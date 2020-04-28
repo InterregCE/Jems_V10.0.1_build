@@ -1,0 +1,6 @@
+rootProject.name = 'skeleton'
+
+include 'skeleton-api'
+include 'skeleton-client'
+include 'skeleton-server'
+include 'skeleton-ui'

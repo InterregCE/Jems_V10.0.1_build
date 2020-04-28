@@ -1,0 +1,10 @@
+/.idea/*
+!.idea/runConfigurations/
+!.idea/Catalysts codestyle.xml
+*.iml
+
+.gradle
+build
+out
+
+node_modules

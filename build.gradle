@@ -1,0 +1,31 @@
+buildscript {
+    repositories {
+        maven { url "https://artifactory.internal.catalysts.cc/cloudflight-internal" }
+    }
+    dependencies {
+        classpath "io.cloudflight.gradle:cloudflight-gradle-plugin:4.3.3"
+    }
+}
+
+// group id needs to be set before the cloudflight-gradle-plugin is applied
+description "Cloudflight Angular Kotlin Skeleton"
+group "io.cloudflight.skeleton.angular"
+version "1.0.0"
+
+apply plugin: "cloudflight-gradle-plugin"
+
+subprojects {
+    if (isJavaProject(it) || isKotlinProject(it)) {
+        dependencies {
+            api enforcedPlatform("io.cloudflight.platform:platform-bom:$cloudflightPlatformVersion")
+            annotationProcessor enforcedPlatform("io.cloudflight.platform:platform-bom:$cloudflightPlatformVersion")
+            testImplementation enforcedPlatform("io.cloudflight.platform:platform-test-bom:$cloudflightPlatformVersion")
+        }
+    }
+
+    if (isKotlinProject(it)) {
+        dependencies {
+            kapt enforcedPlatform("io.cloudflight.platform:platform-bom:$cloudflightPlatformVersion")
+        }
+    }
+}

@@ -1,0 +1,8 @@
+plugins {
+    id 'com.github.node-gradle.node'
+    id 'org.hidetake.swagger.generator'
+}
+
+dependencies {
+    swaggerApi project(':skeleton-api')
+}

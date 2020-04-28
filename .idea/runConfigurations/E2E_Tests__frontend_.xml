@@ -1,0 +1,11 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="E2E Tests (frontend)" type="JavaScriptTestRunnerProtractor">
+    <config-file value="$PROJECT_DIR$/skeleton-ui/e2e/protractor.conf.js" />
+    <node-interpreter value="$PROJECT_DIR$/.gradle/nodejs/node-v12.13.1-win-x64/node" />
+    <protractor-package value="$PROJECT_DIR$/skeleton-ui/node_modules/protractor" />
+    <protractor-options value="" />
+    <envs />
+    <scope-kind value="ALL" />
+    <method v="2" />
+  </configuration>
+</component>
