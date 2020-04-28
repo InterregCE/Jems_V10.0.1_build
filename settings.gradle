@@ -1,6 +1,6 @@
-rootProject.name = 'skeleton'
+rootProject.name = 'ems'
 
-include 'skeleton-api'
-include 'skeleton-client'
-include 'skeleton-server'
-include 'skeleton-ui'
+include 'ems-api'
+include 'ems-client'
+include 'ems-server'
+include 'ems-ui'
