@@ -1,3 +1,7 @@
+plugins {
+    id 'org.flywaydb.flyway' version '6.4.2'
+}
+
 dependencies {
     implementation project(':ems-api')
     implementation project(':ems-ui')
@@ -14,4 +18,12 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-devtools'
     implementation 'org.springframework.boot:spring-boot-starter-security'
     implementation 'org.springframework.boot:spring-boot-starter-web'
+    implementation 'org.mariadb.jdbc:mariadb-java-client:2.6.0'
+}
+
+flyway {
+    url = 'jdbc:mariadb://localhost:3306/'
+    user = 'root'
+    password = 'emspass'
+    schemas = ['ems']
 }
