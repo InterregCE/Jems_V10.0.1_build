@@ -9,7 +9,7 @@ spring:
   datasource:
     url: "${SPRING_DATASOURCE_URL:jdbc:mariadb://localhost:3306/ems}"
     username: root
-    password: "${SPRING_DATASOURCE_PASSWORD:emsroot}"
+    password: "${SPRING_DATASOURCE_PASSWORD:emspass}"
     driver-class-name: org.mariadb.jdbc.Driver
     jpa:
       database: mariadb
@@ -17,4 +17,3 @@ spring:
       hibernate:
         ddl-auto: update
       show-sql: false
-
