@@ -1,0 +1,16 @@
+version: '3'
+
+services:
+
+  ems-database:
+    image: mariadb/server:10.3.13
+    container_name: ems-database
+#    volumes:
+#      - ems-database-data:/var/lib/mariadb
+    ports:
+      - '3306:3306'
+    environment:
+      MYSQL_ROOT_PASSWORD: emspass
+
+#volumes:
+#  ems-database-data:
