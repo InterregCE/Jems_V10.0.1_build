@@ -42,3 +42,8 @@ Import `./idea/Catalysts codestyle.xml` to your IntelliJ and use it.
 ## Help
 
 For any questions please contact https://chat.catalysts.cc/channel/sig-skeleton
+
+### Database
+This project is now based on [MariaDB](https://mariadb.com/kb/en/installing-and-using-mariadb-via-docker/). The easiest way to start DB for local development is to run it inside docker.
+There is a [docker-compose](docker-compose.yml) file, so everything you need is to run `docker-compose up` command in
+root directory.
