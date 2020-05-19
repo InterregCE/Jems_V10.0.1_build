@@ -19,6 +19,11 @@ subprojects {
             api enforcedPlatform("io.cloudflight.platform:platform-bom:$cloudflightPlatformVersion")
             annotationProcessor enforcedPlatform("io.cloudflight.platform:platform-bom:$cloudflightPlatformVersion")
             testImplementation enforcedPlatform("io.cloudflight.platform:platform-test-bom:$cloudflightPlatformVersion")
+
+            constraints {
+                api "org.mariadb.jdbc:mariadb-java-client:2.6.0"
+            }
+
         }
     }
 

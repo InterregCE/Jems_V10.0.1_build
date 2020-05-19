@@ -2,9 +2,19 @@ api:
   base-path: /api
 
 spring:
+  flyway:
+    out-of-order: true
   messages:
     basename: classpath:/messages
-#  datasource:
-#    url: jdbc:mariadb://localhost/CHANGEME
-#    username: CHANGEME
-#    password: CHANGEME
+  datasource:
+    url: "${SPRING_DATASOURCE_URL:jdbc:mariadb://localhost:3306/ems}"
+    username: root
+    password: "${SPRING_DATASOURCE_PASSWORD:emsroot}"
+    driver-class-name: org.mariadb.jdbc.Driver
+    jpa:
+      database: mariadb
+      open-in-view: false
+      hibernate:
+        ddl-auto: update
+      show-sql: false
+
