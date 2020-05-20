@@ -6,6 +6,7 @@ import io.cloudflight.ems.dto.User
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.context.annotation.Profile
+import org.springframework.http.HttpMethod
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken
 import org.springframework.security.authentication.dao.AbstractUserDetailsAuthenticationProvider
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder
@@ -33,19 +34,20 @@ import java.util.*
 @Profile("!production")
 class NoAuthWebSecurityConfig : WebSecurityConfigurerAdapter() {
 
+    // WIll revert commented parts once login is necessary.
     override fun configure(http: HttpSecurity) {
         http
-            .cors()
-            .and()
-
-            .authorizeRequests()
-            .antMatchers("/api/**").fullyAuthenticated()
-            .and()
-
-            .csrf().disable()
-
-            .logout().permitAll()
-            .and()
+//            .cors()
+//            .and()
+//
+//            .authorizeRequests()
+//            .antMatchers("/api/**").fullyAuthenticated()
+//            .and()
+//
+//            .csrf().disable()
+//
+//            .logout().permitAll()
+//            .and()
 
             .httpBasic()
     }
@@ -53,6 +55,7 @@ class NoAuthWebSecurityConfig : WebSecurityConfigurerAdapter() {
     override fun configure(webSecurity: WebSecurity) {
         // permit all static resources
         webSecurity.ignoring()
+            .antMatchers(HttpMethod.POST)
             .antMatchers("/**/*.{js|css|html}")
             .antMatchers("/api/i18n/**")
             .antMatchers("/favicon.ico")

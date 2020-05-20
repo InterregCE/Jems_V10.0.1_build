@@ -1,21 +1,19 @@
 import {NgModule} from '@angular/core';
 import {RouterModule, Routes} from '@angular/router';
-import {HomeComponent} from './pages/home/home.component';
-import {AuthenticationGuard} from './security/authentication-guard.service';
-import {LoginComponent} from './pages/login/login.component';
+import {ProjectApplicationComponent} from './components/project-application/project-application.component';
 
 
 const routes: Routes = [
   {
     path: '',
     pathMatch: 'full',
-    component: HomeComponent,
-    canActivate: [AuthenticationGuard]
+    component: ProjectApplicationComponent,
+    // canActivate: [AuthenticationGuard]
   },
-  {
-    path: 'login',
-    component: LoginComponent
-  }
+  // {
+  //   path: 'login',
+  //   component: LoginComponent,
+  // }
 ];
 
 @NgModule({

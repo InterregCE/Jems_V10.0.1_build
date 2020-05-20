@@ -1,0 +1,22 @@
+<div>
+    <p>Create a new project application:</p>
+    <form (ngSubmit)="onSubmit()">
+        <div class="form-group">
+            <mat-form-field appearance="outline" class="col-md-12">
+                <mat-label>Project Acronym</mat-label>
+                <input name="acronym" [(ngModel)]="project.acronym" matInput placeholder="Project Acronym">
+            </mat-form-field>
+            <mat-form-field appearance="outline" class="col-md-12">
+                <mat-label>Submission Date</mat-label>
+                <input name="submissionDate" [(ngModel)]="project.submissionDate" matInput placeholder="YYYY-MM-DD">
+            </mat-form-field>
+        </div>
+        <button mat-raised-button color="primary" type="submit">+ Create Project Application</button>
+    </form>
+    <div *ngIf="success">
+        <p>Project application was successfully saved.</p>
+    </div>
+    <div *ngIf="error">
+        <p>There was a problem saving the Project application.</p>
+    </div>
+</div>
