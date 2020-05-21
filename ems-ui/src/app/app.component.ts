@@ -11,6 +11,7 @@ import {Observable} from 'rxjs';
 })
 export class AppComponent {
   title = 'frontend';
+  isLoginNeeded = false;
 
   constructor(private securityService: SecurityService,
               private router: Router,
