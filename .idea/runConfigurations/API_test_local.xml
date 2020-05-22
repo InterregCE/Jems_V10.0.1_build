@@ -1,0 +1,12 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="API test local" type="js.build_tools.npm">
+    <package-json value="$PROJECT_DIR$/ems-rest-test/package.json" />
+    <command value="run" />
+    <scripts>
+      <script value="test-local" />
+    </scripts>
+    <node-interpreter value="project" />
+    <envs />
+    <method v="2" />
+  </configuration>
+</component>

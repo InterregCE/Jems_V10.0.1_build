@@ -1,0 +1,13 @@
+{
+  "name": "ems-rest-test",
+  "version": "1.0.0",
+  "description": "Collection of scenarios for testing API endpoints",
+  "scripts": {
+    "test-dev": "newman run collections/ems-rest-test.postman_collection.json -e environments/dev.postman_environment.json",
+    "test-local": "newman run collections/ems-rest-test.postman_collection.json -e environments/local.postman_environment.json"
+  },
+  "author": "Ondrej Oravcok, Cloudflight.io",
+  "devDependencies": {
+    "newman": "^5.0.1"
+  }
+}
