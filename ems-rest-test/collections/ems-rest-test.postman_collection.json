@@ -1,0 +1,362 @@
+{
+	"info": {
+		"_postman_id": "11033879-29b9-4916-9ad7-e0edb90da328",
+		"name": "ems-rest-test",
+		"description": "Check creation of Project Application",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "project-entity",
+			"item": [
+				{
+					"name": "test project application retrieval 1",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "c0cc5943-f742-41a6-9b85-5784c012d8e1",
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"id": "b8584273-c663-4017-991f-ebbcb4700413",
+								"exec": [
+									"const response = pm.response.json()\r",
+									"\r",
+									"pm.test(\"list can be retrieved\", function () {\r",
+									"    pm.expect(response.totalElements).to.be.a('number');\r",
+									"    pm.variables.set(\"totalCount\", response.totalElements);\r",
+									"})\r",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "{{url}}/api/projects",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"api",
+								"projects"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "create project application - invalid data",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "0e30a698-a0e0-4f8e-b1cc-5dbf89bd09e6",
+								"exec": [
+									"pm.variables.set('project_acronym', \"test-proj-this-is-a-very-long-name\");\r",
+									"\r",
+									"var date = new Date();\r",
+									"date.setDate(date.getDate() - 2);\r",
+									"pm.variables.set('project_submissionDate', date.toISOString().split('T')[0]);\r",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"id": "783343cb-3389-4c2a-88f9-6b9fbddfd40b",
+								"exec": [
+									"pm.test('should fail with 422', function () {\r",
+									"    pm.response.to.have.status(422);\r",
+									"});\r",
+									"\r",
+									"pm.test('should return validation errors', function () {\r",
+									"    const response = pm.response.json();\r",
+									"    pm.expect(response['acronym']).to.contain('long');\r",
+									"    pm.expect(response['submissionDate']).to.contain('date_in_past');\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\t\"acronym\": \"{{project_acronym}}\",\n\t\"submissionDate\": \"{{project_submissionDate}}\"\n}"
+						},
+						"url": {
+							"raw": "{{url}}/api/project",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"api",
+								"project"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "create project application - empty",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "f2140b48-8be0-4b4b-bcb9-e441b9dc8a5b",
+								"exec": [
+									"pm.variables.set('project_acronym', \"\");\r",
+									"pm.variables.set('project_submissionDate', \"\");\r",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"id": "90dc2dd2-c000-4472-bd2f-68f24e9f0784",
+								"exec": [
+									"pm.test('should fail with 422', function () {\r",
+									"    pm.response.to.have.status(422);\r",
+									"});\r",
+									"\r",
+									"pm.test('should return validation errors', function () {\r",
+									"    const response = pm.response.json();\r",
+									"    pm.expect(response['acronym']).to.contain('missing');\r",
+									"    pm.expect(response['submissionDate']).to.contain('missing');\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"type": "text",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\t\"acronym\": \"{{project_acronym}}\",\n\t\"submissionDate\": \"{{project_submissionDate}}\"\n}"
+						},
+						"url": {
+							"raw": "{{url}}/api/project",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"api",
+								"project"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "create project application - OK",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "26bbefa5-3d7a-4b70-887a-36e7956bc63e",
+								"exec": [
+									"var uuid = require('uuid');\r",
+									"const randomIdentifier = uuid.v4().substring(24, 32);\r",
+									"pm.variables.set('project_acronym', \"test-proj-\" + randomIdentifier);\r",
+									"\r",
+									"var date = new Date();\r",
+									"date.setDate(date.getDate() + 2);\r",
+									"pm.variables.set('project_submissionDate', date.toISOString().split('T')[0]);\r",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"id": "598cf82a-5151-475f-9c92-e75394d2b4e5",
+								"exec": [
+									"pm.test('should be OK', function() {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"type": "text",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\t\"acronym\": \"{{project_acronym}}\",\n\t\"submissionDate\": \"{{project_submissionDate}}\"\n}"
+						},
+						"url": {
+							"raw": "{{url}}/api/project",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"api",
+								"project"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "test project application retrieval 2",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "8897abf1-aa4f-4554-b9ee-910221cad16c",
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"id": "a0a82042-f77b-407e-ac71-f0bc6bb146ff",
+								"exec": [
+									"const response = pm.response.json();\r",
+									"\r",
+									"pm.test(\"modified list can be retrieved\", function () {\r",
+									"    pm.expect(response.totalElements).to.be.a('number');\r",
+									"\r",
+									"    const totalAmountBefore = pm.variables.get(\"totalCount\");\r",
+									"    pm.expect(response.totalElements).to.equal(totalAmountBefore + 1);\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"type": "text",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "{{url}}/api/projects",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"api",
+								"projects"
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"protocolProfileBehavior": {}
+		}
+	],
+	"auth": {
+		"type": "basic",
+		"basic": [
+			{
+				"key": "username",
+				"value": "user",
+				"type": "string"
+			}
+		]
+	},
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"id": "77d5b21d-6ecc-4be2-a48c-58a552aa922e",
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"id": "fb3e7602-a2d7-43cd-a9e8-c545fec3128e",
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"id": "b895eed0-c4e8-47cc-9c3d-55ffdaefd721",
+			"key": "url",
+			"value": "specify_url_here",
+			"type": "string"
+		}
+	],
+	"protocolProfileBehavior": {}
+}
