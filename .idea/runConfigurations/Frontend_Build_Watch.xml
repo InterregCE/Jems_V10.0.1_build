@@ -1,6 +1,6 @@
 <component name="ProjectRunConfigurationManager">
-  <configuration default="false" name="Frontend Build Watch (skeleton-ui)" type="js.build_tools.npm">
-    <package-json value="$PROJECT_DIR$/skeleton-ui/package.json" />
+  <configuration default="false" name="Frontend Build Watch" type="js.build_tools.npm">
+    <package-json value="$PROJECT_DIR$/ems-ui/package.json" />
     <command value="run" />
     <scripts>
       <script value="build:dev" />
