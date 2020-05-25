@@ -18,6 +18,9 @@ import {MatButtonModule} from '@angular/material/button';
 import {MatInputModule} from '@angular/material/input';
 import {ProjectApplicationComponent} from './components/project-application/project-application.component';
 import {ProjectApplicationListComponent} from './components/project-application/project-application-list/project-application-list.component';
+import {MatListModule} from '@angular/material/list';
+import {MatTableModule} from '@angular/material/table';
+import {ProjectApplicationService} from './services/project-application.service';
 
 @NgModule({
   declarations: [
@@ -39,7 +42,9 @@ import {ProjectApplicationListComponent} from './components/project-application/
     BrowserAnimationsModule,
     MatFormFieldModule,
     MatButtonModule,
-    MatInputModule
+    MatInputModule,
+    MatListModule,
+    MatTableModule
   ],
   providers: [
     SecurityService,
@@ -51,7 +56,9 @@ import {ProjectApplicationListComponent} from './components/project-application/
     {
       provide: BASE_PATH,
       useValue: '.'
-    }],
+    },
+    ProjectApplicationService
+    ],
   entryComponents: [
     HomeComponent,
     LoginComponent
