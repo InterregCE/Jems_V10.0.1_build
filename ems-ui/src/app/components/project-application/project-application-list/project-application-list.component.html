@@ -1,6 +1,6 @@
 <div class="project-application-container">
-    <p *ngIf="dataSource.data.length <= 0">No project applications submitted.</p>
-    <table *ngIf="dataSource.data.length > 0"
+    <p *ngIf="!isTableShown()">No project applications submitted.</p>
+    <table *ngIf="isTableShown()"
             mat-table
             [dataSource]="dataSource"
             class="mat-elevation-z8 project-application-table">
