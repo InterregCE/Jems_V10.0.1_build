@@ -34,10 +34,9 @@
     <div *ngIf="success">
         <p>Project application was successfully saved.</p>
     </div>
-    <div *ngIf="serverError">
-        <p>There was a problem saving the Project application.</p>
-    </div>
-    <div *ngIf="inputError">
-        <p>To create a project application, please enter acronym and submission date!</p>
+    <div *ngIf="error">
+        <div *ngFor="let message of errorMessages">
+            <p>{{message}}</p>
+        </div>
     </div>
 </div>
