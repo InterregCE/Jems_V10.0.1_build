@@ -13,9 +13,14 @@ export class ProjectApplicationComponent implements OnInit {
 
   @ViewChild(ProjectApplicationSubmissionComponent, {static: false}) projectSubmissionComponent: ProjectApplicationSubmissionComponent;
 
+  ERROR_MESSAGE_FIELDS_REQUIRED = 'To create a project application, please enter acronym and submission date!';
+  ERROR_MESSAGE_ACRONYM_TOO_LONG = 'Acronym is too long. Maximum 25 characters.';
+  ERROR_MESSAGE_DATE_IN_PAST = 'The specified date is in the past. Please specify a date in the future.';
+  ERROR_MESSAGE_BAD_REQUEST = 'There was a problem saving the project application.';
+
   success = false;
-  inputError = false;
-  serverError = false;
+  error = false;
+  errorMessages: string[];
   dataSource: MatTableDataSource<OutputProject>;
 
   constructor(private projectService: ProjectApplicationService) {
@@ -26,11 +31,12 @@ export class ProjectApplicationComponent implements OnInit {
   }
 
   submitProjectApplication(project: InputProject) {
-    this.serverError = false;
+    this.error = false;
     this.success = false;
-    this.inputError = false;
+    this.errorMessages = [];
     if (!project.acronym || !project.submissionDate ) {
-      this.inputError = true;
+      this.error = true;
+      this.errorMessages.push(this.ERROR_MESSAGE_FIELDS_REQUIRED);
     } else {
       this.projectService.addProject(project).toPromise()
         .then(() => {
@@ -38,9 +44,12 @@ export class ProjectApplicationComponent implements OnInit {
           this.getProjectsFromServer();
           this.projectSubmissionComponent.resetFormFields();
         })
-        .catch(() => {
-          this.serverError = true;
+        .catch((response: any) => {
+          this.error = true;
           this.projectSubmissionComponent.resetFormFields();
+          if (response.error) {
+            this.setErrorMessagesFromResponse(response.error);
+          }
         });
     }
   }
@@ -50,5 +59,25 @@ export class ProjectApplicationComponent implements OnInit {
       .then((results) => {
         this.dataSource = new MatTableDataSource<OutputProject>(results.content);
       });
+  }
+
+  setErrorMessagesFromResponse(error: any) {
+    if (error.acronym) {
+      error.acronym.forEach((errorMessage: string) => {
+        if (errorMessage === 'long') {
+          this.errorMessages.push(this.ERROR_MESSAGE_ACRONYM_TOO_LONG);
+        }
+      });
+    }
+    if (error.submissionDate) {
+      error.submissionDate.forEach((errorMessage: string) => {
+        if (errorMessage === 'date_in_past') {
+          this.errorMessages.push(this.ERROR_MESSAGE_DATE_IN_PAST);
+        }
+      });
+    }
+    if (this.errorMessages.length <= 0) {
+      this.errorMessages.push(this.ERROR_MESSAGE_BAD_REQUEST);
+    }
   }
 }

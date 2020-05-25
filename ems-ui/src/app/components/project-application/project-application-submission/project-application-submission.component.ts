@@ -12,9 +12,9 @@ export class ProjectApplicationSubmissionComponent {
   @Input()
   success: boolean;
   @Input()
-  serverError: boolean;
+  error: boolean;
   @Input()
-  inputError: boolean;
+  errorMessages: string[];
 
   @Output()
   submitProjectApplication: EventEmitter<InputProject> = new EventEmitter<InputProject>();

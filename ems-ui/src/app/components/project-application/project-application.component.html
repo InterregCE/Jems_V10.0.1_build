@@ -4,8 +4,8 @@
         <div class="col-md-6">
             <app-project-application-submission
                     [success]="success"
-                    [inputError]="inputError"
-                    [serverError]="serverError"
+                    [error]="error"
+                    [errorMessages]="errorMessages"
                     (submitProjectApplication)="submitProjectApplication($event)"
             ></app-project-application-submission>
         </div>
