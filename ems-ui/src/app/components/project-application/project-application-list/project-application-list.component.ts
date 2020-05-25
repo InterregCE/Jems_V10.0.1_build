@@ -12,4 +12,8 @@ export class ProjectApplicationListComponent {
   displayedColumns: string[] = ['Id', 'Acronym', 'Submission Date'];
   @Input()
   dataSource: MatTableDataSource<OutputProject>;
+
+  isTableShown(): boolean {
+    return this.dataSource && this.dataSource.data.length > 0;
+  }
 }
