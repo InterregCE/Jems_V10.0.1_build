@@ -2,10 +2,17 @@
     <h3>Welcome to myProgramme!</h3>
     <div class="row">
         <div class="col-md-6">
-            <app-project-application-submission></app-project-application-submission>
+            <app-project-application-submission
+                    [success]="success"
+                    [inputError]="inputError"
+                    [serverError]="serverError"
+                    (submitProjectApplication)="submitProjectApplication($event)"
+            ></app-project-application-submission>
         </div>
         <div class="col-md-6">
-            <app-project-application-list></app-project-application-list>
+            <app-project-application-list
+                    [dataSource]="dataSource"
+            ></app-project-application-list>
         </div>
     </div>
 </div>

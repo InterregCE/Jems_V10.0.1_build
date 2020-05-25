@@ -1,6 +1,5 @@
-import {Component, ViewChild} from '@angular/core';
-import {FormBuilder, NgForm} from '@angular/forms';
-import {ProjectService} from 'build/generated-sources/openapi/api/project.service';
+import {Component, EventEmitter, Input, Output, ViewChild} from '@angular/core';
+import {NgForm} from '@angular/forms';
 import {InputProject} from 'build/generated-sources/openapi/model/models';
 
 @Component({
@@ -10,34 +9,24 @@ import {InputProject} from 'build/generated-sources/openapi/model/models';
 
 export class ProjectApplicationSubmissionComponent {
   @ViewChild('projectApplicationSubmitForm', {static: false}) projectApplicationSubmitForm: NgForm;
+  @Input()
+  success: boolean;
+  @Input()
+  serverError: boolean;
+  @Input()
+  inputError: boolean;
+
+  @Output()
+  submitProjectApplication: EventEmitter<InputProject> = new EventEmitter<InputProject>();
 
   project = {} as InputProject;
-  success = false;
-  serverError = false;
-  inputError = false;
-
-  constructor(private formBuilder: FormBuilder,
-              private projectService: ProjectService) {
-  }
 
   onSubmit() {
-    this.serverError = false;
-    this.success = false;
-    this.inputError = false;
-    if (!this.project.acronym || !this.project.submissionDate ) {
-      this.inputError = true;
-    } else {
-      this.projectService.createProject(this.project).toPromise()
-        .then(() => {
-          this.success = true;
-        })
-        .catch(() => {
-          this.serverError = true;
-        })
-        .finally(() => {
-          this.project = {} as InputProject;
-          this.projectApplicationSubmitForm.resetForm();
-        });
-    }
+    this.submitProjectApplication.emit(this.project);
+  }
+
+  resetFormFields(): void {
+    this.project = {} as InputProject;
+    this.projectApplicationSubmitForm.resetForm();
   }
 }
