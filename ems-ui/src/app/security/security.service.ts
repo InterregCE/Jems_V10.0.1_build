@@ -29,11 +29,11 @@ export class SecurityService {
   }
 
   private reloadCurrentUser(): Observable<any> {
-    const loadingCurrentUser = this.userApi.getCurrentUser();
+    // const loadingCurrentUser = this.userApi.getCurrentUser();
     const doneProcessingSubject = new Subject();
-    loadingCurrentUser.subscribe(
-      value => { this.myCurrentUser.next(value); doneProcessingSubject.complete(); },
-      () => { this.myCurrentUser.next(null); doneProcessingSubject.complete(); });
+    // loadingCurrentUser.subscribe(
+    //   value => { this.myCurrentUser.next(value); doneProcessingSubject.complete(); },
+    //   () => { this.myCurrentUser.next(null); doneProcessingSubject.complete(); });
     return doneProcessingSubject.asObservable();
   }
 

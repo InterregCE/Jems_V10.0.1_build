@@ -1,7 +1,6 @@
 import {HttpClient} from '@angular/common/http';
 import {TranslateHttpLoader} from '@ngx-translate/http-loader';
 import {NgModule} from '@angular/core';
-import {RouterModule} from '@angular/router';
 import {TranslateLoader, TranslateModule} from '@ngx-translate/core';
 
 
