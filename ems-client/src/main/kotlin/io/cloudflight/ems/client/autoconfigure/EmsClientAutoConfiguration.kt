@@ -1,6 +1,6 @@
 package io.cloudflight.ems.client.autoconfigure
 
-import io.cloudflight.ems.client.HelloWorldClient
+import io.cloudflight.ems.client.ProjectClient
 import org.springframework.cloud.openfeign.EnableFeignClients
 import org.springframework.context.annotation.Configuration
 
@@ -10,5 +10,5 @@ import org.springframework.context.annotation.Configuration
  * you can also leave that up for the clients
  */
 @Configuration
-@EnableFeignClients(basePackageClasses = [HelloWorldClient::class])
+@EnableFeignClients(basePackageClasses = [ProjectClient::class])
 class EmsClientAutoConfiguration

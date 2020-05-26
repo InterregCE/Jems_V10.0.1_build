@@ -4,8 +4,6 @@ import {ApiModule, BASE_PATH} from '@cat/api';
 
 import {AppRoutingModule} from './app-routing.module';
 import {AppComponent} from './app.component';
-import {HomeComponent} from './pages/home/home.component';
-import {LoginComponent} from './pages/login/login.component';
 import {HTTP_INTERCEPTORS, HttpClientModule} from '@angular/common/http';
 import {AuthenticationInterceptor} from './security/authentication.interceptor';
 import {ReactiveFormsModule, FormsModule} from '@angular/forms';
@@ -25,8 +23,6 @@ import {ProjectApplicationService} from './services/project-application.service'
 @NgModule({
   declarations: [
     AppComponent,
-    HomeComponent,
-    LoginComponent,
     ProjectApplicationComponent,
     ProjectApplicationListComponent,
     ProjectApplicationSubmissionComponent,
@@ -60,8 +56,6 @@ import {ProjectApplicationService} from './services/project-application.service'
     ProjectApplicationService
     ],
   entryComponents: [
-    HomeComponent,
-    LoginComponent
   ],
   bootstrap: [AppComponent]
 })
