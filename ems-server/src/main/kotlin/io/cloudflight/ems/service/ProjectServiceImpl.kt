@@ -40,8 +40,6 @@ class ProjectServiceImpl(
 
         if (project.submissionDate == null) {
             validationErrors.put("submissionDate", listOf(DataValidationException.NULL))
-        } else if (project.submissionDate!!.isBefore(LocalDate.now())) {
-            validationErrors.put("submissionDate", listOf(DataValidationException.LOCAL_DATE_IN_PAST))
         }
 
         if (validationErrors.isNotEmpty()) {
