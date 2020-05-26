@@ -61,9 +61,8 @@ class ProjectServiceTest {
                     "very long acronym, which is longer than allowed",
                     yesterday))
         }
-        assertEquals(e.errors.size, 2)
+        assertEquals(e.errors.size, 1)
         assertEquals(e.errors["acronym"], listOf("long"))
-        assertEquals(e.errors["submissionDate"], listOf("date_in_past"))
     }
 
 }

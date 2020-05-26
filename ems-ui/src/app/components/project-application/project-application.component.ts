@@ -15,7 +15,6 @@ export class ProjectApplicationComponent implements OnInit {
 
   ERROR_MESSAGE_FIELDS_REQUIRED = 'To create a project application, please enter acronym and submission date!';
   ERROR_MESSAGE_ACRONYM_TOO_LONG = 'Acronym is too long. Maximum 25 characters.';
-  ERROR_MESSAGE_DATE_IN_PAST = 'The specified date is in the past. Please specify a date in the future.';
   ERROR_MESSAGE_BAD_REQUEST = 'There was a problem saving the project application.';
 
   success = false;
@@ -66,13 +65,6 @@ export class ProjectApplicationComponent implements OnInit {
       error.acronym.forEach((errorMessage: string) => {
         if (errorMessage === 'long') {
           this.errorMessages.push(this.ERROR_MESSAGE_ACRONYM_TOO_LONG);
-        }
-      });
-    }
-    if (error.submissionDate) {
-      error.submissionDate.forEach((errorMessage: string) => {
-        if (errorMessage === 'date_in_past') {
-          this.errorMessages.push(this.ERROR_MESSAGE_DATE_IN_PAST);
         }
       });
     }
