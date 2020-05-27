@@ -2,6 +2,7 @@ package io.cloudflight.ems.service
 
 import io.cloudflight.ems.api.dto.InputProject
 import io.cloudflight.ems.api.dto.OutputProject
+import io.cloudflight.ems.entity.Audit
 import io.cloudflight.ems.exception.DataValidationException
 import io.cloudflight.ems.service.ProjectDtoUtilClass.Companion.getDtoFrom
 import io.cloudflight.ems.service.ProjectDtoUtilClass.Companion.toEntity
@@ -10,11 +11,12 @@ import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
-import java.util.*
+import java.util.Optional
 
 @Service
 class ProjectServiceImpl(
-    private val projectRepo: ProjectRepository
+    private val projectRepo: ProjectRepository,
+    private val auditService: AuditService
 ) : ProjectService {
 
     @Transactional(readOnly = true)
@@ -25,7 +27,10 @@ class ProjectServiceImpl(
     @Transactional
     override fun createProject(project: InputProject): OutputProject {
         validateProject(project)
+
         val createdProject = projectRepo.save(toEntity(project))
+        auditService.logEvent(Audit.projectSubmitted(createdProject.id.toString()))
+
         return getDtoFrom(createdProject)
     }
 

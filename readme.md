@@ -43,10 +43,18 @@ Import `./idea/Catalysts codestyle.xml` to your IntelliJ and use it.
 
 For any questions please contact https://chat.catalysts.cc/channel/sig-skeleton
 
-### Database
-This project is now based on [MariaDB](https://mariadb.com/kb/en/installing-and-using-mariadb-via-docker/). The easiest way to start DB for local development is to run it inside docker.
+### Database (Store)
+This project is now based on
+- [MariaDB](https://mariadb.com/kb/en/installing-and-using-mariadb-via-docker/) for storing all data
+- ElasticSearch for storing "audit logs". Those are tracking all interactions between users and system itself.
+
+The easiest way to start DB for local development is to run it inside docker.
 There is a [docker-compose](docker-compose.yml) file, so everything you need is to run `docker-compose up` command in
-root directory. For intelliJ there is also configuration [ems-database](.idea/runConfigurations/ems_database.xml) prepared for you.
+root directory. For intelliJ there are also configurations
+- [ems-database](.idea/runConfigurations/ems_database.xml) to start MariaDB inside Docker
+- [ems-audit](.idea/runConfigurations/ems_audit.xml) to start ElasticSearch and Kibana  inside Docker. Those data are
+then available either directly in ElasticSearch [localhost:9200](http://localhost:9200/audit-log/audit/_search) or
+in Kibana web interface [localhost:5601](http://localhost:5601)
 
 ### API testing
 For testing APIs we introduced module [ems-rest-test](ems-rest-test), see documentation there.
