@@ -4,7 +4,8 @@ import {InputProject} from 'build/generated-sources/openapi/model/models';
 
 @Component({
   selector: 'app-project-application-submission',
-  templateUrl: 'project-application-submission.component.html'
+  templateUrl: 'project-application-submission.component.html',
+  styleUrls: ['project-application-submission.component.scss']
 })
 
 export class ProjectApplicationSubmissionComponent {

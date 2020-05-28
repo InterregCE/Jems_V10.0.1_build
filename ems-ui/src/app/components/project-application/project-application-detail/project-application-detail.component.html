@@ -1,0 +1,45 @@
+<div>
+    <p>< Back to List of Project Applications</p>
+    <div class="row">
+        <div class="col-sm-12 container">
+            <div class="project-detail-container">
+                <h5>{{project.acronym}}</h5>
+                <div class="row project-detail-row">
+                    <div class="col-sm-2 column">
+                        <span>Application ID</span>
+                        <br>
+                        <span>{{project.id}}</span>
+                    </div>
+                    <div class="col-sm-2 column">
+                        <span>Programm ID</span>
+                        <br>
+                        <span>dummy</span>
+                    </div>
+                    <div class="col-sm-2 column">
+                        <span>Call ID</span>
+                        <br>
+                        <span>dummy</span>
+                    </div>
+                    <div class="col-sm-3 column">
+                        <span>Project Acronym</span>
+                        <br>
+                        <span>{{project.acronym}}</span>
+                    </div>
+                    <div class="col-sm-3 column">
+                        <span>Submission Date</span>
+                        <br>
+                        <span>{{project.submissionDate}}</span>
+                    </div>
+                </div>
+                <div class="row project-detail-table-header">
+                    <h6>List of added file ({{fileNumber}})</h6>
+                    <button *ngIf="false"
+                            mat-raised-button
+                            disabled
+                            color="primary"
+                            (click)="addNewFilesForUpload()">+ add new file</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

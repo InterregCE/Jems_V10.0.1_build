@@ -6,7 +6,8 @@ import {ProjectApplicationService} from '../../services/project-application.serv
 
 @Component({
   selector: 'app-project-application',
-  templateUrl: 'project-application.component.html'
+  templateUrl: 'project-application.component.html',
+  styleUrls: ['project-application.component.scss']
 })
 
 export class ProjectApplicationComponent implements OnInit {

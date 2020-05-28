@@ -1,11 +1,11 @@
-<div>
+<div class="project-application-submission-container">
     <p>Create a new project application:</p>
     <p>Programme ID : dummy | Call ID : dummy</p>
     <form (ngSubmit)="onSubmit()"
           #projectApplicationSubmitForm="ngForm">
         <div class="form-group">
             <mat-form-field appearance="outline"
-                    class="col-md-12">
+                    class="col-md-12 project-application-submission-field">
                 <mat-label>Project Acronym</mat-label>
                 <input name="acronym"
                        [(ngModel)]="project.acronym"
@@ -16,7 +16,7 @@
                 <mat-error *ngIf="acronym.invalid">Acronym is required!</mat-error>
             </mat-form-field>
             <mat-form-field appearance="outline"
-                            class="col-md-12">
+                            class="col-md-12 project-application-submission-field">
                 <mat-label>Submission Date</mat-label>
                 <input name="submissionDate"
                        [(ngModel)]="project.submissionDate"
