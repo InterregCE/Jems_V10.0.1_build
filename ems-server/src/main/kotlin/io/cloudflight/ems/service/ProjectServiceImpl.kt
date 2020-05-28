@@ -10,7 +10,7 @@ import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
-import java.time.LocalDate
+import java.util.*
 
 @Service
 class ProjectServiceImpl(
@@ -27,6 +27,11 @@ class ProjectServiceImpl(
         validateProject(project)
         val createdProject = projectRepo.save(toEntity(project))
         return getDtoFrom(createdProject)
+    }
+
+    @Transactional(readOnly = true)
+    override fun getProjectById(id: Long): Optional<OutputProject> {
+        return getDtoFrom(projectRepo.findById(id))
     }
 
     private fun validateProject(project: InputProject) {
