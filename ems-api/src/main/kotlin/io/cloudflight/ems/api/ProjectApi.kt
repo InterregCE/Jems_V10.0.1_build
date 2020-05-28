@@ -7,7 +7,9 @@ import io.swagger.annotations.ApiOperation
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
 import org.springframework.http.MediaType
+import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.GetMapping
+import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
@@ -23,5 +25,9 @@ interface ProjectApi {
     @ApiOperation("Creates new project application")
     @PostMapping("/project", consumes = [MediaType.APPLICATION_JSON_VALUE])
     fun createProject(@RequestBody project: InputProject): OutputProject
+
+    @ApiOperation("Returns a project application by id")
+    @GetMapping("/project/{id}")
+    fun getProjectById(@PathVariable id: Long): ResponseEntity<OutputProject>
 
 }
