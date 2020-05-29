@@ -1,6 +1,6 @@
 {
 	"info": {
-		"_postman_id": "11033879-29b9-4916-9ad7-e0edb90da328",
+		"_postman_id": "157debc0-ed1d-4592-9f7e-399850c6d90b",
 		"name": "ems-rest-test",
 		"description": "Check creation of Project Application",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
@@ -15,7 +15,7 @@
 						{
 							"listen": "prerequest",
 							"script": {
-								"id": "c0cc5943-f742-41a6-9b85-5784c012d8e1",
+								"id": "2885b24f-80b6-4072-99a3-141625ae729b",
 								"exec": [
 									""
 								],
@@ -25,7 +25,7 @@
 						{
 							"listen": "test",
 							"script": {
-								"id": "b8584273-c663-4017-991f-ebbcb4700413",
+								"id": "6ca00c42-85b9-4d44-bf33-76219497c1c5",
 								"exec": [
 									"const response = pm.response.json()\r",
 									"\r",
@@ -74,7 +74,7 @@
 						{
 							"listen": "prerequest",
 							"script": {
-								"id": "0e30a698-a0e0-4f8e-b1cc-5dbf89bd09e6",
+								"id": "34313bf1-24ff-4026-8a8b-2a30b17be296",
 								"exec": [
 									"pm.variables.set('project_acronym', \"test-proj-this-is-a-very-long-name\");\r",
 									"\r",
@@ -89,7 +89,7 @@
 						{
 							"listen": "test",
 							"script": {
-								"id": "783343cb-3389-4c2a-88f9-6b9fbddfd40b",
+								"id": "f0a728cf-9e16-448c-8c03-f8ac6fdfdf39",
 								"exec": [
 									"pm.test('should fail with 422', function () {\r",
 									"    pm.response.to.have.status(422);\r",
@@ -97,8 +97,7 @@
 									"\r",
 									"pm.test('should return validation errors', function () {\r",
 									"    const response = pm.response.json();\r",
-									"    pm.expect(response['acronym']).to.contain('long');\r",
-									"    pm.expect(response['submissionDate']).to.contain('date_in_past');\r",
+									"    pm.expect(response.acronym).to.contain('long');\r",
 									"});\r",
 									""
 								],
@@ -138,7 +137,7 @@
 						{
 							"listen": "prerequest",
 							"script": {
-								"id": "f2140b48-8be0-4b4b-bcb9-e441b9dc8a5b",
+								"id": "a4232451-ae48-44e9-a2b2-443b00cbcc5b",
 								"exec": [
 									"pm.variables.set('project_acronym', \"\");\r",
 									"pm.variables.set('project_submissionDate', \"\");\r",
@@ -150,7 +149,7 @@
 						{
 							"listen": "test",
 							"script": {
-								"id": "90dc2dd2-c000-4472-bd2f-68f24e9f0784",
+								"id": "a29ba7d0-ffce-45e2-a5be-7202b7d86696",
 								"exec": [
 									"pm.test('should fail with 422', function () {\r",
 									"    pm.response.to.have.status(422);\r",
@@ -199,7 +198,7 @@
 						{
 							"listen": "prerequest",
 							"script": {
-								"id": "26bbefa5-3d7a-4b70-887a-36e7956bc63e",
+								"id": "d4d7a4c4-a721-4499-8d04-165ea142ee40",
 								"exec": [
 									"var uuid = require('uuid');\r",
 									"const randomIdentifier = uuid.v4().substring(24, 32);\r",
@@ -216,10 +215,13 @@
 						{
 							"listen": "test",
 							"script": {
-								"id": "598cf82a-5151-475f-9c92-e75394d2b4e5",
+								"id": "5a54d5f7-6b42-419c-b779-d01c14f1ef1e",
 								"exec": [
 									"pm.test('should be OK', function() {\r",
 									"    pm.response.to.have.status(200);\r",
+									"    pm.environment.set(\"projectId\", pm.response.json().id)\r",
+									"    pm.variables.set(\"projectAcronym\", pm.response.json().acronym)\r",
+									"    pm.variables.set(\"projectSubmissionDate\", pm.response.json().submissionDate)\r",
 									"});\r",
 									""
 								],
@@ -259,7 +261,7 @@
 						{
 							"listen": "prerequest",
 							"script": {
-								"id": "8897abf1-aa4f-4554-b9ee-910221cad16c",
+								"id": "b0973e4a-57a0-4b55-b70e-310fe6a549ce",
 								"exec": [
 									""
 								],
@@ -269,7 +271,7 @@
 						{
 							"listen": "test",
 							"script": {
-								"id": "a0a82042-f77b-407e-ac71-f0bc6bb146ff",
+								"id": "e6711283-759e-4918-ab7b-62275b9c8bd3",
 								"exec": [
 									"const response = pm.response.json();\r",
 									"\r",
@@ -313,6 +315,90 @@
 						}
 					},
 					"response": []
+				},
+				{
+					"name": "test project application retrieval by id 1",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "2faa440b-02b9-4636-a15f-cc3b991aabbe",
+								"exec": [
+									"const response = pm.response.json();\r",
+									"const id = pm.variables.get(\"projectId\")\r",
+									"const acronym = pm.variables.get(\"projectAcronym\")\r",
+									"const submissionDate = pm.variables.get(\"projectSubmissionDate\")\r",
+									"\r",
+									"pm.test(\"one project can be retrieved\", function () {\r",
+									"    pm.expect(response.id).to.equal(id);\r",
+									"    pm.expect(response.acronym).to.equal(acronym);\r",
+									"    pm.expect(response.submissionDate).to.equal(submissionDate);\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{url}}/api/project/{{projectId}}",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"api",
+								"project",
+								"{{projectId}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "test project application retrieval by Id - invalid id",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "320d8f06-9506-4af0-bbf3-de888c9abde5",
+								"exec": [
+									"pm.environment.set(\"projectIdInvalid\", '-1')"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"id": "5fc320bd-fd07-4f02-8228-549ab637a186",
+								"exec": [
+									"pm.test(\"an invalid project returns 404\", function () {\r",
+									"    pm.response.to.have.status(404);\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{url}}/api/project/{{projectIdInvalid}}",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"api",
+								"project",
+								"{{projectIdInvalid}}"
+							]
+						}
+					},
+					"response": []
 				}
 			],
 			"protocolProfileBehavior": {}
@@ -332,7 +418,7 @@
 		{
 			"listen": "prerequest",
 			"script": {
-				"id": "77d5b21d-6ecc-4be2-a48c-58a552aa922e",
+				"id": "1e10d7bd-3d86-446e-915a-0efb4404317c",
 				"type": "text/javascript",
 				"exec": [
 					""
@@ -342,7 +428,7 @@
 		{
 			"listen": "test",
 			"script": {
-				"id": "fb3e7602-a2d7-43cd-a9e8-c545fec3128e",
+				"id": "6d76273d-ab40-4d50-8cf3-992cf8fa2611",
 				"type": "text/javascript",
 				"exec": [
 					""
