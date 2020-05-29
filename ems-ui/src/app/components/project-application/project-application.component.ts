@@ -61,7 +61,7 @@ export class ProjectApplicationComponent implements OnInit {
       });
   }
 
-  setErrorMessagesFromResponse(error: any) {
+  private setErrorMessagesFromResponse(error: any) {
     if (error.acronym) {
       error.acronym.forEach((errorMessage: string) => {
         if (errorMessage === 'long') {

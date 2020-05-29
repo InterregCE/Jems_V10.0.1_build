@@ -8,10 +8,13 @@ import io.mockk.MockKAnnotations
 import io.mockk.every
 import io.mockk.impl.annotations.MockK
 import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.Assertions.assertFalse
+import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
 import java.time.LocalDate
+import java.util.*
 
 val TEST_DATE: LocalDate = LocalDate.now()
 
@@ -65,4 +68,24 @@ class ProjectServiceTest {
         assertEquals(e.errors["acronym"], listOf("long"))
     }
 
+    @Test
+    fun projectGet_OK() {
+        every { projectRepository.findById(eq(1)) } returns Optional.of(Project(1, "test", TEST_DATE))
+
+        val result = projectService.getProjectById(1);
+        assertTrue(result.isPresent)
+        with (result.get()) {
+            assertEquals(1, id)
+            assertEquals("test", acronym)
+            assertEquals(TEST_DATE, submissionDate)
+        }
+    }
+
+    @Test
+    fun projectGet_invalid() {
+        every { projectRepository.findById(eq(2)) } returns Optional.empty()
+
+        val result = projectService.getProjectById(2);
+        assertFalse(result.isPresent)
+    }
 }
