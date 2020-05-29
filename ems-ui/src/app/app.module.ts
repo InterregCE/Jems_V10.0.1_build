@@ -19,6 +19,7 @@ import {ProjectApplicationListComponent} from './components/project-application/
 import {MatListModule} from '@angular/material/list';
 import {MatTableModule} from '@angular/material/table';
 import {ProjectApplicationService} from './services/project-application.service';
+import { ProjectApplicationDetailComponent } from './components/project-application/project-application-detail/project-application-detail.component';
 
 @NgModule({
   declarations: [
@@ -26,6 +27,7 @@ import {ProjectApplicationService} from './services/project-application.service'
     ProjectApplicationComponent,
     ProjectApplicationListComponent,
     ProjectApplicationSubmissionComponent,
+    ProjectApplicationDetailComponent,
   ],
   imports: [
     BrowserModule,
