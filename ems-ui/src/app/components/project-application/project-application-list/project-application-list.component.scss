@@ -5,5 +5,9 @@
 
   .project-application-table {
     width: 100%;
+
+    .clickable-table-row {
+      cursor: pointer;
+    }
   }
 }

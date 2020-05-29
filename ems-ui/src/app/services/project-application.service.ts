@@ -19,4 +19,8 @@ export class ProjectApplicationService {
     return this.service.createProject(project);
   }
 
+  public getProject(id: number): Observable<OutputProject> {
+    return this.service.getProjectById(id);
+  }
+
 }
