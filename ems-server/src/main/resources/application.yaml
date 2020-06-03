@@ -17,3 +17,7 @@ spring:
       hibernate:
         ddl-auto: update
       show-sql: false
+
+audit-service:
+  enabled: "${AUDIT_ENABLED:false}"
+  url-and-port: "${AUDIT_ELASTICSEARCH_URL_AND_PORT:localhost:9200}"
