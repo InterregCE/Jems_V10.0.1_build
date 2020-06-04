@@ -12,6 +12,7 @@ import {Observable} from 'rxjs';
 export class AppComponent {
   title = 'frontend';
   isLoginNeeded = false;
+  auditUrl = '';
 
   constructor(private securityService: SecurityService,
               private router: Router,
@@ -20,10 +21,20 @@ export class AppComponent {
     translate.setDefaultLang('de');
     // the lang to use, if the lang isn't available, it will use the current loader to get them
     translate.use('de');
+    this.prepareAuditUrl(window.location.href);
   }
 
   get currentUser(): Observable<OutputUser | null> {
     return this.securityService.currentUser;
+  }
+
+  prepareAuditUrl(url: string): void {
+    const splitHttp = url.split('://');
+    const splitAddress = splitHttp[1].split('/');
+    this.auditUrl = splitHttp[0] + '://audit-' + splitAddress[0] + '/app/kibana#/discover?_g=(filters:!(),' +
+      'refreshInterval:(pause:!t,value:0),time:(from:now-24h,to:now))' +
+      '&_a=(columns:!(username,action,projectId,description),filters:!(),interval:auto,' +
+      'query:(language:kuery,query:\'\'),sort:!())';
   }
 
   logout() {
