@@ -2,7 +2,7 @@ a { color: inherit; }
 
 .project-detail-container {
   margin-top: 5%;
-  max-width: 60%;
+  max-width: 50%;
   margin-left: 20%;
   margin-right: 20%;
   margin-bottom: 3%;
@@ -24,4 +24,8 @@ a { color: inherit; }
     display: inline-block;
     text-align: center;
   }
+}
+
+.project-files-table-container {
+  max-width: 65%;
 }
