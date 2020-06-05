@@ -18,4 +18,7 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
     implementation 'org.mariadb.jdbc:mariadb-java-client:2.6.0'
     implementation 'org.springframework.data:spring-data-elasticsearch:3.0.8.RELEASE'
+    implementation 'commons-io:commons-io:2.7'
+
+    implementation 'io.minio:minio:7.0.2'
 }

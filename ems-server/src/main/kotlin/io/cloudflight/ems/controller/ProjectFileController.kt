@@ -1,0 +1,37 @@
+package io.cloudflight.ems.controller
+
+import io.cloudflight.ems.api.ProjectFileApi
+import io.cloudflight.ems.dto.FileMetadata
+import io.cloudflight.ems.service.FileStorageService
+import org.springframework.core.io.ByteArrayResource
+import org.springframework.http.HttpHeaders
+import org.springframework.http.MediaType
+import org.springframework.http.ResponseEntity
+import org.springframework.web.bind.annotation.RestController
+import org.springframework.web.multipart.MultipartFile
+
+@RestController
+class ProjectFileController(
+    private val fileStorageService: FileStorageService
+) : ProjectFileApi {
+
+    override fun uploadProjectFile(projectId: Long, file: MultipartFile) {
+        fileStorageService.saveFile(
+            file.inputStream,
+            FileMetadata(
+                name = file.originalFilename ?: file.name,
+                projectId = projectId,
+                size = file.size
+            ))
+    }
+
+    override fun downloadFile(projectId: Long, filename: String): ResponseEntity<ByteArrayResource> {
+        val data = fileStorageService.getFile(projectId, filename)
+        return ResponseEntity.ok()
+            .contentLength(data.size.toLong())
+            .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_OCTET_STREAM_VALUE)
+            .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"$filename\"")
+            .body(ByteArrayResource(data))
+    }
+
+}
