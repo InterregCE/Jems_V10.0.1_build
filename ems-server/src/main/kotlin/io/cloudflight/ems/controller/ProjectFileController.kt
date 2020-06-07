@@ -1,9 +1,12 @@
 package io.cloudflight.ems.controller
 
 import io.cloudflight.ems.api.ProjectFileApi
+import io.cloudflight.ems.api.dto.OutputProjectFile
 import io.cloudflight.ems.dto.FileMetadata
 import io.cloudflight.ems.service.FileStorageService
 import org.springframework.core.io.ByteArrayResource
+import org.springframework.data.domain.Page
+import org.springframework.data.domain.Pageable
 import org.springframework.http.HttpHeaders
 import org.springframework.http.MediaType
 import org.springframework.http.ResponseEntity
@@ -32,6 +35,10 @@ class ProjectFileController(
             .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_OCTET_STREAM_VALUE)
             .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"$filename\"")
             .body(ByteArrayResource(data))
+    }
+
+    override fun getFilesForProject(projectId: Long, pageable: Pageable): Page<OutputProjectFile> {
+        return fileStorageService.getFilesForProject(projectId, pageable)
     }
 
 }

@@ -1,8 +1,11 @@
 package io.cloudflight.ems.api
 
+import io.cloudflight.ems.api.dto.OutputProjectFile
 import io.swagger.annotations.Api
 import io.swagger.annotations.ApiOperation
 import org.springframework.core.io.ByteArrayResource
+import org.springframework.data.domain.Page
+import org.springframework.data.domain.Pageable
 import org.springframework.http.MediaType
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.GetMapping
@@ -29,5 +32,9 @@ interface ProjectFileApi {
     fun downloadFile(
         @PathVariable projectId: Long,
         @RequestParam("filename") filename: String): ResponseEntity<ByteArrayResource>
+
+    @ApiOperation("Get list of files")
+    @GetMapping("/list")
+    fun getFilesForProject(@PathVariable projectId: Long, pageable: Pageable): Page<OutputProjectFile>
 
 }
