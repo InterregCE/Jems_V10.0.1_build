@@ -15,19 +15,19 @@ import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
 
 @Api("Project")
-@RequestMapping("/api")
+@RequestMapping("/api/project")
 interface ProjectApi {
 
     @ApiOperation("Returns all project applications")
-    @GetMapping("/projects")
+    @GetMapping
     fun getProjects(pageable: Pageable): Page<OutputProject>
 
     @ApiOperation("Creates new project application")
-    @PostMapping("/project", consumes = [MediaType.APPLICATION_JSON_VALUE])
+    @PostMapping(consumes = [MediaType.APPLICATION_JSON_VALUE])
     fun createProject(@RequestBody project: InputProject): OutputProject
 
     @ApiOperation("Returns a project application by id")
-    @GetMapping("/project/{id}")
+    @GetMapping("/{id}")
     fun getProjectById(@PathVariable id: Long): ResponseEntity<OutputProject>
 
 }

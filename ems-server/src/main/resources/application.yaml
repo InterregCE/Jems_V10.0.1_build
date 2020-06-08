@@ -21,3 +21,8 @@ spring:
 audit-service:
   enabled: "${AUDIT_ENABLED:false}"
   url-and-port: "${AUDIT_ELASTICSEARCH_URL_AND_PORT:localhost:9200}"
+
+minio-storage:
+  endpoint: "http://localhost:9000"
+  accessKey: "minio"
+  secretKey: "minio123"
