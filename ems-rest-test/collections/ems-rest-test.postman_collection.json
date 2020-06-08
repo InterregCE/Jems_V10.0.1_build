@@ -56,13 +56,13 @@
 							"raw": ""
 						},
 						"url": {
-							"raw": "{{url}}/api/projects",
+							"raw": "{{url}}/api/project",
 							"host": [
 								"{{url}}"
 							],
 							"path": [
 								"api",
-								"projects"
+								"project"
 							]
 						}
 					},
@@ -304,13 +304,13 @@
 							"raw": ""
 						},
 						"url": {
-							"raw": "{{url}}/api/projects",
+							"raw": "{{url}}/api/project",
 							"host": [
 								"{{url}}"
 							],
 							"path": [
 								"api",
-								"projects"
+								"project"
 							]
 						}
 					},
