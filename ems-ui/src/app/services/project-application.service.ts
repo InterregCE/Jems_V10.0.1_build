@@ -12,7 +12,7 @@ export class ProjectApplicationService {
               private service: ProjectService) { }
 
   public getProjects(size: number): Observable<PageOutputProject> {
-    return this.http.get<PageOutputProject>(`${this.basePath}/api/projects?size=${size}&sort=id,desc`);
+    return this.http.get<PageOutputProject>(`${this.basePath}/api/project?size=${size}&sort=id,desc`);
   }
 
   public addProject(project: InputProject): Observable<OutputProject> {

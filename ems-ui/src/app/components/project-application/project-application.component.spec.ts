@@ -57,7 +57,7 @@ describe('ProjectApplicationComponent', () => {
       projectApplicationComponent.getProjectsFromServer();
       httpTestingController.expectOne({
         method: 'GET',
-        url: `/api/projects?size=${100}&sort=id,desc`
+        url: `/api/project?size=${100}&sort=id,desc`
       }).flush({});
       httpTestingController.verify();
   });
