@@ -1,6 +1,7 @@
 package io.cloudflight.ems.controller
 
 import io.cloudflight.ems.api.ProjectFileApi
+import io.cloudflight.ems.api.dto.InputProjectFileDescription
 import io.cloudflight.ems.api.dto.OutputProjectFile
 import io.cloudflight.ems.dto.FileMetadata
 import io.cloudflight.ems.service.FileStorageService
@@ -39,6 +40,14 @@ class ProjectFileController(
 
     override fun getFilesForProject(projectId: Long, pageable: Pageable): Page<OutputProjectFile> {
         return fileStorageService.getFilesForProject(projectId, pageable)
+    }
+
+    override fun setDescriptionToFile(
+        projectId: Long,
+        fileId: Long,
+        projectFileDescription: InputProjectFileDescription
+    ): OutputProjectFile {
+        return fileStorageService.setDescription(projectId, fileId, projectFileDescription.description)
     }
 
 }

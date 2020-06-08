@@ -14,4 +14,6 @@ interface FileStorageService {
 
     fun getFilesForProject(projectId: Long, page: Pageable): Page<OutputProjectFile>
 
+    fun setDescription(projectId: Long, fileId: Long, description: String?): OutputProjectFile
+
 }
