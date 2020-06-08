@@ -23,6 +23,6 @@ audit-service:
   url-and-port: "${AUDIT_ELASTICSEARCH_URL_AND_PORT:localhost:9200}"
 
 minio-storage:
-  endpoint: "http://localhost:9000"
-  accessKey: "minio"
-  secretKey: "minio123"
+  endpoint: "${MINIO_URL_AND_PORT:http://localhost:9000}"
+  accessKey: "${MINIO_ACCESS_KEY:minio}"
+  secretKey: "${MINIO_SECRET_KEY:minio123}"
