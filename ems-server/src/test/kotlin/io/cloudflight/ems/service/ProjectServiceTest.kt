@@ -1,6 +1,7 @@
 package io.cloudflight.ems.service
 
 import io.cloudflight.ems.api.dto.InputProject
+import io.cloudflight.ems.api.dto.OutputProject
 import io.cloudflight.ems.entity.Audit
 import io.cloudflight.ems.entity.AuditAction
 import io.cloudflight.ems.entity.Project
@@ -13,16 +14,22 @@ import io.mockk.slot
 import io.mockk.verify
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertFalse
+import org.junit.jupiter.api.Assertions.assertIterableEquals
 import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
+import org.springframework.data.domain.PageImpl
+import org.springframework.data.domain.Pageable
 import java.time.LocalDate
 import java.util.Optional
+import java.util.stream.Collectors
 
 val TEST_DATE: LocalDate = LocalDate.now()
 
 class ProjectServiceTest {
+
+    private val UNPAGED = Pageable.unpaged()
 
     @MockK
     lateinit var projectRepository: ProjectRepository
@@ -36,6 +43,27 @@ class ProjectServiceTest {
         MockKAnnotations.init(this)
         projectService = ProjectServiceImpl(projectRepository, auditService)
         every { auditService.logEvent(any()) } answers {} // doNothing
+    }
+
+    @Test
+    fun projectRetrieval() {
+        val projectToReturn = Project(
+            id = 25,
+            acronym = "test acronym",
+            submissionDate = TEST_DATE)
+        every { projectRepository.findAll(UNPAGED) } returns PageImpl(listOf(projectToReturn))
+
+        // test start
+        val result = projectService.getProjects(UNPAGED)
+
+        // assertions:
+        assertEquals(1, result.totalElements)
+
+        val expectedProjects = listOf(OutputProject(
+            id = 25,
+            acronym = "test acronym",
+            submissionDate = TEST_DATE))
+        assertIterableEquals(expectedProjects, result.get().collect(Collectors.toList()))
     }
 
     @Test
