@@ -1,4 +1,5 @@
 import {Component, Input, OnInit} from '@angular/core';
+import {TableConfiguration} from '../configurations/table.configuration';
 
 @Component({
   selector: 'app-table',
@@ -7,7 +8,7 @@ import {Component, Input, OnInit} from '@angular/core';
 })
 export class TableComponent implements OnInit {
   @Input()
-  configuration: any;
+  configuration: TableConfiguration;
 
   columnsToDisplay: string[] = [];
 

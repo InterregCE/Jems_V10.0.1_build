@@ -33,15 +33,17 @@
                 </div>
                 <div class="row project-detail-table-header">
                     <h6>List of added files ({{fileNumber}})</h6>
+                    <input style="display: none" type="file" (change)="addNewFilesForUpload($event)" #selectFile>
                     <button mat-raised-button
                             color="primary"
-                            (click)="addNewFilesForUpload()">+ add new file</button>
+                            (click)="selectFile.click()">+ add new file</button>
                 </div>
             </div>
         </div>
     </div>
-    <div *ngIf="fileNumber>0" class="container project-files-table-container">
+    <div  class="container project-files-table-container">
         <app-table
+                *ngIf="isTableShown()"
                 [configuration]="configuration">
         </app-table>
     </div>
