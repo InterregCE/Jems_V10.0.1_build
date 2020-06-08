@@ -10,6 +10,7 @@ import io.cloudflight.ems.service.ProjectFileDtoUtilClass.Companion.getDtoFrom
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
 import org.springframework.stereotype.Service
+import org.springframework.transaction.annotation.Transactional
 import java.io.InputStream
 import java.time.ZonedDateTime
 
@@ -21,8 +22,7 @@ class FileStorageServiceImpl(
     private val repository: ProjectFileRepository
 ): FileStorageService {
 
-    // TODO done with next MP2-57 add save to mariadb
-    //@Transactional
+    @Transactional
     override fun saveFile(stream: InputStream, fileMetadata: FileMetadata) {
         val filePath = getFilePath(fileMetadata.projectId, fileMetadata.name)
         val projectFileEntity = ProjectFile(
