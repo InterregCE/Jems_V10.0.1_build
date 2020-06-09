@@ -4,6 +4,7 @@ import io.cloudflight.ems.api.dto.OutputProjectFile
 import io.cloudflight.ems.dto.FileMetadata
 import io.cloudflight.ems.entity.Project
 import io.cloudflight.ems.entity.ProjectFile
+import io.cloudflight.ems.exception.DataValidationException
 import io.cloudflight.ems.repository.MinioStorage
 import io.cloudflight.ems.repository.ProjectFileRepository
 import io.cloudflight.ems.service.ProjectFileDtoUtilClass.Companion.getDtoFrom
@@ -52,6 +53,26 @@ class FileStorageServiceImpl(
     @Transactional(readOnly = true)
     override fun getFilesForProject(projectId: Long, page: Pageable): Page<OutputProjectFile> {
         return repository.findAllByProject_Id(projectId, page).map { getDtoFrom(it) }
+    }
+
+    @Transactional
+    override fun setDescription(projectId: Long, fileId: Long, description: String?): OutputProjectFile {
+        val projectFile = getFile(projectId, fileId)
+
+        if (description != null && description.length > 100) {
+            throw DataValidationException(mapOf("description" to listOf(DataValidationException.STRING_LONG)))
+        }
+
+        projectFile.description = description
+        return getDtoFrom(repository.save(projectFile))
+    }
+
+    private fun getFile(projectId: Long, fileId: Long): ProjectFile {
+        val result = repository.findById(fileId)
+        if (result.isEmpty || result.get().project?.id != projectId) {
+            throw DataValidationException(mapOf("file" to listOf(DataValidationException.NULL)))
+        }
+        return result.get()
     }
 
     private fun getFilePath(projectIdentifier: Long, fileIdentifier: String): String {

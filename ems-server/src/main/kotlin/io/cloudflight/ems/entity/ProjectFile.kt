@@ -25,7 +25,7 @@ data class ProjectFile (
     val project: Project?,
 
     @Column
-    val description: String?,
+    var description: String?,
 
     @Column
     val size: Long?,

@@ -56,6 +56,7 @@ class NoAuthWebSecurityConfig : WebSecurityConfigurerAdapter() {
         // permit all static resources
         webSecurity.ignoring()
             .antMatchers(HttpMethod.POST)
+            .antMatchers(HttpMethod.PUT)
             .antMatchers("/**/*.{js|css|html}")
             .antMatchers("/api/i18n/**")
             .antMatchers("/favicon.ico")
