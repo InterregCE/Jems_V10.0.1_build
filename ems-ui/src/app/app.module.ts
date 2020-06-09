@@ -22,6 +22,7 @@ import {ProjectApplicationService} from './services/project-application.service'
 import {ProjectFileService} from './services/project-file.service';
 import { ProjectApplicationDetailComponent } from './components/project-application/project-application-detail/project-application-detail.component';
 import { TableComponent } from './components/general/table/table.component';
+import {DatePipe} from '@angular/common';
 
 @NgModule({
   declarations: [
@@ -45,7 +46,7 @@ import { TableComponent } from './components/general/table/table.component';
     MatButtonModule,
     MatInputModule,
     MatListModule,
-    MatTableModule
+    MatTableModule,
   ],
   providers: [
     SecurityService,
@@ -59,7 +60,8 @@ import { TableComponent } from './components/general/table/table.component';
       useValue: '.'
     },
     ProjectApplicationService,
-    ProjectFileService
+    ProjectFileService,
+    DatePipe
     ],
   entryComponents: [
   ],
