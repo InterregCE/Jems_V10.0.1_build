@@ -1,32 +1,8 @@
 <h5>List of submitted projects</h5>
 <div class="project-application-list-container">
     <p *ngIf="!isTableShown()">No projects submitted</p>
-    <table *ngIf="isTableShown()"
-            mat-table
-            [dataSource]="dataSource"
-            class="mat-elevation-z8 project-application-table">
-
-        <!-- Id Column -->
-        <ng-container matColumnDef="Id">
-            <th mat-header-cell *matHeaderCellDef> Id </th>
-            <td mat-cell *matCellDef="let element"> {{element.id}} </td>
-        </ng-container>
-
-        <!-- Acronym Column -->
-        <ng-container matColumnDef="Acronym">
-            <th mat-header-cell *matHeaderCellDef> Acronym </th>
-            <td mat-cell *matCellDef="let element"> {{element.acronym}} </td>
-        </ng-container>
-
-        <!-- Submission Date Column -->
-        <ng-container matColumnDef="Submission Date">
-            <th mat-header-cell *matHeaderCellDef> Submission Date </th>
-            <td mat-cell *matCellDef="let element"> {{element.submissionDate}} </td>
-        </ng-container>
-
-        <tr mat-header-row *matHeaderRowDef="displayedColumns; sticky: true"></tr>
-        <tr mat-row class="clickable-table-row"
-            *matRowDef="let row; columns: displayedColumns;"
-            [routerLink]="['/project/', row.id]"></tr>
-    </table>
+    <app-table
+            *ngIf="isTableShown()"
+            [configuration]="configuration">
+    </app-table>
 </div>

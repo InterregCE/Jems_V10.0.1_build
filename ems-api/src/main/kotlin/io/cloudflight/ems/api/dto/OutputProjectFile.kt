@@ -7,5 +7,6 @@ data class OutputProjectFile (
     val identifier: String?,
     val description: String?,
     val size: Long?,
-    val updated: ZonedDateTime?
+    val updated: ZonedDateTime?,
+    val creator: String?
 )

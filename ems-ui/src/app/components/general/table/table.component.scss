@@ -1,0 +1,29 @@
+table {
+  width: 99%;
+  margin: 2px;
+
+  mat-footer-row, mat-header-row, mat-row {
+    border-bottom-width: 10px;
+  }
+
+  .clickable-table-row{
+    cursor: pointer;
+  }
+
+  .clickable-table-row:hover {
+    border: 3px solid mediumblue;
+  }
+
+  .clickable-table-row:active {
+    outline: 1px solid mediumblue;
+  }
+
+  .icon-button {
+    background-color: transparent;
+    border: none; /* Remove borders */
+    color: mediumblue;
+    padding: 5px 5px; /* Some padding */
+    font-size: 16px; /* Set a font size */
+    cursor: pointer; /* Mouse pointer on hover */
+  }
+}

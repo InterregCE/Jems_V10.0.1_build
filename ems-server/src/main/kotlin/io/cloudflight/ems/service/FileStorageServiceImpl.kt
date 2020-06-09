@@ -45,8 +45,6 @@ class FileStorageServiceImpl(
     }
     */
 
-    // TODO done with next MP2-57 change to read from mariadb
-    //@Transactional(readOnly = true)
     override fun getFile(projectId: Long, fileName: String): ByteArray {
         return storage.getFile(PROJECT_FILES_BUCKET, getFilePath(projectId, fileName))
     }
