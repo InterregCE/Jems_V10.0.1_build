@@ -57,6 +57,7 @@ class NoAuthWebSecurityConfig : WebSecurityConfigurerAdapter() {
         webSecurity.ignoring()
             .antMatchers(HttpMethod.POST)
             .antMatchers(HttpMethod.PUT)
+            .antMatchers(HttpMethod.DELETE)
             .antMatchers("/**/*.{js|css|html}")
             .antMatchers("/api/i18n/**")
             .antMatchers("/favicon.ico")

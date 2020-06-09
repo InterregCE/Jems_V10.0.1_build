@@ -18,8 +18,11 @@ data class ProjectFile (
     @Column
     val bucket: String?,
 
-    @Column
-    val identifier: String?,
+    @Column(nullable = false)
+    val identifier: String,
+
+    @Column(nullable = false)
+    val name: String,
 
     @ManyToOne
     val project: Project?,
@@ -30,7 +33,7 @@ data class ProjectFile (
     @Column
     val size: Long?,
 
-    @Column
-    val updated: ZonedDateTime?
+    @Column(nullable = false)
+    val updated: ZonedDateTime
 
 )

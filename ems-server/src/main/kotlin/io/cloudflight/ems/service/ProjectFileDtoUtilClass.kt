@@ -10,7 +10,7 @@ class ProjectFileDtoUtilClass {
             with (projectFile) {
                 return OutputProjectFile(
                     id,
-                    identifier,
+                    name,
                     description,
                     size,
                     updated,

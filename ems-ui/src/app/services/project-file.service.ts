@@ -12,7 +12,7 @@ export class ProjectFileService {
               private service: ProjectFileStorageService) { }
 
   public getProjectFiles(project: number, size: number): Observable<PageOutputProjectFile> {
-    return this.http.get<PageOutputProjectFile>(`${this.basePath}/${project}/file/list?size=${size}&sort=updated,desc`);
+    return this.http.get<PageOutputProjectFile>(`${this.basePath}/${project}/file?size=${size}&sort=updated,desc`);
   }
 
   public addProjectFile(project: number, file: File) {

@@ -7,6 +7,7 @@ import io.minio.ObjectStat
 import io.minio.PutObjectOptions
 import io.minio.errors.ErrorResponseException
 import org.apache.commons.io.IOUtils
+import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service
 import java.io.InputStream
 
@@ -14,6 +15,10 @@ import java.io.InputStream
 class MinioStorageImpl(
     private val minioClient: MinioClient
 ): MinioStorage {
+
+    companion object {
+        private val logger = LoggerFactory.getLogger(MinioStorageImpl::class.java)
+    }
 
     override fun saveFile(bucket: String, filePath: String, size: Long, stream: InputStream) {
         validateBucket(minioClient, bucket)
@@ -23,16 +28,23 @@ class MinioStorageImpl(
         minioClient.putObject(bucket, filePath, stream, options)
     }
 
-    /*
-    override fun listFilesInDir(bucket: String, dir: String): Iterable<Result<Item>> {
-        validateBucket(minioClient, bucket)
-        return minioClient.listObjects(bucket, dir)
-    }
-    */
-
     override fun getFile(bucket: String, filePath: String): ByteArray {
         return IOUtils.toByteArray(
             minioClient.getObject(bucket, filePath))
+    }
+
+    override fun deleteFile(bucket: String, filePath: String) {
+        try {
+            minioClient.statObject(bucket, filePath)
+        } catch (e: ErrorResponseException) {
+            val reason = e.errorResponse().errorCode()
+            if (reason == ErrorCode.NO_SUCH_KEY || reason == ErrorCode.NO_SUCH_OBJECT) {
+                logger.error("Attempt to delete a file $bucket/$filePath from MinIO storage, that does not exist.")
+            } else {
+                throw e
+            }
+        }
+        minioClient.removeObject(bucket, filePath)
     }
 
     private fun validateBucket(client: MinioClient, bucket: String) {

@@ -29,13 +29,13 @@ class ProjectFileController(
             ))
     }
 
-    override fun downloadFile(projectId: Long, filename: String): ResponseEntity<ByteArrayResource> {
-        val data = fileStorageService.getFile(projectId, filename)
+    override fun downloadFile(projectId: Long, fileId: Long): ResponseEntity<ByteArrayResource> {
+        val data = fileStorageService.downloadFile(projectId, fileId)
         return ResponseEntity.ok()
-            .contentLength(data.size.toLong())
+            .contentLength(data.second.size.toLong())
             .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_OCTET_STREAM_VALUE)
-            .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"$filename\"")
-            .body(ByteArrayResource(data))
+            .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"${data.first}\"")
+            .body(ByteArrayResource(data.second))
     }
 
     override fun getFilesForProject(projectId: Long, pageable: Pageable): Page<OutputProjectFile> {
@@ -48,6 +48,10 @@ class ProjectFileController(
         projectFileDescription: InputProjectFileDescription
     ): OutputProjectFile {
         return fileStorageService.setDescription(projectId, fileId, projectFileDescription.description)
+    }
+
+    override fun deleteFile(projectId: Long, fileId: Long) {
+        fileStorageService.deleteFile(projectId, fileId)
     }
 
 }
