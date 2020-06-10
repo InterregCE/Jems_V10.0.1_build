@@ -78,7 +78,7 @@ export class ProjectApplicationDetailComponent implements OnInit, OnChanges {
 
   initTableConfiguration(): void {
     this.configuration.displayedColumns = ['Filename', 'Timestamp', 'Username', 'Description'];
-    this.configuration.elementProperties = ['identifier', 'updated', 'creator', 'description'];
+    this.configuration.elementProperties = ['name', 'updated', 'creator', 'description'];
     this.configuration.isTableClickable = false;
     this.configuration.dataSource = this.dataSource;
 

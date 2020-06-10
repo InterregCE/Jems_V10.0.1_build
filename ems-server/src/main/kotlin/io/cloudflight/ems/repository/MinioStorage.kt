@@ -8,4 +8,6 @@ interface MinioStorage {
 
     fun getFile(bucket: String, filePath: String): ByteArray
 
+    fun deleteFile(bucket: String, filePath: String)
+
 }

@@ -44,6 +44,17 @@ data class Audit(
             )
         }
 
+        fun projectFileDeleted(projectId: Long, file: ProjectFile): Audit {
+            return Audit(
+                id = null,
+                timestamp = getElasticTimeNow(),
+                action = AuditAction.PROJECT_FILE_DELETE,
+                projectId = projectId.toString(),
+                username = "program user",
+                description = "document ${file.name} deleted from application $projectId"
+            )
+        }
+
         private fun getElasticTimeNow(): String {
             return ZonedDateTime.now(ZoneOffset.UTC).format(DateTimeFormatter.ISO_DATE_TIME)
         }
