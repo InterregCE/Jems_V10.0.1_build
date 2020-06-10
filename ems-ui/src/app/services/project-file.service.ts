@@ -21,6 +21,10 @@ export class ProjectFileService {
     return this.http.post(`${this.basePath}/${project}/file/`, formData);
   }
 
+  public getDownloadLink(projectId: number, fileId: number): string {
+    return `${this.basePath}/${projectId}/file/${fileId}`;
+  }
+
   // TODO done with download story
   // public getProjectFile(project: number, filename: string): Observable<ByteArrayResource> {
   //  return this.service.downloadFile(filename, project);

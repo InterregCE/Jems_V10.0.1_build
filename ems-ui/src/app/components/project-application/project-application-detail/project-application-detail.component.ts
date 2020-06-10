@@ -54,8 +54,11 @@ export class ProjectApplicationDetailComponent implements OnInit, OnChanges {
     });
   }
 
-  downloadFile(element: any) {
-
+  downloadFile(element: OutputProjectFile) {
+    window.open(
+      this.projectFileStorageService.getDownloadLink(this.projectId, element.id),
+      '_blank',
+    );
   }
 
   editFileDescription(element: any) {
@@ -82,12 +85,13 @@ export class ProjectApplicationDetailComponent implements OnInit, OnChanges {
     this.configuration.isTableClickable = false;
     this.configuration.dataSource = this.dataSource;
 
-    // TODO activate actions with MP2-22
-    this.configuration.actionColumn = false;
+    this.configuration.actionColumn = true;
     this.configuration.actions = [
-      new ActionConfiguration('fas fa-edit', (element: any) => this.editFileDescription(element)),
-      new ActionConfiguration('fas fa-file-download', (element: any) => this.downloadFile(element)),
-      new ActionConfiguration('fas fa-trash', (element: any) => this.deleteFile(element)),
+      // TODO activate actions with MP2-22
+      // new ActionConfiguration('fas fa-edit', (element: any) => this.editFileDescription(element)),
+      new ActionConfiguration('fas fa-file-download', (element: OutputProjectFile) => this.downloadFile(element)),
+      // TODO activate actions with MP2-22
+      // new ActionConfiguration('fas fa-trash', (element: any) => this.deleteFile(element)),
     ];
   }
 }
