@@ -85,6 +85,18 @@ class ProjectServiceTest {
             projectService.createProject(
                 InputProject(
                     "",
+                    TEST_DATE))
+        }
+        assertEquals(e.errors.size, 1)
+        assertEquals(e.errors["acronym"], listOf("missing"))
+    }
+
+    @Test
+    fun projectCreation_null() {
+        val e = assertThrows<DataValidationException> {
+            projectService.createProject(
+                InputProject(
+                    null,
                     null))
         }
         assertEquals(e.errors.size, 2)

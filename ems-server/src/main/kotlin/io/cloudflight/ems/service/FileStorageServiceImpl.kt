@@ -19,8 +19,6 @@ import java.io.InputStream
 import java.time.ZonedDateTime
 import java.util.Optional
 
-const val PROJECT_FILES_BUCKET = "project-files"
-
 @Service
 class FileStorageServiceImpl(
     private val auditService: AuditService,
@@ -56,7 +54,7 @@ class FileStorageServiceImpl(
         val projectFile = getFile(projectId, fileId)
         return Pair(
             projectFile.name,
-            storage.getFile(PROJECT_FILES_BUCKET, projectFile.identifier))
+            storage.getFile(projectFile.bucket, projectFile.identifier))
     }
 
     @Transactional(readOnly = true)

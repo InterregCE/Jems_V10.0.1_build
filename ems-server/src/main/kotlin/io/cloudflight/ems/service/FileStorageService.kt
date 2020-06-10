@@ -6,6 +6,8 @@ import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
 import java.io.InputStream
 
+const val PROJECT_FILES_BUCKET = "project-files"
+
 interface FileStorageService {
 
     /**
