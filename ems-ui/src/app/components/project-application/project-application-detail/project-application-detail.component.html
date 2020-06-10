@@ -38,6 +38,11 @@
                             color="primary"
                             (click)="selectFile.click()">+ add new file</button>
                 </div>
+                <div *ngIf="statusMessages">
+                    <div *ngFor="let message of statusMessages">
+                        <p>{{message}}</p>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
