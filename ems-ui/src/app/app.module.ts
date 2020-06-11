@@ -18,15 +18,18 @@ import {ProjectApplicationComponent} from './components/project-application/proj
 import {ProjectApplicationListComponent} from './components/project-application/project-application-list/project-application-list.component';
 import {MatListModule} from '@angular/material/list';
 import {MatTableModule} from '@angular/material/table';
+import {MatDialogModule} from '@angular/material/dialog';
 import {ProjectApplicationService} from './services/project-application.service';
 import {ProjectFileService} from './services/project-file.service';
 import { ProjectApplicationDetailComponent } from './components/project-application/project-application-detail/project-application-detail.component';
 import { TableComponent } from './components/general/table/table.component';
 import {DatePipe} from '@angular/common';
+import {DeleteDialogComponent} from './components/project-application/project-application-detail/delete-dialog.component';
 
 @NgModule({
   declarations: [
     AppComponent,
+    DeleteDialogComponent,
     ProjectApplicationComponent,
     ProjectApplicationListComponent,
     ProjectApplicationSubmissionComponent,
@@ -47,6 +50,7 @@ import {DatePipe} from '@angular/common';
     MatInputModule,
     MatListModule,
     MatTableModule,
+    MatDialogModule,
   ],
   providers: [
     SecurityService,
@@ -64,6 +68,7 @@ import {DatePipe} from '@angular/common';
     DatePipe
     ],
   entryComponents: [
+    DeleteDialogComponent,
   ],
   bootstrap: [AppComponent]
 })

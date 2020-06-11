@@ -1,0 +1,8 @@
+<h1 mat-dialog-title><em class="fas fa-trash"></em> {{data.name}}</h1>
+<div mat-dialog-content>
+    <p>Are you sure you want to delete {{data.name}}?</p>
+</div>
+<div mat-dialog-actions align="end">
+    <button mat-button mat-dialog-close (click)="confirm(false)" cdkFocusInitial>No, Thanks</button>
+    <button mat-button mat-dialog-close (click)="confirm(true)">Yes please</button>
+</div>
