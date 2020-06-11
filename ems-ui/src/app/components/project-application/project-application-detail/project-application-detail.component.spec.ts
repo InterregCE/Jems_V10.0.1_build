@@ -4,9 +4,9 @@ import {CUSTOM_ELEMENTS_SCHEMA} from '@angular/core';
 import {ProjectFileStorageService, ProjectService} from '@cat/api';
 import {HttpClientTestingModule, HttpTestingController} from '@angular/common/http/testing';
 import {ProjectApplicationDetailComponent} from './project-application-detail.component';
-import {ProjectFileService} from "../../../services/project-file.service";
-import {RouterTestingModule} from "@angular/router/testing";
-import {ActivatedRoute} from "@angular/router";
+import {ProjectFileService} from '../../../services/project-file.service';
+import {RouterTestingModule} from '@angular/router/testing';
+import {ActivatedRoute} from '@angular/router';
 
 describe('ProjectApplicationDetailComponent', () => {
 
@@ -75,7 +75,7 @@ describe('ProjectApplicationDetailComponent', () => {
     projectApplicationDetailComponent.getFilesForProject(1);
     httpTestingController.expectOne({
       method: 'GET',
-      url: `/api/project/1/file?size=${100}&sort=updated,desc`
+      url: `/api/project/${1}/file?size=${100}&sort=updated,desc`
     }).flush({});
     httpTestingController.verify();
   });
@@ -86,7 +86,7 @@ describe('ProjectApplicationDetailComponent', () => {
     httpTestingController.expectOne({
       method: 'POST',
       url: `/api/project/1/file`
-    }).flush(event)
+    }).flush(event);
     httpTestingController.verify();
     tick();
     // check for correct status

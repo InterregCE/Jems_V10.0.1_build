@@ -1,5 +1,9 @@
 a { color: inherit; }
 
+input[type="file"] {
+  display: none;
+}
+
 .project-detail-container {
   margin-top: 5%;
   max-width: 50%;
