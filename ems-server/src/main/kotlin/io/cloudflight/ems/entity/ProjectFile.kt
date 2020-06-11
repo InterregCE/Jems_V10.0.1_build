@@ -15,8 +15,8 @@ data class ProjectFile (
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     val id: Long?,
 
-    @Column
-    val bucket: String?,
+    @Column(nullable = false)
+    val bucket: String,
 
     @Column(nullable = false)
     val identifier: String,
