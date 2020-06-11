@@ -31,7 +31,7 @@ class FileStorageServiceImpl(
         val potentialDuplicate = getFileByName(fileMetadata.projectId, fileMetadata.name)
         if (potentialDuplicate.isPresent) {
             with (potentialDuplicate.get()) {
-                throw DuplicateFileException(project?.id, name, updated)
+                throw DuplicateFileException(project.id, name, updated)
             }
         }
 

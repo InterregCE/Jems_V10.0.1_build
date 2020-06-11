@@ -24,8 +24,8 @@ data class ProjectFile (
     @Column(nullable = false)
     val name: String,
 
-    @ManyToOne
-    val project: Project?,
+    @ManyToOne(optional = false)
+    val project: Project,
 
     @Column
     var description: String?,
