@@ -6,6 +6,8 @@ import {TableConfiguration} from '../../general/configurations/table.configurati
 import {ProjectFileService} from '../../../services/project-file.service';
 import {MatTableDataSource} from '@angular/material/table';
 import {ActionConfiguration} from '../../general/configurations/action.configuration';
+import {MatDialog} from '@angular/material/dialog';
+import {DeleteDialogComponent} from './delete-dialog.component';
 
 @Component({
   selector: 'app-project-application-detail',
@@ -24,6 +26,7 @@ export class ProjectApplicationDetailComponent implements OnInit, OnChanges {
 
   constructor(private projectApplicationService: ProjectApplicationService,
               private projectFileStorageService: ProjectFileService,
+              private dialog: MatDialog,
               private activatedRoute: ActivatedRoute) { }
 
   isTableShown(): boolean {
@@ -65,9 +68,19 @@ export class ProjectApplicationDetailComponent implements OnInit, OnChanges {
 
   }
 
-  deleteFile(element: any) {
-    // get files at the end, also in the subscribe
-    this.getFilesForProject(this.projectId);
+  deleteFile(element: OutputProjectFile) {
+    const dialogRef = this.dialog.open(DeleteDialogComponent, {
+      minWidth: '30rem',
+      data: { name: element.name }
+    });
+
+    dialogRef.afterClosed().subscribe((clickedYes: boolean) => {
+      if (clickedYes) {
+        this.projectFileStorageService.deleteFile(this.projectId, element.id).subscribe(() => {
+          this.getFilesForProject(this.projectId);
+        });
+      }
+    });
   }
 
   getFilesForProject(projectId: number) {
@@ -90,8 +103,7 @@ export class ProjectApplicationDetailComponent implements OnInit, OnChanges {
       // TODO activate actions with MP2-22
       // new ActionConfiguration('fas fa-edit', (element: any) => this.editFileDescription(element)),
       new ActionConfiguration('fas fa-file-download', (element: OutputProjectFile) => this.downloadFile(element)),
-      // TODO activate actions with MP2-22
-      // new ActionConfiguration('fas fa-trash', (element: any) => this.deleteFile(element)),
+      new ActionConfiguration('fas fa-trash', (element: OutputProjectFile) => this.deleteFile(element)),
     ];
   }
 }
