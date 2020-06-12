@@ -33,10 +33,15 @@
                 </div>
                 <div class="row project-detail-table-header">
                     <h6>List of added files ({{fileNumber}})</h6>
-                    <input style="display: none" type="file" (change)="addNewFilesForUpload($event)" #selectFile>
+                    <input type="file" (change)="addNewFilesForUpload($event)" #selectFile onclick="this.value=null;">
                     <button mat-raised-button
                             color="primary"
                             (click)="selectFile.click()">+ add new file</button>
+                </div>
+                <div *ngIf="statusMessages">
+                    <div *ngFor="let message of statusMessages">
+                        <p>{{message}}</p>
+                    </div>
                 </div>
             </div>
         </div>

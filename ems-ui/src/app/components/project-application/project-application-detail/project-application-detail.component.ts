@@ -23,6 +23,11 @@ export class ProjectApplicationDetailComponent implements OnInit, OnChanges {
   project = {} as OutputProject;
   fileNumber = 0;
   projectId = this.activatedRoute.snapshot.params.projectId;
+  statusMessages: string[];
+
+  STATUS_MESSAGE_SUCCESS = (filename: string) => `Upload of '${filename}' successful.`;
+  ERROR_MESSAGE_UPLOAD = (filename: string) => `Upload of '${filename}' not successful.`;
+  ERROR_MESSAGE_EXISTS = (filename: string) => `File '${filename}' already exists.`;
 
   constructor(private projectApplicationService: ProjectApplicationService,
               private projectFileStorageService: ProjectFileService,
@@ -52,9 +57,16 @@ export class ProjectApplicationDetailComponent implements OnInit, OnChanges {
   }
 
   addNewFilesForUpload($event: any) {
-    this.projectFileStorageService.addProjectFile(this.projectId, $event.target.files[0]).subscribe(() => {
-      this.getFilesForProject(this.projectId);
-    });
+    this.projectFileStorageService.addProjectFile(this.projectId, $event.target.files[0]).toPromise()
+      .then(() => {
+        this.getFilesForProject(this.projectId);
+        if ($event.target.files[0].name) {
+          this.addMessageFromResponse(this.STATUS_MESSAGE_SUCCESS($event.target.files[0].name));
+        }
+      })
+      .catch((error: any) => {
+        this.addErrorFromResponse(error, $event.target.files[0].name);
+      });
   }
 
   downloadFile(element: OutputProjectFile) {
@@ -105,5 +117,20 @@ export class ProjectApplicationDetailComponent implements OnInit, OnChanges {
       new ActionConfiguration('fas fa-file-download', (element: OutputProjectFile) => this.downloadFile(element)),
       new ActionConfiguration('fas fa-trash', (element: OutputProjectFile) => this.deleteFile(element)),
     ];
+  }
+
+  private addMessageFromResponse(status: string) {
+    if (!this.statusMessages) {
+      this.statusMessages = [];
+    }
+    this.statusMessages.unshift(status);
+  }
+
+  private addErrorFromResponse(status: any, filename: string) {
+    if (status.error && status.status === 422) {
+      this.addMessageFromResponse(this.ERROR_MESSAGE_EXISTS(filename));
+    } else {
+      this.addMessageFromResponse(this.ERROR_MESSAGE_UPLOAD(filename));
+    }
   }
 }
