@@ -89,7 +89,7 @@ class FileStorageServiceTest {
             assertEquals(PROJECT_FILES_BUCKET, bucket)
             assertEquals("project-$PROJECT_ID/proj-file-1.png", identifier)
             assertEquals("proj-file-1.png", name)
-            assertEquals(fileMetadata.projectId, project?.id)
+            assertEquals(fileMetadata.projectId, project.id)
             assertEquals(null, description)
             assertEquals("test".length.toLong(), size)
         }
@@ -101,7 +101,7 @@ class FileStorageServiceTest {
 
     @Test
     fun downloadFile_notExisting() {
-        every { projectFileRepository.findFirstByProject_IdAndId(eq(-1), eq(100)) } throws ResourceNotFoundException()
+        every { projectFileRepository.findFirstByProject_IdAndId(eq(-1), eq(100)) } returns Optional.empty()
         assertThrows<ResourceNotFoundException> { fileStorageService.downloadFile(-1, 100) }
     }
 
@@ -140,7 +140,7 @@ class FileStorageServiceTest {
 
     @Test
     fun setDescription_notExisting() {
-        every { projectFileRepository.findFirstByProject_IdAndId(eq(-1), eq(100)) } throws ResourceNotFoundException()
+        every { projectFileRepository.findFirstByProject_IdAndId(eq(-1), eq(100)) } returns Optional.empty()
         assertThrows<ResourceNotFoundException> {
             fileStorageService.setDescription(-1, 100, null)
         }
@@ -191,7 +191,7 @@ class FileStorageServiceTest {
 
     @Test
     fun deleteFile_notExisting() {
-        every { projectFileRepository.findFirstByProject_IdAndId(eq(-1), eq(100)) } throws ResourceNotFoundException()
+        every { projectFileRepository.findFirstByProject_IdAndId(eq(-1), eq(100)) } returns Optional.empty()
         assertThrows<ResourceNotFoundException> {
             fileStorageService.deleteFile(-1, 100)
         }
