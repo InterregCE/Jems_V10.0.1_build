@@ -1,11 +1,10 @@
 import {MatTableDataSource} from '@angular/material/table';
 import {ActionConfiguration} from './action.configuration';
+import {ColumnConfiguration} from './column.configuration';
 
 export class TableConfiguration {
-  // the name of the columns that will appear in the header of the table.
-  displayedColumns: string[];
-  // the name of the properties of one object in the datasource that will be binded to the cells of the table.
-  elementProperties: string[];
+  // configurtions of columns
+  columns: ColumnConfiguration[];
   // boolean that defines if a table row has a click action.
   isTableClickable: boolean;
   // table data source.

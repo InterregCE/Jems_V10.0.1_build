@@ -1,11 +1,16 @@
-import {Component, Input, OnChanges, OnInit, SimpleChanges} from '@angular/core';
-import {OutputProject, OutputProjectFile} from '@cat/api';
+import {Component, OnChanges, OnInit, SimpleChanges, ViewChild} from '@angular/core';
+import {OutputProject, OutputProjectFile, InputProjectFileDescription} from '@cat/api';
 import {ProjectApplicationService} from '../../../services/project-application.service';
 import {ActivatedRoute} from '@angular/router';
 import {TableConfiguration} from '../../general/configurations/table.configuration';
 import {ProjectFileService} from '../../../services/project-file.service';
 import {MatTableDataSource} from '@angular/material/table';
 import {ActionConfiguration} from '../../general/configurations/action.configuration';
+import {ColumnConfiguration} from '../../general/configurations/column.configuration';
+import {ComponentType} from '@angular/cdk/overlay';
+import {DescriptionCellComponent} from '../../general/cell-renderers/description-cell/description-cell.component';
+import {ColumnType} from '../../general/enums/column-type.enum';
+import {TableComponent} from '../../general/table/table.component';
 import {MatDialog} from '@angular/material/dialog';
 import {DeleteDialogComponent} from './delete-dialog.component';
 
@@ -15,11 +20,10 @@ import {DeleteDialogComponent} from './delete-dialog.component';
   styleUrls: ['./project-application-detail.component.scss']
 })
 export class ProjectApplicationDetailComponent implements OnInit, OnChanges {
-  configuration = new TableConfiguration();
+  @ViewChild(TableComponent, {static: false}) table: TableComponent;
 
-  @Input()
   dataSource: MatTableDataSource<OutputProjectFile>;
-
+  configuration = new TableConfiguration();
   project = {} as OutputProject;
   fileNumber = 0;
   projectId = this.activatedRoute.snapshot.params.projectId;
@@ -46,6 +50,7 @@ export class ProjectApplicationDetailComponent implements OnInit, OnChanges {
           this.project = result;
         }
       });
+      this.dataSource = new MatTableDataSource<OutputProjectFile>();
       this.getFilesForProject(this.projectId);
     }
   }
@@ -75,8 +80,12 @@ export class ProjectApplicationDetailComponent implements OnInit, OnChanges {
     );
   }
 
-  editFileDescription(element: any) {
-
+  editFileDescription(element: any, rowIndex: number) {
+    this.table.changeCustomColumnData(rowIndex, {
+      onSave: (value: string, index: number, fileId: number) => this.onSave(value, index, fileId),
+      onCancel: (index: number) => this.onCancel(index),
+      readOnly: false,
+    });
   }
 
   deleteFile(element: OutputProjectFile) {
@@ -97,22 +106,36 @@ export class ProjectApplicationDetailComponent implements OnInit, OnChanges {
   getFilesForProject(projectId: number) {
     this.projectFileStorageService.getProjectFiles(projectId, 100).toPromise()
       .then((results) => {
-        this.dataSource = new MatTableDataSource<OutputProjectFile>(results.content);
+        this.dataSource.data = results.content;
         this.configuration.dataSource = this.dataSource;
         this.fileNumber = results.totalElements;
+        if (this.table) {
+          setTimeout(() => this.table.createCustomComponents(), 0);
+        }
       });
   }
 
   initTableConfiguration(): void {
-    this.configuration.displayedColumns = ['Filename', 'Timestamp', 'Username', 'Description'];
-    this.configuration.elementProperties = ['name', 'updated', 'creator', 'description'];
+    this.configuration.columns = [];
+    this.configuration.columns.push(this.createNewColumnConfig('Filename', 'name', ColumnType.String));
+    this.configuration.columns.push(this.createNewColumnConfig('Timestamp', 'updated', ColumnType.Date));
+    this.configuration.columns.push(this.createNewColumnConfig('Username', 'creator', ColumnType.String));
+    const columnAffected = this.createNewColumnConfig('Description',
+      'description',
+      ColumnType.CustomComponent,
+      DescriptionCellComponent,
+      {
+        onSave: (value: string, index: number, fileId: number) => this.onSave(value, index, fileId),
+        onCancel: (index: number) => this.onCancel(index),
+        readOnly: true,
+      });
+    this.configuration.columns.push(columnAffected);
     this.configuration.isTableClickable = false;
     this.configuration.dataSource = this.dataSource;
 
     this.configuration.actionColumn = true;
     this.configuration.actions = [
-      // TODO activate actions with MP2-22
-      // new ActionConfiguration('fas fa-edit', (element: any) => this.editFileDescription(element)),
+      new ActionConfiguration('fas fa-edit', (element: any, index: number) => this.editFileDescription(element, index)),
       new ActionConfiguration('fas fa-file-download', (element: OutputProjectFile) => this.downloadFile(element)),
       new ActionConfiguration('fas fa-trash', (element: OutputProjectFile) => this.deleteFile(element)),
     ];
@@ -131,5 +154,42 @@ export class ProjectApplicationDetailComponent implements OnInit, OnChanges {
     } else {
       this.addMessageFromResponse(this.ERROR_MESSAGE_UPLOAD(filename));
     }
+  }
+
+  createNewColumnConfig(displayColumn: string, elementProperties: string, columnType: ColumnType, component?: ComponentType<any>, extraProps?: any): ColumnConfiguration {
+    if (columnType === ColumnType.CustomComponent) {
+      return new ColumnConfiguration({
+        displayedColumn: displayColumn,
+        elementProperty: elementProperties,
+        columnType,
+        component,
+        extraProps,
+      });
+    }
+    return new ColumnConfiguration({
+      displayedColumn: displayColumn,
+      elementProperty: elementProperties,
+      columnType,
+    });
+  }
+
+  onCancel(rowIndex: number): void {
+    this.closeInputFieldAndMakeReadonly(rowIndex);
+  }
+
+  onSave(saveValue: string, rowIndex: number, fileIdentifier: number): void {
+    const description = {description: saveValue} as InputProjectFileDescription;
+    this.projectFileStorageService.setDescriptionToFile(this.projectId, fileIdentifier, description).subscribe(() => {
+      this.getFilesForProject(this.projectId);
+    });
+    this.closeInputFieldAndMakeReadonly(rowIndex);
+  }
+
+  closeInputFieldAndMakeReadonly(rowIndex: number): void {
+    this.table.changeCustomColumnData(rowIndex, {
+      onSave: (value: string, index: number, fileId: number) => this.onSave(value, index, fileId),
+      onCancel: (index: number) => this.onCancel(index),
+      readOnly: true,
+    });
   }
 }
