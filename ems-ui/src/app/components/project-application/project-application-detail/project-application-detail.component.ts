@@ -57,15 +57,14 @@ export class ProjectApplicationDetailComponent implements OnInit, OnChanges {
   }
 
   addNewFilesForUpload($event: any) {
-    this.projectFileStorageService.addProjectFile(this.projectId, $event.target.files[0]).toPromise()
+    const file: File = $event.target.files[0];
+    this.projectFileStorageService.addProjectFile(this.projectId, file).toPromise()
       .then(() => {
         this.getFilesForProject(this.projectId);
-        if ($event.target.files[0].name) {
-          this.addMessageFromResponse(this.STATUS_MESSAGE_SUCCESS($event.target.files[0].name));
-        }
+        this.addMessageFromResponse(this.STATUS_MESSAGE_SUCCESS(file.name));
       })
       .catch((error: any) => {
-        this.addErrorFromResponse(error, $event.target.files[0].name);
+        this.addErrorFromResponse(error, file.name);
       });
   }
 
