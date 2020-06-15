@@ -40,6 +40,7 @@ class MinioStorageImpl(
             val reason = e.errorResponse().errorCode()
             if (reason == ErrorCode.NO_SUCH_KEY || reason == ErrorCode.NO_SUCH_OBJECT) {
                 logger.error("Attempt to delete a file $bucket/$filePath from MinIO storage, that does not exist.")
+                return
             } else {
                 throw e
             }
