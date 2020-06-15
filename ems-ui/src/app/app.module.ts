@@ -24,6 +24,7 @@ import {ProjectFileService} from './services/project-file.service';
 import { ProjectApplicationDetailComponent } from './components/project-application/project-application-detail/project-application-detail.component';
 import { TableComponent } from './components/general/table/table.component';
 import {DatePipe} from '@angular/common';
+import { DescriptionCellComponent } from './components/general/cell-renderers/description-cell/description-cell.component';
 import {DeleteDialogComponent} from './components/project-application/project-application-detail/delete-dialog.component';
 
 @NgModule({
@@ -35,6 +36,7 @@ import {DeleteDialogComponent} from './components/project-application/project-ap
     ProjectApplicationSubmissionComponent,
     ProjectApplicationDetailComponent,
     TableComponent,
+    DescriptionCellComponent,
   ],
   imports: [
     BrowserModule,
@@ -68,6 +70,7 @@ import {DeleteDialogComponent} from './components/project-application/project-ap
     DatePipe
     ],
   entryComponents: [
+    DescriptionCellComponent,
     DeleteDialogComponent,
   ],
   bootstrap: [AppComponent]

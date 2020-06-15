@@ -1,7 +1,7 @@
 import {Injectable} from '@angular/core';
 import {HttpClient} from '@angular/common/http';
 import {Observable} from 'rxjs';
-import { ProjectFileStorageService, PageOutputProjectFile } from '@cat/api';
+import { ProjectFileStorageService, PageOutputProjectFile, InputProjectFileDescription, OutputProjectFile } from '@cat/api';
 
 @Injectable()
 export class ProjectFileService {
@@ -27,6 +27,13 @@ export class ProjectFileService {
 
   public deleteFile(projectId: number, fileId: number): Observable<any> {
     return this.service.deleteFile(fileId, projectId);
+  }
+
+  public setDescriptionToFile(projectId: number,
+                              fileId: number,
+                              description: InputProjectFileDescription
+  ): Observable<OutputProjectFile> {
+    return this.service.setDescriptionToFile(fileId, projectId, description);
   }
 
   // TODO done with download story

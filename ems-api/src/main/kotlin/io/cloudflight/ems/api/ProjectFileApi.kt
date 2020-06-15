@@ -40,8 +40,8 @@ interface ProjectFileApi {
     @GetMapping
     fun getFilesForProject(@PathVariable projectId: Long, pageable: Pageable): Page<OutputProjectFile>
 
-    @ApiOperation("Specify descritpion for a file")
-    @PutMapping("/{fileId}/description")
+    @ApiOperation("Specify description for a file")
+    @PutMapping("/{fileId}/description", consumes = [MediaType.APPLICATION_JSON_VALUE])
     fun setDescriptionToFile(
         @PathVariable projectId: Long,
         @PathVariable fileId: Long,

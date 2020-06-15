@@ -3,19 +3,26 @@
        class="mat-elevation-z8 general-application-table">
 
     <ng-container
-            *ngFor="let column of configuration.displayedColumns; let i = index"
-            matColumnDef="{{column}}">
-        <th mat-header-cell *matHeaderCellDef> {{column}} </th>
-        <td mat-cell *matCellDef="let element"> {{ formatColumnValue(column, element[configuration.elementProperties[i]])}} </td>
+            *ngFor="let column of configuration.columns; let i = index"
+            matColumnDef="{{column.displayedColumn}}">
+        <th mat-header-cell *matHeaderCellDef> {{column.displayedColumn}} </th>
+        <td mat-cell *matCellDef="let element">
+            <ng-container *ngIf="!column.component">
+                {{ formatColumnValue(column.columnType, element[column.elementProperty]) }}
+            </ng-container>
+            <ng-container *ngIf="column.columnType == columnType.CustomComponent">
+                <ng-container class="description-component" #customColumn></ng-container>
+            </ng-container>
+        </td>
     </ng-container>
 
     <ng-container
             *ngIf="configuration.actionColumn"
             matColumnDef="Actions">
         <th mat-header-cell *matHeaderCellDef> Actions </th>
-        <td mat-cell *matCellDef="let element">
-            <ng-container *ngFor="let action of configuration.actions; let i = index">
-                <button class="icon-button" (click)="action.action(element)">
+        <td mat-cell *matCellDef="let element; let i = index">
+            <ng-container *ngFor="let action of configuration.actions;">
+                <button class="icon-button" (click)="action.action(element, i)">
                     <i [className]="action.icon"></i>
                 </button>
             </ng-container>
