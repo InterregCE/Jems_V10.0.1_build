@@ -1,15 +1,5 @@
-<div class="toolbar" role="banner">
-    <div *ngIf="isLoginNeeded">
-        <div class="spacer"></div>
-        <ng-container *ngIf="currentUser | async">
-        <span>
-            Welcome, {{(currentUser | async)?.name}}
-        </span>
-            <button (click)="logout()">Logout</button>
-        </ng-container>
-    </div>
-    <a mat-flat-button [href]="auditUrl" class="mr-3" target="_blank">Audit Log</a>
-</div>
+<app-top-bar [isLoginNeeded]="isLoginNeeded">
+</app-top-bar>
 
 <div class="content" role="main">
     <router-outlet></router-outlet>

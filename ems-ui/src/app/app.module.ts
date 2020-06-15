@@ -6,7 +6,7 @@ import {AppRoutingModule} from './app-routing.module';
 import {AppComponent} from './app.component';
 import {HTTP_INTERCEPTORS, HttpClientModule} from '@angular/common/http';
 import {AuthenticationInterceptor} from './security/authentication.interceptor';
-import {ReactiveFormsModule, FormsModule} from '@angular/forms';
+import {FormsModule, ReactiveFormsModule} from '@angular/forms';
 import {SecurityService} from './security/security.service';
 import {AppI18nModule} from './app-i18n.module';
 import {ProjectApplicationSubmissionComponent} from './components/project-application/project-application-submission/project-application-submission.component';
@@ -21,11 +21,16 @@ import {MatTableModule} from '@angular/material/table';
 import {MatDialogModule} from '@angular/material/dialog';
 import {ProjectApplicationService} from './services/project-application.service';
 import {ProjectFileService} from './services/project-file.service';
-import { ProjectApplicationDetailComponent } from './components/project-application/project-application-detail/project-application-detail.component';
-import { TableComponent } from './components/general/table/table.component';
+import {ProjectApplicationDetailComponent} from './components/project-application/project-application-detail/project-application-detail.component';
+import {TableComponent} from './components/general/table/table.component';
 import {DatePipe} from '@angular/common';
-import { DescriptionCellComponent } from './components/general/cell-renderers/description-cell/description-cell.component';
+import {DescriptionCellComponent} from './components/general/cell-renderers/description-cell/description-cell.component';
 import {DeleteDialogComponent} from './components/project-application/project-application-detail/delete-dialog.component';
+import {MatSelectModule} from '@angular/material/select';
+import {TopBarComponent} from './components/general/top-bar/top-bar.component';
+import {MatCardModule} from '@angular/material/card';
+import {HttpErrorInterceptor} from './common/http-error.interceptor';
+import {LoginComponent} from './components/user/login/login.component';
 
 @NgModule({
   declarations: [
@@ -37,6 +42,8 @@ import {DeleteDialogComponent} from './components/project-application/project-ap
     ProjectApplicationDetailComponent,
     TableComponent,
     DescriptionCellComponent,
+    TopBarComponent,
+    LoginComponent
   ],
   imports: [
     BrowserModule,
@@ -51,6 +58,8 @@ import {DeleteDialogComponent} from './components/project-application/project-ap
     MatButtonModule,
     MatInputModule,
     MatListModule,
+    MatSelectModule,
+    MatCardModule,
     MatTableModule,
     MatDialogModule,
   ],
@@ -62,13 +71,18 @@ import {DeleteDialogComponent} from './components/project-application/project-ap
       multi: true
     },
     {
+      provide: HTTP_INTERCEPTORS,
+      useClass: HttpErrorInterceptor,
+      multi: true
+    },
+    {
       provide: BASE_PATH,
       useValue: '.'
     },
     ProjectApplicationService,
     ProjectFileService,
     DatePipe
-    ],
+  ],
   entryComponents: [
     DescriptionCellComponent,
     DeleteDialogComponent,

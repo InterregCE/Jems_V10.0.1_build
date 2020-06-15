@@ -1,20 +1,20 @@
 import {Injectable} from '@angular/core';
-import {OutputUser, UserService} from '@cat/api';
-import {AuthenticationService} from './authentication.service';
+import {AuthenticationService, LoginRequest, OutputCurrentUser} from '@cat/api';
+import {AuthenticationHolder} from './authentication-holder.service';
 import {from, Observable, ReplaySubject, Subject} from 'rxjs';
-import {map} from 'rxjs/operators';
+import {map, tap} from 'rxjs/operators';
 
 @Injectable({providedIn: 'root'})
 export class SecurityService {
 
-  private myCurrentUser: ReplaySubject<OutputUser | null> = new ReplaySubject(1);
+  private myCurrentUser: ReplaySubject<OutputCurrentUser | null> = new ReplaySubject(1);
 
-  constructor(private authenticationHolder: AuthenticationService,
-              private userApi: UserService) {
+  constructor(private authenticationHolder: AuthenticationHolder,
+              private authenticationService: AuthenticationService) {
     this.reloadCurrentUser();
   }
 
-  get currentUser(): Observable<OutputUser | null> {
+  get currentUser(): Observable<OutputCurrentUser | null> {
     return this.myCurrentUser.asObservable();
   }
 
@@ -23,24 +23,36 @@ export class SecurityService {
       .pipe(map((user) => !!user));
   }
 
-  async login(username: string) {
-    this.authenticationHolder.currentUsername = username;
-    await this.reloadCurrentUser().toPromise();
+  login(loginRequest: LoginRequest): Observable<OutputCurrentUser | null> {
+    return this.authenticationService.login(loginRequest)
+      .pipe(
+        tap((user: OutputCurrentUser) => {
+          this.authenticationHolder.currentUsername = user.name;
+          this.myCurrentUser.next(user);
+        })
+      );
   }
 
   private reloadCurrentUser(): Observable<any> {
-    // const loadingCurrentUser = this.userApi.getCurrentUser();
+    const loadingCurrentUser = this.authenticationService.getCurrentUser();
     const doneProcessingSubject = new Subject();
-    // loadingCurrentUser.subscribe(
-    //   value => { this.myCurrentUser.next(value); doneProcessingSubject.complete(); },
-    //   () => { this.myCurrentUser.next(null); doneProcessingSubject.complete(); });
+    loadingCurrentUser.subscribe(
+      (value: OutputCurrentUser) => {
+        this.myCurrentUser.next(value);
+        doneProcessingSubject.complete();
+      },
+      () => {
+        this.myCurrentUser.next(null);
+        doneProcessingSubject.complete();
+      });
     return doneProcessingSubject.asObservable();
   }
 
   async logout() {
     this.authenticationHolder.currentUsername = null;
     this.myCurrentUser.next(null);
-    await fetch('/logout', { method: 'POST' });
+    await this.authenticationService.logout()
+      .toPromise()
+      .then(() => console.log('logged out'));
   }
-
 }

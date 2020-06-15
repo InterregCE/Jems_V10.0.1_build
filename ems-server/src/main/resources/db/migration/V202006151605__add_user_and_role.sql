@@ -1,9 +1,11 @@
-CREATE TABLE user_role (
+CREATE TABLE user_role
+(
     id   INTEGER AUTO_INCREMENT PRIMARY KEY,
     name VARCHAR(127) NOT NULL UNIQUE
 );
 
-CREATE TABLE user (
+CREATE TABLE user
+(
     id           INTEGER AUTO_INCREMENT PRIMARY KEY,
     email        VARCHAR(255) NOT NULL UNIQUE,
     name         VARCHAR(255) NOT NULL,
@@ -17,16 +19,19 @@ CREATE TABLE user (
 );
 
 INSERT INTO user_role (id, name)
-VALUES (1, 'administrator');
+VALUES (1, 'ADMIN');
 
 INSERT INTO user (email, name, surname, user_role_id, password)
-VALUES ('admin', 'Admin', 'Admin', 1, '{bcrypt}$2a$10$CYJy46GgGETq3mKotIVLCuJx3FyTmX4vDNhXy2lSu/lWrOfOVAJ0q');
-
+VALUES ('admin', 'Admin', 'Admin', 1, '{bcrypt}$2a$10$YbArQmvqQJVXXGehyHrJK.HlZv.FH29ropwqf/WaIRMKjOWVmMrqm');
 
 
 DELIMITER $$
 
-CREATE OR REPLACE TRIGGER protect_last_system_admin BEFORE DELETE ON user FOR EACH ROW BEGIN
+CREATE OR REPLACE TRIGGER protect_last_system_admin
+    BEFORE DELETE
+    ON user
+    FOR EACH ROW
+BEGIN
     DECLARE count_of_admins INTEGER;
 
     SELECT COUNT(*) FROM user WHERE user_role_id = 1 INTO count_of_admins;
