@@ -1,12 +1,17 @@
 import {async, ComponentFixture, fakeAsync, TestBed, tick} from '@angular/core/testing';
 import {ProjectApplicationService} from '../../../services/project-application.service';
 import {CUSTOM_ELEMENTS_SCHEMA} from '@angular/core';
-import {ProjectFileStorageService, ProjectService} from '@cat/api';
+import {ProjectFileStorageService, ProjectService, OutputProjectFile} from '@cat/api';
 import {HttpClientTestingModule, HttpTestingController} from '@angular/common/http/testing';
 import {ProjectApplicationDetailComponent} from './project-application-detail.component';
 import {ProjectFileService} from '../../../services/project-file.service';
 import {RouterTestingModule} from '@angular/router/testing';
 import {ActivatedRoute} from '@angular/router';
+import {MatDialogModule} from '@angular/material/dialog';
+import {of} from 'rxjs';
+import {NoopAnimationsModule} from '@angular/platform-browser/animations';
+import {DeleteDialogComponent} from './delete-dialog.component';
+import {BrowserDynamicTestingModule} from '@angular/platform-browser-dynamic/testing';
 
 describe('ProjectApplicationDetailComponent', () => {
 
@@ -18,10 +23,13 @@ describe('ProjectApplicationDetailComponent', () => {
     TestBed.configureTestingModule({
       imports: [
         HttpClientTestingModule,
-        RouterTestingModule
+        RouterTestingModule,
+        MatDialogModule,
+        NoopAnimationsModule,
       ],
       declarations: [
-        ProjectApplicationDetailComponent
+        ProjectApplicationDetailComponent,
+        DeleteDialogComponent
       ],
       providers: [
         {
@@ -53,10 +61,16 @@ describe('ProjectApplicationDetailComponent', () => {
               }
             }
           }
-        }
+        },
       ],
       schemas: [CUSTOM_ELEMENTS_SCHEMA],
-    }).compileComponents();
+    });
+    TestBed.overrideModule(BrowserDynamicTestingModule, {
+      set: {
+        entryComponents: [ DeleteDialogComponent ],
+      },
+    });
+    TestBed.compileComponents();
   }));
 
   beforeEach(() => {
@@ -85,7 +99,7 @@ describe('ProjectApplicationDetailComponent', () => {
     projectApplicationDetailComponent.addNewFilesForUpload(event);
     httpTestingController.expectOne({
       method: 'POST',
-      url: `/api/project/1/file`
+      url: `/api/project/${1}/file/`
     }).flush(event);
     httpTestingController.verify();
     tick();
@@ -93,4 +107,15 @@ describe('ProjectApplicationDetailComponent', () => {
     expect(projectApplicationDetailComponent.statusMessages).toBeTruthy();
   }));
 
+
+  it('should delete an uploaded project application file', fakeAsync(() => {
+    (projectApplicationDetailComponent as any).projectFileStorageService = TestBed.get(ProjectFileStorageService);
+    spyOn((projectApplicationDetailComponent as any).dialog, 'open')
+      .and
+      .returnValue({afterClosed: () => of(true)});
+    spyOn((projectApplicationDetailComponent as any).projectFileStorageService, 'deleteFile')
+      .and.returnValue(of());
+    projectApplicationDetailComponent.deleteFile({id: 1} as OutputProjectFile);
+    expect((projectApplicationDetailComponent as any).projectFileStorageService.deleteFile).toHaveBeenCalled();
+  }));
 });

@@ -1,5 +1,6 @@
 .description-form {
   width: 12rem;
+  padding-bottom: 0.7rem;
 }
 
 .description-text-area-field {
@@ -7,11 +8,11 @@
 }
 .description-text-area {
   border: 1px solid lightgray;
-  height: 50px;
+  height: 3rem;
 }
 
 .button {
-  width: 80px;
+  width: 5rem;
 }
 
 .right-button {
@@ -19,5 +20,5 @@
 }
 
 label {
-  padding-left: 10px;
+  padding-left: 1rem;
 }
