@@ -1,6 +1,5 @@
 import {Component, OnChanges, OnInit, SimpleChanges, ViewChild} from '@angular/core';
-import {OutputProject, OutputProjectFile, InputProjectFileDescription} from '@cat/api';
-import {ProjectApplicationService} from '../../../services/project-application.service';
+import {OutputProject, OutputProjectFile, InputProjectFileDescription, ProjectService} from '@cat/api';
 import {ActivatedRoute} from '@angular/router';
 import {TableConfiguration} from '../../general/configurations/table.configuration';
 import {ProjectFileService} from '../../../services/project-file.service';
@@ -33,7 +32,7 @@ export class ProjectApplicationDetailComponent implements OnInit, OnChanges {
   ERROR_MESSAGE_UPLOAD = (filename: string) => `Upload of '${filename}' not successful.`;
   ERROR_MESSAGE_EXISTS = (filename: string) => `File '${filename}' already exists.`;
 
-  constructor(private projectApplicationService: ProjectApplicationService,
+  constructor(private projectService: ProjectService,
               private projectFileStorageService: ProjectFileService,
               private dialog: MatDialog,
               private activatedRoute: ActivatedRoute) { }
@@ -45,7 +44,7 @@ export class ProjectApplicationDetailComponent implements OnInit, OnChanges {
   ngOnInit() {
     this.initTableConfiguration();
     if (this.projectId) {
-      this.projectApplicationService.getProject(Number(this.projectId)).subscribe((result: OutputProject) => {
+      this.projectService.getProjectById(Number(this.projectId)).subscribe((result: OutputProject) => {
         if (result) {
           this.project = result;
         }

@@ -3,6 +3,8 @@ package io.cloudflight.ems.api
 import io.cloudflight.ems.api.dto.InputProjectFileDescription
 import io.cloudflight.ems.api.dto.OutputProjectFile
 import io.swagger.annotations.Api
+import io.swagger.annotations.ApiImplicitParam
+import io.swagger.annotations.ApiImplicitParams
 import io.swagger.annotations.ApiOperation
 import org.springframework.core.io.ByteArrayResource
 import org.springframework.data.domain.Page
@@ -37,6 +39,11 @@ interface ProjectFileApi {
         @PathVariable fileId: Long): ResponseEntity<ByteArrayResource>
 
     @ApiOperation("Get list of files")
+    @ApiImplicitParams(
+        ApiImplicitParam(paramType = "query", name = "sort", dataType = "string"),
+        ApiImplicitParam(paramType = "query", name = "size", dataType = "integer"),
+        ApiImplicitParam(paramType = "query", name = "page", dataType = "integer")
+    )
     @GetMapping
     fun getFilesForProject(@PathVariable projectId: Long, pageable: Pageable): Page<OutputProjectFile>
 
