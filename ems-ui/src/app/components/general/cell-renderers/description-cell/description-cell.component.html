@@ -1,13 +1,16 @@
-<form (ngSubmit)="onSubmit()" class="description-form">
-    <label *ngIf="data.extraProps.readOnly">{{data.row.description}}</label>
+<form [formGroup]="descriptionForm" (ngSubmit)="onSubmit()" class="description-form">
+    <label *ngIf="data.extraProps.readOnly" [title]="data.row.description">{{getSizedDescription()}}</label>
     <mat-form-field *ngIf="!data.extraProps.readOnly" class="description-text-area-field">
         <textarea
                 name="descriptionArea"
+                formControlName="descriptionArea"
                 matInput
                 class="description-text-area"
-                [(ngModel)]="description"
                 >{{data.row.description}}
         </textarea>
+        <mat-error>
+            {{ getDescriptionError() | translate}}
+        </mat-error>
     </mat-form-field>
     <button *ngIf="!data.extraProps.readOnly"
             mat-raised-button

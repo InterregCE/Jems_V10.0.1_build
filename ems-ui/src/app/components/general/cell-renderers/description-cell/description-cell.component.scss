@@ -1,6 +1,6 @@
 .description-form {
-  width: 12rem;
-  padding-bottom: 0.7rem;
+  max-width: 30rem;
+  min-width: 12rem;
 }
 
 .description-text-area-field {
@@ -21,4 +21,8 @@
 
 label {
   padding-left: 1rem;
+  margin-bottom: 0;
+}
+mat-form-field {
+  height: 100px;
 }
