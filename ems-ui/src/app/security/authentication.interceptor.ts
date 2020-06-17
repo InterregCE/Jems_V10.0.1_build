@@ -33,11 +33,10 @@ export class AuthenticationInterceptor implements HttpInterceptor {
         catchError(err => {
           if (err.status === 401 || err.status === 403) {
             // go to login when unauthorized status codes are intercepted
-            this.securityService.logout().then(() => {
-              if (this.router.url !== '/login') {
-                this.router.navigate(['/login']);
-              }
-            });
+            if (this.router.url !== '/login') {
+              this.router.navigate(['/login']);
+            }
+            this.securityService.clearAuthentication();
           }
           return throwError(err);
         }));

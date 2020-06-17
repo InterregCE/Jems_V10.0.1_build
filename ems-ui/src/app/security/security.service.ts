@@ -1,7 +1,7 @@
 import {Injectable} from '@angular/core';
 import {AuthenticationService, LoginRequest, OutputCurrentUser} from '@cat/api';
 import {AuthenticationHolder} from './authentication-holder.service';
-import {from, Observable, ReplaySubject, Subject} from 'rxjs';
+import {from, Observable, ReplaySubject} from 'rxjs';
 import {map, tap} from 'rxjs/operators';
 
 @Injectable({providedIn: 'root'})
@@ -11,7 +11,6 @@ export class SecurityService {
 
   constructor(private authenticationHolder: AuthenticationHolder,
               private authenticationService: AuthenticationService) {
-    this.reloadCurrentUser();
   }
 
   get currentUser(): Observable<OutputCurrentUser | null> {
@@ -33,26 +32,21 @@ export class SecurityService {
       );
   }
 
-  private reloadCurrentUser(): Observable<any> {
-    const loadingCurrentUser = this.authenticationService.getCurrentUser();
-    const doneProcessingSubject = new Subject();
-    loadingCurrentUser.subscribe(
-      (value: OutputCurrentUser) => {
-        this.myCurrentUser.next(value);
-        doneProcessingSubject.complete();
-      },
-      () => {
-        this.myCurrentUser.next(null);
-        doneProcessingSubject.complete();
-      });
-    return doneProcessingSubject.asObservable();
+  reloadCurrentUser(): void {
+    this.authenticationService.getCurrentUser()
+      .subscribe(
+        (value: OutputCurrentUser) => this.myCurrentUser.next(value),
+        () => this.myCurrentUser.next(null)
+      );
+  }
+
+  clearAuthentication(): void {
+    this.authenticationHolder.currentUsername = null;
+    this.myCurrentUser.next(null);
   }
 
   async logout() {
-    this.authenticationHolder.currentUsername = null;
-    this.myCurrentUser.next(null);
-    await this.authenticationService.logout()
-      .toPromise()
-      .then(() => console.log('logged out'));
+    this.clearAuthentication();
+    await this.authenticationService.logout().toPromise();
   }
 }

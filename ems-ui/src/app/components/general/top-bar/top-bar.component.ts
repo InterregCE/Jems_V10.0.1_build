@@ -1,4 +1,4 @@
-import {Component, Input} from '@angular/core';
+import {Component, Input, OnInit} from '@angular/core';
 import {SecurityService} from '../../../security/security.service';
 import {Router} from '@angular/router';
 import {TranslateService} from '@ngx-translate/core';
@@ -10,7 +10,8 @@ import {OutputCurrentUser} from '@cat/api';
   templateUrl: './top-bar.component.html',
   styleUrls: ['./top-bar.component.scss']
 })
-export class TopBarComponent {
+export class TopBarComponent implements OnInit {
+
   @Input() isLoginNeeded: boolean;
   auditUrl = '';
 
@@ -18,6 +19,10 @@ export class TopBarComponent {
               private router: Router,
               public translate: TranslateService) {
     this.prepareAuditUrl(window.location.href);
+  }
+
+  ngOnInit(): void {
+    this.securityService.reloadCurrentUser();
   }
 
   get currentUser(): Observable<OutputCurrentUser | null> {

@@ -39,7 +39,9 @@ class AuthenticationControllerIntegrationTest {
     }
 
     @Test
+    @WithUserDetails(value = "admin")
     fun `login with correct credentials`() {
+        // bypasses the spring authentication but still checks the general flow
         val loginRequest = LoginRequest("admin", "Adm1");
         mockMvc.perform(
             post("/api/auth/login")

@@ -26,11 +26,11 @@ class AuthenticationServiceImpl(
         private val log = LoggerFactory.getLogger(AuthenticationServiceImpl::class.java)
     }
 
-    override fun getCurrentUser(): OutputCurrentUser {
-        return OutputCurrentUser(securityService.currentUser.user.email)
+    override fun getCurrentUser(): OutputCurrentUser? {
+        return securityService.currentUser?.user?.email?.let { OutputCurrentUser(it) }
     }
 
-    override fun login(req: HttpServletRequest, loginRequest: LoginRequest): OutputCurrentUser {
+    override fun login(req: HttpServletRequest, loginRequest: LoginRequest): OutputCurrentUser? {
         log.info("Attempting login for email {}", loginRequest.email)
 
         SecurityContextHolder.getContext().authentication = authenticationManager.authenticate(
@@ -49,9 +49,9 @@ class AuthenticationServiceImpl(
     }
 
     override fun logout(req: HttpServletRequest) {
-        log.info("Logging out for current user with email {}", getCurrentUser().name)
+        log.info("Logging out for current user with email {}", getCurrentUser()!!.name)
 
-        auditService.logEvent(Audit.userLoggedOut(getCurrentUser().name))
+        auditService.logEvent(Audit.userLoggedOut(getCurrentUser()!!.name))
 
         SecurityContextHolder.clearContext();
         req.logout();
