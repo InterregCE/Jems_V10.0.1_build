@@ -3,7 +3,7 @@
     <package-json value="$PROJECT_DIR$/ems-ui/package.json" />
     <command value="run" />
     <scripts>
-      <script value="serve local" />
+      <script value="serve:local" />
     </scripts>
     <node-interpreter value="project" />
     <envs />

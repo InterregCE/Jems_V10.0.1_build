@@ -51,10 +51,9 @@ class AuthenticationServiceImpl(
     override fun logout(req: HttpServletRequest) {
         log.info("Logging out for current user with email {}", getCurrentUser().name)
 
-        SecurityContextHolder.getContext().authentication = null;
-        val session = req.getSession(true)
-        session.setAttribute(SPRING_SECURITY_CONTEXT_KEY, SecurityContextHolder.getContext())
-
         auditService.logEvent(Audit.userLoggedOut(getCurrentUser().name))
+
+        SecurityContextHolder.clearContext();
+        req.logout();
     }
 }

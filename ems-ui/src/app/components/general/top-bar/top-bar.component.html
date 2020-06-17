@@ -9,14 +9,14 @@
             <a mat-flat-button [href]="auditUrl" class="mr-3" target="_blank">Audit Log</a>
         </ng-container>
     </div>
-    <mat-select #langSelect
-                class="language-select"
-                [value]="translate.currentLang"
-                (selectionChange)="changeLanguage(langSelect.value)">
-        <mat-option
-                *ngFor="let lang of translate.getLangs()"
-                [value]="lang">
-            {{ lang }}
-        </mat-option>
-    </mat-select>
+    <!--    <mat-select #langSelect-->
+    <!--                class="language-select"-->
+    <!--                [value]="translate.currentLang"-->
+    <!--                (selectionChange)="changeLanguage(langSelect.value)">-->
+    <!--        <mat-option-->
+    <!--                *ngFor="let lang of translate.getLangs()"-->
+    <!--                [value]="lang">-->
+    <!--            {{ lang }}-->
+    <!--        </mat-option>-->
+    <!--    </mat-select>-->
 </div>
