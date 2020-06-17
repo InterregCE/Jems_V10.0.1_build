@@ -18,12 +18,12 @@ import javax.validation.Valid
 interface ProjectApi {
 
     @ApiOperation("Returns all project applications")
-    @GetMapping
     @ApiImplicitParams(
         ApiImplicitParam(paramType = "query", name = "page", dataType = "integer"),
         ApiImplicitParam(paramType = "query", name = "size", dataType = "integer"),
         ApiImplicitParam(paramType = "query", name = "sort", dataType = "string")
     )
+    @GetMapping
     fun getProjects(pageable: Pageable): Page<OutputProject>
 
     @ApiOperation("Creates new project application")

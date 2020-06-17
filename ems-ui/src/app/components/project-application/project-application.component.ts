@@ -1,8 +1,7 @@
 import {Component, OnInit, ViewChild} from '@angular/core';
-import {InputProject, OutputProject} from '@cat/api';
+import { InputProject, OutputProject, ProjectService } from '@cat/api';
 import {MatTableDataSource} from '@angular/material/table';
 import {ProjectApplicationSubmissionComponent} from './project-application-submission/project-application-submission.component';
-import {ProjectApplicationService} from '../../services/project-application.service';
 import {I18nValidationError} from '../../common/i18n-validation-error';
 
 @Component({
@@ -19,7 +18,7 @@ export class ProjectApplicationComponent implements OnInit {
   error: I18nValidationError;
   dataSource: MatTableDataSource<OutputProject>;
 
-  constructor(private projectService: ProjectApplicationService) {
+  constructor(private projectService: ProjectService) {
   }
 
   ngOnInit(): void {
@@ -28,7 +27,7 @@ export class ProjectApplicationComponent implements OnInit {
 
   submitProjectApplication(project: InputProject) {
     this.success = false;
-    this.projectService.addProject(project).toPromise()
+    this.projectService.createProject(project).toPromise()
       .then(() => {
         this.success = true;
         this.getProjectsFromServer();
@@ -39,7 +38,7 @@ export class ProjectApplicationComponent implements OnInit {
   }
 
   getProjectsFromServer(): void {
-    this.projectService.getProjects(100).toPromise()
+    this.projectService.getProjects(0, 100, 'id,desc').toPromise()
       .then((results) => {
         this.dataSource = new MatTableDataSource<OutputProject>(results.content);
       });

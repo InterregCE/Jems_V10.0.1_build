@@ -19,7 +19,6 @@ import {ProjectApplicationListComponent} from './components/project-application/
 import {MatListModule} from '@angular/material/list';
 import {MatTableModule} from '@angular/material/table';
 import {MatDialogModule} from '@angular/material/dialog';
-import {ProjectApplicationService} from './services/project-application.service';
 import {ProjectFileService} from './services/project-file.service';
 import { ProjectApplicationDetailComponent } from './components/project-application/project-application-detail/project-application-detail.component';
 import { TableComponent } from './components/general/table/table.component';
@@ -81,7 +80,6 @@ import { OverlayModule } from '@angular/cdk/overlay';
       provide: BASE_PATH,
       useValue: '.'
     },
-    ProjectApplicationService,
     ProjectFileService,
     DatePipe
   ],
