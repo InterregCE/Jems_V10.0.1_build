@@ -11,9 +11,7 @@ export class DescriptionCellComponent implements OnInit {
   data: any;
 
   descriptionForm = this.formBuilder.group({
-    descriptionArea: ['', Validators.compose([
-      Validators.maxLength(100)
-    ])]
+    descriptionArea: ['', Validators.maxLength(100)]
   });
 
   constructor(private formBuilder: FormBuilder) {
@@ -38,15 +36,8 @@ export class DescriptionCellComponent implements OnInit {
     this.data.extraProps.onCancel(this.data.index);
   }
 
-  getDescriptionError(): string {
-    if (this.description.value.length > 100) {
-      return 'project.file.description.size.too.long';
-    }
-    return '';
-  }
-
   getSizedDescription(): string {
-    if (this.data.row.description.length > 30) {
+    if (this.data.row.description && this.data.row.description.length > 30) {
       return this.data.row.description.substring(0, 30) + '...';
     }
     return this.data.row.description;
