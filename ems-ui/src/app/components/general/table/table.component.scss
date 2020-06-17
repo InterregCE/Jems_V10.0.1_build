@@ -28,6 +28,7 @@ table {
   }
 
   .description-component {
-    width: 12rem;
+    min-width: 12rem;
+    max-width: 30rem;
   }
 }
