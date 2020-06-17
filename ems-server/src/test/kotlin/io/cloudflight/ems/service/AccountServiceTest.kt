@@ -2,9 +2,9 @@ package io.cloudflight.ems.service
 
 import io.cloudflight.ems.api.dto.OutputUser
 import io.cloudflight.ems.api.dto.OutputUserRole
-import io.cloudflight.ems.entity.User
-import io.cloudflight.ems.entity.UserRole
-import io.cloudflight.ems.repository.UserRepository
+import io.cloudflight.ems.entity.Account
+import io.cloudflight.ems.entity.AccountRole
+import io.cloudflight.ems.repository.AccountRepository
 import io.mockk.MockKAnnotations
 import io.mockk.every
 import io.mockk.impl.annotations.MockK
@@ -14,32 +14,32 @@ import org.junit.jupiter.api.Test
 import org.springframework.data.domain.PageImpl
 import org.springframework.data.domain.Pageable
 
-class UserServiceTest {
+class AccountServiceTest {
 
     private val UNPAGED = Pageable.unpaged()
 
     @MockK
-    lateinit var userRepository: UserRepository
+    lateinit var accountRepository: AccountRepository
 
     lateinit var userService: UserService
 
     @BeforeEach
     fun setup() {
         MockKAnnotations.init(this)
-        userService = UserServiceImpl(userRepository)
+        userService = UserServiceImpl(accountRepository)
     }
 
     @Test
     fun getAllUsers() {
-        val userToReturn = User(
+        val userToReturn = Account(
             id = 85,
             email = "admin@ems.io",
             name = "Name",
             surname = "Surname",
-            userRole = UserRole(9, "admin"),
+            accountRole = AccountRole(9, "admin"),
             password = "hash_pass"
         )
-        every { userRepository.findAll(UNPAGED) } returns PageImpl(listOf(userToReturn))
+        every { accountRepository.findAll(UNPAGED) } returns PageImpl(listOf(userToReturn))
 
         // test start
         val result = userService.findAll(UNPAGED)
@@ -61,7 +61,7 @@ class UserServiceTest {
 
     @Test
     fun getUser_empty() {
-        every { userRepository.findOneByEmail(eq("not_existing@ems.io")) } returns null
+        every { accountRepository.findOneByEmail(eq("not_existing@ems.io")) } returns null
 
         val result = userService.findOneByEmail("not_existing@ems.io")
         assertThat(result).isNull();
@@ -69,13 +69,13 @@ class UserServiceTest {
 
     @Test
     fun getUser_OK() {
-        every { userRepository.findOneByEmail(eq("admin@ems.io")) } returns
-                User(
+        every { accountRepository.findOneByEmail(eq("admin@ems.io")) } returns
+                Account(
                     id = 50,
                     email = "admin@ems.io",
                     name = "name",
                     surname = "surname",
-                    userRole = UserRole(2, "admin"),
+                    accountRole = AccountRole(2, "admin"),
                     password = "hash_pass"
                 )
 
