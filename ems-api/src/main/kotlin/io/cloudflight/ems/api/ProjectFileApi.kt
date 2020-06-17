@@ -20,6 +20,7 @@ import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RequestPart
 import org.springframework.web.multipart.MultipartFile
+import javax.validation.Valid
 
 @Api("Project File Storage")
 @RequestMapping("/api/project/{projectId}/file")
@@ -52,7 +53,7 @@ interface ProjectFileApi {
     fun setDescriptionToFile(
         @PathVariable projectId: Long,
         @PathVariable fileId: Long,
-        @RequestBody projectFileDescription: InputProjectFileDescription): OutputProjectFile
+        @Valid @RequestBody projectFileDescription: InputProjectFileDescription): OutputProjectFile
 
     @ApiOperation("Delete existing file")
     @DeleteMapping("/{fileId}")

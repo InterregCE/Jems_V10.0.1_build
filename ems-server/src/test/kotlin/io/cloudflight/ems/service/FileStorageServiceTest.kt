@@ -1,12 +1,12 @@
 package io.cloudflight.ems.service
 
+import io.cloudflight.ems.api.dto.InputProjectFileDescription
 import io.cloudflight.ems.api.dto.OutputProjectFile
 import io.cloudflight.ems.dto.FileMetadata
 import io.cloudflight.ems.entity.Audit
 import io.cloudflight.ems.entity.AuditAction
 import io.cloudflight.ems.entity.Project
 import io.cloudflight.ems.entity.ProjectFile
-import io.cloudflight.ems.exception.DataValidationException
 import io.cloudflight.ems.exception.DuplicateFileException
 import io.cloudflight.ems.exception.ResourceNotFoundException
 import io.cloudflight.ems.repository.MinioStorage
@@ -144,19 +144,6 @@ class FileStorageServiceTest {
         assertThrows<ResourceNotFoundException> {
             fileStorageService.setDescription(-1, 100, null)
         }
-    }
-
-    @Test
-    fun setDescription_long() {
-        val descriptionLongerThanAllowed = "1234567890____15____1234567890____35____1234567890____55____1234567890____75____1234567890____95____1234567890"
-        every { projectFileRepository.findFirstByProject_IdAndId(eq(PROJECT_ID), eq(10)) } returns Optional.of(dummyProjectFile())
-
-        val exception = assertThrows<DataValidationException> {
-            fileStorageService.setDescription(PROJECT_ID, 10, descriptionLongerThanAllowed)
-        }
-
-        assertEquals(exception.errors.size, 1)
-        assertEquals(exception.errors["description"], listOf(DataValidationException.STRING_LONG))
     }
 
     @Test
