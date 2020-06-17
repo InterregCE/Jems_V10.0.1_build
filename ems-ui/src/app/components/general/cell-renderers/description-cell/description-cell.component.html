@@ -9,7 +9,7 @@
                 >{{data.row.description}}
         </textarea>
         <mat-error>
-            {{ getDescriptionError() | translate}}
+            {{ 'project.file.description.size.too.long' | translate}}
         </mat-error>
     </mat-form-field>
     <button *ngIf="!data.extraProps.readOnly"
