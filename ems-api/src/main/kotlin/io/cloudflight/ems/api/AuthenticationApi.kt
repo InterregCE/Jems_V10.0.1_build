@@ -20,11 +20,11 @@ interface AuthenticationApi {
 
     @ApiOperation("Returns the current user")
     @GetMapping("/current")
-    fun getCurrentUser(): OutputCurrentUser
+    fun getCurrentUser(): OutputCurrentUser?
 
     @ApiOperation("Logs in the user with the given credentials")
     @PostMapping("/login", consumes = [MediaType.APPLICATION_JSON_VALUE])
-    fun login(req: HttpServletRequest, @Valid @RequestBody loginRequest: LoginRequest): OutputCurrentUser
+    fun login(req: HttpServletRequest, @Valid @RequestBody loginRequest: LoginRequest): OutputCurrentUser?
 
     @ApiOperation("Logs out the current user")
     @PostMapping("/logout")

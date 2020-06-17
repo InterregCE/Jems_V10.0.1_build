@@ -13,11 +13,11 @@ class AuthenticationController(
     private val authenticationService: AuthenticationService
 ) : AuthenticationApi {
 
-    override fun getCurrentUser(): OutputCurrentUser {
+    override fun getCurrentUser(): OutputCurrentUser? {
         return authenticationService.getCurrentUser();
     }
 
-    override fun login(req: HttpServletRequest, loginRequest: LoginRequest): OutputCurrentUser {
+    override fun login(req: HttpServletRequest, loginRequest: LoginRequest): OutputCurrentUser? {
         return authenticationService.login(req, loginRequest);
     }
 

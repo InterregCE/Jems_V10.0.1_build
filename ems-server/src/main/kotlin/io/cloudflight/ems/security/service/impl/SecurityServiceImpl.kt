@@ -10,10 +10,15 @@ import org.springframework.stereotype.Service
 
 @Service
 class SecurityServiceImpl : SecurityService {
-    override val currentUser: CurrentUser
-        get() = (SecurityContextHolder.getContext().authentication as UsernamePasswordAuthenticationToken).principal as CurrentUser
+    override val currentUser: CurrentUser?
+        get() {
+            if (SecurityContextHolder.getContext().authentication !is UsernamePasswordAuthenticationToken) {
+                return null;
+            }
+            return SecurityContextHolder.getContext().authentication.principal as CurrentUser;
+        }
 
     override fun assertAdminAccess() {
-        if (!currentUser.isAdmin) throw AccessDeniedException("User does not have admin access")
+        if (!currentUser!!.isAdmin) throw AccessDeniedException("User does not have admin access")
     }
 }
