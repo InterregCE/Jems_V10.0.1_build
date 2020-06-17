@@ -7,7 +7,7 @@ import javax.persistence.GenerationType
 import javax.persistence.Id
 
 @Entity(name = "user_role")
-data class UserRole (
+data class UserRole(
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -15,5 +15,4 @@ data class UserRole (
 
     @Column(nullable = false, unique = true)
     val name: String
-
 )

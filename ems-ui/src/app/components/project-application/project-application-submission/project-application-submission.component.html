@@ -1,42 +1,34 @@
 <div class="project-application-submission-container">
     <p>Create a new project application:</p>
     <p>Programme ID : dummy | Call ID : dummy</p>
-    <form (ngSubmit)="onSubmit()"
-          #projectApplicationSubmitForm="ngForm">
+    <form [formGroup]="submissionForm" (ngSubmit)="onSubmit(formDirective)" #formDirective="ngForm">
         <div class="form-group">
             <mat-form-field appearance="outline"
-                    class="col-md-12 project-application-submission-field">
+                            class="col-md-12 project-application-submission-field">
                 <mat-label>Project Acronym</mat-label>
-                <input name="acronym"
-                       [(ngModel)]="project.acronym"
-                       matInput
-                       placeholder="Project Acronym"
-                       required
-                       #acronym="ngModel">
-                <mat-error *ngIf="acronym.invalid">Acronym is required!</mat-error>
+                <input name="acronym" formControlName="acronym" matInput placeholder="Project Acronym" required>
+                <mat-error>
+                    {{ getAcronymError() | translate}}
+                </mat-error>
             </mat-form-field>
             <mat-form-field appearance="outline"
                             class="col-md-12 project-application-submission-field">
                 <mat-label>Submission Date</mat-label>
-                <input name="submissionDate"
-                       [(ngModel)]="project.submissionDate"
-                       matInput
-                       placeholder="YYYY-MM-DD"
-                       required
-                       #submissionDate="ngModel">
-                <mat-error *ngIf="submissionDate.invalid">Submission Date is required!</mat-error>
+                <input name="submissionDate" formControlName="submissionDate" matInput
+                       placeholder="YYYY-MM-DD" type="text" required>
+                <mat-error>
+                    {{ getSubmissionDateError() | translate}}
+                </mat-error>
             </mat-form-field>
         </div>
         <button mat-raised-button
                 color="primary"
-                type="submit">+ Create Project Application</button>
+                type="submit"
+                [disabled]="submissionForm.invalid">
+            + Create Project Application
+        </button>
     </form>
     <div *ngIf="success">
         <p>Project application was successfully saved.</p>
-    </div>
-    <div *ngIf="error">
-        <div *ngFor="let message of errorMessages">
-            <p>{{message}}</p>
-        </div>
     </div>
 </div>

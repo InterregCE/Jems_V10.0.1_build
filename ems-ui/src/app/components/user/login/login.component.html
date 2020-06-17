@@ -1,0 +1,39 @@
+<div class="container vertical-center">
+    <mat-card>
+        <mat-card-title>{{'authentication.login.title.label' | translate}}</mat-card-title>
+        <mat-card-content>
+            <form [formGroup]="loginForm" (ngSubmit)="onSubmit()">
+                <div *ngIf="error && error?.i18nKey" class="alert alert-danger" id="errorMessage" role="alert">
+                    {{ error.i18nKey | translate }}
+                </div>
+                <div class="row">
+                    <mat-form-field>
+                        <mat-label>{{'authentication.email.label' | translate}}</mat-label>
+                        <input matInput autocomplete="email"
+                               formControlName="email" id="email" name="email" required type="text">
+                        <mat-error *ngIf="!loginForm.controls.email.valid">
+                            {{'authentication.email.not.empty' | translate}}
+                        </mat-error>
+                    </mat-form-field>
+                </div>
+                <div class="row">
+                    <mat-form-field>
+                        <mat-label>{{'authentication.password.label' | translate}}</mat-label>
+                        <input matInput
+                               formControlName="password" id="password" name="password" required type="password">
+                        <mat-error *ngIf="!loginForm.controls.password.valid">
+                            {{'authentication.password.not.empty' | translate}}
+                        </mat-error>
+                    </mat-form-field>
+                </div>
+                <div class="row">
+                    <button class="btn btn-primary" id="login"
+                            type="submit"
+                            [disabled]="!loginForm.valid">
+                        {{'common.submit.label' | translate}}
+                    </button>
+                </div>
+            </form>
+        </mat-card-content>
+    </mat-card>
+</div>

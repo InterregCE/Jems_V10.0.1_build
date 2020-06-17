@@ -55,6 +55,39 @@ data class Audit(
             )
         }
 
+        fun userLoggedIn(email: String): Audit {
+            return Audit(
+                id = null,
+                timestamp = getElasticTimeNow(),
+                action = AuditAction.USER_LOGGED_IN,
+                projectId = null,
+                username = email,
+                description = "user with email ${email} logged in"
+            )
+        }
+
+        fun userLoggedOut(email: String): Audit {
+            return Audit(
+                id = null,
+                timestamp = getElasticTimeNow(),
+                action = AuditAction.USER_LOGGED_OUT,
+                projectId = null,
+                username = email,
+                description = "user with email ${email} logged out"
+            )
+        }
+
+        fun userSessionExpired(email: String): Audit {
+            return Audit(
+                id = null,
+                timestamp = getElasticTimeNow(),
+                action = AuditAction.USER_SESSION_EXPIRED,
+                projectId = null,
+                username = email,
+                description = "user with email ${email} was logged out by the system"
+            )
+        }
+
         private fun getElasticTimeNow(): String {
             return ZonedDateTime.now(ZoneOffset.UTC).format(DateTimeFormatter.ISO_DATE_TIME)
         }
@@ -62,7 +95,7 @@ data class Audit(
     }
 
     // default constructor is needed for deserialization
-    constructor(): this(null, null, null, null, null, null)
+    constructor() : this(null, null, null, null, null, null)
 
     fun getTime(): ZonedDateTime {
         return ZonedDateTime.parse(timestamp, DateTimeFormatter.ISO_DATE_TIME)

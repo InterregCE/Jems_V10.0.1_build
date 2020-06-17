@@ -1,27 +1,45 @@
 import {Injectable} from '@angular/core';
 import {HttpEvent, HttpHandler, HttpInterceptor, HttpRequest} from '@angular/common/http';
-import {Observable} from 'rxjs';
-import {AuthenticationService} from './authentication.service';
+import {Observable, throwError} from 'rxjs';
+import {AuthenticationHolder} from './authentication-holder.service';
+import {catchError} from 'rxjs/operators';
+import {Router} from '@angular/router';
+import {SecurityService} from './security.service';
 
 @Injectable()
 export class AuthenticationInterceptor implements HttpInterceptor {
-  constructor(private authenticationService: AuthenticationService) {
+  constructor(private authenticationHolder: AuthenticationHolder,
+              private securityService: SecurityService,
+              private router: Router) {
   }
 
   intercept(req: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
     let authReq: HttpRequest<any>;
-    if (!!this.authenticationService.currentUsername) {
+    if (!!this.authenticationHolder.currentUsername) {
       authReq = req.clone({
         setHeaders: {
-          Authorization: `Basic ${btoa(this.authenticationService.currentUsername + ':')}`
+          Authorization: `Basic ${btoa(this.authenticationHolder.currentUsername + ':')}`
         }
       });
     } else {
       authReq = req;
     }
 
-    return next.handle(authReq.clone({
-      headers: authReq.headers.append('X-Requested-With', 'XMLHttpRequest')
-    }));
+    return next.handle(
+      authReq.clone({
+        headers: authReq.headers.append('X-Requested-With', 'XMLHttpRequest')
+      }))
+      .pipe(
+        catchError(err => {
+          if (err.status === 401 || err.status === 403) {
+            // go to login when unauthorized status codes are intercepted
+            this.securityService.logout().then(() => {
+              if (this.router.url !== '/login') {
+                this.router.navigate(['/login']);
+              }
+            });
+          }
+          return throwError(err);
+        }));
   }
 }

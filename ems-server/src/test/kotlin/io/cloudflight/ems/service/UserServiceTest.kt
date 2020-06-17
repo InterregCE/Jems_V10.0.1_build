@@ -8,14 +8,11 @@ import io.cloudflight.ems.repository.UserRepository
 import io.mockk.MockKAnnotations
 import io.mockk.every
 import io.mockk.impl.annotations.MockK
-import org.junit.jupiter.api.Assertions.assertEquals
-import org.junit.jupiter.api.Assertions.assertIterableEquals
-import org.junit.jupiter.api.Assertions.assertNull
+import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.springframework.data.domain.PageImpl
 import org.springframework.data.domain.Pageable
-import java.util.stream.Collectors
 
 class UserServiceTest {
 
@@ -40,44 +37,47 @@ class UserServiceTest {
             name = "Name",
             surname = "Surname",
             userRole = UserRole(9, "admin"),
-            password = "hash_pass")
+            password = "hash_pass"
+        )
         every { userRepository.findAll(UNPAGED) } returns PageImpl(listOf(userToReturn))
 
         // test start
-        val result = userService.getUsers(UNPAGED)
+        val result = userService.findAll(UNPAGED)
 
         // assertions:
-        assertEquals(1, result.totalElements)
+        assertThat(result.totalElements).isEqualTo(1);
 
-        val expectedUsers = listOf(OutputUser(
-            id = 85,
-            email = "admin@ems.io",
-            name = "Name",
-            surname = "Surname",
-            userRole = OutputUserRole(9, "admin"))
+        val expectedUsers = listOf(
+            OutputUser(
+                id = 85,
+                email = "admin@ems.io",
+                name = "Name",
+                surname = "Surname",
+                userRole = OutputUserRole(9, "admin")
+            )
         )
-        assertIterableEquals(expectedUsers, result.get().collect(Collectors.toList()))
+        assertThat(result.stream()).isEqualTo(expectedUsers);
     }
 
     @Test
     fun getUser_empty() {
-        every { userRepository.findByEmail(eq("not_existing@ems.io")) } returns null
+        every { userRepository.findOneByEmail(eq("not_existing@ems.io")) } returns null
 
-        val result = userService.getByEmail("not_existing@ems.io")
-        assertNull(result)
+        val result = userService.findOneByEmail("not_existing@ems.io")
+        assertThat(result).isNull();
     }
 
     @Test
     fun getUser_OK() {
-        every { userRepository.findByEmail(eq("admin@ems.io")) } returns
-            User(
-                id = 50,
-                email = "admin@ems.io",
-                name = "name",
-                surname = "surname",
-                userRole = UserRole(2, "admin"),
-                password = "hash_pass"
-            )
+        every { userRepository.findOneByEmail(eq("admin@ems.io")) } returns
+                User(
+                    id = 50,
+                    email = "admin@ems.io",
+                    name = "name",
+                    surname = "surname",
+                    userRole = UserRole(2, "admin"),
+                    password = "hash_pass"
+                )
 
         val result = userService.getByEmail("admin@ems.io")
 
@@ -86,8 +86,9 @@ class UserServiceTest {
             email = "admin@ems.io",
             name = "name",
             surname = "surname",
-            userRole = OutputUserRole(2, "admin"))
-        assertEquals(expectedUser, result)
+            userRole = OutputUserRole(2, "admin")
+        )
+        assertThat(result).isEqualTo(expectedUser);
     }
 
 }

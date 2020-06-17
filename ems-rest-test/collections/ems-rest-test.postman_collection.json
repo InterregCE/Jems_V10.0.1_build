@@ -1,6 +1,6 @@
 {
 	"info": {
-		"_postman_id": "157debc0-ed1d-4592-9f7e-399850c6d90b",
+		"_postman_id": "8ea68b87-6c1c-40c2-8454-a377a3c9ffc5",
 		"name": "ems-rest-test",
 		"description": "Check creation of Project Application",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
@@ -15,7 +15,7 @@
 						{
 							"listen": "prerequest",
 							"script": {
-								"id": "2885b24f-80b6-4072-99a3-141625ae729b",
+								"id": "0502bc9e-5a30-4f8f-8d2a-54d20dbe03bd",
 								"exec": [
 									""
 								],
@@ -25,7 +25,7 @@
 						{
 							"listen": "test",
 							"script": {
-								"id": "6ca00c42-85b9-4d44-bf33-76219497c1c5",
+								"id": "b231ad18-d090-4dc6-81e4-5e83214cc6d3",
 								"exec": [
 									"const response = pm.response.json()\r",
 									"\r",
@@ -74,7 +74,7 @@
 						{
 							"listen": "prerequest",
 							"script": {
-								"id": "34313bf1-24ff-4026-8a8b-2a30b17be296",
+								"id": "a9b37956-ffd9-4c5e-a7b4-682235ad5641",
 								"exec": [
 									"pm.variables.set('project_acronym', \"test-proj-this-is-a-very-long-name\");\r",
 									"\r",
@@ -89,15 +89,16 @@
 						{
 							"listen": "test",
 							"script": {
-								"id": "f0a728cf-9e16-448c-8c03-f8ac6fdfdf39",
+								"id": "1d583fad-ed6e-4715-8546-2d09a0d3172b",
 								"exec": [
-									"pm.test('should fail with 422', function () {\r",
-									"    pm.response.to.have.status(422);\r",
+									"pm.test('should fail with 400', function () {\r",
+									"    pm.response.to.have.status(400);\r",
 									"});\r",
 									"\r",
 									"pm.test('should return validation errors', function () {\r",
 									"    const response = pm.response.json();\r",
-									"    pm.expect(response.acronym).to.contain('long');\r",
+									"    pm.expect(response.i18nFieldErrors.acronym.i18nKey).to.contain('project.acronym.size.too.long');\r",
+									"\r",
 									"});\r",
 									""
 								],
@@ -137,7 +138,7 @@
 						{
 							"listen": "prerequest",
 							"script": {
-								"id": "a4232451-ae48-44e9-a2b2-443b00cbcc5b",
+								"id": "ca80e31b-92f6-4874-973b-8ff3150ed125",
 								"exec": [
 									"pm.variables.set('project_acronym', \"\");\r",
 									"pm.variables.set('project_submissionDate', \"\");\r",
@@ -149,16 +150,16 @@
 						{
 							"listen": "test",
 							"script": {
-								"id": "a29ba7d0-ffce-45e2-a5be-7202b7d86696",
+								"id": "cc341194-f490-4928-8d55-f71c1020f8ef",
 								"exec": [
-									"pm.test('should fail with 422', function () {\r",
-									"    pm.response.to.have.status(422);\r",
+									"pm.test('should fail with 400', function () {\r",
+									"    pm.response.to.have.status(400);\r",
 									"});\r",
 									"\r",
 									"pm.test('should return validation errors', function () {\r",
 									"    const response = pm.response.json();\r",
-									"    pm.expect(response['acronym']).to.contain('missing');\r",
-									"    pm.expect(response['submissionDate']).to.contain('missing');\r",
+									"    pm.expect(response.i18nFieldErrors.submissionDate.i18nKey).to.contain('project.submissionDate.should.not.be.empty');\r",
+									"    pm.expect(response.i18nFieldErrors.acronym.i18nKey).to.contain('project.acronym.should.not.be.empty');\r",
 									"});\r",
 									""
 								],
@@ -198,7 +199,7 @@
 						{
 							"listen": "prerequest",
 							"script": {
-								"id": "d4d7a4c4-a721-4499-8d04-165ea142ee40",
+								"id": "81560666-6d59-4ea1-ac12-b969d99c6d0a",
 								"exec": [
 									"var uuid = require('uuid');\r",
 									"const randomIdentifier = uuid.v4().substring(24, 32);\r",
@@ -215,7 +216,7 @@
 						{
 							"listen": "test",
 							"script": {
-								"id": "5a54d5f7-6b42-419c-b779-d01c14f1ef1e",
+								"id": "60b9c6ab-9619-4c34-bf17-d9cad2646f60",
 								"exec": [
 									"pm.test('should be OK', function() {\r",
 									"    pm.response.to.have.status(200);\r",
@@ -261,7 +262,7 @@
 						{
 							"listen": "prerequest",
 							"script": {
-								"id": "b0973e4a-57a0-4b55-b70e-310fe6a549ce",
+								"id": "ec7c918d-a388-4e44-9f5d-55a350b30f9b",
 								"exec": [
 									""
 								],
@@ -271,7 +272,7 @@
 						{
 							"listen": "test",
 							"script": {
-								"id": "e6711283-759e-4918-ab7b-62275b9c8bd3",
+								"id": "946220e3-a74e-4ee5-ae00-d0b26b3ac9e2",
 								"exec": [
 									"const response = pm.response.json();\r",
 									"\r",
@@ -322,7 +323,7 @@
 						{
 							"listen": "test",
 							"script": {
-								"id": "2faa440b-02b9-4636-a15f-cc3b991aabbe",
+								"id": "54f7aabb-318c-4a7b-8fbc-189512187da1",
 								"exec": [
 									"const response = pm.response.json();\r",
 									"const id = pm.variables.get(\"projectId\")\r",
@@ -363,7 +364,7 @@
 						{
 							"listen": "prerequest",
 							"script": {
-								"id": "320d8f06-9506-4af0-bbf3-de888c9abde5",
+								"id": "2a8d34c8-1dbe-4be4-b629-c43211ac793a",
 								"exec": [
 									"pm.environment.set(\"projectIdInvalid\", '-1')"
 								],
@@ -373,7 +374,7 @@
 						{
 							"listen": "test",
 							"script": {
-								"id": "5fc320bd-fd07-4f02-8228-549ab637a186",
+								"id": "2015a178-25aa-48be-b345-4c3b66a0f866",
 								"exec": [
 									"pm.test(\"an invalid project returns 404\", function () {\r",
 									"    pm.response.to.have.status(404);\r",
@@ -401,6 +402,177 @@
 					"response": []
 				}
 			],
+			"auth": {
+				"type": "basic",
+				"basic": [
+					{
+						"key": "password",
+						"value": "Adm1",
+						"type": "string"
+					},
+					{
+						"key": "username",
+						"value": "admin",
+						"type": "string"
+					}
+				]
+			},
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"id": "c475c949-058f-46b2-84eb-d04feb453161",
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"id": "e3bce073-bc86-43dd-b3e1-12301ca2c178",
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
+				}
+			],
+			"protocolProfileBehavior": {}
+		},
+		{
+			"name": "user",
+			"item": [
+				{
+					"name": "login-admin",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "ae2f5292-890c-4860-bf3e-73c1bdfbf65d",
+								"exec": [
+									"const response = pm.response.json()",
+									"",
+									"pm.test(\"admin can login\", function () {",
+									"    pm.response.to.have.status(200);",
+									"    pm.expect(response.name).to.contain('admin');",
+									"})",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"auth": {
+							"type": "basic",
+							"basic": [
+								{
+									"key": "password",
+									"value": "Adm1",
+									"type": "string"
+								},
+								{
+									"key": "username",
+									"value": "admin",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": []
+						},
+						"url": {
+							"raw": "{{url}}/api/auth/current",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"api",
+								"auth",
+								"current"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "login-wrong-user",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "aa8ce950-6552-4d63-a9fa-74e22d3c35d1",
+								"exec": [
+									"const response = pm.response.json()",
+									"",
+									"pm.test(\"wrong user cannot login\", function () {",
+									"    pm.response.to.have.status(401);",
+									"})",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"auth": {
+							"type": "basic",
+							"basic": [
+								{
+									"key": "password",
+									"value": "wrongpwd",
+									"type": "string"
+								},
+								{
+									"key": "username",
+									"value": "wronguser",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": [
+								{
+									"key": "username",
+									"value": "admin",
+									"type": "text"
+								},
+								{
+									"key": "password",
+									"value": "Adm12",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{url}}/api/auth/current",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"api",
+								"auth",
+								"current"
+							]
+						}
+					},
+					"response": []
+				}
+			],
 			"protocolProfileBehavior": {}
 		}
 	],
@@ -408,8 +580,13 @@
 		"type": "basic",
 		"basic": [
 			{
+				"key": "password",
+				"value": "Adm1",
+				"type": "string"
+			},
+			{
 				"key": "username",
-				"value": "user",
+				"value": "admin",
 				"type": "string"
 			}
 		]
@@ -418,7 +595,7 @@
 		{
 			"listen": "prerequest",
 			"script": {
-				"id": "1e10d7bd-3d86-446e-915a-0efb4404317c",
+				"id": "2f891a0c-9296-406f-8957-84079b9c6f63",
 				"type": "text/javascript",
 				"exec": [
 					""
@@ -428,7 +605,7 @@
 		{
 			"listen": "test",
 			"script": {
-				"id": "6d76273d-ab40-4d50-8cf3-992cf8fa2611",
+				"id": "1f7d740d-6b72-4094-8477-1e7bc3bfbe80",
 				"type": "text/javascript",
 				"exec": [
 					""
@@ -438,7 +615,7 @@
 	],
 	"variable": [
 		{
-			"id": "b895eed0-c4e8-47cc-9c3d-55ffdaefd721",
+			"id": "b9ddb6ce-828b-4241-b813-c7db61f93783",
 			"key": "url",
 			"value": "specify_url_here",
 			"type": "string"

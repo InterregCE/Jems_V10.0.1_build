@@ -1,0 +1,22 @@
+<div class="toolbar" role="banner">
+    <div *ngIf="isLoginNeeded">
+        <div class="spacer"></div>
+        <ng-container *ngIf="currentUser | async">
+            <span>
+                {{(currentUser | async)?.name}}
+            </span>
+            <button mat-flat-button (click)="logout()">Logout</button>
+            <a mat-flat-button [href]="auditUrl" class="mr-3" target="_blank">Audit Log</a>
+        </ng-container>
+    </div>
+    <mat-select #langSelect
+                class="language-select"
+                [value]="translate.currentLang"
+                (selectionChange)="changeLanguage(langSelect.value)">
+        <mat-option
+                *ngFor="let lang of translate.getLangs()"
+                [value]="lang">
+            {{ lang }}
+        </mat-option>
+    </mat-select>
+</div>

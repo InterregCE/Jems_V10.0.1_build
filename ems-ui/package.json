@@ -3,8 +3,8 @@
   "version": "1.0.0-SNAPSHOT",
   "scripts": {
     "ng": "ng",
-    "serve local": "ng serve --proxy-config proxy-conf.local.json",
-    "serve ems-dev": "ng serve --proxy-config proxy-conf.ems-dev.json",
+    "serve:local": "ng serve --proxy-config proxy-conf.local.json",
+    "serve:ems-dev": "ng serve --proxy-config proxy-conf.ems-dev.json",
     "build": "ng build --prod=true",
     "build:dev": "ng build --watch",
     "test": "ng test --watch=false",
