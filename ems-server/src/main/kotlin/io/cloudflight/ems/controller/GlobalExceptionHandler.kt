@@ -46,8 +46,13 @@ class GlobalExceptionHandler : ResponseEntityExceptionHandler() {
 
     @ExceptionHandler(Exception::class)
     fun customErrorTransformer(exception: Exception): ResponseEntity<Any?> {
+        if (exception.cause is DuplicateFileException) {
+            return ResponseEntity
+                .status(HttpStatus.UNPROCESSABLE_ENTITY)
+                .body(exception.cause)
+        }
         if (exception.cause is I18nValidationError) {
-            return customErrorTransformer(exception.cause as I18nValidationError);
+            return customErrorTransformer(exception.cause as I18nValidationError)
         }
         return customErrorTransformer(
             I18nValidationError(
