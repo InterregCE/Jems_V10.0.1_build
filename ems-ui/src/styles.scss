@@ -291,3 +291,17 @@ form .form-group {
 
 html, body { height: 100%; }
 body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
+
+.mat-tab-link-active,
+.mat-tab-label-active {
+  color: white;
+}
+
+.mat-tab-link,
+.mat-tab-label {
+  opacity: 1 !important;
+}
+
+.mat-ink-bar {
+  background-color: white !important;
+}

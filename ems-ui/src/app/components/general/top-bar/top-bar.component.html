@@ -2,11 +2,15 @@
     <div *ngIf="isLoginNeeded">
         <div class="spacer"></div>
         <ng-container *ngIf="currentUser | async">
-            <span>
+            <span class="d-inline-block">
+                <app-menu [configuration]="menuConfiguration"></app-menu>
+            </span>
+            <span class="d-inline-block pr-3">
                 {{(currentUser | async)?.name}}
             </span>
-            <button mat-flat-button (click)="logout()">Logout</button>
-            <a mat-flat-button [href]="auditUrl" class="mr-3" target="_blank">Audit Log</a>
+            <span class="d-inline-block">
+                <button mat-flat-button (click)="logout()">Logout</button>
+            </span>
         </ng-container>
     </div>
     <!--    <mat-select #langSelect-->
