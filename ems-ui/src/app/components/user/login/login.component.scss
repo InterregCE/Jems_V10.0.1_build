@@ -1,5 +1,10 @@
 mat-card-title,
-mat-card-content {
+mat-card-content,
+mat-card-subtitle {
   display: flex;
   justify-content: center;
+}
+
+.alert {
+  margin-top: 1rem;
 }
