@@ -44,24 +44,6 @@ class GlobalExceptionHandler : ResponseEntityExceptionHandler() {
             .body(exception)
     }
 
-    @ExceptionHandler(Exception::class)
-    fun customErrorTransformer(exception: Exception): ResponseEntity<Any?> {
-        if (exception.cause is DuplicateFileException) {
-            return ResponseEntity
-                .status(HttpStatus.UNPROCESSABLE_ENTITY)
-                .body(exception.cause)
-        }
-        if (exception.cause is I18nValidationError) {
-            return customErrorTransformer(exception.cause as I18nValidationError)
-        }
-        return customErrorTransformer(
-            I18nValidationError(
-                httpStatus = HttpStatus.INTERNAL_SERVER_ERROR,
-                additionalInfo = exception.message
-            )
-        )
-    }
-
     override fun handleMethodArgumentNotValid(
         ex: MethodArgumentNotValidException, headers: HttpHeaders?,
         status: HttpStatus?, request: WebRequest?
