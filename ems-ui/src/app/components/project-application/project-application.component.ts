@@ -12,7 +12,7 @@ import {I18nValidationError} from '../../common/i18n-validation-error';
 
 export class ProjectApplicationComponent implements OnInit {
 
-  @ViewChild(ProjectApplicationSubmissionComponent, {static: false}) projectSubmissionComponent: ProjectApplicationSubmissionComponent;
+  @ViewChild(ProjectApplicationSubmissionComponent) projectSubmissionComponent: ProjectApplicationSubmissionComponent;
 
   success = false;
   error: I18nValidationError;
