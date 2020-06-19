@@ -4,8 +4,11 @@ import ch.qos.logback.classic.Level
 import ch.qos.logback.classic.Logger
 import ch.qos.logback.classic.spi.ILoggingEvent
 import ch.qos.logback.core.read.ListAppender
+import io.cloudflight.ems.api.dto.OutputUser
+import io.cloudflight.ems.api.dto.OutputUserRole
 import io.cloudflight.ems.entity.Audit
 import io.cloudflight.ems.repository.AuditRepository
+import io.cloudflight.ems.security.model.LocalCurrentUser
 import io.mockk.MockKAnnotations
 import io.mockk.every
 import io.mockk.impl.annotations.MockK
@@ -20,7 +23,15 @@ import org.slf4j.LoggerFactory
 
 class AuditServiceTest {
 
-    private val EXPECTED_LOG = "AUDIT >>> PROJECT_SUBMISSION (projectId submitted-projectId, user program user) : submission of the project application to the system"
+    val user = LocalCurrentUser(OutputUser(
+        id = 1,
+        email = "admin@admin.dev",
+        name = "Name",
+        surname = "Surname",
+        userRole = OutputUserRole(id = 1, name = "ADMIN")
+    ), "", emptyList())
+
+    private val EXPECTED_LOG = "AUDIT >>> PROJECT_SUBMISSION (projectId submitted-projectId, user admin@admin.dev) : submission of the project application to the system"
 
     @MockK
     lateinit var auditRepository: AuditRepository
@@ -42,7 +53,7 @@ class AuditServiceTest {
         auditService = AuditServiceImpl(auditRepository)
 
         // test start
-        auditService.logEvent(Audit.projectSubmitted("submitted-projectId"))
+        auditService.logEvent(Audit.projectSubmitted(user, "submitted-projectId"))
 
         // assert
         assertEquals("submitted-projectId", event.captured.projectId)
@@ -61,7 +72,7 @@ class AuditServiceTest {
         logger.addAppender(listAppender)
 
         // test start
-        auditService.logEvent(Audit.projectSubmitted("submitted-projectId"))
+        auditService.logEvent(Audit.projectSubmitted(user, "submitted-projectId"))
 
         // assert
         assertLinesMatch(listOf(EXPECTED_LOG), listAppender.list.map { it.formattedMessage })
