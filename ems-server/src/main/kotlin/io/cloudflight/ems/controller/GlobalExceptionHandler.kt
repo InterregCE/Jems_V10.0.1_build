@@ -1,6 +1,5 @@
 package io.cloudflight.ems.controller
 
-import io.cloudflight.ems.exception.DataValidationException
 import io.cloudflight.ems.exception.DuplicateFileException
 import io.cloudflight.ems.exception.I18nFieldError
 import io.cloudflight.ems.exception.I18nValidationError
@@ -17,13 +16,6 @@ import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExcep
 
 @ControllerAdvice
 class GlobalExceptionHandler : ResponseEntityExceptionHandler() {
-
-    @ExceptionHandler(DataValidationException::class)
-    fun validationErrorTransformer(exception: DataValidationException): ResponseEntity<Map<String, List<String>>> {
-        return ResponseEntity
-            .unprocessableEntity()
-            .body(exception.errors)
-    }
 
     @ExceptionHandler(DuplicateFileException::class)
     fun duplicateFileExceptionTransformer(exception: DuplicateFileException): ResponseEntity<DuplicateFileException.DuplicateFileError> {

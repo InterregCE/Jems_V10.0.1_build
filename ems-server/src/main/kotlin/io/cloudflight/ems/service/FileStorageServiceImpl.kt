@@ -5,7 +5,6 @@ import io.cloudflight.ems.dto.FileMetadata
 import io.cloudflight.ems.entity.Audit
 import io.cloudflight.ems.entity.Project
 import io.cloudflight.ems.entity.ProjectFile
-import io.cloudflight.ems.exception.DataValidationException
 import io.cloudflight.ems.exception.DuplicateFileException
 import io.cloudflight.ems.exception.ResourceNotFoundException
 import io.cloudflight.ems.repository.MinioStorage
@@ -65,10 +64,6 @@ class FileStorageServiceImpl(
     @Transactional
     override fun setDescription(projectId: Long, fileId: Long, description: String?): OutputProjectFile {
         val projectFile = getFile(projectId, fileId)
-
-        if (description != null && description.length > 100) {
-            throw DataValidationException(mapOf("description" to listOf(DataValidationException.STRING_LONG)))
-        }
 
         projectFile.description = description
         return getDtoFrom(repository.save(projectFile))
