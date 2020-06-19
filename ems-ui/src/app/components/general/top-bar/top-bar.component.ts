@@ -60,13 +60,12 @@ export class TopBarComponent implements OnInit {
           route: '/',
           action: (internal: boolean, route: string) => this.handleNavigation(internal, route),
         }),
-        // TODO uncomment with the User management subtask (MP2-250) and add correct internal route.
-        // new MenuItemConfiguration({
-        //   name: 'User Management',
-        //   isInternal: true,
-        //   route: '/project/120',
-        //   action: (internal: boolean, route: string) => this.handleNavigation(internal, route),
-        // }),
+        new MenuItemConfiguration({
+          name: 'User Management',
+          isInternal: true,
+          route: '/users',
+          action: (internal: boolean, route: string) => this.handleNavigation(internal, route),
+        }),
         new MenuItemConfiguration({
           name: 'Audit Log',
           isInternal: false,

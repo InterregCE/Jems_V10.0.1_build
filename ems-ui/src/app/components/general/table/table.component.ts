@@ -2,9 +2,11 @@ import {
   AfterViewInit,
   Component,
   ComponentFactory,
-  ComponentFactoryResolver, ComponentRef,
+  ComponentFactoryResolver,
+  ComponentRef,
   Input,
-  OnInit, QueryList,
+  OnInit,
+  QueryList,
   ViewChildren,
   ViewContainerRef
 } from '@angular/core';
@@ -13,15 +15,21 @@ import {DatePipe} from '@angular/common';
 import {ColumnConfiguration} from '../configurations/column.configuration';
 import {DescriptionCellComponent} from '../cell-renderers/description-cell/description-cell.component';
 import {ColumnType} from '../enums/column-type.enum';
+import {Observable} from 'rxjs';
+import {Tools} from '../utils/tools';
+import {TranslatePipe} from '@ngx-translate/core';
 
 @Component({
   selector: 'app-table',
   templateUrl: './table.component.html',
-  styleUrls: ['./table.component.scss']
+  styleUrls: ['./table.component.scss'],
+  providers: [TranslatePipe]
 })
 export class TableComponent implements OnInit, AfterViewInit {
   @Input()
   configuration: TableConfiguration;
+  @Input()
+  rows: Observable<any[]> | any[];
 
   @ViewChildren('customColumn', {read: ViewContainerRef}) customComponent: QueryList<ViewContainerRef>;
 
@@ -31,7 +39,9 @@ export class TableComponent implements OnInit, AfterViewInit {
   customComponentColumn: ColumnConfiguration;
   columnsToDisplay: string[] = [];
 
-  constructor(private datepipe: DatePipe, private resolver: ComponentFactoryResolver) {
+  constructor(private datepipe: DatePipe,
+              private translatePipe: TranslatePipe,
+              private resolver: ComponentFactoryResolver) {
   }
 
   ngOnInit(): void {
@@ -54,11 +64,15 @@ export class TableComponent implements OnInit, AfterViewInit {
     setTimeout(() => this.createCustomComponents(), 0);
   }
 
-  formatColumnValue(column: ColumnType, element: any): any {
-    if (column === ColumnType.Date) {
-      return this.datepipe.transform(element, 'yyyy-MM-dd HH:mm:ss');
+  formatColumnValue(column: ColumnConfiguration, element: any): any {
+    const elementValue = Tools.getChainedProperty(element, column.elementProperty, '');
+    if (column.i18nHeader) {
+      return this.translatePipe.transform(column.i18nHeader + elementValue);
     }
-    return element;
+    if (column.columnType === ColumnType.Date) {
+      return this.datepipe.transform(elementValue, 'yyyy-MM-dd HH:mm:ss');
+    }
+    return elementValue;
   }
 
   changeCustomColumnData(index: number, extraProps: any): void {
