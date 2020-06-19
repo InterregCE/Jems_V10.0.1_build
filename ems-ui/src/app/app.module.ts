@@ -31,6 +31,8 @@ import {MatCardModule} from '@angular/material/card';
 import {HttpErrorInterceptor} from './common/http-error.interceptor';
 import {LoginComponent} from './components/user/login/login.component';
 import { OverlayModule } from '@angular/cdk/overlay';
+import { MenuComponent } from './components/general/menu/menu.component';
+import {MatTabsModule} from '@angular/material/tabs';
 
 @NgModule({
   declarations: [
@@ -43,7 +45,8 @@ import { OverlayModule } from '@angular/cdk/overlay';
     TableComponent,
     DescriptionCellComponent,
     TopBarComponent,
-    LoginComponent
+    LoginComponent,
+    MenuComponent
   ],
   imports: [
     BrowserModule,
@@ -63,6 +66,7 @@ import { OverlayModule } from '@angular/cdk/overlay';
     MatTableModule,
     MatDialogModule,
     OverlayModule,
+    MatTabsModule,
   ],
   providers: [
     SecurityService,
