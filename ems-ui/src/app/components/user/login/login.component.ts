@@ -17,6 +17,7 @@ export class LoginComponent implements OnInit {
     });
     returnUrl = false;
     error: I18nValidationError | null;
+    isExpired: boolean;
 
     constructor(private formBuilder: FormBuilder,
                 private router: Router,
@@ -25,7 +26,11 @@ export class LoginComponent implements OnInit {
     }
 
     ngOnInit(): void {
-        this.returnUrl = this.route.snapshot.queryParams.returnUrl || '/';
+      this.isExpired = false;
+      this.returnUrl = this.route.snapshot.queryParams.returnUrl || '/';
+      if (this.route.snapshot.url[1].path === 'expired') {
+        this.isExpired = true;
+      }
     }
 
     onSubmit() {
