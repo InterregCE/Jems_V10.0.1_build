@@ -40,7 +40,10 @@ export class LoginComponent implements OnInit {
             password: this.loginForm.controls.password.value
         }).subscribe({
             next: login => this.router.navigate([this.returnUrl]),
-            error: errors => this.error = errors.error
+            error: errors => {
+              this.isExpired = false;
+              this.error = errors.error;
+            }
         });
     }
 }
