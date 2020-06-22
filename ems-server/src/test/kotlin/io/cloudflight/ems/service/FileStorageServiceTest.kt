@@ -2,6 +2,8 @@ package io.cloudflight.ems.service
 
 import io.cloudflight.ems.api.dto.InputProjectFileDescription
 import io.cloudflight.ems.api.dto.OutputProjectFile
+import io.cloudflight.ems.api.dto.OutputUser
+import io.cloudflight.ems.api.dto.OutputUserRole
 import io.cloudflight.ems.dto.FileMetadata
 import io.cloudflight.ems.entity.Audit
 import io.cloudflight.ems.entity.AuditAction
@@ -11,6 +13,8 @@ import io.cloudflight.ems.exception.DuplicateFileException
 import io.cloudflight.ems.exception.ResourceNotFoundException
 import io.cloudflight.ems.repository.MinioStorage
 import io.cloudflight.ems.repository.ProjectFileRepository
+import io.cloudflight.ems.security.model.LocalCurrentUser
+import io.cloudflight.ems.security.service.SecurityService
 import io.mockk.MockKAnnotations
 import io.mockk.every
 import io.mockk.impl.annotations.MockK
@@ -36,15 +40,24 @@ class FileStorageServiceTest {
 
     private val UNPAGED = Pageable.unpaged()
 
-    val TEST_DATE = LocalDate.of(2020, 6, 10)
-    val TEST_DATE_TIME = ZonedDateTime.of(TEST_DATE, LocalTime.of(16, 0), ZoneId.of("Europe/Bratislava"))
+    private val TEST_DATE = LocalDate.of(2020, 6, 10)
+    private val TEST_DATE_TIME = ZonedDateTime.of(TEST_DATE, LocalTime.of(16, 0), ZoneId.of("Europe/Bratislava"))
 
-    val testProject = Project(id = PROJECT_ID, submissionDate = TEST_DATE, acronym = "test project")
+    private val testProject = Project(id = PROJECT_ID, submissionDate = TEST_DATE, acronym = "test project")
+
+    private val user = OutputUser(
+        id = 1,
+        email = "admin@admin.dev",
+        name = "Name",
+        surname = "Surname",
+        userRole = OutputUserRole(id = 1, name = "ADMIN"))
 
     @MockK
     lateinit var auditService: AuditService
     @MockK
     lateinit var projectFileRepository: ProjectFileRepository
+    @MockK
+    lateinit var securityService: SecurityService
     @MockK
     lateinit var minioStorage: MinioStorage
 
@@ -53,7 +66,8 @@ class FileStorageServiceTest {
     @BeforeEach
     fun setup() {
         MockKAnnotations.init(this)
-        fileStorageService = FileStorageServiceImpl(auditService, minioStorage, projectFileRepository)
+        every { securityService.currentUser } returns LocalCurrentUser(user, "hash_pass", emptyList())
+        fileStorageService = FileStorageServiceImpl(auditService, minioStorage, projectFileRepository, securityService)
     }
 
     @Test
@@ -206,6 +220,7 @@ class FileStorageServiceTest {
         with(auditEvent.captured) {
             assertEquals(testProject.id, PROJECT_ID)
             assertEquals(AuditAction.PROJECT_FILE_DELETE, action)
+            assertEquals("admin@admin.dev", username)
             assertEquals("document proj-file-1.png deleted from application 612", description)
         }
     }

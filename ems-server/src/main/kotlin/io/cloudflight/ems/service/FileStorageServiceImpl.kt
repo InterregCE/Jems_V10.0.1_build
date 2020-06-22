@@ -9,6 +9,7 @@ import io.cloudflight.ems.exception.DuplicateFileException
 import io.cloudflight.ems.exception.ResourceNotFoundException
 import io.cloudflight.ems.repository.MinioStorage
 import io.cloudflight.ems.repository.ProjectFileRepository
+import io.cloudflight.ems.security.service.SecurityService
 import io.cloudflight.ems.service.ProjectFileDtoUtilClass.Companion.getDtoFrom
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
@@ -22,7 +23,8 @@ import java.util.Optional
 class FileStorageServiceImpl(
     private val auditService: AuditService,
     private val storage: MinioStorage,
-    private val repository: ProjectFileRepository
+    private val repository: ProjectFileRepository,
+    private val securityService: SecurityService
 ): FileStorageService {
 
     @Transactional
@@ -72,7 +74,7 @@ class FileStorageServiceImpl(
     @Transactional
     override fun deleteFile(projectId: Long, fileId: Long) {
         val file = getFile(projectId, fileId)
-        auditService.logEvent(Audit.projectFileDeleted(projectId, file))
+        auditService.logEvent(Audit.projectFileDeleted(securityService.currentUser, projectId, file))
         storage.deleteFile(PROJECT_FILES_BUCKET, file.identifier)
         repository.delete(file)
     }

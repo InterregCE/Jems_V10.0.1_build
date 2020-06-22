@@ -1,5 +1,6 @@
 package io.cloudflight.ems.entity
 
+import io.cloudflight.ems.security.model.CurrentUser
 import org.springframework.data.annotation.Id
 import org.springframework.data.elasticsearch.annotations.DateFormat
 import org.springframework.data.elasticsearch.annotations.Document
@@ -33,24 +34,24 @@ data class Audit(
 ) {
 
     companion object {
-        fun projectSubmitted(projectId: String): Audit {
+        fun projectSubmitted(currentUser: CurrentUser?, projectId: String): Audit {
             return Audit(
                 id = null,
                 timestamp = getElasticTimeNow(),
                 action = AuditAction.PROJECT_SUBMISSION,
                 projectId = projectId,
-                username = "program user",
+                username = currentUser?.user?.email,
                 description = "submission of the project application to the system"
             )
         }
 
-        fun projectFileDeleted(projectId: Long, file: ProjectFile): Audit {
+        fun projectFileDeleted(currentUser: CurrentUser?, projectId: Long, file: ProjectFile): Audit {
             return Audit(
                 id = null,
                 timestamp = getElasticTimeNow(),
                 action = AuditAction.PROJECT_FILE_DELETE,
                 projectId = projectId.toString(),
-                username = "program user",
+                username = currentUser?.user?.email,
                 description = "document ${file.name} deleted from application $projectId"
             )
         }

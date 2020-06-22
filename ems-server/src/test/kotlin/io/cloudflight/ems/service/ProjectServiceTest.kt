@@ -2,10 +2,14 @@ package io.cloudflight.ems.service
 
 import io.cloudflight.ems.api.dto.InputProject
 import io.cloudflight.ems.api.dto.OutputProject
+import io.cloudflight.ems.api.dto.OutputUser
+import io.cloudflight.ems.api.dto.OutputUserRole
 import io.cloudflight.ems.entity.Audit
 import io.cloudflight.ems.entity.AuditAction
 import io.cloudflight.ems.entity.Project
 import io.cloudflight.ems.repository.ProjectRepository
+import io.cloudflight.ems.security.model.LocalCurrentUser
+import io.cloudflight.ems.security.service.SecurityService
 import io.mockk.MockKAnnotations
 import io.mockk.every
 import io.mockk.impl.annotations.MockK
@@ -28,18 +32,29 @@ class ProjectServiceTest {
 
     private val UNPAGED = Pageable.unpaged()
 
+    private val user = OutputUser(
+        id = 1,
+        email = "admin@admin.dev",
+        name = "Name",
+        surname = "Surname",
+        userRole = OutputUserRole(id = 1, name = "ADMIN")
+    )
+
     @MockK
     lateinit var projectRepository: ProjectRepository
 
     @MockK
     lateinit var auditService: AuditService
+    @MockK
+    lateinit var securityService: SecurityService
 
     lateinit var projectService: ProjectService
 
     @BeforeEach
     fun setup() {
         MockKAnnotations.init(this)
-        projectService = ProjectServiceImpl(projectRepository, auditService)
+        every { securityService.currentUser } returns LocalCurrentUser(user, "hash_pass", emptyList())
+        projectService = ProjectServiceImpl(projectRepository, auditService, securityService)
         every { auditService.logEvent(any()) } answers {} // doNothing
     }
 
@@ -100,6 +115,7 @@ class ProjectServiceTest {
         verify { auditService.logEvent(capture(event)) }
         with(event.captured) {
             assertEquals(projectIdExpected, projectId)
+            assertEquals("admin@admin.dev", username)
             assertEquals(AuditAction.PROJECT_SUBMISSION, action)
         }
     }
