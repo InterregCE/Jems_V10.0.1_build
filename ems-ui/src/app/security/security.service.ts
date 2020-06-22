@@ -14,7 +14,10 @@ export class SecurityService {
   }
 
   get currentUser(): Observable<OutputCurrentUser | null> {
-    return this.myCurrentUser.asObservable();
+    return this.myCurrentUser
+      .pipe(
+        map((user) => user && user.name ? user : null)
+      );
   }
 
   isLoggedIn(): Observable<boolean> {

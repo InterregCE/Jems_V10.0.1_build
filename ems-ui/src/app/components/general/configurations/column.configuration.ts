@@ -6,8 +6,6 @@ export class ColumnConfiguration {
   displayedColumn: string;
   // the name of the property of one object in the datasource that will be binded to the cells of the table.
   elementProperty: string;
-  // the 18n translation key used to enhance the property
-  i18nHeader?: string;
   // type of the column
   columnType?: ColumnType;
   // if the column type is CustomComponent, this property defines the name of the component to be used
