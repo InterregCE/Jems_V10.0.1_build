@@ -32,11 +32,9 @@
                         {{'common.submit.label' | translate}}
                     </button>
                 </div>
-                <div *ngIf="error && error?.i18nKey" class="alert alert-danger" id="errorMessage" role="alert">
-                    {{ error.i18nKey | translate }}
-                </div>
-                <div *ngIf="isExpired" class="alert alert-danger" id="forceLogoutMessage" role="alert">
-                    {{ 'authentication.expired' | translate }}
+                <div *ngIf="authenticationError | async as error"
+                     class="alert alert-danger" id="errorMessage" role="alert">
+                    {{error.i18nKey | translate }}
                 </div>
             </form>
         </mat-card-content>

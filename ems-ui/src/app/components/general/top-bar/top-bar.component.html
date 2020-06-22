@@ -1,15 +1,15 @@
 <div class="toolbar" role="banner">
     <div *ngIf="isLoginNeeded">
         <div class="spacer"></div>
-        <ng-container *ngIf="currentUser | async">
+        <ng-container *ngIf="currentUser | async as user">
             <span class="d-inline-block">
                 <app-menu [configuration]="menuConfiguration"></app-menu>
             </span>
             <span class="d-inline-block pr-3">
-                {{(currentUser | async)?.name}}
+                {{user.name}}
             </span>
-            <span *ngIf="(currentUser | async)?.role" class="d-inline-block pr-3">
-                ({{(currentUser | async)?.role}})
+            <span *ngIf="user.role" class="d-inline-block pr-3">
+                ({{user.role}})
             </span>
             <span class="d-inline-block">
                 <button mat-flat-button (click)="logout()">Logout</button>
