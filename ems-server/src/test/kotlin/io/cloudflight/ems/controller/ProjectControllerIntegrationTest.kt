@@ -2,13 +2,11 @@ package io.cloudflight.ems.controller
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import io.cloudflight.ems.api.dto.InputProject
-import io.cloudflight.ems.config.TestConfig
 import net.bytebuddy.utility.RandomString
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc
 import org.springframework.boot.test.context.SpringBootTest
-import org.springframework.context.annotation.Import
 import org.springframework.http.MediaType
 import org.springframework.security.test.context.support.WithUserDetails
 import org.springframework.test.web.servlet.MockMvc
@@ -19,7 +17,6 @@ import java.time.LocalDate
 
 @SpringBootTest
 @AutoConfigureMockMvc
-@Import(TestConfig::class)
 class ProjectControllerIntegrationTest {
 
     @Autowired

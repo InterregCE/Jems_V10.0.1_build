@@ -1,6 +1,6 @@
-import {MatTableDataSource} from '@angular/material/table';
 import {ActionConfiguration} from './action.configuration';
 import {ColumnConfiguration} from './column.configuration';
+import {MatTableDataSource} from '@angular/material/table';
 
 export class TableConfiguration {
   // configurtions of columns
@@ -15,4 +15,8 @@ export class TableConfiguration {
   routerLink?: string;
   // Defines a series of action configs. Each of them will have an icon and a lambda function specified.
   actions?: ActionConfiguration[];
+
+  public constructor(config?: Partial<TableConfiguration>) {
+    Object.assign(this, config);
+  }
 }

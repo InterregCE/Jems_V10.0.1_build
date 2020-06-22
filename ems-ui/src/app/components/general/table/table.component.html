@@ -1,14 +1,14 @@
 <table mat-table
-       [dataSource]="configuration.dataSource"
+       [dataSource]="rows || configuration.dataSource"
        class="mat-elevation-z8 general-application-table">
 
     <ng-container
             *ngFor="let column of configuration.columns; let i = index"
             matColumnDef="{{column.displayedColumn}}">
-        <th mat-header-cell *matHeaderCellDef> {{column.displayedColumn}} </th>
+        <th mat-header-cell *matHeaderCellDef> {{column.displayedColumn | translate}} </th>
         <td mat-cell *matCellDef="let element">
             <ng-container *ngIf="!column.component">
-                {{ formatColumnValue(column.columnType, element[column.elementProperty]) }}
+                {{ formatColumnValue(column, element) }}
             </ng-container>
             <ng-container *ngIf="column.columnType == columnType.CustomComponent">
                 <ng-container class="description-component" #customColumn></ng-container>
@@ -19,7 +19,7 @@
     <ng-container
             *ngIf="configuration.actionColumn"
             matColumnDef="Actions">
-        <th mat-header-cell *matHeaderCellDef> Actions </th>
+        <th mat-header-cell *matHeaderCellDef> Actions</th>
         <td mat-cell *matCellDef="let element; let i = index">
             <ng-container *ngFor="let action of configuration.actions;">
                 <button class="icon-button" (click)="action.action(element, i)">
