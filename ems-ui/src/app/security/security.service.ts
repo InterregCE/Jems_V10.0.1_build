@@ -19,7 +19,7 @@ export class SecurityService {
 
   isLoggedIn(): Observable<boolean> {
     return from(this.myCurrentUser)
-      .pipe(map((user) => !!user));
+      .pipe(map((user) => !!(user && user.name)));
   }
 
   login(loginRequest: LoginRequest): Observable<OutputCurrentUser | null> {
