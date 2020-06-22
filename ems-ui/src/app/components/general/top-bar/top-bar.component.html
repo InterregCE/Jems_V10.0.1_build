@@ -1,14 +1,14 @@
 <div class="toolbar" role="banner">
     <div *ngIf="isLoginNeeded">
         <div class="spacer"></div>
-        <ng-container *ngIf="currentUser | async">
+        <ng-container *ngIf="(currentUser | async)?.name || (currentUser | async)?.role">
             <span class="d-inline-block">
                 <app-menu [configuration]="menuConfiguration"></app-menu>
             </span>
             <span class="d-inline-block pr-3">
                 {{(currentUser | async)?.name}}
             </span>
-            <span class="d-inline-block pr-3">
+            <span *ngIf="(currentUser | async)?.role" class="d-inline-block pr-3">
                 ({{(currentUser | async)?.role}})
             </span>
             <span class="d-inline-block">
