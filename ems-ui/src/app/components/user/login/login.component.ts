@@ -28,7 +28,7 @@ export class LoginComponent implements OnInit {
     ngOnInit(): void {
       this.isExpired = false;
       this.returnUrl = this.route.snapshot.queryParams.returnUrl || '/';
-      if (this.route.snapshot.url[1].path === 'expired') {
+      if (this.route.snapshot.queryParams.expired) {
         this.isExpired = true;
       }
     }

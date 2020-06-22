@@ -34,7 +34,7 @@ export class AuthenticationInterceptor implements HttpInterceptor {
           if (err.status === 401 || err.status === 403) {
             // go to login when unauthorized status codes are intercepted
             if (this.router.url !== '/login') {
-              this.router.navigate(['/login/expired']);
+              this.router.navigate(['/login'], { queryParams: { expired: true } });
             }
             this.securityService.clearAuthentication();
           }
