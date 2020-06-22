@@ -19,8 +19,7 @@ export class UserListComponent {
       },
       {
         displayedColumn: 'user.table.column.name.name',
-        elementProperty: 'email',
-        i18nHeader: 'user.table.custom.name.',
+        elementProperty: 'name',
       },
       {
         displayedColumn: 'user.table.column.name.surname',
@@ -32,7 +31,6 @@ export class UserListComponent {
       },
       {
         displayedColumn: 'user.table.column.name.role',
-        i18nHeader: 'user.role.',
         elementProperty: 'userRole.name'
       }
     ]

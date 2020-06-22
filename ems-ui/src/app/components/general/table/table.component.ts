@@ -17,13 +17,11 @@ import {DescriptionCellComponent} from '../cell-renderers/description-cell/descr
 import {ColumnType} from '../enums/column-type.enum';
 import {Observable} from 'rxjs';
 import {Tools} from '../utils/tools';
-import {TranslatePipe} from '@ngx-translate/core';
 
 @Component({
   selector: 'app-table',
   templateUrl: './table.component.html',
-  styleUrls: ['./table.component.scss'],
-  providers: [TranslatePipe]
+  styleUrls: ['./table.component.scss']
 })
 export class TableComponent implements OnInit, AfterViewInit {
   @Input()
@@ -40,7 +38,6 @@ export class TableComponent implements OnInit, AfterViewInit {
   columnsToDisplay: string[] = [];
 
   constructor(private datepipe: DatePipe,
-              private translatePipe: TranslatePipe,
               private resolver: ComponentFactoryResolver) {
   }
 
@@ -66,9 +63,6 @@ export class TableComponent implements OnInit, AfterViewInit {
 
   formatColumnValue(column: ColumnConfiguration, element: any): any {
     const elementValue = Tools.getChainedProperty(element, column.elementProperty, '');
-    if (column.i18nHeader) {
-      return this.translatePipe.transform(column.i18nHeader + elementValue);
-    }
     if (column.columnType === ColumnType.Date) {
       return this.datepipe.transform(elementValue, 'yyyy-MM-dd HH:mm:ss');
     }
