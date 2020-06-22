@@ -27,7 +27,9 @@ class AuthenticationServiceImpl(
     }
 
     override fun getCurrentUser(): OutputCurrentUser? {
-        return securityService.currentUser?.user?.email?.let { OutputCurrentUser(it) }
+        val user = securityService.currentUser?.user?.email ?: ""
+        val role = securityService.currentUser?.user?.userRole?.name ?: ""
+        return OutputCurrentUser(user, role)
     }
 
     override fun login(req: HttpServletRequest, loginRequest: LoginRequest): OutputCurrentUser? {
