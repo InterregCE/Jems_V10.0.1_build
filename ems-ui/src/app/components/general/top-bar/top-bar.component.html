@@ -8,6 +8,9 @@
             <span class="d-inline-block pr-3">
                 {{(currentUser | async)?.name}}
             </span>
+            <span class="d-inline-block pr-3">
+                ({{(currentUser | async)?.role}})
+            </span>
             <span class="d-inline-block">
                 <button mat-flat-button (click)="logout()">Logout</button>
             </span>

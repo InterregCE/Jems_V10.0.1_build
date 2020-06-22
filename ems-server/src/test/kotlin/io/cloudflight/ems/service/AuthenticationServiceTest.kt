@@ -1,9 +1,13 @@
 package io.cloudflight.ems.service
 
 import io.cloudflight.ems.api.dto.LoginRequest
+import io.cloudflight.ems.api.dto.OutputUser
+import io.cloudflight.ems.api.dto.OutputUserRole
+import io.cloudflight.ems.security.model.LocalCurrentUser
 import io.cloudflight.ems.security.service.SecurityService
 import io.cloudflight.ems.security.service.impl.AuthenticationServiceImpl
 import io.mockk.MockKAnnotations
+import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
 import io.mockk.impl.annotations.RelaxedMockK
 import io.mockk.verify
@@ -11,6 +15,7 @@ import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.springframework.security.authentication.AuthenticationManager
+import java.util.Collections
 import javax.servlet.http.HttpServletRequest
 
 class AuthenticationServiceTest {
@@ -57,5 +62,28 @@ class AuthenticationServiceTest {
                     assertThat(it.description).isEqualTo("user with email  logged out")
                 })
         }
+    }
+
+    @Test
+    fun `current user is returned`() {
+        every { securityService.currentUser } returns LocalCurrentUser(
+            OutputUser(
+                1, "test@test.net", "test", "test",
+                OutputUserRole(1, "Role")
+            ), "", Collections.emptyList()
+        )
+
+        val currentUser = authenticationService.getCurrentUser()
+
+        assertThat(currentUser?.name).isEqualTo("test@test.net")
+        assertThat(currentUser?.role).isEqualTo("Role")
+    }
+
+    @Test
+    fun `current user is null`() {
+        val currentUser = authenticationService.getCurrentUser()
+
+        assertThat(currentUser?.name).isEqualTo("")
+        assertThat(currentUser?.role).isEqualTo("")
     }
 }
