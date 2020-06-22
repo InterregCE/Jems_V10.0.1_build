@@ -1,7 +1,7 @@
 package io.cloudflight.ems.service;
 
 import io.cloudflight.ems.api.dto.OutputUser
-import io.cloudflight.ems.entity.Account
+import io.cloudflight.ems.dto.UserWithCredentials
 import io.cloudflight.ems.repository.AccountRepository
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
@@ -12,9 +12,10 @@ import org.springframework.transaction.annotation.Transactional
 class UserServiceImpl(private val accountRepository: AccountRepository) : UserService {
 
     @Transactional(readOnly = true)
-    override fun findOneByEmail(email: String): Account? {
-        // TODO map the user to something else - LocalCurrentUser maybe
-        return accountRepository.findOneByEmail(email);
+    override fun findOneByEmail(email: String): UserWithCredentials? {
+        return accountRepository.findOneByEmail(email)?.let { user ->
+            return UserWithCredentials(user.toOutputUser(), user.password)
+        }
     }
 
     @Transactional(readOnly = true)
