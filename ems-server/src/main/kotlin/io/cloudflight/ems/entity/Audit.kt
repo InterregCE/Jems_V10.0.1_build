@@ -1,12 +1,12 @@
 package io.cloudflight.ems.entity
 
+import io.cloudflight.ems.api.dto.OutputUser
 import io.cloudflight.ems.security.model.CurrentUser
 import org.springframework.data.annotation.Id
 import org.springframework.data.elasticsearch.annotations.DateFormat
 import org.springframework.data.elasticsearch.annotations.Document
 import org.springframework.data.elasticsearch.annotations.Field
 import org.springframework.data.elasticsearch.annotations.FieldType
-import java.time.ZoneId
 import java.time.ZoneOffset
 import java.time.ZonedDateTime
 import java.time.format.DateTimeFormatter
@@ -78,6 +78,18 @@ data class Audit(
             )
         }
 
+        fun userCreated(currentUser: CurrentUser?, createdUser: OutputUser): Audit {
+            val author = currentUser?.user?.email
+            return Audit(
+                id = null,
+                timestamp = getElasticTimeNow(),
+                action = AuditAction.USER_CREATED,
+                projectId = null,
+                username = author,
+                description = "new user ${createdUser.email} with role ${createdUser.userRole.name} has been created by $author"
+            )
+        }
+
         fun userSessionExpired(email: String): Audit {
             return Audit(
                 id = null,
@@ -97,10 +109,5 @@ data class Audit(
 
     // default constructor is needed for deserialization
     constructor() : this(null, null, null, null, null, null)
-
-    fun getTime(): ZonedDateTime {
-        return ZonedDateTime.parse(timestamp, DateTimeFormatter.ISO_DATE_TIME)
-            .withZoneSameInstant(ZoneId.systemDefault())
-    }
 
 }

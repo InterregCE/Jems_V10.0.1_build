@@ -1,32 +1,63 @@
 package io.cloudflight.ems.service
 
+import io.cloudflight.ems.api.dto.InputUser
 import io.cloudflight.ems.api.dto.OutputUser
 import io.cloudflight.ems.api.dto.OutputUserRole
 import io.cloudflight.ems.entity.Account
 import io.cloudflight.ems.entity.AccountRole
+import io.cloudflight.ems.entity.Audit
+import io.cloudflight.ems.entity.AuditAction
+import io.cloudflight.ems.exception.I18nFieldError
+import io.cloudflight.ems.exception.I18nValidationError
 import io.cloudflight.ems.repository.AccountRepository
+import io.cloudflight.ems.repository.AccountRoleRepository
+import io.cloudflight.ems.security.model.LocalCurrentUser
+import io.cloudflight.ems.security.service.SecurityService
 import io.mockk.MockKAnnotations
 import io.mockk.every
 import io.mockk.impl.annotations.MockK
+import io.mockk.slot
+import io.mockk.verify
 import org.assertj.core.api.Assertions.assertThat
+import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.Assertions.assertIterableEquals
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.assertThrows
 import org.springframework.data.domain.PageImpl
 import org.springframework.data.domain.Pageable
+import org.springframework.http.HttpStatus
+import java.util.Optional
 
 class AccountServiceTest {
 
     private val UNPAGED = Pageable.unpaged()
 
+    private val user = OutputUser(
+        id = 1,
+        email = "admin@admin.dev",
+        name = "Name",
+        surname = "Surname",
+        userRole = OutputUserRole(id = 1, name = "ADMIN")
+    )
+
     @MockK
     lateinit var accountRepository: AccountRepository
+    @MockK
+    lateinit var accountRoleRepository: AccountRoleRepository
+    @MockK
+    lateinit var auditService: AuditService
+    @MockK
+    lateinit var securityService: SecurityService
 
     lateinit var userService: UserService
 
     @BeforeEach
     fun setup() {
         MockKAnnotations.init(this)
-        userService = UserServiceImpl(accountRepository)
+        every { securityService.currentUser } returns LocalCurrentUser(user, "hash_pass", emptyList())
+        every { auditService.logEvent(any()) } answers {} // doNothing
+        userService = UserServiceImpl(accountRepository, accountRoleRepository, auditService, securityService)
     }
 
     @Test
@@ -89,6 +120,58 @@ class AccountServiceTest {
             userRole = OutputUserRole(2, "admin")
         )
         assertThat(result).isEqualTo(expectedUser);
+    }
+
+    @Test
+    fun saveUser_wrong() {
+        every { accountRepository.findOneByEmail(eq("existing@user.com")) } returns
+            Account(1, "", "", "", AccountRole(1, ""), "")
+        every { accountRoleRepository.findById(eq(10)) } returns Optional.empty()
+
+        val account = InputUser(
+            email = "existing@user.com",
+            name = "Ondrej",
+            surname = "Tester",
+            accountRoleId = 10 // does not exist
+        )
+
+        val exception = assertThrows<I18nValidationError> { userService.create(account) }
+        assertEquals(HttpStatus.UNPROCESSABLE_ENTITY, exception.httpStatus)
+
+        val expectedErrors = mapOf(
+            "accountRoleId" to I18nFieldError("user.accountRoleId.does.not.exist"),
+            "email" to I18nFieldError("user.email.not.unique")
+        )
+        assertThat(exception.i18nFieldErrors).isEqualTo(expectedErrors)
+    }
+
+    @Test
+    fun saveUser_OK() {
+        every { accountRepository.findOneByEmail(eq("new@user.com")) } returns null
+        every { accountRoleRepository.findById(eq(54)) } returns Optional.of(AccountRole(54, "admin_role"))
+        every { accountRepository.save(any<Account>()) } returnsArgument(0)
+
+        val account = InputUser(
+            email = "new@user.com",
+            name = "Ondrej",
+            surname = "Tester",
+            accountRoleId = 54
+        )
+
+        val result = userService.create(account)
+        assertEquals("new@user.com", result.email)
+        assertEquals("Ondrej", result.name)
+        assertEquals("Tester", result.surname)
+        assertEquals(OutputUserRole(54, "admin_role"), result.userRole)
+
+        val event = slot<Audit>()
+        verify { auditService.logEvent(capture(event)) }
+        with(event.captured) {
+            assertEquals("admin@admin.dev", username)
+            assertEquals(AuditAction.USER_CREATED, action)
+            assertEquals("new user new@user.com with role admin_role has been created by admin@admin.dev", description)
+        }
+
     }
 
 }

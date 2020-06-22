@@ -1,5 +1,6 @@
 package io.cloudflight.ems.api
 
+import io.cloudflight.ems.api.dto.InputUser
 import io.cloudflight.ems.api.dto.OutputUser
 import io.swagger.annotations.Api
 import io.swagger.annotations.ApiImplicitParam
@@ -7,11 +8,15 @@ import io.swagger.annotations.ApiImplicitParams
 import io.swagger.annotations.ApiOperation
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
+import org.springframework.http.MediaType
 import org.springframework.web.bind.annotation.GetMapping
+import org.springframework.web.bind.annotation.PostMapping
+import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
+import javax.validation.Valid
 
 @Api("User")
-@RequestMapping("/api/users")
+@RequestMapping("/api/user")
 interface UserApi {
 
     @ApiOperation("Returns the users")
@@ -22,4 +27,9 @@ interface UserApi {
     )
     @GetMapping
     fun list(pageable: Pageable): Page<OutputUser>
+
+    @ApiOperation("Creates new User")
+    @PostMapping(consumes = [MediaType.APPLICATION_JSON_VALUE])
+    fun createUser(@Valid @RequestBody user: InputUser): OutputUser
+
 }
