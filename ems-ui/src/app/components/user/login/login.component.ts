@@ -41,6 +41,7 @@ export class LoginComponent implements OnInit {
         }).subscribe({
             next: login => this.router.navigate([this.returnUrl]),
             error: errors => {
+              this.router.navigate(['login']);
               this.isExpired = false;
               this.error = errors.error;
             }
