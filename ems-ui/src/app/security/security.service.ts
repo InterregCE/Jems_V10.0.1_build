@@ -3,7 +3,7 @@ import {AuthenticationService, LoginRequest, OutputCurrentUser} from '@cat/api';
 import {AuthenticationHolder} from './authentication-holder.service';
 import {from, Observable, ReplaySubject} from 'rxjs';
 import {catchError, map, tap} from 'rxjs/operators';
-import {I18nValidationError} from '../common/i18n-validation-error';
+import {I18nValidationError} from '@common/validation/i18n-validation-error';
 import {HttpErrorResponse} from '@angular/common/http';
 
 @Injectable({providedIn: 'root'})
