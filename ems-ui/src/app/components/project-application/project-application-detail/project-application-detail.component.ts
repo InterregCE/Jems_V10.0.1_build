@@ -19,7 +19,7 @@ import {DeleteDialogComponent} from './delete-dialog.component';
   styleUrls: ['./project-application-detail.component.scss']
 })
 export class ProjectApplicationDetailComponent implements OnInit, OnChanges {
-  @ViewChild(TableComponent, {static: false}) table: TableComponent;
+  @ViewChild(TableComponent) table: TableComponent;
 
   dataSource: MatTableDataSource<OutputProjectFile>;
   configuration = new TableConfiguration();

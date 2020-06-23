@@ -41,7 +41,7 @@ export class ProjectApplicationSubmissionComponent {
     return this.submissionForm.controls.acronym;
   }
 
-    onSubmit(formDirective: FormGroupDirective) {
+  onSubmit(formDirective: FormGroupDirective): void {
     this.submitProjectApplication.emit({
       acronym: this.acronym.value,
       submissionDate: this.submissionDate.value
@@ -50,38 +50,16 @@ export class ProjectApplicationSubmissionComponent {
   }
 
   getSubmissionDateError(): string {
-    // backend validations
-    if (this.error && this.error.i18nFieldErrors && this.error.i18nFieldErrors.submissionDate) {
-      return this.error.i18nFieldErrors.submissionDate.i18nKey;
-    }
-    // frontend validations
-    if (!this.submissionDate || !this.submissionDate.errors) {
-      return '';
-    }
-    if (this.submissionDate.errors.pattern) {
-      return 'project.submissionDate.should.be.valid';
-    }
-    if (this.submissionDate.errors.required) {
-      return 'project.submissionDate.should.not.be.empty';
-    }
-    return '';
+    return this.error?.i18nFieldErrors?.submissionDate?.i18nKey
+      || (this.submissionDate?.errors?.pattern && 'project.submissionDate.should.be.valid')
+      || (this.submissionDate?.errors?.required && 'project.submissionDate.should.not.be.empty')
+      || ''
   }
 
-  getAcronymError() {
-    // backend validations
-    if (this.error && this.error.i18nFieldErrors && this.error.i18nFieldErrors.acronym) {
-      return this.error.i18nFieldErrors.acronym.i18nKey;
-    }
-    // frontend validations
-    if (!this.acronym || !this.acronym.errors) {
-      return '';
-    }
-    if (this.acronym.errors.maxlength) {
-      return 'project.acronym.size.too.long';
-    }
-    if (this.acronym.errors.required) {
-      return 'project.acronym.should.not.be.empty';
-    }
-    return '';
+  getAcronymError(): string {
+    return this.error?.i18nFieldErrors?.acronym?.i18nKey
+      || (this.acronym?.errors?.maxlength && 'project.acronym.size.too.long')
+      || (this.acronym?.errors?.required && 'project.acronym.should.not.be.empty')
+      || ''
   }
 }
