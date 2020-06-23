@@ -18,9 +18,13 @@ class AuthenticationExceptionHandler : GlobalExceptionHandler() {
     fun authenticationTransformer(exception: AuthenticationException): ResponseEntity<Any?> {
         return customErrorTransformer(
             I18nValidationError(
-                i18nKey = if (exception is BadCredentialsException) "authentication.bad.credentials" else "authentication.failed",
+                i18nKey = if (isBadCredentials(exception)) "authentication.bad.credentials" else "authentication.failed",
                 httpStatus = HttpStatus.UNAUTHORIZED
             )
         )
+    }
+
+    private fun isBadCredentials(exception: AuthenticationException): Boolean {
+        return exception is BadCredentialsException || exception.cause is BadCredentialsException
     }
 }
