@@ -54,8 +54,8 @@ class ProjectServiceTest {
     fun setup() {
         MockKAnnotations.init(this)
         every { securityService.currentUser } returns LocalCurrentUser(user, "hash_pass", emptyList())
-        projectService = ProjectServiceImpl(projectRepository, auditService, securityService)
         every { auditService.logEvent(any()) } answers {} // doNothing
+        projectService = ProjectServiceImpl(projectRepository, auditService, securityService)
     }
 
     @Test
