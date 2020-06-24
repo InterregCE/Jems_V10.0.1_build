@@ -2,7 +2,18 @@
   "extends": "./tsconfig.json",
   "compilerOptions": {
     "outDir": "./out-tsc/app",
-    "types": []
+    "types": [],
+    "paths": {
+      "@cat/api": [
+        "./build/generated-sources/openapi/index.ts"
+      ],
+      "@common/components/*": [
+        "src/app/common/components/*"
+      ],
+      "@common/validation/*": [
+        "src/app/common/validation/*"
+      ]
+    }
   },
   "files": [
     "src/main.ts",

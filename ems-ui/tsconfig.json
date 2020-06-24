@@ -16,15 +16,21 @@
     "typeRoots": [
       "node_modules/@types"
     ],
-    "paths": {
-      "@cat/api": [
-        "./build/generated-sources/openapi/index.ts"
-      ]
-    },
     "lib": [
       "es2018",
       "dom"
-    ]
+    ],
+    "paths": {
+      "@cat/api": [
+        "./build/generated-sources/openapi/index.ts"
+      ],
+      "@common/components/*": [
+        "src/app/common/components/*"
+      ],
+      "@common/validation/*": [
+        "src/app/common/validation/*"
+      ]
+    }
   },
   "include": [
     "build/generated-sources/**/*.ts"
