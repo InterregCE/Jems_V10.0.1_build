@@ -1,7 +1,7 @@
 import {Component} from '@angular/core';
 import {UserPageService} from '../../services/user-page/user-page.service';
 import {Observable} from 'rxjs';
-import {OutputUser} from '@cat/api';
+import {OutputAccount} from '@cat/api';
 
 @Component({
   selector: 'app-user-page',
@@ -9,7 +9,7 @@ import {OutputUser} from '@cat/api';
   styleUrls: ['./user-page.component.scss']
 })
 export class UserPageComponent {
-  filtered$: Observable<OutputUser[]>;
+  filtered$: Observable<OutputAccount[]>;
 
   constructor(private userPageService: UserPageService) {
     this.filtered$ = this.userPageService.filtered();

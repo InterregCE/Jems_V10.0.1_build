@@ -41,8 +41,8 @@ describe('ProjectApplicationComponent', () => {
     projectApplicationComponent = (
       fixture.componentInstance
     ) as ProjectApplicationComponent;
-    httpTestingController = TestBed.get(HttpTestingController);
-    projectApplicationComponent.projectSubmissionComponent = TestBed.get(ProjectApplicationSubmissionComponent);
+    httpTestingController = TestBed.inject(HttpTestingController);
+    projectApplicationComponent.projectSubmissionComponent = TestBed.inject(ProjectApplicationSubmissionComponent);
   });
 
   it('should create the project application', () => {

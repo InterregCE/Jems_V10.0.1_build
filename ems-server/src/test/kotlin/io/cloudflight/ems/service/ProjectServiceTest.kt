@@ -2,8 +2,8 @@ package io.cloudflight.ems.service
 
 import io.cloudflight.ems.api.dto.InputProject
 import io.cloudflight.ems.api.dto.OutputProject
-import io.cloudflight.ems.api.dto.OutputUser
-import io.cloudflight.ems.api.dto.OutputUserRole
+import io.cloudflight.ems.api.dto.OutputAccount
+import io.cloudflight.ems.api.dto.OutputAccountRole
 import io.cloudflight.ems.entity.Audit
 import io.cloudflight.ems.entity.AuditAction
 import io.cloudflight.ems.entity.Project
@@ -32,12 +32,12 @@ class ProjectServiceTest {
 
     private val UNPAGED = Pageable.unpaged()
 
-    private val user = OutputUser(
+    private val user = OutputAccount(
         id = 1,
         email = "admin@admin.dev",
         name = "Name",
         surname = "Surname",
-        userRole = OutputUserRole(id = 1, name = "ADMIN")
+        accountRole = OutputAccountRole(id = 1, name = "ADMIN")
     )
 
     @MockK

@@ -1,6 +1,6 @@
 package io.cloudflight.ems.api
 
-import io.cloudflight.ems.api.dto.OutputUserRole
+import io.cloudflight.ems.api.dto.OutputAccountRole
 import io.swagger.annotations.Api
 import io.swagger.annotations.ApiImplicitParam
 import io.swagger.annotations.ApiImplicitParams
@@ -11,8 +11,8 @@ import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.RequestMapping
 
 // TODO restrict this endpoint to be accessible just for admins
-@Api("User")
-@RequestMapping("/api/role")
+@Api("Account Roles")
+@RequestMapping("/api/accountrole")
 interface AccountRoleApi {
 
     @ApiOperation("Returns available account roles")
@@ -22,6 +22,6 @@ interface AccountRoleApi {
         ApiImplicitParam(paramType = "query", name = "sort", dataType = "string")
     )
     @GetMapping
-    fun list(pageable: Pageable): Page<OutputUserRole>
+    fun list(pageable: Pageable): Page<OutputAccountRole>
 
 }
