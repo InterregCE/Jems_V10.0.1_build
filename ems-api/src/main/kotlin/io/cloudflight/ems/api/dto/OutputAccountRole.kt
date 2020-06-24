@@ -1,6 +1,6 @@
 package io.cloudflight.ems.api.dto
 
-data class OutputUserRole (
+data class OutputAccountRole (
     val id: Long?,
     val name: String
 )

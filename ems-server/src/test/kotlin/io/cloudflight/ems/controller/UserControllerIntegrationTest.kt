@@ -32,21 +32,21 @@ class UserControllerIntegrationTest {
         accountFactory.saveAdminAccount("u2")
 
         mockMvc.perform(
-            get("/api/user?page=0")
+            get("/api/account?page=0")
                 .accept(MediaType.APPLICATION_JSON)
         )
             .andExpect(jsonPath("$.numberOfElements").value(2))
             .andExpect(status().isOk());
 
         mockMvc.perform(
-            get("/api/user?page=1")
+            get("/api/account?page=1")
                 .accept(MediaType.APPLICATION_JSON)
         )
             .andExpect(jsonPath("$.numberOfElements").value(1))
             .andExpect(status().isOk());
 
         mockMvc.perform(
-            get("/api/user?sort=email,desc")
+            get("/api/account?sort=email,desc")
                 .accept(MediaType.APPLICATION_JSON)
         )
             .andExpect(jsonPath("$.content[0].email").value("u2"))

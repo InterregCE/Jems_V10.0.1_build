@@ -1,8 +1,8 @@
 package io.cloudflight.ems.dto
 
-import io.cloudflight.ems.api.dto.OutputUser
+import io.cloudflight.ems.api.dto.OutputAccount
 
 data class UserWithCredentials (
-    val user: OutputUser,
+    val user: OutputAccount,
     val password: String
 )

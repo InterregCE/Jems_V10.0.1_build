@@ -1,5 +1,5 @@
 import {ChangeDetectionStrategy, Component, Input} from '@angular/core';
-import {OutputUser} from '@cat/api';
+import {OutputAccount} from '@cat/api';
 import {TableConfiguration} from '@common/components/table/model/table.configuration';
 
 @Component({
@@ -10,7 +10,7 @@ import {TableConfiguration} from '@common/components/table/model/table.configura
 })
 export class UserListComponent {
 
-  @Input() filtered: OutputUser[];
+  @Input() filtered: OutputAccount[];
   tableConfiguration: TableConfiguration = new TableConfiguration({
     columns: [
       {
@@ -31,7 +31,7 @@ export class UserListComponent {
       },
       {
         displayedColumn: 'user.table.column.name.role',
-        elementProperty: 'userRole.name'
+        elementProperty: 'accountRole.name'
       }
     ]
   });
