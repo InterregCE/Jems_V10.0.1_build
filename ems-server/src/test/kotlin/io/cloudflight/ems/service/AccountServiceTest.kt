@@ -16,11 +16,11 @@ import io.cloudflight.ems.security.service.SecurityService
 import io.mockk.MockKAnnotations
 import io.mockk.every
 import io.mockk.impl.annotations.MockK
+import io.mockk.impl.annotations.RelaxedMockK
 import io.mockk.slot
 import io.mockk.verify
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Assertions.assertEquals
-import org.junit.jupiter.api.Assertions.assertIterableEquals
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
@@ -45,7 +45,7 @@ class AccountServiceTest {
     lateinit var accountRepository: AccountRepository
     @MockK
     lateinit var accountRoleRepository: AccountRoleRepository
-    @MockK
+    @RelaxedMockK
     lateinit var auditService: AuditService
     @MockK
     lateinit var securityService: SecurityService
@@ -56,7 +56,6 @@ class AccountServiceTest {
     fun setup() {
         MockKAnnotations.init(this)
         every { securityService.currentUser } returns LocalCurrentUser(user, "hash_pass", emptyList())
-        every { auditService.logEvent(any()) } answers {} // doNothing
         userService = UserServiceImpl(accountRepository, accountRoleRepository, auditService, securityService)
     }
 
