@@ -1,7 +1,7 @@
 package io.cloudflight.ems.api
 
-import io.cloudflight.ems.api.dto.InputAccount
-import io.cloudflight.ems.api.dto.OutputAccount
+import io.cloudflight.ems.api.dto.InputUser
+import io.cloudflight.ems.api.dto.OutputUser
 import io.swagger.annotations.Api
 import io.swagger.annotations.ApiImplicitParam
 import io.swagger.annotations.ApiImplicitParams
@@ -15,9 +15,9 @@ import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
 import javax.validation.Valid
 
-@Api("Account")
-@RequestMapping("/api/account")
-interface AccountApi {
+@Api("User")
+@RequestMapping("/api/user")
+interface UserApi {
 
     @ApiOperation("Returns the users")
     @ApiImplicitParams(
@@ -26,10 +26,10 @@ interface AccountApi {
         ApiImplicitParam(paramType = "query", name = "sort", dataType = "string")
     )
     @GetMapping
-    fun list(pageable: Pageable): Page<OutputAccount>
+    fun list(pageable: Pageable): Page<OutputUser>
 
     @ApiOperation("Creates new User")
     @PostMapping(consumes = [MediaType.APPLICATION_JSON_VALUE])
-    fun createUser(@Valid @RequestBody account: InputAccount): OutputAccount
+    fun createUser(@Valid @RequestBody user: InputUser): OutputUser
 
 }

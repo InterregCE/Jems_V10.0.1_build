@@ -1,8 +1,8 @@
 package io.cloudflight.ems.service
 
 import io.cloudflight.ems.api.dto.LoginRequest
-import io.cloudflight.ems.api.dto.OutputAccount
-import io.cloudflight.ems.api.dto.OutputAccountRole
+import io.cloudflight.ems.api.dto.OutputUser
+import io.cloudflight.ems.api.dto.OutputUserRole
 import io.cloudflight.ems.security.model.LocalCurrentUser
 import io.cloudflight.ems.security.service.SecurityService
 import io.cloudflight.ems.security.service.impl.AuthenticationServiceImpl
@@ -67,9 +67,9 @@ class AuthenticationServiceTest {
     @Test
     fun `current user is returned`() {
         every { securityService.currentUser } returns LocalCurrentUser(
-            OutputAccount(
+            OutputUser(
                 1, "test@test.net", "test", "test",
-                OutputAccountRole(1, "Role")
+                OutputUserRole(1, "Role")
             ), "", Collections.emptyList()
         )
 

@@ -5,7 +5,7 @@ import javax.validation.constraints.NotBlank
 import javax.validation.constraints.NotNull
 import javax.validation.constraints.Size
 
-data class InputAccount (
+data class InputUser (
 
     @field:NotBlank(message = "user.email.should.not.be.empty")
     @field:Size(max = 255, message = "user.email.wrong.size")

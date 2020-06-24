@@ -9,7 +9,7 @@ describe('UserPageService', () => {
   }));
 
   it('should be created', () => {
-    const service: UserPageService = TestBed.inject(UserPageService);
+    const service: UserPageService = TestBed.get(UserPageService);
     expect(service).toBeTruthy();
   });
 });

@@ -1,8 +1,9 @@
 package io.cloudflight.ems.service
 
+import io.cloudflight.ems.api.dto.InputProjectFileDescription
 import io.cloudflight.ems.api.dto.OutputProjectFile
-import io.cloudflight.ems.api.dto.OutputAccount
-import io.cloudflight.ems.api.dto.OutputAccountRole
+import io.cloudflight.ems.api.dto.OutputUser
+import io.cloudflight.ems.api.dto.OutputUserRole
 import io.cloudflight.ems.dto.FileMetadata
 import io.cloudflight.ems.entity.Audit
 import io.cloudflight.ems.entity.AuditAction
@@ -44,12 +45,12 @@ class FileStorageServiceTest {
 
     private val testProject = Project(id = PROJECT_ID, submissionDate = TEST_DATE, acronym = "test project")
 
-    private val user = OutputAccount(
+    private val user = OutputUser(
         id = 1,
         email = "admin@admin.dev",
         name = "Name",
         surname = "Surname",
-        accountRole = OutputAccountRole(id = 1, name = "ADMIN"))
+        userRole = OutputUserRole(id = 1, name = "ADMIN"))
 
     @MockK
     lateinit var auditService: AuditService

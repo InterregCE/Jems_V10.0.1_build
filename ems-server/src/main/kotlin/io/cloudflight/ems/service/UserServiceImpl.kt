@@ -1,7 +1,7 @@
 package io.cloudflight.ems.service;
 
-import io.cloudflight.ems.api.dto.InputAccount
-import io.cloudflight.ems.api.dto.OutputAccount
+import io.cloudflight.ems.api.dto.InputUser
+import io.cloudflight.ems.api.dto.OutputUser
 import io.cloudflight.ems.dto.UserWithCredentials
 import io.cloudflight.ems.entity.Audit
 import io.cloudflight.ems.exception.I18nFieldError
@@ -16,12 +16,12 @@ import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 
 @Service
-class AccountServiceImpl(
+class UserServiceImpl(
     private val accountRepository: AccountRepository,
     private val accountRoleRepository: AccountRoleRepository,
     private val auditService: AuditService,
     private val securityService: SecurityService
-) : AccountService {
+) : UserService {
 
     @Transactional(readOnly = true)
     override fun findOneByEmail(email: String): UserWithCredentials? {
@@ -31,23 +31,23 @@ class AccountServiceImpl(
     }
 
     @Transactional(readOnly = true)
-    override fun getByEmail(email: String): OutputAccount? {
+    override fun getByEmail(email: String): OutputUser? {
         return accountRepository.findOneByEmail(email)?.toOutputUser()
     }
 
     @Transactional(readOnly = true)
-    override fun findAll(pageable: Pageable): Page<OutputAccount> {
+    override fun findAll(pageable: Pageable): Page<OutputUser> {
         return accountRepository.findAll(pageable).map { it.toOutputUser() }
     }
 
     @Transactional
-    override fun create(account: InputAccount): OutputAccount {
+    override fun create(user: InputUser): OutputUser {
         val fieldErrors = mutableMapOf<String, I18nFieldError>()
-        accountRepository.findOneByEmail(account.email)?.let {
+        accountRepository.findOneByEmail(user.email)?.let {
             fieldErrors.put("email", I18nFieldError("user.email.not.unique"))
         }
 
-        val role = accountRoleRepository.findById(account.accountRoleId!!)
+        val role = accountRoleRepository.findById(user.accountRoleId!!)
         if (role.isEmpty) {
             fieldErrors.put("accountRoleId", I18nFieldError("user.accountRoleId.does.not.exist"))
         }
@@ -58,7 +58,7 @@ class AccountServiceImpl(
                 i18nFieldErrors = fieldErrors)
         }
 
-        val createdUser = accountRepository.save(account.toEntity(role.get())).toOutputUser()
+        val createdUser = accountRepository.save(user.toEntity(role.get())).toOutputUser()
         auditService.logEvent(Audit.userCreated(securityService.currentUser, createdUser))
         return createdUser
     }
