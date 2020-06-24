@@ -1,7 +1,8 @@
 package io.cloudflight.ems.service
 
-import io.cloudflight.ems.api.dto.InputUser
-import io.cloudflight.ems.api.dto.OutputUser
+import io.cloudflight.ems.api.dto.user.InputUserCreate
+import io.cloudflight.ems.api.dto.user.InputUserRegistration
+import io.cloudflight.ems.api.dto.user.OutputUser
 import io.cloudflight.ems.dto.UserWithCredentials
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
@@ -14,6 +15,8 @@ interface UserService {
 
     fun findAll(pageable: Pageable): Page<OutputUser>
 
-    fun create(user: InputUser): OutputUser
+    fun create(user: InputUserCreate): OutputUser
+
+    fun registerApplicant(user: InputUserRegistration): OutputUser
 
 }

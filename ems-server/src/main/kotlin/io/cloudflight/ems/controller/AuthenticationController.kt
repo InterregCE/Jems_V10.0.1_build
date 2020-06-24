@@ -2,7 +2,7 @@ package io.cloudflight.ems.controller
 
 import io.cloudflight.ems.api.AuthenticationApi
 import io.cloudflight.ems.api.dto.LoginRequest
-import io.cloudflight.ems.api.dto.OutputCurrentUser
+import io.cloudflight.ems.api.dto.user.OutputCurrentUser
 import io.cloudflight.ems.security.service.AuthenticationService
 import org.springframework.web.bind.annotation.RestController
 import javax.servlet.http.HttpServletRequest

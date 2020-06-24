@@ -7,4 +7,5 @@ enum class AuditAction() {
     USER_LOGGED_OUT,
     USER_SESSION_EXPIRED,
     USER_CREATED,
+    USER_REGISTERED,
 }

@@ -1,8 +1,8 @@
 package io.cloudflight.ems.service
 
 import io.cloudflight.ems.api.dto.OutputProjectFile
-import io.cloudflight.ems.api.dto.OutputUser
-import io.cloudflight.ems.api.dto.OutputUserRole
+import io.cloudflight.ems.api.dto.user.OutputUser
+import io.cloudflight.ems.api.dto.user.OutputUserRole
 import io.cloudflight.ems.dto.FileMetadata
 import io.cloudflight.ems.entity.*
 import io.cloudflight.ems.exception.DuplicateFileException
@@ -46,7 +46,8 @@ class FileStorageServiceTest {
         email = "admin@admin.dev",
         name = "Name",
         surname = "Surname",
-        userRole = OutputUserRole(id = 1, name = "ADMIN"))
+        userRole = OutputUserRole(id = 1, name = "ADMIN")
+    )
 
     private val account = Account(
         id = 34,

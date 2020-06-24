@@ -1,7 +1,7 @@
 import {Component} from '@angular/core';
 import {UserPageService} from '../../services/user-page/user-page.service';
 import {Observable} from 'rxjs';
-import {InputUser, OutputUser, OutputUserRole} from '@cat/api';
+import {InputUserCreate, OutputUser, OutputUserRole} from '@cat/api';
 import {I18nValidationError} from '@common/validation/i18n-validation-error';
 import {Permission} from '../../../../security/permissions/permission';
 
@@ -27,7 +27,7 @@ export class UserPageComponent {
     this.userPageService.getUserRoles();
   }
 
-  saveUser(user: InputUser): void {
+  saveUser(user: InputUserCreate): void {
     this.userPageService.saveUser(user);
   }
 }

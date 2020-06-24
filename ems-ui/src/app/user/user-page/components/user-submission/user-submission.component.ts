@@ -1,6 +1,6 @@
 import {ChangeDetectionStrategy, ChangeDetectorRef, Component, EventEmitter, Input, Output} from '@angular/core';
 import {FormBuilder, FormGroup, FormGroupDirective, Validators} from '@angular/forms';
-import {InputUser, OutputUserRole} from '@cat/api';
+import {InputUserCreate, OutputUserRole} from '@cat/api';
 import {AbstractForm} from '@common/components/forms/abstract-form';
 
 
@@ -17,7 +17,7 @@ export class UserSubmissionComponent extends AbstractForm {
   @Input()
   userRoles: OutputUserRole[];
   @Output()
-  submitUser: EventEmitter<InputUser> = new EventEmitter<InputUser>();
+  submitUser: EventEmitter<InputUserCreate> = new EventEmitter<InputUserCreate>();
 
   userForm = this.formBuilder.group({
     name: ['', Validators.compose([

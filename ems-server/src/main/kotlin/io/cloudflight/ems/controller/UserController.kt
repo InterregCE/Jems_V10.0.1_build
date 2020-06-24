@@ -1,9 +1,9 @@
 package io.cloudflight.ems.controller
 
 import io.cloudflight.ems.api.UserApi
-import io.cloudflight.ems.api.dto.InputUser
-import io.cloudflight.ems.api.dto.OutputUser
-import io.cloudflight.ems.api.dto.UpdateInputUser
+import io.cloudflight.ems.api.dto.user.InputUserCreate
+import io.cloudflight.ems.api.dto.user.InputUserUpdate
+import io.cloudflight.ems.api.dto.user.OutputUser
 import io.cloudflight.ems.security.ADMINISTRATOR
 import io.cloudflight.ems.service.UserService
 import org.springframework.data.domain.Page
@@ -22,12 +22,12 @@ class UserController(
     }
 
     @PreAuthorize("hasRole('$ADMINISTRATOR')")
-    override fun createUser(user: InputUser): OutputUser {
+    override fun createUser(user: InputUserCreate): OutputUser {
         return userService.create(user)
     }
 
     @PreAuthorize("@userAuthorization.canUpdateUser(#user?.email)")
-    override fun update(user: UpdateInputUser) {
+    override fun update(user: InputUserUpdate) {
         // TODO with the user update story
     }
 }
