@@ -1,6 +1,6 @@
 package io.cloudflight.ems.service
 
-import io.cloudflight.ems.api.dto.OutputAccountRole
+import io.cloudflight.ems.api.dto.OutputUserRole
 import io.cloudflight.ems.entity.AccountRole
 import io.cloudflight.ems.repository.AccountRoleRepository
 import io.mockk.MockKAnnotations
@@ -40,7 +40,7 @@ class AccountRoleServiceTest {
         assertThat(result.totalElements).isEqualTo(1);
 
         val expectedRoles = listOf(
-            OutputAccountRole(
+            OutputUserRole(
                 id = 85,
                 name = "Name"
             )
