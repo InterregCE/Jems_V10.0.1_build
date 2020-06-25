@@ -3,16 +3,14 @@
     <p>Programme ID : dummy | Call ID : dummy</p>
     <form [formGroup]="submissionForm" (ngSubmit)="onSubmit(formDirective)" #formDirective="ngForm">
         <div class="form-group">
-            <mat-form-field appearance="outline"
-                            class="col-md-12 project-application-submission-field">
+            <mat-form-field class="col-md-12 project-application-submission-field">
                 <mat-label>Project Acronym</mat-label>
                 <input name="acronym" formControlName="acronym" matInput placeholder="Project Acronym" required>
                 <mat-error>
                     {{ getAcronymError() | translate}}
                 </mat-error>
             </mat-form-field>
-            <mat-form-field appearance="outline"
-                            class="col-md-12 project-application-submission-field">
+            <mat-form-field class="col-md-12 project-application-submission-field">
                 <mat-label>Submission Date</mat-label>
                 <input name="submissionDate" formControlName="submissionDate" matInput
                        placeholder="YYYY-MM-DD" type="text" required>

@@ -23,7 +23,7 @@ export class UserListComponent {
       },
       {
         displayedColumn: 'user.table.column.name.surname',
-        elementProperty: '',
+        elementProperty: 'surname',
       },
       {
         displayedColumn: 'user.table.column.name.email',

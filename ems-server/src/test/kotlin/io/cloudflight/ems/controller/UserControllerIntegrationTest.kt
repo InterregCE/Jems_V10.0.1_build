@@ -80,7 +80,7 @@ class UserControllerIntegrationTest {
     @Test
     @WithUserDetails(value = "admin")
     fun `create user with invalid data fails`() {
-        val user = InputUser("user", "u", "u", null);
+        val user = InputUser("user", "u", "", null);
 
         mockMvc.perform(
             post("/api/user")

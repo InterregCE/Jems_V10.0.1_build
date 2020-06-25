@@ -17,7 +17,7 @@ data class InputUser (
     val name: String,
 
     @field:NotBlank(message = "user.surname.should.not.be.empty")
-    @field:Size(min = 2, max = 50, message = "user.surname.wrong.size")
+    @field:Size(min = 1, max = 50, message = "user.surname.wrong.size")
     val surname: String,
 
     @field:NotNull(message = "user.accountRoleId.should.not.be.empty")
