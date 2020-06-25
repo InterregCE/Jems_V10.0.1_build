@@ -21,6 +21,7 @@ export class UserPageComponent {
     this.saveError$ = this.userPageService.saveError();
     this.userRoles$ = this.userPageService.userRoles();
     this.userPageService.newPage(0, 100, 'id,desc');
+    this.userPageService.getUserRoles();
   }
 
   saveUser(user:InputUser): void {

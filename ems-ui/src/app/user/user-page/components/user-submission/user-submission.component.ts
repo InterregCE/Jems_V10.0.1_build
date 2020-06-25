@@ -10,7 +10,6 @@ import {
 } from '@angular/core';
 import {I18nValidationError} from '@common/validation/i18n-validation-error';
 import {FormBuilder, FormGroupDirective, Validators} from '@angular/forms';
-import {UserPageService} from '../../services/user-page/user-page.service';
 import {OutputUserRole, InputUser} from '@cat/api';
 
 
@@ -51,8 +50,7 @@ export class UserSubmissionComponent implements OnInit, OnChanges {
     role: ['', Validators.required]
   });
 
-  constructor(private formBuilder: FormBuilder,
-              private userPageService: UserPageService) {
+  constructor(private formBuilder: FormBuilder) {
   }
 
   get name() {
@@ -72,7 +70,6 @@ export class UserSubmissionComponent implements OnInit, OnChanges {
   }
 
   ngOnInit(): void {
-    this.userPageService.getUserRoles();
     this.success = false;
     this.email.valueChanges.subscribe(() => {
       if ( this.error?.i18nFieldErrors?.email) {
@@ -110,7 +107,7 @@ export class UserSubmissionComponent implements OnInit, OnChanges {
     return this.error?.i18nFieldErrors?.surname?.i18nKey
       || (this.surname?.errors?.maxlength && 'user.surname.wrong.size')
       || (this.surname?.errors?.minlength && 'user.surname.wrong.size')
-      || (this.surname?.errors?.required && 'user.surname.should.not.be.empty')
+      || (this.surname?.errors?.required && 'user.surname.wrong.size')
       || ''
   }
 
