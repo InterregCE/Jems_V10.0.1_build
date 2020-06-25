@@ -1,6 +1,6 @@
 /.idea/*
 !.idea/runConfigurations/
-!.idea/Catalysts codestyle.xml
+!.idea/Cloudflight-codestyle.xml
 *.iml
 
 .gradle

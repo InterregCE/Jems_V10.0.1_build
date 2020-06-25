@@ -4,8 +4,7 @@ import io.cloudflight.ems.api.UserApi
 import org.springframework.cloud.openfeign.FeignClient
 
 /**
- * @author Harald Radi (harald.radi@catalysts.cc)
- * @version 1.0
+ * Auto generate REST access to user entity defined in UserApi.
  */
 @FeignClient(name = "user", url = "\${ems.url}")
 interface UserClient : UserApi
