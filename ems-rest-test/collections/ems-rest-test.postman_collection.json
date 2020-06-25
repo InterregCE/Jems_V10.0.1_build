@@ -1,6 +1,6 @@
 {
 	"info": {
-		"_postman_id": "610e5e39-8b28-41a5-875c-9b85e1f82e9c",
+		"_postman_id": "759f8fd6-de6e-4ea4-80b1-0ef2e77114a5",
 		"name": "ems-rest-test",
 		"description": "Check creation of Project Application",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
@@ -15,7 +15,7 @@
 						{
 							"listen": "prerequest",
 							"script": {
-								"id": "1c15a973-c7bd-4c1d-a0a8-576190df4b9a",
+								"id": "edc5b635-2150-4a4d-8c7f-9d48d6cf609e",
 								"exec": [
 									""
 								],
@@ -25,7 +25,7 @@
 						{
 							"listen": "test",
 							"script": {
-								"id": "a7cd9b4c-b6e4-4207-b5af-b9ab40a6808a",
+								"id": "66389eb0-304e-4927-9252-ba7093a4d2f1",
 								"exec": [
 									"const response = pm.response.json()\r",
 									"\r",
@@ -74,7 +74,7 @@
 						{
 							"listen": "prerequest",
 							"script": {
-								"id": "26a8f7a0-69f7-4e4a-99e9-792d9e33a87d",
+								"id": "3213bd67-0df2-4399-be4d-5c4d12683bfa",
 								"exec": [
 									"pm.variables.set('project_acronym', \"test-proj-this-is-a-very-long-name\");\r",
 									"\r",
@@ -89,7 +89,7 @@
 						{
 							"listen": "test",
 							"script": {
-								"id": "6edd7af7-fbdd-4918-8347-ea82ef9c6c29",
+								"id": "ce3d2deb-fe8a-4b9e-baca-b3c4526a1e89",
 								"exec": [
 									"pm.test('should fail with 400', function () {\r",
 									"    pm.response.to.have.status(400);\r",
@@ -138,7 +138,7 @@
 						{
 							"listen": "prerequest",
 							"script": {
-								"id": "8c82a2ed-9318-4907-86b8-24bf346bcc14",
+								"id": "341114c4-c620-44d9-8df4-904c816612e2",
 								"exec": [
 									"pm.variables.set('project_acronym', \"\");\r",
 									"pm.variables.set('project_submissionDate', \"\");\r",
@@ -150,7 +150,7 @@
 						{
 							"listen": "test",
 							"script": {
-								"id": "d75ed47f-e02c-4262-a6a1-c1136cb67e7c",
+								"id": "791f3304-1967-452f-8bb4-34951bce4518",
 								"exec": [
 									"pm.test('should fail with 400', function () {\r",
 									"    pm.response.to.have.status(400);\r",
@@ -199,7 +199,7 @@
 						{
 							"listen": "prerequest",
 							"script": {
-								"id": "2127d661-63e4-449b-9309-cf6bcdd4ae12",
+								"id": "1d2490d5-4ceb-4ae2-a1a4-8a21f836f17a",
 								"exec": [
 									"var uuid = require('uuid');\r",
 									"const randomIdentifier = uuid.v4().substring(24, 32);\r",
@@ -216,7 +216,7 @@
 						{
 							"listen": "test",
 							"script": {
-								"id": "b953ac7d-62dc-4720-b802-3297faa910e7",
+								"id": "c03936d6-6fbd-499e-9007-601578b38cb5",
 								"exec": [
 									"pm.test('should be OK', function() {\r",
 									"    pm.response.to.have.status(200);\r",
@@ -262,7 +262,7 @@
 						{
 							"listen": "prerequest",
 							"script": {
-								"id": "ada081db-043a-4302-aa2e-77e45d63ecc6",
+								"id": "3d15086e-4ee0-4d11-afbc-1c70d200a03c",
 								"exec": [
 									""
 								],
@@ -272,7 +272,7 @@
 						{
 							"listen": "test",
 							"script": {
-								"id": "fca2083f-e901-4844-ba07-4f8c0c38d586",
+								"id": "9f4b2eee-54d7-4d39-8f6a-1696147bb06f",
 								"exec": [
 									"const response = pm.response.json();\r",
 									"\r",
@@ -323,7 +323,7 @@
 						{
 							"listen": "test",
 							"script": {
-								"id": "df089526-fe44-40fd-8218-29ef33cfe5f8",
+								"id": "f4ec3619-d37b-4995-8b01-651499d8daab",
 								"exec": [
 									"const response = pm.response.json();\r",
 									"const id = pm.variables.get(\"projectId\")\r",
@@ -364,7 +364,7 @@
 						{
 							"listen": "prerequest",
 							"script": {
-								"id": "fe5c0d98-1133-47a8-8b9e-92603faca74c",
+								"id": "9e6defb9-a9eb-496f-9ddb-c6044dcad712",
 								"exec": [
 									"pm.environment.set(\"projectIdInvalid\", '-1')"
 								],
@@ -374,7 +374,7 @@
 						{
 							"listen": "test",
 							"script": {
-								"id": "bdb9061d-c6fb-4441-a413-2781cf315ad2",
+								"id": "c25e34bc-fafb-4297-a5f2-f866b5fa024b",
 								"exec": [
 									"pm.test(\"an invalid project returns 404\", function () {\r",
 									"    pm.response.to.have.status(404);\r",
@@ -421,7 +421,7 @@
 				{
 					"listen": "prerequest",
 					"script": {
-						"id": "c223171d-b7d7-4aba-96aa-d5776c02a2ee",
+						"id": "a3081a7c-2d76-493b-979d-edf071b3c119",
 						"type": "text/javascript",
 						"exec": [
 							""
@@ -431,7 +431,7 @@
 				{
 					"listen": "test",
 					"script": {
-						"id": "4920f0cb-3cbd-4199-a30b-e3e8c50b39d1",
+						"id": "133b87ec-c82c-46d7-ac0d-24493f947191",
 						"type": "text/javascript",
 						"exec": [
 							""
@@ -442,7 +442,7 @@
 			"protocolProfileBehavior": {}
 		},
 		{
-			"name": "user",
+			"name": "user-login",
 			"item": [
 				{
 					"name": "login-admin",
@@ -450,7 +450,7 @@
 						{
 							"listen": "test",
 							"script": {
-								"id": "3637160a-4a1c-48d6-9322-f847a0f5b20f",
+								"id": "79b51ea1-e7a9-46a9-89f4-1ace4cffcfb3",
 								"exec": [
 									"const response = pm.response.json()",
 									"",
@@ -513,7 +513,7 @@
 						{
 							"listen": "test",
 							"script": {
-								"id": "f9205cf2-c0bc-4679-8ef2-98bb0b85cdbd",
+								"id": "b1ab7e29-72c5-46d6-83a8-476d931528a9",
 								"exec": [
 									"pm.test(\"logged-in user can access system\", function () {",
 									"    pm.response.to.have.status(200);",
@@ -565,7 +565,7 @@
 						{
 							"listen": "test",
 							"script": {
-								"id": "762153c5-2508-487c-8b25-04ee3afe3aaa",
+								"id": "a17bd1f4-960d-4111-ab6b-b7c5e772e7af",
 								"exec": [
 									"pm.test(\"user can logout\", function () {",
 									"    pm.response.to.have.status(200);",
@@ -602,7 +602,7 @@
 						{
 							"listen": "test",
 							"script": {
-								"id": "29cc4ea1-00bd-4d26-a33f-9de7943fd95c",
+								"id": "625c89b2-8308-4a1b-9066-7bd68542f843",
 								"exec": [
 									"pm.test(\"logged-out user cannot access system\", function () {",
 									"    pm.response.to.have.status(401);",
@@ -654,7 +654,7 @@
 						{
 							"listen": "test",
 							"script": {
-								"id": "581c9c2d-de0c-40a8-bf07-f9e4269e1468",
+								"id": "00e6a5ee-e33d-4cca-933a-978a0561f29d",
 								"exec": [
 									"pm.test(\"wrong user cannot login\", function () {",
 									"    pm.response.to.have.status(401);",
@@ -720,6 +720,215 @@
 				}
 			],
 			"protocolProfileBehavior": {}
+		},
+		{
+			"name": "user-creation",
+			"item": [
+				{
+					"name": "create user administrator successful",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "eb14e514-5a25-4f73-8fa7-1892affa0670",
+								"exec": [
+									"const username = pm.variables.get(\"user_name\")",
+									"",
+									"pm.test('should be OK', function () {",
+									"    pm.response.to.have.status(200);",
+									"    pm.environment.set(\"id\", pm.response.json().id)",
+									"",
+									"    pm.expect(pm.response.json().name).to.equal(username);",
+									"    pm.expect(pm.response.json().email).to.equal(username + '@example.org');",
+									"    pm.expect(pm.response.json().surname).to.equal('RESTTester');",
+									"    pm.expect(pm.response.json().userRole.name).to.contain('admin');",
+									"});",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "59bb0042-1ada-4edf-8ac2-5eaecc16b19c",
+								"exec": [
+									"var uuid = require('uuid');",
+									"const randomIdentifier = uuid.v4().substring(0, 16);",
+									"pm.variables.set('user_name', \"RESTtest-\" + randomIdentifier);"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"protocolProfileBehavior": {
+						"disabledSystemHeaders": {}
+					},
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"type": "text",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\t\"email\": \"{{user_name}}@example.org\",\n\t\"name\": \"{{user_name}}\",\n\t\"surname\": \"RESTTester\",\n    \"accountRoleId\": 1\n}",
+							"options": {
+								"urlencoded": {}
+							}
+						},
+						"url": {
+							"raw": "{{url}}/api/user",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"api",
+								"user"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "create user empty fails",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "14f9528b-09c3-46c3-83bf-1a66cf2f3b0f",
+								"exec": [
+									"pm.test('should fail with 400', function () {",
+									"    pm.response.to.have.status(400);",
+									"});",
+									"",
+									"pm.test('should return validation errors', function () {",
+									"    const response = pm.response.json();",
+									"    pm.expect(response.i18nFieldErrors).to.have.property('surname');",
+									"    pm.expect(response.i18nFieldErrors).to.have.property('name');",
+									"    pm.expect(response.i18nFieldErrors.accountRoleId.i18nKey).to.contain('user.accountRoleId.should.not.be.empty');",
+									"    pm.expect(response.i18nFieldErrors.email.i18nKey).to.contain('user.email.should.not.be.empty');",
+									"});",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "a19cdf2e-f215-461c-b9ff-dad997ad512c",
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"protocolProfileBehavior": {
+						"disabledSystemHeaders": {}
+					},
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"type": "text",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\t\"email\": \"\",\n\t\"name\": \"\",\n\t\"surname\": \"\",\n    \"accountRoleId\": null\n}",
+							"options": {
+								"urlencoded": {}
+							}
+						},
+						"url": {
+							"raw": "{{url}}/api/user",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"api",
+								"user"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "create user invalid data fails",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "5ec804da-27e1-4bea-9aaa-0a99ee66875b",
+								"exec": [
+									"pm.test('should fail with 400', function () {",
+									"    pm.response.to.have.status(400);",
+									"});",
+									"",
+									"pm.test('should return validation errors', function () {",
+									"    const response = pm.response.json();",
+									"    pm.expect(response.i18nFieldErrors.surname.i18nKey).to.contain('user.surname.wrong.size');",
+									"    pm.expect(response.i18nFieldErrors.name.i18nKey).to.contain('user.name.wrong.size');",
+									"    pm.expect(response.i18nFieldErrors.accountRoleId.i18nKey).to.contain('user.accountRoleId.should.not.be.empty');",
+									"    pm.expect(response.i18nFieldErrors.email.i18nKey).to.contain('user.email.wrong.format');",
+									"});",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "f28f9fe9-8b84-4561-93f1-1805d88afe7e",
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"protocolProfileBehavior": {
+						"disabledSystemHeaders": {}
+					},
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"type": "text",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\t\"email\": \"test\",\n\t\"name\": \"x\",\n\t\"surname\": \"\"\n}",
+							"options": {
+								"urlencoded": {}
+							}
+						},
+						"url": {
+							"raw": "{{url}}/api/user",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"api",
+								"user"
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"protocolProfileBehavior": {}
 		}
 	],
 	"auth": {
@@ -741,7 +950,7 @@
 		{
 			"listen": "prerequest",
 			"script": {
-				"id": "3e09d09a-c850-4057-b38c-49f78714cafe",
+				"id": "c6d0044d-2daf-46db-a95a-66216ed4a5c2",
 				"type": "text/javascript",
 				"exec": [
 					""
@@ -751,7 +960,7 @@
 		{
 			"listen": "test",
 			"script": {
-				"id": "ca445bda-dcae-4eb8-bb97-2716c2ffc96a",
+				"id": "998233f4-dfc9-4df9-ad0f-88edd9fafcaa",
 				"type": "text/javascript",
 				"exec": [
 					""

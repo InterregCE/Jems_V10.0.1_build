@@ -34,4 +34,4 @@ minio-storage:
 server:
   servlet:
     session:
-      timeout: 120s
+      timeout: 60m
