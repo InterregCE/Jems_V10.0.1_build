@@ -16,7 +16,7 @@ export class LoginComponent {
     password: ['', Validators.required]
   });
 
-  authenticationError: Observable<I18nValidationError | null> = this.loginPageService.authenticationError;
+  authenticationError: Observable<I18nValidationError | null> = this.loginPageService.authenticationError();
 
   constructor(private formBuilder: FormBuilder,
               private loginPageService: LoginPageService) {

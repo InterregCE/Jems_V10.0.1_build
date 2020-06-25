@@ -29,10 +29,8 @@ export class SecurityService {
   login(loginRequest: LoginRequest): Observable<OutputCurrentUser | null> {
     return this.authenticationService.login(loginRequest)
       .pipe(
-        tap((user: OutputCurrentUser) => {
-          this.authenticationHolder.currentUsername = user.name;
-          this.myCurrentUser.next(user);
-        })
+        tap((user: OutputCurrentUser) => this.authenticationHolder.currentUsername = user.name),
+        tap((user: OutputCurrentUser) => this.myCurrentUser.next(user)),
       );
   }
 

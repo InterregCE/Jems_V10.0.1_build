@@ -3,7 +3,7 @@
         <div class="spacer"></div>
         <ng-container *ngIf="currentUser | async as user">
             <span class="d-inline-block">
-                <app-menu [configuration]="menuConfiguration"></app-menu>
+                <app-menu [items]="menuItems | async"></app-menu>
             </span>
             <span class="d-inline-block pr-3">
                 {{user.name}}

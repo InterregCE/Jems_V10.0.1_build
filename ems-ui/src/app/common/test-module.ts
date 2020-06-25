@@ -3,6 +3,13 @@ import {SharedModule} from './shared-module';
 import {DatePipe} from '@angular/common';
 import {HttpClientTestingModule} from '@angular/common/http/testing';
 import {RouterTestingModule} from '@angular/router/testing';
+import {
+  NgxPermissionsConfigurationStore,
+  NgxPermissionsModule,
+  NgxPermissionsService,
+  NgxPermissionsStore,
+  NgxRolesStore
+} from 'ngx-permissions';
 
 @NgModule({
   declarations: [],
@@ -10,10 +17,15 @@ import {RouterTestingModule} from '@angular/router/testing';
     SharedModule,
     HttpClientTestingModule,
     RouterTestingModule,
-    HttpClientTestingModule
+    HttpClientTestingModule,
+    NgxPermissionsModule
   ],
   providers: [
-    DatePipe
+    DatePipe,
+    NgxPermissionsStore,
+    NgxPermissionsConfigurationStore,
+    NgxRolesStore,
+    NgxPermissionsService,
   ],
   exports: []
 })

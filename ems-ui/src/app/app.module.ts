@@ -6,6 +6,7 @@ import {AuthenticationModule} from './authentication/authentication.module';
 import {ProjectModule} from './project/project.module';
 import {CoreModule} from './common/core-module';
 import {RouterModule} from '@angular/router';
+import {NgxPermissionsModule} from 'ngx-permissions';
 
 @NgModule({
   declarations: [
@@ -16,7 +17,8 @@ import {RouterModule} from '@angular/router';
     UserModule,
     AuthenticationModule,
     ProjectModule,
-    RouterModule
+    RouterModule,
+    NgxPermissionsModule.forRoot(),
   ],
   providers: [
     {
