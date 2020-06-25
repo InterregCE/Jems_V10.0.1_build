@@ -119,7 +119,7 @@ export class ProjectApplicationDetailComponent implements OnInit, OnChanges {
     this.configuration.columns = [];
     this.configuration.columns.push(this.createNewColumnConfig('Filename', 'name', ColumnType.String));
     this.configuration.columns.push(this.createNewColumnConfig('Timestamp', 'updated', ColumnType.Date));
-    this.configuration.columns.push(this.createNewColumnConfig('Username', 'creator', ColumnType.String));
+    this.configuration.columns.push(this.createNewColumnConfig('Username', 'author.email', ColumnType.String));
     const columnAffected = this.createNewColumnConfig('Description',
       'description',
       ColumnType.CustomComponent,

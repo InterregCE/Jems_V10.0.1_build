@@ -3,14 +3,14 @@ package io.cloudflight.ems.service
 import io.cloudflight.ems.api.dto.OutputProjectFile
 import io.cloudflight.ems.dto.FileMetadata
 import io.cloudflight.ems.entity.Audit
-import io.cloudflight.ems.entity.Project
 import io.cloudflight.ems.entity.ProjectFile
 import io.cloudflight.ems.exception.DuplicateFileException
 import io.cloudflight.ems.exception.ResourceNotFoundException
+import io.cloudflight.ems.repository.AccountRepository
 import io.cloudflight.ems.repository.MinioStorage
 import io.cloudflight.ems.repository.ProjectFileRepository
+import io.cloudflight.ems.repository.ProjectRepository
 import io.cloudflight.ems.security.service.SecurityService
-import io.cloudflight.ems.service.ProjectFileDtoUtilClass.Companion.getDtoFrom
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
 import org.springframework.stereotype.Service
@@ -24,6 +24,8 @@ class FileStorageServiceImpl(
     private val auditService: AuditService,
     private val storage: MinioStorage,
     private val repository: ProjectFileRepository,
+    private val projectRepository: ProjectRepository,
+    private val accountRepository: AccountRepository,
     private val securityService: SecurityService
 ): FileStorageService {
 
@@ -36,13 +38,20 @@ class FileStorageServiceImpl(
             }
         }
 
+        val project = projectRepository.findById(fileMetadata.projectId)
+            .orElseThrow { throw ResourceNotFoundException() }
+
+        val author = accountRepository.findById(securityService.currentUser?.user?.id!!)
+            .orElseThrow { throw ResourceNotFoundException() }
+
         val filePath = getFilePath(fileMetadata.projectId, fileMetadata.name)
         val projectFileEntity = ProjectFile(
             id = null,
             bucket = PROJECT_FILES_BUCKET,
             identifier = filePath,
             name = fileMetadata.name,
-            project = Project(id = fileMetadata.projectId, acronym = null, submissionDate = null),
+            project = project,
+            author = author,
             description = null,
             size = fileMetadata.size,
             updated = ZonedDateTime.now())
@@ -60,7 +69,7 @@ class FileStorageServiceImpl(
 
     @Transactional(readOnly = true)
     override fun getFilesForProject(projectId: Long, page: Pageable): Page<OutputProjectFile> {
-        return repository.findAllByProject_Id(projectId, page).map { getDtoFrom(it) }
+        return repository.findAllByProject_Id(projectId, page).map { it.toOutputProjectFile() }
     }
 
     @Transactional
@@ -68,7 +77,7 @@ class FileStorageServiceImpl(
         val projectFile = getFile(projectId, fileId)
 
         projectFile.description = description
-        return getDtoFrom(repository.save(projectFile))
+        return repository.save(projectFile).toOutputProjectFile()
     }
 
     @Transactional

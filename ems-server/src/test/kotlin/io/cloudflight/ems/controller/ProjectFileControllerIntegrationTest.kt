@@ -2,6 +2,7 @@ package io.cloudflight.ems.controller
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import io.cloudflight.ems.api.dto.InputProjectFileDescription
+import io.cloudflight.ems.factory.AccountFactory
 import io.cloudflight.ems.factory.ProjectFileFactory
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
@@ -26,12 +27,14 @@ class ProjectFileControllerIntegrationTest {
 
     @Autowired
     private lateinit var projectFileFactory: ProjectFileFactory
+    @Autowired
+    private lateinit var accountFactory: AccountFactory
 
     @Test
     @WithUserDetails(value = "admin")
     fun `project file description set`() {
-        val project = projectFileFactory.saveProject()
-        val projectFile = projectFileFactory.saveProjectFile(project)
+        val project = projectFileFactory.saveProject(accountFactory.adminAccount)
+        val projectFile = projectFileFactory.saveProjectFile(project, accountFactory.adminAccount)
 
         val projectDescription = InputProjectFileDescription("new test description")
 
