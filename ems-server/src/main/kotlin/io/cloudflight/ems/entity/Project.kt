@@ -6,6 +6,7 @@ import javax.persistence.Entity
 import javax.persistence.GeneratedValue
 import javax.persistence.GenerationType
 import javax.persistence.Id
+import javax.persistence.ManyToOne
 
 @Entity(name = "project")
 data class Project (
@@ -14,10 +15,13 @@ data class Project (
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     val id: Long?,
 
-    @Column
-    val acronym: String?,
+    @Column(nullable = false)
+    val acronym: String,
 
-    @Column
-    val submissionDate: LocalDate?
+    @ManyToOne(optional = false)
+    val applicant: Account,
+
+    @Column(nullable = false)
+    val submissionDate: LocalDate
 
 )

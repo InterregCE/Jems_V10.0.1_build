@@ -5,6 +5,7 @@ import io.cloudflight.ems.api.dto.OutputUser
 import io.cloudflight.ems.dto.UserWithCredentials
 import io.cloudflight.ems.entity.Account
 import io.cloudflight.ems.entity.AccountRole
+import io.cloudflight.ems.security.model.CurrentUser
 import io.cloudflight.ems.security.model.LocalCurrentUser
 import org.springframework.security.core.authority.SimpleGrantedAuthority
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder

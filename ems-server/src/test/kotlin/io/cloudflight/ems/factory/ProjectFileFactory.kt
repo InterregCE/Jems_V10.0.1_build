@@ -1,5 +1,6 @@
 package io.cloudflight.ems.factory
 
+import io.cloudflight.ems.entity.Account
 import io.cloudflight.ems.entity.Project
 import io.cloudflight.ems.entity.ProjectFile
 import io.cloudflight.ems.repository.ProjectFileRepository
@@ -16,12 +17,12 @@ class ProjectFileFactory(
 ) {
 
     @Transactional
-    fun saveProject(): Project {
-        return projectRepository.save(Project(null, "test_project", LocalDate.now()))
+    fun saveProject(author: Account): Project {
+        return projectRepository.save(Project(null, "test_project", author, LocalDate.now()))
     }
 
     @Transactional
-    fun saveProjectFile(project: Project): ProjectFile {
+    fun saveProjectFile(project: Project, applicant: Account): ProjectFile {
         return projectFileRepository.save(
             ProjectFile(
                 null,
@@ -29,6 +30,7 @@ class ProjectFileFactory(
                 "project-1/cat.jpg",
                 "cat.jpg",
                 project,
+                applicant,
                 null,
                 4,
                 ZonedDateTime.now()))

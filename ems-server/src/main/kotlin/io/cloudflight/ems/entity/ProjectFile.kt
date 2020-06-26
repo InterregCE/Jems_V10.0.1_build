@@ -27,11 +27,14 @@ data class ProjectFile (
     @ManyToOne(optional = false)
     val project: Project,
 
+    @ManyToOne(optional = false)
+    val author: Account,
+
     @Column
     var description: String?,
 
-    @Column
-    val size: Long?,
+    @Column(nullable = false)
+    val size: Long,
 
     @Column(nullable = false)
     val updated: ZonedDateTime
