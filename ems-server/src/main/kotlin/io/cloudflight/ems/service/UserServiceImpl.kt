@@ -12,6 +12,7 @@ import io.cloudflight.ems.security.service.SecurityService
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
 import org.springframework.http.HttpStatus
+import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 
@@ -20,7 +21,8 @@ class UserServiceImpl(
     private val accountRepository: AccountRepository,
     private val accountRoleRepository: AccountRoleRepository,
     private val auditService: AuditService,
-    private val securityService: SecurityService
+    private val securityService: SecurityService,
+    private val passwordEncoder: PasswordEncoder
 ) : UserService {
 
     @Transactional(readOnly = true)
@@ -55,10 +57,12 @@ class UserServiceImpl(
         if (fieldErrors.isNotEmpty()) {
             throw I18nValidationError(
                 httpStatus = HttpStatus.UNPROCESSABLE_ENTITY,
-                i18nFieldErrors = fieldErrors)
+                i18nFieldErrors = fieldErrors
+            )
         }
 
-        val createdUser = accountRepository.save(user.toEntity(role.get())).toOutputUser()
+        val password = passwordEncoder.encode(user.email);
+        val createdUser = accountRepository.save(user.toEntity(role.get(), password)).toOutputUser()
         auditService.logEvent(Audit.userCreated(securityService.currentUser, createdUser))
         return createdUser
     }

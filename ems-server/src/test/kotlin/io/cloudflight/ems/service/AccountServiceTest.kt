@@ -27,6 +27,7 @@ import org.junit.jupiter.api.assertThrows
 import org.springframework.data.domain.PageImpl
 import org.springframework.data.domain.Pageable
 import org.springframework.http.HttpStatus
+import org.springframework.security.crypto.password.PasswordEncoder
 import java.util.Optional
 
 class AccountServiceTest {
@@ -43,10 +44,16 @@ class AccountServiceTest {
 
     @MockK
     lateinit var accountRepository: AccountRepository
+
     @MockK
     lateinit var accountRoleRepository: AccountRoleRepository
+
     @RelaxedMockK
     lateinit var auditService: AuditService
+
+    @RelaxedMockK
+    lateinit var passwordEncoder: PasswordEncoder
+
     @MockK
     lateinit var securityService: SecurityService
 
@@ -56,7 +63,8 @@ class AccountServiceTest {
     fun setup() {
         MockKAnnotations.init(this)
         every { securityService.currentUser } returns LocalCurrentUser(user, "hash_pass", emptyList())
-        userService = UserServiceImpl(accountRepository, accountRoleRepository, auditService, securityService)
+        userService =
+            UserServiceImpl(accountRepository, accountRoleRepository, auditService, securityService, passwordEncoder)
     }
 
     @Test
@@ -124,7 +132,7 @@ class AccountServiceTest {
     @Test
     fun saveUser_wrong() {
         every { accountRepository.findOneByEmail(eq("existing@user.com")) } returns
-            Account(1, "", "", "", AccountRole(1, ""), "")
+                Account(1, "", "", "", AccountRole(1, ""), "")
         every { accountRoleRepository.findById(eq(10)) } returns Optional.empty()
 
         val account = InputUser(
@@ -148,7 +156,7 @@ class AccountServiceTest {
     fun saveUser_OK() {
         every { accountRepository.findOneByEmail(eq("new@user.com")) } returns null
         every { accountRoleRepository.findById(eq(54)) } returns Optional.of(AccountRole(54, "admin_role"))
-        every { accountRepository.save(any<Account>()) } returnsArgument(0)
+        every { accountRepository.save(any<Account>()) } returnsArgument (0)
 
         val account = InputUser(
             email = "new@user.com",

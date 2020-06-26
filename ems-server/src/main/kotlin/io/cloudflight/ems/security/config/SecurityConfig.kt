@@ -12,8 +12,6 @@ import org.springframework.security.config.annotation.web.builders.WebSecurity
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter
 import org.springframework.security.core.userdetails.UserDetailsService
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder
-import org.springframework.security.crypto.password.DelegatingPasswordEncoder
 import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.web.cors.CorsConfiguration
 import org.springframework.web.cors.CorsConfigurationSource
@@ -24,10 +22,10 @@ import java.util.Collections
 @Configuration
 @EnableWebSecurity
 @EnableGlobalMethodSecurity(securedEnabled = true)
-class SecurityConfig(val emsUserDetailsService: EmsUserDetailsService) : WebSecurityConfigurerAdapter() {
+class SecurityConfig(val emsUserDetailsService: EmsUserDetailsService, val passwordEncoder: PasswordEncoder) :
+    WebSecurityConfigurerAdapter() {
 
     companion object {
-        const val PASSWORD_ENCODER = "bcrypt"
         private val WHITELIST = arrayOf(
             "/api/auth/**"
         )
@@ -51,7 +49,7 @@ class SecurityConfig(val emsUserDetailsService: EmsUserDetailsService) : WebSecu
     override fun configure(authenticationManagerBuilder: AuthenticationManagerBuilder) {
         authenticationManagerBuilder
             .userDetailsService<UserDetailsService>(emsUserDetailsService)
-            .passwordEncoder(passwordEncoder())
+            .passwordEncoder(passwordEncoder)
     }
 
     @Bean(BeanIds.AUTHENTICATION_MANAGER)
@@ -77,13 +75,5 @@ class SecurityConfig(val emsUserDetailsService: EmsUserDetailsService) : WebSecu
 
         source.registerCorsConfiguration("/**", configuration)
         return source
-    }
-
-    @Bean
-    fun passwordEncoder(): PasswordEncoder {
-        val encoders = mapOf(PASSWORD_ENCODER to BCryptPasswordEncoder());
-        val passworEncoder = DelegatingPasswordEncoder(PASSWORD_ENCODER, encoders)
-        passworEncoder.setDefaultPasswordEncoderForMatches(encoders[PASSWORD_ENCODER]);
-        return passworEncoder
     }
 }
