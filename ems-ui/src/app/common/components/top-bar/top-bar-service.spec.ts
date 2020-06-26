@@ -37,5 +37,10 @@ describe('TopBarService', () => {
     permissionService.setPermissions([Permission.ADMINISTRATOR]);
     tick();
     expect(menuItems.length).toBe(3);
+
+    permissionService.setPermissions([Permission.APPLICANT_USER]);
+    tick();
+    expect(menuItems.length).toBe(1);
+    expect(menuItems[0].name).toBe('Project Applications');
   }));
 });

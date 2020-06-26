@@ -1,5 +1,5 @@
 import {Injectable} from '@angular/core';
-import {Observable, ReplaySubject} from 'rxjs';
+import {Observable, ReplaySubject, zip} from 'rxjs';
 import {MenuItemConfiguration} from '../menu/model/menu-item.configuration';
 import {PermissionService} from '../../../security/permissions/permission.service';
 import {Permission} from '../../../security/permissions/permission';
@@ -34,10 +34,13 @@ export class TopBarService {
   }
 
   private adaptMenuItems(): void {
-    this.permissionService.hasPermission(Permission.PROGRAMME_USER)
+    zip(
+      this.permissionService.hasPermission(Permission.PROGRAMME_USER),
+      this.permissionService.hasPermission(Permission.APPLICANT_USER)
+    )
       .pipe(
         take(1),
-        filter((canSeeProjects: boolean) => canSeeProjects),
+        filter((canSee: boolean[]) => canSee.some(val => val)),
       )
       .subscribe(() => this.menuItems$.next(this.getLimitedItems()));
 
