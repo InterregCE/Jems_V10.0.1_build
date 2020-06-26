@@ -25,7 +25,7 @@
             </mat-form-field>
             <mat-form-field class="col-md-12 user-submission-field">
                 <mat-label>Role</mat-label>
-                <mat-select name="role" formControlName="role" required>
+                <mat-select name="role" formControlName="role" [disableOptionCentering]="true" required panelClass="material-select-panel">
                     <mat-option *ngFor="let role of userRoles" [value]="role">
                         {{role.name}}
                     </mat-option>
