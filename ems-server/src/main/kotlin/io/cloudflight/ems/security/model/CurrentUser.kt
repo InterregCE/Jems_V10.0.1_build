@@ -1,14 +1,14 @@
 package io.cloudflight.ems.security.model
 
 import io.cloudflight.ems.api.dto.OutputUser
-import io.cloudflight.ems.security.ROLE_ADMIN
+import io.cloudflight.ems.security.ADMINISTRATOR
 import org.springframework.security.core.GrantedAuthority
 
 interface CurrentUser {
     val user: OutputUser
 
     val isAdmin: Boolean
-        get() = hasRole(ROLE_ADMIN)
+        get() = hasRole("ROLE_${ADMINISTRATOR}")
 
     fun getAuthorities(): Collection<GrantedAuthority>
 

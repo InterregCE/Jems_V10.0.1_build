@@ -3,6 +3,7 @@ package io.cloudflight.ems.controller
 import com.fasterxml.jackson.databind.ObjectMapper
 import io.cloudflight.ems.api.dto.InputProjectFileDescription
 import io.cloudflight.ems.factory.AccountFactory
+import io.cloudflight.ems.factory.AccountFactory.Companion.ADMINISTRATOR_EMAIL
 import io.cloudflight.ems.factory.ProjectFileFactory
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
@@ -27,11 +28,12 @@ class ProjectFileControllerIntegrationTest {
 
     @Autowired
     private lateinit var projectFileFactory: ProjectFileFactory
+
     @Autowired
     private lateinit var accountFactory: AccountFactory
 
     @Test
-    @WithUserDetails(value = "admin")
+    @WithUserDetails(value = ADMINISTRATOR_EMAIL)
     fun `project file description set`() {
         val project = projectFileFactory.saveProject(accountFactory.adminAccount)
         val projectFile = projectFileFactory.saveProjectFile(project, accountFactory.adminAccount)
@@ -49,9 +51,10 @@ class ProjectFileControllerIntegrationTest {
     }
 
     @Test
-    @WithUserDetails(value = "admin")
+    @WithUserDetails(value = ADMINISTRATOR_EMAIL)
     fun `project file descritpion too long`() {
-        val projectDescription = InputProjectFileDescription("1234567890____15____1234567890____35____1234567890____55____1234567890____75____1234567890____95____1234567890")
+        val projectDescription =
+            InputProjectFileDescription("1234567890____15____1234567890____35____1234567890____55____1234567890____75____1234567890____95____1234567890")
 
         mockMvc.perform(
             put("/api/project/1/file/10/description")
