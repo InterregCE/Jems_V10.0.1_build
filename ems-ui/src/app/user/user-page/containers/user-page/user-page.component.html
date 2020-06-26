@@ -1,3 +1,17 @@
-<app-user-list
-        [filtered]="filtered$ | async">
-</app-user-list>
+<div class="container">
+    <div class="row">
+        <div class="col-md-6">
+            <app-user-submission
+                    [success]="saveSuccess$ | async"
+                    [error]="saveError$ | async"
+                    [userRoles]="userRoles$ | async"
+                    (submitUser)="saveUser($event)"
+            ></app-user-submission>
+        </div>
+        <div class="col-md-6">
+            <app-user-list
+                    [filtered]="filtered$ | async">
+            </app-user-list>
+        </div>
+    </div>
+</div>

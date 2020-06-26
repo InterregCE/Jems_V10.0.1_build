@@ -1,0 +1,48 @@
+<div class="user-submission-container">
+    <p>Create a new user:</p>
+    <form [formGroup]="userForm" (ngSubmit)="onSubmit(formDirective)" #formDirective="ngForm">
+        <div class="form-group">
+            <mat-form-field class="col-md-12 user-submission-field">
+                <mat-label>Name</mat-label>
+                <input name="name" formControlName="name" matInput placeholder="Name" required>
+                <mat-error>
+                    {{ getNameError() | translate}}
+                </mat-error>
+            </mat-form-field>
+            <mat-form-field class="col-md-12 user-submission-field">
+                <mat-label>Surname</mat-label>
+                <input name="surname" formControlName="surname" matInput placeholder="Surname" required>
+                <mat-error>
+                    {{ getSurnameError() | translate}}
+                </mat-error>
+            </mat-form-field>
+            <mat-form-field class="col-md-12 user-submission-field">
+                <mat-label>Email</mat-label>
+                <input name="email" formControlName="email" matInput placeholder="Email" required>
+                <mat-error>
+                    {{ getEmailError() | translate}}
+                </mat-error>
+            </mat-form-field>
+            <mat-form-field class="col-md-12 user-submission-field">
+                <mat-label>Role</mat-label>
+                <mat-select name="role" formControlName="role" required>
+                    <mat-option *ngFor="let role of userRoles" [value]="role">
+                        {{role.name}}
+                    </mat-option>
+                </mat-select>
+                <mat-error>
+                    {{ getRoleError() | translate}}
+                </mat-error>
+            </mat-form-field>
+        </div>
+        <button mat-raised-button
+                color="primary"
+                type="submit"
+                [disabled]="userForm.invalid">
+            + Add User
+        </button>
+    </form>
+    <div *ngIf="success">
+        <p>User was successfully saved.</p>
+    </div>
+</div>

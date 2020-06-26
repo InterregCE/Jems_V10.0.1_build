@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.RequestMapping
 
 // TODO restrict this endpoint to be accessible just for admins
-@Api("User")
+@Api("User Role")
 @RequestMapping("/api/role")
 interface AccountRoleApi {
 
