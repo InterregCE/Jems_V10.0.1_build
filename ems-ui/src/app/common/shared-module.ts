@@ -11,6 +11,7 @@ import {MatInputModule} from '@angular/material/input';
 import {MatButtonModule} from '@angular/material/button';
 import {TableComponent} from './components/table/table.component';
 import {MatTableModule} from '@angular/material/table';
+import {NgxPermissionsModule} from 'ngx-permissions';
 
 const modules = [
   CommonModule,
@@ -25,10 +26,11 @@ const modules = [
   MatButtonModule,
   MatInputModule,
   MatTableModule,
+  NgxPermissionsModule.forChild()
 ];
 
 const declarations = [
-  TableComponent
+  TableComponent,
 ];
 
 @NgModule({

@@ -13,13 +13,14 @@ export class LoginPageService {
   private authenticationProblem$: ReplaySubject<I18nValidationError | null> = new ReplaySubject();
 
   constructor(private securityService: SecurityService,
-              private router:Router) {}
+              private router: Router) {
+  }
 
-  get authenticationError(): Observable<I18nValidationError | null> {
+  authenticationError(): Observable<I18nValidationError | null> {
     return this.authenticationProblem$.asObservable();
   }
 
-  login(loginRequest:LoginRequest): void {
+  login(loginRequest: LoginRequest): void {
     this.authenticationProblem$.next(null);
     this.securityService.login(loginRequest)
       .pipe(

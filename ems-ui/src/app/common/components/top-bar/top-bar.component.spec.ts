@@ -2,6 +2,7 @@ import {async, ComponentFixture, TestBed} from '@angular/core/testing';
 
 import {TopBarComponent} from './top-bar.component';
 import {TestModule} from '../../test-module';
+import {TopBarService} from '@common/components/top-bar/top-bar.service';
 
 describe('TopBarComponent', () => {
   let component: TopBarComponent;
@@ -12,7 +13,13 @@ describe('TopBarComponent', () => {
       imports: [
         TestModule
       ],
-      declarations: [TopBarComponent]
+      declarations: [TopBarComponent],
+      providers: [
+        {
+          provide: TopBarService,
+          useClass: TopBarService
+        },
+      ]
     })
       .compileComponents();
   }));

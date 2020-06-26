@@ -1,6 +1,7 @@
 <nav mat-tab-nav-bar>
-    <a mat-tab-link
-       *ngFor="let item of configuration.items" (click)="callAction(item)" [active]="activeLink == item">
+    <a mat-tab-link *ngFor="let item of items"
+            (click)="callAction(item)"
+            [active]="isActive(item)">
         {{item.name}}
     </a>
 </nav>

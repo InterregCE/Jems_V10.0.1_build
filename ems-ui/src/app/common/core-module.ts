@@ -7,6 +7,8 @@ import {SecurityService} from '../security/security.service';
 import {AuthenticationInterceptor} from '../security/authentication.interceptor';
 import {HttpErrorInterceptor} from './interceptors/http-error.interceptor';
 import {MatTabsModule} from '@angular/material/tabs';
+import {PermissionService} from '../security/permissions/permission.service';
+import {TopBarService} from '@common/components/top-bar/top-bar.service';
 
 const declarations = [
   TopBarComponent,
@@ -23,6 +25,8 @@ const declarations = [
   ],
   providers: [
     SecurityService,
+    PermissionService,
+    TopBarService,
     {
       provide: HTTP_INTERCEPTORS,
       useClass: AuthenticationInterceptor,

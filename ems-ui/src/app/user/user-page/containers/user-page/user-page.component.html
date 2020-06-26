@@ -1,4 +1,6 @@
-<div class="container">
+<div *ngxPermissionsOnly="[Permission.ADMINISTRATOR]" class="container">
+    <!-- This permission check is not needed because the entire route
+    is protected by the permission guard. It is only added as an example-->
     <div class="row">
         <div class="col-md-6">
             <app-user-submission
