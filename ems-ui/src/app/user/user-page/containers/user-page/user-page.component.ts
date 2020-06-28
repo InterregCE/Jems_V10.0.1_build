@@ -16,7 +16,7 @@ export class UserPageComponent {
   filtered$: Observable<OutputUser[]>;
   saveSuccess$: Observable<boolean>;
   saveError$: Observable<I18nValidationError | null>;
-  userRoles$: Observable<OutputUserRole[]>
+  userRoles$: Observable<OutputUserRole[]>;
 
   constructor(private userPageService: UserPageService) {
     this.filtered$ = this.userPageService.filtered();
