@@ -4,19 +4,28 @@ import {UserPageComponent} from './user-page/containers/user-page/user-page.comp
 import {AuthenticationGuard} from '../security/authentication-guard.service';
 import {NgxPermissionsGuard} from 'ngx-permissions';
 import {Permission} from '../security/permissions/permission';
+import {UserDetailComponent} from './user-page/containers/user-detail/user-detail.component';
+
+const userGuard = {
+  permissions: {
+    only: [Permission.ADMINISTRATOR],
+    redirectTo: '/'
+  }
+};
 
 const routes: Routes = [
   {
-    path: 'users',
+    path: 'user',
     component: UserPageComponent,
     canActivate: [AuthenticationGuard, NgxPermissionsGuard],
-    data: {
-      permissions: {
-        only: [Permission.ADMINISTRATOR],
-        redirectTo: '/'
-      }
-    }
+    data: userGuard
   },
+  {
+    path: 'user/:userId',
+    component: UserDetailComponent,
+    canActivate: [AuthenticationGuard, NgxPermissionsGuard],
+    data: userGuard
+  }
 ];
 
 @NgModule({

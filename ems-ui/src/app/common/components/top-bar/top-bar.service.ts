@@ -1,5 +1,5 @@
 import {Injectable} from '@angular/core';
-import {Observable, ReplaySubject, zip} from 'rxjs';
+import {Observable, ReplaySubject} from 'rxjs';
 import {MenuItemConfiguration} from '../menu/model/menu-item.configuration';
 import {PermissionService} from '../../../security/permissions/permission.service';
 import {Permission} from '../../../security/permissions/permission';
@@ -12,6 +12,27 @@ export class TopBarService {
 
   private menuItems$ = new ReplaySubject<MenuItemConfiguration[]>(1);
   private auditUrl = '';
+  private applicationsItem =
+    new MenuItemConfiguration({
+      name: 'Project Applications',
+      isInternal: true,
+      route: '/',
+      action: (internal: boolean, route: string) => this.handleNavigation(internal, route),
+    });
+  private auditItem =
+    new MenuItemConfiguration({
+      name: 'Audit Log',
+      isInternal: false,
+      route: this.auditUrl,
+      action: (internal: boolean, route: string) => this.handleNavigation(internal, route),
+    });
+  private usersItem =
+    new MenuItemConfiguration({
+      name: 'User Management',
+      isInternal: true,
+      route: '/user',
+      action: (internal: boolean, route: string) => this.handleNavigation(internal, route),
+    });
 
   constructor(private permissionService: PermissionService,
               private securityService: SecurityService,
@@ -34,22 +55,26 @@ export class TopBarService {
   }
 
   private adaptMenuItems(): void {
-    zip(
-      this.permissionService.hasPermission(Permission.PROGRAMME_USER),
-      this.permissionService.hasPermission(Permission.APPLICANT_USER)
-    )
+    this.permissionService.hasPermission(Permission.APPLICANT_USER)
       .pipe(
         take(1),
-        filter((canSee: boolean[]) => canSee.some(val => val)),
+        filter(canSee => canSee),
       )
-      .subscribe(() => this.menuItems$.next(this.getLimitedItems()));
+      .subscribe(() => this.menuItems$.next([this.applicationsItem]));
+
+    this.permissionService.hasPermission(Permission.PROGRAMME_USER)
+      .pipe(
+        take(1),
+        filter(canSee => canSee),
+      )
+      .subscribe(() => this.menuItems$.next([this.applicationsItem, this.auditItem]));
 
     this.permissionService.hasPermission(Permission.ADMINISTRATOR)
       .pipe(
         take(1),
         filter((canDoAnything: boolean) => canDoAnything),
       )
-      .subscribe(() => this.menuItems$.next(this.getAdminItems()));
+      .subscribe(() => this.menuItems$.next([this.applicationsItem, this.auditItem, this.usersItem]));
   }
 
   private handleNavigation(internalRoute: boolean, route: string): void {
@@ -58,34 +83,5 @@ export class TopBarService {
     } else {
       window.open(route, '_blank');
     }
-  }
-
-  private getAdminItems(): MenuItemConfiguration[] {
-    return [
-      ...this.getLimitedItems(),
-      new MenuItemConfiguration({
-        name: 'User Management',
-        isInternal: true,
-        route: '/users',
-        action: (internal: boolean, route: string) => this.handleNavigation(internal, route),
-      }),
-      new MenuItemConfiguration({
-        name: 'Audit Log',
-        isInternal: false,
-        route: this.auditUrl,
-        action: (internal: boolean, route: string) => this.handleNavigation(internal, route),
-      })
-    ];
-  }
-
-  private getLimitedItems(): MenuItemConfiguration[] {
-    return [
-      new MenuItemConfiguration({
-        name: 'Project Applications',
-        isInternal: true,
-        route: '/',
-        action: (internal: boolean, route: string) => this.handleNavigation(internal, route),
-      })
-    ]
   }
 }

@@ -12,6 +12,8 @@ export class UserListComponent {
 
   @Input() filtered: OutputUser[];
   tableConfiguration: TableConfiguration = new TableConfiguration({
+    routerLink: '/user/',
+    isTableClickable: true,
     columns: [
       {
         displayedColumn: 'user.table.column.name.id',

@@ -8,4 +8,5 @@ enum class AuditAction() {
     USER_SESSION_EXPIRED,
     USER_CREATED,
     USER_REGISTERED,
+    USER_ROLE_CHANGED
 }

@@ -26,8 +26,13 @@ class UserController(
         return userService.create(user)
     }
 
-    @PreAuthorize("@userAuthorization.canUpdateUser(#user?.email)")
-    override fun update(user: InputUserUpdate) {
-        // TODO with the user update story
+    @PreAuthorize("@userAuthorization.canUpdateUser(#id)")
+    override fun getById(id: Long): OutputUser? {
+        return userService.getById(id)
+    }
+
+    @PreAuthorize("@userAuthorization.canUpdateUser(#user?.id)")
+    override fun update(user: InputUserUpdate): OutputUser {
+        return userService.update(user)
     }
 }

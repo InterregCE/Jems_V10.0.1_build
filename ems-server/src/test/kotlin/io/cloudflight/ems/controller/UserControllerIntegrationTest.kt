@@ -176,4 +176,16 @@ class UserControllerIntegrationTest {
             .andExpect(status().isOk())
     }
 
+    @Test
+    @WithUserDetails(value = ADMINISTRATOR_EMAIL)
+    @Transactional
+    fun `get user by id`() {
+        mockMvc.perform(
+            get("/api/user/1")
+                .accept(MediaType.APPLICATION_JSON_VALUE)
+        )
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.email").value(ADMINISTRATOR_EMAIL))
+    }
+
 }

@@ -2,8 +2,11 @@ package io.cloudflight.ems.service;
 
 import io.cloudflight.ems.api.dto.user.InputUserCreate
 import io.cloudflight.ems.api.dto.user.InputUserRegistration
+import io.cloudflight.ems.api.dto.user.InputUserUpdate
 import io.cloudflight.ems.api.dto.user.OutputUser
 import io.cloudflight.ems.dto.UserWithCredentials
+import io.cloudflight.ems.entity.Account
+import io.cloudflight.ems.entity.AccountRole
 import io.cloudflight.ems.entity.Audit
 import io.cloudflight.ems.exception.I18nFieldError
 import io.cloudflight.ems.exception.I18nValidationError
@@ -15,6 +18,7 @@ import io.cloudflight.ems.security.service.SecurityService
 import org.slf4j.LoggerFactory
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
+import org.springframework.data.repository.findByIdOrNull
 import org.springframework.http.HttpStatus
 import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.stereotype.Service
@@ -43,6 +47,10 @@ class UserServiceImpl(
     @Transactional(readOnly = true)
     override fun getByEmail(email: String): OutputUser? {
         return accountRepository.findOneByEmail(email)?.toOutputUser()
+    }
+
+    override fun getById(id: Long): OutputUser? {
+        return accountRepository.findByIdOrNull(id)?.toOutputUser()
     }
 
     @Transactional(readOnly = true)
@@ -79,4 +87,45 @@ class UserServiceImpl(
         return createdUser
     }
 
+    @Transactional
+    override fun update(user: InputUserUpdate): OutputUser {
+        val existingUser = accountRepository.findByIdOrNull(user.id)
+            ?: let {
+                logger.error("User with id ${user.id} was not found.")
+                throw ResourceNotFoundException()
+            }
+
+        val newRole = getRole(existingUser, user.accountRoleId)
+        writeAuditMessages(existingUser.accountRole, newRole, user.email)
+
+        val updatedUser = existingUser.copy(accountRole = newRole)
+        return accountRepository
+            .save(updatedUser)
+            .toOutputUser()
+    }
+
+    private fun getRole(existingUser: Account, newRoleId: Long): AccountRole {
+        if (existingUser.accountRole.id == newRoleId) {
+            return existingUser.accountRole
+        }
+        return accountRoleRepository.findByIdOrNull(newRoleId)
+            ?: let {
+                logger.error("User role with id $newRoleId was not found.")
+                throw ResourceNotFoundException()
+            }
+    }
+
+    private fun writeAuditMessages(existingRole: AccountRole, newRole: AccountRole, userEmail: String) {
+        if (existingRole.id == newRole.id) {
+            return
+        }
+
+        auditService.logEvent(
+            Audit.userRoleChanged(
+                currentUser = securityService.currentUser,
+                newRole = newRole.name,
+                userEmail = userEmail
+            )
+        )
+    }
 }

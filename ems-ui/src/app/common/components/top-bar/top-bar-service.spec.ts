@@ -29,14 +29,13 @@ describe('TopBarService', () => {
     service.menuItems()
       .subscribe((items: MenuItemConfiguration[]) => menuItems = items);
 
-    permissionService.setPermissions([Permission.PROGRAMME_USER]);
-    tick();
-    expect(menuItems.length).toBe(1);
-    expect(menuItems[0].name).toBe('Project Applications');
-
     permissionService.setPermissions([Permission.ADMINISTRATOR]);
     tick();
     expect(menuItems.length).toBe(3);
+
+    permissionService.setPermissions([Permission.PROGRAMME_USER]);
+    tick();
+    expect(menuItems.length).toBe(2);
 
     permissionService.setPermissions([Permission.APPLICANT_USER]);
     tick();

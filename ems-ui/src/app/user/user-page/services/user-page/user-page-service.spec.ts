@@ -1,44 +1,42 @@
 import {fakeAsync, TestBed, tick} from '@angular/core/testing';
-import {InputUser} from '@cat/api';
+import {OutputUser} from '@cat/api';
 import {UserPageService} from './user-page.service';
 import {UserModule} from '../../../user.module';
 import {HttpTestingController} from '@angular/common/http/testing';
 import {TestModule} from '../../../../common/test-module';
 
 describe('UserPageService', () => {
+  let service: UserPageService;
   let httpTestingController: HttpTestingController;
 
-  beforeEach(() => TestBed.configureTestingModule({
-    imports: [UserModule, TestModule],
-  }));
+  beforeEach(() => {
+    TestBed.configureTestingModule({
+      imports: [UserModule, TestModule],
+    });
+    service = TestBed.inject(UserPageService);
+    httpTestingController = TestBed.inject(HttpTestingController);
+  });
 
   it('should be created', () => {
-    const service: UserPageService = TestBed.get(UserPageService);
     expect(service).toBeTruthy();
   });
 
-  it('should save a user', fakeAsync(() => {
-    httpTestingController = TestBed.get(HttpTestingController);
-    const service: UserPageService = TestBed.get(UserPageService);
-    let success = false;
-    const user = {
-      name: 'test',
-      surname: 'test',
-      email: 'test@test.com',
-      accountRoleId: 1
-    } as InputUser;
+  it('should list users', fakeAsync(() => {
+    let results: OutputUser[] = [];
+    service.userList().subscribe(result => results = result);
 
-    service.saveUser(user);
+    const users = [
+      {email: '1@1'} as OutputUser,
+      {email: '2@2'} as OutputUser
+    ];
     httpTestingController.expectOne({
-      method: 'POST',
-      url: `//api/user`
-    }).flush(user);
+      method: 'GET',
+      url: `//api/user?page=0&size=100&sort=id,desc`
+    }).flush({content: users});
     httpTestingController.verify();
-    service.saveSuccess().subscribe(result => {
-      success = result;
-    })
+
     tick();
-    expect(success).toBeTruthy();
+    expect(results).toEqual(users);
   }));
 });
 

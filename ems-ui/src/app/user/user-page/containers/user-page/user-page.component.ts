@@ -1,9 +1,9 @@
 import {Component} from '@angular/core';
 import {UserPageService} from '../../services/user-page/user-page.service';
-import {Observable} from 'rxjs';
-import {InputUserCreate, OutputUser, OutputUserRole} from '@cat/api';
-import {I18nValidationError} from '@common/validation/i18n-validation-error';
+import {InputUserCreate} from '@cat/api';
 import {Permission} from '../../../../security/permissions/permission';
+import {UserDetailService} from '../../services/user-detail/user-detail.service';
+import {RolePageService} from '../../../user-role/services/role-page/role-page.service';
 
 @Component({
   selector: 'app-user-page',
@@ -13,21 +13,17 @@ import {Permission} from '../../../../security/permissions/permission';
 export class UserPageComponent {
   Permission = Permission;
 
-  filtered$: Observable<OutputUser[]>;
-  saveSuccess$: Observable<boolean>;
-  saveError$: Observable<I18nValidationError | null>;
-  userRoles$: Observable<OutputUserRole[]>;
+  userList$ = this.userPageService.userList();
+  userRoles$ = this.rolePageService.userRoles();
+  saveSuccess$ = this.userDetailService.saveSuccess();
+  saveError$ = this.userDetailService.saveError();
 
-  constructor(private userPageService: UserPageService) {
-    this.filtered$ = this.userPageService.filtered();
-    this.saveSuccess$ = this.userPageService.saveSuccess();
-    this.saveError$ = this.userPageService.saveError();
-    this.userRoles$ = this.userPageService.userRoles();
-    this.userPageService.newPage(0, 100, 'id,desc');
-    this.userPageService.getUserRoles();
+  constructor(private userPageService: UserPageService,
+              private userDetailService: UserDetailService,
+              private rolePageService: RolePageService) {
   }
 
-  saveUser(user: InputUserCreate): void {
-    this.userPageService.saveUser(user);
+  createUser(user: InputUserCreate): void {
+    this.userDetailService.createUser(user);
   }
 }

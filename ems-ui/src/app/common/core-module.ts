@@ -11,11 +11,14 @@ import {TopBarService} from '@common/components/top-bar/top-bar.service';
 import {FormFieldErrorsComponent} from '@common/components/forms/form-field-errors/form-field-errors.component';
 import {KeyValuePipe} from '@angular/common';
 import {SharedModule} from './shared-module';
+import {ConfirmDialogComponent} from '@common/components/modals/confirm-dialog/confirm-dialog.component';
+import {MatDialogModule} from '@angular/material/dialog';
 
 const declarations = [
   TopBarComponent,
   MenuComponent,
-  FormFieldErrorsComponent
+  FormFieldErrorsComponent,
+  ConfirmDialogComponent
 ];
 
 @NgModule({
@@ -24,7 +27,8 @@ const declarations = [
   ],
   imports: [
     SharedModule,
-    MatTabsModule
+    MatTabsModule,
+    MatDialogModule,
   ],
   providers: [
     SecurityService,

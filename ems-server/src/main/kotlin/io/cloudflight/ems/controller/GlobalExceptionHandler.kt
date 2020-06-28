@@ -59,9 +59,13 @@ class GlobalExceptionHandler : ResponseEntityExceptionHandler() {
         val fieldErrors = ex.bindingResult.fieldErrors.associateBy(
             { it.field }, { I18nFieldError(it.defaultMessage) }
         )
+        val typeError = ex.bindingResult.globalError?.defaultMessage
+
         return customErrorTransformer(
             I18nValidationError(
-                httpStatus = HttpStatus.BAD_REQUEST, i18nFieldErrors = fieldErrors
+                i18nKey = typeError,
+                i18nFieldErrors = fieldErrors,
+                httpStatus = HttpStatus.BAD_REQUEST
             )
         )
     }

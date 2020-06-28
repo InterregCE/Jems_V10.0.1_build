@@ -6,7 +6,7 @@ import org.springframework.stereotype.Component
 @Component
 class UserAuthorization(val securityService: SecurityService) {
 
-    fun canUpdateUser(email: String): Boolean =
+    fun canUpdateUser(id: Long): Boolean =
         securityService.currentUser?.isAdmin!! ||
-                securityService.currentUser?.user?.email == email
+                securityService.currentUser?.user?.id == id
 }
