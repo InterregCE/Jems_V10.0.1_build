@@ -12,6 +12,9 @@ import io.cloudflight.ems.entity.Project
 import io.cloudflight.ems.exception.ResourceNotFoundException
 import io.cloudflight.ems.repository.AccountRepository
 import io.cloudflight.ems.repository.ProjectRepository
+import io.cloudflight.ems.security.ADMINISTRATOR
+import io.cloudflight.ems.security.APPLICANT_USER
+import io.cloudflight.ems.security.PROGRAMME_USER
 import io.cloudflight.ems.security.model.LocalCurrentUser
 import io.cloudflight.ems.security.service.SecurityService
 import io.mockk.MockKAnnotations
@@ -26,8 +29,11 @@ import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
+import org.junit.jupiter.params.ParameterizedTest
+import org.junit.jupiter.params.provider.ValueSource
 import org.springframework.data.domain.PageImpl
 import org.springframework.data.domain.Pageable
+import org.springframework.security.core.authority.SimpleGrantedAuthority
 import java.time.LocalDate
 import java.util.Optional
 import java.util.stream.Collectors
@@ -75,8 +81,12 @@ class ProjectServiceTest {
         projectService = ProjectServiceImpl(projectRepository, accountRepository, auditService, securityService)
     }
 
-    @Test
-    fun projectRetrieval() {
+    @ParameterizedTest
+    @ValueSource(strings = [ADMINISTRATOR, PROGRAMME_USER])
+    fun projectRetrieval_admin(role: String) {
+        every { securityService.currentUser } returns
+            LocalCurrentUser(user, "hash_pass", listOf(SimpleGrantedAuthority(role)))
+
         val projectToReturn = Project(
             id = 25,
             acronym = "test acronym",
@@ -100,6 +110,15 @@ class ProjectServiceTest {
             )
         )
         assertIterableEquals(expectedProjects, result.get().collect(Collectors.toList()))
+    }
+
+    @Test
+    fun projectRetrieval_applicant() {
+        every { securityService.currentUser } returns
+            LocalCurrentUser(user, "hash_pass", listOf(SimpleGrantedAuthority("ROLE_$APPLICANT_USER")))
+        every { projectRepository.findAllByApplicant_Id(eq(user.id!!), UNPAGED) } returns PageImpl(emptyList())
+
+        assertEquals(0, projectService.getProjects(UNPAGED).totalElements)
     }
 
     @Test
