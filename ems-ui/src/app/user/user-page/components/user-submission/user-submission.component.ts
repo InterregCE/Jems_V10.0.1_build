@@ -1,33 +1,21 @@
-import {
-  ChangeDetectionStrategy,
-  Component,
-  EventEmitter,
-  Input,
-  OnChanges,
-  OnInit,
-  Output,
-  SimpleChanges
-} from '@angular/core';
-import {I18nValidationError} from '@common/validation/i18n-validation-error';
-import {FormBuilder, FormGroupDirective, Validators} from '@angular/forms';
-import {OutputUserRole, InputUser} from '@cat/api';
+import {ChangeDetectionStrategy, ChangeDetectorRef, Component, EventEmitter, Input, Output} from '@angular/core';
+import {FormBuilder, FormGroup, FormGroupDirective, Validators} from '@angular/forms';
+import {InputUser, OutputUserRole} from '@cat/api';
+import {AbstractForm} from '@common/components/forms/abstract-form';
 
 
 @Component({
   selector: 'app-user-submission',
-  changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './user-submission.component.html',
-  styleUrls: ['./user-submission.component.scss']
+  styleUrls: ['./user-submission.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class UserSubmissionComponent implements OnInit, OnChanges {
+export class UserSubmissionComponent extends AbstractForm {
 
   @Input()
   success: boolean;
   @Input()
-  error: I18nValidationError | null;
-  @Input()
   userRoles: OutputUserRole[];
-
   @Output()
   submitUser: EventEmitter<InputUser> = new EventEmitter<InputUser>();
 
@@ -50,76 +38,44 @@ export class UserSubmissionComponent implements OnInit, OnChanges {
     role: ['', Validators.required]
   });
 
-  constructor(private formBuilder: FormBuilder) {
+  nameErrors = {
+    maxlength: 'user.name.wrong.size',
+    minlength: 'user.name.wrong.size',
+    required: 'user.name.should.not.be.empty'
+  };
+
+  surnameErrors = {
+    maxlength: 'user.surname.wrong.size',
+    minlength: 'user.surname.wrong.size',
+    required: 'user.surname.wrong.size'
+  };
+
+  emailErrors = {
+    required:'user.email.should.not.be.empty',
+    maxlength: 'user.email.wrong.size',
+    email: 'user.email.wrong.format'
+  };
+
+  roleErrors = {
+    required: 'user.accountRoleId.should.not.be.empty'
+  };
+
+  constructor(private formBuilder: FormBuilder,
+              protected changeDetectorRef: ChangeDetectorRef) {
+    super(changeDetectorRef);
   }
 
-  get name() {
-    return this.userForm.controls.name;
-  }
-
-  get surname() {
-    return this.userForm.controls.surname;
-  }
-
-  get email() {
-    return this.userForm.controls.email;
-  }
-
-  get role() {
-    return this.userForm.controls.role;
-  }
-
-  ngOnInit(): void {
-    this.success = false;
-    this.email.valueChanges.subscribe(() => {
-      if ( this.error?.i18nFieldErrors?.email) {
-        this.error.i18nFieldErrors.email = null;
-      }
-    })
-  }
-
-  ngOnChanges(changes: SimpleChanges) {
-    // TODO this should be improved
-    if (changes?.error?.currentValue?.i18nFieldErrors?.email) {
-      this.email.markAsTouched();
-    }
+  getForm(): FormGroup | null {
+    return this.userForm;
   }
 
   onSubmit(formDirective: FormGroupDirective): void {
     this.submitUser.emit({
-      name: this.name.value,
-      surname: this.surname.value,
-      email: this.email.value,
-      accountRoleId: this.role.value.id
+      name: this.userForm?.controls?.name?.value,
+      surname: this.userForm?.controls?.surname?.value,
+      email: this.userForm?.controls?.email.value,
+      accountRoleId: this.userForm?.controls?.role?.value?.id
     });
     formDirective.resetForm();
-  }
-
-  getNameError(): string {
-    return this.error?.i18nFieldErrors?.name?.i18nKey
-      || (this.name?.errors?.maxlength && 'user.name.wrong.size')
-      || (this.name?.errors?.minlength && 'user.name.wrong.size')
-      || (this.name?.errors?.required && 'user.name.should.not.be.empty')
-      || ''
-  }
-
-  getSurnameError(): string {
-    return this.error?.i18nFieldErrors?.surname?.i18nKey
-      || (this.surname?.errors?.maxlength && 'user.surname.wrong.size')
-      || (this.surname?.errors?.minlength && 'user.surname.wrong.size')
-      || (this.surname?.errors?.required && 'user.surname.wrong.size')
-      || ''
-  }
-
-  getEmailError(): string {
-    return this.error?.i18nFieldErrors?.email?.i18nKey
-      || (this.email?.errors?.maxlength && 'user.email.wrong.size')
-      || (this.email?.errors?.email && 'user.email.wrong.format')
-      || (this.email?.errors?.required && 'user.email.should.not.be.empty')
-      || ''
-  }
-
-  getRoleError(): string {
-    return this.error?.i18nFieldErrors?.role?.i18nKey || ''
   }
 }

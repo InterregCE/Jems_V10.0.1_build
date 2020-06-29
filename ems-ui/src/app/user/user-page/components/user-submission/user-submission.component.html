@@ -6,21 +6,30 @@
                 <mat-label>Name</mat-label>
                 <input name="name" formControlName="name" matInput placeholder="Name" required>
                 <mat-error>
-                    {{ getNameError() | translate}}
+                    <app-form-field-errors
+                            [errors]="userForm?.controls?.name?.errors"
+                            [messages]="nameErrors">
+                    </app-form-field-errors>
                 </mat-error>
             </mat-form-field>
             <mat-form-field class="col-md-12 user-submission-field">
                 <mat-label>Surname</mat-label>
                 <input name="surname" formControlName="surname" matInput placeholder="Surname" required>
                 <mat-error>
-                    {{ getSurnameError() | translate}}
+                    <app-form-field-errors
+                            [errors]="userForm?.controls?.surname?.errors"
+                            [messages]="surnameErrors">
+                    </app-form-field-errors>
                 </mat-error>
             </mat-form-field>
             <mat-form-field class="col-md-12 user-submission-field">
                 <mat-label>Email</mat-label>
                 <input name="email" formControlName="email" matInput placeholder="Email" required>
                 <mat-error>
-                    {{ getEmailError() | translate}}
+                    <app-form-field-errors
+                            [errors]="userForm?.controls?.email?.errors"
+                            [messages]="emailErrors">
+                    </app-form-field-errors>
                 </mat-error>
             </mat-form-field>
             <mat-form-field class="col-md-12 user-submission-field">
@@ -31,7 +40,10 @@
                     </mat-option>
                 </mat-select>
                 <mat-error>
-                    {{ getRoleError() | translate}}
+                    <app-form-field-errors
+                            [errors]="userForm?.controls?.role?.errors"
+                            [messages]="roleErrors">
+                    </app-form-field-errors>
                 </mat-error>
             </mat-form-field>
         </div>

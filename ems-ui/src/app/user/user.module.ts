@@ -6,6 +6,7 @@ import {UserListComponent} from './user-page/components/user-list/user-list.comp
 import {SharedModule} from '../common/shared-module';
 import {UserSubmissionComponent} from './user-page/components/user-submission/user-submission.component';
 import {MatSelectModule} from '@angular/material/select';
+import {CoreModule} from '../common/core-module';
 
 @NgModule({
   declarations: [
@@ -13,11 +14,12 @@ import {MatSelectModule} from '@angular/material/select';
     UserListComponent,
     UserSubmissionComponent
   ],
-    imports: [
-        SharedModule,
-        UserRoutingModule,
-        MatSelectModule,
-    ],
+  imports: [
+    SharedModule,
+    UserRoutingModule,
+    MatSelectModule,
+    CoreModule,
+  ],
   providers: [
     UserPageService,
   ]
