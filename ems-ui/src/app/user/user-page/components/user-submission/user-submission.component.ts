@@ -23,7 +23,7 @@ export class UserSubmissionComponent extends AbstractForm {
     name: ['', Validators.compose([
       Validators.required,
       Validators.maxLength(50),
-      Validators.minLength(2),
+      Validators.minLength(1),
     ])],
     surname: ['', Validators.compose([
       Validators.required,
@@ -41,7 +41,7 @@ export class UserSubmissionComponent extends AbstractForm {
   nameErrors = {
     maxlength: 'user.name.wrong.size',
     minlength: 'user.name.wrong.size',
-    required: 'user.name.should.not.be.empty'
+    required: 'user.name.wrong.size',
   };
 
   surnameErrors = {
