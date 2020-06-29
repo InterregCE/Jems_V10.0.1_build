@@ -24,4 +24,6 @@ interface UserService {
 
     fun update(user: InputUserUpdate): OutputUser
 
+    fun changePassword(userId: Long, password: String)
+
 }

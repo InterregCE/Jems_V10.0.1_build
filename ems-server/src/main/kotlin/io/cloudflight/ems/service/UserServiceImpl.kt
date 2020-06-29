@@ -49,6 +49,7 @@ class UserServiceImpl(
         return accountRepository.findOneByEmail(email)?.toOutputUser()
     }
 
+    @Transactional(readOnly = true)
     override fun getById(id: Long): OutputUser? {
         return accountRepository.findByIdOrNull(id)?.toOutputUser()
     }
@@ -127,5 +128,16 @@ class UserServiceImpl(
                 userEmail = userEmail
             )
         )
+    }
+
+    @Transactional
+    override fun changePassword(userId: Long, password: String) {
+        val account = accountRepository.findById(userId)
+            .orElseThrow { throw ResourceNotFoundException() }
+
+        accountRepository.save(
+            account.copy(password = passwordEncoder.encode(password))
+        )
+        auditService.logEvent(Audit.passwordChanged(securityService.currentUser, account.toOutputUser()))
     }
 }

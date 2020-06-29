@@ -1,5 +1,6 @@
 package io.cloudflight.ems.api
 
+import io.cloudflight.ems.api.dto.user.InputPassword
 import io.cloudflight.ems.api.dto.user.InputUserCreate
 import io.cloudflight.ems.api.dto.user.InputUserUpdate
 import io.cloudflight.ems.api.dto.user.OutputUser
@@ -42,4 +43,9 @@ interface UserApi {
     @ApiOperation("Returns a user by id")
     @GetMapping("/{id}")
     fun getById(@PathVariable id: Long): OutputUser?
+
+    @ApiOperation("Changes user password")
+    @PutMapping("/{userId}", consumes = [MediaType.APPLICATION_JSON_VALUE])
+    fun changePassword(@PathVariable userId: Long, @Valid @RequestBody password: InputPassword)
+
 }
