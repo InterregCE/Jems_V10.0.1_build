@@ -2,6 +2,7 @@ package io.cloudflight.ems.controller
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import io.cloudflight.ems.api.dto.InputProject
+import io.cloudflight.ems.factory.AccountFactory.Companion.ADMINISTRATOR_EMAIL
 import net.bytebuddy.utility.RandomString
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
@@ -26,7 +27,7 @@ class ProjectControllerIntegrationTest {
     private lateinit var jsonMapper: ObjectMapper
 
     @Test
-    @WithUserDetails(value = "admin")
+    @WithUserDetails(value = ADMINISTRATOR_EMAIL)
     fun `project created`() {
         val inputProject = InputProject("acronym", LocalDate.now().plusDays(1));
 
@@ -45,7 +46,7 @@ class ProjectControllerIntegrationTest {
     }
 
     @Test
-    @WithUserDetails(value = "admin")
+    @WithUserDetails(value = ADMINISTRATOR_EMAIL)
     fun `project create fails with missing required fields`() {
         val inputProject = InputProject(null, null);
 
@@ -66,7 +67,7 @@ class ProjectControllerIntegrationTest {
     }
 
     @Test
-    @WithUserDetails(value = "admin")
+    @WithUserDetails(value = ADMINISTRATOR_EMAIL)
     fun `project create fails with invalid fields`() {
         val inputProject = InputProject(RandomString.make(26), LocalDate.now().plusDays(1));
 

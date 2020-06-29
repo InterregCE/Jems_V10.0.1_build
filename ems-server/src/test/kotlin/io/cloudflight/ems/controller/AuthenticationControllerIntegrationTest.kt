@@ -2,6 +2,7 @@ package io.cloudflight.ems.controller
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import io.cloudflight.ems.api.dto.LoginRequest
+import io.cloudflight.ems.factory.AccountFactory.Companion.ADMINISTRATOR_EMAIL
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc
@@ -25,33 +26,33 @@ class AuthenticationControllerIntegrationTest {
     private lateinit var jsonMapper: ObjectMapper
 
     @Test
-    @WithUserDetails(value = "admin")
+    @WithUserDetails(value = ADMINISTRATOR_EMAIL)
     fun `get current user`() {
         mockMvc.perform(
             get("/api/auth/current")
                 .accept(MediaType.APPLICATION_JSON)
         )
             .andExpect(status().isOk())
-            .andExpect(jsonPath("$.name").value("admin"))
+            .andExpect(jsonPath("$.name").value(ADMINISTRATOR_EMAIL))
     }
 
     @Test
-    @WithUserDetails(value = "admin")
+    @WithUserDetails(value = ADMINISTRATOR_EMAIL)
     fun `login with correct credentials`() {
         // bypasses the spring authentication but still checks the general flow
-        val loginRequest = LoginRequest("admin", "Adm1");
+        val loginRequest = LoginRequest(ADMINISTRATOR_EMAIL, ADMINISTRATOR_EMAIL);
         mockMvc.perform(
             post("/api/auth/login")
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .content(jsonMapper.writeValueAsString(loginRequest))
         )
             .andExpect(status().isOk)
-            .andExpect(jsonPath("$.name").value("admin"))
+            .andExpect(jsonPath("$.name").value(ADMINISTRATOR_EMAIL))
     }
 
     @Test
     fun `login with wrong credentials`() {
-        val loginRequest = LoginRequest("admin", "Adm2");
+        val loginRequest = LoginRequest(ADMINISTRATOR_EMAIL, "random");
         mockMvc.perform(
             post("/api/auth/login")
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
