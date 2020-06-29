@@ -1,7 +1,7 @@
 package io.cloudflight.ems.controller
 
 import io.cloudflight.ems.api.AccountRoleApi
-import io.cloudflight.ems.api.dto.OutputUserRole
+import io.cloudflight.ems.api.dto.user.OutputUserRole
 import io.cloudflight.ems.service.AccountRoleService
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable

@@ -1,6 +1,6 @@
 package io.cloudflight.ems.entity
 
-import io.cloudflight.ems.api.dto.OutputUser
+import io.cloudflight.ems.api.dto.user.OutputUser
 import io.cloudflight.ems.security.model.CurrentUser
 import org.springframework.data.annotation.Id
 import org.springframework.data.elasticsearch.annotations.DateFormat
@@ -87,6 +87,17 @@ data class Audit(
                 projectId = null,
                 username = author,
                 description = "new user ${createdUser.email} with role ${createdUser.userRole.name} has been created by $author"
+            )
+        }
+
+        fun applicantRegistered(createdUser: OutputUser): Audit {
+            return Audit(
+                id = null,
+                timestamp = getElasticTimeNow(),
+                action = AuditAction.USER_REGISTERED,
+                projectId = null,
+                username = createdUser.email,
+                description = "new user '${createdUser.name} ${createdUser.surname}' with role '${createdUser.userRole.name}' registered"
             )
         }
 

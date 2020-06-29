@@ -1,8 +1,8 @@
 package io.cloudflight.ems.controller
 
 import com.fasterxml.jackson.databind.ObjectMapper
-import io.cloudflight.ems.api.dto.InputUser
-import io.cloudflight.ems.api.dto.UpdateInputUser
+import io.cloudflight.ems.api.dto.user.InputUserCreate
+import io.cloudflight.ems.api.dto.user.InputUserUpdate
 import io.cloudflight.ems.factory.AccountFactory
 import io.cloudflight.ems.factory.AccountFactory.Companion.ADMINISTRATOR_EMAIL
 import io.cloudflight.ems.factory.AccountFactory.Companion.PROGRAMME_USER_EMAIL
@@ -67,7 +67,7 @@ class UserControllerIntegrationTest {
     @WithUserDetails(value = ADMINISTRATOR_EMAIL)
     @Transactional
     fun `create user`() {
-        val user = InputUser("user@rmail.com", "user", "user", 1);
+        val user = InputUserCreate("user@rmail.com", "user", "user", 1);
 
         mockMvc.perform(
             post("/api/user")
@@ -81,7 +81,7 @@ class UserControllerIntegrationTest {
     @Test
     @WithUserDetails(value = ADMINISTRATOR_EMAIL)
     fun `create user with invalid data fails`() {
-        val user = InputUser("user", "u", "", null);
+        val user = InputUserCreate("user", "u", "", null);
 
         mockMvc.perform(
             post("/api/user")
@@ -111,7 +111,7 @@ class UserControllerIntegrationTest {
     @Test
     @WithUserDetails(value = ADMINISTRATOR_EMAIL)
     fun `create user with duplicate email fails`() {
-        val user = InputUser(ADMINISTRATOR_EMAIL, ADMINISTRATOR_EMAIL, ADMINISTRATOR_EMAIL, 1);
+        val user = InputUserCreate(ADMINISTRATOR_EMAIL, ADMINISTRATOR_EMAIL, ADMINISTRATOR_EMAIL, 1);
 
         mockMvc.perform(
             post("/api/user")
@@ -137,7 +137,7 @@ class UserControllerIntegrationTest {
         )
             .andExpect(status().isForbidden());
 
-        val user = InputUser("random@email.com", "user", "user", 1);
+        val user = InputUserCreate("random@email.com", "user", "user", 1);
         mockMvc.perform(
             put("/api/user")
                 .accept(MediaType.APPLICATION_JSON_VALUE)
@@ -160,7 +160,13 @@ class UserControllerIntegrationTest {
     @Transactional
     fun `edit authorized for user which is current user`() {
 
-        val programmeUser = UpdateInputUser(2, PROGRAMME_USER_EMAIL, PROGRAMME_USER_EMAIL, PROGRAMME_USER_EMAIL, 1);
+        val programmeUser = InputUserUpdate(
+            2,
+            PROGRAMME_USER_EMAIL,
+            PROGRAMME_USER_EMAIL,
+            PROGRAMME_USER_EMAIL,
+            1
+        );
         mockMvc.perform(
             put("/api/user")
                 .accept(MediaType.APPLICATION_JSON_VALUE)

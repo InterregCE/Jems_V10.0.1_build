@@ -1,7 +1,7 @@
 package io.cloudflight.ems.security.service.impl
 
 import io.cloudflight.ems.api.dto.LoginRequest
-import io.cloudflight.ems.api.dto.OutputCurrentUser
+import io.cloudflight.ems.api.dto.user.OutputCurrentUser
 import io.cloudflight.ems.entity.Audit
 import io.cloudflight.ems.security.service.AuthenticationService
 import io.cloudflight.ems.security.service.SecurityService

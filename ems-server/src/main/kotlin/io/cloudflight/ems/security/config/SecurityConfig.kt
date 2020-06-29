@@ -62,6 +62,7 @@ class SecurityConfig(val emsUserDetailsService: EmsUserDetailsService, val passw
             .antMatchers("/**/*.{js|css|html}")
             .antMatchers("/api/i18n/**")
             .antMatchers("/favicon.ico")
+            .antMatchers("/api/registration")
     }
 
     @Bean

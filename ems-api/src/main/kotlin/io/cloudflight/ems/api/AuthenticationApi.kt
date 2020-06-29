@@ -1,7 +1,7 @@
 package io.cloudflight.ems.api
 
 import io.cloudflight.ems.api.dto.LoginRequest
-import io.cloudflight.ems.api.dto.OutputCurrentUser
+import io.cloudflight.ems.api.dto.user.OutputCurrentUser
 import io.swagger.annotations.Api
 import io.swagger.annotations.ApiOperation
 import org.springframework.http.HttpStatus

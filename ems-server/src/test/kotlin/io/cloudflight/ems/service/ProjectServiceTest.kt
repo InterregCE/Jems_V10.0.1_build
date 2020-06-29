@@ -2,8 +2,8 @@ package io.cloudflight.ems.service
 
 import io.cloudflight.ems.api.dto.InputProject
 import io.cloudflight.ems.api.dto.OutputProject
-import io.cloudflight.ems.api.dto.OutputUser
-import io.cloudflight.ems.api.dto.OutputUserRole
+import io.cloudflight.ems.api.dto.user.OutputUser
+import io.cloudflight.ems.api.dto.user.OutputUserRole
 import io.cloudflight.ems.entity.Account
 import io.cloudflight.ems.entity.AccountRole
 import io.cloudflight.ems.entity.Audit

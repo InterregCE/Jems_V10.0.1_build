@@ -1,7 +1,8 @@
 package io.cloudflight.ems.service
 
-import io.cloudflight.ems.api.dto.InputUser
-import io.cloudflight.ems.api.dto.OutputUser
+import io.cloudflight.ems.api.dto.user.InputUserCreate
+import io.cloudflight.ems.api.dto.user.InputUserRegistration
+import io.cloudflight.ems.api.dto.user.OutputUser
 import io.cloudflight.ems.dto.UserWithCredentials
 import io.cloudflight.ems.entity.Account
 import io.cloudflight.ems.entity.AccountRole
@@ -22,7 +23,16 @@ fun Account.toOutputUser() = OutputUser(
     userRole = this.accountRole.toOutputUserRole()
 )
 
-fun InputUser.toEntity(role: AccountRole, password: String) = Account(
+fun InputUserCreate.toEntity(role: AccountRole, password: String) = Account(
+    id = null,
+    email = this.email,
+    name = this.name,
+    surname = this.surname,
+    accountRole = role,
+    password = password
+)
+
+fun InputUserRegistration.toEntity(role: AccountRole, password: String) = Account(
     id = null,
     email = this.email,
     name = this.name,

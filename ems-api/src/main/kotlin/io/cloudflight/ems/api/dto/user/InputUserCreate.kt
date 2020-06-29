@@ -1,4 +1,4 @@
-package io.cloudflight.ems.api.dto
+package io.cloudflight.ems.api.dto.user
 
 import io.cloudflight.ems.api.validators.UniqueUserEmail
 import javax.validation.constraints.Email
@@ -6,7 +6,7 @@ import javax.validation.constraints.NotBlank
 import javax.validation.constraints.NotNull
 import javax.validation.constraints.Size
 
-data class InputUser(
+data class InputUserCreate (
 
     @field:NotBlank(message = "user.email.should.not.be.empty")
     @field:Size(max = 255, message = "user.email.wrong.size")

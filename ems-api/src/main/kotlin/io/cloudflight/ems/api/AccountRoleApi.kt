@@ -1,6 +1,6 @@
 package io.cloudflight.ems.api
 
-import io.cloudflight.ems.api.dto.OutputUserRole
+import io.cloudflight.ems.api.dto.user.OutputUserRole
 import io.swagger.annotations.Api
 import io.swagger.annotations.ApiImplicitParam
 import io.swagger.annotations.ApiImplicitParams

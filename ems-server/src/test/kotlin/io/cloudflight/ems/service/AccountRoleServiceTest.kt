@@ -1,6 +1,6 @@
 package io.cloudflight.ems.service
 
-import io.cloudflight.ems.api.dto.OutputUserRole
+import io.cloudflight.ems.api.dto.user.OutputUserRole
 import io.cloudflight.ems.entity.AccountRole
 import io.cloudflight.ems.repository.AccountRoleRepository
 import io.mockk.MockKAnnotations

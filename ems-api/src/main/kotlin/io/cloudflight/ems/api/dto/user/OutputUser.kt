@@ -1,4 +1,4 @@
-package io.cloudflight.ems.api.dto
+package io.cloudflight.ems.api.dto.user
 
 data class OutputUser (
     val id: Long?,

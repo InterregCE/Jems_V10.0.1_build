@@ -1,5 +1,5 @@
 import {Injectable} from '@angular/core';
-import {OutputUser, PageOutputUser, UserService, OutputUserRole, InputUser, PageOutputUserRole, UserRoleService} from '@cat/api';
+import {OutputUser, PageOutputUser, UserService, OutputUserRole, InputUserCreate, PageOutputUserRole, UserRoleService} from '@cat/api';
 import {Observable, ReplaySubject} from 'rxjs';
 import {catchError, flatMap, map, tap} from 'rxjs/operators';
 import {I18nValidationError} from '@common/validation/i18n-validation-error';
@@ -42,7 +42,7 @@ export class UserPageService {
     this.page$.next({page, size, sort});
   }
 
-  saveUser(user: InputUser): void {
+  saveUser(user: InputUserCreate): void {
     this.userService.createUser(user).pipe(
       tap(() => this.userSaveSuccess$.next(true)),
       tap(() => this.newPage(0, 100, 'id,desc')),
