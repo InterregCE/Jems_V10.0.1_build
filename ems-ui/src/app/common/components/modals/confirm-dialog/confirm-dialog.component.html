@@ -1,0 +1,13 @@
+<h1 mat-dialog-title>
+    {{title | translate}}
+</h1>
+
+<div mat-dialog-content>
+    <p>{{message | translate : arguments}}</p>
+</div>
+
+<div mat-dialog-actions align="end">
+    <button mat-button mat-dialog-close (click)="onDismiss()" cdkFocusInitial>No, Thanks</button>
+    <button mat-button mat-dialog-close (click)="onConfirm()">Yes please</button>
+</div>
+

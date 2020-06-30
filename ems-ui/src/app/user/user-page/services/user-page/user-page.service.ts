@@ -1,61 +1,49 @@
 import {Injectable} from '@angular/core';
-import {OutputUser, PageOutputUser, UserService, OutputUserRole, InputUserCreate, PageOutputUserRole, UserRoleService} from '@cat/api';
-import {Observable, ReplaySubject} from 'rxjs';
-import {catchError, flatMap, map, tap} from 'rxjs/operators';
-import {I18nValidationError} from '@common/validation/i18n-validation-error';
-import {HttpErrorResponse} from '@angular/common/http';
+import {OutputUser, UserService} from '@cat/api';
+import {merge, Observable, ReplaySubject} from 'rxjs';
+import {flatMap, map, shareReplay, tap} from 'rxjs/operators';
+import {UserDetailService} from '../user-detail/user-detail.service';
 
 @Injectable()
 export class UserPageService {
 
-  private page$ = new ReplaySubject<any>(1);
-  private userSaveError$ = new ReplaySubject<I18nValidationError | null>();
-  private userSaveSuccess$ = new ReplaySubject<boolean>();
-  private userRoles$ = new ReplaySubject<OutputUserRole[]>();
-  private filtered$ = this.page$
+  private initialPage = {page: 0, size: 100, sort: 'id,desc'};
+  private currentPage$ = new ReplaySubject<any>(1);
+  private userSaveAsPage$ = this.userDetailService.saveSuccess()
     .pipe(
-      flatMap((page) => this.userService.list(page.page, page.size, page.sort)),
-      map((page: PageOutputUser) => page.content)
-    );
+      map(() => this.initialPage)
+    )
+
+  private userList$ =
+    merge(
+      this.userSaveAsPage$,
+      this.currentPage$
+    )
+      .pipe(
+        flatMap(page => this.userService.list(page?.page, page?.size, page?.sort)),
+        tap(page => console.log('Fetched the users:', page.content)),
+        map(page => page.content),
+        shareReplay(1)
+      );
 
   constructor(private userService: UserService,
-              private userRolesService: UserRoleService) {
+              private userDetailService: UserDetailService) {
+    this.newPage(this.initialPage.page, this.initialPage.size, this.initialPage.sort)
   }
 
-  filtered(): Observable<OutputUser[]> {
-    return this.filtered$;
-  }
-
-  saveError(): Observable<I18nValidationError | null> {
-    return this.userSaveError$.asObservable();
-  }
-
-  saveSuccess(): Observable<boolean> {
-    return this.userSaveSuccess$.asObservable();
-  }
-
-  userRoles(): Observable<OutputUserRole[]> {
-    return this.userRoles$.asObservable();
+  /**
+   * Returns a list of users observable.
+   * The last fetched list is emitted to all/late subscribers - shareReplay(1).
+   * The list is refreshed when:
+   * - newPage is called
+   * - a user is successfully saved
+   * - ...?
+   */
+  userList(): Observable<OutputUser[]> {
+    return this.userList$;
   }
 
   newPage(page?: number, size?: number, sort?: string): void {
-    this.page$.next({page, size, sort});
-  }
-
-  saveUser(user: InputUserCreate): void {
-    this.userService.createUser(user).pipe(
-      tap(() => this.userSaveSuccess$.next(true)),
-      tap(() => this.newPage(0, 100, 'id,desc')),
-      catchError((error: HttpErrorResponse) => {
-        this.userSaveError$.next(error.error);
-        throw error;
-      })
-    ).subscribe(() => this.userSaveError$.next(null));
-  }
-
-  getUserRoles(): void {
-    this.userRolesService.list().subscribe((results: PageOutputUserRole) => {
-      this.userRoles$.next(results.content);
-    })
+    this.currentPage$.next({page, size, sort});
   }
 }

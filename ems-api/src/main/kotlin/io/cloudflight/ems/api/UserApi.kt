@@ -11,6 +11,7 @@ import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
 import org.springframework.http.MediaType
 import org.springframework.web.bind.annotation.GetMapping
+import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.PutMapping
 import org.springframework.web.bind.annotation.RequestBody
@@ -36,6 +37,9 @@ interface UserApi {
 
     @ApiOperation("Updates a User")
     @PutMapping(consumes = [MediaType.APPLICATION_JSON_VALUE])
-    fun update(@Valid @RequestBody user: InputUserUpdate)
+    fun update(@Valid @RequestBody user: InputUserUpdate): OutputUser
 
+    @ApiOperation("Returns a user by id")
+    @GetMapping("/{id}")
+    fun getById(@PathVariable id: Long): OutputUser?
 }

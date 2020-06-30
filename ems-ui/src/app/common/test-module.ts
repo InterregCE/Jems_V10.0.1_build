@@ -10,6 +10,7 @@ import {
   NgxPermissionsStore,
   NgxRolesStore
 } from 'ngx-permissions';
+import {LoginPageService} from '../authentication/login/services/login-page-service';
 
 @NgModule({
   declarations: [],
@@ -26,6 +27,7 @@ import {
     NgxPermissionsConfigurationStore,
     NgxRolesStore,
     NgxPermissionsService,
+    LoginPageService
   ],
   exports: []
 })

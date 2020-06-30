@@ -5,7 +5,7 @@ import javax.validation.constraints.NotBlank
 import javax.validation.constraints.NotNull
 import javax.validation.constraints.Size
 
-data class InputUserUpdate (
+data class InputUserUpdate(
 
     @field:NotNull(message = "common.id.should.not.be.empty")
     val id: Long,
@@ -22,6 +22,6 @@ data class InputUserUpdate (
     val surname: String,
 
     @field:NotNull(message = "user.accountRoleId.should.not.be.empty")
-    val accountRoleId: Long?
+    val accountRoleId: Long
 
 )
