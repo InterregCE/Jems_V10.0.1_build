@@ -799,7 +799,7 @@
 						{
 							"listen": "test",
 							"script": {
-								"id": "14f9528b-09c3-46c3-83bf-1a66cf2f3b0f",
+								"id": "493b8e6e-62f3-4ceb-b4d9-110a1ada6e41",
 								"exec": [
 									"pm.test('should fail with 400', function () {",
 									"    pm.response.to.have.status(400);",
@@ -807,8 +807,8 @@
 									"",
 									"pm.test('should return validation errors', function () {",
 									"    const response = pm.response.json();",
-									"    pm.expect(response.i18nFieldErrors).to.have.property('surname');",
-									"    pm.expect(response.i18nFieldErrors).to.have.property('name');",
+									"    pm.expect(response.i18nFieldErrors.surname.i18nKey).to.contain('user.surname.wrong.size');",
+									"    pm.expect(response.i18nFieldErrors.name.i18nKey).to.contain('user.name.wrong.size');",
 									"    pm.expect(response.i18nFieldErrors.accountRoleId.i18nKey).to.contain('user.accountRoleId.should.not.be.empty');",
 									"    pm.expect(response.i18nFieldErrors.email.i18nKey).to.contain('user.email.should.not.be.empty');",
 									"});",
@@ -820,7 +820,7 @@
 						{
 							"listen": "prerequest",
 							"script": {
-								"id": "a19cdf2e-f215-461c-b9ff-dad997ad512c",
+								"id": "99869db3-cf0b-402e-8a45-8cd1465a2743",
 								"exec": [
 									""
 								],
@@ -887,7 +887,7 @@
 						{
 							"listen": "prerequest",
 							"script": {
-								"id": "f28f9fe9-8b84-4561-93f1-1805d88afe7e",
+								"id": "2d845c89-17bf-4e28-880d-31d1aaca02e1",
 								"exec": [
 									""
 								],
@@ -909,7 +909,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n\t\"email\": \"test\",\n\t\"name\": \"x\",\n\t\"surname\": \"\"\n}",
+							"raw": "{\n\t\"email\": \"test\",\n\t\"name\": \"\",\n\t\"surname\": \"\"\n}",
 							"options": {
 								"urlencoded": {}
 							}
