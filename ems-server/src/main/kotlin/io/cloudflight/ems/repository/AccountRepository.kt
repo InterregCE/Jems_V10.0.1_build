@@ -9,4 +9,6 @@ interface AccountRepository : PagingAndSortingRepository<Account, Long> {
 
     fun findOneByEmail(email: String): Account?
 
+    fun findOneById(id: Long): Account?
+
 }

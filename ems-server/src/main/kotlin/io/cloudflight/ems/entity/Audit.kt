@@ -124,6 +124,19 @@ data class Audit(
             )
         }
 
+        fun passwordChanged(initiator: CurrentUser?, changedUser: OutputUser): Audit {
+            return Audit(
+                id = null,
+                timestamp = getElasticTimeNow(),
+                action = AuditAction.PASSWORD_CHANGED,
+                projectId = null,
+                username = initiator?.user?.email,
+                description = if (initiator?.user?.id == changedUser.id)
+                    "Password of user '${changedUser.name} ${changedUser.surname}' (${changedUser.email}) has been changed by himself/herself"
+                else "Password of user '${changedUser.name} ${changedUser.surname}' (${changedUser.email}) has been changed by user ${initiator?.user?.email}"
+            )
+        }
+
         private fun getElasticTimeNow(): String {
             return ZonedDateTime.now(ZoneOffset.UTC).format(DateTimeFormatter.ISO_DATE_TIME)
         }

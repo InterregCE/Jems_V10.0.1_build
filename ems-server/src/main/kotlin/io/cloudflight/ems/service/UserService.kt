@@ -12,9 +12,7 @@ interface UserService {
 
     fun findOneByEmail(email: String): UserWithCredentials?
 
-    fun getByEmail(email: String): OutputUser?
-
-    fun getById(id: Long): OutputUser?
+    fun getById(id: Long): OutputUser
 
     fun findAll(pageable: Pageable): Page<OutputUser>
 
@@ -23,5 +21,7 @@ interface UserService {
     fun registerApplicant(user: InputUserRegistration): OutputUser
 
     fun update(user: InputUserUpdate): OutputUser
+
+    fun changePassword(userId: Long, password: String)
 
 }

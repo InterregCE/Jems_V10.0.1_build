@@ -1,6 +1,7 @@
 package io.cloudflight.ems.controller
 
 import com.fasterxml.jackson.databind.ObjectMapper
+import io.cloudflight.ems.api.dto.user.InputPassword
 import io.cloudflight.ems.api.dto.user.InputUserCreate
 import io.cloudflight.ems.api.dto.user.InputUserUpdate
 import io.cloudflight.ems.factory.AccountFactory
@@ -186,6 +187,34 @@ class UserControllerIntegrationTest {
         )
             .andExpect(status().isOk())
             .andExpect(jsonPath("$.email").value(ADMINISTRATOR_EMAIL))
+    }
+
+    @Test
+    @WithUserDetails(value = ADMINISTRATOR_EMAIL)
+    fun `change password short` () {
+        mockMvc.perform(
+            put("/api/user/${accountFactory.adminAccount.id}")
+                .accept(MediaType.APPLICATION_JSON_VALUE)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .content(jsonMapper.writeValueAsString(InputPassword("short")))
+        )
+            .andExpect(status().isBadRequest)
+            .andExpect(
+                jsonPath("$.i18nFieldErrors.password.i18nKey")
+                    .value("user.password.size.too.short")
+            )
+    }
+
+    @Test
+    @WithUserDetails(value = ADMINISTRATOR_EMAIL)
+    fun `change password long` () {
+        mockMvc.perform(
+            put("/api/user/${accountFactory.adminAccount.id}")
+                .accept(MediaType.APPLICATION_JSON_VALUE)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .content(jsonMapper.writeValueAsString(InputPassword("password_long_enough")))
+        )
+            .andExpect(status().isOk)
     }
 
 }
