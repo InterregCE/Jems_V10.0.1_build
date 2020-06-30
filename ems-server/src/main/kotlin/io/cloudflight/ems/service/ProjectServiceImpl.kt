@@ -6,6 +6,8 @@ import io.cloudflight.ems.entity.Audit
 import io.cloudflight.ems.exception.ResourceNotFoundException
 import io.cloudflight.ems.repository.AccountRepository
 import io.cloudflight.ems.repository.ProjectRepository
+import io.cloudflight.ems.security.ADMINISTRATOR
+import io.cloudflight.ems.security.PROGRAMME_USER
 import io.cloudflight.ems.security.service.SecurityService
 import io.cloudflight.ems.service.ProjectDtoUtilClass.Companion.getDtoFrom
 import org.springframework.data.domain.Page
@@ -25,7 +27,12 @@ class ProjectServiceImpl(
 
     @Transactional(readOnly = true)
     override fun getProjects(page: Pageable): Page<OutputProject> {
-        return projectRepo.findAll(page).map { getDtoFrom(it) }
+        val currentUser = securityService.currentUser!!
+        if (currentUser.hasRole(ADMINISTRATOR) || currentUser.hasRole(PROGRAMME_USER)) {
+            return projectRepo.findAll(page).map { getDtoFrom(it) }
+        } else {
+            return projectRepo.findAllByApplicant_Id(currentUser.user.id!!, page).map { getDtoFrom(it) }
+        }
     }
 
     @Transactional
