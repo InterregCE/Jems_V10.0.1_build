@@ -6,7 +6,7 @@ import io.cloudflight.ems.api.dto.OutputProject
 import io.cloudflight.ems.service.ProjectService
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
-import org.springframework.http.ResponseEntity
+import org.springframework.security.access.prepost.PreAuthorize
 import org.springframework.web.bind.annotation.RestController
 
 @RestController
@@ -22,12 +22,8 @@ class ProjectController(
         return projectService.createProject(project)
     }
 
-    override fun getProjectById(id: Long): ResponseEntity<OutputProject> {
-        val project = projectService.getProjectById(id)
-        if (project.isEmpty) {
-            return ResponseEntity.notFound().build()
-        }
-        return ResponseEntity.ok(project.get())
-
+    @PreAuthorize("@projectAuthorization.canAccessProject(#id)")
+    override fun getProjectById(id: Long): OutputProject {
+        return projectService.getProjectById(id)
     }
 }

@@ -6,7 +6,7 @@ import io.cloudflight.ems.api.dto.user.InputUserCreate
 import io.cloudflight.ems.api.dto.user.InputUserUpdate
 import io.cloudflight.ems.factory.AccountFactory
 import io.cloudflight.ems.factory.AccountFactory.Companion.ADMINISTRATOR_EMAIL
-import io.cloudflight.ems.factory.AccountFactory.Companion.PROGRAMME_USER_EMAIL
+import io.cloudflight.ems.factory.AccountFactory.Companion.APPLICANT_USER_EMAIL
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc
@@ -128,7 +128,7 @@ class UserControllerIntegrationTest {
     }
 
     @Test
-    @WithUserDetails(value = PROGRAMME_USER_EMAIL)
+    @WithUserDetails(value = APPLICANT_USER_EMAIL)
     @Transactional
     fun `list, edit create unauthorized for limited user`() {
 
@@ -157,15 +157,15 @@ class UserControllerIntegrationTest {
     }
 
     @Test
-    @WithUserDetails(value = PROGRAMME_USER_EMAIL)
+    @WithUserDetails(value = APPLICANT_USER_EMAIL)
     @Transactional
     fun `edit authorized for user which is current user`() {
 
         val programmeUser = InputUserUpdate(
             2,
-            PROGRAMME_USER_EMAIL,
-            PROGRAMME_USER_EMAIL,
-            PROGRAMME_USER_EMAIL,
+            APPLICANT_USER_EMAIL,
+            APPLICANT_USER_EMAIL,
+            APPLICANT_USER_EMAIL,
             1
         );
         mockMvc.perform(

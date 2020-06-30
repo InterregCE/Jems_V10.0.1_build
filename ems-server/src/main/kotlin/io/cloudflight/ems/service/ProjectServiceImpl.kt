@@ -10,12 +10,12 @@ import io.cloudflight.ems.security.ADMINISTRATOR
 import io.cloudflight.ems.security.PROGRAMME_USER
 import io.cloudflight.ems.security.service.SecurityService
 import io.cloudflight.ems.service.ProjectDtoUtilClass.Companion.getDtoFrom
+import org.slf4j.LoggerFactory
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
-import java.util.Optional
 
 @Service
 class ProjectServiceImpl(
@@ -24,6 +24,10 @@ class ProjectServiceImpl(
     private val auditService: AuditService,
     private val securityService: SecurityService
 ) : ProjectService {
+
+    companion object {
+        private val logger = LoggerFactory.getLogger(ProjectServiceImpl::class.java)
+    }
 
     @Transactional(readOnly = true)
     override fun getProjects(page: Pageable): Page<OutputProject> {
@@ -47,7 +51,11 @@ class ProjectServiceImpl(
     }
 
     @Transactional(readOnly = true)
-    override fun getProjectById(id: Long): Optional<OutputProject> {
-        return getDtoFrom(projectRepo.findById(id))
+    override fun getProjectById(id: Long): OutputProject {
+        return getDtoFrom(projectRepo.findOneById(id)
+            ?: let {
+                logger.error("Project with id $id was not found.")
+                throw ResourceNotFoundException();
+            })
     }
 }
