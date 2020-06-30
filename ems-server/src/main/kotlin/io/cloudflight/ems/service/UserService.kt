@@ -20,7 +20,7 @@ interface UserService {
 
     fun registerApplicant(user: InputUserRegistration): OutputUser
 
-    fun update(user: InputUserUpdate): OutputUser
+    fun update(newUser: InputUserUpdate): OutputUser
 
     fun changePassword(userId: Long, password: String)
 

@@ -90,7 +90,7 @@ data class Audit(
             )
         }
 
-        fun userRoleChanged(currentUser: CurrentUser?, newRole: String, userEmail: String): Audit {
+        fun userRoleChanged(currentUser: CurrentUser?, user: OutputUser): Audit {
             val author = currentUser?.user?.email
             return Audit(
                 id = null,
@@ -98,7 +98,19 @@ data class Audit(
                 action = AuditAction.USER_ROLE_CHANGED,
                 projectId = null,
                 username = author,
-                description = "user role '${newRole}' has been assigned to $userEmail by $author"
+                description = "user role '${user.userRole.name}' has been assigned to ${user.email} by $author"
+            )
+        }
+
+        fun userDataChanged(currentUser: CurrentUser?, oldUser: OutputUser, newUser: OutputUser): Audit {
+            return Audit(
+                id = null,
+                timestamp = getElasticTimeNow(),
+                action = AuditAction.USER_DATA_CHANGED,
+                projectId = null,
+                username = currentUser?.user?.email,
+                description = "user data changed from '${oldUser.email}, ${oldUser.name}, ${oldUser.surname}'" +
+                    " to '${newUser.email}, ${newUser.name}, ${newUser.surname}'"
             )
         }
 

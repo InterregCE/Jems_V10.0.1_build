@@ -5,6 +5,7 @@ import ch.qos.logback.classic.spi.ILoggingEvent
 import ch.qos.logback.core.read.ListAppender
 import io.cloudflight.ems.api.dto.user.InputUserCreate
 import io.cloudflight.ems.api.dto.user.InputUserRegistration
+import io.cloudflight.ems.api.dto.user.InputUserUpdate
 import io.cloudflight.ems.api.dto.user.OutputUser
 import io.cloudflight.ems.api.dto.user.OutputUserRole
 import io.cloudflight.ems.entity.Account
@@ -16,6 +17,9 @@ import io.cloudflight.ems.exception.I18nValidationException
 import io.cloudflight.ems.exception.ResourceNotFoundException
 import io.cloudflight.ems.repository.AccountRepository
 import io.cloudflight.ems.repository.AccountRoleRepository
+import io.cloudflight.ems.security.ADMINISTRATOR
+import io.cloudflight.ems.security.APPLICANT_USER
+import io.cloudflight.ems.security.PROGRAMME_USER
 import io.cloudflight.ems.security.model.LocalCurrentUser
 import io.cloudflight.ems.security.service.SecurityService
 import io.mockk.MockKAnnotations
@@ -30,10 +34,14 @@ import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
+import org.junit.jupiter.params.ParameterizedTest
+import org.junit.jupiter.params.provider.ValueSource
 import org.slf4j.LoggerFactory
 import org.springframework.data.domain.PageImpl
 import org.springframework.data.domain.Pageable
+import org.springframework.data.repository.findByIdOrNull
 import org.springframework.http.HttpStatus
+import org.springframework.security.core.authority.SimpleGrantedAuthority
 import org.springframework.security.crypto.password.PasswordEncoder
 import java.util.Optional
 
@@ -123,13 +131,7 @@ class UserServiceTest {
             accountRoleId = 10 // does not exist
         )
 
-        val exception = assertThrows<I18nValidationException> { userService.create(account) }
-        assertEquals(HttpStatus.UNPROCESSABLE_ENTITY, exception.httpStatus)
-
-        val expectedErrors = mapOf(
-            "accountRoleId" to I18nFieldError("user.accountRoleId.does.not.exist")
-        )
-        assertThat(exception.i18nFieldErrors).isEqualTo(expectedErrors)
+        assertThrows<ResourceNotFoundException> { userService.create(account) }
     }
 
     @Test
@@ -211,6 +213,119 @@ class UserServiceTest {
             assertEquals("new user 'Ondrej Tester' with role 'applicant user' registered", description)
         }
 
+    }
+
+    @Test
+    fun updateNotExistingUser() {
+        every { accountRepository.findByIdOrNull(eq<Long>(-1)) } returns null
+
+        val newUser = InputUserUpdate(
+            id = -1,
+            email = "",
+            name = "",
+            surname = "",
+            accountRoleId = 1
+        )
+        assertThrows<ResourceNotFoundException> { userService.update(newUser) }
+    }
+
+    @Test
+    fun update_noRoleChange() {
+        every { accountRepository.save(any<Account>()) } returnsArgument (0)
+
+        val oldRole = AccountRole(id = 8, name = "role_program")
+        val oldUser = Account(
+            id = 15,
+            email = "old@mail.eu",
+            name = "OldName",
+            surname = "OldSurname",
+            accountRole = oldRole,
+            password = "hash_pass"
+        )
+        val newUser = InputUserUpdate(
+            id = oldUser.id!!,
+            email = "new@email.eu",
+            name = "NewName",
+            surname = "NewSurname",
+            accountRoleId = oldRole.id!!
+        )
+        every { accountRepository.findByIdOrNull(eq(oldUser.id!!)) } returns oldUser
+        every { accountRepository.findOneByEmail(eq(newUser.email)) } returns null
+
+        val result = userService.update(newUser)
+        assertThat(result.email).isEqualTo("new@email.eu")
+        assertThat(result.name).isEqualTo("NewName")
+        assertThat(result.surname).isEqualTo("NewSurname")
+        assertThat(result.userRole).isEqualTo(OutputUserRole(id = oldRole.id, name = oldRole.name))
+    }
+
+    @ParameterizedTest
+    @ValueSource(strings = [ADMINISTRATOR, PROGRAMME_USER, APPLICANT_USER])
+    fun update_roleChange(role: String) {
+        every { securityService.currentUser } returns LocalCurrentUser(user, "hash_pass", listOf(SimpleGrantedAuthority("ROLE_$role")))
+        every { accountRepository.save(any<Account>()) } returnsArgument (0)
+
+        val oldRole = AccountRole(id = 8, name = "role_program")
+        val newRole = AccountRole(id = 9, name = "role_applicant")
+        every { accountRoleRepository.findById(eq(newRole.id!!)) } returns Optional.of(newRole)
+
+        val oldUser = Account(
+            id = 15,
+            email = "old@mail.eu",
+            name = "OldName",
+            surname = "OldSurname",
+            accountRole = oldRole,
+            password = "hash_pass"
+        )
+        val newUser = InputUserUpdate(
+            id = oldUser.id!!,
+            email = oldUser.email,
+            name = oldUser.name,
+            surname = oldUser.surname,
+            accountRoleId = newRole.id!!
+        )
+        every { accountRepository.findByIdOrNull(eq(oldUser.id!!)) } returns oldUser
+        every { accountRepository.findOneByEmail(eq(newUser.email)) } returns null
+
+        if (role != ADMINISTRATOR) {
+            val exception = assertThrows<I18nValidationException> { userService.update(newUser) }
+            assertThat(exception.httpStatus).isEqualTo(HttpStatus.FORBIDDEN)
+        }
+
+        if (role == ADMINISTRATOR) {
+            val result = userService.update(newUser)
+            assertThat(result.userRole).isEqualTo(OutputUserRole(id = newRole.id, name = newRole.name))
+        }
+    }
+
+    @Test
+    fun update_emailTaken() {
+        every { accountRepository.save(any<Account>()) } returnsArgument (0)
+
+        val oldRole = AccountRole(id = 8, name = "role_program")
+        val oldUser = Account(
+            id = 15,
+            email = "old@mail.eu",
+            name = "OldName",
+            surname = "OldSurname",
+            accountRole = oldRole,
+            password = "hash_pass"
+        )
+        val newUser = InputUserUpdate(
+            id = oldUser.id!!,
+            email = "already@taken.eu",
+            name = "NewName",
+            surname = "NewSurname",
+            accountRoleId = oldRole.id!!
+        )
+        every { accountRepository.findByIdOrNull(eq(oldUser.id!!)) } returns oldUser
+        every { accountRepository.findOneByEmail(eq("already@taken.eu")) } returns Account(id = 345, email = "", name = "", surname = "", accountRole = AccountRole(id = null, name = ""), password = "")
+
+        val exception = assertThrows<I18nValidationException> { userService.update(newUser) }
+
+        assertThat(exception.httpStatus).isEqualTo(HttpStatus.UNPROCESSABLE_ENTITY)
+        assertThat(exception.i18nFieldErrors)
+            .containsAllEntriesOf(mapOf("email" to I18nFieldError("user.email.not.unique")))
     }
 
 }

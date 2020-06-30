@@ -7,6 +7,7 @@ import io.cloudflight.ems.api.dto.user.InputUserUpdate
 import io.cloudflight.ems.factory.AccountFactory
 import io.cloudflight.ems.factory.AccountFactory.Companion.ADMINISTRATOR_EMAIL
 import io.cloudflight.ems.factory.AccountFactory.Companion.APPLICANT_USER_EMAIL
+import io.cloudflight.ems.security.ADMINISTRATOR
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc
@@ -166,8 +167,8 @@ class UserControllerIntegrationTest {
             APPLICANT_USER_EMAIL,
             APPLICANT_USER_EMAIL,
             APPLICANT_USER_EMAIL,
-            1
-        );
+            accountFactory.applicantAccount.accountRole.id!!
+        )
         mockMvc.perform(
             put("/api/user")
                 .accept(MediaType.APPLICATION_JSON_VALUE)
@@ -175,6 +176,27 @@ class UserControllerIntegrationTest {
                 .content(jsonMapper.writeValueAsString(programmeUser))
         )
             .andExpect(status().isOk())
+    }
+
+    @Test
+    @WithUserDetails(value = APPLICANT_USER_EMAIL)
+    @Transactional
+    fun `program user edit his role forbid`() {
+
+        val programmeUser = InputUserUpdate(
+            2,
+            APPLICANT_USER_EMAIL,
+            APPLICANT_USER_EMAIL,
+            APPLICANT_USER_EMAIL,
+            accountFactory.saveRole(ADMINISTRATOR).id!!
+        )
+        mockMvc.perform(
+            put("/api/user")
+                .accept(MediaType.APPLICATION_JSON_VALUE)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .content(jsonMapper.writeValueAsString(programmeUser))
+        )
+            .andExpect(status().isForbidden)
     }
 
     @Test

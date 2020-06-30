@@ -13,6 +13,7 @@ import io.cloudflight.ems.exception.I18nValidationException
 import io.cloudflight.ems.exception.ResourceNotFoundException
 import io.cloudflight.ems.repository.AccountRepository
 import io.cloudflight.ems.repository.AccountRoleRepository
+import io.cloudflight.ems.security.ADMINISTRATOR
 import io.cloudflight.ems.security.APPLICANT_USER
 import io.cloudflight.ems.security.service.SecurityService
 import org.slf4j.LoggerFactory
@@ -57,15 +58,11 @@ class UserServiceImpl(
 
     @Transactional
     override fun create(user: InputUserCreate): OutputUser {
-        val role = accountRoleRepository.findById(user.accountRoleId!!)
-        if (role.isEmpty)
-            throw I18nValidationException(
-                httpStatus = HttpStatus.UNPROCESSABLE_ENTITY,
-                i18nFieldErrors = mapOf("accountRoleId" to I18nFieldError("user.accountRoleId.does.not.exist"))
-            )
+        val role = accountRoleRepository.findByIdOrNull(user.accountRoleId!!)
+            ?: throwNotFound("User with id ${user.accountRoleId} was not found.")
 
-        val passwordEncoded = passwordEncoder.encode(user.email);
-        val createdUser = accountRepository.save(user.toEntity(role.get(), passwordEncoded)).toOutputUser()
+        val passwordEncoded = passwordEncoder.encode(user.email)
+        val createdUser = accountRepository.save(user.toEntity(role, passwordEncoded)).toOutputUser()
         auditService.logEvent(Audit.userCreated(securityService.currentUser, createdUser))
         return createdUser
     }
@@ -73,67 +70,85 @@ class UserServiceImpl(
     @Transactional
     override fun registerApplicant(user: InputUserRegistration): OutputUser {
         val role = accountRoleRepository.findOneByName(APPLICANT_USER)
-        if (role == null) {
-            logger.error("The default applicant role cannot be found in the system.")
-            throw ResourceNotFoundException()
-        }
+            ?: throwNotFound("The default applicant role cannot be found in the system.")
 
-        val passwordEncoded = passwordEncoder.encode(user.password);
+        val passwordEncoded = passwordEncoder.encode(user.password)
         val createdUser = accountRepository.save(user.toEntity(role, passwordEncoded)).toOutputUser()
         auditService.logEvent(Audit.applicantRegistered(createdUser))
         return createdUser
     }
 
     @Transactional
-    override fun update(user: InputUserUpdate): OutputUser {
-        val existingUser = accountRepository.findByIdOrNull(user.id)
-            ?: let {
-                logger.error("User with id ${user.id} was not found.")
-                throw ResourceNotFoundException()
-            }
+    override fun update(newUser: InputUserUpdate): OutputUser {
+        val oldUser = accountRepository.findByIdOrNull(newUser.id)
+            ?: throwNotFound("User with id ${newUser.id} was not found.")
 
-        val newRole = getRole(existingUser, user.accountRoleId)
-        writeAuditMessages(existingUser.accountRole, newRole, user.email)
-
-        val updatedUser = existingUser.copy(accountRole = newRole)
-        return accountRepository
-            .save(updatedUser)
-            .toOutputUser()
-    }
-
-    private fun getRole(existingUser: Account, newRoleId: Long): AccountRole {
-        if (existingUser.accountRole.id == newRoleId) {
-            return existingUser.accountRole
-        }
-        return accountRoleRepository.findByIdOrNull(newRoleId)
-            ?: let {
-                logger.error("User role with id $newRoleId was not found.")
-                throw ResourceNotFoundException()
-            }
-    }
-
-    private fun writeAuditMessages(existingRole: AccountRole, newRole: AccountRole, userEmail: String) {
-        if (existingRole.id == newRole.id) {
-            return
-        }
-
-        auditService.logEvent(
-            Audit.userRoleChanged(
-                currentUser = securityService.currentUser,
-                newRole = newRole.name,
-                userEmail = userEmail
-            )
+        val toUpdate = oldUser.copy(
+            email = getNewEmailIfChanged(oldUser, newUser),
+            name = newUser.name,
+            surname = newUser.surname,
+            accountRole = getNewRoleIfChanged(oldUser, newUser)
         )
+
+        val updatedUser = accountRepository.save(toUpdate)
+        writeChangeAuditMessages(oldUser = oldUser, newUser = updatedUser)
+        return updatedUser.toOutputUser()
     }
 
     @Transactional
     override fun changePassword(userId: Long, password: String) {
-        val account = accountRepository.findById(userId)
-            .orElseThrow { throw ResourceNotFoundException() }
+        val account = accountRepository.findByIdOrNull(userId)
+            ?: throwNotFound("User with id $userId was not found.")
 
         accountRepository.save(
             account.copy(password = passwordEncoder.encode(password))
         )
         auditService.logEvent(Audit.passwordChanged(securityService.currentUser, account.toOutputUser()))
     }
+
+    private fun <T>throwNotFound(msg: String): T {
+        logger.error(msg)
+        throw ResourceNotFoundException()
+    }
+
+    private fun getNewRoleIfChanged(oldUser: Account, newUser: InputUserUpdate): AccountRole {
+        val newRoleId = newUser.accountRoleId
+
+        if (oldUser.accountRole.id == newRoleId)
+            return oldUser.accountRole
+        else if (!securityService.currentUser!!.hasRole(ADMINISTRATOR))
+            throw I18nValidationException(httpStatus = HttpStatus.FORBIDDEN)
+
+        return accountRoleRepository.findByIdOrNull(newRoleId)
+            ?: throwNotFound("User role with id $newRoleId was not found.")
+    }
+
+    private fun getNewEmailIfChanged(oldUser: Account, newUser: InputUserUpdate): String {
+        if (oldUser.email == newUser.email)
+            return oldUser.email
+
+        val existing = accountRepository.findOneByEmail(newUser.email)
+        if (existing == null || existing.id == oldUser.id)
+            return newUser.email
+
+        throw I18nValidationException(
+            httpStatus = HttpStatus.UNPROCESSABLE_ENTITY,
+            i18nFieldErrors = mapOf("email" to I18nFieldError("user.email.not.unique"))
+        )
+    }
+
+    private fun writeChangeAuditMessages(oldUser: Account, newUser: Account) {
+        val newOutputUser = newUser.toOutputUser()
+
+        if (oldUser.accountRole.id != newUser.accountRole.id)
+            auditService.logEvent(
+                Audit.userRoleChanged(securityService.currentUser, newOutputUser)
+            )
+
+        if (oldUser.email != newUser.email || oldUser.name != newUser.name || oldUser.surname != newUser.surname)
+            auditService.logEvent(
+                Audit.userDataChanged(securityService.currentUser, oldUser.toOutputUser(), newOutputUser)
+            )
+    }
+
 }
