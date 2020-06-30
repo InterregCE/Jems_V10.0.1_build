@@ -1,6 +1,7 @@
 package io.cloudflight.ems.controller
 
 import io.cloudflight.ems.exception.I18nValidationError
+import io.cloudflight.ems.exception.I18nValidationException
 import org.springframework.core.Ordered
 import org.springframework.core.annotation.Order
 import org.springframework.http.HttpStatus
@@ -15,9 +16,9 @@ import org.springframework.web.bind.annotation.ExceptionHandler
 class AuthenticationExceptionHandler : GlobalExceptionHandler() {
 
     @ExceptionHandler(AuthenticationException::class)
-    fun authenticationTransformer(exception: AuthenticationException): ResponseEntity<Any?> {
+    fun authenticationTransformer(exception: AuthenticationException): ResponseEntity<I18nValidationError> {
         return customErrorTransformer(
-            I18nValidationError(
+            I18nValidationException(
                 i18nKey = if (isBadCredentials(exception)) "authentication.bad.credentials" else "authentication.failed",
                 httpStatus = HttpStatus.UNAUTHORIZED
             )
