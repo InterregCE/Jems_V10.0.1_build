@@ -1,8 +1,8 @@
 {
 	"info": {
-		"_postman_id": "759f8fd6-de6e-4ea4-80b1-0ef2e77114a5",
+		"_postman_id": "f573a2d4-366d-4585-9e84-11ae79ef7f83",
 		"name": "ems-rest-test",
-		"description": "Check creation of Project Application",
+		"description": "Check EMS application for common use-cases",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
 	},
 	"item": [
@@ -402,26 +402,11 @@
 					"response": []
 				}
 			],
-			"auth": {
-				"type": "basic",
-				"basic": [
-					{
-						"key": "password",
-						"value": "Adm1",
-						"type": "string"
-					},
-					{
-						"key": "username",
-						"value": "admin",
-						"type": "string"
-					}
-				]
-			},
 			"event": [
 				{
 					"listen": "prerequest",
 					"script": {
-						"id": "a3081a7c-2d76-493b-979d-edf071b3c119",
+						"id": "dd84e6a2-b5df-43d2-9f37-4194bbadb6f0",
 						"type": "text/javascript",
 						"exec": [
 							""
@@ -431,7 +416,7 @@
 				{
 					"listen": "test",
 					"script": {
-						"id": "133b87ec-c82c-46d7-ac0d-24493f947191",
+						"id": "388572a7-3965-44b2-9e9d-ab5fdb3fe841",
 						"type": "text/javascript",
 						"exec": [
 							""
@@ -450,7 +435,7 @@
 						{
 							"listen": "test",
 							"script": {
-								"id": "79b51ea1-e7a9-46a9-89f4-1ace4cffcfb3",
+								"id": "3f29d105-7969-4ca8-995d-c2f0aee22df7",
 								"exec": [
 									"const response = pm.response.json()",
 									"",
@@ -473,13 +458,13 @@
 							"type": "basic",
 							"basic": [
 								{
-									"key": "password",
-									"value": "Adm1",
+									"key": "username",
+									"value": "admin@ems.eu",
 									"type": "string"
 								},
 								{
-									"key": "username",
-									"value": "admin",
+									"key": "password",
+									"value": "Adm1",
 									"type": "string"
 								}
 							]
@@ -513,7 +498,7 @@
 						{
 							"listen": "test",
 							"script": {
-								"id": "b1ab7e29-72c5-46d6-83a8-476d931528a9",
+								"id": "648a362e-ac1e-44c9-b72d-c71fdc5fe052",
 								"exec": [
 									"pm.test(\"logged-in user can access system\", function () {",
 									"    pm.response.to.have.status(200);",
@@ -565,7 +550,7 @@
 						{
 							"listen": "test",
 							"script": {
-								"id": "a17bd1f4-960d-4111-ab6b-b7c5e772e7af",
+								"id": "d0f5f53b-1707-4853-bf91-84a0c3eee674",
 								"exec": [
 									"pm.test(\"user can logout\", function () {",
 									"    pm.response.to.have.status(200);",
@@ -602,7 +587,7 @@
 						{
 							"listen": "test",
 							"script": {
-								"id": "625c89b2-8308-4a1b-9066-7bd68542f843",
+								"id": "9d1d22a3-8c7a-4e2b-aa84-b2d4c37abbe5",
 								"exec": [
 									"pm.test(\"logged-out user cannot access system\", function () {",
 									"    pm.response.to.have.status(401);",
@@ -654,7 +639,7 @@
 						{
 							"listen": "test",
 							"script": {
-								"id": "00e6a5ee-e33d-4cca-933a-978a0561f29d",
+								"id": "14d97fe3-4be9-47ed-947f-220877469c2a",
 								"exec": [
 									"pm.test(\"wrong user cannot login\", function () {",
 									"    pm.response.to.have.status(401);",
@@ -719,6 +704,31 @@
 					"response": []
 				}
 			],
+			"auth": {
+				"type": "noauth"
+			},
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"id": "5095e39e-6454-46a4-81c8-30cfa281cb71",
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"id": "3cc6313f-c1d8-4b14-a088-50922054c34d",
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
+				}
+			],
 			"protocolProfileBehavior": {}
 		},
 		{
@@ -730,7 +740,7 @@
 						{
 							"listen": "test",
 							"script": {
-								"id": "eb14e514-5a25-4f73-8fa7-1892affa0670",
+								"id": "157fab3e-b681-43f7-b582-d2651917f6f7",
 								"exec": [
 									"const username = pm.variables.get(\"user_name\")",
 									"",
@@ -751,7 +761,7 @@
 						{
 							"listen": "prerequest",
 							"script": {
-								"id": "59bb0042-1ada-4edf-8ac2-5eaecc16b19c",
+								"id": "ae86e532-00d1-4f6a-b5b7-e6c002146aa5",
 								"exec": [
 									"var uuid = require('uuid');",
 									"const randomIdentifier = uuid.v4().substring(0, 16);",
@@ -799,7 +809,7 @@
 						{
 							"listen": "test",
 							"script": {
-								"id": "493b8e6e-62f3-4ceb-b4d9-110a1ada6e41",
+								"id": "191e0efd-d340-4fde-b8ef-10beb001d509",
 								"exec": [
 									"pm.test('should fail with 400', function () {",
 									"    pm.response.to.have.status(400);",
@@ -820,7 +830,7 @@
 						{
 							"listen": "prerequest",
 							"script": {
-								"id": "99869db3-cf0b-402e-8a45-8cd1465a2743",
+								"id": "db0a0460-63c3-4319-8dfd-7ba7eb96b4d3",
 								"exec": [
 									""
 								],
@@ -866,7 +876,7 @@
 						{
 							"listen": "test",
 							"script": {
-								"id": "5ec804da-27e1-4bea-9aaa-0a99ee66875b",
+								"id": "5eb8a7b1-2bf5-4e8a-ba11-b6e2ded03b88",
 								"exec": [
 									"pm.test('should fail with 400', function () {",
 									"    pm.response.to.have.status(400);",
@@ -887,7 +897,7 @@
 						{
 							"listen": "prerequest",
 							"script": {
-								"id": "2d845c89-17bf-4e28-880d-31d1aaca02e1",
+								"id": "88b6334d-e3dd-4ec3-869e-a940cdf57ad5",
 								"exec": [
 									""
 								],
@@ -928,6 +938,28 @@
 					"response": []
 				}
 			],
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"id": "57069f52-e0b1-4ff8-8e33-c877640e3177",
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"id": "8c573f72-3f21-4223-b466-32b73c531003",
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
+				}
+			],
 			"protocolProfileBehavior": {}
 		}
 	],
@@ -935,13 +967,13 @@
 		"type": "basic",
 		"basic": [
 			{
-				"key": "password",
-				"value": "Adm1",
+				"key": "username",
+				"value": "admin@ems.eu",
 				"type": "string"
 			},
 			{
-				"key": "username",
-				"value": "admin",
+				"key": "password",
+				"value": "Adm1",
 				"type": "string"
 			}
 		]
@@ -950,7 +982,7 @@
 		{
 			"listen": "prerequest",
 			"script": {
-				"id": "c6d0044d-2daf-46db-a95a-66216ed4a5c2",
+				"id": "800b9635-9a2e-4ffc-a4a6-c6d7bc26bebe",
 				"type": "text/javascript",
 				"exec": [
 					""
@@ -960,7 +992,7 @@
 		{
 			"listen": "test",
 			"script": {
-				"id": "998233f4-dfc9-4df9-ad0f-88edd9fafcaa",
+				"id": "8a1b9f9e-2c2f-4d3d-a904-118ddba72346",
 				"type": "text/javascript",
 				"exec": [
 					""
@@ -970,10 +1002,9 @@
 	],
 	"variable": [
 		{
-			"id": "b9ddb6ce-828b-4241-b813-c7db61f93783",
+			"id": "0f93222d-1a02-418c-872e-8bb51fd22484",
 			"key": "url",
-			"value": "specify_url_here",
-			"type": "string"
+			"value": "specify_url_here"
 		}
 	],
 	"protocolProfileBehavior": {}
