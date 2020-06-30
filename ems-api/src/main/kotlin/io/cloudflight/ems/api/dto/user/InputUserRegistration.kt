@@ -1,5 +1,6 @@
 package io.cloudflight.ems.api.dto.user
 
+import io.cloudflight.ems.api.validators.UniqueUserEmail
 import javax.validation.constraints.Email
 import javax.validation.constraints.NotBlank
 import javax.validation.constraints.Size
@@ -9,6 +10,7 @@ data class InputUserRegistration (
     @field:NotBlank(message = "user.email.should.not.be.empty")
     @field:Size(max = 255, message = "user.email.wrong.size")
     @field:Email(message = "user.email.wrong.format")
+    @field:UniqueUserEmail
     val email: String,
 
     @field:Size(min = 1, max = 50, message = "user.name.wrong.size")

@@ -1,0 +1,51 @@
+.user-registration-container {
+  .form-container{
+    display: flex;
+    justify-content: center;
+    width: 20rem;
+    flex-wrap: wrap;
+
+    .user-form {
+      display: flex;
+      width: 100%;
+      flex-wrap: wrap;
+
+        .user-registration-field {
+          width: 100%;
+          margin-bottom: 1.5rem;
+        }
+
+        .register-button {
+          margin-top: 1rem;
+        }
+
+        .cancel-button {
+          margin-top: 1rem;
+          margin-right: 1rem;
+        }
+    }
+  }
+}
+
+.alert {
+  margin-top: 1rem;
+
+  .click-login {
+    cursor: pointer;
+    color: midnightblue;
+  }
+}
+
+
+h5 {
+  display: flex;
+  min-width: 100%;
+  margin-top: 1.5rem;
+  margin-bottom: 1.5rem;
+}
+
+mat-card-subtitle,
+mat-card-content{
+  display: flex;
+  min-width: 100%;
+}

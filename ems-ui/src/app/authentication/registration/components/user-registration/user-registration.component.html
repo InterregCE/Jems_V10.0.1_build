@@ -1,0 +1,83 @@
+<div class="container vertical-center user-registration-container">
+    <mat-card>
+        <div class="container form-container">
+            <h5>Create new user</h5>
+            <mat-card-subtitle>Register new applicant user account</mat-card-subtitle>
+            <mat-card-content>
+                <form class="user-form" [formGroup]="userForm" #formDirective="ngForm">
+
+                            <mat-form-field class="user-registration-field">
+                                <mat-label>Name</mat-label>
+                                <input name="name" formControlName="name" matInput placeholder="Name" required>
+                                <mat-error>
+                                    <app-form-field-errors
+                                            [errors]="userForm?.controls?.name?.errors"
+                                            [messages]="nameErrors">
+                                    </app-form-field-errors>
+                                </mat-error>
+                            </mat-form-field>
+
+
+                            <mat-form-field class="user-registration-field">
+                                <mat-label>Surname</mat-label>
+                                <input name="surname" formControlName="surname" matInput placeholder="Surname" required>
+                                <mat-error>
+                                    <app-form-field-errors
+                                            [errors]="userForm?.controls?.surname?.errors"
+                                            [messages]="surnameErrors">
+                                    </app-form-field-errors>
+                                </mat-error>
+                            </mat-form-field>
+
+
+                            <mat-form-field class="user-registration-field">
+                                <mat-label>Email</mat-label>
+                                <input name="email" formControlName="email" matInput placeholder="Email" required>
+                                <mat-error>
+                                    <app-form-field-errors
+                                            [errors]="userForm?.controls?.email?.errors"
+                                            [messages]="emailErrors">
+                                    </app-form-field-errors>
+                                </mat-error>
+                            </mat-form-field>
+
+
+                            <mat-form-field class="user-registration-field">
+                                <mat-label>Password</mat-label>
+                                <input [type]="hide ? 'password' : 'text'" name="password" formControlName="password" matInput placeholder="Password" required>
+                                <button mat-icon-button matSuffix (click)="hide = !hide" [attr.aria-label]="'Hide password'" [attr.aria-pressed]="hide">
+                                    <i *ngIf="hide" class="far fa-eye"></i>
+                                    <i *ngIf="!hide" class="far fa-eye-slash"></i>
+                                </button>
+                                <mat-error>
+                                    <app-form-field-errors
+                                            [errors]="userForm?.controls?.password?.errors"
+                                            [messages]="passwordErrors">
+                                    </app-form-field-errors>
+                                </mat-error>
+                                <mat-hint>10 characters minimum. Passwords are case sensitive.</mat-hint>
+                            </mat-form-field>
+                        <button mat-raised-button
+                                color="secondary"
+                                class="cancel-button"
+                                (click)="redirectToLogin()">
+                            Cancel
+                        </button>
+                        <button mat-raised-button
+                                color="primary"
+                                (click)="onSubmit(formDirective)"
+                                class="register-button"
+                                [disabled]="userForm.invalid">
+                            Register
+                        </button>
+                    <div *ngIf="success"
+                         class="alert alert-success" id="successMessage" role="alert">
+                        <p>{{'user.registration.save.success' | translate}}</p>
+                        <br>
+                        <a class="click-login" (click)="redirectToLogin()">Go to login</a>
+                    </div>
+                </form>
+            </mat-card-content>
+        </div>
+    </mat-card>
+</div>
