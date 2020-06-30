@@ -28,7 +28,7 @@ class UserController(
     }
 
     @PreAuthorize("@userAuthorization.canUpdateUser(#id)")
-    override fun getById(id: Long): OutputUser? {
+    override fun getById(id: Long): OutputUser {
         return userService.getById(id)
     }
 

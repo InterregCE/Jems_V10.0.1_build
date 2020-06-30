@@ -45,13 +45,9 @@ class UserServiceImpl(
     }
 
     @Transactional(readOnly = true)
-    override fun getByEmail(email: String): OutputUser? {
-        return accountRepository.findOneByEmail(email)?.toOutputUser()
-    }
-
-    @Transactional(readOnly = true)
-    override fun getById(id: Long): OutputUser? {
-        return accountRepository.findByIdOrNull(id)?.toOutputUser()
+    override fun getById(id: Long): OutputUser {
+        return accountRepository.findOneById(id)?.toOutputUser()
+            ?: throw ResourceNotFoundException()
     }
 
     @Transactional(readOnly = true)

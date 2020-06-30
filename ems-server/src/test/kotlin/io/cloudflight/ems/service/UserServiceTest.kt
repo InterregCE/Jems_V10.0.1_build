@@ -113,30 +113,6 @@ class UserServiceTest {
     }
 
     @Test
-    fun getUser_OK() {
-        every { accountRepository.findOneByEmail(eq("admin@ems.io")) } returns
-                Account(
-                    id = 50,
-                    email = "admin@ems.io",
-                    name = "name",
-                    surname = "surname",
-                    accountRole = AccountRole(2, "admin"),
-                    password = "hash_pass"
-                )
-
-        val result = userService.getByEmail("admin@ems.io")
-
-        val expectedUser = OutputUser(
-            id = 50,
-            email = "admin@ems.io",
-            name = "name",
-            surname = "surname",
-            userRole = OutputUserRole(2, "admin")
-        )
-        assertThat(result).isEqualTo(expectedUser);
-    }
-
-    @Test
     fun createUser_wrong() {
         every { accountRoleRepository.findById(any()) } returns Optional.empty()
 

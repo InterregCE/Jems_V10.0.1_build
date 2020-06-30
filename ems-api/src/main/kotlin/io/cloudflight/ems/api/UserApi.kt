@@ -42,7 +42,7 @@ interface UserApi {
 
     @ApiOperation("Returns a user by id")
     @GetMapping("/{id}")
-    fun getById(@PathVariable id: Long): OutputUser?
+    fun getById(@PathVariable id: Long): OutputUser
 
     @ApiOperation("Changes user password")
     @PutMapping("/{userId}", consumes = [MediaType.APPLICATION_JSON_VALUE])
