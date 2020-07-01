@@ -15,6 +15,6 @@ class ProjectAuthorization(
     fun canAccessProject(id: Long): Boolean {
         return securityService.currentUser?.hasRole(ADMINISTRATOR)!!
                 || securityService.currentUser?.hasRole(PROGRAMME_USER)!!
-                || projectService.getProjectById(id).applicant.id == securityService.currentUser?.user?.id
+                || projectService.getById(id).applicant.id == securityService.currentUser?.user?.id
     }
 }

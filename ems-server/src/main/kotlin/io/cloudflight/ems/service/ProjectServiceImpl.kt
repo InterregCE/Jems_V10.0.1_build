@@ -9,8 +9,6 @@ import io.cloudflight.ems.repository.ProjectRepository
 import io.cloudflight.ems.security.ADMINISTRATOR
 import io.cloudflight.ems.security.PROGRAMME_USER
 import io.cloudflight.ems.security.service.SecurityService
-import io.cloudflight.ems.service.ProjectDtoUtilClass.Companion.getDtoFrom
-import org.slf4j.LoggerFactory
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
 import org.springframework.data.repository.findByIdOrNull
@@ -25,17 +23,19 @@ class ProjectServiceImpl(
     private val securityService: SecurityService
 ) : ProjectService {
 
-    companion object {
-        private val logger = LoggerFactory.getLogger(ProjectServiceImpl::class.java)
+    @Transactional(readOnly = true)
+    override fun getById(id: Long): OutputProject {
+        return projectRepo.findOneById(id)?.toOutputProject()
+            ?: throw ResourceNotFoundException()
     }
 
     @Transactional(readOnly = true)
-    override fun getProjects(page: Pageable): Page<OutputProject> {
+    override fun findAll(page: Pageable): Page<OutputProject> {
         val currentUser = securityService.currentUser!!
         if (currentUser.hasRole(ADMINISTRATOR) || currentUser.hasRole(PROGRAMME_USER)) {
-            return projectRepo.findAll(page).map { getDtoFrom(it) }
+            return projectRepo.findAll(page).map { it.toOutputProject() }
         } else {
-            return projectRepo.findAllByApplicant_Id(currentUser.user.id!!, page).map { getDtoFrom(it) }
+            return projectRepo.findAllByApplicant_Id(currentUser.user.id!!, page).map { it.toOutputProject() }
         }
     }
 
@@ -47,15 +47,7 @@ class ProjectServiceImpl(
         val createdProject = projectRepo.save(project.toEntity(applicant))
         auditService.logEvent(Audit.projectSubmitted(securityService.currentUser, createdProject.id.toString()))
 
-        return getDtoFrom(createdProject)
+        return createdProject.toOutputProject()
     }
 
-    @Transactional(readOnly = true)
-    override fun getProjectById(id: Long): OutputProject {
-        return getDtoFrom(projectRepo.findOneById(id)
-            ?: let {
-                logger.error("Project with id $id was not found.")
-                throw ResourceNotFoundException();
-            })
-    }
 }

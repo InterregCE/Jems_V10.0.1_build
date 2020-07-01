@@ -7,9 +7,10 @@ import org.springframework.data.domain.Pageable
 
 interface ProjectService {
 
-    fun getProjects(page: Pageable): Page<OutputProject>
+    fun getById(id: Long): OutputProject
+
+    fun findAll(page: Pageable): Page<OutputProject>
 
     fun createProject(project: InputProject): OutputProject
 
-    fun getProjectById(id: Long): OutputProject
 }

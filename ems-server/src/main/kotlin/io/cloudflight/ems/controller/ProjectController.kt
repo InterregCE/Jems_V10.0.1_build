@@ -15,7 +15,7 @@ class ProjectController(
 ) : ProjectApi {
 
     override fun getProjects(pageable: Pageable): Page<OutputProject> {
-        return projectService.getProjects(pageable)
+        return projectService.findAll(pageable)
     }
 
     override fun createProject(project: InputProject): OutputProject {
@@ -24,6 +24,6 @@ class ProjectController(
 
     @PreAuthorize("@projectAuthorization.canAccessProject(#id)")
     override fun getProjectById(id: Long): OutputProject {
-        return projectService.getProjectById(id)
+        return projectService.getById(id)
     }
 }

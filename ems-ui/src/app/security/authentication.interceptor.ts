@@ -33,7 +33,7 @@ export class AuthenticationInterceptor implements HttpInterceptor {
       }))
       .pipe(
         catchError(err => {
-          if (err.status === 401 || err.status === 403) {
+          if (err.status === 401) {
             // go to login when unauthorized status codes are intercepted
             if (this.router.url !== '/login') {
               this.loginPageService.newAuthenticationError({i18nKey: 'authentication.expired', httpStatus: 401});
@@ -41,6 +41,7 @@ export class AuthenticationInterceptor implements HttpInterceptor {
             }
             this.securityService.clearAuthentication();
           }
+          // TODO handle err.status 403
           return throwError(err);
         }));
   }
