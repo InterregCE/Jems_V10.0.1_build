@@ -11,4 +11,6 @@ interface ProjectRepository : PagingAndSortingRepository<Project, Long> {
 
     fun findAllByApplicant_Id(applicantId: Long, pageable: Pageable): Page<Project>
 
+    fun findOneById(id: Long): Project?
+
 }

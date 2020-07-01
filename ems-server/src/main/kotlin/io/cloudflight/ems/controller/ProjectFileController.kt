@@ -11,6 +11,7 @@ import org.springframework.data.domain.Pageable
 import org.springframework.http.HttpHeaders
 import org.springframework.http.MediaType
 import org.springframework.http.ResponseEntity
+import org.springframework.security.access.prepost.PreAuthorize
 import org.springframework.web.bind.annotation.RestController
 import org.springframework.web.multipart.MultipartFile
 
@@ -19,6 +20,7 @@ class ProjectFileController(
     private val fileStorageService: FileStorageService
 ) : ProjectFileApi {
 
+    @PreAuthorize("@projectAuthorization.canAccessProject(#projectId)")
     override fun uploadProjectFile(projectId: Long, file: MultipartFile) {
         fileStorageService.saveFile(
             file.inputStream,
@@ -26,9 +28,11 @@ class ProjectFileController(
                 name = file.originalFilename ?: file.name,
                 projectId = projectId,
                 size = file.size
-            ))
+            )
+        )
     }
 
+    @PreAuthorize("@projectAuthorization.canAccessProject(#projectId)")
     override fun downloadFile(projectId: Long, fileId: Long): ResponseEntity<ByteArrayResource> {
         val data = fileStorageService.downloadFile(projectId, fileId)
         return ResponseEntity.ok()
@@ -38,10 +42,12 @@ class ProjectFileController(
             .body(ByteArrayResource(data.second))
     }
 
+    @PreAuthorize("@projectAuthorization.canAccessProject(#projectId)")
     override fun getFilesForProject(projectId: Long, pageable: Pageable): Page<OutputProjectFile> {
         return fileStorageService.getFilesForProject(projectId, pageable)
     }
 
+    @PreAuthorize("@projectAuthorization.canAccessProject(#projectId)")
     override fun setDescriptionToFile(
         projectId: Long,
         fileId: Long,
@@ -50,8 +56,8 @@ class ProjectFileController(
         return fileStorageService.setDescription(projectId, fileId, projectFileDescription.description)
     }
 
+    @PreAuthorize("@projectAuthorization.canAccessProject(#projectId)")
     override fun deleteFile(projectId: Long, fileId: Long) {
         fileStorageService.deleteFile(projectId, fileId)
     }
-
 }

@@ -23,9 +23,9 @@ import io.mockk.impl.annotations.MockK
 import io.mockk.impl.annotations.RelaxedMockK
 import io.mockk.slot
 import io.mockk.verify
+import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertIterableEquals
-import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
@@ -63,11 +63,13 @@ class ProjectServiceTest {
 
     @MockK
     lateinit var projectRepository: ProjectRepository
+
     @MockK
     lateinit var accountRepository: AccountRepository
 
     @RelaxedMockK
     lateinit var auditService: AuditService
+
     @MockK
     lateinit var securityService: SecurityService
 
@@ -115,7 +117,7 @@ class ProjectServiceTest {
     @Test
     fun projectRetrieval_applicant() {
         every { securityService.currentUser } returns
-            LocalCurrentUser(user, "hash_pass", listOf(SimpleGrantedAuthority("ROLE_$APPLICANT_USER")))
+                LocalCurrentUser(user, "hash_pass", listOf(SimpleGrantedAuthority("ROLE_$APPLICANT_USER")))
         every { projectRepository.findAllByApplicant_Id(eq(user.id!!), UNPAGED) } returns PageImpl(emptyList())
 
         assertEquals(0, projectService.getProjects(UNPAGED).totalElements)
@@ -142,15 +144,15 @@ class ProjectServiceTest {
 
     @Test
     fun projectGet_OK() {
-        every { projectRepository.findById(eq(1)) } returns Optional.of(Project(1, "test", account, TEST_DATE))
+        every { projectRepository.findOneById(eq(1)) } returns
+                Project(1, "test", account, TEST_DATE)
 
         val result = projectService.getProjectById(1);
-        assertTrue(result.isPresent)
-        with(result.get()) {
-            assertEquals(1, id)
-            assertEquals("test", acronym)
-            assertEquals(TEST_DATE, submissionDate)
-        }
+
+        assertThat(result).isNotNull()
+        assertThat(result.id).isEqualTo(1);
+        assertThat(result.acronym).isEqualTo("test")
+        assertThat(result.submissionDate).isEqualTo(TEST_DATE);
     }
 
     private fun verifyAudit(projectIdExpected: String) {

@@ -5,7 +5,7 @@ import io.cloudflight.ems.entity.AccountRole
 import io.cloudflight.ems.repository.AccountRepository
 import io.cloudflight.ems.repository.AccountRoleRepository
 import io.cloudflight.ems.security.ADMINISTRATOR
-import io.cloudflight.ems.security.PROGRAMME_USER
+import io.cloudflight.ems.security.APPLICANT_USER
 import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.stereotype.Component
 import javax.transaction.Transactional
@@ -19,7 +19,7 @@ class AccountFactory(
 
     val adminAccount: Account = saveAdminAccount(ADMINISTRATOR_EMAIL)
 
-    val programmeAccount: Account = saveProgrammeUser(PROGRAMME_USER_EMAIL)
+    val applicantAccount: Account = saveApplicantUser(APPLICANT_USER_EMAIL)
 
     @Transactional
     fun saveRole(roleName: String): AccountRole {
@@ -47,13 +47,13 @@ class AccountFactory(
         return saveAccount(email, adminRole)
     }
 
-    fun saveProgrammeUser(email: String): Account {
-        val programmeRole = saveRole(PROGRAMME_USER)
+    fun saveApplicantUser(email: String): Account {
+        val programmeRole = saveRole(APPLICANT_USER)
         return saveAccount(email, programmeRole)
     }
 
     companion object {
         const val ADMINISTRATOR_EMAIL = "administrator@email.com"
-        const val PROGRAMME_USER_EMAIL = "programme_user@email.com"
+        const val APPLICANT_USER_EMAIL = "applicant_user@email.com"
     }
 }
