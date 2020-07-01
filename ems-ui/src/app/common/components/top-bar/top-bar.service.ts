@@ -1,44 +1,46 @@
 import {Injectable} from '@angular/core';
-import {Observable, ReplaySubject} from 'rxjs';
+import {combineLatest, Observable, ReplaySubject} from 'rxjs';
 import {MenuItemConfiguration} from '../menu/model/menu-item.configuration';
 import {PermissionService} from '../../../security/permissions/permission.service';
 import {Permission} from '../../../security/permissions/permission';
 import {Router} from '@angular/router';
 import {filter, take} from 'rxjs/operators';
 import {SecurityService} from '../../../security/security.service';
+import {OutputCurrentUser} from '@cat/api';
 
 @Injectable()
 export class TopBarService {
 
   private menuItems$ = new ReplaySubject<MenuItemConfiguration[]>(1);
-  private auditUrl = '';
-  private applicationsItem =
-    new MenuItemConfiguration({
-      name: 'Project Applications',
-      isInternal: true,
-      route: '/',
-      action: (internal: boolean, route: string) => this.handleNavigation(internal, route),
-    });
-  private auditItem =
-    new MenuItemConfiguration({
-      name: 'Audit Log',
-      isInternal: false,
-      route: this.auditUrl,
-      action: (internal: boolean, route: string) => this.handleNavigation(internal, route),
-    });
-  private usersItem =
-    new MenuItemConfiguration({
-      name: 'User Management',
-      isInternal: true,
-      route: '/user',
-      action: (internal: boolean, route: string) => this.handleNavigation(internal, route),
-    });
+  private newAuditUrl$ = new ReplaySubject<string>(1);
+
+  private applicationsItem = {
+    name: 'Project Applications',
+    isInternal: true,
+    route: '/',
+    action: (internal: boolean, route: string) => this.handleNavigation(internal, route),
+  };
+  private usersItem = {
+    name: 'User Management',
+    isInternal: true,
+    route: '/user',
+    action: (internal: boolean, route: string) => this.handleNavigation(internal, route),
+  };
+  private auditItem: MenuItemConfiguration;
+  private editUserItem: MenuItemConfiguration;
 
   constructor(private permissionService: PermissionService,
               private securityService: SecurityService,
               private router: Router) {
-    this.permissionService.permissionsChanged()
-      .subscribe(() => this.adaptMenuItems())
+    combineLatest([
+      this.permissionService.permissionsChanged(),
+      this.newAuditUrl$,
+      this.securityService.currentUser
+    ])
+      .subscribe(([perm, auditUrl, currentUser]) => {
+        this.adaptMenuItems(auditUrl, currentUser);
+        this.assingMenuItemsToUser();
+      });
   }
 
   menuItems(): Observable<MenuItemConfiguration[]> {
@@ -46,7 +48,7 @@ export class TopBarService {
   }
 
   newAuditUrl(auditUrl: string): void {
-    this.auditUrl = auditUrl;
+    this.newAuditUrl$.next(auditUrl);
   }
 
   logout(): void {
@@ -54,27 +56,57 @@ export class TopBarService {
     this.router.navigate(['/login']);
   }
 
-  private adaptMenuItems(): void {
+  private adaptMenuItems(auditUrl: string, currentUser: OutputCurrentUser | null): void {
+    this.auditItem = {
+      name: 'Audit Log',
+      isInternal: false,
+      route: auditUrl,
+      action: (internal: boolean, route: string) => this.handleNavigation(internal, route),
+    };
+    if (!currentUser) {
+      return;
+    }
+    this.editUserItem = {
+      name: `${currentUser?.name} (${currentUser?.role})`,
+      isInternal: true,
+      route: `/user/${currentUser?.id}`,
+      action: (internal: boolean, route: string) => this.handleNavigation(internal, route)
+    };
+  }
+
+  assingMenuItemsToUser(): void {
     this.permissionService.hasPermission(Permission.APPLICANT_USER)
       .pipe(
         take(1),
         filter(canSee => canSee),
       )
-      .subscribe(() => this.menuItems$.next([this.applicationsItem]));
+      .subscribe(() => this.menuItems$.next([
+        this.applicationsItem,
+        this.editUserItem
+      ]));
 
     this.permissionService.hasPermission(Permission.PROGRAMME_USER)
       .pipe(
         take(1),
         filter(canSee => canSee),
       )
-      .subscribe(() => this.menuItems$.next([this.applicationsItem, this.auditItem]));
+      .subscribe(() => this.menuItems$.next([
+        this.applicationsItem,
+        this.auditItem,
+        this.editUserItem
+      ]));
 
     this.permissionService.hasPermission(Permission.ADMINISTRATOR)
       .pipe(
         take(1),
-        filter((canDoAnything: boolean) => canDoAnything),
+        filter(canSee => canSee),
       )
-      .subscribe(() => this.menuItems$.next([this.applicationsItem, this.auditItem, this.usersItem]));
+      .subscribe(() => this.menuItems$.next([
+        this.applicationsItem,
+        this.auditItem,
+        this.usersItem,
+        this.editUserItem
+      ]));
   }
 
   private handleNavigation(internalRoute: boolean, route: string): void {

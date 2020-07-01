@@ -29,6 +29,7 @@ export class SecurityService {
   login(loginRequest: LoginRequest): Observable<OutputCurrentUser | null> {
     return this.authenticationService.login(loginRequest)
       .pipe(
+        tap(user => console.log('User logged in', user)),
         tap((user: OutputCurrentUser) => this.authenticationHolder.currentUsername = user.name),
         tap((user: OutputCurrentUser) => this.myCurrentUser.next(user)),
       );
@@ -36,6 +37,9 @@ export class SecurityService {
 
   reloadCurrentUser(): void {
     this.authenticationService.getCurrentUser()
+      .pipe(
+        tap(user => console.log('Current user loaded', user))
+      )
       .subscribe(
         (value: OutputCurrentUser) => this.myCurrentUser.next(value),
         () => this.myCurrentUser.next(null)
@@ -49,6 +53,10 @@ export class SecurityService {
 
   async logout() {
     this.clearAuthentication();
-    await this.authenticationService.logout().toPromise();
+    await this.authenticationService.logout()
+      .pipe(
+        tap(() => console.log('Current user logged out', this.authenticationHolder.currentUsername))
+      )
+      .toPromise();
   }
 }

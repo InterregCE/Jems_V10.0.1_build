@@ -5,12 +5,6 @@
             <span class="d-inline-block">
                 <app-menu [items]="menuItems | async"></app-menu>
             </span>
-            <span class="d-inline-block pr-3">
-                {{user.name}}
-            </span>
-            <span *ngIf="user.role" class="d-inline-block pr-3">
-                ({{user.role}})
-            </span>
             <span class="d-inline-block">
                 <button mat-flat-button (click)="logout()">Logout</button>
             </span>
