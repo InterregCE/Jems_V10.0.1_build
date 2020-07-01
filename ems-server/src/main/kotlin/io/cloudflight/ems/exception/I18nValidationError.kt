@@ -8,4 +8,4 @@ data class I18nValidationError(
     val httpStatus: HttpStatus,
     val i18nFieldErrors: Map<String, I18nFieldError>? = null,
     val additionalInfo: String? = null
-) : Exception()
+)

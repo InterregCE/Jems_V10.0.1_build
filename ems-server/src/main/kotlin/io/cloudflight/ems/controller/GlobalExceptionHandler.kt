@@ -3,6 +3,7 @@ package io.cloudflight.ems.controller
 import io.cloudflight.ems.exception.DuplicateFileException
 import io.cloudflight.ems.exception.I18nFieldError
 import io.cloudflight.ems.exception.I18nValidationError
+import io.cloudflight.ems.exception.I18nValidationException
 import io.cloudflight.ems.exception.ResourceNotFoundException
 import org.springframework.core.NestedRuntimeException
 import org.springframework.http.HttpHeaders
@@ -45,28 +46,29 @@ class GlobalExceptionHandler : ResponseEntityExceptionHandler() {
             )
     }
 
-    @ExceptionHandler(I18nValidationError::class)
-    fun customErrorTransformer(exception: I18nValidationError): ResponseEntity<Any?> {
+    @ExceptionHandler(I18nValidationException::class)
+    fun customErrorTransformer(exception: I18nValidationException): ResponseEntity<I18nValidationError> {
         return ResponseEntity
             .status(exception.httpStatus)
-            .body(exception)
+            .body(exception.getData())
     }
 
     override fun handleMethodArgumentNotValid(
         ex: MethodArgumentNotValidException, headers: HttpHeaders?,
         status: HttpStatus?, request: WebRequest?
-    ): ResponseEntity<Any?>? {
-        val fieldErrors = ex.bindingResult.fieldErrors.associateBy(
-            { it.field }, { I18nFieldError(it.defaultMessage) }
-        )
-        val typeError = ex.bindingResult.globalError?.defaultMessage
+    ): ResponseEntity<Any> {
+        val result = ex.bindingResult
 
-        return customErrorTransformer(
-            I18nValidationError(
-                i18nKey = typeError,
-                i18nFieldErrors = fieldErrors,
-                httpStatus = HttpStatus.BAD_REQUEST
+        return ResponseEntity
+            .status(HttpStatus.BAD_REQUEST)
+            .body(
+                I18nValidationError(
+                    httpStatus = HttpStatus.BAD_REQUEST,
+                    i18nKey = result.globalError?.defaultMessage,
+                    i18nFieldErrors = result.fieldErrors.associateBy(
+                        { it.field }, { I18nFieldError(it.defaultMessage) }
+                    )
+                )
             )
-        )
     }
 }

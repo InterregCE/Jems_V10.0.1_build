@@ -9,7 +9,7 @@ import io.cloudflight.ems.entity.Account
 import io.cloudflight.ems.entity.AccountRole
 import io.cloudflight.ems.entity.Audit
 import io.cloudflight.ems.exception.I18nFieldError
-import io.cloudflight.ems.exception.I18nValidationError
+import io.cloudflight.ems.exception.I18nValidationException
 import io.cloudflight.ems.exception.ResourceNotFoundException
 import io.cloudflight.ems.repository.AccountRepository
 import io.cloudflight.ems.repository.AccountRoleRepository
@@ -59,7 +59,7 @@ class UserServiceImpl(
     override fun create(user: InputUserCreate): OutputUser {
         val role = accountRoleRepository.findById(user.accountRoleId!!)
         if (role.isEmpty)
-            throw I18nValidationError(
+            throw I18nValidationException(
                 httpStatus = HttpStatus.UNPROCESSABLE_ENTITY,
                 i18nFieldErrors = mapOf("accountRoleId" to I18nFieldError("user.accountRoleId.does.not.exist"))
             )

@@ -12,7 +12,7 @@ import io.cloudflight.ems.entity.AccountRole
 import io.cloudflight.ems.entity.Audit
 import io.cloudflight.ems.entity.AuditAction
 import io.cloudflight.ems.exception.I18nFieldError
-import io.cloudflight.ems.exception.I18nValidationError
+import io.cloudflight.ems.exception.I18nValidationException
 import io.cloudflight.ems.exception.ResourceNotFoundException
 import io.cloudflight.ems.repository.AccountRepository
 import io.cloudflight.ems.repository.AccountRoleRepository
@@ -123,7 +123,7 @@ class UserServiceTest {
             accountRoleId = 10 // does not exist
         )
 
-        val exception = assertThrows<I18nValidationError> { userService.create(account) }
+        val exception = assertThrows<I18nValidationException> { userService.create(account) }
         assertEquals(HttpStatus.UNPROCESSABLE_ENTITY, exception.httpStatus)
 
         val expectedErrors = mapOf(
