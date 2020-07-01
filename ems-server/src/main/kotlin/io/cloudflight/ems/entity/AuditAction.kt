@@ -10,4 +10,5 @@ enum class AuditAction() {
     USER_REGISTERED,
     USER_ROLE_CHANGED,
     PASSWORD_CHANGED,
+    USER_DATA_CHANGED,
 }
