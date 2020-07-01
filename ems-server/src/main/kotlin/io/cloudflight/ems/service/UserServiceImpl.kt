@@ -78,7 +78,7 @@ class UserServiceImpl(
             throw ResourceNotFoundException()
         }
 
-        val passwordEncoded = passwordEncoder.encode(user.email);
+        val passwordEncoded = passwordEncoder.encode(user.password);
         val createdUser = accountRepository.save(user.toEntity(role, passwordEncoded)).toOutputUser()
         auditService.logEvent(Audit.applicantRegistered(createdUser))
         return createdUser
