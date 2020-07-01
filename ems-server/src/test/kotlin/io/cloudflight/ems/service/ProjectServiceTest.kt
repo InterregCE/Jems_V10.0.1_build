@@ -85,7 +85,7 @@ class ProjectServiceTest {
     @ValueSource(strings = [ADMINISTRATOR, PROGRAMME_USER])
     fun projectRetrieval_admin(role: String) {
         every { securityService.currentUser } returns
-            LocalCurrentUser(user, "hash_pass", listOf(SimpleGrantedAuthority(role)))
+            LocalCurrentUser(user, "hash_pass", listOf(SimpleGrantedAuthority("ROLE_$role")))
 
         val projectToReturn = Project(
             id = 25,
