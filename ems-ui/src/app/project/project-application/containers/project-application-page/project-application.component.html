@@ -5,6 +5,7 @@
             <app-project-application-submission
                     [success]="success"
                     [error]="error"
+                    [disableButton]="disableButton() | async"
                     (submitProjectApplication)="submitProjectApplication($event)"
             ></app-project-application-submission>
         </div>

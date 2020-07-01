@@ -3,6 +3,7 @@ import {InputProject, OutputProject, ProjectService} from '@cat/api';
 import {MatTableDataSource} from '@angular/material/table';
 import {ProjectApplicationSubmissionComponent} from '../../components/project-application-submission/project-application-submission.component';
 import {I18nValidationError} from '@common/validation/i18n-validation-error';
+import {Observable, Subject} from 'rxjs';
 
 @Component({
   selector: 'app-project-application',
@@ -17,6 +18,7 @@ export class ProjectApplicationComponent implements OnInit {
   success = false;
   error: I18nValidationError;
   dataSource: MatTableDataSource<OutputProject>;
+  disableButton$ = new Subject<boolean>();
 
   constructor(private projectService: ProjectService) {
   }
@@ -25,14 +27,21 @@ export class ProjectApplicationComponent implements OnInit {
     this.getProjectsFromServer();
   }
 
+  disableButton(): Observable<boolean> {
+    return this.disableButton$.asObservable();
+  }
+
   submitProjectApplication(project: InputProject) {
+    this.disableButton$.next(true);
     this.success = false;
     this.projectService.createProject(project).toPromise()
       .then(() => {
+        this.disableButton$.next(false);
         this.success = true;
         this.getProjectsFromServer();
       })
       .catch((response: any) => {
+        this.disableButton$.next(false);
         this.error = response.error;
       });
   }

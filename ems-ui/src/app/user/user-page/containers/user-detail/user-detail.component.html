@@ -3,6 +3,7 @@
                    [user]="user"
                    [success]="saveSuccess$ | async"
                    [userRoles]="roles"
+                   [disableButton]="disableEditButton$ | async"
                    [error]="saveError$"
                    (submitUser)="updateUser($event)">
     </app-user-edit>

@@ -50,7 +50,7 @@
         <button mat-raised-button
                 color="primary"
                 type="submit"
-                [disabled]="userForm.invalid">
+                [disabled]="userForm.invalid || disableButton">
             + Add User
         </button>
     </form>

@@ -17,6 +17,7 @@ export class UserPageComponent {
   userRoles$ = this.rolePageService.userRoles();
   saveSuccess$ = this.userDetailService.saveSuccess();
   saveError$ = this.userDetailService.saveError();
+  disableSaveButton$  =this.userDetailService.disableSaveButton();
 
   constructor(private userPageService: UserPageService,
               private userDetailService: UserDetailService,
