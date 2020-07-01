@@ -1,4 +1,4 @@
-import {Component, Input, OnInit} from '@angular/core';
+import {ChangeDetectionStrategy, Component, Input, OnInit} from '@angular/core';
 import {ConfirmDialogComponent} from '@common/components/modals/confirm-dialog/confirm-dialog.component';
 import {take} from 'rxjs/operators';
 import {MatDialog} from '@angular/material/dialog';
@@ -8,18 +8,19 @@ import {FormControl, Validators} from '@angular/forms';
 @Component({
   selector: 'app-user-role-form-field',
   templateUrl: './user-role-form-field.component.html',
-  styleUrls: ['./user-role-form-field.component.scss']
+  styleUrls: ['./user-role-form-field.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class UserRoleFormFieldComponent implements OnInit {
 
   @Input()
   userRole: OutputUserRole;
-
   @Input()
   roleControl: FormControl;
-
   @Input()
   roles: OutputUserRole[];
+  @Input()
+  editMode = false;
 
   roleErrors = {
     required: 'user.accountRoleId.should.not.be.empty'

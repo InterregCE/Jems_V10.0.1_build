@@ -7,9 +7,9 @@ import {UserDetailService} from '../user-detail/user-detail.service';
 @Injectable()
 export class UserPageService {
 
-  private initialPage = {page: 0, size: 100, sort: 'id,desc'};
+  private INITIAL_PAGE = {page: 0, size: 100, sort: 'id,desc'};
   private currentPage$ = new ReplaySubject<any>(1);
-  private userSaveAsPage$ = this.userDetailService.saveSuccess()
+  private userSaveAsPage$ = this.userDetailService.userSavedEvent()
     .pipe(
       map(() => this.initialPage)
     )
@@ -28,7 +28,7 @@ export class UserPageService {
 
   constructor(private userService: UserService,
               private userDetailService: UserDetailService) {
-    this.newPage(this.initialPage.page, this.initialPage.size, this.initialPage.sort)
+    this.initialPage();
   }
 
   /**
@@ -45,5 +45,9 @@ export class UserPageService {
 
   newPage(page?: number, size?: number, sort?: string): void {
     this.currentPage$.next({page, size, sort});
+  }
+
+  initialPage(): void {
+    this.newPage(this.INITIAL_PAGE.page, this.INITIAL_PAGE.size, this.INITIAL_PAGE.sort);
   }
 }

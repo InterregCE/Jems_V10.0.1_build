@@ -1,10 +1,11 @@
-import {ChangeDetectorRef, Input, OnDestroy, OnInit} from '@angular/core';
-import {Observable, Subject} from 'rxjs';
+import {ChangeDetectorRef, Input, OnInit} from '@angular/core';
+import {Observable} from 'rxjs';
 import {FormGroup} from '@angular/forms';
 import {I18nValidationError} from '../../validation/i18n-validation-error';
 import {takeUntil} from 'rxjs/operators';
+import {BaseComponent} from '@common/components/base-component';
 
-export abstract class AbstractForm implements OnDestroy, OnInit {
+export abstract class AbstractForm extends BaseComponent implements OnInit {
 
   @Input()
   error$: Observable<I18nValidationError | null>;
@@ -13,40 +14,32 @@ export abstract class AbstractForm implements OnDestroy, OnInit {
 
   validationError?: string;
   submitted = false;
-
-  destroyed$ = new Subject();
+  clearOnSuccess = false;
 
   protected constructor(protected changeDetectorRef: ChangeDetectorRef) {
-  }
-
-  ngOnDestroy() {
-    this.destroyed$.next();
-    this.destroyed$.complete();
+    super();
   }
 
   abstract getForm(): FormGroup | null;
 
-  abstract isClearable(): boolean | null;
-
   ngOnInit(): void {
-    const formGroup = this.getForm();
-    if (!formGroup) {
-      return;
-    }
-
     if (this.error$) {
-      this.handleError(formGroup);
+      this.handleError();
     }
 
     if (this.success$) {
-      this.handleSuccess(formGroup);
+      this.handleSuccess();
     }
   }
 
-  private handleError(formGroup: FormGroup): void {
+  private handleError(): void {
     this.error$
       .pipe(takeUntil(this.destroyed$))
       .subscribe((error: I18nValidationError) => {
+        const formGroup = this.getForm();
+        if (!formGroup) {
+          return;
+        }
         this.submitted = false;
         this.validationError = error?.i18nKey;
         Object.keys(formGroup.controls).forEach(key => {
@@ -61,17 +54,22 @@ export abstract class AbstractForm implements OnDestroy, OnInit {
       });
   }
 
-  private handleSuccess(formGroup: FormGroup): void {
+  private handleSuccess(): void {
     this.success$
       .pipe(takeUntil(this.destroyed$))
       .subscribe(() => {
         this.submitted = false;
-        if (this.isClearable()) {
-          formGroup.reset();
-          Object.keys(formGroup.controls).forEach(key => {
-            formGroup.get(key)?.setErrors(null);
-          });
+        if (!this.clearOnSuccess) {
+          return;
         }
+        const formGroup = this.getForm();
+        if (!formGroup) {
+          return;
+        }
+        formGroup.reset();
+        Object.keys(formGroup.controls).forEach(key => {
+          formGroup.get(key)?.setErrors(null);
+        });
       });
   }
 
