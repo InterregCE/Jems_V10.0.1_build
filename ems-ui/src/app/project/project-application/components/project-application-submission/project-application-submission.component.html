@@ -22,7 +22,7 @@
         <button mat-raised-button
                 color="primary"
                 type="submit"
-                [disabled]="submissionForm.invalid">
+                [disabled]="submissionForm.invalid || disableButton">
             + Create Project Application
         </button>
     </form>

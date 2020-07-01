@@ -15,6 +15,8 @@ export class UserSubmissionComponent extends AbstractForm {
   @Input()
   success: boolean;
   @Input()
+  disableButton: boolean;
+  @Input()
   userRoles: OutputUserRole[];
   @Output()
   submitUser: EventEmitter<InputUserCreate> = new EventEmitter<InputUserCreate>();

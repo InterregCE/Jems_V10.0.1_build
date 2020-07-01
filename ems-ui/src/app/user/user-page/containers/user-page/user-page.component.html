@@ -6,6 +6,7 @@
             <app-user-submission
                     [success]="saveSuccess$ | async"
                     [userRoles]="userRoles$ | async"
+                    [disableButton]="disableSaveButton$ | async"
                     [error]="saveError$"
                     (submitUser)="createUser($event)"
             ></app-user-submission>

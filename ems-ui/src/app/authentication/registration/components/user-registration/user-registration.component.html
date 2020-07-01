@@ -67,7 +67,7 @@
                                 color="primary"
                                 (click)="onSubmit(formDirective)"
                                 class="register-button"
-                                [disabled]="userForm.invalid">
+                                [disabled]="userForm.invalid || disableButton">
                             Register
                         </button>
                     <div *ngIf="success"
