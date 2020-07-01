@@ -46,6 +46,6 @@ interface UserApi {
 
     @ApiOperation("Changes user password")
     @PutMapping("/{userId}", consumes = [MediaType.APPLICATION_JSON_VALUE])
-    fun changePassword(@PathVariable userId: Long, @Valid @RequestBody password: InputPassword)
+    fun changePassword(@PathVariable userId: Long, @Valid @RequestBody passwordData: InputPassword)
 
 }

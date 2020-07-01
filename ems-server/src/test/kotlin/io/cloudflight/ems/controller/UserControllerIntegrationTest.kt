@@ -218,7 +218,7 @@ class UserControllerIntegrationTest {
             put("/api/user/${accountFactory.adminAccount.id}")
                 .accept(MediaType.APPLICATION_JSON_VALUE)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .content(jsonMapper.writeValueAsString(InputPassword("short")))
+                .content(jsonMapper.writeValueAsString(InputPassword("short", null)))
         )
             .andExpect(status().isBadRequest)
             .andExpect(
@@ -234,7 +234,7 @@ class UserControllerIntegrationTest {
             put("/api/user/${accountFactory.adminAccount.id}")
                 .accept(MediaType.APPLICATION_JSON_VALUE)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .content(jsonMapper.writeValueAsString(InputPassword("password_long_enough")))
+                .content(jsonMapper.writeValueAsString(InputPassword("password_long_enough", null)))
         )
             .andExpect(status().isOk)
     }
