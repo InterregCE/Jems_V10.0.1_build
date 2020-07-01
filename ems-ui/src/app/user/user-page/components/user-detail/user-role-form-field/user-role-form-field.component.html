@@ -1,0 +1,17 @@
+<mat-form-field>
+    <mat-label>Role</mat-label>
+    <mat-select required panelClass="material-select-panel"
+                [formControl]="roleControl"
+                [disableOptionCentering]="true"
+                (selectionChange)="roleChanged()">
+        <mat-option *ngFor="let role of roles" [value]="role">
+            {{role.name}}
+        </mat-option>
+    </mat-select>
+    <mat-error>
+        <app-form-field-errors
+                [errors]="roleControl?.errors"
+                [messages]="roleErrors">
+        </app-form-field-errors>
+    </mat-error>
+</mat-form-field>

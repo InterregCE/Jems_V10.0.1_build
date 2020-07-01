@@ -12,6 +12,7 @@ import {UserDetailService} from './user-page/services/user-detail/user-detail.se
 import {UserDetailComponent} from './user-page/containers/user-detail/user-detail.component';
 import {MatCardModule} from '@angular/material/card';
 import {RolePageService} from './user-role/services/role-page/role-page.service';
+import {UserRoleFormFieldComponent} from './user-page/components/user-detail/user-role-form-field/user-role-form-field.component';
 
 @NgModule({
   declarations: [
@@ -20,6 +21,7 @@ import {RolePageService} from './user-role/services/role-page/role-page.service'
     UserSubmissionComponent,
     UserDetailComponent,
     UserEditComponent,
+    UserRoleFormFieldComponent
   ],
   imports: [
     SharedModule,
