@@ -8,11 +8,11 @@ interface CurrentUser {
     val user: OutputUser
 
     val isAdmin: Boolean
-        get() = hasRole("ROLE_${ADMINISTRATOR}")
+        get() = hasRole(ADMINISTRATOR)
 
     fun getAuthorities(): Collection<GrantedAuthority>
 
     fun hasRole(role: String): Boolean {
-        return getAuthorities().stream().anyMatch { r -> r.authority.equals(role, ignoreCase = true) }
+        return getAuthorities().stream().anyMatch { r -> r.authority.equals("ROLE_$role", ignoreCase = true) }
     }
 }
