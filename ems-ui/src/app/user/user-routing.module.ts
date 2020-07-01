@@ -23,7 +23,7 @@ const routes: Routes = [
   {
     path: 'user/:userId',
     component: UserDetailComponent,
-    canActivate: [AuthenticationGuard, NgxPermissionsGuard],
+    canActivate: [AuthenticationGuard],
     data: userGuard
   }
 ];

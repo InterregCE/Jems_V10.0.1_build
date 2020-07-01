@@ -1,13 +1,9 @@
-<app-user-edit *ngIf="user$ | async as user; else userNotFound"
-               [user]="user"
-               [success]="saveSuccess$ | async"
-               [userRoles]="userRoles$ | async"
-               [error]="saveError$"
-               (submitUser)="updateUser($event)">
-</app-user-edit>
-
-<ng-template #userNotFound>
-    <div class="alert alert-danger" id="errorMessage" role="alert">
-        {{'user.does.not.exist' | translate }}
-    </div>
-</ng-template>
+<ng-container *ngIf="userRoles$ | async as roles">
+    <app-user-edit *ngIf="user$ | async as user"
+                   [user]="user"
+                   [success]="saveSuccess$ | async"
+                   [userRoles]="roles"
+                   [error]="saveError$"
+                   (submitUser)="updateUser($event)">
+    </app-user-edit>
+</ng-container>

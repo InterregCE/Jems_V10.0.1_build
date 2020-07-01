@@ -4,26 +4,41 @@ import {TestModule} from '../../test-module';
 import {PermissionService} from '../../../security/permissions/permission.service';
 import {MenuItemConfiguration} from '@common/components/menu/model/menu-item.configuration';
 import {Permission} from '../../../security/permissions/permission';
+import {SecurityService} from '../../../security/security.service';
+import {HttpTestingController} from '@angular/common/http/testing';
 
 describe('TopBarService', () => {
-  beforeEach(() => TestBed.configureTestingModule({
-    imports: [TestModule],
-    providers: [
-      {
-        provide: TopBarService,
-        useClass: TopBarService
-      },
-    ]
-  }));
+  let httpTestingController: HttpTestingController;
+  let service: TopBarService;
+
+  beforeEach(() => {
+    TestBed.configureTestingModule({
+      imports: [TestModule],
+      providers: [
+        {
+          provide: TopBarService,
+          useClass: TopBarService
+        },
+      ]
+    });
+    httpTestingController = TestBed.inject(HttpTestingController);
+    service = TestBed.inject(TopBarService);
+  });
 
   it('should be created', () => {
-    const service: TopBarService = TestBed.inject(TopBarService);
     expect(service).toBeTruthy();
   });
 
   it('should create menus depending on rights', fakeAsync(() => {
-    const service: TopBarService = TestBed.inject(TopBarService);
     const permissionService: PermissionService = TestBed.inject(PermissionService);
+    const securityService: SecurityService = TestBed.inject(SecurityService);
+    securityService.reloadCurrentUser();
+    service.newAuditUrl('auditUrl');
+
+    httpTestingController.expectOne({
+      method: 'GET',
+      url: `//api/auth/current`
+    }).flush({id: 1, name: 'user', role: 'role'});
 
     let menuItems: MenuItemConfiguration[] = [];
     service.menuItems()
@@ -31,15 +46,14 @@ describe('TopBarService', () => {
 
     permissionService.setPermissions([Permission.ADMINISTRATOR]);
     tick();
-    expect(menuItems.length).toBe(3);
+    expect(menuItems.length).toBe(4);
 
     permissionService.setPermissions([Permission.PROGRAMME_USER]);
     tick();
-    expect(menuItems.length).toBe(2);
+    expect(menuItems.length).toBe(3);
 
     permissionService.setPermissions([Permission.APPLICANT_USER]);
     tick();
-    expect(menuItems.length).toBe(1);
-    expect(menuItems[0].name).toBe('Project Applications');
+    expect(menuItems.length).toBe(2);
   }));
 });
