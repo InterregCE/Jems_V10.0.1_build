@@ -213,7 +213,7 @@ class UserControllerIntegrationTest {
 
     @Test
     @WithUserDetails(value = ADMINISTRATOR_EMAIL)
-    fun `change password short` () {
+    fun `change password short`() {
         mockMvc.perform(
             put("/api/user/${accountFactory.adminAccount.id}")
                 .accept(MediaType.APPLICATION_JSON_VALUE)
@@ -229,7 +229,7 @@ class UserControllerIntegrationTest {
 
     @Test
     @WithUserDetails(value = ADMINISTRATOR_EMAIL)
-    fun `change password long` () {
+    fun `change password long`() {
         mockMvc.perform(
             put("/api/user/${accountFactory.adminAccount.id}")
                 .accept(MediaType.APPLICATION_JSON_VALUE)

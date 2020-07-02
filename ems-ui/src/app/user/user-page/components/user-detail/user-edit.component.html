@@ -16,24 +16,12 @@
                     <mat-label>Email</mat-label>
                     <input name="email" formControlName="email" matInput placeholder="Email">
                 </mat-form-field>
-                <div class="form-group row">
-                    <mat-form-field>
-                        <mat-label>Role</mat-label>
-                        <mat-select formControlName="role"
-                                    required panelClass="material-select-panel"
-                                    [disableOptionCentering]="true"
-                                    (selectionChange)="roleChanged()">
-                            <mat-option *ngFor="let role of userRoles" [value]="role">
-                                {{role.name}}
-                            </mat-option>
-                        </mat-select>
-                        <mat-error>
-                            <app-form-field-errors
-                                    [errors]="userForm?.controls?.role?.errors"
-                                    [messages]="roleErrors">
-                            </app-form-field-errors>
-                        </mat-error>
-                    </mat-form-field>
+                <div *ngxPermissionsOnly="[Permission.ADMINISTRATOR]" class="form-group row">
+                    <app-user-role-form-field
+                            [userRole]="user?.userRole"
+                            [roleControl]="userForm?.controls?.role"
+                            [roles]="userRoles">
+                    </app-user-role-form-field>
                 </div>
                 <div class="row">
                     <button mat-raised-button

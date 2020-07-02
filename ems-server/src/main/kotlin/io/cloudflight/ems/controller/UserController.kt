@@ -32,7 +32,7 @@ class UserController(
         return userService.getById(id)
     }
 
-    @PreAuthorize("@userAuthorization.canUpdateUser(#user?.id)")
+    @PreAuthorize("@userAuthorization.canUpdateUser(#user)")
     override fun update(user: InputUserUpdate): OutputUser {
         return userService.update(user)
     }
