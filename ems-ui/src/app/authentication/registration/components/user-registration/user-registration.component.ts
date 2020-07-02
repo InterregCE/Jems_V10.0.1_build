@@ -77,14 +77,17 @@ export class UserRegistrationComponent extends AbstractForm implements OnInit{
     return this.userForm;
   }
 
-  onSubmit(formDirective: FormGroupDirective): void {
+  isClearable(): boolean | null {
+    return true;
+  }
+
+  onSubmit(): void {
     this.submitUser.emit({
       name: this.userForm?.controls?.name?.value,
       surname: this.userForm?.controls?.surname?.value,
       email: this.userForm?.controls?.email.value,
       password: this.userForm?.controls?.password?.value
     });
-    formDirective.resetForm();
   }
 
   redirectToLogin() {

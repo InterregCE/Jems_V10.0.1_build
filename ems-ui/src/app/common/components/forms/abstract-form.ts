@@ -26,6 +26,8 @@ export abstract class AbstractForm implements OnDestroy, OnInit {
 
   abstract getForm(): FormGroup | null;
 
+  abstract isClearable(): boolean | null;
+
   ngOnInit(): void {
     const formGroup = this.getForm();
     if (!formGroup) {
@@ -62,7 +64,15 @@ export abstract class AbstractForm implements OnDestroy, OnInit {
   private handleSuccess(formGroup: FormGroup): void {
     this.success$
       .pipe(takeUntil(this.destroyed$))
-      .subscribe(() => this.submitted = false);
+      .subscribe(() => {
+        this.submitted = false;
+        if (this.isClearable()) {
+          formGroup.reset();
+          Object.keys(formGroup.controls).forEach(key => {
+            formGroup.get(key)?.setErrors(null);
+          });
+        }
+      });
   }
 
 }

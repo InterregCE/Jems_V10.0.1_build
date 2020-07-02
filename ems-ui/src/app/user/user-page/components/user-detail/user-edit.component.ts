@@ -46,6 +46,10 @@ export class UserEditComponent extends AbstractForm implements OnInit {
     return this.userForm;
   }
 
+  isClearable(): boolean | null {
+    return false;
+  }
+
   onSubmit(): void {
     this.submitted = true;
     this.submitUser.emit({
