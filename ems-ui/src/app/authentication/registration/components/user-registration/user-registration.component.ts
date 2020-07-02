@@ -27,7 +27,7 @@ export class UserRegistrationComponent extends AbstractForm implements OnInit{
     name: ['', Validators.compose([
       Validators.required,
       Validators.maxLength(50),
-      Validators.minLength(2),
+      Validators.minLength(1),
     ])],
     surname: ['', Validators.compose([
       Validators.required,
