@@ -16,9 +16,7 @@ export class ProjectApplicationSubmissionComponent {
   @Input()
   error: I18nValidationError;
   @Input()
-  disableButton: boolean;
-
-
+  submitted = false;
   @Output()
   submitProjectApplication: EventEmitter<InputProject> = new EventEmitter<InputProject>();
 

@@ -27,11 +27,11 @@
                     <button mat-raised-button
                             color="primary"
                             type="submit"
-                            [disabled]="userForm.invalid || disableButton">
+                            [disabled]="userForm.invalid || submitted">
                         + Update User
                     </button>
                 </div>
-                <div *ngIf="success"
+                <div *ngIf="success$ | async"
                      class="alert alert-success" id="successMessage" role="alert">
                     <p>{{'user.detail.save.success' | translate}}</p>
                 </div>

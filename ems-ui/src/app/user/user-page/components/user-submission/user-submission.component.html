@@ -50,11 +50,11 @@
         <button mat-raised-button
                 color="primary"
                 type="submit"
-                [disabled]="userForm.invalid || disableButton">
+                [disabled]="userForm.invalid || submitted">
             + Add User
         </button>
     </form>
-    <div *ngIf="success">
+    <div *ngIf="success$ | async">
         <p>User was successfully saved.</p>
     </div>
 </div>

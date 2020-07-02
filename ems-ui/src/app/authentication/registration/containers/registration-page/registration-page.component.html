@@ -1,9 +1,8 @@
 <div class="row">
     <div class="col-md-12">
         <app-user-registration
-                [success]="saveSuccess$ | async"
-                [error]="saveError$"
-                [disableButton]="disableButton$ | async"
+                [success$]="saveSuccess$"
+                [error$]="saveError$"
                 (submitUser)="registerApplicant($event)"
                 (loginRedirect)="redirectToLogin()"
         ></app-user-registration>

@@ -6,8 +6,13 @@ import {takeUntil} from 'rxjs/operators';
 
 export abstract class AbstractForm implements OnDestroy, OnInit {
 
-  @Input() error: Observable<I18nValidationError | null>;
+  @Input()
+  error$: Observable<I18nValidationError | null>;
+  @Input()
+  success$: Observable<boolean>;
+
   validationError?: string;
+  submitted = false;
 
   destroyed$ = new Subject();
 
@@ -23,13 +28,24 @@ export abstract class AbstractForm implements OnDestroy, OnInit {
 
   ngOnInit(): void {
     const formGroup = this.getForm();
-    if (!this.error || !formGroup) {
+    if (!formGroup) {
       return;
     }
 
-    this.error
+    if (this.error$) {
+      this.handleError(formGroup);
+    }
+
+    if (this.success$) {
+      this.handleSuccess(formGroup);
+    }
+  }
+
+  private handleError(formGroup: FormGroup): void {
+    this.error$
       .pipe(takeUntil(this.destroyed$))
       .subscribe((error: I18nValidationError) => {
+        this.submitted = false;
         this.validationError = error?.i18nKey;
         Object.keys(formGroup.controls).forEach(key => {
           if (!error?.i18nFieldErrors || !error.i18nFieldErrors[key]) {
@@ -41,6 +57,12 @@ export abstract class AbstractForm implements OnDestroy, OnInit {
         });
 
       });
+  }
+
+  private handleSuccess(formGroup: FormGroup): void {
+    this.success$
+      .pipe(takeUntil(this.destroyed$))
+      .subscribe(() => this.submitted = false);
   }
 
 }
