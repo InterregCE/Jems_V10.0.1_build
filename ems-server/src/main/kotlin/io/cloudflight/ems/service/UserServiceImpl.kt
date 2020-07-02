@@ -1,5 +1,6 @@
 package io.cloudflight.ems.service;
 
+import io.cloudflight.ems.api.dto.user.InputPassword
 import io.cloudflight.ems.api.dto.user.InputUserCreate
 import io.cloudflight.ems.api.dto.user.InputUserRegistration
 import io.cloudflight.ems.api.dto.user.InputUserUpdate
@@ -96,12 +97,19 @@ class UserServiceImpl(
     }
 
     @Transactional
-    override fun changePassword(userId: Long, password: String) {
+    override fun changePassword(userId: Long, passwordData: InputPassword) {
         val account = accountRepository.findByIdOrNull(userId)
             ?: throwNotFound("User with id $userId was not found.")
 
+        if (!securityService.currentUser!!.isAdmin
+            && !passwordEncoder.matches(passwordData.oldPassword, account.password))
+            throw I18nValidationException(
+                httpStatus = HttpStatus.UNPROCESSABLE_ENTITY,
+                i18nFieldErrors = mapOf("password" to I18nFieldError("user.password.not.match"))
+            )
+
         accountRepository.save(
-            account.copy(password = passwordEncoder.encode(password))
+            account.copy(password = passwordEncoder.encode(passwordData.password))
         )
         auditService.logEvent(Audit.passwordChanged(securityService.currentUser, account.toOutputUser()))
     }

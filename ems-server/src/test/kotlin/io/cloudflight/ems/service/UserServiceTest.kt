@@ -3,6 +3,7 @@ package io.cloudflight.ems.service
 import ch.qos.logback.classic.Logger
 import ch.qos.logback.classic.spi.ILoggingEvent
 import ch.qos.logback.core.read.ListAppender
+import io.cloudflight.ems.api.dto.user.InputPassword
 import io.cloudflight.ems.api.dto.user.InputUserCreate
 import io.cloudflight.ems.api.dto.user.InputUserRegistration
 import io.cloudflight.ems.api.dto.user.InputUserUpdate
@@ -20,6 +21,7 @@ import io.cloudflight.ems.repository.AccountRoleRepository
 import io.cloudflight.ems.security.ADMINISTRATOR
 import io.cloudflight.ems.security.APPLICANT_USER
 import io.cloudflight.ems.security.PROGRAMME_USER
+import io.cloudflight.ems.security.config.PasswordConfig
 import io.cloudflight.ems.security.model.LocalCurrentUser
 import io.cloudflight.ems.security.service.SecurityService
 import io.mockk.MockKAnnotations
@@ -42,6 +44,8 @@ import org.springframework.data.domain.Pageable
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.http.HttpStatus
 import org.springframework.security.core.authority.SimpleGrantedAuthority
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder
+import org.springframework.security.crypto.password.DelegatingPasswordEncoder
 import org.springframework.security.crypto.password.PasswordEncoder
 import java.util.Optional
 
@@ -57,6 +61,17 @@ class UserServiceTest {
         userRole = OutputUserRole(id = 1, name = "ADMIN")
     )
 
+    // data for update
+    val oldRole = AccountRole(id = 8, name = "role_program")
+    val oldUser = Account(
+        id = 15,
+        email = "old@mail.eu",
+        name = "OldName",
+        surname = "OldSurname",
+        accountRole = oldRole,
+        password = "{bcrypt}\$2a\$10\$uUqunxh6bS/vDkUE8Jsjte02BmwsohtEfLG5xFbAGYwzwfdVW5y7S" // hash for 'old_pass'
+    )
+
     @MockK
     lateinit var accountRepository: AccountRepository
 
@@ -66,8 +81,10 @@ class UserServiceTest {
     @RelaxedMockK
     lateinit var auditService: AuditService
 
-    @RelaxedMockK
-    lateinit var passwordEncoder: PasswordEncoder
+    private val passwordEncoder: PasswordEncoder = DelegatingPasswordEncoder(
+        PasswordConfig.PASSWORD_ENCODER,
+        mapOf(PasswordConfig.PASSWORD_ENCODER to BCryptPasswordEncoder())
+    )
 
     @MockK
     lateinit var securityService: SecurityService
@@ -233,15 +250,6 @@ class UserServiceTest {
     fun update_noRoleChange() {
         every { accountRepository.save(any<Account>()) } returnsArgument (0)
 
-        val oldRole = AccountRole(id = 8, name = "role_program")
-        val oldUser = Account(
-            id = 15,
-            email = "old@mail.eu",
-            name = "OldName",
-            surname = "OldSurname",
-            accountRole = oldRole,
-            password = "hash_pass"
-        )
         val newUser = InputUserUpdate(
             id = oldUser.id!!,
             email = "new@email.eu",
@@ -269,14 +277,6 @@ class UserServiceTest {
         val newRole = AccountRole(id = 9, name = "role_applicant")
         every { accountRoleRepository.findById(eq(newRole.id!!)) } returns Optional.of(newRole)
 
-        val oldUser = Account(
-            id = 15,
-            email = "old@mail.eu",
-            name = "OldName",
-            surname = "OldSurname",
-            accountRole = oldRole,
-            password = "hash_pass"
-        )
         val newUser = InputUserUpdate(
             id = oldUser.id!!,
             email = oldUser.email,
@@ -302,15 +302,6 @@ class UserServiceTest {
     fun update_emailTaken() {
         every { accountRepository.save(any<Account>()) } returnsArgument (0)
 
-        val oldRole = AccountRole(id = 8, name = "role_program")
-        val oldUser = Account(
-            id = 15,
-            email = "old@mail.eu",
-            name = "OldName",
-            surname = "OldSurname",
-            accountRole = oldRole,
-            password = "hash_pass"
-        )
         val newUser = InputUserUpdate(
             id = oldUser.id!!,
             email = "already@taken.eu",
@@ -326,6 +317,64 @@ class UserServiceTest {
         assertThat(exception.httpStatus).isEqualTo(HttpStatus.UNPROCESSABLE_ENTITY)
         assertThat(exception.i18nFieldErrors)
             .containsAllEntriesOf(mapOf("email" to I18nFieldError("user.email.not.unique")))
+    }
+
+    @Test
+    fun changePassword_notExistingUser() {
+        every { accountRepository.findByIdOrNull(eq<Long>(-1)) } returns null
+        assertThrows<ResourceNotFoundException> { userService.changePassword(-1, InputPassword("", null)) }
+    }
+
+    @Test
+    fun changePassword_user_wrongOld() {
+        every { securityService.currentUser } returns
+            LocalCurrentUser(user, "hash_pass", listOf(SimpleGrantedAuthority("ROLE_$APPLICANT_USER")))
+
+        every { accountRepository.findByIdOrNull(eq(oldUser.id!!)) } returns oldUser
+
+        val inputPassword = InputPassword(
+            password = "new_pass",
+            oldPassword = "old_pass_wrong"
+        )
+        val exception = assertThrows<I18nValidationException> { userService.changePassword(oldUser.id!!, inputPassword) }
+        assertThat(exception.httpStatus).isEqualTo(HttpStatus.UNPROCESSABLE_ENTITY)
+        assertThat(exception.i18nFieldErrors)
+            .containsAllEntriesOf(mapOf("password" to I18nFieldError("user.password.not.match")))
+    }
+
+    @Test
+    fun changePassword_user_ok() {
+        every { securityService.currentUser } returns
+            LocalCurrentUser(user, "hash_pass", listOf(SimpleGrantedAuthority("ROLE_$APPLICANT_USER")))
+
+        every { accountRepository.findByIdOrNull(eq(oldUser.id!!)) } returns oldUser
+        every { accountRepository.save(any<Account>()) } returnsArgument (0)
+
+        val inputPassword = InputPassword(
+            password = "new_pass",
+            oldPassword = "old_pass"
+        )
+
+        userService.changePassword(oldUser.id!!, inputPassword)
+
+        val event = slot<Account>()
+        verify { accountRepository.save(capture(event)) }
+        assertThat(passwordEncoder.matches("new_pass", event.captured.password))
+    }
+
+    @Test
+    fun changePassword_admin() {
+        every { securityService.currentUser } returns
+            LocalCurrentUser(user, "hash_pass", listOf(SimpleGrantedAuthority("ROLE_$ADMINISTRATOR")))
+
+        every { accountRepository.findByIdOrNull(eq(oldUser.id!!)) } returns oldUser
+        every { accountRepository.save(any<Account>()) } returnsArgument (0)
+
+        userService.changePassword(oldUser.id!!, InputPassword("new_pass"))
+
+        val event = slot<Account>()
+        verify { accountRepository.save(capture(event)) }
+        assertThat(passwordEncoder.matches("new_pass", event.captured.password))
     }
 
 }

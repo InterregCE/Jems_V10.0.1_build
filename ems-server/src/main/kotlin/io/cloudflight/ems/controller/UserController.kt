@@ -38,7 +38,7 @@ class UserController(
     }
 
     @PreAuthorize("@userAuthorization.canUpdateUser(#userId)")
-    override fun changePassword(userId: Long, password: InputPassword) {
-        this.userService.changePassword(userId, password.password)
+    override fun changePassword(userId: Long, passwordData: InputPassword) {
+        this.userService.changePassword(userId, passwordData)
     }
 }

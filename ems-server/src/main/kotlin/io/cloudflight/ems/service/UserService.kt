@@ -1,5 +1,6 @@
 package io.cloudflight.ems.service
 
+import io.cloudflight.ems.api.dto.user.InputPassword
 import io.cloudflight.ems.api.dto.user.InputUserCreate
 import io.cloudflight.ems.api.dto.user.InputUserRegistration
 import io.cloudflight.ems.api.dto.user.InputUserUpdate
@@ -22,6 +23,6 @@ interface UserService {
 
     fun update(newUser: InputUserUpdate): OutputUser
 
-    fun changePassword(userId: Long, password: String)
+    fun changePassword(userId: Long, passwordData: InputPassword)
 
 }
