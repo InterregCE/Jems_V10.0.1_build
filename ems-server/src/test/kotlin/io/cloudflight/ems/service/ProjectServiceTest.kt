@@ -98,7 +98,7 @@ class ProjectServiceTest {
         every { projectRepository.findAll(UNPAGED) } returns PageImpl(listOf(projectToReturn))
 
         // test start
-        val result = projectService.getProjects(UNPAGED)
+        val result = projectService.findAll(UNPAGED)
 
         // assertions:
         assertEquals(1, result.totalElements)
@@ -120,7 +120,7 @@ class ProjectServiceTest {
                 LocalCurrentUser(user, "hash_pass", listOf(SimpleGrantedAuthority("ROLE_$APPLICANT_USER")))
         every { projectRepository.findAllByApplicant_Id(eq(user.id!!), UNPAGED) } returns PageImpl(emptyList())
 
-        assertEquals(0, projectService.getProjects(UNPAGED).totalElements)
+        assertEquals(0, projectService.findAll(UNPAGED).totalElements)
     }
 
     @Test
@@ -147,12 +147,18 @@ class ProjectServiceTest {
         every { projectRepository.findOneById(eq(1)) } returns
                 Project(1, "test", account, TEST_DATE)
 
-        val result = projectService.getProjectById(1);
+        val result = projectService.getById(1);
 
         assertThat(result).isNotNull()
         assertThat(result.id).isEqualTo(1);
         assertThat(result.acronym).isEqualTo("test")
         assertThat(result.submissionDate).isEqualTo(TEST_DATE);
+    }
+
+    @Test
+    fun projectGet_notExisting() {
+        every { projectRepository.findOneById(eq(-1)) } returns null
+        assertThrows<ResourceNotFoundException> { projectService.getById(-1) }
     }
 
     private fun verifyAudit(projectIdExpected: String) {

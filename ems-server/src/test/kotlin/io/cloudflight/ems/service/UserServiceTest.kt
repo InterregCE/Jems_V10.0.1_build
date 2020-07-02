@@ -138,6 +138,35 @@ class UserServiceTest {
     }
 
     @Test
+    fun getUserById() {
+        val userToReturn = Account(
+            id = 44,
+            email = "admin@ems.io",
+            name = "Name",
+            surname = "Surname",
+            accountRole = AccountRole(22, "admin"),
+            password = "hash_pass"
+        )
+        every { accountRepository.findOneById(eq(44)) } returns userToReturn
+
+        val result = userService.getById(44)
+        assertThat(result).isEqualTo(OutputUser(
+            id = 44,
+            email = "admin@ems.io",
+            name = "Name",
+            surname = "Surname",
+            userRole = OutputUserRole(22, "admin")
+        ))
+    }
+
+    @Test
+    fun getUserById_notExisting() {
+        every { accountRepository.findOneById(eq(-1)) } returns null
+
+        assertThrows<ResourceNotFoundException> { userService.getById(-1) }
+    }
+
+    @Test
     fun createUser_wrong() {
         every { accountRoleRepository.findById(any()) } returns Optional.empty()
 
@@ -149,29 +178,6 @@ class UserServiceTest {
         )
 
         assertThrows<ResourceNotFoundException> { userService.create(account) }
-    }
-
-    @Test
-    fun registerUser_missingApplicantRole() {
-        every { accountRoleRepository.findOneByName(any()) } returns null
-
-        val user = InputUserRegistration(
-            email = "new@user.com",
-            name = "Ondrej",
-            surname = "Tester",
-            password = "raw_password"
-        )
-
-        val listAppender = ListAppender<ILoggingEvent>()
-        listAppender.start()
-        val logger: Logger = LoggerFactory.getLogger(UserServiceImpl::class.java) as Logger
-        logger.addAppender(listAppender)
-
-        assertThrows<ResourceNotFoundException> { userService.registerApplicant(user) }
-        Assertions.assertLinesMatch(
-            listOf("The default applicant role cannot be found in the system."),
-            listAppender.list.map { it.formattedMessage }
-        )
     }
 
     @Test
@@ -201,6 +207,42 @@ class UserServiceTest {
             assertEquals("new user new@user.com with role admin_role has been created by admin@admin.dev", description)
         }
 
+    }
+
+    @Test
+    fun createUser_missingRole() {
+        every { accountRoleRepository.findByIdOrNull(-1) } returns null
+
+        val user = InputUserCreate(
+            email = "new@user.com",
+            name = "Ondrej",
+            surname = "Tester",
+            accountRoleId = -1
+        )
+        assertThrows<ResourceNotFoundException> { userService.create(user) }
+    }
+
+    @Test
+    fun registerUser_missingApplicantRole() {
+        every { accountRoleRepository.findOneByName(eq(APPLICANT_USER)) } returns null
+
+        val user = InputUserRegistration(
+            email = "new@user.com",
+            name = "Ondrej",
+            surname = "Tester",
+            password = "raw_password"
+        )
+
+        val listAppender = ListAppender<ILoggingEvent>()
+        listAppender.start()
+        val logger: Logger = LoggerFactory.getLogger(UserServiceImpl::class.java) as Logger
+        logger.addAppender(listAppender)
+
+        assertThrows<ResourceNotFoundException> { userService.registerApplicant(user) }
+        Assertions.assertLinesMatch(
+            listOf("The default applicant role cannot be found in the system."),
+            listAppender.list.map { it.formattedMessage }
+        )
     }
 
     @Test
