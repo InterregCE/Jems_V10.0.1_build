@@ -42,12 +42,19 @@ class AuthenticationServiceTest {
 
     @Test
     fun `logging in is audited`() {
-        authenticationService.login(req, LoginRequest("admin", "admin"))
+        every { securityService.currentUser } returns LocalCurrentUser(
+            OutputUser(
+                1, "admin@test.net", "test", "test",
+                OutputUserRole(1, "Role")
+            ), "", Collections.emptyList()
+        )
+
+        authenticationService.login(req, LoginRequest("admin@test.net", "admin"))
 
         verify {
             auditService.logEvent(
                 withArg {
-                    assertThat(it.description).isEqualTo("user with email admin logged in")
+                    assertThat(it.description).isEqualTo("user with email admin@test.net logged in")
                 })
         }
     }

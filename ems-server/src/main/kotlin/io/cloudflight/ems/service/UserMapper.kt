@@ -2,10 +2,13 @@ package io.cloudflight.ems.service
 
 import io.cloudflight.ems.api.dto.user.InputUserCreate
 import io.cloudflight.ems.api.dto.user.InputUserRegistration
+import io.cloudflight.ems.api.dto.user.OutputCurrentUser
 import io.cloudflight.ems.api.dto.user.OutputUser
 import io.cloudflight.ems.dto.UserWithCredentials
 import io.cloudflight.ems.entity.Account
 import io.cloudflight.ems.entity.AccountRole
+import io.cloudflight.ems.entity.AuditUser
+import io.cloudflight.ems.security.model.CurrentUser
 import io.cloudflight.ems.security.model.LocalCurrentUser
 import org.springframework.security.core.authority.SimpleGrantedAuthority
 
@@ -39,4 +42,14 @@ fun InputUserRegistration.toEntity(role: AccountRole, password: String) = Accoun
     surname = this.surname,
     accountRole = role,
     password = password
+)
+
+fun CurrentUser.toEsUser() = AuditUser (
+    id = user.id ?: 0,
+    email = user.email
+)
+
+fun OutputCurrentUser.toEsUser() = AuditUser (
+    id = id,
+    email = name
 )

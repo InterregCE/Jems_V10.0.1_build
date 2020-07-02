@@ -252,11 +252,12 @@ class FileStorageServiceTest {
 
         val auditEvent = slot<Audit>()
         verify { auditService.logEvent(capture(auditEvent)) }
-        with(auditEvent.captured) {
+        with(auditEvent) {
             assertEquals(testProject.id, PROJECT_ID)
-            assertEquals(AuditAction.PROJECT_FILE_DELETE, action)
-            assertEquals("admin@admin.dev", username)
-            assertEquals("document proj-file-1.png deleted from application 612", description)
+            assertEquals(AuditAction.PROJECT_FILE_DELETE, captured.action)
+            assertEquals(34, captured.user?.id)
+            assertEquals("admin@admin.dev", captured.user?.email)
+            assertEquals("document proj-file-1.png deleted from application 612", captured.description)
         }
     }
 
