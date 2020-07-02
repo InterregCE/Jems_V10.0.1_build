@@ -13,8 +13,6 @@ import {AbstractForm} from '@common/components/forms/abstract-form';
 export class UserSubmissionComponent extends AbstractForm {
 
   @Input()
-  success: boolean;
-  @Input()
   userRoles: OutputUserRole[];
   @Output()
   submitUser: EventEmitter<InputUserCreate> = new EventEmitter<InputUserCreate>();
@@ -70,6 +68,7 @@ export class UserSubmissionComponent extends AbstractForm {
   }
 
   onSubmit(formDirective: FormGroupDirective): void {
+    this.submitted = true;
     this.submitUser.emit({
       name: this.userForm?.controls?.name?.value,
       surname: this.userForm?.controls?.surname?.value,

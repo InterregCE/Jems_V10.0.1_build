@@ -15,7 +15,8 @@ export class ProjectApplicationSubmissionComponent {
   success: boolean;
   @Input()
   error: I18nValidationError;
-
+  @Input()
+  submitted = false;
   @Output()
   submitProjectApplication: EventEmitter<InputProject> = new EventEmitter<InputProject>();
 

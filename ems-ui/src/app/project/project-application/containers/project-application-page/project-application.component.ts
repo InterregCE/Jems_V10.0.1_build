@@ -15,6 +15,7 @@ export class ProjectApplicationComponent implements OnInit {
   @ViewChild(ProjectApplicationSubmissionComponent) projectSubmissionComponent: ProjectApplicationSubmissionComponent;
 
   success = false;
+  submitted = false;
   error: I18nValidationError;
   dataSource: MatTableDataSource<OutputProject>;
 
@@ -27,13 +28,16 @@ export class ProjectApplicationComponent implements OnInit {
 
   submitProjectApplication(project: InputProject) {
     this.success = false;
+    this.submitted = true;
     this.projectService.createProject(project).toPromise()
       .then(() => {
         this.success = true;
+        this.submitted = false;
         this.getProjectsFromServer();
       })
       .catch((response: any) => {
         this.error = response.error;
+        this.submitted = false;
       });
   }
 

@@ -13,8 +13,6 @@ export class UserEditComponent extends AbstractForm implements OnInit {
   Permission = Permission;
 
   @Input()
-  success: boolean;
-  @Input()
   userRoles: OutputUserRole[];
   @Input()
   user: OutputUser;
@@ -49,6 +47,7 @@ export class UserEditComponent extends AbstractForm implements OnInit {
   }
 
   onSubmit(): void {
+    this.submitted = true;
     this.submitUser.emit({
       id: this.user?.id,
       email: this.user?.email,

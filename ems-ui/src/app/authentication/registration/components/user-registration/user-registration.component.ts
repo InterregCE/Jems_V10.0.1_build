@@ -12,8 +12,6 @@ import {Router} from '@angular/router';
 })
 export class UserRegistrationComponent extends AbstractForm implements OnInit{
 
-  @Input()
-  success: boolean;
   @Output()
   submitUser: EventEmitter<InputUserRegistration> = new EventEmitter<InputUserRegistration>();
   @Output()

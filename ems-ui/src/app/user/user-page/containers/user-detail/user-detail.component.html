@@ -1,9 +1,9 @@
 <ng-container *ngIf="userRoles$ | async as roles">
     <app-user-edit *ngIf="user$ | async as user"
                    [user]="user"
-                   [success]="saveSuccess$ | async"
+                   [success$]="saveSuccess$"
                    [userRoles]="roles"
-                   [error]="saveError$"
+                   [error$]="saveError$"
                    (submitUser)="updateUser($event)">
     </app-user-edit>
 </ng-container>

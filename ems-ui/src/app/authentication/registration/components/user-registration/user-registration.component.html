@@ -67,10 +67,10 @@
                                 color="primary"
                                 (click)="onSubmit(formDirective)"
                                 class="register-button"
-                                [disabled]="userForm.invalid">
+                                [disabled]="userForm.invalid || submitted">
                             Register
                         </button>
-                    <div *ngIf="success"
+                    <div *ngIf="success$ | async"
                          class="alert alert-success" id="successMessage" role="alert">
                         <p>{{'user.registration.save.success' | translate}}</p>
                         <br>
