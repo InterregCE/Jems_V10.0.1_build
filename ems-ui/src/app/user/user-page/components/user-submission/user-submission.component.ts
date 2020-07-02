@@ -67,6 +67,10 @@ export class UserSubmissionComponent extends AbstractForm {
     return this.userForm;
   }
 
+  isClearable(): boolean | null {
+    return true;
+  }
+
   onSubmit(formDirective: FormGroupDirective): void {
     this.submitted = true;
     this.submitUser.emit({
