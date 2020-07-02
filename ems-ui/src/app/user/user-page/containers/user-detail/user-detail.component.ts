@@ -17,7 +17,6 @@ export class UserDetailComponent {
   user$: Observable<OutputUser> = this.userDetailService.getById(this.id);
   saveSuccess$ = this.userDetailService.saveSuccess();
   saveError$ = this.userDetailService.saveError();
-  disableEditButton$ = this.userDetailService.disableEditButton();
 
   constructor(private userDetailService: UserDetailService,
               private rolePageService: RolePageService,

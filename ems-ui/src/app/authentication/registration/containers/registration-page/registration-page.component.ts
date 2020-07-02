@@ -13,12 +13,10 @@ export class RegistrationPageComponent{
 
   saveSuccess$: Observable<boolean>;
   saveError$: Observable<I18nValidationError | null>;
-  disableButton$: Observable<boolean>;
 
   constructor(private userRegistrationService: RegistrationPageService) {
     this.saveSuccess$ = this.userRegistrationService.saveSuccess();
     this.saveError$ = this.userRegistrationService.saveError();
-    this.disableButton$ = this.userRegistrationService.disableButton();
   }
 
   registerApplicant(user: InputUserRegistration): void {

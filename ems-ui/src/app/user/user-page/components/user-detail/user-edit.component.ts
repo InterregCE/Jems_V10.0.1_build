@@ -18,8 +18,6 @@ export class UserEditComponent extends AbstractForm implements OnInit {
   userRoles: OutputUserRole[];
   @Input()
   user: OutputUser;
-  @Input()
-  disableButton: boolean;
   @Output()
   submitUser: EventEmitter<InputUserUpdate> = new EventEmitter<InputUserUpdate>();
 

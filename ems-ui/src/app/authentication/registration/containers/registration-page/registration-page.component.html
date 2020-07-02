@@ -3,7 +3,6 @@
         <app-user-registration
                 [success]="saveSuccess$ | async"
                 [error]="saveError$"
-                [disableButton]="disableButton$ | async"
                 (submitUser)="registerApplicant($event)"
                 (loginRedirect)="redirectToLogin()"
         ></app-user-registration>

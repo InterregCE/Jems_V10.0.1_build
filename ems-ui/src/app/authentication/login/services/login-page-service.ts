@@ -1,6 +1,6 @@
 import {Injectable} from '@angular/core';
 import {LoginRequest} from '@cat/api';
-import {Observable, ReplaySubject, Subject} from 'rxjs';
+import {Observable, ReplaySubject} from 'rxjs';
 import {catchError, take} from 'rxjs/operators';
 import {I18nValidationError} from '@common/validation/i18n-validation-error';
 import {SecurityService} from '../../../security/security.service';
@@ -11,7 +11,6 @@ import {HttpErrorResponse} from '@angular/common/http';
 export class LoginPageService {
 
   private authenticationProblem$: ReplaySubject<I18nValidationError | null> = new ReplaySubject();
-  private disableButton$: Subject<boolean> = new Subject<boolean>();
 
   constructor(private securityService: SecurityService,
               private router: Router) {
@@ -21,26 +20,17 @@ export class LoginPageService {
     return this.authenticationProblem$.asObservable();
   }
 
-  disableButton(): Observable<boolean> {
-    return this.disableButton$.asObservable();
-  }
-
   login(loginRequest: LoginRequest): void {
-    this.disableButton$.next(true);
     this.authenticationProblem$.next(null);
     this.securityService.login(loginRequest)
       .pipe(
         take(1),
         catchError((error: HttpErrorResponse) => {
           this.authenticationProblem$.next(error.error);
-          this.disableButton$.next(false);
           throw error;
         })
       )
-      .subscribe(() => {
-        this.disableButton$.next(false);
-        this.router.navigate(['/']);
-      });
+      .subscribe(() => this.router.navigate(['/']));
   }
 
   newAuthenticationError(error: I18nValidationError): void {

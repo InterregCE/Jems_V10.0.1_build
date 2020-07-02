@@ -18,11 +18,9 @@ export class LoginComponent {
 
   authenticationError: Observable<I18nValidationError | null> = this.loginPageService.authenticationError();
   registerLink = '/register';
-  disableButton$: Observable<boolean>;
 
   constructor(private formBuilder: FormBuilder,
               private loginPageService: LoginPageService) {
-    this.disableButton$ = loginPageService.disableButton();
   }
 
   onSubmit() {
