@@ -16,6 +16,7 @@ export class LoginComponent {
     password: ['', Validators.required]
   });
 
+  submitted = false;
   authenticationError: Observable<I18nValidationError | null> = this.loginPageService.authenticationError();
   registerLink = '/register';
 
@@ -24,6 +25,7 @@ export class LoginComponent {
   }
 
   onSubmit() {
+    this.submitted = true;
     this.loginPageService.login({
       email: this.loginForm.controls.email.value,
       password: this.loginForm.controls.password.value
