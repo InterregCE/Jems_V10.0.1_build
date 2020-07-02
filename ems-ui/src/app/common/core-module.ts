@@ -13,12 +13,16 @@ import {KeyValuePipe} from '@angular/common';
 import {SharedModule} from './shared-module';
 import {ConfirmDialogComponent} from '@common/components/modals/confirm-dialog/confirm-dialog.component';
 import {MatDialogModule} from '@angular/material/dialog';
+import {MatMenuModule} from '@angular/material/menu';
+import {MatIconModule} from '@angular/material/icon';
+import {HelpMenuComponent} from '@common/components/top-bar/help-menu/help-menu.component';
 
 const declarations = [
   TopBarComponent,
   MenuComponent,
   FormFieldErrorsComponent,
-  ConfirmDialogComponent
+  ConfirmDialogComponent,
+  HelpMenuComponent,
 ];
 
 @NgModule({
@@ -29,6 +33,8 @@ const declarations = [
     SharedModule,
     MatTabsModule,
     MatDialogModule,
+    MatMenuModule,
+    MatIconModule,
   ],
   providers: [
     SecurityService,
