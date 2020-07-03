@@ -54,7 +54,9 @@
             + Add User
         </button>
     </form>
-    <div *ngIf="success$ | async">
-        <p>User was successfully saved.</p>
-    </div>
+    <app-form-validation
+            [success]="success$ | async"
+            [successMessage]="'user.detail.save.success'"
+            [validationError]="validationError">
+    </app-form-validation>
 </div>

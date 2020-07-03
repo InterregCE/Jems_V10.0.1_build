@@ -7,12 +7,14 @@ import {SharedModule} from '../common/shared-module';
 import {UserSubmissionComponent} from './user-page/components/user-submission/user-submission.component';
 import {MatSelectModule} from '@angular/material/select';
 import {CoreModule} from '../common/core-module';
-import {UserEditComponent} from './user-page/components/user-detail/user-edit.component';
+import {UserEditComponent} from './user-page/components/user-detail/user-edit/user-edit.component';
 import {UserDetailService} from './user-page/services/user-detail/user-detail.service';
 import {UserDetailComponent} from './user-page/containers/user-detail/user-detail.component';
 import {MatCardModule} from '@angular/material/card';
 import {RolePageService} from './user-role/services/role-page/role-page.service';
 import {UserRoleFormFieldComponent} from './user-page/components/user-detail/user-role-form-field/user-role-form-field.component';
+import {UserPasswordComponent} from './user-page/components/user-detail/user-password/user-password.component';
+import { PasswordFieldComponent } from './user-page/components/user-detail/user-password/password-field/password-field.component';
 
 @NgModule({
   declarations: [
@@ -21,7 +23,9 @@ import {UserRoleFormFieldComponent} from './user-page/components/user-detail/use
     UserSubmissionComponent,
     UserDetailComponent,
     UserEditComponent,
-    UserRoleFormFieldComponent
+    UserRoleFormFieldComponent,
+    UserPasswordComponent,
+    PasswordFieldComponent
   ],
   imports: [
     SharedModule,
