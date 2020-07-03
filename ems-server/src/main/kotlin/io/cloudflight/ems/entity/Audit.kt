@@ -98,7 +98,7 @@ data class Audit(
                 action = AuditAction.USER_ROLE_CHANGED,
                 projectId = null,
                 user = currentUser?.toEsUser(),
-                description = "user role '${user.userRole.name}' has been assigned to ${user.email} by $author"
+                description = "user role '${user.userRole.name}' has been assigned to ${user.name} ${user.surname} by $author"
             )
         }
 

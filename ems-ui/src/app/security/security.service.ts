@@ -30,6 +30,7 @@ export class SecurityService {
     return this.authenticationService.login(loginRequest)
       .pipe(
         tap(user => console.log('User logged in', user)),
+        tap((user: OutputCurrentUser) => this.authenticationHolder.currentUserId = user.id),
         tap((user: OutputCurrentUser) => this.authenticationHolder.currentUsername = user.name),
         tap((user: OutputCurrentUser) => this.myCurrentUser.next(user)),
       );

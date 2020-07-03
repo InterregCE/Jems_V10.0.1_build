@@ -1,8 +1,10 @@
 import {Component, OnInit, ViewChild} from '@angular/core';
-import {InputProject, OutputProject, ProjectService} from '@cat/api';
+import {InputProject, OutputProject, OutputUser, UserService, ProjectService} from '@cat/api';
 import {MatTableDataSource} from '@angular/material/table';
 import {ProjectApplicationSubmissionComponent} from '../../components/project-application-submission/project-application-submission.component';
 import {I18nValidationError} from '@common/validation/i18n-validation-error';
+import {Permission} from '../../../../security/permissions/permission';
+import {AuthenticationHolder} from '../../../../security/authentication-holder.service';
 
 @Component({
   selector: 'app-project-application',
@@ -11,6 +13,7 @@ import {I18nValidationError} from '@common/validation/i18n-validation-error';
 })
 
 export class ProjectApplicationComponent implements OnInit {
+  Permission = Permission;
 
   @ViewChild(ProjectApplicationSubmissionComponent) projectSubmissionComponent: ProjectApplicationSubmissionComponent;
 
@@ -18,12 +21,22 @@ export class ProjectApplicationComponent implements OnInit {
   submitted = false;
   error: I18nValidationError;
   dataSource: MatTableDataSource<OutputProject>;
+  currentUser: OutputUser | null = null;
 
-  constructor(private projectService: ProjectService) {
+  constructor(private projectService: ProjectService,
+              private userService: UserService,
+              private authenticationHolder: AuthenticationHolder) {
   }
 
   ngOnInit(): void {
+    this.getCurrentUser();
     this.getProjectsFromServer();
+  }
+  getCurrentUser(): void {
+    if (this.authenticationHolder.currentUserId) {
+      this.userService.getById(this.authenticationHolder.currentUserId)
+        .subscribe((user: OutputUser) => this.currentUser = user);
+    }
   }
 
   submitProjectApplication(project: InputProject) {
