@@ -39,7 +39,7 @@ export class TopBarComponent implements OnInit {
     const splitAddress = splitHttp[1].split('/');
     return splitHttp[0] + '://audit-' + splitAddress[0] + '/app/kibana#/discover?_g=(filters:!(),' +
       'refreshInterval:(pause:!t,value:0),time:(from:now-24h,to:now))' +
-      '&_a=(columns:!(user.id, user.email,action,projectId,description),filters:!(),interval:auto,' +
+      '&_a=(columns:!(user.id,user.email,action,projectId,description),filters:!(),interval:auto,' +
       'query:(language:kuery,query:\'\'),sort:!())';
   }
 
