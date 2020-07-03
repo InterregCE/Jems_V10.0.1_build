@@ -13,13 +13,13 @@ describe('RegistrationPageService', () => {
   }));
 
   it('should be created', () => {
-    const service: RegistrationPageService = TestBed.get(RegistrationPageService);
+    const service: RegistrationPageService = TestBed.inject(RegistrationPageService);
     expect(service).toBeTruthy();
   });
 
   it('should register an applicant', fakeAsync(() => {
-    httpTestingController = TestBed.get(HttpTestingController);
-    const service: RegistrationPageService = TestBed.get(RegistrationPageService);
+    httpTestingController = TestBed.inject(HttpTestingController);
+    const service: RegistrationPageService = TestBed.inject(RegistrationPageService);
     let success = false;
     const applicant = {
       name: 'test',
