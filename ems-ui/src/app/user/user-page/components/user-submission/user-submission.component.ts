@@ -17,6 +17,8 @@ export class UserSubmissionComponent extends AbstractForm {
   @Output()
   submitUser: EventEmitter<InputUserCreate> = new EventEmitter<InputUserCreate>();
 
+  clearOnSuccess = true;
+
   userForm = this.formBuilder.group({
     name: ['', Validators.compose([
       Validators.required,
@@ -65,10 +67,6 @@ export class UserSubmissionComponent extends AbstractForm {
 
   getForm(): FormGroup | null {
     return this.userForm;
-  }
-
-  isClearable(): boolean | null {
-    return true;
   }
 
   onSubmit(formDirective: FormGroupDirective): void {

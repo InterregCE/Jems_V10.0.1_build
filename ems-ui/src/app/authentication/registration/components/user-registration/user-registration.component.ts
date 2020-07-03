@@ -1,9 +1,7 @@
 import {ChangeDetectorRef, Component, EventEmitter, OnInit, Input, Output} from '@angular/core';
 import {AbstractForm} from '@common/components/forms/abstract-form';
-import {FormBuilder, FormGroup, FormGroupDirective, Validators} from '@angular/forms';
+import {FormBuilder, FormGroup, Validators} from '@angular/forms';
 import {InputUserRegistration} from '@cat/api';
-import {Observable} from 'rxjs';
-import {Router} from '@angular/router';
 
 @Component({
   selector: 'app-user-registration',
@@ -18,6 +16,7 @@ export class UserRegistrationComponent extends AbstractForm implements OnInit{
   loginRedirect: EventEmitter<null> = new EventEmitter<null>();
 
   hide = true;
+  clearOnSuccess = true;
 
   userForm = this.formBuilder.group({
     name: ['', Validators.compose([
@@ -75,10 +74,6 @@ export class UserRegistrationComponent extends AbstractForm implements OnInit{
 
   getForm(): FormGroup | null {
     return this.userForm;
-  }
-
-  isClearable(): boolean | null {
-    return true;
   }
 
   onSubmit(): void {

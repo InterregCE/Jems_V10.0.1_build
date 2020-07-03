@@ -31,7 +31,7 @@
                         <span>{{project.submissionDate}}</span>
                     </div>
                 </div>
-                <div class="row project-detail-table-header">
+                <div *ngxPermissionsExcept="[Permission.PROGRAMME_USER]" class="row project-detail-table-header">
                     <h6>List of added files ({{fileNumber}})</h6>
                     <input type="file" (change)="addNewFilesForUpload($event)" #selectFile onclick="this.value=null;">
                     <button mat-raised-button

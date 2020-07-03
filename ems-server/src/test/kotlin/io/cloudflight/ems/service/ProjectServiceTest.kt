@@ -165,10 +165,11 @@ class ProjectServiceTest {
         val event = slot<Audit>()
 
         verify { auditService.logEvent(capture(event)) }
-        with(event.captured) {
-            assertEquals(projectIdExpected, projectId)
-            assertEquals("admin@admin.dev", username)
-            assertEquals(AuditAction.PROJECT_SUBMISSION, action)
+        with(event) {
+            assertEquals(projectIdExpected, captured.projectId)
+            assertEquals(1, captured.user?.id)
+            assertEquals("admin@admin.dev", captured.user?.email)
+            assertEquals(AuditAction.PROJECT_SUBMISSION, captured.action)
         }
     }
 }

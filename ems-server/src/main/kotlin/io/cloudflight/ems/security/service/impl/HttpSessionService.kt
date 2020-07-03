@@ -3,6 +3,7 @@ package io.cloudflight.ems.security.service.impl
 import io.cloudflight.ems.entity.Audit
 import io.cloudflight.ems.security.model.LocalCurrentUser
 import io.cloudflight.ems.service.AuditService
+import io.cloudflight.ems.service.toEsUser
 import org.slf4j.LoggerFactory
 import org.springframework.security.core.context.SecurityContextImpl
 import org.springframework.security.web.context.HttpSessionSecurityContextRepository.SPRING_SECURITY_CONTEXT_KEY
@@ -28,7 +29,7 @@ class HttpSessionService(private val auditService: AuditService) : HttpSessionLi
             .authentication?.let { authentication ->
                 auditService.logEvent(
                     Audit.userSessionExpired(
-                        (authentication.principal as LocalCurrentUser).username
+                        (authentication.principal as LocalCurrentUser).toEsUser()
                     )
                 )
             }

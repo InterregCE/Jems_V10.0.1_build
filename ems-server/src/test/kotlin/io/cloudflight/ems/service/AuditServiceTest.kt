@@ -25,14 +25,14 @@ class AuditServiceTest {
 
     val user = LocalCurrentUser(
         OutputUser(
-            id = 1,
+            id = 16,
             email = "admin@admin.dev",
             name = "Name",
             surname = "Surname",
             userRole = OutputUserRole(id = 1, name = "ADMIN")
         ), "", emptyList())
 
-    private val EXPECTED_LOG = "AUDIT >>> PROJECT_SUBMISSION (projectId submitted-projectId, user admin@admin.dev) : submission of the project application to the system"
+    private val EXPECTED_LOG = "AUDIT >>> PROJECT_SUBMISSION (projectId submitted-projectId, user (16, admin@admin.dev)) : submission of the project application to the system"
 
     @MockK
     lateinit var auditRepository: AuditRepository

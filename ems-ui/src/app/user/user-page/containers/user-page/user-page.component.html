@@ -4,11 +4,11 @@
     <div class="row">
         <div class="col-md-6">
             <app-user-submission
-                    [success$]="saveSuccess$ | async"
-                    [userRoles]="userRoles$ | async"
-                    [error$]="saveError$"
-                    (submitUser)="createUser($event)"
-            ></app-user-submission>
+                [success$]="userSaveSuccess$"
+                [error$]="userSaveError$"
+                [userRoles]="userRoles$ | async"
+                (submitUser)="createUser($event)">
+            </app-user-submission>
         </div>
         <div class="col-md-6">
             <app-user-list

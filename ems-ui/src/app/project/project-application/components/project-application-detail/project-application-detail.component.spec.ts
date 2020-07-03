@@ -70,7 +70,7 @@ describe('ProjectApplicationDetailComponent', () => {
     projectApplicationDetailComponent = (
       fixture.componentInstance
     ) as ProjectApplicationDetailComponent;
-    httpTestingController = TestBed.get(HttpTestingController);
+    httpTestingController = TestBed.inject(HttpTestingController);
   });
 
   it('should create the project application', () => {
@@ -100,7 +100,7 @@ describe('ProjectApplicationDetailComponent', () => {
   }));
 
   it('should delete an uploaded project application file', fakeAsync(() => {
-    (projectApplicationDetailComponent as any).projectFileStorageService = TestBed.get(ProjectFileStorageService);
+    (projectApplicationDetailComponent as any).projectFileStorageService = TestBed.inject(ProjectFileStorageService);
     spyOn((projectApplicationDetailComponent as any).dialog, 'open')
       .and
       .returnValue({afterClosed: () => of(true)});

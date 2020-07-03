@@ -6,6 +6,7 @@ import io.cloudflight.ems.entity.Audit
 import io.cloudflight.ems.security.service.AuthenticationService
 import io.cloudflight.ems.security.service.SecurityService
 import io.cloudflight.ems.service.AuditService
+import io.cloudflight.ems.service.toEsUser
 import org.slf4j.LoggerFactory
 import org.springframework.security.authentication.AuthenticationManager
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken
@@ -45,7 +46,7 @@ class AuthenticationServiceImpl(
         val session = req.getSession(true)
         session.setAttribute(SPRING_SECURITY_CONTEXT_KEY, SecurityContextHolder.getContext())
 
-        auditService.logEvent(Audit.userLoggedIn(loginRequest.email))
+        auditService.logEvent(Audit.userLoggedIn(getCurrentUser()!!.toEsUser()))
 
         log.info("Logged in successfully for email {}", loginRequest.email)
         return getCurrentUser();
@@ -54,7 +55,7 @@ class AuthenticationServiceImpl(
     override fun logout(req: HttpServletRequest) {
         log.info("Logging out for current user with email {}", getCurrentUser()!!.name)
 
-        auditService.logEvent(Audit.userLoggedOut(getCurrentUser()!!.name))
+        auditService.logEvent(Audit.userLoggedOut(getCurrentUser()!!.toEsUser()))
 
         SecurityContextHolder.clearContext();
         req.logout();

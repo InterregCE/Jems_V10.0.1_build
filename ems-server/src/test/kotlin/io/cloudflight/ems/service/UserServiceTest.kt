@@ -201,10 +201,11 @@ class UserServiceTest {
 
         val event = slot<Audit>()
         verify { auditService.logEvent(capture(event)) }
-        with(event.captured) {
-            assertEquals("admin@admin.dev", username)
-            assertEquals(AuditAction.USER_CREATED, action)
-            assertEquals("new user new@user.com with role admin_role has been created by admin@admin.dev", description)
+        with(event) {
+            assertEquals(1, captured.user?.id)
+            assertEquals("admin@admin.dev", captured.user?.email)
+            assertEquals(AuditAction.USER_CREATED, captured.action)
+            assertEquals("new user new@user.com with role admin_role has been created by admin@admin.dev", captured.description)
         }
 
     }
@@ -248,8 +249,9 @@ class UserServiceTest {
     @Test
     fun registerUser_OK() {
         every { accountRepository.findOneByEmail(eq("new@user.com")) } returns null
-        every { accountRoleRepository.findOneByName(eq("applicant user")) } returns AccountRole(3, "applicant user")
-        every { accountRepository.save(any<Account>()) } returnsArgument (0)
+        val role = AccountRole(3, "applicant user")
+        every { accountRoleRepository.findOneByName(eq("applicant user")) } returns role
+        every { accountRepository.save(any<Account>()) } returns Account(18, "new@user.com", "Ondrej", "Tester", role, "hash_pass")
 
         val user = InputUserRegistration(
             email = "new@user.com",
@@ -266,11 +268,10 @@ class UserServiceTest {
 
         val event = slot<Audit>()
         verify { auditService.logEvent(capture(event)) }
-        with(event.captured) {
-            assertEquals("new@user.com", username)
-            assertEquals(AuditAction.USER_REGISTERED, action)
-            assertEquals("new user 'Ondrej Tester' with role 'applicant user' registered", description)
-        }
+        assertEquals(18, event.captured.user?.id)
+        assertEquals("new@user.com", event.captured.user?.email)
+        assertEquals(AuditAction.USER_REGISTERED, event.captured.action)
+        assertEquals("new user 'Ondrej Tester' with role 'applicant user' registered", event.captured.description)
 
     }
 
@@ -315,7 +316,6 @@ class UserServiceTest {
         every { securityService.currentUser } returns LocalCurrentUser(user, "hash_pass", listOf(SimpleGrantedAuthority("ROLE_$role")))
         every { accountRepository.save(any<Account>()) } returnsArgument (0)
 
-        val oldRole = AccountRole(id = 8, name = "role_program")
         val newRole = AccountRole(id = 9, name = "role_applicant")
         every { accountRoleRepository.findById(eq(newRole.id!!)) } returns Optional.of(newRole)
 
