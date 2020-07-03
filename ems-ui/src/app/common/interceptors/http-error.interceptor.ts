@@ -9,7 +9,6 @@ export class HttpErrorInterceptor implements HttpInterceptor {
     return next.handle(request)
       .pipe(
         catchError((error: HttpErrorResponse) => {
-          console.error('Http error:', error);
           return throwError(error);
         })
       );

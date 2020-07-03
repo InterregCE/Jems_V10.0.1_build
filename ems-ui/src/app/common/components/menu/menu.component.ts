@@ -3,6 +3,7 @@ import {MenuItemConfiguration} from './model/menu-item.configuration';
 import {NavigationEnd, Router} from '@angular/router';
 import {BaseComponent} from '@common/components/base-component';
 import {filter, takeUntil} from 'rxjs/operators';
+import {Log} from '../../utils/log';
 
 @Component({
   selector: 'app-menu',
@@ -23,8 +24,9 @@ export class MenuComponent extends BaseComponent {
         filter(val => val instanceof NavigationEnd)
       )
       .subscribe((val: NavigationEnd) => {
-        const activeItem = this.items.find(item => item.route === val.url)
+        const activeItem = this.items.find(item => item.route === val.url);
         if (activeItem) {
+          Log.debug('Switched bar menu item', this, activeItem.route);
           this.activeLink = activeItem;
         }
       });

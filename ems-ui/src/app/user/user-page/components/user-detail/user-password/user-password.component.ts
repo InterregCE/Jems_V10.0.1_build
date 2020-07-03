@@ -10,7 +10,9 @@ import {
 import {FormBuilder, FormGroup, Validators} from '@angular/forms';
 import {InputPassword} from '@cat/api'
 import {Forms} from '../../../../../common/utils/forms';
-import {AbstractForm} from '@common/components/forms/abstract-form';
+import {filter, take, takeUntil} from 'rxjs/operators';
+import {MatDialog} from '@angular/material/dialog';
+import {ViewEditForm} from '@common/components/forms/view-edit-form';
 
 @Component({
   selector: 'app-user-password',
@@ -18,16 +20,16 @@ import {AbstractForm} from '@common/components/forms/abstract-form';
   styleUrls: ['./user-password.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class UserPasswordComponent extends AbstractForm implements OnInit {
+export class UserPasswordComponent extends ViewEditForm implements OnInit {
 
   @Input()
   userId: number;
   @Input()
-  ownUser: boolean
+  ownUser: boolean;
   @Output()
   submitPassword: EventEmitter<InputPassword> = new EventEmitter<InputPassword>();
 
-  editMode = false;
+  clearOnSuccess = true;
   passwordForm: FormGroup;
 
   passwordErrors = {
@@ -40,12 +42,12 @@ export class UserPasswordComponent extends AbstractForm implements OnInit {
   };
 
   constructor(private formBuilder: FormBuilder,
+              private dialog: MatDialog,
               protected changeDetectorRef: ChangeDetectorRef) {
     super(changeDetectorRef);
   }
 
   ngOnInit(): void {
-    super.ngOnInit();
     const controls: { [key: string]: any } = {
       password: ['', Validators.compose([
         Validators.required,
@@ -58,7 +60,8 @@ export class UserPasswordComponent extends AbstractForm implements OnInit {
       ])]
     }
     this.passwordForm = this.formBuilder.group(controls);
-    this.enterViewMode();
+
+    super.ngOnInit();
   }
 
   getForm(): FormGroup | null {
@@ -66,6 +69,25 @@ export class UserPasswordComponent extends AbstractForm implements OnInit {
   }
 
   onSubmit() {
+    if (!this.ownUser) {
+      // admin is editing the password, no confirmation
+      this.savePassword();
+      return;
+    }
+    Forms.confirmDialog(
+      this.dialog,
+      'user.detail.changePassword.dialog.title',
+      'user.detail.changePassword.dialog.message'
+    ).pipe(
+      take(1),
+      takeUntil(this.destroyed$),
+      filter(changePwd => !!changePwd)
+    ).subscribe(() => {
+      this.savePassword();
+    });
+  }
+
+  private savePassword():void {
     this.submitted = true;
     this.submitPassword.emit({
       password: this.passwordForm?.controls?.password?.value,
@@ -73,22 +95,9 @@ export class UserPasswordComponent extends AbstractForm implements OnInit {
     })
   }
 
-  enterViewMode(): void {
-    this.editMode = false;
-
-    this.passwordForm?.controls?.password?.setValue('******');
-    this.passwordForm?.controls?.oldPassword?.setValue('******');
-
-    Forms.disableControls(this.passwordForm)
-  }
-
   enterEditMode(): void {
-    this.editMode = true;
-
     this.passwordForm?.controls?.password?.setValue('');
     this.passwordForm?.controls?.oldPassword?.setValue('');
-
-    Forms.enableControls(this.passwordForm)
   }
 
 }

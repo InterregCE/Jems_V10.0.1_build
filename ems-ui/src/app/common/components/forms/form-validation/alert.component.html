@@ -1,0 +1,11 @@
+<div *ngIf="show"
+     class="alert fade alert-dismissible"
+     [class.show]="show"
+     [class.alert-success]="type === Alert.SUCCESS"
+     [class.alert-danger]="type === Alert.ERROR"
+     id="successMessage" role="alert">
+    <button type="button" class="close" data-dismiss="alert" aria-label="Close" (click)="show = false">
+        <span aria-hidden="true">&times;</span>
+    </button>
+    <ng-content></ng-content>
+</div>

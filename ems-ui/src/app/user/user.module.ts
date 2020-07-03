@@ -1,5 +1,4 @@
 import {NgModule} from '@angular/core';
-import {UserPageService} from './user-page/services/user-page/user-page.service';
 import {UserPageComponent} from './user-page/containers/user-page/user-page.component';
 import {UserRoutingModule} from './user-routing.module';
 import {UserListComponent} from './user-page/components/user-list/user-list.component';
@@ -8,7 +7,6 @@ import {UserSubmissionComponent} from './user-page/components/user-submission/us
 import {MatSelectModule} from '@angular/material/select';
 import {CoreModule} from '../common/core-module';
 import {UserEditComponent} from './user-page/components/user-detail/user-edit/user-edit.component';
-import {UserDetailService} from './user-page/services/user-detail/user-detail.service';
 import {UserDetailComponent} from './user-page/containers/user-detail/user-detail.component';
 import {MatCardModule} from '@angular/material/card';
 import {RolePageService} from './user-role/services/role-page/role-page.service';
@@ -35,8 +33,6 @@ import { PasswordFieldComponent } from './user-page/components/user-detail/user-
     CoreModule,
   ],
   providers: [
-    UserPageService,
-    UserDetailService,
     RolePageService
   ]
 })

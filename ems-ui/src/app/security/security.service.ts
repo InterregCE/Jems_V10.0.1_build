@@ -3,6 +3,7 @@ import {AuthenticationService, LoginRequest, OutputCurrentUser} from '@cat/api';
 import {AuthenticationHolder} from './authentication-holder.service';
 import {from, Observable, ReplaySubject} from 'rxjs';
 import {map, tap} from 'rxjs/operators';
+import {Log} from '../common/utils/log';
 
 @Injectable({providedIn: 'root'})
 export class SecurityService {
@@ -29,7 +30,7 @@ export class SecurityService {
   login(loginRequest: LoginRequest): Observable<OutputCurrentUser | null> {
     return this.authenticationService.login(loginRequest)
       .pipe(
-        tap(user => console.log('User logged in', user)),
+        tap(user => Log.info('User logged in', this, user)),
         tap((user: OutputCurrentUser) => this.authenticationHolder.currentUserId = user.id),
         tap((user: OutputCurrentUser) => this.authenticationHolder.currentUsername = user.name),
         tap((user: OutputCurrentUser) => this.myCurrentUser.next(user)),
@@ -39,7 +40,7 @@ export class SecurityService {
   reloadCurrentUser(): void {
     this.authenticationService.getCurrentUser()
       .pipe(
-        tap(user => console.log('Current user loaded', user))
+        tap(user => Log.info('Current user loaded', this, user))
       )
       .subscribe(
         (value: OutputCurrentUser) => this.myCurrentUser.next(value),
@@ -56,7 +57,7 @@ export class SecurityService {
     this.clearAuthentication();
     await this.authenticationService.logout()
       .pipe(
-        tap(() => console.log('Current user logged out', this.authenticationHolder.currentUsername))
+        tap(() => Log.info('Current user logged out', this, this.authenticationHolder))
       )
       .toPromise();
   }

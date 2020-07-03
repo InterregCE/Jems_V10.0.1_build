@@ -3,7 +3,7 @@ import {UserModule} from '../../../user.module';
 import {HttpTestingController} from '@angular/common/http/testing';
 import {TestModule} from '../../../../common/test-module';
 import {UserPageComponent} from './user-page.component';
-import {InputUserCreate} from '@cat/api';
+import {InputUserCreate, OutputUser} from '@cat/api';
 
 describe('UserPageComponent', () => {
   let httpTestingController: HttpTestingController;
@@ -39,14 +39,30 @@ describe('UserPageComponent', () => {
     let success = false;
     component.userSaveSuccess$.subscribe(result => success = result);
 
-    httpTestingController.expectOne({
-      method: 'POST',
-      url: `//api/user`
-    }).flush(user);
+    httpTestingController.expectOne({method: 'GET', url: `//api/role`});
+    httpTestingController.expectOne({method: 'GET', url: `//api/user?page=0&size=25&sort=id,desc`});
+    httpTestingController.expectOne({method: 'POST', url: `//api/user`}).flush(user);
+    httpTestingController.expectOne({method: 'GET', url: `//api/user?page=0&size=25&sort=id,desc`});
     httpTestingController.verify();
 
     tick();
     expect(success).toBeTruthy();
+  }));
+
+  it('should list users', fakeAsync(() => {
+    let results: OutputUser[] = [];
+    component.currentPage$.subscribe(result => results = result.content);
+
+    const users = [
+      {email: '1@1'} as OutputUser,
+      {email: '2@2'} as OutputUser
+    ];
+
+    httpTestingController.match({method: 'GET', url: `//api/user?page=0&size=25&sort=id,desc`})
+      .forEach(req => req.flush({content: users}));
+
+    tick();
+    expect(results).toEqual(users);
   }));
 });
 

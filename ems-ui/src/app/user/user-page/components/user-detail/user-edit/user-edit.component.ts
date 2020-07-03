@@ -8,10 +8,13 @@ import {
   Output
 } from '@angular/core';
 import {InputUserUpdate, OutputUser, OutputUserRole} from '@cat/api';
-import {AbstractForm} from '@common/components/forms/abstract-form';
 import {FormBuilder, FormGroup, Validators} from '@angular/forms';
 import {Permission} from 'src/app/security/permissions/permission';
 import {Forms} from '../../../../../common/utils/forms';
+import {MatDialog} from '@angular/material/dialog';
+import {take, takeUntil} from 'rxjs/operators';
+import {ViewEditForm} from '@common/components/forms/view-edit-form';
+import {Log} from '../../../../../common/utils/log';
 
 @Component({
   selector: 'app-user-edit',
@@ -19,7 +22,7 @@ import {Forms} from '../../../../../common/utils/forms';
   styleUrls: ['./user-edit.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class UserEditComponent extends AbstractForm implements OnInit {
+export class UserEditComponent extends ViewEditForm implements OnInit {
   Permission = Permission;
 
   @Input()
@@ -28,8 +31,6 @@ export class UserEditComponent extends AbstractForm implements OnInit {
   user: OutputUser;
   @Output()
   submitUser: EventEmitter<InputUserUpdate> = new EventEmitter<InputUserUpdate>();
-
-  editMode = false;
 
   userForm = this.formBuilder.group({
     name: ['', Validators.compose([
@@ -69,16 +70,13 @@ export class UserEditComponent extends AbstractForm implements OnInit {
   };
 
   constructor(private formBuilder: FormBuilder,
+              private dialog: MatDialog,
               protected changeDetectorRef: ChangeDetectorRef) {
     super(changeDetectorRef);
   }
 
   ngOnInit(): void {
     super.ngOnInit();
-    this.userForm.controls.name.setValue(this.user.name);
-    this.userForm.controls.surname.setValue(this.user.surname);
-    this.userForm.controls.email.setValue(this.user.email);
-    this.enterViewMode();
   }
 
   getForm(): FormGroup | null {
@@ -86,28 +84,54 @@ export class UserEditComponent extends AbstractForm implements OnInit {
   }
 
   onSubmit(): void {
+    if (!this.userForm?.controls?.role.value.id
+      || this.user?.userRole?.id === this.userForm.controls.role.value.id) {
+      /**
+       * Proceed to submit the form without the role change confirm if:
+       * - the role did not change
+       * - the form does not have a role => own user editing
+       */
+      Log.debug('Saving user without role confirmation', this);
+      this.saveUser();
+      return;
+    }
+    this.confirmRoleChange();
+  }
+
+  enterViewMode(): void {
+    this.userForm.controls.name.setValue(this.user.name);
+    this.userForm.controls.surname.setValue(this.user.surname);
+    this.userForm.controls.email.setValue(this.user.email);
+  }
+
+  private saveUser(): void {
     this.submitted = true;
+
     this.submitUser.emit({
       id: this.user?.id,
       name: this.userForm?.controls?.name?.value,
       surname: this.userForm?.controls?.surname?.value,
       email: this.userForm?.controls?.email?.value,
-      accountRoleId: this.userForm?.controls?.role?.value?.id || this.user.userRole.id
+      accountRoleId: this.userForm?.controls?.role?.value?.id || this.user?.userRole?.id
     });
   }
 
-  enterEditMode(): void {
-    this.editMode = true;
-    Forms.enableControls(this.userForm);
-  }
-
-  enterViewMode(): void {
-    this.editMode = false;
-
-    this.userForm.controls.name.setValue(this.user.name);
-    this.userForm.controls.surname.setValue(this.user.surname);
-    this.userForm.controls.email.setValue(this.user.email);
-
-    Forms.disableControls(this.userForm);
+  private confirmRoleChange(): void {
+    Forms.confirmDialog(
+      this.dialog,
+      'user.detail.changeRole.dialog.title',
+      'user.detail.changeRole.dialog.message'
+    ).pipe(
+      take(1),
+      takeUntil(this.destroyed$)
+    ).subscribe(changeRole => {
+      const selectedRole = changeRole
+        ? this.userForm?.controls?.role.value
+        : this.userRoles.find(role => role.id === this.user.userRole.id);
+      this.userForm?.controls?.role.setValue(selectedRole);
+      if (changeRole) {
+        this.saveUser();
+      }
+    });
   }
 }

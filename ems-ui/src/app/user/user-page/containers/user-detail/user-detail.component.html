@@ -1,18 +1,16 @@
-<ng-container *ngIf="userRoles$ | async as roles">
-    <ng-container *ngIf="user$ | async as user">
-        <app-user-edit [success$]="userSaveSuccess$"
-                       [error$]="userSaveError$"
-                       [user]="user"
-                       [userRoles]="roles"
-                       (submitUser)="updateUser($event)">
-        </app-user-edit>
-        <ng-container *ngIf="currentUser | async as currentUser">
-            <app-user-password [success$]="passwordSaveSuccess$"
-                               [error$]="passwordSaveError$"
-                               [userId]="user.id"
-                               [ownUser]="currentUser.id === user.id"
-                               (submitPassword)="changePassword($event)">
-            </app-user-password>
-        </ng-container>
-    </ng-container>
+<ng-container *ngIf="details$ | async as details">
+    <app-user-edit
+            [success$]="userSaveSuccess$"
+            [error$]="userSaveError$"
+            [user]="details.user"
+            [userRoles]="details.roles"
+            (submitUser)="saveUser$.next($event)">
+    </app-user-edit>
+    <app-user-password
+            [success$]="passwordSaveSuccess$"
+            [error$]="passwordSaveError$"
+            [userId]="userId"
+            [ownUser]="details.currentUser.id === details.user.id"
+            (submitPassword)="changePassword($event)">
+    </app-user-password>
 </ng-container>

@@ -1,18 +1,21 @@
 import {ChangeDetectorRef, Input, OnInit} from '@angular/core';
-import {Observable} from 'rxjs';
+import {Observable, Subject} from 'rxjs';
 import {FormGroup} from '@angular/forms';
 import {I18nValidationError} from '../../validation/i18n-validation-error';
-import {takeUntil} from 'rxjs/operators';
+import {filter, takeUntil} from 'rxjs/operators';
 import {BaseComponent} from '@common/components/base-component';
+import {Log} from '../../utils/log';
+import {Alert} from './alert';
 
 export abstract class AbstractForm extends BaseComponent implements OnInit {
+  Alert = Alert;
 
   @Input()
   error$: Observable<I18nValidationError | null>;
   @Input()
   success$: Observable<boolean>;
 
-  validationError?: string;
+  showSuccessMessage$ = new Subject<boolean>();
   submitted = false;
   clearOnSuccess = false;
 
@@ -40,8 +43,8 @@ export abstract class AbstractForm extends BaseComponent implements OnInit {
         if (!formGroup) {
           return;
         }
+        Log.debug('Set form backend errors.', this, error);
         this.submitted = false;
-        this.validationError = error?.i18nKey;
         Object.keys(formGroup.controls).forEach(key => {
           if (!error?.i18nFieldErrors || !error.i18nFieldErrors[key]) {
             return;
@@ -56,21 +59,34 @@ export abstract class AbstractForm extends BaseComponent implements OnInit {
 
   private handleSuccess(): void {
     this.success$
-      .pipe(takeUntil(this.destroyed$))
+      .pipe(
+        takeUntil(this.destroyed$),
+        filter(success => !!success)
+      )
       .subscribe(() => {
         this.submitted = false;
-        if (!this.clearOnSuccess) {
-          return;
-        }
-        const formGroup = this.getForm();
-        if (!formGroup) {
-          return;
-        }
-        formGroup.reset();
-        Object.keys(formGroup.controls).forEach(key => {
-          formGroup.get(key)?.setErrors(null);
-        });
+
+        Log.debug('Show success message for 4 seconds.', this);
+        this.showSuccessMessage$.next(true);
+        setTimeout(() => this.showSuccessMessage$.next(false), 4000);
+
+        this.handleClearFormOnSuccess();
       });
+  }
+
+  private handleClearFormOnSuccess(): void {
+    if (!this.clearOnSuccess) {
+      return;
+    }
+    const formGroup = this.getForm();
+    if (!formGroup) {
+      return;
+    }
+    Log.debug('Reset form and errors.', this);
+    formGroup.reset();
+    Object.keys(formGroup.controls).forEach(key => {
+      formGroup.get(key)?.setErrors(null);
+    });
   }
 
 }

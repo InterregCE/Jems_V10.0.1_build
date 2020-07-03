@@ -4,6 +4,8 @@ import {HttpTestingController} from '@angular/common/http/testing';
 import {TestModule} from '../../../../common/test-module';
 import {InputUserUpdate} from '@cat/api';
 import {UserDetailComponent} from './user-detail.component';
+import {Observable, of} from 'rxjs';
+import {ActivatedRoute} from '@angular/router';
 
 describe('UserDetailComponent', () => {
   let httpTestingController: HttpTestingController;
@@ -17,6 +19,14 @@ describe('UserDetailComponent', () => {
         UserModule,
         TestModule
       ],
+      providers: [
+        {
+          provide: ActivatedRoute,
+          useValue: {
+            snapshot: { params: {userId: '1' }}
+          }
+        }
+      ]
     })
       .compileComponents();
     httpTestingController = TestBed.inject(HttpTestingController);
@@ -26,7 +36,6 @@ describe('UserDetailComponent', () => {
 
     fixture = TestBed.createComponent(UserDetailComponent);
     component = fixture.componentInstance;
-    component.id = 1;
 
     fixture.detectChanges();
   });
@@ -38,7 +47,7 @@ describe('UserDetailComponent', () => {
   it('should update a user', fakeAsync(() => {
     const user = {email: 'test@test.com'} as InputUserUpdate;
 
-    component.updateUser(user);
+    component.saveUser$.next(user);
     let success = false;
     component.userSaveSuccess$.subscribe(result => success = result);
 

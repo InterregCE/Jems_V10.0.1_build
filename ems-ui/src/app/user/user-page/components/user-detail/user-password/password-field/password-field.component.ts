@@ -1,14 +1,15 @@
-import {ChangeDetectionStrategy, Component, Input} from '@angular/core';
+import {Component, Input} from '@angular/core';
 import {FormControl} from '@angular/forms';
 
 @Component({
   selector: 'app-password-field',
   templateUrl: './password-field.component.html',
   styleUrls: ['./password-field.component.scss'],
-  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class PasswordFieldComponent {
 
+  @Input()
+  name: string;
   @Input()
   passwordControl: FormControl;
   @Input()

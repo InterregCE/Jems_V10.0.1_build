@@ -4,6 +4,7 @@ import {from, Observable, ReplaySubject} from 'rxjs';
 import {SecurityService} from '../security.service';
 import {OutputCurrentUser} from '@cat/api';
 import {filter} from 'rxjs/operators';
+import {Log} from '../../common/utils/log';
 
 @Injectable({providedIn: 'root'})
 export class PermissionService {
@@ -20,8 +21,9 @@ export class PermissionService {
   }
 
   setPermissions(permissions: string[]): void {
+    Log.info('Setting new user permissions', this, permissions);
     this.ngxPermissionsService.flushPermissions();
-    this.ngxPermissionsService.loadPermissions(permissions)
+    this.ngxPermissionsService.loadPermissions(permissions);
     this.permissionsChanged$.next();
   }
 
