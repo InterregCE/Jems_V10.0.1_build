@@ -26,8 +26,8 @@ data class Audit(
     @Field(type = FieldType.Keyword, store = true)
     val projectId: String?,
 
-    @Field(type = FieldType.Keyword, store = true)
-    val username: String?,
+    @Field(type = FieldType.Object, store = true)
+    val user: AuditUser?,
 
     @Field(type = FieldType.Text, store = true, index = false)
     val description: String?
@@ -40,7 +40,7 @@ data class Audit(
                 timestamp = getElasticTimeNow(),
                 action = AuditAction.PROJECT_SUBMISSION,
                 projectId = projectId,
-                username = currentUser?.user?.email,
+                user = currentUser?.toEsUser(),
                 description = "submission of the project application to the system"
             )
         }
@@ -51,30 +51,30 @@ data class Audit(
                 timestamp = getElasticTimeNow(),
                 action = AuditAction.PROJECT_FILE_DELETE,
                 projectId = projectId.toString(),
-                username = currentUser?.user?.email,
+                user = currentUser?.toEsUser(),
                 description = "document ${file.name} deleted from application $projectId"
             )
         }
 
-        fun userLoggedIn(email: String): Audit {
+        fun userLoggedIn(user: AuditUser): Audit {
             return Audit(
                 id = null,
                 timestamp = getElasticTimeNow(),
                 action = AuditAction.USER_LOGGED_IN,
                 projectId = null,
-                username = email,
-                description = "user with email ${email} logged in"
+                user = user,
+                description = "user with email ${user.email} logged in"
             )
         }
 
-        fun userLoggedOut(email: String): Audit {
+        fun userLoggedOut(user: AuditUser): Audit {
             return Audit(
                 id = null,
                 timestamp = getElasticTimeNow(),
                 action = AuditAction.USER_LOGGED_OUT,
                 projectId = null,
-                username = email,
-                description = "user with email ${email} logged out"
+                user = user,
+                description = "user with email ${user.email} logged out"
             )
         }
 
@@ -85,7 +85,7 @@ data class Audit(
                 timestamp = getElasticTimeNow(),
                 action = AuditAction.USER_CREATED,
                 projectId = null,
-                username = author,
+                user = currentUser?.toEsUser(),
                 description = "new user ${createdUser.email} with role ${createdUser.userRole.name} has been created by $author"
             )
         }
@@ -97,7 +97,7 @@ data class Audit(
                 timestamp = getElasticTimeNow(),
                 action = AuditAction.USER_ROLE_CHANGED,
                 projectId = null,
-                username = author,
+                user = currentUser?.toEsUser(),
                 description = "user role '${user.userRole.name}' has been assigned to ${user.email} by $author"
             )
         }
@@ -108,7 +108,7 @@ data class Audit(
                 timestamp = getElasticTimeNow(),
                 action = AuditAction.USER_DATA_CHANGED,
                 projectId = null,
-                username = currentUser?.user?.email,
+                user = currentUser?.toEsUser(),
                 description = "user data changed from '${oldUser.email}, ${oldUser.name}, ${oldUser.surname}'" +
                     " to '${newUser.email}, ${newUser.name}, ${newUser.surname}'"
             )
@@ -120,19 +120,19 @@ data class Audit(
                 timestamp = getElasticTimeNow(),
                 action = AuditAction.USER_REGISTERED,
                 projectId = null,
-                username = createdUser.email,
+                user = AuditUser(createdUser.id!!, createdUser.email),
                 description = "new user '${createdUser.name} ${createdUser.surname}' with role '${createdUser.userRole.name}' registered"
             )
         }
 
-        fun userSessionExpired(email: String): Audit {
+        fun userSessionExpired(user: AuditUser): Audit {
             return Audit(
                 id = null,
                 timestamp = getElasticTimeNow(),
                 action = AuditAction.USER_SESSION_EXPIRED,
                 projectId = null,
-                username = email,
-                description = "user with email ${email} was logged out by the system"
+                user = user,
+                description = "user with email ${user.email} was logged out by the system"
             )
         }
 
@@ -142,7 +142,7 @@ data class Audit(
                 timestamp = getElasticTimeNow(),
                 action = AuditAction.PASSWORD_CHANGED,
                 projectId = null,
-                username = initiator?.user?.email,
+                user = initiator?.toEsUser(),
                 description = if (initiator?.user?.id == changedUser.id)
                     "Password of user '${changedUser.name} ${changedUser.surname}' (${changedUser.email}) has been changed by himself/herself"
                 else "Password of user '${changedUser.name} ${changedUser.surname}' (${changedUser.email}) has been changed by user ${initiator?.user?.email}"

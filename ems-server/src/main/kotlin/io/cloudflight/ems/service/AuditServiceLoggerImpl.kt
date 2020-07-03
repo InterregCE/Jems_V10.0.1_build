@@ -22,7 +22,7 @@ class AuditServiceLoggerImpl : AuditService {
 
     override fun logEvent(event: Audit) {
         with(event) {
-            logger.info("AUDIT >>> {} (projectId {}, user {}) : {}", action, projectId, username, description)
+            logger.info("AUDIT >>> {} (projectId {}, user ({}, {})) : {}", action, projectId, user?.id, user?.email, description)
         }
     }
 
