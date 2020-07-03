@@ -18,7 +18,6 @@ export class LoginComponent extends AbstractForm {
     password: ['', Validators.required]
   });
 
-  submitted = false;
   registerLink = '/register';
 
   constructor(private formBuilder: FormBuilder,

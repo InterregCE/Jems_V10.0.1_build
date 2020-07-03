@@ -1,7 +1,7 @@
 import {Injectable} from '@angular/core';
 import {LoginRequest} from '@cat/api';
 import {Observable, ReplaySubject} from 'rxjs';
-import {catchError, take} from 'rxjs/operators';
+import {catchError, take, tap} from 'rxjs/operators';
 import {I18nValidationError} from '@common/validation/i18n-validation-error';
 import {SecurityService} from '../../../security/security.service';
 import {Router} from '@angular/router';
@@ -21,10 +21,10 @@ export class LoginPageService {
   }
 
   login(loginRequest: LoginRequest): void {
-    this.authenticationProblem$.next(null);
     this.securityService.login(loginRequest)
       .pipe(
         take(1),
+        tap(() => this.authenticationProblem$.next(null)),
         catchError((error: HttpErrorResponse) => {
           this.authenticationProblem$.next(error.error);
           throw error;
