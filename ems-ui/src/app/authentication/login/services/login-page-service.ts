@@ -21,7 +21,7 @@ export class LoginPageService {
   }
 
   login(loginRequest: LoginRequest): void {
-    this.authenticationProblem$.next(null);
+    // this.authenticationProblem$.next(null);
     this.securityService.login(loginRequest)
       .pipe(
         take(1),

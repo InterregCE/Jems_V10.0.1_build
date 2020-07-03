@@ -39,9 +39,9 @@
                         {{'user.login.button' | translate}}
                     </button>
                 </div>
-                <div *ngIf="authenticationError | async as error"
+                <div *ngIf="validationError"
                      class="alert alert-danger" id="errorMessage" role="alert">
-                    {{error.i18nKey | translate }}
+                    {{validationError | translate }}
                 </div>
             </form>
         </mat-card-content>
