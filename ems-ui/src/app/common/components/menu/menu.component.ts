@@ -1,16 +1,34 @@
 import {Component, Input} from '@angular/core';
 import {MenuItemConfiguration} from './model/menu-item.configuration';
+import {NavigationEnd, Router} from '@angular/router';
+import {BaseComponent} from '@common/components/base-component';
+import {filter, takeUntil} from 'rxjs/operators';
 
 @Component({
   selector: 'app-menu',
   templateUrl: './menu.component.html',
   styleUrls: ['./menu.component.scss']
 })
-export class MenuComponent {
+export class MenuComponent extends BaseComponent {
   @Input()
   items: MenuItemConfiguration[];
 
   activeLink: MenuItemConfiguration | undefined;
+
+  constructor(private router: Router) {
+    super();
+    router.events
+      .pipe(
+        takeUntil(this.destroyed$),
+        filter(val => val instanceof NavigationEnd)
+      )
+      .subscribe((val: NavigationEnd) => {
+        const activeItem = this.items.find(item => item.route === val.url)
+        if (activeItem) {
+          this.activeLink = activeItem;
+        }
+      });
+  }
 
   callAction(item: MenuItemConfiguration): void {
     if (item.isInternal) {
