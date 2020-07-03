@@ -1,4 +1,4 @@
-import {Component, OnChanges, OnInit, SimpleChanges, ViewChild} from '@angular/core';
+import {Component, OnChanges, OnDestroy, OnInit, SimpleChanges, ViewChild} from '@angular/core';
 import {InputProjectFileDescription, OutputProject, OutputProjectFile, ProjectService} from '@cat/api';
 import {ActivatedRoute} from '@angular/router';
 import {TableConfiguration} from '@common/components/table/model/table.configuration';
@@ -13,15 +13,16 @@ import {TableComponent} from '@common/components/table/table.component';
 import {MatDialog} from '@angular/material/dialog';
 import {DeleteDialogComponent} from './delete-dialog.component';
 import {Permission} from '../../../../security/permissions/permission';
-import {filter, take} from 'rxjs/operators';
 import {PermissionService} from '../../../../security/permissions/permission.service';
+import {combineLatest, Subject} from 'rxjs';
+import {take, takeUntil} from 'rxjs/operators';
 
 @Component({
   selector: 'app-project-application-detail',
   templateUrl: './project-application-detail.component.html',
   styleUrls: ['./project-application-detail.component.scss']
 })
-export class ProjectApplicationDetailComponent implements OnInit, OnChanges {
+export class ProjectApplicationDetailComponent implements OnInit, OnChanges, OnDestroy {
   @ViewChild(TableComponent) table: TableComponent;
 
   Permission = Permission;
@@ -31,6 +32,7 @@ export class ProjectApplicationDetailComponent implements OnInit, OnChanges {
   fileNumber = 0;
   projectId = this.activatedRoute.snapshot.params.projectId;
   statusMessages: string[];
+  destroyed$ = new Subject();
 
   editAction = new ActionConfiguration('fas fa-edit', (element: any, index: number) => this.editFileDescription(element, index));
   downloadAction = new ActionConfiguration('fas fa-file-download', (element: OutputProjectFile) => this.downloadFile(element));
@@ -68,6 +70,11 @@ export class ProjectApplicationDetailComponent implements OnInit, OnChanges {
     if (changes.dataSource && changes.dataSource.currentValue) {
       this.configuration.dataSource = changes.dataSource.currentValue;
     }
+  }
+
+  ngOnDestroy() {
+    this.destroyed$.next();
+    this.destroyed$.complete();
   }
 
   addNewFilesForUpload($event: any) {
@@ -199,34 +206,26 @@ export class ProjectApplicationDetailComponent implements OnInit, OnChanges {
   }
 
   assignActionsToUser(): void {
-    this.permissionService.hasPermission(Permission.APPLICANT_USER)
+    combineLatest([
+      this.permissionService.hasPermission(Permission.APPLICANT_USER),
+      this.permissionService.hasPermission(Permission.PROGRAMME_USER),
+      this.permissionService.hasPermission(Permission.ADMINISTRATOR)
+    ])
       .pipe(
         take(1),
-        filter(canSee => canSee),
+        takeUntil(this.destroyed$)
       )
-      .subscribe(() => {
-        const actions = [this.editAction, this.downloadAction, this.deleteAction];
-        this.initTableConfiguration(actions);
-      });
-
-    this.permissionService.hasPermission(Permission.PROGRAMME_USER)
-      .pipe(
-        take(1),
-        filter(canSee => canSee),
-      )
-      .subscribe(() => {
-        const actions = [this.downloadAction];
-        this.initTableConfiguration(actions);
-      });
-
-    this.permissionService.hasPermission(Permission.ADMINISTRATOR)
-      .pipe(
-        take(1),
-        filter(canSee => canSee),
-      )
-      .subscribe(() => {
-        const actions = [this.editAction, this.downloadAction, this.deleteAction];
-        this.initTableConfiguration(actions);
+      .subscribe(([isApplicant, isProgramme,isAdmin]) => {
+        if(isApplicant || isAdmin) {
+          const actions = [this.editAction, this.downloadAction, this.deleteAction];
+          this.initTableConfiguration(actions);
+          return;
+        }
+        if (isProgramme) {
+          const actions = [this.downloadAction];
+          this.initTableConfiguration(actions);
+          return;
+        }
       });
   }
 }
