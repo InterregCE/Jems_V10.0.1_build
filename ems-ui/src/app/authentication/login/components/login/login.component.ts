@@ -1,6 +1,6 @@
 import {ChangeDetectorRef, Component, EventEmitter, OnInit, Output} from '@angular/core';
 import {FormBuilder, FormGroup, Validators} from '@angular/forms';
-import {AbstractForm} from "@common/components/forms/abstract-form";
+import {AbstractForm} from '@common/components/forms/abstract-form';
 import { LoginRequest } from '@cat/api';
 
 @Component({

@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
-import {Observable} from "rxjs";
-import {I18nValidationError} from "@common/validation/i18n-validation-error";
-import {LoginPageService} from "../../services/login-page-service";
+import {Observable} from 'rxjs';
+import {I18nValidationError} from '@common/validation/i18n-validation-error';
+import {LoginPageService} from '../../services/login-page-service';
 import { LoginRequest } from '@cat/api';
 
 @Component({
