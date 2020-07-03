@@ -12,6 +12,9 @@ import {ColumnType} from '@common/components/table/model/column-type.enum';
 import {TableComponent} from '@common/components/table/table.component';
 import {MatDialog} from '@angular/material/dialog';
 import {DeleteDialogComponent} from './delete-dialog.component';
+import {Permission} from '../../../../security/permissions/permission';
+import {filter, take} from 'rxjs/operators';
+import {PermissionService} from '../../../../security/permissions/permission.service';
 
 @Component({
   selector: 'app-project-application-detail',
@@ -21,12 +24,17 @@ import {DeleteDialogComponent} from './delete-dialog.component';
 export class ProjectApplicationDetailComponent implements OnInit, OnChanges {
   @ViewChild(TableComponent) table: TableComponent;
 
+  Permission = Permission;
   dataSource: MatTableDataSource<OutputProjectFile>;
   configuration = new TableConfiguration();
   project = {} as OutputProject;
   fileNumber = 0;
   projectId = this.activatedRoute.snapshot.params.projectId;
   statusMessages: string[];
+
+  editAction = new ActionConfiguration('fas fa-edit', (element: any, index: number) => this.editFileDescription(element, index));
+  downloadAction = new ActionConfiguration('fas fa-file-download', (element: OutputProjectFile) => this.downloadFile(element));
+  deleteAction = new ActionConfiguration('fas fa-trash', (element: OutputProjectFile) => this.deleteFile(element));
 
   STATUS_MESSAGE_SUCCESS = (filename: string) => `Upload of '${filename}' successful.`;
   ERROR_MESSAGE_UPLOAD = (filename: string) => `Upload of '${filename}' not successful.`;
@@ -35,7 +43,8 @@ export class ProjectApplicationDetailComponent implements OnInit, OnChanges {
   constructor(private projectService: ProjectService,
               private projectFileStorageService: ProjectFileService,
               private dialog: MatDialog,
-              private activatedRoute: ActivatedRoute) {
+              private activatedRoute: ActivatedRoute,
+              private permissionService: PermissionService) {
   }
 
   isTableShown(): boolean {
@@ -43,7 +52,7 @@ export class ProjectApplicationDetailComponent implements OnInit, OnChanges {
   }
 
   ngOnInit() {
-    this.initTableConfiguration();
+    this.assignActionsToUser();
     if (this.projectId) {
       this.projectService.getProjectById(Number(this.projectId)).subscribe((result: OutputProject) => {
         if (result) {
@@ -115,7 +124,7 @@ export class ProjectApplicationDetailComponent implements OnInit, OnChanges {
       });
   }
 
-  initTableConfiguration(): void {
+  initTableConfiguration(actions: ActionConfiguration[]): void {
     this.configuration.columns = [];
     this.configuration.columns.push(this.createNewColumnConfig('Filename', 'name', ColumnType.String));
     this.configuration.columns.push(this.createNewColumnConfig('Timestamp', 'updated', ColumnType.Date));
@@ -134,11 +143,7 @@ export class ProjectApplicationDetailComponent implements OnInit, OnChanges {
     this.configuration.dataSource = this.dataSource;
 
     this.configuration.actionColumn = true;
-    this.configuration.actions = [
-      new ActionConfiguration('fas fa-edit', (element: any, index: number) => this.editFileDescription(element, index)),
-      new ActionConfiguration('fas fa-file-download', (element: OutputProjectFile) => this.downloadFile(element)),
-      new ActionConfiguration('fas fa-trash', (element: OutputProjectFile) => this.deleteFile(element)),
-    ];
+    this.configuration.actions = actions;
   }
 
   private addMessageFromResponse(status: string) {
@@ -191,5 +196,37 @@ export class ProjectApplicationDetailComponent implements OnInit, OnChanges {
       onCancel: (index: number) => this.onCancel(index),
       readOnly: true,
     });
+  }
+
+  assignActionsToUser(): void {
+    this.permissionService.hasPermission(Permission.APPLICANT_USER)
+      .pipe(
+        take(1),
+        filter(canSee => canSee),
+      )
+      .subscribe(() => {
+        const actions = [this.editAction, this.downloadAction, this.deleteAction];
+        this.initTableConfiguration(actions);
+      });
+
+    this.permissionService.hasPermission(Permission.PROGRAMME_USER)
+      .pipe(
+        take(1),
+        filter(canSee => canSee),
+      )
+      .subscribe(() => {
+        const actions = [this.downloadAction];
+        this.initTableConfiguration(actions);
+      });
+
+    this.permissionService.hasPermission(Permission.ADMINISTRATOR)
+      .pipe(
+        take(1),
+        filter(canSee => canSee),
+      )
+      .subscribe(() => {
+        const actions = [this.editAction, this.downloadAction, this.deleteAction];
+        this.initTableConfiguration(actions);
+      });
   }
 }

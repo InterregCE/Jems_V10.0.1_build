@@ -79,7 +79,7 @@ class UserServiceImpl(
         return createdUser
     }
 
-    @Transactional
+    @Transactional (rollbackFor = [Exception::class])
     override fun update(newUser: InputUserUpdate): OutputUser {
         val oldUser = accountRepository.findByIdOrNull(newUser.id)
             ?: throwNotFound("User with id ${newUser.id} was not found.")
@@ -91,8 +91,8 @@ class UserServiceImpl(
             accountRole = getNewRoleIfChanged(oldUser, newUser)
         )
 
+        writeChangeAuditMessages(oldUser = oldUser, newUser = toUpdate)
         val updatedUser = accountRepository.save(toUpdate)
-        writeChangeAuditMessages(oldUser = oldUser, newUser = updatedUser)
         return updatedUser.toOutputUser()
     }
 
