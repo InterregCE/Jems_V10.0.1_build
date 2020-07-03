@@ -79,10 +79,11 @@ class UserServiceImpl(
         return createdUser
     }
 
-    @Transactional (rollbackFor = [Exception::class])
+    @Transactional
     override fun update(newUser: InputUserUpdate): OutputUser {
         val oldUser = accountRepository.findByIdOrNull(newUser.id)
             ?: throwNotFound("User with id ${newUser.id} was not found.")
+        val oldData = oldUser.toOutputUser()
 
         val toUpdate = oldUser.copy(
             email = getNewEmailIfChanged(oldUser, newUser),
@@ -91,9 +92,9 @@ class UserServiceImpl(
             accountRole = getNewRoleIfChanged(oldUser, newUser)
         )
 
-        writeChangeAuditMessages(oldUser = oldUser, newUser = toUpdate)
-        val updatedUser = accountRepository.save(toUpdate)
-        return updatedUser.toOutputUser()
+        val updatedUser = accountRepository.save(toUpdate).toOutputUser()
+        writeChangeAuditMessages(oldUser = oldData, newUser = updatedUser)
+        return updatedUser
     }
 
     @Transactional
@@ -145,17 +146,15 @@ class UserServiceImpl(
         )
     }
 
-    private fun writeChangeAuditMessages(oldUser: Account, newUser: Account) {
-        val newOutputUser = newUser.toOutputUser()
-
-        if (oldUser.accountRole.id != newUser.accountRole.id)
+    private fun writeChangeAuditMessages(oldUser: OutputUser, newUser: OutputUser) {
+        if (oldUser.userRole.id != newUser.userRole.id)
             auditService.logEvent(
-                Audit.userRoleChanged(securityService.currentUser, newOutputUser)
+                Audit.userRoleChanged(securityService.currentUser, newUser)
             )
 
         if (oldUser.email != newUser.email || oldUser.name != newUser.name || oldUser.surname != newUser.surname)
             auditService.logEvent(
-                Audit.userDataChanged(securityService.currentUser, oldUser.toOutputUser(), newOutputUser)
+                Audit.userDataChanged(securityService.currentUser, oldUser, newUser)
             )
     }
 
