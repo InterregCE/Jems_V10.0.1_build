@@ -77,6 +77,7 @@ export class UserRegistrationComponent extends AbstractForm implements OnInit{
   }
 
   onSubmit(): void {
+    this.submitted = true;
     this.submitUser.emit({
       name: this.userForm?.controls?.name?.value,
       surname: this.userForm?.controls?.surname?.value,
