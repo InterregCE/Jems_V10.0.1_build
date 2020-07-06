@@ -104,6 +104,7 @@ export class UserEditComponent extends ViewEditForm implements OnInit {
     this.userForm.controls.name.setValue(this.user.name);
     this.userForm.controls.surname.setValue(this.user.surname);
     this.userForm.controls.email.setValue(this.user.email);
+    this.userForm.controls.role.setValue(this.getUserRole());
   }
 
   private saveUser(): void {
@@ -129,11 +130,15 @@ export class UserEditComponent extends ViewEditForm implements OnInit {
     ).subscribe(changeRole => {
       const selectedRole = changeRole
         ? this.userForm?.controls?.role.value
-        : this.userRoles.find(role => role.id === this.user.userRole.id);
+        : this.getUserRole();
       this.userForm?.controls?.role.setValue(selectedRole);
       if (changeRole) {
         this.saveUser();
       }
     });
+  }
+
+  getUserRole(): OutputUserRole | undefined {
+    return this.userRoles.find(role => role.id === this.user.userRole.id)
   }
 }
