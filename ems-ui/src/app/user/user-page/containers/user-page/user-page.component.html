@@ -1,4 +1,4 @@
-<div class="container">
+<div *ngxPermissionsOnly="Permission.ADMINISTRATOR" class="container">
     <div class="row">
         <div *ngIf="userRoles$ | async as userRoles" class="col-md-6">
             <app-user-submission

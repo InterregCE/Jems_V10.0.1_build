@@ -1,4 +1,4 @@
-import {Component, Input} from '@angular/core';
+import {Component, Input, OnInit} from '@angular/core';
 import {MenuItemConfiguration} from './model/menu-item.configuration';
 import {NavigationEnd, Router} from '@angular/router';
 import {BaseComponent} from '@common/components/base-component';
@@ -10,7 +10,7 @@ import {Log} from '../../utils/log';
   templateUrl: './menu.component.html',
   styleUrls: ['./menu.component.scss']
 })
-export class MenuComponent extends BaseComponent {
+export class MenuComponent extends BaseComponent implements OnInit {
   @Input()
   items: MenuItemConfiguration[];
 
@@ -30,6 +30,12 @@ export class MenuComponent extends BaseComponent {
           this.activeLink = activeItem;
         }
       });
+  }
+
+  ngOnInit(): void {
+    this.activeLink = this.items.find((item: MenuItemConfiguration) => {
+      return item.route === this.router.url
+    });
   }
 
   callAction(item: MenuItemConfiguration): void {
