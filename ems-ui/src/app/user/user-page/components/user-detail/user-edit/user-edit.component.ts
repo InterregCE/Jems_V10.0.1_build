@@ -29,6 +29,8 @@ export class UserEditComponent extends ViewEditForm implements OnInit {
   userRoles: OutputUserRole[];
   @Input()
   user: OutputUser;
+  @Input()
+  disabled = false;
   @Output()
   submitUser: EventEmitter<InputUserUpdate> = new EventEmitter<InputUserUpdate>();
 

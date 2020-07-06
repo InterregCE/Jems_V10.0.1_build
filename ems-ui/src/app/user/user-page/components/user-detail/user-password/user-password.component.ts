@@ -8,8 +8,8 @@ import {
   Output
 } from '@angular/core';
 import {FormBuilder, FormGroup, Validators} from '@angular/forms';
-import {InputPassword} from '@cat/api'
 import {Forms} from '../../../../../common/utils/forms';
+import {InputPassword} from '@cat/api';
 import {filter, take, takeUntil} from 'rxjs/operators';
 import {MatDialog} from '@angular/material/dialog';
 import {ViewEditForm} from '@common/components/forms/view-edit-form';
@@ -26,6 +26,8 @@ export class UserPasswordComponent extends ViewEditForm implements OnInit {
   userId: number;
   @Input()
   ownUser: boolean;
+  @Input()
+  disabled: boolean;
   @Output()
   submitPassword: EventEmitter<InputPassword> = new EventEmitter<InputPassword>();
 
@@ -87,7 +89,7 @@ export class UserPasswordComponent extends ViewEditForm implements OnInit {
     });
   }
 
-  private savePassword():void {
+  private savePassword(): void {
     this.submitted = true;
     this.submitPassword.emit({
       password: this.passwordForm?.controls?.password?.value,

@@ -9,6 +9,7 @@ import {catchError, flatMap, map, take, takeUntil, tap} from 'rxjs/operators';
 import {HttpErrorResponse} from '@angular/common/http';
 import {BaseComponent} from '@common/components/base-component';
 import {Log} from '../../../../common/utils/log';
+import {FormState} from '@common/components/forms/form-state';
 
 @Component({
   selector: 'app-user-detail',
@@ -17,11 +18,15 @@ import {Log} from '../../../../common/utils/log';
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class UserDetailComponent extends BaseComponent {
+  FormState = FormState;
 
   userSaveError$ = new Subject<I18nValidationError | null>();
   userSaveSuccess$ = new Subject<boolean>();
   passwordSaveSuccess$ = new Subject<boolean>();
   passwordSaveError$ = new Subject<I18nValidationError | null>();
+
+  userEditDisabled = false;
+  passwordEditDisabled = true;
 
   userId = this.activatedRoute?.snapshot?.params?.userId;
   saveUser$ = new Subject<InputUserUpdate>();
@@ -75,4 +80,11 @@ export class UserDetailComponent extends BaseComponent {
       .subscribe();
   }
 
+  passwordSwitchedMode(formState: FormState): void {
+    this.userEditDisabled = formState === FormState.EDIT;
+  }
+
+  editSwitchedMode(formState: FormState): void {
+    this.passwordEditDisabled = formState === FormState.EDIT;
+  }
 }

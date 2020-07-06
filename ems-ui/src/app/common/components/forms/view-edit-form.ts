@@ -1,4 +1,4 @@
-import {ChangeDetectorRef, OnInit} from '@angular/core';
+import {ChangeDetectorRef, EventEmitter, OnInit, Output} from '@angular/core';
 import {FormGroup} from '@angular/forms';
 import {AbstractForm} from './abstract-form';
 import {delay, filter, takeUntil} from 'rxjs/operators';
@@ -8,6 +8,9 @@ import {FormState} from '@common/components/forms/form-state';
 
 export abstract class ViewEditForm extends AbstractForm implements OnInit {
   FormState = FormState;
+
+  @Output()
+  switchedFormState: EventEmitter<FormState> = new EventEmitter<FormState>();
 
   formState: FormState;
   changeFormState$ = new Subject<FormState>();
@@ -47,6 +50,7 @@ export abstract class ViewEditForm extends AbstractForm implements OnInit {
           this.enterEditMode();
           this.getForm()?.markAsUntouched();
         }
+        this.switchedFormState.emit(newState);
       });
 
     this.changeFormState$.next(FormState.VIEW);

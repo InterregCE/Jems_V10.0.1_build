@@ -4,13 +4,17 @@
             [error$]="userSaveError$"
             [user]="details.user"
             [userRoles]="details.roles"
-            (submitUser)="saveUser$.next($event)">
+            [disabled]="userEditDisabled"
+            (submitUser)="saveUser$.next($event)"
+            (switchedFormState)="editSwitchedMode($event)">
     </app-user-edit>
     <app-user-password
             [success$]="passwordSaveSuccess$"
             [error$]="passwordSaveError$"
             [userId]="userId"
             [ownUser]="details.currentUser.id === details.user.id"
-            (submitPassword)="changePassword($event)">
+            [disabled]="passwordEditDisabled"
+            (submitPassword)="changePassword($event)"
+            (switchedFormState)="passwordSwitchedMode($event)">
     </app-user-password>
 </ng-container>
