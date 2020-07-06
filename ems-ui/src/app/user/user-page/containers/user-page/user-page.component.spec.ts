@@ -40,9 +40,9 @@ describe('UserPageComponent', () => {
     component.userSaveSuccess$.subscribe(result => success = result);
 
     httpTestingController.expectOne({method: 'GET', url: `//api/role`});
-    httpTestingController.expectOne({method: 'GET', url: `//api/user?page=0&size=25&sort=id,desc`});
+    httpTestingController.expectOne({method: 'GET', url: `//api/user?page=0&size=100&sort=id,desc`});
     httpTestingController.expectOne({method: 'POST', url: `//api/user`}).flush(user);
-    httpTestingController.expectOne({method: 'GET', url: `//api/user?page=0&size=25&sort=id,desc`});
+    httpTestingController.expectOne({method: 'GET', url: `//api/user?page=0&size=100&sort=id,desc`});
     httpTestingController.verify();
 
     tick();
@@ -58,7 +58,7 @@ describe('UserPageComponent', () => {
       {email: '2@2'} as OutputUser
     ];
 
-    httpTestingController.match({method: 'GET', url: `//api/user?page=0&size=25&sort=id,desc`})
+    httpTestingController.match({method: 'GET', url: `//api/user?page=0&size=100&sort=id,desc`})
       .forEach(req => req.flush({content: users}));
 
     tick();
