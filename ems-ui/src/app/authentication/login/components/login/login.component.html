@@ -39,10 +39,11 @@
                         {{'user.login.button' | translate}}
                     </button>
                 </div>
-                <div *ngIf="validationError"
-                     class="alert alert-danger" id="errorMessage" role="alert">
-                    {{validationError | translate }}
-                </div>
+                <app-alert *ngIf="error$ | async as error"
+                           [show]="!submitted && !!error.i18nKey"
+                           [type]="Alert.ERROR">
+                    <p>{{error.i18nKey | translate}}</p>
+                </app-alert>
             </form>
         </mat-card-content>
     </mat-card>

@@ -1,5 +1,5 @@
 import {ChangeDetectionStrategy, Component, Input} from '@angular/core';
-import {OutputUser} from '@cat/api';
+import {PageOutputUser} from '@cat/api';
 import {TableConfiguration} from '@common/components/table/model/table.configuration';
 
 @Component({
@@ -10,7 +10,8 @@ import {TableConfiguration} from '@common/components/table/model/table.configura
 })
 export class UserListComponent {
 
-  @Input() filtered: OutputUser[];
+  @Input() userPage: PageOutputUser;
+
   tableConfiguration: TableConfiguration = new TableConfiguration({
     routerLink: '/user/',
     isTableClickable: true,

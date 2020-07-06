@@ -16,7 +16,7 @@ import {MatDialogModule} from '@angular/material/dialog';
 import {MatMenuModule} from '@angular/material/menu';
 import {MatIconModule} from '@angular/material/icon';
 import {HelpMenuComponent} from '@common/components/top-bar/help-menu/help-menu.component';
-import {FormValidationComponent} from '@common/components/forms/form-validation/form-validation.component';
+import {AlertComponent} from '@common/components/forms/form-validation/alert.component';
 
 const declarations = [
   TopBarComponent,
@@ -24,7 +24,7 @@ const declarations = [
   FormFieldErrorsComponent,
   ConfirmDialogComponent,
   HelpMenuComponent,
-  FormValidationComponent
+  AlertComponent
 ];
 
 @NgModule({

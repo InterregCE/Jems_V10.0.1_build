@@ -1,14 +1,16 @@
 <div *ngxPermissionsOnly="[Permission.ADMINISTRATOR]">
-    <a [routerLink]="['/user']">&lt; {{'user.detail.page.back' | translate}}</a>
+    <a [routerLink]="['/user']">&lt; {{'user.detail.page.back.to.users' | translate}}</a>
+</div>
+<div *ngxPermissionsExcept="[Permission.ADMINISTRATOR]">
+    <a [routerLink]="['/']">&lt; {{'user.detail.page.back.to.projects' | translate}}</a>
 </div>
 <div class="container vertical-center">
-    <span class="title-text">{{'user.detail.page.title' | translate}}</span>
-    <button *ngIf="!editMode" class="edit-data-button" mat-raised-button
-            type="submit"
-            (click)="enterEditMode()">
+    <span>{{'user.detail.page.title' | translate}}</span>
+    <button *ngIf="formState === FormState.VIEW" mat-raised-button
+            (click)="changeFormState$.next(FormState.EDIT)">
         edit user data
     </button>
-    <form [formGroup]="userForm" (ngSubmit)="onSubmit()" autocomplete="off">
+    <form [formGroup]="userForm">
         <mat-form-field class="field">
             <mat-label>Name</mat-label>
             <input name="name" formControlName="name" matInput placeholder="Name" required>
@@ -39,31 +41,35 @@
                 </app-form-field-errors>
             </mat-error>
         </mat-form-field>
-        <div *ngxPermissionsOnly="[Permission.ADMINISTRATOR]" class="form-group">
+        <div *ngxPermissionsOnly="[Permission.ADMINISTRATOR]">
             <app-user-role-form-field
-                    [userRole]="user?.userRole"
+                    [roleId]="user?.userRole?.id"
                     [roleControl]="userForm?.controls?.role"
-                    [roles]="userRoles"
-                    [editMode]="editMode">
+                    [roles]="userRoles">
             </app-user-role-form-field>
         </div>
-        <div *ngIf="editMode">
+        <div *ngIf="formState === FormState.EDIT">
             <button mat-raised-button
-                    type="submit"
-                    (click)="enterViewMode()">
+                    (click)="changeFormState$.next(FormState.VIEW)">
                 cancel
             </button>
             <button mat-raised-button
                     color="primary"
                     type="submit"
-                    [disabled]="userForm.invalid || submitted">
+                    [disabled]="userForm.invalid || submitted"
+                    (click)="onSubmit()">
                 save
             </button>
         </div>
-        <app-form-validation
-                [success]="success$ | async"
-                [successMessage]="'user.detail.save.success'"
-                [validationError]="validationError">
-        </app-form-validation>
+        <app-alert
+                [show]="showSuccessMessage$ | async"
+                [type]="Alert.SUCCESS">
+            <p>{{'user.detail.save.success' | translate}}</p>
+        </app-alert>
+        <app-alert *ngIf="error$ | async as error"
+                   [show]="!submitted && !!error.i18nKey"
+                   [type]="Alert.ERROR">
+            <p>{{error.i18nKey | translate}}</p>
+        </app-alert>
     </form>
 </div>

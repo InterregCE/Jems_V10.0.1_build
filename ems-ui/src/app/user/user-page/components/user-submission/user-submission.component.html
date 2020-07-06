@@ -34,7 +34,8 @@
             </mat-form-field>
             <mat-form-field class="col-md-12 user-submission-field">
                 <mat-label>Role</mat-label>
-                <mat-select name="role" formControlName="role" [disableOptionCentering]="true" required panelClass="material-select-panel">
+                <mat-select name="role" formControlName="role" [disableOptionCentering]="true" required
+                            panelClass="material-select-panel">
                     <mat-option *ngFor="let role of userRoles" [value]="role">
                         {{role.name}}
                     </mat-option>
@@ -54,9 +55,14 @@
             + Add User
         </button>
     </form>
-    <app-form-validation
-            [success]="success$ | async"
-            [successMessage]="'user.detail.save.success'"
-            [validationError]="validationError">
-    </app-form-validation>
+    <app-alert
+            [show]="showSuccessMessage$ | async"
+            [type]="Alert.SUCCESS">
+        <p>{{'user.detail.save.success' | translate}}</p>
+    </app-alert>
+    <app-alert *ngIf="error$ | async as error"
+               [show]="!!error.i18nKey"
+               [type]="Alert.ERROR">
+        <p>{{error.i18nKey | translate}}</p>
+    </app-alert>
 </div>

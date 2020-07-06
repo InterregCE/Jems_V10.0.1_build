@@ -2,13 +2,14 @@ import { Injectable } from '@angular/core';
 import {map, shareReplay, tap} from 'rxjs/operators';
 import {UserRoleService, OutputUserRole} from '@cat/api';
 import {Observable} from 'rxjs';
+import {Log} from '../../../../common/utils/log';
 
 @Injectable()
 export class RolePageService {
 
   private userRoles$ = this.userRoleService.list()
     .pipe(
-      tap(page => console.log('Fetched the user roles:', page.content)),
+      tap(page => Log.info('Fetched the user roles:', this, page.content)),
       map(page => page.content),
       shareReplay(1)
     );

@@ -11,6 +11,7 @@ import {
   NgxRolesStore
 } from 'ngx-permissions';
 import {LoginPageService} from '../authentication/login/services/login-page-service';
+import {NoopAnimationsModule} from '@angular/platform-browser/animations';
 
 @NgModule({
   declarations: [],
@@ -19,7 +20,8 @@ import {LoginPageService} from '../authentication/login/services/login-page-serv
     HttpClientTestingModule,
     RouterTestingModule,
     HttpClientTestingModule,
-    NgxPermissionsModule
+    NgxPermissionsModule,
+    NoopAnimationsModule
   ],
   providers: [
     DatePipe,
