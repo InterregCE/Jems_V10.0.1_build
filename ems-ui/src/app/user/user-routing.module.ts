@@ -18,7 +18,6 @@ const routes: Routes = [
     path: 'user',
     component: UserPageComponent,
     canActivate: [AuthenticationGuard, NgxPermissionsGuard],
-    data: userGuard
   },
   {
     path: 'user/:userId',
