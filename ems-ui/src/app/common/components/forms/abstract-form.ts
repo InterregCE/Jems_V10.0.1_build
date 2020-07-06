@@ -87,6 +87,7 @@ export abstract class AbstractForm extends BaseComponent implements OnInit {
     Object.keys(formGroup.controls).forEach(key => {
       formGroup.get(key)?.setErrors(null);
     });
+    formGroup.setErrors([]); // marks the form as invalid without marking the fields with errors.
   }
 
 }
