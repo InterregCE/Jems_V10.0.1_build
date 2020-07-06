@@ -22,7 +22,7 @@ class ProjectController(
         return projectService.createProject(project)
     }
 
-    @PreAuthorize("@projectAuthorization.canReadWriteProject(#id)")
+    @PreAuthorize("@projectAuthorization.canReadProject(#id)")
     override fun getProjectById(id: Long): OutputProject {
         return projectService.getById(id)
     }
