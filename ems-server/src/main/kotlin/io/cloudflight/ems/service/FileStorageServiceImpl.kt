@@ -6,7 +6,7 @@ import io.cloudflight.ems.entity.Audit
 import io.cloudflight.ems.entity.ProjectFile
 import io.cloudflight.ems.exception.DuplicateFileException
 import io.cloudflight.ems.exception.ResourceNotFoundException
-import io.cloudflight.ems.repository.AccountRepository
+import io.cloudflight.ems.repository.UserRepository
 import io.cloudflight.ems.repository.MinioStorage
 import io.cloudflight.ems.repository.ProjectFileRepository
 import io.cloudflight.ems.repository.ProjectRepository
@@ -25,7 +25,7 @@ class FileStorageServiceImpl(
     private val storage: MinioStorage,
     private val repository: ProjectFileRepository,
     private val projectRepository: ProjectRepository,
-    private val accountRepository: AccountRepository,
+    private val userRepository: UserRepository,
     private val securityService: SecurityService
 ): FileStorageService {
 
@@ -41,7 +41,7 @@ class FileStorageServiceImpl(
         val project = projectRepository.findById(fileMetadata.projectId)
             .orElseThrow { throw ResourceNotFoundException() }
 
-        val author = accountRepository.findById(securityService.currentUser?.user?.id!!)
+        val author = userRepository.findById(securityService.currentUser?.user?.id!!)
             .orElseThrow { throw ResourceNotFoundException() }
 
         val filePath = getFilePath(fileMetadata.projectId, fileMetadata.name)

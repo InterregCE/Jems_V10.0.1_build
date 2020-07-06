@@ -18,7 +18,7 @@ export class UserRoleFormFieldComponent implements OnInit {
   roles: OutputUserRole[];
 
   roleErrors = {
-    required: 'user.accountRoleId.should.not.be.empty'
+    required: 'user.userRoleId.should.not.be.empty'
   };
 
   ngOnInit(): void {

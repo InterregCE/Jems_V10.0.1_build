@@ -4,13 +4,13 @@ import io.cloudflight.ems.api.dto.InputProject
 import io.cloudflight.ems.api.dto.OutputProject
 import io.cloudflight.ems.api.dto.user.OutputUser
 import io.cloudflight.ems.api.dto.user.OutputUserRole
-import io.cloudflight.ems.entity.Account
-import io.cloudflight.ems.entity.AccountRole
+import io.cloudflight.ems.entity.User
+import io.cloudflight.ems.entity.UserRole
 import io.cloudflight.ems.entity.Audit
 import io.cloudflight.ems.entity.AuditAction
 import io.cloudflight.ems.entity.Project
 import io.cloudflight.ems.exception.ResourceNotFoundException
-import io.cloudflight.ems.repository.AccountRepository
+import io.cloudflight.ems.repository.UserRepository
 import io.cloudflight.ems.repository.ProjectRepository
 import io.cloudflight.ems.security.ADMINISTRATOR
 import io.cloudflight.ems.security.APPLICANT_USER
@@ -52,12 +52,12 @@ class ProjectServiceTest {
         userRole = OutputUserRole(id = 1, name = "ADMIN")
     )
 
-    private val account = Account(
+    private val account = User(
         id = 1,
         email = "admin@admin.dev",
         name = "Name",
         surname = "Surname",
-        accountRole = AccountRole(id = 1, name = "ADMIN"),
+        userRole = UserRole(id = 1, name = "ADMIN"),
         password = "hash_pass"
     )
 
@@ -65,7 +65,7 @@ class ProjectServiceTest {
     lateinit var projectRepository: ProjectRepository
 
     @MockK
-    lateinit var accountRepository: AccountRepository
+    lateinit var userRepository: UserRepository
 
     @RelaxedMockK
     lateinit var auditService: AuditService
@@ -79,8 +79,8 @@ class ProjectServiceTest {
     fun setup() {
         MockKAnnotations.init(this)
         every { securityService.currentUser } returns LocalCurrentUser(user, "hash_pass", emptyList())
-        every { accountRepository.findById(eq(user.id!!)) } returns Optional.of(account)
-        projectService = ProjectServiceImpl(projectRepository, accountRepository, auditService, securityService)
+        every { userRepository.findById(eq(user.id!!)) } returns Optional.of(account)
+        projectService = ProjectServiceImpl(projectRepository, userRepository, auditService, securityService)
     }
 
     @ParameterizedTest
@@ -138,7 +138,7 @@ class ProjectServiceTest {
 
     @Test
     fun projectCreation_withoutUser() {
-        every { accountRepository.findById(eq(user.id!!)) } returns Optional.empty()
+        every { userRepository.findById(eq(user.id!!)) } returns Optional.empty()
         assertThrows<ResourceNotFoundException> { projectService.createProject(InputProject("test", TEST_DATE)) }
     }
 

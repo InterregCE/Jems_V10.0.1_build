@@ -19,7 +19,7 @@ data class Project (
     val acronym: String,
 
     @ManyToOne(optional = false)
-    val applicant: Account,
+    val applicant: User,
 
     @Column(nullable = false)
     val submissionDate: LocalDate

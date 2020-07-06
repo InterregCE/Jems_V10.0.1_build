@@ -1,9 +1,9 @@
 package io.cloudflight.ems.service
 
 import io.cloudflight.ems.api.dto.user.OutputUserRole
-import io.cloudflight.ems.entity.AccountRole
+import io.cloudflight.ems.entity.UserRole
 
-fun AccountRole.toOutputUserRole() = OutputUserRole(
+fun UserRole.toOutputUserRole() = OutputUserRole(
     id = this.id,
     name = this.name
 )

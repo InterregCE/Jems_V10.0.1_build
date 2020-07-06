@@ -1,9 +1,9 @@
 package io.cloudflight.ems.factory
 
-import io.cloudflight.ems.entity.Account
-import io.cloudflight.ems.entity.AccountRole
-import io.cloudflight.ems.repository.AccountRepository
-import io.cloudflight.ems.repository.AccountRoleRepository
+import io.cloudflight.ems.entity.User
+import io.cloudflight.ems.entity.UserRole
+import io.cloudflight.ems.repository.UserRepository
+import io.cloudflight.ems.repository.UserRoleRepository
 import io.cloudflight.ems.security.ADMINISTRATOR
 import io.cloudflight.ems.security.APPLICANT_USER
 import org.springframework.security.crypto.password.PasswordEncoder
@@ -12,42 +12,42 @@ import javax.transaction.Transactional
 
 @Component
 class AccountFactory(
-    val accountRepository: AccountRepository,
-    val accountRoleRepository: AccountRoleRepository,
+    val userRepository: UserRepository,
+    val userRoleRepository: UserRoleRepository,
     val passwordEncoder: PasswordEncoder
 ) {
 
-    val adminAccount: Account = saveAdminAccount(ADMINISTRATOR_EMAIL)
+    val adminAccount: User = saveAdminAccount(ADMINISTRATOR_EMAIL)
 
-    val applicantAccount: Account = saveApplicantUser(APPLICANT_USER_EMAIL)
+    val applicantAccount: User = saveApplicantUser(APPLICANT_USER_EMAIL)
 
     @Transactional
-    fun saveRole(roleName: String): AccountRole {
-        return accountRoleRepository.findOneByName(roleName)
-            ?: accountRoleRepository.save(AccountRole(null, roleName))
+    fun saveRole(roleName: String): UserRole {
+        return userRoleRepository.findOneByName(roleName)
+            ?: userRoleRepository.save(UserRole(null, roleName))
     }
 
     @Transactional
-    fun saveAccount(email: String, role: AccountRole): Account {
-        return accountRepository.findOneByEmail(email)
-            ?: accountRepository.save(
-                Account(
+    fun saveAccount(email: String, role: UserRole): User {
+        return userRepository.findOneByEmail(email)
+            ?: userRepository.save(
+                User(
                     id = null,
                     email = email,
                     password = passwordEncoder.encode(email),
                     name = email,
                     surname = email,
-                    accountRole = role
+                    userRole = role
                 )
             )
     }
 
-    fun saveAdminAccount(email: String): Account {
-        val adminRole: AccountRole = saveRole(ADMINISTRATOR)
+    fun saveAdminAccount(email: String): User {
+        val adminRole: UserRole = saveRole(ADMINISTRATOR)
         return saveAccount(email, adminRole)
     }
 
-    fun saveApplicantUser(email: String): Account {
+    fun saveApplicantUser(email: String): User {
         val programmeRole = saveRole(APPLICANT_USER)
         return saveAccount(email, programmeRole)
     }

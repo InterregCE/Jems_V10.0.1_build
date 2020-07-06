@@ -6,14 +6,14 @@ import io.cloudflight.ems.api.dto.user.InputUserRegistration
 import io.cloudflight.ems.api.dto.user.InputUserUpdate
 import io.cloudflight.ems.api.dto.user.OutputUser
 import io.cloudflight.ems.dto.UserWithCredentials
-import io.cloudflight.ems.entity.Account
-import io.cloudflight.ems.entity.AccountRole
+import io.cloudflight.ems.entity.User
+import io.cloudflight.ems.entity.UserRole
 import io.cloudflight.ems.entity.Audit
 import io.cloudflight.ems.exception.I18nFieldError
 import io.cloudflight.ems.exception.I18nValidationException
 import io.cloudflight.ems.exception.ResourceNotFoundException
-import io.cloudflight.ems.repository.AccountRepository
-import io.cloudflight.ems.repository.AccountRoleRepository
+import io.cloudflight.ems.repository.UserRepository
+import io.cloudflight.ems.repository.UserRoleRepository
 import io.cloudflight.ems.security.ADMINISTRATOR
 import io.cloudflight.ems.security.APPLICANT_USER
 import io.cloudflight.ems.security.service.SecurityService
@@ -28,8 +28,8 @@ import org.springframework.transaction.annotation.Transactional
 
 @Service
 class UserServiceImpl(
-    private val accountRepository: AccountRepository,
-    private val accountRoleRepository: AccountRoleRepository,
+    private val userRepository: UserRepository,
+    private val userRoleRepository: UserRoleRepository,
     private val auditService: AuditService,
     private val securityService: SecurityService,
     private val passwordEncoder: PasswordEncoder
@@ -41,47 +41,47 @@ class UserServiceImpl(
 
     @Transactional(readOnly = true)
     override fun findOneByEmail(email: String): UserWithCredentials? {
-        return accountRepository.findOneByEmail(email)?.let { user ->
+        return userRepository.findOneByEmail(email)?.let { user ->
             return UserWithCredentials(user.toOutputUser(), user.password)
         }
     }
 
     @Transactional(readOnly = true)
     override fun getById(id: Long): OutputUser {
-        return accountRepository.findOneById(id)?.toOutputUser()
+        return userRepository.findOneById(id)?.toOutputUser()
             ?: throw ResourceNotFoundException()
     }
 
     @Transactional(readOnly = true)
     override fun findAll(pageable: Pageable): Page<OutputUser> {
-        return accountRepository.findAll(pageable).map { it.toOutputUser() }
+        return userRepository.findAll(pageable).map { it.toOutputUser() }
     }
 
     @Transactional
     override fun create(user: InputUserCreate): OutputUser {
-        val role = accountRoleRepository.findByIdOrNull(user.accountRoleId!!)
-            ?: throwNotFound("User with id ${user.accountRoleId} was not found.")
+        val role = userRoleRepository.findByIdOrNull(user.userRoleId!!)
+            ?: throwNotFound("User with id ${user.userRoleId} was not found.")
 
         val passwordEncoded = passwordEncoder.encode(user.email)
-        val createdUser = accountRepository.save(user.toEntity(role, passwordEncoded)).toOutputUser()
+        val createdUser = userRepository.save(user.toEntity(role, passwordEncoded)).toOutputUser()
         auditService.logEvent(Audit.userCreated(securityService.currentUser, createdUser))
         return createdUser
     }
 
     @Transactional
     override fun registerApplicant(user: InputUserRegistration): OutputUser {
-        val role = accountRoleRepository.findOneByName(APPLICANT_USER)
+        val role = userRoleRepository.findOneByName(APPLICANT_USER)
             ?: throwNotFound("The default applicant role cannot be found in the system.")
 
         val passwordEncoded = passwordEncoder.encode(user.password)
-        val createdUser = accountRepository.save(user.toEntity(role, passwordEncoded)).toOutputUser()
+        val createdUser = userRepository.save(user.toEntity(role, passwordEncoded)).toOutputUser()
         auditService.logEvent(Audit.applicantRegistered(createdUser))
         return createdUser
     }
 
     @Transactional
     override fun update(newUser: InputUserUpdate): OutputUser {
-        val oldUser = accountRepository.findByIdOrNull(newUser.id)
+        val oldUser = userRepository.findByIdOrNull(newUser.id)
             ?: throwNotFound("User with id ${newUser.id} was not found.")
         val oldData = oldUser.toOutputUser()
 
@@ -89,17 +89,17 @@ class UserServiceImpl(
             email = getNewEmailIfChanged(oldUser, newUser),
             name = newUser.name,
             surname = newUser.surname,
-            accountRole = getNewRoleIfChanged(oldUser, newUser)
+            userRole = getNewRoleIfChanged(oldUser, newUser)
         )
 
-        val updatedUser = accountRepository.save(toUpdate).toOutputUser()
+        val updatedUser = userRepository.save(toUpdate).toOutputUser()
         writeChangeAuditMessages(oldUser = oldData, newUser = updatedUser)
         return updatedUser
     }
 
     @Transactional
     override fun changePassword(userId: Long, passwordData: InputPassword) {
-        val account = accountRepository.findByIdOrNull(userId)
+        val account = userRepository.findByIdOrNull(userId)
             ?: throwNotFound("User with id $userId was not found.")
 
         if (!securityService.currentUser!!.isAdmin
@@ -109,7 +109,7 @@ class UserServiceImpl(
                 i18nFieldErrors = mapOf("password" to I18nFieldError("user.password.not.match"))
             )
 
-        accountRepository.save(
+        userRepository.save(
             account.copy(password = passwordEncoder.encode(passwordData.password))
         )
         auditService.logEvent(Audit.passwordChanged(securityService.currentUser, account.toOutputUser()))
@@ -120,23 +120,23 @@ class UserServiceImpl(
         throw ResourceNotFoundException()
     }
 
-    private fun getNewRoleIfChanged(oldUser: Account, newUser: InputUserUpdate): AccountRole {
-        val newRoleId = newUser.accountRoleId
+    private fun getNewRoleIfChanged(oldUser: User, newUser: InputUserUpdate): UserRole {
+        val newRoleId = newUser.userRoleId
 
-        if (oldUser.accountRole.id == newRoleId)
-            return oldUser.accountRole
+        if (oldUser.userRole.id == newRoleId)
+            return oldUser.userRole
         else if (!securityService.currentUser!!.hasRole(ADMINISTRATOR))
             throw I18nValidationException(httpStatus = HttpStatus.FORBIDDEN)
 
-        return accountRoleRepository.findByIdOrNull(newRoleId)
+        return userRoleRepository.findByIdOrNull(newRoleId)
             ?: throwNotFound("User role with id $newRoleId was not found.")
     }
 
-    private fun getNewEmailIfChanged(oldUser: Account, newUser: InputUserUpdate): String {
+    private fun getNewEmailIfChanged(oldUser: User, newUser: InputUserUpdate): String {
         if (oldUser.email == newUser.email)
             return oldUser.email
 
-        val existing = accountRepository.findOneByEmail(newUser.email)
+        val existing = userRepository.findOneByEmail(newUser.email)
         if (existing == null || existing.id == oldUser.id)
             return newUser.email
 

@@ -4,7 +4,7 @@ import io.cloudflight.ems.api.dto.InputProject
 import io.cloudflight.ems.api.dto.OutputProject
 import io.cloudflight.ems.entity.Audit
 import io.cloudflight.ems.exception.ResourceNotFoundException
-import io.cloudflight.ems.repository.AccountRepository
+import io.cloudflight.ems.repository.UserRepository
 import io.cloudflight.ems.repository.ProjectRepository
 import io.cloudflight.ems.security.ADMINISTRATOR
 import io.cloudflight.ems.security.PROGRAMME_USER
@@ -18,7 +18,7 @@ import org.springframework.transaction.annotation.Transactional
 @Service
 class ProjectServiceImpl(
     private val projectRepo: ProjectRepository,
-    private val accountRepository: AccountRepository,
+    private val userRepository: UserRepository,
     private val auditService: AuditService,
     private val securityService: SecurityService
 ) : ProjectService {
@@ -41,7 +41,7 @@ class ProjectServiceImpl(
 
     @Transactional
     override fun createProject(project: InputProject): OutputProject {
-        val applicant = accountRepository.findByIdOrNull(securityService.currentUser?.user?.id!!)
+        val applicant = userRepository.findByIdOrNull(securityService.currentUser?.user?.id!!)
             ?: throw ResourceNotFoundException()
 
         val createdProject = projectRepo.save(project.toEntity(applicant))

@@ -1,8 +1,8 @@
 package io.cloudflight.ems.service
 
 import io.cloudflight.ems.api.dto.user.OutputUserRole
-import io.cloudflight.ems.entity.AccountRole
-import io.cloudflight.ems.repository.AccountRoleRepository
+import io.cloudflight.ems.entity.UserRole
+import io.cloudflight.ems.repository.UserRoleRepository
 import io.mockk.MockKAnnotations
 import io.mockk.every
 import io.mockk.impl.annotations.MockK
@@ -12,30 +12,30 @@ import org.junit.jupiter.api.Test
 import org.springframework.data.domain.PageImpl
 import org.springframework.data.domain.Pageable
 
-class AccountRoleServiceTest {
+class UserRoleServiceTest {
 
     private val UNPAGED = Pageable.unpaged()
 
     @MockK
-    lateinit var accountRoleRepository: AccountRoleRepository
+    lateinit var userRoleRepository: UserRoleRepository
 
-    lateinit var accountRoleService: AccountRoleService
+    lateinit var userRoleService: UserRoleService
 
     @BeforeEach
     fun setup() {
         MockKAnnotations.init(this)
-        accountRoleService = AccountRoleServiceImpl(accountRoleRepository)
+        userRoleService = UserRoleServiceImpl(userRoleRepository)
     }
 
     @Test
     fun getAllAccountRoles() {
-        val roleToReturn = AccountRole(
+        val roleToReturn = UserRole(
             id = 85,
             name = "Name"
         )
-        every { accountRoleRepository.findAll(UNPAGED) } returns PageImpl(listOf(roleToReturn))
+        every { userRoleRepository.findAll(UNPAGED) } returns PageImpl(listOf(roleToReturn))
 
-        val result = accountRoleService.findAll(UNPAGED)
+        val result = userRoleService.findAll(UNPAGED)
 
         assertThat(result.totalElements).isEqualTo(1);
 
