@@ -152,10 +152,22 @@ class UserServiceImpl(
                 Audit.userRoleChanged(securityService.currentUser, newUser)
             )
 
-        if (oldUser.email != newUser.email || oldUser.name != newUser.name || oldUser.surname != newUser.surname)
+        val changes = getListOfChangedUserData(oldUser, newUser)
+        if (changes.isNotEmpty())
             auditService.logEvent(
-                Audit.userDataChanged(securityService.currentUser, oldUser, newUser)
+                Audit.userDataChanged(securityService.currentUser, oldUser.id!!, changes)
             )
+    }
+
+    private fun getListOfChangedUserData(oldUser: OutputUser, newUser: OutputUser): Map<String, Pair<String, String>> {
+        val result = mutableMapOf<String, Pair<String, String>>()
+        if (oldUser.email != newUser.email)
+            result.put("email", Pair(oldUser.email, newUser.email))
+        if (oldUser.name != newUser.name)
+            result.put("name", Pair(oldUser.name, newUser.name))
+        if (oldUser.surname != newUser.surname)
+            result.put("surname", Pair(oldUser.surname, newUser.surname))
+        return result
     }
 
 }

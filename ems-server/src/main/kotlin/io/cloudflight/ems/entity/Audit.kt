@@ -10,6 +10,7 @@ import org.springframework.data.elasticsearch.annotations.FieldType
 import java.time.ZoneOffset
 import java.time.ZonedDateTime
 import java.time.format.DateTimeFormatter
+import java.util.stream.Collectors
 
 @Document(indexName = "audit-log", type = "audit")
 data class Audit(
@@ -102,15 +103,18 @@ data class Audit(
             )
         }
 
-        fun userDataChanged(currentUser: CurrentUser?, oldUser: OutputUser, newUser: OutputUser): Audit {
+        fun userDataChanged(currentUser: CurrentUser?, userId: Long, changes: Map<String, Pair<String, String>>): Audit {
+            val changedString = changes.entries.stream()
+                .map { "${it.key} changed from ${it.value.first} to ${it.value.second}" }
+                .collect(Collectors.joining(",\n"))
+
             return Audit(
                 id = null,
                 timestamp = getElasticTimeNow(),
                 action = AuditAction.USER_DATA_CHANGED,
                 projectId = null,
                 user = currentUser?.toEsUser(),
-                description = "user data changed from '${oldUser.email}, ${oldUser.name}, ${oldUser.surname}'" +
-                    " to '${newUser.email}, ${newUser.name}, ${newUser.surname}'"
+                description = "User data changed for user $userId:\n$changedString"
             )
         }
 
