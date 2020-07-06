@@ -19,7 +19,7 @@ import {Log} from '../../../../common/utils/log';
 export class UserPageComponent extends BaseComponent {
   Permission = Permission;
 
-  private INITIAL_PAGE: PageEvent = {pageIndex: 0, pageSize: 25, length: 0};
+  private INITIAL_PAGE: PageEvent = {pageIndex: 0, pageSize: 100, length: 0};
 
   private newPage$ = new Subject<PageEvent>();
   private newSort$ = new Subject<string>();
