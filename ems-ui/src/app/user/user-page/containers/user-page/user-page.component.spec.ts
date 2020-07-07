@@ -39,10 +39,7 @@ describe('UserPageComponent', () => {
     let success = false;
     component.userSaveSuccess$.subscribe(result => success = result);
 
-    httpTestingController.expectOne({method: 'GET', url: `//api/role`});
-    httpTestingController.expectOne({method: 'GET', url: `//api/user?page=0&size=100&sort=id,desc`});
     httpTestingController.expectOne({method: 'POST', url: `//api/user`}).flush(user);
-    httpTestingController.expectOne({method: 'GET', url: `//api/user?page=0&size=100&sort=id,desc`});
     httpTestingController.verify();
 
     tick();

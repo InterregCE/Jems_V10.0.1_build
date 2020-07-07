@@ -1,13 +1,16 @@
 <div class="project-application-submission-container">
     <p>Create a new project application:</p>
     <p>Programme ID : dummy | Call ID : dummy</p>
-    <form [formGroup]="submissionForm" (ngSubmit)="onSubmit(formDirective)" #formDirective="ngForm">
+    <form [formGroup]="submissionForm">
         <div class="form-group">
             <mat-form-field class="col-md-12 project-application-submission-field">
                 <mat-label>Project Acronym</mat-label>
                 <input name="acronym" formControlName="acronym" matInput placeholder="Project Acronym" required>
                 <mat-error>
-                    {{ getAcronymError() | translate}}
+                    <app-form-field-errors
+                            [errors]="submissionForm?.controls?.acronym?.errors"
+                            [messages]="acronymErrors">
+                    </app-form-field-errors>
                 </mat-error>
             </mat-form-field>
             <mat-form-field class="col-md-12 project-application-submission-field">
@@ -15,18 +18,29 @@
                 <input name="submissionDate" formControlName="submissionDate" matInput
                        placeholder="YYYY-MM-DD" type="text" required>
                 <mat-error>
-                    {{ getSubmissionDateError() | translate}}
+                    <app-form-field-errors
+                            [errors]="submissionForm?.controls?.submissionDate?.errors"
+                            [messages]="submissionDateErrors">
+                    </app-form-field-errors>
                 </mat-error>
             </mat-form-field>
         </div>
         <button mat-raised-button
                 color="primary"
                 type="submit"
-                [disabled]="submissionForm.invalid || submitted">
+                [disabled]="submissionForm.invalid || submitted"
+                (click)="onSubmit()">
             + Create Project Application
         </button>
     </form>
-    <div *ngIf="success">
+    <app-alert
+            [show]="showSuccessMessage$ | async"
+            [type]="Alert.SUCCESS">
         <p>Project application was successfully saved.</p>
-    </div>
+    </app-alert>
+    <app-alert *ngIf="error$ | async as error"
+               [show]="!!error.i18nKey"
+               [type]="Alert.ERROR">
+        <p>{{error.i18nKey | translate}}</p>
+    </app-alert>
 </div>
