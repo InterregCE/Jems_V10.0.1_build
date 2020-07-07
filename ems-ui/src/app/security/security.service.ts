@@ -1,8 +1,7 @@
 import {Injectable} from '@angular/core';
-import {AuthenticationService, LoginRequest, OutputCurrentUser} from '@cat/api';
-import {AuthenticationHolder} from './authentication-holder.service';
-import {from, Observable, ReplaySubject} from 'rxjs';
-import {map, tap} from 'rxjs/operators';
+import {AuthenticationService, LoginRequest, OutputCurrentUser, UserService, OutputUser} from '@cat/api';
+import {from, Observable, of, ReplaySubject} from 'rxjs';
+import {catchError, flatMap, map, shareReplay, take, tap} from 'rxjs/operators';
 import {Log} from '../common/utils/log';
 
 @Injectable({providedIn: 'root'})
@@ -10,8 +9,16 @@ export class SecurityService {
 
   private myCurrentUser: ReplaySubject<OutputCurrentUser | null> = new ReplaySubject(1);
 
-  constructor(private authenticationHolder: AuthenticationHolder,
-              private authenticationService: AuthenticationService) {
+  private currentUserDetails$ = this.myCurrentUser
+    .pipe(
+      map(user => user?.id),
+      flatMap(id => id ? this.userService.getById(id) : of(null)),
+      tap(user => Log.info('Current user details loaded', this, user)),
+      shareReplay(1)
+    );
+
+  constructor(private authenticationService: AuthenticationService,
+              private userService: UserService) {
   }
 
   get currentUser(): Observable<OutputCurrentUser | null> {
@@ -21,6 +28,9 @@ export class SecurityService {
       );
   }
 
+  get currentUserDetails(): Observable<OutputUser | null> {
+    return this.currentUserDetails$;
+  }
 
   isLoggedIn(): Observable<boolean> {
     return from(this.myCurrentUser)
@@ -30,9 +40,8 @@ export class SecurityService {
   login(loginRequest: LoginRequest): Observable<OutputCurrentUser | null> {
     return this.authenticationService.login(loginRequest)
       .pipe(
+        take(1),
         tap(user => Log.info('User logged in', this, user)),
-        tap((user: OutputCurrentUser) => this.authenticationHolder.currentUserId = user.id),
-        tap((user: OutputCurrentUser) => this.authenticationHolder.currentUsername = user.name),
         tap((user: OutputCurrentUser) => this.myCurrentUser.next(user)),
       );
   }
@@ -40,16 +49,18 @@ export class SecurityService {
   reloadCurrentUser(): void {
     this.authenticationService.getCurrentUser()
       .pipe(
-        tap(user => Log.info('Current user loaded', this, user))
+        take(1),
+        tap(user => this.myCurrentUser.next(user)),
+        tap(user => Log.info('Current user loaded', this, user)),
+        catchError(err => {
+          this.myCurrentUser.next(null);
+          throw err;
+        })
       )
-      .subscribe(
-        (value: OutputCurrentUser) => this.myCurrentUser.next(value),
-        () => this.myCurrentUser.next(null)
-      );
+      .subscribe();
   }
 
   clearAuthentication(): void {
-    this.authenticationHolder.currentUsername = null;
     this.myCurrentUser.next(null);
   }
 
@@ -57,8 +68,9 @@ export class SecurityService {
     this.clearAuthentication();
     await this.authenticationService.logout()
       .pipe(
-        tap(() => Log.info('Current user logged out', this, this.authenticationHolder))
+        take(1),
+        tap(() => Log.info('Current user logged out', this))
       )
-      .toPromise();
+      .subscribe();
   }
 }
