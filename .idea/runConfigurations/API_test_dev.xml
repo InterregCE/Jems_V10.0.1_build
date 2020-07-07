@@ -3,7 +3,7 @@
     <package-json value="$PROJECT_DIR$/ems-rest-test/package.json" />
     <command value="run" />
     <scripts>
-      <script value="test-dev" />
+      <script value="test-663-ems-staging" />
     </scripts>
     <node-interpreter value="project" />
     <envs />
