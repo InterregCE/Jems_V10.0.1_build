@@ -4,6 +4,7 @@ import ch.qos.logback.classic.Level
 import ch.qos.logback.classic.Logger
 import ch.qos.logback.classic.spi.ILoggingEvent
 import ch.qos.logback.core.read.ListAppender
+import io.cloudflight.ems.api.dto.ProjectApplicationStatus
 import io.cloudflight.ems.api.dto.user.OutputUser
 import io.cloudflight.ems.api.dto.user.OutputUserRole
 import io.cloudflight.ems.entity.Audit
@@ -32,7 +33,7 @@ class AuditServiceTest {
             userRole = OutputUserRole(id = 1, name = "ADMIN")
         ), "", emptyList())
 
-    private val EXPECTED_LOG = "AUDIT >>> PROJECT_SUBMISSION (projectId submitted-projectId, user (16, admin@admin.dev)) : submission of the project application to the system"
+    private val EXPECTED_LOG = "AUDIT >>> APPLICATION_STATUS_CHANGED (projectId submitted-projectId, user (16, admin@admin.dev)) : Project application status changed from DRAFT to SUBMITTED"
 
     @MockK
     lateinit var auditRepository: AuditRepository
@@ -54,7 +55,12 @@ class AuditServiceTest {
         auditService = AuditServiceImpl(auditRepository)
 
         // test start
-        auditService.logEvent(Audit.projectSubmitted(user, "submitted-projectId"))
+        auditService.logEvent(Audit.projectStatusChanged(
+            user,
+            "submitted-projectId",
+            ProjectApplicationStatus.DRAFT,
+            ProjectApplicationStatus.SUBMITTED
+        ))
 
         // assert
         assertEquals("submitted-projectId", event.captured.projectId)
@@ -73,7 +79,12 @@ class AuditServiceTest {
         logger.addAppender(listAppender)
 
         // test start
-        auditService.logEvent(Audit.projectSubmitted(user, "submitted-projectId"))
+        auditService.logEvent(Audit.projectStatusChanged(
+            user,
+            "submitted-projectId",
+            ProjectApplicationStatus.DRAFT,
+            ProjectApplicationStatus.SUBMITTED
+        ))
 
         // assert
         assertLinesMatch(listOf(EXPECTED_LOG), listAppender.list.map { it.formattedMessage })

@@ -1,7 +1,7 @@
 package io.cloudflight.ems.entity
 
-enum class AuditAction() {
-    PROJECT_SUBMISSION,
+enum class AuditAction {
+    APPLICATION_STATUS_CHANGED,
     PROJECT_FILE_DELETE,
     USER_LOGGED_IN,
     USER_LOGGED_OUT,

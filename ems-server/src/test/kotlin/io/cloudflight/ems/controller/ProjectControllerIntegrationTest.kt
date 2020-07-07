@@ -14,7 +14,6 @@ import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
-import java.time.LocalDate
 
 @SpringBootTest
 @AutoConfigureMockMvc
@@ -29,7 +28,7 @@ class ProjectControllerIntegrationTest {
     @Test
     @WithUserDetails(value = ADMINISTRATOR_EMAIL)
     fun `project created`() {
-        val inputProject = InputProject("acronym", LocalDate.now().plusDays(1));
+        val inputProject = InputProject("acronym")
 
         mockMvc.perform(
             post("/api/project")
@@ -39,16 +38,12 @@ class ProjectControllerIntegrationTest {
             .andExpect(status().isOk)
             .andExpect(jsonPath("$.id").isNotEmpty)
             .andExpect(jsonPath("$.acronym").value(inputProject.acronym.toString()))
-            .andExpect(
-                jsonPath("$.submissionDate")
-                    .value(inputProject.submissionDate.toString())
-            )
     }
 
     @Test
     @WithUserDetails(value = ADMINISTRATOR_EMAIL)
     fun `project create fails with missing required fields`() {
-        val inputProject = InputProject(null, null);
+        val inputProject = InputProject(null)
 
         mockMvc.perform(
             post("/api/project")
@@ -60,16 +55,12 @@ class ProjectControllerIntegrationTest {
                 jsonPath("$.i18nFieldErrors.acronym.i18nKey")
                     .value("project.acronym.should.not.be.empty")
             )
-            .andExpect(
-                jsonPath("$.i18nFieldErrors.submissionDate.i18nKey")
-                    .value("project.submissionDate.should.not.be.empty")
-            );
     }
 
     @Test
     @WithUserDetails(value = ADMINISTRATOR_EMAIL)
     fun `project create fails with invalid fields`() {
-        val inputProject = InputProject(RandomString.make(26), LocalDate.now().plusDays(1));
+        val inputProject = InputProject(RandomString.make(26))
 
         mockMvc.perform(
             post("/api/project")

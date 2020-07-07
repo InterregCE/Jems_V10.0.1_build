@@ -1,5 +1,6 @@
 package io.cloudflight.ems.entity
 
+import io.cloudflight.ems.api.dto.ProjectApplicationStatus
 import io.cloudflight.ems.api.dto.user.OutputUser
 import io.cloudflight.ems.security.model.CurrentUser
 import org.springframework.data.annotation.Id
@@ -16,7 +17,7 @@ import java.util.stream.Collectors
 data class Audit(
     @Id
     @Field(type = FieldType.Text)
-    val id: String?,
+    val id: String? = null,
 
     @Field(type = FieldType.Date, store = true, format = DateFormat.date_time)
     val timestamp: String?,
@@ -35,14 +36,23 @@ data class Audit(
 ) {
 
     companion object {
-        fun projectSubmitted(currentUser: CurrentUser?, projectId: String): Audit {
+
+        fun projectStatusChanged(
+            currentUser: CurrentUser?,
+            projectId: String,
+            oldStatus: ProjectApplicationStatus? = null,
+            newStatus: ProjectApplicationStatus
+        ): Audit {
+            val msg = if (oldStatus == null && newStatus == ProjectApplicationStatus.DRAFT)
+                "Project application created with status $newStatus"
+            else
+                "Project application status changed from $oldStatus to $newStatus"
             return Audit(
-                id = null,
                 timestamp = getElasticTimeNow(),
-                action = AuditAction.PROJECT_SUBMISSION,
+                action = AuditAction.APPLICATION_STATUS_CHANGED,
                 projectId = projectId,
                 user = currentUser?.toEsUser(),
-                description = "submission of the project application to the system"
+                description = msg
             )
         }
 
