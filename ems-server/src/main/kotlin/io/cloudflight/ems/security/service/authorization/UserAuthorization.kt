@@ -24,6 +24,6 @@ class UserAuthorization(
             return false;
         }
         // limited user cannot change its own role
-        return userService.getById(userUpdate.id).userRole.id == userUpdate.accountRoleId;
+        return userService.getById(userUpdate.id).userRole.id == userUpdate.userRoleId;
     }
 }

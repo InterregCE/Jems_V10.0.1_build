@@ -1,15 +1,10 @@
 package io.cloudflight.ems.entity
 
-import javax.persistence.Column
-import javax.persistence.Entity
-import javax.persistence.GeneratedValue
-import javax.persistence.GenerationType
-import javax.persistence.Id
-import javax.persistence.ManyToOne
+import javax.persistence.*
 
 
 @Entity(name = "account")
-data class Account (
+data class User (
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -25,7 +20,8 @@ data class Account (
     val surname: String,
 
     @ManyToOne(optional = false)
-    val accountRole: AccountRole,
+    @JoinColumn(name = "account_role_id")
+    val userRole: UserRole,
 
     @Column(nullable = false)
     val password: String

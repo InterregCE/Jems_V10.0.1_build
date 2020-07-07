@@ -105,8 +105,8 @@ class UserControllerIntegrationTest {
                     .value("user.surname.wrong.size")
             )
             .andExpect(
-                jsonPath("$.i18nFieldErrors.accountRoleId.i18nKey")
-                    .value("user.accountRoleId.should.not.be.empty")
+                jsonPath("$.i18nFieldErrors.userRoleId.i18nKey")
+                    .value("user.userRoleId.should.not.be.empty")
             )
     }
 
@@ -167,7 +167,7 @@ class UserControllerIntegrationTest {
             APPLICANT_USER_EMAIL,
             APPLICANT_USER_EMAIL,
             APPLICANT_USER_EMAIL,
-            accountFactory.applicantAccount.accountRole.id!!
+            accountFactory.applicantAccount.userRole.id!!
         )
         mockMvc.perform(
             put("/api/user")

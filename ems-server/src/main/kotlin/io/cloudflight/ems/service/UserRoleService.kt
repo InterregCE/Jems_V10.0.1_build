@@ -4,7 +4,7 @@ import io.cloudflight.ems.api.dto.user.OutputUserRole
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
 
-interface AccountRoleService {
+interface UserRoleService {
 
     fun findAll(pageable: Pageable): Page<OutputUserRole>
 

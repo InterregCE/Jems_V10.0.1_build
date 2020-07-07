@@ -785,7 +785,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n\t\"email\": \"{{user_name}}@example.org\",\n\t\"name\": \"{{user_name}}\",\n\t\"surname\": \"RESTTester\",\n    \"accountRoleId\": 1\n}",
+							"raw": "{\n\t\"email\": \"{{user_name}}@example.org\",\n\t\"name\": \"{{user_name}}\",\n\t\"surname\": \"RESTTester\",\n    \"userRoleId\": 1\n}",
 							"options": {
 								"urlencoded": {}
 							}
@@ -819,7 +819,7 @@
 									"    const response = pm.response.json();",
 									"    pm.expect(response.i18nFieldErrors.surname.i18nKey).to.contain('user.surname.wrong.size');",
 									"    pm.expect(response.i18nFieldErrors.name.i18nKey).to.contain('user.name.wrong.size');",
-									"    pm.expect(response.i18nFieldErrors.accountRoleId.i18nKey).to.contain('user.accountRoleId.should.not.be.empty');",
+									"    pm.expect(response.i18nFieldErrors.userRoleId.i18nKey).to.contain('user.userRoleId.should.not.be.empty');",
 									"    pm.expect(response.i18nFieldErrors.email.i18nKey).to.contain('user.email.should.not.be.empty');",
 									"});",
 									""
@@ -852,7 +852,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n\t\"email\": \"\",\n\t\"name\": \"\",\n\t\"surname\": \"\",\n    \"accountRoleId\": null\n}",
+							"raw": "{\n\t\"email\": \"\",\n\t\"name\": \"\",\n\t\"surname\": \"\",\n    \"userRoleId\": null\n}",
 							"options": {
 								"urlencoded": {}
 							}
@@ -886,7 +886,7 @@
 									"    const response = pm.response.json();",
 									"    pm.expect(response.i18nFieldErrors.surname.i18nKey).to.contain('user.surname.wrong.size');",
 									"    pm.expect(response.i18nFieldErrors.name.i18nKey).to.contain('user.name.wrong.size');",
-									"    pm.expect(response.i18nFieldErrors.accountRoleId.i18nKey).to.contain('user.accountRoleId.should.not.be.empty');",
+									"    pm.expect(response.i18nFieldErrors.userRoleId.i18nKey).to.contain('user.userRoleId.should.not.be.empty');",
 									"    pm.expect(response.i18nFieldErrors.email.i18nKey).to.contain('user.email.wrong.format');",
 									"});",
 									""

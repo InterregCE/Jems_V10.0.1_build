@@ -28,7 +28,7 @@ data class ProjectFile (
     val project: Project,
 
     @ManyToOne(optional = false)
-    val author: Account,
+    val author: User,
 
     @Column
     var description: String?,

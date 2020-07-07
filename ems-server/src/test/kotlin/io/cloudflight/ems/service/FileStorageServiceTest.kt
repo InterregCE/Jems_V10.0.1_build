@@ -7,7 +7,7 @@ import io.cloudflight.ems.dto.FileMetadata
 import io.cloudflight.ems.entity.*
 import io.cloudflight.ems.exception.DuplicateFileException
 import io.cloudflight.ems.exception.ResourceNotFoundException
-import io.cloudflight.ems.repository.AccountRepository
+import io.cloudflight.ems.repository.UserRepository
 import io.cloudflight.ems.repository.MinioStorage
 import io.cloudflight.ems.repository.ProjectFileRepository
 import io.cloudflight.ems.repository.ProjectRepository
@@ -49,12 +49,12 @@ class FileStorageServiceTest {
         userRole = OutputUserRole(id = 1, name = "ADMIN")
     )
 
-    private val account = Account(
+    private val account = User(
         id = 34,
         email = "admin@admin.dev",
         name = "Name",
         surname = "Surname",
-        accountRole = AccountRole(id = 1, name = "ADMIN"),
+        userRole = UserRole(id = 1, name = "ADMIN"),
         password = "hash_pass"
     )
     private val testProject = Project(id = PROJECT_ID, submissionDate = TEST_DATE, applicant = account, acronym = "test project")
@@ -62,7 +62,7 @@ class FileStorageServiceTest {
     @MockK
     lateinit var auditService: AuditService
     @MockK
-    lateinit var accountRepository: AccountRepository
+    lateinit var userRepository: UserRepository
     @MockK
     lateinit var projectRepository: ProjectRepository
     @MockK
@@ -79,7 +79,7 @@ class FileStorageServiceTest {
         MockKAnnotations.init(this)
         every { securityService.currentUser } returns LocalCurrentUser(user, "hash_pass", emptyList())
         fileStorageService = FileStorageServiceImpl(
-            auditService, minioStorage, projectFileRepository, projectRepository, accountRepository, securityService)
+            auditService, minioStorage, projectFileRepository, projectRepository, userRepository, securityService)
     }
 
     @Test
@@ -107,7 +107,7 @@ class FileStorageServiceTest {
         val fileMetadata = FileMetadata(projectId = PROJECT_ID, name = "", size = 0)
         every { projectFileRepository.findFirstByProject_IdAndName(eq(PROJECT_ID), any()) } returns Optional.empty()
         every { projectRepository.findById(eq(PROJECT_ID)) } returns Optional.of(testProject)
-        every { accountRepository.findById(any()) } returns Optional.empty()
+        every { userRepository.findById(any()) } returns Optional.empty()
 
         assertThrows<ResourceNotFoundException> { fileStorageService.saveFile(InputStream.nullInputStream(), fileMetadata) }
     }
@@ -128,7 +128,7 @@ class FileStorageServiceTest {
         every { minioStorage.saveFile(capture(bucketSlot), capture(identifierSlot), capture(sizeSlot), capture(streamSlot)) } answers {}
 
         every { projectRepository.findById(eq(PROJECT_ID)) } returns Optional.of(testProject)
-        every { accountRepository.findById(eq(34)) } returns Optional.of(account)
+        every { userRepository.findById(eq(34)) } returns Optional.of(account)
 
         fileStorageService.saveFile(streamToSave, fileMetadata)
 

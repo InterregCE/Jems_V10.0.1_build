@@ -21,7 +21,7 @@ data class InputUserUpdate(
     @field:Size(min = 1, max = 50, message = "user.surname.wrong.size")
     val surname: String,
 
-    @field:NotNull(message = "user.accountRoleId.should.not.be.empty")
-    val accountRoleId: Long
+    @field:NotNull(message = "user.userRoleId.should.not.be.empty")
+    val userRoleId: Long
 
 )

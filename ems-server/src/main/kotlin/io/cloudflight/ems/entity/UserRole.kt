@@ -7,7 +7,7 @@ import javax.persistence.GenerationType
 import javax.persistence.Id
 
 @Entity(name = "account_role")
-data class AccountRole(
+data class UserRole(
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
