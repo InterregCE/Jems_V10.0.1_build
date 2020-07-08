@@ -115,7 +115,7 @@ export class UserEditComponent extends ViewEditForm implements OnInit {
       name: this.userForm?.controls?.name?.value,
       surname: this.userForm?.controls?.surname?.value,
       email: this.userForm?.controls?.email?.value,
-      userRoleId: this.userForm?.controls?.role?.value?.id || this.user?.userRole?.id
+      accountRoleId: this.userForm?.controls?.role?.value?.id || this.user?.userRole?.id
     });
   }
 
