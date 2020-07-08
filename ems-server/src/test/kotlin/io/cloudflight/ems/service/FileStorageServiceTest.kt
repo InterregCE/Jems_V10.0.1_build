@@ -85,7 +85,7 @@ class FileStorageServiceTest {
     @Test
     fun save_duplicate() {
         val fileMetadata = FileMetadata(projectId = PROJECT_ID, name = "proj-file-1.png", size = 0)
-        every { projectFileRepository.findFirstByProject_IdAndName(eq(PROJECT_ID), eq("proj-file-1.png")) } returns Optional.of(dummyProjectFile())
+        every { projectFileRepository.findFirstByProjectIdAndName(eq(PROJECT_ID), eq("proj-file-1.png")) } returns Optional.of(dummyProjectFile())
 
         val exception = assertThrows<DuplicateFileException> { fileStorageService.saveFile(InputStream.nullInputStream(), fileMetadata) }
 
@@ -96,7 +96,7 @@ class FileStorageServiceTest {
     @Test
     fun save_projectNotExists() {
         val fileMetadata = FileMetadata(projectId = PROJECT_ID, name = "", size = 0)
-        every { projectFileRepository.findFirstByProject_IdAndName(eq(PROJECT_ID), any()) } returns Optional.empty()
+        every { projectFileRepository.findFirstByProjectIdAndName(eq(PROJECT_ID), any()) } returns Optional.empty()
         every { projectRepository.findById(eq(PROJECT_ID)) } returns Optional.empty()
 
         assertThrows<ResourceNotFoundException> { fileStorageService.saveFile(InputStream.nullInputStream(), fileMetadata) }
@@ -105,7 +105,7 @@ class FileStorageServiceTest {
     @Test
     fun save_userNotExists() {
         val fileMetadata = FileMetadata(projectId = PROJECT_ID, name = "", size = 0)
-        every { projectFileRepository.findFirstByProject_IdAndName(eq(PROJECT_ID), any()) } returns Optional.empty()
+        every { projectFileRepository.findFirstByProjectIdAndName(eq(PROJECT_ID), any()) } returns Optional.empty()
         every { projectRepository.findById(eq(PROJECT_ID)) } returns Optional.of(testProject)
         every { userRepository.findById(any()) } returns Optional.empty()
 
@@ -116,7 +116,7 @@ class FileStorageServiceTest {
     fun save() {
         val streamToSave = "test".toByteArray().inputStream()
         val fileMetadata = FileMetadata(projectId = PROJECT_ID, name = "proj-file-1.png", size = "test".length.toLong())
-        every { projectFileRepository.findFirstByProject_IdAndName(eq(PROJECT_ID), any()) } returns Optional.empty()
+        every { projectFileRepository.findFirstByProjectIdAndName(eq(PROJECT_ID), any()) } returns Optional.empty()
 
         val projectFileSlot = slot<ProjectFile>()
         every { projectFileRepository.save(capture(projectFileSlot)) } returnsArgument 0
@@ -150,14 +150,14 @@ class FileStorageServiceTest {
 
     @Test
     fun downloadFile_notExisting() {
-        every { projectFileRepository.findFirstByProject_IdAndId(eq(-1), eq(100)) } returns Optional.empty()
+        every { projectFileRepository.findFirstByProjectIdAndId(eq(-1), eq(100)) } returns Optional.empty()
         assertThrows<ResourceNotFoundException> { fileStorageService.downloadFile(-1, 100) }
     }
 
     @Test
     fun downloadFile() {
         val byteArray = "test-content".toByteArray()
-        every { projectFileRepository.findFirstByProject_IdAndId(eq(PROJECT_ID), eq(10)) } returns Optional.of(dummyProjectFile())
+        every { projectFileRepository.findFirstByProjectIdAndId(eq(PROJECT_ID), eq(10)) } returns Optional.of(dummyProjectFile())
         every { minioStorage.getFile(eq(PROJECT_FILES_BUCKET), eq("project-1/proj-file-1.png")) } returns byteArray
 
         val result = fileStorageService.downloadFile(PROJECT_ID, 10)
@@ -169,7 +169,7 @@ class FileStorageServiceTest {
     @Test
     fun getFilesForProject_OK() {
         val files = listOf(dummyProjectFile())
-        every { projectFileRepository.findAllByProject_Id(eq(PROJECT_ID), UNPAGED) } returns PageImpl(files)
+        every { projectFileRepository.findAllByProjectId(eq(PROJECT_ID), UNPAGED) } returns PageImpl(files)
 
         val result = fileStorageService.getFilesForProject(PROJECT_ID, UNPAGED)
 
@@ -180,7 +180,7 @@ class FileStorageServiceTest {
 
     @Test
     fun getFilesForProject_empty() {
-        every { projectFileRepository.findAllByProject_Id(eq(311), UNPAGED) } returns PageImpl(listOf())
+        every { projectFileRepository.findAllByProjectId(eq(311), UNPAGED) } returns PageImpl(listOf())
 
         val result = fileStorageService.getFilesForProject(311, UNPAGED)
 
@@ -189,7 +189,7 @@ class FileStorageServiceTest {
 
     @Test
     fun setDescription_notExisting() {
-        every { projectFileRepository.findFirstByProject_IdAndId(eq(-1), eq(100)) } returns Optional.empty()
+        every { projectFileRepository.findFirstByProjectIdAndId(eq(-1), eq(100)) } returns Optional.empty()
         assertThrows<ResourceNotFoundException> {
             fileStorageService.setDescription(-1, 100, null)
         }
@@ -199,7 +199,7 @@ class FileStorageServiceTest {
     fun setDescription_null() {
         val project = dummyProjectFile()
         project.description = "old_description"
-        every { projectFileRepository.findFirstByProject_IdAndId(eq(PROJECT_ID), eq(10)) } returns Optional.of(project)
+        every { projectFileRepository.findFirstByProjectIdAndId(eq(PROJECT_ID), eq(10)) } returns Optional.of(project)
 
         val projectFile = slot<ProjectFile>()
         every { projectFileRepository.save(capture(projectFile)) } returnsArgument 0
@@ -214,7 +214,7 @@ class FileStorageServiceTest {
     fun setDescription_new() {
         val project = dummyProjectFile()
         project.description = null
-        every { projectFileRepository.findFirstByProject_IdAndId(eq(PROJECT_ID), eq(10)) } returns Optional.of(project)
+        every { projectFileRepository.findFirstByProjectIdAndId(eq(PROJECT_ID), eq(10)) } returns Optional.of(project)
 
         val projectFile = slot<ProjectFile>()
         every { projectFileRepository.save(capture(projectFile)) } returnsArgument 0
@@ -227,7 +227,7 @@ class FileStorageServiceTest {
 
     @Test
     fun deleteFile_notExisting() {
-        every { projectFileRepository.findFirstByProject_IdAndId(eq(-1), eq(100)) } returns Optional.empty()
+        every { projectFileRepository.findFirstByProjectIdAndId(eq(-1), eq(100)) } returns Optional.empty()
         assertThrows<ResourceNotFoundException> {
             fileStorageService.deleteFile(-1, 100)
         }
@@ -239,7 +239,7 @@ class FileStorageServiceTest {
         val identifier = slot<String>()
         val projectFile = slot<ProjectFile>()
 
-        every { projectFileRepository.findFirstByProject_IdAndId(eq(PROJECT_ID), eq(10)) } returns Optional.of(dummyProjectFile())
+        every { projectFileRepository.findFirstByProjectIdAndId(eq(PROJECT_ID), eq(10)) } returns Optional.of(dummyProjectFile())
         every { minioStorage.deleteFile(capture(bucket), capture(identifier)) } answers {}
         every { projectFileRepository.delete(capture(projectFile)) } answers {}
         every { auditService.logEvent(any()) } answers {} // doNothing

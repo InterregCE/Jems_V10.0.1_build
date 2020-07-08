@@ -69,7 +69,7 @@ class FileStorageServiceImpl(
 
     @Transactional(readOnly = true)
     override fun getFilesForProject(projectId: Long, page: Pageable): Page<OutputProjectFile> {
-        return repository.findAllByProject_Id(projectId, page).map { it.toOutputProjectFile() }
+        return repository.findAllByProjectId(projectId, page).map { it.toOutputProjectFile() }
     }
 
     @Transactional
@@ -89,7 +89,7 @@ class FileStorageServiceImpl(
     }
 
     private fun getFile(projectId: Long, fileId: Long): ProjectFile {
-        val result = repository.findFirstByProject_IdAndId(projectId = projectId, id = fileId)
+        val result = repository.findFirstByProjectIdAndId(projectId = projectId, id = fileId)
         if (result.isEmpty) {
             throw ResourceNotFoundException()
         }
@@ -97,7 +97,7 @@ class FileStorageServiceImpl(
     }
 
     private fun getFileByName(projectId: Long, name: String): Optional<ProjectFile> {
-        return repository.findFirstByProject_IdAndName(projectId = projectId, name = name)
+        return repository.findFirstByProjectIdAndName(projectId = projectId, name = name)
     }
 
     private fun getFilePath(projectIdentifier: Long, fileIdentifier: String): String {
