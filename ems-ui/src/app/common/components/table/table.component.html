@@ -1,11 +1,20 @@
-<table mat-table
+<table mat-table matSort
        [dataSource]="rows || configuration.dataSource"
+       (matSortChange)="sortRows.emit($event)"
        class="mat-elevation-z8 general-application-table">
 
     <ng-container
             *ngFor="let column of configuration.columns; let i = index"
             matColumnDef="{{column.displayedColumn}}">
-        <th mat-header-cell *matHeaderCellDef> {{column.displayedColumn | translate}} </th>
+        <ng-container *ngIf="column.sortProperty; else noSort">
+            <th mat-header-cell *matHeaderCellDef
+                [mat-sort-header]="column.sortProperty">
+                {{column.displayedColumn | translate}}
+            </th>
+        </ng-container>
+        <ng-template #noSort>
+            <th mat-header-cell *matHeaderCellDef>{{column.displayedColumn | translate}}</th>
+        </ng-template>
         <td mat-cell *matCellDef="let element">
             <ng-container *ngIf="!column.component">
                 {{ formatColumnValue(column, element) }}

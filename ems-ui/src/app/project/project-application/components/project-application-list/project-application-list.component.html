@@ -2,8 +2,16 @@
 <div class="project-application-list-container">
     <p *ngIf="!projectPage?.content.length">No projects submitted</p>
 
-    <app-table *ngIf="projectPage?.content?.length"
-               [configuration]="tableConfiguration"
-               [rows]="projectPage.content">
-    </app-table>
+    <ng-container *ngIf="projectPage.content.length">
+        <mat-paginator [length]="projectPage?.totalElements"
+                       [pageSize]="Tables.DEFAULT_INITIAL_PAGE.pageSize"
+                       [pageSizeOptions]="Tables.DEFAULT_PAGE_OPTIONS"
+                       (page)="newPage.emit($event)">
+        </mat-paginator>
+        <app-table *ngIf="projectPage?.content?.length"
+                   [configuration]="tableConfiguration"
+                   [rows]="projectPage.content"
+                   (sortRows)="newSort.emit($event)">
+        </app-table>
+    </ng-container>
 </div>

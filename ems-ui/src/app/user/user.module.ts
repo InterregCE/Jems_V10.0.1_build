@@ -12,7 +12,7 @@ import {MatCardModule} from '@angular/material/card';
 import {RolePageService} from './user-role/services/role-page/role-page.service';
 import {UserRoleFormFieldComponent} from './user-page/components/user-detail/user-role-form-field/user-role-form-field.component';
 import {UserPasswordComponent} from './user-page/components/user-detail/user-password/user-password.component';
-import { PasswordFieldComponent } from './user-page/components/user-detail/user-password/password-field/password-field.component';
+import {PasswordFieldComponent} from './user-page/components/user-detail/user-password/password-field/password-field.component';
 
 @NgModule({
   declarations: [
@@ -30,7 +30,7 @@ import { PasswordFieldComponent } from './user-page/components/user-detail/user-
     UserRoutingModule,
     MatSelectModule,
     MatCardModule,
-    CoreModule,
+    CoreModule
   ],
   providers: [
     RolePageService

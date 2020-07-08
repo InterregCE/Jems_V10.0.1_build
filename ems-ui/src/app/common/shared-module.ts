@@ -12,6 +12,8 @@ import {MatButtonModule} from '@angular/material/button';
 import {TableComponent} from './components/table/table.component';
 import {MatTableModule} from '@angular/material/table';
 import {NgxPermissionsModule} from 'ngx-permissions';
+import {MatPaginatorModule} from '@angular/material/paginator';
+import {MatSortModule} from '@angular/material/sort';
 
 const modules = [
   CommonModule,
@@ -26,6 +28,8 @@ const modules = [
   MatButtonModule,
   MatInputModule,
   MatTableModule,
+  MatPaginatorModule,
+  MatSortModule,
   NgxPermissionsModule.forChild()
 ];
 
@@ -38,7 +42,7 @@ const declarations = [
     declarations
   ],
   imports: [
-    modules
+    modules,
   ],
   exports: [
     modules,

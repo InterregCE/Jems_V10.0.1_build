@@ -4,8 +4,10 @@ import {
   ComponentFactory,
   ComponentFactoryResolver,
   ComponentRef,
+  EventEmitter,
   Input,
   OnInit,
+  Output,
   QueryList,
   ViewChildren,
   ViewContainerRef
@@ -17,6 +19,7 @@ import {DescriptionCellComponent} from './cell-renderers/description-cell/descri
 import {ColumnType} from './model/column-type.enum';
 import {Observable} from 'rxjs';
 import {Tools} from '../../utils/tools';
+import {MatSort} from '@angular/material/sort';
 
 @Component({
   selector: 'app-table',
@@ -28,6 +31,8 @@ export class TableComponent implements OnInit, AfterViewInit {
   configuration: TableConfiguration;
   @Input()
   rows: Observable<any[]> | any[];
+  @Output()
+  sortRows: EventEmitter<Partial<MatSort>> = new EventEmitter<Partial<MatSort>>();
 
   @ViewChildren('customColumn', {read: ViewContainerRef}) customComponent: QueryList<ViewContainerRef>;
 

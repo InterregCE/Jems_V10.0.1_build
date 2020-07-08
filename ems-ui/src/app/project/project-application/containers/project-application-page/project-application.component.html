@@ -12,7 +12,9 @@
             </div>
             <div *ngIf="currentPage$ | async as projectPage" class="col-md-6">
                 <app-project-application-list
-                        [projectPage]="projectPage">
+                        [projectPage]="projectPage"
+                        (newPage)="newPage$.next($event)"
+                        (newSort)="newSort$.next($event)">
                 </app-project-application-list>
             </div>
         </div>

@@ -55,11 +55,28 @@ describe('UserPageComponent', () => {
       {email: '2@2'} as OutputUser
     ];
 
-    httpTestingController.match({method: 'GET', url: `//api/user?page=0&size=100&sort=id,desc`})
+    httpTestingController.match({method: 'GET', url: `//api/user?page=0&size=25&sort=id,desc`})
       .forEach(req => req.flush({content: users}));
 
     tick();
     expect(results).toEqual(users);
+  }));
+
+  it('should sort and page the list of users', fakeAsync(() => {
+    component.currentPage$.subscribe();
+
+    // initial sort and page
+    httpTestingController.expectOne({method: 'GET', url: `//api/user?page=0&size=25&sort=id,desc`});
+
+    // change sorting
+    component.newSort$.next({active: 'userRole.name', direction: 'asc'})
+    httpTestingController.expectOne({method: 'GET', url: `//api/user?page=0&size=25&sort=userRole.name,asc`});
+
+    // change paging
+    component.newPage$.next({pageIndex: 2, pageSize: 3, length: 0})
+    httpTestingController.expectOne({method: 'GET', url: `//api/user?page=2&size=3&sort=userRole.name,asc`});
+
+    httpTestingController.verify();
   }));
 });
 

@@ -4,11 +4,13 @@ import {I18nValidationError} from '@common/validation/i18n-validation-error';
 import {Permission} from '../../../../security/permissions/permission';
 import {PageEvent} from '@angular/material/paginator';
 import {HttpErrorResponse} from '@angular/common/http';
-import {catchError, flatMap, startWith, take, takeUntil, tap} from 'rxjs/operators';
+import {catchError, flatMap, map, startWith, take, takeUntil, tap} from 'rxjs/operators';
 import {Log} from '../../../../common/utils/log';
 import {BaseComponent} from '@common/components/base-component';
 import {combineLatest, Subject} from 'rxjs';
 import {SecurityService} from '../../../../security/security.service';
+import {MatSort} from '@angular/material/sort';
+import {Tables} from '../../../../common/utils/tables';
 
 @Component({
   selector: 'app-project-application',
@@ -20,18 +22,21 @@ import {SecurityService} from '../../../../security/security.service';
 export class ProjectApplicationComponent extends BaseComponent {
   Permission = Permission;
 
-  private INITIAL_PAGE: PageEvent = {pageIndex: 0, pageSize: 100, length: 0};
-
-  private newPage$ = new Subject<PageEvent>();
-  private newSort$ = new Subject<string>();
+  newPage$ = new Subject<PageEvent>();
+  newSort$ = new Subject<Partial<MatSort>>();
 
   currentPage$ =
     combineLatest([
-      this.newPage$.pipe(startWith(this.INITIAL_PAGE)),
-      this.newSort$.pipe(startWith('id,desc'))
+      this.newPage$.pipe(startWith(Tables.DEFAULT_INITIAL_PAGE)),
+      this.newSort$.pipe(
+        startWith(Tables.DEFAULT_INITIAL_SORT),
+        map(sort => sort?.direction ? sort : Tables.DEFAULT_INITIAL_SORT),
+        map(sort => `${sort.active},${sort.direction}`)
+      )
     ])
       .pipe(
-        flatMap(([page, sort]) => this.projectService.getProjects(page?.pageIndex, page?.pageSize, sort)),
+        flatMap(([page, sort]) =>
+          this.projectService.getProjects(page?.pageIndex, page?.pageSize, sort)),
         tap(page => Log.info('Fetched the projects:', this, page.content)),
       );
 
@@ -51,7 +56,7 @@ export class ProjectApplicationComponent extends BaseComponent {
         takeUntil(this.destroyed$),
         tap(() => this.applicationSaveSuccess$.next(true)),
         tap(() => this.applicationSaveError$.next(null)),
-        tap(() => this.newPage(this.INITIAL_PAGE)),
+        tap(() => this.newPage$.next(Tables.DEFAULT_INITIAL_PAGE)),
         tap(saved => Log.info('Created project application:', this, saved)),
         catchError((error: HttpErrorResponse) => {
           this.applicationSaveError$.next(error.error);
@@ -59,9 +64,5 @@ export class ProjectApplicationComponent extends BaseComponent {
         })
       )
       .subscribe();
-  }
-
-  newPage(page: PageEvent) {
-    this.newPage$.next(page);
   }
 }
