@@ -35,7 +35,7 @@ class ProjectServiceImpl(
         if (currentUser.hasRole(ADMINISTRATOR) || currentUser.hasRole(PROGRAMME_USER)) {
             return projectRepo.findAll(page).map { it.toOutputProject() }
         } else {
-            return projectRepo.findAllByApplicant_Id(currentUser.user.id!!, page).map { it.toOutputProject() }
+            return projectRepo.findAllByApplicantId(currentUser.user.id!!, page).map { it.toOutputProject() }
         }
     }
 

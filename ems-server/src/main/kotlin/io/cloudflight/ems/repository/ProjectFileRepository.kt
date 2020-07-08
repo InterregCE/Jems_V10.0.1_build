@@ -10,10 +10,10 @@ import java.util.Optional
 @Repository
 interface ProjectFileRepository : PagingAndSortingRepository<ProjectFile, Long> {
 
-    fun findAllByProject_Id(projectId: Long, pageable: Pageable): Page<ProjectFile>
+    fun findAllByProjectId(projectId: Long, pageable: Pageable): Page<ProjectFile>
 
-    fun findFirstByProject_IdAndId(projectId: Long, id: Long): Optional<ProjectFile>
+    fun findFirstByProjectIdAndId(projectId: Long, id: Long): Optional<ProjectFile>
 
-    fun findFirstByProject_IdAndName(projectId: Long, name: String): Optional<ProjectFile>
+    fun findFirstByProjectIdAndName(projectId: Long, name: String): Optional<ProjectFile>
 
 }

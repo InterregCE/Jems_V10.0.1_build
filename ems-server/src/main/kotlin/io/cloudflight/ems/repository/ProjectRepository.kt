@@ -9,7 +9,7 @@ import org.springframework.stereotype.Repository
 @Repository
 interface ProjectRepository : PagingAndSortingRepository<Project, Long> {
 
-    fun findAllByApplicant_Id(applicantId: Long, pageable: Pageable): Page<Project>
+    fun findAllByApplicantId(applicantId: Long, pageable: Pageable): Page<Project>
 
     fun findOneById(id: Long): Project?
 

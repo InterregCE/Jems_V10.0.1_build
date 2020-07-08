@@ -118,7 +118,7 @@ class ProjectServiceTest {
     fun projectRetrieval_applicant() {
         every { securityService.currentUser } returns
                 LocalCurrentUser(user, "hash_pass", listOf(SimpleGrantedAuthority("ROLE_$APPLICANT_USER")))
-        every { projectRepository.findAllByApplicant_Id(eq(user.id!!), UNPAGED) } returns PageImpl(emptyList())
+        every { projectRepository.findAllByApplicantId(eq(user.id!!), UNPAGED) } returns PageImpl(emptyList())
 
         assertEquals(0, projectService.findAll(UNPAGED).totalElements)
     }
