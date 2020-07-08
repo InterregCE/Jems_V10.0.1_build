@@ -2,7 +2,7 @@ package io.cloudflight.ems.controller
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import io.cloudflight.ems.api.dto.InputProject
-import io.cloudflight.ems.factory.AccountFactory.Companion.ADMINISTRATOR_EMAIL
+import io.cloudflight.ems.factory.UserFactory.Companion.ADMINISTRATOR_EMAIL
 import net.bytebuddy.utility.RandomString
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
