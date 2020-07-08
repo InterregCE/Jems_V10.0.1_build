@@ -4,9 +4,9 @@ import com.fasterxml.jackson.databind.ObjectMapper
 import io.cloudflight.ems.api.dto.user.InputPassword
 import io.cloudflight.ems.api.dto.user.InputUserCreate
 import io.cloudflight.ems.api.dto.user.InputUserUpdate
-import io.cloudflight.ems.factory.AccountFactory
-import io.cloudflight.ems.factory.AccountFactory.Companion.ADMINISTRATOR_EMAIL
-import io.cloudflight.ems.factory.AccountFactory.Companion.APPLICANT_USER_EMAIL
+import io.cloudflight.ems.factory.UserFactory
+import io.cloudflight.ems.factory.UserFactory.Companion.ADMINISTRATOR_EMAIL
+import io.cloudflight.ems.factory.UserFactory.Companion.APPLICANT_USER_EMAIL
 import io.cloudflight.ems.security.ADMINISTRATOR
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
@@ -31,7 +31,7 @@ class UserControllerIntegrationTest {
     private lateinit var mockMvc: MockMvc
 
     @Autowired
-    private lateinit var accountFactory: AccountFactory
+    private lateinit var userFactory: UserFactory;
 
     @Autowired
     private lateinit var jsonMapper: ObjectMapper
@@ -40,8 +40,8 @@ class UserControllerIntegrationTest {
     @WithUserDetails(value = ADMINISTRATOR_EMAIL)
     @Transactional
     fun `list paginated users`() {
-        // we already have the admin and programme user => 2 users will be persisted
-        accountFactory.saveAdminAccount("u1")
+        // we already have the admin and programme user => 3 users will be persisted
+        userFactory.saveAdminUser("u1")
 
         mockMvc.perform(
             get("/api/user?page=0")
@@ -167,7 +167,7 @@ class UserControllerIntegrationTest {
             APPLICANT_USER_EMAIL,
             APPLICANT_USER_EMAIL,
             APPLICANT_USER_EMAIL,
-            accountFactory.applicantAccount.userRole.id!!
+            userFactory.applicantUser.userRole.id!!
         )
         mockMvc.perform(
             put("/api/user")
@@ -188,7 +188,7 @@ class UserControllerIntegrationTest {
             APPLICANT_USER_EMAIL,
             APPLICANT_USER_EMAIL,
             APPLICANT_USER_EMAIL,
-            accountFactory.saveRole(ADMINISTRATOR).id!!
+            userFactory.saveRole(ADMINISTRATOR).id!!
         )
         mockMvc.perform(
             put("/api/user")
@@ -215,7 +215,7 @@ class UserControllerIntegrationTest {
     @WithUserDetails(value = ADMINISTRATOR_EMAIL)
     fun `change password short`() {
         mockMvc.perform(
-            put("/api/user/${accountFactory.adminAccount.id}")
+            put("/api/user/${userFactory.adminUser.id}")
                 .accept(MediaType.APPLICATION_JSON_VALUE)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .content(jsonMapper.writeValueAsString(InputPassword("short", null)))
@@ -231,7 +231,7 @@ class UserControllerIntegrationTest {
     @WithUserDetails(value = ADMINISTRATOR_EMAIL)
     fun `change password long`() {
         mockMvc.perform(
-            put("/api/user/${accountFactory.adminAccount.id}")
+            put("/api/user/${userFactory.adminUser.id}")
                 .accept(MediaType.APPLICATION_JSON_VALUE)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .content(jsonMapper.writeValueAsString(InputPassword("password_long_enough", null)))

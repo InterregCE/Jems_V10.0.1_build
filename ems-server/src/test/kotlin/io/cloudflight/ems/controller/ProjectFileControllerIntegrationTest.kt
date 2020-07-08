@@ -2,10 +2,10 @@ package io.cloudflight.ems.controller
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import io.cloudflight.ems.api.dto.InputProjectFileDescription
-import io.cloudflight.ems.factory.AccountFactory
-import io.cloudflight.ems.factory.AccountFactory.Companion.ADMINISTRATOR_EMAIL
-import io.cloudflight.ems.factory.AccountFactory.Companion.APPLICANT_USER_EMAIL
 import io.cloudflight.ems.factory.ProjectFileFactory
+import io.cloudflight.ems.factory.UserFactory
+import io.cloudflight.ems.factory.UserFactory.Companion.ADMINISTRATOR_EMAIL
+import io.cloudflight.ems.factory.UserFactory.Companion.APPLICANT_USER_EMAIL
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc
@@ -34,14 +34,14 @@ class ProjectFileControllerIntegrationTest {
     private lateinit var projectFileFactory: ProjectFileFactory
 
     @Autowired
-    private lateinit var accountFactory: AccountFactory
+    private lateinit var userFactory: UserFactory
 
     @Test
     @Transactional
     @WithUserDetails(value = ADMINISTRATOR_EMAIL)
     fun `project file description set`() {
-        val project = projectFileFactory.saveProject(accountFactory.adminAccount)
-        val projectFile = projectFileFactory.saveProjectFile(project, accountFactory.adminAccount)
+        val project = projectFileFactory.saveProject(userFactory.adminUser)
+        val projectFile = projectFileFactory.saveProjectFile(project, userFactory.adminUser)
 
         val projectDescription = InputProjectFileDescription("new test description")
 
@@ -77,8 +77,8 @@ class ProjectFileControllerIntegrationTest {
     @Transactional
     @WithUserDetails(value = APPLICANT_USER_EMAIL)
     fun `project file access forbidden for non-owner applicants`() {
-        val project = projectFileFactory.saveProject(accountFactory.adminAccount)
-        val projectFile = projectFileFactory.saveProjectFile(project, accountFactory.adminAccount)
+        val project = projectFileFactory.saveProject(userFactory.adminUser)
+        val projectFile = projectFileFactory.saveProjectFile(project, userFactory.adminUser)
 
         mockMvc.perform(
             get("/api/project/${project.id}")
@@ -105,8 +105,8 @@ class ProjectFileControllerIntegrationTest {
     @Transactional
     @WithUserDetails(value = APPLICANT_USER_EMAIL)
     fun `project file access allowed for owner applicants`() {
-        val project = projectFileFactory.saveProject(accountFactory.applicantAccount)
-        val projectFile = projectFileFactory.saveProjectFile(project, accountFactory.applicantAccount)
+        val project = projectFileFactory.saveProject(userFactory.applicantUser)
+        val projectFile = projectFileFactory.saveProjectFile(project, userFactory.applicantUser)
 
         mockMvc.perform(
             get("/api/project/${project.id}")
