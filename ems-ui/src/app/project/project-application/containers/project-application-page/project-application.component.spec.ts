@@ -40,9 +40,9 @@ describe('ProjectApplicationComponent', () => {
     let success = false;
     component.applicationSaveSuccess$.subscribe(result => success = result);
 
-    httpTestingController.expectOne({method: 'GET', url: `//api/project?page=0&size=100&sort=id,desc`});
+    httpTestingController.expectOne({method: 'GET', url: `//api/project?page=0&size=25&sort=id,desc`});
     httpTestingController.expectOne({method: 'POST', url: `//api/project`}).flush(project);
-    httpTestingController.expectOne({method: 'GET', url: `//api/project?page=0&size=100&sort=id,desc`});
+    httpTestingController.expectOne({method: 'GET', url: `//api/project?page=0&size=25&sort=id,desc`});
     httpTestingController.verify();
 
     tick();
@@ -58,11 +58,26 @@ describe('ProjectApplicationComponent', () => {
       {acronym: '2'} as OutputProject
     ];
 
-    httpTestingController.match({method: 'GET', url: `//api/project?page=0&size=100&sort=id,desc`})
+    httpTestingController.match({method: 'GET', url: `//api/project?page=0&size=25&sort=id,desc`})
       .forEach(req => req.flush({content: projects}));
 
     tick();
     expect(results).toEqual(projects);
+  }));
+
+  it('should sort and page the list of projects', fakeAsync(() => {
+    // initial sort and page
+    httpTestingController.expectOne({method: 'GET', url: `//api/project?page=0&size=25&sort=id,desc`});
+
+    // change sorting
+    component.newSort$.next({active: 'submissionDate', direction: 'asc'})
+    httpTestingController.expectOne({method: 'GET', url: `//api/project?page=0&size=25&sort=submissionDate,asc`});
+
+    // change paging
+    component.newPage$.next({pageIndex: 2, pageSize: 3, length: 0})
+    httpTestingController.expectOne({method: 'GET', url: `//api/project?page=2&size=3&sort=submissionDate,asc`});
+
+    httpTestingController.verify();
   }));
 
 });

@@ -17,6 +17,7 @@ import {MatMenuModule} from '@angular/material/menu';
 import {MatIconModule} from '@angular/material/icon';
 import {HelpMenuComponent} from '@common/components/top-bar/help-menu/help-menu.component';
 import {AlertComponent} from '@common/components/forms/form-validation/alert.component';
+import {MatSortHeader} from '@angular/material/sort';
 
 const declarations = [
   TopBarComponent,
@@ -24,7 +25,7 @@ const declarations = [
   FormFieldErrorsComponent,
   ConfirmDialogComponent,
   HelpMenuComponent,
-  AlertComponent
+  AlertComponent,
 ];
 
 @NgModule({
@@ -43,6 +44,7 @@ const declarations = [
     PermissionService,
     TopBarService,
     KeyValuePipe,
+    MatSortHeader,
     {
       provide: HTTP_INTERCEPTORS,
       useClass: AuthenticationInterceptor,
