@@ -18,6 +18,7 @@ class ProjectController(
         return projectService.findAll(pageable)
     }
 
+    @PreAuthorize("@projectAuthorization.canCreateProject()")
     override fun createProject(project: InputProject): OutputProject {
         return projectService.createProject(project)
     }
