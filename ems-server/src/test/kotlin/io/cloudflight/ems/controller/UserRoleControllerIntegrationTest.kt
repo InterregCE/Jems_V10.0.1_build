@@ -29,7 +29,7 @@ class UserRoleControllerIntegrationTest {
     @WithUserDetails(value = ADMINISTRATOR_EMAIL)
     @Transactional
     fun `list paginated roles`() {
-        // we already have the admin and programme user => 4 roles will be persisted
+        // we already have the admin and programme roles => 3 roles will be persisted
         userFactory.saveRole("r1")
 
         mockMvc.perform(
