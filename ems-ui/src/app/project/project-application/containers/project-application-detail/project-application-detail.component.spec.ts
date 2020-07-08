@@ -5,7 +5,7 @@ import {HttpTestingController} from '@angular/common/http/testing';
 import {ProjectApplicationDetailComponent} from './project-application-detail.component';
 import {ProjectFileService} from '../../services/project-file.service';
 import {ActivatedRoute} from '@angular/router';
-import {DeleteDialogComponent} from './delete-dialog.component';
+import {DeleteDialogComponent} from '../../components/project-application-detail/delete-dialog/delete-dialog.component';
 import {BrowserDynamicTestingModule} from '@angular/platform-browser-dynamic/testing';
 import {TestModule} from '../../../../common/test-module';
 import {MatDialogModule} from '@angular/material/dialog';
