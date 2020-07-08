@@ -1,24 +1,21 @@
-import {Component, EventEmitter, Input, Output} from '@angular/core';
-import {FormBuilder, FormGroupDirective, Validators} from '@angular/forms';
+import {ChangeDetectionStrategy, ChangeDetectorRef, Component, EventEmitter, Output} from '@angular/core';
+import {FormBuilder, FormGroup, Validators} from '@angular/forms';
 import {InputProject} from '@cat/api';
-import {I18nValidationError} from '@common/validation/i18n-validation-error';
+import {AbstractForm} from '@common/components/forms/abstract-form';
 
 @Component({
   selector: 'app-project-application-submission',
   templateUrl: 'project-application-submission.component.html',
-  styleUrls: ['project-application-submission.component.scss']
+  styleUrls: ['project-application-submission.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 
-export class ProjectApplicationSubmissionComponent {
+export class ProjectApplicationSubmissionComponent extends AbstractForm {
 
-  @Input()
-  success: boolean;
-  @Input()
-  error: I18nValidationError;
-  @Input()
-  submitted = false;
   @Output()
   submitProjectApplication: EventEmitter<InputProject> = new EventEmitter<InputProject>();
+
+  clearOnSuccess = true;
 
   submissionForm = this.formBuilder.group({
     acronym: ['', Validators.compose([
@@ -31,36 +28,30 @@ export class ProjectApplicationSubmissionComponent {
     ])]
   });
 
-  constructor(private formBuilder: FormBuilder) {
+  acronymErrors = {
+    maxlength: 'project.acronym.size.too.long',
+    required: 'project.acronym.should.not.be.empty'
+  };
+
+  submissionDateErrors = {
+    pattern: 'project.submissionDate.should.be.valid',
+    required: 'project.submissionDate.should.not.be.empty'
+  };
+
+  constructor(private formBuilder: FormBuilder,
+              protected changeDetectorRef: ChangeDetectorRef) {
+    super(changeDetectorRef);
   }
 
-  get submissionDate() {
-    return this.submissionForm.controls.submissionDate;
+
+  getForm(): FormGroup | null {
+    return this.submissionForm;
   }
 
-  get acronym() {
-    return this.submissionForm.controls.acronym;
-  }
-
-  onSubmit(formDirective: FormGroupDirective): void {
+  onSubmit(): void {
     this.submitProjectApplication.emit({
-      acronym: this.acronym.value,
-      submissionDate: this.submissionDate.value
+      acronym: this.submissionForm?.controls?.acronym?.value,
+      submissionDate: this.submissionForm?.controls?.submissionDate.value
     });
-    formDirective.resetForm();
-  }
-
-  getSubmissionDateError(): string {
-    return this.error?.i18nFieldErrors?.submissionDate?.i18nKey
-      || (this.submissionDate?.errors?.pattern && 'project.submissionDate.should.be.valid')
-      || (this.submissionDate?.errors?.required && 'project.submissionDate.should.not.be.empty')
-      || ''
-  }
-
-  getAcronymError(): string {
-    return this.error?.i18nFieldErrors?.acronym?.i18nKey
-      || (this.acronym?.errors?.maxlength && 'project.acronym.size.too.long')
-      || (this.acronym?.errors?.required && 'project.acronym.should.not.be.empty')
-      || ''
   }
 }

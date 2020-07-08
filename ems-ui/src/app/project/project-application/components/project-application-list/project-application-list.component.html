@@ -1,8 +1,9 @@
 <h5>List of submitted projects</h5>
 <div class="project-application-list-container">
-    <p *ngIf="!isTableShown()">No projects submitted</p>
-    <app-table
-            *ngIf="isTableShown()"
-            [configuration]="configuration">
+    <p *ngIf="!projectPage?.content.length">No projects submitted</p>
+
+    <app-table *ngIf="projectPage?.content?.length"
+               [configuration]="tableConfiguration"
+               [rows]="projectPage.content">
     </app-table>
 </div>

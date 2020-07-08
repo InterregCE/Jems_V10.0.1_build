@@ -18,7 +18,6 @@ import {FormState} from '@common/components/forms/form-state';
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class UserDetailComponent extends BaseComponent {
-  FormState = FormState;
 
   userSaveError$ = new Subject<I18nValidationError | null>();
   userSaveSuccess$ = new Subject<boolean>();

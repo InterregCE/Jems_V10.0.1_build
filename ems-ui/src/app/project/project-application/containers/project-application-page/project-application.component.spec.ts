@@ -1,101 +1,68 @@
 import {async, ComponentFixture, fakeAsync, TestBed, tick} from '@angular/core/testing';
 import {ProjectApplicationComponent} from './project-application.component';
-import {CUSTOM_ELEMENTS_SCHEMA} from '@angular/core';
-import {InputProject, ProjectService} from '@cat/api';
+import {InputProject, OutputProject} from '@cat/api';
 import {HttpTestingController} from '@angular/common/http/testing';
-import {ProjectApplicationSubmissionComponent} from '../../components/project-application-submission/project-application-submission.component';
-import {ProjectApplicationSubmissionStubComponent} from '../../components/project-application-submission/project-application-submission-stub.component';
 import {TestModule} from '../../../../common/test-module';
-import {throwError} from 'rxjs';
+import {ProjectModule} from '../../../project.module';
 
 describe('ProjectApplicationComponent', () => {
 
-  let fixture: ComponentFixture<ProjectApplicationComponent>;
-  let projectApplicationComponent: ProjectApplicationComponent;
   let httpTestingController: HttpTestingController;
+  let component: ProjectApplicationComponent;
+  let fixture: ComponentFixture<ProjectApplicationComponent>;
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
+      declarations: [ProjectApplicationComponent],
       imports: [
+        ProjectModule,
         TestModule
       ],
-      declarations: [
-        ProjectApplicationComponent
-      ],
-      providers: [
-        {
-          provide: ProjectService,
-          useClass: ProjectService
-        },
-        {
-          provide: ProjectApplicationSubmissionComponent,
-          useClass: ProjectApplicationSubmissionStubComponent
-        }
-      ],
-      schemas: [CUSTOM_ELEMENTS_SCHEMA],
-    }).compileComponents();
+    })
+      .compileComponents();
+    httpTestingController = TestBed.inject(HttpTestingController);
   }));
 
   beforeEach(() => {
     fixture = TestBed.createComponent(ProjectApplicationComponent);
-    projectApplicationComponent = (
-      fixture.componentInstance
-    ) as ProjectApplicationComponent;
-    httpTestingController = TestBed.inject(HttpTestingController);
-    projectApplicationComponent.projectSubmissionComponent = TestBed.inject(ProjectApplicationSubmissionComponent);
+    component = fixture.componentInstance;
+    fixture.detectChanges();
   });
 
-  it('should create the project application', () => {
-    expect(projectApplicationComponent).toBeTruthy();
+  it('should be created', () => {
+    expect(component).toBeTruthy();
   });
 
-  // TODO fix test
-  xit('should get 100 paged projects from server', async () => {
-    projectApplicationComponent.getProjectsFromServer();
-    httpTestingController.expectOne({
-      method: 'GET',
-      url: `/api/project?size=${100}&sort=id,desc`
-    }).flush({});
+  it('should create a project', fakeAsync(() => {
+    const project = {acronym: 'test'} as InputProject;
+
+    component.createApplication(project);
+    let success = false;
+    component.applicationSaveSuccess$.subscribe(result => success = result);
+
+    httpTestingController.expectOne({method: 'GET', url: `//api/project?page=0&size=100&sort=id,desc`});
+    httpTestingController.expectOne({method: 'POST', url: `//api/project`}).flush(project);
+    httpTestingController.expectOne({method: 'GET', url: `//api/project?page=0&size=100&sort=id,desc`});
     httpTestingController.verify();
-  });
 
-  it('should submit a project application', fakeAsync(() => {
-    const project = {acronym: 'test', submissionDate: '2020-12-12'} as InputProject;
-    projectApplicationComponent.submitProjectApplication(project);
-    httpTestingController.expectOne({
-      method: 'POST',
-      url: `//api/project`
-    }).flush(project);
-    httpTestingController.verify();
     tick();
-    expect(projectApplicationComponent.success).toBeTruthy();
+    expect(success).toBeTruthy();
   }));
 
-  // TODO fix test
-  xit('should not submit a project application with too long a name.', fakeAsync(() => {
-    const project = {acronym: 'testForOverLimitOfCharacters', submissionDate: '2020-12-12'} as InputProject;
-    spyOn((projectApplicationComponent as any).projectService, 'addProject').and.returnValue(
-      throwError(new ErrorEvent('backend error', {error: {acronym: ['long']}})));
-    projectApplicationComponent.submitProjectApplication(project);
+  it('should list projects', fakeAsync(() => {
+    let results: OutputProject[] = [];
+    component.currentPage$.subscribe(result => results = result.content);
+
+    const projects = [
+      {acronym: '1'} as OutputProject,
+      {acronym: '2'} as OutputProject
+    ];
+
+    httpTestingController.match({method: 'GET', url: `//api/project?page=0&size=100&sort=id,desc`})
+      .forEach(req => req.flush({content: projects}));
+
     tick();
-    expect(projectApplicationComponent.error).toBeTruthy();
+    expect(results).toEqual(projects);
   }));
 
-  // TODO fix test
-  xit('should not submit a project application on Bad request', fakeAsync(() => {
-    const project = {acronym: 'testForOverLimitOfCharacters', submissionDate: '2020-12-12'} as InputProject;
-    spyOn((projectApplicationComponent as any).projectService, 'addProject').and.returnValue(
-      throwError(new ErrorEvent('Bad Request', {error: 'Bad Request'})));
-    projectApplicationComponent.submitProjectApplication(project);
-    tick();
-    expect(projectApplicationComponent.error).toBeTruthy();
-  }));
-
-  // TODO fix test
-  xit('should not submit a project application with missing data', fakeAsync(() => {
-    const project = {acronym: '', submissionDate: ''} as InputProject;
-    projectApplicationComponent.submitProjectApplication(project);
-    tick();
-    expect(projectApplicationComponent.error).toBeTruthy();
-  }));
 });

@@ -1,51 +1,35 @@
-import {Component, Input, OnChanges, OnInit, SimpleChanges} from '@angular/core';
-import {OutputProject} from '@cat/api';
-import {MatTableDataSource} from '@angular/material/table';
+import {ChangeDetectionStrategy, Component, Input} from '@angular/core';
+import {PageOutputProject} from '@cat/api';
 import {TableConfiguration} from '@common/components/table/model/table.configuration';
-import {ColumnConfiguration} from '@common/components/table/model/column.configuration';
-import {ColumnType} from '@common/components/table/model/column-type.enum';
 
 @Component({
   selector: 'app-project-application-list',
   templateUrl: 'project-application-list.component.html',
-  styleUrls: ['project-application-list.component.scss']
+  styleUrls: ['project-application-list.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 
-export class ProjectApplicationListComponent implements OnInit, OnChanges {
-  configuration = new TableConfiguration();
+export class ProjectApplicationListComponent {
 
   @Input()
-  dataSource: MatTableDataSource<OutputProject>;
+  projectPage: PageOutputProject;
 
-  isTableShown(): boolean {
-    return this.dataSource && this.dataSource.data.length > 0;
-  }
-
-  ngOnInit() {
-    this.initTableConfiguration();
-  }
-
-  ngOnChanges(changes: SimpleChanges) {
-    if (changes.dataSource && changes.dataSource.currentValue) {
-      this.configuration.dataSource = changes.dataSource.currentValue;
-    }
-  }
-
-  initTableConfiguration(): void {
-    this.configuration.columns = [];
-    this.configuration.columns.push(this.createNewColumnConfig('Id', 'id', ColumnType.String));
-    this.configuration.columns.push(this.createNewColumnConfig('Acronym', 'acronym', ColumnType.String));
-    this.configuration.columns.push(this.createNewColumnConfig('Submission Date', 'submissionDate', ColumnType.String));
-    this.configuration.isTableClickable = true;
-    this.configuration.dataSource = this.dataSource;
-    this.configuration.routerLink = '/project/';
-  }
-
-  createNewColumnConfig(displayColumn: string, elementProperties: string, columnType: ColumnType): ColumnConfiguration {
-    return new ColumnConfiguration({
-      displayedColumn: displayColumn,
-      elementProperty: elementProperties,
-      columnType,
-    });
-  }
+  tableConfiguration: TableConfiguration = new TableConfiguration({
+    routerLink: '/project/',
+    isTableClickable: true,
+    columns: [
+      {
+        displayedColumn: 'Id',
+        elementProperty: 'id',
+      },
+      {
+        displayedColumn: 'Acronym',
+        elementProperty: 'acronym',
+      },
+      {
+        displayedColumn: 'Submission Date',
+        elementProperty: 'submissionDate',
+      }
+    ]
+  });
 }
