@@ -60,10 +60,43 @@ data class Audit(
             return Audit(
                 id = null,
                 timestamp = getElasticTimeNow(),
-                action = AuditAction.PROJECT_FILE_DELETE,
+                action = AuditAction.PROJECT_FILE_DELETED,
                 projectId = projectId.toString(),
                 user = currentUser?.toEsUser(),
                 description = "document ${file.name} deleted from application $projectId"
+            )
+        }
+
+        fun projectFileUploadedSuccessfully(currentUser: CurrentUser?, projectId: Long, file: ProjectFile): Audit {
+            return Audit(
+                id = null,
+                timestamp = getElasticTimeNow(),
+                action = AuditAction.PROJECT_FILE_UPLOADED_SUCCESSFULLY,
+                projectId = projectId.toString(),
+                user = currentUser?.toEsUser(),
+                description = "document ${file.name} uploaded to project application $projectId"
+            )
+        }
+
+        fun projectFileUploadFailed(currentUser: CurrentUser?, projectId: Long, fileName: String?): Audit {
+            return Audit(
+                id = null,
+                timestamp = getElasticTimeNow(),
+                action = AuditAction.PROJECT_FILE_UPLOAD_FAILED,
+                projectId = projectId.toString(),
+                user = currentUser?.toEsUser(),
+                description = "FAILED upload of document $fileName to project application $projectId"
+            )
+        }
+
+        fun projectFileDescriptionChanged(currentUser: CurrentUser?, projectId: Long, file: ProjectFile, oldDescription: String?): Audit {
+            return Audit(
+                id = null,
+                timestamp = getElasticTimeNow(),
+                action = AuditAction.PROJECT_FILE_DESCRIPTION_CHANGED,
+                projectId = projectId.toString(),
+                user = currentUser?.toEsUser(),
+                description = "description of document ${file.name} in project application $projectId has changed from $oldDescription to ${file.description}"
             )
         }
 
