@@ -51,7 +51,7 @@ export class UserSubmissionComponent extends AbstractForm {
   };
 
   emailErrors = {
-    required:'user.email.should.not.be.empty',
+    required: 'user.email.should.not.be.empty',
     maxlength: 'user.email.wrong.size',
     email: 'user.email.wrong.format'
   };

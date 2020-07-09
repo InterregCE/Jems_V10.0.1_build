@@ -1,5 +1,6 @@
 import {
   AfterViewInit,
+  ChangeDetectorRef,
   Component,
   ComponentFactory,
   ComponentFactoryResolver,
@@ -19,6 +20,7 @@ import {DescriptionCellComponent} from './cell-renderers/description-cell/descri
 import {ColumnType} from './model/column-type.enum';
 import {Observable} from 'rxjs';
 import {Tools} from '../../utils/tools';
+import {map} from 'rxjs/operators';
 import {MatSort} from '@angular/material/sort';
 
 @Component({
@@ -43,7 +45,8 @@ export class TableComponent implements OnInit, AfterViewInit {
   columnsToDisplay: string[] = [];
 
   constructor(private datepipe: DatePipe,
-              private resolver: ComponentFactoryResolver) {
+              private resolver: ComponentFactoryResolver,
+              protected changeDetectorRef: ChangeDetectorRef) {
   }
 
   ngOnInit(): void {
@@ -84,10 +87,19 @@ export class TableComponent implements OnInit, AfterViewInit {
       const componentRef = this.customComponent.toArray()[i].createComponent(this.factory);
       componentRef.instance.data = {
         index: i,
-        row: this.configuration.dataSource.data[i],
+        row: this.getRowWithIndex(i),
         extraProps: this.customComponentColumn.extraProps,
       };
       this.componentRefList.push(componentRef);
+    }
+    this.changeDetectorRef.markForCheck();
+  }
+
+  getRowWithIndex(index: number): any {
+    if (this.rows instanceof Observable) {
+      return this.rows.pipe(map(rows => rows[index]));
+    } else {
+      return this.rows[index];
     }
   }
 }

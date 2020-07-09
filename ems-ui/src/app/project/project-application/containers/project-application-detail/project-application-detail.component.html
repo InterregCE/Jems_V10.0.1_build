@@ -1,0 +1,27 @@
+<div>
+    <a [routerLink]="['']">&lt; Back to List of Project Applications</a>
+    <div class="row">
+        <div *ngIf="project$ | async as project" class="col-sm-12 container">
+            <app-project-application-data
+                    [project]="project"
+                    [fileNumber]="fileNumber"
+                    [Permission]="Permission"
+                    [statusMessages]="statusMessages"
+                    (uploadFile)="addNewFilesForUpload($event)">
+            </app-project-application-data>
+        </div>
+    </div>
+    <div *ngIf="currentPage$ | async as filePage" class="container project-files-table-container">
+        <app-project-application-files-list
+                [filePage]="filePage"
+                [refreshCustomColumns$]="refreshCustomColumns()"
+                [pageIndex]="newPageIndex$ | async"
+                (deleteFile)="deleteFile($event)"
+                (downloadFile)="downloadFile($event)"
+                (saveDescription)="saveDescription($event)"
+                (newSort)="newSort$.next($event)"
+                (newPageIndex)="newPageIndex$.next($event)"
+                (newPageSize)="newPageSize$.next($event)">
+        </app-project-application-files-list>
+    </div>
+</div>
