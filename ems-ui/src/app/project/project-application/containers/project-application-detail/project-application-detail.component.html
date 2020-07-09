@@ -14,10 +14,10 @@
     <div *ngIf="currentPage$ | async as filePage" class="container project-files-table-container">
         <app-project-application-files-list
                 [filePage]="filePage"
-                [refreshCustomColumns]="refreshCustomColumns()"
-                (deleteFile$)="deleteFile($event)"
-                (downloadFile$)="downloadFile($event)"
-                (saveDescription$)="saveDescription($event)"
+                [refreshCustomColumns$]="refreshCustomColumns()"
+                (deleteFile)="deleteFile($event)"
+                (downloadFile)="downloadFile($event)"
+                (saveDescription)="saveDescription($event)"
                 (newSort)="newSort$.next($event)"
                 (newPage)="newPage$.next($event)">
         </app-project-application-files-list>

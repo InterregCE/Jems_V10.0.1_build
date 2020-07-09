@@ -25,13 +25,13 @@ export class ProjectApplicationFilesListComponent extends BaseComponent implemen
   @Input()
   filePage: PageOutputProjectFile;
   @Input()
-  refreshCustomColumns: Observable<null>;
+  refreshCustomColumns$: Observable<null>;
   @Output()
-  deleteFile$ = new EventEmitter<OutputProjectFile>();
+  deleteFile = new EventEmitter<OutputProjectFile>();
   @Output()
-  downloadFile$ = new EventEmitter<OutputProjectFile>();
+  downloadFile = new EventEmitter<OutputProjectFile>();
   @Output()
-  saveDescription$ = new EventEmitter<any>();
+  saveDescription = new EventEmitter<any>();
   @Output()
   newPage: EventEmitter<PageEvent> = new EventEmitter<PageEvent>();
   @Output()
@@ -81,9 +81,9 @@ export class ProjectApplicationFilesListComponent extends BaseComponent implemen
   editAction = new ActionConfiguration('fas fa-edit',
     (element: any, index: number) => this.editFileDescription(element, index));
   downloadAction = new ActionConfiguration('fas fa-file-download',
-    (element: OutputProjectFile) => this.downloadFile(element));
+    (element: OutputProjectFile) => this.onDownload(element));
   deleteAction = new ActionConfiguration('fas fa-trash',
-    (element: OutputProjectFile) => this.deleteFile(element));
+    (element: OutputProjectFile) => this.onDelete(element));
 
   constructor(private permissionService: PermissionService) {
     super();
@@ -91,15 +91,15 @@ export class ProjectApplicationFilesListComponent extends BaseComponent implemen
 
   ngOnInit() {
     this.assignActionsToUser();
-    this.refreshCustomColumns.subscribe(() => {
+    this.refreshCustomColumns$.subscribe(() => {
       if (this.table) {
         setTimeout(() => this.table.createCustomComponents(), 0);
       }
     })
   }
 
-  downloadFile(element: OutputProjectFile) {
-    this.downloadFile$.emit(element);
+  onDownload(element: OutputProjectFile) {
+    this.downloadFile.emit(element);
   }
 
   editFileDescription(element: any, rowIndex: number) {
@@ -110,8 +110,8 @@ export class ProjectApplicationFilesListComponent extends BaseComponent implemen
     });
   }
 
-  deleteFile(element: OutputProjectFile) {
-    this.deleteFile$.emit(element);
+  onDelete(element: OutputProjectFile) {
+    this.deleteFile.emit(element);
   }
 
   onCancel(rowIndex: number): void {
@@ -120,7 +120,7 @@ export class ProjectApplicationFilesListComponent extends BaseComponent implemen
 
   onSave(saveValue: string, rowIndex: number, fileId: number): void {
     const descriptionText = {description: saveValue} as InputProjectFileDescription;
-    this.saveDescription$.emit({fileIdentifier: fileId, description: descriptionText})
+    this.saveDescription.emit({fileIdentifier: fileId, description: descriptionText})
     this.closeInputFieldAndMakeReadonly(rowIndex);
   }
 

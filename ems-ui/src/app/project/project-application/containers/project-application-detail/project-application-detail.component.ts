@@ -10,9 +10,9 @@ import {PageEvent} from '@angular/material/paginator';
 import {Log} from '../../../../common/utils/log';
 import {BaseComponent} from '@common/components/base-component';
 import {HttpErrorResponse} from '@angular/common/http';
-import {DeleteDialogComponent} from '../../components/project-application-detail/delete-dialog/delete-dialog.component';
 import {MatSort} from '@angular/material/sort';
 import {Tables} from '../../../../common/utils/tables';
+import {Forms} from '../../../../common/utils/forms';
 
 @Component({
   selector: 'app-project-application-detail',
@@ -92,12 +92,14 @@ export class ProjectApplicationDetailComponent extends BaseComponent {
   }
 
   deleteFile(element: OutputProjectFile) {
-    const dialogRef = this.dialog.open(DeleteDialogComponent, {
-      minWidth: '30rem',
-      data: {name: element.name}
-    });
-
-    dialogRef.afterClosed().subscribe((clickedYes: boolean) => {
+    Forms.confirmDialog(
+      this.dialog,
+      element.name,
+      'Are you sure you want to delete' + ' ' + element.name + ' ?',
+    ).pipe(
+      take(1),
+      takeUntil(this.destroyed$)
+    ).subscribe(clickedYes => {
       if (clickedYes) {
         this.projectFileStorageService.deleteFile(element.id, this.projectId).pipe(
           takeUntil(this.destroyed$),
