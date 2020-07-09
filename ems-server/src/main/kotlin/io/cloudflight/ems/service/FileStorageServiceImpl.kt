@@ -23,17 +23,22 @@ import java.util.Optional
 class FileStorageServiceImpl(
     private val auditService: AuditService,
     private val storage: MinioStorage,
-    private val repository: ProjectFileRepository,
+    private val projectFileRepository: ProjectFileRepository,
     private val projectRepository: ProjectRepository,
     private val userRepository: UserRepository,
     private val securityService: SecurityService
-): FileStorageService {
+) : FileStorageService {
 
     @Transactional
     override fun saveFile(stream: InputStream, fileMetadata: FileMetadata) {
         val potentialDuplicate = getFileByName(fileMetadata.projectId, fileMetadata.name)
         if (potentialDuplicate.isPresent) {
-            with (potentialDuplicate.get()) {
+            with(potentialDuplicate.get()) {
+                auditService.logEvent(
+                    Audit.projectFileUploadFailed(
+                        securityService.currentUser, fileMetadata.projectId, fileMetadata.name
+                    )
+                )
                 throw DuplicateFileException(project.id, name, updated)
             }
         }
@@ -54,42 +59,66 @@ class FileStorageServiceImpl(
             author = author,
             description = null,
             size = fileMetadata.size,
-            updated = ZonedDateTime.now())
+            updated = ZonedDateTime.now()
+        )
 
-        repository.save(projectFileEntity)
+        projectFileRepository.save(projectFileEntity)
         storage.saveFile(PROJECT_FILES_BUCKET, filePath, fileMetadata.size, stream)
+
+        auditService.logEvent(
+            Audit.projectFileUploadedSuccessfully(
+                securityService.currentUser,
+                fileMetadata.projectId,
+                projectFileEntity
+            )
+        )
     }
 
     override fun downloadFile(projectId: Long, fileId: Long): Pair<String, ByteArray> {
         val projectFile = getFile(projectId, fileId)
         return Pair(
             projectFile.name,
-            storage.getFile(projectFile.bucket, projectFile.identifier))
+            storage.getFile(projectFile.bucket, projectFile.identifier)
+        )
     }
 
     @Transactional(readOnly = true)
     override fun getFilesForProject(projectId: Long, page: Pageable): Page<OutputProjectFile> {
-        return repository.findAllByProjectId(projectId, page).map { it.toOutputProjectFile() }
+        return projectFileRepository.findAllByProjectId(projectId, page).map { it.toOutputProjectFile() }
     }
 
     @Transactional
     override fun setDescription(projectId: Long, fileId: Long, description: String?): OutputProjectFile {
         val projectFile = getFile(projectId, fileId)
+        val oldDescription = projectFile.description
 
         projectFile.description = description
-        return repository.save(projectFile).toOutputProjectFile()
+        val savedProjectFile = projectFileRepository.save(projectFile).toOutputProjectFile()
+
+        auditService.logEvent(
+            Audit.projectFileDescriptionChanged(
+                securityService.currentUser,
+                projectId,
+                projectFile,
+                oldDescription
+            )
+        )
+
+        return savedProjectFile
     }
 
     @Transactional
     override fun deleteFile(projectId: Long, fileId: Long) {
         val file = getFile(projectId, fileId)
-        auditService.logEvent(Audit.projectFileDeleted(securityService.currentUser, projectId, file))
+
         storage.deleteFile(PROJECT_FILES_BUCKET, file.identifier)
-        repository.delete(file)
+        projectFileRepository.delete(file)
+
+        auditService.logEvent(Audit.projectFileDeleted(securityService.currentUser, projectId, file))
     }
 
     private fun getFile(projectId: Long, fileId: Long): ProjectFile {
-        val result = repository.findFirstByProjectIdAndId(projectId = projectId, id = fileId)
+        val result = projectFileRepository.findFirstByProjectIdAndId(projectId = projectId, id = fileId)
         if (result.isEmpty) {
             throw ResourceNotFoundException()
         }
@@ -97,7 +126,7 @@ class FileStorageServiceImpl(
     }
 
     private fun getFileByName(projectId: Long, name: String): Optional<ProjectFile> {
-        return repository.findFirstByProjectIdAndName(projectId = projectId, name = name)
+        return projectFileRepository.findFirstByProjectIdAndName(projectId = projectId, name = name)
     }
 
     private fun getFilePath(projectIdentifier: Long, fileIdentifier: String): String {

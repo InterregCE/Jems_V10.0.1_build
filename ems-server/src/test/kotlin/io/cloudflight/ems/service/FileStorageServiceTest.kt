@@ -23,6 +23,7 @@ import io.cloudflight.ems.security.service.SecurityService
 import io.mockk.MockKAnnotations
 import io.mockk.every
 import io.mockk.impl.annotations.MockK
+import io.mockk.impl.annotations.RelaxedMockK
 import io.mockk.slot
 import io.mockk.verify
 import org.junit.jupiter.api.Assertions.assertEquals
@@ -68,7 +69,7 @@ class FileStorageServiceTest {
         projectStatus = ProjectStatus(status = ProjectApplicationStatus.DRAFT, user = account, updated = ZonedDateTime.now())
     )
 
-    @MockK
+    @RelaxedMockK
     lateinit var auditService: AuditService
     @MockK
     lateinit var userRepository: UserRepository
@@ -100,6 +101,16 @@ class FileStorageServiceTest {
 
         val expected = DuplicateFileException(PROJECT_ID, "proj-file-1.png", TEST_DATE_TIME)
         assertEquals(expected.error, exception.error)
+
+        val auditEvent = slot<Audit>()
+        verify { auditService.logEvent(capture(auditEvent)) }
+        with(auditEvent) {
+            assertEquals(testProject.id, PROJECT_ID)
+            assertEquals(AuditAction.PROJECT_FILE_UPLOAD_FAILED, captured.action)
+            assertEquals(34, captured.user?.id)
+            assertEquals("admin@admin.dev", captured.user?.email)
+            assertEquals("FAILED upload of document proj-file-1.png to project application 612", captured.description)
+        }
     }
 
     @Test
@@ -155,6 +166,16 @@ class FileStorageServiceTest {
         assertEquals("project-$PROJECT_ID/proj-file-1.png", identifierSlot.captured)
         assertEquals("test".length.toLong(), sizeSlot.captured)
         assertEquals(streamToSave, streamSlot.captured)
+
+        val auditEvent = slot<Audit>()
+        verify { auditService.logEvent(capture(auditEvent)) }
+        with(auditEvent) {
+            assertEquals(testProject.id, PROJECT_ID)
+            assertEquals(AuditAction.PROJECT_FILE_UPLOADED_SUCCESSFULLY, captured.action)
+            assertEquals(34, captured.user?.id)
+            assertEquals("admin@admin.dev", captured.user?.email)
+            assertEquals("document proj-file-1.png uploaded to project application 612", captured.description)
+        }
     }
 
     @Test
@@ -217,6 +238,16 @@ class FileStorageServiceTest {
 
         assertEquals(null, projectFile.captured.description)
         assertEquals(null, result.description)
+
+        val auditEvent = slot<Audit>()
+        verify { auditService.logEvent(capture(auditEvent)) }
+        with(auditEvent) {
+            assertEquals(testProject.id, PROJECT_ID)
+            assertEquals(AuditAction.PROJECT_FILE_DESCRIPTION_CHANGED, captured.action)
+            assertEquals(34, captured.user?.id)
+            assertEquals("admin@admin.dev", captured.user?.email)
+            assertEquals("description of document proj-file-1.png in project application 612 has changed from old_description to null", captured.description)
+        }
     }
 
     @Test
@@ -232,6 +263,16 @@ class FileStorageServiceTest {
 
         assertEquals("new_description", projectFile.captured.description)
         assertEquals("new_description", result.description)
+
+        val auditEvent = slot<Audit>()
+        verify { auditService.logEvent(capture(auditEvent)) }
+        with(auditEvent) {
+            assertEquals(testProject.id, PROJECT_ID)
+            assertEquals(AuditAction.PROJECT_FILE_DESCRIPTION_CHANGED, captured.action)
+            assertEquals(34, captured.user?.id)
+            assertEquals("admin@admin.dev", captured.user?.email)
+            assertEquals("description of document proj-file-1.png in project application 612 has changed from null to new_description", captured.description)
+        }
     }
 
     @Test
@@ -251,7 +292,6 @@ class FileStorageServiceTest {
         every { projectFileRepository.findFirstByProjectIdAndId(eq(PROJECT_ID), eq(10)) } returns Optional.of(dummyProjectFile())
         every { minioStorage.deleteFile(capture(bucket), capture(identifier)) } answers {}
         every { projectFileRepository.delete(capture(projectFile)) } answers {}
-        every { auditService.logEvent(any()) } answers {} // doNothing
 
         fileStorageService.deleteFile(PROJECT_ID, 10)
 
@@ -263,7 +303,7 @@ class FileStorageServiceTest {
         verify { auditService.logEvent(capture(auditEvent)) }
         with(auditEvent) {
             assertEquals(testProject.id, PROJECT_ID)
-            assertEquals(AuditAction.PROJECT_FILE_DELETE, captured.action)
+            assertEquals(AuditAction.PROJECT_FILE_DELETED, captured.action)
             assertEquals(34, captured.user?.id)
             assertEquals("admin@admin.dev", captured.user?.email)
             assertEquals("document proj-file-1.png deleted from application 612", captured.description)
