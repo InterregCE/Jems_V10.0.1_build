@@ -10,6 +10,9 @@ import {PermissionService} from '../../../../../security/permissions/permission.
 import {InputProjectFileDescription, OutputProjectFile, PageOutputProjectFile} from '@cat/api';
 import {Permission} from '../../../../../security/permissions/permission';
 import {BaseComponent} from '@common/components/base-component';
+import {Tables} from '../../../../../common/utils/tables';
+import {PageEvent} from '@angular/material/paginator';
+import {MatSort} from '@angular/material/sort';
 
 @Component({
   selector: 'app-project-application-files-list',
@@ -17,6 +20,8 @@ import {BaseComponent} from '@common/components/base-component';
   styleUrls: ['./project-application-files-list.component.scss']
 })
 export class ProjectApplicationFilesListComponent extends BaseComponent implements OnInit {
+  Tables = Tables;
+
   @Input()
   filePage: PageOutputProjectFile;
   @Input()
@@ -27,6 +32,10 @@ export class ProjectApplicationFilesListComponent extends BaseComponent implemen
   downloadFile$ = new EventEmitter<OutputProjectFile>();
   @Output()
   saveDescription$ = new EventEmitter<any>();
+  @Output()
+  newPage: EventEmitter<PageEvent> = new EventEmitter<PageEvent>();
+  @Output()
+  newSort: EventEmitter<Partial<MatSort>> = new EventEmitter<Partial<MatSort>>();
 
   @ViewChild(TableComponent) table: TableComponent;
 
@@ -40,16 +49,19 @@ export class ProjectApplicationFilesListComponent extends BaseComponent implemen
         displayedColumn: 'file.table.column.name.name',
         elementProperty: 'name',
         columnType: ColumnType.String,
+        sortProperty: 'name'
       },
       {
         displayedColumn: 'file.table.column.name.timestamp',
         elementProperty: 'updated',
         columnType: ColumnType.Date,
+        sortProperty: 'updated'
       },
       {
         displayedColumn: 'file.table.column.name.username',
         elementProperty: 'author.email',
-        columnType: ColumnType.String
+        columnType: ColumnType.String,
+        sortProperty: 'author.email'
       },
       {
         displayedColumn: 'file.table.column.name.description',
@@ -61,13 +73,17 @@ export class ProjectApplicationFilesListComponent extends BaseComponent implemen
           onCancel: (index: number) => this.onCancel(index),
           readOnly: true,
         },
+        sortProperty: 'description'
       }
     ]
   });
 
-  editAction = new ActionConfiguration('fas fa-edit', (element: any, index: number) => this.editFileDescription(element, index));
-  downloadAction = new ActionConfiguration('fas fa-file-download', (element: OutputProjectFile) => this.downloadFile(element));
-  deleteAction = new ActionConfiguration('fas fa-trash', (element: OutputProjectFile) => this.deleteFile(element));
+  editAction = new ActionConfiguration('fas fa-edit',
+    (element: any, index: number) => this.editFileDescription(element, index));
+  downloadAction = new ActionConfiguration('fas fa-file-download',
+    (element: OutputProjectFile) => this.downloadFile(element));
+  deleteAction = new ActionConfiguration('fas fa-trash',
+    (element: OutputProjectFile) => this.deleteFile(element));
 
   constructor(private permissionService: PermissionService) {
     super();
@@ -126,8 +142,8 @@ export class ProjectApplicationFilesListComponent extends BaseComponent implemen
         take(1),
         takeUntil(this.destroyed$)
       )
-      .subscribe(([isApplicant, isProgramme,isAdmin]) => {
-        if(isApplicant || isAdmin) {
+      .subscribe(([isApplicant, isProgramme, isAdmin]) => {
+        if (isApplicant || isAdmin) {
           this.tableConfiguration.actions = [this.editAction, this.downloadAction, this.deleteAction];
           return;
         }

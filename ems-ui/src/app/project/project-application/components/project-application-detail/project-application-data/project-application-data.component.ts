@@ -10,7 +10,7 @@ import {Permission} from '../../../../../security/permissions/permission';
 export class ProjectApplicationDataComponent {
 
   @Input()
-  project = {} as OutputProject;
+  project: OutputProject;
   @Input()
   fileNumber: number;
   @Input()

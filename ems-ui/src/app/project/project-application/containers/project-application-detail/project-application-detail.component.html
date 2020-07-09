@@ -1,7 +1,7 @@
 <div>
     <a [routerLink]="['']">&lt; Back to List of Project Applications</a>
     <div class="row">
-        <div class="col-sm-12 container">
+        <div *ngIf="project$ | async as project" class="col-sm-12 container">
             <app-project-application-data
                     [project]="project"
                     [fileNumber]="fileNumber"
@@ -17,7 +17,9 @@
                 [refreshCustomColumns]="refreshCustomColumns()"
                 (deleteFile$)="deleteFile($event)"
                 (downloadFile$)="downloadFile($event)"
-                (saveDescription$)="saveDescription($event)">
+                (saveDescription$)="saveDescription($event)"
+                (newSort)="newSort$.next($event)"
+                (newPage)="newPage$.next($event)">
         </app-project-application-files-list>
     </div>
 </div>

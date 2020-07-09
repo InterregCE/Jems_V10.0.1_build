@@ -1,16 +1,18 @@
-import {ChangeDetectionStrategy, Component, OnDestroy, OnInit} from '@angular/core';
-import {OutputProject, OutputProjectFile, ProjectService, ProjectFileStorageService} from '@cat/api';
+import {ChangeDetectionStrategy, Component} from '@angular/core';
+import {OutputProjectFile, ProjectFileStorageService, ProjectService} from '@cat/api';
 import {ActivatedRoute} from '@angular/router';
 import {ProjectFileService} from '../../services/project-file.service';
 import {MatDialog} from '@angular/material/dialog';
 import {Permission} from '../../../../security/permissions/permission';
 import {combineLatest, Observable, Subject} from 'rxjs';
-import {catchError, flatMap, startWith, takeUntil, tap} from 'rxjs/operators';
+import {catchError, flatMap, map, startWith, take, takeUntil, tap} from 'rxjs/operators';
 import {PageEvent} from '@angular/material/paginator';
 import {Log} from '../../../../common/utils/log';
 import {BaseComponent} from '@common/components/base-component';
 import {HttpErrorResponse} from '@angular/common/http';
 import {DeleteDialogComponent} from '../../components/project-application-detail/delete-dialog/delete-dialog.component';
+import {MatSort} from '@angular/material/sort';
+import {Tables} from '../../../../common/utils/tables';
 
 @Component({
   selector: 'app-project-application-detail',
@@ -18,29 +20,37 @@ import {DeleteDialogComponent} from '../../components/project-application-detail
   styleUrls: ['./project-application-detail.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class ProjectApplicationDetailComponent extends BaseComponent implements OnInit, OnDestroy {
-
+export class ProjectApplicationDetailComponent extends BaseComponent {
   Permission = Permission
-  project = {} as OutputProject;
+
   fileNumber = 0;
   projectId = this.activatedRoute.snapshot.params.projectId;
   statusMessages: string[];
-  destroyed$ = new Subject();
   refreshCustomColumns$ = new Subject<null>();
 
-  private INITIAL_PAGE: PageEvent = {pageIndex: 0, pageSize: 100, length: 0};
+  project$ =
+    this.projectService.getProjectById(Number(this.projectId))
+      .pipe(
+        take(1),
+        takeUntil(this.destroyed$)
+      )
 
-  private newPage$ = new Subject<PageEvent>();
-  private newSort$ = new Subject<string>();
+  newPage$ = new Subject<PageEvent>();
+  newSort$ = new Subject<Partial<MatSort>>();
 
   currentPage$ =
     combineLatest([
-      this.newPage$.pipe(startWith(this.INITIAL_PAGE)),
-      this.newSort$.pipe(startWith('updated,desc'))
+      this.newPage$.pipe(startWith(Tables.DEFAULT_INITIAL_PAGE)),
+      this.newSort$.pipe(
+        startWith(Tables.DEFAULT_INITIAL_SORT),
+        map(sort => sort?.direction ? sort : Tables.DEFAULT_INITIAL_SORT),
+        map(sort => `${sort.active},${sort.direction}`)
+      )
     ])
       .pipe(
-        flatMap(([page, sort]) => this.projectFileStorageService.getFilesForProject(this.projectId, page?.pageIndex, page?.pageSize, sort)),
-        tap(page => Log.info('Fetched the project files:', this, page.content)),
+        flatMap(([page, sort]) =>
+          this.projectFileStorageService.getFilesForProject(this.projectId, page?.pageIndex, page?.pageSize, sort)),
+        tap(page => Log.info('Fetched the projects:', this, page.content)),
         tap(() => this.refreshCustomColumns$.next()),
         tap(page => this.fileNumber = page.content.length),
       );
@@ -57,23 +67,6 @@ export class ProjectApplicationDetailComponent extends BaseComponent implements 
     super();
   }
 
-  ngOnInit() {
-    if (this.projectId) {
-      this.projectService.getProjectById(Number(this.projectId))
-        .pipe(takeUntil(this.destroyed$))
-        .subscribe((result: OutputProject) => {
-          if (result) {
-            this.project = result;
-          }
-        });
-    }
-  }
-
-  ngOnDestroy() {
-    this.destroyed$.next();
-    this.destroyed$.complete();
-  }
-
   refreshCustomColumns(): Observable<null> {
     return this.refreshCustomColumns$.asObservable();
   }
@@ -81,10 +74,9 @@ export class ProjectApplicationDetailComponent extends BaseComponent implements 
   addNewFilesForUpload($event: File) {
     this.projectFileService.addProjectFile(this.projectId, $event).pipe(
       takeUntil(this.destroyed$),
-      tap(() => this.newPage(this.INITIAL_PAGE)),
+      tap(() => this.newPage$.next(Tables.DEFAULT_INITIAL_PAGE)),
       catchError((error: HttpErrorResponse) => {
         this.addErrorFromResponse(error, $event.name);
-        // this.userSaveError$.next(error.error);
         throw error;
       })
     ).subscribe(() => {
@@ -109,7 +101,7 @@ export class ProjectApplicationDetailComponent extends BaseComponent implements 
       if (clickedYes) {
         this.projectFileStorageService.deleteFile(element.id, this.projectId).pipe(
           takeUntil(this.destroyed$),
-          tap(() => this.newPage(this.INITIAL_PAGE))
+          tap(() => this.newPage$.next(Tables.DEFAULT_INITIAL_PAGE))
         ).subscribe();
       }
     });
@@ -118,12 +110,8 @@ export class ProjectApplicationDetailComponent extends BaseComponent implements 
   saveDescription(data: any): void {
     this.projectFileStorageService.setDescriptionToFile(data.fileIdentifier, this.projectId, data.description).pipe(
       takeUntil(this.destroyed$),
-      tap(() => this.newPage(this.INITIAL_PAGE))
+      tap(() => this.newPage$.next(Tables.DEFAULT_INITIAL_PAGE))
     ).subscribe();
-  }
-
-  newPage(page: PageEvent) {
-    this.newPage$.next(page);
   }
 
   private addMessageFromResponse(status: string) {

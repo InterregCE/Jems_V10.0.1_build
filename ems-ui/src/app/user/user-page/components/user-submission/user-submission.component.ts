@@ -51,7 +51,7 @@ export class UserSubmissionComponent extends AbstractForm {
   };
 
   emailErrors = {
-    required:'user.email.should.not.be.empty',
+    required: 'user.email.should.not.be.empty',
     maxlength: 'user.email.wrong.size',
     email: 'user.email.wrong.format'
   };
@@ -75,7 +75,7 @@ export class UserSubmissionComponent extends AbstractForm {
       name: this.userForm?.controls?.name?.value,
       surname: this.userForm?.controls?.surname?.value,
       email: this.userForm?.controls?.email.value,
-      accountRoleId: this.userForm?.controls?.role?.value?.id
+      userRoleId: this.userForm?.controls?.role?.value?.id
     });
     formDirective.resetForm();
   }
