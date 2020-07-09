@@ -1,0 +1,16 @@
+<div class="project-detail-container">
+    <app-project-application-information
+            [project]="project">
+    </app-project-application-information>
+
+    <app-project-application-assessments-container
+            [success$]="projectSubmittedSuccess$"
+            [project]="project"
+            (submitProjectApplication)="submitProjectApplication.next($event)">
+    </app-project-application-assessments-container>
+
+    <app-project-application-file-upload *ngxPermissionsExcept="[Permission.PROGRAMME_USER]"
+                                         [fileNumber]="fileNumber"
+                                         [statusMessages]="statusMessages" (uploadFile)="uploadFile.emit($event)">
+    </app-project-application-file-upload>
+</div>

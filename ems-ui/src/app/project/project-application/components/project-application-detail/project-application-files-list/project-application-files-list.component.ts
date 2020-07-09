@@ -7,7 +7,7 @@ import {combineLatest, Observable} from 'rxjs';
 import {take, takeUntil} from 'rxjs/operators';
 import {TableComponent} from '@common/components/table/table.component';
 import {PermissionService} from '../../../../../security/permissions/permission.service';
-import {InputProjectFileDescription, OutputProjectFile, PageOutputProjectFile} from '@cat/api';
+import {InputProjectFileDescription, OutputProject, OutputProjectFile, OutputProjectStatus, PageOutputProjectFile} from '@cat/api';
 import {Permission} from '../../../../../security/permissions/permission';
 import {BaseComponent} from '@common/components/base-component';
 import {Tables} from '../../../../../common/utils/tables';
@@ -22,11 +22,15 @@ export class ProjectApplicationFilesListComponent extends BaseComponent implemen
   Tables = Tables;
 
   @Input()
+  project$: Observable<OutputProject>
+  @Input()
   filePage: PageOutputProjectFile;
   @Input()
   refreshCustomColumns$: Observable<null>;
   @Input()
   pageIndex: number;
+  @Input()
+  disableActions$: Observable<null>;
   @Output()
   deleteFile = new EventEmitter<OutputProjectFile>();
   @Output()
@@ -41,6 +45,7 @@ export class ProjectApplicationFilesListComponent extends BaseComponent implemen
   newSort: EventEmitter<Partial<MatSort>> = new EventEmitter<Partial<MatSort>>();
 
   @ViewChild(TableComponent) table: TableComponent;
+  OutputProjectStatus = OutputProjectStatus;
 
   tableConfiguration: TableConfiguration = new TableConfiguration({
     routerLink: '/project/',
@@ -99,6 +104,18 @@ export class ProjectApplicationFilesListComponent extends BaseComponent implemen
         setTimeout(() => this.table.createCustomComponents(), 0);
       }
     })
+    this.disableActions$
+      .pipe(takeUntil(this.destroyed$))
+      .subscribe(() => {
+      this.tableConfiguration.actions = [this.downloadAction];
+    })
+    this.project$
+      .pipe(takeUntil(this.destroyed$))
+      .subscribe((project) => {
+        if (project.projectStatus.status === OutputProjectStatus.StatusEnum.SUBMITTED) {
+          this.tableConfiguration.actions = [this.downloadAction];
+        }
+      })
   }
 
   onDownload(element: OutputProjectFile) {
