@@ -74,13 +74,8 @@
 						{
 							"listen": "prerequest",
 							"script": {
-								"id": "3213bd67-0df2-4399-be4d-5c4d12683bfa",
+								"id": "6f359ac4-39a2-4cbe-bb94-9e9916db52e3",
 								"exec": [
-									"pm.variables.set('project_acronym', \"test-proj-this-is-a-very-long-name\");\r",
-									"\r",
-									"var date = new Date();\r",
-									"date.setDate(date.getDate() - 2);\r",
-									"pm.variables.set('project_submissionDate', date.toISOString().split('T')[0]);\r",
 									""
 								],
 								"type": "text/javascript"
@@ -89,7 +84,7 @@
 						{
 							"listen": "test",
 							"script": {
-								"id": "ce3d2deb-fe8a-4b9e-baca-b3c4526a1e89",
+								"id": "b63537fe-989e-4908-ae96-fd73a8ddc445",
 								"exec": [
 									"pm.test('should fail with 400', function () {\r",
 									"    pm.response.to.have.status(400);\r",
@@ -98,7 +93,6 @@
 									"pm.test('should return validation errors', function () {\r",
 									"    const response = pm.response.json();\r",
 									"    pm.expect(response.i18nFieldErrors.acronym.i18nKey).to.contain('project.acronym.size.too.long');\r",
-									"\r",
 									"});\r",
 									""
 								],
@@ -117,7 +111,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n\t\"acronym\": \"{{project_acronym}}\",\n\t\"submissionDate\": \"{{project_submissionDate}}\"\n}"
+							"raw": "{\n\t\"acronym\": \"test-proj-this-is-a-very-long-name\"\n}\n"
 						},
 						"url": {
 							"raw": "{{url}}/api/project",
@@ -138,10 +132,8 @@
 						{
 							"listen": "prerequest",
 							"script": {
-								"id": "341114c4-c620-44d9-8df4-904c816612e2",
+								"id": "dd52d030-7f0b-41c1-9315-107e963e7ea9",
 								"exec": [
-									"pm.variables.set('project_acronym', \"\");\r",
-									"pm.variables.set('project_submissionDate', \"\");\r",
 									""
 								],
 								"type": "text/javascript"
@@ -150,7 +142,7 @@
 						{
 							"listen": "test",
 							"script": {
-								"id": "791f3304-1967-452f-8bb4-34951bce4518",
+								"id": "715b39a3-727f-4014-bf78-eaeec557fe67",
 								"exec": [
 									"pm.test('should fail with 400', function () {\r",
 									"    pm.response.to.have.status(400);\r",
@@ -158,7 +150,6 @@
 									"\r",
 									"pm.test('should return validation errors', function () {\r",
 									"    const response = pm.response.json();\r",
-									"    pm.expect(response.i18nFieldErrors.submissionDate.i18nKey).to.contain('project.submissionDate.should.not.be.empty');\r",
 									"    pm.expect(response.i18nFieldErrors.acronym.i18nKey).to.contain('project.acronym.should.not.be.empty');\r",
 									"});\r",
 									""
@@ -178,7 +169,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n\t\"acronym\": \"{{project_acronym}}\",\n\t\"submissionDate\": \"{{project_submissionDate}}\"\n}"
+							"raw": "{\n\t\"acronym\": \"\"\n}\n"
 						},
 						"url": {
 							"raw": "{{url}}/api/project",

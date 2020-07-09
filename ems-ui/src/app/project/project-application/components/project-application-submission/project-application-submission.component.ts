@@ -51,7 +51,6 @@ export class ProjectApplicationSubmissionComponent extends AbstractForm {
   onSubmit(): void {
     this.submitProjectApplication.emit({
       acronym: this.submissionForm?.controls?.acronym?.value,
-      submissionDate: this.submissionForm?.controls?.submissionDate.value
     });
   }
 }

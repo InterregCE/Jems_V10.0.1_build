@@ -1,10 +1,17 @@
 package io.cloudflight.ems.service
 
 import io.cloudflight.ems.api.dto.OutputProjectFile
+import io.cloudflight.ems.api.dto.ProjectApplicationStatus
 import io.cloudflight.ems.api.dto.user.OutputUser
 import io.cloudflight.ems.api.dto.user.OutputUserRole
 import io.cloudflight.ems.dto.FileMetadata
-import io.cloudflight.ems.entity.*
+import io.cloudflight.ems.entity.Audit
+import io.cloudflight.ems.entity.AuditAction
+import io.cloudflight.ems.entity.Project
+import io.cloudflight.ems.entity.ProjectFile
+import io.cloudflight.ems.entity.ProjectStatus
+import io.cloudflight.ems.entity.User
+import io.cloudflight.ems.entity.UserRole
 import io.cloudflight.ems.exception.DuplicateFileException
 import io.cloudflight.ems.exception.ResourceNotFoundException
 import io.cloudflight.ems.repository.UserRepository
@@ -57,7 +64,9 @@ class FileStorageServiceTest {
         userRole = UserRole(id = 1, name = "ADMIN"),
         password = "hash_pass"
     )
-    private val testProject = Project(id = PROJECT_ID, submissionDate = TEST_DATE, applicant = account, acronym = "test project")
+    private val testProject = Project(id = PROJECT_ID, submissionDate = TEST_DATE_TIME, applicant = account, acronym = "test project",
+        projectStatus = ProjectStatus(status = ProjectApplicationStatus.DRAFT, user = account, updated = ZonedDateTime.now())
+    )
 
     @MockK
     lateinit var auditService: AuditService

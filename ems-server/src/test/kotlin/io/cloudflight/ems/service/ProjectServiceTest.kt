@@ -2,6 +2,8 @@ package io.cloudflight.ems.service
 
 import io.cloudflight.ems.api.dto.InputProject
 import io.cloudflight.ems.api.dto.OutputProject
+import io.cloudflight.ems.api.dto.OutputProjectStatus
+import io.cloudflight.ems.api.dto.ProjectApplicationStatus
 import io.cloudflight.ems.api.dto.user.OutputUser
 import io.cloudflight.ems.api.dto.user.OutputUserRole
 import io.cloudflight.ems.entity.User
@@ -9,9 +11,11 @@ import io.cloudflight.ems.entity.UserRole
 import io.cloudflight.ems.entity.Audit
 import io.cloudflight.ems.entity.AuditAction
 import io.cloudflight.ems.entity.Project
+import io.cloudflight.ems.entity.ProjectStatus
 import io.cloudflight.ems.exception.ResourceNotFoundException
 import io.cloudflight.ems.repository.UserRepository
 import io.cloudflight.ems.repository.ProjectRepository
+import io.cloudflight.ems.repository.ProjectStatusRepository
 import io.cloudflight.ems.security.ADMINISTRATOR
 import io.cloudflight.ems.security.APPLICANT_USER
 import io.cloudflight.ems.security.PROGRAMME_USER
@@ -35,10 +39,14 @@ import org.springframework.data.domain.PageImpl
 import org.springframework.data.domain.Pageable
 import org.springframework.security.core.authority.SimpleGrantedAuthority
 import java.time.LocalDate
+import java.time.LocalTime
+import java.time.ZoneId
+import java.time.ZonedDateTime
 import java.util.Optional
 import java.util.stream.Collectors
 
 val TEST_DATE: LocalDate = LocalDate.now()
+val TEST_DATE_TIME = ZonedDateTime.of(TEST_DATE, LocalTime.of(10, 0), ZoneId.of("Europe/Bratislava"))
 
 class ProjectServiceTest {
 
@@ -61,8 +69,17 @@ class ProjectServiceTest {
         password = "hash_pass"
     )
 
+    private val statusDraft = ProjectStatus(
+        id = 10,
+        status = ProjectApplicationStatus.DRAFT,
+        user = account,
+        updated = TEST_DATE_TIME
+    )
+
     @MockK
     lateinit var projectRepository: ProjectRepository
+    @MockK
+    lateinit var projectStatusRepository: ProjectStatusRepository
 
     @MockK
     lateinit var userRepository: UserRepository
@@ -80,7 +97,8 @@ class ProjectServiceTest {
         MockKAnnotations.init(this)
         every { securityService.currentUser } returns LocalCurrentUser(user, "hash_pass", emptyList())
         every { userRepository.findById(eq(user.id!!)) } returns Optional.of(account)
-        projectService = ProjectServiceImpl(projectRepository, userRepository, auditService, securityService)
+        every { projectStatusRepository.save(any<ProjectStatus>()) } returnsArgument 0
+        projectService = ProjectServiceImpl(projectRepository, projectStatusRepository, userRepository, auditService, securityService)
     }
 
     @ParameterizedTest
@@ -93,7 +111,8 @@ class ProjectServiceTest {
             id = 25,
             acronym = "test acronym",
             applicant = account,
-            submissionDate = TEST_DATE
+            submissionDate = TEST_DATE_TIME,
+            projectStatus = statusDraft
         )
         every { projectRepository.findAll(UNPAGED) } returns PageImpl(listOf(projectToReturn))
 
@@ -108,7 +127,8 @@ class ProjectServiceTest {
                 id = 25,
                 acronym = "test acronym",
                 applicant = user,
-                submissionDate = TEST_DATE
+                submissionDate = TEST_DATE_TIME,
+                projectStatus = OutputProjectStatus(id = 10, status = ProjectApplicationStatus.DRAFT, user = user, updated = TEST_DATE_TIME)
             )
         )
         assertIterableEquals(expectedProjects, result.get().collect(Collectors.toList()))
@@ -125,13 +145,14 @@ class ProjectServiceTest {
 
     @Test
     fun projectCreation_OK() {
-        val project = Project(null, "test", account, TEST_DATE)
-        every { projectRepository.save(eq(project)) } returns Project(612, "test", account, TEST_DATE)
+        every { projectRepository.save(any<Project>()) } returns Project(612, "test", account, TEST_DATE_TIME, statusDraft)
 
-        val result = projectService.createProject(InputProject("test", TEST_DATE))
+        val result = projectService.createProject(InputProject("test"))
 
         assertEquals(result.acronym, "test")
-        assertEquals(result.submissionDate, TEST_DATE)
+        assertEquals(result.submissionDate, TEST_DATE_TIME)
+        assertEquals(result.projectStatus.status, ProjectApplicationStatus.DRAFT)
+        assertEquals(result.projectStatus.updated, TEST_DATE_TIME)
 
         verifyAudit("612")
     }
@@ -139,20 +160,20 @@ class ProjectServiceTest {
     @Test
     fun projectCreation_withoutUser() {
         every { userRepository.findById(eq(user.id!!)) } returns Optional.empty()
-        assertThrows<ResourceNotFoundException> { projectService.createProject(InputProject("test", TEST_DATE)) }
+        assertThrows<ResourceNotFoundException> { projectService.createProject(InputProject("test")) }
     }
 
     @Test
     fun projectGet_OK() {
         every { projectRepository.findOneById(eq(1)) } returns
-                Project(1, "test", account, TEST_DATE)
+                Project(1, "test", account, TEST_DATE_TIME, statusDraft)
 
         val result = projectService.getById(1);
 
         assertThat(result).isNotNull()
         assertThat(result.id).isEqualTo(1);
         assertThat(result.acronym).isEqualTo("test")
-        assertThat(result.submissionDate).isEqualTo(TEST_DATE);
+        assertThat(result.submissionDate).isEqualTo(TEST_DATE_TIME)
     }
 
     @Test
@@ -169,7 +190,7 @@ class ProjectServiceTest {
             assertEquals(projectIdExpected, captured.projectId)
             assertEquals(1, captured.user?.id)
             assertEquals("admin@admin.dev", captured.user?.email)
-            assertEquals(AuditAction.PROJECT_SUBMISSION, captured.action)
+            assertEquals(AuditAction.APPLICATION_STATUS_CHANGED, captured.action)
         }
     }
 }
