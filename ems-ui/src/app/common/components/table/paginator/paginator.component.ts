@@ -14,9 +14,9 @@ export class PaginatorComponent {
   @Input()
   length: number;
   @Input()
-  currentPageIndex: number = Tables.DEFAULT_INITIAL_PAGE.pageIndex;
+  currentPageIndex: number = Tables.DEFAULT_INITIAL_PAGE_INDEX;
   @Input()
-  currentPageSize: number = Tables.DEFAULT_INITIAL_PAGE.pageSize;
+  currentPageSize: number = Tables.DEFAULT_INITIAL_PAGE_SIZE;
   @Output()
   pageIndexChanged: EventEmitter<number> = new EventEmitter<number>();
   @Output()

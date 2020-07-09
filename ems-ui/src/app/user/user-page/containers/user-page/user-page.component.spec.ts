@@ -72,8 +72,12 @@ describe('UserPageComponent', () => {
     component.newSort$.next({active: 'userRole.name', direction: 'asc'})
     httpTestingController.expectOne({method: 'GET', url: `//api/user?page=0&size=25&sort=userRole.name,asc`});
 
-    // change paging
-    component.newPage$.next({pageIndex: 2, pageSize: 3, length: 0})
+    // change page index
+    component.newPageIndex$.next(2)
+    httpTestingController.expectOne({method: 'GET', url: `//api/user?page=2&size=25&sort=userRole.name,asc`});
+
+    // change page size
+    component.newPageSize$.next(3)
     httpTestingController.expectOne({method: 'GET', url: `//api/user?page=2&size=3&sort=userRole.name,asc`});
 
     httpTestingController.verify();

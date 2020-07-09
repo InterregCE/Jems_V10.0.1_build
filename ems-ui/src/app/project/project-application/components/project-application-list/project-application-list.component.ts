@@ -1,9 +1,7 @@
 import {ChangeDetectionStrategy, Component, EventEmitter, Input, Output} from '@angular/core';
 import {PageOutputProject} from '@cat/api';
 import {TableConfiguration} from '@common/components/table/model/table.configuration';
-import {PageEvent} from '@angular/material/paginator';
 import {MatSort} from '@angular/material/sort';
-import {Tables} from '../../../../common/utils/tables';
 
 @Component({
   selector: 'app-project-application-list',
@@ -13,12 +11,14 @@ import {Tables} from '../../../../common/utils/tables';
 })
 
 export class ProjectApplicationListComponent {
-  Tables = Tables;
-
   @Input()
   projectPage: PageOutputProject;
+  @Input()
+  pageIndex: number;
   @Output()
-  newPage: EventEmitter<PageEvent> = new EventEmitter<PageEvent>();
+  newPageSize: EventEmitter<number> = new EventEmitter<number>();
+  @Output()
+  newPageIndex: EventEmitter<number> = new EventEmitter<number>();
   @Output()
   newSort: EventEmitter<Partial<MatSort>> = new EventEmitter<Partial<MatSort>>();
 

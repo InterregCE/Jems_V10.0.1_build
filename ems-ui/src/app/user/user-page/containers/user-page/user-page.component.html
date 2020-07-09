@@ -11,7 +11,9 @@
         <div *ngIf="currentPage$ | async as userPage" class="col-md-6">
             <app-user-list
                     [userPage]="userPage"
-                    (newPage)="newPage$.next($event)"
+                    [pageIndex]="newPageIndex$ | async"
+                    (newPageSize)="newPageSize$.next($event)"
+                    (newPageIndex)="newPageIndex$.next($event)"
                     (newSort)="newSort$.next($event)">
             </app-user-list>
         </div>

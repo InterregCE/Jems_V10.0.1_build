@@ -7,7 +7,6 @@ import {HttpErrorResponse} from '@angular/common/http';
 import {combineLatest, Subject} from 'rxjs';
 import {I18nValidationError} from '@common/validation/i18n-validation-error';
 import {BaseComponent} from '@common/components/base-component';
-import {PageEvent} from '@angular/material/paginator';
 import {Log} from '../../../../common/utils/log';
 import {MatSort} from '@angular/material/sort';
 import {Tables} from '../../../../common/utils/tables';
@@ -21,21 +20,23 @@ import {Tables} from '../../../../common/utils/tables';
 export class UserPageComponent extends BaseComponent {
   Permission = Permission;
 
-  newPage$ = new Subject<PageEvent>();
+  newPageSize$ = new Subject<number>();
+  newPageIndex$ = new Subject<number>();
   newSort$ = new Subject<Partial<MatSort>>();
 
   currentPage$ =
     combineLatest([
-      this.newPage$.pipe(startWith(Tables.DEFAULT_INITIAL_PAGE)),
+      this.newPageIndex$.pipe(startWith(Tables.DEFAULT_INITIAL_PAGE_INDEX)),
+      this.newPageSize$.pipe(startWith(Tables.DEFAULT_INITIAL_PAGE_SIZE)),
       this.newSort$.pipe(
         startWith(Tables.DEFAULT_INITIAL_SORT),
-        map(sort => sort.direction ? sort : Tables.DEFAULT_INITIAL_SORT),
+        map(sort => sort?.direction ? sort : Tables.DEFAULT_INITIAL_SORT),
         map(sort => `${sort.active},${sort.direction}`)
       )
     ])
       .pipe(
-        flatMap(([page, sort]) =>
-          this.userService.list(page?.pageIndex, page?.pageSize, sort)),
+        flatMap(([pageIndex, pageSize, sort]) =>
+          this.userService.list(pageIndex, pageSize, sort)),
         tap(page => Log.info('Fetched the users:', this, page.content)),
       );
 
@@ -55,7 +56,7 @@ export class UserPageComponent extends BaseComponent {
         takeUntil(this.destroyed$),
         tap(() => this.userSaveSuccess$.next(true)),
         tap(() => this.userSaveError$.next(null)),
-        tap(() => this.newPage$.next(Tables.DEFAULT_INITIAL_PAGE)),
+        tap(() => this.newPageIndex$.next(Tables.DEFAULT_INITIAL_PAGE_INDEX)),
         tap(saved => Log.info('Created user:', this, saved)),
         catchError((error: HttpErrorResponse) => {
           this.userSaveError$.next(error.error);
