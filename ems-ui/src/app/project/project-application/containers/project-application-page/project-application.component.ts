@@ -2,7 +2,6 @@ import {ChangeDetectionStrategy, Component} from '@angular/core';
 import {InputProject, ProjectService} from '@cat/api';
 import {I18nValidationError} from '@common/validation/i18n-validation-error';
 import {Permission} from '../../../../security/permissions/permission';
-import {PageEvent} from '@angular/material/paginator';
 import {HttpErrorResponse} from '@angular/common/http';
 import {catchError, flatMap, map, startWith, take, takeUntil, tap} from 'rxjs/operators';
 import {Log} from '../../../../common/utils/log';
@@ -22,12 +21,14 @@ import {Tables} from '../../../../common/utils/tables';
 export class ProjectApplicationComponent extends BaseComponent {
   Permission = Permission;
 
-  newPage$ = new Subject<PageEvent>();
+  newPageSize$ = new Subject<number>();
+  newPageIndex$ = new Subject<number>();
   newSort$ = new Subject<Partial<MatSort>>();
 
   currentPage$ =
     combineLatest([
-      this.newPage$.pipe(startWith(Tables.DEFAULT_INITIAL_PAGE)),
+      this.newPageIndex$.pipe(startWith(Tables.DEFAULT_INITIAL_PAGE_INDEX)),
+      this.newPageSize$.pipe(startWith(Tables.DEFAULT_INITIAL_PAGE_SIZE)),
       this.newSort$.pipe(
         startWith(Tables.DEFAULT_INITIAL_SORT),
         map(sort => sort?.direction ? sort : Tables.DEFAULT_INITIAL_SORT),
@@ -35,8 +36,8 @@ export class ProjectApplicationComponent extends BaseComponent {
       )
     ])
       .pipe(
-        flatMap(([page, sort]) =>
-          this.projectService.getProjects(page?.pageIndex, page?.pageSize, sort)),
+        flatMap(([pageIndex, pageSize, sort]) =>
+          this.projectService.getProjects(pageIndex, pageSize, sort)),
         tap(page => Log.info('Fetched the projects:', this, page.content)),
       );
 
@@ -56,7 +57,7 @@ export class ProjectApplicationComponent extends BaseComponent {
         takeUntil(this.destroyed$),
         tap(() => this.applicationSaveSuccess$.next(true)),
         tap(() => this.applicationSaveError$.next(null)),
-        tap(() => this.newPage$.next(Tables.DEFAULT_INITIAL_PAGE)),
+        tap(() => this.newPageIndex$.next(Tables.DEFAULT_INITIAL_PAGE_INDEX)),
         tap(saved => Log.info('Created project application:', this, saved)),
         catchError((error: HttpErrorResponse) => {
           this.applicationSaveError$.next(error.error);

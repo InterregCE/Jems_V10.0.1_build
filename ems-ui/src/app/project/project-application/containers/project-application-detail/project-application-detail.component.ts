@@ -41,8 +41,8 @@ export class ProjectApplicationDetailComponent extends BaseComponent {
 
   currentPage$ =
     combineLatest([
-      this.newPageIndex$.pipe(startWith(Tables.DEFAULT_INITIAL_PAGE.pageIndex)),
-      this.newPageSize$.pipe(startWith(Tables.DEFAULT_INITIAL_PAGE.pageSize)),
+      this.newPageIndex$.pipe(startWith(Tables.DEFAULT_INITIAL_PAGE_INDEX)),
+      this.newPageSize$.pipe(startWith(Tables.DEFAULT_INITIAL_PAGE_SIZE)),
       this.newSort$.pipe(
         startWith(Tables.DEFAULT_INITIAL_SORT),
         map(sort => sort?.direction ? sort : Tables.DEFAULT_INITIAL_SORT),
@@ -77,7 +77,7 @@ export class ProjectApplicationDetailComponent extends BaseComponent {
   addNewFilesForUpload($event: File) {
     this.projectFileService.addProjectFile(this.projectId, $event).pipe(
       takeUntil(this.destroyed$),
-      tap(() => this.newPageIndex$.next(Tables.DEFAULT_INITIAL_PAGE.pageIndex)),
+      tap(() => this.newPageIndex$.next(Tables.DEFAULT_INITIAL_PAGE_INDEX)),
       catchError((error: HttpErrorResponse) => {
         this.addErrorFromResponse(error, $event.name);
         throw error;
@@ -106,7 +106,7 @@ export class ProjectApplicationDetailComponent extends BaseComponent {
       if (clickedYes) {
         this.projectFileStorageService.deleteFile(element.id, this.projectId).pipe(
           takeUntil(this.destroyed$),
-          tap(() => this.newPageIndex$.next(Tables.DEFAULT_INITIAL_PAGE.pageIndex))
+          tap(() => this.newPageIndex$.next(Tables.DEFAULT_INITIAL_PAGE_SIZE))
         ).subscribe();
       }
     });

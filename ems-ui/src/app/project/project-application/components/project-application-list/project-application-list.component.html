@@ -3,11 +3,12 @@
     <p *ngIf="!projectPage?.content.length">No projects submitted</p>
 
     <ng-container *ngIf="projectPage.content.length">
-        <mat-paginator [length]="projectPage?.totalElements"
-                       [pageSize]="Tables.DEFAULT_INITIAL_PAGE.pageSize"
-                       [pageSizeOptions]="Tables.DEFAULT_PAGE_OPTIONS"
-                       (page)="newPage.emit($event)">
-        </mat-paginator>
+        <app-paginator
+                [length]="projectPage?.totalElements"
+                [currentPageIndex]="pageIndex"
+                (pageIndexChanged)="newPageIndex.emit($event)"
+                (pageSizeChanged)="newPageSize.emit($event)">
+        </app-paginator>
         <app-table *ngIf="projectPage?.content?.length"
                    [configuration]="tableConfiguration"
                    [rows]="projectPage.content"

@@ -73,8 +73,12 @@ describe('ProjectApplicationComponent', () => {
     component.newSort$.next({active: 'submissionDate', direction: 'asc'})
     httpTestingController.expectOne({method: 'GET', url: `//api/project?page=0&size=25&sort=submissionDate,asc`});
 
-    // change paging
-    component.newPage$.next({pageIndex: 2, pageSize: 3, length: 0})
+    // change page index
+    component.newPageIndex$.next(2)
+    httpTestingController.expectOne({method: 'GET', url: `//api/project?page=2&size=25&sort=submissionDate,asc`});
+
+    // change page size
+    component.newPageSize$.next(3)
     httpTestingController.expectOne({method: 'GET', url: `//api/project?page=2&size=3&sort=submissionDate,asc`});
 
     httpTestingController.verify();
