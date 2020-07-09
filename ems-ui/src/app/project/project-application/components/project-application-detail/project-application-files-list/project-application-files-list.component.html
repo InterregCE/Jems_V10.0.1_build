@@ -1,10 +1,10 @@
 <ng-container *ngIf="filePage.content?.length">
-    <mat-paginator
+    <app-paginator
             [length]="filePage?.totalElements"
-            [pageSize]="Tables.DEFAULT_INITIAL_PAGE.pageSize"
-            [pageSizeOptions]="Tables.DEFAULT_PAGE_OPTIONS"
-            (page)="newPage.emit($event)">
-    </mat-paginator>
+            [currentPageIndex]="pageIndex"
+            (pageIndexChanged)="newPageIndex.emit($event)"
+            (pageSizeChanged)="newPageSize.emit($event)">
+    </app-paginator>
     <app-table
             [configuration]="tableConfiguration"
             [rows]="filePage.content"

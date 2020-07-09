@@ -6,7 +6,6 @@ import {MatDialog} from '@angular/material/dialog';
 import {Permission} from '../../../../security/permissions/permission';
 import {combineLatest, Observable, Subject} from 'rxjs';
 import {catchError, flatMap, map, startWith, take, takeUntil, tap} from 'rxjs/operators';
-import {PageEvent} from '@angular/material/paginator';
 import {Log} from '../../../../common/utils/log';
 import {BaseComponent} from '@common/components/base-component';
 import {HttpErrorResponse} from '@angular/common/http';
@@ -35,24 +34,28 @@ export class ProjectApplicationDetailComponent extends BaseComponent {
         takeUntil(this.destroyed$)
       )
 
-  newPage$ = new Subject<PageEvent>();
+  newPageSize$ = new Subject<number>();
+  newPageIndex$ = new Subject<number>();
+  refreshPage$ = new Subject<void>();
   newSort$ = new Subject<Partial<MatSort>>();
 
   currentPage$ =
     combineLatest([
-      this.newPage$.pipe(startWith(Tables.DEFAULT_INITIAL_PAGE)),
+      this.newPageIndex$.pipe(startWith(Tables.DEFAULT_INITIAL_PAGE.pageIndex)),
+      this.newPageSize$.pipe(startWith(Tables.DEFAULT_INITIAL_PAGE.pageSize)),
       this.newSort$.pipe(
         startWith(Tables.DEFAULT_INITIAL_SORT),
         map(sort => sort?.direction ? sort : Tables.DEFAULT_INITIAL_SORT),
         map(sort => `${sort.active},${sort.direction}`)
-      )
+      ),
+      this.refreshPage$.pipe(startWith(null))
     ])
       .pipe(
-        flatMap(([page, sort]) =>
-          this.projectFileStorageService.getFilesForProject(this.projectId, page?.pageIndex, page?.pageSize, sort)),
+        flatMap(([pageIndex, pageSize, sort]) =>
+          this.projectFileStorageService.getFilesForProject(this.projectId, pageIndex, pageSize, sort)),
         tap(page => Log.info('Fetched the projects:', this, page.content)),
         tap(() => this.refreshCustomColumns$.next()),
-        tap(page => this.fileNumber = page.content.length),
+        tap(page => this.fileNumber = page.totalElements),
       );
 
   STATUS_MESSAGE_SUCCESS = (filename: string) => `Upload of '${filename}' successful.`;
@@ -74,7 +77,7 @@ export class ProjectApplicationDetailComponent extends BaseComponent {
   addNewFilesForUpload($event: File) {
     this.projectFileService.addProjectFile(this.projectId, $event).pipe(
       takeUntil(this.destroyed$),
-      tap(() => this.newPage$.next(Tables.DEFAULT_INITIAL_PAGE)),
+      tap(() => this.newPageIndex$.next(Tables.DEFAULT_INITIAL_PAGE.pageIndex)),
       catchError((error: HttpErrorResponse) => {
         this.addErrorFromResponse(error, $event.name);
         throw error;
@@ -103,7 +106,7 @@ export class ProjectApplicationDetailComponent extends BaseComponent {
       if (clickedYes) {
         this.projectFileStorageService.deleteFile(element.id, this.projectId).pipe(
           takeUntil(this.destroyed$),
-          tap(() => this.newPage$.next(Tables.DEFAULT_INITIAL_PAGE))
+          tap(() => this.newPageIndex$.next(Tables.DEFAULT_INITIAL_PAGE.pageIndex))
         ).subscribe();
       }
     });
@@ -111,8 +114,9 @@ export class ProjectApplicationDetailComponent extends BaseComponent {
 
   saveDescription(data: any): void {
     this.projectFileStorageService.setDescriptionToFile(data.fileIdentifier, this.projectId, data.description).pipe(
+      take(1),
       takeUntil(this.destroyed$),
-      tap(() => this.newPage$.next(Tables.DEFAULT_INITIAL_PAGE))
+      tap(() => this.refreshPage$.next()),
     ).subscribe();
   }
 

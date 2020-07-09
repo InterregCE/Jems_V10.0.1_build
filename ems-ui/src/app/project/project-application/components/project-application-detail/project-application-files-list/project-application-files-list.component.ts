@@ -11,7 +11,6 @@ import {InputProjectFileDescription, OutputProjectFile, PageOutputProjectFile} f
 import {Permission} from '../../../../../security/permissions/permission';
 import {BaseComponent} from '@common/components/base-component';
 import {Tables} from '../../../../../common/utils/tables';
-import {PageEvent} from '@angular/material/paginator';
 import {MatSort} from '@angular/material/sort';
 
 @Component({
@@ -26,6 +25,8 @@ export class ProjectApplicationFilesListComponent extends BaseComponent implemen
   filePage: PageOutputProjectFile;
   @Input()
   refreshCustomColumns$: Observable<null>;
+  @Input()
+  pageIndex: number;
   @Output()
   deleteFile = new EventEmitter<OutputProjectFile>();
   @Output()
@@ -33,7 +34,9 @@ export class ProjectApplicationFilesListComponent extends BaseComponent implemen
   @Output()
   saveDescription = new EventEmitter<any>();
   @Output()
-  newPage: EventEmitter<PageEvent> = new EventEmitter<PageEvent>();
+  newPageSize: EventEmitter<number> = new EventEmitter<number>();
+  @Output()
+  newPageIndex: EventEmitter<number> = new EventEmitter<number>();
   @Output()
   newSort: EventEmitter<Partial<MatSort>> = new EventEmitter<Partial<MatSort>>();
 
