@@ -40,6 +40,11 @@ export class ProjectApplicationListComponent {
         displayedColumn: 'Submission Date',
         elementProperty: 'submissionDate',
         sortProperty: 'submissionDate'
+      },
+      {
+        displayedColumn: 'Status',
+        elementProperty: 'projectStatus.status',
+        sortProperty: 'projectStatus.status'
       }
     ]
   });

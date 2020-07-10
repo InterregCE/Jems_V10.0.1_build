@@ -13,17 +13,6 @@
                     </app-form-field-errors>
                 </mat-error>
             </mat-form-field>
-            <mat-form-field class="col-md-12 project-application-submission-field">
-                <mat-label>Submission Date</mat-label>
-                <input name="submissionDate" formControlName="submissionDate" matInput
-                       placeholder="YYYY-MM-DD" type="text" required>
-                <mat-error>
-                    <app-form-field-errors
-                            [errors]="submissionForm?.controls?.submissionDate?.errors"
-                            [messages]="submissionDateErrors">
-                    </app-form-field-errors>
-                </mat-error>
-            </mat-form-field>
         </div>
         <button mat-raised-button
                 color="primary"

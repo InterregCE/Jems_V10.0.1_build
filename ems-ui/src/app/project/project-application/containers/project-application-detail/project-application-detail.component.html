@@ -1,19 +1,23 @@
 <div>
     <a [routerLink]="['']">&lt; Back to List of Project Applications</a>
     <div class="row">
-        <div *ngIf="project$ | async as project" class="col-sm-12 container">
+        <div *ngIf="details$ | async as project" class="col-sm-12 container">
             <app-project-application-data
+                    [projectSubmitted$]="projectSubmittedSuccess$"
                     [project]="project"
                     [fileNumber]="fileNumber"
                     [Permission]="Permission"
                     [statusMessages]="statusMessages"
-                    (uploadFile)="addNewFilesForUpload($event)">
+                    (uploadFile)="addNewFilesForUpload($event)"
+                    (submitProjectApplication)="updateProject$.next($event)">
             </app-project-application-data>
         </div>
     </div>
     <div *ngIf="currentPage$ | async as filePage" class="container project-files-table-container">
         <app-project-application-files-list
+                [project$]="project$"
                 [filePage]="filePage"
+                [disableActions$]="disableActionsAfterSubmit$"
                 [refreshCustomColumns$]="refreshCustomColumns()"
                 [pageIndex]="newPageIndex$ | async"
                 (deleteFile)="deleteFile($event)"

@@ -15,8 +15,11 @@ import {MatDialogModule} from '@angular/material/dialog';
 import {MatSelectModule} from '@angular/material/select';
 import {MatListModule} from '@angular/material/list';
 import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
-import { ProjectApplicationDataComponent } from './project-application/components/project-application-detail/project-application-data/project-application-data.component';
+import { ProjectApplicationDataComponent } from './project-application/containers/project-application-detail/project-application-data/project-application-data.component';
 import { ProjectApplicationFilesListComponent } from './project-application/components/project-application-detail/project-application-files-list/project-application-files-list.component';
+import { ProjectApplicationInformationComponent } from './project-application/components/project-application-detail/project-application-information/project-application-information.component';
+import { ProjectApplicationFileUploadComponent } from './project-application/components/project-application-detail/project-application-file-upload/project-application-file-upload.component';
+import { ProjectApplicationAssessmentsContainerComponent } from './project-application/containers/project-application-detail/project-application-data/project-application-assessments-container/project-application-assessments-container.component';
 
 @NgModule({
   declarations: [
@@ -28,6 +31,9 @@ import { ProjectApplicationFilesListComponent } from './project-application/comp
     ProjectApplicationDetailComponent,
     ProjectApplicationDataComponent,
     ProjectApplicationFilesListComponent,
+    ProjectApplicationInformationComponent,
+    ProjectApplicationFileUploadComponent,
+    ProjectApplicationAssessmentsContainerComponent,
   ],
   imports: [
     SharedModule,

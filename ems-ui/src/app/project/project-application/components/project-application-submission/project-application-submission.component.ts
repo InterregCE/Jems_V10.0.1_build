@@ -21,21 +21,12 @@ export class ProjectApplicationSubmissionComponent extends AbstractForm {
     acronym: ['', Validators.compose([
       Validators.required,
       Validators.maxLength(25)
-    ])],
-    submissionDate: ['', Validators.compose([
-      Validators.required,
-      Validators.pattern('^\\d{4}\\-(0?[1-9]|1[012])\\-(0?[1-9]|[12][0-9]|3[01])$')
     ])]
   });
 
   acronymErrors = {
     maxlength: 'project.acronym.size.too.long',
     required: 'project.acronym.should.not.be.empty'
-  };
-
-  submissionDateErrors = {
-    pattern: 'project.submissionDate.should.be.valid',
-    required: 'project.submissionDate.should.not.be.empty'
   };
 
   constructor(private formBuilder: FormBuilder,
