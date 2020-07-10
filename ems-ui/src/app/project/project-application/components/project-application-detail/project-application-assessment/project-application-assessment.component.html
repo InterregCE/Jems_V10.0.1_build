@@ -1,0 +1,27 @@
+<div class="project-detail-container">
+    <a [routerLink]="['project', projectId]">&lt; Back to Project Application Details</a>
+    <mat-radio-group
+            aria-labelledby="example-radio-group-label"
+            class="example-radio-group">
+        <mat-radio-button class="example-radio-button" *ngFor="let season of seasons" [value]="season">
+            {{season}}
+        </mat-radio-button>
+    </mat-radio-group>
+
+    <div>
+        <textarea>Explanatory Notes</textarea>
+    </div>
+
+    <div>
+        <button mat-raised-button>
+            Cancel
+        </button>
+        <button mat-raised-button
+                color="primary"
+                type="submit"
+                (click)="onSubmit()">
+            Submit Eligibility Decision
+        </button>
+    </div>
+
+</div>
