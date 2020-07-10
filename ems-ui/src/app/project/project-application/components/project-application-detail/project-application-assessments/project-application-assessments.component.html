@@ -1,0 +1,16 @@
+<ng-container *ngxPermissionsExcept="[Permission.PROGRAMME_USER]">
+    <div *ngIf="projectStatus === OutputProjectStatus.StatusEnum.DRAFT" class="row">
+        <button mat-raised-button
+                color="primary"
+                (click)="submitProject()">Submit Project Application
+        </button>
+    </div>
+</ng-container>
+<div *ngIf="submittingUser && projectStatus === OutputProjectStatus.StatusEnum.SUBMITTED" class="row">
+    <p>Project was submitted by {{submittingUser.name}} {{submittingUser.surname}}.</p>
+</div>
+<app-alert
+        [show]="showSuccessMessage$ | async"
+        [type]="Alert.SUCCESS">
+    <p>{{'project.detail.submitted.success' | translate}}</p>
+</app-alert>

@@ -1,10 +1,9 @@
 import {ChangeDetectionStrategy, Component} from '@angular/core';
-import {InputProjectStatus, OutputProjectFile, ProjectFileStorageService, ProjectService, ProjectStatusService} from '@cat/api';
+import {OutputProjectFile, ProjectFileStorageService} from '@cat/api';
 import {ActivatedRoute} from '@angular/router';
 import {ProjectFileService} from '../../services/project-file.service';
 import {MatDialog} from '@angular/material/dialog';
-import {Permission} from '../../../../security/permissions/permission';
-import {combineLatest, merge, Observable, Subject} from 'rxjs';
+import {combineLatest, Observable, Subject} from 'rxjs';
 import {catchError, flatMap, map, startWith, take, takeUntil, tap} from 'rxjs/operators';
 import {Log} from '../../../../common/utils/log';
 import {BaseComponent} from '@common/components/base-component';
@@ -12,46 +11,22 @@ import {HttpErrorResponse} from '@angular/common/http';
 import {MatSort} from '@angular/material/sort';
 import {Tables} from '../../../../common/utils/tables';
 import {Forms} from '../../../../common/utils/forms';
+import {ProjectStore} from './services/project-store.service';
 
 @Component({
   selector: 'app-project-application-detail',
   templateUrl: './project-application-detail.component.html',
   styleUrls: ['./project-application-detail.component.scss'],
-  changeDetection: ChangeDetectionStrategy.OnPush
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  providers: [
+    ProjectStore
+  ]
 })
 export class ProjectApplicationDetailComponent extends BaseComponent {
-  Permission = Permission
-
   fileNumber = 0;
   projectId = this.activatedRoute.snapshot.params.projectId;
   statusMessages: string[];
   refreshCustomColumns$ = new Subject<null>();
-  updateProject$ = new Subject<InputProjectStatus>();
-  projectSubmittedSuccess$ = new Subject<boolean>();
-  disableActionsAfterSubmit$ = new Subject<null>();
-
-  project$ =
-    this.projectService.getProjectById(this.projectId)
-      .pipe(
-        take(1),
-        takeUntil(this.destroyed$),
-        tap(project => Log.info('Fetched project:', this, project))
-      )
-
-  private updatedProject$ = this.updateProject$
-    .pipe(
-      flatMap(statusUpdate => this.projectStatusService.setProjectStatus(this.projectId, statusUpdate)),
-      tap(saved => Log.info('Updated status:', this, saved)),
-      tap(() => this.projectSubmittedSuccess$.next(true)),
-      tap(() => this.disableActionsAfterSubmit$.next()),
-    );
-
-  details$ = combineLatest([
-    merge(this.project$, this.updatedProject$)
-  ])
-    .pipe(
-      map( ([project]) => (project)),
-    );
 
   newPageSize$ = new Subject<number>();
   newPageIndex$ = new Subject<number>();
@@ -72,7 +47,7 @@ export class ProjectApplicationDetailComponent extends BaseComponent {
       .pipe(
         flatMap(([pageIndex, pageSize, sort]) =>
           this.projectFileStorageService.getFilesForProject(this.projectId, pageIndex, pageSize, sort)),
-        tap(page => Log.info('Fetched the projects:', this, page.content)),
+        tap(page => Log.info('Fetched the project files:', this, page.content)),
         tap(() => this.refreshCustomColumns$.next()),
         tap(page => this.fileNumber = page.totalElements),
       );
@@ -81,13 +56,13 @@ export class ProjectApplicationDetailComponent extends BaseComponent {
   ERROR_MESSAGE_UPLOAD = (filename: string) => `Upload of '${filename}' not successful.`;
   ERROR_MESSAGE_EXISTS = (filename: string) => `File '${filename}' already exists.`;
 
-  constructor(private projectService: ProjectService,
-              private projectFileStorageService: ProjectFileStorageService,
+  constructor(private projectFileStorageService: ProjectFileStorageService,
               private projectFileService: ProjectFileService,
-              private projectStatusService: ProjectStatusService,
+              public projectStore: ProjectStore,
               private dialog: MatDialog,
               private activatedRoute: ActivatedRoute) {
     super();
+    this.projectStore.init(this.projectId);
   }
 
   refreshCustomColumns(): Observable<null> {

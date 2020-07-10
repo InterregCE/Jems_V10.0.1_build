@@ -1,4 +1,4 @@
-import {Component, EventEmitter, Input, OnInit, Output, ViewChild} from '@angular/core';
+import {ChangeDetectionStrategy, Component, EventEmitter, Input, OnInit, Output, ViewChild} from '@angular/core';
 import {TableConfiguration} from '@common/components/table/model/table.configuration';
 import {ActionConfiguration} from '@common/components/table/model/action.configuration';
 import {ColumnType} from '@common/components/table/model/column-type.enum';
@@ -7,22 +7,20 @@ import {combineLatest, Observable} from 'rxjs';
 import {take, takeUntil} from 'rxjs/operators';
 import {TableComponent} from '@common/components/table/table.component';
 import {PermissionService} from '../../../../../security/permissions/permission.service';
-import {InputProjectFileDescription, OutputProject, OutputProjectFile, OutputProjectStatus, PageOutputProjectFile} from '@cat/api';
+import {InputProjectFileDescription, OutputProjectFile, OutputProjectStatus, PageOutputProjectFile} from '@cat/api';
 import {Permission} from '../../../../../security/permissions/permission';
 import {BaseComponent} from '@common/components/base-component';
-import {Tables} from '../../../../../common/utils/tables';
 import {MatSort} from '@angular/material/sort';
+import {ProjectStore} from '../../../containers/project-application-detail/services/project-store.service';
 
 @Component({
   selector: 'app-project-application-files-list',
   templateUrl: './project-application-files-list.component.html',
-  styleUrls: ['./project-application-files-list.component.scss']
+  styleUrls: ['./project-application-files-list.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class ProjectApplicationFilesListComponent extends BaseComponent implements OnInit {
-  Tables = Tables;
 
-  @Input()
-  project$: Observable<OutputProject>
   @Input()
   filePage: PageOutputProjectFile;
   @Input()
@@ -45,7 +43,6 @@ export class ProjectApplicationFilesListComponent extends BaseComponent implemen
   newSort: EventEmitter<Partial<MatSort>> = new EventEmitter<Partial<MatSort>>();
 
   @ViewChild(TableComponent) table: TableComponent;
-  OutputProjectStatus = OutputProjectStatus;
 
   tableConfiguration: TableConfiguration = new TableConfiguration({
     routerLink: '/project/',
@@ -93,7 +90,8 @@ export class ProjectApplicationFilesListComponent extends BaseComponent implemen
   deleteAction = new ActionConfiguration('fas fa-trash',
     (element: OutputProjectFile) => this.onDelete(element));
 
-  constructor(private permissionService: PermissionService) {
+  constructor(private permissionService: PermissionService,
+              private projectStore: ProjectStore) {
     super();
   }
 
@@ -104,15 +102,10 @@ export class ProjectApplicationFilesListComponent extends BaseComponent implemen
         setTimeout(() => this.table.createCustomComponents(), 0);
       }
     })
-    this.disableActions$
+    this.projectStore.getStatus()
       .pipe(takeUntil(this.destroyed$))
-      .subscribe(() => {
-      this.tableConfiguration.actions = [this.downloadAction];
-    })
-    this.project$
-      .pipe(takeUntil(this.destroyed$))
-      .subscribe((project) => {
-        if (project.projectStatus.status === OutputProjectStatus.StatusEnum.SUBMITTED) {
+      .subscribe((newStatus) => {
+        if (newStatus === OutputProjectStatus.StatusEnum.SUBMITTED) {
           this.tableConfiguration.actions = [this.downloadAction];
         }
       })

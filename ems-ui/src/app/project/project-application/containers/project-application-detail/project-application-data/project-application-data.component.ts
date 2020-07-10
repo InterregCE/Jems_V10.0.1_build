@@ -1,36 +1,39 @@
-import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
-import {InputProjectStatus, OutputProject} from '@cat/api';
+import {ChangeDetectionStrategy, Component, EventEmitter, Input, Output} from '@angular/core';
+import {InputProjectStatus} from '@cat/api';
 import {Permission} from '../../../../../security/permissions/permission';
-import { Alert } from '../../../../../common/components/forms/alert';
-import {Observable, Subject} from 'rxjs';
+import {Alert} from '@common/components/forms/alert';
+import {BaseComponent} from '@common/components/base-component';
+import {map} from 'rxjs/operators';
+import {ProjectStore} from '../services/project-store.service';
 
 @Component({
   selector: 'app-project-application-data',
   templateUrl: './project-application-data.component.html',
-  styleUrls: ['./project-application-data.component.scss']
+  styleUrls: ['./project-application-data.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class ProjectApplicationDataComponent implements OnInit {
+export class ProjectApplicationDataComponent extends BaseComponent {
   Alert = Alert;
-  @Input()
-  project: OutputProject;
+  Permission = Permission;
+
   @Input()
   fileNumber: number;
   @Input()
   statusMessages: string[];
-  @Input()
-  Permission = Permission;
-  @Input()
-  projectSubmitted$: Observable<boolean>
   @Output()
   uploadFile: EventEmitter<File> = new EventEmitter<File>();
-  @Output()
-  submitProjectApplication: EventEmitter<InputProjectStatus> = new EventEmitter<InputProjectStatus>();
 
-  projectSubmittedSuccess$ = new Subject<boolean>();
+  projectChanged$ = this.projectStore.getStatus()
+    .pipe(
+      map(() => true)
+    )
+  project$ = this.projectStore.getProject();
 
-  ngOnInit() {
-    this.projectSubmitted$.subscribe((value) => {
-      this.projectSubmittedSuccess$.next(value);
-    })
+  constructor(private projectStore: ProjectStore) {
+    super();
+  }
+
+  changeProjectStatus(newStatus: InputProjectStatus): void {
+    this.projectStore.changeStatus(newStatus);
   }
 }

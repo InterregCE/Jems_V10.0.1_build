@@ -1,35 +1,35 @@
-import {ChangeDetectorRef, Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
-import {Permission} from '../../../../../../security/permissions/permission';
-import {InputProjectStatus, OutputProject, OutputProjectStatus} from '@cat/api';
+import {ChangeDetectionStrategy, ChangeDetectorRef, Component, EventEmitter, Input, Output} from '@angular/core';
+import {Permission} from '../../../../../security/permissions/permission';
+import {InputProjectStatus, OutputProjectStatus, OutputUser} from '@cat/api';
 import {AbstractForm} from '@common/components/forms/abstract-form';
 import {Alert} from '@common/components/forms/alert';
 import {MatDialog} from '@angular/material/dialog';
 import {FormGroup} from '@angular/forms';
-import {Forms} from '../../../../../../common/utils/forms';
+import {Forms} from '../../../../../common/utils/forms';
 import {take, takeUntil} from 'rxjs/operators';
 
 @Component({
-  selector: 'app-project-application-assessments-container',
-  templateUrl: './project-application-assessments-container.component.html',
-  styleUrls: ['./project-application-assessments-container.component.scss']
+  selector: 'app-project-application-assessments',
+  templateUrl: './project-application-assessments.component.html',
+  styleUrls: ['./project-application-assessments.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class ProjectApplicationAssessmentsContainerComponent extends AbstractForm implements OnInit {
+export class ProjectApplicationAssessmentsComponent extends AbstractForm {
+  Alert = Alert;
+  Permission = Permission;
+  OutputProjectStatus = OutputProjectStatus;
+
   @Input()
-  project: OutputProject;
+  submittingUser: OutputUser;
+  @Input()
+  projectStatus: OutputProjectStatus.StatusEnum;
 
   @Output()
   submitProjectApplication: EventEmitter<InputProjectStatus> = new EventEmitter<InputProjectStatus>();
 
-  Alert = Alert;
-  Permission = Permission;
-  OutputProjectStatus = OutputProjectStatus;
   constructor(private dialog: MatDialog,
               protected changeDetectorRef: ChangeDetectorRef) {
     super(changeDetectorRef);
-  }
-
-  ngOnInit(): void {
-    super.ngOnInit();
   }
 
   getForm(): FormGroup | null {
