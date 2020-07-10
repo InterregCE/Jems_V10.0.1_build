@@ -7,5 +7,6 @@ fun ProjectStatus.toOutputProjectStatus() = OutputProjectStatus(
     id = id,
     status = status,
     user = user.toOutputUser(),
-    updated = updated
+    updated = updated,
+    note = note
 )

@@ -34,7 +34,7 @@ class ProjectStatusServiceImpl(
         var project = projectRepo.findOneById(projectId) ?: throw ResourceNotFoundException()
         val oldStatus = project.projectStatus.status
 
-        val projectStatus = projectStatusRepo.save(getStatusEntity(project, statusChange.status!!, user))
+        val projectStatus = projectStatusRepo.save(getStatusEntity(project, statusChange.status!!, user, statusChange.note))
         project = projectRepo.save(updateProject(project, projectStatus))
 
         auditService.logEvent(Audit.projectStatusChanged(
@@ -54,12 +54,13 @@ class ProjectStatusServiceImpl(
         }
     }
 
-    private fun getStatusEntity(project: Project, status: ProjectApplicationStatus, user: User): ProjectStatus {
+    private fun getStatusEntity(project: Project, status: ProjectApplicationStatus, user: User, note: String?): ProjectStatus {
         return ProjectStatus(
             project = project,
             status = status,
             user = user,
-            updated = ZonedDateTime.now()
+            updated = ZonedDateTime.now(),
+            note = note
         )
     }
 

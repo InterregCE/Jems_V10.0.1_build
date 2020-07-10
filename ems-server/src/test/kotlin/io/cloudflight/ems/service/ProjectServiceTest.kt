@@ -128,7 +128,7 @@ class ProjectServiceTest {
                 acronym = "test acronym",
                 applicant = user,
                 submissionDate = TEST_DATE_TIME,
-                projectStatus = OutputProjectStatus(id = 10, status = ProjectApplicationStatus.DRAFT, user = user, updated = TEST_DATE_TIME)
+                projectStatus = OutputProjectStatus(id = 10, status = ProjectApplicationStatus.DRAFT, user = user, updated = TEST_DATE_TIME, note = null)
             )
         )
         assertIterableEquals(expectedProjects, result.get().collect(Collectors.toList()))
