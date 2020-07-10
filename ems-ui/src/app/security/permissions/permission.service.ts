@@ -9,7 +9,7 @@ import {Log} from '../../common/utils/log';
 @Injectable({providedIn: 'root'})
 export class PermissionService {
 
-  private permissionsChanged$: ReplaySubject<void> = new ReplaySubject();
+  private permissionsChanged$: ReplaySubject<string[]> = new ReplaySubject();
 
   constructor(private ngxPermissionsService: NgxPermissionsService,
               private securityService: SecurityService) {
@@ -24,14 +24,14 @@ export class PermissionService {
     Log.info('Setting new user permissions', this, permissions);
     this.ngxPermissionsService.flushPermissions();
     this.ngxPermissionsService.loadPermissions(permissions);
-    this.permissionsChanged$.next();
+    this.permissionsChanged$.next(permissions);
   }
 
   hasPermission(permission: string): Observable<boolean> {
     return from(this.ngxPermissionsService.hasPermission(permission));
   }
 
-  permissionsChanged(): Observable<void> {
+  permissionsChanged(): Observable<string[]> {
     return this.permissionsChanged$.asObservable();
   }
 }

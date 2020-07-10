@@ -53,7 +53,11 @@ export class UserDetailComponent extends BaseComponent {
     this.securityService.currentUser
   ])
     .pipe(
-      map(([roles, user, currentUser]) => ({roles, user, currentUser}))
+      map(([roles, user, currentUser]) => ({
+        roles: roles.length ? roles : [user.userRole],
+        user,
+        currentUser
+      }))
     );
 
   constructor(private userService: UserService,
