@@ -5,8 +5,6 @@ import {HttpTestingController} from '@angular/common/http/testing';
 import {ProjectApplicationDetailComponent} from './project-application-detail.component';
 import {ProjectFileService} from '../../services/project-file.service';
 import {ActivatedRoute} from '@angular/router';
-import {DeleteDialogComponent} from '../../components/project-application-detail/delete-dialog/delete-dialog.component';
-import {BrowserDynamicTestingModule} from '@angular/platform-browser-dynamic/testing';
 import {TestModule} from '../../../../common/test-module';
 import {MatDialogModule} from '@angular/material/dialog';
 import {of} from 'rxjs';
@@ -25,7 +23,6 @@ describe('ProjectApplicationDetailComponent', () => {
       ],
       declarations: [
         ProjectApplicationDetailComponent,
-        DeleteDialogComponent
       ],
       providers: [
         {
@@ -56,11 +53,6 @@ describe('ProjectApplicationDetailComponent', () => {
         },
       ],
       schemas: [CUSTOM_ELEMENTS_SCHEMA],
-    });
-    TestBed.overrideModule(BrowserDynamicTestingModule, {
-      set: {
-        entryComponents: [DeleteDialogComponent],
-      },
     });
     TestBed.compileComponents();
   }));

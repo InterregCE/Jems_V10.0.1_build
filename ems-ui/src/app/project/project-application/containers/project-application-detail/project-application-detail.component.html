@@ -12,7 +12,6 @@
     <div *ngIf="currentPage$ | async as filePage" class="container project-files-table-container">
         <app-project-application-files-list
                 [filePage]="filePage"
-                [refreshCustomColumns$]="refreshCustomColumns()"
                 [pageIndex]="newPageIndex$ | async"
                 (deleteFile)="deleteFile($event)"
                 (downloadFile)="downloadFile($event)"

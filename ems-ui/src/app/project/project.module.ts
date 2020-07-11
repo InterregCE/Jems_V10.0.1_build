@@ -6,9 +6,7 @@ import {ProjectApplicationDetailComponent} from './project-application/container
 import {ProjectApplicationSubmissionComponent} from './project-application/components/project-application-submission/project-application-submission.component';
 import {ProjectApplicationListComponent} from './project-application/components/project-application-list/project-application-list.component';
 import {ProjectApplicationComponent} from './project-application/containers/project-application-page/project-application.component';
-import {DeleteDialogComponent} from './project-application/components/project-application-detail/delete-dialog/delete-dialog.component';
 import {ProjectFileService} from './project-application/services/project-file.service';
-import {DescriptionCellComponent} from '@common/components/table/cell-renderers/description-cell/description-cell.component';
 import {SharedModule} from '../common/shared-module';
 import {OverlayModule} from '@angular/cdk/overlay';
 import {MatDialogModule} from '@angular/material/dialog';
@@ -21,10 +19,10 @@ import {ProjectApplicationInformationComponent} from './project-application/comp
 import {ProjectApplicationFileUploadComponent} from './project-application/components/project-application-detail/project-application-file-upload/project-application-file-upload.component';
 import {ProjectApplicationAssessmentsComponent} from './project-application/components/project-application-detail/project-application-assessments/project-application-assessments.component';
 import {ProjectApplicationFilesComponent} from './project-application/containers/project-application-detail/project-application-files/project-application-files.component';
+import {DescriptionCellComponent} from './project-application/components/project-application-detail/project-application-files-list/cell-renderers/description-cell/description-cell.component';
 
 @NgModule({
   declarations: [
-    DeleteDialogComponent,
     DescriptionCellComponent,
     ProjectApplicationComponent,
     ProjectApplicationListComponent,
@@ -52,8 +50,7 @@ import {ProjectApplicationFilesComponent} from './project-application/containers
     DatePipe
   ],
   entryComponents: [
-    DescriptionCellComponent,
-    DeleteDialogComponent,
+    // DescriptionCellComponent,
   ]
 })
 export class ProjectModule {

@@ -11,3 +11,27 @@
             (sortRows)="newSort.emit($event)">
     </app-table>
 </ng-container>
+
+<ng-template #descriptionCell let-file>
+    <app-description-cell
+            [formState]="descriptionState.get(file.id) || FormState.VIEW"
+            [file]="file"
+            (switchedFormState)="descriptionState.set(file.id, $event)"
+            (saveFile)="saveDescription.emit($event)">
+    </app-description-cell>
+</ng-template>
+
+<ng-template #actionsCell let-file>
+    <button *ngIf="editActionVisible" class="icon-button"
+            (click)="descriptionState.set(file.id, FormState.EDIT)">
+        <i class="fas fa-edit"></i>
+    </button>
+    <button *ngIf="downloadActionVisible" class="icon-button"
+            (click)="downloadFile.emit(file)">
+        <i class="fas fa-file-download"></i>
+    </button>
+    <button *ngIf="deleteActionVisible" class="icon-button"
+            (click)="deleteFile.emit(file)">
+        <i class="fas fa-trash"></i>
+    </button>
+</ng-template>

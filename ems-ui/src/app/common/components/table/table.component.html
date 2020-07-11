@@ -1,40 +1,30 @@
 <table mat-table matSort
-       [dataSource]="rows || configuration.dataSource"
+       [dataSource]="rows"
        (matSortChange)="sortRows.emit($event)"
        class="mat-elevation-z8 general-application-table">
 
-    <ng-container
-            *ngFor="let column of configuration.columns; let i = index"
-            matColumnDef="{{column.displayedColumn}}">
+    <ng-container *ngFor="let column of configuration.columns; let i = index"
+                  matColumnDef="{{column.displayedColumn}}">
         <ng-container *ngIf="column.sortProperty; else noSort">
             <th mat-header-cell *matHeaderCellDef
                 [mat-sort-header]="column.sortProperty">
                 {{column.displayedColumn | translate}}
             </th>
         </ng-container>
+
         <ng-template #noSort>
             <th mat-header-cell *matHeaderCellDef>{{column.displayedColumn | translate}}</th>
         </ng-template>
-        <td mat-cell *matCellDef="let element">
-            <ng-container *ngIf="!column.component">
-                {{ formatColumnValue(column, element) }}
-            </ng-container>
-            <ng-container *ngIf="column.columnType == columnType.CustomComponent">
-                <ng-container class="description-component" #customColumn></ng-container>
-            </ng-container>
-        </td>
-    </ng-container>
 
-    <ng-container
-            *ngIf="configuration.actionColumn"
-            matColumnDef="Actions">
-        <th mat-header-cell *matHeaderCellDef> Actions</th>
-        <td mat-cell *matCellDef="let element; let i = index">
-            <ng-container *ngFor="let action of configuration.actions;">
-                <button class="icon-button" (click)="action.action(element, i)">
-                    <i [className]="action.icon"></i>
-                </button>
-            </ng-container>
+        <td mat-cell *matCellDef="let row">
+            <div *ngIf="!column.customCellTemplate; else customCellTemplate">
+                {{ formatColumnValue(column, row) }}
+            </div>
+
+            <ng-template #customCellTemplate>
+                <ng-template [ngTemplateOutlet]="column.customCellTemplate"
+                             [ngTemplateOutletContext]="{ $implicit: row }"></ng-template>
+            </ng-template>
         </td>
     </ng-container>
 

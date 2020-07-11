@@ -1,0 +1,23 @@
+<form [formGroup]="descriptionForm" class="description-form">
+    <label *ngIf="formState === FormState.VIEW"
+           [title]="file?.description">
+        {{getSizedDescription()}}
+    </label>
+    <mat-form-field *ngIf="formState === FormState.EDIT" class="description-text-area-field">
+        <textarea name="description" formControlName="description" matInput></textarea>
+        <mat-error>
+            {{ 'project.file.description.size.too.long' | translate}}
+        </mat-error>
+    </mat-form-field>
+    <button *ngIf="formState === FormState.EDIT"
+            mat-raised-button
+            color="secondary"
+            class="button"
+            (click)="onCancel()">Cancel
+    </button>
+
+    <button *ngIf="formState === FormState.EDIT"
+            mat-raised-button color="primary" class="button right-button" type="submit"
+            (click)="onSubmit()">Save
+    </button>
+</form>
