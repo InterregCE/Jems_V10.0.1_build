@@ -6,6 +6,7 @@ import {ColumnType} from './model/column-type.enum';
 import {Observable} from 'rxjs';
 import {Tools} from '../../utils/tools';
 import {MatSort} from '@angular/material/sort';
+import {Tables} from '../../utils/tables';
 
 @Component({
   selector: 'app-table',
@@ -35,7 +36,7 @@ export class TableComponent implements OnInit {
     }
     const elementValue = Tools.getChainedProperty(element, column.elementProperty, '');
     if (column.columnType === ColumnType.Date) {
-      return this.datepipe.transform(elementValue, 'yyyy-MM-dd HH:mm:ss');
+      return this.datepipe.transform(elementValue, Tables.DEFAULT_DATE_FORMAT);
     }
     return elementValue;
   }
