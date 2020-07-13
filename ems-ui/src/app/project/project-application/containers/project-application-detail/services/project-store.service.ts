@@ -12,7 +12,7 @@ import {Log} from '../../../../../common/utils/log';
 @Injectable()
 export class ProjectStore {
   private projectId$ = new ReplaySubject<number>(1);
-  private newStatus$ = new Subject<InputProjectStatus>();
+  private newStatus$ = new Subject<InputProjectStatus.StatusEnum>();
 
   private projectById$ = this.projectId$
     .pipe(
@@ -26,7 +26,7 @@ export class ProjectStore {
   ])
     .pipe(
       flatMap(([id, newStatus]) =>
-        this.projectStatusService.setProjectStatus(id, newStatus)),
+        this.projectStatusService.setProjectStatus(id, {note: '', status: newStatus})),
       tap(saved => Log.info('Updated project status status:', this, saved)),
     );
   private projectStatus$ = new ReplaySubject<OutputProjectStatus.StatusEnum>(1);
@@ -40,8 +40,8 @@ export class ProjectStore {
         shareReplay(1)
       );
 
-  init(projectId: string) {
-    this.projectId$.next(Number(projectId));
+  init(projectId: number) {
+    this.projectId$.next(projectId);
   }
 
   getProject(): Observable<OutputProject> {
@@ -52,7 +52,7 @@ export class ProjectStore {
     return this.projectStatus$.asObservable();
   }
 
-  changeStatus(newStatus: InputProjectStatus) {
+  changeStatus(newStatus: InputProjectStatus.StatusEnum) {
     this.newStatus$.next(newStatus)
   }
 

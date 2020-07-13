@@ -1,4 +1,4 @@
-import {ChangeDetectionStrategy, Component, EventEmitter, Input, Output} from '@angular/core';
+import {ChangeDetectionStrategy, Component} from '@angular/core';
 import {InputProjectStatus} from '@cat/api';
 import {Permission} from '../../../../../security/permissions/permission';
 import {Alert} from '@common/components/forms/alert';
@@ -16,13 +16,6 @@ export class ProjectApplicationDataComponent extends BaseComponent {
   Alert = Alert;
   Permission = Permission;
 
-  @Input()
-  fileNumber: number;
-  @Input()
-  statusMessages: string[];
-  @Output()
-  uploadFile: EventEmitter<File> = new EventEmitter<File>();
-
   projectChanged$ = this.projectStore.getStatus()
     .pipe(
       map(() => true)
@@ -33,7 +26,7 @@ export class ProjectApplicationDataComponent extends BaseComponent {
     super();
   }
 
-  changeProjectStatus(newStatus: InputProjectStatus): void {
+  changeProjectStatus(newStatus: InputProjectStatus.StatusEnum): void {
     this.projectStore.changeStatus(newStatus);
   }
 }

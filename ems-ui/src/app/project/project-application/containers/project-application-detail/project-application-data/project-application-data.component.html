@@ -7,14 +7,6 @@
             [projectStatus]="project.projectStatus.status"
             [success$]="projectChanged$"
             [submittingUser]="project.applicant"
-            (submitProjectApplication)="changeProjectStatus($event)">
+            (changeStatus)="changeProjectStatus($event)">
     </app-project-application-assessments>
-
-    <app-project-application-file-upload
-            *ngxPermissionsExcept="[Permission.PROGRAMME_USER]"
-            [fileNumber]="fileNumber"
-            [statusMessages]="statusMessages"
-            [projectStatus]="project.projectStatus.status"
-            (uploadFile)="uploadFile.emit($event)">
-    </app-project-application-file-upload>
 </div>

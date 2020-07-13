@@ -1,6 +1,5 @@
 import {
   ChangeDetectionStrategy,
-  ChangeDetectorRef,
   Component,
   EventEmitter,
   Input,
@@ -11,15 +10,13 @@ import {
 } from '@angular/core';
 import {TableConfiguration} from '@common/components/table/model/table.configuration';
 import {ColumnType} from '@common/components/table/model/column-type.enum';
-import {combineLatest} from 'rxjs';
-import {PermissionService} from '../../../../../security/permissions/permission.service';
-import {OutputProjectFile, OutputProjectStatus, PageOutputProjectFile} from '@cat/api';
+import {OutputProjectFile, PageOutputProjectFile} from '@cat/api';
 import {BaseComponent} from '@common/components/base-component';
 import {MatSort} from '@angular/material/sort';
-import {ProjectStore} from '../../../containers/project-application-detail/services/project-store.service';
-import {takeUntil} from 'rxjs/operators';
+import {filter, map, take, takeUntil} from 'rxjs/operators';
 import {FormState} from '@common/components/forms/form-state';
-import {Permission} from '../../../../../security/permissions/permission';
+import {Forms} from '../../../../../common/utils/forms';
+import {MatDialog} from '@angular/material/dialog';
 
 @Component({
   selector: 'app-project-application-files-list',
@@ -34,6 +31,12 @@ export class ProjectApplicationFilesListComponent extends BaseComponent implemen
   filePage: PageOutputProjectFile;
   @Input()
   pageIndex: number;
+  @Input()
+  editActionVisible = false;
+  @Input()
+  downloadActionVisible = true;
+  @Input()
+  deleteActionVisible = false;
 
   @Output()
   deleteFile = new EventEmitter<OutputProjectFile>();
@@ -55,19 +58,12 @@ export class ProjectApplicationFilesListComponent extends BaseComponent implemen
 
   tableConfiguration: TableConfiguration;
   descriptionState = new Map<number, FormState>();
-  editActionVisible = false;
-  downloadActionVisible = true;
-  deleteActionVisible = false;
 
-  constructor(private permissionService: PermissionService,
-              private projectStore: ProjectStore,
-              private changeDetectorRef: ChangeDetectorRef) {
+  constructor(private dialog: MatDialog) {
     super();
   }
 
   ngOnInit() {
-    this.assignActionsToUser();
-
     this.tableConfiguration = new TableConfiguration({
       routerLink: '/project/',
       isTableClickable: false,
@@ -102,25 +98,16 @@ export class ProjectApplicationFilesListComponent extends BaseComponent implemen
     });
   }
 
-  private assignActionsToUser(): void {
-    combineLatest([
-      this.permissionService.hasPermission(Permission.APPLICANT_USER),
-      this.permissionService.hasPermission(Permission.ADMINISTRATOR),
-      this.projectStore.getStatus()
-    ])
+  delete(file: OutputProjectFile) {
+    Forms.confirmDialog(
+      this.dialog,
+      file.name,
+      'Are you sure you want to delete' + ' ' + file.name + ' ?',)
       .pipe(
-        takeUntil(this.destroyed$)
-      )
-      .subscribe(([isApplicant, isAdmin, projectStatus]) => {
-        this.editActionVisible = isAdmin;
-        this.deleteActionVisible = isAdmin;
-        this.downloadActionVisible = true;
-
-        if (isApplicant) {
-          this.editActionVisible = projectStatus === OutputProjectStatus.StatusEnum.DRAFT;
-          this.deleteActionVisible = projectStatus === OutputProjectStatus.StatusEnum.DRAFT;
-        }
-        this.changeDetectorRef.markForCheck();
-      });
+        take(1),
+        takeUntil(this.destroyed$),
+        filter(answer => !!answer),
+        map(() => this.deleteFile.emit(file)),
+      ).subscribe();
   }
 }

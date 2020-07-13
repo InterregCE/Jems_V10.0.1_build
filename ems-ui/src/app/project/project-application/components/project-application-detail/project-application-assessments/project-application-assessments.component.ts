@@ -6,7 +6,7 @@ import {Alert} from '@common/components/forms/alert';
 import {MatDialog} from '@angular/material/dialog';
 import {FormGroup} from '@angular/forms';
 import {Forms} from '../../../../../common/utils/forms';
-import {take, takeUntil} from 'rxjs/operators';
+import {filter, map, take, takeUntil} from 'rxjs/operators';
 
 @Component({
   selector: 'app-project-application-assessments',
@@ -25,7 +25,7 @@ export class ProjectApplicationAssessmentsComponent extends AbstractForm {
   projectStatus: OutputProjectStatus.StatusEnum;
 
   @Output()
-  submitProjectApplication: EventEmitter<InputProjectStatus> = new EventEmitter<InputProjectStatus>();
+  changeStatus = new EventEmitter<InputProjectStatus.StatusEnum>();
 
   constructor(private dialog: MatDialog,
               protected changeDetectorRef: ChangeDetectorRef) {
@@ -43,11 +43,35 @@ export class ProjectApplicationAssessmentsComponent extends AbstractForm {
       'project.detail.submit.dialog.message',
     ).pipe(
       take(1),
-      takeUntil(this.destroyed$)
-    ).subscribe(clickedYes => {
-      if (clickedYes) {
-        this.submitProjectApplication.emit({status: InputProjectStatus.StatusEnum.SUBMITTED} as InputProjectStatus);
-      }
-    });
+      takeUntil(this.destroyed$),
+      filter(answer => !!answer),
+      map(() => this.changeStatus.emit(InputProjectStatus.StatusEnum.SUBMITTED))
+    ).subscribe();
+  }
+
+  resubmitProject(): void {
+    Forms.confirmDialog(
+      this.dialog,
+      'Re-submit Project',
+      'Are you sure, you want to re-submit the application? Operation cannot be reversed.',
+    ).pipe(
+      take(1),
+      takeUntil(this.destroyed$),
+      filter(answer => !!answer),
+      map(() => this.changeStatus.emit(InputProjectStatus.StatusEnum.RESUBMITTED))
+    ).subscribe();
+  }
+
+  returnToApplicant(): void {
+    Forms.confirmDialog(
+      this.dialog,
+      'Return To Applicant',
+      'Are you sure you want to return the application back to the applicant?',
+    ).pipe(
+      take(1),
+      takeUntil(this.destroyed$),
+      filter(answer => !!answer),
+      map(() => this.changeStatus.emit(InputProjectStatus.StatusEnum.RETURNEDTOAPPLICANT))
+    ).subscribe();
   }
 }
