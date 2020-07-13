@@ -101,10 +101,46 @@ describe('ProjectApplicationFilesComponent', () => {
     permissionService.setPermissions([Permission.PROGRAMME_USER]);
 
     httpTestingController.match({method: 'GET', url: '//api/project/1'})
-      .forEach(req => req.flush({projectStatus: InputProjectStatus.StatusEnum.DRAFT}))
+      .forEach(req => req.flush({projectStatus: {status: InputProjectStatus.StatusEnum.DRAFT}}));
 
     tick();
     expect(component.editActionVisible).toBeFalse();
+    expect(component.downloadActionVisible).toBeTrue();
+    expect(component.deleteActionVisible).toBeFalse();
+  }));
+
+
+  it('should set visibility actions for applicant user', fakeAsync(() => {
+    const projectStore = TestBed.inject(ProjectStore);
+    const permissionService = TestBed.inject(PermissionService);
+    projectStore.init(1);
+    component.ngOnInit();
+    projectStore.getProject().subscribe();
+    permissionService.setPermissions([Permission.APPLICANT_USER]);
+
+    let status = InputProjectStatus.StatusEnum.DRAFT;
+    httpTestingController.expectOne({method: 'GET', url: '//api/project/1'})
+      .flush({projectStatus: {status}});
+    tick();
+    expect(component.editActionVisible).toBeTrue();
+    expect(component.downloadActionVisible).toBeTrue();
+    expect(component.deleteActionVisible).toBeTrue();
+
+    status = InputProjectStatus.StatusEnum.SUBMITTED;
+    projectStore.changeStatus(status);
+    httpTestingController.expectOne({method: 'PUT', url: '//api/project/1/status'})
+      .flush({projectStatus: {status}});
+    tick();
+    expect(component.editActionVisible).toBeFalse();
+    expect(component.downloadActionVisible).toBeTrue();
+    expect(component.deleteActionVisible).toBeFalse();
+
+    status = InputProjectStatus.StatusEnum.RETURNEDTOAPPLICANT;
+    projectStore.changeStatus(status);
+    httpTestingController.expectOne({method: 'PUT', url: '//api/project/1/status'})
+      .flush({projectStatus: {status}});
+    tick();
+    expect(component.editActionVisible).toBeTrue();
     expect(component.downloadActionVisible).toBeTrue();
     expect(component.deleteActionVisible).toBeFalse();
   }));
