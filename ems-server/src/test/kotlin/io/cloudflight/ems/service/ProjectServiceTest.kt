@@ -6,16 +6,16 @@ import io.cloudflight.ems.api.dto.OutputProjectStatus
 import io.cloudflight.ems.api.dto.ProjectApplicationStatus
 import io.cloudflight.ems.api.dto.user.OutputUser
 import io.cloudflight.ems.api.dto.user.OutputUserRole
-import io.cloudflight.ems.entity.User
-import io.cloudflight.ems.entity.UserRole
 import io.cloudflight.ems.entity.Audit
 import io.cloudflight.ems.entity.AuditAction
 import io.cloudflight.ems.entity.Project
 import io.cloudflight.ems.entity.ProjectStatus
+import io.cloudflight.ems.entity.User
+import io.cloudflight.ems.entity.UserRole
 import io.cloudflight.ems.exception.ResourceNotFoundException
-import io.cloudflight.ems.repository.UserRepository
 import io.cloudflight.ems.repository.ProjectRepository
 import io.cloudflight.ems.repository.ProjectStatusRepository
+import io.cloudflight.ems.repository.UserRepository
 import io.cloudflight.ems.security.ADMINISTRATOR
 import io.cloudflight.ems.security.APPLICANT_USER
 import io.cloudflight.ems.security.PROGRAMME_USER
@@ -33,8 +33,6 @@ import org.junit.jupiter.api.Assertions.assertIterableEquals
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
-import org.junit.jupiter.params.ParameterizedTest
-import org.junit.jupiter.params.provider.ValueSource
 import org.springframework.data.domain.PageImpl
 import org.springframework.data.domain.Pageable
 import org.springframework.security.core.authority.SimpleGrantedAuthority
@@ -76,8 +74,9 @@ class ProjectServiceTest {
         updated = TEST_DATE_TIME
     )
 
-    @MockK
+    @RelaxedMockK
     lateinit var projectRepository: ProjectRepository
+
     @MockK
     lateinit var projectStatusRepository: ProjectStatusRepository
 
@@ -98,14 +97,19 @@ class ProjectServiceTest {
         every { securityService.currentUser } returns LocalCurrentUser(user, "hash_pass", emptyList())
         every { userRepository.findById(eq(user.id!!)) } returns Optional.of(account)
         every { projectStatusRepository.save(any<ProjectStatus>()) } returnsArgument 0
-        projectService = ProjectServiceImpl(projectRepository, projectStatusRepository, userRepository, auditService, securityService)
+        projectService = ProjectServiceImpl(
+            projectRepository,
+            projectStatusRepository,
+            userRepository,
+            auditService,
+            securityService
+        )
     }
 
-    @ParameterizedTest
-    @ValueSource(strings = [ADMINISTRATOR, PROGRAMME_USER])
-    fun projectRetrieval_admin(role: String) {
+    @Test
+    fun projectRetrieval_admin() {
         every { securityService.currentUser } returns
-            LocalCurrentUser(user, "hash_pass", listOf(SimpleGrantedAuthority("ROLE_$role")))
+                LocalCurrentUser(user, "hash_pass", listOf(SimpleGrantedAuthority("ROLE_$ADMINISTRATOR")))
 
         val projectToReturn = Project(
             id = 25,
@@ -128,10 +132,39 @@ class ProjectServiceTest {
                 acronym = "test acronym",
                 applicant = user,
                 submissionDate = TEST_DATE_TIME,
-                projectStatus = OutputProjectStatus(id = 10, status = ProjectApplicationStatus.DRAFT, user = user, updated = TEST_DATE_TIME, note = null)
+                projectStatus = OutputProjectStatus(
+                    id = 10,
+                    status = ProjectApplicationStatus.DRAFT,
+                    user = user,
+                    updated = TEST_DATE_TIME,
+                    note = null
+                )
             )
         )
         assertIterableEquals(expectedProjects, result.get().collect(Collectors.toList()))
+    }
+
+    @Test
+    fun `programme user lists submitted and resubmitted projects`() {
+        every { securityService.currentUser } returns
+                LocalCurrentUser(
+                    user, "hash_pass",
+                    listOf(SimpleGrantedAuthority("ROLE_$PROGRAMME_USER"))
+                )
+
+        projectService.findAll(UNPAGED);
+
+        verify {
+            projectRepository.findAllWithStatuses(
+                withArg {
+                    assertThat(it).containsExactly(
+                        ProjectApplicationStatus.SUBMITTED,
+                        ProjectApplicationStatus.RESUBMITTED,
+                        ProjectApplicationStatus.RETURNED_TO_APPLICANT
+                    )
+                }, UNPAGED
+            )
+        }
     }
 
     @Test
@@ -145,7 +178,13 @@ class ProjectServiceTest {
 
     @Test
     fun projectCreation_OK() {
-        every { projectRepository.save(any<Project>()) } returns Project(612, "test", account, TEST_DATE_TIME, statusDraft)
+        every { projectRepository.save(any<Project>()) } returns Project(
+            612,
+            "test",
+            account,
+            TEST_DATE_TIME,
+            statusDraft
+        )
 
         val result = projectService.createProject(InputProject("test"))
 
