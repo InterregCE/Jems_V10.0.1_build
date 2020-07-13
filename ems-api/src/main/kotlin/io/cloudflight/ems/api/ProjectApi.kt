@@ -2,6 +2,7 @@ package io.cloudflight.ems.api
 
 import io.cloudflight.ems.api.dto.InputProject
 import io.cloudflight.ems.api.dto.OutputProject
+import io.cloudflight.ems.api.dto.OutputProjectSimple
 import io.swagger.annotations.Api
 import io.swagger.annotations.ApiImplicitParam
 import io.swagger.annotations.ApiImplicitParams
@@ -27,7 +28,7 @@ interface ProjectApi {
         ApiImplicitParam(paramType = "query", name = "sort", dataType = "string")
     )
     @GetMapping
-    fun getProjects(pageable: Pageable): Page<OutputProject>
+    fun getProjects(pageable: Pageable): Page<OutputProjectSimple>
 
     @ApiOperation("Creates new project application")
     @PostMapping(consumes = [MediaType.APPLICATION_JSON_VALUE])

@@ -1,5 +1,5 @@
 import {ChangeDetectionStrategy, Component, EventEmitter, Input, Output} from '@angular/core';
-import {PageOutputProject} from '@cat/api';
+import {PageOutputProjectSimple} from '@cat/api';
 import {TableConfiguration} from '@common/components/table/model/table.configuration';
 import {MatSort} from '@angular/material/sort';
 import {ColumnType} from '@common/components/table/model/column-type.enum';
@@ -13,7 +13,7 @@ import {ColumnType} from '@common/components/table/model/column-type.enum';
 
 export class ProjectApplicationListComponent {
   @Input()
-  projectPage: PageOutputProject;
+  projectPage: PageOutputProjectSimple;
   @Input()
   pageIndex: number;
   @Output()

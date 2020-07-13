@@ -5,6 +5,7 @@ import io.cloudflight.ems.api.dto.user.InputPassword
 import io.cloudflight.ems.api.dto.user.InputUserCreate
 import io.cloudflight.ems.api.dto.user.InputUserUpdate
 import io.cloudflight.ems.api.dto.user.OutputUser
+import io.cloudflight.ems.api.dto.user.OutputUserWithRole
 import io.cloudflight.ems.security.ADMINISTRATOR
 import io.cloudflight.ems.service.UserService
 import org.springframework.data.domain.Page
@@ -23,17 +24,17 @@ class UserController(
     }
 
     @PreAuthorize("hasRole('$ADMINISTRATOR')")
-    override fun createUser(user: InputUserCreate): OutputUser {
+    override fun createUser(user: InputUserCreate): OutputUserWithRole {
         return userService.create(user)
     }
 
     @PreAuthorize("@userAuthorization.canUpdateUser(#id)")
-    override fun getById(id: Long): OutputUser {
+    override fun getById(id: Long): OutputUserWithRole {
         return userService.getById(id)
     }
 
     @PreAuthorize("@userAuthorization.canUpdateUser(#user)")
-    override fun update(user: InputUserUpdate): OutputUser {
+    override fun update(user: InputUserUpdate): OutputUserWithRole {
         return userService.update(user)
     }
 

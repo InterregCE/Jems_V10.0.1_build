@@ -3,6 +3,7 @@ package io.cloudflight.ems.controller
 import io.cloudflight.ems.api.ProjectApi
 import io.cloudflight.ems.api.dto.InputProject
 import io.cloudflight.ems.api.dto.OutputProject
+import io.cloudflight.ems.api.dto.OutputProjectSimple
 import io.cloudflight.ems.service.ProjectService
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
@@ -14,7 +15,7 @@ class ProjectController(
     private val projectService: ProjectService
 ) : ProjectApi {
 
-    override fun getProjects(pageable: Pageable): Page<OutputProject> {
+    override fun getProjects(pageable: Pageable): Page<OutputProjectSimple> {
         return projectService.findAll(pageable)
     }
 

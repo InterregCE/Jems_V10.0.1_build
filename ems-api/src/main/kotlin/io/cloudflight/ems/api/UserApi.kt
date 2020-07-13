@@ -4,6 +4,7 @@ import io.cloudflight.ems.api.dto.user.InputPassword
 import io.cloudflight.ems.api.dto.user.InputUserCreate
 import io.cloudflight.ems.api.dto.user.InputUserUpdate
 import io.cloudflight.ems.api.dto.user.OutputUser
+import io.cloudflight.ems.api.dto.user.OutputUserWithRole
 import io.swagger.annotations.Api
 import io.swagger.annotations.ApiImplicitParam
 import io.swagger.annotations.ApiImplicitParams
@@ -34,15 +35,15 @@ interface UserApi {
 
     @ApiOperation("Creates new User")
     @PostMapping(consumes = [MediaType.APPLICATION_JSON_VALUE])
-    fun createUser(@Valid @RequestBody user: InputUserCreate): OutputUser
+    fun createUser(@Valid @RequestBody user: InputUserCreate): OutputUserWithRole
 
     @ApiOperation("Updates a User")
     @PutMapping(consumes = [MediaType.APPLICATION_JSON_VALUE])
-    fun update(@Valid @RequestBody user: InputUserUpdate): OutputUser
+    fun update(@Valid @RequestBody user: InputUserUpdate): OutputUserWithRole
 
     @ApiOperation("Returns a user by id")
     @GetMapping("/{id}")
-    fun getById(@PathVariable id: Long): OutputUser
+    fun getById(@PathVariable id: Long): OutputUserWithRole
 
     @ApiOperation("Changes user password")
     @PutMapping("/{userId}", consumes = [MediaType.APPLICATION_JSON_VALUE])

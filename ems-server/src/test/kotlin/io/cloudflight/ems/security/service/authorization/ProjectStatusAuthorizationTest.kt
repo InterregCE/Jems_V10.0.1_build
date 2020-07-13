@@ -5,6 +5,7 @@ import io.cloudflight.ems.api.dto.OutputProjectStatus
 import io.cloudflight.ems.api.dto.ProjectApplicationStatus
 import io.cloudflight.ems.api.dto.user.OutputUser
 import io.cloudflight.ems.api.dto.user.OutputUserRole
+import io.cloudflight.ems.api.dto.user.OutputUserWithRole
 import io.cloudflight.ems.security.model.LocalCurrentUser
 import io.cloudflight.ems.security.service.SecurityService
 import io.cloudflight.ems.service.ProjectService
@@ -34,7 +35,7 @@ internal class ProjectStatusAuthorizationTest {
 
     lateinit var projectStatusAuthorization: ProjectStatusAuthorization
 
-    private val userAdmin = OutputUser(
+    private val userAdmin = OutputUserWithRole(
         id = 1,
         email = "admin@admin.dev",
         name = "Name",
@@ -42,7 +43,7 @@ internal class ProjectStatusAuthorizationTest {
         userRole = OutputUserRole(id = 1, name = "administrator")
     )
 
-    private val userProgramme = OutputUser(
+    private val userProgramme = OutputUserWithRole(
         id = 2,
         email = "user@programme.dev",
         name = "",
@@ -50,12 +51,19 @@ internal class ProjectStatusAuthorizationTest {
         userRole = OutputUserRole(id = 2, name = "programme user")
     )
 
-    private val userApplicant = OutputUser(
+    private val userApplicant = OutputUserWithRole(
         id = 3,
         email = "applicant@programme.dev",
         name = "applicant",
         surname = "",
         userRole = OutputUserRole(id = 3, name = "applicant user")
+    )
+
+    private val userApplicantWithoutRole = OutputUser(
+        id = userApplicant.id,
+        email = userApplicant.email,
+        name = userApplicant.name,
+        surname = userApplicant.surname
     )
 
     private val projectDraft = createProject(PID_DRAFT, ProjectApplicationStatus.DRAFT)
@@ -173,9 +181,9 @@ internal class ProjectStatusAuthorizationTest {
         return OutputProject(
             id = id,
             acronym = "acronym",
-            applicant = userApplicant,
+            applicant = userApplicantWithoutRole,
             submissionDate = null,
-            projectStatus = OutputProjectStatus(1, status, userApplicant, ZonedDateTime.now(), null)
+            projectStatus = OutputProjectStatus(1, status, userApplicantWithoutRole, ZonedDateTime.now(), null)
         )
     }
 }

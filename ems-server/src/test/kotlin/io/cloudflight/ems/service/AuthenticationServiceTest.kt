@@ -3,6 +3,7 @@ package io.cloudflight.ems.service
 import io.cloudflight.ems.api.dto.LoginRequest
 import io.cloudflight.ems.api.dto.user.OutputUser
 import io.cloudflight.ems.api.dto.user.OutputUserRole
+import io.cloudflight.ems.api.dto.user.OutputUserWithRole
 import io.cloudflight.ems.security.model.LocalCurrentUser
 import io.cloudflight.ems.security.service.SecurityService
 import io.cloudflight.ems.security.service.impl.AuthenticationServiceImpl
@@ -43,7 +44,7 @@ class AuthenticationServiceTest {
     @Test
     fun `logging in is audited`() {
         every { securityService.currentUser } returns LocalCurrentUser(
-            OutputUser(
+            OutputUserWithRole(
                 1, "admin@test.net", "test", "test",
                 OutputUserRole(1, "Role")
             ), "", Collections.emptyList()
@@ -74,7 +75,7 @@ class AuthenticationServiceTest {
     @Test
     fun `current user is returned`() {
         every { securityService.currentUser } returns LocalCurrentUser(
-            OutputUser(
+            OutputUserWithRole(
                 1, "test@test.net", "test", "test",
                 OutputUserRole(1, "Role")
             ), "", Collections.emptyList()

@@ -5,8 +5,8 @@ import ch.qos.logback.classic.Logger
 import ch.qos.logback.classic.spi.ILoggingEvent
 import ch.qos.logback.core.read.ListAppender
 import io.cloudflight.ems.api.dto.ProjectApplicationStatus
-import io.cloudflight.ems.api.dto.user.OutputUser
 import io.cloudflight.ems.api.dto.user.OutputUserRole
+import io.cloudflight.ems.api.dto.user.OutputUserWithRole
 import io.cloudflight.ems.entity.Audit
 import io.cloudflight.ems.repository.AuditRepository
 import io.cloudflight.ems.security.model.LocalCurrentUser
@@ -25,7 +25,7 @@ import org.slf4j.LoggerFactory
 class AuditServiceTest {
 
     val user = LocalCurrentUser(
-        OutputUser(
+        OutputUserWithRole(
             id = 16,
             email = "admin@admin.dev",
             name = "Name",

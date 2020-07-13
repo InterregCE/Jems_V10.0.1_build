@@ -1,10 +1,12 @@
 package io.cloudflight.ems.service
 
+import io.cloudflight.ems.api.dto.InputProjectQualityAssessment
 import io.cloudflight.ems.api.dto.InputProjectStatus
 import io.cloudflight.ems.api.dto.OutputProject
-import io.cloudflight.ems.entity.Project
 import io.cloudflight.ems.api.dto.ProjectApplicationStatus
 import io.cloudflight.ems.entity.Audit
+import io.cloudflight.ems.entity.Project
+import io.cloudflight.ems.entity.ProjectQualityAssessment
 import io.cloudflight.ems.entity.ProjectStatus
 import io.cloudflight.ems.entity.User
 import io.cloudflight.ems.exception.ResourceNotFoundException
@@ -44,6 +46,32 @@ class ProjectStatusServiceImpl(
             newStatus = projectStatus.status
         ))
         return project.toOutputProject()
+    }
+
+    @Transactional
+    override fun setQualityAssessment(
+        projectId: Long,
+        qualityAssessmentData: InputProjectQualityAssessment
+    ): OutputProject {
+        val user = userRepository.findByIdOrNull(securityService.currentUser?.user?.id!!)
+            ?: throw ResourceNotFoundException()
+        val project = projectRepo.findOneById(projectId) ?: throw ResourceNotFoundException()
+
+        val qualityAssessment = ProjectQualityAssessment(
+            id = projectId,
+            project = project,
+            result = qualityAssessmentData.result!!,
+            user = user,
+            note = qualityAssessmentData.note
+        )
+        val result = projectRepo.save(project.copy(qualityAssessment = qualityAssessment)).toOutputProject()
+
+        auditService.logEvent(Audit.qualityAssessmentConcluded(
+            currentUser = securityService.currentUser,
+            projectId = project.id.toString(),
+            result = project.qualityAssessment!!.result
+        ))
+        return result
     }
 
     private fun updateProject(oldProject: Project, newStatus: ProjectStatus): Project {

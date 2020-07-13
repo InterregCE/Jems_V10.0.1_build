@@ -1,7 +1,7 @@
 package io.cloudflight.ems.entity
 
-import java.time.LocalDate
 import java.time.ZonedDateTime
+import javax.persistence.CascadeType
 import javax.persistence.Column
 import javax.persistence.Entity
 import javax.persistence.GeneratedValue
@@ -9,6 +9,7 @@ import javax.persistence.GenerationType
 import javax.persistence.Id
 import javax.persistence.JoinColumn
 import javax.persistence.ManyToOne
+import javax.persistence.OneToOne
 
 @Entity(name = "project")
 data class Project (
@@ -28,6 +29,9 @@ data class Project (
 
     @ManyToOne(optional = false)
     @JoinColumn(name = "project_status_id")
-    val projectStatus: ProjectStatus
+    val projectStatus: ProjectStatus,
+
+    @OneToOne(mappedBy = "project", cascade = [CascadeType.ALL])
+    val qualityAssessment: ProjectQualityAssessment? = null
 
 )

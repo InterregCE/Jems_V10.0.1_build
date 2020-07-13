@@ -9,6 +9,7 @@ import io.cloudflight.ems.api.dto.user.InputUserRegistration
 import io.cloudflight.ems.api.dto.user.InputUserUpdate
 import io.cloudflight.ems.api.dto.user.OutputUser
 import io.cloudflight.ems.api.dto.user.OutputUserRole
+import io.cloudflight.ems.api.dto.user.OutputUserWithRole
 import io.cloudflight.ems.entity.User
 import io.cloudflight.ems.entity.UserRole
 import io.cloudflight.ems.entity.Audit
@@ -53,7 +54,7 @@ class UserServiceTest {
 
     private val UNPAGED = Pageable.unpaged()
 
-    private val user = OutputUser(
+    private val user = OutputUserWithRole(
         id = 1,
         email = "admin@admin.dev",
         name = "Name",
@@ -122,8 +123,7 @@ class UserServiceTest {
                 id = 85,
                 email = "admin@ems.io",
                 name = "Name",
-                surname = "Surname",
-                userRole = OutputUserRole(9, "admin")
+                surname = "Surname"
             )
         )
         assertThat(result.stream()).isEqualTo(expectedUsers);
@@ -150,7 +150,7 @@ class UserServiceTest {
         every { userRepository.findOneById(eq(44)) } returns userToReturn
 
         val result = userService.getById(44)
-        assertThat(result).isEqualTo(OutputUser(
+        assertThat(result).isEqualTo(OutputUserWithRole(
             id = 44,
             email = "admin@ems.io",
             name = "Name",

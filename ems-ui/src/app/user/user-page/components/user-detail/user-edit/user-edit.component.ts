@@ -7,7 +7,7 @@ import {
   OnInit,
   Output
 } from '@angular/core';
-import {InputUserUpdate, OutputUser, OutputUserRole} from '@cat/api';
+import {InputUserUpdate, OutputUserRole, OutputUserWithRole } from '@cat/api';
 import {FormBuilder, FormGroup, Validators} from '@angular/forms';
 import {Permission} from 'src/app/security/permissions/permission';
 import {Forms} from '../../../../../common/utils/forms';
@@ -28,7 +28,7 @@ export class UserEditComponent extends ViewEditForm implements OnInit {
   @Input()
   userRoles: OutputUserRole[];
   @Input()
-  user: OutputUser;
+  user: OutputUserWithRole;
   @Input()
   disabled = false;
   @Output()
