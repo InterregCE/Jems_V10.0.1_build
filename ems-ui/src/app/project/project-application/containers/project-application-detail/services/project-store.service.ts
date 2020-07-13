@@ -1,7 +1,7 @@
 import {Injectable} from '@angular/core';
 import {combineLatest, merge, Observable, ReplaySubject, Subject} from 'rxjs';
 import {InputProjectStatus, OutputProject, OutputProjectStatus, ProjectService, ProjectStatusService} from '@cat/api';
-import {flatMap, shareReplay, take, tap} from 'rxjs/operators';
+import {flatMap, shareReplay, tap} from 'rxjs/operators';
 import {Log} from '../../../../../common/utils/log';
 
 /**
@@ -16,7 +16,6 @@ export class ProjectStore {
 
   private projectById$ = this.projectId$
     .pipe(
-      take(1),
       flatMap(id => this.projectService.getProjectById(id)),
       tap(project => Log.info('Fetched project:', this, project))
     );
