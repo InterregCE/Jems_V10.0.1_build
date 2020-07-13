@@ -23,6 +23,8 @@ export class ProjectApplicationAssessmentsComponent extends AbstractForm {
   submittingUser: OutputUser;
   @Input()
   projectStatus: OutputProjectStatus.StatusEnum;
+  @Input()
+  projectId: number;
 
   @Output()
   changeStatus = new EventEmitter<InputProjectStatus.StatusEnum>();

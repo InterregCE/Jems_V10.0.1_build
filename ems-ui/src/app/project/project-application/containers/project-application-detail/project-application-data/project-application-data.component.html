@@ -5,6 +5,7 @@
 
     <app-project-application-assessments
             [projectStatus]="project.projectStatus.status"
+            [projectId]="project.id"
             [success$]="projectChanged$"
             [submittingUser]="project.applicant"
             (changeStatus)="changeProjectStatus($event)">

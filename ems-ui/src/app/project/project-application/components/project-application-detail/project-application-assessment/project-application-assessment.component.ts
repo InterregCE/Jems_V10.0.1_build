@@ -1,53 +1,81 @@
-import {ChangeDetectorRef, Component, Input, OnInit} from '@angular/core';
+import {ChangeDetectorRef, Component, OnInit} from '@angular/core';
 import {Forms} from '../../../../../common/utils/forms';
 import {take, takeUntil} from 'rxjs/internal/operators';
 import {MatDialog} from '@angular/material/dialog';
-import {BaseComponent} from '@common/components/base-component';
+import {ActivatedRoute, Router} from '@angular/router';
+import {FormBuilder, FormGroup, Validators} from '@angular/forms';
+import {AbstractForm} from '@common/components/forms/abstract-form';
+import {ProjectStore} from '../../../containers/project-application-detail/services/project-store.service';
+import {Observable} from 'rxjs';
 import {OutputProject} from '@cat/api';
-import {ActivatedRoute, Router} from "@angular/router";
 
 @Component({
   selector: 'app-project-application-assessment',
   templateUrl: './project-application-assessment.component.html',
-  styleUrls: ['./project-application-assessment.component.scss']
+  styleUrls: ['./project-application-assessment.component.scss'],
+  providers: [
+    ProjectStore
+  ]
 })
-export class ProjectApplicationAssessmentComponent extends BaseComponent implements OnInit {
-  note: string;
+export class ProjectApplicationAssessmentComponent extends AbstractForm implements OnInit {
   projectId = this.activatedRoute.snapshot.params.projectId;
+  options: string[] = ['Eligible', 'Ineligible'];
+  project$: Observable<OutputProject>;
+  selectedAssessment: string;
 
-  @Input()
-  project: OutputProject;
+  notesForm = this.formBuilder.group({
+    assessment: ['', Validators.required],
+    notes: ['', Validators.maxLength(1000)]
+  });
 
   constructor(
     private dialog: MatDialog,
     private router: Router,
-    private activatedRoute: ActivatedRoute) {
-    super();
+    private activatedRoute: ActivatedRoute,
+    private formBuilder: FormBuilder,
+    private projectStore: ProjectStore,
+    protected changeDetectorRef: ChangeDetectorRef)
+  {
+    super(changeDetectorRef);
+    this.projectStore.init(this.projectId);
   }
 
   ngOnInit(): void {
+    super.ngOnInit();
+    this.project$ = this.projectStore.getProject();
+  }
+
+  getForm(): FormGroup | null {
+    return null;
   }
 
   onSubmit(): void {
-    console.log("proj id", this.projectId);
-    this.confirmRoleChange();
+    this.confirmEligibilityAssessment();
   }
 
-  private confirmRoleChange(): void {
+  onCancel(): void {
+    this.router.navigate(['project', this.projectId]);
+  }
+
+  assessmentChangeHandler (event: any) {
+    this.selectedAssessment = event.value;
+  }
+
+  private confirmEligibilityAssessment(): void {
+    console.log(this.selectedAssessment);
     Forms.confirmDialog(
       this.dialog,
       'project.assessment.eligibilityCheck.dialog.title',
-      'project.assessment.eligibilityCheck.dialog.message'
+      'Are you sure you want to submit the eligibility assessment as '
+      + this.selectedAssessment
+      + '? Operation cannot be reversed.'
     ).pipe(
       take(1),
       takeUntil(this.destroyed$)
     ).subscribe(selectEligibility => {
-      const selectedEligibility = selectEligibility
-        ? this.project
-        : null
       if (selectEligibility) {
+        // TODO add the save once backend is available and then navigate
         this.router.navigate(['project', this.projectId]);
-        console.log('Selected Eligibility')
       }
     });
   }
