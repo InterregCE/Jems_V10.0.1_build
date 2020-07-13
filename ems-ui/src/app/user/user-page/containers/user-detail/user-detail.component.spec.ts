@@ -4,7 +4,6 @@ import {HttpTestingController} from '@angular/common/http/testing';
 import {TestModule} from '../../../../common/test-module';
 import {InputUserUpdate} from '@cat/api';
 import {UserDetailComponent} from './user-detail.component';
-import {Observable, of} from 'rxjs';
 import {ActivatedRoute} from '@angular/router';
 
 describe('UserDetailComponent', () => {
@@ -23,7 +22,7 @@ describe('UserDetailComponent', () => {
         {
           provide: ActivatedRoute,
           useValue: {
-            snapshot: { params: {userId: '1' }}
+            snapshot: {params: {userId: '1'}}
           }
         }
       ]
@@ -50,11 +49,6 @@ describe('UserDetailComponent', () => {
     component.saveUser$.next(user);
     let success = false;
     component.userSaveSuccess$.subscribe(result => success = result);
-
-    httpTestingController.expectOne({
-      method: 'GET',
-      url: `//api/role`
-    });
 
     httpTestingController.expectOne({
       method: 'GET',

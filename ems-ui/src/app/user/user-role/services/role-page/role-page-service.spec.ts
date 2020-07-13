@@ -1,10 +1,12 @@
 import {fakeAsync, TestBed, tick} from '@angular/core/testing';
 
-import { RolePageService } from './role-page.service';
+import {RolePageService} from './role-page.service';
 import {UserModule} from '../../../user.module';
 import {TestModule} from '../../../../common/test-module';
 import {OutputUserRole} from '@cat/api';
 import {HttpTestingController} from '@angular/common/http/testing';
+import {PermissionService} from '../../../../security/permissions/permission.service';
+import {Permission} from '../../../../security/permissions/permission';
 
 describe('RolePageService', () => {
   let service: RolePageService;
@@ -25,7 +27,18 @@ describe('RolePageService', () => {
     expect(service).toBeTruthy();
   });
 
-  it('should list user roles', fakeAsync(() => {
+  it('should list empty user roles for regular user', fakeAsync(() => {
+    let results: OutputUserRole[] = [];
+    service.userRoles().subscribe(result => results = result);
+
+    tick();
+
+    expect(results).toEqual([]);
+  }));
+
+  it('should list user roles for admin', fakeAsync(() => {
+    const permissionService = TestBed.inject(PermissionService);
+    permissionService.setPermissions([Permission.ADMINISTRATOR]);
     let results: OutputUserRole[] = [];
     service.userRoles().subscribe(result => results = result);
 
@@ -40,6 +53,7 @@ describe('RolePageService', () => {
     httpTestingController.verify();
 
     tick();
+
     expect(results).toEqual(roles);
   }));
 });
