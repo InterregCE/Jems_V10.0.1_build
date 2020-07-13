@@ -2,15 +2,14 @@ package io.cloudflight.ems.service
 
 import io.cloudflight.ems.api.dto.InputProject
 import io.cloudflight.ems.api.dto.OutputProject
-import io.cloudflight.ems.api.dto.OutputProjectStatus
-import io.cloudflight.ems.entity.Audit
 import io.cloudflight.ems.api.dto.ProjectApplicationStatus
+import io.cloudflight.ems.entity.Audit
 import io.cloudflight.ems.entity.ProjectStatus
 import io.cloudflight.ems.entity.User
 import io.cloudflight.ems.exception.ResourceNotFoundException
-import io.cloudflight.ems.repository.UserRepository
 import io.cloudflight.ems.repository.ProjectRepository
 import io.cloudflight.ems.repository.ProjectStatusRepository
+import io.cloudflight.ems.repository.UserRepository
 import io.cloudflight.ems.security.ADMINISTRATOR
 import io.cloudflight.ems.security.APPLICANT_USER
 import io.cloudflight.ems.security.PROGRAMME_USER
@@ -44,7 +43,13 @@ class ProjectServiceImpl(
             return projectRepo.findAll(page).map { it.toOutputProject() }
         }
         if (currentUser.hasRole(PROGRAMME_USER)) {
-            return projectRepo.findAll(page).map { it.toOutputProject() }
+            return projectRepo.findAllWithStatuses(
+                listOf(
+                    ProjectApplicationStatus.SUBMITTED,
+                    ProjectApplicationStatus.RESUBMITTED,
+                    ProjectApplicationStatus.RETURNED_TO_APPLICANT
+                ), page
+            ).map { it.toOutputProject() }
         }
         if (currentUser.hasRole(APPLICANT_USER)) {
             return projectRepo.findAllByApplicantId(currentUser.user.id!!, page).map { it.toOutputProject() }
@@ -61,11 +66,13 @@ class ProjectServiceImpl(
 
         val createdProject = projectRepo.save(project.toEntity(applicant, projectStatus))
         projectStatusRepo.save(projectStatus.copy(project = createdProject))
-        auditService.logEvent(Audit.projectStatusChanged(
-            currentUser = securityService.currentUser,
-            projectId = createdProject.id.toString(),
-            newStatus = createdProject.projectStatus.status
-        ))
+        auditService.logEvent(
+            Audit.projectStatusChanged(
+                currentUser = securityService.currentUser,
+                projectId = createdProject.id.toString(),
+                newStatus = createdProject.projectStatus.status
+            )
+        )
 
         return createdProject.toOutputProject()
     }

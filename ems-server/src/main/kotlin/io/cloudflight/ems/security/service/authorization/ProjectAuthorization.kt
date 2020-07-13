@@ -1,8 +1,8 @@
 package io.cloudflight.ems.security.service.authorization
 
+import io.cloudflight.ems.api.dto.ProjectApplicationStatus
 import io.cloudflight.ems.security.ADMINISTRATOR
 import io.cloudflight.ems.security.APPLICANT_USER
-import io.cloudflight.ems.security.PROGRAMME_USER
 import io.cloudflight.ems.security.service.SecurityService
 import io.cloudflight.ems.service.ProjectService
 import org.springframework.stereotype.Component
@@ -14,19 +14,27 @@ class ProjectAuthorization(
 ) {
 
     fun canReadProject(id: Long): Boolean {
-        return (securityService.currentUser?.hasRole(ADMINISTRATOR)!!
-                || securityService.currentUser?.hasRole(PROGRAMME_USER)!!
-                || projectService.getById(id).applicant.id == securityService.currentUser?.user?.id)
+        if (securityService.currentUser?.hasRole(ADMINISTRATOR)!!) {
+            return true;
+        }
+        val project = projectService.getById(id);
+        if (securityService.currentUser?.hasRole(APPLICANT_USER)!!) {
+            return securityService.currentUser?.user?.id == project.applicant.id
+        }
+        // programme user can only read submitted, resubmitted and returned to applicant
+        return project.projectStatus.status == ProjectApplicationStatus.SUBMITTED
+                || project.projectStatus.status == ProjectApplicationStatus.RESUBMITTED
+                || project.projectStatus.status == ProjectApplicationStatus.RETURNED_TO_APPLICANT
     }
 
     fun canWriteProject(id: Long): Boolean {
         return securityService.currentUser?.hasRole(ADMINISTRATOR)!!
-            || projectService.getById(id).applicant.id == securityService.currentUser?.user?.id
+                || projectService.getById(id).applicant.id == securityService.currentUser?.user?.id
     }
 
     fun canCreateProject(): Boolean {
         return securityService.currentUser?.hasRole(ADMINISTRATOR)!!
-            || securityService.currentUser?.hasRole(APPLICANT_USER)!!
+                || securityService.currentUser?.hasRole(APPLICANT_USER)!!
     }
 
     fun canReadWriteProject(id: Long): Boolean {
