@@ -109,32 +109,26 @@ export class ProjectApplicationFilesComponent extends BaseComponent implements O
 
   private assignActionsToUser(): void {
     combineLatest([
-      this.permissionService.hasPermission(Permission.APPLICANT_USER),
-      this.permissionService.hasPermission(Permission.ADMINISTRATOR),
+      this.permissionService.permissionsChanged(),
       this.projectStatus$
     ])
       .pipe(
         takeUntil(this.destroyed$)
       )
-      .subscribe(([isApplicant, isAdmin, projectStatus]) => {
+      .subscribe(([permissions, projectStatus]) => {
+        const isAdmin = permissions.some(perm => perm === Permission.ADMINISTRATOR);
+
         this.editActionVisible = isAdmin;
         this.deleteActionVisible = isAdmin;
         this.downloadActionVisible = true;
 
-        if (isApplicant) {
-          this.editActionVisible = projectStatus === OutputProjectStatus.StatusEnum.DRAFT
-            || projectStatus === OutputProjectStatus.StatusEnum.RETURNEDTOAPPLICANT
-          this.deleteActionVisible = projectStatus === OutputProjectStatus.StatusEnum.DRAFT;
+        const isApplicant = permissions.some(perm => perm === Permission.APPLICANT_USER);
+        if (!isApplicant) {
+          return;
         }
+        this.editActionVisible = projectStatus === OutputProjectStatus.StatusEnum.DRAFT
+          || projectStatus === OutputProjectStatus.StatusEnum.RETURNEDTOAPPLICANT
+        this.deleteActionVisible = projectStatus === OutputProjectStatus.StatusEnum.DRAFT;
       })
   }
-
-  private addMessageFromResponse(status: any) {
-    // if (!this.statusMessages) {
-    //   this.statusMessages = [];
-    // }
-    this.statusMessages.unshift(status);
-    // this.statusMessages = [].concat([status, ...this.statusMessages]);
-  }
-
 }

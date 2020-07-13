@@ -4,7 +4,9 @@ import {TestModule} from '../../../../../common/test-module';
 import {ProjectModule} from '../../../../project.module';
 import {ProjectStore} from '../services/project-store.service';
 import {HttpTestingController} from '@angular/common/http/testing';
-import {OutputProjectFile} from '@cat/api';
+import {InputProjectStatus, OutputProjectFile} from '@cat/api';
+import {PermissionService} from '../../../../../security/permissions/permission.service';
+import {Permission} from '../../../../../security/permissions/permission';
 
 describe('ProjectApplicationFilesComponent', () => {
   let component: ProjectApplicationFilesComponent;
@@ -88,5 +90,22 @@ describe('ProjectApplicationFilesComponent', () => {
     httpTestingController.expectOne({method: 'PUT', url: '//api/project/1/file/1/description'});
 
     httpTestingController.verify();
+  }));
+
+  it('should set visibility actions for programme user', fakeAsync(() => {
+    const projectStore = TestBed.inject(ProjectStore);
+    const permissionService = TestBed.inject(PermissionService);
+    projectStore.init(1);
+    component.ngOnInit();
+    projectStore.getProject().subscribe();
+    permissionService.setPermissions([Permission.PROGRAMME_USER]);
+
+    httpTestingController.match({method: 'GET', url: '//api/project/1'})
+      .forEach(req => req.flush({projectStatus: InputProjectStatus.StatusEnum.DRAFT}))
+
+    tick();
+    expect(component.editActionVisible).toBeFalse();
+    expect(component.downloadActionVisible).toBeTrue();
+    expect(component.deleteActionVisible).toBeFalse();
   }));
 });
