@@ -1,15 +1,12 @@
-import {async, ComponentFixture, fakeAsync, TestBed, tick} from '@angular/core/testing';
+import {async, ComponentFixture, TestBed} from '@angular/core/testing';
 import {CUSTOM_ELEMENTS_SCHEMA} from '@angular/core';
-import {OutputProjectFile, ProjectFileStorageService, ProjectService} from '@cat/api';
+import {ProjectFileStorageService, ProjectService} from '@cat/api';
 import {HttpTestingController} from '@angular/common/http/testing';
 import {ProjectApplicationDetailComponent} from './project-application-detail.component';
 import {ProjectFileService} from '../../services/project-file.service';
 import {ActivatedRoute} from '@angular/router';
-import {DeleteDialogComponent} from '../../components/project-application-detail/delete-dialog/delete-dialog.component';
-import {BrowserDynamicTestingModule} from '@angular/platform-browser-dynamic/testing';
 import {TestModule} from '../../../../common/test-module';
 import {MatDialogModule} from '@angular/material/dialog';
-import {of} from 'rxjs';
 
 describe('ProjectApplicationDetailComponent', () => {
 
@@ -25,7 +22,6 @@ describe('ProjectApplicationDetailComponent', () => {
       ],
       declarations: [
         ProjectApplicationDetailComponent,
-        DeleteDialogComponent
       ],
       providers: [
         {
@@ -57,11 +53,6 @@ describe('ProjectApplicationDetailComponent', () => {
       ],
       schemas: [CUSTOM_ELEMENTS_SCHEMA],
     });
-    TestBed.overrideModule(BrowserDynamicTestingModule, {
-      set: {
-        entryComponents: [DeleteDialogComponent],
-      },
-    });
     TestBed.compileComponents();
   }));
 
@@ -76,37 +67,4 @@ describe('ProjectApplicationDetailComponent', () => {
   it('should create the project application', () => {
     expect(projectApplicationDetailComponent).toBeTruthy();
   });
-
-  xit('should get 100 paged project files from server', async () => {
-    // projectApplicationDetailComponent.getFilesForProject(1);
-    httpTestingController.expectOne({
-      method: 'GET',
-      url: `/api/project/${1}/file?size=${100}&sort=updated,desc`
-    }).flush({});
-    httpTestingController.verify();
-  });
-
-  xit('should upload a project application file', fakeAsync(() => {
-    const event = {target: {files: [{name: 'name'}]}};
-    // projectApplicationDetailComponent.addNewFilesForUpload(event);
-    httpTestingController.expectOne({
-      method: 'POST',
-      url: `/api/project/${1}/file/`
-    }).flush(event);
-    httpTestingController.verify();
-    tick();
-    // check for correct status
-    expect(projectApplicationDetailComponent.statusMessages).toBeTruthy();
-  }));
-
-  it('should delete an uploaded project application file', fakeAsync(() => {
-    (projectApplicationDetailComponent as any).projectFileStorageService = TestBed.inject(ProjectFileStorageService);
-    spyOn((projectApplicationDetailComponent as any).dialog, 'open')
-      .and
-      .returnValue({afterClosed: () => of(true)});
-    spyOn((projectApplicationDetailComponent as any).projectFileStorageService, 'deleteFile')
-      .and.returnValue(of());
-    projectApplicationDetailComponent.deleteFile({id: 1} as OutputProjectFile);
-    expect((projectApplicationDetailComponent as any).projectFileStorageService.deleteFile).toHaveBeenCalled();
-  }));
 });

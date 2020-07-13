@@ -9,10 +9,10 @@
                 (pageIndexChanged)="newPageIndex.emit($event)"
                 (pageSizeChanged)="newPageSize.emit($event)">
         </app-paginator>
-        <app-table *ngIf="projectPage?.content?.length"
-                   [configuration]="tableConfiguration"
-                   [rows]="projectPage.content"
-                   (sortRows)="newSort.emit($event)">
+        <app-table
+                [configuration]="tableConfiguration"
+                [rows]="projectPage.content"
+                (sortRows)="newSort.emit($event)">
         </app-table>
     </ng-container>
 </div>

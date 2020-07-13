@@ -2,6 +2,7 @@ import {ChangeDetectionStrategy, Component, EventEmitter, Input, Output} from '@
 import {PageOutputProject} from '@cat/api';
 import {TableConfiguration} from '@common/components/table/model/table.configuration';
 import {MatSort} from '@angular/material/sort';
+import {ColumnType} from '@common/components/table/model/column-type.enum';
 
 @Component({
   selector: 'app-project-application-list',
@@ -38,6 +39,7 @@ export class ProjectApplicationListComponent {
       },
       {
         displayedColumn: 'Submission Date',
+        columnType: ColumnType.Date,
         elementProperty: 'submissionDate',
         sortProperty: 'submissionDate'
       },

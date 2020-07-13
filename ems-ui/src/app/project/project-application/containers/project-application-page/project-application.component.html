@@ -2,7 +2,7 @@
     <h3 *ngIf="currentUser$ | async as currentUser">
         Welcome {{currentUser.name}} {{currentUser.surname}} to myProgramme!</h3>
     <div class="row">
-        <div class="col-md-6">
+        <div class="col-md-5">
             <app-project-application-submission
                     *ngxPermissionsExcept="[Permission.PROGRAMME_USER]"
                     [success$]="applicationSaveSuccess$"
@@ -10,7 +10,7 @@
                     (submitProjectApplication)="createApplication($event)"
             ></app-project-application-submission>
         </div>
-        <div *ngIf="currentPage$ | async as projectPage" class="col-md-6">
+        <div *ngIf="currentPage$ | async as projectPage" class="col-md-7">
             <app-project-application-list
                     [projectPage]="projectPage"
                     [pageIndex]="newPageIndex$ | async"

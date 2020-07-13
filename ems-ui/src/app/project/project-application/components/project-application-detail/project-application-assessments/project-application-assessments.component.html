@@ -1,0 +1,41 @@
+<ng-container *ngxPermissionsExcept="[Permission.PROGRAMME_USER]">
+    <div *ngIf="projectStatus === OutputProjectStatus.StatusEnum.DRAFT" class="row">
+        <button mat-raised-button
+                color="primary"
+                (click)="submitProject()">Submit Project Application
+        </button>
+    </div>
+    <div *ngIf="projectStatus === OutputProjectStatus.StatusEnum.RETURNEDTOAPPLICANT" class="row">
+        <button mat-raised-button
+                color="primary"
+                (click)="resubmitProject()">Re-submit Project Application
+        </button>
+    </div>
+</ng-container>
+
+<ng-container *ngxPermissionsExcept="[Permission.APPLICANT_USER]">
+    <div *ngIf="projectStatus === OutputProjectStatus.StatusEnum.SUBMITTED
+             || projectStatus === OutputProjectStatus.StatusEnum.RESUBMITTED" class="row">
+        <button mat-raised-button
+                color="primary"
+                (click)="returnToApplicant()">Return To Applicant
+        </button>
+    </div>
+</ng-container>
+
+<div *ngIf="submittingUser && projectStatus !== OutputProjectStatus.StatusEnum.DRAFT" class="row">
+    <p>Project was submitted by {{submittingUser.name}} {{submittingUser.surname}}.</p>
+</div>
+<app-alert
+        [show]="showSuccessMessage$ | async"
+        [type]="Alert.SUCCESS">
+    <p *ngIf="projectStatus === OutputProjectStatus.StatusEnum.SUBMITTED">
+        {{'project.detail.submitted.success' | translate}}
+    </p>
+    <p *ngIf="projectStatus === OutputProjectStatus.StatusEnum.RETURNEDTOAPPLICANT">
+        {{'project.detail.returned.to.applicant.success' | translate}}
+    </p>
+    <p *ngIf="projectStatus === OutputProjectStatus.StatusEnum.RESUBMITTED">
+        {{'project.detail.resubmitted.success' | translate}}
+    </p>
+</app-alert>
