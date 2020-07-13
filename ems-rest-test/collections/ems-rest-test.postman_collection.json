@@ -954,7 +954,7 @@
 			"protocolProfileBehavior": {}
 		},
 		{
-			"name": "file upload/download",
+			"name": "file upload to DRAFT",
 			"item": [
 				{
 					"name": "register applicant",
@@ -1065,7 +1065,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"acronym\": \"{{application_acronym}}\",\r\n    \"submissionDate\": \"2020-07-06\"\r\n}\r\n",
+							"raw": "{\r\n    \"acronym\": \"{{application_acronym}}\"\r\n}\r\n",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -1509,12 +1509,12 @@
 					"response": []
 				},
 				{
-					"name": "programme user cannot upload file",
+					"name": "programme user cannot see list of files",
 					"event": [
 						{
 							"listen": "prerequest",
 							"script": {
-								"id": "0f73d23d-1f7f-4e31-ac1d-845dc2f33946",
+								"id": "0d970cbe-8550-4b22-997c-a136809665fc",
 								"exec": [
 									""
 								],
@@ -1524,7 +1524,67 @@
 						{
 							"listen": "test",
 							"script": {
-								"id": "e48b5bce-8a75-4502-ab03-a4b122e2f945",
+								"id": "50c1f413-76d5-4ae2-b6ac-3a1c6d8c8ff5",
+								"exec": [
+									"pm.test('programme user should not be able to see files when application is DRAFT', function() {\r",
+									"    pm.response.to.have.status(403);\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "basic",
+							"basic": [
+								{
+									"key": "password",
+									"value": "{{programme_user_email}}",
+									"type": "string"
+								},
+								{
+									"key": "username",
+									"value": "{{programme_user_email}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{url}}/api/project/{{application_id}}/file",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"api",
+								"project",
+								"{{application_id}}",
+								"file"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "programme user cannot upload file",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "4baf4f83-a617-4ac8-8ca8-ddb047de53b8",
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"id": "434ab265-a70f-4b29-a7b9-717752771fca",
 								"exec": [
 									"pm.test('programme user should not be able to upload file', function() {\r",
 									"    pm.response.to.have.status(403);\r",
@@ -1590,76 +1650,12 @@
 					"response": []
 				},
 				{
-					"name": "programme user can see list of files",
-					"event": [
-						{
-							"listen": "prerequest",
-							"script": {
-								"id": "b42a0d1a-f836-40a1-af8d-9b89ca27251a",
-								"exec": [
-									""
-								],
-								"type": "text/javascript"
-							}
-						},
-						{
-							"listen": "test",
-							"script": {
-								"id": "3e1a9eed-1ebd-462b-a2b4-e8e63b10b6f1",
-								"exec": [
-									"const response = pm.response.json();\r",
-									"\r",
-									"pm.test('programme user can retrieve list of uploaded files', function() {\r",
-									"    pm.response.to.have.status(200);\r",
-									"    pm.expect(response.content[0].name).to.equal('file.txt');\r",
-									"    pm.expect(response.totalElements).to.equal(1);\r",
-									"});\r",
-									""
-								],
-								"type": "text/javascript"
-							}
-						}
-					],
-					"request": {
-						"auth": {
-							"type": "basic",
-							"basic": [
-								{
-									"key": "password",
-									"value": "{{programme_user_email}}",
-									"type": "string"
-								},
-								{
-									"key": "username",
-									"value": "{{programme_user_email}}",
-									"type": "string"
-								}
-							]
-						},
-						"method": "GET",
-						"header": [],
-						"url": {
-							"raw": "{{url}}/api/project/{{application_id}}/file",
-							"host": [
-								"{{url}}"
-							],
-							"path": [
-								"api",
-								"project",
-								"{{application_id}}",
-								"file"
-							]
-						}
-					},
-					"response": []
-				},
-				{
 					"name": "programme user cannot set description",
 					"event": [
 						{
 							"listen": "prerequest",
 							"script": {
-								"id": "926dc95a-c941-48da-8185-fe8ecbf2d7ac",
+								"id": "501fcb70-1b17-4082-822f-760904418d21",
 								"exec": [
 									""
 								],
@@ -1669,7 +1665,7 @@
 						{
 							"listen": "test",
 							"script": {
-								"id": "ed4718a2-d6a6-4b54-a4bc-669091d5fae8",
+								"id": "2e49e03f-915d-427e-b3c9-fa79d235ac38",
 								"exec": [
 									"pm.test('programme user should not be able to set description', function() {\r",
 									"    pm.response.to.have.status(403);\r",
@@ -1725,12 +1721,12 @@
 					"response": []
 				},
 				{
-					"name": "programme user can download file",
+					"name": "programme user cannot download file",
 					"event": [
 						{
 							"listen": "prerequest",
 							"script": {
-								"id": "a7ec27bb-9c44-45aa-8f01-56eb10021ef4",
+								"id": "dc66a3d8-03dc-4107-913e-54d7b6c18c07",
 								"exec": [
 									""
 								],
@@ -1740,14 +1736,10 @@
 						{
 							"listen": "test",
 							"script": {
-								"id": "4ffecdf9-a7d3-45ab-b0a3-1028faf5a5e9",
+								"id": "2d7650c5-f48b-4c74-9a84-2eeb3900e29d",
 								"exec": [
-									"pm.test('programme user can also download files', function() {\r",
-									"    pm.response.to.have.status(200);\r",
-									"    pm.response.to.have.header('Content-Type', 'application/octet-stream');\r",
-									"    pm.response.to.have.header('Content-Disposition', 'attachment; filename=\"file.txt\"');\r",
-									"    pm.response.to.have.header('Content-Type', 'application/octet-stream');\r",
-									"    pm.expect(pm.response.text()).to.contain('text');\r",
+									"pm.test('programme user should not be able to download file, when application is just DRAFT', function() {\r",
+									"    pm.response.to.have.status(403);\r",
 									"});\r",
 									""
 								],
@@ -1791,6 +1783,810 @@
 				}
 			],
 			"protocolProfileBehavior": {}
+		},
+		{
+			"name": "submit and resubmit application",
+			"item": [
+				{
+					"name": "register applicant",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "24cdf32e-c4fa-4230-b4f5-93124ed15aa7",
+								"exec": [
+									"var uuid = require('uuid');\r",
+									"const randomIdentifier = uuid.v4().substring(24, 32);\r",
+									"pm.variables.set('applicant_email', randomIdentifier + \"@applicant.eu\");\r",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"id": "cd35826a-7510-4eca-96d7-80e15ab1f023",
+								"exec": [
+									"pm.test('applicant can register', function() {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"email\": \"{{applicant_email}}\",\r\n    \"name\": \"testName\",\r\n    \"surname\": \"testSurname\",\r\n    \"password\": \"{{applicant_email}}\"\r\n}\r\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{url}}/api/registration",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"api",
+								"registration"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "create project application",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "b9e49a26-779f-4a4e-b02b-3c96850364d9",
+								"exec": [
+									"var uuid = require('uuid');\r",
+									"const randomIdentifier = uuid.v4().substring(24, 32);\r",
+									"pm.variables.set('application_acronym', \"test-proj-\" + randomIdentifier);\r",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"id": "a244bad8-ed3c-469e-bd7a-57c24292c38c",
+								"exec": [
+									"const application = pm.response.json();\r",
+									"\r",
+									"pm.test('applicant can create project application', function() {\r",
+									"    pm.response.to.have.status(200);\r",
+									"    pm.variables.set('application_id', pm.response.json().id);\r",
+									"});\r",
+									"\r",
+									"pm.test('application should not have submission date filled in', function() {\r",
+									"    pm.expect(application.submissionDate).to.eql(null);\r",
+									"})\r",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "basic",
+							"basic": [
+								{
+									"key": "password",
+									"value": "{{applicant_email}}",
+									"type": "string"
+								},
+								{
+									"key": "username",
+									"value": "{{applicant_email}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"acronym\": \"{{application_acronym}}\"\r\n}\r\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{url}}/api/project",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"api",
+								"project"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "upload file to application",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "5fe9630c-a3db-4c75-91d0-9636cc418860",
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"id": "0add6882-5144-4905-93af-91817fc24d6d",
+								"exec": [
+									"pm.test('applicant can upload file to project application', function() {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "basic",
+							"basic": [
+								{
+									"key": "password",
+									"value": "{{applicant_email}}",
+									"type": "string"
+								},
+								{
+									"key": "username",
+									"value": "{{applicant_email}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"type": "text",
+								"value": "multipart/form-data"
+							}
+						],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "file",
+									"type": "file",
+									"src": "collections/file.txt"
+								}
+							],
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{url}}/api/project/{{application_id}}/file",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"api",
+								"project",
+								"{{application_id}}",
+								"file"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "submit application",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "78fe6da5-f380-433d-a883-eb5fe862af3e",
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"id": "8a54c9f9-3919-4804-95d1-c3a97226ec71",
+								"exec": [
+									"pm.test('applicant can submit his application', function() {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "basic",
+							"basic": [
+								{
+									"key": "password",
+									"value": "{{applicant_email}}",
+									"type": "string"
+								},
+								{
+									"key": "username",
+									"value": "{{applicant_email}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"status\": \"SUBMITTED\"\r\n}\r\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{url}}/api/project/{{application_id}}/status",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"api",
+								"project",
+								"{{application_id}}",
+								"status"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "upload file to SUBMITTED application",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "b10e54f9-92db-4da6-998f-8a969dc529fb",
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"id": "f803c067-1b52-4da2-b62a-2db47469367d",
+								"exec": [
+									"pm.test('applicant should not be able to upload file to SUBMITTED application', function() {\r",
+									"    pm.response.to.have.status(403);\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "basic",
+							"basic": [
+								{
+									"key": "password",
+									"value": "{{applicant_email}}",
+									"type": "string"
+								},
+								{
+									"key": "username",
+									"value": "{{applicant_email}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"type": "text",
+								"value": "multipart/form-data"
+							}
+						],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "file",
+									"type": "file",
+									"src": "collections/file_empty.txt"
+								}
+							],
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{url}}/api/project/{{application_id}}/file",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"api",
+								"project",
+								"{{application_id}}",
+								"file"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "create programme user",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "68eaeb88-2b53-49c9-8172-efb57b5a4487",
+								"exec": [
+									"var uuid = require('uuid');\r",
+									"const randomIdentifier = uuid.v4().substring(24, 32);\r",
+									"pm.variables.set('programme_user_email', randomIdentifier + \"@programme-user.eu\");\r",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"id": "617eba8d-ce79-4576-bd17-397dfa8c6e57",
+								"exec": [
+									"pm.test('programme user can be created', function() {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "basic",
+							"basic": [
+								{
+									"key": "password",
+									"value": "Adm1",
+									"type": "string"
+								},
+								{
+									"key": "username",
+									"value": "admin@ems.eu",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"email\": \"{{programme_user_email}}\",\r\n    \"name\": \"testName\",\r\n    \"surname\": \"testSurname\",\r\n    \"userRoleId\": \"2\"\r\n}\r\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{url}}/api/user",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"api",
+								"user"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "programme user can see list of files",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "b99bf47a-9e45-4ccb-a507-94c3813a24fb",
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"id": "eea2e80f-ab85-4b95-be92-8841c304b68b",
+								"exec": [
+									"const response = pm.response.json();\r",
+									"\r",
+									"pm.test('programme user can see files, when application is SUBMITTED', function() {\r",
+									"    pm.response.to.have.status(200);\r",
+									"    pm.expect(response.content[0].name).to.equal('file.txt');\r",
+									"    pm.expect(response.totalElements).to.equal(1);\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "basic",
+							"basic": [
+								{
+									"key": "password",
+									"value": "{{programme_user_email}}",
+									"type": "string"
+								},
+								{
+									"key": "username",
+									"value": "{{programme_user_email}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{url}}/api/project/{{application_id}}/file",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"api",
+								"project",
+								"{{application_id}}",
+								"file"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "program user can return application",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "91eaace0-73ee-407f-a35c-b1b018afb917",
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"id": "3bc5a534-42d4-45be-85f5-2224520080cd",
+								"exec": [
+									"pm.test('program user can return application back to user', function() {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"const application = pm.response.json();\r",
+									"\r",
+									"pm.test('status of project is set to RETURNED_TO_APPLICANT', function() {\r",
+									"    pm.expect(application.projectStatus.status).to.eql('RETURNED_TO_APPLICANT');\r",
+									"});\r",
+									"\r",
+									"pm.test('status change is assigned to program user who triggered change', function() {\r",
+									"    pm.expect(application.projectStatus.user.email)\r",
+									"        .to.eql(pm.variables.get(\"programme_user_email\"));\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "basic",
+							"basic": [
+								{
+									"key": "password",
+									"value": "{{programme_user_email}}",
+									"type": "string"
+								},
+								{
+									"key": "username",
+									"value": "{{programme_user_email}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"status\": \"RETURNED_TO_APPLICANT\"\r\n}\r\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{url}}/api/project/{{application_id}}/status",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"api",
+								"project",
+								"{{application_id}}",
+								"status"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "program user cannot resubmit application",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "52198fb4-531e-402a-b34d-5b650ce0ef4d",
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"id": "6a884c99-5e70-4338-b9ce-718a88938d01",
+								"exec": [
+									"pm.test('program user should not be able to resubmit application', function() {\r",
+									"    pm.response.to.have.status(403);\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "basic",
+							"basic": [
+								{
+									"key": "password",
+									"value": "{{programme_user_email}}",
+									"type": "string"
+								},
+								{
+									"key": "username",
+									"value": "{{programme_user_email}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"status\": \"RESUBMITTED\"\r\n}\r\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{url}}/api/project/{{application_id}}/status",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"api",
+								"project",
+								"{{application_id}}",
+								"status"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "applicant cannot RE-submit to status SUBMIT",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "e3a4e346-f1b4-430b-9bbb-33f8d1b3a7f0",
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"id": "0d46014a-8ed4-4475-9b13-137170cb55b5",
+								"exec": [
+									"pm.test('applicant can only re-submit to RESUBMITTED', function() {\r",
+									"    pm.response.to.have.status(403);\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "basic",
+							"basic": [
+								{
+									"key": "password",
+									"value": "{{applicant_email}}",
+									"type": "string"
+								},
+								{
+									"key": "username",
+									"value": "{{applicant_email}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"status\": \"SUBMITTED\"\r\n}\r\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{url}}/api/project/{{application_id}}/status",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"api",
+								"project",
+								"{{application_id}}",
+								"status"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "applicant can resubmit application",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "3b9d18ff-5649-47a6-ae94-b0515f64f72d",
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"id": "2b0b1bae-e852-4556-8fd9-36c82975ca68",
+								"exec": [
+									"pm.test('applicant can resubmit application that was returned to him', function() {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"const application = pm.response.json();\r",
+									"\r",
+									"pm.test('status of project is set to RESUBMITTED', function() {\r",
+									"    pm.expect(application.projectStatus.status).to.eql('RESUBMITTED');\r",
+									"});\r",
+									"\r",
+									"pm.test('status change is assigned to applicant who triggered change', function() {\r",
+									"    pm.expect(application.projectStatus.user.email)\r",
+									"        .to.eql(pm.variables.get(\"applicant_email\"));\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "basic",
+							"basic": [
+								{
+									"key": "password",
+									"value": "{{applicant_email}}",
+									"type": "string"
+								},
+								{
+									"key": "username",
+									"value": "{{applicant_email}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"status\": \"RESUBMITTED\"\r\n}\r\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{url}}/api/project/{{application_id}}/status",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"api",
+								"project",
+								"{{application_id}}",
+								"status"
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"protocolProfileBehavior": {}
 		}
 	],
 	"auth": {
@@ -1812,7 +2608,7 @@
 		{
 			"listen": "prerequest",
 			"script": {
-				"id": "c7dc51e7-0bcb-4fae-a5ac-5b361a60f08a",
+				"id": "7a00930a-cf47-4d47-ae32-11d87f4d1847",
 				"type": "text/javascript",
 				"exec": [
 					""
@@ -1822,7 +2618,7 @@
 		{
 			"listen": "test",
 			"script": {
-				"id": "33f7f1e1-3f01-4fe1-aabc-1765956565af",
+				"id": "0400d1a6-d6a6-4eb1-9044-4f03013e82a0",
 				"type": "text/javascript",
 				"exec": [
 					""
