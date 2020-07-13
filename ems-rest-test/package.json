@@ -3,11 +3,13 @@
   "version": "1.0.0",
   "description": "Collection of scenarios for testing API endpoints",
   "scripts": {
-    "test-663-ems-staging": "newman run collections/ems-rest-test.postman_collection.json -e environments/663-ems-staging.postman_environment.json",
+    "test-663-ems-staging": "newman run collections/ems-rest-test.postman_collection.json -e environments/663-ems-staging.postman_environment.json -r cli,html,teamcity --reporter-html-export output/result.html",
     "test-local": "newman run collections/ems-rest-test.postman_collection.json -e environments/local.postman_environment.json"
   },
   "author": "Ondrej Oravcok, Cloudflight.io",
   "devDependencies": {
-    "newman": "^5.0.1"
+    "newman": "^5.0.1",
+    "newman-reporter-html": "^1.0.5",
+    "newman-reporter-teamcity": "^0.1.12"
   }
 }
