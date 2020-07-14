@@ -8,6 +8,7 @@ data class OutputProject (
     val acronym: String,
     val applicant: OutputUser,
     val submissionDate: ZonedDateTime?,
+    val resubmissionDate: ZonedDateTime?,
     val projectStatus: OutputProjectStatus,
     val qualityAssessment: OutputProjectQualityAssessment? = null,
     val eligibilityAssessment: OutputProjectEligibilityAssessment? = null

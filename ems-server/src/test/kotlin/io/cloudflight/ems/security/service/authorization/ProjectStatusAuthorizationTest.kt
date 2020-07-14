@@ -183,6 +183,7 @@ internal class ProjectStatusAuthorizationTest {
             acronym = "acronym",
             applicant = userApplicantWithoutRole,
             submissionDate = null,
+            resubmissionDate = null,
             projectStatus = OutputProjectStatus(1, status, userApplicantWithoutRole, ZonedDateTime.now(), null)
         )
     }

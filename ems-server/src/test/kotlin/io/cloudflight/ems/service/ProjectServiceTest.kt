@@ -140,6 +140,7 @@ class ProjectServiceTest {
                 id = 25,
                 acronym = "test acronym",
                 submissionDate = TEST_DATE_TIME,
+                resubmissionDate = null,
                 projectStatus = OutputProjectStatus(
                     id = 10,
                     status = ProjectApplicationStatus.DRAFT,
@@ -190,6 +191,7 @@ class ProjectServiceTest {
             "test",
             account,
             TEST_DATE_TIME,
+            null,
             statusDraft
         )
 
@@ -212,7 +214,7 @@ class ProjectServiceTest {
     @Test
     fun projectGet_OK() {
         every { projectRepository.findOneById(eq(1)) } returns
-                Project(1, "test", account, TEST_DATE_TIME, statusDraft)
+                Project(1, "test", account, TEST_DATE_TIME, null, statusDraft)
 
         val result = projectService.getById(1);
 
