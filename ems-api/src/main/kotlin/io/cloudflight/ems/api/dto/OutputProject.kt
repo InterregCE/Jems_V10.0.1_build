@@ -9,5 +9,6 @@ data class OutputProject (
     val applicant: OutputUser,
     val submissionDate: ZonedDateTime?,
     val projectStatus: OutputProjectStatus,
-    val qualityAssessment: OutputProjectQualityAssessment? = null
+    val qualityAssessment: OutputProjectQualityAssessment? = null,
+    val eligibilityAssessment: OutputProjectEligibilityAssessment? = null
 )

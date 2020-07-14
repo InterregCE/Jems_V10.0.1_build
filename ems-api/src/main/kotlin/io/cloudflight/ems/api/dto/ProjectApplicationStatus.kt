@@ -5,4 +5,6 @@ enum class ProjectApplicationStatus {
     SUBMITTED,
     RETURNED_TO_APPLICANT,
     RESUBMITTED,
+    ELIGIBLE,
+    INELIGIBLE,
 }

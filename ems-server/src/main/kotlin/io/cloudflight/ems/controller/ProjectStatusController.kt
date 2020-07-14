@@ -1,6 +1,7 @@
 package io.cloudflight.ems.controller
 
 import io.cloudflight.ems.api.ProjectStatusApi
+import io.cloudflight.ems.api.dto.InputProjectEligibilityAssessment
 import io.cloudflight.ems.api.dto.InputProjectQualityAssessment
 import io.cloudflight.ems.api.dto.InputProjectStatus
 import io.cloudflight.ems.api.dto.OutputProject
@@ -21,6 +22,11 @@ class ProjectStatusController(
     @PreAuthorize("@projectStatusAuthorization.canSetQualityAssessment(#id)")
     override fun setQualityAssessment(id: Long, data: InputProjectQualityAssessment): OutputProject {
         return projectStatusService.setQualityAssessment(id, data)
+    }
+
+    @PreAuthorize("@projectStatusAuthorization.canSetEligibilityAssessment(#id)")
+    override fun setEligibilityAssessment(id: Long, data: InputProjectEligibilityAssessment): OutputProject {
+        return projectStatusService.setEligibilityAssessment(id, data)
     }
 
 }

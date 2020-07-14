@@ -1,11 +1,13 @@
 package io.cloudflight.ems.service
 
+import io.cloudflight.ems.api.dto.InputProjectEligibilityAssessment
 import io.cloudflight.ems.api.dto.InputProjectQualityAssessment
 import io.cloudflight.ems.api.dto.InputProjectStatus
 import io.cloudflight.ems.api.dto.OutputProject
 import io.cloudflight.ems.api.dto.ProjectApplicationStatus
 import io.cloudflight.ems.entity.Audit
 import io.cloudflight.ems.entity.Project
+import io.cloudflight.ems.entity.ProjectEligibilityAssessment
 import io.cloudflight.ems.entity.ProjectQualityAssessment
 import io.cloudflight.ems.entity.ProjectStatus
 import io.cloudflight.ems.entity.User
@@ -70,6 +72,32 @@ class ProjectStatusServiceImpl(
             currentUser = securityService.currentUser,
             projectId = project.id.toString(),
             result = project.qualityAssessment!!.result
+        ))
+        return result
+    }
+
+    @Transactional
+    override fun setEligibilityAssessment(
+        projectId: Long,
+        eligibilityAssessmentData: InputProjectEligibilityAssessment
+    ): OutputProject {
+        val user = userRepository.findByIdOrNull(securityService.currentUser?.user?.id!!)
+            ?: throw ResourceNotFoundException()
+        val project = projectRepo.findOneById(projectId) ?: throw ResourceNotFoundException()
+
+        val eligibilityAssessment = ProjectEligibilityAssessment(
+            id = projectId,
+            project = project,
+            result = eligibilityAssessmentData.result!!,
+            user = user,
+            note = eligibilityAssessmentData.note
+        )
+        val result = projectRepo.save(project.copy(eligibilityAssessment = eligibilityAssessment)).toOutputProject()
+
+        auditService.logEvent(Audit.eligibilityAssessmentConcluded(
+            currentUser = securityService.currentUser,
+            projectId = project.id.toString(),
+            result = project.eligibilityAssessment!!.result
         ))
         return result
     }

@@ -1,6 +1,7 @@
 package io.cloudflight.ems.entity
 
 import io.cloudflight.ems.api.dto.ProjectApplicationStatus
+import io.cloudflight.ems.api.dto.ProjectEligibilityAssessmentResult
 import io.cloudflight.ems.api.dto.ProjectQualityAssessmentResult
 import io.cloudflight.ems.api.dto.user.OutputUser
 import io.cloudflight.ems.api.dto.user.OutputUserWithRole
@@ -196,6 +197,15 @@ data class Audit(
                 projectId = projectId,
                 user = currentUser?.toEsUser(),
                 description = "Project application quality assessment concluded as $result"
+            )
+        }
+
+        fun eligibilityAssessmentConcluded(currentUser: CurrentUser?, projectId: String, result: ProjectEligibilityAssessmentResult): Audit {
+            return Audit(
+                action = AuditAction.ELIGIBILITY_ASSESSMENT_CONCLUDED,
+                projectId = projectId,
+                user = currentUser?.toEsUser(),
+                description = "Project application eligibility assessment concluded as $result"
             )
         }
 
