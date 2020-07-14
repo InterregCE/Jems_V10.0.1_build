@@ -4,6 +4,7 @@ import io.cloudflight.ems.api.dto.user.InputUserCreate
 import io.cloudflight.ems.api.dto.user.InputUserRegistration
 import io.cloudflight.ems.api.dto.user.OutputCurrentUser
 import io.cloudflight.ems.api.dto.user.OutputUser
+import io.cloudflight.ems.api.dto.user.OutputUserWithRole
 import io.cloudflight.ems.dto.UserWithCredentials
 import io.cloudflight.ems.entity.User
 import io.cloudflight.ems.entity.UserRole
@@ -19,6 +20,13 @@ fun UserWithCredentials.toLocalCurrentUser() = LocalCurrentUser(
 )
 
 fun User.toOutputUser() = OutputUser(
+    id = this.id,
+    email = this.email,
+    name = this.name,
+    surname = this.surname
+)
+
+fun User.toOutputUserWithRole() = OutputUserWithRole(
     id = this.id,
     email = this.email,
     name = this.name,

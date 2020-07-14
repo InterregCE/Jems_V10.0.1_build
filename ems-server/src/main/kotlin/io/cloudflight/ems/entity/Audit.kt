@@ -1,7 +1,9 @@
 package io.cloudflight.ems.entity
 
 import io.cloudflight.ems.api.dto.ProjectApplicationStatus
+import io.cloudflight.ems.api.dto.ProjectQualityAssessmentResult
 import io.cloudflight.ems.api.dto.user.OutputUser
+import io.cloudflight.ems.api.dto.user.OutputUserWithRole
 import io.cloudflight.ems.security.model.CurrentUser
 import org.springframework.data.annotation.Id
 import org.springframework.data.elasticsearch.annotations.DateFormat
@@ -20,7 +22,7 @@ data class Audit(
     val id: String? = null,
 
     @Field(type = FieldType.Date, store = true, format = DateFormat.date_time)
-    val timestamp: String?,
+    val timestamp: String? = getElasticTimeNow(),
 
     @Field(type = FieldType.Keyword, store = true)
     val action: AuditAction?,
@@ -122,7 +124,7 @@ data class Audit(
             )
         }
 
-        fun userCreated(currentUser: CurrentUser?, createdUser: OutputUser): Audit {
+        fun userCreated(currentUser: CurrentUser?, createdUser: OutputUserWithRole): Audit {
             val author = currentUser?.user?.email
             return Audit(
                 id = null,
@@ -134,7 +136,7 @@ data class Audit(
             )
         }
 
-        fun userRoleChanged(currentUser: CurrentUser?, user: OutputUser): Audit {
+        fun userRoleChanged(currentUser: CurrentUser?, user: OutputUserWithRole): Audit {
             val author = currentUser?.user?.email
             return Audit(
                 id = null,
@@ -152,8 +154,6 @@ data class Audit(
                 .collect(Collectors.joining(",\n"))
 
             return Audit(
-                id = null,
-                timestamp = getElasticTimeNow(),
                 action = AuditAction.USER_DATA_CHANGED,
                 projectId = null,
                 user = currentUser?.toEsUser(),
@@ -161,10 +161,8 @@ data class Audit(
             )
         }
 
-        fun applicantRegistered(createdUser: OutputUser): Audit {
+        fun applicantRegistered(createdUser: OutputUserWithRole): Audit {
             return Audit(
-                id = null,
-                timestamp = getElasticTimeNow(),
                 action = AuditAction.USER_REGISTERED,
                 projectId = null,
                 user = AuditUser(createdUser.id!!, createdUser.email),
@@ -174,8 +172,6 @@ data class Audit(
 
         fun userSessionExpired(user: AuditUser): Audit {
             return Audit(
-                id = null,
-                timestamp = getElasticTimeNow(),
                 action = AuditAction.USER_SESSION_EXPIRED,
                 projectId = null,
                 user = user,
@@ -185,14 +181,21 @@ data class Audit(
 
         fun passwordChanged(initiator: CurrentUser?, changedUser: OutputUser): Audit {
             return Audit(
-                id = null,
-                timestamp = getElasticTimeNow(),
                 action = AuditAction.PASSWORD_CHANGED,
                 projectId = null,
                 user = initiator?.toEsUser(),
                 description = if (initiator?.user?.id == changedUser.id)
                     "Password of user '${changedUser.name} ${changedUser.surname}' (${changedUser.email}) has been changed by himself/herself"
                 else "Password of user '${changedUser.name} ${changedUser.surname}' (${changedUser.email}) has been changed by user ${initiator?.user?.email}"
+            )
+        }
+
+        fun qualityAssessmentConcluded(currentUser: CurrentUser?, projectId: String, result: ProjectQualityAssessmentResult): Audit {
+            return Audit(
+                action = AuditAction.QUALITY_ASSESSMENT_CONCLUDED,
+                projectId = projectId,
+                user = currentUser?.toEsUser(),
+                description = "Project application quality assessment concluded as $result"
             )
         }
 

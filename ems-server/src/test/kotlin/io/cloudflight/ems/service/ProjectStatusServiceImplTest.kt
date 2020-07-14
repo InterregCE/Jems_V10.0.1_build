@@ -4,6 +4,7 @@ import io.cloudflight.ems.api.dto.InputProjectStatus
 import io.cloudflight.ems.api.dto.ProjectApplicationStatus
 import io.cloudflight.ems.api.dto.user.OutputUser
 import io.cloudflight.ems.api.dto.user.OutputUserRole
+import io.cloudflight.ems.api.dto.user.OutputUserWithRole
 import io.cloudflight.ems.entity.Project
 import io.cloudflight.ems.entity.ProjectStatus
 import io.cloudflight.ems.entity.User
@@ -53,7 +54,7 @@ internal class ProjectStatusServiceImplTest {
         password = "hash_pass"
     )
 
-    private val userApplicant = OutputUser(user.id, user.email, user.name, user.surname, OutputUserRole(user.userRole.id, user.userRole.name))
+    private val userApplicant = OutputUserWithRole(user.id, user.email, user.name, user.surname, OutputUserRole(user.userRole.id, user.userRole.name))
 
     private val projectDraft = createProject(ProjectApplicationStatus.DRAFT)
     private val projectSubmitted = createProject(ProjectApplicationStatus.SUBMITTED, NOTE_DENIED)

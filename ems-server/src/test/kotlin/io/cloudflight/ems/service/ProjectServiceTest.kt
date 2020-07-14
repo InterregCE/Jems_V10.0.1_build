@@ -2,10 +2,12 @@ package io.cloudflight.ems.service
 
 import io.cloudflight.ems.api.dto.InputProject
 import io.cloudflight.ems.api.dto.OutputProject
+import io.cloudflight.ems.api.dto.OutputProjectSimple
 import io.cloudflight.ems.api.dto.OutputProjectStatus
 import io.cloudflight.ems.api.dto.ProjectApplicationStatus
 import io.cloudflight.ems.api.dto.user.OutputUser
 import io.cloudflight.ems.api.dto.user.OutputUserRole
+import io.cloudflight.ems.api.dto.user.OutputUserWithRole
 import io.cloudflight.ems.entity.Audit
 import io.cloudflight.ems.entity.AuditAction
 import io.cloudflight.ems.entity.Project
@@ -50,12 +52,19 @@ class ProjectServiceTest {
 
     private val UNPAGED = Pageable.unpaged()
 
-    private val user = OutputUser(
+    private val user = OutputUserWithRole(
         id = 1,
         email = "admin@admin.dev",
         name = "Name",
         surname = "Surname",
         userRole = OutputUserRole(id = 1, name = "ADMIN")
+    )
+
+    private val userWithoutRole = OutputUser(
+        id = user.id,
+        email = user.email,
+        name = user.name,
+        surname = user.surname
     )
 
     private val account = User(
@@ -127,17 +136,15 @@ class ProjectServiceTest {
         assertEquals(1, result.totalElements)
 
         val expectedProjects = listOf(
-            OutputProject(
+            OutputProjectSimple(
                 id = 25,
                 acronym = "test acronym",
-                applicant = user,
                 submissionDate = TEST_DATE_TIME,
                 projectStatus = OutputProjectStatus(
                     id = 10,
                     status = ProjectApplicationStatus.DRAFT,
-                    user = user,
-                    updated = TEST_DATE_TIME,
-                    note = null
+                    user = userWithoutRole,
+                    updated = TEST_DATE_TIME
                 )
             )
         )

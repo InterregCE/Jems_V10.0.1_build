@@ -4,6 +4,7 @@ import io.cloudflight.ems.api.dto.OutputProjectFile
 import io.cloudflight.ems.api.dto.ProjectApplicationStatus
 import io.cloudflight.ems.api.dto.user.OutputUser
 import io.cloudflight.ems.api.dto.user.OutputUserRole
+import io.cloudflight.ems.api.dto.user.OutputUserWithRole
 import io.cloudflight.ems.dto.FileMetadata
 import io.cloudflight.ems.entity.Audit
 import io.cloudflight.ems.entity.AuditAction
@@ -49,12 +50,19 @@ class FileStorageServiceTest {
     private val TEST_DATE = LocalDate.of(2020, 6, 10)
     private val TEST_DATE_TIME = ZonedDateTime.of(TEST_DATE, LocalTime.of(16, 0), ZoneId.of("Europe/Bratislava"))
 
-    private val user = OutputUser(
+    private val user = OutputUserWithRole(
         id = 34,
         email = "admin@admin.dev",
         name = "Name",
         surname = "Surname",
         userRole = OutputUserRole(id = 1, name = "ADMIN")
+    )
+
+    private val userWithoutRole = OutputUser(
+        id = user.id,
+        email = user.email,
+        name = user.name,
+        surname = user.surname
     )
 
     private val account = User(
@@ -328,7 +336,7 @@ class FileStorageServiceTest {
         return OutputProjectFile(
             id = 1,
             name = "proj-file-1.png",
-            author = user,
+            author = userWithoutRole,
             description = "",
             size = 2,
             updated = TEST_DATE_TIME

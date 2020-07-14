@@ -5,6 +5,7 @@ import io.cloudflight.ems.api.dto.user.InputUserCreate
 import io.cloudflight.ems.api.dto.user.InputUserRegistration
 import io.cloudflight.ems.api.dto.user.InputUserUpdate
 import io.cloudflight.ems.api.dto.user.OutputUser
+import io.cloudflight.ems.api.dto.user.OutputUserWithRole
 import io.cloudflight.ems.dto.UserWithCredentials
 import io.cloudflight.ems.entity.User
 import io.cloudflight.ems.entity.UserRole
@@ -42,13 +43,13 @@ class UserServiceImpl(
     @Transactional(readOnly = true)
     override fun findOneByEmail(email: String): UserWithCredentials? {
         return userRepository.findOneByEmail(email)?.let { user ->
-            return UserWithCredentials(user.toOutputUser(), user.password)
+            return UserWithCredentials(user.toOutputUserWithRole(), user.password)
         }
     }
 
     @Transactional(readOnly = true)
-    override fun getById(id: Long): OutputUser {
-        return userRepository.findOneById(id)?.toOutputUser()
+    override fun getById(id: Long): OutputUserWithRole {
+        return userRepository.findOneById(id)?.toOutputUserWithRole()
             ?: throw ResourceNotFoundException()
     }
 
@@ -58,32 +59,32 @@ class UserServiceImpl(
     }
 
     @Transactional
-    override fun create(user: InputUserCreate): OutputUser {
+    override fun create(user: InputUserCreate): OutputUserWithRole {
         val role = userRoleRepository.findByIdOrNull(user.userRoleId!!)
             ?: throwNotFound("User with id ${user.userRoleId} was not found.")
 
         val passwordEncoded = passwordEncoder.encode(user.email)
-        val createdUser = userRepository.save(user.toEntity(role, passwordEncoded)).toOutputUser()
+        val createdUser = userRepository.save(user.toEntity(role, passwordEncoded)).toOutputUserWithRole()
         auditService.logEvent(Audit.userCreated(securityService.currentUser, createdUser))
         return createdUser
     }
 
     @Transactional
-    override fun registerApplicant(user: InputUserRegistration): OutputUser {
+    override fun registerApplicant(user: InputUserRegistration): OutputUserWithRole {
         val role = userRoleRepository.findOneByName(APPLICANT_USER)
             ?: throwNotFound("The default applicant role cannot be found in the system.")
 
         val passwordEncoded = passwordEncoder.encode(user.password)
-        val createdUser = userRepository.save(user.toEntity(role, passwordEncoded)).toOutputUser()
+        val createdUser = userRepository.save(user.toEntity(role, passwordEncoded)).toOutputUserWithRole()
         auditService.logEvent(Audit.applicantRegistered(createdUser))
         return createdUser
     }
 
     @Transactional
-    override fun update(newUser: InputUserUpdate): OutputUser {
+    override fun update(newUser: InputUserUpdate): OutputUserWithRole {
         val oldUser = userRepository.findByIdOrNull(newUser.id)
             ?: throwNotFound("User with id ${newUser.id} was not found.")
-        val oldData = oldUser.toOutputUser()
+        val oldData = oldUser.toOutputUserWithRole()
 
         val toUpdate = oldUser.copy(
             email = getNewEmailIfChanged(oldUser, newUser),
@@ -92,7 +93,7 @@ class UserServiceImpl(
             userRole = getNewRoleIfChanged(oldUser, newUser)
         )
 
-        val updatedUser = userRepository.save(toUpdate).toOutputUser()
+        val updatedUser = userRepository.save(toUpdate).toOutputUserWithRole()
         writeChangeAuditMessages(oldUser = oldData, newUser = updatedUser)
         return updatedUser
     }
@@ -146,7 +147,7 @@ class UserServiceImpl(
         )
     }
 
-    private fun writeChangeAuditMessages(oldUser: OutputUser, newUser: OutputUser) {
+    private fun writeChangeAuditMessages(oldUser: OutputUserWithRole, newUser: OutputUserWithRole) {
         if (oldUser.userRole.id != newUser.userRole.id)
             auditService.logEvent(
                 Audit.userRoleChanged(securityService.currentUser, newUser)
@@ -159,7 +160,7 @@ class UserServiceImpl(
             )
     }
 
-    private fun getListOfChangedUserData(oldUser: OutputUser, newUser: OutputUser): Map<String, Pair<String, String>> {
+    private fun getListOfChangedUserData(oldUser: OutputUserWithRole, newUser: OutputUserWithRole): Map<String, Pair<String, String>> {
         val result = mutableMapOf<String, Pair<String, String>>()
         if (oldUser.email != newUser.email)
             result.put("email", Pair(oldUser.email, newUser.email))

@@ -8,5 +8,5 @@ data class OutputProjectStatus (
     val status: ProjectApplicationStatus,
     val user: OutputUser,
     val updated: ZonedDateTime,
-    val note: String?
+    val note: String? = null
 )

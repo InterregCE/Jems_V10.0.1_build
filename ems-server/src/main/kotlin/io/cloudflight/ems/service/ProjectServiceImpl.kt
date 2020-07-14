@@ -2,6 +2,7 @@ package io.cloudflight.ems.service
 
 import io.cloudflight.ems.api.dto.InputProject
 import io.cloudflight.ems.api.dto.OutputProject
+import io.cloudflight.ems.api.dto.OutputProjectSimple
 import io.cloudflight.ems.api.dto.ProjectApplicationStatus
 import io.cloudflight.ems.entity.Audit
 import io.cloudflight.ems.entity.ProjectStatus
@@ -37,10 +38,10 @@ class ProjectServiceImpl(
     }
 
     @Transactional(readOnly = true)
-    override fun findAll(page: Pageable): Page<OutputProject> {
+    override fun findAll(page: Pageable): Page<OutputProjectSimple> {
         val currentUser = securityService.currentUser!!
         if (currentUser.hasRole(ADMINISTRATOR)) {
-            return projectRepo.findAll(page).map { it.toOutputProject() }
+            return projectRepo.findAll(page).map { it.toOutputProjectSimple() }
         }
         if (currentUser.hasRole(PROGRAMME_USER)) {
             return projectRepo.findAllWithStatuses(
@@ -49,12 +50,12 @@ class ProjectServiceImpl(
                     ProjectApplicationStatus.RESUBMITTED,
                     ProjectApplicationStatus.RETURNED_TO_APPLICANT
                 ), page
-            ).map { it.toOutputProject() }
+            ).map { it.toOutputProjectSimple() }
         }
         if (currentUser.hasRole(APPLICANT_USER)) {
-            return projectRepo.findAllByApplicantId(currentUser.user.id!!, page).map { it.toOutputProject() }
+            return projectRepo.findAllByApplicantId(currentUser.user.id!!, page).map { it.toOutputProjectSimple() }
         }
-        return projectRepo.findAll(page).map { it.toOutputProject() }
+        return projectRepo.findAll(page).map { it.toOutputProjectSimple() }
     }
 
     @Transactional
