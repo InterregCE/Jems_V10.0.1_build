@@ -1,7 +1,6 @@
 package io.cloudflight.ems.service
 
 import io.cloudflight.ems.api.dto.InputProject
-import io.cloudflight.ems.api.dto.OutputProject
 import io.cloudflight.ems.api.dto.OutputProjectSimple
 import io.cloudflight.ems.api.dto.OutputProjectStatus
 import io.cloudflight.ems.api.dto.ProjectApplicationStatus
@@ -153,7 +152,7 @@ class ProjectServiceTest {
     }
 
     @Test
-    fun `programme user lists submitted and resubmitted projects`() {
+    fun `programme user lists submitted projects`() {
         every { securityService.currentUser } returns
                 LocalCurrentUser(
                     user, "hash_pass",
@@ -167,7 +166,6 @@ class ProjectServiceTest {
                 withArg {
                     assertThat(it).containsExactly(
                         ProjectApplicationStatus.SUBMITTED,
-                        ProjectApplicationStatus.RESUBMITTED,
                         ProjectApplicationStatus.RETURNED_TO_APPLICANT
                     )
                 }, UNPAGED

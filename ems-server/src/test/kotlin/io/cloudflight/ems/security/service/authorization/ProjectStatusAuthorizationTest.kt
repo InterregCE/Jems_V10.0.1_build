@@ -25,11 +25,11 @@ internal class ProjectStatusAuthorizationTest {
         const val PID_DRAFT: Long = 1
         const val PID_SUBMITTED: Long = 2L
         const val PID_RETURNED: Long = 3L
-        const val PID_RESUBMITTED: Long = 4L
     }
 
     @MockK
     lateinit var securityService: SecurityService
+
     @MockK
     lateinit var projectService: ProjectService
 
@@ -69,7 +69,6 @@ internal class ProjectStatusAuthorizationTest {
     private val projectDraft = createProject(PID_DRAFT, ProjectApplicationStatus.DRAFT)
     private val projectSubmitted = createProject(PID_SUBMITTED, ProjectApplicationStatus.SUBMITTED)
     private val projectReturned = createProject(PID_RETURNED, ProjectApplicationStatus.RETURNED_TO_APPLICANT)
-    private val projectResubmitted = createProject(PID_RESUBMITTED, ProjectApplicationStatus.RESUBMITTED)
 
     @BeforeEach
     fun setup() {
@@ -79,58 +78,81 @@ internal class ProjectStatusAuthorizationTest {
         every { projectService.getById(PID_DRAFT) } returns projectDraft
         every { projectService.getById(PID_SUBMITTED) } returns projectSubmitted
         every { projectService.getById(PID_RETURNED) } returns projectReturned
-        every { projectService.getById(PID_RESUBMITTED) } returns projectResubmitted
     }
 
     @Test
     fun `admin can change any allowed status`() {
-        every { securityService.currentUser } returns LocalCurrentUser(userAdmin, "hash_pass", listOf(
-            SimpleGrantedAuthority("ROLE_" + userAdmin.userRole.name)
-        ))
+        every { securityService.currentUser } returns LocalCurrentUser(
+            userAdmin, "hash_pass", listOf(
+                SimpleGrantedAuthority("ROLE_" + userAdmin.userRole.name)
+            )
+        )
 
         assertTrue(projectStatusAuthorization.canChangeStatusTo(PID_DRAFT, ProjectApplicationStatus.SUBMITTED))
-        assertTrue(projectStatusAuthorization.canChangeStatusTo(PID_SUBMITTED, ProjectApplicationStatus.RETURNED_TO_APPLICANT))
-        assertTrue(projectStatusAuthorization.canChangeStatusTo(PID_RETURNED, ProjectApplicationStatus.RESUBMITTED))
-        assertTrue(projectStatusAuthorization.canChangeStatusTo(PID_RESUBMITTED, ProjectApplicationStatus.RETURNED_TO_APPLICANT))
+        assertTrue(
+            projectStatusAuthorization.canChangeStatusTo(
+                PID_SUBMITTED,
+                ProjectApplicationStatus.RETURNED_TO_APPLICANT
+            )
+        )
 
-        assertFalse(projectStatusAuthorization.canChangeStatusTo(PID_DRAFT, ProjectApplicationStatus.RESUBMITTED))
         assertFalse(projectStatusAuthorization.canChangeStatusTo(PID_SUBMITTED, ProjectApplicationStatus.SUBMITTED))
-        assertFalse(projectStatusAuthorization.canChangeStatusTo(PID_RETURNED, ProjectApplicationStatus.RETURNED_TO_APPLICANT))
-        assertFalse(projectStatusAuthorization.canChangeStatusTo(PID_RESUBMITTED, ProjectApplicationStatus.SUBMITTED))
+        assertFalse(
+            projectStatusAuthorization.canChangeStatusTo(
+                PID_RETURNED,
+                ProjectApplicationStatus.RETURNED_TO_APPLICANT
+            )
+        )
     }
 
     @Test
     fun `owner can only submit and resubmit`() {
-        every { securityService.currentUser } returns LocalCurrentUser(userApplicant, "hash_pass", listOf(
-            SimpleGrantedAuthority("ROLE_" + userApplicant.userRole.name)
-        ))
+        every { securityService.currentUser } returns LocalCurrentUser(
+            userApplicant, "hash_pass", listOf(
+                SimpleGrantedAuthority("ROLE_" + userApplicant.userRole.name)
+            )
+        )
 
         assertTrue(projectStatusAuthorization.canChangeStatusTo(PID_DRAFT, ProjectApplicationStatus.SUBMITTED))
-        assertFalse(projectStatusAuthorization.canChangeStatusTo(PID_SUBMITTED, ProjectApplicationStatus.RETURNED_TO_APPLICANT))
-        assertTrue(projectStatusAuthorization.canChangeStatusTo(PID_RETURNED, ProjectApplicationStatus.RESUBMITTED))
-        assertFalse(projectStatusAuthorization.canChangeStatusTo(PID_RESUBMITTED, ProjectApplicationStatus.RETURNED_TO_APPLICANT))
+        assertFalse(
+            projectStatusAuthorization.canChangeStatusTo(
+                PID_SUBMITTED,
+                ProjectApplicationStatus.RETURNED_TO_APPLICANT
+            )
+        )
 
-        assertFalse(projectStatusAuthorization.canChangeStatusTo(PID_DRAFT, ProjectApplicationStatus.RESUBMITTED))
         assertFalse(projectStatusAuthorization.canChangeStatusTo(PID_SUBMITTED, ProjectApplicationStatus.SUBMITTED))
-        assertFalse(projectStatusAuthorization.canChangeStatusTo(PID_RETURNED, ProjectApplicationStatus.RETURNED_TO_APPLICANT))
-        assertFalse(projectStatusAuthorization.canChangeStatusTo(PID_RESUBMITTED, ProjectApplicationStatus.SUBMITTED))
+        assertFalse(
+            projectStatusAuthorization.canChangeStatusTo(
+                PID_RETURNED,
+                ProjectApplicationStatus.RETURNED_TO_APPLICANT
+            )
+        )
     }
 
     @Test
     fun `programme user can only return to applicant`() {
-        every { securityService.currentUser } returns LocalCurrentUser(userProgramme, "hash_pass", listOf(
-            SimpleGrantedAuthority("ROLE_" + userProgramme.userRole.name)
-        ))
+        every { securityService.currentUser } returns LocalCurrentUser(
+            userProgramme, "hash_pass", listOf(
+                SimpleGrantedAuthority("ROLE_" + userProgramme.userRole.name)
+            )
+        )
 
         assertFalse(projectStatusAuthorization.canChangeStatusTo(PID_DRAFT, ProjectApplicationStatus.SUBMITTED))
-        assertTrue(projectStatusAuthorization.canChangeStatusTo(PID_SUBMITTED, ProjectApplicationStatus.RETURNED_TO_APPLICANT))
-        assertFalse(projectStatusAuthorization.canChangeStatusTo(PID_RETURNED, ProjectApplicationStatus.RESUBMITTED))
-        assertTrue(projectStatusAuthorization.canChangeStatusTo(PID_RESUBMITTED, ProjectApplicationStatus.RETURNED_TO_APPLICANT))
+        assertTrue(
+            projectStatusAuthorization.canChangeStatusTo(
+                PID_SUBMITTED,
+                ProjectApplicationStatus.RETURNED_TO_APPLICANT
+            )
+        )
 
-        assertFalse(projectStatusAuthorization.canChangeStatusTo(PID_DRAFT, ProjectApplicationStatus.RESUBMITTED))
         assertFalse(projectStatusAuthorization.canChangeStatusTo(PID_SUBMITTED, ProjectApplicationStatus.SUBMITTED))
-        assertFalse(projectStatusAuthorization.canChangeStatusTo(PID_RETURNED, ProjectApplicationStatus.RETURNED_TO_APPLICANT))
-        assertFalse(projectStatusAuthorization.canChangeStatusTo(PID_RESUBMITTED, ProjectApplicationStatus.SUBMITTED))
+        assertFalse(
+            projectStatusAuthorization.canChangeStatusTo(
+                PID_RETURNED,
+                ProjectApplicationStatus.RETURNED_TO_APPLICANT
+            )
+        )
     }
 
     @Test
@@ -147,33 +169,41 @@ internal class ProjectStatusAuthorizationTest {
 
     @Test
     fun `current user is admin`() {
-        every { securityService.currentUser } returns LocalCurrentUser(userAdmin, "hash_pass", listOf(
-            SimpleGrantedAuthority("ROLE_" + userAdmin.userRole.name)
-        ))
+        every { securityService.currentUser } returns LocalCurrentUser(
+            userAdmin, "hash_pass", listOf(
+                SimpleGrantedAuthority("ROLE_" + userAdmin.userRole.name)
+            )
+        )
         assertTrue(projectStatusAuthorization.isAdmin())
     }
 
     @Test
     fun `current user is not admin`() {
-        every { securityService.currentUser } returns LocalCurrentUser(userProgramme, "hash_pass", listOf(
-            SimpleGrantedAuthority("ROLE_" + userProgramme.userRole.name)
-        ))
+        every { securityService.currentUser } returns LocalCurrentUser(
+            userProgramme, "hash_pass", listOf(
+                SimpleGrantedAuthority("ROLE_" + userProgramme.userRole.name)
+            )
+        )
         assertFalse(projectStatusAuthorization.isAdmin())
     }
 
     @Test
     fun `current user is programme user`() {
-        every { securityService.currentUser } returns LocalCurrentUser(userProgramme, "hash_pass", listOf(
-            SimpleGrantedAuthority("ROLE_" + userProgramme.userRole.name)
-        ))
+        every { securityService.currentUser } returns LocalCurrentUser(
+            userProgramme, "hash_pass", listOf(
+                SimpleGrantedAuthority("ROLE_" + userProgramme.userRole.name)
+            )
+        )
         assertTrue(projectStatusAuthorization.isProgrammeUser())
     }
 
     @Test
     fun `current user is not programme user`() {
-        every { securityService.currentUser } returns LocalCurrentUser(userApplicant, "hash_pass", listOf(
-            SimpleGrantedAuthority("ROLE_" + userApplicant.userRole.name)
-        ))
+        every { securityService.currentUser } returns LocalCurrentUser(
+            userApplicant, "hash_pass", listOf(
+                SimpleGrantedAuthority("ROLE_" + userApplicant.userRole.name)
+            )
+        )
         assertFalse(projectStatusAuthorization.isProgrammeUser())
     }
 

@@ -21,17 +21,15 @@ class ProjectAuthorization(
         if (securityService.currentUser?.hasRole(APPLICANT_USER)!!) {
             return securityService.currentUser?.user?.id == project.applicant.id
         }
-        // programme user can only read submitted, resubmitted and returned to applicant
+        // programme user can only read submitted and returned to applicant
         return project.projectStatus.status == ProjectApplicationStatus.SUBMITTED
-                || project.projectStatus.status == ProjectApplicationStatus.RESUBMITTED
                 || project.projectStatus.status == ProjectApplicationStatus.RETURNED_TO_APPLICANT
     }
 
     fun canWriteProject(id: Long): Boolean {
         val project = projectService.getById(id)
         return securityService.currentUser?.hasRole(ADMINISTRATOR)!!
-                ||
-            (project.applicant.id == securityService.currentUser?.user?.id
+                || (project.applicant.id == securityService.currentUser?.user?.id
                 && (project.projectStatus.status == ProjectApplicationStatus.DRAFT
                 || project.projectStatus.status == ProjectApplicationStatus.RETURNED_TO_APPLICANT))
     }

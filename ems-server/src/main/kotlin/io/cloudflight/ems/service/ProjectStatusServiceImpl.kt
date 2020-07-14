@@ -107,12 +107,16 @@ class ProjectStatusServiceImpl(
     }
 
     private fun updateProject(oldProject: Project, newStatus: ProjectStatus, timestamp: ZonedDateTime): Project {
-        if (newStatus.status == ProjectApplicationStatus.SUBMITTED) {
-            return oldProject.copy(projectStatus = newStatus, submissionDate = timestamp)
-        } else if (oldProject.projectStatus.status == ProjectApplicationStatus.RETURNED_TO_APPLICANT) {
-            return oldProject.copy(projectStatus = newStatus, resubmissionDate = timestamp)
-        } else {
-            return oldProject.copy(projectStatus = newStatus)
+        return when {
+            oldProject.projectStatus.status == ProjectApplicationStatus.RETURNED_TO_APPLICANT -> {
+                oldProject.copy(projectStatus = newStatus, resubmissionDate = timestamp)
+            }
+            newStatus.status == ProjectApplicationStatus.SUBMITTED -> {
+                oldProject.copy(projectStatus = newStatus, submissionDate = timestamp)
+            }
+            else -> {
+                oldProject.copy(projectStatus = newStatus)
+            }
         }
     }
 

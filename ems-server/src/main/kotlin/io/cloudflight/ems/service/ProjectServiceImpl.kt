@@ -47,7 +47,6 @@ class ProjectServiceImpl(
             return projectRepo.findAllWithStatuses(
                 listOf(
                     ProjectApplicationStatus.SUBMITTED,
-                    ProjectApplicationStatus.RESUBMITTED,
                     ProjectApplicationStatus.RETURNED_TO_APPLICANT
                 ), page
             ).map { it.toOutputProjectSimple() }
