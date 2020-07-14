@@ -14,6 +14,7 @@ import {MatTableModule} from '@angular/material/table';
 import {NgxPermissionsModule} from 'ngx-permissions';
 import {MatPaginatorModule} from '@angular/material/paginator';
 import {MatSortModule} from '@angular/material/sort';
+import {PaginatorComponent} from '@common/components/table/paginator/paginator.component';
 
 const modules = [
   CommonModule,
@@ -35,6 +36,7 @@ const modules = [
 
 const declarations = [
   TableComponent,
+  PaginatorComponent,
 ];
 
 @NgModule({

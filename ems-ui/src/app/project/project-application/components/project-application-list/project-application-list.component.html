@@ -1,18 +1,11 @@
 <h5>List of projects</h5>
-<div class="project-application-list-container">
-    <p *ngIf="!projectPage?.content.length">No projects submitted</p>
-
-    <ng-container *ngIf="projectPage.content.length">
-        <app-paginator
-                [length]="projectPage?.totalElements"
-                [currentPageIndex]="pageIndex"
-                (pageIndexChanged)="newPageIndex.emit($event)"
-                (pageSizeChanged)="newPageSize.emit($event)">
-        </app-paginator>
-        <app-table
-                [configuration]="tableConfiguration"
-                [rows]="projectPage.content"
-                (sortRows)="newSort.emit($event)">
-        </app-table>
-    </ng-container>
-</div>
+<p *ngIf="!projectPage?.content.length">No projects submitted</p>
+<app-table *ngIf="projectPage.content.length"
+           [configuration]="tableConfiguration"
+           [rows]="projectPage.content"
+           [totalElements]="projectPage?.totalElements"
+           [pageIndex]="pageIndex"
+           (newPageIndex)="newPageIndex.emit($event)"
+           (newPageSize)="newPageSize.emit($event)"
+           (sortRows)="newSort.emit($event)">
+</app-table>
