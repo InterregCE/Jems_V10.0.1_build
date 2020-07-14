@@ -2073,12 +2073,12 @@
 					"response": []
 				},
 				{
-					"name": "upload file to SUBMITTED application",
+					"name": "check application status",
 					"event": [
 						{
 							"listen": "prerequest",
 							"script": {
-								"id": "b10e54f9-92db-4da6-998f-8a969dc529fb",
+								"id": "ace6f74c-1a24-4043-8f5f-0c77a9f324c7",
 								"exec": [
 									""
 								],
@@ -2088,7 +2088,78 @@
 						{
 							"listen": "test",
 							"script": {
-								"id": "f803c067-1b52-4da2-b62a-2db47469367d",
+								"id": "3ba0c801-b56a-4a73-90fe-e333eacf68d6",
+								"exec": [
+									"const application = pm.response.json();\r",
+									"\r",
+									"pm.test('status should be SUBMITTED', function() {\r",
+									"    pm.response.to.have.status(200);\r",
+									"    pm.expect(application.projectStatus.status).to.eql('SUBMITTED');\r",
+									"});\r",
+									"\r",
+									"pm.test('submission date should be filled in', function() {\r",
+									"    pm.expect(application.submissionDate).not.eql(null);\r",
+									"    pm.variables.set('application_submission_time', application.submissionDate);\r",
+									"});\r",
+									"\r",
+									"pm.test('resubmission date should be empty after first submission', function() {\r",
+									"    pm.expect(application.resubmissionDate).to.eql(null);\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "basic",
+							"basic": [
+								{
+									"key": "password",
+									"value": "{{applicant_email}}",
+									"type": "string"
+								},
+								{
+									"key": "username",
+									"value": "{{applicant_email}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{url}}/api/project/{{application_id}}",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"api",
+								"project",
+								"{{application_id}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "upload file to SUBMITTED application",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "76ee1a19-0c0d-4c74-ab73-79406a7f1706",
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"id": "5d7e1ddd-7913-407d-8c6c-0721586d868f",
 								"exec": [
 									"pm.test('applicant should not be able to upload file to SUBMITTED application', function() {\r",
 									"    pm.response.to.have.status(403);\r",
@@ -2368,12 +2439,12 @@
 					"response": []
 				},
 				{
-					"name": "program user cannot resubmit application",
+					"name": "check application status",
 					"event": [
 						{
 							"listen": "prerequest",
 							"script": {
-								"id": "52198fb4-531e-402a-b34d-5b650ce0ef4d",
+								"id": "ab38b965-4591-4971-ba92-52eb7b1b0ede",
 								"exec": [
 									""
 								],
@@ -2383,7 +2454,79 @@
 						{
 							"listen": "test",
 							"script": {
-								"id": "6a884c99-5e70-4338-b9ce-718a88938d01",
+								"id": "4591dac8-c9c8-46d3-b7f6-c60d96e89282",
+								"exec": [
+									"const application = pm.response.json();\r",
+									"\r",
+									"pm.test('status should be RETURNED_TO_APPLICANT', function() {\r",
+									"    pm.response.to.have.status(200);\r",
+									"    pm.expect(application.projectStatus.status).to.eql('RETURNED_TO_APPLICANT');\r",
+									"});\r",
+									"\r",
+									"pm.test('submission date should stay like it was', function() {\r",
+									"    pm.expect(application.submissionDate).to.eql(\r",
+									"        pm.variables.get('application_submission_time')\r",
+									"    );\r",
+									"});\r",
+									"\r",
+									"pm.test('resubmission date should still be empty', function() {\r",
+									"    pm.expect(application.resubmissionDate).to.eql(null);\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "basic",
+							"basic": [
+								{
+									"key": "password",
+									"value": "{{programme_user_email}}",
+									"type": "string"
+								},
+								{
+									"key": "username",
+									"value": "{{programme_user_email}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{url}}/api/project/{{application_id}}",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"api",
+								"project",
+								"{{application_id}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "program user cannot resubmit application",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "1afddb48-9509-4978-b666-19d51392293f",
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"id": "785f8009-42bd-4f5e-9a0c-e9713f6b8043",
 								"exec": [
 									"pm.test('program user should not be able to resubmit application', function() {\r",
 									"    pm.response.to.have.status(403);\r",
@@ -2414,7 +2557,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"status\": \"RESUBMITTED\"\r\n}\r\n",
+							"raw": "{\r\n    \"status\": \"SUBMITTED\"\r\n}\r\n",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -2437,12 +2580,12 @@
 					"response": []
 				},
 				{
-					"name": "applicant cannot RE-submit to status SUBMIT",
+					"name": "applicant can resubmit application",
 					"event": [
 						{
 							"listen": "prerequest",
 							"script": {
-								"id": "e3a4e346-f1b4-430b-9bbb-33f8d1b3a7f0",
+								"id": "8766bd9e-79c4-42d7-b721-5966a3d57d91",
 								"exec": [
 									""
 								],
@@ -2452,10 +2595,10 @@
 						{
 							"listen": "test",
 							"script": {
-								"id": "0d46014a-8ed4-4475-9b13-137170cb55b5",
+								"id": "0857076f-0178-49de-948a-5da87443fcb2",
 								"exec": [
-									"pm.test('applicant can only re-submit to RESUBMITTED', function() {\r",
-									"    pm.response.to.have.status(403);\r",
+									"pm.test('applicant can resubmit application that was returned to him', function() {\r",
+									"    pm.response.to.have.status(200);\r",
 									"});\r",
 									""
 								],
@@ -2506,12 +2649,12 @@
 					"response": []
 				},
 				{
-					"name": "applicant can resubmit application",
+					"name": "check application status",
 					"event": [
 						{
 							"listen": "prerequest",
 							"script": {
-								"id": "3b9d18ff-5649-47a6-ae94-b0515f64f72d",
+								"id": "23df8217-7b48-425f-9b43-70ebb8ed5720",
 								"exec": [
 									""
 								],
@@ -2521,21 +2664,23 @@
 						{
 							"listen": "test",
 							"script": {
-								"id": "2b0b1bae-e852-4556-8fd9-36c82975ca68",
+								"id": "18fc2bb0-1bb8-4f49-b7c5-180c417dafe0",
 								"exec": [
-									"pm.test('applicant can resubmit application that was returned to him', function() {\r",
-									"    pm.response.to.have.status(200);\r",
-									"});\r",
-									"\r",
 									"const application = pm.response.json();\r",
 									"\r",
-									"pm.test('status of project is set to RESUBMITTED', function() {\r",
-									"    pm.expect(application.projectStatus.status).to.eql('RESUBMITTED');\r",
+									"pm.test('status should be SUBMITTED', function() {\r",
+									"    pm.response.to.have.status(200);\r",
+									"    pm.expect(application.projectStatus.status).to.eql('SUBMITTED');\r",
 									"});\r",
 									"\r",
-									"pm.test('status change is assigned to applicant who triggered change', function() {\r",
-									"    pm.expect(application.projectStatus.user.email)\r",
-									"        .to.eql(pm.variables.get(\"applicant_email\"));\r",
+									"pm.test('submission date should stay like it was', function() {\r",
+									"    pm.expect(application.submissionDate).to.eql(\r",
+									"        pm.variables.get('application_submission_time')\r",
+									"    );\r",
+									"});\r",
+									"\r",
+									"pm.test('resubmission date should be now filled in', function() {\r",
+									"    pm.expect(application.resubmissionDate).not.equal(null);\r",
 									"});\r",
 									""
 								],
@@ -2549,37 +2694,27 @@
 							"basic": [
 								{
 									"key": "password",
-									"value": "{{applicant_email}}",
+									"value": "{{programme_user_email}}",
 									"type": "string"
 								},
 								{
 									"key": "username",
-									"value": "{{applicant_email}}",
+									"value": "{{programme_user_email}}",
 									"type": "string"
 								}
 							]
 						},
-						"method": "PUT",
+						"method": "GET",
 						"header": [],
-						"body": {
-							"mode": "raw",
-							"raw": "{\r\n    \"status\": \"RESUBMITTED\"\r\n}\r\n",
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
-						},
 						"url": {
-							"raw": "{{url}}/api/project/{{application_id}}/status",
+							"raw": "{{url}}/api/project/{{application_id}}",
 							"host": [
 								"{{url}}"
 							],
 							"path": [
 								"api",
 								"project",
-								"{{application_id}}",
-								"status"
+								"{{application_id}}"
 							]
 						}
 					},
@@ -2608,7 +2743,7 @@
 		{
 			"listen": "prerequest",
 			"script": {
-				"id": "7a00930a-cf47-4d47-ae32-11d87f4d1847",
+				"id": "39de0f44-54e0-4e78-9832-e5d20f035514",
 				"type": "text/javascript",
 				"exec": [
 					""
@@ -2618,7 +2753,7 @@
 		{
 			"listen": "test",
 			"script": {
-				"id": "0400d1a6-d6a6-4eb1-9044-4f03013e82a0",
+				"id": "fa7623f0-4da6-4820-a2cc-5a7582804ef1",
 				"type": "text/javascript",
 				"exec": [
 					""
