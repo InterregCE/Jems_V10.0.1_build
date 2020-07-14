@@ -7,7 +7,7 @@ import {FormBuilder, FormGroup, Validators} from '@angular/forms';
 import {AbstractForm} from '@common/components/forms/abstract-form';
 import {ProjectStore} from '../../../containers/project-application-detail/services/project-store.service';
 import {Observable} from 'rxjs';
-import {OutputProject} from '@cat/api';
+import {OutputProject, InputProjectStatus} from '@cat/api';
 
 @Component({
   selector: 'app-project-application-assessment',
@@ -34,8 +34,7 @@ export class ProjectApplicationAssessmentComponent extends AbstractForm implemen
     private activatedRoute: ActivatedRoute,
     private formBuilder: FormBuilder,
     private projectStore: ProjectStore,
-    protected changeDetectorRef: ChangeDetectorRef)
-  {
+    protected changeDetectorRef: ChangeDetectorRef) {
     super(changeDetectorRef);
     this.projectStore.init(this.projectId);
   }
@@ -57,7 +56,7 @@ export class ProjectApplicationAssessmentComponent extends AbstractForm implemen
     this.router.navigate(['project', this.projectId]);
   }
 
-  assessmentChangeHandler (event: any) {
+  assessmentChangeHandler(event: any) {
     this.selectedAssessment = event.value;
   }
 
@@ -66,17 +65,17 @@ export class ProjectApplicationAssessmentComponent extends AbstractForm implemen
     Forms.confirmDialog(
       this.dialog,
       'project.assessment.eligibilityCheck.dialog.title',
-      'Are you sure you want to submit the eligibility assessment as '
+      'Are you sure you want to submit the eligibility decision as '
       + this.selectedAssessment
       + '? Operation cannot be reversed.'
     ).pipe(
       take(1),
       takeUntil(this.destroyed$)
     ).subscribe(selectEligibility => {
-      if (selectEligibility) {
-        // TODO add the save once backend is available and then navigate
-        this.router.navigate(['project', this.projectId]);
-      }
+      const newStatus = this.selectedAssessment === 'Eligible' ? InputProjectStatus.StatusEnum.ELIGIBLE
+        : InputProjectStatus.StatusEnum.INELIGIBLE;
+      this.projectStore.changeStatus(newStatus);
+      this.router.navigate(['project', this.projectId]);
     });
   }
 }
