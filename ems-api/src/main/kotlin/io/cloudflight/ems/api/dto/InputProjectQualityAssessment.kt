@@ -9,6 +9,6 @@ data class InputProjectQualityAssessment(
     val result: ProjectQualityAssessmentResult?,
 
     @field:Size(max = 1000, message = "project.qualityassessment.note.size.too.long")
-    val note: String?
+    val note: String? = null
 
 )

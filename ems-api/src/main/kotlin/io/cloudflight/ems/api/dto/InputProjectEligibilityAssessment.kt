@@ -9,6 +9,6 @@ data class InputProjectEligibilityAssessment(
     val result: ProjectEligibilityAssessmentResult?,
 
     @field:Size(max = 1000, message = "project.eligibilityassessment.note.size.too.long")
-    val note: String?
+    val note: String? = null
 
 )
