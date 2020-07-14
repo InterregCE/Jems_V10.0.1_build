@@ -2073,7 +2073,7 @@
 					"response": []
 				},
 				{
-					"name": "check application status",
+					"name": "check submitted application status",
 					"event": [
 						{
 							"listen": "prerequest",
@@ -2439,7 +2439,7 @@
 					"response": []
 				},
 				{
-					"name": "check application status",
+					"name": "check returned application status",
 					"event": [
 						{
 							"listen": "prerequest",
@@ -2649,7 +2649,7 @@
 					"response": []
 				},
 				{
-					"name": "check application status",
+					"name": "check resubmitted application status",
 					"event": [
 						{
 							"listen": "prerequest",
