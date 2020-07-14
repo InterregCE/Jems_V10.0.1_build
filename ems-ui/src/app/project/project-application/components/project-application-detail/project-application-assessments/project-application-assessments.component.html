@@ -14,8 +14,7 @@
 </ng-container>
 
 <ng-container *ngxPermissionsExcept="[Permission.APPLICANT_USER]">
-    <div *ngIf="projectStatus === OutputProjectStatus.StatusEnum.SUBMITTED
-             || projectStatus === OutputProjectStatus.StatusEnum.RESUBMITTED" class="row">
+    <div *ngIf="projectStatus === OutputProjectStatus.StatusEnum.SUBMITTED" class="row">
         <button mat-raised-button
                 color="primary"
                 (click)="returnToApplicant()">Return To Applicant
@@ -34,9 +33,6 @@
     </p>
     <p *ngIf="projectStatus === OutputProjectStatus.StatusEnum.RETURNEDTOAPPLICANT">
         {{'project.detail.returned.to.applicant.success' | translate}}
-    </p>
-    <p *ngIf="projectStatus === OutputProjectStatus.StatusEnum.RESUBMITTED">
-        {{'project.detail.resubmitted.success' | translate}}
     </p>
 </app-alert>
 <ng-container *ngxPermissionsExcept="[Permission.APPLICANT_USER]">

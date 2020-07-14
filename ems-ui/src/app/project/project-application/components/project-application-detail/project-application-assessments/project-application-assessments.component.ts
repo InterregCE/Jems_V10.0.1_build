@@ -66,7 +66,7 @@ export class ProjectApplicationAssessmentsComponent extends AbstractForm {
       take(1),
       takeUntil(this.destroyed$),
       filter(answer => !!answer),
-      map(() => this.changeStatus.emit(InputProjectStatus.StatusEnum.RESUBMITTED))
+      map(() => this.changeStatus.emit(InputProjectStatus.StatusEnum.SUBMITTED))
     ).subscribe();
   }
 
