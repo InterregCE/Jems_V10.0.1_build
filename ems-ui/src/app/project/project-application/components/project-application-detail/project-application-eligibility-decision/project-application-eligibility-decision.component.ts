@@ -7,17 +7,17 @@ import {FormBuilder, FormGroup, Validators} from '@angular/forms';
 import {AbstractForm} from '@common/components/forms/abstract-form';
 import {ProjectStore} from '../../../containers/project-application-detail/services/project-store.service';
 import {Observable} from 'rxjs';
-import {OutputProject, InputProjectStatus} from '@cat/api';
+import {InputProjectStatus, OutputProject} from '@cat/api';
 
 @Component({
-  selector: 'app-project-application-assessment',
-  templateUrl: './project-application-assessment.component.html',
-  styleUrls: ['./project-application-assessment.component.scss'],
+  selector: 'app-project-eligibility-decision',
+  templateUrl: './project-application-eligibility-decision.component.html',
+  styleUrls: ['./project-application-eligibility-decision.component.scss'],
   providers: [
     ProjectStore
   ]
 })
-export class ProjectApplicationAssessmentComponent extends AbstractForm implements OnInit {
+export class ProjectApplicationEligibilityDecisionComponent extends AbstractForm implements OnInit {
   projectId = this.activatedRoute.snapshot.params.projectId;
   options: string[] = ['Eligible', 'Ineligible'];
   project$: Observable<OutputProject>;
@@ -49,7 +49,7 @@ export class ProjectApplicationAssessmentComponent extends AbstractForm implemen
   }
 
   onSubmit(): void {
-    this.confirmEligibilityAssessment();
+    this.confirmEligibilityDecision();
   }
 
   onCancel(): void {
@@ -60,11 +60,11 @@ export class ProjectApplicationAssessmentComponent extends AbstractForm implemen
     this.selectedAssessment = event.value;
   }
 
-  private confirmEligibilityAssessment(): void {
+  private confirmEligibilityDecision(): void {
     console.log(this.selectedAssessment);
     Forms.confirmDialog(
       this.dialog,
-      'project.assessment.eligibilityCheck.dialog.title',
+      'project.assessment.eligibilityDecision.dialog.title',
       'Are you sure you want to submit the eligibility decision as '
       + this.selectedAssessment
       + '? Operation cannot be reversed.'
@@ -72,10 +72,16 @@ export class ProjectApplicationAssessmentComponent extends AbstractForm implemen
       take(1),
       takeUntil(this.destroyed$)
     ).subscribe(selectEligibility => {
-      const newStatus = this.selectedAssessment === 'Eligible' ? InputProjectStatus.StatusEnum.ELIGIBLE
-        : InputProjectStatus.StatusEnum.INELIGIBLE;
-      this.projectStore.changeStatus(newStatus);
-      this.router.navigate(['project', this.projectId]);
+      if (selectEligibility) {
+        this.projectStore.changeStatus(this.getNewEligibilityStatus(this.selectedAssessment));
+        this.router.navigate(['project', this.projectId]);
+      }
     });
   }
+
+  private getNewEligibilityStatus(selectedDecision: string): InputProjectStatus.StatusEnum {
+    return selectedDecision === 'Eligible' ? InputProjectStatus.StatusEnum.ELIGIBLE
+      : InputProjectStatus.StatusEnum.INELIGIBLE;
+  }
+
 }

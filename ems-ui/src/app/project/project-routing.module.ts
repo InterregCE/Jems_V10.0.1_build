@@ -3,7 +3,7 @@ import { Routes, RouterModule } from '@angular/router';
 import {ProjectApplicationComponent} from './project-application/containers/project-application-page/project-application.component';
 import {ProjectApplicationDetailComponent} from './project-application/containers/project-application-detail/project-application-detail.component';
 import {AuthenticationGuard} from '../security/authentication-guard.service';
-import {ProjectApplicationAssessmentComponent} from './project-application/components/project-application-detail/project-application-assessment/project-application-assessment.component';
+import {ProjectApplicationEligibilityDecisionComponent} from './project-application/components/project-application-detail/project-application-eligibility-decision/project-application-eligibility-decision.component';
 
 const routes: Routes = [
   {
@@ -19,7 +19,7 @@ const routes: Routes = [
   },
   {
     path: 'project/:projectId/assessment',
-    component: ProjectApplicationAssessmentComponent,
+    component: ProjectApplicationEligibilityDecisionComponent,
     canActivate: [AuthenticationGuard]
   }
 ];
