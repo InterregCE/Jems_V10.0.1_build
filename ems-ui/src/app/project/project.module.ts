@@ -22,6 +22,7 @@ import {ProjectApplicationFilesComponent} from './project-application/containers
 import {DescriptionCellComponent} from './project-application/components/project-application-detail/project-application-files-list/cell-renderers/description-cell/description-cell.component';
 import {ProjectApplicationEligibilityDecisionComponent} from './project-application/components/project-application-detail/project-application-eligibility-decision/project-application-eligibility-decision.component';
 import {MatRadioModule} from '@angular/material/radio';
+import { ProjectApplicationQualityCheckComponent } from './project-application/components/project-application-detail/project-application-quality-check/project-application-quality-check.component';
 
 @NgModule({
   declarations: [
@@ -37,6 +38,7 @@ import {MatRadioModule} from '@angular/material/radio';
     ProjectApplicationAssessmentsComponent,
     ProjectApplicationFilesComponent,
     ProjectApplicationEligibilityDecisionComponent,
+    ProjectApplicationQualityCheckComponent,
   ],
   imports: [
     SharedModule,

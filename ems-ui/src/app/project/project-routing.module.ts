@@ -4,6 +4,7 @@ import {ProjectApplicationComponent} from './project-application/containers/proj
 import {ProjectApplicationDetailComponent} from './project-application/containers/project-application-detail/project-application-detail.component';
 import {AuthenticationGuard} from '../security/authentication-guard.service';
 import {ProjectApplicationEligibilityDecisionComponent} from './project-application/components/project-application-detail/project-application-eligibility-decision/project-application-eligibility-decision.component';
+import {ProjectApplicationQualityCheckComponent} from './project-application/components/project-application-detail/project-application-quality-check/project-application-quality-check.component';
 
 const routes: Routes = [
   {
@@ -18,8 +19,13 @@ const routes: Routes = [
     canActivate: [AuthenticationGuard]
   },
   {
-    path: 'project/:projectId/assessment',
+    path: 'project/:projectId/eligibilityDecision',
     component: ProjectApplicationEligibilityDecisionComponent,
+    canActivate: [AuthenticationGuard]
+  },
+  {
+    path: 'project/:projectId/qualityCheck',
+    component: ProjectApplicationQualityCheckComponent,
     canActivate: [AuthenticationGuard]
   }
 ];

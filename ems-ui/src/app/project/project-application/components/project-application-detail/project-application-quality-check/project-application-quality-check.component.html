@@ -1,0 +1,49 @@
+<div>
+    <a [routerLink]="['../../../project', projectId]">&lt; Back to Project Application Details</a>
+    <div *ngIf="project$ | async as project" class="project-detail-container">
+        <app-project-application-information
+                [project]="project">
+        </app-project-application-information>
+        <div class="assessment-container">
+            <form [formGroup]="notesForm" class="description-form">
+                <div></div>
+                <mat-radio-group
+                        required
+                        class="assessment-radio-group"
+                        name="assessment"
+                        formControlName="assessment"
+                        [disabled]="project.qualityAssessment !== null"
+                        (change)="assessmentChangeHandler($event)">
+                    <mat-radio-button
+                            class="assessment-radio-button"
+                            *ngFor="let option of options" [value]="option">
+                        {{option}}
+                    </mat-radio-button>
+                </mat-radio-group>
+                <div>
+                        <textarea
+                                name="notes"
+                                formControlName="notes"
+                                class="assessment-text-area"
+                                matInput
+                                [readonly]="project.qualityAssessment !== null">
+                            Explanatory Notes
+                        </textarea>
+                </div>
+                <div *ngIf="project.qualityAssessment === null">
+                    <button mat-raised-button
+                            color="secondary"
+                            (click)="onCancel()">Cancel
+                    </button>
+
+                    <button mat-raised-button color="primary"
+                            class="right-button"
+                            type="submit"
+                            [disabled]="notesForm.invalid || submitted"
+                            (click)="onSubmit()">Submit Quality Check
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
