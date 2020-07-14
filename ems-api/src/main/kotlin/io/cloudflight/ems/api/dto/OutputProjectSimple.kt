@@ -6,5 +6,6 @@ data class OutputProjectSimple (
     val id: Long?,
     val acronym: String,
     val submissionDate: ZonedDateTime?,
+    val resubmissionDate: ZonedDateTime?,
     val projectStatus: OutputProjectStatus
 )

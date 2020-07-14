@@ -27,6 +27,9 @@ data class Project (
     @Column
     val submissionDate: ZonedDateTime?,
 
+    @Column
+    val resubmissionDate: ZonedDateTime? = null,
+
     @ManyToOne(optional = false)
     @JoinColumn(name = "project_status_id")
     val projectStatus: ProjectStatus,

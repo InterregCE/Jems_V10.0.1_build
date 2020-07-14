@@ -38,10 +38,16 @@ export class ProjectApplicationListComponent {
         sortProperty: 'acronym',
       },
       {
-        displayedColumn: 'Submission Date',
+        displayedColumn: 'First submission',
         columnType: ColumnType.Date,
         elementProperty: 'submissionDate',
         sortProperty: 'submissionDate'
+      },
+      {
+        displayedColumn: 'Latest re-submission',
+        columnType: ColumnType.Date,
+        elementProperty: 'resubmissionDate',
+        sortProperty: 'resubmissionDate'
       },
       {
         displayedColumn: 'Status',

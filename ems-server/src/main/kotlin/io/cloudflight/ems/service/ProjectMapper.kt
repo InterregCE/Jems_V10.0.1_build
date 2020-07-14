@@ -20,6 +20,7 @@ fun Project.toOutputProject() = OutputProject(
     acronym = acronym,
     applicant = applicant.toOutputUser(),
     submissionDate = submissionDate,
+    resubmissionDate = resubmissionDate,
     projectStatus = projectStatus.toOutputProjectStatus(),
     qualityAssessment = qualityAssessment?.toOutputProjectQualityAssessment(),
     eligibilityAssessment = eligibilityAssessment?.toOutputProjectEligibilityAssessment()
@@ -29,5 +30,6 @@ fun Project.toOutputProjectSimple() = OutputProjectSimple(
     id = id,
     acronym = acronym,
     submissionDate = submissionDate,
+    resubmissionDate = resubmissionDate,
     projectStatus = projectStatus.toOutputProjectStatus()
 )
