@@ -21,7 +21,8 @@ fun Project.toOutputProject() = OutputProject(
     applicant = applicant.toOutputUser(),
     submissionDate = submissionDate,
     projectStatus = projectStatus.toOutputProjectStatus(),
-    qualityAssessment = qualityAssessment?.toOutputProjectQualityAssessment()
+    qualityAssessment = qualityAssessment?.toOutputProjectQualityAssessment(),
+    eligibilityAssessment = eligibilityAssessment?.toOutputProjectEligibilityAssessment()
 )
 
 fun Project.toOutputProjectSimple() = OutputProjectSimple(

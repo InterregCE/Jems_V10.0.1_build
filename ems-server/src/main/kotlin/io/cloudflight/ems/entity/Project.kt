@@ -32,6 +32,9 @@ data class Project (
     val projectStatus: ProjectStatus,
 
     @OneToOne(mappedBy = "project", cascade = [CascadeType.ALL])
-    val qualityAssessment: ProjectQualityAssessment? = null
+    val qualityAssessment: ProjectQualityAssessment? = null,
+
+    @OneToOne(mappedBy = "project", cascade = [CascadeType.ALL])
+    val eligibilityAssessment: ProjectEligibilityAssessment? = null
 
 )

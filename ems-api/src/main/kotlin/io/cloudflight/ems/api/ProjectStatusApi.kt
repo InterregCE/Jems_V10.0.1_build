@@ -1,5 +1,6 @@
 package io.cloudflight.ems.api
 
+import io.cloudflight.ems.api.dto.InputProjectEligibilityAssessment
 import io.cloudflight.ems.api.dto.InputProjectQualityAssessment
 import io.cloudflight.ems.api.dto.InputProjectStatus
 import io.cloudflight.ems.api.dto.OutputProject
@@ -24,5 +25,9 @@ interface ProjectStatusApi {
     @ApiOperation("Set quality assessment result to project application")
     @PostMapping("/quality", consumes = [MediaType.APPLICATION_JSON_VALUE])
     fun setQualityAssessment(@PathVariable id: Long, @Valid @RequestBody data: InputProjectQualityAssessment): OutputProject
+
+    @ApiOperation("Set eligibility assessment result to project application")
+    @PostMapping("/eligibility", consumes = [MediaType.APPLICATION_JSON_VALUE])
+    fun setEligibilityAssessment(@PathVariable id: Long, @Valid @RequestBody data: InputProjectEligibilityAssessment): OutputProject
 
 }
