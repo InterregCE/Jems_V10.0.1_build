@@ -28,8 +28,12 @@ class ProjectAuthorization(
     }
 
     fun canWriteProject(id: Long): Boolean {
+        val project = projectService.getById(id)
         return securityService.currentUser?.hasRole(ADMINISTRATOR)!!
-                || projectService.getById(id).applicant.id == securityService.currentUser?.user?.id
+                ||
+            (project.applicant.id == securityService.currentUser?.user?.id
+                && (project.projectStatus.status == ProjectApplicationStatus.DRAFT
+                || project.projectStatus.status == ProjectApplicationStatus.RETURNED_TO_APPLICANT))
     }
 
     fun canCreateProject(): Boolean {
