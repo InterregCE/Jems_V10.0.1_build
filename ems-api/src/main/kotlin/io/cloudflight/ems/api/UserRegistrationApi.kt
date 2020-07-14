@@ -1,7 +1,6 @@
 package io.cloudflight.ems.api
 
 import io.cloudflight.ems.api.dto.user.InputUserRegistration
-import io.cloudflight.ems.api.dto.user.OutputUser
 import io.cloudflight.ems.api.dto.user.OutputUserWithRole
 import io.swagger.annotations.Api
 import io.swagger.annotations.ApiOperation

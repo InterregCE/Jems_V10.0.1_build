@@ -119,11 +119,12 @@ class UserServiceTest {
         assertThat(result.totalElements).isEqualTo(1);
 
         val expectedUsers = listOf(
-            OutputUser(
+            OutputUserWithRole(
                 id = 85,
                 email = "admin@ems.io",
                 name = "Name",
-                surname = "Surname"
+                surname = "Surname",
+                userRole = OutputUserRole(9, "admin")
             )
         )
         assertThat(result.stream()).isEqualTo(expectedUsers);

@@ -1,5 +1,5 @@
 import {ChangeDetectionStrategy, Component, EventEmitter, Input, Output} from '@angular/core';
-import {PageOutputUser} from '@cat/api';
+import {PageOutputUserWithRole} from '@cat/api';
 import {TableConfiguration} from '@common/components/table/model/table.configuration';
 import {MatSort} from '@angular/material/sort';
 
@@ -11,7 +11,7 @@ import {MatSort} from '@angular/material/sort';
 })
 export class UserListComponent {
   @Input()
-  userPage: PageOutputUser;
+  userPage: PageOutputUserWithRole;
   @Input()
   pageIndex: number;
   @Output()
