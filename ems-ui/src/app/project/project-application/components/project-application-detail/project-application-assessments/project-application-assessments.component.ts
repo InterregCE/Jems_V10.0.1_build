@@ -1,12 +1,14 @@
 import {ChangeDetectionStrategy, ChangeDetectorRef, Component, EventEmitter, Input, Output} from '@angular/core';
 import {Permission} from '../../../../../security/permissions/permission';
-import {InputProjectStatus, OutputProjectStatus, OutputUser} from '@cat/api';
+import {InputProjectStatus, OutputProjectStatus, OutputProject, OutputUser} from '@cat/api';
 import {AbstractForm} from '@common/components/forms/abstract-form';
 import {Alert} from '@common/components/forms/alert';
 import {MatDialog} from '@angular/material/dialog';
 import {FormGroup} from '@angular/forms';
 import {Forms} from '../../../../../common/utils/forms';
 import {filter, map, take, takeUntil} from 'rxjs/operators';
+import {ProjectStore} from '../../../containers/project-application-detail/services/project-store.service';
+import {Router} from '@angular/router';
 
 @Component({
   selector: 'app-project-application-assessments',
@@ -26,10 +28,14 @@ export class ProjectApplicationAssessmentsComponent extends AbstractForm {
   @Input()
   projectId: number;
 
+  project$ = this.projectStore.getProject();
+
   @Output()
   changeStatus = new EventEmitter<InputProjectStatus.StatusEnum>();
 
   constructor(private dialog: MatDialog,
+              private projectStore: ProjectStore,
+              private router: Router,
               protected changeDetectorRef: ChangeDetectorRef) {
     super(changeDetectorRef);
   }
