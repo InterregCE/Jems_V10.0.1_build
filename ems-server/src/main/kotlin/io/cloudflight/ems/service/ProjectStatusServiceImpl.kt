@@ -74,8 +74,8 @@ class ProjectStatusServiceImpl(
 
         auditService.logEvent(Audit.qualityAssessmentConcluded(
             currentUser = securityService.currentUser,
-            projectId = project.id.toString(),
-            result = project.qualityAssessment!!.result
+            projectId = result.id.toString(),
+            result = result.qualityAssessment!!.result
         ))
         return result
     }
@@ -100,8 +100,8 @@ class ProjectStatusServiceImpl(
 
         auditService.logEvent(Audit.eligibilityAssessmentConcluded(
             currentUser = securityService.currentUser,
-            projectId = project.id.toString(),
-            result = project.eligibilityAssessment!!.result
+            projectId = result.id.toString(),
+            result = result.eligibilityAssessment!!.result
         ))
         return result
     }
