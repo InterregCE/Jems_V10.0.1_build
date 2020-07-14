@@ -4,7 +4,6 @@ import io.cloudflight.ems.api.dto.user.InputPassword
 import io.cloudflight.ems.api.dto.user.InputUserCreate
 import io.cloudflight.ems.api.dto.user.InputUserRegistration
 import io.cloudflight.ems.api.dto.user.InputUserUpdate
-import io.cloudflight.ems.api.dto.user.OutputUser
 import io.cloudflight.ems.api.dto.user.OutputUserWithRole
 import io.cloudflight.ems.dto.UserWithCredentials
 import io.cloudflight.ems.entity.User
@@ -54,8 +53,8 @@ class UserServiceImpl(
     }
 
     @Transactional(readOnly = true)
-    override fun findAll(pageable: Pageable): Page<OutputUser> {
-        return userRepository.findAll(pageable).map { it.toOutputUser() }
+    override fun findAll(pageable: Pageable): Page<OutputUserWithRole> {
+        return userRepository.findAll(pageable).map { it.toOutputUserWithRole() }
     }
 
     @Transactional

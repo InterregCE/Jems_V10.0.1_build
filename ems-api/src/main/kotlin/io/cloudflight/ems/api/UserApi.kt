@@ -3,7 +3,6 @@ package io.cloudflight.ems.api
 import io.cloudflight.ems.api.dto.user.InputPassword
 import io.cloudflight.ems.api.dto.user.InputUserCreate
 import io.cloudflight.ems.api.dto.user.InputUserUpdate
-import io.cloudflight.ems.api.dto.user.OutputUser
 import io.cloudflight.ems.api.dto.user.OutputUserWithRole
 import io.swagger.annotations.Api
 import io.swagger.annotations.ApiImplicitParam
@@ -31,7 +30,7 @@ interface UserApi {
         ApiImplicitParam(paramType = "query", name = "sort", dataType = "string")
     )
     @GetMapping
-    fun list(pageable: Pageable): Page<OutputUser>
+    fun list(pageable: Pageable): Page<OutputUserWithRole>
 
     @ApiOperation("Creates new User")
     @PostMapping(consumes = [MediaType.APPLICATION_JSON_VALUE])

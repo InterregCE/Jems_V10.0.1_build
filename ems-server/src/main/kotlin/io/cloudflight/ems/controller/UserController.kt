@@ -4,7 +4,6 @@ import io.cloudflight.ems.api.UserApi
 import io.cloudflight.ems.api.dto.user.InputPassword
 import io.cloudflight.ems.api.dto.user.InputUserCreate
 import io.cloudflight.ems.api.dto.user.InputUserUpdate
-import io.cloudflight.ems.api.dto.user.OutputUser
 import io.cloudflight.ems.api.dto.user.OutputUserWithRole
 import io.cloudflight.ems.security.ADMINISTRATOR
 import io.cloudflight.ems.service.UserService
@@ -19,7 +18,7 @@ class UserController(
 ) : UserApi {
 
     @PreAuthorize("hasRole('$ADMINISTRATOR')")
-    override fun list(pageable: Pageable): Page<OutputUser> {
+    override fun list(pageable: Pageable): Page<OutputUserWithRole> {
         return userService.findAll(pageable = pageable)
     }
 

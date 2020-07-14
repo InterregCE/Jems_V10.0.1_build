@@ -4,7 +4,6 @@ import io.cloudflight.ems.api.dto.user.InputPassword
 import io.cloudflight.ems.api.dto.user.InputUserCreate
 import io.cloudflight.ems.api.dto.user.InputUserRegistration
 import io.cloudflight.ems.api.dto.user.InputUserUpdate
-import io.cloudflight.ems.api.dto.user.OutputUser
 import io.cloudflight.ems.api.dto.user.OutputUserWithRole
 import io.cloudflight.ems.dto.UserWithCredentials
 import org.springframework.data.domain.Page
@@ -16,7 +15,7 @@ interface UserService {
 
     fun getById(id: Long): OutputUserWithRole
 
-    fun findAll(pageable: Pageable): Page<OutputUser>
+    fun findAll(pageable: Pageable): Page<OutputUserWithRole>
 
     fun create(user: InputUserCreate): OutputUserWithRole
 
