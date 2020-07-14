@@ -1,3 +1,4 @@
+
 <ng-container *ngxPermissionsExcept="[Permission.PROGRAMME_USER]">
     <div *ngIf="projectStatus === OutputProjectStatus.StatusEnum.DRAFT" class="row">
         <button mat-raised-button
@@ -39,3 +40,22 @@
         {{'project.detail.resubmitted.success' | translate}}
     </p>
 </app-alert>
+<ng-container *ngxPermissionsExcept="[Permission.APPLICANT_USER]">
+    <div class="assessment-area" *ngIf="projectStatus !== OutputProjectStatus.StatusEnum.DRAFT">
+        <h5>Assessments</h5>
+        <div class="project-detail-row">
+            <div class="row">
+                <div class="col-sm-5 column assessment-text">Eligibility Assessment:</div>
+                <div class="col-sm-7 column">
+                    <button mat-raised-button
+                            color="primary"
+                            class="assessment-button"
+                            [routerLink]="'/project/'+ projectId + '/assessment'">
+                        Go to eligibility assessment
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</ng-container>
+

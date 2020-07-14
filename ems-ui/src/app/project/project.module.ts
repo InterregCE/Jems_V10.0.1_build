@@ -20,6 +20,8 @@ import {ProjectApplicationFileUploadComponent} from './project-application/compo
 import {ProjectApplicationAssessmentsComponent} from './project-application/components/project-application-detail/project-application-assessments/project-application-assessments.component';
 import {ProjectApplicationFilesComponent} from './project-application/containers/project-application-detail/project-application-files/project-application-files.component';
 import {DescriptionCellComponent} from './project-application/components/project-application-detail/project-application-files-list/cell-renderers/description-cell/description-cell.component';
+import {ProjectApplicationEligibilityDecisionComponent} from './project-application/components/project-application-detail/project-application-eligibility-decision/project-application-eligibility-decision.component';
+import {MatRadioModule} from '@angular/material/radio';
 
 @NgModule({
   declarations: [
@@ -34,6 +36,7 @@ import {DescriptionCellComponent} from './project-application/components/project
     ProjectApplicationFileUploadComponent,
     ProjectApplicationAssessmentsComponent,
     ProjectApplicationFilesComponent,
+    ProjectApplicationEligibilityDecisionComponent,
   ],
   imports: [
     SharedModule,
@@ -43,7 +46,8 @@ import {DescriptionCellComponent} from './project-application/components/project
     MatSelectModule,
     MatDialogModule,
     OverlayModule,
-    BrowserAnimationsModule
+    BrowserAnimationsModule,
+    MatRadioModule
   ],
   providers: [
     ProjectFileService,

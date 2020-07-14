@@ -1,0 +1,32 @@
+.project-detail-container {
+  margin-top: 5%;
+  max-width: 76%;
+  margin-left: 12%;
+  margin-right: 12%;
+  margin-bottom: 3%;
+}
+
+.assessment-container{
+  width: 30rem;
+
+  .assessment-text-area {
+    border: 1px solid lightgray;
+    height: 8rem;
+    width: 30rem;
+    margin-bottom: 3%;
+  }
+
+  .assessment-radio-group {
+    display: flex;
+    flex-direction: column;
+    margin: 15px 0;
+  }
+
+  .assessment-radio-button {
+    margin: 5px;
+  }
+
+  .right-button {
+    float: right;
+  }
+}

@@ -1,4 +1,26 @@
 .row {
-  margin-bottom: 3%;
+  margin-top: 3%;
   margin-left: 0;
 }
+
+.assessment-area {
+  margin-top: 3%;
+
+  .project-detail-row {
+    padding-bottom: 1rem;
+    border: solid 1px darkgrey;
+    margin-left: 0;
+    margin-bottom: 3%;
+    margin-top: 1%;
+    max-width: 40%;
+  }
+
+  .assessment-button {
+    max-width: 95%;
+  }
+
+  .assessment-text {
+    padding-top: 0.5rem;
+  }
+}
+
