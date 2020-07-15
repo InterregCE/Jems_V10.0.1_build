@@ -32,9 +32,13 @@ data class ProjectStatus (
     val user: User,
 
     @Column(nullable = false)
-    val updated: ZonedDateTime,
+    val updated: ZonedDateTime = ZonedDateTime.now(),
 
     @Column
     val note: String? = null
 
-)
+) {
+    override fun toString(): String {
+        return "${this.javaClass.simpleName}(status=$status, user=$user, updated=$updated, note=$note)"
+    }
+}

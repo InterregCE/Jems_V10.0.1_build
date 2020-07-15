@@ -19,6 +19,10 @@ class ProjectStatusAuthorization(
 
     fun canChangeStatusTo(projectId: Long, newStatus: ProjectApplicationStatus): Boolean {
         val project = projectService.getById(projectId)
+        return canChangeStatusTo(project, newStatus)
+    }
+
+    fun canChangeStatusTo(project: OutputProject, newStatus: ProjectApplicationStatus): Boolean {
         val oldStatus = project.projectStatus.status
 
         if (submitted(oldStatus, newStatus))
@@ -38,13 +42,15 @@ class ProjectStatusAuthorization(
     }
 
     fun returned(oldStatus: ProjectApplicationStatus, newStatus: ProjectApplicationStatus): Boolean {
-        return oldStatus == SUBMITTED && newStatus == RETURNED_TO_APPLICANT
+        val oldPossibilities = setOf(SUBMITTED, ELIGIBLE)
+        return oldPossibilities.contains(oldStatus) && newStatus == RETURNED_TO_APPLICANT
     }
 
     fun eligibilityFilled(project: OutputProject, newStatus: ProjectApplicationStatus): Boolean {
         val newPossibilities = setOf(ELIGIBLE, INELIGIBLE)
+        val oldPossibilities = setOf(SUBMITTED, RETURNED_TO_APPLICANT)
 
-        return project.projectStatus.status == SUBMITTED
+        return oldPossibilities.contains(project.projectStatus.status)
                 && newPossibilities.contains(newStatus)
                 && project.eligibilityAssessment != null
     }
