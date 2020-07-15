@@ -20,6 +20,8 @@ interface FileStorageService {
      */
     fun downloadFile(projectId: Long, fileId: Long): Pair<String, ByteArray>
 
+    fun getFileDetail(projectId: Long, fileId: Long): OutputProjectFile
+
     /**
      * Paged list of all project files.
      */

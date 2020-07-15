@@ -56,7 +56,7 @@ class ProjectFileController(
         return fileStorageService.setDescription(projectId, fileId, projectFileDescription.description)
     }
 
-    @PreAuthorize("@projectAuthorization.canReadWriteProject(#projectId)")
+    @PreAuthorize("@projectAuthorization.canDeleteFile(#projectId, #fileId)")
     override fun deleteFile(projectId: Long, fileId: Long) {
         fileStorageService.deleteFile(projectId, fileId)
     }

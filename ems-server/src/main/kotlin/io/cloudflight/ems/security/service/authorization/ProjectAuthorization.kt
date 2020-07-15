@@ -4,13 +4,15 @@ import io.cloudflight.ems.api.dto.ProjectApplicationStatus
 import io.cloudflight.ems.security.ADMINISTRATOR
 import io.cloudflight.ems.security.APPLICANT_USER
 import io.cloudflight.ems.security.service.SecurityService
+import io.cloudflight.ems.service.FileStorageService
 import io.cloudflight.ems.service.ProjectService
 import org.springframework.stereotype.Component
 
 @Component
 class ProjectAuthorization(
     val securityService: SecurityService,
-    val projectService: ProjectService
+    val projectService: ProjectService,
+    val fileStorageService: FileStorageService
 ) {
 
     fun canReadProject(id: Long): Boolean {
@@ -41,5 +43,14 @@ class ProjectAuthorization(
 
     fun canReadWriteProject(id: Long): Boolean {
         return canReadProject(id) && canWriteProject(id);
+    }
+
+    fun canDeleteFile(projectId: Long, fileId: Long): Boolean {
+        val project = projectService.getById(projectId)
+        val fileUploaded = fileStorageService.getFileDetail(projectId, fileId).updated
+        // take last resubmission, if not then submission, if not then it means it is a DRAFT so take status timestamp
+        val lastSubmission = project.resubmissionDate ?: project.submissionDate ?: project.projectStatus.updated
+
+        return canReadWriteProject(projectId) && fileUploaded.isAfter(lastSubmission)
     }
 }
