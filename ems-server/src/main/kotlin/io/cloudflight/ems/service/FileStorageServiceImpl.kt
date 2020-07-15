@@ -83,6 +83,11 @@ class FileStorageServiceImpl(
     }
 
     @Transactional(readOnly = true)
+    override fun getFileDetail(projectId: Long, fileId: Long): OutputProjectFile {
+        return getFile(projectId, fileId).toOutputProjectFile()
+    }
+
+    @Transactional(readOnly = true)
     override fun getFilesForProject(projectId: Long, page: Pageable): Page<OutputProjectFile> {
         return projectFileRepository.findAllByProjectId(projectId, page).map { it.toOutputProjectFile() }
     }

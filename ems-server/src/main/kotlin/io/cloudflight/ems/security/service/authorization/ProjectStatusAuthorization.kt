@@ -7,8 +7,6 @@ import io.cloudflight.ems.api.dto.ProjectApplicationStatus.ELIGIBLE
 import io.cloudflight.ems.api.dto.ProjectApplicationStatus.INELIGIBLE
 import io.cloudflight.ems.api.dto.ProjectApplicationStatus.RETURNED_TO_APPLICANT
 import io.cloudflight.ems.api.dto.ProjectApplicationStatus.SUBMITTED
-import io.cloudflight.ems.security.ADMINISTRATOR
-import io.cloudflight.ems.security.PROGRAMME_USER
 import io.cloudflight.ems.security.service.SecurityService
 import io.cloudflight.ems.service.ProjectService
 import org.springframework.stereotype.Component
@@ -73,11 +71,11 @@ class ProjectStatusAuthorization(
     }
 
     fun isAdmin(): Boolean {
-        return securityService.currentUser?.hasRole(ADMINISTRATOR)!!
+        return securityService.currentUser?.isAdmin!!
     }
 
     fun isProgrammeUser(): Boolean {
-        return securityService.currentUser?.hasRole(PROGRAMME_USER)!!
+        return securityService.currentUser?.isProgrammeUser!!
     }
 
 }
