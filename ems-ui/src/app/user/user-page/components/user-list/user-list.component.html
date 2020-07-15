@@ -1,11 +1,11 @@
 <h5>{{'users.table.title.label'| translate}}</h5>
-<app-paginator
-    [length]="userPage?.totalElements"
-    [currentPageIndex]="pageIndex"
-    (pageIndexChanged)="newPageIndex.emit($event)"
-    (pageSizeChanged)="newPageSize.emit($event)">
-</app-paginator>
-<app-table [configuration]="tableConfiguration"
-           [rows]="userPage.content"
-           (sortRows)="newSort.emit($event)">
+<app-table
+        [configuration]="tableConfiguration"
+        [rows]="userPage.content"
+        [totalElements]="userPage.totalElements"
+        [pageIndex]="pageIndex"
+        (newPageSize)="newPageSize.emit($event)"
+        (newPageIndex)="newPageSize.emit($event)"
+        (sortRows)="newSort.emit($event)">
 </app-table>
+

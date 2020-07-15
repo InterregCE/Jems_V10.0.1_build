@@ -1,3 +1,10 @@
+<app-paginator
+        [length]="totalElements"
+        [currentPageIndex]="pageIndex"
+        [currentPageSize]="currentPageSize"
+        (pageIndexChanged)="newPageIndex.emit($event)"
+        (pageSizeChanged)="currentPageSize = $event;newPageSize.emit($event)">
+</app-paginator>
 <table mat-table matSort
        [dataSource]="rows"
        (matSortChange)="sortRows.emit($event)"
@@ -34,3 +41,10 @@
         *matRowDef="let row; columns: columnsToDisplay;"
         [routerLink]="configuration.isTableClickable ? [configuration.routerLink, row.id] : []"></tr>
 </table>
+<app-paginator
+        [length]="totalElements"
+        [currentPageIndex]="pageIndex"
+        [currentPageSize]="currentPageSize"
+        (pageIndexChanged)="newPageIndex.emit($event)"
+        (pageSizeChanged)="currentPageSize = $event;newPageSize.emit($event)">
+</app-paginator>

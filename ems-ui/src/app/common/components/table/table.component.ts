@@ -18,10 +18,20 @@ export class TableComponent implements OnInit {
   configuration: TableConfiguration;
   @Input()
   rows: Observable<any[]> | any[];
+  @Input()
+  totalElements: number;
+  @Input()
+  pageIndex: number;
+
   @Output()
   sortRows = new EventEmitter<Partial<MatSort>>();
+  @Output()
+  newPageSize: EventEmitter<number> = new EventEmitter<number>();
+  @Output()
+  newPageIndex: EventEmitter<number> = new EventEmitter<number>();
 
   columnsToDisplay: string[] = [];
+  currentPageSize = Tables.DEFAULT_INITIAL_PAGE_SIZE;
 
   constructor(private datepipe: DatePipe,) {
   }
