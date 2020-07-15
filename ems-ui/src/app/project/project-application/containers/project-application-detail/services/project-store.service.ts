@@ -9,7 +9,7 @@ import {
   ProjectService,
   ProjectStatusService
 } from '@cat/api';
-import {distinct, flatMap, shareReplay, tap, withLatestFrom} from 'rxjs/operators';
+import {flatMap, shareReplay, tap, withLatestFrom} from 'rxjs/operators';
 import {Log} from '../../../../../common/utils/log';
 import {Router} from '@angular/router';
 
@@ -25,7 +25,6 @@ export class ProjectStore {
 
   private projectById$ = this.projectId$
     .pipe(
-      distinct(),
       flatMap(id => this.projectService.getProjectById(id)),
       tap(project => Log.info('Fetched project:', this, project))
     );

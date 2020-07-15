@@ -28,6 +28,12 @@
 <app-alert
         [show]="showSuccessMessage$ | async"
         [type]="Alert.SUCCESS">
+    <p *ngIf="projectStatus === OutputProjectStatus.StatusEnum.ELIGIBLE">
+        {{'project.detail.eligible.success' | translate}}
+    </p>
+    <p *ngIf="projectStatus === OutputProjectStatus.StatusEnum.INELIGIBLE">
+        {{'project.detail.ineligible.success' | translate}}
+    </p>
     <p *ngIf="projectStatus === OutputProjectStatus.StatusEnum.SUBMITTED">
         {{'project.detail.submitted.success' | translate}}
     </p>
