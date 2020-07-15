@@ -4,9 +4,9 @@ import {MatDialog} from '@angular/material/dialog';
 import {ActivatedRoute, Router} from '@angular/router';
 import {ProjectStore} from '../../../containers/project-application-detail/services/project-store.service';
 import {Forms} from '../../../../../common/utils/forms';
-import {filter, take, takeUntil, tap} from 'rxjs/internal/operators';
+import {filter, take, takeUntil} from 'rxjs/internal/operators';
 import {AbstractForm} from '@common/components/forms/abstract-form';
-import {InputProjectEligibilityAssessment, OutputProject, ProjectStatusService} from '@cat/api';
+import {InputProjectEligibilityAssessment, OutputProject} from '@cat/api';
 import {Observable} from 'rxjs';
 
 @Component({
@@ -35,7 +35,6 @@ export class ProjectApplicationEligibilityCheckComponent extends AbstractForm im
     private activatedRoute: ActivatedRoute,
     private formBuilder: FormBuilder,
     private projectStore: ProjectStore,
-    private projectStatusService: ProjectStatusService,
     protected changeDetectorRef: ChangeDetectorRef) {
     super(changeDetectorRef);
   }
@@ -71,7 +70,6 @@ export class ProjectApplicationEligibilityCheckComponent extends AbstractForm im
   }
 
   private confirmEligibilityAssessment(): void {
-    console.log(this.selectedAssessment);
     Forms.confirmDialog(
       this.dialog,
       'project.assessment.eligibilityCheck.dialog.title',
@@ -80,25 +78,18 @@ export class ProjectApplicationEligibilityCheckComponent extends AbstractForm im
       take(1),
       takeUntil(this.destroyed$),
       filter(selectEligibility => !!selectEligibility)
-    ).subscribe(selectEligibility => {
-        const eligibilityCheckResult = {
-          result: this.getEligibilityCheckValue(),
-          note: this.notesForm?.controls?.notes?.value,
-        } as InputProjectEligibilityAssessment;
-        this.projectStatusService.setEligibilityAssessment(this.projectId, eligibilityCheckResult)
-          .pipe(
-            takeUntil(this.destroyed$),
-            tap(() => this.router.navigate(['project', this.projectId]))
-          ).subscribe();
-    });
+    ).subscribe(() =>
+      this.projectStore.setEligibilityAssessment({
+        result: this.getEligibilityCheckValue(),
+        note: this.notesForm?.controls?.notes?.value,
+      })
+    );
   }
 
   private getEligibilityCheckValue(): InputProjectEligibilityAssessment.ResultEnum {
-    if (this.selectedAssessment === this.INELIGIBLE) {
-      return InputProjectEligibilityAssessment.ResultEnum.FAILED;
-    }
-    return InputProjectEligibilityAssessment.ResultEnum.PASSED;
-
+    return this.selectedAssessment === this.INELIGIBLE
+      ? InputProjectEligibilityAssessment.ResultEnum.FAILED
+      : InputProjectEligibilityAssessment.ResultEnum.PASSED;
   }
 
   private setEligibilityCheckValue(project: OutputProject): void {
@@ -110,9 +101,8 @@ export class ProjectApplicationEligibilityCheckComponent extends AbstractForm im
   }
 
   private getEligibilityCheckMesage(): string {
-    if (this.selectedAssessment === this.ELIGIBLE) {
-      return 'project.assessment.eligibilityCheck.dialog.message.eligible';
-    }
-    return 'project.assessment.eligibilityCheck.dialog.message.ineligible';
+    return this.selectedAssessment === this.ELIGIBLE
+      ? 'project.assessment.eligibilityCheck.dialog.message.eligible'
+      : 'project.assessment.eligibilityCheck.dialog.message.ineligible';
   }
 }

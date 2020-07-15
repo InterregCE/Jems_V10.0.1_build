@@ -5,9 +5,9 @@ import {MatDialog} from '@angular/material/dialog';
 import {ActivatedRoute, Router} from '@angular/router';
 import {ProjectStore} from '../../../containers/project-application-detail/services/project-store.service';
 import {Forms} from '../../../../../common/utils/forms';
-import {take, takeUntil, tap} from 'rxjs/internal/operators';
+import {filter, take, takeUntil} from 'rxjs/internal/operators';
 import {AbstractForm} from '@common/components/forms/abstract-form';
-import {InputProjectQualityAssessment, OutputProject, ProjectStatusService} from '@cat/api';
+import {InputProjectQualityAssessment, OutputProject} from '@cat/api';
 
 @Component({
   selector: 'app-project-application-quality-check',
@@ -36,9 +36,7 @@ export class ProjectApplicationQualityCheckComponent extends AbstractForm implem
     private activatedRoute: ActivatedRoute,
     private formBuilder: FormBuilder,
     private projectStore: ProjectStore,
-    private projectStatusService: ProjectStatusService,
-    protected changeDetectorRef: ChangeDetectorRef)
-  {
+    protected changeDetectorRef: ChangeDetectorRef) {
     super(changeDetectorRef);
   }
 
@@ -67,33 +65,25 @@ export class ProjectApplicationQualityCheckComponent extends AbstractForm implem
     this.router.navigate(['project', this.projectId]);
   }
 
-  assessmentChangeHandler (event: any) {
+  assessmentChangeHandler(event: any) {
     this.selectedAssessment = event.value;
   }
 
   private confirmQualityAssessment(): void {
-    console.log(this.selectedAssessment);
     Forms.confirmDialog(
       this.dialog,
       'project.assessment.qualityCheck.dialog.title',
       this.getQualityCheckMesage()
     ).pipe(
       take(1),
-      takeUntil(this.destroyed$)
-    ).subscribe(selectQuality => {
-      if (selectQuality) {
-        const qualityCheckResult = {
-          result: this.getQualityCheckValue(),
-          note: this.notesForm?.controls?.notes?.value,
-        } as InputProjectQualityAssessment;
-        // TODO move to container
-        this.projectStatusService.setQualityAssessment(this.projectId, qualityCheckResult)
-          .pipe(
-            takeUntil(this.destroyed$),
-            tap(() => this.router.navigate(['project', this.projectId]))
-          ).subscribe();
-      }
-    });
+      takeUntil(this.destroyed$),
+      filter(selectQuality => !!selectQuality)
+    ).subscribe(() =>
+      this.projectStore.setQualityAssessment({
+        result: this.getQualityCheckValue(),
+        note: this.notesForm?.controls?.notes?.value,
+      })
+    );
   }
 
   private getQualityCheckValue(): InputProjectQualityAssessment.ResultEnum {
