@@ -15,6 +15,9 @@ class ProjectController(
     private val projectService: ProjectService
 ) : ProjectApi {
 
+    /**
+     * Here the @PreAuthorize annotation is missing because list is filtered based on restrictions inside the service
+     */
     override fun getProjects(pageable: Pageable): Page<OutputProjectSimple> {
         return projectService.findAll(pageable)
     }

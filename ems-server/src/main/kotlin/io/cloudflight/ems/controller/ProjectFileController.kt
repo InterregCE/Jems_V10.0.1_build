@@ -20,7 +20,7 @@ class ProjectFileController(
     private val fileStorageService: FileStorageService
 ) : ProjectFileApi {
 
-    @PreAuthorize("@projectAuthorization.canReadWriteProject(#projectId)")
+    @PreAuthorize("@projectAuthorization.canWriteProject(#projectId)")
     override fun uploadProjectFile(projectId: Long, file: MultipartFile) {
         fileStorageService.saveFile(
             file.inputStream,
@@ -47,7 +47,7 @@ class ProjectFileController(
         return fileStorageService.getFilesForProject(projectId, pageable)
     }
 
-    @PreAuthorize("@projectAuthorization.canReadWriteProject(#projectId)")
+    @PreAuthorize("@projectFileAuthorization.canChangeFile(#projectId, #fileId)")
     override fun setDescriptionToFile(
         projectId: Long,
         fileId: Long,
@@ -56,7 +56,7 @@ class ProjectFileController(
         return fileStorageService.setDescription(projectId, fileId, projectFileDescription.description)
     }
 
-    @PreAuthorize("@projectAuthorization.canDeleteFile(#projectId, #fileId)")
+    @PreAuthorize("@projectFileAuthorization.canChangeFile(#projectId, #fileId)")
     override fun deleteFile(projectId: Long, fileId: Long) {
         fileStorageService.deleteFile(projectId, fileId)
     }

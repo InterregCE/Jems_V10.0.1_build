@@ -10,6 +10,9 @@ interface ProjectService {
 
     fun getById(id: Long): OutputProject
 
+    /**
+     * List of projects is restricted based on actual user role.
+     */
     fun findAll(page: Pageable): Page<OutputProjectSimple>
 
     fun createProject(project: InputProject): OutputProject
