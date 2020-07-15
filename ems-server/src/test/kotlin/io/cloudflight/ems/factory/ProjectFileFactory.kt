@@ -23,7 +23,7 @@ class ProjectFileFactory(
     @Transactional
     fun saveProject(author: User): Project {
         val projectStatus = projectStatusRepository.save(ProjectStatus(null, null, ProjectApplicationStatus.DRAFT, author, ZonedDateTime.now(), null))
-        return projectRepository.save(Project(null, "test_project", author, ZonedDateTime.now(), null, projectStatus))
+        return projectRepository.save(Project(null, "test_project", author, projectStatus, projectStatus))
     }
 
     @Transactional

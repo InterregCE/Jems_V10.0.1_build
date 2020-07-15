@@ -23,12 +23,12 @@
     <div class="col-sm-2 column">
         <span>First submission</span>
         <br>
-        <span>{{project.submissionDate | date : Tables.DEFAULT_DATE_FORMAT}}</span>
+        <span>{{project.firstSubmission?.updated | date : Tables.DEFAULT_DATE_FORMAT}}</span>
     </div>
     <div class="col-sm-2 column">
         <span>Latest re-submission</span>
         <br>
-        <span>{{project.resubmissionDate | date : Tables.DEFAULT_DATE_FORMAT}}</span>
+        <span>{{project.lastResubmission?.updated | date : Tables.DEFAULT_DATE_FORMAT}}</span>
     </div>
     <div class="col-sm-2 column">
         <span>Status</span>

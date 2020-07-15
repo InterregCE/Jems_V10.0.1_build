@@ -73,7 +73,7 @@ class FileStorageServiceTest {
         userRole = UserRole(id = 1, name = "ADMIN"),
         password = "hash_pass"
     )
-    private val testProject = Project(id = PROJECT_ID, submissionDate = TEST_DATE_TIME, applicant = account, acronym = "test project",
+    private val testProject = Project(id = PROJECT_ID, applicant = account, acronym = "test project",
         projectStatus = ProjectStatus(status = ProjectApplicationStatus.DRAFT, user = account, updated = ZonedDateTime.now())
     )
 

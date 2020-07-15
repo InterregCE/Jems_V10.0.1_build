@@ -90,8 +90,8 @@ internal class ProjectStatusServiceImplTest {
         val result = projectStatusService.setProjectStatus(1, InputProjectStatus(ProjectApplicationStatus.SUBMITTED, NOTE_DENIED))
 
         assertThat(result.id).isEqualTo(1)
-        assertThat(result.submissionDate).isNotNull()
-        assertThat(result.resubmissionDate).isNull()
+        assertThat(result.firstSubmission).isNotNull()
+        assertThat(result.lastResubmission).isNull()
         assertThat(result.projectStatus.status).isEqualTo(ProjectApplicationStatus.SUBMITTED)
         assertThat(result.projectStatus.note).isEqualTo(NOTE_DENIED)
     }
@@ -107,9 +107,9 @@ internal class ProjectStatusServiceImplTest {
         val result = projectStatusService.setProjectStatus(1, InputProjectStatus(ProjectApplicationStatus.SUBMITTED, null))
 
         assertThat(result.id).isEqualTo(1)
-        assertThat(result.submissionDate).isNotNull()
-        assertThat(result.resubmissionDate).isNotNull()
-        assertThat(result.submissionDate).isNotEqualTo(result.resubmissionDate)
+        assertThat(result.firstSubmission).isNotNull()
+        assertThat(result.lastResubmission).isNotNull()
+        assertThat(result.firstSubmission?.updated).isNotEqualTo(result.lastResubmission?.updated)
         assertThat(result.projectStatus.status).isEqualTo(ProjectApplicationStatus.SUBMITTED)
         assertThat(result.projectStatus.note).isNull()
     }
@@ -125,13 +125,24 @@ internal class ProjectStatusServiceImplTest {
     }
 
     private fun createProject(status: ProjectApplicationStatus, note: String? = null): Project {
-        val time = if (ProjectApplicationStatus.SUBMITTED == status || ProjectApplicationStatus.RETURNED_TO_APPLICANT == status) SUBMIT_TIME else null
+        var submitTime: ZonedDateTime?
+        var statusTime: ZonedDateTime
+        if (status == ProjectApplicationStatus.DRAFT) {
+            submitTime = null
+            statusTime = DRAFT_TIME
+        } else if (status == ProjectApplicationStatus.SUBMITTED) {
+            submitTime = DRAFT_TIME.plusDays(1)
+            statusTime = submitTime
+        } else { // status RETURNED_TO_APPLICANT
+            submitTime = DRAFT_TIME.plusDays(1)
+            statusTime = submitTime.plusDays(1)
+        }
         return Project(
             id = 1,
             acronym = "acronym",
             applicant = user,
-            submissionDate = time,
-            projectStatus = ProjectStatus(1, null, status, user, time ?: DRAFT_TIME, note)
+            projectStatus = ProjectStatus(1, null, status, user, statusTime, note),
+            firstSubmission = if (submitTime != null) ProjectStatus(2, null, ProjectApplicationStatus.SUBMITTED, user, submitTime, note) else null
         )
     }
 

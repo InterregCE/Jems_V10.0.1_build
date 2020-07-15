@@ -34,7 +34,9 @@ class ProjectFileAuthorization(
      * take last resubmission, if not then submission, if not then it means it is a DRAFT so take status timestamp
      */
     fun getLastSubmissionFor(project: OutputProject): ZonedDateTime {
-        return project.resubmissionDate ?: project.submissionDate ?: project.projectStatus.updated
+        return project.lastResubmission?.updated
+            ?: project.firstSubmission?.updated
+            ?: project.projectStatus.updated
     }
 
     fun isOwner(project: OutputProject): Boolean {
