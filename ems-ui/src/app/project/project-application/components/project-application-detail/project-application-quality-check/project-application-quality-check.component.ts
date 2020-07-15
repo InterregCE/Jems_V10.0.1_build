@@ -18,9 +18,9 @@ import {InputProjectQualityAssessment, ProjectStatusService, OutputProject} from
   ]
 })
 export class ProjectApplicationQualityCheckComponent extends AbstractForm implements OnInit {
-  RECOMMEND = 'Recommended for funding';
-  RECOMMEND_WITH_CONDITIONS = 'Recommended with conditions';
-  NOT_RECOMMEND = 'Not recommended';
+  RECOMMEND = 'Project is RECOMMENDED for funding.';
+  RECOMMEND_WITH_CONDITIONS = 'Project is RECOMMENDED WITH CONDITIONS.';
+  NOT_RECOMMEND = 'Project is NOT RECOMMENDED for funding.';
   projectId = this.activatedRoute.snapshot.params.projectId;
   options: string[] = [this.RECOMMEND, this.RECOMMEND_WITH_CONDITIONS, this.NOT_RECOMMEND];
   project$: Observable<OutputProject>;
@@ -76,7 +76,7 @@ export class ProjectApplicationQualityCheckComponent extends AbstractForm implem
     Forms.confirmDialog(
       this.dialog,
       'project.assessment.qualityCheck.dialog.title',
-      'project.assessment.qualityCheck.dialog.message'
+      this.getQualityCheckMesage()
     ).pipe(
       take(1),
       takeUntil(this.destroyed$)
@@ -115,5 +115,15 @@ export class ProjectApplicationQualityCheckComponent extends AbstractForm implem
       return;
     }
     this.notesForm.controls.assessment.setValue(this.NOT_RECOMMEND);
+  }
+
+  private getQualityCheckMesage(): string {
+    if (this.selectedAssessment === this.RECOMMEND) {
+      return 'project.assessment.qualityCheck.dialog.message.recommended';
+    }
+    if (this.selectedAssessment === this.RECOMMEND_WITH_CONDITIONS) {
+      return 'project.assessment.qualityCheck.dialog.message.recommended.conditions';
+    }
+    return 'project.assessment.qualityCheck.dialog.message.not.recommended';
   }
 }

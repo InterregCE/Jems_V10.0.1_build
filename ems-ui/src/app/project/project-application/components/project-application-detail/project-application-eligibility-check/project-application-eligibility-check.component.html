@@ -11,7 +11,7 @@
                         class="assessment-radio-group"
                         name="assessment"
                         formControlName="assessment"
-                        [disabled]="project.qualityAssessment !== null"
+                        [disabled]="project.eligibilityAssessment !== null"
                         (change)="assessmentChangeHandler($event)">
                     <mat-radio-button
                             class="assessment-radio-button"
@@ -25,11 +25,11 @@
                                 formControlName="notes"
                                 class="assessment-text-area"
                                 matInput
-                                [readonly]="project.qualityAssessment !== null">
+                                [readonly]="project.eligibilityAssessment !== null">
                             Explanatory Notes
                         </textarea>
                 </div>
-                <div *ngIf="project.qualityAssessment === null">
+                <div *ngIf="project.eligibilityAssessment === null">
                     <button mat-raised-button
                             color="secondary"
                             (click)="onCancel()">Cancel
@@ -39,7 +39,7 @@
                             class="right-button"
                             type="submit"
                             [disabled]="notesForm.invalid || submitted"
-                            (click)="onSubmit()">{{'project.assessment.qualityCheck.dialog.title' | translate}}
+                            (click)="onSubmit()">{{'project.assessment.eligibilityCheck.dialog.title' | translate}}
                     </button>
                 </div>
             </form>
