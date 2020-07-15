@@ -8,7 +8,6 @@ import {FormGroup} from '@angular/forms';
 import {Forms} from '../../../../../common/utils/forms';
 import {filter, map, take, takeUntil} from 'rxjs/operators';
 import {ProjectStore} from '../../../containers/project-application-detail/services/project-store.service';
-import {Router} from '@angular/router';
 
 @Component({
   selector: 'app-project-application-assessments',
@@ -35,7 +34,6 @@ export class ProjectApplicationAssessmentsComponent extends AbstractForm {
 
   constructor(private dialog: MatDialog,
               private projectStore: ProjectStore,
-              private router: Router,
               protected changeDetectorRef: ChangeDetectorRef) {
     super(changeDetectorRef);
   }

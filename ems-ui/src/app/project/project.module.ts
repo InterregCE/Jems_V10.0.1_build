@@ -22,8 +22,10 @@ import {ProjectApplicationFilesComponent} from './project-application/containers
 import {DescriptionCellComponent} from './project-application/components/project-application-detail/project-application-files-list/cell-renderers/description-cell/description-cell.component';
 import {ProjectApplicationEligibilityDecisionComponent} from './project-application/components/project-application-detail/project-application-eligibility-decision/project-application-eligibility-decision.component';
 import {MatRadioModule} from '@angular/material/radio';
-import { ProjectApplicationQualityCheckComponent } from './project-application/components/project-application-detail/project-application-quality-check/project-application-quality-check.component';
 import {ProjectApplicationEligibilityCheckComponent} from './project-application/components/project-application-detail/project-application-eligibility-check/project-application-eligibility-check.component';
+import {ProjectApplicationQualityCheckComponent} from './project-application/components/project-application-detail/project-application-quality-check/project-application-quality-check.component';
+import {ProjectStore} from './project-application/containers/project-application-detail/services/project-store.service';
+import {MatExpansionModule} from '@angular/material/expansion';
 
 @NgModule({
   declarations: [
@@ -51,14 +53,13 @@ import {ProjectApplicationEligibilityCheckComponent} from './project-application
     MatDialogModule,
     OverlayModule,
     BrowserAnimationsModule,
-    MatRadioModule
+    MatRadioModule,
+    MatExpansionModule
   ],
   providers: [
     ProjectFileService,
-    DatePipe
-  ],
-  entryComponents: [
-    // DescriptionCellComponent,
+    DatePipe,
+    ProjectStore
   ]
 })
 export class ProjectModule {

@@ -16,11 +16,11 @@ export class ProjectApplicationDataComponent extends BaseComponent {
   Alert = Alert;
   Permission = Permission;
 
+  project$ = this.projectStore.getProject();
   projectChanged$ = this.projectStore.getStatus()
     .pipe(
       map(() => true)
-    )
-  project$ = this.projectStore.getProject();
+    );
 
   constructor(private projectStore: ProjectStore) {
     super();

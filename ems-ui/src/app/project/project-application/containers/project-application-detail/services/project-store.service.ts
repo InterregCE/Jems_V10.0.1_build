@@ -1,13 +1,11 @@
 import {Injectable} from '@angular/core';
-import {combineLatest, merge, Observable, ReplaySubject, Subject} from 'rxjs';
+import {merge, Observable, ReplaySubject, Subject} from 'rxjs';
 import {InputProjectStatus, OutputProject, OutputProjectStatus, ProjectService, ProjectStatusService} from '@cat/api';
-import {flatMap, shareReplay, tap} from 'rxjs/operators';
+import {distinct, flatMap, shareReplay, tap, withLatestFrom} from 'rxjs/operators';
 import {Log} from '../../../../../common/utils/log';
 
 /**
  * Stores project related information.
- * Because his injectable is tied to an entity id it is meant to be
- * provided in a detail container rather than a module.
  */
 @Injectable()
 export class ProjectStore {
@@ -16,18 +14,20 @@ export class ProjectStore {
 
   private projectById$ = this.projectId$
     .pipe(
+      distinct(),
       flatMap(id => this.projectService.getProjectById(id)),
       tap(project => Log.info('Fetched project:', this, project))
     );
-  private changedStatus$ = combineLatest([
-    this.projectId$,
-    this.newStatus$
-  ])
+
+  private changedStatus$ = this.newStatus$
     .pipe(
-      flatMap(([id, newStatus]) =>
+      withLatestFrom(this.projectId$),
+      flatMap(([newStatus, id]) =>
         this.projectStatusService.setProjectStatus(id, {note: '', status: newStatus})),
+      tap(saved => this.projectStatus$.next(saved.projectStatus.status)),
       tap(saved => Log.info('Updated project status status:', this, saved)),
     );
+
   private projectStatus$ = new ReplaySubject<OutputProjectStatus.StatusEnum>(1);
   private project$ =
     merge(
@@ -35,7 +35,6 @@ export class ProjectStore {
       this.changedStatus$
     )
       .pipe(
-        tap(saved => this.projectStatus$.next(saved.projectStatus.status)),
         shareReplay(1)
       );
 

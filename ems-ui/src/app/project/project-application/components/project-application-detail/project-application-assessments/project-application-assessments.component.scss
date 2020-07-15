@@ -4,31 +4,11 @@
   margin-right: 0;
 }
 
-.assessment-area {
-  margin-top: 3%;
-  border: solid 1px darkgrey;
-  max-width: 40%;
+.project-detail-row-clickable {
+  cursor: pointer;
+}
 
-  .project-detail-row {
-    padding-bottom: 1rem;
-    border-top: solid 1px darkgrey;
-    margin-left: 0;
-  }
-
-  .project-detail-row-clickable {
-    padding-bottom: 1rem;
-    border-top: solid 1px darkgrey;
-    margin-left: 0;
-    cursor: pointer;
-  }
-
-  .assessment-button {
-    width: 90%;
-  }
-
-  .assessment-text {
-    max-width: inherit;
-    padding-top: 0.5rem;
-  }
+.assessment-button {
+  width: 100%;
 }
 
