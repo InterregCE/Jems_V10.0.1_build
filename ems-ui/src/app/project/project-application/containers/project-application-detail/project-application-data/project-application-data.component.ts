@@ -27,6 +27,6 @@ export class ProjectApplicationDataComponent extends BaseComponent {
   }
 
   changeProjectStatus(newStatus: InputProjectStatus.StatusEnum): void {
-    this.projectStore.changeStatus(newStatus);
+    this.projectStore.changeStatus({status: newStatus, note: ''});
   }
 }

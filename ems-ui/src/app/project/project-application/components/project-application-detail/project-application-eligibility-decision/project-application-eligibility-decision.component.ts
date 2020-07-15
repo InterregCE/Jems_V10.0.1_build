@@ -86,9 +86,12 @@ export class ProjectApplicationEligibilityDecisionComponent extends AbstractForm
     });
   }
 
-  private getNewEligibilityStatus(selectedDecision: string): InputProjectStatus.StatusEnum {
-    return selectedDecision === this.ELIGIBLE ? InputProjectStatus.StatusEnum.ELIGIBLE
-      : InputProjectStatus.StatusEnum.INELIGIBLE;
+  private getNewEligibilityStatus(selectedDecision: string): InputProjectStatus {
+    return {
+      status: selectedDecision === this.ELIGIBLE
+        ? InputProjectStatus.StatusEnum.ELIGIBLE
+        : InputProjectStatus.StatusEnum.INELIGIBLE,
+      note: this.notesForm?.controls?.notes?.value};
   }
 
   private setEligibilityDecisionValue(project: OutputProject): void {
