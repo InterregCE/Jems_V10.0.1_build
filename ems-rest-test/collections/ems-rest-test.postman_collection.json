@@ -190,15 +190,11 @@
 						{
 							"listen": "prerequest",
 							"script": {
-								"id": "1d2490d5-4ceb-4ae2-a1a4-8a21f836f17a",
+								"id": "8a218f5e-2384-470c-90b4-c929585ea66c",
 								"exec": [
 									"var uuid = require('uuid');\r",
 									"const randomIdentifier = uuid.v4().substring(24, 32);\r",
 									"pm.variables.set('project_acronym', \"test-proj-\" + randomIdentifier);\r",
-									"\r",
-									"var date = new Date();\r",
-									"date.setDate(date.getDate() + 2);\r",
-									"pm.variables.set('project_submissionDate', date.toISOString().split('T')[0]);\r",
 									""
 								],
 								"type": "text/javascript"
@@ -207,13 +203,25 @@
 						{
 							"listen": "test",
 							"script": {
-								"id": "c03936d6-6fbd-499e-9007-601578b38cb5",
+								"id": "09753376-2d2f-4fd1-b2a6-011c9916d65a",
 								"exec": [
-									"pm.test('should be OK', function() {\r",
+									"const application = pm.response.json()\r",
+									"\r",
+									"pm.test('project should be created', function() {\r",
 									"    pm.response.to.have.status(200);\r",
-									"    pm.environment.set(\"projectId\", pm.response.json().id)\r",
-									"    pm.variables.set(\"projectAcronym\", pm.response.json().acronym)\r",
-									"    pm.variables.set(\"projectSubmissionDate\", pm.response.json().submissionDate)\r",
+									"    pm.expect(application).to.have.property(\"id\");\r",
+									"    pm.expect(application.id).not.eql(null);\r",
+									"    pm.variables.set(\"projectId\", application.id);\r",
+									"});\r",
+									"\r",
+									"pm.test('acronym should fit', function() {\r",
+									"    pm.expect(application).to.have.property(\"acronym\");\r",
+									"    pm.expect(application.acronym).to.eql(pm.variables.get(\"project_acronym\"));\r",
+									"});\r",
+									"\r",
+									"pm.test('submission should be empty', function() {\r",
+									"    pm.expect(application).to.have.property(\"firstSubmission\");\r",
+									"    pm.expect(application.firstSubmission).to.eql(null)\r",
 									"});\r",
 									""
 								],
@@ -232,7 +240,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n\t\"acronym\": \"{{project_acronym}}\",\n\t\"submissionDate\": \"{{project_submissionDate}}\"\n}"
+							"raw": "{\n\t\"acronym\": \"{{project_acronym}}\"\n}"
 						},
 						"url": {
 							"raw": "{{url}}/api/project",
@@ -314,17 +322,18 @@
 						{
 							"listen": "test",
 							"script": {
-								"id": "f4ec3619-d37b-4995-8b01-651499d8daab",
+								"id": "1647bdd5-8571-41b3-9ea5-646387766af5",
 								"exec": [
 									"const response = pm.response.json();\r",
-									"const id = pm.variables.get(\"projectId\")\r",
-									"const acronym = pm.variables.get(\"projectAcronym\")\r",
-									"const submissionDate = pm.variables.get(\"projectSubmissionDate\")\r",
 									"\r",
-									"pm.test(\"one project can be retrieved\", function () {\r",
-									"    pm.expect(response.id).to.equal(id);\r",
-									"    pm.expect(response.acronym).to.equal(acronym);\r",
-									"    pm.expect(response.submissionDate).to.equal(submissionDate);\r",
+									"pm.test(\"id should fit\", function () {\r",
+									"    pm.expect(response).to.have.property(\"id\");\r",
+									"    pm.expect(response.id).to.equal(pm.variables.get(\"projectId\"));\r",
+									"});\r",
+									"\r",
+									"pm.test(\"acronym should fit\", function () {\r",
+									"    pm.expect(response).to.have.property(\"acronym\");\r",
+									"    pm.expect(response.acronym).to.equal(pm.variables.get(\"project_acronym\"));\r",
 									"});\r",
 									""
 								],
@@ -355,9 +364,9 @@
 						{
 							"listen": "prerequest",
 							"script": {
-								"id": "9e6defb9-a9eb-496f-9ddb-c6044dcad712",
+								"id": "4402654f-5d24-47c3-a7d4-c286ec526307",
 								"exec": [
-									"pm.environment.set(\"projectIdInvalid\", '-1')"
+									""
 								],
 								"type": "text/javascript"
 							}
@@ -379,14 +388,14 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "{{url}}/api/project/{{projectIdInvalid}}",
+							"raw": "{{url}}/api/project/-1",
 							"host": [
 								"{{url}}"
 							],
 							"path": [
 								"api",
 								"project",
-								"{{projectIdInvalid}}"
+								"-1"
 							]
 						}
 					},
@@ -1851,7 +1860,7 @@
 						{
 							"listen": "prerequest",
 							"script": {
-								"id": "b9e49a26-779f-4a4e-b02b-3c96850364d9",
+								"id": "11e49b2c-a623-49fe-abff-a5fed15adf5e",
 								"exec": [
 									"var uuid = require('uuid');\r",
 									"const randomIdentifier = uuid.v4().substring(24, 32);\r",
@@ -1864,7 +1873,7 @@
 						{
 							"listen": "test",
 							"script": {
-								"id": "a244bad8-ed3c-469e-bd7a-57c24292c38c",
+								"id": "092aa5c9-f9ce-4788-92b0-26ce1141dc69",
 								"exec": [
 									"const application = pm.response.json();\r",
 									"\r",
@@ -1874,7 +1883,7 @@
 									"});\r",
 									"\r",
 									"pm.test('application should not have submission date filled in', function() {\r",
-									"    pm.expect(application.submissionDate).to.eql(null);\r",
+									"    pm.expect(application.firstSubmission).to.eql(null);\r",
 									"})\r",
 									""
 								],
@@ -2088,7 +2097,7 @@
 						{
 							"listen": "test",
 							"script": {
-								"id": "3ba0c801-b56a-4a73-90fe-e333eacf68d6",
+								"id": "79c28bc4-26ff-48e5-bec2-8f55ddb90aef",
 								"exec": [
 									"const application = pm.response.json();\r",
 									"\r",
@@ -2098,12 +2107,12 @@
 									"});\r",
 									"\r",
 									"pm.test('submission date should be filled in', function() {\r",
-									"    pm.expect(application.submissionDate).not.eql(null);\r",
-									"    pm.variables.set('application_submission_time', application.submissionDate);\r",
+									"    pm.expect(application.firstSubmission.updated).not.eql(null);\r",
+									"    pm.variables.set('application_submission_time', application.firstSubmission.updated);\r",
 									"});\r",
 									"\r",
 									"pm.test('resubmission date should be empty after first submission', function() {\r",
-									"    pm.expect(application.resubmissionDate).to.eql(null);\r",
+									"    pm.expect(application.lastResubmission).to.eql(null);\r",
 									"});\r",
 									""
 								],
@@ -2454,7 +2463,7 @@
 						{
 							"listen": "test",
 							"script": {
-								"id": "4591dac8-c9c8-46d3-b7f6-c60d96e89282",
+								"id": "a2456fb7-b4a3-4c32-a209-1d58a449bf24",
 								"exec": [
 									"const application = pm.response.json();\r",
 									"\r",
@@ -2464,13 +2473,13 @@
 									"});\r",
 									"\r",
 									"pm.test('submission date should stay like it was', function() {\r",
-									"    pm.expect(application.submissionDate).to.eql(\r",
+									"    pm.expect(application.firstSubmission.updated).to.eql(\r",
 									"        pm.variables.get('application_submission_time')\r",
 									"    );\r",
 									"});\r",
 									"\r",
 									"pm.test('resubmission date should still be empty', function() {\r",
-									"    pm.expect(application.resubmissionDate).to.eql(null);\r",
+									"    pm.expect(application.lastResubmission).to.eql(null);\r",
 									"});\r",
 									""
 								],
@@ -2654,7 +2663,7 @@
 						{
 							"listen": "prerequest",
 							"script": {
-								"id": "23df8217-7b48-425f-9b43-70ebb8ed5720",
+								"id": "09883112-ebd9-4830-ad28-a8b2ed2319c5",
 								"exec": [
 									""
 								],
@@ -2664,7 +2673,7 @@
 						{
 							"listen": "test",
 							"script": {
-								"id": "18fc2bb0-1bb8-4f49-b7c5-180c417dafe0",
+								"id": "b34f68d3-ae96-41d3-a0f7-13b42935faa7",
 								"exec": [
 									"const application = pm.response.json();\r",
 									"\r",
@@ -2674,13 +2683,14 @@
 									"});\r",
 									"\r",
 									"pm.test('submission date should stay like it was', function() {\r",
-									"    pm.expect(application.submissionDate).to.eql(\r",
+									"    pm.expect(application.firstSubmission.updated).to.eql(\r",
 									"        pm.variables.get('application_submission_time')\r",
 									"    );\r",
 									"});\r",
 									"\r",
 									"pm.test('resubmission date should be now filled in', function() {\r",
-									"    pm.expect(application.resubmissionDate).not.equal(null);\r",
+									"    pm.expect(application.lastResubmission).not.equal(null);\r",
+									"    pm.expect(application.lastResubmission.updated).not.equal(null);\r",
 									"});\r",
 									""
 								],

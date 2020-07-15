@@ -1,6 +1,5 @@
 package io.cloudflight.ems.entity
 
-import java.time.ZonedDateTime
 import javax.persistence.CascadeType
 import javax.persistence.Column
 import javax.persistence.Entity
@@ -24,15 +23,17 @@ data class Project (
     @ManyToOne(optional = false)
     val applicant: User,
 
-    @Column
-    val submissionDate: ZonedDateTime?,
-
-    @Column
-    val resubmissionDate: ZonedDateTime? = null,
-
     @ManyToOne(optional = false)
     @JoinColumn(name = "project_status_id")
     val projectStatus: ProjectStatus,
+
+    @ManyToOne(optional = true)
+    @JoinColumn(name = "first_submission_id")
+    val firstSubmission: ProjectStatus? = null,
+
+    @ManyToOne(optional = true)
+    @JoinColumn(name = "last_resubmission_id")
+    val lastResubmission: ProjectStatus? = null,
 
     @OneToOne(mappedBy = "project", cascade = [CascadeType.ALL])
     val qualityAssessment: ProjectQualityAssessment? = null,

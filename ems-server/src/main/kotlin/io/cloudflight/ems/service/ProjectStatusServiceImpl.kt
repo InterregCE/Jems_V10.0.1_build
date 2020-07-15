@@ -37,13 +37,12 @@ class ProjectStatusServiceImpl(
 
         var project = projectRepo.findOneById(projectId) ?: throw ResourceNotFoundException()
         val oldStatus = project.projectStatus.status
-        val changeTimestamp = ZonedDateTime.now() // to have exactly the same timestamp on both entities
 
         val projectStatus =
             projectStatusRepo.save(
-                getStatusEntity(project, statusChange, user, changeTimestamp)
+                getStatusEntity(project, statusChange, user)
             )
-        project = projectRepo.save(updateProject(project, projectStatus, changeTimestamp))
+        project = projectRepo.save(updateProject(project, projectStatus))
 
         auditService.logEvent(Audit.projectStatusChanged(
             currentUser = securityService.currentUser,
@@ -106,13 +105,13 @@ class ProjectStatusServiceImpl(
         return result
     }
 
-    private fun updateProject(oldProject: Project, newStatus: ProjectStatus, timestamp: ZonedDateTime): Project {
+    private fun updateProject(oldProject: Project, newStatus: ProjectStatus): Project {
         return when {
             oldProject.projectStatus.status == ProjectApplicationStatus.RETURNED_TO_APPLICANT -> {
-                oldProject.copy(projectStatus = newStatus, resubmissionDate = timestamp)
+                oldProject.copy(projectStatus = newStatus, lastResubmission = newStatus)
             }
             newStatus.status == ProjectApplicationStatus.SUBMITTED -> {
-                oldProject.copy(projectStatus = newStatus, submissionDate = timestamp)
+                oldProject.copy(projectStatus = newStatus, firstSubmission = newStatus)
             }
             else -> {
                 oldProject.copy(projectStatus = newStatus)
@@ -123,14 +122,13 @@ class ProjectStatusServiceImpl(
     private fun getStatusEntity(
         project: Project,
         statusChange: InputProjectStatus,
-        user: User,
-        timestamp: ZonedDateTime
+        user: User
     ): ProjectStatus {
         return ProjectStatus(
             project = project,
             status = statusChange.status!!,
             user = user,
-            updated = timestamp,
+            updated = ZonedDateTime.now(),
             note = statusChange.note
         )
     }

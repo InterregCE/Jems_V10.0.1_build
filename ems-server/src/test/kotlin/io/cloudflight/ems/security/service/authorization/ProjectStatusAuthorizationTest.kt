@@ -212,8 +212,8 @@ internal class ProjectStatusAuthorizationTest {
             id = id,
             acronym = "acronym",
             applicant = userApplicantWithoutRole,
-            submissionDate = null,
-            resubmissionDate = null,
+            firstSubmission = null,
+            lastResubmission = null,
             projectStatus = OutputProjectStatus(1, status, userApplicantWithoutRole, ZonedDateTime.now(), null)
         )
     }

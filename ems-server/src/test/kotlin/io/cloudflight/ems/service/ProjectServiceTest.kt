@@ -82,6 +82,13 @@ class ProjectServiceTest {
         updated = TEST_DATE_TIME
     )
 
+    private val statusSubmitted = ProjectStatus(
+        id = 11,
+        status = ProjectApplicationStatus.SUBMITTED,
+        user = account,
+        updated = TEST_DATE_TIME
+    )
+
     @RelaxedMockK
     lateinit var projectRepository: ProjectRepository
 
@@ -123,8 +130,8 @@ class ProjectServiceTest {
             id = 25,
             acronym = "test acronym",
             applicant = account,
-            submissionDate = TEST_DATE_TIME,
-            projectStatus = statusDraft
+            projectStatus = statusSubmitted,
+            firstSubmission = statusSubmitted
         )
         every { projectRepository.findAll(UNPAGED) } returns PageImpl(listOf(projectToReturn))
 
@@ -138,11 +145,11 @@ class ProjectServiceTest {
             OutputProjectSimple(
                 id = 25,
                 acronym = "test acronym",
-                submissionDate = TEST_DATE_TIME,
-                resubmissionDate = null,
+                firstSubmissionDate = TEST_DATE_TIME,
+                lastResubmissionDate = null,
                 projectStatus = OutputProjectStatus(
-                    id = 10,
-                    status = ProjectApplicationStatus.DRAFT,
+                    id = 11,
+                    status = ProjectApplicationStatus.SUBMITTED,
                     user = userWithoutRole,
                     updated = TEST_DATE_TIME
                 )
@@ -188,15 +195,15 @@ class ProjectServiceTest {
             612,
             "test",
             account,
-            TEST_DATE_TIME,
-            null,
             statusDraft
         )
 
         val result = projectService.createProject(InputProject("test"))
 
         assertEquals(result.acronym, "test")
-        assertEquals(result.submissionDate, TEST_DATE_TIME)
+        assertEquals(result.firstSubmission, null)
+        assertEquals(result.lastResubmission, null)
+        assertEquals(result.projectStatus.id, 10)
         assertEquals(result.projectStatus.status, ProjectApplicationStatus.DRAFT)
         assertEquals(result.projectStatus.updated, TEST_DATE_TIME)
 
@@ -212,14 +219,16 @@ class ProjectServiceTest {
     @Test
     fun projectGet_OK() {
         every { projectRepository.findOneById(eq(1)) } returns
-                Project(1, "test", account, TEST_DATE_TIME, null, statusDraft)
+                Project(1, "test", account, statusSubmitted, statusSubmitted)
 
         val result = projectService.getById(1);
 
         assertThat(result).isNotNull()
         assertThat(result.id).isEqualTo(1);
         assertThat(result.acronym).isEqualTo("test")
-        assertThat(result.submissionDate).isEqualTo(TEST_DATE_TIME)
+        assertThat(result.projectStatus.id).isEqualTo(11)
+        assertThat(result.firstSubmission?.id).isEqualTo(11)
+        assertThat(result.firstSubmission?.updated).isEqualTo(TEST_DATE_TIME)
     }
 
     @Test
