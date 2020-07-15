@@ -7,7 +7,7 @@ import {FormBuilder, FormGroup, Validators} from '@angular/forms';
 import {AbstractForm} from '@common/components/forms/abstract-form';
 import {ProjectStore} from '../../../containers/project-application-detail/services/project-store.service';
 import {Observable} from 'rxjs';
-import {InputProjectStatus, OutputProject} from '@cat/api';
+import {InputProjectStatus, OutputProject, OutputProjectStatus} from '@cat/api';
 
 @Component({
   selector: 'app-project-eligibility-decision',
@@ -18,8 +18,11 @@ import {InputProjectStatus, OutputProject} from '@cat/api';
   ]
 })
 export class ProjectApplicationEligibilityDecisionComponent extends AbstractForm implements OnInit {
+  OutputProjectStatus = OutputProjectStatus;
   projectId = this.activatedRoute.snapshot.params.projectId;
-  options: string[] = ['Eligible', 'Ineligible'];
+  ELIGIBLE = 'Project is ELIGIBLE.'
+  INELIGIBLE = 'Project is INELIGIBLE.'
+  options: string[] = [this.ELIGIBLE, this.INELIGIBLE];
   project$: Observable<OutputProject>;
   selectedAssessment: string;
 
@@ -42,6 +45,13 @@ export class ProjectApplicationEligibilityDecisionComponent extends AbstractForm
   ngOnInit(): void {
     super.ngOnInit();
     this.project$ = this.projectStore.getProject();
+    this.project$.subscribe((project) => {
+      if (project.projectStatus.status === OutputProjectStatus.StatusEnum.ELIGIBLE
+        || project.projectStatus.status === OutputProjectStatus.StatusEnum.INELIGIBLE) {
+          this.setEligibilityDecisionValue(project);
+          this.notesForm.controls.notes.setValue(project.projectStatus.note);
+      }
+    })
   }
 
   getForm(): FormGroup | null {
@@ -65,9 +75,7 @@ export class ProjectApplicationEligibilityDecisionComponent extends AbstractForm
     Forms.confirmDialog(
       this.dialog,
       'project.assessment.eligibilityDecision.dialog.title',
-      'Are you sure you want to submit the eligibility decision as '
-      + this.selectedAssessment
-      + '? Operation cannot be reversed.'
+      this.getEligibilityDecisionMesage()
     ).pipe(
       take(1),
       takeUntil(this.destroyed$)
@@ -80,8 +88,22 @@ export class ProjectApplicationEligibilityDecisionComponent extends AbstractForm
   }
 
   private getNewEligibilityStatus(selectedDecision: string): InputProjectStatus.StatusEnum {
-    return selectedDecision === 'Eligible' ? InputProjectStatus.StatusEnum.ELIGIBLE
+    return selectedDecision === this.ELIGIBLE ? InputProjectStatus.StatusEnum.ELIGIBLE
       : InputProjectStatus.StatusEnum.INELIGIBLE;
   }
 
+  private setEligibilityDecisionValue(project: OutputProject): void {
+    if (project.projectStatus.status === OutputProjectStatus.StatusEnum.INELIGIBLE) {
+      this.notesForm.controls.assessment.setValue(this.INELIGIBLE);
+      return;
+    }
+    this.notesForm.controls.assessment.setValue(this.ELIGIBLE);
+  }
+
+  private getEligibilityDecisionMesage(): string {
+    if (this.selectedAssessment === this.ELIGIBLE) {
+      return 'project.assessment.eligibilityDecision.dialog.message.eligible';
+    }
+    return 'project.assessment.eligibilityDecision.dialog.message.ineligible';
+  }
 }

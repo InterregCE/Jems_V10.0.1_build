@@ -18,8 +18,8 @@ import {InputProjectEligibilityAssessment, ProjectStatusService, OutputProject} 
   ]
 })
 export class ProjectApplicationEligibilityCheckComponent extends AbstractForm implements OnInit {
-  ELIGIBLE = 'project has PASSED ELIGIBILITY assessment';
-  INELIGIBLE = 'project has FAILED ELIGIBILITY assessment'
+  ELIGIBLE = 'Project has PASSED ELIGIBILITY assessment.';
+  INELIGIBLE = 'Project has FAILED ELIGIBILITY assessment.'
   projectId = this.activatedRoute.snapshot.params.projectId;
   options: string[] = [this.ELIGIBLE, this.INELIGIBLE];
   project$: Observable<OutputProject>;
@@ -74,9 +74,7 @@ export class ProjectApplicationEligibilityCheckComponent extends AbstractForm im
     Forms.confirmDialog(
       this.dialog,
       'project.assessment.eligibilityCheck.dialog.title',
-      'Are you sure you want to submit the eligibility assessment as '
-      + this.selectedAssessment
-      + '? Operation cannot be reversed.'
+      this.getEligibilityCheckMesage()
     ).pipe(
       take(1),
       takeUntil(this.destroyed$)
@@ -109,5 +107,12 @@ export class ProjectApplicationEligibilityCheckComponent extends AbstractForm im
       return;
     }
     this.notesForm.controls.assessment.setValue(this.ELIGIBLE);
+  }
+
+  private getEligibilityCheckMesage(): string {
+    if (this.selectedAssessment === this.ELIGIBLE) {
+      return 'project.assessment.eligibilityCheck.dialog.message.eligible';
+    }
+    return 'project.assessment.eligibilityCheck.dialog.message.ineligible';
   }
 }

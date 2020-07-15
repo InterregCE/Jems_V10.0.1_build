@@ -6,7 +6,6 @@
         </app-project-application-information>
         <div class="assessment-container">
             <form [formGroup]="notesForm" class="description-form">
-                <div></div>
                 <mat-radio-group
                         required
                         class="assessment-radio-group"
@@ -40,7 +39,7 @@
                             class="right-button"
                             type="submit"
                             [disabled]="notesForm.invalid || submitted"
-                            (click)="onSubmit()">Submit Quality Check
+                            (click)="onSubmit()">{{'project.assessment.qualityCheck.dialog.title' | translate}}
                     </button>
                 </div>
             </form>
