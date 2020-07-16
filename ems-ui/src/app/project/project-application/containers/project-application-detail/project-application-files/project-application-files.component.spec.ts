@@ -2,11 +2,11 @@ import {async, ComponentFixture, fakeAsync, TestBed, tick} from '@angular/core/t
 import {ProjectApplicationFilesComponent} from './project-application-files.component';
 import {TestModule} from '../../../../../common/test-module';
 import {ProjectModule} from '../../../../project.module';
-import {ProjectStore} from '../services/project-store.service';
 import {HttpTestingController} from '@angular/common/http/testing';
-import {InputProjectStatus, OutputProjectFile} from '@cat/api';
+import {OutputProjectFile} from '@cat/api';
 import {PermissionService} from '../../../../../security/permissions/permission.service';
 import {Permission} from '../../../../../security/permissions/permission';
+import {ProjectStore} from '../services/project-store.service';
 
 describe('ProjectApplicationFilesComponent', () => {
   let component: ProjectApplicationFilesComponent;
@@ -20,12 +20,6 @@ describe('ProjectApplicationFilesComponent', () => {
         ProjectModule
       ],
       declarations: [ProjectApplicationFilesComponent],
-      providers: [
-        {
-          provide: ProjectStore,
-          useClass: ProjectStore
-        }
-      ]
     })
       .compileComponents();
   }));
@@ -43,11 +37,16 @@ describe('ProjectApplicationFilesComponent', () => {
   });
 
   it('should list project files', fakeAsync(() => {
+    const permissionService = TestBed.inject(PermissionService);
+    const projectStore = TestBed.inject(ProjectStore);
+    permissionService.setPermissions([Permission.ADMINISTRATOR]);
     let results: OutputProjectFile[] = [];
-    component.currentPage$.subscribe(result => results = result.content);
+    component.details$.subscribe(result => results = result.page.content);
 
     const users = [{name: '1'} as OutputProjectFile, {name: '2'} as OutputProjectFile];
 
+    projectStore.init(1);
+    httpTestingController.expectOne({method: 'GET', url: '//api/project/1'}).flush({id: 1});
     httpTestingController.match({method: 'GET', url: '//api/project/1/file?page=0&size=25&sort=id,desc'})
       .forEach(req => req.flush({content: users}));
 
@@ -90,58 +89,5 @@ describe('ProjectApplicationFilesComponent', () => {
     httpTestingController.expectOne({method: 'PUT', url: '//api/project/1/file/1/description'});
 
     httpTestingController.verify();
-  }));
-
-  it('should set visibility actions for programme user', fakeAsync(() => {
-    const projectStore = TestBed.inject(ProjectStore);
-    const permissionService = TestBed.inject(PermissionService);
-    projectStore.init(1);
-    component.ngOnInit();
-    projectStore.getProject().subscribe();
-    permissionService.setPermissions([Permission.PROGRAMME_USER]);
-
-    httpTestingController.match({method: 'GET', url: '//api/project/1'})
-      .forEach(req => req.flush({projectStatus: {status: InputProjectStatus.StatusEnum.DRAFT}}));
-
-    tick();
-    expect(component.editActionVisible).toBeFalse();
-    expect(component.downloadActionVisible).toBeTrue();
-    expect(component.deleteActionVisible).toBeFalse();
-  }));
-
-
-  it('should set visibility actions for applicant user', fakeAsync(() => {
-    const projectStore = TestBed.inject(ProjectStore);
-    const permissionService = TestBed.inject(PermissionService);
-    projectStore.init(1);
-    component.ngOnInit();
-    projectStore.getProject().subscribe();
-    permissionService.setPermissions([Permission.APPLICANT_USER]);
-
-    let status = InputProjectStatus.StatusEnum.DRAFT;
-    httpTestingController.expectOne({method: 'GET', url: '//api/project/1'})
-      .flush({projectStatus: {status}});
-    tick();
-    expect(component.editActionVisible).toBeTrue();
-    expect(component.downloadActionVisible).toBeTrue();
-    expect(component.deleteActionVisible).toBeTrue();
-
-    status = InputProjectStatus.StatusEnum.SUBMITTED;
-    projectStore.changeStatus(status);
-    httpTestingController.expectOne({method: 'PUT', url: '//api/project/1/status'})
-      .flush({projectStatus: {status}});
-    tick();
-    expect(component.editActionVisible).toBeFalse();
-    expect(component.downloadActionVisible).toBeTrue();
-    expect(component.deleteActionVisible).toBeFalse();
-
-    status = InputProjectStatus.StatusEnum.RETURNEDTOAPPLICANT;
-    projectStore.changeStatus(status);
-    httpTestingController.expectOne({method: 'PUT', url: '//api/project/1/status'})
-      .flush({projectStatus: {status}});
-    tick();
-    expect(component.editActionVisible).toBeTrue();
-    expect(component.downloadActionVisible).toBeTrue();
-    expect(component.deleteActionVisible).toBeFalse();
   }));
 });

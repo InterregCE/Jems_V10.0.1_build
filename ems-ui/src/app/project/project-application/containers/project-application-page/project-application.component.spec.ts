@@ -1,6 +1,6 @@
 import {async, ComponentFixture, fakeAsync, TestBed, tick} from '@angular/core/testing';
 import {ProjectApplicationComponent} from './project-application.component';
-import {InputProject, OutputProject} from '@cat/api';
+import {InputProject, OutputProject, OutputProjectSimple} from '@cat/api';
 import {HttpTestingController} from '@angular/common/http/testing';
 import {TestModule} from '../../../../common/test-module';
 import {ProjectModule} from '../../../project.module';
@@ -50,7 +50,7 @@ describe('ProjectApplicationComponent', () => {
   }));
 
   it('should list projects', fakeAsync(() => {
-    let results: OutputProject[] = [];
+    let results: OutputProjectSimple[] = [];
     component.currentPage$.subscribe(result => results = result.content);
 
     const projects = [

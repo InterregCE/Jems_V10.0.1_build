@@ -10,13 +10,14 @@ import {
 } from '@angular/core';
 import {TableConfiguration} from '@common/components/table/model/table.configuration';
 import {ColumnType} from '@common/components/table/model/column-type.enum';
-import {OutputProjectFile, PageOutputProjectFile} from '@cat/api';
+import {OutputProject, OutputProjectFile, PageOutputProjectFile} from '@cat/api';
 import {BaseComponent} from '@common/components/base-component';
 import {MatSort} from '@angular/material/sort';
 import {filter, map, take, takeUntil} from 'rxjs/operators';
 import {FormState} from '@common/components/forms/form-state';
 import {Forms} from '../../../../../common/utils/forms';
 import {MatDialog} from '@angular/material/dialog';
+import {Permission} from '../../../../../security/permissions/permission';
 
 @Component({
   selector: 'app-project-application-files-list',
@@ -32,11 +33,9 @@ export class ProjectApplicationFilesListComponent extends BaseComponent implemen
   @Input()
   pageIndex: number;
   @Input()
-  editActionVisible = false;
+  project: OutputProject;
   @Input()
-  downloadActionVisible = true;
-  @Input()
-  deleteActionVisible = false;
+  permission: Permission;
 
   @Output()
   deleteFile = new EventEmitter<OutputProjectFile>();

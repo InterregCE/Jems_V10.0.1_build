@@ -2,7 +2,8 @@
     <h6>List of added files ({{fileNumber}})</h6>
     <input type="file" #selectFile onclick="this.value=null;"
            (change)="addNewFilesForUpload($event)">
-    <button *ngIf="projectStatus === OutputProjectStatus.StatusEnum.DRAFT
+    <button *ngIf="permission === Permission.ADMINISTRATOR
+                || projectStatus === OutputProjectStatus.StatusEnum.DRAFT
                 || projectStatus === OutputProjectStatus.StatusEnum.RETURNEDTOAPPLICANT" mat-raised-button
             color="primary"
             (click)="selectFile.click()">+ add new file

@@ -20,16 +20,12 @@
 </ng-template>
 
 <ng-template #actionsCell let-file>
-    <button *ngIf="editActionVisible" class="icon-button"
-            (click)="descriptionState.set(file.id, FormState.EDIT)">
-        <i class="fas fa-edit"></i>
-    </button>
-    <button *ngIf="downloadActionVisible" class="icon-button"
-            (click)="downloadFile.emit(file)">
-        <i class="fas fa-file-download"></i>
-    </button>
-    <button *ngIf="deleteActionVisible" class="icon-button"
-            (click)="delete(file)">
-        <i class="fas fa-trash"></i>
-    </button>
+    <app-actions-cell
+            [file]="file"
+            [project]="project"
+            [permission]="permission"
+            (edit)="descriptionState.set(file.id, FormState.EDIT)"
+            (download)="downloadFile.emit($event)"
+            (delete)="delete(file)">
+    </app-actions-cell>
 </ng-template>

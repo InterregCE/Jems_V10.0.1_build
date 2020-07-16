@@ -1,0 +1,12 @@
+<button *ngIf="canChangeFile()" class="icon-button"
+        (click)="edit.emit(file)">
+    <i class="fas fa-edit"></i>
+</button>
+<button *ngIf="true" class="icon-button"
+        (click)="download.emit(file)">
+    <i class="fas fa-file-download"></i>
+</button>
+<button *ngIf="canChangeFile()" class="icon-button"
+        (click)="delete.emit(file)">
+    <i class="fas fa-trash"></i>
+</button>

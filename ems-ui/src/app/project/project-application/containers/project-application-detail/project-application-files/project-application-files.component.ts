@@ -1,11 +1,11 @@
-import {ChangeDetectionStrategy, Component, Input, OnInit} from '@angular/core';
+import {ChangeDetectionStrategy, Component, Input} from '@angular/core';
 import {PermissionService} from '../../../../../security/permissions/permission.service';
 import {ProjectStore} from '../services/project-store.service';
-import {combineLatest, Observable, of, Subject} from 'rxjs';
+import {combineLatest, of, Subject} from 'rxjs';
 import {catchError, flatMap, map, startWith, take, takeUntil, tap} from 'rxjs/operators';
 import {BaseComponent} from '@common/components/base-component';
 import {Permission} from '../../../../../security/permissions/permission';
-import {OutputProjectFile, OutputProjectStatus, PageOutputProjectFile, ProjectFileStorageService} from '@cat/api';
+import {OutputProjectFile, ProjectFileStorageService} from '@cat/api';
 import {MatSort} from '@angular/material/sort';
 import {Tables} from '../../../../../common/utils/tables';
 import {Log} from '../../../../../common/utils/log';
@@ -18,15 +18,11 @@ import {HttpErrorResponse} from '@angular/common/http';
   styleUrls: ['./project-application-files.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class ProjectApplicationFilesComponent extends BaseComponent implements OnInit {
+export class ProjectApplicationFilesComponent extends BaseComponent {
   Permission = Permission;
 
   @Input()
   projectId: number;
-
-  editActionVisible: boolean;
-  deleteActionVisible: boolean;
-  downloadActionVisible: boolean;
   statusMessages: string[] = [];
 
   newPageSize$ = new Subject<number>();
@@ -34,34 +30,37 @@ export class ProjectApplicationFilesComponent extends BaseComponent implements O
   refreshPage$ = new Subject<void>();
   newSort$ = new Subject<Partial<MatSort>>();
 
-  project$ = this.projectStore.getProject();
-  currentPage$: Observable<PageOutputProjectFile>;
+  private currentPage$ = combineLatest([
+    this.newPageIndex$.pipe(startWith(Tables.DEFAULT_INITIAL_PAGE_INDEX)),
+    this.newPageSize$.pipe(startWith(Tables.DEFAULT_INITIAL_PAGE_SIZE)),
+    this.newSort$.pipe(
+      startWith(Tables.DEFAULT_INITIAL_SORT),
+      map(sort => sort?.direction ? sort : Tables.DEFAULT_INITIAL_SORT),
+      map(sort => `${sort.active},${sort.direction}`)
+    ),
+    this.refreshPage$.pipe(startWith(null))
+  ])
+    .pipe(
+      flatMap(([pageIndex, pageSize, sort]) =>
+        this.projectFileStorageService.getFilesForProject(this.projectId, pageIndex, pageSize, sort)),
+      tap(page => Log.info('Fetched the project files:', this, page.content)),
+    );
+
+  details$ = combineLatest([
+    this.currentPage$,
+    this.projectStore.getProject(),
+    this.permissionService.permissionsChanged()
+  ])
+    .pipe(
+      map(([page, project, permissions]) =>
+        ({page, project, permission: permissions[0]}))
+    )
 
   constructor(private permissionService: PermissionService,
               private projectStore: ProjectStore,
               private projectFileStorageService: ProjectFileStorageService,
               private projectFileService: ProjectFileService) {
     super();
-  }
-
-  ngOnInit(): void {
-    this.assignActionsToUser();
-
-    this.currentPage$ = combineLatest([
-      this.newPageIndex$.pipe(startWith(Tables.DEFAULT_INITIAL_PAGE_INDEX)),
-      this.newPageSize$.pipe(startWith(Tables.DEFAULT_INITIAL_PAGE_SIZE)),
-      this.newSort$.pipe(
-        startWith(Tables.DEFAULT_INITIAL_SORT),
-        map(sort => sort?.direction ? sort : Tables.DEFAULT_INITIAL_SORT),
-        map(sort => `${sort.active},${sort.direction}`)
-      ),
-      this.refreshPage$.pipe(startWith(null))
-    ])
-      .pipe(
-        flatMap(([pageIndex, pageSize, sort]) =>
-          this.projectFileStorageService.getFilesForProject(this.projectId, pageIndex, pageSize, sort)),
-        tap(page => Log.info('Fetched the project files:', this, page.content)),
-      );
   }
 
   addNewFilesForUpload(file: File): void {
@@ -105,31 +104,5 @@ export class ProjectApplicationFilesComponent extends BaseComponent implements O
         tap(saved => Log.info('Changed file description', this, saved)),
         tap(() => this.refreshPage$.next()),
       ).subscribe();
-  }
-
-  private assignActionsToUser(): void {
-    combineLatest([
-      this.permissionService.permissionsChanged(),
-      this.project$
-    ])
-      .pipe(
-        takeUntil(this.destroyed$)
-      )
-      .subscribe(([permissions, project]) => {
-        const isAdmin = permissions.some(perm => perm === Permission.ADMINISTRATOR);
-
-        this.editActionVisible = isAdmin;
-        this.deleteActionVisible = isAdmin;
-        this.downloadActionVisible = true;
-
-        const isApplicant = permissions.some(perm => perm === Permission.APPLICANT_USER);
-        if (!isApplicant) {
-          return;
-        }
-        const status = project?.projectStatus?.status;
-        this.editActionVisible = status === OutputProjectStatus.StatusEnum.DRAFT
-          || status === OutputProjectStatus.StatusEnum.RETURNEDTOAPPLICANT
-        this.deleteActionVisible = status === OutputProjectStatus.StatusEnum.DRAFT;
-      })
   }
 }

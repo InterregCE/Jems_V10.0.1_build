@@ -1,5 +1,6 @@
 import {ChangeDetectionStrategy, Component, EventEmitter, Input, Output} from '@angular/core';
 import {OutputProjectStatus} from '@cat/api'
+import {Permission} from '../../../../../security/permissions/permission';
 
 @Component({
   selector: 'app-project-application-file-upload',
@@ -9,6 +10,7 @@ import {OutputProjectStatus} from '@cat/api'
 })
 export class ProjectApplicationFileUploadComponent {
   OutputProjectStatus = OutputProjectStatus;
+  Permission = Permission;
 
   @Input()
   fileNumber: number;
@@ -16,6 +18,9 @@ export class ProjectApplicationFileUploadComponent {
   statusMessages: string[];
   @Input()
   projectStatus: OutputProjectStatus.StatusEnum;
+  @Input()
+  permission: Permission;
+
   @Output()
   uploadFile: EventEmitter<File> = new EventEmitter<File>();
 
