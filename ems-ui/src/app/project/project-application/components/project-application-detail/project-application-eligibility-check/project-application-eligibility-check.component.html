@@ -19,16 +19,14 @@
                         {{option}}
                     </mat-radio-button>
                 </mat-radio-group>
-                <div>
-                        <textarea
-                                name="notes"
-                                formControlName="notes"
-                                class="assessment-text-area"
-                                matInput
-                                [readonly]="project.eligibilityAssessment !== null">
-                            Explanatory Notes
-                        </textarea>
-                </div>
+                <textarea
+                        name="notes"
+                        formControlName="notes"
+                        class="assessment-text-area"
+                        matInput
+                        [readonly]="project.eligibilityAssessment !== null">
+                    Explanatory Notes
+                </textarea>
                 <div *ngIf="project.eligibilityAssessment === null">
                     <button mat-raised-button
                             color="secondary"

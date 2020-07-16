@@ -34,7 +34,7 @@ export class ProjectApplicationFilesComponent extends BaseComponent implements O
   refreshPage$ = new Subject<void>();
   newSort$ = new Subject<Partial<MatSort>>();
 
-  projectStatus$ = this.projectStore.getStatus();
+  project$ = this.projectStore.getProject();
   currentPage$: Observable<PageOutputProjectFile>;
 
   constructor(private permissionService: PermissionService,
@@ -110,12 +110,12 @@ export class ProjectApplicationFilesComponent extends BaseComponent implements O
   private assignActionsToUser(): void {
     combineLatest([
       this.permissionService.permissionsChanged(),
-      this.projectStatus$
+      this.project$
     ])
       .pipe(
         takeUntil(this.destroyed$)
       )
-      .subscribe(([permissions, projectStatus]) => {
+      .subscribe(([permissions, project]) => {
         const isAdmin = permissions.some(perm => perm === Permission.ADMINISTRATOR);
 
         this.editActionVisible = isAdmin;
@@ -126,9 +126,10 @@ export class ProjectApplicationFilesComponent extends BaseComponent implements O
         if (!isApplicant) {
           return;
         }
-        this.editActionVisible = projectStatus === OutputProjectStatus.StatusEnum.DRAFT
-          || projectStatus === OutputProjectStatus.StatusEnum.RETURNEDTOAPPLICANT
-        this.deleteActionVisible = projectStatus === OutputProjectStatus.StatusEnum.DRAFT;
+        const status = project?.projectStatus?.status;
+        this.editActionVisible = status === OutputProjectStatus.StatusEnum.DRAFT
+          || status === OutputProjectStatus.StatusEnum.RETURNEDTOAPPLICANT
+        this.deleteActionVisible = status === OutputProjectStatus.StatusEnum.DRAFT;
       })
   }
 }

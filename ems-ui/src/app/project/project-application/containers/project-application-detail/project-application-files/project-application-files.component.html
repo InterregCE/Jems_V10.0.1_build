@@ -3,7 +3,7 @@
             *ngxPermissionsExcept="[Permission.PROGRAMME_USER]"
             [fileNumber]="filePage.totalElements"
             [statusMessages]="statusMessages"
-            [projectStatus]="projectStatus$ | async"
+            [projectStatus]="(project$ | async)?.projectStatus?.status"
             (uploadFile)="addNewFilesForUpload($event)">
     </app-project-application-file-upload>
     <app-project-application-files-list

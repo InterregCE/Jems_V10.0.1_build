@@ -1,26 +1,25 @@
-import {ChangeDetectorRef, Component, OnInit} from '@angular/core';
+import {ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit} from '@angular/core';
 import {Observable} from 'rxjs';
 import {FormBuilder, FormGroup, Validators} from '@angular/forms';
 import {MatDialog} from '@angular/material/dialog';
 import {ActivatedRoute, Router} from '@angular/router';
 import {ProjectStore} from '../../../containers/project-application-detail/services/project-store.service';
 import {Forms} from '../../../../../common/utils/forms';
-import {take, takeUntil, tap} from 'rxjs/internal/operators';
+import {filter, take, takeUntil} from 'rxjs/internal/operators';
 import {AbstractForm} from '@common/components/forms/abstract-form';
-import {InputProjectQualityAssessment, ProjectStatusService, OutputProject} from '@cat/api';
+import {InputProjectQualityAssessment, OutputProject} from '@cat/api';
 
 @Component({
   selector: 'app-project-application-quality-check',
   templateUrl: './project-application-quality-check.component.html',
   styleUrls: ['./project-application-quality-check.component.scss'],
-  providers: [
-    ProjectStore
-  ]
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class ProjectApplicationQualityCheckComponent extends AbstractForm implements OnInit {
   RECOMMEND = 'Project is RECOMMENDED for funding.';
   RECOMMEND_WITH_CONDITIONS = 'Project is RECOMMENDED WITH CONDITIONS.';
   NOT_RECOMMEND = 'Project is NOT RECOMMENDED for funding.';
+  // TODO move to container, use as Input()
   projectId = this.activatedRoute.snapshot.params.projectId;
   options: string[] = [this.RECOMMEND, this.RECOMMEND_WITH_CONDITIONS, this.NOT_RECOMMEND];
   project$: Observable<OutputProject>;
@@ -37,15 +36,13 @@ export class ProjectApplicationQualityCheckComponent extends AbstractForm implem
     private activatedRoute: ActivatedRoute,
     private formBuilder: FormBuilder,
     private projectStore: ProjectStore,
-    private projectStatusService: ProjectStatusService,
-    protected changeDetectorRef: ChangeDetectorRef)
-  {
+    protected changeDetectorRef: ChangeDetectorRef) {
     super(changeDetectorRef);
-    this.projectStore.init(this.projectId);
   }
 
   ngOnInit(): void {
     super.ngOnInit();
+    // TODO move to container, use as Input()
     this.project$ = this.projectStore.getProject();
     this.project$.subscribe((project) => {
       if (project.qualityAssessment) {
@@ -64,35 +61,29 @@ export class ProjectApplicationQualityCheckComponent extends AbstractForm implem
   }
 
   onCancel(): void {
+    // TODO move to container, use as Input()
     this.router.navigate(['project', this.projectId]);
   }
 
-  assessmentChangeHandler (event: any) {
+  assessmentChangeHandler(event: any) {
     this.selectedAssessment = event.value;
   }
 
   private confirmQualityAssessment(): void {
-    console.log(this.selectedAssessment);
     Forms.confirmDialog(
       this.dialog,
       'project.assessment.qualityCheck.dialog.title',
       this.getQualityCheckMesage()
     ).pipe(
       take(1),
-      takeUntil(this.destroyed$)
-    ).subscribe(selectQuality => {
-      if (selectQuality) {
-        const qualityCheckResult = {
-          result: this.getQualityCheckValue(),
-          note: this.notesForm?.controls?.notes?.value,
-        } as InputProjectQualityAssessment;
-        this.projectStatusService.setQualityAssessment(this.projectId, qualityCheckResult)
-          .pipe(
-            takeUntil(this.destroyed$),
-            tap(() => this.router.navigate(['project', this.projectId]))
-          ).subscribe();
-      }
-    });
+      takeUntil(this.destroyed$),
+      filter(selectQuality => !!selectQuality)
+    ).subscribe(() =>
+      this.projectStore.setQualityAssessment({
+        result: this.getQualityCheckValue(),
+        note: this.notesForm?.controls?.notes?.value,
+      })
+    );
   }
 
   private getQualityCheckValue(): InputProjectQualityAssessment.ResultEnum {

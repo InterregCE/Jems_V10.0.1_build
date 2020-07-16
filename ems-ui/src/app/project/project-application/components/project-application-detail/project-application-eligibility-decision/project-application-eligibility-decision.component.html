@@ -1,50 +1,48 @@
- <div>
+<div>
     <a [routerLink]="['../../../project', projectId]">&lt; Back to Project Application Details</a>
-        <div *ngIf="project$ | async as project" class="project-detail-container">
-            <app-project-application-information
-                    [project]="project">
-            </app-project-application-information>
-            <div class="assessment-container">
-                <form [formGroup]="notesForm" class="description-form">
-                    <mat-radio-group
-                            required
-                            class="assessment-radio-group"
-                            name="assessment"
-                            formControlName="assessment"
-                            [disabled]="project.projectStatus.status === OutputProjectStatus.StatusEnum.ELIGIBLE || project.projectStatus.status === OutputProjectStatus.StatusEnum.INELIGIBLE"
-                            (change)="assessmentChangeHandler($event)">
-                        <mat-radio-button
-                                class="assessment-radio-button"
-                                *ngFor="let option of options" [value]="option">
-                            {{option}}
-                        </mat-radio-button>
-                    </mat-radio-group>
-                    <div>
-                        <textarea
-                                name="notes"
-                                formControlName="notes"
-                                class="assessment-text-area"
-                                matInput
-                                [readonly]="project.projectStatus.status === OutputProjectStatus.StatusEnum.ELIGIBLE || project.projectStatus.status === OutputProjectStatus.StatusEnum.INELIGIBLE">
-                            Explanatory Notes
-                        </textarea>
-                    </div>
-                    <div *ngIf="project.projectStatus.status === OutputProjectStatus.StatusEnum.SUBMITTED">
-                        <button mat-raised-button
-                                color="secondary"
-                                (click)="onCancel()">Cancel
-                        </button>
+    <div *ngIf="project$ | async as project" class="project-detail-container">
+        <app-project-application-information
+                [project]="project">
+        </app-project-application-information>
+        <div class="assessment-container">
+            <form [formGroup]="notesForm" class="description-form">
+                <mat-radio-group
+                        required
+                        class="assessment-radio-group"
+                        name="assessment"
+                        formControlName="assessment"
+                        [disabled]="project.projectStatus.status === OutputProjectStatus.StatusEnum.ELIGIBLE || project.projectStatus.status === OutputProjectStatus.StatusEnum.INELIGIBLE"
+                        (change)="assessmentChangeHandler($event)">
+                    <mat-radio-button
+                            class="assessment-radio-button"
+                            *ngFor="let option of options" [value]="option">
+                        {{option}}
+                    </mat-radio-button>
+                </mat-radio-group>
+                <textarea
+                        name="notes"
+                        formControlName="notes"
+                        class="assessment-text-area"
+                        matInput
+                        [readonly]="project.projectStatus.status === OutputProjectStatus.StatusEnum.ELIGIBLE || project.projectStatus.status === OutputProjectStatus.StatusEnum.INELIGIBLE">
+                    Explanatory Notes
+                </textarea>
+                <div *ngIf="project.projectStatus.status === OutputProjectStatus.StatusEnum.SUBMITTED">
+                    <button mat-raised-button
+                            color="secondary"
+                            (click)="onCancel()">Cancel
+                    </button>
 
-                        <button mat-raised-button color="primary"
-                                class="right-button"
-                                type="submit"
-                                [disabled]="notesForm.invalid || submitted"
-                                (click)="onSubmit()">{{'project.assessment.eligibilityDecision.dialog.title' | translate}}
-                        </button>
-                    </div>
-                </form>
-            </div>
+                    <button mat-raised-button color="primary"
+                            class="right-button"
+                            type="submit"
+                            [disabled]="notesForm.invalid || submitted"
+                            (click)="onSubmit()">{{'project.assessment.eligibilityDecision.dialog.title' | translate}}
+                    </button>
+                </div>
+            </form>
         </div>
+    </div>
 </div>
 
 

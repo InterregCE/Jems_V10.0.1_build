@@ -7,10 +7,7 @@ import {ProjectStore} from './services/project-store.service';
   selector: 'app-project-application-detail',
   templateUrl: './project-application-detail.component.html',
   styleUrls: ['./project-application-detail.component.scss'],
-  changeDetection: ChangeDetectionStrategy.OnPush,
-  providers: [
-    ProjectStore
-  ]
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class ProjectApplicationDetailComponent extends BaseComponent {
   projectId = this.activatedRoute.snapshot.params.projectId;

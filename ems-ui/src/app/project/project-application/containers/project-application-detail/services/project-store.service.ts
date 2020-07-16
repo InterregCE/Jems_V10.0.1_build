@@ -1,43 +1,76 @@
 import {Injectable} from '@angular/core';
-import {combineLatest, merge, Observable, ReplaySubject, Subject} from 'rxjs';
-import {InputProjectStatus, OutputProject, OutputProjectStatus, ProjectService, ProjectStatusService} from '@cat/api';
-import {flatMap, shareReplay, tap} from 'rxjs/operators';
+import {merge, Observable, ReplaySubject, Subject} from 'rxjs';
+import {
+  InputProjectEligibilityAssessment,
+  InputProjectQualityAssessment,
+  InputProjectStatus,
+  OutputProject,
+  OutputProjectStatus,
+  ProjectService,
+  ProjectStatusService
+} from '@cat/api';
+import {flatMap, shareReplay, tap, withLatestFrom} from 'rxjs/operators';
 import {Log} from '../../../../../common/utils/log';
+import {Router} from '@angular/router';
 
 /**
  * Stores project related information.
- * Because his injectable is tied to an entity id it is meant to be
- * provided in a detail container rather than a module.
  */
 @Injectable()
 export class ProjectStore {
   private projectId$ = new ReplaySubject<number>(1);
-  private newStatus$ = new Subject<InputProjectStatus.StatusEnum>();
+  private newStatus$ = new Subject<InputProjectStatus>();
+  private newEligibilityAssessment$ = new Subject<InputProjectEligibilityAssessment>();
+  private newQualityAssessment$ = new Subject<InputProjectQualityAssessment>();
 
   private projectById$ = this.projectId$
     .pipe(
       flatMap(id => this.projectService.getProjectById(id)),
       tap(project => Log.info('Fetched project:', this, project))
     );
-  private changedStatus$ = combineLatest([
-    this.projectId$,
-    this.newStatus$
-  ])
+
+  private changedStatus$ = this.newStatus$
     .pipe(
-      flatMap(([id, newStatus]) =>
-        this.projectStatusService.setProjectStatus(id, {note: '', status: newStatus})),
+      withLatestFrom(this.projectId$),
+      flatMap(([newStatus, id]) =>
+        this.projectStatusService.setProjectStatus(id, newStatus)),
+      tap(saved => this.projectStatus$.next(saved.projectStatus.status)),
       tap(saved => Log.info('Updated project status status:', this, saved)),
     );
+
+  private changedEligibilityAssessment$ = this.newEligibilityAssessment$
+    .pipe(
+      withLatestFrom(this.projectId$),
+      flatMap(([assessment, id]) => this.projectStatusService.setEligibilityAssessment(id, assessment)),
+      tap(saved => Log.info('Updated project eligibility assessment:', this, saved)),
+      tap(saved => this.router.navigate(['project', saved.id]))
+    );
+
+  private changedQualityAssessment$ = this.newQualityAssessment$
+    .pipe(
+      withLatestFrom(this.projectId$),
+      flatMap(([assessment, id]) => this.projectStatusService.setQualityAssessment(id, assessment)),
+      tap(saved => Log.info('Updated project uality assessment:', this, saved)),
+      tap(saved => this.router.navigate(['project', saved.id]))
+    )
+
   private projectStatus$ = new ReplaySubject<OutputProjectStatus.StatusEnum>(1);
   private project$ =
     merge(
       this.projectById$,
-      this.changedStatus$
+      this.changedStatus$,
+      this.changedEligibilityAssessment$,
+      this.changedQualityAssessment$,
     )
       .pipe(
-        tap(saved => this.projectStatus$.next(saved.projectStatus.status)),
         shareReplay(1)
       );
+
+
+  constructor(private projectService: ProjectService,
+              private projectStatusService: ProjectStatusService,
+              private router: Router) {
+  }
 
   init(projectId: number) {
     this.projectId$.next(projectId);
@@ -51,11 +84,15 @@ export class ProjectStore {
     return this.projectStatus$.asObservable();
   }
 
-  changeStatus(newStatus: InputProjectStatus.StatusEnum) {
+  changeStatus(newStatus: InputProjectStatus) {
     this.newStatus$.next(newStatus)
   }
 
-  constructor(private projectService: ProjectService,
-              private projectStatusService: ProjectStatusService) {
+  setEligibilityAssessment(assessment: InputProjectEligibilityAssessment): void {
+    this.newEligibilityAssessment$.next(assessment);
+  }
+
+  setQualityAssessment(assessment: InputProjectQualityAssessment): void {
+    this.newQualityAssessment$.next(assessment);
   }
 }

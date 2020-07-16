@@ -1,4 +1,4 @@
-import {ChangeDetectorRef, Component, OnInit} from '@angular/core';
+import {ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit} from '@angular/core';
 import {Forms} from '../../../../../common/utils/forms';
 import {take, takeUntil} from 'rxjs/internal/operators';
 import {MatDialog} from '@angular/material/dialog';
@@ -13,9 +13,7 @@ import {InputProjectStatus, OutputProject, OutputProjectStatus} from '@cat/api';
   selector: 'app-project-eligibility-decision',
   templateUrl: './project-application-eligibility-decision.component.html',
   styleUrls: ['./project-application-eligibility-decision.component.scss'],
-  providers: [
-    ProjectStore
-  ]
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class ProjectApplicationEligibilityDecisionComponent extends AbstractForm implements OnInit {
   OutputProjectStatus = OutputProjectStatus;
@@ -39,11 +37,11 @@ export class ProjectApplicationEligibilityDecisionComponent extends AbstractForm
     private projectStore: ProjectStore,
     protected changeDetectorRef: ChangeDetectorRef) {
     super(changeDetectorRef);
-    this.projectStore.init(this.projectId);
   }
 
   ngOnInit(): void {
     super.ngOnInit();
+    // TODO move to container, use as Input()
     this.project$ = this.projectStore.getProject();
     this.project$.subscribe((project) => {
       if (project.projectStatus.status === OutputProjectStatus.StatusEnum.ELIGIBLE
@@ -81,15 +79,19 @@ export class ProjectApplicationEligibilityDecisionComponent extends AbstractForm
       takeUntil(this.destroyed$)
     ).subscribe(selectEligibility => {
       if (selectEligibility) {
+        // TODO move service + router call to container
         this.projectStore.changeStatus(this.getNewEligibilityStatus(this.selectedAssessment));
         this.router.navigate(['project', this.projectId]);
       }
     });
   }
 
-  private getNewEligibilityStatus(selectedDecision: string): InputProjectStatus.StatusEnum {
-    return selectedDecision === this.ELIGIBLE ? InputProjectStatus.StatusEnum.ELIGIBLE
-      : InputProjectStatus.StatusEnum.INELIGIBLE;
+  private getNewEligibilityStatus(selectedDecision: string): InputProjectStatus {
+    return {
+      status: selectedDecision === this.ELIGIBLE
+        ? InputProjectStatus.StatusEnum.ELIGIBLE
+        : InputProjectStatus.StatusEnum.INELIGIBLE,
+      note: this.notesForm?.controls?.notes?.value};
   }
 
   private setEligibilityDecisionValue(project: OutputProject): void {

@@ -16,17 +16,17 @@ export class ProjectApplicationDataComponent extends BaseComponent {
   Alert = Alert;
   Permission = Permission;
 
+  project$ = this.projectStore.getProject();
   projectChanged$ = this.projectStore.getStatus()
     .pipe(
       map(() => true)
-    )
-  project$ = this.projectStore.getProject();
+    );
 
   constructor(private projectStore: ProjectStore) {
     super();
   }
 
   changeProjectStatus(newStatus: InputProjectStatus.StatusEnum): void {
-    this.projectStore.changeStatus(newStatus);
+    this.projectStore.changeStatus({status: newStatus, note: ''});
   }
 }
