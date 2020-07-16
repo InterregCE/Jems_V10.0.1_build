@@ -5,6 +5,7 @@
                 [project]="project">
         </app-project-application-information>
         <div class="assessment-container">
+            <h5>Quality Assessment</h5>
             <form [formGroup]="notesForm" class="description-form">
                 <mat-radio-group
                         required
@@ -20,14 +21,16 @@
                     </mat-radio-button>
                 </mat-radio-group>
                 <div>
+                    <mat-form-field class="field">
+                        <mat-label>Explanatory Notes</mat-label>
                         <textarea
                                 name="notes"
                                 formControlName="notes"
                                 class="assessment-text-area"
                                 matInput
                                 [readonly]="project.qualityAssessment !== null">
-                            Explanatory Notes
                         </textarea>
+                    </mat-form-field>
                 </div>
                 <div *ngIf="project.qualityAssessment === null">
                     <button mat-raised-button
