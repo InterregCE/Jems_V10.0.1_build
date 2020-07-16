@@ -37,4 +37,8 @@ data class ProjectEligibilityAssessment (
     @Column
     val note: String? = null
 
-)
+) {
+    override fun toString(): String {
+        return "${this.javaClass.simpleName}(result=$result, user=$user, updated=$updated, note=$note)"
+    }
+}

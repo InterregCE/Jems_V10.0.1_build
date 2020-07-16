@@ -44,12 +44,8 @@ class ProjectServiceImpl(
             return projectRepo.findAll(page).map { it.toOutputProjectSimple() }
         }
         if (currentUser.hasRole(PROGRAMME_USER)) {
-            return projectRepo.findAllWithStatuses(
-                listOf(
-                    ProjectApplicationStatus.SUBMITTED,
-                    ProjectApplicationStatus.RETURNED_TO_APPLICANT
-                ), page
-            ).map { it.toOutputProjectSimple() }
+            return projectRepo.findAllByProjectStatusStatusNot(ProjectApplicationStatus.DRAFT, page)
+                .map { it.toOutputProjectSimple() }
         }
         if (currentUser.hasRole(APPLICANT_USER)) {
             return projectRepo.findAllByApplicantId(currentUser.user.id!!, page).map { it.toOutputProjectSimple() }

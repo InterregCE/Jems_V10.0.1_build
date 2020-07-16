@@ -38,8 +38,8 @@ internal class ProjectStatusServiceImplTest {
 
     companion object {
         const val NOTE_DENIED = "denied"
-        val SUBMIT_TIME = ZonedDateTime.of(LocalDate.of(2020, 7, 14), LocalTime.of(17, 0), ZoneId.of("Europe/Bratislava"))
         val DRAFT_TIME = ZonedDateTime.of(LocalDate.of(2020, 7, 13), LocalTime.of(12, 0), ZoneId.of("Europe/Bratislava"))
+        val SUBMIT_TIME = DRAFT_TIME.plusDays(1)
     }
 
     @MockK
@@ -97,11 +97,15 @@ internal class ProjectStatusServiceImplTest {
     }
 
     @Test
-    fun `project status resubmitted`() {
+    fun `project status re-submitted to SUBMITTED`() {
+        val ignoreStatuses = setOf(ProjectApplicationStatus.DRAFT, ProjectApplicationStatus.RETURNED_TO_APPLICANT)
+        val previousState = ProjectStatus(status = ProjectApplicationStatus.SUBMITTED, user = user)
+
         every { securityService.currentUser } returns LocalCurrentUser(userApplicant, "hash_pass", emptyList())
         every { userRepository.findByIdOrNull(1) } returns user
         every { projectRepository.findOneById(1) } returns projectReturned
         every { projectStatusRepository.save(any<ProjectStatus>()) } returnsArgument 0
+        every { projectStatusRepository.findFirstByProjectIdAndStatusNotInOrderByUpdatedDesc(eq(1), eq(ignoreStatuses)) } returns previousState
         every { projectRepository.save(any<Project>()) } returnsArgument 0
 
         val result = projectStatusService.setProjectStatus(1, InputProjectStatus(ProjectApplicationStatus.SUBMITTED, null))
@@ -111,6 +115,28 @@ internal class ProjectStatusServiceImplTest {
         assertThat(result.lastResubmission).isNotNull()
         assertThat(result.firstSubmission?.updated).isNotEqualTo(result.lastResubmission?.updated)
         assertThat(result.projectStatus.status).isEqualTo(ProjectApplicationStatus.SUBMITTED)
+        assertThat(result.projectStatus.note).isNull()
+    }
+
+    @Test
+    fun `project status re-submitted to ELIGIBLE`() {
+        val ignoreStatuses = setOf(ProjectApplicationStatus.RETURNED_TO_APPLICANT, ProjectApplicationStatus.DRAFT)
+        val previousState = ProjectStatus(status = ProjectApplicationStatus.ELIGIBLE, user = user)
+
+        every { securityService.currentUser } returns LocalCurrentUser(userApplicant, "hash_pass", emptyList())
+        every { userRepository.findByIdOrNull(1) } returns user
+        every { projectRepository.findOneById(1) } returns projectReturned
+        every { projectStatusRepository.save(any<ProjectStatus>()) } returnsArgument 0
+        every { projectStatusRepository.findFirstByProjectIdAndStatusNotInOrderByUpdatedDesc(eq(1), eq(ignoreStatuses)) } returns previousState
+        every { projectRepository.save(any<Project>()) } returnsArgument 0
+
+        val result = projectStatusService.setProjectStatus(1, InputProjectStatus(ProjectApplicationStatus.SUBMITTED, null))
+
+        assertThat(result.id).isEqualTo(1)
+        assertThat(result.firstSubmission).isNotNull()
+        assertThat(result.lastResubmission).isNotNull()
+        assertThat(result.firstSubmission?.updated).isNotEqualTo(result.lastResubmission?.updated)
+        assertThat(result.projectStatus.status).isEqualTo(ProjectApplicationStatus.ELIGIBLE)
         assertThat(result.projectStatus.note).isNull()
     }
 
@@ -131,11 +157,11 @@ internal class ProjectStatusServiceImplTest {
             submitTime = null
             statusTime = DRAFT_TIME
         } else if (status == ProjectApplicationStatus.SUBMITTED) {
-            submitTime = DRAFT_TIME.plusDays(1)
-            statusTime = submitTime
+            submitTime = SUBMIT_TIME
+            statusTime = SUBMIT_TIME
         } else { // status RETURNED_TO_APPLICANT
-            submitTime = DRAFT_TIME.plusDays(1)
-            statusTime = submitTime.plusDays(1)
+            submitTime = SUBMIT_TIME
+            statusTime = SUBMIT_TIME.plusDays(1)
         }
         return Project(
             id = 1,

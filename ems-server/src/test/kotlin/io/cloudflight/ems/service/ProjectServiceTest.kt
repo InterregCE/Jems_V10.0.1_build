@@ -169,12 +169,9 @@ class ProjectServiceTest {
         projectService.findAll(UNPAGED);
 
         verify {
-            projectRepository.findAllWithStatuses(
+            projectRepository.findAllByProjectStatusStatusNot(
                 withArg {
-                    assertThat(it).containsExactly(
-                        ProjectApplicationStatus.SUBMITTED,
-                        ProjectApplicationStatus.RETURNED_TO_APPLICANT
-                    )
+                    assertThat(it).isEqualTo(ProjectApplicationStatus.DRAFT)
                 }, UNPAGED
             )
         }
