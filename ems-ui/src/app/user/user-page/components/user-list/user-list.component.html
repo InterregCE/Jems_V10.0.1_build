@@ -5,7 +5,7 @@
         [totalElements]="userPage.totalElements"
         [pageIndex]="pageIndex"
         (newPageSize)="newPageSize.emit($event)"
-        (newPageIndex)="newPageSize.emit($event)"
+        (newPageIndex)="newPageIndex.emit($event)"
         (sortRows)="newSort.emit($event)">
 </app-table>
 
