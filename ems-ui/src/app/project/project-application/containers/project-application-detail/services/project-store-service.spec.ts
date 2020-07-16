@@ -1,5 +1,10 @@
 import {fakeAsync, TestBed, tick} from '@angular/core/testing';
-import {OutputProject, InputProjectStatus} from '@cat/api';
+import {
+  InputProjectEligibilityAssessment,
+  InputProjectQualityAssessment,
+  InputProjectStatus,
+  OutputProject
+} from '@cat/api';
 import {HttpTestingController} from '@angular/common/http/testing';
 import {ProjectStore} from './project-store.service';
 import {TestModule} from '../../../../../common/test-module';
@@ -14,12 +19,6 @@ describe('ProjectStoreService', () => {
       imports: [
         ProjectModule,
         TestModule
-      ],
-      providers: [
-        {
-          provide: ProjectStore,
-          useClass: ProjectStore
-        }
       ]
     });
     service = TestBed.inject(ProjectStore);
@@ -32,9 +31,7 @@ describe('ProjectStoreService', () => {
 
   it('should fetch project and status', fakeAsync(() => {
     let project: OutputProject = {} as OutputProject;
-    let status: InputProjectStatus.StatusEnum = InputProjectStatus.StatusEnum.SUBMITTED;
     service.getProject().subscribe(res => project = res);
-    service.getStatus().subscribe(res => status = res);
 
     service.init(1);
 
@@ -42,8 +39,55 @@ describe('ProjectStoreService', () => {
       .flush({id: 1, projectStatus: {status: InputProjectStatus.StatusEnum.DRAFT}});
 
     tick();
-
     expect(project.id).toEqual(1);
+  }));
+
+  it('should change status', fakeAsync(() => {
+    let status: InputProjectStatus.StatusEnum = InputProjectStatus.StatusEnum.SUBMITTED;
+    service.getProject().subscribe();
+    service.getStatus().subscribe(res => status = res);
+
+    service.init(1);
+    service.changeStatus({status: InputProjectStatus.StatusEnum.DRAFT, note: ''})
+
+    httpTestingController.expectOne({method: 'PUT', url: '//api/project/1/status'})
+      .flush({id: 1, projectStatus: {status: InputProjectStatus.StatusEnum.DRAFT}});
+
+    tick();
     expect(status).toEqual(InputProjectStatus.StatusEnum.DRAFT);
+  }));
+
+  it('should change eligibility assessment', fakeAsync(() => {
+    let project: OutputProject = {} as OutputProject;
+    service.getProject().subscribe(res => project = res);
+
+    service.init(1);
+    service.setEligibilityAssessment({note: '', result: InputProjectEligibilityAssessment.ResultEnum.PASSED})
+
+    httpTestingController.expectOne({method: 'POST', url: '//api/project/1/status/eligibility'})
+      .flush({
+        id: 1,
+        eligibilityAssessment: {note: '', result: InputProjectEligibilityAssessment.ResultEnum.PASSED}
+      });
+
+    tick();
+    expect(project.eligibilityAssessment.result).toEqual(InputProjectEligibilityAssessment.ResultEnum.PASSED);
+  }));
+
+  it('should change quality assessment', fakeAsync(() => {
+    let project: OutputProject = {} as OutputProject;
+    service.getProject().subscribe(res => project = res);
+
+    service.init(1);
+    service.setQualityAssessment({note: '', result: InputProjectQualityAssessment.ResultEnum.NOTRECOMMENDED})
+
+    httpTestingController.expectOne({method: 'POST', url: '//api/project/1/status/quality'})
+      .flush({
+        id: 1,
+        qualityAssessment: {note: '', result: InputProjectQualityAssessment.ResultEnum.NOTRECOMMENDED}
+      });
+
+    tick();
+    expect(project.qualityAssessment.result).toEqual(InputProjectQualityAssessment.ResultEnum.NOTRECOMMENDED);
   }));
 });

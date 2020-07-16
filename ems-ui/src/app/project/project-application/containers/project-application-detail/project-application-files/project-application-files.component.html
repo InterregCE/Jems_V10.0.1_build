@@ -1,17 +1,17 @@
-<div *ngIf="currentPage$ | async as filePage" class="container project-files-table-container">
+<div *ngIf="details$ | async as details" class="container project-files-table-container">
     <app-project-application-file-upload
             *ngxPermissionsExcept="[Permission.PROGRAMME_USER]"
-            [fileNumber]="filePage.totalElements"
+            [fileNumber]="details.page.totalElements"
             [statusMessages]="statusMessages"
-            [projectStatus]="(project$ | async)?.projectStatus?.status"
+            [projectStatus]="details.project.projectStatus.status"
+            [permission]="details.permission"
             (uploadFile)="addNewFilesForUpload($event)">
     </app-project-application-file-upload>
     <app-project-application-files-list
-            [filePage]="filePage"
+            [filePage]="details.page"
             [pageIndex]="newPageIndex$ | async"
-            [editActionVisible]="editActionVisible"
-            [deleteActionVisible]="deleteActionVisible"
-            [downloadActionVisible]="downloadActionVisible"
+            [project]="details.project"
+            [permission]="details.permission"
             (deleteFile)="deleteFile($event)"
             (downloadFile)="downloadFile($event)"
             (saveDescription)="saveDescription($event)"

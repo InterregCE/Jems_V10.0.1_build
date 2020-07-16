@@ -1,12 +1,10 @@
 import {async, ComponentFixture, TestBed} from '@angular/core/testing';
 import {CUSTOM_ELEMENTS_SCHEMA} from '@angular/core';
-import {ProjectFileStorageService, ProjectService} from '@cat/api';
 import {HttpTestingController} from '@angular/common/http/testing';
 import {ProjectApplicationDetailComponent} from './project-application-detail.component';
-import {ProjectFileService} from '../../services/project-file.service';
 import {ActivatedRoute} from '@angular/router';
 import {TestModule} from '../../../../common/test-module';
-import {MatDialogModule} from '@angular/material/dialog';
+import {ProjectModule} from '../../../project.module';
 
 describe('ProjectApplicationDetailComponent', () => {
 
@@ -18,28 +16,12 @@ describe('ProjectApplicationDetailComponent', () => {
     TestBed.configureTestingModule({
       imports: [
         TestModule,
-        MatDialogModule
+        ProjectModule,
       ],
       declarations: [
         ProjectApplicationDetailComponent,
       ],
       providers: [
-        {
-          provide: ProjectApplicationDetailComponent,
-          useClass: ProjectApplicationDetailComponent
-        },
-        {
-          provide: ProjectService,
-          useClass: ProjectService
-        },
-        {
-          provide: ProjectFileService,
-          useClass: ProjectFileService
-        },
-        {
-          provide: ProjectFileStorageService,
-          useClass: ProjectFileStorageService
-        },
         {
           provide: ActivatedRoute,
           useValue: {
