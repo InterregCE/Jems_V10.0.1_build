@@ -1,0 +1,52 @@
+<mat-expansion-panel
+        *ngIf="projectStatus !== OutputProjectStatus.StatusEnum.DRAFT
+            && projectStatus !== OutputProjectStatus.StatusEnum.RETURNEDTOAPPLICANT"
+        [expanded]="true">
+    <mat-expansion-panel-header>
+        <mat-panel-title><h6>Decisions</h6></mat-panel-title>
+    </mat-expansion-panel-header>
+    <div class="row">
+        <div class="col-4">Eligibility Decision:</div>
+        <div class="col-5">
+            <div *ngIf="projectStatus !== OutputProjectStatus.StatusEnum.SUBMITTED">
+                {{project.eligibilityAssessment.result}}
+            </div>
+        </div>
+        <div *ngIf="projectStatus === OutputProjectStatus.StatusEnum.SUBMITTED" class="col-3 column">
+            <button mat-raised-button color="primary" class="assessment-button"
+                    [disabled]="!project.eligibilityAssessment"
+                    [routerLink]="'/project/'+ project.id + '/eligibilityDecision'">
+                {{'project.assessment.eligibilityDecision.assessment' | translate}}
+            </button>
+        </div>
+        <div *ngIf="projectStatus !== OutputProjectStatus.StatusEnum.SUBMITTED" class="col-3 column">
+            <button mat-raised-button color="secondary" class="assessment-button"
+                    [routerLink]="'/project/'+ project.id + '/eligibilityDecision'">
+                {{'project.assessment.eligibilityDecision.assessment.view' | translate}}
+            </button>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-4">Funding Decision:</div>
+        <div class="col-5">
+            <!--                    <div *ngIf="project.eligibilityAssessment">-->
+            <!--                        {{project.eligibilityAssessment.result}}-->
+            <!--                    </div>-->
+        </div>
+        <div *ngIf="projectStatus === OutputProjectStatus.StatusEnum.SUBMITTED
+                 || projectStatus === OutputProjectStatus.StatusEnum.ELIGIBLE"
+             class="col-3 column">
+            <button mat-raised-button color="primary" class="assessment-button"
+                    [disabled]="true"
+                    [routerLink]="'/project/'+ project.id + '/fundingDecision'">
+                {{'project.assessment.fundingDecision.assessment' | translate}}
+            </button>
+        </div>
+        <div *ngIf="false" class="col-3 column">
+            <button mat-raised-button color="secondary" class="assessment-button"
+                    [routerLink]="'/project/'+ project.id + '/fundingDecision'">
+                {{'project.assessment.fundingDecision.assessment.view' | translate}}
+            </button>
+        </div>
+    </div>
+</mat-expansion-panel>

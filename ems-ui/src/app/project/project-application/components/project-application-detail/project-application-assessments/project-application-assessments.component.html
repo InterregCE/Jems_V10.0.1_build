@@ -1,160 +1,54 @@
-<ng-container *ngxPermissionsExcept="[Permission.PROGRAMME_USER]">
-    <div *ngIf="projectStatus === OutputProjectStatus.StatusEnum.DRAFT" class="row">
-        <button mat-raised-button
-                color="primary"
-                (click)="submitProject()">Submit Project Application
-        </button>
-    </div>
-    <div *ngIf="projectStatus === OutputProjectStatus.StatusEnum.RETURNEDTOAPPLICANT" class="row">
-        <button mat-raised-button
-                color="primary"
-                (click)="resubmitProject()">Re-submit Project Application
-        </button>
-    </div>
-</ng-container>
-
-<ng-container *ngxPermissionsExcept="[Permission.APPLICANT_USER]">
-    <div *ngIf="projectStatus === OutputProjectStatus.StatusEnum.SUBMITTED" class="row">
-        <button mat-raised-button
-                color="primary"
-                (click)="returnToApplicant()">Return To Applicant
-        </button>
-    </div>
-</ng-container>
-
-<div *ngIf="submittingUser && projectStatus !== OutputProjectStatus.StatusEnum.DRAFT" class="row">
-    <p>Project was submitted by {{submittingUser.name}} {{submittingUser.surname}}.</p>
-</div>
-<app-alert
-        [show]="showSuccessMessage$ | async"
-        [type]="Alert.SUCCESS">
-    <p *ngIf="projectStatus === OutputProjectStatus.StatusEnum.ELIGIBLE">
-        {{'project.detail.eligible.success' | translate}}
-    </p>
-    <p *ngIf="projectStatus === OutputProjectStatus.StatusEnum.INELIGIBLE">
-        {{'project.detail.ineligible.success' | translate}}
-    </p>
-    <p *ngIf="projectStatus === OutputProjectStatus.StatusEnum.SUBMITTED">
-        {{'project.detail.submitted.success' | translate}}
-    </p>
-    <p *ngIf="projectStatus === OutputProjectStatus.StatusEnum.RETURNEDTOAPPLICANT">
-        {{'project.detail.returned.to.applicant.success' | translate}}
-    </p>
-</app-alert>
-<ng-container
-        *ngIf="projectStatus !== OutputProjectStatus.StatusEnum.DRAFT && projectStatus !== OutputProjectStatus.StatusEnum.RETURNEDTOAPPLICANT">
-    <mat-expansion-panel *ngxPermissionsExcept="[Permission.APPLICANT_USER]"
-                         [expanded]="true">
-        <!--    TODO move to separate component-->
-        <mat-expansion-panel-header>
-            <mat-panel-title><h6>Decisions</h6></mat-panel-title>
-        </mat-expansion-panel-header>
-        <div>
-            <div *ngIf="project$ | async as project" class="row">
-                <div class="col-4">Eligibility Decision:</div>
-                <div class="col-5">
-                    <div *ngIf="projectStatus !== OutputProjectStatus.StatusEnum.SUBMITTED">
-                        {{project.eligibilityAssessment.result}}
-                    </div>
-                </div>
-                <div *ngIf="projectStatus === OutputProjectStatus.StatusEnum.SUBMITTED" class="col-3 column">
-                    <button mat-raised-button color="primary" class="assessment-button"
-                            [disabled]="!project.eligibilityAssessment"
-                            [routerLink]="'/project/'+ projectId + '/eligibilityDecision'">
-                        {{'project.assessment.eligibilityDecision.assessment' | translate}}
-                    </button>
-                </div>
-                <div *ngIf="projectStatus !== OutputProjectStatus.StatusEnum.SUBMITTED" class="col-3 column">
-                    <button mat-raised-button color="secondary" class="assessment-button"
-                            [routerLink]="'/project/'+ projectId + '/eligibilityDecision'">
-                        {{'project.assessment.eligibilityDecision.assessment.view' | translate}}
-                    </button>
+<mat-expansion-panel
+        *ngIf="projectStatus !== OutputProjectStatus.StatusEnum.DRAFT
+            && projectStatus !== OutputProjectStatus.StatusEnum.RETURNEDTOAPPLICANT"
+        [expanded]="true">
+    <mat-expansion-panel-header>
+        <mat-panel-title><h6>Assessments</h6></mat-panel-title>
+    </mat-expansion-panel-header>
+    <div *ngIf="projectStatus !== OutputProjectStatus.StatusEnum.DRAFT">
+        <div class="row">
+            <div class="col-4">Eligibility Check:</div>
+            <div class="col-5">
+                <div *ngIf="project.eligibilityAssessment">
+                    {{project.eligibilityAssessment.result}}
                 </div>
             </div>
-
-            <div *ngIf="project$ | async as project" class="row">
-                <div class="col-4">Funding Decision:</div>
-                <div class="col-5">
-                    <!--                    <div *ngIf="project.eligibilityAssessment">-->
-                    <!--                        {{project.eligibilityAssessment.result}}-->
-                    <!--                    </div>-->
-                </div>
-                <div *ngIf="projectStatus === OutputProjectStatus.StatusEnum.SUBMITTED || projectStatus === OutputProjectStatus.StatusEnum.ELIGIBLE"
-                     class="col-3 column">
-                    <button mat-raised-button color="primary" class="assessment-button"
-                            [disabled]="true"
-                            [routerLink]="'/project/'+ projectId + '/fundingDecision'">
-                        {{'project.assessment.fundingDecision.assessment' | translate}}
-                    </button>
-                </div>
-                <div *ngIf="false" class="col-3 column">
-                    <button mat-raised-button color="secondary" class="assessment-button"
-                            [routerLink]="'/project/'+ projectId + '/fundingDecision'">
-                        {{'project.assessment.fundingDecision.assessment.view' | translate}}
-                    </button>
-                </div>
+            <div *ngIf="!project.eligibilityAssessment"
+                 class="col-3">
+                <button mat-raised-button color="primary" class="assessment-button"
+                        [routerLink]="'/project/'+ project.id + '/eligibilityCheck'">
+                    {{'project.assessment.eligibilityCheck.assessment' | translate}}
+                </button>
+            </div>
+            <div *ngIf="project.eligibilityAssessment"
+                 class="col-3">
+                <button mat-raised-button color="secondary" class="assessment-button"
+                        [routerLink]="'/project/'+ project.id + '/eligibilityCheck'">
+                    {{'project.assessment.eligibilityCheck.assessment.view' | translate}}
+                </button>
             </div>
         </div>
-    </mat-expansion-panel>
-</ng-container>
-
-<ng-container
-        *ngIf="projectStatus !== OutputProjectStatus.StatusEnum.DRAFT && projectStatus !== OutputProjectStatus.StatusEnum.RETURNEDTOAPPLICANT">
-    <mat-expansion-panel *ngxPermissionsExcept="[Permission.APPLICANT_USER]"
-                         [expanded]="true">
-        <!--    TODO move to separate component-->
-        <mat-expansion-panel-header>
-            <mat-panel-title><h6>Assessments</h6></mat-panel-title>
-        </mat-expansion-panel-header>
-        <div class="assessment-area" *ngIf="projectStatus !== OutputProjectStatus.StatusEnum.DRAFT">
-            <ng-container *ngIf="project$ | async as project">
-                <div class="row">
-                    <div class="col-4">Eligibility Check:</div>
-                    <div class="col-5">
-                        <div *ngIf="project.eligibilityAssessment">
-                            {{project.eligibilityAssessment.result}}
-                        </div>
-                    </div>
-                    <div *ngIf="!project.eligibilityAssessment"
-                         class="col-3">
-                        <button mat-raised-button color="primary" class="assessment-button"
-                                [routerLink]="'/project/'+ projectId + '/eligibilityCheck'">
-                            {{'project.assessment.eligibilityCheck.assessment' | translate}}
-                        </button>
-                    </div>
-                    <div *ngIf="project.eligibilityAssessment"
-                         class="col-3">
-                        <button mat-raised-button color="secondary" class="assessment-button"
-                                [routerLink]="'/project/'+ projectId + '/eligibilityCheck'">
-                            {{'project.assessment.eligibilityCheck.assessment.view' | translate}}
-                        </button>
-                    </div>
+        <div class="row">
+            <div class="col-4">Quality Check:</div>
+            <div class="col-5">
+                <div *ngIf="project.qualityAssessment">
+                    {{project.qualityAssessment.result}}
                 </div>
-            </ng-container>
-            <ng-container *ngIf="project$ | async as project">
-                <div class="row">
-                    <div class="col-4">Quality Check:</div>
-                    <div class="col-5">
-                        <div *ngIf="project.qualityAssessment">
-                            {{project.qualityAssessment.result}}
-                        </div>
-                    </div>
-                    <div *ngIf="!project.qualityAssessment"
-                         class="col-3">
-                        <button mat-raised-button color="primary" class="assessment-button"
-                                [routerLink]="'/project/'+ projectId + '/qualityCheck'">
-                            {{'project.assessment.qualityCheck.assessment' | translate}}
-                        </button>
-                    </div>
-                    <div *ngIf="project.qualityAssessment"
-                         class="col-3">
-                        <button mat-raised-button color="secondary" class="assessment-button"
-                                [routerLink]="'/project/'+ projectId + '/qualityCheck'">
-                            {{'project.assessment.qualityCheck.assessment.view' | translate}}
-                        </button>
-                    </div>
-                </div>
-            </ng-container>
+            </div>
+            <div *ngIf="!project.qualityAssessment"
+                 class="col-3">
+                <button mat-raised-button color="primary" class="assessment-button"
+                        [routerLink]="'/project/'+ project.id + '/qualityCheck'">
+                    {{'project.assessment.qualityCheck.assessment' | translate}}
+                </button>
+            </div>
+            <div *ngIf="project.qualityAssessment"
+                 class="col-3">
+                <button mat-raised-button color="secondary" class="assessment-button"
+                        [routerLink]="'/project/'+ project.id + '/qualityCheck'">
+                    {{'project.assessment.qualityCheck.assessment.view' | translate}}
+                </button>
+            </div>
         </div>
-    </mat-expansion-panel>
-</ng-container>
+    </div>
+</mat-expansion-panel>

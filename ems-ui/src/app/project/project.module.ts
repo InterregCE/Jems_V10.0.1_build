@@ -27,6 +27,8 @@ import {ProjectApplicationQualityCheckComponent} from './project-application/com
 import {ProjectStore} from './project-application/containers/project-application-detail/services/project-store.service';
 import {MatExpansionModule} from '@angular/material/expansion';
 import {ActionsCellComponent} from './project-application/components/project-application-detail/project-application-files-list/cell-renderers/actions-cell/actions-cell.component';
+import {ProjectApplicationDecisionsComponent} from './project-application/components/project-application-detail/project-application-decisions/project-application-decisions.component';
+import {ProjectApplicationActionsComponent} from './project-application/components/project-application-detail/project-application-actions/project-application-actions.component';
 
 @NgModule({
   declarations: [
@@ -41,6 +43,8 @@ import {ActionsCellComponent} from './project-application/components/project-app
     ProjectApplicationFileUploadComponent,
     ProjectApplicationAssessmentsComponent,
     ProjectApplicationFilesComponent,
+    ProjectApplicationDecisionsComponent,
+    ProjectApplicationActionsComponent,
     ProjectApplicationEligibilityDecisionComponent,
     ProjectApplicationQualityCheckComponent,
     ProjectApplicationEligibilityCheckComponent,
