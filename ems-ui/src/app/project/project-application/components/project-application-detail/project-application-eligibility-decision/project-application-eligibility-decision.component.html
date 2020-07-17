@@ -5,6 +5,7 @@
                 [project]="project">
         </app-project-application-information>
         <div class="assessment-container">
+            <h5>Eligibility Decision</h5>
             <form [formGroup]="notesForm" class="description-form">
                 <mat-radio-group
                         required
@@ -19,14 +20,16 @@
                         {{option}}
                     </mat-radio-button>
                 </mat-radio-group>
-                <textarea
+                <mat-form-field class="field">
+                    <mat-label>Explanatory Notes</mat-label>
+                    <textarea
                         name="notes"
                         formControlName="notes"
                         class="assessment-text-area"
                         matInput
                         [readonly]="project.projectStatus.status === OutputProjectStatus.StatusEnum.ELIGIBLE || project.projectStatus.status === OutputProjectStatus.StatusEnum.INELIGIBLE">
-                    Explanatory Notes
-                </textarea>
+                    </textarea>
+                </mat-form-field>
                 <div *ngIf="project.projectStatus.status === OutputProjectStatus.StatusEnum.SUBMITTED">
                     <button mat-raised-button
                             color="secondary"
