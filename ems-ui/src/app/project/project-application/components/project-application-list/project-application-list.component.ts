@@ -41,13 +41,13 @@ export class ProjectApplicationListComponent {
         displayedColumn: 'First submission',
         columnType: ColumnType.Date,
         elementProperty: 'firstSubmissionDate',
-        sortProperty: 'firstSubmissionDate'
+        sortProperty: 'firstSubmission.updated'
       },
       {
         displayedColumn: 'Latest re-submission',
         columnType: ColumnType.Date,
         elementProperty: 'lastResubmissionDate',
-        sortProperty: 'lastResubmissionDate'
+        sortProperty: 'lastResubmission.updated'
       },
       {
         displayedColumn: 'Status',
