@@ -22,13 +22,21 @@
     </div>
     <div class="col-sm-2 column">
         <span>First submission</span>
-        <br>
-        <span>{{project.firstSubmission?.updated | date : Tables.DEFAULT_DATE_FORMAT}}</span>
+        <ng-container *ngIf="project.firstSubmission">
+            <br>
+            <span>{{project.firstSubmission?.updated | date : Tables.DEFAULT_DATE_FORMAT}}</span>
+            <br>
+            <span>by {{project.firstSubmission?.user?.name}} {{project.firstSubmission?.user?.surname}}</span>
+        </ng-container>
     </div>
     <div class="col-sm-2 column">
         <span>Latest re-submission</span>
-        <br>
-        <span>{{project.lastResubmission?.updated | date : Tables.DEFAULT_DATE_FORMAT}}</span>
+        <ng-container *ngIf="project.lastResubmission">
+            <br>
+            <span>{{project.lastResubmission?.updated | date : Tables.DEFAULT_DATE_FORMAT}}</span>
+            <br>
+            <span>by {{project.lastResubmission?.user?.name}} {{project.lastResubmission?.user?.surname}}</span>
+        </ng-container>
     </div>
     <div class="col-sm-2 column">
         <span>Status</span>
