@@ -1,6 +1,6 @@
 {
 	"info": {
-		"_postman_id": "f573a2d4-366d-4585-9e84-11ae79ef7f83",
+		"_postman_id": "b8bc7295-e6bc-4aac-a954-b5e441edcfc1",
 		"name": "ems-rest-test",
 		"description": "Check EMS application for common use-cases",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
@@ -15,7 +15,7 @@
 						{
 							"listen": "prerequest",
 							"script": {
-								"id": "edc5b635-2150-4a4d-8c7f-9d48d6cf609e",
+								"id": "c062e5b0-3188-489b-a978-911252b2e09b",
 								"exec": [
 									""
 								],
@@ -25,7 +25,7 @@
 						{
 							"listen": "test",
 							"script": {
-								"id": "66389eb0-304e-4927-9252-ba7093a4d2f1",
+								"id": "f19fcfb6-77ed-443f-9140-edcfb1c6817f",
 								"exec": [
 									"const response = pm.response.json()\r",
 									"\r",
@@ -74,7 +74,7 @@
 						{
 							"listen": "prerequest",
 							"script": {
-								"id": "6f359ac4-39a2-4cbe-bb94-9e9916db52e3",
+								"id": "36317434-e7b0-4dfd-b7a3-60c4daba49ed",
 								"exec": [
 									""
 								],
@@ -84,7 +84,7 @@
 						{
 							"listen": "test",
 							"script": {
-								"id": "b63537fe-989e-4908-ae96-fd73a8ddc445",
+								"id": "d2a89dd3-a7a1-4990-b592-791d52e5705b",
 								"exec": [
 									"pm.test('should fail with 400', function () {\r",
 									"    pm.response.to.have.status(400);\r",
@@ -132,7 +132,7 @@
 						{
 							"listen": "prerequest",
 							"script": {
-								"id": "dd52d030-7f0b-41c1-9315-107e963e7ea9",
+								"id": "b21f3773-2dbe-47dc-9ebb-903ad94dc9d8",
 								"exec": [
 									""
 								],
@@ -142,7 +142,7 @@
 						{
 							"listen": "test",
 							"script": {
-								"id": "715b39a3-727f-4014-bf78-eaeec557fe67",
+								"id": "6829013a-363b-4e5c-80fd-7aafda27c7b0",
 								"exec": [
 									"pm.test('should fail with 400', function () {\r",
 									"    pm.response.to.have.status(400);\r",
@@ -190,7 +190,7 @@
 						{
 							"listen": "prerequest",
 							"script": {
-								"id": "8a218f5e-2384-470c-90b4-c929585ea66c",
+								"id": "dd92a5a2-3937-4d1d-b900-071ef85c893b",
 								"exec": [
 									"var uuid = require('uuid');\r",
 									"const randomIdentifier = uuid.v4().substring(24, 32);\r",
@@ -203,7 +203,7 @@
 						{
 							"listen": "test",
 							"script": {
-								"id": "09753376-2d2f-4fd1-b2a6-011c9916d65a",
+								"id": "0db6ac5d-fbb3-4489-9dde-4f27f20dcde3",
 								"exec": [
 									"const application = pm.response.json()\r",
 									"\r",
@@ -261,7 +261,7 @@
 						{
 							"listen": "prerequest",
 							"script": {
-								"id": "3d15086e-4ee0-4d11-afbc-1c70d200a03c",
+								"id": "69f5cd4d-9fbb-4f06-96a9-d8563e224426",
 								"exec": [
 									""
 								],
@@ -271,7 +271,7 @@
 						{
 							"listen": "test",
 							"script": {
-								"id": "9f4b2eee-54d7-4d39-8f6a-1696147bb06f",
+								"id": "65f0409e-fdfd-42b5-bfed-c31046927173",
 								"exec": [
 									"const response = pm.response.json();\r",
 									"\r",
@@ -322,7 +322,7 @@
 						{
 							"listen": "test",
 							"script": {
-								"id": "1647bdd5-8571-41b3-9ea5-646387766af5",
+								"id": "903487f8-85bf-4155-910c-672c8b713be7",
 								"exec": [
 									"const response = pm.response.json();\r",
 									"\r",
@@ -364,7 +364,7 @@
 						{
 							"listen": "prerequest",
 							"script": {
-								"id": "4402654f-5d24-47c3-a7d4-c286ec526307",
+								"id": "f338a8e3-bcf4-4e22-846b-16532003b632",
 								"exec": [
 									""
 								],
@@ -374,7 +374,7 @@
 						{
 							"listen": "test",
 							"script": {
-								"id": "c25e34bc-fafb-4297-a5f2-f866b5fa024b",
+								"id": "66c683d5-547e-4287-8be0-57b2dd897601",
 								"exec": [
 									"pm.test(\"an invalid project returns 404\", function () {\r",
 									"    pm.response.to.have.status(404);\r",
@@ -406,7 +406,7 @@
 				{
 					"listen": "prerequest",
 					"script": {
-						"id": "dd84e6a2-b5df-43d2-9f37-4194bbadb6f0",
+						"id": "d97233ca-9876-4896-8d6f-7a0bc80ef501",
 						"type": "text/javascript",
 						"exec": [
 							""
@@ -416,7 +416,7 @@
 				{
 					"listen": "test",
 					"script": {
-						"id": "388572a7-3965-44b2-9e9d-ab5fdb3fe841",
+						"id": "2b1eb52a-ed6c-4d69-a0af-6567cef10ad0",
 						"type": "text/javascript",
 						"exec": [
 							""
@@ -435,7 +435,7 @@
 						{
 							"listen": "test",
 							"script": {
-								"id": "3f29d105-7969-4ca8-995d-c2f0aee22df7",
+								"id": "b7100951-94b6-4111-be14-c0acb93b916e",
 								"exec": [
 									"const response = pm.response.json()",
 									"",
@@ -498,7 +498,7 @@
 						{
 							"listen": "test",
 							"script": {
-								"id": "648a362e-ac1e-44c9-b72d-c71fdc5fe052",
+								"id": "7f3285cd-b8e7-433e-8693-91a4b5ce445f",
 								"exec": [
 									"pm.test(\"logged-in user can access system\", function () {",
 									"    pm.response.to.have.status(200);",
@@ -550,7 +550,7 @@
 						{
 							"listen": "test",
 							"script": {
-								"id": "d0f5f53b-1707-4853-bf91-84a0c3eee674",
+								"id": "105955b0-248f-426a-9586-b370209c2f1a",
 								"exec": [
 									"pm.test(\"user can logout\", function () {",
 									"    pm.response.to.have.status(200);",
@@ -587,7 +587,7 @@
 						{
 							"listen": "test",
 							"script": {
-								"id": "9d1d22a3-8c7a-4e2b-aa84-b2d4c37abbe5",
+								"id": "c516f34d-e589-4faa-a3ed-b0b19ec6916c",
 								"exec": [
 									"pm.test(\"logged-out user cannot access system\", function () {",
 									"    pm.response.to.have.status(401);",
@@ -639,7 +639,7 @@
 						{
 							"listen": "test",
 							"script": {
-								"id": "14d97fe3-4be9-47ed-947f-220877469c2a",
+								"id": "0a00bca5-020e-4801-990b-dc5bef7025a1",
 								"exec": [
 									"pm.test(\"wrong user cannot login\", function () {",
 									"    pm.response.to.have.status(401);",
@@ -711,7 +711,7 @@
 				{
 					"listen": "prerequest",
 					"script": {
-						"id": "5095e39e-6454-46a4-81c8-30cfa281cb71",
+						"id": "25277490-14ed-421e-9c1f-92ffc5cd95e3",
 						"type": "text/javascript",
 						"exec": [
 							""
@@ -721,7 +721,7 @@
 				{
 					"listen": "test",
 					"script": {
-						"id": "3cc6313f-c1d8-4b14-a088-50922054c34d",
+						"id": "97c6d426-7fc8-4793-b71d-227796db1657",
 						"type": "text/javascript",
 						"exec": [
 							""
@@ -740,7 +740,7 @@
 						{
 							"listen": "test",
 							"script": {
-								"id": "157fab3e-b681-43f7-b582-d2651917f6f7",
+								"id": "168e8a17-3f2b-4e71-8999-3a13ae59246f",
 								"exec": [
 									"const username = pm.variables.get(\"user_name\")",
 									"",
@@ -761,7 +761,7 @@
 						{
 							"listen": "prerequest",
 							"script": {
-								"id": "ae86e532-00d1-4f6a-b5b7-e6c002146aa5",
+								"id": "803c415f-d807-4891-b43e-1c68023fb406",
 								"exec": [
 									"var uuid = require('uuid');",
 									"const randomIdentifier = uuid.v4().substring(0, 16);",
@@ -809,7 +809,7 @@
 						{
 							"listen": "test",
 							"script": {
-								"id": "191e0efd-d340-4fde-b8ef-10beb001d509",
+								"id": "c670e13e-7cd1-4064-84bc-38451733f3a8",
 								"exec": [
 									"pm.test('should fail with 400', function () {",
 									"    pm.response.to.have.status(400);",
@@ -830,7 +830,7 @@
 						{
 							"listen": "prerequest",
 							"script": {
-								"id": "db0a0460-63c3-4319-8dfd-7ba7eb96b4d3",
+								"id": "a2e83482-71e0-4315-8dc5-1554f3dcb47f",
 								"exec": [
 									""
 								],
@@ -876,7 +876,7 @@
 						{
 							"listen": "test",
 							"script": {
-								"id": "5eb8a7b1-2bf5-4e8a-ba11-b6e2ded03b88",
+								"id": "c1d3ae38-a17b-424a-9767-cf09078f67c3",
 								"exec": [
 									"pm.test('should fail with 400', function () {",
 									"    pm.response.to.have.status(400);",
@@ -897,7 +897,7 @@
 						{
 							"listen": "prerequest",
 							"script": {
-								"id": "88b6334d-e3dd-4ec3-869e-a940cdf57ad5",
+								"id": "9f7f4c32-6d81-439c-908c-6158c404419d",
 								"exec": [
 									""
 								],
@@ -942,7 +942,7 @@
 				{
 					"listen": "prerequest",
 					"script": {
-						"id": "f743805d-2068-45a2-aa5a-6cccf1788853",
+						"id": "bec0583f-7991-4d9c-8f65-9a3efe9134a4",
 						"type": "text/javascript",
 						"exec": [
 							""
@@ -952,7 +952,7 @@
 				{
 					"listen": "test",
 					"script": {
-						"id": "3fd4bee3-56fd-4de8-bcdd-2ea3a415c172",
+						"id": "b00f34dd-989c-4549-93a2-a0a3dcdca214",
 						"type": "text/javascript",
 						"exec": [
 							""
@@ -971,7 +971,7 @@
 						{
 							"listen": "prerequest",
 							"script": {
-								"id": "50aef5f9-220b-481d-ad2a-d4d827ee71bf",
+								"id": "00cb7392-a417-461e-b86d-8bc89cf1f1b0",
 								"exec": [
 									"var uuid = require('uuid');\r",
 									"const randomIdentifier = uuid.v4().substring(24, 32);\r",
@@ -984,7 +984,7 @@
 						{
 							"listen": "test",
 							"script": {
-								"id": "a99df8ae-69f1-4dac-8763-2f93d1d44eb9",
+								"id": "9954b792-3bfe-4b59-9a4e-8f9a3c852e36",
 								"exec": [
 									"pm.test('applicant can register', function() {\r",
 									"    pm.response.to.have.status(200);\r",
@@ -1003,7 +1003,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"email\": \"{{applicant_email}}\",\r\n    \"name\": \"testName\",\r\n    \"surname\": \"testSurname\",\r\n    \"password\": \"{{applicant_email}}\"\r\n}\r\n",
+							"raw": "{\r\n    \"email\": \"{{applicant_email}}\",\r\n    \"name\": \"{{$randomFirstName}}\",\r\n    \"surname\": \"{{$randomLastName}}\",\r\n    \"password\": \"{{applicant_email}}\"\r\n}\r\n",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -1029,7 +1029,7 @@
 						{
 							"listen": "prerequest",
 							"script": {
-								"id": "e3893ee2-6eeb-43bc-82a7-47b5b9a463a3",
+								"id": "fd9c61a9-8184-45b9-aca9-a19514ea04ed",
 								"exec": [
 									"var uuid = require('uuid');\r",
 									"const randomIdentifier = uuid.v4().substring(24, 32);\r",
@@ -1042,7 +1042,7 @@
 						{
 							"listen": "test",
 							"script": {
-								"id": "507bafb5-2ff4-41cd-93e1-9152815309fe",
+								"id": "8a4f33d3-3dc7-43ff-a494-e4df7e91da78",
 								"exec": [
 									"pm.test('applicant can create project application', function() {\r",
 									"    pm.response.to.have.status(200);\r",
@@ -1100,7 +1100,7 @@
 						{
 							"listen": "prerequest",
 							"script": {
-								"id": "9418394a-659c-4c8d-87f4-0d894b40f1a2",
+								"id": "8205f3b3-6b28-435e-969f-239cf7d4dade",
 								"exec": [
 									""
 								],
@@ -1110,7 +1110,7 @@
 						{
 							"listen": "test",
 							"script": {
-								"id": "75157691-da58-43e1-b9c0-954755ff037e",
+								"id": "18e311c5-d8d7-47dc-8c37-f1d6335fabea",
 								"exec": [
 									"pm.test('applicant can upload file to project application', function() {\r",
 									"    pm.response.to.have.status(200);\r",
@@ -1181,7 +1181,7 @@
 						{
 							"listen": "prerequest",
 							"script": {
-								"id": "d970f13e-ddb0-4c79-b46d-0a718f7de9e9",
+								"id": "a1afba57-80f0-41f6-8172-c0cb1c1cb3bc",
 								"exec": [
 									""
 								],
@@ -1191,7 +1191,7 @@
 						{
 							"listen": "test",
 							"script": {
-								"id": "aa8fdbc4-6188-4267-b4c9-434cb4c23022",
+								"id": "6b1fb59e-c5c7-4525-a6b9-b5538e73a39f",
 								"exec": [
 									"const file = pm.response.json().content[0];\r",
 									"\r",
@@ -1245,7 +1245,7 @@
 						{
 							"listen": "prerequest",
 							"script": {
-								"id": "99284748-eaed-4450-a11a-873e5817bb38",
+								"id": "bd946dc8-c29d-41ca-8de3-b425fc76d494",
 								"exec": [
 									""
 								],
@@ -1255,7 +1255,7 @@
 						{
 							"listen": "test",
 							"script": {
-								"id": "c458de73-08ac-49a6-a848-af1137223d77",
+								"id": "52b5a2a5-6f7f-4849-805a-1af85e3f9dcf",
 								"exec": [
 									"const file = pm.response.json();\r",
 									"\r",
@@ -1321,7 +1321,7 @@
 						{
 							"listen": "prerequest",
 							"script": {
-								"id": "d3dd69e5-cd28-4f23-82e0-5fde96fdffde",
+								"id": "6b5b6188-ea20-4b78-a582-ddfd1d79dead",
 								"exec": [
 									""
 								],
@@ -1331,7 +1331,7 @@
 						{
 							"listen": "test",
 							"script": {
-								"id": "7f7d5604-e65c-42cf-a5f7-db43dbc4433d",
+								"id": "9e18d848-e87e-4e1a-93da-e1dd7225df21",
 								"exec": [
 									"pm.test('applicant can download previously-uploaded file', function() {\r",
 									"    pm.response.to.have.status(200);\r",
@@ -1386,7 +1386,7 @@
 						{
 							"listen": "prerequest",
 							"script": {
-								"id": "5b245872-3266-4ab7-8bb1-07e39098fb43",
+								"id": "f321159d-9df3-4c41-b5fa-7202ca221f04",
 								"exec": [
 									"var uuid = require('uuid');\r",
 									"const randomIdentifier = uuid.v4().substring(24, 32);\r",
@@ -1399,7 +1399,7 @@
 						{
 							"listen": "test",
 							"script": {
-								"id": "952370b1-fbe5-41b8-8def-60cc0129ab48",
+								"id": "2d59d8dd-75e0-436b-a571-936b04a32d15",
 								"exec": [
 									"pm.test('programme user can be created', function() {\r",
 									"    pm.response.to.have.status(200);\r",
@@ -1430,7 +1430,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"email\": \"{{programme_user_email}}\",\r\n    \"name\": \"testName\",\r\n    \"surname\": \"testSurname\",\r\n    \"userRoleId\": \"2\"\r\n}\r\n",
+							"raw": "{\r\n    \"email\": \"{{programme_user_email}}\",\r\n    \"name\": \"{{$randomFirstName}}\",\r\n    \"surname\": \"{{$randomLastName}}\",\r\n    \"userRoleId\": \"2\"\r\n}\r\n",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -1456,7 +1456,7 @@
 						{
 							"listen": "prerequest",
 							"script": {
-								"id": "8d97669d-9e40-4582-a2fc-52eeada9c91f",
+								"id": "8ca14133-abce-4c3e-8852-a99ef15ee931",
 								"exec": [
 									""
 								],
@@ -1466,7 +1466,7 @@
 						{
 							"listen": "test",
 							"script": {
-								"id": "7acd753c-11e7-49bb-a25b-ee55a6d29bc3",
+								"id": "9288dfa9-4785-4971-a041-f3b164fa0260",
 								"exec": [
 									"pm.test('programme user should not be able to create project application', function() {\r",
 									"    pm.response.to.have.status(403);\r",
@@ -1523,7 +1523,7 @@
 						{
 							"listen": "prerequest",
 							"script": {
-								"id": "0d970cbe-8550-4b22-997c-a136809665fc",
+								"id": "3aecc59c-07dc-405f-a7af-62291ac576aa",
 								"exec": [
 									""
 								],
@@ -1533,7 +1533,7 @@
 						{
 							"listen": "test",
 							"script": {
-								"id": "50c1f413-76d5-4ae2-b6ac-3a1c6d8c8ff5",
+								"id": "05fd04d5-350c-438b-b798-2bbe1cedc254",
 								"exec": [
 									"pm.test('programme user should not be able to see files when application is DRAFT', function() {\r",
 									"    pm.response.to.have.status(403);\r",
@@ -1583,7 +1583,7 @@
 						{
 							"listen": "prerequest",
 							"script": {
-								"id": "4baf4f83-a617-4ac8-8ca8-ddb047de53b8",
+								"id": "537506be-9780-4f1a-8b32-c03c6f217b35",
 								"exec": [
 									""
 								],
@@ -1593,7 +1593,7 @@
 						{
 							"listen": "test",
 							"script": {
-								"id": "434ab265-a70f-4b29-a7b9-717752771fca",
+								"id": "950888d3-425c-46b5-871a-cd408944d0f5",
 								"exec": [
 									"pm.test('programme user should not be able to upload file', function() {\r",
 									"    pm.response.to.have.status(403);\r",
@@ -1664,7 +1664,7 @@
 						{
 							"listen": "prerequest",
 							"script": {
-								"id": "501fcb70-1b17-4082-822f-760904418d21",
+								"id": "29892a47-1dfd-4f2c-814b-d2b9ef6ea07b",
 								"exec": [
 									""
 								],
@@ -1674,7 +1674,7 @@
 						{
 							"listen": "test",
 							"script": {
-								"id": "2e49e03f-915d-427e-b3c9-fa79d235ac38",
+								"id": "37305c91-f17e-40c1-87f0-c995b3851df3",
 								"exec": [
 									"pm.test('programme user should not be able to set description', function() {\r",
 									"    pm.response.to.have.status(403);\r",
@@ -1735,7 +1735,7 @@
 						{
 							"listen": "prerequest",
 							"script": {
-								"id": "dc66a3d8-03dc-4107-913e-54d7b6c18c07",
+								"id": "baf5b2a6-23e1-4ec5-9af6-6ffab9c49897",
 								"exec": [
 									""
 								],
@@ -1745,7 +1745,7 @@
 						{
 							"listen": "test",
 							"script": {
-								"id": "2d7650c5-f48b-4c74-9a84-2eeb3900e29d",
+								"id": "fec9eb38-e68c-4616-b5ca-d215819e4c70",
 								"exec": [
 									"pm.test('programme user should not be able to download file, when application is just DRAFT', function() {\r",
 									"    pm.response.to.have.status(403);\r",
@@ -1802,7 +1802,7 @@
 						{
 							"listen": "prerequest",
 							"script": {
-								"id": "24cdf32e-c4fa-4230-b4f5-93124ed15aa7",
+								"id": "6fb5fcbf-39a8-4782-b61e-d5e76822391c",
 								"exec": [
 									"var uuid = require('uuid');\r",
 									"const randomIdentifier = uuid.v4().substring(24, 32);\r",
@@ -1815,7 +1815,7 @@
 						{
 							"listen": "test",
 							"script": {
-								"id": "cd35826a-7510-4eca-96d7-80e15ab1f023",
+								"id": "da884c0b-5a91-493d-9dd9-0b38132e6404",
 								"exec": [
 									"pm.test('applicant can register', function() {\r",
 									"    pm.response.to.have.status(200);\r",
@@ -1834,7 +1834,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"email\": \"{{applicant_email}}\",\r\n    \"name\": \"testName\",\r\n    \"surname\": \"testSurname\",\r\n    \"password\": \"{{applicant_email}}\"\r\n}\r\n",
+							"raw": "{\r\n    \"email\": \"{{applicant_email}}\",\r\n    \"name\": \"{{$randomFirstName}}\",\r\n    \"surname\": \"{{$randomLastName}}\",\r\n    \"password\": \"{{applicant_email}}\"\r\n}\r\n",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -1860,7 +1860,7 @@
 						{
 							"listen": "prerequest",
 							"script": {
-								"id": "11e49b2c-a623-49fe-abff-a5fed15adf5e",
+								"id": "939fd800-b844-4aa5-a318-f03417b8e13e",
 								"exec": [
 									"var uuid = require('uuid');\r",
 									"const randomIdentifier = uuid.v4().substring(24, 32);\r",
@@ -1873,7 +1873,7 @@
 						{
 							"listen": "test",
 							"script": {
-								"id": "092aa5c9-f9ce-4788-92b0-26ce1141dc69",
+								"id": "e44c454e-6011-4415-ad39-3068c3ae84a9",
 								"exec": [
 									"const application = pm.response.json();\r",
 									"\r",
@@ -1937,7 +1937,7 @@
 						{
 							"listen": "prerequest",
 							"script": {
-								"id": "5fe9630c-a3db-4c75-91d0-9636cc418860",
+								"id": "d1c3ba65-2d8b-463f-ac91-c36f0989a9ba",
 								"exec": [
 									""
 								],
@@ -1947,7 +1947,7 @@
 						{
 							"listen": "test",
 							"script": {
-								"id": "0add6882-5144-4905-93af-91817fc24d6d",
+								"id": "490771b7-fcec-458b-a46a-b2fbdb582c55",
 								"exec": [
 									"pm.test('applicant can upload file to project application', function() {\r",
 									"    pm.response.to.have.status(200);\r",
@@ -2018,7 +2018,7 @@
 						{
 							"listen": "prerequest",
 							"script": {
-								"id": "78fe6da5-f380-433d-a883-eb5fe862af3e",
+								"id": "ef4548dc-e6aa-4294-a5ab-cc70345723ca",
 								"exec": [
 									""
 								],
@@ -2028,7 +2028,7 @@
 						{
 							"listen": "test",
 							"script": {
-								"id": "8a54c9f9-3919-4804-95d1-c3a97226ec71",
+								"id": "14b96280-6f77-4dbb-bc91-d9501e96216c",
 								"exec": [
 									"pm.test('applicant can submit his application', function() {\r",
 									"    pm.response.to.have.status(200);\r",
@@ -2087,7 +2087,7 @@
 						{
 							"listen": "prerequest",
 							"script": {
-								"id": "ace6f74c-1a24-4043-8f5f-0c77a9f324c7",
+								"id": "2a7d89d2-dd69-4426-b415-ce46e2ccba29",
 								"exec": [
 									""
 								],
@@ -2097,7 +2097,7 @@
 						{
 							"listen": "test",
 							"script": {
-								"id": "79c28bc4-26ff-48e5-bec2-8f55ddb90aef",
+								"id": "09e13e2a-07b3-4353-83bd-ae2956181f2c",
 								"exec": [
 									"const application = pm.response.json();\r",
 									"\r",
@@ -2158,7 +2158,7 @@
 						{
 							"listen": "prerequest",
 							"script": {
-								"id": "76ee1a19-0c0d-4c74-ab73-79406a7f1706",
+								"id": "26ed53d1-3f62-43fb-96e3-b135ab33ecb7",
 								"exec": [
 									""
 								],
@@ -2168,7 +2168,7 @@
 						{
 							"listen": "test",
 							"script": {
-								"id": "5d7e1ddd-7913-407d-8c6c-0721586d868f",
+								"id": "f1b91f0f-2976-4d0e-a2f6-f58d3260dc35",
 								"exec": [
 									"pm.test('applicant should not be able to upload file to SUBMITTED application', function() {\r",
 									"    pm.response.to.have.status(403);\r",
@@ -2239,7 +2239,7 @@
 						{
 							"listen": "prerequest",
 							"script": {
-								"id": "68eaeb88-2b53-49c9-8172-efb57b5a4487",
+								"id": "35bfe25f-5541-4268-ac31-8b324bfb9d2a",
 								"exec": [
 									"var uuid = require('uuid');\r",
 									"const randomIdentifier = uuid.v4().substring(24, 32);\r",
@@ -2252,7 +2252,7 @@
 						{
 							"listen": "test",
 							"script": {
-								"id": "617eba8d-ce79-4576-bd17-397dfa8c6e57",
+								"id": "009a0120-b107-4988-99f6-68d1ffd6054c",
 								"exec": [
 									"pm.test('programme user can be created', function() {\r",
 									"    pm.response.to.have.status(200);\r",
@@ -2283,7 +2283,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"email\": \"{{programme_user_email}}\",\r\n    \"name\": \"testName\",\r\n    \"surname\": \"testSurname\",\r\n    \"userRoleId\": \"2\"\r\n}\r\n",
+							"raw": "{\r\n    \"email\": \"{{programme_user_email}}\",\r\n    \"name\": \"{{$randomFirstName}}\",\r\n    \"surname\": \"{{$randomLastName}}\",\r\n    \"userRoleId\": \"2\"\r\n}\r\n",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -2309,7 +2309,7 @@
 						{
 							"listen": "prerequest",
 							"script": {
-								"id": "b99bf47a-9e45-4ccb-a507-94c3813a24fb",
+								"id": "954f6bda-92d6-4c6a-bedf-0a0613965c21",
 								"exec": [
 									""
 								],
@@ -2319,7 +2319,7 @@
 						{
 							"listen": "test",
 							"script": {
-								"id": "eea2e80f-ab85-4b95-be92-8841c304b68b",
+								"id": "12747230-007f-4883-8898-5438aa72c5f2",
 								"exec": [
 									"const response = pm.response.json();\r",
 									"\r",
@@ -2373,7 +2373,7 @@
 						{
 							"listen": "prerequest",
 							"script": {
-								"id": "91eaace0-73ee-407f-a35c-b1b018afb917",
+								"id": "f472c036-b5e6-46ba-a9e6-a3e52cb01b60",
 								"exec": [
 									""
 								],
@@ -2383,7 +2383,7 @@
 						{
 							"listen": "test",
 							"script": {
-								"id": "3bc5a534-42d4-45be-85f5-2224520080cd",
+								"id": "c385672d-36bf-413d-b112-bf93879a42a3",
 								"exec": [
 									"pm.test('program user can return application back to user', function() {\r",
 									"    pm.response.to.have.status(200);\r",
@@ -2453,7 +2453,7 @@
 						{
 							"listen": "prerequest",
 							"script": {
-								"id": "ab38b965-4591-4971-ba92-52eb7b1b0ede",
+								"id": "4d3eb7f4-4adb-46d1-af0a-eb3ef1aa59c2",
 								"exec": [
 									""
 								],
@@ -2463,7 +2463,7 @@
 						{
 							"listen": "test",
 							"script": {
-								"id": "a2456fb7-b4a3-4c32-a209-1d58a449bf24",
+								"id": "e4b7505e-99be-4a07-91bb-b4d3f9e422e2",
 								"exec": [
 									"const application = pm.response.json();\r",
 									"\r",
@@ -2525,7 +2525,7 @@
 						{
 							"listen": "prerequest",
 							"script": {
-								"id": "1afddb48-9509-4978-b666-19d51392293f",
+								"id": "fbc599a4-165e-4b1a-89cb-043edbcfce1a",
 								"exec": [
 									""
 								],
@@ -2535,7 +2535,7 @@
 						{
 							"listen": "test",
 							"script": {
-								"id": "785f8009-42bd-4f5e-9a0c-e9713f6b8043",
+								"id": "c9ea05fe-31eb-473d-8a88-9b4ab68155fb",
 								"exec": [
 									"pm.test('program user should not be able to resubmit application', function() {\r",
 									"    pm.response.to.have.status(403);\r",
@@ -2594,7 +2594,7 @@
 						{
 							"listen": "prerequest",
 							"script": {
-								"id": "8766bd9e-79c4-42d7-b721-5966a3d57d91",
+								"id": "13fc9110-ec09-4f50-9564-45cc418e7472",
 								"exec": [
 									""
 								],
@@ -2604,7 +2604,7 @@
 						{
 							"listen": "test",
 							"script": {
-								"id": "0857076f-0178-49de-948a-5da87443fcb2",
+								"id": "85cdf8d1-98f0-4caf-8181-62959a4c8c64",
 								"exec": [
 									"pm.test('applicant can resubmit application that was returned to him', function() {\r",
 									"    pm.response.to.have.status(200);\r",
@@ -2663,7 +2663,7 @@
 						{
 							"listen": "prerequest",
 							"script": {
-								"id": "09883112-ebd9-4830-ad28-a8b2ed2319c5",
+								"id": "71231684-ce29-475c-b2c7-035122226f88",
 								"exec": [
 									""
 								],
@@ -2673,7 +2673,7 @@
 						{
 							"listen": "test",
 							"script": {
-								"id": "c98efdc0-f011-44e1-ac98-7dac2c052c6c",
+								"id": "c4139a0b-59cd-4603-8a1e-95ff03d87787",
 								"exec": [
 									"const application = pm.response.json();\r",
 									"\r",
@@ -2734,7 +2734,7 @@
 			"protocolProfileBehavior": {}
 		},
 		{
-			"name": "eligibility status",
+			"name": "eligibility assessment (EA) and decision",
 			"item": [
 				{
 					"name": "register applicant",
@@ -2742,7 +2742,7 @@
 						{
 							"listen": "prerequest",
 							"script": {
-								"id": "709635bd-c0ae-4fe9-8d28-c236aaf06e38",
+								"id": "13f4559e-5131-42fd-8e5f-a9c9f15cc420",
 								"exec": [
 									"var uuid = require('uuid');\r",
 									"const randomIdentifier = uuid.v4().substring(24, 32);\r",
@@ -2755,7 +2755,7 @@
 						{
 							"listen": "test",
 							"script": {
-								"id": "fee53bec-51a0-4c91-a6cd-bd941f8599dc",
+								"id": "c8d64def-1399-4f40-9c87-b0d35d297f7d",
 								"exec": [
 									"pm.test('applicant can register', function() {\r",
 									"    pm.response.to.have.status(200);\r",
@@ -2774,7 +2774,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"email\": \"{{applicant_email}}\",\r\n    \"name\": \"testName\",\r\n    \"surname\": \"testSurname\",\r\n    \"password\": \"{{applicant_email}}\"\r\n}\r\n",
+							"raw": "{\r\n    \"email\": \"{{applicant_email}}\",\r\n    \"name\": \"{{$randomFirstName}}\",\r\n    \"surname\": \"{{$randomLastName}}\",\r\n    \"password\": \"{{applicant_email}}\"\r\n}\r\n",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -2800,7 +2800,7 @@
 						{
 							"listen": "prerequest",
 							"script": {
-								"id": "ad69acb6-f814-4394-86d9-2879e669948f",
+								"id": "2aa43f41-acd3-4ea5-9dbf-2d142621cc0e",
 								"exec": [
 									"var uuid = require('uuid');\r",
 									"const randomIdentifier = uuid.v4().substring(24, 32);\r",
@@ -2813,7 +2813,7 @@
 						{
 							"listen": "test",
 							"script": {
-								"id": "577cf8f8-432c-4f37-a54b-12747fb7b8dc",
+								"id": "f0f0229c-37b8-4a24-896b-2fdb910e6327",
 								"exec": [
 									"const application = pm.response.json();\r",
 									"\r",
@@ -2877,7 +2877,7 @@
 						{
 							"listen": "prerequest",
 							"script": {
-								"id": "56934727-c704-4dae-ad9f-7ce39773aceb",
+								"id": "ea8e6be4-a6b5-4c84-86c4-55494bb71b9a",
 								"exec": [
 									""
 								],
@@ -2887,7 +2887,7 @@
 						{
 							"listen": "test",
 							"script": {
-								"id": "b830768e-4b59-4989-8c60-ecb9a53291e2",
+								"id": "5f491af8-7585-4942-bd65-f641eb860985",
 								"exec": [
 									"pm.test('applicant can submit his application', function() {\r",
 									"    pm.response.to.have.status(200);\r",
@@ -2946,7 +2946,7 @@
 						{
 							"listen": "prerequest",
 							"script": {
-								"id": "ba22d4ac-5d30-47bd-bfd0-62a231b94c26",
+								"id": "ffbe05a6-a653-4010-9a29-c0f9e5552059",
 								"exec": [
 									"var uuid = require('uuid');\r",
 									"const randomIdentifier = uuid.v4().substring(24, 32);\r",
@@ -2959,7 +2959,7 @@
 						{
 							"listen": "test",
 							"script": {
-								"id": "9805b0d6-08df-4b28-a9e9-1da195b2c866",
+								"id": "adc3005c-1451-491a-86cb-e5b0d96b1c4e",
 								"exec": [
 									"pm.test('programme user can be created', function() {\r",
 									"    pm.response.to.have.status(200);\r",
@@ -2990,7 +2990,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"email\": \"{{programme_user_email}}\",\r\n    \"name\": \"testName\",\r\n    \"surname\": \"testSurname\",\r\n    \"userRoleId\": \"2\"\r\n}\r\n",
+							"raw": "{\r\n    \"email\": \"{{programme_user_email}}\",\r\n    \"name\": \"{{$randomFirstName}}\",\r\n    \"surname\": \"{{$randomLastName}}\",\r\n    \"userRoleId\": \"2\"\r\n}\r\n",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -3016,7 +3016,7 @@
 						{
 							"listen": "prerequest",
 							"script": {
-								"id": "f5a49987-506e-4421-8250-24673e515adb",
+								"id": "81750a1f-593d-49cf-8f8f-d62a7626bde9",
 								"exec": [
 									""
 								],
@@ -3026,7 +3026,7 @@
 						{
 							"listen": "test",
 							"script": {
-								"id": "81241802-c83f-42cf-9b61-e4cf6fecfb77",
+								"id": "990809b5-9222-4267-bd77-ee0cecfd9393",
 								"exec": [
 									"pm.test('applicant should not be able to enter EA', function() {\r",
 									"    pm.response.to.have.status(403);\r",
@@ -3086,7 +3086,7 @@
 						{
 							"listen": "prerequest",
 							"script": {
-								"id": "1ef53d9c-e640-4b72-b152-544802e5007b",
+								"id": "9dae3f7d-c7d2-4ef1-ae62-5390debdd048",
 								"exec": [
 									""
 								],
@@ -3096,7 +3096,7 @@
 						{
 							"listen": "test",
 							"script": {
-								"id": "9ca1ca93-10e6-464b-b67d-5b7808003c6c",
+								"id": "59e12c60-17da-4291-9e80-bff9b7cbe8e1",
 								"exec": [
 									"pm.test('program user can enter EA once', function() {\r",
 									"    pm.response.to.have.status(200);\r",
@@ -3182,7 +3182,7 @@
 						{
 							"listen": "prerequest",
 							"script": {
-								"id": "59191585-1ece-48b0-bde6-c777687e4c60",
+								"id": "5a00df25-d77b-4955-a59b-da214bc5d1d4",
 								"exec": [
 									""
 								],
@@ -3192,7 +3192,7 @@
 						{
 							"listen": "test",
 							"script": {
-								"id": "746a4d61-7818-4613-a16c-a54689adfbe9",
+								"id": "ff51da95-ce0c-44ac-a3dd-0dc6d73561e1",
 								"exec": [
 									"pm.test('program user should not be able to enter EA second time', function() {\r",
 									"    pm.response.to.have.status(403);\r",
@@ -3247,12 +3247,12 @@
 					"response": []
 				},
 				{
-					"name": "program user can change status to ELIGIBLE",
+					"name": "program user cannot change to ELIGIBLE without date",
 					"event": [
 						{
 							"listen": "prerequest",
 							"script": {
-								"id": "9dd98576-7436-4365-8a5d-fb503e0093d8",
+								"id": "74df01ec-0e07-4910-9520-4f95bdd760b3",
 								"exec": [
 									""
 								],
@@ -3262,21 +3262,14 @@
 						{
 							"listen": "test",
 							"script": {
-								"id": "62794ec7-96db-442a-aa68-5aca99cbc58e",
+								"id": "deb7818c-4c27-49e4-af4a-5cc971562b3c",
 								"exec": [
-									"pm.test('program user can change status to ELIGIBLE', function() {\r",
-									"    pm.response.to.have.status(200);\r",
+									"pm.test('program user should not be able to change status to ELIGIBLE without date', function() {\r",
+									"    pm.response.to.have.status(422);\r",
 									"});\r",
 									"\r",
-									"const application = pm.response.json();\r",
-									"\r",
-									"pm.test('status of project is set to ELIGIBLE', function() {\r",
-									"    pm.expect(application.projectStatus.status).to.eql('ELIGIBLE');\r",
-									"});\r",
-									"\r",
-									"pm.test('status change is assigned to program user who triggered change', function() {\r",
-									"    pm.expect(application.projectStatus.user.email)\r",
-									"        .to.eql(pm.variables.get(\"programme_user_email\"));\r",
+									"pm.test('correct translation key returned for this error', function() {\r",
+									"    pm.expect(pm.response.json().i18nKey).to.eql('project.decision.date.unknown')\r",
 									"});\r",
 									""
 								],
@@ -3327,12 +3320,100 @@
 					"response": []
 				},
 				{
+					"name": "program user can change status to ELIGIBLE",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "72034709-8f32-434c-9c5f-27870b337fc8",
+								"exec": [
+									"var date = new Date();\r",
+									"date.setDate(date.getDate() + 1);\r",
+									"pm.variables.set('eligibility_decision_date_tomorrow', date.toISOString().split('T')[0]);\r",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"id": "08f174d3-3681-49e8-ba8a-df8edf6c759c",
+								"exec": [
+									"pm.test('program user can change status to ELIGIBLE', function() {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"const application = pm.response.json();\r",
+									"\r",
+									"pm.test('status of project is set to ELIGIBLE', function() {\r",
+									"    pm.expect(application.projectStatus.status).to.eql('ELIGIBLE');\r",
+									"});\r",
+									"\r",
+									"pm.test('status decision date is set to tomorrow', function() {\r",
+									"    pm.expect(application.projectStatus.decisionDate)\r",
+									"        .to.eql(pm.variables.get(\"eligibility_decision_date_tomorrow\"));\r",
+									"});\r",
+									"\r",
+									"pm.test('status change is assigned to program user who triggered change', function() {\r",
+									"    pm.expect(application.projectStatus.user.email)\r",
+									"        .to.eql(pm.variables.get(\"programme_user_email\"));\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "basic",
+							"basic": [
+								{
+									"key": "password",
+									"value": "{{programme_user_email}}",
+									"type": "string"
+								},
+								{
+									"key": "username",
+									"value": "{{programme_user_email}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"status\": \"ELIGIBLE\",\r\n    \"date\": \"{{eligibility_decision_date_tomorrow}}\"\r\n}\r\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{url}}/api/project/{{application_id}}/status",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"api",
+								"project",
+								"{{application_id}}",
+								"status"
+							]
+						}
+					},
+					"response": []
+				},
+				{
 					"name": "program user can return application",
 					"event": [
 						{
 							"listen": "prerequest",
 							"script": {
-								"id": "ce116698-315d-402b-871f-6d4ec16924a1",
+								"id": "fe1028a9-95b2-4ce8-8260-667dd3a2bca4",
 								"exec": [
 									""
 								],
@@ -3342,7 +3423,7 @@
 						{
 							"listen": "test",
 							"script": {
-								"id": "893de2bc-f361-4d20-b2a9-82585e68c451",
+								"id": "b6a5db78-9a53-471e-80e2-3afa65a98d50",
 								"exec": [
 									"pm.test('program user can return application back to user', function() {\r",
 									"    pm.response.to.have.status(200);\r",
@@ -3412,7 +3493,7 @@
 						{
 							"listen": "prerequest",
 							"script": {
-								"id": "f31a2bee-2b73-4339-889f-4cfbac1fae49",
+								"id": "e2e9ca1b-ce09-4b51-88f9-1e1bef5f9375",
 								"exec": [
 									""
 								],
@@ -3422,7 +3503,7 @@
 						{
 							"listen": "test",
 							"script": {
-								"id": "52afa967-afbe-4888-91c9-e03498872189",
+								"id": "6ee85fd0-aec9-4c7b-be6b-0756aa84aaee",
 								"exec": [
 									"pm.test('applicant can resubmit application that was returned to him', function() {\r",
 									"    pm.response.to.have.status(200);\r",
@@ -3509,7 +3590,7 @@
 		{
 			"listen": "prerequest",
 			"script": {
-				"id": "31041c6c-e354-433b-8ff3-18ea2d462c74",
+				"id": "40cb3d78-39b8-4909-b4dc-38ecc10e9929",
 				"type": "text/javascript",
 				"exec": [
 					""
@@ -3519,7 +3600,7 @@
 		{
 			"listen": "test",
 			"script": {
-				"id": "0eb309ea-9cc6-406a-bdfa-a9c5ba728e31",
+				"id": "b8ed81ff-97e4-478e-88b1-b0d03e25bbc2",
 				"type": "text/javascript",
 				"exec": [
 					""
