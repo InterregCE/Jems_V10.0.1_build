@@ -22,6 +22,15 @@
     </div>
 </ng-container>
 
+<ng-container *ngxPermissionsExcept="[Permission.APPLICANT_USER]">
+    <div *ngIf="projectStatus === OutputProjectStatus.StatusEnum.ELIGIBLE" class="row">
+        <button mat-raised-button
+                color="primary"
+                (click)="returnToApplicant()">Return To Applicant
+        </button>
+    </div>
+</ng-container>
+
 <app-alert
         [show]="showSuccessMessage$ | async"
         [type]="Alert.SUCCESS">
