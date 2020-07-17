@@ -1,8 +1,10 @@
 package io.cloudflight.ems.security.service.authorization
 
 import io.cloudflight.ems.api.dto.OutputProject
+import io.cloudflight.ems.api.dto.OutputProjectEligibilityAssessment
 import io.cloudflight.ems.api.dto.OutputProjectStatus
 import io.cloudflight.ems.api.dto.ProjectApplicationStatus
+import io.cloudflight.ems.api.dto.ProjectEligibilityAssessmentResult
 import io.cloudflight.ems.api.dto.user.OutputUser
 import io.cloudflight.ems.api.dto.user.OutputUserRole
 import io.cloudflight.ems.api.dto.user.OutputUserWithRole
@@ -16,15 +18,24 @@ import org.junit.jupiter.api.Assertions.assertFalse
 import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.TestInstance
+import org.junit.jupiter.params.ParameterizedTest
+import org.junit.jupiter.params.provider.Arguments
+import org.junit.jupiter.params.provider.MethodSource
 import org.springframework.security.core.authority.SimpleGrantedAuthority
 import java.time.ZonedDateTime
+import java.util.stream.Stream
 
+@TestInstance(TestInstance.Lifecycle.PER_CLASS)
 internal class ProjectStatusAuthorizationTest {
 
     companion object {
         const val PID_DRAFT: Long = 1
         const val PID_SUBMITTED: Long = 2L
         const val PID_RETURNED: Long = 3L
+        const val PID_SUBMITTED_WITH_EA: Long = 21L
+        const val PID_ELIGIBLE: Long = 4L
+        const val PID_INELIGIBLE: Long = 5L
     }
 
     @MockK
@@ -66,9 +77,43 @@ internal class ProjectStatusAuthorizationTest {
         surname = userApplicant.surname
     )
 
+    private val userProgrammeWithoutRole = OutputUser(
+        id = userProgramme.id,
+        email = userProgramme.email,
+        name = userProgramme.name,
+        surname = userProgramme.surname
+    )
+
+    private val programmeUser = LocalCurrentUser(
+        userProgramme, "hash_pass", listOf(
+            SimpleGrantedAuthority("ROLE_" + userProgramme.userRole.name)
+        )
+    )
+    private val adminUser = LocalCurrentUser(
+        userAdmin, "hash_pass", listOf(
+            SimpleGrantedAuthority("ROLE_" + userAdmin.userRole.name)
+        )
+    )
+    private val applicantUser = LocalCurrentUser(
+        userApplicant, "hash_pass", listOf(
+            SimpleGrantedAuthority("ROLE_" + userApplicant.userRole.name)
+        )
+    )
+
+    private val eligibilityAssessment = OutputProjectEligibilityAssessment(
+        result = ProjectEligibilityAssessmentResult.PASSED,
+        user = userProgrammeWithoutRole,
+        updated = ZonedDateTime.now())
+
     private val projectDraft = createProject(PID_DRAFT, ProjectApplicationStatus.DRAFT)
     private val projectSubmitted = createProject(PID_SUBMITTED, ProjectApplicationStatus.SUBMITTED)
     private val projectReturned = createProject(PID_RETURNED, ProjectApplicationStatus.RETURNED_TO_APPLICANT)
+    private val projectSubmittedWithEa = projectSubmitted.copy(
+        eligibilityAssessment = eligibilityAssessment)
+    private val projectEligible = createProject(PID_ELIGIBLE, ProjectApplicationStatus.ELIGIBLE).copy(
+        eligibilityAssessment = eligibilityAssessment)
+    private val projectIneligible = createProject(PID_INELIGIBLE, ProjectApplicationStatus.INELIGIBLE).copy(
+        eligibilityAssessment = eligibilityAssessment)
 
     @BeforeEach
     fun setup() {
@@ -77,7 +122,10 @@ internal class ProjectStatusAuthorizationTest {
 
         every { projectService.getById(PID_DRAFT) } returns projectDraft
         every { projectService.getById(PID_SUBMITTED) } returns projectSubmitted
+        every { projectService.getById(PID_SUBMITTED_WITH_EA) } returns projectSubmittedWithEa
         every { projectService.getById(PID_RETURNED) } returns projectReturned
+        every { projectService.getById(PID_ELIGIBLE) } returns projectEligible
+        every { projectService.getById(PID_INELIGIBLE) } returns projectIneligible
     }
 
     @Test
@@ -107,11 +155,7 @@ internal class ProjectStatusAuthorizationTest {
 
     @Test
     fun `owner can only submit and resubmit`() {
-        every { securityService.currentUser } returns LocalCurrentUser(
-            userApplicant, "hash_pass", listOf(
-                SimpleGrantedAuthority("ROLE_" + userApplicant.userRole.name)
-            )
-        )
+        every { securityService.currentUser } returns applicantUser
 
         assertTrue(projectStatusAuthorization.canChangeStatusTo(PID_DRAFT, ProjectApplicationStatus.SUBMITTED))
         assertFalse(
@@ -132,11 +176,7 @@ internal class ProjectStatusAuthorizationTest {
 
     @Test
     fun `programme user can only return to applicant`() {
-        every { securityService.currentUser } returns LocalCurrentUser(
-            userProgramme, "hash_pass", listOf(
-                SimpleGrantedAuthority("ROLE_" + userProgramme.userRole.name)
-            )
-        )
+        every { securityService.currentUser } returns programmeUser
 
         assertFalse(projectStatusAuthorization.canChangeStatusTo(PID_DRAFT, ProjectApplicationStatus.SUBMITTED))
         assertTrue(
@@ -153,6 +193,69 @@ internal class ProjectStatusAuthorizationTest {
                 ProjectApplicationStatus.RETURNED_TO_APPLICANT
             )
         )
+    }
+
+    @ParameterizedTest
+    @MethodSource("provideAdminAndProgramUsers")
+    fun `programme or admin user can enter eligibility decision`(currentUser: LocalCurrentUser) {
+        every { securityService.currentUser } returns currentUser
+
+        assertTrue(
+            projectStatusAuthorization.canChangeStatusTo(PID_SUBMITTED_WITH_EA, ProjectApplicationStatus.ELIGIBLE)
+        )
+        assertTrue(
+            projectStatusAuthorization.canChangeStatusTo(PID_SUBMITTED_WITH_EA, ProjectApplicationStatus.INELIGIBLE)
+        )
+    }
+
+    @ParameterizedTest
+    @MethodSource("provideAdminAndProgramUsers")
+    fun `programme or admin user can enter EA`(currentUser: LocalCurrentUser) {
+        every { securityService.currentUser } returns currentUser
+
+        assertTrue(
+            projectStatusAuthorization.canSetEligibilityAssessment(PID_SUBMITTED)
+        )
+    }
+
+    @ParameterizedTest
+    @MethodSource("provideAdminAndProgramUsers")
+    fun `programme or admin user can enter QA`(currentUser: LocalCurrentUser) {
+        every { securityService.currentUser } returns currentUser
+
+        listOf(PID_SUBMITTED, PID_SUBMITTED_WITH_EA, PID_ELIGIBLE).forEach {
+            assertTrue(
+                projectStatusAuthorization.canSetQualityAssessment(it)
+            )
+        }
+    }
+
+    @ParameterizedTest
+    @MethodSource("provideAdminAndProgramUsers")
+    fun `programme or admin user cannot enter QA when INELIGIBLE`(currentUser: LocalCurrentUser) {
+        every { securityService.currentUser } returns currentUser
+
+        assertFalse(projectStatusAuthorization.canSetQualityAssessment(PID_INELIGIBLE))
+    }
+
+    @ParameterizedTest
+    @MethodSource("provideAllUsers")
+    fun `cannot enter eligibility decision`(currentUser: LocalCurrentUser) {
+        every { securityService.currentUser } returns currentUser
+
+        listOf(PID_SUBMITTED, PID_RETURNED, PID_DRAFT).forEach {
+            assertFalse(
+                projectStatusAuthorization.canChangeStatusTo(it, ProjectApplicationStatus.ELIGIBLE)
+            )
+        }
+    }
+
+    @Test
+    fun `applicant cannot enter decisions`() {
+        every { securityService.currentUser } returns applicantUser
+
+        assertFalse(projectStatusAuthorization.canSetQualityAssessment(PID_SUBMITTED))
+        assertFalse(projectStatusAuthorization.canSetEligibilityAssessment(PID_SUBMITTED))
     }
 
     @Test
@@ -217,4 +320,20 @@ internal class ProjectStatusAuthorizationTest {
             projectStatus = OutputProjectStatus(1, status, userApplicantWithoutRole, ZonedDateTime.now(), null)
         )
     }
+
+    private fun provideAdminAndProgramUsers(): Stream<Arguments> {
+        return Stream.of(
+            Arguments.of(programmeUser),
+            Arguments.of(adminUser)
+        )
+    }
+
+    private fun provideAllUsers(): Stream<Arguments> {
+        return Stream.of(
+            Arguments.of(adminUser),
+            Arguments.of(programmeUser),
+            Arguments.of(applicantUser)
+        )
+    }
+
 }
