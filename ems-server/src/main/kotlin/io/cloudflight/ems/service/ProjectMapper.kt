@@ -24,6 +24,7 @@ fun Project.toOutputProject() = OutputProject(
     qualityAssessment = qualityAssessment?.toOutputProjectQualityAssessment(),
     eligibilityAssessment = eligibilityAssessment?.toOutputProjectEligibilityAssessment(),
     eligibilityDecision = eligibilityDecision?.toOutputProjectStatus()
+    fundingDecision = fundingDecision?.toOutputProjectStatus()
 )
 
 fun Project.toOutputProjectSimple() = OutputProjectSimple(

@@ -44,4 +44,8 @@ data class Project (
     @ManyToOne(optional = true)
     @JoinColumn(name = "eligibility_decision_id")
     val eligibilityDecision: ProjectStatus? = null
+
+    @ManyToOne(optional = true)
+    @JoinColumn(name = "funding_decision_id")
+    val fundingDecision: ProjectStatus? = null
 )

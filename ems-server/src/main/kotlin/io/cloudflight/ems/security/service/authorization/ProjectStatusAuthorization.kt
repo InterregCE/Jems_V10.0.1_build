@@ -5,6 +5,9 @@ import io.cloudflight.ems.api.dto.ProjectApplicationStatus
 import io.cloudflight.ems.api.dto.ProjectApplicationStatus.DRAFT
 import io.cloudflight.ems.api.dto.ProjectApplicationStatus.ELIGIBLE
 import io.cloudflight.ems.api.dto.ProjectApplicationStatus.INELIGIBLE
+import io.cloudflight.ems.api.dto.ProjectApplicationStatus.APPROVED
+import io.cloudflight.ems.api.dto.ProjectApplicationStatus.APPROVED_WITH_CONDITIONS
+import io.cloudflight.ems.api.dto.ProjectApplicationStatus.NOT_APPROVED
 import io.cloudflight.ems.api.dto.ProjectApplicationStatus.RETURNED_TO_APPLICANT
 import io.cloudflight.ems.api.dto.ProjectApplicationStatus.SUBMITTED
 import io.cloudflight.ems.security.service.SecurityService
@@ -34,6 +37,9 @@ class ProjectStatusAuthorization(
         if (eligibilityFilled(project, newStatus))
             return isProgrammeUser() || isAdmin()
 
+        if (fundingFilled(project, newStatus))
+            return isProgrammeUser() || isAdmin()
+
         return false
     }
 
@@ -44,6 +50,15 @@ class ProjectStatusAuthorization(
     fun returned(oldStatus: ProjectApplicationStatus, newStatus: ProjectApplicationStatus): Boolean {
         val oldPossibilities = setOf(SUBMITTED, ELIGIBLE)
         return oldPossibilities.contains(oldStatus) && newStatus == RETURNED_TO_APPLICANT
+    }
+
+    fun fundingFilled(project: OutputProject, newStatus: ProjectApplicationStatus): Boolean {
+        val newPossibilities = setOf(APPROVED, APPROVED_WITH_CONDITIONS, NOT_APPROVED)
+        val oldPossibilities = setOf(ELIGIBLE, RETURNED_TO_APPLICANT)
+
+        return oldPossibilities.contains(project.projectStatus.status)
+            && newPossibilities.contains(newStatus)
+            && project.qualityAssessment != null
     }
 
     fun eligibilityFilled(project: OutputProject, newStatus: ProjectApplicationStatus): Boolean {
