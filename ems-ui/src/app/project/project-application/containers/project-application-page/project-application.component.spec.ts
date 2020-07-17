@@ -1,6 +1,6 @@
 import {async, ComponentFixture, fakeAsync, TestBed, tick} from '@angular/core/testing';
 import {ProjectApplicationComponent} from './project-application.component';
-import {InputProject, OutputProject, OutputProjectSimple} from '@cat/api';
+import {InputProject, OutputProjectSimple} from '@cat/api';
 import {HttpTestingController} from '@angular/common/http/testing';
 import {TestModule} from '../../../../common/test-module';
 import {ProjectModule} from '../../../project.module';
@@ -54,8 +54,8 @@ describe('ProjectApplicationComponent', () => {
     component.currentPage$.subscribe(result => results = result.content);
 
     const projects = [
-      {acronym: '1'} as OutputProject,
-      {acronym: '2'} as OutputProject
+      {acronym: '1'} as OutputProjectSimple,
+      {acronym: '2'} as OutputProjectSimple
     ];
 
     httpTestingController.match({method: 'GET', url: `//api/project?page=0&size=25&sort=id,desc`})
