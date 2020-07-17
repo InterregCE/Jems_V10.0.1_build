@@ -28,5 +28,4 @@ class ProjectStatusController(
     override fun setEligibilityAssessment(id: Long, data: InputProjectEligibilityAssessment): OutputProject {
         return projectStatusService.setEligibilityAssessment(id, data)
     }
-
 }

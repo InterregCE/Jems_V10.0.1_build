@@ -39,6 +39,9 @@ data class Project (
     val qualityAssessment: ProjectQualityAssessment? = null,
 
     @OneToOne(mappedBy = "project", cascade = [CascadeType.ALL])
-    val eligibilityAssessment: ProjectEligibilityAssessment? = null
+    val eligibilityAssessment: ProjectEligibilityAssessment? = null,
 
+    @ManyToOne(optional = true)
+    @JoinColumn(name = "eligibility_decision_id")
+    val eligibilityDecision: ProjectStatus? = null
 )

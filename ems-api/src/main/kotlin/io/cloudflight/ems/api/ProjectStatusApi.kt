@@ -29,5 +29,4 @@ interface ProjectStatusApi {
     @ApiOperation("Set eligibility assessment result to project application")
     @PostMapping("/eligibility", consumes = [MediaType.APPLICATION_JSON_VALUE])
     fun setEligibilityAssessment(@PathVariable id: Long, @Valid @RequestBody data: InputProjectEligibilityAssessment): OutputProject
-
 }

@@ -1,5 +1,6 @@
 import {ChangeDetectionStrategy, Component, Input} from '@angular/core';
 import {OutputProject, OutputProjectStatus} from '@cat/api';
+import { Tables } from 'src/app/common/utils/tables';
 
 @Component({
   selector: 'app-project-application-decisions',
@@ -9,6 +10,7 @@ import {OutputProject, OutputProjectStatus} from '@cat/api';
 })
 export class ProjectApplicationDecisionsComponent {
   OutputProjectStatus = OutputProjectStatus;
+  Tables = Tables;
 
   @Input()
   project: OutputProject;

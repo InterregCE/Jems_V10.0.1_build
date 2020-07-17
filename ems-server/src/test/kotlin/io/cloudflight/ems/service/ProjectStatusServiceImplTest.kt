@@ -87,7 +87,7 @@ internal class ProjectStatusServiceImplTest {
         every { projectStatusRepository.save(any<ProjectStatus>()) } returnsArgument 0
         every { projectRepository.save(any<Project>()) } returnsArgument 0
 
-        val result = projectStatusService.setProjectStatus(1, InputProjectStatus(ProjectApplicationStatus.SUBMITTED, NOTE_DENIED))
+        val result = projectStatusService.setProjectStatus(1, InputProjectStatus(ProjectApplicationStatus.SUBMITTED, NOTE_DENIED, null))
 
         assertThat(result.id).isEqualTo(1)
         assertThat(result.firstSubmission).isNotNull()
@@ -108,7 +108,7 @@ internal class ProjectStatusServiceImplTest {
         every { projectStatusRepository.findFirstByProjectIdAndStatusNotInOrderByUpdatedDesc(eq(1), eq(ignoreStatuses)) } returns previousState
         every { projectRepository.save(any<Project>()) } returnsArgument 0
 
-        val result = projectStatusService.setProjectStatus(1, InputProjectStatus(ProjectApplicationStatus.SUBMITTED, null))
+        val result = projectStatusService.setProjectStatus(1, InputProjectStatus(ProjectApplicationStatus.SUBMITTED, null, null))
 
         assertThat(result.id).isEqualTo(1)
         assertThat(result.firstSubmission).isNotNull()
@@ -130,7 +130,7 @@ internal class ProjectStatusServiceImplTest {
         every { projectStatusRepository.findFirstByProjectIdAndStatusNotInOrderByUpdatedDesc(eq(1), eq(ignoreStatuses)) } returns previousState
         every { projectRepository.save(any<Project>()) } returnsArgument 0
 
-        val result = projectStatusService.setProjectStatus(1, InputProjectStatus(ProjectApplicationStatus.SUBMITTED, null))
+        val result = projectStatusService.setProjectStatus(1, InputProjectStatus(ProjectApplicationStatus.SUBMITTED, null, null))
 
         assertThat(result.id).isEqualTo(1)
         assertThat(result.firstSubmission).isNotNull()
@@ -146,7 +146,7 @@ internal class ProjectStatusServiceImplTest {
         every { userRepository.findByIdOrNull(1) } returns user
         every { projectRepository.findOneById(2) } returns null
         assertThrows<ResourceNotFoundException> {
-            projectStatusService.setProjectStatus(2, InputProjectStatus(ProjectApplicationStatus.SUBMITTED, null))
+            projectStatusService.setProjectStatus(2, InputProjectStatus(ProjectApplicationStatus.SUBMITTED, null, null))
         }
     }
 
@@ -167,8 +167,8 @@ internal class ProjectStatusServiceImplTest {
             id = 1,
             acronym = "acronym",
             applicant = user,
-            projectStatus = ProjectStatus(1, null, status, user, statusTime, note),
-            firstSubmission = if (submitTime != null) ProjectStatus(2, null, ProjectApplicationStatus.SUBMITTED, user, submitTime, note) else null
+            projectStatus = ProjectStatus(1, null, status, user, statusTime, null, note),
+            firstSubmission = if (submitTime != null) ProjectStatus(2, null, ProjectApplicationStatus.SUBMITTED, user, submitTime, null, note) else null
         )
     }
 

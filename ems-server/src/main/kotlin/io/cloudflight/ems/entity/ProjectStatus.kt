@@ -1,6 +1,7 @@
 package io.cloudflight.ems.entity
 
 import io.cloudflight.ems.api.dto.ProjectApplicationStatus
+import java.time.LocalDate
 import java.time.ZonedDateTime
 import javax.persistence.Column
 import javax.persistence.Entity
@@ -33,6 +34,9 @@ data class ProjectStatus (
 
     @Column(nullable = false)
     val updated: ZonedDateTime = ZonedDateTime.now(),
+
+    @Column
+    val decisionDate: LocalDate? = null,
 
     @Column
     val note: String? = null

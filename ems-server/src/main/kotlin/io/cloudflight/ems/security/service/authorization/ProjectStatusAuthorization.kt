@@ -72,6 +72,14 @@ class ProjectStatusAuthorization(
                 && project.projectStatus.status == SUBMITTED
     }
 
+    fun canSetEligibilityDecision(projectId: Long): Boolean {
+        val project = projectService.getById(projectId)
+
+        return project.eligibilityDecision == null
+            && (isProgrammeUser() || isAdmin())
+            && project.projectStatus.status == SUBMITTED
+    }
+
     fun isOwner(project: OutputProject): Boolean {
         return project.applicant.id == securityService.currentUser?.user?.id
     }

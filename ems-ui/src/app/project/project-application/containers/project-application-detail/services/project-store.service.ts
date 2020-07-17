@@ -36,6 +36,7 @@ export class ProjectStore {
         this.projectStatusService.setProjectStatus(id, newStatus)),
       tap(saved => this.projectStatus$.next(saved.projectStatus.status)),
       tap(saved => Log.info('Updated project status status:', this, saved)),
+      tap(saved => this.router.navigate(['project', saved.id]))
     );
 
   private changedEligibilityAssessment$ = this.newEligibilityAssessment$
