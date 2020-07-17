@@ -29,6 +29,9 @@ import {MatExpansionModule} from '@angular/material/expansion';
 import {ActionsCellComponent} from './project-application/components/project-application-detail/project-application-files-list/cell-renderers/actions-cell/actions-cell.component';
 import {ProjectApplicationDecisionsComponent} from './project-application/components/project-application-detail/project-application-decisions/project-application-decisions.component';
 import {ProjectApplicationActionsComponent} from './project-application/components/project-application-detail/project-application-actions/project-application-actions.component';
+import {MatDatepickerModule} from '@angular/material/datepicker';
+import {MatMomentDateModule, MAT_MOMENT_DATE_ADAPTER_OPTIONS} from '@angular/material-moment-adapter';
+import {MAT_DATE_LOCALE} from '@angular/material/core';
 
 @NgModule({
   declarations: [
@@ -60,12 +63,17 @@ import {ProjectApplicationActionsComponent} from './project-application/componen
     OverlayModule,
     BrowserAnimationsModule,
     MatRadioModule,
-    MatExpansionModule
+    MatExpansionModule,
+    MatDatepickerModule,
+    MatMomentDateModule
   ],
   providers: [
     ProjectFileService,
     DatePipe,
-    ProjectStore
+    ProjectStore,
+    MatDatepickerModule,
+    { provide: MAT_MOMENT_DATE_ADAPTER_OPTIONS, useValue: {useUtc: true} },
+    {provide: MAT_DATE_LOCALE, useValue: 'en-GB'}
   ]
 })
 export class ProjectModule {

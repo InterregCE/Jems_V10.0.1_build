@@ -12,5 +12,4 @@ interface ProjectStatusService {
     fun setQualityAssessment(projectId: Long, qualityAssessmentData: InputProjectQualityAssessment): OutputProject
 
     fun setEligibilityAssessment(projectId: Long, eligibilityAssessmentData: InputProjectEligibilityAssessment): OutputProject
-
 }

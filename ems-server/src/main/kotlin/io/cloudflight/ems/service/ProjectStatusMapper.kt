@@ -8,5 +8,6 @@ fun ProjectStatus.toOutputProjectStatus() = OutputProjectStatus(
     status = status,
     user = user.toOutputUser(),
     updated = updated,
+    decisionDate = decisionDate,
     note = note
 )

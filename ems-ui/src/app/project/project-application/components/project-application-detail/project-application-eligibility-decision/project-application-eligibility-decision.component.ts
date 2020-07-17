@@ -26,7 +26,8 @@ export class ProjectApplicationEligibilityDecisionComponent extends AbstractForm
 
   notesForm = this.formBuilder.group({
     assessment: ['', Validators.required],
-    notes: ['', Validators.maxLength(1000)]
+    notes: ['', Validators.maxLength(1000)],
+    decisionDate: ['', Validators.required]
   });
 
   constructor(
@@ -47,7 +48,8 @@ export class ProjectApplicationEligibilityDecisionComponent extends AbstractForm
       if (project.projectStatus.status === OutputProjectStatus.StatusEnum.ELIGIBLE
         || project.projectStatus.status === OutputProjectStatus.StatusEnum.INELIGIBLE) {
           this.setEligibilityDecisionValue(project);
-          this.notesForm.controls.notes.setValue(project.projectStatus.note);
+          this.notesForm.controls.notes.setValue(project.eligibilityDecision.note);
+          this.notesForm.controls.decisionDate.setValue(project.eligibilityDecision.decisionDate);
       }
     })
   }
@@ -73,36 +75,37 @@ export class ProjectApplicationEligibilityDecisionComponent extends AbstractForm
     Forms.confirmDialog(
       this.dialog,
       'project.assessment.eligibilityDecision.dialog.title',
-      this.getEligibilityDecisionMesage()
+      this.getEligibilityDecisionMessage()
     ).pipe(
       take(1),
       takeUntil(this.destroyed$)
     ).subscribe(selectEligibility => {
       if (selectEligibility) {
         // TODO move service + router call to container
-        this.projectStore.changeStatus(this.getNewEligibilityStatus(this.selectedAssessment));
-        this.router.navigate(['project', this.projectId]);
+        this.projectStore.changeStatus({
+          status: this.getEligibilityDecisionValue(),
+          note: this.notesForm?.controls?.notes?.value,
+          date: this.notesForm?.controls?.decisionDate?.value.format('YYYY-MM-DD')
+        })
       }
     });
   }
 
-  private getNewEligibilityStatus(selectedDecision: string): InputProjectStatus {
-    return {
-      status: selectedDecision === this.ELIGIBLE
-        ? InputProjectStatus.StatusEnum.ELIGIBLE
-        : InputProjectStatus.StatusEnum.INELIGIBLE,
-      note: this.notesForm?.controls?.notes?.value};
+  private getEligibilityDecisionValue(): OutputProjectStatus.StatusEnum {
+    return this.selectedAssessment === this.INELIGIBLE
+      ? OutputProjectStatus.StatusEnum.INELIGIBLE
+      : OutputProjectStatus.StatusEnum.ELIGIBLE
   }
 
   private setEligibilityDecisionValue(project: OutputProject): void {
-    if (project.projectStatus.status === OutputProjectStatus.StatusEnum.INELIGIBLE) {
+    if (project.eligibilityDecision.status === OutputProjectStatus.StatusEnum.INELIGIBLE) {
       this.notesForm.controls.assessment.setValue(this.INELIGIBLE);
       return;
     }
     this.notesForm.controls.assessment.setValue(this.ELIGIBLE);
   }
 
-  private getEligibilityDecisionMesage(): string {
+  private getEligibilityDecisionMessage(): string {
     if (this.selectedAssessment === this.ELIGIBLE) {
       return 'project.assessment.eligibilityDecision.dialog.message.eligible';
     }

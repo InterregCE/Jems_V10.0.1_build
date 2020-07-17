@@ -48,7 +48,7 @@ describe('ProjectStoreService', () => {
     service.getStatus().subscribe(res => status = res);
 
     service.init(1);
-    service.changeStatus({status: InputProjectStatus.StatusEnum.DRAFT, note: ''})
+    service.changeStatus({status: InputProjectStatus.StatusEnum.DRAFT, note: '', date: ''})
 
     httpTestingController.expectOne({method: 'PUT', url: '//api/project/1/status'})
       .flush({id: 1, projectStatus: {status: InputProjectStatus.StatusEnum.DRAFT}});

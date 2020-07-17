@@ -7,19 +7,24 @@
     </mat-expansion-panel-header>
     <div class="row">
         <div class="col-4">Eligibility Decision:</div>
-        <div class="col-5">
-            <div *ngIf="projectStatus !== OutputProjectStatus.StatusEnum.SUBMITTED">
-                {{project.eligibilityAssessment.result}}
+        <div class="col-3">
+            <div *ngIf="project.eligibilityDecision">
+                {{project.eligibilityDecision.status}}
             </div>
         </div>
-        <div *ngIf="projectStatus === OutputProjectStatus.StatusEnum.SUBMITTED" class="col-3 column">
+        <div class="col-2">
+            <div *ngIf="project.eligibilityDecision">
+                {{project.eligibilityDecision.decisionDate | date : Tables.DEFAULT_DATE_FORMAT_NO_TIME}}
+            </div>
+        </div>
+        <div *ngIf="!project.eligibilityDecision" class="col-3 column">
             <button mat-raised-button color="primary" class="assessment-button"
                     [disabled]="!project.eligibilityAssessment"
                     [routerLink]="'/project/'+ project.id + '/eligibilityDecision'">
                 {{'project.assessment.eligibilityDecision.assessment' | translate}}
             </button>
         </div>
-        <div *ngIf="projectStatus !== OutputProjectStatus.StatusEnum.SUBMITTED" class="col-3 column">
+        <div *ngIf="project.eligibilityDecision" class="col-3 column">
             <button mat-raised-button color="secondary" class="assessment-button"
                     [routerLink]="'/project/'+ project.id + '/eligibilityDecision'">
                 {{'project.assessment.eligibilityDecision.assessment.view' | translate}}
