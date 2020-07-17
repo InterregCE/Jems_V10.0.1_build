@@ -2,12 +2,19 @@
     <app-project-application-information
             [project]="project">
     </app-project-application-information>
-
-    <app-project-application-assessments
-            [projectStatus]="project.projectStatus.status"
-            [projectId]="project.id"
+    <app-project-application-actions
             [success$]="projectChanged$"
-            [submittingUser]="project.applicant"
+            [projectStatus]="project.projectStatus.status"
             (changeStatus)="changeProjectStatus($event)">
+    </app-project-application-actions>
+    <app-project-application-decisions
+            *ngxPermissionsExcept="[Permission.APPLICANT_USER]"
+            [project]="project"
+            [projectStatus]="project.projectStatus.status">
+    </app-project-application-decisions>
+    <app-project-application-assessments
+            *ngxPermissionsExcept="[Permission.APPLICANT_USER]"
+            [project]="project"
+            [projectStatus]="project.projectStatus.status">
     </app-project-application-assessments>
 </div>
