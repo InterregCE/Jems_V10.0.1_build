@@ -7,6 +7,554 @@
 	},
 	"item": [
 		{
+			"name": "user-login",
+			"item": [
+				{
+					"name": "login-admin",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "b7100951-94b6-4111-be14-c0acb93b916e",
+								"exec": [
+									"const response = pm.response.json()",
+									"",
+									"pm.test(\"admin can login\", function () {",
+									"    pm.response.to.have.status(200);",
+									"    pm.expect(response.name).to.contain('admin');",
+									"    pm.expect(pm.cookies.has('JSESSIONID')).to.be.true;",
+									"})",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"auth": {
+							"type": "basic",
+							"basic": [
+								{
+									"key": "password",
+									"value": "{{admin_password}}",
+									"type": "string"
+								},
+								{
+									"key": "username",
+									"value": "{{admin_email}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": [],
+							"options": {
+								"urlencoded": {}
+							}
+						},
+						"url": {
+							"raw": "{{url}}/api/auth/current",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"api",
+								"auth",
+								"current"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "check access to project with cookie",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "7f3285cd-b8e7-433e-8693-91a4b5ce445f",
+								"exec": [
+									"pm.test(\"logged-in user can access system\", function () {",
+									"    pm.response.to.have.status(200);",
+									"})",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": [],
+							"options": {
+								"urlencoded": {}
+							}
+						},
+						"url": {
+							"raw": "{{url}}/api/project?sort=id,desc",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"api",
+								"project"
+							],
+							"query": [
+								{
+									"key": "sort",
+									"value": "id,desc"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "logout",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "105955b0-248f-426a-9586-b370209c2f1a",
+								"exec": [
+									"pm.test(\"user can logout\", function () {",
+									"    pm.response.to.have.status(200);",
+									"})",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "{{url}}/api/auth/logout",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"api",
+								"auth",
+								"logout"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "check access to project with invalid cookie",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "c516f34d-e589-4faa-a3ed-b0b19ec6916c",
+								"exec": [
+									"pm.test(\"logged-out user cannot access system\", function () {",
+									"    pm.response.to.have.status(401);",
+									"})",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": [],
+							"options": {
+								"urlencoded": {}
+							}
+						},
+						"url": {
+							"raw": "{{url}}/api/project?sort=id,desc",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"api",
+								"project"
+							],
+							"query": [
+								{
+									"key": "sort",
+									"value": "id,desc"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "login-wrong-user",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "0a00bca5-020e-4801-990b-dc5bef7025a1",
+								"exec": [
+									"pm.test(\"wrong user cannot login\", function () {",
+									"    pm.response.to.have.status(401);",
+									"})",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"auth": {
+							"type": "basic",
+							"basic": [
+								{
+									"key": "password",
+									"value": "wrongpwd",
+									"type": "string"
+								},
+								{
+									"key": "username",
+									"value": "wronguser",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": [
+								{
+									"key": "username",
+									"value": "admin",
+									"type": "text"
+								},
+								{
+									"key": "password",
+									"value": "Adm12",
+									"type": "text"
+								}
+							],
+							"options": {
+								"urlencoded": {}
+							}
+						},
+						"url": {
+							"raw": "{{url}}/api/auth/current",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"api",
+								"auth",
+								"current"
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"auth": {
+				"type": "noauth"
+			},
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"id": "25277490-14ed-421e-9c1f-92ffc5cd95e3",
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"id": "97c6d426-7fc8-4793-b71d-227796db1657",
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
+				}
+			],
+			"protocolProfileBehavior": {}
+		},
+		{
+			"name": "user-creation",
+			"item": [
+				{
+					"name": "create user invalid data fails",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "c1d3ae38-a17b-424a-9767-cf09078f67c3",
+								"exec": [
+									"pm.test('should fail with 400', function () {",
+									"    pm.response.to.have.status(400);",
+									"});",
+									"",
+									"pm.test('should return validation errors', function () {",
+									"    const response = pm.response.json();",
+									"    pm.expect(response.i18nFieldErrors.surname.i18nKey).to.contain('user.surname.wrong.size');",
+									"    pm.expect(response.i18nFieldErrors.name.i18nKey).to.contain('user.name.wrong.size');",
+									"    pm.expect(response.i18nFieldErrors.userRoleId.i18nKey).to.contain('user.userRoleId.should.not.be.empty');",
+									"    pm.expect(response.i18nFieldErrors.email.i18nKey).to.contain('user.email.wrong.format');",
+									"});",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "9f7f4c32-6d81-439c-908c-6158c404419d",
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"protocolProfileBehavior": {
+						"disabledSystemHeaders": {}
+					},
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"type": "text",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\t\"email\": \"test\",\n\t\"name\": \"\",\n\t\"surname\": \"\"\n}",
+							"options": {
+								"urlencoded": {}
+							}
+						},
+						"url": {
+							"raw": "{{url}}/api/user",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"api",
+								"user"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "create user empty fails",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "c670e13e-7cd1-4064-84bc-38451733f3a8",
+								"exec": [
+									"pm.test('should fail with 400', function () {",
+									"    pm.response.to.have.status(400);",
+									"});",
+									"",
+									"pm.test('should return validation errors', function () {",
+									"    const response = pm.response.json();",
+									"    pm.expect(response.i18nFieldErrors.surname.i18nKey).to.contain('user.surname.wrong.size');",
+									"    pm.expect(response.i18nFieldErrors.name.i18nKey).to.contain('user.name.wrong.size');",
+									"    pm.expect(response.i18nFieldErrors.userRoleId.i18nKey).to.contain('user.userRoleId.should.not.be.empty');",
+									"    pm.expect(response.i18nFieldErrors.email.i18nKey).to.contain('user.email.should.not.be.empty');",
+									"});",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "a2e83482-71e0-4315-8dc5-1554f3dcb47f",
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"protocolProfileBehavior": {
+						"disabledSystemHeaders": {}
+					},
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"type": "text",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\t\"email\": \"\",\n\t\"name\": \"\",\n\t\"surname\": \"\",\n    \"userRoleId\": null\n}",
+							"options": {
+								"urlencoded": {}
+							}
+						},
+						"url": {
+							"raw": "{{url}}/api/user",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"api",
+								"user"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "create user administrator successful",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "168e8a17-3f2b-4e71-8999-3a13ae59246f",
+								"exec": [
+									"const username = pm.variables.get(\"admin_user_name\")",
+									"const response = pm.response.json()",
+									"",
+									"pm.test('should be created with correct credentials', function () {",
+									"    pm.response.to.have.status(200);",
+									"    pm.expect(response.email).to.equal(pm.variables.get(\"admin_user_email_to_create\"));",
+									"",
+									"    pm.variables.set(\"admin_email\", response.email);",
+									"    pm.variables.set(\"admin_password\", response.email);",
+									"});",
+									"",
+									"pm.test('should be created with correct name and surname', function () {",
+									"    pm.expect(response.name).to.equal(pm.variables.get(\"admin_name\"));",
+									"    pm.expect(response.surname).to.equal(pm.variables.get(\"admin_surname\"));",
+									"});",
+									"",
+									"pm.test('should be created with correct role', function () {",
+									"    pm.expect(response.userRole.name).to.contain('admin');",
+									"});",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "803c415f-d807-4891-b43e-1c68023fb406",
+								"exec": [
+									"var uuid = require('uuid');",
+									"const randomIdentifier = uuid.v4().substring(24, 32);",
+									"",
+									"pm.variables.set('admin_user_email_to_create', randomIdentifier + \"@admin.eu\");",
+									"pm.variables.set('admin_name', pm.variables.replaceIn('{{$randomFirstName}}'));",
+									"pm.variables.set('admin_surname', pm.variables.replaceIn('{{$randomLastName}}'));",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"protocolProfileBehavior": {
+						"disabledSystemHeaders": {}
+					},
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"type": "text",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\t\"email\": \"{{admin_user_email_to_create}}\",\n\t\"name\": \"{{admin_name}}\",\n\t\"surname\": \"{{admin_surname}}\",\n    \"userRoleId\": 1\n}",
+							"options": {
+								"urlencoded": {}
+							}
+						},
+						"url": {
+							"raw": "{{url}}/api/user",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"api",
+								"user"
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"id": "bec0583f-7991-4d9c-8f65-9a3efe9134a4",
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"id": "b00f34dd-989c-4549-93a2-a0a3dcdca214",
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
+				}
+			],
+			"protocolProfileBehavior": {}
+		},
+		{
 			"name": "project-entity",
 			"item": [
 				{
@@ -427,542 +975,6 @@
 			"protocolProfileBehavior": {}
 		},
 		{
-			"name": "user-login",
-			"item": [
-				{
-					"name": "login-admin",
-					"event": [
-						{
-							"listen": "test",
-							"script": {
-								"id": "b7100951-94b6-4111-be14-c0acb93b916e",
-								"exec": [
-									"const response = pm.response.json()",
-									"",
-									"pm.test(\"admin can login\", function () {",
-									"    pm.response.to.have.status(200);",
-									"    pm.expect(response.name).to.contain('admin');",
-									"    pm.expect(pm.cookies.has('JSESSIONID')).to.be.true;",
-									"})",
-									""
-								],
-								"type": "text/javascript"
-							}
-						}
-					],
-					"protocolProfileBehavior": {
-						"disableBodyPruning": true
-					},
-					"request": {
-						"auth": {
-							"type": "basic",
-							"basic": [
-								{
-									"key": "username",
-									"value": "admin@ems.eu",
-									"type": "string"
-								},
-								{
-									"key": "password",
-									"value": "Adm1",
-									"type": "string"
-								}
-							]
-						},
-						"method": "GET",
-						"header": [],
-						"body": {
-							"mode": "urlencoded",
-							"urlencoded": [],
-							"options": {
-								"urlencoded": {}
-							}
-						},
-						"url": {
-							"raw": "{{url}}/api/auth/current",
-							"host": [
-								"{{url}}"
-							],
-							"path": [
-								"api",
-								"auth",
-								"current"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "check access to project with cookie",
-					"event": [
-						{
-							"listen": "test",
-							"script": {
-								"id": "7f3285cd-b8e7-433e-8693-91a4b5ce445f",
-								"exec": [
-									"pm.test(\"logged-in user can access system\", function () {",
-									"    pm.response.to.have.status(200);",
-									"})",
-									""
-								],
-								"type": "text/javascript"
-							}
-						}
-					],
-					"protocolProfileBehavior": {
-						"disableBodyPruning": true
-					},
-					"request": {
-						"auth": {
-							"type": "noauth"
-						},
-						"method": "GET",
-						"header": [],
-						"body": {
-							"mode": "urlencoded",
-							"urlencoded": [],
-							"options": {
-								"urlencoded": {}
-							}
-						},
-						"url": {
-							"raw": "{{url}}/api/project?sort=id,desc",
-							"host": [
-								"{{url}}"
-							],
-							"path": [
-								"api",
-								"project"
-							],
-							"query": [
-								{
-									"key": "sort",
-									"value": "id,desc"
-								}
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "logout",
-					"event": [
-						{
-							"listen": "test",
-							"script": {
-								"id": "105955b0-248f-426a-9586-b370209c2f1a",
-								"exec": [
-									"pm.test(\"user can logout\", function () {",
-									"    pm.response.to.have.status(200);",
-									"})",
-									""
-								],
-								"type": "text/javascript"
-							}
-						}
-					],
-					"request": {
-						"auth": {
-							"type": "noauth"
-						},
-						"method": "POST",
-						"header": [],
-						"url": {
-							"raw": "{{url}}/api/auth/logout",
-							"host": [
-								"{{url}}"
-							],
-							"path": [
-								"api",
-								"auth",
-								"logout"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "check access to project with invalid cookie",
-					"event": [
-						{
-							"listen": "test",
-							"script": {
-								"id": "c516f34d-e589-4faa-a3ed-b0b19ec6916c",
-								"exec": [
-									"pm.test(\"logged-out user cannot access system\", function () {",
-									"    pm.response.to.have.status(401);",
-									"})",
-									""
-								],
-								"type": "text/javascript"
-							}
-						}
-					],
-					"protocolProfileBehavior": {
-						"disableBodyPruning": true
-					},
-					"request": {
-						"auth": {
-							"type": "noauth"
-						},
-						"method": "GET",
-						"header": [],
-						"body": {
-							"mode": "urlencoded",
-							"urlencoded": [],
-							"options": {
-								"urlencoded": {}
-							}
-						},
-						"url": {
-							"raw": "{{url}}/api/project?sort=id,desc",
-							"host": [
-								"{{url}}"
-							],
-							"path": [
-								"api",
-								"project"
-							],
-							"query": [
-								{
-									"key": "sort",
-									"value": "id,desc"
-								}
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "login-wrong-user",
-					"event": [
-						{
-							"listen": "test",
-							"script": {
-								"id": "0a00bca5-020e-4801-990b-dc5bef7025a1",
-								"exec": [
-									"pm.test(\"wrong user cannot login\", function () {",
-									"    pm.response.to.have.status(401);",
-									"})",
-									""
-								],
-								"type": "text/javascript"
-							}
-						}
-					],
-					"protocolProfileBehavior": {
-						"disableBodyPruning": true
-					},
-					"request": {
-						"auth": {
-							"type": "basic",
-							"basic": [
-								{
-									"key": "password",
-									"value": "wrongpwd",
-									"type": "string"
-								},
-								{
-									"key": "username",
-									"value": "wronguser",
-									"type": "string"
-								}
-							]
-						},
-						"method": "GET",
-						"header": [],
-						"body": {
-							"mode": "urlencoded",
-							"urlencoded": [
-								{
-									"key": "username",
-									"value": "admin",
-									"type": "text"
-								},
-								{
-									"key": "password",
-									"value": "Adm12",
-									"type": "text"
-								}
-							],
-							"options": {
-								"urlencoded": {}
-							}
-						},
-						"url": {
-							"raw": "{{url}}/api/auth/current",
-							"host": [
-								"{{url}}"
-							],
-							"path": [
-								"api",
-								"auth",
-								"current"
-							]
-						}
-					},
-					"response": []
-				}
-			],
-			"auth": {
-				"type": "noauth"
-			},
-			"event": [
-				{
-					"listen": "prerequest",
-					"script": {
-						"id": "25277490-14ed-421e-9c1f-92ffc5cd95e3",
-						"type": "text/javascript",
-						"exec": [
-							""
-						]
-					}
-				},
-				{
-					"listen": "test",
-					"script": {
-						"id": "97c6d426-7fc8-4793-b71d-227796db1657",
-						"type": "text/javascript",
-						"exec": [
-							""
-						]
-					}
-				}
-			],
-			"protocolProfileBehavior": {}
-		},
-		{
-			"name": "user-creation",
-			"item": [
-				{
-					"name": "create user administrator successful",
-					"event": [
-						{
-							"listen": "test",
-							"script": {
-								"id": "168e8a17-3f2b-4e71-8999-3a13ae59246f",
-								"exec": [
-									"const username = pm.variables.get(\"user_name\")",
-									"",
-									"pm.test('should be OK', function () {",
-									"    pm.response.to.have.status(200);",
-									"    pm.environment.set(\"id\", pm.response.json().id)",
-									"",
-									"    pm.expect(pm.response.json().name).to.equal(username);",
-									"    pm.expect(pm.response.json().email).to.equal(username + '@example.org');",
-									"    pm.expect(pm.response.json().surname).to.equal('RESTTester');",
-									"    pm.expect(pm.response.json().userRole.name).to.contain('admin');",
-									"});",
-									""
-								],
-								"type": "text/javascript"
-							}
-						},
-						{
-							"listen": "prerequest",
-							"script": {
-								"id": "803c415f-d807-4891-b43e-1c68023fb406",
-								"exec": [
-									"var uuid = require('uuid');",
-									"const randomIdentifier = uuid.v4().substring(0, 16);",
-									"pm.variables.set('user_name', \"RESTtest-\" + randomIdentifier);"
-								],
-								"type": "text/javascript"
-							}
-						}
-					],
-					"protocolProfileBehavior": {
-						"disabledSystemHeaders": {}
-					},
-					"request": {
-						"method": "POST",
-						"header": [
-							{
-								"key": "Content-Type",
-								"type": "text",
-								"value": "application/json"
-							}
-						],
-						"body": {
-							"mode": "raw",
-							"raw": "{\n\t\"email\": \"{{user_name}}@example.org\",\n\t\"name\": \"{{user_name}}\",\n\t\"surname\": \"RESTTester\",\n    \"userRoleId\": 1\n}",
-							"options": {
-								"urlencoded": {}
-							}
-						},
-						"url": {
-							"raw": "{{url}}/api/user",
-							"host": [
-								"{{url}}"
-							],
-							"path": [
-								"api",
-								"user"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "create user empty fails",
-					"event": [
-						{
-							"listen": "test",
-							"script": {
-								"id": "c670e13e-7cd1-4064-84bc-38451733f3a8",
-								"exec": [
-									"pm.test('should fail with 400', function () {",
-									"    pm.response.to.have.status(400);",
-									"});",
-									"",
-									"pm.test('should return validation errors', function () {",
-									"    const response = pm.response.json();",
-									"    pm.expect(response.i18nFieldErrors.surname.i18nKey).to.contain('user.surname.wrong.size');",
-									"    pm.expect(response.i18nFieldErrors.name.i18nKey).to.contain('user.name.wrong.size');",
-									"    pm.expect(response.i18nFieldErrors.userRoleId.i18nKey).to.contain('user.userRoleId.should.not.be.empty');",
-									"    pm.expect(response.i18nFieldErrors.email.i18nKey).to.contain('user.email.should.not.be.empty');",
-									"});",
-									""
-								],
-								"type": "text/javascript"
-							}
-						},
-						{
-							"listen": "prerequest",
-							"script": {
-								"id": "a2e83482-71e0-4315-8dc5-1554f3dcb47f",
-								"exec": [
-									""
-								],
-								"type": "text/javascript"
-							}
-						}
-					],
-					"protocolProfileBehavior": {
-						"disabledSystemHeaders": {}
-					},
-					"request": {
-						"method": "POST",
-						"header": [
-							{
-								"key": "Content-Type",
-								"type": "text",
-								"value": "application/json"
-							}
-						],
-						"body": {
-							"mode": "raw",
-							"raw": "{\n\t\"email\": \"\",\n\t\"name\": \"\",\n\t\"surname\": \"\",\n    \"userRoleId\": null\n}",
-							"options": {
-								"urlencoded": {}
-							}
-						},
-						"url": {
-							"raw": "{{url}}/api/user",
-							"host": [
-								"{{url}}"
-							],
-							"path": [
-								"api",
-								"user"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "create user invalid data fails",
-					"event": [
-						{
-							"listen": "test",
-							"script": {
-								"id": "c1d3ae38-a17b-424a-9767-cf09078f67c3",
-								"exec": [
-									"pm.test('should fail with 400', function () {",
-									"    pm.response.to.have.status(400);",
-									"});",
-									"",
-									"pm.test('should return validation errors', function () {",
-									"    const response = pm.response.json();",
-									"    pm.expect(response.i18nFieldErrors.surname.i18nKey).to.contain('user.surname.wrong.size');",
-									"    pm.expect(response.i18nFieldErrors.name.i18nKey).to.contain('user.name.wrong.size');",
-									"    pm.expect(response.i18nFieldErrors.userRoleId.i18nKey).to.contain('user.userRoleId.should.not.be.empty');",
-									"    pm.expect(response.i18nFieldErrors.email.i18nKey).to.contain('user.email.wrong.format');",
-									"});",
-									""
-								],
-								"type": "text/javascript"
-							}
-						},
-						{
-							"listen": "prerequest",
-							"script": {
-								"id": "9f7f4c32-6d81-439c-908c-6158c404419d",
-								"exec": [
-									""
-								],
-								"type": "text/javascript"
-							}
-						}
-					],
-					"protocolProfileBehavior": {
-						"disabledSystemHeaders": {}
-					},
-					"request": {
-						"method": "POST",
-						"header": [
-							{
-								"key": "Content-Type",
-								"type": "text",
-								"value": "application/json"
-							}
-						],
-						"body": {
-							"mode": "raw",
-							"raw": "{\n\t\"email\": \"test\",\n\t\"name\": \"\",\n\t\"surname\": \"\"\n}",
-							"options": {
-								"urlencoded": {}
-							}
-						},
-						"url": {
-							"raw": "{{url}}/api/user",
-							"host": [
-								"{{url}}"
-							],
-							"path": [
-								"api",
-								"user"
-							]
-						}
-					},
-					"response": []
-				}
-			],
-			"event": [
-				{
-					"listen": "prerequest",
-					"script": {
-						"id": "bec0583f-7991-4d9c-8f65-9a3efe9134a4",
-						"type": "text/javascript",
-						"exec": [
-							""
-						]
-					}
-				},
-				{
-					"listen": "test",
-					"script": {
-						"id": "b00f34dd-989c-4549-93a2-a0a3dcdca214",
-						"type": "text/javascript",
-						"exec": [
-							""
-						]
-					}
-				}
-			],
-			"protocolProfileBehavior": {}
-		},
-		{
 			"name": "file upload to DRAFT",
 			"item": [
 				{
@@ -1057,21 +1069,6 @@
 								}
 							],
 							"request": {
-								"auth": {
-									"type": "basic",
-									"basic": [
-										{
-											"key": "password",
-											"value": "Adm1",
-											"type": "string"
-										},
-										{
-											"key": "username",
-											"value": "admin@ems.eu",
-											"type": "string"
-										}
-									]
-								},
 								"method": "POST",
 								"header": [],
 								"body": {
@@ -1108,9 +1105,11 @@
 							"script": {
 								"id": "fd9c61a9-8184-45b9-aca9-a19514ea04ed",
 								"exec": [
-									"var uuid = require('uuid');\r",
-									"const randomIdentifier = uuid.v4().substring(24, 32);\r",
-									"pm.variables.set('application_acronym', \"test-proj-\" + randomIdentifier);\r",
+									"const projectName = pm.variables.replaceIn('{{$randomCompanyName}}')\r",
+									"pm.variables.set(\r",
+									"    'application_acronym',\r",
+									"    projectName.substr(0,25)\r",
+									");\r",
 									""
 								],
 								"type": "text/javascript"
@@ -1895,21 +1894,6 @@
 								}
 							],
 							"request": {
-								"auth": {
-									"type": "basic",
-									"basic": [
-										{
-											"key": "password",
-											"value": "Adm1",
-											"type": "string"
-										},
-										{
-											"key": "username",
-											"value": "admin@ems.eu",
-											"type": "string"
-										}
-									]
-								},
 								"method": "POST",
 								"header": [],
 								"body": {
@@ -1946,9 +1930,11 @@
 							"script": {
 								"id": "939fd800-b844-4aa5-a318-f03417b8e13e",
 								"exec": [
-									"var uuid = require('uuid');\r",
-									"const randomIdentifier = uuid.v4().substring(24, 32);\r",
-									"pm.variables.set('application_acronym', \"test-proj-\" + randomIdentifier);\r",
+									"const projectName = pm.variables.replaceIn('{{$randomCompanyName}}')\r",
+									"pm.variables.set(\r",
+									"    'application_acronym',\r",
+									"    projectName.substr(0,25)\r",
+									");\r",
 									""
 								],
 								"type": "text/javascript"
@@ -2842,21 +2828,6 @@
 								}
 							],
 							"request": {
-								"auth": {
-									"type": "basic",
-									"basic": [
-										{
-											"key": "password",
-											"value": "Adm1",
-											"type": "string"
-										},
-										{
-											"key": "username",
-											"value": "admin@ems.eu",
-											"type": "string"
-										}
-									]
-								},
 								"method": "POST",
 								"header": [],
 								"body": {
@@ -2893,9 +2864,11 @@
 							"script": {
 								"id": "2aa43f41-acd3-4ea5-9dbf-2d142621cc0e",
 								"exec": [
-									"var uuid = require('uuid');\r",
-									"const randomIdentifier = uuid.v4().substring(24, 32);\r",
-									"pm.variables.set('application_acronym', \"test-proj-\" + randomIdentifier);\r",
+									"const projectName = pm.variables.replaceIn('{{$randomCompanyName}}')\r",
+									"pm.variables.set(\r",
+									"    'application_acronym',\r",
+									"    projectName.substr(0,25)\r",
+									");\r",
 									""
 								],
 								"type": "text/javascript"
@@ -3686,21 +3659,6 @@
 								}
 							],
 							"request": {
-								"auth": {
-									"type": "basic",
-									"basic": [
-										{
-											"key": "password",
-											"value": "Adm1",
-											"type": "string"
-										},
-										{
-											"key": "username",
-											"value": "admin@ems.eu",
-											"type": "string"
-										}
-									]
-								},
 								"method": "POST",
 								"header": [],
 								"body": {
@@ -3762,9 +3720,11 @@
 									"script": {
 										"id": "328eab95-dc4f-4413-93b0-3b3f5e425559",
 										"exec": [
-											"var uuid = require('uuid');\r",
-											"const randomIdentifier = uuid.v4().substring(24, 32);\r",
-											"pm.variables.set('application_acronym', \"test-proj-\" + randomIdentifier);\r",
+											"const projectName = pm.variables.replaceIn('{{$randomCompanyName}}')\r",
+											"pm.variables.set(\r",
+											"    'application_acronym',\r",
+											"    projectName.substr(0,25)\r",
+											");\r",
 											""
 										],
 										"type": "text/javascript"
@@ -4151,9 +4111,11 @@
 									"script": {
 										"id": "42c3e3d9-d1fe-4f41-886d-5b779033cd83",
 										"exec": [
-											"var uuid = require('uuid');\r",
-											"const randomIdentifier = uuid.v4().substring(24, 32);\r",
-											"pm.variables.set('application_acronym', \"test-proj-\" + randomIdentifier);\r",
+											"const projectName = pm.variables.replaceIn('{{$randomCompanyName}}')\r",
+											"pm.variables.set(\r",
+											"    'application_acronym',\r",
+											"    projectName.substr(0,25)\r",
+											");\r",
 											""
 										],
 										"type": "text/javascript"
@@ -4519,13 +4481,13 @@
 		"type": "basic",
 		"basic": [
 			{
-				"key": "username",
-				"value": "admin@ems.eu",
+				"key": "password",
+				"value": "{{admin_password}}",
 				"type": "string"
 			},
 			{
-				"key": "password",
-				"value": "Adm1",
+				"key": "username",
+				"value": "{{admin_email}}",
 				"type": "string"
 			}
 		]
@@ -4554,7 +4516,7 @@
 	],
 	"variable": [
 		{
-			"id": "0f93222d-1a02-418c-872e-8bb51fd22484",
+			"id": "11cb709b-5dd4-4a45-876c-cc27a898531d",
 			"key": "url",
 			"value": "specify_url_here"
 		}
