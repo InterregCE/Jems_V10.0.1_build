@@ -1,13 +1,20 @@
-import {ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit} from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  ChangeDetectorRef,
+  Component,
+  EventEmitter,
+  Input,
+  OnInit,
+  Output
+} from '@angular/core';
 import {Forms} from '../../../../../common/utils/forms';
 import {take, takeUntil} from 'rxjs/internal/operators';
 import {MatDialog} from '@angular/material/dialog';
 import {ActivatedRoute, Router} from '@angular/router';
 import {FormBuilder, FormGroup, Validators} from '@angular/forms';
 import {AbstractForm} from '@common/components/forms/abstract-form';
-import {ProjectStore} from '../../../containers/project-application-detail/services/project-store.service';
-import {Observable} from 'rxjs';
 import {InputProjectStatus, OutputProject, OutputProjectStatus} from '@cat/api';
+import {filter} from 'rxjs/operators';
 
 @Component({
   selector: 'app-project-eligibility-decision',
@@ -16,13 +23,24 @@ import {InputProjectStatus, OutputProject, OutputProjectStatus} from '@cat/api';
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class ProjectApplicationEligibilityDecisionComponent extends AbstractForm implements OnInit {
-  OutputProjectStatus = OutputProjectStatus;
-  projectId = this.activatedRoute.snapshot.params.projectId;
+  @Input()
+  project: OutputProject;
+
+  @Output()
+  changeStatus = new EventEmitter<InputProjectStatus>();
+  @Output()
+  cancel = new EventEmitter<void>();
+
   ELIGIBLE = 'Project is ELIGIBLE.'
   INELIGIBLE = 'Project is INELIGIBLE.'
   options: string[] = [this.ELIGIBLE, this.INELIGIBLE];
-  project$: Observable<OutputProject>;
-  selectedAssessment: string;
+  projectId = this.activatedRoute.snapshot.params.projectId;
+
+  today = new Date();
+  dateErrors = {
+    required: 'project.decision.date.unknown',
+    matDatepickerMax: 'project.decision.date.must.be.in.the.past'
+  };
 
   notesForm = this.formBuilder.group({
     assessment: ['', Validators.required],
@@ -30,28 +48,24 @@ export class ProjectApplicationEligibilityDecisionComponent extends AbstractForm
     decisionDate: ['', Validators.required]
   });
 
+  selectedAssessment: string;
+
+
+
   constructor(
     private dialog: MatDialog,
     private router: Router,
     private activatedRoute: ActivatedRoute,
     private formBuilder: FormBuilder,
-    private projectStore: ProjectStore,
     protected changeDetectorRef: ChangeDetectorRef) {
     super(changeDetectorRef);
   }
 
   ngOnInit(): void {
     super.ngOnInit();
-    // TODO move to container, use as Input()
-    this.project$ = this.projectStore.getProject();
-    this.project$.subscribe((project) => {
-      if (project.projectStatus.status === OutputProjectStatus.StatusEnum.ELIGIBLE
-        || project.projectStatus.status === OutputProjectStatus.StatusEnum.INELIGIBLE) {
-          this.setEligibilityDecisionValue(project);
-          this.notesForm.controls.notes.setValue(project.eligibilityDecision.note);
-          this.notesForm.controls.decisionDate.setValue(project.eligibilityDecision.decisionDate);
-      }
-    })
+    this.setEligibilityDecisionValue();
+    this.notesForm.controls.notes.setValue(this.project.eligibilityDecision?.note);
+    this.notesForm.controls.decisionDate.setValue(this.project.eligibilityDecision?.decisionDate);
   }
 
   getForm(): FormGroup | null {
@@ -78,16 +92,14 @@ export class ProjectApplicationEligibilityDecisionComponent extends AbstractForm
       this.getEligibilityDecisionMessage()
     ).pipe(
       take(1),
-      takeUntil(this.destroyed$)
-    ).subscribe(selectEligibility => {
-      if (selectEligibility) {
-        // TODO move service + router call to container
-        this.projectStore.changeStatus({
+      takeUntil(this.destroyed$),
+      filter(yes => !!yes)
+    ).subscribe(() => {
+        this.changeStatus.emit({
           status: this.getEligibilityDecisionValue(),
           note: this.notesForm?.controls?.notes?.value,
           date: this.notesForm?.controls?.decisionDate?.value.format('YYYY-MM-DD')
         })
-      }
     });
   }
 
@@ -97,12 +109,13 @@ export class ProjectApplicationEligibilityDecisionComponent extends AbstractForm
       : OutputProjectStatus.StatusEnum.ELIGIBLE
   }
 
-  private setEligibilityDecisionValue(project: OutputProject): void {
-    if (project.eligibilityDecision.status === OutputProjectStatus.StatusEnum.INELIGIBLE) {
-      this.notesForm.controls.assessment.setValue(this.INELIGIBLE);
-      return;
+  private setEligibilityDecisionValue(): void {
+    if (this.project?.eligibilityDecision) {
+      if (this.project?.eligibilityDecision?.status === OutputProjectStatus.StatusEnum.INELIGIBLE) {
+        this.notesForm.controls.assessment.setValue(this.INELIGIBLE);
+      }
+      this.notesForm.controls.assessment.setValue(this.ELIGIBLE);
     }
-    this.notesForm.controls.assessment.setValue(this.ELIGIBLE);
   }
 
   private getEligibilityDecisionMessage(): string {

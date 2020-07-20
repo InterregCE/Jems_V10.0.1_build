@@ -34,6 +34,7 @@ import {MatMomentDateModule, MAT_MOMENT_DATE_ADAPTER_OPTIONS} from '@angular/mat
 import {MAT_DATE_LOCALE} from '@angular/material/core';
 import {ProjectApplicationFundingPageComponent} from './project-application/containers/project-application-detail/project-application-funding-page/project-application-funding-page.component';
 import {ProjectApplicationFundingDecisionComponent} from './project-application/components/project-application-detail/project-application-funding-decision/project-application-funding-decision.component';
+import { ProjectApplicationEligibilityDecisionPageComponent } from './project-application/containers/project-application-detail/project-application-eligibility-decision-page/project-application-eligibility-decision-page.component';
 
 @NgModule({
   declarations: [
@@ -55,7 +56,8 @@ import {ProjectApplicationFundingDecisionComponent} from './project-application/
     ProjectApplicationEligibilityCheckComponent,
     ActionsCellComponent,
     ProjectApplicationFundingPageComponent,
-    ProjectApplicationFundingDecisionComponent
+    ProjectApplicationFundingDecisionComponent,
+    ProjectApplicationEligibilityDecisionPageComponent
   ],
   imports: [
     SharedModule,

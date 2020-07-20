@@ -1,56 +1,63 @@
-<div>
-    <a [routerLink]="['../../../project', projectId]">&lt; Back to Project Application Details</a>
-    <div *ngIf="project$ | async as project" class="project-detail-container">
-        <app-project-application-information
-                [project]="project">
-        </app-project-application-information>
-        <div class="assessment-container">
-            <h5>Eligibility Decision</h5>
-            <form [formGroup]="notesForm" class="description-form">
-                <mat-radio-group
-                        required
-                        class="assessment-radio-group"
-                        name="assessment"
-                        formControlName="assessment"
-                        [disabled]="project.eligibilityDecision"
-                        (change)="assessmentChangeHandler($event)">
-                    <mat-radio-button
-                            class="assessment-radio-button"
-                            *ngFor="let option of options" [value]="option">
-                        {{option}}
-                    </mat-radio-button>
-                </mat-radio-group>
-                <mat-form-field appearance="outline" class="field">
-                    <mat-label>Explanatory Notes</mat-label>
-                    <textarea
-                        name="notes"
-                        formControlName="notes"
-                        class="assessment-text-area"
-                        matInput
-                        [readonly]="project.eligibilityDecision">
-                    </textarea>
-                </mat-form-field>
-                <mat-form-field>
-                    <mat-label>Decision Date</mat-label>
-                    <input class="assessment-date-picker" [readonly]="project.eligibilityDecision" name="decisionDate" formControlName="decisionDate" matInput [matDatepicker]="picker" required>
-                    <mat-datepicker-toggle [disabled]="project.eligibilityDecision !== null" matSuffix [for]="picker"></mat-datepicker-toggle>
-                    <mat-datepicker #picker></mat-datepicker>
-                </mat-form-field>
-                <div *ngIf="project.projectStatus.status === OutputProjectStatus.StatusEnum.SUBMITTED">
-                    <button mat-raised-button
-                            color="secondary"
-                            (click)="onCancel()">Cancel
-                    </button>
+<a [routerLink]="['../../../project', projectId]">&lt; Back to Project Application Details</a>
+<div class="project-detail-container">
+    <app-project-application-information
+            [project]="project">
+    </app-project-application-information>
+    <div class="assessment-container">
+        <h5>Eligibility Decision</h5>
+        <form [formGroup]="notesForm" class="description-form">
+            <mat-radio-group
+                    required
+                    class="assessment-radio-group"
+                    name="assessment"
+                    formControlName="assessment"
+                    [disabled]="!!project.eligibilityDecision"
+                    (change)="assessmentChangeHandler($event)">
+                <mat-radio-button
+                        class="assessment-radio-button"
+                        *ngFor="let option of options" [value]="option">
+                    {{option}}
+                </mat-radio-button>
+            </mat-radio-group>
+            <mat-form-field appearance="outline" class="field">
+                <mat-label>Explanatory Notes</mat-label>
+                <textarea
+                    name="notes"
+                    formControlName="notes"
+                    class="assessment-text-area"
+                    matInput
+                    [readonly]="!!project.eligibilityDecision">
+                </textarea>
+            </mat-form-field>
+            <mat-form-field>
+                <mat-label>Decision Date</mat-label>
+                <input class="assessment-date-picker" name="decisionDate" formControlName="decisionDate" matInput required
+                       [matDatepicker]="picker"
+                       [readonly]="!!project.eligibilityDecision"
+                       [max]="today">
+                <mat-datepicker-toggle [disabled]="!!project.eligibilityDecision" matSuffix [for]="picker"></mat-datepicker-toggle>
+                <mat-datepicker #picker></mat-datepicker>
+                <mat-error>
+                    <app-form-field-errors
+                            [errors]="notesForm?.controls?.decisionDate?.errors"
+                            [messages]="dateErrors">
+                    </app-form-field-errors>
+                </mat-error>
+            </mat-form-field>
+            <div *ngIf="!project.eligibilityDecision">
+                <button mat-raised-button
+                        color="secondary"
+                        (click)="onCancel()">Cancel
+                </button>
 
-                    <button mat-raised-button color="primary"
-                            class="right-button"
-                            type="submit"
-                            [disabled]="notesForm.invalid || submitted"
-                            (click)="onSubmit()">{{'project.assessment.eligibilityDecision.dialog.title' | translate}}
-                    </button>
-                </div>
-            </form>
-        </div>
+                <button mat-raised-button color="primary"
+                        class="right-button"
+                        type="submit"
+                        [disabled]="notesForm.invalid || submitted"
+                        (click)="onSubmit()">{{'project.assessment.eligibilityDecision.dialog.title' | translate}}
+                </button>
+            </div>
+        </form>
     </div>
 </div>
 
