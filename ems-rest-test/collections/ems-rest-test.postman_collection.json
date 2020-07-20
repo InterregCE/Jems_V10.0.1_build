@@ -966,62 +966,139 @@
 			"name": "file upload to DRAFT",
 			"item": [
 				{
-					"name": "register applicant",
-					"event": [
+					"name": "create applicant and programme user for following tests",
+					"item": [
 						{
-							"listen": "prerequest",
-							"script": {
-								"id": "00cb7392-a417-461e-b86d-8bc89cf1f1b0",
-								"exec": [
-									"var uuid = require('uuid');\r",
-									"const randomIdentifier = uuid.v4().substring(24, 32);\r",
-									"pm.variables.set('applicant_email', randomIdentifier + \"@applicant.eu\");\r",
-									""
-								],
-								"type": "text/javascript"
-							}
+							"name": "register applicant",
+							"event": [
+								{
+									"listen": "prerequest",
+									"script": {
+										"id": "c8d8c8d6-7cfc-41ce-8ce5-c8b1e648a4d2",
+										"exec": [
+											"var uuid = require('uuid');\r",
+											"const randomIdentifier = uuid.v4().substring(24, 32);\r",
+											"pm.variables.set('applicant_email', randomIdentifier + \"@applicant.eu\");\r",
+											""
+										],
+										"type": "text/javascript"
+									}
+								},
+								{
+									"listen": "test",
+									"script": {
+										"id": "0e0353f4-2843-440f-ba2b-539097a85e02",
+										"exec": [
+											"pm.test('applicant can register', function() {\r",
+											"    pm.response.to.have.status(200);\r",
+											"});\r",
+											""
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"auth": {
+									"type": "noauth"
+								},
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"email\": \"{{applicant_email}}\",\r\n    \"name\": \"{{$randomFirstName}}\",\r\n    \"surname\": \"{{$randomLastName}}\",\r\n    \"password\": \"{{applicant_email}}\"\r\n}\r\n",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{url}}/api/registration",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"api",
+										"registration"
+									]
+								}
+							},
+							"response": []
 						},
 						{
-							"listen": "test",
-							"script": {
-								"id": "9954b792-3bfe-4b59-9a4e-8f9a3c852e36",
-								"exec": [
-									"pm.test('applicant can register', function() {\r",
-									"    pm.response.to.have.status(200);\r",
-									"});\r",
-									""
-								],
-								"type": "text/javascript"
-							}
+							"name": "create programme user",
+							"event": [
+								{
+									"listen": "prerequest",
+									"script": {
+										"id": "d47dad2a-8b94-4c88-9830-b2d17ccb8448",
+										"exec": [
+											"var uuid = require('uuid');\r",
+											"const randomIdentifier = uuid.v4().substring(24, 32);\r",
+											"pm.variables.set('programme_user_email', randomIdentifier + \"@programme-user.eu\");\r",
+											""
+										],
+										"type": "text/javascript"
+									}
+								},
+								{
+									"listen": "test",
+									"script": {
+										"id": "e6c1aa00-5eb6-4100-9c2b-a4c924608a33",
+										"exec": [
+											"pm.test('programme user can be created', function() {\r",
+											"    pm.response.to.have.status(200);\r",
+											"});\r",
+											""
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"auth": {
+									"type": "basic",
+									"basic": [
+										{
+											"key": "password",
+											"value": "Adm1",
+											"type": "string"
+										},
+										{
+											"key": "username",
+											"value": "admin@ems.eu",
+											"type": "string"
+										}
+									]
+								},
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"email\": \"{{programme_user_email}}\",\r\n    \"name\": \"{{$randomFirstName}}\",\r\n    \"surname\": \"{{$randomLastName}}\",\r\n    \"userRoleId\": \"2\"\r\n}\r\n",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{url}}/api/user",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"api",
+										"user"
+									]
+								}
+							},
+							"response": []
 						}
 					],
-					"request": {
-						"auth": {
-							"type": "noauth"
-						},
-						"method": "POST",
-						"header": [],
-						"body": {
-							"mode": "raw",
-							"raw": "{\r\n    \"email\": \"{{applicant_email}}\",\r\n    \"name\": \"{{$randomFirstName}}\",\r\n    \"surname\": \"{{$randomLastName}}\",\r\n    \"password\": \"{{applicant_email}}\"\r\n}\r\n",
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
-						},
-						"url": {
-							"raw": "{{url}}/api/registration",
-							"host": [
-								"{{url}}"
-							],
-							"path": [
-								"api",
-								"registration"
-							]
-						}
-					},
-					"response": []
+					"protocolProfileBehavior": {},
+					"_postman_isSubFolder": true
 				},
 				{
 					"name": "create project application",
@@ -1381,76 +1458,6 @@
 					"response": []
 				},
 				{
-					"name": "create programme user",
-					"event": [
-						{
-							"listen": "prerequest",
-							"script": {
-								"id": "f321159d-9df3-4c41-b5fa-7202ca221f04",
-								"exec": [
-									"var uuid = require('uuid');\r",
-									"const randomIdentifier = uuid.v4().substring(24, 32);\r",
-									"pm.variables.set('programme_user_email', randomIdentifier + \"@programme-user.eu\");\r",
-									""
-								],
-								"type": "text/javascript"
-							}
-						},
-						{
-							"listen": "test",
-							"script": {
-								"id": "2d59d8dd-75e0-436b-a571-936b04a32d15",
-								"exec": [
-									"pm.test('programme user can be created', function() {\r",
-									"    pm.response.to.have.status(200);\r",
-									"});\r",
-									""
-								],
-								"type": "text/javascript"
-							}
-						}
-					],
-					"request": {
-						"auth": {
-							"type": "basic",
-							"basic": [
-								{
-									"key": "password",
-									"value": "Adm1",
-									"type": "string"
-								},
-								{
-									"key": "username",
-									"value": "admin@ems.eu",
-									"type": "string"
-								}
-							]
-						},
-						"method": "POST",
-						"header": [],
-						"body": {
-							"mode": "raw",
-							"raw": "{\r\n    \"email\": \"{{programme_user_email}}\",\r\n    \"name\": \"{{$randomFirstName}}\",\r\n    \"surname\": \"{{$randomLastName}}\",\r\n    \"userRoleId\": \"2\"\r\n}\r\n",
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
-						},
-						"url": {
-							"raw": "{{url}}/api/user",
-							"host": [
-								"{{url}}"
-							],
-							"path": [
-								"api",
-								"user"
-							]
-						}
-					},
-					"response": []
-				},
-				{
 					"name": "programme user cannot create application",
 					"event": [
 						{
@@ -1797,62 +1804,139 @@
 			"name": "submit and resubmit application",
 			"item": [
 				{
-					"name": "register applicant",
-					"event": [
+					"name": "create applicant and programme user for following tests",
+					"item": [
 						{
-							"listen": "prerequest",
-							"script": {
-								"id": "6fb5fcbf-39a8-4782-b61e-d5e76822391c",
-								"exec": [
-									"var uuid = require('uuid');\r",
-									"const randomIdentifier = uuid.v4().substring(24, 32);\r",
-									"pm.variables.set('applicant_email', randomIdentifier + \"@applicant.eu\");\r",
-									""
-								],
-								"type": "text/javascript"
-							}
+							"name": "register applicant",
+							"event": [
+								{
+									"listen": "prerequest",
+									"script": {
+										"id": "30dcf3fe-b631-4b3e-a042-a621ede180fe",
+										"exec": [
+											"var uuid = require('uuid');\r",
+											"const randomIdentifier = uuid.v4().substring(24, 32);\r",
+											"pm.variables.set('applicant_email', randomIdentifier + \"@applicant.eu\");\r",
+											""
+										],
+										"type": "text/javascript"
+									}
+								},
+								{
+									"listen": "test",
+									"script": {
+										"id": "a7d7144c-256a-4420-a40b-b3a53d8a2709",
+										"exec": [
+											"pm.test('applicant can register', function() {\r",
+											"    pm.response.to.have.status(200);\r",
+											"});\r",
+											""
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"auth": {
+									"type": "noauth"
+								},
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"email\": \"{{applicant_email}}\",\r\n    \"name\": \"{{$randomFirstName}}\",\r\n    \"surname\": \"{{$randomLastName}}\",\r\n    \"password\": \"{{applicant_email}}\"\r\n}\r\n",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{url}}/api/registration",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"api",
+										"registration"
+									]
+								}
+							},
+							"response": []
 						},
 						{
-							"listen": "test",
-							"script": {
-								"id": "da884c0b-5a91-493d-9dd9-0b38132e6404",
-								"exec": [
-									"pm.test('applicant can register', function() {\r",
-									"    pm.response.to.have.status(200);\r",
-									"});\r",
-									""
-								],
-								"type": "text/javascript"
-							}
+							"name": "create programme user",
+							"event": [
+								{
+									"listen": "prerequest",
+									"script": {
+										"id": "60dda8c7-42a6-4d82-9e1c-5ec8eba20b02",
+										"exec": [
+											"var uuid = require('uuid');\r",
+											"const randomIdentifier = uuid.v4().substring(24, 32);\r",
+											"pm.variables.set('programme_user_email', randomIdentifier + \"@programme-user.eu\");\r",
+											""
+										],
+										"type": "text/javascript"
+									}
+								},
+								{
+									"listen": "test",
+									"script": {
+										"id": "4481aa8e-9bbd-423f-8491-a8ee54dbbc71",
+										"exec": [
+											"pm.test('programme user can be created', function() {\r",
+											"    pm.response.to.have.status(200);\r",
+											"});\r",
+											""
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"auth": {
+									"type": "basic",
+									"basic": [
+										{
+											"key": "password",
+											"value": "Adm1",
+											"type": "string"
+										},
+										{
+											"key": "username",
+											"value": "admin@ems.eu",
+											"type": "string"
+										}
+									]
+								},
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"email\": \"{{programme_user_email}}\",\r\n    \"name\": \"{{$randomFirstName}}\",\r\n    \"surname\": \"{{$randomLastName}}\",\r\n    \"userRoleId\": \"2\"\r\n}\r\n",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{url}}/api/user",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"api",
+										"user"
+									]
+								}
+							},
+							"response": []
 						}
 					],
-					"request": {
-						"auth": {
-							"type": "noauth"
-						},
-						"method": "POST",
-						"header": [],
-						"body": {
-							"mode": "raw",
-							"raw": "{\r\n    \"email\": \"{{applicant_email}}\",\r\n    \"name\": \"{{$randomFirstName}}\",\r\n    \"surname\": \"{{$randomLastName}}\",\r\n    \"password\": \"{{applicant_email}}\"\r\n}\r\n",
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
-						},
-						"url": {
-							"raw": "{{url}}/api/registration",
-							"host": [
-								"{{url}}"
-							],
-							"path": [
-								"api",
-								"registration"
-							]
-						}
-					},
-					"response": []
+					"protocolProfileBehavior": {},
+					"_postman_isSubFolder": true
 				},
 				{
 					"name": "create project application",
@@ -2228,76 +2312,6 @@
 								"project",
 								"{{application_id}}",
 								"file"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "create programme user",
-					"event": [
-						{
-							"listen": "prerequest",
-							"script": {
-								"id": "35bfe25f-5541-4268-ac31-8b324bfb9d2a",
-								"exec": [
-									"var uuid = require('uuid');\r",
-									"const randomIdentifier = uuid.v4().substring(24, 32);\r",
-									"pm.variables.set('programme_user_email', randomIdentifier + \"@programme-user.eu\");\r",
-									""
-								],
-								"type": "text/javascript"
-							}
-						},
-						{
-							"listen": "test",
-							"script": {
-								"id": "009a0120-b107-4988-99f6-68d1ffd6054c",
-								"exec": [
-									"pm.test('programme user can be created', function() {\r",
-									"    pm.response.to.have.status(200);\r",
-									"});\r",
-									""
-								],
-								"type": "text/javascript"
-							}
-						}
-					],
-					"request": {
-						"auth": {
-							"type": "basic",
-							"basic": [
-								{
-									"key": "password",
-									"value": "Adm1",
-									"type": "string"
-								},
-								{
-									"key": "username",
-									"value": "admin@ems.eu",
-									"type": "string"
-								}
-							]
-						},
-						"method": "POST",
-						"header": [],
-						"body": {
-							"mode": "raw",
-							"raw": "{\r\n    \"email\": \"{{programme_user_email}}\",\r\n    \"name\": \"{{$randomFirstName}}\",\r\n    \"surname\": \"{{$randomLastName}}\",\r\n    \"userRoleId\": \"2\"\r\n}\r\n",
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
-						},
-						"url": {
-							"raw": "{{url}}/api/user",
-							"host": [
-								"{{url}}"
-							],
-							"path": [
-								"api",
-								"user"
 							]
 						}
 					},
@@ -2734,65 +2748,142 @@
 			"protocolProfileBehavior": {}
 		},
 		{
-			"name": "eligibility assessment (EA) and decision",
+			"name": "enter eligibility assessment (EA) and decision",
 			"item": [
 				{
-					"name": "register applicant",
-					"event": [
+					"name": "create applicant and programme user for following tests",
+					"item": [
 						{
-							"listen": "prerequest",
-							"script": {
-								"id": "13f4559e-5131-42fd-8e5f-a9c9f15cc420",
-								"exec": [
-									"var uuid = require('uuid');\r",
-									"const randomIdentifier = uuid.v4().substring(24, 32);\r",
-									"pm.variables.set('applicant_email', randomIdentifier + \"@applicant.eu\");\r",
-									""
-								],
-								"type": "text/javascript"
-							}
+							"name": "register applicant",
+							"event": [
+								{
+									"listen": "prerequest",
+									"script": {
+										"id": "00cb7392-a417-461e-b86d-8bc89cf1f1b0",
+										"exec": [
+											"var uuid = require('uuid');\r",
+											"const randomIdentifier = uuid.v4().substring(24, 32);\r",
+											"pm.variables.set('applicant_email', randomIdentifier + \"@applicant.eu\");\r",
+											""
+										],
+										"type": "text/javascript"
+									}
+								},
+								{
+									"listen": "test",
+									"script": {
+										"id": "9954b792-3bfe-4b59-9a4e-8f9a3c852e36",
+										"exec": [
+											"pm.test('applicant can register', function() {\r",
+											"    pm.response.to.have.status(200);\r",
+											"});\r",
+											""
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"auth": {
+									"type": "noauth"
+								},
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"email\": \"{{applicant_email}}\",\r\n    \"name\": \"{{$randomFirstName}}\",\r\n    \"surname\": \"{{$randomLastName}}\",\r\n    \"password\": \"{{applicant_email}}\"\r\n}\r\n",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{url}}/api/registration",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"api",
+										"registration"
+									]
+								}
+							},
+							"response": []
 						},
 						{
-							"listen": "test",
-							"script": {
-								"id": "c8d64def-1399-4f40-9c87-b0d35d297f7d",
-								"exec": [
-									"pm.test('applicant can register', function() {\r",
-									"    pm.response.to.have.status(200);\r",
-									"});\r",
-									""
-								],
-								"type": "text/javascript"
-							}
+							"name": "create programme user",
+							"event": [
+								{
+									"listen": "prerequest",
+									"script": {
+										"id": "f321159d-9df3-4c41-b5fa-7202ca221f04",
+										"exec": [
+											"var uuid = require('uuid');\r",
+											"const randomIdentifier = uuid.v4().substring(24, 32);\r",
+											"pm.variables.set('programme_user_email', randomIdentifier + \"@programme-user.eu\");\r",
+											""
+										],
+										"type": "text/javascript"
+									}
+								},
+								{
+									"listen": "test",
+									"script": {
+										"id": "2d59d8dd-75e0-436b-a571-936b04a32d15",
+										"exec": [
+											"pm.test('programme user can be created', function() {\r",
+											"    pm.response.to.have.status(200);\r",
+											"});\r",
+											""
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"auth": {
+									"type": "basic",
+									"basic": [
+										{
+											"key": "password",
+											"value": "Adm1",
+											"type": "string"
+										},
+										{
+											"key": "username",
+											"value": "admin@ems.eu",
+											"type": "string"
+										}
+									]
+								},
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"email\": \"{{programme_user_email}}\",\r\n    \"name\": \"{{$randomFirstName}}\",\r\n    \"surname\": \"{{$randomLastName}}\",\r\n    \"userRoleId\": \"2\"\r\n}\r\n",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{url}}/api/user",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"api",
+										"user"
+									]
+								}
+							},
+							"response": []
 						}
 					],
-					"request": {
-						"auth": {
-							"type": "noauth"
-						},
-						"method": "POST",
-						"header": [],
-						"body": {
-							"mode": "raw",
-							"raw": "{\r\n    \"email\": \"{{applicant_email}}\",\r\n    \"name\": \"{{$randomFirstName}}\",\r\n    \"surname\": \"{{$randomLastName}}\",\r\n    \"password\": \"{{applicant_email}}\"\r\n}\r\n",
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
-						},
-						"url": {
-							"raw": "{{url}}/api/registration",
-							"host": [
-								"{{url}}"
-							],
-							"path": [
-								"api",
-								"registration"
-							]
-						}
-					},
-					"response": []
+					"protocolProfileBehavior": {},
+					"_postman_isSubFolder": true
 				},
 				{
 					"name": "create project application",
@@ -2935,76 +3026,6 @@
 								"project",
 								"{{application_id}}",
 								"status"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "create programme user",
-					"event": [
-						{
-							"listen": "prerequest",
-							"script": {
-								"id": "ffbe05a6-a653-4010-9a29-c0f9e5552059",
-								"exec": [
-									"var uuid = require('uuid');\r",
-									"const randomIdentifier = uuid.v4().substring(24, 32);\r",
-									"pm.variables.set('programme_user_email', randomIdentifier + \"@programme-user.eu\");\r",
-									""
-								],
-								"type": "text/javascript"
-							}
-						},
-						{
-							"listen": "test",
-							"script": {
-								"id": "adc3005c-1451-491a-86cb-e5b0d96b1c4e",
-								"exec": [
-									"pm.test('programme user can be created', function() {\r",
-									"    pm.response.to.have.status(200);\r",
-									"});\r",
-									""
-								],
-								"type": "text/javascript"
-							}
-						}
-					],
-					"request": {
-						"auth": {
-							"type": "basic",
-							"basic": [
-								{
-									"key": "password",
-									"value": "Adm1",
-									"type": "string"
-								},
-								{
-									"key": "username",
-									"value": "admin@ems.eu",
-									"type": "string"
-								}
-							]
-						},
-						"method": "POST",
-						"header": [],
-						"body": {
-							"mode": "raw",
-							"raw": "{\r\n    \"email\": \"{{programme_user_email}}\",\r\n    \"name\": \"{{$randomFirstName}}\",\r\n    \"surname\": \"{{$randomLastName}}\",\r\n    \"userRoleId\": \"2\"\r\n}\r\n",
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
-						},
-						"url": {
-							"raw": "{{url}}/api/user",
-							"host": [
-								"{{url}}"
-							],
-							"path": [
-								"api",
-								"user"
 							]
 						}
 					},
@@ -3566,6 +3587,929 @@
 						}
 					},
 					"response": []
+				}
+			],
+			"protocolProfileBehavior": {}
+		},
+		{
+			"name": "enter quality assessment (QA)",
+			"item": [
+				{
+					"name": "create applicant and programme user for following tests",
+					"item": [
+						{
+							"name": "register applicant",
+							"event": [
+								{
+									"listen": "prerequest",
+									"script": {
+										"id": "c51cae11-6e7c-4c8a-b031-725e1832f218",
+										"exec": [
+											"var uuid = require('uuid');\r",
+											"const randomIdentifier = uuid.v4().substring(24, 32);\r",
+											"pm.variables.set('applicant_email', randomIdentifier + \"@applicant.eu\");\r",
+											""
+										],
+										"type": "text/javascript"
+									}
+								},
+								{
+									"listen": "test",
+									"script": {
+										"id": "f97828d6-dc16-4385-9a24-a7e69da4cb6e",
+										"exec": [
+											"pm.test('applicant can register', function() {\r",
+											"    pm.response.to.have.status(200);\r",
+											"});\r",
+											""
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"auth": {
+									"type": "noauth"
+								},
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"email\": \"{{applicant_email}}\",\r\n    \"name\": \"{{$randomFirstName}}\",\r\n    \"surname\": \"{{$randomLastName}}\",\r\n    \"password\": \"{{applicant_email}}\"\r\n}\r\n",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{url}}/api/registration",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"api",
+										"registration"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "create programme user",
+							"event": [
+								{
+									"listen": "prerequest",
+									"script": {
+										"id": "e13ea4ae-6f3c-4385-834f-70a37c0b996c",
+										"exec": [
+											"var uuid = require('uuid');\r",
+											"const randomIdentifier = uuid.v4().substring(24, 32);\r",
+											"pm.variables.set('programme_user_email', randomIdentifier + \"@programme-user.eu\");\r",
+											""
+										],
+										"type": "text/javascript"
+									}
+								},
+								{
+									"listen": "test",
+									"script": {
+										"id": "39d8926f-0b32-4f43-ac40-0c88e65d03db",
+										"exec": [
+											"pm.test('programme user can be created', function() {\r",
+											"    pm.response.to.have.status(200);\r",
+											"});\r",
+											""
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"auth": {
+									"type": "basic",
+									"basic": [
+										{
+											"key": "password",
+											"value": "Adm1",
+											"type": "string"
+										},
+										{
+											"key": "username",
+											"value": "admin@ems.eu",
+											"type": "string"
+										}
+									]
+								},
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"email\": \"{{programme_user_email}}\",\r\n    \"name\": \"{{$randomFirstName}}\",\r\n    \"surname\": \"{{$randomLastName}}\",\r\n    \"userRoleId\": \"2\"\r\n}\r\n",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{url}}/api/user",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"api",
+										"user"
+									]
+								}
+							},
+							"response": []
+						}
+					],
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "66555ccb-42b7-44df-9efb-9b259744c930",
+								"type": "text/javascript",
+								"exec": [
+									""
+								]
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"id": "dbdd7ff2-303d-4bd7-bb2e-b2a3a83f4fa2",
+								"type": "text/javascript",
+								"exec": [
+									""
+								]
+							}
+						}
+					],
+					"protocolProfileBehavior": {},
+					"_postman_isSubFolder": true
+				},
+				{
+					"name": "when SUBMITTED",
+					"item": [
+						{
+							"name": "create project application",
+							"event": [
+								{
+									"listen": "prerequest",
+									"script": {
+										"id": "328eab95-dc4f-4413-93b0-3b3f5e425559",
+										"exec": [
+											"var uuid = require('uuid');\r",
+											"const randomIdentifier = uuid.v4().substring(24, 32);\r",
+											"pm.variables.set('application_acronym', \"test-proj-\" + randomIdentifier);\r",
+											""
+										],
+										"type": "text/javascript"
+									}
+								},
+								{
+									"listen": "test",
+									"script": {
+										"id": "b4399ccc-f847-499c-864c-0c7f4adce8bf",
+										"exec": [
+											"const application = pm.response.json();\r",
+											"\r",
+											"pm.test('applicant can create project application', function() {\r",
+											"    pm.response.to.have.status(200);\r",
+											"    pm.variables.set('application_id', pm.response.json().id);\r",
+											"});\r",
+											"\r",
+											"pm.test('application should not have submission date filled in', function() {\r",
+											"    pm.expect(application.firstSubmission).to.eql(null);\r",
+											"})\r",
+											""
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"auth": {
+									"type": "basic",
+									"basic": [
+										{
+											"key": "password",
+											"value": "{{applicant_email}}",
+											"type": "string"
+										},
+										{
+											"key": "username",
+											"value": "{{applicant_email}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"acronym\": \"{{application_acronym}}\"\r\n}\r\n",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{url}}/api/project",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"api",
+										"project"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "submit application",
+							"event": [
+								{
+									"listen": "prerequest",
+									"script": {
+										"id": "22a585f8-3859-4b0a-b94f-02a4dd4fd675",
+										"exec": [
+											""
+										],
+										"type": "text/javascript"
+									}
+								},
+								{
+									"listen": "test",
+									"script": {
+										"id": "556be607-e9de-4413-86f1-ded65c31fa72",
+										"exec": [
+											"pm.test('applicant can submit his application', function() {\r",
+											"    pm.response.to.have.status(200);\r",
+											"});\r",
+											""
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"auth": {
+									"type": "basic",
+									"basic": [
+										{
+											"key": "password",
+											"value": "{{applicant_email}}",
+											"type": "string"
+										},
+										{
+											"key": "username",
+											"value": "{{applicant_email}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "PUT",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"status\": \"SUBMITTED\"\r\n}\r\n",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{url}}/api/project/{{application_id}}/status",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"api",
+										"project",
+										"{{application_id}}",
+										"status"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "applicant cannot enter QA",
+							"event": [
+								{
+									"listen": "prerequest",
+									"script": {
+										"id": "f4f6f2e7-d0eb-4d42-af8a-0afa65e9b4a7",
+										"exec": [
+											""
+										],
+										"type": "text/javascript"
+									}
+								},
+								{
+									"listen": "test",
+									"script": {
+										"id": "87fb99ef-87f6-44fe-afdb-4abcd23ac129",
+										"exec": [
+											"pm.test('applicant should not be able to enter QA', function() {\r",
+											"    pm.response.to.have.status(403);\r",
+											"});\r",
+											""
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"auth": {
+									"type": "basic",
+									"basic": [
+										{
+											"key": "password",
+											"value": "{{applicant_email}}",
+											"type": "string"
+										},
+										{
+											"key": "username",
+											"value": "{{applicant_email}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"result\": \"NOT_RECOMMENDED\",\r\n    \"note\": \"this should not work\"\r\n}\r\n",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{url}}/api/project/{{application_id}}/status/quality",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"api",
+										"project",
+										"{{application_id}}",
+										"status",
+										"quality"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "program user can enter QA once",
+							"event": [
+								{
+									"listen": "prerequest",
+									"script": {
+										"id": "5877fb48-a783-41f5-b954-124ba5f64b86",
+										"exec": [
+											""
+										],
+										"type": "text/javascript"
+									}
+								},
+								{
+									"listen": "test",
+									"script": {
+										"id": "607130cd-7e5b-41a1-ac7f-8216a151613f",
+										"exec": [
+											"pm.test('program user can enter QA once', function() {\r",
+											"    pm.response.to.have.status(200);\r",
+											"});\r",
+											"\r",
+											"const application = pm.response.json();\r",
+											"\r",
+											"pm.test('QA is part of the application detail', function() {\r",
+											"    pm.expect(application).to.have.property(\"qualityAssessment\");\r",
+											"    pm.expect(application.qualityAssessment).not.eql(null);\r",
+											"});\r",
+											"\r",
+											"pm.test('status of the application is not changed', function() {\r",
+											"    pm.expect(application.projectStatus.status).to.eql('SUBMITTED');\r",
+											"});\r",
+											"\r",
+											"pm.test('QA is assigned to user who filled it in', function() {\r",
+											"    pm.expect(application.qualityAssessment.user.email)\r",
+											"        .to.eql(pm.variables.get(\"programme_user_email\"));\r",
+											"});\r",
+											"\r",
+											"pm.test('QA result is properly saved', function() {\r",
+											"    pm.expect(application.qualityAssessment.result)\r",
+											"        .to.eql(\"RECOMMENDED_FOR_FUNDING\");\r",
+											"});\r",
+											"\r",
+											"pm.test('QA note is properly saved', function() {\r",
+											"    pm.expect(application.qualityAssessment.note)\r",
+											"        .to.eql(\"status set to recommended for funding\");\r",
+											"});\r",
+											""
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"auth": {
+									"type": "basic",
+									"basic": [
+										{
+											"key": "password",
+											"value": "{{programme_user_email}}",
+											"type": "string"
+										},
+										{
+											"key": "username",
+											"value": "{{programme_user_email}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"result\": \"RECOMMENDED_FOR_FUNDING\",\r\n    \"note\": \"status set to recommended for funding\"\r\n}\r\n",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{url}}/api/project/{{application_id}}/status/quality",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"api",
+										"project",
+										"{{application_id}}",
+										"status",
+										"quality"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "program user cannot enter QA twice Copy",
+							"event": [
+								{
+									"listen": "prerequest",
+									"script": {
+										"id": "c60a9f67-618f-48ac-b26d-3d572b1364c0",
+										"exec": [
+											""
+										],
+										"type": "text/javascript"
+									}
+								},
+								{
+									"listen": "test",
+									"script": {
+										"id": "0a8383e6-370e-4f06-86c2-857d5210c2bf",
+										"exec": [
+											"pm.test('program user should not be able to enter QA second time', function() {\r",
+											"    pm.response.to.have.status(403);\r",
+											"});\r",
+											""
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"auth": {
+									"type": "basic",
+									"basic": [
+										{
+											"key": "password",
+											"value": "{{programme_user_email}}",
+											"type": "string"
+										},
+										{
+											"key": "username",
+											"value": "{{programme_user_email}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"result\": \"RECOMMENDED_WITH_CONDITIONS\",\r\n    \"note\": \"status set to recommended with conditions\"\r\n}\r\n",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{url}}/api/project/{{application_id}}/status/quality",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"api",
+										"project",
+										"{{application_id}}",
+										"status",
+										"quality"
+									]
+								}
+							},
+							"response": []
+						}
+					],
+					"protocolProfileBehavior": {},
+					"_postman_isSubFolder": true
+				},
+				{
+					"name": "when INELIGIBLE",
+					"item": [
+						{
+							"name": "create project application",
+							"event": [
+								{
+									"listen": "prerequest",
+									"script": {
+										"id": "42c3e3d9-d1fe-4f41-886d-5b779033cd83",
+										"exec": [
+											"var uuid = require('uuid');\r",
+											"const randomIdentifier = uuid.v4().substring(24, 32);\r",
+											"pm.variables.set('application_acronym', \"test-proj-\" + randomIdentifier);\r",
+											""
+										],
+										"type": "text/javascript"
+									}
+								},
+								{
+									"listen": "test",
+									"script": {
+										"id": "b7d49643-5b00-44cc-ae50-896d9b6007f2",
+										"exec": [
+											"const application = pm.response.json();\r",
+											"\r",
+											"pm.test('applicant can create project application', function() {\r",
+											"    pm.response.to.have.status(200);\r",
+											"    pm.variables.set('application_id', pm.response.json().id);\r",
+											"});\r",
+											"\r",
+											"pm.test('application should not have submission date filled in', function() {\r",
+											"    pm.expect(application.firstSubmission).to.eql(null);\r",
+											"})\r",
+											""
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"auth": {
+									"type": "basic",
+									"basic": [
+										{
+											"key": "password",
+											"value": "{{applicant_email}}",
+											"type": "string"
+										},
+										{
+											"key": "username",
+											"value": "{{applicant_email}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"acronym\": \"{{application_acronym}}\"\r\n}\r\n",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{url}}/api/project",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"api",
+										"project"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "submit application",
+							"event": [
+								{
+									"listen": "prerequest",
+									"script": {
+										"id": "18c7d8b6-6893-43c6-b97a-2ac95b641512",
+										"exec": [
+											""
+										],
+										"type": "text/javascript"
+									}
+								},
+								{
+									"listen": "test",
+									"script": {
+										"id": "eac5dc4d-b6de-463a-986e-97d0a3dd1d6c",
+										"exec": [
+											"pm.test('applicant can submit his application', function() {\r",
+											"    pm.response.to.have.status(200);\r",
+											"});\r",
+											""
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"auth": {
+									"type": "basic",
+									"basic": [
+										{
+											"key": "password",
+											"value": "{{applicant_email}}",
+											"type": "string"
+										},
+										{
+											"key": "username",
+											"value": "{{applicant_email}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "PUT",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"status\": \"SUBMITTED\"\r\n}\r\n",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{url}}/api/project/{{application_id}}/status",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"api",
+										"project",
+										"{{application_id}}",
+										"status"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "program user can enter EA",
+							"event": [
+								{
+									"listen": "prerequest",
+									"script": {
+										"id": "06289fd2-8d95-48cb-9746-6bac3b70e776",
+										"exec": [
+											""
+										],
+										"type": "text/javascript"
+									}
+								},
+								{
+									"listen": "test",
+									"script": {
+										"id": "b0d8c4c4-03c5-46ee-8f6e-bed030b5382b",
+										"exec": [
+											"pm.test('program user can enter EA = FAILED', function() {\r",
+											"    pm.response.to.have.status(200);\r",
+											"});\r",
+											""
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"auth": {
+									"type": "basic",
+									"basic": [
+										{
+											"key": "password",
+											"value": "{{programme_user_email}}",
+											"type": "string"
+										},
+										{
+											"key": "username",
+											"value": "{{programme_user_email}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"result\": \"FAILED\"\r\n}\r\n",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{url}}/api/project/{{application_id}}/status/eligibility",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"api",
+										"project",
+										"{{application_id}}",
+										"status",
+										"eligibility"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "program user can change status to INELIGIBLE",
+							"event": [
+								{
+									"listen": "prerequest",
+									"script": {
+										"id": "3e161145-a83c-47d6-8a5a-1484ea6c59e4",
+										"exec": [
+											"var date = new Date();\r",
+											"date.setDate(date.getDate() + 1);\r",
+											"pm.variables.set('eligibility_decision_date_tomorrow', date.toISOString().split('T')[0]);\r",
+											""
+										],
+										"type": "text/javascript"
+									}
+								},
+								{
+									"listen": "test",
+									"script": {
+										"id": "496a2bf8-c5b5-4d83-9bd3-ac7f6b1d1523",
+										"exec": [
+											"pm.test('program user can change status to INELIGIBLE', function() {\r",
+											"    pm.response.to.have.status(200);\r",
+											"});\r",
+											"\r",
+											"const application = pm.response.json();\r",
+											"\r",
+											"pm.test('status of project is set to INELIGIBLE', function() {\r",
+											"    pm.expect(application.projectStatus.status).to.eql('INELIGIBLE');\r",
+											"});\r",
+											""
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"auth": {
+									"type": "basic",
+									"basic": [
+										{
+											"key": "password",
+											"value": "{{programme_user_email}}",
+											"type": "string"
+										},
+										{
+											"key": "username",
+											"value": "{{programme_user_email}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "PUT",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"status\": \"INELIGIBLE\",\r\n    \"date\": \"{{eligibility_decision_date_tomorrow}}\"\r\n}\r\n",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{url}}/api/project/{{application_id}}/status",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"api",
+										"project",
+										"{{application_id}}",
+										"status"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "applicant cannot enter QA when INELIGIBLE already",
+							"event": [
+								{
+									"listen": "prerequest",
+									"script": {
+										"id": "51723ce7-af26-4a55-b117-b0e8755153a0",
+										"exec": [
+											""
+										],
+										"type": "text/javascript"
+									}
+								},
+								{
+									"listen": "test",
+									"script": {
+										"id": "a6b5eb71-2544-4a2c-8dc5-393ad66f71c9",
+										"exec": [
+											"pm.test('applicant should not be able to enter QA when INELIGIBLE state already', function() {\r",
+											"    pm.response.to.have.status(403);\r",
+											"});\r",
+											""
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"auth": {
+									"type": "basic",
+									"basic": [
+										{
+											"key": "password",
+											"value": "{{applicant_email}}",
+											"type": "string"
+										},
+										{
+											"key": "username",
+											"value": "{{applicant_email}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"result\": \"NOT_RECOMMENDED\",\r\n    \"note\": \"this should not work\"\r\n}\r\n",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{url}}/api/project/{{application_id}}/status/quality",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"api",
+										"project",
+										"{{application_id}}",
+										"status",
+										"quality"
+									]
+								}
+							},
+							"response": []
+						}
+					],
+					"protocolProfileBehavior": {},
+					"_postman_isSubFolder": true
 				}
 			],
 			"protocolProfileBehavior": {}
