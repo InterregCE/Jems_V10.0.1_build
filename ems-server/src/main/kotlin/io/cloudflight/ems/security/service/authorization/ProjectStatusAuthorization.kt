@@ -48,7 +48,7 @@ class ProjectStatusAuthorization(
 
     fun eligibilityFilled(project: OutputProject, newStatus: ProjectApplicationStatus): Boolean {
         val newPossibilities = setOf(ELIGIBLE, INELIGIBLE)
-        val oldPossibilities = setOf(SUBMITTED, RETURNED_TO_APPLICANT)
+        val oldPossibilities = setOf(SUBMITTED)
 
         return oldPossibilities.contains(project.projectStatus.status)
                 && newPossibilities.contains(newStatus)
@@ -70,14 +70,6 @@ class ProjectStatusAuthorization(
         return project.eligibilityAssessment == null
                 && (isProgrammeUser() || isAdmin())
                 && project.projectStatus.status == SUBMITTED
-    }
-
-    fun canSetEligibilityDecision(projectId: Long): Boolean {
-        val project = projectService.getById(projectId)
-
-        return project.eligibilityDecision == null
-            && (isProgrammeUser() || isAdmin())
-            && project.projectStatus.status == SUBMITTED
     }
 
     fun isOwner(project: OutputProject): Boolean {

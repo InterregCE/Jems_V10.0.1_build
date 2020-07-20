@@ -10,9 +10,11 @@ import io.cloudflight.ems.api.dto.user.OutputUserRole
 import io.cloudflight.ems.api.dto.user.OutputUserWithRole
 import io.cloudflight.ems.entity.AuditAction
 import io.cloudflight.ems.entity.Project
+import io.cloudflight.ems.entity.ProjectEligibilityAssessment
 import io.cloudflight.ems.entity.ProjectStatus
 import io.cloudflight.ems.entity.User
 import io.cloudflight.ems.entity.UserRole
+import io.cloudflight.ems.exception.I18nValidationException
 import io.cloudflight.ems.exception.ResourceNotFoundException
 import io.cloudflight.ems.repository.ProjectRepository
 import io.cloudflight.ems.repository.ProjectStatusRepository
@@ -29,6 +31,7 @@ import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
 import org.springframework.data.repository.findByIdOrNull
+import org.springframework.http.HttpStatus
 import java.time.LocalDate
 import java.time.LocalTime
 import java.time.ZoneId
@@ -138,6 +141,58 @@ internal class ProjectStatusServiceImplTest {
         assertThat(result.firstSubmission?.updated).isNotEqualTo(result.lastResubmission?.updated)
         assertThat(result.projectStatus.status).isEqualTo(ProjectApplicationStatus.ELIGIBLE)
         assertThat(result.projectStatus.note).isNull()
+    }
+
+    @Test
+    fun `project status SUBMITTED to ELIGIBLE`() {
+        val eligibilityAssessment = ProjectEligibilityAssessment(
+            id = 10,
+            project = projectSubmitted,
+            result = ProjectEligibilityAssessmentResult.PASSED,
+            user = user
+        )
+        every { securityService.currentUser } returns LocalCurrentUser(userApplicant, "hash_pass", emptyList())
+        every { userRepository.findByIdOrNull(1) } returns user
+        every { projectRepository.findOneById(1) } returns projectSubmitted.copy(eligibilityAssessment = eligibilityAssessment)
+        every { projectStatusRepository.save(any<ProjectStatus>()) } returnsArgument 0
+        every { projectRepository.save(any<Project>()) } returnsArgument 0
+
+        val result = projectStatusService.setProjectStatus(
+            projectId = 1,
+            statusChange = InputProjectStatus(ProjectApplicationStatus.ELIGIBLE, "some note", LocalDate.now().plusDays(1))
+        )
+
+        assertThat(result.id).isEqualTo(1)
+        assertThat(result.eligibilityDecision).isNotNull()
+        assertThat(result.eligibilityDecision?.status).isEqualTo(ProjectApplicationStatus.ELIGIBLE)
+        assertThat(result.projectStatus.status).isEqualTo(ProjectApplicationStatus.ELIGIBLE)
+        assertThat(result.projectStatus.note).isEqualTo("some note")
+        assertThat(result.projectStatus).isEqualTo(result.eligibilityDecision)
+    }
+
+    @Test
+    fun `project status SUBMITTED to ELIGIBLE missing date`() {
+        val eligibilityAssessment = ProjectEligibilityAssessment(
+            id = 10,
+            project = projectSubmitted,
+            result = ProjectEligibilityAssessmentResult.PASSED,
+            user = user
+        )
+        every { securityService.currentUser } returns LocalCurrentUser(userApplicant, "hash_pass", emptyList())
+        every { userRepository.findByIdOrNull(1) } returns user
+        every { projectRepository.findOneById(1) } returns projectSubmitted.copy(eligibilityAssessment = eligibilityAssessment)
+        every { projectStatusRepository.save(any<ProjectStatus>()) } returnsArgument 0
+        every { projectRepository.save(any<Project>()) } returnsArgument 0
+
+        val exception = assertThrows<I18nValidationException> {
+            projectStatusService.setProjectStatus(
+                projectId = 1,
+                statusChange = InputProjectStatus(ProjectApplicationStatus.ELIGIBLE, "some note", null)
+            )
+        }
+
+        assertThat(exception.httpStatus).isEqualTo(HttpStatus.UNPROCESSABLE_ENTITY)
+        assertThat(exception.i18nKey).isEqualTo("project.decision.date.unknown")
     }
 
     @Test
