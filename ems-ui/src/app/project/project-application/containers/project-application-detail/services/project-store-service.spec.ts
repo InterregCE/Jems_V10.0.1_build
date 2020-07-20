@@ -57,6 +57,21 @@ describe('ProjectStoreService', () => {
     expect(status).toEqual(InputProjectStatus.StatusEnum.DRAFT);
   }));
 
+  it('should change status in eligibility decision', fakeAsync(() => {
+    let status: InputProjectStatus.StatusEnum = InputProjectStatus.StatusEnum.SUBMITTED;
+    service.getProject().subscribe();
+    service.getStatus().subscribe(res => status = res);
+
+    service.init(1);
+    service.changeStatus({status: InputProjectStatus.StatusEnum.ELIGIBLE, note: 'Passed', date: '20/07/2020'})
+
+    httpTestingController.expectOne({method: 'PUT', url: '//api/project/1/status'})
+      .flush({id: 1, projectStatus: {status: InputProjectStatus.StatusEnum.ELIGIBLE, note: 'Passed', date: '20/07/2020'}});
+
+    tick();
+    expect(status).toEqual(InputProjectStatus.StatusEnum.ELIGIBLE);
+  }));
+
   it('should change eligibility assessment', fakeAsync(() => {
     let project: OutputProject = {} as OutputProject;
     service.getProject().subscribe(res => project = res);
