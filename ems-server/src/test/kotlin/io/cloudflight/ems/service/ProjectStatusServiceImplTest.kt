@@ -73,6 +73,7 @@ internal class ProjectStatusServiceImplTest {
     private val projectDraft = createProject(ProjectApplicationStatus.DRAFT)
     private val projectSubmitted = createProject(ProjectApplicationStatus.SUBMITTED, NOTE_DENIED)
     private val projectReturned = createProject(ProjectApplicationStatus.RETURNED_TO_APPLICANT)
+    private val projectEligible = createProject(ProjectApplicationStatus.ELIGIBLE)
 
     @BeforeEach
     fun setup() {
@@ -194,6 +195,73 @@ internal class ProjectStatusServiceImplTest {
         assertThat(exception.httpStatus).isEqualTo(HttpStatus.UNPROCESSABLE_ENTITY)
         assertThat(exception.i18nKey).isEqualTo("project.decision.date.unknown")
     }
+
+    @Test
+    fun `project status ELIGIBLE to APPROVED funding decision`() {
+        every { securityService.currentUser } returns LocalCurrentUser(userApplicant, "hash_pass", emptyList())
+        every { userRepository.findByIdOrNull(1) } returns user
+        every { projectRepository.findOneById(1) } returns projectEligible
+        every { projectStatusRepository.save(any<ProjectStatus>()) } returnsArgument 0
+        every { projectRepository.save(any<Project>()) } returnsArgument 0
+
+
+        val result = projectStatusService.setProjectStatus(
+            projectId = 1,
+            statusChange = InputProjectStatus(ProjectApplicationStatus.APPROVED, null, LocalDate.now().plusDays(1))
+        )
+
+        assertThat(result.id).isEqualTo(1)
+        assertThat(result.fundingDecision).isNotNull()
+        assertThat(result.fundingDecision?.status).isEqualTo(ProjectApplicationStatus.APPROVED)
+        assertThat(result.projectStatus.status).isEqualTo(ProjectApplicationStatus.APPROVED)
+        assertThat(result.projectStatus.note).isEqualTo(null)
+        assertThat(result.projectStatus).isEqualTo(result.fundingDecision)
+    }
+
+    @Test
+    fun `project status ELIGIBLE to APPROVED_WITH_CONDITIONS funding decision`() {
+        every { securityService.currentUser } returns LocalCurrentUser(userApplicant, "hash_pass", emptyList())
+        every { userRepository.findByIdOrNull(1) } returns user
+        every { projectRepository.findOneById(1) } returns projectEligible
+        every { projectStatusRepository.save(any<ProjectStatus>()) } returnsArgument 0
+        every { projectRepository.save(any<Project>()) } returnsArgument 0
+
+
+        val result = projectStatusService.setProjectStatus(
+            projectId = 1,
+            statusChange = InputProjectStatus(ProjectApplicationStatus.APPROVED_WITH_CONDITIONS, "some note", LocalDate.now().plusDays(1))
+        )
+
+        assertThat(result.id).isEqualTo(1)
+        assertThat(result.fundingDecision).isNotNull()
+        assertThat(result.fundingDecision?.status).isEqualTo(ProjectApplicationStatus.APPROVED_WITH_CONDITIONS)
+        assertThat(result.projectStatus.status).isEqualTo(ProjectApplicationStatus.APPROVED_WITH_CONDITIONS)
+        assertThat(result.projectStatus.note).isEqualTo("some note")
+        assertThat(result.projectStatus).isEqualTo(result.fundingDecision)
+    }
+
+    @Test
+    fun `project status ELIGIBLE to NOT_APPROVED funding decision`() {
+        every { securityService.currentUser } returns LocalCurrentUser(userApplicant, "hash_pass", emptyList())
+        every { userRepository.findByIdOrNull(1) } returns user
+        every { projectRepository.findOneById(1) } returns projectEligible
+        every { projectStatusRepository.save(any<ProjectStatus>()) } returnsArgument 0
+        every { projectRepository.save(any<Project>()) } returnsArgument 0
+
+
+        val result = projectStatusService.setProjectStatus(
+            projectId = 1,
+            statusChange = InputProjectStatus(ProjectApplicationStatus.NOT_APPROVED, "some note", LocalDate.now().plusDays(1))
+        )
+
+        assertThat(result.id).isEqualTo(1)
+        assertThat(result.fundingDecision).isNotNull()
+        assertThat(result.fundingDecision?.status).isEqualTo(ProjectApplicationStatus.NOT_APPROVED)
+        assertThat(result.projectStatus.status).isEqualTo(ProjectApplicationStatus.NOT_APPROVED)
+        assertThat(result.projectStatus.note).isEqualTo("some note")
+        assertThat(result.projectStatus).isEqualTo(result.fundingDecision)
+    }
+
 
     @Test
     fun `project status setting failed successfully`() {

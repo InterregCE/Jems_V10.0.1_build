@@ -2,9 +2,11 @@ package io.cloudflight.ems.security.service.authorization
 
 import io.cloudflight.ems.api.dto.OutputProject
 import io.cloudflight.ems.api.dto.OutputProjectEligibilityAssessment
+import io.cloudflight.ems.api.dto.OutputProjectQualityAssessment
 import io.cloudflight.ems.api.dto.OutputProjectStatus
 import io.cloudflight.ems.api.dto.ProjectApplicationStatus
 import io.cloudflight.ems.api.dto.ProjectEligibilityAssessmentResult
+import io.cloudflight.ems.api.dto.ProjectQualityAssessmentResult
 import io.cloudflight.ems.api.dto.user.OutputUser
 import io.cloudflight.ems.api.dto.user.OutputUserRole
 import io.cloudflight.ems.api.dto.user.OutputUserWithRole
@@ -36,6 +38,7 @@ internal class ProjectStatusAuthorizationTest {
         const val PID_SUBMITTED_WITH_EA: Long = 21L
         const val PID_ELIGIBLE: Long = 4L
         const val PID_INELIGIBLE: Long = 5L
+        const val PID_ELIGIBLE_WITH_QA: Long = 22L
     }
 
     @MockK
@@ -104,6 +107,11 @@ internal class ProjectStatusAuthorizationTest {
         result = ProjectEligibilityAssessmentResult.PASSED,
         user = userProgrammeWithoutRole,
         updated = ZonedDateTime.now())
+    private val qualityAssessment = OutputProjectQualityAssessment(
+        result = ProjectQualityAssessmentResult.RECOMMENDED_FOR_FUNDING,
+        user = userProgrammeWithoutRole,
+        updated = ZonedDateTime.now()
+    )
 
     private val projectDraft = createProject(PID_DRAFT, ProjectApplicationStatus.DRAFT)
     private val projectSubmitted = createProject(PID_SUBMITTED, ProjectApplicationStatus.SUBMITTED)
@@ -114,6 +122,8 @@ internal class ProjectStatusAuthorizationTest {
         eligibilityAssessment = eligibilityAssessment)
     private val projectIneligible = createProject(PID_INELIGIBLE, ProjectApplicationStatus.INELIGIBLE).copy(
         eligibilityAssessment = eligibilityAssessment)
+    private val projectEligibleWithQA = createProject(PID_ELIGIBLE_WITH_QA, ProjectApplicationStatus.ELIGIBLE).copy(
+        qualityAssessment = qualityAssessment)
 
     @BeforeEach
     fun setup() {
@@ -126,6 +136,7 @@ internal class ProjectStatusAuthorizationTest {
         every { projectService.getById(PID_RETURNED) } returns projectReturned
         every { projectService.getById(PID_ELIGIBLE) } returns projectEligible
         every { projectService.getById(PID_INELIGIBLE) } returns projectIneligible
+        every { projectService.getById(PID_ELIGIBLE_WITH_QA) } returns projectEligibleWithQA
     }
 
     @Test
@@ -239,6 +250,24 @@ internal class ProjectStatusAuthorizationTest {
     }
 
     @ParameterizedTest
+    @MethodSource("provideAdminAndProgramUsers")
+    fun `programme or admin user can enter funding decision`(currentUser: LocalCurrentUser) {
+        every { securityService.currentUser } returns currentUser
+
+        assertTrue(
+            projectStatusAuthorization.canChangeStatusTo(PID_ELIGIBLE_WITH_QA, ProjectApplicationStatus.APPROVED)
+        )
+
+        assertTrue(
+            projectStatusAuthorization.canChangeStatusTo(PID_ELIGIBLE_WITH_QA, ProjectApplicationStatus.APPROVED_WITH_CONDITIONS)
+        )
+
+        assertTrue(
+            projectStatusAuthorization.canChangeStatusTo(PID_ELIGIBLE_WITH_QA, ProjectApplicationStatus.NOT_APPROVED)
+        )
+    }
+
+    @ParameterizedTest
     @MethodSource("provideAllUsers")
     fun `cannot enter eligibility decision`(currentUser: LocalCurrentUser) {
         every { securityService.currentUser } returns currentUser
@@ -246,6 +275,18 @@ internal class ProjectStatusAuthorizationTest {
         listOf(PID_SUBMITTED, PID_RETURNED, PID_DRAFT).forEach {
             assertFalse(
                 projectStatusAuthorization.canChangeStatusTo(it, ProjectApplicationStatus.ELIGIBLE)
+            )
+        }
+    }
+
+    @ParameterizedTest
+    @MethodSource("provideAllUsers")
+    fun `cannot enter funding decision`(currentUser: LocalCurrentUser) {
+        every { securityService.currentUser } returns currentUser
+
+        listOf(PID_SUBMITTED, PID_RETURNED, PID_DRAFT, PID_ELIGIBLE, PID_INELIGIBLE).forEach {
+            assertFalse(
+                projectStatusAuthorization.canChangeStatusTo(it, ProjectApplicationStatus.APPROVED)
             )
         }
     }
