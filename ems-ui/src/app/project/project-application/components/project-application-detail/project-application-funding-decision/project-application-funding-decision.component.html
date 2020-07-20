@@ -1,0 +1,58 @@
+<a [routerLink]="['../../../project', project.id]">&lt; Back to Project Application Details</a>
+<div class="project-detail-container">
+    <app-project-application-information
+            [project]="project">
+    </app-project-application-information>
+    <div class="assessment-container">
+        <h5>Funding Decision</h5>
+        <form [formGroup]="decisionForm" class="description-form">
+            <mat-radio-group
+                    required class="assessment-radio-group" name="status" formControlName="status"
+                    [disabled]="!!project.fundingDecision">
+                <mat-radio-button class="assessment-radio-button" *ngFor="let option of options" [value]="option">
+                    {{'project.assessment.fundingDecision.' + option | translate}}
+                </mat-radio-button>
+            </mat-radio-group>
+            <mat-form-field appearance="outline" class="field">
+                <mat-label>Explanatory Notes</mat-label>
+                <textarea
+                        name="notes" formControlName="notes" class="assessment-text-area" matInput
+                        [readonly]="!!project.fundingDecision">
+                    </textarea>
+            </mat-form-field>
+            <mat-form-field class="assessment-date-picker">
+                <mat-label>Decision Date</mat-label>
+                <input required name="decisionDate" formControlName="decisionDate" matInput
+                       [readonly]="!!project.fundingDecision"
+                       [matDatepicker]="picker"
+                       [max]="today">
+                <mat-datepicker-toggle
+                        matSuffix
+                        [disabled]="!!project.fundingDecision"
+                        [for]="picker"></mat-datepicker-toggle>
+                <mat-datepicker #picker></mat-datepicker>
+                <mat-error>
+                    <app-form-field-errors
+                            [errors]="decisionForm?.controls?.decisionDate?.errors"
+                            [messages]="dateErrors">
+                    </app-form-field-errors>
+                </mat-error>
+            </mat-form-field>
+            <div *ngIf="!project.fundingDecision">
+                <button mat-raised-button
+                        color="secondary"
+                        (click)="cancel.emit()">Cancel
+                </button>
+
+                <button mat-raised-button color="primary"
+                        class="right-button"
+                        type="submit"
+                        [disabled]="decisionForm.invalid || submitted"
+                        (click)="onSubmit()">{{'project.assessment.fundingDecision.submit.label' | translate}}
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+

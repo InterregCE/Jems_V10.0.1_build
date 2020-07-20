@@ -1,0 +1,35 @@
+.project-detail-container {
+  max-width: 76%;
+  margin: 5% 12% 3%;
+}
+
+.assessment-container{
+  width: 30rem;
+
+  .assessment-text-area {
+    height: 8rem;
+  }
+
+  .assessment-radio-group {
+    display: flex;
+    flex-direction: column;
+    margin: 15px 0;
+  }
+
+  .assessment-date-picker {
+    margin-bottom: 3%;
+  }
+
+  .assessment-radio-button {
+    margin: 5px;
+  }
+
+  .right-button {
+    float: right;
+  }
+
+  .field {
+    width: 100%;
+    padding-bottom: 1rem;
+  }
+}
