@@ -3,10 +3,10 @@ import { Routes, RouterModule } from '@angular/router';
 import {ProjectApplicationComponent} from './project-application/containers/project-application-page/project-application.component';
 import {ProjectApplicationDetailComponent} from './project-application/containers/project-application-detail/project-application-detail.component';
 import {AuthenticationGuard} from '../security/authentication-guard.service';
-import {ProjectApplicationEligibilityDecisionComponent} from './project-application/components/project-application-detail/project-application-eligibility-decision/project-application-eligibility-decision.component';
 import {ProjectApplicationQualityCheckComponent} from './project-application/components/project-application-detail/project-application-quality-check/project-application-quality-check.component';
 import {ProjectApplicationEligibilityCheckComponent} from './project-application/components/project-application-detail/project-application-eligibility-check/project-application-eligibility-check.component';
 import {ProjectApplicationFundingPageComponent} from './project-application/containers/project-application-detail/project-application-funding-page/project-application-funding-page.component';
+import {ProjectApplicationEligibilityDecisionPageComponent} from './project-application/containers/project-application-detail/project-application-eligibility-decision-page/project-application-eligibility-decision-page.component';
 
 const routes: Routes = [
   {
@@ -22,7 +22,7 @@ const routes: Routes = [
   },
   {
     path: 'project/:projectId/eligibilityDecision',
-    component: ProjectApplicationEligibilityDecisionComponent,
+    component: ProjectApplicationEligibilityDecisionPageComponent,
     canActivate: [AuthenticationGuard]
   },
   {
