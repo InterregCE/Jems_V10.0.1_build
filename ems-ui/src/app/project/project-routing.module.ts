@@ -6,6 +6,7 @@ import {AuthenticationGuard} from '../security/authentication-guard.service';
 import {ProjectApplicationEligibilityDecisionComponent} from './project-application/components/project-application-detail/project-application-eligibility-decision/project-application-eligibility-decision.component';
 import {ProjectApplicationQualityCheckComponent} from './project-application/components/project-application-detail/project-application-quality-check/project-application-quality-check.component';
 import {ProjectApplicationEligibilityCheckComponent} from './project-application/components/project-application-detail/project-application-eligibility-check/project-application-eligibility-check.component';
+import {ProjectApplicationFundingPageComponent} from './project-application/containers/project-application-detail/project-application-funding-page/project-application-funding-page.component';
 
 const routes: Routes = [
   {
@@ -32,6 +33,11 @@ const routes: Routes = [
   {
     path: 'project/:projectId/eligibilityCheck',
     component: ProjectApplicationEligibilityCheckComponent,
+    canActivate: [AuthenticationGuard]
+  },
+  {
+    path: 'project/:projectId/fundingDecision',
+    component: ProjectApplicationFundingPageComponent,
     canActivate: [AuthenticationGuard]
   }
 ];

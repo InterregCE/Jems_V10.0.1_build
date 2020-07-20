@@ -3,9 +3,9 @@ package io.cloudflight.ems.service
 import io.cloudflight.ems.api.dto.InputProject
 import io.cloudflight.ems.api.dto.OutputProject
 import io.cloudflight.ems.api.dto.OutputProjectSimple
-import io.cloudflight.ems.entity.User
 import io.cloudflight.ems.entity.Project
 import io.cloudflight.ems.entity.ProjectStatus
+import io.cloudflight.ems.entity.User
 
 fun InputProject.toEntity(applicant: User, status: ProjectStatus) = Project(
     id = null,
@@ -23,7 +23,8 @@ fun Project.toOutputProject() = OutputProject(
     lastResubmission = lastResubmission?.toOutputProjectStatus(),
     qualityAssessment = qualityAssessment?.toOutputProjectQualityAssessment(),
     eligibilityAssessment = eligibilityAssessment?.toOutputProjectEligibilityAssessment(),
-    eligibilityDecision = eligibilityDecision?.toOutputProjectStatus()
+    eligibilityDecision = eligibilityDecision?.toOutputProjectStatus(),
+    fundingDecision = fundingDecision?.toOutputProjectStatus()
 )
 
 fun Project.toOutputProjectSimple() = OutputProjectSimple(

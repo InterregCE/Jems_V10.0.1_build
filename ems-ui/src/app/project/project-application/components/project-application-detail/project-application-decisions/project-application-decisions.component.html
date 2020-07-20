@@ -33,21 +33,26 @@
     </div>
     <div class="row">
         <div class="col-4">Funding Decision:</div>
-        <div class="col-5">
-            <!--                    <div *ngIf="project.eligibilityAssessment">-->
-            <!--                        {{project.eligibilityAssessment.result}}-->
-            <!--                    </div>-->
+        <div class="col-3">
+            <div *ngIf="project.fundingDecision">
+                {{project.fundingDecision.status}}
+            </div>
         </div>
-        <div *ngIf="projectStatus === OutputProjectStatus.StatusEnum.SUBMITTED
-                 || projectStatus === OutputProjectStatus.StatusEnum.ELIGIBLE"
+        <div class="col-2">
+            <div *ngIf="project.fundingDecision">
+                {{project.fundingDecision.decisionDate | date : Tables.DEFAULT_DATE_FORMAT_NO_TIME}}
+            </div>
+        </div>
+        <div *ngIf="!project.fundingDecision"
              class="col-3 column">
             <button mat-raised-button color="primary" class="assessment-button"
-                    [disabled]="true"
+                    [disabled]="project.eligibilityDecision?.status !== OutputProjectStatus.StatusEnum.ELIGIBLE
+                            || !project.qualityAssessment"
                     [routerLink]="'/project/'+ project.id + '/fundingDecision'">
                 {{'project.assessment.fundingDecision.assessment' | translate}}
             </button>
         </div>
-        <div *ngIf="false" class="col-3 column">
+        <div *ngIf="!!project.fundingDecision" class="col-3 column">
             <button mat-raised-button color="secondary" class="assessment-button"
                     [routerLink]="'/project/'+ project.id + '/fundingDecision'">
                 {{'project.assessment.fundingDecision.assessment.view' | translate}}

@@ -1,0 +1,8 @@
+<ng-container *ngxPermissionsExcept="[Permission.APPLICANT_USER]">
+    <app-project-application-funding-decision
+            *ngIf="project$ | async as project"
+            [project]="project"
+            (changeStatus)="projectStore.changeStatus($event)"
+            (cancel)="redirectToProject()">
+    </app-project-application-funding-decision>
+</ng-container>

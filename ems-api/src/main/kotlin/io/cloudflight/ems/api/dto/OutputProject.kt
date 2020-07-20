@@ -11,5 +11,6 @@ data class OutputProject (
     val lastResubmission: OutputProjectStatus? = null,
     val qualityAssessment: OutputProjectQualityAssessment? = null,
     val eligibilityAssessment: OutputProjectEligibilityAssessment? = null,
-    val eligibilityDecision: OutputProjectStatus? = null
+    val eligibilityDecision: OutputProjectStatus? = null,
+    val fundingDecision: OutputProjectStatus? = null
 )

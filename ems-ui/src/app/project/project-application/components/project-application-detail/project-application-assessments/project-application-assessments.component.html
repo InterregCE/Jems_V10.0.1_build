@@ -38,6 +38,7 @@
             <div *ngIf="!project.qualityAssessment"
                  class="col-3">
                 <button mat-raised-button color="primary" class="assessment-button"
+                        [disabled]="project.projectStatus.status === OutputProjectStatus.StatusEnum.INELIGIBLE"
                         [routerLink]="'/project/'+ project.id + '/qualityCheck'">
                     {{'project.assessment.qualityCheck.assessment' | translate}}
                 </button>
