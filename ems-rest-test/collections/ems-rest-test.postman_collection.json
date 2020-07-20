@@ -740,9 +740,11 @@
 							"script": {
 								"id": "dd92a5a2-3937-4d1d-b900-071ef85c893b",
 								"exec": [
-									"var uuid = require('uuid');\r",
-									"const randomIdentifier = uuid.v4().substring(24, 32);\r",
-									"pm.variables.set('project_acronym', \"test-proj-\" + randomIdentifier);\r",
+									"const projectName = pm.variables.replaceIn('{{$randomCompanyName}}')\r",
+									"pm.variables.set(\r",
+									"    'project_acronym_to_create',\r",
+									"    projectName.substr(0,25)\r",
+									");\r",
 									""
 								],
 								"type": "text/javascript"
@@ -764,7 +766,7 @@
 									"\r",
 									"pm.test('acronym should fit', function() {\r",
 									"    pm.expect(application).to.have.property(\"acronym\");\r",
-									"    pm.expect(application.acronym).to.eql(pm.variables.get(\"project_acronym\"));\r",
+									"    pm.expect(application.acronym).to.eql(pm.variables.get(\"project_acronym_to_create\"));\r",
 									"});\r",
 									"\r",
 									"pm.test('submission should be empty', function() {\r",
@@ -788,7 +790,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n\t\"acronym\": \"{{project_acronym}}\"\n}"
+							"raw": "{\n\t\"acronym\": \"{{project_acronym_to_create}}\"\n}"
 						},
 						"url": {
 							"raw": "{{url}}/api/project",
@@ -881,7 +883,7 @@
 									"\r",
 									"pm.test(\"acronym should fit\", function () {\r",
 									"    pm.expect(response).to.have.property(\"acronym\");\r",
-									"    pm.expect(response.acronym).to.equal(pm.variables.get(\"project_acronym\"));\r",
+									"    pm.expect(response.acronym).to.equal(pm.variables.get(\"project_acronym_to_create\"));\r",
 									"});\r",
 									""
 								],
@@ -2183,6 +2185,11 @@
 									"\r",
 									"pm.test('resubmission date should be empty after first submission', function() {\r",
 									"    pm.expect(application.lastResubmission).to.eql(null);\r",
+									"});\r",
+									"\r",
+									"pm.test('submission and status should be equal', function() {\r",
+									"    pm.expect(application.firstSubmission)\r",
+									"        .deep.equal(application.projectStatus);\r",
 									"});\r",
 									""
 								],
@@ -4475,6 +4482,1913 @@
 				}
 			],
 			"protocolProfileBehavior": {}
+		},
+		{
+			"name": "enter funding decision (FD)",
+			"item": [
+				{
+					"name": "create applicant and programme user for following tests",
+					"item": [
+						{
+							"name": "register applicant",
+							"event": [
+								{
+									"listen": "prerequest",
+									"script": {
+										"id": "c96dca54-fe75-4f52-a863-91a99bfdc772",
+										"exec": [
+											"var uuid = require('uuid');\r",
+											"const randomIdentifier = uuid.v4().substring(24, 32);\r",
+											"pm.variables.set('applicant_email', randomIdentifier + \"@applicant.eu\");\r",
+											""
+										],
+										"type": "text/javascript"
+									}
+								},
+								{
+									"listen": "test",
+									"script": {
+										"id": "05918323-095b-4303-b7d6-38ae966e5518",
+										"exec": [
+											"pm.test('applicant can register', function() {\r",
+											"    pm.response.to.have.status(200);\r",
+											"});\r",
+											""
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"auth": {
+									"type": "noauth"
+								},
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"email\": \"{{applicant_email}}\",\r\n    \"name\": \"{{$randomFirstName}}\",\r\n    \"surname\": \"{{$randomLastName}}\",\r\n    \"password\": \"{{applicant_email}}\"\r\n}\r\n",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{url}}/api/registration",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"api",
+										"registration"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "create programme user",
+							"event": [
+								{
+									"listen": "prerequest",
+									"script": {
+										"id": "1096d73f-27cd-4cb7-b101-b1227a9d9e5f",
+										"exec": [
+											"var uuid = require('uuid');\r",
+											"const randomIdentifier = uuid.v4().substring(24, 32);\r",
+											"pm.variables.set('programme_user_email', randomIdentifier + \"@programme-user.eu\");\r",
+											""
+										],
+										"type": "text/javascript"
+									}
+								},
+								{
+									"listen": "test",
+									"script": {
+										"id": "0ffe2199-3719-42f5-b23b-949047d979fe",
+										"exec": [
+											"pm.test('programme user can be created', function() {\r",
+											"    pm.response.to.have.status(200);\r",
+											"});\r",
+											""
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"email\": \"{{programme_user_email}}\",\r\n    \"name\": \"{{$randomFirstName}}\",\r\n    \"surname\": \"{{$randomLastName}}\",\r\n    \"userRoleId\": \"2\"\r\n}\r\n",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{url}}/api/user",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"api",
+										"user"
+									]
+								}
+							},
+							"response": []
+						}
+					],
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "b77aa08b-c11b-468a-bb64-023829d218ba",
+								"type": "text/javascript",
+								"exec": [
+									""
+								]
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"id": "7b3585fd-4fd2-4cc0-97e5-82c1fb84d604",
+								"type": "text/javascript",
+								"exec": [
+									""
+								]
+							}
+						}
+					],
+					"protocolProfileBehavior": {},
+					"_postman_isSubFolder": true
+				},
+				{
+					"name": "with QA and ED",
+					"item": [
+						{
+							"name": "create project application",
+							"event": [
+								{
+									"listen": "prerequest",
+									"script": {
+										"id": "f4de46f0-eb9a-42eb-bfd3-697b33245a10",
+										"exec": [
+											"const projectName = pm.variables.replaceIn('{{$randomCompanyName}}')\r",
+											"pm.variables.set(\r",
+											"    'application_acronym',\r",
+											"    projectName.substr(0,25)\r",
+											");\r",
+											""
+										],
+										"type": "text/javascript"
+									}
+								},
+								{
+									"listen": "test",
+									"script": {
+										"id": "cc6f0418-0245-448e-a767-ca5967d819d7",
+										"exec": [
+											"const application = pm.response.json();\r",
+											"\r",
+											"pm.test('applicant can create project application', function() {\r",
+											"    pm.response.to.have.status(200);\r",
+											"    pm.variables.set('application_id', pm.response.json().id);\r",
+											"});\r",
+											"\r",
+											"pm.test('application should not have submission date filled in', function() {\r",
+											"    pm.expect(application.firstSubmission).to.eql(null);\r",
+											"})\r",
+											""
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"auth": {
+									"type": "basic",
+									"basic": [
+										{
+											"key": "password",
+											"value": "{{applicant_email}}",
+											"type": "string"
+										},
+										{
+											"key": "username",
+											"value": "{{applicant_email}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"acronym\": \"{{application_acronym}}\"\r\n}\r\n",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{url}}/api/project",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"api",
+										"project"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "submit application",
+							"event": [
+								{
+									"listen": "prerequest",
+									"script": {
+										"id": "2bf1a579-807d-4639-aadf-9f9308710638",
+										"exec": [
+											""
+										],
+										"type": "text/javascript"
+									}
+								},
+								{
+									"listen": "test",
+									"script": {
+										"id": "e5f61791-c83b-4a2a-a123-c3d9836b2110",
+										"exec": [
+											"pm.test('applicant can submit his application', function() {\r",
+											"    pm.response.to.have.status(200);\r",
+											"});\r",
+											""
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"auth": {
+									"type": "basic",
+									"basic": [
+										{
+											"key": "password",
+											"value": "{{applicant_email}}",
+											"type": "string"
+										},
+										{
+											"key": "username",
+											"value": "{{applicant_email}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "PUT",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"status\": \"SUBMITTED\"\r\n}\r\n",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{url}}/api/project/{{application_id}}/status",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"api",
+										"project",
+										"{{application_id}}",
+										"status"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "program user can enter QA",
+							"event": [
+								{
+									"listen": "prerequest",
+									"script": {
+										"id": "40ef79e1-80f7-475f-a981-2346f460cb65",
+										"exec": [
+											""
+										],
+										"type": "text/javascript"
+									}
+								},
+								{
+									"listen": "test",
+									"script": {
+										"id": "48a12604-a161-458d-92de-6a521887cab4",
+										"exec": [
+											"pm.test('program user can enter QA', function() {\r",
+											"    pm.response.to.have.status(200);\r",
+											"});\r",
+											""
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"auth": {
+									"type": "basic",
+									"basic": [
+										{
+											"key": "password",
+											"value": "{{programme_user_email}}",
+											"type": "string"
+										},
+										{
+											"key": "username",
+											"value": "{{programme_user_email}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"result\": \"RECOMMENDED_FOR_FUNDING\",\r\n    \"note\": \"status set to recommended for funding\"\r\n}\r\n",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{url}}/api/project/{{application_id}}/status/quality",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"api",
+										"project",
+										"{{application_id}}",
+										"status",
+										"quality"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "program user can enter EA",
+							"event": [
+								{
+									"listen": "prerequest",
+									"script": {
+										"id": "d38af210-553a-4c9b-9f22-995540739c8b",
+										"exec": [
+											""
+										],
+										"type": "text/javascript"
+									}
+								},
+								{
+									"listen": "test",
+									"script": {
+										"id": "bb5b71ba-106a-4a3e-bbf3-3b3724f88742",
+										"exec": [
+											"pm.test('program user can enter EA', function() {\r",
+											"    pm.response.to.have.status(200);\r",
+											"});\r",
+											""
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"auth": {
+									"type": "basic",
+									"basic": [
+										{
+											"key": "password",
+											"value": "{{programme_user_email}}",
+											"type": "string"
+										},
+										{
+											"key": "username",
+											"value": "{{programme_user_email}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"result\": \"PASSED\"\r\n}\r\n",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{url}}/api/project/{{application_id}}/status/eligibility",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"api",
+										"project",
+										"{{application_id}}",
+										"status",
+										"eligibility"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "program user can change status to ELIGIBLE",
+							"event": [
+								{
+									"listen": "prerequest",
+									"script": {
+										"id": "f98a7278-a037-44c8-8e32-af76e8d668b5",
+										"exec": [
+											"var date = new Date();\r",
+											"date.setDate(date.getDate() + 1);\r",
+											"pm.variables.set('eligibility_decision_date_tomorrow', date.toISOString().split('T')[0]);\r",
+											""
+										],
+										"type": "text/javascript"
+									}
+								},
+								{
+									"listen": "test",
+									"script": {
+										"id": "70c75ece-2878-44bb-acbc-2e447b52b939",
+										"exec": [
+											"pm.test('program user can change status to ELIGIBLE', function() {\r",
+											"    pm.response.to.have.status(200);\r",
+											"});\r",
+											""
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"auth": {
+									"type": "basic",
+									"basic": [
+										{
+											"key": "password",
+											"value": "{{programme_user_email}}",
+											"type": "string"
+										},
+										{
+											"key": "username",
+											"value": "{{programme_user_email}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "PUT",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"status\": \"ELIGIBLE\",\r\n    \"date\": \"{{eligibility_decision_date_tomorrow}}\"\r\n}\r\n",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{url}}/api/project/{{application_id}}/status",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"api",
+										"project",
+										"{{application_id}}",
+										"status"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "program user can enter FD",
+							"event": [
+								{
+									"listen": "prerequest",
+									"script": {
+										"id": "681ec09b-d6fd-4664-821f-c67706a3d5cb",
+										"exec": [
+											"var date = new Date();\r",
+											"date.setDate(date.getDate() + 3);\r",
+											"pm.variables.set('funding_decision_date_tomorrow', date.toISOString().split('T')[0]);\r",
+											""
+										],
+										"type": "text/javascript"
+									}
+								},
+								{
+									"listen": "test",
+									"script": {
+										"id": "151e2447-4c95-4249-8fe9-38ccfd8e574f",
+										"exec": [
+											"pm.test('program user can change status to APPROVED', function() {\r",
+											"    pm.response.to.have.status(200);\r",
+											"});\r",
+											"\r",
+											"const application = pm.response.json();\r",
+											"\r",
+											"pm.test('status of project is set to APPROVED', function() {\r",
+											"    pm.expect(application.projectStatus.status).to.eql('APPROVED');\r",
+											"});\r",
+											"\r",
+											"pm.test('status decision date is set to tomorrow', function() {\r",
+											"    pm.expect(application.projectStatus.decisionDate)\r",
+											"        .to.eql(pm.variables.get(\"funding_decision_date_tomorrow\"));\r",
+											"});\r",
+											"\r",
+											"pm.test('status change is assigned to program user who triggered change', function() {\r",
+											"    pm.expect(application.projectStatus.user.email)\r",
+											"        .to.eql(pm.variables.get(\"programme_user_email\"));\r",
+											"});\r",
+											"\r",
+											"pm.test('funding note is properly saved', function() {\r",
+											"    pm.expect(application.projectStatus.note)\r",
+											"        .to.eql(\"changed to approved\");\r",
+											"});\r",
+											"\r",
+											"pm.test('funding decision is part of the project object', function() {\r",
+											"    pm.expect(application).to.have.property('fundingDecision');\r",
+											"    pm.expect(application.fundingDecision)\r",
+											"        .deep.equal(application.projectStatus);\r",
+											"});\r",
+											""
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"auth": {
+									"type": "basic",
+									"basic": [
+										{
+											"key": "password",
+											"value": "{{programme_user_email}}",
+											"type": "string"
+										},
+										{
+											"key": "username",
+											"value": "{{programme_user_email}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "PUT",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"status\": \"APPROVED\",\r\n    \"note\": \"changed to approved\",\r\n    \"date\": \"{{funding_decision_date_tomorrow}}\"\r\n}\r\n",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{url}}/api/project/{{application_id}}/status",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"api",
+										"project",
+										"{{application_id}}",
+										"status"
+									]
+								}
+							},
+							"response": []
+						}
+					],
+					"protocolProfileBehavior": {},
+					"_postman_isSubFolder": true
+				},
+				{
+					"name": "without ED",
+					"item": [
+						{
+							"name": "create project application",
+							"event": [
+								{
+									"listen": "prerequest",
+									"script": {
+										"id": "167c337f-0575-4074-9bb4-d44f05319b27",
+										"exec": [
+											"const projectName = pm.variables.replaceIn('{{$randomCompanyName}}')\r",
+											"pm.variables.set(\r",
+											"    'application_acronym',\r",
+											"    projectName.substr(0,25)\r",
+											");\r",
+											""
+										],
+										"type": "text/javascript"
+									}
+								},
+								{
+									"listen": "test",
+									"script": {
+										"id": "ee762e86-9f29-46c4-a8cd-9d822271db7b",
+										"exec": [
+											"const application = pm.response.json();\r",
+											"\r",
+											"pm.test('applicant can create project application', function() {\r",
+											"    pm.response.to.have.status(200);\r",
+											"    pm.variables.set('application_id', pm.response.json().id);\r",
+											"});\r",
+											"\r",
+											"pm.test('application should not have submission date filled in', function() {\r",
+											"    pm.expect(application.firstSubmission).to.eql(null);\r",
+											"})\r",
+											""
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"auth": {
+									"type": "basic",
+									"basic": [
+										{
+											"key": "password",
+											"value": "{{applicant_email}}",
+											"type": "string"
+										},
+										{
+											"key": "username",
+											"value": "{{applicant_email}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"acronym\": \"{{application_acronym}}\"\r\n}\r\n",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{url}}/api/project",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"api",
+										"project"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "submit application",
+							"event": [
+								{
+									"listen": "prerequest",
+									"script": {
+										"id": "f5634aea-1d7a-46ce-880a-3db9baf14101",
+										"exec": [
+											""
+										],
+										"type": "text/javascript"
+									}
+								},
+								{
+									"listen": "test",
+									"script": {
+										"id": "e945e938-4e6a-4620-9f4f-edf8fce7b877",
+										"exec": [
+											"pm.test('applicant can submit his application', function() {\r",
+											"    pm.response.to.have.status(200);\r",
+											"});\r",
+											""
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"auth": {
+									"type": "basic",
+									"basic": [
+										{
+											"key": "password",
+											"value": "{{applicant_email}}",
+											"type": "string"
+										},
+										{
+											"key": "username",
+											"value": "{{applicant_email}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "PUT",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"status\": \"SUBMITTED\"\r\n}\r\n",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{url}}/api/project/{{application_id}}/status",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"api",
+										"project",
+										"{{application_id}}",
+										"status"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "program user can enter QA",
+							"event": [
+								{
+									"listen": "prerequest",
+									"script": {
+										"id": "a10ae2b4-4ea0-4182-bd04-c25b7035baf0",
+										"exec": [
+											""
+										],
+										"type": "text/javascript"
+									}
+								},
+								{
+									"listen": "test",
+									"script": {
+										"id": "12b435f4-cc87-4002-98f3-354a9af00e28",
+										"exec": [
+											"pm.test('program user can enter QA', function() {\r",
+											"    pm.response.to.have.status(200);\r",
+											"});\r",
+											""
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"auth": {
+									"type": "basic",
+									"basic": [
+										{
+											"key": "password",
+											"value": "{{programme_user_email}}",
+											"type": "string"
+										},
+										{
+											"key": "username",
+											"value": "{{programme_user_email}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"result\": \"RECOMMENDED_FOR_FUNDING\",\r\n    \"note\": \"status set to recommended for funding\"\r\n}\r\n",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{url}}/api/project/{{application_id}}/status/quality",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"api",
+										"project",
+										"{{application_id}}",
+										"status",
+										"quality"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "program user cannot enter FD without ED",
+							"event": [
+								{
+									"listen": "prerequest",
+									"script": {
+										"id": "4cce8b4d-d90e-4f4f-92cc-2ec2d27b8cb6",
+										"exec": [
+											""
+										],
+										"type": "text/javascript"
+									}
+								},
+								{
+									"listen": "test",
+									"script": {
+										"id": "1560c80a-8b46-4a52-b1ac-9d62d6b38351",
+										"exec": [
+											"pm.test('program user should not be able to enter funding without ED', function() {\r",
+											"    pm.response.to.have.status(403);\r",
+											"});\r",
+											""
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"auth": {
+									"type": "basic",
+									"basic": [
+										{
+											"key": "password",
+											"value": "{{programme_user_email}}",
+											"type": "string"
+										},
+										{
+											"key": "username",
+											"value": "{{programme_user_email}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "PUT",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"status\": \"APPROVED\"\r\n}\r\n",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{url}}/api/project/{{application_id}}/status",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"api",
+										"project",
+										"{{application_id}}",
+										"status"
+									]
+								}
+							},
+							"response": []
+						}
+					],
+					"protocolProfileBehavior": {},
+					"_postman_isSubFolder": true
+				},
+				{
+					"name": "without QA",
+					"item": [
+						{
+							"name": "create project application",
+							"event": [
+								{
+									"listen": "prerequest",
+									"script": {
+										"id": "0004c6fb-d0a5-4746-9c64-736241d2e28d",
+										"exec": [
+											"const projectName = pm.variables.replaceIn('{{$randomCompanyName}}')\r",
+											"pm.variables.set(\r",
+											"    'application_acronym',\r",
+											"    projectName.substr(0,25)\r",
+											");\r",
+											""
+										],
+										"type": "text/javascript"
+									}
+								},
+								{
+									"listen": "test",
+									"script": {
+										"id": "8d0cb20c-ad99-4ad6-9fe1-4ce8642c65da",
+										"exec": [
+											"const application = pm.response.json();\r",
+											"\r",
+											"pm.test('applicant can create project application', function() {\r",
+											"    pm.response.to.have.status(200);\r",
+											"    pm.variables.set('application_id', pm.response.json().id);\r",
+											"});\r",
+											"\r",
+											"pm.test('application should not have submission date filled in', function() {\r",
+											"    pm.expect(application.firstSubmission).to.eql(null);\r",
+											"})\r",
+											""
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"auth": {
+									"type": "basic",
+									"basic": [
+										{
+											"key": "password",
+											"value": "{{applicant_email}}",
+											"type": "string"
+										},
+										{
+											"key": "username",
+											"value": "{{applicant_email}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"acronym\": \"{{application_acronym}}\"\r\n}\r\n",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{url}}/api/project",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"api",
+										"project"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "submit application",
+							"event": [
+								{
+									"listen": "prerequest",
+									"script": {
+										"id": "be2d1215-762d-43af-9209-cd76be01302a",
+										"exec": [
+											""
+										],
+										"type": "text/javascript"
+									}
+								},
+								{
+									"listen": "test",
+									"script": {
+										"id": "af849f75-4227-443c-bc43-5c8705205635",
+										"exec": [
+											"pm.test('applicant can submit his application', function() {\r",
+											"    pm.response.to.have.status(200);\r",
+											"});\r",
+											""
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"auth": {
+									"type": "basic",
+									"basic": [
+										{
+											"key": "password",
+											"value": "{{applicant_email}}",
+											"type": "string"
+										},
+										{
+											"key": "username",
+											"value": "{{applicant_email}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "PUT",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"status\": \"SUBMITTED\"\r\n}\r\n",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{url}}/api/project/{{application_id}}/status",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"api",
+										"project",
+										"{{application_id}}",
+										"status"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "program user can enter EA",
+							"event": [
+								{
+									"listen": "prerequest",
+									"script": {
+										"id": "49773389-2a46-42b5-9ed0-c44982b8fda8",
+										"exec": [
+											""
+										],
+										"type": "text/javascript"
+									}
+								},
+								{
+									"listen": "test",
+									"script": {
+										"id": "3c33c058-00c7-44e0-8458-bf630849dfcd",
+										"exec": [
+											"pm.test('program user can enter EA', function() {\r",
+											"    pm.response.to.have.status(200);\r",
+											"});\r",
+											""
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"auth": {
+									"type": "basic",
+									"basic": [
+										{
+											"key": "password",
+											"value": "{{programme_user_email}}",
+											"type": "string"
+										},
+										{
+											"key": "username",
+											"value": "{{programme_user_email}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"result\": \"PASSED\"\r\n}\r\n",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{url}}/api/project/{{application_id}}/status/eligibility",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"api",
+										"project",
+										"{{application_id}}",
+										"status",
+										"eligibility"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "program user can change status to ELIGIBLE",
+							"event": [
+								{
+									"listen": "prerequest",
+									"script": {
+										"id": "def170ac-2c8b-4334-a61e-8d52d50c0de3",
+										"exec": [
+											"var date = new Date();\r",
+											"date.setDate(date.getDate() + 1);\r",
+											"pm.variables.set('eligibility_decision_date_tomorrow', date.toISOString().split('T')[0]);\r",
+											""
+										],
+										"type": "text/javascript"
+									}
+								},
+								{
+									"listen": "test",
+									"script": {
+										"id": "5348445a-8997-4e9d-b2ac-d0fa5c979814",
+										"exec": [
+											"pm.test('program user can change status to ELIGIBLE', function() {\r",
+											"    pm.response.to.have.status(200);\r",
+											"});\r",
+											""
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"auth": {
+									"type": "basic",
+									"basic": [
+										{
+											"key": "password",
+											"value": "{{programme_user_email}}",
+											"type": "string"
+										},
+										{
+											"key": "username",
+											"value": "{{programme_user_email}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "PUT",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"status\": \"ELIGIBLE\",\r\n    \"date\": \"{{eligibility_decision_date_tomorrow}}\"\r\n}\r\n",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{url}}/api/project/{{application_id}}/status",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"api",
+										"project",
+										"{{application_id}}",
+										"status"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "program user cannot enter FD without QA",
+							"event": [
+								{
+									"listen": "prerequest",
+									"script": {
+										"id": "6d7fe9b9-73ed-4f41-8bf2-a212ab307cea",
+										"exec": [
+											""
+										],
+										"type": "text/javascript"
+									}
+								},
+								{
+									"listen": "test",
+									"script": {
+										"id": "4ff31a68-e8c3-4e89-aebf-b3d928cb9dd4",
+										"exec": [
+											"pm.test('program user should not be able to enter funding without QA', function() {\r",
+											"    pm.response.to.have.status(403);\r",
+											"});\r",
+											""
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"auth": {
+									"type": "basic",
+									"basic": [
+										{
+											"key": "password",
+											"value": "{{programme_user_email}}",
+											"type": "string"
+										},
+										{
+											"key": "username",
+											"value": "{{programme_user_email}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "PUT",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"status\": \"APPROVED\"\r\n}\r\n",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{url}}/api/project/{{application_id}}/status",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"api",
+										"project",
+										"{{application_id}}",
+										"status"
+									]
+								}
+							},
+							"response": []
+						}
+					],
+					"protocolProfileBehavior": {},
+					"_postman_isSubFolder": true
+				},
+				{
+					"name": "enter FD, return and resubmit",
+					"item": [
+						{
+							"name": "create project application",
+							"event": [
+								{
+									"listen": "prerequest",
+									"script": {
+										"id": "3cabe03b-5b69-4d5b-849c-b53e09f8ed3f",
+										"exec": [
+											"const projectName = pm.variables.replaceIn('{{$randomCompanyName}}')\r",
+											"pm.variables.set(\r",
+											"    'application_acronym',\r",
+											"    projectName.substr(0,25)\r",
+											");\r",
+											""
+										],
+										"type": "text/javascript"
+									}
+								},
+								{
+									"listen": "test",
+									"script": {
+										"id": "70644cc0-6cdc-43cc-8c8a-cd2eae88be20",
+										"exec": [
+											"const application = pm.response.json();\r",
+											"\r",
+											"pm.test('applicant can create project application', function() {\r",
+											"    pm.response.to.have.status(200);\r",
+											"    pm.variables.set('application_id', pm.response.json().id);\r",
+											"});\r",
+											"\r",
+											"pm.test('application should not have submission date filled in', function() {\r",
+											"    pm.expect(application.firstSubmission).to.eql(null);\r",
+											"})\r",
+											""
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"auth": {
+									"type": "basic",
+									"basic": [
+										{
+											"key": "password",
+											"value": "{{applicant_email}}",
+											"type": "string"
+										},
+										{
+											"key": "username",
+											"value": "{{applicant_email}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"acronym\": \"{{application_acronym}}\"\r\n}\r\n",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{url}}/api/project",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"api",
+										"project"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "submit application",
+							"event": [
+								{
+									"listen": "prerequest",
+									"script": {
+										"id": "7dceac9f-bcbd-4648-bcb1-22906a2607a6",
+										"exec": [
+											""
+										],
+										"type": "text/javascript"
+									}
+								},
+								{
+									"listen": "test",
+									"script": {
+										"id": "95c73047-bc2b-4aec-827e-2e1738bbcd37",
+										"exec": [
+											"pm.test('applicant can submit his application', function() {\r",
+											"    pm.response.to.have.status(200);\r",
+											"});\r",
+											""
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"auth": {
+									"type": "basic",
+									"basic": [
+										{
+											"key": "password",
+											"value": "{{applicant_email}}",
+											"type": "string"
+										},
+										{
+											"key": "username",
+											"value": "{{applicant_email}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "PUT",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"status\": \"SUBMITTED\"\r\n}\r\n",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{url}}/api/project/{{application_id}}/status",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"api",
+										"project",
+										"{{application_id}}",
+										"status"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "program user can enter QA",
+							"event": [
+								{
+									"listen": "prerequest",
+									"script": {
+										"id": "d1f78489-31fa-42ff-bfdc-626fe7bb22f9",
+										"exec": [
+											""
+										],
+										"type": "text/javascript"
+									}
+								},
+								{
+									"listen": "test",
+									"script": {
+										"id": "f1e2b72a-f147-44e6-b1ce-acdd70fb4c53",
+										"exec": [
+											"pm.test('program user can enter QA', function() {\r",
+											"    pm.response.to.have.status(200);\r",
+											"});\r",
+											""
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"auth": {
+									"type": "basic",
+									"basic": [
+										{
+											"key": "password",
+											"value": "{{programme_user_email}}",
+											"type": "string"
+										},
+										{
+											"key": "username",
+											"value": "{{programme_user_email}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"result\": \"RECOMMENDED_FOR_FUNDING\",\r\n    \"note\": \"status set to recommended for funding\"\r\n}\r\n",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{url}}/api/project/{{application_id}}/status/quality",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"api",
+										"project",
+										"{{application_id}}",
+										"status",
+										"quality"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "program user can enter EA",
+							"event": [
+								{
+									"listen": "prerequest",
+									"script": {
+										"id": "674fe129-ff90-4f4e-8d08-b1bd1cb768de",
+										"exec": [
+											""
+										],
+										"type": "text/javascript"
+									}
+								},
+								{
+									"listen": "test",
+									"script": {
+										"id": "bfee0a2a-799e-46d4-b872-ac1772172416",
+										"exec": [
+											"pm.test('program user can enter EA', function() {\r",
+											"    pm.response.to.have.status(200);\r",
+											"});\r",
+											""
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"auth": {
+									"type": "basic",
+									"basic": [
+										{
+											"key": "password",
+											"value": "{{programme_user_email}}",
+											"type": "string"
+										},
+										{
+											"key": "username",
+											"value": "{{programme_user_email}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"result\": \"PASSED\"\r\n}\r\n",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{url}}/api/project/{{application_id}}/status/eligibility",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"api",
+										"project",
+										"{{application_id}}",
+										"status",
+										"eligibility"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "program user can change status to ELIGIBLE",
+							"event": [
+								{
+									"listen": "prerequest",
+									"script": {
+										"id": "0b226160-cfe4-498e-8921-6d66c2eae4b4",
+										"exec": [
+											"var date = new Date();\r",
+											"date.setDate(date.getDate() + 1);\r",
+											"pm.variables.set('eligibility_decision_date_tomorrow', date.toISOString().split('T')[0]);\r",
+											""
+										],
+										"type": "text/javascript"
+									}
+								},
+								{
+									"listen": "test",
+									"script": {
+										"id": "7ed4d6f4-22dd-4b6f-ad0f-27d4f893d33b",
+										"exec": [
+											"pm.test('program user can change status to ELIGIBLE', function() {\r",
+											"    pm.response.to.have.status(200);\r",
+											"});\r",
+											""
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"auth": {
+									"type": "basic",
+									"basic": [
+										{
+											"key": "password",
+											"value": "{{programme_user_email}}",
+											"type": "string"
+										},
+										{
+											"key": "username",
+											"value": "{{programme_user_email}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "PUT",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"status\": \"ELIGIBLE\",\r\n    \"date\": \"{{eligibility_decision_date_tomorrow}}\"\r\n}\r\n",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{url}}/api/project/{{application_id}}/status",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"api",
+										"project",
+										"{{application_id}}",
+										"status"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "program user can enter FD - APPROVED",
+							"event": [
+								{
+									"listen": "prerequest",
+									"script": {
+										"id": "5f95f3e1-b0be-4888-adca-c0cd58a2311c",
+										"exec": [
+											"var date = new Date();\r",
+											"date.setDate(date.getDate() + 3);\r",
+											"pm.variables.set('funding_decision_date_tomorrow', date.toISOString().split('T')[0]);\r",
+											""
+										],
+										"type": "text/javascript"
+									}
+								},
+								{
+									"listen": "test",
+									"script": {
+										"id": "71a0b358-cad1-4161-bdee-6e8227a8a792",
+										"exec": [
+											"pm.test('program user can change status to APPROVED', function() {\r",
+											"    pm.response.to.have.status(200);\r",
+											"});\r",
+											"\r",
+											"const application = pm.response.json();\r",
+											"\r",
+											"pm.test('status of project is set to APPROVED', function() {\r",
+											"    pm.expect(application.projectStatus.status).to.eql('APPROVED');\r",
+											"});\r",
+											"\r",
+											"pm.test('status decision date is set to tomorrow', function() {\r",
+											"    pm.expect(application.projectStatus.decisionDate)\r",
+											"        .to.eql(pm.variables.get(\"funding_decision_date_tomorrow\"));\r",
+											"});\r",
+											"\r",
+											"pm.test('status change is assigned to program user who triggered change', function() {\r",
+											"    pm.expect(application.projectStatus.user.email)\r",
+											"        .to.eql(pm.variables.get(\"programme_user_email\"));\r",
+											"});\r",
+											"\r",
+											"pm.test('funding note is properly saved', function() {\r",
+											"    pm.expect(application.projectStatus.note)\r",
+											"        .to.eql(\"changed to approved\");\r",
+											"});\r",
+											"\r",
+											"pm.test('funding decision is part of the project object', function() {\r",
+											"    pm.expect(application).to.have.property('fundingDecision');\r",
+											"    pm.expect(application.fundingDecision)\r",
+											"        .deep.equal(application.projectStatus);\r",
+											"});\r",
+											""
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"auth": {
+									"type": "basic",
+									"basic": [
+										{
+											"key": "password",
+											"value": "{{programme_user_email}}",
+											"type": "string"
+										},
+										{
+											"key": "username",
+											"value": "{{programme_user_email}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "PUT",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"status\": \"APPROVED\",\r\n    \"note\": \"changed to approved\",\r\n    \"date\": \"{{funding_decision_date_tomorrow}}\"\r\n}\r\n",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{url}}/api/project/{{application_id}}/status",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"api",
+										"project",
+										"{{application_id}}",
+										"status"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "program user can return application after FD",
+							"event": [
+								{
+									"listen": "prerequest",
+									"script": {
+										"id": "830d3a1e-c86b-4190-afd8-7f751a2c66bf",
+										"exec": [
+											""
+										],
+										"type": "text/javascript"
+									}
+								},
+								{
+									"listen": "test",
+									"script": {
+										"id": "c6c93f7b-c84a-4d5c-b745-98b87cb65372",
+										"exec": [
+											"pm.test('program user can return application back to user', function() {\r",
+											"    pm.response.to.have.status(200);\r",
+											"});\r",
+											"\r",
+											"const application = pm.response.json();\r",
+											"\r",
+											"pm.test('status of project is set to RETURNED_TO_APPLICANT', function() {\r",
+											"    pm.expect(application.projectStatus.status).to.eql('RETURNED_TO_APPLICANT');\r",
+											"});\r",
+											"\r",
+											"pm.test('status change is assigned to program user who triggered change', function() {\r",
+											"    pm.expect(application.projectStatus.user.email)\r",
+											"        .to.eql(pm.variables.get(\"programme_user_email\"));\r",
+											"});\r",
+											""
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"auth": {
+									"type": "basic",
+									"basic": [
+										{
+											"key": "password",
+											"value": "{{programme_user_email}}",
+											"type": "string"
+										},
+										{
+											"key": "username",
+											"value": "{{programme_user_email}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "PUT",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"status\": \"RETURNED_TO_APPLICANT\"\r\n}\r\n",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{url}}/api/project/{{application_id}}/status",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"api",
+										"project",
+										"{{application_id}}",
+										"status"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "applicant can resubmit back to APPROVED",
+							"event": [
+								{
+									"listen": "prerequest",
+									"script": {
+										"id": "24aafac1-a834-48a0-96bf-1ef9463e72b9",
+										"exec": [
+											""
+										],
+										"type": "text/javascript"
+									}
+								},
+								{
+									"listen": "test",
+									"script": {
+										"id": "75ec8c15-035b-45fb-a94d-5e85112ed807",
+										"exec": [
+											"pm.test('applicant should be able to resubmit his application', function() {\r",
+											"    pm.response.to.have.status(200);\r",
+											"});\r",
+											"\r",
+											"const application = pm.response.json();\r",
+											"\r",
+											"pm.test('status should be back to APPROVED', function() {\r",
+											"    pm.expect(application.projectStatus.status).to.eql('APPROVED');\r",
+											"});\r",
+											"\r",
+											"pm.test('project status should refer to this change', function() {\r",
+											"    pm.expect(application).to.have.property('lastResubmission');\r",
+											"    pm.expect(application).to.have.property('projectStatus');\r",
+											"    pm.expect(application.lastResubmission)\r",
+											"        .deep.eql(application.projectStatus);\r",
+											"});\r",
+											"\r",
+											"pm.test('status change is assigned to applicant who triggered change', function() {\r",
+											"    pm.expect(application.projectStatus.user.email)\r",
+											"        .to.eql(pm.variables.get(\"applicant_email\"));\r",
+											"});\r",
+											""
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"auth": {
+									"type": "basic",
+									"basic": [
+										{
+											"key": "password",
+											"value": "{{applicant_email}}",
+											"type": "string"
+										},
+										{
+											"key": "username",
+											"value": "{{applicant_email}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "PUT",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"status\": \"SUBMITTED\"\r\n}\r\n",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{url}}/api/project/{{application_id}}/status",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"api",
+										"project",
+										"{{application_id}}",
+										"status"
+									]
+								}
+							},
+							"response": []
+						}
+					],
+					"protocolProfileBehavior": {},
+					"_postman_isSubFolder": true
+				}
+			],
+			"protocolProfileBehavior": {}
 		}
 	],
 	"auth": {
@@ -4516,7 +6430,7 @@
 	],
 	"variable": [
 		{
-			"id": "11cb709b-5dd4-4a45-876c-cc27a898531d",
+			"id": "fe9f1fe2-6791-4dc7-90f4-273716dd0a46",
 			"key": "url",
 			"value": "specify_url_here"
 		}
