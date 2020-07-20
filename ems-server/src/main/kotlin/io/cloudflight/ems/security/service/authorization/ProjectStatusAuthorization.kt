@@ -54,18 +54,18 @@ class ProjectStatusAuthorization(
 
     fun fundingFilled(project: OutputProject, newStatus: ProjectApplicationStatus): Boolean {
         val newPossibilities = setOf(APPROVED, APPROVED_WITH_CONDITIONS, NOT_APPROVED)
-        val oldPossibilities = setOf(ELIGIBLE, RETURNED_TO_APPLICANT)
+        val oldStatus = ELIGIBLE
 
-        return oldPossibilities.contains(project.projectStatus.status)
+        return oldStatus == project.projectStatus.status
             && newPossibilities.contains(newStatus)
             && project.qualityAssessment != null
     }
 
     fun eligibilityFilled(project: OutputProject, newStatus: ProjectApplicationStatus): Boolean {
         val newPossibilities = setOf(ELIGIBLE, INELIGIBLE)
-        val oldPossibilities = setOf(SUBMITTED)
+        val oldStatus = SUBMITTED
 
-        return oldPossibilities.contains(project.projectStatus.status)
+        return oldStatus == project.projectStatus.status
                 && newPossibilities.contains(newStatus)
                 && project.eligibilityAssessment != null
     }
