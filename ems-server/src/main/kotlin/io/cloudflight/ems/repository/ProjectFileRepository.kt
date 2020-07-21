@@ -1,5 +1,6 @@
 package io.cloudflight.ems.repository
 
+import io.cloudflight.ems.api.dto.ProjectFileType
 import io.cloudflight.ems.entity.ProjectFile
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
@@ -10,10 +11,10 @@ import java.util.Optional
 @Repository
 interface ProjectFileRepository : PagingAndSortingRepository<ProjectFile, Long> {
 
-    fun findAllByProjectId(projectId: Long, pageable: Pageable): Page<ProjectFile>
+    fun findAllByProjectIdAndType(projectId: Long, type: ProjectFileType, pageable: Pageable): Page<ProjectFile>
 
     fun findFirstByProjectIdAndId(projectId: Long, id: Long): Optional<ProjectFile>
 
-    fun findFirstByProjectIdAndName(projectId: Long, name: String): Optional<ProjectFile>
+    fun findFirstByProjectIdAndNameAndType(projectId: Long, name: String, type: ProjectFileType): Optional<ProjectFile>
 
 }

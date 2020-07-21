@@ -7,6 +7,7 @@ fun ProjectFile.toOutputProjectFile() = OutputProjectFile(
     id,
     name,
     author.toOutputUser(),
+    type,
     description,
     size,
     updated

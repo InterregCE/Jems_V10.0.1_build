@@ -3,6 +3,7 @@ package io.cloudflight.ems.controller
 import io.cloudflight.ems.api.ProjectFileApi
 import io.cloudflight.ems.api.dto.InputProjectFileDescription
 import io.cloudflight.ems.api.dto.OutputProjectFile
+import io.cloudflight.ems.api.dto.ProjectFileType
 import io.cloudflight.ems.dto.FileMetadata
 import io.cloudflight.ems.service.FileStorageService
 import org.springframework.core.io.ByteArrayResource
@@ -20,19 +21,17 @@ class ProjectFileController(
     private val fileStorageService: FileStorageService
 ) : ProjectFileApi {
 
-    @PreAuthorize("@projectAuthorization.canWriteProject(#projectId)")
-    override fun uploadProjectFile(projectId: Long, file: MultipartFile) {
-        fileStorageService.saveFile(
-            file.inputStream,
-            FileMetadata(
-                name = file.originalFilename ?: file.name,
-                projectId = projectId,
-                size = file.size
-            )
-        )
+    @PreAuthorize("@projectFileAuthorization.canUploadFile(#projectId, 'APPLICANT_FILE')")
+    override fun uploadApplicationProjectFile(projectId: Long, file: MultipartFile) {
+        uploadFile(projectId, file, ProjectFileType.APPLICANT_FILE)
     }
 
-    @PreAuthorize("@projectAuthorization.canReadProject(#projectId)")
+    @PreAuthorize("@projectFileAuthorization.canUploadFile(#projectId, 'ASSESSMENT_FILE')")
+    override fun uploadAssessmentProjectFile(projectId: Long, file: MultipartFile) {
+        uploadFile(projectId, file, ProjectFileType.ASSESSMENT_FILE)
+    }
+
+    @PreAuthorize("@projectFileAuthorization.canDownloadFile(#projectId, #fileId)")
     override fun downloadFile(projectId: Long, fileId: Long): ResponseEntity<ByteArrayResource> {
         val data = fileStorageService.downloadFile(projectId, fileId)
         return ResponseEntity.ok()
@@ -42,9 +41,14 @@ class ProjectFileController(
             .body(ByteArrayResource(data.second))
     }
 
-    @PreAuthorize("@projectAuthorization.canReadProject(#projectId)")
-    override fun getFilesForProject(projectId: Long, pageable: Pageable): Page<OutputProjectFile> {
-        return fileStorageService.getFilesForProject(projectId, pageable)
+    @PreAuthorize("@projectFileAuthorization.canListFiles(#projectId, 'APPLICANT_FILE')")
+    override fun getApplicationFilesForProject(projectId: Long, pageable: Pageable): Page<OutputProjectFile> {
+        return fileStorageService.getFilesForProject(projectId, ProjectFileType.APPLICANT_FILE, pageable)
+    }
+
+    @PreAuthorize("@projectFileAuthorization.canListFiles(#projectId, 'ASSESSMENT_FILE')")
+    override fun getAssessmentFilesForProject(projectId: Long, pageable: Pageable): Page<OutputProjectFile> {
+        return fileStorageService.getFilesForProject(projectId, ProjectFileType.ASSESSMENT_FILE, pageable)
     }
 
     @PreAuthorize("@projectFileAuthorization.canChangeFile(#projectId, #fileId)")
@@ -60,4 +64,17 @@ class ProjectFileController(
     override fun deleteFile(projectId: Long, fileId: Long) {
         fileStorageService.deleteFile(projectId, fileId)
     }
+
+    private fun uploadFile(projectId: Long, file: MultipartFile, type: ProjectFileType) {
+        fileStorageService.saveFile(
+            file.inputStream,
+            FileMetadata(
+                name = file.originalFilename ?: file.name,
+                projectId = projectId,
+                size = file.size,
+                type = type
+            )
+        )
+    }
+
 }

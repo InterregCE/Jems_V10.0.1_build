@@ -42,7 +42,7 @@ export class ProjectApplicationFilesComponent extends BaseComponent {
   ])
     .pipe(
       flatMap(([pageIndex, pageSize, sort]) =>
-        this.projectFileStorageService.getFilesForProject(this.projectId, pageIndex, pageSize, sort)),
+        this.projectFileStorageService.getApplicationFilesForProject(this.projectId, pageIndex, pageSize, sort)),
       tap(page => Log.info('Fetched the project files:', this, page.content)),
     );
 
