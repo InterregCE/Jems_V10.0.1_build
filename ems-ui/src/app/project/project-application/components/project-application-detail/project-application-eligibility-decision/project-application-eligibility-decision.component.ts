@@ -113,8 +113,9 @@ export class ProjectApplicationEligibilityDecisionComponent extends AbstractForm
     if (this.project?.eligibilityDecision) {
       if (this.project?.eligibilityDecision?.status === OutputProjectStatus.StatusEnum.INELIGIBLE) {
         this.notesForm.controls.assessment.setValue(this.INELIGIBLE);
+      } else {
+        this.notesForm.controls.assessment.setValue(this.ELIGIBLE);
       }
-      this.notesForm.controls.assessment.setValue(this.ELIGIBLE);
     }
   }
 
