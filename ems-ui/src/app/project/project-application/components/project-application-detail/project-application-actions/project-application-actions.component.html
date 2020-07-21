@@ -13,17 +13,8 @@
     </div>
 </ng-container>
 
-<ng-container *ngxPermissionsExcept="[Permission.APPLICANT_USER]">
-    <div *ngIf="projectStatus === OutputProjectStatus.StatusEnum.SUBMITTED" class="row">
-        <button mat-raised-button
-                color="primary"
-                (click)="returnToApplicant()">Return To Applicant
-        </button>
-    </div>
-</ng-container>
-
-<ng-container *ngxPermissionsExcept="[Permission.APPLICANT_USER]">
-    <div *ngIf="projectStatus === OutputProjectStatus.StatusEnum.ELIGIBLE" class="row">
+<ng-container *ngxPermissionsOnly="[Permission.ADMINISTRATOR, Permission.PROGRAMME_USER]">
+    <div *ngIf="returnableStatuses.includes(projectStatus)" class="row">
         <button mat-raised-button
                 color="primary"
                 (click)="returnToApplicant()">Return To Applicant
@@ -34,13 +25,7 @@
 <app-alert
         [show]="showSuccessMessage$ | async"
         [type]="Alert.SUCCESS">
-    <p *ngIf="projectStatus === OutputProjectStatus.StatusEnum.ELIGIBLE">
-        {{'project.detail.eligible.success' | translate}}
-    </p>
-    <p *ngIf="projectStatus === OutputProjectStatus.StatusEnum.INELIGIBLE">
-        {{'project.detail.ineligible.success' | translate}}
-    </p>
-    <p *ngIf="projectStatus === OutputProjectStatus.StatusEnum.SUBMITTED">
+    <p *ngIf="projectStatus !== OutputProjectStatus.StatusEnum.RETURNEDTOAPPLICANT">
         {{'project.detail.submitted.success' | translate}}
     </p>
     <p *ngIf="projectStatus === OutputProjectStatus.StatusEnum.RETURNEDTOAPPLICANT">

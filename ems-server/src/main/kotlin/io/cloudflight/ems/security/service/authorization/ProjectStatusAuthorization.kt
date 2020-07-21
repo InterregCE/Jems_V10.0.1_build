@@ -71,9 +71,9 @@ class ProjectStatusAuthorization(
 
     fun eligibilityFilled(project: OutputProject, newStatus: ProjectApplicationStatus): Boolean {
         val newPossibilities = setOf(ELIGIBLE, INELIGIBLE)
-        val oldStatus = SUBMITTED
+        val oldStatus = project.projectStatus.status
 
-        return oldStatus == project.projectStatus.status
+        return oldStatus == SUBMITTED
                 && newPossibilities.contains(newStatus)
                 && project.eligibilityAssessment != null
     }
