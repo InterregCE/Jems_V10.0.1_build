@@ -122,8 +122,9 @@ class ProjectStatusServiceImpl(
     }
 
     private fun updateProject(oldProject: Project, newStatus: ProjectStatus): Project {
+        val oldStatus = oldProject.projectStatus.status
         return when {
-            oldProject.projectStatus.status == RETURNED_TO_APPLICANT -> {
+            oldStatus == RETURNED_TO_APPLICANT -> {
                 oldProject.copy(projectStatus = newStatus, lastResubmission = newStatus)
             }
             newStatus.status == ELIGIBLE || newStatus.status == INELIGIBLE -> {
@@ -132,7 +133,7 @@ class ProjectStatusServiceImpl(
             newStatus.status == SUBMITTED -> {
                 oldProject.copy(projectStatus = newStatus, firstSubmission = newStatus)
             }
-            oldProject.projectStatus.status == ELIGIBLE && isFundingDecision(newStatus.status) -> {
+            isFundingDecision(oldStatus, newStatus.status) -> {
                 oldProject.copy(projectStatus = newStatus, fundingDecision = newStatus)
             }
             else -> {
@@ -141,8 +142,10 @@ class ProjectStatusServiceImpl(
         }
     }
 
-    private fun isFundingDecision(status: ProjectApplicationStatus): Boolean {
-        return status == APPROVED || status == APPROVED_WITH_CONDITIONS || status == NOT_APPROVED;
+    private fun isFundingDecision(oldStatus: ProjectApplicationStatus, newStatus: ProjectApplicationStatus): Boolean {
+        val oldPossibilities = setOf(ELIGIBLE, APPROVED_WITH_CONDITIONS)
+        val newPossibilities = setOf(APPROVED, APPROVED_WITH_CONDITIONS, NOT_APPROVED)
+        return oldPossibilities.contains(oldStatus) && newPossibilities.contains(newStatus) && oldStatus != newStatus
     }
 
     /**

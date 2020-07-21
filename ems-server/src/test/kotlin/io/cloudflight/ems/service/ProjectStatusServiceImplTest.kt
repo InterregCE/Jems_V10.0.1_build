@@ -32,6 +32,7 @@ import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.http.HttpStatus
+import java.lang.IllegalStateException
 import java.time.LocalDate
 import java.time.LocalTime
 import java.time.ZoneId
@@ -74,6 +75,7 @@ internal class ProjectStatusServiceImplTest {
     private val projectSubmitted = createProject(ProjectApplicationStatus.SUBMITTED, NOTE_DENIED)
     private val projectReturned = createProject(ProjectApplicationStatus.RETURNED_TO_APPLICANT)
     private val projectEligible = createProject(ProjectApplicationStatus.ELIGIBLE)
+    private val projectApprovedWithConditions = createAlreadyApprovedProject(ProjectApplicationStatus.APPROVED_WITH_CONDITIONS)
 
     @BeforeEach
     fun setup() {
@@ -262,6 +264,36 @@ internal class ProjectStatusServiceImplTest {
         assertThat(result.projectStatus).isEqualTo(result.fundingDecision)
     }
 
+    @Test
+    fun `test allowed funding transitions`() {
+        val allowedTransitions = setOf(
+            projectEligible to ProjectApplicationStatus.APPROVED,
+            projectEligible to ProjectApplicationStatus.NOT_APPROVED,
+            projectEligible to ProjectApplicationStatus.APPROVED_WITH_CONDITIONS,
+            projectApprovedWithConditions to ProjectApplicationStatus.NOT_APPROVED,
+            projectApprovedWithConditions to ProjectApplicationStatus.APPROVED
+        )
+
+        allowedTransitions.forEach { testAlowedFundingTransitions(it) }
+    }
+
+    private fun testAlowedFundingTransitions(pair: Pair<Project, ProjectApplicationStatus>): Unit {
+        every { securityService.currentUser } returns LocalCurrentUser(userApplicant, "hash_pass", emptyList())
+        every { userRepository.findByIdOrNull(1) } returns user
+        every { projectRepository.findOneById(1) } returns pair.first
+        every { projectStatusRepository.save(any<ProjectStatus>()) } returnsArgument 0
+        every { projectRepository.save(any<Project>()) } returnsArgument 0
+
+        val result = projectStatusService.setProjectStatus(
+            projectId = 1,
+            statusChange = InputProjectStatus(pair.second, "some note", LocalDate.now().plusDays(1))
+        )
+
+        assertThat(result.id).isEqualTo(1)
+        assertThat(result.projectStatus.status).isEqualTo(pair.second)
+        assertThat(result.projectStatus.note).isEqualTo("some note")
+        assertThat(result.projectStatus).isEqualTo(result.fundingDecision)
+    }
 
     @Test
     fun `project status setting failed successfully`() {
@@ -292,6 +324,25 @@ internal class ProjectStatusServiceImplTest {
             applicant = user,
             projectStatus = ProjectStatus(1, null, status, user, statusTime, null, note),
             firstSubmission = if (submitTime != null) ProjectStatus(2, null, ProjectApplicationStatus.SUBMITTED, user, submitTime, null, note) else null
+        )
+    }
+
+    private fun createAlreadyApprovedProject(status: ProjectApplicationStatus): Project {
+        val alreadyApprovedStatuses = setOf(
+            ProjectApplicationStatus.APPROVED,
+            ProjectApplicationStatus.APPROVED_WITH_CONDITIONS,
+            ProjectApplicationStatus.NOT_APPROVED
+        )
+        if (!alreadyApprovedStatuses.contains(status))
+            throw IllegalStateException()
+
+        val status = ProjectStatus(1, null, status, user, ZonedDateTime.now(), null, null)
+        return Project(
+            id = 1,
+            acronym = "acronym",
+            applicant = user,
+            projectStatus = status,
+            fundingDecision = status
         )
     }
 
