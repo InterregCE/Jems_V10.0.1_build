@@ -39,6 +39,9 @@ internal class ProjectStatusAuthorizationTest {
         const val PID_ELIGIBLE: Long = 4L
         const val PID_INELIGIBLE: Long = 5L
         const val PID_ELIGIBLE_WITH_QA: Long = 22L
+        const val PID_NOT_APPROVED: Long = 6L
+        const val PID_APPROVED_WITH_CONDITIONS: Long = 7L
+        const val PID_APPROVED: Long = 8L
     }
 
     @MockK
@@ -124,6 +127,9 @@ internal class ProjectStatusAuthorizationTest {
         eligibilityAssessment = eligibilityAssessment)
     private val projectEligibleWithQA = createProject(PID_ELIGIBLE_WITH_QA, ProjectApplicationStatus.ELIGIBLE).copy(
         qualityAssessment = qualityAssessment)
+    private val projectNotApproved = createProject(PID_NOT_APPROVED, ProjectApplicationStatus.NOT_APPROVED)
+    private val projectApprovedWithConditions = createProject(PID_APPROVED_WITH_CONDITIONS, ProjectApplicationStatus.APPROVED_WITH_CONDITIONS)
+    private val projectApproved = createProject(PID_APPROVED, ProjectApplicationStatus.APPROVED)
 
     @BeforeEach
     fun setup() {
@@ -137,6 +143,9 @@ internal class ProjectStatusAuthorizationTest {
         every { projectService.getById(PID_ELIGIBLE) } returns projectEligible
         every { projectService.getById(PID_INELIGIBLE) } returns projectIneligible
         every { projectService.getById(PID_ELIGIBLE_WITH_QA) } returns projectEligibleWithQA
+        every { projectService.getById(PID_NOT_APPROVED) } returns projectNotApproved
+        every { projectService.getById(PID_APPROVED_WITH_CONDITIONS) } returns projectApprovedWithConditions
+        every { projectService.getById(PID_APPROVED) } returns projectApproved
     }
 
     @Test
@@ -265,6 +274,40 @@ internal class ProjectStatusAuthorizationTest {
         assertTrue(
             projectStatusAuthorization.canChangeStatusTo(PID_ELIGIBLE_WITH_QA, ProjectApplicationStatus.NOT_APPROVED)
         )
+    }
+
+    @ParameterizedTest
+    @MethodSource("provideAdminAndProgramUsers")
+    fun `programme or admin user can change funding decision`(currentUser: LocalCurrentUser) {
+        every { securityService.currentUser } returns currentUser
+
+        assertTrue(
+            projectStatusAuthorization.canChangeStatusTo(PID_APPROVED_WITH_CONDITIONS, ProjectApplicationStatus.APPROVED)
+        )
+        assertTrue(
+            projectStatusAuthorization.canChangeStatusTo(PID_APPROVED_WITH_CONDITIONS, ProjectApplicationStatus.NOT_APPROVED)
+        )
+        assertFalse( // no change
+            projectStatusAuthorization.canChangeStatusTo(PID_APPROVED_WITH_CONDITIONS, ProjectApplicationStatus.APPROVED_WITH_CONDITIONS)
+        )
+    }
+
+    @ParameterizedTest
+    @MethodSource("provideAllUsers")
+    fun `cannot update final funding decision`(currentUser: LocalCurrentUser) {
+        every { securityService.currentUser } returns currentUser
+
+        listOf(PID_APPROVED, PID_NOT_APPROVED).forEach {
+            assertFalse(
+                projectStatusAuthorization.canChangeStatusTo(it, ProjectApplicationStatus.APPROVED_WITH_CONDITIONS)
+            )
+            assertFalse(
+                projectStatusAuthorization.canChangeStatusTo(it, ProjectApplicationStatus.APPROVED)
+            )
+            assertFalse(
+                projectStatusAuthorization.canChangeStatusTo(it, ProjectApplicationStatus.NOT_APPROVED)
+            )
+        }
     }
 
     @ParameterizedTest

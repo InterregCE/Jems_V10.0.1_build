@@ -37,7 +37,7 @@ class ProjectStatusAuthorization(
         if (eligibilityFilled(project, newStatus))
             return isProgrammeUser() || isAdmin()
 
-        if (fundingFilled(project, newStatus))
+        if (fundingFilled(project, newStatus) || fundingChanged(project, newStatus))
             return isProgrammeUser() || isAdmin()
 
         return false
@@ -54,11 +54,19 @@ class ProjectStatusAuthorization(
 
     fun fundingFilled(project: OutputProject, newStatus: ProjectApplicationStatus): Boolean {
         val newPossibilities = setOf(APPROVED, APPROVED_WITH_CONDITIONS, NOT_APPROVED)
-        val oldStatus = ELIGIBLE
+        val oldStatus = project.projectStatus.status
 
-        return oldStatus == project.projectStatus.status
+        return oldStatus == ELIGIBLE
             && newPossibilities.contains(newStatus)
             && project.qualityAssessment != null
+    }
+
+    fun fundingChanged(project: OutputProject, newStatus: ProjectApplicationStatus): Boolean {
+        val newPossibilities = setOf(APPROVED, NOT_APPROVED)
+        val oldStatus = project.projectStatus.status
+
+        return oldStatus == APPROVED_WITH_CONDITIONS
+            && newPossibilities.contains(newStatus)
     }
 
     fun eligibilityFilled(project: OutputProject, newStatus: ProjectApplicationStatus): Boolean {
