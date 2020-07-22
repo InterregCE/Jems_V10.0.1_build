@@ -9,8 +9,17 @@
             (click)="selectFile.click()">+ add new file
     </button>
 </div>
-<div *ngIf="statusMessages">
-    <div *ngFor="let message of statusMessages">
-        <p>{{message}}</p>
-    </div>
-</div>
+
+<app-alert
+        [show]="showSuccessMessage$ | async"
+        [type]="Alert.SUCCESS">
+    <p>Upload of {{uploadedFileName}} successful.</p>
+</app-alert>
+<app-alert
+        [show]="(error$ | async) !== null"
+        [type]="Alert.ERROR">
+    <p *ngIf="(error$ | async)?.httpStatus === 422; else unknown">File {{uploadedFileName}} already exists.</p>
+</app-alert>
+<ng-template #unknown>
+    <p>Upload of {{uploadedFileName}} not successful.</p>
+</ng-template>
