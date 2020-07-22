@@ -45,10 +45,10 @@ class FileStorageServiceImpl(
         }
 
         val project = projectRepository.findById(fileMetadata.projectId)
-            .orElseThrow { throw ResourceNotFoundException() }
+            .orElseThrow { ResourceNotFoundException() }
 
         val author = userRepository.findById(securityService.currentUser?.user?.id!!)
-            .orElseThrow { throw ResourceNotFoundException() }
+            .orElseThrow { ResourceNotFoundException() }
 
         val filePath = getFilePath(fileMetadata)
         val projectFileEntity = ProjectFile(

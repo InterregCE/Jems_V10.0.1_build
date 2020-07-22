@@ -16,9 +16,9 @@ import org.springframework.stereotype.Component
 
 @Component
 class ProjectStatusAuthorization(
-    val securityService: SecurityService,
+    override val securityService: SecurityService,
     val projectService: ProjectService
-) {
+): Authorization(securityService) {
 
     fun canChangeStatusTo(projectId: Long, newStatus: ProjectApplicationStatus): Boolean {
         val project = projectService.getById(projectId)
@@ -97,14 +97,6 @@ class ProjectStatusAuthorization(
 
     fun isOwner(project: OutputProject): Boolean {
         return project.applicant.id == securityService.currentUser?.user?.id
-    }
-
-    fun isAdmin(): Boolean {
-        return securityService.currentUser?.isAdmin!!
-    }
-
-    fun isProgrammeUser(): Boolean {
-        return securityService.currentUser?.isProgrammeUser!!
     }
 
 }
