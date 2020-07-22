@@ -13,10 +13,10 @@ import java.time.ZonedDateTime
 
 @Component
 class ProjectFileAuthorization(
-    val securityService: SecurityService,
+    override val securityService: SecurityService,
     val projectService: ProjectService,
     val fileStorageService: FileStorageService
-) {
+): Authorization(securityService) {
 
     fun canUploadFile(projectId: Long, fileType: ProjectFileType): Boolean {
         if (isAdmin())
@@ -104,14 +104,6 @@ class ProjectFileAuthorization(
 
     fun isOwner(project: OutputProject): Boolean {
         return project.applicant.id == securityService.currentUser?.user?.id
-    }
-
-    fun isAdmin(): Boolean {
-        return securityService.currentUser?.isAdmin!!
-    }
-
-    fun isProgrammeUser(): Boolean {
-        return securityService.currentUser?.isProgrammeUser!!
     }
 
 }
