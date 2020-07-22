@@ -48,7 +48,7 @@ class ProjectStatusAuthorization(
     }
 
     fun returned(oldStatus: ProjectApplicationStatus, newStatus: ProjectApplicationStatus): Boolean {
-        val oldPossibilities = setOf(SUBMITTED, ELIGIBLE, INELIGIBLE, APPROVED, APPROVED_WITH_CONDITIONS, NOT_APPROVED)
+        val oldPossibilities = setOf(SUBMITTED, ELIGIBLE, INELIGIBLE, APPROVED_WITH_CONDITIONS)
         return oldPossibilities.contains(oldStatus) && newStatus == RETURNED_TO_APPLICANT
     }
 
