@@ -1,6 +1,6 @@
 import {ChangeDetectionStrategy, Component, Input} from '@angular/core';
 import {OutputProject, OutputProjectStatus} from '@cat/api';
-import { Tables } from 'src/app/common/utils/tables';
+import {Tables} from 'src/app/common/utils/tables';
 
 @Component({
   selector: 'app-project-application-decisions',
@@ -17,4 +17,9 @@ export class ProjectApplicationDecisionsComponent {
   @Input()
   projectStatus: OutputProjectStatus.StatusEnum;
 
+  updateOrViewFundingLabel(): string {
+    return this.projectStatus === OutputProjectStatus.StatusEnum.APPROVEDWITHCONDITIONS
+      ? 'project.assessment.fundingDecision.assessment.update'
+      : 'project.assessment.fundingDecision.assessment.view'
+  }
 }
