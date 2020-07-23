@@ -2,6 +2,7 @@ package io.cloudflight.ems.service
 
 import io.cloudflight.ems.api.dto.OutputProjectFile
 import io.cloudflight.ems.api.dto.ProjectApplicationStatus
+import io.cloudflight.ems.api.dto.ProjectFileType
 import io.cloudflight.ems.api.dto.user.OutputUser
 import io.cloudflight.ems.api.dto.user.OutputUserRole
 import io.cloudflight.ems.api.dto.user.OutputUserWithRole
@@ -102,8 +103,12 @@ class FileStorageServiceTest {
 
     @Test
     fun save_duplicate() {
-        val fileMetadata = FileMetadata(projectId = PROJECT_ID, name = "proj-file-1.png", size = 0)
-        every { projectFileRepository.findFirstByProjectIdAndName(eq(PROJECT_ID), eq("proj-file-1.png")) } returns Optional.of(dummyProjectFile())
+        val fileMetadata = FileMetadata(projectId = PROJECT_ID, name = "proj-file-1.png", size = 0, type = ProjectFileType.APPLICANT_FILE)
+        every { projectFileRepository.findFirstByProjectIdAndNameAndType(
+            eq(PROJECT_ID),
+            eq("proj-file-1.png"),
+            eq(ProjectFileType.APPLICANT_FILE)
+        ) } returns Optional.of(dummyProjectFile())
 
         val exception = assertThrows<DuplicateFileException> { fileStorageService.saveFile(InputStream.nullInputStream(), fileMetadata) }
 
@@ -123,8 +128,8 @@ class FileStorageServiceTest {
 
     @Test
     fun save_projectNotExists() {
-        val fileMetadata = FileMetadata(projectId = PROJECT_ID, name = "", size = 0)
-        every { projectFileRepository.findFirstByProjectIdAndName(eq(PROJECT_ID), any()) } returns Optional.empty()
+        val fileMetadata = FileMetadata(projectId = PROJECT_ID, name = "", size = 0, type = ProjectFileType.APPLICANT_FILE)
+        every { projectFileRepository.findFirstByProjectIdAndNameAndType(eq(PROJECT_ID), any(), eq(ProjectFileType.APPLICANT_FILE)) } returns Optional.empty()
         every { projectRepository.findById(eq(PROJECT_ID)) } returns Optional.empty()
 
         assertThrows<ResourceNotFoundException> { fileStorageService.saveFile(InputStream.nullInputStream(), fileMetadata) }
@@ -132,8 +137,8 @@ class FileStorageServiceTest {
 
     @Test
     fun save_userNotExists() {
-        val fileMetadata = FileMetadata(projectId = PROJECT_ID, name = "", size = 0)
-        every { projectFileRepository.findFirstByProjectIdAndName(eq(PROJECT_ID), any()) } returns Optional.empty()
+        val fileMetadata = FileMetadata(projectId = PROJECT_ID, name = "", size = 0, type = ProjectFileType.APPLICANT_FILE)
+        every { projectFileRepository.findFirstByProjectIdAndNameAndType(eq(PROJECT_ID), any(), eq(ProjectFileType.APPLICANT_FILE)) } returns Optional.empty()
         every { projectRepository.findById(eq(PROJECT_ID)) } returns Optional.of(testProject)
         every { userRepository.findById(any()) } returns Optional.empty()
 
@@ -143,8 +148,8 @@ class FileStorageServiceTest {
     @Test
     fun save() {
         val streamToSave = "test".toByteArray().inputStream()
-        val fileMetadata = FileMetadata(projectId = PROJECT_ID, name = "proj-file-1.png", size = "test".length.toLong())
-        every { projectFileRepository.findFirstByProjectIdAndName(eq(PROJECT_ID), any()) } returns Optional.empty()
+        val fileMetadata = FileMetadata(projectId = PROJECT_ID, name = "proj-file-1.png", size = "test".length.toLong(), type = ProjectFileType.APPLICANT_FILE)
+        every { projectFileRepository.findFirstByProjectIdAndNameAndType(eq(PROJECT_ID), any(), eq(ProjectFileType.APPLICANT_FILE)) } returns Optional.empty()
 
         val projectFileSlot = slot<ProjectFile>()
         every { projectFileRepository.save(capture(projectFileSlot)) } returnsArgument 0
@@ -163,7 +168,7 @@ class FileStorageServiceTest {
         with (projectFileSlot.captured) {
             assertEquals(null, id)
             assertEquals(PROJECT_FILES_BUCKET, bucket)
-            assertEquals("project-$PROJECT_ID/proj-file-1.png", identifier)
+            assertEquals("project-$PROJECT_ID/${ProjectFileType.APPLICANT_FILE}/proj-file-1.png", identifier)
             assertEquals("proj-file-1.png", name)
             assertEquals(PROJECT_ID, project.id)
             assertEquals(34, author.id)
@@ -171,7 +176,7 @@ class FileStorageServiceTest {
             assertEquals("test".length.toLong(), size)
         }
         assertEquals(PROJECT_FILES_BUCKET, bucketSlot.captured)
-        assertEquals("project-$PROJECT_ID/proj-file-1.png", identifierSlot.captured)
+        assertEquals("project-$PROJECT_ID/${ProjectFileType.APPLICANT_FILE}/proj-file-1.png", identifierSlot.captured)
         assertEquals("test".length.toLong(), sizeSlot.captured)
         assertEquals(streamToSave, streamSlot.captured)
 
@@ -207,9 +212,9 @@ class FileStorageServiceTest {
     @Test
     fun getFilesForProject_OK() {
         val files = listOf(dummyProjectFile())
-        every { projectFileRepository.findAllByProjectId(eq(PROJECT_ID), UNPAGED) } returns PageImpl(files)
+        every { projectFileRepository.findAllByProjectIdAndType(eq(PROJECT_ID), eq(ProjectFileType.APPLICANT_FILE), UNPAGED) } returns PageImpl(files)
 
-        val result = fileStorageService.getFilesForProject(PROJECT_ID, UNPAGED)
+        val result = fileStorageService.getFilesForProject(PROJECT_ID, ProjectFileType.APPLICANT_FILE, UNPAGED)
 
         assertEquals(1, result.totalElements)
 
@@ -218,9 +223,9 @@ class FileStorageServiceTest {
 
     @Test
     fun getFilesForProject_empty() {
-        every { projectFileRepository.findAllByProjectId(eq(311), UNPAGED) } returns PageImpl(listOf())
+        every { projectFileRepository.findAllByProjectIdAndType(eq(311), eq(ProjectFileType.APPLICANT_FILE), UNPAGED) } returns PageImpl(listOf())
 
-        val result = fileStorageService.getFilesForProject(311, UNPAGED)
+        val result = fileStorageService.getFilesForProject(311, ProjectFileType.APPLICANT_FILE, UNPAGED)
 
         assertEquals(0, result.totalElements)
     }
@@ -326,6 +331,7 @@ class FileStorageServiceTest {
             name = "proj-file-1.png",
             project = testProject,
             author = account,
+            type = ProjectFileType.APPLICANT_FILE,
             description = "",
             size = 2,
             updated = TEST_DATE_TIME
@@ -337,6 +343,7 @@ class FileStorageServiceTest {
             id = 1,
             name = "proj-file-1.png",
             author = userWithoutRole,
+            type = ProjectFileType.APPLICANT_FILE,
             description = "",
             size = 2,
             updated = TEST_DATE_TIME

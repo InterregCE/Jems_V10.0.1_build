@@ -32,7 +32,6 @@ import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.http.HttpStatus
-import java.lang.IllegalStateException
 import java.time.LocalDate
 import java.time.LocalTime
 import java.time.ZoneId
@@ -42,18 +41,23 @@ internal class ProjectStatusServiceImplTest {
 
     companion object {
         const val NOTE_DENIED = "denied"
-        val DRAFT_TIME = ZonedDateTime.of(LocalDate.of(2020, 7, 13), LocalTime.of(12, 0), ZoneId.of("Europe/Bratislava"))
+        val DRAFT_TIME =
+            ZonedDateTime.of(LocalDate.of(2020, 7, 13), LocalTime.of(12, 0), ZoneId.of("Europe/Bratislava"))
         val SUBMIT_TIME = DRAFT_TIME.plusDays(1)
     }
 
     @MockK
     lateinit var projectRepository: ProjectRepository
+
     @MockK
     lateinit var userRepository: UserRepository
+
     @RelaxedMockK
     lateinit var auditService: AuditService
+
     @MockK
     lateinit var securityService: SecurityService
+
     @MockK
     lateinit var projectStatusRepository: ProjectStatusRepository
 
@@ -68,14 +72,21 @@ internal class ProjectStatusServiceImplTest {
         password = "hash_pass"
     )
 
-    private val userApplicant = OutputUserWithRole(user.id, user.email, user.name, user.surname, OutputUserRole(user.userRole.id, user.userRole.name))
+    private val userApplicant = OutputUserWithRole(
+        user.id,
+        user.email,
+        user.name,
+        user.surname,
+        OutputUserRole(user.userRole.id, user.userRole.name)
+    )
     private val userProgramme = OutputUserWithRole(16, "programme@email", "", "", OutputUserRole(7, "programme"))
 
     private val projectDraft = createProject(ProjectApplicationStatus.DRAFT)
     private val projectSubmitted = createProject(ProjectApplicationStatus.SUBMITTED, NOTE_DENIED)
     private val projectReturned = createProject(ProjectApplicationStatus.RETURNED_TO_APPLICANT)
     private val projectEligible = createProject(ProjectApplicationStatus.ELIGIBLE)
-    private val projectApprovedWithConditions = createAlreadyApprovedProject(ProjectApplicationStatus.APPROVED_WITH_CONDITIONS)
+    private val projectApprovedWithConditions =
+        createAlreadyApprovedProject(ProjectApplicationStatus.APPROVED_WITH_CONDITIONS)
 
     @BeforeEach
     fun setup() {
@@ -93,7 +104,10 @@ internal class ProjectStatusServiceImplTest {
         every { projectStatusRepository.save(any<ProjectStatus>()) } returnsArgument 0
         every { projectRepository.save(any<Project>()) } returnsArgument 0
 
-        val result = projectStatusService.setProjectStatus(1, InputProjectStatus(ProjectApplicationStatus.SUBMITTED, NOTE_DENIED, null))
+        val result = projectStatusService.setProjectStatus(
+            1,
+            InputProjectStatus(ProjectApplicationStatus.SUBMITTED, NOTE_DENIED, null)
+        )
 
         assertThat(result.id).isEqualTo(1)
         assertThat(result.firstSubmission).isNotNull()
@@ -111,10 +125,16 @@ internal class ProjectStatusServiceImplTest {
         every { userRepository.findByIdOrNull(1) } returns user
         every { projectRepository.findOneById(1) } returns projectReturned
         every { projectStatusRepository.save(any<ProjectStatus>()) } returnsArgument 0
-        every { projectStatusRepository.findFirstByProjectIdAndStatusNotInOrderByUpdatedDesc(eq(1), eq(ignoreStatuses)) } returns previousState
+        every {
+            projectStatusRepository.findFirstByProjectIdAndStatusNotInOrderByUpdatedDesc(
+                eq(1),
+                eq(ignoreStatuses)
+            )
+        } returns previousState
         every { projectRepository.save(any<Project>()) } returnsArgument 0
 
-        val result = projectStatusService.setProjectStatus(1, InputProjectStatus(ProjectApplicationStatus.SUBMITTED, null, null))
+        val result =
+            projectStatusService.setProjectStatus(1, InputProjectStatus(ProjectApplicationStatus.SUBMITTED, null, null))
 
         assertThat(result.id).isEqualTo(1)
         assertThat(result.firstSubmission).isNotNull()
@@ -133,10 +153,16 @@ internal class ProjectStatusServiceImplTest {
         every { userRepository.findByIdOrNull(1) } returns user
         every { projectRepository.findOneById(1) } returns projectReturned
         every { projectStatusRepository.save(any<ProjectStatus>()) } returnsArgument 0
-        every { projectStatusRepository.findFirstByProjectIdAndStatusNotInOrderByUpdatedDesc(eq(1), eq(ignoreStatuses)) } returns previousState
+        every {
+            projectStatusRepository.findFirstByProjectIdAndStatusNotInOrderByUpdatedDesc(
+                eq(1),
+                eq(ignoreStatuses)
+            )
+        } returns previousState
         every { projectRepository.save(any<Project>()) } returnsArgument 0
 
-        val result = projectStatusService.setProjectStatus(1, InputProjectStatus(ProjectApplicationStatus.SUBMITTED, null, null))
+        val result =
+            projectStatusService.setProjectStatus(1, InputProjectStatus(ProjectApplicationStatus.SUBMITTED, null, null))
 
         assertThat(result.id).isEqualTo(1)
         assertThat(result.firstSubmission).isNotNull()
@@ -162,7 +188,11 @@ internal class ProjectStatusServiceImplTest {
 
         val result = projectStatusService.setProjectStatus(
             projectId = 1,
-            statusChange = InputProjectStatus(ProjectApplicationStatus.ELIGIBLE, "some note", LocalDate.now().plusDays(1))
+            statusChange = InputProjectStatus(
+                ProjectApplicationStatus.ELIGIBLE,
+                "some note",
+                LocalDate.now().plusDays(1)
+            )
         )
 
         assertThat(result.id).isEqualTo(1)
@@ -231,7 +261,11 @@ internal class ProjectStatusServiceImplTest {
 
         val result = projectStatusService.setProjectStatus(
             projectId = 1,
-            statusChange = InputProjectStatus(ProjectApplicationStatus.APPROVED_WITH_CONDITIONS, "some note", LocalDate.now().plusDays(1))
+            statusChange = InputProjectStatus(
+                ProjectApplicationStatus.APPROVED_WITH_CONDITIONS,
+                "some note",
+                LocalDate.now().plusDays(1)
+            )
         )
 
         assertThat(result.id).isEqualTo(1)
@@ -253,7 +287,11 @@ internal class ProjectStatusServiceImplTest {
 
         val result = projectStatusService.setProjectStatus(
             projectId = 1,
-            statusChange = InputProjectStatus(ProjectApplicationStatus.NOT_APPROVED, "some note", LocalDate.now().plusDays(1))
+            statusChange = InputProjectStatus(
+                ProjectApplicationStatus.NOT_APPROVED,
+                "some note",
+                LocalDate.now().plusDays(1)
+            )
         )
 
         assertThat(result.id).isEqualTo(1)
@@ -269,9 +307,7 @@ internal class ProjectStatusServiceImplTest {
         val allowedTransitions = setOf(
             projectEligible to ProjectApplicationStatus.APPROVED,
             projectEligible to ProjectApplicationStatus.NOT_APPROVED,
-            projectEligible to ProjectApplicationStatus.APPROVED_WITH_CONDITIONS,
-            projectApprovedWithConditions to ProjectApplicationStatus.NOT_APPROVED,
-            projectApprovedWithConditions to ProjectApplicationStatus.APPROVED
+            projectEligible to ProjectApplicationStatus.APPROVED_WITH_CONDITIONS
         )
 
         allowedTransitions.forEach { testAlowedFundingTransitions(it) }
@@ -323,7 +359,15 @@ internal class ProjectStatusServiceImplTest {
             acronym = "acronym",
             applicant = user,
             projectStatus = ProjectStatus(1, null, status, user, statusTime, null, note),
-            firstSubmission = if (submitTime != null) ProjectStatus(2, null, ProjectApplicationStatus.SUBMITTED, user, submitTime, null, note) else null
+            firstSubmission = if (submitTime != null) ProjectStatus(
+                2,
+                null,
+                ProjectApplicationStatus.SUBMITTED,
+                user,
+                submitTime,
+                null,
+                note
+            ) else null
         )
     }
 
@@ -349,7 +393,14 @@ internal class ProjectStatusServiceImplTest {
     @Test
     fun `set quality assessment`() {
         every { securityService.currentUser } returns LocalCurrentUser(userProgramme, "hash_pass", emptyList())
-        every { userRepository.findByIdOrNull(any()) } returns User(1, "programme@email", "", "", UserRole(7, "programme"), "hash_pass")
+        every { userRepository.findByIdOrNull(any()) } returns User(
+            1,
+            "programme@email",
+            "",
+            "",
+            UserRole(7, "programme"),
+            "hash_pass"
+        )
         every { projectRepository.findOneById(16) } returns projectSubmitted.copy(id = 16)
         every { projectRepository.save(any<Project>()) } returnsArgument 0
 
@@ -384,7 +435,14 @@ internal class ProjectStatusServiceImplTest {
     @Test
     fun `set QA no project`() {
         every { securityService.currentUser } returns LocalCurrentUser(userProgramme, "hash_pass", emptyList())
-        every { userRepository.findByIdOrNull(any()) } returns User(1, "programme@email", "", "", UserRole(7, "programme"), "hash_pass")
+        every { userRepository.findByIdOrNull(any()) } returns User(
+            1,
+            "programme@email",
+            "",
+            "",
+            UserRole(7, "programme"),
+            "hash_pass"
+        )
         every { projectRepository.findOneById(-51) } returns null
 
         val data = InputProjectQualityAssessment(ProjectQualityAssessmentResult.RECOMMENDED_WITH_CONDITIONS)
@@ -394,7 +452,14 @@ internal class ProjectStatusServiceImplTest {
     @Test
     fun `set eligibility assessment`() {
         every { securityService.currentUser } returns LocalCurrentUser(userProgramme, "hash_pass", emptyList())
-        every { userRepository.findByIdOrNull(any()) } returns User(1, "programme@email", "", "", UserRole(7, "programme"), "hash_pass")
+        every { userRepository.findByIdOrNull(any()) } returns User(
+            1,
+            "programme@email",
+            "",
+            "",
+            UserRole(7, "programme"),
+            "hash_pass"
+        )
         every { projectRepository.findOneById(79) } returns projectSubmitted.copy(id = 79)
         every { projectRepository.save(any<Project>()) } returnsArgument 0
 
@@ -429,7 +494,14 @@ internal class ProjectStatusServiceImplTest {
     @Test
     fun `set EA no project`() {
         every { securityService.currentUser } returns LocalCurrentUser(userProgramme, "hash_pass", emptyList())
-        every { userRepository.findByIdOrNull(any()) } returns User(1, "programme@email", "", "", UserRole(7, "programme"), "hash_pass")
+        every { userRepository.findByIdOrNull(any()) } returns User(
+            1,
+            "programme@email",
+            "",
+            "",
+            UserRole(7, "programme"),
+            "hash_pass"
+        )
         every { projectRepository.findOneById(-22) } returns null
 
         val data = InputProjectEligibilityAssessment(ProjectEligibilityAssessmentResult.FAILED)

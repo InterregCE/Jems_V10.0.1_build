@@ -1,6 +1,7 @@
 package io.cloudflight.ems.service
 
 import io.cloudflight.ems.api.dto.OutputProjectFile
+import io.cloudflight.ems.api.dto.ProjectFileType
 import io.cloudflight.ems.dto.FileMetadata
 import io.cloudflight.ems.entity.Audit
 import io.cloudflight.ems.entity.ProjectFile
@@ -31,7 +32,7 @@ class FileStorageServiceImpl(
 
     @Transactional
     override fun saveFile(stream: InputStream, fileMetadata: FileMetadata) {
-        val potentialDuplicate = getFileByName(fileMetadata.projectId, fileMetadata.name)
+        val potentialDuplicate = getFileByName(fileMetadata)
         if (potentialDuplicate.isPresent) {
             with(potentialDuplicate.get()) {
                 auditService.logEvent(
@@ -44,12 +45,12 @@ class FileStorageServiceImpl(
         }
 
         val project = projectRepository.findById(fileMetadata.projectId)
-            .orElseThrow { throw ResourceNotFoundException() }
+            .orElseThrow { ResourceNotFoundException() }
 
         val author = userRepository.findById(securityService.currentUser?.user?.id!!)
-            .orElseThrow { throw ResourceNotFoundException() }
+            .orElseThrow { ResourceNotFoundException() }
 
-        val filePath = getFilePath(fileMetadata.projectId, fileMetadata.name)
+        val filePath = getFilePath(fileMetadata)
         val projectFileEntity = ProjectFile(
             id = null,
             bucket = PROJECT_FILES_BUCKET,
@@ -57,6 +58,7 @@ class FileStorageServiceImpl(
             name = fileMetadata.name,
             project = project,
             author = author,
+            type = fileMetadata.type,
             description = null,
             size = fileMetadata.size,
             updated = ZonedDateTime.now()
@@ -88,8 +90,8 @@ class FileStorageServiceImpl(
     }
 
     @Transactional(readOnly = true)
-    override fun getFilesForProject(projectId: Long, page: Pageable): Page<OutputProjectFile> {
-        return projectFileRepository.findAllByProjectId(projectId, page).map { it.toOutputProjectFile() }
+    override fun getFilesForProject(projectId: Long, type: ProjectFileType, page: Pageable): Page<OutputProjectFile> {
+        return projectFileRepository.findAllByProjectIdAndType(projectId, type, page).map { it.toOutputProjectFile() }
     }
 
     @Transactional
@@ -130,12 +132,15 @@ class FileStorageServiceImpl(
         return result.get()
     }
 
-    private fun getFileByName(projectId: Long, name: String): Optional<ProjectFile> {
-        return projectFileRepository.findFirstByProjectIdAndName(projectId = projectId, name = name)
+    private fun getFileByName(fileMetadata: FileMetadata): Optional<ProjectFile> {
+        with (fileMetadata) {
+            return projectFileRepository
+                .findFirstByProjectIdAndNameAndType(projectId, name, type)
+        }
     }
 
-    private fun getFilePath(projectIdentifier: Long, fileIdentifier: String): String {
-        return "project-$projectIdentifier/$fileIdentifier"
+    private fun getFilePath(fileMetadata: FileMetadata): String {
+        return "project-${fileMetadata.projectId}/${fileMetadata.type}/${fileMetadata.name}"
     }
 
 }

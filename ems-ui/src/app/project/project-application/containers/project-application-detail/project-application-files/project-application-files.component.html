@@ -2,7 +2,8 @@
     <app-project-application-file-upload
             *ngxPermissionsExcept="[Permission.PROGRAMME_USER]"
             [fileNumber]="details.page.totalElements"
-            [statusMessages]="statusMessages"
+            [success$]="uploadSuccess$"
+            [error$]="uploadError$"
             [projectStatus]="details.project.projectStatus.status"
             [permission]="details.permission"
             (uploadFile)="addNewFilesForUpload($event)">

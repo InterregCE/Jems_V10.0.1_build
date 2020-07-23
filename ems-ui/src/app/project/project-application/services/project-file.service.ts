@@ -1,7 +1,7 @@
 import {Injectable} from '@angular/core';
 import {HttpClient} from '@angular/common/http';
 import {Observable} from 'rxjs';
-import { ProjectFileStorageService, PageOutputProjectFile, InputProjectFileDescription, OutputProjectFile } from '@cat/api';
+import {ProjectFileStorageService} from '@cat/api';
 
 @Injectable()
 export class ProjectFileService {
@@ -14,7 +14,7 @@ export class ProjectFileService {
   public addProjectFile(project: number, file: File) {
     const formData = new FormData();
     formData.append('file', file);
-    return this.http.post(`${this.basePath}/${project}/file/`, formData);
+    return this.http.post(`${this.basePath}/${project}/file/application`, formData);
   }
 
   public getDownloadLink(projectId: number, fileId: number): string {

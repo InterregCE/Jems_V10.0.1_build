@@ -133,7 +133,7 @@ class ProjectStatusServiceImpl(
             newStatus.status == SUBMITTED -> {
                 oldProject.copy(projectStatus = newStatus, firstSubmission = newStatus)
             }
-            isFundingDecision(oldStatus, newStatus.status) -> {
+            isFirstFunding(oldStatus, newStatus.status) -> {
                 oldProject.copy(projectStatus = newStatus, fundingDecision = newStatus)
             }
             else -> {
@@ -142,8 +142,8 @@ class ProjectStatusServiceImpl(
         }
     }
 
-    private fun isFundingDecision(oldStatus: ProjectApplicationStatus, newStatus: ProjectApplicationStatus): Boolean {
-        val oldPossibilities = setOf(ELIGIBLE, APPROVED_WITH_CONDITIONS)
+    private fun isFirstFunding(oldStatus: ProjectApplicationStatus, newStatus: ProjectApplicationStatus): Boolean {
+        val oldPossibilities = setOf(ELIGIBLE)
         val newPossibilities = setOf(APPROVED, APPROVED_WITH_CONDITIONS, NOT_APPROVED)
         return oldPossibilities.contains(oldStatus) && newPossibilities.contains(newStatus) && oldStatus != newStatus
     }

@@ -131,25 +131,31 @@ internal class ProjectStatusAuthorizationTest {
     private val projectApprovedWithConditions = createProject(PID_APPROVED_WITH_CONDITIONS, ProjectApplicationStatus.APPROVED_WITH_CONDITIONS)
     private val projectApproved = createProject(PID_APPROVED, ProjectApplicationStatus.APPROVED)
 
+    private val projects = mapOf(
+        PID_DRAFT to projectDraft,
+        PID_SUBMITTED to projectSubmitted,
+        PID_SUBMITTED_WITH_EA to projectSubmittedWithEa,
+        PID_RETURNED to projectReturned,
+        PID_ELIGIBLE to projectEligible,
+        PID_INELIGIBLE to projectIneligible,
+        PID_ELIGIBLE_WITH_QA to projectEligibleWithQA,
+        PID_NOT_APPROVED to projectNotApproved,
+        PID_APPROVED to projectApproved,
+        PID_APPROVED_WITH_CONDITIONS to projectApprovedWithConditions
+    )
+
     @BeforeEach
     fun setup() {
         MockKAnnotations.init(this)
         projectStatusAuthorization = ProjectStatusAuthorization(securityService, projectService)
 
-        every { projectService.getById(PID_DRAFT) } returns projectDraft
-        every { projectService.getById(PID_SUBMITTED) } returns projectSubmitted
-        every { projectService.getById(PID_SUBMITTED_WITH_EA) } returns projectSubmittedWithEa
-        every { projectService.getById(PID_RETURNED) } returns projectReturned
-        every { projectService.getById(PID_ELIGIBLE) } returns projectEligible
-        every { projectService.getById(PID_INELIGIBLE) } returns projectIneligible
-        every { projectService.getById(PID_ELIGIBLE_WITH_QA) } returns projectEligibleWithQA
-        every { projectService.getById(PID_NOT_APPROVED) } returns projectNotApproved
-        every { projectService.getById(PID_APPROVED_WITH_CONDITIONS) } returns projectApprovedWithConditions
-        every { projectService.getById(PID_APPROVED) } returns projectApproved
+        projects.forEach { (projectId, projectObject) ->
+            every { projectService.getById(projectId) } returns projectObject
+        }
     }
 
     @Test
-    fun `admin can change any allowed status`() {
+    fun `admin can perform any allowed status transition`() {
         every { securityService.currentUser } returns LocalCurrentUser(
             userAdmin, "hash_pass", listOf(
                 SimpleGrantedAuthority("ROLE_" + userAdmin.userRole.name)
@@ -157,20 +163,24 @@ internal class ProjectStatusAuthorizationTest {
         )
 
         assertTrue(projectStatusAuthorization.canChangeStatusTo(PID_DRAFT, ProjectApplicationStatus.SUBMITTED))
-        assertTrue(
-            projectStatusAuthorization.canChangeStatusTo(
-                PID_SUBMITTED,
-                ProjectApplicationStatus.RETURNED_TO_APPLICANT
-            )
-        )
+
+        listOf(PID_SUBMITTED, PID_ELIGIBLE, PID_APPROVED_WITH_CONDITIONS)
+            .forEach {
+                assertTrue(
+                    projectStatusAuthorization.canChangeStatusTo(it, ProjectApplicationStatus.RETURNED_TO_APPLICANT),
+                    "transition from ${projects[it]?.projectStatus?.status} to ${ProjectApplicationStatus.RETURNED_TO_APPLICANT} should be possible"
+                )
+            }
 
         assertFalse(projectStatusAuthorization.canChangeStatusTo(PID_SUBMITTED, ProjectApplicationStatus.SUBMITTED))
-        assertFalse(
-            projectStatusAuthorization.canChangeStatusTo(
-                PID_RETURNED,
-                ProjectApplicationStatus.RETURNED_TO_APPLICANT
-            )
-        )
+
+        listOf(PID_DRAFT, PID_RETURNED, PID_APPROVED, PID_NOT_APPROVED)
+            .forEach {
+                assertFalse(
+                    projectStatusAuthorization.canChangeStatusTo(it, ProjectApplicationStatus.RETURNED_TO_APPLICANT),
+                    "transition from ${projects[it]?.projectStatus?.status} to ${ProjectApplicationStatus.RETURNED_TO_APPLICANT} should not be possible"
+                )
+            }
     }
 
     @Test

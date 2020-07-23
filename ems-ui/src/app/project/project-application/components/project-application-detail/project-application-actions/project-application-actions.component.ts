@@ -19,6 +19,13 @@ export class ProjectApplicationActionsComponent extends AbstractForm {
   Permission = Permission;
   OutputProjectStatus = OutputProjectStatus;
 
+  returnableStatuses = [
+    OutputProjectStatus.StatusEnum.SUBMITTED,
+    OutputProjectStatus.StatusEnum.ELIGIBLE,
+    OutputProjectStatus.StatusEnum.INELIGIBLE,
+    OutputProjectStatus.StatusEnum.APPROVEDWITHCONDITIONS,
+  ];
+
   @Input()
   projectStatus: OutputProjectStatus.StatusEnum;
 

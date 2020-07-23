@@ -1,8 +1,29 @@
-<ng-container *ngxPermissionsExcept="[Permission.APPLICANT_USER]">
-    <app-project-application-funding-decision
-            *ngIf="project$ | async as project"
-            [project]="project"
-            (changeStatus)="projectStore.changeStatus($event)"
-            (cancel)="redirectToProject()">
-    </app-project-application-funding-decision>
+<ng-container *ngIf="details$ | async as details">
+    <a [routerLink]="['../../../project', details.project.id]">&lt; Back to Project Application Details</a>
+    <div *ngxPermissionsExcept="[Permission.APPLICANT_USER]" class="project-detail-container">
+        <app-project-application-information
+                [project]="details.project">
+        </app-project-application-information>
+        <div class="assessment-container">
+            <h5>Funding Decision</h5>
+            <app-project-application-funding-decision
+                    *ngIf="details.showWithConditions"
+                    [project]="details.project"
+                    [status]="details.withConditionsStatus"
+                    [options]="details.withConditionsStatusOptions"
+                    [submitLabel]="details.withConditionsSubmitLabel"
+                    (changeStatus)="projectStore.changeStatus($event)"
+                    (cancel)="redirectToProject()">
+            </app-project-application-funding-decision>
+            <hr>
+            <app-project-application-funding-decision
+                    [project]="details.project"
+                    [status]="details.status"
+                    [options]="details.statusOptions"
+                    [submitLabel]="details.submitLabel"
+                    (changeStatus)="projectStore.changeStatus($event)"
+                    (cancel)="redirectToProject()">
+            </app-project-application-funding-decision>
+        </div>
+    </div>
 </ng-container>

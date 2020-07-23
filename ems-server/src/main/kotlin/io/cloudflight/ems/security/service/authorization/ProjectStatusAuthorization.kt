@@ -16,9 +16,9 @@ import org.springframework.stereotype.Component
 
 @Component
 class ProjectStatusAuthorization(
-    val securityService: SecurityService,
+    override val securityService: SecurityService,
     val projectService: ProjectService
-) {
+): Authorization(securityService) {
 
     fun canChangeStatusTo(projectId: Long, newStatus: ProjectApplicationStatus): Boolean {
         val project = projectService.getById(projectId)
@@ -48,7 +48,7 @@ class ProjectStatusAuthorization(
     }
 
     fun returned(oldStatus: ProjectApplicationStatus, newStatus: ProjectApplicationStatus): Boolean {
-        val oldPossibilities = setOf(SUBMITTED, ELIGIBLE, INELIGIBLE, APPROVED, APPROVED_WITH_CONDITIONS, NOT_APPROVED)
+        val oldPossibilities = setOf(SUBMITTED, ELIGIBLE, INELIGIBLE, APPROVED_WITH_CONDITIONS)
         return oldPossibilities.contains(oldStatus) && newStatus == RETURNED_TO_APPLICANT
     }
 
@@ -71,9 +71,9 @@ class ProjectStatusAuthorization(
 
     fun eligibilityFilled(project: OutputProject, newStatus: ProjectApplicationStatus): Boolean {
         val newPossibilities = setOf(ELIGIBLE, INELIGIBLE)
-        val oldStatus = SUBMITTED
+        val oldStatus = project.projectStatus.status
 
-        return oldStatus == project.projectStatus.status
+        return oldStatus == SUBMITTED
                 && newPossibilities.contains(newStatus)
                 && project.eligibilityAssessment != null
     }
@@ -97,14 +97,6 @@ class ProjectStatusAuthorization(
 
     fun isOwner(project: OutputProject): Boolean {
         return project.applicant.id == securityService.currentUser?.user?.id
-    }
-
-    fun isAdmin(): Boolean {
-        return securityService.currentUser?.isAdmin!!
-    }
-
-    fun isProgrammeUser(): Boolean {
-        return securityService.currentUser?.isProgrammeUser!!
     }
 
 }

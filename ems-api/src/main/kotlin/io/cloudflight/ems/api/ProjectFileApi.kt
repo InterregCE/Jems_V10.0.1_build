@@ -26,10 +26,15 @@ import javax.validation.Valid
 @RequestMapping("/api/project/{projectId}/file")
 interface ProjectFileApi {
 
-    // TODO recheck if not possible to get swagger-codegen working without hidden
-    @ApiOperation("Upload file to project", hidden = true)
-    @PostMapping(consumes = [MediaType.MULTIPART_FORM_DATA_VALUE])
-    fun uploadProjectFile(
+    @ApiOperation("Upload application file to project", hidden = true)
+    @PostMapping("/application", consumes = [MediaType.MULTIPART_FORM_DATA_VALUE])
+    fun uploadApplicationProjectFile(
+        @PathVariable projectId: Long,
+        @RequestPart("file") file: MultipartFile)
+
+    @ApiOperation("Upload assessment file to project", hidden = true)
+    @PostMapping("/assessment", consumes = [MediaType.MULTIPART_FORM_DATA_VALUE])
+    fun uploadAssessmentProjectFile(
         @PathVariable projectId: Long,
         @RequestPart("file") file: MultipartFile)
 
@@ -39,14 +44,23 @@ interface ProjectFileApi {
         @PathVariable projectId: Long,
         @PathVariable fileId: Long): ResponseEntity<ByteArrayResource>
 
-    @ApiOperation("Get list of files")
+    @ApiOperation("Get list of application files")
     @ApiImplicitParams(
         ApiImplicitParam(paramType = "query", name = "sort", dataType = "string"),
         ApiImplicitParam(paramType = "query", name = "size", dataType = "integer"),
         ApiImplicitParam(paramType = "query", name = "page", dataType = "integer")
     )
-    @GetMapping
-    fun getFilesForProject(@PathVariable projectId: Long, pageable: Pageable): Page<OutputProjectFile>
+    @GetMapping("/application")
+    fun getApplicationFilesForProject(@PathVariable projectId: Long, pageable: Pageable): Page<OutputProjectFile>
+
+    @ApiOperation("Get list of assessment files")
+    @ApiImplicitParams(
+        ApiImplicitParam(paramType = "query", name = "sort", dataType = "string"),
+        ApiImplicitParam(paramType = "query", name = "size", dataType = "integer"),
+        ApiImplicitParam(paramType = "query", name = "page", dataType = "integer")
+    )
+    @GetMapping("/assessment")
+    fun getAssessmentFilesForProject(@PathVariable projectId: Long, pageable: Pageable): Page<OutputProjectFile>
 
     @ApiOperation("Specify description for a file")
     @PutMapping("/{fileId}/description", consumes = [MediaType.APPLICATION_JSON_VALUE])

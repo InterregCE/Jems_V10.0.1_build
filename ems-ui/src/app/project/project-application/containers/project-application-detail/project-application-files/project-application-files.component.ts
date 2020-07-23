@@ -1,7 +1,7 @@
 import {ChangeDetectionStrategy, Component, Input} from '@angular/core';
 import {PermissionService} from '../../../../../security/permissions/permission.service';
 import {ProjectStore} from '../services/project-store.service';
-import {combineLatest, of, Subject} from 'rxjs';
+import {combineLatest, ReplaySubject, Subject} from 'rxjs';
 import {catchError, flatMap, map, startWith, take, takeUntil, tap} from 'rxjs/operators';
 import {BaseComponent} from '@common/components/base-component';
 import {Permission} from '../../../../../security/permissions/permission';
@@ -11,6 +11,7 @@ import {Tables} from '../../../../../common/utils/tables';
 import {Log} from '../../../../../common/utils/log';
 import {ProjectFileService} from '../../../services/project-file.service';
 import {HttpErrorResponse} from '@angular/common/http';
+import {I18nValidationError} from '@common/validation/i18n-validation-error';
 
 @Component({
   selector: 'app-project-application-files',
@@ -23,7 +24,9 @@ export class ProjectApplicationFilesComponent extends BaseComponent {
 
   @Input()
   projectId: number;
-  statusMessages: string[] = [];
+
+  uploadSuccess$ = new Subject<boolean>();
+  uploadError$ = new ReplaySubject<I18nValidationError | null>();
 
   newPageSize$ = new Subject<number>();
   newPageIndex$ = new Subject<number>();
@@ -42,7 +45,7 @@ export class ProjectApplicationFilesComponent extends BaseComponent {
   ])
     .pipe(
       flatMap(([pageIndex, pageSize, sort]) =>
-        this.projectFileStorageService.getFilesForProject(this.projectId, pageIndex, pageSize, sort)),
+        this.projectFileStorageService.getApplicationFilesForProject(this.projectId, pageIndex, pageSize, sort)),
       tap(page => Log.info('Fetched the project files:', this, page.content)),
     );
 
@@ -69,13 +72,12 @@ export class ProjectApplicationFilesComponent extends BaseComponent {
         take(1),
         takeUntil(this.destroyed$),
         tap(() => this.newPageIndex$.next(Tables.DEFAULT_INITIAL_PAGE_INDEX)),
-        map(() => `Upload of '${file.name}' successful.`),
-        catchError((error: HttpErrorResponse) =>
-          of(error.status === 422
-            ? `File '${file.name}' already exists.`
-            : `Upload of '${file.name}' not successful.`)
-        ),
-        tap(message => this.statusMessages = [message, ...this.statusMessages])
+        tap(() => this.uploadSuccess$.next(true)),
+        tap(() => this.uploadError$.next(null)),
+        catchError((error: HttpErrorResponse) => {
+          this.uploadError$.next({httpStatus: error.status})
+          throw error;
+        })
       ).subscribe();
   }
 
