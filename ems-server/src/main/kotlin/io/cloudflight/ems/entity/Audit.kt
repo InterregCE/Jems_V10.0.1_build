@@ -3,6 +3,7 @@ package io.cloudflight.ems.entity
 import io.cloudflight.ems.api.dto.ProjectApplicationStatus
 import io.cloudflight.ems.api.dto.ProjectEligibilityAssessmentResult
 import io.cloudflight.ems.api.dto.ProjectQualityAssessmentResult
+import io.cloudflight.ems.api.dto.call.OutputCall
 import io.cloudflight.ems.api.dto.user.OutputUser
 import io.cloudflight.ems.api.dto.user.OutputUserWithRole
 import io.cloudflight.ems.security.model.CurrentUser
@@ -206,6 +207,15 @@ data class Audit(
                 projectId = projectId,
                 user = currentUser?.toEsUser(),
                 description = "Project application eligibility assessment concluded as $result"
+            )
+        }
+
+        fun callCreated(currentUser: CurrentUser?, callId: String, call: OutputCall): Audit {
+            return Audit(
+                action = AuditAction.CALL_CREATED,
+                projectId = callId,
+                user = currentUser?.toEsUser(),
+                description = "new call '${call.name}' was created"
             )
         }
 
