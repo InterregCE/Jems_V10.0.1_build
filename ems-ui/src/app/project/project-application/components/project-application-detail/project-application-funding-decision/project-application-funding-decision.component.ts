@@ -7,7 +7,7 @@ import {
   OnInit,
   Output
 } from '@angular/core';
-import {InputProjectStatus, OutputProject} from '@cat/api';
+import {InputProjectStatus, OutputProject, OutputProjectStatus} from '@cat/api';
 import {AbstractForm} from '@common/components/forms/abstract-form';
 import {FormBuilder, FormGroup, Validators} from '@angular/forms';
 import {MatDialog} from '@angular/material/dialog';
@@ -21,20 +21,21 @@ import {filter, take, takeUntil} from 'rxjs/operators';
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class ProjectApplicationFundingDecisionComponent extends AbstractForm implements OnInit {
+  OutputProjectStatus = OutputProjectStatus;
 
   @Input()
   project: OutputProject;
+  @Input()
+  status: OutputProjectStatus;
+  @Input()
+  options: InputProjectStatus.StatusEnum[];
+  @Input()
+  submitLabel: string;
 
   @Output()
   changeStatus = new EventEmitter<InputProjectStatus>();
   @Output()
   cancel = new EventEmitter<void>();
-
-  options = [
-    InputProjectStatus.StatusEnum.APPROVED,
-    InputProjectStatus.StatusEnum.APPROVEDWITHCONDITIONS,
-    InputProjectStatus.StatusEnum.NOTAPPROVED
-  ];
 
   today = new Date();
   dateErrors = {
@@ -56,9 +57,9 @@ export class ProjectApplicationFundingDecisionComponent extends AbstractForm imp
 
   ngOnInit(): void {
     super.ngOnInit();
-    this.decisionForm.controls.status.setValue(this.project.fundingDecision?.status);
-    this.decisionForm.controls.notes.setValue(this.project.fundingDecision?.note);
-    this.decisionForm.controls.decisionDate.setValue(this.project.fundingDecision?.decisionDate);
+    this.decisionForm.controls.status.setValue(this.status?.status);
+    this.decisionForm.controls.notes.setValue(this.status?.note);
+    this.decisionForm.controls.decisionDate.setValue(this.status?.decisionDate);
   }
 
   onSubmit(): void {
