@@ -17,7 +17,7 @@ import org.springframework.web.bind.annotation.PathVariable
 import javax.validation.Valid
 
 @Api("Call")
-@RequestMapping("api/call")
+@RequestMapping("/api/call")
 interface CallApi {
 
     @ApiOperation("Create a new call")

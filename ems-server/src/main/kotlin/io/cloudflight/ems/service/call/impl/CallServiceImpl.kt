@@ -23,7 +23,7 @@ class CallServiceImpl(
     private val userRepository: UserRepository,
     private val auditService: AuditService,
     private val securityService: SecurityService
-): CallService {
+) : CallService {
 
     @Transactional
     override fun createCall(inputCall: InputCallCreate): OutputCall {
@@ -42,7 +42,8 @@ class CallServiceImpl(
 
     @Transactional(readOnly = true)
     override fun getCallById(id: Long): OutputCall {
-        return callRepository.findById(id).get().toOutputCall()
+        return callRepository.findById(id).map { it.toOutputCall() }
+            .orElseThrow { ResourceNotFoundException() }
     }
 
     @Transactional(readOnly = true)

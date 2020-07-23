@@ -93,7 +93,6 @@ class CallServiceTest {
         val result = callService.createCall(newCall)
         assertThat(result).isNotNull
         assertThat(result.name).isEqualTo("Test call name")
-        assertThat(result.creator).isEqualTo(account.email)
         assertThat(result.status).isEqualTo(CallStatus.DRAFT)
 
         val event = slot<Audit>()

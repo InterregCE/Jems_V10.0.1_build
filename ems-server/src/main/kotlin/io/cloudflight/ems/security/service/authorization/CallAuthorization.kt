@@ -6,20 +6,12 @@ import org.springframework.stereotype.Component
 
 @Component
 class CallAuthorization(
-    val securityService: SecurityService,
+    override val securityService: SecurityService,
     val callService: CallService
-) {
+) : Authorization(securityService) {
 
     fun canCreateCall(): Boolean {
         return isAdmin() || isProgrammeUser()
-    }
-
-    fun isAdmin(): Boolean {
-        return securityService.currentUser?.isAdmin!!
-    }
-
-    fun isProgrammeUser(): Boolean {
-        return securityService.currentUser?.isProgrammeUser!!
     }
 
 }
