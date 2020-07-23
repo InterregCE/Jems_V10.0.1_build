@@ -1,4 +1,4 @@
-package io.cloudflight.ems.api
+package io.cloudflight.ems.api.programme
 
 import io.cloudflight.ems.api.dto.ProgrammeSetup
 import io.swagger.annotations.Api

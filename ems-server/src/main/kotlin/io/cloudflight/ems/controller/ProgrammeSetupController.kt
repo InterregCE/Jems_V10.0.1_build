@@ -1,6 +1,6 @@
 package io.cloudflight.ems.controller
 
-import io.cloudflight.ems.api.ProgrammeSetupApi
+import io.cloudflight.ems.api.programme.ProgrammeSetupApi
 import io.cloudflight.ems.api.dto.ProgrammeSetup
 import io.cloudflight.ems.service.ProgrammeDataService
 import org.springframework.security.access.prepost.PreAuthorize

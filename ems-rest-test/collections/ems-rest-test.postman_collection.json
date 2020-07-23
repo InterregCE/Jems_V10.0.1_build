@@ -3328,6 +3328,83 @@
 					"response": []
 				},
 				{
+					"name": "program user cannot change to ELIGIBLE with date in future",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "8b244b9b-d8f7-4462-ab8f-8bf4c264c72b",
+								"exec": [
+									"var date = new Date();\r",
+									"date.setDate(date.getDate() + 5);\r",
+									"pm.variables.set('date_plus_5', date.toISOString().split('T')[0]);\r",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"id": "4a8297d9-d6b6-496b-a6a0-8df48ef35234",
+								"exec": [
+									"pm.test('program user should not be able to change status to ELIGIBLE with date in future', function() {\r",
+									"    pm.response.to.have.status(400);\r",
+									"});\r",
+									"\r",
+									"pm.test('correct translation key returned for this error', function() {\r",
+									"    pm.expect(pm.response.json().i18nFieldErrors.date.i18nKey)\r",
+									"        .to.eql('project.status.date.should.be.in.past.or.present')\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "basic",
+							"basic": [
+								{
+									"key": "password",
+									"value": "{{programme_user_email}}",
+									"type": "string"
+								},
+								{
+									"key": "username",
+									"value": "{{programme_user_email}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"status\": \"ELIGIBLE\",\r\n    \"date\": \"{{date_plus_5}}\"\r\n}\r\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{url}}/api/project/{{application_id}}/status",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"api",
+								"project",
+								"{{application_id}}",
+								"status"
+							]
+						}
+					},
+					"response": []
+				},
+				{
 					"name": "program user can change status to ELIGIBLE",
 					"event": [
 						{
@@ -3336,8 +3413,8 @@
 								"id": "72034709-8f32-434c-9c5f-27870b337fc8",
 								"exec": [
 									"var date = new Date();\r",
-									"date.setDate(date.getDate() + 1);\r",
-									"pm.variables.set('eligibility_decision_date_tomorrow', date.toISOString().split('T')[0]);\r",
+									"date.setDate(date.getDate() - 5);\r",
+									"pm.variables.set('eligibility_decision_date_minus_5', date.toISOString().split('T')[0]);\r",
 									""
 								],
 								"type": "text/javascript"
@@ -3358,9 +3435,9 @@
 									"    pm.expect(application.projectStatus.status).to.eql('ELIGIBLE');\r",
 									"});\r",
 									"\r",
-									"pm.test('status decision date is set to tomorrow', function() {\r",
+									"pm.test('status decision date is set to date -5days', function() {\r",
 									"    pm.expect(application.projectStatus.decisionDate)\r",
-									"        .to.eql(pm.variables.get(\"eligibility_decision_date_tomorrow\"));\r",
+									"        .to.eql(pm.variables.get(\"eligibility_decision_date_minus_5\"));\r",
 									"});\r",
 									"\r",
 									"pm.test('status change is assigned to program user who triggered change', function() {\r",
@@ -3393,7 +3470,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"status\": \"ELIGIBLE\",\r\n    \"date\": \"{{eligibility_decision_date_tomorrow}}\"\r\n}\r\n",
+							"raw": "{\r\n    \"status\": \"ELIGIBLE\",\r\n    \"date\": \"{{eligibility_decision_date_minus_5}}\"\r\n}\r\n",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -4344,8 +4421,8 @@
 										"id": "3e161145-a83c-47d6-8a5a-1484ea6c59e4",
 										"exec": [
 											"var date = new Date();\r",
-											"date.setDate(date.getDate() + 1);\r",
-											"pm.variables.set('eligibility_decision_date_tomorrow', date.toISOString().split('T')[0]);\r",
+											"date.setDate(date.getDate() - 5);\r",
+											"pm.variables.set('eligibility_decision_date_minus_5', date.toISOString().split('T')[0]);\r",
 											""
 										],
 										"type": "text/javascript"
@@ -4391,7 +4468,7 @@
 								"header": [],
 								"body": {
 									"mode": "raw",
-									"raw": "{\r\n    \"status\": \"INELIGIBLE\",\r\n    \"date\": \"{{eligibility_decision_date_tomorrow}}\"\r\n}\r\n",
+									"raw": "{\r\n    \"status\": \"INELIGIBLE\",\r\n    \"date\": \"{{eligibility_decision_date_minus_5}}\"\r\n}\r\n",
 									"options": {
 										"raw": {
 											"language": "json"
@@ -4935,8 +5012,8 @@
 										"id": "f98a7278-a037-44c8-8e32-af76e8d668b5",
 										"exec": [
 											"var date = new Date();\r",
-											"date.setDate(date.getDate() + 1);\r",
-											"pm.variables.set('eligibility_decision_date_tomorrow', date.toISOString().split('T')[0]);\r",
+											"date.setDate(date.getDate() - 5);\r",
+											"pm.variables.set('eligibility_decision_date_minus_5', date.toISOString().split('T')[0]);\r",
 											""
 										],
 										"type": "text/javascript"
@@ -4976,7 +5053,7 @@
 								"header": [],
 								"body": {
 									"mode": "raw",
-									"raw": "{\r\n    \"status\": \"ELIGIBLE\",\r\n    \"date\": \"{{eligibility_decision_date_tomorrow}}\"\r\n}\r\n",
+									"raw": "{\r\n    \"status\": \"ELIGIBLE\",\r\n    \"date\": \"{{eligibility_decision_date_minus_5}}\"\r\n}\r\n",
 									"options": {
 										"raw": {
 											"language": "json"
@@ -5007,8 +5084,8 @@
 										"id": "681ec09b-d6fd-4664-821f-c67706a3d5cb",
 										"exec": [
 											"var date = new Date();\r",
-											"date.setDate(date.getDate() + 3);\r",
-											"pm.variables.set('funding_decision_date_tomorrow', date.toISOString().split('T')[0]);\r",
+											"date.setDate(date.getDate() - 3);\r",
+											"pm.variables.set('funding_decision_date_minus_3', date.toISOString().split('T')[0]);\r",
 											""
 										],
 										"type": "text/javascript"
@@ -5031,7 +5108,7 @@
 											"\r",
 											"pm.test('status decision date is set to tomorrow', function() {\r",
 											"    pm.expect(application.projectStatus.decisionDate)\r",
-											"        .to.eql(pm.variables.get(\"funding_decision_date_tomorrow\"));\r",
+											"        .to.eql(pm.variables.get(\"funding_decision_date_minus_3\"));\r",
 											"});\r",
 											"\r",
 											"pm.test('status change is assigned to program user who triggered change', function() {\r",
@@ -5075,7 +5152,7 @@
 								"header": [],
 								"body": {
 									"mode": "raw",
-									"raw": "{\r\n    \"status\": \"APPROVED\",\r\n    \"note\": \"changed to approved\",\r\n    \"date\": \"{{funding_decision_date_tomorrow}}\"\r\n}\r\n",
+									"raw": "{\r\n    \"status\": \"APPROVED\",\r\n    \"note\": \"changed to approved\",\r\n    \"date\": \"{{funding_decision_date_minus_3}}\"\r\n}\r\n",
 									"options": {
 										"raw": {
 											"language": "json"
@@ -5625,8 +5702,8 @@
 										"id": "def170ac-2c8b-4334-a61e-8d52d50c0de3",
 										"exec": [
 											"var date = new Date();\r",
-											"date.setDate(date.getDate() + 1);\r",
-											"pm.variables.set('eligibility_decision_date_tomorrow', date.toISOString().split('T')[0]);\r",
+											"date.setDate(date.getDate() - 5);\r",
+											"pm.variables.set('eligibility_decision_date_minus_5', date.toISOString().split('T')[0]);\r",
 											""
 										],
 										"type": "text/javascript"
@@ -5666,7 +5743,7 @@
 								"header": [],
 								"body": {
 									"mode": "raw",
-									"raw": "{\r\n    \"status\": \"ELIGIBLE\",\r\n    \"date\": \"{{eligibility_decision_date_tomorrow}}\"\r\n}\r\n",
+									"raw": "{\r\n    \"status\": \"ELIGIBLE\",\r\n    \"date\": \"{{eligibility_decision_date_minus_5}}\"\r\n}\r\n",
 									"options": {
 										"raw": {
 											"language": "json"
@@ -6061,8 +6138,8 @@
 										"id": "0b226160-cfe4-498e-8921-6d66c2eae4b4",
 										"exec": [
 											"var date = new Date();\r",
-											"date.setDate(date.getDate() + 1);\r",
-											"pm.variables.set('eligibility_decision_date_tomorrow', date.toISOString().split('T')[0]);\r",
+											"date.setDate(date.getDate() - 5);\r",
+											"pm.variables.set('eligibility_decision_date_minus_5', date.toISOString().split('T')[0]);\r",
 											""
 										],
 										"type": "text/javascript"
@@ -6102,7 +6179,7 @@
 								"header": [],
 								"body": {
 									"mode": "raw",
-									"raw": "{\r\n    \"status\": \"ELIGIBLE\",\r\n    \"date\": \"{{eligibility_decision_date_tomorrow}}\"\r\n}\r\n",
+									"raw": "{\r\n    \"status\": \"ELIGIBLE\",\r\n    \"date\": \"{{eligibility_decision_date_minus_5}}\"\r\n}\r\n",
 									"options": {
 										"raw": {
 											"language": "json"
@@ -6133,8 +6210,8 @@
 										"id": "5f95f3e1-b0be-4888-adca-c0cd58a2311c",
 										"exec": [
 											"var date = new Date();\r",
-											"date.setDate(date.getDate() + 3);\r",
-											"pm.variables.set('funding_decision_date_tomorrow', date.toISOString().split('T')[0]);\r",
+											"date.setDate(date.getDate() - 3);\r",
+											"pm.variables.set('funding_decision_date_minus_3', date.toISOString().split('T')[0]);\r",
 											""
 										],
 										"type": "text/javascript"
@@ -6157,7 +6234,7 @@
 											"\r",
 											"pm.test('status decision date is set to tomorrow', function() {\r",
 											"    pm.expect(application.projectStatus.decisionDate)\r",
-											"        .to.eql(pm.variables.get(\"funding_decision_date_tomorrow\"));\r",
+											"        .to.eql(pm.variables.get(\"funding_decision_date_minus_3\"));\r",
 											"});\r",
 											"\r",
 											"pm.test('status change is assigned to program user who triggered change', function() {\r",
@@ -6201,7 +6278,7 @@
 								"header": [],
 								"body": {
 									"mode": "raw",
-									"raw": "{\r\n    \"status\": \"APPROVED_WITH_CONDITIONS\",\r\n    \"note\": \"changed to approved with conditions\",\r\n    \"date\": \"{{funding_decision_date_tomorrow}}\"\r\n}\r\n",
+									"raw": "{\r\n    \"status\": \"APPROVED_WITH_CONDITIONS\",\r\n    \"note\": \"changed to approved with conditions\",\r\n    \"date\": \"{{funding_decision_date_minus_3}}\"\r\n}\r\n",
 									"options": {
 										"raw": {
 											"language": "json"
@@ -6399,8 +6476,8 @@
 										"id": "47e9dee9-66a7-4359-9d0f-d2f3cc9d802d",
 										"exec": [
 											"var date = new Date();\r",
-											"date.setDate(date.getDate() - 5);\r",
-											"pm.variables.set('funding_decision_date_minus_5', date.toISOString().split('T')[0]);\r",
+											"date.setDate(date.getDate() - 2);\r",
+											"pm.variables.set('funding_decision_date_minus_2', date.toISOString().split('T')[0]);\r",
 											""
 										],
 										"type": "text/javascript"
@@ -6423,7 +6500,7 @@
 											"\r",
 											"pm.test('status decision date is set to day-5', function() {\r",
 											"    pm.expect(application.projectStatus.decisionDate)\r",
-											"        .to.eql(pm.variables.get(\"funding_decision_date_minus_5\"));\r",
+											"        .to.eql(pm.variables.get(\"funding_decision_date_minus_2\"));\r",
 											"});\r",
 											"\r",
 											"pm.test('project status should refer to this change', function() {\r",
@@ -6459,7 +6536,7 @@
 								"header": [],
 								"body": {
 									"mode": "raw",
-									"raw": "{\r\n    \"status\": \"APPROVED\",\r\n    \"date\": \"{{funding_decision_date_minus_5}}\"\r\n}\r\n",
+									"raw": "{\r\n    \"status\": \"APPROVED\",\r\n    \"date\": \"{{funding_decision_date_minus_2}}\"\r\n}\r\n",
 									"options": {
 										"raw": {
 											"language": "json"
@@ -6528,7 +6605,7 @@
 	],
 	"variable": [
 		{
-			"id": "20fafdeb-c182-4dfb-8ee9-b77accb895b0",
+			"id": "66ee8f6b-f6f4-49d2-884b-88032b26dec1",
 			"key": "url",
 			"value": "specify_url_here"
 		}

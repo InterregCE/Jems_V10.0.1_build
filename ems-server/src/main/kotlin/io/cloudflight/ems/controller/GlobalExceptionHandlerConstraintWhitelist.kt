@@ -5,5 +5,6 @@ package io.cloudflight.ems.controller
  * We should not send all of them to the FE because of the security.
  */
 val DB_ERROR_WHITE_LIST = listOf(
-    "user.lastAdmin.cannot.be.removed"
+    "user.lastAdmin.cannot.be.removed",
+    "programme.priority.priorityPolicies.should.not.be.of.different.objectives"
 )
