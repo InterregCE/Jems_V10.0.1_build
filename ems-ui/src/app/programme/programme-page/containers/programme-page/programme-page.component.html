@@ -1,0 +1,17 @@
+<ng-container *ngIf="details$ | async as details">
+    <div *ngxPermissionsExcept="Permission.APPLICANT_USER" class="container">
+        <h5>{{'programme.data.page.title' | translate}}</h5>
+        <mat-tab-group class="programme-tab-menu">
+            <mat-tab label="Programme Data">
+                <app-programme-data
+                        [success$]="programmeSaveSuccess$"
+                        [error$]="programmeSaveError$"
+                        [programme]="details.programme"
+                        (saveProgrammeData)="saveProgrammeData$.next($event)">
+                </app-programme-data>
+            </mat-tab>
+<!--           TODO enable with the FE subtask of MP2-354 and add the priority editing to this section-->
+<!--            <mat-tab label="Priorities"> </mat-tab>-->
+        </mat-tab-group>
+    </div>
+</ng-container>

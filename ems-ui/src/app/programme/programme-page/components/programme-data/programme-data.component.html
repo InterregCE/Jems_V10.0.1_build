@@ -1,0 +1,126 @@
+<div class="container vertical-center">
+    <form [formGroup]="programmeForm">
+        <mat-form-field class="field">
+            <mat-label>CCI</mat-label>
+            <input name="cci" formControlName="cci" matInput placeholder="CCI">
+            <mat-error>
+                <app-form-field-errors
+                        [errors]="programmeForm?.controls?.cci?.errors"
+                        [messages]="cciErrors">
+                </app-form-field-errors>
+            </mat-error>
+        </mat-form-field>
+        <mat-form-field class="field-half">
+            <mat-label>Title</mat-label>
+            <input name="title" formControlName="title" matInput placeholder="Title">
+            <mat-error>
+                <app-form-field-errors
+                        [errors]="programmeForm?.controls?.title?.errors"
+                        [messages]="titleErrors">
+                </app-form-field-errors>
+            </mat-error>
+        </mat-form-field>
+        <mat-form-field class="field-half">
+            <mat-label>Version</mat-label>
+            <input name="version" formControlName="version" matInput placeholder="Version">
+            <mat-error>
+                <app-form-field-errors
+                        [errors]="programmeForm?.controls?.version?.errors"
+                        [messages]="versionErrors">
+                </app-form-field-errors>
+            </mat-error>
+        </mat-form-field>
+        <mat-form-field class="field-half">
+            <mat-label>First year</mat-label>
+            <input type="number" name="firstYear" formControlName="firstYear" matInput placeholder="First year">
+            <mat-error>
+                <app-form-field-errors
+                        [errors]="programmeForm?.controls?.firstYear?.errors"
+                        [messages]="firstYearErrors">
+                </app-form-field-errors>
+            </mat-error>
+        </mat-form-field>
+        <mat-form-field class="field-half">
+            <mat-label>Last year</mat-label>
+            <input type="number" name="lastYear" formControlName="lastYear" matInput placeholder="Last year">
+            <mat-error>
+                <app-form-field-errors
+                        [errors]="programmeForm?.controls?.lastYear?.errors"
+                        [messages]="lastYearErrors">
+                </app-form-field-errors>
+            </mat-error>
+        </mat-form-field>
+        <mat-form-field class="field-half">
+            <mat-label>Eligible from</mat-label>
+            <input name="eligibleFrom" formControlName="eligibleFrom" matInput placeholder="Eligible from" [matDatepicker]="eligibleFromPicker">
+            <mat-datepicker-toggle matSuffix [for]="eligibleFromPicker"></mat-datepicker-toggle>
+            <mat-datepicker #eligibleFromPicker></mat-datepicker>
+        </mat-form-field>
+        <mat-form-field class="field-half">
+            <mat-label>Eligible until</mat-label>
+            <input name="eligibleUntil" formControlName="eligibleUntil" matInput placeholder="Eligible until" [matDatepicker]="eligibleUntilPicker">
+            <mat-datepicker-toggle matSuffix [for]="eligibleUntilPicker"></mat-datepicker-toggle>
+            <mat-datepicker #eligibleUntilPicker></mat-datepicker>
+        </mat-form-field>
+        <mat-form-field class="field-half">
+            <mat-label>Commission decision number</mat-label>
+            <input name="commissionDecisionNumber" formControlName="commissionDecisionNumber" matInput placeholder="Commission decision number">
+            <mat-error>
+                <app-form-field-errors
+                        [errors]="programmeForm?.controls?.commissionDecisionNumber?.errors"
+                        [messages]="commissionDecisionNumberErrors">
+                </app-form-field-errors>
+            </mat-error>
+        </mat-form-field>
+        <mat-form-field class="field-half">
+            <mat-label>Commission decision date</mat-label>
+            <input name="commissionDecisionDate" formControlName="commissionDecisionDate" matInput placeholder="Commission decision date" [matDatepicker]="commissionDecisionPicker">
+            <mat-datepicker-toggle matSuffix [for]="commissionDecisionPicker"></mat-datepicker-toggle>
+            <mat-datepicker #commissionDecisionPicker></mat-datepicker>
+        </mat-form-field>
+        <mat-form-field class="field-half">
+            <mat-label>Programme amending decision number</mat-label>
+            <input name="programmeAmendingDecisionNumber" formControlName="programmeAmendingDecisionNumber" matInput placeholder="Programme amending decision number">
+            <mat-error>
+                <app-form-field-errors
+                        [errors]="programmeForm?.controls?.programmeAmendingDecisionNumber?.errors"
+                        [messages]="programmeAmendingDecisionNumberErrors">
+                </app-form-field-errors>
+            </mat-error>
+        </mat-form-field>
+        <mat-form-field class="field-half">
+            <mat-label>Programme amending decision entry into force date</mat-label>
+            <input name="programmeAmendingDecisionDate" formControlName="programmeAmendingDecisionDate" matInput placeholder="Programme amending decision entry into force date" [matDatepicker]="programmeAmendingDecisionPicker">
+            <mat-datepicker-toggle matSuffix [for]="programmeAmendingDecisionPicker"></mat-datepicker-toggle>
+            <mat-datepicker #programmeAmendingDecisionPicker></mat-datepicker>
+        </mat-form-field>
+        <div *ngIf="formState === FormState.EDIT">
+            <button mat-raised-button
+                    (click)="changeFormState$.next(FormState.VIEW)">
+                Cancel
+            </button>
+            <button mat-raised-button
+                    color="primary"
+                    type="submit"
+                    [disabled]="programmeForm.invalid || submitted"
+                    (click)="onSubmit()">
+                Save
+            </button>
+        </div>
+        <button *ngIf="formState === FormState.VIEW" mat-raised-button
+                (click)="changeFormState$.next(FormState.EDIT)">
+            Edit programme data
+        </button>
+        <app-alert
+                [show]="showSuccessMessage$ | async"
+                [type]="Alert.SUCCESS">
+            <p>{{'programme.data.save.success' | translate}}</p>
+        </app-alert>
+        <app-alert *ngIf="error$ | async as error"
+                   [show]="!submitted && !!error.i18nKey"
+                   [type]="Alert.ERROR">
+            <p>{{error.i18nKey | translate}}</p>
+        </app-alert>
+    </form>
+</div>
+
