@@ -6427,10 +6427,11 @@
 											"});\r",
 											"\r",
 											"pm.test('project status should refer to this change', function() {\r",
-											"    pm.expect(application).to.have.property('fundingDecision');\r",
-											"    pm.expect(application).to.have.property('projectStatus');\r",
-											"    pm.expect(application.fundingDecision)\r",
-											"        .deep.eql(application.projectStatus);\r",
+											"    pm.expect(application.fundingDecision).to.have.property('id');\r",
+											"    pm.expect(application.projectStatus).to.have.property('id');\r",
+											"    // fundingDecision is still referring to the first funding attempt\r",
+											"    pm.expect(application.fundingDecision.id)\r",
+											"        .not.eql(application.projectStatus.id);\r",
 											"});\r",
 											""
 										],
@@ -6527,7 +6528,7 @@
 	],
 	"variable": [
 		{
-			"id": "001c88b3-35da-4edf-92d2-3f2457479f34",
+			"id": "20fafdeb-c182-4dfb-8ee9-b77accb895b0",
 			"key": "url",
 			"value": "specify_url_here"
 		}
