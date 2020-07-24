@@ -292,18 +292,31 @@ form .form-group {
 html, body { height: 100%; }
 body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
 
-.mat-tab-link-active,
-.mat-tab-label-active {
-  color: white;
+.programme-tab-menu {
+  .mat-tab-link-active,
+  .mat-tab-label-active {
+    color: mediumblue;
+  }
+
+  .mat-ink-bar {
+    background-color: mediumblue !important;
+  }
+}
+
+.top-bar-nav {
+  .mat-tab-link-active,
+  .mat-tab-label-active {
+    color: white;
+  }
+
+  .mat-ink-bar {
+    background-color: white !important;
+  }
 }
 
 .mat-tab-link,
 .mat-tab-label {
   opacity: 1 !important;
-}
-
-.mat-ink-bar {
-  background-color: white !important;
 }
 
 .material-select-panel{
