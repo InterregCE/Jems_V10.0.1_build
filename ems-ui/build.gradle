@@ -5,4 +5,9 @@ plugins {
 
 dependencies {
     swaggerApi project(':ems-api')
+    swaggerCodegen("io.swagger.codegen.v3:swagger-codegen-cli")
+    constraints {
+        // TODO - remove the -SNAPSHOT when swagger generator 3.0.21 is published to maven central
+        swaggerCodegen("io.swagger.codegen.v3:swagger-codegen-cli:3.0.21-SNAPSHOT")
+    }
 }
