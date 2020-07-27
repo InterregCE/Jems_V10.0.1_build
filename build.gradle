@@ -1,35 +1,39 @@
-buildscript {
-    repositories {
-        maven { url "https://artifactory.internal.catalysts.cc/cloudflight-internal" }
-    }
-    dependencies {
-        classpath "io.cloudflight.gradle:cloudflight-gradle-plugin:4.3.3"
-    }
+import com.moowork.gradle.node.npm.NpmTask
+
+plugins {
+    id "cloudflight-gradle-plugin" version "5.5.9"
 }
 
 description "EMS Project"
 group "io.cloudflight.ems"
 version "1.0.0"
 
-apply plugin: "cloudflight-gradle-plugin"
+cloudflight {
+    softwareProjectKey = "ems/ems"
+}
 
 subprojects {
-    if (isJavaProject(it) || isKotlinProject(it)) {
+    if (isKotlinProject(it)) {
         dependencies {
-            api enforcedPlatform("io.cloudflight.platform:platform-bom:$cloudflightPlatformVersion")
-            annotationProcessor enforcedPlatform("io.cloudflight.platform:platform-bom:$cloudflightPlatformVersion")
-            testImplementation enforcedPlatform("io.cloudflight.platform:platform-test-bom:$cloudflightPlatformVersion")
-
-            constraints {
-                api "org.mariadb.jdbc:mariadb-java-client:2.6.0"
-            }
-
+            implementation platform("io.cloudflight.platform:platform-bom:$cloudflightPlatformVersion")
+            annotationProcessor platform("io.cloudflight.platform:platform-bom:$cloudflightPlatformVersion")
+            testImplementation platform("io.cloudflight.platform:platform-test-bom:$cloudflightPlatformVersion")
+            kapt platform("io.cloudflight.platform:platform-bom:$cloudflightPlatformVersion")
         }
     }
 
-    if (isKotlinProject(it)) {
-        dependencies {
-            kapt enforcedPlatform("io.cloudflight.platform:platform-bom:$cloudflightPlatformVersion")
+    if (isUiProject(it)) {
+        apply plugin: 'java-library'
+
+        tasks.create([name: "npmTest", type: NpmTask]) {
+            group = "verification"
+            setArgs(["run", "test"])
+            dependsOn("npmInstall", "clfNpmLint")
+            doFirst {
+                environment "GRADLE_BUILD": true
+            }
         }
+
+        tasks.check.dependsOn(tasks.npmTest)
     }
 }

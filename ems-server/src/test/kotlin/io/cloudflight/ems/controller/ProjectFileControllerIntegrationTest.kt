@@ -51,7 +51,7 @@ class ProjectFileControllerIntegrationTest {
                 .content(jsonMapper.writeValueAsString(projectDescription))
         )
             .andExpect(status().isOk)
-            .andExpect(jsonPath("$.id").value(projectFile.id))
+            .andExpect(jsonPath("$.id").value(projectFile.id.toString()))
             .andExpect(jsonPath("$.description").value(projectDescription.description.toString()))
     }
 
@@ -106,7 +106,6 @@ class ProjectFileControllerIntegrationTest {
     @WithUserDetails(value = APPLICANT_USER_EMAIL)
     fun `project file access allowed for owner applicants`() {
         val project = projectFileFactory.saveProject(userFactory.applicantUser)
-        val projectFile = projectFileFactory.saveProjectFile(project, userFactory.applicantUser)
 
         mockMvc.perform(
             get("/api/project/${project.id}")

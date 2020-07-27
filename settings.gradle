@@ -1,3 +1,9 @@
+pluginManagement {
+    repositories {
+        maven { url "https://artifacts.cloudflight.io/repository/plugins-maven" }
+    }
+}
+
 rootProject.name = 'ems'
 
 include 'ems-api'
