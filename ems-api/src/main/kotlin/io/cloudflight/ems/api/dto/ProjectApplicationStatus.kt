@@ -20,5 +20,9 @@ enum class ProjectApplicationStatus {
             return status != APPROVED && status != NOT_APPROVED
         }
 
+        fun wasSubmittedAtLeastOnce(status: ProjectApplicationStatus): Boolean {
+            return status != DRAFT
+        }
+
     }
 }

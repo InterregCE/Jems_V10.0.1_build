@@ -4,6 +4,7 @@ import io.cloudflight.ems.api.dto.OutputProject
 import io.cloudflight.ems.api.dto.ProjectApplicationStatus.DRAFT
 import io.cloudflight.ems.api.dto.ProjectApplicationStatus.Companion.isNotFinallyFunded
 import io.cloudflight.ems.api.dto.ProjectApplicationStatus.Companion.isNotSubmittedNow
+import io.cloudflight.ems.api.dto.ProjectApplicationStatus.Companion.wasSubmittedAtLeastOnce
 import io.cloudflight.ems.api.dto.ProjectFileType
 import io.cloudflight.ems.security.service.SecurityService
 import io.cloudflight.ems.service.FileStorageService
@@ -52,7 +53,7 @@ class ProjectFileAuthorization(
 
         if (file.type == ProjectFileType.ASSESSMENT_FILE)
             return isProgrammeUser()
-                && isNotFinallyFunded(status)
+                && isNotFinallyFunded(status) && wasSubmittedAtLeastOnce(status)
 
         return false
     }
