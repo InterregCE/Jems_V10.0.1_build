@@ -5,11 +5,10 @@ import {combineLatest, ReplaySubject, Subject} from 'rxjs';
 import {catchError, flatMap, map, startWith, take, takeUntil, tap} from 'rxjs/operators';
 import {BaseComponent} from '@common/components/base-component';
 import {Permission} from '../../../../../security/permissions/permission';
-import {OutputProjectFile, ProjectFileStorageService} from '@cat/api';
+import {OutputProject, OutputProjectFile, OutputProjectStatus, ProjectFileStorageService} from '@cat/api';
 import {MatSort} from '@angular/material/sort';
 import {Tables} from '../../../../../common/utils/tables';
 import {Log} from '../../../../../common/utils/log';
-import {ProjectFileService} from '../../../services/project-file.service';
 import {HttpErrorResponse} from '@angular/common/http';
 import {I18nValidationError} from '@common/validation/i18n-validation-error';
 
@@ -24,6 +23,8 @@ export class ProjectApplicationFilesComponent extends BaseComponent {
 
   @Input()
   projectId: number;
+  @Input()
+  fileType: OutputProjectFile.TypeEnum;
 
   uploadSuccess$ = new Subject<boolean>();
   uploadError$ = new ReplaySubject<I18nValidationError | null>();
@@ -45,7 +46,7 @@ export class ProjectApplicationFilesComponent extends BaseComponent {
   ])
     .pipe(
       flatMap(([pageIndex, pageSize, sort]) =>
-        this.projectFileStorageService.getApplicationFilesForProject(this.projectId, pageIndex, pageSize, sort)),
+        this.projectFileStorageService.getFilesForProject(this.fileType, this.projectId, pageIndex, pageSize, sort)),
       tap(page => Log.info('Fetched the project files:', this, page.content)),
     );
 
@@ -55,19 +56,22 @@ export class ProjectApplicationFilesComponent extends BaseComponent {
     this.permissionService.permissionsChanged()
   ])
     .pipe(
-      map(([page, project, permissions]) =>
-        ({page, project, permission: permissions[0]}))
+      map(([page, project, permissions]) => ({
+        page,
+        project,
+        permission: permissions[0],
+        uploadPossible: this.canUploadFiles(project, permissions[0])
+      }))
     )
 
   constructor(private permissionService: PermissionService,
               private projectStore: ProjectStore,
-              private projectFileStorageService: ProjectFileStorageService,
-              private projectFileService: ProjectFileService) {
+              private projectFileStorageService: ProjectFileStorageService) {
     super();
   }
 
   addNewFilesForUpload(file: File): void {
-    this.projectFileService.addProjectFile(this.projectId, file)
+    this.projectFileStorageService.uploadProjectFileForm(file, this.fileType, this.projectId)
       .pipe(
         take(1),
         takeUntil(this.destroyed$),
@@ -81,9 +85,9 @@ export class ProjectApplicationFilesComponent extends BaseComponent {
       ).subscribe();
   }
 
-  downloadFile(element: OutputProjectFile): void {
+  downloadFile(file: OutputProjectFile): void {
     window.open(
-      this.projectFileService.getDownloadLink(this.projectId, element.id),
+      `/api/project/${this.projectId}/file/${file.id}`,
       '_blank',
     );
   }
@@ -106,5 +110,16 @@ export class ProjectApplicationFilesComponent extends BaseComponent {
         tap(saved => Log.info('Changed file description', this, saved)),
         tap(() => this.refreshPage$.next()),
       ).subscribe();
+  }
+
+  private canUploadFiles(project: OutputProject, permission: Permission): boolean {
+    if (permission === Permission.ADMINISTRATOR) {
+      return true;
+    }
+    if (this.fileType === OutputProjectFile.TypeEnum.ASSESSMENTFILE) {
+      return permission === Permission.PROGRAMME_USER;
+    }
+    return project.projectStatus.status === OutputProjectStatus.StatusEnum.DRAFT
+      || project.projectStatus.status === OutputProjectStatus.StatusEnum.RETURNEDTOAPPLICANT
   }
 }

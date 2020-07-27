@@ -1,7 +1,22 @@
-<div>
-    <a [routerLink]="['']">&lt; Back to List of Project Applications</a>
+<a [routerLink]="['']">&lt; Back to List of Project Applications</a>
+<div class="container">
     <app-project-application-data></app-project-application-data>
-    <app-project-application-files
-            [projectId]="projectId">
-    </app-project-application-files>
+    <mat-tab-group class="files-container">
+        <mat-tab label="Application Files">
+            <ng-template matTabContent>
+                <app-project-application-files
+                        [projectId]="projectId"
+                        [fileType]="fileType.APPLICANTFILE">
+                </app-project-application-files>
+            </ng-template>
+        </mat-tab>
+        <mat-tab label="Assessment Files" *ngxPermissionsExcept="Permission.APPLICANT_USER">
+            <ng-template matTabContent>
+                <app-project-application-files
+                        [projectId]="projectId"
+                        [fileType]="fileType.ASSESSMENTFILE">
+                </app-project-application-files>
+            </ng-template>
+        </mat-tab>
+    </mat-tab-group>
 </div>

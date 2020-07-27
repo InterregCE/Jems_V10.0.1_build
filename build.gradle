@@ -7,6 +7,15 @@ buildscript {
     }
 }
 
+// TODO - remove this section/repo when swagger generator 3.0.21 is published to maven central
+allprojects {
+    repositories {
+        maven {
+            url "https://oss.sonatype.org/content/repositories/snapshots"
+        }
+    }
+}
+
 description "EMS Project"
 group "io.cloudflight.ems"
 version "1.0.0"

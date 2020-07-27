@@ -52,7 +52,8 @@
             </button>
         </div>
         <div *ngIf="!!project.fundingDecision" class="col-3 column">
-            <button mat-raised-button color="secondary" class="assessment-button"
+            <button mat-raised-button class="assessment-button"
+                    [color]="projectStatus === OutputProjectStatus.StatusEnum.APPROVEDWITHCONDITIONS ? 'primary' : null"
                     [routerLink]="'/project/'+ project.id + '/fundingDecision'">
                 {{updateOrViewFundingLabel() | translate}}
             </button>
