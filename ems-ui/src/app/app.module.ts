@@ -7,6 +7,7 @@ import {ProjectModule} from './project/project.module';
 import {CoreModule} from './common/core-module';
 import {RouterModule} from '@angular/router';
 import {NgxPermissionsModule} from 'ngx-permissions';
+import {ProgrammeModule} from './programme/programme.module';
 
 @NgModule({
   declarations: [
@@ -17,6 +18,7 @@ import {NgxPermissionsModule} from 'ngx-permissions';
     UserModule,
     AuthenticationModule,
     ProjectModule,
+    ProgrammeModule,
     RouterModule,
     NgxPermissionsModule.forRoot(),
   ],

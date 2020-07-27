@@ -26,6 +26,12 @@ export class TopBarService {
     route: '/user',
     action: (internal: boolean, route: string) => this.handleNavigation(internal, route),
   };
+  private programmItem = {
+    name: 'Programme Setup',
+    isInternal: true,
+    route: '/programme',
+    action: (internal: boolean, route: string) => this.handleNavigation(internal, route),
+  };
   private auditItem: MenuItemConfiguration;
   private editUserItem: MenuItemConfiguration;
 
@@ -93,7 +99,8 @@ export class TopBarService {
       .subscribe(() => this.menuItems$.next([
         this.applicationsItem,
         this.auditItem,
-        this.editUserItem
+        this.programmItem,
+        this.editUserItem,
       ]));
 
     this.permissionService.hasPermission(Permission.ADMINISTRATOR)
@@ -105,7 +112,8 @@ export class TopBarService {
         this.applicationsItem,
         this.auditItem,
         this.usersItem,
-        this.editUserItem
+        this.programmItem,
+        this.editUserItem,
       ]));
   }
 
