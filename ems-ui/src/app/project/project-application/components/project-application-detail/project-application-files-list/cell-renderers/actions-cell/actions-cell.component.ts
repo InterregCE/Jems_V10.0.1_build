@@ -27,13 +27,6 @@ export class ActionsCellComponent {
     if (this.permission === Permission.ADMINISTRATOR) {
       return true;
     }
-
-    return this.file.type === OutputProjectFile.TypeEnum.APPLICANTFILE
-      ? this.canChangeApplicationFile()
-      : this.canChangeAssessmentFile();
-  }
-
-  private canChangeApplicationFile(): boolean {
     if (this.permission === Permission.PROGRAMME_USER) {
       return false;
     }
@@ -44,10 +37,5 @@ export class ActionsCellComponent {
       || this.project?.projectStatus.updated;
 
     return this.file.updated > lastSubmissionDate;
-  }
-
-  private canChangeAssessmentFile(): boolean {
-    return this.permission !== Permission.APPLICANT_USER
-      && (!this.project.fundingDecision || this.file.updated > this.project.projectStatus.updated);
   }
 }
