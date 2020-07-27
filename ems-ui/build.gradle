@@ -5,4 +5,8 @@ plugins {
 
 dependencies {
     swaggerApi project(':ems-api')
+    swaggerCodegen("io.swagger.codegen.v3:swagger-codegen-cli")
+    constraints {
+        swaggerCodegen("io.swagger.codegen.v3:swagger-codegen-cli:3.0.20")
+    }
 }

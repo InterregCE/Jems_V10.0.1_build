@@ -2,6 +2,7 @@ package io.cloudflight.ems.api
 
 import io.cloudflight.ems.api.dto.InputProjectFileDescription
 import io.cloudflight.ems.api.dto.OutputProjectFile
+import io.cloudflight.ems.api.dto.ProjectFileType
 import io.swagger.annotations.Api
 import io.swagger.annotations.ApiImplicitParam
 import io.swagger.annotations.ApiImplicitParams
@@ -18,6 +19,7 @@ import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.PutMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
+import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RequestPart
 import org.springframework.web.multipart.MultipartFile
 import javax.validation.Valid
@@ -26,23 +28,20 @@ import javax.validation.Valid
 @RequestMapping("/api/project/{projectId}/file")
 interface ProjectFileApi {
 
-    @ApiOperation("Upload application file to project", hidden = true)
-    @PostMapping("/application", consumes = [MediaType.MULTIPART_FORM_DATA_VALUE])
-    fun uploadApplicationProjectFile(
+    @ApiOperation("Upload application file to project")
+    @PostMapping(consumes = [MediaType.MULTIPART_FORM_DATA_VALUE])
+    fun uploadProjectFile(
         @PathVariable projectId: Long,
-        @RequestPart("file") file: MultipartFile)
-
-    @ApiOperation("Upload assessment file to project", hidden = true)
-    @PostMapping("/assessment", consumes = [MediaType.MULTIPART_FORM_DATA_VALUE])
-    fun uploadAssessmentProjectFile(
-        @PathVariable projectId: Long,
-        @RequestPart("file") file: MultipartFile)
+        @RequestParam("fileType") fileType: ProjectFileType,
+        @RequestPart("file") file: MultipartFile
+    )
 
     @ApiOperation("Download file")
     @GetMapping("/{fileId}", produces = [MediaType.APPLICATION_OCTET_STREAM_VALUE])
     fun downloadFile(
         @PathVariable projectId: Long,
-        @PathVariable fileId: Long): ResponseEntity<ByteArrayResource>
+        @PathVariable fileId: Long
+    ): ResponseEntity<ByteArrayResource>
 
     @ApiOperation("Get list of application files")
     @ApiImplicitParams(
@@ -50,29 +49,26 @@ interface ProjectFileApi {
         ApiImplicitParam(paramType = "query", name = "size", dataType = "integer"),
         ApiImplicitParam(paramType = "query", name = "page", dataType = "integer")
     )
-    @GetMapping("/application")
-    fun getApplicationFilesForProject(@PathVariable projectId: Long, pageable: Pageable): Page<OutputProjectFile>
-
-    @ApiOperation("Get list of assessment files")
-    @ApiImplicitParams(
-        ApiImplicitParam(paramType = "query", name = "sort", dataType = "string"),
-        ApiImplicitParam(paramType = "query", name = "size", dataType = "integer"),
-        ApiImplicitParam(paramType = "query", name = "page", dataType = "integer")
-    )
-    @GetMapping("/assessment")
-    fun getAssessmentFilesForProject(@PathVariable projectId: Long, pageable: Pageable): Page<OutputProjectFile>
+    @GetMapping()
+    fun getFilesForProject(
+        @PathVariable projectId: Long,
+        @RequestParam("fileType") fileType: ProjectFileType,
+        pageable: Pageable
+    ): Page<OutputProjectFile>
 
     @ApiOperation("Specify description for a file")
     @PutMapping("/{fileId}/description", consumes = [MediaType.APPLICATION_JSON_VALUE])
     fun setDescriptionToFile(
         @PathVariable projectId: Long,
         @PathVariable fileId: Long,
-        @Valid @RequestBody projectFileDescription: InputProjectFileDescription): OutputProjectFile
+        @Valid @RequestBody projectFileDescription: InputProjectFileDescription
+    ): OutputProjectFile
 
     @ApiOperation("Delete existing file")
     @DeleteMapping("/{fileId}")
     fun deleteFile(
         @PathVariable projectId: Long,
-        @PathVariable fileId: Long)
+        @PathVariable fileId: Long
+    )
 
 }

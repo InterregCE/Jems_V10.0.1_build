@@ -1,11 +1,10 @@
-<div *ngIf="details$ | async as details" class="container project-files-table-container">
+<div *ngIf="details$ | async as details" class="project-files-table-container">
     <app-project-application-file-upload
-            *ngxPermissionsExcept="[Permission.PROGRAMME_USER]"
+            [uploadPossible]="details.uploadPossible"
             [fileNumber]="details.page.totalElements"
             [success$]="uploadSuccess$"
             [error$]="uploadError$"
             [projectStatus]="details.project.projectStatus.status"
-            [permission]="details.permission"
             (uploadFile)="addNewFilesForUpload($event)">
     </app-project-application-file-upload>
     <app-project-application-files-list
