@@ -1,7 +1,5 @@
-import com.moowork.gradle.node.npm.NpmTask
-
 plugins {
-    id "cloudflight-gradle-plugin" version "5.5.9"
+    id "cloudflight-gradle-plugin" version "5.5.22"
 }
 
 description "EMS Project"
@@ -9,7 +7,7 @@ group "io.cloudflight.ems"
 version "1.0.0"
 
 cloudflight {
-    softwareProjectKey = "ems/ems"
+    softwareProjectKey = "cloudflight/ems"
 }
 
 subprojects {
@@ -20,20 +18,5 @@ subprojects {
             testImplementation platform("io.cloudflight.platform:platform-test-bom:$cloudflightPlatformVersion")
             kapt platform("io.cloudflight.platform:platform-bom:$cloudflightPlatformVersion")
         }
-    }
-
-    if (isUiProject(it)) {
-        apply plugin: 'java-library'
-
-        tasks.create([name: "npmTest", type: NpmTask]) {
-            group = "verification"
-            setArgs(["run", "test"])
-            dependsOn("npmInstall", "clfNpmLint")
-            doFirst {
-                environment "GRADLE_BUILD": true
-            }
-        }
-
-        tasks.check.dependsOn(tasks.npmTest)
     }
 }

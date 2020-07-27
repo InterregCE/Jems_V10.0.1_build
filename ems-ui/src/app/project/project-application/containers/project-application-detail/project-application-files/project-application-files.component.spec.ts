@@ -50,7 +50,7 @@ describe('ProjectApplicationFilesComponent', () => {
     httpTestingController.expectOne({method: 'GET', url: '//api/project/1'}).flush({id: 1});
     httpTestingController.match({
       method: 'GET',
-      url: '//api/project/1/file/application?fileType=APPLICANT_FILE&page=0&size=25&sort=id,desc'
+      url: '//api/project/1/file?fileType=APPLICANT_FILE&page=0&size=25&sort=id,desc'
     }).forEach(req => req.flush({content: users}));
 
     tick();
@@ -61,28 +61,28 @@ describe('ProjectApplicationFilesComponent', () => {
     // initial sort and page
     httpTestingController.expectOne({
       method: 'GET',
-      url: '//api/project/1/file/application?fileType=APPLICANT_FILE&page=0&size=25&sort=id,desc'
+      url: '//api/project/1/file?fileType=APPLICANT_FILE&page=0&size=25&sort=id,desc'
     });
 
     // change sorting
     component.newSort$.next({active: 'userRole.name', direction: 'asc'})
     httpTestingController.expectOne({
       method: 'GET',
-      url: '//api/project/1/file/application?fileType=APPLICANT_FILE&page=0&size=25&sort=userRole.name,asc'
+      url: '//api/project/1/file?fileType=APPLICANT_FILE&page=0&size=25&sort=userRole.name,asc'
     });
 
     // change page index
     component.newPageIndex$.next(2)
     httpTestingController.expectOne({
       method: 'GET',
-      url: '//api/project/1/file/application?fileType=APPLICANT_FILE&page=2&size=25&sort=userRole.name,asc'
+      url: '//api/project/1/file?fileType=APPLICANT_FILE&page=2&size=25&sort=userRole.name,asc'
     });
 
     // change page size
     component.newPageSize$.next(3)
     httpTestingController.expectOne({
       method: 'GET',
-      url: '//api/project/1/file/application?fileType=APPLICANT_FILE&page=2&size=3&sort=userRole.name,asc'
+      url: '//api/project/1/file?fileType=APPLICANT_FILE&page=2&size=3&sort=userRole.name,asc'
     });
 
     httpTestingController.verify();
@@ -93,7 +93,7 @@ describe('ProjectApplicationFilesComponent', () => {
 
     httpTestingController.expectOne({
       method: 'GET',
-      url: '//api/project/1/file/application?fileType=APPLICANT_FILE&page=0&size=25&sort=id,desc'
+      url: '//api/project/1/file?fileType=APPLICANT_FILE&page=0&size=25&sort=id,desc'
     });
     httpTestingController.expectOne({method: 'DELETE', url: '//api/project/1/file/1'});
 
@@ -105,7 +105,7 @@ describe('ProjectApplicationFilesComponent', () => {
 
     httpTestingController.expectOne({
       method: 'GET',
-      url: '//api/project/1/file/application?fileType=APPLICANT_FILE&page=0&size=25&sort=id,desc'
+      url: '//api/project/1/file?fileType=APPLICANT_FILE&page=0&size=25&sort=id,desc'
     });
     httpTestingController.expectOne({method: 'PUT', url: '//api/project/1/file/1/description'});
 
