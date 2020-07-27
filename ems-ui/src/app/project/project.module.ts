@@ -6,6 +6,7 @@ import {ProjectApplicationDetailComponent} from './project-application/container
 import {ProjectApplicationSubmissionComponent} from './project-application/components/project-application-submission/project-application-submission.component';
 import {ProjectApplicationListComponent} from './project-application/components/project-application-list/project-application-list.component';
 import {ProjectApplicationComponent} from './project-application/containers/project-application-page/project-application.component';
+import {ProjectFileService} from './project-application/services/project-file.service';
 import {SharedModule} from '../common/shared-module';
 import {OverlayModule} from '@angular/cdk/overlay';
 import {MatDialogModule} from '@angular/material/dialog';
@@ -73,6 +74,7 @@ import {ProjectApplicationEligibilityDecisionPageComponent} from './project-appl
     MatMomentDateModule
   ],
   providers: [
+    ProjectFileService,
     DatePipe,
     ProjectStore,
     MatDatepickerModule,

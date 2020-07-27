@@ -1,5 +1,6 @@
 import {ChangeDetectionStrategy, ChangeDetectorRef, Component, EventEmitter, Input, Output} from '@angular/core';
 import {OutputProjectStatus} from '@cat/api'
+import {Permission} from '../../../../../security/permissions/permission';
 import {Alert} from '@common/components/forms/alert';
 import {AbstractForm} from '@common/components/forms/abstract-form';
 import {FormGroup} from '@angular/forms';
@@ -11,14 +12,16 @@ import {FormGroup} from '@angular/forms';
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class ProjectApplicationFileUploadComponent extends AbstractForm {
+  OutputProjectStatus = OutputProjectStatus;
+  Permission = Permission;
   Alert = Alert;
 
-  @Input()
-  uploadPossible: boolean;
   @Input()
   fileNumber: number;
   @Input()
   projectStatus: OutputProjectStatus.StatusEnum;
+  @Input()
+  permission: Permission;
 
   @Output()
   uploadFile: EventEmitter<File> = new EventEmitter<File>();

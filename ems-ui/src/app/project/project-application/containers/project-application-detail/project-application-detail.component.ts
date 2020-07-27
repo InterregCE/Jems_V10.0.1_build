@@ -2,8 +2,6 @@ import {ChangeDetectionStrategy, Component} from '@angular/core';
 import {ActivatedRoute} from '@angular/router';
 import {BaseComponent} from '@common/components/base-component';
 import {ProjectStore} from './services/project-store.service';
-import {Permission} from '../../../../security/permissions/permission';
-import {OutputProjectFile} from '@cat/api';
 
 @Component({
   selector: 'app-project-application-detail',
@@ -12,9 +10,6 @@ import {OutputProjectFile} from '@cat/api';
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class ProjectApplicationDetailComponent extends BaseComponent {
-  Permission = Permission;
-  fileType = OutputProjectFile.TypeEnum;
-
   projectId = this.activatedRoute.snapshot.params.projectId;
 
   constructor(private projectStore: ProjectStore,

@@ -21,9 +21,14 @@ class ProjectFileController(
     private val fileStorageService: FileStorageService
 ) : ProjectFileApi {
 
-    @PreAuthorize("@projectFileAuthorization.canUploadFile(#projectId, #fileType)")
-    override fun uploadProjectFile(projectId: Long, fileType: ProjectFileType, file: MultipartFile) {
-        uploadFile(projectId, file, fileType)
+    @PreAuthorize("@projectFileAuthorization.canUploadFile(#projectId, 'APPLICANT_FILE')")
+    override fun uploadApplicationProjectFile(projectId: Long, file: MultipartFile) {
+        uploadFile(projectId, file, ProjectFileType.APPLICANT_FILE)
+    }
+
+    @PreAuthorize("@projectFileAuthorization.canUploadFile(#projectId, 'ASSESSMENT_FILE')")
+    override fun uploadAssessmentProjectFile(projectId: Long, file: MultipartFile) {
+        uploadFile(projectId, file, ProjectFileType.ASSESSMENT_FILE)
     }
 
     @PreAuthorize("@projectFileAuthorization.canDownloadFile(#projectId, #fileId)")
@@ -36,13 +41,14 @@ class ProjectFileController(
             .body(ByteArrayResource(data.second))
     }
 
-    @PreAuthorize("@projectFileAuthorization.canListFiles(#projectId, #fileType)")
-    override fun getFilesForProject(
-        projectId: Long,
-        fileType: ProjectFileType,
-        pageable: Pageable
-    ): Page<OutputProjectFile> {
-        return fileStorageService.getFilesForProject(projectId, fileType, pageable)
+    @PreAuthorize("@projectFileAuthorization.canListFiles(#projectId, 'APPLICANT_FILE')")
+    override fun getApplicationFilesForProject(projectId: Long, pageable: Pageable): Page<OutputProjectFile> {
+        return fileStorageService.getFilesForProject(projectId, ProjectFileType.APPLICANT_FILE, pageable)
+    }
+
+    @PreAuthorize("@projectFileAuthorization.canListFiles(#projectId, 'ASSESSMENT_FILE')")
+    override fun getAssessmentFilesForProject(projectId: Long, pageable: Pageable): Page<OutputProjectFile> {
+        return fileStorageService.getFilesForProject(projectId, ProjectFileType.ASSESSMENT_FILE, pageable)
     }
 
     @PreAuthorize("@projectFileAuthorization.canChangeFile(#projectId, #fileId)")
