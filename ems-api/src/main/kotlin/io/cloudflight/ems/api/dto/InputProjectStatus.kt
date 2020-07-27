@@ -1,8 +1,8 @@
 package io.cloudflight.ems.api.dto
 
 import java.time.LocalDate
-import java.time.ZonedDateTime
 import javax.validation.constraints.NotNull
+import javax.validation.constraints.PastOrPresent
 import javax.validation.constraints.Size
 
 data class InputProjectStatus(
@@ -13,5 +13,6 @@ data class InputProjectStatus(
     @field:Size(max = 255, message = "project.status.note.size.too.long")
     val note: String?,
 
+    @field:PastOrPresent(message = "project.status.date.should.be.in.past.or.present")
     val date: LocalDate?
 )
