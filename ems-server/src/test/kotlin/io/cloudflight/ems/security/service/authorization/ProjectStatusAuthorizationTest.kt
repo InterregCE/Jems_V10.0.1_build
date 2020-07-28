@@ -8,10 +8,11 @@ import io.cloudflight.ems.api.dto.ProjectApplicationStatus
 import io.cloudflight.ems.api.dto.ProjectEligibilityAssessmentResult
 import io.cloudflight.ems.api.dto.ProjectQualityAssessmentResult
 import io.cloudflight.ems.api.dto.user.OutputUser
-import io.cloudflight.ems.api.dto.user.OutputUserRole
-import io.cloudflight.ems.api.dto.user.OutputUserWithRole
 import io.cloudflight.ems.security.model.LocalCurrentUser
 import io.cloudflight.ems.security.service.SecurityService
+import io.cloudflight.ems.security.service.authorization.AuthorizationUtil.Companion.adminUser
+import io.cloudflight.ems.security.service.authorization.AuthorizationUtil.Companion.applicantUser
+import io.cloudflight.ems.security.service.authorization.AuthorizationUtil.Companion.programmeUser
 import io.cloudflight.ems.service.ProjectService
 import io.mockk.MockKAnnotations
 import io.mockk.every
@@ -24,7 +25,6 @@ import org.junit.jupiter.api.TestInstance
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.Arguments
 import org.junit.jupiter.params.provider.MethodSource
-import org.springframework.security.core.authority.SimpleGrantedAuthority
 import java.time.ZonedDateTime
 import java.util.stream.Stream
 
@@ -52,58 +52,18 @@ internal class ProjectStatusAuthorizationTest {
 
     lateinit var projectStatusAuthorization: ProjectStatusAuthorization
 
-    private val userAdmin = OutputUserWithRole(
-        id = 1,
-        email = "admin@admin.dev",
-        name = "Name",
-        surname = "Surname",
-        userRole = OutputUserRole(id = 1, name = "administrator")
-    )
-
-    private val userProgramme = OutputUserWithRole(
-        id = 2,
-        email = "user@programme.dev",
-        name = "",
-        surname = "",
-        userRole = OutputUserRole(id = 2, name = "programme user")
-    )
-
-    private val userApplicant = OutputUserWithRole(
-        id = 3,
-        email = "applicant@programme.dev",
-        name = "applicant",
-        surname = "",
-        userRole = OutputUserRole(id = 3, name = "applicant user")
-    )
-
     private val userApplicantWithoutRole = OutputUser(
-        id = userApplicant.id,
-        email = userApplicant.email,
-        name = userApplicant.name,
-        surname = userApplicant.surname
+        id = applicantUser.user.id,
+        email = applicantUser.user.email,
+        name = applicantUser.user.name,
+        surname = applicantUser.user.surname
     )
 
     private val userProgrammeWithoutRole = OutputUser(
-        id = userProgramme.id,
-        email = userProgramme.email,
-        name = userProgramme.name,
-        surname = userProgramme.surname
-    )
-
-    private val programmeUser = LocalCurrentUser(
-        userProgramme, "hash_pass", listOf(
-            SimpleGrantedAuthority("ROLE_" + userProgramme.userRole.name)
-        )
-    )
-    private val adminUser = LocalCurrentUser(
-        userAdmin, "hash_pass", listOf(
-            SimpleGrantedAuthority("ROLE_" + userAdmin.userRole.name)
-        )
-    )
-    private val applicantUser = LocalCurrentUser(
-        userApplicant, "hash_pass", listOf(
-            SimpleGrantedAuthority("ROLE_" + userApplicant.userRole.name)
-        )
+        id = programmeUser.user.id,
+        email = programmeUser.user.email,
+        name = programmeUser.user.name,
+        surname = programmeUser.user.surname
     )
 
     private val eligibilityAssessment = OutputProjectEligibilityAssessment(
@@ -156,11 +116,7 @@ internal class ProjectStatusAuthorizationTest {
 
     @Test
     fun `admin can perform any allowed status transition`() {
-        every { securityService.currentUser } returns LocalCurrentUser(
-            userAdmin, "hash_pass", listOf(
-                SimpleGrantedAuthority("ROLE_" + userAdmin.userRole.name)
-            )
-        )
+        every { securityService.currentUser } returns adminUser
 
         assertTrue(projectStatusAuthorization.canChangeStatusTo(PID_DRAFT, ProjectApplicationStatus.SUBMITTED))
 
@@ -354,53 +310,37 @@ internal class ProjectStatusAuthorizationTest {
 
     @Test
     fun `current user is owner of project`() {
-        every { securityService.currentUser } returns LocalCurrentUser(userApplicant, "hash_pass", emptyList())
+        every { securityService.currentUser } returns applicantUser
         assertTrue(projectStatusAuthorization.isOwner(projectDraft))
     }
 
     @Test
     fun `current user is not owner of project`() {
-        every { securityService.currentUser } returns LocalCurrentUser(userProgramme, "hash_pass", emptyList())
+        every { securityService.currentUser } returns programmeUser
         assertFalse(projectStatusAuthorization.isOwner(projectDraft))
     }
 
     @Test
     fun `current user is admin`() {
-        every { securityService.currentUser } returns LocalCurrentUser(
-            userAdmin, "hash_pass", listOf(
-                SimpleGrantedAuthority("ROLE_" + userAdmin.userRole.name)
-            )
-        )
+        every { securityService.currentUser } returns adminUser
         assertTrue(projectStatusAuthorization.isAdmin())
     }
 
     @Test
     fun `current user is not admin`() {
-        every { securityService.currentUser } returns LocalCurrentUser(
-            userProgramme, "hash_pass", listOf(
-                SimpleGrantedAuthority("ROLE_" + userProgramme.userRole.name)
-            )
-        )
+        every { securityService.currentUser } returns programmeUser
         assertFalse(projectStatusAuthorization.isAdmin())
     }
 
     @Test
     fun `current user is programme user`() {
-        every { securityService.currentUser } returns LocalCurrentUser(
-            userProgramme, "hash_pass", listOf(
-                SimpleGrantedAuthority("ROLE_" + userProgramme.userRole.name)
-            )
-        )
+        every { securityService.currentUser } returns programmeUser
         assertTrue(projectStatusAuthorization.isProgrammeUser())
     }
 
     @Test
     fun `current user is not programme user`() {
-        every { securityService.currentUser } returns LocalCurrentUser(
-            userApplicant, "hash_pass", listOf(
-                SimpleGrantedAuthority("ROLE_" + userApplicant.userRole.name)
-            )
-        )
+        every { securityService.currentUser } returns applicantUser
         assertFalse(projectStatusAuthorization.isProgrammeUser())
     }
 
