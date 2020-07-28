@@ -1,0 +1,66 @@
+<form [formGroup]="po1Form">
+    <span class="field-full">
+        <ul>
+          <li *ngIf="policyObjectives[0]">
+            <mat-checkbox [disabled]="!po1Form?.controls?.specificObjectiveCode1?.value" name="specificObjectiveCheckbox1" formControlName="specificObjectiveCheckbox1" (change)="modifyListOfSelectedValues($event)">
+            </mat-checkbox>
+            <mat-form-field class="checkbox-field">
+                <mat-label>Specific Objective Code</mat-label>
+                <input name="specificObjectiveCode1" formControlName="specificObjectiveCode1" matInput placeholder="Specific Objective Code">
+                <mat-error>
+                    <app-form-field-errors
+                            [errors]="po1Form?.controls?.specificObjectiveCode1?.errors"
+                            [messages]="specificObjectiveCodeErrors">
+                    </app-form-field-errors>
+                </mat-error>
+            </mat-form-field>
+                {{policyObjectives[0]}}
+            </li>
+            <li *ngIf="policyObjectives[1]">
+            <mat-checkbox [disabled]="!po1Form?.controls?.specificObjectiveCode2?.value" name="specificObjectiveCheckbox2" formControlName="specificObjectiveCheckbox2" (change)="modifyListOfSelectedValues($event)">
+            </mat-checkbox>
+            <mat-form-field class="checkbox-field">
+                <mat-label>Specific Objective Code</mat-label>
+                <input name="specificObjectiveCode2" formControlName="specificObjectiveCode2" matInput placeholder="Specific Objective Code">
+                <mat-error>
+                <app-form-field-errors
+                        [errors]="po1Form?.controls?.specificObjectiveCode2?.errors"
+                        [messages]="specificObjectiveCodeErrors">
+                </app-form-field-errors>
+                </mat-error>
+            </mat-form-field>
+                {{policyObjectives[1]}}
+            </li>
+            <li *ngIf="policyObjectives[2]">
+            <mat-checkbox [disabled]="!po1Form?.controls?.specificObjectiveCode3?.value" name="specificObjectiveCheckbox3" formControlName="specificObjectiveCheckbox3" (change)="modifyListOfSelectedValues($event)">
+            </mat-checkbox>
+            <mat-form-field class="checkbox-field">
+                <mat-label>Specific Objective Code</mat-label>
+                <input name="specificObjectiveCode3" formControlName="specificObjectiveCode3" matInput placeholder="Specific Objective Code">
+                <mat-error>
+                    <app-form-field-errors
+                            [errors]="po1Form?.controls?.specificObjectiveCode3?.errors"
+                            [messages]="specificObjectiveCodeErrors">
+                    </app-form-field-errors>
+                </mat-error>
+            </mat-form-field>
+                {{policyObjectives[2]}}
+            </li>
+            <li *ngIf="policyObjectives[3]">
+            <mat-checkbox  [disabled]="!po1Form?.controls?.specificObjectiveCode4?.value" name="specificObjectiveCheckbox4" formControlName="specificObjectiveCheckbox4" (change)="modifyListOfSelectedValues($event)">
+            </mat-checkbox>
+            <mat-form-field class="checkbox-field">
+            <mat-label>Specific Objective Code</mat-label>
+            <input name="specificObjectiveCode4" formControlName="specificObjectiveCode4" matInput placeholder="Specific Objective Code">
+            <mat-error>
+                <app-form-field-errors
+                        [errors]="po1Form?.controls?.specificObjectiveCode4?.errors"
+                        [messages]="specificObjectiveCodeErrors">
+                </app-form-field-errors>
+            </mat-error>
+            </mat-form-field>
+                {{policyObjectives[3]}}
+            </li>
+        </ul>
+    </span>
+</form>

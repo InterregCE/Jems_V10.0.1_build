@@ -1,0 +1,39 @@
+.container {
+  width: 40rem;
+
+  .field-left {
+    width: 30%;
+    padding-top: 1rem;
+    margin-right: 1rem;
+  }
+
+  .field-right {
+    width: 60%;
+    padding-top: 1rem;
+    margin-right: 1rem;
+  }
+
+  .field-full {
+    width: 97%;
+    padding-top: 1rem;
+    margin-right: 1rem;
+  }
+
+  button {
+    margin-left: 0.5rem;
+    margin-right: 2rem;
+    margin-bottom: 0.25rem;
+  }
+
+  ::ng-deep.mat-form-field-disabled .mat-form-field-underline {
+    height: 0 !important;
+  }
+
+  .mat-form-field-appearance-outline .mat-form-field-outline {
+    color: white;
+  }
+
+  input.mat-input-element {
+    color: #343a40;
+  }
+}

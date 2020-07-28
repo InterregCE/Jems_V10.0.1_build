@@ -1,0 +1,13 @@
+<div class="container">
+    <h5>List of programme Priorities</h5>
+    <button mat-raised-button
+            color="primary"
+            [routerLink]="'/priority'">
+        + Add Priority
+    </button>
+    <div *ngIf="currentPage$ | async as priorities">
+        <app-programme-priority-items
+                [priorities]="priorities.content">
+        </app-programme-priority-items>
+    </div>
+</div>
