@@ -1,4 +1,4 @@
-package io.cloudflight.ems.controller
+package io.cloudflight.ems.programme.controller
 
 import io.cloudflight.ems.api.programme.ProgrammePriorityApi
 import io.cloudflight.ems.api.programme.dto.InputProgrammePriorityCreate
@@ -6,7 +6,7 @@ import io.cloudflight.ems.api.programme.dto.InputProgrammePriorityUpdate
 import io.cloudflight.ems.api.programme.dto.OutputProgrammePriority
 import io.cloudflight.ems.api.programme.dto.ProgrammeObjective
 import io.cloudflight.ems.api.programme.dto.ProgrammeObjectivePolicy
-import io.cloudflight.ems.service.ProgrammePriorityService
+import io.cloudflight.ems.programme.service.ProgrammePriorityService
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
 import org.springframework.security.access.prepost.PreAuthorize

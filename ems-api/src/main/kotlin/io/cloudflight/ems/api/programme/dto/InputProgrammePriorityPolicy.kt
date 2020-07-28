@@ -11,6 +11,6 @@ data class InputProgrammePriorityPolicy(
 
     @field:NotBlank(message = "programme.priorityPolicy.code.should.not.be.empty")
     @field:Size(max = 50, message = "programme.priority.title.size.too.long")
-    val code: String?
+    val code: String? = null
 
 )

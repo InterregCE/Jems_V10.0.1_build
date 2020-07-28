@@ -1,4 +1,4 @@
-package io.cloudflight.ems.entity
+package io.cloudflight.ems.programme.entity
 
 import io.cloudflight.ems.api.programme.dto.ProgrammeObjectivePolicy
 import javax.persistence.Column

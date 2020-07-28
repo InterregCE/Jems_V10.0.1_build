@@ -1,4 +1,4 @@
-package io.cloudflight.ems.controller
+package io.cloudflight.ems.programme.controller
 
 import io.cloudflight.ems.api.programme.ProgrammeSetupApi
 import io.cloudflight.ems.api.dto.ProgrammeSetup
@@ -7,16 +7,15 @@ import org.springframework.security.access.prepost.PreAuthorize
 import org.springframework.web.bind.annotation.RestController
 
 @RestController
+@PreAuthorize("@programmeSetupAuthorization.canAccessSetup()")
 class ProgrammeSetupController(
     private val programmeDataService: ProgrammeDataService
 ) : ProgrammeSetupApi {
 
-    @PreAuthorize("@programmeSetupAuthorization.canAccessSetup()")
     override fun get(): ProgrammeSetup {
         return programmeDataService.get()
     }
 
-    @PreAuthorize("@programmeSetupAuthorization.canAccessSetup()")
     override fun update(setup: ProgrammeSetup): ProgrammeSetup {
         return programmeDataService.update(setup)
     }

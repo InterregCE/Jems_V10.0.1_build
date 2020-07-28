@@ -1,10 +1,8 @@
-package io.cloudflight.ems.repository
+package io.cloudflight.ems.programme.repository
 
-import io.cloudflight.ems.entity.ProgrammePriority
-import io.cloudflight.ems.entity.ProjectFile
+import io.cloudflight.ems.programme.entity.ProgrammePriority
 import org.springframework.data.repository.PagingAndSortingRepository
 import org.springframework.stereotype.Repository
-import java.util.*
 
 @Repository
 interface ProgrammePriorityRepository : PagingAndSortingRepository<ProgrammePriority, Long> {

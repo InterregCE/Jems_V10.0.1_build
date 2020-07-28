@@ -1,11 +1,9 @@
-package io.cloudflight.ems.service.validators
+package io.cloudflight.ems.programme.service.validator
 
-import io.cloudflight.ems.api.programme.dto.InputProgrammePriorityCreate
 import io.cloudflight.ems.api.programme.dto.InputProgrammePriorityPolicy
 import io.cloudflight.ems.api.programme.dto.ProgrammeObjective
 import io.cloudflight.ems.api.programme.validator.PolicyObjectiveRelationshipValidator
 import org.springframework.stereotype.Component
-import javax.validation.ConstraintValidatorContext
 
 @Component
 class PolicyObjectiveRelationshipValidatorImpl : PolicyObjectiveRelationshipValidator {
