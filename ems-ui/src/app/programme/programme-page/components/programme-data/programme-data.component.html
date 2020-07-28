@@ -1,4 +1,11 @@
-<div class="container vertical-center">
+<div>
+    <h5 class="header">Programme Data</h5>
+    <button class="header-button" *ngIf="formState === FormState.VIEW" mat-raised-button
+            (click)="changeFormState$.next(FormState.EDIT)">
+        Edit programme data
+    </button>
+</div>
+<div class="container">
     <form [formGroup]="programmeForm">
         <mat-form-field class="field">
             <mat-label>CCI</mat-label>
@@ -107,10 +114,6 @@
                 Save
             </button>
         </div>
-        <button *ngIf="formState === FormState.VIEW" mat-raised-button
-                (click)="changeFormState$.next(FormState.EDIT)">
-            Edit programme data
-        </button>
         <app-alert
                 [show]="showSuccessMessage$ | async"
                 [type]="Alert.SUCCESS">
