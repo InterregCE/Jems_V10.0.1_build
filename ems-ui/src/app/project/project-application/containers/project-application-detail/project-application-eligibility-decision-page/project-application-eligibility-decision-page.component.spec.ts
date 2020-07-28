@@ -2,6 +2,8 @@ import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { ProjectApplicationEligibilityDecisionPageComponent } from './project-application-eligibility-decision-page.component';
 import {Router} from '@angular/router';
+import {TestModule} from '../../../../../common/test-module';
+import {ProjectModule} from '../../../../project.module';
 
 describe('ProjectApplicationEligibilityDecisionPageComponent', () => {
   let component: ProjectApplicationEligibilityDecisionPageComponent;
@@ -9,6 +11,7 @@ describe('ProjectApplicationEligibilityDecisionPageComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
+      imports: [TestModule, ProjectModule],
       declarations: [ ProjectApplicationEligibilityDecisionPageComponent ]
     })
     .compileComponents();

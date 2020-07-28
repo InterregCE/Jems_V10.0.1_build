@@ -371,16 +371,16 @@ internal class ProjectStatusServiceImplTest {
         )
     }
 
-    private fun createAlreadyApprovedProject(status: ProjectApplicationStatus): Project {
+    private fun createAlreadyApprovedProject(appStatus: ProjectApplicationStatus): Project {
         val alreadyApprovedStatuses = setOf(
             ProjectApplicationStatus.APPROVED,
             ProjectApplicationStatus.APPROVED_WITH_CONDITIONS,
             ProjectApplicationStatus.NOT_APPROVED
         )
-        if (!alreadyApprovedStatuses.contains(status))
+        if (!alreadyApprovedStatuses.contains(appStatus))
             throw IllegalStateException()
 
-        val status = ProjectStatus(1, null, status, user, ZonedDateTime.now(), null, null)
+        val status = ProjectStatus(1, null, appStatus, user, ZonedDateTime.now(), null, null)
         return Project(
             id = 1,
             acronym = "acronym",

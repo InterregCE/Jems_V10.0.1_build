@@ -78,8 +78,8 @@ class GlobalExceptionHandler : ResponseEntityExceptionHandler() {
     }
 
     override fun handleMethodArgumentNotValid(
-        ex: MethodArgumentNotValidException, headers: HttpHeaders?,
-        status: HttpStatus?, request: WebRequest?
+        ex: MethodArgumentNotValidException, headers: HttpHeaders,
+        status: HttpStatus, request: WebRequest
     ): ResponseEntity<Any> {
         val result = ex.bindingResult
 

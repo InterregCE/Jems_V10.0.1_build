@@ -1,35 +1,22 @@
-buildscript {
-    repositories {
-        maven { url "https://artifactory.internal.catalysts.cc/cloudflight-internal" }
-    }
-    dependencies {
-        classpath "io.cloudflight.gradle:cloudflight-gradle-plugin:4.3.3"
-    }
+plugins {
+    id "cloudflight-gradle-plugin" version "5.5.22"
 }
 
 description "EMS Project"
 group "io.cloudflight.ems"
 version "1.0.0"
 
-apply plugin: "cloudflight-gradle-plugin"
+cloudflight {
+    softwareProjectKey = "cloudflight/ems"
+}
 
 subprojects {
-    if (isJavaProject(it) || isKotlinProject(it)) {
-        dependencies {
-            api enforcedPlatform("io.cloudflight.platform:platform-bom:$cloudflightPlatformVersion")
-            annotationProcessor enforcedPlatform("io.cloudflight.platform:platform-bom:$cloudflightPlatformVersion")
-            testImplementation enforcedPlatform("io.cloudflight.platform:platform-test-bom:$cloudflightPlatformVersion")
-
-            constraints {
-                api "org.mariadb.jdbc:mariadb-java-client:2.6.0"
-            }
-
-        }
-    }
-
     if (isKotlinProject(it)) {
         dependencies {
-            kapt enforcedPlatform("io.cloudflight.platform:platform-bom:$cloudflightPlatformVersion")
+            implementation platform("io.cloudflight.platform:platform-bom:$cloudflightPlatformVersion")
+            annotationProcessor platform("io.cloudflight.platform:platform-bom:$cloudflightPlatformVersion")
+            testImplementation platform("io.cloudflight.platform:platform-test-bom:$cloudflightPlatformVersion")
+            kapt platform("io.cloudflight.platform:platform-bom:$cloudflightPlatformVersion")
         }
     }
 }
