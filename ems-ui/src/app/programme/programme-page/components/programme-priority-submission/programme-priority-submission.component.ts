@@ -2,10 +2,14 @@ import {ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit} from '@an
 import {AbstractForm} from '@common/components/forms/abstract-form';
 import {FormBuilder, FormGroup, Validators} from '@angular/forms';
 import {MatDialog} from '@angular/material/dialog';
-import {InputProgrammePriorityCreate, InputProgrammePriorityPolicy, ProgrammePriorityService, OutputProgrammePriority} from '@cat/api';
+import {
+  InputProgrammePriorityCreate,
+  InputProgrammePriorityPolicy,
+  OutputProgrammePriority,
+  ProgrammePriorityService
+} from '@cat/api';
 import {filter, take, takeUntil, tap} from 'rxjs/operators';
 import {Log} from '../../../../common/utils/log';
-import {MatSelectChange} from '@angular/material/select';
 import {Forms} from '../../../../common/utils/forms';
 
 @Component({
@@ -18,8 +22,9 @@ export class ProgrammePrioritySubmissionComponent extends AbstractForm implement
   OutputProgrammePriority = OutputProgrammePriority;
 
   objectives: string[] = [];
-  objectivesWithPolicies: { [key: string]: Array<string>; } = {};
+  objectivesWithPolicies: { [key: string]: string[] } = {};
   currentObjective: string;
+  policies: FormGroup = this.formBuilder.group({});
 
   currentPolicies: InputProgrammePriorityPolicy[] = [];
 
@@ -48,11 +53,11 @@ export class ProgrammePrioritySubmissionComponent extends AbstractForm implement
     super.ngOnInit();
     this.programmePriorityService.getFreePrioritiesWithPolicies()
       .pipe(
+        takeUntil(this.destroyed$),
         tap(freePrioritiesWithPolicies => Log.info('Fetched free programme priorities with policies:', this, freePrioritiesWithPolicies)),
-        takeUntil(this.destroyed$)
       ).subscribe(freePrioritiesWithPolicies => {
-        this.objectives = Object.keys(freePrioritiesWithPolicies);
-        this.objectivesWithPolicies = freePrioritiesWithPolicies;
+      this.objectives = Object.keys(freePrioritiesWithPolicies);
+      this.objectivesWithPolicies = freePrioritiesWithPolicies;
     });
   }
 
@@ -79,8 +84,14 @@ export class ProgrammePrioritySubmissionComponent extends AbstractForm implement
     });
   }
 
-  changeCurrentObjective(event: MatSelectChange) {
-    this.currentObjective = event.value;
+  changeCurrentObjective(objective: string) {
+    this.currentObjective = objective;
+    const policies = this.objectivesWithPolicies[objective]
+      .reduce((map, obj) => {
+        map[obj] = Validators.maxLength(50);
+        return map;
+      }, {});
+    this.policies = Forms.toFormGroup(policies)
   }
 
   changeCurrentPolicies(event: InputProgrammePriorityPolicy[]) {

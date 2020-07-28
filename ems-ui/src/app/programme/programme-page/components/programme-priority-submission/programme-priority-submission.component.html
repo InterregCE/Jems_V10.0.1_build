@@ -25,15 +25,16 @@
         <h6>Policy Objective and Specific Objective</h6>
         <mat-form-field class="field-full">
             <mat-label>Select Policy Objective</mat-label>
-            <mat-select name="policyObjective" formControlName="policyObjective" (selectionChange)="changeCurrentObjective($event)" required
+            <mat-select name="policyObjective" formControlName="policyObjective"
+                        (selectionChange)="changeCurrentObjective($event.value)" required
                         panelClass="material-select-panel">
                 <mat-option *ngFor="let objective of objectives" [value]="objective">
                     {{objective}}
                 </mat-option>
             </mat-select>
         </mat-form-field>
-        <div *ngIf="currentObjective === OutputProgrammePriority.ObjectiveEnum.PO1">
-            <app-programme-policy-checkbox-po1 [policyObjectives]="objectivesWithPolicies[currentObjective]" (selectedValues)="changeCurrentPolicies($event)">
+        <div>
+            <app-programme-policy-checkbox-po1 [policyForm]="policies">
             </app-programme-policy-checkbox-po1>
         </div>
         <div *ngIf="currentObjective === OutputProgrammePriority.ObjectiveEnum.PO2">
@@ -60,7 +61,7 @@
         <button mat-raised-button
                 color="primary"
                 type="submit"
-                [disabled]="priorityForm.invalid || submitted"
+                [disabled]="priorityForm.invalid || policies.invalid || submitted"
                 (click)="onSubmit()">
             Add Priority
         </button>
