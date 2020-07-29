@@ -1,6 +1,7 @@
 package io.cloudflight.ems.api.programme.dto
 
 import io.cloudflight.ems.api.programme.dto.ProgrammeObjective.ISO1
+import io.cloudflight.ems.api.programme.dto.ProgrammeObjective.ISO12
 import io.cloudflight.ems.api.programme.dto.ProgrammeObjective.ISO2
 import io.cloudflight.ems.api.programme.dto.ProgrammeObjective.PO1
 import io.cloudflight.ems.api.programme.dto.ProgrammeObjective.PO2
@@ -54,5 +55,12 @@ enum class ProgrammeObjectivePolicy(val objective: ProgrammeObjective) {
     ISO2MacroRegion(ISO2),
     ISO2Democracy(ISO2),
     ISO2Other(ISO2),
+
+    ISO12InstitutionalCapacities(ISO12),
+    ISO12AdministrativeCooperation(ISO12),
+    ISO12IncreaseTrust(ISO12),
+    ISO12MacroRegion(ISO12),
+    ISO12Democracy(ISO12),
+    ISO12Other(ISO12),
 
 }
