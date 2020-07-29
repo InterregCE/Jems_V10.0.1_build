@@ -1,7 +1,7 @@
 package io.cloudflight.ems.controller
 
 import com.fasterxml.jackson.databind.ObjectMapper
-import io.cloudflight.ems.api.dto.call.InputCallCreate
+import io.cloudflight.ems.api.call.dto.InputCallCreate
 import io.cloudflight.ems.factory.UserFactory
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
@@ -30,7 +30,12 @@ class CallControllerIntegrationTest {
     @WithUserDetails(value = UserFactory.ADMINISTRATOR_EMAIL)
     @Transactional
     fun `create call`() {
-        val call = InputCallCreate("New Call", ZonedDateTime.now(), ZonedDateTime.now().plusDays(3L), "Short description")
+        val call = InputCallCreate(
+            "New Call",
+            ZonedDateTime.now(),
+            ZonedDateTime.now().plusDays(3L),
+            "Short description"
+        )
 
         mockMvc.perform(
             MockMvcRequestBuilders.post("/api/call")

@@ -3,7 +3,7 @@ package io.cloudflight.ems.entity
 import io.cloudflight.ems.api.dto.ProjectApplicationStatus
 import io.cloudflight.ems.api.dto.ProjectEligibilityAssessmentResult
 import io.cloudflight.ems.api.dto.ProjectQualityAssessmentResult
-import io.cloudflight.ems.api.dto.call.OutputCall
+import io.cloudflight.ems.api.call.dto.OutputCall
 import io.cloudflight.ems.api.dto.user.OutputUser
 import io.cloudflight.ems.api.dto.user.OutputUserWithRole
 import io.cloudflight.ems.security.model.CurrentUser
@@ -30,7 +30,7 @@ data class Audit(
     val action: AuditAction?,
 
     @Field(type = FieldType.Keyword, store = true)
-    val projectId: String?,
+    val projectId: String? = null,
 
     @Field(type = FieldType.Object, store = true)
     val user: AuditUser?,
@@ -52,7 +52,6 @@ data class Audit(
             else
                 "Project application status changed from $oldStatus to $newStatus"
             return Audit(
-                timestamp = getElasticTimeNow(),
                 action = AuditAction.APPLICATION_STATUS_CHANGED,
                 projectId = projectId,
                 user = currentUser?.toEsUser(),
@@ -62,8 +61,6 @@ data class Audit(
 
         fun projectFileDeleted(currentUser: CurrentUser?, projectId: Long, file: ProjectFile): Audit {
             return Audit(
-                id = null,
-                timestamp = getElasticTimeNow(),
                 action = AuditAction.PROJECT_FILE_DELETED,
                 projectId = projectId.toString(),
                 user = currentUser?.toEsUser(),
@@ -73,8 +70,6 @@ data class Audit(
 
         fun projectFileUploadedSuccessfully(currentUser: CurrentUser?, projectId: Long, file: ProjectFile): Audit {
             return Audit(
-                id = null,
-                timestamp = getElasticTimeNow(),
                 action = AuditAction.PROJECT_FILE_UPLOADED_SUCCESSFULLY,
                 projectId = projectId.toString(),
                 user = currentUser?.toEsUser(),
@@ -84,8 +79,6 @@ data class Audit(
 
         fun projectFileUploadFailed(currentUser: CurrentUser?, projectId: Long, fileName: String?): Audit {
             return Audit(
-                id = null,
-                timestamp = getElasticTimeNow(),
                 action = AuditAction.PROJECT_FILE_UPLOAD_FAILED,
                 projectId = projectId.toString(),
                 user = currentUser?.toEsUser(),
@@ -95,8 +88,6 @@ data class Audit(
 
         fun projectFileDescriptionChanged(currentUser: CurrentUser?, projectId: Long, file: ProjectFile, oldDescription: String?): Audit {
             return Audit(
-                id = null,
-                timestamp = getElasticTimeNow(),
                 action = AuditAction.PROJECT_FILE_DESCRIPTION_CHANGED,
                 projectId = projectId.toString(),
                 user = currentUser?.toEsUser(),
@@ -106,10 +97,7 @@ data class Audit(
 
         fun userLoggedIn(user: AuditUser): Audit {
             return Audit(
-                id = null,
-                timestamp = getElasticTimeNow(),
                 action = AuditAction.USER_LOGGED_IN,
-                projectId = null,
                 user = user,
                 description = "user with email ${user.email} logged in"
             )
@@ -117,10 +105,7 @@ data class Audit(
 
         fun userLoggedOut(user: AuditUser): Audit {
             return Audit(
-                id = null,
-                timestamp = getElasticTimeNow(),
                 action = AuditAction.USER_LOGGED_OUT,
-                projectId = null,
                 user = user,
                 description = "user with email ${user.email} logged out"
             )
@@ -130,7 +115,6 @@ data class Audit(
             val author = currentUser?.user?.email
             return Audit(
                 id = null,
-                timestamp = getElasticTimeNow(),
                 action = AuditAction.USER_CREATED,
                 projectId = null,
                 user = currentUser?.toEsUser(),
@@ -141,10 +125,8 @@ data class Audit(
         fun userRoleChanged(currentUser: CurrentUser?, user: OutputUserWithRole): Audit {
             val author = currentUser?.user?.email
             return Audit(
-                id = null,
                 timestamp = getElasticTimeNow(),
                 action = AuditAction.USER_ROLE_CHANGED,
-                projectId = null,
                 user = currentUser?.toEsUser(),
                 description = "user role '${user.userRole.name}' has been assigned to ${user.name} ${user.surname} by $author"
             )
@@ -157,7 +139,6 @@ data class Audit(
 
             return Audit(
                 action = AuditAction.USER_DATA_CHANGED,
-                projectId = null,
                 user = currentUser?.toEsUser(),
                 description = "User data changed for user $userId:\n$changedString"
             )
@@ -166,7 +147,6 @@ data class Audit(
         fun applicantRegistered(createdUser: OutputUserWithRole): Audit {
             return Audit(
                 action = AuditAction.USER_REGISTERED,
-                projectId = null,
                 user = AuditUser(createdUser.id!!, createdUser.email),
                 description = "new user '${createdUser.name} ${createdUser.surname}' with role '${createdUser.userRole.name}' registered"
             )
@@ -175,7 +155,6 @@ data class Audit(
         fun userSessionExpired(user: AuditUser): Audit {
             return Audit(
                 action = AuditAction.USER_SESSION_EXPIRED,
-                projectId = null,
                 user = user,
                 description = "user with email ${user.email} was logged out by the system"
             )
@@ -184,7 +163,6 @@ data class Audit(
         fun passwordChanged(initiator: CurrentUser?, changedUser: OutputUser): Audit {
             return Audit(
                 action = AuditAction.PASSWORD_CHANGED,
-                projectId = null,
                 user = initiator?.toEsUser(),
                 description = if (initiator?.user?.id == changedUser.id)
                     "Password of user '${changedUser.name} ${changedUser.surname}' (${changedUser.email}) has been changed by himself/herself"
@@ -210,21 +188,11 @@ data class Audit(
             )
         }
 
-        fun callCreated(currentUser: CurrentUser?, callId: String, call: OutputCall): Audit {
+        fun callPublished(currentUser: CurrentUser?, call: OutputCall): Audit {
             return Audit(
-                action = AuditAction.CALL_CREATED,
-                projectId = callId,
+                action = AuditAction.CALL_PUBLISHED,
                 user = currentUser?.toEsUser(),
-                description = "New call '${call.name}' was created by ${currentUser?.user?.email}"
-            )
-        }
-
-        fun callUpdated(currentUser: CurrentUser?, callId: String, call: OutputCall): Audit {
-            return Audit(
-                action = AuditAction.CALL_UPDATED,
-                projectId = callId,
-                user = currentUser?.toEsUser(),
-                description = "Call '${call.name}' was updated by ${currentUser?.user?.email}"
+                description = "Call '${call.name}' published"
             )
         }
 
