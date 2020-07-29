@@ -1,4 +1,4 @@
-package io.cloudflight.ems.service.validators
+package io.cloudflight.ems.programme.service.validator
 
 import io.cloudflight.ems.api.programme.dto.InputProgrammePriorityPolicy
 import io.cloudflight.ems.api.programme.dto.OutputProgrammePriorityPolicy
@@ -6,7 +6,7 @@ import io.cloudflight.ems.api.programme.dto.ProgrammeObjectivePolicy
 import io.cloudflight.ems.api.programme.validator.PriorityPolicyUniqueCodeValidator
 import io.cloudflight.ems.exception.I18nFieldError
 import io.cloudflight.ems.exception.I18nValidationException
-import io.cloudflight.ems.service.ProgrammePriorityService
+import io.cloudflight.ems.programme.service.ProgrammePriorityService
 import org.springframework.http.HttpStatus
 import org.springframework.stereotype.Component
 
@@ -17,16 +17,16 @@ class PriorityPolicyUniqueCodeValidatorImpl(
 
     override fun isPolicyFreeOrBelongsToThisProgramme(policy: ProgrammeObjectivePolicy, priorityId: Long?): Boolean {
         val priorityIdOfRelatedExistingPolicy = programmePriorityService.getPriorityIdForPolicyIfExists(policy)
-        return if (priorityId == null) {
+        if (priorityId == null) {
             // creating new ProgrammePriority
             if (priorityIdOfRelatedExistingPolicy == null)
-                true
+                return true
             else
                 throw buildPolicyInUseException(policy)
         } else {
             // updating existing ProgrammePriority
             if (priorityIdOfRelatedExistingPolicy == null || priorityIdOfRelatedExistingPolicy == priorityId)
-                true
+                return true
             else
                 throw buildPolicyInUseException(policy)
         }

@@ -1,6 +1,7 @@
 package io.cloudflight.ems.exception
 
 import org.springframework.http.HttpStatus
+import java.util.Objects
 
 class I18nValidationException(
     val i18nKey: String? = null,
@@ -18,6 +19,18 @@ class I18nValidationException(
             i18nFieldErrors = i18nFieldErrors,
             additionalInfo = additionalInfo
         )
+    }
+
+    override fun equals(other: Any?): Boolean
+        = (other is I18nValidationException)
+        && i18nKey == other.i18nKey
+        && Objects.equals(i8nArguments, other.i8nArguments)
+        && httpStatus == other.httpStatus
+        && Objects.equals(i18nFieldErrors, other.i18nFieldErrors)
+        && additionalInfo == other.additionalInfo
+
+    override fun hashCode(): Int {
+        return Objects.hash(i18nKey, i8nArguments, httpStatus, i18nFieldErrors, additionalInfo)
     }
 
 }

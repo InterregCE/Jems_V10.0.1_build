@@ -1,4 +1,4 @@
-package io.cloudflight.ems.service
+package io.cloudflight.ems.programme.service
 
 import io.cloudflight.ems.api.programme.dto.InputProgrammePriorityCreate
 import io.cloudflight.ems.api.programme.dto.InputProgrammePriorityUpdate

@@ -1,4 +1,4 @@
-package io.cloudflight.ems.service
+package io.cloudflight.ems.programme.service
 
 import io.cloudflight.ems.api.programme.dto.InputProgrammePriorityCreate
 import io.cloudflight.ems.api.programme.dto.InputProgrammePriorityPolicy
@@ -7,8 +7,8 @@ import io.cloudflight.ems.api.programme.dto.OutputProgrammePriority
 import io.cloudflight.ems.api.programme.dto.OutputProgrammePriorityPolicy
 import io.cloudflight.ems.api.programme.dto.ProgrammeObjective
 import io.cloudflight.ems.api.programme.dto.ProgrammeObjectivePolicy
-import io.cloudflight.ems.entity.ProgrammePriority
-import io.cloudflight.ems.entity.ProgrammePriorityPolicy
+import io.cloudflight.ems.programme.entity.ProgrammePriority
+import io.cloudflight.ems.programme.entity.ProgrammePriorityPolicy
 import io.cloudflight.ems.exception.I18nValidationException
 import org.springframework.http.HttpStatus
 
@@ -17,7 +17,9 @@ fun ProgrammePriority.toOutputProgrammePriority() = OutputProgrammePriority(
     code = code,
     title = title,
     objective = objective,
-    programmePriorityPolicies = programmePriorityPolicies.map { it.toOutputProgrammePriorityPolicy() }
+    programmePriorityPolicies = programmePriorityPolicies
+        .map { it.toOutputProgrammePriorityPolicy() }
+        .sortedBy { it.programmeObjectivePolicy }
 )
 
 fun ProgrammePriorityPolicy.toOutputProgrammePriorityPolicy() = OutputProgrammePriorityPolicy(
@@ -40,10 +42,11 @@ fun InputProgrammePriorityUpdate.toEntity() = ProgrammePriority(
     programmePriorityPolicies = programmePriorityPolicies!!.mapTo(HashSet()) { it.toEntity(objective!!) }
 )
 
-fun InputProgrammePriorityPolicy.toEntity(checkObjective: ProgrammeObjective) = ProgrammePriorityPolicy(
-    programmeObjectivePolicy = programmeObjectivePolicy!!.ifSuits(checkObjective),
-    code = code!!
-)
+fun InputProgrammePriorityPolicy.toEntity(checkObjective: ProgrammeObjective) =
+    ProgrammePriorityPolicy(
+        programmeObjectivePolicy = programmeObjectivePolicy!!.ifSuits(checkObjective),
+        code = code!!
+    )
 
 /**
  * Check, if parent objective of this policy is properly set, e.g. if such relation is possible in the system

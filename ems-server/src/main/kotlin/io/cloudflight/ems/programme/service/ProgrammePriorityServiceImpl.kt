@@ -1,4 +1,4 @@
-package io.cloudflight.ems.service
+package io.cloudflight.ems.programme.service
 
 import io.cloudflight.ems.api.programme.dto.InputProgrammePriorityCreate
 import io.cloudflight.ems.api.programme.dto.InputProgrammePriorityUpdate
@@ -7,8 +7,8 @@ import io.cloudflight.ems.api.programme.dto.OutputProgrammePriorityPolicy
 import io.cloudflight.ems.api.programme.dto.ProgrammeObjective
 import io.cloudflight.ems.api.programme.dto.ProgrammeObjectivePolicy
 import io.cloudflight.ems.exception.ResourceNotFoundException
-import io.cloudflight.ems.repository.ProgrammePriorityPolicyRepository
-import io.cloudflight.ems.repository.ProgrammePriorityRepository
+import io.cloudflight.ems.programme.repository.ProgrammePriorityPolicyRepository
+import io.cloudflight.ems.programme.repository.ProgrammePriorityRepository
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
 import org.springframework.stereotype.Service

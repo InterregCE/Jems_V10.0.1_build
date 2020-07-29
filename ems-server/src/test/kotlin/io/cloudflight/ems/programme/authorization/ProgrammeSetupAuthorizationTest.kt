@@ -1,4 +1,4 @@
-package io.cloudflight.ems.security.service.authorization
+package io.cloudflight.ems.programme.authorization
 
 import io.cloudflight.ems.security.model.LocalCurrentUser
 import io.cloudflight.ems.security.service.SecurityService
@@ -29,7 +29,8 @@ internal class ProgrammeSetupAuthorizationTest {
     @BeforeEach
     fun setup() {
         MockKAnnotations.init(this)
-        programmeSetupAuthorization = ProgrammeSetupAuthorization(securityService)
+        programmeSetupAuthorization =
+            ProgrammeSetupAuthorization(securityService)
     }
 
     @ParameterizedTest

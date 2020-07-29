@@ -1,9 +1,8 @@
-package io.cloudflight.ems.service.validators
+package io.cloudflight.ems.programme.service.validator
 
 import io.cloudflight.ems.api.programme.validator.UniqueProgrammePriorityCodeAndTitleValidator
-import io.cloudflight.ems.service.ProgrammePriorityService
+import io.cloudflight.ems.programme.service.ProgrammePriorityService
 import org.springframework.stereotype.Component
-import javax.validation.ConstraintValidatorContext
 
 @Component
 class UniqueProgrammePriorityCodeAndTitleValidatorImpl(private val programmePriorityService: ProgrammePriorityService) :

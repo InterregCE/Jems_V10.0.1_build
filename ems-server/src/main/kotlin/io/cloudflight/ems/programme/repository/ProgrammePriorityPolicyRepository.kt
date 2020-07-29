@@ -1,7 +1,7 @@
-package io.cloudflight.ems.repository
+package io.cloudflight.ems.programme.repository
 
 import io.cloudflight.ems.api.programme.dto.ProgrammeObjectivePolicy
-import io.cloudflight.ems.entity.ProgrammePriorityPolicy
+import io.cloudflight.ems.programme.entity.ProgrammePriorityPolicy
 import org.springframework.data.jpa.repository.Query
 import org.springframework.data.repository.PagingAndSortingRepository
 import org.springframework.data.repository.query.Param
