@@ -1,7 +1,7 @@
 import {async, ComponentFixture, fakeAsync, TestBed, tick} from '@angular/core/testing';
 
 import { ProgrammePageComponent } from './programme-page.component';
-import {ProgrammeSetup} from '@cat/api';
+import {InputProgrammeData} from '@cat/api';
 import {HttpTestingController} from '@angular/common/http/testing';
 import {TestModule} from '../../../../common/test-module';
 import {ProgrammeModule} from '../../../programme.module';
@@ -34,7 +34,7 @@ describe('ProgrammePageComponent', () => {
   });
 
   it('should update a programme', fakeAsync(() => {
-    const user = {cci: 'some cci'} as ProgrammeSetup;
+    const user = {cci: 'some cci'} as InputProgrammeData;
 
     component.saveProgrammeData$.next(user);
     let success = false;
@@ -42,12 +42,12 @@ describe('ProgrammePageComponent', () => {
 
     httpTestingController.expectOne({
       method: 'GET',
-      url: `//api/setup`
+      url: `//api/programmedata`
     }).flush(user);
 
     httpTestingController.expectOne({
       method: 'PUT',
-      url: `//api/setup`
+      url: `//api/programmedata`
     }).flush(user);
     httpTestingController.verify();
 

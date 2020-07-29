@@ -9,9 +9,9 @@ import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
 import javax.validation.Valid
 
-@Api("Programme Setup")
-@RequestMapping("/api/setup")
-interface ProgrammeSetupApi {
+@Api("Programme Data")
+@RequestMapping("/api/programmedata")
+interface ProgrammeDataApi {
 
     @GetMapping
     fun get(): InputProgrammeData

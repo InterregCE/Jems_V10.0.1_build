@@ -1,8 +1,6 @@
 package io.cloudflight.ems.api.programme
 
-import io.cloudflight.ems.api.dto.user.OutputUserWithRole
 import io.cloudflight.ems.api.programme.dto.InputProgrammePriorityCreate
-import io.cloudflight.ems.api.programme.dto.InputProgrammePriorityIdentifier
 import io.cloudflight.ems.api.programme.dto.InputProgrammePriorityUpdate
 import io.cloudflight.ems.api.programme.dto.OutputProgrammePriority
 import io.cloudflight.ems.api.programme.dto.ProgrammeObjective

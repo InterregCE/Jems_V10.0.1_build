@@ -3,7 +3,7 @@ import {BaseComponent} from '@common/components/base-component';
 import {Permission} from '../../../../security/permissions/permission';
 import {combineLatest, merge, Observable, Subject} from 'rxjs';
 import {I18nValidationError} from '@common/validation/i18n-validation-error';
-import {ProgrammeSetup, ProgrammeSetupService} from '@cat/api';
+import {InputProgrammeData, ProgrammeDataService} from '@cat/api';
 import {catchError, flatMap, map, tap} from 'rxjs/operators';
 import {Log} from '../../../../common/utils/log';
 import {HttpErrorResponse} from '@angular/common/http';
@@ -20,17 +20,17 @@ export class ProgrammePageComponent extends BaseComponent {
 
   programmeSaveError$ = new Subject<I18nValidationError | null>();
   programmeSaveSuccess$ = new Subject<boolean>();
-  saveProgrammeData$ = new Subject<ProgrammeSetup>();
+  saveProgrammeData$ = new Subject<InputProgrammeData>();
   activeTab$: Observable<number> = this.programmeNavigationStateManagementService.getTab();
 
-  private programme$ = this.programmeSetupService.get()
+  private programme$ = this.programmeDataService.get()
     .pipe(
       tap(programmeData => Log.info('Fetched programme data:', this, programmeData))
     );
 
   private savedProgramme$ = this.saveProgrammeData$
     .pipe(
-      flatMap(programmeUpdate => this.programmeSetupService.update(programmeUpdate)),
+      flatMap(programmeUpdate => this.programmeDataService.update(programmeUpdate)),
       tap(saved => Log.info('Updated programme:', this, saved)),
       tap(() => this.programmeSaveSuccess$.next(true)),
       tap(() => this.programmeSaveError$.next(null)),
@@ -47,7 +47,7 @@ export class ProgrammePageComponent extends BaseComponent {
       map(([programme]) => ({programme}))
     );
 
-  constructor(private programmeSetupService: ProgrammeSetupService,
+  constructor(private programmeDataService: ProgrammeDataService,
               private programmeNavigationStateManagementService: ProgrammeNavigationStateManagementService) {
     super();
   }
