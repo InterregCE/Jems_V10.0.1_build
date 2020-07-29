@@ -3,7 +3,7 @@ import {RouterModule, Routes} from '@angular/router';
 import {AuthenticationGuard} from '../security/authentication-guard.service';
 import {ProgrammePageComponent} from './programme-page/containers/programme-page/programme-page.component';
 import {ProgrammePrioritiesComponent} from './programme-page/containers/programme-priorities/programme-priorities.component';
-import {ProgrammePrioritySubmissionComponent} from './programme-page/components/programme-priority-submission/programme-priority-submission.component';
+import {ProgrammePriorityComponent} from './programme-page/containers/programme-priority/programme-priority.component';
 
 const routes: Routes = [
   {
@@ -18,7 +18,7 @@ const routes: Routes = [
   },
   {
     path: 'priority',
-    component: ProgrammePrioritySubmissionComponent,
+    component: ProgrammePriorityComponent,
     canActivate: [AuthenticationGuard],
   }
 ];

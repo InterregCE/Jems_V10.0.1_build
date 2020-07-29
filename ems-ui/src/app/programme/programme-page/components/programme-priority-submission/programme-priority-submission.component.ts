@@ -1,16 +1,22 @@
-import {ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit} from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  ChangeDetectorRef,
+  Component,
+  EventEmitter,
+  Input,
+  OnInit,
+  Output
+} from '@angular/core';
 import {AbstractForm} from '@common/components/forms/abstract-form';
 import {FormBuilder, FormGroup, Validators} from '@angular/forms';
 import {MatDialog} from '@angular/material/dialog';
 import {
   InputProgrammePriorityCreate,
-  InputProgrammePriorityPolicy,
-  OutputProgrammePriority,
-  ProgrammePriorityService
+  InputProgrammePriorityPolicy
 } from '@cat/api';
-import {filter, take, takeUntil, tap} from 'rxjs/operators';
-import {Log} from '../../../../common/utils/log';
+import {filter, take, takeUntil} from 'rxjs/operators';
 import {Forms} from '../../../../common/utils/forms';
+import {Router} from '@angular/router';
 
 @Component({
   selector: 'app-programme-priority-submission',
@@ -19,14 +25,17 @@ import {Forms} from '../../../../common/utils/forms';
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class ProgrammePrioritySubmissionComponent extends AbstractForm implements OnInit {
-  OutputProgrammePriority = OutputProgrammePriority;
 
-  objectives: string[] = [];
-  objectivesWithPolicies: { [key: string]: string[] } = {};
+  @Input()
+  objectives: string[];
+  @Input()
+  objectivesWithPolicies: { [key: string]: string[] };
+  @Output()
+  savePriority: EventEmitter<InputProgrammePriorityCreate> = new EventEmitter<InputProgrammePriorityCreate>();
+
   currentObjective: string;
-  policies: FormGroup = this.formBuilder.group({});
-
-  currentPolicies: InputProgrammePriorityPolicy[] = [];
+  policyForm: FormGroup = this.formBuilder.group({});
+  checked = new Map<string, boolean>();
 
   priorityForm = this.formBuilder.group({
     priorityCode: ['', Validators.maxLength(50)],
@@ -44,43 +53,34 @@ export class ProgrammePrioritySubmissionComponent extends AbstractForm implement
 
   constructor(private formBuilder: FormBuilder,
               private dialog: MatDialog,
-              private programmePriorityService: ProgrammePriorityService,
+              private router: Router,
               protected changeDetectorRef: ChangeDetectorRef) {
     super(changeDetectorRef);
   }
 
   ngOnInit(): void {
     super.ngOnInit();
-    this.programmePriorityService.getFreePrioritiesWithPolicies()
-      .pipe(
-        takeUntil(this.destroyed$),
-        tap(freePrioritiesWithPolicies => Log.info('Fetched free programme priorities with policies:', this, freePrioritiesWithPolicies)),
-      ).subscribe(freePrioritiesWithPolicies => {
-      this.objectives = Object.keys(freePrioritiesWithPolicies);
-      this.objectivesWithPolicies = freePrioritiesWithPolicies;
-    });
   }
 
   getForm(): FormGroup | null {
     return this.priorityForm;
   }
 
+  onCancel(): void {
+    this.router.navigate(['/programme']);
+  }
+
   onSubmit(): void {
     Forms.confirmDialog(
       this.dialog,
-      'programme.data.dialog.title',
-      'programme.data.dialog.message'
+      'programme.priority.dialog.title',
+      'programme.priority.dialog.message'
     ).pipe(
       take(1),
       takeUntil(this.destroyed$),
       filter(yes => !!yes)
     ).subscribe(() => {
-      this.programmePriorityService.create({
-        code: this.priorityForm.controls.priorityCode.value,
-        title: this.priorityForm.controls.priorityTitle.value,
-        objective: this.currentObjective,
-        programmePriorityPolicies: this.currentPolicies,
-      } as InputProgrammePriorityCreate).subscribe();
+      this.submitPriority();
     });
   }
 
@@ -91,10 +91,29 @@ export class ProgrammePrioritySubmissionComponent extends AbstractForm implement
         map[obj] = Validators.maxLength(50);
         return map;
       }, {});
-    this.policies = Forms.toFormGroup(policies)
+    this.policyForm = Forms.toFormGroup(policies)
   }
 
-  changeCurrentPolicies(event: InputProgrammePriorityPolicy[]) {
-    this.currentPolicies = event;
+  submitPriority(): void {
+    const priority = {
+      code: this.priorityForm.controls.priorityCode.value,
+      title: this.priorityForm.controls.priorityTitle.value,
+      objective: this.currentObjective,
+      programmePriorityPolicies: this.buildPolicyList()
+    } as InputProgrammePriorityCreate;
+    this.savePriority.emit(priority);
+  }
+
+  buildPolicyList(): InputProgrammePriorityPolicy[] {
+    const currentlySelected: InputProgrammePriorityPolicy[] = []
+    this.checked.forEach((value, key) => {
+      if (value) {
+        currentlySelected.push({
+          code: this.policyForm.controls[key].value,
+          programmeObjectivePolicy: key,
+        } as InputProgrammePriorityPolicy);
+      }
+    })
+    return currentlySelected;
   }
 }

@@ -10,7 +10,8 @@ import {MatCheckboxModule} from '@angular/material/checkbox';
 import {ProgrammePrioritiesComponent} from './programme-page/containers/programme-priorities/programme-priorities.component';
 import {ProgrammePriorityItemsComponent} from './programme-page/components/programme-priority-items/programme-priority-items.component';
 import {ProgrammePrioritySubmissionComponent} from './programme-page/components/programme-priority-submission/programme-priority-submission.component';
-import {ProgrammePolicyCheckboxPo1Component} from './programme-page/components/programme-priority-submission/checkbox-components/programme-policy-checkbox-po1/programme-policy-checkbox-po1.component';
+import {ProgrammePolicyCheckboxComponent} from './programme-page/components/programme-priority-submission/programme-policy-checkbox/programme-policy-checkbox.component';
+import { ProgrammePriorityComponent } from './programme-page/containers/programme-priority/programme-priority.component';
 
 @NgModule({
   declarations: [
@@ -19,7 +20,10 @@ import {ProgrammePolicyCheckboxPo1Component} from './programme-page/components/p
     ProgrammePrioritiesComponent,
     ProgrammePriorityItemsComponent,
     ProgrammePrioritySubmissionComponent,
-    ProgrammePolicyCheckboxPo1Component],
+    ProgrammePolicyCheckboxComponent,
+    ProgrammePolicyCheckboxComponent,
+    ProgrammePriorityComponent
+  ],
   imports: [
     SharedModule,
     ProgrammeRoutingModule,

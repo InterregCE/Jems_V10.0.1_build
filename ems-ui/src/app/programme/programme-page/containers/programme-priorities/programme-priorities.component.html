@@ -5,7 +5,7 @@
             [routerLink]="'/priority'">
         + Add Priority
     </button>
-    <div *ngIf="currentPage$ | async as priorities">
+    <div *ngIf="currentPage$ | async as priorities" class="priority-items">
         <app-programme-priority-items
                 [priorities]="priorities.content">
         </app-programme-priority-items>

@@ -1,0 +1,9 @@
+<div>
+    <app-programme-priority-submission
+            [objectives]="objectives"
+            [objectivesWithPolicies]="objectivesWithPolicies"
+            [success$]="prioritySaveSuccess$"
+            [error$]="prioritySaveError$"
+            (savePriority)="savePriority($event)">
+    </app-programme-priority-submission>
+</div>

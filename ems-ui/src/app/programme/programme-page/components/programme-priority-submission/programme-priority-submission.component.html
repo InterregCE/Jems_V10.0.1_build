@@ -34,34 +34,16 @@
             </mat-select>
         </mat-form-field>
         <div>
-            <app-programme-policy-checkbox-po1 [policyForm]="policies">
-            </app-programme-policy-checkbox-po1>
+            <app-programme-policy-checkbox [policyForm]="policyForm" [checked]="checked">
+            </app-programme-policy-checkbox>
         </div>
-        <div *ngIf="currentObjective === OutputProgrammePriority.ObjectiveEnum.PO2">
-
-        </div>
-        <div *ngIf="currentObjective === OutputProgrammePriority.ObjectiveEnum.PO3">
-
-        </div>
-        <div *ngIf="currentObjective === OutputProgrammePriority.ObjectiveEnum.PO4">
-
-        </div>
-        <div *ngIf="currentObjective === OutputProgrammePriority.ObjectiveEnum.PO5">
-
-        </div>
-        <div *ngIf="currentObjective === OutputProgrammePriority.ObjectiveEnum.ISO1">
-
-        </div>
-        <div *ngIf="currentObjective === OutputProgrammePriority.ObjectiveEnum.ISO2">
-
-        </div>
-        <button mat-raised-button>
+        <button mat-raised-button (click)="onCancel()">
             Cancel
         </button>
         <button mat-raised-button
                 color="primary"
                 type="submit"
-                [disabled]="priorityForm.invalid || policies.invalid || submitted"
+                [disabled]="priorityForm.invalid || policyForm.invalid || submitted"
                 (click)="onSubmit()">
             Add Priority
         </button>
