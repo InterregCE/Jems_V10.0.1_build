@@ -10,7 +10,7 @@
                 </app-project-application-files>
             </ng-template>
         </mat-tab>
-        <mat-tab label="Assessment Files" *ngxPermissionsExcept="Permission.APPLICANT_USER">
+        <mat-tab label="Assessment Files" *ngIf="assessmentFilesVisible$ | async">
             <ng-template matTabContent>
                 <app-project-application-files
                         [projectId]="projectId"

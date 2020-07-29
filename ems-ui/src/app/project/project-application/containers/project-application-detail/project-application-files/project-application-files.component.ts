@@ -119,6 +119,10 @@ export class ProjectApplicationFilesComponent extends BaseComponent {
     if (this.fileType === OutputProjectFile.TypeEnum.ASSESSMENTFILE) {
       return permission === Permission.PROGRAMME_USER;
     }
+    if (permission === Permission.PROGRAMME_USER) {
+      // programme user can only upload assessment files
+      return false;
+    }
     return project.projectStatus.status === OutputProjectStatus.StatusEnum.DRAFT
       || project.projectStatus.status === OutputProjectStatus.StatusEnum.RETURNEDTOAPPLICANT
   }
