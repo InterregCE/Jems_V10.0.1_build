@@ -1,12 +1,11 @@
-package io.cloudflight.ems.api.dto
+package io.cloudflight.ems.api.programme.dto
 
 import java.time.LocalDate
-import javax.validation.constraints.Size
-import javax.validation.constraints.Digits
 import javax.validation.constraints.Max
 import javax.validation.constraints.Min
+import javax.validation.constraints.Size
 
-data class ProgrammeSetup (
+data class InputProgrammeData (
 
     @field:Size(max = 15, message = "programme.cci.size.too.long")
     val cci: String?,
