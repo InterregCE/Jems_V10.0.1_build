@@ -1,6 +1,7 @@
 package io.cloudflight.ems.service.call.impl
 
 import io.cloudflight.ems.api.dto.call.InputCallCreate
+import io.cloudflight.ems.api.dto.call.InputCallUpdate
 import io.cloudflight.ems.api.dto.call.OutputCall
 import io.cloudflight.ems.entity.Audit
 import io.cloudflight.ems.exception.ResourceNotFoundException
@@ -38,6 +39,31 @@ class CallServiceImpl(
             call = savedCall
         ))
         return savedCall;
+    }
+
+    @Transactional
+    override fun updateCall(inputCall: InputCallUpdate): OutputCall {
+        val call = callRepository.findById(inputCall.id).orElseThrow { ResourceNotFoundException() }
+
+        val toUpdate = call.copy(
+            name = inputCall.name,
+            startDate = inputCall.startDate!!,
+            endDate = inputCall.endDate!!,
+            description = inputCall.description!!
+        )
+
+        val updatedCall = callRepository.save(toUpdate).toOutputCall()
+
+        auditService.logEvent(
+            Audit.callUpdated(
+                currentUser = securityService.currentUser,
+                callId = updatedCall.id.toString(),
+                call = updatedCall
+            )
+        )
+
+        return updatedCall
+
     }
 
     @Transactional(readOnly = true)

@@ -1,6 +1,7 @@
 package io.cloudflight.ems.api
 
 import io.cloudflight.ems.api.dto.call.InputCallCreate
+import io.cloudflight.ems.api.dto.call.InputCallUpdate
 import io.cloudflight.ems.api.dto.call.OutputCall
 import io.swagger.annotations.Api
 import io.swagger.annotations.ApiImplicitParam
@@ -10,6 +11,7 @@ import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
 import org.springframework.http.MediaType
 import org.springframework.web.bind.annotation.GetMapping
+import org.springframework.web.bind.annotation.PutMapping
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
@@ -23,6 +25,11 @@ interface CallApi {
     @ApiOperation("Create a new call")
     @PostMapping(consumes = [MediaType.APPLICATION_JSON_VALUE])
     fun createCall(@Valid @RequestBody call: InputCallCreate): OutputCall
+
+    @ApiOperation("Update an existing call")
+    @PutMapping(consumes = [MediaType.APPLICATION_JSON_VALUE])
+    fun updateCall(@Valid @RequestBody call: InputCallUpdate): OutputCall
+
 
     @ApiOperation("Returns all calls")
     @ApiImplicitParams(
