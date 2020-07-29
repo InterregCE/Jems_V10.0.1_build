@@ -56,6 +56,8 @@ class PolicyObjectiveRelationshipValidatorTest {
     fun isValidEmpty() {
         assertTrue(policyObjectiveRelationshipValidator.isValid(emptySet(), PO1),
             "empty set is valid")
+        assertTrue(policyObjectiveRelationshipValidator.isValid(null, PO1),
+            "null is valid")
     }
 
 }
