@@ -39,23 +39,27 @@ class UniqueProgrammePriorityCodeAndTitleValidatorTest {
 
     @Test
     fun `update existing priority code with existing code`() {
-        every { programmePriorityService.getByCode("existingCode") } returns getExistingPriorityWithId(78)
+        val ID_78 = 78L
+        val ID_4 = 4L
+        every { programmePriorityService.getByCode("existingCode") } returns getExistingPriorityWithId(ID_78)
         every { programmePriorityService.getByTitle("notExistingTitle") } returns null
 
         assertFalse(
-            uniqueProgrammePriorityCodeAndTitleValidator.isValid(4, "existingCode", "notExistingTitle"),
-            "we cannot change code, because this code is already in use by other priority"
+            uniqueProgrammePriorityCodeAndTitleValidator.isValid(ID_4, "existingCode", "notExistingTitle"),
+            "we cannot change code for priority $ID_4, because this code is already in use by priority $ID_78"
         )
     }
 
     @Test
     fun `update existing priority title with existing title`() {
-        every { programmePriorityService.getByCode("notExistingCode") } returns getExistingPriorityWithId(42)
-        every { programmePriorityService.getByTitle("existingTitle") } returns null
+        val ID_42 = 42L
+        val ID_17 = 17L
+        every { programmePriorityService.getByCode("notExistingCode") } returns null
+        every { programmePriorityService.getByTitle("existingTitle") } returns getExistingPriorityWithId(ID_42)
 
         assertFalse(
-            uniqueProgrammePriorityCodeAndTitleValidator.isValid(17, "notExistingCode", "existingTitle"),
-            "we cannot change title, because this title is already in use by other priority"
+            uniqueProgrammePriorityCodeAndTitleValidator.isValid(ID_17, "notExistingCode", "existingTitle"),
+            "we cannot change title for priority $ID_17, because this title is already in use by priority $ID_42"
         )
     }
 
