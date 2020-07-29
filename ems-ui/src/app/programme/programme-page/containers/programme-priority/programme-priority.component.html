@@ -4,6 +4,6 @@
         [objectivesWithPolicies]="details.objectivesWithPolicies"
         [success$]="prioritySaveSuccess$"
         [error$]="prioritySaveError$"
-        (savePriority)="savePriority($event)">
+        (savePriority)="savePriority($event)" (cancelPriority)="cancelPriority($event)">
 </app-programme-priority-submission>
 

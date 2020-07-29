@@ -1,11 +1,12 @@
-import {ChangeDetectionStrategy, Component, OnInit} from '@angular/core';
+import {ChangeDetectionStrategy, Component, Input, OnInit} from '@angular/core';
 import {ProgrammePriorityService} from '@cat/api'
-import {combineLatest, Subject} from 'rxjs';
+import {combineLatest, Observable, Subject} from 'rxjs';
 import {MatSort} from '@angular/material/sort';
-import {flatMap, map, startWith, tap} from 'rxjs/operators';
+import {flatMap, map, startWith, takeUntil, tap} from 'rxjs/operators';
 import {Tables} from '../../../../common/utils/tables';
 import {Log} from '../../../../common/utils/log';
 import {Permission} from '../../../../security/permissions/permission';
+import {BaseComponent} from '@common/components/base-component';
 
 @Component({
   selector: 'app-programme-priorities',
@@ -13,12 +14,16 @@ import {Permission} from '../../../../security/permissions/permission';
   styleUrls: ['./programme-priorities.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class ProgrammePrioritiesComponent {
+export class ProgrammePrioritiesComponent extends BaseComponent implements OnInit {
   Permission = Permission;
+
+  @Input()
+  refreshPage$: Observable<void>;
 
   newPageSize$ = new Subject<number>();
   newPageIndex$ = new Subject<number>();
   newSort$ = new Subject<Partial<MatSort>>();
+  refresh$ = new Subject<void>();
 
   currentPage$ =
     combineLatest([
@@ -28,7 +33,8 @@ export class ProgrammePrioritiesComponent {
         startWith(Tables.DEFAULT_INITIAL_SORT),
         map(sort => sort?.direction ? sort : Tables.DEFAULT_INITIAL_SORT),
         map(sort => `${sort.active},${sort.direction}`)
-      )
+      ),
+      this.refresh$.pipe(startWith(null))
     ])
       .pipe(
         flatMap(([pageIndex, pageSize, sort]) =>
@@ -36,5 +42,15 @@ export class ProgrammePrioritiesComponent {
         tap(page => Log.info('Fetched the priorities:', this, page.content)),
       );
 
-  constructor(private programmePriorityService: ProgrammePriorityService) { }
+  constructor(private programmePriorityService: ProgrammePriorityService) {
+    super();
+  }
+
+  ngOnInit(): void {
+    this.refreshPage$.pipe(
+      takeUntil(this.destroyed$)
+    ).subscribe(() => {
+      this.refresh$.next();
+    })
+  }
 }

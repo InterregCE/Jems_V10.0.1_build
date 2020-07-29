@@ -13,11 +13,11 @@ export class Forms {
     return dialogRef.afterClosed();
   }
 
-  static toFormGroup(items: { [key: string]: Array<ValidatorFn> }): FormGroup {
+  static toFormGroup(items: Map<string, ValidatorFn[]>): FormGroup {
     const group: any = {};
 
-    Object.keys(items).forEach(item => {
-      group[item] = new FormControl('', items[item]);
+    items.forEach((value, item) => {
+      group[item] = new FormControl('', value);
     })
     return new FormGroup(group);
   }
