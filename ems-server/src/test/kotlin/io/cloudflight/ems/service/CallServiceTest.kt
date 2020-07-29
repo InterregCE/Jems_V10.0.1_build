@@ -61,11 +61,13 @@ class CallServiceTest {
 
     @MockK
     lateinit var callRepository: CallRepository
+
     @MockK
     lateinit var userRepository: UserRepository
 
     @MockK
     lateinit var securityService: SecurityService
+
     @RelaxedMockK
     lateinit var auditService: AuditService
 
@@ -100,7 +102,7 @@ class CallServiceTest {
         with(event) {
             assertThat(AuditAction.CALL_CREATED).isEqualTo(captured.action)
             Assertions.assertEquals(
-                "new call 'Test call name' was created",
+                "New call 'Test call name' was created by admin@admin.dev",
                 captured.description
             )
         }

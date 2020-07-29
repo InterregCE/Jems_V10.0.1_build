@@ -2,6 +2,7 @@ package io.cloudflight.ems.controller
 
 import io.cloudflight.ems.api.CallApi
 import io.cloudflight.ems.api.dto.call.InputCallCreate
+import io.cloudflight.ems.api.dto.call.InputCallUpdate
 import io.cloudflight.ems.api.dto.call.OutputCall
 import io.cloudflight.ems.service.call.CallService
 import org.springframework.data.domain.Page
@@ -17,6 +18,10 @@ class CallController(
     @PreAuthorize("@callAuthorization.canCreateCall()")
     override fun createCall(call: InputCallCreate): OutputCall {
         return callService.createCall(call);
+    }
+
+    override fun updateCall(call: InputCallUpdate): OutputCall {
+        return callService.updateCall(call)
     }
 
     override fun getCalls(pageable: Pageable): Page<OutputCall> {

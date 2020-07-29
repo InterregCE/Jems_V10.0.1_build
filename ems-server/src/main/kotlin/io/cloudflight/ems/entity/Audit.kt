@@ -215,7 +215,16 @@ data class Audit(
                 action = AuditAction.CALL_CREATED,
                 projectId = callId,
                 user = currentUser?.toEsUser(),
-                description = "new call '${call.name}' was created"
+                description = "New call '${call.name}' was created by ${currentUser?.user?.email}"
+            )
+        }
+
+        fun callUpdated(currentUser: CurrentUser?, callId: String, call: OutputCall): Audit {
+            return Audit(
+                action = AuditAction.CALL_UPDATED,
+                projectId = callId,
+                user = currentUser?.toEsUser(),
+                description = "Call '${call.name}' was updated by ${currentUser?.user?.email}"
             )
         }
 
