@@ -1,6 +1,6 @@
 package io.cloudflight.ems.entity
 
-import io.cloudflight.ems.api.dto.call.CallStatus
+import io.cloudflight.ems.api.call.dto.CallStatus
 import java.time.ZonedDateTime
 import javax.persistence.Column
 import javax.persistence.Entity
@@ -12,7 +12,7 @@ import javax.persistence.GenerationType
 import javax.persistence.JoinColumn
 import javax.persistence.ManyToOne
 
-@Entity(name = "calls")
+@Entity(name = "project_call")
 data class Call (
 
     @Id

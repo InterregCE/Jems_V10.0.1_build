@@ -1,4 +1,4 @@
-package io.cloudflight.ems.api.dto.call
+package io.cloudflight.ems.api.call.dto
 
 enum class CallStatus {
     DRAFT,

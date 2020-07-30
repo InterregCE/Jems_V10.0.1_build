@@ -1,9 +1,9 @@
 package io.cloudflight.ems.controller
 
-import io.cloudflight.ems.api.CallApi
-import io.cloudflight.ems.api.dto.call.InputCallCreate
-import io.cloudflight.ems.api.dto.call.InputCallUpdate
-import io.cloudflight.ems.api.dto.call.OutputCall
+import io.cloudflight.ems.api.call.CallApi
+import io.cloudflight.ems.api.call.dto.InputCallCreate
+import io.cloudflight.ems.api.call.dto.InputCallUpdate
+import io.cloudflight.ems.api.call.dto.OutputCall
 import io.cloudflight.ems.service.call.CallService
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
@@ -15,20 +15,31 @@ class CallController(
     private val callService: CallService
 ) : CallApi {
 
+    /**
+     * Here the @PreAuthorize annotation is missing because list is filtered based on restrictions inside the service
+     */
+    override fun getCalls(pageable: Pageable): Page<OutputCall> {
+        return callService.getCalls(pageable)
+    }
+
+    @PreAuthorize("@callAuthorization.canReadCallDetail(#id)")
+    override fun getCallById(id: Long): OutputCall {
+        return callService.getCallById(id)
+    }
+
     @PreAuthorize("@callAuthorization.canCreateCall()")
     override fun createCall(call: InputCallCreate): OutputCall {
         return callService.createCall(call);
     }
 
+    @PreAuthorize("@callAuthorization.canUpdateCall(#call.id)")
     override fun updateCall(call: InputCallUpdate): OutputCall {
         return callService.updateCall(call)
     }
 
-    override fun getCalls(pageable: Pageable): Page<OutputCall> {
-        return callService.getCalls(pageable)
+    @PreAuthorize("@callAuthorization.canUpdateCall(#id)")
+    override fun publishCall(id: Long): OutputCall {
+        return callService.publishCall(id)
     }
 
-    override fun getCallById(id: Long): OutputCall {
-        return callService.getCallById(id)
-    }
 }

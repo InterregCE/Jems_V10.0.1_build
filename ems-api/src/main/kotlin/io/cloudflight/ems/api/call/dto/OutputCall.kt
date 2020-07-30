@@ -1,4 +1,4 @@
-package io.cloudflight.ems.api.dto.call
+package io.cloudflight.ems.api.call.dto
 
 import java.time.ZonedDateTime
 
@@ -7,5 +7,6 @@ data class OutputCall (
     val name: String,
     val status: CallStatus,
     val startDate: ZonedDateTime,
-    val endDate: ZonedDateTime
+    val endDate: ZonedDateTime,
+    val description: String? = null
 )

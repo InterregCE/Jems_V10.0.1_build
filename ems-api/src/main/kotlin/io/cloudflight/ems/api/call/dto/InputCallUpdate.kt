@@ -1,16 +1,18 @@
-package io.cloudflight.ems.api.dto.call
+package io.cloudflight.ems.api.call.dto
 
-import java.time.LocalDate
 import java.time.ZonedDateTime
 import javax.validation.constraints.NotBlank
 import javax.validation.constraints.NotNull
 import javax.validation.constraints.Size
 
-data class InputCallCreate (
+data class InputCallUpdate (
+
+    @field:NotNull(message = "common.id.should.not.be.empty")
+    val id: Long,
 
     @field:NotBlank
     @field:Size(max = 150, message = "call.name.wrong.size")
-    val name: String,
+    val name: String?,
 
     @field:NotNull(message = "call.startDate.unknown")
     val startDate: ZonedDateTime?,
@@ -20,5 +22,4 @@ data class InputCallCreate (
 
     @field:Size(max = 1000, message = "call.description.wrong.size")
     val description: String?
-
 )
