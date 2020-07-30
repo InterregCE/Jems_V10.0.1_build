@@ -8,6 +8,7 @@ import {CoreModule} from './common/core-module';
 import {RouterModule} from '@angular/router';
 import {NgxPermissionsModule} from 'ngx-permissions';
 import {ProgrammeModule} from './programme/programme.module';
+import {CallModule} from './call/call.module';
 
 @NgModule({
   declarations: [
@@ -20,6 +21,7 @@ import {ProgrammeModule} from './programme/programme.module';
     ProjectModule,
     ProgrammeModule,
     RouterModule,
+    CallModule,
     NgxPermissionsModule.forRoot(),
   ],
   providers: [

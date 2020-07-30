@@ -1,0 +1,11 @@
+<h5>List of Calls</h5>
+<p *ngIf="!callPage?.content.length">No calls submitted</p>
+<app-table *ngIf="callPage.content.length"
+           [configuration]="tableConfiguration"
+           [rows]="callPage.content"
+           [totalElements]="callPage?.totalElements"
+           [pageIndex]="pageIndex"
+           (newPageIndex)="newPageIndex.emit($event)"
+           (newPageSize)="newPageSize.emit($event)"
+           (sortRows)="newSort.emit($event)">>
+</app-table>

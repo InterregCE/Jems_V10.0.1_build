@@ -32,6 +32,12 @@ export class TopBarService {
     route: '/programme',
     action: (internal: boolean, route: string) => this.handleNavigation(internal, route),
   };
+  private callsItem = {
+    name: 'Calls',
+    isInternal: true,
+    route: '/calls',
+    action: (internal: boolean, route: string) => this.handleNavigation(internal, route),
+  }
   private auditItem: MenuItemConfiguration;
   private editUserItem: MenuItemConfiguration;
 
@@ -110,6 +116,7 @@ export class TopBarService {
       )
       .subscribe(() => this.menuItems$.next([
         this.applicationsItem,
+        this.callsItem,
         this.auditItem,
         this.usersItem,
         this.programmItem,

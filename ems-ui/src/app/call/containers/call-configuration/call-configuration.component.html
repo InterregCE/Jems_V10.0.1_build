@@ -1,0 +1,9 @@
+<div *ngIf="call$ | async as call" class="container">
+    <app-call-detail
+            [call]="call"
+            [error$]="callSaveError$"
+            (create)="createCall($event)"
+            (update)="saveCall$.next($event)"
+            (cancel)="redirectToCallOverview()">
+    </app-call-detail>
+</div>
