@@ -1,15 +1,13 @@
-import {ChangeDetectionStrategy, Component, OnInit} from '@angular/core';
+import {ChangeDetectionStrategy, Component} from '@angular/core';
 import {BaseComponent} from '@common/components/base-component';
 import {Permission} from '../../../../security/permissions/permission';
 import {combineLatest, merge, Observable, Subject} from 'rxjs';
 import {I18nValidationError} from '@common/validation/i18n-validation-error';
 import {ProgrammeSetup, ProgrammeSetupService} from '@cat/api';
-import {catchError, flatMap, map, takeUntil, tap} from 'rxjs/operators';
+import {catchError, flatMap, map, tap} from 'rxjs/operators';
 import {Log} from '../../../../common/utils/log';
 import {HttpErrorResponse} from '@angular/common/http';
-import {
-  ProgrammeNavigationStateManagementService
-} from '../../services/programme-navigation-state-management.service';
+import {ProgrammeNavigationStateManagementService} from '../../services/programme-navigation-state-management.service';
 
 @Component({
   selector: 'app-programme-page',
@@ -17,15 +15,13 @@ import {
   styleUrls: ['./programme-page.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class ProgrammePageComponent extends BaseComponent implements OnInit {
+export class ProgrammePageComponent extends BaseComponent {
   Permission = Permission;
 
   programmeSaveError$ = new Subject<I18nValidationError | null>();
   programmeSaveSuccess$ = new Subject<boolean>();
   saveProgrammeData$ = new Subject<ProgrammeSetup>();
-  refreshPage$ = new Subject<void>();
-  activeTab: Observable<number> = this.programmeNavigationStateManagementService.getTab();
-  currentTab = 0;
+  activeTab$: Observable<number> = this.programmeNavigationStateManagementService.getTab();
 
   private programme$ = this.programmeSetupService.get()
     .pipe(
@@ -54,15 +50,5 @@ export class ProgrammePageComponent extends BaseComponent implements OnInit {
   constructor(private programmeSetupService: ProgrammeSetupService,
               private programmeNavigationStateManagementService: ProgrammeNavigationStateManagementService) {
     super();
-  }
-
-  ngOnInit(): void {
-    this.activeTab
-      .pipe(takeUntil(this.destroyed$))
-      .subscribe((index: number) => {
-          this.currentTab = index;
-          this.refreshPage$.next();
-      }
-    )
   }
 }
