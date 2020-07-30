@@ -4,7 +4,7 @@
     </p>
     <ul>
         <li *ngFor="let policy of priority.programmePriorityPolicies">
-            {{policy.code}} - {{policy.programmeObjectivePolicy}}
+            {{policy.code}} -  {{'programme.policy.' + policy.programmeObjectivePolicy | translate}}
         </li>
     </ul>
 </div>

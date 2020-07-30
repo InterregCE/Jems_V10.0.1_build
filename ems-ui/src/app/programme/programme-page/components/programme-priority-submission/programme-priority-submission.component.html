@@ -29,7 +29,7 @@
                         (selectionChange)="changeCurrentObjective($event.value)" required
                         panelClass="material-select-panel">
                 <mat-option *ngFor="let objective of objectives" [value]="objective">
-                    {{objective}}
+                    {{'programme.objective.' + objective | translate}}
                 </mat-option>
             </mat-select>
         </mat-form-field>

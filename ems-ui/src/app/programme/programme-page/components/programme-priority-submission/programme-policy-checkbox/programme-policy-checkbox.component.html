@@ -15,7 +15,9 @@
                     </app-form-field-errors>
                 </mat-error>
             </mat-form-field>
-            {{control.key}}
+            <div class="container">
+                {{'programme.policy.' + control.key | translate}}
+            </div>
         </li>
     </ul>
 </form>

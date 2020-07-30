@@ -23,10 +23,6 @@ export class ProgrammePolicyCheckboxComponent extends AbstractForm implements On
     super(changeDetectorRef);
   }
 
-  ngOnInit(): void {
-    super.ngOnInit();
-  }
-
   getForm(): FormGroup | null {
     return this.policyForm;
   }
