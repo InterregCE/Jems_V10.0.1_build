@@ -5,11 +5,13 @@
         + Add new Call
     </button>
     <div *ngIf="currentPage$ | async as callPage" class="col-md-7">
-        <app-call-list [callPage]="callPage"
-                       [pageIndex]="newPageIndex$ | async"
-                       (newPageSize)="newPageSize$.next($event)"
-                       (newPageIndex)="newPageIndex$.next($event)"
-                       (newSort)="newSort$.next($event)">
+        <app-call-list
+                [publishedCall]="publishedCall$ | async"
+                [callPage]="callPage"
+                [pageIndex]="newPageIndex$ | async"
+                (newPageSize)="newPageSize$.next($event)"
+                (newPageIndex)="newPageIndex$.next($event)"
+                (newSort)="newSort$.next($event)">
         </app-call-list>
     </div>
 </div>

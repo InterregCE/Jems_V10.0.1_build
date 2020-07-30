@@ -1,10 +1,10 @@
 import {ChangeDetectionStrategy, Component} from '@angular/core';
 import {BaseComponent} from '@common/components/base-component';
 import {Permission} from '../../../../security/permissions/permission';
-import {combineLatest, merge, Observable, Subject} from 'rxjs';
+import {merge, Observable, Subject} from 'rxjs';
 import {I18nValidationError} from '@common/validation/i18n-validation-error';
 import {InputProgrammeData, ProgrammeDataService} from '@cat/api';
-import {catchError, flatMap, map, tap} from 'rxjs/operators';
+import {catchError, flatMap, tap} from 'rxjs/operators';
 import {Log} from '../../../../common/utils/log';
 import {HttpErrorResponse} from '@angular/common/http';
 import {ProgrammeNavigationStateManagementService} from '../../services/programme-navigation-state-management.service';
@@ -23,7 +23,7 @@ export class ProgrammePageComponent extends BaseComponent {
   saveProgrammeData$ = new Subject<InputProgrammeData>();
   activeTab$: Observable<number> = this.programmeNavigationStateManagementService.getTab();
 
-  private programme$ = this.programmeDataService.get()
+  private programmeById$ = this.programmeDataService.get()
     .pipe(
       tap(programmeData => Log.info('Fetched programme data:', this, programmeData))
     );
@@ -40,12 +40,7 @@ export class ProgrammePageComponent extends BaseComponent {
       })
     );
 
-  details$ = combineLatest([
-    merge(this.programme$, this.savedProgramme$)
-  ])
-    .pipe(
-      map(([programme]) => ({programme}))
-    );
+  programme$ = merge(this.programmeById$, this.savedProgramme$)
 
   constructor(private programmeDataService: ProgrammeDataService,
               private programmeNavigationStateManagementService: ProgrammeNavigationStateManagementService) {

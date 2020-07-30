@@ -1,4 +1,4 @@
-<ng-container *ngIf="details$ | async as details">
+<ng-container *ngIf="programme$ | async as programme">
     <div *ngxPermissionsExcept="Permission.APPLICANT_USER">
         <h5>{{'programme.data.page.title' | translate}}</h5>
         <mat-tab-group class="programme-tab-menu"
@@ -7,7 +7,7 @@
                 <app-programme-data
                         [success$]="programmeSaveSuccess$"
                         [error$]="programmeSaveError$"
-                        [programme]="details.programme"
+                        [programme]="programme"
                         (saveProgrammeData)="saveProgrammeData$.next($event)">
                 </app-programme-data>
             </mat-tab>

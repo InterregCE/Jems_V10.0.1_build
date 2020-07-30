@@ -1,7 +1,19 @@
-import {ChangeDetectionStrategy, ChangeDetectorRef, Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
-import {AbstractForm} from '@common/components/forms/abstract-form';
+import {
+  ChangeDetectionStrategy,
+  ChangeDetectorRef,
+  Component,
+  EventEmitter,
+  Input,
+  OnInit,
+  Output
+} from '@angular/core';
 import {FormBuilder, FormGroup, Validators} from '@angular/forms';
 import {InputCallCreate, InputCallUpdate, OutputCall} from '@cat/api'
+import {ViewEditForm} from '@common/components/forms/view-edit-form';
+import {FormState} from '@common/components/forms/form-state';
+import {Forms} from '../../../common/utils/forms';
+import {filter, take, takeUntil} from 'rxjs/operators';
+import {MatDialog} from '@angular/material/dialog';
 
 @Component({
   selector: 'app-call-detail',
@@ -9,7 +21,7 @@ import {InputCallCreate, InputCallUpdate, OutputCall} from '@cat/api'
   styleUrls: ['./call-detail.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class CallDetailComponent extends AbstractForm implements OnInit {
+export class CallDetailComponent extends ViewEditForm implements OnInit {
 
   @Input()
   call: OutputCall
@@ -19,12 +31,10 @@ export class CallDetailComponent extends AbstractForm implements OnInit {
   @Output()
   update: EventEmitter<InputCallUpdate> = new EventEmitter<InputCallUpdate>()
   @Output()
+  publish: EventEmitter<number> = new EventEmitter<number>()
+  @Output()
   cancel: EventEmitter<void> = new EventEmitter<void>()
 
-  constructor(private formBuilder: FormBuilder,
-              protected changeDetectorRef: ChangeDetectorRef) {
-    super(changeDetectorRef)
-  }
 
   startDateErrors = {
     required: 'call.startDate.unknown',
@@ -38,7 +48,8 @@ export class CallDetailComponent extends AbstractForm implements OnInit {
   };
   descriptionErrors = {
     maxLength: 'call.description.wrong.size'
-  }
+  };
+  published = false;
 
   callForm = this.formBuilder.group({
     name: ['', Validators.compose([
@@ -50,8 +61,16 @@ export class CallDetailComponent extends AbstractForm implements OnInit {
     description: ['', Validators.maxLength(1000)]
   });
 
+  constructor(private formBuilder: FormBuilder,
+              private dialog: MatDialog,
+              protected changeDetectorRef: ChangeDetectorRef) {
+    super(changeDetectorRef)
+  }
+
   ngOnInit(): void {
-    super.ngOnInit()
+    super.ngOnInit();
+    this.published = this.call?.status === OutputCall.StatusEnum.PUBLISHED;
+    this.changeFormState$.next(this.published ? FormState.VIEW : FormState.EDIT);
     if (!this.call) {
       return;
     }
@@ -79,6 +98,20 @@ export class CallDetailComponent extends AbstractForm implements OnInit {
     this.update.emit({
       ...call,
       id: this.call.id
+    });
+  }
+
+  publishCall() {
+    Forms.confirmDialog(
+      this.dialog,
+      'Publish Call',
+      'Are you sure you want to publish the Call?'
+    ).pipe(
+      take(1),
+      takeUntil(this.destroyed$),
+      filter(yes => !!yes)
+    ).subscribe(() => {
+      this.publish.emit(this.call?.id);
     });
   }
 }

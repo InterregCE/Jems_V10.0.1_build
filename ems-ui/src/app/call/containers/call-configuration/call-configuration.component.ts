@@ -1,12 +1,15 @@
 import {ChangeDetectionStrategy, Component} from '@angular/core';
-import {CallService, InputCallCreate, InputCallUpdate} from '@cat/api'
+import {CallService, InputCallCreate, InputCallUpdate, OutputCall} from '@cat/api'
 import {BaseComponent} from '@common/components/base-component';
-import {catchError, flatMap, take, takeUntil, tap} from 'rxjs/operators';
+import {catchError, flatMap, map, take, takeUntil, tap} from 'rxjs/operators';
 import {Log} from '../../../common/utils/log';
 import {ActivatedRoute, Router} from '@angular/router';
-import {merge, of, Subject} from 'rxjs';
+import {combineLatest, merge, of, Subject} from 'rxjs';
 import {I18nValidationError} from '@common/validation/i18n-validation-error';
 import {HttpErrorResponse} from '@angular/common/http';
+import {CallStore} from '../../services/call-store.service';
+import {Permission} from '../../../security/permissions/permission';
+import {PermissionService} from '../../../security/permissions/permission.service';
 
 @Component({
   selector: 'app-call-configuration',
@@ -19,6 +22,7 @@ export class CallConfigurationComponent extends BaseComponent {
   callId = this.activatedRoute?.snapshot?.params?.callId;
   callSaveError$ = new Subject<I18nValidationError | null>();
   saveCall$ = new Subject<InputCallUpdate>();
+  publishCall$ = new Subject<number>();
 
   private callById$ = this.callId
     ? this.callService.getCallById(this.callId)
@@ -39,10 +43,41 @@ export class CallConfigurationComponent extends BaseComponent {
       })
     );
 
-  call$ = merge(this.callById$, this.savedCall$);
+  private publishedCall$ = this.publishCall$
+    .pipe(
+      flatMap(callUpdate => this.callService.publishCall(callUpdate)),
+      tap(() => this.callSaveError$.next(null)),
+      tap(() => this.redirectToCallOverview()),
+      tap(published => this.callStore.callPublished(published)),
+      tap(saved => Log.info('Published call:', this, saved)),
+      catchError((error: HttpErrorResponse) => {
+        this.callSaveError$.next(error.error);
+        throw error;
+      })
+    );
+
+  details$ = combineLatest([
+    merge(this.callById$, this.savedCall$, this.publishedCall$),
+    this.permissionService.permissionsChanged()
+  ])
+    .pipe(
+      map(([call, permissions]) => ({
+        call,
+        applicantCanAccessCall: permissions[0] !== Permission.APPLICANT_USER
+          || (call as OutputCall).status !== OutputCall.StatusEnum.PUBLISHED
+      })),
+      tap(details => {
+        // applicant user cannot see published calls
+        if (!details.applicantCanAccessCall) {
+          this.redirectToCallOverview();
+        }
+      })
+    );
 
   constructor(private callService: CallService,
+              private callStore: CallStore,
               private activatedRoute: ActivatedRoute,
+              private permissionService: PermissionService,
               private router: Router) {
     super();
   }
