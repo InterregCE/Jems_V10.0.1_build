@@ -1,0 +1,10 @@
+<div *ngFor="let priority of priorities" class="container">
+    <p>
+        {{priority.code}} - {{priority.title}}
+    </p>
+    <ul>
+        <li *ngFor="let policy of priority.programmePriorityPolicies">
+            {{policy.code}} -  {{'programme.policy.' + policy.programmeObjectivePolicy | translate}}
+        </li>
+    </ul>
+</div>

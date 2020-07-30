@@ -1,7 +1,8 @@
 <ng-container *ngIf="details$ | async as details">
-    <div *ngxPermissionsExcept="Permission.APPLICANT_USER" class="container">
+    <div *ngxPermissionsExcept="Permission.APPLICANT_USER">
         <h5>{{'programme.data.page.title' | translate}}</h5>
-        <mat-tab-group class="programme-tab-menu">
+        <mat-tab-group class="programme-tab-menu"
+                       [selectedIndex]="activeTab$ | async">
             <mat-tab label="Basic Data">
                 <app-programme-data
                         [success$]="programmeSaveSuccess$"
@@ -9,6 +10,10 @@
                         [programme]="details.programme"
                         (saveProgrammeData)="saveProgrammeData$.next($event)">
                 </app-programme-data>
+            </mat-tab>
+            <mat-tab label="Programme Priorities">
+                <app-programme-priorities>
+                </app-programme-priorities>
             </mat-tab>
         </mat-tab-group>
     </div>

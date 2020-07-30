@@ -1,0 +1,23 @@
+<form [formGroup]="policyForm">
+    <ul class="field-full">
+        <li *ngFor="let control of policyForm?.controls | keyvalue">
+            <mat-checkbox [disabled]="!control?.value.value"
+                          (change)="checked.set(control.key, $event.checked)">
+            </mat-checkbox>
+            <mat-form-field class="checkbox-field">
+                <mat-label>Specific Objective Code</mat-label>
+                <input [name]="control?.key"
+                       [formControlName]="control.key" matInput>
+                <mat-error>
+                    <app-form-field-errors
+                            [errors]="control.value?.errors"
+                            [messages]="specificObjectiveCodeErrors">
+                    </app-form-field-errors>
+                </mat-error>
+            </mat-form-field>
+            <div class="container">
+                {{'programme.policy.' + control.key | translate}}
+            </div>
+        </li>
+    </ul>
+</form>

@@ -1,12 +1,13 @@
 import {ChangeDetectionStrategy, Component} from '@angular/core';
 import {BaseComponent} from '@common/components/base-component';
 import {Permission} from '../../../../security/permissions/permission';
-import {combineLatest, merge, Subject} from 'rxjs';
+import {combineLatest, merge, Observable, Subject} from 'rxjs';
 import {I18nValidationError} from '@common/validation/i18n-validation-error';
 import {ProgrammeSetup, ProgrammeSetupService} from '@cat/api';
 import {catchError, flatMap, map, tap} from 'rxjs/operators';
 import {Log} from '../../../../common/utils/log';
 import {HttpErrorResponse} from '@angular/common/http';
+import {ProgrammeNavigationStateManagementService} from '../../services/programme-navigation-state-management.service';
 
 @Component({
   selector: 'app-programme-page',
@@ -20,6 +21,7 @@ export class ProgrammePageComponent extends BaseComponent {
   programmeSaveError$ = new Subject<I18nValidationError | null>();
   programmeSaveSuccess$ = new Subject<boolean>();
   saveProgrammeData$ = new Subject<ProgrammeSetup>();
+  activeTab$: Observable<number> = this.programmeNavigationStateManagementService.getTab();
 
   private programme$ = this.programmeSetupService.get()
     .pipe(
@@ -45,7 +47,8 @@ export class ProgrammePageComponent extends BaseComponent {
       map(([programme]) => ({programme}))
     );
 
-  constructor(private programmeSetupService: ProgrammeSetupService) {
+  constructor(private programmeSetupService: ProgrammeSetupService,
+              private programmeNavigationStateManagementService: ProgrammeNavigationStateManagementService) {
     super();
   }
 }

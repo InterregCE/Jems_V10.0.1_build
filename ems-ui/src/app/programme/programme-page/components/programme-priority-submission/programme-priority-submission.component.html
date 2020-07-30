@@ -1,0 +1,61 @@
+<div class="container">
+    <h5>Add Priority</h5>
+    <form [formGroup]="priorityForm">
+        <h6>Programme Priority</h6>
+        <mat-form-field class="field-left">
+            <mat-label>Priority Code</mat-label>
+            <input name="priorityCode" formControlName="priorityCode" matInput placeholder="Priority Code">
+            <mat-error>
+                <app-form-field-errors
+                        [errors]="priorityForm?.controls?.priorityCode?.errors"
+                        [messages]="priorityCodeErrors">
+                </app-form-field-errors>
+            </mat-error>
+        </mat-form-field>
+        <mat-form-field class="field-right">
+            <mat-label>Priority Title</mat-label>
+            <input name="priorityTitle" formControlName="priorityTitle" matInput placeholder="Priority Title">
+            <mat-error>
+                <app-form-field-errors
+                        [errors]="priorityForm?.controls?.priorityTitle?.errors"
+                        [messages]="priorityTitleErrors">
+                </app-form-field-errors>
+            </mat-error>
+        </mat-form-field>
+        <h6>Policy Objective and Specific Objective</h6>
+        <mat-form-field class="field-full">
+            <mat-label>Select Policy Objective</mat-label>
+            <mat-select name="policyObjective" formControlName="policyObjective"
+                        (selectionChange)="changeCurrentObjective($event.value)" required
+                        panelClass="material-select-panel">
+                <mat-option *ngFor="let objective of objectives" [value]="objective">
+                    {{'programme.objective.' + objective | translate}}
+                </mat-option>
+            </mat-select>
+        </mat-form-field>
+        <div>
+            <app-programme-policy-checkbox [policyForm]="policyForm" [checked]="checked">
+            </app-programme-policy-checkbox>
+        </div>
+        <button mat-raised-button (click)="onCancel()">
+            Cancel
+        </button>
+        <button mat-raised-button
+                color="primary"
+                type="submit"
+                [disabled]="priorityForm.invalid || policyForm.invalid || submitted"
+                (click)="onSubmit()">
+            Add Priority
+        </button>
+        <app-alert
+                [show]="showSuccessMessage$ | async"
+                [type]="Alert.SUCCESS">
+            <p>{{'programme.priority.save.success' | translate}}</p>
+        </app-alert>
+        <app-alert *ngIf="error$ | async as error"
+                   [show]="!submitted && !!error.i18nKey"
+                   [type]="Alert.ERROR">
+            <p>{{error.i18nKey | translate}}</p>
+        </app-alert>
+    </form>
+</div>
