@@ -1,0 +1,74 @@
+<a *ngIf="call?.id" [routerLink]="['/calls']">&lt; Back to List of Calls</a>
+
+<form [formGroup]="callForm" class="container">
+    <h4 class="col-md-12">Call Configuration</h4>
+    <mat-form-field class="field col-md-12">
+        <mat-label>Call name</mat-label>
+        <input name="name" formControlName="name" matInput placeholder="Call name" required>
+        <mat-error>
+            <app-form-field-errors
+                    [errors]="callForm?.controls?.name?.errors"
+                    [messages]="nameErrors">
+            </app-form-field-errors>
+        </mat-error>
+    </mat-form-field>
+
+    <mat-form-field class="field col-md-6">
+        <mat-label>Start Date</mat-label>
+        <input required formControlName="startDate" matInput name="startDate"
+               [matDatepicker]="start">
+        <mat-datepicker-toggle matSuffix [for]="start">
+        </mat-datepicker-toggle>
+        <mat-datepicker #start></mat-datepicker>
+        <mat-error>
+            <app-form-field-errors
+                    [errors]="callForm?.controls?.startDate?.errors"
+                    [messages]="startDateErrors">
+            </app-form-field-errors>
+        </mat-error>
+    </mat-form-field>
+
+    <mat-form-field class="field col-md-6">
+        <mat-label>End Date</mat-label>
+        <input required formControlName="endDate" matInput name="endDate"
+               [matDatepicker]="end">
+        <mat-datepicker-toggle matSuffix [for]="end">
+        </mat-datepicker-toggle>
+        <mat-datepicker #end></mat-datepicker>
+        <mat-error>
+            <app-form-field-errors
+                    [errors]="callForm?.controls?.endDate?.errors"
+                    [messages]="endDateErrors">
+            </app-form-field-errors>
+        </mat-error>
+    </mat-form-field>
+
+    <mat-form-field class="field col-md-12">
+        <mat-label>Description</mat-label>
+        <textarea formControlName="description" matInput name="description">
+        </textarea>
+        <mat-error>
+            <app-form-field-errors
+                    [errors]="callForm?.controls?.description?.errors"
+                    [messages]="descriptionErrors">
+            </app-form-field-errors>
+        </mat-error>
+    </mat-form-field>
+
+    <button mat-raised-button color="secondary"
+            (click)="cancel.emit()">
+        Cancel
+    </button>
+
+    <button mat-raised-button color="primary"
+            [disabled]="callForm.invalid"
+            (click)="onSubmit()">
+        Save
+    </button>
+    <app-alert *ngIf="error$ | async as error"
+               [show]="!submitted && !!error.i18nKey"
+               [type]="Alert.ERROR">
+        <p>{{error.i18nKey | translate}}</p>
+    </app-alert>
+</form>
+

@@ -46,7 +46,7 @@ describe('TopBarService', () => {
 
     permissionService.setPermissions([Permission.ADMINISTRATOR]);
     tick();
-    expect(menuItems.length).toBe(5);
+    expect(menuItems.length).toBe(6);
 
     permissionService.setPermissions([Permission.PROGRAMME_USER]);
     tick();
