@@ -1,3 +1,8 @@
+<app-alert
+        [show]="!!publishedCall"
+        [type]="Alert.SUCCESS">
+    <p>Successfully published Call {{publishedCall}}</p>
+</app-alert>
 <h5>List of Calls</h5>
 <p *ngIf="!callPage?.content.length">No calls submitted</p>
 <app-table *ngIf="callPage.content.length"

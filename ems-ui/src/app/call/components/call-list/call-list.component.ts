@@ -3,6 +3,7 @@ import {TableConfiguration} from '@common/components/table/model/table.configura
 import {ColumnType} from '@common/components/table/model/column-type.enum';
 import {MatSort} from '@angular/material/sort';
 import {PageOutputCall} from '@cat/api'
+import {Alert} from '@common/components/forms/alert';
 
 @Component({
   selector: 'app-call-list',
@@ -11,17 +12,21 @@ import {PageOutputCall} from '@cat/api'
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class CallListComponent {
+  Alert = Alert;
+
+  @Input()
+  publishedCall: string;
   @Input()
   callPage: PageOutputCall;
   @Input()
   pageIndex: number;
+
   @Output()
   newPageSize: EventEmitter<number> = new EventEmitter<number>();
   @Output()
   newPageIndex: EventEmitter<number> = new EventEmitter<number>();
   @Output()
   newSort: EventEmitter<Partial<MatSort>> = new EventEmitter<Partial<MatSort>>();
-
 
   tableConfiguration: TableConfiguration = new TableConfiguration({
     routerLink: '/call',
@@ -37,7 +42,6 @@ export class CallListComponent {
         elementProperty: 'name',
         sortProperty: 'name',
       },
-
       {
         displayedColumn: 'Status',
         elementProperty: 'status',

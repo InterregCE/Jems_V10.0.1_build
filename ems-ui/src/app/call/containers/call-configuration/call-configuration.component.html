@@ -1,9 +1,11 @@
-<div *ngIf="call$ | async as call" class="container">
+<div *ngIf="details$ | async as details" class="container">
     <app-call-detail
-            [call]="call"
+            *ngIf="details.applicantCanAccessCall"
+            [call]="details.call"
             [error$]="callSaveError$"
             (create)="createCall($event)"
             (update)="saveCall$.next($event)"
+            (publish)="publishCall$.next($event)"
             (cancel)="redirectToCallOverview()">
     </app-call-detail>
 </div>

@@ -9,6 +9,7 @@ import {CoreModule} from '../common/core-module';
 import {CallConfigurationComponent} from './containers/call-configuration/call-configuration.component';
 import {MAT_MOMENT_DATE_ADAPTER_OPTIONS, MatMomentDateModule} from '@angular/material-moment-adapter';
 import {MAT_DATE_LOCALE} from '@angular/material/core';
+import {CallStore} from './services/call-store.service';
 
 @NgModule({
   declarations: [
@@ -25,6 +26,7 @@ import {MAT_DATE_LOCALE} from '@angular/material/core';
     CoreModule
   ],
   providers: [
+    CallStore,
     MatDatepickerModule,
     {provide: MAT_MOMENT_DATE_ADAPTER_OPTIONS, useValue: {useUtc: true}},
     {provide: MAT_DATE_LOCALE, useValue: 'en-GB'}],

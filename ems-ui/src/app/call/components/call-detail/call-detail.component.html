@@ -1,5 +1,5 @@
 <a *ngIf="call?.id" [routerLink]="['/calls']">&lt; Back to List of Calls</a>
-
+<br>
 <form [formGroup]="callForm" class="container">
     <h4 class="col-md-12">Call Configuration</h4>
     <mat-form-field class="field col-md-12">
@@ -55,16 +55,22 @@
         </mat-error>
     </mat-form-field>
 
-    <button mat-raised-button color="secondary"
-            (click)="cancel.emit()">
-        Cancel
-    </button>
-
-    <button mat-raised-button color="primary"
-            [disabled]="callForm.invalid"
-            (click)="onSubmit()">
-        Save
-    </button>
+    <ng-container *ngIf="!published">
+        <button mat-raised-button color="secondary"
+                (click)="cancel.emit()">
+            Cancel
+        </button>
+        <button mat-raised-button color="primary"
+                [disabled]="callForm.invalid"
+                (click)="onSubmit()">
+            Save
+        </button>
+        <button *ngIf="call?.id" mat-raised-button color="primary"
+                [disabled]="callForm.invalid"
+                (click)="publishCall()">
+            Publish Call
+        </button>
+    </ng-container>
     <app-alert *ngIf="error$ | async as error"
                [show]="!submitted && !!error.i18nKey"
                [type]="Alert.ERROR">

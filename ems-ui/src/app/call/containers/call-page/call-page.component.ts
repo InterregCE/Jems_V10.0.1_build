@@ -5,6 +5,7 @@ import {Tables} from '../../../common/utils/tables';
 import {Log} from '../../../common/utils/log';
 import {MatSort} from '@angular/material/sort';
 import {CallService} from '@cat/api';
+import {CallStore} from '../../services/call-store.service';
 
 @Component({
   selector: 'app-call-page',
@@ -13,9 +14,7 @@ import {CallService} from '@cat/api';
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class CallPageComponent {
-
-  constructor(private callService: CallService) { }
-
+  publishedCall$ = this.callStore.publishedCall();
 
   newPageSize$ = new Subject<number>();
   newPageIndex$ = new Subject<number>();
@@ -37,4 +36,7 @@ export class CallPageComponent {
         tap(page => Log.info('Fetched the projects:', this, page.content)),
       );
 
+  constructor(private callService: CallService,
+              private callStore: CallStore) {
+  }
 }
