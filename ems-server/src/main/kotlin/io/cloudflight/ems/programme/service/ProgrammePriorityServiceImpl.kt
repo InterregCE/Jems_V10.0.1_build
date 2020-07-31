@@ -39,7 +39,7 @@ class ProgrammePriorityServiceImpl(
     override fun delete(programmePriorityId: Long) {
         programmePriorityRepository.delete(
             programmePriorityRepository.findById(programmePriorityId)
-                .orElseThrow { ResourceNotFoundException() }
+                .orElseThrow { ResourceNotFoundException("programme_priority") }
         )
     }
 

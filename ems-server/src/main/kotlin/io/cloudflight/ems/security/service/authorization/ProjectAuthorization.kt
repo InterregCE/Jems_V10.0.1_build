@@ -2,6 +2,7 @@ package io.cloudflight.ems.security.service.authorization
 
 import io.cloudflight.ems.api.dto.OutputProject
 import io.cloudflight.ems.api.dto.ProjectApplicationStatus.DRAFT
+import io.cloudflight.ems.exception.ResourceNotFoundException
 import io.cloudflight.ems.security.service.SecurityService
 import io.cloudflight.ems.service.ProjectService
 import org.springframework.stereotype.Component
@@ -9,7 +10,8 @@ import org.springframework.stereotype.Component
 @Component
 class ProjectAuthorization(
     override val securityService: SecurityService,
-    val projectService: ProjectService
+    val projectService: ProjectService,
+    val callAuthorization: CallAuthorization
 ): Authorization(securityService) {
 
     fun canReadProject(id: Long): Boolean {
@@ -19,15 +21,21 @@ class ProjectAuthorization(
 
         val status = project.projectStatus.status
         if (isProgrammeUser())
-            return status != DRAFT
+            if (status != DRAFT)
+                return true
+            else
+                throw ResourceNotFoundException("project")
+
+        if (!isOwner(project))
+            throw ResourceNotFoundException("project")
 
         return false
     }
 
-    fun canCreateProject(): Boolean {
-        return isAdmin() || isApplicantUser()
+    fun canCreateProjectForCall(callId: Long): Boolean {
+        return callAuthorization.canReadCallDetail(callId)
+            && (isAdmin() || isApplicantUser())
     }
-
 
     fun isOwner(project: OutputProject): Boolean {
         return project.applicant.id == securityService.currentUser?.user?.id

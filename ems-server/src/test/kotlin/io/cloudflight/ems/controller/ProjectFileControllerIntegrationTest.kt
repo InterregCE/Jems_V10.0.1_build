@@ -2,6 +2,7 @@ package io.cloudflight.ems.controller
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import io.cloudflight.ems.api.dto.InputProjectFileDescription
+import io.cloudflight.ems.factory.CallFactory
 import io.cloudflight.ems.factory.ProjectFileFactory
 import io.cloudflight.ems.factory.UserFactory
 import io.cloudflight.ems.factory.UserFactory.Companion.ADMINISTRATOR_EMAIL
@@ -34,13 +35,17 @@ class ProjectFileControllerIntegrationTest {
     private lateinit var projectFileFactory: ProjectFileFactory
 
     @Autowired
+    private lateinit var callFactory: CallFactory
+
+    @Autowired
     private lateinit var userFactory: UserFactory
 
     @Test
     @Transactional
     @WithUserDetails(value = ADMINISTRATOR_EMAIL)
     fun `project file description set`() {
-        val project = projectFileFactory.saveProject(userFactory.adminUser)
+        val call = callFactory.savePublishedCall(userFactory.adminUser)
+        val project = projectFileFactory.saveProject(userFactory.adminUser, call)
         val projectFile = projectFileFactory.saveProjectFile(project, userFactory.adminUser)
 
         val projectDescription = InputProjectFileDescription("new test description")
@@ -76,21 +81,22 @@ class ProjectFileControllerIntegrationTest {
     @Test
     @Transactional
     @WithUserDetails(value = APPLICANT_USER_EMAIL)
-    fun `project file access forbidden for non-owner applicants`() {
-        val project = projectFileFactory.saveProject(userFactory.adminUser)
+    fun `project file not found for non-owner applicants`() {
+        val call = callFactory.savePublishedCall(userFactory.adminUser)
+        val project = projectFileFactory.saveProject(userFactory.adminUser, call)
         val projectFile = projectFileFactory.saveProjectFile(project, userFactory.adminUser)
 
         mockMvc.perform(
             get("/api/project/${project.id}")
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
         )
-            .andExpect(status().isForbidden())
+            .andExpect(status().isNotFound())
 
         mockMvc.perform(
             delete("/api/project/${project.id}/file/${projectFile.id}")
                 .accept(MediaType.APPLICATION_JSON)
         )
-            .andExpect(status().isForbidden())
+            .andExpect(status().isNotFound())
 
         val projectDescription = InputProjectFileDescription("new test description")
         mockMvc.perform(
@@ -98,14 +104,15 @@ class ProjectFileControllerIntegrationTest {
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .content(jsonMapper.writeValueAsString(projectDescription))
         )
-            .andExpect(status().isForbidden())
+            .andExpect(status().isNotFound())
     }
 
     @Test
     @Transactional
     @WithUserDetails(value = APPLICANT_USER_EMAIL)
     fun `project file access allowed for owner applicants`() {
-        val project = projectFileFactory.saveProject(userFactory.applicantUser)
+        val call = callFactory.savePublishedCall(userFactory.adminUser)
+        val project = projectFileFactory.saveProject(userFactory.applicantUser, call)
 
         mockMvc.perform(
             get("/api/project/${project.id}")

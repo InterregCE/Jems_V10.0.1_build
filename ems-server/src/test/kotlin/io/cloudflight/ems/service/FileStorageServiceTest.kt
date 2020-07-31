@@ -1,5 +1,6 @@
 package io.cloudflight.ems.service
 
+import io.cloudflight.ems.api.call.dto.CallStatus
 import io.cloudflight.ems.api.dto.OutputProjectFile
 import io.cloudflight.ems.api.dto.ProjectApplicationStatus
 import io.cloudflight.ems.api.dto.ProjectFileType
@@ -9,6 +10,7 @@ import io.cloudflight.ems.api.dto.user.OutputUserWithRole
 import io.cloudflight.ems.dto.FileMetadata
 import io.cloudflight.ems.entity.Audit
 import io.cloudflight.ems.entity.AuditAction
+import io.cloudflight.ems.entity.Call
 import io.cloudflight.ems.entity.Project
 import io.cloudflight.ems.entity.ProjectFile
 import io.cloudflight.ems.entity.ProjectStatus
@@ -74,7 +76,8 @@ class FileStorageServiceTest {
         userRole = UserRole(id = 1, name = "ADMIN"),
         password = "hash_pass"
     )
-    private val testProject = Project(id = PROJECT_ID, applicant = account, acronym = "test project",
+    private val dummyCall = Call(id = 5, creator = account, name = "call", startDate = ZonedDateTime.now(), endDate = ZonedDateTime.now(), status = CallStatus.PUBLISHED)
+    private val testProject = Project(id = PROJECT_ID, call = dummyCall, applicant = account, acronym = "test project",
         projectStatus = ProjectStatus(status = ProjectApplicationStatus.DRAFT, user = account, updated = ZonedDateTime.now())
     )
 

@@ -2,6 +2,7 @@ package io.cloudflight.ems.security.service.authorization
 
 import io.cloudflight.ems.api.call.dto.CallStatus
 import io.cloudflight.ems.api.call.dto.OutputCall
+import io.cloudflight.ems.exception.ResourceNotFoundException
 import io.cloudflight.ems.security.service.SecurityService
 import io.cloudflight.ems.service.call.CallService
 import org.springframework.stereotype.Component
@@ -25,9 +26,13 @@ class CallAuthorization(
 
     fun canReadCallDetail(callId: Long): Boolean {
         if (isApplicantUser())
-            return isCallPublished(callService.getCallById(callId))
+            if (isCallPublished(callService.getCallById(callId)))
+                return true
+            else throw ResourceNotFoundException("call")
+
         if (isAdmin() || isProgrammeUser())
             return true
+
         return false
     }
 

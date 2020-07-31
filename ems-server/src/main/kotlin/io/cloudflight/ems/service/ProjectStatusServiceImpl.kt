@@ -45,7 +45,7 @@ class ProjectStatusServiceImpl(
         val user = userRepository.findByIdOrNull(securityService.currentUser?.user?.id!!)
             ?: throw ResourceNotFoundException()
 
-        var project = projectRepo.findOneById(projectId) ?: throw ResourceNotFoundException()
+        var project = projectRepo.findOneById(projectId) ?: throw ResourceNotFoundException("project")
         val oldStatus = project.projectStatus.status
 
         val projectStatus =
@@ -72,7 +72,7 @@ class ProjectStatusServiceImpl(
     ): OutputProject {
         val user = userRepository.findByIdOrNull(securityService.currentUser?.user?.id!!)
             ?: throw ResourceNotFoundException()
-        val project = projectRepo.findOneById(projectId) ?: throw ResourceNotFoundException()
+        val project = projectRepo.findOneById(projectId) ?: throw ResourceNotFoundException("project")
 
         val qualityAssessment = ProjectQualityAssessment(
             id = projectId,
@@ -100,7 +100,7 @@ class ProjectStatusServiceImpl(
     ): OutputProject {
         val user = userRepository.findByIdOrNull(securityService.currentUser?.user?.id!!)
             ?: throw ResourceNotFoundException()
-        val project = projectRepo.findOneById(projectId) ?: throw ResourceNotFoundException()
+        val project = projectRepo.findOneById(projectId) ?: throw ResourceNotFoundException("project")
 
         val eligibilityAssessment = ProjectEligibilityAssessment(
             id = projectId,
@@ -167,7 +167,7 @@ class ProjectStatusServiceImpl(
                 .findFirstByProjectIdAndStatusNotInOrderByUpdatedDesc(
                     projectId = project.id!!,
                     ignoreStatuses = setOf(RETURNED_TO_APPLICANT, DRAFT)
-                )?.status ?: throw ResourceNotFoundException()
+                )?.status ?: throw ResourceNotFoundException("project_status")
         }
         var decisionDate: LocalDate? = null
         if (decisionDateRequired(oldStatus, newStatus))

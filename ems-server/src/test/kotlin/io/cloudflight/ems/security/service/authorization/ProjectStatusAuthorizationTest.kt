@@ -1,5 +1,6 @@
 package io.cloudflight.ems.security.service.authorization
 
+import io.cloudflight.ems.api.call.dto.OutputCallSimple
 import io.cloudflight.ems.api.dto.OutputProject
 import io.cloudflight.ems.api.dto.OutputProjectEligibilityAssessment
 import io.cloudflight.ems.api.dto.OutputProjectQualityAssessment
@@ -46,9 +47,10 @@ internal class ProjectStatusAuthorizationTest {
 
     @MockK
     lateinit var securityService: SecurityService
-
     @MockK
     lateinit var projectService: ProjectService
+    @MockK
+    lateinit var projectAuthorization: ProjectAuthorization
 
     lateinit var projectStatusAuthorization: ProjectStatusAuthorization
 
@@ -107,7 +109,7 @@ internal class ProjectStatusAuthorizationTest {
     @BeforeEach
     fun setup() {
         MockKAnnotations.init(this)
-        projectStatusAuthorization = ProjectStatusAuthorization(securityService, projectService)
+        projectStatusAuthorization = ProjectStatusAuthorization(securityService, projectAuthorization, projectService)
 
         projects.forEach { (projectId, projectObject) ->
             every { projectService.getById(projectId) } returns projectObject
@@ -117,11 +119,13 @@ internal class ProjectStatusAuthorizationTest {
     @Test
     fun `admin can perform any allowed status transition`() {
         every { securityService.currentUser } returns adminUser
+        every { projectAuthorization.canReadProject(eq(PID_DRAFT)) } returns true
 
         assertTrue(projectStatusAuthorization.canChangeStatusTo(PID_DRAFT, ProjectApplicationStatus.SUBMITTED))
 
         listOf(PID_SUBMITTED, PID_ELIGIBLE, PID_APPROVED_WITH_CONDITIONS)
             .forEach {
+                every { projectAuthorization.canReadProject(eq(it)) } returns true
                 assertTrue(
                     projectStatusAuthorization.canChangeStatusTo(it, ProjectApplicationStatus.RETURNED_TO_APPLICANT),
                     "transition from ${projects[it]?.projectStatus?.status} to ${ProjectApplicationStatus.RETURNED_TO_APPLICANT} should be possible"
@@ -132,6 +136,7 @@ internal class ProjectStatusAuthorizationTest {
 
         listOf(PID_DRAFT, PID_RETURNED, PID_APPROVED, PID_NOT_APPROVED)
             .forEach {
+                every { projectAuthorization.canReadProject(eq(it)) } returns true
                 assertFalse(
                     projectStatusAuthorization.canChangeStatusTo(it, ProjectApplicationStatus.RETURNED_TO_APPLICANT),
                     "transition from ${projects[it]?.projectStatus?.status} to ${ProjectApplicationStatus.RETURNED_TO_APPLICANT} should not be possible"
@@ -185,6 +190,7 @@ internal class ProjectStatusAuthorizationTest {
     @MethodSource("provideAdminAndProgramUsers")
     fun `programme or admin user can enter eligibility decision`(currentUser: LocalCurrentUser) {
         every { securityService.currentUser } returns currentUser
+        every { projectAuthorization.canReadProject(eq(PID_SUBMITTED_WITH_EA)) } returns true
 
         assertTrue(
             projectStatusAuthorization.canChangeStatusTo(PID_SUBMITTED_WITH_EA, ProjectApplicationStatus.ELIGIBLE)
@@ -228,6 +234,7 @@ internal class ProjectStatusAuthorizationTest {
     @MethodSource("provideAdminAndProgramUsers")
     fun `programme or admin user can enter funding decision`(currentUser: LocalCurrentUser) {
         every { securityService.currentUser } returns currentUser
+        every { projectAuthorization.canReadProject(eq(PID_ELIGIBLE_WITH_QA)) } returns true
 
         assertTrue(
             projectStatusAuthorization.canChangeStatusTo(PID_ELIGIBLE_WITH_QA, ProjectApplicationStatus.APPROVED)
@@ -246,6 +253,7 @@ internal class ProjectStatusAuthorizationTest {
     @MethodSource("provideAdminAndProgramUsers")
     fun `programme or admin user can change funding decision`(currentUser: LocalCurrentUser) {
         every { securityService.currentUser } returns currentUser
+        every { projectAuthorization.canReadProject(eq(PID_APPROVED_WITH_CONDITIONS)) } returns true
 
         assertTrue(
             projectStatusAuthorization.canChangeStatusTo(PID_APPROVED_WITH_CONDITIONS, ProjectApplicationStatus.APPROVED)
@@ -277,13 +285,19 @@ internal class ProjectStatusAuthorizationTest {
     }
 
     @ParameterizedTest
-    @MethodSource("provideAllUsers")
-    fun `cannot enter eligibility decision`(currentUser: LocalCurrentUser) {
+    @MethodSource("provideAdminAndProgramUsers")
+    fun `cannot enter eligibility decision admin and programme user`(currentUser: LocalCurrentUser) {
         every { securityService.currentUser } returns currentUser
 
-        listOf(PID_SUBMITTED, PID_RETURNED, PID_DRAFT).forEach {
+        val listOfAllowed = mutableListOf(PID_SUBMITTED, PID_RETURNED)
+        if (currentUser.isAdmin)
+            listOfAllowed.add(PID_DRAFT)
+
+        listOfAllowed.forEach {
+            every { projectAuthorization.canReadProject(eq(it)) } returns true
             assertFalse(
-                projectStatusAuthorization.canChangeStatusTo(it, ProjectApplicationStatus.ELIGIBLE)
+                projectStatusAuthorization.canChangeStatusTo(it, ProjectApplicationStatus.ELIGIBLE),
+                "cannot make eligibility decision without eligibility assessment"
             )
         }
     }
@@ -293,7 +307,12 @@ internal class ProjectStatusAuthorizationTest {
     fun `cannot enter funding decision`(currentUser: LocalCurrentUser) {
         every { securityService.currentUser } returns currentUser
 
-        listOf(PID_SUBMITTED, PID_RETURNED, PID_DRAFT, PID_ELIGIBLE, PID_INELIGIBLE).forEach {
+        val listOfAllowed = mutableListOf(PID_SUBMITTED, PID_RETURNED, PID_DRAFT, PID_ELIGIBLE, PID_INELIGIBLE)
+        if (!currentUser.isAdmin && !currentUser.isProgrammeUser)
+            listOfAllowed.remove(PID_DRAFT)
+
+        listOfAllowed.forEach {
+            every { projectAuthorization.canReadProject(eq(it)) } returns true
             assertFalse(
                 projectStatusAuthorization.canChangeStatusTo(it, ProjectApplicationStatus.APPROVED)
             )
@@ -306,18 +325,6 @@ internal class ProjectStatusAuthorizationTest {
 
         assertFalse(projectStatusAuthorization.canSetQualityAssessment(PID_SUBMITTED))
         assertFalse(projectStatusAuthorization.canSetEligibilityAssessment(PID_SUBMITTED))
-    }
-
-    @Test
-    fun `current user is owner of project`() {
-        every { securityService.currentUser } returns applicantUser
-        assertTrue(projectStatusAuthorization.isOwner(projectDraft))
-    }
-
-    @Test
-    fun `current user is not owner of project`() {
-        every { securityService.currentUser } returns programmeUser
-        assertFalse(projectStatusAuthorization.isOwner(projectDraft))
     }
 
     @Test
@@ -347,6 +354,7 @@ internal class ProjectStatusAuthorizationTest {
     private fun createProject(id: Long, status: ProjectApplicationStatus): OutputProject {
         return OutputProject(
             id = id,
+            call = OutputCallSimple(id = 1, name = "call"),
             acronym = "acronym",
             applicant = userApplicantWithoutRole,
             firstSubmission = null,

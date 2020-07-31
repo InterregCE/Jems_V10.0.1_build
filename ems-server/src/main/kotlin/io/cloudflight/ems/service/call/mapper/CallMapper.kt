@@ -3,6 +3,7 @@ package io.cloudflight.ems.service.call.mapper
 import io.cloudflight.ems.api.call.dto.CallStatus
 import io.cloudflight.ems.api.call.dto.InputCallCreate
 import io.cloudflight.ems.api.call.dto.OutputCall
+import io.cloudflight.ems.api.call.dto.OutputCallSimple
 import io.cloudflight.ems.entity.Call
 import io.cloudflight.ems.entity.User
 
@@ -23,4 +24,9 @@ fun Call.toOutputCall() = OutputCall(
     startDate = startDate,
     endDate = endDate,
     description = description
+)
+
+fun Call.toOutputCallSimple() = OutputCallSimple(
+    id = id!!,
+    name = name
 )

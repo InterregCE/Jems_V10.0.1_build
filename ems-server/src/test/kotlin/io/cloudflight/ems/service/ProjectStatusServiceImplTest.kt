@@ -1,5 +1,6 @@
 package io.cloudflight.ems.service
 
+import io.cloudflight.ems.api.call.dto.CallStatus
 import io.cloudflight.ems.api.dto.InputProjectEligibilityAssessment
 import io.cloudflight.ems.api.dto.InputProjectQualityAssessment
 import io.cloudflight.ems.api.dto.InputProjectStatus
@@ -9,6 +10,7 @@ import io.cloudflight.ems.api.dto.ProjectQualityAssessmentResult
 import io.cloudflight.ems.api.dto.user.OutputUserRole
 import io.cloudflight.ems.api.dto.user.OutputUserWithRole
 import io.cloudflight.ems.entity.AuditAction
+import io.cloudflight.ems.entity.Call
 import io.cloudflight.ems.entity.Project
 import io.cloudflight.ems.entity.ProjectEligibilityAssessment
 import io.cloudflight.ems.entity.ProjectStatus
@@ -80,6 +82,8 @@ internal class ProjectStatusServiceImplTest {
         OutputUserRole(user.userRole.id, user.userRole.name)
     )
     private val userProgramme = OutputUserWithRole(16, "programme@email", "", "", OutputUserRole(7, "programme"))
+
+    private val dummyCall = Call(id = 5, creator = user, name = "call", startDate = ZonedDateTime.now(), endDate = ZonedDateTime.now(), status = CallStatus.PUBLISHED)
 
     private val projectDraft = createProject(ProjectApplicationStatus.DRAFT)
     private val projectSubmitted = createProject(ProjectApplicationStatus.SUBMITTED, NOTE_DENIED)
@@ -356,6 +360,7 @@ internal class ProjectStatusServiceImplTest {
         }
         return Project(
             id = 1,
+            call = dummyCall,
             acronym = "acronym",
             applicant = user,
             projectStatus = ProjectStatus(1, null, status, user, statusTime, null, note),
@@ -383,6 +388,7 @@ internal class ProjectStatusServiceImplTest {
         val status = ProjectStatus(1, null, appStatus, user, ZonedDateTime.now(), null, null)
         return Project(
             id = 1,
+            call = dummyCall,
             acronym = "acronym",
             applicant = user,
             projectStatus = status,

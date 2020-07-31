@@ -17,6 +17,10 @@ data class Project(
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     val id: Long?,
 
+    @ManyToOne(optional = false)
+    @JoinColumn(name = "project_call_id")
+    val call: Call,
+
     @Column(nullable = false)
     val acronym: String,
 

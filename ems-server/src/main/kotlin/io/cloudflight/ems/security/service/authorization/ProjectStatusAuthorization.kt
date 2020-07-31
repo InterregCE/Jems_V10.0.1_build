@@ -10,6 +10,7 @@ import io.cloudflight.ems.api.dto.ProjectApplicationStatus.APPROVED_WITH_CONDITI
 import io.cloudflight.ems.api.dto.ProjectApplicationStatus.NOT_APPROVED
 import io.cloudflight.ems.api.dto.ProjectApplicationStatus.RETURNED_TO_APPLICANT
 import io.cloudflight.ems.api.dto.ProjectApplicationStatus.SUBMITTED
+import io.cloudflight.ems.exception.ResourceNotFoundException
 import io.cloudflight.ems.security.service.SecurityService
 import io.cloudflight.ems.service.ProjectService
 import org.springframework.stereotype.Component
@@ -17,12 +18,13 @@ import org.springframework.stereotype.Component
 @Component
 class ProjectStatusAuthorization(
     override val securityService: SecurityService,
+    val projectAuthorization: ProjectAuthorization,
     val projectService: ProjectService
 ): Authorization(securityService) {
 
     fun canChangeStatusTo(projectId: Long, newStatus: ProjectApplicationStatus): Boolean {
-        val project = projectService.getById(projectId)
-        return canChangeStatusTo(project, newStatus)
+        return projectAuthorization.canReadProject(projectId)
+            && canChangeStatusTo(projectService.getById(projectId), newStatus)
     }
 
     fun canChangeStatusTo(project: OutputProject, newStatus: ProjectApplicationStatus): Boolean {
@@ -43,16 +45,16 @@ class ProjectStatusAuthorization(
         return false
     }
 
-    fun submitted(oldStatus: ProjectApplicationStatus, newStatus: ProjectApplicationStatus): Boolean {
+    private fun submitted(oldStatus: ProjectApplicationStatus, newStatus: ProjectApplicationStatus): Boolean {
         return (oldStatus == DRAFT || oldStatus == RETURNED_TO_APPLICANT) && newStatus == SUBMITTED
     }
 
-    fun returned(oldStatus: ProjectApplicationStatus, newStatus: ProjectApplicationStatus): Boolean {
+    private fun returned(oldStatus: ProjectApplicationStatus, newStatus: ProjectApplicationStatus): Boolean {
         val oldPossibilities = setOf(SUBMITTED, ELIGIBLE, INELIGIBLE, APPROVED_WITH_CONDITIONS)
         return oldPossibilities.contains(oldStatus) && newStatus == RETURNED_TO_APPLICANT
     }
 
-    fun fundingFilled(project: OutputProject, newStatus: ProjectApplicationStatus): Boolean {
+    private fun fundingFilled(project: OutputProject, newStatus: ProjectApplicationStatus): Boolean {
         val newPossibilities = setOf(APPROVED, APPROVED_WITH_CONDITIONS, NOT_APPROVED)
         val oldStatus = project.projectStatus.status
 
@@ -61,7 +63,7 @@ class ProjectStatusAuthorization(
             && project.qualityAssessment != null
     }
 
-    fun fundingChanged(project: OutputProject, newStatus: ProjectApplicationStatus): Boolean {
+    private fun fundingChanged(project: OutputProject, newStatus: ProjectApplicationStatus): Boolean {
         val newPossibilities = setOf(APPROVED, NOT_APPROVED)
         val oldStatus = project.projectStatus.status
 
@@ -69,7 +71,7 @@ class ProjectStatusAuthorization(
             && newPossibilities.contains(newStatus)
     }
 
-    fun eligibilityFilled(project: OutputProject, newStatus: ProjectApplicationStatus): Boolean {
+    private fun eligibilityFilled(project: OutputProject, newStatus: ProjectApplicationStatus): Boolean {
         val newPossibilities = setOf(ELIGIBLE, INELIGIBLE)
         val oldStatus = project.projectStatus.status
 
@@ -95,7 +97,7 @@ class ProjectStatusAuthorization(
                 && project.projectStatus.status == SUBMITTED
     }
 
-    fun isOwner(project: OutputProject): Boolean {
+    private fun isOwner(project: OutputProject): Boolean {
         return project.applicant.id == securityService.currentUser?.user?.id
     }
 

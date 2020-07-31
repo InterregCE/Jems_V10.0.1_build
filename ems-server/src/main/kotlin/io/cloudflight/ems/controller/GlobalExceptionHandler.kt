@@ -7,6 +7,7 @@ import io.cloudflight.ems.exception.I18nValidationException
 import io.cloudflight.ems.exception.ResourceNotFoundException
 import org.hibernate.exception.ConstraintViolationException
 import org.springframework.core.NestedRuntimeException
+import org.springframework.expression.ExpressionInvocationTargetException
 import org.springframework.http.HttpHeaders
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
@@ -15,6 +16,7 @@ import org.springframework.web.bind.annotation.ControllerAdvice
 import org.springframework.web.bind.annotation.ExceptionHandler
 import org.springframework.web.context.request.WebRequest
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler
+import java.lang.IllegalArgumentException
 
 
 @ControllerAdvice
@@ -28,8 +30,35 @@ class GlobalExceptionHandler : ResponseEntityExceptionHandler() {
     }
 
     @ExceptionHandler(ResourceNotFoundException::class)
-    fun error404Transformer(exception: ResourceNotFoundException): ResponseEntity<Void> {
-        return ResponseEntity.notFound().build()
+    fun error404Transformer(exception: ResourceNotFoundException): ResponseEntity<I18nValidationError> {
+        return ResponseEntity
+            .status(HttpStatus.NOT_FOUND)
+            .body(
+                if (exception.entity != null)
+                    I18nValidationError(
+                        httpStatus = HttpStatus.NOT_FOUND,
+                        i18nKey = "${exception.entity}.not.exists"
+                    ) else null
+            )
+    }
+
+    /**
+     * If there is an exception during @PreAuthorize or @PostAuthorize,
+     * this exception is wrapped by Spring into IllegalArgumentException.
+     *
+     * As this exception is important for us, we need to catch it inside the cause.
+     */
+    @ExceptionHandler(IllegalArgumentException::class)
+    fun illegalArgumentExceptionHandler(exception: IllegalArgumentException): ResponseEntity<I18nValidationError> {
+        val invTarget = exception.cause
+        if (invTarget is ExpressionInvocationTargetException) {
+            val cause = invTarget.cause
+            if (cause is I18nValidationException)
+                return customErrorTransformer(cause)
+            if (cause is ResourceNotFoundException)
+                return error404Transformer(cause)
+        }
+        throw exception
     }
 
     @ExceptionHandler(NestedRuntimeException::class)

@@ -1,11 +1,11 @@
 package io.cloudflight.ems.security.service.authorization
 
 import io.cloudflight.ems.api.dto.OutputProject
-import io.cloudflight.ems.api.dto.ProjectApplicationStatus.DRAFT
 import io.cloudflight.ems.api.dto.ProjectApplicationStatus.Companion.isNotFinallyFunded
 import io.cloudflight.ems.api.dto.ProjectApplicationStatus.Companion.isNotSubmittedNow
 import io.cloudflight.ems.api.dto.ProjectApplicationStatus.Companion.wasSubmittedAtLeastOnce
 import io.cloudflight.ems.api.dto.ProjectFileType
+import io.cloudflight.ems.exception.ResourceNotFoundException
 import io.cloudflight.ems.security.service.SecurityService
 import io.cloudflight.ems.service.FileStorageService
 import io.cloudflight.ems.service.ProjectService
@@ -16,23 +16,23 @@ import java.time.ZonedDateTime
 class ProjectFileAuthorization(
     override val securityService: SecurityService,
     val projectService: ProjectService,
-    val fileStorageService: FileStorageService
+    val fileStorageService: FileStorageService,
+    val projectAuthorization: ProjectAuthorization
 ): Authorization(securityService) {
 
     fun canUploadFile(projectId: Long, fileType: ProjectFileType): Boolean {
         if (isAdmin())
             return true
 
+        projectAuthorization.canReadProject(projectId)
         val project = projectService.getById(projectId)
         val status = project.projectStatus.status
 
         if (fileType == ProjectFileType.APPLICANT_FILE)
-            return isOwner(project)
-                && isNotSubmittedNow(status)
+            return isOwner(project) && isNotSubmittedNow(status)
 
         if (fileType == ProjectFileType.ASSESSMENT_FILE)
             return isProgrammeUser()
-                && status != DRAFT
 
         return false
     }
@@ -41,19 +41,23 @@ class ProjectFileAuthorization(
         if (isAdmin())
             return true
 
+        projectAuthorization.canReadProject(projectId)
         val project = projectService.getById(projectId)
         val status = project.projectStatus.status
         val file = fileStorageService.getFileDetail(projectId, fileId)
         val lastSubmission = getLastSubmissionFor(project)
 
         if (file.type == ProjectFileType.APPLICANT_FILE)
-            return isOwner(project)
-                && isNotSubmittedNow(status)
-                && file.updated.isAfter(lastSubmission)
+            if (isOwner(project))
+                return isNotSubmittedNow(status) && file.updated.isAfter(lastSubmission)
+            else
+                throw ResourceNotFoundException("project_file")
 
         if (file.type == ProjectFileType.ASSESSMENT_FILE)
-            return isProgrammeUser()
-                && isNotFinallyFunded(status) && wasSubmittedAtLeastOnce(status)
+            if (isProgrammeUser())
+                return isNotFinallyFunded(status) && wasSubmittedAtLeastOnce(status)
+            else
+                throw ResourceNotFoundException("project_file")
 
         return false
     }
@@ -62,17 +66,17 @@ class ProjectFileAuthorization(
         if (isAdmin())
             return true
 
+        projectAuthorization.canReadProject(projectId)
         val project = projectService.getById(projectId)
         val file = fileStorageService.getFileDetail(projectId, fileId)
-        val status = project.projectStatus.status
 
         if (isOwner(project))
-            return file.type == ProjectFileType.APPLICANT_FILE
+            if (file.type == ProjectFileType.APPLICANT_FILE)
+                return true
+            else
+                throw ResourceNotFoundException("project_file")
 
-        if (isProgrammeUser() && file.type == ProjectFileType.APPLICANT_FILE)
-            return status != DRAFT
-
-        if (isProgrammeUser() && file.type == ProjectFileType.ASSESSMENT_FILE)
+        if (isProgrammeUser())
             return true
 
         return false
@@ -82,14 +86,15 @@ class ProjectFileAuthorization(
         if (isAdmin())
             return true
 
+        projectAuthorization.canReadProject(projectId)
+
         if (fileType == ProjectFileType.ASSESSMENT_FILE)
             return isProgrammeUser()
 
         val project = projectService.getById(projectId)
-        val status = project.projectStatus.status
 
         if (fileType == ProjectFileType.APPLICANT_FILE)
-            return isOwner(project) || (isProgrammeUser() && status != DRAFT)
+            return isOwner(project) || isProgrammeUser()
 
         return false
     }
