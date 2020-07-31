@@ -47,10 +47,21 @@ describe('TopBarService', () => {
     permissionService.setPermissions([Permission.ADMINISTRATOR]);
     tick();
     expect(menuItems.length).toBe(6);
+    expect(menuItems[0].name).toBe('Project Applications')
+    expect(menuItems[1].name).toBe('Calls')
+    expect(menuItems[2].name).toBe('Audit Log')
+    expect(menuItems[3].name).toBe('User Management')
+    expect(menuItems[4].name).toBe('Programme Setup')
+    expect(menuItems[5].name).toBe('user (role)')
 
     permissionService.setPermissions([Permission.PROGRAMME_USER]);
     tick();
-    expect(menuItems.length).toBe(4);
+    expect(menuItems.length).toBe(5);
+    expect(menuItems[0].name).toBe('Project Applications')
+    expect(menuItems[1].name).toBe('Calls')
+    expect(menuItems[2].name).toBe('Audit Log')
+    expect(menuItems[3].name).toBe('Programme Setup')
+    expect(menuItems[4].name).toBe('user (role)')
 
     permissionService.setPermissions([Permission.APPLICANT_USER]);
     tick();

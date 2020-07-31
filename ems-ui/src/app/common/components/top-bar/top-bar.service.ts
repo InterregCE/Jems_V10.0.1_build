@@ -104,6 +104,7 @@ export class TopBarService {
       )
       .subscribe(() => this.menuItems$.next([
         this.applicationsItem,
+        this.callsItem,
         this.auditItem,
         this.programmItem,
         this.editUserItem,
