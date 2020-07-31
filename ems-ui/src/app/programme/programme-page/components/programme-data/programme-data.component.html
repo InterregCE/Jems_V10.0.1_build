@@ -1,6 +1,6 @@
 <div class="container">
-    <h5 class="header">Programme Data</h5>
-    <button class="header-button" *ngIf="formState === FormState.VIEW" mat-raised-button
+    <h5 class="header">Basic Programme Data</h5>
+    <button class="header-button" color="primary" *ngIf="formState === FormState.VIEW" mat-raised-button
             (click)="changeFormState$.next(FormState.EDIT)">
         Edit programme data
     </button>
@@ -19,7 +19,7 @@
         </mat-form-field>
         <mat-form-field class="field-half">
             <mat-label>Title</mat-label>
-            <input name="title" formControlName="title" matInput placeholder="Title">
+            <input [title]="programme.title" name="title" formControlName="title" matInput placeholder="Title">
             <mat-error>
                 <app-form-field-errors
                         [errors]="programmeForm?.controls?.title?.errors"
@@ -29,7 +29,7 @@
         </mat-form-field>
         <mat-form-field class="field-half">
             <mat-label>Version</mat-label>
-            <input name="version" formControlName="version" matInput placeholder="Version">
+            <input [title]="programme.version" name="version" formControlName="version" matInput placeholder="Version">
             <mat-error>
                 <app-form-field-errors
                         [errors]="programmeForm?.controls?.version?.errors"
@@ -71,7 +71,7 @@
         </mat-form-field>
         <mat-form-field class="field-half">
             <mat-label>Commission decision number</mat-label>
-            <input name="commissionDecisionNumber" formControlName="commissionDecisionNumber" matInput placeholder="Commission decision number">
+            <input [title]="programme.commissionDecisionNumber" name="commissionDecisionNumber" formControlName="commissionDecisionNumber" matInput placeholder="Commission decision number">
             <mat-error>
                 <app-form-field-errors
                         [errors]="programmeForm?.controls?.commissionDecisionNumber?.errors"
@@ -87,7 +87,7 @@
         </mat-form-field>
         <mat-form-field class="field-half">
             <mat-label>Programme amending decision number</mat-label>
-            <input name="programmeAmendingDecisionNumber" formControlName="programmeAmendingDecisionNumber" matInput placeholder="Programme amending decision number">
+            <input [title]="programme.programmeAmendingDecisionNumber" name="programmeAmendingDecisionNumber" formControlName="programmeAmendingDecisionNumber" matInput placeholder="Programme amending decision number">
             <mat-error>
                 <app-form-field-errors
                         [errors]="programmeForm?.controls?.programmeAmendingDecisionNumber?.errors"

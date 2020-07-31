@@ -8,7 +8,7 @@ import {
   Output
 } from '@angular/core';
 import {ViewEditForm} from '@common/components/forms/view-edit-form';
-import {FormBuilder, FormGroup, Validators} from '@angular/forms';
+import {FormBuilder, FormControl, FormGroup, Validators} from '@angular/forms';
 import {MatDialog} from '@angular/material/dialog';
 import {Forms} from '../../../../common/utils/forms';
 import {filter, take, takeUntil} from 'rxjs/operators';
@@ -87,18 +87,28 @@ export class ProgrammeDataComponent extends ViewEditForm implements OnInit {
   }
 
   enterViewMode(): void {
+    super.enterViewMode();
     const controls = this.programmeForm.controls;
     controls.cci.setValue(this.programme.cci);
-    controls.title.setValue(this.programme.title);
-    controls.version.setValue(this.programme.version);
+    controls.title.setValue(this.getSizedValue(this.programme.title));
+    controls.version.setValue(this.getSizedValue(this.programme.version));
     controls.firstYear.setValue(this.programme.firstYear);
     controls.lastYear.setValue(this.programme.lastYear);
     controls.eligibleFrom.setValue(this.programme.eligibleFrom);
     controls.eligibleUntil.setValue(this.programme.eligibleUntil);
-    controls.commissionDecisionNumber.setValue(this.programme.commissionDecisionNumber);
+    controls.commissionDecisionNumber.setValue(this.getSizedValue(this.programme.commissionDecisionNumber));
     controls.commissionDecisionDate.setValue(this.programme.commissionDecisionDate);
-    controls.programmeAmendingDecisionNumber.setValue(this.programme.programmeAmendingDecisionNumber);
+    controls.programmeAmendingDecisionNumber.setValue(this.getSizedValue(this.programme.programmeAmendingDecisionNumber));
     controls.programmeAmendingDecisionDate.setValue(this.programme.programmeAmendingDecisionDate);
+  }
+
+  protected enterEditMode() {
+    super.enterEditMode();
+    const controls = this.programmeForm.controls;
+    controls.title.setValue(this.programme.title)
+    controls.version.setValue(this.programme.version)
+    controls.commissionDecisionNumber.setValue(this.programme.commissionDecisionNumber)
+    controls.programmeAmendingDecisionNumber.setValue(this.programme.programmeAmendingDecisionNumber)
   }
 
   private submitProgrammeData(): void {
@@ -132,5 +142,12 @@ export class ProgrammeDataComponent extends ViewEditForm implements OnInit {
     ).subscribe(() => {
       this.submitProgrammeData();
     });
+  }
+
+  getSizedValue(value: string) {
+    if (value && value.length > 30) {
+      return value.substring(0, 30) + '...';
+    }
+    return value;
   }
 }
