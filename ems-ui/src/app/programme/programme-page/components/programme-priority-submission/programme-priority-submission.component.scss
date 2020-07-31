@@ -1,3 +1,13 @@
+.link, .link:visited {
+  color: #1976d2;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.link:hover{
+  color: #125699;
+}
+
 .container {
   width: 80rem;
 
@@ -14,7 +24,7 @@
   }
 
   .field-full {
-    width: 97%;
+    width: 91.5%;
     padding-top: 1rem;
     margin-right: 1rem;
   }
@@ -35,5 +45,9 @@
 
   input.mat-input-element {
     color: #343a40;
+  }
+
+  .button {
+    margin-top: 1rem;
   }
 }

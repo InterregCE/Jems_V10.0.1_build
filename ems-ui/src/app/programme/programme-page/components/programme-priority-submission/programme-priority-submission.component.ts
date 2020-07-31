@@ -39,18 +39,28 @@ export class ProgrammePrioritySubmissionComponent extends AbstractForm implement
   checked = new Map<string, boolean>();
 
   priorityForm = this.formBuilder.group({
-    priorityCode: ['', Validators.maxLength(50)],
-    priorityTitle: ['', Validators.maxLength(300)],
-    policyObjective: ['']
+    priorityCode: ['', Validators.compose([
+      Validators.maxLength(50),
+      Validators.required])],
+    priorityTitle: ['', Validators.compose([
+      Validators.maxLength(300),
+      Validators.required])],
+    policyObjective: ['', Validators.required],
   });
 
   priorityCodeErrors = {
+    required: 'programme.priority.code.should.not.be.empty',
     maxlength: 'programme.priority.code.size.too.long',
   };
 
   priorityTitleErrors = {
+    required: 'programme.priority.title.should.not.be.empty',
     maxlength: 'programme.priority.title.size.too.long',
   };
+
+  policyObjectiveErrors = {
+    required: 'programme.priority.objective.should.not.be.empty'
+  }
 
   constructor(private formBuilder: FormBuilder,
               private dialog: MatDialog,
