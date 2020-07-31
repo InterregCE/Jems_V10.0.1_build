@@ -16,10 +16,10 @@
     <mat-form-field class="field col-md-6">
         <mat-label>Start Date</mat-label>
         <input required formControlName="startDate" matInput name="startDate"
-               [matDatepicker]="start">
+               [ngxMatDatetimePicker]="start">
         <mat-datepicker-toggle matSuffix [for]="start">
         </mat-datepicker-toggle>
-        <mat-datepicker #start></mat-datepicker>
+        <ngx-mat-datetime-picker #start></ngx-mat-datetime-picker>
         <mat-error>
             <app-form-field-errors
                     [errors]="callForm?.controls?.startDate?.errors"
@@ -31,10 +31,10 @@
     <mat-form-field class="field col-md-6">
         <mat-label>End Date</mat-label>
         <input required formControlName="endDate" matInput name="endDate"
-               [matDatepicker]="end">
+               [ngxMatDatetimePicker]="end">
         <mat-datepicker-toggle matSuffix [for]="end">
         </mat-datepicker-toggle>
-        <mat-datepicker #end></mat-datepicker>
+        <ngx-mat-datetime-picker #end></ngx-mat-datetime-picker>
         <mat-error>
             <app-form-field-errors
                     [errors]="callForm?.controls?.endDate?.errors"
