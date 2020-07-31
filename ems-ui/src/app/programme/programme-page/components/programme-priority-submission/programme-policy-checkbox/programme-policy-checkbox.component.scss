@@ -1,9 +1,19 @@
+.inline-title {
+  display: inline-block;
+  margin-left: 2.5rem;
+  margin-right: 12rem;
+}
+
 .field-full {
   width: 97%;
   padding-top: 1rem;
   margin-right: 1rem;
 
   list-style-type: none;
+
+  li {
+    margin-bottom: 1.5rem;
+  }
 
   .checkbox-field {
     width: 20%;
