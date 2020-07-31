@@ -7,8 +7,8 @@ import {CallDetailComponent} from './components/call-detail/call-detail.componen
 import {MatDatepickerModule} from '@angular/material/datepicker';
 import {CoreModule} from '../common/core-module';
 import {CallConfigurationComponent} from './containers/call-configuration/call-configuration.component';
-import {MAT_MOMENT_DATE_ADAPTER_OPTIONS, MatMomentDateModule} from '@angular/material-moment-adapter';
-import {MAT_DATE_LOCALE} from '@angular/material/core';
+import {NGX_MAT_DATE_FORMATS, NgxMatDatetimePickerModule} from '@angular-material-components/datetime-picker';
+import {NgxMatMomentModule} from '@angular-material-components/moment-adapter';
 import {CallStore} from './services/call-store.service';
 
 @NgModule({
@@ -22,14 +22,30 @@ import {CallStore} from './services/call-store.service';
     CallRoutingModule,
     SharedModule,
     MatDatepickerModule,
-    MatMomentDateModule,
+    NgxMatDatetimePickerModule,
+    NgxMatMomentModule,
     CoreModule
   ],
   providers: [
     CallStore,
     MatDatepickerModule,
-    {provide: MAT_MOMENT_DATE_ADAPTER_OPTIONS, useValue: {useUtc: true}},
-    {provide: MAT_DATE_LOCALE, useValue: 'en-GB'}],
+    NgxMatDatetimePickerModule,
+    {
+      provide: NGX_MAT_DATE_FORMATS, useValue: {
+        parse: {
+          dateInput: 'YYYY-MM-DDTHH:MM:00Z',
+        },
+        display: {
+          dateInput: 'l, LT',
+          monthYearLabel: 'MMM YYYY',
+          dateA11yLabel: 'LL',
+          monthYearA11yLabel: 'MMMM YYYY'
+
+        },
+        useUtc: true
+      }
+    }
+  ],
 })
 export class CallModule {
 }
