@@ -1,4 +1,4 @@
-package io.cloudflight.ems.service
+package io.cloudflight.ems.call.service
 
 import io.cloudflight.ems.api.call.dto.CallStatus
 import io.cloudflight.ems.api.call.dto.InputCallCreate
@@ -8,21 +8,20 @@ import io.cloudflight.ems.api.dto.user.OutputUserRole
 import io.cloudflight.ems.api.dto.user.OutputUserWithRole
 import io.cloudflight.ems.entity.Audit
 import io.cloudflight.ems.entity.AuditAction
-import io.cloudflight.ems.entity.Call
+import io.cloudflight.ems.call.entity.Call
 import io.cloudflight.ems.entity.User
 import io.cloudflight.ems.entity.UserRole
 import io.cloudflight.ems.exception.I18nFieldError
 import io.cloudflight.ems.exception.I18nValidationException
 import io.cloudflight.ems.exception.ResourceNotFoundException
-import io.cloudflight.ems.repository.CallRepository
+import io.cloudflight.ems.call.repository.CallRepository
 import io.cloudflight.ems.repository.UserRepository
 import io.cloudflight.ems.security.model.LocalCurrentUser
 import io.cloudflight.ems.security.service.SecurityService
 import io.cloudflight.ems.security.service.authorization.AuthorizationUtil.Companion.adminUser
 import io.cloudflight.ems.security.service.authorization.AuthorizationUtil.Companion.applicantUser
 import io.cloudflight.ems.security.service.authorization.AuthorizationUtil.Companion.programmeUser
-import io.cloudflight.ems.service.call.CallService
-import io.cloudflight.ems.service.call.impl.CallServiceImpl
+import io.cloudflight.ems.service.AuditService
 import io.mockk.MockKAnnotations
 import io.mockk.every
 import io.mockk.impl.annotations.MockK
@@ -100,7 +99,12 @@ class CallServiceTest {
     @BeforeEach
     fun setup() {
         MockKAnnotations.init(this)
-        callService = CallServiceImpl(callRepository, userRepository, auditService, securityService)
+        callService = CallServiceImpl(
+            callRepository,
+            userRepository,
+            auditService,
+            securityService
+        )
     }
 
     @Test
@@ -307,6 +311,18 @@ class CallServiceTest {
         )
         val exception = assertThrows<I18nValidationException> { callService.publishCall(existingId) }
         assertThat(exception).isEqualTo(expectedException)
+    }
+
+    @Test
+    fun `findOneByName existing`() {
+        every { callRepository.findOneByName(eq("existing")) } returns callWithId(10L)
+        assertThat(callService.findOneByName("existing")).isEqualTo(outputCallWithId(10L))
+    }
+
+    @Test
+    fun `findOneByName non-existing`() {
+        every { callRepository.findOneByName(eq("non-existing")) } returns null
+        assertThat(callService.findOneByName("non-existing")).isNull()
     }
 
 }

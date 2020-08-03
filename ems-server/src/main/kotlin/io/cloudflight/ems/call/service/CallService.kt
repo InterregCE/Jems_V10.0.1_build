@@ -1,4 +1,4 @@
-package io.cloudflight.ems.service.call
+package io.cloudflight.ems.call.service
 
 import io.cloudflight.ems.api.call.dto.InputCallCreate
 import io.cloudflight.ems.api.call.dto.InputCallUpdate

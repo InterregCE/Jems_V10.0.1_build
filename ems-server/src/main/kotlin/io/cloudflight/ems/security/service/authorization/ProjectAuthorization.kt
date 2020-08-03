@@ -2,6 +2,7 @@ package io.cloudflight.ems.security.service.authorization
 
 import io.cloudflight.ems.api.dto.OutputProject
 import io.cloudflight.ems.api.dto.ProjectApplicationStatus.DRAFT
+import io.cloudflight.ems.call.authorization.CallAuthorization
 import io.cloudflight.ems.exception.ResourceNotFoundException
 import io.cloudflight.ems.security.service.SecurityService
 import io.cloudflight.ems.service.ProjectService

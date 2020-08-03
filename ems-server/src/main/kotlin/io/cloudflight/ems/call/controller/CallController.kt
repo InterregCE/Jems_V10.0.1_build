@@ -1,10 +1,10 @@
-package io.cloudflight.ems.controller
+package io.cloudflight.ems.call.controller
 
 import io.cloudflight.ems.api.call.CallApi
 import io.cloudflight.ems.api.call.dto.InputCallCreate
 import io.cloudflight.ems.api.call.dto.InputCallUpdate
 import io.cloudflight.ems.api.call.dto.OutputCall
-import io.cloudflight.ems.service.call.CallService
+import io.cloudflight.ems.call.service.CallService
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
 import org.springframework.security.access.prepost.PreAuthorize

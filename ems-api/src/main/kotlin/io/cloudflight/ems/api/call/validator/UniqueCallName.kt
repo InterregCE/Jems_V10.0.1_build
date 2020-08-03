@@ -18,10 +18,10 @@ annotation class UniqueCallName(
 class CallNameValidator(private val uniqueNameValidator: UniqueCallNameValidator) :
     ConstraintValidator<UniqueCallName, String> {
     override fun isValid(name: String?, context: ConstraintValidatorContext?): Boolean {
-        return uniqueNameValidator.isValid(name, context)
+        return uniqueNameValidator.isValid(name)
     }
 }
 
 interface UniqueCallNameValidator {
-    fun isValid(name: String?, context: ConstraintValidatorContext?): Boolean
+    fun isValid(name: String?): Boolean
 }

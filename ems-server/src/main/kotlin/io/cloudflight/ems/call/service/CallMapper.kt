@@ -1,10 +1,10 @@
-package io.cloudflight.ems.service.call.mapper
+package io.cloudflight.ems.call.service
 
 import io.cloudflight.ems.api.call.dto.CallStatus
 import io.cloudflight.ems.api.call.dto.InputCallCreate
 import io.cloudflight.ems.api.call.dto.OutputCall
 import io.cloudflight.ems.api.call.dto.OutputCallSimple
-import io.cloudflight.ems.entity.Call
+import io.cloudflight.ems.call.entity.Call
 import io.cloudflight.ems.entity.User
 
 fun InputCallCreate.toEntity(creator: User) = Call(

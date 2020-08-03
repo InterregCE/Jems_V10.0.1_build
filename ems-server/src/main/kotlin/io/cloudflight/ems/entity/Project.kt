@@ -1,5 +1,6 @@
 package io.cloudflight.ems.entity
 
+import io.cloudflight.ems.call.entity.Call
 import javax.persistence.CascadeType
 import javax.persistence.Column
 import javax.persistence.Entity

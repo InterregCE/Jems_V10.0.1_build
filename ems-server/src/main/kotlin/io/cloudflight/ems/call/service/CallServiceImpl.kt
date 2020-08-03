@@ -1,22 +1,19 @@
-package io.cloudflight.ems.service.call.impl
+package io.cloudflight.ems.call.service
 
 import io.cloudflight.ems.api.call.dto.CallStatus
 import io.cloudflight.ems.api.call.dto.InputCallCreate
 import io.cloudflight.ems.api.call.dto.InputCallUpdate
 import io.cloudflight.ems.api.call.dto.OutputCall
 import io.cloudflight.ems.entity.Audit
-import io.cloudflight.ems.entity.Call
+import io.cloudflight.ems.call.entity.Call
 import io.cloudflight.ems.exception.I18nFieldError
 import io.cloudflight.ems.exception.I18nValidationException
 import io.cloudflight.ems.exception.ResourceNotFoundException
-import io.cloudflight.ems.repository.CallRepository
+import io.cloudflight.ems.call.repository.CallRepository
 import io.cloudflight.ems.repository.UserRepository
 import io.cloudflight.ems.security.APPLICANT_USER
 import io.cloudflight.ems.security.service.SecurityService
 import io.cloudflight.ems.service.AuditService
-import io.cloudflight.ems.service.call.CallService
-import io.cloudflight.ems.service.call.mapper.toEntity
-import io.cloudflight.ems.service.call.mapper.toOutputCall
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
 import org.springframework.http.HttpStatus
