@@ -2,8 +2,8 @@
     <h6>Specific Objectives</h6>
     <form [formGroup]="policyForm">
         <div>
-            <h6 class="inline-title">Code</h6>
-            <h6 class="inline-title">Title</h6>
+            <h6 class="inline-title-left">Code</h6>
+            <h6 class="inline-title-right">Title</h6>
         </div>
         <ul class="field-full">
             <li *ngFor="let control of policyForm?.controls | keyvalue">
