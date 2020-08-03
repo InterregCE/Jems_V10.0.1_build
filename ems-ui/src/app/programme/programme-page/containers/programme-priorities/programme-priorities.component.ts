@@ -27,8 +27,8 @@ export class ProgrammePrioritiesComponent extends BaseComponent {
       this.newPageIndex$.pipe(startWith(Tables.DEFAULT_INITIAL_PAGE_INDEX)),
       this.newPageSize$.pipe(startWith(Tables.DEFAULT_INITIAL_PAGE_SIZE)),
       this.newSort$.pipe(
-        startWith({active: 'code', direction: 'desc'}),
-        map(sort => sort?.direction ? sort : {active: 'code', direction: 'desc'}),
+        startWith({active: 'code', direction: 'asc'}),
+        map(sort => sort?.direction ? sort : {active: 'code', direction: 'asc'}),
         map(sort => `${sort.active},${sort.direction}`)
       ),
       this.programmeNavigationStateManagementService.getTab()
