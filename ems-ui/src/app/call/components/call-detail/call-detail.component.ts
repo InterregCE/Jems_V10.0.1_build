@@ -46,10 +46,10 @@ export class CallDetailComponent extends ViewEditForm implements OnInit {
   };
   nameErrors = {
     required: 'call.name.unknown',
-    maxLength: 'call.name.wrong.size'
+    maxlength: 'call.name.wrong.size'
   };
   descriptionErrors = {
-    maxLength: 'call.description.wrong.size'
+    maxlength: 'call.description.wrong.size'
   };
   published = false;
 
