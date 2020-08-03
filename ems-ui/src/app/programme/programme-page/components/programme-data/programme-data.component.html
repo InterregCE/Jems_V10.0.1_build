@@ -62,12 +62,24 @@
             <input name="eligibleFrom" formControlName="eligibleFrom" matInput placeholder="Eligible from" [matDatepicker]="eligibleFromPicker">
             <mat-datepicker-toggle matSuffix [for]="eligibleFromPicker"></mat-datepicker-toggle>
             <mat-datepicker #eligibleFromPicker></mat-datepicker>
+            <mat-error>
+                <app-form-field-errors
+                        [errors]="programmeForm?.controls?.eligibleFrom?.errors"
+                        [messages]="dateErrors">
+                </app-form-field-errors>
+            </mat-error>
         </mat-form-field>
         <mat-form-field class="field-half">
             <mat-label>Eligible until</mat-label>
             <input name="eligibleUntil" formControlName="eligibleUntil" matInput placeholder="Eligible until" [matDatepicker]="eligibleUntilPicker">
             <mat-datepicker-toggle matSuffix [for]="eligibleUntilPicker"></mat-datepicker-toggle>
             <mat-datepicker #eligibleUntilPicker></mat-datepicker>
+            <mat-error>
+                <app-form-field-errors
+                        [errors]="programmeForm?.controls?.eligibleUntil?.errors"
+                        [messages]="dateErrors">
+                </app-form-field-errors>
+            </mat-error>
         </mat-form-field>
         <mat-form-field class="field-half">
             <mat-label>Commission decision number</mat-label>
@@ -84,6 +96,12 @@
             <input name="commissionDecisionDate" formControlName="commissionDecisionDate" matInput placeholder="Commission decision date" [matDatepicker]="commissionDecisionPicker">
             <mat-datepicker-toggle matSuffix [for]="commissionDecisionPicker"></mat-datepicker-toggle>
             <mat-datepicker #commissionDecisionPicker></mat-datepicker>
+            <mat-error>
+                <app-form-field-errors
+                        [errors]="programmeForm?.controls?.commissionDecisionDate?.errors"
+                        [messages]="dateErrors">
+                </app-form-field-errors>
+            </mat-error>
         </mat-form-field>
         <mat-form-field class="field-half">
             <mat-label>Programme amending decision number</mat-label>
@@ -100,6 +118,12 @@
             <input name="programmeAmendingDecisionDate" formControlName="programmeAmendingDecisionDate" matInput placeholder="Programme amending decision entry into force date" [matDatepicker]="programmeAmendingDecisionPicker">
             <mat-datepicker-toggle matSuffix [for]="programmeAmendingDecisionPicker"></mat-datepicker-toggle>
             <mat-datepicker #programmeAmendingDecisionPicker></mat-datepicker>
+            <mat-error>
+                <app-form-field-errors
+                        [errors]="programmeForm?.controls?.programmeAmendingDecisionDate?.errors"
+                        [messages]="dateErrors">
+                </app-form-field-errors>
+            </mat-error>
         </mat-form-field>
         <div *ngIf="formState === FormState.EDIT">
             <button mat-raised-button

@@ -33,7 +33,7 @@ import {CallStore} from './services/call-store.service';
     {
       provide: NGX_MAT_DATE_FORMATS, useValue: {
         parse: {
-          dateInput: 'YYYY-MM-DDTHH:MM:00Z',
+          dateInput: ['YYYY-MM-DDTHH:MM:00Z', 'l, LT']
         },
         display: {
           dateInput: 'l, LT',
