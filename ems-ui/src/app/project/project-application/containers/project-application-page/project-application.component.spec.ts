@@ -4,6 +4,7 @@ import {InputProject, OutputProjectSimple} from '@cat/api';
 import {HttpTestingController} from '@angular/common/http/testing';
 import {TestModule} from '../../../../common/test-module';
 import {ProjectModule} from '../../../project.module';
+import {CallModule} from '../../../../call/call.module';
 
 describe('ProjectApplicationComponent', () => {
 
@@ -15,6 +16,7 @@ describe('ProjectApplicationComponent', () => {
     TestBed.configureTestingModule({
       declarations: [ProjectApplicationComponent],
       imports: [
+        CallModule,
         ProjectModule,
         TestModule
       ],
@@ -36,6 +38,7 @@ describe('ProjectApplicationComponent', () => {
   it('should create a project', fakeAsync(() => {
     const project = {acronym: 'test'} as InputProject;
 
+    component.currentPage$.subscribe();
     component.createApplication(project);
     let success = false;
     component.applicationSaveSuccess$.subscribe(result => success = result);
@@ -67,6 +70,7 @@ describe('ProjectApplicationComponent', () => {
 
   it('should sort and page the list of projects', fakeAsync(() => {
     // initial sort and page
+    component.currentPage$.subscribe();
     httpTestingController.expectOne({method: 'GET', url: `//api/project?page=0&size=25&sort=id,desc`});
 
     // change sorting

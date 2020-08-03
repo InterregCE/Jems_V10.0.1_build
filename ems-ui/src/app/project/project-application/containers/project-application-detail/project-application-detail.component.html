@@ -1,4 +1,5 @@
-<a [routerLink]="['']">&lt; Back to List of Project Applications</a>
+<a *ngxPermissionsExcept="Permission.APPLICANT_USER" [routerLink]="['']">&lt; Back to List of Project Applications</a>
+<a *ngxPermissionsOnly="Permission.APPLICANT_USER" [routerLink]="['/calls']">&lt; Back to List of Calls</a>
 <div class="container">
     <app-project-application-data></app-project-application-data>
     <mat-tab-group class="files-container">

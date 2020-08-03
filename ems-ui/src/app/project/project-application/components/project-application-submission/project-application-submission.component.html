@@ -1,4 +1,4 @@
-<div class="project-application-submission-container">
+<div class="container vertical-center">
     <p>Create a new project application:</p>
     <p>Programme ID : dummy | Call ID : dummy</p>
     <form [formGroup]="submissionForm">
@@ -14,9 +14,17 @@
                 </mat-error>
             </mat-form-field>
         </div>
+        <button *ngxPermissionsOnly="Permission.APPLICANT_USER"
+                mat-raised-button
+                color="secondary"
+                class="button"
+                (click)="onCancel()">
+            Cancel
+        </button>
         <button mat-raised-button
                 color="primary"
                 type="submit"
+                class="button"
                 [disabled]="submissionForm.invalid || submitted"
                 (click)="onSubmit()">
             + Create Project Application

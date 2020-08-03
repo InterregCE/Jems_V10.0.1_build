@@ -2,6 +2,8 @@ import {ChangeDetectionStrategy, ChangeDetectorRef, Component, EventEmitter, Out
 import {FormBuilder, FormGroup, Validators} from '@angular/forms';
 import {InputProject} from '@cat/api';
 import {AbstractForm} from '@common/components/forms/abstract-form';
+import {ActivatedRoute, Router} from '@angular/router';
+import {Permission} from '../../../../security/permissions/permission';
 
 @Component({
   selector: 'app-project-application-submission',
@@ -16,6 +18,7 @@ export class ProjectApplicationSubmissionComponent extends AbstractForm {
   submitProjectApplication: EventEmitter<InputProject> = new EventEmitter<InputProject>();
 
   clearOnSuccess = true;
+  Permission = Permission;
 
   submissionForm = this.formBuilder.group({
     acronym: ['', Validators.compose([
@@ -30,10 +33,13 @@ export class ProjectApplicationSubmissionComponent extends AbstractForm {
   };
 
   constructor(private formBuilder: FormBuilder,
-              protected changeDetectorRef: ChangeDetectorRef) {
+              private router: Router,
+              protected changeDetectorRef: ChangeDetectorRef,
+              protected activatedRoute: ActivatedRoute) {
     super(changeDetectorRef);
   }
 
+  callId = this.activatedRoute.snapshot.params.callId;
 
   getForm(): FormGroup | null {
     return this.submissionForm;
@@ -42,7 +48,11 @@ export class ProjectApplicationSubmissionComponent extends AbstractForm {
   onSubmit(): void {
     this.submitProjectApplication.emit({
       acronym: this.submissionForm?.controls?.acronym?.value,
-      projectCallId: 1 // TODO MP2-450 add apply button to call list
+      projectCallId: this.callId
     });
+  }
+
+  onCancel(): void {
+    this.router.navigate(['/calls']);
   }
 }

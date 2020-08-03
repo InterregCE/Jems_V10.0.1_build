@@ -53,6 +53,11 @@ export class ProjectApplicationListComponent {
         displayedColumn: 'Status',
         elementProperty: 'projectStatus.status',
         sortProperty: 'projectStatus.status'
+      },
+      {
+        displayedColumn: 'Related Call',
+        elementProperty: 'callName',
+        sortProperty: 'callName'
       }
     ]
   });
