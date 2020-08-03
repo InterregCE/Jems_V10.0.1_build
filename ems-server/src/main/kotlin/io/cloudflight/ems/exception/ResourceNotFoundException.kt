@@ -1,3 +1,3 @@
 package io.cloudflight.ems.exception
 
-class ResourceNotFoundException : Exception()
+class ResourceNotFoundException(val entity: String? = null) : Exception()

@@ -37,5 +37,5 @@ data class Call (
     val status: CallStatus,
 
     @Column
-    val description: String?
+    val description: String? = null
 )

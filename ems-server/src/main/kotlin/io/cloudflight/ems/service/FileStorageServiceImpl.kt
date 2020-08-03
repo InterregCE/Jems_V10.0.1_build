@@ -127,7 +127,7 @@ class FileStorageServiceImpl(
     private fun getFile(projectId: Long, fileId: Long): ProjectFile {
         val result = projectFileRepository.findFirstByProjectIdAndId(projectId = projectId, id = fileId)
         if (result.isEmpty) {
-            throw ResourceNotFoundException()
+            throw ResourceNotFoundException("project_file")
         }
         return result.get()
     }

@@ -617,13 +617,26 @@
 					"response": []
 				},
 				{
-					"name": "create project application - invalid data",
+					"name": "create call",
 					"event": [
 						{
 							"listen": "prerequest",
 							"script": {
 								"id": "36317434-e7b0-4dfd-b7a3-60c4daba49ed",
 								"exec": [
+									"const callName = pm.variables.replaceIn('{{$randomCatchPhrase}}')\r",
+									"pm.variables.set(\r",
+									"    'call_name_to_create',\r",
+									"    callName.substr(0,150)\r",
+									");\r",
+									"\r",
+									"var callDateStart = new Date();\r",
+									"callDateStart.setDate(callDateStart.getDate() + 1);\r",
+									"pm.variables.set('callDateStart', callDateStart.toISOString());\r",
+									"\r",
+									"var callDateEnd = new Date();\r",
+									"callDateEnd.setDate(callDateEnd.getDate() + 10);\r",
+									"pm.variables.set('callDateEnd', callDateEnd.toISOString());\r",
 									""
 								],
 								"type": "text/javascript"
@@ -633,6 +646,127 @@
 							"listen": "test",
 							"script": {
 								"id": "d2a89dd3-a7a1-4990-b592-791d52e5705b",
+								"exec": [
+									"pm.test('call should be created', function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"pm.test('should return name and id', function () {\r",
+									"    const response = pm.response.json();\r",
+									"    pm.expect(response).to.have.property(\"id\");\r",
+									"    pm.expect(response.id).not.eql(null);\r",
+									"    pm.variables.set(\"callId\", response.id);\r",
+									"\r",
+									"    pm.expect(response).to.have.property(\"name\");\r",
+									"    pm.expect(response.name).to.eql(pm.variables.get(\"call_name_to_create\"));\r",
+									"});\r",
+									"\r",
+									"pm.test('call is in status DRAFT', function () {\r",
+									"    const response = pm.response.json();\r",
+									"    pm.expect(response).to.have.property(\"status\");\r",
+									"    pm.expect(response.status).to.eql(\"DRAFT\");\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\t\"name\": \"{{call_name_to_create}}\",\n\t\"startDate\": \"{{callDateStart}}\",\n\t\"endDate\": \"{{callDateEnd}}\"\n}\n"
+						},
+						"url": {
+							"raw": "{{url}}/api/call",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"api",
+								"call"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "publish call",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "5809d9b9-57a9-4087-9881-c8a4e1c4ada1",
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"id": "7065b9b0-775f-46ec-b545-8977a419510d",
+								"exec": [
+									"pm.test('call should be PUBLISHED', function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"    pm.expect(pm.response.json().status).to.eql(\"PUBLISHED\");\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"type": "text",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "{{url}}/api/call/{{callId}}/publish",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"api",
+								"call",
+								"{{callId}}",
+								"publish"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "create project application - invalid data",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "14f19a9d-22e1-41d6-9bc6-f02e93213e18",
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"id": "2baeb26e-dd33-4e4f-bb12-ee405a0efc24",
 								"exec": [
 									"pm.test('should fail with 400', function () {\r",
 									"    pm.response.to.have.status(400);\r",
@@ -717,7 +851,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n\t\"acronym\": \"\"\n}\n"
+							"raw": "{\n\t\"acronym\": \"\",\n\t\"projectCallId\": null\n}\n"
 						},
 						"url": {
 							"raw": "{{url}}/api/project",
@@ -790,7 +924,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n\t\"acronym\": \"{{project_acronym_to_create}}\"\n}"
+							"raw": "{\n\t\"acronym\": \"{{project_acronym_to_create}}\",\n\t\"projectCallId\": {{callId}}\n}\n"
 						},
 						"url": {
 							"raw": "{{url}}/api/project",
@@ -980,7 +1114,7 @@
 			"name": "file upload to DRAFT",
 			"item": [
 				{
-					"name": "create applicant and programme user for following tests",
+					"name": "create calls and users for following tests",
 					"item": [
 						{
 							"name": "register applicant",
@@ -1094,6 +1228,176 @@
 								}
 							},
 							"response": []
+						},
+						{
+							"name": "create call",
+							"event": [
+								{
+									"listen": "prerequest",
+									"script": {
+										"id": "e18ec919-f279-4d7d-a7c5-fd40ee951aa0",
+										"exec": [
+											"const callName = pm.variables.replaceIn('{{$randomCatchPhrase}}')\r",
+											"pm.variables.set(\r",
+											"    'call_name_to_create',\r",
+											"    callName.substr(0,150)\r",
+											");\r",
+											"\r",
+											"var callDateStart = new Date();\r",
+											"callDateStart.setDate(callDateStart.getDate() + 1);\r",
+											"pm.variables.set('callDateStart', callDateStart.toISOString());\r",
+											"\r",
+											"var callDateEnd = new Date();\r",
+											"callDateEnd.setDate(callDateEnd.getDate() + 10);\r",
+											"pm.variables.set('callDateEnd', callDateEnd.toISOString());\r",
+											""
+										],
+										"type": "text/javascript"
+									}
+								},
+								{
+									"listen": "test",
+									"script": {
+										"id": "3fd977fa-4836-41e3-bd37-a34b0191c374",
+										"exec": [
+											"pm.test('call can be created', function () {\r",
+											"    pm.response.to.have.status(200);\r",
+											"    pm.variables.set(\"callId\", pm.response.json().id);\r",
+											"});\r",
+											""
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"auth": {
+									"type": "basic",
+									"basic": [
+										{
+											"key": "password",
+											"value": "{{programme_user_email}}",
+											"type": "string"
+										},
+										{
+											"key": "username",
+											"value": "{{programme_user_email}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n\t\"name\": \"{{call_name_to_create}}\",\n\t\"startDate\": \"{{callDateStart}}\",\n\t\"endDate\": \"{{callDateEnd}}\"\n}\n"
+								},
+								"url": {
+									"raw": "{{url}}/api/call",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"api",
+										"call"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "publish call",
+							"event": [
+								{
+									"listen": "prerequest",
+									"script": {
+										"id": "14886b0b-f39d-49b0-aa94-6b1a48fea082",
+										"exec": [
+											""
+										],
+										"type": "text/javascript"
+									}
+								},
+								{
+									"listen": "test",
+									"script": {
+										"id": "663d2c35-14fb-4d82-89f6-de9775a81970",
+										"exec": [
+											"pm.test('call is published successfully', function () {\r",
+											"    pm.response.to.have.status(200);\r",
+											"});\r",
+											""
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"auth": {
+									"type": "basic",
+									"basic": [
+										{
+											"key": "password",
+											"value": "{{programme_user_email}}",
+											"type": "string"
+										},
+										{
+											"key": "username",
+											"value": "{{programme_user_email}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "PUT",
+								"header": [
+									{
+										"key": "Content-Type",
+										"type": "text",
+										"value": "application/json"
+									}
+								],
+								"url": {
+									"raw": "{{url}}/api/call/{{callId}}/publish",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"api",
+										"call",
+										"{{callId}}",
+										"publish"
+									]
+								}
+							},
+							"response": []
+						}
+					],
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "af042f75-c74e-4488-b614-b39cce536f96",
+								"type": "text/javascript",
+								"exec": [
+									""
+								]
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"id": "7d4bedc4-ef2f-495e-9996-11b5b9b006f3",
+								"type": "text/javascript",
+								"exec": [
+									""
+								]
+							}
 						}
 					],
 					"protocolProfileBehavior": {},
@@ -1152,7 +1456,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"acronym\": \"{{application_acronym}}\"\r\n}\r\n",
+							"raw": "{\r\n    \"acronym\": \"{{application_acronym}}\",\r\n    \"projectCallId\": {{callId}}\r\n}\r\n",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -1517,7 +1821,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"acronym\": \"should-not-create\",\r\n    \"submissionDate\": \"2020-07-06\"\r\n}\r\n",
+							"raw": "{\r\n    \"acronym\": \"should-not-create\",\r\n    \"projectCallId\": {{callId}}\r\n}\r\n",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -1556,7 +1860,13 @@
 								"id": "05fd04d5-350c-438b-b798-2bbe1cedc254",
 								"exec": [
 									"pm.test('programme user should not be able to see files when application is DRAFT', function() {\r",
-									"    pm.response.to.have.status(403);\r",
+									"    pm.response.to.have.status(404);\r",
+									"});\r",
+									"\r",
+									"pm.test('programme user should not be able to see files because he cannot see project in DRAFT', function() {\r",
+									"    const response = pm.response.json();\r",
+									"    pm.expect(response).to.have.property(\"i18nKey\");\r",
+									"    pm.expect(response.i18nKey).to.equal(\"project.not.exists\");\r",
 									"});\r",
 									""
 								],
@@ -1621,8 +1931,14 @@
 							"script": {
 								"id": "950888d3-425c-46b5-871a-cd408944d0f5",
 								"exec": [
-									"pm.test('programme user should not be able to upload file', function() {\r",
-									"    pm.response.to.have.status(403);\r",
+									"pm.test('programme user should not be able to upload APPLICANT file when he cannot read project itself', function() {\r",
+									"    pm.response.to.have.status(404);\r",
+									"});\r",
+									"\r",
+									"pm.test('programme user can see the error - he cannot see project itself', function() {\r",
+									"    const response = pm.response.json();\r",
+									"    pm.expect(response).to.have.property(\"i18nKey\");\r",
+									"    pm.expect(response.i18nKey).to.equal(\"project.not.exists\");\r",
 									"});\r",
 									""
 								],
@@ -1708,8 +2024,14 @@
 							"script": {
 								"id": "37305c91-f17e-40c1-87f0-c995b3851df3",
 								"exec": [
-									"pm.test('programme user should not be able to set description', function() {\r",
-									"    pm.response.to.have.status(403);\r",
+									"pm.test('programme user should not be able to set description, when he cannot see DRAFT project', function() {\r",
+									"    pm.response.to.have.status(404);\r",
+									"});\r",
+									"\r",
+									"pm.test('programme user can see the error - he cannot find project itself', function() {\r",
+									"    const response = pm.response.json();\r",
+									"    pm.expect(response).to.have.property(\"i18nKey\");\r",
+									"    pm.expect(response.i18nKey).to.equal(\"project.not.exists\");\r",
 									"});\r",
 									""
 								],
@@ -1779,8 +2101,14 @@
 							"script": {
 								"id": "fec9eb38-e68c-4616-b5ca-d215819e4c70",
 								"exec": [
-									"pm.test('programme user should not be able to download file, when application is just DRAFT', function() {\r",
-									"    pm.response.to.have.status(403);\r",
+									"pm.test('programme user should not be able to download file, cause he cannot see application in DRAFT', function() {\r",
+									"    pm.response.to.have.status(404);\r",
+									"});\r",
+									"\r",
+									"pm.test('programme user can see the error - he cannot find project itself', function() {\r",
+									"    const response = pm.response.json();\r",
+									"    pm.expect(response).to.have.property(\"i18nKey\");\r",
+									"    pm.expect(response.i18nKey).to.equal(\"project.not.exists\");\r",
 									"});\r",
 									""
 								],
@@ -1829,7 +2157,7 @@
 			"name": "submit and resubmit application",
 			"item": [
 				{
-					"name": "create applicant and programme user for following tests",
+					"name": "create calls and users for following tests",
 					"item": [
 						{
 							"name": "register applicant",
@@ -1837,7 +2165,7 @@
 								{
 									"listen": "prerequest",
 									"script": {
-										"id": "30dcf3fe-b631-4b3e-a042-a621ede180fe",
+										"id": "7fe9e085-e1f0-4ab9-8c02-8cc9d6670cf9",
 										"exec": [
 											"var uuid = require('uuid');\r",
 											"const randomIdentifier = uuid.v4().substring(24, 32);\r",
@@ -1850,7 +2178,7 @@
 								{
 									"listen": "test",
 									"script": {
-										"id": "a7d7144c-256a-4420-a40b-b3a53d8a2709",
+										"id": "c53fe413-da95-4fce-bea2-da3a98934099",
 										"exec": [
 											"pm.test('applicant can register', function() {\r",
 											"    pm.response.to.have.status(200);\r",
@@ -1895,7 +2223,7 @@
 								{
 									"listen": "prerequest",
 									"script": {
-										"id": "60dda8c7-42a6-4d82-9e1c-5ec8eba20b02",
+										"id": "4d7a730b-39c5-4a59-9d11-9aa3e30ad63b",
 										"exec": [
 											"var uuid = require('uuid');\r",
 											"const randomIdentifier = uuid.v4().substring(24, 32);\r",
@@ -1908,7 +2236,7 @@
 								{
 									"listen": "test",
 									"script": {
-										"id": "4481aa8e-9bbd-423f-8491-a8ee54dbbc71",
+										"id": "844003f4-be08-41a3-8c87-2f8b31fcf273",
 										"exec": [
 											"pm.test('programme user can be created', function() {\r",
 											"    pm.response.to.have.status(200);\r",
@@ -1943,6 +2271,176 @@
 								}
 							},
 							"response": []
+						},
+						{
+							"name": "create call",
+							"event": [
+								{
+									"listen": "prerequest",
+									"script": {
+										"id": "72fc9bb7-fe74-449e-a900-209d1283f5f5",
+										"exec": [
+											"const callName = pm.variables.replaceIn('{{$randomCatchPhrase}}')\r",
+											"pm.variables.set(\r",
+											"    'call_name_to_create',\r",
+											"    callName.substr(0,150)\r",
+											");\r",
+											"\r",
+											"var callDateStart = new Date();\r",
+											"callDateStart.setDate(callDateStart.getDate() + 1);\r",
+											"pm.variables.set('callDateStart', callDateStart.toISOString());\r",
+											"\r",
+											"var callDateEnd = new Date();\r",
+											"callDateEnd.setDate(callDateEnd.getDate() + 10);\r",
+											"pm.variables.set('callDateEnd', callDateEnd.toISOString());\r",
+											""
+										],
+										"type": "text/javascript"
+									}
+								},
+								{
+									"listen": "test",
+									"script": {
+										"id": "3e2f272b-0ccc-4c7a-bf9f-c515ba203bf5",
+										"exec": [
+											"pm.test('call can be created', function () {\r",
+											"    pm.response.to.have.status(200);\r",
+											"    pm.variables.set(\"callId\", pm.response.json().id);\r",
+											"});\r",
+											""
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"auth": {
+									"type": "basic",
+									"basic": [
+										{
+											"key": "password",
+											"value": "{{programme_user_email}}",
+											"type": "string"
+										},
+										{
+											"key": "username",
+											"value": "{{programme_user_email}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n\t\"name\": \"{{call_name_to_create}}\",\n\t\"startDate\": \"{{callDateStart}}\",\n\t\"endDate\": \"{{callDateEnd}}\"\n}\n"
+								},
+								"url": {
+									"raw": "{{url}}/api/call",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"api",
+										"call"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "publish call",
+							"event": [
+								{
+									"listen": "prerequest",
+									"script": {
+										"id": "fbc8e6b4-c064-4d9a-9d43-1a467e16fcad",
+										"exec": [
+											""
+										],
+										"type": "text/javascript"
+									}
+								},
+								{
+									"listen": "test",
+									"script": {
+										"id": "b2487a49-0449-47c4-ac17-44784daba01c",
+										"exec": [
+											"pm.test('call is published successfully', function () {\r",
+											"    pm.response.to.have.status(200);\r",
+											"});\r",
+											""
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"auth": {
+									"type": "basic",
+									"basic": [
+										{
+											"key": "password",
+											"value": "{{programme_user_email}}",
+											"type": "string"
+										},
+										{
+											"key": "username",
+											"value": "{{programme_user_email}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "PUT",
+								"header": [
+									{
+										"key": "Content-Type",
+										"type": "text",
+										"value": "application/json"
+									}
+								],
+								"url": {
+									"raw": "{{url}}/api/call/{{callId}}/publish",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"api",
+										"call",
+										"{{callId}}",
+										"publish"
+									]
+								}
+							},
+							"response": []
+						}
+					],
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "5ab6f46a-b0e1-420c-84c1-33854ba67284",
+								"type": "text/javascript",
+								"exec": [
+									""
+								]
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"id": "f9ab29e6-53b6-4bdb-9ff7-3cba6b4aaf0a",
+								"type": "text/javascript",
+								"exec": [
+									""
+								]
+							}
 						}
 					],
 					"protocolProfileBehavior": {},
@@ -2007,7 +2505,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"acronym\": \"{{application_acronym}}\"\r\n}\r\n",
+							"raw": "{\r\n    \"acronym\": \"{{application_acronym}}\",\r\n    \"projectCallId\": {{callId}}\r\n}\r\n",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -2786,7 +3284,7 @@
 			"name": "enter eligibility assessment (EA) and decision",
 			"item": [
 				{
-					"name": "create applicant and programme user for following tests",
+					"name": "create calls and users for following tests",
 					"item": [
 						{
 							"name": "register applicant",
@@ -2794,7 +3292,7 @@
 								{
 									"listen": "prerequest",
 									"script": {
-										"id": "00cb7392-a417-461e-b86d-8bc89cf1f1b0",
+										"id": "4edd2ae1-8621-4b72-a51b-0522f62d187b",
 										"exec": [
 											"var uuid = require('uuid');\r",
 											"const randomIdentifier = uuid.v4().substring(24, 32);\r",
@@ -2807,7 +3305,7 @@
 								{
 									"listen": "test",
 									"script": {
-										"id": "9954b792-3bfe-4b59-9a4e-8f9a3c852e36",
+										"id": "88436dcc-d4ee-4c20-aa16-5f85075306d4",
 										"exec": [
 											"pm.test('applicant can register', function() {\r",
 											"    pm.response.to.have.status(200);\r",
@@ -2852,7 +3350,7 @@
 								{
 									"listen": "prerequest",
 									"script": {
-										"id": "f321159d-9df3-4c41-b5fa-7202ca221f04",
+										"id": "af22d680-4fc1-4acf-9c39-a71ede0b5f91",
 										"exec": [
 											"var uuid = require('uuid');\r",
 											"const randomIdentifier = uuid.v4().substring(24, 32);\r",
@@ -2865,7 +3363,7 @@
 								{
 									"listen": "test",
 									"script": {
-										"id": "2d59d8dd-75e0-436b-a571-936b04a32d15",
+										"id": "963bc60f-dba6-466f-b555-1ae09030aee5",
 										"exec": [
 											"pm.test('programme user can be created', function() {\r",
 											"    pm.response.to.have.status(200);\r",
@@ -2900,6 +3398,176 @@
 								}
 							},
 							"response": []
+						},
+						{
+							"name": "create call",
+							"event": [
+								{
+									"listen": "prerequest",
+									"script": {
+										"id": "ead33571-ff0a-438b-a7f5-84127cd4317b",
+										"exec": [
+											"const callName = pm.variables.replaceIn('{{$randomCatchPhrase}}')\r",
+											"pm.variables.set(\r",
+											"    'call_name_to_create',\r",
+											"    callName.substr(0,150)\r",
+											");\r",
+											"\r",
+											"var callDateStart = new Date();\r",
+											"callDateStart.setDate(callDateStart.getDate() + 1);\r",
+											"pm.variables.set('callDateStart', callDateStart.toISOString());\r",
+											"\r",
+											"var callDateEnd = new Date();\r",
+											"callDateEnd.setDate(callDateEnd.getDate() + 10);\r",
+											"pm.variables.set('callDateEnd', callDateEnd.toISOString());\r",
+											""
+										],
+										"type": "text/javascript"
+									}
+								},
+								{
+									"listen": "test",
+									"script": {
+										"id": "a6ee0d4b-f300-4432-b823-2c8b206867f0",
+										"exec": [
+											"pm.test('call can be created', function () {\r",
+											"    pm.response.to.have.status(200);\r",
+											"    pm.variables.set(\"callId\", pm.response.json().id);\r",
+											"});\r",
+											""
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"auth": {
+									"type": "basic",
+									"basic": [
+										{
+											"key": "password",
+											"value": "{{programme_user_email}}",
+											"type": "string"
+										},
+										{
+											"key": "username",
+											"value": "{{programme_user_email}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n\t\"name\": \"{{call_name_to_create}}\",\n\t\"startDate\": \"{{callDateStart}}\",\n\t\"endDate\": \"{{callDateEnd}}\"\n}\n"
+								},
+								"url": {
+									"raw": "{{url}}/api/call",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"api",
+										"call"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "publish call",
+							"event": [
+								{
+									"listen": "prerequest",
+									"script": {
+										"id": "6ba37fcd-885a-4e65-8ad5-56230e478beb",
+										"exec": [
+											""
+										],
+										"type": "text/javascript"
+									}
+								},
+								{
+									"listen": "test",
+									"script": {
+										"id": "9a62bf34-f340-4dbc-aa6e-bee6404bd69d",
+										"exec": [
+											"pm.test('call is published successfully', function () {\r",
+											"    pm.response.to.have.status(200);\r",
+											"});\r",
+											""
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"auth": {
+									"type": "basic",
+									"basic": [
+										{
+											"key": "password",
+											"value": "{{programme_user_email}}",
+											"type": "string"
+										},
+										{
+											"key": "username",
+											"value": "{{programme_user_email}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "PUT",
+								"header": [
+									{
+										"key": "Content-Type",
+										"type": "text",
+										"value": "application/json"
+									}
+								],
+								"url": {
+									"raw": "{{url}}/api/call/{{callId}}/publish",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"api",
+										"call",
+										"{{callId}}",
+										"publish"
+									]
+								}
+							},
+							"response": []
+						}
+					],
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "4c7ef2c1-2a02-4365-a7e4-1feac4f66bf3",
+								"type": "text/javascript",
+								"exec": [
+									""
+								]
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"id": "07fa398c-2b25-4ddb-b6ae-cb8f2641ae16",
+								"type": "text/javascript",
+								"exec": [
+									""
+								]
+							}
 						}
 					],
 					"protocolProfileBehavior": {},
@@ -2964,7 +3632,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"acronym\": \"{{application_acronym}}\"\r\n}\r\n",
+							"raw": "{\r\n    \"acronym\": \"{{application_acronym}}\",\r\n    \"projectCallId\": {{callId}}\r\n}\r\n",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -3694,7 +4362,7 @@
 			"name": "enter quality assessment (QA)",
 			"item": [
 				{
-					"name": "create applicant and programme user for following tests",
+					"name": "create calls and users for following tests",
 					"item": [
 						{
 							"name": "register applicant",
@@ -3702,7 +4370,7 @@
 								{
 									"listen": "prerequest",
 									"script": {
-										"id": "c51cae11-6e7c-4c8a-b031-725e1832f218",
+										"id": "274325bd-b1e8-437b-91bf-40e16c253abd",
 										"exec": [
 											"var uuid = require('uuid');\r",
 											"const randomIdentifier = uuid.v4().substring(24, 32);\r",
@@ -3715,7 +4383,7 @@
 								{
 									"listen": "test",
 									"script": {
-										"id": "f97828d6-dc16-4385-9a24-a7e69da4cb6e",
+										"id": "0061ebad-4a34-41d9-8bf3-1130211cc828",
 										"exec": [
 											"pm.test('applicant can register', function() {\r",
 											"    pm.response.to.have.status(200);\r",
@@ -3760,7 +4428,7 @@
 								{
 									"listen": "prerequest",
 									"script": {
-										"id": "e13ea4ae-6f3c-4385-834f-70a37c0b996c",
+										"id": "eac8df13-79d8-40d8-ae95-4d01717dfb03",
 										"exec": [
 											"var uuid = require('uuid');\r",
 											"const randomIdentifier = uuid.v4().substring(24, 32);\r",
@@ -3773,7 +4441,7 @@
 								{
 									"listen": "test",
 									"script": {
-										"id": "39d8926f-0b32-4f43-ac40-0c88e65d03db",
+										"id": "91f6133c-0449-4602-b277-37a65af79186",
 										"exec": [
 											"pm.test('programme user can be created', function() {\r",
 											"    pm.response.to.have.status(200);\r",
@@ -3808,13 +4476,161 @@
 								}
 							},
 							"response": []
+						},
+						{
+							"name": "create call",
+							"event": [
+								{
+									"listen": "prerequest",
+									"script": {
+										"id": "ef9284c0-2e10-4fa7-9d14-a312e0429c50",
+										"exec": [
+											"const callName = pm.variables.replaceIn('{{$randomCatchPhrase}}')\r",
+											"pm.variables.set(\r",
+											"    'call_name_to_create',\r",
+											"    callName.substr(0,150)\r",
+											");\r",
+											"\r",
+											"var callDateStart = new Date();\r",
+											"callDateStart.setDate(callDateStart.getDate() + 1);\r",
+											"pm.variables.set('callDateStart', callDateStart.toISOString());\r",
+											"\r",
+											"var callDateEnd = new Date();\r",
+											"callDateEnd.setDate(callDateEnd.getDate() + 10);\r",
+											"pm.variables.set('callDateEnd', callDateEnd.toISOString());\r",
+											""
+										],
+										"type": "text/javascript"
+									}
+								},
+								{
+									"listen": "test",
+									"script": {
+										"id": "23c5514d-2e50-44a5-914c-376d09c95a73",
+										"exec": [
+											"pm.test('call can be created', function () {\r",
+											"    pm.response.to.have.status(200);\r",
+											"    pm.variables.set(\"callId\", pm.response.json().id);\r",
+											"});\r",
+											""
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"auth": {
+									"type": "basic",
+									"basic": [
+										{
+											"key": "password",
+											"value": "{{programme_user_email}}",
+											"type": "string"
+										},
+										{
+											"key": "username",
+											"value": "{{programme_user_email}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n\t\"name\": \"{{call_name_to_create}}\",\n\t\"startDate\": \"{{callDateStart}}\",\n\t\"endDate\": \"{{callDateEnd}}\"\n}\n"
+								},
+								"url": {
+									"raw": "{{url}}/api/call",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"api",
+										"call"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "publish call",
+							"event": [
+								{
+									"listen": "prerequest",
+									"script": {
+										"id": "37813551-41af-4a6a-b6ca-df7835737f45",
+										"exec": [
+											""
+										],
+										"type": "text/javascript"
+									}
+								},
+								{
+									"listen": "test",
+									"script": {
+										"id": "ee8580da-60f4-4faa-a511-ba398af4c431",
+										"exec": [
+											"pm.test('call is published successfully', function () {\r",
+											"    pm.response.to.have.status(200);\r",
+											"});\r",
+											""
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"auth": {
+									"type": "basic",
+									"basic": [
+										{
+											"key": "password",
+											"value": "{{programme_user_email}}",
+											"type": "string"
+										},
+										{
+											"key": "username",
+											"value": "{{programme_user_email}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "PUT",
+								"header": [
+									{
+										"key": "Content-Type",
+										"type": "text",
+										"value": "application/json"
+									}
+								],
+								"url": {
+									"raw": "{{url}}/api/call/{{callId}}/publish",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"api",
+										"call",
+										"{{callId}}",
+										"publish"
+									]
+								}
+							},
+							"response": []
 						}
 					],
 					"event": [
 						{
 							"listen": "prerequest",
 							"script": {
-								"id": "66555ccb-42b7-44df-9efb-9b259744c930",
+								"id": "cf7bde02-3e69-4209-ba6c-5cf811f20177",
 								"type": "text/javascript",
 								"exec": [
 									""
@@ -3824,7 +4640,7 @@
 						{
 							"listen": "test",
 							"script": {
-								"id": "dbdd7ff2-303d-4bd7-bb2e-b2a3a83f4fa2",
+								"id": "4bec3780-c08a-4003-afbb-3ba010696985",
 								"type": "text/javascript",
 								"exec": [
 									""
@@ -3897,7 +4713,7 @@
 								"header": [],
 								"body": {
 									"mode": "raw",
-									"raw": "{\r\n    \"acronym\": \"{{application_acronym}}\"\r\n}\r\n",
+									"raw": "{\r\n    \"acronym\": \"{{application_acronym}}\",\r\n    \"projectCallId\": {{callId}}\r\n}\r\n",
 									"options": {
 										"raw": {
 											"language": "json"
@@ -4288,7 +5104,7 @@
 								"header": [],
 								"body": {
 									"mode": "raw",
-									"raw": "{\r\n    \"acronym\": \"{{application_acronym}}\"\r\n}\r\n",
+									"raw": "{\r\n    \"acronym\": \"{{application_acronym}}\",\r\n    \"projectCallId\": {{callId}}\r\n}\r\n",
 									"options": {
 										"raw": {
 											"language": "json"
@@ -4606,7 +5422,7 @@
 			"name": "enter funding decision (FD)",
 			"item": [
 				{
-					"name": "create applicant and programme user for following tests",
+					"name": "create calls and users for following tests",
 					"item": [
 						{
 							"name": "register applicant",
@@ -4614,7 +5430,7 @@
 								{
 									"listen": "prerequest",
 									"script": {
-										"id": "c96dca54-fe75-4f52-a863-91a99bfdc772",
+										"id": "ac8cdcd6-9dd8-47bf-9d95-bedbdf1646dc",
 										"exec": [
 											"var uuid = require('uuid');\r",
 											"const randomIdentifier = uuid.v4().substring(24, 32);\r",
@@ -4627,7 +5443,7 @@
 								{
 									"listen": "test",
 									"script": {
-										"id": "05918323-095b-4303-b7d6-38ae966e5518",
+										"id": "b84ec5bd-dc33-474d-9b3e-878592403c15",
 										"exec": [
 											"pm.test('applicant can register', function() {\r",
 											"    pm.response.to.have.status(200);\r",
@@ -4672,7 +5488,7 @@
 								{
 									"listen": "prerequest",
 									"script": {
-										"id": "1096d73f-27cd-4cb7-b101-b1227a9d9e5f",
+										"id": "7dcb287c-200d-4c7c-9a92-6930d4c9b194",
 										"exec": [
 											"var uuid = require('uuid');\r",
 											"const randomIdentifier = uuid.v4().substring(24, 32);\r",
@@ -4685,7 +5501,7 @@
 								{
 									"listen": "test",
 									"script": {
-										"id": "0ffe2199-3719-42f5-b23b-949047d979fe",
+										"id": "8c2af4bf-8649-421f-8f53-5501a909fa90",
 										"exec": [
 											"pm.test('programme user can be created', function() {\r",
 											"    pm.response.to.have.status(200);\r",
@@ -4720,13 +5536,161 @@
 								}
 							},
 							"response": []
+						},
+						{
+							"name": "create call",
+							"event": [
+								{
+									"listen": "prerequest",
+									"script": {
+										"id": "f8cd9cbd-f0bf-412b-98ca-3fe2a9738dfc",
+										"exec": [
+											"const callName = pm.variables.replaceIn('{{$randomCatchPhrase}}')\r",
+											"pm.variables.set(\r",
+											"    'call_name_to_create',\r",
+											"    callName.substr(0,150)\r",
+											");\r",
+											"\r",
+											"var callDateStart = new Date();\r",
+											"callDateStart.setDate(callDateStart.getDate() + 1);\r",
+											"pm.variables.set('callDateStart', callDateStart.toISOString());\r",
+											"\r",
+											"var callDateEnd = new Date();\r",
+											"callDateEnd.setDate(callDateEnd.getDate() + 10);\r",
+											"pm.variables.set('callDateEnd', callDateEnd.toISOString());\r",
+											""
+										],
+										"type": "text/javascript"
+									}
+								},
+								{
+									"listen": "test",
+									"script": {
+										"id": "d3a15fd2-6153-4006-bbb6-8b7634d5d832",
+										"exec": [
+											"pm.test('call can be created', function () {\r",
+											"    pm.response.to.have.status(200);\r",
+											"    pm.variables.set(\"callId\", pm.response.json().id);\r",
+											"});\r",
+											""
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"auth": {
+									"type": "basic",
+									"basic": [
+										{
+											"key": "password",
+											"value": "{{programme_user_email}}",
+											"type": "string"
+										},
+										{
+											"key": "username",
+											"value": "{{programme_user_email}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n\t\"name\": \"{{call_name_to_create}}\",\n\t\"startDate\": \"{{callDateStart}}\",\n\t\"endDate\": \"{{callDateEnd}}\"\n}\n"
+								},
+								"url": {
+									"raw": "{{url}}/api/call",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"api",
+										"call"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "publish call",
+							"event": [
+								{
+									"listen": "prerequest",
+									"script": {
+										"id": "f8582613-ade1-4880-9a80-c41985009767",
+										"exec": [
+											""
+										],
+										"type": "text/javascript"
+									}
+								},
+								{
+									"listen": "test",
+									"script": {
+										"id": "f459d4bb-820d-4ca5-82bb-adaae6de8432",
+										"exec": [
+											"pm.test('call is published successfully', function () {\r",
+											"    pm.response.to.have.status(200);\r",
+											"});\r",
+											""
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"auth": {
+									"type": "basic",
+									"basic": [
+										{
+											"key": "password",
+											"value": "{{programme_user_email}}",
+											"type": "string"
+										},
+										{
+											"key": "username",
+											"value": "{{programme_user_email}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "PUT",
+								"header": [
+									{
+										"key": "Content-Type",
+										"type": "text",
+										"value": "application/json"
+									}
+								],
+								"url": {
+									"raw": "{{url}}/api/call/{{callId}}/publish",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"api",
+										"call",
+										"{{callId}}",
+										"publish"
+									]
+								}
+							},
+							"response": []
 						}
 					],
 					"event": [
 						{
 							"listen": "prerequest",
 							"script": {
-								"id": "b77aa08b-c11b-468a-bb64-023829d218ba",
+								"id": "c7798927-95e9-4afb-9f9e-8ee8f4adb2db",
 								"type": "text/javascript",
 								"exec": [
 									""
@@ -4736,7 +5700,7 @@
 						{
 							"listen": "test",
 							"script": {
-								"id": "7b3585fd-4fd2-4cc0-97e5-82c1fb84d604",
+								"id": "ce01cde1-4298-43e9-9d4e-1c056fdd6d9d",
 								"type": "text/javascript",
 								"exec": [
 									""
@@ -4809,7 +5773,7 @@
 								"header": [],
 								"body": {
 									"mode": "raw",
-									"raw": "{\r\n    \"acronym\": \"{{application_acronym}}\"\r\n}\r\n",
+									"raw": "{\r\n    \"acronym\": \"{{application_acronym}}\",\r\n    \"projectCallId\": {{callId}}\r\n}\r\n",
 									"options": {
 										"raw": {
 											"language": "json"
@@ -5275,7 +6239,7 @@
 								"header": [],
 								"body": {
 									"mode": "raw",
-									"raw": "{\r\n    \"acronym\": \"{{application_acronym}}\"\r\n}\r\n",
+									"raw": "{\r\n    \"acronym\": \"{{application_acronym}}\",\r\n    \"projectCallId\": {{callId}}\r\n}\r\n",
 									"options": {
 										"raw": {
 											"language": "json"
@@ -5569,7 +6533,7 @@
 								"header": [],
 								"body": {
 									"mode": "raw",
-									"raw": "{\r\n    \"acronym\": \"{{application_acronym}}\"\r\n}\r\n",
+									"raw": "{\r\n    \"acronym\": \"{{application_acronym}}\",\r\n    \"projectCallId\": {{callId}}\r\n}\r\n",
 									"options": {
 										"raw": {
 											"language": "json"
@@ -5935,7 +6899,7 @@
 								"header": [],
 								"body": {
 									"mode": "raw",
-									"raw": "{\r\n    \"acronym\": \"{{application_acronym}}\"\r\n}\r\n",
+									"raw": "{\r\n    \"acronym\": \"{{application_acronym}}\",\r\n    \"projectCallId\": {{callId}}\r\n}\r\n",
 									"options": {
 										"raw": {
 											"language": "json"
@@ -6640,7 +7604,7 @@
 	],
 	"variable": [
 		{
-			"id": "0863e169-41b6-4463-b1dc-23675f6b587a",
+			"id": "5650804c-2893-4833-becb-a85fe2488900",
 			"key": "url",
 			"value": "specify_url_here"
 		}

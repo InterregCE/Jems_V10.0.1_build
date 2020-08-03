@@ -2,6 +2,8 @@ package io.cloudflight.ems.controller
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import io.cloudflight.ems.api.dto.InputProject
+import io.cloudflight.ems.factory.CallFactory
+import io.cloudflight.ems.factory.UserFactory
 import io.cloudflight.ems.factory.UserFactory.Companion.ADMINISTRATOR_EMAIL
 import net.bytebuddy.utility.RandomString
 import org.junit.jupiter.api.Test
@@ -23,12 +25,19 @@ class ProjectControllerIntegrationTest {
     private lateinit var mockMvc: MockMvc
 
     @Autowired
+    private lateinit var callFactory: CallFactory
+
+    @Autowired
+    private lateinit var userFactory: UserFactory
+
+    @Autowired
     private lateinit var jsonMapper: ObjectMapper
 
     @Test
     @WithUserDetails(value = ADMINISTRATOR_EMAIL)
     fun `project created`() {
-        val inputProject = InputProject("acronym")
+        val call = callFactory.savePublishedCall(userFactory.adminUser)
+        val inputProject = InputProject(acronym = "acronym", projectCallId = call.id)
 
         mockMvc.perform(
             post("/api/project")
@@ -43,7 +52,7 @@ class ProjectControllerIntegrationTest {
     @Test
     @WithUserDetails(value = ADMINISTRATOR_EMAIL)
     fun `project create fails with missing required fields`() {
-        val inputProject = InputProject(null)
+        val inputProject = InputProject(null, null)
 
         mockMvc.perform(
             post("/api/project")
@@ -60,7 +69,7 @@ class ProjectControllerIntegrationTest {
     @Test
     @WithUserDetails(value = ADMINISTRATOR_EMAIL)
     fun `project create fails with invalid fields`() {
-        val inputProject = InputProject(RandomString.make(26))
+        val inputProject = InputProject(RandomString.make(26), null)
 
         mockMvc.perform(
             post("/api/project")

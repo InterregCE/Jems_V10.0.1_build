@@ -22,7 +22,7 @@ class ProjectController(
         return projectService.findAll(pageable)
     }
 
-    @PreAuthorize("@projectAuthorization.canCreateProject()")
+    @PreAuthorize("@projectAuthorization.canCreateProjectForCall(#project.projectCallId)")
     override fun createProject(project: InputProject): OutputProject {
         return projectService.createProject(project)
     }

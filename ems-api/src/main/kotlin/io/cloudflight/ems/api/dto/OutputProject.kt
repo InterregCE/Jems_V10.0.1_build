@@ -1,9 +1,11 @@
 package io.cloudflight.ems.api.dto
 
+import io.cloudflight.ems.api.call.dto.OutputCallSimple
 import io.cloudflight.ems.api.dto.user.OutputUser
 
 data class OutputProject (
     val id: Long?,
+    val call: OutputCallSimple,
     val acronym: String,
     val applicant: OutputUser,
     val projectStatus: OutputProjectStatus,

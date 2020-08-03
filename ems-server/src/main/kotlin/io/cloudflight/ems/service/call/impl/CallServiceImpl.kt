@@ -34,7 +34,7 @@ class CallServiceImpl(
     @Transactional(readOnly = true)
     override fun getCallById(id: Long): OutputCall {
         return callRepository.findById(id).map { it.toOutputCall() }
-            .orElseThrow { ResourceNotFoundException() }
+            .orElseThrow { ResourceNotFoundException("call") }
     }
 
     @Transactional(readOnly = true)
@@ -57,7 +57,7 @@ class CallServiceImpl(
     @Transactional
     override fun updateCall(inputCall: InputCallUpdate): OutputCall {
         val oldCall = callRepository.findById(inputCall.id)
-            .orElseThrow { ResourceNotFoundException() }
+            .orElseThrow { ResourceNotFoundException("call") }
 
         val toUpdate = oldCall.copy(
             name = getCallNameIfUnique(oldCall, inputCall.name!!),
@@ -86,7 +86,7 @@ class CallServiceImpl(
     @Transactional
     override fun publishCall(callId: Long): OutputCall {
         val call = callRepository.findById(callId)
-            .orElseThrow { ResourceNotFoundException() }
+            .orElseThrow { ResourceNotFoundException("call") }
 
         if (call.status != CallStatus.DRAFT)
             throw I18nValidationException(

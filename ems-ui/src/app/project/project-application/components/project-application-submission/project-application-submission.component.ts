@@ -42,6 +42,7 @@ export class ProjectApplicationSubmissionComponent extends AbstractForm {
   onSubmit(): void {
     this.submitProjectApplication.emit({
       acronym: this.submissionForm?.controls?.acronym?.value,
+      projectCallId: 1 // TODO MP2-450 add apply button to call list
     });
   }
 }
