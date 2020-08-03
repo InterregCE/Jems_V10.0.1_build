@@ -72,6 +72,10 @@ export class ProgrammeDataComponent extends ViewEditForm implements OnInit {
     maxlength: 'programme.programmeAmendingDecisionNumber.size.too.long',
   };
 
+  dateErrors = {
+    matDatepickerParse: 'common.date.should.be.valid'
+  };
+
   constructor(private formBuilder: FormBuilder,
               private dialog: MatDialog,
               protected changeDetectorRef: ChangeDetectorRef) {

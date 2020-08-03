@@ -39,7 +39,8 @@ export class ProjectApplicationEligibilityDecisionComponent extends AbstractForm
   today = new Date();
   dateErrors = {
     required: 'project.decision.date.unknown',
-    matDatepickerMax: 'project.decision.date.must.be.in.the.past'
+    matDatepickerMax: 'project.decision.date.must.be.in.the.past',
+    matDatepickerParse: 'common.date.should.be.valid'
   };
 
   notesForm = this.formBuilder.group({
