@@ -1,10 +1,11 @@
-package io.cloudflight.ems.security.service.authorization
+package io.cloudflight.ems.call.authorization
 
 import io.cloudflight.ems.api.call.dto.CallStatus
 import io.cloudflight.ems.api.call.dto.OutputCall
 import io.cloudflight.ems.exception.ResourceNotFoundException
 import io.cloudflight.ems.security.service.SecurityService
-import io.cloudflight.ems.service.call.CallService
+import io.cloudflight.ems.security.service.authorization.Authorization
+import io.cloudflight.ems.call.service.CallService
 import org.springframework.stereotype.Component
 
 @Component
@@ -19,8 +20,12 @@ class CallAuthorization(
 
     fun canUpdateCall(callId: Long): Boolean {
         val callStatus = callService.getCallById(callId).status
-        if (callStatus == CallStatus.DRAFT)
-            return isAdmin() || isProgrammeUser()
+        if (isAdmin() || isProgrammeUser())
+            return callStatus == CallStatus.DRAFT
+
+        if (!isAdmin() && !isProgrammeUser())
+            throw ResourceNotFoundException("call")
+
         return false
     }
 

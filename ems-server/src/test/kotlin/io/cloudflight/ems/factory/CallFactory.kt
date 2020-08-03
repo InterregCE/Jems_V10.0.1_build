@@ -1,9 +1,9 @@
 package io.cloudflight.ems.factory
 
 import io.cloudflight.ems.api.call.dto.CallStatus
-import io.cloudflight.ems.entity.Call
+import io.cloudflight.ems.call.entity.Call
 import io.cloudflight.ems.entity.User
-import io.cloudflight.ems.repository.CallRepository
+import io.cloudflight.ems.call.repository.CallRepository
 import org.springframework.stereotype.Component
 import java.time.ZonedDateTime
 import javax.transaction.Transactional
@@ -23,7 +23,16 @@ class CallFactory(
         val call = callRepository.findOneByName(callName)
         if (call != null)
             return call
-        return callRepository.save(Call(null, user, callName, callStart, callEnd, CallStatus.PUBLISHED))
+        return callRepository.save(
+            Call(
+                null,
+                user,
+                callName,
+                callStart,
+                callEnd,
+                CallStatus.PUBLISHED
+            )
+        )
     }
 
 }

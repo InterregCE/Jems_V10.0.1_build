@@ -6,12 +6,12 @@ import io.cloudflight.ems.api.dto.OutputProject
 import io.cloudflight.ems.api.dto.OutputProjectSimple
 import io.cloudflight.ems.api.dto.ProjectApplicationStatus
 import io.cloudflight.ems.entity.Audit
-import io.cloudflight.ems.entity.Call
+import io.cloudflight.ems.call.entity.Call
 import io.cloudflight.ems.entity.ProjectStatus
 import io.cloudflight.ems.entity.User
 import io.cloudflight.ems.exception.I18nValidationException
 import io.cloudflight.ems.exception.ResourceNotFoundException
-import io.cloudflight.ems.repository.CallRepository
+import io.cloudflight.ems.call.repository.CallRepository
 import io.cloudflight.ems.repository.ProjectRepository
 import io.cloudflight.ems.repository.ProjectStatusRepository
 import io.cloudflight.ems.repository.UserRepository

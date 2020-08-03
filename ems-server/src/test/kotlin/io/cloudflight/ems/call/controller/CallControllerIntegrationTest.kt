@@ -1,4 +1,4 @@
-package io.cloudflight.ems.controller
+package io.cloudflight.ems.call.controller
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import io.cloudflight.ems.api.call.dto.InputCallCreate

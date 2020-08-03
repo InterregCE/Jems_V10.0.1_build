@@ -10,7 +10,7 @@ import io.cloudflight.ems.api.dto.ProjectQualityAssessmentResult
 import io.cloudflight.ems.api.dto.user.OutputUserRole
 import io.cloudflight.ems.api.dto.user.OutputUserWithRole
 import io.cloudflight.ems.entity.AuditAction
-import io.cloudflight.ems.entity.Call
+import io.cloudflight.ems.call.entity.Call
 import io.cloudflight.ems.entity.Project
 import io.cloudflight.ems.entity.ProjectEligibilityAssessment
 import io.cloudflight.ems.entity.ProjectStatus
@@ -83,7 +83,14 @@ internal class ProjectStatusServiceImplTest {
     )
     private val userProgramme = OutputUserWithRole(16, "programme@email", "", "", OutputUserRole(7, "programme"))
 
-    private val dummyCall = Call(id = 5, creator = user, name = "call", startDate = ZonedDateTime.now(), endDate = ZonedDateTime.now(), status = CallStatus.PUBLISHED)
+    private val dummyCall = Call(
+        id = 5,
+        creator = user,
+        name = "call",
+        startDate = ZonedDateTime.now(),
+        endDate = ZonedDateTime.now(),
+        status = CallStatus.PUBLISHED
+    )
 
     private val projectDraft = createProject(ProjectApplicationStatus.DRAFT)
     private val projectSubmitted = createProject(ProjectApplicationStatus.SUBMITTED, NOTE_DENIED)

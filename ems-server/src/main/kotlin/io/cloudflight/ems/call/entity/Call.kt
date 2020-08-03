@@ -1,6 +1,7 @@
-package io.cloudflight.ems.entity
+package io.cloudflight.ems.call.entity
 
 import io.cloudflight.ems.api.call.dto.CallStatus
+import io.cloudflight.ems.entity.User
 import java.time.ZonedDateTime
 import javax.persistence.Column
 import javax.persistence.Entity

@@ -1,14 +1,12 @@
 package io.cloudflight.ems.factory
 
-import io.cloudflight.ems.api.call.dto.CallStatus
 import io.cloudflight.ems.api.dto.ProjectApplicationStatus
 import io.cloudflight.ems.api.dto.ProjectFileType
-import io.cloudflight.ems.entity.Call
+import io.cloudflight.ems.call.entity.Call
 import io.cloudflight.ems.entity.User
 import io.cloudflight.ems.entity.Project
 import io.cloudflight.ems.entity.ProjectFile
 import io.cloudflight.ems.entity.ProjectStatus
-import io.cloudflight.ems.repository.CallRepository
 import io.cloudflight.ems.repository.ProjectFileRepository
 import io.cloudflight.ems.repository.ProjectRepository
 import io.cloudflight.ems.repository.ProjectStatusRepository
