@@ -3,14 +3,23 @@
         [type]="Alert.SUCCESS">
     <p>Successfully published Call {{publishedCall}}</p>
 </app-alert>
-<h5>List of Calls</h5>
+
 <p *ngIf="!callPage?.content.length">No calls submitted</p>
-<app-table *ngIf="callPage.content.length"
-           [configuration]="tableConfiguration"
-           [rows]="callPage.content"
-           [totalElements]="callPage?.totalElements"
-           [pageIndex]="pageIndex"
-           (newPageIndex)="newPageIndex.emit($event)"
-           (newPageSize)="newPageSize.emit($event)"
-           (sortRows)="newSort.emit($event)">>
-</app-table>
+<ng-container>
+    <app-table *ngIf="callPage.content.length"
+               [configuration]="isApplicant ? tableConfigurationApplicant : tableConfigurationProgramme"
+               [rows]="callPage.content"
+               [totalElements]="callPage?.totalElements"
+               [pageIndex]="pageIndex"
+               (newPageIndex)="newPageIndex.emit($event)"
+               (newPageSize)="newPageSize.emit($event)"
+               (sortRows)="newSort.emit($event)">>
+    </app-table>
+</ng-container>
+
+<ng-template #callActionsCell let-call>
+    <app-call-action-cell
+            [call]="call"
+            (apply)="applyToCall($event)">
+    </app-call-action-cell>
+</ng-template>

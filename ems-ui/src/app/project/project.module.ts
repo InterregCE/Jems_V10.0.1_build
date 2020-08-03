@@ -70,7 +70,10 @@ import {ProjectApplicationEligibilityDecisionPageComponent} from './project-appl
     MatRadioModule,
     MatExpansionModule,
     MatDatepickerModule,
-    MatMomentDateModule
+    MatMomentDateModule,
+  ],
+  exports: [
+    ProjectApplicationListComponent
   ],
   providers: [
     DatePipe,

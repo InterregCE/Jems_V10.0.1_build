@@ -10,6 +10,7 @@ import {combineLatest, Subject} from 'rxjs';
 import {SecurityService} from '../../../../security/security.service';
 import {MatSort} from '@angular/material/sort';
 import {Tables} from '../../../../common/utils/tables';
+import {Router} from '@angular/router';
 
 @Component({
   selector: 'app-project-application',
@@ -46,7 +47,8 @@ export class ProjectApplicationComponent extends BaseComponent {
   applicationSaveSuccess$ = new Subject<boolean>();
 
   constructor(private projectService: ProjectService,
-              private securityService: SecurityService) {
+              private securityService: SecurityService,
+              private router: Router) {
     super();
   }
 
@@ -59,6 +61,7 @@ export class ProjectApplicationComponent extends BaseComponent {
         tap(() => this.applicationSaveError$.next(null)),
         tap(() => this.newPageIndex$.next(Tables.DEFAULT_INITIAL_PAGE_INDEX)),
         tap(saved => Log.info('Created project application:', this, saved)),
+        tap(() => this.router.navigate(['/calls'])),
         catchError((error: HttpErrorResponse) => {
           this.applicationSaveError$.next(error.error);
           throw error;

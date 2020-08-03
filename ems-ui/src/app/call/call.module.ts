@@ -10,13 +10,16 @@ import {CallConfigurationComponent} from './containers/call-configuration/call-c
 import {NGX_MAT_DATE_FORMATS, NgxMatDatetimePickerModule} from '@angular-material-components/datetime-picker';
 import {NgxMatMomentModule} from '@angular-material-components/moment-adapter';
 import {CallStore} from './services/call-store.service';
+import {CallActionCellComponent} from './components/call-list/call-action-cell/call-action-cell.component';
+import {ProjectModule} from '../project/project.module';
 
 @NgModule({
   declarations: [
     CallPageComponent,
     CallListComponent,
     CallDetailComponent,
-    CallConfigurationComponent
+    CallConfigurationComponent,
+    CallActionCellComponent
   ],
   imports: [
     CallRoutingModule,
@@ -24,7 +27,8 @@ import {CallStore} from './services/call-store.service';
     MatDatepickerModule,
     NgxMatDatetimePickerModule,
     NgxMatMomentModule,
-    CoreModule
+    CoreModule,
+    ProjectModule
   ],
   providers: [
     CallStore,

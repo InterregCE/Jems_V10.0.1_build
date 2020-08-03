@@ -93,7 +93,7 @@ export class TopBarService {
         filter(canSee => canSee),
       )
       .subscribe(() => this.menuItems$.next([
-        this.applicationsItem,
+        this.callsItem,
         this.editUserItem
       ]));
 

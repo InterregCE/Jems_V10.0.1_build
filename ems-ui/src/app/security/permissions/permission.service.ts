@@ -3,7 +3,7 @@ import {NgxPermissionsService} from 'ngx-permissions';
 import {from, Observable, ReplaySubject} from 'rxjs';
 import {SecurityService} from '../security.service';
 import {OutputCurrentUser} from '@cat/api';
-import {filter} from 'rxjs/operators';
+import {tap} from 'rxjs/operators';
 import {Log} from '../../common/utils/log';
 
 @Injectable({providedIn: 'root'})
@@ -15,9 +15,9 @@ export class PermissionService {
               private securityService: SecurityService) {
     this.securityService.currentUser
       .pipe(
-        filter((user: OutputCurrentUser) => !!user)
+        tap((user: OutputCurrentUser) => this.setPermissions(user ? [user.role] : []))
       )
-      .subscribe((user: OutputCurrentUser) => this.setPermissions([user.role]))
+      .subscribe()
   }
 
   setPermissions(permissions: string[]): void {

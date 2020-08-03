@@ -1,17 +1,51 @@
-<div class="container">
-    <h4>Call Overview</h4>
-    <button mat-raised-button color="primary"
-            [routerLink]="'/call/create'">
-        + Add new Call
-    </button>
-    <div *ngIf="currentPage$ | async as callPage" class="col-md-7">
-        <app-call-list
-                [publishedCall]="publishedCall$ | async"
-                [callPage]="callPage"
-                [pageIndex]="newPageIndex$ | async"
-                (newPageSize)="newPageSize$.next($event)"
-                (newPageIndex)="newPageIndex$.next($event)"
-                (newSort)="newSort$.next($event)">
-        </app-call-list>
+<div class="container vertical-center">
+    <h4 *ngxPermissionsExcept="Permission.APPLICANT_USER">Call Overview</h4>
+    <h4 *ngxPermissionsOnly="Permission.APPLICANT_USER">Dashboard</h4>
+
+    <div *ngxPermissionsOnly="Permission.APPLICANT_USER">
+        <h5>My Applications</h5>
+        <div *ngIf="currentApplicationPage$ | async as projectPage">
+            <app-project-application-list
+                    [projectPage]="projectPage"
+                    [pageIndex]="newPageIndex$ | async"
+                    (newPageSize)="newPageSize$.next($event)"
+                    (newPageIndex)="newPageIndex$.next($event)"
+                    (newSort)="newSort$.next($event)">
+            </app-project-application-list>
+        </div>
+    </div>
+
+    <div *ngxPermissionsExcept="[Permission.APPLICANT_USER]">
+        <button mat-raised-button color="primary"
+                [routerLink]="'/call/create'">
+            + Add new Call
+        </button>
+        <div *ngIf="currentPage$ | async as callPage">
+            <h5>List of Calls</h5>
+            <app-call-list
+                    [isApplicant]="false"
+                    [publishedCall]="publishedCall$ | async"
+                    [callPage]="callPage"
+                    [pageIndex]="newPageIndex$ | async"
+                    (newPageSize)="newPageSize$.next($event)"
+                    (newPageIndex)="newPageIndex$.next($event)"
+                    (newSort)="newSort$.next($event)">
+            </app-call-list>
+        </div>
+    </div>
+
+    <div *ngxPermissionsOnly="Permission.APPLICANT_USER">
+        <div *ngIf="currentPage$ | async as callPage">
+            <h5>Open Calls</h5>
+            <app-call-list
+                    [isApplicant]="true"
+                    [publishedCall]="publishedCall$ | async"
+                    [callPage]="callPage"
+                    [pageIndex]="newPageIndex$ | async"
+                    (newPageSize)="newPageSize$.next($event)"
+                    (newPageIndex)="newPageIndex$.next($event)"
+                    (newSort)="newSort$.next($event)">
+            </app-call-list>
+        </div>
     </div>
 </div>
