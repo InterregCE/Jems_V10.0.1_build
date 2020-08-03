@@ -3,6 +3,7 @@ import {PageOutputProjectSimple} from '@cat/api';
 import {TableConfiguration} from '@common/components/table/model/table.configuration';
 import {MatSort} from '@angular/material/sort';
 import {ColumnType} from '@common/components/table/model/column-type.enum';
+import {Permission} from '../../../../security/permissions/permission';
 
 @Component({
   selector: 'app-project-application-list',
@@ -12,6 +13,8 @@ import {ColumnType} from '@common/components/table/model/column-type.enum';
 })
 
 export class ProjectApplicationListComponent {
+  Permission = Permission
+
   @Input()
   projectPage: PageOutputProjectSimple;
   @Input()

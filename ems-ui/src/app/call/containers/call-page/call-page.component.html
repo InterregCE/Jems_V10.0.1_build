@@ -15,7 +15,9 @@
         </div>
     </div>
 
-    <div *ngxPermissionsExcept="[Permission.APPLICANT_USER]">
+    <br>
+
+    <div *ngxPermissionsExcept="Permission.APPLICANT_USER">
         <button mat-raised-button color="primary"
                 [routerLink]="'/call/create'">
             + Add new Call
