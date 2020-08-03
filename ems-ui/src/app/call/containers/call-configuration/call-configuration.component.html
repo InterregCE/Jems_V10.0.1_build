@@ -1,4 +1,4 @@
-<div *ngIf="details$ | async as details" class="container">
+<div *ngIf="details$ | async as details">
     <app-call-detail
             *ngIf="details.applicantCanAccessCall"
             [call]="details.call"
