@@ -1,8 +1,11 @@
 <div *ngxPermissionsOnly="[Permission.ADMINISTRATOR]">
     <a [routerLink]="['/user']">&lt; {{'user.detail.page.back.to.users' | translate}}</a>
 </div>
-<div *ngxPermissionsExcept="[Permission.ADMINISTRATOR]">
+<div *ngxPermissionsOnly="[Permission.PROGRAMME_USER]">
     <a [routerLink]="['/']">&lt; {{'user.detail.page.back.to.projects' | translate}}</a>
+</div>
+<div *ngxPermissionsOnly="[Permission.APPLICANT_USER]">
+    <a [routerLink]="['/calls']">&lt; {{'user.detail.page.back.to.dashboard' | translate}}</a>
 </div>
 <div class="container vertical-center">
     <span>{{'user.detail.page.title' | translate}}</span>
