@@ -1,13 +1,13 @@
-import {ChangeDetectionStrategy, Component} from '@angular/core';
+import {ChangeDetectionStrategy, Component, OnDestroy} from '@angular/core';
 import {BaseComponent} from '@common/components/base-component';
 import {Permission} from '../../../../security/permissions/permission';
-import {merge, Observable, Subject} from 'rxjs';
+import {merge, Subject} from 'rxjs';
 import {I18nValidationError} from '@common/validation/i18n-validation-error';
 import {InputProgrammeData, ProgrammeDataService} from '@cat/api';
 import {catchError, flatMap, tap} from 'rxjs/operators';
 import {Log} from '../../../../common/utils/log';
 import {HttpErrorResponse} from '@angular/common/http';
-import {ProgrammeNavigationStateManagementService} from '../../services/programme-navigation-state-management.service';
+import {TabService} from '../../../../common/services/tab.service';
 
 @Component({
   selector: 'app-programme-page',
@@ -15,13 +15,13 @@ import {ProgrammeNavigationStateManagementService} from '../../services/programm
   styleUrls: ['./programme-page.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class ProgrammePageComponent extends BaseComponent {
+export class ProgrammePageComponent extends BaseComponent implements OnDestroy {
   Permission = Permission;
 
   programmeSaveError$ = new Subject<I18nValidationError | null>();
   programmeSaveSuccess$ = new Subject<boolean>();
   saveProgrammeData$ = new Subject<InputProgrammeData>();
-  activeTab$: Observable<number> = this.programmeNavigationStateManagementService.getTab();
+  activeTab$ = this.tabService.currentTab(ProgrammePageComponent.name);
 
   private programmeById$ = this.programmeDataService.get()
     .pipe(
@@ -43,7 +43,16 @@ export class ProgrammePageComponent extends BaseComponent {
   programme$ = merge(this.programmeById$, this.savedProgramme$)
 
   constructor(private programmeDataService: ProgrammeDataService,
-              private programmeNavigationStateManagementService: ProgrammeNavigationStateManagementService) {
+              private tabService: TabService) {
     super();
+  }
+
+  ngOnDestroy(): void {
+    super.ngOnDestroy();
+    this.tabService.cleanupTab(ProgrammePageComponent.name);
+  }
+
+  changeTab(tabIndex: number): void {
+    this.tabService.changeTab(ProgrammePageComponent.name, tabIndex);
   }
 }

@@ -18,6 +18,7 @@ import {MatIconModule} from '@angular/material/icon';
 import {HelpMenuComponent} from '@common/components/top-bar/help-menu/help-menu.component';
 import {AlertComponent} from '@common/components/forms/form-validation/alert.component';
 import {MatSortHeader} from '@angular/material/sort';
+import {TabService} from './services/tab.service';
 
 const declarations = [
   TopBarComponent,
@@ -45,6 +46,7 @@ const declarations = [
     TopBarService,
     KeyValuePipe,
     MatSortHeader,
+    TabService,
     {
       provide: HTTP_INTERCEPTORS,
       useClass: AuthenticationInterceptor,

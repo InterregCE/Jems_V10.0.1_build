@@ -12,7 +12,6 @@ import {ProgrammePriorityItemsComponent} from './programme-page/components/progr
 import {ProgrammePrioritySubmissionComponent} from './programme-page/components/programme-priority-submission/programme-priority-submission.component';
 import {ProgrammePolicyCheckboxComponent} from './programme-page/components/programme-priority-submission/programme-policy-checkbox/programme-policy-checkbox.component';
 import { ProgrammePriorityComponent } from './programme-page/containers/programme-priority/programme-priority.component';
-import {ProgrammeNavigationStateManagementService} from './programme-page/services/programme-navigation-state-management.service';
 
 @NgModule({
   declarations: [
@@ -24,9 +23,6 @@ import {ProgrammeNavigationStateManagementService} from './programme-page/servic
     ProgrammePolicyCheckboxComponent,
     ProgrammePolicyCheckboxComponent,
     ProgrammePriorityComponent
-  ],
-  providers: [
-    ProgrammeNavigationStateManagementService
   ],
   imports: [
     SharedModule,
