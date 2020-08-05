@@ -1,6 +1,7 @@
 <div>
     <a [routerLink]="['../../../project', projectId]">&lt; Back to Project Application Details</a>
     <div *ngIf="project$ | async as project" class="project-detail-container">
+        <h5>{{project.acronym}}</h5>
         <app-project-application-information
                 [project]="project">
         </app-project-application-information>

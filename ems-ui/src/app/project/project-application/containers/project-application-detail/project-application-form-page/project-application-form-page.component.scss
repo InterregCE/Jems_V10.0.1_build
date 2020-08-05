@@ -1,0 +1,19 @@
+.container {
+  max-width: 76%;
+  margin: 5% 12% 3%;
+  min-height: 800px;
+
+  .header {
+    display: inline-block;
+  }
+
+  .header-button {
+    margin-left: 0.5rem;
+    margin-right: 2rem;
+    margin-bottom: 0.25rem;
+  }
+
+  .button {
+    margin-right: 3rem;
+  }
+}

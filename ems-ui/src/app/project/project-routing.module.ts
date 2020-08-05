@@ -7,6 +7,7 @@ import {ProjectApplicationQualityCheckComponent} from './project-application/com
 import {ProjectApplicationEligibilityCheckComponent} from './project-application/components/project-application-detail/project-application-eligibility-check/project-application-eligibility-check.component';
 import {ProjectApplicationFundingPageComponent} from './project-application/containers/project-application-detail/project-application-funding-page/project-application-funding-page.component';
 import {ProjectApplicationEligibilityDecisionPageComponent} from './project-application/containers/project-application-detail/project-application-eligibility-decision-page/project-application-eligibility-decision-page.component';
+import {ProjectApplicationFormPageComponent} from './project-application/containers/project-application-detail/project-application-form-page/project-application-form-page.component';
 
 const routes: Routes = [
   {
@@ -38,6 +39,11 @@ const routes: Routes = [
   {
     path: 'project/:projectId/fundingDecision',
     component: ProjectApplicationFundingPageComponent,
+    canActivate: [AuthenticationGuard]
+  },
+  {
+    path: 'project/:projectId/applicationForm',
+    component: ProjectApplicationFormPageComponent,
     canActivate: [AuthenticationGuard]
   }
 ];

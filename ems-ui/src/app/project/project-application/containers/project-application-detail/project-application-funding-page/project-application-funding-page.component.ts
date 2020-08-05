@@ -22,6 +22,7 @@ export class ProjectApplicationFundingPageComponent extends BaseComponent implem
       takeUntil(this.destroyed$),
       map(project => ({
         project,
+        acronym: project.acronym,
         status: project.fundingDecision,
         statusOptions: [
           InputProjectStatus.StatusEnum.APPROVED,
