@@ -7,7 +7,6 @@ import {Tables} from '../../../../common/utils/tables';
 import {Log} from '../../../../common/utils/log';
 import {Permission} from '../../../../security/permissions/permission';
 import {BaseComponent} from '@common/components/base-component';
-import {ProgrammeNavigationStateManagementService} from '../../services/programme-navigation-state-management.service';
 
 @Component({
   selector: 'app-programme-priorities',
@@ -31,8 +30,6 @@ export class ProgrammePrioritiesComponent extends BaseComponent {
         map(sort => sort?.direction ? sort : {active: 'code', direction: 'asc'}),
         map(sort => `${sort.active},${sort.direction}`)
       ),
-      this.programmeNavigationStateManagementService.getTab()
-        .pipe(startWith(0)),
     ])
       .pipe(
         flatMap(([pageIndex, pageSize, sort]) =>
@@ -40,8 +37,7 @@ export class ProgrammePrioritiesComponent extends BaseComponent {
         tap(page => Log.info('Fetched the priorities:', this, page.content)),
       );
 
-  constructor(private programmePriorityService: ProgrammePriorityService,
-              private programmeNavigationStateManagementService: ProgrammeNavigationStateManagementService) {
+  constructor(private programmePriorityService: ProgrammePriorityService) {
     super();
   }
 }
