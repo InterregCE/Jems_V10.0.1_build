@@ -44,7 +44,7 @@ class ProjectFileControllerIntegrationTest {
     @Transactional
     @WithUserDetails(value = ADMINISTRATOR_EMAIL)
     fun `project file description set`() {
-        val call = callFactory.savePublishedCall(userFactory.adminUser)
+        val call = callFactory.savePublishedCallWithoutPolicy(userFactory.adminUser)
         val project = projectFileFactory.saveProject(userFactory.adminUser, call)
         val projectFile = projectFileFactory.saveProjectFile(project, userFactory.adminUser)
 
@@ -82,7 +82,7 @@ class ProjectFileControllerIntegrationTest {
     @Transactional
     @WithUserDetails(value = APPLICANT_USER_EMAIL)
     fun `project file not found for non-owner applicants`() {
-        val call = callFactory.savePublishedCall(userFactory.adminUser)
+        val call = callFactory.savePublishedCallWithoutPolicy(userFactory.adminUser)
         val project = projectFileFactory.saveProject(userFactory.adminUser, call)
         val projectFile = projectFileFactory.saveProjectFile(project, userFactory.adminUser)
 
@@ -111,7 +111,7 @@ class ProjectFileControllerIntegrationTest {
     @Transactional
     @WithUserDetails(value = APPLICANT_USER_EMAIL)
     fun `project file access allowed for owner applicants`() {
-        val call = callFactory.savePublishedCall(userFactory.adminUser)
+        val call = callFactory.savePublishedCallWithoutPolicy(userFactory.adminUser)
         val project = projectFileFactory.saveProject(userFactory.applicantUser, call)
 
         mockMvc.perform(

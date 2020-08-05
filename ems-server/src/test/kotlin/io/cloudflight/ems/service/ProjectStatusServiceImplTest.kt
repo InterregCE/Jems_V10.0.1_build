@@ -9,6 +9,7 @@ import io.cloudflight.ems.api.dto.ProjectEligibilityAssessmentResult
 import io.cloudflight.ems.api.dto.ProjectQualityAssessmentResult
 import io.cloudflight.ems.api.dto.user.OutputUserRole
 import io.cloudflight.ems.api.dto.user.OutputUserWithRole
+import io.cloudflight.ems.api.programme.dto.ProgrammeObjectivePolicy.DisadvantagedGroups
 import io.cloudflight.ems.entity.AuditAction
 import io.cloudflight.ems.call.entity.Call
 import io.cloudflight.ems.entity.Project
@@ -18,6 +19,7 @@ import io.cloudflight.ems.entity.User
 import io.cloudflight.ems.entity.UserRole
 import io.cloudflight.ems.exception.I18nValidationException
 import io.cloudflight.ems.exception.ResourceNotFoundException
+import io.cloudflight.ems.programme.entity.ProgrammePriorityPolicy
 import io.cloudflight.ems.repository.ProjectRepository
 import io.cloudflight.ems.repository.ProjectStatusRepository
 import io.cloudflight.ems.repository.UserRepository
@@ -87,6 +89,7 @@ internal class ProjectStatusServiceImplTest {
         id = 5,
         creator = user,
         name = "call",
+        priorityPolicies = setOf(ProgrammePriorityPolicy(DisadvantagedGroups, "DG")),
         startDate = ZonedDateTime.now(),
         endDate = ZonedDateTime.now(),
         status = CallStatus.PUBLISHED

@@ -7,6 +7,7 @@ import io.cloudflight.ems.api.dto.ProjectFileType
 import io.cloudflight.ems.api.dto.user.OutputUser
 import io.cloudflight.ems.api.dto.user.OutputUserRole
 import io.cloudflight.ems.api.dto.user.OutputUserWithRole
+import io.cloudflight.ems.api.programme.dto.ProgrammeObjectivePolicy.CircularEconomy
 import io.cloudflight.ems.dto.FileMetadata
 import io.cloudflight.ems.entity.Audit
 import io.cloudflight.ems.entity.AuditAction
@@ -18,6 +19,7 @@ import io.cloudflight.ems.entity.User
 import io.cloudflight.ems.entity.UserRole
 import io.cloudflight.ems.exception.DuplicateFileException
 import io.cloudflight.ems.exception.ResourceNotFoundException
+import io.cloudflight.ems.programme.entity.ProgrammePriorityPolicy
 import io.cloudflight.ems.repository.UserRepository
 import io.cloudflight.ems.repository.MinioStorage
 import io.cloudflight.ems.repository.ProjectFileRepository
@@ -80,6 +82,7 @@ class FileStorageServiceTest {
         id = 5,
         creator = account,
         name = "call",
+        priorityPolicies = setOf(ProgrammePriorityPolicy(CircularEconomy, "CE")),
         startDate = ZonedDateTime.now(),
         endDate = ZonedDateTime.now(),
         status = CallStatus.PUBLISHED

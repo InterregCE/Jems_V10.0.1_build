@@ -91,7 +91,8 @@ export class CallDetailComponent extends ViewEditForm implements OnInit {
       name: this.callForm?.controls?.name?.value,
       startDate: this.callForm?.controls?.startDate?.value,
       endDate: this.callForm?.controls?.endDate?.value,
-      description: this.callForm?.controls?.description?.value
+      description: this.callForm?.controls?.description?.value,
+      priorityPolicies: [],
     }
     if (!this.call.id) {
       this.create.emit(call);

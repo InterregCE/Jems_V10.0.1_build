@@ -36,7 +36,7 @@ class ProjectControllerIntegrationTest {
     @Test
     @WithUserDetails(value = ADMINISTRATOR_EMAIL)
     fun `project created`() {
-        val call = callFactory.savePublishedCall(userFactory.adminUser)
+        val call = callFactory.savePublishedCallWithoutPolicy(userFactory.adminUser)
         val inputProject = InputProject(acronym = "acronym", projectCallId = call.id)
 
         mockMvc.perform(

@@ -6,6 +6,9 @@ import io.cloudflight.ems.api.call.dto.InputCallUpdate
 import io.cloudflight.ems.api.call.dto.OutputCall
 import io.cloudflight.ems.api.dto.user.OutputUserRole
 import io.cloudflight.ems.api.dto.user.OutputUserWithRole
+import io.cloudflight.ems.api.programme.dto.OutputProgrammePriorityPolicy
+import io.cloudflight.ems.api.programme.dto.ProgrammeObjectivePolicy.AdvancedTechnologies
+import io.cloudflight.ems.api.programme.dto.ProgrammeObjectivePolicy.DigitalConnectivity
 import io.cloudflight.ems.entity.Audit
 import io.cloudflight.ems.entity.AuditAction
 import io.cloudflight.ems.call.entity.Call
@@ -15,12 +18,15 @@ import io.cloudflight.ems.exception.I18nFieldError
 import io.cloudflight.ems.exception.I18nValidationException
 import io.cloudflight.ems.exception.ResourceNotFoundException
 import io.cloudflight.ems.call.repository.CallRepository
+import io.cloudflight.ems.programme.entity.ProgrammePriorityPolicy
+import io.cloudflight.ems.programme.repository.ProgrammePriorityPolicyRepository
 import io.cloudflight.ems.repository.UserRepository
 import io.cloudflight.ems.security.model.LocalCurrentUser
 import io.cloudflight.ems.security.service.SecurityService
 import io.cloudflight.ems.security.service.authorization.AuthorizationUtil.Companion.adminUser
 import io.cloudflight.ems.security.service.authorization.AuthorizationUtil.Companion.applicantUser
 import io.cloudflight.ems.security.service.authorization.AuthorizationUtil.Companion.programmeUser
+import io.cloudflight.ems.security.service.authorization.AuthorizationUtil.Companion.userProgramme
 import io.cloudflight.ems.service.AuditService
 import io.mockk.MockKAnnotations
 import io.mockk.every
@@ -68,6 +74,7 @@ class CallServiceTest {
         id = 0,
         creator = account,
         name = "Test call name",
+        priorityPolicies = emptySet(),
         startDate = ZonedDateTime.now(),
         endDate = ZonedDateTime.now().plusDays(5L),
         status = CallStatus.DRAFT,
@@ -79,6 +86,7 @@ class CallServiceTest {
     private fun outputCallWithId(id: Long) = OutputCall(
         id = id,
         name = call.name,
+        priorityPolicies = emptyList(),
         startDate = call.startDate,
         endDate = call.endDate,
         status = call.status,
@@ -89,6 +97,8 @@ class CallServiceTest {
     lateinit var callRepository: CallRepository
     @MockK
     lateinit var userRepository: UserRepository
+    @MockK
+    lateinit var programmePriorityPolicyRepository: ProgrammePriorityPolicyRepository
     @MockK
     lateinit var securityService: SecurityService
     @RelaxedMockK
@@ -102,6 +112,7 @@ class CallServiceTest {
         callService = CallServiceImpl(
             callRepository,
             userRepository,
+            programmePriorityPolicyRepository,
             auditService,
             securityService
         )
@@ -150,12 +161,14 @@ class CallServiceTest {
     }
 
     @Test
-    fun `createCall Successful`() {
-        every { userRepository.findById(eq(user.id!!)) } returns Optional.of(account)
+    fun `createCall Successful empty policies`() {
+        every { securityService.currentUser } returns adminUser
+        every { userRepository.findById(eq(adminUser.user.id!!)) } returns Optional.of(account)
         every { callRepository.save(any<Call>()) } returnsArgument 0
 
         val newCall = InputCallCreate(
             name = call.name,
+            priorityPolicies = null,
             startDate = call.startDate,
             endDate = call.endDate,
             description = call.description
@@ -170,11 +183,51 @@ class CallServiceTest {
     }
 
     @Test
+    fun `createCall Successful with policies`() {
+        every { securityService.currentUser } returns adminUser
+        every { userRepository.findById(eq(adminUser.user.id!!)) } returns Optional.of(account)
+        every { callRepository.save(any<Call>()) } returnsArgument 0
+        every { programmePriorityPolicyRepository.findById(eq(AdvancedTechnologies)) } returns
+            Optional.of(ProgrammePriorityPolicy(programmeObjectivePolicy = AdvancedTechnologies, code = "AT"))
+
+        val newCall = InputCallCreate(
+            name = call.name,
+            priorityPolicies = setOf(AdvancedTechnologies),
+            startDate = call.startDate,
+            endDate = call.endDate
+        )
+
+        val result = callService.createCall(newCall)
+        assertThat(result.name).isEqualTo(call.name)
+        assertThat(result.priorityPolicies).isEqualTo(listOf(OutputProgrammePriorityPolicy(AdvancedTechnologies, "AT")))
+        assertThat(result.status).isEqualTo(CallStatus.DRAFT)
+    }
+
+    @Test
+    fun `createCall Unsuccessful with not existing policies`() {
+        every { securityService.currentUser } returns adminUser
+        every { userRepository.findById(eq(adminUser.user.id!!)) } returns Optional.of(account)
+        every { callRepository.save(any<Call>()) } returnsArgument 0
+        every { programmePriorityPolicyRepository.findById(eq(DigitalConnectivity)) } returns Optional.empty()
+
+        val newCall = InputCallCreate(
+            name = call.name,
+            priorityPolicies = setOf(DigitalConnectivity),
+            startDate = call.startDate,
+            endDate = call.endDate
+        )
+
+        val exception = assertThrows<ResourceNotFoundException> { callService.createCall(newCall) }
+        assertThat(exception.entity).isEqualTo("programme_priority_policy")
+    }
+
+    @Test
     fun `createCall no user`() {
         every { userRepository.findById(eq(user.id!!)) } returns Optional.empty()
 
         val newCall = InputCallCreate(
             name = call.name,
+            priorityPolicies = null,
             startDate = call.startDate,
             endDate = call.endDate,
             description = call.description
@@ -191,9 +244,13 @@ class CallServiceTest {
         every { callRepository.findById(eq(existingId)) } returns Optional.of(callWithId(existingId))
         every { callRepository.save(any<Call>()) } returnsArgument 0
 
+        val programmePriorityPolicy = ProgrammePriorityPolicy(programmeObjectivePolicy = AdvancedTechnologies, code = "AT")
+        every { programmePriorityPolicyRepository.findById(eq(AdvancedTechnologies)) } returns Optional.of(programmePriorityPolicy)
+
         val newDataForCall = InputCallUpdate(
             id = existingId,
             name = "new name",
+            priorityPolicies = setOf(AdvancedTechnologies),
             startDate = startDate,
             endDate = endDate,
             description = "new description"
@@ -202,6 +259,7 @@ class CallServiceTest {
 
         val result = callService.updateCall(newDataForCall)
         assertThat(result.name).isEqualTo("new name")
+        assertThat(result.priorityPolicies).isEqualTo(listOf(OutputProgrammePriorityPolicy(programmeObjectivePolicy = AdvancedTechnologies, code = "AT")))
         assertThat(result.startDate).isEqualTo(startDate)
         assertThat(result.endDate).isEqualTo(endDate)
         assertThat(result.description).isEqualTo("new description")
@@ -219,6 +277,7 @@ class CallServiceTest {
         val newDataForCall = InputCallUpdate(
             id = ID_10,
             name = "existing name",
+            priorityPolicies = emptySet(),
             startDate = startDate,
             endDate = endDate,
             description = "new description"
@@ -244,6 +303,7 @@ class CallServiceTest {
         val newDataForCall = InputCallUpdate(
             id = existingId,
             name = call.name, // no change
+            priorityPolicies = emptySet(),
             startDate = startDate,
             endDate = endDate,
             description = "new description"
@@ -265,6 +325,7 @@ class CallServiceTest {
         val newCall = InputCallUpdate(
             id = notExistingId,
             name = call.name,
+            priorityPolicies = emptySet(),
             startDate = call.startDate,
             endDate = call.endDate,
             description = call.description
@@ -276,14 +337,17 @@ class CallServiceTest {
     @Test
     fun `publishCall not existing`() {
         every { callRepository.findById(eq(-1)) } returns Optional.empty()
-        assertThrows<ResourceNotFoundException> { callService.publishCall(-1) }
+        val exception = assertThrows<ResourceNotFoundException> { callService.publishCall(-1) }
+        assertThat(exception.entity).isEqualTo("call")
     }
 
     @Test
     fun `publishCall Successful`() {
         val existingId = 1L
+        val policies = setOf(ProgrammePriorityPolicy(programmeObjectivePolicy = AdvancedTechnologies, code = "AT"))
+
         every { callRepository.findById(eq(existingId)) } returns
-            Optional.of(callWithId(existingId).copy(status = CallStatus.DRAFT))
+            Optional.of(callWithId(existingId).copy(status = CallStatus.DRAFT, priorityPolicies = policies))
         every { callRepository.save(any<Call>()) } returnsArgument 0
 
         val result = callService.publishCall(existingId)
@@ -308,6 +372,22 @@ class CallServiceTest {
         val expectedException = I18nValidationException(
             httpStatus = HttpStatus.UNPROCESSABLE_ENTITY,
             i18nKey = "call.state.cannot.publish"
+        )
+        val exception = assertThrows<I18nValidationException> { callService.publishCall(existingId) }
+        assertThat(exception).isEqualTo(expectedException)
+    }
+
+    @Test
+    fun `publishCall empty policies`() {
+        val existingId = 1L
+        val policies = emptySet<ProgrammePriorityPolicy>()
+        every { callRepository.findById(eq(existingId)) } returns
+            Optional.of(callWithId(existingId).copy(status = CallStatus.DRAFT, priorityPolicies = policies))
+        every { callRepository.save(any<Call>()) } returnsArgument 0
+
+        val expectedException = I18nValidationException(
+            httpStatus = HttpStatus.UNPROCESSABLE_ENTITY,
+            i18nKey = "call.priorityPolicies.is.empty"
         )
         val exception = assertThrows<I18nValidationException> { callService.publishCall(existingId) }
         assertThat(exception).isEqualTo(expectedException)

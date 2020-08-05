@@ -32,6 +32,7 @@ class CallControllerIntegrationTest {
     fun `create call`() {
         val call = InputCallCreate(
             "New Call",
+            null,
             ZonedDateTime.now(),
             ZonedDateTime.now().plusDays(3L),
             "Short description"

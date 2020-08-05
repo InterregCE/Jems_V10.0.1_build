@@ -38,6 +38,7 @@ internal class CallAuthorizationTest {
     private fun dummyCallWithStatus(status: CallStatus) = OutputCall(
         id = 1,
         name = "test call",
+        priorityPolicies = emptyList(),
         status = status,
         startDate = ZonedDateTime.now().minusDays(2),
         endDate = ZonedDateTime.now().plusDays(2)
