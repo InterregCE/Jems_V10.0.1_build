@@ -15,7 +15,7 @@ export class AppComponent {
               private router: Router) {
     this.router.routeReuseStrategy.shouldReuseRoute = () => false;
     translate.setDefaultLang('en');
-    translate.addLangs(['en', 'de']);
+    translate.addLangs(['en', 'de', 'ja_JP']);
     translate.use('en');
     this.titleService.setTitle('Ems');
   }

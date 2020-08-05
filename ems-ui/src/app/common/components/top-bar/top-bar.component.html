@@ -6,19 +6,21 @@
                 <app-menu [items]="menuItems | async"></app-menu>
             </span>
             <app-help-menu></app-help-menu>
+        </ng-container>
+
+        <mat-select #langSelect
+                    class="language-select"
+                    [value]="translate.currentLang"
+                    (selectionChange)="changeLanguage(langSelect.value)">
+            <mat-option *ngFor="let lang of translate.getLangs()" [value]="lang">
+                <mat-label>{{'language.' + lang | translate}}</mat-label>
+            </mat-option>
+        </mat-select>
+
+        <ng-container *ngIf="currentUser | async as user">
             <span class="d-inline-block">
                 <button mat-flat-button (click)="logout()">Logout</button>
             </span>
         </ng-container>
     </div>
-    <!--    <mat-select #langSelect-->
-    <!--                class="language-select"-->
-    <!--                [value]="translate.currentLang"-->
-    <!--                (selectionChange)="changeLanguage(langSelect.value)">-->
-    <!--        <mat-option-->
-    <!--                *ngFor="let lang of translate.getLangs()"-->
-    <!--                [value]="lang">-->
-    <!--            {{ lang }}-->
-    <!--        </mat-option>-->
-    <!--    </mat-select>-->
 </div>
