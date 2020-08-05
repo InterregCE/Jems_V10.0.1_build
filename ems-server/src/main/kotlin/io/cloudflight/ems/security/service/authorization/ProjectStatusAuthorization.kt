@@ -10,7 +10,6 @@ import io.cloudflight.ems.api.dto.ProjectApplicationStatus.APPROVED_WITH_CONDITI
 import io.cloudflight.ems.api.dto.ProjectApplicationStatus.NOT_APPROVED
 import io.cloudflight.ems.api.dto.ProjectApplicationStatus.RETURNED_TO_APPLICANT
 import io.cloudflight.ems.api.dto.ProjectApplicationStatus.SUBMITTED
-import io.cloudflight.ems.exception.ResourceNotFoundException
 import io.cloudflight.ems.security.service.SecurityService
 import io.cloudflight.ems.service.ProjectService
 import org.springframework.stereotype.Component
@@ -50,7 +49,7 @@ class ProjectStatusAuthorization(
     }
 
     private fun returned(oldStatus: ProjectApplicationStatus, newStatus: ProjectApplicationStatus): Boolean {
-        val oldPossibilities = setOf(SUBMITTED, ELIGIBLE, INELIGIBLE, APPROVED_WITH_CONDITIONS)
+        val oldPossibilities = setOf(SUBMITTED, ELIGIBLE, APPROVED_WITH_CONDITIONS)
         return oldPossibilities.contains(oldStatus) && newStatus == RETURNED_TO_APPLICANT
     }
 

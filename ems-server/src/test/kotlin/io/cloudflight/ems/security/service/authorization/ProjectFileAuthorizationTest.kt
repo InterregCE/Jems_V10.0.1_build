@@ -264,7 +264,6 @@ internal class ProjectFileAuthorizationTest {
             SUBMITTED,
             RETURNED_TO_APPLICANT,
             ELIGIBLE,
-            INELIGIBLE,
             APPROVED_WITH_CONDITIONS
         ).forEach {
             every { projectService.getById(eq(315)) } returns getProject(315, 42, it)
@@ -295,23 +294,44 @@ internal class ProjectFileAuthorizationTest {
             assertThat(exception.entity).isEqualTo("project")
         }
 
+    }
+
+    @Test
+    fun `canChangeFile programme user ASSESSMENT FILE finalized status`() {
+
         listOf(
             APPROVED,
             NOT_APPROVED
         ).forEach {
-            every { projectService.getById(eq(200)) } returns getProject(200, 42, it)
-            every { projectAuthorization.canReadProject(eq(200))} returns true
+            val fundingDecision = OutputProjectStatus(id = null, status = it, updated = toZonedDate(year2008), user = OutputUser(null, "", "", ""))
+            every { projectService.getById(eq(210)) } returns getProject(210, 42, it).copy(fundingDecision = fundingDecision)
+            every { projectAuthorization.canReadProject(eq(210))} returns true
 
-            if (file.type == ProjectFileType.ASSESSMENT_FILE)
-                assertFalse(projectFileAuthorization.canChangeFile(200, file.id!!),
-                    "${programmeUser.user.email} CAN NOT change ${file.type} when project status is $it")
-            else {
-                val exception = assertThrows<ResourceNotFoundException>(
-                    "${programmeUser.user.email} CAN NOT even retrieve ${file.type} when project status is $it"
-                ) { projectFileAuthorization.canChangeFile(200, file.id!!) }
-                assertThat(exception.entity).isEqualTo("project_file")
-            }
+            var file = assessmentFile2005
+            assertFalse(projectFileAuthorization.canChangeFile(210, file.id!!),
+                "${programmeUser.user.email} CAN NOT change ${file.type}, because it was uploaded before final $it decision")
+
+            file = assessmentFile2011
+            assertTrue(projectFileAuthorization.canChangeFile(210, file.id!!),
+                "${programmeUser.user.email} CAN change ${file.type}, because it was uploaded after final $it decision")
         }
+
+        listOf(
+            INELIGIBLE
+        ).forEach {
+            val eligibilityDecision = OutputProjectStatus(id = null, status = it, updated = toZonedDate(year2008), user = OutputUser(null, "", "", ""))
+            every { projectService.getById(eq(220)) } returns getProject(220, 42, it).copy(eligibilityDecision = eligibilityDecision)
+            every { projectAuthorization.canReadProject(eq(220))} returns true
+
+            var file = assessmentFile2005
+            assertFalse(projectFileAuthorization.canChangeFile(220, file.id!!),
+                "${programmeUser.user.email} CAN NOT change ${file.type}, because it was uploaded before final $it decision")
+
+            file = assessmentFile2011
+            assertTrue(projectFileAuthorization.canChangeFile(220, file.id!!),
+                "${programmeUser.user.email} CAN change ${file.type}, because it was uploaded after final $it decision")
+        }
+
     }
 
     @Test
