@@ -41,6 +41,7 @@ export class ProjectApplicationFundingDecisionComponent extends AbstractForm imp
   dateErrors = {
     required: 'project.decision.date.unknown',
     matDatepickerMax: 'project.decision.date.must.be.in.the.past',
+    matDatepickerMin: 'project.decision.date.must.be.after.eligibility.date',
     matDatepickerParse: 'common.date.should.be.valid'
   };
 
