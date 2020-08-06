@@ -18,6 +18,7 @@ import {MatIconModule} from '@angular/material/icon';
 import {HelpMenuComponent} from '@common/components/top-bar/help-menu/help-menu.component';
 import {AlertComponent} from '@common/components/forms/form-validation/alert.component';
 import {MatSortHeader} from '@angular/material/sort';
+import {MatSelectModule} from '@angular/material/select';
 import {TabService} from './services/tab.service';
 
 const declarations = [
@@ -39,6 +40,7 @@ const declarations = [
     MatDialogModule,
     MatMenuModule,
     MatIconModule,
+    MatSelectModule,
   ],
   providers: [
     SecurityService,

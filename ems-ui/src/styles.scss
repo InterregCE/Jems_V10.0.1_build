@@ -303,6 +303,13 @@ body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
   }
 }
 
+app-top-bar {
+  .mat-select-value,
+  .mat-select-arrow {
+    color: white;
+  }
+}
+
 .top-bar-nav {
   .mat-tab-link-active,
   .mat-tab-label-active {
