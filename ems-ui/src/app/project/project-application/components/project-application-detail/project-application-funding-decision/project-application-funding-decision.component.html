@@ -14,6 +14,12 @@
                 name="notes-{{status?.status}}"
                 [readonly]="!!status">
         </textarea>
+        <mat-error>
+            <app-form-field-errors
+                    [errors]="decisionForm?.controls?.notes?.errors"
+                    [messages]="noteErrors">
+            </app-form-field-errors>
+        </mat-error>
     </mat-form-field>
     <mat-form-field class="assessment-date-picker">
         <mat-label>Decision Date</mat-label>

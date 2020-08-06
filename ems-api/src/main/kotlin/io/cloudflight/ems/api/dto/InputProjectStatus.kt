@@ -10,7 +10,7 @@ data class InputProjectStatus(
     @field:NotNull(message = "project.status.status.should.not.be.empty")
     val status: ProjectApplicationStatus?,
 
-    @field:Size(max = 255, message = "project.status.note.size.too.long")
+    @field:Size(max = 10000, message = "project.status.note.size.too.long")
     val note: String?,
 
     @field:PastOrPresent(message = "project.status.date.should.be.in.past.or.present")

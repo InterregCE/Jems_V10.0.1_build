@@ -44,10 +44,13 @@ export class ProjectApplicationFundingDecisionComponent extends AbstractForm imp
     matDatepickerMin: 'project.decision.date.must.be.after.eligibility.date',
     matDatepickerParse: 'common.date.should.be.valid'
   };
+  noteErrors = {
+    maxlength: 'project.decision.notes.too.long'
+  }
 
   decisionForm = this.formBuilder.group({
     status: ['', Validators.required],
-    notes: ['', Validators.maxLength(1000)],
+    notes: ['', Validators.maxLength(10000)],
     decisionDate: ['', Validators.required]
   });
 
