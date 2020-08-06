@@ -1,5 +1,5 @@
-<h5 *ngxPermissionsExcept="Permission.APPLICANT_USER">List of projects</h5>
-<p *ngIf="!projectPage?.content.length">No projects submitted</p>
+<h5 *ngxPermissionsExcept="Permission.APPLICANT_USER">{{'project.list.header' | translate}}</h5>
+<p *ngIf="!projectPage?.content.length">{{'project.list.empty' | translate}}</p>
 <app-table *ngIf="projectPage.content.length"
            [configuration]="tableConfiguration"
            [rows]="projectPage.content"

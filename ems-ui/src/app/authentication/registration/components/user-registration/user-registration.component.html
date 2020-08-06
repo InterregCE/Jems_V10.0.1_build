@@ -1,14 +1,15 @@
 <div class="container vertical-center user-registration-container">
     <mat-card>
         <div class="container form-container">
-            <h5>Create new user</h5>
-            <mat-card-subtitle>Register new applicant user account</mat-card-subtitle>
+            <h5>{{'user.registration.title' | translate}}</h5>
+            <mat-card-subtitle>{{'user.registration.subtitle' | translate}}</mat-card-subtitle>
             <mat-card-content>
                 <form class="user-form" [formGroup]="userForm">
 
                     <mat-form-field class="user-registration-field">
-                        <mat-label>Name</mat-label>
-                        <input name="name" formControlName="name" matInput placeholder="Name" required>
+                        <mat-label>{{'user.registration.field.name' | translate}}</mat-label>
+                        <input name="name" formControlName="name" matInput
+                               placeholder="{{'user.registration.field.name' | translate}}" required>
                         <mat-error>
                             <app-form-field-errors
                                     [errors]="userForm?.controls?.name?.errors"
@@ -19,8 +20,9 @@
 
 
                     <mat-form-field class="user-registration-field">
-                        <mat-label>Surname</mat-label>
-                        <input name="surname" formControlName="surname" matInput placeholder="Surname" required>
+                        <mat-label>{{'user.registration.field.surname' | translate}}</mat-label>
+                        <input name="surname" formControlName="surname" matInput
+                               placeholder="{{'user.registration.field.surname' | translate}}" required>
                         <mat-error>
                             <app-form-field-errors
                                     [errors]="userForm?.controls?.surname?.errors"
@@ -31,8 +33,9 @@
 
 
                     <mat-form-field class="user-registration-field">
-                        <mat-label>Email</mat-label>
-                        <input name="email" formControlName="email" matInput placeholder="Email" required>
+                        <mat-label>{{'user.registration.field.email' | translate}}</mat-label>
+                        <input name="email" formControlName="email" matInput
+                               placeholder="{{'user.registration.field.email' | translate}}" required>
                         <mat-error>
                             <app-form-field-errors
                                     [errors]="userForm?.controls?.email?.errors"
@@ -43,13 +46,13 @@
 
 
                     <mat-form-field class="user-registration-field">
-                        <mat-label>Password</mat-label>
+                        <mat-label>{{'user.registration.field.password' | translate}}</mat-label>
                         <input [type]="hide ? 'password' : 'text'" name="password" formControlName="password" matInput
-                               placeholder="Password" required>
+                               placeholder="{{'user.registration.field.password' | translate}}" required>
                         <button mat-icon-button matSuffix (click)="hide = !hide" [attr.aria-label]="'Hide password'"
                                 [attr.aria-pressed]="hide">
-                            <i *ngIf="hide" class="far fa-eye"></i>
-                            <i *ngIf="!hide" class="far fa-eye-slash"></i>
+                            <em *ngIf="hide" class="far fa-eye"></em>
+                            <em *ngIf="!hide" class="far fa-eye-slash"></em>
                         </button>
                         <mat-error>
                             <app-form-field-errors
@@ -57,20 +60,20 @@
                                     [messages]="passwordErrors">
                             </app-form-field-errors>
                         </mat-error>
-                        <mat-hint>10 characters minimum. Passwords are case sensitive.</mat-hint>
+                        <mat-hint>{{'user.registration.field.password.hint' | translate}}</mat-hint>
                     </mat-form-field>
                     <button mat-raised-button
                             color="secondary"
                             class="cancel-button"
                             (click)="redirectToLogin()">
-                        Cancel
+                        {{'user.registration.button.cancel' | translate}}
                     </button>
                     <button mat-raised-button
                             color="primary"
                             (click)="onSubmit()"
                             class="register-button"
                             [disabled]="userForm.invalid || submitted">
-                        Register
+                        {{'user.registration.button.register' | translate}}
                     </button>
                     <app-alert
                             [show]="showSuccessMessage$ | async"
