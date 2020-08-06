@@ -8,7 +8,7 @@ import {
   Output
 } from '@angular/core';
 import {ViewEditForm} from '@common/components/forms/view-edit-form';
-import {FormBuilder, FormControl, FormGroup, Validators} from '@angular/forms';
+import {FormBuilder, FormGroup, Validators} from '@angular/forms';
 import {MatDialog} from '@angular/material/dialog';
 import {Forms} from '../../../../common/utils/forms';
 import {filter, take, takeUntil} from 'rxjs/operators';
@@ -32,7 +32,8 @@ export class ProgrammeDataComponent extends ViewEditForm implements OnInit {
     cci: ['', Validators.maxLength(15)],
     title: ['', Validators.maxLength(255)],
     version: ['', Validators.maxLength(255)],
-    firstYear: ['', Validators.compose([Validators.max(9999), Validators.min(1000)])],
+    firstYear: ['', Validators.compose([Validators.max(9999), Validators.min(1000)]),
+    ],
     lastYear: ['', Validators.compose([Validators.max(9999), Validators.min(1000)])],
     eligibleFrom: [''],
     eligibleUntil: [''],
@@ -40,6 +41,8 @@ export class ProgrammeDataComponent extends ViewEditForm implements OnInit {
     commissionDecisionDate: [''],
     programmeAmendingDecisionNumber: ['', Validators.maxLength(255)],
     programmeAmendingDecisionDate: [''],
+  }, {
+    validator: this.firstYearBeforeLastYear
   });
 
   cciErrors = {
@@ -148,10 +151,25 @@ export class ProgrammeDataComponent extends ViewEditForm implements OnInit {
     });
   }
 
-  getSizedValue(value: string) {
+  private getSizedValue(value: string): string {
     if (value && value.length > 30) {
       return value.substring(0, 30) + '...';
     }
     return value;
+  }
+
+  firstYearBeforeLastYear(group: FormGroup): any {
+    const lastYear = group.controls.lastYear;
+    const firstYear = group.controls.firstYear;
+
+    group.markAsTouched();
+
+    if (!firstYear.value || !lastYear.value || firstYear.value <= lastYear.value) {
+      return null;
+    }
+
+    return {
+      lastYearBeforeFirstYear: true
+    };
   }
 }
