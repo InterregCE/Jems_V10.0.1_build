@@ -17,7 +17,7 @@ enum class ProjectApplicationStatus {
         }
 
         fun isNotFinallyFunded(status: ProjectApplicationStatus): Boolean {
-            return status != APPROVED && status != NOT_APPROVED
+            return status != APPROVED && status != NOT_APPROVED && status != INELIGIBLE
         }
 
         fun wasSubmittedAtLeastOnce(status: ProjectApplicationStatus): Boolean {

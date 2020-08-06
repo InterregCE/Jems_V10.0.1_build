@@ -1,10 +1,16 @@
 package io.cloudflight.ems.security.service.authorization
 
 import io.cloudflight.ems.api.dto.OutputProject
+import io.cloudflight.ems.api.dto.OutputProjectFile
+import io.cloudflight.ems.api.dto.ProjectApplicationStatus.APPROVED
+import io.cloudflight.ems.api.dto.ProjectApplicationStatus.INELIGIBLE
+import io.cloudflight.ems.api.dto.ProjectApplicationStatus.NOT_APPROVED
 import io.cloudflight.ems.api.dto.ProjectApplicationStatus.Companion.isNotFinallyFunded
 import io.cloudflight.ems.api.dto.ProjectApplicationStatus.Companion.isNotSubmittedNow
 import io.cloudflight.ems.api.dto.ProjectApplicationStatus.Companion.wasSubmittedAtLeastOnce
 import io.cloudflight.ems.api.dto.ProjectFileType
+import io.cloudflight.ems.api.dto.ProjectFileType.APPLICANT_FILE
+import io.cloudflight.ems.api.dto.ProjectFileType.ASSESSMENT_FILE
 import io.cloudflight.ems.exception.ResourceNotFoundException
 import io.cloudflight.ems.security.service.SecurityService
 import io.cloudflight.ems.service.FileStorageService
@@ -28,13 +34,11 @@ class ProjectFileAuthorization(
         val project = projectService.getById(projectId)
         val status = project.projectStatus.status
 
-        if (fileType == ProjectFileType.APPLICANT_FILE)
-            return isOwner(project) && isNotSubmittedNow(status)
-
-        if (fileType == ProjectFileType.ASSESSMENT_FILE)
-            return isProgrammeUser()
-
-        return false
+        return when (fileType) {
+            APPLICANT_FILE -> isOwner(project) && isNotSubmittedNow(status)
+            ASSESSMENT_FILE -> isProgrammeUser()
+            else -> false
+        }
     }
 
     fun canChangeFile(projectId: Long, fileId: Long): Boolean {
@@ -43,23 +47,41 @@ class ProjectFileAuthorization(
 
         projectAuthorization.canReadProject(projectId)
         val project = projectService.getById(projectId)
-        val status = project.projectStatus.status
         val file = fileStorageService.getFileDetail(projectId, fileId)
-        val lastSubmission = getLastSubmissionFor(project)
 
-        if (file.type == ProjectFileType.APPLICANT_FILE)
-            if (isOwner(project))
-                return isNotSubmittedNow(status) && file.updated.isAfter(lastSubmission)
-            else
-                throw ResourceNotFoundException("project_file")
+        return when (file.type) {
+            APPLICANT_FILE -> canChangeApplicantProjectFile(project, file)
+            ASSESSMENT_FILE -> canChangeAssessmentProjectFile(project, file)
+            else -> false
+        }
+    }
 
-        if (file.type == ProjectFileType.ASSESSMENT_FILE)
-            if (isProgrammeUser())
-                return isNotFinallyFunded(status) && wasSubmittedAtLeastOnce(status)
-            else
-                throw ResourceNotFoundException("project_file")
+    private fun canChangeApplicantProjectFile(project: OutputProject, file: OutputProjectFile): Boolean {
+        val status = project.projectStatus.status
+        if (isOwner(project))
+            return isNotSubmittedNow(status) && file.updated.isAfter(getLastSubmissionFor(project))
+        else
+            throw ResourceNotFoundException("project_file")
+    }
 
-        return false
+    private fun canChangeAssessmentProjectFile(project: OutputProject, file: OutputProjectFile): Boolean {
+        val status = project.projectStatus.status
+        if (isProgrammeUser()) {
+            return when {
+
+                isNotFinallyFunded(status) ->
+                    wasSubmittedAtLeastOnce(status)
+
+                status == APPROVED || status == NOT_APPROVED ->
+                    file.updated.isAfter(project.fundingDecision!!.updated)
+
+                status == INELIGIBLE ->
+                    file.updated.isAfter(project.eligibilityDecision!!.updated)
+
+                else -> false
+            }
+        } else
+            throw ResourceNotFoundException("project_file")
     }
 
     fun canDownloadFile(projectId: Long, fileId: Long): Boolean {
@@ -71,7 +93,7 @@ class ProjectFileAuthorization(
         val file = fileStorageService.getFileDetail(projectId, fileId)
 
         if (isOwner(project))
-            if (file.type == ProjectFileType.APPLICANT_FILE)
+            if (file.type == APPLICANT_FILE)
                 return true
             else
                 throw ResourceNotFoundException("project_file")
@@ -88,15 +110,11 @@ class ProjectFileAuthorization(
 
         projectAuthorization.canReadProject(projectId)
 
-        if (fileType == ProjectFileType.ASSESSMENT_FILE)
-            return isProgrammeUser()
-
-        val project = projectService.getById(projectId)
-
-        if (fileType == ProjectFileType.APPLICANT_FILE)
-            return isOwner(project) || isProgrammeUser()
-
-        return false
+        return when (fileType) {
+            ASSESSMENT_FILE -> isProgrammeUser()
+            APPLICANT_FILE -> isProgrammeUser() || isOwner(projectService.getById(projectId))
+            else -> false
+        }
     }
 
     /**
