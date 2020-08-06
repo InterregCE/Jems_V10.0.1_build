@@ -1,6 +1,7 @@
 package io.cloudflight.ems.api.call.dto
 
 import io.cloudflight.ems.api.call.validator.UniqueCallName
+import io.cloudflight.ems.api.programme.dto.ProgrammeObjectivePolicy
 import java.time.ZonedDateTime
 import javax.validation.constraints.NotBlank
 import javax.validation.constraints.NotNull
@@ -13,6 +14,8 @@ data class InputCallCreate (
     @UniqueCallName
     val name: String?,
 
+    val priorityPolicies: Set<ProgrammeObjectivePolicy>?,
+
     @field:NotNull(message = "call.startDate.unknown")
     val startDate: ZonedDateTime?,
 
@@ -20,6 +23,6 @@ data class InputCallCreate (
     val endDate: ZonedDateTime?,
 
     @field:Size(max = 1000, message = "call.description.wrong.size")
-    val description: String?
+    val description: String? = null
 
 )

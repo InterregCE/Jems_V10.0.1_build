@@ -4,12 +4,15 @@ import io.cloudflight.ems.api.call.dto.CallStatus
 import io.cloudflight.ems.api.call.dto.InputCallCreate
 import io.cloudflight.ems.api.call.dto.InputCallUpdate
 import io.cloudflight.ems.api.call.dto.OutputCall
+import io.cloudflight.ems.api.programme.dto.ProgrammeObjectivePolicy
 import io.cloudflight.ems.entity.Audit
 import io.cloudflight.ems.call.entity.Call
 import io.cloudflight.ems.exception.I18nFieldError
 import io.cloudflight.ems.exception.I18nValidationException
 import io.cloudflight.ems.exception.ResourceNotFoundException
 import io.cloudflight.ems.call.repository.CallRepository
+import io.cloudflight.ems.programme.entity.ProgrammePriorityPolicy
+import io.cloudflight.ems.programme.repository.ProgrammePriorityPolicyRepository
 import io.cloudflight.ems.repository.UserRepository
 import io.cloudflight.ems.security.APPLICANT_USER
 import io.cloudflight.ems.security.service.SecurityService
@@ -24,6 +27,7 @@ import org.springframework.transaction.annotation.Transactional
 class CallServiceImpl(
     private val callRepository: CallRepository,
     private val userRepository: UserRepository,
+    private val programmePriorityPolicyRepository: ProgrammePriorityPolicyRepository,
     private val auditService: AuditService,
     private val securityService: SecurityService
 ) : CallService {
@@ -48,7 +52,12 @@ class CallServiceImpl(
     override fun createCall(inputCall: InputCallCreate): OutputCall {
         val creator = userRepository.findById(securityService.currentUser?.user?.id!!)
             .orElseThrow { ResourceNotFoundException() }
-        return callRepository.save(inputCall.toEntity(creator)).toOutputCall()
+        return callRepository.save(inputCall
+            .toEntity(
+                creator = creator,
+                priorityPolicies = inputCall.priorityPolicies?.let { getPoliciesAsEntities(it) } ?: emptySet()
+            )
+        ).toOutputCall()
     }
 
     @Transactional
@@ -58,9 +67,10 @@ class CallServiceImpl(
 
         val toUpdate = oldCall.copy(
             name = getCallNameIfUnique(oldCall, inputCall.name!!),
+            priorityPolicies = getPoliciesAsEntities(inputCall.priorityPolicies!!),
             startDate = inputCall.startDate!!,
             endDate = inputCall.endDate!!,
-            description = inputCall.description!!
+            description = inputCall.description
         )
 
         return callRepository.save(toUpdate).toOutputCall()
@@ -80,16 +90,20 @@ class CallServiceImpl(
         )
     }
 
+    private fun getPoliciesAsEntities(policies: Iterable<ProgrammeObjectivePolicy>): Set<ProgrammePriorityPolicy> {
+        return policies.map {
+            programmePriorityPolicyRepository.findById(it)
+                .orElseThrow { ResourceNotFoundException("programme_priority_policy") }
+        }.toSet()
+    }
+
     @Transactional
     override fun publishCall(callId: Long): OutputCall {
         val call = callRepository.findById(callId)
             .orElseThrow { ResourceNotFoundException("call") }
 
-        if (call.status != CallStatus.DRAFT)
-            throw I18nValidationException(
-                httpStatus = HttpStatus.UNPROCESSABLE_ENTITY,
-                i18nKey = "call.state.cannot.publish"
-            )
+        validateIsDraft(call)
+        validatePoliciesNotEmpty(call)
 
         val updatedCall = callRepository.save(call.copy(status = CallStatus.PUBLISHED)).toOutputCall()
 
@@ -100,6 +114,22 @@ class CallServiceImpl(
             )
         )
         return updatedCall
+    }
+
+    private fun validateIsDraft(call: Call) {
+        if (call.status != CallStatus.DRAFT)
+            throw I18nValidationException(
+                httpStatus = HttpStatus.UNPROCESSABLE_ENTITY,
+                i18nKey = "call.state.cannot.publish"
+            )
+    }
+
+    private fun validatePoliciesNotEmpty(call: Call) {
+        if (call.priorityPolicies.isEmpty())
+            throw I18nValidationException(
+                httpStatus = HttpStatus.UNPROCESSABLE_ENTITY,
+                i18nKey = "call.priorityPolicies.is.empty"
+            )
     }
 
     @Transactional(readOnly = true)

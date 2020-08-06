@@ -6,11 +6,14 @@ import io.cloudflight.ems.api.call.dto.OutputCall
 import io.cloudflight.ems.api.call.dto.OutputCallSimple
 import io.cloudflight.ems.call.entity.Call
 import io.cloudflight.ems.entity.User
+import io.cloudflight.ems.programme.entity.ProgrammePriorityPolicy
+import io.cloudflight.ems.programme.service.toOutputProgrammePriorityPolicy
 
-fun InputCallCreate.toEntity(creator: User) = Call(
+fun InputCallCreate.toEntity(creator: User, priorityPolicies: Set<ProgrammePriorityPolicy>) = Call(
     id = null,
-    name = name!!,
     creator = creator,
+    name = name!!,
+    priorityPolicies = priorityPolicies,
     status = CallStatus.DRAFT,
     startDate = startDate!!,
     endDate = endDate!!,
@@ -20,6 +23,7 @@ fun InputCallCreate.toEntity(creator: User) = Call(
 fun Call.toOutputCall() = OutputCall(
     id = id,
     name = name,
+    priorityPolicies = priorityPolicies.map { it.toOutputProgrammePriorityPolicy() },
     status = status,
     startDate = startDate,
     endDate = endDate,

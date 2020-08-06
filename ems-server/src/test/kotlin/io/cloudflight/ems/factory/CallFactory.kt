@@ -19,7 +19,7 @@ class CallFactory(
     val callEnd = ZonedDateTime.now().plusDays(20)
 
     @Transactional
-    fun savePublishedCall(user: User): Call {
+    fun savePublishedCallWithoutPolicy(user: User): Call {
         val call = callRepository.findOneByName(callName)
         if (call != null)
             return call
@@ -28,6 +28,7 @@ class CallFactory(
                 null,
                 user,
                 callName,
+                emptySet(),
                 callStart,
                 callEnd,
                 CallStatus.PUBLISHED
