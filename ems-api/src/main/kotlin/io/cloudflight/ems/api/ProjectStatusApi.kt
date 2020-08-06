@@ -3,10 +3,13 @@ package io.cloudflight.ems.api
 import io.cloudflight.ems.api.dto.InputProjectEligibilityAssessment
 import io.cloudflight.ems.api.dto.InputProjectQualityAssessment
 import io.cloudflight.ems.api.dto.InputProjectStatus
+import io.cloudflight.ems.api.dto.InputRevertProjectStatus
 import io.cloudflight.ems.api.dto.OutputProject
+import io.cloudflight.ems.api.dto.OutputRevertProjectStatus
 import io.swagger.annotations.Api
 import io.swagger.annotations.ApiOperation
 import org.springframework.http.MediaType
+import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.PutMapping
@@ -29,4 +32,13 @@ interface ProjectStatusApi {
     @ApiOperation("Set eligibility assessment result to project application")
     @PostMapping("/eligibility", consumes = [MediaType.APPLICATION_JSON_VALUE])
     fun setEligibilityAssessment(@PathVariable id: Long, @Valid @RequestBody data: InputProjectEligibilityAssessment): OutputProject
+
+    @ApiOperation("Recheck possibility to revert the last decision made (eligibility decision, funding decision)")
+    @GetMapping("/revert")
+    fun findPossibleDecisionRevertStatus(@PathVariable id: Long): OutputRevertProjectStatus
+
+    @ApiOperation("Revert last decision made (eligibility decision, funding decision)")
+    @PostMapping("/revert", consumes = [MediaType.APPLICATION_JSON_VALUE])
+    fun revertLastDecision(@PathVariable id: Long, @Valid @RequestBody data: InputRevertProjectStatus)
+
 }

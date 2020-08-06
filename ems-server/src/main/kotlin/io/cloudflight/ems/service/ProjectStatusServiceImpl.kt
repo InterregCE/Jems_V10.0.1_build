@@ -3,7 +3,9 @@ package io.cloudflight.ems.service
 import io.cloudflight.ems.api.dto.InputProjectEligibilityAssessment
 import io.cloudflight.ems.api.dto.InputProjectQualityAssessment
 import io.cloudflight.ems.api.dto.InputProjectStatus
+import io.cloudflight.ems.api.dto.InputRevertProjectStatus
 import io.cloudflight.ems.api.dto.OutputProject
+import io.cloudflight.ems.api.dto.OutputRevertProjectStatus
 import io.cloudflight.ems.api.dto.ProjectApplicationStatus
 import io.cloudflight.ems.api.dto.ProjectApplicationStatus.APPROVED
 import io.cloudflight.ems.api.dto.ProjectApplicationStatus.APPROVED_WITH_CONDITIONS
@@ -25,6 +27,7 @@ import io.cloudflight.ems.repository.ProjectRepository
 import io.cloudflight.ems.repository.ProjectStatusRepository
 import io.cloudflight.ems.repository.UserRepository
 import io.cloudflight.ems.security.service.SecurityService
+import org.slf4j.LoggerFactory
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.http.HttpStatus
 import org.springframework.stereotype.Service
@@ -39,6 +42,10 @@ class ProjectStatusServiceImpl(
     private val auditService: AuditService,
     private val securityService: SecurityService
 ) : ProjectStatusService {
+
+    companion object {
+        private val log = LoggerFactory.getLogger(this::class.java)
+    }
 
     @Transactional
     override fun setProjectStatus(projectId: Long, statusChange: InputProjectStatus): OutputProject {
@@ -119,6 +126,68 @@ class ProjectStatusServiceImpl(
             )
         )
         return result
+    }
+
+    @Transactional(readOnly = true)
+    override fun findPossibleDecisionRevertStatusOutput(projectId: Long): OutputRevertProjectStatus {
+        val pairFromTo = findPossibleDecisionRevertStatus(projectId)
+        return OutputRevertProjectStatus(
+            from = pairFromTo.first.toOutputProjectStatus(),
+            to = pairFromTo.second.toOutputProjectStatus()
+        )
+    }
+
+    private fun findPossibleDecisionRevertStatus(projectId: Long): Pair<ProjectStatus, ProjectStatus> {
+        val statuses = projectStatusRepo.findTop2ByProjectIdOrderByUpdatedDesc(projectId)
+        if (statuses.size == 2 && possibleRevertTransitions.contains(Pair(statuses[0].status, statuses[1].status)))
+            return Pair(statuses[0], statuses[1])
+
+        log.warn("Recheck for decision-revert done for project(id=$projectId). Result: not possible due to conditions.")
+        throw I18nValidationException(
+            httpStatus = HttpStatus.UNPROCESSABLE_ENTITY,
+            i18nKey = "project.decision.revert.not.possible"
+        )
+    }
+
+    @Transactional
+    override fun revertLastDecision(projectId: Long, request: InputRevertProjectStatus) {
+        val possibleReversion = findPossibleDecisionRevertStatus(projectId)
+        val statusToBeRevoked = possibleReversion.first
+        val statusToBeReestablished = possibleReversion.second
+
+        validateDecisionReversion(from = statusToBeRevoked, to = statusToBeReestablished, request = request)
+        val projectWithNewStatus = projectRepo.findOneById(projectId)?.copy(projectStatus = statusToBeReestablished)
+            ?: throw ResourceNotFoundException("project")
+
+        projectRepo.save(
+            when (statusToBeReestablished.status) {
+                SUBMITTED -> projectWithNewStatus.copy(eligibilityDecision = null)
+                ELIGIBLE -> projectWithNewStatus.copy(fundingDecision = null)
+                APPROVED_WITH_CONDITIONS -> projectWithNewStatus.copy(fundingDecision = statusToBeReestablished)
+                else -> throw UnsupportedOperationException()
+            }
+        )
+        projectStatusRepo.delete(statusToBeRevoked)
+
+        log.warn("Decision-reversion has been done for project(id=$projectId) status moved from ${statusToBeRevoked.status} to ${statusToBeReestablished.status}")
+        auditService.logEvent(
+            Audit.projectStatusChanged(
+                currentUser = securityService.currentUser,
+                projectId = projectId.toString(),
+                oldStatus = statusToBeRevoked.status,
+                newStatus = statusToBeReestablished.status
+            )
+        )
+    }
+
+    private fun validateDecisionReversion(from: ProjectStatus, to: ProjectStatus, request: InputRevertProjectStatus) {
+        if (request.projectStatusFromId != from.id || request.projectStatusToId != to.id) {
+            log.error("Decision-revert attempt for status has been done (possible from ${from.id} to ${to.id}), but wrong status IDs $request has been provided in request!")
+            throw I18nValidationException(
+                httpStatus = HttpStatus.UNPROCESSABLE_ENTITY,
+                i18nKey = "project.decision.revert.not.possible"
+            )
+        }
     }
 
     private fun updateProject(oldProject: Project, newStatus: ProjectStatus): Project {

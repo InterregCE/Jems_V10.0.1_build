@@ -13,4 +13,6 @@ interface ProjectStatusRepository : PagingAndSortingRepository<ProjectStatus, Lo
         ignoreStatuses: Collection<ProjectApplicationStatus>
     ): ProjectStatus?
 
+    fun findTop2ByProjectIdOrderByUpdatedDesc(projectId: Long): List<ProjectStatus>
+
 }
