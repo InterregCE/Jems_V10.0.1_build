@@ -21,7 +21,8 @@
                name="decisionDate-{{status?.status}}"
                [readonly]="!!project.fundingDecision"
                [matDatepicker]="picker"
-               [max]="today">
+               [max]="today"
+               [min]="project?.eligibilityDecision?.decisionDate">
         <mat-datepicker-toggle
                 matSuffix
                 [disabled]="!!status"
