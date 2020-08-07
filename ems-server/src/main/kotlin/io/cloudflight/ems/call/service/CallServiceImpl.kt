@@ -22,6 +22,7 @@ import org.springframework.data.domain.Pageable
 import org.springframework.http.HttpStatus
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
+import java.time.ZonedDateTime
 
 @Service
 class CallServiceImpl(
@@ -44,7 +45,11 @@ class CallServiceImpl(
         if (currentUser.isAdmin || currentUser.isProgrammeUser)
             return callRepository.findAll(pageable).map { it.toOutputCall() }
         if (currentUser.hasRole(APPLICANT_USER))
-            return callRepository.findAllByStatus(CallStatus.PUBLISHED, pageable).map { it.toOutputCall() }
+            return callRepository.findAllByStatusAndEndDateAfter(
+                status = CallStatus.PUBLISHED,
+                endDateAfter = ZonedDateTime.now(),
+                pageable = pageable
+            ).map { it.toOutputCall() }
         return Page.empty()
     }
 

@@ -16,7 +16,7 @@ fun InputCallCreate.toEntity(creator: User, priorityPolicies: Set<ProgrammePrior
     priorityPolicies = priorityPolicies,
     status = CallStatus.DRAFT,
     startDate = startDate!!,
-    endDate = endDate!!,
+    endDate = endDate!!.withSecond(0).withNano(0).plusMinutes(1).minusNanos(1),
     description = description
 )
 

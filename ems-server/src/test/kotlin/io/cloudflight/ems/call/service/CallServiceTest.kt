@@ -26,7 +26,6 @@ import io.cloudflight.ems.security.service.SecurityService
 import io.cloudflight.ems.security.service.authorization.AuthorizationUtil.Companion.adminUser
 import io.cloudflight.ems.security.service.authorization.AuthorizationUtil.Companion.applicantUser
 import io.cloudflight.ems.security.service.authorization.AuthorizationUtil.Companion.programmeUser
-import io.cloudflight.ems.security.service.authorization.AuthorizationUtil.Companion.userProgramme
 import io.cloudflight.ems.service.AuditService
 import io.mockk.MockKAnnotations
 import io.mockk.every
@@ -151,7 +150,7 @@ class CallServiceTest {
     @Test
     fun `getAllCalls applicantUser`() {
         every { securityService.currentUser } returns applicantUser
-        every { callRepository.findAllByStatus(eq(CallStatus.PUBLISHED), any<Pageable>()) } returns
+        every { callRepository.findAllByStatusAndEndDateAfter(eq(CallStatus.PUBLISHED), any<ZonedDateTime>(), any<Pageable>()) } returns
             PageImpl(listOf(callWithId(1)))
 
         val expectedResult = listOf(outputCallWithId(1))
@@ -173,11 +172,12 @@ class CallServiceTest {
             endDate = call.endDate,
             description = call.description
         )
+        val endDate = call.endDate.withSecond(59).withNano(999999999)
 
         val result = callService.createCall(newCall)
         assertThat(result.name).isEqualTo(call.name)
         assertThat(result.startDate).isEqualTo(call.startDate)
-        assertThat(result.endDate).isEqualTo(call.endDate)
+        assertThat(result.endDate).isEqualTo(endDate)
         assertThat(result.status).isEqualTo(CallStatus.DRAFT)
         assertThat(result.description).isEqualTo(call.description)
     }
