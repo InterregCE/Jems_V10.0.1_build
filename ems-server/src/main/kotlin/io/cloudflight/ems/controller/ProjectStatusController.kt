@@ -4,7 +4,9 @@ import io.cloudflight.ems.api.ProjectStatusApi
 import io.cloudflight.ems.api.dto.InputProjectEligibilityAssessment
 import io.cloudflight.ems.api.dto.InputProjectQualityAssessment
 import io.cloudflight.ems.api.dto.InputProjectStatus
+import io.cloudflight.ems.api.dto.InputRevertProjectStatus
 import io.cloudflight.ems.api.dto.OutputProject
+import io.cloudflight.ems.api.dto.OutputRevertProjectStatus
 import io.cloudflight.ems.service.ProjectStatusService
 import org.springframework.security.access.prepost.PreAuthorize
 import org.springframework.web.bind.annotation.RestController
@@ -28,4 +30,15 @@ class ProjectStatusController(
     override fun setEligibilityAssessment(id: Long, data: InputProjectEligibilityAssessment): OutputProject {
         return projectStatusService.setEligibilityAssessment(id, data)
     }
+
+    @PreAuthorize("@projectStatusAuthorization.isAdmin()")
+    override fun findPossibleDecisionRevertStatus(id: Long): OutputRevertProjectStatus {
+        return projectStatusService.findPossibleDecisionRevertStatusOutput(projectId = id)
+    }
+
+    @PreAuthorize("@projectStatusAuthorization.isAdmin()")
+    override fun revertLastDecision(id: Long, data: InputRevertProjectStatus) {
+        projectStatusService.revertLastDecision(projectId = id, request = data)
+    }
+
 }
