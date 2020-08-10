@@ -38,11 +38,13 @@ export class CallDetailComponent extends ViewEditForm implements OnInit {
 
   startDateErrors = {
     required: 'call.startDate.unknown',
-    matDatetimePickerParse: 'common.date.should.be.valid'
+    matDatetimePickerParse: 'common.date.should.be.valid',
+    matDatetimePickerMax: 'call.startDate.must.be.before.endDate',
   };
   endDateErrors = {
     required: 'call.endDate.unknown',
-    matDatetimePickerParse: 'common.date.should.be.valid'
+    matDatetimePickerParse: 'common.date.should.be.valid',
+    matDatetimePickerMin: 'call.endDate.must.be.after.startDate',
   };
   nameErrors = {
     required: 'call.name.unknown',
