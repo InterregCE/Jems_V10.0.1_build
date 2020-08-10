@@ -8,7 +8,7 @@
         </mat-radio-button>
     </mat-radio-group>
     <mat-form-field appearance="outline" class="field">
-        <mat-label>Explanatory Notes</mat-label>
+        <mat-label>{{'project.assessment.fundingDecision.dialog.field.note' | translate}}</mat-label>
         <textarea
                 formControlName="notes" class="assessment-text-area" matInput
                 name="notes-{{status?.status}}"
@@ -22,7 +22,7 @@
         </mat-error>
     </mat-form-field>
     <mat-form-field class="assessment-date-picker">
-        <mat-label>Decision Date</mat-label>
+        <mat-label>{{'project.assessment.fundingDecision.dialog.field.date' | translate}}</mat-label>
         <input required formControlName="decisionDate" matInput
                name="decisionDate-{{status?.status}}"
                [readonly]="!!project.fundingDecision"
@@ -44,7 +44,7 @@
     <div *ngIf="!status">
         <button mat-raised-button
                 color="secondary"
-                (click)="cancel.emit()">Cancel
+                (click)="cancel.emit()">{{'project.assessment.fundingDecision.dialog.button.cancel' | translate}}
         </button>
 
         <button mat-raised-button color="primary"

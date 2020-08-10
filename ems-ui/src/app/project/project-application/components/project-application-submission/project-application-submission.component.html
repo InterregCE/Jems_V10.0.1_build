@@ -1,11 +1,12 @@
 <div class="container vertical-center">
-    <p>Create a new project application:</p>
-    <p>Programme ID : dummy | Call ID : dummy</p>
+    <p>{{'project.detail.new.title' | translate}}</p>
+    <p>{{'project.detail.new.subtitle' | translate}}</p>
     <form [formGroup]="submissionForm">
         <div class="form-group">
             <mat-form-field class="col-md-12 project-application-submission-field">
-                <mat-label>Project Acronym</mat-label>
-                <input name="acronym" formControlName="acronym" matInput placeholder="Project Acronym" required>
+                <mat-label>{{'project.detail.new.field.acronym' | translate}}</mat-label>
+                <input name="acronym" formControlName="acronym" matInput
+                       placeholder="{{'project.detail.new.field.acronym' | translate}}" required>
                 <mat-error>
                     <app-form-field-errors
                             [errors]="submissionForm?.controls?.acronym?.errors"
@@ -20,7 +21,7 @@
                 class="button"
                 type="button"
                 (click)="onCancel()">
-            Cancel
+            {{'project.detail.new.button.cancel' | translate}}
         </button>
         <button mat-raised-button
                 color="primary"
@@ -28,13 +29,13 @@
                 class="button"
                 [disabled]="submissionForm.invalid || submitted"
                 (click)="onSubmit()">
-            + Create Project Application
+            + {{'project.detail.new.button.create' | translate}}
         </button>
     </form>
     <app-alert
             [show]="showSuccessMessage$ | async"
             [type]="Alert.SUCCESS">
-        <p>Project application was successfully saved.</p>
+        <p>{{'project.detail.new.message.successful' | translate}}</p>
     </app-alert>
     <app-alert *ngIf="error$ | async as error"
                [show]="!!error.i18nKey"

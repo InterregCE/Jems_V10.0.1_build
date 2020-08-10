@@ -31,8 +31,8 @@ export class ProjectApplicationEligibilityDecisionComponent extends AbstractForm
   @Output()
   cancel = new EventEmitter<void>();
 
-  ELIGIBLE = 'Project is ELIGIBLE.'
-  INELIGIBLE = 'Project is INELIGIBLE.'
+  ELIGIBLE = 'ELIGIBLE'
+  INELIGIBLE = 'INELIGIBLE'
   options: string[] = [this.ELIGIBLE, this.INELIGIBLE];
   projectId = this.activatedRoute.snapshot.params.projectId;
 

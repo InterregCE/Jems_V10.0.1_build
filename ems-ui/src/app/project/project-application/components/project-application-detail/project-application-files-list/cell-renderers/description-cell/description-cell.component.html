@@ -13,12 +13,12 @@
             mat-raised-button
             color="secondary"
             class="button"
-            (click)="onCancel()">Cancel
+            (click)="onCancel()">{{'project.file.description.button.cancel' | translate}}
     </button>
 
     <button *ngIf="formState === FormState.EDIT"
             mat-raised-button color="primary" class="button right-button" type="submit"
             [disabled]="descriptionForm.invalid || submitted"
-            (click)="onSubmit()">Save
+            (click)="onSubmit()">{{'project.file.description.button.save' | translate}}
     </button>
 </form>

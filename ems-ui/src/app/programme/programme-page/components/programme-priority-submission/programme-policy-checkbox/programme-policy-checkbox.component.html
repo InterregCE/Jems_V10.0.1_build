@@ -1,16 +1,16 @@
 <div>
-    <h6>Specific Objectives</h6>
+    <h6>{{'programme.priority.objective.title' | translate}}</h6>
     <form [formGroup]="policyForm">
         <div>
-            <h6 class="inline-title-left">Code</h6>
-            <h6 class="inline-title-right">Title</h6>
+            <h6 class="inline-title-left">{{'programme.priority.objective.table.column.code' | translate}}</h6>
+            <h6 class="inline-title-right">{{'programme.priority.objective.table.column.title' | translate}}</h6>
         </div>
         <ul class="field-full">
             <li *ngFor="let control of policyForm?.controls | keyvalue">
                 <mat-checkbox (change)="setCheckedStatus(control.key, $event.checked)">
                 </mat-checkbox>
                 <mat-form-field class="checkbox-field">
-                    <mat-label>Specific Objective Code</mat-label>
+                    <mat-label>{{'programme.priority.objective.table.field.code' | translate}}</mat-label>
                     <input [name]="control?.key"
                            [formControlName]="control.key" matInput>
                     <mat-error>

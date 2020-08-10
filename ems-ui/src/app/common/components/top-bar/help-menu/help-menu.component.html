@@ -3,10 +3,10 @@
         <mat-icon>help_outline</mat-icon>
     </a>
     <mat-menu #menu="matMenu">
-        <label class="help-category">HELP</label>
-        <a mat-menu-item>Contact us <a href="mailto:ems@interact-eu.net">ems@interact-eu.net</a></a>
-        <label class="help-category">LEGAL</label>
-        <a mat-menu-item>Privacy Policy</a>
-        <a mat-menu-item>Terms & Conditions</a>
+        <label class="help-category">{{'topbar.help.title' | translate}}</label>
+        <a mat-menu-item>{{'topbar.help.contact' | translate}} <a href="mailto:ems@interact-eu.net">ems@interact-eu.net</a></a>
+        <label class="help-category">{{'topbar.help.legal' | translate}}</label>
+        <a mat-menu-item>{{'topbar.help.legal.privacy' | translate}}</a>
+        <a mat-menu-item>{{'topbar.help.legal.terms' | translate}}</a>
     </mat-menu>
 </span>

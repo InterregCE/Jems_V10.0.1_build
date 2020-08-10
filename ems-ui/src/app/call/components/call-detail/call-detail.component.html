@@ -1,4 +1,4 @@
-<a *ngIf="call?.id" [routerLink]="['/calls']">&lt; Back to List of Calls</a>
+<a *ngIf="call?.id" [routerLink]="['/calls']">{{'back.call.list' | translate}}</a>
 <br>
 <form [formGroup]="callForm" class="container">
     <h4 class="col-md-12">{{'call.detail.title' | translate}}</h4>

@@ -1,22 +1,22 @@
 <div class="row project-detail-table-header">
-    <h6>List of added files ({{fileNumber}})</h6>
+    <h6>{{'file.upload.header' | translate: {number: fileNumber} }}</h6>
     <input type="file" #selectFile onclick="this.value=null;"
            (change)="addNewFilesForUpload($event)">
     <button *ngIf="uploadPossible" mat-raised-button color="primary"
-            (click)="selectFile.click()">+ add new file
+            (click)="selectFile.click()">+ {{'file.upload.add.new' | translate}}
     </button>
 </div>
 
 <app-alert
         [show]="showSuccessMessage$ | async"
         [type]="Alert.SUCCESS">
-    <p>Upload of {{uploadedFileName}} successful.</p>
+    <p>{{'file.upload.message.successful' | translate: {name: uploadedFileName} }}</p>
 </app-alert>
 <app-alert
         [show]="(error$ | async) !== null"
         [type]="Alert.ERROR">
-    <p *ngIf="(error$ | async)?.httpStatus === 422; else unknown">File {{uploadedFileName}} already exists.</p>
+    <p *ngIf="(error$ | async)?.httpStatus === 422; else unknown">{{'file.upload.message.duplicate' | translate: {name: uploadedFileName} }}</p>
 </app-alert>
 <ng-template #unknown>
-    <p>Upload of {{uploadedFileName}} not successful.</p>
+    <p>{{'file.upload.message.failed' | translate: {name: uploadedFileName} }}</p>
 </ng-template>

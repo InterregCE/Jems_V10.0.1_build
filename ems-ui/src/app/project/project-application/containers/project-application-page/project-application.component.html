@@ -1,4 +1,4 @@
-<a *ngxPermissionsOnly="Permission.APPLICANT_USER" [routerLink]="['/calls']">&lt; Back to Dashboard</a>
+<a *ngxPermissionsOnly="Permission.APPLICANT_USER" [routerLink]="['/calls']">&lt; {{'common.back.to.dashboard' | translate}}</a>
 <div class="container">
     <div *ngxPermissionsExcept="[Permission.APPLICANT_USER]">
         <h3 *ngIf="currentUser$ | async as currentUser">

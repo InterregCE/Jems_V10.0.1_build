@@ -2,11 +2,13 @@
     <form [formGroup]="identificationForm">
         <mat-form-field class="field">
             <mat-label>{{'project.application.form.field.project.id' | translate}}</mat-label>
-            <input name="projectId" formControlName="projectId" matInput placeholder="Project ID" readonly>
+            <input name="projectId" formControlName="projectId" matInput
+                   placeholder="{{'project.application.form.field.project.id' | translate}}" readonly>
         </mat-form-field>
         <mat-form-field class="field">
             <mat-label>{{'project.application.form.field.project.acronym' | translate}}</mat-label>
-            <input name="projectAcronym" formControlName="projectAcronym" matInput placeholder="Project Acronym" [readonly]="disabled">
+            <input name="projectAcronym" formControlName="projectAcronym" matInput
+                   placeholder="{{'project.application.form.field.project.acronym' | translate}}" [readonly]="disabled">
             <mat-error>
                 <app-form-field-errors
                         [errors]="identificationForm?.controls?.projectAcronym?.errors"
@@ -16,7 +18,8 @@
         </mat-form-field>
         <mat-form-field class="field">
             <mat-label>{{'project.application.form.field.project.title' | translate}}</mat-label>
-            <input name="projectTitle" formControlName="projectTitle" matInput placeholder="Project Title" [readonly]="disabled">
+            <input name="projectTitle" formControlName="projectTitle" matInput
+                   placeholder="{{'project.application.form.field.project.title' | translate}}" [readonly]="disabled">
             <mat-error>
                 <app-form-field-errors
                         [errors]="identificationForm?.controls?.projectTitle?.errors"
@@ -26,7 +29,8 @@
         </mat-form-field>
         <mat-form-field class="field">
             <mat-label>{{'project.application.form.field.project.duration' | translate}}</mat-label>
-            <input type="number" name="projectDuration" formControlName="projectDuration" matInput placeholder="Project Duration" [readonly]="disabled">
+            <input type="number" name="projectDuration" formControlName="projectDuration" matInput
+                   placeholder="{{'project.application.form.field.project.duration' | translate}}" [readonly]="disabled">
             <mat-error>
                 <app-form-field-errors
                         [errors]="identificationForm?.controls?.projectDuration?.errors"

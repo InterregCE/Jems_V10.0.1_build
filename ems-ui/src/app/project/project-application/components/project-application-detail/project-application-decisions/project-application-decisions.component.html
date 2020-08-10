@@ -3,10 +3,10 @@
             && projectStatus !== OutputProjectStatus.StatusEnum.RETURNEDTOAPPLICANT"
         [expanded]="true">
     <mat-expansion-panel-header>
-        <mat-panel-title><h6>Decisions</h6></mat-panel-title>
+        <mat-panel-title><h6>{{'project.assessment.decision.header' | translate}}</h6></mat-panel-title>
     </mat-expansion-panel-header>
     <div class="row">
-        <div class="col-4">Eligibility Decision:</div>
+        <div class="col-4">{{'project.assessment.eligibilityDecision.title' | translate}}</div>
         <div class="col-3">
             <div *ngIf="project.eligibilityDecision">
                 {{project.eligibilityDecision.status}}
@@ -32,7 +32,7 @@
         </div>
     </div>
     <div class="row">
-        <div class="col-4">Funding Decision:</div>
+        <div class="col-4">{{'project.assessment.fundingDecision.title' | translate}}</div>
         <div class="col-3">
             <div *ngIf="project.fundingDecision">
                 {{project.projectStatus.status}}

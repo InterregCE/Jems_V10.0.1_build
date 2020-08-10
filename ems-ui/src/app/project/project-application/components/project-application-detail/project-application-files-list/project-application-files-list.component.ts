@@ -90,7 +90,7 @@ export class ProjectApplicationFilesListComponent extends BaseComponent implemen
           customCellTemplate: this.descriptionCell
         },
         {
-          displayedColumn: 'Actions',
+          displayedColumn: 'file.table.column.name.action',
           customCellTemplate: this.actionsCell
         }
       ]
