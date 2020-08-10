@@ -22,7 +22,6 @@ export class ProjectApplicationActionsComponent extends AbstractForm {
   returnableStatuses = [
     OutputProjectStatus.StatusEnum.SUBMITTED,
     OutputProjectStatus.StatusEnum.ELIGIBLE,
-    OutputProjectStatus.StatusEnum.INELIGIBLE,
     OutputProjectStatus.StatusEnum.APPROVEDWITHCONDITIONS,
   ];
 
