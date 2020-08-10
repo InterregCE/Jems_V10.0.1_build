@@ -2,7 +2,7 @@
 <div class="container">
     <div *ngxPermissionsExcept="[Permission.APPLICANT_USER]">
         <h3 *ngIf="currentUser$ | async as currentUser">
-            Welcome {{currentUser.name}} {{currentUser.surname}} to myProgramme!</h3>
+            {{'project.welcome' | translate: {name: currentUser.name, surname: currentUser.surname} }}</h3>
     </div>
     <div *ngxPermissionsExcept="Permission.APPLICANT_USER">
         <div *ngIf="currentPage$ | async as projectPage">

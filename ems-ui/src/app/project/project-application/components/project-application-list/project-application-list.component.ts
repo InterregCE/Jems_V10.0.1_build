@@ -31,34 +31,34 @@ export class ProjectApplicationListComponent {
     isTableClickable: true,
     columns: [
       {
-        displayedColumn: 'Id',
+        displayedColumn: 'project.table.column.name.id',
         elementProperty: 'id',
         sortProperty: 'id'
       },
       {
-        displayedColumn: 'Acronym',
+        displayedColumn: 'project.table.column.name.acronym',
         elementProperty: 'acronym',
         sortProperty: 'acronym',
       },
       {
-        displayedColumn: 'First submission',
+        displayedColumn: 'project.table.column.name.submission',
         columnType: ColumnType.Date,
         elementProperty: 'firstSubmissionDate',
         sortProperty: 'firstSubmission.updated'
       },
       {
-        displayedColumn: 'Latest re-submission',
+        displayedColumn: 'project.table.column.name.resubmission',
         columnType: ColumnType.Date,
         elementProperty: 'lastResubmissionDate',
         sortProperty: 'lastResubmission.updated'
       },
       {
-        displayedColumn: 'Status',
+        displayedColumn: 'project.table.column.name.status',
         elementProperty: 'projectStatus.status',
         sortProperty: 'projectStatus.status'
       },
       {
-        displayedColumn: 'Related Call',
+        displayedColumn: 'project.table.column.name.related',
         elementProperty: 'callName',
         sortProperty: 'callName'
       }
