@@ -35,10 +35,10 @@ interface ProjectStatusApi {
 
     @ApiOperation("Recheck possibility to revert the last decision made (eligibility decision, funding decision)")
     @GetMapping("/revert")
-    fun findPossibleDecisionRevertStatus(@PathVariable id: Long): OutputRevertProjectStatus
+    fun findPossibleDecisionRevertStatus(@PathVariable id: Long): OutputRevertProjectStatus?
 
     @ApiOperation("Revert last decision made (eligibility decision, funding decision)")
     @PostMapping("/revert", consumes = [MediaType.APPLICATION_JSON_VALUE])
-    fun revertLastDecision(@PathVariable id: Long, @Valid @RequestBody data: InputRevertProjectStatus)
+    fun revertLastDecision(@PathVariable id: Long, @Valid @RequestBody data: InputRevertProjectStatus): OutputProject
 
 }

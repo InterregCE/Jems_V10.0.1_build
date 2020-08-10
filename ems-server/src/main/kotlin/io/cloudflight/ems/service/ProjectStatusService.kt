@@ -32,7 +32,7 @@ interface ProjectStatusService {
      * If the last status was made by decision, check if there is possibility to revert it.
      * If there is such possibility, will return detail info about such transition.
      */
-    fun findPossibleDecisionRevertStatusOutput(projectId: Long): OutputRevertProjectStatus
+    fun findPossibleDecisionRevertStatusOutput(projectId: Long): OutputRevertProjectStatus?
 
-    fun revertLastDecision(projectId: Long, request: InputRevertProjectStatus)
+    fun revertLastDecision(projectId: Long, request: InputRevertProjectStatus): OutputProject
 }

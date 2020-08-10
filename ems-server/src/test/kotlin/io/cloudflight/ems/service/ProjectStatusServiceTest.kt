@@ -514,17 +514,38 @@ internal class ProjectStatusServiceTest {
             every { projectStatusRepository.findTop2ByProjectIdOrderByUpdatedDesc(eq(projectId)) } returns it
             val message = "Decision-Reversion from ${it[0].status} back to ${it[1].status} should be possible"
 
-            val result: OutputRevertProjectStatus
+            val result: OutputRevertProjectStatus?
             try {
                 result = projectStatusService.findPossibleDecisionRevertStatusOutput(projectId)
             } catch (e: Exception) {
                 fail(message, e)
             }
 
-            assertThat(listOf(result.from.status, result.to.status))
+            assertThat(result).isNotNull
+            assertThat(listOf(result!!.from.status, result.to.status))
                 .overridingErrorMessage(message)
                 .containsExactlyElementsOf(it.stream().map { outputStatus -> outputStatus.status }.collect(Collectors.toList()))
         }
+    }
+
+    @Test
+    fun `cannot find funding reversion statuses`() {
+        val projectId = 15L
+
+        every { projectStatusRepository.findTop2ByProjectIdOrderByUpdatedDesc(eq(projectId)) } returns listOf(statusEligible)
+        assertThat(projectStatusService.findPossibleDecisionRevertStatusOutput(projectId))
+            .overridingErrorMessage("When statuses cannot be found, there should be no possibility to revert")
+            .isNull()
+    }
+
+    @Test
+    fun `cannot find funding reversion for wrong statuses`() {
+        val projectId = 15L
+
+        every { projectStatusRepository.findTop2ByProjectIdOrderByUpdatedDesc(eq(projectId)) } returns listOf(statusEligible, statusIneligible)
+        assertThat(projectStatusService.findPossibleDecisionRevertStatusOutput(projectId))
+            .overridingErrorMessage("When statuses are not allowed to be reverted, there should be no possibility returned")
+            .isNull()
     }
 
     @Test
