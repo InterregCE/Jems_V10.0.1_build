@@ -1,8 +1,10 @@
 <div *ngIf="project$ | async as project" class="project-detail-container">
+    <h5>{{project.acronym}}</h5>
     <app-project-application-information
             [project]="project">
     </app-project-application-information>
     <app-project-application-actions
+            [projectId]="project.id"
             [success$]="projectChanged$"
             [projectStatus]="project.projectStatus.status"
             (changeStatus)="changeProjectStatus($event)">

@@ -22,6 +22,14 @@
     </div>
 </ng-container>
 
+<div class="row">
+    <button mat-raised-button
+            color="primary"
+            [routerLink]="'/project/'+ projectId + '/applicationForm'">
+        {{'project.application.form.title' | translate}}
+    </button>
+</div>
+
 <app-alert
         [show]="showSuccessMessage$ | async"
         [type]="Alert.SUCCESS">

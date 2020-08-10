@@ -1,0 +1,38 @@
+<div>
+    <form [formGroup]="identificationForm">
+        <mat-form-field class="field">
+            <mat-label>{{'project.application.form.field.project.id' | translate}}</mat-label>
+            <input name="projectId" formControlName="projectId" matInput placeholder="Project ID" readonly>
+        </mat-form-field>
+        <mat-form-field class="field">
+            <mat-label>{{'project.application.form.field.project.acronym' | translate}}</mat-label>
+            <input name="projectAcronym" formControlName="projectAcronym" matInput placeholder="Project Acronym" [readonly]="disabled">
+            <mat-error>
+                <app-form-field-errors
+                        [errors]="identificationForm?.controls?.projectAcronym?.errors"
+                        [messages]="projectAcronymErrors">
+                </app-form-field-errors>
+            </mat-error>
+        </mat-form-field>
+        <mat-form-field class="field">
+            <mat-label>{{'project.application.form.field.project.title' | translate}}</mat-label>
+            <input name="projectTitle" formControlName="projectTitle" matInput placeholder="Project Title" [readonly]="disabled">
+            <mat-error>
+                <app-form-field-errors
+                        [errors]="identificationForm?.controls?.projectTitle?.errors"
+                        [messages]="projectTitleErrors">
+                </app-form-field-errors>
+            </mat-error>
+        </mat-form-field>
+        <mat-form-field class="field">
+            <mat-label>{{'project.application.form.field.project.duration' | translate}}</mat-label>
+            <input type="number" name="projectDuration" formControlName="projectDuration" matInput placeholder="Project Duration" [readonly]="disabled">
+            <mat-error>
+                <app-form-field-errors
+                        [errors]="identificationForm?.controls?.projectDuration?.errors"
+                        [messages]="projectDurationErrors">
+                </app-form-field-errors>
+            </mat-error>
+        </mat-form-field>
+    </form>
+</div>

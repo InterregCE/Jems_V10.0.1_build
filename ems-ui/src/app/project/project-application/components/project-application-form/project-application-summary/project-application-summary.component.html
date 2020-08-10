@@ -1,0 +1,24 @@
+<div>
+    <p>{{'project.application.form.summary.intro.row.one' | translate}}</p>
+    <p>{{'project.application.form.summary.intro.row.two' | translate}}</p>
+    <p>{{'project.application.form.summary.intro.row.three' | translate}}</p>
+    <p>{{'project.application.form.summary.intro.row.four' | translate}}</p>
+    <p>{{'project.application.form.summary.intro.row.five' | translate}}</p>
+    <p>{{'project.application.form.summary.intro.row.six' | translate}}</p>
+    <form [formGroup]="summaryForm">
+        <mat-form-field class="field">
+            <mat-label>{{'project.application.form.field.project.summary' | translate}}</mat-label>
+            <textarea
+                    name="projectSummary"
+                    formControlName="projectSummary"
+                    matInput [readonly]="disabled">
+                    </textarea>
+            <mat-error>
+                <app-form-field-errors
+                        [errors]="summaryForm?.controls?.projectSummary?.errors"
+                        [messages]="projectSummaryErrors">
+                </app-form-field-errors>
+            </mat-error>
+        </mat-form-field>
+    </form>
+</div>

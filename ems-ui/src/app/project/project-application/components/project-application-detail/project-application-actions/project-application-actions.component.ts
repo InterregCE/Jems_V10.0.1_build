@@ -29,6 +29,9 @@ export class ProjectApplicationActionsComponent extends AbstractForm {
   @Input()
   projectStatus: OutputProjectStatus.StatusEnum;
 
+  @Input()
+  projectId: number;
+
   @Output()
   changeStatus = new EventEmitter<InputProjectStatus.StatusEnum>();
 

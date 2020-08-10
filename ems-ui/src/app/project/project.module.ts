@@ -34,6 +34,9 @@ import {MAT_DATE_LOCALE} from '@angular/material/core';
 import {ProjectApplicationFundingPageComponent} from './project-application/containers/project-application-detail/project-application-funding-page/project-application-funding-page.component';
 import {ProjectApplicationFundingDecisionComponent} from './project-application/components/project-application-detail/project-application-funding-decision/project-application-funding-decision.component';
 import {ProjectApplicationEligibilityDecisionPageComponent} from './project-application/containers/project-application-detail/project-application-eligibility-decision-page/project-application-eligibility-decision-page.component';
+import { ProjectApplicationFormPageComponent } from './project-application/containers/project-application-detail/project-application-form-page/project-application-form-page.component';
+import { ProjectApplicationIdentificationComponent } from './project-application/components/project-application-form/project-application-identification/project-application-identification.component';
+import { ProjectApplicationSummaryComponent } from './project-application/components/project-application-form/project-application-summary/project-application-summary.component';
 
 @NgModule({
   declarations: [
@@ -56,7 +59,10 @@ import {ProjectApplicationEligibilityDecisionPageComponent} from './project-appl
     ActionsCellComponent,
     ProjectApplicationFundingPageComponent,
     ProjectApplicationFundingDecisionComponent,
-    ProjectApplicationEligibilityDecisionPageComponent
+    ProjectApplicationEligibilityDecisionPageComponent,
+    ProjectApplicationFormPageComponent,
+    ProjectApplicationIdentificationComponent,
+    ProjectApplicationSummaryComponent
   ],
   imports: [
     SharedModule,

@@ -1,0 +1,67 @@
+<div *ngIf="project$ | async as project">
+    <a [routerLink]="'/project/'+ project.id">{{'back.project.details' | translate}}</a>
+    <div class="container">
+        <h4>{{project.acronym}} {{'project.application.form.title' | translate}}</h4>
+
+        <app-project-application-information
+                [project]="project">
+        </app-project-application-information>
+
+        <div>
+            <h5 class="header" id="applicationFormHeading">{{'project.application.form.section.part.a' | translate}}</h5>
+            <span class="header-button" *ngxPermissionsExcept="Permission.PROGRAMME_USER">
+                <button color="primary" *ngIf="formState === FormState.VIEW && (project.projectStatus.status === OutputProjectStatus.StatusEnum.DRAFT || project.projectStatus.status === OutputProjectStatus.StatusEnum.RETURNEDTOAPPLICANT)" mat-raised-button
+                        (click)="changeFormState$.next(FormState.EDIT)">
+                    {{'common.edit.label' | translate}}
+                </button>
+            </span>
+        </div>
+
+        <form [formGroup]="applicationForm">
+            <ng-container>
+                <h6 id="projectIdentificationHeading">{{'project.application.form.section.part.a.subsection.one' | translate}}</h6>
+                <app-project-application-identification
+                        [project]="project"
+                        [identificationForm]="identificationForm"
+                        [disabled]="formState === FormState.VIEW">
+                </app-project-application-identification>
+            </ng-container>
+
+            <ng-container>
+                <h6 id="projectSummaryHeading">{{'project.application.form.section.part.a.subsection.two' | translate}}</h6>
+                <app-project-application-summary
+                        [project]="project"
+                        [summaryForm]="summaryForm"
+                        [disabled]="formState === FormState.VIEW">
+                </app-project-application-summary>
+            </ng-container>
+
+            <div *ngIf="formState === FormState.EDIT">
+                <button mat-raised-button
+                        (click)="changeFormState$.next(FormState.VIEW)"
+                        class="button">
+                    {{'common.cancel.label' | translate}}
+                </button>
+                <button mat-raised-button
+                        color="primary"
+                        type="submit"
+                        class="button"
+                        [disabled]="applicationForm.invalid || identificationForm.invalid || submitted"
+                        (click)="onSubmit()">
+                    {{'common.save.label' | translate}}
+                </button>
+            </div>
+
+            <app-alert
+                    [show]="showSuccessMessage$ | async"
+                    [type]="Alert.SUCCESS">
+                <p>{{'programme.priority.save.success' | translate}}</p>
+            </app-alert>
+            <app-alert *ngIf="error$ | async as error"
+                       [show]="!submitted && !!error.i18nKey"
+                       [type]="Alert.ERROR">
+                <p>{{error.i18nKey | translate}}</p>
+            </app-alert>
+        </form>
+    </div>
+</div>
