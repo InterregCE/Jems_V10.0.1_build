@@ -9,6 +9,10 @@ import io.cloudflight.ems.entity.User
 import io.cloudflight.ems.programme.entity.ProgrammePriorityPolicy
 import io.cloudflight.ems.programme.service.toOutputProgrammePriorityPolicy
 
+/**
+ * Map InputCallCreate to entity Call.
+ * The specified minute is included in the end time of the call by adding all of its seconds.
+ */
 fun InputCallCreate.toEntity(creator: User, priorityPolicies: Set<ProgrammePriorityPolicy>) = Call(
     id = null,
     creator = creator,
