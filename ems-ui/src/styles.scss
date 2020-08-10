@@ -8,6 +8,7 @@ body {
   box-sizing: border-box;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  padding-top: 3.75rem;
 }
 
 h1,
@@ -35,6 +36,10 @@ p {
   background-color: #1976d2;
   color: white;
   font-weight: 600;
+  position: fixed;
+  width: 100%;
+  top: 0;
+  z-index: 100;
 }
 
 .toolbar img {
@@ -328,4 +333,12 @@ app-top-bar {
 
 .material-select-panel{
   margin: 1.5rem 0 !important;
+}
+
+h5::before,
+h6::before{
+  content:"";
+  display:block;
+  height:60px; /* fixed top-bar height*/
+  margin:-60px 0 0; /* negative fixed top-bar height */
 }
