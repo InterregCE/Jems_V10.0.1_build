@@ -77,6 +77,16 @@ export class ProgrammeDataComponent extends ViewEditForm implements OnInit {
 
   dateErrors = {
     matDatepickerParse: 'common.date.should.be.valid'
+  }
+
+  eligibleFromErrors = {
+    matDatepickerParse: 'common.date.should.be.valid',
+    matDatepickerMax: 'programme.eligibleFrom.must.be.before.eligibleUntil',
+  };
+
+  eligibleUntilErrors = {
+    matDatepickerParse: 'common.date.should.be.valid',
+    matDatepickerMin: 'programme.eligibleUntil.must.be.after.eligibleFrom',
   };
 
   constructor(private formBuilder: FormBuilder,

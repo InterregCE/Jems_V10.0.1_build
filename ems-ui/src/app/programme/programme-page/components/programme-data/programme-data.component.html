@@ -72,7 +72,7 @@
             <mat-error>
                 <app-form-field-errors
                         [errors]="programmeForm?.controls?.eligibleFrom?.errors"
-                        [messages]="dateErrors">
+                        [messages]="eligibleFromErrors">
                 </app-form-field-errors>
             </mat-error>
         </mat-form-field>
@@ -86,7 +86,7 @@
             <mat-error>
                 <app-form-field-errors
                         [errors]="programmeForm?.controls?.eligibleUntil?.errors"
-                        [messages]="dateErrors">
+                        [messages]="eligibleUntilErrors">
                 </app-form-field-errors>
             </mat-error>
         </mat-form-field>
