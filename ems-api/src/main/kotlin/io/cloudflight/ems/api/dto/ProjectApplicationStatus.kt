@@ -24,5 +24,9 @@ enum class ProjectApplicationStatus {
             return status != DRAFT
         }
 
+        fun isFundingStatus(status: ProjectApplicationStatus): Boolean {
+            return listOf(APPROVED, APPROVED_WITH_CONDITIONS, NOT_APPROVED).contains(status)
+        }
+
     }
 }

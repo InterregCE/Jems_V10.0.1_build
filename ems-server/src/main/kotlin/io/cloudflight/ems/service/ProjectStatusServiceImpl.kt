@@ -9,6 +9,7 @@ import io.cloudflight.ems.api.dto.OutputRevertProjectStatus
 import io.cloudflight.ems.api.dto.ProjectApplicationStatus
 import io.cloudflight.ems.api.dto.ProjectApplicationStatus.APPROVED
 import io.cloudflight.ems.api.dto.ProjectApplicationStatus.APPROVED_WITH_CONDITIONS
+import io.cloudflight.ems.api.dto.ProjectApplicationStatus.Companion.isFundingStatus
 import io.cloudflight.ems.api.dto.ProjectApplicationStatus.DRAFT
 import io.cloudflight.ems.api.dto.ProjectApplicationStatus.ELIGIBLE
 import io.cloudflight.ems.api.dto.ProjectApplicationStatus.INELIGIBLE
@@ -53,6 +54,7 @@ class ProjectStatusServiceImpl(
             ?: throw ResourceNotFoundException()
 
         var project = projectRepo.findOneById(projectId) ?: throw ResourceNotFoundException("project")
+        validateDecisionDateIfFunding(statusChange, project)
         val oldStatus = project.projectStatus.status
 
         val projectStatus =
@@ -70,6 +72,16 @@ class ProjectStatusServiceImpl(
             )
         )
         return project.toOutputProject()
+    }
+
+    private fun validateDecisionDateIfFunding(statusChange: InputProjectStatus, project: Project) {
+        if (isFundingStatus(statusChange.status!!)
+            && statusChange.date!!.isBefore(project.eligibilityDecision!!.decisionDate)) {
+            throw I18nValidationException(
+                httpStatus = HttpStatus.UNPROCESSABLE_ENTITY,
+                i18nKey = "project.funding.decision.is.before.eligibility.decision"
+            )
+        }
     }
 
     @Transactional
