@@ -7,6 +7,7 @@ import io.cloudflight.ems.security.service.SecurityService
 import io.cloudflight.ems.security.service.authorization.Authorization
 import io.cloudflight.ems.call.service.CallService
 import org.springframework.stereotype.Component
+import java.time.ZonedDateTime
 
 @Component
 class CallAuthorization(
@@ -31,7 +32,7 @@ class CallAuthorization(
 
     fun canReadCallDetail(callId: Long): Boolean {
         if (isApplicantUser())
-            if (isCallPublished(callService.getCallById(callId)))
+            if (isCallPublishedAndOpen(callService.getCallById(callId)))
                 return true
             else throw ResourceNotFoundException("call")
 
@@ -41,8 +42,8 @@ class CallAuthorization(
         return false
     }
 
-    private fun isCallPublished(call: OutputCall): Boolean {
-        return call.status == CallStatus.PUBLISHED
+    private fun isCallPublishedAndOpen(call: OutputCall): Boolean {
+        return call.status == CallStatus.PUBLISHED && ZonedDateTime.now().isBefore(call.endDate)
     }
 
 }

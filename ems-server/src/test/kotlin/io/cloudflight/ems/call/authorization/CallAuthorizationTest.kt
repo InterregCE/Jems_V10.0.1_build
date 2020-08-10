@@ -135,17 +135,25 @@ internal class CallAuthorizationTest {
 
         val ID_PUBLISHED = 1L
         val ID_DRAFT = 2L
+        val ID_PUBLISHED_BUT_CLOSED = 3L
         every { callService.getCallById(ID_PUBLISHED) } returns dummyCallWithStatus(CallStatus.PUBLISHED)
         every { callService.getCallById(ID_DRAFT) } returns dummyCallWithStatus(CallStatus.DRAFT)
+        every { callService.getCallById(ID_PUBLISHED_BUT_CLOSED) } returns
+            dummyCallWithStatus(CallStatus.PUBLISHED).copy(endDate = ZonedDateTime.now().minusDays(1))
 
         assertTrue(
             callAuthorization.canReadCallDetail(ID_PUBLISHED),
             "${applicantUser.user.email} should be able to read call detail which is in status ${CallStatus.PUBLISHED})"
         )
 
-        val exception = assertThrows<ResourceNotFoundException>(
+        var exception = assertThrows<ResourceNotFoundException>(
             "${applicantUser.user.email} should NOT be able to find call detail which is in status ${CallStatus.DRAFT})"
         ) { callAuthorization.canReadCallDetail(ID_DRAFT) }
+        assertThat(exception.entity).isEqualTo("call")
+
+        exception = assertThrows<ResourceNotFoundException>(
+            "${applicantUser.user.email} should NOT be able to read NOT_OPEN call detail which is in status ${CallStatus.PUBLISHED})"
+        ) { callAuthorization.canReadCallDetail(ID_PUBLISHED_BUT_CLOSED) }
         assertThat(exception.entity).isEqualTo("call")
     }
 
