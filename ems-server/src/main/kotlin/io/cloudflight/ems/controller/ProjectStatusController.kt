@@ -32,13 +32,13 @@ class ProjectStatusController(
     }
 
     @PreAuthorize("@projectStatusAuthorization.isAdmin()")
-    override fun findPossibleDecisionRevertStatus(id: Long): OutputRevertProjectStatus {
+    override fun findPossibleDecisionRevertStatus(id: Long): OutputRevertProjectStatus? {
         return projectStatusService.findPossibleDecisionRevertStatusOutput(projectId = id)
     }
 
     @PreAuthorize("@projectStatusAuthorization.isAdmin()")
-    override fun revertLastDecision(id: Long, data: InputRevertProjectStatus) {
-        projectStatusService.revertLastDecision(projectId = id, request = data)
+    override fun revertLastDecision(id: Long, data: InputRevertProjectStatus): OutputProject {
+        return projectStatusService.revertLastDecision(projectId = id, request = data)
     }
 
 }

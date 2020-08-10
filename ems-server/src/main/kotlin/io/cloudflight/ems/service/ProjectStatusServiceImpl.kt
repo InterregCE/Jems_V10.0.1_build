@@ -141,29 +141,28 @@ class ProjectStatusServiceImpl(
     }
 
     @Transactional(readOnly = true)
-    override fun findPossibleDecisionRevertStatusOutput(projectId: Long): OutputRevertProjectStatus {
+    override fun findPossibleDecisionRevertStatusOutput(projectId: Long): OutputRevertProjectStatus? {
         val pairFromTo = findPossibleDecisionRevertStatus(projectId)
-        return OutputRevertProjectStatus(
-            from = pairFromTo.first.toOutputProjectStatus(),
-            to = pairFromTo.second.toOutputProjectStatus()
-        )
+        return if (pairFromTo == null) null else
+            OutputRevertProjectStatus(
+                from = pairFromTo.first.toOutputProjectStatus(),
+                to = pairFromTo.second.toOutputProjectStatus()
+            )
     }
 
-    private fun findPossibleDecisionRevertStatus(projectId: Long): Pair<ProjectStatus, ProjectStatus> {
+    private fun findPossibleDecisionRevertStatus(projectId: Long): Pair<ProjectStatus, ProjectStatus>? {
         val statuses = projectStatusRepo.findTop2ByProjectIdOrderByUpdatedDesc(projectId)
         if (statuses.size == 2 && possibleRevertTransitions.contains(Pair(statuses[0].status, statuses[1].status)))
             return Pair(statuses[0], statuses[1])
 
         log.warn("Recheck for decision-revert done for project(id=$projectId). Result: not possible due to conditions.")
-        throw I18nValidationException(
-            httpStatus = HttpStatus.UNPROCESSABLE_ENTITY,
-            i18nKey = "project.decision.revert.not.possible"
-        )
+        return null
     }
 
     @Transactional
-    override fun revertLastDecision(projectId: Long, request: InputRevertProjectStatus) {
-        val possibleReversion = findPossibleDecisionRevertStatus(projectId)
+    override fun revertLastDecision(projectId: Long, request: InputRevertProjectStatus): OutputProject {
+        val possibleReversion = findPossibleDecisionRevertStatus(projectId) ?: throw revertDecisionNotPossible()
+
         val statusToBeRevoked = possibleReversion.first
         val statusToBeReestablished = possibleReversion.second
 
@@ -171,7 +170,7 @@ class ProjectStatusServiceImpl(
         val projectWithNewStatus = projectRepo.findOneById(projectId)?.copy(projectStatus = statusToBeReestablished)
             ?: throw ResourceNotFoundException("project")
 
-        projectRepo.save(
+        val project = projectRepo.save(
             when (statusToBeReestablished.status) {
                 SUBMITTED -> projectWithNewStatus.copy(eligibilityDecision = null)
                 ELIGIBLE -> projectWithNewStatus.copy(fundingDecision = null)
@@ -190,16 +189,21 @@ class ProjectStatusServiceImpl(
                 newStatus = statusToBeReestablished.status
             )
         )
+        return project.toOutputProject()
     }
 
     private fun validateDecisionReversion(from: ProjectStatus, to: ProjectStatus, request: InputRevertProjectStatus) {
         if (request.projectStatusFromId != from.id || request.projectStatusToId != to.id) {
             log.error("Decision-revert attempt for status has been done (possible from ${from.id} to ${to.id}), but wrong status IDs $request has been provided in request!")
-            throw I18nValidationException(
-                httpStatus = HttpStatus.UNPROCESSABLE_ENTITY,
-                i18nKey = "project.decision.revert.not.possible"
-            )
+            throw revertDecisionNotPossible()
         }
+    }
+
+    private fun revertDecisionNotPossible(): I18nValidationException {
+        return I18nValidationException(
+            httpStatus = HttpStatus.UNPROCESSABLE_ENTITY,
+            i18nKey = "project.decision.revert.not.possible"
+        )
     }
 
     private fun updateProject(oldProject: Project, newStatus: ProjectStatus): Project {
