@@ -12,12 +12,12 @@
     <button *ngIf="formState === FormState.VIEW" mat-raised-button
             [disabled]="disabled"
             (click)="changeFormState$.next(FormState.EDIT)">
-        edit user data
+        {{'user.detail.button.edit' | translate}}
     </button>
     <form [formGroup]="userForm">
         <mat-form-field class="field">
-            <mat-label>Name</mat-label>
-            <input name="name" formControlName="name" matInput placeholder="Name" required>
+            <mat-label>{{'user.detail.field.name' | translate}}</mat-label>
+            <input name="name" formControlName="name" matInput placeholder="{{'user.detail.field.name' | translate}}" required>
             <mat-error>
                 <app-form-field-errors
                         [errors]="userForm?.controls?.name?.errors"
@@ -26,8 +26,8 @@
             </mat-error>
         </mat-form-field>
         <mat-form-field class="field">
-            <mat-label>Surname</mat-label>
-            <input name="surname" formControlName="surname" matInput placeholder="Surname" required>
+            <mat-label>{{'user.detail.field.surname' | translate}}</mat-label>
+            <input name="surname" formControlName="surname" matInput placeholder="{{'user.detail.field.surname' | translate}}" required>
             <mat-error>
                 <app-form-field-errors
                         [errors]="userForm?.controls?.surname?.errors"
@@ -36,8 +36,8 @@
             </mat-error>
         </mat-form-field>
         <mat-form-field class="field">
-            <mat-label>Email</mat-label>
-            <input name="email" formControlName="email" matInput placeholder="Email" required>
+            <mat-label>{{'user.detail.field.email' | translate}}</mat-label>
+            <input name="email" formControlName="email" matInput placeholder="{{'user.detail.field.email' | translate}}" required>
             <mat-error>
                 <app-form-field-errors
                         [errors]="userForm?.controls?.email?.errors"
@@ -56,14 +56,14 @@
             <button mat-raised-button
                     [disabled]="disabled"
                     (click)="changeFormState$.next(FormState.VIEW)">
-                cancel
+                {{'user.detail.button.cancel' | translate}}
             </button>
             <button mat-raised-button
                     color="primary"
                     type="submit"
                     [disabled]="disabled || userForm.invalid || submitted"
                     (click)="onSubmit()">
-                save
+                {{'user.detail.button.save' | translate}}
             </button>
         </div>
         <app-alert

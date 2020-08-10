@@ -1,9 +1,9 @@
 <div class="container vertical-center">
-    <h4 *ngxPermissionsExcept="Permission.APPLICANT_USER">Call Overview</h4>
-    <h4 *ngxPermissionsOnly="Permission.APPLICANT_USER">Dashboard</h4>
+    <h4 *ngxPermissionsExcept="Permission.APPLICANT_USER">{{'call.header' | translate}}</h4>
+    <h4 *ngxPermissionsOnly="Permission.APPLICANT_USER">{{'call.dashboard.header' | translate}}</h4>
 
     <div *ngxPermissionsOnly="Permission.APPLICANT_USER">
-        <h5>My Applications</h5>
+        <h5>{{'call.applications.title' | translate}}</h5>
         <div *ngIf="currentApplicationPage$ | async as projectPage">
             <app-project-application-list
                     [projectPage]="projectPage"
@@ -20,10 +20,10 @@
     <div *ngxPermissionsExcept="Permission.APPLICANT_USER">
         <button mat-raised-button color="primary"
                 [routerLink]="'/call/create'">
-            + Add new Call
+            + {{'call.add.new' | translate}}
         </button>
         <div *ngIf="currentPage$ | async as callPage">
-            <h5>List of Calls</h5>
+            <h5>{{'call.list.header' | translate}}</h5>
             <app-call-list
                     [isApplicant]="false"
                     [publishedCall]="publishedCall$ | async"
@@ -38,7 +38,7 @@
 
     <div *ngxPermissionsOnly="Permission.APPLICANT_USER">
         <div *ngIf="currentPage$ | async as callPage">
-            <h5>Open Calls</h5>
+            <h5>{{'call.list.open.title' | translate}}</h5>
             <app-call-list
                     [isApplicant]="true"
                     [publishedCall]="publishedCall$ | async"
