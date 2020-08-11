@@ -377,6 +377,8 @@ class CallServiceTest {
         assertThat(exception).isEqualTo(expectedException)
     }
 
+    // TODO MP2-504 re-enable
+    /**
     @Test
     fun `publishCall empty policies`() {
         val existingId = 1L
@@ -392,6 +394,7 @@ class CallServiceTest {
         val exception = assertThrows<I18nValidationException> { callService.publishCall(existingId) }
         assertThat(exception).isEqualTo(expectedException)
     }
+     **/
 
     @Test
     fun `findOneByName existing`() {
