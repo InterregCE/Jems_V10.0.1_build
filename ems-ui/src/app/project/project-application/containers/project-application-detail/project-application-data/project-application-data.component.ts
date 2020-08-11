@@ -1,5 +1,5 @@
 import {ChangeDetectionStrategy, Component} from '@angular/core';
-import {InputProjectStatus} from '@cat/api';
+import {InputProjectStatus, InputRevertProjectStatus} from '@cat/api';
 import {Permission} from '../../../../../security/permissions/permission';
 import {Alert} from '@common/components/forms/alert';
 import {BaseComponent} from '@common/components/base-component';
@@ -21,6 +21,7 @@ export class ProjectApplicationDataComponent extends BaseComponent {
     .pipe(
       map(() => true)
     );
+  revertStatus$ = this.projectStore.getRevertStatus();
 
   constructor(private projectStore: ProjectStore) {
     super();
@@ -28,5 +29,9 @@ export class ProjectApplicationDataComponent extends BaseComponent {
 
   changeProjectStatus(newStatus: InputProjectStatus.StatusEnum): void {
     this.projectStore.changeStatus({status: newStatus, note: '', date: ''});
+  }
+
+  revertStatus(status: InputRevertProjectStatus): void {
+    this.projectStore.revertStatus(status);
   }
 }

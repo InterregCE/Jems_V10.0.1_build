@@ -3,12 +3,15 @@ import {
   InputProjectEligibilityAssessment,
   InputProjectQualityAssessment,
   InputProjectStatus,
-  OutputProject
+  OutputProject,
+  OutputRevertProjectStatus
 } from '@cat/api';
 import {HttpTestingController} from '@angular/common/http/testing';
 import {ProjectStore} from './project-store.service';
 import {TestModule} from '../../../../../common/test-module';
 import {ProjectModule} from '../../../../project.module';
+import {PermissionService} from '../../../../../security/permissions/permission.service';
+import {Permission} from '../../../../../security/permissions/permission';
 
 describe('ProjectStoreService', () => {
   let service: ProjectStore;
@@ -66,7 +69,10 @@ describe('ProjectStoreService', () => {
     service.changeStatus({status: InputProjectStatus.StatusEnum.ELIGIBLE, note: 'Passed', date: '20/07/2020'})
 
     httpTestingController.expectOne({method: 'PUT', url: '//api/project/1/status'})
-      .flush({id: 1, projectStatus: {status: InputProjectStatus.StatusEnum.ELIGIBLE, note: 'Passed', date: '20/07/2020'}});
+      .flush({
+        id: 1,
+        projectStatus: {status: InputProjectStatus.StatusEnum.ELIGIBLE, note: 'Passed', date: '20/07/2020'}
+      });
 
     tick();
     expect(status).toEqual(InputProjectStatus.StatusEnum.ELIGIBLE);
@@ -104,5 +110,34 @@ describe('ProjectStoreService', () => {
 
     tick();
     expect(project.qualityAssessment.result).toEqual(InputProjectQualityAssessment.ResultEnum.NOTRECOMMENDED);
+  }));
+
+  it('should fetch the revert status', fakeAsync(() => {
+    const permissionService = TestBed.inject(PermissionService);
+    let revertStatus: OutputRevertProjectStatus | null = {} as OutputRevertProjectStatus;
+    service.getRevertStatus().subscribe(res => revertStatus = res);
+
+    service.init(1);
+    permissionService.setPermissions([Permission.ADMINISTRATOR]);
+
+    httpTestingController.expectOne({method: 'GET', url: '//api/project/1/status/revert'})
+      .flush({from: {id: 1}, to: {id: 2}});
+
+    tick();
+    expect(revertStatus).toEqual({from: {id: 1}, to: {id: 2}} as any);
+  }));
+
+  it('should change the revert status', fakeAsync(() => {
+    let project: OutputProject = {} as OutputProject;
+    service.getProject().subscribe(res => project = res);
+
+    service.init(1);
+    service.revertStatus({} as any);
+
+    httpTestingController.expectOne({method: 'POST', url: '//api/project/1/status/revert'})
+      .flush({id: 1});
+
+    tick();
+    expect(project).toEqual({id: 1} as any);
   }));
 });
