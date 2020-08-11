@@ -108,7 +108,8 @@ class CallServiceImpl(
             .orElseThrow { ResourceNotFoundException("call") }
 
         validateIsDraft(call)
-        validatePoliciesNotEmpty(call)
+//        TODO MP2-504 uncomment this validation for call publishing
+//        validatePoliciesNotEmpty(call)
 
         val updatedCall = callRepository.save(call.copy(status = CallStatus.PUBLISHED)).toOutputCall()
 
