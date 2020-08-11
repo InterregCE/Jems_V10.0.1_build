@@ -1,5 +1,7 @@
 package io.cloudflight.ems.programme.service
 
+import io.cloudflight.ems.api.dto.user.OutputUserRole
+import io.cloudflight.ems.api.dto.user.OutputUserWithRole
 import io.cloudflight.ems.api.programme.dto.InputProgrammePriorityCreate
 import io.cloudflight.ems.api.programme.dto.InputProgrammePriorityPolicy
 import io.cloudflight.ems.api.programme.dto.InputProgrammePriorityUpdate
@@ -17,15 +19,23 @@ import io.cloudflight.ems.api.programme.dto.ProgrammeObjectivePolicy.IndustrialT
 import io.cloudflight.ems.api.programme.dto.ProgrammeObjectivePolicy.SmartEnergy
 import io.cloudflight.ems.api.programme.dto.ProgrammeObjectivePolicy.SocialInnovation
 import io.cloudflight.ems.api.programme.dto.ProgrammeObjectivePolicy.WaterManagement
+import io.cloudflight.ems.entity.Audit
+import io.cloudflight.ems.entity.AuditAction
 import io.cloudflight.ems.exception.I18nValidationException
 import io.cloudflight.ems.exception.ResourceNotFoundException
 import io.cloudflight.ems.programme.entity.ProgrammePriority
 import io.cloudflight.ems.programme.entity.ProgrammePriorityPolicy
 import io.cloudflight.ems.programme.repository.ProgrammePriorityPolicyRepository
 import io.cloudflight.ems.programme.repository.ProgrammePriorityRepository
+import io.cloudflight.ems.security.model.LocalCurrentUser
+import io.cloudflight.ems.security.service.SecurityService
+import io.cloudflight.ems.service.AuditService
 import io.mockk.MockKAnnotations
 import io.mockk.every
 import io.mockk.impl.annotations.MockK
+import io.mockk.impl.annotations.RelaxedMockK
+import io.mockk.slot
+import io.mockk.verify
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -38,19 +48,34 @@ import java.util.stream.Collectors
 
 class ProgrammePriorityServiceTest {
 
+    private val user = OutputUserWithRole(
+        id = 1,
+        email = "admin@admin.dev",
+        name = "Name",
+        surname = "Surname",
+        userRole = OutputUserRole(id = 1, name = "ADMIN")
+    )
+
     @MockK
     lateinit var programmePriorityRepository: ProgrammePriorityRepository
     @MockK
     lateinit var programmePriorityPolicyRepository: ProgrammePriorityPolicyRepository
+    @MockK
+    lateinit var securityService: SecurityService
+    @RelaxedMockK
+    lateinit var auditService: AuditService
 
     lateinit var programmePriorityService: ProgrammePriorityService
 
     @BeforeEach
     fun setup() {
         MockKAnnotations.init(this)
+        every { securityService.currentUser } returns LocalCurrentUser(user, "hash_pass", emptyList())
         programmePriorityService = ProgrammePriorityServiceImpl(
             programmePriorityRepository,
-            programmePriorityPolicyRepository
+            programmePriorityPolicyRepository,
+            auditService,
+            securityService
         )
     }
 
@@ -118,6 +143,13 @@ class ProgrammePriorityServiceTest {
 
         assertThat(programmePriorityService.create(toCreate))
             .isEqualTo(expectedResult)
+
+        val event = slot<Audit>()
+        verify { auditService.logEvent(capture(event)) }
+        with(event) {
+            assertThat(AuditAction.PROGRAMME_PRIORITY_ADDED).isEqualTo(captured.action)
+            assertThat("New programme priority 'new prio' 'New priority' was created").isEqualTo(captured.description)
+        }
     }
 
     @Test

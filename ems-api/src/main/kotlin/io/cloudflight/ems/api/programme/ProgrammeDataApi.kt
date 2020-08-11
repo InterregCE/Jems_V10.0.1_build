@@ -1,6 +1,6 @@
 package io.cloudflight.ems.api.programme
 
-import io.cloudflight.ems.api.programme.dto.InputProgrammeData
+import io.cloudflight.ems.api.programme.dto.ProgrammeBasicData
 import io.swagger.annotations.Api
 import org.springframework.http.MediaType
 import org.springframework.web.bind.annotation.GetMapping
@@ -14,9 +14,9 @@ import javax.validation.Valid
 interface ProgrammeDataApi {
 
     @GetMapping
-    fun get(): InputProgrammeData
+    fun get(): ProgrammeBasicData
 
     @PutMapping(consumes = [MediaType.APPLICATION_JSON_VALUE])
-    fun update(@Valid @RequestBody dataInput: InputProgrammeData): InputProgrammeData
+    fun update(@Valid @RequestBody basicData: ProgrammeBasicData): ProgrammeBasicData
 
 }

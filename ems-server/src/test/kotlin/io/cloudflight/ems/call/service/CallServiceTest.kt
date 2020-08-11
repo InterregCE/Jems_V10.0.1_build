@@ -108,6 +108,7 @@ class CallServiceTest {
     @BeforeEach
     fun setup() {
         MockKAnnotations.init(this)
+        every { securityService.currentUser } returns LocalCurrentUser(user, "hash_pass", emptyList())
         callService = CallServiceImpl(
             callRepository,
             userRepository,
@@ -164,7 +165,16 @@ class CallServiceTest {
     fun `createCall Successful empty policies`() {
         every { securityService.currentUser } returns adminUser
         every { userRepository.findById(eq(adminUser.user.id!!)) } returns Optional.of(account)
-        every { callRepository.save(any<Call>()) } returnsArgument 0
+        every { callRepository.save(any<Call>()) } returns Call (
+            100,
+            account,
+            call.name,
+            call.priorityPolicies,
+            call.startDate,
+            call.endDate.withSecond(59).withNano(999999999),
+            CallStatus.DRAFT,
+            call.description
+        )
 
         val newCall = InputCallCreate(
             name = call.name,
@@ -181,6 +191,13 @@ class CallServiceTest {
         assertThat(result.endDate).isEqualTo(endDate)
         assertThat(result.status).isEqualTo(CallStatus.DRAFT)
         assertThat(result.description).isEqualTo(call.description)
+
+        val event = slot<Audit>()
+        verify { auditService.logEvent(capture(event)) }
+        with(event) {
+            assertThat(AuditAction.CALL_CREATED).isEqualTo(captured.action)
+            assertThat("A new call '100' 'Test call name' was created").isEqualTo(captured.description)
+        }
     }
 
     @Test
@@ -359,7 +376,7 @@ class CallServiceTest {
         with(event) {
             assertThat(captured.action).isEqualTo(AuditAction.CALL_PUBLISHED)
             assertThat(captured.description)
-                .isEqualTo("Call 'Test call name' published")
+                .isEqualTo("Call '1' 'Test call name' published")
         }
     }
 
