@@ -1,7 +1,7 @@
 package io.cloudflight.ems.controller
 
 import com.fasterxml.jackson.databind.ObjectMapper
-import io.cloudflight.ems.api.dto.InputProject
+import io.cloudflight.ems.api.project.dto.InputProject
 import io.cloudflight.ems.factory.CallFactory
 import io.cloudflight.ems.factory.UserFactory
 import io.cloudflight.ems.factory.UserFactory.Companion.ADMINISTRATOR_EMAIL

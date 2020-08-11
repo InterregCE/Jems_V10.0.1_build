@@ -1,20 +1,21 @@
 package io.cloudflight.ems.security.service.authorization
 
-import io.cloudflight.ems.api.dto.OutputProject
+import io.cloudflight.ems.api.project.dto.OutputProject
 import io.cloudflight.ems.api.dto.OutputProjectFile
-import io.cloudflight.ems.api.dto.ProjectApplicationStatus.APPROVED
-import io.cloudflight.ems.api.dto.ProjectApplicationStatus.INELIGIBLE
-import io.cloudflight.ems.api.dto.ProjectApplicationStatus.NOT_APPROVED
-import io.cloudflight.ems.api.dto.ProjectApplicationStatus.Companion.isNotFinallyFunded
-import io.cloudflight.ems.api.dto.ProjectApplicationStatus.Companion.isNotSubmittedNow
-import io.cloudflight.ems.api.dto.ProjectApplicationStatus.Companion.wasSubmittedAtLeastOnce
+import io.cloudflight.ems.api.project.dto.status.ProjectApplicationStatus.APPROVED
+import io.cloudflight.ems.api.project.dto.status.ProjectApplicationStatus.INELIGIBLE
+import io.cloudflight.ems.api.project.dto.status.ProjectApplicationStatus.NOT_APPROVED
+import io.cloudflight.ems.api.project.dto.status.ProjectApplicationStatus.Companion.isNotFinallyFunded
+import io.cloudflight.ems.api.project.dto.status.ProjectApplicationStatus.Companion.isNotSubmittedNow
+import io.cloudflight.ems.api.project.dto.status.ProjectApplicationStatus.Companion.wasSubmittedAtLeastOnce
 import io.cloudflight.ems.api.dto.ProjectFileType
 import io.cloudflight.ems.api.dto.ProjectFileType.APPLICANT_FILE
 import io.cloudflight.ems.api.dto.ProjectFileType.ASSESSMENT_FILE
 import io.cloudflight.ems.exception.ResourceNotFoundException
+import io.cloudflight.ems.project.authorization.ProjectAuthorization
 import io.cloudflight.ems.security.service.SecurityService
 import io.cloudflight.ems.service.FileStorageService
-import io.cloudflight.ems.service.ProjectService
+import io.cloudflight.ems.project.service.ProjectService
 import org.springframework.stereotype.Component
 import java.time.ZonedDateTime
 
@@ -124,10 +125,6 @@ class ProjectFileAuthorization(
         return project.lastResubmission?.updated
             ?: project.firstSubmission?.updated
             ?: project.projectStatus.updated
-    }
-
-    fun isOwner(project: OutputProject): Boolean {
-        return project.applicant.id == securityService.currentUser?.user?.id
     }
 
 }

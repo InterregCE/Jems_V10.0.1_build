@@ -1,6 +1,7 @@
 package io.cloudflight.ems.entity
 
 import io.cloudflight.ems.api.dto.ProjectFileType
+import io.cloudflight.ems.project.entity.Project
 import java.time.ZonedDateTime
 import javax.persistence.Column
 import javax.persistence.Entity
@@ -12,7 +13,7 @@ import javax.persistence.Id
 import javax.persistence.ManyToOne
 
 @Entity(name = "project_file")
-data class ProjectFile (
+data class ProjectFile(
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

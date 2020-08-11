@@ -54,7 +54,7 @@ export class ProjectApplicationListComponent {
       },
       {
         displayedColumn: 'project.table.column.name.status',
-        elementProperty: 'projectStatus.status',
+        elementProperty: 'projectStatus',
         sortProperty: 'projectStatus.status'
       },
       {
