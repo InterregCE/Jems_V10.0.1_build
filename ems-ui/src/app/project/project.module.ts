@@ -35,6 +35,7 @@ import {ProjectApplicationFundingPageComponent} from './project-application/cont
 import {ProjectApplicationFundingDecisionComponent} from './project-application/components/project-application-detail/project-application-funding-decision/project-application-funding-decision.component';
 import {ProjectApplicationEligibilityDecisionPageComponent} from './project-application/containers/project-application-detail/project-application-eligibility-decision-page/project-application-eligibility-decision-page.component';
 import { ProjectApplicationFormPageComponent } from './project-application/containers/project-application-detail/project-application-form-page/project-application-form-page.component';
+import {MatSidenavModule} from '@angular/material/sidenav';
 import { ProjectApplicationIdentificationComponent } from './project-application/components/project-application-form/project-application-identification/project-application-identification.component';
 import { ProjectApplicationSummaryComponent } from './project-application/components/project-application-form/project-application-summary/project-application-summary.component';
 
@@ -64,22 +65,24 @@ import { ProjectApplicationSummaryComponent } from './project-application/compon
     ProjectApplicationIdentificationComponent,
     ProjectApplicationSummaryComponent
   ],
-  imports: [
-    SharedModule,
-    CoreModule,
-    ProjectRoutingModule,
-    MatListModule,
-    MatSelectModule,
-    MatDialogModule,
-    OverlayModule,
-    BrowserAnimationsModule,
-    MatRadioModule,
-    MatExpansionModule,
-    MatDatepickerModule,
-    MatMomentDateModule,
-  ],
+    imports: [
+        SharedModule,
+        CoreModule,
+        ProjectRoutingModule,
+        MatListModule,
+        MatSelectModule,
+        MatDialogModule,
+        OverlayModule,
+        BrowserAnimationsModule,
+        MatRadioModule,
+        MatExpansionModule,
+        MatDatepickerModule,
+        MatMomentDateModule,
+        MatSidenavModule,
+    ],
   exports: [
-    ProjectApplicationListComponent
+    ProjectApplicationListComponent,
+    ProjectApplicationDetailComponent
   ],
   providers: [
     DatePipe,

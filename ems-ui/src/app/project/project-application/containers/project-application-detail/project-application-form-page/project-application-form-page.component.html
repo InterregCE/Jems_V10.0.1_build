@@ -1,5 +1,5 @@
 <div *ngIf="project$ | async as project">
-    <a [routerLink]="'/project/'+ project.id">{{'back.project.details' | translate}}</a>
+
     <div class="container">
         <h4>{{project.acronym}} {{'project.application.form.title' | translate}}</h4>
 
