@@ -12,6 +12,9 @@ import {NgxMatMomentModule} from '@angular-material-components/moment-adapter';
 import {CallStore} from './services/call-store.service';
 import {CallActionCellComponent} from './components/call-list/call-action-cell/call-action-cell.component';
 import {ProjectModule} from '../project/project.module';
+import {CallPriorityTreeComponent} from './components/call-priority-tree/call-priority-tree.component';
+import {MatTreeModule} from '@angular/material/tree';
+import {MatCheckboxModule} from '@angular/material/checkbox';
 
 @NgModule({
   declarations: [
@@ -19,7 +22,8 @@ import {ProjectModule} from '../project/project.module';
     CallListComponent,
     CallDetailComponent,
     CallConfigurationComponent,
-    CallActionCellComponent
+    CallActionCellComponent,
+    CallPriorityTreeComponent
   ],
   imports: [
     CallRoutingModule,
@@ -28,7 +32,9 @@ import {ProjectModule} from '../project/project.module';
     NgxMatDatetimePickerModule,
     NgxMatMomentModule,
     CoreModule,
-    ProjectModule
+    ProjectModule,
+    MatTreeModule,
+    MatCheckboxModule
   ],
   providers: [
     CallStore,

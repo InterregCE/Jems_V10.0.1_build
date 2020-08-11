@@ -57,6 +57,9 @@
         </mat-error>
     </mat-form-field>
 
+    <app-call-priority-tree [data]="data.asObservable()">
+    </app-call-priority-tree>
+
     <ng-container *ngIf="!published">
         <button mat-raised-button color="secondary"
                 (click)="cancel.emit()">

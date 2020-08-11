@@ -14,6 +14,8 @@ import {FormState} from '@common/components/forms/form-state';
 import {Forms} from '../../../common/utils/forms';
 import {filter, take, takeUntil} from 'rxjs/operators';
 import {MatDialog} from '@angular/material/dialog';
+import {TreeNode} from '../call-priority-tree/call-priority-tree.component';
+import {Observable, Subject} from 'rxjs';
 
 @Component({
   selector: 'app-call-detail',
@@ -25,6 +27,8 @@ export class CallDetailComponent extends ViewEditForm implements OnInit {
 
   @Input()
   call: OutputCall
+  @Input()
+  datasource: Observable<TreeNode[]>;
 
   @Output()
   create: EventEmitter<InputCallCreate> = new EventEmitter<InputCallCreate>()
@@ -35,6 +39,7 @@ export class CallDetailComponent extends ViewEditForm implements OnInit {
   @Output()
   cancel: EventEmitter<void> = new EventEmitter<void>()
 
+  data = new Subject<TreeNode[]>();
 
   startDateErrors = {
     required: 'call.startDate.unknown',
@@ -82,6 +87,12 @@ export class CallDetailComponent extends ViewEditForm implements OnInit {
     this.callForm.controls.startDate.setValue(this.call.startDate);
     this.callForm.controls.endDate.setValue(this.call.endDate);
     this.callForm.controls.description.setValue(this.call.description);
+    this.datasource
+      .pipe(
+        takeUntil(this.destroyed$)
+      ).subscribe(data => {
+      this.data.next(data);
+    })
   }
 
   getForm(): FormGroup | null {
