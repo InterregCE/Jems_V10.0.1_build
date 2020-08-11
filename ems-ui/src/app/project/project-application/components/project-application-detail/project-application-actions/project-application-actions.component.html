@@ -14,9 +14,9 @@
 </ng-container>
 
 <ng-container *ngxPermissionsOnly="[Permission.ADMINISTRATOR, Permission.PROGRAMME_USER]">
-    <div *ngIf="returnableStatuses.includes(projectStatus)" class="row">
-        <button mat-raised-button
-                color="primary"
+    <div class="row">
+        <button *ngIf="returnableStatuses.includes(projectStatus)"
+                mat-raised-button color="primary"
                 (click)="returnToApplicant()">{{'project.detail.button.return.applicant' | translate}}
         </button>
         <button *ngIf="projectRevertStatus"
