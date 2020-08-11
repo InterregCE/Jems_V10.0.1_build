@@ -5,10 +5,10 @@ import {FormControl, FormGroup, ValidatorFn} from '@angular/forms';
 
 export class Forms {
 
-  static confirmDialog(dialog: MatDialog, title: string, message: string): Observable<boolean> {
+  static confirmDialog(dialog: MatDialog, title: string, message: string, messageArguments?: any): Observable<boolean> {
     const dialogRef = dialog.open(ConfirmDialogComponent, {
       maxWidth: '30rem',
-      data: {title, message}
+      data: {title, message, arguments: messageArguments}
     });
     return dialogRef.afterClosed();
   }

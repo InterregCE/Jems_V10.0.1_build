@@ -7,7 +7,9 @@
             [projectId]="project.id"
             [success$]="projectChanged$"
             [projectStatus]="project.projectStatus.status"
-            (changeStatus)="changeProjectStatus($event)">
+            [projectRevertStatus]="revertStatus$ | async"
+            (changeStatus)="changeProjectStatus($event)"
+            (revertStatus)="revertStatus($event)">
     </app-project-application-actions>
     <app-project-application-decisions
             *ngxPermissionsExcept="[Permission.APPLICANT_USER]"

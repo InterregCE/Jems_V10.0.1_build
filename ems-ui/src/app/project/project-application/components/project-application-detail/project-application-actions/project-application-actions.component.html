@@ -19,6 +19,11 @@
                 color="primary"
                 (click)="returnToApplicant()">{{'project.detail.button.return.applicant' | translate}}
         </button>
+        <button *ngIf="projectRevertStatus"
+                mat-raised-button color="primary"
+                (click)="revertProjectStatus()">
+            {{ 'project.application.revert.status.button.label'| translate: {status: projectRevertStatus.to.status} }}
+        </button>
     </div>
 </ng-container>
 

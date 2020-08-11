@@ -15,6 +15,7 @@ export class ConfirmDialogComponent {
               @Inject(MAT_DIALOG_DATA) public data: ConfirmDialogData) {
     this.title = data.title;
     this.message = data.message;
+    this.arguments = data.arguments;
   }
 
   onConfirm(): void {

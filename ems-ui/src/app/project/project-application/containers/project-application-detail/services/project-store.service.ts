@@ -1,17 +1,21 @@
 import {Injectable} from '@angular/core';
-import {merge, Observable, ReplaySubject, Subject} from 'rxjs';
+import {combineLatest, merge, Observable, of, ReplaySubject, Subject} from 'rxjs';
 import {
   InputProjectEligibilityAssessment,
   InputProjectQualityAssessment,
   InputProjectStatus,
+  InputRevertProjectStatus,
   OutputProject,
   OutputProjectStatus,
+  OutputRevertProjectStatus,
   ProjectService,
   ProjectStatusService
 } from '@cat/api';
-import {flatMap, shareReplay, tap, withLatestFrom} from 'rxjs/operators';
+import {flatMap, shareReplay, startWith, tap, withLatestFrom} from 'rxjs/operators';
 import {Log} from '../../../../../common/utils/log';
 import {Router} from '@angular/router';
+import {PermissionService} from '../../../../../security/permissions/permission.service';
+import {Permission} from '../../../../../security/permissions/permission';
 
 /**
  * Stores project related information.
@@ -22,6 +26,8 @@ export class ProjectStore {
   private newStatus$ = new Subject<InputProjectStatus>();
   private newEligibilityAssessment$ = new Subject<InputProjectEligibilityAssessment>();
   private newQualityAssessment$ = new Subject<InputProjectQualityAssessment>();
+  private newRevertProjectStatus$ = new Subject<InputRevertProjectStatus>();
+  private revertStatusChanged$ = new Subject<void>();
 
   private projectById$ = this.projectId$
     .pipe(
@@ -51,9 +57,30 @@ export class ProjectStore {
     .pipe(
       withLatestFrom(this.projectId$),
       flatMap(([assessment, id]) => this.projectStatusService.setQualityAssessment(id, assessment)),
-      tap(saved => Log.info('Updated project uality assessment:', this, saved)),
+      tap(saved => Log.info('Updated project quality assessment:', this, saved)),
       tap(saved => this.router.navigate(['project', saved.id]))
     )
+
+  private revertedProjectStatus$ = this.newRevertProjectStatus$
+    .pipe(
+      withLatestFrom(this.projectId$),
+      flatMap(([status, id]) => this.projectStatusService.revertLastDecision(id, status)),
+      tap(() => this.revertStatusChanged$.next()),
+      tap(saved => Log.info('Reverted project status:', this, saved))
+    );
+
+  private revertStatus$ = combineLatest([
+    this.permissionService.permissionsChanged(),
+    this.projectId$,
+    this.revertStatusChanged$.pipe(startWith(null))
+  ])
+    .pipe(
+      flatMap(([permissions, id]) => permissions[0] === Permission.ADMINISTRATOR
+        ? this.projectStatusService.findPossibleDecisionRevertStatus(id)
+        : of(null)
+      ),
+      tap(revertStatus => Log.info('Fetched the project revert status', revertStatus))
+    );
 
   private projectStatus$ = new ReplaySubject<OutputProjectStatus.StatusEnum>(1);
   private project$ =
@@ -62,6 +89,7 @@ export class ProjectStore {
       this.changedStatus$,
       this.changedEligibilityAssessment$,
       this.changedQualityAssessment$,
+      this.revertedProjectStatus$
     )
       .pipe(
         shareReplay(1)
@@ -70,7 +98,8 @@ export class ProjectStore {
 
   constructor(private projectService: ProjectService,
               private projectStatusService: ProjectStatusService,
-              private router: Router) {
+              private router: Router,
+              private permissionService: PermissionService) {
   }
 
   init(projectId: number) {
@@ -95,5 +124,13 @@ export class ProjectStore {
 
   setQualityAssessment(assessment: InputProjectQualityAssessment): void {
     this.newQualityAssessment$.next(assessment);
+  }
+
+  getRevertStatus(): Observable<OutputRevertProjectStatus | null> {
+    return this.revertStatus$;
+  }
+
+  revertStatus(status: InputRevertProjectStatus): void {
+    this.newRevertProjectStatus$.next(status);
   }
 }
