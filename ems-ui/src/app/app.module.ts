@@ -9,6 +9,9 @@ import {RouterModule} from '@angular/router';
 import {NgxPermissionsModule} from 'ngx-permissions';
 import {ProgrammeModule} from './programme/programme.module';
 import {CallModule} from './call/call.module';
+import {MatSidenavModule} from '@angular/material/sidenav';
+import {CommonModule} from '@angular/common';
+import {SharedModule} from './common/shared-module';
 
 @NgModule({
   declarations: [
@@ -23,6 +26,9 @@ import {CallModule} from './call/call.module';
     RouterModule,
     CallModule,
     NgxPermissionsModule.forRoot(),
+    MatSidenavModule,
+    CommonModule,
+    SharedModule
   ],
   providers: [
     {

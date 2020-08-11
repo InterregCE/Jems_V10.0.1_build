@@ -12,6 +12,7 @@ import {
 } from 'ngx-permissions';
 import {LoginPageService} from '../authentication/login/services/login-page-service';
 import {NoopAnimationsModule} from '@angular/platform-browser/animations';
+import {SideNavService} from '@common/components/side-nav/side-nav.service';
 import {TabService} from './services/tab.service';
 
 @NgModule({
@@ -31,7 +32,9 @@ import {TabService} from './services/tab.service';
     NgxRolesStore,
     NgxPermissionsService,
     LoginPageService,
-    TabService
+    TabService,
+    LoginPageService,
+    SideNavService
   ],
   exports: []
 })

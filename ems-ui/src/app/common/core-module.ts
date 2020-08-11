@@ -20,6 +20,8 @@ import {AlertComponent} from '@common/components/forms/form-validation/alert.com
 import {MatSortHeader} from '@angular/material/sort';
 import {MatSelectModule} from '@angular/material/select';
 import {TabService} from './services/tab.service';
+import {MatSidenavModule} from '@angular/material/sidenav';
+import {SideNavService} from '@common/components/side-nav/side-nav.service';
 
 const declarations = [
   TopBarComponent,
@@ -40,12 +42,14 @@ const declarations = [
     MatDialogModule,
     MatMenuModule,
     MatIconModule,
+    MatSidenavModule,
     MatSelectModule,
   ],
   providers: [
     SecurityService,
     PermissionService,
     TopBarService,
+    SideNavService,
     KeyValuePipe,
     MatSortHeader,
     TabService,
