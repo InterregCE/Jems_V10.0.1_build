@@ -59,28 +59,28 @@ export class CallListComponent extends BaseComponent implements OnInit {
       isTableClickable: true,
       columns: [
         {
-          displayedColumn: 'Id',
+          displayedColumn: 'call.table.column.name.id',
           elementProperty: 'id',
           sortProperty: 'id'
         },
         {
-          displayedColumn: 'Name',
+          displayedColumn: 'call.table.column.name.name',
           elementProperty: 'name',
           sortProperty: 'name',
         },
         {
-          displayedColumn: 'Status',
+          displayedColumn: 'call.table.column.name.status',
           elementProperty: 'status',
           sortProperty: 'status'
         },
         {
-          displayedColumn: 'Started',
+          displayedColumn: 'call.table.column.name.started',
           columnType: ColumnType.Date,
           elementProperty: 'startDate',
           sortProperty: 'startDate'
         },
         {
-          displayedColumn: 'Ends',
+          displayedColumn: 'call.table.column.name.end',
           columnType: ColumnType.Date,
           elementProperty: 'endDate',
           sortProperty: 'endDate'
@@ -92,34 +92,34 @@ export class CallListComponent extends BaseComponent implements OnInit {
       isTableClickable: false,
       columns: [
         {
-          displayedColumn: 'Id',
+          displayedColumn: 'call.table.column.name.id',
           elementProperty: 'id',
           sortProperty: 'id'
         },
         {
-          displayedColumn: 'Name',
+          displayedColumn: 'call.table.column.name.name',
           elementProperty: 'name',
           sortProperty: 'name',
         },
         {
-          displayedColumn: 'Status',
+          displayedColumn: 'call.table.column.name.status',
           elementProperty: 'status',
           sortProperty: 'status'
         },
         {
-          displayedColumn: 'Started',
+          displayedColumn: 'call.table.column.name.started',
           columnType: ColumnType.Date,
           elementProperty: 'startDate',
           sortProperty: 'startDate'
         },
         {
-          displayedColumn: 'Ends',
+          displayedColumn: 'call.table.column.name.end',
           columnType: ColumnType.Date,
           elementProperty: 'endDate',
           sortProperty: 'endDate'
         },
         {
-          displayedColumn: 'Actions',
+          displayedColumn: 'call.table.column.name.action',
           customCellTemplate: this.actionsCell
         }
       ]

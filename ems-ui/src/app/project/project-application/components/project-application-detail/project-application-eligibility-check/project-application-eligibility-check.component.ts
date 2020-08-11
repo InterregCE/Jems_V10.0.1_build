@@ -16,8 +16,8 @@ import {Observable} from 'rxjs';
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class ProjectApplicationEligibilityCheckComponent extends AbstractForm implements OnInit {
-  ELIGIBLE = 'Project has PASSED ELIGIBILITY assessment.';
-  INELIGIBLE = 'Project has FAILED ELIGIBILITY assessment.'
+  ELIGIBLE = 'ELIGIBLE';
+  INELIGIBLE = 'INELIGIBLE'
   // TODO move id to a container
   projectId = this.activatedRoute.snapshot.params.projectId;
   options: string[] = [this.ELIGIBLE, this.INELIGIBLE];

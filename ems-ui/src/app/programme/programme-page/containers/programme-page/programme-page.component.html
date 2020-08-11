@@ -4,7 +4,7 @@
         <mat-tab-group class="programme-tab-menu"
                        (selectedIndexChange)="changeTab($event)"
                        [selectedIndex]="activeTab$ | async">
-            <mat-tab label="Basic Data">
+            <mat-tab label="{{'programme.tab.data' | translate}}">
                 <app-programme-data
                         [success$]="programmeSaveSuccess$"
                         [error$]="programmeSaveError$"
@@ -12,7 +12,7 @@
                         (saveProgrammeData)="saveProgrammeData$.next($event)">
                 </app-programme-data>
             </mat-tab>
-            <mat-tab label="Programme Priorities">
+            <mat-tab label="{{'programme.tab.priority' | translate}}">
                 <app-programme-priorities>
                 </app-programme-priorities>
             </mat-tab>

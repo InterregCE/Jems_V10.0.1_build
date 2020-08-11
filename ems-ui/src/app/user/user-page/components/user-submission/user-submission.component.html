@@ -1,10 +1,10 @@
 <div class="user-submission-container">
-    <p>Create a new user:</p>
+    <p>{{'user.create.header' | translate}}</p>
     <form [formGroup]="userForm" (ngSubmit)="onSubmit(formDirective)" #formDirective="ngForm">
         <div class="form-group">
             <mat-form-field class="col-md-12 user-submission-field">
-                <mat-label>Name</mat-label>
-                <input name="name" formControlName="name" matInput placeholder="Name" required>
+                <mat-label>{{'user.detail.field.name' | translate}}</mat-label>
+                <input name="name" formControlName="name" matInput placeholder="{{'user.detail.field.name' | translate}}" required>
                 <mat-error>
                     <app-form-field-errors
                             [errors]="userForm?.controls?.name?.errors"
@@ -13,8 +13,8 @@
                 </mat-error>
             </mat-form-field>
             <mat-form-field class="col-md-12 user-submission-field">
-                <mat-label>Surname</mat-label>
-                <input name="surname" formControlName="surname" matInput placeholder="Surname" required>
+                <mat-label>{{'user.detail.field.surname' | translate}}</mat-label>
+                <input name="surname" formControlName="surname" matInput placeholder="{{'user.detail.field.surname' | translate}}" required>
                 <mat-error>
                     <app-form-field-errors
                             [errors]="userForm?.controls?.surname?.errors"
@@ -23,8 +23,8 @@
                 </mat-error>
             </mat-form-field>
             <mat-form-field class="col-md-12 user-submission-field">
-                <mat-label>Email</mat-label>
-                <input name="email" formControlName="email" matInput placeholder="Email" required>
+                <mat-label>{{'user.detail.field.email' | translate}}</mat-label>
+                <input name="email" formControlName="email" matInput placeholder="{{'user.detail.field.email' | translate}}" required>
                 <mat-error>
                     <app-form-field-errors
                             [errors]="userForm?.controls?.email?.errors"
@@ -33,7 +33,7 @@
                 </mat-error>
             </mat-form-field>
             <mat-form-field class="col-md-12 user-submission-field">
-                <mat-label>Role</mat-label>
+                <mat-label>{{'user.detail.field.role' | translate}}</mat-label>
                 <mat-select name="role" formControlName="role" [disableOptionCentering]="true" required
                             panelClass="material-select-panel">
                     <mat-option *ngFor="let role of userRoles" [value]="role">
@@ -52,7 +52,7 @@
                 color="primary"
                 type="submit"
                 [disabled]="userForm.invalid || submitted">
-            + Add User
+            + {{'user.create.button.add' | translate}}
         </button>
     </form>
     <app-alert

@@ -16,9 +16,9 @@ import {InputProjectQualityAssessment, OutputProject} from '@cat/api';
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class ProjectApplicationQualityCheckComponent extends AbstractForm implements OnInit {
-  RECOMMEND = 'Project is RECOMMENDED for funding.';
-  RECOMMEND_WITH_CONDITIONS = 'Project is RECOMMENDED WITH CONDITIONS.';
-  NOT_RECOMMEND = 'Project is NOT RECOMMENDED for funding.';
+  RECOMMEND = 'RECOMMEND';
+  RECOMMEND_WITH_CONDITIONS = 'RECOMMEND_WITH_CONDITIONS';
+  NOT_RECOMMEND = 'NOT_RECOMMENDED';
   // TODO move to container, use as Input()
   projectId = this.activatedRoute.snapshot.params.projectId;
   options: string[] = [this.RECOMMEND, this.RECOMMEND_WITH_CONDITIONS, this.NOT_RECOMMEND];

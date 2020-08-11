@@ -1,9 +1,9 @@
 <div class="container">
-    <h5>List of programme priorities</h5>
+    <h5>{{'programme.priority.list.header' | translate}}</h5>
     <button mat-raised-button
             color="primary"
             [routerLink]="'/priority'">
-        + Add Priority
+        + {{'programme.priority.add.new' | translate}}
     </button>
     <div *ngIf="currentPage$ | async as priorities" class="priority-items">
         <app-programme-priority-items

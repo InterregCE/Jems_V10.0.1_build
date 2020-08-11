@@ -2,13 +2,13 @@
     <div *ngIf="projectStatus === OutputProjectStatus.StatusEnum.DRAFT" class="row">
         <button mat-raised-button
                 color="primary"
-                (click)="submitProject()">Submit Project Application
+                (click)="submitProject()">{{'project.detail.button.submit' | translate}}
         </button>
     </div>
     <div *ngIf="projectStatus === OutputProjectStatus.StatusEnum.RETURNEDTOAPPLICANT" class="row">
         <button mat-raised-button
                 color="primary"
-                (click)="resubmitProject()">Re-submit Project Application
+                (click)="resubmitProject()">{{'project.detail.button.resubmit' | translate}}
         </button>
     </div>
 </ng-container>
@@ -17,7 +17,7 @@
     <div *ngIf="returnableStatuses.includes(projectStatus)" class="row">
         <button mat-raised-button
                 color="primary"
-                (click)="returnToApplicant()">Return To Applicant
+                (click)="returnToApplicant()">{{'project.detail.button.return.applicant' | translate}}
         </button>
     </div>
 </ng-container>

@@ -15,25 +15,25 @@ export class TopBarService {
   private newAuditUrl$ = new ReplaySubject<string>(1);
 
   private applicationsItem = {
-    name: 'Project Applications',
+    name: 'topbar.main.project',
     isInternal: true,
     route: '/',
     action: (internal: boolean, route: string) => this.handleNavigation(internal, route),
   };
   private usersItem = {
-    name: 'User Management',
+    name: 'topbar.main.user.management',
     isInternal: true,
     route: '/user',
     action: (internal: boolean, route: string) => this.handleNavigation(internal, route),
   };
   private programmItem = {
-    name: 'Programme Setup',
+    name: 'topbar.main.programme',
     isInternal: true,
     route: '/programme',
     action: (internal: boolean, route: string) => this.handleNavigation(internal, route),
   };
   private callsItem = {
-    name: 'Calls',
+    name: 'topbar.main.call',
     isInternal: true,
     route: '/calls',
     action: (internal: boolean, route: string) => this.handleNavigation(internal, route),
@@ -70,7 +70,7 @@ export class TopBarService {
 
   private adaptMenuItems(auditUrl: string, currentUser: OutputCurrentUser | null): void {
     this.auditItem = {
-      name: 'Audit Log',
+      name: 'topbar.main.audit',
       isInternal: false,
       route: auditUrl,
       action: (internal: boolean, route: string) => this.handleNavigation(internal, route),

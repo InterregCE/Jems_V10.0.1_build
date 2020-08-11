@@ -1,10 +1,10 @@
-<a *ngIf="call?.id" [routerLink]="['/calls']">&lt; Back to List of Calls</a>
+<a *ngIf="call?.id" [routerLink]="['/calls']">{{'back.call.list' | translate}}</a>
 <br>
 <form [formGroup]="callForm" class="container">
-    <h4 class="col-md-12">Call Configuration</h4>
+    <h4 class="col-md-12">{{'call.detail.title' | translate}}</h4>
     <mat-form-field class="field col-md-12">
-        <mat-label>Call name</mat-label>
-        <input name="name" formControlName="name" matInput placeholder="Call name" required>
+        <mat-label>{{'call.detail.field.name' | translate}}</mat-label>
+        <input name="name" formControlName="name" matInput placeholder="{{'call.detail.field.name' | translate}}" required>
         <mat-error>
             <app-form-field-errors
                     [errors]="callForm?.controls?.name?.errors"
@@ -14,7 +14,7 @@
     </mat-form-field>
 
     <mat-form-field class="field col-md-6">
-        <mat-label>Start Date</mat-label>
+        <mat-label>{{'call.detail.field.start' | translate}}</mat-label>
         <input required formControlName="startDate" matInput name="startDate"
                [max]="callForm?.controls?.endDate?.value"
                [ngxMatDatetimePicker]="start">
@@ -30,7 +30,7 @@
     </mat-form-field>
 
     <mat-form-field class="field col-md-6">
-        <mat-label>End Date</mat-label>
+        <mat-label>{{'call.detail.field.end' | translate}}</mat-label>
         <input required formControlName="endDate" matInput name="endDate"
                [min]="callForm?.controls?.startDate?.value"
                [ngxMatDatetimePicker]="end">
@@ -46,7 +46,7 @@
     </mat-form-field>
 
     <mat-form-field class="field col-md-12">
-        <mat-label>Description</mat-label>
+        <mat-label>{{'call.detail.field.description' | translate}}</mat-label>
         <textarea formControlName="description" matInput name="description">
         </textarea>
         <mat-error>
@@ -60,17 +60,17 @@
     <ng-container *ngIf="!published">
         <button mat-raised-button color="secondary"
                 (click)="cancel.emit()">
-            Cancel
+            {{'call.detail.button.cancel' | translate}}
         </button>
         <button mat-raised-button color="primary"
                 [disabled]="callForm.invalid"
                 (click)="onSubmit()">
-            Save
+            {{'call.detail.button.save' | translate}}
         </button>
         <button *ngIf="call?.id" mat-raised-button color="primary"
                 [disabled]="callForm.invalid"
                 (click)="publishCall()">
-            Publish Call
+            {{'call.detail.button.publish' | translate}}
         </button>
     </ng-container>
     <app-alert *ngIf="error$ | async as error"

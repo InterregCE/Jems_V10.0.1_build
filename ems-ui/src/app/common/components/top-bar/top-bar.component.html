@@ -19,7 +19,7 @@
 
         <ng-container *ngIf="currentUser | async as user">
             <span class="d-inline-block">
-                <button mat-flat-button (click)="logout()">Logout</button>
+                <button mat-flat-button (click)="logout()">{{'topbar.main.button.logout' | translate}}</button>
             </span>
         </ng-container>
     </div>

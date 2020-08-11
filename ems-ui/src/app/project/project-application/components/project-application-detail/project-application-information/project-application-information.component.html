@@ -1,26 +1,26 @@
 <div class="row project-detail-row">
     <div class="col-sm-1 column">
-        <span>Application ID</span>
+        <span>{{'project.detail.table.id.application' | translate}}</span>
         <br>
         <span>{{project.id}}</span>
     </div>
     <div class="col-sm-1 column">
-        <span>Programm ID</span>
+        <span>{{'project.detail.table.id.programme' | translate}}</span>
         <br>
         <span>dummy</span>
     </div>
     <div class="col-sm-2 column">
-        <span>Call Name</span>
+        <span>{{'project.detail.table.call.name' | translate}}</span>
         <br>
         <span>{{project.call.name}}</span>
     </div>
     <div class="col-sm-2 column">
-        <span>Project Acronym</span>
+        <span>{{'project.detail.table.project.acronym' | translate}}</span>
         <br>
         <span>{{project.acronym}}</span>
     </div>
     <div class="col-sm-2 column">
-        <span>First submission</span>
+        <span>{{'project.detail.table.submission.first' | translate}}</span>
         <ng-container *ngIf="project.firstSubmission">
             <br>
             <span>{{project.firstSubmission?.updated | date : Tables.DEFAULT_DATE_FORMAT}}</span>
@@ -29,7 +29,7 @@
         </ng-container>
     </div>
     <div class="col-sm-2 column">
-        <span>Latest re-submission</span>
+        <span>{{'project.detail.table.submission.latest' | translate}}</span>
         <ng-container *ngIf="project.lastResubmission">
             <br>
             <span>{{project.lastResubmission?.updated | date : Tables.DEFAULT_DATE_FORMAT}}</span>
@@ -38,7 +38,7 @@
         </ng-container>
     </div>
     <div class="col-sm-2 column">
-        <span>Status</span>
+        <span>{{'project.detail.table.status' | translate}}</span>
         <br>
         <span>{{project.projectStatus.status}}</span>
     </div>

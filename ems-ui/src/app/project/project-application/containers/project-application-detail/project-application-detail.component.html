@@ -1,9 +1,9 @@
-<a *ngxPermissionsExcept="Permission.APPLICANT_USER" [routerLink]="['']">&lt; Back to List of Project Applications</a>
+<a *ngxPermissionsExcept="Permission.APPLICANT_USER" [routerLink]="['']">{{'back.project.list' | translate}}</a>
 <a *ngxPermissionsOnly="Permission.APPLICANT_USER" [routerLink]="['/calls']">&lt; {{'common.back.to.dashboard' | translate}}</a>
 <div class="container">
     <app-project-application-data></app-project-application-data>
     <mat-tab-group class="files-container">
-        <mat-tab label="Application Files">
+        <mat-tab label="{{'file.tab.application' | translate}}">
             <ng-template matTabContent>
                 <app-project-application-files
                         [projectId]="projectId"
@@ -11,7 +11,7 @@
                 </app-project-application-files>
             </ng-template>
         </mat-tab>
-        <mat-tab label="Assessment Files" *ngIf="assessmentFilesVisible$ | async">
+        <mat-tab label="{{'file.tab.assessment' | translate}}" *ngIf="assessmentFilesVisible$ | async">
             <ng-template matTabContent>
                 <app-project-application-files
                         [projectId]="projectId"

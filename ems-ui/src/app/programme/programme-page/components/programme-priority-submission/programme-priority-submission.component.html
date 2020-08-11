@@ -1,13 +1,13 @@
-<a class="link" (click)="onCancel()">&lt; Back to Programme Priorities</a>
+<a class="link" (click)="onCancel()">{{'back.programme.priority' | translate}}</a>
 <div class="container">
     <br>
     <br>
-    <h5>Add Priority</h5>
+    <h5>{{'programme.priority.add.new' | translate}}</h5>
     <form [formGroup]="priorityForm">
-        <h6>Programme Priority</h6>
+        <h6>{{'programme.priority.add.title' | translate}}</h6>
         <mat-form-field class="field-left">
-            <mat-label>Priority Code</mat-label>
-            <input name="priorityCode" formControlName="priorityCode" matInput placeholder="Priority Code" required>
+            <mat-label>{{'programme.priority.field.code' | translate}}</mat-label>
+            <input name="priorityCode" formControlName="priorityCode" matInput placeholder="{{'programme.priority.field.code' | translate}}" required>
             <mat-error>
                 <app-form-field-errors
                         [errors]="priorityForm?.controls?.priorityCode?.errors"
@@ -16,8 +16,8 @@
             </mat-error>
         </mat-form-field>
         <mat-form-field class="field-right">
-            <mat-label>Priority Title</mat-label>
-            <input name="priorityTitle" formControlName="priorityTitle" matInput placeholder="Priority Title" required>
+            <mat-label>{{'programme.priority.field.title' | translate}}</mat-label>
+            <input name="priorityTitle" formControlName="priorityTitle" matInput placeholder="{{'programme.priority.field.title' | translate}}" required>
             <mat-error>
                 <app-form-field-errors
                         [errors]="priorityForm?.controls?.priorityTitle?.errors"
@@ -25,9 +25,9 @@
                 </app-form-field-errors>
             </mat-error>
         </mat-form-field>
-        <h6>Policy Objective</h6>
+        <h6>{{'programme.priority.add.objective.title' | translate}}</h6>
         <mat-form-field class="field-full">
-            <mat-label>Select Policy Objective</mat-label>
+            <mat-label>{{'programme.priority.field.objective.select' | translate}}</mat-label>
             <mat-select name="policyObjective" formControlName="policyObjective"
                         (selectionChange)="changeCurrentObjective($event.value)" required
                         panelClass="material-select-panel">
@@ -47,7 +47,7 @@
             </app-programme-policy-checkbox>
         </div>
         <button mat-raised-button (click)="onCancel()" class="button">
-            Cancel
+            {{'programme.priority.button.cancel' | translate}}
         </button>
         <button mat-raised-button
                 color="primary"
@@ -55,7 +55,7 @@
                 class="button"
                 [disabled]="priorityForm.invalid || policyForm.invalid || submitted"
                 (click)="onSubmit()">
-            Add Priority
+            {{'programme.priority.button.add' | translate}}
         </button>
         <app-alert
                 [show]="showSuccessMessage$ | async"

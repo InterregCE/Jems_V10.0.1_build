@@ -1,11 +1,11 @@
-<a [routerLink]="['../../../project', projectId]">&lt; Back to Project Application Details</a>
+<a [routerLink]="['../../../project', projectId]">{{'back.project.application.details' | translate}}</a>
 <div class="project-detail-container">
     <h5>{{project.acronym}}</h5>
     <app-project-application-information
             [project]="project">
     </app-project-application-information>
     <div class="assessment-container">
-        <h5>Eligibility Decision</h5>
+        <h5>{{'project.assessment.eligibilityDecision.dialog.title' | translate}}</h5>
         <form [formGroup]="notesForm" class="description-form">
             <mat-radio-group
                     required
@@ -17,11 +17,11 @@
                 <mat-radio-button
                         class="assessment-radio-button"
                         *ngFor="let option of options" [value]="option">
-                    {{option}}
+                    {{'project.assessment.eligibilityDecision.dialog.select.' + option | translate}}
                 </mat-radio-button>
             </mat-radio-group>
             <mat-form-field appearance="outline" class="field">
-                <mat-label>Explanatory Notes</mat-label>
+                <mat-label>{{'project.assessment.eligibilityDecision.dialog.field.note' | translate}}</mat-label>
                 <textarea
                     name="notes"
                     formControlName="notes"
@@ -31,7 +31,7 @@
                 </textarea>
             </mat-form-field>
             <mat-form-field>
-                <mat-label>Decision Date</mat-label>
+                <mat-label>{{'project.assessment.eligibilityDecision.dialog.field.date' | translate}}</mat-label>
                 <input class="assessment-date-picker" name="decisionDate" formControlName="decisionDate" matInput required
                        [matDatepicker]="picker"
                        [readonly]="!!project.eligibilityDecision"
@@ -48,14 +48,14 @@
             <div *ngIf="!project.eligibilityDecision">
                 <button mat-raised-button
                         color="secondary"
-                        (click)="onCancel()">Cancel
+                        (click)="onCancel()">{{'project.assessment.eligibilityDecision.dialog.button.cancel' | translate}}
                 </button>
 
                 <button mat-raised-button color="primary"
                         class="right-button"
                         type="submit"
                         [disabled]="notesForm.invalid || submitted"
-                        (click)="onSubmit()">{{'project.assessment.eligibilityDecision.dialog.title' | translate}}
+                        (click)="onSubmit()">{{'project.assessment.eligibilityDecision.dialog.button.submit' | translate}}
                 </button>
             </div>
         </form>

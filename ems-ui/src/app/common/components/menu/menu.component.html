@@ -2,6 +2,6 @@
     <a mat-tab-link *ngFor="let item of items"
             (click)="callAction(item)"
             [active]="isActive(item)">
-        {{item.name}}
+        {{item.name | translate}}
     </a>
 </nav>

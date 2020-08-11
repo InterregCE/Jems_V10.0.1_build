@@ -1,12 +1,12 @@
 <ng-container *ngIf="details$ | async as details">
-    <a [routerLink]="['../../../project', details.project.id]">&lt; Back to Project Application Details</a>
+    <a [routerLink]="['../../../project', details.project.id]">{{'back.project.application.details' | translate}}</a>
     <div *ngxPermissionsExcept="[Permission.APPLICANT_USER]" class="project-detail-container">
         <h5>{{details.acronym}}</h5>
         <app-project-application-information
                 [project]="details.project">
         </app-project-application-information>
         <div class="assessment-container">
-            <h5>Funding Decision</h5>
+            <h5>{{'project.assessment.fundingDecision.dialog.title' | translate}}</h5>
             <app-project-application-funding-decision
                     *ngIf="details.showWithConditions"
                     [project]="details.project"
