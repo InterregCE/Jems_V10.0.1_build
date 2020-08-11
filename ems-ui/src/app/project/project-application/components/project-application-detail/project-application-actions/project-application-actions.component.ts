@@ -23,6 +23,7 @@ export class ProjectApplicationActionsComponent extends AbstractForm {
     OutputProjectStatus.StatusEnum.SUBMITTED,
     OutputProjectStatus.StatusEnum.ELIGIBLE,
     OutputProjectStatus.StatusEnum.APPROVEDWITHCONDITIONS,
+    OutputProjectStatus.StatusEnum.APPROVED,
   ];
 
   @Input()

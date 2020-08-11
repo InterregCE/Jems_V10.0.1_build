@@ -134,7 +134,7 @@ internal class ProjectStatusAuthorizationTest {
 
         assertFalse(projectStatusAuthorization.canChangeStatusTo(PID_SUBMITTED, ProjectApplicationStatus.SUBMITTED))
 
-        listOf(PID_DRAFT, PID_RETURNED, PID_APPROVED, PID_NOT_APPROVED)
+        listOf(PID_DRAFT, PID_RETURNED, PID_INELIGIBLE, PID_NOT_APPROVED)
             .forEach {
                 every { projectAuthorization.canReadProject(eq(it)) } returns true
                 assertFalse(
@@ -272,6 +272,7 @@ internal class ProjectStatusAuthorizationTest {
         every { securityService.currentUser } returns currentUser
 
         listOf(PID_APPROVED, PID_NOT_APPROVED).forEach {
+            every { projectAuthorization.canReadProject(eq(it)) } returns true
             assertFalse(
                 projectStatusAuthorization.canChangeStatusTo(it, ProjectApplicationStatus.APPROVED_WITH_CONDITIONS)
             )
