@@ -11,7 +11,7 @@ import java.time.ZonedDateTime
 @Repository
 interface CallRepository: PagingAndSortingRepository<Call, Long> {
 
-    fun findAllByStatusAndEndDateAfter(status: CallStatus, endDateAfter: ZonedDateTime, pageable: Pageable): Page<Call>
+    fun findAllByStatus(status: CallStatus, pageable: Pageable): Page<Call>
 
     fun findOneByName(name: String): Call?
 

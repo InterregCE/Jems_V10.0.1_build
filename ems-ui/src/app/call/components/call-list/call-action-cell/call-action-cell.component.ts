@@ -1,5 +1,6 @@
 import {ChangeDetectionStrategy, Component, EventEmitter, Input, Output} from '@angular/core';
 import {OutputCall} from '@cat/api';
+import * as moment from 'moment';
 
 @Component({
   selector: 'app-call-action-cell',
@@ -13,4 +14,9 @@ export class CallActionCellComponent {
 
   @Output()
   apply = new EventEmitter<number>();
+
+  isExpired(): boolean {
+    const currentDate = new Date();
+    return moment(currentDate).isAfter(this.call.endDate);
+  };
 }
