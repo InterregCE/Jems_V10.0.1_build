@@ -29,7 +29,7 @@ describe('SideNavService', () => {
     service.getHeadlines().subscribe((items: HeadlineRoute[]) => {headlines = items;});
 
     service.setHeadlines(destroyed$,[
-      new HeadlineRoute('back.project.details', '/project/1', HeadlineType.BACKROUTE),
+      new HeadlineRoute('back.project.overview', '/project/1', HeadlineType.BACKROUTE),
       new HeadlineRoute('project.application.form.title', '', HeadlineType.TITLE),
       new HeadlineRoute('Test', '', HeadlineType.SUBTITLE),
       new HeadlineRoute('A - Project Identification', 'applicationFormHeading', HeadlineType.SECTION),
@@ -37,7 +37,7 @@ describe('SideNavService', () => {
 
     tick(60);
     expect(headlines.length).toBe(5);
-    expect(headlines[0].headline).toBe('back.project.details')
+    expect(headlines[0].headline).toBe('back.project.overview')
     expect(headlines[0].route).toBe('/project/1')
     expect(headlines[0].type).toBe(HeadlineType.BACKROUTE)
     expect(headlines[1].headline).toBe('project.application.form.title')
