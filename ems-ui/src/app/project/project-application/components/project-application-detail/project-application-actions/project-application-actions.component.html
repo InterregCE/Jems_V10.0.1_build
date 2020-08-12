@@ -19,13 +19,21 @@
                 mat-raised-button color="primary"
                 (click)="returnToApplicant()">{{'project.detail.button.return.applicant' | translate}}
         </button>
-        <button *ngIf="projectRevertStatus"
+        <button *ngIf="projectRevertStatus; else revertNotPossible"
                 mat-raised-button color="primary"
                 (click)="revertProjectStatus()">
-            {{ 'project.application.revert.status.button.label'| translate: {status: projectRevertStatus.to.status} }}
+            {{ 'project.application.revert.decision.button.label'| translate: {status: projectRevertStatus.to.status} }}
         </button>
     </div>
 </ng-container>
+
+<ng-template #revertNotPossible>
+    <button *ngxPermissionsOnly="Permission.ADMINISTRATOR"
+            mat-raised-button disabled
+            (click)="revertProjectStatus()">
+        {{ 'project.application.revert.decision.impossible.button.label'| translate }}
+    </button>
+</ng-template>
 
 <div class="row">
     <button mat-raised-button
