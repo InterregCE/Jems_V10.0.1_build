@@ -109,8 +109,8 @@ export class CallDetailComponent extends ViewEditForm implements OnInit {
   publishCall() {
     Forms.confirmDialog(
       this.dialog,
-      'Publish Call',
-      'Are you sure you want to publish the Call?'
+      'call.dialog.title',
+      'call.dialog.message'
     ).pipe(
       take(1),
       takeUntil(this.destroyed$),
