@@ -1,6 +1,7 @@
 import {ChangeDetectionStrategy, ChangeDetectorRef, Component, Input, OnInit} from '@angular/core';
 import {AbstractForm} from '@common/components/forms/abstract-form';
-import {FormGroup, Validators} from '@angular/forms';
+import {AbstractControl, FormGroup, Validators} from '@angular/forms';
+import {KeyValue} from '@angular/common';
 
 @Component({
   selector: 'app-programme-policy-checkbox',
@@ -27,6 +28,8 @@ export class ProgrammePolicyCheckboxComponent extends AbstractForm implements On
   getForm(): FormGroup | null {
     return this.policyForm;
   }
+
+  originalOrder = (): number => 0;
 
   setCheckedStatus(key: string, value: boolean) {
     this.checked.set(key, value);

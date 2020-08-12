@@ -6,7 +6,7 @@
             <h6 class="inline-title-right">{{'programme.priority.objective.table.column.title' | translate}}</h6>
         </div>
         <ul class="field-full">
-            <li *ngFor="let control of policyForm?.controls | keyvalue">
+            <li *ngFor="let control of policyForm?.controls | keyvalue: originalOrder">
                 <mat-checkbox (change)="setCheckedStatus(control.key, $event.checked)">
                 </mat-checkbox>
                 <mat-form-field class="checkbox-field">
