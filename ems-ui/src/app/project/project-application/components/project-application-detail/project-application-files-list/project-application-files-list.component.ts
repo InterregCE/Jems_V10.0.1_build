@@ -101,7 +101,8 @@ export class ProjectApplicationFilesListComponent extends BaseComponent implemen
     Forms.confirmDialog(
       this.dialog,
       file.name,
-      'Are you sure you want to delete' + ' ' + file.name + ' ?',)
+      'file.dialog.message',
+      {name: file.name} )
       .pipe(
         take(1),
         takeUntil(this.destroyed$),

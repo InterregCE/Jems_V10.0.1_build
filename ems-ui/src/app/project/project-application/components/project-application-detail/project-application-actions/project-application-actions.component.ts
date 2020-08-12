@@ -64,8 +64,8 @@ export class ProjectApplicationActionsComponent extends AbstractForm {
   resubmitProject(): void {
     Forms.confirmDialog(
       this.dialog,
-      'Re-submit Project',
-      'Are you sure, you want to re-submit the application? Operation cannot be reversed.',
+      'project.detail.resubmit.dialog.title',
+      'project.detail.resubmit.dialog.message',
     ).pipe(
       take(1),
       takeUntil(this.destroyed$),
@@ -77,8 +77,8 @@ export class ProjectApplicationActionsComponent extends AbstractForm {
   returnToApplicant(): void {
     Forms.confirmDialog(
       this.dialog,
-      'Return To Applicant',
-      'Are you sure you want to return the application back to the applicant?',
+      'project.detail.return.dialog.title',
+      'project.detail.return.dialog.message',
     ).pipe(
       take(1),
       takeUntil(this.destroyed$),
