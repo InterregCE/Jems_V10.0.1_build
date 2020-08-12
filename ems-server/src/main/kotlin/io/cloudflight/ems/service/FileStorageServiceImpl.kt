@@ -10,7 +10,7 @@ import io.cloudflight.ems.exception.ResourceNotFoundException
 import io.cloudflight.ems.repository.UserRepository
 import io.cloudflight.ems.repository.MinioStorage
 import io.cloudflight.ems.repository.ProjectFileRepository
-import io.cloudflight.ems.repository.ProjectRepository
+import io.cloudflight.ems.project.repository.ProjectRepository
 import io.cloudflight.ems.security.service.SecurityService
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
@@ -133,7 +133,7 @@ class FileStorageServiceImpl(
     }
 
     private fun getFileByName(fileMetadata: FileMetadata): Optional<ProjectFile> {
-        with (fileMetadata) {
+        with(fileMetadata) {
             return projectFileRepository
                 .findFirstByProjectIdAndNameAndType(projectId, name, type)
         }

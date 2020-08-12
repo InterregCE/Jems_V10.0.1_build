@@ -1,5 +1,6 @@
 package io.cloudflight.ems.security.service.authorization
 
+import io.cloudflight.ems.api.project.dto.OutputProject
 import io.cloudflight.ems.security.APPLICANT_USER
 import io.cloudflight.ems.security.service.SecurityService
 
@@ -15,5 +16,8 @@ abstract class Authorization(
 
     fun isApplicantUser(): Boolean =
         securityService.currentUser?.hasRole(APPLICANT_USER)!!
+
+    protected fun isOwner(project: OutputProject): Boolean =
+        project.applicant.id == securityService.currentUser?.user?.id
 
 }

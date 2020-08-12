@@ -1,8 +1,8 @@
 package io.cloudflight.ems.entity
 
-import io.cloudflight.ems.api.dto.ProjectApplicationStatus
-import io.cloudflight.ems.api.dto.ProjectEligibilityAssessmentResult
-import io.cloudflight.ems.api.dto.ProjectQualityAssessmentResult
+import io.cloudflight.ems.api.project.dto.status.ProjectApplicationStatus
+import io.cloudflight.ems.api.project.dto.status.ProjectEligibilityAssessmentResult
+import io.cloudflight.ems.api.project.dto.status.ProjectQualityAssessmentResult
 import io.cloudflight.ems.api.call.dto.OutputCall
 import io.cloudflight.ems.api.dto.user.OutputUser
 import io.cloudflight.ems.api.dto.user.OutputUserWithRole
