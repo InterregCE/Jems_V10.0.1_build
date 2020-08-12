@@ -14,8 +14,7 @@ import {FormState} from '@common/components/forms/form-state';
 import {Forms} from '../../../common/utils/forms';
 import {filter, take, takeUntil} from 'rxjs/operators';
 import {MatDialog} from '@angular/material/dialog';
-import {TreeNode} from '../call-priority-tree/call-priority-tree.component';
-import {Observable, Subject} from 'rxjs';
+import {CallPriorityCheckbox} from '../../containers/model/call-priority-checkbox';
 
 @Component({
   selector: 'app-call-detail',
@@ -28,7 +27,7 @@ export class CallDetailComponent extends ViewEditForm implements OnInit {
   @Input()
   call: OutputCall
   @Input()
-  datasource: Observable<TreeNode[]>;
+  priorityCheckboxes: CallPriorityCheckbox[];
 
   @Output()
   create: EventEmitter<InputCallCreate> = new EventEmitter<InputCallCreate>()
@@ -38,8 +37,6 @@ export class CallDetailComponent extends ViewEditForm implements OnInit {
   publish: EventEmitter<number> = new EventEmitter<number>()
   @Output()
   cancel: EventEmitter<void> = new EventEmitter<void>()
-
-  data = new Subject<TreeNode[]>();
 
   startDateErrors = {
     required: 'call.startDate.unknown',
@@ -87,12 +84,6 @@ export class CallDetailComponent extends ViewEditForm implements OnInit {
     this.callForm.controls.startDate.setValue(this.call.startDate);
     this.callForm.controls.endDate.setValue(this.call.endDate);
     this.callForm.controls.description.setValue(this.call.description);
-    this.datasource
-      .pipe(
-        takeUntil(this.destroyed$)
-      ).subscribe(data => {
-      this.data.next(data);
-    })
   }
 
   getForm(): FormGroup | null {
@@ -105,7 +96,8 @@ export class CallDetailComponent extends ViewEditForm implements OnInit {
       startDate: this.callForm?.controls?.startDate?.value,
       endDate: this.callForm?.controls?.endDate?.value,
       description: this.callForm?.controls?.description?.value,
-      priorityPolicies: [],
+      priorityPolicies: this.priorityCheckboxes
+        .flatMap(checkbox => checkbox.getCheckedChildPolicies())
     }
     if (!this.call.id) {
       this.create.emit(call);
@@ -129,5 +121,10 @@ export class CallDetailComponent extends ViewEditForm implements OnInit {
     ).subscribe(() => {
       this.publish.emit(this.call?.id);
     });
+  }
+
+  noPolicyChecked(): boolean {
+    return !this.priorityCheckboxes
+      .some(priority => priority.checked || priority.someChecked());
   }
 }

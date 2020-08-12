@@ -13,7 +13,6 @@ import {CallStore} from './services/call-store.service';
 import {CallActionCellComponent} from './components/call-list/call-action-cell/call-action-cell.component';
 import {ProjectModule} from '../project/project.module';
 import {CallPriorityTreeComponent} from './components/call-priority-tree/call-priority-tree.component';
-import {MatTreeModule} from '@angular/material/tree';
 import {MatCheckboxModule} from '@angular/material/checkbox';
 
 @NgModule({
@@ -33,7 +32,6 @@ import {MatCheckboxModule} from '@angular/material/checkbox';
     NgxMatMomentModule,
     CoreModule,
     ProjectModule,
-    MatTreeModule,
     MatCheckboxModule
   ],
   providers: [
