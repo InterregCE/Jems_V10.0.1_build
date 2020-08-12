@@ -30,8 +30,8 @@ describe('CallActionCellComponent', () => {
       id = 1;
       name = 'Test';
       priorityPolicies = [];
-      startDate = new Date('2020-08-01T14:15+02:00');
-      endDate = new Date('2020-08-03T13:12+02:00');
+      startDate = new Date('2020-08-01T14:15:00+02:00');
+      endDate = new Date('2020-08-03T13:12:00+02:00');
       status = OutputCall.StatusEnum.PUBLISHED;
       description = 'test';
     } ();
@@ -43,8 +43,8 @@ describe('CallActionCellComponent', () => {
       id = 1;
       name = 'Test';
       priorityPolicies = [];
-      startDate = new Date('2020-08-11T14:15+05:00');
-      endDate = new Date('2320-08-11T13:12+05:00');
+      startDate = new Date('2020-08-11T14:15:00+05:00');
+      endDate = new Date('2320-08-11T13:12:00+05:00');
       status = OutputCall.StatusEnum.PUBLISHED;
       description = 'test';
     } ();
@@ -54,9 +54,9 @@ describe('CallActionCellComponent', () => {
 
     // Testing the mechanism of the isExpired method from the component
     tick();
-    expect(moment('Tue Aug 11 2020 13:32:20 GMT+0300').isAfter('Tue Aug 11 2020 13:27:56 GMT+0600')).toBe(true);
+    expect(moment('2020-08-11T13:32:20+03:00').isAfter('2020-08-11T13:27:56+06:00')).toBe(true);
 
     tick();
-    expect(moment('Tue Aug 11 2020 13:32:20 GMT+0300').isAfter('Tue Aug 11 2020 13:27:56 GMT-0200')).toBe(false);
+    expect(moment('2020-08-11T13:32:20+03:00').isAfter('2020-08-11T13:27:56-02:00')).toBe(false);
   }));
 });
