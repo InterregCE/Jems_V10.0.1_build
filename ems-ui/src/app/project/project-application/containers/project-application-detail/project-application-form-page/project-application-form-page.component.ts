@@ -58,7 +58,7 @@ export class ProjectApplicationFormPageComponent extends ViewEditForm implements
 
     this.getProjectAcronym();
     this.sideNavService.setHeadlines(this.destroyed$,[
-      new HeadlineRoute('back.project.details', '/project/' + this.projectId, HeadlineType.BACKROUTE),
+      new HeadlineRoute('back.project.overview', '/project/' + this.projectId, HeadlineType.BACKROUTE),
       new HeadlineRoute('project.application.form.title', '', HeadlineType.TITLE),
       new HeadlineRoute(this.projectAcronym, '', HeadlineType.SUBTITLE),
       new HeadlineRoute('project.application.form.section.part.a', 'applicationFormHeading', HeadlineType.SECTION),
