@@ -52,12 +52,20 @@ class CallServiceImpl(
     override fun createCall(inputCall: InputCallCreate): OutputCall {
         val creator = userRepository.findById(securityService.currentUser?.user?.id!!)
             .orElseThrow { ResourceNotFoundException() }
-        return callRepository.save(inputCall
+
+        val savedCall = callRepository.save(inputCall
             .toEntity(
                 creator = creator,
                 priorityPolicies = inputCall.priorityPolicies?.let { getPoliciesAsEntities(it) } ?: emptySet()
             )
         ).toOutputCall()
+
+        auditService.logEvent(Audit.callCreated(
+            currentUser = securityService.currentUser,
+            call = savedCall
+        ))
+
+        return savedCall
     }
 
     @Transactional

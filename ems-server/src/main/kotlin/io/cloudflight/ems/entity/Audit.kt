@@ -6,6 +6,7 @@ import io.cloudflight.ems.api.project.dto.status.ProjectQualityAssessmentResult
 import io.cloudflight.ems.api.call.dto.OutputCall
 import io.cloudflight.ems.api.dto.user.OutputUser
 import io.cloudflight.ems.api.dto.user.OutputUserWithRole
+import io.cloudflight.ems.api.programme.dto.OutputProgrammePriority
 import io.cloudflight.ems.security.model.CurrentUser
 import org.springframework.data.annotation.Id
 import org.springframework.data.elasticsearch.annotations.DateFormat
@@ -188,11 +189,39 @@ data class Audit(
             )
         }
 
+        fun callCreated(currentUser: CurrentUser?, call: OutputCall): Audit {
+            return Audit(
+                action = AuditAction.CALL_CREATED,
+                user = currentUser?.toEsUser(),
+                description = "A new call '${call.id}' '${call.name}' was created"
+            )
+        }
+
         fun callPublished(currentUser: CurrentUser?, call: OutputCall): Audit {
             return Audit(
                 action = AuditAction.CALL_PUBLISHED,
                 user = currentUser?.toEsUser(),
-                description = "Call '${call.name}' published"
+                description = "Call '${call.id}' '${call.name}' published"
+            )
+        }
+
+        fun programmePriorityAdded(currentUser: CurrentUser?, programmePriority: OutputProgrammePriority): Audit {
+            return Audit(
+                action = AuditAction.PROGRAMME_PRIORITY_ADDED,
+                user = currentUser?.toEsUser(),
+                description = "New programme priority '${programmePriority.code}' '${programmePriority.title}' was created"
+            )
+        }
+
+        fun programmeBasicDataChanged(currentUser: CurrentUser?, changes: Map<String, Pair<Any?, Any?>>): Audit {
+            val changedString = changes.entries.stream()
+                .map { "${it.key} changed from ${it.value.first} to ${it.value.second}" }
+                .collect(Collectors.joining(",\n"))
+
+            return Audit(
+                action = AuditAction.PROGRAMME_BASIC_DATA_EDITED,
+                user = currentUser?.toEsUser(),
+                description = "Programme basic data changed:\n$changedString"
             )
         }
 

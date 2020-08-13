@@ -1,9 +1,9 @@
 package io.cloudflight.ems.programme.service
 
-import io.cloudflight.ems.api.programme.dto.InputProgrammeData
+import io.cloudflight.ems.api.programme.dto.ProgrammeBasicData
 import io.cloudflight.ems.entity.ProgrammeData
 
-fun InputProgrammeData.toEntity() = ProgrammeData(
+fun ProgrammeBasicData.toEntity() = ProgrammeData(
     id = 1,
     cci = cci,
     title = title,
@@ -18,7 +18,7 @@ fun InputProgrammeData.toEntity() = ProgrammeData(
     programmeAmendingDecisionDate = programmeAmendingDecisionDate
 )
 
-fun ProgrammeData.toInputProgrammeData() = InputProgrammeData(
+fun ProgrammeData.toProgrammeBasicData() = ProgrammeBasicData(
     cci = cci,
     title = title,
     version = version,

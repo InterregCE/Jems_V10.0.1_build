@@ -1,11 +1,11 @@
 package io.cloudflight.ems.programme.service
 
-import io.cloudflight.ems.api.programme.dto.InputProgrammeData
+import io.cloudflight.ems.api.programme.dto.ProgrammeBasicData
 
 interface ProgrammeDataService {
 
-    fun get(): InputProgrammeData
+    fun get(): ProgrammeBasicData
 
-    fun update(dataInput: InputProgrammeData): InputProgrammeData
+    fun update(basicData: ProgrammeBasicData): ProgrammeBasicData
 
 }
