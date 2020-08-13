@@ -6,6 +6,7 @@ import {Observable} from 'rxjs';
 import {OutputCurrentUser} from '@cat/api';
 import {MenuItemConfiguration} from '../menu/model/menu-item.configuration';
 import {TopBarService} from '@common/components/top-bar/top-bar.service';
+import {LanguageService} from '../../services/language.service';
 
 @Component({
   selector: 'app-top-bar',
@@ -20,7 +21,8 @@ export class TopBarComponent implements OnInit {
   constructor(private securityService: SecurityService,
               private router: Router,
               private topBarService: TopBarService,
-              public translate: TranslateService,) {
+              private languageService: LanguageService,
+              public translate: TranslateService) {
     const auditUrl = this.prepareAuditUrl(window.location.href);
     this.topBarService.newAuditUrl(auditUrl)
   }
@@ -48,6 +50,6 @@ export class TopBarComponent implements OnInit {
   }
 
   changeLanguage(newLang: string): void {
-    this.translate.use(newLang);
+    this.languageService.changeLanguage(newLang);
   }
 }

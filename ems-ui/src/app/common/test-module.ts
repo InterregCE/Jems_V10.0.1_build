@@ -14,6 +14,7 @@ import {LoginPageService} from '../authentication/login/services/login-page-serv
 import {NoopAnimationsModule} from '@angular/platform-browser/animations';
 import {SideNavService} from '@common/components/side-nav/side-nav.service';
 import {TabService} from './services/tab.service';
+import {LanguageService} from './services/language.service';
 
 @NgModule({
   declarations: [],
@@ -34,7 +35,8 @@ import {TabService} from './services/tab.service';
     LoginPageService,
     TabService,
     LoginPageService,
-    SideNavService
+    SideNavService,
+    LanguageService
   ],
   exports: []
 })

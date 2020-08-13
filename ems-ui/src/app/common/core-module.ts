@@ -22,6 +22,7 @@ import {MatSelectModule} from '@angular/material/select';
 import {TabService} from './services/tab.service';
 import {MatSidenavModule} from '@angular/material/sidenav';
 import {SideNavService} from '@common/components/side-nav/side-nav.service';
+import {LanguageService} from './services/language.service';
 
 const declarations = [
   TopBarComponent,
@@ -50,6 +51,7 @@ const declarations = [
     PermissionService,
     TopBarService,
     SideNavService,
+    LanguageService,
     KeyValuePipe,
     MatSortHeader,
     TabService,

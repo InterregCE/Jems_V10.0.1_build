@@ -4,7 +4,7 @@ import {Title} from '@angular/platform-browser';
 import {Router} from '@angular/router';
 import {Location} from '@angular/common';
 import {SideNavService} from '@common/components/side-nav/side-nav.service';
-import { ViewportScroller } from '@angular/common';
+import {ViewportScroller} from '@angular/common';
 import {HeadlineType} from '@common/components/side-nav/headline-type';
 
 @Component({
@@ -23,10 +23,8 @@ export class AppComponent {
               private location: Location,
               private sideNavService: SideNavService,
               private viewportScroller: ViewportScroller) {
+
     this.router.routeReuseStrategy.shouldReuseRoute = () => false;
-    translate.setDefaultLang('en');
-    translate.addLangs(['en', 'de', 'ja_JP']);
-    translate.use('en');
     this.titleService.setTitle('Ems');
   }
 
