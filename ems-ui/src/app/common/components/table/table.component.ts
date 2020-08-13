@@ -40,11 +40,20 @@ export class TableComponent implements OnInit {
     this.columnsToDisplay = this.configuration.columns.map(col => col.displayedColumn);
   }
 
+  /**
+   * formats element value with certain date format, translation key or its pure value.
+   *
+   * @param column configuration
+   * @param element value
+   */
   formatColumnValue(column: ColumnConfiguration, element: any): any {
     if (!column.elementProperty) {
       return element;
     }
     const elementValue = Tools.getChainedProperty(element, column.elementProperty, '');
+    if (column.elementTranslationKey) {
+      return column.elementTranslationKey + '.' + elementValue;
+    }
     if (column.columnType === ColumnType.Date) {
       return this.datepipe.transform(elementValue, Tables.DEFAULT_DATE_FORMAT);
     }

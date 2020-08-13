@@ -55,6 +55,7 @@ export class ProjectApplicationListComponent {
       {
         displayedColumn: 'project.table.column.name.status',
         elementProperty: 'projectStatus',
+        elementTranslationKey: 'common.label.projectapplicationstatus',
         sortProperty: 'projectStatus.status'
       },
       {

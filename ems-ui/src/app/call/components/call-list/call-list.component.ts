@@ -71,6 +71,7 @@ export class CallListComponent extends BaseComponent implements OnInit {
         {
           displayedColumn: 'call.table.column.name.status',
           elementProperty: 'status',
+          elementTranslationKey: 'common.label.callstatus',
           sortProperty: 'status'
         },
         {
@@ -104,6 +105,7 @@ export class CallListComponent extends BaseComponent implements OnInit {
         {
           displayedColumn: 'call.table.column.name.status',
           elementProperty: 'status',
+          elementTranslationKey: 'common.label.callstatus',
           sortProperty: 'status'
         },
         {
