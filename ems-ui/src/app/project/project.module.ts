@@ -34,10 +34,9 @@ import {MAT_DATE_LOCALE} from '@angular/material/core';
 import {ProjectApplicationFundingPageComponent} from './project-application/containers/project-application-detail/project-application-funding-page/project-application-funding-page.component';
 import {ProjectApplicationFundingDecisionComponent} from './project-application/components/project-application-detail/project-application-funding-decision/project-application-funding-decision.component';
 import {ProjectApplicationEligibilityDecisionPageComponent} from './project-application/containers/project-application-detail/project-application-eligibility-decision-page/project-application-eligibility-decision-page.component';
-import { ProjectApplicationFormPageComponent } from './project-application/containers/project-application-detail/project-application-form-page/project-application-form-page.component';
+import {ProjectApplicationFormPageComponent} from './project-application/containers/project-application-detail/project-application-form-page/project-application-form-page.component';
 import {MatSidenavModule} from '@angular/material/sidenav';
-import { ProjectApplicationIdentificationComponent } from './project-application/components/project-application-form/project-application-identification/project-application-identification.component';
-import { ProjectApplicationSummaryComponent } from './project-application/components/project-application-form/project-application-summary/project-application-summary.component';
+import {ProjectApplicationFormComponent} from './project-application/components/project-application-form/project-application-form.component';
 
 @NgModule({
   declarations: [
@@ -62,24 +61,23 @@ import { ProjectApplicationSummaryComponent } from './project-application/compon
     ProjectApplicationFundingDecisionComponent,
     ProjectApplicationEligibilityDecisionPageComponent,
     ProjectApplicationFormPageComponent,
-    ProjectApplicationIdentificationComponent,
-    ProjectApplicationSummaryComponent
+    ProjectApplicationFormComponent
   ],
-    imports: [
-        SharedModule,
-        CoreModule,
-        ProjectRoutingModule,
-        MatListModule,
-        MatSelectModule,
-        MatDialogModule,
-        OverlayModule,
-        BrowserAnimationsModule,
-        MatRadioModule,
-        MatExpansionModule,
-        MatDatepickerModule,
-        MatMomentDateModule,
-        MatSidenavModule,
-    ],
+  imports: [
+    SharedModule,
+    CoreModule,
+    ProjectRoutingModule,
+    MatListModule,
+    MatSelectModule,
+    MatDialogModule,
+    OverlayModule,
+    BrowserAnimationsModule,
+    MatRadioModule,
+    MatExpansionModule,
+    MatDatepickerModule,
+    MatMomentDateModule,
+    MatSidenavModule,
+  ],
   exports: [
     ProjectApplicationListComponent,
     ProjectApplicationDetailComponent

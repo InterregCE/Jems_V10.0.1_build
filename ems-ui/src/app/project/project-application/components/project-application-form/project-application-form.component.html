@@ -1,0 +1,97 @@
+<form [formGroup]="applicationForm" class="container">
+    <h4>{{project.acronym}} {{'project.application.form.title' | translate}}</h4>
+
+    <h5 class="header" id="applicationFormHeading">
+        {{'project.application.form.section.part.a' | translate}}
+    </h5>
+    <span class="header-button" *ngxPermissionsExcept="Permission.PROGRAMME_USER">
+        <button color="primary" mat-raised-button
+                *ngIf="formState === FormState.VIEW && editable"
+                (click)="changeFormState$.next(FormState.EDIT)">
+            {{'common.edit.label' | translate}}
+        </button>
+    </span>
+
+    <h6 id="projectIdentificationHeading">{{'project.application.form.section.part.a.subsection.one' | translate}}</h6>
+    <mat-form-field class="field">
+        <mat-label>{{'project.application.form.field.project.id' | translate}}</mat-label>
+        <input name="projectId" formControlName="projectId" matInput
+               placeholder="{{'project.application.form.field.project.id' | translate}}">
+    </mat-form-field>
+    <mat-form-field class="field">
+        <mat-label>{{'project.application.form.field.project.acronym' | translate}}</mat-label>
+        <input name="projectAcronym" formControlName="projectAcronym" matInput
+               placeholder="{{'project.application.form.field.project.acronym' | translate}}">
+        <mat-error>
+            <app-form-field-errors
+                    [errors]="applicationForm?.controls?.projectAcronym?.errors"
+                    [messages]="projectAcronymErrors">
+            </app-form-field-errors>
+        </mat-error>
+    </mat-form-field>
+    <mat-form-field class="field">
+        <mat-label>{{'project.application.form.field.project.title' | translate}}</mat-label>
+        <input name="projectTitle" formControlName="projectTitle" matInput
+               placeholder="{{'project.application.form.field.project.title' | translate}}">
+        <mat-error>
+            <app-form-field-errors
+                    [errors]="applicationForm?.controls?.projectTitle?.errors"
+                    [messages]="projectTitleErrors">
+            </app-form-field-errors>
+        </mat-error>
+    </mat-form-field>
+    <mat-form-field class="field">
+        <mat-label>{{'project.application.form.field.project.duration' | translate}}</mat-label>
+        <input type="number" name="projectDuration" formControlName="projectDuration" matInput
+               placeholder="{{'project.application.form.field.project.duration' | translate}}">
+        <mat-error>
+            <app-form-field-errors
+                    [errors]="applicationForm?.controls?.projectDuration?.errors"
+                    [messages]="projectDurationErrors">
+            </app-form-field-errors>
+        </mat-error>
+    </mat-form-field>
+
+    <h6 id="projectSummaryHeading">{{'project.application.form.section.part.a.subsection.two' | translate}}</h6>
+    <div>
+        <p>{{'project.application.form.summary.intro.row.one' | translate}}</p>
+        <p>{{'project.application.form.summary.intro.row.two' | translate}}</p>
+        <p>{{'project.application.form.summary.intro.row.three' | translate}}</p>
+        <p>{{'project.application.form.summary.intro.row.four' | translate}}</p>
+        <p>{{'project.application.form.summary.intro.row.five' | translate}}</p>
+        <p>{{'project.application.form.summary.intro.row.six' | translate}}</p>
+    </div>
+    <mat-form-field class="field">
+        <mat-label>{{'project.application.form.field.project.summary' | translate}}</mat-label>
+        <textarea name="projectSummary" formControlName="projectSummary" matInput></textarea>
+        <mat-error>
+            <app-form-field-errors
+                    [errors]="applicationForm?.controls?.projectSummary?.errors"
+                    [messages]="projectSummaryErrors">
+            </app-form-field-errors>
+        </mat-error>
+    </mat-form-field>
+
+    <div *ngIf="formState === FormState.EDIT">
+        <button mat-raised-button class="button"
+                (click)="changeFormState$.next(FormState.VIEW)">
+            {{'common.cancel.label' | translate}}
+        </button>
+        <button mat-raised-button color="primary" type="submit" class="button"
+                [disabled]="applicationForm.invalid || applicationForm.invalid || submitted"
+                (click)="onSubmit()">
+            {{'common.save.label' | translate}}
+        </button>
+    </div>
+
+    <app-alert
+            [show]="showSuccessMessage$ | async"
+            [type]="Alert.SUCCESS">
+        <p>{{'project.application.form.save.success' | translate}}</p>
+    </app-alert>
+    <app-alert *ngIf="error$ | async as error"
+               [show]="!submitted && !!error.i18nKey"
+               [type]="Alert.ERROR">
+        <p>{{error.i18nKey | translate}}</p>
+    </app-alert>
+</form>
