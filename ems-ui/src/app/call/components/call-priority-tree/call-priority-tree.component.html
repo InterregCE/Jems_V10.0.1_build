@@ -1,0 +1,19 @@
+<span *ngFor="let priority of priorityCheckboxes">
+    <mat-checkbox
+            [disabled]="disabled"
+            [checked]="priority.checked"
+            [indeterminate]="priority.someChecked()"
+            (change)="priority.checkOrUncheckAll()">
+        {{priority.name | translate}}
+    </mat-checkbox>
+    <ul>
+        <li *ngFor="let policy of priority.children">
+            <mat-checkbox
+                    [(ngModel)]="policy.checked"
+                    [disabled]="disabled"
+                    (ngModelChange)="priority.updateChecked()">
+                {{policy.name | translate}}
+            </mat-checkbox>
+        </li>
+    </ul>
+</span>

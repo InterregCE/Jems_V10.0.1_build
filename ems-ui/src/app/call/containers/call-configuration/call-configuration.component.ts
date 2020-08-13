@@ -1,5 +1,5 @@
 import {ChangeDetectionStrategy, Component} from '@angular/core';
-import {CallService, InputCallCreate, InputCallUpdate, OutputCall} from '@cat/api'
+import {CallService, InputCallCreate, InputCallUpdate, OutputCall, ProgrammePriorityService} from '@cat/api'
 import {BaseComponent} from '@common/components/base-component';
 import {catchError, flatMap, map, take, takeUntil, tap} from 'rxjs/operators';
 import {Log} from '../../../common/utils/log';
@@ -10,6 +10,8 @@ import {HttpErrorResponse} from '@angular/common/http';
 import {CallStore} from '../../services/call-store.service';
 import {Permission} from '../../../security/permissions/permission';
 import {PermissionService} from '../../../security/permissions/permission.service';
+import {Tables} from '../../../common/utils/tables';
+import {CallPriorityCheckbox} from '../model/call-priority-checkbox';
 
 @Component({
   selector: 'app-call-configuration',
@@ -24,12 +26,36 @@ export class CallConfigurationComponent extends BaseComponent {
   saveCall$ = new Subject<InputCallUpdate>();
   publishCall$ = new Subject<number>();
 
+  private allPriorities$ = this.programmePriorityService
+    .get(Tables.DEFAULT_INITIAL_PAGE_INDEX, 100, 'code,asc')
+    .pipe(
+      tap(page => Log.info('Fetched the priorities:', this, page.content)),
+      map(page => page.content),
+      map(priorities => priorities.map(priority => CallPriorityCheckbox.fromPriority(priority)))
+    );
+
   private callById$ = this.callId
     ? this.callService.getCallById(this.callId)
       .pipe(
         tap(call => Log.info('Fetched call:', this, call))
       )
     : of({});
+
+  priorities$ = combineLatest([
+    this.allPriorities$,
+    this.callById$
+  ])
+    .pipe(
+      map(([allPriorities, call]) => {
+        if (!call || !(call as OutputCall).priorityPolicies) {
+          return allPriorities;
+        }
+        const savedPolicies = (call as OutputCall).priorityPolicies.map(policy => policy.programmeObjectivePolicy);
+        Log.debug('Adapting the priority policies', this, allPriorities, savedPolicies);
+        allPriorities.forEach(priority => priority.updateCheckedPolicies(savedPolicies));
+        return allPriorities;
+      })
+    );
 
   private savedCall$ = this.saveCall$
     .pipe(
@@ -78,7 +104,8 @@ export class CallConfigurationComponent extends BaseComponent {
               private callStore: CallStore,
               private activatedRoute: ActivatedRoute,
               private permissionService: PermissionService,
-              private router: Router) {
+              private router: Router,
+              private programmePriorityService: ProgrammePriorityService) {
     super();
   }
 

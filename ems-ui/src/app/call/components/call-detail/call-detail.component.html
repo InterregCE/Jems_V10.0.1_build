@@ -4,7 +4,8 @@
     <h4 class="col-md-12">{{'call.detail.title' | translate}}</h4>
     <mat-form-field class="field col-md-12">
         <mat-label>{{'call.detail.field.name' | translate}}</mat-label>
-        <input name="name" formControlName="name" matInput placeholder="{{'call.detail.field.name' | translate}}" required>
+        <input name="name" formControlName="name" matInput placeholder="{{'call.detail.field.name' | translate}}"
+               required>
         <mat-error>
             <app-form-field-errors
                     [errors]="callForm?.controls?.name?.errors"
@@ -57,13 +58,19 @@
         </mat-error>
     </mat-form-field>
 
+    <app-call-priority-tree
+            *ngIf="priorityCheckboxes"
+            [priorityCheckboxes]="priorityCheckboxes"
+            [disabled]="formState === FormState.VIEW">
+    </app-call-priority-tree>
+
     <ng-container *ngIf="!published">
         <button mat-raised-button color="secondary"
                 (click)="cancel.emit()">
             {{'call.detail.button.cancel' | translate}}
         </button>
         <button mat-raised-button color="primary"
-                [disabled]="callForm.invalid"
+                [disabled]="callForm.invalid || noPolicyChecked()"
                 (click)="onSubmit()">
             {{'call.detail.button.save' | translate}}
         </button>

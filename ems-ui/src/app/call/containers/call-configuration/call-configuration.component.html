@@ -3,6 +3,7 @@
             *ngIf="details.applicantCanAccessCall"
             [call]="details.call"
             [error$]="callSaveError$"
+            [priorityCheckboxes]="priorities$ | async"
             (create)="createCall($event)"
             (update)="saveCall$.next($event)"
             (publish)="publishCall$.next($event)"
