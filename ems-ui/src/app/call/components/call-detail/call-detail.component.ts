@@ -124,7 +124,7 @@ export class CallDetailComponent extends ViewEditForm implements OnInit {
   }
 
   noPolicyChecked(): boolean {
-    return !this.priorityCheckboxes
-      .some(priority => priority.checked || priority.someChecked());
+    return this.priorityCheckboxes
+      && !this.priorityCheckboxes.some(priority => priority.checked || priority.someChecked());
   }
 }

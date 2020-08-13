@@ -70,12 +70,12 @@
             {{'call.detail.button.cancel' | translate}}
         </button>
         <button mat-raised-button color="primary"
-                [disabled]="callForm.invalid || noPolicyChecked()"
+                [disabled]="callForm.invalid"
                 (click)="onSubmit()">
             {{'call.detail.button.save' | translate}}
         </button>
         <button *ngIf="call?.id" mat-raised-button color="primary"
-                [disabled]="callForm.invalid"
+                [disabled]="callForm.invalid || noPolicyChecked()"
                 (click)="publishCall()">
             {{'call.detail.button.publish' | translate}}
         </button>
