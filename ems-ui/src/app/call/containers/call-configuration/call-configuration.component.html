@@ -2,6 +2,7 @@
     <app-call-detail
             *ngIf="details.applicantCanAccessCall"
             [call]="details.call"
+            [success$]="callSaveSuccess$"
             [error$]="callSaveError$"
             [priorityCheckboxes]="priorities$ | async"
             (create)="createCall($event)"

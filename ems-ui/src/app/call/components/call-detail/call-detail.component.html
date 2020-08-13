@@ -80,6 +80,11 @@
             {{'call.detail.button.publish' | translate}}
         </button>
     </ng-container>
+    <app-alert
+            [show]="showSuccessMessage$ | async"
+            [type]="Alert.SUCCESS">
+        <p>{{'call.detail.save.success' | translate}}</p>
+    </app-alert>
     <app-alert *ngIf="error$ | async as error"
                [show]="!submitted && !!error.i18nKey"
                [type]="Alert.ERROR">
