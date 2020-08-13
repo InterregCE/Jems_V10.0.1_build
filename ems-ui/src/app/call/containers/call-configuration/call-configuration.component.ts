@@ -22,6 +22,7 @@ import {CallPriorityCheckbox} from '../model/call-priority-checkbox';
 export class CallConfigurationComponent extends BaseComponent {
 
   callId = this.activatedRoute?.snapshot?.params?.callId;
+  callSaveSuccess$ = new Subject<boolean>()
   callSaveError$ = new Subject<I18nValidationError | null>();
   saveCall$ = new Subject<InputCallUpdate>();
   publishCall$ = new Subject<number>();
@@ -61,7 +62,7 @@ export class CallConfigurationComponent extends BaseComponent {
     .pipe(
       flatMap(callUpdate => this.callService.updateCall(callUpdate)),
       tap(() => this.callSaveError$.next(null)),
-      tap(() => this.redirectToCallOverview()),
+      tap(() => this.callSaveSuccess$.next(true)),
       tap(saved => Log.info('Updated call:', this, saved)),
       catchError((error: HttpErrorResponse) => {
         this.callSaveError$.next(error.error);
