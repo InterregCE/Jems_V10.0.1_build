@@ -41,7 +41,7 @@ interface ProjectApi {
     fun getProjectById(@PathVariable id: Long): OutputProject
 
     @ApiOperation("Update project-related data")
-    @PutMapping("/{id}")
+    @PutMapping("/{id}", consumes = [MediaType.APPLICATION_JSON_VALUE])
     fun updateProjectData(@PathVariable id: Long, @Valid @RequestBody project: InputProjectData): OutputProject
 
 }
