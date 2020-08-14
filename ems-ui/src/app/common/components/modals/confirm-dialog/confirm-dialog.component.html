@@ -7,6 +7,7 @@
 </div>
 
 <div mat-dialog-actions align="end">
-    <button mat-button mat-dialog-close (click)="onDismiss()" cdkFocusInitial>{{'common.dialog.dismiss' | translate}}</button>
-    <button mat-button mat-dialog-close (click)="onConfirm()">{{'common.dialog.confirm' | translate}}</button>
+    <button mat-raised-button mat-dialog-close (click)="onDismiss()" cdkFocusInitial>{{'common.dialog.dismiss' | translate}}</button>
+    <button mat-raised-button mat-dialog-close (click)="onConfirm()" color="primary">{{'common.dialog.confirm' | translate}}</button>
 </div>
+

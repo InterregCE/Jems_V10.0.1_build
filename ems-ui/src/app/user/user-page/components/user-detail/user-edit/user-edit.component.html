@@ -8,8 +8,8 @@
     <a [routerLink]="['/calls']">&lt; {{'common.back.to.dashboard' | translate}}</a>
 </div>
 <div class="container vertical-center">
-    <span>{{'user.detail.page.title' | translate}}</span>
-    <button *ngIf="formState === FormState.VIEW" mat-raised-button
+    <h5>{{'user.detail.page.title' | translate}}</h5>
+    <button class="header-button" color="primary" *ngIf="formState === FormState.VIEW" mat-raised-button
             [disabled]="disabled"
             (click)="changeFormState$.next(FormState.EDIT)">
         {{'user.detail.button.edit' | translate}}

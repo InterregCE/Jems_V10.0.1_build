@@ -105,8 +105,8 @@ export class TopBarService {
       .subscribe(() => this.menuItems$.next([
         this.applicationsItem,
         this.callsItem,
-        this.auditItem,
         this.programmItem,
+        this.auditItem,
         this.editUserItem,
       ]));
 
@@ -118,9 +118,9 @@ export class TopBarService {
       .subscribe(() => this.menuItems$.next([
         this.applicationsItem,
         this.callsItem,
-        this.auditItem,
-        this.usersItem,
         this.programmItem,
+        this.usersItem,
+        this.auditItem,
         this.editUserItem,
       ]));
   }

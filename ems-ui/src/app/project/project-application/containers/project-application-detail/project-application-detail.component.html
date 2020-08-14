@@ -2,6 +2,8 @@
 <a *ngxPermissionsOnly="Permission.APPLICANT_USER" [routerLink]="['/calls']">&lt; {{'common.back.to.dashboard' | translate}}</a>
 <div class="container">
     <app-project-application-data></app-project-application-data>
+    <br>
+    <h5>Attachments</h5>
     <mat-tab-group class="files-container">
         <mat-tab label="{{'file.tab.application' | translate}}">
             <ng-template matTabContent>

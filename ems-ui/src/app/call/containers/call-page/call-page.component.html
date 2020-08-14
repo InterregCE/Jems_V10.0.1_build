@@ -1,6 +1,6 @@
 <div class="container vertical-center">
-    <h4 *ngxPermissionsExcept="Permission.APPLICANT_USER">{{'call.header' | translate}}</h4>
-    <h4 *ngxPermissionsOnly="Permission.APPLICANT_USER">{{'call.dashboard.header' | translate}}</h4>
+    <h3 *ngxPermissionsExcept="Permission.APPLICANT_USER">{{'call.header' | translate}}</h3>
+    <h3 *ngxPermissionsOnly="Permission.APPLICANT_USER">{{'call.dashboard.header' | translate}}</h3>
 
     <div *ngxPermissionsOnly="Permission.APPLICANT_USER">
         <h5>{{'call.applications.title' | translate}}</h5>

@@ -1,6 +1,6 @@
 <ng-container *ngIf="programme$ | async as programme">
-    <div *ngxPermissionsExcept="Permission.APPLICANT_USER">
-        <h5>{{'programme.data.page.title' | translate}}</h5>
+    <div *ngxPermissionsExcept="Permission.APPLICANT_USER" class="container">
+        <h3>{{'programme.data.page.title' | translate}}</h3>
         <mat-tab-group class="programme-tab-menu"
                        (selectedIndexChange)="changeTab($event)"
                        [selectedIndex]="activeTab$ | async">
