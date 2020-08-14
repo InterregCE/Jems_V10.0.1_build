@@ -6,6 +6,8 @@ export class ColumnConfiguration {
   displayedColumn: string;
   // the name of the property of one object in the datasource that will be binded to the cells of the table.
   elementProperty?: string;
+  // main translation key for that element
+  elementTranslationKey?: string;
   // if present the table will be sorted by the given property
   sortProperty?: string
   // type of the column

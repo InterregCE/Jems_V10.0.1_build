@@ -10,7 +10,7 @@
             <div class="col-4">{{'project.assessment.eligibilityCheck.title' | translate}}</div>
             <div class="col-5">
                 <div *ngIf="project.eligibilityAssessment">
-                    {{project.eligibilityAssessment.result}}
+                    {{'common.label.projecteligibilityassessmentresult.' + project.eligibilityAssessment.result | translate}}
                 </div>
             </div>
             <div *ngIf="!project.eligibilityAssessment"
@@ -32,7 +32,7 @@
             <div class="col-4">{{'project.assessment.qualityCheck.title' | translate}}</div>
             <div class="col-5">
                 <div *ngIf="project.qualityAssessment">
-                    {{project.qualityAssessment.result}}
+                    {{'common.label.projectqualityassessmentresult.' + project.qualityAssessment.result | translate}}
                 </div>
             </div>
             <div *ngIf="!project.qualityAssessment"

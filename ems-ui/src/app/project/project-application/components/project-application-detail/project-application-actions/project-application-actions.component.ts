@@ -7,6 +7,7 @@ import {Forms} from '../../../../../common/utils/forms';
 import {InputProjectStatus, InputRevertProjectStatus, OutputProjectStatus, OutputRevertProjectStatus} from '@cat/api';
 import {Alert} from '@common/components/forms/alert';
 import {Permission} from 'src/app/security/permissions/permission';
+import {TranslateService} from '@ngx-translate/core';
 
 @Component({
   selector: 'app-project-application-actions',
@@ -39,7 +40,8 @@ export class ProjectApplicationActionsComponent extends AbstractForm {
   @Output()
   revertStatus = new EventEmitter<InputRevertProjectStatus>();
 
-  constructor(private dialog: MatDialog,
+  constructor(public translate: TranslateService,
+              private dialog: MatDialog,
               protected changeDetectorRef: ChangeDetectorRef) {
     super(changeDetectorRef);
   }
@@ -93,8 +95,8 @@ export class ProjectApplicationActionsComponent extends AbstractForm {
       'project.application.revert.status.dialog.title',
       'project.application.revert.status.dialog.message',
       {
-        from: this.projectRevertStatus?.from?.status,
-        to: this.projectRevertStatus?.to?.status
+        from: this.translate.instant('common.label.projectapplicationstatus.' + this.projectRevertStatus?.from?.status),
+        to: this.translate.instant('common.label.projectapplicationstatus.' + this.projectRevertStatus?.to?.status)
       }
     ).pipe(
       take(1),
