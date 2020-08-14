@@ -207,7 +207,7 @@ class ProjectServiceTest {
 
     @Test
     fun projectCreation_OK() {
-        every { callRepository.findById(eq(dummyCall.id!!)) } returns Optional.of(dummyCall)
+        every { callRepository.findById(eq(dummyCall.id!!)) } returns Optional.of(dummyCall.copy(endDate = ZonedDateTime.now().plusDays(1)))
         every { projectRepository.save(any<Project>()) } returns Project(
             612,
             dummyCall,

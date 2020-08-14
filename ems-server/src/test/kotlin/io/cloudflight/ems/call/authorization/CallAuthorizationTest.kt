@@ -146,15 +146,15 @@ internal class CallAuthorizationTest {
             "${applicantUser.user.email} should be able to read call detail which is in status ${CallStatus.PUBLISHED})"
         )
 
-        var exception = assertThrows<ResourceNotFoundException>(
+        val exception = assertThrows<ResourceNotFoundException>(
             "${applicantUser.user.email} should NOT be able to find call detail which is in status ${CallStatus.DRAFT})"
         ) { callAuthorization.canReadCallDetail(ID_DRAFT) }
         assertThat(exception.entity).isEqualTo("call")
 
-        exception = assertThrows<ResourceNotFoundException>(
-            "${applicantUser.user.email} should NOT be able to read NOT_OPEN call detail which is in status ${CallStatus.PUBLISHED})"
-        ) { callAuthorization.canReadCallDetail(ID_PUBLISHED_BUT_CLOSED) }
-        assertThat(exception.entity).isEqualTo("call")
+        assertTrue(
+            callAuthorization.canReadCallDetail(ID_PUBLISHED_BUT_CLOSED),
+            "${applicantUser.user.email} should be able to read EXPIRED call detail which is in status ${CallStatus.PUBLISHED})"
+        )
     }
 
     private fun provideAdminAndProgramUsers(): Stream<Arguments> {

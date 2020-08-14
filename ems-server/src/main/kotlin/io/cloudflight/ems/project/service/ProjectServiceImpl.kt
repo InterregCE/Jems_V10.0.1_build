@@ -94,11 +94,11 @@ class ProjectServiceImpl(
     private fun getCallIfOpen(callId: Long): Call {
         val call = callRepository.findById(callId)
             .orElseThrow { ResourceNotFoundException("call") }
-        if (call.status == CallStatus.PUBLISHED)
+        if (call.status == CallStatus.PUBLISHED && ZonedDateTime.now().isBefore(call.endDate))
             return call
         throw I18nValidationException(
             httpStatus = HttpStatus.UNPROCESSABLE_ENTITY,
-            i18nKey = "call.status.not.published"
+            i18nKey = "call.not.open"
         )
     }
 

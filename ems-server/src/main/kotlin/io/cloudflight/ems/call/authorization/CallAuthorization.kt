@@ -32,7 +32,7 @@ class CallAuthorization(
 
     fun canReadCallDetail(callId: Long): Boolean {
         if (isApplicantUser())
-            if (isCallPublishedAndOpen(callService.getCallById(callId)))
+            if (isCallPublished(callService.getCallById(callId)))
                 return true
             else throw ResourceNotFoundException("call")
 
@@ -42,8 +42,8 @@ class CallAuthorization(
         return false
     }
 
-    private fun isCallPublishedAndOpen(call: OutputCall): Boolean {
-        return call.status == CallStatus.PUBLISHED && ZonedDateTime.now().isBefore(call.endDate)
+    private fun isCallPublished(call: OutputCall): Boolean {
+        return call.status == CallStatus.PUBLISHED
     }
 
 }
