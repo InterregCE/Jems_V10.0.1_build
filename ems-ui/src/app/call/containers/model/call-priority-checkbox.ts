@@ -21,6 +21,24 @@ export class CallPriorityCheckbox {
     return checkbox;
   }
 
+  static fromSavedPolicies(priorityCheckbox: CallPriorityCheckbox,
+                           checked: OutputProgrammePriorityPolicy.ProgrammeObjectivePolicyEnum[]): CallPriorityCheckbox {
+    const checkbox = new CallPriorityCheckbox();
+    checkbox.name = priorityCheckbox.name;
+    checkbox.children = priorityCheckbox.children.map(child => {
+        const copy = new CallPriorityCheckbox();
+        copy.name = child.name;
+        copy.children = [];
+        copy.policy = child.policy;
+        copy.checked = checked.includes(child.policy)
+      return copy;
+      }
+    );
+    checkbox.policy = priorityCheckbox.policy;
+    checkbox.updateChecked();
+    return checkbox;
+  }
+
   updateChecked(): void {
     this.checked = this.children.every(child => child.checked);
   }
@@ -38,12 +56,5 @@ export class CallPriorityCheckbox {
     return this.children
       .filter(child => child.checked)
       .map(child => child.policy)
-  }
-
-  updateCheckedPolicies(checked: OutputProgrammePriorityPolicy.ProgrammeObjectivePolicyEnum[]): void {
-    this.children
-      .filter(policy => checked.includes(policy.policy))
-      .forEach(checkbox => checkbox.checked = true)
-    this.updateChecked();
   }
 }

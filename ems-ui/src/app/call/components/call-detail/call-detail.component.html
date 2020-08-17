@@ -1,7 +1,12 @@
 <a *ngIf="call?.id" [routerLink]="['/calls']">{{'back.call.list' | translate}}</a>
 <br>
 <form [formGroup]="callForm" class="container">
-    <h4 class="col-md-12">{{'call.detail.title' | translate}}</h4>
+    <h4 class="col-md-12">{{'call.detail.title' | translate}}
+        <button *ngIf="!published && formState === FormState.VIEW" mat-raised-button
+                (click)="changeFormState$.next(FormState.EDIT)">
+            {{'call.detail.button.edit' | translate}}
+        </button>
+    </h4>
     <mat-form-field class="field col-md-12">
         <mat-label>{{'call.detail.field.name' | translate}}</mat-label>
         <input name="name" formControlName="name" matInput placeholder="{{'call.detail.field.name' | translate}}"
@@ -64,9 +69,9 @@
             [disabled]="formState === FormState.VIEW">
     </app-call-priority-tree>
 
-    <ng-container *ngIf="!published">
+    <ng-container *ngIf="!published && formState === FormState.EDIT">
         <button mat-raised-button color="secondary"
-                (click)="cancel.emit()">
+                (click)="onCancel()">
             {{'call.detail.button.cancel' | translate}}
         </button>
         <button mat-raised-button color="primary"
@@ -74,12 +79,13 @@
                 (click)="onSubmit()">
             {{'call.detail.button.save' | translate}}
         </button>
-        <button *ngIf="call?.id" mat-raised-button color="primary"
-                [disabled]="callForm.invalid || noPolicyChecked()"
-                (click)="publishCall()">
-            {{'call.detail.button.publish' | translate}}
-        </button>
     </ng-container>
+    <button *ngIf="call?.id && !published && formState === FormState.VIEW"
+            mat-raised-button color="primary"
+            [disabled]="noPolicyChecked()"
+            (click)="publishCall()">
+        {{'call.detail.button.publish' | translate}}
+    </button>
     <app-alert
             [show]="showSuccessMessage$ | async"
             [type]="Alert.SUCCESS">
