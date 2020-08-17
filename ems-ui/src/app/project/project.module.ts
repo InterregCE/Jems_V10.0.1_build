@@ -37,6 +37,7 @@ import {ProjectApplicationEligibilityDecisionPageComponent} from './project-appl
 import {ProjectApplicationFormPageComponent} from './project-application/containers/project-application-detail/project-application-form-page/project-application-form-page.component';
 import {MatSidenavModule} from '@angular/material/sidenav';
 import {ProjectApplicationFormComponent} from './project-application/components/project-application-form/project-application-form.component';
+import {MatTooltipModule} from '@angular/material/tooltip';
 
 @NgModule({
   declarations: [
@@ -77,6 +78,7 @@ import {ProjectApplicationFormComponent} from './project-application/components/
     MatDatepickerModule,
     MatMomentDateModule,
     MatSidenavModule,
+    MatTooltipModule,
   ],
   exports: [
     ProjectApplicationListComponent,

@@ -10,6 +10,7 @@ body {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   padding-top: 3.75rem;
+  background: #fafafa;
 }
 
 h1,
@@ -70,6 +71,10 @@ svg.material-icons {
 
 svg.material-icons:not(:last-child) {
   margin-right: 8px;
+}
+
+.mat-paginator {
+  background: none;
 }
 
 .card svg.material-icons path {
