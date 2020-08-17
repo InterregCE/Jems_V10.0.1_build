@@ -1,10 +1,12 @@
 package io.cloudflight.ems.api.programme.dto
 
+import io.cloudflight.ems.api.validators.StartDateBeforeEndDate
 import java.time.LocalDate
 import javax.validation.constraints.Max
 import javax.validation.constraints.Min
 import javax.validation.constraints.Size
 
+@StartDateBeforeEndDate("programme.lastYear.before.firstYear")
 data class ProgrammeBasicData(
 
     @field:Size(max = 15, message = "programme.cci.size.too.long")
