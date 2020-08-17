@@ -1,7 +1,7 @@
 import {ChangeDetectionStrategy, Component} from '@angular/core';
 import {CallService, InputCallCreate, InputCallUpdate, OutputCall, ProgrammePriorityService} from '@cat/api'
 import {BaseComponent} from '@common/components/base-component';
-import {catchError, flatMap, map, take, takeUntil, tap} from 'rxjs/operators';
+import {catchError, flatMap, map, startWith, take, takeUntil, tap} from 'rxjs/operators';
 import {Log} from '../../../common/utils/log';
 import {ActivatedRoute, Router} from '@angular/router';
 import {combineLatest, merge, of, Subject} from 'rxjs';
@@ -26,6 +26,7 @@ export class CallConfigurationComponent extends BaseComponent {
   callSaveError$ = new Subject<I18nValidationError | null>();
   saveCall$ = new Subject<InputCallUpdate>();
   publishCall$ = new Subject<number>();
+  canceledEdit$ = new Subject<void>();
 
   private allPriorities$ = this.programmePriorityService
     .get(Tables.DEFAULT_INITIAL_PAGE_INDEX, 100, 'code,asc')
@@ -44,17 +45,18 @@ export class CallConfigurationComponent extends BaseComponent {
 
   priorities$ = combineLatest([
     this.allPriorities$,
-    this.callById$
+    merge(this.callById$, this.saveCall$),
+    this.canceledEdit$.pipe(startWith(null))
   ])
     .pipe(
       map(([allPriorities, call]) => {
         if (!call || !(call as OutputCall).priorityPolicies) {
           return allPriorities;
         }
-        const savedPolicies = (call as OutputCall).priorityPolicies.map(policy => policy.programmeObjectivePolicy);
+        const savedPolicies = (call as OutputCall).priorityPolicies
+          .map(policy => policy.programmeObjectivePolicy ? policy.programmeObjectivePolicy : policy) as any;
         Log.debug('Adapting the priority policies', this, allPriorities, savedPolicies);
-        allPriorities.forEach(priority => priority.updateCheckedPolicies(savedPolicies));
-        return allPriorities;
+        return allPriorities.map(priority => CallPriorityCheckbox.fromSavedPolicies(priority, savedPolicies));
       })
     );
 
@@ -126,7 +128,15 @@ export class CallConfigurationComponent extends BaseComponent {
       .subscribe();
   }
 
-  redirectToCallOverview() {
+  cancel(): void {
+    if (this.callId) {
+      this.canceledEdit$.next();
+    } else {
+      this.redirectToCallOverview();
+    }
+  }
+
+  redirectToCallOverview(): void {
     this.router.navigate(['/calls'])
   }
 }

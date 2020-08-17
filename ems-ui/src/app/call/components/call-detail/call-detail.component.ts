@@ -76,21 +76,14 @@ export class CallDetailComponent extends ViewEditForm implements OnInit {
   ngOnInit(): void {
     super.ngOnInit();
     this.published = this.call?.status === OutputCall.StatusEnum.PUBLISHED;
-    this.changeFormState$.next(this.published ? FormState.VIEW : FormState.EDIT);
-    if (!this.call) {
-      return;
-    }
-    this.callForm.controls.name.setValue(this.call.name);
-    this.callForm.controls.startDate.setValue(this.call.startDate);
-    this.callForm.controls.endDate.setValue(this.call.endDate);
-    this.callForm.controls.description.setValue(this.call.description);
+    this.changeFormState$.next(this.call?.id ? FormState.VIEW : FormState.EDIT);
   }
 
   getForm(): FormGroup | null {
     return this.callForm;
   }
 
-  onSubmit() {
+  onSubmit(): void {
     const call = {
       name: this.callForm?.controls?.name?.value,
       startDate: this.callForm?.controls?.startDate?.value,
@@ -109,7 +102,14 @@ export class CallDetailComponent extends ViewEditForm implements OnInit {
     });
   }
 
-  publishCall() {
+  onCancel(): void {
+    if (this.call?.id) {
+      this.changeFormState$.next(FormState.VIEW);
+    }
+    this.cancel.emit();
+  }
+
+  publishCall(): void {
     Forms.confirmDialog(
       this.dialog,
       'call.dialog.title',
@@ -126,5 +126,12 @@ export class CallDetailComponent extends ViewEditForm implements OnInit {
   noPolicyChecked(): boolean {
     return this.priorityCheckboxes
       && !this.priorityCheckboxes.some(priority => priority.checked || priority.someChecked());
+  }
+
+  protected enterViewMode(): void {
+    this.callForm.controls.name.setValue(this.call.name);
+    this.callForm.controls.startDate.setValue(this.call.startDate);
+    this.callForm.controls.endDate.setValue(this.call.endDate);
+    this.callForm.controls.description.setValue(this.call.description);
   }
 }
