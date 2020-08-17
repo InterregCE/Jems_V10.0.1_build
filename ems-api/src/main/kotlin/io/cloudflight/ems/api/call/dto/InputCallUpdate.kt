@@ -1,11 +1,13 @@
 package io.cloudflight.ems.api.call.dto
 
+import io.cloudflight.ems.api.validators.StartDateBeforeEndDate
 import io.cloudflight.ems.api.programme.dto.ProgrammeObjectivePolicy
 import java.time.ZonedDateTime
 import javax.validation.constraints.NotBlank
 import javax.validation.constraints.NotNull
 import javax.validation.constraints.Size
 
+@StartDateBeforeEndDate("call.endDate.is.before.startDate")
 data class InputCallUpdate (
 
     @field:NotNull(message = "common.id.should.not.be.empty")
