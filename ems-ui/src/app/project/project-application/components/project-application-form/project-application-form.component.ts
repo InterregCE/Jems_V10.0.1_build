@@ -12,6 +12,7 @@ import {FormBuilder, FormGroup, Validators} from '@angular/forms';
 import {InputProjectData, OutputProject} from '@cat/api';
 import {Permission} from '../../../../security/permissions/permission';
 import {FormState} from '@common/components/forms/form-state';
+import {SideNavService} from '@common/components/side-nav/side-nav.service';
 
 @Component({
   selector: 'app-project-application-form',
@@ -60,7 +61,8 @@ export class ProjectApplicationFormComponent extends ViewEditForm implements OnI
   };
 
   constructor(private formBuilder: FormBuilder,
-              protected changeDetectorRef: ChangeDetectorRef) {
+              protected changeDetectorRef: ChangeDetectorRef,
+              private sideNavService: SideNavService) {
     super(changeDetectorRef);
   }
 
@@ -68,15 +70,18 @@ export class ProjectApplicationFormComponent extends ViewEditForm implements OnI
     super.ngOnInit();
     if (this.editable) {
       this.changeFormState$.next(FormState.EDIT);
+    } else {
+      this.enterViewMode();
     }
-    this.enterViewMode();
   }
 
   protected enterViewMode(): void {
+    this.sideNavService.setAlertStatus(false);
     this.initFields();
   }
 
   protected enterEditMode(): void {
+    this.sideNavService.setAlertStatus(true);
     this.applicationForm.controls.projectId.disable();
   }
 
