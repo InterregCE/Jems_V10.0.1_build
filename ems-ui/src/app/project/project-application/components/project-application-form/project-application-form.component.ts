@@ -11,7 +11,6 @@ import {ViewEditForm} from '@common/components/forms/view-edit-form';
 import {FormBuilder, FormGroup, Validators} from '@angular/forms';
 import {InputProjectData, OutputProject} from '@cat/api';
 import {Permission} from '../../../../security/permissions/permission';
-import {FormState} from '@common/components/forms/form-state';
 
 @Component({
   selector: 'app-project-application-form',
@@ -66,12 +65,15 @@ export class ProjectApplicationFormComponent extends ViewEditForm implements OnI
 
   ngOnInit() {
     super.ngOnInit();
-    this.changeFormState$.next(FormState.EDIT);
     this.enterViewMode();
   }
 
   protected enterViewMode(): void {
-    this.initFields();
+    this.applicationForm.controls.projectId.setValue(this.project.id);
+    this.applicationForm.controls.projectAcronym.setValue(this.project.acronym);
+    this.applicationForm.controls.projectTitle.setValue(this.project?.projectData?.title);
+    this.applicationForm.controls.projectDuration.setValue(this.project?.projectData?.duration);
+    this.applicationForm.controls.projectSummary.setValue(this.project?.projectData?.introProgrammeLanguage);
   }
 
   protected enterEditMode(): void {
@@ -90,13 +92,5 @@ export class ProjectApplicationFormComponent extends ViewEditForm implements OnI
       introProgrammeLanguage: this.applicationForm.controls.projectSummary.value,
       intro: ''
     });
-  }
-
-  private initFields() {
-    this.applicationForm.controls.projectId.setValue(this.project.id);
-    this.applicationForm.controls.projectAcronym.setValue(this.project.acronym);
-    this.applicationForm.controls.projectTitle.setValue(this.project?.projectData?.title);
-    this.applicationForm.controls.projectDuration.setValue(this.project?.projectData?.duration);
-    this.applicationForm.controls.projectSummary.setValue(this.project?.projectData?.introProgrammeLanguage);
   }
 }
