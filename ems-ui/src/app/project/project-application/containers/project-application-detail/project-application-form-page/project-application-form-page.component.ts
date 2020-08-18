@@ -53,7 +53,7 @@ export class ProjectApplicationFormPageComponent extends BaseComponent implement
   )
     .pipe(
       takeUntil(this.destroyed$),
-      tap(project => this.setHeadlines(project.acronym)),
+      tap(project => this.setHeadlines(project.id + ' '  +  project.acronym)),
       map(project => ({
         project,
         editable: project.projectStatus.status === OutputProjectStatus.StatusEnum.DRAFT
