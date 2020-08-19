@@ -1,0 +1,6 @@
+<app-programme-nuts-info
+        [metadata]="metaData$ | async"
+        [success$]="downloadSuccess$"
+        [error$]="downloadError$"
+        (downloadNuts)="downloadLatestNuts$.next()">
+</app-programme-nuts-info>
