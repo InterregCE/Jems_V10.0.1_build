@@ -1,7 +1,7 @@
 package io.cloudflight.ems.programme.service.validator
 
 import io.cloudflight.ems.api.programme.dto.InputProgrammePriorityPolicy
-import io.cloudflight.ems.api.programme.dto.OutputProgrammePriorityPolicy
+import io.cloudflight.ems.api.programme.dto.OutputProgrammePriorityPolicySimple
 import io.cloudflight.ems.api.programme.dto.ProgrammeObjectivePolicy
 import io.cloudflight.ems.api.programme.validator.PriorityPolicyUniqueCodeValidator
 import io.cloudflight.ems.exception.I18nFieldError
@@ -53,7 +53,7 @@ class PriorityPolicyUniqueCodeValidatorImpl(
         return true
     }
 
-    private fun buildPolicyCodeInUseException(policy: OutputProgrammePriorityPolicy): I18nValidationException {
+    private fun buildPolicyCodeInUseException(policy: OutputProgrammePriorityPolicySimple): I18nValidationException {
         throw I18nValidationException(
             httpStatus = HttpStatus.UNPROCESSABLE_ENTITY,
             i18nFieldErrors = mapOf("programme.priorityPolicy.programmeObjectivePolicy" to I18nFieldError(

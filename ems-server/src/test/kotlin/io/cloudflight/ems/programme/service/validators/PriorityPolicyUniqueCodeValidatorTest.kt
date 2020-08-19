@@ -1,7 +1,7 @@
 package io.cloudflight.ems.programme.service.validators
 
 import io.cloudflight.ems.api.programme.dto.InputProgrammePriorityPolicy
-import io.cloudflight.ems.api.programme.dto.OutputProgrammePriorityPolicy
+import io.cloudflight.ems.api.programme.dto.OutputProgrammePriorityPolicySimple
 import io.cloudflight.ems.api.programme.dto.ProgrammeObjectivePolicy
 import io.cloudflight.ems.api.programme.dto.ProgrammeObjectivePolicy.AdvancedTechnologies
 import io.cloudflight.ems.api.programme.dto.ProgrammeObjectivePolicy.ClimateChange
@@ -93,7 +93,7 @@ class PriorityPolicyUniqueCodeValidatorTest {
 
     @Test
     fun `policy with such code already exists for different policy - code is not unique`() {
-        val existingPriorityPolicy = OutputProgrammePriorityPolicy(
+        val existingPriorityPolicy = OutputProgrammePriorityPolicySimple(
             code = "existing-code",
             programmeObjectivePolicy = AdvancedTechnologies
         )
@@ -116,7 +116,7 @@ class PriorityPolicyUniqueCodeValidatorTest {
 
     @Test
     fun `policy with such code already exists for this policy - no change`() {
-        val existingPriorityPolicy = OutputProgrammePriorityPolicy(
+        val existingPriorityPolicy = OutputProgrammePriorityPolicySimple(
             code = "existing-code",
             programmeObjectivePolicy = AdvancedTechnologies
         )
@@ -130,7 +130,7 @@ class PriorityPolicyUniqueCodeValidatorTest {
             "should be valid, when such policy code is not changing")
     }
 
-    private fun expectedExceptionForPolicyCodeAlreadyInUse(existingPriorityPolicy: OutputProgrammePriorityPolicy): I18nValidationException {
+    private fun expectedExceptionForPolicyCodeAlreadyInUse(existingPriorityPolicy: OutputProgrammePriorityPolicySimple): I18nValidationException {
         return I18nValidationException(
             httpStatus = HttpStatus.UNPROCESSABLE_ENTITY,
             i18nFieldErrors = mapOf("programme.priorityPolicy.programmeObjectivePolicy" to I18nFieldError(

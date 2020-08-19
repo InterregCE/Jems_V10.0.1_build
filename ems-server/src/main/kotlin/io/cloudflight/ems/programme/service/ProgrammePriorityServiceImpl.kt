@@ -3,7 +3,7 @@ package io.cloudflight.ems.programme.service
 import io.cloudflight.ems.api.programme.dto.InputProgrammePriorityCreate
 import io.cloudflight.ems.api.programme.dto.InputProgrammePriorityUpdate
 import io.cloudflight.ems.api.programme.dto.OutputProgrammePriority
-import io.cloudflight.ems.api.programme.dto.OutputProgrammePriorityPolicy
+import io.cloudflight.ems.api.programme.dto.OutputProgrammePriorityPolicySimple
 import io.cloudflight.ems.api.programme.dto.ProgrammeObjective
 import io.cloudflight.ems.api.programme.dto.ProgrammeObjectivePolicy
 import io.cloudflight.ems.entity.Audit
@@ -79,7 +79,7 @@ class ProgrammePriorityServiceImpl(
     }
 
     @Transactional(readOnly = true)
-    override fun getPriorityPolicyByCode(code: String): OutputProgrammePriorityPolicy? {
+    override fun getPriorityPolicyByCode(code: String): OutputProgrammePriorityPolicySimple? {
         return programmePriorityPolicyRepository.findFirstByCode(code)?.toOutputProgrammePriorityPolicy()
     }
 

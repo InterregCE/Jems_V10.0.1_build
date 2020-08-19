@@ -8,7 +8,7 @@ import io.cloudflight.ems.api.project.dto.status.ProjectApplicationStatus
 import io.cloudflight.ems.api.dto.user.OutputUser
 import io.cloudflight.ems.api.dto.user.OutputUserRole
 import io.cloudflight.ems.api.dto.user.OutputUserWithRole
-import io.cloudflight.ems.api.programme.dto.OutputProgrammePriorityPolicy
+import io.cloudflight.ems.api.programme.dto.OutputProgrammePriorityPolicySimple
 import io.cloudflight.ems.api.programme.dto.ProgrammeObjectivePolicy.AdvancedTechnologies
 import io.cloudflight.ems.api.programme.dto.ProgrammeObjectivePolicy.HealthcareAcrossBorders
 import io.cloudflight.ems.api.project.dto.InputProjectData
@@ -318,7 +318,7 @@ class ProjectServiceTest {
             duration = projectData.duration,
             intro = projectData.intro,
             introProgrammeLanguage = projectData.introProgrammeLanguage,
-            specificObjective = OutputProgrammePriorityPolicy(programmeObjectivePolicy = AdvancedTechnologies, code = "AT")
+            specificObjective = OutputProgrammePriorityPolicySimple(programmeObjectivePolicy = AdvancedTechnologies, code = "AT")
         )
 
         val result = projectService.update(1, projectData)

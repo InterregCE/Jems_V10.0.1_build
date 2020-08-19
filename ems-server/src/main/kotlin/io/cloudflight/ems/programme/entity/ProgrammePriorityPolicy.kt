@@ -1,7 +1,7 @@
 package io.cloudflight.ems.programme.entity
 
 import io.cloudflight.ems.api.programme.dto.ProgrammeObjectivePolicy
-import java.util.*
+import java.util.Objects
 import javax.persistence.Column
 import javax.persistence.Entity
 import javax.persistence.EnumType
@@ -24,11 +24,9 @@ data class ProgrammePriorityPolicy(
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "programme_priority_id", insertable = false, updatable = false)
-    val programmePriority: ProgrammePriority? = null
+    val programmePriority: ProgrammePriority? = null    // here null is because of hibernate, but when retrieved it cannot be null
 
-)
-
-{
+) {
     override fun hashCode(): Int {
         return Objects.hashCode(programmeObjectivePolicy)
     }

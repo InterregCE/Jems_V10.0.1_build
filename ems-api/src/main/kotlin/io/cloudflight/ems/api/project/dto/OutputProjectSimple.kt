@@ -1,6 +1,6 @@
 package io.cloudflight.ems.api.project.dto
 
-import io.cloudflight.ems.api.programme.dto.OutputProgrammePriorityPolicy
+import io.cloudflight.ems.api.programme.dto.OutputProgrammePriorityPolicySimple
 import io.cloudflight.ems.api.programme.dto.OutputProgrammePrioritySimple
 import io.cloudflight.ems.api.project.dto.status.ProjectApplicationStatus
 import java.time.ZonedDateTime
@@ -12,6 +12,6 @@ data class OutputProjectSimple(
     val projectStatus: ProjectApplicationStatus,
     val firstSubmissionDate: ZonedDateTime?,
     val lastResubmissionDate: ZonedDateTime?,
-    val specificObjective: OutputProgrammePriorityPolicy?,
+    val specificObjective: OutputProgrammePriorityPolicySimple?,
     val programmePriority: OutputProgrammePrioritySimple?
 )

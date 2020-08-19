@@ -4,8 +4,8 @@ import io.cloudflight.ems.api.call.CallApi
 import io.cloudflight.ems.api.call.dto.InputCallCreate
 import io.cloudflight.ems.api.call.dto.InputCallUpdate
 import io.cloudflight.ems.api.call.dto.OutputCall
+import io.cloudflight.ems.api.call.dto.OutputCallList
 import io.cloudflight.ems.api.call.dto.OutputCallProgrammePriority
-import io.cloudflight.ems.api.programme.dto.OutputProgrammePriority
 import io.cloudflight.ems.call.service.CallService
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
@@ -20,7 +20,7 @@ class CallController(
     /**
      * Here the @PreAuthorize annotation is missing because list is filtered based on restrictions inside the service
      */
-    override fun getCalls(pageable: Pageable): Page<OutputCall> {
+    override fun getCalls(pageable: Pageable): Page<OutputCallList> {
         return callService.getCalls(pageable)
     }
 
@@ -44,6 +44,7 @@ class CallController(
         return callService.publishCall(id)
     }
 
+    @PreAuthorize("@callAuthorization.canReadCallDetail(#id)")
     override fun getCallObjectives(callId: Long): List<OutputCallProgrammePriority> {
         return callService.getPriorityAndPoliciesForCall(callId)
     }

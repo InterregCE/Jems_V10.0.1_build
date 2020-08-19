@@ -3,7 +3,7 @@ package io.cloudflight.ems.programme.service
 import io.cloudflight.ems.api.programme.dto.InputProgrammePriorityCreate
 import io.cloudflight.ems.api.programme.dto.InputProgrammePriorityUpdate
 import io.cloudflight.ems.api.programme.dto.OutputProgrammePriority
-import io.cloudflight.ems.api.programme.dto.OutputProgrammePriorityPolicy
+import io.cloudflight.ems.api.programme.dto.OutputProgrammePriorityPolicySimple
 import io.cloudflight.ems.api.programme.dto.ProgrammeObjective
 import io.cloudflight.ems.api.programme.dto.ProgrammeObjectivePolicy
 import org.springframework.data.domain.Page
@@ -33,7 +33,7 @@ interface ProgrammePriorityService {
      *   - only a ProgrammePriorityPolicy for given code without ProgrammePriority assigned to it
      *   - or null if there is not yet a ProgrammePriorityPolicy with such code
      */
-    fun getPriorityPolicyByCode(code: String): OutputProgrammePriorityPolicy?
+    fun getPriorityPolicyByCode(code: String): OutputProgrammePriorityPolicySimple?
 
     /**
      * Will extract ProgrammePriority ID, if given ProgrammePriorityPolicy is already defined in programme setup.

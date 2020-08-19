@@ -4,6 +4,7 @@ import io.cloudflight.ems.api.call.dto.CallStatus
 import io.cloudflight.ems.api.call.dto.InputCallCreate
 import io.cloudflight.ems.api.call.dto.InputCallUpdate
 import io.cloudflight.ems.api.call.dto.OutputCall
+import io.cloudflight.ems.api.call.dto.OutputCallList
 import io.cloudflight.ems.api.call.dto.OutputCallProgrammePriority
 import io.cloudflight.ems.api.programme.dto.ProgrammeObjectivePolicy
 import io.cloudflight.ems.entity.Audit
@@ -42,12 +43,12 @@ class CallServiceImpl(
     }
 
     @Transactional(readOnly = true)
-    override fun getCalls(pageable: Pageable): Page<OutputCall> {
+    override fun getCalls(pageable: Pageable): Page<OutputCallList> {
         val currentUser = securityService.currentUser!!
         if (currentUser.isAdmin || currentUser.isProgrammeUser)
-            return callRepository.findAll(pageable).map { it.toOutputCall() }
+            return callRepository.findAll(pageable).map { it.toOutputCallList() }
         if (currentUser.hasRole(APPLICANT_USER))
-            return callRepository.findAllByStatus(CallStatus.PUBLISHED, pageable).map { it.toOutputCall() }
+            return callRepository.findAllByStatus(CallStatus.PUBLISHED, pageable).map { it.toOutputCallList() }
         return Page.empty()
     }
 

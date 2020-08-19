@@ -6,7 +6,7 @@ import io.cloudflight.ems.api.programme.dto.InputProgrammePriorityCreate
 import io.cloudflight.ems.api.programme.dto.InputProgrammePriorityPolicy
 import io.cloudflight.ems.api.programme.dto.InputProgrammePriorityUpdate
 import io.cloudflight.ems.api.programme.dto.OutputProgrammePriority
-import io.cloudflight.ems.api.programme.dto.OutputProgrammePriorityPolicy
+import io.cloudflight.ems.api.programme.dto.OutputProgrammePriorityPolicySimple
 import io.cloudflight.ems.api.programme.dto.ProgrammeObjective.PO1
 import io.cloudflight.ems.api.programme.dto.ProgrammeObjective.PO2
 import io.cloudflight.ems.api.programme.dto.ProgrammeObjectivePolicy
@@ -98,7 +98,7 @@ class ProgrammePriorityServiceTest {
                 title = "Priority A - $PO1",
                 objective = PO1,
                 programmePriorityPolicies = listOf(
-                    OutputProgrammePriorityPolicy(programmeObjectivePolicy = Digitalization, code = "Code-Digit"))
+                    OutputProgrammePriorityPolicySimple(programmeObjectivePolicy = Digitalization, code = "Code-Digit"))
             )
         )
 
@@ -136,8 +136,8 @@ class ProgrammePriorityServiceTest {
             title = "New priority",
             objective = PO1,
             programmePriorityPolicies = listOf(
-                OutputProgrammePriorityPolicy(programmeObjectivePolicy = Growth, code = "growth"),
-                OutputProgrammePriorityPolicy(programmeObjectivePolicy = IndustrialTransition, code = "indu")
+                OutputProgrammePriorityPolicySimple(programmeObjectivePolicy = Growth, code = "growth"),
+                OutputProgrammePriorityPolicySimple(programmeObjectivePolicy = IndustrialTransition, code = "indu")
             )
         )
 
@@ -205,9 +205,9 @@ class ProgrammePriorityServiceTest {
             title = "Existing priority",
             objective = PO2,
             programmePriorityPolicies = listOf(
-                OutputProgrammePriorityPolicy(programmeObjectivePolicy = SmartEnergy, code = "smart"),
-                OutputProgrammePriorityPolicy(programmeObjectivePolicy = ClimateChange, code = "climate"),
-                OutputProgrammePriorityPolicy(programmeObjectivePolicy = WaterManagement, code = "water")
+                OutputProgrammePriorityPolicySimple(programmeObjectivePolicy = SmartEnergy, code = "smart"),
+                OutputProgrammePriorityPolicySimple(programmeObjectivePolicy = ClimateChange, code = "climate"),
+                OutputProgrammePriorityPolicySimple(programmeObjectivePolicy = WaterManagement, code = "water")
             )
         )
 
@@ -315,7 +315,7 @@ class ProgrammePriorityServiceTest {
         every { programmePriorityPolicyRepository.findFirstByCode("code-not-used") } returns null
 
         assertThat(programmePriorityService.getPriorityPolicyByCode("code-used"))
-            .isEqualTo(OutputProgrammePriorityPolicy(programmeObjectivePolicy = AdvancedTechnologies, code = "code-used"))
+            .isEqualTo(OutputProgrammePriorityPolicySimple(programmeObjectivePolicy = AdvancedTechnologies, code = "code-used"))
         assertThat(programmePriorityService.getPriorityPolicyByCode("code-not-used")).isNull()
     }
 
