@@ -4,6 +4,8 @@ import io.cloudflight.ems.api.call.CallApi
 import io.cloudflight.ems.api.call.dto.InputCallCreate
 import io.cloudflight.ems.api.call.dto.InputCallUpdate
 import io.cloudflight.ems.api.call.dto.OutputCall
+import io.cloudflight.ems.api.call.dto.OutputCallProgrammePriority
+import io.cloudflight.ems.api.programme.dto.OutputProgrammePriority
 import io.cloudflight.ems.call.service.CallService
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
@@ -40,6 +42,10 @@ class CallController(
     @PreAuthorize("@callAuthorization.canUpdateCall(#id)")
     override fun publishCall(id: Long): OutputCall {
         return callService.publishCall(id)
+    }
+
+    override fun getCallObjectives(callId: Long): List<OutputCallProgrammePriority> {
+        return callService.getPriorityAndPoliciesForCall(callId)
     }
 
 }

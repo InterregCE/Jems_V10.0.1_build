@@ -1,6 +1,8 @@
 package io.cloudflight.ems.project.service
 
 import io.cloudflight.ems.api.call.dto.CallStatus
+import io.cloudflight.ems.api.programme.dto.OutputProgrammePriority
+import io.cloudflight.ems.api.programme.dto.ProgrammeObjectivePolicy
 import io.cloudflight.ems.api.project.dto.InputProject
 import io.cloudflight.ems.api.project.dto.OutputProject
 import io.cloudflight.ems.api.project.dto.OutputProjectSimple
@@ -13,6 +15,11 @@ import io.cloudflight.ems.entity.User
 import io.cloudflight.ems.exception.I18nValidationException
 import io.cloudflight.ems.exception.ResourceNotFoundException
 import io.cloudflight.ems.call.repository.CallRepository
+import io.cloudflight.ems.programme.entity.ProgrammePriority
+import io.cloudflight.ems.programme.entity.ProgrammePriorityPolicy
+import io.cloudflight.ems.programme.repository.ProgrammePriorityPolicyRepository
+import io.cloudflight.ems.programme.repository.ProgrammePriorityRepository
+import io.cloudflight.ems.programme.service.toOutputProgrammePriority
 import io.cloudflight.ems.project.repository.ProjectRepository
 import io.cloudflight.ems.project.repository.ProjectStatusRepository
 import io.cloudflight.ems.repository.UserRepository
@@ -36,6 +43,8 @@ class ProjectServiceImpl(
     private val callRepository: CallRepository,
     private val userRepository: UserRepository,
     private val auditService: AuditService,
+    private val programmePriorityPolicyRepository: ProgrammePriorityPolicyRepository,
+    private val programmePriorityRepository: ProgrammePriorityRepository,
     private val securityService: SecurityService
 ) : ProjectService {
 
@@ -60,6 +69,7 @@ class ProjectServiceImpl(
         }
         return projectRepo.findAll(page).map { it.toOutputProjectSimple() }
     }
+
 
     @Transactional
     override fun createProject(project: InputProject): OutputProject {
@@ -123,9 +133,14 @@ class ProjectServiceImpl(
         return projectRepo.save(
             project.copy(
                 acronym = projectData.acronym!!,
-                projectData = projectData.toEntity(project)
+                projectData = projectData.toEntity(project,
+                    priorityPolicy = policyToEntity(projectData.specificObjective))
             )
         ).toOutputProject()
+    }
+
+    private fun policyToEntity(policy: ProgrammeObjectivePolicy?): ProgrammePriorityPolicy {
+        return programmePriorityPolicyRepository.findById(policy!!).get()
     }
 
 }

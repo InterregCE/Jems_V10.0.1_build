@@ -1,7 +1,9 @@
 <app-project-application-form
         *ngIf="details$ | async as details"
-        [project]="details.project"
-        [editable]="details.editable"
+        [project]="details.projectDetails.project"
+        [editable]="details.projectDetails.editable"
+        [priorities]="details.callObjectives.priorities"
+        [objectivesWithPolicies]="details.callObjectives.objectivesWithPolicies"
         [success$]="saveSuccess$"
         [error$]="saveError$"
         (updateData)="updateProjectData$.next($event)">

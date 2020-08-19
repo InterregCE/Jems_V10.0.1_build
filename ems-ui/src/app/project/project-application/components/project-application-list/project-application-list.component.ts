@@ -53,6 +53,23 @@ export class ProjectApplicationListComponent {
         sortProperty: 'lastResubmission.updated'
       },
       {
+        displayedColumn: 'project.table.column.name.priority',
+        elementProperty: 'programmePriority.code',
+        sortProperty: 'programmePriority',
+        tooltip: {
+          tooltipContent: 'programmePriority.title'
+        }
+      },
+      {
+        displayedColumn: 'project.table.column.name.objective',
+        elementProperty: 'specificObjective.code',
+        sortProperty: 'specificObjective',
+        tooltip: {
+          tooltipContent: 'specificObjective.programmeObjectivePolicy',
+          tooltipTranslationKey: 'programme.policy'
+        }
+      },
+      {
         displayedColumn: 'project.table.column.name.status',
         elementProperty: 'projectStatus',
         elementTranslationKey: 'common.label.projectapplicationstatus',

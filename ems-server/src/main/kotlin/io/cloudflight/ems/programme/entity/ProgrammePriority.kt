@@ -6,6 +6,7 @@ import javax.persistence.Column
 import javax.persistence.Entity
 import javax.persistence.EnumType
 import javax.persistence.Enumerated
+import javax.persistence.FetchType
 import javax.persistence.GeneratedValue
 import javax.persistence.GenerationType
 import javax.persistence.Id
@@ -29,7 +30,7 @@ data class ProgrammePriority(
     @Enumerated(EnumType.STRING)
     val objective: ProgrammeObjective,
 
-    @OneToMany(cascade = [CascadeType.ALL], orphanRemoval = true)
+    @OneToMany(cascade = [CascadeType.ALL], orphanRemoval = true, fetch = FetchType.LAZY)
     @JoinColumn(name = "programme_priority_id", nullable = false, insertable = true)
     val programmePriorityPolicies: Set<ProgrammePriorityPolicy>
 

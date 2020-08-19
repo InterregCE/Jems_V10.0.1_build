@@ -24,7 +24,8 @@
         </ng-template>
 
         <td mat-cell *matCellDef="let row">
-            <div *ngIf="!column.customCellTemplate; else customCellTemplate">
+            <div *ngIf="!column.customCellTemplate; else customCellTemplate"
+            [title]="formatColumnTooltip(column, row) | translate" >
                 {{ formatColumnValue(column, row) | translate }}
             </div>
 
