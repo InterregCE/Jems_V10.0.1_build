@@ -14,6 +14,11 @@ import {ProgrammePolicyCheckboxComponent} from './programme-page/components/prog
 import {ProgrammePriorityComponent} from './programme-page/containers/programme-priority/programme-priority.component';
 import {ProgrammeAreaComponent} from './programme-page/containers/programme-area/programme-area.component';
 import {ProgrammeNutsInfoComponent} from './programme-page/components/programme-nuts-info/programme-nuts-info.component';
+import {MatTreeModule} from '@angular/material/tree';
+import {MatIconModule} from '@angular/material/icon';
+import {ProgrammeRegionsTreeComponent} from './programme-page/components/programme-regions-tree/programme-regions-tree.component';
+import {ProgrammeSelectedRegionsComponent} from './programme-page/components/programme-selected-regions/programme-selected-regions.component';
+import {ProgrammeRegionsComponent} from './programme-page/components/programme-regions/programme-regions.component';
 
 @NgModule({
   declarations: [
@@ -26,7 +31,10 @@ import {ProgrammeNutsInfoComponent} from './programme-page/components/programme-
     ProgrammePolicyCheckboxComponent,
     ProgrammePriorityComponent,
     ProgrammeAreaComponent,
-    ProgrammeNutsInfoComponent
+    ProgrammeNutsInfoComponent,
+    ProgrammeRegionsComponent,
+    ProgrammeRegionsTreeComponent,
+    ProgrammeSelectedRegionsComponent
   ],
   imports: [
     SharedModule,
@@ -34,7 +42,9 @@ import {ProgrammeNutsInfoComponent} from './programme-page/components/programme-
     CoreModule,
     MatDatepickerModule,
     MatSelectModule,
-    MatCheckboxModule
+    MatCheckboxModule,
+    MatTreeModule,
+    MatIconModule
   ]
 })
 export class ProgrammeModule {

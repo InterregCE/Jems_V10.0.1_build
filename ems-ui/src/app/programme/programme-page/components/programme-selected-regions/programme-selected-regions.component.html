@@ -1,0 +1,9 @@
+<div *ngFor="let region of selectedRegions | keyvalue : originalOrder">
+    <p class="country">{{region.key}}</p>
+    <ul>
+        <li *ngFor="let subRegion of region.value">
+            {{subRegion.title}}
+            <span *ngIf="subRegion.id">({{subRegion.id}})</span>
+        </li>
+    </ul>
+</div>

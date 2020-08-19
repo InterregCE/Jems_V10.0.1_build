@@ -16,7 +16,9 @@
                 <app-programme-priorities></app-programme-priorities>
             </mat-tab>
             <mat-tab label="{{'programme.tab.area' | translate}}">
-                <app-programme-area></app-programme-area>
+                <app-programme-area
+                        [programmeNuts]="programme.programmeNuts">
+                </app-programme-area>
             </mat-tab>
         </mat-tab-group>
     </div>
