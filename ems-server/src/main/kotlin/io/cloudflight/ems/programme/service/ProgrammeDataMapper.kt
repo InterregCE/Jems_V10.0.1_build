@@ -1,9 +1,12 @@
 package io.cloudflight.ems.programme.service
 
-import io.cloudflight.ems.api.programme.dto.ProgrammeBasicData
+import io.cloudflight.ems.api.programme.dto.InputProgrammeData
+import io.cloudflight.ems.api.programme.dto.OutputProgrammeData
 import io.cloudflight.ems.entity.ProgrammeData
+import io.cloudflight.ems.nuts.entity.NutsRegion3
+import io.cloudflight.ems.nuts.service.groupNuts
 
-fun ProgrammeBasicData.toEntity() = ProgrammeData(
+fun InputProgrammeData.toEntity(programmeNuts: Set<NutsRegion3>) = ProgrammeData(
     id = 1,
     cci = cci,
     title = title,
@@ -15,10 +18,11 @@ fun ProgrammeBasicData.toEntity() = ProgrammeData(
     commissionDecisionNumber = commissionDecisionNumber,
     commissionDecisionDate = commissionDecisionDate,
     programmeAmendingDecisionNumber = programmeAmendingDecisionNumber,
-    programmeAmendingDecisionDate = programmeAmendingDecisionDate
+    programmeAmendingDecisionDate = programmeAmendingDecisionDate,
+    programmeNuts = programmeNuts
 )
 
-fun ProgrammeData.toProgrammeBasicData() = ProgrammeBasicData(
+fun ProgrammeData.toOutputProgrammeData() = OutputProgrammeData(
     cci = cci,
     title = title,
     version = version,
@@ -29,5 +33,6 @@ fun ProgrammeData.toProgrammeBasicData() = ProgrammeBasicData(
     commissionDecisionNumber = commissionDecisionNumber,
     commissionDecisionDate = commissionDecisionDate,
     programmeAmendingDecisionNumber = programmeAmendingDecisionNumber,
-    programmeAmendingDecisionDate = programmeAmendingDecisionDate
+    programmeAmendingDecisionDate = programmeAmendingDecisionDate,
+    programmeNuts = groupNuts(programmeNuts)
 )

@@ -2,7 +2,7 @@ package io.cloudflight.ems.api.validators
 
 import io.cloudflight.ems.api.call.dto.InputCallCreate
 import io.cloudflight.ems.api.call.dto.InputCallUpdate
-import io.cloudflight.ems.api.programme.dto.ProgrammeBasicData
+import io.cloudflight.ems.api.programme.dto.InputProgrammeData
 import java.time.ZoneId
 import java.time.ZonedDateTime
 import javax.validation.Constraint
@@ -35,7 +35,7 @@ class StartBeforeEndValidator(private val startBeforeEndValidator: StartDateBefo
             start = dtoWithTimeRange.startDate
             end = dtoWithTimeRange.endDate
         }
-        if (dtoWithTimeRange is ProgrammeBasicData) {
+        if (dtoWithTimeRange is InputProgrammeData) {
             start = toYear(dtoWithTimeRange.firstYear)
             end = toYear(dtoWithTimeRange.lastYear)
         }

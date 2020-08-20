@@ -45,7 +45,8 @@ INSERT INTO nuts_metadata (id) VALUE (1);
 
 CREATE TABLE programme_nuts
 (
-    nuts_region_3_id VARCHAR(5) PRIMARY KEY,
+    nuts_region_3_id  VARCHAR(5) PRIMARY KEY,
+    programme_data_id ENUM ('1') DEFAULT '1',
     CONSTRAINT fk_programme_nuts_nuts_region_3
         FOREIGN KEY (nuts_region_3_id) REFERENCES nuts_region_3 (id)
             ON DELETE RESTRICT

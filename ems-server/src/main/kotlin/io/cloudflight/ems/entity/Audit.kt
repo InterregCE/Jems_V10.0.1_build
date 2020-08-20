@@ -6,6 +6,7 @@ import io.cloudflight.ems.api.project.dto.status.ProjectQualityAssessmentResult
 import io.cloudflight.ems.api.call.dto.OutputCall
 import io.cloudflight.ems.api.dto.user.OutputUser
 import io.cloudflight.ems.api.dto.user.OutputUserWithRole
+import io.cloudflight.ems.api.nuts.dto.OutputNutsMetadata
 import io.cloudflight.ems.api.programme.dto.OutputProgrammePriority
 import io.cloudflight.ems.security.model.CurrentUser
 import org.springframework.data.annotation.Id
@@ -193,7 +194,7 @@ data class Audit(
             return Audit(
                 action = AuditAction.CALL_CREATED,
                 user = currentUser?.toEsUser(),
-                description = "A new call '${call.id}' '${call.name}' was created"
+                description = "A new call id=${call.id} '${call.name}' was created"
             )
         }
 
@@ -201,7 +202,7 @@ data class Audit(
             return Audit(
                 action = AuditAction.CALL_PUBLISHED,
                 user = currentUser?.toEsUser(),
-                description = "Call '${call.id}' '${call.name}' published"
+                description = "Call id=${call.id} '${call.name}' published"
             )
         }
 
@@ -222,6 +223,22 @@ data class Audit(
                 action = AuditAction.PROGRAMME_BASIC_DATA_EDITED,
                 user = currentUser?.toEsUser(),
                 description = "Programme basic data changed:\n$changedString"
+            )
+        }
+
+        fun nutsDownloadRequest(currentUser: CurrentUser?): Audit {
+            return Audit(
+                action = AuditAction.NUTS_DATASET_DOWNLOAD,
+                user = currentUser?.toEsUser(),
+                description = "There was an attempt to download NUTS regions from GISCO. Download is starting..."
+            )
+        }
+
+        fun nutsDownloadSuccessful(currentUser: CurrentUser?, nutsMetadata: OutputNutsMetadata): Audit {
+            return Audit(
+                action = AuditAction.NUTS_DATASET_DOWNLOAD,
+                user = currentUser?.toEsUser(),
+                description = "NUTS Dataset '${nutsMetadata.title}' ${nutsMetadata.date} has been downloaded."
             )
         }
 

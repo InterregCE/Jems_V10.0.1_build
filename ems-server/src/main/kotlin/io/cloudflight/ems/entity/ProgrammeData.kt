@@ -1,9 +1,13 @@
 package io.cloudflight.ems.entity
 
+import io.cloudflight.ems.nuts.entity.NutsRegion3
 import java.time.LocalDate
 import javax.persistence.Column
 import javax.persistence.Entity
 import javax.persistence.Id
+import javax.persistence.JoinColumn
+import javax.persistence.JoinTable
+import javax.persistence.OneToMany
 
 @Entity(name = "programme_data")
 data class ProgrammeData(
@@ -42,6 +46,14 @@ data class ProgrammeData(
     val programmeAmendingDecisionNumber: String?,
 
     @Column
-    val programmeAmendingDecisionDate: LocalDate?
+    val programmeAmendingDecisionDate: LocalDate?,
+
+    @OneToMany
+    @JoinTable(
+        name = "programme_nuts",
+        joinColumns = [JoinColumn(name = "programme_data_id")],
+        inverseJoinColumns = [JoinColumn(name = "nuts_region_3_id")]
+    )
+    val programmeNuts: Set<NutsRegion3> = emptySet()
 
 )

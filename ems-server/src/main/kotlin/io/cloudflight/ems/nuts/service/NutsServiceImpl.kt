@@ -1,32 +1,26 @@
 package io.cloudflight.ems.nuts.service
 
 import io.cloudflight.ems.api.nuts.dto.OutputNutsMetadata
+import io.cloudflight.ems.entity.Audit
 import io.cloudflight.ems.exception.I18nValidationException
 import io.cloudflight.ems.exception.ResourceNotFoundException
-import io.cloudflight.ems.nuts.entity.NutsCountry
 import io.cloudflight.ems.nuts.entity.NutsMetadata
-import io.cloudflight.ems.nuts.entity.NutsRegion1
-import io.cloudflight.ems.nuts.entity.NutsRegion2
-import io.cloudflight.ems.nuts.entity.NutsRegion3
 import io.cloudflight.ems.nuts.repository.NutsCountryRepository
 import io.cloudflight.ems.nuts.repository.NutsMetadataRepository
 import io.cloudflight.ems.nuts.repository.NutsRegion1Repository
 import io.cloudflight.ems.nuts.repository.NutsRegion2Repository
 import io.cloudflight.ems.nuts.repository.NutsRegion3Repository
-import io.cloudflight.ems.nuts.repository.ProgrammeNutsSaveRepository
+import io.cloudflight.ems.security.service.SecurityService
+import io.cloudflight.ems.service.AuditService
 import org.apache.tomcat.util.json.JSONParser
 import org.springframework.boot.web.client.RestTemplateBuilder
 import org.springframework.http.HttpMethod
 import org.springframework.http.HttpStatus
-import org.springframework.http.client.ClientHttpResponse
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
-import org.springframework.util.StreamUtils
-import org.springframework.web.client.ResponseExtractor
 import org.springframework.web.client.RestTemplate
 import java.io.BufferedReader
 import java.io.File
-import java.io.FileOutputStream
 import java.io.FileReader
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
@@ -34,11 +28,13 @@ import java.time.format.DateTimeFormatter
 @Service
 class NutsServiceImpl(
     restTemplateBuilder: RestTemplateBuilder,
-    val nutsRepository: NutsCountryRepository,
-    val nutsRegion1Repository: NutsRegion1Repository,
-    val nutsRegion2Repository: NutsRegion2Repository,
-    val nutsRegion3Repository: NutsRegion3Repository,
-    val nutsMetadataRepository: NutsMetadataRepository
+    private val nutsRepository: NutsCountryRepository,
+    private val nutsRegion1Repository: NutsRegion1Repository,
+    private val nutsRegion2Repository: NutsRegion2Repository,
+    private val nutsRegion3Repository: NutsRegion3Repository,
+    private val nutsMetadataRepository: NutsMetadataRepository,
+    private val auditService: AuditService,
+    private val securityService: SecurityService
 ) : NutsService {
 
     val restTemplate: RestTemplate = restTemplateBuilder.build()
@@ -55,6 +51,8 @@ class NutsServiceImpl(
 
     @Transactional
     override fun downloadLatestNutsFromGisco(): OutputNutsMetadata {
+        auditService.logEvent(Audit.nutsDownloadRequest(securityService.currentUser))
+
         if (getNutsMetadata() != null)
             throw I18nValidationException(
                 httpStatus = HttpStatus.UNPROCESSABLE_ENTITY,
@@ -62,7 +60,8 @@ class NutsServiceImpl(
             )
 
         val nuts = extractNutsFromDatasets()
-        val csvFileName: String = getCsvFileName(nutsFile = nuts.get("files") ?: throw ResourceNotFoundException("nuts"))
+        val csvFileName: String = getCsvFileName(nutsFile = nuts.get("files")
+            ?: throw ResourceNotFoundException("nuts"))
         val groupedByCodeLength = groupNutsByLevel(getTemporaryCsvFile(csvFileName))
 
         nutsRepository.saveAll(
@@ -77,8 +76,10 @@ class NutsServiceImpl(
         nutsRegion3Repository.saveAll(
             groupedByCodeLength.get(REGION_3_CODE_LENGTH)?.map { it.toNutsRegion3() }!!
         )
-        return nutsMetadataRepository.save(createMetadataFromNuts(nuts))
-            .toOutputNutsMetadata()
+
+        val metadata = nutsMetadataRepository.save(createMetadataFromNuts(nuts)).toOutputNutsMetadata()
+        auditService.logEvent(Audit.nutsDownloadSuccessful(securityService.currentUser, metadata))
+        return metadata
     }
 
     @Transactional(readOnly = true)

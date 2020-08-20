@@ -66,7 +66,7 @@ data class NutsIdentifier(
     }
 
     override fun toString(): String {
-        return title
+        return "$id|$title"
     }
 
 }

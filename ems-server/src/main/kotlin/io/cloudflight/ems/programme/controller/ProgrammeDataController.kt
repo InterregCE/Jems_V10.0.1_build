@@ -1,7 +1,8 @@
 package io.cloudflight.ems.programme.controller
 
 import io.cloudflight.ems.api.programme.ProgrammeDataApi
-import io.cloudflight.ems.api.programme.dto.ProgrammeBasicData
+import io.cloudflight.ems.api.programme.dto.InputProgrammeData
+import io.cloudflight.ems.api.programme.dto.OutputProgrammeData
 import io.cloudflight.ems.programme.service.ProgrammeDataService
 import org.springframework.security.access.prepost.PreAuthorize
 import org.springframework.web.bind.annotation.RestController
@@ -12,12 +13,16 @@ class ProgrammeDataController(
     private val programmeDataService: ProgrammeDataService
 ) : ProgrammeDataApi {
 
-    override fun get(): ProgrammeBasicData {
+    override fun get(): OutputProgrammeData {
         return programmeDataService.get()
     }
 
-    override fun update(basicData: ProgrammeBasicData): ProgrammeBasicData {
-        return programmeDataService.update(basicData)
+    override fun update(programmeData: InputProgrammeData): OutputProgrammeData {
+        return programmeDataService.update(programmeData)
+    }
+
+    override fun updateNuts(regions: Collection<String>): OutputProgrammeData {
+        return programmeDataService.saveProgrammeNuts(regions)
     }
 
 }

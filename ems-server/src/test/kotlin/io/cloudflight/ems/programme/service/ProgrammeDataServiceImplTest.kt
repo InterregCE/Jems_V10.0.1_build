@@ -2,10 +2,12 @@ package io.cloudflight.ems.programme.service
 
 import io.cloudflight.ems.api.dto.user.OutputUserRole
 import io.cloudflight.ems.api.dto.user.OutputUserWithRole
-import io.cloudflight.ems.api.programme.dto.ProgrammeBasicData
+import io.cloudflight.ems.api.programme.dto.InputProgrammeData
+import io.cloudflight.ems.api.programme.dto.OutputProgrammeData
 import io.cloudflight.ems.entity.Audit
 import io.cloudflight.ems.entity.AuditAction
 import io.cloudflight.ems.entity.ProgrammeData
+import io.cloudflight.ems.nuts.repository.NutsRegion3Repository
 import io.cloudflight.ems.repository.ProgrammeDataRepository
 import io.cloudflight.ems.security.model.LocalCurrentUser
 import io.cloudflight.ems.security.service.SecurityService
@@ -51,6 +53,8 @@ internal class ProgrammeDataServiceImplTest {
 
     @MockK
     lateinit var programmeDataRepository: ProgrammeDataRepository
+    @MockK
+    lateinit var nutsRegion3Repository: NutsRegion3Repository
 
     @MockK
     lateinit var securityService: SecurityService
@@ -65,6 +69,7 @@ internal class ProgrammeDataServiceImplTest {
         every { securityService.currentUser } returns LocalCurrentUser(user, "hash_pass", emptyList())
         programmeDataService = ProgrammeDataServiceImpl(
             programmeDataRepository,
+            nutsRegion3Repository,
             auditService,
             securityService
         )
@@ -73,7 +78,7 @@ internal class ProgrammeDataServiceImplTest {
     @Test
     fun get() {
         val programmeDataInput =
-            ProgrammeBasicData("cci", "title", "version", 2020, 2024, null, null, null, null, null, null)
+            OutputProgrammeData("cci", "title", "version", 2020, 2024, null, null, null, null, null, null, emptyMap<String, String>())
         every { programmeDataRepository.findById(1) } returns Optional.of(existingProgrammeData)
 
         val programmeData = programmeDataService.get()
@@ -84,16 +89,18 @@ internal class ProgrammeDataServiceImplTest {
     @Test
     fun `update existing programme data`() {
         val programmeDataInput =
-            ProgrammeBasicData("cci-updated", "title", "version", 2020, 2024, null, null, null, null, null, null)
+            InputProgrammeData("cci-updated", "title", "version", 2020, 2024, null, null, null, null, null, null)
         val programmeDataUpdated =
             ProgrammeData(1, "cci-updated", "title", "version", 2020, 2024, null, null, null, null, null, null)
+        val programmeDataExpectedOutput =
+            OutputProgrammeData("cci-updated", "title", "version", 2020, 2024, null, null, null, null, null, null, emptyMap<String, String>())
 
         every { programmeDataRepository.save(any<ProgrammeData>()) } returns programmeDataUpdated
         every { programmeDataRepository.findById(1) } returns Optional.of(existingProgrammeData)
 
         val programmeData = programmeDataService.update(programmeDataInput)
 
-        assertThat(programmeData).isEqualTo(programmeDataInput)
+        assertThat(programmeData).isEqualTo(programmeDataExpectedOutput)
 
         val event = slot<Audit>()
         verify { auditService.logEvent(capture(event)) }

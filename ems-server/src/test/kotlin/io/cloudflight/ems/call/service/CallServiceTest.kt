@@ -196,7 +196,7 @@ class CallServiceTest {
         verify { auditService.logEvent(capture(event)) }
         with(event) {
             assertThat(AuditAction.CALL_CREATED).isEqualTo(captured.action)
-            assertThat("A new call '100' 'Test call name' was created").isEqualTo(captured.description)
+            assertThat("A new call id=100 'Test call name' was created").isEqualTo(captured.description)
         }
     }
 
@@ -376,7 +376,7 @@ class CallServiceTest {
         with(event) {
             assertThat(captured.action).isEqualTo(AuditAction.CALL_PUBLISHED)
             assertThat(captured.description)
-                .isEqualTo("Call '1' 'Test call name' published")
+                .isEqualTo("Call id=1 'Test call name' published")
         }
     }
 

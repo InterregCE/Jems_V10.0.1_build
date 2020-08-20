@@ -5,7 +5,7 @@ import io.cloudflight.ems.security.service.authorization.Authorization
 import org.springframework.stereotype.Component
 
 @Component
-class ProgrammeNutsAuthorization(
+class NutsAuthorization(
     override val securityService: SecurityService
 ): Authorization(securityService) {
 

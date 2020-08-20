@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.RestController
 
 
 @RestController
-@PreAuthorize("@programmeNutsAuthorization.canSetupNuts()")
+@PreAuthorize("@nutsAuthorization.canSetupNuts()")
 class NutsController(
     val nutsService: NutsService
 ) : NutsApi {

@@ -16,7 +16,7 @@ data class NutsRegion2 (
     @Column(nullable = false)
     override val title: String,
 
-    @ManyToOne(optional = false, fetch = FetchType.LAZY)
+    @ManyToOne(optional = false, fetch = FetchType.EAGER)
     @JoinColumn(name = "nuts_region_1_id")
     val region1: NutsRegion1
 
