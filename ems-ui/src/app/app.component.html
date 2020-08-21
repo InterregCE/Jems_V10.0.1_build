@@ -6,7 +6,11 @@
     <mat-sidenav *ngIf="headlines$ | async as headlines " mode="side" [opened] = "!!headlines.length" class="side-nav-container">
 
         <div *ngFor="let data of headlines">
-            <a class="back-link" *ngIf="data.type == headlineType.BACKROUTE" [routerLink]="data.route"> {{data.headline | translate}}</a>
+            <div class="back-link" *ngIf="data.type == headlineType.BACKROUTE">
+                <a class="dialog-a-text" *ngIf="alertStatus == true"
+                   (click)="navigateToBackRoute(data.route)" [routerLink]="">{{data.headline | translate}}</a>
+                <a *ngIf="alertStatus == false" [routerLink]="data.route">{{data.headline | translate}}</a>
+            </div>
             <p class="side-nav-content-title" *ngIf="data.type == headlineType.TITLE"> {{data.headline | translate}}</p>
             <p class="side-nav-content-subtitle" *ngIf="data.type == headlineType.SUBTITLE"> {{data.headline}}</p>
         </div>

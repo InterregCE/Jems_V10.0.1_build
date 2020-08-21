@@ -57,4 +57,21 @@ describe('SideNavService', () => {
     tick();
     expect(headlines.length).toBe(0);
   }));
+
+  it('should store and pass the alert status', fakeAsync(() => {
+    const destroyed$ = new Subject();
+
+    let alertStatus = true;
+    service.getAlertStatus().subscribe((status: boolean) => alertStatus = status);
+
+    service.setAlertStatus(false);
+    service.setHeadlines(destroyed$,[])
+
+    tick(60);
+    expect(alertStatus).toBe(false);
+
+    destroyed$.next();
+    tick();
+    expect(alertStatus).toBeUndefined();
+  }));
 });

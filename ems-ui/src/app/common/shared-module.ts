@@ -16,6 +16,7 @@ import {MatPaginatorModule} from '@angular/material/paginator';
 import {MatSortModule} from '@angular/material/sort';
 import {PaginatorComponent} from '@common/components/table/paginator/paginator.component';
 import {MatTabsModule} from '@angular/material/tabs';
+import {MatDialogModule} from '@angular/material/dialog';
 
 const modules = [
   CommonModule,
@@ -30,6 +31,7 @@ const modules = [
   MatButtonModule,
   MatInputModule,
   MatTableModule,
+  MatDialogModule,
   MatPaginatorModule,
   MatSortModule,
   MatTabsModule,
