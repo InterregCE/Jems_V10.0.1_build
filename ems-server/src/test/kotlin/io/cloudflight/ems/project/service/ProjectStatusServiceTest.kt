@@ -97,8 +97,8 @@ internal class ProjectStatusServiceTest {
         creator = user,
         name = "call",
         priorityPolicies = setOf(ProgrammePriorityPolicy(DisadvantagedGroups, "DG")),
-        startDate = ZonedDateTime.now(),
-        endDate = ZonedDateTime.now(),
+        startDate = ZonedDateTime.now().minusDays(2),
+        endDate = ZonedDateTime.now().plusDays(2),
         status = CallStatus.PUBLISHED
     )
 

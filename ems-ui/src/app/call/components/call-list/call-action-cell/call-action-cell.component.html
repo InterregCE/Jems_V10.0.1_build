@@ -1,5 +1,5 @@
 <button mat-raised-button color="primary"
-        [disabled]="isExpired()"
+        [disabled]="!isOpen()"
         (click)="apply.emit(call.id)">
     {{'call.table.column.action.apply' | translate}}
 </button>

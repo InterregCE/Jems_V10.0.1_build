@@ -35,6 +35,7 @@ import org.springframework.http.HttpStatus
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import java.time.LocalDate
+import java.time.ZonedDateTime
 
 @Service
 class ProjectStatusServiceImpl(
@@ -67,6 +68,7 @@ class ProjectStatusServiceImpl(
             ?: throw ResourceNotFoundException()
 
         var project = projectRepo.findOneById(projectId) ?: throw ResourceNotFoundException("project")
+        validateCallOpen(statusChange, project)
         validateDecisionDateIfFunding(statusChange, project)
         val oldStatus = project.projectStatus.status
 
@@ -89,10 +91,32 @@ class ProjectStatusServiceImpl(
 
     private fun validateDecisionDateIfFunding(statusChange: InputProjectStatus, project: Project) {
         if (isFundingStatus(statusChange.status!!)
-            && statusChange.date!!.isBefore(project.eligibilityDecision!!.decisionDate)) {
+            && statusChange.date!!.isBefore(project.eligibilityDecision!!.decisionDate)
+        ) {
             throw I18nValidationException(
                 httpStatus = HttpStatus.UNPROCESSABLE_ENTITY,
                 i18nKey = "project.funding.decision.is.before.eligibility.decision"
+            )
+        }
+    }
+
+    private fun validateCallOpen(statusChange: InputProjectStatus, project: Project) {
+        if ((statusChange.status == SUBMITTED && project.projectStatus.status == DRAFT) &&
+            (ZonedDateTime.now().isBefore(project.call.startDate)
+                || ZonedDateTime.now().isAfter(project.call.endDate))
+        ) {
+            auditService.logEvent(
+                Audit.callAlreadyEnded(
+                    currentUser = securityService.currentUser,
+                    callId = project.call.id.toString()
+                )
+            )
+
+            log.error("Attempted unsuccessfully to submit or to apply for call '${project.call.id.toString()}' that has already ended")
+
+            throw I18nValidationException(
+                httpStatus = HttpStatus.UNPROCESSABLE_ENTITY,
+                i18nKey = "call.not.open"
             )
         }
     }

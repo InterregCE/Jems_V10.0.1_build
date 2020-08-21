@@ -1,7 +1,7 @@
 package io.cloudflight.ems.project.service
 
 import io.cloudflight.ems.api.call.dto.CallStatus
-import io.cloudflight.ems.api.call.dto.OutputCallSimple
+import io.cloudflight.ems.api.call.dto.OutputCallWithDates
 import io.cloudflight.ems.api.project.dto.InputProject
 import io.cloudflight.ems.api.project.dto.OutputProjectSimple
 import io.cloudflight.ems.api.project.dto.status.ProjectApplicationStatus
@@ -218,7 +218,7 @@ class ProjectServiceTest {
 
         val result = projectService.createProject(InputProject("test", dummyCall.id))
 
-        assertEquals(OutputCallSimple(id = dummyCall.id!!, name = dummyCall.name), result.call)
+        assertEquals(OutputCallWithDates(id = dummyCall.id!!, name = dummyCall.name, startDate = dummyCall.startDate, endDate = dummyCall.endDate), result.call)
         assertEquals(result.acronym, "test")
         assertEquals(result.firstSubmission, null)
         assertEquals(result.lastResubmission, null)

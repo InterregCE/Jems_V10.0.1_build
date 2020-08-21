@@ -6,8 +6,10 @@
     <app-project-application-actions
             [projectId]="project.id"
             [success$]="projectChanged$"
+            [error$]="changeStatusError$"
             [projectStatus]="project.projectStatus.status"
             [projectRevertStatus]="revertStatus$ | async"
+            [projectCallEndDate]="project.call.endDate"
             (changeStatus)="changeProjectStatus($event)"
             (revertStatus)="revertStatus($event)">
     </app-project-application-actions>

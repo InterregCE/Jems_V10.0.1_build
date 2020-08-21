@@ -15,7 +15,7 @@ class CallFactory(
 
     private val callName = "call name"
 
-    val callStart = ZonedDateTime.now().plusDays(1)
+    val callStart = ZonedDateTime.now().minusDays(1)
     val callEnd = ZonedDateTime.now().plusDays(20)
 
     @Transactional

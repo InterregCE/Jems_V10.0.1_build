@@ -1,6 +1,6 @@
 package io.cloudflight.ems.security.service.authorization
 
-import io.cloudflight.ems.api.call.dto.OutputCallSimple
+import io.cloudflight.ems.api.call.dto.OutputCallWithDates
 import io.cloudflight.ems.api.project.dto.OutputProject
 import io.cloudflight.ems.api.dto.OutputProjectFile
 import io.cloudflight.ems.api.project.dto.status.OutputProjectStatus
@@ -90,9 +90,11 @@ internal class ProjectFileAuthorizationTest {
             )
         }
 
-        private val dummyCall = OutputCallSimple(
+        private val dummyCall = OutputCallWithDates(
             id = 1,
-            name = "call"
+            name = "call",
+            startDate = ZonedDateTime.now(),
+            endDate = ZonedDateTime.now()
         )
 
         private fun getProject(id: Long, applicantId: Long, status: ProjectApplicationStatus): OutputProject {

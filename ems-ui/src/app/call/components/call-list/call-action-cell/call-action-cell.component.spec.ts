@@ -37,7 +37,7 @@ describe('CallActionCellComponent', () => {
     } ();
 
     tick();
-    expect(actionCell.isExpired()).toBe(true);
+    expect(actionCell.isOpen()).toBe(false);
 
     actionCell.call = new class implements OutputCall {
       id = 1;
@@ -50,7 +50,7 @@ describe('CallActionCellComponent', () => {
     } ();
 
     tick();
-    expect(actionCell.isExpired()).toBe(false);
+    expect(actionCell.isOpen()).toBe(true);
 
     // Testing the mechanism of the isExpired method from the component
     tick();

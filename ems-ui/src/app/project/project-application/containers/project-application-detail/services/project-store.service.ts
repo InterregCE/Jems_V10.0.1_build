@@ -11,11 +11,13 @@ import {
   ProjectService,
   ProjectStatusService
 } from '@cat/api';
-import {flatMap, shareReplay, startWith, tap, withLatestFrom} from 'rxjs/operators';
+import {catchError, flatMap, shareReplay, startWith, tap, withLatestFrom} from 'rxjs/operators';
 import {Log} from '../../../../../common/utils/log';
 import {Router} from '@angular/router';
 import {PermissionService} from '../../../../../security/permissions/permission.service';
 import {Permission} from '../../../../../security/permissions/permission';
+import {I18nValidationError} from '@common/validation/i18n-validation-error';
+import {HttpErrorResponse} from '@angular/common/http';
 
 /**
  * Stores project related information.
@@ -28,6 +30,7 @@ export class ProjectStore {
   private newQualityAssessment$ = new Subject<InputProjectQualityAssessment>();
   private newRevertProjectStatus$ = new Subject<InputRevertProjectStatus>();
   private revertStatusChanged$ = new Subject<void>();
+  private changeStatusError$ = new Subject<I18nValidationError | null>();
 
   private projectById$ = this.projectId$
     .pipe(
@@ -42,7 +45,11 @@ export class ProjectStore {
         this.projectStatusService.setProjectStatus(id, newStatus)),
       tap(saved => this.projectStatus$.next(saved.projectStatus.status)),
       tap(saved => Log.info('Updated project status status:', this, saved)),
-      tap(saved => this.router.navigate(['project', saved.id]))
+      tap(saved => this.router.navigate(['project', saved.id])),
+      catchError((error: HttpErrorResponse) => {
+        this.changeStatusError$.next(error.error);
+        throw error;
+      })
     );
 
   private changedEligibilityAssessment$ = this.newEligibilityAssessment$
@@ -116,6 +123,10 @@ export class ProjectStore {
 
   changeStatus(newStatus: InputProjectStatus) {
     this.newStatus$.next(newStatus)
+  }
+
+  getChangeStatusError(): Observable<I18nValidationError | null> {
+    return this.changeStatusError$.asObservable();
   }
 
   setEligibilityAssessment(assessment: InputProjectEligibilityAssessment): void {

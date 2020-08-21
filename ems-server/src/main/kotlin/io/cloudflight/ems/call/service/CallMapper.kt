@@ -4,6 +4,7 @@ import io.cloudflight.ems.api.call.dto.CallStatus
 import io.cloudflight.ems.api.call.dto.InputCallCreate
 import io.cloudflight.ems.api.call.dto.OutputCall
 import io.cloudflight.ems.api.call.dto.OutputCallSimple
+import io.cloudflight.ems.api.call.dto.OutputCallWithDates
 import io.cloudflight.ems.call.entity.Call
 import io.cloudflight.ems.entity.User
 import io.cloudflight.ems.programme.entity.ProgrammePriorityPolicy
@@ -37,4 +38,11 @@ fun Call.toOutputCall() = OutputCall(
 fun Call.toOutputCallSimple() = OutputCallSimple(
     id = id!!,
     name = name
+)
+
+fun Call.toOutputCallWithDates() = OutputCallWithDates(
+    id = id!!,
+    name = name,
+    startDate = startDate,
+    endDate = endDate
 )

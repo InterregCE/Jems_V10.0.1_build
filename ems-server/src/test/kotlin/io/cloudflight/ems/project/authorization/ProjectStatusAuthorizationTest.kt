@@ -1,6 +1,8 @@
 package io.cloudflight.ems.project.authorization
 
-import io.cloudflight.ems.api.call.dto.OutputCallSimple
+import io.cloudflight.ems.api.call.dto.CallStatus
+import io.cloudflight.ems.api.call.dto.OutputCall
+import io.cloudflight.ems.api.call.dto.OutputCallWithDates
 import io.cloudflight.ems.api.project.dto.OutputProject
 import io.cloudflight.ems.api.project.dto.status.OutputProjectEligibilityAssessment
 import io.cloudflight.ems.api.project.dto.status.OutputProjectQualityAssessment
@@ -9,15 +11,18 @@ import io.cloudflight.ems.api.project.dto.status.ProjectApplicationStatus
 import io.cloudflight.ems.api.project.dto.status.ProjectEligibilityAssessmentResult
 import io.cloudflight.ems.api.project.dto.status.ProjectQualityAssessmentResult
 import io.cloudflight.ems.api.dto.user.OutputUser
+import io.cloudflight.ems.call.service.CallService
 import io.cloudflight.ems.security.model.LocalCurrentUser
 import io.cloudflight.ems.security.service.SecurityService
 import io.cloudflight.ems.security.service.authorization.AuthorizationUtil.Companion.adminUser
 import io.cloudflight.ems.security.service.authorization.AuthorizationUtil.Companion.applicantUser
 import io.cloudflight.ems.security.service.authorization.AuthorizationUtil.Companion.programmeUser
 import io.cloudflight.ems.project.service.ProjectService
+import io.cloudflight.ems.service.AuditService
 import io.mockk.MockKAnnotations
 import io.mockk.every
 import io.mockk.impl.annotations.MockK
+import io.mockk.impl.annotations.RelaxedMockK
 import org.junit.jupiter.api.Assertions.assertFalse
 import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.BeforeEach
@@ -71,7 +76,8 @@ internal class ProjectStatusAuthorizationTest {
     private val eligibilityAssessment = OutputProjectEligibilityAssessment(
         result = ProjectEligibilityAssessmentResult.PASSED,
         user = userProgrammeWithoutRole,
-        updated = ZonedDateTime.now())
+        updated = ZonedDateTime.now()
+    )
     private val qualityAssessment = OutputProjectQualityAssessment(
         result = ProjectQualityAssessmentResult.RECOMMENDED_FOR_FUNDING,
         user = userProgrammeWithoutRole,
@@ -109,7 +115,8 @@ internal class ProjectStatusAuthorizationTest {
     @BeforeEach
     fun setup() {
         MockKAnnotations.init(this)
-        projectStatusAuthorization = ProjectStatusAuthorization(securityService, projectAuthorization, projectService)
+        projectStatusAuthorization =
+            ProjectStatusAuthorization(securityService, projectAuthorization, projectService)
 
         projects.forEach { (projectId, projectObject) ->
             every { projectService.getById(projectId) } returns projectObject
@@ -241,7 +248,10 @@ internal class ProjectStatusAuthorizationTest {
         )
 
         assertTrue(
-            projectStatusAuthorization.canChangeStatusTo(PID_ELIGIBLE_WITH_QA, ProjectApplicationStatus.APPROVED_WITH_CONDITIONS)
+            projectStatusAuthorization.canChangeStatusTo(
+                PID_ELIGIBLE_WITH_QA,
+                ProjectApplicationStatus.APPROVED_WITH_CONDITIONS
+            )
         )
 
         assertTrue(
@@ -355,7 +365,12 @@ internal class ProjectStatusAuthorizationTest {
     private fun createProject(id: Long, status: ProjectApplicationStatus): OutputProject {
         return OutputProject(
             id = id,
-            call = OutputCallSimple(id = 1, name = "call"),
+            call = OutputCallWithDates(
+                id = 1,
+                name = "call",
+                startDate = ZonedDateTime.now(),
+                endDate = ZonedDateTime.now()
+            ),
             acronym = "acronym",
             applicant = userApplicantWithoutRole,
             firstSubmission = null,
@@ -363,6 +378,24 @@ internal class ProjectStatusAuthorizationTest {
             projectStatus = OutputProjectStatus(1, status, userApplicantWithoutRole, ZonedDateTime.now(), null)
         )
     }
+
+    private fun dummyCallWithStatus(status: CallStatus) = OutputCall(
+        id = 1,
+        name = "test call",
+        priorityPolicies = emptyList(),
+        status = status,
+        startDate = ZonedDateTime.now().minusDays(2),
+        endDate = ZonedDateTime.now().plusDays(2)
+    )
+
+    private fun dummyCallExpired() = OutputCall(
+        id = 2,
+        name = "test call expired",
+        priorityPolicies = emptyList(),
+        status = CallStatus.PUBLISHED,
+        startDate = ZonedDateTime.now().minusDays(2),
+        endDate = ZonedDateTime.now().minusDays(1)
+    )
 
     private fun provideAdminAndProgramUsers(): Stream<Arguments> {
         return Stream.of(
