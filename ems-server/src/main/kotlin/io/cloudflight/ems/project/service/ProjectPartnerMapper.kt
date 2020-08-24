@@ -14,5 +14,6 @@ fun InputProjectPartner.toEntity(project: Project) = ProjectPartner(
 fun ProjectPartner.toOutputProjectPartner() = OutputProjectPartner(
     id = id,
     name = name,
-    role = role
+    role = role,
+    sortNumber = sortNumber
 )

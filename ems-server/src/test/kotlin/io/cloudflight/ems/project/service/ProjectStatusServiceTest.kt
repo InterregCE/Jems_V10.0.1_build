@@ -29,9 +29,11 @@ import io.cloudflight.ems.security.model.LocalCurrentUser
 import io.cloudflight.ems.security.service.SecurityService
 import io.cloudflight.ems.service.AuditService
 import io.mockk.MockKAnnotations
+import io.mockk.Runs
 import io.mockk.every
 import io.mockk.impl.annotations.MockK
 import io.mockk.impl.annotations.RelaxedMockK
+import io.mockk.just
 import io.mockk.slot
 import io.mockk.verify
 import org.assertj.core.api.Assertions.assertThat
@@ -68,6 +70,9 @@ internal class ProjectStatusServiceTest {
 
     @MockK
     lateinit var securityService: SecurityService
+
+    @MockK
+    lateinit var projectPartnerService: ProjectPartnerService
 
     @MockK
     lateinit var projectStatusRepository: ProjectStatusRepository
@@ -113,7 +118,7 @@ internal class ProjectStatusServiceTest {
     fun setup() {
         MockKAnnotations.init(this)
         projectStatusService = ProjectStatusServiceImpl(
-            projectRepository, projectStatusRepository, userRepository, auditService, securityService
+            projectRepository, projectStatusRepository, userRepository, auditService, securityService, projectPartnerService
         )
     }
 
@@ -123,6 +128,7 @@ internal class ProjectStatusServiceTest {
         every { userRepository.findByIdOrNull(1) } returns user
         every { projectRepository.findOneById(1) } returns projectDraft
         every { projectStatusRepository.save(any<ProjectStatus>()) } returnsArgument 0
+        every { projectPartnerService.updateSortByRole(1) } just Runs
         every { projectRepository.save(any<Project>()) } returnsArgument 0
 
         val result = projectStatusService.setProjectStatus(
@@ -152,6 +158,7 @@ internal class ProjectStatusServiceTest {
                 eq(ignoreStatuses)
             )
         } returns previousState
+        every { projectPartnerService.updateSortByRole(1) } just Runs
         every { projectRepository.save(any<Project>()) } returnsArgument 0
 
         val result =

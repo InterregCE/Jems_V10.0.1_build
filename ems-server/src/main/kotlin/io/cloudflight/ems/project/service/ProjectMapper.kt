@@ -19,14 +19,12 @@ import io.cloudflight.ems.service.toOutputUser
 
 fun InputProject.toEntity(call: Call,
                           applicant: User,
-                          status: ProjectStatus,
-                          projectPartners: Set<ProjectPartner>) = Project(
+                          status: ProjectStatus) = Project(
     id = null,
     call = call,
     acronym = this.acronym!!,
     applicant = applicant,
-    projectStatus = status,
-    projectPartners = projectPartners
+    projectStatus = status
 )
 
 fun Project.toOutputProject() = OutputProject(

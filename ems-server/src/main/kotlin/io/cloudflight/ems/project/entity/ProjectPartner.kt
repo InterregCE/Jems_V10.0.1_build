@@ -27,10 +27,13 @@ data class ProjectPartner(
 
     @Column(nullable = false)
     @Enumerated(EnumType.STRING)
-    val role: ProjectPartnerRole
+    val role: ProjectPartnerRole,
+
+    @Column
+    val sortNumber: Long? = null
 
 ) {
     override fun toString(): String {
-        return "${this.javaClass.simpleName}(id=$id, projectId=$project.id, name=$name, role=$role)"
+        return "${this.javaClass.simpleName}(id=$id, projectId=$project.id, name=$name, role=$role, sortNumber=$sortNumber)"
     }
 }
