@@ -11,7 +11,9 @@ import {ProgrammePrioritiesComponent} from './programme-page/containers/programm
 import {ProgrammePriorityItemsComponent} from './programme-page/components/programme-priority-items/programme-priority-items.component';
 import {ProgrammePrioritySubmissionComponent} from './programme-page/components/programme-priority-submission/programme-priority-submission.component';
 import {ProgrammePolicyCheckboxComponent} from './programme-page/components/programme-priority-submission/programme-policy-checkbox/programme-policy-checkbox.component';
-import { ProgrammePriorityComponent } from './programme-page/containers/programme-priority/programme-priority.component';
+import {ProgrammePriorityComponent} from './programme-page/containers/programme-priority/programme-priority.component';
+import {ProgrammeAreaComponent} from './programme-page/containers/programme-area/programme-area.component';
+import {ProgrammeNutsInfoComponent} from './programme-page/components/programme-nuts-info/programme-nuts-info.component';
 
 @NgModule({
   declarations: [
@@ -22,7 +24,9 @@ import { ProgrammePriorityComponent } from './programme-page/containers/programm
     ProgrammePrioritySubmissionComponent,
     ProgrammePolicyCheckboxComponent,
     ProgrammePolicyCheckboxComponent,
-    ProgrammePriorityComponent
+    ProgrammePriorityComponent,
+    ProgrammeAreaComponent,
+    ProgrammeNutsInfoComponent
   ],
   imports: [
     SharedModule,

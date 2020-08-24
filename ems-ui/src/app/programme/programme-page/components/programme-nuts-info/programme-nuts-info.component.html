@@ -1,0 +1,45 @@
+<div class="container">
+    <h5 class="header">{{'programme.area.nuts.header' | translate}}</h5>
+    <app-alert
+            [show]="showSuccessMessage$ | async"
+            [type]="Alert.SUCCESS">
+        <p>
+            {{
+            'programme.area.nuts.download.success' | translate : {
+                version: metadata?.title,
+                date: metadata?.date
+            }
+            }}
+        </p>
+    </app-alert>
+    <app-alert *ngIf="error$ | async as error"
+               [show]="!!error"
+               [type]="Alert.ERROR">
+        <p>{{'programme.area.nuts.download.error' | translate}}</p>
+    </app-alert>
+    <div class="nuts-database">
+        <p *ngIf="metadata">
+            {{
+            'programme.area.nuts.downloaded.label' | translate : {
+                version: metadata.title,
+                date: metadata.date
+            }
+            }}
+        </p>
+        <p *ngIf="!metadata">
+            {{'programme.area.nuts.not.downloaded.label' | translate }}
+        </p>
+        <br>
+        <p>{{'programme.area.nuts.copyright.en' | translate}}</p>
+        <p>{{'programme.area.nuts.copyright.fr' | translate}}</p>
+        <p>{{'programme.area.nuts.copyright.de' | translate}}</p>
+        <div *ngIf="!metadata" class="text-center">
+            <br><br>
+            <button mat-raised-button color="primary" type="submit"
+                    [disabled]="submitted"
+                    (click)="onSubmit()">
+                {{'programme.area.nuts.download.button' | translate}}
+            </button>
+        </div>
+    </div>
+</div>
