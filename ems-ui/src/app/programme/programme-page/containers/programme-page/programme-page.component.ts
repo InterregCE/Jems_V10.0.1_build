@@ -3,7 +3,7 @@ import {BaseComponent} from '@common/components/base-component';
 import {Permission} from '../../../../security/permissions/permission';
 import {merge, Subject} from 'rxjs';
 import {I18nValidationError} from '@common/validation/i18n-validation-error';
-import {ProgrammeBasicData, ProgrammeDataService} from '@cat/api';
+import {OutputProgrammeData, ProgrammeDataService} from '@cat/api';
 import {catchError, flatMap, tap} from 'rxjs/operators';
 import {Log} from '../../../../common/utils/log';
 import {HttpErrorResponse} from '@angular/common/http';
@@ -20,7 +20,7 @@ export class ProgrammePageComponent extends BaseComponent implements OnDestroy {
 
   programmeSaveError$ = new Subject<I18nValidationError | null>();
   programmeSaveSuccess$ = new Subject<boolean>();
-  saveProgrammeData$ = new Subject<ProgrammeBasicData>();
+  saveProgrammeData$ = new Subject<OutputProgrammeData>();
   activeTab$ = this.tabService.currentTab(ProgrammePageComponent.name);
 
   private programmeById$ = this.programmeDataService.get()

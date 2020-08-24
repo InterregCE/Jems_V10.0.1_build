@@ -1,11 +1,14 @@
 package io.cloudflight.ems.programme.service
 
-import io.cloudflight.ems.api.programme.dto.ProgrammeBasicData
+import io.cloudflight.ems.api.programme.dto.InputProgrammeData
+import io.cloudflight.ems.api.programme.dto.OutputProgrammeData
 
 interface ProgrammeDataService {
 
-    fun get(): ProgrammeBasicData
+    fun get(): OutputProgrammeData
 
-    fun update(basicData: ProgrammeBasicData): ProgrammeBasicData
+    fun update(basicData: InputProgrammeData): OutputProgrammeData
+
+    fun saveProgrammeNuts(regions: Collection<String>): OutputProgrammeData
 
 }

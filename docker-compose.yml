@@ -12,6 +12,7 @@ services:
     environment:
       MYSQL_DATABASE: ems
       MYSQL_ROOT_PASSWORD: emspass
+    command: ['mysqld', '--character-set-server=utf8mb4', '--collation-server=utf8mb4_unicode_ci']
 
   ems-minio:
     image: minio/minio:RELEASE.2020-05-16T01-33-21Z

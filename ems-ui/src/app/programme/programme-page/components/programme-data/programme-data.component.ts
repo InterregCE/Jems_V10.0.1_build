@@ -13,7 +13,7 @@ import {MatDialog} from '@angular/material/dialog';
 import {Forms} from '../../../../common/utils/forms';
 import {filter, take, takeUntil} from 'rxjs/operators';
 import {Permission} from '../../../../security/permissions/permission';
-import {ProgrammeBasicData} from '@cat/api';
+import {InputProgrammeData, OutputProgrammeData} from '@cat/api';
 
 @Component({
   selector: 'app-programme-data',
@@ -24,9 +24,9 @@ import {ProgrammeBasicData} from '@cat/api';
 export class ProgrammeDataComponent extends ViewEditForm implements OnInit {
   Permission = Permission;
   @Input()
-  programme: ProgrammeBasicData;
+  programme: OutputProgrammeData;
   @Output()
-  saveProgrammeData: EventEmitter<ProgrammeBasicData> = new EventEmitter<ProgrammeBasicData>();
+  saveProgrammeData: EventEmitter<InputProgrammeData> = new EventEmitter<InputProgrammeData>();
 
   programmeForm = this.formBuilder.group({
     cci: ['', Validators.maxLength(15)],
