@@ -1,10 +1,10 @@
-import {OutputProgrammePriority, OutputProgrammePriorityPolicy} from '@cat/api';
+import {OutputProgrammePriority, OutputProgrammePriorityPolicySimple} from '@cat/api';
 
 export class CallPriorityCheckbox {
   name: string;
   checked: boolean;
   children: CallPriorityCheckbox[] = [];
-  policy: OutputProgrammePriorityPolicy.ProgrammeObjectivePolicyEnum;
+  policy: OutputProgrammePriorityPolicySimple.ProgrammeObjectivePolicyEnum;
 
   static fromPriority(from: OutputProgrammePriority): CallPriorityCheckbox {
     const checkbox = new CallPriorityCheckbox();
@@ -13,7 +13,7 @@ export class CallPriorityCheckbox {
     return checkbox;
   }
 
-  static fromPriorityPolicy(from: OutputProgrammePriorityPolicy): CallPriorityCheckbox {
+  static fromPriorityPolicy(from: OutputProgrammePriorityPolicySimple): CallPriorityCheckbox {
     const checkbox = new CallPriorityCheckbox();
     checkbox.name = 'programme.policy.' + from.programmeObjectivePolicy;
     checkbox.children = [];
@@ -22,7 +22,7 @@ export class CallPriorityCheckbox {
   }
 
   static fromSavedPolicies(priorityCheckbox: CallPriorityCheckbox,
-                           checked: OutputProgrammePriorityPolicy.ProgrammeObjectivePolicyEnum[]): CallPriorityCheckbox {
+                           checked: OutputProgrammePriorityPolicySimple.ProgrammeObjectivePolicyEnum[]): CallPriorityCheckbox {
     const checkbox = new CallPriorityCheckbox();
     checkbox.name = priorityCheckbox.name;
     checkbox.children = priorityCheckbox.children.map(child => {
@@ -52,7 +52,7 @@ export class CallPriorityCheckbox {
     this.updateChecked();
   }
 
-  getCheckedChildPolicies(): OutputProgrammePriorityPolicy.ProgrammeObjectivePolicyEnum[] {
+  getCheckedChildPolicies(): OutputProgrammePriorityPolicySimple.ProgrammeObjectivePolicyEnum[] {
     return this.children
       .filter(child => child.checked)
       .map(child => child.policy)

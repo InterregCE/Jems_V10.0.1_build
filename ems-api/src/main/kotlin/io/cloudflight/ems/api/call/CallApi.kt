@@ -3,8 +3,8 @@ package io.cloudflight.ems.api.call
 import io.cloudflight.ems.api.call.dto.InputCallCreate
 import io.cloudflight.ems.api.call.dto.InputCallUpdate
 import io.cloudflight.ems.api.call.dto.OutputCall
+import io.cloudflight.ems.api.call.dto.OutputCallList
 import io.cloudflight.ems.api.call.dto.OutputCallProgrammePriority
-import io.cloudflight.ems.api.programme.dto.OutputProgrammePriority
 import io.swagger.annotations.Api
 import io.swagger.annotations.ApiImplicitParam
 import io.swagger.annotations.ApiImplicitParams
@@ -31,7 +31,7 @@ interface CallApi {
         ApiImplicitParam(paramType = "query", name = "sort", dataType = "string")
     )
     @GetMapping
-    fun getCalls(pageable: Pageable): Page<OutputCall>
+    fun getCalls(pageable: Pageable): Page<OutputCallList>
 
     @ApiOperation("Returns a call by call id")
     @GetMapping("/{id}")

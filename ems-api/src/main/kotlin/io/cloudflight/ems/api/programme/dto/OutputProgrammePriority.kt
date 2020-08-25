@@ -5,5 +5,5 @@ data class OutputProgrammePriority (
     val code: String,
     val title: String,
     val objective: ProgrammeObjective,
-    val programmePriorityPolicies: List<OutputProgrammePriorityPolicy>
+    val programmePriorityPolicies: List<OutputProgrammePriorityPolicySimple>
 )

@@ -17,8 +17,7 @@ data class OutputProgrammeData(
     val programmeAmendingDecisionDate: LocalDate?,
     val programmeNuts: Any
 ) {
-    fun getChange(newData: OutputProgrammeData):
-        Map<String, Pair<Any?, Any?>> {
+    fun getChange(newData: OutputProgrammeData): Map<String, Pair<Any?, Any?>> {
         val changes = mutableMapOf<String, Pair<Any?, Any?>>()
         if (cci != newData.cci) {
             changes["cci"] = Pair(cci, newData.cci)

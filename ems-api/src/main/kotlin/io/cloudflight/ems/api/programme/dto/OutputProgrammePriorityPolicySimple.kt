@@ -1,6 +1,6 @@
 package io.cloudflight.ems.api.programme.dto
 
-data class OutputProgrammePriorityPolicy (
+data class OutputProgrammePriorityPolicySimple (
     val programmeObjectivePolicy: ProgrammeObjectivePolicy,
     val code: String
 )

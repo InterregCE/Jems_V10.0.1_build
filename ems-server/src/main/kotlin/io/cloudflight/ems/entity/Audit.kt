@@ -250,6 +250,26 @@ data class Audit(
             )
         }
 
+        fun indicatorAdded(currentUser: CurrentUser?, identifier: String): Audit {
+            return Audit(
+                action = AuditAction.PROGRAMME_INDICATOR_ADDED,
+                user = currentUser?.toEsUser(),
+                description = "Programme indicator $identifier has been added"
+            )
+        }
+
+        fun indicatorEdited(currentUser: CurrentUser?, identifier: String, changes: Map<String, Pair<Any?, Any?>>): Audit {
+            val changedString = changes.entries.stream()
+                .map { "${it.key} changed from ${it.value.first} to ${it.value.second}" }
+                .collect(Collectors.joining(",\n"))
+
+            return Audit(
+                action = AuditAction.PROGRAMME_INDICATOR_EDITED,
+                user = currentUser?.toEsUser(),
+                description = "Programme indicator $identifier edited:\n$changedString"
+            )
+        }
+
         private fun getElasticTimeNow(): String {
             return ZonedDateTime.now(ZoneOffset.UTC).format(DateTimeFormatter.ISO_DATE_TIME)
         }

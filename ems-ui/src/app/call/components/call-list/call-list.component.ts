@@ -11,7 +11,7 @@ import {
 import {TableConfiguration} from '@common/components/table/model/table.configuration';
 import {ColumnType} from '@common/components/table/model/column-type.enum';
 import {MatSort} from '@angular/material/sort';
-import {PageOutputCall} from '@cat/api'
+import {PageOutputCallList} from '@cat/api'
 import {Alert} from '@common/components/forms/alert';
 import {Permission} from '../../../security/permissions/permission';
 import {Router} from '@angular/router';
@@ -33,7 +33,7 @@ export class CallListComponent extends BaseComponent implements OnInit {
   @Input()
   publishedCall: string;
   @Input()
-  callPage: PageOutputCall;
+  callPage: PageOutputCallList;
   @Input()
   pageIndex: number;
   @Input()

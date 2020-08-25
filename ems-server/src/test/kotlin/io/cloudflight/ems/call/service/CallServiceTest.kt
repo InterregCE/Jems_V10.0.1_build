@@ -4,9 +4,10 @@ import io.cloudflight.ems.api.call.dto.CallStatus
 import io.cloudflight.ems.api.call.dto.InputCallCreate
 import io.cloudflight.ems.api.call.dto.InputCallUpdate
 import io.cloudflight.ems.api.call.dto.OutputCall
+import io.cloudflight.ems.api.call.dto.OutputCallList
 import io.cloudflight.ems.api.dto.user.OutputUserRole
 import io.cloudflight.ems.api.dto.user.OutputUserWithRole
-import io.cloudflight.ems.api.programme.dto.OutputProgrammePriorityPolicy
+import io.cloudflight.ems.api.programme.dto.OutputProgrammePriorityPolicySimple
 import io.cloudflight.ems.api.programme.dto.ProgrammeObjectivePolicy.AdvancedTechnologies
 import io.cloudflight.ems.api.programme.dto.ProgrammeObjectivePolicy.DigitalConnectivity
 import io.cloudflight.ems.entity.Audit
@@ -93,6 +94,14 @@ class CallServiceTest {
         description = call.description
     )
 
+    private fun outputCallListWithId(id: Long) = OutputCallList(
+        id = id,
+        name = call.name,
+        startDate = call.startDate,
+        endDate = call.endDate,
+        status = call.status
+    )
+
     @MockK
     lateinit var callRepository: CallRepository
     @MockK
@@ -137,7 +146,7 @@ class CallServiceTest {
         every { securityService.currentUser } returns currentUser
         every { callRepository.findAll(Pageable.unpaged()) } returns PageImpl(listOf(callWithId(1)))
 
-        val expectedResult = listOf(outputCallWithId(1))
+        val expectedResult = listOf(outputCallListWithId(1))
         val result = callService.getCalls(Pageable.unpaged()).get().collect(Collectors.toList())
         assertThat(result).isEqualTo(expectedResult)
     }
@@ -155,7 +164,7 @@ class CallServiceTest {
         every { callRepository.findAllByStatus(eq(CallStatus.PUBLISHED), any<Pageable>()) } returns
             PageImpl(listOf(callWithId(1)))
 
-        val expectedResult = listOf(outputCallWithId(1))
+        val expectedResult = listOf(outputCallListWithId(1))
 
         val result = callService.getCalls(Pageable.unpaged()).get().collect(Collectors.toList())
         assertThat(result).isEqualTo(expectedResult)
@@ -218,7 +227,7 @@ class CallServiceTest {
 
         val result = callService.createCall(newCall)
         assertThat(result.name).isEqualTo(call.name)
-        assertThat(result.priorityPolicies).isEqualTo(listOf(OutputProgrammePriorityPolicy(AdvancedTechnologies, "AT")))
+        assertThat(result.priorityPolicies).isEqualTo(listOf(OutputProgrammePriorityPolicySimple(AdvancedTechnologies, "AT")))
         assertThat(result.status).isEqualTo(CallStatus.DRAFT)
     }
 
@@ -278,7 +287,7 @@ class CallServiceTest {
 
         val result = callService.updateCall(newDataForCall)
         assertThat(result.name).isEqualTo("new name")
-        assertThat(result.priorityPolicies).isEqualTo(listOf(OutputProgrammePriorityPolicy(programmeObjectivePolicy = AdvancedTechnologies, code = "AT")))
+        assertThat(result.priorityPolicies).isEqualTo(listOf(OutputProgrammePriorityPolicySimple(programmeObjectivePolicy = AdvancedTechnologies, code = "AT")))
         assertThat(result.startDate).isEqualTo(startDate)
         assertThat(result.endDate).isEqualTo(endDate)
         assertThat(result.description).isEqualTo("new description")
