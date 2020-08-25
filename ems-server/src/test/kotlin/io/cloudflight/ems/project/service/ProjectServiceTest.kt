@@ -8,6 +8,8 @@ import io.cloudflight.ems.api.project.dto.status.ProjectApplicationStatus
 import io.cloudflight.ems.api.dto.user.OutputUser
 import io.cloudflight.ems.api.dto.user.OutputUserRole
 import io.cloudflight.ems.api.dto.user.OutputUserWithRole
+import io.cloudflight.ems.api.programme.dto.OutputProgrammePriorityPolicy
+import io.cloudflight.ems.api.programme.dto.ProgrammeObjectivePolicy.AdvancedTechnologies
 import io.cloudflight.ems.api.programme.dto.ProgrammeObjectivePolicy.HealthcareAcrossBorders
 import io.cloudflight.ems.api.project.dto.InputProjectData
 import io.cloudflight.ems.api.project.dto.OutputProjectData
@@ -21,6 +23,8 @@ import io.cloudflight.ems.entity.UserRole
 import io.cloudflight.ems.exception.ResourceNotFoundException
 import io.cloudflight.ems.call.repository.CallRepository
 import io.cloudflight.ems.programme.entity.ProgrammePriorityPolicy
+import io.cloudflight.ems.programme.repository.ProgrammePriorityPolicyRepository
+import io.cloudflight.ems.programme.repository.ProgrammePriorityRepository
 import io.cloudflight.ems.project.repository.ProjectRepository
 import io.cloudflight.ems.project.repository.ProjectStatusRepository
 import io.cloudflight.ems.repository.UserRepository
@@ -125,6 +129,12 @@ class ProjectServiceTest {
     @MockK
     lateinit var securityService: SecurityService
 
+    @MockK
+    lateinit var programmePriorityPolicyRepository: ProgrammePriorityPolicyRepository
+
+    @MockK
+    lateinit var programmePriorityRepository: ProgrammePriorityRepository
+
     lateinit var projectService: ProjectService
 
     @BeforeEach
@@ -139,6 +149,8 @@ class ProjectServiceTest {
             callRepository,
             userRepository,
             auditService,
+            programmePriorityPolicyRepository,
+            programmePriorityRepository,
             securityService
         )
     }
@@ -171,7 +183,9 @@ class ProjectServiceTest {
                 acronym = "test acronym",
                 firstSubmissionDate = TEST_DATE_TIME,
                 lastResubmissionDate = null,
-                projectStatus = ProjectApplicationStatus.SUBMITTED
+                projectStatus = ProjectApplicationStatus.SUBMITTED,
+                specificObjective = null,
+                programmePriority = null
             )
         )
         assertIterableEquals(expectedProjects, result.get().collect(Collectors.toList()))
@@ -273,7 +287,8 @@ class ProjectServiceTest {
         title = "new title",
         duration = 15,
         intro = null,
-        introProgrammeLanguage = "english text"
+        introProgrammeLanguage = "english text",
+        specificObjective = AdvancedTechnologies
     )
 
     @Test
@@ -295,12 +310,15 @@ class ProjectServiceTest {
         )
         every { projectRepository.findById(eq(1)) } returns Optional.of(projectToReturn)
         every { projectRepository.save(any<Project>()) } returnsArgument 0
+        every { programmePriorityPolicyRepository.findById(eq(AdvancedTechnologies)) } returns
+            Optional.of(ProgrammePriorityPolicy(programmeObjectivePolicy = AdvancedTechnologies, code = "AT"))
 
         val expectedData = OutputProjectData(
             title = projectData.title,
             duration = projectData.duration,
             intro = projectData.intro,
-            introProgrammeLanguage = projectData.introProgrammeLanguage
+            introProgrammeLanguage = projectData.introProgrammeLanguage,
+            specificObjective = OutputProgrammePriorityPolicy(programmeObjectivePolicy = AdvancedTechnologies, code = "AT")
         )
 
         val result = projectService.update(1, projectData)

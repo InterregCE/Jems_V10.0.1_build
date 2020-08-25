@@ -52,6 +52,36 @@
         </mat-error>
     </mat-form-field>
 
+    <div *ngIf="formState === FormState.EDIT">
+        <mat-form-field class="field-full">
+            <mat-label>{{'project.application.form.field.project.priority' | translate}}</mat-label>
+            <mat-select (selectionChange)="currentPriority = $event.value" required
+                        panelClass="material-select-panel">
+                <mat-option *ngFor="let objective of priorities" [value]="objective">
+                    {{objective}}
+                </mat-option>
+            </mat-select>
+        </mat-form-field>
+        <div *ngIf="currentPriority">
+            <app-project-application-form-policy-radio-button
+                    [objectives]="objectivesWithPolicies[currentPriority]"
+                    [checked]="previousObjective"
+                    (selected)="selectedSpecificObjective = $event">
+            </app-project-application-form-policy-radio-button>
+        </div>
+    </div>
+
+    <div *ngIf="formState === FormState.VIEW">
+        <p class="policy-label">{{'project.application.form.field.project.objective' | translate}}</p>
+        <p *ngIf="project.projectData.specificObjective">
+            {{project.projectData.specificObjective.code +  ' - '}}
+            {{'programme.policy.' + project.projectData.specificObjective.programmeObjectivePolicy | translate}}
+        </p>
+        <p *ngIf="!project.projectData">
+            {{'project.application.form.field.project.objective.empty' | translate}}
+        </p>
+    </div>
+
     <h6 id="projectSummaryHeading">{{'project.application.form.section.part.a.subsection.two' | translate}}</h6>
     <div>
         <p>{{'project.application.form.summary.intro.row.one' | translate}}</p>

@@ -59,4 +59,21 @@ export class TableComponent implements OnInit {
     }
     return elementValue;
   }
+
+  /**
+   * formats tooltip value with certain translation key or its pure value.
+   *
+   * @param column configuration
+   * @param element value
+   */
+  formatColumnTooltip(column: ColumnConfiguration, element: any): any {
+    if (!column.tooltip?.tooltipContent) {
+      return element;
+    }
+    const elementTitle = Tools.getChainedProperty(element, column.tooltip.tooltipContent, '');
+    if (column.tooltip.tooltipTranslationKey) {
+      return column.tooltip.tooltipTranslationKey + '.' + elementTitle;
+    }
+    return elementTitle;
+  }
 }

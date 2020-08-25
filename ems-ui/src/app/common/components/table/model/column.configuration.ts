@@ -1,5 +1,6 @@
 import {ColumnType} from './column-type.enum';
 import {TemplateRef} from '@angular/core';
+import {TooltipConfiguration} from '@common/components/table/model/tooltip.configuration';
 
 export class ColumnConfiguration {
   // the name of the column that will appear in the header of the table.
@@ -14,6 +15,8 @@ export class ColumnConfiguration {
   columnType?: ColumnType;
   // the custom template
   customCellTemplate?: TemplateRef<any>
+  // the cell tooltip
+  tooltip?: TooltipConfiguration
 
   public constructor(init?: Partial<ColumnConfiguration>) {
     Object.assign(this, init);

@@ -38,6 +38,8 @@ import {ProjectApplicationFormPageComponent} from './project-application/contain
 import {MatSidenavModule} from '@angular/material/sidenav';
 import {ProjectApplicationFormComponent} from './project-application/components/project-application-form/project-application-form.component';
 import {MatTooltipModule} from '@angular/material/tooltip';
+import {ProjectApplicationFormPolicyRadioButtonComponent} from './project-application/components/project-application-form/project-application-form-policy-radio-button/project-application-form-policy-radio-button.component';
+import {MatCheckboxModule} from '@angular/material/checkbox';
 
 @NgModule({
   declarations: [
@@ -62,24 +64,26 @@ import {MatTooltipModule} from '@angular/material/tooltip';
     ProjectApplicationFundingDecisionComponent,
     ProjectApplicationEligibilityDecisionPageComponent,
     ProjectApplicationFormPageComponent,
-    ProjectApplicationFormComponent
+    ProjectApplicationFormComponent,
+    ProjectApplicationFormPolicyRadioButtonComponent
   ],
-  imports: [
-    SharedModule,
-    CoreModule,
-    ProjectRoutingModule,
-    MatListModule,
-    MatSelectModule,
-    MatDialogModule,
-    OverlayModule,
-    BrowserAnimationsModule,
-    MatRadioModule,
-    MatExpansionModule,
-    MatDatepickerModule,
-    MatMomentDateModule,
-    MatSidenavModule,
-    MatTooltipModule,
-  ],
+    imports: [
+        SharedModule,
+        CoreModule,
+        ProjectRoutingModule,
+        MatListModule,
+        MatSelectModule,
+        MatDialogModule,
+        OverlayModule,
+        BrowserAnimationsModule,
+        MatRadioModule,
+        MatExpansionModule,
+        MatDatepickerModule,
+        MatMomentDateModule,
+        MatSidenavModule,
+        MatTooltipModule,
+        MatCheckboxModule,
+    ],
   exports: [
     ProjectApplicationListComponent,
     ProjectApplicationDetailComponent

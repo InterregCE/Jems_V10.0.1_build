@@ -27,9 +27,18 @@ export class ProjectApplicationFormComponent extends ViewEditForm implements OnI
   project: OutputProject;
   @Input()
   editable: boolean;
+  @Input()
+  priorities: string[];
+  @Input()
+  objectivesWithPolicies: { [key: string]: InputProjectData.SpecificObjectiveEnum[] };
 
   @Output()
   updateData = new EventEmitter<InputProjectData>();
+
+  currentPriority: string;
+  previousObjective: InputProjectData.SpecificObjectiveEnum;
+  currentObjectives: any =  [];
+  selectedSpecificObjective: InputProjectData.SpecificObjectiveEnum;
 
   applicationForm: FormGroup = this.formBuilder.group({
     projectId: [''],
@@ -82,6 +91,7 @@ export class ProjectApplicationFormComponent extends ViewEditForm implements OnI
 
   protected enterEditMode(): void {
     this.sideNavService.setAlertStatus(true);
+    this.currentObjectives = [];
     this.applicationForm.controls.projectId.disable();
   }
 
@@ -95,7 +105,8 @@ export class ProjectApplicationFormComponent extends ViewEditForm implements OnI
       title: this.applicationForm.controls.projectTitle.value,
       duration: this.applicationForm.controls.projectDuration.value,
       introProgrammeLanguage: this.applicationForm.controls.projectSummary.value,
-      intro: ''
+      intro: '',
+      specificObjective: this.selectedSpecificObjective
     });
   }
 
@@ -105,5 +116,8 @@ export class ProjectApplicationFormComponent extends ViewEditForm implements OnI
     this.applicationForm.controls.projectTitle.setValue(this.project?.projectData?.title);
     this.applicationForm.controls.projectDuration.setValue(this.project?.projectData?.duration);
     this.applicationForm.controls.projectSummary.setValue(this.project?.projectData?.introProgrammeLanguage);
+    if (this.project?.projectData?.specificObjective) {
+      this.previousObjective = this.project?.projectData?.specificObjective.programmeObjectivePolicy
+    }
   }
 }

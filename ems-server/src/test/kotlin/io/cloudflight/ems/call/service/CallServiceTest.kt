@@ -20,6 +20,7 @@ import io.cloudflight.ems.exception.ResourceNotFoundException
 import io.cloudflight.ems.call.repository.CallRepository
 import io.cloudflight.ems.programme.entity.ProgrammePriorityPolicy
 import io.cloudflight.ems.programme.repository.ProgrammePriorityPolicyRepository
+import io.cloudflight.ems.programme.repository.ProgrammePriorityRepository
 import io.cloudflight.ems.repository.UserRepository
 import io.cloudflight.ems.security.model.LocalCurrentUser
 import io.cloudflight.ems.security.service.SecurityService

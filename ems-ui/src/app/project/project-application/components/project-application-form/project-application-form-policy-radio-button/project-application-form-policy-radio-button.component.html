@@ -1,0 +1,15 @@
+<div>
+    <h6>{{'programme.priority.objective.title' | translate}}</h6>
+    <mat-radio-group
+            aria-labelledby="example-radio-group-label"
+            class="radio-group"
+            [(ngModel)]="checked"
+            (change)="selected.emit(checked)">
+        <mat-radio-button class="radio-button"
+                          *ngFor="let objective of objectives"
+                          [value]="objective"
+                          (change)="selected.emit(checked)">
+            {{'programme.policy.' + objective | translate}}
+        </mat-radio-button>
+    </mat-radio-group>
+</div>

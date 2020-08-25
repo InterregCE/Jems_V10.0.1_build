@@ -3,6 +3,8 @@ package io.cloudflight.ems.api.call
 import io.cloudflight.ems.api.call.dto.InputCallCreate
 import io.cloudflight.ems.api.call.dto.InputCallUpdate
 import io.cloudflight.ems.api.call.dto.OutputCall
+import io.cloudflight.ems.api.call.dto.OutputCallProgrammePriority
+import io.cloudflight.ems.api.programme.dto.OutputProgrammePriority
 import io.swagger.annotations.Api
 import io.swagger.annotations.ApiImplicitParam
 import io.swagger.annotations.ApiImplicitParams
@@ -46,5 +48,8 @@ interface CallApi {
     @ApiOperation("Publish existing call (which is now DRAFT)")
     @PutMapping("/{id}/publish")
     fun publishCall(@PathVariable id: Long): OutputCall
+
+    @GetMapping("/objectives/{callId}")
+    fun getCallObjectives(@PathVariable callId: Long): List<OutputCallProgrammePriority>
 
 }

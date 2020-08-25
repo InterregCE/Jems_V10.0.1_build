@@ -7,6 +7,7 @@ import io.cloudflight.ems.api.programme.dto.OutputProgrammePriority
 import io.cloudflight.ems.api.programme.dto.OutputProgrammePriorityPolicy
 import io.cloudflight.ems.api.programme.dto.ProgrammeObjective
 import io.cloudflight.ems.api.programme.dto.ProgrammeObjectivePolicy
+import io.cloudflight.ems.api.programme.dto.OutputProgrammePrioritySimple
 import io.cloudflight.ems.programme.entity.ProgrammePriority
 import io.cloudflight.ems.programme.entity.ProgrammePriorityPolicy
 import io.cloudflight.ems.exception.I18nValidationException
@@ -20,6 +21,11 @@ fun ProgrammePriority.toOutputProgrammePriority() = OutputProgrammePriority(
     programmePriorityPolicies = programmePriorityPolicies
         .map { it.toOutputProgrammePriorityPolicy() }
         .sortedBy { it.programmeObjectivePolicy }
+)
+
+fun ProgrammePriority.toOutputProgrammePrioritySimple() = OutputProgrammePrioritySimple(
+    code = code,
+    title = title
 )
 
 fun ProgrammePriorityPolicy.toOutputProgrammePriorityPolicy() = OutputProgrammePriorityPolicy(

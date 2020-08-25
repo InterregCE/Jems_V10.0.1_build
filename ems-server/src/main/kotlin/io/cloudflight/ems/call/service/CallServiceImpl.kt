@@ -4,6 +4,7 @@ import io.cloudflight.ems.api.call.dto.CallStatus
 import io.cloudflight.ems.api.call.dto.InputCallCreate
 import io.cloudflight.ems.api.call.dto.InputCallUpdate
 import io.cloudflight.ems.api.call.dto.OutputCall
+import io.cloudflight.ems.api.call.dto.OutputCallProgrammePriority
 import io.cloudflight.ems.api.programme.dto.ProgrammeObjectivePolicy
 import io.cloudflight.ems.entity.Audit
 import io.cloudflight.ems.call.entity.Call
@@ -13,6 +14,8 @@ import io.cloudflight.ems.exception.ResourceNotFoundException
 import io.cloudflight.ems.call.repository.CallRepository
 import io.cloudflight.ems.programme.entity.ProgrammePriorityPolicy
 import io.cloudflight.ems.programme.repository.ProgrammePriorityPolicyRepository
+import io.cloudflight.ems.programme.service.toOutputProgrammePriorityPolicy
+import io.cloudflight.ems.programme.service.toOutputProgrammePrioritySimple
 import io.cloudflight.ems.repository.UserRepository
 import io.cloudflight.ems.security.APPLICANT_USER
 import io.cloudflight.ems.security.service.SecurityService
@@ -143,6 +146,20 @@ class CallServiceImpl(
     @Transactional(readOnly = true)
     override fun findOneByName(name: String): OutputCall? {
         return callRepository.findOneByName(name)?.toOutputCall()
+    }
+
+    @Transactional(readOnly = true)
+    override fun getPriorityAndPoliciesForCall(callId: Long): List<OutputCallProgrammePriority> {
+        val call = callRepository.findById(callId)
+            .orElseThrow { ResourceNotFoundException("call") }
+
+        return call.priorityPolicies
+            .groupBy { it.programmePriority!!.toOutputProgrammePrioritySimple() }
+            .map { (programmePriority, policies) -> OutputCallProgrammePriority(
+                code = programmePriority.code,
+                title = programmePriority.title,
+                programmePriorityPolicies = policies.map { it.toOutputProgrammePriorityPolicy() }
+            ) }
     }
 
 }

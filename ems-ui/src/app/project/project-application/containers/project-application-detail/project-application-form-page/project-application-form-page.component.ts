@@ -3,12 +3,13 @@ import {ProjectStore} from '../services/project-store.service';
 import {catchError, flatMap, map, takeUntil, tap} from 'rxjs/operators';
 import {ActivatedRoute} from '@angular/router';
 import {Permission} from '../../../../../security/permissions/permission';
-import {InputProjectData, OutputProjectStatus, ProjectService} from '@cat/api';
+import {InputProjectData, OutputProjectStatus, ProjectService, OutputProject,
+  CallService, OutputCallProgrammePriority} from '@cat/api';
 import {SideNavService} from '@common/components/side-nav/side-nav.service';
 import {BaseComponent} from '@common/components/base-component';
 import {HeadlineType} from '@common/components/side-nav/headline-type';
 import {HeadlineRoute} from '@common/components/side-nav/headline-route';
-import {merge, Subject} from 'rxjs';
+import {combineLatest, merge, Subject} from 'rxjs';
 import {Log} from '../../../../../common/utils/log';
 import {I18nValidationError} from '@common/validation/i18n-validation-error';
 import {HttpErrorResponse} from '@angular/common/http';
@@ -31,7 +32,8 @@ export class ProjectApplicationFormPageComponent extends BaseComponent implement
   constructor(private projectStore: ProjectStore,
               private projectService: ProjectService,
               private activatedRoute: ActivatedRoute,
-              private sideNavService: SideNavService) {
+              private sideNavService: SideNavService,
+              private callService: CallService) {
     super();
   }
 
@@ -47,19 +49,42 @@ export class ProjectApplicationFormPageComponent extends BaseComponent implement
       })
     );
 
-  details$ = merge(
+  private fetchObjectives$ = new Subject<OutputProject>()
+
+  private projectDetails$ = merge(
     this.projectStore.getProject(),
     this.updatedProjectData$
   )
     .pipe(
       takeUntil(this.destroyed$),
       tap(project => this.setHeadlines(project.id + ' '  +  project.acronym)),
+      tap(project => this.fetchObjectives$.next(project)),
       map(project => ({
         project,
         editable: project.projectStatus.status === OutputProjectStatus.StatusEnum.DRAFT
           || project.projectStatus.status === OutputProjectStatus.StatusEnum.RETURNEDTOAPPLICANT
       })),
     );
+
+  private callObjectives$ = this.fetchObjectives$
+    .pipe(
+      flatMap( project => this.callService.getCallObjectives(project.call.id)),
+      tap(objectives => Log.info('Fetched objectives', this, objectives)),
+      map(objectives =>  ({
+        priorities: objectives.map(objective => objective.code + ' - ' + objective.title),
+        objectivesWithPolicies: this.getObjectivesWithPolicies(objectives)
+      }))
+    )
+
+  details$ = combineLatest([
+    this.projectDetails$,
+    this.callObjectives$
+    ])
+    .pipe(
+      map(
+        ([projectDetails, callObjectives]) => ({projectDetails, callObjectives})
+      )
+    )
 
   ngOnInit() {
     this.projectStore.init(this.projectId);
@@ -76,4 +101,13 @@ export class ProjectApplicationFormPageComponent extends BaseComponent implement
     ]);
   }
 
+  private getObjectivesWithPolicies(objectives: OutputCallProgrammePriority[]):  { [key: string]: InputProjectData.SpecificObjectiveEnum[] } {
+    const objectivesWithPolicies: any = {};
+    objectives
+      .forEach(objective =>
+        objectivesWithPolicies[objective.code + ' - ' + objective.title] = objective.programmePriorityPolicies
+            .map(priority => priority.programmeObjectivePolicy
+    ));
+    return  objectivesWithPolicies;
+  }
 }
