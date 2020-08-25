@@ -394,7 +394,7 @@
 									");\r",
 									"\r",
 									"var callDateStart = new Date();\r",
-									"callDateStart.setDate(callDateStart.getDate() + 1);\r",
+									"callDateStart.setDate(callDateStart.getDate() - 1);\r",
 									"pm.variables.set('callDateStart', callDateStart.toISOString());\r",
 									"\r",
 									"var callDateEnd = new Date();\r",
@@ -6495,7 +6495,7 @@
 	],
 	"variable": [
 		{
-			"id": "96257a41-b3cf-4840-a62b-5a116ebbda9d",
+			"id": "1aa28799-b3ba-45dd-bd4a-22ab62bc7f58",
 			"key": "url",
 			"value": "specify_url_here"
 		}

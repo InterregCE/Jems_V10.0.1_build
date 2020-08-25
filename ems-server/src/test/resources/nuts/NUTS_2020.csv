@@ -1,0 +1,11 @@
+CNTR_CODE,NUTS_ID,NUTS_NAME,MOUNT_TYPE,URBN_TYPE,COAST_TYPE
+CO,CO01,Country West,,,
+CO,CO010,West 01,,,
+CO,CO02,Country North,,,
+CO,CO021,North 01,,,
+CO,CO0E,Country East,,,
+CO,CO0E1,East 01,,,
+CO,CO0E2,East 02,,,
+CO,CO0E3,East 03,,,
+CO,CO0,"Some SubCountry",,,
+CO,CO,Country Name,,,
