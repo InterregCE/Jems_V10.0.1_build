@@ -21,6 +21,7 @@ export class ProjectApplicationDataComponent extends BaseComponent {
     .pipe(
       map(() => true)
     );
+  changeStatusError$ = this.projectStore.getChangeStatusError();
   revertStatus$ = this.projectStore.getRevertStatus();
 
   constructor(private projectStore: ProjectStore) {

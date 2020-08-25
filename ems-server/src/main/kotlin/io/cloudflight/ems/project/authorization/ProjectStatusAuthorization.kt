@@ -30,8 +30,9 @@ class ProjectStatusAuthorization(
     fun canChangeStatusTo(project: OutputProject, newStatus: ProjectApplicationStatus): Boolean {
         val oldStatus = project.projectStatus.status
 
-        if (submitted(oldStatus, newStatus))
-            return isOwner(project) || isAdmin()
+        if (submitted(oldStatus, newStatus)) {
+            return (isOwner(project) || isAdmin())
+        }
 
         if (returned(oldStatus, newStatus))
             return isProgrammeUser() || isAdmin()

@@ -6,12 +6,12 @@ import io.cloudflight.ems.api.project.dto.OutputProject
 import io.cloudflight.ems.api.project.dto.OutputProjectData
 import io.cloudflight.ems.api.project.dto.OutputProjectSimple
 import io.cloudflight.ems.call.entity.Call
-import io.cloudflight.ems.call.service.toOutputCallSimple
-import io.cloudflight.ems.entity.User
+import io.cloudflight.ems.call.service.toOutputCallWithDates
 import io.cloudflight.ems.project.entity.Project
+import io.cloudflight.ems.project.entity.ProjectStatus
 import io.cloudflight.ems.project.entity.ProjectData
 import io.cloudflight.ems.project.entity.ProjectPartner
-import io.cloudflight.ems.project.entity.ProjectStatus
+import io.cloudflight.ems.entity.User
 import io.cloudflight.ems.service.toOutputUser
 
 fun InputProject.toEntity(call: Call,
@@ -28,7 +28,7 @@ fun InputProject.toEntity(call: Call,
 
 fun Project.toOutputProject() = OutputProject(
     id = id,
-    call = call.toOutputCallSimple(),
+    call = call.toOutputCallWithDates(),
     acronym = acronym,
     applicant = applicant.toOutputUser(),
     projectStatus = projectStatus.toOutputProjectStatus(),

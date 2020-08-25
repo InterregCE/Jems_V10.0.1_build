@@ -8,6 +8,7 @@ import {InputProjectStatus, InputRevertProjectStatus, OutputProjectStatus, Outpu
 import {Alert} from '@common/components/forms/alert';
 import {Permission} from 'src/app/security/permissions/permission';
 import {TranslateService} from '@ngx-translate/core';
+import * as moment from 'moment';
 
 @Component({
   selector: 'app-project-application-actions',
@@ -31,7 +32,8 @@ export class ProjectApplicationActionsComponent extends AbstractForm {
   projectStatus: OutputProjectStatus.StatusEnum;
   @Input()
   projectRevertStatus: OutputRevertProjectStatus;
-
+  @Input()
+  projectCallEndDate: Date;
   @Input()
   projectId: number;
 
@@ -108,4 +110,9 @@ export class ProjectApplicationActionsComponent extends AbstractForm {
       }))
     ).subscribe();
   }
+
+  isOpen(): boolean {
+    const currentDate = moment(new Date());
+    return currentDate.isBefore(this.projectCallEndDate);
+  };
 }

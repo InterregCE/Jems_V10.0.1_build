@@ -206,6 +206,14 @@ data class Audit(
             )
         }
 
+        fun callAlreadyEnded(currentUser: CurrentUser?, callId: String): Audit {
+            return Audit(
+                action = AuditAction.CALL_ALREADY_ENDED,
+                user = currentUser?.toEsUser(),
+                description = "Attempted unsuccessfully to submit or to apply for call '$callId' that has already ended"
+            )
+        }
+
         fun programmePriorityAdded(currentUser: CurrentUser?, programmePriority: OutputProgrammePriority): Audit {
             return Audit(
                 action = AuditAction.PROGRAMME_PRIORITY_ADDED,

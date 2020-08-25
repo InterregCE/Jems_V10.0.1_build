@@ -15,8 +15,8 @@ export class CallActionCellComponent {
   @Output()
   apply = new EventEmitter<number>();
 
-  isExpired(): boolean {
-    const currentDate = new Date();
-    return moment(currentDate).isAfter(this.call.endDate);
+  isOpen(): boolean {
+    const currentDate = moment(new Date());
+    return currentDate.isBefore(this.call.endDate) && currentDate.isAfter(this.call.startDate);
   };
 }

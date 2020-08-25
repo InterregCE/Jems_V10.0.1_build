@@ -98,8 +98,19 @@ class ProjectServiceImpl(
     private fun getCallIfOpen(callId: Long): Call {
         val call = callRepository.findById(callId)
             .orElseThrow { ResourceNotFoundException("call") }
-        if (call.status == CallStatus.PUBLISHED && ZonedDateTime.now().isBefore(call.endDate))
+        if (call.status == CallStatus.PUBLISHED
+            && ZonedDateTime.now().isBefore(call.endDate)
+            && ZonedDateTime.now().isAfter(call.startDate)
+        )
             return call
+
+        auditService.logEvent(
+            Audit.callAlreadyEnded(
+                currentUser = securityService.currentUser!!,
+                callId = call.id.toString()
+            )
+        )
+
         throw I18nValidationException(
             httpStatus = HttpStatus.UNPROCESSABLE_ENTITY,
             i18nKey = "call.not.open"
