@@ -6,19 +6,24 @@ import io.cloudflight.ems.api.project.dto.OutputProject
 import io.cloudflight.ems.api.project.dto.OutputProjectData
 import io.cloudflight.ems.api.project.dto.OutputProjectSimple
 import io.cloudflight.ems.call.entity.Call
-import io.cloudflight.ems.project.entity.Project
-import io.cloudflight.ems.project.entity.ProjectStatus
-import io.cloudflight.ems.entity.User
 import io.cloudflight.ems.call.service.toOutputCallSimple
+import io.cloudflight.ems.entity.User
+import io.cloudflight.ems.project.entity.Project
 import io.cloudflight.ems.project.entity.ProjectData
+import io.cloudflight.ems.project.entity.ProjectPartner
+import io.cloudflight.ems.project.entity.ProjectStatus
 import io.cloudflight.ems.service.toOutputUser
 
-fun InputProject.toEntity(call: Call, applicant: User, status: ProjectStatus) = Project(
+fun InputProject.toEntity(call: Call,
+                          applicant: User,
+                          status: ProjectStatus,
+                          projectPartners: Set<ProjectPartner>) = Project(
     id = null,
     call = call,
     acronym = this.acronym!!,
     applicant = applicant,
-    projectStatus = status
+    projectStatus = status,
+    projectPartners = projectPartners
 )
 
 fun Project.toOutputProject() = OutputProject(
@@ -34,6 +39,7 @@ fun Project.toOutputProject() = OutputProject(
     eligibilityDecision = eligibilityDecision?.toOutputProjectStatus(),
     fundingDecision = fundingDecision?.toOutputProjectStatus(),
     projectData = projectData?.toOutputProjectData()
+    // projectPartners are handled in its own endpoint
 )
 
 fun Project.toOutputProjectSimple() = OutputProjectSimple(

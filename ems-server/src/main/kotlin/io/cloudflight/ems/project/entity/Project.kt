@@ -2,8 +2,6 @@ package io.cloudflight.ems.project.entity
 
 import io.cloudflight.ems.call.entity.Call
 import io.cloudflight.ems.entity.User
-import org.hibernate.annotations.LazyToOne
-import org.hibernate.annotations.LazyToOneOption
 import javax.persistence.CascadeType
 import javax.persistence.Column
 import javax.persistence.Entity
@@ -13,6 +11,7 @@ import javax.persistence.GenerationType
 import javax.persistence.Id
 import javax.persistence.JoinColumn
 import javax.persistence.ManyToOne
+import javax.persistence.OneToMany
 import javax.persistence.OneToOne
 
 @Entity(name = "project")
@@ -59,5 +58,9 @@ data class Project(
     val fundingDecision: ProjectStatus? = null,
 
     @OneToOne(mappedBy = "project", cascade = [CascadeType.ALL])
-    val projectData: ProjectData? = null
+    val projectData: ProjectData? = null,
+
+    @OneToMany(mappedBy = "project", cascade = [CascadeType.REMOVE])
+    val projectPartners: Set<ProjectPartner>? = emptySet()
+
 )
