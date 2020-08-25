@@ -73,11 +73,11 @@
 
     <div *ngIf="formState === FormState.VIEW">
         <p class="policy-label">{{'project.application.form.field.project.objective' | translate}}</p>
-        <p *ngIf="project.projectData.specificObjective">
+        <p *ngIf="previousObjective">
             {{project.projectData.specificObjective.code +  ' - '}}
             {{'programme.policy.' + project.projectData.specificObjective.programmeObjectivePolicy | translate}}
         </p>
-        <p *ngIf="!project.projectData">
+        <p *ngIf="!previousObjective">
             {{'project.application.form.field.project.objective.empty' | translate}}
         </p>
     </div>
