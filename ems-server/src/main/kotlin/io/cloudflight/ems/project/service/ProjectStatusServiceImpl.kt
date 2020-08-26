@@ -43,7 +43,8 @@ class ProjectStatusServiceImpl(
     private val projectStatusRepo: ProjectStatusRepository,
     private val userRepository: UserRepository,
     private val auditService: AuditService,
-    private val securityService: SecurityService
+    private val securityService: SecurityService,
+    private val projectPartnerService: ProjectPartnerService
 ) : ProjectStatusService {
 
     companion object {
@@ -245,6 +246,10 @@ class ProjectStatusServiceImpl(
 
     private fun updateProject(oldProject: Project, newStatus: ProjectStatus): Project {
         val oldStatus = oldProject.projectStatus.status
+        // renumber project partners on submit
+        if (newStatus.status == SUBMITTED) {
+            projectPartnerService.updateSortByRole(oldProject.id!!)
+        }
         return when {
             oldStatus == RETURNED_TO_APPLICANT -> {
                 oldProject.copy(projectStatus = newStatus, lastResubmission = newStatus)

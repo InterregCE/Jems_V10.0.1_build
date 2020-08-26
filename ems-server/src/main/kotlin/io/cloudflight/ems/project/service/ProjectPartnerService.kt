@@ -16,4 +16,6 @@ interface ProjectPartnerService {
 
     fun update(projectId: Long, projectPartner: InputProjectPartnerUpdate): OutputProjectPartner
 
+    fun updateSortByRole(projectId: Long)
+
 }

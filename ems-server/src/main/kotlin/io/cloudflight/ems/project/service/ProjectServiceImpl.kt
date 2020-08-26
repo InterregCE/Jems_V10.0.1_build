@@ -83,8 +83,7 @@ class ProjectServiceImpl(
         val createdProject = projectRepo.save(project.toEntity(
             call,
             applicant,
-            projectStatus,
-            projectPartners = emptySet()))
+            projectStatus))
         projectStatusRepo.save(projectStatus.copy(project = createdProject))
         auditService.logEvent(
             Audit.projectStatusChanged(
