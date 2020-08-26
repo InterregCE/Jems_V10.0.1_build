@@ -4,6 +4,8 @@ import {AuthenticationGuard} from '../security/authentication-guard.service';
 import {ProgrammePageComponent} from './programme-page/containers/programme-page/programme-page.component';
 import {ProgrammePrioritiesComponent} from './programme-page/containers/programme-priorities/programme-priorities.component';
 import {ProgrammePriorityComponent} from './programme-page/containers/programme-priority/programme-priority.component';
+import {ProgrammeOutputIndicatorSubmissionPageComponent} from './programme-page/containers/programme-output-indicator-submission-page/programme-output-indicator-submission-page.component';
+import {ProgrammeResultIndicatorSubmissionPageComponent} from './programme-page/containers/programme-result-indicator-submission-page/programme-result-indicator-submission-page.component';
 
 const routes: Routes = [
   {
@@ -20,7 +22,27 @@ const routes: Routes = [
     path: 'priority',
     component: ProgrammePriorityComponent,
     canActivate: [AuthenticationGuard],
-  }
+  },
+  {
+    path: 'outputIndicator/create',
+    component: ProgrammeOutputIndicatorSubmissionPageComponent,
+    canActivate: [AuthenticationGuard],
+  },
+  {
+    path: 'outputIndicator/:indicatorId',
+    component: ProgrammeOutputIndicatorSubmissionPageComponent,
+    canActivate: [AuthenticationGuard],
+  },
+  {
+    path: 'resultIndicator/create',
+    component: ProgrammeResultIndicatorSubmissionPageComponent,
+    canActivate: [AuthenticationGuard],
+  },
+  {
+    path: 'resultIndicator/:indicatorId',
+    component: ProgrammeResultIndicatorSubmissionPageComponent,
+    canActivate: [AuthenticationGuard],
+  },
 ];
 
 @NgModule({

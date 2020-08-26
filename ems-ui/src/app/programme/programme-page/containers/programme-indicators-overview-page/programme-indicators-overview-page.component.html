@@ -1,0 +1,36 @@
+<div *ngxPermissionsExcept="Permission.APPLICANT_USER" class="container">
+    <div *ngIf="currentOutputIndicatorPage$ | async as outputIndicatorPage">
+        <h5>List of Output Indicators</h5>
+        <button mat-raised-button color="primary"
+                [routerLink]="'/outputIndicator/create'">
+            + Add new Output Indicator
+        </button>
+        <app-programme-output-indicators-list
+                [indicator]="outputIndicator$ | async"
+                [indicatorPage]="outputIndicatorPage"
+                [pageIndex]="newOutputIndicatorPageIndex$ | async"
+                (newPageSize)="newOutputIndicatorPageSize$.next($event)"
+                (newPageIndex)="newOutputIndicatorPageIndex$.next($event)"
+                (newSort)="newOutputIndicatorSort$.next($event)">
+        </app-programme-output-indicators-list>
+    </div>
+
+    <br>
+
+    <div *ngIf="currentResultIndicatorPage$ | async as resultIndicatorPage">
+        <h5>List of Result Indicators</h5>
+        <button mat-raised-button color="primary"
+                [routerLink]="'/resultIndicator/create'">
+            + Add new Result Indicator
+        </button>
+        <app-programme-result-indicators-list
+                [indicator]="resultIndicator$ | async"
+                [indicatorPage]="resultIndicatorPage"
+                [pageIndex]="newResultIndicatorPageIndex$ | async"
+                (newPageSize)="newResultIndicatorPageSize$.next($event)"
+                (newPageIndex)="newResultIndicatorPageIndex$.next($event)"
+                (newSort)="newResultIndicatorSort$.next($event)">
+        </app-programme-result-indicators-list>
+    </div>
+</div>
+
