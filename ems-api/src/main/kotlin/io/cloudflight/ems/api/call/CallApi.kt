@@ -49,7 +49,7 @@ interface CallApi {
     @PutMapping("/{id}/publish")
     fun publishCall(@PathVariable id: Long): OutputCall
 
-    @GetMapping("/objectives/{callId}")
-    fun getCallObjectives(@PathVariable callId: Long): List<OutputCallProgrammePriority>
+    @GetMapping("/objectives/{id}")
+    fun getCallObjectives(@PathVariable id: Long): List<OutputCallProgrammePriority>
 
 }
