@@ -43,7 +43,8 @@
     <mat-form-field class="field">
         <mat-label>{{'project.application.form.field.project.duration' | translate}}</mat-label>
         <input type="number" name="projectDuration" formControlName="projectDuration" matInput
-               placeholder="{{'project.application.form.field.project.duration' | translate}}">
+               placeholder="{{'project.application.form.field.project.duration' | translate}}"
+               (paste)="tools.checkDigitsOnPaste($event)" (keypress)="tools.checkDigitsOnInput($event)">
         <mat-error>
             <app-form-field-errors
                     [errors]="applicationForm?.controls?.projectDuration?.errors"

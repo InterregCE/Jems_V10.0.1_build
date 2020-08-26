@@ -14,6 +14,7 @@ import {Forms} from '../../../../common/utils/forms';
 import {filter, take, takeUntil} from 'rxjs/operators';
 import {Permission} from '../../../../security/permissions/permission';
 import {InputProgrammeData, OutputProgrammeData} from '@cat/api';
+import {Tools} from '../../../../common/utils/tools';
 
 @Component({
   selector: 'app-programme-data',
@@ -23,6 +24,8 @@ import {InputProgrammeData, OutputProgrammeData} from '@cat/api';
 })
 export class ProgrammeDataComponent extends ViewEditForm implements OnInit {
   Permission = Permission;
+  tools = Tools;
+
   @Input()
   programme: OutputProgrammeData;
   @Output()

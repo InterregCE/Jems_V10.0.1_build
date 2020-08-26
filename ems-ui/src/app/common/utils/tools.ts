@@ -11,4 +11,17 @@ export class Tools {
     }
     return newObject === undefined ? defaultVal : newObject;
   }
+
+  static checkDigitsOnPaste(event: ClipboardEvent) {
+    const clipboardData = event.clipboardData?.getData('text').toUpperCase() || '';
+    if (clipboardData.includes('E') || clipboardData.includes('-') || clipboardData.includes('+')) {
+      event.stopPropagation();
+      event.preventDefault();
+    }
+  }
+
+  static checkDigitsOnInput(event: KeyboardEvent) {
+    const charCode = (event.which) ? event.which : event.key;
+    return !(charCode === 101 || charCode === 69 || charCode === 45 || charCode === 43);
+  }
 }

@@ -13,6 +13,7 @@ import {InputProjectData, OutputProject} from '@cat/api';
 import {Permission} from '../../../../security/permissions/permission';
 import {FormState} from '@common/components/forms/form-state';
 import {SideNavService} from '@common/components/side-nav/side-nav.service';
+import {Tools} from '../../../../common/utils/tools';
 
 @Component({
   selector: 'app-project-application-form',
@@ -22,6 +23,7 @@ import {SideNavService} from '@common/components/side-nav/side-nav.service';
 })
 export class ProjectApplicationFormComponent extends ViewEditForm implements OnInit {
   Permission = Permission;
+  tools = Tools;
 
   @Input()
   project: OutputProject;
