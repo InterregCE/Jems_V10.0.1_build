@@ -11,20 +11,20 @@ data class InputIndicatorOutputUpdate(
 
     val id: Long,
 
-    @field:NotBlank(message = "indicator.id.should.not.be.empty")
-    @field:Size(max = 5, message = "indicator.id.size.too.long")
+    @field:NotBlank(message = "indicator.identifier.should.not.be.empty")
+    @field:Size(max = 5, message = "indicator.identifier.size.too.long")
     val identifier: String?,
 
     @field:Size(max = 6, message = "indicator.code.size.too.long")
     val code: String?,
 
     @field:NotBlank(message = "indicator.name.should.not.be.empty")
-    @field:Size(max = 255, message = "indicator.name.size.too.long")
+    @field:Size(max = 250, message = "indicator.name.size.too.long")
     val name: String?,
 
     val programmeObjectivePolicy: ProgrammeObjectivePolicy?,
 
-    @field:Size(max = 255, message = "indicator.id.size.too.long")
+    @field:Size(max = 255, message = "indicator.measurementUnit.size.too.long")
     val measurementUnit: String?,
 
     @field:DecimalMin(value = "0.0", message = "indicator.milestone.out.of.range")
