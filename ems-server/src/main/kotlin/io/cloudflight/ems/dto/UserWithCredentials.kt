@@ -1,6 +1,6 @@
 package io.cloudflight.ems.dto
 
-import io.cloudflight.ems.api.dto.user.OutputUserWithRole
+import io.cloudflight.ems.api.user.dto.OutputUserWithRole
 
 data class UserWithCredentials (
     val user: OutputUserWithRole,

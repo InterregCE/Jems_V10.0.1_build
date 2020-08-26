@@ -1,8 +1,10 @@
 package io.cloudflight.ems.service
 
-import io.cloudflight.ems.api.dto.user.OutputUserRole
-import io.cloudflight.ems.entity.UserRole
-import io.cloudflight.ems.repository.UserRoleRepository
+import io.cloudflight.ems.api.user.dto.OutputUserRole
+import io.cloudflight.ems.user.entity.UserRole
+import io.cloudflight.ems.user.repository.UserRoleRepository
+import io.cloudflight.ems.user.service.UserRoleService
+import io.cloudflight.ems.user.service.UserRoleServiceImpl
 import io.mockk.MockKAnnotations
 import io.mockk.every
 import io.mockk.impl.annotations.MockK
@@ -30,8 +32,8 @@ class UserRoleServiceTest {
     @Test
     fun getAllAccountRoles() {
         val roleToReturn = UserRole(
-            id = 85,
-            name = "Name"
+                id = 85,
+                name = "Name"
         )
         every { userRoleRepository.findAll(UNPAGED) } returns PageImpl(listOf(roleToReturn))
 

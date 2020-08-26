@@ -1,7 +1,7 @@
 package io.cloudflight.ems.service.validators
 
 import io.cloudflight.ems.api.validators.UniqueEmailValidator
-import io.cloudflight.ems.service.UserService
+import io.cloudflight.ems.user.service.UserService
 import org.springframework.stereotype.Component
 import javax.validation.ConstraintValidatorContext
 

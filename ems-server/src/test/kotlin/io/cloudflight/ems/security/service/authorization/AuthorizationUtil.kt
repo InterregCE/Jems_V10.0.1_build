@@ -1,7 +1,7 @@
 package io.cloudflight.ems.security.service.authorization
 
-import io.cloudflight.ems.api.dto.user.OutputUserRole
-import io.cloudflight.ems.api.dto.user.OutputUserWithRole
+import io.cloudflight.ems.api.user.dto.OutputUserRole
+import io.cloudflight.ems.api.user.dto.OutputUserWithRole
 import io.cloudflight.ems.security.model.LocalCurrentUser
 import org.springframework.security.core.authority.SimpleGrantedAuthority
 

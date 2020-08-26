@@ -3,11 +3,13 @@ package io.cloudflight.ems.service
 import io.cloudflight.ems.api.dto.OutputProjectFile
 import io.cloudflight.ems.api.dto.ProjectFileType
 import io.cloudflight.ems.dto.FileMetadata
-import io.cloudflight.ems.entity.Audit
+import io.cloudflight.ems.audit.entity.AuditAction
+import io.cloudflight.ems.audit.service.AuditCandidate
+import io.cloudflight.ems.audit.service.AuditService
 import io.cloudflight.ems.entity.ProjectFile
 import io.cloudflight.ems.exception.DuplicateFileException
 import io.cloudflight.ems.exception.ResourceNotFoundException
-import io.cloudflight.ems.repository.UserRepository
+import io.cloudflight.ems.user.repository.UserRepository
 import io.cloudflight.ems.repository.MinioStorage
 import io.cloudflight.ems.repository.ProjectFileRepository
 import io.cloudflight.ems.project.repository.ProjectRepository
@@ -36,9 +38,7 @@ class FileStorageServiceImpl(
         if (potentialDuplicate.isPresent) {
             with(potentialDuplicate.get()) {
                 auditService.logEvent(
-                    Audit.projectFileUploadFailed(
-                        securityService.currentUser, fileMetadata.projectId, fileMetadata.name
-                    )
+                    projectFileUploadFailed(fileMetadata.projectId, fileMetadata.name)
                 )
                 throw DuplicateFileException(project.id, name, updated)
             }
@@ -68,8 +68,7 @@ class FileStorageServiceImpl(
         storage.saveFile(PROJECT_FILES_BUCKET, filePath, fileMetadata.size, stream)
 
         auditService.logEvent(
-            Audit.projectFileUploadedSuccessfully(
-                securityService.currentUser,
+            projectFileUploadedSuccessfully(
                 fileMetadata.projectId,
                 projectFileEntity
             )
@@ -103,8 +102,7 @@ class FileStorageServiceImpl(
         val savedProjectFile = projectFileRepository.save(projectFile).toOutputProjectFile()
 
         auditService.logEvent(
-            Audit.projectFileDescriptionChanged(
-                securityService.currentUser,
+            projectFileDescriptionChangedAudit(
                 projectId,
                 projectFile,
                 oldDescription
@@ -121,7 +119,7 @@ class FileStorageServiceImpl(
         storage.deleteFile(PROJECT_FILES_BUCKET, file.identifier)
         projectFileRepository.delete(file)
 
-        auditService.logEvent(Audit.projectFileDeleted(securityService.currentUser, projectId, file))
+        auditService.logEvent(projectFileDeleted(projectId, file))
     }
 
     private fun getFile(projectId: Long, fileId: Long): ProjectFile {
@@ -143,4 +141,31 @@ class FileStorageServiceImpl(
         return "project-${fileMetadata.projectId}/${fileMetadata.type}/${fileMetadata.name}"
     }
 
+    private fun projectFileDescriptionChangedAudit(projectId: Long, file: ProjectFile, oldDescription: String?): AuditCandidate =
+        AuditCandidate(
+            action = AuditAction.PROJECT_FILE_DESCRIPTION_CHANGED,
+            projectId = projectId.toString(),
+            description = "description of document ${file.name} in project application $projectId has changed from $oldDescription to ${file.description}"
+        )
+
+    private fun projectFileDeleted(projectId: Long, file: ProjectFile): AuditCandidate =
+        AuditCandidate(
+            action = AuditAction.PROJECT_FILE_DELETED,
+            projectId = projectId.toString(),
+            description = "document ${file.name} deleted from application $projectId"
+        )
+
+    private fun projectFileUploadedSuccessfully(projectId: Long, file: ProjectFile): AuditCandidate =
+        AuditCandidate(
+            action = AuditAction.PROJECT_FILE_UPLOADED_SUCCESSFULLY,
+            projectId = projectId.toString(),
+            description = "document ${file.name} uploaded to project application $projectId"
+        )
+
+    private fun projectFileUploadFailed(projectId: Long, fileName: String?): AuditCandidate =
+        AuditCandidate(
+            action = AuditAction.PROJECT_FILE_UPLOAD_FAILED,
+            projectId = projectId.toString(),
+            description = "FAILED upload of document $fileName to project application $projectId"
+        )
 }

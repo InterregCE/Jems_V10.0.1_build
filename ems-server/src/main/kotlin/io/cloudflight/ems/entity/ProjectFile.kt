@@ -2,6 +2,7 @@ package io.cloudflight.ems.entity
 
 import io.cloudflight.ems.api.dto.ProjectFileType
 import io.cloudflight.ems.project.entity.Project
+import io.cloudflight.ems.user.entity.User
 import java.time.ZonedDateTime
 import javax.persistence.Column
 import javax.persistence.Entity

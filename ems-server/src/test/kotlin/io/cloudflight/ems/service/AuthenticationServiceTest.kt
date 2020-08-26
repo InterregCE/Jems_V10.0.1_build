@@ -1,9 +1,10 @@
 package io.cloudflight.ems.service
 
 import io.cloudflight.ems.api.dto.LoginRequest
-import io.cloudflight.ems.api.dto.user.OutputUser
-import io.cloudflight.ems.api.dto.user.OutputUserRole
-import io.cloudflight.ems.api.dto.user.OutputUserWithRole
+import io.cloudflight.ems.api.user.dto.OutputUserRole
+import io.cloudflight.ems.api.user.dto.OutputUserWithRole
+import io.cloudflight.ems.audit.service.AuditCandidateWithUser
+import io.cloudflight.ems.audit.service.AuditService
 import io.cloudflight.ems.security.model.LocalCurrentUser
 import io.cloudflight.ems.security.service.SecurityService
 import io.cloudflight.ems.security.service.impl.AuthenticationServiceImpl
@@ -11,6 +12,7 @@ import io.mockk.MockKAnnotations
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
 import io.mockk.impl.annotations.RelaxedMockK
+import io.mockk.slot
 import io.mockk.verify
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeEach
@@ -52,24 +54,18 @@ class AuthenticationServiceTest {
 
         authenticationService.login(req, LoginRequest("admin@test.net", "admin"))
 
-        verify {
-            auditService.logEvent(
-                withArg {
-                    assertThat(it.description).isEqualTo("user with email admin@test.net logged in")
-                })
-        }
+        val event = slot<AuditCandidateWithUser>()
+        verify { auditService.logEvent(capture(event)) }
+        assertThat(event.captured.description).isEqualTo("user with email admin@test.net logged in")
     }
 
     @Test
     fun `logging out is audited`() {
         authenticationService.logout(req)
 
-        verify {
-            auditService.logEvent(
-                withArg {
-                    assertThat(it.description).isEqualTo("user with email  logged out")
-                })
-        }
+        val event = slot<AuditCandidateWithUser>()
+        verify { auditService.logEvent(capture(event)) }
+        assertThat(event.captured.description).isEqualTo("user with email  logged out")
     }
 
     @Test

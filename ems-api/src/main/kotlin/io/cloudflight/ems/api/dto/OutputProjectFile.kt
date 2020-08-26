@@ -1,6 +1,6 @@
 package io.cloudflight.ems.api.dto
 
-import io.cloudflight.ems.api.dto.user.OutputUser
+import io.cloudflight.ems.api.user.dto.OutputUser
 import java.time.ZonedDateTime
 
 data class OutputProjectFile (

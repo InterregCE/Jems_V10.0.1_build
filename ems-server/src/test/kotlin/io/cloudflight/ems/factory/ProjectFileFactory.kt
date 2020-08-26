@@ -3,7 +3,7 @@ package io.cloudflight.ems.factory
 import io.cloudflight.ems.api.project.dto.status.ProjectApplicationStatus
 import io.cloudflight.ems.api.dto.ProjectFileType
 import io.cloudflight.ems.call.entity.Call
-import io.cloudflight.ems.entity.User
+import io.cloudflight.ems.user.entity.User
 import io.cloudflight.ems.project.entity.Project
 import io.cloudflight.ems.entity.ProjectFile
 import io.cloudflight.ems.project.entity.ProjectStatus

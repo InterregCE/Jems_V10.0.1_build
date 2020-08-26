@@ -7,7 +7,8 @@ import io.cloudflight.ems.api.call.dto.OutputCall
 import io.cloudflight.ems.api.call.dto.OutputCallList
 import io.cloudflight.ems.api.call.dto.OutputCallProgrammePriority
 import io.cloudflight.ems.api.programme.dto.ProgrammeObjectivePolicy
-import io.cloudflight.ems.entity.Audit
+import io.cloudflight.ems.audit.entity.AuditAction
+import io.cloudflight.ems.audit.service.AuditBuilder
 import io.cloudflight.ems.call.entity.Call
 import io.cloudflight.ems.exception.I18nFieldError
 import io.cloudflight.ems.exception.I18nValidationException
@@ -17,10 +18,10 @@ import io.cloudflight.ems.programme.entity.ProgrammePriorityPolicy
 import io.cloudflight.ems.programme.repository.ProgrammePriorityPolicyRepository
 import io.cloudflight.ems.programme.service.toOutputProgrammePriorityPolicy
 import io.cloudflight.ems.programme.service.toOutputProgrammePrioritySimple
-import io.cloudflight.ems.repository.UserRepository
+import io.cloudflight.ems.user.repository.UserRepository
 import io.cloudflight.ems.security.APPLICANT_USER
 import io.cloudflight.ems.security.service.SecurityService
-import io.cloudflight.ems.service.AuditService
+import io.cloudflight.ems.audit.service.AuditService
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
 import org.springframework.http.HttpStatus
@@ -29,11 +30,11 @@ import org.springframework.transaction.annotation.Transactional
 
 @Service
 class CallServiceImpl(
-    private val callRepository: CallRepository,
-    private val userRepository: UserRepository,
-    private val programmePriorityPolicyRepository: ProgrammePriorityPolicyRepository,
-    private val auditService: AuditService,
-    private val securityService: SecurityService
+        private val callRepository: CallRepository,
+        private val userRepository: UserRepository,
+        private val programmePriorityPolicyRepository: ProgrammePriorityPolicyRepository,
+        private val auditService: AuditService,
+        private val securityService: SecurityService
 ) : CallService {
 
     @Transactional(readOnly = true)
@@ -64,10 +65,9 @@ class CallServiceImpl(
             )
         ).toOutputCall()
 
-        auditService.logEvent(Audit.callCreated(
-            currentUser = securityService.currentUser,
-            call = savedCall
-        ))
+        AuditBuilder(AuditAction.CALL_CREATED)
+            .description("A new call id=${savedCall.id} '${savedCall.name}' was created")
+            .logWithService(auditService)
 
         return savedCall
     }
@@ -119,12 +119,9 @@ class CallServiceImpl(
 
         val updatedCall = callRepository.save(call.copy(status = CallStatus.PUBLISHED)).toOutputCall()
 
-        auditService.logEvent(
-            Audit.callPublished(
-                currentUser = securityService.currentUser,
-                call = updatedCall
-            )
-        )
+        AuditBuilder(AuditAction.CALL_PUBLISHED)
+            .description("Call id=${call.id} '${call.name}' published")
+            .logWithService(auditService)
         return updatedCall
     }
 

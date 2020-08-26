@@ -1,6 +1,6 @@
 package io.cloudflight.ems.config
 
-import io.cloudflight.ems.repository.AuditRepository
+import io.cloudflight.ems.audit.repository.AuditRepository
 import org.elasticsearch.client.RestHighLevelClient
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty
 import org.springframework.boot.context.properties.ConfigurationProperties

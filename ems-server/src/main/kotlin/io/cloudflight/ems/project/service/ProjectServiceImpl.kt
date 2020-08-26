@@ -1,33 +1,28 @@
 package io.cloudflight.ems.project.service
 
 import io.cloudflight.ems.api.call.dto.CallStatus
-import io.cloudflight.ems.api.programme.dto.OutputProgrammePriority
 import io.cloudflight.ems.api.programme.dto.ProgrammeObjectivePolicy
 import io.cloudflight.ems.api.project.dto.InputProject
 import io.cloudflight.ems.api.project.dto.OutputProject
 import io.cloudflight.ems.api.project.dto.OutputProjectSimple
 import io.cloudflight.ems.api.project.dto.status.ProjectApplicationStatus
 import io.cloudflight.ems.api.project.dto.InputProjectData
-import io.cloudflight.ems.entity.Audit
 import io.cloudflight.ems.call.entity.Call
 import io.cloudflight.ems.project.entity.ProjectStatus
-import io.cloudflight.ems.entity.User
+import io.cloudflight.ems.user.entity.User
 import io.cloudflight.ems.exception.I18nValidationException
 import io.cloudflight.ems.exception.ResourceNotFoundException
 import io.cloudflight.ems.call.repository.CallRepository
-import io.cloudflight.ems.programme.entity.ProgrammePriority
 import io.cloudflight.ems.programme.entity.ProgrammePriorityPolicy
 import io.cloudflight.ems.programme.repository.ProgrammePriorityPolicyRepository
-import io.cloudflight.ems.programme.repository.ProgrammePriorityRepository
-import io.cloudflight.ems.programme.service.toOutputProgrammePriority
 import io.cloudflight.ems.project.repository.ProjectRepository
 import io.cloudflight.ems.project.repository.ProjectStatusRepository
-import io.cloudflight.ems.repository.UserRepository
+import io.cloudflight.ems.user.repository.UserRepository
 import io.cloudflight.ems.security.ADMINISTRATOR
 import io.cloudflight.ems.security.APPLICANT_USER
 import io.cloudflight.ems.security.PROGRAMME_USER
 import io.cloudflight.ems.security.service.SecurityService
-import io.cloudflight.ems.service.AuditService
+import io.cloudflight.ems.audit.service.AuditService
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
 import org.springframework.data.repository.findByIdOrNull
@@ -44,7 +39,6 @@ class ProjectServiceImpl(
     private val userRepository: UserRepository,
     private val auditService: AuditService,
     private val programmePriorityPolicyRepository: ProgrammePriorityPolicyRepository,
-    private val programmePriorityRepository: ProgrammePriorityRepository,
     private val securityService: SecurityService
 ) : ProjectService {
 
@@ -85,13 +79,11 @@ class ProjectServiceImpl(
             applicant,
             projectStatus))
         projectStatusRepo.save(projectStatus.copy(project = createdProject))
-        auditService.logEvent(
-            Audit.projectStatusChanged(
-                currentUser = securityService.currentUser,
-                projectId = createdProject.id.toString(),
-                newStatus = createdProject.projectStatus.status
-            )
-        )
+
+        projectStatusChanged(
+            projectId = createdProject.id!!,
+            newStatus = createdProject.projectStatus.status
+        ).logWithService(auditService)
 
         return createdProject.toOutputProject()
     }
@@ -113,12 +105,7 @@ class ProjectServiceImpl(
         )
             return call
 
-        auditService.logEvent(
-            Audit.callAlreadyEnded(
-                currentUser = securityService.currentUser!!,
-                callId = call.id.toString()
-            )
-        )
+        auditService.logEvent(callAlreadyEnded(callId = callId))
 
         throw I18nValidationException(
             httpStatus = HttpStatus.UNPROCESSABLE_ENTITY,

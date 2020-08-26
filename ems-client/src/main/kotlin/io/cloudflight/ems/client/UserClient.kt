@@ -1,6 +1,6 @@
 package io.cloudflight.ems.client
 
-import io.cloudflight.ems.api.UserApi
+import io.cloudflight.ems.api.user.UserApi
 import org.springframework.cloud.openfeign.FeignClient
 
 /**

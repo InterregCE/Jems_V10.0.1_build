@@ -6,12 +6,10 @@ import io.cloudflight.ems.api.programme.dto.OutputProgrammePriority
 import io.cloudflight.ems.api.programme.dto.OutputProgrammePriorityPolicySimple
 import io.cloudflight.ems.api.programme.dto.ProgrammeObjective
 import io.cloudflight.ems.api.programme.dto.ProgrammeObjectivePolicy
-import io.cloudflight.ems.entity.Audit
 import io.cloudflight.ems.exception.ResourceNotFoundException
 import io.cloudflight.ems.programme.repository.ProgrammePriorityPolicyRepository
 import io.cloudflight.ems.programme.repository.ProgrammePriorityRepository
-import io.cloudflight.ems.security.service.SecurityService
-import io.cloudflight.ems.service.AuditService
+import io.cloudflight.ems.audit.service.AuditService
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
 import org.springframework.stereotype.Service
@@ -21,8 +19,7 @@ import org.springframework.transaction.annotation.Transactional
 class ProgrammePriorityServiceImpl(
     private val programmePriorityRepository: ProgrammePriorityRepository,
     private val programmePriorityPolicyRepository: ProgrammePriorityPolicyRepository,
-    private val auditService: AuditService,
-    private val securityService: SecurityService
+    private val auditService: AuditService
 ) : ProgrammePriorityService {
 
     @Transactional(readOnly = true)
@@ -33,13 +30,7 @@ class ProgrammePriorityServiceImpl(
     @Transactional
     override fun create(priority: InputProgrammePriorityCreate): OutputProgrammePriority {
         val savedProgrammePriority = programmePriorityRepository.save(priority.toEntity()).toOutputProgrammePriority()
-
-        auditService.logEvent(
-            Audit.programmePriorityAdded(
-                currentUser = securityService.currentUser,
-                programmePriority = savedProgrammePriority
-        ))
-
+        auditService.logEvent(programmePriorityAdded(savedProgrammePriority))
         return savedProgrammePriority
     }
 

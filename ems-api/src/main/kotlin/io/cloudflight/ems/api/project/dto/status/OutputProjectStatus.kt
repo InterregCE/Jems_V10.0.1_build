@@ -1,6 +1,6 @@
 package io.cloudflight.ems.api.project.dto.status
 
-import io.cloudflight.ems.api.dto.user.OutputUser
+import io.cloudflight.ems.api.user.dto.OutputUser
 import java.time.LocalDate
 import java.time.ZonedDateTime
 

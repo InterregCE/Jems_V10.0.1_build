@@ -8,8 +8,9 @@ import io.cloudflight.ems.api.indicator.dto.OutputIndicatorOutput
 import io.cloudflight.ems.api.indicator.dto.OutputIndicatorResult
 import io.cloudflight.ems.api.programme.dto.ProgrammeObjective
 import io.cloudflight.ems.api.programme.dto.ProgrammeObjectivePolicy
-import io.cloudflight.ems.entity.Audit
-import io.cloudflight.ems.entity.AuditAction
+import io.cloudflight.ems.audit.entity.Audit
+import io.cloudflight.ems.audit.entity.AuditAction
+import io.cloudflight.ems.audit.service.AuditCandidate
 import io.cloudflight.ems.exception.ResourceNotFoundException
 import io.cloudflight.ems.indicator.entity.IndicatorOutput
 import io.cloudflight.ems.indicator.entity.IndicatorResult
@@ -20,7 +21,7 @@ import io.cloudflight.ems.programme.entity.ProgrammePriorityPolicy
 import io.cloudflight.ems.programme.repository.ProgrammePriorityPolicyRepository
 import io.cloudflight.ems.security.service.SecurityService
 import io.cloudflight.ems.security.service.authorization.AuthorizationUtil.Companion.adminUser
-import io.cloudflight.ems.service.AuditService
+import io.cloudflight.ems.audit.service.AuditService
 import io.mockk.MockKAnnotations
 import io.mockk.every
 import io.mockk.impl.annotations.MockK
@@ -115,8 +116,6 @@ class IndicatorServiceTest {
     lateinit var indicatorOutputRepository: IndicatorOutputRepository
     @MockK
     lateinit var programmePriorityPolicyRepository: ProgrammePriorityPolicyRepository
-    @MockK
-    lateinit var securityService: SecurityService
     @RelaxedMockK
     lateinit var auditService: AuditService
 
@@ -125,13 +124,11 @@ class IndicatorServiceTest {
     @BeforeEach
     fun setup() {
         MockKAnnotations.init(this)
-        every { securityService.currentUser } returns adminUser
         indicatorService = IndicatorServiceImpl(
             indicatorResultRepository,
             indicatorOutputRepository,
             programmePriorityPolicyRepository,
-            auditService,
-            securityService
+            auditService
         )
     }
 
@@ -181,7 +178,7 @@ class IndicatorServiceTest {
         assertThat(indicatorService.save(indicatorCreate))
             .isEqualTo(testOutputIndicatorOutput.copy(id = null)) // not a real repository
 
-        val auditLog = slot<Audit>()
+        val auditLog = slot<AuditCandidate>()
         verify { auditService.logEvent(capture(auditLog)) }
         with(auditLog.captured) {
             assertThat(action).isEqualTo(AuditAction.PROGRAMME_INDICATOR_ADDED)
@@ -208,7 +205,7 @@ class IndicatorServiceTest {
         assertThat(indicatorService.save(indicatorUpdate))
             .isEqualTo(testOutputIndicatorOutput.copy(id = 10, measurementUnit = "new measurement unit")) // not a real repository
 
-        val auditLog = slot<Audit>()
+        val auditLog = slot<AuditCandidate>()
         verify { auditService.logEvent(capture(auditLog)) }
         with(auditLog.captured) {
             assertThat(action).isEqualTo(AuditAction.PROGRAMME_INDICATOR_EDITED)
@@ -266,7 +263,7 @@ class IndicatorServiceTest {
         assertThat(indicatorService.save(indicatorCreate))
             .isEqualTo(testOutputIndicatorResult.copy(id = null)) // not a real repository
 
-        val auditLog = slot<Audit>()
+        val auditLog = slot<AuditCandidate>()
         verify { auditService.logEvent(capture(auditLog)) }
         with(auditLog.captured) {
             assertThat(action).isEqualTo(AuditAction.PROGRAMME_INDICATOR_ADDED)
@@ -296,7 +293,7 @@ class IndicatorServiceTest {
         assertThat(indicatorService.save(indicatorUpdate))
             .isEqualTo(testOutputIndicatorResult.copy(id = 10, measurementUnit = "new measurement unit")) // not a real repository
 
-        val auditLog = slot<Audit>()
+        val auditLog = slot<AuditCandidate>()
         verify { auditService.logEvent(capture(auditLog)) }
         with(auditLog.captured) {
             assertThat(action).isEqualTo(AuditAction.PROGRAMME_INDICATOR_EDITED)

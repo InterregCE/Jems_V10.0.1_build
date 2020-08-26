@@ -2,7 +2,7 @@ package io.cloudflight.ems.factory
 
 import io.cloudflight.ems.api.call.dto.CallStatus
 import io.cloudflight.ems.call.entity.Call
-import io.cloudflight.ems.entity.User
+import io.cloudflight.ems.user.entity.User
 import io.cloudflight.ems.call.repository.CallRepository
 import org.springframework.stereotype.Component
 import java.time.ZonedDateTime

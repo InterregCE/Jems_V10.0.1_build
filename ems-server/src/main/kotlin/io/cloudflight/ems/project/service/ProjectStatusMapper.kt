@@ -6,7 +6,7 @@ import io.cloudflight.ems.api.project.dto.status.OutputProjectStatus
 import io.cloudflight.ems.project.entity.ProjectEligibilityAssessment
 import io.cloudflight.ems.project.entity.ProjectQualityAssessment
 import io.cloudflight.ems.project.entity.ProjectStatus
-import io.cloudflight.ems.service.toOutputUser
+import io.cloudflight.ems.user.service.toOutputUser
 
 fun ProjectStatus.toOutputProjectStatus() = OutputProjectStatus(
         id = id,

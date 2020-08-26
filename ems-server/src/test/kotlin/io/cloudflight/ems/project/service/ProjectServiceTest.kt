@@ -5,21 +5,21 @@ import io.cloudflight.ems.api.call.dto.OutputCallWithDates
 import io.cloudflight.ems.api.project.dto.InputProject
 import io.cloudflight.ems.api.project.dto.OutputProjectSimple
 import io.cloudflight.ems.api.project.dto.status.ProjectApplicationStatus
-import io.cloudflight.ems.api.dto.user.OutputUser
-import io.cloudflight.ems.api.dto.user.OutputUserRole
-import io.cloudflight.ems.api.dto.user.OutputUserWithRole
+import io.cloudflight.ems.api.user.dto.OutputUser
+import io.cloudflight.ems.api.user.dto.OutputUserRole
+import io.cloudflight.ems.api.user.dto.OutputUserWithRole
 import io.cloudflight.ems.api.programme.dto.OutputProgrammePriorityPolicySimple
 import io.cloudflight.ems.api.programme.dto.ProgrammeObjectivePolicy.AdvancedTechnologies
 import io.cloudflight.ems.api.programme.dto.ProgrammeObjectivePolicy.HealthcareAcrossBorders
 import io.cloudflight.ems.api.project.dto.InputProjectData
 import io.cloudflight.ems.api.project.dto.OutputProjectData
-import io.cloudflight.ems.entity.Audit
-import io.cloudflight.ems.entity.AuditAction
+import io.cloudflight.ems.audit.entity.AuditAction
+import io.cloudflight.ems.audit.service.AuditCandidate
 import io.cloudflight.ems.call.entity.Call
 import io.cloudflight.ems.project.entity.Project
 import io.cloudflight.ems.project.entity.ProjectStatus
-import io.cloudflight.ems.entity.User
-import io.cloudflight.ems.entity.UserRole
+import io.cloudflight.ems.user.entity.User
+import io.cloudflight.ems.user.entity.UserRole
 import io.cloudflight.ems.exception.ResourceNotFoundException
 import io.cloudflight.ems.call.repository.CallRepository
 import io.cloudflight.ems.programme.entity.ProgrammePriorityPolicy
@@ -27,13 +27,13 @@ import io.cloudflight.ems.programme.repository.ProgrammePriorityPolicyRepository
 import io.cloudflight.ems.programme.repository.ProgrammePriorityRepository
 import io.cloudflight.ems.project.repository.ProjectRepository
 import io.cloudflight.ems.project.repository.ProjectStatusRepository
-import io.cloudflight.ems.repository.UserRepository
+import io.cloudflight.ems.user.repository.UserRepository
 import io.cloudflight.ems.security.ADMINISTRATOR
 import io.cloudflight.ems.security.APPLICANT_USER
 import io.cloudflight.ems.security.PROGRAMME_USER
 import io.cloudflight.ems.security.model.LocalCurrentUser
 import io.cloudflight.ems.security.service.SecurityService
-import io.cloudflight.ems.service.AuditService
+import io.cloudflight.ems.audit.service.AuditService
 import io.mockk.MockKAnnotations
 import io.mockk.every
 import io.mockk.impl.annotations.MockK
@@ -79,12 +79,12 @@ class ProjectServiceTest {
     )
 
     private val account = User(
-        id = 1,
-        email = "admin@admin.dev",
-        name = "Name",
-        surname = "Surname",
-        userRole = UserRole(id = 1, name = "ADMIN"),
-        password = "hash_pass"
+            id = 1,
+            email = "admin@admin.dev",
+            name = "Name",
+            surname = "Surname",
+            userRole = UserRole(id = 1, name = "ADMIN"),
+            password = "hash_pass"
     )
 
     private val statusDraft = ProjectStatus(
@@ -150,7 +150,6 @@ class ProjectServiceTest {
             userRepository,
             auditService,
             programmePriorityPolicyRepository,
-            programmePriorityRepository,
             securityService
         )
     }
@@ -271,13 +270,11 @@ class ProjectServiceTest {
     }
 
     private fun verifyAudit(projectIdExpected: String) {
-        val event = slot<Audit>()
+        val event = slot<AuditCandidate>()
 
         verify { auditService.logEvent(capture(event)) }
         with(event) {
             assertEquals(projectIdExpected, captured.projectId)
-            assertEquals(1, captured.user?.id)
-            assertEquals("admin@admin.dev", captured.user?.email)
             assertEquals(AuditAction.APPLICATION_STATUS_CHANGED, captured.action)
         }
     }
