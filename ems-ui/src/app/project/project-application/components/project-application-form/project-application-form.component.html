@@ -139,4 +139,21 @@
                [type]="Alert.ERROR">
         <p>{{error.i18nKey | translate}}</p>
     </app-alert>
+
+    <h6 class="spaced-elements" id="projectWorkPlanHeading">{{'project.application.form.section.part.c.subsection.four' | translate}}</h6>
+
+    <button class="spaced-elements" mat-raised-button color="primary" [routerLink]="'/workPackage'">
+        + {{'project.application.form.add.work.package' | translate}}
+    </button>
+
+    <div *ngIf="workPackagePage">
+        <app-project-application-form-work-packages-list
+                [workPackagePage]="workPackagePage"
+                [pageIndex]="newPageIndex | async"
+                (newPageSize)="newPageSize.next($event)"
+                (newPageIndex)="newPageIndex.next($event)"
+                (newSort)="newSort.next($event)">
+        </app-project-application-form-work-packages-list>
+    </div>
+
 </form>
