@@ -45,8 +45,8 @@ class CallController(
     }
 
     @PreAuthorize("@callAuthorization.canReadCallDetail(#id)")
-    override fun getCallObjectives(callId: Long): List<OutputCallProgrammePriority> {
-        return callService.getPriorityAndPoliciesForCall(callId)
+    override fun getCallObjectives(id: Long): List<OutputCallProgrammePriority> {
+        return callService.getPriorityAndPoliciesForCall(id)
     }
 
 }
