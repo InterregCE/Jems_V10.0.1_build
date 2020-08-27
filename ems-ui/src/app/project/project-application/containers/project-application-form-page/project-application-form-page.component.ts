@@ -77,7 +77,12 @@ export class ProjectApplicationFormPageComponent extends BaseComponent implement
       flatMap(project => this.callService.getCallObjectives(project.call.id)),
       tap(objectives => Log.info('Fetched objectives', this, objectives)),
       map(objectives => ({
-        priorities: objectives.map(objective => objective.code + ' - ' + objective.title),
+        priorities: objectives
+          .sort((a,b) => {
+            const orderBool = a.code > b.code;
+            return orderBool ? 1 : -1;
+          })
+          .map(objective => objective.code + ' - ' + objective.title),
         objectivesWithPolicies: this.getObjectivesWithPolicies(objectives)
       }))
     )

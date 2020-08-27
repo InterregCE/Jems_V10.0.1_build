@@ -24,7 +24,6 @@ import io.cloudflight.ems.exception.ResourceNotFoundException
 import io.cloudflight.ems.call.repository.CallRepository
 import io.cloudflight.ems.programme.entity.ProgrammePriorityPolicy
 import io.cloudflight.ems.programme.repository.ProgrammePriorityPolicyRepository
-import io.cloudflight.ems.programme.repository.ProgrammePriorityRepository
 import io.cloudflight.ems.project.repository.ProjectRepository
 import io.cloudflight.ems.project.repository.ProjectStatusRepository
 import io.cloudflight.ems.user.repository.UserRepository
@@ -131,9 +130,6 @@ class ProjectServiceTest {
 
     @MockK
     lateinit var programmePriorityPolicyRepository: ProgrammePriorityPolicyRepository
-
-    @MockK
-    lateinit var programmePriorityRepository: ProgrammePriorityRepository
 
     lateinit var projectService: ProjectService
 
@@ -315,7 +311,8 @@ class ProjectServiceTest {
             duration = projectData.duration,
             intro = projectData.intro,
             introProgrammeLanguage = projectData.introProgrammeLanguage,
-            specificObjective = OutputProgrammePriorityPolicySimple(programmeObjectivePolicy = AdvancedTechnologies, code = "AT")
+            specificObjective = OutputProgrammePriorityPolicySimple(programmeObjectivePolicy = AdvancedTechnologies, code = "AT"),
+            programmePriority = null
         )
 
         val result = projectService.update(1, projectData)

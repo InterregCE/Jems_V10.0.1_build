@@ -53,7 +53,9 @@ export class ProjectApplicationFormComponent extends ViewEditForm implements OnI
       Validators.max(999),
       Validators.min(1)
     ])],
-    projectSummary: ['', Validators.maxLength(2000)]
+    projectSummary: ['', Validators.maxLength(2000)],
+    programmePriority: ['', Validators.required],
+    specificObjective: ['', Validators.required]
   });
 
   projectAcronymErrors = {
@@ -70,6 +72,9 @@ export class ProjectApplicationFormComponent extends ViewEditForm implements OnI
   projectSummaryErrors = {
     maxlength: 'project.summary.size.too.long'
   };
+  programmePriorityErrors = {
+    required: 'project.priority.should.not.be.empty'
+  }
 
   constructor(private formBuilder: FormBuilder,
               protected changeDetectorRef: ChangeDetectorRef,
@@ -119,7 +124,13 @@ export class ProjectApplicationFormComponent extends ViewEditForm implements OnI
     this.applicationForm.controls.projectDuration.setValue(this.project?.projectData?.duration);
     this.applicationForm.controls.projectSummary.setValue(this.project?.projectData?.introProgrammeLanguage);
     if (this.project?.projectData?.specificObjective) {
-      this.previousObjective = this.project?.projectData?.specificObjective.programmeObjectivePolicy
+      this.previousObjective = this.project?.projectData?.specificObjective.programmeObjectivePolicy;
+      this.selectedSpecificObjective = this.project?.projectData?.specificObjective.programmeObjectivePolicy;
+      const prevPriority = this.project?.projectData?.programmePriority.code
+        + ' - ' + this.project?.projectData?.programmePriority.title;
+      this.currentPriority = prevPriority
+      this.applicationForm.controls.programmePriority.setValue(prevPriority);
+      this.applicationForm.controls.specificObjective.setValue(this.selectedSpecificObjective);
     }
   }
 }

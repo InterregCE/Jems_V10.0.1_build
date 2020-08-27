@@ -1,15 +1,21 @@
-<div>
+<div [formGroup]="applicationForm">
     <h6>{{'programme.priority.objective.title' | translate}}</h6>
     <mat-radio-group
             aria-labelledby="example-radio-group-label"
             class="radio-group"
-            [(ngModel)]="checked"
-            (change)="selected.emit(checked)">
+            formControlName="specificObjective"
+            (change)="selected.emit($event.value)">
         <mat-radio-button class="radio-button"
                           *ngFor="let objective of objectives"
                           [value]="objective"
-                          (change)="selected.emit(checked)">
+                          (change)="selected.emit($event.value)">
             {{'programme.policy.' + objective | translate}}
         </mat-radio-button>
     </mat-radio-group>
+    <mat-error>
+        <app-form-field-errors
+                [errors]="applicationForm?.controls?.specificObjective?.errors"
+                [messages]="specificObjectiveErrors">
+        </app-form-field-errors>
+    </mat-error>
 </div>

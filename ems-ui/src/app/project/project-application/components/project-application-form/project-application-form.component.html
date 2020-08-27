@@ -56,23 +56,37 @@
     <div *ngIf="formState === FormState.EDIT">
         <mat-form-field class="field-full">
             <mat-label>{{'project.application.form.field.project.priority' | translate}}</mat-label>
-            <mat-select (selectionChange)="currentPriority = $event.value" required
-                        panelClass="material-select-panel">
+            <mat-select (selectionChange)="currentPriority = $event.value" required [(value)]=currentPriority
+                        panelClass="material-select-panel" formControlName="programmePriority">
                 <mat-option *ngFor="let objective of priorities" [value]="objective">
                     {{objective}}
                 </mat-option>
             </mat-select>
+            <mat-error>
+                <app-form-field-errors
+                        [errors]="applicationForm?.controls?.programmePriority?.errors"
+                        [messages]="programmePriorityErrors">
+                </app-form-field-errors>
+            </mat-error>
         </mat-form-field>
         <div *ngIf="currentPriority">
             <app-project-application-form-policy-radio-button
                     [objectives]="objectivesWithPolicies[currentPriority]"
-                    [checked]="previousObjective"
+                    [applicationForm]="applicationForm"
                     (selected)="selectedSpecificObjective = $event">
             </app-project-application-form-policy-radio-button>
         </div>
     </div>
 
     <div *ngIf="formState === FormState.VIEW">
+        <p class="policy-label">{{'project.application.form.field.project.priority' | translate}}</p>
+        <p *ngIf="previousObjective">
+            {{project.projectData.programmePriority.code +  ' - '}}
+            {{project.projectData.programmePriority.title}}
+        </p>
+        <p *ngIf="!previousObjective">
+            {{'project.application.form.field.project.objective.empty' | translate}}
+        </p>
         <p class="policy-label">{{'project.application.form.field.project.objective' | translate}}</p>
         <p *ngIf="previousObjective">
             {{project.projectData.specificObjective.code +  ' - '}}
