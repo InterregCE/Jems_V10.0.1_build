@@ -1,16 +1,22 @@
 import {ChangeDetectionStrategy, Component, OnInit} from '@angular/core';
-import {ProjectStore} from '../services/project-store.service';
+import {ProjectStore} from '../project-application-detail/services/project-store.service';
 import {catchError, flatMap, map, takeUntil, tap} from 'rxjs/operators';
 import {ActivatedRoute} from '@angular/router';
-import {Permission} from '../../../../../security/permissions/permission';
-import {InputProjectData, OutputProjectStatus, ProjectService, OutputProject,
-  CallService, OutputCallProgrammePriority} from '@cat/api';
+import {Permission} from '../../../../security/permissions/permission';
+import {
+  CallService,
+  InputProjectData,
+  OutputCallProgrammePriority,
+  OutputProject,
+  OutputProjectStatus,
+  ProjectService
+} from '@cat/api';
 import {SideNavService} from '@common/components/side-nav/side-nav.service';
 import {BaseComponent} from '@common/components/base-component';
 import {HeadlineType} from '@common/components/side-nav/headline-type';
 import {HeadlineRoute} from '@common/components/side-nav/headline-route';
 import {combineLatest, merge, Subject} from 'rxjs';
-import {Log} from '../../../../../common/utils/log';
+import {Log} from '../../../../common/utils/log';
 import {I18nValidationError} from '@common/validation/i18n-validation-error';
 import {HttpErrorResponse} from '@angular/common/http';
 
@@ -57,7 +63,7 @@ export class ProjectApplicationFormPageComponent extends BaseComponent implement
   )
     .pipe(
       takeUntil(this.destroyed$),
-      tap(project => this.setHeadlines(project.id + ' '  +  project.acronym)),
+      tap(project => this.setHeadlines(project.id + ' ' + project.acronym)),
       tap(project => this.fetchObjectives$.next(project)),
       map(project => ({
         project,
@@ -68,9 +74,9 @@ export class ProjectApplicationFormPageComponent extends BaseComponent implement
 
   private callObjectives$ = this.fetchObjectives$
     .pipe(
-      flatMap( project => this.callService.getCallObjectives(project.call.id)),
+      flatMap(project => this.callService.getCallObjectives(project.call.id)),
       tap(objectives => Log.info('Fetched objectives', this, objectives)),
-      map(objectives =>  ({
+      map(objectives => ({
         priorities: objectives.map(objective => objective.code + ' - ' + objective.title),
         objectivesWithPolicies: this.getObjectivesWithPolicies(objectives)
       }))
@@ -79,7 +85,7 @@ export class ProjectApplicationFormPageComponent extends BaseComponent implement
   details$ = combineLatest([
     this.projectDetails$,
     this.callObjectives$
-    ])
+  ])
     .pipe(
       map(
         ([projectDetails, callObjectives]) => ({projectDetails, callObjectives})
@@ -101,13 +107,11 @@ export class ProjectApplicationFormPageComponent extends BaseComponent implement
     ]);
   }
 
-  private getObjectivesWithPolicies(objectives: OutputCallProgrammePriority[]):  { [key: string]: InputProjectData.SpecificObjectiveEnum[] } {
+  private getObjectivesWithPolicies(objectives: OutputCallProgrammePriority[]): { [key: string]: InputProjectData.SpecificObjectiveEnum[] } {
     const objectivesWithPolicies: any = {};
-    objectives
-      .forEach(objective =>
-        objectivesWithPolicies[objective.code + ' - ' + objective.title] = objective.programmePriorityPolicies
-            .map(priority => priority.programmeObjectivePolicy
-    ));
-    return  objectivesWithPolicies;
+    objectives.forEach(objective =>
+      objectivesWithPolicies[objective.code + ' - ' + objective.title] =
+        objective.programmePriorityPolicies.map(priority => priority.programmeObjectivePolicy));
+    return objectivesWithPolicies;
   }
 }

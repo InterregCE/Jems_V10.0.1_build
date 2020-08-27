@@ -34,7 +34,7 @@ import {MAT_DATE_LOCALE} from '@angular/material/core';
 import {ProjectApplicationFundingPageComponent} from './project-application/containers/project-application-detail/project-application-funding-page/project-application-funding-page.component';
 import {ProjectApplicationFundingDecisionComponent} from './project-application/components/project-application-detail/project-application-funding-decision/project-application-funding-decision.component';
 import {ProjectApplicationEligibilityDecisionPageComponent} from './project-application/containers/project-application-detail/project-application-eligibility-decision-page/project-application-eligibility-decision-page.component';
-import {ProjectApplicationFormPageComponent} from './project-application/containers/project-application-detail/project-application-form-page/project-application-form-page.component';
+import {ProjectApplicationFormPageComponent} from './project-application/containers/project-application-form-page/project-application-form-page.component';
 import {MatSidenavModule} from '@angular/material/sidenav';
 import {ProjectApplicationFormComponent} from './project-application/components/project-application-form/project-application-form.component';
 import {MatTooltipModule} from '@angular/material/tooltip';
@@ -67,23 +67,23 @@ import {MatCheckboxModule} from '@angular/material/checkbox';
     ProjectApplicationFormComponent,
     ProjectApplicationFormPolicyRadioButtonComponent
   ],
-    imports: [
-        SharedModule,
-        CoreModule,
-        ProjectRoutingModule,
-        MatListModule,
-        MatSelectModule,
-        MatDialogModule,
-        OverlayModule,
-        BrowserAnimationsModule,
-        MatRadioModule,
-        MatExpansionModule,
-        MatDatepickerModule,
-        MatMomentDateModule,
-        MatSidenavModule,
-        MatTooltipModule,
-        MatCheckboxModule,
-    ],
+  imports: [
+    SharedModule,
+    CoreModule,
+    ProjectRoutingModule,
+    MatListModule,
+    MatSelectModule,
+    MatDialogModule,
+    OverlayModule,
+    BrowserAnimationsModule,
+    MatRadioModule,
+    MatExpansionModule,
+    MatDatepickerModule,
+    MatMomentDateModule,
+    MatSidenavModule,
+    MatTooltipModule,
+    MatCheckboxModule,
+  ],
   exports: [
     ProjectApplicationListComponent,
     ProjectApplicationDetailComponent
