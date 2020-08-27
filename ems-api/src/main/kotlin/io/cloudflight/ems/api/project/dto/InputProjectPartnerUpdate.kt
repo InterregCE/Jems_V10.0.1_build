@@ -6,7 +6,6 @@ import javax.validation.constraints.Size
 
 data class InputProjectPartnerUpdate(
 
-    @field:NotNull(message = "common.id.should.not.be.empty")
     val id: Long,
 
     @field:NotBlank(message = "project.partner.name.should.not.be.empty")
@@ -14,6 +13,11 @@ data class InputProjectPartnerUpdate(
     val name: String?,
 
     @field:NotNull(message = "project.partner.role.should.not.be.empty")
-    val role: ProjectPartnerRole?
+    val role: ProjectPartnerRole?,
+
+    /**
+     * Optional: if creating new LeadPartner when there is already one
+     */
+    val oldLeadPartnerId: Long? = null
 
 )

@@ -36,7 +36,7 @@ class ProjectFileAuthorization(
         val status = project.projectStatus.status
 
         return when (fileType) {
-            APPLICANT_FILE -> isOwner(project) && isNotSubmittedNow(status)
+            APPLICANT_FILE -> isApplicantOwner(project) && isNotSubmittedNow(status)
             ASSESSMENT_FILE -> isProgrammeUser()
             else -> false
         }
@@ -59,7 +59,7 @@ class ProjectFileAuthorization(
 
     private fun canChangeApplicantProjectFile(project: OutputProject, file: OutputProjectFile): Boolean {
         val status = project.projectStatus.status
-        if (isOwner(project))
+        if (isApplicantOwner(project))
             return isNotSubmittedNow(status) && file.updated.isAfter(getLastSubmissionFor(project))
         else
             throw ResourceNotFoundException("project_file")
@@ -93,7 +93,7 @@ class ProjectFileAuthorization(
         val project = projectService.getById(projectId)
         val file = fileStorageService.getFileDetail(projectId, fileId)
 
-        if (isOwner(project))
+        if (isApplicantOwner(project))
             if (file.type == APPLICANT_FILE)
                 return true
             else
@@ -113,7 +113,7 @@ class ProjectFileAuthorization(
 
         return when (fileType) {
             ASSESSMENT_FILE -> isProgrammeUser()
-            APPLICANT_FILE -> isProgrammeUser() || isOwner(projectService.getById(projectId))
+            APPLICANT_FILE -> isProgrammeUser() || isApplicantOwner(projectService.getById(projectId))
             else -> false
         }
     }

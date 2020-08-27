@@ -18,6 +18,4 @@ interface ProjectRepository : PagingAndSortingRepository<Project, Long> {
 
     fun findAllByProjectStatusStatusNot(status: ProjectApplicationStatus, pageable: Pageable): Page<Project>
 
-    fun findOneById(id: Long): Project?
-
 }

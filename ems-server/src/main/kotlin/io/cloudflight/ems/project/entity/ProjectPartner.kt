@@ -30,7 +30,7 @@ data class ProjectPartner(
     val role: ProjectPartnerRole,
 
     @Column
-    val sortNumber: Long? = null
+    val sortNumber: Int? = null
 
 ) {
     override fun toString(): String {

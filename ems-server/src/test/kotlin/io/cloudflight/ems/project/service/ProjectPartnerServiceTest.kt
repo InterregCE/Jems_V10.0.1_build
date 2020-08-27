@@ -1,7 +1,7 @@
 package io.cloudflight.ems.project.service
 
 import io.cloudflight.ems.api.call.dto.CallStatus
-import io.cloudflight.ems.api.project.dto.InputProjectPartner
+import io.cloudflight.ems.api.project.dto.InputProjectPartnerCreate
 import io.cloudflight.ems.api.project.dto.InputProjectPartnerUpdate
 import io.cloudflight.ems.api.project.dto.ProjectPartnerRole
 import io.cloudflight.ems.api.project.dto.status.ProjectApplicationStatus
@@ -29,6 +29,7 @@ import org.junit.jupiter.api.assertThrows
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.PageImpl
 import org.springframework.data.domain.Pageable
+import org.springframework.data.domain.Sort
 import java.time.ZonedDateTime
 import java.util.Optional
 
@@ -93,8 +94,8 @@ internal class ProjectPartnerServiceTest {
 
     @Test
     fun getById() {
-        every { projectPartnerRepository.findOneById(0) } returns null
-        every { projectPartnerRepository.findOneById(1) } returns projectPartner
+        every { projectPartnerRepository.findById(0) } returns Optional.empty()
+        every { projectPartnerRepository.findById(1) } returns Optional.of(projectPartner)
 
         assertThrows<ResourceNotFoundException> { projectPartnerService.getById(0) }
         assertThat(projectPartnerService.getById(1)).isEqualTo(outputProjectPartner)
@@ -111,32 +112,32 @@ internal class ProjectPartnerServiceTest {
 
     @Test
     fun createProjectPartner() {
-        val inputProjectPartner = InputProjectPartner("partner", ProjectPartnerRole.LEAD_PARTNER)
+        val inputProjectPartner = InputProjectPartnerCreate("partner", ProjectPartnerRole.LEAD_PARTNER)
         val projectPartnerWithProject = ProjectPartner(null, project, inputProjectPartner.name!!, inputProjectPartner.role!!)
-        every { projectRepository.findOneById(0) } returns null
-        every { projectRepository.findOneById(1) } returns project
-        every { projectPartnerRepository.findAllByProjectIdAndRole(1, ProjectPartnerRole.LEAD_PARTNER, UNPAGED) } returns Page.empty()
+        every { projectRepository.findById(0) } returns Optional.empty()
+        every { projectRepository.findById(1) } returns Optional.of(project)
+        every { projectPartnerRepository.findFirstByProjectIdAndRole(1, ProjectPartnerRole.LEAD_PARTNER) } returns Optional.empty()
         every { projectPartnerRepository.save(projectPartnerWithProject) } returns projectPartner
 
-        assertThrows<ResourceNotFoundException> { projectPartnerService.createProjectPartner(0, inputProjectPartner) }
-        assertThat(projectPartnerService.createProjectPartner(1, inputProjectPartner)).isEqualTo(outputProjectPartner)
+        assertThrows<ResourceNotFoundException> { projectPartnerService.create(0, inputProjectPartner) }
+        assertThat(projectPartnerService.create(1, inputProjectPartner)).isEqualTo(outputProjectPartner)
         verify { projectPartnerRepository.save(projectPartnerWithProject) }
     }
 
     @Test
     fun `error on multiple LEAD_PARTNER partner creation attempt`() {
-        val inputProjectPartner = InputProjectPartner("partner", ProjectPartnerRole.PARTNER)
-        val inputProjectPartnerLead = InputProjectPartner("partner", ProjectPartnerRole.LEAD_PARTNER)
+        val inputProjectPartner = InputProjectPartnerCreate("partner", ProjectPartnerRole.PARTNER)
+        val inputProjectPartnerLead = InputProjectPartnerCreate("partner", ProjectPartnerRole.LEAD_PARTNER)
         val projectPartnerWithProject = ProjectPartner(null, project, inputProjectPartner.name!!, inputProjectPartner.role!!)
-        every { projectRepository.findOneById(1) } returns project
-        every { projectPartnerRepository.findAllByProjectIdAndRole(1, ProjectPartnerRole.LEAD_PARTNER, UNPAGED) } returns PageImpl(listOf(projectPartnerWithProject))
+        every { projectRepository.findById(1) } returns Optional.of(project)
+        every { projectPartnerRepository.findFirstByProjectIdAndRole(1, ProjectPartnerRole.LEAD_PARTNER) } returns Optional.of(projectPartnerWithProject)
         every { projectPartnerRepository.save(projectPartnerWithProject) } returns projectPartner
 
         // new with Partner role creation will work
-        assertThat(projectPartnerService.createProjectPartner(1, inputProjectPartner)).isEqualTo(outputProjectPartner)
+        assertThat(projectPartnerService.create(1, inputProjectPartner)).isEqualTo(outputProjectPartner)
         verify { projectPartnerRepository.save(projectPartnerWithProject) }
         // but new Lead should fail
-        assertThrows<I18nValidationException> { projectPartnerService.createProjectPartner(1, inputProjectPartnerLead) }
+        assertThrows<I18nValidationException> { projectPartnerService.create(1, inputProjectPartnerLead) }
     }
 
     @Test
@@ -144,11 +145,9 @@ internal class ProjectPartnerServiceTest {
         val projectPartnerUpdate = InputProjectPartnerUpdate(1, "updated", ProjectPartnerRole.PARTNER)
         val updatedProjectPartner = ProjectPartner(1, project, projectPartnerUpdate.name!!, projectPartnerUpdate.role!!)
         every { projectPartnerRepository.findById(1) } returns Optional.of(projectPartner)
-        every { projectRepository.findOneById(0) } returns null
-        every { projectRepository.findOneById(1) } returns project
+        every { projectRepository.findById(1) } returns Optional.of(project)
         every { projectPartnerRepository.save(updatedProjectPartner) } returns updatedProjectPartner
 
-        assertThrows<ResourceNotFoundException> { projectPartnerService.update(0, projectPartnerUpdate) }
         assertThat(projectPartnerService.update(1, projectPartnerUpdate))
             .isEqualTo(updatedProjectPartner.toOutputProjectPartner())
     }
@@ -157,16 +156,14 @@ internal class ProjectPartnerServiceTest {
     fun `update sort order of partners`() {
         val projectPartnerNonLead = ProjectPartner(id = 0, name = "p", role = ProjectPartnerRole.PARTNER, project = project)
         val projectPartners = listOf(projectPartner, projectPartnerNonLead)
-        every { projectPartnerRepository.findAllByProjectId(1, any()) } returns PageImpl(projectPartners)
+        every { projectPartnerRepository.findAllByProjectId(1, any<Sort>()) } returns projectPartners
         val projectPartnerUpdated = projectPartner.copy(sortNumber = 1)
         val projectPartnerNonLeadUpdated = projectPartnerNonLead.copy(sortNumber = 2)
-        every { projectPartnerRepository.save(projectPartnerUpdated) } returns projectPartnerUpdated
-        every { projectPartnerRepository.save(projectPartnerNonLeadUpdated) } returns projectPartnerNonLeadUpdated
+        every { projectPartnerRepository.saveAll(any<Iterable<ProjectPartner>>()) } returnsArgument 0
 
         projectPartnerService.updateSortByRole(1)
         verify {
-            projectPartnerRepository.save(projectPartnerUpdated)
-            projectPartnerRepository.save(projectPartnerNonLeadUpdated)
+            projectPartnerRepository.saveAll(listOf(projectPartnerUpdated, projectPartnerNonLeadUpdated))
         }
     }
 

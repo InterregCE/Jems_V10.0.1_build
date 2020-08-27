@@ -92,7 +92,7 @@ class GlobalExceptionHandler : ResponseEntityExceptionHandler() {
                 httpStatus = HttpStatus.UNPROCESSABLE_ENTITY,
                 i18nFieldErrors = mapOf(cause.constraintName to I18nFieldError(
                     i18nKey = "${cause.constraintName}.already.in.use",
-                    i8nArguments = """Duplicate entry '(.*?)'.*""".toRegex().find(message)?.groups?.get(1)?.value?.let { listOf(it) }
+                    i18nArguments = """Duplicate entry '(.*?)'.*""".toRegex().find(message)?.groups?.get(1)?.value?.let { listOf(it) }
                 ))
             )
         }

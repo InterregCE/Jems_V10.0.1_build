@@ -1,7 +1,7 @@
 package io.cloudflight.ems.project.controller
 
 import io.cloudflight.ems.api.project.ProjectPartnerApi
-import io.cloudflight.ems.api.project.dto.InputProjectPartner
+import io.cloudflight.ems.api.project.dto.InputProjectPartnerCreate
 import io.cloudflight.ems.api.project.dto.InputProjectPartnerUpdate
 import io.cloudflight.ems.api.project.dto.OutputProjectPartner
 import io.cloudflight.ems.project.service.ProjectPartnerService
@@ -26,12 +26,13 @@ class ProjectPartnerController(
     }
 
     @PreAuthorize("@projectAuthorization.canUpdateProject(#projectId)")
+    override fun createProjectPartner(projectId: Long, projectPartner: InputProjectPartnerCreate): OutputProjectPartner {
+        return projectPartnerService.create(projectId = projectId, projectPartner = projectPartner)
+    }
+
+    @PreAuthorize("@projectAuthorization.canUpdateProject(#projectId)")
     override fun updateProjectPartner(projectId: Long, projectPartner: InputProjectPartnerUpdate): OutputProjectPartner {
         return projectPartnerService.update(projectId, projectPartner)
     }
 
-    @PreAuthorize("@projectAuthorization.canUpdateProject(#projectId)")
-    override fun createProjectPartner(projectId: Long, projectPartner: InputProjectPartner): OutputProjectPartner {
-        return projectPartnerService.createProjectPartner(projectId = projectId, projectPartner = projectPartner)
-    }
 }
