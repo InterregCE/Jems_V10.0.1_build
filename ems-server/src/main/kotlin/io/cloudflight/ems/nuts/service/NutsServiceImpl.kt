@@ -1,9 +1,6 @@
 package io.cloudflight.ems.nuts.service
 
 import io.cloudflight.ems.api.nuts.dto.OutputNutsMetadata
-import io.cloudflight.ems.audit.entity.Audit
-import io.cloudflight.ems.audit.entity.AuditAction
-import io.cloudflight.ems.audit.service.AuditBuilder
 import io.cloudflight.ems.exception.I18nValidationException
 import io.cloudflight.ems.exception.ResourceNotFoundException
 import io.cloudflight.ems.nuts.entity.NutsMetadata
@@ -12,7 +9,6 @@ import io.cloudflight.ems.nuts.repository.NutsMetadataRepository
 import io.cloudflight.ems.nuts.repository.NutsRegion1Repository
 import io.cloudflight.ems.nuts.repository.NutsRegion2Repository
 import io.cloudflight.ems.nuts.repository.NutsRegion3Repository
-import io.cloudflight.ems.security.service.SecurityService
 import io.cloudflight.ems.audit.service.AuditService
 import org.apache.tomcat.util.json.JSONParser
 import org.springframework.boot.web.client.RestTemplateBuilder

@@ -18,5 +18,6 @@ interface IndicatorOutputRepository : PagingAndSortingRepository<IndicatorOutput
     override fun findById(id: Long): Optional<IndicatorOutput>
 
     fun existsByIdentifier(identifier: String): Boolean
+    fun findOneByIdentifier(identifier: String): IndicatorOutput?
 
 }

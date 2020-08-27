@@ -22,6 +22,8 @@ import io.cloudflight.ems.programme.repository.ProgrammePriorityPolicyRepository
 import io.cloudflight.ems.security.service.SecurityService
 import io.cloudflight.ems.security.service.authorization.AuthorizationUtil.Companion.adminUser
 import io.cloudflight.ems.audit.service.AuditService
+import io.cloudflight.ems.exception.I18nFieldError
+import io.cloudflight.ems.exception.I18nValidationException
 import io.mockk.MockKAnnotations
 import io.mockk.every
 import io.mockk.impl.annotations.MockK
@@ -35,6 +37,7 @@ import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
 import org.springframework.data.domain.PageImpl
 import org.springframework.data.domain.Pageable
+import org.springframework.http.HttpStatus
 import java.math.BigDecimal
 import java.util.Optional
 
@@ -187,10 +190,11 @@ class IndicatorServiceTest {
     }
 
     @Test
-    fun `save update indicatorOutput`() {
+    fun `save update indicatorOutput no change in identifier`() {
         every { indicatorOutputRepository.findById(eq(10)) } returns Optional.of(testIndicatorOutput)
         every { indicatorOutputRepository.save(any<IndicatorOutput>()) } returnsArgument 0
         every { programmePriorityPolicyRepository.findById(eq(priorityPolicy.programmeObjectivePolicy)) } returns Optional.of(priorityPolicy)
+        every { indicatorOutputRepository.findOneByIdentifier(eq(testIndicatorOutput.identifier)) } returns testIndicatorOutput
 
         val indicatorUpdate = InputIndicatorOutputUpdate(
             id = 10,
@@ -211,6 +215,59 @@ class IndicatorServiceTest {
             assertThat(action).isEqualTo(AuditAction.PROGRAMME_INDICATOR_EDITED)
             assertThat(description).isEqualTo("Programme indicator ID01 edited:\nmeasurementUnit changed from measurement unit to new measurement unit")
         }
+    }
+
+    @Test
+    fun `save update indicatorOutput change in identifier`() {
+        every { indicatorOutputRepository.findById(eq(10)) } returns Optional.of(testIndicatorOutput)
+        every { indicatorOutputRepository.save(any<IndicatorOutput>()) } returnsArgument 0
+        every { programmePriorityPolicyRepository.findById(eq(priorityPolicy.programmeObjectivePolicy)) } returns Optional.of(priorityPolicy)
+        every { indicatorOutputRepository.findOneByIdentifier(eq("newID")) } returns null
+
+        val indicatorUpdate = InputIndicatorOutputUpdate(
+            id = 10,
+            identifier = "newID",
+            code = testIndicatorOutput.code,
+            name = testIndicatorOutput.name,
+            programmeObjectivePolicy = priorityPolicy.programmeObjectivePolicy,
+            measurementUnit = testIndicatorOutput.measurementUnit,
+            milestone = testIndicatorOutput.milestone,
+            finalTarget = testIndicatorOutput.finalTarget
+        )
+        assertThat(indicatorService.save(indicatorUpdate))
+            .isEqualTo(testOutputIndicatorOutput.copy(id = 10, identifier = "newID")) // not a real repository
+
+        val auditLog = slot<AuditCandidate>()
+        verify { auditService.logEvent(capture(auditLog)) }
+        with(auditLog.captured) {
+            assertThat(action).isEqualTo(AuditAction.PROGRAMME_INDICATOR_EDITED)
+            assertThat(description).isEqualTo("Programme indicator newID edited:\nidentifier changed from ID01 to newID")
+        }
+    }
+
+    @Test
+    fun `save update indicatorOutput identifier in use`() {
+        every { indicatorOutputRepository.findById(eq(10)) } returns Optional.of(testIndicatorOutput)
+        every { indicatorOutputRepository.save(any<IndicatorOutput>()) } returnsArgument 0
+        every { programmePriorityPolicyRepository.findById(eq(priorityPolicy.programmeObjectivePolicy)) } returns Optional.of(priorityPolicy)
+        every { indicatorOutputRepository.findOneByIdentifier(eq(testIndicatorOutput.identifier)) } returns testIndicatorOutput.copy(id = 30) // different indicator
+
+        val indicatorUpdate = InputIndicatorOutputUpdate(
+            id = 10,
+            identifier = testIndicatorOutput.identifier,
+            code = testIndicatorOutput.code,
+            name = testIndicatorOutput.name,
+            programmeObjectivePolicy = priorityPolicy.programmeObjectivePolicy,
+            measurementUnit = "new measurement unit",
+            milestone = testIndicatorOutput.milestone,
+            finalTarget = testIndicatorOutput.finalTarget
+        )
+        val exception = assertThrows<I18nValidationException> { indicatorService.save(indicatorUpdate) }
+        val expected = I18nValidationException(
+            httpStatus = HttpStatus.UNPROCESSABLE_ENTITY,
+            i18nFieldErrors = mapOf("identifier" to I18nFieldError("indicator.identifier.already.in.use"))
+        )
+        assertThat(exception).isEqualTo(expected)
     }
     //endregion
 
@@ -276,6 +333,7 @@ class IndicatorServiceTest {
         every { indicatorResultRepository.findById(eq(10)) } returns Optional.of(testIndicatorResult)
         every { indicatorResultRepository.save(any<IndicatorResult>()) } returnsArgument 0
         every { programmePriorityPolicyRepository.findById(eq(priorityPolicy.programmeObjectivePolicy)) } returns Optional.of(priorityPolicy)
+        every { indicatorResultRepository.findOneByIdentifier(eq(testIndicatorResult.identifier)) } returns testIndicatorResult
 
         val indicatorUpdate = InputIndicatorResultUpdate(
             id = 10,

@@ -35,9 +35,12 @@ fun InputIndicatorOutputCreate.toEntity(programmePriorityPolicy: ProgrammePriori
     finalTarget = finalTarget
 )
 
-fun InputIndicatorOutputUpdate.toEntity(programmePriorityPolicy: ProgrammePriorityPolicy?) = IndicatorOutput(
+fun InputIndicatorOutputUpdate.toEntity(
+    uniqueIdentifier: String,
+    programmePriorityPolicy: ProgrammePriorityPolicy?
+) = IndicatorOutput(
     id = id,
-    identifier = identifier!!,
+    identifier = uniqueIdentifier,
     code = code,
     name = name!!,
     programmePriorityPolicy = programmePriorityPolicy,
@@ -78,9 +81,12 @@ fun InputIndicatorResultCreate.toEntity(programmePriorityPolicy: ProgrammePriori
     comment = comment
 )
 
-fun InputIndicatorResultUpdate.toEntity(programmePriorityPolicy: ProgrammePriorityPolicy?) = IndicatorResult(
+fun InputIndicatorResultUpdate.toEntity(
+    uniqueIdentifier: String,
+    programmePriorityPolicy: ProgrammePriorityPolicy?
+) = IndicatorResult(
     id = id,
-    identifier = identifier!!,
+    identifier = uniqueIdentifier,
     code = code,
     name = name!!,
     programmePriorityPolicy = programmePriorityPolicy,

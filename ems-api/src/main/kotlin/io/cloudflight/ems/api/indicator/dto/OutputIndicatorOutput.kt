@@ -18,7 +18,7 @@ data class OutputIndicatorOutput (
     fun getDiff(other: OutputIndicatorOutput): Map<String, Pair<Any?, Any?>> {
         val changes = mutableMapOf<String, Pair<Any?, Any?>>()
         if (identifier != other.identifier) {
-            changes["id"] = Pair(identifier, other.identifier)
+            changes["identifier"] = Pair(identifier, other.identifier)
         }
         if (code != other.code) {
             changes["code"] = Pair(code, other.code)
