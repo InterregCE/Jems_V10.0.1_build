@@ -69,5 +69,6 @@ fun ProjectData.toOutputProjectData() = OutputProjectData(
     duration = duration,
     intro = intro,
     introProgrammeLanguage = introProgrammeLanguage,
-    specificObjective = priorityPolicy?.toOutputProgrammePriorityPolicy()
+    specificObjective = priorityPolicy?.toOutputProgrammePriorityPolicy(),
+    programmePriority = priorityPolicy?.programmePriority?.toOutputProgrammePrioritySimple()
 )
