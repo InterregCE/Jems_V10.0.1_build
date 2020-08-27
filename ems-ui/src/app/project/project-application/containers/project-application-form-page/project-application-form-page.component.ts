@@ -1,11 +1,13 @@
 import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
-import { ProjectStore } from '../services/project-store.service';
-import { catchError, flatMap, map, startWith, takeUntil, tap } from 'rxjs/operators';
+import { catchError, flatMap, map, takeUntil, tap } from 'rxjs/operators';
 import { ActivatedRoute } from '@angular/router';
-import { Permission } from '../../../../../security/permissions/permission';
 import {
-    InputProjectData, OutputProjectStatus, ProjectService, ProjectPartnerService, OutputProject,
-    CallService, OutputCallProgrammePriority
+    CallService,
+    InputProjectData,
+    OutputCallProgrammePriority,
+    OutputProject,
+    OutputProjectStatus,
+    ProjectService
 } from '@cat/api';
 import { SideNavService } from '@common/components/side-nav/side-nav.service';
 import { BaseComponent } from '@common/components/base-component';
@@ -15,8 +17,8 @@ import { combineLatest, merge, Subject } from 'rxjs';
 import { Log } from '../../../../common/utils/log';
 import { I18nValidationError } from '@common/validation/i18n-validation-error';
 import { HttpErrorResponse } from '@angular/common/http';
-import { MatSort } from '@angular/material/sort';
-import { Tables } from '../../../../../common/utils/tables';
+import { ProjectStore } from '../project-application-detail/services/project-store.service';
+import { Permission } from 'src/app/security/permissions/permission';
 
 @Component({
     selector: 'app-project-application-form-page',
@@ -27,35 +29,14 @@ import { Tables } from '../../../../../common/utils/tables';
 export class ProjectApplicationFormPageComponent extends BaseComponent implements OnInit {
     Permission = Permission;
     OutputProjectStatus = OutputProjectStatus;
-    projectId = this.activatedRoute.snapshot.params.projectId;
+    projectId = this.activatedRoute?.snapshot?.params?.projectId;
 
     saveError$ = new Subject<I18nValidationError | null>();
     saveSuccess$ = new Subject<boolean>();
     updateProjectData$ = new Subject<InputProjectData>();
 
-    partnerPageSize$ = new Subject<number>();
-    partnerPageIndex$ = new Subject<number>();
-    partnerSort$ = new Subject<Partial<MatSort>>();
-
-    currentPartnerPage$ =
-        combineLatest([
-            this.partnerPageSize$.pipe(startWith(Tables.DEFAULT_INITIAL_PAGE_INDEX)),
-            this.partnerPageIndex$.pipe(startWith(Tables.DEFAULT_INITIAL_PAGE_SIZE)),
-            this.partnerSort$.pipe(
-                startWith(Tables.DEFAULT_INITIAL_SORT),
-                map(sort => sort?.direction ? sort : Tables.DEFAULT_INITIAL_SORT),
-                map(sort => `${sort.active},${sort.direction}`)
-            )
-        ])
-            .pipe(
-                flatMap(([pageIndex, pageSize, sort]) =>
-                    this.projectPartnerService.getProjectPartners(this.projectId, pageIndex, pageSize, sort)),
-                tap(page => Log.info('Fetched the work packages:', this, page.content)),
-            );
-
     constructor(private projectStore: ProjectStore,
         private projectService: ProjectService,
-        private projectPartnerService: ProjectPartnerService,
         private activatedRoute: ActivatedRoute,
         private sideNavService: SideNavService,
         private callService: CallService) {
@@ -109,10 +90,20 @@ export class ProjectApplicationFormPageComponent extends BaseComponent implement
             flatMap(project => this.callService.getCallObjectives(project.call.id)),
             tap(objectives => Log.info('Fetched objectives', this, objectives)),
             map(objectives => ({
-                priorities: objectives.map(objective => objective.code + ' - ' + objective.title),
+                priorities: objectives
+                    .sort((a, b) => {
+                        const orderBool = a.code > b.code;
+                        return orderBool ? 1 : -1;
+                    })
+                    .map(objective => objective.code + ' - ' + objective.title),
                 objectivesWithPolicies: this.getObjectivesWithPolicies(objectives)
             }))
         )
+
+    private projectDetails$ = merge(
+        this.projectStore.getProject(),
+        this.updatedProjectData$
+    )
 
     details$ = combineLatest([
         this.projectDetails$,

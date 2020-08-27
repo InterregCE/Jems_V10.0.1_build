@@ -5,11 +5,11 @@ import {PageOutputProjectPartner} from '@cat/api'
 
 @Component({
   selector: 'app-project-application-form-partner-list',
-  changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './project-application-form-partner-list.component.html',
-  styleUrls: ['./project-application-form-partner-list.component.scss']
+  styleUrls: ['./project-application-form-partner-list.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class ProjectApplicationFormPartnerListComponent{
+export class ProjectApplicationFormPartnerListComponent {
   @Input()
   partnerPage: PageOutputProjectPartner;
   @Input()

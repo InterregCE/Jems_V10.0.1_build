@@ -68,6 +68,8 @@ import { ProjectApplicationFormWorkPackageSectionComponent } from './project-app
         ProjectApplicationFormPageComponent,
         ProjectApplicationFormComponent,
         ProjectApplicationFormPolicyRadioButtonComponent,
+        ProjectApplicationFormPartnerSectionComponent,
+        ProjectApplicationFormPartnerListComponent,
         ProjectApplicationFormWorkPackagesListComponent,
         ProjectApplicationFormWorkPackageSectionComponent
     ],
