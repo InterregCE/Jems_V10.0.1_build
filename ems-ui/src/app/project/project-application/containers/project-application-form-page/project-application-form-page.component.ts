@@ -100,11 +100,6 @@ export class ProjectApplicationFormPageComponent extends BaseComponent implement
             }))
         )
 
-    private projectDetails$ = merge(
-        this.projectStore.getProject(),
-        this.updatedProjectData$
-    )
-
     details$ = combineLatest([
         this.projectDetails$,
         this.callObjectives$

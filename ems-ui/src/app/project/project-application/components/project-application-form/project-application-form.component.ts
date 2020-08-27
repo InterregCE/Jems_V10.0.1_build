@@ -136,3 +136,4 @@ export class ProjectApplicationFormComponent extends ViewEditForm implements OnI
             this.applicationForm.controls.specificObjective.setValue(this.selectedSpecificObjective);
         }
     }
+}
