@@ -6,7 +6,7 @@ import io.cloudflight.ems.api.call.dto.OutputCall
 import io.cloudflight.ems.api.call.dto.OutputCallList
 import io.cloudflight.ems.api.call.dto.OutputCallWithDates
 import io.cloudflight.ems.call.entity.Call
-import io.cloudflight.ems.entity.User
+import io.cloudflight.ems.user.entity.User
 import io.cloudflight.ems.programme.entity.ProgrammePriorityPolicy
 import io.cloudflight.ems.programme.service.toOutputProgrammePriorityPolicy
 

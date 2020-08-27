@@ -1,8 +1,8 @@
 package io.cloudflight.ems.nuts.service
 
 import io.cloudflight.ems.api.nuts.dto.OutputNutsMetadata
-import io.cloudflight.ems.entity.Audit
-import io.cloudflight.ems.entity.AuditAction
+import io.cloudflight.ems.audit.entity.AuditAction
+import io.cloudflight.ems.audit.service.AuditCandidate
 import io.cloudflight.ems.exception.I18nValidationException
 import io.cloudflight.ems.nuts.entity.NutsCountry
 import io.cloudflight.ems.nuts.entity.NutsMetadata
@@ -14,9 +14,7 @@ import io.cloudflight.ems.nuts.repository.NutsMetadataRepository
 import io.cloudflight.ems.nuts.repository.NutsRegion1Repository
 import io.cloudflight.ems.nuts.repository.NutsRegion2Repository
 import io.cloudflight.ems.nuts.repository.NutsRegion3Repository
-import io.cloudflight.ems.security.service.SecurityService
-import io.cloudflight.ems.security.service.authorization.AuthorizationUtil.Companion.adminUser
-import io.cloudflight.ems.service.AuditService
+import io.cloudflight.ems.audit.service.AuditService
 import io.mockk.MockKAnnotations
 import io.mockk.every
 import io.mockk.impl.annotations.MockK
@@ -53,8 +51,6 @@ class NutsServiceTest {
     lateinit var nutsRegion3Repository: NutsRegion3Repository
     @MockK
     lateinit var nutsMetadataRepository: NutsMetadataRepository
-    @MockK
-    lateinit var securityService: SecurityService
     @RelaxedMockK
     lateinit var auditService: AuditService
 
@@ -63,7 +59,6 @@ class NutsServiceTest {
     @BeforeEach
     fun setup() {
         MockKAnnotations.init(this)
-        every { securityService.currentUser } returns adminUser
         every { restTemplateBuilder.build() } returns restTemplate
         nutsService = NutsServiceImpl(
             restTemplateBuilder,
@@ -72,8 +67,7 @@ class NutsServiceTest {
             nutsRegion2Repository,
             nutsRegion3Repository,
             nutsMetadataRepository,
-            auditService,
-            securityService
+            auditService
         )
     }
 
@@ -102,7 +96,7 @@ class NutsServiceTest {
             i18nKey = "nuts.already.downloaded"
         ))
 
-        val event = slot<Audit>()
+        val event = slot<AuditCandidate>()
         verify { auditService.logEvent(capture(event)) }
         with(event.captured) {
             assertThat(action).isEqualTo(AuditAction.NUTS_DATASET_DOWNLOAD)
@@ -192,8 +186,8 @@ class NutsServiceTest {
             )
         )
 
-        val audit1 = slot<Audit>()
-        val audit2 = slot<Audit>()
+        val audit1 = slot<AuditCandidate>()
+        val audit2 = slot<AuditCandidate>()
         verifyOrder {
             auditService.logEvent(capture(audit1))
             auditService.logEvent(capture(audit2))

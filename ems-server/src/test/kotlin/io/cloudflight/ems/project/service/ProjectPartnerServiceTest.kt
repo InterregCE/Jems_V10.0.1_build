@@ -6,8 +6,6 @@ import io.cloudflight.ems.api.project.dto.InputProjectPartnerUpdate
 import io.cloudflight.ems.api.project.dto.ProjectPartnerRole
 import io.cloudflight.ems.api.project.dto.status.ProjectApplicationStatus
 import io.cloudflight.ems.call.entity.Call
-import io.cloudflight.ems.entity.User
-import io.cloudflight.ems.entity.UserRole
 import io.cloudflight.ems.exception.I18nValidationException
 import io.cloudflight.ems.exception.ResourceNotFoundException
 import io.cloudflight.ems.project.entity.Project
@@ -17,7 +15,9 @@ import io.cloudflight.ems.project.repository.ProjectPartnerRepository
 import io.cloudflight.ems.project.repository.ProjectRepository
 import io.cloudflight.ems.security.model.LocalCurrentUser
 import io.cloudflight.ems.security.service.SecurityService
-import io.cloudflight.ems.service.toOutputUserWithRole
+import io.cloudflight.ems.user.entity.User
+import io.cloudflight.ems.user.entity.UserRole
+import io.cloudflight.ems.user.service.toOutputUserWithRole
 import io.mockk.MockKAnnotations
 import io.mockk.every
 import io.mockk.impl.annotations.MockK

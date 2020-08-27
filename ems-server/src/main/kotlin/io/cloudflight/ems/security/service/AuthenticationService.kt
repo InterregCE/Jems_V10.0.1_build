@@ -1,7 +1,7 @@
 package io.cloudflight.ems.security.service
 
 import io.cloudflight.ems.api.dto.LoginRequest
-import io.cloudflight.ems.api.dto.user.OutputCurrentUser
+import io.cloudflight.ems.api.user.dto.OutputCurrentUser
 import javax.servlet.http.HttpServletRequest
 
 interface AuthenticationService {

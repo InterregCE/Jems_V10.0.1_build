@@ -1,7 +1,7 @@
 package io.cloudflight.ems.project.entity
 
 import io.cloudflight.ems.api.project.dto.status.ProjectApplicationStatus
-import io.cloudflight.ems.entity.User
+import io.cloudflight.ems.user.entity.User
 import java.time.LocalDate
 import java.time.ZonedDateTime
 import javax.persistence.Column

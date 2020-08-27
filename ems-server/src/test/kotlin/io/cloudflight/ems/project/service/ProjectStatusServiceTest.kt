@@ -9,25 +9,26 @@ import io.cloudflight.ems.api.project.dto.status.OutputRevertProjectStatus
 import io.cloudflight.ems.api.project.dto.status.ProjectApplicationStatus
 import io.cloudflight.ems.api.project.dto.status.ProjectEligibilityAssessmentResult
 import io.cloudflight.ems.api.project.dto.status.ProjectQualityAssessmentResult
-import io.cloudflight.ems.api.dto.user.OutputUserRole
-import io.cloudflight.ems.api.dto.user.OutputUserWithRole
+import io.cloudflight.ems.api.user.dto.OutputUserRole
+import io.cloudflight.ems.api.user.dto.OutputUserWithRole
 import io.cloudflight.ems.api.programme.dto.ProgrammeObjectivePolicy.DisadvantagedGroups
-import io.cloudflight.ems.entity.AuditAction
+import io.cloudflight.ems.audit.entity.AuditAction
+import io.cloudflight.ems.audit.service.AuditCandidate
 import io.cloudflight.ems.call.entity.Call
 import io.cloudflight.ems.project.entity.Project
 import io.cloudflight.ems.project.entity.ProjectEligibilityAssessment
 import io.cloudflight.ems.project.entity.ProjectStatus
-import io.cloudflight.ems.entity.User
-import io.cloudflight.ems.entity.UserRole
+import io.cloudflight.ems.user.entity.User
+import io.cloudflight.ems.user.entity.UserRole
 import io.cloudflight.ems.exception.I18nValidationException
 import io.cloudflight.ems.exception.ResourceNotFoundException
 import io.cloudflight.ems.programme.entity.ProgrammePriorityPolicy
 import io.cloudflight.ems.project.repository.ProjectRepository
 import io.cloudflight.ems.project.repository.ProjectStatusRepository
-import io.cloudflight.ems.repository.UserRepository
+import io.cloudflight.ems.user.repository.UserRepository
 import io.cloudflight.ems.security.model.LocalCurrentUser
 import io.cloudflight.ems.security.service.SecurityService
-import io.cloudflight.ems.service.AuditService
+import io.cloudflight.ems.audit.service.AuditService
 import io.mockk.MockKAnnotations
 import io.mockk.Runs
 import io.mockk.every
@@ -80,12 +81,12 @@ internal class ProjectStatusServiceTest {
     lateinit var projectStatusService: ProjectStatusService
 
     private val user = User(
-        id = 1,
-        email = "applicant@programme.dev",
-        name = "applicant",
-        surname = "",
-        userRole = UserRole(id = 3, name = "applicant user"),
-        password = "hash_pass"
+            id = 1,
+            email = "applicant@programme.dev",
+            name = "applicant",
+            surname = "",
+            userRole = UserRole(id = 3, name = "applicant user"),
+            password = "hash_pass"
     )
 
     private val userApplicant = OutputUserWithRole(
@@ -403,14 +404,12 @@ internal class ProjectStatusServiceTest {
         assertThat(result.qualityAssessment!!.result).isEqualTo(ProjectQualityAssessmentResult.RECOMMENDED_FOR_FUNDING)
         assertThat(result.projectStatus.status).isEqualTo(ProjectApplicationStatus.SUBMITTED)
 
-        verify {
-            auditService.logEvent(
-                withArg {
-                    assertThat(it.action).isEqualTo(AuditAction.QUALITY_ASSESSMENT_CONCLUDED)
-                    assertThat(it.projectId).isEqualTo(16.toString())
-                    assertThat(it.description).isEqualTo("Project application quality assessment concluded as RECOMMENDED_FOR_FUNDING")
-                })
-        }
+        val event = slot<AuditCandidate>()
+        verify { auditService.logEvent(capture(event)) }
+        assertThat(event.captured.action).isEqualTo(AuditAction.QUALITY_ASSESSMENT_CONCLUDED)
+        assertThat(event.captured.projectId).isEqualTo(16.toString())
+        assertThat(event.captured.description).isEqualTo("Project application quality assessment concluded as RECOMMENDED_FOR_FUNDING")
+
     }
 
     @Test
@@ -426,12 +425,12 @@ internal class ProjectStatusServiceTest {
     fun `set QA no project`() {
         every { securityService.currentUser } returns LocalCurrentUser(userProgramme, "hash_pass", emptyList())
         every { userRepository.findByIdOrNull(any()) } returns User(
-            1,
-            "programme@email",
-            "",
-            "",
+                1,
+                "programme@email",
+                "",
+                "",
             UserRole(7, "programme"),
-            "hash_pass"
+                "hash_pass"
         )
         every { projectRepository.findOneById(-51) } returns null
 
@@ -443,12 +442,12 @@ internal class ProjectStatusServiceTest {
     fun `set eligibility assessment`() {
         every { securityService.currentUser } returns LocalCurrentUser(userProgramme, "hash_pass", emptyList())
         every { userRepository.findByIdOrNull(any()) } returns User(
-            1,
-            "programme@email",
-            "",
-            "",
+                1,
+                "programme@email",
+                "",
+                "",
             UserRole(7, "programme"),
-            "hash_pass"
+                "hash_pass"
         )
         every { projectRepository.findOneById(79) } returns projectSubmitted.copy(id = 79)
         every { projectRepository.save(any<Project>()) } returnsArgument 0
@@ -462,14 +461,11 @@ internal class ProjectStatusServiceTest {
         assertThat(result.eligibilityAssessment!!.result).isEqualTo(ProjectEligibilityAssessmentResult.PASSED)
         assertThat(result.projectStatus.status).isEqualTo(ProjectApplicationStatus.SUBMITTED)
 
-        verify {
-            auditService.logEvent(
-                withArg {
-                    assertThat(it.action).isEqualTo(AuditAction.ELIGIBILITY_ASSESSMENT_CONCLUDED)
-                    assertThat(it.projectId).isEqualTo(79.toString())
-                    assertThat(it.description).isEqualTo("Project application eligibility assessment concluded as PASSED")
-                })
-        }
+        val event = slot<AuditCandidate>()
+        verify { auditService.logEvent(capture(event)) }
+        assertThat(event.captured.action).isEqualTo(AuditAction.ELIGIBILITY_ASSESSMENT_CONCLUDED)
+        assertThat(event.captured.projectId).isEqualTo(79.toString())
+        assertThat(event.captured.description).isEqualTo("Project application eligibility assessment concluded as PASSED")
     }
 
     @Test

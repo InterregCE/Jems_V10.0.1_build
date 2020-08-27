@@ -7,14 +7,12 @@ import io.cloudflight.ems.api.indicator.dto.InputIndicatorResultUpdate
 import io.cloudflight.ems.api.indicator.dto.OutputIndicatorOutput
 import io.cloudflight.ems.api.indicator.dto.OutputIndicatorResult
 import io.cloudflight.ems.api.programme.dto.ProgrammeObjectivePolicy
-import io.cloudflight.ems.entity.Audit
 import io.cloudflight.ems.exception.ResourceNotFoundException
 import io.cloudflight.ems.indicator.repository.IndicatorOutputRepository
 import io.cloudflight.ems.indicator.repository.IndicatorResultRepository
 import io.cloudflight.ems.programme.entity.ProgrammePriorityPolicy
 import io.cloudflight.ems.programme.repository.ProgrammePriorityPolicyRepository
-import io.cloudflight.ems.security.service.SecurityService
-import io.cloudflight.ems.service.AuditService
+import io.cloudflight.ems.audit.service.AuditService
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
 import org.springframework.stereotype.Service
@@ -25,8 +23,7 @@ class IndicatorServiceImpl(
     private val indicatorResultRepository: IndicatorResultRepository,
     private val indicatorOutputRepository: IndicatorOutputRepository,
     private val programmePriorityPolicyRepository: ProgrammePriorityPolicyRepository,
-    private val auditService: AuditService,
-    private val securityService: SecurityService
+    private val auditService: AuditService
 ) : IndicatorService {
 
     //region INDICATOR OUTPUT
@@ -52,10 +49,7 @@ class IndicatorServiceImpl(
         val indicatorSaved =  indicatorOutputRepository.save(
             indicator.toEntity(getProgrammePriorityEntity(indicator.programmeObjectivePolicy))
         ).toOutputIndicator()
-        auditService.logEvent(Audit.indicatorAdded(
-            currentUser = securityService.currentUser,
-            identifier = indicatorSaved.identifier
-        ))
+        auditService.logEvent(indicatorAdded(indicatorSaved.identifier))
         return indicatorSaved
     }
 
@@ -65,8 +59,7 @@ class IndicatorServiceImpl(
         val indicatorSaved = indicatorOutputRepository.save(
             indicator.toEntity(getProgrammePriorityEntity(indicator.programmeObjectivePolicy))
         ).toOutputIndicator()
-        auditService.logEvent(Audit.indicatorEdited(
-            currentUser = securityService.currentUser,
+        auditService.logEvent(indicatorEdited(
             identifier = indicatorSaved.identifier,
             changes = indicatorOld.getDiff(indicatorSaved)
         ))
@@ -97,10 +90,7 @@ class IndicatorServiceImpl(
         val indicatorSaved = indicatorResultRepository.save(
             indicator.toEntity(getProgrammePriorityEntity(indicator.programmeObjectivePolicy))
         ).toOutputIndicator()
-        auditService.logEvent(Audit.indicatorAdded(
-            currentUser = securityService.currentUser,
-            identifier = indicatorSaved.identifier
-        ))
+        auditService.logEvent(indicatorAdded(indicatorSaved.identifier))
         return indicatorSaved
     }
 
@@ -110,8 +100,7 @@ class IndicatorServiceImpl(
         val indicatorSaved =  indicatorResultRepository.save(
             indicator.toEntity(getProgrammePriorityEntity(indicator.programmeObjectivePolicy))
         ).toOutputIndicator()
-        auditService.logEvent(Audit.indicatorEdited(
-            currentUser = securityService.currentUser,
+        auditService.logEvent(indicatorEdited(
             identifier = indicatorSaved.identifier,
             changes = indicatorOld.getDiff(indicatorSaved)
         ))

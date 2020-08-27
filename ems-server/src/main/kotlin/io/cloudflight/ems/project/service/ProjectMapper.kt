@@ -14,8 +14,8 @@ import io.cloudflight.ems.programme.service.toOutputProgrammePriorityPolicy
 import io.cloudflight.ems.programme.service.toOutputProgrammePrioritySimple
 import io.cloudflight.ems.project.entity.ProjectData
 import io.cloudflight.ems.project.entity.ProjectPartner
-import io.cloudflight.ems.entity.User
-import io.cloudflight.ems.service.toOutputUser
+import io.cloudflight.ems.user.entity.User
+import io.cloudflight.ems.user.service.toOutputUser
 
 fun InputProject.toEntity(call: Call,
                           applicant: User,

@@ -14,7 +14,7 @@ import io.cloudflight.ems.api.project.dto.status.ProjectApplicationStatus.NOT_AP
 import io.cloudflight.ems.api.project.dto.status.ProjectApplicationStatus.RETURNED_TO_APPLICANT
 import io.cloudflight.ems.api.project.dto.status.ProjectApplicationStatus.SUBMITTED
 import io.cloudflight.ems.api.dto.ProjectFileType
-import io.cloudflight.ems.api.dto.user.OutputUser
+import io.cloudflight.ems.api.user.dto.OutputUser
 import io.cloudflight.ems.exception.ResourceNotFoundException
 import io.cloudflight.ems.project.authorization.ProjectAuthorization
 import io.cloudflight.ems.security.service.SecurityService

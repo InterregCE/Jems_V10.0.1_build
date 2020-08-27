@@ -5,30 +5,29 @@ import io.cloudflight.ems.api.call.dto.InputCallCreate
 import io.cloudflight.ems.api.call.dto.InputCallUpdate
 import io.cloudflight.ems.api.call.dto.OutputCall
 import io.cloudflight.ems.api.call.dto.OutputCallList
-import io.cloudflight.ems.api.dto.user.OutputUserRole
-import io.cloudflight.ems.api.dto.user.OutputUserWithRole
+import io.cloudflight.ems.api.user.dto.OutputUserRole
+import io.cloudflight.ems.api.user.dto.OutputUserWithRole
 import io.cloudflight.ems.api.programme.dto.OutputProgrammePriorityPolicySimple
 import io.cloudflight.ems.api.programme.dto.ProgrammeObjectivePolicy.AdvancedTechnologies
 import io.cloudflight.ems.api.programme.dto.ProgrammeObjectivePolicy.DigitalConnectivity
-import io.cloudflight.ems.entity.Audit
-import io.cloudflight.ems.entity.AuditAction
+import io.cloudflight.ems.audit.entity.AuditAction
+import io.cloudflight.ems.audit.service.AuditCandidate
 import io.cloudflight.ems.call.entity.Call
-import io.cloudflight.ems.entity.User
-import io.cloudflight.ems.entity.UserRole
+import io.cloudflight.ems.user.entity.User
+import io.cloudflight.ems.user.entity.UserRole
 import io.cloudflight.ems.exception.I18nFieldError
 import io.cloudflight.ems.exception.I18nValidationException
 import io.cloudflight.ems.exception.ResourceNotFoundException
 import io.cloudflight.ems.call.repository.CallRepository
 import io.cloudflight.ems.programme.entity.ProgrammePriorityPolicy
 import io.cloudflight.ems.programme.repository.ProgrammePriorityPolicyRepository
-import io.cloudflight.ems.programme.repository.ProgrammePriorityRepository
-import io.cloudflight.ems.repository.UserRepository
+import io.cloudflight.ems.user.repository.UserRepository
 import io.cloudflight.ems.security.model.LocalCurrentUser
 import io.cloudflight.ems.security.service.SecurityService
 import io.cloudflight.ems.security.service.authorization.AuthorizationUtil.Companion.adminUser
 import io.cloudflight.ems.security.service.authorization.AuthorizationUtil.Companion.applicantUser
 import io.cloudflight.ems.security.service.authorization.AuthorizationUtil.Companion.programmeUser
-import io.cloudflight.ems.service.AuditService
+import io.cloudflight.ems.audit.service.AuditService
 import io.mockk.MockKAnnotations
 import io.mockk.every
 import io.mockk.impl.annotations.MockK
@@ -55,12 +54,12 @@ import java.util.stream.Stream
 class CallServiceTest {
 
     private val account = User(
-        id = 1,
-        email = "admin@admin.dev",
-        name = "Name",
-        surname = "Surname",
-        userRole = UserRole(id = 1, name = "ADMIN"),
-        password = "hash_pass"
+            id = 1,
+            email = "admin@admin.dev",
+            name = "Name",
+            surname = "Surname",
+            userRole = UserRole(id = 1, name = "ADMIN"),
+            password = "hash_pass"
     )
 
     private val user = OutputUserWithRole(
@@ -202,7 +201,7 @@ class CallServiceTest {
         assertThat(result.status).isEqualTo(CallStatus.DRAFT)
         assertThat(result.description).isEqualTo(call.description)
 
-        val event = slot<Audit>()
+        val event = slot<AuditCandidate>()
         verify { auditService.logEvent(capture(event)) }
         with(event) {
             assertThat(AuditAction.CALL_CREATED).isEqualTo(captured.action)
@@ -381,7 +380,7 @@ class CallServiceTest {
         val result = callService.publishCall(existingId)
         assertThat(result.status).isEqualTo(CallStatus.PUBLISHED)
 
-        val event = slot<Audit>()
+        val event = slot<AuditCandidate>()
         verify { auditService.logEvent(capture(event)) }
         with(event) {
             assertThat(captured.action).isEqualTo(AuditAction.CALL_PUBLISHED)

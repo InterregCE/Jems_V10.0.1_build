@@ -1,9 +1,9 @@
 package io.cloudflight.ems.controller
 
 import com.fasterxml.jackson.databind.ObjectMapper
-import io.cloudflight.ems.api.dto.user.InputPassword
-import io.cloudflight.ems.api.dto.user.InputUserCreate
-import io.cloudflight.ems.api.dto.user.InputUserUpdate
+import io.cloudflight.ems.api.user.dto.InputPassword
+import io.cloudflight.ems.api.user.dto.InputUserCreate
+import io.cloudflight.ems.api.user.dto.InputUserUpdate
 import io.cloudflight.ems.factory.UserFactory
 import io.cloudflight.ems.factory.UserFactory.Companion.ADMINISTRATOR_EMAIL
 import io.cloudflight.ems.factory.UserFactory.Companion.APPLICANT_USER_EMAIL

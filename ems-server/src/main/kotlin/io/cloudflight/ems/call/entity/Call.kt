@@ -1,7 +1,7 @@
 package io.cloudflight.ems.call.entity
 
 import io.cloudflight.ems.api.call.dto.CallStatus
-import io.cloudflight.ems.entity.User
+import io.cloudflight.ems.user.entity.User
 import io.cloudflight.ems.programme.entity.ProgrammePriorityPolicy
 import java.time.ZonedDateTime
 import javax.persistence.Column
@@ -17,7 +17,7 @@ import javax.persistence.ManyToOne
 import javax.persistence.OneToMany
 
 @Entity(name = "project_call")
-data class Call (
+data class Call(
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

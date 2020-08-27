@@ -2,12 +2,12 @@ package io.cloudflight.ems.programme.service
 
 import io.cloudflight.ems.api.programme.dto.InputProgrammeData
 import io.cloudflight.ems.api.programme.dto.OutputProgrammeData
-import io.cloudflight.ems.entity.Audit
+import io.cloudflight.ems.audit.entity.Audit
 import io.cloudflight.ems.exception.ResourceNotFoundException
 import io.cloudflight.ems.nuts.repository.NutsRegion3Repository
 import io.cloudflight.ems.repository.ProgrammeDataRepository
 import io.cloudflight.ems.security.service.SecurityService
-import io.cloudflight.ems.service.AuditService
+import io.cloudflight.ems.audit.service.AuditService
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 
@@ -15,8 +15,7 @@ import org.springframework.transaction.annotation.Transactional
 class ProgrammeDataServiceImpl(
     private val programmeDataRepository: ProgrammeDataRepository,
     private val nutsRegion3Repository: NutsRegion3Repository,
-    private val auditService: AuditService,
-    private val securityService: SecurityService
+    private val auditService: AuditService
 ) : ProgrammeDataService {
 
     @Transactional(readOnly = true)
@@ -34,12 +33,8 @@ class ProgrammeDataServiceImpl(
             basicData.toEntity(oldProgrammeData.programmeNuts)
         ).toOutputProgrammeData()
 
-        auditService.logEvent(
-            Audit.programmeBasicDataChanged(
-                currentUser = securityService.currentUser,
-                changes = oldProgrammeBasicData.getChange(savedProgrammeData)
-            )
-        )
+        programmeBasicDataChanged(changes = oldProgrammeBasicData.getChange(savedProgrammeData))
+            .logWithService(auditService)
 
         return savedProgrammeData
     }

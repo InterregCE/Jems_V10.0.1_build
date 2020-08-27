@@ -1,7 +1,7 @@
 package io.cloudflight.ems.security.service.impl;
 
-import io.cloudflight.ems.service.UserService
-import io.cloudflight.ems.service.toLocalCurrentUser
+import io.cloudflight.ems.user.service.UserService
+import io.cloudflight.ems.user.service.toLocalCurrentUser
 import org.springframework.security.authentication.BadCredentialsException
 import org.springframework.security.core.userdetails.UserDetails
 import org.springframework.security.core.userdetails.UserDetailsService

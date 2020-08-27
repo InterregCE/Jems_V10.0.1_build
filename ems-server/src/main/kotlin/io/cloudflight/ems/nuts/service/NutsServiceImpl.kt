@@ -1,7 +1,9 @@
 package io.cloudflight.ems.nuts.service
 
 import io.cloudflight.ems.api.nuts.dto.OutputNutsMetadata
-import io.cloudflight.ems.entity.Audit
+import io.cloudflight.ems.audit.entity.Audit
+import io.cloudflight.ems.audit.entity.AuditAction
+import io.cloudflight.ems.audit.service.AuditBuilder
 import io.cloudflight.ems.exception.I18nValidationException
 import io.cloudflight.ems.exception.ResourceNotFoundException
 import io.cloudflight.ems.nuts.entity.NutsMetadata
@@ -11,7 +13,7 @@ import io.cloudflight.ems.nuts.repository.NutsRegion1Repository
 import io.cloudflight.ems.nuts.repository.NutsRegion2Repository
 import io.cloudflight.ems.nuts.repository.NutsRegion3Repository
 import io.cloudflight.ems.security.service.SecurityService
-import io.cloudflight.ems.service.AuditService
+import io.cloudflight.ems.audit.service.AuditService
 import org.apache.tomcat.util.json.JSONParser
 import org.springframework.boot.web.client.RestTemplateBuilder
 import org.springframework.http.HttpMethod
@@ -33,8 +35,7 @@ class NutsServiceImpl(
     private val nutsRegion2Repository: NutsRegion2Repository,
     private val nutsRegion3Repository: NutsRegion3Repository,
     private val nutsMetadataRepository: NutsMetadataRepository,
-    private val auditService: AuditService,
-    private val securityService: SecurityService
+    private val auditService: AuditService
 ) : NutsService {
 
     val restTemplate: RestTemplate = restTemplateBuilder.build()
@@ -51,7 +52,7 @@ class NutsServiceImpl(
 
     @Transactional
     override fun downloadLatestNutsFromGisco(): OutputNutsMetadata {
-        auditService.logEvent(Audit.nutsDownloadRequest(securityService.currentUser))
+        auditService.logEvent(nutsDownloadRequest())
 
         if (getNutsMetadata() != null)
             throw I18nValidationException(
@@ -78,7 +79,7 @@ class NutsServiceImpl(
         )
 
         val metadata = nutsMetadataRepository.save(createMetadataFromNuts(nuts)).toOutputNutsMetadata()
-        auditService.logEvent(Audit.nutsDownloadSuccessful(securityService.currentUser, metadata))
+        auditService.logEvent(nutsDownloadSuccessful(metadata))
         return metadata
     }
 

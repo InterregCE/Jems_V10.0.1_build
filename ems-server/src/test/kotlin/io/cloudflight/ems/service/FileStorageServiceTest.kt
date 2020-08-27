@@ -4,23 +4,24 @@ import io.cloudflight.ems.api.call.dto.CallStatus
 import io.cloudflight.ems.api.dto.OutputProjectFile
 import io.cloudflight.ems.api.project.dto.status.ProjectApplicationStatus
 import io.cloudflight.ems.api.dto.ProjectFileType
-import io.cloudflight.ems.api.dto.user.OutputUser
-import io.cloudflight.ems.api.dto.user.OutputUserRole
-import io.cloudflight.ems.api.dto.user.OutputUserWithRole
+import io.cloudflight.ems.api.user.dto.OutputUser
+import io.cloudflight.ems.api.user.dto.OutputUserRole
+import io.cloudflight.ems.api.user.dto.OutputUserWithRole
 import io.cloudflight.ems.api.programme.dto.ProgrammeObjectivePolicy.CircularEconomy
 import io.cloudflight.ems.dto.FileMetadata
-import io.cloudflight.ems.entity.Audit
-import io.cloudflight.ems.entity.AuditAction
+import io.cloudflight.ems.audit.entity.AuditAction
+import io.cloudflight.ems.audit.service.AuditCandidate
+import io.cloudflight.ems.audit.service.AuditService
 import io.cloudflight.ems.call.entity.Call
 import io.cloudflight.ems.project.entity.Project
 import io.cloudflight.ems.entity.ProjectFile
 import io.cloudflight.ems.project.entity.ProjectStatus
-import io.cloudflight.ems.entity.User
-import io.cloudflight.ems.entity.UserRole
+import io.cloudflight.ems.user.entity.User
+import io.cloudflight.ems.user.entity.UserRole
 import io.cloudflight.ems.exception.DuplicateFileException
 import io.cloudflight.ems.exception.ResourceNotFoundException
 import io.cloudflight.ems.programme.entity.ProgrammePriorityPolicy
-import io.cloudflight.ems.repository.UserRepository
+import io.cloudflight.ems.user.repository.UserRepository
 import io.cloudflight.ems.repository.MinioStorage
 import io.cloudflight.ems.repository.ProjectFileRepository
 import io.cloudflight.ems.project.repository.ProjectRepository
@@ -71,12 +72,12 @@ class FileStorageServiceTest {
     )
 
     private val account = User(
-        id = 34,
-        email = "admin@admin.dev",
-        name = "Name",
-        surname = "Surname",
-        userRole = UserRole(id = 1, name = "ADMIN"),
-        password = "hash_pass"
+            id = 34,
+            email = "admin@admin.dev",
+            name = "Name",
+            surname = "Surname",
+            userRole = UserRole(id = 1, name = "ADMIN"),
+            password = "hash_pass"
     )
     private val dummyCall = Call(
         id = 5,
@@ -128,13 +129,11 @@ class FileStorageServiceTest {
         val expected = DuplicateFileException(PROJECT_ID, "proj-file-1.png", TEST_DATE_TIME)
         assertEquals(expected.error, exception.error)
 
-        val auditEvent = slot<Audit>()
+        val auditEvent = slot<AuditCandidate>()
         verify { auditService.logEvent(capture(auditEvent)) }
         with(auditEvent) {
             assertEquals(testProject.id, PROJECT_ID)
             assertEquals(AuditAction.PROJECT_FILE_UPLOAD_FAILED, captured.action)
-            assertEquals(34, captured.user?.id)
-            assertEquals("admin@admin.dev", captured.user?.email)
             assertEquals("FAILED upload of document proj-file-1.png to project application 612", captured.description)
         }
     }
@@ -193,13 +192,11 @@ class FileStorageServiceTest {
         assertEquals("test".length.toLong(), sizeSlot.captured)
         assertEquals(streamToSave, streamSlot.captured)
 
-        val auditEvent = slot<Audit>()
+        val auditEvent = slot<AuditCandidate>()
         verify { auditService.logEvent(capture(auditEvent)) }
         with(auditEvent) {
             assertEquals(testProject.id, PROJECT_ID)
             assertEquals(AuditAction.PROJECT_FILE_UPLOADED_SUCCESSFULLY, captured.action)
-            assertEquals(34, captured.user?.id)
-            assertEquals("admin@admin.dev", captured.user?.email)
             assertEquals("document proj-file-1.png uploaded to project application 612", captured.description)
         }
     }
@@ -265,13 +262,11 @@ class FileStorageServiceTest {
         assertEquals(null, projectFile.captured.description)
         assertEquals(null, result.description)
 
-        val auditEvent = slot<Audit>()
+        val auditEvent = slot<AuditCandidate>()
         verify { auditService.logEvent(capture(auditEvent)) }
         with(auditEvent) {
             assertEquals(testProject.id, PROJECT_ID)
             assertEquals(AuditAction.PROJECT_FILE_DESCRIPTION_CHANGED, captured.action)
-            assertEquals(34, captured.user?.id)
-            assertEquals("admin@admin.dev", captured.user?.email)
             assertEquals("description of document proj-file-1.png in project application 612 has changed from old_description to null", captured.description)
         }
     }
@@ -290,13 +285,11 @@ class FileStorageServiceTest {
         assertEquals("new_description", projectFile.captured.description)
         assertEquals("new_description", result.description)
 
-        val auditEvent = slot<Audit>()
+        val auditEvent = slot<AuditCandidate>()
         verify { auditService.logEvent(capture(auditEvent)) }
         with(auditEvent) {
             assertEquals(testProject.id, PROJECT_ID)
             assertEquals(AuditAction.PROJECT_FILE_DESCRIPTION_CHANGED, captured.action)
-            assertEquals(34, captured.user?.id)
-            assertEquals("admin@admin.dev", captured.user?.email)
             assertEquals("description of document proj-file-1.png in project application 612 has changed from null to new_description", captured.description)
         }
     }
@@ -325,13 +318,11 @@ class FileStorageServiceTest {
         assertEquals("project-1/proj-file-1.png", identifier.captured)
         assertEquals(dummyProjectFile(), projectFile.captured)
 
-        val auditEvent = slot<Audit>()
+        val auditEvent = slot<AuditCandidate>()
         verify { auditService.logEvent(capture(auditEvent)) }
         with(auditEvent) {
             assertEquals(testProject.id, PROJECT_ID)
             assertEquals(AuditAction.PROJECT_FILE_DELETED, captured.action)
-            assertEquals(34, captured.user?.id)
-            assertEquals("admin@admin.dev", captured.user?.email)
             assertEquals("document proj-file-1.png deleted from application 612", captured.description)
         }
     }

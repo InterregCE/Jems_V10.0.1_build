@@ -1,11 +1,11 @@
 package io.cloudflight.ems.programme.service
 
-import io.cloudflight.ems.api.dto.user.OutputUserRole
-import io.cloudflight.ems.api.dto.user.OutputUserWithRole
+import io.cloudflight.ems.api.user.dto.OutputUserRole
+import io.cloudflight.ems.api.user.dto.OutputUserWithRole
 import io.cloudflight.ems.api.programme.dto.InputProgrammeData
 import io.cloudflight.ems.api.programme.dto.OutputProgrammeData
-import io.cloudflight.ems.entity.Audit
-import io.cloudflight.ems.entity.AuditAction
+import io.cloudflight.ems.audit.entity.AuditAction
+import io.cloudflight.ems.audit.service.AuditCandidate
 import io.cloudflight.ems.entity.ProgrammeData
 import io.cloudflight.ems.exception.ResourceNotFoundException
 import io.cloudflight.ems.nuts.entity.NutsCountry
@@ -15,9 +15,7 @@ import io.cloudflight.ems.nuts.entity.NutsRegion3
 import io.cloudflight.ems.nuts.repository.NutsRegion3Repository
 import io.cloudflight.ems.nuts.service.NutsIdentifier
 import io.cloudflight.ems.repository.ProgrammeDataRepository
-import io.cloudflight.ems.security.model.LocalCurrentUser
-import io.cloudflight.ems.security.service.SecurityService
-import io.cloudflight.ems.service.AuditService
+import io.cloudflight.ems.audit.service.AuditService
 import io.mockk.MockKAnnotations
 import io.mockk.every
 import io.mockk.impl.annotations.MockK
@@ -63,9 +61,6 @@ internal class ProgrammeDataServiceTest {
     @MockK
     lateinit var nutsRegion3Repository: NutsRegion3Repository
 
-    @MockK
-    lateinit var securityService: SecurityService
-
     @RelaxedMockK
     lateinit var auditService: AuditService
     lateinit var programmeDataService: ProgrammeDataService
@@ -73,12 +68,10 @@ internal class ProgrammeDataServiceTest {
     @BeforeEach
     fun setup() {
         MockKAnnotations.init(this)
-        every { securityService.currentUser } returns LocalCurrentUser(user, "hash_pass", emptyList())
         programmeDataService = ProgrammeDataServiceImpl(
             programmeDataRepository,
             nutsRegion3Repository,
-            auditService,
-            securityService
+            auditService
         )
     }
 
@@ -109,7 +102,7 @@ internal class ProgrammeDataServiceTest {
 
         assertThat(programmeData).isEqualTo(programmeDataExpectedOutput)
 
-        val event = slot<Audit>()
+        val event = slot<AuditCandidate>()
         verify { auditService.logEvent(capture(event)) }
         with(event) {
             assertThat(AuditAction.PROGRAMME_BASIC_DATA_EDITED).isEqualTo(captured.action)

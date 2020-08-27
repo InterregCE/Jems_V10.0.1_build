@@ -16,19 +16,18 @@ import io.cloudflight.ems.api.project.dto.status.ProjectApplicationStatus.INELIG
 import io.cloudflight.ems.api.project.dto.status.ProjectApplicationStatus.NOT_APPROVED
 import io.cloudflight.ems.api.project.dto.status.ProjectApplicationStatus.RETURNED_TO_APPLICANT
 import io.cloudflight.ems.api.project.dto.status.ProjectApplicationStatus.SUBMITTED
-import io.cloudflight.ems.entity.Audit
 import io.cloudflight.ems.project.entity.Project
 import io.cloudflight.ems.project.entity.ProjectEligibilityAssessment
 import io.cloudflight.ems.project.entity.ProjectQualityAssessment
 import io.cloudflight.ems.project.entity.ProjectStatus
-import io.cloudflight.ems.entity.User
+import io.cloudflight.ems.user.entity.User
 import io.cloudflight.ems.exception.I18nValidationException
 import io.cloudflight.ems.exception.ResourceNotFoundException
 import io.cloudflight.ems.project.repository.ProjectRepository
 import io.cloudflight.ems.project.repository.ProjectStatusRepository
-import io.cloudflight.ems.repository.UserRepository
+import io.cloudflight.ems.user.repository.UserRepository
 import io.cloudflight.ems.security.service.SecurityService
-import io.cloudflight.ems.service.AuditService
+import io.cloudflight.ems.audit.service.AuditService
 import org.slf4j.LoggerFactory
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.http.HttpStatus
@@ -79,14 +78,12 @@ class ProjectStatusServiceImpl(
             )
         project = projectRepo.save(updateProject(project, projectStatus))
 
-        auditService.logEvent(
-            Audit.projectStatusChanged(
-                currentUser = securityService.currentUser,
-                projectId = project.id.toString(),
-                oldStatus = oldStatus,
-                newStatus = projectStatus.status
-            )
-        )
+        projectStatusChanged(
+            projectId = project.id!!,
+            oldStatus = oldStatus,
+            newStatus = projectStatus.status
+        ).logWithService(auditService)
+
         return project.toOutputProject()
     }
 
@@ -106,12 +103,7 @@ class ProjectStatusServiceImpl(
             (ZonedDateTime.now().isBefore(project.call.startDate)
                 || ZonedDateTime.now().isAfter(project.call.endDate))
         ) {
-            auditService.logEvent(
-                Audit.callAlreadyEnded(
-                    currentUser = securityService.currentUser,
-                    callId = project.call.id.toString()
-                )
-            )
+            auditService.logEvent(callAlreadyEnded(project.call.id!!))
 
             log.error("Attempted unsuccessfully to submit or to apply for call '${project.call.id.toString()}' that has already ended")
 
@@ -141,9 +133,8 @@ class ProjectStatusServiceImpl(
         val result = projectRepo.save(project.copy(qualityAssessment = qualityAssessment)).toOutputProject()
 
         auditService.logEvent(
-            Audit.qualityAssessmentConcluded(
-                currentUser = securityService.currentUser,
-                projectId = result.id.toString(),
+            qualityAssessmentConcluded(
+                projectId = result.id!!,
                 result = result.qualityAssessment!!.result
             )
         )
@@ -169,9 +160,8 @@ class ProjectStatusServiceImpl(
         val result = projectRepo.save(project.copy(eligibilityAssessment = eligibilityAssessment)).toOutputProject()
 
         auditService.logEvent(
-            Audit.eligibilityAssessmentConcluded(
-                currentUser = securityService.currentUser,
-                projectId = result.id.toString(),
+            eligibilityAssessmentConcluded(
+                projectId = result.id!!,
                 result = result.eligibilityAssessment!!.result
             )
         )
@@ -220,9 +210,8 @@ class ProjectStatusServiceImpl(
 
         log.warn("Decision-reversion has been done for project(id=$projectId) status moved from ${statusToBeRevoked.status} to ${statusToBeReestablished.status}")
         auditService.logEvent(
-            Audit.projectStatusChanged(
-                currentUser = securityService.currentUser,
-                projectId = projectId.toString(),
+            projectStatusChanged(
+                projectId = projectId,
                 oldStatus = statusToBeRevoked.status,
                 newStatus = statusToBeReestablished.status
             )

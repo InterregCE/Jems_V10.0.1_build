@@ -4,7 +4,7 @@ import io.cloudflight.ems.api.call.dto.OutputCallWithDates
 import io.cloudflight.ems.api.project.dto.status.OutputProjectEligibilityAssessment
 import io.cloudflight.ems.api.project.dto.status.OutputProjectQualityAssessment
 import io.cloudflight.ems.api.project.dto.status.OutputProjectStatus
-import io.cloudflight.ems.api.dto.user.OutputUser
+import io.cloudflight.ems.api.user.dto.OutputUser
 
 data class OutputProject (
     val id: Long?,

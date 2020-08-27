@@ -1,6 +1,6 @@
 package io.cloudflight.ems.security.model
 
-import io.cloudflight.ems.api.dto.user.OutputUserWithRole
+import io.cloudflight.ems.api.user.dto.OutputUserWithRole
 import io.cloudflight.ems.security.ADMINISTRATOR
 import io.cloudflight.ems.security.PROGRAMME_USER
 import org.springframework.security.core.GrantedAuthority

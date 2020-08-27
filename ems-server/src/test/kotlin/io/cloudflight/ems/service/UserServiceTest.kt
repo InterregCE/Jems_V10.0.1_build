@@ -3,28 +3,31 @@ package io.cloudflight.ems.service
 import ch.qos.logback.classic.Logger
 import ch.qos.logback.classic.spi.ILoggingEvent
 import ch.qos.logback.core.read.ListAppender
-import io.cloudflight.ems.api.dto.user.InputPassword
-import io.cloudflight.ems.api.dto.user.InputUserCreate
-import io.cloudflight.ems.api.dto.user.InputUserRegistration
-import io.cloudflight.ems.api.dto.user.InputUserUpdate
-import io.cloudflight.ems.api.dto.user.OutputUser
-import io.cloudflight.ems.api.dto.user.OutputUserRole
-import io.cloudflight.ems.api.dto.user.OutputUserWithRole
-import io.cloudflight.ems.entity.User
-import io.cloudflight.ems.entity.UserRole
-import io.cloudflight.ems.entity.Audit
-import io.cloudflight.ems.entity.AuditAction
+import io.cloudflight.ems.api.user.dto.InputPassword
+import io.cloudflight.ems.api.user.dto.InputUserCreate
+import io.cloudflight.ems.api.user.dto.InputUserRegistration
+import io.cloudflight.ems.api.user.dto.InputUserUpdate
+import io.cloudflight.ems.api.user.dto.OutputUserRole
+import io.cloudflight.ems.api.user.dto.OutputUserWithRole
+import io.cloudflight.ems.user.entity.User
+import io.cloudflight.ems.user.entity.UserRole
+import io.cloudflight.ems.audit.entity.AuditAction
+import io.cloudflight.ems.audit.service.AuditCandidate
+import io.cloudflight.ems.audit.service.AuditCandidateWithUser
+import io.cloudflight.ems.audit.service.AuditService
 import io.cloudflight.ems.exception.I18nFieldError
 import io.cloudflight.ems.exception.I18nValidationException
 import io.cloudflight.ems.exception.ResourceNotFoundException
-import io.cloudflight.ems.repository.UserRepository
-import io.cloudflight.ems.repository.UserRoleRepository
+import io.cloudflight.ems.user.repository.UserRepository
+import io.cloudflight.ems.user.repository.UserRoleRepository
 import io.cloudflight.ems.security.ADMINISTRATOR
 import io.cloudflight.ems.security.APPLICANT_USER
 import io.cloudflight.ems.security.PROGRAMME_USER
 import io.cloudflight.ems.security.config.PasswordConfig
 import io.cloudflight.ems.security.model.LocalCurrentUser
 import io.cloudflight.ems.security.service.SecurityService
+import io.cloudflight.ems.user.service.UserService
+import io.cloudflight.ems.user.service.UserServiceImpl
 import io.mockk.MockKAnnotations
 import io.mockk.every
 import io.mockk.impl.annotations.MockK
@@ -65,12 +68,12 @@ class UserServiceTest {
     // data for update
     val oldRole = UserRole(id = 8, name = "role_program")
     val oldUser = User(
-        id = 15,
-        email = "old@mail.eu",
-        name = "OldName",
-        surname = "OldSurname",
-        userRole = oldRole,
-        password = "{bcrypt}\$2a\$10\$uUqunxh6bS/vDkUE8Jsjte02BmwsohtEfLG5xFbAGYwzwfdVW5y7S" // hash for 'old_pass'
+            id = 15,
+            email = "old@mail.eu",
+            name = "OldName",
+            surname = "OldSurname",
+            userRole = oldRole,
+            password = "{bcrypt}\$2a\$10\$uUqunxh6bS/vDkUE8Jsjte02BmwsohtEfLG5xFbAGYwzwfdVW5y7S" // hash for 'old_pass'
     )
 
     @MockK
@@ -103,12 +106,12 @@ class UserServiceTest {
     @Test
     fun getAllUsers() {
         val userToReturn = User(
-            id = 85,
-            email = "admin@ems.io",
-            name = "Name",
-            surname = "Surname",
-            userRole = UserRole(9, "admin"),
-            password = "hash_pass"
+                id = 85,
+                email = "admin@ems.io",
+                name = "Name",
+                surname = "Surname",
+                userRole = UserRole(9, "admin"),
+                password = "hash_pass"
         )
         every { userRepository.findAll(UNPAGED) } returns PageImpl(listOf(userToReturn))
 
@@ -141,12 +144,12 @@ class UserServiceTest {
     @Test
     fun getUserById() {
         val userToReturn = User(
-            id = 44,
-            email = "admin@ems.io",
-            name = "Name",
-            surname = "Surname",
-            userRole = UserRole(22, "admin"),
-            password = "hash_pass"
+                id = 44,
+                email = "admin@ems.io",
+                name = "Name",
+                surname = "Surname",
+                userRole = UserRole(22, "admin"),
+                password = "hash_pass"
         )
         every { userRepository.findOneById(eq(44)) } returns userToReturn
 
@@ -200,11 +203,9 @@ class UserServiceTest {
         assertEquals("Tester", result.surname)
         assertEquals(OutputUserRole(54, "admin_role"), result.userRole)
 
-        val event = slot<Audit>()
+        val event = slot<AuditCandidate>()
         verify { auditService.logEvent(capture(event)) }
         with(event) {
-            assertEquals(1, captured.user?.id)
-            assertEquals("admin@admin.dev", captured.user?.email)
             assertEquals(AuditAction.USER_CREATED, captured.action)
             assertEquals("new user new@user.com with role admin_role has been created by admin@admin.dev", captured.description)
         }
@@ -267,10 +268,10 @@ class UserServiceTest {
         assertEquals("Tester", result.surname)
         assertEquals(OutputUserRole(3, "applicant user"), result.userRole)
 
-        val event = slot<Audit>()
+        val event = slot<AuditCandidateWithUser>()
         verify { auditService.logEvent(capture(event)) }
-        assertEquals(18, event.captured.user?.id)
-        assertEquals("new@user.com", event.captured.user?.email)
+        assertEquals(18, event.captured.user.id)
+        assertEquals("new@user.com", event.captured.user.email)
         assertEquals(AuditAction.USER_REGISTERED, event.captured.action)
         assertEquals("new user 'Ondrej Tester' with role 'applicant user' registered", event.captured.description)
 

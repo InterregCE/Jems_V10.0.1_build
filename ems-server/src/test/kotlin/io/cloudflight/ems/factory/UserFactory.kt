@@ -1,9 +1,9 @@
 package io.cloudflight.ems.factory
 
-import io.cloudflight.ems.entity.User
-import io.cloudflight.ems.entity.UserRole
-import io.cloudflight.ems.repository.UserRepository
-import io.cloudflight.ems.repository.UserRoleRepository
+import io.cloudflight.ems.user.entity.User
+import io.cloudflight.ems.user.entity.UserRole
+import io.cloudflight.ems.user.repository.UserRepository
+import io.cloudflight.ems.user.repository.UserRoleRepository
 import io.cloudflight.ems.security.ADMINISTRATOR
 import io.cloudflight.ems.security.APPLICANT_USER
 import org.springframework.security.crypto.password.PasswordEncoder
@@ -31,14 +31,14 @@ class UserFactory(
     fun saveUser(email: String, role: UserRole): User {
         return userRepository.findOneByEmail(email)
             ?: userRepository.save(
-                User(
-                    id = null,
-                    email = email,
-                    password = passwordEncoder.encode(email),
-                    name = email,
-                    surname = email,
-                    userRole = role
-                )
+                    User(
+                            id = null,
+                            email = email,
+                            password = passwordEncoder.encode(email),
+                            name = email,
+                            surname = email,
+                            userRole = role
+                    )
             )
     }
 
