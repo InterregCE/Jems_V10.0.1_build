@@ -1,0 +1,76 @@
+<form [formGroup]="workPackageForm" class="container">
+
+    <h5 class="header">
+            {{'project.application.form.work.package.form.header' | translate}}
+            {{workPackageNumber}}
+    </h5>
+
+    <h6>{{'project.application.form.work.package.form.objectives' | translate}}</h6>
+    <span class="header-button" *ngxPermissionsExcept="Permission.PROGRAMME_USER">
+        <button color="primary" mat-raised-button
+                *ngIf="formState === FormState.VIEW && editable"
+                (click)="changeFormState$.next(FormState.EDIT)">
+                {{'common.edit.label' | translate}}
+        </button>
+    </span>
+
+    <mat-form-field class="field">
+        <mat-label>{{'project.application.form.work.package.field.number' | translate}}</mat-label>
+        <input name="workPackageNumber" formControlName="workPackageNumber" matInput
+               placeholder="{{'project.application.form.work.package.field.number' | translate}}">
+    </mat-form-field>
+    <mat-form-field class="field">
+        <mat-label>{{'project.application.form.work.package.field.title' | translate}}</mat-label>
+        <input name="workPackageTitle" formControlName="workPackageTitle" matInput
+               placeholder="{{'project.application.form.work.package.field.title' | translate}}">
+        <mat-error>
+            <app-form-field-errors
+                    [errors]="workPackageForm?.controls?.workPackageTitle?.errors"
+                    [messages]="workPackageTitleErrors">
+            </app-form-field-errors>
+        </mat-error>
+    </mat-form-field>
+    <mat-form-field class="field">
+        <mat-label>{{'project.application.form.work.package.field.specific.objective' | translate}}</mat-label>
+        <textarea name="workPackageSpecificObjective" formControlName="workPackageSpecificObjective" matInput></textarea>
+        <mat-error>
+            <app-form-field-errors
+                    [errors]="workPackageForm?.controls?.workPackageSpecificObjective?.errors"
+                    [messages]="workPackageSpecificObjectiveErrors">
+            </app-form-field-errors>
+        </mat-error>
+    </mat-form-field>
+    <mat-form-field class="field">
+        <mat-label>{{'project.application.form.work.package.field.target.audience' | translate}}</mat-label>
+        <textarea name="workPackageTargetAudience" formControlName="workPackageTargetAudience" matInput></textarea>
+        <mat-error>
+            <app-form-field-errors
+                    [errors]="workPackageForm?.controls?.workPackageTargetAudience?.errors"
+                    [messages]="workPackageTargetAudienceErrors">
+            </app-form-field-errors>
+        </mat-error>
+    </mat-form-field>
+
+    <div *ngIf="formState === FormState.EDIT">
+        <button mat-raised-button class="button"
+                (click)="changeFormState$.next(FormState.VIEW)">
+            {{'common.cancel.label' | translate}}
+        </button>
+        <button mat-raised-button color="primary" type="submit" class="button"
+                [disabled]="workPackageForm.invalid || workPackageForm.invalid || submitted"
+                (click)="onSubmit()">
+            {{'common.save.label' | translate}}
+        </button>
+    </div>
+
+    <app-alert
+            [show]="showSuccessMessage$ | async"
+            [type]="Alert.SUCCESS">
+        <p>{{'project.application.form.work.package.save.success' | translate}}</p>
+    </app-alert>
+    <app-alert *ngIf="error$ | async as error"
+               [show]="!submitted && !!error.i18nKey"
+               [type]="Alert.ERROR">
+        <p>{{error.i18nKey | translate}}</p>
+    </app-alert>
+</form>

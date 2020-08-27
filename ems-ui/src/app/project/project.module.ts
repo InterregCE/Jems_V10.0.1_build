@@ -42,6 +42,8 @@ import {ProjectApplicationFormPolicyRadioButtonComponent} from './project-applic
 import {MatCheckboxModule} from '@angular/material/checkbox';
 import {ProjectApplicationFormWorkPackagesListComponent} from './project-application/components/project-application-form/project-application-form-work-packages-list/project-application-form-work-packages-list.component';
 import {ProjectApplicationFormWorkPackagesListComponent} from './project-application/components/project-application-form/project-application-form-work-packages-list/project-application-form-work-packages-list.component';
+import {ProjectApplicationFormWorkPackageDetailComponent} from './project-application/components/project-application-form/project-application-form-work-package-detail/project-application-form-work-package-detail.component';
+import { ProjectApplicationFormWorkPackageComponent } from './project-application/containers/project-application-form-page/project-application-form-work-package/project-application-form-work-package.component';
 
 @NgModule({
   declarations: [
@@ -69,7 +71,8 @@ import {ProjectApplicationFormWorkPackagesListComponent} from './project-applica
     ProjectApplicationFormComponent,
     ProjectApplicationFormPolicyRadioButtonComponent,
     ProjectApplicationFormWorkPackagesListComponent,
-    ProjectApplicationFormWorkPackageSectionComponent
+    ProjectApplicationFormWorkPackageDetailComponent,
+    ProjectApplicationFormWorkPackageComponent
   ],
   imports: [
     SharedModule,

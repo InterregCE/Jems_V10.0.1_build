@@ -1,8 +1,6 @@
 import {ChangeDetectionStrategy, Component, OnInit} from '@angular/core';
-import {ProjectStore} from '../services/project-store.service';
 import {catchError, flatMap, map, startWith, takeUntil, tap} from 'rxjs/operators';
 import {ProjectStore} from '../project-application-detail/services/project-store.service';
-import {catchError, flatMap, map, takeUntil, tap} from 'rxjs/operators';
 import {ActivatedRoute} from '@angular/router';
 import {Permission} from '../../../../security/permissions/permission';
 import {
@@ -11,7 +9,8 @@ import {
   OutputCallProgrammePriority,
   OutputProject,
   OutputProjectStatus,
-  ProjectService
+  ProjectService,
+  WorkPackageService
 } from '@cat/api';
 import {SideNavService} from '@common/components/side-nav/side-nav.service';
 import {BaseComponent} from '@common/components/base-component';
@@ -22,7 +21,7 @@ import {Log} from '../../../../common/utils/log';
 import {I18nValidationError} from '@common/validation/i18n-validation-error';
 import {HttpErrorResponse} from '@angular/common/http';
 import {MatSort} from '@angular/material/sort';
-import {Tables} from '../../../../../common/utils/tables';
+import {Tables} from '../../../../common/utils/tables';
 
 @Component({
   selector: 'app-project-application-form-page',
@@ -55,7 +54,7 @@ export class ProjectApplicationFormPageComponent extends BaseComponent implement
     ])
       .pipe(
         flatMap(([pageIndex, pageSize, sort]) =>
-          this.projectService.getWorkPackages(this.projectId, pageIndex, pageSize, sort)),
+          this.workPackageService.getWorkPackagesByProjectId(this.projectId, pageIndex, pageSize, sort)),
         tap(page => Log.info('Fetched the work packages:', this, page.content)),
       );
 
@@ -63,7 +62,8 @@ export class ProjectApplicationFormPageComponent extends BaseComponent implement
               private projectService: ProjectService,
               private activatedRoute: ActivatedRoute,
               private sideNavService: SideNavService,
-              private callService: CallService) {
+              private callService: CallService,
+              private workPackageService: WorkPackageService) {
     super();
   }
 
