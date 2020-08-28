@@ -1,6 +1,8 @@
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import {async, ComponentFixture, TestBed} from '@angular/core/testing';
 
-import { ProjectApplicationFormPartnerSectionComponent } from './project-application-form-partner-section.component';
+import {ProjectApplicationFormPartnerSectionComponent} from './project-application-form-partner-section.component';
+import {TestModule} from '../../../../../common/test-module';
+import {ProjectModule} from '../../../../project.module';
 
 describe('ProjectApplicationFormPartnerSectionComponent', () => {
   let component: ProjectApplicationFormPartnerSectionComponent;
@@ -8,14 +10,19 @@ describe('ProjectApplicationFormPartnerSectionComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ ProjectApplicationFormPartnerSectionComponent ]
+      imports: [
+        TestModule,
+        ProjectModule
+      ],
+      declarations: [ProjectApplicationFormPartnerSectionComponent]
     })
-    .compileComponents();
+      .compileComponents();
   }));
 
   beforeEach(() => {
     fixture = TestBed.createComponent(ProjectApplicationFormPartnerSectionComponent);
     component = fixture.componentInstance;
+    component.projectId = 1;
     fixture.detectChanges();
   });
 

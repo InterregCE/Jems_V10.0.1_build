@@ -1,5 +1,5 @@
 import {ChangeDetectorRef, EventEmitter, OnInit, Output} from '@angular/core';
-import {FormGroup} from '@angular/forms';
+import {AbstractControl, FormGroup} from '@angular/forms';
 import {AbstractForm} from './abstract-form';
 import {delay, filter, takeUntil} from 'rxjs/operators';
 import {Subject} from 'rxjs';
@@ -20,6 +20,10 @@ export abstract class ViewEditForm extends AbstractForm implements OnInit {
   }
 
   abstract getForm(): FormGroup | null;
+
+  get controls(): { [key: string]: AbstractControl } | undefined {
+    return this.getForm()?.controls;
+  }
 
   ngOnInit(): void {
     super.ngOnInit();
