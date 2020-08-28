@@ -1,9 +1,10 @@
 <app-project-application-form-work-package-detail
         *ngIf="details$ | async as details"
-        [workPackage]="details.workPackage.workPackage"
-        [workPackageNumber]="details.workPackageNumber"
-        [editable]="details.workPackage.editable"
+        [workPackage]="details.workPackage"
+        [editable]="details.editable"
         [projectId]="projectId"
+        [success$]="saveSuccess$"
+        [error$]="saveError$"
         (updateData)="updateWorkPackageData$.next($event)"
         (createDate)="createWorkPackageData$.next($event)">
 </app-project-application-form-work-package-detail>

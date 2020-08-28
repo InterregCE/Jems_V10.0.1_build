@@ -5,18 +5,15 @@ import javax.validation.constraints.NotNull
 
 data class InputWorkPackageCreate(
 
-    @field:NotNull(message = "work_package.number.should.not.be.empty")
-    val number: Int,
-
-    @field:Size(max = 100, message = "work_package.name.wrong.size")
+    @field:Size(max = 100, message = "workpackage.name.wrong.size")
     val name: String?,
 
-    @field:Size(max = 250, message = "work_package.projectSpecificObjective.wrong.size")
+    @field:Size(max = 250, message = "workpackage.projectSpecificObjective.wrong.size")
     val specificObjective: String?,
 
-    @field:Size(max = 500, message = "work_package.objectiveAndAudience.wrong.size")
+    @field:Size(max = 500, message = "workpackage.objectiveAndAudience.wrong.size")
     val objectiveAndAudience: String?,
 
-    @field:NotNull(message = "work_package.project.should.not.be.empty")
+    @field:NotNull(message = "workpackage.project.should.not.be.empty")
     val projectId: Long?
 )

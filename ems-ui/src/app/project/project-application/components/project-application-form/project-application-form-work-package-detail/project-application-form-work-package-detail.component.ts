@@ -1,4 +1,12 @@
-import {ChangeDetectorRef, Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  ChangeDetectorRef,
+  Component,
+  EventEmitter,
+  Input,
+  OnInit,
+  Output
+} from '@angular/core';
 import {FormBuilder, FormGroup, Validators} from '@angular/forms';
 import {FormState} from '@common/components/forms/form-state';
 import {ViewEditForm} from '@common/components/forms/view-edit-form';
@@ -10,15 +18,14 @@ import {ActivatedRoute} from '@angular/router';
 @Component({
   selector: 'app-project-application-form-work-package-detail',
   templateUrl: './project-application-form-work-package-detail.component.html',
-  styleUrls: ['./project-application-form-work-package-detail.component.scss']
+  styleUrls: ['./project-application-form-work-package-detail.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class ProjectApplicationFormWorkPackageDetailComponent extends ViewEditForm implements OnInit {
   Permission = Permission;
 
   @Input()
   workPackage: OutputWorkPackage;
-  @Input()
-  workPackageNumber: number;
   @Input()
   editable: boolean;
   @Input()
@@ -28,24 +35,23 @@ export class ProjectApplicationFormWorkPackageDetailComponent extends ViewEditFo
   @Output()
   createDate = new EventEmitter<InputWorkPackageCreate>();
 
+  workPackageNumber: number;
+
   workPackageForm: FormGroup = this.formBuilder.group({
     workPackageNumber: [''],
-    workPackageTitle: ['', Validators.compose([
-      Validators.maxLength(100),
-      Validators.required])
-    ],
+    workPackageTitle: ['', Validators.maxLength(100)],
     workPackageSpecificObjective: ['', Validators.maxLength(250)],
     workPackageTargetAudience: ['', Validators.maxLength(500)],
   });
 
   workPackageTitleErrors = {
-    maxlength: 'work.package.title.size.too.long',
+    maxlength: 'workpackage.title.size.too.long',
   };
   workPackageSpecificObjectiveErrors = {
-    maxlength: 'work.package.specific.objective.size.too.long'
+    maxlength: 'workpackage.specific.objective.size.too.long'
   }
   workPackageTargetAudienceErrors = {
-    maxlength: 'work.package.target.audience.size.too.long'
+    maxlength: 'workpackage.target.audience.size.too.long'
   };
 
   constructor(private formBuilder: FormBuilder,
@@ -62,15 +68,20 @@ export class ProjectApplicationFormWorkPackageDetailComponent extends ViewEditFo
     } else {
       this.enterViewMode();
     }
+    if (this.workPackage?.number){
+      this.workPackageNumber = this.workPackage.number;
+    }
   }
 
   protected enterViewMode(): void {
     this.sideNavService.setAlertStatus(false);
+    this.workPackageNumber = this.workPackage.number;
     this.initFields();
   }
 
   protected enterEditMode(): void {
     this.sideNavService.setAlertStatus(true);
+    this.workPackageNumber = this.workPackage.number;
     this.workPackageForm.controls.workPackageNumber.disable();
   }
 
@@ -81,13 +92,12 @@ export class ProjectApplicationFormWorkPackageDetailComponent extends ViewEditFo
   onSubmit(): void {
     const workPackage = {
       name:  this.workPackageForm.controls.workPackageTitle.value,
-      projectSpecificObjective:  this.workPackageForm.controls.workPackageSpecificObjective.value,
+      specificObjective:  this.workPackageForm.controls.workPackageSpecificObjective.value,
       objectiveAndAudience:  this.workPackageForm.controls.workPackageTargetAudience.value,
     }
     if (!this.workPackage.id) {
       this.createDate.emit({
         ...workPackage,
-        number: this.workPackageForm.controls.workPackageNumber.value,
         projectId: this.projectId
       });
       return;
@@ -101,7 +111,7 @@ export class ProjectApplicationFormWorkPackageDetailComponent extends ViewEditFo
   private initFields() {
     this.workPackageForm.controls.workPackageNumber.setValue(this.workPackage?.number || this.workPackageNumber);
     this.workPackageForm.controls.workPackageTitle.setValue(this.workPackage?.name);
-    this.workPackageForm.controls.workPackageSpecificObjective.setValue(this.workPackage?.projectSpecificObjective);
+    this.workPackageForm.controls.workPackageSpecificObjective.setValue(this.workPackage?.specificObjective);
     this.workPackageForm.controls.workPackageTargetAudience.setValue(this.workPackage?.objectiveAndAudience);
   }
 

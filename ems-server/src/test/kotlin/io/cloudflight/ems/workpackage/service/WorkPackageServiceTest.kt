@@ -87,7 +87,6 @@ class WorkPackageServiceTest {
     )
 
     private val mockWorkPackageToCreate = InputWorkPackageCreate(
-        2,
         "Test",
         "",
         "",

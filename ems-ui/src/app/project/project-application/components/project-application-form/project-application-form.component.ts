@@ -9,7 +9,7 @@ import {
 } from '@angular/core';
 import {ViewEditForm} from '@common/components/forms/view-edit-form';
 import {FormBuilder, FormGroup, Validators} from '@angular/forms';
-import {InputProjectData, OutputProject, PageOutputWorkPackageSimple} from '@cat/api';
+import {InputProjectData, OutputProject} from '@cat/api';
 import {Permission} from '../../../../security/permissions/permission';
 import {FormState} from '@common/components/forms/form-state';
 import {SideNavService} from '@common/components/side-nav/side-nav.service';

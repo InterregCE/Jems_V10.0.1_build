@@ -9,13 +9,13 @@ import io.cloudflight.ems.workpackage.entity.WorkPackage
 fun WorkPackage.toOutputWorkPackageSimple() = OutputWorkPackageSimple (
     id = id,
     number = number!!,
-    name = name!!
+    name = name
 )
 
 fun WorkPackage.toOutputWorkPackage() = OutputWorkPackage (
     id = id,
     number = number!!,
-    name = name!!,
+    name = name,
     specificObjective = specificObjective,
     objectiveAndAudience = objectiveAndAudience
 )

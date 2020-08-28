@@ -41,9 +41,9 @@ import {MatTooltipModule} from '@angular/material/tooltip';
 import {ProjectApplicationFormPolicyRadioButtonComponent} from './project-application/components/project-application-form/project-application-form-policy-radio-button/project-application-form-policy-radio-button.component';
 import {MatCheckboxModule} from '@angular/material/checkbox';
 import {ProjectApplicationFormWorkPackagesListComponent} from './project-application/components/project-application-form/project-application-form-work-packages-list/project-application-form-work-packages-list.component';
-import {ProjectApplicationFormWorkPackagesListComponent} from './project-application/components/project-application-form/project-application-form-work-packages-list/project-application-form-work-packages-list.component';
 import {ProjectApplicationFormWorkPackageDetailComponent} from './project-application/components/project-application-form/project-application-form-work-package-detail/project-application-form-work-package-detail.component';
-import { ProjectApplicationFormWorkPackageComponent } from './project-application/containers/project-application-form-page/project-application-form-work-package/project-application-form-work-package.component';
+import {WorkPackageDetailsComponent} from './project-application/containers/project-application-form-page/project-application-form-work-package-section/work-package-details/work-package-details.component';
+import {ProjectApplicationFormWorkPackageSectionComponent} from './project-application/containers/project-application-form-page/project-application-form-work-package-section/project-application-form-work-package-section.component';
 
 @NgModule({
   declarations: [
@@ -72,7 +72,8 @@ import { ProjectApplicationFormWorkPackageComponent } from './project-applicatio
     ProjectApplicationFormPolicyRadioButtonComponent,
     ProjectApplicationFormWorkPackagesListComponent,
     ProjectApplicationFormWorkPackageDetailComponent,
-    ProjectApplicationFormWorkPackageComponent
+    WorkPackageDetailsComponent,
+    ProjectApplicationFormWorkPackageSectionComponent
   ],
   imports: [
     SharedModule,

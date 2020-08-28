@@ -6,12 +6,12 @@ data class InputWorkPackageUpdate(
 
     val id: Long,
 
-    @field:Size(max = 100, message = "work_package.name.wrong.size")
+    @field:Size(max = 100, message = "workpackage.name.wrong.size")
     val name: String?,
 
-    @field:Size(max = 250, message = "work_package.projectSpecificObjective.wrong.size")
+    @field:Size(max = 250, message = "workpackage.projectSpecificObjective.wrong.size")
     val specificObjective: String?,
 
-    @field:Size(max = 500, message = "work_package.objectiveAndAudience.wrong.size")
+    @field:Size(max = 500, message = "workpackage.objectiveAndAudience.wrong.size")
     val objectiveAndAudience: String?
 )

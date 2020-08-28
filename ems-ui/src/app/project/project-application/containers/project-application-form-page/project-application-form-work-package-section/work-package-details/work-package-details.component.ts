@@ -1,21 +1,23 @@
-import {Component, EventEmitter, OnInit} from '@angular/core';
+import {ChangeDetectionStrategy, Component, EventEmitter} from '@angular/core';
 import {BaseComponent} from '@common/components/base-component';
 import {ActivatedRoute} from '@angular/router';
-import {WorkPackageService, InputWorkPackageUpdate, InputWorkPackageCreate} from '@cat/api'
+import {WorkPackageService, InputWorkPackageUpdate, InputWorkPackageCreate, OutputProjectStatus} from '@cat/api'
 import {combineLatest, merge, of, Subject} from 'rxjs';
 import {catchError, flatMap, map, takeUntil, tap} from 'rxjs/operators';
-import {Log} from '../../../../../common/utils/log';
+import {Log} from '../../../../../../common/utils/log';
 import {HttpErrorResponse} from '@angular/common/http';
 import {I18nValidationError} from '@common/validation/i18n-validation-error';
+import {ProjectStore} from '../../../project-application-detail/services/project-store.service';
 
 @Component({
-  selector: 'app-project-application-form-work-package',
-  templateUrl: './project-application-form-work-package.component.html',
-  styleUrls: ['./project-application-form-work-package.component.scss']
+  selector: 'app-work-package-details',
+  templateUrl: './work-package-details.component.html',
+  styleUrls: ['./work-package-details.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class ProjectApplicationFormWorkPackageComponent extends BaseComponent implements OnInit {
+export class WorkPackageDetailsComponent extends BaseComponent {
+  projectId = this.activatedRoute?.snapshot?.params?.projectId;
   workPackageId = this.activatedRoute?.snapshot?.params?.workPackageId;
-  projectId = 2;
 
   saveError$ = new Subject<I18nValidationError | null>();
   saveSuccess$ = new Subject<boolean>();
@@ -23,13 +25,14 @@ export class ProjectApplicationFormWorkPackageComponent extends BaseComponent im
   createWorkPackageData$ = new EventEmitter<InputWorkPackageCreate>()
 
   constructor( private workPackageService: WorkPackageService,
-               private activatedRoute: ActivatedRoute) {
+               private activatedRoute: ActivatedRoute,
+               private projectStore: ProjectStore) {
     super();
   }
 
   private updatedWorkPackageData$ = this.updateWorkPackageData$
     .pipe(
-      flatMap((data) => this.workPackageService.updateWorkPackage(data)),
+      flatMap((data) => this.workPackageService.updateWorkPackage(this.projectId, data)),
       tap(() => this.saveSuccess$.next(true)),
       tap(() => this.saveError$.next(null)),
       tap(saved => Log.info('Updated work package data:', this, saved)),
@@ -41,7 +44,7 @@ export class ProjectApplicationFormWorkPackageComponent extends BaseComponent im
 
   private createdWorkPackageData$ = this.createWorkPackageData$
     .pipe(
-      flatMap((data) => this.workPackageService.createWorkPackage(data)),
+      flatMap((data) => this.workPackageService.createWorkPackage(this.projectId, data)),
       tap(() => this.saveSuccess$.next(true)),
       tap(() => this.saveError$.next(null)),
       tap(saved => Log.info('Created work package data:', this, saved)),
@@ -51,32 +54,24 @@ export class ProjectApplicationFormWorkPackageComponent extends BaseComponent im
       })
     );
 
-  private workPackageDetails$ = merge(
+  public workPackageDetails$ = merge(
     this.workPackageId
-      ?  this.workPackageService.getWorkPackageById(this.workPackageId)
+      ?  this.workPackageService.getWorkPackageById(this.workPackageId, this.projectId)
       : of({}),
     this.updatedWorkPackageData$,
     this.createdWorkPackageData$
   )
-    .pipe(
-      takeUntil(this.destroyed$),
-      map(workPackage => ({
-        workPackage,
-        editable: true
-      })),
-    );
 
-  details$  = combineLatest ([
+  details$ = combineLatest([
     this.workPackageDetails$,
-    this.workPackageService.getWorkPackageNumberForProjectId(this.projectId),
-   ])
+    this.projectStore.getProject()
+  ])
     .pipe(
       map(
-      ([workPackage, workPackageNumber]) => ({workPackage, workPackageNumber})
+        ([workPackage, project]) => ({
+          workPackage,
+          editable: project.projectStatus.status === OutputProjectStatus.StatusEnum.DRAFT
+            || project.projectStatus.status === OutputProjectStatus.StatusEnum.RETURNEDTOAPPLICANT })
       )
     )
-
-  ngOnInit(): void {
-  }
-
 }

@@ -16,6 +16,8 @@ export class ProjectApplicationFormWorkPackageSectionComponent{
 
   @Input()
   projectId: number;
+  @Input()
+  editable: boolean;
 
   newPageSize$ = new Subject<number>();
   newPageIndex$ = new Subject<number>();

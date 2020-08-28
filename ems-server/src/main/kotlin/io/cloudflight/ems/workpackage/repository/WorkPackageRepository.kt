@@ -11,5 +11,5 @@ interface WorkPackageRepository: PagingAndSortingRepository<WorkPackage, Long> {
 
     fun findAllByProjectId(projectId: Long, pageable: Pageable): Page<WorkPackage>
 
-    fun findFirstByProjectIdOrderByNumberDesc(projectId: Long): WorkPackage
+    fun findFirstByProjectIdOrderByNumberDesc(projectId: Long): WorkPackage?
 }
