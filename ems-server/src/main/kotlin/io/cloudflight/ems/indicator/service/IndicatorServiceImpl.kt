@@ -13,8 +13,11 @@ import io.cloudflight.ems.indicator.repository.IndicatorResultRepository
 import io.cloudflight.ems.programme.entity.ProgrammePriorityPolicy
 import io.cloudflight.ems.programme.repository.ProgrammePriorityPolicyRepository
 import io.cloudflight.ems.audit.service.AuditService
+import io.cloudflight.ems.exception.I18nFieldError
+import io.cloudflight.ems.exception.I18nValidationException
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
+import org.springframework.http.HttpStatus
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 
@@ -57,13 +60,30 @@ class IndicatorServiceImpl(
     override fun save(indicator: InputIndicatorOutputUpdate): OutputIndicatorOutput {
         val indicatorOld = getOutputIndicatorById(indicator.id)
         val indicatorSaved = indicatorOutputRepository.save(
-            indicator.toEntity(getProgrammePriorityEntity(indicator.programmeObjectivePolicy))
+            indicator.toEntity(
+                uniqueIdentifier = getIndicatorIdentifierIfUnique(indicatorOld, indicator.identifier!!),
+                programmePriorityPolicy = getProgrammePriorityEntity(indicator.programmeObjectivePolicy)
+            )
         ).toOutputIndicator()
         auditService.logEvent(indicatorEdited(
             identifier = indicatorSaved.identifier,
             changes = indicatorOld.getDiff(indicatorSaved)
         ))
         return indicatorSaved
+    }
+
+    private fun getIndicatorIdentifierIfUnique(oldIndicator: OutputIndicatorOutput, newIdentifier: String): String {
+        if (oldIndicator.name == newIdentifier)
+            return oldIndicator.name
+
+        val existing = indicatorOutputRepository.findOneByIdentifier(newIdentifier)
+        if (existing == null || existing.id == oldIndicator.id)
+            return newIdentifier
+
+        throw I18nValidationException(
+            httpStatus = HttpStatus.UNPROCESSABLE_ENTITY,
+            i18nFieldErrors = mapOf("identifier" to I18nFieldError("indicator.identifier.already.in.use"))
+        )
     }
     //endregion
 
@@ -98,7 +118,10 @@ class IndicatorServiceImpl(
     override fun save(indicator: InputIndicatorResultUpdate): OutputIndicatorResult {
         val indicatorOld = getResultIndicatorById(indicator.id)
         val indicatorSaved =  indicatorResultRepository.save(
-            indicator.toEntity(getProgrammePriorityEntity(indicator.programmeObjectivePolicy))
+            indicator.toEntity(
+                uniqueIdentifier = getIndicatorIdentifierIfUnique(indicatorOld, indicator.identifier!!),
+                programmePriorityPolicy = getProgrammePriorityEntity(indicator.programmeObjectivePolicy)
+            )
         ).toOutputIndicator()
         auditService.logEvent(indicatorEdited(
             identifier = indicatorSaved.identifier,
@@ -107,6 +130,21 @@ class IndicatorServiceImpl(
         return indicatorSaved
     }
 
+    private fun getIndicatorIdentifierIfUnique(oldIndicator: OutputIndicatorResult, newIdentifier: String): String {
+        if (oldIndicator.name == newIdentifier)
+            return oldIndicator.name
+
+        val existing = indicatorResultRepository.findOneByIdentifier(newIdentifier)
+        if (existing == null || existing.id == oldIndicator.id)
+            return newIdentifier
+
+        throw I18nValidationException(
+            httpStatus = HttpStatus.UNPROCESSABLE_ENTITY,
+            i18nFieldErrors = mapOf("identifier" to I18nFieldError("indicator.identifier.already.in.use"))
+        )
+    }
+    //endregion
+
     private fun getProgrammePriorityEntity(programmeObjectivePolicy: ProgrammeObjectivePolicy?): ProgrammePriorityPolicy? {
         var programmePriorityPolicy: ProgrammePriorityPolicy? = null
         if (programmeObjectivePolicy != null)
@@ -114,6 +152,5 @@ class IndicatorServiceImpl(
                 .orElseThrow { ResourceNotFoundException("programme_priority_policy") }
         return programmePriorityPolicy
     }
-    //endregion
 
 }
