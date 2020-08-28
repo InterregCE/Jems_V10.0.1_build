@@ -63,21 +63,12 @@ internal class ProjectStatusAuthorizationTest {
         surname = applicantUser.user.surname
     )
 
-    private val userProgrammeWithoutRole = OutputUser(
-        id = programmeUser.user.id,
-        email = programmeUser.user.email,
-        name = programmeUser.user.name,
-        surname = programmeUser.user.surname
-    )
-
     private val eligibilityAssessment = OutputProjectEligibilityAssessment(
         result = ProjectEligibilityAssessmentResult.PASSED,
-        user = userProgrammeWithoutRole,
         updated = ZonedDateTime.now()
     )
     private val qualityAssessment = OutputProjectQualityAssessment(
         result = ProjectQualityAssessmentResult.RECOMMENDED_FOR_FUNDING,
-        user = userProgrammeWithoutRole,
         updated = ZonedDateTime.now()
     )
 

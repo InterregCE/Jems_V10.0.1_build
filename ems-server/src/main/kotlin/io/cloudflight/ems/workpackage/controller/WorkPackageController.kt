@@ -16,22 +16,22 @@ class WorkPackageController(
     private val workPackageService: WorkPackageService
 ) : WorkPackageApi {
 
-    @PreAuthorize("@workPackageAuthorization.canAccessWorkPackageDetails(#projectId)")
+    @PreAuthorize("@projectAuthorization.canReadProject(#projectId)")
     override fun getWorkPackageById(projectId: Long, id: Long): OutputWorkPackage {
         return workPackageService.getWorkPackageById(id)
     }
 
-    @PreAuthorize("@workPackageAuthorization.canAccessWorkPackageDetails(#projectId)")
+    @PreAuthorize("@projectAuthorization.canReadProject(#projectId)")
     override fun getWorkPackagesByProjectId(projectId: Long, pageable: Pageable): Page<OutputWorkPackageSimple> {
         return workPackageService.getWorkPackagesByProjectId(projectId, pageable)
     }
 
-    @PreAuthorize("@workPackageAuthorization.canAccessWorkPackageDetails(#inputWorkPackageCreate.projectId)")
+    @PreAuthorize("@projectAuthorization.canUpdateProject(#inputWorkPackageCreate.projectId)")
     override fun createWorkPackage(projectId: Long, inputWorkPackageCreate: InputWorkPackageCreate): OutputWorkPackage {
         return workPackageService.createWorkPackage(inputWorkPackageCreate)
     }
 
-    @PreAuthorize("@workPackageAuthorization.canAccessWorkPackageDetails(#projectId)")
+    @PreAuthorize("@projectAuthorization.canUpdateProject(#projectId)")
     override fun updateWorkPackage(projectId: Long, inputWorkPackageUpdate: InputWorkPackageUpdate): OutputWorkPackage {
         return workPackageService.updateWorkPackage(inputWorkPackageUpdate)
     }

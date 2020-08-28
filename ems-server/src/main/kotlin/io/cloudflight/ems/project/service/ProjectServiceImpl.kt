@@ -23,6 +23,7 @@ import io.cloudflight.ems.security.APPLICANT_USER
 import io.cloudflight.ems.security.PROGRAMME_USER
 import io.cloudflight.ems.security.service.SecurityService
 import io.cloudflight.ems.audit.service.AuditService
+import io.cloudflight.ems.project.dto.ProjectApplicantAndStatus
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
 import org.springframework.data.repository.findByIdOrNull
@@ -45,6 +46,12 @@ class ProjectServiceImpl(
     @Transactional(readOnly = true)
     override fun getById(id: Long): OutputProject {
         return projectRepo.findById(id).map { it.toOutputProject() }
+            .orElseThrow { ResourceNotFoundException("project") }
+    }
+
+    @Transactional(readOnly = true)
+    override fun getApplicantAndStatusById(id: Long): ProjectApplicantAndStatus {
+        return projectRepo.findById(id).map { it.toApplicantAndStatus() }
             .orElseThrow { ResourceNotFoundException("project") }
     }
 

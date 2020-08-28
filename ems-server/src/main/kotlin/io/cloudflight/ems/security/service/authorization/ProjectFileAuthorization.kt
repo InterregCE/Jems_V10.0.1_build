@@ -32,11 +32,10 @@ class ProjectFileAuthorization(
             return true
 
         projectAuthorization.canReadProject(projectId)
-        val project = projectService.getById(projectId)
-        val status = project.projectStatus.status
+        val project = projectService.getApplicantAndStatusById(projectId)
 
         return when (fileType) {
-            APPLICANT_FILE -> isApplicantOwner(project) && isNotSubmittedNow(status)
+            APPLICANT_FILE -> isApplicantOwner(project.applicantId) && isNotSubmittedNow(project.projectStatus)
             ASSESSMENT_FILE -> isProgrammeUser()
             else -> false
         }
@@ -59,7 +58,7 @@ class ProjectFileAuthorization(
 
     private fun canChangeApplicantProjectFile(project: OutputProject, file: OutputProjectFile): Boolean {
         val status = project.projectStatus.status
-        if (isApplicantOwner(project))
+        if (isApplicantOwner(project.applicant.id!!))
             return isNotSubmittedNow(status) && file.updated.isAfter(getLastSubmissionFor(project))
         else
             throw ResourceNotFoundException("project_file")
@@ -90,10 +89,10 @@ class ProjectFileAuthorization(
             return true
 
         projectAuthorization.canReadProject(projectId)
-        val project = projectService.getById(projectId)
+        val project = projectService.getApplicantAndStatusById(projectId)
         val file = fileStorageService.getFileDetail(projectId, fileId)
 
-        if (isApplicantOwner(project))
+        if (isApplicantOwner(project.applicantId))
             if (file.type == APPLICANT_FILE)
                 return true
             else
@@ -113,7 +112,7 @@ class ProjectFileAuthorization(
 
         return when (fileType) {
             ASSESSMENT_FILE -> isProgrammeUser()
-            APPLICANT_FILE -> isProgrammeUser() || isApplicantOwner(projectService.getById(projectId))
+            APPLICANT_FILE -> isProgrammeUser() || isApplicantOwner(projectService.getApplicantAndStatusById(projectId).applicantId)
             else -> false
         }
     }

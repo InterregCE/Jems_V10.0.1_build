@@ -17,10 +17,10 @@ abstract class Authorization(
     fun isApplicantUser(): Boolean =
         securityService.currentUser?.hasRole(APPLICANT_USER)!!
 
-    protected fun isApplicantOwner(project: OutputProject): Boolean =
-        isApplicantUser() && project.applicant.id == securityService.currentUser?.user?.id
+    protected fun isApplicantOwner(applicantId: Long): Boolean =
+        isApplicantUser() && applicantId == securityService.currentUser?.user?.id
 
-    protected fun isApplicantNotOwner(project: OutputProject): Boolean =
-        isApplicantUser() && project.applicant.id != securityService.currentUser?.user?.id
+    protected fun isApplicantNotOwner(applicantId: Long): Boolean =
+        isApplicantUser() && applicantId != securityService.currentUser?.user?.id
 
 }
