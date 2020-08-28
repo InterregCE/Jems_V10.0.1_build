@@ -1,13 +1,7 @@
 package io.cloudflight.ems.api.project.dto
 
-enum class ProjectPartnerRole {
-    PARTNER,
-    LEAD_PARTNER;
+enum class ProjectPartnerRole(val isLead: Boolean) {
+    PARTNER(false),
+    LEAD_PARTNER(true);
 
-    companion object {
-
-        fun isLeadPartner(role: ProjectPartnerRole): Boolean {
-            return role == LEAD_PARTNER
-        }
-    }
 }

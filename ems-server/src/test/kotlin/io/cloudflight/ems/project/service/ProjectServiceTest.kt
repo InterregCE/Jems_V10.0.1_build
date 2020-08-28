@@ -246,8 +246,8 @@ class ProjectServiceTest {
 
     @Test
     fun projectGet_OK() {
-        every { projectRepository.findOneById(eq(1)) } returns
-                Project(1, dummyCall, "test", account, statusSubmitted, statusSubmitted)
+        every { projectRepository.findById(eq(1)) } returns
+                Optional.of(Project(1, dummyCall, "test", account, statusSubmitted, statusSubmitted))
 
         val result = projectService.getById(1);
 
@@ -261,7 +261,7 @@ class ProjectServiceTest {
 
     @Test
     fun projectGet_notExisting() {
-        every { projectRepository.findOneById(eq(-1)) } returns null
+        every { projectRepository.findById(eq(-1)) } returns Optional.empty()
         assertThrows<ResourceNotFoundException> { projectService.getById(-1) }
     }
 

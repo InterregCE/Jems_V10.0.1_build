@@ -44,8 +44,8 @@ class ProjectServiceImpl(
 
     @Transactional(readOnly = true)
     override fun getById(id: Long): OutputProject {
-        return projectRepo.findOneById(id)?.toOutputProject()
-            ?: throw ResourceNotFoundException("project")
+        return projectRepo.findById(id).map { it.toOutputProject() }
+            .orElseThrow { ResourceNotFoundException("project") }
     }
 
     @Transactional(readOnly = true)

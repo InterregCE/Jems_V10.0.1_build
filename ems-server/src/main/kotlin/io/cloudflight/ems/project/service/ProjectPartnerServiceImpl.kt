@@ -1,6 +1,6 @@
 package io.cloudflight.ems.project.service
 
-import io.cloudflight.ems.api.project.dto.InputProjectPartner
+import io.cloudflight.ems.api.project.dto.InputProjectPartnerCreate
 import io.cloudflight.ems.api.project.dto.InputProjectPartnerUpdate
 import io.cloudflight.ems.api.project.dto.OutputProjectPartner
 import io.cloudflight.ems.api.project.dto.ProjectPartnerRole
@@ -9,9 +9,9 @@ import io.cloudflight.ems.exception.ResourceNotFoundException
 import io.cloudflight.ems.project.repository.ProjectPartnerRepository
 import io.cloudflight.ems.project.repository.ProjectRepository
 import org.springframework.data.domain.Page
-import org.springframework.data.domain.PageRequest
 import org.springframework.data.domain.Pageable
 import org.springframework.data.domain.Sort
+import org.springframework.data.repository.findByIdOrNull
 import org.springframework.http.HttpStatus
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
@@ -24,8 +24,8 @@ class ProjectPartnerServiceImpl(
 
     @Transactional(readOnly = true)
     override fun getById(id: Long): OutputProjectPartner {
-        return projectPartnerRepo.findOneById(id)?.toOutputProjectPartner()
-            ?: throw ResourceNotFoundException("projectPartner")
+        return projectPartnerRepo.findById(id).map { it.toOutputProjectPartner() }
+            .orElseThrow { ResourceNotFoundException("projectPartner") }
     }
 
     @Transactional(readOnly = true)
@@ -34,45 +34,63 @@ class ProjectPartnerServiceImpl(
     }
 
     @Transactional
-    override fun createProjectPartner(projectId: Long, projectPartner: InputProjectPartner): OutputProjectPartner {
-        val project = projectRepo.findOneById(projectId) ?: throw ResourceNotFoundException("project")
+    override fun create(projectId: Long, projectPartner: InputProjectPartnerCreate): OutputProjectPartner {
+        val project = projectRepo.findByIdOrNull(projectId) ?: throw ResourceNotFoundException("project")
 
         // prevent multiple role LEAD_PARTNER entries
-        validateProjectPartner(projectId, projectPartner.role!!)
+        if (projectPartner.role!!.isLead)
+            validateLeadPartnerChange(projectId, projectPartner.oldLeadPartnerId)
 
         return projectPartnerRepo.save(projectPartner.toEntity(project = project)).toOutputProjectPartner()
+    }
+
+    private fun validateLeadPartnerChange(projectId: Long, oldLeadPartnerId: Long?) {
+        if (oldLeadPartnerId == null)
+            validateOnlyOneLeadPartner(projectId)
+        else
+            updateOldLeadPartner(projectId, oldLeadPartnerId)
     }
 
     /**
      * validate project partner to be saved: only one role LEAD should exist.
      */
-    private fun validateProjectPartner(projectId: Long, projectPartnerRole: ProjectPartnerRole) {
-        if (!ProjectPartnerRole.isLeadPartner(projectPartnerRole)) {
-            return
-        }
-
-        val projectPartners =
-            projectPartnerRepo.findAllByProjectIdAndRole(projectId, ProjectPartnerRole.LEAD_PARTNER, Pageable.unpaged())
-        if (!projectPartners.isEmpty) {
-            val leadPartnerNameAlreadyExisting = projectPartners.first().name
+    private fun validateOnlyOneLeadPartner(projectId: Long) {
+        val projectPartner = projectPartnerRepo.findFirstByProjectIdAndRole(projectId, ProjectPartnerRole.LEAD_PARTNER)
+        if (projectPartner.isPresent) {
+            val currentLead = projectPartner.get()
             throw I18nValidationException(
                 httpStatus = HttpStatus.UNPROCESSABLE_ENTITY,
                 i18nKey = "project.partner.role.lead.already.existing",
-                additionalInfo = leadPartnerNameAlreadyExisting
+                i18nArguments = listOf(currentLead.id.toString(), currentLead.name)
             )
         }
     }
 
+    private fun updateOldLeadPartner(projectId: Long, oldLeadPartnerId: Long) {
+        val oldLeadPartner = projectPartnerRepo.findFirstByProjectIdAndRole(projectId, ProjectPartnerRole.LEAD_PARTNER)
+            .orElseThrow { ResourceNotFoundException("projectPartner") }
+
+        if (oldLeadPartner.id == oldLeadPartnerId)
+            projectPartnerRepo.save(oldLeadPartner.copy(role = ProjectPartnerRole.PARTNER))
+        else
+            throw I18nValidationException(
+                httpStatus = HttpStatus.UNPROCESSABLE_ENTITY,
+                i18nKey = "project.partner.oldLeadPartnerId.is.not.lead"
+            )
+    }
+
     @Transactional
     override fun update(projectId: Long, projectPartner: InputProjectPartnerUpdate): OutputProjectPartner {
-        val oldProjectPartner = projectPartnerRepo.findById(projectPartner.id).orElseThrow { ResourceNotFoundException("projectPartner") }
-        val project = projectRepo.findOneById(projectId) ?: throw ResourceNotFoundException("project")
+        val oldProjectPartner = projectPartnerRepo.findById(projectPartner.id)
+            .orElseThrow { ResourceNotFoundException("projectPartner") }
+
+        if (!oldProjectPartner.role.isLead && projectPartner.role!!.isLead)
+            validateLeadPartnerChange(projectId, projectPartner.oldLeadPartnerId)
 
         return projectPartnerRepo.save(
             oldProjectPartner.copy(
                 name = projectPartner.name!!,
-                role = projectPartner.role!!,
-                project = project
+                role = projectPartner.role!!
             )
         ).toOutputProjectPartner()
     }
@@ -82,19 +100,14 @@ class ProjectPartnerServiceImpl(
      */
     @Transactional
     override fun updateSortByRole(projectId: Long) {
-        val pageable =  PageRequest.of(0, Integer.MAX_VALUE, Sort.by(listOf(
+        val sort = Sort.by(listOf(
             Sort.Order(Sort.Direction.ASC, "role"),
             Sort.Order(Sort.Direction.DESC, "id")
-        )))
+        ))
 
-        val projectPartners = projectPartnerRepo.findAllByProjectId(projectId, pageable)
-        // renumber partners by role
-        projectPartners.forEachIndexed {
-            index, oldPartner ->
-            // index starts at 0
-            val updatedPartner = oldPartner.copy(sortNumber = index.plus(1).toLong())
-            projectPartnerRepo.save(updatedPartner)
-        }
+        val projectPartners = projectPartnerRepo.findAllByProjectId(projectId, sort)
+            .mapIndexed { index, old -> old.copy(sortNumber = index.plus(1)) }
+        projectPartnerRepo.saveAll(projectPartners)
     }
 
 }

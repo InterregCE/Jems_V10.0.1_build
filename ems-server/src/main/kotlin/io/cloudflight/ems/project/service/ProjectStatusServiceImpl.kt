@@ -67,7 +67,7 @@ class ProjectStatusServiceImpl(
         val user = userRepository.findByIdOrNull(securityService.currentUser?.user?.id!!)
             ?: throw ResourceNotFoundException()
 
-        var project = projectRepo.findOneById(projectId) ?: throw ResourceNotFoundException("project")
+        var project = projectRepo.findById(projectId).orElseThrow { ResourceNotFoundException("project") }
         validateCallOpen(statusChange, project)
         validateDecisionDateIfFunding(statusChange, project)
         val oldStatus = project.projectStatus.status
@@ -121,7 +121,7 @@ class ProjectStatusServiceImpl(
     ): OutputProject {
         val user = userRepository.findByIdOrNull(securityService.currentUser?.user?.id!!)
             ?: throw ResourceNotFoundException()
-        val project = projectRepo.findOneById(projectId) ?: throw ResourceNotFoundException("project")
+        val project = projectRepo.findById(projectId).orElseThrow { ResourceNotFoundException("project") }
 
         val qualityAssessment = ProjectQualityAssessment(
             id = projectId,
@@ -148,7 +148,7 @@ class ProjectStatusServiceImpl(
     ): OutputProject {
         val user = userRepository.findByIdOrNull(securityService.currentUser?.user?.id!!)
             ?: throw ResourceNotFoundException()
-        val project = projectRepo.findOneById(projectId) ?: throw ResourceNotFoundException("project")
+        val project = projectRepo.findById(projectId).orElseThrow { ResourceNotFoundException("project") }
 
         val eligibilityAssessment = ProjectEligibilityAssessment(
             id = projectId,
@@ -195,8 +195,9 @@ class ProjectStatusServiceImpl(
         val statusToBeReestablished = possibleReversion.second
 
         validateDecisionReversion(from = statusToBeRevoked, to = statusToBeReestablished, request = request)
-        val projectWithNewStatus = projectRepo.findOneById(projectId)?.copy(projectStatus = statusToBeReestablished)
-            ?: throw ResourceNotFoundException("project")
+        val projectWithNewStatus = projectRepo.findById(projectId)
+            .orElseThrow { ResourceNotFoundException("project") }
+            .copy(projectStatus = statusToBeReestablished)
 
         val project = projectRepo.save(
             when (statusToBeReestablished.status) {

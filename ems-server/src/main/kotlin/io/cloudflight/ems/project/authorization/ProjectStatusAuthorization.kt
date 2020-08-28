@@ -31,7 +31,7 @@ class ProjectStatusAuthorization(
         val oldStatus = project.projectStatus.status
 
         if (submitted(oldStatus, newStatus)) {
-            return (isOwner(project) || isAdmin())
+            return (isApplicantOwner(project) || isAdmin())
         }
 
         if (returned(oldStatus, newStatus))

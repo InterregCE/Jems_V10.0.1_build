@@ -1,7 +1,7 @@
 package io.cloudflight.ems.controller
 
 import com.fasterxml.jackson.databind.ObjectMapper
-import io.cloudflight.ems.api.project.dto.InputProjectPartner
+import io.cloudflight.ems.api.project.dto.InputProjectPartnerCreate
 import io.cloudflight.ems.api.project.dto.ProjectPartnerRole
 import io.cloudflight.ems.factory.CallFactory
 import io.cloudflight.ems.factory.ProjectFileFactory
@@ -43,7 +43,7 @@ class ProjectPartnerControllerIntegrationTest {
     fun `project partner created`() {
         val call = callFactory.savePublishedCallWithoutPolicy(userFactory.adminUser)
         val project = projectFileFactory.saveProject(userFactory.adminUser, call)
-        val inputProjectPartner = InputProjectPartner("partner", ProjectPartnerRole.LEAD_PARTNER)
+        val inputProjectPartner = InputProjectPartnerCreate("partner", ProjectPartnerRole.LEAD_PARTNER)
 
         mockMvc.perform(
             post("/api/project/${project.id}/partner")
@@ -58,7 +58,7 @@ class ProjectPartnerControllerIntegrationTest {
     @Test
     @WithUserDetails(value = ADMINISTRATOR_EMAIL)
     fun `project partner create fails with missing required fields`() {
-        val inputProjectPartner = InputProjectPartner(null, null)
+        val inputProjectPartner = InputProjectPartnerCreate(null, null)
 
         mockMvc.perform(
             post("/api/project/1/partner")
@@ -75,7 +75,7 @@ class ProjectPartnerControllerIntegrationTest {
     @Test
     @WithUserDetails(value = ADMINISTRATOR_EMAIL)
     fun `project partner create fails with invalid fields`() {
-        val inputProjectPartner = InputProjectPartner(RandomString.make(16), ProjectPartnerRole.LEAD_PARTNER)
+        val inputProjectPartner = InputProjectPartnerCreate(RandomString.make(16), ProjectPartnerRole.LEAD_PARTNER)
 
         mockMvc.perform(
             post("/api/project/1/partner")

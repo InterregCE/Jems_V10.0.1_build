@@ -58,7 +58,7 @@ class PriorityPolicyUniqueCodeValidatorTest {
             httpStatus = HttpStatus.UNPROCESSABLE_ENTITY,
             i18nFieldErrors = mapOf("programme.priorityPolicy.programmeObjectivePolicy" to I18nFieldError(
                 i18nKey = "programme.priorityPolicy.programmeObjectivePolicy.already.in.use",
-                i8nArguments = listOf(policy.name)
+                i18nArguments = listOf(policy.name)
             ))
         )
     }
@@ -135,7 +135,7 @@ class PriorityPolicyUniqueCodeValidatorTest {
             httpStatus = HttpStatus.UNPROCESSABLE_ENTITY,
             i18nFieldErrors = mapOf("programme.priorityPolicy.programmeObjectivePolicy" to I18nFieldError(
                 i18nKey = "programme.priorityPolicy.programmeObjectivePolicy.code.already.in.use",
-                i8nArguments = listOf(existingPriorityPolicy.code, existingPriorityPolicy.programmeObjectivePolicy.name)
+                i18nArguments = listOf(existingPriorityPolicy.code, existingPriorityPolicy.programmeObjectivePolicy.name)
             ))
         )
     }

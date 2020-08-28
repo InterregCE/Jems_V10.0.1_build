@@ -6454,6 +6454,627 @@
 				}
 			],
 			"protocolProfileBehavior": {}
+		},
+		{
+			"name": "project-partner",
+			"item": [
+				{
+					"name": "create project application",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "bb148ee5-8a40-4331-b7c6-b311ba984b48",
+								"exec": [
+									"const projectName = pm.variables.replaceIn('{{$randomCompanyName}}')\r",
+									"pm.variables.set(\r",
+									"    'application_acronym',\r",
+									"    projectName.substr(0,25)\r",
+									");\r",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"id": "e240ee85-c058-4cf8-bc48-5a455ef86430",
+								"exec": [
+									"pm.test('applicant can create project application', function() {\r",
+									"    pm.response.to.have.status(200);\r",
+									"    pm.variables.set('application_id', pm.response.json().id);\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "basic",
+							"basic": [
+								{
+									"key": "password",
+									"value": "{{applicant_email}}",
+									"type": "string"
+								},
+								{
+									"key": "username",
+									"value": "{{applicant_email}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"acronym\": \"{{application_acronym}}\",\r\n    \"projectCallId\": {{callId}}\r\n}\r\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{url}}/api/project",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"api",
+								"project"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "create project partner A",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "7af68a68-aa2d-4674-b61a-795dcc04c6c1",
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"id": "22559ef2-c827-4544-a7cd-010c7bf97725",
+								"exec": [
+									"const partner = pm.response.json();\r",
+									"\r",
+									"pm.test('applicant can create project Partner A', function() {\r",
+									"    pm.response.to.have.status(200);\r",
+									"    pm.variables.set('partnerIdA', partner.id);\r",
+									"});\r",
+									"\r",
+									"pm.test('partner has correct name', function() {\r",
+									"    pm.expect(partner.name).to.eql(\"Partner A\");\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "basic",
+							"basic": [
+								{
+									"key": "password",
+									"value": "{{applicant_email}}",
+									"type": "string"
+								},
+								{
+									"key": "username",
+									"value": "{{applicant_email}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"name\": \"Partner A\",\r\n    \"role\": \"PARTNER\"\r\n}\r\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{url}}/api/project/{{application_id}}/partner",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"api",
+								"project",
+								"{{application_id}}",
+								"partner"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "create project partner B",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "2541032c-df29-4edf-9935-13ba4573ecae",
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"id": "8d1ed82f-833e-4703-a7dc-e7a5108517c6",
+								"exec": [
+									"const partner = pm.response.json();\r",
+									"\r",
+									"pm.test('applicant can create project Partner B', function() {\r",
+									"    pm.response.to.have.status(200);\r",
+									"    pm.variables.set('partnerIdB', partner.id);\r",
+									"});\r",
+									"\r",
+									"pm.test('partner has correct name', function() {\r",
+									"    pm.expect(partner.name).to.eql(\"Partner B\");\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "basic",
+							"basic": [
+								{
+									"key": "password",
+									"value": "{{applicant_email}}",
+									"type": "string"
+								},
+								{
+									"key": "username",
+									"value": "{{applicant_email}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"name\": \"Partner B\",\r\n    \"role\": \"PARTNER\"\r\n}\r\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{url}}/api/project/{{application_id}}/partner",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"api",
+								"project",
+								"{{application_id}}",
+								"partner"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "make partner A LeadPartner",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "9fcfc115-7ef7-408c-b23d-80b7d3fb020a",
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"id": "bd6a80e3-a622-4fd1-a387-e3bb0b37c121",
+								"exec": [
+									"const partner = pm.response.json();\r",
+									"\r",
+									"pm.test('applicant can update project Partner A', function() {\r",
+									"    pm.response.to.have.status(200);\r",
+									"    pm.expect(partner.role).to.eql(\"LEAD_PARTNER\");\r",
+									"});\r",
+									"\r",
+									"pm.test('partner has correct name', function() {\r",
+									"    pm.expect(partner.name).to.eql(\"Partner A LEAD\");\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "basic",
+							"basic": [
+								{
+									"key": "password",
+									"value": "{{applicant_email}}",
+									"type": "string"
+								},
+								{
+									"key": "username",
+									"value": "{{applicant_email}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"id\": \"{{partnerIdA}}\",\r\n    \"name\": \"Partner A LEAD\",\r\n    \"role\": \"LEAD_PARTNER\"\r\n}\r\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{url}}/api/project/{{application_id}}/partner",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"api",
+								"project",
+								"{{application_id}}",
+								"partner"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "make partner B LeadPartner - fail",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "f7a2acb2-3fde-451e-b9c8-3efcfe15ad0b",
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"id": "1474cee4-eefd-4397-ad1f-2911c14f268f",
+								"exec": [
+									"const error = pm.response.json();\r",
+									"\r",
+									"pm.test('applicant cannot update Partner B to be LEAD when A already is', function() {\r",
+									"    pm.response.to.have.status(422);\r",
+									"    pm.expect(error.i18nKey).to.eql(\"project.partner.role.lead.already.existing\");\r",
+									"});\r",
+									"\r",
+									"pm.test('correct id is sent to FE in error response', function() {\r",
+									"    pm.expect(error.i18nArguments).to.eql([pm.variables.get('partnerIdA') + \"\", \"Partner A LEAD\"]);\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "basic",
+							"basic": [
+								{
+									"key": "password",
+									"value": "{{applicant_email}}",
+									"type": "string"
+								},
+								{
+									"key": "username",
+									"value": "{{applicant_email}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"id\": \"{{partnerIdB}}\",\r\n    \"name\": \"Partner B LEAD\",\r\n    \"role\": \"LEAD_PARTNER\"\r\n}\r\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{url}}/api/project/{{application_id}}/partner",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"api",
+								"project",
+								"{{application_id}}",
+								"partner"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "make partner B LeadPartner - force",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "bf815b2c-56d6-4dda-9fbc-479c275eb713",
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"id": "5e625361-f9e0-44db-b82e-67ec51a8642b",
+								"exec": [
+									"const partner = pm.response.json();\r",
+									"\r",
+									"pm.test('applicant can force to update project Partner B to be LEAD', function() {\r",
+									"    pm.response.to.have.status(200);\r",
+									"    pm.expect(partner.role).to.eql(\"LEAD_PARTNER\");\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "basic",
+							"basic": [
+								{
+									"key": "password",
+									"value": "{{applicant_email}}",
+									"type": "string"
+								},
+								{
+									"key": "username",
+									"value": "{{applicant_email}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"id\": \"{{partnerIdB}}\",\r\n    \"name\": \"Partner B LEAD\",\r\n    \"role\": \"LEAD_PARTNER\",\r\n    \"oldLeadPartnerId\": \"{{partnerIdA}}\"\r\n}\r\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{url}}/api/project/{{application_id}}/partner",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"api",
+								"project",
+								"{{application_id}}",
+								"partner"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "create another project LeadPartner C - fail",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "fdc6e484-64e5-4271-842d-eaa3bfe311be",
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"id": "a6b588a0-d27a-42b6-98f1-955453380fb4",
+								"exec": [
+									"const error = pm.response.json();\r",
+									"\r",
+									"pm.test('applicant cannot create LeadPartner C cause B is now LeadPartner', function() {\r",
+									"    pm.response.to.have.status(422);\r",
+									"    pm.expect(error.i18nKey).to.eql(\"project.partner.role.lead.already.existing\");\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "basic",
+							"basic": [
+								{
+									"key": "password",
+									"value": "{{applicant_email}}",
+									"type": "string"
+								},
+								{
+									"key": "username",
+									"value": "{{applicant_email}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"name\": \"Partner C\",\r\n    \"role\": \"LEAD_PARTNER\"\r\n}\r\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{url}}/api/project/{{application_id}}/partner",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"api",
+								"project",
+								"{{application_id}}",
+								"partner"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "create another project LeadPartner C - force fail",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "20786ea0-1459-4261-a588-34464370c84c",
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"id": "13faffe0-b0b1-4131-bb1e-83367fe5c843",
+								"exec": [
+									"const error = pm.response.json();\r",
+									"\r",
+									"pm.test('applicant cannot override LeadPartner A cause B is now LeadPartner', function() {\r",
+									"    pm.response.to.have.status(422);\r",
+									"    pm.expect(error.i18nKey).to.eql(\"project.partner.oldLeadPartnerId.is.not.lead\");\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "basic",
+							"basic": [
+								{
+									"key": "password",
+									"value": "{{applicant_email}}",
+									"type": "string"
+								},
+								{
+									"key": "username",
+									"value": "{{applicant_email}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"name\": \"Partner C\",\r\n    \"role\": \"LEAD_PARTNER\",\r\n    \"oldLeadPartnerId\": \"{{partnerIdA}}\"\r\n}\r\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{url}}/api/project/{{application_id}}/partner",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"api",
+								"project",
+								"{{application_id}}",
+								"partner"
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"id": "8db1cce9-67ed-4c35-8581-0507fa5c3061",
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"id": "32302d30-85f1-420d-9aae-c01e22354893",
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
+				}
+			],
+			"protocolProfileBehavior": {}
 		}
 	],
 	"auth": {
@@ -6495,7 +7116,7 @@
 	],
 	"variable": [
 		{
-			"id": "1aa28799-b3ba-45dd-bd4a-22ab62bc7f58",
+			"id": "16969979-56ec-4bc5-bb15-3ec8373f0706",
 			"key": "url",
 			"value": "specify_url_here"
 		}

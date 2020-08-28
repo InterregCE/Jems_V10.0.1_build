@@ -1,6 +1,6 @@
 package io.cloudflight.ems.project.authorization
 
-import io.cloudflight.ems.api.project.dto.OutputProject
+import io.cloudflight.ems.api.project.dto.status.ProjectApplicationStatus.Companion.isNotSubmittedNow
 import io.cloudflight.ems.api.project.dto.status.ProjectApplicationStatus.DRAFT
 import io.cloudflight.ems.call.authorization.CallAuthorization
 import io.cloudflight.ems.exception.ResourceNotFoundException
@@ -18,7 +18,7 @@ class ProjectAuthorization(
 
     fun canReadProject(id: Long): Boolean {
         val project = projectService.getById(id)
-        if (isAdmin() || isOwner(project))
+        if (isAdmin() || isApplicantOwner(project))
             return true
 
         val status = project.projectStatus.status
@@ -28,7 +28,7 @@ class ProjectAuthorization(
             else
                 throw ResourceNotFoundException("project")
 
-        if (!isOwner(project))
+        if (isApplicantNotOwner(project))
             throw ResourceNotFoundException("project")
 
         return false
@@ -40,15 +40,19 @@ class ProjectAuthorization(
     }
 
     fun canUpdateProject(projectId: Long): Boolean {
-        if (isAdmin())
-            return true
+        val project = projectService.getById(projectId)
+        val status = project.projectStatus.status
+        if (isAdmin() || isApplicantOwner(project))
+            return isNotSubmittedNow(status)
 
-        if (isApplicantUser()) {
-            if (isOwner(projectService.getById(projectId)))
-                return true
+        if (isProgrammeUser())
+            if (status != DRAFT)
+                return false
             else
                 throw ResourceNotFoundException("project")
-        }
+
+        if (isApplicantNotOwner(projectService.getById(projectId)))
+            throw ResourceNotFoundException("project")
 
         return false
     }

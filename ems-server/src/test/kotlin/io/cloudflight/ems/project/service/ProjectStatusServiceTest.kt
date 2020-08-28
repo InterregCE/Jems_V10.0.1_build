@@ -49,6 +49,7 @@ import java.time.LocalDate
 import java.time.LocalTime
 import java.time.ZoneId
 import java.time.ZonedDateTime
+import java.util.*
 import java.util.stream.Collectors
 
 internal class ProjectStatusServiceTest {
@@ -127,7 +128,7 @@ internal class ProjectStatusServiceTest {
     fun `project status submitted`() {
         every { securityService.currentUser } returns LocalCurrentUser(userApplicant, "hash_pass", emptyList())
         every { userRepository.findByIdOrNull(1) } returns user
-        every { projectRepository.findOneById(1) } returns projectDraft
+        every { projectRepository.findById(1) } returns Optional.of(projectDraft)
         every { projectStatusRepository.save(any<ProjectStatus>()) } returnsArgument 0
         every { projectPartnerService.updateSortByRole(1) } just Runs
         every { projectRepository.save(any<Project>()) } returnsArgument 0
@@ -151,7 +152,7 @@ internal class ProjectStatusServiceTest {
 
         every { securityService.currentUser } returns LocalCurrentUser(userApplicant, "hash_pass", emptyList())
         every { userRepository.findByIdOrNull(1) } returns user
-        every { projectRepository.findOneById(1) } returns projectReturned
+        every { projectRepository.findById(1) } returns Optional.of(projectReturned)
         every { projectStatusRepository.save(any<ProjectStatus>()) } returnsArgument 0
         every {
             projectStatusRepository.findFirstByProjectIdAndStatusNotInOrderByUpdatedDesc(
@@ -180,7 +181,7 @@ internal class ProjectStatusServiceTest {
 
         every { securityService.currentUser } returns LocalCurrentUser(userApplicant, "hash_pass", emptyList())
         every { userRepository.findByIdOrNull(1) } returns user
-        every { projectRepository.findOneById(1) } returns projectReturned
+        every { projectRepository.findById(1) } returns Optional.of(projectReturned)
         every { projectStatusRepository.save(any<ProjectStatus>()) } returnsArgument 0
         every {
             projectStatusRepository.findFirstByProjectIdAndStatusNotInOrderByUpdatedDesc(
@@ -211,7 +212,7 @@ internal class ProjectStatusServiceTest {
         )
         every { securityService.currentUser } returns LocalCurrentUser(userApplicant, "hash_pass", emptyList())
         every { userRepository.findByIdOrNull(1) } returns user
-        every { projectRepository.findOneById(1) } returns projectSubmitted.copy(eligibilityAssessment = eligibilityAssessment)
+        every { projectRepository.findById(1) } returns Optional.of(projectSubmitted.copy(eligibilityAssessment = eligibilityAssessment))
         every { projectStatusRepository.save(any<ProjectStatus>()) } returnsArgument 0
         every { projectRepository.save(any<Project>()) } returnsArgument 0
 
@@ -242,7 +243,7 @@ internal class ProjectStatusServiceTest {
         )
         every { securityService.currentUser } returns LocalCurrentUser(userApplicant, "hash_pass", emptyList())
         every { userRepository.findByIdOrNull(1) } returns user
-        every { projectRepository.findOneById(1) } returns projectSubmitted.copy(eligibilityAssessment = eligibilityAssessment)
+        every { projectRepository.findById(1) } returns Optional.of(projectSubmitted.copy(eligibilityAssessment = eligibilityAssessment))
         every { projectStatusRepository.save(any<ProjectStatus>()) } returnsArgument 0
         every { projectRepository.save(any<Project>()) } returnsArgument 0
 
@@ -277,7 +278,7 @@ internal class ProjectStatusServiceTest {
     private fun testAllowedFundingTransitions(pair: Pair<Project, ProjectApplicationStatus>): Unit {
         every { securityService.currentUser } returns LocalCurrentUser(userApplicant, "hash_pass", emptyList())
         every { userRepository.findByIdOrNull(1) } returns user
-        every { projectRepository.findOneById(1) } returns pair.first
+        every { projectRepository.findById(1) } returns Optional.of(pair.first)
         every { projectStatusRepository.save(any<ProjectStatus>()) } returnsArgument 0
         every { projectRepository.save(any<Project>()) } returnsArgument 0
 
@@ -303,7 +304,7 @@ internal class ProjectStatusServiceTest {
 
         every { securityService.currentUser } returns LocalCurrentUser(userApplicant, "hash_pass", emptyList())
         every { userRepository.findByIdOrNull(1) } returns user
-        every { projectRepository.findOneById(1) } returns projectEligibleWithDate
+        every { projectRepository.findById(1) } returns Optional.of(projectEligibleWithDate)
         every { projectStatusRepository.save(any<ProjectStatus>()) } returnsArgument 0
         every { projectRepository.save(any<Project>()) } returnsArgument 0
 
@@ -324,7 +325,7 @@ internal class ProjectStatusServiceTest {
     fun `project status setting failed successfully`() {
         every { securityService.currentUser } returns LocalCurrentUser(userApplicant, "hash_pass", emptyList())
         every { userRepository.findByIdOrNull(1) } returns user
-        every { projectRepository.findOneById(2) } returns null
+        every { projectRepository.findById(2) } returns Optional.empty()
         assertThrows<ResourceNotFoundException> {
             projectStatusService.setProjectStatus(2, InputProjectStatus(ProjectApplicationStatus.SUBMITTED, null, null))
         }
@@ -392,7 +393,7 @@ internal class ProjectStatusServiceTest {
             UserRole(7, "programme"),
             "hash_pass"
         )
-        every { projectRepository.findOneById(16) } returns projectSubmitted.copy(id = 16)
+        every { projectRepository.findById(16) } returns Optional.of(projectSubmitted.copy(id = 16))
         every { projectRepository.save(any<Project>()) } returnsArgument 0
 
         val inputData = InputProjectQualityAssessment(
@@ -432,7 +433,7 @@ internal class ProjectStatusServiceTest {
             UserRole(7, "programme"),
                 "hash_pass"
         )
-        every { projectRepository.findOneById(-51) } returns null
+        every { projectRepository.findById(-51) } returns Optional.empty()
 
         val data = InputProjectQualityAssessment(ProjectQualityAssessmentResult.RECOMMENDED_WITH_CONDITIONS)
         assertThrows<ResourceNotFoundException> { projectStatusService.setQualityAssessment(-51, data) }
@@ -449,7 +450,7 @@ internal class ProjectStatusServiceTest {
             UserRole(7, "programme"),
                 "hash_pass"
         )
-        every { projectRepository.findOneById(79) } returns projectSubmitted.copy(id = 79)
+        every { projectRepository.findById(79) } returns Optional.of(projectSubmitted.copy(id = 79))
         every { projectRepository.save(any<Project>()) } returnsArgument 0
 
         val inputData = InputProjectEligibilityAssessment(
@@ -488,7 +489,7 @@ internal class ProjectStatusServiceTest {
             UserRole(7, "programme"),
             "hash_pass"
         )
-        every { projectRepository.findOneById(-22) } returns null
+        every { projectRepository.findById(-22) } returns Optional.empty()
 
         val data = InputProjectEligibilityAssessment(ProjectEligibilityAssessmentResult.FAILED)
         assertThrows<ResourceNotFoundException> { projectStatusService.setEligibilityAssessment(-22, data) }
@@ -574,7 +575,7 @@ internal class ProjectStatusServiceTest {
         val projectId = 17L
         every { projectStatusRepository.findTop2ByProjectIdOrderByUpdatedDesc(eq(projectId)) } returns
             listOf(statusApproved, statusEligible)
-        every { projectRepository.findOneById(eq(projectId)) } returns null
+        every { projectRepository.findById(eq(projectId)) } returns Optional.empty()
 
         val revertRequest = InputRevertProjectStatus(
             projectStatusFromId = statusApproved.id,
@@ -599,10 +600,10 @@ internal class ProjectStatusServiceTest {
             listOf(statusIneligible, statusSubmitted)
         ).forEach {
             every { projectStatusRepository.findTop2ByProjectIdOrderByUpdatedDesc(eq(projectId)) } returns it
-            every { projectRepository.findOneById(eq(projectId)) } returns
+            every { projectRepository.findById(eq(projectId)) } returns Optional.of(
                 projectEligible.copy(
                     eligibilityDecision = it[0]
-                )
+                ))
 
             val revertRequest = InputRevertProjectStatus(projectStatusFromId = it[0].id, projectStatusToId = it[1].id)
             projectStatusService.revertLastDecision(projectId, revertRequest)
@@ -630,8 +631,8 @@ internal class ProjectStatusServiceTest {
             listOf(statusNotApproved, statusApprovedWithConditions)
         ).forEach {
             every { projectStatusRepository.findTop2ByProjectIdOrderByUpdatedDesc(eq(projectId)) } returns it
-            every { projectRepository.findOneById(eq(projectId)) } returns
-                createAlreadyApprovedProject(it[0].status)
+            every { projectRepository.findById(eq(projectId)) } returns
+                Optional.of(createAlreadyApprovedProject(it[0].status))
 
             val revertRequest = InputRevertProjectStatus(projectStatusFromId = it[0].id, projectStatusToId = it[1].id)
             projectStatusService.revertLastDecision(projectId, revertRequest)
@@ -660,8 +661,8 @@ internal class ProjectStatusServiceTest {
             listOf(statusApprovedWithConditions, statusEligible)
         ).forEach {
             every { projectStatusRepository.findTop2ByProjectIdOrderByUpdatedDesc(eq(projectId)) } returns it
-            every { projectRepository.findOneById(eq(projectId)) } returns
-                createAlreadyApprovedProject(it[0].status)
+            every { projectRepository.findById(eq(projectId)) } returns
+                Optional.of(createAlreadyApprovedProject(it[0].status))
 
             val revertRequest = InputRevertProjectStatus(projectStatusFromId = it[0].id, projectStatusToId = it[1].id)
             projectStatusService.revertLastDecision(projectId, revertRequest)
