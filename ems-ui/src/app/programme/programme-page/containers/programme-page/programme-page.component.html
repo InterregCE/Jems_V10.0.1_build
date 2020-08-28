@@ -20,11 +20,9 @@
                         [programmeNuts]="programme.programmeNuts">
                 </app-programme-area>
             </mat-tab>
-            <div *ngIf="priorities$ | async as priorities">
-                <mat-tab label="{{'programme.tab.indicators' | translate}}" [disabled]="priorities.empty">
-                    <app-programme-indicators-overview-page></app-programme-indicators-overview-page>
-                </mat-tab>
-            </div>
+            <mat-tab label="{{'programme.tab.indicators' | translate}}" [disabled]="(priorities$ | async)?.empty">
+                <app-programme-indicators-overview-page></app-programme-indicators-overview-page>
+            </mat-tab>
         </mat-tab-group>
     </div>
 </ng-container>
