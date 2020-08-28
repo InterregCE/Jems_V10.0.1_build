@@ -8,6 +8,7 @@ import io.cloudflight.ems.nuts.repository.NutsRegion3Repository
 import io.cloudflight.ems.repository.ProgrammeDataRepository
 import io.cloudflight.ems.security.service.SecurityService
 import io.cloudflight.ems.audit.service.AuditService
+import io.cloudflight.ems.nuts.service.toOutput
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 
@@ -43,9 +44,13 @@ class ProgrammeDataServiceImpl(
     override fun saveProgrammeNuts(regions: Collection<String>): OutputProgrammeData {
         val toBeSaved = programmeDataRepository.findById(1)
             .orElseThrow { ResourceNotFoundException() }
-        return programmeDataRepository.save(toBeSaved.copy(
-            programmeNuts = nutsRegion3Repository.findAllById(regions).toSet()
-        )).toOutputProgrammeData()
+            .copy(programmeNuts = nutsRegion3Repository.findAllById(regions).toSet())
+
+        val savedProgramme = programmeDataRepository.save(toBeSaved).toOutputProgrammeData()
+        val updatedNuts = toBeSaved.programmeNuts.mapTo(HashSet()) { it.toOutput() }
+
+        programmeNutsAreaChanged(updatedNuts).logWithService(auditService)
+        return savedProgramme
     }
 
 }
