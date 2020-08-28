@@ -1,0 +1,17 @@
+<app-alert
+        [show]="!!indicator"
+        [type]="Alert.SUCCESS">
+    <p>Successfully saved Result Indicator {{indicator}}</p>
+</app-alert>
+
+<p *ngIf="!indicatorPage?.content.length">No Result Indicators Saved</p>
+<app-table *ngIf="indicatorPage.content.length"
+           [configuration]="indicatorTableConfiguration"
+           [rows]="indicatorPage.content"
+           [totalElements]="indicatorPage?.totalElements"
+           [pageIndex]="pageIndex"
+           (newPageIndex)="newPageIndex.emit($event)"
+           (newPageSize)="newPageSize.emit($event)"
+           (sortRows)="newSort.emit($event)">>
+</app-table>
+

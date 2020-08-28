@@ -1,0 +1,13 @@
+<a *ngIf="!isCreate" class="link" (click)="cancelCreate()">{{'back.indicators' | translate}}</a>
+<div *ngIf="outputIndicator$ | async as details" class="container">
+    <app-programme-output-indicator-detail
+            [outputIndicator]="details"
+            [priorities]="(priorities$ | async)?.content"
+            [success$]="outputIndicatorSaveSuccess$"
+            [error$]="outputIndicatorSaveError$"
+            [isCreate]="isCreate"
+            (createOutputIndicator)="createOutputIndicator($event)"
+            (updateOutputIndicator)="updateOutputIndicator($event)"
+            (cancelCreate)="cancelCreate()">
+    </app-programme-output-indicator-detail>
+</div>

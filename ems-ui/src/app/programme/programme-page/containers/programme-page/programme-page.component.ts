@@ -1,13 +1,15 @@
 import {ChangeDetectionStrategy, Component, OnDestroy} from '@angular/core';
 import {BaseComponent} from '@common/components/base-component';
 import {Permission} from '../../../../security/permissions/permission';
-import {merge, Subject} from 'rxjs';
+import {combineLatest, merge, Subject} from 'rxjs';
 import {I18nValidationError} from '@common/validation/i18n-validation-error';
-import {OutputProgrammeData, ProgrammeDataService} from '@cat/api';
-import {catchError, flatMap, tap} from 'rxjs/operators';
+import {OutputProgrammeData, ProgrammeDataService, ProgrammePriorityService} from '@cat/api';
+import {catchError, flatMap, map, startWith, tap} from 'rxjs/operators';
 import {Log} from '../../../../common/utils/log';
 import {HttpErrorResponse} from '@angular/common/http';
 import {TabService} from '../../../../common/services/tab.service';
+import {Tables} from '../../../../common/utils/tables';
+import {MatSort} from '@angular/material/sort';
 
 @Component({
   selector: 'app-programme-page',
@@ -22,6 +24,9 @@ export class ProgrammePageComponent extends BaseComponent implements OnDestroy {
   programmeSaveSuccess$ = new Subject<boolean>();
   saveProgrammeData$ = new Subject<OutputProgrammeData>();
   activeTab$ = this.tabService.currentTab(ProgrammePageComponent.name);
+  newPageSize$ = new Subject<number>();
+  newPageIndex$ = new Subject<number>();
+  newSort$ = new Subject<Partial<MatSort>>();
 
   private programmeById$ = this.programmeDataService.get()
     .pipe(
@@ -42,7 +47,24 @@ export class ProgrammePageComponent extends BaseComponent implements OnDestroy {
 
   programme$ = merge(this.programmeById$, this.savedProgramme$)
 
+  priorities$ =
+    combineLatest([
+      this.newPageIndex$.pipe(startWith(Tables.DEFAULT_INITIAL_PAGE_INDEX)),
+      this.newPageSize$.pipe(startWith(100)),
+      this.newSort$.pipe(
+        startWith({ active: 'code', direction: 'asc' }),
+        map(sort => sort?.direction ? sort : { active: 'code', direction: 'asc' }),
+        map(sort => `${sort.active},${sort.direction}`)
+      ),
+    ])
+      .pipe(
+        flatMap(([pageIndex, pageSize, sort]) =>
+          this.programmePriorityService.get(pageIndex, pageSize, sort)),
+        tap(page => Log.info('Fetched the priorities:', this, page.content)),
+      );
+
   constructor(private programmeDataService: ProgrammeDataService,
+              private programmePriorityService: ProgrammePriorityService,
               private tabService: TabService) {
     super();
   }
