@@ -15,7 +15,7 @@
     <app-alert *ngIf="error$ | async as error"
                [show]="!!error"
                [type]="Alert.ERROR">
-        <p>{{'programme.area.nuts.download.error' | translate}}</p>
+        <p>{{ (error.i18nKey ? error.i18nKey : 'programme.area.nuts.download.error') | translate}}</p>
     </app-alert>
     <div class="nuts-database">
         <p *ngIf="metadata">

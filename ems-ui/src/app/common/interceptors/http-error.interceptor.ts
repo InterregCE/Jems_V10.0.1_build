@@ -9,6 +9,9 @@ export class HttpErrorInterceptor implements HttpInterceptor {
     return next.handle(request)
       .pipe(
         catchError((error: HttpErrorResponse) => {
+          if (error.status === 0) {
+            return throwError({...error, error: { i18nKey: 'common.network.error' }})
+          }
           return throwError(error);
         })
       );

@@ -39,12 +39,12 @@ export abstract class AbstractForm extends BaseComponent implements OnInit {
     this.error$
       .pipe(takeUntil(this.destroyed$))
       .subscribe((error: I18nValidationError) => {
+        this.submitted = false;
         const formGroup = this.getForm();
         if (!formGroup) {
           return;
         }
         Log.debug('Set form backend errors.', this, error);
-        this.submitted = false;
         Object.keys(formGroup.controls).forEach(key => {
           if (!error?.i18nFieldErrors || !error.i18nFieldErrors[key]) {
             return;
