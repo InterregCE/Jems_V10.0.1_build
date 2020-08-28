@@ -14,14 +14,17 @@ export class Tools {
 
   static checkDigitsOnPaste(event: ClipboardEvent) {
     const clipboardData = event.clipboardData?.getData('text').toUpperCase() || '';
-    if (clipboardData.includes('E') || clipboardData.includes('-') || clipboardData.includes('+')) {
+    if (clipboardData.includes('E') || clipboardData.includes('-') || clipboardData.includes('+')
+      || clipboardData.includes('.') || clipboardData.includes(',')) {
       event.stopPropagation();
       event.preventDefault();
     }
   }
 
   static checkDigitsOnInput(event: KeyboardEvent) {
-    const charCode = (event.which) ? event.which : event.key;
-    return !(charCode === 101 || charCode === 69 || charCode === 45 || charCode === 43);
+    const charCode = (event.which) ? event.which : event.keyCode;
+    if (charCode === 101)
+      return false;
+    return (charCode >= 48 && charCode <= 57);
   }
 }
