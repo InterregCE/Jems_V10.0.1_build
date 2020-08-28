@@ -4,6 +4,7 @@ import io.cloudflight.ems.api.programme.dto.OutputProgrammePriority
 import io.cloudflight.ems.audit.entity.AuditAction
 import io.cloudflight.ems.audit.service.AuditBuilder
 import io.cloudflight.ems.audit.service.AuditCandidate
+import io.cloudflight.ems.nuts.service.NutsIdentifier
 import java.util.stream.Collectors
 
 fun programmePriorityAdded(programmePriority: OutputProgrammePriority): AuditCandidate {
@@ -19,5 +20,15 @@ fun programmeBasicDataChanged(changes: Map<String, Pair<Any?, Any?>>): AuditCand
 
     return AuditBuilder(AuditAction.PROGRAMME_BASIC_DATA_EDITED)
         .description("Programme basic data changed:\n$changedString")
+        .build()
+}
+
+fun programmeNutsAreaChanged(updatedNuts: Collection<NutsIdentifier>): AuditCandidate {
+    val changes = updatedNuts.stream()
+        .map { it.toString() }
+        .collect(Collectors.joining(",\n"))
+
+    return AuditBuilder(AuditAction.PROGRAMME_NUTS_AREA_CHANGED)
+        .description("The programme area has been set to:\n$changes")
         .build()
 }
