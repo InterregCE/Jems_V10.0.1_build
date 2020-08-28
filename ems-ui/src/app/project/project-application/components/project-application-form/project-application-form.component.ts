@@ -92,6 +92,9 @@ export class ProjectApplicationFormComponent extends ViewEditForm implements OnI
   }
 
   protected enterViewMode(): void {
+    this.applicationForm.controls.programmePriority.setValue(undefined);
+    this.currentPriority = '';
+    this.selectedSpecificObjective = '' as InputProjectData.SpecificObjectiveEnum;
     this.sideNavService.setAlertStatus(false);
     this.initFields();
   }
