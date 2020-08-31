@@ -2,7 +2,7 @@
     <h4 *ngIf="!partner?.name">{{'project.partner.detail.add' | translate}}</h4>
     <h4 *ngIf="partner?.name">{{partner.name}}</h4>
     <h4><span>{{'project.partner.detail.title' | translate}}</span>
-        <button *ngIf="formState === FormState.VIEW" mat-raised-button
+        <button *ngIf="formState === FormState.VIEW && editable" mat-raised-button
                 (click)="changeFormState$.next(FormState.EDIT)">
             {{'call.detail.button.edit' | translate}}
         </button>
