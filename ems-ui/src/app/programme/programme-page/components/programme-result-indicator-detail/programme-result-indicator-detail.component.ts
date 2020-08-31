@@ -160,9 +160,9 @@ export class ProgrammeResultIndicatorDetailComponent extends ViewEditForm implem
           name: this.resultIndicatorForm?.controls?.indicatorName?.value,
           programmeObjectivePolicy: this.resultIndicatorForm?.controls?.specificObjective?.value,
           measurementUnit: this.resultIndicatorForm?.controls?.measurementUnit?.value,
-          baseline: Number(this.resultIndicatorForm?.controls?.baseline?.value),
+          baseline: this.resultIndicatorForm?.controls?.baseline?.value,
           referenceYear: this.resultIndicatorForm?.controls?.referenceYear?.value,
-          finalTarget: Number(this.resultIndicatorForm?.controls?.finalTarget?.value),
+          finalTarget: this.resultIndicatorForm?.controls?.finalTarget?.value,
           sourceOfData: this.resultIndicatorForm?.controls?.sourceOfData?.value,
           comment: this.resultIndicatorForm?.controls?.comments?.value,
         })
@@ -174,9 +174,9 @@ export class ProgrammeResultIndicatorDetailComponent extends ViewEditForm implem
           name: this.resultIndicatorForm?.controls?.indicatorName?.value,
           programmeObjectivePolicy: this.resultIndicatorForm?.controls?.specificObjective?.value,
           measurementUnit: this.resultIndicatorForm?.controls?.measurementUnit?.value,
-          baseline: Number(this.resultIndicatorForm?.controls?.baseline?.value),
+          baseline: this.resultIndicatorForm?.controls?.baseline?.value,
           referenceYear: this.resultIndicatorForm?.controls?.referenceYear?.value,
-          finalTarget: Number(this.resultIndicatorForm?.controls?.finalTarget?.value),
+          finalTarget: this.resultIndicatorForm?.controls?.finalTarget?.value,
           sourceOfData: this.resultIndicatorForm?.controls?.sourceOfData?.value,
           comment: this.resultIndicatorForm?.controls?.comments?.value,
         })
