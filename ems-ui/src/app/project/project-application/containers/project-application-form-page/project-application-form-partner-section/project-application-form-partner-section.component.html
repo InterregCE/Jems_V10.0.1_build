@@ -1,7 +1,8 @@
 <h6 class="spaced-elements" id="projectPartnersHeading">{{'project.application.form.section.part.b' | translate}}</h6>
 
 <button class="spaced-elements" mat-raised-button color="primary"
-        [routerLink]="'/project/' + projectId + '/partner'">
+        [routerLink]="'/project/' + projectId + '/partner'"
+        [disabled]="!editable">
     + {{'project.application.form.partner.add' | translate}}
 </button>
 

@@ -1,12 +1,18 @@
-import {ChangeDetectionStrategy, Component} from '@angular/core';
-import {merge, of, Subject} from 'rxjs';
+import {ChangeDetectionStrategy, Component, OnInit} from '@angular/core';
+import {combineLatest, merge, of, Subject} from 'rxjs';
 import {I18nValidationError} from '@common/validation/i18n-validation-error';
 import {HttpErrorResponse} from '@angular/common/http';
-import {catchError, switchMap, tap} from 'rxjs/operators';
+import {catchError, map, switchMap, tap} from 'rxjs/operators';
 import {Log} from '../../../../../../common/utils/log';
 import {ActivatedRoute, Router} from '@angular/router';
-import {InputProjectPartnerCreate, InputProjectPartnerUpdate, ProjectPartnerService} from '@cat/api';
+import {
+  InputProjectPartnerCreate,
+  InputProjectPartnerUpdate,
+  OutputProjectStatus,
+  ProjectPartnerService
+} from '@cat/api';
 import {BaseComponent} from '@common/components/base-component';
+import {ProjectStore} from '../../../project-application-detail/services/project-store.service';
 
 @Component({
   selector: 'app-project-application-form-partner-detail',
@@ -14,7 +20,7 @@ import {BaseComponent} from '@common/components/base-component';
   styleUrls: ['./project-application-form-partner-detail.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class ProjectApplicationFormPartnerDetailComponent extends BaseComponent {
+export class ProjectApplicationFormPartnerDetailComponent extends BaseComponent implements OnInit {
 
   projectId = this.activatedRoute?.snapshot?.params?.projectId
   partnerId = this.activatedRoute?.snapshot?.params?.partnerId;
@@ -62,16 +68,35 @@ export class ProjectApplicationFormPartnerDetailComponent extends BaseComponent 
       tap(saved => Log.info('Created partner:', this, saved)),
     );
 
-  partner$ = merge(this.partnerById$, this.savedPartner$, this.createdPartner$);
+  private partner$ = merge(this.partnerById$, this.savedPartner$, this.createdPartner$);
+
+  details$ = combineLatest([
+    this.partner$,
+    this.projectStore.getProject()
+  ])
+    .pipe(
+      map(
+        ([partner, project]) => ({
+          partner,
+          editable: project.projectStatus.status === OutputProjectStatus.StatusEnum.DRAFT
+            || project.projectStatus.status === OutputProjectStatus.StatusEnum.RETURNEDTOAPPLICANT
+        })
+      )
+    )
+
 
   constructor(private partnerService: ProjectPartnerService,
               private activatedRoute: ActivatedRoute,
+              private projectStore: ProjectStore,
               private router: Router) {
     super();
+  }
+
+  ngOnInit(): void {
+    this.projectStore.init(this.projectId);
   }
 
   redirectToPartnerOverview(): void {
     this.router.navigate(['/project/' + this.projectId + '/applicationForm']);
   }
-
 }
