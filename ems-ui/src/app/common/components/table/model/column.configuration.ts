@@ -9,6 +9,10 @@ export class ColumnConfiguration {
   elementProperty?: string;
   // main translation key for that element
   elementTranslationKey?: string;
+  // optional function as condition to replace element value
+  alternativeValueCondition?: (element: any) => {};
+  // optional value if condition is set and applies
+  alternativeValue?: string;
   // if present the table will be sorted by the given property
   sortProperty?: string
   // type of the column

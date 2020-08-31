@@ -1,7 +1,7 @@
 import {ColumnConfiguration} from './column.configuration';
 
 export class TableConfiguration {
-  // configurtions of columns
+  // configurations of columns
   columns: ColumnConfiguration[];
   // boolean that defines if a table row has a click action.
   isTableClickable: boolean;
