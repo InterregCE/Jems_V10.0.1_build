@@ -28,12 +28,30 @@ describe('SideNavService', () => {
     let headlines: HeadlineRoute[] = [];
     service.getHeadlines().subscribe((items: HeadlineRoute[]) => {headlines = items;});
 
-    service.setHeadlines(destroyed$,[
-      new HeadlineRoute('back.project.overview', '/project/1', HeadlineType.BACKROUTE),
-      new HeadlineRoute('project.application.form.title', '', HeadlineType.TITLE),
-      new HeadlineRoute('Test', '', HeadlineType.SUBTITLE),
-      new HeadlineRoute('A - Project Identification', 'applicationFormHeading', HeadlineType.SECTION),
-      new HeadlineRoute('A.1 Project Identification', 'projectIdentificationHeading', HeadlineType.SUBSECTION)]);
+    service.setHeadlines(destroyed$, [
+      {
+        headline: 'back.project.overview',
+        route: '/project/1',
+        type: HeadlineType.BACKROUTE
+      },
+      {
+        headline: 'project.application.form.title',
+        type: HeadlineType.TITLE
+      },
+      {
+        headline: 'Test',
+        type: HeadlineType.SUBTITLE
+      },
+      {
+        headline: 'A - Project Identification',
+        scrollRoute: 'applicationFormHeading',
+        type: HeadlineType.SECTION
+      },
+      {
+        headline: 'A.1 Project Identification',
+        scrollRoute: 'projectIdentificationHeading',
+        type: HeadlineType.SUBSECTION
+      }]);
 
     tick(60);
     expect(headlines.length).toBe(5);
@@ -41,16 +59,14 @@ describe('SideNavService', () => {
     expect(headlines[0].route).toBe('/project/1')
     expect(headlines[0].type).toBe(HeadlineType.BACKROUTE)
     expect(headlines[1].headline).toBe('project.application.form.title')
-    expect(headlines[1].route).toBe('')
     expect(headlines[1].type).toBe(HeadlineType.TITLE)
     expect(headlines[2].headline).toBe('Test')
-    expect(headlines[2].route).toBe('')
     expect(headlines[2].type).toBe(HeadlineType.SUBTITLE)
     expect(headlines[3].headline).toBe('A - Project Identification')
-    expect(headlines[3].route).toBe('applicationFormHeading')
+    expect(headlines[3].scrollRoute).toBe('applicationFormHeading')
     expect(headlines[3].type).toBe(HeadlineType.SECTION)
     expect(headlines[4].headline).toBe('A.1 Project Identification')
-    expect(headlines[4].route).toBe('projectIdentificationHeading')
+    expect(headlines[4].scrollRoute).toBe('projectIdentificationHeading')
     expect(headlines[4].type).toBe(HeadlineType.SUBSECTION);
 
     destroyed$.next();

@@ -103,13 +103,49 @@ export class ProjectApplicationFormPageComponent extends BaseComponent implement
 
   private setHeadlines(acronym: string): void {
     this.sideNavService.setHeadlines(this.destroyed$, [
-      new HeadlineRoute('back.project.overview', '/project/' + this.projectId, HeadlineType.BACKROUTE),
-      new HeadlineRoute('project.application.form.title', '', HeadlineType.TITLE),
-      new HeadlineRoute(acronym, '', HeadlineType.SUBTITLE),
-      new HeadlineRoute('project.application.form.section.part.a', 'applicationFormHeading', HeadlineType.SECTION),
-      new HeadlineRoute('project.application.form.section.part.a.subsection.one', 'projectIdentificationHeading', HeadlineType.SUBSECTION),
-      new HeadlineRoute('project.application.form.section.part.a.subsection.two', 'projectSummaryHeading', HeadlineType.SUBSECTION),
-      new HeadlineRoute('project.application.form.section.part.b', 'applicationFormHeading', HeadlineType.SECTION),
+      {
+        headline: 'back.project.overview',
+        route: '/project/' + this.projectId,
+        type: HeadlineType.BACKROUTE
+      },
+      {
+        headline: 'project.application.form.title',
+        type: HeadlineType.TITLE
+      },
+      {
+        headline: acronym,
+        type: HeadlineType.SUBTITLE
+      },
+      {
+        headline: 'project.application.form.section.part.a',
+        scrollRoute: 'applicationFormHeading',
+        type: HeadlineType.SECTION
+      },
+      {
+        headline: 'project.application.form.section.part.a.subsection.one',
+        scrollRoute: 'projectIdentificationHeading',
+        type:  HeadlineType.SUBSECTION
+      },
+      {
+        headline: 'project.application.form.section.part.a.subsection.two',
+        scrollRoute: 'projectSummaryHeading',
+        type:  HeadlineType.SUBSECTION
+      },
+      {
+        headline: 'project.application.form.section.part.b',
+        scrollRoute: 'projectPartnersHeading',
+        type:  HeadlineType.SECTION
+      },
+      {
+        headline: 'project.application.form.section.part.c',
+        scrollRoute: 'projectDescriptionHeading',
+        type: HeadlineType.SECTION
+      },
+      {
+        headline: 'project.application.form.section.part.c.subsection.four',
+        scrollRoute: 'projectWorkPlanHeading',
+        type:HeadlineType.SUBSECTION
+      }
     ]);
   }
 
