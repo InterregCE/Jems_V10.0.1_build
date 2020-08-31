@@ -1,10 +1,17 @@
-<app-project-application-form
-        *ngIf="details$ | async as details"
-        [project]="details.projectDetails.project"
-        [editable]="details.projectDetails.editable"
-        [priorities]="details.callObjectives.priorities"
-        [objectivesWithPolicies]="details.callObjectives.objectivesWithPolicies"
-        [success$]="saveSuccess$"
-        [error$]="saveError$"
-        (updateData)="updateProjectData$.next($event)">
-</app-project-application-form>
+<div class="container">
+    <app-project-application-form
+            *ngIf="details$ | async as details"
+            [project]="details.projectDetails.project"
+            [editable]="details.projectDetails.editable"
+            [priorities]="details.callObjectives.priorities"
+            [objectivesWithPolicies]="details.callObjectives.objectivesWithPolicies"
+            [success$]="saveSuccess$"
+            [error$]="saveError$"
+            (updateData)="updateProjectData$.next($event)">
+    </app-project-application-form>
+    <div class="section">
+        <app-project-application-form-work-package-section
+                [projectId]="projectId">
+        </app-project-application-form-work-package-section>
+    </div>
+</div>
