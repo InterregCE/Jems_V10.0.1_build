@@ -8,16 +8,18 @@
     <a [routerLink]="['/calls']">&lt; {{'common.back.to.dashboard' | translate}}</a>
 </div>
 <div class="container vertical-center">
-    <h5>{{'user.detail.page.title' | translate}}</h5>
-    <button class="header-button" color="primary" *ngIf="formState === FormState.VIEW" mat-raised-button
-            [disabled]="disabled"
-            (click)="changeFormState$.next(FormState.EDIT)">
-        {{'user.detail.button.edit' | translate}}
-    </button>
+    <h5>{{'user.detail.page.title' | translate}}
+        <button class="header-button" color="primary" *ngIf="formState === FormState.VIEW" mat-raised-button
+                [disabled]="disabled"
+                (click)="changeFormState$.next(FormState.EDIT)">
+            {{'user.detail.button.edit' | translate}}
+        </button>
+    </h5>
     <form [formGroup]="userForm">
         <mat-form-field class="field">
             <mat-label>{{'user.detail.field.name' | translate}}</mat-label>
-            <input name="name" formControlName="name" matInput placeholder="{{'user.detail.field.name' | translate}}" required>
+            <input name="name" formControlName="name" matInput placeholder="{{'user.detail.field.name' | translate}}"
+                   required>
             <mat-error>
                 <app-form-field-errors
                         [errors]="userForm?.controls?.name?.errors"
@@ -27,7 +29,8 @@
         </mat-form-field>
         <mat-form-field class="field">
             <mat-label>{{'user.detail.field.surname' | translate}}</mat-label>
-            <input name="surname" formControlName="surname" matInput placeholder="{{'user.detail.field.surname' | translate}}" required>
+            <input name="surname" formControlName="surname" matInput
+                   placeholder="{{'user.detail.field.surname' | translate}}" required>
             <mat-error>
                 <app-form-field-errors
                         [errors]="userForm?.controls?.surname?.errors"
@@ -37,7 +40,8 @@
         </mat-form-field>
         <mat-form-field class="field">
             <mat-label>{{'user.detail.field.email' | translate}}</mat-label>
-            <input name="email" formControlName="email" matInput placeholder="{{'user.detail.field.email' | translate}}" required>
+            <input name="email" formControlName="email" matInput placeholder="{{'user.detail.field.email' | translate}}"
+                   required>
             <mat-error>
                 <app-form-field-errors
                         [errors]="userForm?.controls?.email?.errors"

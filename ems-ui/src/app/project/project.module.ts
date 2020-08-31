@@ -44,6 +44,11 @@ import {ProjectApplicationFormWorkPackagesListComponent} from './project-applica
 import {ProjectApplicationFormWorkPackageDetailComponent} from './project-application/components/project-application-form/project-application-form-work-package-detail/project-application-form-work-package-detail.component';
 import {WorkPackageDetailsComponent} from './project-application/containers/project-application-form-page/project-application-form-work-package-section/work-package-details/work-package-details.component';
 import {ProjectApplicationFormWorkPackageSectionComponent} from './project-application/containers/project-application-form-page/project-application-form-work-package-section/project-application-form-work-package-section.component';
+import {ProjectApplicationFormPartnerSectionComponent} from './project-application/containers/project-application-form-page/project-application-form-partner-section/project-application-form-partner-section.component';
+import {ProjectApplicationFormPartnerListComponent} from './project-application/components/project-application-form/project-application-form-partner-list/project-application-form-partner-list.component';
+import {ProjectApplicationFormPartnerDetailComponent} from './project-application/containers/project-application-form-page/project-application-form-partner-section/project-application-form-partner-detail/project-application-form-partner-detail.component';
+import {ProjectApplicationFormPartnerEditComponent} from './project-application/components/project-application-form/project-application-form-partner-edit/project-application-form-partner-edit.component';
+import {MatButtonToggleModule} from '@angular/material/button-toggle';
 
 @NgModule({
   declarations: [
@@ -70,6 +75,10 @@ import {ProjectApplicationFormWorkPackageSectionComponent} from './project-appli
     ProjectApplicationFormPageComponent,
     ProjectApplicationFormComponent,
     ProjectApplicationFormPolicyRadioButtonComponent,
+    ProjectApplicationFormPartnerSectionComponent,
+    ProjectApplicationFormPartnerListComponent,
+    ProjectApplicationFormPartnerDetailComponent,
+    ProjectApplicationFormPartnerEditComponent,
     ProjectApplicationFormWorkPackagesListComponent,
     ProjectApplicationFormWorkPackageDetailComponent,
     WorkPackageDetailsComponent,
@@ -91,6 +100,7 @@ import {ProjectApplicationFormWorkPackageSectionComponent} from './project-appli
     MatSidenavModule,
     MatTooltipModule,
     MatCheckboxModule,
+    MatButtonToggleModule,
   ],
   exports: [
     ProjectApplicationListComponent,

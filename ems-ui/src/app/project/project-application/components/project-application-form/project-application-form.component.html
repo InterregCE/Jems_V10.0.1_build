@@ -1,4 +1,4 @@
-<form [formGroup]="applicationForm" class="container">
+<form [formGroup]="applicationForm">
     <h4>{{project.acronym}} {{'project.application.form.title' | translate}}</h4>
 
     <h5 class="header" id="applicationFormHeading">
@@ -89,7 +89,7 @@
         </p>
         <p class="policy-label">{{'project.application.form.field.project.objective' | translate}}</p>
         <p *ngIf="previousObjective">
-            {{project.projectData.specificObjective.code +  ' - '}}
+            {{project.projectData.specificObjective.code + ' - '}}
             {{'programme.policy.' + project.projectData.specificObjective.programmeObjectivePolicy | translate}}
         </p>
         <p *ngIf="!previousObjective">

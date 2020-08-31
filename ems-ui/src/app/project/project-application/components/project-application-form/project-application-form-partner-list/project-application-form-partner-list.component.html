@@ -1,0 +1,10 @@
+<p *ngIf="!partnerPage?.content.length">{{'project.application.form.partner.list.empty' | translate}}</p>
+<app-table *ngIf="partnerPage.content.length"
+           [configuration]="tableConfiguration"
+           [rows]="partnerPage.content"
+           [totalElements]="partnerPage?.totalElements"
+           [pageIndex]="pageIndex"
+           (newPageIndex)="newPageIndex.emit($event)"
+           (newPageSize)="newPageSize.emit($event)"
+           (sortRows)="newSort.emit($event)">
+</app-table>

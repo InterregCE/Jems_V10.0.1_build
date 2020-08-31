@@ -1,0 +1,9 @@
+<app-project-application-form-partner-edit
+        *ngIf="partner$ | async as partner"
+        [success$]="partnerSaveSuccess$"
+        [error$]="partnerSaveError$"
+        [partner]="partner"
+        (create)="createPartner$.next($event)"
+        (update)="savePartner$.next($event)"
+        (cancel)="redirectToPartnerOverview()">
+</app-project-application-form-partner-edit>

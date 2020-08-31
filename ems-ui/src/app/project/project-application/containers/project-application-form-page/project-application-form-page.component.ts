@@ -2,7 +2,6 @@ import {ChangeDetectionStrategy, Component, OnInit} from '@angular/core';
 import {catchError, flatMap, map, takeUntil, tap} from 'rxjs/operators';
 import {ProjectStore} from '../project-application-detail/services/project-store.service';
 import {ActivatedRoute} from '@angular/router';
-import {Permission} from '../../../../security/permissions/permission';
 import {
   CallService,
   InputProjectData,
@@ -19,6 +18,8 @@ import {combineLatest, merge, Subject} from 'rxjs';
 import {Log} from '../../../../common/utils/log';
 import {I18nValidationError} from '@common/validation/i18n-validation-error';
 import {HttpErrorResponse} from '@angular/common/http';
+import {ProjectStore} from '../project-application-detail/services/project-store.service';
+import {Permission} from 'src/app/security/permissions/permission';
 
 @Component({
   selector: 'app-project-application-form-page',
@@ -29,7 +30,7 @@ import {HttpErrorResponse} from '@angular/common/http';
 export class ProjectApplicationFormPageComponent extends BaseComponent implements OnInit {
   Permission = Permission;
   OutputProjectStatus = OutputProjectStatus;
-  projectId = this.activatedRoute.snapshot.params.projectId;
+  projectId = this.activatedRoute?.snapshot?.params?.projectId;
 
   saveError$ = new Subject<I18nValidationError | null>();
   saveSuccess$ = new Subject<boolean>();
@@ -43,6 +44,8 @@ export class ProjectApplicationFormPageComponent extends BaseComponent implement
     super();
   }
 
+
+  private fetchObjectives$ = new Subject<OutputProject>()
   private updatedProjectData$ = this.updateProjectData$
     .pipe(
       flatMap((data) => this.projectService.updateProjectData(this.projectId, data)),
@@ -55,7 +58,20 @@ export class ProjectApplicationFormPageComponent extends BaseComponent implement
       })
     );
 
-  private fetchObjectives$ = new Subject<OutputProject>()
+  private callObjectives$ = this.fetchObjectives$
+    .pipe(
+      flatMap(project => this.callService.getCallObjectives(project.call.id)),
+      tap(objectives => Log.info('Fetched objectives', this, objectives)),
+      map(objectives => ({
+        priorities: objectives
+          .sort((a, b) => {
+            const orderBool = a.code.toLocaleLowerCase() > b.code.toLocaleLowerCase();
+            return orderBool ? 1 : -1;
+          })
+          .map(objective => objective.code + ' - ' + objective.title),
+        objectivesWithPolicies: this.getObjectivesWithPolicies(objectives)
+      }))
+    )
 
   private projectDetails$ = merge(
     this.projectStore.getProject(),
@@ -71,21 +87,6 @@ export class ProjectApplicationFormPageComponent extends BaseComponent implement
           || project.projectStatus.status === OutputProjectStatus.StatusEnum.RETURNEDTOAPPLICANT
       })),
     );
-
-  private callObjectives$ = this.fetchObjectives$
-    .pipe(
-      flatMap(project => this.callService.getCallObjectives(project.call.id)),
-      tap(objectives => Log.info('Fetched objectives', this, objectives)),
-      map(objectives => ({
-        priorities: objectives
-          .sort((a,b) => {
-            const orderBool = a.code.toLocaleLowerCase() > b.code.toLocaleLowerCase();
-            return orderBool ? 1 : -1;
-          })
-          .map(objective => objective.code + ' - ' + objective.title),
-        objectivesWithPolicies: this.getObjectivesWithPolicies(objectives)
-      }))
-    )
 
   details$ = combineLatest([
     this.projectDetails$,
@@ -109,6 +110,7 @@ export class ProjectApplicationFormPageComponent extends BaseComponent implement
       new HeadlineRoute('project.application.form.section.part.a', 'applicationFormHeading', HeadlineType.SECTION),
       new HeadlineRoute('project.application.form.section.part.a.subsection.one', 'projectIdentificationHeading', HeadlineType.SUBSECTION),
       new HeadlineRoute('project.application.form.section.part.a.subsection.two', 'projectSummaryHeading', HeadlineType.SUBSECTION),
+      new HeadlineRoute('project.application.form.section.part.b', 'applicationFormHeading', HeadlineType.SECTION),
     ]);
   }
 
