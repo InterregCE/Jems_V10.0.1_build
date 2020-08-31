@@ -27,15 +27,15 @@ export class ProjectApplicationFormPartnerSectionComponent {
       this.newPageSize$.pipe(startWith(Tables.DEFAULT_INITIAL_PAGE_INDEX)),
       this.newPageIndex$.pipe(startWith(Tables.DEFAULT_INITIAL_PAGE_SIZE)),
       this.newSort$.pipe(
-        startWith(Tables.DEFAULT_INITIAL_SORT),
-        map(sort => sort?.direction ? sort : Tables.DEFAULT_INITIAL_SORT),
+        startWith({active: 'sortNumber', direction: 'asc'}),
+        map(sort => sort?.direction ? sort : {active: 'sortNumber', direction: 'asc'}),
         map(sort => `${sort.active},${sort.direction}`)
       )
     ])
       .pipe(
         flatMap(([pageIndex, pageSize, sort]) =>
           this.projectPartnerService.getProjectPartners(this.projectId, pageIndex, pageSize, sort)),
-        tap(page => Log.info('Fetched the work packages:', this, page.content)),
+        tap(page => Log.info('Fetched the project partners:', this, page.content)),
       );
 
   constructor(private projectPartnerService: ProjectPartnerService) {

@@ -54,6 +54,9 @@ export class TableComponent implements OnInit {
     if (column.elementTranslationKey) {
       return column.elementTranslationKey + '.' + elementValue;
     }
+    if (column.alternativeValueCondition && column.alternativeValueCondition(elementValue)) {
+      return column.alternativeValue;
+    }
     if (column.columnType === ColumnType.Date) {
       return this.datepipe.transform(elementValue, Tables.DEFAULT_DATE_FORMAT);
     }

@@ -102,7 +102,7 @@ class ProjectPartnerServiceImpl(
     override fun updateSortByRole(projectId: Long) {
         val sort = Sort.by(listOf(
             Sort.Order(Sort.Direction.ASC, "role"),
-            Sort.Order(Sort.Direction.DESC, "id")
+            Sort.Order(Sort.Direction.ASC, "id")
         ))
 
         val projectPartners = projectPartnerRepo.findAllByProjectId(projectId, sort)

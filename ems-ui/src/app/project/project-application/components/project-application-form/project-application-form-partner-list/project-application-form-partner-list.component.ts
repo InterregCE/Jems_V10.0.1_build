@@ -39,6 +39,8 @@ export class ProjectApplicationFormPartnerListComponent implements OnInit {
         {
           displayedColumn: 'project.application.form.partner.table.number',
           elementProperty: 'sortNumber',
+          alternativeValueCondition: (element: any) => {return element === null},
+          alternativeValue: 'project.application.form.partner.number.info.auto',
           sortProperty: 'sortNumber'
         },
         {
