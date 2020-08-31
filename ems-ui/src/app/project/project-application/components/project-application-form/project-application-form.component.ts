@@ -33,7 +33,6 @@ export class ProjectApplicationFormComponent extends ViewEditForm implements OnI
   priorities: string[];
   @Input()
   objectivesWithPolicies: { [key: string]: InputProjectData.SpecificObjectiveEnum[] };
-
   @Output()
   updateData = new EventEmitter<InputProjectData>();
 

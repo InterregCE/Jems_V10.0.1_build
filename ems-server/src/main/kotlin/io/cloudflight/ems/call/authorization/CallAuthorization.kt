@@ -7,7 +7,6 @@ import io.cloudflight.ems.security.service.SecurityService
 import io.cloudflight.ems.security.service.authorization.Authorization
 import io.cloudflight.ems.call.service.CallService
 import org.springframework.stereotype.Component
-import java.time.ZonedDateTime
 
 @Component
 class CallAuthorization(

@@ -1,0 +1,12 @@
+<p class="spaced-elements" *ngIf="!workPackagePage?.content.length">
+    {{'project.application.form.work.package.list.empty' | translate}}
+</p>
+<app-table *ngIf="workPackagePage.content.length"
+           [configuration]="tableConfiguration"
+           [rows]="workPackagePage.content"
+           [totalElements]="workPackagePage?.totalElements"
+           [pageIndex]="pageIndex"
+           (newPageIndex)="newPageIndex.emit($event)"
+           (newPageSize)="newPageSize.emit($event)"
+           (sortRows)="newSort.emit($event)">
+</app-table>
