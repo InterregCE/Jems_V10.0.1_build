@@ -34,6 +34,8 @@ export class ProjectApplicationFormWorkPackageDetailComponent extends ViewEditFo
   updateData = new EventEmitter<InputWorkPackageUpdate>();
   @Output()
   createDate = new EventEmitter<InputWorkPackageCreate>();
+  @Output()
+  cancel = new EventEmitter<void>();
 
   workPackageNumber: number;
 
@@ -106,6 +108,13 @@ export class ProjectApplicationFormWorkPackageDetailComponent extends ViewEditFo
       ...workPackage,
       id: this.workPackage.id
     });
+  }
+
+  onCancel(): void {
+    if (!this.workPackage.id) {
+      this.cancel.emit();
+    }
+    this.changeFormState$.next(FormState.VIEW);
   }
 
   private initFields() {

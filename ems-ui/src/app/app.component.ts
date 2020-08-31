@@ -10,6 +10,7 @@ import {Forms} from './common/utils/forms';
 import {filter, take, takeUntil, tap} from 'rxjs/operators';
 import {MatDialog} from '@angular/material/dialog';
 import {BaseComponent} from '@common/components/base-component';
+import {HeadlineRoute} from '@common/components/side-nav/headline-route';
 
 @Component({
   selector: 'app-root',
@@ -40,7 +41,7 @@ export class AppComponent extends BaseComponent {
       ).subscribe();
   }
 
-  navigateToBackRoute(route: string) {
+  private confirmNavigate(headline: HeadlineRoute) {
     Forms.confirmDialog(
       this.dialog,
       'common.sidebar.dialog.title',
@@ -49,12 +50,34 @@ export class AppComponent extends BaseComponent {
       take(1),
       takeUntil(this.destroyed$),
       filter(yes => !!yes)
-    ).subscribe(() => {
-      this.router.navigate([route]);
-    });
+    ).subscribe(() => this.navigateToRoute(headline));
   }
 
-  navigateToRoute(route: string) {
-    this.viewportScroller.scrollToAnchor(route);
+  private navigateToRoute(headline: HeadlineRoute){
+    this.router.navigate([headline.route])
+      .then(() => {
+        if (!headline.scrollRoute) {
+          return;
+        }
+        setTimeout(() => this.scrollToRoute(headline.scrollRoute as any), 650);
+      });
+  }
+
+  private scrollToRoute(scrollRoute: string) {
+    this.viewportScroller.scrollToAnchor(scrollRoute);
+  }
+
+  navigate(headline: HeadlineRoute): void{
+    if(headline.route && this.alertStatus){
+      this.confirmNavigate(headline);
+      return;
+    }
+    if(headline.route){
+      this.navigateToRoute(headline);
+      return;
+    }
+    if(headline.scrollRoute){
+      this.scrollToRoute(headline.scrollRoute);
+    }
   }
 }

@@ -7,16 +7,15 @@
 
         <div *ngFor="let data of headlines">
             <div class="back-link" *ngIf="data.type == headlineType.BACKROUTE">
-                <a class="dialog-a-text" *ngIf="alertStatus == true"
-                   (click)="navigateToBackRoute(data.route)" [routerLink]="">{{data.headline | translate}}</a>
-                <a *ngIf="alertStatus == false" [routerLink]="data.route">{{data.headline | translate}}</a>
+                <a class="dialog-a-text" (click)="navigate(data)"
+                   [routerLink]="">{{data.headline | translate}}</a>
             </div>
             <p class="side-nav-content-title" *ngIf="data.type == headlineType.TITLE"> {{data.headline | translate}}</p>
             <p class="side-nav-content-subtitle" *ngIf="data.type == headlineType.SUBTITLE"> {{data.headline}}</p>
         </div>
 
         <ul class="no-bullets">
-            <li *ngFor="let data of headlines" (click)="navigateToRoute(data.route)">
+            <li *ngFor="let data of headlines" (click)="navigate(data)">
                 <p *ngIf="data.type == headlineType.SUBSECTION" class="side-nav-subsection"> {{ data.headline | translate}}</p>
                 <p *ngIf="data.type == headlineType.SECTION" class="side-nav-section"> {{ data.headline | translate}} </p>
             </li>

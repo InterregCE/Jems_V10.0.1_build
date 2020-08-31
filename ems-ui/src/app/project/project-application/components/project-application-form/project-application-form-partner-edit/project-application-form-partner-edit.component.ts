@@ -15,6 +15,7 @@ import {filter, take, takeUntil, tap} from 'rxjs/operators';
 import {I18nValidationError} from '@common/validation/i18n-validation-error';
 import {MatDialog} from '@angular/material/dialog';
 import {Forms} from '../../../../../common/utils/forms';
+import {SideNavService} from '@common/components/side-nav/side-nav.service';
 
 @Component({
   selector: 'app-project-application-form-partner-edit',
@@ -57,7 +58,8 @@ export class ProjectApplicationFormPartnerEditComponent extends ViewEditForm imp
 
   constructor(private formBuilder: FormBuilder,
               private dialog: MatDialog,
-              protected changeDetectorRef: ChangeDetectorRef) {
+              protected changeDetectorRef: ChangeDetectorRef,
+              private sideNavService: SideNavService) {
     super(changeDetectorRef);
   }
 
@@ -109,12 +111,14 @@ export class ProjectApplicationFormPartnerEditComponent extends ViewEditForm imp
     this.controls?.id.setValue(this.partner?.id);
     this.controls?.role.setValue(this.partner?.role);
     this.controls?.name.setValue(this.partner?.name);
+    this.sideNavService.setAlertStatus(false);
   }
 
   protected enterEditMode(): void {
     this.controls?.id.setValue(this.partner?.id);
     this.controls?.role.setValue(this.partner?.role);
     this.controls?.name.setValue(this.partner?.name);
+    this.sideNavService.setAlertStatus(true);
   }
 
   private handleLeadAlreadyExisting(controls: any, error: I18nValidationError): void {
