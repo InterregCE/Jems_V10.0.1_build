@@ -1,4 +1,4 @@
-import {ChangeDetectionStrategy, Component, EventEmitter} from '@angular/core';
+import {ChangeDetectionStrategy, Component, EventEmitter, OnInit} from '@angular/core';
 import {BaseComponent} from '@common/components/base-component';
 import {ActivatedRoute} from '@angular/router';
 import {WorkPackageService, InputWorkPackageUpdate, InputWorkPackageCreate, OutputProjectStatus} from '@cat/api'
@@ -15,7 +15,7 @@ import {ProjectStore} from '../../../project-application-detail/services/project
   styleUrls: ['./work-package-details.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class WorkPackageDetailsComponent extends BaseComponent {
+export class WorkPackageDetailsComponent extends BaseComponent implements OnInit{
   projectId = this.activatedRoute?.snapshot?.params?.projectId;
   workPackageId = this.activatedRoute?.snapshot?.params?.workPackageId;
 
@@ -74,4 +74,8 @@ export class WorkPackageDetailsComponent extends BaseComponent {
             || project.projectStatus.status === OutputProjectStatus.StatusEnum.RETURNEDTOAPPLICANT })
       )
     )
+
+  ngOnInit(): void {
+    this.projectStore.init(this.projectId);
+  }
 }

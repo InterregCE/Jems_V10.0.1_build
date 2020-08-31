@@ -18,7 +18,6 @@ import {combineLatest, merge, Subject} from 'rxjs';
 import {Log} from '../../../../common/utils/log';
 import {I18nValidationError} from '@common/validation/i18n-validation-error';
 import {HttpErrorResponse} from '@angular/common/http';
-import {ProjectStore} from '../project-application-detail/services/project-store.service';
 import {Permission} from 'src/app/security/permissions/permission';
 
 @Component({
