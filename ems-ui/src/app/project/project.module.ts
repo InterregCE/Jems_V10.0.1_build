@@ -41,7 +41,12 @@ import {MatTooltipModule} from '@angular/material/tooltip';
 import {ProjectApplicationFormPolicyRadioButtonComponent} from './project-application/components/project-application-form/project-application-form-policy-radio-button/project-application-form-policy-radio-button.component';
 import {MatCheckboxModule} from '@angular/material/checkbox';
 import {ProjectApplicationFormWorkPackagesListComponent} from './project-application/components/project-application-form/project-application-form-work-packages-list/project-application-form-work-packages-list.component';
-import { ProjectApplicationFormWorkPackageSectionComponent } from './project-application/containers/project-application-form-page/project-application-form-work-package-section/project-application-form-work-package-section.component';
+import {ProjectApplicationFormWorkPackageSectionComponent} from './project-application/containers/project-application-form-page/project-application-form-work-package-section/project-application-form-work-package-section.component';
+import {ProjectApplicationFormPartnerSectionComponent} from './project-application/containers/project-application-form-page/project-application-form-partner-section/project-application-form-partner-section.component';
+import {ProjectApplicationFormPartnerListComponent} from './project-application/components/project-application-form/project-application-form-partner-list/project-application-form-partner-list.component';
+import {ProjectApplicationFormPartnerDetailComponent} from './project-application/containers/project-application-form-page/project-application-form-partner-section/project-application-form-partner-detail/project-application-form-partner-detail.component';
+import {ProjectApplicationFormPartnerEditComponent} from './project-application/components/project-application-form/project-application-form-partner-edit/project-application-form-partner-edit.component';
+import {MatButtonToggleModule} from '@angular/material/button-toggle';
 
 @NgModule({
   declarations: [
@@ -68,6 +73,10 @@ import { ProjectApplicationFormWorkPackageSectionComponent } from './project-app
     ProjectApplicationFormPageComponent,
     ProjectApplicationFormComponent,
     ProjectApplicationFormPolicyRadioButtonComponent,
+    ProjectApplicationFormPartnerSectionComponent,
+    ProjectApplicationFormPartnerListComponent,
+    ProjectApplicationFormPartnerDetailComponent,
+    ProjectApplicationFormPartnerEditComponent,
     ProjectApplicationFormWorkPackagesListComponent,
     ProjectApplicationFormWorkPackageSectionComponent
   ],
@@ -87,6 +96,7 @@ import { ProjectApplicationFormWorkPackageSectionComponent } from './project-app
     MatSidenavModule,
     MatTooltipModule,
     MatCheckboxModule,
+    MatButtonToggleModule,
   ],
   exports: [
     ProjectApplicationListComponent,
