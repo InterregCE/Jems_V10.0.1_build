@@ -20,6 +20,9 @@
                 <mat-label>{{'result.indicator.form.field.specific.code' | translate}}</mat-label>
                 <mat-select name="indicatorCode" formControlName="indicatorCode" [disableOptionCentering]="true"
                             panelClass="material-select-panel">
+                    <mat-option>
+                        {{'result.indicator.code.not.applicable' | translate}}
+                    </mat-option>
                     <mat-option *ngFor="let code of indicatorCodes" [value]="code">
                         {{code}}
                     </mat-option>
@@ -82,7 +85,7 @@
             </mat-form-field>
             <mat-form-field class="field-third">
                 <mat-label>{{'result.indicator.form.field.baseline' | translate}}</mat-label>
-                <input name="baseline" formControlName="baseline" matInput
+                <input name="baseline" formControlName="baseline" matInput type="number"
                        placeholder="{{'result.indicator.form.field.baseline' | translate}}">
             </mat-form-field>
             <mat-form-field class="field-third">
@@ -98,7 +101,7 @@
             </mat-form-field>
             <mat-form-field class="field-third">
                 <mat-label>{{'result.indicator.form.field.final.target' | translate}}</mat-label>
-                <input name="finalTarget" formControlName="finalTarget" matInput
+                <input name="finalTarget" formControlName="finalTarget" matInput type="number"s
                        placeholder="{{'result.indicator.form.field.final.target' | translate}}">
             </mat-form-field>
             <mat-form-field class="field-third">

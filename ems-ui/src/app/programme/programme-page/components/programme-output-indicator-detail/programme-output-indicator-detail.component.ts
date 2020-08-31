@@ -143,8 +143,8 @@ export class ProgrammeOutputIndicatorDetailComponent extends ViewEditForm implem
           name: this.outputIndicatorForm?.controls?.indicatorName?.value,
           programmeObjectivePolicy: this.outputIndicatorForm?.controls?.specificObjective?.value,
           measurementUnit: this.outputIndicatorForm?.controls?.measurementUnit?.value,
-          milestone: Number(this.outputIndicatorForm?.controls?.milestone?.value),
-          finalTarget: Number(this.outputIndicatorForm?.controls?.finalTarget?.value),
+          milestone: this.outputIndicatorForm?.controls?.milestone?.value,
+          finalTarget: this.outputIndicatorForm?.controls?.finalTarget?.value,
         })
       } else {
         this.updateOutputIndicator.emit({
@@ -154,8 +154,8 @@ export class ProgrammeOutputIndicatorDetailComponent extends ViewEditForm implem
           name: this.outputIndicatorForm?.controls?.indicatorName?.value,
           programmeObjectivePolicy: this.outputIndicatorForm?.controls?.specificObjective?.value,
           measurementUnit: this.outputIndicatorForm?.controls?.measurementUnit?.value,
-          milestone: Number(this.outputIndicatorForm?.controls?.milestone?.value),
-          finalTarget: Number(this.outputIndicatorForm?.controls?.finalTarget?.value),
+          milestone: this.outputIndicatorForm?.controls?.milestone?.value,
+          finalTarget: this.outputIndicatorForm?.controls?.finalTarget?.value,
         })
       }
     });
