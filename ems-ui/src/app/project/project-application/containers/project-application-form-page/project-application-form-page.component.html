@@ -1,6 +1,5 @@
-<div class="container">
+<div class="container" *ngIf="details$ | async as details">
     <app-project-application-form
-            *ngIf="details$ | async as details"
             [project]="details.projectDetails.project"
             [editable]="details.projectDetails.editable"
             [priorities]="details.callObjectives.priorities"
@@ -10,13 +9,14 @@
             (updateData)="updateProjectData$.next($event)">
     </app-project-application-form>
     <div class="section">
-        <app-project-application-form-work-package-section
-                [projectId]="projectId">
-        </app-project-application-form-work-package-section>
-    </div>
-    <div class="section">
         <app-project-application-form-partner-section
                 [projectId]="projectId">
         </app-project-application-form-partner-section>
+    </div>
+    <div class="section">
+        <app-project-application-form-work-package-section
+                [projectId]="projectId"
+                [editable]="details.projectDetails.editable">
+        </app-project-application-form-work-package-section>
     </div>
 </div>

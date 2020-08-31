@@ -2,6 +2,7 @@ import {ChangeDetectionStrategy, Component, EventEmitter, Input, Output} from '@
 import {MatSort} from '@angular/material/sort';
 import {TableConfiguration} from '@common/components/table/model/table.configuration';
 import {PageOutputWorkPackageSimple} from '@cat/api'
+import {ActivatedRoute} from '@angular/router';
 
 @Component({
   selector: 'app-project-application-form-work-packages-list',
@@ -10,6 +11,8 @@ import {PageOutputWorkPackageSimple} from '@cat/api'
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class ProjectApplicationFormWorkPackagesListComponent {
+  projectId = this.activatedRoute.snapshot.params.projectId
+
   @Input()
   workPackagePage: PageOutputWorkPackageSimple;
   @Input()
@@ -22,19 +25,21 @@ export class ProjectApplicationFormWorkPackagesListComponent {
   newSort: EventEmitter<Partial<MatSort>> = new EventEmitter<Partial<MatSort>>();
 
   tableConfiguration: TableConfiguration = new TableConfiguration({
-    routerLink: '/workPackage/',
+    routerLink: '/project/' + this.projectId + '/workPackage/',
     isTableClickable: true,
     columns: [
       {
-        displayedColumn: 'project.application.form.work.package.number',
+        displayedColumn: 'project.application.form.workpackage.number',
         elementProperty: 'number',
         sortProperty: 'number'
       },
       {
-        displayedColumn: 'project.application.form.work.package.name',
+        displayedColumn: 'project.application.form.workpackage.name',
         elementProperty: 'name',
         sortProperty: 'name',
       },
     ]
   });
+
+  constructor(private activatedRoute: ActivatedRoute) {}
 }

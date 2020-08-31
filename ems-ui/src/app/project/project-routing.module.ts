@@ -7,6 +7,7 @@ import {ProjectApplicationQualityCheckComponent} from './project-application/com
 import {ProjectApplicationEligibilityCheckComponent} from './project-application/components/project-application-detail/project-application-eligibility-check/project-application-eligibility-check.component';
 import {ProjectApplicationFundingPageComponent} from './project-application/containers/project-application-detail/project-application-funding-page/project-application-funding-page.component';
 import {ProjectApplicationEligibilityDecisionPageComponent} from './project-application/containers/project-application-detail/project-application-eligibility-decision-page/project-application-eligibility-decision-page.component';
+import {WorkPackageDetailsComponent} from './project-application/containers/project-application-form-page/project-application-form-work-package-section/work-package-details/work-package-details.component';
 import {ProjectApplicationFormPageComponent} from './project-application/containers/project-application-form-page/project-application-form-page.component';
 import {ProjectApplicationFormPartnerDetailComponent} from './project-application/containers/project-application-form-page/project-application-form-partner-section/project-application-form-partner-detail/project-application-form-partner-detail.component';
 
@@ -56,13 +57,21 @@ const routes: Routes = [
     path: 'project/:projectId/partner/:partnerId',
     component: ProjectApplicationFormPartnerDetailComponent,
     canActivate: [AuthenticationGuard]
+  },
+  {
+    path: 'project/:projectId/workPackage',
+    component: WorkPackageDetailsComponent,
+    canActivate: [AuthenticationGuard]
+  },
+  {
+    path: 'project/:projectId/workPackage/:workPackageId',
+    component: WorkPackageDetailsComponent,
+    canActivate: [AuthenticationGuard]
   }
-
 ];
 
 @NgModule({
   imports: [RouterModule.forChild(routes)],
   exports: [RouterModule]
 })
-export class ProjectRoutingModule {
-}
+export class ProjectRoutingModule { }

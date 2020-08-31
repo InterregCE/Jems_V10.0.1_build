@@ -1,7 +1,9 @@
 <h6 class="spaced-elements" id="projectWorkPlanHeading">{{'project.application.form.section.part.c.subsection.four' | translate}}</h6>
 
-<button class="spaced-elements" mat-raised-button color="primary" [routerLink]="'/workPackage'">
-    + {{'project.application.form.add.work.package' | translate}}
+<button class="spaced-elements" mat-raised-button color="primary"
+        [routerLink]="'/project/' + projectId + '/workPackage'"
+        [disabled]="!editable">
+    + {{'project.application.form.add.workpackage' | translate}}
 </button>
 
 <app-project-application-form-work-packages-list
