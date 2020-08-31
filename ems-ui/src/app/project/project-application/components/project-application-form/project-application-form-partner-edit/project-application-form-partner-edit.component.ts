@@ -27,6 +27,8 @@ export class ProjectApplicationFormPartnerEditComponent extends ViewEditForm imp
 
   @Input()
   partner: OutputProjectPartner;
+  @Input()
+  editable: boolean;
 
   @Output()
   create = new EventEmitter<InputProjectPartnerCreate>();
@@ -61,7 +63,7 @@ export class ProjectApplicationFormPartnerEditComponent extends ViewEditForm imp
 
   ngOnInit(): void {
     super.ngOnInit();
-    if (!this.partner?.id) {
+    if (this.editable && !this.partner?.id) {
       this.changeFormState$.next(FormState.EDIT);
     }
     if (!this.error$) {

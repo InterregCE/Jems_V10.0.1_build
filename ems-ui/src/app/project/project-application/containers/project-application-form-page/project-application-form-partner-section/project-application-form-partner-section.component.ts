@@ -15,6 +15,8 @@ import {ProjectPartnerService} from '@cat/api';
 export class ProjectApplicationFormPartnerSectionComponent {
   @Input()
   projectId: number;
+  @Input()
+  editable: boolean;
 
   newPageSize$ = new Subject<number>();
   newPageIndex$ = new Subject<number>();
