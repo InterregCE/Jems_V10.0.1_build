@@ -31,8 +31,8 @@ export class ProgrammeIndicatorsOverviewPageComponent extends BaseComponent {
 
   currentOutputIndicatorPage$ =
     combineLatest([
-      this.newOutputIndicatorPageSize$.pipe(startWith(Tables.DEFAULT_INITIAL_PAGE_INDEX)),
-      this.newOutputIndicatorPageIndex$.pipe(startWith(Tables.DEFAULT_INITIAL_PAGE_SIZE)),
+      this.newOutputIndicatorPageIndex$.pipe(startWith(Tables.DEFAULT_INITIAL_PAGE_INDEX)),
+      this.newOutputIndicatorPageSize$.pipe(startWith(Tables.DEFAULT_INITIAL_PAGE_SIZE)),
       this.newOutputIndicatorSort$.pipe(
         startWith(Tables.DEFAULT_INITIAL_SORT),
         map(sort => sort?.direction ? sort : Tables.DEFAULT_INITIAL_SORT),
@@ -47,8 +47,8 @@ export class ProgrammeIndicatorsOverviewPageComponent extends BaseComponent {
 
   currentResultIndicatorPage$ =
     combineLatest([
-      this.newResultIndicatorPageSize$.pipe(startWith(Tables.DEFAULT_INITIAL_PAGE_INDEX)),
-      this.newResultIndicatorPageIndex$.pipe(startWith(Tables.DEFAULT_INITIAL_PAGE_SIZE)),
+      this.newResultIndicatorPageIndex$.pipe(startWith(Tables.DEFAULT_INITIAL_PAGE_INDEX)),
+      this.newResultIndicatorPageSize$.pipe(startWith(Tables.DEFAULT_INITIAL_PAGE_SIZE)),
       this.newResultIndicatorSort$.pipe(
         startWith(Tables.DEFAULT_INITIAL_SORT),
         map(sort => sort?.direction ? sort : Tables.DEFAULT_INITIAL_SORT),
