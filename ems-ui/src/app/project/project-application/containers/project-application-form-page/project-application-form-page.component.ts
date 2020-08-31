@@ -79,7 +79,7 @@ export class ProjectApplicationFormPageComponent extends BaseComponent implement
       map(objectives => ({
         priorities: objectives
           .sort((a,b) => {
-            const orderBool = a.code > b.code;
+            const orderBool = a.code.toLocaleLowerCase() > b.code.toLocaleLowerCase();
             return orderBool ? 1 : -1;
           })
           .map(objective => objective.code + ' - ' + objective.title),
