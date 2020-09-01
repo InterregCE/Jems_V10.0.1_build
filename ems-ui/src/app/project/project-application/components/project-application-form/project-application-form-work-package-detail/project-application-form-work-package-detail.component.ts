@@ -65,7 +65,7 @@ export class ProjectApplicationFormWorkPackageDetailComponent extends ViewEditFo
 
   ngOnInit(): void {
     super.ngOnInit();
-    if (this.editable) {
+    if (this.editable && !this.workPackage.id) {
       this.changeFormState$.next(FormState.EDIT);
     } else {
       this.enterViewMode();
