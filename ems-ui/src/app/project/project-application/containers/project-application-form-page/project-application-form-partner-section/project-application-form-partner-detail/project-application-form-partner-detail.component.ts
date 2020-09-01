@@ -67,6 +67,7 @@ export class ProjectApplicationFormPartnerDetailComponent extends BaseComponent 
       tap(() => this.partnerSaveError$.next(null)),
       tap(() => this.partnerSaveSuccess$.next(true)),
       tap(saved => Log.info('Created partner:', this, saved)),
+      tap(() => this.projectApplicationFormSidenavService.refreshPartners()),
     );
 
   private partner$ = merge(this.partnerById$, this.savedPartner$, this.createdPartner$);

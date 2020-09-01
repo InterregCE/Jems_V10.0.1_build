@@ -51,6 +51,7 @@ export class WorkPackageDetailsComponent extends BaseComponent implements OnInit
       tap(() => this.saveSuccess$.next(true)),
       tap(() => this.saveError$.next(null)),
       tap(saved => Log.info('Created work package data:', this, saved)),
+      tap(() => this.projectApplicationFormSidenavService.refreshPackages()),
       catchError((error: HttpErrorResponse) => {
         this.saveError$.next(error.error);
         throw error;
