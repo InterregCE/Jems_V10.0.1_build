@@ -45,8 +45,8 @@ export class CallPageComponent {
 
   currentApplicationPage$ =
     combineLatest([
-      this.newApplicationsPageSize$.pipe(startWith(Tables.DEFAULT_INITIAL_PAGE_INDEX)),
-      this.newApplicationsPageIndex$.pipe(startWith(Tables.DEFAULT_INITIAL_PAGE_SIZE)),
+      this.newApplicationsPageIndex$.pipe(startWith(Tables.DEFAULT_INITIAL_PAGE_INDEX)),
+      this.newApplicationsPageSize$.pipe(startWith(Tables.DEFAULT_INITIAL_PAGE_SIZE)),
       this.newApplicationsSort$.pipe(
         startWith(Tables.DEFAULT_INITIAL_SORT),
         map(sort => sort?.direction ? sort : Tables.DEFAULT_INITIAL_SORT),

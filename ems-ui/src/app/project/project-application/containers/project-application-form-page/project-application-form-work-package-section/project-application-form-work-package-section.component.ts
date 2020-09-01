@@ -25,8 +25,8 @@ export class ProjectApplicationFormWorkPackageSectionComponent{
 
   currentWorkPackagePage$ =
     combineLatest([
-      this.newPageSize$.pipe(startWith(Tables.DEFAULT_INITIAL_PAGE_INDEX)),
-      this.newPageIndex$.pipe(startWith(Tables.DEFAULT_INITIAL_PAGE_SIZE)),
+      this.newPageIndex$.pipe(startWith(Tables.DEFAULT_INITIAL_PAGE_INDEX)),
+      this.newPageSize$.pipe(startWith(Tables.DEFAULT_INITIAL_PAGE_SIZE)),
       this.newSort$.pipe(
         startWith(Tables.DEFAULT_INITIAL_SORT),
         map(sort => sort?.direction ? sort : Tables.DEFAULT_INITIAL_SORT),

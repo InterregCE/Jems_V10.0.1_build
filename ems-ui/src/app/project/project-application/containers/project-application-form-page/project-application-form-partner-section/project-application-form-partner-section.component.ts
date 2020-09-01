@@ -24,8 +24,8 @@ export class ProjectApplicationFormPartnerSectionComponent {
 
   partnerPage$ =
     combineLatest([
-      this.newPageSize$.pipe(startWith(Tables.DEFAULT_INITIAL_PAGE_INDEX)),
-      this.newPageIndex$.pipe(startWith(Tables.DEFAULT_INITIAL_PAGE_SIZE)),
+      this.newPageIndex$.pipe(startWith(Tables.DEFAULT_INITIAL_PAGE_INDEX)),
+      this.newPageSize$.pipe(startWith(Tables.DEFAULT_INITIAL_PAGE_SIZE)),
       this.newSort$.pipe(
         startWith({active: 'sortNumber', direction: 'asc'}),
         map(sort => sort?.direction ? sort : {active: 'sortNumber', direction: 'asc'}),
