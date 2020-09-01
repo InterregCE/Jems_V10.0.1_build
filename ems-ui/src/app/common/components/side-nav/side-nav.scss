@@ -1,4 +1,4 @@
-.side-nav-container{
+.side-nav-container {
   padding: 10px;
   margin-top: 60px;
   height: 100% !important;
@@ -10,18 +10,7 @@
   list-style-type: none;
 }
 
-.side-nav-subsection{
-  padding-left: 10px;
-  padding-top: 3px;
-  cursor: pointer;
-}
-.back-link {
-  padding-left: 30px;
-}
-
 .side-nav-section {
-  font-size: large;
-  padding-top: 20px;
   cursor: pointer;
 }
 
@@ -37,7 +26,7 @@ html {
   cursor: default;
 }
 
-.side-nav-content-subtitle{
+.side-nav-content-subtitle {
   text-align: center;
   font-size: large;
   font-weight: bold;

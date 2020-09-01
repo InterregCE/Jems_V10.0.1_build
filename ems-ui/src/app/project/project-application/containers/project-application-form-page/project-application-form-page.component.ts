@@ -10,15 +10,13 @@ import {
   OutputProjectStatus,
   ProjectService
 } from '@cat/api';
-import {SideNavService} from '@common/components/side-nav/side-nav.service';
 import {BaseComponent} from '@common/components/base-component';
-import {HeadlineType} from '@common/components/side-nav/headline-type';
-import {HeadlineRoute} from '@common/components/side-nav/headline-route';
 import {combineLatest, merge, Subject} from 'rxjs';
 import {Log} from '../../../../common/utils/log';
 import {I18nValidationError} from '@common/validation/i18n-validation-error';
 import {HttpErrorResponse} from '@angular/common/http';
 import {Permission} from 'src/app/security/permissions/permission';
+import {ProjectApplicationFormSidenavService} from './services/project-application-form-sidenav.service';
 
 @Component({
   selector: 'app-project-application-form-page',
@@ -38,7 +36,7 @@ export class ProjectApplicationFormPageComponent extends BaseComponent implement
   constructor(private projectStore: ProjectStore,
               private projectService: ProjectService,
               private activatedRoute: ActivatedRoute,
-              private sideNavService: SideNavService,
+              private projectApplicationFormSidenavService: ProjectApplicationFormSidenavService,
               private callService: CallService) {
     super();
   }
@@ -70,7 +68,7 @@ export class ProjectApplicationFormPageComponent extends BaseComponent implement
           .map(objective => objective.code + ' - ' + objective.title),
         objectivesWithPolicies: this.getObjectivesWithPolicies(objectives)
       }))
-    )
+    );
 
   private projectDetails$ = merge(
     this.projectStore.getProject(),
@@ -78,7 +76,7 @@ export class ProjectApplicationFormPageComponent extends BaseComponent implement
   )
     .pipe(
       takeUntil(this.destroyed$),
-      tap(project => this.setHeadlines(project.id + ' ' + project.acronym)),
+      tap(project => this.projectApplicationFormSidenavService.setAcronym(project.acronym)),
       tap(project => this.fetchObjectives$.next(project)),
       map(project => ({
         project,
@@ -95,58 +93,11 @@ export class ProjectApplicationFormPageComponent extends BaseComponent implement
       map(
         ([projectDetails, callObjectives]) => ({projectDetails, callObjectives})
       )
-    )
+    );
 
   ngOnInit() {
     this.projectStore.init(this.projectId);
-  }
-
-  private setHeadlines(acronym: string): void {
-    this.sideNavService.setHeadlines(this.destroyed$, [
-      {
-        headline: 'back.project.overview',
-        route: '/project/' + this.projectId,
-        type: HeadlineType.BACKROUTE
-      },
-      {
-        headline: 'project.application.form.title',
-        type: HeadlineType.TITLE
-      },
-      {
-        headline: acronym,
-        type: HeadlineType.SUBTITLE
-      },
-      {
-        headline: 'project.application.form.section.part.a',
-        scrollRoute: 'applicationFormHeading',
-        type: HeadlineType.SECTION
-      },
-      {
-        headline: 'project.application.form.section.part.a.subsection.one',
-        scrollRoute: 'projectIdentificationHeading',
-        type:  HeadlineType.SUBSECTION
-      },
-      {
-        headline: 'project.application.form.section.part.a.subsection.two',
-        scrollRoute: 'projectSummaryHeading',
-        type:  HeadlineType.SUBSECTION
-      },
-      {
-        headline: 'project.application.form.section.part.b',
-        scrollRoute: 'projectPartnersHeading',
-        type:  HeadlineType.SECTION
-      },
-      {
-        headline: 'project.application.form.section.part.c',
-        scrollRoute: 'projectDescriptionHeading',
-        type: HeadlineType.SECTION
-      },
-      {
-        headline: 'project.application.form.section.part.c.subsection.four',
-        scrollRoute: 'projectWorkPlanHeading',
-        type:HeadlineType.SUBSECTION
-      }
-    ]);
+    this.projectApplicationFormSidenavService.init(this.destroyed$, this.projectId);
   }
 
   private getObjectivesWithPolicies(objectives: OutputCallProgrammePriority[]): { [key: string]: InputProjectData.SpecificObjectiveEnum[] } {

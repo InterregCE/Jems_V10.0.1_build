@@ -5,6 +5,7 @@ import {flatMap, map, startWith, tap} from 'rxjs/operators';
 import {Tables} from '../../../../../common/utils/tables';
 import {Log} from '../../../../../common/utils/log';
 import {ProjectPartnerService} from '@cat/api';
+import {ProjectApplicationFormSidenavService} from '../services/project-application-form-sidenav.service';
 
 @Component({
   selector: 'app-project-application-form-partner-section',
