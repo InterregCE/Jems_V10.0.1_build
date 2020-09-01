@@ -13,8 +13,7 @@ import {
 } from '@cat/api';
 import {BaseComponent} from '@common/components/base-component';
 import {ProjectStore} from '../../../project-application-detail/services/project-store.service';
-import {HeadlineType} from '@common/components/side-nav/headline-type';
-import {SideNavService} from '@common/components/side-nav/side-nav.service';
+import {ProjectApplicationFormSidenavService} from '../../services/project-application-form-sidenav.service';
 
 @Component({
   selector: 'app-project-application-form-partner-detail',
@@ -77,7 +76,7 @@ export class ProjectApplicationFormPartnerDetailComponent extends BaseComponent 
     this.projectStore.getProject()
   ])
     .pipe(
-      tap(([workPackage,project]) => this.setHeadlines(project.id + ' ' + project.acronym)),
+      tap(([partner, project]) => this.projectApplicationFormSidenavService.setAcronym(project.acronym)),
       map(
         ([partner, project]) => ({
           partner,
@@ -85,76 +84,22 @@ export class ProjectApplicationFormPartnerDetailComponent extends BaseComponent 
             || project.projectStatus.status === OutputProjectStatus.StatusEnum.RETURNEDTOAPPLICANT
         })
       )
-    )
-
+    );
 
   constructor(private partnerService: ProjectPartnerService,
               private activatedRoute: ActivatedRoute,
               private projectStore: ProjectStore,
               private router: Router,
-              private sideNavService: SideNavService) {
+              private projectApplicationFormSidenavService: ProjectApplicationFormSidenavService) {
     super();
   }
 
   ngOnInit(): void {
     this.projectStore.init(this.projectId);
+    this.projectApplicationFormSidenavService.init(this.destroyed$, this.projectId);
   }
 
   redirectToPartnerOverview(): void {
     this.router.navigate(['/project/' + this.projectId + '/applicationForm']);
-  }
-
-  private setHeadlines(acronym: string): void {
-    this.sideNavService.setHeadlines(this.destroyed$, [
-      {
-        headline: 'back.project.overview',
-        route: '/project/' + this.projectId,
-        type: HeadlineType.BACKROUTE
-      },
-      {
-        headline: 'project.application.form.title',
-        type: HeadlineType.TITLE
-      },
-      {
-        headline: acronym,
-        type: HeadlineType.SUBTITLE
-      },
-      {
-        headline: 'project.application.form.section.part.a',
-        scrollRoute: 'applicationFormHeading',
-        route: '/project/' + this.projectId + '/applicationForm',
-        type: HeadlineType.SECTION
-      },
-      {
-        headline: 'project.application.form.section.part.a.subsection.one',
-        scrollRoute: 'projectIdentificationHeading',
-        route: '/project/' + this.projectId + '/applicationForm',
-        type:  HeadlineType.SUBSECTION
-      },
-      {
-        headline: 'project.application.form.section.part.a.subsection.two',
-        scrollRoute: 'projectSummaryHeading',
-        route: '/project/' + this.projectId + '/applicationForm',
-        type:  HeadlineType.SUBSECTION
-      },
-      {
-        headline: 'project.application.form.section.part.b',
-        scrollRoute: 'projectPartnersHeading',
-        route: '/project/' + this.projectId + '/applicationForm',
-        type:  HeadlineType.SECTION
-      },
-      {
-        headline: 'project.application.form.section.part.c',
-        scrollRoute: 'projectDescriptionHeading',
-        route: '/project/' + this.projectId + '/applicationForm',
-        type: HeadlineType.SECTION
-      },
-      {
-        headline: 'project.application.form.section.part.c.subsection.four',
-        scrollRoute: 'projectWorkPlanHeading',
-        route: '/project/' + this.projectId + '/applicationForm',
-        type:HeadlineType.SUBSECTION
-      }
-    ]);
   }
 }

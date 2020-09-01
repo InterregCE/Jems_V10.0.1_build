@@ -1,15 +1,14 @@
 import {ChangeDetectionStrategy, Component, EventEmitter, OnInit} from '@angular/core';
 import {BaseComponent} from '@common/components/base-component';
 import {ActivatedRoute, Router} from '@angular/router';
-import {WorkPackageService, InputWorkPackageUpdate, InputWorkPackageCreate, OutputProjectStatus} from '@cat/api'
+import {InputWorkPackageCreate, InputWorkPackageUpdate, OutputProjectStatus, WorkPackageService} from '@cat/api'
 import {combineLatest, merge, of, Subject} from 'rxjs';
 import {catchError, flatMap, map, tap} from 'rxjs/operators';
 import {Log} from '../../../../../../common/utils/log';
 import {HttpErrorResponse} from '@angular/common/http';
 import {I18nValidationError} from '@common/validation/i18n-validation-error';
 import {ProjectStore} from '../../../project-application-detail/services/project-store.service';
-import {HeadlineType} from '@common/components/side-nav/headline-type';
-import {SideNavService} from '@common/components/side-nav/side-nav.service';
+import {ProjectApplicationFormSidenavService} from '../../services/project-application-form-sidenav.service';
 
 @Component({
   selector: 'app-work-package-details',
@@ -17,7 +16,7 @@ import {SideNavService} from '@common/components/side-nav/side-nav.service';
   styleUrls: ['./work-package-details.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class WorkPackageDetailsComponent extends BaseComponent implements OnInit{
+export class WorkPackageDetailsComponent extends BaseComponent implements OnInit {
   projectId = this.activatedRoute?.snapshot?.params?.projectId;
   workPackageId = this.activatedRoute?.snapshot?.params?.workPackageId;
 
@@ -26,11 +25,11 @@ export class WorkPackageDetailsComponent extends BaseComponent implements OnInit
   updateWorkPackageData$ = new EventEmitter<InputWorkPackageUpdate>()
   createWorkPackageData$ = new EventEmitter<InputWorkPackageCreate>()
 
-  constructor( private workPackageService: WorkPackageService,
-               private activatedRoute: ActivatedRoute,
-               private projectStore: ProjectStore,
-               private sideNavService: SideNavService,
-               private router: Router) {
+  constructor(private workPackageService: WorkPackageService,
+              private activatedRoute: ActivatedRoute,
+              private projectStore: ProjectStore,
+              private projectApplicationFormSidenavService: ProjectApplicationFormSidenavService,
+              private router: Router) {
     super();
   }
 
@@ -60,7 +59,7 @@ export class WorkPackageDetailsComponent extends BaseComponent implements OnInit
 
   public workPackageDetails$ = merge(
     this.workPackageId
-      ?  this.workPackageService.getWorkPackageById(this.workPackageId, this.projectId)
+      ? this.workPackageService.getWorkPackageById(this.workPackageId, this.projectId)
       : of({}),
     this.updatedWorkPackageData$,
     this.createdWorkPackageData$
@@ -71,74 +70,24 @@ export class WorkPackageDetailsComponent extends BaseComponent implements OnInit
     this.projectStore.getProject()
   ])
     .pipe(
-      tap(([workPackage,project]) => this.setHeadlines(project.id + ' ' + project.acronym)),
+      tap(([workPackage, project]) =>
+        this.projectApplicationFormSidenavService.setAcronym(project.acronym)
+      ),
       map(
         ([workPackage, project]) => ({
           workPackage,
           editable: project.projectStatus.status === OutputProjectStatus.StatusEnum.DRAFT
-            || project.projectStatus.status === OutputProjectStatus.StatusEnum.RETURNEDTOAPPLICANT })
+            || project.projectStatus.status === OutputProjectStatus.StatusEnum.RETURNEDTOAPPLICANT
+        })
       )
     )
 
   ngOnInit(): void {
     this.projectStore.init(this.projectId);
+    this.projectApplicationFormSidenavService.init(this.destroyed$, this.projectId);
   }
 
   redirectToWorkPackageOverview(): void {
     this.router.navigate(['/project/' + this.projectId + '/applicationForm']);
-  }
-
-  private setHeadlines(acronym: string): void {
-    this.sideNavService.setHeadlines(this.destroyed$, [
-      {
-        headline: 'back.project.overview',
-        route: '/project/' + this.projectId,
-        type: HeadlineType.BACKROUTE
-      },
-      {
-        headline: 'project.application.form.title',
-        type: HeadlineType.TITLE
-      },
-      {
-        headline: acronym,
-        type: HeadlineType.SUBTITLE
-      },
-      {
-        headline: 'project.application.form.section.part.a',
-        scrollRoute: 'applicationFormHeading',
-        route: '/project/' + this.projectId + '/applicationForm',
-        type: HeadlineType.SECTION
-      },
-      {
-        headline: 'project.application.form.section.part.a.subsection.one',
-        scrollRoute: 'projectIdentificationHeading',
-        route: '/project/' + this.projectId + '/applicationForm',
-        type:  HeadlineType.SUBSECTION
-      },
-      {
-        headline: 'project.application.form.section.part.a.subsection.two',
-        scrollRoute: 'projectSummaryHeading',
-        route: '/project/' + this.projectId + '/applicationForm',
-        type:  HeadlineType.SUBSECTION
-      },
-      {
-        headline: 'project.application.form.section.part.b',
-        scrollRoute: 'projectPartnersHeading',
-        route: '/project/' + this.projectId + '/applicationForm',
-        type:  HeadlineType.SECTION
-      },
-      {
-        headline: 'project.application.form.section.part.c',
-        scrollRoute: 'projectDescriptionHeading',
-        route: '/project/' + this.projectId + '/applicationForm',
-        type: HeadlineType.SECTION
-      },
-      {
-        headline: 'project.application.form.section.part.c.subsection.four',
-        scrollRoute: 'projectWorkPlanHeading',
-        route: '/project/' + this.projectId + '/applicationForm',
-        type:HeadlineType.SUBSECTION
-      }
-    ]);
   }
 }

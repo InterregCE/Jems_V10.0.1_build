@@ -1,23 +1,32 @@
-
 <app-top-bar [isLoginNeeded]="isLoginNeeded">
 </app-top-bar>
 
 <mat-sidenav-container class="example-container">
-    <mat-sidenav *ngIf="headlines$ | async as headlines " mode="side" [opened] = "!!headlines.length" class="side-nav-container">
+    <mat-sidenav *ngIf="headlines$ | async as headlines " mode="side" [opened]="!!headlines.length"
+                 class="side-nav-container">
 
         <div *ngFor="let data of headlines">
-            <div class="back-link" *ngIf="data.type == headlineType.BACKROUTE">
-                <a class="dialog-a-text" (click)="navigate(data)"
-                   [routerLink]="">{{data.headline | translate}}</a>
+            <div *ngIf="data.type === HeadlineType.BACKROUTE" [style.padding-left]="data.paddingLeft + 'px'">
+                <a class="dialog-a-text"
+                   (click)="sideNavService.navigate(data)"
+                   [routerLink]="">
+                    {{data.headline | translate}}
+                </a>
             </div>
-            <p class="side-nav-content-title" *ngIf="data.type == headlineType.TITLE"> {{data.headline | translate}}</p>
-            <p class="side-nav-content-subtitle" *ngIf="data.type == headlineType.SUBTITLE"> {{data.headline}}</p>
+            <p class="side-nav-content-title"
+               *ngIf="data.type === HeadlineType.TITLE"> {{data.headline | translate}}</p>
+            <p class="side-nav-content-subtitle" *ngIf="data.type === HeadlineType.SUBTITLE"> {{data.headline}}</p>
         </div>
 
         <ul class="no-bullets">
-            <li *ngFor="let data of headlines" (click)="navigate(data)">
-                <p *ngIf="data.type == headlineType.SUBSECTION" class="side-nav-subsection"> {{ data.headline | translate}}</p>
-                <p *ngIf="data.type == headlineType.SECTION" class="side-nav-section"> {{ data.headline | translate}} </p>
+            <li *ngFor="let data of headlines"
+                (click)="sideNavService.navigate(data)">
+                <p *ngIf="!data.type" class="side-nav-section"
+                   [style.padding-left]="data.paddingLeft + 'px'"
+                   [style.padding-top]="data.paddingTop + 'px'"
+                   [style.font-size]="data.fontSize">
+                    {{ data.headline | translate}}
+                </p>
             </li>
         </ul>
     </mat-sidenav>

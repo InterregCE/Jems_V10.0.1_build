@@ -5,6 +5,7 @@ import {SideNavService} from '@common/components/side-nav/side-nav.service';
 import {HeadlineRoute} from '@common/components/side-nav/headline-route';
 import {Subject} from 'rxjs';
 import {HeadlineType} from '@common/components/side-nav/headline-type';
+import {ViewportScroller} from '@angular/common';
 
 describe('SideNavService', () => {
   let httpTestingController: HttpTestingController;
@@ -26,7 +27,7 @@ describe('SideNavService', () => {
     const destroyed$ = new Subject();
 
     let headlines: HeadlineRoute[] = [];
-    service.getHeadlines().subscribe((items: HeadlineRoute[]) => {headlines = items;});
+    service.getHeadlines().subscribe((items: HeadlineRoute[]) => headlines = items);
 
     service.setHeadlines(destroyed$, [
       {
@@ -50,7 +51,6 @@ describe('SideNavService', () => {
       {
         headline: 'A.1 Project Identification',
         scrollRoute: 'projectIdentificationHeading',
-        type: HeadlineType.SUBSECTION
       }]);
 
     tick(60);
@@ -67,27 +67,19 @@ describe('SideNavService', () => {
     expect(headlines[3].type).toBe(HeadlineType.SECTION)
     expect(headlines[4].headline).toBe('A.1 Project Identification')
     expect(headlines[4].scrollRoute).toBe('projectIdentificationHeading')
-    expect(headlines[4].type).toBe(HeadlineType.SUBSECTION);
 
     destroyed$.next();
     tick();
     expect(headlines.length).toBe(0);
+    // wait for combine latest
+    tick(300);
   }));
 
-  it('should store and pass the alert status', fakeAsync(() => {
-    const destroyed$ = new Subject();
+  it('scroll to anchor', fakeAsync(() => {
+    const scroller = TestBed.inject(ViewportScroller);
+    spyOn(scroller, 'scrollToAnchor').and.callThrough();
 
-    let alertStatus = true;
-    service.getAlertStatus().subscribe((status: boolean) => alertStatus = status);
-
-    service.setAlertStatus(false);
-    service.setHeadlines(destroyed$,[])
-
-    tick(60);
-    expect(alertStatus).toBe(false);
-
-    destroyed$.next();
-    tick();
-    expect(alertStatus).toBeUndefined();
+    service.navigate({scrollRoute: 'scrollRoute'} as any);
+    expect(scroller.scrollToAnchor).toHaveBeenCalledWith('scrollRoute');
   }));
 });

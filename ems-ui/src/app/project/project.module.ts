@@ -49,6 +49,7 @@ import {ProjectApplicationFormPartnerListComponent} from './project-application/
 import {ProjectApplicationFormPartnerDetailComponent} from './project-application/containers/project-application-form-page/project-application-form-partner-section/project-application-form-partner-detail/project-application-form-partner-detail.component';
 import {ProjectApplicationFormPartnerEditComponent} from './project-application/components/project-application-form/project-application-form-partner-edit/project-application-form-partner-edit.component';
 import {MatButtonToggleModule} from '@angular/material/button-toggle';
+import {ProjectApplicationFormSidenavService} from './project-application/containers/project-application-form-page/services/project-application-form-sidenav.service';
 
 @NgModule({
   declarations: [
@@ -109,6 +110,7 @@ import {MatButtonToggleModule} from '@angular/material/button-toggle';
   providers: [
     DatePipe,
     ProjectStore,
+    ProjectApplicationFormSidenavService,
     MatDatepickerModule,
     {provide: MAT_MOMENT_DATE_ADAPTER_OPTIONS, useValue: {useUtc: true}},
     {provide: MAT_DATE_LOCALE, useValue: 'en-GB'}

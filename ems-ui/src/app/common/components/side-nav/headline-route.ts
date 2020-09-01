@@ -1,8 +1,11 @@
 import {HeadlineType} from '@common/components/side-nav/headline-type';
 
-export class HeadlineRoute{
+export class HeadlineRoute {
   headline: string;
   route?: string;
   scrollRoute?: string;
-  type: HeadlineType;
+  type?: HeadlineType;
+  paddingLeft?: number;
+  paddingTop?: number;
+  fontSize?: string;
 }
