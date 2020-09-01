@@ -28,8 +28,8 @@ export class ProjectApplicationFormWorkPackageSectionComponent{
       this.newPageIndex$.pipe(startWith(Tables.DEFAULT_INITIAL_PAGE_INDEX)),
       this.newPageSize$.pipe(startWith(Tables.DEFAULT_INITIAL_PAGE_SIZE)),
       this.newSort$.pipe(
-        startWith(Tables.DEFAULT_INITIAL_SORT),
-        map(sort => sort?.direction ? sort : Tables.DEFAULT_INITIAL_SORT),
+        startWith({active: 'id', direction: 'asc'}),
+        map(sort => sort?.direction ? sort : {active: 'id', direction: 'asc'}),
         map(sort => `${sort.active},${sort.direction}`)
       )
     ])
