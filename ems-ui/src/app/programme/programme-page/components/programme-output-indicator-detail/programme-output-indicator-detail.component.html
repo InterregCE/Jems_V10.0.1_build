@@ -55,7 +55,8 @@
             <mat-select name="specificObjective" formControlName="specificObjective" [disableOptionCentering]="true"
                         panelClass="material-select-panel">
                 <mat-optgroup *ngFor="let priority of priorities" [label]="priority.title">
-                    <mat-option *ngFor="let objective of priority.programmePriorityPolicies" [value]="objective.programmeObjectivePolicy">
+                    <mat-option *ngFor="let objective of priority.programmePriorityPolicies"
+                                [value]="objective.programmeObjectivePolicy">
                         {{objective.code}} -  {{'programme.policy.' + objective.programmeObjectivePolicy | translate}}
                     </mat-option>
                 </mat-optgroup>
@@ -110,7 +111,7 @@
                     class="button"
                     [disabled]="outputIndicatorForm.invalid || submitted"
                     (click)="onSubmit()">
-                 {{'output.indicator.new.button.save' | translate}}
+                {{'output.indicator.new.button.save' | translate}}
             </button>
         </div>
     </form>
@@ -124,21 +125,6 @@
                [show]="!!error.i18nKey"
                [type]="Alert.ERROR">
         <p>{{error.i18nKey | translate}}</p>
-    </app-alert>
-    <app-alert *ngIf="error$ | async as error"
-               [show]="!submitted && !!error.i18nFieldErrors?.milestone?.i18nKey"
-               [type]="Alert.ERROR">
-        <p>{{error.i18nFieldErrors?.milestone?.i18nKey | translate}}</p>
-    </app-alert>
-    <app-alert *ngIf="error$ | async as error"
-               [show]="!submitted && !!error.i18nFieldErrors?.finalTarget?.i18nKey"
-               [type]="Alert.ERROR">
-        <p>{{error.i18nFieldErrors?.finalTarget?.i18nKey | translate}}</p>
-    </app-alert>
-    <app-alert *ngIf="error$ | async as error"
-               [show]="!submitted && !!error.i18nFieldErrors?.identifier?.i18nKey"
-               [type]="Alert.ERROR">
-        <p>{{error.i18nFieldErrors?.identifier?.i18nKey | translate}}</p>
     </app-alert>
 </div>
 
