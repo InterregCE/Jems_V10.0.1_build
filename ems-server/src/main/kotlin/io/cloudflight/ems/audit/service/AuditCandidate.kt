@@ -7,7 +7,7 @@ data class AuditCandidate(
     val projectId: String? = null,
     val description: String
 ) {
-    fun logWithService(auditService: AuditService) {
+    fun logWith(auditService: AuditService) {
         auditService.logEvent(this)
     }
 }
