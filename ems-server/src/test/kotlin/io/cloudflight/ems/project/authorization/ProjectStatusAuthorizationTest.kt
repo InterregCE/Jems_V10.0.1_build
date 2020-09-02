@@ -382,7 +382,8 @@ internal class ProjectStatusAuthorizationTest {
         priorityPolicies = emptyList(),
         status = status,
         startDate = ZonedDateTime.now().minusDays(2),
-        endDate = ZonedDateTime.now().plusDays(2)
+        endDate = ZonedDateTime.now().plusDays(2),
+        lengthOfPeriod = 1
     )
 
     private fun dummyCallExpired() = OutputCall(
@@ -391,7 +392,8 @@ internal class ProjectStatusAuthorizationTest {
         priorityPolicies = emptyList(),
         status = CallStatus.PUBLISHED,
         startDate = ZonedDateTime.now().minusDays(2),
-        endDate = ZonedDateTime.now().minusDays(1)
+        endDate = ZonedDateTime.now().minusDays(1),
+        lengthOfPeriod = 1
     )
 
     private fun provideAdminAndProgramUsers(): Stream<Arguments> {

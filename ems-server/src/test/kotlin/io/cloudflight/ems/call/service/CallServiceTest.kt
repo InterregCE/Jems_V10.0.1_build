@@ -78,7 +78,8 @@ class CallServiceTest {
         startDate = ZonedDateTime.now(),
         endDate = ZonedDateTime.now().plusDays(5L),
         status = CallStatus.DRAFT,
-        description = "This is a dummy call"
+        description = "This is a dummy call",
+        lengthOfPeriod = 1
     )
 
     private fun callWithId(id: Long) = call.copy(id = id)
@@ -90,7 +91,8 @@ class CallServiceTest {
         startDate = call.startDate,
         endDate = call.endDate,
         status = call.status,
-        description = call.description
+        description = call.description,
+        lengthOfPeriod = 1
     )
 
     private fun outputCallListWithId(id: Long) = OutputCallList(
@@ -182,7 +184,9 @@ class CallServiceTest {
             call.startDate,
             call.endDate.withSecond(59).withNano(999999999),
             CallStatus.DRAFT,
+            call.lengthOfPeriod,
             call.description
+
         )
 
         val newCall = InputCallCreate(

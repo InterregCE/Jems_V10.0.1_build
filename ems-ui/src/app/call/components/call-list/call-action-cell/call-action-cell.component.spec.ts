@@ -34,6 +34,7 @@ describe('CallActionCellComponent', () => {
       endDate = new Date('2020-08-03T13:12:00+02:00');
       status = OutputCall.StatusEnum.PUBLISHED;
       description = 'test';
+      lengthOfPeriod = 1;
     } ();
 
     tick();
@@ -47,6 +48,7 @@ describe('CallActionCellComponent', () => {
       endDate = new Date('2320-08-11T13:12:00+05:00');
       status = OutputCall.StatusEnum.PUBLISHED;
       description = 'test';
+      lengthOfPeriod = 1;
     } ();
 
     tick();

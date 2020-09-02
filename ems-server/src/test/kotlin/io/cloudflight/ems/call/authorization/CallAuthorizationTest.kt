@@ -41,7 +41,8 @@ internal class CallAuthorizationTest {
         priorityPolicies = emptyList(),
         status = status,
         startDate = ZonedDateTime.now().minusDays(2),
-        endDate = ZonedDateTime.now().plusDays(2)
+        endDate = ZonedDateTime.now().plusDays(2),
+        lengthOfPeriod = 1
     )
 
     @BeforeEach

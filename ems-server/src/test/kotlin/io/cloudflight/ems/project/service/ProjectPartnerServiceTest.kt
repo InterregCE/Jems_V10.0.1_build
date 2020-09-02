@@ -65,7 +65,8 @@ internal class ProjectPartnerServiceTest {
         status = CallStatus.DRAFT,
         startDate = ZonedDateTime.now(),
         endDate = ZonedDateTime.now(),
-        priorityPolicies = emptySet()
+        priorityPolicies = emptySet(),
+        lengthOfPeriod = 1
     )
     private val projectStatus = ProjectStatus(
         status = ProjectApplicationStatus.APPROVED,

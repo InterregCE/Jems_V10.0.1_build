@@ -10,5 +10,6 @@ data class OutputCall (
     val status: CallStatus,
     val startDate: ZonedDateTime,
     val endDate: ZonedDateTime,
-    val description: String? = null
+    val description: String? = null,
+    val lengthOfPeriod: Int?
 )

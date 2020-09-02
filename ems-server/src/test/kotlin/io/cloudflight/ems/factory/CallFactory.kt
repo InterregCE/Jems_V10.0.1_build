@@ -31,7 +31,8 @@ class CallFactory(
                 emptySet(),
                 callStart,
                 callEnd,
-                CallStatus.PUBLISHED
+                CallStatus.PUBLISHED,
+                lengthOfPeriod = 1
             )
         )
     }

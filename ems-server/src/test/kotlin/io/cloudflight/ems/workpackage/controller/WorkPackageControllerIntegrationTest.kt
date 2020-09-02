@@ -7,6 +7,7 @@ import io.cloudflight.ems.factory.ProjectFactory
 import io.cloudflight.ems.factory.UserFactory
 import io.cloudflight.ems.factory.UserFactory.Companion.ADMINISTRATOR_EMAIL
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post
+import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc
@@ -42,7 +43,7 @@ class WorkPackageControllerIntegrationTest {
         val call = callFactory.savePublishedCallWithoutPolicy(userFactory.adminUser)
         val project = projectFactory.saveProject(userFactory.adminUser, call)
 
-        val inputWorkPackage = InputWorkPackageCreate("Work package name", "", "", 1)
+        val inputWorkPackage = InputWorkPackageCreate("Work package name", "", "", project.id)
 
         mockMvc.perform(
             post("/api/project/${project.id}/workpackage")
@@ -63,8 +64,8 @@ class WorkPackageControllerIntegrationTest {
         val call = callFactory.savePublishedCallWithoutPolicy(userFactory.adminUser)
         val project = projectFactory.saveProject(userFactory.adminUser, call)
 
-        val firstWorkPackage = InputWorkPackageCreate("Work package name", "", "", 2)
-        val secondWorkPackage = InputWorkPackageCreate("Work package name", "", "", 2)
+        val firstWorkPackage = InputWorkPackageCreate("Work package name", "", "", project.id)
+        val secondWorkPackage = InputWorkPackageCreate("Work package name", "", "", project.id)
 
         mockMvc.perform(
             post("/api/project/${project.id}/workpackage")
@@ -82,6 +83,28 @@ class WorkPackageControllerIntegrationTest {
         )
             .andExpect(MockMvcResultMatchers.status().isOk)
             .andExpect(MockMvcResultMatchers.jsonPath("$.number").value(2))
+    }
+
+    @Test
+    @WithUserDetails(value = ADMINISTRATOR_EMAIL)
+    fun `work packages received for project id`() {
+        val call = callFactory.savePublishedCallWithoutPolicy(userFactory.adminUser)
+        val project = projectFactory.saveProject(userFactory.adminUser, call)
+
+        val firstWorkPackage = InputWorkPackageCreate("Work package name", "", "", project.id)
+
+        mockMvc.perform(
+            post("/api/project/${project.id}/workpackage")
+
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .content(jsonMapper.writeValueAsString(firstWorkPackage))
+        )
+            .andExpect(MockMvcResultMatchers.status().isOk)
+
+        mockMvc.perform(
+            get("/api/project/${project.id}/workpackage?page=0")
+        )
+            .andExpect(MockMvcResultMatchers.jsonPath("$.numberOfElements").value(1))
     }
 
 
