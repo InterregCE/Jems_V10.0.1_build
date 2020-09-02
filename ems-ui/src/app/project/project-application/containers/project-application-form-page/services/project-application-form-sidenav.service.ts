@@ -6,6 +6,7 @@ import {flatMap, map, takeUntil, tap} from 'rxjs/operators';
 import {OutputProjectPartner, ProjectPartnerService, WorkPackageService} from '@cat/api';
 import {HeadlineRoute} from '@common/components/side-nav/headline-route';
 import {Log} from '../../../../../common/utils/log';
+import {TranslateService} from '@ngx-translate/core';
 
 @Injectable()
 export class ProjectApplicationFormSidenavService {
@@ -25,7 +26,8 @@ export class ProjectApplicationFormSidenavService {
       map(partners => partners
         .sort((a, b) => a.role === OutputProjectPartner.RoleEnum.LEADPARTNER ? -1 : 1)
         .map(partner => ({
-            headline: partner.name,
+            headline: this.translate.instant('common.label.project.partner.role.' + partner.role)
+              + ' ' + partner.name,
             route: '/project/' + this.projectId + '/partner/' + partner.id,
             paddingLeft: 20,
             paddingTop: 3
@@ -54,7 +56,8 @@ export class ProjectApplicationFormSidenavService {
 
   constructor(private sideNavService: SideNavService,
               private projectPartnerService: ProjectPartnerService,
-              private workPackageService: WorkPackageService) {
+              private workPackageService: WorkPackageService,
+              private translate: TranslateService) {
   }
 
   init(destroyed: Subject<any>, projectId: number): void {
