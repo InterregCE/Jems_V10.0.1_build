@@ -6,6 +6,6 @@
         [success$]="saveSuccess$"
         [error$]="saveError$"
         (updateData)="updateWorkPackageData$.next($event)"
-        (createDate)="createWorkPackageData$.next($event)"
+        (createData)="createWorkPackageData$.next($event)"
         (cancel)="redirectToWorkPackageOverview()">
 </app-project-application-form-work-package-detail>

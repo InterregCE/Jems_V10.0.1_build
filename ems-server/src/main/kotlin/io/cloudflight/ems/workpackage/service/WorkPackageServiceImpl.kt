@@ -30,9 +30,7 @@ class WorkPackageServiceImpl(
     }
 
     @Transactional
-    override fun createWorkPackage(inputWorkPackageCreate: InputWorkPackageCreate): OutputWorkPackage {
-        val projectId = inputWorkPackageCreate.projectId!!
-
+    override fun createWorkPackage(projectId: Long, inputWorkPackageCreate: InputWorkPackageCreate): OutputWorkPackage {
         val project = projectRepository.findById(projectId)
             .orElseThrow { ResourceNotFoundException("project") }
 
@@ -44,9 +42,8 @@ class WorkPackageServiceImpl(
     }
 
     @Transactional
-    override fun updateWorkPackage(inputWorkPackageUpdate: InputWorkPackageUpdate): OutputWorkPackage {
-        val oldWorkPackage = workPackageRepository.findById(inputWorkPackageUpdate.id)
-            .orElseThrow { ResourceNotFoundException("workpackage") }
+    override fun updateWorkPackage(projectId: Long, inputWorkPackageUpdate: InputWorkPackageUpdate): OutputWorkPackage {
+        val oldWorkPackage = workPackageRepository.findFirstByProjectIdAndId(projectId, inputWorkPackageUpdate.id)
 
         val toUpdate = oldWorkPackage.copy(
             name = inputWorkPackageUpdate.name,

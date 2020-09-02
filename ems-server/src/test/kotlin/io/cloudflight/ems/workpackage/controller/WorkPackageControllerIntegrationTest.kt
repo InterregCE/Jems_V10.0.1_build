@@ -43,7 +43,7 @@ class WorkPackageControllerIntegrationTest {
         val call = callFactory.savePublishedCallWithoutPolicy(userFactory.adminUser)
         val project = projectFactory.saveProject(userFactory.adminUser, call)
 
-        val inputWorkPackage = InputWorkPackageCreate("Work package name", "", "", project.id)
+        val inputWorkPackage = InputWorkPackageCreate("Work package name", "", "")
 
         mockMvc.perform(
             post("/api/project/${project.id}/workpackage")
@@ -64,8 +64,8 @@ class WorkPackageControllerIntegrationTest {
         val call = callFactory.savePublishedCallWithoutPolicy(userFactory.adminUser)
         val project = projectFactory.saveProject(userFactory.adminUser, call)
 
-        val firstWorkPackage = InputWorkPackageCreate("Work package name", "", "", project.id)
-        val secondWorkPackage = InputWorkPackageCreate("Work package name", "", "", project.id)
+        val firstWorkPackage = InputWorkPackageCreate("Work package name", "", "")
+        val secondWorkPackage = InputWorkPackageCreate("Work package name", "", "")
 
         mockMvc.perform(
             post("/api/project/${project.id}/workpackage")
@@ -91,7 +91,7 @@ class WorkPackageControllerIntegrationTest {
         val call = callFactory.savePublishedCallWithoutPolicy(userFactory.adminUser)
         val project = projectFactory.saveProject(userFactory.adminUser, call)
 
-        val firstWorkPackage = InputWorkPackageCreate("Work package name", "", "", project.id)
+        val firstWorkPackage = InputWorkPackageCreate("Work package name", "", "")
 
         mockMvc.perform(
             post("/api/project/${project.id}/workpackage")
