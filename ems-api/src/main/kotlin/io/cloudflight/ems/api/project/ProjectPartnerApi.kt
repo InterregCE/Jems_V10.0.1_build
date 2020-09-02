@@ -26,7 +26,7 @@ interface ProjectPartnerApi {
     @ApiImplicitParams(
         ApiImplicitParam(paramType = "query", name = "page", dataType = "integer"),
         ApiImplicitParam(paramType = "query", name = "size", dataType = "integer"),
-        ApiImplicitParam(paramType = "query", name = "sort", dataType = "string")
+        ApiImplicitParam(paramType = "query", name = "sort", dataType = "string", allowMultiple = true)
     )
     @GetMapping
     fun getProjectPartners(@PathVariable projectId: Long, pageable: Pageable): Page<OutputProjectPartner>

@@ -19,7 +19,7 @@ export class ProjectApplicationFormSidenavService {
   private partners$ = this.fetchPartners$
     .pipe(
       flatMap(() =>
-        this.projectPartnerService.getProjectPartners(this.projectId, 0, 100, 'sortNumber,asc')
+        this.projectPartnerService.getProjectPartners(this.projectId, 0, 100, ['role,asc', 'sortNumber,asc'])
       ),
       map(page => page.content),
       tap(partners => Log.info('Fetched the project partners:', this, partners)),

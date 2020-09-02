@@ -68,9 +68,10 @@ class ProjectStatusServiceImpl(
             ?: throw ResourceNotFoundException()
 
         var project = projectRepo.findById(projectId).orElseThrow { ResourceNotFoundException("project") }
+        val oldStatus = project.projectStatus.status
         validateCallOpen(statusChange, project)
         validateDecisionDateIfFunding(statusChange, project)
-        val oldStatus = project.projectStatus.status
+        updateProjectDependingOnStatus(projectId, statusChange.status!!)
 
         val projectStatus =
             projectStatusRepo.save(
@@ -85,6 +86,17 @@ class ProjectStatusServiceImpl(
         ).logWithService(auditService)
 
         return project.toOutputProject()
+    }
+
+    /**
+     * update Project data depending on status.
+     * - resorts Partners on Submission
+     */
+    private fun updateProjectDependingOnStatus(projectId: Long, status: ProjectApplicationStatus) {
+        // renumber project partners on submit
+        if (status == SUBMITTED) {
+            projectPartnerService.updateSortByRole(projectId)
+        }
     }
 
     private fun validateDecisionDateIfFunding(statusChange: InputProjectStatus, project: Project) {
@@ -236,10 +248,6 @@ class ProjectStatusServiceImpl(
 
     private fun updateProject(oldProject: Project, newStatus: ProjectStatus): Project {
         val oldStatus = oldProject.projectStatus.status
-        // renumber project partners on submit
-        if (newStatus.status == SUBMITTED) {
-            projectPartnerService.updateSortByRole(oldProject.id!!)
-        }
         return when {
             oldStatus == RETURNED_TO_APPLICANT -> {
                 oldProject.copy(projectStatus = newStatus, lastResubmission = newStatus)
