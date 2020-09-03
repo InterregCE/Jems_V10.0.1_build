@@ -35,7 +35,8 @@ export class ProjectApplicationFormPartnerSectionComponent {
     ])
       .pipe(
         flatMap(([pageIndex, pageSize, sort]) =>
-          this.projectPartnerService.getProjectPartners(this.projectId, pageIndex, pageSize, sort)),
+          // put lead partner on top by default
+          this.projectPartnerService.getProjectPartners(this.projectId, pageIndex, pageSize, ['role,asc', sort])),
         tap(page => Log.info('Fetched the project partners:', this, page.content)),
       );
 

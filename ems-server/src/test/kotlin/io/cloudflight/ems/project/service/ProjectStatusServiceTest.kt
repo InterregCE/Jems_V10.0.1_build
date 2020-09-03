@@ -182,6 +182,7 @@ internal class ProjectStatusServiceTest {
         every { securityService.currentUser } returns LocalCurrentUser(userApplicant, "hash_pass", emptyList())
         every { userRepository.findByIdOrNull(1) } returns user
         every { projectRepository.findById(1) } returns Optional.of(projectReturned)
+        every { projectPartnerService.updateSortByRole(1) } just Runs
         every { projectStatusRepository.save(any<ProjectStatus>()) } returnsArgument 0
         every {
             projectStatusRepository.findFirstByProjectIdAndStatusNotInOrderByUpdatedDesc(

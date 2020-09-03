@@ -70,7 +70,7 @@ export class ProjectApplicationFormPartnerDetailComponent extends BaseComponent 
       tap(() => this.projectApplicationFormSidenavService.refreshPartners()),
     );
 
-  private partner$ = merge(this.partnerById$, this.savedPartner$, this.createdPartner$);
+  public partner$ = merge(this.partnerById$, this.savedPartner$, this.createdPartner$);
 
   details$ = combineLatest([
     this.partner$,
