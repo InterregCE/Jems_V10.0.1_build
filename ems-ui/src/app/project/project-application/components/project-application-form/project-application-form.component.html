@@ -56,7 +56,7 @@
     <div *ngIf="formState === FormState.EDIT">
         <mat-form-field class="field-full">
             <mat-label>{{'project.application.form.field.project.priority' | translate}}</mat-label>
-            <mat-select (selectionChange)="currentPriority = $event.value" required [(value)]=currentPriority
+            <mat-select (selectionChange)="changeCurrentPriority( $event.value)" required [(value)]=currentPriority
                         panelClass="material-select-panel" formControlName="programmePriority">
                 <mat-option *ngFor="let objective of priorities" [value]="objective">
                     {{objective}}
