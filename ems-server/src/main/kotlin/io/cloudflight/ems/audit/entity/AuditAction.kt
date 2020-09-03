@@ -35,6 +35,9 @@ enum class AuditAction {
     USER_LOGGED_OUT,
     USER_SESSION_EXPIRED,
 
+    //package STRATEGY
+    PROGRAMME_STRATEGIES_CHANGED,
+
     // package USER
     USER_CREATED,
     USER_REGISTERED,
