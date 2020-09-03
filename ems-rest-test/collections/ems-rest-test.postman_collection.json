@@ -446,7 +446,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n\t\"name\": \"{{call_name_to_create}}\",\n\t\"startDate\": \"{{callDateStart}}\",\n\t\"endDate\": \"{{callDateEnd}}\",\n\t\"priorityPolicies\": [ \"{{programmePriorityPolicy}}\" ]\n}\n",
+							"raw": "{\n\t\"name\": \"{{call_name_to_create}}\",\n\t\"priorityPolicies\": [ \"{{programmePriorityPolicy}}\" ],\n\t\"startDate\": \"{{callDateStart}}\",\n\t\"endDate\": \"{{callDateEnd}}\",\n    \"lengthOfPeriod\": 12\n}\n",
 							"options": {
 								"raw": {}
 							}
@@ -3295,11 +3295,6 @@
 									"    pm.expect(application.projectStatus.status).to.eql('SUBMITTED');\r",
 									"});\r",
 									"\r",
-									"pm.test('EA is assigned to user who filled it in', function() {\r",
-									"    pm.expect(application.eligibilityAssessment.user.email)\r",
-									"        .to.eql(pm.variables.get(\"programme_user_email\"));\r",
-									"});\r",
-									"\r",
 									"pm.test('EA result is properly saved', function() {\r",
 									"    pm.expect(application.eligibilityAssessment.result)\r",
 									"        .to.eql(\"PASSED\");\r",
@@ -4084,11 +4079,6 @@
 											"\r",
 											"pm.test('status of the application is not changed', function() {\r",
 											"    pm.expect(application.projectStatus.status).to.eql('SUBMITTED');\r",
-											"});\r",
-											"\r",
-											"pm.test('QA is assigned to user who filled it in', function() {\r",
-											"    pm.expect(application.qualityAssessment.user.email)\r",
-											"        .to.eql(pm.variables.get(\"programme_user_email\"));\r",
 											"});\r",
 											"\r",
 											"pm.test('QA result is properly saved', function() {\r",
@@ -7116,7 +7106,7 @@
 	],
 	"variable": [
 		{
-			"id": "16969979-56ec-4bc5-bb15-3ec8373f0706",
+			"id": "38ac2811-e067-4b24-9840-94680904c1d1",
 			"key": "url",
 			"value": "specify_url_here"
 		}

@@ -10,7 +10,7 @@ import javax.persistence.Id
 import javax.persistence.JoinColumn
 import javax.persistence.ManyToOne
 
-@Entity(name = "work_package")
+@Entity(name = "project_work_package")
 data class WorkPackage(
 
     @Id

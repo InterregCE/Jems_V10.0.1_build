@@ -2,11 +2,9 @@ package io.cloudflight.ems.programme.service
 
 import io.cloudflight.ems.api.programme.dto.InputProgrammeData
 import io.cloudflight.ems.api.programme.dto.OutputProgrammeData
-import io.cloudflight.ems.audit.entity.Audit
 import io.cloudflight.ems.exception.ResourceNotFoundException
 import io.cloudflight.ems.nuts.repository.NutsRegion3Repository
 import io.cloudflight.ems.repository.ProgrammeDataRepository
-import io.cloudflight.ems.security.service.SecurityService
 import io.cloudflight.ems.audit.service.AuditService
 import io.cloudflight.ems.nuts.service.toOutput
 import org.springframework.stereotype.Service
@@ -35,7 +33,7 @@ class ProgrammeDataServiceImpl(
         ).toOutputProgrammeData()
 
         programmeBasicDataChanged(changes = oldProgrammeBasicData.getChange(savedProgrammeData))
-            .logWithService(auditService)
+            .logWith(auditService)
 
         return savedProgrammeData
     }
@@ -49,7 +47,7 @@ class ProgrammeDataServiceImpl(
         val savedProgramme = programmeDataRepository.save(toBeSaved).toOutputProgrammeData()
         val updatedNuts = toBeSaved.programmeNuts.mapTo(HashSet()) { it.toOutput() }
 
-        programmeNutsAreaChanged(updatedNuts).logWithService(auditService)
+        programmeNutsAreaChanged(updatedNuts).logWith(auditService)
         return savedProgramme
     }
 

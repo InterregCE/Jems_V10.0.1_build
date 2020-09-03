@@ -83,7 +83,7 @@ class ProjectStatusServiceImpl(
             projectId = project.id!!,
             oldStatus = oldStatus,
             newStatus = projectStatus.status
-        ).logWithService(auditService)
+        ).logWith(auditService)
 
         return project.toOutputProject()
     }

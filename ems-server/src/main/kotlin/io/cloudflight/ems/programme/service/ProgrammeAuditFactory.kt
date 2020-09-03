@@ -5,6 +5,7 @@ import io.cloudflight.ems.audit.entity.AuditAction
 import io.cloudflight.ems.audit.service.AuditBuilder
 import io.cloudflight.ems.audit.service.AuditCandidate
 import io.cloudflight.ems.nuts.service.NutsIdentifier
+import io.cloudflight.ems.programme.entity.ProgrammeFund
 import java.util.stream.Collectors
 
 fun programmePriorityAdded(programmePriority: OutputProgrammePriority): AuditCandidate {
@@ -30,5 +31,15 @@ fun programmeNutsAreaChanged(updatedNuts: Collection<NutsIdentifier>): AuditCand
 
     return AuditBuilder(AuditAction.PROGRAMME_NUTS_AREA_CHANGED)
         .description("The programme area has been set to:\n$changes")
+        .build()
+}
+
+fun programmeFundsChanged(funds: Iterable<ProgrammeFund>): AuditCandidate {
+    val fundsAsString = funds.asSequence()
+        .filter { it.selected }
+        .map { it.abbreviation }.joinToString(",\n")
+
+    return AuditBuilder(AuditAction.PROGRAMME_FUNDS_CHANGED)
+        .description("Programme funds has been set to:\n$fundsAsString")
         .build()
 }
