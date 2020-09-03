@@ -84,11 +84,7 @@ export class ProjectApplicationFormComponent extends ViewEditForm implements OnI
 
     ngOnInit() {
         super.ngOnInit();
-        if (this.editable) {
-            this.changeFormState$.next(FormState.EDIT);
-        } else {
-            this.enterViewMode();
-        }
+        this.changeFormState$.next(FormState.VIEW);
     }
 
     protected enterViewMode(): void {

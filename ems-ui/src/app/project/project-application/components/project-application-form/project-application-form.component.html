@@ -1,7 +1,7 @@
 <form [formGroup]="applicationForm">
-    <h4>{{project.acronym}} {{'project.application.form.title' | translate}}</h4>
+    <h4 id="applicationFormHeading">{{project.acronym}} {{'project.application.form.title' | translate}}</h4>
 
-    <h5 class="header" id="applicationFormHeading">
+    <h5 class="header">
         {{'project.application.form.section.part.a' | translate}}
     </h5>
     <span class="header-button" *ngxPermissionsExcept="Permission.PROGRAMME_USER">
@@ -80,19 +80,19 @@
 
     <div *ngIf="formState === FormState.VIEW">
         <p class="policy-label">{{'project.application.form.field.project.priority' | translate}}</p>
-        <p *ngIf="previousObjective">
+        <p class="policy-data" *ngIf="previousObjective">
             {{project.projectData.programmePriority.code +  ' - '}}
             {{project.projectData.programmePriority.title}}
         </p>
-        <p *ngIf="!previousObjective">
+        <p class="policy-data" *ngIf="!previousObjective">
             {{'project.application.form.field.project.field.empty' | translate}}
         </p>
         <p class="policy-label">{{'project.application.form.field.project.objective' | translate}}</p>
-        <p *ngIf="previousObjective">
+        <p class="policy-data" *ngIf="previousObjective">
             {{project.projectData.specificObjective.code + ' - '}}
             {{'programme.policy.' + project.projectData.specificObjective.programmeObjectivePolicy | translate}}
         </p>
-        <p *ngIf="!previousObjective">
+        <p class="policy-data" *ngIf="!previousObjective">
             {{'project.application.form.field.project.field.empty' | translate}}
         </p>
     </div>
