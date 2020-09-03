@@ -106,7 +106,8 @@ internal class ProjectStatusServiceTest {
         priorityPolicies = setOf(ProgrammePriorityPolicy(DisadvantagedGroups, "DG")),
         startDate = ZonedDateTime.now().minusDays(2),
         endDate = ZonedDateTime.now().plusDays(2),
-        status = CallStatus.PUBLISHED
+        status = CallStatus.PUBLISHED,
+        lengthOfPeriod = 1
     )
 
     private val projectDraft = createProject(ProjectApplicationStatus.DRAFT)

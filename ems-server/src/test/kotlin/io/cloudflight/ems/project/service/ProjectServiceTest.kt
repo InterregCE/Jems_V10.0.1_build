@@ -107,7 +107,8 @@ class ProjectServiceTest {
         priorityPolicies = setOf(ProgrammePriorityPolicy(HealthcareAcrossBorders, "HAB")),
         startDate = ZonedDateTime.now(),
         endDate = ZonedDateTime.now(),
-        status = CallStatus.PUBLISHED
+        status = CallStatus.PUBLISHED,
+        lengthOfPeriod = 1
     )
 
     @RelaxedMockK

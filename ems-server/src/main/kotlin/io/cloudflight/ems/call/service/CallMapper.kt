@@ -22,7 +22,8 @@ fun InputCallCreate.toEntity(creator: User, priorityPolicies: Set<ProgrammePrior
     status = CallStatus.DRAFT,
     startDate = startDate!!.withSecond(0).withNano(0),
     endDate = endDate!!.withSecond(0).withNano(0).plusMinutes(1).minusNanos(1),
-    description = description
+    description = description,
+    lengthOfPeriod = lengthOfPeriod
 )
 
 fun Call.toOutputCall() = OutputCall(
@@ -32,7 +33,8 @@ fun Call.toOutputCall() = OutputCall(
     status = status,
     startDate = startDate,
     endDate = endDate,
-    description = description
+    description = description,
+    lengthOfPeriod = lengthOfPeriod
 )
 
 fun Call.toOutputCallList() = OutputCallList(

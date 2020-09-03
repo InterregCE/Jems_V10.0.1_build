@@ -86,7 +86,8 @@ class FileStorageServiceTest {
         priorityPolicies = setOf(ProgrammePriorityPolicy(CircularEconomy, "CE")),
         startDate = ZonedDateTime.now(),
         endDate = ZonedDateTime.now(),
-        status = CallStatus.PUBLISHED
+        status = CallStatus.PUBLISHED,
+        lengthOfPeriod = 1
     )
     private val testProject = Project(id = PROJECT_ID, call = dummyCall, applicant = account, acronym = "test project",
         projectStatus = ProjectStatus(status = ProjectApplicationStatus.DRAFT, user = account, updated = ZonedDateTime.now())

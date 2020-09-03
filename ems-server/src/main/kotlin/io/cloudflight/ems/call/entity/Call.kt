@@ -49,5 +49,8 @@ data class Call(
     val status: CallStatus,
 
     @Column
+    val lengthOfPeriod: Int?,
+
+    @Column
     val description: String? = null
 )

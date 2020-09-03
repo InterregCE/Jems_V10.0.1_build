@@ -59,7 +59,8 @@ class WorkPackageServiceTest {
         startDate = ZonedDateTime.now(),
         endDate = ZonedDateTime.now().plusDays(5L),
         status = CallStatus.DRAFT,
-        description = "This is a dummy call"
+        description = "This is a dummy call",
+        lengthOfPeriod = 1
     )
 
     private val statusDraft = ProjectStatus(

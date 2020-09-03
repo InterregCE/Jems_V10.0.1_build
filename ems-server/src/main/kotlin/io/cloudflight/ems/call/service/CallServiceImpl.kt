@@ -82,7 +82,8 @@ class CallServiceImpl(
             priorityPolicies = getPoliciesAsEntities(inputCall.priorityPolicies!!),
             startDate = inputCall.startDate!!,
             endDate = inputCall.endDate!!,
-            description = inputCall.description
+            description = inputCall.description,
+            lengthOfPeriod = inputCall.lengthOfPeriod
         )
 
         return callRepository.save(toUpdate).toOutputCall()
@@ -115,7 +116,7 @@ class CallServiceImpl(
             .orElseThrow { ResourceNotFoundException("call") }
 
         validateIsDraft(call)
-        validatePoliciesNotEmpty(call)
+        validatePublishingRequirementsAchieved(call)
 
         val updatedCall = callRepository.save(call.copy(status = CallStatus.PUBLISHED)).toOutputCall()
 
@@ -133,11 +134,16 @@ class CallServiceImpl(
             )
     }
 
-    private fun validatePoliciesNotEmpty(call: Call) {
+    private fun validatePublishingRequirementsAchieved(call: Call) {
         if (call.priorityPolicies.isEmpty())
             throw I18nValidationException(
                 httpStatus = HttpStatus.UNPROCESSABLE_ENTITY,
                 i18nKey = "call.priorityPolicies.is.empty"
+            )
+        if (call.lengthOfPeriod == null)
+            throw I18nValidationException(
+                httpStatus = HttpStatus.UNPROCESSABLE_ENTITY,
+                i18nKey = "call.lengthOfPeriod.is.empty"
             )
     }
 

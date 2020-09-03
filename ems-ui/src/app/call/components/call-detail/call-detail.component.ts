@@ -89,6 +89,7 @@ export class CallDetailComponent extends ViewEditForm implements OnInit {
       startDate: this.callForm?.controls?.startDate?.value,
       endDate: this.callForm?.controls?.endDate?.value,
       description: this.callForm?.controls?.description?.value,
+      lengthOfPeriod: 1,
       priorityPolicies: this.priorityCheckboxes
         .flatMap(checkbox => checkbox.getCheckedChildPolicies())
     }
