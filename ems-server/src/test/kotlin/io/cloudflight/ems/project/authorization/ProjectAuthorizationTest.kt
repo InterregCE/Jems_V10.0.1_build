@@ -9,6 +9,7 @@ import io.cloudflight.ems.api.user.dto.OutputUserRole
 import io.cloudflight.ems.api.user.dto.OutputUserWithRole
 import io.cloudflight.ems.call.authorization.CallAuthorization
 import io.cloudflight.ems.exception.ResourceNotFoundException
+import io.cloudflight.ems.project.dto.ProjectApplicantAndStatus
 import io.cloudflight.ems.security.model.LocalCurrentUser
 import io.cloudflight.ems.security.service.SecurityService
 import io.cloudflight.ems.security.service.authorization.AuthorizationUtil.Companion.adminUser
@@ -53,12 +54,9 @@ internal class ProjectAuthorizationTest {
             endDate = ZonedDateTime.now().plusDays(1)
         )
 
-        private fun testProject(status: ProjectApplicationStatus) = OutputProject(
-            id = null,
-            call = call,
-            acronym = "test-draft",
-            applicant = ownerApplicant,
-            projectStatus = OutputProjectStatus(id = 1, status = status, user = ownerApplicant, updated = ZonedDateTime.now())
+        private fun testProject(status: ProjectApplicationStatus) = ProjectApplicantAndStatus(
+            applicantId = ownerApplicant.id!!,
+            projectStatus = status
         )
     }
 
@@ -80,9 +78,8 @@ internal class ProjectAuthorizationTest {
     @Test
     fun `admin canReadProject`() {
         every { securityService.currentUser } returns adminUser
-        every { projectService.getById(eq(1)) } returns testProject(ProjectApplicationStatus.RETURNED_TO_APPLICANT)
         ProjectApplicationStatus.values().forEach {
-            every { projectService.getById(eq(1)) } returns testProject(it)
+            every { projectService.getApplicantAndStatusById(eq(1)) } returns testProject(it)
             assertTrue(
                 projectAuthorization.canReadProject(1),
                 "admin is able to read Project anytime (also $it)"
@@ -94,7 +91,7 @@ internal class ProjectAuthorizationTest {
     fun `owner canReadProject`() {
         every { securityService.currentUser } returns applicantUser
         ProjectApplicationStatus.values().forEach {
-            every { projectService.getById(eq(2)) } returns testProject(it)
+            every { projectService.getApplicantAndStatusById(eq(2)) } returns testProject(it)
             assertTrue(
                 projectAuthorization.canReadProject(2),
                 "applicant who is owner of Project is able to read Project anytime (also $it)"
@@ -108,7 +105,7 @@ internal class ProjectAuthorizationTest {
             notOwnerApplicant, "hash_pass", listOf(
             SimpleGrantedAuthority("ROLE_" + userApplicant.userRole.name)
         ))
-        every { projectService.getById(eq(3)) } returns testProject(ProjectApplicationStatus.DRAFT)
+        every { projectService.getApplicantAndStatusById(eq(3)) } returns testProject(ProjectApplicationStatus.DRAFT)
 
         val exception = assertThrows<ResourceNotFoundException>(
             "applicant cannot find project when he is not an owner"
@@ -119,7 +116,7 @@ internal class ProjectAuthorizationTest {
     @Test
     fun `programmeUser canReadProject DRAFT`() {
         every { securityService.currentUser } returns programmeUser
-        every { projectService.getById(eq(4)) } returns testProject(ProjectApplicationStatus.DRAFT)
+        every { projectService.getApplicantAndStatusById(eq(4)) } returns testProject(ProjectApplicationStatus.DRAFT)
 
         val exception = assertThrows<ResourceNotFoundException>(
             "programme user cannot find project in ${ProjectApplicationStatus.DRAFT}"
@@ -134,7 +131,7 @@ internal class ProjectAuthorizationTest {
         possibleStatuses.remove(ProjectApplicationStatus.DRAFT)
 
         possibleStatuses.forEach {
-            every { projectService.getById(eq(5)) } returns testProject(it)
+            every { projectService.getApplicantAndStatusById(eq(5)) } returns testProject(it)
             assertTrue(projectAuthorization.canReadProject(5), "Programme user can read project in $it")
         }
     }
@@ -142,7 +139,7 @@ internal class ProjectAuthorizationTest {
     @Test
     fun `user without role canReadProject`() {
         every { securityService.currentUser } returns LocalCurrentUser(notOwnerApplicant, "hash_pass", emptyList())
-        every { projectService.getById(eq(6)) } returns testProject(ProjectApplicationStatus.DRAFT)
+        every { projectService.getApplicantAndStatusById(eq(6)) } returns testProject(ProjectApplicationStatus.DRAFT)
         assertFalse(projectAuthorization.canReadProject(6), "Fallback - user without role should get 'false'")
     }
 
@@ -198,7 +195,7 @@ internal class ProjectAuthorizationTest {
         ))
 
         impossibleStatuses.forEach {
-            every { projectService.getById(eq(1)) } returns testProject(it)
+            every { projectService.getApplicantAndStatusById(eq(1)) } returns testProject(it)
             assertFalse(
                 projectAuthorization.canUpdateProject(1),
                 "admin is NOT able to update Project when $it"
@@ -215,7 +212,7 @@ internal class ProjectAuthorizationTest {
         )
 
         possibleStatuses.forEach {
-            every { projectService.getById(eq(2)) } returns testProject(it)
+            every { projectService.getApplicantAndStatusById(eq(2)) } returns testProject(it)
             assertTrue(
                 projectAuthorization.canUpdateProject(2),
                 "admin is able to update Project when $it"
@@ -232,7 +229,7 @@ internal class ProjectAuthorizationTest {
         ))
 
         impossibleStatuses.forEach {
-            every { projectService.getById(eq(3)) } returns testProject(it)
+            every { projectService.getApplicantAndStatusById(eq(3)) } returns testProject(it)
             assertFalse(
                 projectAuthorization.canUpdateProject(3),
                 "programmeUser is NOT able to update Project anytime (tested with $it)"
@@ -243,7 +240,7 @@ internal class ProjectAuthorizationTest {
     @Test
     fun `programmeUser canUpdateProject - DRAFT`() {
         every { securityService.currentUser } returns programmeUser
-        every { projectService.getById(eq(4)) } returns testProject(ProjectApplicationStatus.DRAFT)
+        every { projectService.getApplicantAndStatusById(eq(4)) } returns testProject(ProjectApplicationStatus.DRAFT)
 
         val exception = assertThrows<ResourceNotFoundException>(
             "programmeUser cannot find project when he is in ${ProjectApplicationStatus.DRAFT}"
@@ -258,7 +255,7 @@ internal class ProjectAuthorizationTest {
             SimpleGrantedAuthority("ROLE_" + userApplicant.userRole.name)
         ))
         ProjectApplicationStatus.values().forEach {
-            every { projectService.getById(eq(5)) } returns testProject(it)
+            every { projectService.getApplicantAndStatusById(eq(5)) } returns testProject(it)
             val exception = assertThrows<ResourceNotFoundException>(
                 "applicant, who is not an owner of project can never find project ($it)"
             ) { projectAuthorization.canReadProject(5) }
@@ -269,7 +266,7 @@ internal class ProjectAuthorizationTest {
     @Test
     fun `user without role canUpdateProject`() {
         every { securityService.currentUser } returns LocalCurrentUser(notOwnerApplicant, "hash_pass", emptyList())
-        every { projectService.getById(eq(6)) } returns testProject(ProjectApplicationStatus.DRAFT)
+        every { projectService.getApplicantAndStatusById(eq(6)) } returns testProject(ProjectApplicationStatus.DRAFT)
         assertFalse(projectAuthorization.canUpdateProject(6), "Fallback - user without role should get 'false'")
     }
 

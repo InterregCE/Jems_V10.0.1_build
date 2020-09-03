@@ -19,14 +19,12 @@ fun ProjectStatus.toOutputProjectStatus() = OutputProjectStatus(
 
 fun ProjectQualityAssessment.toOutputProjectQualityAssessment() = OutputProjectQualityAssessment(
     result = result,
-    user = user.toOutputUser(),
     updated = updated,
     note = note
 )
 
 fun ProjectEligibilityAssessment.toOutputProjectEligibilityAssessment() = OutputProjectEligibilityAssessment(
     result = result,
-    user = user.toOutputUser(),
     updated = updated,
     note = note
 )

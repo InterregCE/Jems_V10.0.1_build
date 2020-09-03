@@ -17,18 +17,18 @@ class ProjectAuthorization(
 ): Authorization(securityService) {
 
     fun canReadProject(id: Long): Boolean {
-        val project = projectService.getById(id)
-        if (isAdmin() || isApplicantOwner(project))
+        val project = projectService.getApplicantAndStatusById(id)
+        if (isAdmin() || isApplicantOwner(project.applicantId))
             return true
 
-        val status = project.projectStatus.status
+        val status = project.projectStatus
         if (isProgrammeUser())
             if (status != DRAFT)
                 return true
             else
                 throw ResourceNotFoundException("project")
 
-        if (isApplicantNotOwner(project))
+        if (isApplicantNotOwner(project.applicantId))
             throw ResourceNotFoundException("project")
 
         return false
@@ -40,9 +40,9 @@ class ProjectAuthorization(
     }
 
     fun canUpdateProject(projectId: Long): Boolean {
-        val project = projectService.getById(projectId)
-        val status = project.projectStatus.status
-        if (isAdmin() || isApplicantOwner(project))
+        val project = projectService.getApplicantAndStatusById(projectId)
+        val status = project.projectStatus
+        if (isAdmin() || isApplicantOwner(project.applicantId))
             return isNotSubmittedNow(status)
 
         if (isProgrammeUser())
@@ -51,7 +51,7 @@ class ProjectAuthorization(
             else
                 throw ResourceNotFoundException("project")
 
-        if (isApplicantNotOwner(projectService.getById(projectId)))
+        if (isApplicantNotOwner(project.applicantId))
             throw ResourceNotFoundException("project")
 
         return false

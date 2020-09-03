@@ -12,6 +12,7 @@ import io.cloudflight.ems.project.entity.ProjectStatus
 import io.cloudflight.ems.programme.entity.ProgrammePriorityPolicy
 import io.cloudflight.ems.programme.service.toOutputProgrammePriorityPolicy
 import io.cloudflight.ems.programme.service.toOutputProgrammePrioritySimple
+import io.cloudflight.ems.project.dto.ProjectApplicantAndStatus
 import io.cloudflight.ems.project.entity.ProjectData
 import io.cloudflight.ems.project.entity.ProjectPartner
 import io.cloudflight.ems.user.entity.User
@@ -52,6 +53,11 @@ fun Project.toOutputProjectSimple() = OutputProjectSimple(
     lastResubmissionDate = lastResubmission?.updated,
     specificObjective = projectData?.priorityPolicy?.toOutputProgrammePriorityPolicy(),
     programmePriority = projectData?.priorityPolicy?.programmePriority?.toOutputProgrammePrioritySimple()
+)
+
+fun Project.toApplicantAndStatus() = ProjectApplicantAndStatus(
+    applicantId = applicant.id!!,
+    projectStatus = projectStatus.status
 )
 
 fun InputProjectData.toEntity(project: Project, priorityPolicy: ProgrammePriorityPolicy?) = ProjectData(
