@@ -7,10 +7,10 @@
         <div *ngIf="currentApplicationPage$ | async as projectPage">
             <app-project-application-list
                     [projectPage]="projectPage"
-                    [pageIndex]="newPageIndex$ | async"
-                    (newPageSize)="newPageSize$.next($event)"
-                    (newPageIndex)="newPageIndex$.next($event)"
-                    (newSort)="newSort$.next($event)">
+                    [pageIndex]="newApplicationsPageIndex$ | async"
+                    (newPageSize)="newApplicationsPageSize$.next($event)"
+                    (newPageIndex)="newApplicationsPageIndex$.next($event)"
+                    (newSort)="newApplicationsSort$.next($event)">
             </app-project-application-list>
         </div>
     </div>
