@@ -52,6 +52,20 @@
     </mat-form-field>
 
     <mat-form-field class="field col-md-12">
+        <mat-label>{{'call.detail.field.lengthOfPeriod' | translate}}</mat-label>
+        <input type="number" name="lengthOfPeriod" formControlName="lengthOfPeriod" matInput
+               placeholder="{{'call.detail.field.lengthOfPeriod' | translate}}"
+               [max]="callForm?.controls?.lengthOfPeriod?.value"
+               (paste)="tools.checkDigitsOnPaste($event)" (keypress)="tools.checkDigitsOnInput($event)">
+        <mat-error>
+            <app-form-field-errors
+                    [errors]="callForm?.controls?.lengthOfPeriod?.errors"
+                    [messages]="lengthOfPeriodErrors">
+            </app-form-field-errors>
+        </mat-error>
+    </mat-form-field>
+
+    <mat-form-field class="field col-md-12">
         <mat-label>{{'call.detail.field.description' | translate}}</mat-label>
         <textarea formControlName="description" matInput name="description">
         </textarea>
@@ -82,7 +96,7 @@
     </ng-container>
     <button *ngIf="call?.id && !published && formState === FormState.VIEW"
             mat-raised-button color="primary"
-            [disabled]="noPolicyChecked()"
+            [disabled]="publishingRequirementsNotAchieved()"
             (click)="publishCall()">
         {{'call.detail.button.publish' | translate}}
     </button>

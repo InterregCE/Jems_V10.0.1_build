@@ -15,6 +15,7 @@ import {Forms} from '../../../common/utils/forms';
 import {filter, take, takeUntil} from 'rxjs/operators';
 import {MatDialog} from '@angular/material/dialog';
 import {CallPriorityCheckbox} from '../../containers/model/call-priority-checkbox';
+import {Tools} from '../../../common/utils/tools';
 
 @Component({
   selector: 'app-call-detail',
@@ -23,6 +24,7 @@ import {CallPriorityCheckbox} from '../../containers/model/call-priority-checkbo
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class CallDetailComponent extends ViewEditForm implements OnInit {
+  tools = Tools;
 
   @Input()
   call: OutputCall
@@ -55,6 +57,10 @@ export class CallDetailComponent extends ViewEditForm implements OnInit {
   descriptionErrors = {
     maxlength: 'call.description.wrong.size'
   };
+  lengthOfPeriodErrors = {
+    max: 'call.lengthOfPeriod.invalid.period',
+    min: 'call.lengthOfPeriod.invalid.period',
+  };
   published = false;
 
   callForm = this.formBuilder.group({
@@ -64,7 +70,9 @@ export class CallDetailComponent extends ViewEditForm implements OnInit {
     ])],
     startDate: ['', Validators.required],
     endDate: ['', Validators.required],
-    description: ['', Validators.maxLength(1000)]
+    description: ['', Validators.maxLength(1000)],
+    lengthOfPeriod: ['', Validators.compose(
+      [Validators.max(99), Validators.min(1)])]
   });
 
   constructor(private formBuilder: FormBuilder,
@@ -89,7 +97,7 @@ export class CallDetailComponent extends ViewEditForm implements OnInit {
       startDate: this.callForm?.controls?.startDate?.value,
       endDate: this.callForm?.controls?.endDate?.value,
       description: this.callForm?.controls?.description?.value,
-      lengthOfPeriod: 1,
+      lengthOfPeriod: this.callForm?.controls?.lengthOfPeriod?.value,
       priorityPolicies: this.priorityCheckboxes
         .flatMap(checkbox => checkbox.getCheckedChildPolicies())
     }
@@ -124,9 +132,10 @@ export class CallDetailComponent extends ViewEditForm implements OnInit {
     });
   }
 
-  noPolicyChecked(): boolean {
-    return this.priorityCheckboxes
-      && !this.priorityCheckboxes.some(priority => priority.checked || priority.someChecked());
+  publishingRequirementsNotAchieved(): boolean {
+    return (this.priorityCheckboxes
+      && !this.priorityCheckboxes.some(priority => priority.checked || priority.someChecked())
+      || !this.call.lengthOfPeriod);
   }
 
   protected enterViewMode(): void {
@@ -134,5 +143,6 @@ export class CallDetailComponent extends ViewEditForm implements OnInit {
     this.callForm.controls.startDate.setValue(this.call.startDate);
     this.callForm.controls.endDate.setValue(this.call.endDate);
     this.callForm.controls.description.setValue(this.call.description);
+    this.callForm.controls.lengthOfPeriod.setValue(this.call.lengthOfPeriod);
   }
 }
