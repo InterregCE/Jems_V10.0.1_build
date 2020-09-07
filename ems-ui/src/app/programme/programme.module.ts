@@ -29,6 +29,8 @@ import {MatAutocompleteModule} from '@angular/material/autocomplete';
 import {ProgrammeResultIndicatorSubmissionPageComponent} from './programme-page/containers/programme-result-indicator-submission-page/programme-result-indicator-submission-page.component';
 import {ProgrammeResultIndicatorDetailComponent} from './programme-page/components/programme-result-indicator-detail/programme-result-indicator-detail.component';
 import {ProgrammeBasicFundsComponent} from './programme-page/components/programme-basic-funds/programme-basic-funds.component';
+import { ProgrammeStrategiesPageComponent } from './programme-page/containers/programme-strategies-page/programme-strategies-page.component';
+import { ProgrammeStrategiesComponent } from './programme-page/components/programme-strategies/programme-strategies.component';
 
 @NgModule({
   declarations: [
@@ -53,7 +55,9 @@ import {ProgrammeBasicFundsComponent} from './programme-page/components/programm
     ProgrammeOutputIndicatorSubmissionPageComponent,
     ProgrammeResultIndicatorSubmissionPageComponent,
     ProgrammeResultIndicatorDetailComponent,
-    ProgrammeBasicFundsComponent
+    ProgrammeBasicFundsComponent,
+    ProgrammeStrategiesPageComponent,
+    ProgrammeStrategiesComponent
   ],
   providers: [
     IndicatorsStore
