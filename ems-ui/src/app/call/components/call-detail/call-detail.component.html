@@ -55,7 +55,6 @@
         <mat-label>{{'call.detail.field.lengthOfPeriod' | translate}}</mat-label>
         <input type="number" name="lengthOfPeriod" formControlName="lengthOfPeriod" matInput
                placeholder="{{'call.detail.field.lengthOfPeriod' | translate}}"
-               [max]="callForm?.controls?.lengthOfPeriod?.value"
                (paste)="tools.checkDigitsOnPaste($event)" (keypress)="tools.checkDigitsOnInput($event)">
         <mat-error>
             <app-form-field-errors
