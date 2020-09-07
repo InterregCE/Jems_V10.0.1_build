@@ -4,8 +4,6 @@
             (click)="changeFormState$.next(FormState.EDIT)">
         {{'programme.data.button.edit' | translate}}
     </button>
-</div>
-<div class="container">
     <form [formGroup]="programmeForm">
         <mat-form-field class="field">
             <mat-label>{{'programme.data.field.cci' | translate}}</mat-label>
@@ -19,7 +17,8 @@
         </mat-form-field>
         <mat-form-field class="field-half">
             <mat-label>{{'programme.data.field.title' | translate}}</mat-label>
-            <input [title]="programme.title" name="title" formControlName="title" matInput placeholder="{{'programme.data.field.title' | translate}}">
+            <input [title]="programme.title" name="title" formControlName="title" matInput
+                   placeholder="{{'programme.data.field.title' | translate}}">
             <mat-error>
                 <app-form-field-errors
                         [errors]="programmeForm?.controls?.title?.errors"
@@ -29,7 +28,8 @@
         </mat-form-field>
         <mat-form-field class="field-half">
             <mat-label>{{'programme.data.field.version' | translate}}</mat-label>
-            <input [title]="programme.version" name="version" formControlName="version" matInput placeholder="{{'programme.data.field.version' | translate}}">
+            <input [title]="programme.version" name="version" formControlName="version" matInput
+                   placeholder="{{'programme.data.field.version' | translate}}">
             <mat-error>
                 <app-form-field-errors
                         [errors]="programmeForm?.controls?.version?.errors"
@@ -68,7 +68,8 @@
         </mat-error>
         <mat-form-field class="field-half">
             <mat-label>{{'programme.data.field.eligible.from' | translate}}</mat-label>
-            <input name="eligibleFrom" formControlName="eligibleFrom" matInput placeholder="{{'programme.data.field.eligible.from' | translate}}"
+            <input name="eligibleFrom" formControlName="eligibleFrom" matInput
+                   placeholder="{{'programme.data.field.eligible.from' | translate}}"
                    [matDatepicker]="eligibleFromPicker"
                    [max]="programmeForm?.controls?.eligibleUntil?.value">
             <mat-datepicker-toggle matSuffix [for]="eligibleFromPicker"></mat-datepicker-toggle>
@@ -82,7 +83,8 @@
         </mat-form-field>
         <mat-form-field class="field-half">
             <mat-label>{{'programme.data.field.eligible.until' | translate}}</mat-label>
-            <input name="eligibleUntil" formControlName="eligibleUntil" matInput placeholder="{{'programme.data.field.eligible.until' | translate}}"
+            <input name="eligibleUntil" formControlName="eligibleUntil" matInput
+                   placeholder="{{'programme.data.field.eligible.until' | translate}}"
                    [matDatepicker]="eligibleUntilPicker"
                    [min]="programmeForm?.controls?.eligibleFrom?.value">
             <mat-datepicker-toggle matSuffix [for]="eligibleUntilPicker"></mat-datepicker-toggle>
@@ -110,7 +112,8 @@
         <mat-form-field class="field-half">
             <mat-label>{{'programme.data.field.commission.date' | translate}}</mat-label>
             <input name="commissionDecisionDate" formControlName="commissionDecisionDate" matInput
-                   placeholder="{{'programme.data.field.commission.date' | translate}}" [matDatepicker]="commissionDecisionPicker">
+                   placeholder="{{'programme.data.field.commission.date' | translate}}"
+                   [matDatepicker]="commissionDecisionPicker">
             <mat-datepicker-toggle matSuffix [for]="commissionDecisionPicker"></mat-datepicker-toggle>
             <mat-datepicker #commissionDecisionPicker></mat-datepicker>
             <mat-error>

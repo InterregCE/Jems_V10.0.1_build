@@ -23,11 +23,12 @@ import {ProgrammeIndicatorsOverviewPageComponent} from './programme-page/contain
 import {ProgrammeOutputIndicatorsListComponent} from './programme-page/components/programme-output-indicators-list/programme-output-indicators-list.component';
 import {ProgrammeResultIndicatorsListComponent} from './programme-page/components/programme-result-indicators-list/programme-result-indicators-list.component';
 import {IndicatorsStore} from './programme-page/services/indicators-store.service';
-import { ProgrammeOutputIndicatorDetailComponent } from './programme-page/components/programme-output-indicator-detail/programme-output-indicator-detail.component';
-import { ProgrammeOutputIndicatorSubmissionPageComponent } from './programme-page/containers/programme-output-indicator-submission-page/programme-output-indicator-submission-page.component';
+import {ProgrammeOutputIndicatorDetailComponent} from './programme-page/components/programme-output-indicator-detail/programme-output-indicator-detail.component';
+import {ProgrammeOutputIndicatorSubmissionPageComponent} from './programme-page/containers/programme-output-indicator-submission-page/programme-output-indicator-submission-page.component';
 import {MatAutocompleteModule} from '@angular/material/autocomplete';
-import { ProgrammeResultIndicatorSubmissionPageComponent } from './programme-page/containers/programme-result-indicator-submission-page/programme-result-indicator-submission-page.component';
-import { ProgrammeResultIndicatorDetailComponent } from './programme-page/components/programme-result-indicator-detail/programme-result-indicator-detail.component';
+import {ProgrammeResultIndicatorSubmissionPageComponent} from './programme-page/containers/programme-result-indicator-submission-page/programme-result-indicator-submission-page.component';
+import {ProgrammeResultIndicatorDetailComponent} from './programme-page/components/programme-result-indicator-detail/programme-result-indicator-detail.component';
+import {ProgrammeBasicFundsComponent} from './programme-page/components/programme-basic-funds/programme-basic-funds.component';
 
 @NgModule({
   declarations: [
@@ -51,7 +52,8 @@ import { ProgrammeResultIndicatorDetailComponent } from './programme-page/compon
     ProgrammeOutputIndicatorDetailComponent,
     ProgrammeOutputIndicatorSubmissionPageComponent,
     ProgrammeResultIndicatorSubmissionPageComponent,
-    ProgrammeResultIndicatorDetailComponent
+    ProgrammeResultIndicatorDetailComponent,
+    ProgrammeBasicFundsComponent
   ],
   providers: [
     IndicatorsStore
