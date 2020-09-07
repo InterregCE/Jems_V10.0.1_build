@@ -1,10 +1,12 @@
 <h5 class="spaced-elements" id="projectPartnersHeading">{{'project.application.form.section.part.b' | translate}}</h5>
 
-<button class="spaced-elements" mat-raised-button color="primary"
-        [routerLink]="'/project/' + projectId + '/partner'"
-        [disabled]="!editable">
-    + {{'project.application.form.partner.add' | translate}}
-</button>
+<span class="header-button" *ngxPermissionsExcept="Permission.PROGRAMME_USER">
+    <button class="spaced-elements" mat-raised-button color="primary"
+            [routerLink]="'/project/' + projectId + '/partner'"
+            [disabled]="!editable">
+        + {{'project.application.form.partner.add' | translate}}
+    </button>
+</span>
 
 <app-project-application-form-partner-list
         *ngIf="partnerPage$ | async as partnerPage"

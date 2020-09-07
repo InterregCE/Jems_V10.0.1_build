@@ -5,7 +5,7 @@ import {flatMap, map, startWith, tap} from 'rxjs/operators';
 import {Tables} from '../../../../../common/utils/tables';
 import {Log} from '../../../../../common/utils/log';
 import {ProjectPartnerService} from '@cat/api';
-import {ProjectApplicationFormSidenavService} from '../services/project-application-form-sidenav.service';
+import {Permission} from '../../../../../security/permissions/permission';
 
 @Component({
   selector: 'app-project-application-form-partner-section',
@@ -14,6 +14,8 @@ import {ProjectApplicationFormSidenavService} from '../services/project-applicat
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class ProjectApplicationFormPartnerSectionComponent {
+  Permission = Permission;
+
   @Input()
   projectId: number;
   @Input()

@@ -2,10 +2,12 @@
     <h4 *ngIf="!partner?.name">{{'project.partner.detail.add' | translate}}</h4>
     <h4 *ngIf="partner?.name">{{partner.name}}</h4>
     <h4><span>{{'project.partner.detail.title' | translate}}</span>
-        <button *ngIf="formState === FormState.VIEW && editable" mat-raised-button
-                (click)="changeFormState$.next(FormState.EDIT)">
-            {{'call.detail.button.edit' | translate}}
-        </button>
+        <span class="header-button" *ngxPermissionsExcept="Permission.PROGRAMME_USER">
+            <button *ngIf="formState === FormState.VIEW && editable" mat-raised-button
+                    (click)="changeFormState$.next(FormState.EDIT)">
+                {{'common.edit.label' | translate}}
+            </button>
+        </span>
     </h4>
     <mat-form-field *ngIf="formState === FormState.VIEW && partner.id" class="field col-md-12">
         <mat-label>{{'project.partner.id.label' | translate}}</mat-label>

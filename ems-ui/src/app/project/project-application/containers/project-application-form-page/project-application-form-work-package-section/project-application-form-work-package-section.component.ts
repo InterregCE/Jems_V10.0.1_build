@@ -5,6 +5,7 @@ import {flatMap, map, startWith, tap} from 'rxjs/operators';
 import {Tables} from '../../../../../common/utils/tables';
 import {Log} from '../../../../../common/utils/log';
 import {WorkPackageService} from '@cat/api'
+import {Permission} from '../../../../../security/permissions/permission';
 
 @Component({
   selector: 'app-project-application-form-work-package-section',
@@ -13,6 +14,7 @@ import {WorkPackageService} from '@cat/api'
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class ProjectApplicationFormWorkPackageSectionComponent{
+  Permission = Permission;
 
   @Input()
   projectId: number;
