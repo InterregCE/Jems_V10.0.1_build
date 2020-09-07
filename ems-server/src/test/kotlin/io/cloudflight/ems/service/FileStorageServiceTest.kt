@@ -8,6 +8,7 @@ import io.cloudflight.ems.api.user.dto.OutputUser
 import io.cloudflight.ems.api.user.dto.OutputUserRole
 import io.cloudflight.ems.api.user.dto.OutputUserWithRole
 import io.cloudflight.ems.api.programme.dto.ProgrammeObjectivePolicy.CircularEconomy
+import io.cloudflight.ems.api.strategy.ProgrammeStrategy
 import io.cloudflight.ems.dto.FileMetadata
 import io.cloudflight.ems.audit.entity.AuditAction
 import io.cloudflight.ems.audit.service.AuditCandidate
@@ -27,6 +28,7 @@ import io.cloudflight.ems.repository.ProjectFileRepository
 import io.cloudflight.ems.project.repository.ProjectRepository
 import io.cloudflight.ems.security.model.LocalCurrentUser
 import io.cloudflight.ems.security.service.SecurityService
+import io.cloudflight.ems.strategy.entity.Strategy
 import io.mockk.MockKAnnotations
 import io.mockk.every
 import io.mockk.impl.annotations.MockK
@@ -84,6 +86,7 @@ class FileStorageServiceTest {
         creator = account,
         name = "call",
         priorityPolicies = setOf(ProgrammePriorityPolicy(CircularEconomy, "CE")),
+        strategies = setOf(Strategy(ProgrammeStrategy.SeaBasinStrategyArcticOcean, true)),
         startDate = ZonedDateTime.now(),
         endDate = ZonedDateTime.now(),
         status = CallStatus.PUBLISHED,

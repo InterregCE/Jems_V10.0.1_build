@@ -13,6 +13,7 @@ import io.cloudflight.ems.api.programme.dto.ProgrammeObjectivePolicy.AdvancedTec
 import io.cloudflight.ems.api.programme.dto.ProgrammeObjectivePolicy.HealthcareAcrossBorders
 import io.cloudflight.ems.api.project.dto.InputProjectData
 import io.cloudflight.ems.api.project.dto.OutputProjectData
+import io.cloudflight.ems.api.strategy.ProgrammeStrategy
 import io.cloudflight.ems.audit.entity.AuditAction
 import io.cloudflight.ems.audit.service.AuditCandidate
 import io.cloudflight.ems.call.entity.Call
@@ -33,6 +34,7 @@ import io.cloudflight.ems.security.PROGRAMME_USER
 import io.cloudflight.ems.security.model.LocalCurrentUser
 import io.cloudflight.ems.security.service.SecurityService
 import io.cloudflight.ems.audit.service.AuditService
+import io.cloudflight.ems.strategy.entity.Strategy
 import io.mockk.MockKAnnotations
 import io.mockk.every
 import io.mockk.impl.annotations.MockK
@@ -105,6 +107,7 @@ class ProjectServiceTest {
         creator = account,
         name = "call",
         priorityPolicies = setOf(ProgrammePriorityPolicy(HealthcareAcrossBorders, "HAB")),
+        strategies = setOf(Strategy(ProgrammeStrategy.MediterraneanSeaBasin, true)),
         startDate = ZonedDateTime.now(),
         endDate = ZonedDateTime.now(),
         status = CallStatus.PUBLISHED,

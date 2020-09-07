@@ -3,6 +3,7 @@ package io.cloudflight.ems.call.entity
 import io.cloudflight.ems.api.call.dto.CallStatus
 import io.cloudflight.ems.user.entity.User
 import io.cloudflight.ems.programme.entity.ProgrammePriorityPolicy
+import io.cloudflight.ems.strategy.entity.Strategy
 import java.time.ZonedDateTime
 import javax.persistence.Column
 import javax.persistence.Entity
@@ -37,6 +38,14 @@ data class Call(
         inverseJoinColumns = [JoinColumn(name = "programme_priority_policy")]
     )
     val priorityPolicies: Set<ProgrammePriorityPolicy>,
+
+    @OneToMany
+    @JoinTable(
+        name = "project_call_strategy",
+        joinColumns = [JoinColumn(name = "call_id")],
+        inverseJoinColumns = [JoinColumn(name = "programme_strategy")]
+    )
+    val strategies: Set<Strategy>,
 
     @Column(nullable = false, name = "start_date")
     val startDate: ZonedDateTime,

@@ -10,6 +10,7 @@ import io.cloudflight.ems.api.user.dto.OutputUserWithRole
 import io.cloudflight.ems.api.programme.dto.OutputProgrammePriorityPolicySimple
 import io.cloudflight.ems.api.programme.dto.ProgrammeObjectivePolicy.AdvancedTechnologies
 import io.cloudflight.ems.api.programme.dto.ProgrammeObjectivePolicy.DigitalConnectivity
+import io.cloudflight.ems.api.strategy.ProgrammeStrategy
 import io.cloudflight.ems.audit.entity.AuditAction
 import io.cloudflight.ems.audit.service.AuditCandidate
 import io.cloudflight.ems.call.entity.Call
@@ -28,6 +29,8 @@ import io.cloudflight.ems.security.service.authorization.AuthorizationUtil.Compa
 import io.cloudflight.ems.security.service.authorization.AuthorizationUtil.Companion.applicantUser
 import io.cloudflight.ems.security.service.authorization.AuthorizationUtil.Companion.programmeUser
 import io.cloudflight.ems.audit.service.AuditService
+import io.cloudflight.ems.strategy.entity.Strategy
+import io.cloudflight.ems.strategy.repository.StrategyRepository
 import io.mockk.MockKAnnotations
 import io.mockk.every
 import io.mockk.impl.annotations.MockK
@@ -75,6 +78,7 @@ class CallServiceTest {
         creator = account,
         name = "Test call name",
         priorityPolicies = emptySet(),
+        strategies = emptySet(),
         startDate = ZonedDateTime.now(),
         endDate = ZonedDateTime.now().plusDays(5L),
         status = CallStatus.DRAFT,
@@ -88,6 +92,7 @@ class CallServiceTest {
         id = id,
         name = call.name,
         priorityPolicies = emptyList(),
+        strategies = emptyList(),
         startDate = call.startDate,
         endDate = call.endDate,
         status = call.status,
@@ -110,6 +115,8 @@ class CallServiceTest {
     @MockK
     lateinit var programmePriorityPolicyRepository: ProgrammePriorityPolicyRepository
     @MockK
+    lateinit var strategyRepository: StrategyRepository
+    @MockK
     lateinit var securityService: SecurityService
     @RelaxedMockK
     lateinit var auditService: AuditService
@@ -124,6 +131,7 @@ class CallServiceTest {
             callRepository,
             userRepository,
             programmePriorityPolicyRepository,
+            strategyRepository,
             auditService,
             securityService
         )
@@ -181,6 +189,7 @@ class CallServiceTest {
             account,
             call.name,
             call.priorityPolicies,
+            call.strategies,
             call.startDate,
             call.endDate.withSecond(59).withNano(999999999),
             CallStatus.DRAFT,
@@ -218,12 +227,15 @@ class CallServiceTest {
         every { securityService.currentUser } returns adminUser
         every { userRepository.findById(eq(adminUser.user.id!!)) } returns Optional.of(account)
         every { callRepository.save(any<Call>()) } returnsArgument 0
-        every { programmePriorityPolicyRepository.findById(eq(AdvancedTechnologies)) } returns
-            Optional.of(ProgrammePriorityPolicy(programmeObjectivePolicy = AdvancedTechnologies, code = "AT"))
+        every { programmePriorityPolicyRepository.findAllById(eq(setOf(AdvancedTechnologies))) } returns
+            listOf(ProgrammePriorityPolicy(programmeObjectivePolicy = AdvancedTechnologies, code = "AT"))
+        every { strategyRepository.findAllById(eq(setOf(ProgrammeStrategy.EUStrategyBalticSeaRegion))) } returns
+            listOf(Strategy(ProgrammeStrategy.EUStrategyBalticSeaRegion, true))
 
         val newCall = InputCallCreate(
             name = call.name,
             priorityPolicies = setOf(AdvancedTechnologies),
+            strategies = setOf(ProgrammeStrategy.EUStrategyBalticSeaRegion),
             startDate = call.startDate,
             endDate = call.endDate
         )
@@ -231,6 +243,7 @@ class CallServiceTest {
         val result = callService.createCall(newCall)
         assertThat(result.name).isEqualTo(call.name)
         assertThat(result.priorityPolicies).isEqualTo(listOf(OutputProgrammePriorityPolicySimple(AdvancedTechnologies, "AT")))
+        assertThat(result.strategies).isEqualTo(listOf(ProgrammeStrategy.EUStrategyBalticSeaRegion))
         assertThat(result.status).isEqualTo(CallStatus.DRAFT)
     }
 
@@ -239,7 +252,7 @@ class CallServiceTest {
         every { securityService.currentUser } returns adminUser
         every { userRepository.findById(eq(adminUser.user.id!!)) } returns Optional.of(account)
         every { callRepository.save(any<Call>()) } returnsArgument 0
-        every { programmePriorityPolicyRepository.findById(eq(DigitalConnectivity)) } returns Optional.empty()
+        every { programmePriorityPolicyRepository.findAllById(eq(setOf(DigitalConnectivity))) } returns emptyList()
 
         val newCall = InputCallCreate(
             name = call.name,
@@ -330,6 +343,7 @@ class CallServiceTest {
         val endDate = ZonedDateTime.now().plusDays(5)
         every { callRepository.findById(eq(existingId)) } returns Optional.of(callWithId(existingId))
         every { callRepository.save(any<Call>()) } returnsArgument 0
+        every { programmePriorityPolicyRepository.findAllById(eq(emptySet())) } returns emptyList()
 
         val newDataForCall = InputCallUpdate(
             id = existingId,
