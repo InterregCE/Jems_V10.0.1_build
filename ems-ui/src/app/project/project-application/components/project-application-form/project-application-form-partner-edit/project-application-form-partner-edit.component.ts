@@ -16,6 +16,7 @@ import {I18nValidationError} from '@common/validation/i18n-validation-error';
 import {MatDialog} from '@angular/material/dialog';
 import {Forms} from '../../../../../common/utils/forms';
 import {SideNavService} from '@common/components/side-nav/side-nav.service';
+import {Permission} from '../../../../../security/permissions/permission';
 
 @Component({
   selector: 'app-project-application-form-partner-edit',
@@ -24,6 +25,7 @@ import {SideNavService} from '@common/components/side-nav/side-nav.service';
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class ProjectApplicationFormPartnerEditComponent extends ViewEditForm implements OnInit {
+  Permission = Permission;
   RoleEnum = OutputProjectPartner.RoleEnum;
 
   @Input()
