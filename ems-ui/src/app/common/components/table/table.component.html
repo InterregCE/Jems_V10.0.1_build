@@ -1,4 +1,5 @@
 <app-paginator
+        *ngIf="configuration?.sortable"
         [length]="totalElements"
         [currentPageIndex]="pageIndex"
         [currentPageSize]="currentPageSize"
@@ -43,6 +44,7 @@
         [routerLink]="configuration.isTableClickable ? [configuration.routerLink, row.id] : []"></tr>
 </table>
 <app-paginator
+        *ngIf="configuration?.sortable"
         [length]="totalElements"
         [currentPageIndex]="pageIndex"
         [currentPageSize]="currentPageSize"

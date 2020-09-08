@@ -11,6 +11,13 @@
                         [programme]="programme"
                         (saveProgrammeData)="saveProgrammeData$.next($event)">
                 </app-programme-data>
+                <app-programme-basic-funds
+                        *ngIf="funds$ | async as funds"
+                        [success$]="fundsSaveSuccess$"
+                        [error$]="fundsSaveError$"
+                        [programmeFunds]="funds"
+                        (saveFunds)="saveFunds$.next($event)">
+                </app-programme-basic-funds>
             </mat-tab>
             <mat-tab label="{{'programme.tab.priority' | translate}}">
                 <app-programme-priorities></app-programme-priorities>

@@ -3,7 +3,13 @@ import {BaseComponent} from '@common/components/base-component';
 import {Permission} from '../../../../security/permissions/permission';
 import {combineLatest, merge, Subject} from 'rxjs';
 import {I18nValidationError} from '@common/validation/i18n-validation-error';
-import {OutputProgrammeData, ProgrammeDataService, ProgrammePriorityService} from '@cat/api';
+import {
+  InputProgrammeFundWrapper,
+  OutputProgrammeData,
+  ProgrammeDataService,
+  ProgrammeFundService,
+  ProgrammePriorityService
+} from '@cat/api';
 import {catchError, flatMap, map, startWith, tap} from 'rxjs/operators';
 import {Log} from '../../../../common/utils/log';
 import {HttpErrorResponse} from '@angular/common/http';
@@ -23,7 +29,13 @@ export class ProgrammePageComponent extends BaseComponent implements OnDestroy {
   programmeSaveError$ = new Subject<I18nValidationError | null>();
   programmeSaveSuccess$ = new Subject<boolean>();
   saveProgrammeData$ = new Subject<OutputProgrammeData>();
+
+  fundsSaveError$ = new Subject<I18nValidationError | null>();
+  fundsSaveSuccess$ = new Subject<boolean>();
+  saveFunds$ = new Subject<InputProgrammeFundWrapper>();
+
   activeTab$ = this.tabService.currentTab(ProgrammePageComponent.name);
+
   newPageSize$ = new Subject<number>();
   newPageIndex$ = new Subject<number>();
   newSort$ = new Subject<Partial<MatSort>>();
@@ -47,13 +59,41 @@ export class ProgrammePageComponent extends BaseComponent implements OnDestroy {
 
   programme$ = merge(this.programmeById$, this.savedProgramme$)
 
+  private initialFunds$ = this.programmeFundService.getProgrammeFundList()
+    .pipe(
+      tap(funds => Log.info('Fetched programme funds:', this, funds))
+    );
+
+  private savedFunds$ = this.saveFunds$
+    .pipe(
+      flatMap(funds => this.programmeFundService.updateProgrammeFundList(funds)),
+      tap(saved => Log.info('Updated programme funds:', this, saved)),
+      tap(() => this.fundsSaveSuccess$.next(true)),
+      tap(() => this.fundsSaveError$.next(null)),
+      catchError((error: HttpErrorResponse) => {
+        this.fundsSaveError$.next(error.error);
+        throw error;
+      })
+    );
+
+  funds$ = merge(this.initialFunds$, this.savedFunds$)
+    .pipe(
+      map(funds => funds.map(fund => ({
+        id: fund.id,
+        selected: fund.selected,
+        abbreviation: fund.abbreviation,
+        description: fund.description,
+        creation: false
+      })))
+    );
+
   priorities$ =
     combineLatest([
       this.newPageIndex$.pipe(startWith(Tables.DEFAULT_INITIAL_PAGE_INDEX)),
       this.newPageSize$.pipe(startWith(100)),
       this.newSort$.pipe(
-        startWith({ active: 'code', direction: 'asc' }),
-        map(sort => sort?.direction ? sort : { active: 'code', direction: 'asc' }),
+        startWith({active: 'code', direction: 'asc'}),
+        map(sort => sort?.direction ? sort : {active: 'code', direction: 'asc'}),
         map(sort => `${sort.active},${sort.direction}`)
       ),
     ])
@@ -64,6 +104,7 @@ export class ProgrammePageComponent extends BaseComponent implements OnDestroy {
       );
 
   constructor(private programmeDataService: ProgrammeDataService,
+              private programmeFundService: ProgrammeFundService,
               private programmePriorityService: ProgrammePriorityService,
               private tabService: TabService) {
     super();
