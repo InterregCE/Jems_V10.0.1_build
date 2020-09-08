@@ -64,17 +64,14 @@
         </mat-error>
     </mat-form-field>
 
-    <mat-form-field class="field col-md-12">
-        <mat-label>{{'call.detail.field.description' | translate}}</mat-label>
-        <textarea formControlName="description" matInput name="description">
-        </textarea>
-        <mat-error>
-            <app-form-field-errors
-                    [errors]="callForm?.controls?.description?.errors"
-                    [messages]="descriptionErrors">
-            </app-form-field-errors>
-        </mat-error>
-    </mat-form-field>
+    <app-expandable-textarea class="field col-md-12"
+         [control]="callForm?.controls?.description"
+         [errors]="callForm?.controls?.description?.errors"
+         [messages]="descriptionErrors"
+         [characterLimit]="1000"
+         [label]="'call.detail.field.description'"
+         [disabled]="formState === FormState.VIEW">
+    </app-expandable-textarea>
 
     <app-call-priority-tree
             *ngIf="priorityCheckboxes"

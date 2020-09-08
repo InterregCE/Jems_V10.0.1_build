@@ -4,9 +4,15 @@
         {{getSizedDescription()}}
     </label>
     <mat-form-field *ngIf="formState === FormState.EDIT" class="description-text-area-field">
-        <textarea name="description" formControlName="description" class="description-text-area" matInput></textarea>
+        <textarea name="description" formControlName="description" class="description-text-area"
+                  matInput #inputCharacters rows="4">
+        </textarea>
+        <mat-hint *ngIf="formState === FormState.EDIT">
+            {{ inputCharacters.value.length }} / 100 {{'common.textarea.hint' | translate}}
+        </mat-hint>
         <mat-error>
             {{ 'project.file.description.size.too.long' | translate}}
+            ({{ inputCharacters.value.length }}/100 {{'common.textarea.hint' | translate}})
         </mat-error>
     </mat-form-field>
     <button *ngIf="formState === FormState.EDIT"

@@ -30,6 +30,10 @@ export class ProjectApplicationQualityCheckComponent extends AbstractForm implem
     notes: ['', Validators.maxLength(1000)]
   });
 
+  notesErrors = {
+    maxlength: 'quality.check.notes.size.too.long',
+  }
+
   constructor(
     private dialog: MatDialog,
     private router: Router,

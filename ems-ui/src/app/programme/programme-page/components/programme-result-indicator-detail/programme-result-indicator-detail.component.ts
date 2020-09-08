@@ -99,7 +99,7 @@ export class ProgrammeResultIndicatorDetailComponent extends ViewEditForm implem
   };
 
   commentsErrors = {
-    maxlength: 'indicator.comments.size.too.long',
+    maxlength: 'indicator.comment.size.too.long',
   };
 
   constructor(private formBuilder: FormBuilder,

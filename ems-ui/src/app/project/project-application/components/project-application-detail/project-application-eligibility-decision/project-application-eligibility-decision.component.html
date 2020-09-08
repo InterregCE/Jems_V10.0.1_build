@@ -20,16 +20,15 @@
                     {{'project.assessment.eligibilityDecision.dialog.select.' + option | translate}}
                 </mat-radio-button>
             </mat-radio-group>
-            <mat-form-field appearance="outline" class="field">
-                <mat-label>{{'project.assessment.eligibilityDecision.dialog.field.note' | translate}}</mat-label>
-                <textarea
-                    name="notes"
-                    formControlName="notes"
-                    class="assessment-text-area"
-                    matInput
-                    [readonly]="!!project.eligibilityDecision">
-                </textarea>
-            </mat-form-field>
+            <app-expandable-textarea class="assessment-text-area"
+                    [control]="notesForm?.controls?.notes"
+                    [errors]="notesForm?.controls?.notes?.errors"
+                    [messages]="notesErrors"
+                    [characterLimit]="1000"
+                    [label]="'project.assessment.eligibilityDecision.dialog.field.note'"
+                    [disabled]="!!project.eligibilityDecision"
+                    [customStyle]="'outline'">
+            </app-expandable-textarea>
             <mat-form-field>
                 <mat-label>{{'project.assessment.eligibilityDecision.dialog.field.date' | translate}}</mat-label>
                 <input class="assessment-date-picker" name="decisionDate" formControlName="decisionDate" matInput required

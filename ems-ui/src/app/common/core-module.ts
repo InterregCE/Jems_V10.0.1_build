@@ -23,6 +23,7 @@ import {TabService} from './services/tab.service';
 import {MatSidenavModule} from '@angular/material/sidenav';
 import {SideNavService} from '@common/components/side-nav/side-nav.service';
 import {LanguageService} from './services/language.service';
+import {ExpandableTextareaComponent} from '@common/components/expandable-textarea/expandable-textarea.component';
 
 const declarations = [
   TopBarComponent,
@@ -30,7 +31,8 @@ const declarations = [
   FormFieldErrorsComponent,
   ConfirmDialogComponent,
   HelpMenuComponent,
-  AlertComponent
+  AlertComponent,
+  ExpandableTextareaComponent
 ];
 
 @NgModule({

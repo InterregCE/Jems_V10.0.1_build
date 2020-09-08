@@ -29,6 +29,10 @@ export class ProjectApplicationEligibilityCheckComponent extends AbstractForm im
     notes: ['', Validators.maxLength(1000)]
   });
 
+  notesErrors = {
+    maxlength: 'eligibility.check.notes.size.too.long',
+  }
+
   constructor(
     private dialog: MatDialog,
     private router: Router,

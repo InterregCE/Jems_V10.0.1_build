@@ -29,26 +29,24 @@
             </app-form-field-errors>
         </mat-error>
     </mat-form-field>
-    <mat-form-field class="field">
-        <mat-label>{{'project.application.form.workpackage.field.specific.objective' | translate}}</mat-label>
-        <textarea name="workPackageSpecificObjective" formControlName="workPackageSpecificObjective" matInput></textarea>
-        <mat-error>
-            <app-form-field-errors
-                    [errors]="workPackageForm?.controls?.workPackageSpecificObjective?.errors"
-                    [messages]="workPackageSpecificObjectiveErrors">
-            </app-form-field-errors>
-        </mat-error>
-    </mat-form-field>
-    <mat-form-field class="field">
-        <mat-label>{{'project.application.form.workpackage.field.target.audience' | translate}}</mat-label>
-        <textarea name="workPackageTargetAudience" formControlName="workPackageTargetAudience" matInput></textarea>
-        <mat-error>
-            <app-form-field-errors
-                    [errors]="workPackageForm?.controls?.workPackageTargetAudience?.errors"
-                    [messages]="workPackageTargetAudienceErrors">
-            </app-form-field-errors>
-        </mat-error>
-    </mat-form-field>
+
+    <app-expandable-textarea
+            [control]="workPackageForm?.controls?.workPackageSpecificObjective"
+            [errors]="workPackageForm?.controls?.workPackageSpecificObjective?.errors"
+            [messages]="workPackageSpecificObjectiveErrors"
+            [characterLimit]="250"
+            [label]="'project.application.form.workpackage.field.specific.objective'"
+            [disabled]="formState === FormState.VIEW">
+    </app-expandable-textarea>
+
+    <app-expandable-textarea
+            [control]="workPackageForm?.controls?.workPackageTargetAudience"
+            [errors]="workPackageForm?.controls?.workPackageTargetAudience?.errors"
+            [messages]="workPackageTargetAudienceErrors"
+            [characterLimit]="500"
+            [label]="'project.application.form.workpackage.field.target.audience'"
+            [disabled]="formState === FormState.VIEW">
+    </app-expandable-textarea>
 
     <div *ngIf="formState === FormState.EDIT">
         <button mat-raised-button class="button"

@@ -1,0 +1,15 @@
+<mat-form-field class="field" [appearance]="customStyle">
+    <mat-label>{{label | translate}}</mat-label>
+    <textarea [formControl]="control" matInput rows="10" #inputText [readonly]="disabled"
+              [ngStyle]="disabled ? {height: inputText.scrollHeight + 'px'} : {height : ''}">
+    </textarea>
+    <mat-hint *ngIf="!disabled">
+        {{inputText.value.length}} / {{characterLimit}} {{'common.textarea.hint' | translate}}
+    </mat-hint>
+    <mat-error>
+        <div *ngFor="let error of errors | keyvalue">
+            {{messages[error.key] || error.value || error.key | translate}}
+            ({{inputText.value.length}}/{{characterLimit}} {{'common.textarea.hint' | translate}})
+        </div>
+    </mat-error>
+</mat-form-field>

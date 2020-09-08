@@ -49,6 +49,10 @@ export class ProjectApplicationEligibilityDecisionComponent extends AbstractForm
     decisionDate: ['', Validators.required]
   });
 
+  notesErrors = {
+    maxlength: 'eligibility.decision.notes.size.too.long',
+  }
+
   selectedAssessment: string;
 
 

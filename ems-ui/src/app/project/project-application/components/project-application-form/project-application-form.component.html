@@ -106,16 +106,15 @@
         <p>{{'project.application.form.summary.intro.row.five' | translate}}</p>
         <p>{{'project.application.form.summary.intro.row.six' | translate}}</p>
     </div>
-    <mat-form-field class="field">
-        <mat-label>{{'project.application.form.field.project.summary' | translate}}</mat-label>
-        <textarea name="projectSummary" formControlName="projectSummary" matInput></textarea>
-        <mat-error>
-            <app-form-field-errors
-                    [errors]="applicationForm?.controls?.projectSummary?.errors"
-                    [messages]="projectSummaryErrors">
-            </app-form-field-errors>
-        </mat-error>
-    </mat-form-field>
+
+    <app-expandable-textarea
+            [control]="applicationForm?.controls?.projectSummary"
+            [errors]="applicationForm?.controls?.projectSummary?.errors"
+            [messages]="projectSummaryErrors"
+            [characterLimit]="2000"
+            [label]="'project.application.form.field.project.summary'"
+            [disabled]="formState === FormState.VIEW">
+    </app-expandable-textarea>
 
     <div *ngIf="formState === FormState.EDIT">
         <button mat-raised-button class="button"
