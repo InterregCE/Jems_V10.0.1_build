@@ -88,6 +88,10 @@
             <mat-label>{{'result.indicator.form.field.baseline' | translate}}</mat-label>
             <input name="baseline" formControlName="baseline" matInput type="number"
                    placeholder="{{'result.indicator.form.field.baseline' | translate}}">
+            <mat-error>
+                <app-form-field-errors [errors]="resultIndicatorForm?.controls?.baseline?.errors">
+                </app-form-field-errors>
+            </mat-error>
         </mat-form-field>
         <mat-form-field class="field-third">
             <mat-label>{{'result.indicator.form.field.referenceYear' | translate}}</mat-label>
@@ -104,8 +108,13 @@
             <mat-label>{{'result.indicator.form.field.final.target' | translate}}</mat-label>
             <input name="finalTarget" formControlName="finalTarget" matInput type="number" s
                    placeholder="{{'result.indicator.form.field.final.target' | translate}}">
+            <mat-error>
+                <app-form-field-errors [errors]="resultIndicatorForm?.controls?.finalTarget?.errors">
+                </app-form-field-errors>
+            </mat-error>
         </mat-form-field>
-        <app-expandable-textarea class="field-third"
+        <app-expandable-textarea
+                class="field-third"
                 [control]="resultIndicatorForm?.controls?.sourceOfData"
                 [errors]="resultIndicatorForm?.controls?.sourceOfData?.errors"
                 [messages]="sourceOfDataErrors"
@@ -113,13 +122,14 @@
                 [label]="'result.indicator.form.field.source.of.data'"
                 [disabled]="formState === FormState.VIEW">
         </app-expandable-textarea>
-        <app-expandable-textarea class="field-third"
-                 [control]="resultIndicatorForm?.controls?.comments"
-                 [errors]="resultIndicatorForm?.controls?.comments?.errors"
-                 [messages]="commentsErrors"
-                 [characterLimit]="1000"
-                 [label]="'result.indicator.form.field.comments'"
-                 [disabled]="formState === FormState.VIEW">
+        <app-expandable-textarea
+                class="field-third"
+                [control]="resultIndicatorForm?.controls?.comments"
+                [errors]="resultIndicatorForm?.controls?.comments?.errors"
+                [messages]="commentsErrors"
+                [characterLimit]="1000"
+                [label]="'result.indicator.form.field.comments'"
+                [disabled]="formState === FormState.VIEW">
         </app-expandable-textarea>
         <div class="button-div" *ngIf="formState === FormState.EDIT">
             <button *ngxPermissionsExcept="Permission.APPLICANT_USER"
