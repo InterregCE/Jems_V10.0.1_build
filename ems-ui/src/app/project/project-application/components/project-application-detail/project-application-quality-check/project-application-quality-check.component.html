@@ -22,16 +22,15 @@
                     </mat-radio-button>
                 </mat-radio-group>
                 <div>
-                    <mat-form-field appearance="outline" class="field">
-                        <mat-label>{{'project.assessment.qualityCheck.dialog.field.note' | translate}}</mat-label>
-                        <textarea
-                                name="notes"
-                                formControlName="notes"
-                                class="assessment-text-area"
-                                matInput
-                                [readonly]="project.qualityAssessment !== null">
-                        </textarea>
-                    </mat-form-field>
+                    <app-expandable-textarea class="assessment-text-area"
+                            [control]="notesForm?.controls?.notes"
+                            [errors]="notesForm?.controls?.notes?.errors"
+                            [messages]="notesErrors"
+                            [characterLimit]="1000"
+                            [label]="'project.assessment.qualityCheck.dialog.field.note'"
+                            [disabled]="project.qualityAssessment !== null"
+                            [customStyle]="'outline'">
+                    </app-expandable-textarea>
                 </div>
                 <div *ngIf="project.qualityAssessment === null">
                     <button mat-raised-button

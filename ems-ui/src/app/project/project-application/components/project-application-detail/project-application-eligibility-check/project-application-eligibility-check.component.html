@@ -21,16 +21,15 @@
                         {{'project.assessment.eligibilityCheck.dialog.select.' + option | translate}}
                     </mat-radio-button>
                 </mat-radio-group>
-                <mat-form-field appearance="outline" class="field">
-                    <mat-label>{{'project.assessment.eligibilityCheck.dialog.field.note' | translate}}</mat-label>
-                    <textarea
-                        name="notes"
-                        formControlName="notes"
-                        class="assessment-text-area"
-                        matInput
-                        [readonly]="project.eligibilityAssessment !== null">
-                    </textarea>
-                </mat-form-field>
+                <app-expandable-textarea class="assessment-text-area"
+                        [control]="notesForm?.controls?.notes"
+                        [errors]="notesForm?.controls?.notes?.errors"
+                        [messages]="notesErrors"
+                        [characterLimit]="1000"
+                        [label]="'project.assessment.eligibilityCheck.dialog.field.note'"
+                        [disabled]="project.eligibilityAssessment !== null"
+                        [customStyle]="'outline'">
+                </app-expandable-textarea>
                 <div *ngIf="project.eligibilityAssessment === null">
                     <button mat-raised-button
                             color="secondary"

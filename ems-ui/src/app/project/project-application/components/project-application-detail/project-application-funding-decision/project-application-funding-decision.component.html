@@ -7,20 +7,15 @@
             {{'project.assessment.fundingDecision.' + option | translate}}
         </mat-radio-button>
     </mat-radio-group>
-    <mat-form-field appearance="outline" class="field">
-        <mat-label>{{'project.assessment.fundingDecision.dialog.field.note' | translate}}</mat-label>
-        <textarea
-                formControlName="notes" class="assessment-text-area" matInput
-                name="notes-{{status?.status}}"
-                [readonly]="!!status">
-        </textarea>
-        <mat-error>
-            <app-form-field-errors
-                    [errors]="decisionForm?.controls?.notes?.errors"
-                    [messages]="noteErrors">
-            </app-form-field-errors>
-        </mat-error>
-    </mat-form-field>
+    <app-expandable-textarea class="assessment-text-area"
+            [control]="decisionForm?.controls?.notes"
+            [errors]="decisionForm?.controls?.notes?.errors"
+            [messages]="noteErrors"
+            [characterLimit]="10000"
+            [label]="'project.assessment.fundingDecision.dialog.field.note'"
+            [disabled]="!!status"
+            [customStyle]="'outline'">
+    </app-expandable-textarea>
     <mat-form-field class="assessment-date-picker">
         <mat-label>{{'project.assessment.fundingDecision.dialog.field.date' | translate}}</mat-label>
         <input required formControlName="decisionDate" matInput
