@@ -1,6 +1,5 @@
 package io.cloudflight.ems.project.controller
 
-import io.cloudflight.ems.api.programme.dto.OutputProgrammePriority
 import io.cloudflight.ems.api.project.ProjectApi
 import io.cloudflight.ems.api.project.dto.InputProject
 import io.cloudflight.ems.api.project.dto.InputProjectData

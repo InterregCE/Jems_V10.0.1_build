@@ -1,1 +1,0 @@
-ALTER TABLE project_file ADD COLUMN name VARCHAR(255) NOT NULL AFTER identifier;
