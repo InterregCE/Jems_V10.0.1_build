@@ -152,12 +152,13 @@
         </mat-form-field>
         <div *ngIf="formState === FormState.EDIT">
             <button mat-raised-button
+                    type="button"
                     (click)="changeFormState$.next(FormState.VIEW)">
                 {{'programme.data.button.cancel' | translate}}
             </button>
             <button mat-raised-button
                     color="primary"
-                    type="submit"
+                    type="button"
                     [disabled]="programmeForm.invalid || submitted"
                     (click)="onSubmit()">
                 {{'programme.data.button.save' | translate}}

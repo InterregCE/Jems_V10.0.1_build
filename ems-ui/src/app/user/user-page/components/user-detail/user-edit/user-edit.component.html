@@ -59,12 +59,13 @@
         <div *ngIf="formState === FormState.EDIT">
             <button mat-raised-button
                     [disabled]="disabled"
+                    type="button"
                     (click)="changeFormState$.next(FormState.VIEW)">
                 {{'user.detail.button.cancel' | translate}}
             </button>
             <button mat-raised-button
                     color="primary"
-                    type="submit"
+                    type="button"
                     [disabled]="disabled || userForm.invalid || submitted"
                     (click)="onSubmit()">
                 {{'user.detail.button.save' | translate}}

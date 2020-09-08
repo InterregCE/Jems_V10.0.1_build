@@ -49,11 +49,11 @@
     </app-expandable-textarea>
 
     <div *ngIf="formState === FormState.EDIT">
-        <button mat-raised-button class="button"
+        <button mat-raised-button class="button" type="button"
                 (click)="onCancel()">
             {{'common.cancel.label' | translate}}
         </button>
-        <button mat-raised-button color="primary" type="submit" class="button"
+        <button mat-raised-button color="primary" type="button" class="button"
                 [disabled]="workPackageForm.invalid || workPackageForm.invalid || submitted"
                 (click)="onSubmit()">
             {{'common.save.label' | translate}}

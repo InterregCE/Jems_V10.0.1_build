@@ -81,11 +81,13 @@
 
     <ng-container *ngIf="!published && formState === FormState.EDIT">
         <button mat-raised-button color="secondary"
+                type="button"
                 (click)="onCancel()">
             {{'call.detail.button.cancel' | translate}}
         </button>
         <button mat-raised-button color="primary"
                 [disabled]="callForm.invalid"
+                type="button"
                 (click)="onSubmit()">
             {{'call.detail.button.save' | translate}}
         </button>

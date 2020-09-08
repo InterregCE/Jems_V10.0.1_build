@@ -118,10 +118,13 @@
 
     <div *ngIf="formState === FormState.EDIT">
         <button mat-raised-button class="button"
+                type="button"
                 (click)="changeFormState$.next(FormState.VIEW)">
             {{'common.cancel.label' | translate}}
         </button>
-        <button mat-raised-button color="primary" type="submit" class="button"
+        <button mat-raised-button color="primary"
+                class="button"
+                type="button"
                 [disabled]="applicationForm.invalid || applicationForm.invalid || submitted"
                 (click)="onSubmit()">
             {{'common.save.label' | translate}}
