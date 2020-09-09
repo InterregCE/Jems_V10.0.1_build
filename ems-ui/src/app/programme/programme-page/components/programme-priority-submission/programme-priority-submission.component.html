@@ -51,12 +51,12 @@
                     [checked]="checked">
             </app-programme-policy-checkbox>
         </div>
-        <button mat-raised-button (click)="onCancel()" class="button">
+        <button mat-raised-button (click)="onCancel()" class="button" type="button">
             {{'programme.priority.button.cancel' | translate}}
         </button>
         <button mat-raised-button
                 color="primary"
-                type="submit"
+                type="button"
                 class="button"
                 [disabled]="priorityForm.invalid || policyForm.invalid || submitted"
                 (click)="onSubmit()">

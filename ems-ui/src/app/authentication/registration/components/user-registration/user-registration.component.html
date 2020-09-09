@@ -64,12 +64,14 @@
                     </mat-form-field>
                     <button mat-raised-button
                             color="secondary"
+                            type="button"
                             class="cancel-button"
                             (click)="redirectToLogin()">
                         {{'user.registration.button.cancel' | translate}}
                     </button>
                     <button mat-raised-button
                             color="primary"
+                            type="button"
                             (click)="onSubmit()"
                             class="register-button"
                             [disabled]="userForm.invalid || submitted">

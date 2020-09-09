@@ -1,5 +1,5 @@
 <form [formGroup]="partnerForm" class="container">
-    <h4 *ngIf="!partner?.name">{{'project.partner.detail.add' | translate}}</h4>
+    <h4 *ngIf="!partner?.name">{{'project.application.form.partner.add' | translate}}</h4>
     <h4 *ngIf="partner?.name">{{partner.name}}</h4>
     <h4><span>{{'project.partner.detail.title' | translate}}</span>
         <span class="header-button" *ngxPermissionsExcept="Permission.PROGRAMME_USER">
@@ -58,10 +58,12 @@
 
     <div *ngIf="formState === FormState.EDIT" class="buttons">
         <button mat-raised-button color="secondary"
+                type="button"
                 (click)="onCancel()">
             {{'call.detail.button.cancel' | translate}}
         </button>
         <button mat-raised-button color="primary"
+                type="button"
                 [disabled]="partnerForm.invalid"
                 (click)="onSubmit(controls)">
             {{'common.save.label' | translate}}
