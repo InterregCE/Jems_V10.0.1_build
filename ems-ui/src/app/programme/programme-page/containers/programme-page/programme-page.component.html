@@ -30,6 +30,9 @@
             <mat-tab label="{{'programme.tab.indicators' | translate}}" [disabled]="(priorities$ | async)?.empty">
                 <app-programme-indicators-overview-page></app-programme-indicators-overview-page>
             </mat-tab>
+            <mat-tab label="{{'programme.tab.strategies' | translate}}">
+                <app-programme-strategies-page></app-programme-strategies-page>
+            </mat-tab>
         </mat-tab-group>
     </div>
 </ng-container>
