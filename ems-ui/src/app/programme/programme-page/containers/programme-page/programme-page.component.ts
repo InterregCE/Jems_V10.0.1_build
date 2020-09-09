@@ -1,7 +1,7 @@
 import {ChangeDetectionStrategy, Component, OnDestroy} from '@angular/core';
 import {BaseComponent} from '@common/components/base-component';
 import {Permission} from '../../../../security/permissions/permission';
-import {combineLatest, merge, Subject} from 'rxjs';
+import {merge, Subject} from 'rxjs';
 import {I18nValidationError} from '@common/validation/i18n-validation-error';
 import {
   InputProgrammeFundWrapper,
@@ -10,12 +10,11 @@ import {
   ProgrammeFundService,
   ProgrammePriorityService
 } from '@cat/api';
-import {catchError, flatMap, map, startWith, tap} from 'rxjs/operators';
+import {catchError, flatMap, map, tap} from 'rxjs/operators';
 import {Log} from '../../../../common/utils/log';
 import {HttpErrorResponse} from '@angular/common/http';
-import {TabService} from '../../../../common/services/tab.service';
-import {Tables} from '../../../../common/utils/tables';
 import {MatSort} from '@angular/material/sort';
+import {ProgrammePageSidenavService} from '../../services/programme-page-sidenav.service';
 
 @Component({
   selector: 'app-programme-page',
@@ -33,8 +32,6 @@ export class ProgrammePageComponent extends BaseComponent implements OnDestroy {
   fundsSaveError$ = new Subject<I18nValidationError | null>();
   fundsSaveSuccess$ = new Subject<boolean>();
   saveFunds$ = new Subject<InputProgrammeFundWrapper>();
-
-  activeTab$ = this.tabService.currentTab(ProgrammePageComponent.name);
 
   newPageSize$ = new Subject<number>();
   newPageIndex$ = new Subject<number>();
@@ -87,35 +84,15 @@ export class ProgrammePageComponent extends BaseComponent implements OnDestroy {
       })))
     );
 
-  priorities$ =
-    combineLatest([
-      this.newPageIndex$.pipe(startWith(Tables.DEFAULT_INITIAL_PAGE_INDEX)),
-      this.newPageSize$.pipe(startWith(100)),
-      this.newSort$.pipe(
-        startWith({active: 'code', direction: 'asc'}),
-        map(sort => sort?.direction ? sort : {active: 'code', direction: 'asc'}),
-        map(sort => `${sort.active},${sort.direction}`)
-      ),
-    ])
-      .pipe(
-        flatMap(([pageIndex, pageSize, sort]) =>
-          this.programmePriorityService.get(pageIndex, pageSize, sort)),
-        tap(page => Log.info('Fetched the priorities:', this, page.content)),
-      );
-
   constructor(private programmeDataService: ProgrammeDataService,
               private programmeFundService: ProgrammeFundService,
               private programmePriorityService: ProgrammePriorityService,
-              private tabService: TabService) {
+              private programmePageSidenavService: ProgrammePageSidenavService) {
     super();
+    this.programmePageSidenavService.init(this.destroyed$);
   }
 
   ngOnDestroy(): void {
     super.ngOnDestroy();
-    this.tabService.cleanupTab(ProgrammePageComponent.name);
-  }
-
-  changeTab(tabIndex: number): void {
-    this.tabService.changeTab(ProgrammePageComponent.name, tabIndex);
   }
 }

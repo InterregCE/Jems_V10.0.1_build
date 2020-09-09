@@ -1,37 +1,39 @@
-<h5>{{'programme.area.nuts.explorer.header' | translate}}
-    <button *ngIf=" formState === FormState.VIEW" mat-raised-button
-            (click)="changeFormState$.next(FormState.EDIT)">
-        {{'common.edit.label' | translate}}
-    </button>
-</h5>
-<div class="row col-md-12">
-    <p class="col-md-6">{{'programme.area.nuts.explorer.select' | translate}}</p>
-    <p class="col-md-6">{{'programme.area.nuts.explorer.selected' | translate}}</p>
-    <div class="col-md-6 pane">
-        <app-programme-regions-tree
-                [dataSource]="dataSource"
-                [disabled]="formState === FormState.VIEW"
-                (selectionChanged)="selectionChanged.emit($event)">
-        </app-programme-regions-tree>
+<div class="container">
+    <h5>{{'programme.area.nuts.explorer.header' | translate}}
+        <button *ngIf=" formState === FormState.VIEW" mat-raised-button
+                (click)="changeFormState$.next(FormState.EDIT)">
+            {{'common.edit.label' | translate}}
+        </button>
+    </h5>
+    <div class="row col-md-12">
+        <p class="col-md-6">{{'programme.area.nuts.explorer.select' | translate}}</p>
+        <p class="col-md-6">{{'programme.area.nuts.explorer.selected' | translate}}</p>
+        <div class="col-md-6 pane">
+            <app-programme-regions-tree
+                    [dataSource]="dataSource"
+                    [disabled]="formState === FormState.VIEW"
+                    (selectionChanged)="selectionChanged.emit($event)">
+            </app-programme-regions-tree>
+        </div>
+        <div class="col-md-6 pane">
+            <app-programme-selected-regions
+                    [selectedRegions]="selectedRegions">
+            </app-programme-selected-regions>
+        </div>
     </div>
-    <div class="col-md-6 pane">
-        <app-programme-selected-regions
-                [selectedRegions]="selectedRegions">
-        </app-programme-selected-regions>
-    </div>
+    <ng-container *ngIf="formState === FormState.EDIT">
+        <button mat-raised-button color="primary" class="button"
+                (click)="onSubmit()">
+            {{'common.save.label' | translate}}
+        </button>
+        <button mat-raised-button color="secondary" class="button"
+                (click)="onCancel()">
+            {{'common.cancel.label' | translate}}
+        </button>
+    </ng-container>
+    <app-alert
+            [show]="showSuccessMessage$ | async"
+            [type]="Alert.SUCCESS">
+        <p>{{'programme.area.nuts.explorer.save.success' | translate}}</p>
+    </app-alert>
 </div>
-<ng-container *ngIf="formState === FormState.EDIT">
-    <button mat-raised-button color="primary" class="button"
-            (click)="onSubmit()">
-        {{'common.save.label' | translate}}
-    </button>
-    <button mat-raised-button color="secondary" class="button"
-            (click)="onCancel()">
-        {{'common.cancel.label' | translate}}
-    </button>
-</ng-container>
-<app-alert
-        [show]="showSuccessMessage$ | async"
-        [type]="Alert.SUCCESS">
-    <p>{{'programme.area.nuts.explorer.save.success' | translate}}</p>
-</app-alert>

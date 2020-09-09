@@ -1,15 +1,17 @@
-<app-programme-nuts-info
-        [metadata]="metaData$ | async"
-        [success$]="downloadSuccess$"
-        [error$]="downloadError$"
-        (downloadNuts)="downloadLatestNuts$.next()">
-</app-programme-nuts-info>
-<app-programme-regions
-        *ngIf="(regionTreeDataSource._data | async)?.length"
-        [success$]="regionSaveSuccess$"
-        [dataSource]="regionTreeDataSource"
-        [selectedRegions]="selectedRegions$ | async"
-        (selectionChanged)="selectionChanged$.next(regionTreeDataSource.data)"
-        (saveRegions)="saveSelectedRegions$.next()"
-        (cancelEdit)="cancelEdit$.next()">
-</app-programme-regions>
+<ng-container *ngxPermissionsExcept="Permission.APPLICANT_USER">
+    <app-programme-nuts-info
+            [metadata]="metaData$ | async"
+            [success$]="downloadSuccess$"
+            [error$]="downloadError$"
+            (downloadNuts)="downloadLatestNuts$.next()">
+    </app-programme-nuts-info>
+    <app-programme-regions
+            *ngIf="(regionTreeDataSource._data | async)?.length"
+            [success$]="regionSaveSuccess$"
+            [dataSource]="regionTreeDataSource"
+            [selectedRegions]="selectedRegions$ | async"
+            (selectionChanged)="selectionChanged$.next(regionTreeDataSource.data)"
+            (saveRegions)="saveSelectedRegions$.next()"
+            (cancelEdit)="cancelEdit$.next()">
+    </app-programme-regions>
+</ng-container>

@@ -10,10 +10,7 @@ import {
 import {AbstractForm} from '@common/components/forms/abstract-form';
 import {FormBuilder, FormGroup, ValidatorFn, Validators} from '@angular/forms';
 import {MatDialog} from '@angular/material/dialog';
-import {
-  InputProgrammePriorityCreate,
-  InputProgrammePriorityPolicy
-} from '@cat/api';
+import {InputProgrammePriorityCreate, InputProgrammePriorityPolicy} from '@cat/api';
 import {filter, take, takeUntil} from 'rxjs/operators';
 import {Forms} from '../../../../common/utils/forms';
 
@@ -32,7 +29,7 @@ export class ProgrammePrioritySubmissionComponent extends AbstractForm implement
   @Output()
   savePriority: EventEmitter<InputProgrammePriorityCreate> = new EventEmitter<InputProgrammePriorityCreate>();
   @Output()
-  cancelPriority: EventEmitter<number> = new EventEmitter<number>();
+  cancelPriority: EventEmitter<void> = new EventEmitter<void>();
 
   currentObjective: string;
   policyForm: FormGroup = this.formBuilder.group({});
@@ -73,7 +70,7 @@ export class ProgrammePrioritySubmissionComponent extends AbstractForm implement
   }
 
   onCancel(): void {
-    this.cancelPriority.emit(1);
+    this.cancelPriority.emit();
   }
 
   onSubmit(): void {

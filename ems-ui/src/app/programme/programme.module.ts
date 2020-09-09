@@ -29,8 +29,9 @@ import {MatAutocompleteModule} from '@angular/material/autocomplete';
 import {ProgrammeResultIndicatorSubmissionPageComponent} from './programme-page/containers/programme-result-indicator-submission-page/programme-result-indicator-submission-page.component';
 import {ProgrammeResultIndicatorDetailComponent} from './programme-page/components/programme-result-indicator-detail/programme-result-indicator-detail.component';
 import {ProgrammeBasicFundsComponent} from './programme-page/components/programme-basic-funds/programme-basic-funds.component';
-import { ProgrammeStrategiesPageComponent } from './programme-page/containers/programme-strategies-page/programme-strategies-page.component';
-import { ProgrammeStrategiesComponent } from './programme-page/components/programme-strategies/programme-strategies.component';
+import {ProgrammeStrategiesPageComponent} from './programme-page/containers/programme-strategies-page/programme-strategies-page.component';
+import {ProgrammeStrategiesComponent} from './programme-page/components/programme-strategies/programme-strategies.component';
+import {ProgrammePageSidenavService} from './programme-page/services/programme-page-sidenav.service';
 
 @NgModule({
   declarations: [
@@ -60,7 +61,8 @@ import { ProgrammeStrategiesComponent } from './programme-page/components/progra
     ProgrammeStrategiesComponent
   ],
   providers: [
-    IndicatorsStore
+    IndicatorsStore,
+    ProgrammePageSidenavService
   ],
   imports: [
     SharedModule,
