@@ -33,8 +33,6 @@ export class ProgrammeBasicFundsComponent extends ViewEditForm implements OnInit
   dataSource: MatTableDataSource<InputProgrammeFund>;
 
   editableFundsForm = new FormGroup({});
-  // temporary added fund at the end of the table
-  lastFund: InputProgrammeFund;
 
   abbrevErrors = {
     maxlength: 'programme.fund.abbreviation.size.too.long',
@@ -60,14 +58,12 @@ export class ProgrammeBasicFundsComponent extends ViewEditForm implements OnInit
   }
 
   addNewFund(): void {
-    this.addLastFund();
-    this.addControl(this.lastFund);
+    this.addControl(this.addLastFund());
   }
 
   onSubmit(): void {
     this.saveFunds.emit({
       funds: this.dataSource.data
-        .filter(element => element.id !== this.lastFund.id)
         .map(element => ({
           id: (element.creation ? null : element.id as any),
           selected: this.selection.isSelected(element),
@@ -83,7 +79,7 @@ export class ProgrammeBasicFundsComponent extends ViewEditForm implements OnInit
 
   isValid(): boolean {
     return Object.keys(this.editableFundsForm.controls)
-      .slice(this.DEFAULT_FUNDS_LENGTH * 2, -2) // don't validate the first 9 (default) and last (automatically added) fund
+      .slice(this.DEFAULT_FUNDS_LENGTH * 2) // don't validate the first 9 (default)
       .every(control => this.editableFundsForm.get(control)?.valid);
   }
 
@@ -98,19 +94,19 @@ export class ProgrammeBasicFundsComponent extends ViewEditForm implements OnInit
   }
 
   protected enterEditMode(): void {
-    this.addLastFund();
     this.dataSource.data.forEach(fund => this.addControl(fund));
   }
 
-  private addLastFund(): void {
-    this.lastFund = {
+  private addLastFund(): InputProgrammeFund {
+    const lastFund = {
       id: this.getNextId(),
       selected: false,
       abbreviation: '',
       description: '',
       creation: true
     };
-    this.dataSource.data = [...this.dataSource.data, this.lastFund];
+    this.dataSource.data = [...this.dataSource.data, lastFund];
+    return lastFund;
   }
 
   private addControl(fund: OutputProgrammeFund): void {
