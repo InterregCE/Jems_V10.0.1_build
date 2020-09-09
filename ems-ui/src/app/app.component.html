@@ -13,22 +13,30 @@
                     {{data.headline | translate}}
                 </a>
             </div>
-            <p class="side-nav-content-title"
-               *ngIf="data.type === HeadlineType.TITLE"> {{data.headline | translate}}</p>
-            <p class="side-nav-content-subtitle" *ngIf="data.type === HeadlineType.SUBTITLE"> {{data.headline}}</p>
-        </div>
 
-        <ul class="no-bullets">
-            <li *ngFor="let data of headlines"
-                (click)="sideNavService.navigate(data)">
-                <p *ngIf="!data.type" class="side-nav-section"
-                   [style.padding-left]="data.paddingLeft + 'px'"
-                   [style.padding-top]="data.paddingTop + 'px'"
-                   [style.font-size]="data.fontSize">
-                    {{ data.headline | translate}}
-                </p>
-            </li>
-        </ul>
+            <p class="side-nav-content-title" *ngIf="data.type === HeadlineType.TITLE">
+                <a (click)="sideNavService.navigate(data)" [routerLink]="">
+                    {{data.headline | translate}}
+                </a>
+            </p>
+
+            <p class="side-nav-content-subtitle" *ngIf="data.type === HeadlineType.SUBTITLE">
+                {{data.headline}}
+            </p>
+
+            <ul class="no-bullets" *ngIf="data.type === HeadlineType.BULLETS">
+                <li *ngFor="let bullet of data.bullets"
+                    (click)="sideNavService.navigate(bullet)">
+                    <p *ngIf="!bullet.type" class="side-nav-section"
+                       [style.padding-left]="bullet.paddingLeft + 'px'"
+                       [style.padding-top]="bullet.paddingTop + 'px'"
+                       [style.font-size]="bullet.fontSize">
+                        {{ bullet.headline | translate}}
+                    </p>
+                </li>
+            </ul>
+
+        </div>
     </mat-sidenav>
 
     <mat-sidenav-content>

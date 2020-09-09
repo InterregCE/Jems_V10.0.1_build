@@ -93,63 +93,87 @@ export class ProjectApplicationFormSidenavService {
   private setHeadlines(acronym: string, projectId: number, partners: HeadlineRoute[], packages: HeadlineRoute[]): void {
     this.sideNavService.setHeadlines(this.pageDestroyed$, [
       {
-        headline: 'back.project.overview',
+        headline: 'project.application.form.lifecycle.title',
         route: '/project/' + projectId,
-        type: HeadlineType.BACKROUTE,
-        paddingLeft: 30
+        scrollRoute: 'applicationFormLifecycle',
+        type: HeadlineType.TITLE
+      },
+      {
+        headline: '',
+        type: HeadlineType.BULLETS,
+        bullets: [
+          {
+            headline: 'project.assessment.header',
+            scrollRoute: 'applicationFormLifecycleAssessment',
+            route: '/project/' + projectId,
+            fontSize: 'large',
+            paddingTop: 20
+          },
+          {
+            headline: 'file.tab.header',
+            scrollRoute: 'applicationFormLifecycleAttachments',
+            route: '/project/' + projectId,
+            fontSize: 'large',
+            paddingTop: 3
+          },
+        ]
       },
       {
         headline: 'project.application.form.title',
+        scrollRoute: 'applicationFormHeading',
+        route: '/project/' + projectId + '/applicationForm',
         type: HeadlineType.TITLE
       },
       {
         headline: projectId + ' ' + acronym,
-        type: HeadlineType.SUBTITLE
+        type: HeadlineType.BULLETS,
+        bullets: [
+          {
+            headline: 'project.application.form.section.part.a',
+            scrollRoute: 'projectIdentification',
+            route: '/project/' + projectId + '/applicationForm',
+            fontSize: 'large',
+            paddingTop: 20
+          },
+          {
+            headline: 'project.application.form.section.part.a.subsection.one',
+            scrollRoute: 'projectIdentificationHeading',
+            route: '/project/' + projectId + '/applicationForm',
+            paddingLeft: 10,
+            paddingTop: 3
+          },
+          {
+            headline: 'project.application.form.section.part.a.subsection.two',
+            scrollRoute: 'projectSummaryHeading',
+            route: '/project/' + projectId + '/applicationForm',
+            paddingLeft: 10,
+            paddingTop: 3
+          },
+          {
+            headline: 'project.application.form.section.part.b',
+            scrollRoute: 'projectPartnersHeading',
+            route: '/project/' + projectId + '/applicationForm',
+            fontSize: 'large',
+            paddingTop: 20
+          },
+          ...partners,
+          {
+            headline: 'project.application.form.section.part.c',
+            scrollRoute: 'projectDescriptionHeading',
+            route: '/project/' + projectId + '/applicationForm',
+            fontSize: 'large',
+            paddingTop: 20
+          },
+          {
+            headline: 'project.application.form.section.part.c.subsection.four',
+            scrollRoute: 'projectWorkPlanHeading',
+            route: '/project/' + projectId + '/applicationForm',
+            paddingLeft: 10,
+            paddingTop: 3
+          },
+          ...packages
+        ]
       },
-      {
-        headline: 'project.application.form.section.part.a',
-        scrollRoute: 'applicationFormHeading',
-        route: '/project/' + projectId + '/applicationForm',
-        fontSize: 'large',
-        paddingTop: 20
-      },
-      {
-        headline: 'project.application.form.section.part.a.subsection.one',
-        scrollRoute: 'projectIdentificationHeading',
-        route: '/project/' + projectId + '/applicationForm',
-        paddingLeft: 10,
-        paddingTop: 3
-      },
-      {
-        headline: 'project.application.form.section.part.a.subsection.two',
-        scrollRoute: 'projectSummaryHeading',
-        route: '/project/' + projectId + '/applicationForm',
-        paddingLeft: 10,
-        paddingTop: 3
-      },
-      {
-        headline: 'project.application.form.section.part.b',
-        scrollRoute: 'projectPartnersHeading',
-        route: '/project/' + projectId + '/applicationForm',
-        fontSize: 'large',
-        paddingTop: 20
-      },
-      ...partners,
-      {
-        headline: 'project.application.form.section.part.c',
-        scrollRoute: 'projectDescriptionHeading',
-        route: '/project/' + projectId + '/applicationForm',
-        fontSize: 'large',
-        paddingTop: 20
-      },
-      {
-        headline: 'project.application.form.section.part.c.subsection.four',
-        scrollRoute: 'projectWorkPlanHeading',
-        route: '/project/' + projectId + '/applicationForm',
-        paddingLeft: 10,
-        paddingTop: 3
-      },
-      ...packages
     ]);
   }
 }

@@ -8,4 +8,5 @@ export class HeadlineRoute {
   paddingLeft?: number;
   paddingTop?: number;
   fontSize?: string;
+  bullets?: HeadlineRoute[]; // used if type=BULLETS
 }
