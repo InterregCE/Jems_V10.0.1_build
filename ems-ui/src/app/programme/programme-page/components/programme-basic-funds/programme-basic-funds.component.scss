@@ -23,6 +23,11 @@
     color: white;
   }
 
+  ::ng-deep.mat-form-field-wrapper {
+    margin-top: 0.4rem;
+    margin-bottom: 0.2rem;
+  }
+
   mat-checkbox {
     padding-left: 0.4rem;
   }
@@ -33,6 +38,7 @@
 
   button {
     width: unset !important;
+    margin-bottom: 0.1rem;
   }
 
   ::ng-deep.mat-input-invalid .mat-input-placeholder {

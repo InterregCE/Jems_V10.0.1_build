@@ -12,14 +12,14 @@
             <ng-container matColumnDef="select">
                 <mat-header-cell *matHeaderCellDef>{{'programme.fund.list.select' | translate}}</mat-header-cell>
                 <td mat-cell *matCellDef="let element">
-                    <mat-checkbox *ngIf="formState === FormState.VIEW || element.id !== lastFund.id"
-                                  (click)="$event.stopPropagation()"
+                    <mat-checkbox (click)="$event.stopPropagation()"
                                   (change)="selection.toggle(element)"
                                   [disabled]="formState === FormState.VIEW"
                                   [checked]="selection.isSelected(element)">
                     </mat-checkbox>
-                    <button *ngIf="formState === FormState.EDIT && element.id === lastFund.id"
-                            mat-icon-button
+                </td>
+                <td mat-footer-cell *matFooterCellDef>
+                    <button *ngIf="formState === FormState.EDIT" mat-icon-button
                             (click)="addNewFund()">
                         <mat-icon>add</mat-icon>
                     </button>
@@ -32,12 +32,12 @@
                     <span *ngIf="!element.creation || formState === FormState.VIEW">
                         {{element.abbreviation || 'programme.fund.abbreviation.' + element.id | translate}}
                     </span>
-                    <mat-form-field *ngIf="element.creation && formState === FormState.EDIT"
-                                    floatLabel="never">
+                    <mat-form-field *ngIf="element.creation && formState === FormState.EDIT">
+                        <mat-label>{{'programme.fund.list.add.fund' | translate}}</mat-label>
                         <input matInput formnovalidate
                                [name]="abbreviation(element.id)"
                                [formControlName]="abbreviation(element.id)">
-                        <mat-error *ngIf="element.id !== lastFund.id">
+                        <mat-error>
                             <app-form-field-errors
                                     [errors]="editableFundsForm?.controls[abbreviation(element.id)]?.errors"
                                     [messages]="abbrevErrors">
@@ -56,12 +56,12 @@
                         </span>
                         <span *ngIf="element.id > DEFAULT_FUNDS_LENGTH">{{element.description}}</span>
                     </ng-container>
-                    <mat-form-field *ngIf="element.creation && formState === FormState.EDIT"
-                                    floatLabel="never">
+                    <mat-form-field *ngIf="element.creation && formState === FormState.EDIT">
+                        <mat-label>{{'programme.fund.list.description' | translate}}</mat-label>
                         <input matInput
                                [name]="description(element.id)"
                                [formControlName]="description(element.id)">
-                        <mat-error *ngIf="element.id !== lastFund.id">
+                        <mat-error>
                             <app-form-field-errors
                                     [errors]="editableFundsForm?.controls[description(element.id)]?.errors"
                                     [messages]="descErrors">
@@ -73,6 +73,9 @@
 
             <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
             <mat-row *matRowDef="let row; columns: displayedColumns;"></mat-row>
+            <mat-row *matFooterRowDef="['select']"
+                     [hidden]="formState === FormState.VIEW">
+            </mat-row>
         </mat-table>
     </form>
     <div *ngIf="formState === FormState.EDIT">
