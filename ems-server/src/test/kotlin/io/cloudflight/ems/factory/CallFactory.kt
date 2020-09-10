@@ -29,6 +29,7 @@ class CallFactory(
                 user,
                 callName,
                 emptySet(),
+                emptySet(),
                 callStart,
                 callEnd,
                 CallStatus.PUBLISHED,

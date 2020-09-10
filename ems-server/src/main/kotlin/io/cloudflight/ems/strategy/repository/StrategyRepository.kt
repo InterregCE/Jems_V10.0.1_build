@@ -6,5 +6,4 @@ import org.springframework.data.repository.PagingAndSortingRepository
 import org.springframework.stereotype.Repository
 
 @Repository
-interface StrategyRepository : PagingAndSortingRepository<Strategy, ProgrammeStrategy> {
-}
+interface StrategyRepository : PagingAndSortingRepository<Strategy, ProgrammeStrategy>

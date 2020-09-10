@@ -31,7 +31,7 @@ class CallController(
 
     @PreAuthorize("@callAuthorization.canCreateCall()")
     override fun createCall(call: InputCallCreate): OutputCall {
-        return callService.createCall(call);
+        return callService.createCall(call)
     }
 
     @PreAuthorize("@callAuthorization.canUpdateCall(#call.id)")

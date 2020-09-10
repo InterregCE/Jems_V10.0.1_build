@@ -7,6 +7,7 @@ import io.cloudflight.ems.api.call.dto.OutputCall
 import io.cloudflight.ems.api.call.dto.OutputCallList
 import io.cloudflight.ems.api.call.dto.OutputCallProgrammePriority
 import io.cloudflight.ems.api.programme.dto.ProgrammeObjectivePolicy
+import io.cloudflight.ems.api.strategy.ProgrammeStrategy
 import io.cloudflight.ems.audit.entity.AuditAction
 import io.cloudflight.ems.audit.service.AuditBuilder
 import io.cloudflight.ems.call.entity.Call
@@ -22,6 +23,8 @@ import io.cloudflight.ems.user.repository.UserRepository
 import io.cloudflight.ems.security.APPLICANT_USER
 import io.cloudflight.ems.security.service.SecurityService
 import io.cloudflight.ems.audit.service.AuditService
+import io.cloudflight.ems.strategy.entity.Strategy
+import io.cloudflight.ems.strategy.repository.StrategyRepository
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
 import org.springframework.http.HttpStatus
@@ -33,6 +36,7 @@ class CallServiceImpl(
         private val callRepository: CallRepository,
         private val userRepository: UserRepository,
         private val programmePriorityPolicyRepository: ProgrammePriorityPolicyRepository,
+        private val strategyRepository: StrategyRepository,
         private val auditService: AuditService,
         private val securityService: SecurityService
 ) : CallService {
@@ -61,7 +65,8 @@ class CallServiceImpl(
         val savedCall = callRepository.save(inputCall
             .toEntity(
                 creator = creator,
-                priorityPolicies = inputCall.priorityPolicies?.let { getPoliciesAsEntities(it) } ?: emptySet()
+                priorityPolicies = inputCall.priorityPolicies?.let { getPoliciesAsEntities(it) } ?: emptySet(),
+                strategies = getStrategiesAsEntities(inputCall.strategies)
             )
         ).toOutputCall()
 
@@ -80,6 +85,7 @@ class CallServiceImpl(
         val toUpdate = oldCall.copy(
             name = getCallNameIfUnique(oldCall, inputCall.name!!),
             priorityPolicies = getPoliciesAsEntities(inputCall.priorityPolicies!!),
+            strategies = getStrategiesAsEntities(inputCall.strategies),
             startDate = inputCall.startDate!!,
             endDate = inputCall.endDate!!,
             description = inputCall.description,
@@ -103,11 +109,25 @@ class CallServiceImpl(
         )
     }
 
-    private fun getPoliciesAsEntities(policies: Iterable<ProgrammeObjectivePolicy>): Set<ProgrammePriorityPolicy> {
-        return policies.map {
-            programmePriorityPolicyRepository.findById(it)
-                .orElseThrow { ResourceNotFoundException("programme_priority_policy") }
-        }.toSet()
+    private fun getPoliciesAsEntities(policies: Collection<ProgrammeObjectivePolicy>): Set<ProgrammePriorityPolicy> {
+        val result = programmePriorityPolicyRepository.findAllById(policies).toSet()
+
+        if (policies.size != result.size)
+            throw ResourceNotFoundException("programme_priority_policy")
+        else
+            return result
+    }
+
+    private fun getStrategiesAsEntities(strategies: Collection<ProgrammeStrategy>?): Set<Strategy> {
+        if (strategies == null) return emptySet()
+        val result = strategyRepository.findAllById(strategies)
+            .filter { it.active }
+            .toSet()
+
+        if (strategies.size != result.size)
+            throw ResourceNotFoundException("programme_strategy")
+        else
+            return result
     }
 
     @Transactional

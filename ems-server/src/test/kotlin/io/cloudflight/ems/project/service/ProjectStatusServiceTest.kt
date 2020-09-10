@@ -12,6 +12,7 @@ import io.cloudflight.ems.api.project.dto.status.ProjectQualityAssessmentResult
 import io.cloudflight.ems.api.user.dto.OutputUserRole
 import io.cloudflight.ems.api.user.dto.OutputUserWithRole
 import io.cloudflight.ems.api.programme.dto.ProgrammeObjectivePolicy.DisadvantagedGroups
+import io.cloudflight.ems.api.strategy.ProgrammeStrategy
 import io.cloudflight.ems.audit.entity.AuditAction
 import io.cloudflight.ems.audit.service.AuditCandidate
 import io.cloudflight.ems.call.entity.Call
@@ -29,6 +30,7 @@ import io.cloudflight.ems.user.repository.UserRepository
 import io.cloudflight.ems.security.model.LocalCurrentUser
 import io.cloudflight.ems.security.service.SecurityService
 import io.cloudflight.ems.audit.service.AuditService
+import io.cloudflight.ems.strategy.entity.Strategy
 import io.mockk.MockKAnnotations
 import io.mockk.Runs
 import io.mockk.every
@@ -104,6 +106,7 @@ internal class ProjectStatusServiceTest {
         creator = user,
         name = "call",
         priorityPolicies = setOf(ProgrammePriorityPolicy(DisadvantagedGroups, "DG")),
+        strategies = setOf(Strategy(ProgrammeStrategy.SeaBasinStrategyArcticOcean, true)),
         startDate = ZonedDateTime.now().minusDays(2),
         endDate = ZonedDateTime.now().plusDays(2),
         status = CallStatus.PUBLISHED,

@@ -367,26 +367,6 @@ internal class ProjectStatusAuthorizationTest {
         )
     }
 
-    private fun dummyCallWithStatus(status: CallStatus) = OutputCall(
-        id = 1,
-        name = "test call",
-        priorityPolicies = emptyList(),
-        status = status,
-        startDate = ZonedDateTime.now().minusDays(2),
-        endDate = ZonedDateTime.now().plusDays(2),
-        lengthOfPeriod = 1
-    )
-
-    private fun dummyCallExpired() = OutputCall(
-        id = 2,
-        name = "test call expired",
-        priorityPolicies = emptyList(),
-        status = CallStatus.PUBLISHED,
-        startDate = ZonedDateTime.now().minusDays(2),
-        endDate = ZonedDateTime.now().minusDays(1),
-        lengthOfPeriod = 1
-    )
-
     private fun provideAdminAndProgramUsers(): Stream<Arguments> {
         return Stream.of(
             Arguments.of(programmeUser),
