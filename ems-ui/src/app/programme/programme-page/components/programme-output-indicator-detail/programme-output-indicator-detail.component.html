@@ -53,7 +53,7 @@
         <mat-form-field class="field-third">
             <mat-label>{{'output.indicator.form.field.specific.objective' | translate}}</mat-label>
             <mat-select name="specificObjective" formControlName="specificObjective" [disableOptionCentering]="true"
-                        panelClass="material-select-panel">
+                        panelClass="material-select-panel" required>
                 <mat-optgroup *ngFor="let priority of priorities" [label]="priority.title">
                     <mat-option *ngFor="let objective of priority.programmePriorityPolicies"
                                 [value]="objective.programmeObjectivePolicy">
@@ -107,7 +107,7 @@
         <div class="button-div" *ngIf="formState === FormState.EDIT">
             <button mat-raised-button
                     color="primary"
-                    type="submit"
+                    type="button"
                     class="button"
                     [disabled]="outputIndicatorForm.invalid || submitted"
                     (click)="onSubmit()">

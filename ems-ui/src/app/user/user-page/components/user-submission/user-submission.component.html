@@ -1,6 +1,6 @@
 <div class="user-submission-container">
     <h5>{{'user.create.header' | translate}}</h5>
-    <form [formGroup]="userForm" (ngSubmit)="onSubmit(formDirective)" #formDirective="ngForm">
+    <form [formGroup]="userForm">
         <div class="form-group">
             <mat-form-field class="col-md-12 user-submission-field">
                 <mat-label>{{'user.detail.field.name' | translate}}</mat-label>
@@ -51,6 +51,7 @@
         <button mat-raised-button
                 color="primary"
                 type="button"
+                (click)="onSubmit()"
                 [disabled]="userForm.invalid || submitted">
             + {{'user.create.button.add' | translate}}
         </button>

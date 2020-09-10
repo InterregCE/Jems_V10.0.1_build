@@ -1,3 +1,5 @@
+<a *ngxPermissionsExcept="Permission.APPLICANT_USER" [routerLink]="['']">{{'back.project.list' | translate}}</a>
+<a *ngxPermissionsOnly="Permission.APPLICANT_USER" [routerLink]="['/calls']">&lt; {{'common.back.to.dashboard' | translate}}</a>
 <div class="container" *ngIf="details$ | async as details">
     <app-project-application-form
             [project]="details.projectDetails.project"

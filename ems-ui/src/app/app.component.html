@@ -6,41 +6,25 @@
                  class="side-nav-container">
 
         <div *ngFor="let data of headlines">
-            <div *ngIf="data.type === HeadlineType.BACKROUTE" [style.padding-left]="data.paddingLeft + 'px'">
-                <a class="dialog-a-text"
-                   (click)="sideNavService.navigate(data)"
-                   [routerLink]="">
-                    {{data.headline | translate}}
-                </a>
+            <div class="side-nav-title">{{data.headline | translate}}</div>
+
+            <div *ngFor="let subtitle of data.bullets">
+                <p class="side-nav-subtitle" (click)="sideNavService.navigate(subtitle)">
+                    {{subtitle.headline | translate}}
+                </p>
+
+                <ul class="side-nav-section">
+                    <li *ngFor="let section of subtitle.bullets"
+                        (click)="sideNavService.navigate(section)">
+                        <p>{{ section.headline | translate}}</p>
+                    </li>
+                </ul>
             </div>
-
-            <p class="side-nav-content-title" *ngIf="data.type === HeadlineType.TITLE">
-                <a (click)="sideNavService.navigate(data)" [routerLink]="">
-                    {{data.headline | translate}}
-                </a>
-            </p>
-
-            <p class="side-nav-content-subtitle" *ngIf="data.type === HeadlineType.SUBTITLE">
-                {{data.headline}}
-            </p>
-
-            <ul class="no-bullets" *ngIf="data.type === HeadlineType.BULLETS">
-                <li *ngFor="let bullet of data.bullets"
-                    (click)="sideNavService.navigate(bullet)">
-                    <p *ngIf="!bullet.type" class="side-nav-section"
-                       [style.padding-left]="bullet.paddingLeft + 'px'"
-                       [style.padding-top]="bullet.paddingTop + 'px'"
-                       [style.font-size]="bullet.fontSize">
-                        {{ bullet.headline | translate}}
-                    </p>
-                </li>
-            </ul>
-
         </div>
     </mat-sidenav>
 
     <mat-sidenav-content>
-        <div class="content" role="main">
+        <div id="main-content" class="main-content" role="main">
             <router-outlet></router-outlet>
         </div>
     </mat-sidenav-content>
