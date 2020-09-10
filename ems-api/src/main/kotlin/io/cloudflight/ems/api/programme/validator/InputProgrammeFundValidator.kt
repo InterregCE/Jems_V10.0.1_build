@@ -16,10 +16,10 @@ annotation class InputProgrammeFundValidator(
     val payload: Array<KClass<out Payload>> = []
 )
 
-class ProgrammeFundValidator(private val policySelectionValidator: ProgrammeFundInputValidator) :
+class ProgrammeFundValidator(private val programmeFundValidator: ProgrammeFundInputValidator) :
     ConstraintValidator<InputProgrammeFundValidator, InputProgrammeFundWrapper> {
     override fun isValid(programmeFund: InputProgrammeFundWrapper, context: ConstraintValidatorContext): Boolean {
-        return policySelectionValidator.isProgrammeFundFilledInCorrectly(programmeFund, context)
+        return programmeFundValidator.isProgrammeFundFilledInCorrectly(programmeFund, context)
     }
 }
 
