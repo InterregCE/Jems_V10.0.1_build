@@ -1,12 +1,13 @@
 <a *ngIf="call?.id" [routerLink]="['/calls']">{{'back.call.list' | translate}}</a>
 <br>
-<form [formGroup]="callForm" class="container">
-    <h4 id="callTitle" class="col-md-12">{{'call.detail.title' | translate}}
+<form [formGroup]="callForm" class="container col-md-12">
+    <h3 class="col-md-12">{{'call.detail.title' | translate}}
         <button *ngIf="!published && formState === FormState.VIEW" mat-raised-button
                 (click)="changeFormState$.next(FormState.EDIT)">
             {{'call.detail.button.edit' | translate}}
         </button>
-    </h4>
+    </h3>
+    <h5 class="col-md-12">{{'call.identification.title' | translate}}</h5>
     <button *ngIf="call?.id && !published && formState === FormState.VIEW"
             mat-raised-button color="primary"
             class="button"
@@ -81,7 +82,7 @@
             [disabled]="formState === FormState.VIEW">
     </app-expandable-textarea>
 
-    <div class="section">
+    <div class="section col-md-12">
         <h5 id="callPriorities">{{'call.programme.priorities.title' | translate}}</h5>
         <app-call-priority-tree
                 *ngIf="priorityCheckboxes"
@@ -90,7 +91,7 @@
         </app-call-priority-tree>
     </div>
 
-    <div class="section">
+    <div class="section col-md-12">
         <h5 id="callStrategies">{{'call.strategy.title' | translate}}</h5>
         <span *ngFor="let element of strategies">
             <mat-checkbox (click)="$event.stopPropagation()"
@@ -103,28 +104,32 @@
         </span>
     </div>
 
-    <ng-container *ngIf="!published && formState === FormState.EDIT">
-        <button mat-raised-button color="secondary"
-                type="button"
-                (click)="onCancel()">
-            {{'call.detail.button.cancel' | translate}}
-        </button>
-        <button mat-raised-button color="primary"
-                [disabled]="callForm.invalid"
-                type="button"
-                (click)="onSubmit()">
-            {{'call.detail.button.save' | translate}}
-        </button>
-    </ng-container>
-    <app-alert
-            [show]="showSuccessMessage$ | async"
-            [type]="Alert.SUCCESS">
-        <p>{{'call.detail.save.success' | translate}}</p>
-    </app-alert>
-    <app-alert *ngIf="error$ | async as error"
-               [show]="!submitted && !!error.i18nKey"
-               [type]="Alert.ERROR">
-        <p>{{error.i18nKey | translate}}</p>
-    </app-alert>
+    <div class="section col-md-12">
+        <ng-container *ngIf="!published && formState === FormState.EDIT"  class="col-md-12">
+            <button mat-raised-button color="secondary"
+                    type="button"
+                    (click)="onCancel()">
+                {{'call.detail.button.cancel' | translate}}
+            </button>
+            <button mat-raised-button color="primary"
+                    [disabled]="callForm.invalid"
+                    type="button"
+                    (click)="onSubmit()">
+                {{'call.detail.button.save' | translate}}
+            </button>
+        </ng-container>
+    </div>
+    <div class="section col-md-12">
+        <app-alert
+                [show]="showSuccessMessage$ | async"
+                [type]="Alert.SUCCESS">
+            <p>{{'call.detail.save.success' | translate}}</p>
+        </app-alert>
+        <app-alert *ngIf="error$ | async as error"
+                   [show]="!submitted && !!error.i18nKey"
+                   [type]="Alert.ERROR">
+            <p>{{error.i18nKey | translate}}</p>
+        </app-alert>
+    </div>
 </form>
 

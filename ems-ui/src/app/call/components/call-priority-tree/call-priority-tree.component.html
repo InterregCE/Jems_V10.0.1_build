@@ -6,7 +6,7 @@
             (change)="priority.checkOrUncheckAll()">
         {{priority.name | translate}}
     </mat-checkbox>
-    <ul>
+    <ul class="no-bullets">
         <li *ngFor="let policy of priority.children">
             <mat-checkbox
                     [(ngModel)]="policy.checked"
