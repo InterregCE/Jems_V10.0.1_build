@@ -1,3 +1,4 @@
 <div *ngFor="let error of errors | keyvalue">
+    {{Log.debug('Validation error', this, error)}}
     {{messages && messages[error.key] || error.value || error.key | translate}}
 </div>
