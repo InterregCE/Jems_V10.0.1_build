@@ -57,12 +57,6 @@ describe('SideNavService', () => {
     expect(headlines[3].scrollRoute).toBe('applicationFormHeading')
     expect(headlines[4].headline).toBe('A.1 Project Identification')
     expect(headlines[4].scrollRoute).toBe('projectIdentificationHeading')
-
-    destroyed$.next();
-    tick();
-    expect(headlines.length).toBe(0);
-    // wait for combine latest
-    tick(500);
   }));
 
   it('scroll to anchor', fakeAsync(() => {

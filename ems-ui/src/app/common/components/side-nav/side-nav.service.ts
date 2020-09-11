@@ -13,6 +13,11 @@ export class SideNavService {
   private navigateTo$ = new Subject<HeadlineRoute>();
   private alertStatus: boolean;
 
+  private routeChanged$ = this.router.events
+    .pipe(
+      filter(val => val instanceof ResolveEnd)
+    );
+
   constructor(private router: Router,
               private dialog: MatDialog) {
   }
@@ -20,28 +25,26 @@ export class SideNavService {
   setHeadlines(destroyed$: Subject<any>, newHeadlines: HeadlineRoute[]): void {
     setTimeout(() => this.headlines$.next(newHeadlines), 50);
     Log.debug('Setting headlines', this, this.headlines$);
-
-    if (!destroyed$)
-      return;
-
-    destroyed$
-      .pipe(
-        take(1),
-        tap(() => Log.debug('Setting headlines', this, [])),
-        tap(() => this.headlines$.next([])),
-        tap(() => this.alertStatus = false)
-      ).subscribe();
+    const headlinesRoutes: string[] = [];
+    newHeadlines.forEach(headline => this.getAllRoutes(headline, headlinesRoutes));
 
     combineLatest([
-      this.router.events,
+      this.routeChanged$,
       this.navigateTo$,
     ])
       .pipe(
         takeUntil(destroyed$),
-        filter(([val, to]) => val instanceof ResolveEnd && to.route === val.url),
+        filter(([val, to]) => to.route === (val as ResolveEnd).url),
         delay(500), // wait for dom to render
         tap(([val, to]) => this.scrollToRoute(to.scrollRoute as any))
       ).subscribe();
+
+    this.routeChanged$
+      .pipe(
+        takeUntil(destroyed$),
+        tap(route => this.resetOnLeave(route as ResolveEnd, headlinesRoutes))
+      )
+      .subscribe();
   }
 
   getHeadlines(): Observable<HeadlineRoute[]> {
@@ -92,5 +95,20 @@ export class SideNavService {
   private scrollToRoute(scrollRoute: string) {
     Log.debug('Scrolling to anchor', this, scrollRoute);
     document.getElementById(scrollRoute)?.scrollIntoView({behavior: 'smooth'});
+  }
+
+  private getAllRoutes(headline: HeadlineRoute, allRoutes: string[]) {
+    if (headline.route) {
+      allRoutes.push(headline.route);
+    }
+    headline?.bullets?.forEach(child => this.getAllRoutes(child, allRoutes));
+  }
+
+  private resetOnLeave(val: ResolveEnd, headlinesRoutes: string[]): void {
+    if (!headlinesRoutes.includes(val.url)) {
+      Log.debug('Setting headlines', this, []);
+      this.headlines$.next([]);
+      this.alertStatus = false;
+    }
   }
 }
