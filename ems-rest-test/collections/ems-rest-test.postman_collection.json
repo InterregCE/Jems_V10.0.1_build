@@ -1286,6 +1286,74 @@
 					"response": []
 				},
 				{
+					"name": "fill in project data",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "c3a4e3a7-32a9-472f-9df3-515837f31e8f",
+								"exec": [
+									"const projectName = pm.variables.replaceIn('{{$randomBs}}')\r",
+									"pm.variables.set(\r",
+									"    'project_title',\r",
+									"    projectName.substr(0,250)\r",
+									");\r",
+									"\r",
+									"const projectDuration = pm.variables.replaceIn('{{$randomInt}}')\r",
+									"pm.variables.set(\r",
+									"    'project_duration',\r",
+									"    (projectDuration % 999 + 1)\r",
+									");\r",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"id": "05caf39c-f59a-45c5-b5f3-ea54e05d5829",
+								"exec": [
+									"pm.test('project data should be saved', function() {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"type": "text",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\t\"acronym\": \"{{project_acronym_to_create}}\",\n\t\"specificObjective\": \"{{programmePriorityPolicy}}\",\n    \"title\": \"{{project_title}}\",\n\t\"duration\": {{project_duration}},\n    \"introProgrammeLanguage\": \"{{$randomLoremParagraph}}\\n{{$randomLoremParagraph}}\\n\\n{{$randomLoremParagraph}}\"\n}\n",
+							"options": {
+								"raw": {}
+							}
+						},
+						"url": {
+							"raw": "{{url}}/api/project/{{projectId}}",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"api",
+								"project",
+								"{{projectId}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
 					"name": "test project application retrieval 2",
 					"event": [
 						{
@@ -1367,6 +1435,20 @@
 									"pm.test(\"acronym should fit\", function () {\r",
 									"    pm.expect(response).to.have.property(\"acronym\");\r",
 									"    pm.expect(response.acronym).to.equal(pm.variables.get(\"project_acronym_to_create\"));\r",
+									"});\r",
+									"\r",
+									"pm.test('title should fit', function() {\r",
+									"    pm.expect(response).to.have.property(\"projectData\");\r",
+									"    pm.expect(response.projectData).to.have.property(\"title\");\r",
+									"    pm.expect(response.projectData.title).to.eql(pm.variables.get(\"project_title\"));\r",
+									"});\r",
+									"\r",
+									"pm.test('specificObjective should fit', function() {\r",
+									"    pm.expect(response).to.have.property(\"projectData\");\r",
+									"    pm.expect(response.projectData).to.have.property(\"specificObjective\");\r",
+									"    pm.expect(response.projectData.specificObjective).to.have.property(\"programmeObjectivePolicy\");\r",
+									"    pm.expect(response.projectData.specificObjective.programmeObjectivePolicy)\r",
+									"        .to.eql(pm.variables.get(\"programmePriorityPolicy\"));\r",
 									"});\r",
 									""
 								],
@@ -7106,7 +7188,7 @@
 	],
 	"variable": [
 		{
-			"id": "38ac2811-e067-4b24-9840-94680904c1d1",
+			"id": "f990b146-ebfd-436d-a5c3-61c54a40c321",
 			"key": "url",
 			"value": "specify_url_here"
 		}
