@@ -8,7 +8,7 @@ import {
   Output
 } from '@angular/core';
 import {FormBuilder, FormGroup, Validators} from '@angular/forms';
-import {InputCallCreate, InputCallUpdate, OutputCall} from '@cat/api'
+import {InputCallCreate, InputCallUpdate, OutputCall, OutputProgrammeStrategy} from '@cat/api'
 import {ViewEditForm} from '@common/components/forms/view-edit-form';
 import {FormState} from '@common/components/forms/form-state';
 import {Forms} from '../../../common/utils/forms';
@@ -16,6 +16,7 @@ import {filter, take, takeUntil} from 'rxjs/operators';
 import {MatDialog} from '@angular/material/dialog';
 import {CallPriorityCheckbox} from '../../containers/model/call-priority-checkbox';
 import {Tools} from '../../../common/utils/tools';
+import {SelectionModel} from '@angular/cdk/collections';
 
 @Component({
   selector: 'app-call-detail',
@@ -30,6 +31,8 @@ export class CallDetailComponent extends ViewEditForm implements OnInit {
   call: OutputCall
   @Input()
   priorityCheckboxes: CallPriorityCheckbox[];
+  @Input()
+  strategies: OutputProgrammeStrategy[];
 
   @Output()
   create: EventEmitter<InputCallCreate> = new EventEmitter<InputCallCreate>()
@@ -62,6 +65,7 @@ export class CallDetailComponent extends ViewEditForm implements OnInit {
     min: 'call.lengthOfPeriod.invalid.period',
   };
   published = false;
+  selection = new SelectionModel<OutputProgrammeStrategy>(true, []);
 
   callForm = this.formBuilder.group({
     name: ['', Validators.compose([
@@ -100,7 +104,7 @@ export class CallDetailComponent extends ViewEditForm implements OnInit {
       lengthOfPeriod: this.callForm?.controls?.lengthOfPeriod?.value,
       priorityPolicies: this.priorityCheckboxes
         .flatMap(checkbox => checkbox.getCheckedChildPolicies()),
-      strategies: []
+      strategies: this.buildUpdateEntity(),
     }
     if (!this.call.id) {
       this.create.emit(call);
@@ -139,11 +143,22 @@ export class CallDetailComponent extends ViewEditForm implements OnInit {
       || !this.call.lengthOfPeriod);
   }
 
+  private buildUpdateEntity():  OutputProgrammeStrategy.StrategyEnum[] {
+    return this.strategies
+      .filter(strategy => this.selection.isSelected(strategy))
+      .map(strategy => strategy.strategy);
+  }
+
   protected enterViewMode(): void {
     this.callForm.controls.name.setValue(this.call.name);
     this.callForm.controls.startDate.setValue(this.call.startDate);
     this.callForm.controls.endDate.setValue(this.call.endDate);
     this.callForm.controls.description.setValue(this.call.description);
     this.callForm.controls.lengthOfPeriod.setValue(this.call.lengthOfPeriod);
+    if (this.strategies) {
+      this.selection.select(...this.strategies.filter(element => element.active));
+      this.selection.deselect(...this.strategies.filter(element => !element.active));
+      this.changeDetectorRef.markForCheck();
+    }
   }
 }

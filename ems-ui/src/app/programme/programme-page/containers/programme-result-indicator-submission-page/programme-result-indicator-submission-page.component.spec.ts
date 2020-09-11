@@ -42,7 +42,7 @@ describe('ProgrammeResultIndicatorSubmissionPageComponent', () => {
     })
   }));
 
-  it('should create a call', fakeAsync(() => {
+  it('should create an indicator', fakeAsync(() => {
     component.createResultIndicator({} as InputIndicatorResultCreate);
 
     httpTestingController.expectOne({

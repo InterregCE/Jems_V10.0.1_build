@@ -1,9 +1,10 @@
 <div *ngIf="details$ | async as details">
     <app-call-detail
-            *ngIf="details.applicantCanAccessCall"
+            *ngIf="details.applicantCanAccessCall && strategies$ | async as strategies"
             [call]="details.call"
             [success$]="callSaveSuccess$"
             [error$]="callSaveError$"
+            [strategies]="strategies"
             [priorityCheckboxes]="priorities$ | async"
             (create)="createCall($event)"
             (update)="saveCall$.next($event)"

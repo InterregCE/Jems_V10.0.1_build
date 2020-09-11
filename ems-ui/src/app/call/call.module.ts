@@ -22,7 +22,7 @@ import {MatCheckboxModule} from '@angular/material/checkbox';
     CallDetailComponent,
     CallConfigurationComponent,
     CallActionCellComponent,
-    CallPriorityTreeComponent
+    CallPriorityTreeComponent,
   ],
   imports: [
     CallRoutingModule,

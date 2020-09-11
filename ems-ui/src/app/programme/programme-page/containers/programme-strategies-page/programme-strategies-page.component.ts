@@ -18,7 +18,7 @@ import {Permission} from '../../../../security/permissions/permission';
 export class ProgrammeStrategiesPageComponent extends BaseComponent {
   Permission = Permission;
 
-  private strategies$ = this.programmeStrategyService.getProgrammeStrategies()
+  strategies$ = this.programmeStrategyService.getProgrammeStrategies()
     .pipe(
       tap(programmeStrategies => Log.info('Fetched programme strategies:', this, programmeStrategies))
     );
