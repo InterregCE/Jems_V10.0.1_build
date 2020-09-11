@@ -89,3 +89,7 @@ textarea:read-only,
 textarea:disabled {
   overflow: hidden !important;
 }
+
+.no-bullets {
+  list-style-type: none;
+}
