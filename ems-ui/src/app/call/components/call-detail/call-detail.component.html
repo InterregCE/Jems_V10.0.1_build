@@ -1,7 +1,7 @@
 <a *ngIf="call?.id" [routerLink]="['/calls']">{{'back.call.list' | translate}}</a>
 <br>
 <form [formGroup]="callForm" class="container">
-    <h4 class="col-md-12">{{'call.detail.title' | translate}}
+    <h4 id="callTitle" class="col-md-12">{{'call.detail.title' | translate}}
         <button *ngIf="!published && formState === FormState.VIEW" mat-raised-button
                 (click)="changeFormState$.next(FormState.EDIT)">
             {{'call.detail.button.edit' | translate}}
@@ -71,17 +71,18 @@
         </mat-error>
     </mat-form-field>
 
-    <app-expandable-textarea class="field col-md-12"
-         [control]="callForm?.controls?.description"
-         [errors]="callForm?.controls?.description?.errors"
-         [messages]="descriptionErrors"
-         [characterLimit]="1000"
-         [label]="'call.detail.field.description'"
-         [disabled]="formState === FormState.VIEW">
+    <app-expandable-textarea
+            class="field col-md-12"
+            [control]="callForm?.controls?.description"
+            [errors]="callForm?.controls?.description?.errors"
+            [messages]="descriptionErrors"
+            [characterLimit]="1000"
+            [label]="'call.detail.field.description'"
+            [disabled]="formState === FormState.VIEW">
     </app-expandable-textarea>
 
     <div class="section">
-        <h5>{{'call.programme.priorities.title' | translate}}</h5>
+        <h5 id="callPriorities">{{'call.programme.priorities.title' | translate}}</h5>
         <app-call-priority-tree
                 *ngIf="priorityCheckboxes"
                 [priorityCheckboxes]="priorityCheckboxes"
@@ -90,7 +91,7 @@
     </div>
 
     <div class="section">
-        <h5>{{'call.strategy.title' | translate}}</h5>
+        <h5 id="callStrategies">{{'call.strategy.title' | translate}}</h5>
         <span *ngFor="let element of strategies">
             <mat-checkbox (click)="$event.stopPropagation()"
                           (change)="selection.toggle(element)"

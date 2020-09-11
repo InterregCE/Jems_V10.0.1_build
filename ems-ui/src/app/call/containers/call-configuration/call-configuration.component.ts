@@ -1,9 +1,17 @@
 import {ChangeDetectionStrategy, Component} from '@angular/core';
-import {CallService, OutputProgrammeStrategy, InputCallCreate, InputCallUpdate, OutputCall, ProgrammePriorityService, ProgrammeStrategyService} from '@cat/api'
+import {
+  CallService,
+  InputCallCreate,
+  InputCallUpdate,
+  OutputCall,
+  OutputProgrammeStrategy,
+  ProgrammePriorityService,
+  ProgrammeStrategyService
+} from '@cat/api'
 import {BaseComponent} from '@common/components/base-component';
 import {catchError, flatMap, map, startWith, take, takeUntil, tap} from 'rxjs/operators';
 import {Log} from '../../../common/utils/log';
-import {ActivatedRoute, Router} from '@angular/router';
+import {ActivatedRoute} from '@angular/router';
 import {combineLatest, merge, of, Subject} from 'rxjs';
 import {I18nValidationError} from '@common/validation/i18n-validation-error';
 import {HttpErrorResponse} from '@angular/common/http';
@@ -12,6 +20,7 @@ import {Permission} from '../../../security/permissions/permission';
 import {PermissionService} from '../../../security/permissions/permission.service';
 import {Tables} from '../../../common/utils/tables';
 import {CallPriorityCheckbox} from '../model/call-priority-checkbox';
+import {SideNavService} from '@common/components/side-nav/side-nav.service';
 
 @Component({
   selector: 'app-call-configuration',
@@ -73,8 +82,8 @@ export class CallConfigurationComponent extends BaseComponent {
           .filter(strategy => strategy.active)
           .map(element =>
             ({strategy: element.strategy, active: false} as OutputProgrammeStrategy)
-        );
-        if (!call || (call as OutputCall).strategies.length === 0) {
+          );
+        if (!call || !(call as OutputCall).strategies?.length) {
           return savedStrategies;
         }
         Log.debug('Adapting the selected strategies', this, allActiveStrategies, (call as OutputCall).strategies);
@@ -132,10 +141,30 @@ export class CallConfigurationComponent extends BaseComponent {
               private callStore: CallStore,
               private activatedRoute: ActivatedRoute,
               private permissionService: PermissionService,
-              private router: Router,
+              private sideNavService: SideNavService,
               private programmePriorityService: ProgrammePriorityService,
               private programmeStrategyService: ProgrammeStrategyService) {
     super();
+    this.sideNavService.setHeadlines(this.destroyed$, [
+      {
+        headline: 'call.detail.title',
+        scrollToTop: true,
+        bullets: [
+          {
+            headline: 'call.section.basic.data',
+            scrollRoute: 'callTitle'
+          },
+          {
+            headline: 'call.programme.priorities.title',
+            scrollRoute: 'callPriorities'
+          },
+          {
+            headline: 'call.strategy.title',
+            scrollRoute: 'callStrategies'
+          }
+        ]
+      }
+    ]);
   }
 
   createCall(call: InputCallCreate): void {
@@ -163,6 +192,6 @@ export class CallConfigurationComponent extends BaseComponent {
   }
 
   redirectToCallOverview(): void {
-    this.router.navigate(['/calls'])
+    this.sideNavService.navigate({headline: 'calls', route: '/calls'})
   }
 }
