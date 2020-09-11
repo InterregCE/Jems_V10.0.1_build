@@ -1,18 +1,7 @@
-.field{
-  width: 70%;
-  padding-top: 1rem;
-  margin-right: 30%;
-  margin-bottom: 1rem;
+:host {
+  display: inline-block;
 }
 
-::ng-deep.mat-form-field-disabled .mat-form-field-underline {
-  height: 0 !important;
-}
-
-.mat-form-field-appearance-outline .mat-form-field-outline {
-  color: white;
-}
-
-.mat-input-element {
-  color: #343a40;
+mat-form-field {
+  width: 100%;
 }

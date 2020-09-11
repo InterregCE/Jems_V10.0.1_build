@@ -31,6 +31,7 @@
     </mat-form-field>
 
     <app-expandable-textarea
+            class="field-wide"
             [control]="workPackageForm?.controls?.workPackageSpecificObjective"
             [errors]="workPackageForm?.controls?.workPackageSpecificObjective?.errors"
             [messages]="workPackageSpecificObjectiveErrors"
@@ -40,6 +41,7 @@
     </app-expandable-textarea>
 
     <app-expandable-textarea
+            class="field-wide"
             [control]="workPackageForm?.controls?.workPackageTargetAudience"
             [errors]="workPackageForm?.controls?.workPackageTargetAudience?.errors"
             [messages]="workPackageTargetAudienceErrors"
