@@ -183,8 +183,8 @@ class ProjectServiceTest {
                 firstSubmissionDate = TEST_DATE_TIME,
                 lastResubmissionDate = null,
                 projectStatus = ProjectApplicationStatus.SUBMITTED,
-                specificObjective = null,
-                programmePriority = null
+                specificObjectiveCode = null,
+                programmePriorityCode = null
             )
         )
         assertIterableEquals(expectedProjects, result.get().collect(Collectors.toList()))

@@ -51,8 +51,8 @@ fun Project.toOutputProjectSimple() = OutputProjectSimple(
     projectStatus = projectStatus.status,
     firstSubmissionDate = firstSubmission?.updated,
     lastResubmissionDate = lastResubmission?.updated,
-    specificObjective = projectData?.priorityPolicy?.toOutputProgrammePriorityPolicy(),
-    programmePriority = projectData?.priorityPolicy?.programmePriority?.toOutputProgrammePrioritySimple()
+    specificObjectiveCode = projectData?.priorityPolicy?.code,
+    programmePriorityCode = projectData?.priorityPolicy?.programmePriority?.code
 )
 
 fun Project.toApplicantAndStatus() = ProjectApplicantAndStatus(
