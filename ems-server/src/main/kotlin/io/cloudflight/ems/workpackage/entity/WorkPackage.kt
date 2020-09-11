@@ -22,7 +22,7 @@ data class WorkPackage(
     val project: Project,
 
     @Column
-    val number: Int?,
+    val number: Int? = null,
 
     @Column
     val name: String?,

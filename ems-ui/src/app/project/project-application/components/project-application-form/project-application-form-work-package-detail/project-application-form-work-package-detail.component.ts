@@ -33,7 +33,7 @@ export class ProjectApplicationFormWorkPackageDetailComponent extends ViewEditFo
   @Output()
   updateData = new EventEmitter<InputWorkPackageUpdate>();
   @Output()
-  createDate = new EventEmitter<InputWorkPackageCreate>();
+  createData = new EventEmitter<InputWorkPackageCreate>();
   @Output()
   cancel = new EventEmitter<void>();
 
@@ -98,10 +98,7 @@ export class ProjectApplicationFormWorkPackageDetailComponent extends ViewEditFo
       objectiveAndAudience:  this.workPackageForm.controls.workPackageTargetAudience.value,
     }
     if (!this.workPackage.id) {
-      this.createDate.emit({
-        ...workPackage,
-        projectId: this.projectId
-      });
+      this.createData.emit(workPackage);
       return;
     }
     this.updateData.emit({

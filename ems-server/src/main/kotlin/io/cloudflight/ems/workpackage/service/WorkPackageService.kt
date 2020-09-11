@@ -13,7 +13,10 @@ interface WorkPackageService {
 
     fun getWorkPackagesByProjectId(projectId: Long, pageable: Pageable): Page<OutputWorkPackageSimple>
 
-    fun createWorkPackage(inputWorkPackageCreate: InputWorkPackageCreate): OutputWorkPackage
+    fun createWorkPackage(projectId: Long, inputWorkPackageCreate: InputWorkPackageCreate): OutputWorkPackage
 
-    fun updateWorkPackage(inputWorkPackageUpdate: InputWorkPackageUpdate): OutputWorkPackage
+    fun updateWorkPackage(projectId: Long, inputWorkPackageUpdate: InputWorkPackageUpdate): OutputWorkPackage
+
+    fun updateSortOnNumber(projectId: Long)
+
 }

@@ -43,7 +43,7 @@ class WorkPackageControllerIntegrationTest {
         val call = callFactory.savePublishedCallWithoutPolicy(userFactory.adminUser)
         val project = projectFactory.saveProject(userFactory.adminUser, call)
 
-        val inputWorkPackage = InputWorkPackageCreate("Work package name", "", "", project.id)
+        val inputWorkPackage = InputWorkPackageCreate("Work package name", "", "")
 
         mockMvc.perform(
             post("/api/project/${project.id}/workpackage")
@@ -54,35 +54,7 @@ class WorkPackageControllerIntegrationTest {
             .andExpect(MockMvcResultMatchers.status().isOk)
             .andExpect(MockMvcResultMatchers.jsonPath("$.id").isNotEmpty)
             .andExpect(MockMvcResultMatchers.jsonPath("$.name").value(inputWorkPackage.name.toString()))
-            .andExpect(MockMvcResultMatchers.jsonPath("$.number").value(1))
-
-    }
-
-    @Test
-    @WithUserDetails(value = ADMINISTRATOR_EMAIL)
-    fun `work packages created with correct work package number`() {
-        val call = callFactory.savePublishedCallWithoutPolicy(userFactory.adminUser)
-        val project = projectFactory.saveProject(userFactory.adminUser, call)
-
-        val firstWorkPackage = InputWorkPackageCreate("Work package name", "", "", project.id)
-        val secondWorkPackage = InputWorkPackageCreate("Work package name", "", "", project.id)
-
-        mockMvc.perform(
-            post("/api/project/${project.id}/workpackage")
-
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .content(jsonMapper.writeValueAsString(firstWorkPackage))
-        )
-            .andExpect(MockMvcResultMatchers.status().isOk)
-            .andExpect(MockMvcResultMatchers.jsonPath("$.number").value(1))
-        mockMvc.perform(
-            post("/api/project/${project.id}/workpackage")
-
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .content(jsonMapper.writeValueAsString(secondWorkPackage))
-        )
-            .andExpect(MockMvcResultMatchers.status().isOk)
-            .andExpect(MockMvcResultMatchers.jsonPath("$.number").value(2))
+            .andExpect(MockMvcResultMatchers.jsonPath("$.number").isEmpty)
     }
 
     @Test
@@ -91,7 +63,7 @@ class WorkPackageControllerIntegrationTest {
         val call = callFactory.savePublishedCallWithoutPolicy(userFactory.adminUser)
         val project = projectFactory.saveProject(userFactory.adminUser, call)
 
-        val firstWorkPackage = InputWorkPackageCreate("Work package name", "", "", project.id)
+        val firstWorkPackage = InputWorkPackageCreate("Work package name", "", "")
 
         mockMvc.perform(
             post("/api/project/${project.id}/workpackage")

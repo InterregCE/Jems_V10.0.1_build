@@ -12,8 +12,5 @@ data class InputWorkPackageCreate(
     val specificObjective: String?,
 
     @field:Size(max = 500, message = "workpackage.objectiveAndAudience.wrong.size")
-    val objectiveAndAudience: String?,
-
-    @field:NotNull(message = "workpackage.project.should.not.be.empty")
-    val projectId: Long?
+    val objectiveAndAudience: String?
 )

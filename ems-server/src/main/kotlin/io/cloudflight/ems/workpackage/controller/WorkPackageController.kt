@@ -26,14 +26,14 @@ class WorkPackageController(
         return workPackageService.getWorkPackagesByProjectId(projectId, pageable)
     }
 
-    @PreAuthorize("@projectAuthorization.canUpdateProject(#inputWorkPackageCreate.projectId)")
+    @PreAuthorize("@projectAuthorization.canUpdateProject(#projectId)")
     override fun createWorkPackage(projectId: Long, inputWorkPackageCreate: InputWorkPackageCreate): OutputWorkPackage {
-        return workPackageService.createWorkPackage(inputWorkPackageCreate)
+        return workPackageService.createWorkPackage(projectId, inputWorkPackageCreate)
     }
 
     @PreAuthorize("@projectAuthorization.canUpdateProject(#projectId)")
     override fun updateWorkPackage(projectId: Long, inputWorkPackageUpdate: InputWorkPackageUpdate): OutputWorkPackage {
-        return workPackageService.updateWorkPackage(inputWorkPackageUpdate)
+        return workPackageService.updateWorkPackage(projectId, inputWorkPackageUpdate)
     }
 
 }

@@ -28,6 +28,7 @@ import io.cloudflight.ems.project.repository.ProjectStatusRepository
 import io.cloudflight.ems.user.repository.UserRepository
 import io.cloudflight.ems.security.service.SecurityService
 import io.cloudflight.ems.audit.service.AuditService
+import io.cloudflight.ems.workpackage.service.WorkPackageService
 import org.slf4j.LoggerFactory
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.http.HttpStatus
@@ -43,7 +44,8 @@ class ProjectStatusServiceImpl(
     private val userRepository: UserRepository,
     private val auditService: AuditService,
     private val securityService: SecurityService,
-    private val projectPartnerService: ProjectPartnerService
+    private val projectPartnerService: ProjectPartnerService,
+    private val projectWorkPackageService: WorkPackageService
 ) : ProjectStatusService {
 
     companion object {
@@ -96,6 +98,7 @@ class ProjectStatusServiceImpl(
         // renumber project partners on submit
         if (status == SUBMITTED) {
             projectPartnerService.updateSortByRole(projectId)
+            projectWorkPackageService.updateSortOnNumber(projectId)
         }
     }
 

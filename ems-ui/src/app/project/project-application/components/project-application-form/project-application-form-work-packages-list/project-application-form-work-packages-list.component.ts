@@ -31,6 +31,8 @@ export class ProjectApplicationFormWorkPackagesListComponent {
       {
         displayedColumn: 'project.application.form.workpackage.number',
         elementProperty: 'number',
+        alternativeValueCondition: (element: any) => {return element === null},
+        alternativeValue: 'project.application.form.partner.number.info.auto',
         sortProperty: 'number'
       },
       {

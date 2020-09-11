@@ -91,8 +91,7 @@ class WorkPackageServiceTest {
     private val mockWorkPackageToCreate = InputWorkPackageCreate(
         "Test",
         "",
-        "",
-        1
+        ""
     )
 
     private val mockWorkPackageToUpdate = InputWorkPackageUpdate(
@@ -150,7 +149,7 @@ class WorkPackageServiceTest {
             ""
         )
 
-        val result = workPackageService.createWorkPackage(mockWorkPackageToCreate)
+        val result = workPackageService.createWorkPackage(1, mockWorkPackageToCreate)
 
         assertThat(result).isNotNull
         assertThat(result.number).isEqualTo(2)
@@ -167,7 +166,7 @@ class WorkPackageServiceTest {
             ""
         )
 
-        every { workPackageRepository.findById(1L) } returns Optional.of(workPackageUpdated)
+        every { workPackageRepository.findFirstByProjectIdAndId(1L, 1L) } returns workPackageUpdated
         every { workPackageRepository.save(any<WorkPackage>()) } returnsArgument 0
 
         val expectedData = OutputWorkPackage (
@@ -178,7 +177,7 @@ class WorkPackageServiceTest {
             objectiveAndAudience = ""
         )
 
-        val result = workPackageService.updateWorkPackage(mockWorkPackageToUpdate)
+        val result = workPackageService.updateWorkPackage(1L, mockWorkPackageToUpdate)
 
         assertThat(result).isNotNull
         assertThat(result.number).isEqualTo(expectedData.number)
