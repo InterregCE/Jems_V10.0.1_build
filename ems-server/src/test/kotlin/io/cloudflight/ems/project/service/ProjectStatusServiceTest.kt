@@ -31,6 +31,7 @@ import io.cloudflight.ems.security.model.LocalCurrentUser
 import io.cloudflight.ems.security.service.SecurityService
 import io.cloudflight.ems.audit.service.AuditService
 import io.cloudflight.ems.strategy.entity.Strategy
+import io.cloudflight.ems.workpackage.service.WorkPackageService
 import io.mockk.MockKAnnotations
 import io.mockk.Runs
 import io.mockk.every
@@ -75,8 +76,11 @@ internal class ProjectStatusServiceTest {
     @MockK
     lateinit var securityService: SecurityService
 
-    @MockK
+    @RelaxedMockK
     lateinit var projectPartnerService: ProjectPartnerService
+
+    @RelaxedMockK
+    lateinit var projectWorkPackageService: WorkPackageService
 
     @MockK
     lateinit var projectStatusRepository: ProjectStatusRepository
@@ -124,7 +128,7 @@ internal class ProjectStatusServiceTest {
     fun setup() {
         MockKAnnotations.init(this)
         projectStatusService = ProjectStatusServiceImpl(
-            projectRepository, projectStatusRepository, userRepository, auditService, securityService, projectPartnerService
+            projectRepository, projectStatusRepository, userRepository, auditService, securityService, projectPartnerService, projectWorkPackageService
         )
     }
 
@@ -147,6 +151,11 @@ internal class ProjectStatusServiceTest {
         assertThat(result.lastResubmission).isNull()
         assertThat(result.projectStatus.status).isEqualTo(ProjectApplicationStatus.SUBMITTED)
         assertThat(result.projectStatus.note).isEqualTo(NOTE_DENIED)
+
+        verify {
+            projectPartnerService.updateSortByRole(1)
+            projectWorkPackageService.updateSortOnNumber(1)
+        }
     }
 
     @Test

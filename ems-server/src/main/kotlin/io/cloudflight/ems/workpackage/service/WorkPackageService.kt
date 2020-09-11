@@ -16,4 +16,7 @@ interface WorkPackageService {
     fun createWorkPackage(projectId: Long, inputWorkPackageCreate: InputWorkPackageCreate): OutputWorkPackage
 
     fun updateWorkPackage(projectId: Long, inputWorkPackageUpdate: InputWorkPackageUpdate): OutputWorkPackage
+
+    fun updateSortOnNumber(projectId: Long)
+
 }

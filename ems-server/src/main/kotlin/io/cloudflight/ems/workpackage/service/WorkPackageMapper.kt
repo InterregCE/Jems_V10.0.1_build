@@ -7,24 +7,23 @@ import io.cloudflight.ems.project.entity.Project
 import io.cloudflight.ems.workpackage.entity.WorkPackage
 
 fun WorkPackage.toOutputWorkPackageSimple() = OutputWorkPackageSimple (
-    id = id,
-    number = number!!,
+    id = id!!,
+    number = number,
     name = name
 )
 
 fun WorkPackage.toOutputWorkPackage() = OutputWorkPackage (
-    id = id,
-    number = number!!,
+    id = id!!,
+    number = number,
     name = name,
     specificObjective = specificObjective,
     objectiveAndAudience = objectiveAndAudience
 )
 
-fun InputWorkPackageCreate.toEntity(project: Project, number: Int) = WorkPackage (
+fun InputWorkPackageCreate.toEntity(project: Project) = WorkPackage (
     id = null,
     name = name,
     project = project,
-    number = number,
     specificObjective = specificObjective,
     objectiveAndAudience = objectiveAndAudience
 )

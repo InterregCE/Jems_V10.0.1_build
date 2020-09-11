@@ -9,6 +9,7 @@ import io.cloudflight.ems.project.repository.ProjectRepository
 import io.cloudflight.ems.workpackage.repository.WorkPackageRepository
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
+import org.springframework.data.domain.Sort
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 
@@ -34,10 +35,8 @@ class WorkPackageServiceImpl(
         val project = projectRepository.findById(projectId)
             .orElseThrow { ResourceNotFoundException("project") }
 
-        val generatedWorkPackageNumber = getWorkPackageNumber(projectId)
-
         return workPackageRepository.save(
-            inputWorkPackageCreate.toEntity(project, generatedWorkPackageNumber)
+            inputWorkPackageCreate.toEntity(project)
         ).toOutputWorkPackage()
     }
 
@@ -54,13 +53,13 @@ class WorkPackageServiceImpl(
         return workPackageRepository.save(toUpdate).toOutputWorkPackage()
     }
 
-    private fun getWorkPackageNumber(projectId: Long): Int {
-        val previousWorkPackageNumber: Int? =
-            workPackageRepository.findFirstByProjectIdOrderByNumberDesc(projectId)?.number
+    @Transactional
+    override fun updateSortOnNumber(projectId: Long) {
+        val sort = Sort.by(Sort.Direction.ASC, "id")
 
-        return if (previousWorkPackageNumber != null) {
-            previousWorkPackageNumber + 1
-        } else 1
+        val projectWorkPackages = workPackageRepository.findAllByProjectId(projectId, sort)
+            .mapIndexed { index, old -> old.copy(number = index.plus(1)) }
+        workPackageRepository.saveAll(projectWorkPackages)
     }
 
 }
