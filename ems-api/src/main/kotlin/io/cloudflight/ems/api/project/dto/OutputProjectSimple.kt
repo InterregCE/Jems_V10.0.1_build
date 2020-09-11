@@ -12,6 +12,6 @@ data class OutputProjectSimple(
     val projectStatus: ProjectApplicationStatus,
     val firstSubmissionDate: ZonedDateTime?,
     val lastResubmissionDate: ZonedDateTime?,
-    val specificObjective: OutputProgrammePriorityPolicySimple?,
-    val programmePriority: OutputProgrammePrioritySimple?
+    val specificObjectiveCode: String?,
+    val programmePriorityCode: String?
 )
