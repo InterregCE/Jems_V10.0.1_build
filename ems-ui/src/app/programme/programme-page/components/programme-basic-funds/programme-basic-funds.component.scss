@@ -25,7 +25,10 @@
 
   ::ng-deep.mat-form-field-wrapper {
     margin-top: 0.4rem;
-    margin-bottom: 0.2rem;
+  }
+
+  ::ng-deep.mat-form-field-invalid {
+    margin-bottom: 1rem;
   }
 
   mat-checkbox {

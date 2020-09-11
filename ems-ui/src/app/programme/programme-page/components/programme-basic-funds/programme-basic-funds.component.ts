@@ -112,11 +112,14 @@ export class ProgrammeBasicFundsComponent extends ViewEditForm implements OnInit
   private addControl(fund: OutputProgrammeFund): void {
     this.editableFundsForm.addControl(
       this.abbreviation(fund.id),
-      new FormControl(fund?.abbreviation, [Validators.required, Validators.max(50)])
+      new FormControl(fund?.abbreviation, [
+        Validators.required,
+        Validators.maxLength(50)
+      ])
     );
     this.editableFundsForm.addControl(
       this.description(fund.id),
-      new FormControl(fund?.description, Validators.max(250))
+      new FormControl(fund?.description, Validators.maxLength(250))
     );
   }
 
