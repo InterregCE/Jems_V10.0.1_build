@@ -1,5 +1,5 @@
 import {ChangeDetectionStrategy, Component} from '@angular/core';
-import {CallService, InputCallCreate, InputCallUpdate, OutputCall, ProgrammePriorityService} from '@cat/api'
+import {CallService, OutputProgrammeStrategy, InputCallCreate, InputCallUpdate, OutputCall, ProgrammePriorityService, ProgrammeStrategyService} from '@cat/api'
 import {BaseComponent} from '@common/components/base-component';
 import {catchError, flatMap, map, startWith, take, takeUntil, tap} from 'rxjs/operators';
 import {Log} from '../../../common/utils/log';
@@ -36,6 +36,9 @@ export class CallConfigurationComponent extends BaseComponent {
       map(priorities => priorities.map(priority => CallPriorityCheckbox.fromPriority(priority)))
     );
 
+  private allActiveStrategies$ = this.programmeStrategyService.getProgrammeStrategies().pipe(
+    tap(programmeStrategies => Log.info('Fetched programme strategies:', this, programmeStrategies)))
+
   private callById$ = this.callId
     ? this.callService.getCallById(this.callId)
       .pipe(
@@ -57,6 +60,28 @@ export class CallConfigurationComponent extends BaseComponent {
           .map(policy => policy.programmeObjectivePolicy ? policy.programmeObjectivePolicy : policy) as any;
         Log.debug('Adapting the priority policies', this, allPriorities, savedPolicies);
         return allPriorities.map(priority => CallPriorityCheckbox.fromSavedPolicies(priority, savedPolicies));
+      })
+    );
+
+  strategies$ = combineLatest([
+    this.allActiveStrategies$,
+    merge(this.callById$, this.saveCall$)
+  ])
+    .pipe(
+      map(([allActiveStrategies, call]) => {
+        const savedStrategies = allActiveStrategies
+          .filter(strategy => strategy.active)
+          .map(element =>
+            ({strategy: element.strategy, active: false} as OutputProgrammeStrategy)
+        );
+        if (!call || (call as OutputCall).strategies.length === 0) {
+          return savedStrategies;
+        }
+        Log.debug('Adapting the selected strategies', this, allActiveStrategies, (call as OutputCall).strategies);
+        savedStrategies
+          .filter(element => (call as OutputCall).strategies.includes(element.strategy))
+          .forEach(element => element.active = true)
+        return savedStrategies;
       })
     );
 
@@ -108,7 +133,8 @@ export class CallConfigurationComponent extends BaseComponent {
               private activatedRoute: ActivatedRoute,
               private permissionService: PermissionService,
               private router: Router,
-              private programmePriorityService: ProgrammePriorityService) {
+              private programmePriorityService: ProgrammePriorityService,
+              private programmeStrategyService: ProgrammeStrategyService) {
     super();
   }
 

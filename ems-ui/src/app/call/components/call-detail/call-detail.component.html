@@ -7,6 +7,13 @@
             {{'call.detail.button.edit' | translate}}
         </button>
     </h4>
+    <button *ngIf="call?.id && !published && formState === FormState.VIEW"
+            mat-raised-button color="primary"
+            class="button"
+            [disabled]="publishingRequirementsNotAchieved()"
+            (click)="publishCall()">
+        {{'call.detail.button.publish' | translate}}
+    </button>
     <mat-form-field class="field col-md-12">
         <mat-label>{{'call.detail.field.name' | translate}}</mat-label>
         <input name="name" formControlName="name" matInput placeholder="{{'call.detail.field.name' | translate}}"
@@ -73,11 +80,27 @@
          [disabled]="formState === FormState.VIEW">
     </app-expandable-textarea>
 
-    <app-call-priority-tree
-            *ngIf="priorityCheckboxes"
-            [priorityCheckboxes]="priorityCheckboxes"
-            [disabled]="formState === FormState.VIEW">
-    </app-call-priority-tree>
+    <div class="section">
+        <h5>{{'call.programme.priorities.title' | translate}}</h5>
+        <app-call-priority-tree
+                *ngIf="priorityCheckboxes"
+                [priorityCheckboxes]="priorityCheckboxes"
+                [disabled]="formState === FormState.VIEW">
+        </app-call-priority-tree>
+    </div>
+
+    <div class="section">
+        <h5>{{'call.strategy.title' | translate}}</h5>
+        <span *ngFor="let element of strategies">
+            <mat-checkbox (click)="$event.stopPropagation()"
+                          (change)="selection.toggle(element)"
+                          [disabled]="formState === FormState.VIEW"
+                          [checked]="selection.isSelected(element)">
+                {{'programme.strategy.' + element.strategy | translate}}
+            </mat-checkbox>
+            <br>
+        </span>
+    </div>
 
     <ng-container *ngIf="!published && formState === FormState.EDIT">
         <button mat-raised-button color="secondary"
@@ -92,12 +115,6 @@
             {{'call.detail.button.save' | translate}}
         </button>
     </ng-container>
-    <button *ngIf="call?.id && !published && formState === FormState.VIEW"
-            mat-raised-button color="primary"
-            [disabled]="publishingRequirementsNotAchieved()"
-            (click)="publishCall()">
-        {{'call.detail.button.publish' | translate}}
-    </button>
     <app-alert
             [show]="showSuccessMessage$ | async"
             [type]="Alert.SUCCESS">
