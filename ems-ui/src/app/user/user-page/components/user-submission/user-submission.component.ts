@@ -1,5 +1,5 @@
 import {ChangeDetectionStrategy, ChangeDetectorRef, Component, EventEmitter, Input, Output} from '@angular/core';
-import {FormBuilder, FormGroup, FormGroupDirective, Validators} from '@angular/forms';
+import {FormBuilder, FormGroup, Validators} from '@angular/forms';
 import {InputUserCreate, OutputUserRole} from '@cat/api';
 import {AbstractForm} from '@common/components/forms/abstract-form';
 
@@ -69,7 +69,7 @@ export class UserSubmissionComponent extends AbstractForm {
     return this.userForm;
   }
 
-  onSubmit(formDirective: FormGroupDirective): void {
+  onSubmit(): void {
     this.submitted = true;
     this.submitUser.emit({
       name: this.userForm?.controls?.name?.value,
@@ -77,6 +77,6 @@ export class UserSubmissionComponent extends AbstractForm {
       email: this.userForm?.controls?.email.value,
       userRoleId: this.userForm?.controls?.role?.value?.id
     });
-    formDirective.resetForm();
+    this.userForm.reset();
   }
 }

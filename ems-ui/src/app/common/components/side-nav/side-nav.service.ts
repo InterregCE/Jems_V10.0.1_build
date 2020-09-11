@@ -4,7 +4,6 @@ import {delay, filter, take, takeUntil, tap} from 'rxjs/operators';
 import {Log} from '../../utils/log';
 import {HeadlineRoute} from '@common/components/side-nav/headline-route';
 import {MatDialog} from '@angular/material/dialog';
-import {ViewportScroller} from '@angular/common';
 import {ResolveEnd, Router} from '@angular/router';
 import {Forms} from '../../utils/forms';
 
@@ -15,8 +14,7 @@ export class SideNavService {
   private alertStatus: boolean;
 
   constructor(private router: Router,
-              private dialog: MatDialog,
-              private viewportScroller: ViewportScroller) {
+              private dialog: MatDialog) {
   }
 
   setHeadlines(destroyed$: Subject<any>, newHeadlines: HeadlineRoute[]): void {
@@ -41,7 +39,7 @@ export class SideNavService {
       .pipe(
         takeUntil(destroyed$),
         filter(([val, to]) => val instanceof ResolveEnd && to.route === val.url),
-        delay(300), // wait for dom to render
+        delay(500), // wait for dom to render
         tap(([val, to]) => this.scrollToRoute(to.scrollRoute as any))
       ).subscribe();
   }
@@ -68,6 +66,8 @@ export class SideNavService {
     }
     if (headline.scrollRoute) {
       this.scrollToRoute(headline.scrollRoute);
+    } else if (headline.scrollToTop) {
+      document.getElementById('main-content')?.scrollIntoView({behavior: 'smooth'});
     }
   }
 
@@ -91,6 +91,6 @@ export class SideNavService {
 
   private scrollToRoute(scrollRoute: string) {
     Log.debug('Scrolling to anchor', this, scrollRoute);
-    this.viewportScroller.scrollToAnchor(scrollRoute);
+    document.getElementById(scrollRoute)?.scrollIntoView({behavior: 'smooth'});
   }
 }

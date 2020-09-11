@@ -1,7 +1,8 @@
 <form [formGroup]="applicationForm">
-    <h4 id="applicationFormHeading">{{project.acronym}} {{'project.application.form.title' | translate}}</h4>
+    <h3>{{'project.application.form.title' | translate}}</h3>
+    <h4>{{project.acronym}}</h4>
 
-    <h5 class="header">
+    <h5 id="projectIdentification" class="header">
         {{'project.application.form.section.part.a' | translate}}
     </h5>
     <span class="header-button" *ngxPermissionsExcept="Permission.PROGRAMME_USER">

@@ -1,7 +1,32 @@
+:host {
+  display: inline-block;
+}
+
 .language-select {
   width: 6rem;
   margin-right: 1rem;
 }
 button {
   margin-right: 2rem;
+}
+
+.toolbar {
+  display: flex;
+  width: 100%;
+  height: 100%;
+  justify-content: flex-end;
+  align-items: center;
+  background-color: #1976d2;
+  color: white;
+  font-weight: 600;
+  top: 0;
+  z-index: 100;
+}
+
+.toolbar img {
+  margin: 0 2rem;
+}
+
+.spacer {
+  flex: 1;
 }

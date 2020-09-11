@@ -6,33 +6,25 @@
                  class="side-nav-container">
 
         <div *ngFor="let data of headlines">
-            <div *ngIf="data.type === HeadlineType.BACKROUTE" [style.padding-left]="data.paddingLeft + 'px'">
-                <a class="dialog-a-text"
-                   (click)="sideNavService.navigate(data)"
-                   [routerLink]="">
-                    {{data.headline | translate}}
-                </a>
-            </div>
-            <p class="side-nav-content-title"
-               *ngIf="data.type === HeadlineType.TITLE"> {{data.headline | translate}}</p>
-            <p class="side-nav-content-subtitle" *ngIf="data.type === HeadlineType.SUBTITLE"> {{data.headline}}</p>
-        </div>
+            <div class="side-nav-title">{{data.headline | translate}}</div>
 
-        <ul class="no-bullets">
-            <li *ngFor="let data of headlines"
-                (click)="sideNavService.navigate(data)">
-                <p *ngIf="!data.type" class="side-nav-section"
-                   [style.padding-left]="data.paddingLeft + 'px'"
-                   [style.padding-top]="data.paddingTop + 'px'"
-                   [style.font-size]="data.fontSize">
-                    {{ data.headline | translate}}
+            <div *ngFor="let subtitle of data.bullets">
+                <p class="side-nav-subtitle" (click)="sideNavService.navigate(subtitle)">
+                    {{subtitle.headline | translate}}
                 </p>
-            </li>
-        </ul>
+
+                <ul class="side-nav-section">
+                    <li *ngFor="let section of subtitle.bullets"
+                        (click)="sideNavService.navigate(section)">
+                        <p>{{ section.headline | translate}}</p>
+                    </li>
+                </ul>
+            </div>
+        </div>
     </mat-sidenav>
 
     <mat-sidenav-content>
-        <div class="content" role="main">
+        <div id="main-content" class="main-content" role="main">
             <router-outlet></router-outlet>
         </div>
     </mat-sidenav-content>

@@ -1,6 +1,5 @@
 import {Injectable} from '@angular/core';
 import {SideNavService} from '@common/components/side-nav/side-nav.service';
-import {HeadlineType} from '@common/components/side-nav/headline-type';
 import {combineLatest, Subject} from 'rxjs';
 import {flatMap, map, takeUntil, tap} from 'rxjs/operators';
 import {OutputProjectPartner, ProjectPartnerService, WorkPackageService} from '@cat/api';
@@ -29,8 +28,6 @@ export class ProjectApplicationFormSidenavService {
             headline: this.translate.instant('common.label.project.partner.role.' + partner.role)
               + ' ' + partner.name,
             route: '/project/' + this.projectId + '/partner/' + partner.id,
-            paddingLeft: 20,
-            paddingTop: 3
           }
         ))
       )
@@ -47,8 +44,6 @@ export class ProjectApplicationFormSidenavService {
         .map(workPackage => ({
             headline: workPackage.name,
             route: '/project/' + this.projectId + '/workPackage/' + workPackage.id,
-            paddingLeft: 30,
-            paddingTop: 3
           }
         ))
       )
@@ -93,63 +88,68 @@ export class ProjectApplicationFormSidenavService {
   private setHeadlines(acronym: string, projectId: number, partners: HeadlineRoute[], packages: HeadlineRoute[]): void {
     this.sideNavService.setHeadlines(this.pageDestroyed$, [
       {
-        headline: 'back.project.overview',
-        route: '/project/' + projectId,
-        type: HeadlineType.BACKROUTE,
-        paddingLeft: 30
+        headline: 'project.application.form.tree.title',
+        bullets: [
+          {
+            headline: 'project.application.form.lifecycle.title',
+            route: '/project/' + projectId,
+            scrollToTop: true,
+            bullets: [
+              {
+                headline: 'project.assessment.header',
+                scrollRoute: 'applicationFormLifecycleAssessment',
+                route: '/project/' + projectId,
+              },
+              {
+                headline: 'file.tab.header',
+                scrollRoute: 'applicationFormLifecycleAttachments',
+                route: '/project/' + projectId,
+              },
+            ]
+          },
+        ]
       },
       {
         headline: 'project.application.form.title',
-        type: HeadlineType.TITLE
+        bullets: [
+          {
+            headline: 'project.application.form.section.part.a',
+            route: '/project/' + projectId + '/applicationForm',
+            scrollToTop: true,
+            bullets: [
+              {
+                headline: 'project.application.form.section.part.a.subsection.one',
+                scrollRoute: 'projectIdentificationHeading',
+                route: '/project/' + projectId + '/applicationForm',
+              },
+              {
+                headline: 'project.application.form.section.part.a.subsection.two',
+                scrollRoute: 'projectSummaryHeading',
+                route: '/project/' + projectId + '/applicationForm',
+              },
+            ]
+          },
+          {
+            headline: 'project.application.form.section.part.b',
+            scrollRoute: 'projectPartnersHeading',
+            route: '/project/' + projectId + '/applicationForm',
+            bullets: [...partners],
+          },
+          {
+            headline: 'project.application.form.section.part.c',
+            scrollRoute: 'projectDescriptionHeading',
+            route: '/project/' + projectId + '/applicationForm',
+            bullets: [
+              {
+                headline: 'project.application.form.section.part.c.subsection.four',
+                scrollRoute: 'projectWorkPlanHeading',
+                route: '/project/' + projectId + '/applicationForm',
+                bullets: [...packages],
+              },
+            ],
+          },
+        ]
       },
-      {
-        headline: projectId + ' ' + acronym,
-        type: HeadlineType.SUBTITLE
-      },
-      {
-        headline: 'project.application.form.section.part.a',
-        scrollRoute: 'applicationFormHeading',
-        route: '/project/' + projectId + '/applicationForm',
-        fontSize: 'large',
-        paddingTop: 20
-      },
-      {
-        headline: 'project.application.form.section.part.a.subsection.one',
-        scrollRoute: 'projectIdentificationHeading',
-        route: '/project/' + projectId + '/applicationForm',
-        paddingLeft: 10,
-        paddingTop: 3
-      },
-      {
-        headline: 'project.application.form.section.part.a.subsection.two',
-        scrollRoute: 'projectSummaryHeading',
-        route: '/project/' + projectId + '/applicationForm',
-        paddingLeft: 10,
-        paddingTop: 3
-      },
-      {
-        headline: 'project.application.form.section.part.b',
-        scrollRoute: 'projectPartnersHeading',
-        route: '/project/' + projectId + '/applicationForm',
-        fontSize: 'large',
-        paddingTop: 20
-      },
-      ...partners,
-      {
-        headline: 'project.application.form.section.part.c',
-        scrollRoute: 'projectDescriptionHeading',
-        route: '/project/' + projectId + '/applicationForm',
-        fontSize: 'large',
-        paddingTop: 20
-      },
-      {
-        headline: 'project.application.form.section.part.c.subsection.four',
-        scrollRoute: 'projectWorkPlanHeading',
-        route: '/project/' + projectId + '/applicationForm',
-        paddingLeft: 10,
-        paddingTop: 3
-      },
-      ...packages
     ]);
   }
 }

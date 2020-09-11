@@ -1,8 +1,7 @@
-
 <div *ngIf="projectStatus !== OutputProjectStatus.StatusEnum.DRAFT
             && projectStatus !== OutputProjectStatus.StatusEnum.RETURNEDTOAPPLICANT">
     <br>
-    <h5>{{'project.assessment.header' | translate}}</h5>
+    <h5 id="applicationFormLifecycleAssessment">{{'project.assessment.header' | translate}}</h5>
     <mat-expansion-panel
         [expanded]="true">
     <mat-expansion-panel-header>
