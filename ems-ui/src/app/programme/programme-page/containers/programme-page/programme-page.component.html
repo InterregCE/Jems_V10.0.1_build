@@ -1,38 +1,17 @@
 <ng-container *ngIf="programme$ | async as programme">
-    <div *ngxPermissionsExcept="Permission.APPLICANT_USER" class="container">
-        <h3>{{'programme.data.page.title' | translate}}</h3>
-        <mat-tab-group class="programme-tab-menu"
-                       (selectedIndexChange)="changeTab($event)"
-                       [selectedIndex]="activeTab$ | async">
-            <mat-tab label="{{'programme.tab.data' | translate}}">
-                <app-programme-data
-                        [success$]="programmeSaveSuccess$"
-                        [error$]="programmeSaveError$"
-                        [programme]="programme"
-                        (saveProgrammeData)="saveProgrammeData$.next($event)">
-                </app-programme-data>
-                <app-programme-basic-funds
-                        *ngIf="funds$ | async as funds"
-                        [success$]="fundsSaveSuccess$"
-                        [error$]="fundsSaveError$"
-                        [programmeFunds]="funds"
-                        (saveFunds)="saveFunds$.next($event)">
-                </app-programme-basic-funds>
-            </mat-tab>
-            <mat-tab label="{{'programme.tab.priority' | translate}}">
-                <app-programme-priorities></app-programme-priorities>
-            </mat-tab>
-            <mat-tab label="{{'programme.tab.area' | translate}}">
-                <app-programme-area
-                        [programmeNuts]="programme.programmeNuts">
-                </app-programme-area>
-            </mat-tab>
-            <mat-tab label="{{'programme.tab.indicators' | translate}}" [disabled]="(priorities$ | async)?.empty">
-                <app-programme-indicators-overview-page></app-programme-indicators-overview-page>
-            </mat-tab>
-            <mat-tab label="{{'programme.tab.strategies' | translate}}">
-                <app-programme-strategies-page></app-programme-strategies-page>
-            </mat-tab>
-        </mat-tab-group>
+    <div *ngxPermissionsExcept="Permission.APPLICANT_USER">
+        <app-programme-data
+                [success$]="programmeSaveSuccess$"
+                [error$]="programmeSaveError$"
+                [programme]="programme"
+                (saveProgrammeData)="saveProgrammeData$.next($event)">
+        </app-programme-data>
+        <app-programme-basic-funds
+                *ngIf="funds$ | async as funds"
+                [success$]="fundsSaveSuccess$"
+                [error$]="fundsSaveError$"
+                [programmeFunds]="funds"
+                (saveFunds)="saveFunds$.next($event)">
+        </app-programme-basic-funds>
     </div>
 </ng-container>

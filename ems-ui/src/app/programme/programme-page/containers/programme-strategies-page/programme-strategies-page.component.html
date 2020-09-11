@@ -1,6 +1,9 @@
-<app-programme-strategies *ngIf="details$ | async as strategies"
-        [strategies]="strategies"
-        [success$]="strategiesSaveSuccess$"
-        [error$]="strategiesSaveError$"
-        (updateProgrammeStrategy)="saveStrategies$.next($event)">
-</app-programme-strategies>
+<ng-container *ngxPermissionsExcept="Permission.APPLICANT_USER">
+    <app-programme-strategies
+            *ngIf="details$ | async as strategies"
+            [strategies]="strategies"
+            [success$]="strategiesSaveSuccess$"
+            [error$]="strategiesSaveError$"
+            (updateProgrammeStrategy)="saveStrategies$.next($event)">
+    </app-programme-strategies>
+</ng-container>

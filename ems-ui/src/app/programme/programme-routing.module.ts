@@ -6,6 +6,9 @@ import {ProgrammePrioritiesComponent} from './programme-page/containers/programm
 import {ProgrammePriorityComponent} from './programme-page/containers/programme-priority/programme-priority.component';
 import {ProgrammeOutputIndicatorSubmissionPageComponent} from './programme-page/containers/programme-output-indicator-submission-page/programme-output-indicator-submission-page.component';
 import {ProgrammeResultIndicatorSubmissionPageComponent} from './programme-page/containers/programme-result-indicator-submission-page/programme-result-indicator-submission-page.component';
+import {ProgrammeAreaComponent} from './programme-page/containers/programme-area/programme-area.component';
+import {ProgrammeIndicatorsOverviewPageComponent} from './programme-page/containers/programme-indicators-overview-page/programme-indicators-overview-page.component';
+import {ProgrammeStrategiesPageComponent} from './programme-page/containers/programme-strategies-page/programme-strategies-page.component';
 
 const routes: Routes = [
   {
@@ -22,6 +25,16 @@ const routes: Routes = [
     path: 'priority',
     component: ProgrammePriorityComponent,
     canActivate: [AuthenticationGuard],
+  },
+  {
+    path: 'areas',
+    component: ProgrammeAreaComponent,
+    canActivate: [AuthenticationGuard],
+  },
+  {
+    path: 'indicators',
+    component: ProgrammeIndicatorsOverviewPageComponent,
+    canActivate: [AuthenticationGuard]
   },
   {
     path: 'outputIndicator/create',
@@ -41,6 +54,11 @@ const routes: Routes = [
   {
     path: 'resultIndicator/:indicatorId',
     component: ProgrammeResultIndicatorSubmissionPageComponent,
+    canActivate: [AuthenticationGuard],
+  },
+  {
+    path: 'strategies',
+    component: ProgrammeStrategiesPageComponent,
     canActivate: [AuthenticationGuard],
   },
 ];

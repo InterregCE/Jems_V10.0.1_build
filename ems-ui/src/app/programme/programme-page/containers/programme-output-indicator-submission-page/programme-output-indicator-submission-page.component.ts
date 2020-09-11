@@ -6,16 +6,14 @@ import {
   ProgrammeIndicatorService,
   ProgrammePriorityService
 } from '@cat/api';
-import {ActivatedRoute, Router} from '@angular/router';
-import {catchError, flatMap, map, startWith, take, takeUntil, tap} from 'rxjs/operators';
+import {ActivatedRoute} from '@angular/router';
+import {catchError, map, take, takeUntil, tap} from 'rxjs/operators';
 import {Log} from '../../../../common/utils/log';
-import {combineLatest, merge, of, Subject} from 'rxjs';
-import {Tables} from '../../../../common/utils/tables';
-import {MatSort} from '@angular/material/sort';
+import {of, Subject} from 'rxjs';
 import {I18nValidationError} from '@common/validation/i18n-validation-error';
-import {ProgrammePageComponent} from '../programme-page/programme-page.component';
 import {HttpErrorResponse} from '@angular/common/http';
 import {TabService} from '../../../../common/services/tab.service';
+import {ProgrammePageSidenavService} from '../../services/programme-page-sidenav.service';
 
 @Component({
   selector: 'app-programme-output-indicator-submission-page',
@@ -28,10 +26,6 @@ export class ProgrammeOutputIndicatorSubmissionPageComponent extends BaseCompone
   outputIndicatorId = this.activatedRoute?.snapshot?.params?.indicatorId;
   isCreate = !this.outputIndicatorId;
 
-  newPageSize$ = new Subject<number>();
-  newPageIndex$ = new Subject<number>();
-  newSort$ = new Subject<Partial<MatSort>>();
-
   outputIndicatorSaveError$ = new Subject<I18nValidationError | null>();
   outputIndicatorSaveSuccess$ = new Subject<boolean>();
 
@@ -40,28 +34,19 @@ export class ProgrammeOutputIndicatorSubmissionPageComponent extends BaseCompone
       tap(outputIndicatorData => Log.info('Fetched output Indicator data:', this, outputIndicatorData)))
     : of({});
 
-  priorities$ =
-    combineLatest([
-      this.newPageIndex$.pipe(startWith(Tables.DEFAULT_INITIAL_PAGE_INDEX)),
-      this.newPageSize$.pipe(startWith(100)),
-      this.newSort$.pipe(
-        startWith({ active: 'code', direction: 'asc' }),
-        map(sort => sort?.direction ? sort : { active: 'code', direction: 'asc' }),
-        map(sort => `${sort.active},${sort.direction}`)
-      ),
-    ])
-      .pipe(
-        flatMap(([pageIndex, pageSize, sort]) =>
-          this.programmePriorityService.get(pageIndex, pageSize, sort)),
-        tap(page => Log.info('Fetched the priorities:', this, page.content)),
-      );
+  priorities$ = this.programmePriorityService.get(0, 100, 'code,asc')
+    .pipe(
+      map(page => page.content),
+      tap(page => Log.info('Fetched the priorities:', this, page)),
+    );
 
   constructor(private programmeIndicatorService: ProgrammeIndicatorService,
               private activatedRoute: ActivatedRoute,
               private tabService: TabService,
-              private router: Router,
-              private programmePriorityService: ProgrammePriorityService) {
+              private programmePriorityService: ProgrammePriorityService,
+              private programmePageSidenavService: ProgrammePageSidenavService) {
     super();
+    this.programmePageSidenavService.init(this.destroyed$);
   }
 
   createOutputIndicator(indicator: InputIndicatorOutputCreate) {
@@ -72,10 +57,7 @@ export class ProgrammeOutputIndicatorSubmissionPageComponent extends BaseCompone
         tap(saved => Log.info('Saved indicator:', this, saved)),
         tap(() => this.outputIndicatorSaveSuccess$.next(true)),
         tap(() => this.outputIndicatorSaveError$.next(null)),
-        tap(() => {
-          this.tabService.changeTab(ProgrammePageComponent.name, 3);
-          this.router.navigate(['/programme']);
-        }),
+        tap(() => this.programmePageSidenavService.goToIndicators()),
         catchError((error: HttpErrorResponse) => {
           this.outputIndicatorSaveError$.next(error.error);
           throw error;
@@ -99,8 +81,7 @@ export class ProgrammeOutputIndicatorSubmissionPageComponent extends BaseCompone
   }
 
   cancelCreate() {
-    this.tabService.changeTab(ProgrammePageComponent.name, 3);
-    this.router.navigate(['/programme']);
+    this.programmePageSidenavService.goToIndicators();
   }
 
 }

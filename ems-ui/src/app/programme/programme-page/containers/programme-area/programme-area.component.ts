@@ -1,4 +1,4 @@
-import {ChangeDetectionStrategy, Component, Input, OnInit} from '@angular/core';
+import {ChangeDetectionStrategy, Component, OnInit} from '@angular/core';
 import {NutsImportService, ProgrammeDataService} from '@cat/api';
 import {combineLatest, merge, ReplaySubject, Subject} from 'rxjs';
 import {catchError, flatMap, map, startWith, take, takeUntil, tap} from 'rxjs/operators';
@@ -8,6 +8,8 @@ import {I18nValidationError} from '@common/validation/i18n-validation-error';
 import {HttpErrorResponse} from '@angular/common/http';
 import {ProgrammeRegionCheckbox} from '../../model/programme-region-checkbox';
 import {MatTreeNestedDataSource} from '@angular/material/tree';
+import {ProgrammePageSidenavService} from '../../services/programme-page-sidenav.service';
+import {Permission} from '../../../../security/permissions/permission';
 
 @Component({
   selector: 'app-programme-area',
@@ -16,8 +18,7 @@ import {MatTreeNestedDataSource} from '@angular/material/tree';
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class ProgrammeAreaComponent extends BaseComponent implements OnInit {
-  @Input()
-  programmeNuts: { [key: string]: any };
+  Permission = Permission;
 
   regionTreeDataSource = new MatTreeNestedDataSource<ProgrammeRegionCheckbox>();
 
@@ -25,6 +26,12 @@ export class ProgrammeAreaComponent extends BaseComponent implements OnInit {
   downloadSuccess$ = new Subject<boolean>();
   downloadError$ = new Subject<I18nValidationError | null>();
   regionSaveSuccess$ = new Subject<boolean>();
+
+  private programmeNuts$ = this.programmeDataService.get()
+    .pipe(
+      tap(programmeData => Log.info('Fetched programme data:', this, programmeData)),
+      map(programmeData => programmeData.programmeNuts)
+    );
 
   private latestNutsMetadata$ = this.downloadLatestNuts$
     .pipe(
@@ -77,16 +84,15 @@ export class ProgrammeAreaComponent extends BaseComponent implements OnInit {
   cancelEdit$ = new Subject<void>();
 
   constructor(private nutsService: NutsImportService,
-              private programmeDataService: ProgrammeDataService) {
+              private programmeDataService: ProgrammeDataService,
+              private programmePageSidenavService: ProgrammePageSidenavService) {
     super();
+    this.programmePageSidenavService.init(this.destroyed$);
   }
 
   ngOnInit(): void {
     combineLatest([
-      this.savedSelectedRegions$
-        .pipe(
-          startWith(this.programmeNuts)
-        ),
+      merge(this.programmeNuts$, this.savedSelectedRegions$),
       this.savedNuts$,
       this.cancelEdit$.pipe(
         startWith(null)

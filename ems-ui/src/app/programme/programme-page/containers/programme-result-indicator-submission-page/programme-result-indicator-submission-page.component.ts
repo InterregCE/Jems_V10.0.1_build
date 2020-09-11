@@ -1,14 +1,11 @@
 import {ChangeDetectionStrategy, Component} from '@angular/core';
 import {BaseComponent} from '@common/components/base-component';
-import {combineLatest, merge, of, Subject} from 'rxjs';
-import {MatSort} from '@angular/material/sort';
+import {of, Subject} from 'rxjs';
 import {I18nValidationError} from '@common/validation/i18n-validation-error';
-import {catchError, flatMap, map, startWith, take, takeUntil, tap} from 'rxjs/operators';
+import {catchError, map, take, takeUntil, tap} from 'rxjs/operators';
 import {Log} from '../../../../common/utils/log';
-import {Tables} from '../../../../common/utils/tables';
-import {ActivatedRoute, Router} from '@angular/router';
+import {ActivatedRoute} from '@angular/router';
 import {TabService} from '../../../../common/services/tab.service';
-import {ProgrammePageComponent} from '../programme-page/programme-page.component';
 import {HttpErrorResponse} from '@angular/common/http';
 import {
   InputIndicatorResultCreate,
@@ -16,6 +13,7 @@ import {
   ProgrammeIndicatorService,
   ProgrammePriorityService
 } from '@cat/api';
+import {ProgrammePageSidenavService} from '../../services/programme-page-sidenav.service';
 
 @Component({
   selector: 'app-programme-result-indicator-submission-page',
@@ -28,43 +26,30 @@ export class ProgrammeResultIndicatorSubmissionPageComponent extends BaseCompone
   resultIndicatorId = this.activatedRoute?.snapshot?.params?.indicatorId;
   isCreate = !this.resultIndicatorId;
 
-  newPageSize$ = new Subject<number>();
-  newPageIndex$ = new Subject<number>();
-  newSort$ = new Subject<Partial<MatSort>>();
-
   resultIndicatorSaveError$ = new Subject<I18nValidationError | null>();
   resultIndicatorSaveSuccess$ = new Subject<boolean>();
 
-resultIndicator$ = this.resultIndicatorId
+  resultIndicator$ = this.resultIndicatorId
     ? this.programmeIndicatorService.getIndicatorResult(this.resultIndicatorId).pipe(
       tap(resultIndicatorData => Log.info('Fetched result Indicator data:', this, resultIndicatorData)))
     : of({});
 
-  priorities$ =
-    combineLatest([
-      this.newPageIndex$.pipe(startWith(Tables.DEFAULT_INITIAL_PAGE_INDEX)),
-      this.newPageSize$.pipe(startWith(100)),
-      this.newSort$.pipe(
-        startWith({ active: 'code', direction: 'asc' }),
-        map(sort => sort?.direction ? sort : { active: 'code', direction: 'asc' }),
-        map(sort => `${sort.active},${sort.direction}`)
-      ),
-    ])
-      .pipe(
-        flatMap(([pageIndex, pageSize, sort]) =>
-          this.programmePriorityService.get(pageIndex, pageSize, sort)),
-        tap(page => Log.info('Fetched the priorities:', this, page.content)),
-      );
+  priorities$ = this.programmePriorityService.get(0, 100, 'code,asc')
+    .pipe(
+      map(page => page.content),
+      tap(page => Log.info('Fetched the priorities:', this, page)),
+    );
 
   constructor(private programmeIndicatorService: ProgrammeIndicatorService,
-    private activatedRoute: ActivatedRoute,
-    private tabService: TabService,
-    private router: Router,
-    private programmePriorityService: ProgrammePriorityService) {
+              private activatedRoute: ActivatedRoute,
+              private tabService: TabService,
+              private programmePriorityService: ProgrammePriorityService,
+              private programmePageSidenavService: ProgrammePageSidenavService) {
     super();
+    this.programmePageSidenavService.init(this.destroyed$);
   }
 
-  createResultIndicator(indicator: InputIndicatorResultCreate) {
+  createResultIndicator(indicator: InputIndicatorResultCreate): void {
     this.programmeIndicatorService.createIndicatorResult(indicator)
       .pipe(
         take(1),
@@ -72,10 +57,7 @@ resultIndicator$ = this.resultIndicatorId
         tap(saved => Log.info('Saved indicator:', this, saved)),
         tap(() => this.resultIndicatorSaveSuccess$.next(true)),
         tap(() => this.resultIndicatorSaveError$.next(null)),
-        tap(() => {
-          this.tabService.changeTab(ProgrammePageComponent.name, 3);
-          this.router.navigate(['/programme']);
-        }),
+        tap(() => this.programmePageSidenavService.goToIndicators()),
         catchError((error: HttpErrorResponse) => {
           this.resultIndicatorSaveError$.next(error.error);
           throw error;
@@ -83,7 +65,7 @@ resultIndicator$ = this.resultIndicatorId
       ).subscribe();
   }
 
-  updateResultIndicator(indicator: InputIndicatorResultUpdate) {
+  updateResultIndicator(indicator: InputIndicatorResultUpdate): void {
     this.programmeIndicatorService.updateIndicatorResult(indicator)
       .pipe(
         take(1),
@@ -98,9 +80,8 @@ resultIndicator$ = this.resultIndicatorId
       ).subscribe();
   }
 
-  cancelCreate() {
-    this.tabService.changeTab(ProgrammePageComponent.name, 3);
-    this.router.navigate(['/programme']);
+  cancelCreate(): void {
+    this.programmePageSidenavService.goToIndicators();
   }
 
 }

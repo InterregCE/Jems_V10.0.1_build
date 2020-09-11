@@ -6,9 +6,8 @@ import {Log} from '../../../../common/utils/log';
 import {Subject} from 'rxjs';
 import {I18nValidationError} from '@common/validation/i18n-validation-error';
 import {HttpErrorResponse} from '@angular/common/http';
-import {Router} from '@angular/router';
 import {TabService} from '../../../../common/services/tab.service';
-import {ProgrammePageComponent} from '../programme-page/programme-page.component';
+import {ProgrammePageSidenavService} from '../../services/programme-page-sidenav.service';
 
 @Component({
   selector: 'app-programme-priority',
@@ -33,8 +32,9 @@ export class ProgrammePriorityComponent extends BaseComponent {
 
   constructor(private programmePriorityService: ProgrammePriorityService,
               private tabService: TabService,
-              private router: Router) {
+              private programmePageSidenavService: ProgrammePageSidenavService) {
     super();
+    this.programmePageSidenavService.init(this.destroyed$);
   }
 
   savePriority(priority: InputProgrammePriorityCreate) {
@@ -45,10 +45,7 @@ export class ProgrammePriorityComponent extends BaseComponent {
         tap(saved => Log.info('Saved priority:', this, saved)),
         tap(() => this.prioritySaveSuccess$.next(true)),
         tap(() => this.prioritySaveError$.next(null)),
-        tap(() => {
-          this.tabService.changeTab(ProgrammePageComponent.name, 1);
-          this.router.navigate(['/programme']);
-        }),
+        tap(() => this.programmePageSidenavService.goToPriorities()),
         catchError((error: HttpErrorResponse) => {
           this.prioritySaveError$.next(error.error);
           throw error;
@@ -56,8 +53,7 @@ export class ProgrammePriorityComponent extends BaseComponent {
       ).subscribe();
   }
 
-  cancelPriority(index: number) {
-    this.tabService.changeTab(ProgrammePageComponent.name, 1);
-    this.router.navigate(['/programme']);
+  cancelPriority() {
+    this.programmePageSidenavService.goToPriorities();
   }
 }

@@ -33,10 +33,13 @@ describe('ProgrammeAreaComponent', () => {
   });
 
   it('should download initial nuts metadata', () => {
+    component.metaData$.subscribe();
+
     httpTestingController.expectOne({method: 'GET', url: '//api/nuts/metadata'});
   });
 
   it('should download nuts metadata', fakeAsync(() => {
+    component.metaData$.subscribe();
     component.downloadLatestNuts$.next();
 
     httpTestingController.expectOne({method: 'GET', url: '//api/nuts/metadata'});
@@ -54,7 +57,10 @@ describe('ProgrammeAreaComponent', () => {
     };
 
     beforeEach(() => {
+      component.metaData$.subscribe();
       httpTestingController.expectOne({method: 'GET', url: '//api/nuts/metadata'}).flush({});
+      httpTestingController.expectOne({method: 'GET', url: '//api/programmedata'})
+        .flush({programmeNuts: nuts});
       httpTestingController.expectOne({method: 'GET', url: '//api/nuts'}).flush(nuts);
     });
 
@@ -96,6 +102,9 @@ describe('ProgrammeAreaComponent', () => {
       const clujRegion = component.regionTreeDataSource.data[0].children[0].children[0];
       clujRegion.checked = true;
       clujRegion.updateChecked();
+      const bistritaRegion = component.regionTreeDataSource.data[0].children[0].children[1];
+      bistritaRegion.checked = false;
+      bistritaRegion.updateChecked();
 
       let selectedRegions: any;
       component.selectedRegions$.subscribe(regions => selectedRegions = regions);

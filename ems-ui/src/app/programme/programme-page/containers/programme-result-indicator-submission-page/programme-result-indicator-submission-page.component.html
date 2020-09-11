@@ -2,7 +2,7 @@
 <div *ngIf="resultIndicator$ | async as details" class="container">
     <app-programme-result-indicator-detail
             [resultIndicator]="details"
-            [priorities]="(priorities$ | async)?.content"
+            [priorities]="priorities$ | async"
             [success$]="resultIndicatorSaveSuccess$"
             [error$]="resultIndicatorSaveError$"
             [isCreate]="isCreate"

@@ -8,6 +8,7 @@ import {Log} from '../../../../common/utils/log';
 import {IndicatorsStore} from '../../services/indicators-store.service';
 import {ProgrammeIndicatorService} from '@cat/api';
 import {BaseComponent} from '@common/components/base-component';
+import {ProgrammePageSidenavService} from '../../services/programme-page-sidenav.service';
 
 @Component({
   selector: 'app-programme-indicators-overview-page',
@@ -62,8 +63,10 @@ export class ProgrammeIndicatorsOverviewPageComponent extends BaseComponent {
       );
 
   constructor(private indicatorsStore: IndicatorsStore,
-              private programmeIndicatorService: ProgrammeIndicatorService) {
+              private programmeIndicatorService: ProgrammeIndicatorService,
+              private programmePageSidenavService: ProgrammePageSidenavService) {
     super();
+    this.programmePageSidenavService.init(this.destroyed$);
   }
 
 }
