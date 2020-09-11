@@ -17,6 +17,12 @@
                     <li *ngFor="let section of subtitle.bullets"
                         (click)="sideNavService.navigate(section)">
                         <p>{{ section.headline | translate}}</p>
+                        <ul class="side-nav-subsection">
+                            <li *ngFor="let subsection of section.bullets"
+                                (click)="$event.stopPropagation();sideNavService.navigate(subsection)">
+                                <p>{{ subsection.headline | translate}}</p>
+                            </li>
+                        </ul>
                     </li>
                 </ul>
             </div>
