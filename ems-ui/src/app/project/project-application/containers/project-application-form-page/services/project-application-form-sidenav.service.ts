@@ -2,10 +2,13 @@ import {Injectable} from '@angular/core';
 import {SideNavService} from '@common/components/side-nav/side-nav.service';
 import {combineLatest, Observable, Subject} from 'rxjs';
 import {flatMap, map, takeUntil, tap} from 'rxjs/operators';
-import {OutputProjectPartner, ProjectPartnerService, WorkPackageService} from '@cat/api';
+import {OutputProjectPartner, OutputProjectStatus, ProjectPartnerService, WorkPackageService} from '@cat/api';
 import {HeadlineRoute} from '@common/components/side-nav/headline-route';
 import {Log} from '../../../../../common/utils/log';
 import {TranslateService} from '@ngx-translate/core';
+import {PermissionService} from '../../../../../security/permissions/permission.service';
+import {Permission} from '../../../../../security/permissions/permission';
+import {ProjectStore} from '../../project-application-detail/services/project-store.service';
 
 @Injectable()
 export class ProjectApplicationFormSidenavService {
@@ -49,10 +52,17 @@ export class ProjectApplicationFormSidenavService {
       )
     );
 
+  private isNotApplicant$: Observable<boolean> = this.permissionService.permissionsChanged()
+    .pipe(
+      map(permissions => !permissions.includes(Permission.APPLICANT_USER))
+    )
+
   constructor(private sideNavService: SideNavService,
               private projectPartnerService: ProjectPartnerService,
               private workPackageService: WorkPackageService,
-              private translate: TranslateService) {
+              private projectStore: ProjectStore,
+              private translate: TranslateService,
+              private permissionService: PermissionService) {
   }
 
   init(destroyed: Subject<any>, projectId: number): void {
@@ -60,13 +70,19 @@ export class ProjectApplicationFormSidenavService {
     this.projectId = projectId;
 
     combineLatest([
-      this.acronym$,
+      this.isNotApplicant$,
       this.partners$,
-      this.packages$
+      this.packages$,
+      this.projectStore.getProject()
     ])
       .pipe(
         takeUntil(destroyed),
-        tap(([acronym, partners, packages]) => this.setHeadlines(acronym, projectId, partners, packages))
+        tap(([isNotApplicant, partners, packages, project]) => {
+          const status = project.projectStatus.status
+          const isNotOpen = status !== OutputProjectStatus.StatusEnum.DRAFT
+            && status !== OutputProjectStatus.StatusEnum.RETURNEDTOAPPLICANT
+          this.setHeadlines(isNotApplicant && isNotOpen, projectId, partners, packages)
+        })
       ).subscribe();
 
     this.refreshPartners();
@@ -85,7 +101,7 @@ export class ProjectApplicationFormSidenavService {
     this.fetchPackages$.next();
   }
 
-  private setHeadlines(acronym: string, projectId: number, partners: HeadlineRoute[], packages: HeadlineRoute[]): void {
+  private setHeadlines(showAssessment: boolean, projectId: number, partners: HeadlineRoute[], packages: HeadlineRoute[]): void {
     this.sideNavService.setHeadlines(this.pageDestroyed$, [
       {
         headline: 'project.application.form.tree.title',
@@ -95,17 +111,17 @@ export class ProjectApplicationFormSidenavService {
             route: '/project/' + projectId,
             scrollToTop: true,
             bullets: [
-              {
+              ...(showAssessment ? [{
                 headline: 'project.assessment.header',
                 scrollRoute: 'applicationFormLifecycleAssessment',
                 route: '/project/' + projectId,
-              },
-              {
-                headline: 'file.tab.header',
-                scrollRoute: 'applicationFormLifecycleAttachments',
-                route: '/project/' + projectId,
-              },
+              }] : []),
             ]
+          },
+          {
+            headline: 'file.tab.header',
+            scrollRoute: 'applicationFormLifecycleAttachments',
+            route: '/project/' + projectId,
           },
         ]
       },
