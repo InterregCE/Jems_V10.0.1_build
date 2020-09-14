@@ -12,6 +12,11 @@ mat-sidenav-container {
   width: 100%;
 }
 
+// override default material, to be able to show sections together
+ul {
+  margin-bottom: 0;
+}
+
 .main-content {
   padding: 1rem 1rem 0 1rem;
 }
@@ -30,10 +35,13 @@ mat-sidenav-container {
   cursor: default;
 }
 
-.side-nav-subtitle {
-  font-size: 1.25rem;
-  padding-left: 3rem;
-  cursor: pointer;
+.side-nav-main {
+  margin-bottom: .25rem;
+  &_title {
+    font-size: 1.25rem;
+    padding-left: 3rem;
+    cursor: pointer;
+  }
 }
 
 .side-nav-section {

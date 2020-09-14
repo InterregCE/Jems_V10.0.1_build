@@ -3,5 +3,5 @@ export class HeadlineRoute {
   route?: string;
   scrollRoute?: string;
   scrollToTop? = false;
-  bullets?: HeadlineRoute[];
+  bullets?: HeadlineRoute[] = [];
 }

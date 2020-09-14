@@ -8,16 +8,16 @@
         <div *ngFor="let data of headlines">
             <div class="side-nav-title">{{data.headline | translate}}</div>
 
-            <div *ngFor="let subtitle of data.bullets">
-                <p class="side-nav-subtitle" (click)="sideNavService.navigate(subtitle)">
+            <div *ngFor="let subtitle of data.bullets" class="side-nav-main">
+                <p class="side-nav-main_title" (click)="sideNavService.navigate(subtitle)">
                     {{subtitle.headline | translate}}
                 </p>
 
-                <ul class="side-nav-section">
+                <ul class="side-nav-section" *ngIf="subtitle.bullets?.length">
                     <li *ngFor="let section of subtitle.bullets"
                         (click)="sideNavService.navigate(section)">
                         <p>{{ section.headline | translate}}</p>
-                        <ul class="side-nav-subsection">
+                        <ul class="side-nav-subsection" *ngIf="section.bullets?.length">
                             <li *ngFor="let subsection of section.bullets"
                                 (click)="$event.stopPropagation();sideNavService.navigate(subsection)">
                                 <p>{{ subsection.headline | translate}}</p>
