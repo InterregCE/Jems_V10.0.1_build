@@ -8,9 +8,11 @@ import io.cloudflight.ems.api.indicator.dto.OutputIndicatorOutput
 import io.cloudflight.ems.api.indicator.dto.OutputIndicatorResult
 import io.cloudflight.ems.api.programme.dto.ProgrammeObjective
 import io.cloudflight.ems.api.programme.dto.ProgrammeObjectivePolicy
-import io.cloudflight.ems.audit.entity.Audit
 import io.cloudflight.ems.audit.entity.AuditAction
 import io.cloudflight.ems.audit.service.AuditCandidate
+import io.cloudflight.ems.audit.service.AuditService
+import io.cloudflight.ems.exception.I18nFieldError
+import io.cloudflight.ems.exception.I18nValidationException
 import io.cloudflight.ems.exception.ResourceNotFoundException
 import io.cloudflight.ems.indicator.entity.IndicatorOutput
 import io.cloudflight.ems.indicator.entity.IndicatorResult
@@ -19,11 +21,6 @@ import io.cloudflight.ems.indicator.repository.IndicatorResultRepository
 import io.cloudflight.ems.programme.entity.ProgrammePriority
 import io.cloudflight.ems.programme.entity.ProgrammePriorityPolicy
 import io.cloudflight.ems.programme.repository.ProgrammePriorityPolicyRepository
-import io.cloudflight.ems.security.service.SecurityService
-import io.cloudflight.ems.security.service.authorization.AuthorizationUtil.Companion.adminUser
-import io.cloudflight.ems.audit.service.AuditService
-import io.cloudflight.ems.exception.I18nFieldError
-import io.cloudflight.ems.exception.I18nValidationException
 import io.mockk.MockKAnnotations
 import io.mockk.every
 import io.mockk.impl.annotations.MockK
@@ -39,7 +36,8 @@ import org.springframework.data.domain.PageImpl
 import org.springframework.data.domain.Pageable
 import org.springframework.http.HttpStatus
 import java.math.BigDecimal
-import java.util.Optional
+import java.util.Optional.empty
+import java.util.Optional.of
 
 class IndicatorServiceTest {
 
@@ -96,21 +94,7 @@ class IndicatorServiceTest {
             comment = "test comment"
         )
 
-        private val testOutputIndicatorResult = OutputIndicatorResult(
-            id = 1L,
-            identifier = testIndicatorResult.identifier,
-            code = testIndicatorResult.code,
-            name = testIndicatorResult.name,
-            programmePriorityPolicySpecificObjective = priorityPolicy.programmeObjectivePolicy,
-            programmePriorityPolicyCode = priorityPolicy.code,
-            programmePriorityCode = priorityPolicy.programmePriority!!.code,
-            measurementUnit = testIndicatorResult.measurementUnit,
-            baseline = testIndicatorResult.baseline,
-            referenceYear = testIndicatorResult.referenceYear,
-            finalTarget = testIndicatorResult.finalTarget,
-            sourceOfData = testIndicatorResult.sourceOfData,
-            comment = testIndicatorResult.comment
-        )
+        private val testOutputIndicatorResult = testIndicatorResult.toOutputIndicator()
     }
 
     @MockK
@@ -139,14 +123,14 @@ class IndicatorServiceTest {
 
     @Test
     fun `getOutputIndicatorById not found`() {
-        every { indicatorOutputRepository.findById(eq(-1)) } returns Optional.empty()
+        every { indicatorOutputRepository.findById(eq(-1)) } returns empty()
         val exception = assertThrows<ResourceNotFoundException> { indicatorService.getOutputIndicatorById(-1) }
         assertThat(exception.entity).isEqualTo("indicator_output")
     }
 
     @Test
     fun getOutputIndicatorById() {
-        every { indicatorOutputRepository.findById(eq(1)) } returns Optional.of(testIndicatorOutput)
+        every { indicatorOutputRepository.findById(eq(1)) } returns of(testIndicatorOutput)
         assertThat(indicatorService.getOutputIndicatorById(1))
             .isEqualTo(testOutputIndicatorOutput)
     }
@@ -167,7 +151,7 @@ class IndicatorServiceTest {
     @Test
     fun `save create indicatorOutput`() {
         every { indicatorOutputRepository.save(any<IndicatorOutput>()) } returnsArgument 0
-        every { programmePriorityPolicyRepository.findById(eq(priorityPolicy.programmeObjectivePolicy)) } returns Optional.of(priorityPolicy)
+        every { programmePriorityPolicyRepository.findById(eq(priorityPolicy.programmeObjectivePolicy)) } returns of(priorityPolicy)
 
         val indicatorCreate = InputIndicatorOutputCreate(
             identifier = testIndicatorOutput.identifier,
@@ -191,9 +175,9 @@ class IndicatorServiceTest {
 
     @Test
     fun `save update indicatorOutput no change in identifier`() {
-        every { indicatorOutputRepository.findById(eq(10)) } returns Optional.of(testIndicatorOutput)
+        every { indicatorOutputRepository.findById(eq(10)) } returns of(testIndicatorOutput)
         every { indicatorOutputRepository.save(any<IndicatorOutput>()) } returnsArgument 0
-        every { programmePriorityPolicyRepository.findById(eq(priorityPolicy.programmeObjectivePolicy)) } returns Optional.of(priorityPolicy)
+        every { programmePriorityPolicyRepository.findById(eq(priorityPolicy.programmeObjectivePolicy)) } returns of(priorityPolicy)
         every { indicatorOutputRepository.findOneByIdentifier(eq(testIndicatorOutput.identifier)) } returns testIndicatorOutput
 
         val indicatorUpdate = InputIndicatorOutputUpdate(
@@ -219,9 +203,9 @@ class IndicatorServiceTest {
 
     @Test
     fun `save update indicatorOutput change in identifier`() {
-        every { indicatorOutputRepository.findById(eq(10)) } returns Optional.of(testIndicatorOutput)
+        every { indicatorOutputRepository.findById(eq(10)) } returns of(testIndicatorOutput)
         every { indicatorOutputRepository.save(any<IndicatorOutput>()) } returnsArgument 0
-        every { programmePriorityPolicyRepository.findById(eq(priorityPolicy.programmeObjectivePolicy)) } returns Optional.of(priorityPolicy)
+        every { programmePriorityPolicyRepository.findById(eq(priorityPolicy.programmeObjectivePolicy)) } returns of(priorityPolicy)
         every { indicatorOutputRepository.findOneByIdentifier(eq("newID")) } returns null
 
         val indicatorUpdate = InputIndicatorOutputUpdate(
@@ -247,9 +231,9 @@ class IndicatorServiceTest {
 
     @Test
     fun `save update indicatorOutput identifier in use`() {
-        every { indicatorOutputRepository.findById(eq(10)) } returns Optional.of(testIndicatorOutput)
+        every { indicatorOutputRepository.findById(eq(10)) } returns of(testIndicatorOutput)
         every { indicatorOutputRepository.save(any<IndicatorOutput>()) } returnsArgument 0
-        every { programmePriorityPolicyRepository.findById(eq(priorityPolicy.programmeObjectivePolicy)) } returns Optional.of(priorityPolicy)
+        every { programmePriorityPolicyRepository.findById(eq(priorityPolicy.programmeObjectivePolicy)) } returns of(priorityPolicy)
         every { indicatorOutputRepository.findOneByIdentifier(eq(testIndicatorOutput.identifier)) } returns testIndicatorOutput.copy(id = 30) // different indicator
 
         val indicatorUpdate = InputIndicatorOutputUpdate(
@@ -275,14 +259,14 @@ class IndicatorServiceTest {
 
     @Test
     fun `getResultIndicatorById not found`() {
-        every { indicatorResultRepository.findById(eq(-1)) } returns Optional.empty()
+        every { indicatorResultRepository.findById(eq(-1)) } returns empty()
         val exception = assertThrows<ResourceNotFoundException> { indicatorService.getResultIndicatorById(-1) }
         assertThat(exception.entity).isEqualTo("indicator_result")
     }
 
     @Test
     fun getResultIndicatorById() {
-        every { indicatorResultRepository.findById(eq(1)) } returns Optional.of(testIndicatorResult)
+        every { indicatorResultRepository.findById(eq(1)) } returns of(testIndicatorResult)
         assertThat(indicatorService.getResultIndicatorById(1))
             .isEqualTo(testOutputIndicatorResult)
     }
@@ -303,7 +287,7 @@ class IndicatorServiceTest {
     @Test
     fun `save create indicatorResult`() {
         every { indicatorResultRepository.save(any<IndicatorResult>()) } returnsArgument 0
-        every { programmePriorityPolicyRepository.findById(eq(priorityPolicy.programmeObjectivePolicy)) } returns Optional.of(priorityPolicy)
+        every { programmePriorityPolicyRepository.findById(eq(priorityPolicy.programmeObjectivePolicy)) } returns of(priorityPolicy)
 
         val indicatorCreate = InputIndicatorResultCreate(
             identifier = testIndicatorResult.identifier,
@@ -330,9 +314,9 @@ class IndicatorServiceTest {
 
     @Test
     fun `save update indicatorResult`() {
-        every { indicatorResultRepository.findById(eq(10)) } returns Optional.of(testIndicatorResult)
+        every { indicatorResultRepository.findById(eq(10)) } returns of(testIndicatorResult)
         every { indicatorResultRepository.save(any<IndicatorResult>()) } returnsArgument 0
-        every { programmePriorityPolicyRepository.findById(eq(priorityPolicy.programmeObjectivePolicy)) } returns Optional.of(priorityPolicy)
+        every { programmePriorityPolicyRepository.findById(eq(priorityPolicy.programmeObjectivePolicy)) } returns of(priorityPolicy)
         every { indicatorResultRepository.findOneByIdentifier(eq(testIndicatorResult.identifier)) } returns testIndicatorResult
 
         val indicatorUpdate = InputIndicatorResultUpdate(
@@ -359,6 +343,47 @@ class IndicatorServiceTest {
         }
     }
 
+    @Test
+    fun `save update indicatorResult changed data`() {
+        val testIndicatorResultUpdate = InputIndicatorResultUpdate(
+            id = 10,
+            identifier = "ID11",
+            code = "ioCODE-update",
+            name = "indicator title2",
+            programmeObjectivePolicy = priorityPolicy.programmeObjectivePolicy,
+            measurementUnit = "new measurement unit",
+            baseline = BigDecimal.ONE,
+            referenceYear = "2022/2024",
+            finalTarget = BigDecimal.TEN,
+            sourceOfData = "test source of data update",
+            comment = "test comment update"
+        )
+        val testIndicatorResultNew = testIndicatorResultUpdate.toEntity(testIndicatorResultUpdate.identifier!!, priorityPolicy)
+        val testOutputIndicatorResult = testIndicatorResultNew.toOutputIndicator()
+
+        every { indicatorResultRepository.findById(eq(10)) } returns of(testIndicatorResult)
+        every { indicatorResultRepository.save(any<IndicatorResult>()) } returns testIndicatorResultNew
+        every { programmePriorityPolicyRepository.findById(testIndicatorResultUpdate.programmeObjectivePolicy!!) } returns of(priorityPolicy)
+        every { indicatorResultRepository.findOneByIdentifier(testIndicatorResultUpdate.identifier!!) } returns null
+
+        assertThat(indicatorService.save(testIndicatorResultUpdate)).isEqualTo(testOutputIndicatorResult)
+
+        val auditLog = slot<AuditCandidate>()
+        verify { auditService.logEvent(capture(auditLog)) }
+        with(auditLog.captured) {
+            assertThat(action).isEqualTo(AuditAction.PROGRAMME_INDICATOR_EDITED)
+            assertThat(description).isEqualTo("Programme indicator ID11 edited:\n" +
+                "identifier changed from ID10 to ID11,\n" +
+                "code changed from ioCODE to ioCODE-update,\n" +
+                "name changed from indicator title to indicator title2,\n" +
+                "measurementUnit changed from measurement unit to new measurement unit,\n" +
+                "baseline changed from 10 to 1,\n" +
+                "referenceYear changed from 2022/2023 to 2022/2024,\n" +
+                "finalTarget changed from 1 to 10,\n" +
+                "sourceOfData changed from test source of data to test source of data update,\n" +
+                "comment changed from test comment to test comment update")
+        }
+    }
     //endregion
 
 }

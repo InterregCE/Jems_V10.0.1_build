@@ -26,6 +26,7 @@ import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
+import java.time.LocalDate
 import java.util.Optional
 
 /**
@@ -105,9 +106,45 @@ internal class ProgrammeDataServiceTest {
         val event = slot<AuditCandidate>()
         verify { auditService.logEvent(capture(event)) }
         with(event) {
-            assertThat(AuditAction.PROGRAMME_BASIC_DATA_EDITED).isEqualTo(captured.action)
-            assertThat("Programme basic data changed:\n" +
-                "cci changed from cci to cci-updated").isEqualTo(captured.description)
+            assertThat(captured.action).isEqualTo(AuditAction.PROGRAMME_BASIC_DATA_EDITED)
+            assertThat(captured.description).isEqualTo("Programme basic data changed:\n" +
+                "cci changed from cci to cci-updated")
+        }
+    }
+
+    @Test
+    fun `update existing programme data with different data`() {
+        val programmeDataInput =
+            InputProgrammeData("cci-updated", "title-updated", "version-updated", 2021, 2025,
+                LocalDate.of(2020, 1, 1), LocalDate.of(2021, 2, 2),
+                "d1",  LocalDate.of(2022, 3, 3),
+                "d2", LocalDate.of(2022, 4, 4))
+        val programmeDataUpdated = programmeDataInput.toEntity(emptySet())
+        val programmeDataExpectedOutput = programmeDataUpdated.toOutputProgrammeData()
+
+        every { programmeDataRepository.save(any<ProgrammeData>()) } returns programmeDataUpdated
+        every { programmeDataRepository.findById(1) } returns Optional.of(existingProgrammeData)
+
+        val programmeData = programmeDataService.update(programmeDataInput)
+
+        assertThat(programmeData).isEqualTo(programmeDataExpectedOutput)
+
+        val event = slot<AuditCandidate>()
+        verify { auditService.logEvent(capture(event)) }
+        with(event) {
+            assertThat(captured.action).isEqualTo(AuditAction.PROGRAMME_BASIC_DATA_EDITED)
+            assertThat(captured.description).isEqualTo("Programme basic data changed:\n" +
+                "cci changed from cci to cci-updated,\n" +
+                "title changed from title to title-updated,\n" +
+                "version changed from version to version-updated,\n" +
+                "firstYear changed from 2020 to 2021,\n" +
+                "lastYear changed from 2024 to 2025,\n" +
+                "eligibleFrom changed from null to 2020-01-01,\n" +
+                "eligibleUntil changed from null to 2021-02-02,\n" +
+                "commissionDecisionNumber changed from null to d1,\n" +
+                "commissionDecisionDate changed from null to 2022-03-03,\n" +
+                "programmeAmendingDecisionNumber changed from null to d2,\n" +
+                "programmeAmendingDecisionDate changed from null to 2022-04-04")
         }
     }
 
