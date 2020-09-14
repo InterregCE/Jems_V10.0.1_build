@@ -88,11 +88,21 @@
             <mat-label>{{'output.indicator.form.field.milestone' | translate}}</mat-label>
             <input name="milestone" formControlName="milestone" matInput type="number"
                    placeholder="{{'output.indicator.form.field.milestone' | translate}}">
+            <mat-error>
+                <app-form-field-errors
+                        [errors]="outputIndicatorForm?.controls?.milestone?.errors">
+                </app-form-field-errors>
+            </mat-error>
         </mat-form-field>
         <mat-form-field class="field-third">
             <mat-label>{{'output.indicator.form.field.final.target' | translate}}</mat-label>
             <input name="finalTarget" formControlName="finalTarget" matInput type="number"
                    placeholder="{{'output.indicator.form.field.final.target' | translate}}">
+            <mat-error>
+                <app-form-field-errors
+                        [errors]="outputIndicatorForm?.controls?.finalTarget?.errors">
+                </app-form-field-errors>
+            </mat-error>
         </mat-form-field>
         <div class="button-div" *ngIf="formState === FormState.EDIT">
             <button *ngxPermissionsExcept="Permission.APPLICANT_USER"
