@@ -23,7 +23,7 @@ export class SideNavService {
   }
 
   setHeadlines(destroyed$: Subject<any>, newHeadlines: HeadlineRoute[]): void {
-    setTimeout(() => this.headlines$.next(newHeadlines), 50);
+    this.headlines$.next(newHeadlines);
     Log.debug('Setting headlines', this, this.headlines$);
     const headlinesRoutes: string[] = [];
     newHeadlines.forEach(headline => this.getAllRoutes(headline, headlinesRoutes));
