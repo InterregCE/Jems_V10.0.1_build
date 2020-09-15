@@ -52,12 +52,12 @@ export class ProgrammeResultIndicatorsListComponent extends BaseComponent {
       {
         displayedColumn: 'result.indicator.table.column.name.priority',
         elementProperty: 'programmePriorityCode',
-        sortProperty: 'programmePriorityCode'
+        sortProperty: 'programmePriorityPolicy.programmePriority.code',
       },
       {
         displayedColumn: 'result.indicator.table.column.name.specific.objective',
         elementProperty: 'programmePriorityPolicyCode',
-        sortProperty: 'programmePriorityPolicyCode'
+        sortProperty: 'programmePriorityPolicy.code',
       },
       {
         displayedColumn: 'result.indicator.table.column.name.measurement.unit',
