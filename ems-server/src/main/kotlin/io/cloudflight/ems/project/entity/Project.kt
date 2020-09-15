@@ -61,9 +61,6 @@ data class Project(
     val projectData: ProjectData? = null,
 
     @OneToMany(mappedBy = "project", cascade = [CascadeType.REMOVE])
-    val projectPartners: Set<ProjectPartner>? = emptySet(),
-
-    @OneToOne(mappedBy = "project", cascade = [CascadeType.ALL])
-    val projectDescription: ProjectDescription? = null
+    val projectPartners: Set<ProjectPartner>? = emptySet()
 
 )

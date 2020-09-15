@@ -2,25 +2,28 @@ package io.cloudflight.ems.project.service
 
 import io.cloudflight.ems.api.project.dto.InputProject
 import io.cloudflight.ems.api.project.dto.InputProjectData
-import io.cloudflight.ems.api.project.dto.InputProjectHorizontalPrinciples
-import io.cloudflight.ems.api.project.dto.InputProjectLongTermPlans
-import io.cloudflight.ems.api.project.dto.InputProjectManagement
+import io.cloudflight.ems.api.project.dto.description.InputProjectHorizontalPrinciples
+import io.cloudflight.ems.api.project.dto.description.InputProjectLongTermPlans
+import io.cloudflight.ems.api.project.dto.description.InputProjectManagement
 import io.cloudflight.ems.api.project.dto.OutputProject
 import io.cloudflight.ems.api.project.dto.OutputProjectData
-import io.cloudflight.ems.api.project.dto.OutputProjectLongTermPlans
-import io.cloudflight.ems.api.project.dto.OutputProjectManagement
+import io.cloudflight.ems.api.project.dto.description.OutputProjectLongTermPlans
+import io.cloudflight.ems.api.project.dto.description.OutputProjectManagement
 import io.cloudflight.ems.api.project.dto.OutputProjectSimple
+import io.cloudflight.ems.api.project.dto.description.InputProjectCooperationCriteria
 import io.cloudflight.ems.call.entity.Call
 import io.cloudflight.ems.call.service.toOutputCallWithDates
-import io.cloudflight.ems.project.entity.Project
-import io.cloudflight.ems.project.entity.ProjectStatus
 import io.cloudflight.ems.programme.entity.ProgrammePriorityPolicy
 import io.cloudflight.ems.programme.service.toOutputProgrammePriorityPolicy
 import io.cloudflight.ems.programme.service.toOutputProgrammePrioritySimple
 import io.cloudflight.ems.project.dto.ProjectApplicantAndStatus
+import io.cloudflight.ems.project.entity.Project
 import io.cloudflight.ems.project.entity.ProjectData
-import io.cloudflight.ems.project.entity.ProjectDescription
-import io.cloudflight.ems.project.entity.ProjectHorizontalPrinciples
+import io.cloudflight.ems.project.entity.description.ProjectHorizontalPrinciples
+import io.cloudflight.ems.project.entity.description.ProjectLongTermPlans
+import io.cloudflight.ems.project.entity.description.ProjectManagement
+import io.cloudflight.ems.project.entity.ProjectStatus
+import io.cloudflight.ems.project.entity.description.ProjectCooperationCriteria
 import io.cloudflight.ems.user.entity.User
 import io.cloudflight.ems.user.service.toOutputUser
 
@@ -48,10 +51,7 @@ fun Project.toOutputProject() = OutputProject(
     eligibilityAssessment = eligibilityAssessment?.toOutputProjectEligibilityAssessment(),
     eligibilityDecision = eligibilityDecision?.toOutputProjectStatus(),
     fundingDecision = fundingDecision?.toOutputProjectStatus(),
-    projectData = projectData?.toOutputProjectData(),
-    projectManagement = projectDescription?.toOutputProjectManagement(),
-    projectLongTermPlans = projectDescription?.toOutputProjectLongTermPlans()
-    // projectPartners are handled in its own endpoint
+    projectData = projectData?.toOutputProjectData()
 )
 
 fun Project.toOutputProjectSimple() = OutputProjectSimple(
@@ -89,69 +89,58 @@ fun ProjectData.toOutputProjectData() = OutputProjectData(
     programmePriority = priorityPolicy?.programmePriority?.toOutputProgrammePrioritySimple()
 )
 
-fun InputProjectManagement.toEntity(project: Project, projectLongTermPlans: OutputProjectLongTermPlans?) =
-    ProjectDescription(
-        projectId = project.id!!,
-        project = project,
+fun InputProjectManagement.toEntity(projectId: Long) =
+    ProjectManagement(
+        projectId = projectId,
         projectCoordination = projectCoordination,
         projectQualityAssurance = projectQualityAssurance,
         projectCommunication = projectCommunication,
         projectFinancialManagement = projectFinancialManagement,
-        projectJointDevelopment = projectJointDevelopment,
-        projectJointImplementation = projectJointImplementation,
-        projectJointStaffing = projectJointStaffing,
-        projectJointFinancing = projectJointFinancing,
-        projectHorizontalPrinciples = projectHorizontalPrinciples?.toEntity(project),
-        projectOwnership = projectLongTermPlans?.projectOwnership,
-        projectDurability = projectLongTermPlans?.projectDurability,
-        projectTransferability = projectLongTermPlans?.projectTransferability
+        projectCooperationCriteria = projectCooperationCriteria?.toEntity(),
+        projectHorizontalPrinciples = projectHorizontalPrinciples?.toEntity()
     )
 
-fun InputProjectLongTermPlans.toEntity(project: Project, projectManagement: OutputProjectManagement?) =
-    ProjectDescription(
-        projectId = project.id!!,
-        project = project,
-        projectCoordination = projectManagement?.projectCoordination,
-        projectQualityAssurance = projectManagement?.projectQualityAssurance,
-        projectCommunication = projectManagement?.projectCommunication,
-        projectFinancialManagement = projectManagement?.projectFinancialManagement,
-        projectJointDevelopment = projectManagement?.projectJointDevelopment,
-        projectJointImplementation = projectManagement?.projectJointImplementation,
-        projectJointStaffing = projectManagement?.projectJointStaffing,
-        projectJointFinancing = projectManagement?.projectJointFinancing,
-        projectHorizontalPrinciples = projectManagement?.projectHorizontalPrinciples?.toEntity(project),
+fun InputProjectLongTermPlans.toEntity(projectId: Long) =
+    ProjectLongTermPlans(
+        projectId = projectId,
         projectOwnership = projectOwnership,
         projectDurability = projectDurability,
         projectTransferability = projectTransferability
     )
 
-fun ProjectDescription.toOutputProjectManagement() = OutputProjectManagement(
+fun ProjectManagement.toOutputProjectManagement() = OutputProjectManagement(
     projectCoordination = projectCoordination,
     projectQualityAssurance = projectQualityAssurance,
     projectCommunication = projectCommunication,
     projectFinancialManagement = projectFinancialManagement,
-    projectJointDevelopment = projectJointDevelopment,
-    projectJointImplementation = projectJointImplementation,
-    projectJointStaffing = projectJointStaffing,
-    projectJointFinancing = projectJointFinancing,
-    projectHorizontalPrinciples = projectHorizontalPrinciples?.toOutputHorizontalPrinciples()
+    projectCooperationCriteria = projectCooperationCriteria?.ifNotEmpty()?.toOutputCooperationCriteria(),
+    projectHorizontalPrinciples = projectHorizontalPrinciples?.ifNotEmpty()?.toOutputHorizontalPrinciples()
 )
 
-fun ProjectDescription.toOutputProjectLongTermPlans() = OutputProjectLongTermPlans(
+fun ProjectLongTermPlans.toOutputProjectLongTermPlans() = OutputProjectLongTermPlans(
     projectOwnership = projectOwnership,
     projectDurability = projectDurability,
     projectTransferability = projectTransferability
 )
 
-fun InputProjectHorizontalPrinciples.toEntity(project: Project) = ProjectHorizontalPrinciples(
-    projectId = project.id!!,
-    project = project,
+fun InputProjectHorizontalPrinciples.toEntity() = ProjectHorizontalPrinciples(
     sustainableDevelopmentCriteriaEffect = sustainableDevelopmentCriteriaEffect,
     sustainableDevelopmentDescription = sustainableDevelopmentDescription,
     equalOpportunitiesEffect = equalOpportunitiesEffect,
     equalOpportunitiesDescription = equalOpportunitiesDescription,
     sexualEqualityEffect = sexualEqualityEffect,
     sexualEqualityDescription = sexualEqualityDescription
+)
+
+fun InputProjectCooperationCriteria.toEntity() = ProjectCooperationCriteria(
+    projectJointDevelopment = projectJointDevelopment,
+    projectJointDevelopmentDescription = projectJointDevelopmentDescription,
+    projectJointImplementation = projectJointImplementation,
+    projectJointImplementationDescription = projectJointImplementationDescription,
+    projectJointStaffing = projectJointStaffing,
+    projectJointStaffingDescription = projectJointStaffingDescription,
+    projectJointFinancing = projectJointFinancing,
+    projectJointFinancingDescription = projectJointFinancingDescription
 )
 
 fun ProjectHorizontalPrinciples.toOutputHorizontalPrinciples() = InputProjectHorizontalPrinciples(
@@ -161,4 +150,15 @@ fun ProjectHorizontalPrinciples.toOutputHorizontalPrinciples() = InputProjectHor
     equalOpportunitiesDescription = equalOpportunitiesDescription,
     sexualEqualityEffect = sexualEqualityEffect,
     sexualEqualityDescription = sexualEqualityDescription
+)
+
+fun ProjectCooperationCriteria.toOutputCooperationCriteria() = InputProjectCooperationCriteria(
+    projectJointDevelopment = projectJointDevelopment,
+    projectJointDevelopmentDescription = projectJointDevelopmentDescription,
+    projectJointImplementation = projectJointImplementation,
+    projectJointImplementationDescription = projectJointImplementationDescription,
+    projectJointStaffing = projectJointStaffing,
+    projectJointStaffingDescription = projectJointStaffingDescription,
+    projectJointFinancing = projectJointFinancing,
+    projectJointFinancingDescription = projectJointFinancingDescription
 )

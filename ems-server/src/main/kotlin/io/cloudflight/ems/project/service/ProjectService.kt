@@ -2,8 +2,6 @@ package io.cloudflight.ems.project.service
 
 import io.cloudflight.ems.api.project.dto.InputProject
 import io.cloudflight.ems.api.project.dto.InputProjectData
-import io.cloudflight.ems.api.project.dto.InputProjectLongTermPlans
-import io.cloudflight.ems.api.project.dto.InputProjectManagement
 import io.cloudflight.ems.api.project.dto.OutputProject
 import io.cloudflight.ems.api.project.dto.OutputProjectSimple
 import io.cloudflight.ems.project.dto.ProjectApplicantAndStatus
@@ -24,9 +22,5 @@ interface ProjectService {
     fun createProject(project: InputProject): OutputProject
 
     fun update(id: Long, projectData: InputProjectData): OutputProject
-
-    fun updateProjectManagement(id: Long, projectManagement: InputProjectManagement): OutputProject
-
-    fun updateProjectLongTermPlans(id: Long, projectLongTermPlans: InputProjectLongTermPlans): OutputProject
 
 }

@@ -2,8 +2,6 @@ package io.cloudflight.ems.api.project
 
 import io.cloudflight.ems.api.project.dto.InputProject
 import io.cloudflight.ems.api.project.dto.InputProjectData
-import io.cloudflight.ems.api.project.dto.InputProjectLongTermPlans
-import io.cloudflight.ems.api.project.dto.InputProjectManagement
 import io.cloudflight.ems.api.project.dto.OutputProject
 import io.cloudflight.ems.api.project.dto.OutputProjectSimple
 import io.swagger.annotations.Api
@@ -34,24 +32,16 @@ interface ProjectApi {
     @GetMapping
     fun getProjects(pageable: Pageable): Page<OutputProjectSimple>
 
-    @ApiOperation("Creates new project application")
-    @PostMapping(consumes = [MediaType.APPLICATION_JSON_VALUE])
-    fun createProject(@Valid @RequestBody project: InputProject): OutputProject
-
     @ApiOperation("Returns a project application by id")
     @GetMapping("/{id}")
     fun getProjectById(@PathVariable id: Long): OutputProject
 
+    @ApiOperation("Creates new project application")
+    @PostMapping(consumes = [MediaType.APPLICATION_JSON_VALUE])
+    fun createProject(@Valid @RequestBody project: InputProject): OutputProject
+
     @ApiOperation("Update project-related data")
     @PutMapping("/{id}", consumes = [MediaType.APPLICATION_JSON_VALUE])
     fun updateProjectData(@PathVariable id: Long, @Valid @RequestBody project: InputProjectData): OutputProject
-
-    @ApiOperation("Update project-related data")
-    @PutMapping("/{id}/management", consumes = [MediaType.APPLICATION_JSON_VALUE])
-    fun updateProjectManagement(@PathVariable id: Long, @Valid @RequestBody project: InputProjectManagement): OutputProject
-
-    @ApiOperation("Update project-related data")
-    @PutMapping("/{id}/plans", consumes = [MediaType.APPLICATION_JSON_VALUE])
-    fun updateProjectLongTermPlans(@PathVariable id: Long, @Valid @RequestBody project: InputProjectLongTermPlans): OutputProject
 
 }

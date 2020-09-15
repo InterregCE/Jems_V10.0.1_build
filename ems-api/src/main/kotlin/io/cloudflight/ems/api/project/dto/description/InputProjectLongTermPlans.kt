@@ -1,6 +1,9 @@
-package io.cloudflight.ems.api.project.dto
+package io.cloudflight.ems.api.project.dto.description
 
-data class OutputProjectLongTermPlans(
+/**
+ * C8
+ */
+data class InputProjectLongTermPlans(
     val projectOwnership: String?,
     val projectDurability: String?,
     val projectTransferability: String?

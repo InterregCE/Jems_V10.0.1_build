@@ -80,12 +80,12 @@ class ProjectServiceTest {
     )
 
     private val account = User(
-            id = 1,
-            email = "admin@admin.dev",
-            name = "Name",
-            surname = "Surname",
-            userRole = UserRole(id = 1, name = "ADMIN"),
-            password = "hash_pass"
+        id = 1,
+        email = "admin@admin.dev",
+        name = "Name",
+        surname = "Surname",
+        userRole = UserRole(id = 1, name = "ADMIN"),
+        password = "hash_pass"
     )
 
     private val statusDraft = ProjectStatus(
@@ -157,7 +157,7 @@ class ProjectServiceTest {
     @Test
     fun projectRetrieval_admin() {
         every { securityService.currentUser } returns
-                LocalCurrentUser(user, "hash_pass", listOf(SimpleGrantedAuthority("ROLE_$ADMINISTRATOR")))
+            LocalCurrentUser(user, "hash_pass", listOf(SimpleGrantedAuthority("ROLE_$ADMINISTRATOR")))
 
         val projectToReturn = Project(
             id = 25,
@@ -193,10 +193,10 @@ class ProjectServiceTest {
     @Test
     fun `programme user lists submitted projects`() {
         every { securityService.currentUser } returns
-                LocalCurrentUser(
-                    user, "hash_pass",
-                    listOf(SimpleGrantedAuthority("ROLE_$PROGRAMME_USER"))
-                )
+            LocalCurrentUser(
+                user, "hash_pass",
+                listOf(SimpleGrantedAuthority("ROLE_$PROGRAMME_USER"))
+            )
 
         projectService.findAll(UNPAGED);
 
@@ -212,7 +212,7 @@ class ProjectServiceTest {
     @Test
     fun projectRetrieval_applicant() {
         every { securityService.currentUser } returns
-                LocalCurrentUser(user, "hash_pass", listOf(SimpleGrantedAuthority("ROLE_$APPLICANT_USER")))
+            LocalCurrentUser(user, "hash_pass", listOf(SimpleGrantedAuthority("ROLE_$APPLICANT_USER")))
         every { projectRepository.findAllByApplicantId(eq(user.id!!), UNPAGED) } returns PageImpl(emptyList())
 
         assertEquals(0, projectService.findAll(UNPAGED).totalElements)
@@ -251,7 +251,7 @@ class ProjectServiceTest {
     @Test
     fun projectGet_OK() {
         every { projectRepository.findById(eq(1)) } returns
-                Optional.of(Project(1, dummyCall, "test", account, statusSubmitted, statusSubmitted))
+            Optional.of(Project(1, dummyCall, "test", account, statusSubmitted, statusSubmitted))
 
         val result = projectService.getById(1);
 

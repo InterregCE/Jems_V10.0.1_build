@@ -3,8 +3,6 @@ package io.cloudflight.ems.project.controller
 import io.cloudflight.ems.api.project.ProjectApi
 import io.cloudflight.ems.api.project.dto.InputProject
 import io.cloudflight.ems.api.project.dto.InputProjectData
-import io.cloudflight.ems.api.project.dto.InputProjectLongTermPlans
-import io.cloudflight.ems.api.project.dto.InputProjectManagement
 import io.cloudflight.ems.api.project.dto.OutputProject
 import io.cloudflight.ems.api.project.dto.OutputProjectSimple
 import io.cloudflight.ems.project.service.ProjectService
@@ -25,29 +23,19 @@ class ProjectController(
         return projectService.findAll(pageable)
     }
 
-    @PreAuthorize("@projectAuthorization.canCreateProjectForCall(#project.projectCallId)")
-    override fun createProject(project: InputProject): OutputProject {
-        return projectService.createProject(project)
-    }
-
     @PreAuthorize("@projectAuthorization.canReadProject(#id)")
     override fun getProjectById(id: Long): OutputProject {
         return projectService.getById(id)
     }
 
+    @PreAuthorize("@projectAuthorization.canCreateProjectForCall(#project.projectCallId)")
+    override fun createProject(project: InputProject): OutputProject {
+        return projectService.createProject(project)
+    }
+
     @PreAuthorize("@projectAuthorization.canUpdateProject(#id)")
     override fun updateProjectData(id: Long, project: InputProjectData): OutputProject {
         return projectService.update(id, project)
-    }
-
-    @PreAuthorize("@projectAuthorization.canUpdateProject(#id)")
-    override fun updateProjectManagement(id: Long, project: InputProjectManagement): OutputProject {
-        return projectService.updateProjectManagement(id, project)
-    }
-
-    @PreAuthorize("@projectAuthorization.canUpdateProject(#id)")
-    override fun updateProjectLongTermPlans(id: Long, project: InputProjectLongTermPlans): OutputProject {
-        return projectService.updateProjectLongTermPlans(id, project)
     }
 
 }

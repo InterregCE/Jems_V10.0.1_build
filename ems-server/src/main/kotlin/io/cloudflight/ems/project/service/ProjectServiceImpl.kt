@@ -7,10 +7,6 @@ import io.cloudflight.ems.api.project.dto.OutputProject
 import io.cloudflight.ems.api.project.dto.OutputProjectSimple
 import io.cloudflight.ems.api.project.dto.status.ProjectApplicationStatus
 import io.cloudflight.ems.api.project.dto.InputProjectData
-import io.cloudflight.ems.api.project.dto.InputProjectLongTermPlans
-import io.cloudflight.ems.api.project.dto.InputProjectManagement
-import io.cloudflight.ems.api.project.dto.OutputProjectLongTermPlans
-import io.cloudflight.ems.api.project.dto.OutputProjectManagement
 import io.cloudflight.ems.call.entity.Call
 import io.cloudflight.ems.project.entity.ProjectStatus
 import io.cloudflight.ems.user.entity.User
@@ -28,7 +24,6 @@ import io.cloudflight.ems.security.PROGRAMME_USER
 import io.cloudflight.ems.security.service.SecurityService
 import io.cloudflight.ems.audit.service.AuditService
 import io.cloudflight.ems.project.dto.ProjectApplicantAndStatus
-import io.cloudflight.ems.project.entity.ProjectDescription
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
 import org.springframework.data.repository.findByIdOrNull
@@ -142,41 +137,8 @@ class ProjectServiceImpl(
         ).toOutputProject()
     }
 
-    @Transactional
-    override fun updateProjectManagement(id: Long, projectManagement: InputProjectManagement): OutputProject {
-        val project = projectRepo.findById(id).orElseThrow { ResourceNotFoundException("project") }
-        return projectRepo.save(
-            project.copy(
-                projectDescription = projectManagement.toEntity(
-                    project,
-                    getProjectLongTermPlans(project.projectDescription)
-                )
-            )
-        ).toOutputProject()
-    }
-
-    @Transactional
-    override fun updateProjectLongTermPlans(id: Long, projectLongTermPlans: InputProjectLongTermPlans): OutputProject {
-        val project = projectRepo.findById(id).orElseThrow { ResourceNotFoundException("project") }
-        return projectRepo.save(
-            project.copy(
-                projectDescription = projectLongTermPlans.toEntity(
-                    project,
-                    getProjectManagement(project.projectDescription)
-                )
-            )
-        ).toOutputProject()
-    }
-
     private fun policyToEntity(policy: ProgrammeObjectivePolicy?): ProgrammePriorityPolicy {
         return programmePriorityPolicyRepository.findById(policy!!).get()
     }
 
-    private fun getProjectManagement(project: ProjectDescription?): OutputProjectManagement? {
-        return project?.toOutputProjectManagement()
-    }
-
-    private fun getProjectLongTermPlans(project: ProjectDescription?): OutputProjectLongTermPlans? {
-        return project?.toOutputProjectLongTermPlans()
-    }
 }
