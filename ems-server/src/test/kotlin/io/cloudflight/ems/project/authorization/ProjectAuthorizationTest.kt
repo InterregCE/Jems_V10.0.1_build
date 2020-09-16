@@ -1,8 +1,6 @@
 package io.cloudflight.ems.project.authorization
 
 import io.cloudflight.ems.api.call.dto.OutputCallWithDates
-import io.cloudflight.ems.api.project.dto.OutputProject
-import io.cloudflight.ems.api.project.dto.status.OutputProjectStatus
 import io.cloudflight.ems.api.project.dto.status.ProjectApplicationStatus
 import io.cloudflight.ems.api.user.dto.OutputUser
 import io.cloudflight.ems.api.user.dto.OutputUserRole

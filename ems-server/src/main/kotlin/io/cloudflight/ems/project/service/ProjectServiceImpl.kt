@@ -81,10 +81,13 @@ class ProjectServiceImpl(
 
         val projectStatus = projectStatusRepo.save(projectStatusDraft(applicant))
 
-        val createdProject = projectRepo.save(project.toEntity(
-            call,
-            applicant,
-            projectStatus))
+        val createdProject = projectRepo.save(
+            project.toEntity(
+                call,
+                applicant,
+                projectStatus
+            )
+        )
         projectStatusRepo.save(projectStatus.copy(project = createdProject))
 
         projectStatusChanged(
@@ -126,8 +129,10 @@ class ProjectServiceImpl(
         return projectRepo.save(
             project.copy(
                 acronym = projectData.acronym!!,
-                projectData = projectData.toEntity(project,
-                    priorityPolicy = policyToEntity(projectData.specificObjective))
+                projectData = projectData.toEntity(
+                    project,
+                    priorityPolicy = policyToEntity(projectData.specificObjective)
+                )
             )
         ).toOutputProject()
     }

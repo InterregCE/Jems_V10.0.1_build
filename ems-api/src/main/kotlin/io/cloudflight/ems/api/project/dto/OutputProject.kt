@@ -18,6 +18,5 @@ data class OutputProject (
     val eligibilityAssessment: OutputProjectEligibilityAssessment? = null,
     val eligibilityDecision: OutputProjectStatus? = null,
     val fundingDecision: OutputProjectStatus? = null,
-    val projectData: OutputProjectData? = null,
-    val projectPartners: List<OutputProjectPartner>? = emptyList()
+    val projectData: OutputProjectData? = null
 )

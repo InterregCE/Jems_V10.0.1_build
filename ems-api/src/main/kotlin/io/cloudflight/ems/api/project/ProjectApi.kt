@@ -32,13 +32,13 @@ interface ProjectApi {
     @GetMapping
     fun getProjects(pageable: Pageable): Page<OutputProjectSimple>
 
-    @ApiOperation("Creates new project application")
-    @PostMapping(consumes = [MediaType.APPLICATION_JSON_VALUE])
-    fun createProject(@Valid @RequestBody project: InputProject): OutputProject
-
     @ApiOperation("Returns a project application by id")
     @GetMapping("/{id}")
     fun getProjectById(@PathVariable id: Long): OutputProject
+
+    @ApiOperation("Creates new project application")
+    @PostMapping(consumes = [MediaType.APPLICATION_JSON_VALUE])
+    fun createProject(@Valid @RequestBody project: InputProject): OutputProject
 
     @ApiOperation("Update project-related data")
     @PutMapping("/{id}", consumes = [MediaType.APPLICATION_JSON_VALUE])
