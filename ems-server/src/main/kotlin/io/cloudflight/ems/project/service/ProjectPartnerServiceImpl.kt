@@ -1,8 +1,10 @@
 package io.cloudflight.ems.project.service
 
+import io.cloudflight.ems.api.project.dto.InputProjectPartnerContact
 import io.cloudflight.ems.api.project.dto.InputProjectPartnerCreate
 import io.cloudflight.ems.api.project.dto.InputProjectPartnerUpdate
 import io.cloudflight.ems.api.project.dto.OutputProjectPartner
+import io.cloudflight.ems.api.project.dto.OutputProjectPartnerDetail
 import io.cloudflight.ems.api.project.dto.ProjectPartnerRole
 import io.cloudflight.ems.exception.I18nValidationException
 import io.cloudflight.ems.exception.ResourceNotFoundException
@@ -23,8 +25,8 @@ class ProjectPartnerServiceImpl(
 ) : ProjectPartnerService {
 
     @Transactional(readOnly = true)
-    override fun getById(id: Long): OutputProjectPartner {
-        return projectPartnerRepo.findById(id).map { it.toOutputProjectPartner() }
+    override fun getById(id: Long): OutputProjectPartnerDetail {
+        return projectPartnerRepo.findById(id).map { it.toOutputProjectPartnerDetail() }
             .orElseThrow { ResourceNotFoundException("projectPartner") }
     }
 
@@ -34,14 +36,14 @@ class ProjectPartnerServiceImpl(
     }
 
     @Transactional
-    override fun create(projectId: Long, projectPartner: InputProjectPartnerCreate): OutputProjectPartner {
+    override fun create(projectId: Long, projectPartner: InputProjectPartnerCreate): OutputProjectPartnerDetail {
         val project = projectRepo.findByIdOrNull(projectId) ?: throw ResourceNotFoundException("project")
 
         // prevent multiple role LEAD_PARTNER entries
         if (projectPartner.role!!.isLead)
             validateLeadPartnerChange(projectId, projectPartner.oldLeadPartnerId)
 
-        return projectPartnerRepo.save(projectPartner.toEntity(project = project)).toOutputProjectPartner()
+        return projectPartnerRepo.save(projectPartner.toEntity(project = project)).toOutputProjectPartnerDetail()
     }
 
     private fun validateLeadPartnerChange(projectId: Long, oldLeadPartnerId: Long?) {
@@ -80,7 +82,7 @@ class ProjectPartnerServiceImpl(
     }
 
     @Transactional
-    override fun update(projectId: Long, projectPartner: InputProjectPartnerUpdate): OutputProjectPartner {
+    override fun update(projectId: Long, projectPartner: InputProjectPartnerUpdate): OutputProjectPartnerDetail {
         val oldProjectPartner = projectPartnerRepo.findById(projectPartner.id)
             .orElseThrow { ResourceNotFoundException("projectPartner") }
 
@@ -92,7 +94,7 @@ class ProjectPartnerServiceImpl(
                 name = projectPartner.name!!,
                 role = projectPartner.role!!
             )
-        ).toOutputProjectPartner()
+        ).toOutputProjectPartnerDetail()
     }
 
     /**
@@ -108,6 +110,16 @@ class ProjectPartnerServiceImpl(
         val projectPartners = projectPartnerRepo.findAllByProjectId(projectId, sort)
             .mapIndexed { index, old -> old.copy(sortNumber = index.plus(1)) }
         projectPartnerRepo.saveAll(projectPartners)
+    }
+
+    @Transactional
+    override fun updatePartnerContact(partnerId: Long, projectPartnerContact: Set<InputProjectPartnerContact>): OutputProjectPartnerDetail {
+        val projectPartner = projectPartnerRepo.findById(partnerId).orElseThrow { ResourceNotFoundException("projectPartner") }
+        return projectPartnerRepo.save(
+            projectPartner.copy(
+                partnerContactPersons = projectPartnerContact.map{ it.toEntity(projectPartner) }.toHashSet()
+            )
+        ).toOutputProjectPartnerDetail()
     }
 
 }

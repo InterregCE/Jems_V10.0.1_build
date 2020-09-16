@@ -1,6 +1,7 @@
 package io.cloudflight.ems.project.entity
 
 import io.cloudflight.ems.api.project.dto.ProjectPartnerRole
+import javax.persistence.CascadeType
 import javax.persistence.Column
 import javax.persistence.Entity
 import javax.persistence.EnumType
@@ -11,6 +12,7 @@ import javax.persistence.GenerationType
 import javax.persistence.Id
 import javax.persistence.JoinColumn
 import javax.persistence.ManyToOne
+import javax.persistence.OneToMany
 
 @Entity(name = "project_partner")
 data class ProjectPartner(
@@ -31,10 +33,13 @@ data class ProjectPartner(
     val role: ProjectPartnerRole,
 
     @Column
-    val sortNumber: Int? = null
+    val sortNumber: Int? = null,
+
+    @OneToMany(mappedBy = "partnerContactPersonId.partnerId", cascade = [CascadeType.ALL], orphanRemoval = true)
+    val partnerContactPersons: Set<PartnerContactPerson>? = emptySet()
 
 ) {
     override fun toString(): String {
-        return "${this.javaClass.simpleName}(id=$id, projectId=$project.id, name=$name, role=$role, sortNumber=$sortNumber)"
+        return "${this.javaClass.simpleName}(id=$id, projectId=$project.id, name=$name, role=$role, sortNumber=$sortNumber, partnerContact=$partnerContactPersons)"
     }
 }
