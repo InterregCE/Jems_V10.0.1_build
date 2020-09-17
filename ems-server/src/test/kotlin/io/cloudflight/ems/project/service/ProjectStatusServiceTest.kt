@@ -111,6 +111,7 @@ internal class ProjectStatusServiceTest {
         name = "call",
         priorityPolicies = setOf(ProgrammePriorityPolicy(DisadvantagedGroups, "DG")),
         strategies = setOf(Strategy(ProgrammeStrategy.SeaBasinStrategyArcticOcean, true)),
+        funds = emptySet(),
         startDate = ZonedDateTime.now().minusDays(2),
         endDate = ZonedDateTime.now().plusDays(2),
         status = CallStatus.PUBLISHED,

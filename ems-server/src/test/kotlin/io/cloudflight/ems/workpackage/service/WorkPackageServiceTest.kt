@@ -57,6 +57,7 @@ class WorkPackageServiceTest {
         name = "Test call name",
         priorityPolicies = emptySet(),
         strategies = emptySet(),
+        funds = emptySet(),
         startDate = ZonedDateTime.now(),
         endDate = ZonedDateTime.now().plusDays(5L),
         status = CallStatus.DRAFT,

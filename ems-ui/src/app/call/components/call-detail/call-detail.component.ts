@@ -105,6 +105,7 @@ export class CallDetailComponent extends ViewEditForm implements OnInit {
       priorityPolicies: this.priorityCheckboxes
         .flatMap(checkbox => checkbox.getCheckedChildPolicies()),
       strategies: this.buildUpdateEntity(),
+      funds: []
     }
     if (!this.call.id) {
       this.create.emit(call);

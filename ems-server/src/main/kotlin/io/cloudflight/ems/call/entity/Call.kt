@@ -1,6 +1,7 @@
 package io.cloudflight.ems.call.entity
 
 import io.cloudflight.ems.api.call.dto.CallStatus
+import io.cloudflight.ems.programme.entity.ProgrammeFund
 import io.cloudflight.ems.user.entity.User
 import io.cloudflight.ems.programme.entity.ProgrammePriorityPolicy
 import io.cloudflight.ems.strategy.entity.Strategy
@@ -46,6 +47,14 @@ data class Call(
         inverseJoinColumns = [JoinColumn(name = "programme_strategy")]
     )
     val strategies: Set<Strategy>,
+
+    @OneToMany
+    @JoinTable(
+        name = "project_call_fund",
+        joinColumns = [JoinColumn(name = "call_id")],
+        inverseJoinColumns = [JoinColumn(name = "programme_fund")]
+    )
+    val funds: Set<ProgrammeFund>,
 
     @Column(nullable = false, name = "start_date")
     val startDate: ZonedDateTime,

@@ -11,6 +11,13 @@ fun InputProgrammeFund.toEntity() = ProgrammeFund(
     selected = selected
 )
 
+fun OutputProgrammeFund.toEntity() = ProgrammeFund(
+    id = id,
+    abbreviation = abbreviation,
+    description = description,
+    selected = selected
+)
+
 fun ProgrammeFund.toOutputProgrammeFund(): OutputProgrammeFund {
     return if (id!! <= 9) { // only first 9 funds are translated
         OutputProgrammeFund(id = id!!, selected = selected)

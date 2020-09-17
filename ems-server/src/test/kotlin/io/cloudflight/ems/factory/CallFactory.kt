@@ -30,6 +30,7 @@ class CallFactory(
                 callName,
                 emptySet(),
                 emptySet(),
+                emptySet(),
                 callStart,
                 callEnd,
                 CallStatus.PUBLISHED,
