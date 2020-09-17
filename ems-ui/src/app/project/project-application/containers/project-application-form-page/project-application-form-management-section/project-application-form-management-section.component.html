@@ -1,0 +1,8 @@
+<app-project-application-form-management-detail
+        *ngIf="projectDescriptionDetails$ | async as details"
+        [success$]="saveSuccess$"
+        [project]="details.project"
+        [editable]="details.editable"
+        [error$]="saveError$"
+        (updateData)="updateProjectDescription$.next($event)">
+</app-project-application-form-management-detail>

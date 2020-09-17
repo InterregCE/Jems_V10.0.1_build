@@ -1,0 +1,56 @@
+.spaced-elements{
+  margin-top: 1rem;
+}
+
+.field {
+  width: 100% !important;
+  padding-top: 1rem;
+}
+
+.header {
+  display: inline-block;
+}
+
+.header-button {
+  margin-left: 0.5rem;
+  margin-right: 2rem;
+  margin-bottom: 0.25rem;
+}
+
+.button {
+  margin-right: 3rem;
+}
+
+::ng-deep.mat-form-field-disabled .mat-form-field-underline {
+  height: 0 !important;
+}
+
+.mat-form-field-appearance-outline .mat-form-field-outline {
+  color: white;
+}
+
+.mat-input-element {
+  color: #343a40;
+}
+
+.intro-text {
+  width: 100%;
+  padding-top: 1rem;
+}
+
+.intro-text-small{
+  font-size: 0.75rem;
+}
+
+mat-checkbox {
+  padding-left: 0.4rem;
+}
+
+table{
+  width: 100%;
+  margin-top: 0.25rem;
+}
+
+th{
+  font-weight: normal;
+}

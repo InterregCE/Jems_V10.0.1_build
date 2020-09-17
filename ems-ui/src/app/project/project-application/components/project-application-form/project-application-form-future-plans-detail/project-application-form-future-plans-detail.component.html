@@ -1,0 +1,77 @@
+<form [formGroup]="futurePlansForm">
+    <h6 class="header" id="projectFuturePlansHeading">
+        {{'project.application.form.section.part.c.subsection.eight' | translate}}
+    </h6>
+    <span class="header-button" *ngxPermissionsExcept="Permission.PROGRAMME_USER">
+        <button color="primary" mat-raised-button
+                *ngIf="formState === FormState.VIEW && editable"
+                (click)="changeFormState$.next(FormState.EDIT)">
+            {{'common.edit.label' | translate}}
+        </button>
+    </span>
+
+    <div class="intro-text">
+        {{'project.application.form.future.plans.intro' | translate}}
+    </div>
+    <div class="intro-text">
+        <p>{{'project.application.form.future.plans.field.1' | translate}}</p>
+        <p class="intro-text-small">{{'project.application.form.future.plans.field.1.intro' | translate}}</p>
+    </div>
+    <app-expandable-textarea class="field"
+            [control]="futurePlansForm?.controls?.ownership"
+            [errors]="futurePlansForm?.controls?.ownership?.errors"
+            [messages]="ownershipErrors"
+            [characterLimit]="5000"
+            [label]="'project.application.form.future.plans.form.field'"
+            [disabled]="formState === FormState.VIEW">
+    </app-expandable-textarea>
+
+    <div class="intro-text">
+        <p>{{'project.application.form.future.plans.field.2' | translate}}</p>
+        <p class="intro-text-small">{{'project.application.form.future.plans.field.2.intro' | translate}}</p>
+    </div>
+    <app-expandable-textarea class="field"
+            [control]="futurePlansForm?.controls?.durability"
+            [errors]="futurePlansForm?.controls?.durability?.errors"
+            [messages]="durabilityErrors"
+            [characterLimit]="5000"
+            [label]="'project.application.form.future.plans.form.field'"
+            [disabled]="formState === FormState.VIEW">
+    </app-expandable-textarea>
+
+    <div class="intro-text">
+        <p>{{'project.application.form.future.plans.field.3' | translate}}</p>
+        <p class="intro-text-small">{{'project.application.form.future.plans.field.3.intro' | translate}}</p>
+    </div>
+    <app-expandable-textarea class="field"
+            [control]="futurePlansForm?.controls?.transferability"
+            [errors]="futurePlansForm?.controls?.transferability?.errors"
+            [messages]="transferabilityErrors"
+            [characterLimit]="5000"
+            [label]="'project.application.form.future.plans.form.field'"
+            [disabled]="formState === FormState.VIEW">
+    </app-expandable-textarea>
+
+    <div *ngIf="formState === FormState.EDIT" class="spaced-elements">
+        <button mat-raised-button class="button"
+                (click)="changeFormState$.next(FormState.VIEW)">
+            {{'common.cancel.label' | translate}}
+        </button>
+        <button mat-raised-button color="primary" type="submit" class="button"
+                [disabled]="futurePlansForm.invalid || futurePlansForm.invalid || submitted"
+                (click)="onSubmit()">
+            {{'common.save.label' | translate}}
+        </button>
+    </div>
+
+    <app-alert
+            [show]="showSuccessMessage$ | async"
+            [type]="Alert.SUCCESS">
+        <p>{{'project.application.form.future.plans.save.success' | translate}}</p>
+    </app-alert>
+    <app-alert *ngIf="error$ | async as error"
+               [show]="!submitted && !!error.i18nKey"
+               [type]="Alert.ERROR">
+        <p>{{error.i18nKey | translate}}</p>
+    </app-alert>
+</form>
