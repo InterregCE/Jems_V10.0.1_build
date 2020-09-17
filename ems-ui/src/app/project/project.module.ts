@@ -50,6 +50,11 @@ import {ProjectApplicationFormPartnerDetailComponent} from './project-applicatio
 import {ProjectApplicationFormPartnerEditComponent} from './project-application/components/project-application-form/project-application-form-partner-edit/project-application-form-partner-edit.component';
 import {MatButtonToggleModule} from '@angular/material/button-toggle';
 import {ProjectApplicationFormSidenavService} from './project-application/containers/project-application-form-page/services/project-application-form-sidenav.service';
+import {ProjectApplicationFormManagementSectionComponent} from './project-application/containers/project-application-form-page/project-application-form-management-section/project-application-form-management-section.component';
+import {ProjectApplicationFormFuturePlansSectionComponent} from './project-application/containers/project-application-form-page/project-application-form-future-plans-section/project-application-form-future-plans-section.component';
+import {ProjectApplicationFormManagementDetailComponent} from './project-application/components/project-application-form/project-application-form-management-detail/project-application-form-management-detail.component';
+import {ProjectApplicationFormFuturePlansDetailComponent} from './project-application/components/project-application-form/project-application-form-future-plans-detail/project-application-form-future-plans-detail.component';
+import {ContributionRadioColumnComponent} from './project-application/components/project-application-form/project-application-form-management-detail/contribution-radio-column/contribution-radio-column.component';
 
 @NgModule({
   declarations: [
@@ -83,7 +88,12 @@ import {ProjectApplicationFormSidenavService} from './project-application/contai
     ProjectApplicationFormWorkPackagesListComponent,
     ProjectApplicationFormWorkPackageDetailComponent,
     WorkPackageDetailsComponent,
-    ProjectApplicationFormWorkPackageSectionComponent
+    ProjectApplicationFormWorkPackageSectionComponent,
+    ProjectApplicationFormManagementSectionComponent,
+    ProjectApplicationFormFuturePlansSectionComponent,
+    ProjectApplicationFormManagementDetailComponent,
+    ProjectApplicationFormFuturePlansDetailComponent,
+    ContributionRadioColumnComponent
   ],
   imports: [
     SharedModule,

@@ -1,0 +1,20 @@
+<mat-radio-group class="radio-group"
+                 [disabled]="disabled"
+                 (change)="selected.emit($event.value)"
+                 [(ngModel)]="previousSelection">
+    <mat-radio-button value="PositiveEffects"
+                      (change)="selected.emit($event.value)"
+                      class="intro-text-small">
+        {{'project.application.form.management.principles.table.contribution.type.positive' | translate}}
+    </mat-radio-button>
+    <mat-radio-button value="Neutral"
+                      (change)="selected.emit($event.value)"
+                      class="intro-text-small">
+        {{'project.application.form.management.principles.table.contribution.type.neutral' | translate}}
+    </mat-radio-button>
+    <mat-radio-button value="NegativeEffects"
+                      (change)="selected.emit($event.value)"
+                      class="intro-text-small">
+        {{'project.application.form.management.principles.table.contribution.type.negative' | translate}}
+    </mat-radio-button>
+</mat-radio-group>

@@ -1,0 +1,279 @@
+<form [formGroup]="managementForm">
+    <h6 class="header" id="projectManagementHeading">
+        {{'project.application.form.section.part.c.subsection.seven' | translate}}
+    </h6>
+    <span class="header-button" *ngxPermissionsExcept="Permission.PROGRAMME_USER">
+        <button color="primary" mat-raised-button
+                *ngIf="formState === FormState.VIEW && editable"
+                (click)="changeFormState$.next(FormState.EDIT)">
+            {{'common.edit.label' | translate}}
+        </button>
+    </span>
+
+    <div class="intro-text">
+        {{'project.application.form.management.intro' | translate}}
+    </div>
+    <div class="intro-text">
+        <p>{{'project.application.form.management.field.1' | translate}}</p>
+        <p class="intro-text-small">{{'project.application.form.management.field.1.intro' | translate}}</p>
+    </div>
+    <app-expandable-textarea class="field"
+            [control]="managementForm?.controls?.coordination"
+            [errors]="managementForm?.controls?.coordination?.errors"
+            [messages]="coordinationErrors"
+            [characterLimit]="5000"
+            [label]="'project.application.form.management.form.field'"
+            [disabled]="formState === FormState.VIEW">
+    </app-expandable-textarea>
+
+    <div class="intro-text">
+        <p>{{'project.application.form.management.field.2' | translate}}</p>
+        <p class="intro-text-small">{{'project.application.form.management.field.2.intro' | translate}}</p>
+    </div>
+    <app-expandable-textarea class="field"
+            [control]="managementForm?.controls?.quality"
+            [errors]="managementForm?.controls?.quality?.errors"
+            [messages]="qualityErrors"
+            [characterLimit]="5000"
+            [label]="'project.application.form.management.form.field'"
+            [disabled]="formState === FormState.VIEW">
+    </app-expandable-textarea>
+
+    <div class="intro-text">
+        <p>{{'project.application.form.management.field.3' | translate}}</p>
+        <p class="intro-text-small">{{'project.application.form.management.field.3.intro' | translate}}</p>
+    </div>
+    <app-expandable-textarea class="field"
+            [control]="managementForm?.controls?.communication"
+            [errors]="managementForm?.controls?.communication?.errors"
+            [messages]="communicationErrors"
+            [characterLimit]="5000"
+            [label]="'project.application.form.management.form.field'"
+            [disabled]="formState === FormState.VIEW">
+    </app-expandable-textarea>
+
+    <div class="intro-text">
+        <p>{{'project.application.form.management.field.4' | translate}}</p>
+        <p class="intro-text-small">{{'project.application.form.management.field.4.intro' | translate}}</p>
+    </div>
+    <app-expandable-textarea class="field"
+            [control]="managementForm?.controls?.financial"
+            [errors]="managementForm?.controls?.financial?.errors"
+            [messages]="financialErrors"
+            [characterLimit]="5000"
+            [label]="'project.application.form.management.form.field'"
+            [disabled]="formState === FormState.VIEW">
+    </app-expandable-textarea>
+
+    <div class="intro-text">
+        <p>{{'project.application.form.management.field.5' | translate}}</p>
+        <p class="intro-text-small">{{'project.application.form.management.field.5.intro' | translate}}</p>
+    </div>
+    <table>
+        <tr>
+            <th></th>
+            <th>{{'project.application.form.management.cooperation.table.header.criteria' | translate}}</th>
+            <th>{{'project.application.form.management.cooperation.table.header.description' | translate}}</th>
+        </tr>
+        <tr>
+            <td>
+                <mat-checkbox
+                        (click)="$event.stopPropagation()"
+                        (change)="changeSelection('criteria_development')"
+                        [disabled]="formState === FormState.VIEW"
+                        [checked]="selection.isSelected('criteria_development')">
+                </mat-checkbox>
+            </td>
+            <td class="intro-text-small">
+                {{'project.application.form.management.cooperation.table.row.1' | translate}}
+            </td>
+            <td>
+                <app-expandable-textarea class="field"
+                        [control]="managementForm?.controls?.criteria_development"
+                        [errors]="managementForm?.controls?.criteria_development?.errors"
+                        [messages]="criteriaErrors"
+                        [characterLimit]="2000"
+                        [minRows]="3"
+                        [label]="'project.application.form.management.form.field'"
+                        [disabled]="formState === FormState.VIEW || !selection.isSelected('criteria_development')">
+             </app-expandable-textarea>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <mat-checkbox
+                        (click)="$event.stopPropagation()"
+                        (change)="changeSelection('criteria_implementation')"
+                        [disabled]="formState === FormState.VIEW"
+                        [checked]="selection.isSelected('criteria_implementation')">
+                </mat-checkbox>
+            </td>
+            <td class="intro-text-small">
+                {{'project.application.form.management.cooperation.table.row.2' | translate}}
+            </td>
+            <td>
+                <app-expandable-textarea class="field"
+                        [control]="managementForm?.controls?.criteria_implementation"
+                        [errors]="managementForm?.controls?.criteria_implementation?.errors"
+                        [messages]="criteriaErrors"
+                        [characterLimit]="2000"
+                        [minRows]="3"
+                        [label]="'project.application.form.management.form.field'"
+                        [disabled]="formState === FormState.VIEW || !selection.isSelected('criteria_implementation')">
+                </app-expandable-textarea>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <mat-checkbox
+                        (click)="$event.stopPropagation()"
+                        (change)="changeSelection('criteria_staffing')"
+                        [disabled]="formState === FormState.VIEW"
+                        [checked]="selection.isSelected('criteria_staffing')">
+                </mat-checkbox>
+            </td>
+            <td class="intro-text-small">
+                {{'project.application.form.management.cooperation.table.row.3' | translate}}
+            </td>
+            <td>
+                <app-expandable-textarea class="field"
+                        [control]="managementForm?.controls?.criteria_staffing"
+                        [errors]="managementForm?.controls?.criteria_staffing?.errors"
+                        [messages]="criteriaErrors"
+                        [characterLimit]="2000"
+                        [minRows]="3"
+                        [label]="'project.application.form.management.form.field'"
+                        [disabled]="formState === FormState.VIEW || !selection.isSelected('criteria_staffing')">
+                </app-expandable-textarea>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <mat-checkbox
+                        (click)="$event.stopPropagation()"
+                        (change)="changeSelection('criteria_financing')"
+                        [disabled]="formState === FormState.VIEW"
+                        [checked]="selection.isSelected('criteria_financing')">
+                </mat-checkbox>
+            </td>
+            <td class="intro-text-small">
+                {{'project.application.form.management.cooperation.table.row.4' | translate}}
+            </td>
+            <td>
+                <app-expandable-textarea class="field"
+                        [control]="managementForm?.controls?.criteria_financing"
+                        [errors]="managementForm?.controls?.criteria_financial?.errors"
+                        [messages]="criteriaErrors"
+                        [characterLimit]="2000"
+                        [minRows]="3"
+                        [label]="'project.application.form.management.form.field'"
+                        [disabled]="formState === FormState.VIEW || !selection.isSelected('criteria_financing')">
+                </app-expandable-textarea>
+            </td>
+        </tr>
+    </table>
+
+    <div class="intro-text">
+        <p>{{'project.application.form.management.field.6' | translate}}</p>
+        <p class="intro-text-small">{{'project.application.form.management.field.6.intro' | translate}}</p>
+    </div>
+    <table>
+        <tr>
+            <th>{{'project.application.form.management.principles.table.header.principles' | translate}}</th>
+            <th>{{'project.application.form.management.principles.table.header.contribution' | translate}}</th>
+            <th>{{'project.application.form.management.principles.table.header.description' | translate}}</th>
+        </tr>
+        <tr>
+            <td class="intro-text-small">
+                {{'project.application.form.management.principles.table.row.1' | translate}}
+            </td>
+            <td>
+                <app-contribution-radio-column
+                        [disabled]="formState === FormState.VIEW"
+                        (selected)="selectedContributionPrincipleDevelopment = $event"
+                        [previousSelection]="selectedContributionPrincipleDevelopment">
+                </app-contribution-radio-column>
+            </td>
+            <td>
+                <app-expandable-textarea class="field"
+                        [control]="managementForm?.controls?.principles_sustainable"
+                        [errors]="managementForm?.controls?.principles_sustainable?.errors"
+                        [messages]="principleErrors"
+                        [characterLimit]="2000"
+                        [minRows]="3"
+                        [label]="'project.application.form.management.form.field'"
+                        [disabled]="formState === FormState.VIEW || !selectedContributionPrincipleDevelopment">
+                </app-expandable-textarea>
+            </td>
+        </tr>
+        <tr>
+            <td class="intro-text-small">
+                {{'project.application.form.management.principles.table.row.2' | translate}}
+            </td>
+            <td>
+                <app-contribution-radio-column
+                        [disabled]="formState === FormState.VIEW"
+                        (selected)="selectedContributionPrincipleOpportunities = $event"
+                        [previousSelection]="selectedContributionPrincipleOpportunities">
+                </app-contribution-radio-column>
+            </td>
+            <td>
+                <app-expandable-textarea class="field"
+                        [control]="managementForm?.controls?.principles_opportunities"
+                        [errors]="managementForm?.controls?.principles_opportunities?.errors"
+                        [messages]="principleErrors"
+                        [characterLimit]="2000"
+                        [minRows]="3"
+                        [label]="'project.application.form.management.form.field'"
+                        [disabled]="formState === FormState.VIEW || !selectedContributionPrincipleOpportunities">
+                </app-expandable-textarea>
+            </td>
+        </tr>
+        <tr>
+            <td class="intro-text-small">
+                {{'project.application.form.management.principles.table.row.3' | translate}}
+            </td>
+            <td>
+                <app-contribution-radio-column
+                        [disabled]="formState === FormState.VIEW"
+                        (selected)="selectedContributionPrincipleEquality = $event"
+                        [previousSelection]="selectedContributionPrincipleEquality">
+                </app-contribution-radio-column>
+            </td>
+            <td>
+                <app-expandable-textarea class="field"
+                        [control]="managementForm?.controls?.principles_equality"
+                        [errors]="managementForm?.controls?.principles_equality?.errors"
+                        [messages]="principleErrors"
+                        [characterLimit]="2000"
+                        [minRows]="3"
+                        [label]="'project.application.form.management.form.field'"
+                        [disabled]="formState === FormState.VIEW || !selectedContributionPrincipleEquality">
+                </app-expandable-textarea>
+            </td>
+        </tr>
+    </table>
+
+    <div *ngIf="formState === FormState.EDIT" class="spaced-elements">
+        <button mat-raised-button class="button"
+                (click)="changeFormState$.next(FormState.VIEW)">
+            {{'common.cancel.label' | translate}}
+        </button>
+        <button mat-raised-button color="primary" type="submit" class="button"
+                [disabled]="managementForm.invalid || managementForm.invalid || submitted"
+                (click)="onSubmit()">
+            {{'common.save.label' | translate}}
+        </button>
+    </div>
+
+    <app-alert
+            [show]="showSuccessMessage$ | async"
+            [type]="Alert.SUCCESS">
+        <p>{{'project.application.form.management.save.success' | translate}}</p>
+    </app-alert>
+    <app-alert *ngIf="error$ | async as error"
+               [show]="!submitted && !!error.i18nKey"
+               [type]="Alert.ERROR">
+        <p>{{error.i18nKey | translate}}</p>
+    </app-alert>
+</form>

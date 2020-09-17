@@ -2,7 +2,7 @@
     <mat-label>{{label | translate}}</mat-label>
     <textarea [formControl]="control" matInput
               [cdkTextareaAutosize]
-              [cdkAutosizeMinRows]="3"
+              [cdkAutosizeMinRows]="minRows"
               [cdkAutosizeMaxRows]="50"
               #inputText [readonly]="disabled">
     </textarea>
