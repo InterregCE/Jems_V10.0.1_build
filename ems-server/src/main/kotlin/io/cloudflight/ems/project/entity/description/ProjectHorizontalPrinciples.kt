@@ -33,11 +33,11 @@ data class ProjectHorizontalPrinciples(
 ) {
     fun ifNotEmpty(): ProjectHorizontalPrinciples? {
         if (sustainableDevelopmentCriteriaEffect != null
-            || sustainableDevelopmentDescription != null
+            || !sustainableDevelopmentDescription.isNullOrEmpty()
             || equalOpportunitiesEffect != null
-            || equalOpportunitiesDescription != null
+            || !equalOpportunitiesDescription.isNullOrEmpty()
             || sexualEqualityEffect != null
-            || sexualEqualityDescription != null)
+            || !sexualEqualityDescription.isNullOrEmpty())
             return this
         return null
     }

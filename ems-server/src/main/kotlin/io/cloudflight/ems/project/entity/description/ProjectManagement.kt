@@ -5,6 +5,9 @@ import javax.persistence.Embedded
 import javax.persistence.Entity
 import javax.persistence.Id
 
+/**
+ * C7
+ */
 @Entity(name = "project_description_c7_management")
 data class ProjectManagement(
 

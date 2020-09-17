@@ -32,14 +32,14 @@ data class ProjectCooperationCriteria(
 
 ) {
     fun ifNotEmpty(): ProjectCooperationCriteria? {
-        if (!projectJointDevelopment
-            || projectJointDevelopmentDescription != null
-            || !projectJointImplementation
-            || projectJointImplementationDescription != null
-            || !projectJointStaffing
-            || projectJointStaffingDescription != null
-            || !projectJointFinancing
-            || projectJointFinancingDescription != null
+        if (projectJointDevelopment
+            || !projectJointDevelopmentDescription.isNullOrEmpty()
+            || projectJointImplementation
+            || !projectJointImplementationDescription.isNullOrEmpty()
+            || projectJointStaffing
+            || !projectJointStaffingDescription.isNullOrEmpty()
+            || projectJointFinancing
+            || !projectJointFinancingDescription.isNullOrEmpty()
         )
             return this
         return null
