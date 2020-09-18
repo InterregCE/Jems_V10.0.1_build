@@ -1,10 +1,27 @@
-<app-project-application-form-partner-edit
-        *ngIf="details$ | async as details"
-        [success$]="partnerSaveSuccess$"
-        [error$]="partnerSaveError$"
-        [partner]="details.partner"
-        [editable]="details.editable"
-        (create)="createPartner$.next($event)"
-        (update)="savePartner$.next($event)"
-        (cancel)="redirectToPartnerOverview()">
-</app-project-application-form-partner-edit>
+<div *ngIf="details$ | async as details">
+    <h5 *ngIf="details.partner.name">{{details.partner.role}} {{details.partner.name}}</h5>
+    <mat-tab-group class="partner-tab-menu"
+                   (selectedIndexChange)="changeTab($event)"
+                   [selectedIndex]="activeTab$ | async">
+        <mat-tab label="{{'partner.tab.identity' | translate}}">
+            <app-project-application-form-partner-edit
+                    [success$]="partnerSaveSuccess$"
+                    [error$]="partnerSaveError$"
+                    [partner]="details.partner"
+                    [editable]="details.editable"
+                    (create)="createPartner$.next($event)"
+                    (update)="savePartner$.next($event)"
+                    (cancel)="redirectToPartnerOverview()">
+            </app-project-application-form-partner-edit>
+        </mat-tab>
+        <mat-tab label="{{'partner.tab.contact' | translate}}">
+            <app-project-application-form-partner-contact
+                    [success$]="partnerContactSaveSuccess$"
+                    [error$]="partnerContactSaveError$"
+                    [partner]="details.partner"
+                    [editable]="details.editable"
+                    (update)="savePartnerContact$.next($event)">
+            </app-project-application-form-partner-contact>
+        </mat-tab>
+    </mat-tab-group>
+</div>

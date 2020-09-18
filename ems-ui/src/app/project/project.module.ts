@@ -55,6 +55,7 @@ import {ProjectApplicationFormFuturePlansSectionComponent} from './project-appli
 import {ProjectApplicationFormManagementDetailComponent} from './project-application/components/project-application-form/project-application-form-management-detail/project-application-form-management-detail.component';
 import {ProjectApplicationFormFuturePlansDetailComponent} from './project-application/components/project-application-form/project-application-form-future-plans-detail/project-application-form-future-plans-detail.component';
 import {ContributionRadioColumnComponent} from './project-application/components/project-application-form/project-application-form-management-detail/contribution-radio-column/contribution-radio-column.component';
+import {ProjectApplicationFormPartnerContactComponent} from './project-application/components/project-application-form/project-application-form-partner-contact/project-application-form-partner-contact.component';
 
 @NgModule({
   declarations: [
@@ -93,7 +94,9 @@ import {ContributionRadioColumnComponent} from './project-application/components
     ProjectApplicationFormFuturePlansSectionComponent,
     ProjectApplicationFormManagementDetailComponent,
     ProjectApplicationFormFuturePlansDetailComponent,
-    ContributionRadioColumnComponent
+    ContributionRadioColumnComponent,
+    ProjectApplicationFormWorkPackageSectionComponent,
+    ProjectApplicationFormPartnerContactComponent
   ],
   imports: [
     SharedModule,
