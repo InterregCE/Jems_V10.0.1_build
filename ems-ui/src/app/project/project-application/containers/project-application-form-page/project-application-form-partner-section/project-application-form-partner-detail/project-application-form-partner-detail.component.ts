@@ -2,18 +2,20 @@ import {ChangeDetectionStrategy, Component, OnInit} from '@angular/core';
 import {combineLatest, merge, of, Subject} from 'rxjs';
 import {I18nValidationError} from '@common/validation/i18n-validation-error';
 import {HttpErrorResponse} from '@angular/common/http';
-import {catchError, map, switchMap, tap} from 'rxjs/operators';
+import {catchError, flatMap, map, switchMap, tap} from 'rxjs/operators';
 import {Log} from '../../../../../../common/utils/log';
 import {ActivatedRoute, Router} from '@angular/router';
 import {
   InputProjectPartnerCreate,
   InputProjectPartnerUpdate,
   OutputProjectStatus,
-  ProjectPartnerService
+  ProjectPartnerService,
+  InputProjectPartnerContact
 } from '@cat/api';
 import {BaseComponent} from '@common/components/base-component';
 import {ProjectStore} from '../../../project-application-detail/services/project-store.service';
 import {ProjectApplicationFormSidenavService} from '../../services/project-application-form-sidenav.service';
+import {TabService} from '../../../../../../common/services/tab.service';
 
 @Component({
   selector: 'app-project-application-form-partner-detail',
@@ -29,6 +31,12 @@ export class ProjectApplicationFormPartnerDetailComponent extends BaseComponent 
   partnerSaveError$ = new Subject<I18nValidationError | null>();
   savePartner$ = new Subject<InputProjectPartnerUpdate>();
   createPartner$ = new Subject<InputProjectPartnerCreate>();
+
+  activeTab$ = this.tabService.currentTab(ProjectApplicationFormPartnerDetailComponent.name);
+
+  partnerContactSaveSuccess$ = new Subject<boolean>()
+  partnerContactSaveError$ = new Subject<I18nValidationError | null>();
+  savePartnerContact$ = new Subject<InputProjectPartnerContact[]>();
 
   private partnerById$ = this.partnerId
     ? this.partnerService.getProjectPartnerById(this.partnerId, this.projectId)
@@ -53,6 +61,20 @@ export class ProjectApplicationFormPartnerDetailComponent extends BaseComponent 
       tap(saved => Log.info('Updated partner:', this, saved))
     );
 
+  private updatedPartnerContact$ = this.savePartnerContact$
+    .pipe(
+      flatMap(partnerUpdate =>
+        this.partnerService.updateProjectPartnerContact(this.partnerId, this.projectId, partnerUpdate)
+      ),
+      tap(() => this.partnerContactSaveError$.next(null)),
+      tap(() => this.partnerContactSaveSuccess$.next(true)),
+      tap(saved => Log.info('Updated partner contact:', this, saved)),
+      catchError((error: HttpErrorResponse) => {
+        this.partnerContactSaveError$.next(error.error);
+        return of();
+      })
+    );
+
   private createdPartner$ = this.createPartner$
     .pipe(
       switchMap(partnerCreate =>
@@ -70,7 +92,7 @@ export class ProjectApplicationFormPartnerDetailComponent extends BaseComponent 
       tap(() => this.projectApplicationFormSidenavService.refreshPartners()),
     );
 
-  public partner$ = merge(this.partnerById$, this.savedPartner$, this.createdPartner$);
+  public partner$ = merge(this.partnerById$, this.savedPartner$, this.createdPartner$, this.updatedPartnerContact$);
 
   details$ = combineLatest([
     this.partner$,
@@ -91,16 +113,23 @@ export class ProjectApplicationFormPartnerDetailComponent extends BaseComponent 
               private activatedRoute: ActivatedRoute,
               private projectStore: ProjectStore,
               private router: Router,
-              private projectApplicationFormSidenavService: ProjectApplicationFormSidenavService) {
+              private projectApplicationFormSidenavService: ProjectApplicationFormSidenavService,
+              private tabService: TabService) {
     super();
   }
 
   ngOnInit(): void {
     this.projectStore.init(this.projectId);
     this.projectApplicationFormSidenavService.init(this.destroyed$, this.projectId);
+    this.changeTab(0);
   }
 
   redirectToPartnerOverview(): void {
     this.router.navigate(['/project/' + this.projectId + '/applicationForm']);
   }
+
+  changeTab(tabIndex: number): void {
+    this.tabService.changeTab(ProjectApplicationFormPartnerDetailComponent.name, tabIndex);
+  }
+
 }
