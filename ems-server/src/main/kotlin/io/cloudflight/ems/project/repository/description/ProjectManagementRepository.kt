@@ -1,9 +1,8 @@
-package io.cloudflight.ems.project.repository
+package io.cloudflight.ems.project.repository.description
 
 import io.cloudflight.ems.project.entity.description.ProjectManagement
 import org.springframework.data.repository.PagingAndSortingRepository
 import org.springframework.stereotype.Repository
-import java.util.*
 
 @Repository
 interface ProjectManagementRepository : PagingAndSortingRepository<ProjectManagement, Long> {

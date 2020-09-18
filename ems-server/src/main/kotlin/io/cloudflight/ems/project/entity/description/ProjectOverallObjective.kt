@@ -5,21 +5,16 @@ import javax.persistence.Entity
 import javax.persistence.Id
 
 /**
- * C8
+ * C1
  */
-@Entity(name = "project_description_c8_long_term_plans")
-data class ProjectLongTermPlans(
+@Entity(name = "project_description_c1_overall_objective")
+data class ProjectOverallObjective(
 
     @Id
     @Column(name = "project_id", nullable = false)
     val projectId: Long,
 
     @Column
-    val projectOwnership: String?,
+    val projectOverallObjective: String?
 
-    @Column
-    val projectDurability: String?,
-
-    @Column
-    val projectTransferability: String?
 )

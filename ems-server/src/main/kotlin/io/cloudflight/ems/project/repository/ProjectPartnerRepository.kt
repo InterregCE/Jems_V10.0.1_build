@@ -18,6 +18,4 @@ interface ProjectPartnerRepository : PagingAndSortingRepository<ProjectPartner, 
 
     fun findFirstByProjectIdAndRole(projectId: Long, role: ProjectPartnerRole): Optional<ProjectPartner>
 
-    fun findAllByProjectIdAndRole(projectId: Long, role: ProjectPartnerRole, pageable: Pageable): Page<ProjectPartner>
-
 }
