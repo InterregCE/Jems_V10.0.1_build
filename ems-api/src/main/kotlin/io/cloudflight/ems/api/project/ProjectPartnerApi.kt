@@ -1,8 +1,10 @@
 package io.cloudflight.ems.api.project
 
+import io.cloudflight.ems.api.project.dto.InputProjectPartnerContact
 import io.cloudflight.ems.api.project.dto.InputProjectPartnerCreate
 import io.cloudflight.ems.api.project.dto.InputProjectPartnerUpdate
 import io.cloudflight.ems.api.project.dto.OutputProjectPartner
+import io.cloudflight.ems.api.project.dto.OutputProjectPartnerDetail
 import io.swagger.annotations.Api
 import io.swagger.annotations.ApiImplicitParam
 import io.swagger.annotations.ApiImplicitParams
@@ -34,16 +36,22 @@ interface ProjectPartnerApi {
     @ApiOperation("Returns a project partner by id")
     @GetMapping("/{id}")
     fun getProjectPartnerById(@PathVariable projectId: Long,
-                              @PathVariable id: Long): OutputProjectPartner
+                              @PathVariable id: Long): OutputProjectPartnerDetail
 
     @ApiOperation("Creates new project partner")
     @PostMapping(consumes = [MediaType.APPLICATION_JSON_VALUE])
     fun createProjectPartner(@PathVariable projectId: Long,
-                             @Valid @RequestBody projectPartner: InputProjectPartnerCreate): OutputProjectPartner
+                             @Valid @RequestBody projectPartner: InputProjectPartnerCreate): OutputProjectPartnerDetail
 
     @ApiOperation("Update project partner")
     @PutMapping(consumes = [MediaType.APPLICATION_JSON_VALUE])
     fun updateProjectPartner(@PathVariable projectId: Long,
-                             @Valid @RequestBody projectPartner: InputProjectPartnerUpdate): OutputProjectPartner
+                             @Valid @RequestBody projectPartner: InputProjectPartnerUpdate): OutputProjectPartnerDetail
+
+    @ApiOperation("Update project partner contact")
+    @PutMapping("/{id}/contact", consumes = [MediaType.APPLICATION_JSON_VALUE])
+    fun updateProjectPartnerContact(@PathVariable projectId: Long,
+                                    @PathVariable id: Long,
+                                    @Valid @RequestBody projectPartner: Set<InputProjectPartnerContact>): OutputProjectPartnerDetail
 
 }
