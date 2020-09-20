@@ -25,6 +25,7 @@ import {HttpErrorResponse} from '@angular/common/http';
 @Injectable()
 export class ProjectStore {
   private projectId$ = new ReplaySubject<number>(1);
+  private projectAcronym$ = new ReplaySubject<string>(1);
   private newStatus$ = new Subject<InputProjectStatus>();
   private newEligibilityAssessment$ = new Subject<InputProjectEligibilityAssessment>();
   private newQualityAssessment$ = new Subject<InputProjectQualityAssessment>();
@@ -99,6 +100,7 @@ export class ProjectStore {
       this.revertedProjectStatus$
     )
       .pipe(
+        tap(project => this.projectAcronym$.next(project.acronym)),
         shareReplay(1)
       );
 
@@ -143,5 +145,9 @@ export class ProjectStore {
 
   revertStatus(status: InputRevertProjectStatus): void {
     this.newRevertProjectStatus$.next(status);
+  }
+
+  getAcronym(): Observable<string> {
+    return this.projectAcronym$.asObservable();
   }
 }

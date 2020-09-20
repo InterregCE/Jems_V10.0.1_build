@@ -1,6 +1,5 @@
-<a *ngxPermissionsExcept="Permission.APPLICANT_USER" [routerLink]="['']">{{'back.project.list' | translate}}</a>
-<a *ngxPermissionsOnly="Permission.APPLICANT_USER" [routerLink]="['/calls']">&lt; {{'common.back.to.dashboard' | translate}}</a>
 <div class="container">
+    <app-breadcrumb></app-breadcrumb>
     <app-project-application-data></app-project-application-data>
     <br>
     <h5 id="applicationFormLifecycleAttachments">{{'file.tab.header' | translate}}</h5>

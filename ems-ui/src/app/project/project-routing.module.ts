@@ -10,68 +10,145 @@ import {ProjectApplicationEligibilityDecisionPageComponent} from './project-appl
 import {WorkPackageDetailsComponent} from './project-application/containers/project-application-form-page/project-application-form-work-package-section/work-package-details/work-package-details.component';
 import {ProjectApplicationFormPageComponent} from './project-application/containers/project-application-form-page/project-application-form-page.component';
 import {ProjectApplicationFormPartnerDetailComponent} from './project-application/containers/project-application-form-page/project-application-form-partner-section/project-application-form-partner-detail/project-application-form-partner-detail.component';
+import {Breadcrumb} from '@common/components/breadcrumb/breadcrumb';
+import {RouteData} from '../common/utils/route-data';
+import {Permission} from '../security/permissions/permission';
+import {PermissionGuard} from '../security/permission.guard';
+import {ProjectAcronymBreadcrumbProvider} from './project-application/containers/project-application-detail/services/project-acronym-breadcrumb-provider.guard';
+import {ReplaySubject} from 'rxjs';
 
+/**
+ * TODO Use the PermissionGuard to limit access to routes where it makes sense
+ * and cleanup the pages (remove *ngxPermission..)
+ */
 const routes: Routes = [
   {
-    path: '',
-    pathMatch: 'full',
-    component: ProjectApplicationComponent,
-    canActivate: [AuthenticationGuard]
+    path: 'project',
+    data: new RouteData({
+      breadcrumb: 'project.breadcrumb.list',
+      permissionsOnly: [Permission.ADMINISTRATOR, Permission.PROGRAMME_USER]
+    }),
+    children: [
+      {
+        path: '',
+        component: ProjectApplicationComponent,
+        canActivate: [AuthenticationGuard, PermissionGuard],
+      },
+      {
+        path: ':projectId',
+        data: new RouteData({
+          breadcrumb: ProjectAcronymBreadcrumbProvider.name,
+          breadcrumb$: new ReplaySubject<string>(1)
+        }),
+        canActivate: [AuthenticationGuard, ProjectAcronymBreadcrumbProvider],
+        children: [
+          {
+            path: '',
+            component: ProjectApplicationDetailComponent,
+          },
+          {
+            path: 'eligibilityDecision',
+            component: ProjectApplicationEligibilityDecisionPageComponent,
+            data: new RouteData({
+              breadcrumb: 'project.breadcrumb.eligibilityDecision',
+            }),
+            canActivate: [AuthenticationGuard]
+          },
+          {
+            path: 'qualityCheck',
+            component: ProjectApplicationQualityCheckComponent,
+            data: new RouteData({
+              breadcrumb: 'project.breadcrumb.qualityCheck',
+            }),
+            canActivate: [AuthenticationGuard]
+          },
+          {
+            path: 'eligibilityCheck',
+            component: ProjectApplicationEligibilityCheckComponent,
+            data: new RouteData({
+              breadcrumb: 'project.breadcrumb.eligibilityCheck',
+            }),
+            canActivate: [AuthenticationGuard]
+          },
+          {
+            path: 'fundingDecision',
+            component: ProjectApplicationFundingPageComponent,
+            data: new RouteData({
+              breadcrumb: 'project.breadcrumb.fundingDecision',
+              permissionsOnly: [Permission.ADMINISTRATOR, Permission.PROGRAMME_USER]
+            }),
+            canActivate: [AuthenticationGuard, PermissionGuard]
+          },
+          {
+            path: 'applicationForm',
+            data: new RouteData({
+              breadcrumb: 'project.breadcrumb.applicationForm',
+            }),
+            children: [
+              {
+                path: '',
+                component: ProjectApplicationFormPageComponent,
+                canActivate: [AuthenticationGuard],
+              },
+              {
+                path: 'partner',
+                data: new RouteData({
+                  breadcrumb: Breadcrumb.DO_NOT_SHOW,
+                }),
+                children: [
+                  {
+                    path: 'create',
+                    component: ProjectApplicationFormPartnerDetailComponent,
+                    data: new RouteData({
+                      breadcrumb: 'project.breadcrumb.partnerCreate',
+                    }),
+                    canActivate: [AuthenticationGuard],
+                  },
+                  {
+                    path: ':partnerId',
+                    component: ProjectApplicationFormPartnerDetailComponent,
+                    data: new RouteData({
+                      breadcrumb: 'project.breadcrumb.partnerName',
+                    }),
+                    canActivate: [AuthenticationGuard]
+                  },
+                ]
+              },
+              {
+                path: 'workPackage',
+                data: new RouteData({
+                  breadcrumb: Breadcrumb.DO_NOT_SHOW,
+                }),
+                children: [
+                  {
+                    path: 'create',
+                    component: WorkPackageDetailsComponent,
+                    data: new RouteData({
+                      breadcrumb: 'project.breadcrumb.workPackageCreate',
+                    }),
+                    canActivate: [AuthenticationGuard],
+                  },
+                  {
+                    path: ':workPackageId',
+                    component: WorkPackageDetailsComponent,
+                    data: new RouteData({
+                      breadcrumb: 'project.breadcrumb.workPackageName',
+                    }),
+                    canActivate: [AuthenticationGuard]
+                  }
+                ]
+              },
+            ]
+          },
+        ]
+      },
+    ]
   },
-  {
-    path: 'project/:projectId',
-    component: ProjectApplicationDetailComponent,
-    canActivate: [AuthenticationGuard]
-  },
-  {
-    path: 'project/:projectId/eligibilityDecision',
-    component: ProjectApplicationEligibilityDecisionPageComponent,
-    canActivate: [AuthenticationGuard]
-  },
-  {
-    path: 'project/:projectId/qualityCheck',
-    component: ProjectApplicationQualityCheckComponent,
-    canActivate: [AuthenticationGuard]
-  },
-  {
-    path: 'project/:projectId/eligibilityCheck',
-    component: ProjectApplicationEligibilityCheckComponent,
-    canActivate: [AuthenticationGuard]
-  },
-  {
-    path: 'project/:projectId/fundingDecision',
-    component: ProjectApplicationFundingPageComponent,
-    canActivate: [AuthenticationGuard]
-  },
-  {
-    path: 'project/:projectId/applicationForm',
-    component: ProjectApplicationFormPageComponent,
-    canActivate: [AuthenticationGuard]
-  },
-  {
-    path: 'project/:projectId/partner',
-    component: ProjectApplicationFormPartnerDetailComponent,
-    canActivate: [AuthenticationGuard]
-  },
-  {
-    path: 'project/:projectId/partner/:partnerId',
-    component: ProjectApplicationFormPartnerDetailComponent,
-    canActivate: [AuthenticationGuard]
-  },
-  {
-    path: 'project/:projectId/workPackage',
-    component: WorkPackageDetailsComponent,
-    canActivate: [AuthenticationGuard]
-  },
-  {
-    path: 'project/:projectId/workPackage/:workPackageId',
-    component: WorkPackageDetailsComponent,
-    canActivate: [AuthenticationGuard]
-  }
 ];
 
 @NgModule({
   imports: [RouterModule.forChild(routes)],
   exports: [RouterModule]
 })
-export class ProjectRoutingModule { }
+export class ProjectRoutingModule {
+}

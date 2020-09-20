@@ -1,5 +1,3 @@
-<a *ngIf="call?.id" [routerLink]="['/calls']">{{'back.call.list' | translate}}</a>
-<br>
 <form [formGroup]="callForm" class="container col-md-12">
     <h3 id="callTitle" class="col-md-12">{{'call.detail.title' | translate}}
         <button *ngIf="!published && formState === FormState.VIEW" mat-raised-button

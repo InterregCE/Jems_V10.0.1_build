@@ -55,7 +55,7 @@ export class CallListComponent extends BaseComponent implements OnInit {
 
   ngOnInit() {
     this.tableConfigurationProgramme = new TableConfiguration({
-      routerLink: '/call',
+      routerLink: '/calls',
       isTableClickable: true,
       columns: [
         {
@@ -129,6 +129,6 @@ export class CallListComponent extends BaseComponent implements OnInit {
   }
 
   applyToCall(callId: number): void {
-    this.router.navigate(['/call/' + callId + '/apply']);
+    this.router.navigate(['/calls/' + callId + '/apply']);
   }
 }

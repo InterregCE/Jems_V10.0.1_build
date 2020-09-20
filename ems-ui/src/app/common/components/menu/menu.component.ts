@@ -1,4 +1,4 @@
-import {Component, Input, OnInit} from '@angular/core';
+import {ChangeDetectionStrategy, ChangeDetectorRef, Component, Input, OnInit} from '@angular/core';
 import {MenuItemConfiguration} from './model/menu-item.configuration';
 import {NavigationEnd, Router} from '@angular/router';
 import {BaseComponent} from '@common/components/base-component';
@@ -8,7 +8,8 @@ import {Log} from '../../utils/log';
 @Component({
   selector: 'app-menu',
   templateUrl: './menu.component.html',
-  styleUrls: ['./menu.component.scss']
+  styleUrls: ['./menu.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class MenuComponent extends BaseComponent implements OnInit {
   @Input()
@@ -16,7 +17,8 @@ export class MenuComponent extends BaseComponent implements OnInit {
 
   activeLink: MenuItemConfiguration | undefined;
 
-  constructor(private router: Router) {
+  constructor(private router: Router,
+              private changeDetectorRef: ChangeDetectorRef) {
     super();
     router.events
       .pipe(
@@ -28,6 +30,7 @@ export class MenuComponent extends BaseComponent implements OnInit {
         if (activeItem) {
           Log.debug('Switched bar menu item', this, activeItem.route);
           this.activeLink = activeItem;
+          this.changeDetectorRef.markForCheck();
         }
       });
   }

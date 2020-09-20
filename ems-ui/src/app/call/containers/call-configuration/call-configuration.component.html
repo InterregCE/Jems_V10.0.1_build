@@ -1,17 +1,16 @@
+<app-breadcrumb></app-breadcrumb>
 <div *ngIf="details$ | async as details">
-    <div *ngIf="funds$ | async as funds">
-        <app-call-detail
-                *ngIf="details.applicantCanAccessCall && strategies$ | async as strategies"
-                [call]="details.call"
-                [success$]="callSaveSuccess$"
-                [error$]="callSaveError$"
-                [strategies]="strategies"
-                [funds]="funds"
-                [priorityCheckboxes]="priorities$ | async"
-                (create)="createCall($event)"
-                (update)="saveCall$.next($event)"
-                (publish)="publishCall$.next($event)"
-                (cancel)="cancel()">
-        </app-call-detail>
-    </div>
+    <app-call-detail
+            *ngIf="details.applicantCanAccessCall"
+            [call]="details.call"
+            [success$]="callStore.callSaveSuccess$"
+            [error$]="callStore.callSaveError$"
+            [strategies]="details.strategies"
+            [funds]="details.funds"
+            [priorityCheckboxes]="details.priorities"
+            (create)="createCall($event)"
+            (update)="callStore.saveCall$.next($event)"
+            (publish)="publishCall$.next($event)"
+            (cancel)="cancel()">
+    </app-call-detail>
 </div>

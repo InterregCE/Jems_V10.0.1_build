@@ -4,7 +4,7 @@ import {CallConfigurationComponent} from './call-configuration.component';
 import {TestModule} from '../../../common/test-module';
 import {CallModule} from '../../call.module';
 import {HttpTestingController} from '@angular/common/http/testing';
-import {InputCallCreate, InputCallUpdate} from '@cat/api';
+import {InputCallCreate} from '@cat/api';
 
 describe('CallConfigurationComponent', () => {
   let component: CallConfigurationComponent;
@@ -39,15 +39,6 @@ describe('CallConfigurationComponent', () => {
     httpTestingController.expectOne({
       method: 'PUT',
       url: `//api/call/1/publish`
-    })
-  }));
-
-  it('should update a call', fakeAsync(() => {
-    component.saveCall$.next({} as InputCallUpdate);
-
-    httpTestingController.expectOne({
-      method: 'PUT',
-      url: `//api/call`
     })
   }));
 

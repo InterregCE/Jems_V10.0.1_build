@@ -1,13 +1,5 @@
-import {
-  ChangeDetectionStrategy,
-  ChangeDetectorRef,
-  Component,
-  EventEmitter,
-  Input,
-  OnInit,
-  Output
-} from '@angular/core';
-import {InputUserUpdate, OutputUserRole, OutputUserWithRole } from '@cat/api';
+import {ChangeDetectionStrategy, ChangeDetectorRef, Component, EventEmitter, Input, Output} from '@angular/core';
+import {InputUserUpdate, OutputUserRole, OutputUserWithRole} from '@cat/api';
 import {FormBuilder, FormGroup, Validators} from '@angular/forms';
 import {Permission} from 'src/app/security/permissions/permission';
 import {Forms} from '../../../../../common/utils/forms';
@@ -22,11 +14,13 @@ import {Log} from '../../../../../common/utils/log';
   styleUrls: ['./user-edit.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class UserEditComponent extends ViewEditForm implements OnInit {
+export class UserEditComponent extends ViewEditForm {
   Permission = Permission;
 
   @Input()
   userRoles: OutputUserRole[];
+  @Input()
+  userId: number;
   @Input()
   user: OutputUserWithRole;
   @Input()
@@ -75,10 +69,6 @@ export class UserEditComponent extends ViewEditForm implements OnInit {
               private dialog: MatDialog,
               protected changeDetectorRef: ChangeDetectorRef) {
     super(changeDetectorRef);
-  }
-
-  ngOnInit(): void {
-    super.ngOnInit();
   }
 
   getForm(): FormGroup | null {

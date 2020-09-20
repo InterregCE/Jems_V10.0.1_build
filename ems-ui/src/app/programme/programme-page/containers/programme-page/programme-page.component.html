@@ -1,5 +1,6 @@
 <ng-container *ngIf="programme$ | async as programme">
     <div *ngxPermissionsExcept="Permission.APPLICANT_USER">
+        <app-breadcrumb></app-breadcrumb>
         <app-programme-data
                 [success$]="programmeSaveSuccess$"
                 [error$]="programmeSaveError$"

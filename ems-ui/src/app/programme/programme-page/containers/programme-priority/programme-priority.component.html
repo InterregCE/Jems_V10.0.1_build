@@ -1,10 +1,11 @@
-<app-programme-priority-submission
-        *ngIf="details$ | async as details"
-        [objectives]="details.objectives"
-        [objectivesWithPolicies]="details.objectivesWithPolicies"
-        [success$]="prioritySaveSuccess$"
-        [error$]="prioritySaveError$"
-        (savePriority)="savePriority($event)"
-        (cancelPriority)="cancelPriority()">
-</app-programme-priority-submission>
-
+<ng-container *ngIf="details$ | async as details">
+    <app-breadcrumb></app-breadcrumb>
+    <app-programme-priority-submission
+            [objectives]="details.objectives"
+            [objectivesWithPolicies]="details.objectivesWithPolicies"
+            [success$]="prioritySaveSuccess$"
+            [error$]="prioritySaveError$"
+            (savePriority)="savePriority($event)"
+            (cancelPriority)="cancelPriority()">
+    </app-programme-priority-submission>
+</ng-container>

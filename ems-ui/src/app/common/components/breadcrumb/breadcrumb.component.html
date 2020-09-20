@@ -1,0 +1,24 @@
+<ol class="breadcrumb" *ngIf="breadcrumbs">
+    <li *ngFor='let breadcrumb of breadcrumbs let i = index'>
+        <ng-container *ngIf="(breadcrumb.label | async) !== Breadcrumb.DO_NOT_SHOW">
+            <ng-container *ngxPermissionsOnly="breadcrumb.permissionsOnly">
+                <ng-container *ngIf="i < breadcrumbs.length -1">
+                    <a [routerLink]='[breadcrumb.url]' routerLinkActive='active'>
+                        <ng-container
+                                *ngTemplateOutlet="breadcrumbLabel; context:{$implicit: breadcrumb}"></ng-container>
+                    </a>
+                    <span class="separator">/</span>
+                </ng-container>
+                <span *ngIf="i === breadcrumbs.length -1" class="current-page">
+                <ng-container *ngTemplateOutlet="breadcrumbLabel; context:{$implicit: breadcrumb}"></ng-container>
+            </span>
+            </ng-container>
+        </ng-container>
+    </li>
+</ol>
+<ng-template let-breadcrumb #breadcrumbLabel>
+    <span>
+        <mat-icon *ngIf="breadcrumb.i18nKey === home.i18nKey">home</mat-icon>
+        {{ breadcrumb?.label | async}}
+    </span>
+</ng-template>

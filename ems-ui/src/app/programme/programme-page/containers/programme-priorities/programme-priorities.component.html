@@ -1,8 +1,9 @@
 <div *ngxPermissionsExcept="Permission.APPLICANT_USER" class="container">
+    <app-breadcrumb></app-breadcrumb>
     <h5>{{'programme.priority.list.header' | translate}}</h5>
     <button mat-raised-button
             color="primary"
-            [routerLink]="'/priority'">
+            [routerLink]="'/programme/priorities/priority'">
         + {{'programme.priority.add.new' | translate}}
     </button>
     <div *ngIf="priorities$ | async as priorities" class="priority-items">

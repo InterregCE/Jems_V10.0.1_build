@@ -14,8 +14,7 @@ import {BaseComponent} from '@common/components/base-component';
 import {catchError, flatMap, map, startWith, take, takeUntil, tap} from 'rxjs/operators';
 import {Log} from '../../../common/utils/log';
 import {ActivatedRoute} from '@angular/router';
-import {combineLatest, merge, of, Subject} from 'rxjs';
-import {I18nValidationError} from '@common/validation/i18n-validation-error';
+import {combineLatest, merge, Subject} from 'rxjs';
 import {HttpErrorResponse} from '@angular/common/http';
 import {CallStore} from '../../services/call-store.service';
 import {Permission} from '../../../security/permissions/permission';
@@ -33,9 +32,6 @@ import {SideNavService} from '@common/components/side-nav/side-nav.service';
 export class CallConfigurationComponent extends BaseComponent {
 
   callId = this.activatedRoute?.snapshot?.params?.callId;
-  callSaveSuccess$ = new Subject<boolean>()
-  callSaveError$ = new Subject<I18nValidationError | null>();
-  saveCall$ = new Subject<InputCallUpdate>();
   publishCall$ = new Subject<number>();
   canceledEdit$ = new Subject<void>();
 
@@ -47,126 +43,56 @@ export class CallConfigurationComponent extends BaseComponent {
       map(priorities => priorities.map(priority => CallPriorityCheckbox.fromPriority(priority)))
     );
 
-  private allActiveStrategies$ = this.programmeStrategyService.getProgrammeStrategies().pipe(
-    tap(programmeStrategies => Log.info('Fetched programme strategies:', this, programmeStrategies)))
-
-  private allActiveFunds$ = this.programmeFundService.getProgrammeFundList().pipe(
-    tap(programmeFunds => Log.info('Fetched programme funds:', this, programmeFunds)))
-
-  private callById$ = this.callId
-    ? this.callService.getCallById(this.callId)
-      .pipe(
-        tap(call => Log.info('Fetched call:', this, call))
-      )
-    : of({});
-
-  priorities$ = combineLatest([
-    this.allPriorities$,
-    merge(this.callById$, this.saveCall$),
-    this.canceledEdit$.pipe(startWith(null))
-  ])
+  private allActiveStrategies$ = this.programmeStrategyService.getProgrammeStrategies()
     .pipe(
-      map(([allPriorities, call]) => {
-        if (!call || !(call as OutputCall).priorityPolicies) {
-          return allPriorities;
-        }
-        const savedPolicies = (call as OutputCall).priorityPolicies
-          .map(policy => policy.programmeObjectivePolicy ? policy.programmeObjectivePolicy : policy) as any;
-        Log.debug('Adapting the priority policies', this, allPriorities, savedPolicies);
-        return allPriorities.map(priority => CallPriorityCheckbox.fromSavedPolicies(priority, savedPolicies));
-      })
+      tap(programmeStrategies => Log.info('Fetched programme strategies:', this, programmeStrategies))
     );
 
-  strategies$ = combineLatest([
-    this.allActiveStrategies$,
-    merge(this.callById$, this.saveCall$)
-  ])
+  private allFunds$ = this.programmeFundService.getProgrammeFundList()
     .pipe(
-      map(([allActiveStrategies, call]) => {
-        const savedStrategies = allActiveStrategies
-          .filter(strategy => strategy.active)
-          .map(element =>
-            ({strategy: element.strategy, active: false} as OutputProgrammeStrategy)
-          );
-        if (!call || !(call as OutputCall).strategies?.length) {
-          return savedStrategies;
-        }
-        Log.debug('Adapting the selected strategies', this, allActiveStrategies, (call as OutputCall).strategies);
-        savedStrategies
-          .filter(element => (call as OutputCall).strategies.includes(element.strategy))
-          .forEach(element => element.active = true)
-        return savedStrategies;
-      })
-    );
-
-  funds$ = combineLatest([
-    this.allActiveFunds$,
-    merge(this.callById$, this.saveCall$)
-  ])
-    .pipe(
-      map(([allActiveFunds, call]) => {
-        const savedFunds = allActiveFunds
-          .filter(fund => fund.selected)
-          .map(element =>
-            ({id: element.id, abbreviation: element.abbreviation, description: element.description, selected: false} as OutputProgrammeFund)
-          );
-        if (!call || !(call as OutputCall).funds?.length) {
-          return savedFunds;
-        }
-        Log.debug('Adapting the selected funds', this, allActiveFunds, (call as OutputCall).funds);
-        const callFundIds = (call as OutputCall).funds.map(element => element.id ? element.id : element);
-        savedFunds
-          .filter(element => callFundIds.includes(element.id))
-          .forEach(element => element.selected = true)
-        return savedFunds;
-      })
-    );
-
-  private savedCall$ = this.saveCall$
-    .pipe(
-      flatMap(callUpdate => this.callService.updateCall(callUpdate)),
-      tap(() => this.callSaveError$.next(null)),
-      tap(() => this.callSaveSuccess$.next(true)),
-      tap(saved => Log.info('Updated call:', this, saved)),
-      catchError((error: HttpErrorResponse) => {
-        this.callSaveError$.next(error.error);
-        throw error;
-      })
+      tap(programmeFunds => Log.info('Fetched programme funds:', this, programmeFunds))
     );
 
   private publishedCall$ = this.publishCall$
     .pipe(
       flatMap(callUpdate => this.callService.publishCall(callUpdate)),
-      tap(() => this.callSaveError$.next(null)),
+      tap(() => this.callStore.callSaveError$.next(null)),
       tap(() => this.redirectToCallOverview()),
       tap(published => this.callStore.callPublished(published)),
       tap(saved => Log.info('Published call:', this, saved)),
       catchError((error: HttpErrorResponse) => {
-        this.callSaveError$.next(error.error);
+        this.callStore.callSaveError$.next(error.error);
         throw error;
       })
     );
 
   details$ = combineLatest([
-    merge(this.callById$, this.savedCall$, this.publishedCall$),
-    this.permissionService.permissionsChanged()
+    merge(this.callStore.getCall(), this.publishedCall$),
+    this.permissionService.permissionsChanged(),
+    this.allActiveStrategies$,
+    this.allPriorities$,
+    this.allFunds$,
+    this.canceledEdit$.pipe(startWith(null))
   ])
     .pipe(
-      map(([call, permissions]) => ({
+      map(([call, permissions, allActiveStrategies, allPriorities, allFunds]) => ({
         call,
         applicantCanAccessCall: permissions[0] !== Permission.APPLICANT_USER
-          || (call as OutputCall).status !== OutputCall.StatusEnum.PUBLISHED
+          || (call as OutputCall).status !== OutputCall.StatusEnum.PUBLISHED,
+        strategies: this.getStrategies(allActiveStrategies, call),
+        priorities: this.getPriorities(allPriorities, call),
+        funds: this.getFunds(allFunds, call)
       })),
       tap(details => {
         // applicant user cannot see published calls
         if (!details.applicantCanAccessCall) {
           this.redirectToCallOverview();
         }
-      })
+      }),
     );
 
   constructor(private callService: CallService,
-              private callStore: CallStore,
+              public callStore: CallStore,
               private activatedRoute: ActivatedRoute,
               private permissionService: PermissionService,
               private sideNavService: SideNavService,
@@ -174,6 +100,7 @@ export class CallConfigurationComponent extends BaseComponent {
               private programmeStrategyService: ProgrammeStrategyService,
               private programmeFundService: ProgrammeFundService,) {
     super();
+    this.callStore.init(this.callId);
     this.sideNavService.setHeadlines(this.destroyed$, [
       {
         headline: 'call.detail.title',
@@ -205,11 +132,11 @@ export class CallConfigurationComponent extends BaseComponent {
       .pipe(
         take(1),
         takeUntil(this.destroyed$),
-        tap(() => this.callSaveError$.next(null)),
+        tap(() => this.callStore.callSaveError$.next(null)),
         tap(() => this.redirectToCallOverview()),
         tap(saved => Log.info('Created call:', this, saved)),
         catchError((error: HttpErrorResponse) => {
-          this.callSaveError$.next(error.error);
+          this.callStore.callSaveError$.next(error.error);
           throw error;
         })
       )
@@ -226,5 +153,48 @@ export class CallConfigurationComponent extends BaseComponent {
 
   redirectToCallOverview(): void {
     this.sideNavService.navigate({headline: 'calls', route: '/calls'})
+  }
+
+  private getStrategies(allActiveStrategies: OutputProgrammeStrategy[], call: OutputCall): OutputProgrammeStrategy[] {
+    const savedStrategies = allActiveStrategies
+      .filter(strategy => strategy.active)
+      .map(element =>
+        ({strategy: element.strategy, active: false} as OutputProgrammeStrategy)
+      );
+    if (!call || !(call as OutputCall).strategies?.length) {
+      return savedStrategies;
+    }
+    Log.debug('Adapting the selected strategies', this, allActiveStrategies, (call as OutputCall).strategies);
+    savedStrategies
+      .filter(element => (call as OutputCall).strategies.includes(element.strategy))
+      .forEach(element => element.active = true)
+    return savedStrategies;
+  }
+
+  private getPriorities(allPriorities: CallPriorityCheckbox[], call: OutputCall): CallPriorityCheckbox[] {
+    if (!call || !(call as OutputCall).priorityPolicies) {
+      return allPriorities;
+    }
+    const savedPolicies = (call as OutputCall).priorityPolicies
+      .map(policy => policy.programmeObjectivePolicy ? policy.programmeObjectivePolicy : policy) as any;
+    Log.debug('Adapting the priority policies', this, allPriorities, savedPolicies);
+    return allPriorities.map(priority => CallPriorityCheckbox.fromSavedPolicies(priority, savedPolicies));
+  }
+
+  private getFunds(allFunds: OutputProgrammeFund[], call: OutputCall | InputCallUpdate): OutputProgrammeFund[] {
+    const savedFunds = allFunds
+      .filter(fund => fund.selected)
+      .map(element =>
+        ({id: element.id, abbreviation: element.abbreviation, description: element.description, selected: false} as OutputProgrammeFund)
+      );
+    if (!call || !(call as OutputCall).funds?.length) {
+      return savedFunds;
+    }
+    Log.debug('Adapting the selected funds', this, allFunds, (call as OutputCall).funds);
+    const callFundIds = (call as OutputCall).funds.map(element => element.id ? element.id : element);
+    savedFunds
+      .filter(element => callFundIds.includes(element.id))
+      .forEach(element => element.selected = true)
+    return savedFunds;
   }
 }

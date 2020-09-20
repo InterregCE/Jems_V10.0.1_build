@@ -17,7 +17,7 @@ export class TopBarService {
   private applicationsItem = {
     name: 'topbar.main.project',
     isInternal: true,
-    route: '/',
+    route: '/project',
     action: (internal: boolean, route: string) => this.handleNavigation(internal, route),
   };
   private usersItem = {

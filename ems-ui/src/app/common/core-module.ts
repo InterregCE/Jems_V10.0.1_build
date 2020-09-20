@@ -24,6 +24,7 @@ import {MatSidenavModule} from '@angular/material/sidenav';
 import {SideNavService} from '@common/components/side-nav/side-nav.service';
 import {LanguageService} from './services/language.service';
 import {ExpandableTextareaComponent} from '@common/components/expandable-textarea/expandable-textarea.component';
+import {BreadcrumbComponent} from '@common/components/breadcrumb/breadcrumb.component';
 
 const declarations = [
   TopBarComponent,
@@ -32,7 +33,8 @@ const declarations = [
   ConfirmDialogComponent,
   HelpMenuComponent,
   AlertComponent,
-  ExpandableTextareaComponent
+  ExpandableTextareaComponent,
+  BreadcrumbComponent
 ];
 
 @NgModule({

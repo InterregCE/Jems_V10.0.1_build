@@ -2,11 +2,12 @@
     {{'project.application.form.section.part.c' | translate}}
 </h5>
 
-<h6 class="spaced-elements" id="projectWorkPlanHeading">{{'project.application.form.section.part.c.subsection.four' | translate}}</h6>
+<h6 class="spaced-elements"
+    id="projectWorkPlanHeading">{{'project.application.form.section.part.c.subsection.four' | translate}}</h6>
 
 <span class="header-button" *ngxPermissionsExcept="Permission.PROGRAMME_USER">
     <button class="spaced-elements" mat-raised-button color="primary"
-            [routerLink]="'/project/' + projectId + '/workPackage'"
+            [routerLink]="'/project/' + projectId + '/applicationForm/workPackage/create'"
             [disabled]="!editable">
         + {{'project.application.form.add.workpackage' | translate}}
     </button>

@@ -9,58 +9,150 @@ import {ProgrammeResultIndicatorSubmissionPageComponent} from './programme-page/
 import {ProgrammeAreaComponent} from './programme-page/containers/programme-area/programme-area.component';
 import {ProgrammeIndicatorsOverviewPageComponent} from './programme-page/containers/programme-indicators-overview-page/programme-indicators-overview-page.component';
 import {ProgrammeStrategiesPageComponent} from './programme-page/containers/programme-strategies-page/programme-strategies-page.component';
+import {Permission} from '../security/permissions/permission';
+import {Breadcrumb} from '@common/components/breadcrumb/breadcrumb';
+import {RouteData} from '../common/utils/route-data';
+import {PermissionGuard} from '../security/permission.guard';
+
+/**
+ * TODO Use the PermissionGuard to limit access to routes where it makes sense
+ * and cleanup the pages (remove *ngxPermission..)
+ */
 
 const routes: Routes = [
   {
     path: 'programme',
-    component: ProgrammePageComponent,
-    canActivate: [AuthenticationGuard],
-  },
-  {
-    path: 'priorities',
-    component: ProgrammePrioritiesComponent,
-    canActivate: [AuthenticationGuard],
-  },
-  {
-    path: 'priority',
-    component: ProgrammePriorityComponent,
-    canActivate: [AuthenticationGuard],
-  },
-  {
-    path: 'areas',
-    component: ProgrammeAreaComponent,
-    canActivate: [AuthenticationGuard],
-  },
-  {
-    path: 'indicators',
-    component: ProgrammeIndicatorsOverviewPageComponent,
-    canActivate: [AuthenticationGuard]
-  },
-  {
-    path: 'outputIndicator/create',
-    component: ProgrammeOutputIndicatorSubmissionPageComponent,
-    canActivate: [AuthenticationGuard],
-  },
-  {
-    path: 'outputIndicator/:indicatorId',
-    component: ProgrammeOutputIndicatorSubmissionPageComponent,
-    canActivate: [AuthenticationGuard],
-  },
-  {
-    path: 'resultIndicator/create',
-    component: ProgrammeResultIndicatorSubmissionPageComponent,
-    canActivate: [AuthenticationGuard],
-  },
-  {
-    path: 'resultIndicator/:indicatorId',
-    component: ProgrammeResultIndicatorSubmissionPageComponent,
-    canActivate: [AuthenticationGuard],
-  },
-  {
-    path: 'strategies',
-    component: ProgrammeStrategiesPageComponent,
-    canActivate: [AuthenticationGuard],
-  },
+    data: new RouteData({
+      breadcrumb: 'programme.breadcrumb.setup',
+      permissionsOnly: [Permission.ADMINISTRATOR, Permission.PROGRAMME_USER],
+    }),
+    children: [
+      {
+        path: '',
+        component: ProgrammePageComponent,
+        canActivate: [AuthenticationGuard, PermissionGuard],
+      },
+      {
+        path: 'priorities',
+        data: new RouteData({
+          breadcrumb: 'programme.breadcrumb.priorities',
+          permissionsOnly: [Permission.ADMINISTRATOR, Permission.PROGRAMME_USER],
+        }),
+        children: [
+          {
+            path: '',
+            component: ProgrammePrioritiesComponent,
+            canActivate: [AuthenticationGuard, PermissionGuard],
+          },
+          {
+            path: 'priority',
+            component: ProgrammePriorityComponent,
+            data: new RouteData({
+              breadcrumb: 'programme.breadcrumb.priority',
+              permissionsOnly: [Permission.ADMINISTRATOR, Permission.PROGRAMME_USER],
+            }),
+            canActivate: [AuthenticationGuard, PermissionGuard],
+          },
+        ],
+      },
+      {
+        path: 'areas',
+        component: ProgrammeAreaComponent,
+        data: new RouteData({
+          breadcrumb: 'programme.breadcrumb.areas',
+          permissionsOnly: [Permission.ADMINISTRATOR, Permission.PROGRAMME_USER],
+        }),
+        canActivate: [AuthenticationGuard, PermissionGuard],
+      },
+      {
+        path: 'indicators',
+        data: new RouteData({
+          breadcrumb: 'programme.breadcrumb.indicators',
+          permissionsOnly: [Permission.ADMINISTRATOR, Permission.PROGRAMME_USER],
+        }),
+        children: [
+          {
+            path: '',
+            component: ProgrammeIndicatorsOverviewPageComponent,
+            canActivate: [AuthenticationGuard, PermissionGuard]
+          },
+          {
+            path: 'outputIndicator',
+            data: new RouteData({
+              breadcrumb: Breadcrumb.DO_NOT_SHOW,
+              permissionsOnly: [Permission.ADMINISTRATOR, Permission.PROGRAMME_USER],
+            }),
+            children: [
+              {
+                path: '',
+                component: ProgrammeIndicatorsOverviewPageComponent,
+                canActivate: [AuthenticationGuard, PermissionGuard]
+              },
+              {
+                path: 'create',
+                component: ProgrammeOutputIndicatorSubmissionPageComponent,
+                data: new RouteData({
+                  breadcrumb: 'programme.breadcrumb.outputIndicator.create',
+                  permissionsOnly: [Permission.ADMINISTRATOR, Permission.PROGRAMME_USER],
+                }),
+                canActivate: [AuthenticationGuard, PermissionGuard],
+              },
+              {
+                path: ':indicatorId',
+                data: new RouteData({
+                  breadcrumb: 'programme.breadcrumb.outputIndicator.name',
+                  permissionsOnly: [Permission.ADMINISTRATOR, Permission.PROGRAMME_USER],
+                }),
+                component: ProgrammeOutputIndicatorSubmissionPageComponent,
+                canActivate: [AuthenticationGuard, PermissionGuard],
+              },
+            ]
+          },
+          {
+            path: 'resultIndicator',
+            data: new RouteData({
+              breadcrumb: Breadcrumb.DO_NOT_SHOW,
+              permissionsOnly: [Permission.ADMINISTRATOR, Permission.PROGRAMME_USER],
+            }),
+            children: [
+              {
+                path: '',
+                component: ProgrammeIndicatorsOverviewPageComponent,
+                canActivate: [AuthenticationGuard, PermissionGuard]
+              },
+              {
+                path: 'create',
+                component: ProgrammeResultIndicatorSubmissionPageComponent,
+                data: new RouteData({
+                  breadcrumb: 'programme.breadcrumb.resultIndicator.create',
+                  permissionsOnly: [Permission.ADMINISTRATOR, Permission.PROGRAMME_USER],
+                }),
+                canActivate: [AuthenticationGuard, PermissionGuard],
+              },
+              {
+                path: ':indicatorId',
+                component: ProgrammeResultIndicatorSubmissionPageComponent,
+                data: new RouteData({
+                  breadcrumb: 'programme.breadcrumb.resultIndicator.name',
+                  permissionsOnly: [Permission.ADMINISTRATOR, Permission.PROGRAMME_USER],
+                }),
+                canActivate: [AuthenticationGuard, PermissionGuard],
+              },
+            ]
+          },
+        ],
+      },
+      {
+        path: 'strategies',
+        component: ProgrammeStrategiesPageComponent,
+        data: new RouteData({
+          breadcrumb: 'programme.breadcrumb.strategies',
+          permissionsOnly: [Permission.ADMINISTRATOR, Permission.PROGRAMME_USER],
+        }),
+        canActivate: [AuthenticationGuard, PermissionGuard],
+      },
+    ]
+  }
 ];
 
 @NgModule({
