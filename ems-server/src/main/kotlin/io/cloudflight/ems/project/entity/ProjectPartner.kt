@@ -13,6 +13,7 @@ import javax.persistence.Id
 import javax.persistence.JoinColumn
 import javax.persistence.ManyToOne
 import javax.persistence.OneToMany
+import javax.persistence.OneToOne
 
 @Entity(name = "project_partner")
 data class ProjectPartner(
@@ -36,10 +37,13 @@ data class ProjectPartner(
     val sortNumber: Int? = null,
 
     @OneToMany(mappedBy = "partnerContactPersonId.partnerId", cascade = [CascadeType.ALL], orphanRemoval = true)
-    val partnerContactPersons: Set<PartnerContactPerson>? = emptySet()
+    val partnerContactPersons: Set<PartnerContactPerson>? = emptySet(),
+
+    @OneToOne(mappedBy = "partner", cascade = [CascadeType.ALL])
+    val partnerContribution: ProjectPartnerContribution? = null
 
 ) {
     override fun toString(): String {
-        return "${this.javaClass.simpleName}(id=$id, projectId=$project.id, name=$name, role=$role, sortNumber=$sortNumber, partnerContact=$partnerContactPersons)"
+        return "${this.javaClass.simpleName}(id=$id, projectId=$project.id, name=$name, role=$role, sortNumber=$sortNumber, partnerContact=$partnerContactPersons, partnerContribution=$partnerContribution)"
     }
 }

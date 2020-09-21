@@ -1,6 +1,7 @@
 package io.cloudflight.ems.project.service
 
 import io.cloudflight.ems.api.project.dto.InputProjectPartnerContact
+import io.cloudflight.ems.api.project.dto.InputProjectPartnerContribution
 import io.cloudflight.ems.api.project.dto.InputProjectPartnerCreate
 import io.cloudflight.ems.api.project.dto.InputProjectPartnerUpdate
 import io.cloudflight.ems.api.project.dto.OutputProjectPartner
@@ -113,11 +114,23 @@ class ProjectPartnerServiceImpl(
     }
 
     @Transactional
-    override fun updatePartnerContact(partnerId: Long, projectPartnerContact: Set<InputProjectPartnerContact>): OutputProjectPartnerDetail {
-        val projectPartner = projectPartnerRepo.findById(partnerId).orElseThrow { ResourceNotFoundException("projectPartner") }
+    override fun updatePartnerContact(projectId: Long, partnerId: Long, projectPartnerContact: Set<InputProjectPartnerContact>): OutputProjectPartnerDetail {
+        val projectPartner = projectPartnerRepo.findByProjectIdAndId(projectId, partnerId)
+            .orElseThrow { ResourceNotFoundException("projectPartner") }
         return projectPartnerRepo.save(
             projectPartner.copy(
                 partnerContactPersons = projectPartnerContact.map{ it.toEntity(projectPartner) }.toHashSet()
+            )
+        ).toOutputProjectPartnerDetail()
+    }
+
+    @Transactional
+    override fun updatePartnerContribution(projectId: Long, partnerId: Long, partnerContribution: InputProjectPartnerContribution): OutputProjectPartnerDetail {
+        val projectPartner = projectPartnerRepo.findByProjectIdAndId(projectId, partnerId)
+            .orElseThrow { ResourceNotFoundException("projectPartner") }
+        return projectPartnerRepo.save(
+            projectPartner.copy(
+                partnerContribution = partnerContribution.toEntity(projectPartner)
             )
         ).toOutputProjectPartnerDetail()
     }
