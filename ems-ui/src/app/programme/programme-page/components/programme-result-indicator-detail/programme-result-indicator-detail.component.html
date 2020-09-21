@@ -1,11 +1,12 @@
 <div class="container">
-    <h5>{{'result.indicator.title' | translate}}</h5>
-    <button *ngIf="formState === FormState.VIEW" mat-raised-button
-            (click)="changeFormState$.next(FormState.EDIT)">
-        {{'result.indicator.button.edit' | translate}}
-    </button>
+    <h5>{{'result.indicator.title' | translate}}
+        <button *ngIf="formState === FormState.VIEW" mat-raised-button
+                (click)="changeFormState$.next(FormState.EDIT)">
+            {{'result.indicator.button.edit' | translate}}
+        </button>
+    </h5>
     <form [formGroup]="resultIndicatorForm">
-        <mat-form-field class="field-quarter">
+        <mat-form-field class="field-third">
             <mat-label>{{'result.indicator.form.field.identifier' | translate}}</mat-label>
             <input name="identifier" formControlName="identifier" matInput
                    placeholder="{{'result.indicator.form.field.identifier' | translate}}" required>
@@ -34,7 +35,7 @@
                 </app-form-field-errors>
             </mat-error>
         </mat-form-field>
-        <mat-form-field class="field-full">
+        <mat-form-field class="field-third">
             <input name="indicatorName" formControlName="indicatorName" matInput
                    placeholder="{{'result.indicator.form.field.name' | translate}}" required
                    [matAutocomplete]="autoNames">
@@ -131,7 +132,7 @@
                 [label]="'result.indicator.form.field.comments'"
                 [disabled]="formState === FormState.VIEW">
         </app-expandable-textarea>
-        <div class="button-div" *ngIf="formState === FormState.EDIT">
+        <div *ngIf="formState === FormState.EDIT">
             <button *ngxPermissionsExcept="Permission.APPLICANT_USER"
                     mat-raised-button
                     color="secondary"
@@ -140,8 +141,6 @@
                     (click)="onCancel()">
                 {{'result.indicator.new.button.cancel' | translate}}
             </button>
-        </div>
-        <div class="button-div" *ngIf="formState === FormState.EDIT">
             <button mat-raised-button
                     color="primary"
                     type="button"

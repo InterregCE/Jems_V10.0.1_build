@@ -1,0 +1,9 @@
+<span *ngFor="let element of funds">
+    <mat-checkbox (click)="$event.stopPropagation()"
+                  (change)="selection.toggle(element)"
+                  [disabled]="disabled"
+                  [checked]="selection.isSelected(element)">
+        {{element.abbreviation || 'programme.fund.abbreviation.' + element.id | translate}}s
+    </mat-checkbox>
+    <br>
+</span>

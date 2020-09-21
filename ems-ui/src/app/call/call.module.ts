@@ -14,6 +14,8 @@ import {CallActionCellComponent} from './components/call-list/call-action-cell/c
 import {ProjectModule} from '../project/project.module';
 import {CallPriorityTreeComponent} from './components/call-priority-tree/call-priority-tree.component';
 import {MatCheckboxModule} from '@angular/material/checkbox';
+import { CallStrategiesComponent } from './components/call-detail/call-strategies/call-strategies.component';
+import { CallFundsComponent } from './components/call-detail/call-funds/call-funds.component';
 
 @NgModule({
   declarations: [
@@ -23,6 +25,8 @@ import {MatCheckboxModule} from '@angular/material/checkbox';
     CallConfigurationComponent,
     CallActionCellComponent,
     CallPriorityTreeComponent,
+    CallStrategiesComponent,
+    CallFundsComponent,
   ],
   imports: [
     CallRoutingModule,
