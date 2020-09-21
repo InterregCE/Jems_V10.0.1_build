@@ -87,6 +87,7 @@ class FileStorageServiceTest {
         name = "call",
         priorityPolicies = setOf(ProgrammePriorityPolicy(CircularEconomy, "CE")),
         strategies = setOf(Strategy(ProgrammeStrategy.SeaBasinStrategyArcticOcean, true)),
+        funds = emptySet(),
         startDate = ZonedDateTime.now(),
         endDate = ZonedDateTime.now(),
         status = CallStatus.PUBLISHED,

@@ -6,6 +6,7 @@ import io.cloudflight.ems.api.call.dto.InputCallUpdate
 import io.cloudflight.ems.api.call.dto.OutputCall
 import io.cloudflight.ems.api.call.dto.OutputCallList
 import io.cloudflight.ems.api.call.dto.OutputCallProgrammePriority
+import io.cloudflight.ems.api.programme.dto.OutputProgrammeFund
 import io.cloudflight.ems.api.programme.dto.ProgrammeObjectivePolicy
 import io.cloudflight.ems.api.strategy.ProgrammeStrategy
 import io.cloudflight.ems.audit.entity.AuditAction
@@ -23,6 +24,8 @@ import io.cloudflight.ems.user.repository.UserRepository
 import io.cloudflight.ems.security.APPLICANT_USER
 import io.cloudflight.ems.security.service.SecurityService
 import io.cloudflight.ems.audit.service.AuditService
+import io.cloudflight.ems.programme.entity.ProgrammeFund
+import io.cloudflight.ems.programme.repository.ProgrammeFundRepository
 import io.cloudflight.ems.strategy.entity.Strategy
 import io.cloudflight.ems.strategy.repository.StrategyRepository
 import org.springframework.data.domain.Page
@@ -33,12 +36,13 @@ import org.springframework.transaction.annotation.Transactional
 
 @Service
 class CallServiceImpl(
-        private val callRepository: CallRepository,
-        private val userRepository: UserRepository,
-        private val programmePriorityPolicyRepository: ProgrammePriorityPolicyRepository,
-        private val strategyRepository: StrategyRepository,
-        private val auditService: AuditService,
-        private val securityService: SecurityService
+    private val callRepository: CallRepository,
+    private val userRepository: UserRepository,
+    private val programmePriorityPolicyRepository: ProgrammePriorityPolicyRepository,
+    private val strategyRepository: StrategyRepository,
+    private val fundRepository: ProgrammeFundRepository,
+    private val auditService: AuditService,
+    private val securityService: SecurityService
 ) : CallService {
 
     @Transactional(readOnly = true)
@@ -66,7 +70,8 @@ class CallServiceImpl(
             .toEntity(
                 creator = creator,
                 priorityPolicies = inputCall.priorityPolicies?.let { getPoliciesAsEntities(it) } ?: emptySet(),
-                strategies = getStrategiesAsEntities(inputCall.strategies)
+                strategies = getStrategiesAsEntities(inputCall.strategies),
+                funds = getFundsAsEntities(inputCall.funds)
             )
         ).toOutputCall()
 
@@ -86,6 +91,7 @@ class CallServiceImpl(
             name = getCallNameIfUnique(oldCall, inputCall.name!!),
             priorityPolicies = getPoliciesAsEntities(inputCall.priorityPolicies!!),
             strategies = getStrategiesAsEntities(inputCall.strategies),
+            funds = getFundsAsEntities(inputCall.funds),
             startDate = inputCall.startDate!!,
             endDate = inputCall.endDate!!,
             description = inputCall.description,
@@ -130,6 +136,18 @@ class CallServiceImpl(
             return result
     }
 
+    private fun getFundsAsEntities(funds: Set<Long>?): Set<ProgrammeFund> {
+        if (funds == null) return emptySet()
+        val result = fundRepository.findAllById(funds)
+            .filter { it.selected }
+            .toSet()
+
+        if (funds.size != result.size)
+            throw ResourceNotFoundException("programme_fund")
+        else
+            return result
+    }
+
     @Transactional
     override fun publishCall(callId: Long): OutputCall {
         val call = callRepository.findById(callId)
@@ -165,6 +183,11 @@ class CallServiceImpl(
                 httpStatus = HttpStatus.UNPROCESSABLE_ENTITY,
                 i18nKey = "call.lengthOfPeriod.is.empty"
             )
+        if (call.funds.isEmpty())
+            throw I18nValidationException(
+                httpStatus = HttpStatus.UNPROCESSABLE_ENTITY,
+                i18nKey = "call.funds.is.empty"
+            )
     }
 
     @Transactional(readOnly = true)
@@ -179,11 +202,13 @@ class CallServiceImpl(
 
         return call.priorityPolicies
             .groupBy { it.programmePriority!!.toOutputProgrammePrioritySimple() }
-            .map { (programmePriority, policies) -> OutputCallProgrammePriority(
-                code = programmePriority.code,
-                title = programmePriority.title,
-                programmePriorityPolicies = policies.map { it.toOutputProgrammePriorityPolicy() }
-            ) }
+            .map { (programmePriority, policies) ->
+                OutputCallProgrammePriority(
+                    code = programmePriority.code,
+                    title = programmePriority.title,
+                    programmePriorityPolicies = policies.map { it.toOutputProgrammePriorityPolicy() }
+                )
+            }
     }
 
 }

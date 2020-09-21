@@ -108,6 +108,7 @@ class ProjectServiceTest {
         name = "call",
         priorityPolicies = setOf(ProgrammePriorityPolicy(HealthcareAcrossBorders, "HAB")),
         strategies = setOf(Strategy(ProgrammeStrategy.MediterraneanSeaBasin, true)),
+        funds = emptySet(),
         startDate = ZonedDateTime.now(),
         endDate = ZonedDateTime.now(),
         status = CallStatus.PUBLISHED,

@@ -25,6 +25,8 @@ data class InputCallUpdate (
 
     val strategies: Set<ProgrammeStrategy>? = null,
 
+    val funds: Set<Long>? = null,
+
     @field:NotNull(message = "call.startDate.unknown")
     val startDate: ZonedDateTime?,
 

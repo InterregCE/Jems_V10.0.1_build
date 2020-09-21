@@ -32,7 +32,7 @@ internal class StartBeforeEndValidatorTest {
     fun `is valid create call date validation`() {
         val startDate = ZonedDateTime.of(2020, 1, 1, 7, 50, 11, 1, ZoneId.systemDefault())
         val endDate = ZonedDateTime.of(2020, 1, 1, 8, 25, 11, 1, ZoneId.systemDefault())
-        val call = InputCallCreate("code", setOf(ProgrammeObjectivePolicy.AdvancedTechnologies), null, startDate, endDate)
+        val call = InputCallCreate("code", setOf(ProgrammeObjectivePolicy.AdvancedTechnologies), null, null, startDate, endDate)
         every { startBeforeEndDateValidator.isEndNotBeforeStart(startDate, endDate) } returns true
 
         assertThat(startBeforeEndValidator.isValid(call, validatorContext)).isTrue()
@@ -42,7 +42,7 @@ internal class StartBeforeEndValidatorTest {
     fun `is not valid update call date validation`() {
         val startDate = ZonedDateTime.of(2020, 1, 1, 7, 50, 11, 1, ZoneId.systemDefault())
         val endDate = ZonedDateTime.of(2020, 1, 1, 7, 25, 11, 1, ZoneId.systemDefault())
-        val call = InputCallUpdate(1, "code", setOf(ProgrammeObjectivePolicy.AdvancedTechnologies), null, startDate, endDate)
+        val call = InputCallUpdate(1, "code", setOf(ProgrammeObjectivePolicy.AdvancedTechnologies), null, null, startDate, endDate)
         every { startBeforeEndDateValidator.isEndNotBeforeStart(startDate, endDate) } returns false
 
         assertThat(startBeforeEndValidator.isValid(call, validatorContext)).isFalse()

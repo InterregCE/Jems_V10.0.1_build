@@ -40,6 +40,7 @@ internal class CallAuthorizationTest {
         name = "test call",
         priorityPolicies = emptyList(),
         strategies = emptyList(),
+        funds = emptyList(),
         status = status,
         startDate = ZonedDateTime.now().minusDays(2),
         endDate = ZonedDateTime.now().plusDays(2),

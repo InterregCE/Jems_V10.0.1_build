@@ -6,8 +6,10 @@ import io.cloudflight.ems.api.call.dto.OutputCall
 import io.cloudflight.ems.api.call.dto.OutputCallList
 import io.cloudflight.ems.api.call.dto.OutputCallWithDates
 import io.cloudflight.ems.call.entity.Call
+import io.cloudflight.ems.programme.entity.ProgrammeFund
 import io.cloudflight.ems.user.entity.User
 import io.cloudflight.ems.programme.entity.ProgrammePriorityPolicy
+import io.cloudflight.ems.programme.service.toOutputProgrammeFund
 import io.cloudflight.ems.programme.service.toOutputProgrammePriorityPolicy
 import io.cloudflight.ems.strategy.entity.Strategy
 
@@ -18,12 +20,15 @@ import io.cloudflight.ems.strategy.entity.Strategy
 fun InputCallCreate.toEntity(
     creator: User,
     priorityPolicies: Set<ProgrammePriorityPolicy>,
-    strategies: Set<Strategy>) = Call(
+    strategies: Set<Strategy>,
+    funds: Set<ProgrammeFund>
+) = Call(
     id = null,
     creator = creator,
     name = name!!,
     priorityPolicies = priorityPolicies,
     strategies = strategies,
+    funds = funds,
     status = CallStatus.DRAFT,
     startDate = startDate!!.withSecond(0).withNano(0),
     endDate = endDate!!.withSecond(0).withNano(0).plusMinutes(1).minusNanos(1),
@@ -36,6 +41,7 @@ fun Call.toOutputCall() = OutputCall(
     name = name,
     priorityPolicies = priorityPolicies.map { it.toOutputProgrammePriorityPolicy() },
     strategies = strategies.map { it.strategy },
+    funds = funds.map { it.toOutputProgrammeFund() },
     status = status,
     startDate = startDate,
     endDate = endDate,
