@@ -8,7 +8,7 @@ import {
   Output
 } from '@angular/core';
 import {FormBuilder, FormGroup, Validators} from '@angular/forms';
-import {InputCallCreate, InputCallUpdate, OutputCall, OutputProgrammeStrategy} from '@cat/api'
+import {InputCallCreate, InputCallUpdate, OutputCall, OutputProgrammeStrategy, OutputProgrammeFund} from '@cat/api'
 import {ViewEditForm} from '@common/components/forms/view-edit-form';
 import {FormState} from '@common/components/forms/form-state';
 import {Forms} from '../../../common/utils/forms';
@@ -33,6 +33,8 @@ export class CallDetailComponent extends ViewEditForm implements OnInit {
   priorityCheckboxes: CallPriorityCheckbox[];
   @Input()
   strategies: OutputProgrammeStrategy[];
+  @Input()
+  funds: OutputProgrammeFund[];
 
   @Output()
   create: EventEmitter<InputCallCreate> = new EventEmitter<InputCallCreate>()
@@ -66,6 +68,7 @@ export class CallDetailComponent extends ViewEditForm implements OnInit {
   };
   published = false;
   selection = new SelectionModel<OutputProgrammeStrategy>(true, []);
+  selectionFunds = new SelectionModel<OutputProgrammeFund>(true, []);
 
   callForm = this.formBuilder.group({
     name: ['', Validators.compose([
@@ -104,8 +107,8 @@ export class CallDetailComponent extends ViewEditForm implements OnInit {
       lengthOfPeriod: this.callForm?.controls?.lengthOfPeriod?.value,
       priorityPolicies: this.priorityCheckboxes
         .flatMap(checkbox => checkbox.getCheckedChildPolicies()),
-      strategies: this.buildUpdateEntity(),
-      funds: []
+      strategies: this.buildUpdateEntityStrategies(),
+      funds: this.buildUpdateEntityFunds(),
     }
     if (!this.call.id) {
       this.create.emit(call);
@@ -141,13 +144,20 @@ export class CallDetailComponent extends ViewEditForm implements OnInit {
   publishingRequirementsNotAchieved(): boolean {
     return (this.priorityCheckboxes
       && !this.priorityCheckboxes.some(priority => priority.checked || priority.someChecked())
-      || !this.call.lengthOfPeriod);
+      || !this.call.lengthOfPeriod
+      || this.buildUpdateEntityFunds().length === 0);
   }
 
-  private buildUpdateEntity():  OutputProgrammeStrategy.StrategyEnum[] {
+  private buildUpdateEntityStrategies():  OutputProgrammeStrategy.StrategyEnum[] {
     return this.strategies
       .filter(strategy => this.selection.isSelected(strategy))
       .map(strategy => strategy.strategy);
+  }
+
+  private buildUpdateEntityFunds():  number[] {
+    return this.funds
+      .filter(fund => this.selectionFunds.isSelected(fund))
+      .map(fund => fund.id);
   }
 
   protected enterViewMode(): void {
@@ -159,6 +169,11 @@ export class CallDetailComponent extends ViewEditForm implements OnInit {
     if (this.strategies) {
       this.selection.select(...this.strategies.filter(element => element.active));
       this.selection.deselect(...this.strategies.filter(element => !element.active));
+      this.changeDetectorRef.markForCheck();
+    }
+    if (this.funds) {
+      this.selectionFunds.select(...this.funds.filter(element => element.selected));
+      this.selectionFunds.deselect(...this.funds.filter(element => !element.selected));
       this.changeDetectorRef.markForCheck();
     }
   }

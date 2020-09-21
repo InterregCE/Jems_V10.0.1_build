@@ -94,15 +94,20 @@
 
     <div class="section col-md-12">
         <h5 id="callStrategies">{{'call.strategy.title' | translate}}</h5>
-        <span *ngFor="let element of strategies">
-            <mat-checkbox (click)="$event.stopPropagation()"
-                          (change)="selection.toggle(element)"
-                          [disabled]="formState === FormState.VIEW"
-                          [checked]="selection.isSelected(element)">
-                {{'programme.strategy.' + element.strategy | translate}}
-            </mat-checkbox>
-            <br>
-        </span>
+        <app-call-strategies
+                [selection]="selection"
+                [strategies]="strategies"
+                [disabled]="formState === FormState.VIEW">
+        </app-call-strategies>
+    </div>
+
+    <div class="section col-md-12">
+        <h5 id="callFunds">{{'call.funds.title' | translate}}</h5>
+        <app-call-funds
+                [selection]="selectionFunds"
+                [funds]="funds"
+                [disabled]="formState === FormState.VIEW">
+        </app-call-funds>
     </div>
 
     <div class="section col-md-12">

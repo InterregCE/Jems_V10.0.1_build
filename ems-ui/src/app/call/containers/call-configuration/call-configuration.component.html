@@ -1,14 +1,17 @@
 <div *ngIf="details$ | async as details">
-    <app-call-detail
-            *ngIf="details.applicantCanAccessCall && strategies$ | async as strategies"
-            [call]="details.call"
-            [success$]="callSaveSuccess$"
-            [error$]="callSaveError$"
-            [strategies]="strategies"
-            [priorityCheckboxes]="priorities$ | async"
-            (create)="createCall($event)"
-            (update)="saveCall$.next($event)"
-            (publish)="publishCall$.next($event)"
-            (cancel)="cancel()">
-    </app-call-detail>
+    <div *ngIf="funds$ | async as funds">
+        <app-call-detail
+                *ngIf="details.applicantCanAccessCall && strategies$ | async as strategies"
+                [call]="details.call"
+                [success$]="callSaveSuccess$"
+                [error$]="callSaveError$"
+                [strategies]="strategies"
+                [funds]="funds"
+                [priorityCheckboxes]="priorities$ | async"
+                (create)="createCall($event)"
+                (update)="saveCall$.next($event)"
+                (publish)="publishCall$.next($event)"
+                (cancel)="cancel()">
+        </app-call-detail>
+    </div>
 </div>

@@ -5,8 +5,10 @@ import {
   InputCallUpdate,
   OutputCall,
   OutputProgrammeStrategy,
+  OutputProgrammeFund,
   ProgrammePriorityService,
-  ProgrammeStrategyService
+  ProgrammeStrategyService,
+  ProgrammeFundService
 } from '@cat/api'
 import {BaseComponent} from '@common/components/base-component';
 import {catchError, flatMap, map, startWith, take, takeUntil, tap} from 'rxjs/operators';
@@ -47,6 +49,9 @@ export class CallConfigurationComponent extends BaseComponent {
 
   private allActiveStrategies$ = this.programmeStrategyService.getProgrammeStrategies().pipe(
     tap(programmeStrategies => Log.info('Fetched programme strategies:', this, programmeStrategies)))
+
+  private allActiveFunds$ = this.programmeFundService.getProgrammeFundList().pipe(
+    tap(programmeFunds => Log.info('Fetched programme funds:', this, programmeFunds)))
 
   private callById$ = this.callId
     ? this.callService.getCallById(this.callId)
@@ -91,6 +96,29 @@ export class CallConfigurationComponent extends BaseComponent {
           .filter(element => (call as OutputCall).strategies.includes(element.strategy))
           .forEach(element => element.active = true)
         return savedStrategies;
+      })
+    );
+
+  funds$ = combineLatest([
+    this.allActiveFunds$,
+    merge(this.callById$, this.saveCall$)
+  ])
+    .pipe(
+      map(([allActiveFunds, call]) => {
+        const savedFunds = allActiveFunds
+          .filter(fund => fund.selected)
+          .map(element =>
+            ({id: element.id, abbreviation: element.abbreviation, description: element.description, selected: false} as OutputProgrammeFund)
+          );
+        if (!call || !(call as OutputCall).funds?.length) {
+          return savedFunds;
+        }
+        Log.debug('Adapting the selected funds', this, allActiveFunds, (call as OutputCall).funds);
+        const callFundIds = (call as OutputCall).funds.map(element => element.id ? element.id : element);
+        savedFunds
+          .filter(element => callFundIds.includes(element.id))
+          .forEach(element => element.selected = true)
+        return savedFunds;
       })
     );
 
@@ -143,7 +171,8 @@ export class CallConfigurationComponent extends BaseComponent {
               private permissionService: PermissionService,
               private sideNavService: SideNavService,
               private programmePriorityService: ProgrammePriorityService,
-              private programmeStrategyService: ProgrammeStrategyService) {
+              private programmeStrategyService: ProgrammeStrategyService,
+              private programmeFundService: ProgrammeFundService,) {
     super();
     this.sideNavService.setHeadlines(this.destroyed$, [
       {
@@ -161,6 +190,10 @@ export class CallConfigurationComponent extends BaseComponent {
           {
             headline: 'call.strategy.title',
             scrollRoute: 'callStrategies'
+          },
+          {
+            headline: 'call.funds.title',
+            scrollRoute: 'callFunds'
           }
         ]
       }

@@ -1,32 +1,16 @@
 .container {
   width: 80rem;
 
-  .field-quarter {
-    width: 25%;
-    padding-top: 1rem;
-    margin-right: 1rem;
-  }
-
   .field-third {
     width: 40%;
     padding-top: 1rem;
     margin-right: 10rem;
   }
 
-  .field-full {
-    width: 91.5%;
-    padding-top: 1rem;
-    margin-right: 1rem;
-  }
-
-  .button-div {
-    display: inline-block;
-
-    .button {
-      margin-right: 2rem;
-      margin-bottom: 0.25rem;
-      margin-top: 1rem;
-    }
+  .button {
+    margin-right: 2rem;
+    margin-bottom: 0.25rem;
+    margin-top: 1rem;
   }
 
   ::ng-deep.mat-form-field-disabled .mat-form-field-underline {
