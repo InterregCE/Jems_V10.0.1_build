@@ -76,6 +76,23 @@ export class ProjectApplicationFormPartnerContactComponent extends ViewEditForm 
     pattern: 'partner.contact.telephone.wrong.format'
   };
 
+  private static isContactDtoEmpty(contactDto: InputProjectPartnerContact): boolean {
+    return !(contactDto.title || contactDto.firstName || contactDto.lastName ||
+      contactDto.email || contactDto.telephone);
+  }
+
+  private static getValidatedDataToEmit(legalRepresentative: InputProjectPartnerContact,
+                                        contactPerson: InputProjectPartnerContact): InputProjectPartnerContact[]{
+    const dataToEmit : InputProjectPartnerContact[] = [];
+    if (!ProjectApplicationFormPartnerContactComponent.isContactDtoEmpty(legalRepresentative)) {
+      dataToEmit.push(legalRepresentative);
+    }
+    if (!ProjectApplicationFormPartnerContactComponent.isContactDtoEmpty(contactPerson)) {
+      dataToEmit.push(contactPerson);
+    }
+    return dataToEmit;
+  }
+
   constructor(private formBuilder: FormBuilder,
               protected changeDetectorRef: ChangeDetectorRef,
               private activatedRoute: ActivatedRoute,
@@ -108,8 +125,8 @@ export class ProjectApplicationFormPartnerContactComponent extends ViewEditForm 
       title: this.partnerContactForm.controls.partnerRepresentativeTitle.value,
       firstName: this.partnerContactForm.controls.partnerRepresentativeFirstName.value,
       lastName: this.partnerContactForm.controls.partnerRepresentativeLastName.value,
-      email: null,
-      telephone: null
+      email: '',
+      telephone: ''
     };
     const contactPerson = {
       type: InputProjectPartnerContact.TypeEnum.ContactPerson,
@@ -119,7 +136,7 @@ export class ProjectApplicationFormPartnerContactComponent extends ViewEditForm 
       email: this.partnerContactForm.controls.partnerContactEmail.value,
       telephone: this.partnerContactForm.controls.partnerContactTelephone.value
     };
-    this.update.emit([legalRepresentative, contactPerson]);
+    this.update.emit(ProjectApplicationFormPartnerContactComponent.getValidatedDataToEmit(legalRepresentative, contactPerson));
   }
 
   onCancel(): void {
