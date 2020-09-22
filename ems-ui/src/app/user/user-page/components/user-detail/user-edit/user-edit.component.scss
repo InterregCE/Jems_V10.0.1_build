@@ -1,6 +1,12 @@
-.container {
-  width: 20rem;
+:host {
+  display: block;
+  width: 100%;
+  max-width: 25rem;
+  margin-left: auto;
+  margin-right: auto;
+}
 
+.wrapper {
   .field {
     width: 100%;
     padding-top: 1rem;

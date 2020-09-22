@@ -1,4 +1,4 @@
-<div *ngxPermissionsExcept="Permission.APPLICANT_USER" class="container">
+<div *ngxPermissionsExcept="Permission.APPLICANT_USER">
     <app-breadcrumb></app-breadcrumb>
     <div *ngIf="currentOutputIndicatorPage$ | async as outputIndicatorPage">
         <h5 id="outputIndicators">{{'output.indicator.table.title' | translate}}</h5>

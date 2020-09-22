@@ -1,6 +1,11 @@
+:host {
+  display: inline-block;
+  width: 100%;
+}
+
 table {
-  width: 99%;
-  margin: 2px;
+  width: 100%;
+  overflow-x: auto;
 
   mat-footer-row, mat-header-row, mat-row {
     border-bottom-width: 10px;

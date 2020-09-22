@@ -1,4 +1,4 @@
-<ol class="breadcrumb" *ngIf="breadcrumbs">
+<ol class="breadcrumbs" *ngIf="breadcrumbs">
     <li *ngFor='let breadcrumb of breadcrumbs let i = index'>
         <ng-container *ngIf="(breadcrumb.label | async) !== Breadcrumb.DO_NOT_SHOW">
             <ng-container *ngxPermissionsOnly="breadcrumb.permissionsOnly">

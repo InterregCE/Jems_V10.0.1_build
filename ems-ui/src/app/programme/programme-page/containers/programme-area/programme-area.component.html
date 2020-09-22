@@ -6,7 +6,7 @@
             [error$]="downloadError$"
             (downloadNuts)="downloadLatestNuts$.next()">
     </app-programme-nuts-info>
-    <app-programme-regions
+    <app-programme-regions class="margin-before"
             *ngIf="(regionTreeDataSource._data | async)?.length"
             [success$]="regionSaveSuccess$"
             [dataSource]="regionTreeDataSource"

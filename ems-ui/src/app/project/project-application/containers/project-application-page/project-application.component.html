@@ -1,26 +1,24 @@
-<div class="container">
-    <app-breadcrumb></app-breadcrumb>
-    <div *ngxPermissionsExcept="[Permission.APPLICANT_USER]">
-        <h3 *ngIf="currentUser$ | async as currentUser">
-            {{'project.welcome' | translate: {name: currentUser.name, surname: currentUser.surname} }}</h3>
+<app-breadcrumb></app-breadcrumb>
+<div *ngxPermissionsExcept="[Permission.APPLICANT_USER]">
+    <h3 *ngIf="currentUser$ | async as currentUser">
+        {{'project.welcome' | translate: {name: currentUser.name, surname: currentUser.surname} }}</h3>
+</div>
+<div *ngxPermissionsExcept="Permission.APPLICANT_USER">
+    <div *ngIf="currentPage$ | async as projectPage">
+        <app-project-application-list
+                [projectPage]="projectPage"
+                [pageIndex]="newPageIndex$ | async"
+                (newPageSize)="newPageSize$.next($event)"
+                (newPageIndex)="newPageIndex$.next($event)"
+                (newSort)="newSort$.next($event)">
+        </app-project-application-list>
     </div>
-    <div *ngxPermissionsExcept="Permission.APPLICANT_USER">
-        <div *ngIf="currentPage$ | async as projectPage">
-            <app-project-application-list
-                    [projectPage]="projectPage"
-                    [pageIndex]="newPageIndex$ | async"
-                    (newPageSize)="newPageSize$.next($event)"
-                    (newPageIndex)="newPageIndex$.next($event)"
-                    (newSort)="newSort$.next($event)">
-            </app-project-application-list>
-        </div>
-    </div>
-    <div *ngxPermissionsOnly="Permission.APPLICANT_USER">
-        <app-project-application-submission
-                *ngxPermissionsExcept="[Permission.PROGRAMME_USER]"
-                [success$]="applicationSaveSuccess$"
-                [error$]="applicationSaveError$"
-                (submitProjectApplication)="createApplication($event)"
-        ></app-project-application-submission>
-    </div>
+</div>
+<div *ngxPermissionsOnly="Permission.APPLICANT_USER">
+    <app-project-application-submission
+            *ngxPermissionsExcept="[Permission.PROGRAMME_USER]"
+            [success$]="applicationSaveSuccess$"
+            [error$]="applicationSaveError$"
+            (submitProjectApplication)="createApplication($event)"
+    ></app-project-application-submission>
 </div>
