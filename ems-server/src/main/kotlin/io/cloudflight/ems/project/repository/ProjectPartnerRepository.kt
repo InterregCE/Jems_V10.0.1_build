@@ -16,6 +16,9 @@ interface ProjectPartnerRepository : PagingAndSortingRepository<ProjectPartner, 
     @EntityGraph(attributePaths = ["partnerContactPersons"])
     override fun findById(id: Long): Optional<ProjectPartner>
 
+    @EntityGraph(attributePaths = ["partnerContactPersons"])
+    fun findByProjectIdAndId(projectId: Long, id: Long): Optional<ProjectPartner>
+
     fun findAllByProjectId(projectId: Long, pageable: Pageable): Page<ProjectPartner>
 
     fun findAllByProjectId(projectId: Long, sort: Sort): Iterable<ProjectPartner>

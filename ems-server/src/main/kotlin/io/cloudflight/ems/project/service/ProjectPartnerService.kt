@@ -1,6 +1,7 @@
 package io.cloudflight.ems.project.service
 
 import io.cloudflight.ems.api.project.dto.InputProjectPartnerContact
+import io.cloudflight.ems.api.project.dto.InputProjectPartnerContribution
 import io.cloudflight.ems.api.project.dto.InputProjectPartnerCreate
 import io.cloudflight.ems.api.project.dto.InputProjectPartnerUpdate
 import io.cloudflight.ems.api.project.dto.OutputProjectPartner
@@ -20,6 +21,8 @@ interface ProjectPartnerService {
 
     fun updateSortByRole(projectId: Long)
 
-    fun updatePartnerContact(partnerId: Long, projectPartnerContact: Set<InputProjectPartnerContact>): OutputProjectPartnerDetail
+    fun updatePartnerContact(projectId: Long, partnerId: Long, projectPartnerContact: Set<InputProjectPartnerContact>): OutputProjectPartnerDetail
+
+    fun updatePartnerContribution(projectId: Long, partnerId: Long, partnerContribution: InputProjectPartnerContribution): OutputProjectPartnerDetail
 
 }

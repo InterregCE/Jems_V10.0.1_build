@@ -1,6 +1,7 @@
 package io.cloudflight.ems.api.project
 
 import io.cloudflight.ems.api.project.dto.InputProjectPartnerContact
+import io.cloudflight.ems.api.project.dto.InputProjectPartnerContribution
 import io.cloudflight.ems.api.project.dto.InputProjectPartnerCreate
 import io.cloudflight.ems.api.project.dto.InputProjectPartnerUpdate
 import io.cloudflight.ems.api.project.dto.OutputProjectPartner
@@ -53,5 +54,11 @@ interface ProjectPartnerApi {
     fun updateProjectPartnerContact(@PathVariable projectId: Long,
                                     @PathVariable id: Long,
                                     @Valid @RequestBody projectPartner: Set<InputProjectPartnerContact>): OutputProjectPartnerDetail
+
+    @ApiOperation("Update project partner contribution")
+    @PutMapping("/{id}/contribution", consumes = [MediaType.APPLICATION_JSON_VALUE])
+    fun updateProjectPartnerContribution(@PathVariable projectId: Long,
+                                    @PathVariable id: Long,
+                                    @Valid @RequestBody partnerContribution: InputProjectPartnerContribution): OutputProjectPartnerDetail
 
 }

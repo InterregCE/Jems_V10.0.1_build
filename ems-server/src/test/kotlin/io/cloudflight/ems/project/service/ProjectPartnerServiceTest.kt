@@ -2,6 +2,7 @@ package io.cloudflight.ems.project.service
 
 import io.cloudflight.ems.api.call.dto.CallStatus
 import io.cloudflight.ems.api.project.dto.InputProjectPartnerContact
+import io.cloudflight.ems.api.project.dto.InputProjectPartnerContribution
 import io.cloudflight.ems.api.project.dto.InputProjectPartnerCreate
 import io.cloudflight.ems.api.project.dto.InputProjectPartnerUpdate
 import io.cloudflight.ems.api.project.dto.PartnerContactPersonType
@@ -191,11 +192,11 @@ internal class ProjectPartnerServiceTest {
         val contactPersonsDto = HashSet<InputProjectPartnerContact>()
             contactPersonsDto.add(projectPartnerContactUpdate)
 
-        every { projectPartnerRepository.findById(1) } returns Optional.of(projectPartner)
+        every { projectPartnerRepository.findByProjectIdAndId(1,1) } returns Optional.of(projectPartner)
         every { projectRepository.findById(1) } returns Optional.of(project)
         every { projectPartnerRepository.save(updatedProjectPartner) } returns updatedProjectPartner
 
-        assertThat(projectPartnerService.updatePartnerContact(1, contactPersonsDto))
+        assertThat(projectPartnerService.updatePartnerContact(1,1, contactPersonsDto))
             .isEqualTo(updatedProjectPartner.toOutputProjectPartnerDetail())
     }
 
@@ -210,8 +211,37 @@ internal class ProjectPartnerServiceTest {
             "test")
         val contactPersonsDto = HashSet<InputProjectPartnerContact>()
             contactPersonsDto.add(projectPartnerContactUpdate)
-        every { projectPartnerRepository.findById(eq(-1)) } returns Optional.empty()
-        val exception = assertThrows<ResourceNotFoundException> { projectPartnerService.updatePartnerContact(-1, contactPersonsDto) }
+        every { projectPartnerRepository.findByProjectIdAndId(1,eq(-1)) } returns Optional.empty()
+        val exception = assertThrows<ResourceNotFoundException> { projectPartnerService.updatePartnerContact(1,-1, contactPersonsDto) }
+        assertThat(exception.entity).isEqualTo("projectPartner")
+    }
+
+    @Test
+    fun updatePartnerContribution() {
+        val projectPartnerContributionUpdate = InputProjectPartnerContribution(
+            "test",
+            "test",
+            "test")
+        val projectPartner = ProjectPartner(1, project, "updated", ProjectPartnerRole.PARTNER)
+        val updatedProjectPartner = ProjectPartner(1, project, "updated", ProjectPartnerRole.PARTNER,
+            null, emptySet(), projectPartnerContributionUpdate.toEntity(projectPartner))
+
+        every { projectPartnerRepository.findByProjectIdAndId(1,1) } returns Optional.of(projectPartner)
+        every { projectRepository.findById(1) } returns Optional.of(project)
+        every { projectPartnerRepository.save(updatedProjectPartner) } returns updatedProjectPartner
+
+        assertThat(projectPartnerService.updatePartnerContribution(1,1, projectPartnerContributionUpdate))
+            .isEqualTo(updatedProjectPartner.toOutputProjectPartnerDetail())
+    }
+
+    @Test
+    fun updatePartnerContribution_notExisting() {
+        val projectPartnerContributionUpdate = InputProjectPartnerContribution(
+            "test",
+            "test",
+            "test")
+        every { projectPartnerRepository.findByProjectIdAndId(1,eq(-1)) } returns Optional.empty()
+        val exception = assertThrows<ResourceNotFoundException> { projectPartnerService.updatePartnerContribution(1,-1, projectPartnerContributionUpdate) }
         assertThat(exception.entity).isEqualTo("projectPartner")
     }
 
