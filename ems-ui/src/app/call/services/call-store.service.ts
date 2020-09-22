@@ -50,6 +50,10 @@ export class CallStore {
     return merge(this.callById$, this.savedCall$);
   }
 
+  getCallById(): Observable<OutputCall> {
+    return this.callById$;
+  }
+
   callPublished(call: OutputCall): void {
     this.publishedCall$.next(call?.name);
     setTimeout(() => this.publishedCall$.next(null), 4000);

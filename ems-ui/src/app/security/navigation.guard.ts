@@ -18,8 +18,8 @@ export class NavigationGuard implements CanActivate {
         tap(currentUser =>
           // redirect to home page depending on role type
           currentUser?.role === Permission.APPLICANT_USER
-            ? this.router.navigate(['/calls'])
-            : this.router.navigate(['/project'])
+            ? this.router.navigate(['/app/call'])
+            : this.router.navigate(['/app/project'])
         ),
         map(() => true)
       );

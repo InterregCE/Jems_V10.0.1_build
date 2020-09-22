@@ -42,6 +42,7 @@ class SecurityConfig(val emsUserDetailsService: EmsUserDetailsService, val passw
             .and()
             .logout()
             .invalidateHttpSession(true)
+            .deleteCookies("JSESSIONID")
     }
 
     override fun configure(authenticationManagerBuilder: AuthenticationManagerBuilder) {

@@ -1,43 +1,32 @@
 import {NgModule} from '@angular/core';
 import {UserPageComponent} from './user-page/containers/user-page/user-page.component';
-import {UserRoutingModule} from './user-routing.module';
+import {routes} from './user-routing.module';
 import {UserListComponent} from './user-page/components/user-list/user-list.component';
 import {SharedModule} from '../common/shared-module';
 import {UserSubmissionComponent} from './user-page/components/user-submission/user-submission.component';
 import {MatSelectModule} from '@angular/material/select';
 import {CoreModule} from '../common/core-module';
-import {UserEditComponent} from './user-page/components/user-detail/user-edit/user-edit.component';
-import {UserDetailComponent} from './user-page/containers/user-detail/user-detail.component';
 import {MatCardModule} from '@angular/material/card';
-import {RolePageService} from './user-role/services/role-page/role-page.service';
-import {UserRoleFormFieldComponent} from './user-page/components/user-detail/user-role-form-field/user-role-form-field.component';
-import {UserPasswordComponent} from './user-page/components/user-detail/user-password/user-password.component';
-import {PasswordFieldComponent} from './user-page/components/user-detail/user-password/password-field/password-field.component';
-import {UserStore} from './user-page/services/user-store.service';
-import {UserNameBreadcrumbProvider} from './user-page/services/user-name-breadcrumb-provider.guard';
+import {UserNameResolver} from './user-page/services/user-name.resolver';
+import {RouterModule} from '@angular/router';
+import {UserDetailSharedModule} from '../common/user-detail-shared-module';
 
 @NgModule({
   declarations: [
     UserPageComponent,
     UserListComponent,
     UserSubmissionComponent,
-    UserDetailComponent,
-    UserEditComponent,
-    UserRoleFormFieldComponent,
-    UserPasswordComponent,
-    PasswordFieldComponent
   ],
   imports: [
     SharedModule,
-    UserRoutingModule,
+    RouterModule.forChild(routes),
     MatSelectModule,
     MatCardModule,
-    CoreModule
+    CoreModule,
+    UserDetailSharedModule,
   ],
   providers: [
-    RolePageService,
-    UserStore,
-    UserNameBreadcrumbProvider,
+    UserNameResolver,
   ]
 })
 export class UserModule {

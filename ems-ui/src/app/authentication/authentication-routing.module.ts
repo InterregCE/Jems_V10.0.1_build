@@ -1,22 +1,16 @@
-import {NgModule} from '@angular/core';
-import {RouterModule, Routes} from '@angular/router';
+import {Routes} from '@angular/router';
 import {RegistrationPageComponent} from './registration/containers/registration-page/registration-page.component';
 import {LoginPageComponent} from './login/containers/login-page/login-page.component';
+import {NoDoubleLoginGuard} from './service/no-double-login-guard.service';
 
-const routes: Routes = [
+export const routes: Routes = [
   {
     path: 'login',
     component: LoginPageComponent,
+    canActivate: [NoDoubleLoginGuard]
   },
   {
     path: 'register',
     component: RegistrationPageComponent,
   }
 ];
-
-@NgModule({
-  imports: [RouterModule.forChild(routes)],
-  exports: [RouterModule]
-})
-export class AuthenticationRoutingModule {
-}

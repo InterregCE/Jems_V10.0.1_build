@@ -8,11 +8,13 @@ import {Log} from '../common/utils/log';
 export class SecurityService {
 
   private myCurrentUser: ReplaySubject<OutputCurrentUser | null> = new ReplaySubject(1);
+  public hasBeenInitialized = false;
 
   private currentUserDetails$ = this.myCurrentUser
     .pipe(
       map(user => user?.id),
-      flatMap(id => id ? this.userService.getById(id) : of(null)),
+      tap(() => this.hasBeenInitialized = true),
+      flatMap(id => (id && id > 0) ? this.userService.getById(id) : of(null)),
       tap(user => Log.info('Current user details loaded', this, user)),
       shareReplay(1)
     );
@@ -46,8 +48,8 @@ export class SecurityService {
       );
   }
 
-  reloadCurrentUser(): void {
-    this.authenticationService.getCurrentUser()
+  reloadCurrentUser(): Observable<OutputCurrentUser> {
+    return this.authenticationService.getCurrentUser()
       .pipe(
         take(1),
         tap(user => this.myCurrentUser.next(user)),
@@ -56,8 +58,7 @@ export class SecurityService {
           this.myCurrentUser.next(null);
           throw err;
         })
-      )
-      .subscribe();
+      );
   }
 
   clearAuthentication(): void {

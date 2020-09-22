@@ -22,7 +22,7 @@ export class UserListComponent {
   newSort: EventEmitter<Partial<MatSort>> = new EventEmitter<Partial<MatSort>>();
 
   tableConfiguration: TableConfiguration = new TableConfiguration({
-    routerLink: '/user/',
+    routerLink: '/app/user/detail',
     isTableClickable: true,
     columns: [
       {

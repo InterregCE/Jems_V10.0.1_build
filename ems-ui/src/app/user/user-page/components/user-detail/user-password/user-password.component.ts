@@ -23,7 +23,7 @@ import {ViewEditForm} from '@common/components/forms/view-edit-form';
 export class UserPasswordComponent extends ViewEditForm implements OnInit {
 
   @Input()
-  userId: number;
+  userId?: number;
   @Input()
   ownUser: boolean;
   @Input()

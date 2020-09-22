@@ -16,14 +16,14 @@
             <div *ngIf="!project.eligibilityAssessment"
                  class="col-3">
                 <button mat-raised-button color="primary" class="assessment-button"
-                        [routerLink]="'/project/'+ project.id + '/eligibilityCheck'">
+                        [routerLink]="'./assessment/eligibilityCheck'">
                     {{'project.assessment.eligibilityCheck.assessment' | translate}}
                 </button>
             </div>
             <div *ngIf="project.eligibilityAssessment"
                  class="col-3">
                 <button mat-raised-button color="secondary" class="assessment-button"
-                        [routerLink]="'/project/'+ project.id + '/eligibilityCheck'">
+                        [routerLink]="'./assessment/eligibilityCheck'">
                     {{'project.assessment.eligibilityCheck.assessment.view' | translate}}
                 </button>
             </div>
@@ -39,14 +39,14 @@
                  class="col-3">
                 <button mat-raised-button color="primary" class="assessment-button"
                         [disabled]="project.projectStatus.status === OutputProjectStatus.StatusEnum.INELIGIBLE"
-                        [routerLink]="'/project/'+ project.id + '/qualityCheck'">
+                        [routerLink]="'./assessment/qualityCheck'">
                     {{'project.assessment.qualityCheck.assessment' | translate}}
                 </button>
             </div>
             <div *ngIf="project.qualityAssessment"
                  class="col-3">
                 <button mat-raised-button color="secondary" class="assessment-button"
-                        [routerLink]="'/project/'+ project.id + '/qualityCheck'">
+                        [routerLink]="'./assessment/qualityCheck'">
                     {{'project.assessment.qualityCheck.assessment.view' | translate}}
                 </button>
             </div>

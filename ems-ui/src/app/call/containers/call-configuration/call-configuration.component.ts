@@ -152,7 +152,7 @@ export class CallConfigurationComponent extends BaseComponent {
   }
 
   redirectToCallOverview(): void {
-    this.sideNavService.navigate({headline: 'calls', route: '/calls'})
+    this.sideNavService.navigate({headline: 'calls', route: '/app/call'})
   }
 
   private getStrategies(allActiveStrategies: OutputProgrammeStrategy[], call: OutputCall): OutputProgrammeStrategy[] {

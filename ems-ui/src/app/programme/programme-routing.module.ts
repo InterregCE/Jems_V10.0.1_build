@@ -1,5 +1,4 @@
-import {NgModule} from '@angular/core';
-import {RouterModule, Routes} from '@angular/router';
+import {Routes} from '@angular/router';
 import {AuthenticationGuard} from '../security/authentication-guard.service';
 import {ProgrammePageComponent} from './programme-page/containers/programme-page/programme-page.component';
 import {ProgrammePrioritiesComponent} from './programme-page/containers/programme-priorities/programme-priorities.component';
@@ -10,22 +9,15 @@ import {ProgrammeAreaComponent} from './programme-page/containers/programme-area
 import {ProgrammeIndicatorsOverviewPageComponent} from './programme-page/containers/programme-indicators-overview-page/programme-indicators-overview-page.component';
 import {ProgrammeStrategiesPageComponent} from './programme-page/containers/programme-strategies-page/programme-strategies-page.component';
 import {Permission} from '../security/permissions/permission';
-import {Breadcrumb} from '@common/components/breadcrumb/breadcrumb';
 import {RouteData} from '../common/utils/route-data';
 import {PermissionGuard} from '../security/permission.guard';
 
-/**
- * TODO Use the PermissionGuard to limit access to routes where it makes sense
- * and cleanup the pages (remove *ngxPermission..)
- */
-
-const routes: Routes = [
+export const routes: Routes = [
   {
-    path: 'programme',
-    data: new RouteData({
+    path: '',
+    data: {
       breadcrumb: 'programme.breadcrumb.setup',
-      permissionsOnly: [Permission.ADMINISTRATOR, Permission.PROGRAMME_USER],
-    }),
+    },
     children: [
       {
         path: '',
@@ -34,10 +26,9 @@ const routes: Routes = [
       },
       {
         path: 'priorities',
-        data: new RouteData({
+        data: {
           breadcrumb: 'programme.breadcrumb.priorities',
-          permissionsOnly: [Permission.ADMINISTRATOR, Permission.PROGRAMME_USER],
-        }),
+        },
         children: [
           {
             path: '',
@@ -47,10 +38,9 @@ const routes: Routes = [
           {
             path: 'priority',
             component: ProgrammePriorityComponent,
-            data: new RouteData({
+            data: {
               breadcrumb: 'programme.breadcrumb.priority',
-              permissionsOnly: [Permission.ADMINISTRATOR, Permission.PROGRAMME_USER],
-            }),
+            },
             canActivate: [AuthenticationGuard, PermissionGuard],
           },
         ],
@@ -58,18 +48,16 @@ const routes: Routes = [
       {
         path: 'areas',
         component: ProgrammeAreaComponent,
-        data: new RouteData({
+        data: {
           breadcrumb: 'programme.breadcrumb.areas',
-          permissionsOnly: [Permission.ADMINISTRATOR, Permission.PROGRAMME_USER],
-        }),
+        },
         canActivate: [AuthenticationGuard, PermissionGuard],
       },
       {
         path: 'indicators',
-        data: new RouteData({
+        data: {
           breadcrumb: 'programme.breadcrumb.indicators',
-          permissionsOnly: [Permission.ADMINISTRATOR, Permission.PROGRAMME_USER],
-        }),
+        },
         children: [
           {
             path: '',
@@ -78,10 +66,6 @@ const routes: Routes = [
           },
           {
             path: 'outputIndicator',
-            data: new RouteData({
-              breadcrumb: Breadcrumb.DO_NOT_SHOW,
-              permissionsOnly: [Permission.ADMINISTRATOR, Permission.PROGRAMME_USER],
-            }),
             children: [
               {
                 path: '',
@@ -98,7 +82,7 @@ const routes: Routes = [
                 canActivate: [AuthenticationGuard, PermissionGuard],
               },
               {
-                path: ':indicatorId',
+                path: 'detail/:indicatorId',
                 data: new RouteData({
                   breadcrumb: 'programme.breadcrumb.outputIndicator.name',
                   permissionsOnly: [Permission.ADMINISTRATOR, Permission.PROGRAMME_USER],
@@ -110,10 +94,6 @@ const routes: Routes = [
           },
           {
             path: 'resultIndicator',
-            data: new RouteData({
-              breadcrumb: Breadcrumb.DO_NOT_SHOW,
-              permissionsOnly: [Permission.ADMINISTRATOR, Permission.PROGRAMME_USER],
-            }),
             children: [
               {
                 path: '',
@@ -123,14 +103,13 @@ const routes: Routes = [
               {
                 path: 'create',
                 component: ProgrammeResultIndicatorSubmissionPageComponent,
-                data: new RouteData({
+                data: {
                   breadcrumb: 'programme.breadcrumb.resultIndicator.create',
-                  permissionsOnly: [Permission.ADMINISTRATOR, Permission.PROGRAMME_USER],
-                }),
+                },
                 canActivate: [AuthenticationGuard, PermissionGuard],
               },
               {
-                path: ':indicatorId',
+                path: 'detail/:indicatorId',
                 component: ProgrammeResultIndicatorSubmissionPageComponent,
                 data: new RouteData({
                   breadcrumb: 'programme.breadcrumb.resultIndicator.name',
@@ -154,14 +133,3 @@ const routes: Routes = [
     ]
   }
 ];
-
-@NgModule({
-  imports: [
-    RouterModule.forChild(routes),
-  ],
-  exports: [
-    RouterModule,
-  ],
-})
-export class ProgrammeRoutingModule {
-}

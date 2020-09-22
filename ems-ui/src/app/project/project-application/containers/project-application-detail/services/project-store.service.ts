@@ -119,6 +119,10 @@ export class ProjectStore {
     return this.project$;
   }
 
+  getProjectById(): Observable<OutputProject> {
+    return this.projectById$;
+  }
+
   getStatus(): Observable<OutputProjectStatus.StatusEnum> {
     return this.projectStatus$.asObservable();
   }

@@ -7,7 +7,7 @@
 
 <span class="header-button" *ngxPermissionsExcept="Permission.PROGRAMME_USER">
     <button class="spaced-elements" mat-raised-button color="primary"
-            [routerLink]="'/project/' + projectId + '/applicationForm/workPackage/create'"
+            [routerLink]="'/app/project/detail/' + projectId + '/applicationForm/workPackage/create'"
             [disabled]="!editable">
         + {{'project.application.form.add.workpackage' | translate}}
     </button>

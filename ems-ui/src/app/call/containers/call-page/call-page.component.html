@@ -1,25 +1,9 @@
 <app-breadcrumb></app-breadcrumb>
-<h3 *ngxPermissionsExcept="Permission.APPLICANT_USER">{{'call.header' | translate}}</h3>
-<h3 *ngxPermissionsOnly="Permission.APPLICANT_USER">{{'call.dashboard.header' | translate}}</h3>
-
-<div *ngxPermissionsOnly="Permission.APPLICANT_USER">
-    <h5>{{'call.applications.title' | translate}}</h5>
-    <div *ngIf="currentApplicationPage$ | async as projectPage">
-        <app-project-application-list
-                [projectPage]="projectPage"
-                [pageIndex]="newApplicationsPageIndex$ | async"
-                (newPageSize)="newApplicationsPageSize$.next($event)"
-                (newPageIndex)="newApplicationsPageIndex$.next($event)"
-                (newSort)="newApplicationsSort$.next($event)">
-        </app-project-application-list>
-    </div>
-</div>
-
-<br>
+<h3>{{'call.header' | translate}}</h3>
 
 <div *ngxPermissionsExcept="Permission.APPLICANT_USER">
     <button mat-raised-button color="primary"
-            [routerLink]="'/calls/create'">
+            [routerLink]="'/app/call/create'">
         + {{'call.add.new' | translate}}
     </button>
     <div *ngIf="currentPage$ | async as callPage">

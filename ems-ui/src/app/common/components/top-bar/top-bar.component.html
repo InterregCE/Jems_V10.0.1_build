@@ -1,11 +1,13 @@
 <div class="toolbar" role="banner">
-    <div *ngIf="isLoginNeeded">
-        <div class="spacer"></div>
-        <ng-container *ngIf="currentUser | async as user">
+    <div>
+        <ng-container *ngIf="isAuthenticated">
+            <div class="spacer"></div>
+            <ng-container *ngIf="currentUser | async as user">
             <span class="d-inline-block">
                 <app-menu [items]="menuItems | async"></app-menu>
             </span>
-            <app-help-menu></app-help-menu>
+                <app-help-menu></app-help-menu>
+            </ng-container>
         </ng-container>
 
         <mat-select #langSelect
@@ -17,10 +19,12 @@
             </mat-option>
         </mat-select>
 
-        <ng-container *ngIf="currentUser | async as user">
+        <ng-container *ngIf="isAuthenticated">
+            <ng-container *ngIf="currentUser | async as user">
             <span class="d-inline-block">
                 <button mat-flat-button (click)="logout()">{{'topbar.main.button.logout' | translate}}</button>
             </span>
+            </ng-container>
         </ng-container>
     </div>
 </div>

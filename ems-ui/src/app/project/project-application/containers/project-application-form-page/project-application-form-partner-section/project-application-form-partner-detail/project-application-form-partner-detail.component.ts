@@ -150,7 +150,7 @@ export class ProjectApplicationFormPartnerDetailComponent extends BaseComponent 
   }
 
   redirectToPartnerOverview(): void {
-    this.router.navigate(['/project/' + this.projectId + '/applicationForm']);
+    this.router.navigate(['app', 'project', 'detail', this.projectId, 'applicationForm']);
   }
 
   changeTab(tabIndex: number): void {

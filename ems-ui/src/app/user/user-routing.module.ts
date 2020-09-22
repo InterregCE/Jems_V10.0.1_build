@@ -1,47 +1,25 @@
-import {NgModule} from '@angular/core';
-import {RouterModule, Routes} from '@angular/router';
+import {Routes} from '@angular/router';
 import {UserPageComponent} from './user-page/containers/user-page/user-page.component';
-import {AuthenticationGuard} from '../security/authentication-guard.service';
-import {Permission} from '../security/permissions/permission';
 import {UserDetailComponent} from './user-page/containers/user-detail/user-detail.component';
-import {RouteData} from '../common/utils/route-data';
-import {PermissionGuard} from '../security/permission.guard';
-import {UserNameBreadcrumbProvider} from './user-page/services/user-name-breadcrumb-provider.guard';
-import {ReplaySubject} from 'rxjs';
+import {UserNameResolver} from './user-page/services/user-name.resolver';
 
-const routes: Routes = [
+export const routes: Routes = [
   {
-    path: 'user',
-    data: new RouteData({
+    path: '',
+    data: {
       breadcrumb: 'user.breadcrumb.create',
-      permissionsOnly: [Permission.ADMINISTRATOR],
-    }),
+    },
     children: [
       {
         path: '',
         component: UserPageComponent,
-        canActivate: [AuthenticationGuard, PermissionGuard],
       },
       {
-        path: ':userId',
+        path: 'detail/:userId',
         component: UserDetailComponent,
-        canActivate: [AuthenticationGuard, UserNameBreadcrumbProvider],
-        data: new RouteData({
-          breadcrumb: UserNameBreadcrumbProvider.name,
-          breadcrumb$: new ReplaySubject<string>(1)
-        }),
+        data: { dynamicValue: true },
+        resolve: { dynamicValue: UserNameResolver }
       }
     ]
   }
 ];
-
-@NgModule({
-  imports: [
-    RouterModule.forChild(routes),
-  ],
-  exports: [
-    RouterModule,
-  ],
-})
-export class UserRoutingModule {
-}

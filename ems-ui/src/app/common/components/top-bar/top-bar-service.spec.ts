@@ -32,7 +32,7 @@ describe('TopBarService', () => {
   it('should create menus depending on rights', fakeAsync(() => {
     const permissionService: PermissionService = TestBed.inject(PermissionService);
     const securityService: SecurityService = TestBed.inject(SecurityService);
-    securityService.reloadCurrentUser();
+    securityService.reloadCurrentUser().subscribe();
     service.newAuditUrl('auditUrl');
 
     httpTestingController.expectOne({
@@ -65,6 +65,6 @@ describe('TopBarService', () => {
 
     permissionService.setPermissions([Permission.APPLICANT_USER]);
     tick();
-    expect(menuItems.length).toBe(2);
+    expect(menuItems.length).toBe(3);
   }));
 });

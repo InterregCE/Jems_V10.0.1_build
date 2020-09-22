@@ -12,6 +12,8 @@ import {TestModule} from '../../../../../common/test-module';
 import {ProjectModule} from '../../../../project.module';
 import {PermissionService} from '../../../../../security/permissions/permission.service';
 import {Permission} from '../../../../../security/permissions/permission';
+import {RouterTestingModule} from '@angular/router/testing';
+import {ProjectApplicationDetailComponent} from '../project-application-detail.component';
 
 describe('ProjectStoreService', () => {
   let service: ProjectStore;
@@ -21,7 +23,9 @@ describe('ProjectStoreService', () => {
     TestBed.configureTestingModule({
       imports: [
         ProjectModule,
-        TestModule
+        TestModule,
+        RouterTestingModule.withRoutes(
+          [{path: 'project/1', component: ProjectApplicationDetailComponent}])
       ]
     });
     service = TestBed.inject(ProjectStore);

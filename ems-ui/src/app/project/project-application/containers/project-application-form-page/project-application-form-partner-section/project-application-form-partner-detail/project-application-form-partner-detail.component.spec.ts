@@ -41,7 +41,7 @@ describe('ProjectApplicationFormPartnerDetailComponent', () => {
 
     component.redirectToPartnerOverview();
 
-    expect(router.navigate).toHaveBeenCalledWith(['/project/1/applicationForm']);
+    expect(router.navigate).toHaveBeenCalledWith(['app', 'project', 'detail', 1, 'applicationForm']);
   });
 
   it('should list project partner details', fakeAsync(() => {
