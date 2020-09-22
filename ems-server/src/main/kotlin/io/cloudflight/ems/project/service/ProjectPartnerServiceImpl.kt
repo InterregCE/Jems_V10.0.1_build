@@ -3,12 +3,15 @@ package io.cloudflight.ems.project.service
 import io.cloudflight.ems.api.project.dto.InputProjectPartnerContact
 import io.cloudflight.ems.api.project.dto.InputProjectPartnerContribution
 import io.cloudflight.ems.api.project.dto.InputProjectPartnerCreate
+import io.cloudflight.ems.api.project.dto.InputProjectPartnerOrganization
 import io.cloudflight.ems.api.project.dto.InputProjectPartnerUpdate
 import io.cloudflight.ems.api.project.dto.OutputProjectPartner
 import io.cloudflight.ems.api.project.dto.OutputProjectPartnerDetail
 import io.cloudflight.ems.api.project.dto.ProjectPartnerRole
 import io.cloudflight.ems.exception.I18nValidationException
 import io.cloudflight.ems.exception.ResourceNotFoundException
+import io.cloudflight.ems.project.entity.ProjectPartnerOrganization
+import io.cloudflight.ems.project.repository.ProjectPartnerOrganizationRepository
 import io.cloudflight.ems.project.repository.ProjectPartnerRepository
 import io.cloudflight.ems.project.repository.ProjectRepository
 import org.springframework.data.domain.Page
@@ -22,7 +25,8 @@ import org.springframework.transaction.annotation.Transactional
 @Service
 class ProjectPartnerServiceImpl(
     private val projectPartnerRepo: ProjectPartnerRepository,
-    private val projectRepo: ProjectRepository
+    private val projectRepo: ProjectRepository,
+    private val projectPartnerOrganizationRepo: ProjectPartnerOrganizationRepository
 ) : ProjectPartnerService {
 
     @Transactional(readOnly = true)
@@ -44,7 +48,13 @@ class ProjectPartnerServiceImpl(
         if (projectPartner.role!!.isLead)
             validateLeadPartnerChange(projectId, projectPartner.oldLeadPartnerId)
 
-        return projectPartnerRepo.save(projectPartner.toEntity(project = project)).toOutputProjectPartnerDetail()
+        val organization = if (projectPartner.organization == null){
+            null
+        } else {
+            this.projectPartnerOrganizationRepo.save(projectPartner.organization!!.toEntity())
+        }
+
+        return projectPartnerRepo.save(projectPartner.toEntity(project = project).copy(organization = organization)).toOutputProjectPartnerDetail()
     }
 
     private fun validateLeadPartnerChange(projectId: Long, oldLeadPartnerId: Long?) {
@@ -90,10 +100,17 @@ class ProjectPartnerServiceImpl(
         if (!oldProjectPartner.role.isLead && projectPartner.role!!.isLead)
             validateLeadPartnerChange(projectId, projectPartner.oldLeadPartnerId)
 
+        val organization = if (projectPartner.organization == null){
+            null
+        } else {
+            this.projectPartnerOrganizationRepo.save(projectPartner.organization!!.toEntity())
+        }
+
         return projectPartnerRepo.save(
             oldProjectPartner.copy(
                 name = projectPartner.name!!,
-                role = projectPartner.role!!
+                role = projectPartner.role!!,
+                organization = organization
             )
         ).toOutputProjectPartnerDetail()
     }

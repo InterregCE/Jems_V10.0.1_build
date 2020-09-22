@@ -40,10 +40,14 @@ data class ProjectPartner(
     val partnerContactPersons: Set<PartnerContactPerson>? = emptySet(),
 
     @OneToOne(mappedBy = "partner", cascade = [CascadeType.ALL])
-    val partnerContribution: ProjectPartnerContribution? = null
+    val partnerContribution: ProjectPartnerContribution? = null,
+
+    @ManyToOne(optional = true)
+    @JoinColumn(name = "organization_id")
+    val organization: ProjectPartnerOrganization? = null
 
 ) {
     override fun toString(): String {
-        return "${this.javaClass.simpleName}(id=$id, projectId=$project.id, name=$name, role=$role, sortNumber=$sortNumber, partnerContact=$partnerContactPersons, partnerContribution=$partnerContribution)"
+        return "${this.javaClass.simpleName}(id=$id, projectId=$project.id, name=$name, role=$role, sortNumber=$sortNumber, partnerContact=$partnerContactPersons, partnerContribution=$partnerContribution, organization=$organization)"
     }
 }

@@ -6,5 +6,6 @@ data class OutputProjectPartnerDetail (
     val role: ProjectPartnerRole,
     val sortNumber: Int? = null,
     val partnerContactPersons: Set<OutputProjectPartnerContact>? = null,
-    val partnerContribution: OutputProjectPartnerContribution? = null
+    val partnerContribution: OutputProjectPartnerContribution? = null,
+    val organization: OutputProjectPartnerOrganization? = null
 )
