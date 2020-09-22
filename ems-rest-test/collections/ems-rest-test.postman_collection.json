@@ -380,6 +380,128 @@
 					"response": []
 				},
 				{
+					"name": "retrieve some existing programme funds",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "d385f525-79da-4a99-a67a-0e1fa8c82123",
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"id": "b88ab92d-f7be-4001-b67a-2221bed4c822",
+								"exec": [
+									"pm.test('we can retrieve programme funds', function() {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"pm.test('we have programme fund or we need to enable first one', function() {\r",
+									"    const funds = pm.response.json().filter(f => f.selected);\r",
+									"    if (funds.length > 0) {\r",
+									"        const fundId = funds[0].id;\r",
+									"        console.log('There is fund wth id ' + fundId);\r",
+									"        pm.environment.set('programmeFundId', fundId);\r",
+									"    } else {\r",
+									"        console.log('There are no any programme funds yet enabled. We need to enable one.');\r",
+									"        pm.environment.set('programmeFundId', null);\r",
+									"    }\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{url}}/api/programmefund",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"api",
+								"programmefund"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "[IF] not exists, then enable programme fund 1",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "9bbf6f08-111d-4354-85d4-ede244601330",
+								"exec": [
+									"if (pm.environment.get('programmeFundId') == null) {\r",
+									"    console.log('There is no any programme fund enabled we can use, so we need to enable one.');\r",
+									"    pm.variables.set('programmeFundIdToBeEnabled', 1);\r",
+									"} else {\r",
+									"    console.log('There is already a programme fund enabled, so we will use that one.');\r",
+									"    pm.variables.set('programmeFundIdToBeEnabled', \"not-existing\");\r",
+									"}\r",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"id": "3aaf4a5d-0760-4b7f-a3be-3a61be67d39c",
+								"exec": [
+									"pm.test('programme fund was enabled', function() {\r",
+									"    console.log('programmePriorityPolicy is set to ' + pm.environment.get('programmePriorityPolicy'));\r",
+									"    if (pm.environment.get('programmeFundId') == null) {\r",
+									"        pm.response.to.have.status(200);\r",
+									"        console.log('We enabled programme fund id=1');\r",
+									"        pm.environment.set('programmeFundId', 1);\r",
+									"    } else {\r",
+									"        pm.response.to.have.status(400);\r",
+									"        console.log('We did an invalid POST to NOT enable new programme funds, no variable is changing.');\r",
+									"    }\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"funds\": [\r\n        {\r\n            \"id\": {{programmeFundIdToBeEnabled}},\r\n            \"selected\": true\r\n        }\r\n    ]\r\n}\r\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{url}}/api/programmefund",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"api",
+								"programmefund"
+							]
+						}
+					},
+					"response": []
+				},
+				{
 					"name": "create call",
 					"event": [
 						{
@@ -446,7 +568,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n\t\"name\": \"{{call_name_to_create}}\",\n\t\"priorityPolicies\": [ \"{{programmePriorityPolicy}}\" ],\n\t\"startDate\": \"{{callDateStart}}\",\n\t\"endDate\": \"{{callDateEnd}}\",\n    \"lengthOfPeriod\": 12\n}\n",
+							"raw": "{\n\t\"name\": \"{{call_name_to_create}}\",\n\t\"priorityPolicies\": [ \"{{programmePriorityPolicy}}\" ],\n    \"funds\": [{{programmeFundId}}],\n\t\"startDate\": \"{{callDateStart}}\",\n\t\"endDate\": \"{{callDateEnd}}\",\n    \"lengthOfPeriod\": 12\n}\n",
 							"options": {
 								"raw": {}
 							}
@@ -7188,7 +7310,7 @@
 	],
 	"variable": [
 		{
-			"id": "f990b146-ebfd-436d-a5c3-61c54a40c321",
+			"id": "a3a7b3db-4470-4f54-addf-c3c522b037a0",
 			"key": "url",
 			"value": "specify_url_here"
 		}
