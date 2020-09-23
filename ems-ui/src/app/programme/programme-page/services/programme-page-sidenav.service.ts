@@ -7,24 +7,24 @@ export class ProgrammePageSidenavService {
 
   private indicatorsPage = {
     headline: 'programme.tab.indicators',
-    route: '/indicators',
+    route: 'programme/indicators',
     bullets: [
       {
         headline: 'output.indicator.table.title',
         scrollRoute: 'outputIndicators',
-        route: '/indicators',
+        route: 'programme/indicators',
       },
       {
         headline: 'result.indicator.table.title',
         scrollRoute: 'resultIndicators',
-        route: '/indicators',
+        route: 'programme/indicators',
       },
     ]
   };
 
   private prioritiesPage = {
     headline: 'programme.tab.priority',
-    route: '/priorities',
+    route: 'programme/priorities',
   };
 
   constructor(private sideNavService: SideNavService) {
@@ -55,12 +55,12 @@ export class ProgrammePageSidenavService {
           this.prioritiesPage,
           {
             headline: 'programme.tab.area',
-            route: '/areas',
+            route: 'programme/areas',
           },
           this.indicatorsPage,
           {
             headline: 'programme.tab.strategies',
-            route: '/strategies',
+            route: 'programme/strategies',
           }
         ]
       },

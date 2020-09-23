@@ -30,7 +30,7 @@ export class ProjectApplicationFormSidenavService {
         .map(partner => ({
             headline: this.translate.instant('common.label.project.partner.role.' + partner.role)
               + ' ' + partner.name,
-            route: '/project/' + this.projectId + '/partner/' + partner.id,
+            route: `/project/${this.projectId}/applicationForm/partner/${partner.id}`,
           }
         ))
       )
@@ -46,7 +46,7 @@ export class ProjectApplicationFormSidenavService {
       map(packages => packages
         .map(workPackage => ({
             headline: workPackage.name,
-            route: '/project/' + this.projectId + '/workPackage/' + workPackage.id,
+            route: `/project/${this.projectId}/applicationForm/workPackage/${workPackage.id}`,
           }
         ))
       )

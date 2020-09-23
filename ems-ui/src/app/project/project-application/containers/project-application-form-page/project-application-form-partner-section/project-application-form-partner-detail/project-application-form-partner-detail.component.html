@@ -1,4 +1,5 @@
 <div *ngIf="details$ | async as details">
+    <app-breadcrumb></app-breadcrumb>
     <h5 *ngIf="details.partner.name">
         {{'common.label.project.partner.role.' + details.partner.role | translate}}
         {{details.partner.name}}

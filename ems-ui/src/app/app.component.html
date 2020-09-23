@@ -31,7 +31,9 @@
 
     <mat-sidenav-content>
         <div id="main-content" class="main-content" role="main">
-            <router-outlet></router-outlet>
+            <div class="container" [ngClass]="{'shrunk': !!(headlines$ | async)?.length}">
+                <router-outlet></router-outlet>
+            </div>
         </div>
     </mat-sidenav-content>
 </mat-sidenav-container>

@@ -56,6 +56,7 @@ import {ProjectApplicationFormManagementDetailComponent} from './project-applica
 import {ProjectApplicationFormFuturePlansDetailComponent} from './project-application/components/project-application-form/project-application-form-future-plans-detail/project-application-form-future-plans-detail.component';
 import {ContributionRadioColumnComponent} from './project-application/components/project-application-form/project-application-form-management-detail/contribution-radio-column/contribution-radio-column.component';
 import {ProjectApplicationFormPartnerContactComponent} from './project-application/components/project-application-form/project-application-form-partner-contact/project-application-form-partner-contact.component';
+import {ProjectAcronymBreadcrumbProvider} from './project-application/containers/project-application-detail/services/project-acronym-breadcrumb-provider.guard';
 
 @NgModule({
   declarations: [
@@ -125,6 +126,7 @@ import {ProjectApplicationFormPartnerContactComponent} from './project-applicati
     ProjectStore,
     ProjectApplicationFormSidenavService,
     MatDatepickerModule,
+    ProjectAcronymBreadcrumbProvider,
     {provide: MAT_MOMENT_DATE_ADAPTER_OPTIONS, useValue: {useUtc: true}},
     {provide: MAT_DATE_LOCALE, useValue: 'en-GB'}
   ]

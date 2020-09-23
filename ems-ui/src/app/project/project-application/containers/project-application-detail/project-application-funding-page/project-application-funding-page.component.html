@@ -1,30 +1,28 @@
-<ng-container *ngIf="details$ | async as details">
-    <a [routerLink]="['../../../project', details.project.id]">{{'back.project.application.details' | translate}}</a>
-    <div *ngxPermissionsExcept="[Permission.APPLICANT_USER]" class="project-detail-container">
-        <h5>{{details.acronym}}</h5>
-        <app-project-application-information
-                [project]="details.project">
-        </app-project-application-information>
-        <div class="assessment-container">
-            <h5>{{'project.assessment.fundingDecision.dialog.title' | translate}}</h5>
-            <app-project-application-funding-decision
-                    *ngIf="details.showWithConditions"
-                    [project]="details.project"
-                    [status]="details.withConditionsStatus"
-                    [options]="details.withConditionsStatusOptions"
-                    [submitLabel]="details.withConditionsSubmitLabel"
-                    (changeStatus)="projectStore.changeStatus($event)"
-                    (cancel)="redirectToProject()">
-            </app-project-application-funding-decision>
-            <hr>
-            <app-project-application-funding-decision
-                    [project]="details.project"
-                    [status]="details.status"
-                    [options]="details.statusOptions"
-                    [submitLabel]="details.submitLabel"
-                    (changeStatus)="projectStore.changeStatus($event)"
-                    (cancel)="redirectToProject()">
-            </app-project-application-funding-decision>
-        </div>
+<div *ngIf="details$ | async as details" class="project-detail-container">
+    <app-breadcrumb></app-breadcrumb>
+    <h5>{{details.acronym}}</h5>
+    <app-project-application-information
+            [project]="details.project">
+    </app-project-application-information>
+    <div class="assessment-container">
+        <h5>{{'project.assessment.fundingDecision.dialog.title' | translate}}</h5>
+        <app-project-application-funding-decision
+                *ngIf="details.showWithConditions"
+                [project]="details.project"
+                [status]="details.withConditionsStatus"
+                [options]="details.withConditionsStatusOptions"
+                [submitLabel]="details.withConditionsSubmitLabel"
+                (changeStatus)="projectStore.changeStatus($event)"
+                (cancel)="redirectToProject()">
+        </app-project-application-funding-decision>
+        <hr>
+        <app-project-application-funding-decision
+                [project]="details.project"
+                [status]="details.status"
+                [options]="details.statusOptions"
+                [submitLabel]="details.submitLabel"
+                (changeStatus)="projectStore.changeStatus($event)"
+                (cancel)="redirectToProject()">
+        </app-project-application-funding-decision>
     </div>
-</ng-container>
+</div>

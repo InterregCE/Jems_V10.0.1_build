@@ -1,51 +1,49 @@
-<div>
-    <a [routerLink]="['../../../project', projectId]">{{'back.project.application.details' | translate}}</a>
-    <div *ngIf="project$ | async as project" class="project-detail-container">
-        <h5>{{project.acronym}}</h5>
-        <app-project-application-information
-                [project]="project">
-        </app-project-application-information>
-        <div class="assessment-container">
-            <h5>{{'project.assessment.qualityCheck.dialog.title' | translate}}</h5>
-            <form [formGroup]="notesForm" class="description-form">
-                <mat-radio-group
-                        required
-                        class="assessment-radio-group"
-                        name="assessment"
-                        formControlName="assessment"
-                        [disabled]="project.qualityAssessment !== null"
-                        (change)="assessmentChangeHandler($event)">
-                    <mat-radio-button
-                            class="assessment-radio-button"
-                            *ngFor="let option of options" [value]="option">
-                        {{'project.assessment.qualityCheck.dialog.select.' + option | translate}}
-                    </mat-radio-button>
-                </mat-radio-group>
-                <div>
-                    <app-expandable-textarea class="assessment-text-area"
-                            [control]="notesForm?.controls?.notes"
-                            [errors]="notesForm?.controls?.notes?.errors"
-                            [messages]="notesErrors"
-                            [characterLimit]="1000"
-                            [label]="'project.assessment.qualityCheck.dialog.field.note'"
-                            [disabled]="project.qualityAssessment !== null"
-                            [customStyle]="'outline'">
-                    </app-expandable-textarea>
-                </div>
-                <div *ngIf="project.qualityAssessment === null">
-                    <button mat-raised-button
-                            color="secondary"
-                            (click)="onCancel()">{{'project.assessment.qualityCheck.dialog.button.cancel' | translate}}
-                    </button>
+<div *ngIf="project$ | async as project" class="project-detail-container">
+    <app-breadcrumb></app-breadcrumb>
+    <h5>{{project.acronym}}</h5>
+    <app-project-application-information
+            [project]="project">
+    </app-project-application-information>
+    <div class="assessment-container">
+        <h5>{{'project.assessment.qualityCheck.dialog.title' | translate}}</h5>
+        <form [formGroup]="notesForm" class="description-form">
+            <mat-radio-group
+                    required
+                    class="assessment-radio-group"
+                    name="assessment"
+                    formControlName="assessment"
+                    [disabled]="project.qualityAssessment !== null"
+                    (change)="assessmentChangeHandler($event)">
+                <mat-radio-button
+                        class="assessment-radio-button"
+                        *ngFor="let option of options" [value]="option">
+                    {{'project.assessment.qualityCheck.dialog.select.' + option | translate}}
+                </mat-radio-button>
+            </mat-radio-group>
+            <div>
+                <app-expandable-textarea class="assessment-text-area"
+                                         [control]="notesForm?.controls?.notes"
+                                         [errors]="notesForm?.controls?.notes?.errors"
+                                         [messages]="notesErrors"
+                                         [characterLimit]="1000"
+                                         [label]="'project.assessment.qualityCheck.dialog.field.note'"
+                                         [disabled]="project.qualityAssessment !== null"
+                                         [customStyle]="'outline'">
+                </app-expandable-textarea>
+            </div>
+            <div *ngIf="project.qualityAssessment === null">
+                <button mat-raised-button
+                        color="secondary"
+                        (click)="onCancel()">{{'project.assessment.qualityCheck.dialog.button.cancel' | translate}}
+                </button>
 
-                    <button mat-raised-button color="primary"
-                            class="right-button"
-                            type="submit"
-                            [disabled]="notesForm.invalid || submitted"
-                            (click)="onSubmit()">{{'project.assessment.qualityCheck.dialog.button.submit' | translate}}
-                    </button>
-                </div>
-            </form>
-        </div>
+                <button mat-raised-button color="primary"
+                        class="right-button"
+                        type="submit"
+                        [disabled]="notesForm.invalid || submitted"
+                        (click)="onSubmit()">{{'project.assessment.qualityCheck.dialog.button.submit' | translate}}
+                </button>
+            </div>
+        </form>
     </div>
 </div>

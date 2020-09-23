@@ -1,12 +1,13 @@
 <ng-container *ngIf="programme$ | async as programme">
     <div *ngxPermissionsExcept="Permission.APPLICANT_USER">
+        <app-breadcrumb></app-breadcrumb>
         <app-programme-data
                 [success$]="programmeSaveSuccess$"
                 [error$]="programmeSaveError$"
                 [programme]="programme"
                 (saveProgrammeData)="saveProgrammeData$.next($event)">
         </app-programme-data>
-        <app-programme-basic-funds
+        <app-programme-basic-funds class="margin-before"
                 *ngIf="funds$ | async as funds"
                 [success$]="fundsSaveSuccess$"
                 [error$]="fundsSaveError$"

@@ -14,6 +14,7 @@ import {CallActionCellComponent} from './components/call-list/call-action-cell/c
 import {ProjectModule} from '../project/project.module';
 import {CallPriorityTreeComponent} from './components/call-priority-tree/call-priority-tree.component';
 import {MatCheckboxModule} from '@angular/material/checkbox';
+import {CallNameBreadcrumbProvider} from './services/call-name-breadcrumb-provider.guard';
 import { CallStrategiesComponent } from './components/call-detail/call-strategies/call-strategies.component';
 import { CallFundsComponent } from './components/call-detail/call-funds/call-funds.component';
 
@@ -42,6 +43,7 @@ import { CallFundsComponent } from './components/call-detail/call-funds/call-fun
     CallStore,
     MatDatepickerModule,
     NgxMatDatetimePickerModule,
+    CallNameBreadcrumbProvider,
     {
       provide: NGX_MAT_DATE_FORMATS, useValue: {
         parse: {
@@ -52,7 +54,6 @@ import { CallFundsComponent } from './components/call-detail/call-funds/call-fun
           monthYearLabel: 'MMM YYYY',
           dateA11yLabel: 'LL',
           monthYearA11yLabel: 'MMMM YYYY'
-
         },
         useUtc: true
       }

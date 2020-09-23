@@ -1,5 +1,5 @@
-<a *ngIf="!isCreate" class="link" (click)="cancelCreate()">{{'back.indicators' | translate}}</a>
 <div *ngIf="resultIndicator$ | async as details" class="container">
+    <app-breadcrumb></app-breadcrumb>
     <app-programme-result-indicator-detail
             [resultIndicator]="details"
             [priorities]="priorities$ | async"

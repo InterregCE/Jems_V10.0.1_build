@@ -1,11 +1,12 @@
 <ng-container *ngxPermissionsExcept="Permission.APPLICANT_USER">
+    <app-breadcrumb></app-breadcrumb>
     <app-programme-nuts-info
             [metadata]="metaData$ | async"
             [success$]="downloadSuccess$"
             [error$]="downloadError$"
             (downloadNuts)="downloadLatestNuts$.next()">
     </app-programme-nuts-info>
-    <app-programme-regions
+    <app-programme-regions class="margin-before"
             *ngIf="(regionTreeDataSource._data | async)?.length"
             [success$]="regionSaveSuccess$"
             [dataSource]="regionTreeDataSource"

@@ -1,15 +1,16 @@
 import {ChangeDetectionStrategy, Component} from '@angular/core';
-import {combineLatest, merge, Subject} from 'rxjs';
-import {InputPassword, InputUserUpdate, UserService} from '@cat/api';
+import {combineLatest, Subject} from 'rxjs';
+import {InputPassword, UserService} from '@cat/api';
 import {ActivatedRoute} from '@angular/router';
 import {RolePageService} from '../../../user-role/services/role-page/role-page.service';
 import {SecurityService} from '../../../../security/security.service';
 import {I18nValidationError} from '@common/validation/i18n-validation-error';
-import {catchError, flatMap, map, take, takeUntil, tap} from 'rxjs/operators';
+import {catchError, map, take, takeUntil, tap} from 'rxjs/operators';
 import {HttpErrorResponse} from '@angular/common/http';
 import {BaseComponent} from '@common/components/base-component';
 import {Log} from '../../../../common/utils/log';
 import {FormState} from '@common/components/forms/form-state';
+import {UserStore} from '../../services/user-store.service';
 
 @Component({
   selector: 'app-user-detail',
@@ -19,8 +20,6 @@ import {FormState} from '@common/components/forms/form-state';
 })
 export class UserDetailComponent extends BaseComponent {
 
-  userSaveError$ = new Subject<I18nValidationError | null>();
-  userSaveSuccess$ = new Subject<boolean>();
   passwordSaveSuccess$ = new Subject<boolean>();
   passwordSaveError$ = new Subject<I18nValidationError | null>();
 
@@ -28,28 +27,10 @@ export class UserDetailComponent extends BaseComponent {
   passwordEditDisabled = true;
 
   userId = this.activatedRoute?.snapshot?.params?.userId;
-  saveUser$ = new Subject<InputUserUpdate>();
-
-  private userById$ = this.userService.getById(this.userId)
-    .pipe(
-      tap(user => Log.info('Fetched user:', this, user))
-    );
-
-  private savedUser$ = this.saveUser$
-    .pipe(
-      flatMap(userUpdate => this.userService.update(userUpdate)),
-      tap(saved => Log.info('Updated user:', this, saved)),
-      tap(() => this.userSaveSuccess$.next(true)),
-      tap(() => this.userSaveError$.next(null)),
-      catchError((error: HttpErrorResponse) => {
-        this.userSaveError$.next(error.error);
-        throw error;
-      })
-    );
 
   details$ = combineLatest([
     this.rolePageService.userRoles(),
-    merge(this.userById$, this.savedUser$),
+    this.userStore.getUser(),
     this.securityService.currentUser
   ])
     .pipe(
@@ -61,10 +42,12 @@ export class UserDetailComponent extends BaseComponent {
     );
 
   constructor(private userService: UserService,
+              public userStore: UserStore,
               private rolePageService: RolePageService,
               private activatedRoute: ActivatedRoute,
               private securityService: SecurityService) {
     super();
+    this.userStore.init(this.userId);
   }
 
   changePassword(password: InputPassword): void {

@@ -1,0 +1,39 @@
+:host {
+  display: inline-block;
+  width: 100%;
+}
+
+ol.breadcrumbs {
+  display: inline-block;
+  margin: 0 0 .5rem 0;
+  padding: 0;
+  font-size: 1rem;
+
+  li {
+    list-style: none;
+    float: left;
+    line-height: 1.75rem;
+
+    a {
+      color: dimgray;
+      text-decoration: none;
+    }
+
+    a:hover {
+      text-decoration: underline;
+    }
+
+    mat-icon {
+      vertical-align: middle;
+    }
+
+    .current-page {
+      color: #FFBB00;
+    }
+
+    .separator {
+      margin-right: 0.5rem;
+      margin-left: 0.5rem;
+    }
+  }
+}

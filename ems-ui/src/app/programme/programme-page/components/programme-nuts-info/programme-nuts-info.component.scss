@@ -1,14 +1,14 @@
-.container {
-  width: 40rem;
-  padding-top: 0.5rem;
-  padding-bottom: 0.5rem;
+:host {
+  display: inline-block;
+  width: 100%;
+}
 
-  .nuts-database {
-    padding: 0.5rem;
-    border: 1px solid black;
-  }
+.nuts-database {
+  padding: 0.5rem;
+  border: 1px solid black;
+  text-align: center;
+}
 
-  .download {
-    align-content: center;
-  }
+.download {
+  align-content: center;
 }

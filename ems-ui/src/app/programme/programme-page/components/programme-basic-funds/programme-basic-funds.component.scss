@@ -1,5 +1,10 @@
-.container {
-  width: 40rem;
+:host {
+  display: inline-block;
+  width: 100%;
+}
+
+.wrapper {
+  width: 100%;
 
   .header {
     display: inline-block;

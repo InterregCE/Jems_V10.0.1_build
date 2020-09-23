@@ -1,3 +1,23 @@
+$sidebarSize: 21rem;
+
+.shrunk {
+  @media (min-width: 576px) {
+    max-width: calc(540px - #{$sidebarSize});
+  }
+  @media (min-width: 768px) {
+    max-width: calc(720px - #{$sidebarSize});
+  }
+  @media (min-width: 992px) {
+    max-width: calc(960px - #{$sidebarSize});
+  }
+  @media (min-width: 1200px) {
+    max-width: calc(1140px - #{$sidebarSize});
+  }
+  @media (min-width: 1596px) {
+    max-width: 1140px;
+  }
+}
+
 app-top-bar {
   height: 3.75rem;
   width: 100%;
@@ -18,11 +38,11 @@ ul {
 }
 
 .main-content {
-  padding: 1rem 1rem 0 1rem;
+  padding: 1rem 1rem 3rem 1rem;
 }
 
 .side-nav-container {
-  width: 21rem;
+  width: $sidebarSize;
   height: 100%;
   background: lightgrey;
 }

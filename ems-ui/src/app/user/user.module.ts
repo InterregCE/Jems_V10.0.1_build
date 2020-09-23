@@ -13,6 +13,8 @@ import {RolePageService} from './user-role/services/role-page/role-page.service'
 import {UserRoleFormFieldComponent} from './user-page/components/user-detail/user-role-form-field/user-role-form-field.component';
 import {UserPasswordComponent} from './user-page/components/user-detail/user-password/user-password.component';
 import {PasswordFieldComponent} from './user-page/components/user-detail/user-password/password-field/password-field.component';
+import {UserStore} from './user-page/services/user-store.service';
+import {UserNameBreadcrumbProvider} from './user-page/services/user-name-breadcrumb-provider.guard';
 
 @NgModule({
   declarations: [
@@ -33,7 +35,9 @@ import {PasswordFieldComponent} from './user-page/components/user-detail/user-pa
     CoreModule
   ],
   providers: [
-    RolePageService
+    RolePageService,
+    UserStore,
+    UserNameBreadcrumbProvider,
   ]
 })
 export class UserModule {
