@@ -36,6 +36,7 @@ class SecurityConfig(val emsUserDetailsService: EmsUserDetailsService, val passw
             .and()
             .authorizeRequests()
             .antMatchers(*WHITELIST).permitAll()
+            .antMatchers("/api/programmedata").permitAll()  // access for enabled languages
             .antMatchers("/api/**").fullyAuthenticated()
             .and()
             .httpBasic()

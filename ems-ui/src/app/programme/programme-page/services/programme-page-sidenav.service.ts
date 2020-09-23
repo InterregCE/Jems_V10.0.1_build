@@ -15,6 +15,11 @@ export class ProgrammePageSidenavService {
     route: '/app/programme/priorities',
   };
 
+  private languagesPage = {
+    headline: 'programme.tab.languages',
+    route: '/app/programme/languages',
+  };
+
   constructor(private sideNavService: SideNavService) {
   }
 
@@ -33,6 +38,7 @@ export class ProgrammePageSidenavService {
             scrollRoute: 'funds',
                 route: '/app/programme',
           },
+          this.languagesPage,
           this.prioritiesPage,
           {
             headline: 'programme.tab.area',
@@ -54,5 +60,9 @@ export class ProgrammePageSidenavService {
 
   public goToPriorities(): void {
     this.sideNavService.navigate(this.prioritiesPage);
+  }
+
+  public goToLanguages(): void {
+    this.sideNavService.navigate(this.languagesPage);
   }
 }

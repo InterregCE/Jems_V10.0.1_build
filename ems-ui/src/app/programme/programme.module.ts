@@ -35,6 +35,8 @@ import {ProgrammeBasicFundsComponent} from './programme-page/components/programm
 import {ProgrammeStrategiesPageComponent} from './programme-page/containers/programme-strategies-page/programme-strategies-page.component';
 import {ProgrammeStrategiesComponent} from './programme-page/components/programme-strategies/programme-strategies.component';
 import {ProgrammePageSidenavService} from './programme-page/services/programme-page-sidenav.service';
+import {ProgrammeLanguagesComponent} from './programme-page/components/programme-languages/programme-languages.component';
+import {ProgrammeLanguagesPageComponent} from './programme-page/containers/programme-languages-page/programme-languages-page.component';
 
 @NgModule({
   declarations: [
@@ -60,6 +62,8 @@ import {ProgrammePageSidenavService} from './programme-page/services/programme-p
     ProgrammeResultIndicatorSubmissionPageComponent,
     ProgrammeResultIndicatorDetailComponent,
     ProgrammeBasicFundsComponent,
+    ProgrammeLanguagesPageComponent,
+    ProgrammeLanguagesComponent,
     ProgrammeStrategiesPageComponent,
     ProgrammeStrategiesComponent
   ],

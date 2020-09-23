@@ -80,7 +80,7 @@ export class ProgrammeDataComponent extends ViewEditForm implements OnInit {
 
   dateErrors = {
     matDatepickerParse: 'common.date.should.be.valid'
-  }
+  };
 
   eligibleFromErrors = {
     matDatepickerParse: 'common.date.should.be.valid',
@@ -125,10 +125,10 @@ export class ProgrammeDataComponent extends ViewEditForm implements OnInit {
   protected enterEditMode() {
     super.enterEditMode();
     const controls = this.programmeForm.controls;
-    controls.title.setValue(this.programme.title)
-    controls.version.setValue(this.programme.version)
-    controls.commissionDecisionNumber.setValue(this.programme.commissionDecisionNumber)
-    controls.programmeAmendingDecisionNumber.setValue(this.programme.programmeAmendingDecisionNumber)
+    controls.title.setValue(this.programme.title);
+    controls.version.setValue(this.programme.version);
+    controls.commissionDecisionNumber.setValue(this.programme.commissionDecisionNumber);
+    controls.programmeAmendingDecisionNumber.setValue(this.programme.programmeAmendingDecisionNumber);
   }
 
   private submitProgrammeData(): void {
@@ -146,7 +146,8 @@ export class ProgrammeDataComponent extends ViewEditForm implements OnInit {
       commissionDecisionNumber: controls?.commissionDecisionNumber?.value,
       commissionDecisionDate: controls?.commissionDecisionDate?.value,
       programmeAmendingDecisionNumber: controls?.programmeAmendingDecisionNumber?.value,
-      programmeAmendingDecisionDate: controls?.programmeAmendingDecisionDate?.value
+      programmeAmendingDecisionDate: controls?.programmeAmendingDecisionDate?.value,
+      systemLanguageSelections: this.programme.systemLanguageSelections
     });
   }
 

@@ -61,6 +61,6 @@ import {SecurityService} from './security/security.service';
 })
 export class AppModule {
   constructor(translate: TranslateService) {
-    translate.setDefaultLang('en');
+    translate.setDefaultLang('EN');
   }
 }
