@@ -98,10 +98,9 @@
         </mat-form-field>
         <mat-form-field class="field-half">
             <mat-label>{{'programme.data.field.commission.number' | translate}}</mat-label>
-            <input [title]="programme.commissionDecisionNumber" name="commissionDecisionNumber" type="number"
+            <input [title]="programme.commissionDecisionNumber" name="commissionDecisionNumber"
                    formControlName="commissionDecisionNumber" matInput
-                   placeholder="{{'programme.data.field.commission.number' | translate}}"
-                   (paste)="tools.checkDigitsOnPaste($event)" (keypress)="tools.checkDigitsOnInput($event)">
+                   placeholder="{{'programme.data.field.commission.number' | translate}}">
             <mat-error>
                 <app-form-field-errors
                         [errors]="programmeForm?.controls?.commissionDecisionNumber?.errors"
@@ -126,9 +125,8 @@
         <mat-form-field class="field-half">
             <mat-label>{{'programme.data.field.amending.decision.number' | translate}}</mat-label>
             <input [title]="programme.programmeAmendingDecisionNumber" name="programmeAmendingDecisionNumber"
-                   formControlName="programmeAmendingDecisionNumber" matInput type="number"
-                   placeholder="{{'programme.data.field.amending.decision' | translate}}"
-                   (paste)="tools.checkDigitsOnPaste($event)" (keypress)="tools.checkDigitsOnInput($event)">
+                   formControlName="programmeAmendingDecisionNumber" matInput
+                   placeholder="{{'programme.data.field.amending.decision' | translate}}">
             <mat-error>
                 <app-form-field-errors
                         [errors]="programmeForm?.controls?.programmeAmendingDecisionNumber?.errors"
