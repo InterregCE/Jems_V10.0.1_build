@@ -2,6 +2,8 @@ package io.cloudflight.ems.project.service
 
 import io.cloudflight.ems.api.project.dto.description.InputProjectLongTermPlans
 import io.cloudflight.ems.api.project.dto.description.InputProjectManagement
+import io.cloudflight.ems.api.project.dto.description.InputProjectOverallObjective
+import io.cloudflight.ems.api.project.dto.description.InputProjectPartnership
 import io.cloudflight.ems.api.project.dto.description.InputProjectRelevance
 import io.cloudflight.ems.api.project.dto.description.OutputProjectDescription
 import io.cloudflight.ems.api.project.dto.description.OutputProjectLongTermPlans
@@ -42,10 +44,8 @@ class ProjectDescriptionServiceImpl(
     }
 
     @Transactional
-    override fun updateOverallObjective(id: Long, projectOverallObjective: String?): String? {
-        return projectOverallObjectiveRepository.save(
-            ProjectOverallObjective(projectId = id, projectOverallObjective = projectOverallObjective)
-        ).projectOverallObjective
+    override fun updateOverallObjective(id: Long, projectOverallObjective: InputProjectOverallObjective): InputProjectOverallObjective {
+        return projectOverallObjectiveRepository.save(projectOverallObjective.toEntity(id)).toOutputProjectOverallObjective()
     }
 
     @Transactional
@@ -54,10 +54,8 @@ class ProjectDescriptionServiceImpl(
     }
 
     @Transactional
-    override fun updatePartnership(id: Long, projectPartnership: String?): String? {
-        return projectPartnershipRepository.save(
-            ProjectPartnership(projectId = id, projectPartnership = projectPartnership)
-        ).projectPartnership
+    override fun updatePartnership(id: Long, projectPartnership: InputProjectPartnership): InputProjectPartnership {
+        return projectPartnershipRepository.save(projectPartnership.toEntity(id)).toOutputProjectPartnership()
     }
 
     @Transactional

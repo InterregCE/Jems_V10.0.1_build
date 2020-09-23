@@ -24,8 +24,8 @@ class ProjectDescriptionController(
     }
 
     @PreAuthorize("@projectAuthorization.canUpdateProject(#id)")
-    override fun updateProjectOverallObjective(id: Long, overallObjective: InputProjectOverallObjective): String? {
-        return projectDescriptionService.updateOverallObjective(id, overallObjective.overallObjective)
+    override fun updateProjectOverallObjective(id: Long, overallObjective: InputProjectOverallObjective): InputProjectOverallObjective? {
+        return projectDescriptionService.updateOverallObjective(id, overallObjective)
     }
 
     @PreAuthorize("@projectAuthorization.canUpdateProject(#id)")
@@ -34,8 +34,8 @@ class ProjectDescriptionController(
     }
 
     @PreAuthorize("@projectAuthorization.canUpdateProject(#id)")
-    override fun updateProjectPartnership(id: Long, partnership: InputProjectPartnership): String? {
-        return projectDescriptionService.updatePartnership(id, partnership.partnership)
+    override fun updateProjectPartnership(id: Long, partnership: InputProjectPartnership): InputProjectPartnership? {
+        return projectDescriptionService.updatePartnership(id, partnership)
     }
 
     @PreAuthorize("@projectAuthorization.canUpdateProject(#id)")

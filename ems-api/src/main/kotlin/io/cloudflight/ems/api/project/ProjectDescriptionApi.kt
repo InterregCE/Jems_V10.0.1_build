@@ -32,7 +32,7 @@ interface ProjectDescriptionApi {
     fun updateProjectOverallObjective(
         @PathVariable id: Long,
         @Valid @RequestBody overallObjective: InputProjectOverallObjective
-    ): String?
+    ): InputProjectOverallObjective?
 
     @ApiOperation("Update project relevance")
     @PutMapping("/c2", consumes = [MediaType.APPLICATION_JSON_VALUE])
@@ -46,7 +46,7 @@ interface ProjectDescriptionApi {
     fun updateProjectPartnership(
         @PathVariable id: Long,
         @Valid @RequestBody partnership: InputProjectPartnership
-    ): String?
+    ): InputProjectPartnership?
 
     @ApiOperation("Update project management data")
     @PutMapping("/c7", consumes = [MediaType.APPLICATION_JSON_VALUE])

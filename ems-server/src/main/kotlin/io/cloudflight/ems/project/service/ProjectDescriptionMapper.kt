@@ -7,6 +7,8 @@ import io.cloudflight.ems.api.project.dto.description.OutputProjectLongTermPlans
 import io.cloudflight.ems.api.project.dto.description.OutputProjectManagement
 import io.cloudflight.ems.api.project.dto.description.InputProjectRelevanceBenefit
 import io.cloudflight.ems.api.project.dto.description.InputProjectCooperationCriteria
+import io.cloudflight.ems.api.project.dto.description.InputProjectOverallObjective
+import io.cloudflight.ems.api.project.dto.description.InputProjectPartnership
 import io.cloudflight.ems.api.project.dto.description.InputProjectRelevance
 import io.cloudflight.ems.api.project.dto.description.InputProjectRelevanceStrategy
 import io.cloudflight.ems.api.project.dto.description.InputProjectRelevanceSynergy
@@ -15,6 +17,8 @@ import io.cloudflight.ems.project.entity.description.ProjectLongTermPlans
 import io.cloudflight.ems.project.entity.description.ProjectManagement
 import io.cloudflight.ems.project.entity.description.ProjectRelevanceBenefit
 import io.cloudflight.ems.project.entity.description.ProjectCooperationCriteria
+import io.cloudflight.ems.project.entity.description.ProjectOverallObjective
+import io.cloudflight.ems.project.entity.description.ProjectPartnership
 import io.cloudflight.ems.project.entity.description.ProjectRelevance
 import io.cloudflight.ems.project.entity.description.ProjectRelevanceStrategy
 import io.cloudflight.ems.project.entity.description.ProjectRelevanceSynergy
@@ -158,3 +162,25 @@ fun ProjectCooperationCriteria.toOutputCooperationCriteria() = InputProjectCoope
     projectJointFinancing = projectJointFinancing,
     projectJointFinancingDescription = projectJointFinancingDescription
 )
+
+fun InputProjectOverallObjective.toEntity(projectId: Long) =
+    ProjectOverallObjective(
+        projectId = projectId,
+        projectOverallObjective = overallObjective
+    )
+
+fun ProjectOverallObjective.toOutputProjectOverallObjective() =
+    InputProjectOverallObjective(
+        overallObjective = projectOverallObjective
+    )
+
+fun InputProjectPartnership.toEntity(projectId: Long) =
+    ProjectPartnership(
+        projectId = projectId,
+        projectPartnership = partnership
+    )
+
+fun ProjectPartnership.toOutputProjectPartnership() =
+    InputProjectPartnership(
+        partnership = projectPartnership
+    )
