@@ -57,6 +57,7 @@ import {ProjectApplicationFormFuturePlansDetailComponent} from './project-applic
 import {ContributionRadioColumnComponent} from './project-application/components/project-application-form/project-application-form-management-detail/contribution-radio-column/contribution-radio-column.component';
 import {ProjectApplicationFormPartnerContactComponent} from './project-application/components/project-application-form/project-application-form-partner-contact/project-application-form-partner-contact.component';
 import {ProjectAcronymBreadcrumbProvider} from './project-application/containers/project-application-detail/services/project-acronym-breadcrumb-provider.guard';
+import {ProjectApplicationFormPartnerContributionComponent} from './project-application/components/project-application-form/project-application-form-partner-contribution/project-application-form-partner-contribution.component';
 
 @NgModule({
   declarations: [
@@ -97,7 +98,8 @@ import {ProjectAcronymBreadcrumbProvider} from './project-application/containers
     ProjectApplicationFormFuturePlansDetailComponent,
     ContributionRadioColumnComponent,
     ProjectApplicationFormWorkPackageSectionComponent,
-    ProjectApplicationFormPartnerContactComponent
+    ProjectApplicationFormPartnerContactComponent,
+    ProjectApplicationFormPartnerContributionComponent
   ],
   imports: [
     SharedModule,

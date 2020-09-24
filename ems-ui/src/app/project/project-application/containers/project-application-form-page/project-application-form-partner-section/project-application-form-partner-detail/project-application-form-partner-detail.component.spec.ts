@@ -4,7 +4,7 @@ import {ProjectModule} from '../../../../../project.module';
 import {ProjectApplicationFormPartnerDetailComponent} from './project-application-form-partner-detail.component';
 import {Router} from '@angular/router';
 import {HttpTestingController} from '@angular/common/http/testing';
-import {OutputProjectPartner, InputProjectPartnerCreate, InputProjectPartnerUpdate} from '@cat/api';
+import {OutputProjectPartner, InputProjectPartnerCreate, InputProjectPartnerUpdate, InputProjectPartnerContribution, InputProjectPartnerContact} from '@cat/api';
 
 describe('ProjectApplicationFormPartnerDetailComponent', () => {
   let component: ProjectApplicationFormPartnerDetailComponent;
@@ -72,6 +72,24 @@ describe('ProjectApplicationFormPartnerDetailComponent', () => {
     httpTestingController.expectOne({
       method: 'POST',
       url: `//api/project/1/partner`
+    })
+  }));
+
+  it('should update a project partner contact', fakeAsync(() => {
+    component.savePartnerContact$.next({} as InputProjectPartnerContact[]);
+
+    httpTestingController.expectOne({
+      method: 'PUT',
+      url: `//api/project/1/partner/2/contact`
+    })
+  }));
+
+  it('should update a project partner contribution', fakeAsync(() => {
+    component.savePartnerContribution$.next({} as InputProjectPartnerContribution);
+
+    httpTestingController.expectOne({
+      method: 'PUT',
+      url: `//api/project/1/partner/2/contribution`
     })
   }));
 });

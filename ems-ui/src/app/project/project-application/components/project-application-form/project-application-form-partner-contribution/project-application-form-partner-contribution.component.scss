@@ -1,0 +1,45 @@
+.container {
+  max-width: 76%;
+  margin: 5% 12% 3%;
+
+  .field {
+    width: 40%;
+    padding-top: 1rem;
+    margin-right: 60%;
+  }
+  .field-wide {
+    width: 70%;
+    margin-right: 30%;
+  }
+
+  .header {
+    display: inline-block;
+  }
+
+  .header-button {
+    margin-left: 0.5rem;
+    margin-right: 2rem;
+    margin-bottom: 0.25rem;
+  }
+
+  .button {
+    margin-right: 3rem;
+  }
+
+  ::ng-deep.mat-form-field-disabled .mat-form-field-underline {
+    height: 0 !important;
+  }
+
+  .mat-form-field-appearance-outline .mat-form-field-outline {
+    color: white;
+  }
+
+  .intro-text {
+    width: 100%;
+    padding-top: 1rem;
+  }
+
+  .mat-input-element {
+    color: #343a40;
+  }
+}

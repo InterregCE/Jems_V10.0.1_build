@@ -1,0 +1,72 @@
+<form [formGroup]="partnerContributionForm" class="container">
+    <h6><span>{{'project.partner.motivation.header' | translate}}</span>
+        <span class="header-button" *ngxPermissionsExcept="Permission.PROGRAMME_USER">
+            <button *ngIf="(formState === FormState.VIEW && editable) && partner?.id"
+                    (click)="changeFormState$.next(FormState.EDIT)" mat-raised-button>
+                {{'common.edit.label' | translate}}
+            </button>
+        </span>
+    </h6>
+
+    <div class="intro-text">
+        {{'project.partner.motivation.organization.relevance' | translate}}
+    </div>
+    <app-expandable-textarea
+            class="field-wide"
+            [control]="partnerContributionForm?.controls?.organizationRelevance"
+            [errors]="partnerContributionForm?.controls?.organizationRelevance?.errors"
+            [messages]="organizationRelevanceErrors"
+            [characterLimit]="2000"
+            [label]="'project.application.form.motivation.form.field'"
+            [disabled]="formState === FormState.VIEW">
+    </app-expandable-textarea>
+
+    <div class="intro-text">
+        {{'project.partner.motivation.organization.role' | translate}}
+    </div>
+    <app-expandable-textarea
+            class="field-wide"
+            [control]="partnerContributionForm?.controls?.organizationRole"
+            [errors]="partnerContributionForm?.controls?.organizationRole?.errors"
+            [messages]="organizationRoleErrors"
+            [characterLimit]="2000"
+            [label]="'project.application.form.motivation.form.field'"
+            [disabled]="formState === FormState.VIEW">
+    </app-expandable-textarea>
+
+    <div class="intro-text">
+        {{'project.partner.motivation.organization.experience' | translate}}
+    </div>
+    <app-expandable-textarea
+            class="field-wide"
+            [control]="partnerContributionForm?.controls?.organizationExperience"
+            [errors]="partnerContributionForm?.controls?.organizationExperience?.errors"
+            [messages]="organizationExperienceErrors"
+            [characterLimit]="2000"
+            [label]="'project.application.form.motivation.form.field'"
+            [disabled]="formState === FormState.VIEW">
+    </app-expandable-textarea>
+
+    <div *ngIf="formState === FormState.EDIT">
+        <button mat-raised-button class="button" type="button"
+                (click)="onCancel()">
+            {{'common.cancel.label' | translate}}
+        </button>
+        <button mat-raised-button color="primary" type="button" class="button"
+                [disabled]="partnerContributionForm.invalid || partnerContributionForm.invalid || submitted"
+                (click)="onSubmit()">
+            {{'common.save.label' | translate}}
+        </button>
+    </div>
+
+    <app-alert
+            [show]="showSuccessMessage$ | async"
+            [type]="Alert.SUCCESS">
+        <p>{{'project.partner.motivation.save.success' | translate}}</p>
+    </app-alert>
+    <app-alert *ngIf="error$ | async as error"
+               [show]="!submitted && !!error.i18nKey"
+               [type]="Alert.ERROR">
+        <p>{{error.i18nKey | translate}}</p>
+    </app-alert>
+</form>

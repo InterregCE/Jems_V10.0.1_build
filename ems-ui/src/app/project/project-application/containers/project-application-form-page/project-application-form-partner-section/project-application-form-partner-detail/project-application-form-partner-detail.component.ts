@@ -10,7 +10,8 @@ import {
   InputProjectPartnerUpdate,
   OutputProjectStatus,
   ProjectPartnerService,
-  InputProjectPartnerContact
+  InputProjectPartnerContact,
+  InputProjectPartnerContribution
 } from '@cat/api';
 import {BaseComponent} from '@common/components/base-component';
 import {ProjectStore} from '../../../project-application-detail/services/project-store.service';
@@ -27,16 +28,20 @@ export class ProjectApplicationFormPartnerDetailComponent extends BaseComponent 
 
   projectId = this.activatedRoute?.snapshot?.params?.projectId
   partnerId = this.activatedRoute?.snapshot?.params?.partnerId;
-  partnerSaveSuccess$ = new Subject<boolean>()
+  partnerSaveSuccess$ = new Subject<boolean>();
   partnerSaveError$ = new Subject<I18nValidationError | null>();
   savePartner$ = new Subject<InputProjectPartnerUpdate>();
   createPartner$ = new Subject<InputProjectPartnerCreate>();
 
   activeTab$ = this.tabService.currentTab(ProjectApplicationFormPartnerDetailComponent.name);
 
-  partnerContactSaveSuccess$ = new Subject<boolean>()
+  partnerContactSaveSuccess$ = new Subject<boolean>();
   partnerContactSaveError$ = new Subject<I18nValidationError | null>();
   savePartnerContact$ = new Subject<InputProjectPartnerContact[]>();
+
+  partnerContributionSaveSuccess$ = new Subject<boolean>();
+  partnerContributionSaveError$ = new Subject<I18nValidationError | null>();
+  savePartnerContribution$ = new Subject<InputProjectPartnerContribution>();
 
   private partnerById$ = this.partnerId
     ? this.partnerService.getProjectPartnerById(this.partnerId, this.projectId)
@@ -75,6 +80,20 @@ export class ProjectApplicationFormPartnerDetailComponent extends BaseComponent 
       })
     );
 
+  private updatedPartnerContribution$ = this.savePartnerContribution$
+    .pipe(
+      flatMap(partnerContributionUpdate =>
+        this.partnerService.updateProjectPartnerContribution(this.partnerId, this.projectId, partnerContributionUpdate)
+      ),
+      tap(() => this.partnerContributionSaveError$.next(null)),
+      tap(() => this.partnerContributionSaveSuccess$.next(true)),
+      tap(saved => Log.info('Updated partner contribution:', this, saved)),
+      catchError((error: HttpErrorResponse) => {
+        this.partnerContributionSaveError$.next(error.error);
+        return of();
+      })
+    );
+
   private createdPartner$ = this.createPartner$
     .pipe(
       switchMap(partnerCreate =>
@@ -92,7 +111,13 @@ export class ProjectApplicationFormPartnerDetailComponent extends BaseComponent 
       tap(() => this.projectApplicationFormSidenavService.refreshPartners()),
     );
 
-  public partner$ = merge(this.partnerById$, this.savedPartner$, this.createdPartner$, this.updatedPartnerContact$);
+  public partner$ = merge(
+    this.partnerById$,
+    this.savedPartner$,
+    this.createdPartner$,
+    this.updatedPartnerContact$,
+    this.updatedPartnerContribution$
+  );
 
   details$ = combineLatest([
     this.partner$,
