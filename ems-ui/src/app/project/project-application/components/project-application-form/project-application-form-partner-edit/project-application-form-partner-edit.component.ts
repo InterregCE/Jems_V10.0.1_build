@@ -9,7 +9,13 @@ import {
 } from '@angular/core';
 import {ViewEditForm} from '@common/components/forms/view-edit-form';
 import {FormBuilder, FormGroup, Validators} from '@angular/forms';
-import {InputProjectPartnerCreate, InputProjectPartnerUpdate, OutputProjectPartner} from '@cat/api';
+import {
+  InputProjectPartnerCreate,
+  InputProjectPartnerUpdate,
+  OutputProjectPartner,
+  OutputProjectPartnerDetail,
+  InputProjectPartnerOrganization
+} from '@cat/api';
 import {FormState} from '@common/components/forms/form-state';
 import {filter, take, takeUntil, tap} from 'rxjs/operators';
 import {I18nValidationError} from '@common/validation/i18n-validation-error';
@@ -29,7 +35,7 @@ export class ProjectApplicationFormPartnerEditComponent extends ViewEditForm imp
   RoleEnum = OutputProjectPartner.RoleEnum;
 
   @Input()
-  partner: OutputProjectPartner;
+  partner: OutputProjectPartnerDetail;
   @Input()
   editable: boolean;
 
@@ -48,6 +54,9 @@ export class ProjectApplicationFormPartnerEditComponent extends ViewEditForm imp
       Validators.required])
     ],
     role: ['', Validators.required],
+    nameInOriginalLanguage: ['', Validators.maxLength(100)],
+    nameInEnglish: ['', Validators.maxLength(100)],
+    department: ['', Validators.maxLength(250)]
   });
 
   nameErrors = {
@@ -56,6 +65,15 @@ export class ProjectApplicationFormPartnerEditComponent extends ViewEditForm imp
   };
   roleErrors = {
     required: 'project.partner.role.should.not.be.empty',
+  };
+  nameInOriginalLanguageErrors = {
+    maxlength: 'partner.organization.original.name.size.too.long'
+  };
+  nameInEnglishErrors = {
+    maxlength: 'partner.organization.english.name.size.too.long'
+  };
+  departmentErrors = {
+    maxlength: 'partner.organization.department.size.too.long'
   };
 
   constructor(private formBuilder: FormBuilder,
@@ -85,13 +103,27 @@ export class ProjectApplicationFormPartnerEditComponent extends ViewEditForm imp
     return this.partnerForm;
   }
 
+  private checkOrganization(controls: any) {
+    const organization ={
+      id: this.partner?.organization?.id,
+      nameInOriginalLanguage: controls?.nameInOriginalLanguage.value,
+      nameInEnglish: controls?.nameInEnglish.value,
+      department:  controls?.department.value
+    } as InputProjectPartnerOrganization
+    if (organization.nameInOriginalLanguage || organization.nameInEnglish || organization.department){
+      return organization;
+    }
+    return null as any;
+  }
+
   onSubmit(controls: any, oldPartnerId?: number): void {
+    const organization = this.checkOrganization(controls)
     if (!controls.id?.value) {
       this.create.emit({
         name: controls?.name.value,
         role: controls?.role.value,
         oldLeadPartnerId: oldPartnerId as any,
-        organization: {} as any
+        organization
       });
       return;
     }
@@ -100,7 +132,7 @@ export class ProjectApplicationFormPartnerEditComponent extends ViewEditForm imp
       name: controls?.name.value,
       role: controls?.role.value,
       oldLeadPartnerId: oldPartnerId as any,
-      organization: {} as any
+      organization
     })
   }
 
@@ -112,17 +144,23 @@ export class ProjectApplicationFormPartnerEditComponent extends ViewEditForm imp
   }
 
   protected enterViewMode(): void {
-    this.controls?.id.setValue(this.partner?.id);
-    this.controls?.role.setValue(this.partner?.role);
-    this.controls?.name.setValue(this.partner?.name);
+    this.initFields();
     this.sideNavService.setAlertStatus(false);
   }
 
   protected enterEditMode(): void {
+    this.initFields();
+    this.sideNavService.setAlertStatus(true);
+  }
+
+  private initFields(){
     this.controls?.id.setValue(this.partner?.id);
     this.controls?.role.setValue(this.partner?.role);
     this.controls?.name.setValue(this.partner?.name);
     this.sideNavService.setAlertStatus(true);
+    this.controls?.nameInOriginalLanguage.setValue(this.partner?.organization?.nameInOriginalLanguage);
+    this.controls?.nameInEnglish.setValue(this.partner?.organization?.nameInEnglish);
+    this.controls?.department.setValue(this.partner?.organization?.department);
   }
 
   private handleLeadAlreadyExisting(controls: any, error: I18nValidationError): void {

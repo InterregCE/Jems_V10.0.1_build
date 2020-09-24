@@ -44,6 +44,39 @@
         </mat-error>
     </div>
     <mat-form-field class="field col-md-12">
+        <mat-label>{{'project.partner.partner.organization.original.name.label' | translate}}</mat-label>
+        <input name="nameInOriginalLanguage" formControlName="nameInOriginalLanguage" matInput
+               placeholder="{{'project.partner.partner.organization.original.name.label' | translate}}">
+        <mat-error>
+            <app-form-field-errors
+                    [errors]="controls?.nameInOriginalLanguage?.errors"
+                    [messages]="nameInOriginalLanguageErrors">
+            </app-form-field-errors>
+        </mat-error>
+    </mat-form-field>
+    <mat-form-field class="field col-md-12">
+        <mat-label>{{'project.partner.organization.english.name.label' | translate}}</mat-label>
+        <input name="nameInEnglish" formControlName="nameInEnglish" matInput
+               placeholder="{{'project.partner.organization.english.name.label' | translate}}">
+        <mat-error>
+            <app-form-field-errors
+                    [errors]="controls?.nameInEnglish?.errors"
+                    [messages]="nameInEnglishErrors">
+            </app-form-field-errors>
+        </mat-error>
+    </mat-form-field>
+    <mat-form-field class="field col-md-12">
+        <mat-label>{{'project.partner.organization.department.label' | translate}}</mat-label>
+        <input name="department" formControlName="department" matInput
+               placeholder="{{'project.partner.organization.department.label' | translate}}">
+        <mat-error>
+            <app-form-field-errors
+                    [errors]="controls?.department?.errors"
+                    [messages]="departmentErrors">
+            </app-form-field-errors>
+        </mat-error>
+    </mat-form-field>
+    <mat-form-field class="field col-md-12">
         <mat-label>{{'project.partner.name.label' | translate}}</mat-label>
         <input name="name" formControlName="name" matInput placeholder="{{'project.partner.name.label' | translate}}"
                required>
