@@ -3,7 +3,7 @@
     <textarea [formControl]="control" matInput
               [cdkTextareaAutosize]
               [cdkAutosizeMinRows]="minRows"
-              [cdkAutosizeMaxRows]="50"
+              [cdkAutosizeMaxRows]="maxRows"
               #inputText [readonly]="disabled">
     </textarea>
     <mat-hint *ngIf="!disabled">

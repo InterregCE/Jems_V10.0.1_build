@@ -1,0 +1,71 @@
+<form [formGroup]="editableBenefitsForm">
+    <mat-table [dataSource]="benefitsDataSource">
+        <ng-container matColumnDef="select">
+            <mat-header-cell *matHeaderCellDef class="invisible-header"></mat-header-cell>
+            <td mat-cell *matCellDef="let element" class="invisible-field">
+            </td>
+            <td mat-footer-cell *matFooterCellDef class="invisible-field">
+                <button *ngIf="!disabled" mat-icon-button
+                        type="button"
+                        (click)="addNewBenefit()">
+                    <mat-icon>add</mat-icon>
+                </button>
+            </td>
+        </ng-container>
+
+        <ng-container matColumnDef="targetGroup">
+            <mat-header-cell *matHeaderCellDef class="small-header">{{'project.application.form.relevance.target.group' | translate}}</mat-header-cell>
+            <mat-cell *matCellDef="let element" class="small-column">
+                        <span *ngIf="disabled">
+                            {{'project.application.form.relevance.target.group.' + element.targetGroup | translate}}
+                        </span>
+                <mat-form-field *ngIf="!disabled" class="small-column">
+                    <mat-label>{{'project.application.form.relevance.target.group' | translate}}</mat-label>
+                    <mat-select [formControlName]="targetGroup(element.id)"
+                                [disableOptionCentering]="true"
+                                panelClass="material-select-panel">
+                        <mat-option *ngFor="let targetGroup of benefitEnums" [value]="targetGroup">
+                            {{'project.application.form.relevance.target.group.' + targetGroup | translate}}
+                        </mat-option>
+                    </mat-select>
+                    <mat-error>
+                        <app-form-field-errors
+                                [errors]="editableBenefitsForm?.controls[targetGroup(element.id)]?.errors"
+                                [messages]="targetGroupErrors">
+                        </app-form-field-errors>
+                    </mat-error>
+                </mat-form-field>
+            </mat-cell>
+        </ng-container>
+
+        <ng-container matColumnDef="specification">
+            <mat-header-cell *matHeaderCellDef class="big-header">{{'project.application.form.relevance.specification' | translate}}</mat-header-cell>
+            <mat-cell *matCellDef="let element" class="big-column">
+                <ng-container *ngIf="disabled">
+                    <textarea matInput
+                              [cdkTextareaAutosize]
+                              [cdkAutosizeMinRows]="3"
+                              [cdkAutosizeMaxRows]="50"
+                              [readonly]="disabled"
+                    >{{element.specification}}</textarea>
+                </ng-container>
+                <app-expandable-textarea *ngIf="!disabled" class="small-field"
+                                         [control]="editableBenefitsForm?.controls[specification(element.id)]"
+                                         [errors]="editableBenefitsForm?.controls[specification(element.id)]?.errors"
+                                         [messages]="specificationErrors"
+                                         [characterLimit]="2000"
+                                         [minRows]="3"
+                                         [maxRows]="50"
+                                         [label]="'project.application.form.relevance.specification'"
+                                         [disabled]="disabled">
+                </app-expandable-textarea>
+            </mat-cell>
+        </ng-container>
+
+        <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
+        <mat-row *matRowDef="let row; columns: displayedColumns;"></mat-row>
+        <mat-row *matFooterRowDef="['select']"
+                 [hidden]="disabled">
+        </mat-row>
+    </mat-table>
+</form>

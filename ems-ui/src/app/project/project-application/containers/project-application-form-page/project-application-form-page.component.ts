@@ -43,6 +43,7 @@ export class ProjectApplicationFormPageComponent extends BaseComponent implement
 
 
   private fetchObjectives$ = new Subject<OutputProject>()
+  private fetchStrategies$ = new Subject<OutputProject>()
   private updatedProjectData$ = this.updateProjectData$
     .pipe(
       flatMap((data) => this.projectService.updateProjectData(this.projectId, data)),
@@ -70,14 +71,24 @@ export class ProjectApplicationFormPageComponent extends BaseComponent implement
       }))
     );
 
+  private callStrategies$ = this.fetchStrategies$
+    .pipe(
+      flatMap(project => this.callService.getCallById(project.call.id)),
+      tap(call => Log.info('Fetched strategies from call', this, call.strategies)),
+      map(call => ({
+        strategies: call.strategies
+      }))
+    );
+
   private projectDetails$ = merge(
     this.projectStore.getProject(),
-    this.updatedProjectData$
+    this.updatedProjectData$,
   )
     .pipe(
       takeUntil(this.destroyed$),
       tap(project => this.projectApplicationFormSidenavService.setAcronym(project.acronym)),
       tap(project => this.fetchObjectives$.next(project)),
+      tap(project => this.fetchStrategies$.next(project)),
       map(project => ({
         project,
         editable: project.projectStatus.status === OutputProjectStatus.StatusEnum.DRAFT
@@ -87,11 +98,12 @@ export class ProjectApplicationFormPageComponent extends BaseComponent implement
 
   details$ = combineLatest([
     this.projectDetails$,
-    this.callObjectives$
+    this.callObjectives$,
+    this.callStrategies$
   ])
     .pipe(
       map(
-        ([projectDetails, callObjectives]) => ({projectDetails, callObjectives})
+        ([projectDetails, callObjectives, callStrategies]) => ({projectDetails, callObjectives, callStrategies})
       )
     );
 

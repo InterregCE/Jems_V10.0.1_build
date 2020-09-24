@@ -1,0 +1,9 @@
+<app-project-application-form-project-relevance-and-context-detail
+        *ngIf="projectDescriptionDetails$ | async as details"
+        [success$]="saveSuccess$"
+        [project]="details.project"
+        [editable]="details.editable"
+        [strategiesFromCall]="strategies"
+        [error$]="saveError$"
+        (updateData)="updateProjectDescription$.next($event)">
+</app-project-application-form-project-relevance-and-context-detail>

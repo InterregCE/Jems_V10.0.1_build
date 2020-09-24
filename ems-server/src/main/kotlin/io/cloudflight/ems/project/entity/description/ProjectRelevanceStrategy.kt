@@ -21,9 +21,9 @@ data class ProjectRelevanceStrategy(
     @JoinColumn(name = "project_relevance_id", insertable = false, updatable = false)
     val projectRelevance: ProjectRelevance? = null,
 
-    @Column(nullable = false)
+    @Column
     @Enumerated(EnumType.STRING)
-    val strategy: ProgrammeStrategy,
+    val strategy: ProgrammeStrategy?,
 
     @Column
     val specification: String?

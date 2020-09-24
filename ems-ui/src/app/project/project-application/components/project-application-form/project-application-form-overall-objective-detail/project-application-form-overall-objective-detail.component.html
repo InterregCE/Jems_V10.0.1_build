@@ -1,0 +1,64 @@
+<form [formGroup]="overallObjectiveForm">
+    <h6 class="header" id="projectOverallObjectiveHeading">
+        {{'project.application.form.section.part.c.subsection.one' | translate}}
+    <span class="header-button" *ngxPermissionsExcept="Permission.PROGRAMME_USER">
+        <button color="primary" mat-raised-button
+                *ngIf="formState === FormState.VIEW && editable"
+                (click)="changeFormState$.next(FormState.EDIT)">
+            {{'common.edit.label' | translate}}
+        </button>
+    </span>
+    </h6>
+
+    <div class="intro-text">
+        <p class="intro-text-small">{{'project.application.form.overall.objective.field.row.one' | translate}}</p>
+        <p class="intro-text-small">{{'project.application.form.overall.objective.field.row.two' | translate}}</p>
+        <p class="intro-text-small">{{'project.application.form.overall.objective.field.row.three' | translate}}</p>
+        <p class="intro-text-small">{{'project.application.form.overall.objective.field.row.four' | translate}}</p>
+        <p class="intro-text-small">{{'project.application.form.overall.objective.field.row.five' | translate}}</p>
+        <p class="intro-text-small">{{'project.application.form.overall.objective.field.row.six' | translate}}</p>
+    </div>
+    <mat-form-field class="field" name="projectSpecificObjective">
+        <mat-label>{{'project.application.form.overall.objective.field.projectSpecificObjective' | translate}}</mat-label>
+        <input [readonly]="formState === FormState.EDIT" formControlName="projectSpecificObjective" matInput placeholder="{{'project.application.form.overall.objective.field.projectSpecificObjective' | translate}}">
+        <mat-error>
+            <app-form-field-errors
+                    [errors]="overallObjectiveForm?.controls?.projectSpecificObjective?.errors"
+                    [messages]="projectSpecificObjectiveError">
+            </app-form-field-errors>
+        </mat-error>
+    </mat-form-field>
+
+    <app-expandable-textarea class="field"
+                             [control]="overallObjectiveForm?.controls?.projectOverallObjective"
+                             [errors]="overallObjectiveForm?.controls?.projectOverallObjective?.errors"
+                             [messages]="projectOverallObjectiveError"
+                             [characterLimit]="500"
+                             [minRows]="3"
+                             [label]="'project.application.form.overall.objective.field.projectOverallObjective'"
+                             [disabled]="formState === FormState.VIEW">
+    </app-expandable-textarea>
+
+    <div *ngIf="formState === FormState.EDIT" class="spaced-elements">
+        <button mat-raised-button class="button"
+                (click)="changeFormState$.next(FormState.VIEW)">
+            {{'common.cancel.label' | translate}}
+        </button>
+        <button mat-raised-button color="primary" type="submit" class="button"
+                [disabled]="overallObjectiveForm.invalid || submitted"
+                (click)="onSubmit()">
+            {{'common.save.label' | translate}}
+        </button>
+    </div>
+
+    <app-alert
+            [show]="showSuccessMessage$ | async"
+            [type]="Alert.SUCCESS">
+        <p>{{'project.application.form.overall.objective.save.success' | translate}}</p>
+    </app-alert>
+    <app-alert *ngIf="error$ | async as error"
+               [show]="!submitted && !!error.i18nKey"
+               [type]="Alert.ERROR">
+        <p>{{error.i18nKey | translate}}</p>
+    </app-alert>
+</form>
