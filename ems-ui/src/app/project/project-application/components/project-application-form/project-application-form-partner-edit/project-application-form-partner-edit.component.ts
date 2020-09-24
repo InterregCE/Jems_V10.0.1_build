@@ -90,7 +90,8 @@ export class ProjectApplicationFormPartnerEditComponent extends ViewEditForm imp
       this.create.emit({
         name: controls?.name.value,
         role: controls?.role.value,
-        oldLeadPartnerId: oldPartnerId as any
+        oldLeadPartnerId: oldPartnerId as any,
+        organization: {} as any
       });
       return;
     }
@@ -98,7 +99,8 @@ export class ProjectApplicationFormPartnerEditComponent extends ViewEditForm imp
       id: controls?.id.value,
       name: controls?.name.value,
       role: controls?.role.value,
-      oldLeadPartnerId: oldPartnerId as any
+      oldLeadPartnerId: oldPartnerId as any,
+      organization: {} as any
     })
   }
 

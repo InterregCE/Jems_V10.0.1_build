@@ -3,15 +3,18 @@ package io.cloudflight.ems.project.service
 import io.cloudflight.ems.api.project.dto.InputProjectPartnerContact
 import io.cloudflight.ems.api.project.dto.InputProjectPartnerContribution
 import io.cloudflight.ems.api.project.dto.InputProjectPartnerCreate
+import io.cloudflight.ems.api.project.dto.InputProjectPartnerOrganization
 import io.cloudflight.ems.api.project.dto.OutputProjectPartner
 import io.cloudflight.ems.api.project.dto.OutputProjectPartnerContact
 import io.cloudflight.ems.api.project.dto.OutputProjectPartnerContribution
 import io.cloudflight.ems.api.project.dto.OutputProjectPartnerDetail
+import io.cloudflight.ems.api.project.dto.OutputProjectPartnerOrganization
 import io.cloudflight.ems.project.entity.Project
 import io.cloudflight.ems.project.entity.ProjectPartner
 import io.cloudflight.ems.project.entity.PartnerContactPerson
 import io.cloudflight.ems.project.entity.PartnerContactPersonId
 import io.cloudflight.ems.project.entity.ProjectPartnerContribution
+import io.cloudflight.ems.project.entity.ProjectPartnerOrganization
 
 fun InputProjectPartnerCreate.toEntity(project: Project) = ProjectPartner(
     name = name!!,
@@ -32,7 +35,8 @@ fun ProjectPartner.toOutputProjectPartnerDetail() = OutputProjectPartnerDetail(
     role = role,
     sortNumber = sortNumber,
     partnerContactPersons = partnerContactPersons?.map { it.toOutputProjectPartnerContact() }?.toHashSet(),
-    partnerContribution = partnerContribution?.toOutputProjectPartnerContribution()
+    partnerContribution = partnerContribution?.toOutputProjectPartnerContribution(),
+    organization = organization?.toOutputProjectPartnerOrganization()
 )
 
 fun InputProjectPartnerContact.toEntity(partner: ProjectPartner) = PartnerContactPerson(
@@ -65,4 +69,18 @@ fun ProjectPartnerContribution.toOutputProjectPartnerContribution() = OutputProj
     organizationRelevance = organizationRelevance,
     organizationRole = organizationRole,
     organizationExperience = organizationExperience
+)
+
+fun InputProjectPartnerOrganization.toEntity() = ProjectPartnerOrganization(
+    id = id,
+    nameInOriginalLanguage = nameInOriginalLanguage,
+    nameInEnglish = nameInEnglish,
+    department = department
+)
+
+fun ProjectPartnerOrganization.toOutputProjectPartnerOrganization() = OutputProjectPartnerOrganization(
+    id = id,
+    nameInOriginalLanguage = nameInOriginalLanguage,
+    nameInEnglish = nameInEnglish,
+    department = department
 )

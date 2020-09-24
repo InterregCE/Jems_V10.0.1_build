@@ -16,6 +16,8 @@ data class InputProjectPartnerCreate(
     /**
      * Optional: if creating new LeadPartner when there is already one
      */
-    val oldLeadPartnerId: Long? = null
+    val oldLeadPartnerId: Long? = null,
+
+    val organization: InputProjectPartnerOrganization? = null
 
 )

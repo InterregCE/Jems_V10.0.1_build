@@ -4,6 +4,7 @@ import io.cloudflight.ems.api.call.dto.CallStatus
 import io.cloudflight.ems.api.project.dto.InputProjectPartnerContact
 import io.cloudflight.ems.api.project.dto.InputProjectPartnerContribution
 import io.cloudflight.ems.api.project.dto.InputProjectPartnerCreate
+import io.cloudflight.ems.api.project.dto.InputProjectPartnerOrganization
 import io.cloudflight.ems.api.project.dto.InputProjectPartnerUpdate
 import io.cloudflight.ems.api.project.dto.PartnerContactPersonType
 import io.cloudflight.ems.api.project.dto.ProjectPartnerRole
@@ -14,7 +15,9 @@ import io.cloudflight.ems.exception.ResourceNotFoundException
 import io.cloudflight.ems.project.entity.PartnerContactPerson
 import io.cloudflight.ems.project.entity.Project
 import io.cloudflight.ems.project.entity.ProjectPartner
+import io.cloudflight.ems.project.entity.ProjectPartnerOrganization
 import io.cloudflight.ems.project.entity.ProjectStatus
+import io.cloudflight.ems.project.repository.ProjectPartnerOrganizationRepository
 import io.cloudflight.ems.project.repository.ProjectPartnerRepository
 import io.cloudflight.ems.project.repository.ProjectRepository
 import io.cloudflight.ems.security.model.LocalCurrentUser
@@ -33,6 +36,7 @@ import org.junit.jupiter.api.assertThrows
 import org.springframework.data.domain.PageImpl
 import org.springframework.data.domain.Pageable
 import org.springframework.data.domain.Sort
+import org.springframework.data.repository.findByIdOrNull
 import java.time.ZonedDateTime
 import java.util.Optional
 import kotlin.collections.HashSet
@@ -41,6 +45,9 @@ internal class ProjectPartnerServiceTest {
 
     @MockK
     lateinit var projectPartnerRepository: ProjectPartnerRepository
+
+    @MockK
+    lateinit var projectPartnerOrganizationRepository: ProjectPartnerOrganizationRepository
 
     @MockK
     lateinit var projectRepository: ProjectRepository
@@ -89,6 +96,17 @@ internal class ProjectPartnerServiceTest {
         project = project,
         name = "partner",
         role = ProjectPartnerRole.LEAD_PARTNER)
+    private val organization = ProjectPartnerOrganization(
+        1,
+        "test",
+        "test",
+        "test")
+    private val projectPartnerWithOrganization = ProjectPartner(
+        id = 1,
+        project = project,
+        name = "partner",
+        role = ProjectPartnerRole.LEAD_PARTNER,
+        organization = organization)
 
     private val outputProjectPartner = projectPartner.toOutputProjectPartner()
     private val outputProjectPartnerDetail = projectPartner.toOutputProjectPartnerDetail()
@@ -97,7 +115,7 @@ internal class ProjectPartnerServiceTest {
     fun setup() {
         MockKAnnotations.init(this)
         every { securityService.currentUser } returns LocalCurrentUser(outputUser, user.password, emptyList())
-        projectPartnerService = ProjectPartnerServiceImpl(projectPartnerRepository, projectRepository)
+        projectPartnerService = ProjectPartnerServiceImpl(projectPartnerRepository, projectRepository, projectPartnerOrganizationRepository)
     }
 
     @Test
@@ -149,7 +167,7 @@ internal class ProjectPartnerServiceTest {
     }
 
     @Test
-    fun update() {
+    fun updateProjectPartner() {
         val projectPartnerUpdate = InputProjectPartnerUpdate(1, "updated", ProjectPartnerRole.PARTNER)
         val updatedProjectPartner = ProjectPartner(1, project, projectPartnerUpdate.name!!, projectPartnerUpdate.role!!)
         every { projectPartnerRepository.findById(1) } returns Optional.of(projectPartner)
@@ -243,6 +261,39 @@ internal class ProjectPartnerServiceTest {
         every { projectPartnerRepository.findByProjectIdAndId(1,eq(-1)) } returns Optional.empty()
         val exception = assertThrows<ResourceNotFoundException> { projectPartnerService.updatePartnerContribution(1,-1, projectPartnerContributionUpdate) }
         assertThat(exception.entity).isEqualTo("projectPartner")
+    }
+
+    @Test
+    fun createProjectPartnerWithOrganization() {
+        val inputProjectPartner = InputProjectPartnerCreate("partner", ProjectPartnerRole.LEAD_PARTNER, null,
+            InputProjectPartnerOrganization(null, "test", "test", "test"))
+        val projectPartnerWithProject = ProjectPartner(null, project, inputProjectPartner.name!!, inputProjectPartner.role!!, null,
+            emptySet(), null, organization)
+        every { projectRepository.findById(0) } returns Optional.empty()
+        every { projectRepository.findById(1) } returns Optional.of(project)
+        every { projectPartnerRepository.findFirstByProjectIdAndRole(1, ProjectPartnerRole.LEAD_PARTNER) } returns Optional.empty()
+        every { projectPartnerRepository.save(projectPartnerWithProject) } returns projectPartnerWithOrganization
+        every { projectPartnerOrganizationRepository.save(inputProjectPartner.organization!!.toEntity()) } returns organization
+
+        assertThrows<ResourceNotFoundException> { projectPartnerService.create(0, inputProjectPartner) }
+        assertThat(projectPartnerService.create(1, inputProjectPartner)).isEqualTo(projectPartnerWithOrganization.toOutputProjectPartnerDetail())
+        verify { projectPartnerRepository.save(projectPartnerWithProject) }
+    }
+
+    @Test
+    fun updateProjectPartnerWithOrganization() {
+        val projectPartnerUpdate =  InputProjectPartnerUpdate(1, "updated", ProjectPartnerRole.PARTNER, null,
+            InputProjectPartnerOrganization(null, "test", "test", "test"))
+        val updatedProjectPartner = ProjectPartner(1, project, projectPartnerUpdate.name!!, projectPartnerUpdate.role!!, null,
+            emptySet(), null, organization)
+        every { projectPartnerRepository.findById(1) } returns Optional.of(projectPartner)
+        every { projectRepository.findById(1) } returns Optional.of(project)
+        every { projectPartnerRepository.save(updatedProjectPartner) } returns updatedProjectPartner
+        every { projectPartnerOrganizationRepository.findByIdOrNull(1) } returns organization
+        every { projectPartnerOrganizationRepository.save(projectPartnerUpdate.organization!!.toEntity()) } returns organization
+
+        assertThat(projectPartnerService.update(1, projectPartnerUpdate))
+            .isEqualTo(updatedProjectPartner.toOutputProjectPartnerDetail())
     }
 
 }
