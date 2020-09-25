@@ -102,29 +102,38 @@ export class ProjectApplicationFormSidenavService {
   }
 
   private setHeadlines(showAssessment: boolean, projectId: number, partners: HeadlineRoute[], packages: HeadlineRoute[]): void {
-    this.sideNavService.setHeadlines(this.pageDestroyed$, [
+    // extracted this because Assessment is now on the same level with other headlines
+    const applicationTreeHeadlines = {
+      headline: 'project.application.form.tree.title',
+      bullets: [
+        {
+          headline: 'project.application.form.lifecycle.title',
+            route: '/app/project/detail/' + projectId,
+          scrollToTop: true,
+          scrollRoute: ''
+        },
+      ]
+    };
+    if (showAssessment){
+      applicationTreeHeadlines.bullets.push(
+        {
+          headline: 'project.assessment.header',
+          scrollRoute: 'applicationFormLifecycleAssessment',
+          route: '/app/project/detail/' + projectId,
+          scrollToTop: false
+        }
+      );
+    }
+    applicationTreeHeadlines.bullets.push(
       {
-        headline: 'project.application.form.tree.title',
-        bullets: [
-          {
-            headline: 'project.application.form.lifecycle.title',
-            route: '/app/project/detail/' + projectId,
-            scrollToTop: true,
-            bullets: [
-              ...(showAssessment ? [{
-                headline: 'project.assessment.header',
-                scrollRoute: 'applicationFormLifecycleAssessment',
-                route: '/app/project/detail/' + projectId,
-              }] : []),
-            ]
-          },
-          {
-            headline: 'file.tab.header',
-            scrollRoute: 'applicationFormLifecycleAttachments',
-            route: '/app/project/detail/' + projectId,
-          },
-        ]
-      },
+        headline: 'file.tab.header',
+        scrollRoute: 'applicationFormLifecycleAttachments',
+        route: '/app/project/detail/' + projectId,
+        scrollToTop: false
+      }
+    );
+    this.sideNavService.setHeadlines(this.pageDestroyed$, [
+      applicationTreeHeadlines,
       {
         headline: 'project.application.form.title',
         bullets: [
@@ -159,17 +168,17 @@ export class ProjectApplicationFormSidenavService {
               {
                 headline: 'project.application.form.section.part.c.subsection.one',
                 scrollRoute: 'projectOverallObjectiveHeading',
-                route: '/project/' + projectId + '/applicationForm',
+                route: '/app/project/detail/' + projectId + '/applicationForm',
               },
               {
                 headline: 'project.application.form.section.part.c.subsection.two',
                 scrollRoute: 'projectRelevanceHeading',
-                route: '/project/' + projectId + '/applicationForm',
+                route: '/app/project/detail/' + projectId + '/applicationForm',
               },
               {
                 headline: 'project.application.form.section.part.c.subsection.three',
                 scrollRoute: 'projectPartnershipHeading',
-                route: '/project/' + projectId + '/applicationForm',
+                route: '/app/project/detail/' + projectId + '/applicationForm',
               },
               {
                 headline: 'project.application.form.section.part.c.subsection.four',
