@@ -6,9 +6,6 @@ This application is build on top of an kotlin-springboot-angular template with:
 * Spring Boot
 * Angular
 
-That all backed by the [Cloudflight Platform](https://git.internal.cloudflight.io/cloudflight/libs/cloudflight-platform) and built by the
-[Cloudflight Gradle Plugin](https://git.internal.cloudflight.io/cloudflight/gradle/cloudflight-gradle-plugin).
-
 ## How to ...
 
 ### ... dev this locally
@@ -21,7 +18,6 @@ Import in IntelliJ using `gradle` and you will see 3 run configs (you should ren
 
 ### ... deploy to prod
 
-Please use our [Teamcity](https://teamcity.internal.cloudflight.io/) for this.
 Basically run `gradlew clean build` and run the jar found under `./backend/build/libs`.
 
 ## Codestyle
