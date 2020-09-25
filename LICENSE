@@ -1,0 +1,39 @@
+Copyright (C) 2020 City of Vienna - All Rights Reserved.
+The use of any part of the code for any purpose is strictly prohibited.
+The modification of any part of the code for any purpose is strictly prohibited.
+The distribution of any part of the code via any medium and for any purpose is strictly prohibited.
+
+Some parts of the software are not property of the City of Vienna. The excluded parts and respective licenses are listed as follows:
+
+1. Back-End
+
+· Spring (Apache 2.0) - version 5.2.7
+· MariaDB (GPL v.2) - version 10.3.13
+· mariadb-java-client (LGPL 2.1) - version 2.4.4 
+· MinIO (Apache 2.0) - version RELEASE.2020-05-16T01-33-21Z
+· org.apache commons-io (Apache 2.0) - version 2.7
+· Flyway (Apache 2.0) - version 6.4.4
+· jackson-module-kotlin (Apache 2.0) - version 2.11.0
+· swagger (Apache 2.0) - version 2.9.2
+· h2database (MPL 2.0) - version 1.4.200
+· ElasticSearch (Apache 2.0 for most of parts) - version 7.7.0
+
+2. Front-End
+
+· Angular (MIT) - now version 9.1.11 includes material design now version 9.2.4
+· bootstrap (MIT) - version 4.5.0
+· moment (MIT) - version 2.27.0
+· RxJS (Apache 2.0)  version 6.5.5
+· FontAwesome Free (SIL OFL) (The icon font in the project)
+· Roboto (Apache 2.0) (The copy font in the project)
+
+(3.) Productivity
+
+It is possible that some Cloudflight proprietary code can be found in the code repository. This code aims for productivity/efficiency of the development process such as deployment or testing, they are not directly part of the Monitoring System application code.
+
+· cloudflight-gradle-plugin 5.5.22 (license below)
+· io.cloudflight.platform 0.11.0 (license below)
+
+Cloudflight license
+
+This license gives simple, non-exclusive, perpetual rights of use, modify and distribute the code for the specific purpose as computer-assisted programme management and monitoring system for the management of European Structural and Investment Funds and for compliance with the relevant legal requirements. As such it covers all exchanges of information between the beneficiaries and the managing authority, certifying authority, audit authority and intermediate bodies, that must be carried out via electronic data interchange systems (see Article 125 par. 2 letter d of Regulation (EU) No 1303/2013 of the European Parliament and of the Council of 17.12.2013 and Art. 122 par. 3 of the Regulation (EU) No 1303/2013). In particular, the use, modification or distribution for purposes deviating therefrom, as well as for own economic purposes, is explicitly prohibited.
