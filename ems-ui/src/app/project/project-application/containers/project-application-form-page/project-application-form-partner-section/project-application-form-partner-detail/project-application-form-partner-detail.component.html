@@ -27,5 +27,14 @@
                     (update)="savePartnerContact$.next($event)">
             </app-project-application-form-partner-contact>
         </mat-tab>
+        <mat-tab label="{{'partner.tab.motivation' | translate}}">
+            <app-project-application-form-partner-contribution
+                    [success$]="partnerContributionSaveSuccess$"
+                    [error$]="partnerContributionSaveError$"
+                    [partner]="details.partner"
+                    [editable]="details.editable"
+                    (update)="savePartnerContribution$.next($event)">
+            </app-project-application-form-partner-contribution>
+        </mat-tab>
     </mat-tab-group>
 </div>
