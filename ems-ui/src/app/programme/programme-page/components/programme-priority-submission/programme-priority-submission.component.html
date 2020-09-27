@@ -1,9 +1,9 @@
 <div class="container">
     <br>
     <br>
-    <h5>{{'programme.priority.add.new' | translate}}</h5>
+    <h4>{{'programme.priority.add.new' | translate}}</h4>
     <form [formGroup]="priorityForm">
-        <h6>{{'programme.priority.add.title' | translate}}</h6>
+        <h5>{{'programme.priority.add.title' | translate}}</h5>
         <mat-form-field class="field-left">
             <mat-label>{{'programme.priority.field.code' | translate}}</mat-label>
             <input name="priorityCode" formControlName="priorityCode" matInput
@@ -26,7 +26,7 @@
                 </app-form-field-errors>
             </mat-error>
         </mat-form-field>
-        <h6>{{'programme.priority.add.objective.title' | translate}}</h6>
+        <h5>{{'programme.priority.add.objective.title' | translate}}</h5>
         <mat-form-field class="field-full">
             <mat-label>{{'programme.priority.field.objective.select' | translate}}</mat-label>
             <mat-select name="policyObjective" formControlName="policyObjective"

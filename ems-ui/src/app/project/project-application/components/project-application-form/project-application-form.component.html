@@ -1,10 +1,10 @@
 <form [formGroup]="applicationForm">
-    <h3>{{'project.application.form.title' | translate}}</h3>
-    <h4>{{project.acronym}}</h4>
+    <h2>{{'project.application.form.title' | translate}}</h2>
+    <h3>{{project.acronym}}</h3>
 
-    <h5 id="projectIdentification" class="header">
+    <h4 id="projectIdentification" class="header">
         {{'project.application.form.section.part.a' | translate}}
-    </h5>
+    </h4>
     <span class="header-button" *ngxPermissionsExcept="Permission.PROGRAMME_USER">
         <button color="primary" mat-raised-button
                 *ngIf="formState === FormState.VIEW && editable"
@@ -13,7 +13,7 @@
         </button>
     </span>
 
-    <h6 id="projectIdentificationHeading">{{'project.application.form.section.part.a.subsection.one' | translate}}</h6>
+    <h5 id="projectIdentificationHeading">{{'project.application.form.section.part.a.subsection.one' | translate}}</h5>
     <mat-form-field class="field">
         <mat-label>{{'project.application.form.field.project.id' | translate}}</mat-label>
         <input name="projectId" formControlName="projectId" matInput
@@ -53,7 +53,6 @@
             </app-form-field-errors>
         </mat-error>
     </mat-form-field>
-
     <div *ngIf="formState === FormState.EDIT">
         <mat-form-field class="field-full">
             <mat-label>{{'project.application.form.field.project.priority' | translate}}</mat-label>
@@ -98,14 +97,15 @@
         </p>
     </div>
 
-    <h6 id="projectSummaryHeading">{{'project.application.form.section.part.a.subsection.two' | translate}}</h6>
+    <h5 id="projectSummaryHeading">{{'project.application.form.section.part.a.subsection.two' | translate}}</h5>
     <div>
-        <p>{{'project.application.form.summary.intro.row.one' | translate}}</p>
-        <p>{{'project.application.form.summary.intro.row.two' | translate}}</p>
-        <p>{{'project.application.form.summary.intro.row.three' | translate}}</p>
-        <p>{{'project.application.form.summary.intro.row.four' | translate}}</p>
-        <p>{{'project.application.form.summary.intro.row.five' | translate}}</p>
-        <p>{{'project.application.form.summary.intro.row.six' | translate}}</p>
+        <p class="intro-text-small">{{'project.application.form.summary.intro.row.one' | translate}}</p>
+        <p class="intro-text-small">{{'project.application.form.summary.intro.row.two' | translate}}</p>
+        <p class="intro-text-small">{{'project.application.form.summary.intro.row.three' | translate}}</p>
+        <p class="intro-text-small">{{'project.application.form.summary.intro.row.four' | translate}}</p>
+        <p class="intro-text-small">{{'project.application.form.summary.intro.row.five' | translate}}</p>
+        <p class="intro-text-small">{{'project.application.form.summary.intro.row.six' | translate}}</p>
+        <br>
     </div>
 
     <app-expandable-textarea
@@ -119,6 +119,7 @@
     </app-expandable-textarea>
 
     <div *ngIf="formState === FormState.EDIT">
+        <br>
         <button mat-raised-button class="button"
                 type="button"
                 (click)="changeFormState$.next(FormState.VIEW)">

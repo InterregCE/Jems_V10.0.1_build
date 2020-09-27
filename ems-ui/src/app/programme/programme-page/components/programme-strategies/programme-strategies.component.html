@@ -1,10 +1,10 @@
 <div class="container">
-    <h5>{{'programme.strategy.title' | translate}}
+    <h4>{{'programme.strategy.title' | translate}}
         <button *ngIf="formState === FormState.VIEW" mat-raised-button color="primary" class="edit-button"
                 (click)="changeFormState$.next(FormState.EDIT)">
             {{'programme.strategy.button.edit' | translate}}
         </button>
-    </h5>
+    </h4>
     <form [formGroup]="programmeStrategyForm">
         <span *ngFor="let element of strategies">
             <mat-checkbox (click)="$event.stopPropagation()"

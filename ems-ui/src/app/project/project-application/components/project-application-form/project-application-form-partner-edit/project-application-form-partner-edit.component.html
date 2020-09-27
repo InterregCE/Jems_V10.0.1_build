@@ -1,13 +1,13 @@
 <form [formGroup]="partnerForm" class="container">
-    <h5 *ngIf="!partner?.name">{{'project.application.form.partner.add' | translate}}</h5>
-    <h6><span>{{'project.partner.detail.title' | translate}}</span>
+    <h4 *ngIf="!partner?.name">{{'project.application.form.partner.add' | translate}}</h4>
+    <h5><span>{{'project.partner.detail.title' | translate}}</span>
         <span class="header-button" *ngxPermissionsExcept="Permission.PROGRAMME_USER">
             <button *ngIf="formState === FormState.VIEW && editable" mat-raised-button
                     (click)="changeFormState$.next(FormState.EDIT)">
                 {{'common.edit.label' | translate}}
             </button>
         </span>
-    </h6>
+    </h5>
     <mat-form-field *ngIf="formState === FormState.VIEW && partner.id" class="field col-md-12">
         <mat-label>{{'project.partner.id.label' | translate}}</mat-label>
         <input name="id" formControlName="id" matInput required>

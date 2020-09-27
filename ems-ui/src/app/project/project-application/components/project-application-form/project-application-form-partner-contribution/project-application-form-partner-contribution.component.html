@@ -1,12 +1,12 @@
 <form [formGroup]="partnerContributionForm" class="container">
-    <h6><span>{{'project.partner.motivation.header' | translate}}</span>
+    <h5><span>{{'project.partner.motivation.header' | translate}}</span>
         <span class="header-button" *ngxPermissionsExcept="Permission.PROGRAMME_USER">
             <button *ngIf="(formState === FormState.VIEW && editable) && partner?.id"
                     (click)="changeFormState$.next(FormState.EDIT)" mat-raised-button>
                 {{'common.edit.label' | translate}}
             </button>
         </span>
-    </h6>
+    </h5>
 
     <div class="intro-text">
         {{'project.partner.motivation.organization.relevance' | translate}}

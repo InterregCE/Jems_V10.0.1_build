@@ -1,7 +1,7 @@
 <form [formGroup]="futurePlansForm">
-    <h6 class="header" id="projectFuturePlansHeading">
+    <h5 class="header" id="projectFuturePlansHeading">
         {{'project.application.form.section.part.c.subsection.eight' | translate}}
-    </h6>
+    </h5>
     <span class="header-button" *ngxPermissionsExcept="Permission.PROGRAMME_USER">
         <button color="primary" mat-raised-button
                 *ngIf="formState === FormState.VIEW && editable"
@@ -14,7 +14,7 @@
         {{'project.application.form.future.plans.intro' | translate}}
     </div>
     <div class="intro-text">
-        <p>{{'project.application.form.future.plans.field.1' | translate}}</p>
+        <h6>{{'project.application.form.future.plans.field.1' | translate}}</h6>
         <p class="intro-text-small">{{'project.application.form.future.plans.field.1.intro' | translate}}</p>
     </div>
     <app-expandable-textarea class="field"
@@ -27,7 +27,7 @@
     </app-expandable-textarea>
 
     <div class="intro-text">
-        <p>{{'project.application.form.future.plans.field.2' | translate}}</p>
+        <h6>{{'project.application.form.future.plans.field.2' | translate}}</h6>
         <p class="intro-text-small">{{'project.application.form.future.plans.field.2.intro' | translate}}</p>
     </div>
     <app-expandable-textarea class="field"
@@ -40,7 +40,7 @@
     </app-expandable-textarea>
 
     <div class="intro-text">
-        <p>{{'project.application.form.future.plans.field.3' | translate}}</p>
+        <h6>{{'project.application.form.future.plans.field.3' | translate}}</h6>
         <p class="intro-text-small">{{'project.application.form.future.plans.field.3.intro' | translate}}</p>
     </div>
     <app-expandable-textarea class="field"

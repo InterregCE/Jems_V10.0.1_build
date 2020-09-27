@@ -1,5 +1,5 @@
 <app-breadcrumb></app-breadcrumb>
-<h3>{{'call.header' | translate}}</h3>
+<h2>{{'call.header' | translate}}</h2>
 
 <div *ngxPermissionsExcept="Permission.APPLICANT_USER">
     <button mat-raised-button color="primary"
@@ -7,7 +7,7 @@
         + {{'call.add.new' | translate}}
     </button>
     <div *ngIf="currentPage$ | async as callPage">
-        <h5>{{'call.list.header' | translate}}</h5>
+        <h4>{{'call.list.header' | translate}}</h4>
         <app-call-list
                 [isApplicant]="false"
                 [publishedCall]="publishedCall$ | async"
@@ -22,7 +22,7 @@
 
 <div *ngxPermissionsOnly="Permission.APPLICANT_USER">
     <div *ngIf="currentPage$ | async as callPage">
-        <h5>{{'call.list.open.title' | translate}}</h5>
+        <h4>{{'call.list.open.title' | translate}}</h4>
         <app-call-list
                 [isApplicant]="true"
                 [publishedCall]="publishedCall$ | async"

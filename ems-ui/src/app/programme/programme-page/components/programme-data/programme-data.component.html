@@ -1,5 +1,6 @@
 <div>
-    <h5 id="basicData" class="header">{{'programme.data.header' | translate}}</h5>
+    <h2>{{'programme.data.page.title' | translate}}</h2>
+    <h4 id="basicData" class="header">{{'programme.data.header' | translate}}</h4>
     <button class="header-button" color="primary" *ngIf="formState === FormState.VIEW" mat-raised-button
             (click)="changeFormState$.next(FormState.EDIT)">
         {{'programme.data.button.edit' | translate}}
