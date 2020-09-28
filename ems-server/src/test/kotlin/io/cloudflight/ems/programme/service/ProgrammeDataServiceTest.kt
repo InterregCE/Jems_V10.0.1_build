@@ -192,7 +192,7 @@ internal class ProgrammeDataServiceTest {
     fun selectSystemLanguage(systemLanguageSelections: List<SystemLanguageSelection>,
                              systemLanguage: SystemLanguage): List<SystemLanguageSelection> {
         // success if already selected
-        if (systemLanguageSelections.any { it.name == systemLanguage.name && it.selected })
+        if (systemLanguageSelections.any { it.name == systemLanguage && it.selected })
             return systemLanguageSelections
 
         // otherwise add
@@ -200,13 +200,13 @@ internal class ProgrammeDataServiceTest {
         SystemLanguage.values().forEach {
             val selected = if (it.name == systemLanguage.name) { true } else { isSelected(systemLanguageSelections, it.name) }
             updatedSystemLanguageSelections.add(
-                SystemLanguageSelection(it.name, it.translationKey, selected))
+                SystemLanguageSelection(it, it.translationKey, selected))
         }
         return updatedSystemLanguageSelections
     }
 
     private fun isSelected(systemLanguageSelections: List<SystemLanguageSelection>,
                    systemLanguage: String): Boolean {
-        return systemLanguageSelections.any { it.name == systemLanguage && it.selected }
+        return systemLanguageSelections.any { it.name.name == systemLanguage && it.selected }
     }
 }

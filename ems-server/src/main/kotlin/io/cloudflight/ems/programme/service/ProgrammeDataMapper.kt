@@ -8,7 +8,6 @@ import io.cloudflight.ems.api.programme.dto.getSystemLanguageSelectionsAsString
 import io.cloudflight.ems.entity.ProgrammeData
 import io.cloudflight.ems.nuts.entity.NutsRegion3
 import io.cloudflight.ems.nuts.service.groupNuts
-import java.util.stream.Collectors
 
 fun InputProgrammeData.toEntity(programmeNuts: Set<NutsRegion3>) = ProgrammeData(
     id = 1,
@@ -46,6 +45,6 @@ fun ProgrammeData.toOutputProgrammeData() = OutputProgrammeData(
 fun ProgrammeData.getSystemLanguageSelectionList(): List<SystemLanguageSelection> {
     val selectedLanguages = languagesSystem ?: "EN"
     return SystemLanguage.values().map {
-        SystemLanguageSelection(it.name, it.translationKey, it.isSelected(selectedLanguages))
+        SystemLanguageSelection(it, it.translationKey, it.isSelected(selectedLanguages))
     }
 }
