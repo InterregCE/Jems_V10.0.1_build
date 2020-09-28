@@ -55,7 +55,7 @@ export const routes: Routes = [
         canActivate: [PermissionGuard],
       },
       {
-        path: 'userprofile',
+        path: 'profile',
         loadChildren: () => import('./user-profile/user-profile.module').then(m => m.UserProfileModule),
         data: {skipBreadcrumb: true},
       },
