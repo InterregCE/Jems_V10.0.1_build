@@ -11,41 +11,47 @@
     <div class="intro-text">
         {{'project.partner.motivation.organization.relevance' | translate}}
     </div>
-    <app-expandable-textarea
+    <app-expandable-textarea *ngIf="formState === FormState.EDIT"
             class="field-wide"
             [control]="partnerContributionForm?.controls?.organizationRelevance"
             [errors]="partnerContributionForm?.controls?.organizationRelevance?.errors"
             [messages]="organizationRelevanceErrors"
             [characterLimit]="2000"
-            [label]="'project.application.form.motivation.form.field'"
-            [disabled]="formState === FormState.VIEW">
+            [label]="'project.application.form.motivation.form.field'">
     </app-expandable-textarea>
+    <p *ngIf="formState === FormState.VIEW" class="view-text">
+        <br>{{partnerContributionForm?.controls?.organizationRelevance.value}}
+    </p>
 
     <div class="intro-text">
         {{'project.partner.motivation.organization.role' | translate}}
     </div>
-    <app-expandable-textarea
+    <app-expandable-textarea *ngIf="formState === FormState.EDIT"
             class="field-wide"
             [control]="partnerContributionForm?.controls?.organizationRole"
             [errors]="partnerContributionForm?.controls?.organizationRole?.errors"
             [messages]="organizationRoleErrors"
             [characterLimit]="2000"
-            [label]="'project.application.form.motivation.form.field'"
-            [disabled]="formState === FormState.VIEW">
+            [label]="'project.application.form.motivation.form.field'">
     </app-expandable-textarea>
+    <p *ngIf="formState === FormState.VIEW" class="view-text">
+        <br>{{partnerContributionForm?.controls?.organizationRole.value}}
+    </p>
 
     <div class="intro-text">
         {{'project.partner.motivation.organization.experience' | translate}}
     </div>
-    <app-expandable-textarea
+    <app-expandable-textarea *ngIf="formState === FormState.EDIT"
             class="field-wide"
             [control]="partnerContributionForm?.controls?.organizationExperience"
             [errors]="partnerContributionForm?.controls?.organizationExperience?.errors"
             [messages]="organizationExperienceErrors"
             [characterLimit]="2000"
-            [label]="'project.application.form.motivation.form.field'"
-            [disabled]="formState === FormState.VIEW">
+            [label]="'project.application.form.motivation.form.field'">
     </app-expandable-textarea>
+    <p *ngIf="formState === FormState.VIEW" class="view-text">
+        <br>{{partnerContributionForm?.controls?.organizationExperience.value}}
+    </p>
 
     <div *ngIf="formState === FormState.EDIT">
         <button mat-raised-button class="button" type="button"
