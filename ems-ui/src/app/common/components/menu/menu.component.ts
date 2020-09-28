@@ -1,57 +1,25 @@
-import {ChangeDetectionStrategy, ChangeDetectorRef, Component, Input, OnInit} from '@angular/core';
+import {Component, Input, OnInit} from '@angular/core';
 import {MenuItemConfiguration} from './model/menu-item.configuration';
-import {NavigationEnd, Router} from '@angular/router';
+import {Router} from '@angular/router';
 import {BaseComponent} from '@common/components/base-component';
-import {filter, takeUntil} from 'rxjs/operators';
-import {Log} from '../../utils/log';
 
 @Component({
   selector: 'app-menu',
   templateUrl: './menu.component.html',
   styleUrls: ['./menu.component.scss'],
-  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class MenuComponent extends BaseComponent implements OnInit {
   @Input()
   items: MenuItemConfiguration[];
 
-  activeLink: MenuItemConfiguration | undefined;
-
-  constructor(private router: Router,
-              private changeDetectorRef: ChangeDetectorRef) {
+  constructor(public router: Router) {
     super();
-    router.events
-      .pipe(
-        takeUntil(this.destroyed$),
-        filter(val => val instanceof NavigationEnd)
-      )
-      .subscribe((val: NavigationEnd) => {
-        const activeItem = this.items.find(item => item.route === val.url);
-        if (activeItem) {
-          Log.debug('Switched bar menu item', this, activeItem.route);
-          this.activeLink = activeItem;
-          this.changeDetectorRef.markForCheck();
-        }
-      });
   }
 
   ngOnInit(): void {
-    this.activeLink = this.items.find((item: MenuItemConfiguration) => {
-      return item.route === this.router.url
-    });
   }
 
   callAction(item: MenuItemConfiguration): void {
-    if (item.isInternal) {
-      this.activeLink = item;
-    }
     item.action(item.isInternal, item.route);
-  }
-
-  isActive(item: MenuItemConfiguration): boolean {
-    if (this.activeLink) {
-      return this.activeLink === item;
-    }
-    return this.items && item === this.items[0];
   }
 }

@@ -80,7 +80,7 @@ export class TopBarService {
     this.editUserItem = {
       name: `${currentUser?.name} (${currentUser?.role})`,
       isInternal: true,
-      route: `/app/userprofile`,
+      route: `/app/profile`,
       action: (internal: boolean, route: string) => this.handleNavigation(internal, route)
     };
   }

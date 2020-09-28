@@ -1,7 +1,14 @@
 <nav mat-tab-nav-bar class="top-bar-nav">
-    <a mat-tab-link *ngFor="let item of items"
-            (click)="callAction(item)"
-            [active]="isActive(item)">
-        {{item.name | translate}}
-    </a>
+    <ng-container *ngFor="let item of items">
+        <a *ngIf="item.isInternal" mat-tab-link
+           [routerLink]="item.route"
+           [active]="router.url.startsWith(item.route)">
+            {{item.name | translate}}
+        </a>
+        <a *ngIf="!item.isInternal" mat-tab-link
+           (click)="callAction(item)"
+           [active]="false">
+            {{item.name | translate}}
+        </a>
+    </ng-container>
 </nav>
