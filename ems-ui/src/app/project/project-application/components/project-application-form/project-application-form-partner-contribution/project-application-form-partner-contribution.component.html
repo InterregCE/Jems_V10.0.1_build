@@ -1,4 +1,4 @@
-<form [formGroup]="partnerContributionForm" class="container">
+<form [formGroup]="partnerContributionForm" class="wrapper">
     <h5><span>{{'project.partner.motivation.header' | translate}}</span>
         <span class="header-button" *ngxPermissionsExcept="Permission.PROGRAMME_USER">
             <button *ngIf="(formState === FormState.VIEW && editable) && partner?.id"
