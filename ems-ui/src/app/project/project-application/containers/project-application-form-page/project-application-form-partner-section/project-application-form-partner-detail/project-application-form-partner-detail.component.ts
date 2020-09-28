@@ -99,6 +99,7 @@ export class ProjectApplicationFormPartnerDetailComponent extends BaseComponent 
       switchMap(partnerCreate =>
         this.partnerService.createProjectPartner(this.projectId, partnerCreate)
           .pipe(
+            tap(saved => this.partnerId = saved.id),
             catchError((error: HttpErrorResponse) => {
               this.partnerSaveError$.next(error.error);
               return of();
