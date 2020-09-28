@@ -3,6 +3,7 @@ package io.cloudflight.jems.server.project.service
 import io.cloudflight.jems.api.project.dto.InputProjectPartnerContact
 import io.cloudflight.jems.api.project.dto.InputProjectPartnerContribution
 import io.cloudflight.jems.api.project.dto.InputProjectPartnerCreate
+import io.cloudflight.jems.api.project.dto.InputProjectPartnerOrganizationDetails
 import io.cloudflight.jems.api.project.dto.InputProjectPartnerUpdate
 import io.cloudflight.jems.api.project.dto.OutputProjectPartner
 import io.cloudflight.jems.api.project.dto.OutputProjectPartnerDetail
@@ -25,4 +26,5 @@ interface ProjectPartnerService {
 
     fun updatePartnerContribution(projectId: Long, partnerId: Long, partnerContribution: InputProjectPartnerContribution): OutputProjectPartnerDetail
 
+    fun updatePartnerOrganizationDetails(projectId: Long, partnerId: Long, partnerOrganizationDetails: InputProjectPartnerOrganizationDetails): OutputProjectPartnerDetail
 }

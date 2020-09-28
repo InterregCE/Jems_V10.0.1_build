@@ -67,6 +67,8 @@ import { BenefitsTableComponent } from './project-application/components/project
 import { StrategyTableComponent } from './project-application/components/project-application-form/project-application-form-project-relevance-and-context-detail/tables/strategy-table/strategy-table.component';
 import { SynergyTableComponent } from './project-application/components/project-application-form/project-application-form-project-relevance-and-context-detail/tables/synergy-table/synergy-table.component';
 import {ProjectApplicationFormPartnerContributionComponent} from './project-application/components/project-application-form/project-application-form-partner-contribution/project-application-form-partner-contribution.component';
+import {ProjectApplicationFormPartnerAddressComponent} from './project-application/components/project-application-form/project-application-form-partner-address/project-application-form-partner-address.component';
+import {ProjectApplicationFormRegionSelectionComponent} from './project-application/containers/project-application-form-page/project-application-form-partner-section/project-application-form-region-selection/project-application-form-region-selection.component';
 
 @NgModule({
   declarations: [
@@ -109,6 +111,7 @@ import {ProjectApplicationFormPartnerContributionComponent} from './project-appl
     ProjectApplicationFormWorkPackageSectionComponent,
     ProjectApplicationFormPartnerContactComponent,
     ProjectApplicationFormPartnerContributionComponent,
+    ProjectApplicationFormPartnerAddressComponent,
     ProjectApplicationFormPartnerContactComponent,
     ProjectApplicationFormOverallObjectiveSectionComponent,
     ProjectApplicationFormOverallObjectiveDetailComponent,
@@ -118,7 +121,8 @@ import {ProjectApplicationFormPartnerContributionComponent} from './project-appl
     ProjectApplicationFormProjectRelevanceAndContextDetailComponent,
     BenefitsTableComponent,
     StrategyTableComponent,
-    SynergyTableComponent
+    SynergyTableComponent,
+    ProjectApplicationFormRegionSelectionComponent
   ],
   imports: [
     CommonModule,

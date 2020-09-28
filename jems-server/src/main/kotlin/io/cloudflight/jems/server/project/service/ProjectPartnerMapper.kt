@@ -4,17 +4,20 @@ import io.cloudflight.jems.api.project.dto.InputProjectPartnerContact
 import io.cloudflight.jems.api.project.dto.InputProjectPartnerContribution
 import io.cloudflight.jems.api.project.dto.InputProjectPartnerCreate
 import io.cloudflight.jems.api.project.dto.InputProjectPartnerOrganization
+import io.cloudflight.jems.api.project.dto.InputProjectPartnerOrganizationDetails
 import io.cloudflight.jems.api.project.dto.OutputProjectPartner
 import io.cloudflight.jems.api.project.dto.OutputProjectPartnerContact
 import io.cloudflight.jems.api.project.dto.OutputProjectPartnerContribution
 import io.cloudflight.jems.api.project.dto.OutputProjectPartnerDetail
 import io.cloudflight.jems.api.project.dto.OutputProjectPartnerOrganization
+import io.cloudflight.jems.api.project.dto.OutputProjectPartnerOrganizationDetails
 import io.cloudflight.jems.server.project.entity.Project
 import io.cloudflight.jems.server.project.entity.ProjectPartner
 import io.cloudflight.jems.server.project.entity.PartnerContactPerson
 import io.cloudflight.jems.server.project.entity.PartnerContactPersonId
 import io.cloudflight.jems.server.project.entity.ProjectPartnerContribution
 import io.cloudflight.jems.server.project.entity.ProjectPartnerOrganization
+import io.cloudflight.jems.server.project.entity.ProjectPartnerOrganizationDetails
 
 fun InputProjectPartnerCreate.toEntity(project: Project) = ProjectPartner(
     name = name!!,
@@ -82,5 +85,30 @@ fun ProjectPartnerOrganization.toOutputProjectPartnerOrganization() = OutputProj
     id = id,
     nameInOriginalLanguage = nameInOriginalLanguage,
     nameInEnglish = nameInEnglish,
-    department = department
+    department = department,
+    organizationDetails = organizationDetails?.toOutputProjectPartnerOrganizationDetails()
+)
+
+fun ProjectPartnerOrganizationDetails.toOutputProjectPartnerOrganizationDetails() = OutputProjectPartnerOrganizationDetails(
+    country = country,
+    nutsRegion2 = nutsRegion2,
+    nutsRegion3 = nutsRegion3,
+    street = street,
+    houseNumber = houseNumber,
+    postalCode = postalCode,
+    city = city,
+    homepage = homepage
+)
+
+fun InputProjectPartnerOrganizationDetails.toEntity(partnerOrganization: ProjectPartnerOrganization) = ProjectPartnerOrganizationDetails(
+    organizationId = partnerOrganization.id!!,
+    organization = partnerOrganization,
+    country = country,
+    nutsRegion2 = nutsRegion2,
+    nutsRegion3 = nutsRegion3,
+    street = street,
+    houseNumber = houseNumber,
+    postalCode = postalCode,
+    city = city,
+    homepage = homepage
 )

@@ -1,0 +1,12 @@
+<app-project-application-form-partner-address
+        [nutsCountry]="nuts$ | async"
+        [nutsRegion2]="nuts2$ | async"
+        [nutsRegion3]="nuts3$ | async"
+        [success$]="success$"
+        [error$]="error$"
+        [partner]="partner"
+        [editable]="editable"
+        (update)="update.emit($event)"
+        (changeCountry)="changeCountry($event)"
+        (changeRegion)="changeRegion($event)">
+</app-project-application-form-partner-address>

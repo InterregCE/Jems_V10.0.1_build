@@ -1,0 +1,130 @@
+<form [formGroup]="partnerAddressForm" class="container">
+    <h4><span>{{'project.partner.address.header' | translate}}</span></h4>
+    <h6><span>{{'project.partner.main-address.header' | translate}}</span>
+        <span class="header-button" *ngxPermissionsExcept="Permission.PROGRAMME_USER">
+            <button *ngIf="(formState === FormState.VIEW && editable)"
+                    (click)="changeFormState$.next(FormState.EDIT)" mat-raised-button>
+                {{'common.edit.label' | translate}}
+            </button>
+        </span></h6>
+    <mat-form-field *ngIf="nutsCountry"
+                    class="field">
+        <mat-label>{{'project.partner.main-address.country' | translate}}</mat-label>
+        <mat-select (selectionChange)="countryChanged(nutsCountry[$event.value])" name="partnerCountry"
+                    panelClass="material-select-panel" formControlName="partnerCountry">
+
+            <mat-option *ngFor="let region of Object.keys(nutsCountry)" [value]="region">
+                {{region}}
+            </mat-option>
+        </mat-select>
+    </mat-form-field>
+
+    <mat-form-field *ngIf="nutsRegion2"
+                    class="field">
+        <mat-label>{{'project.partner.main-address.region2' | translate}}</mat-label>
+        <mat-select [disabled]="nutsRegion2.length === 0"
+                    (selectionChange)="regionChanged(nutsRegion2.get($event.value))"
+                    name="partnerRegion2"
+                    panelClass="material-select-panel" formControlName="partnerRegion2">
+            <mat-option *ngFor="let region of nutsRegion2.keys()" [value]="region">
+                {{region}}
+            </mat-option>
+        </mat-select>
+    </mat-form-field>
+
+    <mat-form-field *ngIf="nutsRegion3"
+                    class="field">
+        <mat-label>{{'project.partner.main-address.region3' | translate}}</mat-label>
+        <mat-select [disabled]="nutsRegion3.length === 0"
+                    name="partnerRegion3"
+                    panelClass="material-select-panel" formControlName="partnerRegion3">
+
+            <mat-option *ngFor="let region of nutsRegion3" [value]="region">
+                {{region}}
+            </mat-option>
+        </mat-select>
+    </mat-form-field>
+
+    <mat-form-field class="field">
+        <mat-label>{{'project.partner.main-address.street' | translate}}</mat-label>
+        <input name="partnerStreet" formControlName="partnerStreet" matInput
+               placeholder="{{'project.partner.main-address.street' | translate}}">
+        <mat-error>
+            <app-form-field-errors
+                    [errors]="partnerAddressForm?.controls?.partnerStreet?.errors"
+                    [messages]="partnerStreetErrors">
+            </app-form-field-errors>
+        </mat-error>
+    </mat-form-field>
+
+    <mat-form-field class="field">
+        <mat-label>{{'project.partner.main-address.housenumber' | translate}}</mat-label>
+        <input name="partnerHouseNumber" formControlName="partnerHouseNumber" matInput
+               placeholder="{{'project.partner.main-address.housenumber' | translate}}">
+                <mat-error>
+                    <app-form-field-errors
+                            [errors]="partnerAddressForm?.controls?.partnerHouseNumber?.errors"
+                            [messages]="partnerHouseNumberErrors">
+                    </app-form-field-errors>
+                </mat-error>
+    </mat-form-field>
+
+    <mat-form-field class="field">
+        <mat-label>{{'project.partner.main-address.postalcode' | translate}}</mat-label>
+        <input name="partnerPostalCode" formControlName="partnerPostalCode" matInput
+               placeholder="{{'project.partner.main-address.postalcode' | translate}}">
+                <mat-error>
+                    <app-form-field-errors
+                            [errors]="partnerAddressForm?.controls?.partnerPostalCode?.errors"
+                            [messages]="partnerPostalCodeErrors">
+                    </app-form-field-errors>
+                </mat-error>
+    </mat-form-field>
+
+
+    <mat-form-field class="field">
+        <mat-label>{{'project.partner.main-address.city' | translate}}</mat-label>
+        <input name="partnerCity" formControlName="partnerCity" matInput
+               placeholder="{{'project.partner.main-address.city' | translate}}">
+                <mat-error>
+                    <app-form-field-errors
+                            [errors]="partnerAddressForm?.controls?.partnerCity?.errors"
+                            [messages]="partnerCityErrors">
+                    </app-form-field-errors>
+                </mat-error>
+    </mat-form-field>
+
+    <mat-form-field class="field-wide">
+        <mat-label>{{'project.partner.main-address.homepage' | translate}}</mat-label>
+        <input name="partnerHomepage" formControlName="partnerHomepage" matInput
+               placeholder="{{'project.partner.main-address.homepage' | translate}}">
+                <mat-error>
+                    <app-form-field-errors
+                            [errors]="partnerAddressForm?.controls?.partnerHomepage?.errors"
+                            [messages]="partnerHomepageErrors">
+                    </app-form-field-errors>
+                </mat-error>
+    </mat-form-field>
+    <div *ngIf="formState === FormState.EDIT">
+        <button mat-raised-button class="button" type="button"
+                (click)="onCancel()">
+            {{'common.cancel.label' | translate}}
+        </button>
+        <button mat-raised-button color="primary" type="button" class="button"
+                [disabled]="partnerAddressForm.invalid || partnerAddressForm.invalid || submitted"
+                (click)="onSubmit()">
+            {{'common.save.label' | translate}}
+        </button>
+    </div>
+
+    <app-alert
+            [show]="showSuccessMessage$ | async"
+            [type]="Alert.SUCCESS">
+        <p>{{'project.partner.main-address.save.success' | translate}}</p>
+    </app-alert>
+    <app-alert *ngIf="error$ | async as error"
+               [show]="!submitted && !!error.i18nKey"
+               [type]="Alert.ERROR">
+        <p>{{error.i18nKey | translate}}</p>
+    </app-alert>
+</form>

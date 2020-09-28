@@ -1,13 +1,12 @@
 package io.cloudflight.jems.server.project.entity
 
+import javax.persistence.CascadeType
 import javax.persistence.Column
 import javax.persistence.Entity
-import javax.persistence.FetchType
 import javax.persistence.GeneratedValue
 import javax.persistence.GenerationType
 import javax.persistence.Id
-import javax.persistence.JoinColumn
-import javax.persistence.ManyToOne
+import javax.persistence.OneToOne
 
 @Entity(name = "project_partner_organization")
 data class ProjectPartnerOrganization (
@@ -23,5 +22,8 @@ data class ProjectPartnerOrganization (
     val nameInEnglish: String?,
 
     @Column
-    val department: String?
+    val department: String?,
+
+    @OneToOne(mappedBy = "organization", cascade = [CascadeType.ALL])
+    val organizationDetails: ProjectPartnerOrganizationDetails? = null
 )

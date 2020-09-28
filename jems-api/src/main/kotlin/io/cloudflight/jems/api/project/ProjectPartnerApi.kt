@@ -3,6 +3,7 @@ package io.cloudflight.jems.api.project
 import io.cloudflight.jems.api.project.dto.InputProjectPartnerContact
 import io.cloudflight.jems.api.project.dto.InputProjectPartnerContribution
 import io.cloudflight.jems.api.project.dto.InputProjectPartnerCreate
+import io.cloudflight.jems.api.project.dto.InputProjectPartnerOrganizationDetails
 import io.cloudflight.jems.api.project.dto.InputProjectPartnerUpdate
 import io.cloudflight.jems.api.project.dto.OutputProjectPartner
 import io.cloudflight.jems.api.project.dto.OutputProjectPartnerDetail
@@ -61,4 +62,10 @@ interface ProjectPartnerApi {
                                     @PathVariable id: Long,
                                     @Valid @RequestBody partnerContribution: InputProjectPartnerContribution): OutputProjectPartnerDetail
 
+    @ApiOperation("Update project partner organization details")
+    @PutMapping("/{id}/details", consumes = [MediaType.APPLICATION_JSON_VALUE])
+    fun updateProjectPartnerOrganizationDetails(@PathVariable projectId: Long,
+                                                @PathVariable id: Long,
+                                                @Valid @RequestBody partnerOrganizationDetails: InputProjectPartnerOrganizationDetails
+    ): OutputProjectPartnerDetail
 }
