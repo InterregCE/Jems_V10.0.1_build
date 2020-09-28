@@ -157,6 +157,21 @@ export class ProjectApplicationFormSidenavService {
             route: '/app/project/detail/' + projectId + '/applicationForm',
             bullets: [
               {
+                headline: 'project.application.form.section.part.c.subsection.one',
+                scrollRoute: 'projectOverallObjectiveHeading',
+                route: '/project/' + projectId + '/applicationForm',
+              },
+              {
+                headline: 'project.application.form.section.part.c.subsection.two',
+                scrollRoute: 'projectRelevanceHeading',
+                route: '/project/' + projectId + '/applicationForm',
+              },
+              {
+                headline: 'project.application.form.section.part.c.subsection.three',
+                scrollRoute: 'projectPartnershipHeading',
+                route: '/project/' + projectId + '/applicationForm',
+              },
+              {
                 headline: 'project.application.form.section.part.c.subsection.four',
                 scrollRoute: 'projectWorkPlanHeading',
                 route: '/app/project/detail/' + projectId + '/applicationForm',

@@ -24,4 +24,6 @@ export class ExpandableTextareaComponent {
   customStyle?: string;
   @Input()
   minRows? = 10;
+  @Input()
+  maxRows? = 50;
 }

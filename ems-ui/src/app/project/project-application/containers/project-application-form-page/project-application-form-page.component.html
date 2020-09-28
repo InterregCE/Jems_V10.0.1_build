@@ -16,6 +16,26 @@
         </app-project-application-form-partner-section>
     </div>
     <div class="section">
+        <app-project-application-form-overall-objective-section
+                [projectId]="projectId"
+                [project]="details.projectDetails.project"
+                [editable]="details.projectDetails.editable">
+        </app-project-application-form-overall-objective-section>
+    </div>
+    <div class="section">
+        <app-project-application-form-project-relevance-and-context-section
+                [projectId]="projectId"
+                [strategies]="details.callStrategies.strategies"
+                [editable]="details.projectDetails.editable">
+        </app-project-application-form-project-relevance-and-context-section>
+    </div>
+    <div class="section">
+        <app-project-application-form-project-partnership-section
+                [projectId]="projectId"
+                [editable]="details.projectDetails.editable">
+        </app-project-application-form-project-partnership-section>
+    </div>
+    <div class="section">
         <app-project-application-form-work-package-section
                 [projectId]="projectId"
                 [editable]="details.projectDetails.editable">

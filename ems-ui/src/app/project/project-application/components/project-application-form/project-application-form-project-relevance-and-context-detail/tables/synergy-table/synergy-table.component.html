@@ -1,0 +1,70 @@
+<form [formGroup]="editableSynergyForm">
+    <mat-table [dataSource]="synergyDataSource">
+        <ng-container matColumnDef="select">
+            <mat-header-cell *matHeaderCellDef class="invisible-header"></mat-header-cell>
+            <td mat-cell *matCellDef="let element" class="invisible-field">
+            </td>
+            <td mat-footer-cell *matFooterCellDef class="invisible-field">
+                <button *ngIf="!disabled" mat-icon-button
+                        type="button"
+                        (click)="addNewSynergy()">
+                    <mat-icon>add</mat-icon>
+                </button>
+            </td>
+        </ng-container>
+
+        <ng-container matColumnDef="project">
+            <mat-header-cell *matHeaderCellDef class="small-header">{{'project.application.form.relevance.project.or.initiative' | translate}}</mat-header-cell>
+            <mat-cell *matCellDef="let element" class="small-column">
+                <ng-container *ngIf="disabled">
+                    <textarea matInput
+                              [cdkTextareaAutosize]
+                              [cdkAutosizeMinRows]="3"
+                              [cdkAutosizeMaxRows]="50"
+                              [readonly]="disabled"
+                    >{{element.specification}}</textarea>
+                </ng-container>
+                <app-expandable-textarea *ngIf="!disabled" class="small-field"
+                                         [control]="editableSynergyForm?.controls[projectInitiative(element.id)]"
+                                         [errors]="editableSynergyForm?.controls[projectInitiative(element.id)]?.errors"
+                                         [messages]="projectErrors"
+                                         [characterLimit]="500"
+                                         [minRows]="3"
+                                         [maxRows]="50"
+                                         [label]="'project.application.form.relevance.project.or.initiative'"
+                                         [disabled]="disabled">
+                </app-expandable-textarea>
+            </mat-cell>
+        </ng-container>
+
+        <ng-container matColumnDef="synergy">
+            <mat-header-cell *matHeaderCellDef class="big-header">{{'project.application.form.relevance.synergy' | translate}}</mat-header-cell>
+            <mat-cell *matCellDef="let element" class="big-column">
+                <ng-container *ngIf="disabled">
+                    <textarea matInput
+                              [cdkTextareaAutosize]
+                              [cdkAutosizeMinRows]="3"
+                              [cdkAutosizeMaxRows]="50"
+                              [readonly]="disabled"
+                    >{{element.synergy}}</textarea>
+                </ng-container>
+                <app-expandable-textarea *ngIf="!disabled" class="small-field"
+                                         [control]="editableSynergyForm?.controls[synergy(element.id)]"
+                                         [errors]="editableSynergyForm?.controls[synergy(element.id)]?.errors"
+                                         [messages]="synergyErrors"
+                                         [characterLimit]="2000"
+                                         [minRows]="3"
+                                         [maxRows]="50"
+                                         [label]="'project.application.form.relevance.synergy'"
+                                         [disabled]="disabled">
+                </app-expandable-textarea>
+            </mat-cell>
+        </ng-container>
+
+        <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
+        <mat-row *matRowDef="let row; columns: displayedColumns;"></mat-row>
+        <mat-row *matFooterRowDef="['select']"
+                 [hidden]="disabled">
+        </mat-row>
+    </mat-table>
+</form>

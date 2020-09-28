@@ -1,0 +1,13 @@
+<h5 class="header" id="projectDescriptionHeading">
+    {{'project.application.form.section.part.c' | translate}}
+</h5>
+
+<app-project-application-form-overall-objective-detail
+        *ngIf="projectDescriptionDetails$ | async as details"
+        [success$]="saveSuccess$"
+        [project]="details.project"
+        [specificObjective]="project.projectData?.specificObjective"
+        [editable]="details.editable"
+        [error$]="saveError$"
+        (updateData)="updateProjectDescription$.next($event)">
+</app-project-application-form-overall-objective-detail>
