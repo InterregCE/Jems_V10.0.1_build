@@ -1,4 +1,4 @@
-$sidebarSize: 21rem;
+$sidebarSize: 17rem;
 
 .shrunk {
   @media (min-width: 576px) {
@@ -13,7 +13,7 @@ $sidebarSize: 21rem;
   @media (min-width: 1200px) {
     max-width: calc(1140px - #{$sidebarSize});
   }
-  @media (min-width: 1596px) {
+  @media (min-width: 1532px) {
     max-width: 1140px;
   }
 }
@@ -44,36 +44,5 @@ ul {
 .side-nav-container {
   width: $sidebarSize;
   height: 100%;
-  background: lightgrey;
-}
-
-.side-nav-title {
-  font-size: 1.25rem;
-  font-weight: bold;
-  padding-left: 2rem;
-  padding-top: 2rem;
-  cursor: default;
-}
-
-.side-nav-main {
-  margin-bottom: .25rem;
-  &_title {
-    font-size: 1.25rem;
-    padding-left: 3rem;
-    cursor: pointer;
-  }
-}
-
-.side-nav-section {
-  font-size: 1rem;
-  padding-left: 4rem;
-  cursor: pointer;
-  list-style-type: none;
-}
-
-.side-nav-subsection {
-  font-size: 1rem;
-  padding-left: 1rem;
-  cursor: pointer;
-  list-style-type: none;
+  background: #5FB3D9;
 }

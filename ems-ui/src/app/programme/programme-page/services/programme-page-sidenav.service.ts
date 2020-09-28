@@ -7,19 +7,7 @@ export class ProgrammePageSidenavService {
 
   private indicatorsPage = {
     headline: 'programme.tab.indicators',
-    route: '/app/programme/indicators',
-    bullets: [
-      {
-        headline: 'output.indicator.table.title',
-        scrollRoute: 'outputIndicators',
-        route: '/app/programme/indicators',
-      },
-      {
-        headline: 'result.indicator.table.title',
-        scrollRoute: 'resultIndicators',
-        route: '/app/programme/indicators',
-      },
-    ]
+    route: '/app/programme/indicators'
   };
 
   private prioritiesPage = {
@@ -38,19 +26,12 @@ export class ProgrammePageSidenavService {
           {
             headline: 'programme.tab.data',
             route: '/app/programme',
-            scrollToTop: true,
-            bullets: [
-              {
-                headline: 'programme.data.header',
-                scrollRoute: 'basicData',
+            scrollToTop: true
+          },
+          {
+            headline: 'programme.fund.list.title',
+            scrollRoute: 'funds',
                 route: '/app/programme',
-              },
-              {
-                headline: 'programme.fund.list.title',
-                scrollRoute: 'funds',
-                route: '/app/programme',
-              },
-            ]
           },
           this.prioritiesPage,
           {

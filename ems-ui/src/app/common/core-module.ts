@@ -21,6 +21,8 @@ import {MenuComponent} from './components/menu/menu.component';
 import {SharedModule} from './shared-module';
 import {TabService} from './services/tab.service';
 import {LanguageService} from './services/language.service';
+import {SideNavComponent} from '@common/components/side-nav/component/side-nav.component';
+import {MatExpansionModule} from '@angular/material/expansion';
 
 const declarations = [
   TopBarComponent,
@@ -31,6 +33,8 @@ const declarations = [
   AlertComponent,
   ExpandableTextareaComponent,
   BreadcrumbComponent,
+  BreadcrumbComponent,
+  SideNavComponent
 ];
 
 @NgModule({
@@ -46,6 +50,7 @@ const declarations = [
     MatIconModule,
     MatSidenavModule,
     MatSelectModule,
+    MatExpansionModule,
   ],
   providers: [
     DatePipe,
