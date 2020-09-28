@@ -14,8 +14,8 @@
                 <td mat-cell *matCellDef="let element">
                     <mat-checkbox (click)="$event.stopPropagation()"
                                   (change)="langselection.toggle(element)"
-                                  [disabled]="formState === FormState.VIEW"
-                                  [checked]="langselection.isSelected(element)">
+                                  [disabled]="formState === FormState.VIEW || element.name === 'EN'"
+                                  [checked]="langselection.isSelected(element) || element.name === 'EN'">
                     </mat-checkbox>
                 </td>
             </ng-container>

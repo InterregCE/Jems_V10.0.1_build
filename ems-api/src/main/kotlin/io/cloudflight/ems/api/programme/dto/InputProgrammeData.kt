@@ -1,5 +1,6 @@
 package io.cloudflight.ems.api.programme.dto
 
+import io.cloudflight.ems.api.programme.SystemLanguage
 import io.cloudflight.ems.api.validators.StartDateBeforeEndDate
 import java.time.LocalDate
 import java.util.stream.Collectors
@@ -47,7 +48,8 @@ data class InputProgrammeData(
 
 fun InputProgrammeData.getSystemLanguageSelectionsAsString(): String {
     return systemLanguageSelections.stream()
-        .filter { it.selected }
-        .map(SystemLanguageSelection::name)
+        .filter { it.selected || it.name == SystemLanguage.EN }
+        .map { it.name.name }
         .collect(Collectors.joining(","))
 }
+

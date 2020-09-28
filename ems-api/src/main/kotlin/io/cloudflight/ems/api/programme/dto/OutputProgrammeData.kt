@@ -67,7 +67,7 @@ data class OutputProgrammeData(
     private fun getSystemLanguageSelectionsAsString(): String {
         return systemLanguageSelections.stream()
             .filter { it.selected }
-            .map(SystemLanguageSelection::name)
+            .map { it.name.name }
             .collect(Collectors.joining(","))
     }
 }
