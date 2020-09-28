@@ -1,19 +1,11 @@
-.container {
-  max-width: 76%;
-  margin: 5% 12% 3%;
+.wrapper {
+  margin-top: 2rem;
 
   .field {
-    width: 40%;
+    max-width: 35rem;
+    width: 100%;
     padding-top: 1rem;
-    margin-right: 60%;
-  }
-  .field-wide {
-    width: 70%;
-    margin-right: 30%;
-  }
-
-  .header {
-    display: inline-block;
+    display: block;
   }
 
   .header-button {
@@ -32,10 +24,6 @@
 
   .mat-form-field-appearance-outline .mat-form-field-outline {
     color: white;
-  }
-
-  input.mat-input-element {
-    color: #343a40;
   }
 
   .valid-role {

@@ -1,19 +1,9 @@
-.container {
-  max-width: 76%;
-  margin: 5% 12% 3%;
+.wrapper {
+  margin-top: 2rem;
 
-  .field {
-    width: 40%;
-    padding-top: 1rem;
-    margin-right: 60%;
-  }
   .field-wide {
     width: 70%;
     margin-right: 30%;
-  }
-
-  .header {
-    display: inline-block;
   }
 
   .header-button {
@@ -39,14 +29,9 @@
     padding-top: 1rem;
   }
 
-  .mat-input-element {
-    color: #343a40;
-  }
-
-  .view-text{
+  .view-text {
+    overflow-wrap: break-word;
     color: darkgray;
     white-space: pre-wrap;
-    max-width: 70%;
-    margin-right: 30%;
   }
 }

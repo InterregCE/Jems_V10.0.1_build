@@ -1,4 +1,4 @@
-<form [formGroup]="partnerForm" class="container">
+<form [formGroup]="partnerForm" class="wrapper">
     <h4 *ngIf="!partner?.name">{{'project.application.form.partner.add' | translate}}</h4>
     <h5><span>{{'project.partner.detail.title' | translate}}</span>
         <span class="header-button" *ngxPermissionsExcept="Permission.PROGRAMME_USER">
@@ -8,16 +8,16 @@
             </button>
         </span>
     </h5>
-    <mat-form-field *ngIf="formState === FormState.VIEW && partner.id" class="field col-md-12">
+    <mat-form-field *ngIf="formState === FormState.VIEW && partner.id" class="field">
         <mat-label>{{'project.partner.id.label' | translate}}</mat-label>
         <input name="id" formControlName="id" matInput required>
     </mat-form-field>
-    <mat-form-field *ngIf="formState === FormState.VIEW" class="field col-md-12">
+    <mat-form-field *ngIf="formState === FormState.VIEW" class="field">
         <mat-label>{{'project.partner.role.label' | translate}}</mat-label>
         <input ngModel="{{('common.label.project.partner.role.' + controls?.role?.value) | translate}}"
                name="role" formControlName="fakeRole" matInput required>
     </mat-form-field>
-    <div *ngIf="formState === FormState.EDIT" class="field col-md-12">
+    <div *ngIf="formState === FormState.EDIT" class="field">
         <div [class.valid-role]="!controls?.role?.errors"
              [class.invalid-role]="!!controls?.role?.errors">
             {{'project.partner.role.label' | translate}} *
@@ -43,7 +43,7 @@
             </app-form-field-errors>
         </mat-error>
     </div>
-    <mat-form-field class="field col-md-12">
+    <mat-form-field class="field">
         <mat-label>{{'project.partner.partner.organization.original.name.label' | translate}}</mat-label>
         <input name="nameInOriginalLanguage" formControlName="nameInOriginalLanguage" matInput
                placeholder="{{'project.partner.partner.organization.original.name.label' | translate}}">
@@ -54,7 +54,7 @@
             </app-form-field-errors>
         </mat-error>
     </mat-form-field>
-    <mat-form-field class="field col-md-12">
+    <mat-form-field class="field">
         <mat-label>{{'project.partner.organization.english.name.label' | translate}}</mat-label>
         <input name="nameInEnglish" formControlName="nameInEnglish" matInput
                placeholder="{{'project.partner.organization.english.name.label' | translate}}">
@@ -65,7 +65,7 @@
             </app-form-field-errors>
         </mat-error>
     </mat-form-field>
-    <mat-form-field class="field col-md-12">
+    <mat-form-field class="field">
         <mat-label>{{'project.partner.organization.department.label' | translate}}</mat-label>
         <input name="department" formControlName="department" matInput
                placeholder="{{'project.partner.organization.department.label' | translate}}">
@@ -76,7 +76,7 @@
             </app-form-field-errors>
         </mat-error>
     </mat-form-field>
-    <mat-form-field class="field col-md-12">
+    <mat-form-field class="field">
         <mat-label>{{'project.partner.name.label' | translate}}</mat-label>
         <input name="name" formControlName="name" matInput placeholder="{{'project.partner.name.label' | translate}}"
                required>
