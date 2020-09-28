@@ -1,9 +1,11 @@
 package io.cloudflight.ems.programme.service
 
+import io.cloudflight.ems.api.programme.SystemLanguage
 import io.cloudflight.ems.api.user.dto.OutputUserRole
 import io.cloudflight.ems.api.user.dto.OutputUserWithRole
 import io.cloudflight.ems.api.programme.dto.InputProgrammeData
 import io.cloudflight.ems.api.programme.dto.OutputProgrammeData
+import io.cloudflight.ems.api.programme.dto.SystemLanguageSelection
 import io.cloudflight.ems.audit.entity.AuditAction
 import io.cloudflight.ems.audit.service.AuditCandidate
 import io.cloudflight.ems.entity.ProgrammeData
@@ -54,8 +56,11 @@ internal class ProgrammeDataServiceTest {
             null,
             null,
             null,
+            null,
             null
         )
+    private val systemLanguages =
+        existingProgrammeData.getSystemLanguageSelectionList()
 
     @MockK
     lateinit var programmeDataRepository: ProgrammeDataRepository
@@ -79,7 +84,7 @@ internal class ProgrammeDataServiceTest {
     @Test
     fun get() {
         val programmeDataInput =
-            OutputProgrammeData("cci", "title", "version", 2020, 2024, null, null, null, null, null, null, emptyMap<String, String>())
+            OutputProgrammeData("cci", "title", "version", 2020, 2024, null, null, null, null, null, null, systemLanguages, emptyMap<String, String>())
         every { programmeDataRepository.findById(1) } returns Optional.of(existingProgrammeData)
 
         val programmeData = programmeDataService.get()
@@ -90,11 +95,11 @@ internal class ProgrammeDataServiceTest {
     @Test
     fun `update existing programme data`() {
         val programmeDataInput =
-            InputProgrammeData("cci-updated", "title", "version", 2020, 2024, null, null, null, null, null, null)
+            InputProgrammeData("cci-updated", "title", "version", 2020, 2024, null, null, null, null, null, null, systemLanguages)
         val programmeDataUpdated =
-            ProgrammeData(1, "cci-updated", "title", "version", 2020, 2024, null, null, null, null, null, null)
+            ProgrammeData(1, "cci-updated", "title", "version", 2020, 2024, null, null, null, null, null, null, null)
         val programmeDataExpectedOutput =
-            OutputProgrammeData("cci-updated", "title", "version", 2020, 2024, null, null, null, null, null, null, emptyMap<String, String>())
+            OutputProgrammeData("cci-updated", "title", "version", 2020, 2024, null, null, null, null, null, null, systemLanguages, emptyMap<String, String>())
 
         every { programmeDataRepository.save(any<ProgrammeData>()) } returns programmeDataUpdated
         every { programmeDataRepository.findById(1) } returns Optional.of(existingProgrammeData)
@@ -114,11 +119,12 @@ internal class ProgrammeDataServiceTest {
 
     @Test
     fun `update existing programme data with different data`() {
+        val updatedSystemLanguages = selectSystemLanguage(systemLanguages, SystemLanguage.DE)
         val programmeDataInput =
             InputProgrammeData("cci-updated", "title-updated", "version-updated", 2021, 2025,
                 LocalDate.of(2020, 1, 1), LocalDate.of(2021, 2, 2),
                 "d1",  LocalDate.of(2022, 3, 3),
-                "d2", LocalDate.of(2022, 4, 4))
+                "d2", LocalDate.of(2022, 4, 4), updatedSystemLanguages)
         val programmeDataUpdated = programmeDataInput.toEntity(emptySet())
         val programmeDataExpectedOutput = programmeDataUpdated.toOutputProgrammeData()
 
@@ -144,7 +150,8 @@ internal class ProgrammeDataServiceTest {
                 "commissionDecisionNumber changed from null to d1,\n" +
                 "commissionDecisionDate changed from null to 2022-03-03,\n" +
                 "programmeAmendingDecisionNumber changed from null to d2,\n" +
-                "programmeAmendingDecisionDate changed from null to 2022-04-04")
+                "programmeAmendingDecisionDate changed from null to 2022-04-04,\n" +
+                "languagesSystem changed from EN to DE,EN")
         }
     }
 
@@ -182,5 +189,24 @@ internal class ProgrammeDataServiceTest {
         )
     }
 
+    fun selectSystemLanguage(systemLanguageSelections: List<SystemLanguageSelection>,
+                             systemLanguage: SystemLanguage): List<SystemLanguageSelection> {
+        // success if already selected
+        if (systemLanguageSelections.any { it.name == systemLanguage.name && it.selected })
+            return systemLanguageSelections
 
+        // otherwise add
+        val updatedSystemLanguageSelections: ArrayList<SystemLanguageSelection> = ArrayList()
+        SystemLanguage.values().forEach {
+            val selected = if (it.name == systemLanguage.name) { true } else { isSelected(systemLanguageSelections, it.name) }
+            updatedSystemLanguageSelections.add(
+                SystemLanguageSelection(it.name, it.translationKey, selected))
+        }
+        return updatedSystemLanguageSelections
+    }
+
+    private fun isSelected(systemLanguageSelections: List<SystemLanguageSelection>,
+                   systemLanguage: String): Boolean {
+        return systemLanguageSelections.any { it.name == systemLanguage && it.selected }
+    }
 }

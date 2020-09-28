@@ -15,7 +15,7 @@
                     [value]="translate.currentLang"
                     (selectionChange)="changeLanguage(langSelect.value)">
             <mat-option *ngFor="let lang of translate.getLangs()" [value]="lang">
-                <mat-label>{{'language.' + lang | translate}}</mat-label>
+                <mat-label>{{'language.' + lang.toLowerCase() | translate}}</mat-label>
             </mat-option>
         </mat-select>
 

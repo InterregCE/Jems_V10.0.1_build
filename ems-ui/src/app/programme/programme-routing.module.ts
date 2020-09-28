@@ -7,6 +7,7 @@ import {ProgrammeResultIndicatorSubmissionPageComponent} from './programme-page/
 import {ProgrammeAreaComponent} from './programme-page/containers/programme-area/programme-area.component';
 import {ProgrammeIndicatorsOverviewPageComponent} from './programme-page/containers/programme-indicators-overview-page/programme-indicators-overview-page.component';
 import {ProgrammeStrategiesPageComponent} from './programme-page/containers/programme-strategies-page/programme-strategies-page.component';
+import {ProgrammeLanguagesPageComponent} from './programme-page/containers/programme-languages-page/programme-languages-page.component';
 
 export const routes: Routes = [
   {
@@ -36,6 +37,11 @@ export const routes: Routes = [
         path: 'areas',
         component: ProgrammeAreaComponent,
         data: {breadcrumb: 'programme.breadcrumb.areas'},
+      },
+      {
+        path: 'languages',
+        component: ProgrammeLanguagesPageComponent,
+        data: {breadcrumb: 'programme.breadcrumb.languages'},
       },
       {
         path: 'indicators',

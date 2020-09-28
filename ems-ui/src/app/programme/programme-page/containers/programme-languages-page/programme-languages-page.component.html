@@ -1,0 +1,10 @@
+<ng-container *ngIf="programme$ | async as programme">
+    <div *ngxPermissionsExcept="Permission.APPLICANT_USER">
+        <app-programme-languages
+                [programme]="programme"
+                [success$]="programmeSaveSuccess$"
+                [error$]="programmeSaveError$"
+                (saveProgrammeData)="saveProgrammeData$.next($event)">
+        </app-programme-languages>
+    </div>
+</ng-container>

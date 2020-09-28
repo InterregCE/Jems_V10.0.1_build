@@ -1,5 +1,5 @@
 import {Injectable} from '@angular/core';
-import {UserProfileService, InputUserProfile, OutputUserProfile} from '@cat/api'
+import {UserProfileService, InputUserProfile, OutputUserProfile, ProgrammeDataService} from '@cat/api'
 import {filter, take, tap} from 'rxjs/operators';
 import {TranslateService} from '@ngx-translate/core';
 import {SecurityService} from '../../security/security.service';
@@ -12,10 +12,19 @@ export class LanguageService {
 
   constructor(private userProfileService: UserProfileService,
               private translate: TranslateService,
-              private securityService: SecurityService) {
+              private securityService: SecurityService,
+              private programmeDataService: ProgrammeDataService) {
 
-    translate.setDefaultLang('en');
-    translate.addLangs(['en', 'de', 'ja_JP']);
+    this.programmeDataService.get()
+      .pipe(
+        take(1),
+      )
+      .subscribe( response => {
+        const availableLanguages = response.systemLanguageSelections
+          .filter(value => value.selected)
+          .map(value => value.name);
+        translate.addLangs(availableLanguages);
+      });
 
     this.securityService.currentUser.subscribe(response => {
       if (!response) {

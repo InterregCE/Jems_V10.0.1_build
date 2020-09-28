@@ -1,0 +1,43 @@
+table {
+  width: 100%;
+}
+
+.container {
+  width: 40rem;
+
+  .header {
+    display: inline-block;
+    margin-bottom: 2rem;
+  }
+
+  .button {
+    margin-right: 1rem;
+    margin-top: 2rem;
+  }
+
+  .header-button {
+    margin-left: 0.5rem;
+  }
+
+  ::ng-deep.mat-form-field .mat-form-field-underline {
+    height: 0 !important;
+  }
+
+  .mat-form-field-appearance-outline .mat-form-field-outline {
+    color: white;
+  }
+
+  mat-checkbox {
+    padding-left: 0.4rem;
+  }
+
+  th.mat-header-cell, td.mat-cell, td.mat-footer-cell {
+    border: none;
+  }
+
+  button {
+    width: unset !important;
+    margin-bottom: 0.1rem;
+  }
+
+}
