@@ -61,7 +61,7 @@ export class ProjectApplyToCallComponent extends BaseComponent {
         tap(() => this.applicationSaveError$.next(null)),
         tap(() => this.newPageIndex$.next(Tables.DEFAULT_INITIAL_PAGE_INDEX)),
         tap(saved => Log.info('Created project application:', this, saved)),
-        tap(() => this.router.navigate(['app', 'call'])),
+        tap(() => this.router.navigate(['app', 'project'])),
         catchError((error: HttpErrorResponse) => {
           this.applicationSaveError$.next(error.error);
           throw error;

@@ -65,13 +65,12 @@ export class SecurityService {
     this.myCurrentUser.next(null);
   }
 
-  async logout() {
-    this.clearAuthentication();
-    await this.authenticationService.logout()
+  logout() {
+    return this.authenticationService.logout()
       .pipe(
         take(1),
-        tap(() => Log.info('Current user logged out', this))
+        tap(() => Log.info('Current user logged out', this)),
+        tap(() => this.clearAuthentication()),
       )
-      .subscribe();
   }
 }

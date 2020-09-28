@@ -63,9 +63,8 @@ export class TopBarService {
     this.newAuditUrl$.next(auditUrl);
   }
 
-  logout(): void {
-    this.securityService.logout();
-    this.router.navigate(['/login']);
+  logout(): Observable<any> {
+    return this.securityService.logout();
   }
 
   private adaptMenuItems(auditUrl: string, currentUser: OutputCurrentUser | null): void {

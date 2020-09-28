@@ -7,6 +7,7 @@ import {OutputCurrentUser} from '@cat/api';
 import {MenuItemConfiguration} from '../menu/model/menu-item.configuration';
 import {TopBarService} from '@common/components/top-bar/top-bar.service';
 import {LanguageService} from '../../services/language.service';
+import {finalize} from 'rxjs/operators';
 
 @Component({
   selector: 'app-top-bar',
@@ -17,6 +18,8 @@ export class TopBarComponent implements OnInit {
 
   @Input() isAuthenticated: boolean;
   menuItems: Observable<MenuItemConfiguration[]>;
+
+  public logoutOngoing = false;
 
   constructor(private securityService: SecurityService,
               private router: Router,
@@ -46,7 +49,10 @@ export class TopBarComponent implements OnInit {
   }
 
   logout(): void {
-    this.topBarService.logout();
+    this.logoutOngoing = true;
+    this.topBarService.logout()
+      .pipe(finalize(() => this.logoutOngoing = false))
+      .subscribe(() => this.router.navigate(['/login']));
   }
 
   changeLanguage(newLang: string): void {
