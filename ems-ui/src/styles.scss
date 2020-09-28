@@ -26,9 +26,18 @@ h3,
 h4,
 h5,
 h6 {
-  margin: .5rem 0;
+  margin: 1rem 0;
 }
-
+h1, h2, h3, h4 {
+  font-weight: 300;
+  margin: 1rem 0;
+}
+h5 {
+  font-weight: 400;
+}
+h6 {
+  font-weight: 500;
+}
 p {
   margin: 0;
 }
@@ -44,6 +53,9 @@ a:hover {
   color: #125699;
 }
 
+.field {
+  /*padding-top: 0 !important*/;
+}
 form .form-group {
   display: flex;
   flex-direction: row;
@@ -62,7 +74,22 @@ form .form-group {
     flex-basis: 100%;
   }
 }
-
+.policy-label{
+  font-size: 0.66rem;
+  color: darkgray;
+}
+.intro-text-small{
+  font-size: 0.75rem;
+}
+.authentication-logo {
+  background: rgb(33,147,176);
+  color: white;
+  font-style: italic;
+  font-weight: 400;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
 html {
   scroll-behavior: smooth;
 }

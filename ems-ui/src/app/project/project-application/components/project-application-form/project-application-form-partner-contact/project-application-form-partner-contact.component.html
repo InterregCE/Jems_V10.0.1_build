@@ -1,12 +1,12 @@
 <form [formGroup]="partnerContactForm" class="container">
-    <h6><span>{{'project.partner.representative.header' | translate}}</span>
+    <h5><span>{{'project.partner.representative.header' | translate}}</span>
         <span class="header-button" *ngxPermissionsExcept="Permission.PROGRAMME_USER">
             <button *ngIf="(formState === FormState.VIEW && editable) && partner?.id"
                     (click)="changeFormState$.next(FormState.EDIT)" mat-raised-button>
                 {{'common.edit.label' | translate}}
             </button>
         </span>
-    </h6>
+    </h5>
 
     <mat-form-field class="field">
         <mat-label>{{'project.partner.representative.title' | translate}}</mat-label>
@@ -44,7 +44,7 @@
         </mat-error>
     </mat-form-field>
 
-    <h6>{{'project.partner.contact.header' | translate}}</h6>
+    <h5>{{'project.partner.contact.header' | translate}}</h5>
 
     <mat-form-field class="field">
         <mat-label>{{'project.partner.contact.title' | translate}}</mat-label>

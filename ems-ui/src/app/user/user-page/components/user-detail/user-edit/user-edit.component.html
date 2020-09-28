@@ -1,11 +1,11 @@
 <div class="wrapper">
-    <h5>{{'user.detail.page.title' | translate}}
+    <h4>{{'user.detail.page.title' | translate}}
         <button class="header-button" color="primary" *ngIf="formState === FormState.VIEW" mat-raised-button
                 [disabled]="disabled"
                 (click)="changeFormState$.next(FormState.EDIT)">
             {{'user.detail.button.edit' | translate}}
         </button>
-    </h5>
+    </h4>
     <form [formGroup]="userForm">
         <mat-form-field class="field">
             <mat-label>{{'user.detail.field.name' | translate}}</mat-label>

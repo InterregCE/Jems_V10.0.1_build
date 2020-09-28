@@ -1,6 +1,6 @@
 <app-breadcrumb></app-breadcrumb>
-<h3 *ngIf="currentUser$ | async as currentUser">
-    {{'project.welcome' | translate: {name: currentUser.name, surname: currentUser.surname} }}</h3>
+<h2 *ngIf="currentUser$ | async as currentUser">
+    {{'project.welcome' | translate: {name: currentUser.name, surname: currentUser.surname} }}</h2>
 <div>
     <div *ngIf="currentPage$ | async as projectPage">
         <app-project-application-list

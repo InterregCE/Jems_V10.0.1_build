@@ -1,10 +1,10 @@
 <div>
-    <h5>{{'programme.area.nuts.explorer.header' | translate}}
+    <h4>{{'programme.area.nuts.explorer.header' | translate}}
         <button *ngIf=" formState === FormState.VIEW" mat-raised-button
                 (click)="changeFormState$.next(FormState.EDIT)">
             {{'common.edit.label' | translate}}
         </button>
-    </h5>
+    </h4>
     <div class="row col-md-12">
         <p class="col-md-6">{{'programme.area.nuts.explorer.select' | translate}}</p>
         <p class="col-md-6">{{'programme.area.nuts.explorer.selected' | translate}}</p>
@@ -21,7 +21,7 @@
             </app-programme-selected-regions>
         </div>
     </div>
-    <ng-container *ngIf="formState === FormState.EDIT">
+    <div *ngIf="formState === FormState.EDIT" class="row col-md-12">
         <button mat-raised-button color="primary" class="button"
                 (click)="onSubmit()">
             {{'common.save.label' | translate}}
@@ -30,7 +30,7 @@
                 (click)="onCancel()">
             {{'common.cancel.label' | translate}}
         </button>
-    </ng-container>
+    </div>
     <app-alert
             [show]="showSuccessMessage$ | async"
             [type]="Alert.SUCCESS">

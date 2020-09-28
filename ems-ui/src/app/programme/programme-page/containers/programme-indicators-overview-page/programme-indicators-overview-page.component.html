@@ -1,7 +1,7 @@
 <div *ngxPermissionsExcept="Permission.APPLICANT_USER">
     <app-breadcrumb></app-breadcrumb>
     <div *ngIf="currentOutputIndicatorPage$ | async as outputIndicatorPage">
-        <h5 id="outputIndicators">{{'output.indicator.table.title' | translate}}</h5>
+        <h4 id="outputIndicators">{{'output.indicator.table.title' | translate}}</h4>
         <button mat-raised-button color="primary"
                 [routerLink]="'/app/programme/indicators/outputIndicator/create'">
             + Add new Output Indicator
@@ -19,7 +19,7 @@
     <br>
 
     <div *ngIf="currentResultIndicatorPage$ | async as resultIndicatorPage">
-        <h5 id="resultIndicators">{{'result.indicator.table.title' | translate}}</h5>
+        <h4 id="resultIndicators">{{'result.indicator.table.title' | translate}}</h4>
         <button mat-raised-button color="primary"
                 [routerLink]="'/app/programme/indicators/resultIndicator/create'">
             + Add new Result Indicator

@@ -1,10 +1,10 @@
 <div class="container">
-    <h5>{{'result.indicator.title' | translate}}
+    <h4>{{'result.indicator.title' | translate}}
         <button *ngIf="formState === FormState.VIEW" mat-raised-button
                 (click)="changeFormState$.next(FormState.EDIT)">
             {{'result.indicator.button.edit' | translate}}
         </button>
-    </h5>
+    </h4>
     <form [formGroup]="resultIndicatorForm">
         <mat-form-field class="field-third">
             <mat-label>{{'result.indicator.form.field.identifier' | translate}}</mat-label>

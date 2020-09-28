@@ -1,11 +1,11 @@
-<form [formGroup]="callForm" class="wrapper col-md-12">
-    <h3 id="callTitle" class="col-md-12">{{'call.detail.title' | translate}}
+<form [formGroup]="callForm" class="wrapper">
+    <h2 id="callTitle" class="col-md-12">{{'call.detail.title' | translate}}
         <button *ngIf="!published && formState === FormState.VIEW" mat-raised-button
                 (click)="changeFormState$.next(FormState.EDIT)">
             {{'call.detail.button.edit' | translate}}
         </button>
-    </h3>
-    <h5 class="col-md-12">{{'call.identification.title' | translate}}</h5>
+    </h2>
+    <h4 class="col-md-12">{{'call.identification.title' | translate}}</h4>
     <button *ngIf="call?.id && !published && formState === FormState.VIEW"
             mat-raised-button color="primary"
             class="button"
@@ -82,7 +82,7 @@
     </app-expandable-textarea>
 
     <div class="section col-md-12">
-        <h5 id="callPriorities">{{'call.programme.priorities.title' | translate}}</h5>
+        <h4 id="callPriorities">{{'call.programme.priorities.title' | translate}}</h4>
         <app-call-priority-tree
                 *ngIf="priorityCheckboxes"
                 [priorityCheckboxes]="priorityCheckboxes"
@@ -91,7 +91,7 @@
     </div>
 
     <div class="section col-md-12">
-        <h5 id="callStrategies">{{'call.strategy.title' | translate}}</h5>
+        <h4 id="callStrategies">{{'call.strategy.title' | translate}}</h4>
         <app-call-strategies
                 [selection]="selection"
                 [strategies]="strategies"
@@ -100,7 +100,7 @@
     </div>
 
     <div class="section col-md-12">
-        <h5 id="callFunds">{{'call.funds.title' | translate}}</h5>
+        <h4 id="callFunds">{{'call.funds.title' | translate}}</h4>
         <app-call-funds
                 [selection]="selectionFunds"
                 [funds]="funds"
