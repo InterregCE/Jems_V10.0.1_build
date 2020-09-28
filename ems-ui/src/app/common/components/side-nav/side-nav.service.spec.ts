@@ -30,7 +30,7 @@ describe('SideNavService', () => {
     service.setHeadlines(destroyed$, [
       {
         headline: 'back.project.overview',
-        route: '/project/1',
+        route: '/app/project/1',
       },
       {
         headline: 'project.application.form.title',
@@ -50,7 +50,7 @@ describe('SideNavService', () => {
     tick(60);
     expect(headlines.length).toBe(5);
     expect(headlines[0].headline).toBe('back.project.overview')
-    expect(headlines[0].route).toBe('/project/1')
+    expect(headlines[0].route).toBe('/app/project/1')
     expect(headlines[1].headline).toBe('project.application.form.title')
     expect(headlines[2].headline).toBe('Test')
     expect(headlines[3].headline).toBe('A - Project Identification')

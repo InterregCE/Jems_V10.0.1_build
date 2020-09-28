@@ -22,13 +22,13 @@
         <div *ngIf="!project.eligibilityDecision" class="col-3 column">
             <button mat-raised-button color="primary" class="assessment-button"
                     [disabled]="!project.eligibilityAssessment"
-                    [routerLink]="'/project/'+ project.id + '/eligibilityDecision'">
+                    [routerLink]="'./assessment/eligibilityDecision'">
                 {{'project.assessment.eligibilityDecision.assessment' | translate}}
             </button>
         </div>
         <div *ngIf="project.eligibilityDecision" class="col-3 column">
             <button mat-raised-button color="secondary" class="assessment-button"
-                    [routerLink]="'/project/'+ project.id + '/eligibilityDecision'">
+                    [routerLink]="'./assessment/eligibilityDecision'">
                 {{'project.assessment.eligibilityDecision.assessment.view' | translate}}
             </button>
         </div>
@@ -49,14 +49,14 @@
             <button mat-raised-button color="primary" class="assessment-button"
                     [disabled]="project.eligibilityDecision?.status !== OutputProjectStatus.StatusEnum.ELIGIBLE
                             || !project.qualityAssessment"
-                    [routerLink]="'/project/'+ project.id + '/fundingDecision'">
+                    [routerLink]="'./assessment/fundingDecision'">
                 {{'project.assessment.fundingDecision.assessment' | translate}}
             </button>
         </div>
         <div *ngIf="!!project.fundingDecision" class="col-3 column">
             <button mat-raised-button class="assessment-button"
                     [color]="projectStatus === OutputProjectStatus.StatusEnum.APPROVEDWITHCONDITIONS ? 'primary' : null"
-                    [routerLink]="'/project/'+ project.id + '/fundingDecision'">
+                    [routerLink]="'./assessment/fundingDecision'">
                 {{updateOrViewFundingLabel() | translate}}
             </button>
         </div>

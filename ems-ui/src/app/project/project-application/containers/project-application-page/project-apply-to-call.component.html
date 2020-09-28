@@ -1,0 +1,9 @@
+<app-breadcrumb></app-breadcrumb>
+<div *ngxPermissionsOnly="Permission.APPLICANT_USER">
+    <app-project-application-submission
+            *ngxPermissionsExcept="[Permission.PROGRAMME_USER]"
+            [success$]="applicationSaveSuccess$"
+            [error$]="applicationSaveError$"
+            (submitProjectApplication)="createApplication($event)"
+    ></app-project-application-submission>
+</div>

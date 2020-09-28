@@ -63,5 +63,6 @@ export class CallPageComponent {
   constructor(private callService: CallService,
               private projectService: ProjectService,
               private callStore: CallStore) {
+    console.log('constructing call page component');
   }
 }

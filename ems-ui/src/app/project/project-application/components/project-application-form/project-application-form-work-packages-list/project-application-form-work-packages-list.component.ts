@@ -25,7 +25,7 @@ export class ProjectApplicationFormWorkPackagesListComponent {
   newSort: EventEmitter<Partial<MatSort>> = new EventEmitter<Partial<MatSort>>();
 
   tableConfiguration: TableConfiguration = new TableConfiguration({
-    routerLink: '/project/' + this.projectId + '/workPackage/',
+    routerLink: '/app/project/detail/' + this.projectId + '/applicationForm/workPackage/detail',
     isTableClickable: true,
     columns: [
       {

@@ -3,7 +3,7 @@
     <h5>{{'programme.priority.list.header' | translate}}</h5>
     <button mat-raised-button
             color="primary"
-            [routerLink]="'/programme/priorities/priority'">
+            [routerLink]="'/app/programme/priorities/priority'">
         + {{'programme.priority.add.new' | translate}}
     </button>
     <div *ngIf="priorities$ | async as priorities" class="priority-items">

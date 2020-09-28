@@ -15,7 +15,7 @@ import {LanguageService} from '../../services/language.service';
 })
 export class TopBarComponent implements OnInit {
 
-  @Input() isLoginNeeded: boolean;
+  @Input() isAuthenticated: boolean;
   menuItems: Observable<MenuItemConfiguration[]>;
 
   constructor(private securityService: SecurityService,
@@ -28,7 +28,7 @@ export class TopBarComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.securityService.reloadCurrentUser();
+    this.securityService.reloadCurrentUser().subscribe();
     this.menuItems = this.topBarService.menuItems();
   }
 

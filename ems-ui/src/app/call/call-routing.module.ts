@@ -1,26 +1,21 @@
-import {RouterModule, Routes} from '@angular/router';
-import {AuthenticationGuard} from '../security/authentication-guard.service';
-import {NgModule} from '@angular/core';
+import {Routes} from '@angular/router';
 import {CallPageComponent} from './containers/call-page/call-page.component';
 import {CallConfigurationComponent} from './containers/call-configuration/call-configuration.component';
-import {ProjectApplicationComponent} from '../project/project-application/containers/project-application-page/project-application.component';
 import {Permission} from '../security/permissions/permission';
 import {RouteData} from '../common/utils/route-data';
 import {PermissionGuard} from '../security/permission.guard';
-import {CallNameBreadcrumbProvider} from './services/call-name-breadcrumb-provider.guard';
-import {ReplaySubject} from 'rxjs';
+import {CallNameResolver} from './services/call-name.resolver';
 
-const routes: Routes = [
+export const routes: Routes = [
   {
-    path: 'calls',
-    data: new RouteData({
+    path: '',
+    data: {
       breadcrumb: 'call.breadcrumb.list.of.calls'
-    }),
+    },
     children: [
       {
         path: '',
         component: CallPageComponent,
-        canActivate: [AuthenticationGuard],
       },
       {
         path: 'create',
@@ -29,43 +24,23 @@ const routes: Routes = [
           breadcrumb: 'call.breadcrumb.create',
           permissionsOnly: [Permission.ADMINISTRATOR, Permission.PROGRAMME_USER],
         }),
-        canActivate: [AuthenticationGuard, PermissionGuard],
+        canActivate: [PermissionGuard],
       },
       {
-        path: ':callId',
-        data: new RouteData({
-          breadcrumb: CallNameBreadcrumbProvider.name,
-          breadcrumb$: new ReplaySubject<string>(1),
+        path: 'detail/:callId',
+        data: {
+          dynamicValue: true,
           permissionsOnly: [Permission.ADMINISTRATOR, Permission.PROGRAMME_USER],
-        }),
-        children: [
-          {
-            path: '',
-            component: CallConfigurationComponent,
-            canActivate: [AuthenticationGuard, PermissionGuard, CallNameBreadcrumbProvider]
-          },
-          {
-            path: 'apply',
-            component: ProjectApplicationComponent,
-            data: new RouteData({
-              breadcrumb: 'call.breadcrumb.apply',
-              permissionsOnly: [Permission.APPLICANT_USER],
-            }),
-            canActivate: [AuthenticationGuard, PermissionGuard],
-          }
-        ]
+        },
+        resolve: { dynamicValue: CallNameResolver },
+        canActivate: [PermissionGuard],
+        component: CallConfigurationComponent,
+      },
+      {
+        path: 'apply/:callId',
+        pathMatch: 'full',
+        redirectTo: '/app/project/applyTo/:callId',
       },
     ]
   },
 ]
-
-@NgModule({
-  imports: [
-    RouterModule.forChild(routes),
-  ],
-  exports: [
-    RouterModule,
-  ],
-})
-export class CallRoutingModule {
-}

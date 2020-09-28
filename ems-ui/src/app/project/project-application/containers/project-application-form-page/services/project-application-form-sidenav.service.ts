@@ -30,7 +30,7 @@ export class ProjectApplicationFormSidenavService {
         .map(partner => ({
             headline: this.translate.instant('common.label.project.partner.role.' + partner.role)
               + ' ' + partner.name,
-            route: `/project/${this.projectId}/applicationForm/partner/${partner.id}`,
+            route: `/app/project/detail/${this.projectId}/applicationForm/partner/detail/${partner.id}`,
           }
         ))
       )
@@ -46,7 +46,7 @@ export class ProjectApplicationFormSidenavService {
       map(packages => packages
         .map(workPackage => ({
             headline: workPackage.name,
-            route: `/project/${this.projectId}/applicationForm/workPackage/${workPackage.id}`,
+            route: `/app/project/detail/${this.projectId}/applicationForm/workPackage/detail/${workPackage.id}`,
           }
         ))
       )
@@ -108,20 +108,20 @@ export class ProjectApplicationFormSidenavService {
         bullets: [
           {
             headline: 'project.application.form.lifecycle.title',
-            route: '/project/' + projectId,
+            route: '/app/project/detail/' + projectId,
             scrollToTop: true,
             bullets: [
               ...(showAssessment ? [{
                 headline: 'project.assessment.header',
                 scrollRoute: 'applicationFormLifecycleAssessment',
-                route: '/project/' + projectId,
+                route: '/app/project/detail/' + projectId,
               }] : []),
             ]
           },
           {
             headline: 'file.tab.header',
             scrollRoute: 'applicationFormLifecycleAttachments',
-            route: '/project/' + projectId,
+            route: '/app/project/detail/' + projectId,
           },
         ]
       },
@@ -130,47 +130,47 @@ export class ProjectApplicationFormSidenavService {
         bullets: [
           {
             headline: 'project.application.form.section.part.a',
-            route: '/project/' + projectId + '/applicationForm',
+            route: '/app/project/detail/' + projectId + '/applicationForm',
             scrollToTop: true,
             bullets: [
               {
                 headline: 'project.application.form.section.part.a.subsection.one',
                 scrollRoute: 'projectIdentificationHeading',
-                route: '/project/' + projectId + '/applicationForm',
+                route: '/app/project/detail/' + projectId + '/applicationForm',
               },
               {
                 headline: 'project.application.form.section.part.a.subsection.two',
                 scrollRoute: 'projectSummaryHeading',
-                route: '/project/' + projectId + '/applicationForm',
+                route: '/app/project/detail/' + projectId + '/applicationForm',
               },
             ]
           },
           {
             headline: 'project.application.form.section.part.b',
             scrollRoute: 'projectPartnersHeading',
-            route: '/project/' + projectId + '/applicationForm',
+            route: '/app/project/detail/' + projectId + '/applicationForm',
             bullets: [...partners],
           },
           {
             headline: 'project.application.form.section.part.c',
             scrollRoute: 'projectDescriptionHeading',
-            route: '/project/' + projectId + '/applicationForm',
+            route: '/app/project/detail/' + projectId + '/applicationForm',
             bullets: [
               {
                 headline: 'project.application.form.section.part.c.subsection.four',
                 scrollRoute: 'projectWorkPlanHeading',
-                route: '/project/' + projectId + '/applicationForm',
+                route: '/app/project/detail/' + projectId + '/applicationForm',
                 bullets: [...packages],
               },
               {
                 headline: 'project.application.form.section.part.c.subsection.seven',
                 scrollRoute: 'projectManagementHeading',
-                route: '/project/' + projectId + '/applicationForm',
+                route: '/app/project/detail/' + projectId + '/applicationForm',
               },
               {
                 headline: 'project.application.form.section.part.c.subsection.eight',
                 scrollRoute: 'projectFuturePlansHeading',
-                route: '/project/' + projectId + '/applicationForm',
+                route: '/app/project/detail/' + projectId + '/applicationForm',
               }
             ],
           },

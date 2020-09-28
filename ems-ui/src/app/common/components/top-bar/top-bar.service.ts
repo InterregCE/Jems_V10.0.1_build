@@ -17,25 +17,25 @@ export class TopBarService {
   private applicationsItem = {
     name: 'topbar.main.project',
     isInternal: true,
-    route: '/project',
+    route: '/app/project',
     action: (internal: boolean, route: string) => this.handleNavigation(internal, route),
   };
   private usersItem = {
     name: 'topbar.main.user.management',
     isInternal: true,
-    route: '/user',
+    route: '/app/user',
     action: (internal: boolean, route: string) => this.handleNavigation(internal, route),
   };
   private programmItem = {
     name: 'topbar.main.programme',
     isInternal: true,
-    route: '/programme',
+    route: '/app/programme',
     action: (internal: boolean, route: string) => this.handleNavigation(internal, route),
   };
   private callsItem = {
     name: 'topbar.main.call',
     isInternal: true,
-    route: '/calls',
+    route: '/app/call',
     action: (internal: boolean, route: string) => this.handleNavigation(internal, route),
   }
   private auditItem: MenuItemConfiguration;
@@ -81,7 +81,7 @@ export class TopBarService {
     this.editUserItem = {
       name: `${currentUser?.name} (${currentUser?.role})`,
       isInternal: true,
-      route: `/user/${currentUser?.id}`,
+      route: `/app/userprofile`,
       action: (internal: boolean, route: string) => this.handleNavigation(internal, route)
     };
   }
@@ -93,6 +93,7 @@ export class TopBarService {
         filter(canSee => canSee),
       )
       .subscribe(() => this.menuItems$.next([
+        this.applicationsItem,
         this.callsItem,
         this.editUserItem
       ]));

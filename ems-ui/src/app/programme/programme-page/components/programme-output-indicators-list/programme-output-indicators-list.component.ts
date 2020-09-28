@@ -31,7 +31,7 @@ export class ProgrammeOutputIndicatorsListComponent extends BaseComponent {
   newSort: EventEmitter<Partial<MatSort>> = new EventEmitter<Partial<MatSort>>();
 
   indicatorTableConfiguration = new TableConfiguration({
-    routerLink: '/programme/indicators/outputIndicator',
+    routerLink: '/app/programme/indicators/outputIndicator/detail',
     isTableClickable: true,
     columns: [
       {

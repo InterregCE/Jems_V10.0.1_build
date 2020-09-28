@@ -11,14 +11,10 @@ import {BaseComponent} from '@common/components/base-component';
   templateUrl: './app.component.html'
 })
 export class AppComponent extends BaseComponent {
-  isLoginNeeded = true;
-
-  headlines$ = this.sideNavService.getHeadlines();
 
   constructor(public translate: TranslateService,
               private titleService: Title,
-              private router: Router,
-              public sideNavService: SideNavService) {
+              private router: Router) {
     super();
 
     this.router.routeReuseStrategy.shouldReuseRoute = () => false;

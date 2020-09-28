@@ -1,17 +1,15 @@
 import {NgModule} from '@angular/core';
-import {DatePipe} from '@angular/common';
-import {ProjectRoutingModule} from './project-routing.module';
+import {CommonModule, DatePipe} from '@angular/common';
+import {routes} from './project-routing.module';
 import {CoreModule} from '../common/core-module';
 import {ProjectApplicationDetailComponent} from './project-application/containers/project-application-detail/project-application-detail.component';
 import {ProjectApplicationSubmissionComponent} from './project-application/components/project-application-submission/project-application-submission.component';
-import {ProjectApplicationListComponent} from './project-application/components/project-application-list/project-application-list.component';
 import {ProjectApplicationComponent} from './project-application/containers/project-application-page/project-application.component';
 import {SharedModule} from '../common/shared-module';
 import {OverlayModule} from '@angular/cdk/overlay';
 import {MatDialogModule} from '@angular/material/dialog';
 import {MatSelectModule} from '@angular/material/select';
 import {MatListModule} from '@angular/material/list';
-import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
 import {ProjectApplicationDataComponent} from './project-application/containers/project-application-detail/project-application-data/project-application-data.component';
 import {ProjectApplicationFilesListComponent} from './project-application/components/project-application-detail/project-application-files-list/project-application-files-list.component';
 import {ProjectApplicationInformationComponent} from './project-application/components/project-application-detail/project-application-information/project-application-information.component';
@@ -56,14 +54,16 @@ import {ProjectApplicationFormManagementDetailComponent} from './project-applica
 import {ProjectApplicationFormFuturePlansDetailComponent} from './project-application/components/project-application-form/project-application-form-future-plans-detail/project-application-form-future-plans-detail.component';
 import {ContributionRadioColumnComponent} from './project-application/components/project-application-form/project-application-form-management-detail/contribution-radio-column/contribution-radio-column.component';
 import {ProjectApplicationFormPartnerContactComponent} from './project-application/components/project-application-form/project-application-form-partner-contact/project-application-form-partner-contact.component';
-import {ProjectAcronymBreadcrumbProvider} from './project-application/containers/project-application-detail/services/project-acronym-breadcrumb-provider.guard';
+import {ProjectAcronymResolver} from './project-application/containers/project-application-detail/services/project-acronym.resolver';
+import {RouterModule} from '@angular/router';
+import {ProjectApplyToCallComponent} from './project-application/containers/project-application-page/project-apply-to-call.component';
 import {ProjectApplicationFormPartnerContributionComponent} from './project-application/components/project-application-form/project-application-form-partner-contribution/project-application-form-partner-contribution.component';
 
 @NgModule({
   declarations: [
     DescriptionCellComponent,
     ProjectApplicationComponent,
-    ProjectApplicationListComponent,
+    ProjectApplyToCallComponent,
     ProjectApplicationSubmissionComponent,
     ProjectApplicationDetailComponent,
     ProjectApplicationDataComponent,
@@ -102,14 +102,14 @@ import {ProjectApplicationFormPartnerContributionComponent} from './project-appl
     ProjectApplicationFormPartnerContributionComponent
   ],
   imports: [
+    CommonModule,
     SharedModule,
     CoreModule,
-    ProjectRoutingModule,
+    RouterModule.forChild(routes),
     MatListModule,
     MatSelectModule,
     MatDialogModule,
     OverlayModule,
-    BrowserAnimationsModule,
     MatRadioModule,
     MatExpansionModule,
     MatDatepickerModule,
@@ -120,7 +120,6 @@ import {ProjectApplicationFormPartnerContributionComponent} from './project-appl
     MatButtonToggleModule,
   ],
   exports: [
-    ProjectApplicationListComponent,
     ProjectApplicationDetailComponent
   ],
   providers: [
@@ -128,7 +127,7 @@ import {ProjectApplicationFormPartnerContributionComponent} from './project-appl
     ProjectStore,
     ProjectApplicationFormSidenavService,
     MatDatepickerModule,
-    ProjectAcronymBreadcrumbProvider,
+    ProjectAcronymResolver,
     {provide: MAT_MOMENT_DATE_ADAPTER_OPTIONS, useValue: {useUtc: true}},
     {provide: MAT_DATE_LOCALE, useValue: 'en-GB'}
   ]

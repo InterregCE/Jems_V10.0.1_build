@@ -4,7 +4,7 @@
             [success$]="userStore.userSaveSuccess$"
             [error$]="userStore.userSaveError$"
             [user]="details.user"
-            [userId]="details.user.id"
+            [userId]="details.user?.id"
             [userRoles]="details.roles"
             [disabled]="userEditDisabled"
             (submitUser)="userStore.saveUser$.next($event)"

@@ -7,24 +7,24 @@ export class ProgrammePageSidenavService {
 
   private indicatorsPage = {
     headline: 'programme.tab.indicators',
-    route: 'programme/indicators',
+    route: '/app/programme/indicators',
     bullets: [
       {
         headline: 'output.indicator.table.title',
         scrollRoute: 'outputIndicators',
-        route: 'programme/indicators',
+        route: '/app/programme/indicators',
       },
       {
         headline: 'result.indicator.table.title',
         scrollRoute: 'resultIndicators',
-        route: 'programme/indicators',
+        route: '/app/programme/indicators',
       },
     ]
   };
 
   private prioritiesPage = {
     headline: 'programme.tab.priority',
-    route: 'programme/priorities',
+    route: '/app/programme/priorities',
   };
 
   constructor(private sideNavService: SideNavService) {
@@ -37,30 +37,30 @@ export class ProgrammePageSidenavService {
         bullets: [
           {
             headline: 'programme.tab.data',
-            route: '/programme',
+            route: '/app/programme',
             scrollToTop: true,
             bullets: [
               {
                 headline: 'programme.data.header',
                 scrollRoute: 'basicData',
-                route: '/programme',
+                route: '/app/programme',
               },
               {
                 headline: 'programme.fund.list.title',
                 scrollRoute: 'funds',
-                route: '/programme',
+                route: '/app/programme',
               },
             ]
           },
           this.prioritiesPage,
           {
             headline: 'programme.tab.area',
-            route: 'programme/areas',
+            route: '/app/programme/areas',
           },
           this.indicatorsPage,
           {
             headline: 'programme.tab.strategies',
-            route: 'programme/strategies',
+            route: '/app/programme/strategies',
           }
         ]
       },

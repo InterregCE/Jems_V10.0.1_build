@@ -1,23 +1,36 @@
 import {Injectable} from '@angular/core';
 import {ActivatedRouteSnapshot, CanActivate, Router, RouterStateSnapshot} from '@angular/router';
-import {SecurityService} from './security.service';
-import {Observable} from 'rxjs';
-import {map} from 'rxjs/operators';
+import {Observable, of} from 'rxjs';
+import {catchError, map, tap} from 'rxjs/operators';
+import {AuthenticationService, OutputCurrentUser} from '@cat/api';
 
 @Injectable({providedIn: 'root'})
 export class AuthenticationGuard implements CanActivate {
-  constructor(private securityService: SecurityService,
-              private router: Router) {
+
+  constructor(private authenticationService: AuthenticationService,
+              private _router: Router) {
   }
 
   canActivate(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): Observable<boolean> {
-    return this.securityService.isLoggedIn()
-      .pipe(map((isLoggedIn) => {
-        if (!isLoggedIn) {
-          this.router.navigate(['/login']);
-        }
-        return isLoggedIn;
-      }));
+    return this.authGuard(state.url);
+  }
+
+  private authGuard(url: string): Observable<boolean> {
+    return this.authenticationService.getCurrentUser().pipe(
+      tap((cu: OutputCurrentUser) => {
+        if (!cu || cu.id === -1)
+          throw {}
+      }),
+      map(() => true),
+      catchError(() => {
+        this.unauthorized(url);
+        return of(false);
+      }),
+    );
+  }
+
+  private unauthorized(url: string) {
+    this._router.navigate(['no-auth', 'login'], { queryParams: { ref: url } });
   }
 
 }

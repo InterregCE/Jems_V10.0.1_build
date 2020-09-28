@@ -64,7 +64,7 @@ export class ProjectApplicationFilesListComponent extends BaseComponent implemen
 
   ngOnInit() {
     this.tableConfiguration = new TableConfiguration({
-      routerLink: '/project/',
+      routerLink: '/app/project/',
       isTableClickable: false,
       columns: [
         {

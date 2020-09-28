@@ -26,7 +26,9 @@ export class UserDetailComponent extends BaseComponent {
   userEditDisabled = false;
   passwordEditDisabled = true;
 
-  userId = this.activatedRoute?.snapshot?.params?.userId;
+  userDetailId = this.activatedRoute?.snapshot?.params?.userId;
+  currentUserId = this.activatedRoute?.snapshot?.data?.userId;
+  userId = this.userDetailId ? this.userDetailId : this.currentUserId;
 
   details$ = combineLatest([
     this.rolePageService.userRoles(),

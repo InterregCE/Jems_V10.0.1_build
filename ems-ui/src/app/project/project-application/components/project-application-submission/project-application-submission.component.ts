@@ -53,6 +53,6 @@ export class ProjectApplicationSubmissionComponent extends AbstractForm {
   }
 
   onCancel(): void {
-    this.router.navigate(['/calls']);
+    this.router.navigate(['/app/call']);
   }
 }

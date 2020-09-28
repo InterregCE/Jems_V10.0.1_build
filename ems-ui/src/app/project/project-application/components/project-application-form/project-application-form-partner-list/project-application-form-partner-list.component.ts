@@ -28,7 +28,7 @@ export class ProjectApplicationFormPartnerListComponent implements OnInit {
 
   ngOnInit(): void {
     this.tableConfiguration = new TableConfiguration({
-      routerLink: '/project/' + this.projectId + '/partner/',
+      routerLink: '/app/project/detail/' + this.projectId + '/applicationForm/partner/detail',
       isTableClickable: true,
       columns: [
         {

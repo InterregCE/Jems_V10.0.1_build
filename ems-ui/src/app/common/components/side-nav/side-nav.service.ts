@@ -7,7 +7,7 @@ import {MatDialog} from '@angular/material/dialog';
 import {ResolveEnd, Router} from '@angular/router';
 import {Forms} from '../../utils/forms';
 
-@Injectable()
+@Injectable({providedIn: 'root'})
 export class SideNavService {
   private headlines$ = new ReplaySubject<HeadlineRoute[]>();
   private navigateTo$ = new Subject<HeadlineRoute>();

@@ -3,7 +3,7 @@
     <div *ngIf="currentOutputIndicatorPage$ | async as outputIndicatorPage">
         <h5 id="outputIndicators">{{'output.indicator.table.title' | translate}}</h5>
         <button mat-raised-button color="primary"
-                [routerLink]="'/programme/indicators/outputIndicator/create'">
+                [routerLink]="'/app/programme/indicators/outputIndicator/create'">
             + Add new Output Indicator
         </button>
         <app-programme-output-indicators-list
@@ -21,7 +21,7 @@
     <div *ngIf="currentResultIndicatorPage$ | async as resultIndicatorPage">
         <h5 id="resultIndicators">{{'result.indicator.table.title' | translate}}</h5>
         <button mat-raised-button color="primary"
-                [routerLink]="'/programme/indicators/resultIndicator/create'">
+                [routerLink]="'/app/programme/indicators/resultIndicator/create'">
             + Add new Result Indicator
         </button>
         <app-programme-result-indicators-list

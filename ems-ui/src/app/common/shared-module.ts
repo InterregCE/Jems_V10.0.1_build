@@ -1,11 +1,6 @@
 import {NgModule} from '@angular/core';
 import {CommonModule} from '@angular/common';
-import {AppI18nModule} from '../app-i18n.module';
-import {HttpClientModule} from '@angular/common/http';
 import {FormsModule, ReactiveFormsModule} from '@angular/forms';
-import {BrowserModule} from '@angular/platform-browser';
-import {ApiModule} from '@cat/api';
-import {AppRoutingModule} from '../app-routing.module';
 import {TranslateModule} from '@ngx-translate/core';
 import {MatInputModule} from '@angular/material/input';
 import {MatButtonModule} from '@angular/material/button';
@@ -17,14 +12,11 @@ import {MatSortModule} from '@angular/material/sort';
 import {PaginatorComponent} from '@common/components/table/paginator/paginator.component';
 import {MatTabsModule} from '@angular/material/tabs';
 import {MatDialogModule} from '@angular/material/dialog';
+import {RouterModule} from '@angular/router';
+import {ProjectApplicationListComponent} from '../project/project-application/components/project-application-list/project-application-list.component';
 
 const modules = [
   CommonModule,
-  BrowserModule,
-  HttpClientModule,
-  ApiModule,
-  AppRoutingModule,
-  AppI18nModule,
   TranslateModule,
   FormsModule,
   ReactiveFormsModule,
@@ -35,10 +27,12 @@ const modules = [
   MatPaginatorModule,
   MatSortModule,
   MatTabsModule,
-  NgxPermissionsModule.forChild()
+  NgxPermissionsModule.forChild(),
+  RouterModule,
 ];
 
 const declarations = [
+  ProjectApplicationListComponent,
   TableComponent,
   PaginatorComponent,
 ];
