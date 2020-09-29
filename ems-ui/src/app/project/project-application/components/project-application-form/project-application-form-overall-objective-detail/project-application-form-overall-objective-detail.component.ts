@@ -34,13 +34,10 @@ specificObjective: OutputProgrammePriorityPolicySimple;
   updateData = new EventEmitter<InputProjectOverallObjective>();
 
   overallObjectiveForm: FormGroup = this.formBuilder.group({
-    projectSpecificObjective: ['', Validators.required],
+    projectSpecificObjective: ['', []],
     projectOverallObjective: ['', Validators.maxLength(500)]
   });
 
-  projectSpecificObjectiveError = {
-    required: 'project.application.form.overall.objective.specific.objective.required'
-  };
   projectOverallObjectiveError = {
     maxlength: 'project.application.form.overall.objective.entered.text.size.too.long'
   };

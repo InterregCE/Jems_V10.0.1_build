@@ -18,15 +18,12 @@
         <p class="intro-text-small">{{'project.application.form.overall.objective.field.row.five' | translate}}</p>
         <p class="intro-text-small">{{'project.application.form.overall.objective.field.row.six' | translate}}</p>
     </div>
-    <mat-form-field class="field" name="projectSpecificObjective">
+    <mat-form-field [ngClass]="!overallObjectiveForm?.controls?.projectSpecificObjective?.value && formState === FormState.EDIT ? 'disable-warning-field' : 'field'" name="projectSpecificObjective">
         <mat-label>{{'project.application.form.overall.objective.field.projectSpecificObjective' | translate}}</mat-label>
         <input [readonly]="formState === FormState.EDIT" formControlName="projectSpecificObjective" matInput placeholder="{{'project.application.form.overall.objective.field.projectSpecificObjective' | translate}}">
-        <mat-error>
-            <app-form-field-errors
-                    [errors]="overallObjectiveForm?.controls?.projectSpecificObjective?.errors"
-                    [messages]="projectSpecificObjectiveError">
-            </app-form-field-errors>
-        </mat-error>
+        <mat-hint *ngIf="!overallObjectiveForm?.controls?.projectSpecificObjective?.value && formState === FormState.EDIT" class="warning-hint">
+            {{'project.application.form.overall.objective.specific.objective.required' | translate}}
+        </mat-hint>
     </mat-form-field>
 
     <app-expandable-textarea class="field"
