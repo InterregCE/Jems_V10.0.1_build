@@ -1,11 +1,11 @@
-import {ChangeDetectionStrategy, Component} from '@angular/core';
-import {combineLatest, Subject} from 'rxjs';
+import {ChangeDetectionStrategy, Component, OnInit} from '@angular/core';
+import {combineLatest, of, Subject} from 'rxjs';
 import {InputPassword, UserService} from '@cat/api';
 import {ActivatedRoute} from '@angular/router';
 import {RolePageService} from '../../../user-role/services/role-page/role-page.service';
 import {SecurityService} from '../../../../security/security.service';
 import {I18nValidationError} from '@common/validation/i18n-validation-error';
-import {catchError, map, take, takeUntil, tap} from 'rxjs/operators';
+import {catchError, filter, map, take, takeUntil, tap} from 'rxjs/operators';
 import {HttpErrorResponse} from '@angular/common/http';
 import {BaseComponent} from '@common/components/base-component';
 import {Log} from '../../../../common/utils/log';
@@ -18,7 +18,7 @@ import {UserStore} from '../../services/user-store.service';
   styleUrls: ['./user-detail.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class UserDetailComponent extends BaseComponent {
+export class UserDetailComponent extends BaseComponent implements OnInit {
 
   passwordSaveSuccess$ = new Subject<boolean>();
   passwordSaveError$ = new Subject<I18nValidationError | null>();
@@ -26,22 +26,8 @@ export class UserDetailComponent extends BaseComponent {
   userEditDisabled = false;
   passwordEditDisabled = true;
 
-  userDetailId = this.activatedRoute?.snapshot?.params?.userId;
-  currentUserId = this.activatedRoute?.snapshot?.data?.userId;
-  userId = this.userDetailId ? this.userDetailId : this.currentUserId;
-
-  details$ = combineLatest([
-    this.rolePageService.userRoles(),
-    this.userStore.getUser(),
-    this.securityService.currentUser
-  ])
-    .pipe(
-      map(([roles, user, currentUser]) => ({
-        roles: roles.length ? roles : [user.userRole],
-        user,
-        currentUser
-      }))
-    );
+  userId = this.activatedRoute?.snapshot?.params?.userId;
+  details$ = of();
 
   constructor(private userService: UserService,
               public userStore: UserStore,
@@ -50,6 +36,23 @@ export class UserDetailComponent extends BaseComponent {
               private securityService: SecurityService) {
     super();
     this.userStore.init(this.userId);
+  }
+
+  ngOnInit(): void {
+    this.details$ = combineLatest([
+      this.rolePageService.userRoles(),
+      this.userStore.getUser(),
+      this.securityService.currentUser
+    ])
+      .pipe(
+        filter(([roles, user, currentUser]) => !!user),
+        map(([roles, user, currentUser]) => ({
+          roles: roles.length ? roles : [user.userRole],
+          user,
+          currentUser
+        }))
+      );
+
   }
 
   changePassword(password: InputPassword): void {

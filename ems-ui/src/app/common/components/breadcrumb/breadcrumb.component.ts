@@ -1,26 +1,29 @@
-import {Component, OnDestroy, OnInit} from '@angular/core';
-import {ActivatedRoute, Router} from '@angular/router';
-import {Subscription} from 'rxjs';
+import {ChangeDetectionStrategy, Component, OnInit} from '@angular/core';
+import {ActivatedRoute} from '@angular/router';
 import {Breadcrumb} from '@common/components/breadcrumb/breadcrumb';
+import {takeUntil, tap} from 'rxjs/operators';
+import {BaseComponent} from '@common/components/base-component';
 
 @Component({
   selector: 'app-breadcrumb',
   templateUrl: './breadcrumb.component.html',
   styleUrls: ['./breadcrumb.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class BreadcrumbComponent implements OnInit, OnDestroy {
+export class BreadcrumbComponent extends BaseComponent implements OnInit {
 
-  private breadcrumbs$: Subscription;
   breadcrumbs: Breadcrumb[] = [];
 
-  constructor(private _route: ActivatedRoute,
-              private _router: Router) {
-    this.breadcrumbs = []
+  constructor(private route: ActivatedRoute) {
+    super();
   }
 
   ngOnInit(): void {
-    this.breadcrumbs$ = this._route.data
-      .subscribe(() => this.breadcrumbs = this.buildBreadcrumbs(this._route.root, '/'))
+    this.route.data
+      .pipe(
+        takeUntil(this.destroyed$),
+        tap(() => this.breadcrumbs = this.buildBreadcrumbs(this.route.root, '/'))
+      ).subscribe()
   }
 
   private buildBreadcrumbs(route: ActivatedRoute, url: string, previous: Breadcrumb[] = []): Breadcrumb[] {
@@ -28,14 +31,13 @@ export class BreadcrumbComponent implements OnInit, OnDestroy {
     let nextUrl = url;
 
     const data = route.routeConfig?.data
-    const dynamicValue = route.snapshot.data.dynamicValue
 
     if (data) {
       nextUrl = `${url}/${this.extractPathFrom(route)}`
       if (!data.skipBreadcrumb) {
         const breadcrumb = {
-          i18nKey: !(data.dynamicValue) ? data.breadcrumb : null,
-          label: (data.dynamicValue) ? dynamicValue : null,
+          i18nKey: !data.dynamicBreadcrumb && data.breadcrumb,
+          dynamicValue: data.dynamicBreadcrumb && route.snapshot?.data?.breadcrumb$,
           url: nextUrl
         }
         newBreadcrumbs = [...newBreadcrumbs, breadcrumb];
@@ -61,10 +63,4 @@ export class BreadcrumbComponent implements OnInit, OnDestroy {
 
     return path;
   }
-
-  ngOnDestroy(): void {
-    if (this.breadcrumbs$)
-      this.breadcrumbs$.unsubscribe();
-  }
-
 }

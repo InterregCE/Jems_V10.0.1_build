@@ -66,7 +66,7 @@ export class ProjectApplicationEligibilityCheckComponent extends AbstractForm im
   }
 
   onCancel(): void {
-    this.router.navigate(['project', this.projectId]);
+    this.router.navigate(['app', 'project', 'detail', this.projectId]);
   }
 
   assessmentChangeHandler(event: any) {

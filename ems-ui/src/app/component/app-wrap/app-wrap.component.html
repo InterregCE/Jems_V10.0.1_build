@@ -1,4 +1,6 @@
-<app-top-bar [isAuthenticated]="true">
+<app-top-bar
+    [currentUser]="securityService.currentUser | async"
+    [isAuthenticated]="true">
 </app-top-bar>
 
 <mat-sidenav-container class="example-container">

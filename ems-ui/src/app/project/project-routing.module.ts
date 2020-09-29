@@ -29,8 +29,8 @@ export const routes: Routes = [
       },
       {
         path: 'detail/:projectId',
-        data: {dynamicValue: true},
-        resolve: {dynamicValue: ProjectAcronymResolver},
+        data: {dynamicBreadcrumb: true},
+        resolve: {breadcrumb$: ProjectAcronymResolver},
         children: [
           {
             path: '',

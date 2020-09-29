@@ -25,21 +25,10 @@ export class PermissionGuard implements CanActivate {
   }
 
   canActivate(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): Observable<boolean> {
-    if (!this.securityService.hasBeenInitialized) {
-      return this.securityService.reloadCurrentUser()
-        .pipe(
-          filter(user => !!user),
-          map(user => this.checkUser(user, route)
-          )
-        );
-    } else {
-      return this.securityService.currentUser
-        .pipe(
-          filter(user => !!user),
-          map(user => this.checkUser(user, route)
-          )
-        );
-    }
+    return this.securityService.currentUser
+      .pipe(
+        filter(user => !!user),
+        map(user => this.checkUser(user, route))
+      );
   }
-
 }

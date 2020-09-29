@@ -1,23 +1,16 @@
 import {Injectable} from '@angular/core';
 import {ActivatedRouteSnapshot, Resolve, RouterStateSnapshot} from '@angular/router';
-import {Observable} from 'rxjs';
+import {Observable, of} from 'rxjs';
 import {CallStore} from './call-store.service';
-import {map, take} from 'rxjs/operators';
 
 @Injectable()
-export class CallNameResolver implements Resolve<string> {
+export class CallNameResolver implements Resolve<Observable<string>> {
 
   constructor(private callStore: CallStore) {
   }
 
-  resolve(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): Observable<string> {
-    this.callStore.init(route.params.callId);
-    return this.callStore
-      .getCallById()
-      .pipe(
-        map(call => call.name),
-        take(1)
-      );
+  resolve(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): Observable<Observable<string>> {
+    return of(this.callStore.getCallName());
   }
 
 }

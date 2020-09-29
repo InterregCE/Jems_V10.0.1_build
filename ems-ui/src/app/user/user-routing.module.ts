@@ -17,8 +17,8 @@ export const routes: Routes = [
       {
         path: 'detail/:userId',
         component: UserDetailComponent,
-        data: { dynamicValue: true },
-        resolve: { dynamicValue: UserNameResolver }
+        data: {dynamicBreadcrumb: true},
+        resolve: {breadcrumb$: UserNameResolver}
       }
     ]
   }

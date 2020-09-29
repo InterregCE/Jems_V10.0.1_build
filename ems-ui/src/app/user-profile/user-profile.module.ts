@@ -6,11 +6,9 @@ import {CoreModule} from '../common/core-module';
 import {MatCardModule} from '@angular/material/card';
 import {RouterModule} from '@angular/router';
 import {UserDetailSharedModule} from '../common/user-detail-shared-module';
-import {CurrentUserResolver} from './services/current-user.resolver';
 
 @NgModule({
-  declarations: [
-  ],
+  declarations: [],
   imports: [
     SharedModule,
     RouterModule.forChild(routes),
@@ -18,9 +16,6 @@ import {CurrentUserResolver} from './services/current-user.resolver';
     MatCardModule,
     CoreModule,
     UserDetailSharedModule,
-  ],
-  providers: [
-    CurrentUserResolver,
   ]
 })
 export class UserProfileModule {

@@ -1,8 +1,7 @@
-export interface Breadcrumb {
+import {Observable} from 'rxjs';
 
+export interface Breadcrumb {
   url?: string;
   i18nKey?: string;
-  label?: string;
-  // permissionsOnly?: Permission[];
-
+  dynamicValue?: Observable<string>;
 }

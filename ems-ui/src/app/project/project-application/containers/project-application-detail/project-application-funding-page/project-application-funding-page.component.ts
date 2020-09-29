@@ -52,7 +52,7 @@ export class ProjectApplicationFundingPageComponent extends BaseComponent implem
   }
 
   redirectToProject(): void {
-    this.router.navigate(['project', this.projectId]);
+    this.router.navigate(['app', 'project', 'detail', this.projectId]);
   }
 
   private getApprovedWithConditionsStatus(project: OutputProject): OutputProjectStatus | null {
