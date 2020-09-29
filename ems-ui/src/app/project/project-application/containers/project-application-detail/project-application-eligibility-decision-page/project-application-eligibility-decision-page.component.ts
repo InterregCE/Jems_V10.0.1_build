@@ -26,7 +26,7 @@ export class ProjectApplicationEligibilityDecisionPageComponent implements OnIni
   }
 
   redirectToProject(): void {
-    this.router.navigate(['project', this.projectId]);
+    this.router.navigate(['app', 'project', 'detail', this.projectId]);
   }
 
 }

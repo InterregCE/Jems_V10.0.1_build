@@ -29,10 +29,10 @@ export const routes: Routes = [
       {
         path: 'detail/:callId',
         data: {
-          dynamicValue: true,
+          dynamicBreadcrumb: true,
           permissionsOnly: [Permission.ADMINISTRATOR, Permission.PROGRAMME_USER],
         },
-        resolve: { dynamicValue: CallNameResolver },
+        resolve: {breadcrumb$: CallNameResolver},
         canActivate: [PermissionGuard],
         component: CallConfigurationComponent,
       },

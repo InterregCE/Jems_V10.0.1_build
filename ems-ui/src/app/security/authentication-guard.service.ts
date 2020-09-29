@@ -8,7 +8,7 @@ import {AuthenticationService, OutputCurrentUser} from '@cat/api';
 export class AuthenticationGuard implements CanActivate {
 
   constructor(private authenticationService: AuthenticationService,
-              private _router: Router) {
+              private router: Router) {
   }
 
   canActivate(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): Observable<boolean> {
@@ -30,7 +30,7 @@ export class AuthenticationGuard implements CanActivate {
   }
 
   private unauthorized(url: string) {
-    this._router.navigate(['no-auth', 'login'], { queryParams: { ref: url } });
+    this.router.navigate(['no-auth', 'login'], {queryParams: {ref: url}});
   }
 
 }

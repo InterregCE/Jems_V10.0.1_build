@@ -1,30 +1,32 @@
 <div class="toolbar" role="banner">
-    <div>
-        <ng-container *ngIf="isAuthenticated">
-            <div class="spacer"></div>
-            <ng-container *ngIf="currentUser | async as user">
-            <span class="d-inline-block">
-                <app-menu [items]="menuItems | async"></app-menu>
-            </span>
-                <app-help-menu></app-help-menu>
-            </ng-container>
+    <ng-container *ngIf="isAuthenticated">
+        <div class="spacer"></div>
+        <ng-container *ngIf="currentUser">
+                <span class="d-inline-block">
+                    <app-menu [items]="menuItems | async"></app-menu>
+                </span>
+            <app-help-menu></app-help-menu>
         </ng-container>
+    </ng-container>
 
-        <mat-select #langSelect
-                    class="language-select"
-                    [value]="translate.currentLang"
-                    (selectionChange)="changeLanguage(langSelect.value)">
-            <mat-option *ngFor="let lang of translate.getLangs()" [value]="lang">
-                <mat-label>{{'language.' + lang.toLowerCase() | translate}}</mat-label>
-            </mat-option>
-        </mat-select>
+    <mat-select #langSelect
+                class="language-select"
+                [value]="translate.currentLang"
+                (selectionChange)="changeLanguage(langSelect.value)">
+        <mat-option *ngFor="let lang of translate.getLangs()" [value]="lang">
+            <mat-label>{{'language.' + lang.toLowerCase() | translate}}</mat-label>
+        </mat-option>
+    </mat-select>
 
-        <ng-container *ngIf="isAuthenticated">
-            <ng-container *ngIf="currentUser | async as user">
+    <ng-container *ngIf="isAuthenticated">
+        <ng-container *ngIf="currentUser">
             <span class="d-inline-block">
-                <button mat-flat-button (click)="logout()" [disabled]="logoutOngoing">{{'topbar.main.button.logout' | translate}}</button>
+                <button mat-flat-button
+                        (click)="logout()"
+                        [disabled]="logoutOngoing">
+                    {{'topbar.main.button.logout' | translate}}
+                </button>
             </span>
-            </ng-container>
         </ng-container>
-    </div>
+    </ng-container>
 </div>

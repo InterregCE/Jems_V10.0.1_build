@@ -13,7 +13,7 @@
     <app-user-password
             [success$]="passwordSaveSuccess$"
             [error$]="passwordSaveError$"
-            [userId]="userId"
+            [userId]="details.user?.id"
             [ownUser]="details.currentUser.id === details.user.id"
             [disabled]="passwordEditDisabled"
             (submitPassword)="changePassword($event)"

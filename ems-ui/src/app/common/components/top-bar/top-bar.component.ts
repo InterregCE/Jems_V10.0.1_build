@@ -1,5 +1,4 @@
-import {Component, Input, OnInit} from '@angular/core';
-import {SecurityService} from '../../../security/security.service';
+import {ChangeDetectionStrategy, Component, Input, OnInit} from '@angular/core';
 import {Router} from '@angular/router';
 import {TranslateService} from '@ngx-translate/core';
 import {Observable} from 'rxjs';
@@ -12,17 +11,21 @@ import {finalize} from 'rxjs/operators';
 @Component({
   selector: 'app-top-bar',
   templateUrl: './top-bar.component.html',
-  styleUrls: ['./top-bar.component.scss']
+  styleUrls: ['./top-bar.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class TopBarComponent implements OnInit {
 
-  @Input() isAuthenticated: boolean;
-  menuItems: Observable<MenuItemConfiguration[]>;
+  @Input()
+  currentUser: OutputCurrentUser;
 
+  @Input()
+  isAuthenticated: boolean;
+
+  menuItems: Observable<MenuItemConfiguration[]>;
   public logoutOngoing = false;
 
-  constructor(private securityService: SecurityService,
-              private router: Router,
+  constructor(private router: Router,
               private topBarService: TopBarService,
               private languageService: LanguageService,
               public translate: TranslateService) {
@@ -31,12 +34,7 @@ export class TopBarComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.securityService.reloadCurrentUser().subscribe();
     this.menuItems = this.topBarService.menuItems();
-  }
-
-  get currentUser(): Observable<OutputCurrentUser | null> {
-    return this.securityService.currentUser;
   }
 
   prepareAuditUrl(url: string): string {

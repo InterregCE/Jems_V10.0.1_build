@@ -8,18 +8,19 @@ import {AuthenticationService, OutputCurrentUser} from '@cat/api';
 export class NoDoubleLoginGuard implements CanActivate {
 
   constructor(private authenticationService: AuthenticationService,
-              private _router: Router) {
+              private router: Router) {
   }
 
   canActivate(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): Observable<boolean> {
-    return this.authenticationService.getCurrentUser().pipe(
-      tap((cu: OutputCurrentUser) => {
-        if (cu.id > 0)
-          this._router.navigate(['app']);
-      }),
-      map(() => true),
-      catchError(() => of(true)),
-    );
+    return this.authenticationService.getCurrentUser()
+      .pipe(
+        tap((cu: OutputCurrentUser) => {
+          if (cu.id > 0)
+            this.router.navigate(['app']);
+        }),
+        map(() => true),
+        catchError(() => of(true)),
+      );
   }
 
 }

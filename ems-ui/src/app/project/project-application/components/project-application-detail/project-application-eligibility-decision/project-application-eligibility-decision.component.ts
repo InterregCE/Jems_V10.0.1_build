@@ -56,7 +56,6 @@ export class ProjectApplicationEligibilityDecisionComponent extends AbstractForm
   selectedAssessment: string;
 
 
-
   constructor(
     private dialog: MatDialog,
     private router: Router,
@@ -82,7 +81,7 @@ export class ProjectApplicationEligibilityDecisionComponent extends AbstractForm
   }
 
   onCancel(): void {
-    this.router.navigate(['project', this.projectId]);
+    this.router.navigate(['app', 'project', 'detail', this.projectId]);
   }
 
   assessmentChangeHandler(event: any) {
@@ -100,11 +99,11 @@ export class ProjectApplicationEligibilityDecisionComponent extends AbstractForm
       takeUntil(this.destroyed$),
       filter(yes => !!yes)
     ).subscribe(() => {
-        this.changeStatus.emit({
-          status: this.getEligibilityDecisionValue(),
-          note: this.notesForm?.controls?.notes?.value,
-          date: this.notesForm?.controls?.decisionDate?.value.format('YYYY-MM-DD')
-        })
+      this.changeStatus.emit({
+        status: this.getEligibilityDecisionValue(),
+        note: this.notesForm?.controls?.notes?.value,
+        date: this.notesForm?.controls?.decisionDate?.value.format('YYYY-MM-DD')
+      })
     });
   }
 

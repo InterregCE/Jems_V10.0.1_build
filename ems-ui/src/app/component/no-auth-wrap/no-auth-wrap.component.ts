@@ -1,11 +1,14 @@
-import {BaseComponent} from '../../common/components/base-component';
-import {Component} from '@angular/core';
-import {SideNavService} from '../../common/components/side-nav/side-nav.service';
+import {ChangeDetectionStrategy, Component} from '@angular/core';
+import {SecurityService} from '../../security/security.service';
 
 @Component({
   selector: 'app-no-auth-wrap',
   templateUrl: './no-auth-wrap.component.html',
   styleUrls: ['./no-auth-wrap.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class NoAuthWrapComponent extends BaseComponent {
+export class NoAuthWrapComponent {
+
+  constructor(public securityService: SecurityService) {
+  }
 }

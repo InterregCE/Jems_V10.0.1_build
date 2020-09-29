@@ -14,5 +14,6 @@
 </ol>
 
 <ng-template let-breadcrumb #breadcrumbLabel>
-    {{ breadcrumb.i18nKey ? (breadcrumb.i18nKey | translate) : breadcrumb.label }}
+    <ng-container *ngIf="breadcrumb.dynamicValue">{{breadcrumb.dynamicValue | async}}</ng-container>
+    <ng-container *ngIf="!breadcrumb.dynamicValue">{{breadcrumb.i18nKey | translate}}</ng-container>
 </ng-template>

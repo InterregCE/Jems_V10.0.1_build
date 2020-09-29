@@ -46,7 +46,7 @@ export class ProjectStore {
         this.projectStatusService.setProjectStatus(id, newStatus)),
       tap(saved => this.projectStatus$.next(saved.projectStatus.status)),
       tap(saved => Log.info('Updated project status status:', this, saved)),
-      tap(saved => this.router.navigate(['project', saved.id])),
+      tap(saved => this.router.navigate(['app', 'project', 'detail', saved.id])),
       catchError((error: HttpErrorResponse) => {
         this.changeStatusError$.next(error.error);
         throw error;
@@ -58,7 +58,7 @@ export class ProjectStore {
       withLatestFrom(this.projectId$),
       flatMap(([assessment, id]) => this.projectStatusService.setEligibilityAssessment(id, assessment)),
       tap(saved => Log.info('Updated project eligibility assessment:', this, saved)),
-      tap(saved => this.router.navigate(['project', saved.id]))
+      tap(saved => this.router.navigate(['app', 'project', 'detail', saved.id]))
     );
 
   private changedQualityAssessment$ = this.newQualityAssessment$
@@ -66,7 +66,7 @@ export class ProjectStore {
       withLatestFrom(this.projectId$),
       flatMap(([assessment, id]) => this.projectStatusService.setQualityAssessment(id, assessment)),
       tap(saved => Log.info('Updated project quality assessment:', this, saved)),
-      tap(saved => this.router.navigate(['project', saved.id]))
+      tap(saved => this.router.navigate(['app', 'project', 'detail', saved.id]))
     )
 
   private revertedProjectStatus$ = this.newRevertProjectStatus$
@@ -117,10 +117,6 @@ export class ProjectStore {
 
   getProject(): Observable<OutputProject> {
     return this.project$;
-  }
-
-  getProjectById(): Observable<OutputProject> {
-    return this.projectById$;
   }
 
   getStatus(): Observable<OutputProjectStatus.StatusEnum> {

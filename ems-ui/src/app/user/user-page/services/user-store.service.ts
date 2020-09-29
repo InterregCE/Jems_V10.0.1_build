@@ -1,10 +1,11 @@
 import {Injectable} from '@angular/core';
 import {merge, Observable, ReplaySubject, Subject} from 'rxjs';
 import {InputUserUpdate, OutputUserWithRole, UserService} from '@cat/api';
-import {catchError, distinctUntilChanged, flatMap, tap} from 'rxjs/operators';
+import {catchError, flatMap, tap} from 'rxjs/operators';
 import {Log} from '../../../common/utils/log';
 import {I18nValidationError} from '@common/validation/i18n-validation-error';
 import {HttpErrorResponse} from '@angular/common/http';
+import {SecurityService} from '../../../security/security.service';
 
 @Injectable()
 export class UserStore {
@@ -17,17 +18,16 @@ export class UserStore {
 
   private userById$ = this.userId$
     .pipe(
-      distinctUntilChanged(),
       flatMap(id => this.userService.getById(id)),
       tap(user => Log.info('Fetched user:', this, user)),
-      tap(user => this.userName$.next(user.name))
+      tap(user => this.userName$.next(`${user.name} ${user.surname}`))
     );
 
   private savedUser$ = this.saveUser$
     .pipe(
       flatMap(userUpdate => this.userService.update(userUpdate)),
       tap(saved => Log.info('Updated user:', this, saved)),
-      tap(user => this.userName$.next(user.name)),
+      tap(user => this.userName$.next(`${user.name} ${user.surname}`)),
       tap(() => this.userSaveSuccess$.next(true)),
       tap(() => this.userSaveError$.next(null)),
       catchError((error: HttpErrorResponse) => {
@@ -36,11 +36,17 @@ export class UserStore {
       })
     );
 
-  constructor(private userService: UserService) {
+  constructor(private userService: UserService,
+              private securityService: SecurityService) {
   }
 
   init(userId: number | string) {
-    this.userId$.next(Number(userId));
+    if (userId) {
+      this.userId$.next(Number(userId));
+      return;
+    }
+    // if no userId is provided the current user will be loaded
+    this.userById$ = this.securityService.currentUserDetails as Observable<OutputUserWithRole>;
   }
 
   getUser(): Observable<OutputUserWithRole> {
@@ -50,5 +56,4 @@ export class UserStore {
   getUserName(): Observable<string> {
     return this.userName$.asObservable();
   }
-
 }

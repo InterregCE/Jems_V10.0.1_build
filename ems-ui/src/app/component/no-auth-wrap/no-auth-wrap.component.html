@@ -1,4 +1,7 @@
-<app-top-bar [isAuthenticated]="false"></app-top-bar>
+<app-top-bar
+        [currentUser]="securityService.currentUser | async"
+        [isAuthenticated]="false">
+</app-top-bar>
 
 <div class="no-auth-content" role="main">
     <div class="container">

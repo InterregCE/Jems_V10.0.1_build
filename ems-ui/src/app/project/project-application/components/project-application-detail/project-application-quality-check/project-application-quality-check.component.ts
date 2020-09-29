@@ -66,7 +66,7 @@ export class ProjectApplicationQualityCheckComponent extends AbstractForm implem
 
   onCancel(): void {
     // TODO move to container, use as Input()
-    this.router.navigate(['project', this.projectId]);
+    this.router.navigate(['app', 'project', 'detail', this.projectId]);
   }
 
   assessmentChangeHandler(event: any) {
