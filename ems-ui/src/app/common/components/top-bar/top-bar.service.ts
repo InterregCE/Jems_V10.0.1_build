@@ -14,29 +14,25 @@ export class TopBarService {
   private menuItems$ = new ReplaySubject<MenuItemConfiguration[]>(1);
   private newAuditUrl$ = new ReplaySubject<string>(1);
 
-  private applicationsItem = {
+  private applicationsItem: MenuItemConfiguration = {
     name: 'topbar.main.project',
     isInternal: true,
     route: '/app/project',
-    action: (internal: boolean, route: string) => this.handleNavigation(internal, route),
   };
-  private usersItem = {
+  private usersItem: MenuItemConfiguration = {
     name: 'topbar.main.user.management',
     isInternal: true,
     route: '/app/user',
-    action: (internal: boolean, route: string) => this.handleNavigation(internal, route),
   };
-  private programmItem = {
+  private programmItem: MenuItemConfiguration = {
     name: 'topbar.main.programme',
     isInternal: true,
     route: '/app/programme',
-    action: (internal: boolean, route: string) => this.handleNavigation(internal, route),
   };
-  private callsItem = {
+  private callsItem: MenuItemConfiguration = {
     name: 'topbar.main.call',
     isInternal: true,
     route: '/app/call',
-    action: (internal: boolean, route: string) => this.handleNavigation(internal, route),
   }
   private auditItem: MenuItemConfiguration;
   private editUserItem: MenuItemConfiguration;
@@ -45,11 +41,10 @@ export class TopBarService {
               private securityService: SecurityService,
               private router: Router) {
     combineLatest([
-      this.permissionService.permissionsChanged(),
       this.newAuditUrl$,
       this.securityService.currentUser
     ])
-      .subscribe(([perm, auditUrl, currentUser]) => {
+      .subscribe(([auditUrl, currentUser]) => {
         this.adaptMenuItems(auditUrl, currentUser);
         this.assingMenuItemsToUser();
       });
@@ -72,7 +67,6 @@ export class TopBarService {
       name: 'topbar.main.audit',
       isInternal: false,
       route: auditUrl,
-      action: (internal: boolean, route: string) => this.handleNavigation(internal, route),
     };
     if (!currentUser) {
       return;
@@ -81,7 +75,6 @@ export class TopBarService {
       name: `${currentUser?.name} (${currentUser?.role})`,
       isInternal: true,
       route: `/app/profile`,
-      action: (internal: boolean, route: string) => this.handleNavigation(internal, route)
     };
   }
 
@@ -123,13 +116,5 @@ export class TopBarService {
         this.auditItem,
         this.editUserItem,
       ]));
-  }
-
-  private handleNavigation(internalRoute: boolean, route: string): void {
-    if (internalRoute) {
-      this.router.navigate([route]);
-    } else {
-      window.open(route, '_blank');
-    }
   }
 }
