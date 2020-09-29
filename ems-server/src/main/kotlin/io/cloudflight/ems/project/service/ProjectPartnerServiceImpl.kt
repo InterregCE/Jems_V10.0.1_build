@@ -10,14 +10,12 @@ import io.cloudflight.ems.api.project.dto.OutputProjectPartnerDetail
 import io.cloudflight.ems.api.project.dto.ProjectPartnerRole
 import io.cloudflight.ems.exception.I18nValidationException
 import io.cloudflight.ems.exception.ResourceNotFoundException
-import io.cloudflight.ems.project.entity.ProjectPartnerOrganization
 import io.cloudflight.ems.project.repository.ProjectPartnerOrganizationRepository
 import io.cloudflight.ems.project.repository.ProjectPartnerRepository
 import io.cloudflight.ems.project.repository.ProjectRepository
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
 import org.springframework.data.domain.Sort
-import org.springframework.data.repository.findByIdOrNull
 import org.springframework.http.HttpStatus
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
@@ -30,8 +28,8 @@ class ProjectPartnerServiceImpl(
 ) : ProjectPartnerService {
 
     @Transactional(readOnly = true)
-    override fun getById(id: Long): OutputProjectPartnerDetail {
-        return projectPartnerRepo.findById(id).map { it.toOutputProjectPartnerDetail() }
+    override fun getById(projectId: Long, id: Long): OutputProjectPartnerDetail {
+        return projectPartnerRepo.findFirstByProjectIdAndId(projectId, id).map { it.toOutputProjectPartnerDetail() }
             .orElseThrow { ResourceNotFoundException("projectPartner") }
     }
 
@@ -42,7 +40,7 @@ class ProjectPartnerServiceImpl(
 
     @Transactional
     override fun create(projectId: Long, projectPartner: InputProjectPartnerCreate): OutputProjectPartnerDetail {
-        val project = projectRepo.findByIdOrNull(projectId) ?: throw ResourceNotFoundException("project")
+        val project = projectRepo.findById(projectId).orElseThrow { ResourceNotFoundException("project") }
 
         // prevent multiple role LEAD_PARTNER entries
         if (projectPartner.role!!.isLead)
@@ -94,7 +92,7 @@ class ProjectPartnerServiceImpl(
 
     @Transactional
     override fun update(projectId: Long, projectPartner: InputProjectPartnerUpdate): OutputProjectPartnerDetail {
-        val oldProjectPartner = projectPartnerRepo.findById(projectPartner.id)
+        val oldProjectPartner = projectPartnerRepo.findFirstByProjectIdAndId(projectId, projectPartner.id)
             .orElseThrow { ResourceNotFoundException("projectPartner") }
 
         if (!oldProjectPartner.role.isLead && projectPartner.role!!.isLead)
@@ -132,7 +130,7 @@ class ProjectPartnerServiceImpl(
 
     @Transactional
     override fun updatePartnerContact(projectId: Long, partnerId: Long, projectPartnerContact: Set<InputProjectPartnerContact>): OutputProjectPartnerDetail {
-        val projectPartner = projectPartnerRepo.findByProjectIdAndId(projectId, partnerId)
+        val projectPartner = projectPartnerRepo.findFirstByProjectIdAndId(projectId, partnerId)
             .orElseThrow { ResourceNotFoundException("projectPartner") }
         return projectPartnerRepo.save(
             projectPartner.copy(
@@ -143,7 +141,7 @@ class ProjectPartnerServiceImpl(
 
     @Transactional
     override fun updatePartnerContribution(projectId: Long, partnerId: Long, partnerContribution: InputProjectPartnerContribution): OutputProjectPartnerDetail {
-        val projectPartner = projectPartnerRepo.findByProjectIdAndId(projectId, partnerId)
+        val projectPartner = projectPartnerRepo.findFirstByProjectIdAndId(projectId, partnerId)
             .orElseThrow { ResourceNotFoundException("projectPartner") }
         return projectPartnerRepo.save(
             projectPartner.copy(

@@ -120,11 +120,11 @@ internal class ProjectPartnerServiceTest {
 
     @Test
     fun getById() {
-        every { projectPartnerRepository.findById(0) } returns Optional.empty()
-        every { projectPartnerRepository.findById(1) } returns Optional.of(projectPartner)
+        every { projectPartnerRepository.findFirstByProjectIdAndId(1, 0) } returns Optional.empty()
+        every { projectPartnerRepository.findFirstByProjectIdAndId(1, 1) } returns Optional.of(projectPartner)
 
-        assertThrows<ResourceNotFoundException> { projectPartnerService.getById(0) }
-        assertThat(projectPartnerService.getById(1)).isEqualTo(outputProjectPartnerDetail)
+        assertThrows<ResourceNotFoundException> { projectPartnerService.getById(1,0) }
+        assertThat(projectPartnerService.getById(1, 1)).isEqualTo(outputProjectPartnerDetail)
     }
 
     @Test
@@ -170,7 +170,7 @@ internal class ProjectPartnerServiceTest {
     fun updateProjectPartner() {
         val projectPartnerUpdate = InputProjectPartnerUpdate(1, "updated", ProjectPartnerRole.PARTNER)
         val updatedProjectPartner = ProjectPartner(1, project, projectPartnerUpdate.name!!, projectPartnerUpdate.role!!)
-        every { projectPartnerRepository.findById(1) } returns Optional.of(projectPartner)
+        every { projectPartnerRepository.findFirstByProjectIdAndId(1, 1) } returns Optional.of(projectPartner)
         every { projectRepository.findById(1) } returns Optional.of(project)
         every { projectPartnerRepository.save(updatedProjectPartner) } returns updatedProjectPartner
 
@@ -210,7 +210,7 @@ internal class ProjectPartnerServiceTest {
         val contactPersonsDto = HashSet<InputProjectPartnerContact>()
             contactPersonsDto.add(projectPartnerContactUpdate)
 
-        every { projectPartnerRepository.findByProjectIdAndId(1,1) } returns Optional.of(projectPartner)
+        every { projectPartnerRepository.findFirstByProjectIdAndId(1,1) } returns Optional.of(projectPartner)
         every { projectRepository.findById(1) } returns Optional.of(project)
         every { projectPartnerRepository.save(updatedProjectPartner) } returns updatedProjectPartner
 
@@ -229,7 +229,7 @@ internal class ProjectPartnerServiceTest {
             "test")
         val contactPersonsDto = HashSet<InputProjectPartnerContact>()
             contactPersonsDto.add(projectPartnerContactUpdate)
-        every { projectPartnerRepository.findByProjectIdAndId(1,eq(-1)) } returns Optional.empty()
+        every { projectPartnerRepository.findFirstByProjectIdAndId(1,eq(-1)) } returns Optional.empty()
         val exception = assertThrows<ResourceNotFoundException> { projectPartnerService.updatePartnerContact(1,-1, contactPersonsDto) }
         assertThat(exception.entity).isEqualTo("projectPartner")
     }
@@ -244,7 +244,7 @@ internal class ProjectPartnerServiceTest {
         val updatedProjectPartner = ProjectPartner(1, project, "updated", ProjectPartnerRole.PARTNER,
             null, emptySet(), projectPartnerContributionUpdate.toEntity(projectPartner))
 
-        every { projectPartnerRepository.findByProjectIdAndId(1,1) } returns Optional.of(projectPartner)
+        every { projectPartnerRepository.findFirstByProjectIdAndId(1,1) } returns Optional.of(projectPartner)
         every { projectRepository.findById(1) } returns Optional.of(project)
         every { projectPartnerRepository.save(updatedProjectPartner) } returns updatedProjectPartner
 
@@ -258,7 +258,7 @@ internal class ProjectPartnerServiceTest {
             "test",
             "test",
             "test")
-        every { projectPartnerRepository.findByProjectIdAndId(1,eq(-1)) } returns Optional.empty()
+        every { projectPartnerRepository.findFirstByProjectIdAndId(1,eq(-1)) } returns Optional.empty()
         val exception = assertThrows<ResourceNotFoundException> { projectPartnerService.updatePartnerContribution(1,-1, projectPartnerContributionUpdate) }
         assertThat(exception.entity).isEqualTo("projectPartner")
     }
@@ -286,7 +286,7 @@ internal class ProjectPartnerServiceTest {
             InputProjectPartnerOrganization(null, "test", "test", "test"))
         val updatedProjectPartner = ProjectPartner(1, project, projectPartnerUpdate.name!!, projectPartnerUpdate.role!!, null,
             emptySet(), null, organization)
-        every { projectPartnerRepository.findById(1) } returns Optional.of(projectPartner)
+        every { projectPartnerRepository.findFirstByProjectIdAndId(1, 1) } returns Optional.of(projectPartner)
         every { projectRepository.findById(1) } returns Optional.of(project)
         every { projectPartnerRepository.save(updatedProjectPartner) } returns updatedProjectPartner
         every { projectPartnerOrganizationRepository.findByIdOrNull(1) } returns organization

@@ -25,7 +25,7 @@ class ProjectPartnerController(
 
     @PreAuthorize("@projectAuthorization.canReadProject(#projectId)")
     override fun getProjectPartnerById(projectId: Long, id: Long): OutputProjectPartnerDetail {
-        return projectPartnerService.getById(id)
+        return projectPartnerService.getById(projectId, id)
     }
 
     @PreAuthorize("@projectAuthorization.canUpdateProject(#projectId)")
