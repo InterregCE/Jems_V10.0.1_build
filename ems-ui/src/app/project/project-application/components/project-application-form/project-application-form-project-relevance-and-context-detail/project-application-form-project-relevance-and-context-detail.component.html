@@ -1,5 +1,5 @@
 <form [formGroup]="projectRelevanceForm">
-    <h6 class="header" id="projectRelevanceHeading">
+    <h5 class="header" id="projectRelevanceHeading">
         {{'project.application.form.section.part.c.subsection.two' | translate}}
         <span class="header-button" *ngxPermissionsExcept="Permission.PROGRAMME_USER">
         <button color="primary" mat-raised-button
@@ -8,10 +8,10 @@
             {{'common.edit.label' | translate}}
         </button>
     </span>
-    </h6>
+    </h5>
 
     <div class="intro-text">
-        <p>{{'project.application.form.relevance.field.1' | translate}}</p>
+        <h6>{{'project.application.form.relevance.field.1' | translate}}</h6>
         <p class="intro-text-small">{{'project.application.form.relevance.field.1.intro.one' | translate}}</p>
         <p class="intro-text-small">{{'project.application.form.relevance.field.1.intro.two' | translate}}</p>
     </div>
@@ -26,7 +26,7 @@
     </app-expandable-textarea>
 
     <div class="intro-text">
-        <p>{{'project.application.form.relevance.field.2' | translate}}</p>
+        <h6>{{'project.application.form.relevance.field.2' | translate}}</h6>
         <p class="intro-text-small">{{'project.application.form.relevance.field.2.intro.one' | translate}}</p>
         <p class="intro-text-small">{{'project.application.form.relevance.field.2.intro.two' | translate}}</p>
     </div>
@@ -41,7 +41,7 @@
     </app-expandable-textarea>
 
     <div class="intro-text">
-        <p>{{'project.application.form.relevance.field.3' | translate}}</p>
+        <h6>{{'project.application.form.relevance.field.3' | translate}}</h6>
         <p class="intro-text-small">{{'project.application.form.relevance.field.3.intro.one' | translate}}</p>
         <p class="intro-text-small">{{'project.application.form.relevance.field.3.intro.two' | translate}}</p>
     </div>
@@ -56,7 +56,7 @@
     </app-expandable-textarea>
 
     <div class="intro-text">
-        <p>{{'project.application.form.relevance.field.4' | translate}}</p>
+        <h6>{{'project.application.form.relevance.field.4' | translate}}</h6>
         <p class="intro-text-small">{{'project.application.form.relevance.field.4.intro.one' | translate}}</p>
         <p class="intro-text-small">{{'project.application.form.relevance.field.4.intro.two' | translate}}</p>
         <p class="intro-text-small">{{'project.application.form.relevance.field.4.intro.three' | translate}}</p>
@@ -69,7 +69,7 @@
     </app-benefits-table>
 
     <div class="intro-text">
-        <p>{{'project.application.form.relevance.field.5' | translate}}</p>
+        <h6>{{'project.application.form.relevance.field.5' | translate}}</h6>
         <p class="intro-text-small">{{'project.application.form.relevance.field.5.intro.one' | translate}}</p>
     </div>
     <app-strategy-table
@@ -81,7 +81,7 @@
     </app-strategy-table>
 
     <div class="intro-text">
-        <p>{{'project.application.form.relevance.field.6' | translate}}</p>
+        <h6>{{'project.application.form.relevance.field.6' | translate}}</h6>
     </div>
     <app-synergy-table
             [synergyDataSource]="synergiesDataSource"
@@ -91,7 +91,7 @@
     </app-synergy-table>
 
     <div class="intro-text">
-        <p>{{'project.application.form.relevance.field.7' | translate}}</p>
+        <h6>{{'project.application.form.relevance.field.7' | translate}}</h6>
         <p class="intro-text-small">{{'project.application.form.relevance.field.7.intro' | translate}}</p>
     </div>
     <app-expandable-textarea class="field"
