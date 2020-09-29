@@ -42,6 +42,7 @@ describe('RolePageService', () => {
     let results: OutputUserRole[] = [];
     service.userRoles().subscribe(result => results = result);
 
+    httpTestingController.match({method: 'GET', url: `//api/auth/current`});
     const roles = [
       {name: 'role1'} as OutputUserRole,
       {name: '2@role1'} as OutputUserRole

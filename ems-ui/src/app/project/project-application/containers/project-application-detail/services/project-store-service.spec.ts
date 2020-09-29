@@ -25,7 +25,7 @@ describe('ProjectStoreService', () => {
         ProjectModule,
         TestModule,
         RouterTestingModule.withRoutes(
-          [{path: 'project/1', component: ProjectApplicationDetailComponent}])
+          [{path: 'app/project/detail/1', component: ProjectApplicationDetailComponent}])
       ]
     });
     service = TestBed.inject(ProjectStore);

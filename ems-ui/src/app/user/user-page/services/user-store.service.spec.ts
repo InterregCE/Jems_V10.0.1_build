@@ -31,6 +31,7 @@ describe('UserStoreService', () => {
     let success = false;
     service.userSaveSuccess$.subscribe((result: boolean) => success = result);
 
+    httpTestingController.match({method: 'GET', url: `//api/auth/current`});
     httpTestingController.expectOne({
       method: 'GET',
       url: `//api/user/1`

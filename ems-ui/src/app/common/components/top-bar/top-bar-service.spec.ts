@@ -35,6 +35,7 @@ describe('TopBarService', () => {
     securityService.reloadCurrentUser().subscribe();
     service.newAuditUrl('auditUrl');
 
+    // Error: Expected one matching request for criteria "Match method: GET, URL: //api/auth/current", found 2 requests.
     httpTestingController.expectOne({
       method: 'GET',
       url: `//api/auth/current`
