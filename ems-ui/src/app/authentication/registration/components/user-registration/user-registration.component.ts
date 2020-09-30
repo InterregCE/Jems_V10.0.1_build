@@ -17,6 +17,7 @@ export class UserRegistrationComponent extends AbstractForm implements OnInit{
 
   hide = true;
   clearOnSuccess = true;
+  permanentSuccessAlert = true;
 
   userForm = this.formBuilder.group({
     name: ['', Validators.compose([
