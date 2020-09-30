@@ -82,7 +82,9 @@
                             [type]="Alert.SUCCESS">
                         <p>{{'user.registration.save.success' | translate}}</p>
                         <br>
-                        <a class="alert-link" (click)="redirectToLogin()">Go to login</a>
+                        <a class="alert-link" (click)="redirectToLogin()">
+                            {{'user.registration.save.success.redirect.login' | translate}}
+                        </a>
                     </app-alert>
                     <app-alert *ngIf="error$ | async as error"
                                [show]="!submitted && !!error.i18nKey"

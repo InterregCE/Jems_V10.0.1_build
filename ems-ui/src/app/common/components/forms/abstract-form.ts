@@ -18,6 +18,7 @@ export abstract class AbstractForm extends BaseComponent implements OnInit {
   showSuccessMessage$ = new Subject<boolean>();
   submitted = false;
   clearOnSuccess = false;
+  permanentSuccessAlert = false;
 
   protected constructor(protected changeDetectorRef: ChangeDetectorRef) {
     super();
@@ -68,7 +69,9 @@ export abstract class AbstractForm extends BaseComponent implements OnInit {
 
         Log.debug('Show success message for 4 seconds.', this);
         this.showSuccessMessage$.next(true);
-        setTimeout(() => this.showSuccessMessage$.next(false), 4000);
+        if (!this.permanentSuccessAlert) {
+          setTimeout(() => this.showSuccessMessage$.next(false), 4000);
+        }
 
         this.handleClearFormOnSuccess();
       });
