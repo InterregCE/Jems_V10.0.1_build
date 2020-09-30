@@ -11,7 +11,6 @@ dependencies {
     }
 }
 
-// TODO re-enable FE tests
-//test.configure {
-//    dependsOn('clfNpmTest')
-//}
+test.configure {
+    dependsOn('clfNpmTest')
+}

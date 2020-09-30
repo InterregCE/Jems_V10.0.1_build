@@ -38,8 +38,7 @@ export class TopBarService {
   private editUserItem: MenuItemConfiguration;
 
   constructor(private permissionService: PermissionService,
-              private securityService: SecurityService,
-              private router: Router) {
+              private securityService: SecurityService) {
     combineLatest([
       this.newAuditUrl$,
       this.securityService.currentUser

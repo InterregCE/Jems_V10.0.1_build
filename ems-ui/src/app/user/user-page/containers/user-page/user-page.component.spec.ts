@@ -39,6 +39,7 @@ describe('UserPageComponent', () => {
     let success = false;
     component.userSaveSuccess$.subscribe(result => success = result);
 
+    httpTestingController.match({method: 'GET', url: `//api/auth/current`});
     httpTestingController.expectOne({method: 'POST', url: `//api/user`}).flush(user);
     httpTestingController.verify();
 
@@ -64,6 +65,7 @@ describe('UserPageComponent', () => {
 
   it('should sort and page the list of users', fakeAsync(() => {
     component.currentPage$.subscribe();
+    httpTestingController.match({method: 'GET', url: `//api/auth/current`});
 
     // initial sort and page
     httpTestingController.expectOne({method: 'GET', url: `//api/user?page=0&size=25&sort=id,desc`});

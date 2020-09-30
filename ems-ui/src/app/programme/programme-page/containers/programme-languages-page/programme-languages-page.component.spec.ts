@@ -34,6 +34,7 @@ describe('ProgrammeLanguagesPageComponent', () => {
   });
 
   it('should update a programme', fakeAsync(() => {
+    const spyOnReload = spyOn(component, 'reloadPage');
     const programme = {cci: 'some cci'} as OutputProgrammeData;
     programme.systemLanguageSelections = new Array({ name: 'EN', selected: true, translationKey: 'translation.en'});
 
@@ -53,6 +54,7 @@ describe('ProgrammeLanguagesPageComponent', () => {
     httpTestingController.verify();
 
     tick();
+    expect(spyOnReload).toHaveBeenCalled();
     expect(success).toBeTruthy();
   }));
 

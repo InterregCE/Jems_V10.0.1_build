@@ -58,6 +58,7 @@ describe('ProjectApplicationFilesComponent', () => {
   }));
 
   it('should sort and page the list of project files', fakeAsync(() => {
+    httpTestingController.match({method: 'GET', url: `//api/auth/current`});
     // initial sort and page
     httpTestingController.expectOne({
       method: 'GET',
@@ -91,6 +92,7 @@ describe('ProjectApplicationFilesComponent', () => {
   it('should delete file', fakeAsync(() => {
     component.deleteFile({id: 1, name: 'file'} as OutputProjectFile);
 
+    httpTestingController.match({method: 'GET', url: `//api/auth/current`});
     httpTestingController.expectOne({
       method: 'GET',
       url: '//api/project/1/file?fileType=APPLICANT_FILE&page=0&size=25&sort=id,desc'
@@ -103,6 +105,7 @@ describe('ProjectApplicationFilesComponent', () => {
   it('should save description', fakeAsync(() => {
     component.saveDescription({id: 1, name: 'file'} as OutputProjectFile);
 
+    httpTestingController.match({method: 'GET', url: `//api/auth/current`});
     httpTestingController.expectOne({
       method: 'GET',
       url: '//api/project/1/file?fileType=APPLICANT_FILE&page=0&size=25&sort=id,desc'

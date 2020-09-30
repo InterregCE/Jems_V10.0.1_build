@@ -44,7 +44,7 @@ export class SecurityService {
       );
   }
 
-  reloadCurrentUser(): Observable<OutputCurrentUser> {
+  private reloadCurrentUser(): Observable<OutputCurrentUser> {
     return this.authenticationService.getCurrentUser()
       .pipe(
         take(1),

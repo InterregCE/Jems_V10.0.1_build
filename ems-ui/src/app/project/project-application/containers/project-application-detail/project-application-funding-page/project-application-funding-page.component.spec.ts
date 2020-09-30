@@ -37,6 +37,6 @@ describe('ProjectApplicationFundingPageComponent', () => {
 
     component.redirectToProject();
 
-    expect(router.navigate).toHaveBeenCalledWith(['project', 1]);
+    expect(router.navigate).toHaveBeenCalledWith(['app', 'project', 'detail', 1]);
   });
 });

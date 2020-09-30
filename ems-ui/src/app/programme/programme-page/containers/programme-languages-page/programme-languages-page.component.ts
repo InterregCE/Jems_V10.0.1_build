@@ -38,7 +38,7 @@ export class ProgrammeLanguagesPageComponent extends BaseComponent implements On
           .map(value => value.name))),
       tap(() => this.programmeSaveSuccess$.next(true)),
       tap(() => this.programmeSaveError$.next(null)),
-      tap(() => window.location.reload()),
+      tap(() => this.reloadPage()),
       catchError((error: HttpErrorResponse) => {
         this.programmeSaveError$.next(error.error);
         throw error;
@@ -49,9 +49,12 @@ export class ProgrammeLanguagesPageComponent extends BaseComponent implements On
 
   constructor(private programmeDataService: ProgrammeDataService,
               private programmePageSidenavService: ProgrammePageSidenavService,
-              private translateService: TranslateService) {
+              private translateService: TranslateService,) {
     super();
     this.programmePageSidenavService.init(this.destroyed$);
   }
 
+  reloadPage() {
+    window.location.reload();
+  }
 }
