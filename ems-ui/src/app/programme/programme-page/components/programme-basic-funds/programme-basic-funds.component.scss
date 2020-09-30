@@ -20,14 +20,6 @@
     margin-left: 0.5rem;
   }
 
-  ::ng-deep.mat-form-field .mat-form-field-underline {
-    height: 0 !important;
-  }
-
-  .mat-form-field-appearance-outline .mat-form-field-outline {
-    color: white;
-  }
-
   ::ng-deep.mat-form-field-wrapper {
     margin-top: 0.4rem;
   }
@@ -47,14 +39,6 @@
   button {
     width: unset !important;
     margin-bottom: 0.1rem;
-  }
-
-  ::ng-deep.mat-input-invalid .mat-input-placeholder {
-    color: blue;
-  }
-
-  ::ng-deep.mat-input-invalid .mat-input-ripple {
-    background-color: blue;
   }
 
 }

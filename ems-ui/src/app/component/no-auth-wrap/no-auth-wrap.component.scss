@@ -1,16 +1,19 @@
+$topBarHeight: 3.75rem;
+
 app-top-bar {
-  height: 3.75rem;
+  height: $topBarHeight;
   width: 100%;
   position: fixed;
   top: 0;
 }
 
-.no-auth-content {
+.main-content {
+  padding: 2rem 1rem 3rem 1rem;
+}
+
+mat-sidenav-container {
   position: fixed;
-  top: 3.75rem;
+  top: $topBarHeight;
   bottom: 0;
-  right: 0;
-  left: 0;
-  padding: 1rem 1rem 3rem 1rem;
-  overflow-y: auto;
+  width: 100%;
 }

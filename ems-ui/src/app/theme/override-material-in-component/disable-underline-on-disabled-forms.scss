@@ -1,0 +1,10 @@
+.mat-form-field-disabled .mat-form-field-underline {
+  height: 0 !important;
+}
+
+.mat-form-field-disabled .mat-select-arrow {
+  visibility: hidden;
+}
+.mat-form-field-disabled .mat-select-value-text {
+  color: var(--font-color-primary);
+}

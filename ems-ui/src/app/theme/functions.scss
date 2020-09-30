@@ -1,0 +1,42 @@
+@import 'node_modules/@angular/material/theming';
+
+// source: https://stackoverflow.com/a/57288409
+
+@mixin generate-theme-vars($theme) {
+  //default palette foreground/background:
+  $foreground-palette: map-get($theme, foreground);
+  $background-palette: map-get($theme, background);
+
+  /////////////////////////////////////////////////
+  // SCSS VARS
+  /////////////////////////////////////////////////
+
+  $primary-theme: map-get($theme, primary);
+  $primary: mat-color(map-get($theme, primary));
+  $accent: mat-color(map-get($theme, accent));
+  $warn: mat-color(map-get($theme, warn));
+
+  $text: mat-color($foreground-palette, text);
+  $text-secondary: mat-color($foreground-palette, secondary-text);
+  $text-contrast: mat-color($primary-theme, default-contrast);
+  $text-contrast-lighter: mat-color($primary-theme, lighter-contrast);
+  $text-contrast-darker: mat-color($primary-theme, darker-contrast);
+
+  $hover: mat-color($background-palette, hover);
+
+  /////////////////////////////////////////////////
+  // CSS VARS
+  /////////////////////////////////////////////////
+
+  --primary-color: #{$primary};
+  --accent-color: #{$accent};
+  --warn-color: #{$warn};
+
+  --font-color-primary: #{$text};
+  --font-color-secondary: #{$text-secondary};
+  --font-color-contrast: #{$text-contrast};
+  --font-color-contrast-lighter: #{$text-contrast-lighter};
+  --font-color-contrast-darker: #{$text-contrast-darker};
+
+  --hover-color: #{$hover};
+}

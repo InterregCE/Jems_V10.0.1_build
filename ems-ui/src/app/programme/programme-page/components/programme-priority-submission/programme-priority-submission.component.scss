@@ -1,13 +1,3 @@
-.link, .link:visited {
-  color: #1976d2;
-  text-decoration: none;
-  cursor: pointer;
-}
-
-.link:hover{
-  color: #125699;
-}
-
 .container {
   width: 80rem;
 
@@ -33,18 +23,6 @@
     margin-left: 0.5rem;
     margin-right: 2rem;
     margin-bottom: 0.25rem;
-  }
-
-  ::ng-deep.mat-form-field-disabled .mat-form-field-underline {
-    height: 0 !important;
-  }
-
-  .mat-form-field-appearance-outline .mat-form-field-outline {
-    color: white;
-  }
-
-  input.mat-input-element {
-    color: #343a40;
   }
 
   .button {

@@ -1,9 +1,9 @@
-import {Component} from '@angular/core';
+import {Component, HostBinding} from '@angular/core';
 import {TranslateService} from '@ngx-translate/core';
 import {Title} from '@angular/platform-browser';
 import {Router} from '@angular/router';
-import {SideNavService} from '@common/components/side-nav/side-nav.service';
 import {BaseComponent} from '@common/components/base-component';
+import {ThemeService} from './theme/theme.service';
 
 @Component({
   selector: 'app-root',
@@ -12,12 +12,21 @@ import {BaseComponent} from '@common/components/base-component';
 })
 export class AppComponent extends BaseComponent {
 
+  @HostBinding('class') componentCssClass = 'light-theme';
+
   constructor(public translate: TranslateService,
+              public themeService: ThemeService,
               private titleService: Title,
               private router: Router) {
     super();
-
     this.router.routeReuseStrategy.shouldReuseRoute = () => false;
     this.titleService.setTitle('Ems');
+    themeService.$currentTheme
+      .subscribe(theme => this.componentCssClass = theme);
   }
+
+  onSetTheme(theme: string) {
+    this.themeService.$currentTheme.next(theme);
+  }
+
 }

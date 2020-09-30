@@ -1,4 +1,5 @@
 $sidebarSize: 18rem;
+$topBarHeight: 3.75rem;
 
 .shrunk {
   @media (min-width: 576px) {
@@ -19,7 +20,7 @@ $sidebarSize: 18rem;
 }
 
 app-top-bar {
-  height: 3.75rem;
+  height: $topBarHeight;
   width: 100%;
   position: fixed;
   top: 0;
@@ -27,7 +28,7 @@ app-top-bar {
 
 mat-sidenav-container {
   position: fixed;
-  top: 3.75rem;
+  top: $topBarHeight;
   bottom: 0;
   width: 100%;
 }

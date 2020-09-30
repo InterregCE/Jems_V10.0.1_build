@@ -1,14 +1,14 @@
-<button *ngIf="canChangeFile()" class="icon-button"
+<button *ngIf="canChangeFile()" mat-icon-button color="accent"
         (click)="edit.emit(file)"
-        matTooltip="{{'file.table.action.description.tooltip' | translate}}">
+        matTooltip="Test">
     <i class="fas fa-edit"></i>
 </button>
-<button *ngIf="true" class="icon-button"
+<button mat-icon-button color="accent"
         (click)="download.emit(file)"
         matTooltip="{{'file.table.action.download.tooltip' | translate}}">
     <i class="fas fa-file-download"></i>
 </button>
-<button *ngIf="canChangeFile()" class="icon-button"
+<button *ngIf="canChangeFile()" mat-icon-button color="accent"
         (click)="delete.emit(file)"
         matTooltip="{{'file.table.action.delete.tooltip' | translate}}">
     <i class="fas fa-trash"></i>

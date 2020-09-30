@@ -1,23 +1,34 @@
 @import "../node_modules/bootstrap/scss/bootstrap.scss";
-@import "~@angular/material/prebuilt-themes/indigo-pink.css";
+@import "src/app/theme/functions.scss";
+@import '~@angular/material/theming';
+
+@include mat-core();
+.dark-theme {
+  @import "src/app/theme/theme_dark";
+  @include angular-material-theme($dark-theme);
+  @include generate-theme-vars($dark-theme);
+}
+.light-theme {
+  @import "src/app/theme/theme_light";
+  @include angular-material-theme($light-theme);
+  @include generate-theme-vars($light-theme);
+}
 
 /**
  * Overriding styles: if you want to change colors of default material theme in specific components
  */
-@import "src/app/override-material-in-component/top-bar.scss";
-@import "src/app/override-material-in-component/programme-page";
+@import "src/app/theme/override-material-in-component/top-bar.scss";
+@import "src/app/theme/override-material-in-component/disable-underline-on-disabled-forms";
+@import "src/app/theme/override-material-in-component/disable-padding-on-mat-lists";
 
 /**
  * Following styles are applied globally to every HTML tag in this app
  */
 body {
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
-  font-size: 14px;
-  color: #333;
-  box-sizing: border-box;
+  font-family: Roboto, "Helvetica Neue", sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  background: #fafafa;
+  margin: 0;
 }
 
 h1,
@@ -42,20 +53,6 @@ p {
   margin: 0;
 }
 
-a,
-a:visited,
-a:hover {
-  color: #1976d2;
-  text-decoration: none;
-}
-
-a:hover {
-  color: #125699;
-}
-
-.field {
-  /*padding-top: 0 !important*/;
-}
 form .form-group {
   display: flex;
   flex-direction: row;
@@ -74,21 +71,9 @@ form .form-group {
     flex-basis: 100%;
   }
 }
-.policy-label{
-  font-size: 0.66rem;
-  color: darkgray;
-}
+
 .intro-text-small{
   font-size: 0.75rem;
-}
-.authentication-logo {
-  background: rgb(33,147,176);
-  color: white;
-  font-style: italic;
-  font-weight: 400;
-  display: flex;
-  align-items: center;
-  justify-content: center;
 }
 html {
   scroll-behavior: smooth;
@@ -96,16 +81,6 @@ html {
 
 html, body {
   height: 100%;
-}
-
-body {
-  margin: 0;
-  font-family: Roboto, "Helvetica Neue", sans-serif;
-}
-
-.mat-tab-link,
-.mat-tab-label {
-  opacity: 1 !important;
 }
 
 .material-select-panel {

@@ -6,7 +6,6 @@ import {ProjectApplicationDetailComponent} from './project-application/container
 import {ProjectApplicationSubmissionComponent} from './project-application/components/project-application-submission/project-application-submission.component';
 import {ProjectApplicationComponent} from './project-application/containers/project-application-page/project-application.component';
 import {SharedModule} from '../common/shared-module';
-import {OverlayModule} from '@angular/cdk/overlay';
 import {MatDialogModule} from '@angular/material/dialog';
 import {MatSelectModule} from '@angular/material/select';
 import {MatListModule} from '@angular/material/list';
@@ -129,7 +128,6 @@ import {ProjectApplicationFormPartnerContributionComponent} from './project-appl
     MatListModule,
     MatSelectModule,
     MatDialogModule,
-    OverlayModule,
     MatRadioModule,
     MatExpansionModule,
     MatDatepickerModule,

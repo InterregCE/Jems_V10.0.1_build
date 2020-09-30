@@ -20,6 +20,8 @@ import {NoAuthWrapComponent} from './component/no-auth-wrap/no-auth-wrap.compone
 import {AppNotFoundComponent} from './component/app-not-found/app-not-found.component';
 import {PermissionService} from './security/permissions/permission.service';
 import {SecurityService} from './security/security.service';
+import {OverlayContainer, OverlayModule} from '@angular/cdk/overlay';
+import {ThemeService} from './theme/theme.service';
 
 @NgModule({
   declarations: [
@@ -46,11 +48,13 @@ import {SecurityService} from './security/security.service';
     MatSidenavModule,
     SharedModule,
     MatCardModule,
+    OverlayModule,
   ],
   providers: [
     SecurityService,
     SideNavService,
     PermissionService,
+    ThemeService,
     {
       provide: BASE_PATH,
       useValue: '.'
@@ -60,7 +64,9 @@ import {SecurityService} from './security/security.service';
   bootstrap: [AppComponent]
 })
 export class AppModule {
-  constructor(translate: TranslateService) {
+  constructor(translate: TranslateService, overlayContainer: OverlayContainer, themeService: ThemeService) {
     translate.setDefaultLang('EN');
+    themeService.$currentTheme
+      .subscribe(theme => overlayContainer.getContainerElement().classList.value = `cdk-overlay-container ${theme}`);
   }
 }

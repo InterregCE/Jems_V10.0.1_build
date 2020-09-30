@@ -15,7 +15,7 @@ ol.breadcrumbs {
     line-height: 1.75rem;
 
     a {
-      color: dimgray;
+      color: var(--font-color-secondary);
       text-decoration: none;
     }
 
@@ -28,7 +28,7 @@ ol.breadcrumbs {
     }
 
     .current-page {
-      color: #FFBB00;
+      color: var(--accent-color);
     }
 
     .separator {

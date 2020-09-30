@@ -1,3 +1,12 @@
-a {
-  color: inherit;
+@import "src/app/theme/custom_colors";
+
+.mat-tab-link {
+  color: $light-primary-text;
+  opacity: 1;
+}
+
+a,
+a:visited,
+a:hover {
+  text-decoration: none;
 }

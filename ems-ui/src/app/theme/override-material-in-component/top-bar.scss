@@ -1,0 +1,14 @@
+@import 'src/app/theme/custom_colors';
+
+.top-bar-nav {
+  .mat-ink-bar {
+    background-color: $light-primary-text !important;
+  }
+}
+app-top-bar {
+  .mat-select-value-text,
+  .mat-select-arrow {
+    font-size: .875rem;
+    color: $light-primary-text !important;
+  }
+}

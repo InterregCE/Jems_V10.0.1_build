@@ -3,8 +3,12 @@
         [isAuthenticated]="false">
 </app-top-bar>
 
-<div class="no-auth-content" role="main">
-    <div class="container">
-        <router-outlet></router-outlet>
-    </div>
-</div>
+<mat-sidenav-container>
+    <mat-sidenav-content>
+        <div id="main-content" class="main-content" role="main">
+            <div class="container">
+                <router-outlet></router-outlet>
+            </div>
+        </div>
+    </mat-sidenav-content>
+</mat-sidenav-container>

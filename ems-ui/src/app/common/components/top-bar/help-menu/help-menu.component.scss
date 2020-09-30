@@ -1,5 +1,9 @@
 .help-category {
   font-size: 0.65rem;
-  color: #888888;
+  color: var(--font-color-secondary);
   padding-left: 1rem;
+}
+
+mat-icon {
+  color: var(--font-color-contrast);
 }

@@ -17,28 +17,24 @@
   width: 47%;
   padding-top: 1rem;
   margin-right: 53%;
+
+  input.mat-input-element {
+    color: var(--font-color-primary);
+  }
 }
 
 .field-half {
   width: 47%;
   padding-top: 1rem;
   margin-right: 1rem;
+
+  input.mat-input-element {
+    color: var(--font-color-primary);
+  }
 }
 
 button {
   margin-left: 0.5rem;
   margin-right: 2rem;
   margin-bottom: 0.25rem;
-}
-
-::ng-deep.mat-form-field-disabled .mat-form-field-underline {
-  height: 0 !important;
-}
-
-.mat-form-field-appearance-outline .mat-form-field-outline {
-  color: white;
-}
-
-input.mat-input-element {
-  color: #343a40;
 }

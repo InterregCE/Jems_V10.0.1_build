@@ -1,5 +1,12 @@
-.project-detail-row {
-  border: solid 1px darkgrey;
-  margin-left: 0;
-  margin-bottom: 3%;
+.key-value-list {
+  margin-bottom: 1rem;
+
+  .key {
+    color: var(--font-color-secondary);
+    font-size: .875rem !important;
+  }
+  .value {
+    font-size: 1rem !important;
+  }
+
 }
