@@ -11,7 +11,7 @@ import org.springframework.data.domain.Pageable
 
 interface ProjectPartnerService {
 
-    fun getById(id: Long): OutputProjectPartnerDetail
+    fun getById(projectId: Long, id: Long): OutputProjectPartnerDetail
 
     fun findAllByProjectId(projectId: Long, page: Pageable): Page<OutputProjectPartner>
 
