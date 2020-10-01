@@ -28,6 +28,7 @@ export class ProjectApplicationFormProjectRelevanceAndContextSectionComponent ex
   saveSuccess$ = new Subject<boolean>();
   updateProjectDescription$ = new Subject<InputProjectRelevance>();
   projectDescriptionDetails$: Observable<any>;
+  deleteEntriesFromTables$ = new Subject<InputProjectRelevance>();
 
   constructor(private projectDescriptionService: ProjectDescriptionService) {
     super();
@@ -51,7 +52,18 @@ export class ProjectApplicationFormProjectRelevanceAndContextSectionComponent ex
         })
       );
 
-    this.projectDescriptionDetails$ = merge(savedDescription$, updatedProjectDescription$)
+    const deletedEntriesFromTables$ = this.deleteEntriesFromTables$
+      .pipe(
+        flatMap((data) => this.projectDescriptionService.updateProjectRelevance(this.projectId, data)),
+        tap(() => this.saveError$.next(null)),
+        tap(saved => Log.info('Deleted entries from project relevance tables:', this, saved)),
+        catchError((error: HttpErrorResponse) => {
+          this.saveError$.next(error.error);
+          throw error;
+        })
+      );
+
+    this.projectDescriptionDetails$ = merge(savedDescription$, updatedProjectDescription$, deletedEntriesFromTables$)
       .pipe(
         map(project => ({
           project,
