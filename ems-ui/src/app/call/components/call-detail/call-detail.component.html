@@ -1,6 +1,6 @@
 <form [formGroup]="callForm" class="wrapper">
     <h2 id="callTitle" class="col-md-12">{{'call.detail.title' | translate}}
-        <button *ngIf="!published && formState === FormState.VIEW" mat-raised-button
+        <button *ngIf="!published && formState === FormState.VIEW" mat-raised-button color="primary"
                 (click)="changeFormState$.next(FormState.EDIT)">
             {{'call.detail.button.edit' | translate}}
         </button>

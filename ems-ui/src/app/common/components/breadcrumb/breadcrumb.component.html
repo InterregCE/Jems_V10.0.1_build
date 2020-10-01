@@ -2,7 +2,7 @@
     <li *ngFor="let breadcrumb of breadcrumbs; let first = first; let last = last" [class.active]="last">
 
         <a *ngIf="!last" [routerLink]="[breadcrumb.url]">
-            <mat-icon *ngIf="first">home</mat-icon>
+            <mat-icon *ngIf="first" color="secondary">home</mat-icon>
             <ng-container *ngTemplateOutlet="breadcrumbLabel; context:{$implicit: breadcrumb}"></ng-container>
         </a>
         <span *ngIf="last" class="current-page">

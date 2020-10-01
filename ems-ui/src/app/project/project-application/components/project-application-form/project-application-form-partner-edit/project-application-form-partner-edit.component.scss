@@ -18,20 +18,17 @@
     margin-right: 3rem;
   }
 
-  ::ng-deep.mat-form-field-disabled .mat-form-field-underline {
-    height: 0 !important;
-  }
-
-  .mat-form-field-appearance-outline .mat-form-field-outline {
-    color: white;
+  .mat-input-element {
+    color: var(--font-color-primary);
   }
 
   .valid-role {
-    font-size: 0.7rem;
-    color: #0000008a;
+    font-size: 0.75rem;
+    color: var(--font-color-secondary);
   }
 
   .invalid-role {
-    color: #f44336;
+    font-size: 0.75rem;
+    color: var(--warn-color);
   }
 }

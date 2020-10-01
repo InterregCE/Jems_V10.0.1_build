@@ -27,15 +27,7 @@
     margin-right: 3rem;
   }
 
-  ::ng-deep.mat-form-field-disabled .mat-form-field-underline {
-    height: 0 !important;
-  }
-
-  .mat-form-field-appearance-outline .mat-form-field-outline {
-    color: white;
-  }
-
   .mat-input-element {
-    color: #343a40;
+    color: var(--font-color-primary);
   }
 }

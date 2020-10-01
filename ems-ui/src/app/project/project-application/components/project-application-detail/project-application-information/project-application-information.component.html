@@ -1,61 +1,45 @@
 <h4>{{project.acronym}}</h4>
-<div class="row project-detail-row col-sm-12">
-    <div class="col-sm-1 column">
-        <span>{{'project.detail.table.id.application' | translate}}</span>
-        <br>
-        <span>{{project.id}}</span>
-    </div>
-    <div class="col-sm-1 column">
-        <span>{{'project.detail.table.id.programme' | translate}}</span>
-        <br>
-        <span>dummy</span>
-    </div>
-    <div class="col-sm-1 column">
-        <span>{{'project.detail.table.call.name' | translate}}</span>
-        <br>
-        <span>{{project.call.name}}</span>
-    </div>
-    <div class="col-sm-2 column">
-        <span>{{'project.detail.table.project.acronym' | translate}}</span>
-        <br>
-        <span>{{project.acronym}}</span>
-    </div>
-    <div class="col-sm-2 column">
-        <span>{{'project.detail.table.submission.first' | translate}}</span>
-        <ng-container *ngIf="project.firstSubmission">
-            <br>
-            <span>{{project.firstSubmission?.updated | date : Tables.DEFAULT_DATE_FORMAT}}</span>
-            <br>
-            <span>by {{project.firstSubmission?.user?.name}} {{project.firstSubmission?.user?.surname}}</span>
-        </ng-container>
-    </div>
-    <div class="col-sm-2 column">
-        <span>{{'project.detail.table.submission.latest' | translate}}</span>
-        <ng-container *ngIf="project.lastResubmission">
-            <br>
-            <span>{{project.lastResubmission?.updated | date : Tables.DEFAULT_DATE_FORMAT}}</span>
-            <br>
-            <span>by {{project.lastResubmission?.user?.name}} {{project.lastResubmission?.user?.surname}}</span>
-        </ng-container>
-    </div>
-    <ng-container *ngIf="project.projectData?.programmePriority">
-        <div [title]="project.projectData?.programmePriority?.title" class="col-sm-1 column">
-            <span>{{'project.detail.table.programme.priority' | translate}}</span>
-            <br>
-            <span>{{project.projectData?.programmePriority?.code}}</span>
-        </div>
-    </ng-container>
-    <ng-container *ngIf="project.projectData?.specificObjective">
-        <div [title]="'programme.policy.' + project.projectData?.specificObjective?.programmeObjectivePolicy | translate"
-             class="col-sm-1 column">
-            <span>{{'project.detail.table.specific.objective' | translate}}</span>
-            <br>
-            <span>{{project.projectData?.specificObjective?.code}}</span>
-        </div>
-    </ng-container>
-    <div class="col-sm-1 column">
-        <span>{{'project.detail.table.status' | translate}}</span>
-        <br>
-        <span>{{'common.label.projectapplicationstatus.' + project.projectStatus.status | translate}}</span>
-    </div>
-</div>
+<mat-list class="key-value-list">
+    <mat-list-item>
+        <h6 matLine class="key">{{'project.detail.table.id.application' | translate}}</h6>
+        <p matLine class="value">{{project.id}}</p>
+    </mat-list-item>
+    <mat-list-item>
+        <h6 matLine class="key">{{'project.detail.table.id.programme' | translate}}</h6>
+        <p matLine class="value">dummy</p>
+    </mat-list-item>
+    <mat-list-item>
+        <h6 matLine class="key">{{'project.detail.table.status' | translate}}</h6>
+        <p matLine class="value">{{'common.label.projectapplicationstatus.' + project.projectStatus.status | translate}}</p>
+    </mat-list-item>
+    <mat-list-item>
+        <h6 matLine class="key">{{'project.detail.table.call.name' | translate}}</h6>
+        <p matLine class="value">{{project.call.name}}</p>
+    </mat-list-item>
+    <mat-list-item>
+        <h6 matLine class="key">{{'project.detail.table.project.acronym' | translate}}</h6>
+        <p matLine class="value">{{project.acronym}}</p>
+    </mat-list-item>
+    <mat-list-item>
+        <h6 matLine class="key">{{'project.detail.table.submission.first' | translate}}</h6>
+        <p matLine class="value"
+           *ngIf="project.firstSubmission">{{project.firstSubmission?.updated | date : Tables.DEFAULT_DATE_FORMAT}}
+            ({{project.firstSubmission?.user?.name}} {{project.firstSubmission?.user?.surname}})</p>
+        <p matLine class="value" *ngIf="!project.firstSubmission"></p>
+    </mat-list-item>
+    <mat-list-item>
+        <h6 matLine class="key">{{'project.detail.table.submission.latest' | translate}}</h6>
+        <p matLine class="value"
+           *ngIf="project.lastResubmission">{{project.lastResubmission?.updated | date : Tables.DEFAULT_DATE_FORMAT}}
+            ({{project.lastResubmission?.user?.name}} {{project.lastResubmission?.user?.surname}})</p>
+        <p matLine class="value" *ngIf="!project.lastResubmission"></p>
+    </mat-list-item>
+    <mat-list-item *ngIf="project.projectData?.programmePriority">
+        <h6 matLine class="key">{{'project.detail.table.programme.priority' | translate}}</h6>
+        <p matLine class="value">{{project.projectData?.programmePriority?.code}}</p>
+    </mat-list-item>
+    <mat-list-item *ngIf="project.projectData?.specificObjective">
+        <h6 matLine class="key">{{'project.detail.table.specific.objective' | translate}}</h6>
+        <p matLine class="value">{{project.projectData?.specificObjective?.code}}</p>
+    </mat-list-item>
+</mat-list>

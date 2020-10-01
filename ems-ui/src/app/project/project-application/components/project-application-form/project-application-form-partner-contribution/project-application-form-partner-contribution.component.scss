@@ -16,14 +16,6 @@
     margin-right: 3rem;
   }
 
-  ::ng-deep.mat-form-field-disabled .mat-form-field-underline {
-    height: 0 !important;
-  }
-
-  .mat-form-field-appearance-outline .mat-form-field-outline {
-    color: white;
-  }
-
   .intro-text {
     width: 100%;
     padding-top: 1rem;
@@ -31,7 +23,7 @@
 
   .view-text {
     overflow-wrap: break-word;
-    color: darkgray;
+    color: var(--font-color-secondary);
     white-space: pre-wrap;
   }
 }
