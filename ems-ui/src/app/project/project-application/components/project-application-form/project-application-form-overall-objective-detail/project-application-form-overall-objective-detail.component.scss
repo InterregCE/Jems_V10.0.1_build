@@ -3,6 +3,19 @@
   padding-top: 1rem;
 }
 
+.disable-warning-field {
+  width: 100% !important;
+  padding-top: 1rem;
+
+  ::ng-deep.mat-form-field-label {
+    color: red !important;
+  }
+
+  ::ng-deep.mat-form-field-underline {
+    background-color: red !important;
+  }
+}
+
 .button {
   margin-right: 3rem;
 }
@@ -14,4 +27,8 @@
 
 .intro-text-small{
   font-size: 0.75rem;
+}
+
+.warning-hint {
+  color: red;
 }
