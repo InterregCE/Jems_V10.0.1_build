@@ -8,7 +8,7 @@ import {merge, Subject} from 'rxjs';
 import {I18nValidationError} from '@common/validation/i18n-validation-error';
 import {ProgrammePageSidenavService} from '../../services/programme-page-sidenav.service';
 import {Permission} from '../../../../security/permissions/permission';
-import {TranslateService} from '@ngx-translate/core';
+import {LanguageService} from '../../../../common/services/language.service';
 
 @Component({
   selector: 'app-programme-languages-page',
@@ -32,13 +32,9 @@ export class ProgrammeLanguagesPageComponent extends BaseComponent implements On
     .pipe(
       flatMap(programmeUpdate => this.programmeDataService.update(programmeUpdate)),
       tap(saved => Log.info('Updated programme:', this, saved)),
-      tap((response) => this.translateService.addLangs(
-        response?.systemLanguageSelections
-          .filter(value => value.selected)
-          .map(value => value.name))),
       tap(() => this.programmeSaveSuccess$.next(true)),
       tap(() => this.programmeSaveError$.next(null)),
-      tap(() => this.reloadPage()),
+      tap((response) => this.reloadLanguages(response)),
       catchError((error: HttpErrorResponse) => {
         this.programmeSaveError$.next(error.error);
         throw error;
@@ -49,12 +45,13 @@ export class ProgrammeLanguagesPageComponent extends BaseComponent implements On
 
   constructor(private programmeDataService: ProgrammeDataService,
               private programmePageSidenavService: ProgrammePageSidenavService,
-              private translateService: TranslateService,) {
+              private languageService: LanguageService) {
     super();
     this.programmePageSidenavService.init(this.destroyed$);
   }
 
-  reloadPage() {
-    window.location.reload();
+  reloadLanguages(response: OutputProgrammeData) {
+    this.languageService.languagesChanged$
+      .next(response);
   }
 }

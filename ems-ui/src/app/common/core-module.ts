@@ -20,7 +20,6 @@ import {TopBarComponent} from './components/top-bar/top-bar.component';
 import {MenuComponent} from './components/menu/menu.component';
 import {SharedModule} from './shared-module';
 import {TabService} from './services/tab.service';
-import {LanguageService} from './services/language.service';
 import {SideNavComponent} from '@common/components/side-nav/component/side-nav.component';
 import {MatExpansionModule} from '@angular/material/expansion';
 
@@ -55,7 +54,6 @@ const declarations = [
   providers: [
     DatePipe,
     TopBarService,
-    LanguageService,
     KeyValuePipe,
     MatSortHeader,
     TabService,
