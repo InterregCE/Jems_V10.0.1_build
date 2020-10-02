@@ -27,7 +27,7 @@ export class TopBarComponent implements OnInit {
 
   constructor(private router: Router,
               private topBarService: TopBarService,
-              private languageService: LanguageService,
+              public languageService: LanguageService,
               public translate: TranslateService) {
     const auditUrl = this.prepareAuditUrl(window.location.href);
     this.topBarService.newAuditUrl(auditUrl)

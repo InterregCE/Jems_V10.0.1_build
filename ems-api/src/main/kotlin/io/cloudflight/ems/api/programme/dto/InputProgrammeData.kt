@@ -48,7 +48,7 @@ data class InputProgrammeData(
 
 fun InputProgrammeData.getSystemLanguageSelectionsAsString(): String {
     return systemLanguageSelections.stream()
-        .filter { it.selected || it.name == SystemLanguage.EN }
+        .filter { it.selected }
         .map { it.name.name }
         .collect(Collectors.joining(","))
 }

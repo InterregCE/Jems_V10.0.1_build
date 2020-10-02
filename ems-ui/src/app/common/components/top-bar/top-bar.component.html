@@ -9,11 +9,16 @@
         </ng-container>
     </ng-container>
 
-    <mat-select #langSelect
+    <mat-select *ngIf="languageService.languageList$ | async as languagelist"
+                #langSelect
                 class="language-select"
                 [value]="translate.currentLang"
                 (selectionChange)="changeLanguage(langSelect.value)">
-        <mat-option *ngFor="let lang of translate.getLangs()" [value]="lang">
+        <mat-option *ngIf="!languagelist.isEnglishAvailable && translate.currentLang === languageService.default()"
+                    [value]="languageService.default()">
+            <mat-label>{{'language.en' | translate}}</mat-label>
+        </mat-option>
+        <mat-option *ngFor="let lang of languagelist.languages" [value]="lang">
             <mat-label>{{'language.' + lang.toLowerCase() | translate}}</mat-label>
         </mat-option>
     </mat-select>

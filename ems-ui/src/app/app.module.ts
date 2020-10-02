@@ -4,7 +4,7 @@ import {MatSidenavModule} from '@angular/material/sidenav';
 import {BrowserModule} from '@angular/platform-browser';
 import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
 import {HttpClient, HttpClientModule} from '@angular/common/http';
-import {TranslateLoader, TranslateModule, TranslateService} from '@ngx-translate/core';
+import {TranslateLoader, TranslateModule} from '@ngx-translate/core';
 import {MatCardModule} from '@angular/material/card';
 import {NgxPermissionsModule} from 'ngx-permissions';
 
@@ -64,8 +64,7 @@ import {ThemeService} from './theme/theme.service';
   bootstrap: [AppComponent]
 })
 export class AppModule {
-  constructor(translate: TranslateService, overlayContainer: OverlayContainer, themeService: ThemeService) {
-    translate.setDefaultLang('EN');
+  constructor(overlayContainer: OverlayContainer, themeService: ThemeService) {
     themeService.$currentTheme
       .subscribe(theme => overlayContainer.getContainerElement().classList.value = `cdk-overlay-container ${theme}`);
   }

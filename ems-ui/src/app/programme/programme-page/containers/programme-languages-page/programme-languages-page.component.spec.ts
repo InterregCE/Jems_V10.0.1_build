@@ -34,7 +34,7 @@ describe('ProgrammeLanguagesPageComponent', () => {
   });
 
   it('should update a programme', fakeAsync(() => {
-    const spyOnReload = spyOn(component, 'reloadPage');
+    const spyOnReload = spyOn(component, 'reloadLanguages');
     const programme = {cci: 'some cci'} as OutputProgrammeData;
     programme.systemLanguageSelections = new Array({ name: 'EN', selected: true, translationKey: 'translation.en'});
 
@@ -42,10 +42,8 @@ describe('ProgrammeLanguagesPageComponent', () => {
     let success = false;
     component.programmeSaveSuccess$.subscribe(result => success = result);
 
-    httpTestingController.expectOne({
-      method: 'GET',
-      url: `//api/programmedata`
-    }).flush(programme);
+    httpTestingController.expectOne({ method: 'GET', url: `//api/auth/current` });
+    httpTestingController.match({ method: 'GET', url: `//api/programmedata` });
 
     httpTestingController.expectOne({
       method: 'PUT',
