@@ -1,7 +1,7 @@
-@import "src/app/theme/custom_colors";
-
 :host {
   display: inline-block;
+  background-color: var(--app-bar);
+  background: linear-gradient(90deg, var(--app-bar) 0%, var(--background-lighter) 100%);
 }
 
 .language-select {
@@ -18,8 +18,6 @@ button {
   height: 100%;
   justify-content: flex-end;
   align-items: center;
-  background: $primaryDark;
-  background: linear-gradient(90deg, $primaryLight 0%, $primaryDark 100%);
   top: 0;
   z-index: 100;
 }

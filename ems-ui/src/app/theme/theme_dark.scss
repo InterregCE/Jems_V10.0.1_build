@@ -1,7 +1,9 @@
 @import 'node_modules/@angular/material/theming';
-@import 'src/app/theme/custom_colors';
 
+$primary: mat-palette($mat-blue, 600);
+$accent: mat-palette($mat-amber, 600);
 $warn: mat-palette($mat-red, 400);
+
 $dark-theme: mat-dark-theme($primary, $accent, $warn);
 
 @include angular-material-theme($dark-theme);

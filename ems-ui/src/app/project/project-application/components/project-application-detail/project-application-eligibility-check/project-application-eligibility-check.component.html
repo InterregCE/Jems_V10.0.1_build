@@ -30,8 +30,7 @@
                                      [customStyle]="'outline'">
             </app-expandable-textarea>
             <div *ngIf="project.eligibilityAssessment === null">
-                <button mat-raised-button
-                        color="secondary"
+                <button mat-stroked-button
                         (click)="onCancel()">{{'project.assessment.eligibilityCheck.dialog.button.cancel' | translate}}
                 </button>
 

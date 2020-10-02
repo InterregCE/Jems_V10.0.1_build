@@ -1,14 +1,15 @@
-@import 'src/app/theme/custom_colors';
-
 .top-bar-nav {
   .mat-ink-bar {
-    background-color: $light-primary-text !important;
+    // change active link underline
+    background-color: var(--font-text-link) !important;
   }
 }
+
+// change language dropdown styling
 app-top-bar {
   .mat-select-value-text,
   .mat-select-arrow {
     font-size: .875rem;
-    color: $light-primary-text !important;
+    color: var(--font-text-link) !important;
   }
 }

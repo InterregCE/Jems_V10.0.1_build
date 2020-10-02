@@ -32,8 +32,7 @@
                 </app-expandable-textarea>
             </div>
             <div *ngIf="project.qualityAssessment === null">
-                <button mat-raised-button
-                        color="secondary"
+                <button mat-stroked-button
                         (click)="onCancel()">{{'project.assessment.qualityCheck.dialog.button.cancel' | translate}}
                 </button>
 
