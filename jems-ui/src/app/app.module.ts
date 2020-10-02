@@ -3,7 +3,7 @@ import {RouterModule} from '@angular/router';
 import {MatSidenavModule} from '@angular/material/sidenav';
 import {BrowserModule} from '@angular/platform-browser';
 import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
-import {HttpClient, HttpClientModule} from '@angular/common/http';
+import {HTTP_INTERCEPTORS, HttpClient, HttpClientModule} from '@angular/common/http';
 import {TranslateLoader, TranslateModule} from '@ngx-translate/core';
 import {MatCardModule} from '@angular/material/card';
 import {NgxPermissionsModule} from 'ngx-permissions';
@@ -22,6 +22,9 @@ import {PermissionService} from './security/permissions/permission.service';
 import {SecurityService} from './security/security.service';
 import {OverlayContainer, OverlayModule} from '@angular/cdk/overlay';
 import {ThemeService} from './theme/theme.service';
+import {HttpErrorInterceptor} from './common/interceptors/http-error.interceptor';
+import {AuthenticationInterceptor} from './security/authentication.interceptor';
+import {LoginPageService} from './authentication/login/services/login-page-service';
 
 @NgModule({
   declarations: [
@@ -52,6 +55,7 @@ import {ThemeService} from './theme/theme.service';
   ],
   providers: [
     SecurityService,
+    LoginPageService,
     SideNavService,
     PermissionService,
     ThemeService,
@@ -59,6 +63,16 @@ import {ThemeService} from './theme/theme.service';
       provide: BASE_PATH,
       useValue: '.'
     },
+    {
+      provide: HTTP_INTERCEPTORS,
+      useClass: AuthenticationInterceptor,
+      multi: true
+    },
+    {
+      provide: HTTP_INTERCEPTORS,
+      useClass: HttpErrorInterceptor,
+      multi: true
+    }
   ],
   exports: [AppComponent],
   bootstrap: [AppComponent]
