@@ -6,6 +6,7 @@
   //default palette foreground/background:
   $foreground-palette: map-get($theme, foreground);
   $background-palette: map-get($theme, background);
+  $is-dark-theme: map-get($theme, is-dark);
 
   /////////////////////////////////////////////////
   // SCSS VARS
@@ -21,8 +22,12 @@
   $text-contrast: mat-color($primary-theme, default-contrast);
   $text-contrast-lighter: mat-color($primary-theme, lighter-contrast);
   $text-contrast-darker: mat-color($primary-theme, darker-contrast);
+  $text-link: if($is-dark-theme, $text, $primary);
 
+  $background-lighter: mat-color($primary-theme, if($is-dark-theme, darker, lighter));
+  $app-bar: mat-color($background-palette, app-bar);
   $hover: mat-color($background-palette, hover);
+  $outline: mat-color($foreground-palette, divider, if($is-dark-theme, 0.3, 0.12));;
 
   /////////////////////////////////////////////////
   // CSS VARS
@@ -37,6 +42,35 @@
   --font-color-contrast: #{$text-contrast};
   --font-color-contrast-lighter: #{$text-contrast-lighter};
   --font-color-contrast-darker: #{$text-contrast-darker};
+  --font-text-link: #{$text-link};
 
   --hover-color: #{$hover};
+  --background-lighter: #{$background-lighter};
+  --app-bar: #{$app-bar};
+
+  /**
+   * Our custom coloring to global components:
+   */
+
+  // changed coloring for stroked button
+  .mat-stroked-button {
+    color: if($is-dark-theme, $text, $primary);
+  }
+  .mat-stroked-button:not([disabled]) {
+    border-color: if($is-dark-theme, $outline, $primary);
+  }
+
+  // changed button-toggle styling to match stroked button
+  .mat-button-toggle-group {
+    border-color: if($is-dark-theme, $outline, $primary);
+  }
+  .mat-button-toggle {
+    background-color: transparent;
+    color: if($is-dark-theme, $text, $primary);
+  }
+  .mat-button-toggle-checked {
+    background-color: $primary;
+    color: $text-contrast !important;
+  }
+
 }

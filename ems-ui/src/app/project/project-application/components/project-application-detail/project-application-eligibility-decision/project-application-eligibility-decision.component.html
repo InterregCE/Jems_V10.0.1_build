@@ -44,8 +44,7 @@
                 </mat-error>
             </mat-form-field>
             <div *ngIf="!project.eligibilityDecision">
-                <button mat-raised-button
-                        color="secondary"
+                <button mat-stroked-button
                         (click)="onCancel()">{{'project.assessment.eligibilityDecision.dialog.button.cancel' | translate}}
                 </button>
 

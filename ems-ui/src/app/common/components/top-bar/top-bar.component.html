@@ -27,6 +27,7 @@
         <ng-container *ngIf="currentUser">
             <span class="d-inline-block">
                 <button mat-flat-button
+                        color="primary"
                         (click)="logout()"
                         [disabled]="logoutOngoing">
                     {{'topbar.main.button.logout' | translate}}

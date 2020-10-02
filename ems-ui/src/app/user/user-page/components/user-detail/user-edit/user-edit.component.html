@@ -48,7 +48,7 @@
             </app-user-role-form-field>
         </div>
         <div *ngIf="formState === FormState.EDIT">
-            <button mat-raised-button
+            <button mat-stroked-button
                     [disabled]="disabled"
                     type="button"
                     (click)="changeFormState$.next(FormState.VIEW)">

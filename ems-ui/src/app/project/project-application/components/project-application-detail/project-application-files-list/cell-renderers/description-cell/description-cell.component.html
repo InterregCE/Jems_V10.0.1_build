@@ -16,8 +16,7 @@
         </mat-error>
     </mat-form-field>
     <button *ngIf="formState === FormState.EDIT"
-            mat-raised-button
-            color="secondary"
+            mat-stroked-button
             class="button"
             (click)="onCancel()">{{'project.file.description.button.cancel' | translate}}
     </button>

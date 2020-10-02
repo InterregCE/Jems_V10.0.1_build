@@ -22,7 +22,7 @@
             </div>
             <div *ngIf="project.eligibilityAssessment"
                  class="col-3">
-                <button mat-raised-button color="secondary" class="assessment-button"
+                <button mat-stroked-button class="assessment-button"
                         [routerLink]="'./assessment/eligibilityCheck'">
                     {{'project.assessment.eligibilityCheck.assessment.view' | translate}}
                 </button>
@@ -45,7 +45,7 @@
             </div>
             <div *ngIf="project.qualityAssessment"
                  class="col-3">
-                <button mat-raised-button color="secondary" class="assessment-button"
+                <button mat-stroked-button class="assessment-button" disabled
                         [routerLink]="'./assessment/qualityCheck'">
                     {{'project.assessment.qualityCheck.assessment.view' | translate}}
                 </button>

@@ -37,8 +37,7 @@
         </mat-error>
     </mat-form-field>
     <div *ngIf="!status">
-        <button mat-raised-button
-                color="secondary"
+        <button mat-stroked-button
                 (click)="cancel.emit()">{{'project.assessment.fundingDecision.dialog.button.cancel' | translate}}
         </button>
 

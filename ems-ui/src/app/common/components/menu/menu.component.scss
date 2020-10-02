@@ -1,7 +1,5 @@
-@import "src/app/theme/custom_colors";
-
 .mat-tab-link {
-  color: $light-primary-text;
+  color: var(--font-text-link);
   opacity: 1;
 }
 
