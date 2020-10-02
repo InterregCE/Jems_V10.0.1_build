@@ -1,6 +1,6 @@
 <div class="container">
     <h4>{{'output.indicator.title' | translate}}
-        <button *ngIf="formState === FormState.VIEW" mat-raised-button
+        <button *ngIf="formState === FormState.VIEW" mat-raised-button color="primary"
                 (click)="changeFormState$.next(FormState.EDIT)">
             {{'output.indicator.button.edit' | translate}}
         </button>

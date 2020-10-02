@@ -1,6 +1,6 @@
 <div>
     <h4>{{'programme.area.nuts.explorer.header' | translate}}
-        <button *ngIf=" formState === FormState.VIEW" mat-raised-button
+        <button *ngIf=" formState === FormState.VIEW" mat-raised-button color="primary"
                 (click)="changeFormState$.next(FormState.EDIT)">
             {{'common.edit.label' | translate}}
         </button>
@@ -22,13 +22,13 @@
         </div>
     </div>
     <div *ngIf="formState === FormState.EDIT" class="row col-md-12">
-        <button mat-raised-button color="primary" class="button"
-                (click)="onSubmit()">
-            {{'common.save.label' | translate}}
-        </button>
         <button mat-stroked-button class="button"
                 (click)="onCancel()">
             {{'common.cancel.label' | translate}}
+        </button>
+        <button mat-raised-button color="primary" class="button"
+                (click)="onSubmit()">
+            {{'common.save.label' | translate}}
         </button>
     </div>
     <app-alert

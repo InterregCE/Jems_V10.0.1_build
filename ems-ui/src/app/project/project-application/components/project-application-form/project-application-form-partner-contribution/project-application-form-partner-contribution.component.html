@@ -2,7 +2,7 @@
     <h5><span>{{'project.partner.motivation.header' | translate}}</span>
         <span class="header-button" *ngxPermissionsExcept="Permission.PROGRAMME_USER">
             <button *ngIf="(formState === FormState.VIEW && editable) && partner?.id"
-                    (click)="changeFormState$.next(FormState.EDIT)" mat-raised-button>
+                    (click)="changeFormState$.next(FormState.EDIT)" color="primary" mat-raised-button>
                 {{'common.edit.label' | translate}}
             </button>
         </span>
