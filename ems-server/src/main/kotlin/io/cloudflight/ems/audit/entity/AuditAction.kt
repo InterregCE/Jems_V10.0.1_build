@@ -45,4 +45,7 @@ enum class AuditAction {
     PASSWORD_CHANGED,
     USER_DATA_CHANGED,
 
+    //package LEGAL STATUS
+    LEGAL_STATUS_EDITED,
+
 }

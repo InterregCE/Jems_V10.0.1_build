@@ -6,6 +6,7 @@ import io.cloudflight.ems.audit.service.AuditBuilder
 import io.cloudflight.ems.audit.service.AuditCandidate
 import io.cloudflight.ems.nuts.service.NutsIdentifier
 import io.cloudflight.ems.programme.entity.ProgrammeFund
+import io.cloudflight.ems.programme.entity.ProgrammeLegalStatus
 import java.util.stream.Collectors
 
 fun programmePriorityAdded(programmePriority: OutputProgrammePriority): AuditCandidate {
@@ -41,5 +42,14 @@ fun programmeFundsChanged(funds: Iterable<ProgrammeFund>): AuditCandidate {
 
     return AuditBuilder(AuditAction.PROGRAMME_FUNDS_CHANGED)
         .description("Programme funds has been set to:\n$fundsAsString")
+        .build()
+}
+
+fun programmeLegalStatusesChanged(statuses: Iterable<ProgrammeLegalStatus>): AuditCandidate {
+    val statusesAsString = statuses.asSequence()
+        .map { it.description }.joinToString(",\n")
+
+    return AuditBuilder(AuditAction.LEGAL_STATUS_EDITED)
+        .description("Values for partner legal status set to:\n$statusesAsString")
         .build()
 }
