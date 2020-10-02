@@ -20,7 +20,7 @@ export class AppComponent extends BaseComponent {
               private router: Router) {
     super();
     this.router.routeReuseStrategy.shouldReuseRoute = () => false;
-    this.titleService.setTitle('Ems');
+    this.titleService.setTitle('Jems');
     themeService.$currentTheme
       .subscribe(theme => this.componentCssClass = theme);
   }
