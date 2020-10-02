@@ -1,11 +1,13 @@
-import {ChangeDetectionStrategy, Component, Input, OnInit} from '@angular/core';
+import {ChangeDetectionStrategy, Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
 import {BaseComponent} from '@common/components/base-component';
 import {MatTableDataSource} from '@angular/material/table';
 import {ProjectRelevanceSynergy} from '../../dtos/project-relevance-synergy';
 import {FormControl, FormGroup, Validators} from '@angular/forms';
-import {Observable, Subject} from 'rxjs';
-import {takeUntil} from 'rxjs/operators';
-import { Permission } from 'src/app/security/permissions/permission';
+import {Observable} from 'rxjs';
+import {filter, take, takeUntil, tap} from 'rxjs/operators';
+import {Permission} from 'src/app/security/permissions/permission';
+import {Forms} from '../../../../../../../common/utils/forms';
+import {MatDialog} from '@angular/material/dialog';
 
 @Component({
   selector: 'app-synergy-table',
@@ -24,19 +26,22 @@ export class SynergyTableComponent extends BaseComponent implements OnInit {
   disabled: boolean
   @Input()
   changedFormState$: Observable<null>;
+  @Output()
+  deleteData = new EventEmitter<any>();
 
-  showTable$ = new Subject<null>();
-
-  displayedColumns: string[] = ['select', 'project', 'synergy'];
+  displayedColumns: string[] = ['select', 'project', 'synergy', 'delete'];
 
   synergyCounter: number;
 
   projectErrors = {
     maxlength: 'project.application.form.relevance.project.size.too.long',
   };
-
   synergyErrors = {
     maxlength: 'project.application.form.relevance.synergy.size.too.long'
+  }
+
+  constructor(private dialog: MatDialog) {
+    super();
   }
 
   ngOnInit(): void {
@@ -82,5 +87,25 @@ export class SynergyTableComponent extends BaseComponent implements OnInit {
       this.synergy(synergy.id),
       new FormControl(synergy?.synergy, Validators.maxLength(2000))
     );
+  }
+
+  confirmDeletion(element: ProjectRelevanceSynergy): void {
+    Forms.confirmDialog(
+      this.dialog,
+      'project.application.form.description.table.delete.dialog.header',
+      'project.application.form.description.synergy.table.delete.dialog.message',
+      {name: element.specification}
+    ).pipe(
+      take(1),
+      filter(yes => !!yes),
+      tap(() => this.deleteEntry(element))
+    ).subscribe();
+  }
+
+  deleteEntry(element: ProjectRelevanceSynergy): void {
+    const index = this.synergyDataSource.data.indexOf(element);
+    this.synergyDataSource.data.splice(index,1);
+    this.synergyDataSource._updateChangeSubscription();
+    this.deleteData.emit();
   }
 }

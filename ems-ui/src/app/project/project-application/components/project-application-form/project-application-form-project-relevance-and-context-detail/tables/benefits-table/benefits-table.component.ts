@@ -1,12 +1,15 @@
-import {ChangeDetectionStrategy, Component, Input, OnInit} from '@angular/core';
+import {ChangeDetectionStrategy, Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
 import {Permission} from 'src/app/security/permissions/permission';
 import {MatTableDataSource} from '@angular/material/table';
 import {ProjectRelevanceBenefit} from '../../dtos/project-relevance-benefit';
 import {FormControl, FormGroup, Validators} from '@angular/forms';
 import {InputProjectRelevanceBenefit} from '@cat/api';
 import {Observable} from 'rxjs';
-import {takeUntil} from 'rxjs/operators';
+import {filter, take, takeUntil, tap} from 'rxjs/operators';
 import {BaseComponent} from '@common/components/base-component';
+import {Forms} from '../../../../../../../common/utils/forms';
+import {MatDialog} from '@angular/material/dialog';
+import {TranslateService} from '@ngx-translate/core';
 
 @Component({
   selector: 'app-benefits-table',
@@ -25,8 +28,10 @@ export class BenefitsTableComponent extends BaseComponent implements OnInit {
   disabled: boolean
   @Input()
   changedFormState$: Observable<null>;
+  @Output()
+  deleteData = new EventEmitter<any>();
 
-  displayedColumns: string[] = ['select', 'targetGroup', 'specification'];
+  displayedColumns: string[] = ['select', 'targetGroup', 'specification', 'delete'];
 
   benefitCounter: number;
   benefitEnums = [
@@ -50,9 +55,13 @@ export class BenefitsTableComponent extends BaseComponent implements OnInit {
   targetGroupErrors = {
     required: 'project.application.form.relevance.target.group.not.empty',
   };
-
   specificationErrors = {
     maxlength: 'project.application.form.relevance.specification.size.too.long'
+  }
+
+  constructor(private dialog: MatDialog,
+              private translateService: TranslateService) {
+    super();
   }
 
   ngOnInit(): void {
@@ -98,5 +107,31 @@ export class BenefitsTableComponent extends BaseComponent implements OnInit {
       this.specification(benefit.id),
       new FormControl(benefit?.specification, Validators.maxLength(2000))
     );
+  }
+
+  confirmDeletion(element: ProjectRelevanceBenefit): void {
+    let translatedTargetGroup = '';
+    this.translateService.get('project.application.form.relevance.target.group.' + element.targetGroup)
+      .pipe(
+        take(1),
+        tap(text => translatedTargetGroup = text)
+      ).subscribe()
+    Forms.confirmDialog(
+      this.dialog,
+      'project.application.form.description.table.delete.dialog.header',
+      'project.application.form.description.target.group.table.delete.dialog.message',
+      {name: translatedTargetGroup}
+    ).pipe(
+      take(1),
+      filter(yes => !!yes),
+      tap(() => this.deleteEntry(element))
+    ).subscribe();
+  }
+
+  deleteEntry(element: ProjectRelevanceBenefit): void {
+    const index = this.benefitsDataSource.data.indexOf(element);
+    this.benefitsDataSource.data.splice(index,1);
+    this.benefitsDataSource._updateChangeSubscription();
+    this.deleteData.emit();
   }
 }

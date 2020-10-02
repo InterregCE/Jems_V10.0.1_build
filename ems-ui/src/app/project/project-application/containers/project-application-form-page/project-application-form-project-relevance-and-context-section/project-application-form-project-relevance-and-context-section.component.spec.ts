@@ -1,6 +1,6 @@
 import {async, ComponentFixture, fakeAsync, TestBed} from '@angular/core/testing';
 import {InputProjectRelevance} from '@cat/api';
-import { ProjectApplicationFormProjectRelevanceAndContextSectionComponent } from './project-application-form-project-relevance-and-context-section.component';
+import {ProjectApplicationFormProjectRelevanceAndContextSectionComponent} from './project-application-form-project-relevance-and-context-section.component';
 import {HttpTestingController} from '@angular/common/http/testing';
 import {TestModule} from '../../../../../common/test-module';
 import {ProjectModule} from '../../../../project.module';
@@ -40,6 +40,15 @@ describe('ProjectApplicationFormProjectRelevanceAndContextSectionComponent', () 
       method: 'GET',
       url: '//api/project/1/description'
     })
+    httpTestingController.expectOne({
+      method: 'PUT',
+      url: '//api/project/1/description/c2'
+    })
+  }));
+
+  it('should delete an entry from project relevance tables', fakeAsync(() => {
+    component.deleteEntriesFromTables$.next({} as InputProjectRelevance);
+
     httpTestingController.expectOne({
       method: 'PUT',
       url: '//api/project/1/description/c2'

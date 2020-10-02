@@ -36,6 +36,8 @@ export class ProjectApplicationFormProjectRelevanceAndContextDetailComponent ext
   strategiesFromCall: InputProjectRelevanceStrategy.StrategyEnum[];
   @Output()
   updateData = new EventEmitter<InputProjectRelevance>();
+  @Output()
+  deleteData = new EventEmitter<InputProjectRelevance>();
 
   editableBenefitsForm = new FormGroup({});
   benefitsDataSource: MatTableDataSource<ProjectRelevanceBenefit>;
@@ -61,15 +63,12 @@ export class ProjectApplicationFormProjectRelevanceAndContextDetailComponent ext
   territorialChallengeErrors = {
     maxlength: 'project.application.form.relevance.entered.text.size.too.long'
   };
-
   commonChallengeErrors = {
     maxlength: 'project.application.form.relevance.entered.text.size.too.long'
   };
-
   internationalCooperationErrors = {
     maxlength: 'project.application.form.relevance.entered.text.size.too.long'
   };
-
   availableKnowledgeErrors = {
     maxlength: 'project.application.form.relevance.entered.text.size.too.long'
   };
@@ -101,6 +100,18 @@ export class ProjectApplicationFormProjectRelevanceAndContextDetailComponent ext
       projectStrategies: this.buildStrategiesToSave(),
       projectSynergies: this.buildSynergiesToSave(),
       availableKnowledge: this.projectRelevanceForm.controls.availableKnowledge.value,
+    });
+  }
+
+  saveDeletion(): void {
+    this.deleteData.emit({
+      territorialChallenge: this.project?.territorialChallenge,
+      commonChallenge: this.project?.commonChallenge,
+      transnationalCooperation: this.project?.transnationalCooperation,
+      projectBenefits: this.buildBenefitsToSave(),
+      projectStrategies: this.buildStrategiesToSave(),
+      projectSynergies: this.buildSynergiesToSave(),
+      availableKnowledge: this.project?.availableKnowledge,
     });
   }
 
