@@ -1,8 +1,8 @@
 apply plugin: 'kotlin-jpa'
 
 dependencies {
-    implementation project(':ems-api')
-    implementation project(':ems-ui')
+    implementation project(':jems-api')
+    implementation project(':jems-ui')
 
     implementation('io.cloudflight.platform:platform-i18n')
 

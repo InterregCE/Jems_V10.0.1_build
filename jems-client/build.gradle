@@ -1,5 +1,5 @@
 dependencies {
-    implementation project(':ems-api')
+    implementation project(':jems-api')
 
     implementation('org.springframework.cloud:spring-cloud-starter-oauth2')
     implementation('org.springframework.cloud:spring-cloud-starter-openfeign')
