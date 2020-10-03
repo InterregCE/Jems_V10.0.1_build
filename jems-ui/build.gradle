@@ -1,0 +1,16 @@
+plugins {
+    id 'com.github.node-gradle.node'
+    id 'org.hidetake.swagger.generator'
+}
+
+dependencies {
+    swaggerApi project(':jems-api')
+    swaggerCodegen("io.swagger.codegen.v3:swagger-codegen-cli")
+    constraints {
+        swaggerCodegen("io.swagger.codegen.v3:swagger-codegen-cli:3.0.20")
+    }
+}
+
+test.configure {
+    dependsOn('clfNpmTest')
+}

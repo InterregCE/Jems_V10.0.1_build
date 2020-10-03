@@ -4,9 +4,9 @@ pluginManagement {
     }
 }
 
-rootProject.name = 'ems'
+rootProject.name = 'jems'
 
-include 'ems-api'
-include 'ems-client'
-include 'ems-server'
-include 'ems-ui'
+include 'jems-api'
+include 'jems-client'
+include 'jems-server'
+include 'jems-ui'
