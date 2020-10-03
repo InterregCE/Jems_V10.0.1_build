@@ -7,9 +7,9 @@ spring:
   messages:
     basename: classpath:/messages
   datasource:
-    url: "${SPRING_DATASOURCE_URL:jdbc:mariadb://localhost:3306/ems}"
+    url: "${SPRING_DATASOURCE_URL:jdbc:mariadb://localhost:3306/jems}"
     username: root
-    password: "${SPRING_DATASOURCE_PASSWORD:emspass}"
+    password: "${SPRING_DATASOURCE_PASSWORD:jemspass}"
     driver-class-name: org.mariadb.jdbc.Driver
     jpa:
       database: mariadb
