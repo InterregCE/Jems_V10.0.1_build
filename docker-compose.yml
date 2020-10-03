@@ -4,14 +4,14 @@ services:
 
   ems-database:
     image: mariadb/server:10.3.13
-    container_name: ems-database
+    container_name: jems-database
 #    volumes:
 #      - ems-database-data:/var/lib/mariadb
     ports:
       - '3306:3306'
     environment:
-      MYSQL_DATABASE: ems
-      MYSQL_ROOT_PASSWORD: emspass
+      MYSQL_DATABASE: jems
+      MYSQL_ROOT_PASSWORD: jemspass
     command: ['mysqld', '--character-set-server=utf8mb4', '--collation-server=utf8mb4_unicode_ci']
 
   ems-minio:
