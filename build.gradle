@@ -2,12 +2,12 @@ plugins {
     id "cloudflight-gradle-plugin" version "5.5.22"
 }
 
-description "EMS Project"
-group "io.cloudflight.ems"
+description "Jems Project"
+group "io.cloudflight.jems"
 version "1.0.0"
 
 cloudflight {
-    softwareProjectKey = "cloudflight/ems"
+    softwareProjectKey = "cloudflight/jems"
 }
 
 subprojects {
