@@ -1,4 +1,4 @@
-import {ChangeDetectionStrategy, Component, OnDestroy} from '@angular/core';
+import {ChangeDetectionStrategy, Component} from '@angular/core';
 import {BaseComponent} from '@common/components/base-component';
 import {Permission} from '../../../../security/permissions/permission';
 import {merge, Subject} from 'rxjs';
@@ -22,7 +22,7 @@ import {ProgrammePageSidenavService} from '../../services/programme-page-sidenav
   styleUrls: ['./programme-page.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class ProgrammePageComponent extends BaseComponent implements OnDestroy {
+export class ProgrammePageComponent extends BaseComponent {
   Permission = Permission;
 
   programmeSaveError$ = new Subject<I18nValidationError | null>();
@@ -90,9 +90,5 @@ export class ProgrammePageComponent extends BaseComponent implements OnDestroy {
               private programmePageSidenavService: ProgrammePageSidenavService) {
     super();
     this.programmePageSidenavService.init(this.destroyed$);
-  }
-
-  ngOnDestroy(): void {
-    super.ngOnDestroy();
   }
 }

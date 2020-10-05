@@ -13,7 +13,7 @@ export abstract class AbstractForm extends BaseComponent implements OnInit {
   @Input()
   error$: Observable<I18nValidationError | null>;
   @Input()
-  success$: Observable<boolean>;
+  success$: Observable<any>;
 
   showSuccessMessage$ = new Subject<boolean>();
   submitted = false;

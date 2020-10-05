@@ -11,16 +11,13 @@ import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 
 @Service
-class ProgrammeLegalStatusServiceImpl (
+class ProgrammeLegalStatusServiceImpl(
     private val programmeLegalStatusRepository: ProgrammeLegalStatusRepository,
     private val auditService: AuditService
 ) : ProgrammeLegalStatusService {
 
     companion object {
         val MAX_COUNT = 20
-
-        private val TO_CREATE = true // isCreation() == true
-        private val TO_JUST_UPDATE = false // isCreation() == false
     }
 
     @Transactional(readOnly = true)
@@ -42,7 +39,7 @@ class ProgrammeLegalStatusServiceImpl (
     }
 
     @Transactional
-    override fun delete(legalStatusId: Long) {
+    override fun delete(legalStatusId: Long): List<OutputProgrammeLegalStatus> {
         if (legalStatusId == 1L || legalStatusId == 2L) {
             throw(ResourceNotFoundException("programme_legal_status"))
         }
@@ -50,6 +47,9 @@ class ProgrammeLegalStatusServiceImpl (
             programmeLegalStatusRepository.findById(legalStatusId)
                 .orElseThrow { ResourceNotFoundException("programme_legal_status") }
         )
+        val result = programmeLegalStatusRepository.findAll()
+        programmeLegalStatusesChanged(result).logWith(auditService)
+        return result.map { it.toOutputProgrammeLegalStatus() }
     }
 
     private fun validateMax20LegalStatuses() {

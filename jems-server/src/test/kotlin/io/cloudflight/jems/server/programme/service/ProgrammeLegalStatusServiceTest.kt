@@ -28,11 +28,12 @@ class ProgrammeLegalStatusServiceTest {
             id = 3L,
             description = "3rd Status"
         )
-        val  outputProgrammeLegalStatus = OutputProgrammeLegalStatus(
+        val outputProgrammeLegalStatus = OutputProgrammeLegalStatus(
             id = programmeLegalStatus.id!!,
             description = programmeLegalStatus.description
         )
     }
+
     @MockK
     lateinit var programmeLegalStatusRepository: ProgrammeLegalStatusRepository
 
@@ -54,7 +55,14 @@ class ProgrammeLegalStatusServiceTest {
     fun get() {
         every { programmeLegalStatusRepository.findAll() } returns listOf(programmeLegalStatus)
         assertThat(programmeLegalStatusService.get())
-            .isEqualTo(listOf(OutputProgrammeLegalStatus(id = programmeLegalStatus.id!!, description = programmeLegalStatus.description)))
+            .isEqualTo(
+                listOf(
+                    OutputProgrammeLegalStatus(
+                        id = programmeLegalStatus.id!!,
+                        description = programmeLegalStatus.description
+                    )
+                )
+            )
     }
 
     @Test
@@ -64,9 +72,9 @@ class ProgrammeLegalStatusServiceTest {
         )
         val expectedResult = listOf(
             ProgrammeLegalStatus(
-            id = 10L,
-            description = toBeCreatedLegalStatus.description
-        )
+                id = 10L,
+                description = toBeCreatedLegalStatus.description
+            )
         )
 
         every { programmeLegalStatusRepository.findAllById(eq(emptySet())) } returns emptyList()
@@ -77,19 +85,23 @@ class ProgrammeLegalStatusServiceTest {
 
         val result = programmeLegalStatusService.save(listOf(toBeCreatedLegalStatus))
         assertThat(result)
-            .isEqualTo(listOf(
-                OutputProgrammeLegalStatus(
-                id = 10L,
-                description = toBeCreatedLegalStatus.description
+            .isEqualTo(
+                listOf(
+                    OutputProgrammeLegalStatus(
+                        id = 10L,
+                        description = toBeCreatedLegalStatus.description
+                    )
+                )
             )
-            ))
 
         assertThat(saveLegalStatusSlot.captured)
-            .isEqualTo(listOf(
-                ProgrammeLegalStatus(
-                description = toBeCreatedLegalStatus.description
+            .isEqualTo(
+                listOf(
+                    ProgrammeLegalStatus(
+                        description = toBeCreatedLegalStatus.description
+                    )
+                )
             )
-            ))
 
         val audit = slot<AuditCandidate>()
         verify { auditService.logEvent(capture(audit)) }
@@ -116,10 +128,28 @@ class ProgrammeLegalStatusServiceTest {
             description = "some status"
         )
 
+        val expectedResult = listOf(
+            ProgrammeLegalStatus(
+                id = 10L,
+                description = "desc"
+            )
+        )
+
         every { programmeLegalStatusRepository.findById(eq(4)) } returns Optional.of(existingEntity)
         every { programmeLegalStatusRepository.delete(eq(existingEntity)) } returnsArgument 0
+        every { programmeLegalStatusRepository.findAll() } returns expectedResult
 
-        programmeLegalStatusService.delete(4L)
+        val result = programmeLegalStatusService.delete(4L)
+
+        assertThat(result)
+            .isEqualTo(
+                listOf(
+                    OutputProgrammeLegalStatus(
+                        id = 10L,
+                        description = "desc"
+                    )
+                )
+            )
     }
 
     @Test

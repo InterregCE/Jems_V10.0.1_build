@@ -8,6 +8,7 @@ import {ProgrammeAreaComponent} from './programme-page/containers/programme-area
 import {ProgrammeIndicatorsOverviewPageComponent} from './programme-page/containers/programme-indicators-overview-page/programme-indicators-overview-page.component';
 import {ProgrammeStrategiesPageComponent} from './programme-page/containers/programme-strategies-page/programme-strategies-page.component';
 import {ProgrammeLanguagesPageComponent} from './programme-page/containers/programme-languages-page/programme-languages-page.component';
+import {ProgrammeLegalStatusComponent} from './programme-page/containers/programme-legal-status/programme-legal-status.component';
 
 export const routes: Routes = [
   {
@@ -95,6 +96,11 @@ export const routes: Routes = [
         path: 'strategies',
         component: ProgrammeStrategiesPageComponent,
         data: {breadcrumb: 'programme.breadcrumb.strategies'},
+      },
+      {
+        path: 'legalStatus',
+        component: ProgrammeLegalStatusComponent,
+        data: {breadcrumb: 'programme.breadcrumb.legal.status'},
       },
     ]
   }

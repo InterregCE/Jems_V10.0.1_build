@@ -36,7 +36,7 @@ export class ProgrammePageSidenavService {
           {
             headline: 'programme.fund.list.title',
             scrollRoute: 'funds',
-                route: '/app/programme',
+            route: '/app/programme',
           },
           this.languagesPage,
           this.prioritiesPage,
@@ -48,6 +48,10 @@ export class ProgrammePageSidenavService {
           {
             headline: 'programme.tab.strategies',
             route: '/app/programme/strategies',
+          },
+          {
+            headline: 'programme.tab.legal.status',
+            route: '/app/programme/legalStatus',
           }
         ]
       },

@@ -37,6 +37,9 @@ import {ProgrammeStrategiesComponent} from './programme-page/components/programm
 import {ProgrammePageSidenavService} from './programme-page/services/programme-page-sidenav.service';
 import {ProgrammeLanguagesComponent} from './programme-page/components/programme-languages/programme-languages.component';
 import {ProgrammeLanguagesPageComponent} from './programme-page/containers/programme-languages-page/programme-languages-page.component';
+import {ProgrammeLegalStatusComponent} from './programme-page/containers/programme-legal-status/programme-legal-status.component';
+import {ProgrammeLegalStatusListComponent} from './programme-page/components/programme-legal-status-list/programme-legal-status-list.component';
+import {MatTooltipModule} from '@angular/material/tooltip';
 
 @NgModule({
   declarations: [
@@ -65,7 +68,9 @@ import {ProgrammeLanguagesPageComponent} from './programme-page/containers/progr
     ProgrammeLanguagesPageComponent,
     ProgrammeLanguagesComponent,
     ProgrammeStrategiesPageComponent,
-    ProgrammeStrategiesComponent
+    ProgrammeStrategiesComponent,
+    ProgrammeLegalStatusComponent,
+    ProgrammeLegalStatusListComponent
   ],
   providers: [
     IndicatorsStore,
@@ -83,6 +88,7 @@ import {ProgrammeLanguagesPageComponent} from './programme-page/containers/progr
     MatCheckboxModule,
     MatAutocompleteModule,
     MatMomentDateModule,
+    MatTooltipModule,
   ]
 })
 export class ProgrammeModule {

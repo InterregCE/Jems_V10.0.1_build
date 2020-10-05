@@ -8,5 +8,5 @@ interface ProgrammeLegalStatusService {
 
     fun save(legalStatuses: Collection<InputProgrammeLegalStatus>): List<OutputProgrammeLegalStatus>
 
-    fun delete(legalStatusId: Long)
+    fun delete(legalStatusId: Long): List<OutputProgrammeLegalStatus>
 }
