@@ -223,6 +223,6 @@ export class ProjectApplicationFormProjectRelevanceAndContextDetailComponent ext
         specification: this.editableSynergyForm.get(this.projectInitiative(element.id))?.value,
         synergy: this.editableSynergyForm.get(this.synergy(element.id))?.value
       }))
-      .filter(element => element.specification && element.synergy);
+      .filter(element => element.specification || element.synergy);
   }
 }
