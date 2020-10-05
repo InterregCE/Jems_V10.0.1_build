@@ -1,11 +1,10 @@
 <component name="ProjectRunConfigurationManager">
-  <configuration default="false" name="ems-audit" type="docker-deploy" factoryName="docker-compose.yml" server-name="Docker">
+  <configuration default="false" name="jems-minio" type="docker-deploy" factoryName="docker-compose.yml" server-name="Docker">
     <deployment type="docker-compose.yml">
       <settings>
         <option name="services">
           <list>
-            <option value="audit-database" />
-            <option value="audit-analyzer" />
+            <option value="jems-minio" />
           </list>
         </option>
         <option name="sourceFilePath" value="docker-compose.yml" />
