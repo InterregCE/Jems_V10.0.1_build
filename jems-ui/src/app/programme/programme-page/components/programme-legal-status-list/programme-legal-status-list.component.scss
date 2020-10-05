@@ -1,0 +1,46 @@
+.header {
+  display: inline-block;
+  margin-bottom: 2rem;
+}
+
+.button {
+  margin-right: 1rem;
+  margin-top: 2rem;
+}
+
+.header-button {
+  margin-left: 0.5rem;
+}
+
+::ng-deep.mat-form-field .mat-form-field-underline {
+  height: 0 !important;
+}
+
+::ng-deep.mat-form-field-wrapper {
+  margin-top: 0.4rem;
+}
+
+::ng-deep.mat-form-field-invalid {
+  margin-bottom: 1rem;
+}
+
+mat-checkbox {
+  padding-left: 0.4rem;
+}
+
+th.mat-header-cell, td.mat-cell, td.mat-footer-cell {
+  border: none;
+}
+
+button {
+  width: unset !important;
+  margin-bottom: 0.1rem;
+}
+
+.mat-column-add {
+  flex: 0 0 3rem;
+}
+
+.mat-column-delete {
+  flex: 0 0 5rem;
+}

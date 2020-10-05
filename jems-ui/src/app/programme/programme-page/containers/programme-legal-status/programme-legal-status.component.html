@@ -1,0 +1,10 @@
+<app-breadcrumb></app-breadcrumb>
+<app-programme-legal-status-list
+        class="margin-before"
+        *ngIf="legalStatuses$ | async as statuses"
+        [success$]="success$"
+        [error$]="error$"
+        [legalStatuses]="statuses"
+        (saveLegalStatuses)="saveStatuses$.next($event)"
+        (deleteStatus)="deleteStatus$.next($event)">
+</app-programme-legal-status-list>

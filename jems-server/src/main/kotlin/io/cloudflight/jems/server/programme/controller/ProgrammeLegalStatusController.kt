@@ -1,7 +1,8 @@
 package io.cloudflight.jems.server.programme.controller
 
 import io.cloudflight.jems.api.programme.ProgrammeLegalStatusApi
-import io.cloudflight.jems.api.programme.dto.*
+import io.cloudflight.jems.api.programme.dto.InputProgrammeLegalStatusWrapper
+import io.cloudflight.jems.api.programme.dto.OutputProgrammeLegalStatus
 import io.cloudflight.jems.server.programme.service.ProgrammeLegalStatusService
 import org.springframework.data.domain.Pageable
 import org.springframework.security.access.prepost.PreAuthorize
@@ -9,7 +10,7 @@ import org.springframework.web.bind.annotation.RestController
 
 @RestController
 @PreAuthorize("@programmeSetupAuthorization.canAccessSetup()")
-class ProgrammeLegalStatusController (
+class ProgrammeLegalStatusController(
     private val programmeLegalStatusService: ProgrammeLegalStatusService
 ) : ProgrammeLegalStatusApi {
 
@@ -21,8 +22,8 @@ class ProgrammeLegalStatusController (
         return programmeLegalStatusService.save(statusData.statuses)
     }
 
-    override fun delete(id: Long) {
-        programmeLegalStatusService.delete(legalStatusId = id)
+    override fun delete(id: Long): List<OutputProgrammeLegalStatus> {
+        return programmeLegalStatusService.delete(legalStatusId = id)
     }
 
 }
