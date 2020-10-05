@@ -4,6 +4,13 @@
   background: linear-gradient(90deg, var(--app-bar) 0%, var(--background-lighter) 100%);
 }
 
+h1 {
+  font-size: 1.5rem;
+  font-weight: 500;
+  color: var(--font-text-link);
+  margin-left: 2rem;
+}
+
 .language-select {
   width: 6rem;
   margin-right: 1rem;
