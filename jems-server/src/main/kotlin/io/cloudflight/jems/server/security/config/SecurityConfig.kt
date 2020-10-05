@@ -16,6 +16,7 @@ import org.springframework.web.cors.CorsConfiguration
 import org.springframework.web.cors.CorsConfigurationSource
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource
 import java.util.Collections
+import javax.servlet.http.HttpServletResponse
 
 
 @Configuration
@@ -40,6 +41,12 @@ class SecurityConfig(val emsUserDetailsService: EmsUserDetailsService, val passw
             .antMatchers("/api/**").fullyAuthenticated()
             .and()
             .httpBasic()
+            // this exception handling automatically dismiss default browser "Sign in" pop-up for Basic auth
+            .and()
+            .exceptionHandling().authenticationEntryPoint { httpServletRequest, httpServletResponse, authException -> run {
+                httpServletResponse.setHeader("WWW-Authenticate", "FormBased")
+                httpServletResponse.sendError(HttpServletResponse.SC_UNAUTHORIZED, authException.message)
+            } }
             .and()
             .logout()
             .invalidateHttpSession(true)

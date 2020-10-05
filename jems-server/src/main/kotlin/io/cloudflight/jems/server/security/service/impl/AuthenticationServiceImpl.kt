@@ -29,7 +29,7 @@ class AuthenticationServiceImpl(
         private val log = LoggerFactory.getLogger(AuthenticationServiceImpl::class.java)
     }
 
-    override fun getCurrentUser(): OutputCurrentUser? {
+    override fun getCurrentUser(): OutputCurrentUser {
         val id = securityService.currentUser?.user?.id ?: -1
         val user = securityService.currentUser?.user?.email ?: ""
         val role = securityService.currentUser?.user?.userRole?.name ?: ""
