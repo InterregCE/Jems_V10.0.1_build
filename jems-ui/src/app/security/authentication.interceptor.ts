@@ -3,10 +3,12 @@ import {HttpEvent, HttpHandler, HttpInterceptor, HttpRequest} from '@angular/com
 import {Observable, throwError} from 'rxjs';
 import {catchError} from 'rxjs/operators';
 import {Router} from '@angular/router';
+import {AuthenticationStore} from '../authentication/service/authentication-store.service';
 
 @Injectable()
 export class AuthenticationInterceptor implements HttpInterceptor {
-  constructor(private router: Router) {
+  constructor(private router: Router,
+              private authenticationStore: AuthenticationStore) {
   }
 
   intercept(req: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
@@ -16,8 +18,7 @@ export class AuthenticationInterceptor implements HttpInterceptor {
           if (err.status === 401) {
             // go to login when unauthorized status codes are intercepted
             if (this.router.url !== '/login') {
-              // TODO fix circular dependency
-              // this.loginPageService.newAuthenticationError({i18nKey: 'authentication.expired', httpStatus: 401});
+              this.authenticationStore.newAuthenticationError({i18nKey: 'authentication.expired', httpStatus: 401});
               this.router.navigate(['/login']);
             }
           }

@@ -2,6 +2,7 @@ import {fakeAsync, TestBed, tick} from '@angular/core/testing';
 import {TestModule} from '../../../common/test-module';
 import {LoginPageService} from './login-page-service';
 import {I18nValidationError} from '@common/validation/i18n-validation-error';
+import {AuthenticationStore} from '../../service/authentication-store.service';
 
 describe('LoginPageService', () => {
   beforeEach(() => TestBed.configureTestingModule({
@@ -11,6 +12,10 @@ describe('LoginPageService', () => {
         provide: LoginPageService,
         useClass: LoginPageService
       },
+      {
+        provide: AuthenticationStore,
+        useClass: AuthenticationStore
+      }
     ]
   }));
 
@@ -21,12 +26,13 @@ describe('LoginPageService', () => {
 
   it('should forward authentication problems', fakeAsync(() => {
     const service: LoginPageService = TestBed.inject(LoginPageService);
+    const authenticationStore = TestBed.inject(AuthenticationStore);
 
     let authError: I18nValidationError | null = null;
-    service.authenticationError()
+    authenticationStore.getAuthenticationProblem()
       .subscribe((error: I18nValidationError | null) => authError = error);
 
-    service.newAuthenticationError({i18nKey: 'authentication.expired', httpStatus: 401})
+    authenticationStore.newAuthenticationError({i18nKey: 'authentication.expired', httpStatus: 401})
 
     tick();
     expect(authError).toBeTruthy();
