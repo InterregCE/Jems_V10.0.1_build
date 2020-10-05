@@ -18,8 +18,8 @@ data class ProjectRelevanceSynergy(
     @JoinColumn(name = "project_relevance_id", insertable = false, updatable = false)
     val projectRelevance: ProjectRelevance? = null,
 
-    @Column(nullable = false)
-    val synergy: String,
+    @Column
+    val synergy: String?,
 
     @Column
     val specification: String?
