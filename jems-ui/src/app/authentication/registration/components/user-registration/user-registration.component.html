@@ -77,7 +77,7 @@
                         {{'user.registration.button.register' | translate}}
                     </button>
                     <app-alert
-                            [show]="showSuccessMessage$ | async"
+                            [show]="!submitted && (showSuccessMessage$ | async)"
                             [type]="Alert.SUCCESS">
                         <p>{{'user.registration.save.success' | translate}}</p>
                         <br>

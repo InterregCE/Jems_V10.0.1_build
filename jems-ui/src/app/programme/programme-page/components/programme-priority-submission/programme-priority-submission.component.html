@@ -62,7 +62,7 @@
             {{'programme.priority.button.add' | translate}}
         </button>
         <app-alert
-                [show]="showSuccessMessage$ | async"
+                [show]="!submitted && (showSuccessMessage$ | async)"
                 [type]="Alert.SUCCESS">
             <p>{{'programme.priority.save.success' | translate}}</p>
         </app-alert>

@@ -152,7 +152,7 @@
     </form>
 
     <app-alert
-            [show]="showSuccessMessage$ | async"
+            [show]="!submitted && (showSuccessMessage$ | async)"
             [type]="Alert.SUCCESS">
         <p>{{'result.indicator.new.message.successful' | translate}}</p>
     </app-alert>

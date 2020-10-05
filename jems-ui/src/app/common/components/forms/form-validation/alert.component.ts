@@ -15,4 +15,5 @@ export class AlertComponent {
 
   @Input()
   type: Alert;
+
 }

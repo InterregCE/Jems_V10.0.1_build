@@ -38,7 +38,7 @@
 </ng-template>
 
 <app-alert
-        [show]="showSuccessMessage$ | async"
+        [show]="!submitted && (showSuccessMessage$ | async)"
         [type]="Alert.SUCCESS">
     <p *ngIf="projectStatus !== OutputProjectStatus.StatusEnum.RETURNEDTOAPPLICANT">
         {{'project.detail.submitted.success' | translate}}
