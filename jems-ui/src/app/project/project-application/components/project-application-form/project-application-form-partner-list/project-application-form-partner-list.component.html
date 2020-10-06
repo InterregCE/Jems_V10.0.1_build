@@ -8,3 +8,12 @@
            (newPageSize)="newPageSize.emit($event)"
            (sortRows)="newSort.emit($event)">
 </app-table>
+
+<ng-template #deletionCell let-partner>
+    <app-delete-action-cell
+            (click)="$event.stopPropagation()"
+            [element]="partner"
+            [disabled]="!editable"
+            (delete)="delete($event)">
+    </app-delete-action-cell>
+</ng-template>

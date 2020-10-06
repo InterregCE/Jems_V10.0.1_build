@@ -11,9 +11,11 @@
 <app-project-application-form-partner-list
         *ngIf="partnerPage$ | async as partnerPage"
         [projectId]="projectId"
+        [editable]="editable"
         [partnerPage]="partnerPage"
         [pageIndex]="newPageIndex$ | async"
         (newPageSize)="newPageSize$.next($event)"
         (newPageIndex)="newPageIndex$.next($event)"
-        (newSort)="newSort$.next($event)">
+        (newSort)="newSort$.next($event)"
+        (deletePartner)="deletePartner($event)">
 </app-project-application-form-partner-list>

@@ -20,6 +20,7 @@ import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.PutMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
+import org.springframework.web.bind.annotation.DeleteMapping
 import javax.validation.Valid
 
 @Api("Project Partner")
@@ -68,4 +69,10 @@ interface ProjectPartnerApi {
                                                 @PathVariable id: Long,
                                                 @Valid @RequestBody partnerOrganizationDetails: InputProjectPartnerOrganizationDetails
     ): OutputProjectPartnerDetail
+
+    @ApiOperation("Delete a project partnjer")
+    @DeleteMapping("/{id}")
+    fun deleteProjectPartner(@PathVariable projectId: Long,
+                             @PathVariable id: Long): Boolean
+
 }

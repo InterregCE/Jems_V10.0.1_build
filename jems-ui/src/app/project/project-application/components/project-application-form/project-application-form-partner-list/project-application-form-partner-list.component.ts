@@ -1,7 +1,20 @@
-import {ChangeDetectionStrategy, Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  EventEmitter,
+  Input,
+  OnInit,
+  Output,
+  TemplateRef,
+  ViewChild
+} from '@angular/core';
 import {MatSort} from '@angular/material/sort';
 import {TableConfiguration} from '@common/components/table/model/table.configuration';
-import {PageOutputProjectPartner} from '@cat/api'
+import {PageOutputProjectPartner, OutputProjectPartner} from '@cat/api'
+import {ColumnType} from '@common/components/table/model/column-type.enum';
+import {Forms} from '../../../../../common/utils/forms';
+import {filter, map, take} from 'rxjs/operators';
+import {MatDialog} from '@angular/material/dialog';
 
 @Component({
   selector: 'app-project-application-form-partner-list',
@@ -16,6 +29,8 @@ export class ProjectApplicationFormPartnerListComponent implements OnInit {
   partnerPage: PageOutputProjectPartner;
   @Input()
   pageIndex: number;
+  @Input()
+  editable: boolean;
 
   @Output()
   newPageSize: EventEmitter<number> = new EventEmitter<number>();
@@ -23,8 +38,15 @@ export class ProjectApplicationFormPartnerListComponent implements OnInit {
   newPageIndex: EventEmitter<number> = new EventEmitter<number>();
   @Output()
   newSort: EventEmitter<Partial<MatSort>> = new EventEmitter<Partial<MatSort>>();
+  @Output()
+  deletePartner = new EventEmitter<number>();
+
+  @ViewChild('deletionCell', {static: true})
+  deletionCell: TemplateRef<any>;
 
   tableConfiguration: TableConfiguration;
+
+  constructor(private dialog: MatDialog) {}
 
   ngOnInit(): void {
     this.tableConfiguration = new TableConfiguration({
@@ -54,7 +76,26 @@ export class ProjectApplicationFormPartnerListComponent implements OnInit {
           elementTranslationKey: 'common.label.project.partner.role',
           sortProperty: 'role',
         },
+        {
+          displayedColumn: ' ',
+          columnType: ColumnType.CustomComponent,
+          customCellTemplate: this.deletionCell
+        }
       ]
     });
+  }
+
+  delete(project: OutputProjectPartner) {
+    Forms.confirmDialog(
+      this.dialog,
+      'project.application.form.partner.table.action.delete.dialog.header',
+      'project.application.form.partner.table.action.delete.dialog.message',
+      {name: project.name,
+        boldWarningMessage: 'project.application.form.partner.table.action.delete.dialog.warning' })
+      .pipe(
+        take(1),
+        filter(answer => !!answer),
+        map(() => this.deletePartner.emit(project.id)),
+      ).subscribe();
   }
 }
