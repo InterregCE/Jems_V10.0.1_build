@@ -1,7 +1,7 @@
 import {ChangeDetectionStrategy, Component, Input} from '@angular/core';
 import {combineLatest, Subject} from 'rxjs';
 import {MatSort} from '@angular/material/sort';
-import {flatMap, map, startWith, tap} from 'rxjs/operators';
+import {flatMap, map, startWith, take, tap} from 'rxjs/operators';
 import {Tables} from '../../../../../common/utils/tables';
 import {Log} from '../../../../../common/utils/log';
 import {ProjectPartnerService} from '@cat/api';
@@ -43,5 +43,14 @@ export class ProjectApplicationFormPartnerSectionComponent {
       );
 
   constructor(private projectPartnerService: ProjectPartnerService) {
+  }
+
+  deletePartner(partnerId: number): void {
+    this.projectPartnerService.deleteProjectPartner(partnerId, this.projectId)
+      .pipe(
+        take(1),
+        tap(() => this.newPageIndex$.next(Tables.DEFAULT_INITIAL_PAGE_INDEX)),
+        tap(() => Log.info('Deleted partner: ', this, partnerId)),
+      ).subscribe();
   }
 }

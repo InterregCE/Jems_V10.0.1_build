@@ -49,4 +49,18 @@ describe('ProjectApplicationFormPartnerSectionComponent', () => {
     tick();
     expect(results).toEqual(projectPartners);
   }));
+
+  it('should delete a project partner', fakeAsync(() => {
+    component.deletePartner(1);
+
+    httpTestingController.expectOne({
+      method: 'DELETE',
+      url: `//api/project/1/partner/1`
+    })
+    httpTestingController.expectOne({
+      method: 'GET',
+      url: `//api/project/1/partner?page=0&size=25&sort=role,asc&sort=sortNumber,asc`
+    })
+  }));
+
 });
