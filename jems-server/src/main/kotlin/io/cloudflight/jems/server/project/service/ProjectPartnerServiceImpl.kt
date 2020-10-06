@@ -3,7 +3,7 @@ package io.cloudflight.jems.server.project.service
 import io.cloudflight.jems.api.project.dto.InputProjectPartnerContact
 import io.cloudflight.jems.api.project.dto.InputProjectPartnerContribution
 import io.cloudflight.jems.api.project.dto.InputProjectPartnerCreate
-import io.cloudflight.jems.api.project.dto.InputProjectPartnerOrganization
+import io.cloudflight.jems.api.project.dto.InputProjectPartnerOrganizationDetails
 import io.cloudflight.jems.api.project.dto.InputProjectPartnerUpdate
 import io.cloudflight.jems.api.project.dto.OutputProjectPartner
 import io.cloudflight.jems.api.project.dto.OutputProjectPartnerDetail
@@ -146,6 +146,31 @@ class ProjectPartnerServiceImpl(
         return projectPartnerRepo.save(
             projectPartner.copy(
                 partnerContribution = partnerContribution.toEntity(projectPartner)
+            )
+        ).toOutputProjectPartnerDetail()
+    }
+
+    @Transactional
+    override fun updatePartnerOrganizationDetails(
+        projectId: Long,
+        partnerId: Long,
+        partnerOrganizationDetails: InputProjectPartnerOrganizationDetails
+    ): OutputProjectPartnerDetail {
+        val projectPartner = projectPartnerRepo.findFirstByProjectIdAndId(projectId, partnerId)
+            .orElseThrow { ResourceNotFoundException("projectPartner") }
+        val partnerOrganization =
+            projectPartnerOrganizationRepo.findById(projectPartner.organization?.id!!)
+                .orElseThrow { ResourceNotFoundException("projectPartnerOrganization") }
+
+        val newPartnerOrganization = projectPartnerOrganizationRepo.save (
+            partnerOrganization.copy(
+                organizationDetails = partnerOrganizationDetails.toEntity(partnerOrganization)
+            )
+        )
+
+        return projectPartnerRepo.save(
+            projectPartner.copy(
+                organization = newPartnerOrganization
             )
         ).toOutputProjectPartnerDetail()
     }

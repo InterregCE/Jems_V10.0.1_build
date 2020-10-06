@@ -22,6 +22,7 @@ import {SharedModule} from './shared-module';
 import {TabService} from './services/tab.service';
 import {SideNavComponent} from '@common/components/side-nav/component/side-nav.component';
 import {MatExpansionModule} from '@angular/material/expansion';
+import {NutsStoreService} from './services/nuts-store.service';
 
 const declarations = [
   TopBarComponent,
@@ -57,6 +58,7 @@ const declarations = [
     KeyValuePipe,
     MatSortHeader,
     TabService,
+    NutsStoreService,
   ],
   exports: [
     declarations

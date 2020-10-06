@@ -11,7 +11,8 @@ import {
   OutputProjectStatus,
   ProjectPartnerService,
   InputProjectPartnerContact,
-  InputProjectPartnerContribution
+  InputProjectPartnerContribution,
+  InputProjectPartnerOrganizationDetails
 } from '@cat/api';
 import {BaseComponent} from '@common/components/base-component';
 import {ProjectStore} from '../../../project-application-detail/services/project-store.service';
@@ -42,6 +43,10 @@ export class ProjectApplicationFormPartnerDetailComponent extends BaseComponent 
   partnerContributionSaveSuccess$ = new Subject<boolean>();
   partnerContributionSaveError$ = new Subject<I18nValidationError | null>();
   savePartnerContribution$ = new Subject<InputProjectPartnerContribution>();
+
+  partnerOrganizationDetailsSaveSuccess$ = new Subject<boolean>();
+  partnerOrganizationDetailsSaveError$ = new Subject<I18nValidationError | null>();
+  savePartnerOrganizationDetails$ = new Subject<InputProjectPartnerOrganizationDetails>();
 
   private partnerById$ = this.partnerId
     ? this.partnerService.getProjectPartnerById(this.partnerId, this.projectId)
@@ -94,6 +99,20 @@ export class ProjectApplicationFormPartnerDetailComponent extends BaseComponent 
       })
     );
 
+  private updatedPartnerOrganizationDetails$ = this.savePartnerOrganizationDetails$
+      .pipe(
+          flatMap(partnerOrganizationDetailsUpdate =>
+            this.partnerService.updateProjectPartnerOrganizationDetails(this.partnerId, this.projectId, partnerOrganizationDetailsUpdate)
+          ),
+          tap(() => this.partnerOrganizationDetailsSaveError$.next(null)),
+          tap(() => this.partnerOrganizationDetailsSaveSuccess$.next(true)),
+          tap(saved => Log.info('Updated partner organization details:', this, saved)),
+          catchError((error: HttpErrorResponse) => {
+              this.partnerOrganizationDetailsSaveError$.next(error.error);
+              return of();
+          })
+      )
+
   private createdPartner$ = this.createPartner$
     .pipe(
       switchMap(partnerCreate =>
@@ -117,7 +136,8 @@ export class ProjectApplicationFormPartnerDetailComponent extends BaseComponent 
     this.savedPartner$,
     this.createdPartner$,
     this.updatedPartnerContact$,
-    this.updatedPartnerContribution$
+    this.updatedPartnerContribution$,
+    this.updatedPartnerOrganizationDetails$
   );
 
   details$ = combineLatest([

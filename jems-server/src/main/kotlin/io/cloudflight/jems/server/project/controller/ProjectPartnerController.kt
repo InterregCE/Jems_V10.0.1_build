@@ -4,6 +4,7 @@ import io.cloudflight.jems.api.project.ProjectPartnerApi
 import io.cloudflight.jems.api.project.dto.InputProjectPartnerContact
 import io.cloudflight.jems.api.project.dto.InputProjectPartnerContribution
 import io.cloudflight.jems.api.project.dto.InputProjectPartnerCreate
+import io.cloudflight.jems.api.project.dto.InputProjectPartnerOrganizationDetails
 import io.cloudflight.jems.api.project.dto.InputProjectPartnerUpdate
 import io.cloudflight.jems.api.project.dto.OutputProjectPartner
 import io.cloudflight.jems.api.project.dto.OutputProjectPartnerDetail
@@ -46,6 +47,11 @@ class ProjectPartnerController(
     @PreAuthorize("@projectAuthorization.canUpdateProject(#projectId)")
     override fun updateProjectPartnerContribution(projectId: Long, id: Long, partnerContribution: InputProjectPartnerContribution): OutputProjectPartnerDetail {
         return projectPartnerService.updatePartnerContribution(projectId, id, partnerContribution)
+    }
+
+    @PreAuthorize("@projectAuthorization.canUpdateProject(#projectId)")
+    override fun updateProjectPartnerOrganizationDetails(projectId: Long, id: Long, partnerOrganizationDetails: InputProjectPartnerOrganizationDetails): OutputProjectPartnerDetail {
+        return projectPartnerService.updatePartnerOrganizationDetails(projectId, id, partnerOrganizationDetails)
     }
 
 }

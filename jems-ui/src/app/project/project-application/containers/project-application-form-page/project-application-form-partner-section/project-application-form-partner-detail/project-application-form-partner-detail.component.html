@@ -18,6 +18,15 @@
                     (cancel)="redirectToPartnerOverview()">
             </app-project-application-form-partner-edit>
         </mat-tab>
+        <mat-tab label="{{'partner.tab.address' | translate}}">
+            <app-project-application-form-region-selection
+                [success$]="partnerOrganizationDetailsSaveSuccess$"
+                [error$]="partnerOrganizationDetailsSaveError$"
+                [partner]="details.partner"
+                [editable]="details.editable"
+                (update)="savePartnerOrganizationDetails$.next($event)">
+            </app-project-application-form-region-selection>
+        </mat-tab>
         <mat-tab label="{{'partner.tab.contact' | translate}}">
             <app-project-application-form-partner-contact
                     [success$]="partnerContactSaveSuccess$"
