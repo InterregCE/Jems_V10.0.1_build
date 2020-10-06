@@ -6,7 +6,8 @@ import io.cloudflight.jems.api.programme.dto.OutputProgrammeLegalStatus
 interface ProgrammeLegalStatusService {
     fun get(): List<OutputProgrammeLegalStatus>
 
-    fun save(legalStatuses: Collection<InputProgrammeLegalStatus>): List<OutputProgrammeLegalStatus>
-
-    fun delete(legalStatusId: Long): List<OutputProgrammeLegalStatus>
+    fun save(
+        toPersist: Collection<InputProgrammeLegalStatus>,
+        toDelete: Collection<InputProgrammeLegalStatus>
+    ): List<OutputProgrammeLegalStatus>
 }

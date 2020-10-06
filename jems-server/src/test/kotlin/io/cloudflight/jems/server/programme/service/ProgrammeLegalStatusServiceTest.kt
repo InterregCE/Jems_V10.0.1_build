@@ -11,7 +11,6 @@ import io.cloudflight.jems.server.programme.entity.ProgrammeLegalStatus
 import io.cloudflight.jems.server.programme.repository.ProgrammeLegalStatusRepository
 import io.mockk.MockKAnnotations
 import io.mockk.every
-import io.mockk.impl.annotations.MockK
 import io.mockk.impl.annotations.RelaxedMockK
 import io.mockk.slot
 import io.mockk.verify
@@ -19,7 +18,6 @@ import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
-import java.util.Optional
 
 class ProgrammeLegalStatusServiceTest {
 
@@ -28,13 +26,9 @@ class ProgrammeLegalStatusServiceTest {
             id = 3L,
             description = "3rd Status"
         )
-        val outputProgrammeLegalStatus = OutputProgrammeLegalStatus(
-            id = programmeLegalStatus.id!!,
-            description = programmeLegalStatus.description
-        )
     }
 
-    @MockK
+    @RelaxedMockK
     lateinit var programmeLegalStatusRepository: ProgrammeLegalStatusRepository
 
     @RelaxedMockK
@@ -67,9 +61,13 @@ class ProgrammeLegalStatusServiceTest {
 
     @Test
     fun `save new`() {
-        val toBeCreatedLegalStatus = InputProgrammeLegalStatus(
-            description = "created status"
+        val toBeCreatedLegalStatus = InputProgrammeLegalStatus(description = "created status");
+        val toBeSaved = listOf(
+            InputProgrammeLegalStatus(id = 1L),
+            InputProgrammeLegalStatus(id = 2L),
+            toBeCreatedLegalStatus
         )
+        val toBeDeleted = listOf(InputProgrammeLegalStatus(id = 3L))
         val expectedResult = listOf(
             ProgrammeLegalStatus(
                 id = 10L,
@@ -83,7 +81,7 @@ class ProgrammeLegalStatusServiceTest {
         every { programmeLegalStatusRepository.count() } returns expectedResult.size.toLong()
         every { programmeLegalStatusRepository.findAll() } returns expectedResult
 
-        val result = programmeLegalStatusService.save(listOf(toBeCreatedLegalStatus))
+        val result = programmeLegalStatusService.save(toBeSaved, toBeDeleted)
         assertThat(result)
             .isEqualTo(
                 listOf(
@@ -97,6 +95,8 @@ class ProgrammeLegalStatusServiceTest {
         assertThat(saveLegalStatusSlot.captured)
             .isEqualTo(
                 listOf(
+                    ProgrammeLegalStatus(id = 1L),
+                    ProgrammeLegalStatus(id = 2L),
                     ProgrammeLegalStatus(
                         description = toBeCreatedLegalStatus.description
                     )
@@ -105,6 +105,7 @@ class ProgrammeLegalStatusServiceTest {
 
         val audit = slot<AuditCandidate>()
         verify { auditService.logEvent(capture(audit)) }
+        verify { programmeLegalStatusRepository.deleteAll(any()) }
         with(audit) {
             assertThat(captured.action).isEqualTo(AuditAction.LEGAL_STATUS_EDITED)
             assertThat(captured.description).isEqualTo("Values for partner legal status set to:\ncreated status")
@@ -117,51 +118,32 @@ class ProgrammeLegalStatusServiceTest {
         every { programmeLegalStatusRepository.saveAll(any<List<ProgrammeLegalStatus>>()) } returnsArgument 0
         every { programmeLegalStatusRepository.count() } returns 21
 
-        val exception = assertThrows<I18nValidationException> { programmeLegalStatusService.save(emptyList()) }
+        val exception =
+            assertThrows<I18nValidationException> {
+                programmeLegalStatusService.save(
+                    listOf(
+                        InputProgrammeLegalStatus(id = 1L),
+                        InputProgrammeLegalStatus(id = 2L)
+                    ),
+                    emptyList()
+                )
+            }
         assertThat(exception.i18nKey).isEqualTo("programme.legal.status.wrong.size")
     }
 
     @Test
-    fun delete() {
-        val existingEntity = ProgrammeLegalStatus(
-            id = 20L,
-            description = "some status"
-        )
-
-        val expectedResult = listOf(
-            ProgrammeLegalStatus(
-                id = 10L,
-                description = "desc"
-            )
-        )
-
-        every { programmeLegalStatusRepository.findById(eq(4)) } returns Optional.of(existingEntity)
-        every { programmeLegalStatusRepository.delete(eq(existingEntity)) } returnsArgument 0
-        every { programmeLegalStatusRepository.findAll() } returns expectedResult
-
-        val result = programmeLegalStatusService.delete(4L)
-
-        assertThat(result)
-            .isEqualTo(
-                listOf(
-                    OutputProgrammeLegalStatus(
-                        id = 10L,
-                        description = "desc"
-                    )
-                )
-            )
-    }
-
-    @Test
-    fun `delete not existing`() {
-        every { programmeLegalStatusRepository.findById(eq(-9)) } returns Optional.empty()
-        assertThrows<ResourceNotFoundException> { programmeLegalStatusService.delete(-9) }
-    }
-
-    @Test
     fun `delete not allowed`() {
-        every { programmeLegalStatusRepository.findById(eq(1L)) } returns Optional.empty()
-        assertThrows<ResourceNotFoundException> { programmeLegalStatusService.delete(1L) }
+        assertThrows<ResourceNotFoundException> {
+            programmeLegalStatusService.save(
+                listOf(
+                    InputProgrammeLegalStatus(
+                        id = 1L,
+                        description = "impossible to delete"
+                    )
+                ),
+                emptyList()
+            )
+        }
     }
 
 }

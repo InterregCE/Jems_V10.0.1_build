@@ -11,9 +11,6 @@ import {ViewEditForm} from '@common/components/forms/view-edit-form';
 import {FormControl, FormGroup, Validators} from '@angular/forms';
 import {InputProgrammeLegalStatus, InputProgrammeLegalStatusWrapper} from '@cat/api';
 import {MatTableDataSource} from '@angular/material/table';
-import {Forms} from '../../../../common/utils/forms';
-import {MatDialog} from '@angular/material/dialog';
-import {filter, take, tap} from 'rxjs/operators';
 
 @Component({
   selector: 'app-programme-legal-status-list',
@@ -27,11 +24,10 @@ export class ProgrammeLegalStatusListComponent extends ViewEditForm implements O
 
   @Output()
   saveLegalStatuses = new EventEmitter<InputProgrammeLegalStatusWrapper>();
-  @Output()
-  deleteStatus = new EventEmitter<number>();
 
   displayedColumns: string[] = ['add', 'description', 'delete'];
   dataSource: MatTableDataSource<InputProgrammeLegalStatus>;
+  toDelete: InputProgrammeLegalStatus[] = [];
 
   statusForm = new FormGroup({});
 
@@ -40,8 +36,7 @@ export class ProgrammeLegalStatusListComponent extends ViewEditForm implements O
     required: 'programme.legal.status.description.not.be.empty',
   };
 
-  constructor(protected changeDetectorRef: ChangeDetectorRef,
-              private dialog: MatDialog) {
+  constructor(protected changeDetectorRef: ChangeDetectorRef) {
     super(changeDetectorRef);
   }
 
@@ -71,25 +66,28 @@ export class ProgrammeLegalStatusListComponent extends ViewEditForm implements O
   }
 
   deleteLegalStatus(status: InputProgrammeLegalStatus): void {
-    Forms.confirmDialog(
-      this.dialog,
-      'common.dialog.confirm',
-      'programme.legal.status.delete.dialog.message',
-      {name: status.description}
-    ).pipe(
-      take(1),
-      filter(yes => !!yes),
-      tap(() => this.deleteStatus.emit(status.id))
-    ).subscribe();
+    this.dataSource.data = this.dataSource.data.filter(element => element.id !== status.id);
+
+    if (this.statusForm.controls[status.id]) {
+      this.statusForm.removeControl(String(status.id));
+    }
+
+    const persistedStatus = this.legalStatuses.find(element => element.id === status.id);
+    if (persistedStatus) {
+      this.toDelete.push(persistedStatus);
+    }
   }
 
   onSubmit(): void {
     this.saveLegalStatuses.emit({
-      statuses: Object.values(this.statusForm.controls)
+      toPersist: this.dataSource.data
         .map(element => ({
-          id: null as any,
-          description: element.value,
-        }))
+            id: this.statusForm.controls[element.id] ? null : element.id as any,
+            description: this.statusForm.controls[element.id]
+              ? this.statusForm.controls[element.id].value : element.description
+          })
+        ),
+      toDelete: this.toDelete
     });
   }
 
@@ -101,7 +99,11 @@ export class ProgrammeLegalStatusListComponent extends ViewEditForm implements O
     this.dataSource.data = this.legalStatuses;
   }
 
-  getNextId(): number {
+  protected enterEditMode() {
+    this.toDelete = [];
+  }
+
+  private getNextId(): number {
     return Math.max(...this.dataSource.data.map(legalStatus => legalStatus.id)) + 1;
   }
 }

@@ -26,27 +26,22 @@ class ProgrammeLegalStatusServiceImpl(
     }
 
     @Transactional
-    override fun save(legalStatuses: Collection<InputProgrammeLegalStatus>): List<OutputProgrammeLegalStatus> {
-        val toBeSaved = legalStatuses.map { it.toEntity() }
-
-        // persist both existing Legal Statuses as well as newly created Legal Statuses
-        programmeLegalStatusRepository.saveAll(toBeSaved)
-        validateMax20LegalStatuses()
-
-        val result = programmeLegalStatusRepository.findAll()
-        programmeLegalStatusesChanged(result).logWith(auditService)
-        return result.map { it.toOutputProgrammeLegalStatus() }
-    }
-
-    @Transactional
-    override fun delete(legalStatusId: Long): List<OutputProgrammeLegalStatus> {
-        if (legalStatusId == 1L || legalStatusId == 2L) {
+    override fun save(
+        toPersist: Collection<InputProgrammeLegalStatus>,
+        toDelete: Collection<InputProgrammeLegalStatus>
+    ): List<OutputProgrammeLegalStatus> {
+        val defaultStatuses = toPersist.filter { it.id == 1L || it.id == 2L }.size
+        if (defaultStatuses != 2) {
             throw(ResourceNotFoundException("programme_legal_status"))
         }
-        programmeLegalStatusRepository.delete(
-            programmeLegalStatusRepository.findById(legalStatusId)
-                .orElseThrow { ResourceNotFoundException("programme_legal_status") }
-        )
+
+        val toBeSaved = toPersist.map { it.toEntity() }
+        programmeLegalStatusRepository.saveAll(toBeSaved)
+        val toBeDeleted = toDelete.map { it.toEntity() }
+        programmeLegalStatusRepository.deleteAll(toBeDeleted)
+
+        validateMax20LegalStatuses()
+
         val result = programmeLegalStatusRepository.findAll()
         programmeLegalStatusesChanged(result).logWith(auditService)
         return result.map { it.toOutputProgrammeLegalStatus() }
