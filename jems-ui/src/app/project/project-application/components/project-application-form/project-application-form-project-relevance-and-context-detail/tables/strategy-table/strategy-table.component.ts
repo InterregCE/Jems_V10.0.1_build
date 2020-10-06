@@ -4,10 +4,9 @@ import {MatTableDataSource} from '@angular/material/table';
 import {ProjectRelevanceStrategy} from '../../dtos/project-relevance-strategy';
 import {FormControl, FormGroup, Validators} from '@angular/forms';
 import {Observable} from 'rxjs';
-import {filter, take, takeUntil, tap} from 'rxjs/operators';
+import {takeUntil} from 'rxjs/operators';
 import {Permission} from 'src/app/security/permissions/permission';
 import {InputProjectRelevanceStrategy, OutputCall} from '@cat/api';
-import {Forms} from '../../../../../../../common/utils/forms';
 import {MatDialog} from '@angular/material/dialog';
 import {TranslateService} from '@ngx-translate/core';
 
@@ -30,8 +29,6 @@ export class StrategyTableComponent extends BaseComponent implements OnInit {
   changedFormState$: Observable<null>;
   @Input()
   strategies: OutputCall.StrategiesEnum[];
-  @Output()
-  deleteData = new EventEmitter<any>();
 
   strategyEnum: string[] =  [];
 
@@ -105,29 +102,9 @@ export class StrategyTableComponent extends BaseComponent implements OnInit {
     this.strategyEnum.push('Other');
   }
 
-  confirmDeletion(element: ProjectRelevanceStrategy): void {
-    let translatedName = '';
-    this.translateService.get('programme.strategy.' + element.projectStrategy)
-      .pipe(
-        take(1),
-        tap(text => translatedName = text)
-      ).subscribe()
-    Forms.confirmDialog(
-      this.dialog,
-      'project.application.form.description.table.delete.dialog.header',
-      'project.application.form.description.strategy.table.delete.dialog.message',
-      { name: translatedName }
-    ).pipe(
-      take(1),
-      filter(yes => !!yes),
-      tap(() => this.deleteEntry(element))
-    ).subscribe();
-  }
-
   deleteEntry(element: ProjectRelevanceStrategy): void {
     const index = this.strategyDataSource.data.indexOf(element);
     this.strategyDataSource.data.splice(index,1);
     this.strategyDataSource._updateChangeSubscription();
-    this.deleteData.emit();
   }
 }

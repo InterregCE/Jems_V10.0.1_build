@@ -65,8 +65,7 @@
             [benefitsDataSource]="benefitsDataSource"
             [editableBenefitsForm]="editableBenefitsForm"
             [disabled]="formState === FormState.VIEW"
-            [changedFormState$]="changeTableState$.asObservable()"
-            (deleteData)="saveDeletion()">
+            [changedFormState$]="changeTableState$.asObservable()">
     </app-benefits-table>
 
     <div class="intro-text">
@@ -78,8 +77,7 @@
             [editableStrategyForm]="editableStrategyForm"
             [strategies]="strategiesFromCall"
             [disabled]="formState === FormState.VIEW"
-            [changedFormState$]="changeTableState$.asObservable()"
-            (deleteData)="saveDeletion()">
+            [changedFormState$]="changeTableState$.asObservable()">
     </app-strategy-table>
 
     <div class="intro-text">
@@ -89,8 +87,7 @@
             [synergyDataSource]="synergiesDataSource"
             [editableSynergyForm]="editableSynergyForm"
             [disabled]="formState === FormState.VIEW"
-            [changedFormState$]="changeTableState$.asObservable()"
-            (deleteData)="saveDeletion()">
+            [changedFormState$]="changeTableState$.asObservable()">
     </app-synergy-table>
 
     <div class="intro-text">

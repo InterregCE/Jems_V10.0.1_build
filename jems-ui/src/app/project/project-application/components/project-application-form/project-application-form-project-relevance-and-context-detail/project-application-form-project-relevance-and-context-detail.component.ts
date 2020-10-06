@@ -103,18 +103,6 @@ export class ProjectApplicationFormProjectRelevanceAndContextDetailComponent ext
     });
   }
 
-  saveDeletion(): void {
-    this.deleteData.emit({
-      territorialChallenge: this.project?.territorialChallenge,
-      commonChallenge: this.project?.commonChallenge,
-      transnationalCooperation: this.project?.transnationalCooperation,
-      projectBenefits: this.buildBenefitsToSave(),
-      projectStrategies: this.buildStrategiesToSave(),
-      projectSynergies: this.buildSynergiesToSave(),
-      availableKnowledge: this.project?.availableKnowledge,
-    });
-  }
-
   targetGroup = (id: number): string => id + 'targ';
   specification = (id: number): string => id + 'spec';
   strategy = (id: number): string => id + 'strat';

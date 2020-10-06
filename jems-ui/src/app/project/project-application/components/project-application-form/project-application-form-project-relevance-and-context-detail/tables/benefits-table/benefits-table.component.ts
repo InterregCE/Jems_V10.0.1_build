@@ -5,9 +5,8 @@ import {ProjectRelevanceBenefit} from '../../dtos/project-relevance-benefit';
 import {FormControl, FormGroup, Validators} from '@angular/forms';
 import {InputProjectRelevanceBenefit} from '@cat/api';
 import {Observable} from 'rxjs';
-import {filter, take, takeUntil, tap} from 'rxjs/operators';
+import {takeUntil} from 'rxjs/operators';
 import {BaseComponent} from '@common/components/base-component';
-import {Forms} from '../../../../../../../common/utils/forms';
 import {MatDialog} from '@angular/material/dialog';
 import {TranslateService} from '@ngx-translate/core';
 
@@ -28,8 +27,6 @@ export class BenefitsTableComponent extends BaseComponent implements OnInit {
   disabled: boolean
   @Input()
   changedFormState$: Observable<null>;
-  @Output()
-  deleteData = new EventEmitter<any>();
 
   displayedColumns: string[] = ['select', 'targetGroup', 'specification', 'delete'];
 
@@ -109,29 +106,9 @@ export class BenefitsTableComponent extends BaseComponent implements OnInit {
     );
   }
 
-  confirmDeletion(element: ProjectRelevanceBenefit): void {
-    let translatedTargetGroup = '';
-    this.translateService.get('project.application.form.relevance.target.group.' + element.targetGroup)
-      .pipe(
-        take(1),
-        tap(text => translatedTargetGroup = text)
-      ).subscribe()
-    Forms.confirmDialog(
-      this.dialog,
-      'project.application.form.description.table.delete.dialog.header',
-      'project.application.form.description.target.group.table.delete.dialog.message',
-      {name: translatedTargetGroup}
-    ).pipe(
-      take(1),
-      filter(yes => !!yes),
-      tap(() => this.deleteEntry(element))
-    ).subscribe();
-  }
-
   deleteEntry(element: ProjectRelevanceBenefit): void {
     const index = this.benefitsDataSource.data.indexOf(element);
     this.benefitsDataSource.data.splice(index,1);
     this.benefitsDataSource._updateChangeSubscription();
-    this.deleteData.emit();
   }
 }
