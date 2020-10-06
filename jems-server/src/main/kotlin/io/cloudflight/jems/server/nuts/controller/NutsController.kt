@@ -8,15 +8,16 @@ import org.springframework.web.bind.annotation.RestController
 
 
 @RestController
-@PreAuthorize("@nutsAuthorization.canSetupNuts()")
 class NutsController(
     val nutsService: NutsService
 ) : NutsApi {
 
+    @PreAuthorize("@nutsAuthorization.canSetupNuts()")
     override fun getNutsMetadata(): OutputNutsMetadata? {
         return nutsService.getNutsMetadata()
     }
 
+    @PreAuthorize("@nutsAuthorization.canSetupNuts()")
     override fun downloadLatestNuts(): OutputNutsMetadata {
         return nutsService.downloadLatestNutsFromGisco()
     }
