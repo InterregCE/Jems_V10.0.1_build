@@ -1,56 +1,109 @@
-# Monitoring System
+# Joint electronic monitoring system
 
-This application is build on top of an kotlin-springboot-angular template with:
+This application is called Jems and is build on top of a kotlin-springboot-angular template based on:
 
 * Java / Kotlin
 * Spring Boot
 * Angular
+* Gradle
 
-That all backed by the [Cloudflight Platform](https://git.internal.cloudflight.io/cloudflight/libs/cloudflight-platform) and built by the
-[Cloudflight Gradle Plugin](https://git.internal.cloudflight.io/cloudflight/gradle/cloudflight-gradle-plugin).
+That is backed by the Cloudflight Platform [1] to improve efficiency and quality.
+Further, Jems is built by the improved Cloudflight Gradle Plugin [2] which is currently available via the Cloudflight repository.
 
 ## How to ...
 
-### ... dev this locally
+### ... develop locally
 
-Import in IntelliJ using `gradle` and you will see 3 run configs (you should rename those):
+Requirements:
 
- - `Frontend Build Watch (skeleton-ui)` start the angular build watch (run this for automatic reload after frontend changes, start before Application)
- - `Application` start backend (will run on `:8080`, wait for Frontend to build once before starting)
- - `Debug Angular Application (skeleton-ui)` start intellij JS debugging (optional, you can also debug it via browser devtools)
+ - Java, recommended: OpenJDK 11
+ - Gradle
+ - npm
+ - docker or manual configuration of: MariaDB, MinIO, ElasticSearch
+ - access to Cloudflight repository for the Gradle plugin
 
-### ... deploy to prod
+After unpacking or cloning the Jems repository, import the project in IntelliJ or a similar development environment.
+For a successful build, the Cloudflight gradle plugin is needed once to be downloaded via the specified repository [3].
+This can be achieved by specifying the username and token received in either the file `gradle.properties` or the local gradle configuration.
+The token can be generated or received from [Interact](jems@interact-eu.net).
 
-Please use our [Teamcity](https://teamcity.internal.cloudflight.io/) for this.
-Basically run `gradlew clean build` and run the jar found under `./backend/build/libs`.
+The following are example properties:
+ - `cloudflightRepositoryUser=_cust_interact`
+ - `cloudflightRepositoryPassword=TOKEN`
+
+Synchronize or import the Gradle project.
+To run the server successfully, it is needed to at least have an instance of MariaDB available.
+This is configured by the property `SPRING_DATASOURCE_URL` or the default `jdbc:mariadb://localhost:3306/jems`.
+To simplify the startup of Jems, a docker compose file is available (docker-compose.yml).
+The following commands are used for development:
+
+ - `gradle clean build` for building the project; specifically use `clean` if changes for generated files are necessary
+ - `spring boot` with MainClass `io.cloudflight.jems.server.Application` starts server (on default port `8080`)
+ - `npm run serve:local` start the angular build watch (run for automatic reload after frontend changes)
+
+### ... deploy to an environment
+
+Requirements:
+
+ - Docker to use the following easily as containers, or manually set up:
+ - MariaDB
+ - MinIO
+ - Elastic Search
+ - Kibana
+
+Currently, there are two environments set up for internal development [4] and testing [5] with external access.
+Both are deployed on the Cloudflight OpenShift and updated automatically within each development cycle.
+The build and deployment is managed within Teamcity [6].
+
+Manual deployment using docker compose:
+
+ - execute `gradle clean build` for building the project
+ - run the following docker-compose services
+   - jems-database (relational database for Jems configuration and input data)
+   - jems-minio (Object storage for files)
+   - audit-database (logging into elastic search, needed for Audit Logs in Kibana)
+   - audit-analyzer (Kibana for Audit Log access)
+ - run the jar (jems-server `./build/libs`) as Spring Boot application
+   - the webapp uses flyway to automatically migrate the relational database (mariaDB)
+   - `--audit-service.enabled=true` can be used to enable/disable the logging into elastic search
+   - `--audit-service.url-and-port=127.0.0.1:9200` can be specified to use a local elastic search instance
 
 ## Codestyle
 
-Import `./idea/Cloudflight-codestyle.xml` to your IntelliJ and use it.
+Import `./idea/Cloudflight-codestyle.xml` to your development environment (e.g. IntelliJ) and use it.
 
-## Help
-
-For any questions please contact the developers.
+## Additional details
 
 ### Database (Store)
 This project is now based on
 - [MariaDB](https://mariadb.com/kb/en/installing-and-using-mariadb-via-docker/) for storing all data
-- ElasticSearch for storing "audit logs". Those are tracking all interactions between users and system itself.
+- ElasticSearch for storing "audit logs". Those are tracking specific interactions between users and the system itself.
 - MinIO file storage for storing files
 
 The easiest way to start everything needed for local development is to run it inside docker.
 There is a [docker-compose](docker-compose.yml) file, so everything you need is to run `docker-compose up` command in
-root directory. For intelliJ there are also configurations
-- [ems-database](.idea/runConfigurations/ems_database.xml) to start MariaDB inside Docker
-- [ems-audit](.idea/runConfigurations/ems_audit.xml) to start ElasticSearch and Kibana inside Docker. Those data are
+root directory. For IntelliJ there are also configurations
+- [jems-database](.idea/runConfigurations/jems_database.xml) to start MariaDB inside Docker
+- [jems-audit](.idea/runConfigurations/jems_audit.xml) to start ElasticSearch and Kibana inside Docker. Those data are
 then available either directly in ElasticSearch [localhost:9200](http://localhost:9200/audit-log/audit/_search) or
 in Kibana web interface [localhost:5601](http://localhost:5601)
-- [ems-minio](.idea/runConfigurations/ems_minio.xml) to start MinIO file storage. MinIO is then accessible on
+- [jems-minio](.idea/runConfigurations/jems_minio.xml) to start MinIO file storage. MinIO is then accessible on
 [localhost:9000](http://localhost:9000)
 
-There is no need to start everything besides MariaDB, so spring-boot will also start without MinIO and without
+There is no need to start anything besides MariaDB, so spring-boot will also start without MinIO and without
 Audit (ES+Kibana). There is property value `audit-service.enabled` - if you set to `false` audits will be written
 as _info \[LOG\]_ to stdout.
 
 ### API testing
-For testing APIs we introduced module [ems-rest-test](ems-rest-test), see documentation there.
+For testing the API, the module [jems-rest-test](jems-rest-test) was introduced.
+The generated documentation of the API can be found on the successful started Jems server [7].
+
+## References
+
+1. [Cloudflight Platform](https://git.internal.cloudflight.io/cloudflight/libs/cloudflight-platform)
+2. [Cloudflight Gradle Plugin](https://git.internal.cloudflight.io/cloudflight/gradle/cloudflight-gradle-plugin)
+3. https://artifacts.cloudflight.io/repository/plugins-maven
+4. https://jems-dev.internal.cloudflight.dev/
+5. https://jems-test.cloudflight.dev/
+6. [Teamcity](https://teamcity.internal.cloudflight.io/)
+7. [Generated Swagger API documentation](https://jems-test.cloudflight.dev/swagger-ui.html#/)

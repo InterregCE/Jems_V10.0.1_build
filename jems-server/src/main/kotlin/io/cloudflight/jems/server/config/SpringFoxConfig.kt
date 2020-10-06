@@ -29,7 +29,7 @@ class SpringFoxConfig {
 
     private fun apiInfo(): ApiInfo? {
         return ApiInfoBuilder()
-            .title("Ems API")
+            .title("Jems API")
             .build()
     }
 }
