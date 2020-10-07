@@ -1,12 +1,10 @@
-<span class="d-inline-block">
-    <a mat-icon-button [matMenuTriggerFor]="menu">
-        <mat-icon>help_outline</mat-icon>
-    </a>
-    <mat-menu #menu="matMenu">
-        <label class="help-category">{{'topbar.help.title' | translate}}</label>
-        <a mat-menu-item>{{'topbar.help.contact' | translate}} <a href="mailto:jems@interact-eu.net">jems@interact-eu.net</a></a>
-        <label class="help-category">{{'topbar.help.legal' | translate}}</label>
-        <a mat-menu-item>{{'topbar.help.legal.privacy' | translate}}</a>
-        <a mat-menu-item>{{'topbar.help.legal.terms' | translate}}</a>
-    </mat-menu>
-</span>
+<a mat-icon-button [matMenuTriggerFor]="menu">
+    <mat-icon>help_outline</mat-icon>
+</a>
+<mat-menu #menu="matMenu">
+    <label class="help-category">{{'topbar.help.title' | translate}}</label>
+    <a mat-menu-item>{{'topbar.help.contact' | translate}} <a href="mailto:jems@interact-eu.net">jems@interact-eu.net</a></a>
+    <label class="help-category">{{'topbar.help.legal' | translate}}</label>
+    <a mat-menu-item>{{'topbar.help.legal.privacy' | translate}}</a>
+    <a mat-menu-item>{{'topbar.help.legal.terms' | translate}}</a>
+</mat-menu>

@@ -1,5 +1,5 @@
 $sidebarSize: 18rem;
-$topBarHeight: 3.125rem;
+$topBarHeight: 2.875rem;
 
 .shrunk {
   @media (min-width: 576px) {
@@ -20,9 +20,10 @@ $topBarHeight: 3.125rem;
 }
 
 app-top-bar {
-  height: $topBarHeight;
+  min-height: $topBarHeight;
+  z-index: 100;
   width: 100%;
-  position: fixed;
+  position: relative;
   top: 0;
 }
 
