@@ -70,9 +70,8 @@ interface ProjectPartnerApi {
                                                 @Valid @RequestBody partnerOrganizationDetails: InputProjectPartnerOrganizationDetails
     ): OutputProjectPartnerDetail
 
-    @ApiOperation("Delete a project partnjer")
+    @ApiOperation("Delete a project partner")
     @DeleteMapping("/{id}")
-    fun deleteProjectPartner(@PathVariable projectId: Long,
-                             @PathVariable id: Long): Boolean
+    fun deleteProjectPartner(@PathVariable projectId: Long, @PathVariable id: Long)
 
 }

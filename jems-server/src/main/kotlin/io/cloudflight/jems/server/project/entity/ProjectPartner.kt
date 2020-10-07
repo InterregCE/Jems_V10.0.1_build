@@ -42,7 +42,7 @@ data class ProjectPartner(
     @OneToOne(mappedBy = "partner", cascade = [CascadeType.ALL])
     val partnerContribution: ProjectPartnerContribution? = null,
 
-    @ManyToOne(optional = true)
+    @ManyToOne(optional = true, cascade = [CascadeType.ALL])
     @JoinColumn(name = "organization_id")
     val organization: ProjectPartnerOrganization? = null
 

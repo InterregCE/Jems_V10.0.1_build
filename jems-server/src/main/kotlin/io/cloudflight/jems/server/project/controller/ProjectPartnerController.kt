@@ -55,8 +55,8 @@ class ProjectPartnerController(
     }
 
     @PreAuthorize("@projectAuthorization.canUpdateProject(#projectId)")
-    override fun deleteProjectPartner(projectId: Long, id: Long): Boolean {
-        return true
+    override fun deleteProjectPartner(projectId: Long, id: Long) {
+        return projectPartnerService.deletePartner(projectId, id)
     }
 
 }
