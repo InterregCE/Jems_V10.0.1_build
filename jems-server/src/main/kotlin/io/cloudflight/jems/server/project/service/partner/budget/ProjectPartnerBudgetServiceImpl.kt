@@ -9,6 +9,7 @@ import io.cloudflight.jems.server.project.repository.partner.budget.ProjectPartn
 import org.springframework.http.HttpStatus
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
+import java.math.BigDecimal
 import java.util.stream.Collectors
 
 @Service
@@ -19,6 +20,7 @@ class ProjectPartnerBudgetServiceImpl(
 
     companion object {
         const val MAX_ALLOWED_AMOUNT = 300
+        private val MAX_ALLOWED_VALUE = BigDecimal.valueOf(999_999_999_999_999_99L, 2)
     }
 
     @Transactional(readOnly = true)
@@ -32,7 +34,7 @@ class ProjectPartnerBudgetServiceImpl(
 
     @Transactional
     override fun updateStaffCosts(projectId: Long, partnerId: Long, staffCosts: List<InputBudget>): List<InputBudget> {
-        validateInput(projectId, partnerId, staffCosts.size)
+        validateInput(projectId, partnerId, staffCosts)
 
         val toBeRemoved = retrieveToBeRemoved(
             newData = staffCosts,
@@ -45,14 +47,22 @@ class ProjectPartnerBudgetServiceImpl(
             .map { it.toOutput() }
     }
 
-    private fun validateInput(projectId: Long, partnerId: Long, budgetListSize: Int? = null) {
+    private fun validateInput(projectId: Long, partnerId: Long, budgetList: List<InputBudget> = emptyList()) {
         if (projectPartnerRepository.findFirstByProjectIdAndId(projectId, partnerId).isEmpty)
             throw ResourceNotFoundException("projectPartner")
 
-        if (budgetListSize != null && budgetListSize > MAX_ALLOWED_AMOUNT)
+        if (budgetList.size > MAX_ALLOWED_AMOUNT)
             throw I18nValidationException(
                 httpStatus = HttpStatus.UNPROCESSABLE_ENTITY,
                 i18nKey = "project.partner.budget.max.allowed.reached"
+            )
+
+        if (!budgetList.parallelStream().allMatch {
+                it.numberOfUnits <= MAX_ALLOWED_VALUE && it.pricePerUnit <= MAX_ALLOWED_VALUE
+            })
+            throw I18nValidationException(
+                httpStatus = HttpStatus.UNPROCESSABLE_ENTITY,
+                i18nKey = "project.partner.budget.number.out.of.range"
             )
     }
 
