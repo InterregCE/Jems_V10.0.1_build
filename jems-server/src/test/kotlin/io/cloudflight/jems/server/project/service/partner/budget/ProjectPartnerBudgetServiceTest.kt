@@ -5,6 +5,7 @@ import io.cloudflight.jems.api.project.dto.ProjectPartnerRole
 import io.cloudflight.jems.api.project.dto.partner.budget.InputBudget
 import io.cloudflight.jems.api.project.dto.status.ProjectApplicationStatus
 import io.cloudflight.jems.server.call.entity.Call
+import io.cloudflight.jems.server.exception.I18nValidationException
 import io.cloudflight.jems.server.exception.ResourceNotFoundException
 import io.cloudflight.jems.server.project.entity.Project
 import io.cloudflight.jems.server.project.entity.ProjectPartner
@@ -84,6 +85,9 @@ class ProjectPartnerBudgetServiceTest {
         )
 
     }
+
+    @MockK
+    lateinit var veryBigList: List<InputBudget>
 
     @MockK
     lateinit var projectPartnerRepository: ProjectPartnerRepository
@@ -169,8 +173,8 @@ class ProjectPartnerBudgetServiceTest {
     fun `save BudgetStaffCost test maximum`() {
         val toBeSaved = listOf(
             InputBudget(
-                numberOfUnits = BigDecimal.valueOf(999_999_999_999_999_999L, 3),
-                pricePerUnit = BigDecimal.valueOf(999_999_999_999_999_991L, 3))
+                numberOfUnits = BigDecimal.valueOf(999_999_999_999_999_99L, 2),
+                pricePerUnit = BigDecimal.valueOf(999_999_999_999_999_99L, 2))
         )
 
         every { projectPartnerRepository.findFirstByProjectIdAndId(1, 1) } returns Optional.of(projectPartner)
@@ -187,6 +191,43 @@ class ProjectPartnerBudgetServiceTest {
                     pricePerUnit = BigDecimal.valueOf(999_999_999_999_999_99L, 2))
             )
         )
+    }
+
+    @Test
+    fun `save BudgetStaffCost more items than allowed`() {
+        every { veryBigList.size } returns 301
+        every { projectPartnerRepository.findFirstByProjectIdAndId(1, 1) } returns Optional.of(projectPartner)
+
+        assertThat(
+            assertThrows<I18nValidationException> { projectPartnerBudgetService.updateStaffCosts(1, 1, veryBigList) }.i18nKey
+        ).isEqualTo("project.partner.budget.max.allowed.reached")
+    }
+
+    @Test
+    fun `save BudgetStaffCost number out of range`() {
+        every { projectPartnerRepository.findFirstByProjectIdAndId(1, 1) } returns Optional.of(projectPartner)
+
+        assertThat(
+            assertThrows<I18nValidationException> {
+                projectPartnerBudgetService.updateStaffCosts(1, 1, listOf(
+                    InputBudget(
+                        numberOfUnits = BigDecimal.valueOf(999_999_999_999_999_991L, 3),
+                        pricePerUnit = BigDecimal.ONE
+                    )
+                ))
+            }.i18nKey
+        ).isEqualTo("project.partner.budget.number.out.of.range")
+
+        assertThat(
+            assertThrows<I18nValidationException> {
+                projectPartnerBudgetService.updateStaffCosts(1, 1, listOf(
+                    InputBudget(
+                        numberOfUnits = BigDecimal.ONE,
+                        pricePerUnit = BigDecimal.valueOf(999_999_999_999_999_991L, 3)
+                    )
+                ))
+            }.i18nKey
+        ).isEqualTo("project.partner.budget.number.out.of.range")
     }
 
 }
