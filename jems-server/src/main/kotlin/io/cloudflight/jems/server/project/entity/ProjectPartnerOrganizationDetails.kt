@@ -1,21 +1,16 @@
 package io.cloudflight.jems.server.project.entity
 
+
 import javax.persistence.Column
+import javax.persistence.EmbeddedId
 import javax.persistence.Entity
-import javax.persistence.Id
-import javax.persistence.MapsId
-import javax.persistence.OneToOne
+
 
 @Entity(name = "project_partner_organization_details")
 data class ProjectPartnerOrganizationDetails(
 
-    @Id
-    @Column(name = "organization_id", nullable = false)
-    val organizationId: Long,
-
-    @OneToOne(optional = false)
-    @MapsId
-    val organization: ProjectPartnerOrganization,
+    @EmbeddedId
+    val partnerOrganizationDetailId: PartnerOrganizationDetailId,
 
     @Column
     val country: String?,

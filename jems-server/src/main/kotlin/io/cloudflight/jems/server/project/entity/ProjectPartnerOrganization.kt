@@ -6,7 +6,8 @@ import javax.persistence.Entity
 import javax.persistence.GeneratedValue
 import javax.persistence.GenerationType
 import javax.persistence.Id
-import javax.persistence.OneToOne
+import javax.persistence.OneToMany
+
 
 @Entity(name = "project_partner_organization")
 data class ProjectPartnerOrganization (
@@ -24,6 +25,6 @@ data class ProjectPartnerOrganization (
     @Column
     val department: String?,
 
-    @OneToOne(mappedBy = "organization", cascade = [CascadeType.ALL])
-    val organizationDetails: ProjectPartnerOrganizationDetails? = null
+    @OneToMany(mappedBy = "partnerOrganizationDetailId.organizationId", cascade = [CascadeType.ALL])
+    val organizationsDetails: Set<ProjectPartnerOrganizationDetails>?= emptySet()
 )

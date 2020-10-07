@@ -67,8 +67,7 @@ interface ProjectPartnerApi {
     @PutMapping("/{id}/details", consumes = [MediaType.APPLICATION_JSON_VALUE])
     fun updateProjectPartnerOrganizationDetails(@PathVariable projectId: Long,
                                                 @PathVariable id: Long,
-                                                @Valid @RequestBody partnerOrganizationDetails: InputProjectPartnerOrganizationDetails
-    ): OutputProjectPartnerDetail
+                                                @Valid @RequestBody partnerOrganizationDetails: Set<InputProjectPartnerOrganizationDetails>): OutputProjectPartnerDetail
 
     @ApiOperation("Delete a project partner")
     @DeleteMapping("/{id}")
