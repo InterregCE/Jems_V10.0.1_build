@@ -8,9 +8,9 @@
         </span>
     </h5>
 
-    <div class="intro-text">
+    <h6 class="intro-text">
         {{'project.partner.motivation.organization.relevance' | translate}}
-    </div>
+    </h6>
     <app-expandable-textarea *ngIf="formState === FormState.EDIT"
             class="field-wide"
             [control]="partnerContributionForm?.controls?.organizationRelevance"
@@ -23,9 +23,9 @@
         <br>{{partnerContributionForm?.controls?.organizationRelevance.value}}
     </p>
 
-    <div class="intro-text">
+    <h6 class="intro-text">
         {{'project.partner.motivation.organization.role' | translate}}
-    </div>
+    </h6>
     <app-expandable-textarea *ngIf="formState === FormState.EDIT"
             class="field-wide"
             [control]="partnerContributionForm?.controls?.organizationRole"
@@ -38,9 +38,9 @@
         <br>{{partnerContributionForm?.controls?.organizationRole.value}}
     </p>
 
-    <div class="intro-text">
+    <h6 class="intro-text">
         {{'project.partner.motivation.organization.experience' | translate}}
-    </div>
+    </h6>
     <app-expandable-textarea *ngIf="formState === FormState.EDIT"
             class="field-wide"
             [control]="partnerContributionForm?.controls?.organizationExperience"
