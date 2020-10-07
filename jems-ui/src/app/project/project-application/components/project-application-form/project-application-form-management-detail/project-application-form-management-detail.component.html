@@ -267,7 +267,7 @@
     </div>
 
     <app-alert
-            [show]="showSuccessMessage$ | async"
+            [show]="!submitted && (showSuccessMessage$ | async)"
             [type]="Alert.SUCCESS">
         <p>{{'project.application.form.management.save.success' | translate}}</p>
     </app-alert>

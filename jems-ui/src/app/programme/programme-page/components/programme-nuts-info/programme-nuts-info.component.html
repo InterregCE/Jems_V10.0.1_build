@@ -1,7 +1,7 @@
 <div>
     <h4 class="header">{{'programme.area.nuts.header' | translate}}</h4>
     <app-alert
-            [show]="showSuccessMessage$ | async"
+            [show]="!submitted && (showSuccessMessage$ | async)"
             [type]="Alert.SUCCESS">
         <p>
             {{

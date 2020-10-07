@@ -32,7 +32,7 @@
         </button>
     </div>
     <app-alert
-            [show]="showSuccessMessage$ | async"
+            [show]="!submitted && (showSuccessMessage$ | async)"
             [type]="Alert.SUCCESS">
         <p>{{'programme.area.nuts.explorer.save.success' | translate}}</p>
     </app-alert>

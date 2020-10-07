@@ -125,7 +125,7 @@
     </div>
     <div class="section col-md-12">
         <app-alert
-                [show]="showSuccessMessage$ | async"
+                [show]="!submitted && (showSuccessMessage$ | async)"
                 [type]="Alert.SUCCESS">
             <p>{{'call.detail.save.success' | translate}}</p>
         </app-alert>

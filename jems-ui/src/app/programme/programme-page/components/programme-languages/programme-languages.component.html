@@ -50,7 +50,7 @@
         </button>
     </div>
     <app-alert
-            [show]="showSuccessMessage$ | async"
+            [show]="!submitted && (showSuccessMessage$ | async)"
             [type]="Alert.SUCCESS">
         <p>{{'programme.data.save.success' | translate}}</p>
     </app-alert>

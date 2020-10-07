@@ -74,7 +74,7 @@
         </button>
     </div>
     <app-alert
-            [show]="showSuccessMessage$ | async"
+            [show]="!submitted && (showSuccessMessage$ | async)"
             [type]="Alert.SUCCESS">
         <p *ngIf="success$ | async as successMessage">{{successMessage | translate}}</p>
     </app-alert>

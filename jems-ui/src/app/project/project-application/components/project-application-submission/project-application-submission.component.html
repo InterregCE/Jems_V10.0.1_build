@@ -32,7 +32,7 @@
         </button>
     </form>
     <app-alert
-            [show]="showSuccessMessage$ | async"
+            [show]="!submitted && (showSuccessMessage$ | async)"
             [type]="Alert.SUCCESS">
         <p>{{'project.detail.new.message.successful' | translate}}</p>
     </app-alert>
