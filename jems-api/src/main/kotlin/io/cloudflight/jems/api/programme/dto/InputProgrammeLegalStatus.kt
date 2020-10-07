@@ -2,7 +2,7 @@ package io.cloudflight.jems.api.programme.dto
 
 import io.cloudflight.jems.api.programme.validator.InputProgrammeLegalStatusValidator
 
-data class InputProgrammeLegalStatus (
+data class InputProgrammeLegalStatus(
     val id: Long? = null,
 
     val description: String? = null
@@ -10,5 +10,6 @@ data class InputProgrammeLegalStatus (
 
 @InputProgrammeLegalStatusValidator
 data class InputProgrammeLegalStatusWrapper(
-    val statuses: Collection<InputProgrammeLegalStatus>
+    val toPersist: Collection<InputProgrammeLegalStatus>,
+    val toDelete: Collection<InputProgrammeLegalStatus>
 )

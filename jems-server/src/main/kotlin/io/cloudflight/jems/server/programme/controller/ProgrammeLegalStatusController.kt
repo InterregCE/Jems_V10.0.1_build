@@ -18,12 +18,7 @@ class ProgrammeLegalStatusController(
         return programmeLegalStatusService.get()
     }
 
-    override fun addProgrammeLegalStatuses(statusData: InputProgrammeLegalStatusWrapper): List<OutputProgrammeLegalStatus> {
-        return programmeLegalStatusService.save(statusData.statuses)
+    override fun updateProgrammeLegalStatuses(statusData: InputProgrammeLegalStatusWrapper): List<OutputProgrammeLegalStatus> {
+        return programmeLegalStatusService.save(statusData.toPersist, statusData.toDelete)
     }
-
-    override fun delete(id: Long): List<OutputProgrammeLegalStatus> {
-        return programmeLegalStatusService.delete(legalStatusId = id)
-    }
-
 }

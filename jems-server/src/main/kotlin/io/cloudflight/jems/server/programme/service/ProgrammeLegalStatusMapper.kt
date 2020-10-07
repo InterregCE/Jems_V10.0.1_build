@@ -6,7 +6,7 @@ import io.cloudflight.jems.server.programme.entity.ProgrammeLegalStatus
 
 fun InputProgrammeLegalStatus.toEntity() = ProgrammeLegalStatus(
     id = id,
-    description = if (id == null) description else null
+    description = description
 )
 
 fun OutputProgrammeLegalStatus.toEntity() = ProgrammeLegalStatus(

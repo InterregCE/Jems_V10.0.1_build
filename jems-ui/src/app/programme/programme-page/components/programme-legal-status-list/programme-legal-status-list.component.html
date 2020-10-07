@@ -46,7 +46,7 @@
             <ng-container matColumnDef="delete">
                 <mat-header-cell *matHeaderCellDef></mat-header-cell>
                 <mat-cell *matCellDef="let element">
-                    <button *ngIf="formState === FormState.EDIT && element.description"
+                    <button *ngIf="formState === FormState.EDIT && element.id > 2"
                             mat-icon-button color="accent"
                             matTooltip="{{'common.delete.entry.tooltip' | translate}}"
                             (click)="deleteLegalStatus(element)">
@@ -58,7 +58,7 @@
             <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
             <mat-row *matRowDef="let row; columns: displayedColumns;"></mat-row>
             <mat-row *matFooterRowDef="['add']"
-                     [hidden]="formState === FormState.VIEW">
+                     [hidden]="formState === FormState.VIEW || dataSource.data.length > 19">
             </mat-row>
         </mat-table>
     </form>
@@ -68,7 +68,7 @@
             {{'common.cancel.label' | translate}}
         </button>
         <button class="button" mat-raised-button color="primary" type="button"
-                [disabled]="!statusForm.valid || submitted"
+                [disabled]="!statusForm.valid || dataSource.data.length > 20 || submitted"
                 (click)="onSubmit()">
             {{'common.save.label' | translate}}
         </button>
