@@ -70,6 +70,7 @@ import {ProjectApplicationFormPartnerContributionComponent} from './project-appl
 import {ProjectApplicationFormPartnerAddressComponent} from './project-application/components/project-application-form/project-application-form-partner-address/project-application-form-partner-address.component';
 import {ProjectApplicationFormRegionSelectionComponent} from './project-application/containers/project-application-form-page/project-application-form-partner-section/project-application-form-region-selection/project-application-form-region-selection.component';
 import {DeleteActionCellComponent} from './project-application/components/project-application-form/project-application-form-partner-list/delete-action-cell/delete-action-cell.component';
+import {WorkPackageDeleteActionCellComponent} from './project-application/components/project-application-form/project-application-form-work-packages-list/work-package-delete-action-cell/work-package-delete-action-cell.component';
 
 @NgModule({
   declarations: [
@@ -124,7 +125,8 @@ import {DeleteActionCellComponent} from './project-application/components/projec
     StrategyTableComponent,
     SynergyTableComponent,
     ProjectApplicationFormRegionSelectionComponent,
-    DeleteActionCellComponent
+    DeleteActionCellComponent,
+    WorkPackageDeleteActionCellComponent
   ],
   imports: [
     CommonModule,

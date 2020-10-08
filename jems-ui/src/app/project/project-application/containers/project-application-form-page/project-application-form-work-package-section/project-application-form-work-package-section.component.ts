@@ -1,11 +1,12 @@
 import {ChangeDetectionStrategy, Component, Input} from '@angular/core';
 import {combineLatest, Subject} from 'rxjs';
 import {MatSort} from '@angular/material/sort';
-import {flatMap, map, startWith, tap} from 'rxjs/operators';
+import {flatMap, map, startWith, take, tap} from 'rxjs/operators';
 import {Tables} from '../../../../../common/utils/tables';
 import {Log} from '../../../../../common/utils/log';
 import {WorkPackageService} from '@cat/api'
 import {Permission} from '../../../../../security/permissions/permission';
+import {ProjectApplicationFormSidenavService} from '../services/project-application-form-sidenav.service';
 
 @Component({
   selector: 'app-project-application-form-work-package-section',
@@ -41,7 +42,17 @@ export class ProjectApplicationFormWorkPackageSectionComponent{
         tap(page => Log.info('Fetched the work packages:', this, page.content)),
       );
 
+  constructor(private workPackageService: WorkPackageService,
+              private projectApplicationFormSidenavService: ProjectApplicationFormSidenavService) { }
 
-  constructor(private workPackageService: WorkPackageService) { }
+  deleteWorkPackage(workPackageId: number): void {
+    this.workPackageService.deleteWorkPackage(workPackageId, this.projectId)
+      .pipe(
+        take(1),
+        tap(() => this.newPageIndex$.next(Tables.DEFAULT_INITIAL_PAGE_INDEX)),
+        tap(() => Log.info('Deleted work package: ', this, workPackageId)),
+        tap(() => this.projectApplicationFormSidenavService.refreshPackages())
+      ).subscribe();
+  }
 
 }

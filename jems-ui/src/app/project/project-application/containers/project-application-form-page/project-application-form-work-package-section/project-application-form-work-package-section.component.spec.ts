@@ -49,4 +49,18 @@ describe('ProjectApplicationFormWorkPackageSectionComponent', () => {
     tick();
     expect(results).toEqual(workPackages);
   }));
+
+  it('should delete a workPackage', fakeAsync(() => {
+    component.deleteWorkPackage(1);
+
+    httpTestingController.expectOne({
+      method: 'DELETE',
+      url: `//api/project/1/workpackage/1`
+    })
+    httpTestingController.expectOne({
+      method: 'GET',
+      url: `//api/project/1/workpackage?page=0&size=25&sort=id,asc`
+    })
+  }));
+
 });

@@ -11,6 +11,7 @@ import io.swagger.annotations.ApiOperation
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
 import org.springframework.http.MediaType
+import org.springframework.web.bind.annotation.DeleteMapping
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.RequestMapping
@@ -43,4 +44,9 @@ interface WorkPackageApi {
     @ApiOperation("Update work package")
     @PutMapping(consumes = [MediaType.APPLICATION_JSON_VALUE])
     fun updateWorkPackage(@PathVariable projectId: Long, @Valid @RequestBody inputWorkPackageUpdate: InputWorkPackageUpdate): OutputWorkPackage
+
+    @ApiOperation("Delete a work package")
+    @DeleteMapping("/{id}")
+    fun deleteWorkPackage(@PathVariable projectId: Long, @PathVariable id: Long)
+
 }

@@ -36,4 +36,9 @@ class WorkPackageController(
         return workPackageService.updateWorkPackage(projectId, inputWorkPackageUpdate)
     }
 
+    @PreAuthorize("@projectAuthorization.canUpdateProject(#projectId)")
+    override fun deleteWorkPackage(projectId: Long, id: Long) {
+        return workPackageService.deleteWorkPackage(projectId, id)
+    }
+
 }
