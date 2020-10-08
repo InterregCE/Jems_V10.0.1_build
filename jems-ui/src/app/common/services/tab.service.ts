@@ -2,7 +2,7 @@ import {Injectable} from '@angular/core';
 import {Observable, ReplaySubject} from 'rxjs';
 import {Log} from '../utils/log';
 
-@Injectable()
+@Injectable({providedIn: 'root'})
 export class TabService {
   private currentTabs = new Map<string, ReplaySubject<number>>();
 

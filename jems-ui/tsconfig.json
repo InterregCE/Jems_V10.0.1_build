@@ -33,6 +33,7 @@
     }
   },
   "include": [
+    "src/**/*",
     "build/generated-sources/**/*.ts"
   ],
   "angularCompilerOptions": {
