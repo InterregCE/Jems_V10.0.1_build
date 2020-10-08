@@ -207,25 +207,18 @@ internal class ProjectFileAuthorizationTest {
 
         // is Owner
         listOf(DRAFT, RETURNED_TO_APPLICANT).forEach {
-            every { projectAuthorization.getApplicantAndStatusById(eq(1L)) } returns ProjectApplicantAndStatus(
-                applicantUser.user.id!!,
-                it
-            )
+            every { projectService.getApplicantAndStatusById(eq(1L)) } returns ProjectApplicantAndStatus(applicantUser.user.id!!, it)
             every { projectAuthorization.canReadProject(eq(1L)) } returns true
 
-            assertFalse(
-                projectFileAuthorization.canUploadFile(1, ProjectFileType.ASSESSMENT_FILE),
-                "${applicantUser.user.email} as owner cannot upload ${ProjectFileType.ASSESSMENT_FILE} file (status was $it)"
-            )
-            assertTrue(
-                projectFileAuthorization.canUploadFile(1, ProjectFileType.APPLICANT_FILE),
-                "${applicantUser.user.email} as owner CAN upload ${ProjectFileType.APPLICANT_FILE} file when status is $it"
-            )
+            assertFalse(projectFileAuthorization.canUploadFile(1, ProjectFileType.ASSESSMENT_FILE),
+                "${applicantUser.user.email} as owner cannot upload ${ProjectFileType.ASSESSMENT_FILE} file (status was $it)")
+            assertTrue(projectFileAuthorization.canUploadFile(1, ProjectFileType.APPLICANT_FILE),
+                "${applicantUser.user.email} as owner CAN upload ${ProjectFileType.APPLICANT_FILE} file when status is $it")
         }
 
         // is NOT Owner
         listOf(DRAFT, RETURNED_TO_APPLICANT).forEach {
-            every { projectAuthorization.getApplicantAndStatusById(eq(2L)) } returns ProjectApplicantAndStatus(456L, it)
+            every { projectService.getApplicantAndStatusById(eq(2L)) } returns ProjectApplicantAndStatus(456L, it)
             every { projectAuthorization.canReadProject(eq(2L)) } throws ResourceNotFoundException("project")
 
             var exception = assertThrows<ResourceNotFoundException>(
@@ -247,18 +240,11 @@ internal class ProjectFileAuthorizationTest {
             APPROVED_WITH_CONDITIONS,
             NOT_APPROVED
         ).forEach {
-            every { projectAuthorization.getApplicantAndStatusById(eq(1L)) } returns ProjectApplicantAndStatus(
-                applicantUser.user.id!!,
-                it
-            )
-            assertFalse(
-                projectFileAuthorization.canUploadFile(1, ProjectFileType.ASSESSMENT_FILE),
-                "${programmeUser.user.email} cannot upload ${ProjectFileType.ASSESSMENT_FILE} file when status is $it"
-            )
-            assertFalse(
-                projectFileAuthorization.canUploadFile(1, ProjectFileType.APPLICANT_FILE),
-                "${programmeUser.user.email} cannot upload ${ProjectFileType.APPLICANT_FILE} file when status is $it"
-            )
+            every { projectService.getApplicantAndStatusById(eq(1L)) } returns ProjectApplicantAndStatus(applicantUser.user.id!!, it)
+            assertFalse(projectFileAuthorization.canUploadFile(1, ProjectFileType.ASSESSMENT_FILE),
+                "${programmeUser.user.email} cannot upload ${ProjectFileType.ASSESSMENT_FILE} file when status is $it")
+            assertFalse(projectFileAuthorization.canUploadFile(1, ProjectFileType.APPLICANT_FILE),
+                "${programmeUser.user.email} cannot upload ${ProjectFileType.APPLICANT_FILE} file when status is $it")
         }
 
     }
@@ -419,12 +405,10 @@ internal class ProjectFileAuthorizationTest {
             APPROVED_WITH_CONDITIONS,
             NOT_APPROVED
         ).forEach {
-            every { projectAuthorization.getApplicantAndStatusById(eq(420)) } returns ProjectApplicantAndStatus(-56, it)
-            every { projectAuthorization.canReadProject(eq(420)) } returns true
-            assertTrue(
-                projectFileAuthorization.canDownloadFile(420, assessmentFile2011.id!!),
-                "${programmeUser.user.email} can download ${assessmentFile2011.type} when project status is $it"
-            )
+            every { projectService.getApplicantAndStatusById(eq(420)) } returns ProjectApplicantAndStatus(-56, it)
+            every { projectAuthorization.canReadProject(eq(420))} returns true
+            assertTrue(projectFileAuthorization.canDownloadFile(420, assessmentFile2011.id!!),
+                "${programmeUser.user.email} can download ${assessmentFile2011.type} when project status is $it")
         }
 
         // ## APPLICANT_FILE section: ##
@@ -437,20 +421,18 @@ internal class ProjectFileAuthorizationTest {
             APPROVED_WITH_CONDITIONS,
             NOT_APPROVED
         ).forEach {
-            every { projectAuthorization.getApplicantAndStatusById(eq(421)) } returns ProjectApplicantAndStatus(-57, it)
-            every { projectAuthorization.canReadProject(eq(421)) } returns true
-            assertTrue(
-                projectFileAuthorization.canDownloadFile(421, applicantFile2011.id!!),
-                "${programmeUser.user.email} can download ${applicantFile2011.type} when project status is $it"
-            )
+            every { projectService.getApplicantAndStatusById(eq(421)) } returns ProjectApplicantAndStatus(-57, it)
+            every { projectAuthorization.canReadProject(eq(421))} returns true
+            assertTrue(projectFileAuthorization.canDownloadFile(421, applicantFile2011.id!!),
+                "${programmeUser.user.email} can download ${applicantFile2011.type} when project status is $it")
         }
 
         listOf( // not allowed statuses for BOTH
             DRAFT
         ).forEach {
-            every { projectAuthorization.canReadProject(eq(422)) } throws ResourceNotFoundException("project")
+            every { projectAuthorization.canReadProject(eq(422))} throws ResourceNotFoundException("project")
 
-            every { projectAuthorization.getApplicantAndStatusById(eq(422)) } returns ProjectApplicantAndStatus(-58, it)
+            every { projectService.getApplicantAndStatusById(eq(422)) } returns ProjectApplicantAndStatus( -58, it)
             var exception = assertThrows<ResourceNotFoundException>(
                 "${programmeUser.user.email} cannot download ${assessmentFile2011.type} when project status is $it"
             ) { projectFileAuthorization.canDownloadFile(422, assessmentFile2011.id!!) }
@@ -471,19 +453,14 @@ internal class ProjectFileAuthorizationTest {
         // ## APPLICANT_FILE section: ##
         ProjectApplicationStatus.values().forEach {
             // is owner
-            every { projectAuthorization.getApplicantAndStatusById(eq(115)) } returns ProjectApplicantAndStatus(
-                applicantUser.user.id!!,
-                it
-            )
-            every { projectAuthorization.canReadProject(eq(115)) } returns true
-            assertTrue(
-                projectFileAuthorization.canDownloadFile(115, applicantFile2005.id!!),
-                "${applicantUser.user.email} can download his(!!) ${applicantFile2005.type} (project status was $it)"
-            )
+            every { projectService.getApplicantAndStatusById(eq(115)) } returns ProjectApplicantAndStatus(applicantUser.user.id!!, it)
+            every { projectAuthorization.canReadProject(eq(115))} returns true
+            assertTrue(projectFileAuthorization.canDownloadFile(115, applicantFile2005.id!!),
+                "${applicantUser.user.email} can download his(!!) ${applicantFile2005.type} (project status was $it)")
 
             // is not owner
             every { projectService.getApplicantAndStatusById(eq(115)) } returns ProjectApplicantAndStatus(-6, it)
-            every { projectAuthorization.canReadProject(eq(115)) } throws ResourceNotFoundException("project")
+            every { projectAuthorization.canReadProject(eq(115))} throws ResourceNotFoundException("project")
             val exception = assertThrows<ResourceNotFoundException>(
                 "${applicantUser.user.email} cannot download ${applicantFile2005.type} when he is not owner(!!) (project status was $it)"
             ) { projectFileAuthorization.canDownloadFile(115, applicantFile2005.id!!) }
@@ -492,10 +469,7 @@ internal class ProjectFileAuthorizationTest {
 
         // ## ASSESSMENT_FILE section: ##
         ProjectApplicationStatus.values().forEach {
-            every { projectAuthorization.getApplicantAndStatusById(eq(180)) } returns ProjectApplicantAndStatus(
-                applicantUser.user.id!!,
-                it
-            )
+            every { projectService.getApplicantAndStatusById(eq(180)) } returns ProjectApplicantAndStatus(applicantUser.user.id!!, it)
             every { projectAuthorization.canReadProject(eq(180)) } returns true
 
             val exception = assertThrows<ResourceNotFoundException>(
@@ -564,19 +538,14 @@ internal class ProjectFileAuthorizationTest {
         // ## APPLICANT_FILE section: ##
         ProjectApplicationStatus.values().forEach {
             // is owner
-            every { projectAuthorization.getApplicantAndStatusById(eq(396)) } returns ProjectApplicantAndStatus(
-                applicantUser.user.id!!,
-                it
-            )
-            every { projectAuthorization.canReadProject(eq(396)) } returns true
-            assertTrue(
-                projectFileAuthorization.canListFiles(396, ProjectFileType.APPLICANT_FILE),
-                "${applicantUser.user.email} can list his(!!) files of type ${ProjectFileType.APPLICANT_FILE} (project status was $it)"
-            )
+            every { projectService.getApplicantAndStatusById(eq(396)) } returns ProjectApplicantAndStatus(applicantUser.user.id!!, it)
+            every { projectAuthorization.canReadProject(eq(396))} returns true
+            assertTrue(projectFileAuthorization.canListFiles(396, ProjectFileType.APPLICANT_FILE),
+                "${applicantUser.user.email} can list his(!!) files of type ${ProjectFileType.APPLICANT_FILE} (project status was $it)")
 
             // is not owner
             every { projectService.getApplicantAndStatusById(eq(397)) } returns ProjectApplicantAndStatus(-15, it)
-            every { projectAuthorization.canReadProject(eq(397)) } throws ResourceNotFoundException("project")
+            every { projectAuthorization.canReadProject(eq(397))} throws ResourceNotFoundException("project")
             val exception = assertThrows<ResourceNotFoundException>(
                 "${applicantUser.user.email} cannot list files of type ${ProjectFileType.APPLICANT_FILE} when he is not owner(!!) (project status was $it)"
             ) { projectFileAuthorization.canListFiles(397, ProjectFileType.APPLICANT_FILE) }
@@ -585,20 +554,15 @@ internal class ProjectFileAuthorizationTest {
 
         // ## ASSESSMENT_FILE section: ##
         ProjectApplicationStatus.values().forEach {
-            every { projectService.getApplicantAndStatusById(eq(398)) } returns ProjectApplicantAndStatus(
-                applicantUser.user.id!!,
-                it
-            )
-            every { projectAuthorization.canReadProject(eq(398)) } returns true
-            assertFalse(
-                projectFileAuthorization.canListFiles(398, ProjectFileType.ASSESSMENT_FILE),
-                "${applicantUser.user.email} cannot list files of type ${ProjectFileType.ASSESSMENT_FILE} (project status was $it)"
-            )
+            every { projectService.getApplicantAndStatusById(eq(398)) } returns ProjectApplicantAndStatus(applicantUser.user.id!!, it)
+            every { projectAuthorization.canReadProject(eq(398))} returns true
+            assertFalse(projectFileAuthorization.canListFiles(398, ProjectFileType.ASSESSMENT_FILE),
+                "${applicantUser.user.email} cannot list files of type ${ProjectFileType.ASSESSMENT_FILE} (project status was $it)")
         }
     }
 
     @Test
-    fun `get last submission date correctly`() {
+    fun `get last submission date correctly` () {
         val finalStatus = getSubmissionAt(year2011)
         val dummyProject = dummyProjectWithStatus(finalStatus)
 
