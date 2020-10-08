@@ -23,9 +23,10 @@ export class TopBarComponent implements OnInit {
   isAuthenticated: boolean;
 
   menuItems: Observable<MenuItemConfiguration[]>;
-  public logoutOngoing = false;
+  logoutOngoing = false;
+  isNavBarCollapsed = true;
 
-  constructor(private router: Router,
+  constructor(public router: Router,
               private topBarService: TopBarService,
               public languageService: LanguageService,
               public translate: TranslateService) {
@@ -50,10 +51,14 @@ export class TopBarComponent implements OnInit {
     this.logoutOngoing = true;
     this.topBarService.logout()
       .pipe(finalize(() => this.logoutOngoing = false))
-      .subscribe(() => this.router.navigate(['/login']));
+      .subscribe(() => {
+        this.isNavBarCollapsed = true;
+        this.router.navigate(['/login'])
+      });
   }
 
   changeLanguage(newLang: string): void {
     this.languageService.changeLanguage(newLang);
+    this.isNavBarCollapsed = true;
   }
 }

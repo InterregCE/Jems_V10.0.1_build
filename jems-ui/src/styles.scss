@@ -95,3 +95,8 @@ textarea:disabled {
 .no-bullets {
   list-style-type: none;
 }
+
+// disable thick border when focusing button
+button:focus {
+  outline: none;
+}

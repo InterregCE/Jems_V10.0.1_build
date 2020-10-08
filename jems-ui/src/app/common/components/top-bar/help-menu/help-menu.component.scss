@@ -1,3 +1,10 @@
+$width-icon: 1rem;
+
+:host {
+  display: inline-block;
+  max-width: $width-icon;
+}
+
 .help-category {
   font-size: 0.65rem;
   color: var(--font-color-secondary);
@@ -6,4 +13,9 @@
 
 mat-icon {
   color: var(--font-text-link);
+}
+.mat-icon-button {
+  max-width: $width-icon;
+  height: 0;
+  line-height: inherit;
 }
