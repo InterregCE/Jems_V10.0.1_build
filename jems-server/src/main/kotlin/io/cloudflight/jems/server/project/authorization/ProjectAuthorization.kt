@@ -4,11 +4,9 @@ import io.cloudflight.jems.api.project.dto.status.ProjectApplicationStatus.Compa
 import io.cloudflight.jems.api.project.dto.status.ProjectApplicationStatus.DRAFT
 import io.cloudflight.jems.server.call.authorization.CallAuthorization
 import io.cloudflight.jems.server.exception.ResourceNotFoundException
-import io.cloudflight.jems.server.project.dto.ProjectApplicantAndStatus
-import io.cloudflight.jems.server.project.service.ProjectService
 import io.cloudflight.jems.server.security.service.SecurityService
+import io.cloudflight.jems.server.project.service.ProjectService
 import io.cloudflight.jems.server.security.service.authorization.Authorization
-import org.springframework.cache.annotation.Cacheable
 import org.springframework.stereotype.Component
 
 @Component
@@ -16,10 +14,10 @@ class ProjectAuthorization(
     override val securityService: SecurityService,
     val projectService: ProjectService,
     val callAuthorization: CallAuthorization
-) : Authorization(securityService) {
+): Authorization(securityService) {
 
     fun canReadProject(id: Long): Boolean {
-        val project = getApplicantAndStatusById(id)
+        val project = projectService.getApplicantAndStatusById(id)
         if (isAdmin() || isApplicantOwner(project.applicantId))
             return true
 
@@ -42,7 +40,7 @@ class ProjectAuthorization(
     }
 
     fun canUpdateProject(projectId: Long): Boolean {
-        val project = getApplicantAndStatusById(projectId)
+        val project = projectService.getApplicantAndStatusById(projectId)
         val status = project.projectStatus
         if (isAdmin() || isApplicantOwner(project.applicantId))
             return isNotSubmittedNow(status)
@@ -57,11 +55,6 @@ class ProjectAuthorization(
             throw ResourceNotFoundException("project")
 
         return false
-    }
-
-    @Cacheable("project-applicant-and-status")
-    fun getApplicantAndStatusById(projectId: Long): ProjectApplicantAndStatus {
-        return projectService.getApplicantAndStatusById(projectId);
     }
 
 }
