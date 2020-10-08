@@ -21,4 +21,14 @@ class ProjectPartnerBudgetController(
         return projectPartnerBudgetService.updateStaffCosts(projectId, partnerId, budgetCosts)
     }
 
+    @PreAuthorize("@projectAuthorization.canReadProject(#projectId)")
+    override fun getBudgetTravel(projectId: Long, partnerId: Long): List<InputBudget> {
+        return projectPartnerBudgetService.getTravel(projectId, partnerId)
+    }
+
+    @PreAuthorize("@projectAuthorization.canUpdateProject(#projectId)")
+    override fun updateBudgetTravel(projectId: Long, partnerId: Long, travels: List<InputBudget>): List<InputBudget> {
+        return projectPartnerBudgetService.updateTravel(projectId, partnerId, travels)
+    }
+
 }
