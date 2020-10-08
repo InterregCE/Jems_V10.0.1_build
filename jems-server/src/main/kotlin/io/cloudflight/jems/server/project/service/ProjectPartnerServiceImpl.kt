@@ -175,4 +175,10 @@ class ProjectPartnerServiceImpl(
         ).toOutputProjectPartnerDetail()
     }
 
+    @Transactional
+    override fun deletePartner(projectId: Long, partnerId: Long) {
+        this.projectPartnerRepo.deleteById(partnerId)
+        this.updateSortByRole(projectId)
+    }
+
 }

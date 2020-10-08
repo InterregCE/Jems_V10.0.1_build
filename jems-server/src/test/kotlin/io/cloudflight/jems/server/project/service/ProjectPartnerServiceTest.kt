@@ -32,6 +32,7 @@ import io.mockk.verify
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.assertDoesNotThrow
 import org.junit.jupiter.api.assertThrows
 import org.springframework.data.domain.PageImpl
 import org.springframework.data.domain.Pageable
@@ -294,6 +295,44 @@ internal class ProjectPartnerServiceTest {
 
         assertThat(projectPartnerService.update(1, projectPartnerUpdate))
             .isEqualTo(updatedProjectPartner.toOutputProjectPartnerDetail())
+    }
+
+    @Test
+    fun deleteProjectPartnerWithOrganization() {
+        val organization = ProjectPartnerOrganization(
+            1,
+            "test",
+            "test",
+            "test")
+        val projectPartnerWithOrganization = ProjectPartner(
+            id = 1,
+            project = project,
+            name = "partner",
+            role = ProjectPartnerRole.LEAD_PARTNER,
+            organization = organization)
+        every { projectPartnerRepository.deleteById(projectPartnerWithOrganization.id!!) } returns Unit
+        every { projectPartnerRepository.findAllByProjectId(project.id!!, any<Sort>()) } returns emptySet()
+        every { projectPartnerRepository.saveAll(emptyList()) } returns emptySet()
+
+        assertDoesNotThrow { projectPartnerService.deletePartner(project.id!!, projectPartnerWithOrganization.id!!) }
+    }
+
+    @Test
+    fun deleteProjectPartnerWithoutOrganization() {
+        every { projectPartnerRepository.deleteById(projectPartner.id!!) } returns Unit
+        every { projectPartnerRepository.findAllByProjectId(project.id!!, any<Sort>()) } returns emptySet()
+        every { projectPartnerRepository.saveAll(emptyList()) } returns emptySet()
+
+        assertDoesNotThrow { projectPartnerService.deletePartner(project.id!!, projectPartner.id!!) }
+    }
+
+    @Test
+    fun deleteProjectPartner_notExisting() {
+        every { projectPartnerRepository.deleteById(100) } returns Unit
+        every { projectPartnerRepository.findAllByProjectId(project.id!!, any<Sort>()) } returns emptySet()
+        every { projectPartnerRepository.saveAll(emptyList()) } returns emptySet()
+
+        assertDoesNotThrow { projectPartnerService.deletePartner(project.id!!, 100) }
     }
 
 }
