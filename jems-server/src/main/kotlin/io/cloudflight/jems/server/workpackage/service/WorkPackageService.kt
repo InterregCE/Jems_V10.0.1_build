@@ -17,6 +17,4 @@ interface WorkPackageService {
 
     fun updateWorkPackage(projectId: Long, inputWorkPackageUpdate: InputWorkPackageUpdate): OutputWorkPackage
 
-    fun updateSortOnNumber(projectId: Long)
-
 }

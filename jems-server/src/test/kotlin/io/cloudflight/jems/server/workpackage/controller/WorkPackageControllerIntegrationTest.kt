@@ -54,7 +54,7 @@ class WorkPackageControllerIntegrationTest {
             .andExpect(MockMvcResultMatchers.status().isOk)
             .andExpect(MockMvcResultMatchers.jsonPath("$.id").isNotEmpty)
             .andExpect(MockMvcResultMatchers.jsonPath("$.name").value(inputWorkPackage.name.toString()))
-            .andExpect(MockMvcResultMatchers.jsonPath("$.number").isEmpty)
+            .andExpect(MockMvcResultMatchers.jsonPath("$.number").value(1))
     }
 
     @Test

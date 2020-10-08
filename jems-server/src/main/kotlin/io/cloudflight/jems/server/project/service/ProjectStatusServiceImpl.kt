@@ -43,9 +43,7 @@ class ProjectStatusServiceImpl(
     private val projectStatusRepo: ProjectStatusRepository,
     private val userRepository: UserRepository,
     private val auditService: AuditService,
-    private val securityService: SecurityService,
-    private val projectPartnerService: ProjectPartnerService,
-    private val projectWorkPackageService: WorkPackageService
+    private val securityService: SecurityService
 ) : ProjectStatusService {
 
     companion object {
@@ -73,7 +71,6 @@ class ProjectStatusServiceImpl(
         val oldStatus = project.projectStatus.status
         validateCallOpen(statusChange, project)
         validateDecisionDateIfFunding(statusChange, project)
-        updateProjectDependingOnStatus(projectId, statusChange.status!!)
 
         val projectStatus =
             projectStatusRepo.save(
@@ -88,18 +85,6 @@ class ProjectStatusServiceImpl(
         ).logWith(auditService)
 
         return project.toOutputProject()
-    }
-
-    /**
-     * update Project data depending on status.
-     * - resorts Partners on Submission
-     */
-    private fun updateProjectDependingOnStatus(projectId: Long, status: ProjectApplicationStatus) {
-        // renumber project partners on submit
-        if (status == SUBMITTED) {
-            projectPartnerService.updateSortByRole(projectId)
-            projectWorkPackageService.updateSortOnNumber(projectId)
-        }
     }
 
     private fun validateDecisionDateIfFunding(statusChange: InputProjectStatus, project: Project) {

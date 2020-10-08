@@ -20,8 +20,6 @@ interface ProjectPartnerService {
 
     fun update(projectId: Long, projectPartner: InputProjectPartnerUpdate): OutputProjectPartnerDetail
 
-    fun updateSortByRole(projectId: Long)
-
     fun updatePartnerContact(projectId: Long, partnerId: Long, projectPartnerContact: Set<InputProjectPartnerContact>): OutputProjectPartnerDetail
 
     fun updatePartnerContribution(projectId: Long, partnerId: Long, partnerContribution: InputProjectPartnerContribution): OutputProjectPartnerDetail
