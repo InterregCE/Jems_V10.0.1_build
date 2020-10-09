@@ -45,7 +45,7 @@ export class ProjectApplicationFormSidenavService {
       tap(packages => Log.info('Fetched the project work packages:', this, packages)),
       map(packages => packages
         .map(workPackage => ({
-            headline: this.translate.instant('common.label.workpackage.shortcut') + workPackage.number + ' ' + workPackage.name,
+            headline: this.translate.instant('common.label.workpackage.shortcut') + workPackage.number,
             route: `/app/project/detail/${this.projectId}/applicationForm/workPackage/detail/${workPackage.id}`,
           }
         ))
