@@ -14,6 +14,9 @@ import io.cloudflight.jems.server.project.entity.partner.budget.Budget
 import io.cloudflight.jems.server.project.entity.partner.budget.ProjectPartnerBudgetStaffCost
 import io.cloudflight.jems.server.project.entity.partner.budget.ProjectPartnerBudgetTravel
 import io.cloudflight.jems.server.project.repository.ProjectPartnerRepository
+import io.cloudflight.jems.server.project.repository.partner.budget.ProjectPartnerBudgetEquipmentRepository
+import io.cloudflight.jems.server.project.repository.partner.budget.ProjectPartnerBudgetExternalRepository
+import io.cloudflight.jems.server.project.repository.partner.budget.ProjectPartnerBudgetInfrastructureRepository
 import io.cloudflight.jems.server.project.repository.partner.budget.ProjectPartnerBudgetStaffCostRepository
 import io.cloudflight.jems.server.project.repository.partner.budget.ProjectPartnerBudgetTravelRepository
 import io.cloudflight.jems.server.user.entity.User
@@ -108,6 +111,15 @@ class ProjectPartnerBudgetServiceTest {
     @MockK
     lateinit var projectPartnerBudgetTravelRepository: ProjectPartnerBudgetTravelRepository
 
+    @MockK
+    lateinit var projectPartnerBudgetExternalRepository: ProjectPartnerBudgetExternalRepository
+
+    @MockK
+    lateinit var projectPartnerBudgetEquipmentRepository: ProjectPartnerBudgetEquipmentRepository
+
+    @MockK
+    lateinit var projectPartnerBudgetInfrastructureRepository: ProjectPartnerBudgetInfrastructureRepository
+
     lateinit var projectPartnerBudgetService: ProjectPartnerBudgetService
 
     @BeforeEach
@@ -116,7 +128,10 @@ class ProjectPartnerBudgetServiceTest {
         projectPartnerBudgetService = ProjectPartnerBudgetServiceImpl(
             projectPartnerRepository,
             projectPartnerBudgetStaffCostRepository,
-            projectPartnerBudgetTravelRepository
+            projectPartnerBudgetTravelRepository,
+            projectPartnerBudgetExternalRepository,
+            projectPartnerBudgetEquipmentRepository,
+            projectPartnerBudgetInfrastructureRepository
         )
     }
 
@@ -192,24 +207,40 @@ class ProjectPartnerBudgetServiceTest {
 
     @Test
     fun `save Budget_Any_ test maximum`() {
-        val toBeSaved = listOf(
-            InputBudget(
-                numberOfUnits = BigDecimal.valueOf(999_999_999_999_999_99L, 2),
-                pricePerUnit = BigDecimal.valueOf(999_999_999_999_999_99L, 2))
-        )
-
         every { projectPartnerRepository.findFirstByProjectIdAndId(1, 1) } returns Optional.of(projectPartner)
         every { projectPartnerBudgetStaffCostRepository.findAllByPartnerIdOrderByIdAsc(1) } returns emptyList()
         every { projectPartnerBudgetStaffCostRepository.deleteAll(any<List<ProjectPartnerBudgetStaffCost>>()) } answers {}
         every { projectPartnerBudgetStaffCostRepository.saveAll(any<List<ProjectPartnerBudgetStaffCost>>()) } returnsArgument 0
 
+        val toBeSavedMaxNumberOfUnits = listOf(
+            InputBudget(
+                numberOfUnits = BigDecimal.valueOf(999_999_999_999_999_99L, 2),
+                pricePerUnit = BigDecimal.ONE)
+        )
+
         assertThat(
-            projectPartnerBudgetService.updateStaffCosts(1, 1, toBeSaved)
-        ).isEqualTo(
+            projectPartnerBudgetService.updateStaffCosts(1, 1, toBeSavedMaxNumberOfUnits)
+        ).overridingErrorMessage("numberOfUnits could be up to 999.999.999.999.999,99").isEqualTo(
             listOf(
                 InputBudget(
                     numberOfUnits = BigDecimal.valueOf(999_999_999_999_999_99L, 2),
-                    pricePerUnit = BigDecimal.valueOf(999_999_999_999_999_99L, 2))
+                    pricePerUnit = BigDecimal.valueOf(100L, 2))
+            )
+        )
+
+        val toBeSavedMaxPricePerUnit = listOf(
+            InputBudget(
+                numberOfUnits = BigDecimal.valueOf(999_999_999_999_999_99L, 2),
+                pricePerUnit = BigDecimal.ONE)
+        )
+
+        assertThat(
+            projectPartnerBudgetService.updateStaffCosts(1, 1, toBeSavedMaxPricePerUnit)
+        ).overridingErrorMessage("pricePerUnit could be up to 999.999.999.999.999,99").isEqualTo(
+            listOf(
+                InputBudget(
+                    numberOfUnits = BigDecimal.valueOf(999_999_999_999_999_99L, 2),
+                    pricePerUnit = BigDecimal.valueOf(100L, 2))
             )
         )
     }
@@ -249,6 +280,18 @@ class ProjectPartnerBudgetServiceTest {
                 ))
             }.i18nKey
         ).isEqualTo("project.partner.budget.number.out.of.range")
+
+        assertThat(
+            assertThrows<I18nValidationException> {
+                projectPartnerBudgetService.updateStaffCosts(1, 1, listOf(
+                    InputBudget(
+                        numberOfUnits = BigDecimal.TEN,
+                        pricePerUnit = BigDecimal.valueOf(100_000_000_000_000_00L, 2)
+                    )
+                ))
+            }.i18nKey
+        ).overridingErrorMessage("pricePerUnit * numberOfUnits together cannot be more then 999.999.999.999.999,99")
+            .isEqualTo("project.partner.budget.number.out.of.range")
     }
     //endregion StaffCosts
 

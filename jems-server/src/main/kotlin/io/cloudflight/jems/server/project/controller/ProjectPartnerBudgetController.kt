@@ -31,4 +31,34 @@ class ProjectPartnerBudgetController(
         return projectPartnerBudgetService.updateTravel(projectId, partnerId, travels)
     }
 
+    @PreAuthorize("@projectAuthorization.canReadProject(#projectId)")
+    override fun getBudgetExternal(projectId: Long, partnerId: Long): List<InputBudget> {
+        return projectPartnerBudgetService.getExternal(projectId, partnerId)
+    }
+
+    @PreAuthorize("@projectAuthorization.canUpdateProject(#projectId)")
+    override fun updateBudgetExternal(projectId: Long, partnerId: Long, externals: List<InputBudget>): List<InputBudget> {
+        return projectPartnerBudgetService.updateExternal(projectId, partnerId, externals)
+    }
+
+    @PreAuthorize("@projectAuthorization.canReadProject(#projectId)")
+    override fun getBudgetEquipment(projectId: Long, partnerId: Long): List<InputBudget> {
+        return projectPartnerBudgetService.getEquipment(projectId, partnerId)
+    }
+
+    @PreAuthorize("@projectAuthorization.canUpdateProject(#projectId)")
+    override fun updateBudgetEquipment(projectId: Long, partnerId: Long, equipments: List<InputBudget>): List<InputBudget> {
+        return projectPartnerBudgetService.updateEquipment(projectId, partnerId, equipments)
+    }
+
+    @PreAuthorize("@projectAuthorization.canReadProject(#projectId)")
+    override fun getBudgetInfrastructure(projectId: Long, partnerId: Long): List<InputBudget> {
+        return projectPartnerBudgetService.getInfrastructure(projectId, partnerId)
+    }
+
+    @PreAuthorize("@projectAuthorization.canUpdateProject(#projectId)")
+    override fun updateBudgetInfrastructure(projectId: Long, partnerId: Long, infrastructures: List<InputBudget>): List<InputBudget> {
+        return projectPartnerBudgetService.updateInfrastructure(projectId, partnerId, infrastructures)
+    }
+
 }
