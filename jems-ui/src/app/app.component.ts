@@ -16,10 +16,8 @@ export class AppComponent extends BaseComponent {
 
   constructor(public translate: TranslateService,
               public themeService: ThemeService,
-              private titleService: Title,
-              private router: Router) {
+              private titleService: Title) {
     super();
-    this.router.routeReuseStrategy.shouldReuseRoute = () => false;
     this.titleService.setTitle('Jems');
     themeService.$currentTheme
       .subscribe(theme => this.componentCssClass = theme);
