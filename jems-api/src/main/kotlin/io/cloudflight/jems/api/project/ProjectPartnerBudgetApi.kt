@@ -15,19 +15,34 @@ import javax.validation.Valid
 @RequestMapping("/api/project/{projectId}/partner/{partnerId}/")
 interface ProjectPartnerBudgetApi {
 
-    @ApiOperation("Get project partner Staff Costs")
+    @ApiOperation("Get project partner Budget: Staff Costs")
     @GetMapping("/staffcost")
     fun getBudgetStaffCost(
         @PathVariable projectId: Long,
         @PathVariable partnerId: Long
     ): List<InputBudget>
 
-    @ApiOperation("Update project partner Staff Costs")
+    @ApiOperation("Update project partner Budget: Staff Costs")
     @PutMapping("/staffcost", consumes = [MediaType.APPLICATION_JSON_VALUE])
     fun updateBudgetStaffCost(
         @PathVariable projectId: Long,
         @PathVariable partnerId: Long,
         @Valid @RequestBody budgetCosts: List<InputBudget>
+    ): List<InputBudget>
+
+    @ApiOperation("Get project partner Budget: Travel")
+    @GetMapping("/travel")
+    fun getBudgetTravel(
+        @PathVariable projectId: Long,
+        @PathVariable partnerId: Long
+    ): List<InputBudget>
+
+    @ApiOperation("Update project partner Budget: Travel")
+    @PutMapping("/travel", consumes = [MediaType.APPLICATION_JSON_VALUE])
+    fun updateBudgetTravel(
+        @PathVariable projectId: Long,
+        @PathVariable partnerId: Long,
+        @Valid @RequestBody travels: List<InputBudget>
     ): List<InputBudget>
 
 }

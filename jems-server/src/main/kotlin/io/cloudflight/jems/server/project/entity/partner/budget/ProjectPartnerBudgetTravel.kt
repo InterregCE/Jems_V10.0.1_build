@@ -7,8 +7,8 @@ import javax.persistence.GeneratedValue
 import javax.persistence.GenerationType
 import javax.persistence.Id
 
-@Entity(name = "project_partner_budget_staff_cost")
-data class ProjectPartnerBudgetStaffCost(
+@Entity(name = "project_partner_budget_travel")
+data class ProjectPartnerBudgetTravel(
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

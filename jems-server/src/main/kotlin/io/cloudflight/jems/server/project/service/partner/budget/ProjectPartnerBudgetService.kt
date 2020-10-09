@@ -8,4 +8,8 @@ interface ProjectPartnerBudgetService {
 
     fun updateStaffCosts(projectId: Long, partnerId: Long, staffCosts: List<InputBudget>): List<InputBudget>
 
+    fun getTravel(projectId: Long, partnerId: Long): List<InputBudget>
+
+    fun updateTravel(projectId: Long, partnerId: Long, travel: List<InputBudget>): List<InputBudget>
+
 }

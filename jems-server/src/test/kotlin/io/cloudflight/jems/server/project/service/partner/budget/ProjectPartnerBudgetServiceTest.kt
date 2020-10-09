@@ -10,9 +10,12 @@ import io.cloudflight.jems.server.exception.ResourceNotFoundException
 import io.cloudflight.jems.server.project.entity.Project
 import io.cloudflight.jems.server.project.entity.ProjectPartner
 import io.cloudflight.jems.server.project.entity.ProjectStatus
+import io.cloudflight.jems.server.project.entity.partner.budget.Budget
 import io.cloudflight.jems.server.project.entity.partner.budget.ProjectPartnerBudgetStaffCost
+import io.cloudflight.jems.server.project.entity.partner.budget.ProjectPartnerBudgetTravel
 import io.cloudflight.jems.server.project.repository.ProjectPartnerRepository
 import io.cloudflight.jems.server.project.repository.partner.budget.ProjectPartnerBudgetStaffCostRepository
+import io.cloudflight.jems.server.project.repository.partner.budget.ProjectPartnerBudgetTravelRepository
 import io.cloudflight.jems.server.user.entity.User
 import io.cloudflight.jems.server.user.entity.UserRole
 import io.mockk.MockKAnnotations
@@ -73,16 +76,23 @@ class ProjectPartnerBudgetServiceTest {
             return ProjectPartnerBudgetStaffCost(
                 id = id,
                 partnerId = projectPartner.id!!,
-                numberOfUnits = BigDecimal.valueOf(numberOfUnits),
-                pricePerUnit = BigDecimal.valueOf(pricePerUnit)
+                budget = Budget(
+                    numberOfUnits = BigDecimal.valueOf(numberOfUnits),
+                    pricePerUnit = BigDecimal.valueOf(pricePerUnit)
+                )
             )
         }
 
-        private val projectPartnerBudgetStaffCosts = listOf(
-            staffCost(id = 1, numberOfUnits = 2.00, pricePerUnit = 15600.00),
-            staffCost(id = 2, numberOfUnits = 1.00, pricePerUnit = 220000.125),
-            staffCost(id = 3, numberOfUnits = 15.189, pricePerUnit = 180.134)
-        )
+        private fun travel(id: Long, numberOfUnits: Double, pricePerUnit: Double): ProjectPartnerBudgetTravel {
+            return ProjectPartnerBudgetTravel(
+                id = id,
+                partnerId = projectPartner.id!!,
+                budget = Budget(
+                    numberOfUnits = BigDecimal.valueOf(numberOfUnits),
+                    pricePerUnit = BigDecimal.valueOf(pricePerUnit)
+                )
+            )
+        }
 
     }
 
@@ -95,6 +105,8 @@ class ProjectPartnerBudgetServiceTest {
     @MockK
     lateinit var projectPartnerBudgetStaffCostRepository: ProjectPartnerBudgetStaffCostRepository
 
+    @MockK
+    lateinit var projectPartnerBudgetTravelRepository: ProjectPartnerBudgetTravelRepository
 
     lateinit var projectPartnerBudgetService: ProjectPartnerBudgetService
 
@@ -103,12 +115,21 @@ class ProjectPartnerBudgetServiceTest {
         MockKAnnotations.init(this)
         projectPartnerBudgetService = ProjectPartnerBudgetServiceImpl(
             projectPartnerRepository,
-            projectPartnerBudgetStaffCostRepository
+            projectPartnerBudgetStaffCostRepository,
+            projectPartnerBudgetTravelRepository
         )
     }
 
+    //region StaffCosts
+
     @Test
     fun getProjectPartnerBudgetStaffCost() {
+        val projectPartnerBudgetStaffCosts = listOf(
+            staffCost(id = 1, numberOfUnits = 2.00, pricePerUnit = 15600.00),
+            staffCost(id = 2, numberOfUnits = 1.00, pricePerUnit = 220000.12),
+            staffCost(id = 3, numberOfUnits = 15.18, pricePerUnit = 180.13)
+        )
+
         every { projectPartnerRepository.findFirstByProjectIdAndId(1, 1) } returns Optional.of(projectPartner)
         every { projectPartnerBudgetStaffCostRepository.findAllByPartnerIdOrderByIdAsc(1) } returns projectPartnerBudgetStaffCosts
 
@@ -116,8 +137,8 @@ class ProjectPartnerBudgetServiceTest {
             .isEqualTo(
                 listOf(
                     InputBudget(id = 1, numberOfUnits = BigDecimal.valueOf(2.00), pricePerUnit = BigDecimal.valueOf(15600.00)),
-                    InputBudget(id = 2, numberOfUnits = BigDecimal.valueOf(1.00), pricePerUnit = BigDecimal.valueOf(220000.125)),
-                    InputBudget(id = 3, numberOfUnits = BigDecimal.valueOf(15.189), pricePerUnit = BigDecimal.valueOf(180.134))
+                    InputBudget(id = 2, numberOfUnits = BigDecimal.valueOf(1.00), pricePerUnit = BigDecimal.valueOf(220000.12)),
+                    InputBudget(id = 3, numberOfUnits = BigDecimal.valueOf(15.18), pricePerUnit = BigDecimal.valueOf(180.13))
                 )
             )
     }
@@ -170,7 +191,7 @@ class ProjectPartnerBudgetServiceTest {
     }
 
     @Test
-    fun `save BudgetStaffCost test maximum`() {
+    fun `save Budget_Any_ test maximum`() {
         val toBeSaved = listOf(
             InputBudget(
                 numberOfUnits = BigDecimal.valueOf(999_999_999_999_999_99L, 2),
@@ -194,7 +215,7 @@ class ProjectPartnerBudgetServiceTest {
     }
 
     @Test
-    fun `save BudgetStaffCost more items than allowed`() {
+    fun `save Budget_Any_ more items than allowed`() {
         every { veryBigList.size } returns 301
         every { projectPartnerRepository.findFirstByProjectIdAndId(1, 1) } returns Optional.of(projectPartner)
 
@@ -204,7 +225,7 @@ class ProjectPartnerBudgetServiceTest {
     }
 
     @Test
-    fun `save BudgetStaffCost number out of range`() {
+    fun `save Budget_Any_ number out of range`() {
         every { projectPartnerRepository.findFirstByProjectIdAndId(1, 1) } returns Optional.of(projectPartner)
 
         assertThat(
@@ -229,5 +250,68 @@ class ProjectPartnerBudgetServiceTest {
             }.i18nKey
         ).isEqualTo("project.partner.budget.number.out.of.range")
     }
+    //endregion StaffCosts
+
+    //region Travel
+
+    @Test
+    fun getProjectPartnerBudgetTravel() {
+        val projectPartnerBudgetTravels = listOf(
+            travel(id = 1, numberOfUnits = 2.00, pricePerUnit = 15600.00),
+            travel(id = 2, numberOfUnits = 1.00, pricePerUnit = 220000.12),
+            travel(id = 3, numberOfUnits = 15.18, pricePerUnit = 180.13)
+        )
+
+        every { projectPartnerRepository.findFirstByProjectIdAndId(1, 1) } returns Optional.of(projectPartner)
+        every { projectPartnerBudgetTravelRepository.findAllByPartnerIdOrderByIdAsc(1) } returns projectPartnerBudgetTravels
+
+        assertThat(projectPartnerBudgetService.getTravel(1, 1))
+            .isEqualTo(
+                listOf(
+                    InputBudget(id = 1, numberOfUnits = BigDecimal.valueOf(2.00), pricePerUnit = BigDecimal.valueOf(15600.00)),
+                    InputBudget(id = 2, numberOfUnits = BigDecimal.valueOf(1.00), pricePerUnit = BigDecimal.valueOf(220000.12)),
+                    InputBudget(id = 3, numberOfUnits = BigDecimal.valueOf(15.18), pricePerUnit = BigDecimal.valueOf(180.13))
+                )
+            )
+    }
+
+    @Test
+    fun `save BudgetTravel`() {
+        val existing = listOf(
+            travel(id = 1, numberOfUnits = 2000.00, pricePerUnit = 662.25),
+            travel(id = 2, numberOfUnits = 18.00, pricePerUnit = 220_000_000.0),
+            travel(id = 3, numberOfUnits = 1.00, pricePerUnit = 1000_000.10) // to be removed
+        )
+        val toBeSaved = listOf(
+            // updated existing
+            InputBudget(id = 1, numberOfUnits = BigDecimal.valueOf(1500.00), pricePerUnit = BigDecimal.valueOf(773.36)),
+            // no change for existing
+            InputBudget(id = 2, numberOfUnits = BigDecimal.valueOf(18), pricePerUnit = BigDecimal.valueOf(220_000_000.0)),
+            // new to be created
+            InputBudget(id = null, numberOfUnits = BigDecimal.valueOf(550), pricePerUnit = BigDecimal.valueOf(10.0))
+        )
+
+        every { projectPartnerRepository.findFirstByProjectIdAndId(1, 1) } returns Optional.of(projectPartner)
+        every { projectPartnerBudgetTravelRepository.findAllByPartnerIdOrderByIdAsc(1) } returns existing
+        every { projectPartnerBudgetTravelRepository.deleteAll(any<List<ProjectPartnerBudgetTravel>>()) } answers {}
+        every { projectPartnerBudgetTravelRepository.saveAll(any<List<ProjectPartnerBudgetTravel>>()) } returnsArgument 0
+
+        assertThat(
+            projectPartnerBudgetService.updateTravel(1, 1, toBeSaved)
+        ).isEqualTo(
+            listOf(
+                InputBudget(id = 1, numberOfUnits = BigDecimal.valueOf(150000, 2), pricePerUnit = BigDecimal.valueOf(77336, 2)),
+                InputBudget(id = 2, numberOfUnits = BigDecimal.valueOf(1800, 2), pricePerUnit = BigDecimal.valueOf(220_000_000_00, 2)),
+                // here there should be id=4 normally
+                InputBudget(id = null, numberOfUnits = BigDecimal.valueOf(55000, 2), pricePerUnit = BigDecimal.valueOf(1000, 2))
+            )
+        )
+
+        verify {
+            projectPartnerBudgetTravelRepository
+                .deleteAll(setOf(travel(id = 3, numberOfUnits = 1.00, pricePerUnit = 1000_000.10)))
+        }
+    }
+    //endregion Travel
 
 }
