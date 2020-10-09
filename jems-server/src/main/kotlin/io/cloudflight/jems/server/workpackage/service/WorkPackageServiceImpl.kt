@@ -62,4 +62,10 @@ class WorkPackageServiceImpl(
         workPackageRepository.saveAll(projectWorkPackages)
     }
 
+    @Transactional
+    override fun deleteWorkPackage(projectId: Long, id: Long) {
+        this.workPackageRepository.deleteById(id)
+        this.updateSortOnNumber(projectId)
+    }
+
 }

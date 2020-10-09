@@ -6,6 +6,7 @@ import {Tables} from '../../../../../common/utils/tables';
 import {Log} from '../../../../../common/utils/log';
 import {ProjectPartnerService} from '@cat/api';
 import {Permission} from '../../../../../security/permissions/permission';
+import {ProjectApplicationFormSidenavService} from '../services/project-application-form-sidenav.service';
 
 @Component({
   selector: 'app-project-application-form-partner-section',
@@ -42,8 +43,8 @@ export class ProjectApplicationFormPartnerSectionComponent {
         tap(page => Log.info('Fetched the project partners:', this, page.content)),
       );
 
-  constructor(private projectPartnerService: ProjectPartnerService) {
-  }
+  constructor(private projectPartnerService: ProjectPartnerService,
+              private projectApplicationFormSidenavService: ProjectApplicationFormSidenavService) { }
 
   deletePartner(partnerId: number): void {
     this.projectPartnerService.deleteProjectPartner(partnerId, this.projectId)
@@ -51,6 +52,7 @@ export class ProjectApplicationFormPartnerSectionComponent {
         take(1),
         tap(() => this.newPageIndex$.next(Tables.DEFAULT_INITIAL_PAGE_INDEX)),
         tap(() => Log.info('Deleted partner: ', this, partnerId)),
+        tap(() => this.projectApplicationFormSidenavService.refreshPartners())
       ).subscribe();
   }
 }

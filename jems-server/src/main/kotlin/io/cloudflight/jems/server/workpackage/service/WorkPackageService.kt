@@ -17,4 +17,6 @@ interface WorkPackageService {
 
     fun updateWorkPackage(projectId: Long, inputWorkPackageUpdate: InputWorkPackageUpdate): OutputWorkPackage
 
+    fun deleteWorkPackage(projectId: Long, id: Long)
+
 }

@@ -23,6 +23,8 @@ import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.TestInstance
+import org.junit.jupiter.api.assertDoesNotThrow
+import org.springframework.data.domain.Sort
 import java.time.LocalDate
 import java.time.LocalTime
 import java.time.ZoneId
@@ -183,4 +185,23 @@ class WorkPackageServiceTest {
         assertThat(result).isNotNull
         assertThat(result.number).isEqualTo(expectedData.number)
     }
+
+    @Test
+    fun deleteWorkPackage() {
+        every { workPackageRepository.deleteById(mockWorkPackage.id!!) } returns Unit
+        every { workPackageRepository.findAllByProjectId(project.id!!, any<Sort>()) } returns emptySet()
+        every { workPackageRepository.saveAll(emptyList()) } returns emptySet()
+
+        assertDoesNotThrow { workPackageService.deleteWorkPackage(project.id!!, mockWorkPackage.id!!) }
+    }
+
+    @Test
+    fun deleteWorkPackage_notExisting() {
+        every { workPackageRepository.deleteById(100) } returns Unit
+        every { workPackageRepository.findAllByProjectId(project.id!!, any<Sort>()) } returns emptySet()
+        every { workPackageRepository.saveAll(emptyList()) } returns emptySet()
+
+        assertDoesNotThrow { workPackageService.deleteWorkPackage(project.id!!, 100) }
+    }
+
 }

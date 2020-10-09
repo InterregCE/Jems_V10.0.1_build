@@ -10,3 +10,12 @@
            (newPageSize)="newPageSize.emit($event)"
            (sortRows)="newSort.emit($event)">
 </app-table>
+
+<ng-template #deletionCell let-workPackage>
+    <app-work-package-delete-action-cell
+            (click)="$event.stopPropagation()"
+            [element]="workPackage"
+            [disabled]="!editable"
+            (delete)="delete($event)">
+    </app-work-package-delete-action-cell>
+</ng-template>

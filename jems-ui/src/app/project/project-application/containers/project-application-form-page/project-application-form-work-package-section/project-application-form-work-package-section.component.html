@@ -13,7 +13,9 @@
         *ngIf="currentWorkPackagePage$ | async as workPackagePage"
         [workPackagePage]="workPackagePage"
         [pageIndex]="newPageIndex$ | async"
+        [editable]="editable"
         (newPageSize)="newPageSize$.next($event)"
         (newPageIndex)="newPageIndex$.next($event)"
-        (newSort)="newSort$.next($event)">
+        (newSort)="newSort$.next($event)"
+        (deleteWorkPackage)="deleteWorkPackage($event)">
 </app-project-application-form-work-packages-list>
