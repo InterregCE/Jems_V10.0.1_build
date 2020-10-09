@@ -5,5 +5,5 @@ data class OutputProjectPartnerOrganization (
     val nameInOriginalLanguage: String?,
     val nameInEnglish: String?,
     val department: String?,
-    val organizationDetails: OutputProjectPartnerOrganizationDetails?
+    val organizationDetails: Set<OutputProjectPartnerOrganizationDetails>?
 )

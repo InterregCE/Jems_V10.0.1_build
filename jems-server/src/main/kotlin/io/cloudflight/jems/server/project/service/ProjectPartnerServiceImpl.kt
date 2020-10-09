@@ -158,28 +158,23 @@ class ProjectPartnerServiceImpl(
     }
 
     @Transactional
-    override fun updatePartnerOrganizationDetails(
-        projectId: Long,
-        partnerId: Long,
-        partnerOrganizationDetails: InputProjectPartnerOrganizationDetails
-    ): OutputProjectPartnerDetail {
+    override fun updatePartnerOrganizationDetails(projectId: Long, partnerId: Long, partnerOrganizationDetails: Set<InputProjectPartnerOrganizationDetails>): OutputProjectPartnerDetail {
         val projectPartner = projectPartnerRepo.findFirstByProjectIdAndId(projectId, partnerId)
             .orElseThrow { ResourceNotFoundException("projectPartner") }
         val partnerOrganization =
             projectPartnerOrganizationRepo.findById(projectPartner.organization?.id!!)
                 .orElseThrow { ResourceNotFoundException("projectPartnerOrganization") }
-
-        val newPartnerOrganization = projectPartnerOrganizationRepo.save (
+        val updatePartnerOrganization = projectPartnerOrganizationRepo.save(
             partnerOrganization.copy(
-                organizationDetails = partnerOrganizationDetails.toEntity(partnerOrganization)
+                organizationsDetails = partnerOrganizationDetails.map{ it.toEntity(partnerOrganization) }.toHashSet()
             )
         )
 
         return projectPartnerRepo.save(
-            projectPartner.copy(
-                organization = newPartnerOrganization
-            )
-        ).toOutputProjectPartnerDetail()
+                    projectPartner.copy(
+                        organization = updatePartnerOrganization
+                    )
+                ).toOutputProjectPartnerDetail()
     }
 
     @Transactional

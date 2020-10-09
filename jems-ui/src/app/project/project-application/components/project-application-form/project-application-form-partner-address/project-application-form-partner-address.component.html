@@ -94,7 +94,7 @@
                 </mat-error>
     </mat-form-field>
 
-    <mat-form-field class="field-wide">
+    <mat-form-field *ngIf="showHomePage" class="field-wide">
         <mat-label>{{'project.partner.main-address.homepage' | translate}}</mat-label>
         <input name="partnerHomepage" formControlName="partnerHomepage" matInput
                placeholder="{{'project.partner.main-address.homepage' | translate}}">
@@ -105,6 +105,97 @@
                     </app-form-field-errors>
                 </mat-error>
     </mat-form-field>
+
+    <br><br><br>
+
+    <h6><span>{{'project.partner.department-address.header' | translate}}</span></h6>
+    <mat-form-field *ngIf="nutsCountryDepartment"
+                    class="field">
+        <mat-label>{{'project.partner.main-address.country' | translate}}</mat-label>
+        <mat-select (selectionChange)="countryDepartmentChanged(nutsCountryDepartment[$event.value])" name="partnerDepartmentCountry"
+                    panelClass="material-select-panel" formControlName="partnerDepartmentCountry">
+
+            <mat-option *ngFor="let region of Object.keys(nutsCountryDepartment)" [value]="region">
+                {{region}}
+            </mat-option>
+        </mat-select>
+    </mat-form-field>
+
+    <mat-form-field *ngIf="nutsRegion2Department"
+                    class="field">
+        <mat-label>{{'project.partner.main-address.region2' | translate}}</mat-label>
+        <mat-select [disabled]="nutsRegion2Department.length === 0"
+                    (selectionChange)="regionDepartmentChanged(nutsRegion2Department.get($event.value))"
+                    name="partnerDepartmentRegion2"
+                    panelClass="material-select-panel" formControlName="partnerDepartmentRegion2">
+            <mat-option *ngFor="let region of nutsRegion2Department.keys()" [value]="region">
+                {{region}}
+            </mat-option>
+        </mat-select>
+    </mat-form-field>
+
+    <mat-form-field *ngIf="nutsRegion3Department"
+                    class="field">
+        <mat-label>{{'project.partner.main-address.region3' | translate}}</mat-label>
+        <mat-select [disabled]="nutsRegion3Department.length === 0"
+                    name="partnerDepartmentRegion3"
+                    panelClass="material-select-panel" formControlName="partnerDepartmentRegion3">
+
+            <mat-option *ngFor="let region of nutsRegion3Department" [value]="region">
+                {{region}}
+            </mat-option>
+        </mat-select>
+    </mat-form-field>
+
+    <mat-form-field class="field">
+        <mat-label>{{'project.partner.main-address.street' | translate}}</mat-label>
+        <input name="partnerDepartmentStreet" formControlName="partnerDepartmentStreet" matInput
+               placeholder="{{'project.partner.main-address.street' | translate}}">
+        <mat-error>
+            <app-form-field-errors
+                    [errors]="partnerAddressForm?.controls?.partnerStreet?.errors"
+                    [messages]="partnerStreetErrors">
+            </app-form-field-errors>
+        </mat-error>
+    </mat-form-field>
+
+    <mat-form-field class="field">
+        <mat-label>{{'project.partner.main-address.housenumber' | translate}}</mat-label>
+        <input name="partnerDepartmentHouseNumber" formControlName="partnerDepartmentHouseNumber" matInput
+               placeholder="{{'project.partner.main-address.housenumber' | translate}}">
+        <mat-error>
+            <app-form-field-errors
+                    [errors]="partnerAddressForm?.controls?.partnerHouseNumber?.errors"
+                    [messages]="partnerHouseNumberErrors">
+            </app-form-field-errors>
+        </mat-error>
+    </mat-form-field>
+
+    <mat-form-field class="field">
+        <mat-label>{{'project.partner.main-address.postalcode' | translate}}</mat-label>
+        <input name="partnerDepartmentPostalCode" formControlName="partnerDepartmentPostalCode" matInput
+               placeholder="{{'project.partner.main-address.postalcode' | translate}}">
+        <mat-error>
+            <app-form-field-errors
+                    [errors]="partnerAddressForm?.controls?.partnerPostalCode?.errors"
+                    [messages]="partnerPostalCodeErrors">
+            </app-form-field-errors>
+        </mat-error>
+    </mat-form-field>
+
+
+    <mat-form-field class="field">
+        <mat-label>{{'project.partner.main-address.city' | translate}}</mat-label>
+        <input name="partnerDepartmentCity" formControlName="partnerDepartmentCity" matInput
+               placeholder="{{'project.partner.main-address.city' | translate}}">
+        <mat-error>
+            <app-form-field-errors
+                    [errors]="partnerAddressForm?.controls?.partnerCity?.errors"
+                    [messages]="partnerCityErrors">
+            </app-form-field-errors>
+        </mat-error>
+    </mat-form-field>
+
     <div *ngIf="formState === FormState.EDIT">
         <button mat-raised-button class="button" type="button"
                 (click)="onCancel()">

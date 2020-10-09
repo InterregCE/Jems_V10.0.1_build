@@ -1,5 +1,5 @@
 import {ChangeDetectionStrategy, Component, OnInit} from '@angular/core';
-import {combineLatest, merge, of, Subject} from 'rxjs';
+import {combineLatest, merge, of, ReplaySubject, Subject} from 'rxjs';
 import {I18nValidationError} from '@common/validation/i18n-validation-error';
 import {HttpErrorResponse} from '@angular/common/http';
 import {catchError, flatMap, map, switchMap, tap} from 'rxjs/operators';
@@ -46,7 +46,7 @@ export class ProjectApplicationFormPartnerDetailComponent extends BaseComponent 
 
   partnerOrganizationDetailsSaveSuccess$ = new Subject<boolean>();
   partnerOrganizationDetailsSaveError$ = new Subject<I18nValidationError | null>();
-  savePartnerOrganizationDetails$ = new Subject<InputProjectPartnerOrganizationDetails>();
+  savePartnerOrganizationDetails$ = new Subject<InputProjectPartnerOrganizationDetails[]>();
 
   private partnerById$ = this.partnerId
     ? this.partnerService.getProjectPartnerById(this.partnerId, this.projectId)

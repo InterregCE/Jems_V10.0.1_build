@@ -50,7 +50,7 @@ class ProjectPartnerController(
     }
 
     @PreAuthorize("@projectAuthorization.canUpdateProject(#projectId)")
-    override fun updateProjectPartnerOrganizationDetails(projectId: Long, id: Long, partnerOrganizationDetails: InputProjectPartnerOrganizationDetails): OutputProjectPartnerDetail {
+    override fun updateProjectPartnerOrganizationDetails(projectId: Long, id: Long, partnerOrganizationDetails: Set<InputProjectPartnerOrganizationDetails>): OutputProjectPartnerDetail {
         return projectPartnerService.updatePartnerOrganizationDetails(projectId, id, partnerOrganizationDetails)
     }
 

@@ -2,11 +2,17 @@
         [nutsCountry]="nuts$ | async"
         [nutsRegion2]="nuts2$ | async"
         [nutsRegion3]="nuts3$ | async"
+        [nutsCountryDepartment]="nutsDepartment$ | async"
+        [nutsRegion2Department]="nuts2Department$ | async"
+        [nutsRegion3Department]="nuts3Department$ | async"
         [success$]="success$"
         [error$]="error$"
-        [partner]="partner"
+        [organizationDetails]="organizationDetails"
         [editable]="editable"
+        [showHomePage]="showHomePage"
         (update)="update.emit($event)"
         (changeCountry)="changeCountry($event)"
-        (changeRegion)="changeRegion($event)">
+        (changeRegion)="changeRegion($event)"
+        (changeDepartmentCountry)="changeDepartmentCountry($event)"
+        (changeDepartmentRegion)="changeDepartmentRegion($event)">
 </app-project-application-form-partner-address>

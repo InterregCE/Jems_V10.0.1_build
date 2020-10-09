@@ -24,7 +24,7 @@ interface ProjectPartnerService {
 
     fun updatePartnerContribution(projectId: Long, partnerId: Long, partnerContribution: InputProjectPartnerContribution): OutputProjectPartnerDetail
 
-    fun updatePartnerOrganizationDetails(projectId: Long, partnerId: Long, partnerOrganizationDetails: InputProjectPartnerOrganizationDetails): OutputProjectPartnerDetail
+    fun updatePartnerOrganizationDetails(projectId: Long, partnerId: Long, partnerOrganizationDetails: Set<InputProjectPartnerOrganizationDetails>): OutputProjectPartnerDetail
 
     fun deletePartner(projectId: Long, partnerId: Long)
 }
