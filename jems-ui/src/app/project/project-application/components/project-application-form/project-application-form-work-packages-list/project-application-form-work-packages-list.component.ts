@@ -79,12 +79,20 @@ export class ProjectApplicationFormWorkPackagesListComponent implements OnInit{
   }
 
   delete(workPackage: OutputWorkPackageSimple) {
+    let message : string;
+    let name : string;
+    if (workPackage.name){
+      message = 'project.application.form.workpackage.table.action.delete.dialog.message';
+      name = workPackage.name;
+    } else {
+      message = 'project.application.form.workpackage.table.action.delete.dialog.message.no.name';
+      name = ' ';
+    }
     Forms.confirmDialog(
       this.dialog,
       'project.application.form.workpackage.table.action.delete.dialog.header',
-      'project.application.form.workpackage.table.action.delete.dialog.message',
-      {name: workPackage.name,
-        boldWarningMessage: 'project.application.form.workpackage.table.action.delete.dialog.warning' })
+      message,
+      {name, boldWarningMessage: 'project.application.form.workpackage.table.action.delete.dialog.warning' })
       .pipe(
         take(1),
         filter(answer => !!answer),
