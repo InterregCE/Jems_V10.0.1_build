@@ -28,7 +28,6 @@ import io.cloudflight.jems.server.project.repository.ProjectStatusRepository
 import io.cloudflight.jems.server.user.repository.UserRepository
 import io.cloudflight.jems.server.security.service.SecurityService
 import io.cloudflight.jems.server.audit.service.AuditService
-import io.cloudflight.jems.server.workpackage.service.WorkPackageService
 import org.slf4j.LoggerFactory
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.http.HttpStatus
