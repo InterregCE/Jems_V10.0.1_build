@@ -35,9 +35,10 @@ class WorkPackageServiceImpl(
         val project = projectRepository.findById(projectId)
             .orElseThrow { ResourceNotFoundException("project") }
 
-        return workPackageRepository.save(
-            inputWorkPackageCreate.toEntity(project)
-        ).toOutputWorkPackage()
+        val workPackageCreated = workPackageRepository.save(inputWorkPackageCreate.toEntity(project))
+        updateSortOnNumber(projectId)
+        // entity is attached, number will have been updated
+        return workPackageCreated.toOutputWorkPackage()
     }
 
     @Transactional
@@ -53,8 +54,7 @@ class WorkPackageServiceImpl(
         return workPackageRepository.save(toUpdate).toOutputWorkPackage()
     }
 
-    @Transactional
-    override fun updateSortOnNumber(projectId: Long) {
+    private fun updateSortOnNumber(projectId: Long) {
         val sort = Sort.by(Sort.Direction.ASC, "id")
 
         val projectWorkPackages = workPackageRepository.findAllByProjectId(projectId, sort)

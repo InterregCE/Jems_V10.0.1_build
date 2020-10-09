@@ -145,6 +145,10 @@ internal class ProjectPartnerServiceTest {
         every { projectRepository.findById(1) } returns Optional.of(project)
         every { projectPartnerRepository.findFirstByProjectIdAndRole(1, ProjectPartnerRole.LEAD_PARTNER) } returns Optional.empty()
         every { projectPartnerRepository.save(projectPartnerWithProject) } returns projectPartner
+        // also handle sorting
+        val projectPartners = listOf(projectPartner, projectPartnerWithProject)
+        every { projectPartnerRepository.findAllByProjectId(1, any<Sort>()) } returns projectPartners
+        every { projectPartnerRepository.saveAll(any<Iterable<ProjectPartner>>()) } returnsArgument 0
 
         assertThrows<ResourceNotFoundException> { projectPartnerService.create(0, inputProjectPartner) }
         assertThat(projectPartnerService.create(1, inputProjectPartner)).isEqualTo(outputProjectPartnerDetail)
@@ -159,6 +163,10 @@ internal class ProjectPartnerServiceTest {
         every { projectRepository.findById(1) } returns Optional.of(project)
         every { projectPartnerRepository.findFirstByProjectIdAndRole(1, ProjectPartnerRole.LEAD_PARTNER) } returns Optional.of(projectPartnerWithProject)
         every { projectPartnerRepository.save(projectPartnerWithProject) } returns projectPartner
+        // also handle sorting
+        val projectPartners = listOf(projectPartner, projectPartnerWithProject)
+        every { projectPartnerRepository.findAllByProjectId(1, any<Sort>()) } returns projectPartners
+        every { projectPartnerRepository.saveAll(any<Iterable<ProjectPartner>>()) } returnsArgument 0
 
         // new with Partner role creation will work
         assertThat(projectPartnerService.create(1, inputProjectPartner)).isEqualTo(outputProjectPartnerDetail)
@@ -177,21 +185,6 @@ internal class ProjectPartnerServiceTest {
 
         assertThat(projectPartnerService.update(1, projectPartnerUpdate))
             .isEqualTo(updatedProjectPartner.toOutputProjectPartnerDetail())
-    }
-
-    @Test
-    fun `update sort order of partners`() {
-        val projectPartnerNonLead = ProjectPartner(id = 0, name = "p", role = ProjectPartnerRole.PARTNER, project = project)
-        val projectPartners = listOf(projectPartner, projectPartnerNonLead)
-        every { projectPartnerRepository.findAllByProjectId(1, any<Sort>()) } returns projectPartners
-        val projectPartnerUpdated = projectPartner.copy(sortNumber = 1)
-        val projectPartnerNonLeadUpdated = projectPartnerNonLead.copy(sortNumber = 2)
-        every { projectPartnerRepository.saveAll(any<Iterable<ProjectPartner>>()) } returnsArgument 0
-
-        projectPartnerService.updateSortByRole(1)
-        verify {
-            projectPartnerRepository.saveAll(listOf(projectPartnerUpdated, projectPartnerNonLeadUpdated))
-        }
     }
 
     @Test
@@ -275,6 +268,10 @@ internal class ProjectPartnerServiceTest {
         every { projectPartnerRepository.findFirstByProjectIdAndRole(1, ProjectPartnerRole.LEAD_PARTNER) } returns Optional.empty()
         every { projectPartnerRepository.save(projectPartnerWithProject) } returns projectPartnerWithOrganization
         every { projectPartnerOrganizationRepository.save(inputProjectPartner.organization!!.toEntity()) } returns organization
+        // also handle sorting
+        val projectPartners = listOf(projectPartner, projectPartnerWithProject)
+        every { projectPartnerRepository.findAllByProjectId(1, any<Sort>()) } returns projectPartners
+        every { projectPartnerRepository.saveAll(any<Iterable<ProjectPartner>>()) } returnsArgument 0
 
         assertThrows<ResourceNotFoundException> { projectPartnerService.create(0, inputProjectPartner) }
         assertThat(projectPartnerService.create(1, inputProjectPartner)).isEqualTo(projectPartnerWithOrganization.toOutputProjectPartnerDetail())

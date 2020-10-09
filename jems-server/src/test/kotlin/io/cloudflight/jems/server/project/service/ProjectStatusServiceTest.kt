@@ -1,43 +1,40 @@
 package io.cloudflight.jems.server.project.service
 
 import io.cloudflight.jems.api.call.dto.CallStatus
-import io.cloudflight.jems.api.project.dto.status.InputProjectEligibilityAssessment
-import io.cloudflight.jems.api.project.dto.status.InputProjectQualityAssessment
+import io.cloudflight.jems.api.programme.dto.ProgrammeObjectivePolicy.DisadvantagedGroups
 import io.cloudflight.jems.api.project.dto.InputProjectStatus
 import io.cloudflight.jems.api.project.dto.InputRevertProjectStatus
+import io.cloudflight.jems.api.project.dto.status.InputProjectEligibilityAssessment
+import io.cloudflight.jems.api.project.dto.status.InputProjectQualityAssessment
 import io.cloudflight.jems.api.project.dto.status.OutputRevertProjectStatus
 import io.cloudflight.jems.api.project.dto.status.ProjectApplicationStatus
 import io.cloudflight.jems.api.project.dto.status.ProjectEligibilityAssessmentResult
 import io.cloudflight.jems.api.project.dto.status.ProjectQualityAssessmentResult
+import io.cloudflight.jems.api.strategy.ProgrammeStrategy
 import io.cloudflight.jems.api.user.dto.OutputUserRole
 import io.cloudflight.jems.api.user.dto.OutputUserWithRole
-import io.cloudflight.jems.api.programme.dto.ProgrammeObjectivePolicy.DisadvantagedGroups
-import io.cloudflight.jems.api.strategy.ProgrammeStrategy
 import io.cloudflight.jems.server.audit.entity.AuditAction
 import io.cloudflight.jems.server.audit.service.AuditCandidate
+import io.cloudflight.jems.server.audit.service.AuditService
 import io.cloudflight.jems.server.call.entity.Call
-import io.cloudflight.jems.server.project.entity.Project
-import io.cloudflight.jems.server.project.entity.ProjectEligibilityAssessment
-import io.cloudflight.jems.server.project.entity.ProjectStatus
-import io.cloudflight.jems.server.user.entity.User
-import io.cloudflight.jems.server.user.entity.UserRole
 import io.cloudflight.jems.server.exception.I18nValidationException
 import io.cloudflight.jems.server.exception.ResourceNotFoundException
 import io.cloudflight.jems.server.programme.entity.ProgrammePriorityPolicy
+import io.cloudflight.jems.server.project.entity.Project
+import io.cloudflight.jems.server.project.entity.ProjectEligibilityAssessment
+import io.cloudflight.jems.server.project.entity.ProjectStatus
 import io.cloudflight.jems.server.project.repository.ProjectRepository
 import io.cloudflight.jems.server.project.repository.ProjectStatusRepository
-import io.cloudflight.jems.server.user.repository.UserRepository
 import io.cloudflight.jems.server.security.model.LocalCurrentUser
 import io.cloudflight.jems.server.security.service.SecurityService
-import io.cloudflight.jems.server.audit.service.AuditService
 import io.cloudflight.jems.server.strategy.entity.Strategy
-import io.cloudflight.jems.server.workpackage.service.WorkPackageService
+import io.cloudflight.jems.server.user.entity.User
+import io.cloudflight.jems.server.user.entity.UserRole
+import io.cloudflight.jems.server.user.repository.UserRepository
 import io.mockk.MockKAnnotations
-import io.mockk.Runs
 import io.mockk.every
 import io.mockk.impl.annotations.MockK
 import io.mockk.impl.annotations.RelaxedMockK
-import io.mockk.just
 import io.mockk.slot
 import io.mockk.verify
 import org.assertj.core.api.Assertions.assertThat
@@ -47,12 +44,11 @@ import org.junit.jupiter.api.assertThrows
 import org.junit.jupiter.api.fail
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.http.HttpStatus
-import java.lang.Exception
 import java.time.LocalDate
 import java.time.LocalTime
 import java.time.ZoneId
 import java.time.ZonedDateTime
-import java.util.*
+import java.util.Optional
 import java.util.stream.Collectors
 
 internal class ProjectStatusServiceTest {
@@ -75,12 +71,6 @@ internal class ProjectStatusServiceTest {
 
     @MockK
     lateinit var securityService: SecurityService
-
-    @RelaxedMockK
-    lateinit var projectPartnerService: ProjectPartnerService
-
-    @RelaxedMockK
-    lateinit var projectWorkPackageService: WorkPackageService
 
     @MockK
     lateinit var projectStatusRepository: ProjectStatusRepository
@@ -129,7 +119,7 @@ internal class ProjectStatusServiceTest {
     fun setup() {
         MockKAnnotations.init(this)
         projectStatusService = ProjectStatusServiceImpl(
-            projectRepository, projectStatusRepository, userRepository, auditService, securityService, projectPartnerService, projectWorkPackageService
+            projectRepository, projectStatusRepository, userRepository, auditService, securityService
         )
     }
 
@@ -139,7 +129,6 @@ internal class ProjectStatusServiceTest {
         every { userRepository.findByIdOrNull(1) } returns user
         every { projectRepository.findById(1) } returns Optional.of(projectDraft)
         every { projectStatusRepository.save(any<ProjectStatus>()) } returnsArgument 0
-        every { projectPartnerService.updateSortByRole(1) } just Runs
         every { projectRepository.save(any<Project>()) } returnsArgument 0
 
         val result = projectStatusService.setProjectStatus(
@@ -152,11 +141,6 @@ internal class ProjectStatusServiceTest {
         assertThat(result.lastResubmission).isNull()
         assertThat(result.projectStatus.status).isEqualTo(ProjectApplicationStatus.SUBMITTED)
         assertThat(result.projectStatus.note).isEqualTo(NOTE_DENIED)
-
-        verify {
-            projectPartnerService.updateSortByRole(1)
-            projectWorkPackageService.updateSortOnNumber(1)
-        }
     }
 
     @Test
@@ -174,7 +158,6 @@ internal class ProjectStatusServiceTest {
                 eq(ignoreStatuses)
             )
         } returns previousState
-        every { projectPartnerService.updateSortByRole(1) } just Runs
         every { projectRepository.save(any<Project>()) } returnsArgument 0
 
         val result =
@@ -196,7 +179,6 @@ internal class ProjectStatusServiceTest {
         every { securityService.currentUser } returns LocalCurrentUser(userApplicant, "hash_pass", emptyList())
         every { userRepository.findByIdOrNull(1) } returns user
         every { projectRepository.findById(1) } returns Optional.of(projectReturned)
-        every { projectPartnerService.updateSortByRole(1) } just Runs
         every { projectStatusRepository.save(any<ProjectStatus>()) } returnsArgument 0
         every {
             projectStatusRepository.findFirstByProjectIdAndStatusNotInOrderByUpdatedDesc(

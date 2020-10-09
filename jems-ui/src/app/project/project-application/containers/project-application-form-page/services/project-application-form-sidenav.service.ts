@@ -28,8 +28,8 @@ export class ProjectApplicationFormSidenavService {
       map(partners => partners
         .sort((a, b) => a.role === OutputProjectPartner.RoleEnum.LEADPARTNER ? -1 : 1)
         .map(partner => ({
-            headline: this.translate.instant('common.label.project.partner.role.' + partner.role)
-              + ' ' + partner.name,
+            headline: this.translate.instant('common.label.project.partner.role.shortcut.' + partner.role)
+              + partner.sortNumber + ' ' + partner.name,
             route: `/app/project/detail/${this.projectId}/applicationForm/partner/detail/${partner.id}`,
           }
         ))
@@ -45,7 +45,7 @@ export class ProjectApplicationFormSidenavService {
       tap(packages => Log.info('Fetched the project work packages:', this, packages)),
       map(packages => packages
         .map(workPackage => ({
-            headline: workPackage.name,
+            headline: this.translate.instant('common.label.workpackage.shortcut') + workPackage.number + ' ' + workPackage.name,
             route: `/app/project/detail/${this.projectId}/applicationForm/workPackage/detail/${workPackage.id}`,
           }
         ))

@@ -52,7 +52,10 @@ class ProjectPartnerServiceImpl(
             this.projectPartnerOrganizationRepo.save(projectPartner.organization!!.toEntity())
         }
 
-        return projectPartnerRepo.save(projectPartner.toEntity(project = project).copy(organization = organization)).toOutputProjectPartnerDetail()
+        val partnerCreated = projectPartnerRepo.save(projectPartner.toEntity(project = project).copy(organization = organization));
+        updateSortByRole(projectId)
+        // entity is attached, number will have been updated
+        return partnerCreated.toOutputProjectPartnerDetail()
     }
 
     private fun validateLeadPartnerChange(projectId: Long, oldLeadPartnerId: Long?) {
@@ -104,20 +107,24 @@ class ProjectPartnerServiceImpl(
             this.projectPartnerOrganizationRepo.save(projectPartner.organization!!.toEntity())
         }
 
-        return projectPartnerRepo.save(
+        val partnerUpdated = projectPartnerRepo.save(
             oldProjectPartner.copy(
                 name = projectPartner.name!!,
                 role = projectPartner.role!!,
                 organization = organization
             )
-        ).toOutputProjectPartnerDetail()
+        )
+        // update sorting if leadPartner changed
+        if (projectPartner.oldLeadPartnerId != null)
+            updateSortByRole(projectId)
+
+        return partnerUpdated.toOutputProjectPartnerDetail()
     }
 
     /**
      * sets or updates the sort number for all partners for the specified project.
      */
-    @Transactional
-    override fun updateSortByRole(projectId: Long) {
+    protected fun updateSortByRole(projectId: Long) {
         val sort = Sort.by(listOf(
             Sort.Order(Sort.Direction.ASC, "role"),
             Sort.Order(Sort.Direction.ASC, "id")
