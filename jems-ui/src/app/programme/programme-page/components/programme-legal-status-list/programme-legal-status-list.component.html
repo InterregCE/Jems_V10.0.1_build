@@ -48,6 +48,7 @@
                 <mat-cell *matCellDef="let element">
                     <button *ngIf="formState === FormState.EDIT && element.id > 2"
                             mat-icon-button color="accent"
+                            type="button"
                             matTooltip="{{'common.delete.entry.tooltip' | translate}}"
                             (click)="deleteLegalStatus(element)">
                         <i class="fas fa-trash"></i>
