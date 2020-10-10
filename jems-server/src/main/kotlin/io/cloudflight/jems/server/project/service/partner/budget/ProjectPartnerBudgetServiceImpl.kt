@@ -5,6 +5,9 @@ import io.cloudflight.jems.server.exception.I18nValidationException
 import io.cloudflight.jems.server.exception.ResourceNotFoundException
 import io.cloudflight.jems.server.project.entity.partner.budget.CommonBudget
 import io.cloudflight.jems.server.project.repository.ProjectPartnerRepository
+import io.cloudflight.jems.server.project.repository.partner.budget.ProjectPartnerBudgetEquipmentRepository
+import io.cloudflight.jems.server.project.repository.partner.budget.ProjectPartnerBudgetExternalRepository
+import io.cloudflight.jems.server.project.repository.partner.budget.ProjectPartnerBudgetInfrastructureRepository
 import io.cloudflight.jems.server.project.repository.partner.budget.ProjectPartnerBudgetStaffCostRepository
 import io.cloudflight.jems.server.project.repository.partner.budget.ProjectPartnerBudgetTravelRepository
 import org.springframework.http.HttpStatus
@@ -17,13 +20,18 @@ import java.util.stream.Collectors
 class ProjectPartnerBudgetServiceImpl(
     private val projectPartnerRepository: ProjectPartnerRepository,
     private val projectPartnerBudgetStaffCostRepository: ProjectPartnerBudgetStaffCostRepository,
-    private val projectPartnerBudgetTravelRepository: ProjectPartnerBudgetTravelRepository
+    private val projectPartnerBudgetTravelRepository: ProjectPartnerBudgetTravelRepository,
+    private val projectPartnerBudgetExternalRepository: ProjectPartnerBudgetExternalRepository,
+    private val projectPartnerBudgetEquipmentRepository: ProjectPartnerBudgetEquipmentRepository,
+    private val projectPartnerBudgetInfrastructureRepository: ProjectPartnerBudgetInfrastructureRepository
 ) : ProjectPartnerBudgetService {
 
     companion object {
         const val MAX_ALLOWED_AMOUNT = 300
         private val MAX_ALLOWED_VALUE = BigDecimal.valueOf(999_999_999_999_999_99L, 2)
     }
+
+    //region StuffCosts
 
     @Transactional(readOnly = true)
     override fun getStaffCosts(projectId: Long, partnerId: Long): List<InputBudget> {
@@ -48,6 +56,9 @@ class ProjectPartnerBudgetServiceImpl(
             .saveAll(staffCosts.map { it.toStaffCost(partnerId) })
             .map { it.toOutput() }
     }
+    //endregion StuffCosts
+
+    //region Travel
 
     @Transactional(readOnly = true)
     override fun getTravel(projectId: Long, partnerId: Long): List<InputBudget> {
@@ -72,6 +83,88 @@ class ProjectPartnerBudgetServiceImpl(
             .saveAll(travel.map { it.toTravel(partnerId) })
             .map { it.toOutput() }
     }
+    //endregion Travel
+
+    //region External
+
+    @Transactional(readOnly = true)
+    override fun getExternal(projectId: Long, partnerId: Long): List<InputBudget> {
+        validateInput(projectId, partnerId)
+
+        return projectPartnerBudgetExternalRepository
+            .findAllByPartnerIdOrderByIdAsc(partnerId)
+            .map { it.toOutput() }
+    }
+
+    @Transactional
+    override fun updateExternal(projectId: Long, partnerId: Long, externals: List<InputBudget>): List<InputBudget> {
+        validateInput(projectId, partnerId, externals)
+
+        val toBeRemoved = retrieveToBeRemoved(
+            newData = externals,
+            old = projectPartnerBudgetExternalRepository.findAllByPartnerIdOrderByIdAsc(partnerId)
+        )
+
+        projectPartnerBudgetExternalRepository.deleteAll(toBeRemoved)
+        return projectPartnerBudgetExternalRepository
+            .saveAll(externals.map { it.toExternal(partnerId) })
+            .map { it.toOutput() }
+    }
+    //endregion External
+
+    // region Equipment
+
+    @Transactional(readOnly = true)
+    override fun getEquipment(projectId: Long, partnerId: Long): List<InputBudget> {
+        validateInput(projectId, partnerId)
+
+        return projectPartnerBudgetEquipmentRepository
+            .findAllByPartnerIdOrderByIdAsc(partnerId)
+            .map { it.toOutput() }
+    }
+
+    @Transactional
+    override fun updateEquipment(projectId: Long, partnerId: Long, equipments: List<InputBudget>): List<InputBudget> {
+        validateInput(projectId, partnerId, equipments)
+
+        val toBeRemoved = retrieveToBeRemoved(
+            newData = equipments,
+            old = projectPartnerBudgetEquipmentRepository.findAllByPartnerIdOrderByIdAsc(partnerId)
+        )
+
+        projectPartnerBudgetEquipmentRepository.deleteAll(toBeRemoved)
+        return projectPartnerBudgetEquipmentRepository
+            .saveAll(equipments.map { it.toEquipment(partnerId) })
+            .map { it.toOutput() }
+    }
+    //endregion Equipment
+
+    //region Infrastructure
+
+    @Transactional(readOnly = true)
+    override fun getInfrastructure(projectId: Long, partnerId: Long): List<InputBudget> {
+        validateInput(projectId, partnerId)
+
+        return projectPartnerBudgetInfrastructureRepository
+            .findAllByPartnerIdOrderByIdAsc(partnerId)
+            .map { it.toOutput() }
+    }
+
+    @Transactional
+    override fun updateInfrastructure(projectId: Long, partnerId: Long, infrastructures: List<InputBudget>): List<InputBudget> {
+        validateInput(projectId, partnerId, infrastructures)
+
+        val toBeRemoved = retrieveToBeRemoved(
+            newData = infrastructures,
+            old = projectPartnerBudgetInfrastructureRepository.findAllByPartnerIdOrderByIdAsc(partnerId)
+        )
+
+        projectPartnerBudgetInfrastructureRepository.deleteAll(toBeRemoved)
+        return projectPartnerBudgetInfrastructureRepository
+            .saveAll(infrastructures.map { it.toInfrastructure(partnerId) })
+            .map { it.toOutput() }
+    }
+    //endregion Infrastructure
 
     private fun validateInput(projectId: Long, partnerId: Long, budgetList: List<InputBudget> = emptyList()) {
         if (projectPartnerRepository.findFirstByProjectIdAndId(projectId, partnerId).isEmpty)
@@ -85,6 +178,7 @@ class ProjectPartnerBudgetServiceImpl(
 
         if (!budgetList.parallelStream().allMatch {
                 it.numberOfUnits <= MAX_ALLOWED_VALUE && it.pricePerUnit <= MAX_ALLOWED_VALUE
+                    && it.numberOfUnits.multiply(it.pricePerUnit) <= MAX_ALLOWED_VALUE
             })
             throw I18nValidationException(
                 httpStatus = HttpStatus.UNPROCESSABLE_ENTITY,

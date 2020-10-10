@@ -15,6 +15,8 @@ import javax.validation.Valid
 @RequestMapping("/api/project/{projectId}/partner/{partnerId}/")
 interface ProjectPartnerBudgetApi {
 
+    //region StuffCosts
+
     @ApiOperation("Get project partner Budget: Staff Costs")
     @GetMapping("/staffcost")
     fun getBudgetStaffCost(
@@ -29,6 +31,9 @@ interface ProjectPartnerBudgetApi {
         @PathVariable partnerId: Long,
         @Valid @RequestBody budgetCosts: List<InputBudget>
     ): List<InputBudget>
+    //endregion StuffCosts
+
+    //region Travel
 
     @ApiOperation("Get project partner Budget: Travel")
     @GetMapping("/travel")
@@ -44,5 +49,60 @@ interface ProjectPartnerBudgetApi {
         @PathVariable partnerId: Long,
         @Valid @RequestBody travels: List<InputBudget>
     ): List<InputBudget>
+    //endregion Travel
+
+    //region External
+
+    @ApiOperation("Get project partner Budget: External")
+    @GetMapping("/external")
+    fun getBudgetExternal(
+        @PathVariable projectId: Long,
+        @PathVariable partnerId: Long
+    ): List<InputBudget>
+
+    @ApiOperation("Update project partner Budget: External")
+    @PutMapping("/external", consumes = [MediaType.APPLICATION_JSON_VALUE])
+    fun updateBudgetExternal(
+        @PathVariable projectId: Long,
+        @PathVariable partnerId: Long,
+        @Valid @RequestBody externals: List<InputBudget>
+    ): List<InputBudget>
+    //endregion External
+
+    //region Equipment
+
+    @ApiOperation("Get project partner Budget: Equipment")
+    @GetMapping("/equipment")
+    fun getBudgetEquipment(
+        @PathVariable projectId: Long,
+        @PathVariable partnerId: Long
+    ): List<InputBudget>
+
+    @ApiOperation("Update project partner Budget: Equipment")
+    @PutMapping("/equipment", consumes = [MediaType.APPLICATION_JSON_VALUE])
+    fun updateBudgetEquipment(
+        @PathVariable projectId: Long,
+        @PathVariable partnerId: Long,
+        @Valid @RequestBody equipments: List<InputBudget>
+    ): List<InputBudget>
+    //endregion Equipment
+
+    //region Infrastructure
+
+    @ApiOperation("Get project partner Budget: Infrastructure")
+    @GetMapping("/infrastructure")
+    fun getBudgetInfrastructure(
+        @PathVariable projectId: Long,
+        @PathVariable partnerId: Long
+    ): List<InputBudget>
+
+    @ApiOperation("Update project partner Budget: Infrastructure")
+    @PutMapping("/infrastructure", consumes = [MediaType.APPLICATION_JSON_VALUE])
+    fun updateBudgetInfrastructure(
+        @PathVariable projectId: Long,
+        @PathVariable partnerId: Long,
+        @Valid @RequestBody infrastructures: List<InputBudget>
+    ): List<InputBudget>
+    //endregion Infrastructure
 
 }
