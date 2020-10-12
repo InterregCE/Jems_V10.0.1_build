@@ -7,6 +7,7 @@ import {Log} from '../../../../../common/utils/log';
 import {HttpErrorResponse} from '@angular/common/http';
 import {InputProjectOverallObjective, ProjectDescriptionService, OutputProject} from '@cat/api';
 import {BaseComponent} from '@common/components/base-component';
+import {ProjectApplicationFormStore} from '../services/project-application-form-store.service';
 
 @Component({
   selector: 'app-project-application-form-overall-objective-section',
@@ -29,14 +30,15 @@ export class ProjectApplicationFormOverallObjectiveSectionComponent extends Base
   updateProjectDescription$ = new Subject<InputProjectOverallObjective>();
   projectDescriptionDetails$: Observable<any>;
 
-  constructor(private projectDescriptionService: ProjectDescriptionService) {
+  constructor(private projectDescriptionService: ProjectDescriptionService,
+              private projectApplicationFormStore: ProjectApplicationFormStore) {
     super();
   }
 
   ngOnInit(): void {
-    const savedDescription$ = this.projectDescriptionService.getProjectDescription(this.projectId)
+    const savedDescription$ = this.projectApplicationFormStore.getProjectDescription()
       .pipe(
-        map(project => {return {overallObjective: project.projectOverallObjective} as InputProjectOverallObjective})
+        map(project => ({overallObjective: project.projectOverallObjective}))
       )
 
     const updatedProjectDescription$ = this.updateProjectDescription$

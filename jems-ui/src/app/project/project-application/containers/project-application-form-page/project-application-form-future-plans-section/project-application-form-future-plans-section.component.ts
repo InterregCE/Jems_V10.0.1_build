@@ -1,11 +1,12 @@
 import {ChangeDetectionStrategy, Component, Input, OnInit} from '@angular/core';
 import {BaseComponent} from '@common/components/base-component';
 import {merge, Observable, Subject} from 'rxjs';
-import {ProjectDescriptionService, InputProjectLongTermPlans,OutputProjectLongTermPlans} from '@cat/api';
+import {ProjectDescriptionService, InputProjectLongTermPlans} from '@cat/api';
 import {I18nValidationError} from '@common/validation/i18n-validation-error';
-import {catchError, flatMap, map, takeUntil, tap} from 'rxjs/operators';
+import {catchError, flatMap, map, tap} from 'rxjs/operators';
 import {Log} from '../../../../../common/utils/log';
 import {HttpErrorResponse} from '@angular/common/http';
+import {ProjectApplicationFormStore} from '../services/project-application-form-store.service';
 
 @Component({
   selector: 'app-project-application-form-future-plans-section',
@@ -25,12 +26,13 @@ export class ProjectApplicationFormFuturePlansSectionComponent extends BaseCompo
   updateProjectDescription$ = new Subject<InputProjectLongTermPlans>();
   projectDescriptionDetails$: Observable<any>;
 
-  constructor(private projectDescriptionService: ProjectDescriptionService) {
+  constructor(private projectDescriptionService: ProjectDescriptionService,
+              private projectApplicationFormStore: ProjectApplicationFormStore) {
     super();
   }
 
   ngOnInit(): void {
-    const savedDescription$ = this.projectDescriptionService.getProjectDescription(this.projectId)
+    const savedDescription$ = this.projectApplicationFormStore.getProjectDescription()
       .pipe(
         map(project => project.projectLongTermPlans)
       )

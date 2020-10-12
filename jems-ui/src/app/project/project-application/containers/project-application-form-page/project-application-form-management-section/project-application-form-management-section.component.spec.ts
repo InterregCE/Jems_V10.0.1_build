@@ -1,6 +1,6 @@
 import {async, ComponentFixture, fakeAsync, TestBed} from '@angular/core/testing';
 import {InputProjectManagement} from '@cat/api';
-import { ProjectApplicationFormManagementSectionComponent } from './project-application-form-management-section.component';
+import {ProjectApplicationFormManagementSectionComponent} from './project-application-form-management-section.component';
 import {HttpTestingController} from '@angular/common/http/testing';
 import {TestModule} from '../../../../../common/test-module';
 import {ProjectModule} from '../../../../project.module';
@@ -16,9 +16,9 @@ describe('ProjectApplicationFormManagementSectionComponent', () => {
         TestModule,
         ProjectModule
       ],
-      declarations: [ ProjectApplicationFormManagementSectionComponent ]
+      declarations: [ProjectApplicationFormManagementSectionComponent]
     })
-    .compileComponents();
+      .compileComponents();
     httpTestingController = TestBed.inject(HttpTestingController);
   }));
 
@@ -36,10 +36,6 @@ describe('ProjectApplicationFormManagementSectionComponent', () => {
   it('should update project management', fakeAsync(() => {
     component.updateProjectDescription$.next({} as InputProjectManagement);
 
-    httpTestingController.expectOne({
-      method: 'GET',
-      url: '//api/project/1/description'
-    })
     httpTestingController.expectOne({
       method: 'PUT',
       url: '//api/project/1/description/c7'

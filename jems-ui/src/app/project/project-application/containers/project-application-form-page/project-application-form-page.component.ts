@@ -17,6 +17,7 @@ import {I18nValidationError} from '@common/validation/i18n-validation-error';
 import {HttpErrorResponse} from '@angular/common/http';
 import {Permission} from 'src/app/security/permissions/permission';
 import {ProjectApplicationFormSidenavService} from './services/project-application-form-sidenav.service';
+import {ProjectApplicationFormStore} from './services/project-application-form-store.service';
 
 @Component({
   selector: 'app-project-application-form-page',
@@ -34,6 +35,7 @@ export class ProjectApplicationFormPageComponent extends BaseComponent implement
   updateProjectData$ = new Subject<InputProjectData>();
 
   constructor(private projectStore: ProjectStore,
+              private projectApplicationFormStore: ProjectApplicationFormStore,
               private projectService: ProjectService,
               private activatedRoute: ActivatedRoute,
               private projectApplicationFormSidenavService: ProjectApplicationFormSidenavService,
@@ -109,6 +111,7 @@ export class ProjectApplicationFormPageComponent extends BaseComponent implement
 
   ngOnInit() {
     this.projectStore.init(this.projectId);
+    this.projectApplicationFormStore.init(this.projectId);
     this.projectApplicationFormSidenavService.init(this.destroyed$, this.projectId);
   }
 

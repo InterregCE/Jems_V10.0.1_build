@@ -16,9 +16,9 @@ describe('ProjectApplicationFormProjectRelevanceAndContextSectionComponent', () 
         TestModule,
         ProjectModule
       ],
-      declarations: [ ProjectApplicationFormProjectRelevanceAndContextSectionComponent ]
+      declarations: [ProjectApplicationFormProjectRelevanceAndContextSectionComponent]
     })
-    .compileComponents();
+      .compileComponents();
     httpTestingController = TestBed.inject(HttpTestingController);
   }));
 
@@ -36,10 +36,6 @@ describe('ProjectApplicationFormProjectRelevanceAndContextSectionComponent', () 
   it('should update project relevance', fakeAsync(() => {
     component.updateProjectDescription$.next({} as InputProjectRelevance);
 
-    httpTestingController.expectOne({
-      method: 'GET',
-      url: '//api/project/1/description'
-    })
     httpTestingController.expectOne({
       method: 'PUT',
       url: '//api/project/1/description/c2'

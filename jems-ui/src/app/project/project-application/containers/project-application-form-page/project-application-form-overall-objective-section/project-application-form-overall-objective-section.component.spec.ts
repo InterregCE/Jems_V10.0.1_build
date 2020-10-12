@@ -1,6 +1,6 @@
 import {async, ComponentFixture, fakeAsync, TestBed} from '@angular/core/testing';
 import {InputProjectOverallObjective} from '@cat/api';
-import { ProjectApplicationFormOverallObjectiveSectionComponent } from './project-application-form-overall-objective-section.component';
+import {ProjectApplicationFormOverallObjectiveSectionComponent} from './project-application-form-overall-objective-section.component';
 import {TestModule} from '../../../../../common/test-module';
 import {ProjectModule} from '../../../../project.module';
 import {HttpTestingController} from '@angular/common/http/testing';
@@ -16,9 +16,9 @@ describe('ProjectApplicationFormOverallObjectiveSectionComponent', () => {
         TestModule,
         ProjectModule
       ],
-      declarations: [ ProjectApplicationFormOverallObjectiveSectionComponent ]
+      declarations: [ProjectApplicationFormOverallObjectiveSectionComponent]
     })
-    .compileComponents();
+      .compileComponents();
     httpTestingController = TestBed.inject(HttpTestingController);
   }));
 
@@ -36,10 +36,6 @@ describe('ProjectApplicationFormOverallObjectiveSectionComponent', () => {
   it('should update project overall objective', fakeAsync(() => {
     component.updateProjectDescription$.next({} as InputProjectOverallObjective);
 
-    httpTestingController.expectOne({
-      method: 'GET',
-      url: '//api/project/1/description'
-    })
     httpTestingController.expectOne({
       method: 'PUT',
       url: '//api/project/1/description/c1'
