@@ -24,7 +24,7 @@
                     [success$]="partnerOrganizationDetailsSaveSuccess$"
                     [error$]="partnerOrganizationDetailsSaveError$"
                     [organizationDetails]="details.partner?.organization?.organizationDetails"
-                    [editable]="details.editable"
+                    [editable]="details.editable && details.partner?.organization?.id"
                     (update)="savePartnerOrganizationDetails$.next($event)">
             </app-project-application-form-region-selection>
         </mat-tab>

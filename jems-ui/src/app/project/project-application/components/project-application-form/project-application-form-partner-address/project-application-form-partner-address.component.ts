@@ -4,7 +4,6 @@ import {
   Component,
   EventEmitter,
   Input,
-  OnInit,
   Output,
 } from '@angular/core';
 import {FormBuilder, FormGroup, Validators} from '@angular/forms';
@@ -20,7 +19,7 @@ import {Permission} from '../../../../../security/permissions/permission';
   styleUrls: ['./project-application-form-partner-address.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class ProjectApplicationFormPartnerAddressComponent extends ViewEditForm implements OnInit {
+export class ProjectApplicationFormPartnerAddressComponent extends ViewEditForm {
 
   @Input()
   nutsCountry: any;
@@ -114,12 +113,6 @@ export class ProjectApplicationFormPartnerAddressComponent extends ViewEditForm 
               private nutsService: NutsImportService,
               private sideNavService: SideNavService) {
     super(changeDetectorRef);
-  }
-
-
-  ngOnInit() {
-    super.ngOnInit();
-    this.changeFormState$.next(FormState.EDIT);
   }
 
   protected enterViewMode() {
