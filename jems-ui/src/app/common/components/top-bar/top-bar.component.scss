@@ -36,6 +36,8 @@
 
 .nav-item {
   padding: 0 1rem;
+  border-bottom: .125rem solid transparent;
+  transition: border-bottom-color .2s linear;
 
   .nav-link {
     cursor: pointer;
@@ -45,7 +47,7 @@
   }
 
   &.active-collapsed {
-    border-bottom: .125rem solid var(--font-text-link);
+    border-bottom-color: var(--font-text-link);
   }
 
   &.active-not-collapsed {
