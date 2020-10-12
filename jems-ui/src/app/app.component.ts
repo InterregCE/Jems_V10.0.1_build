@@ -1,7 +1,6 @@
 import {Component, HostBinding} from '@angular/core';
 import {TranslateService} from '@ngx-translate/core';
 import {Title} from '@angular/platform-browser';
-import {Router} from '@angular/router';
 import {BaseComponent} from '@common/components/base-component';
 import {ThemeService} from './theme/theme.service';
 
