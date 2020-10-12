@@ -29,33 +29,33 @@ describe('SideNavService', () => {
 
     service.setHeadlines(destroyed$, [
       {
-        headline: 'back.project.overview',
+        headline: { i18nKey: 'back.project.overview'},
         route: '/app/project/1',
       },
       {
-        headline: 'project.application.form.title',
+        headline: { i18nKey: 'project.application.form.title'},
       },
       {
-        headline: 'Test',
+        headline: { i18nKey: 'Test'},
       },
       {
-        headline: 'A - Project Identification',
+        headline: { i18nKey: 'A - Project Identification'},
         scrollRoute: 'applicationFormHeading',
       },
       {
-        headline: 'A.1 Project Identification',
+        headline: { i18nKey: 'A.1 Project Identification'},
         scrollRoute: 'projectIdentificationHeading',
       }]);
 
     tick(60);
     expect(headlines.length).toBe(5);
-    expect(headlines[0].headline).toBe('back.project.overview')
+    expect(headlines[0].headline.i18nKey).toBe('back.project.overview')
     expect(headlines[0].route).toBe('/app/project/1')
-    expect(headlines[1].headline).toBe('project.application.form.title')
-    expect(headlines[2].headline).toBe('Test')
-    expect(headlines[3].headline).toBe('A - Project Identification')
+    expect(headlines[1].headline.i18nKey).toBe('project.application.form.title')
+    expect(headlines[2].headline.i18nKey).toBe('Test')
+    expect(headlines[3].headline.i18nKey).toBe('A - Project Identification')
     expect(headlines[3].scrollRoute).toBe('applicationFormHeading')
-    expect(headlines[4].headline).toBe('A.1 Project Identification')
+    expect(headlines[4].headline.i18nKey).toBe('A.1 Project Identification')
     expect(headlines[4].scrollRoute).toBe('projectIdentificationHeading')
   }));
 
