@@ -1,18 +1,18 @@
-import {ChangeDetectionStrategy, Component, OnInit} from '@angular/core';
-import {combineLatest, merge, of, ReplaySubject, Subject} from 'rxjs';
+import {ChangeDetectionStrategy, Component, OnDestroy, OnInit} from '@angular/core';
+import {combineLatest, merge, of, Subject} from 'rxjs';
 import {I18nValidationError} from '@common/validation/i18n-validation-error';
 import {HttpErrorResponse} from '@angular/common/http';
 import {catchError, flatMap, map, switchMap, tap} from 'rxjs/operators';
 import {Log} from '../../../../../../common/utils/log';
 import {ActivatedRoute, Router} from '@angular/router';
 import {
-  InputProjectPartnerCreate,
-  InputProjectPartnerUpdate,
-  OutputProjectStatus,
-  ProjectPartnerService,
   InputProjectPartnerContact,
   InputProjectPartnerContribution,
-  InputProjectPartnerOrganizationDetails
+  InputProjectPartnerCreate,
+  InputProjectPartnerOrganizationDetails,
+  InputProjectPartnerUpdate,
+  OutputProjectStatus,
+  ProjectPartnerService
 } from '@cat/api';
 import {BaseComponent} from '@common/components/base-component';
 import {ProjectStore} from '../../../project-application-detail/services/project-store.service';
@@ -25,7 +25,7 @@ import {TabService} from '../../../../../../common/services/tab.service';
   styleUrls: ['./project-application-form-partner-detail.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class ProjectApplicationFormPartnerDetailComponent extends BaseComponent implements OnInit {
+export class ProjectApplicationFormPartnerDetailComponent extends BaseComponent implements OnInit, OnDestroy {
 
   projectId = this.activatedRoute?.snapshot?.params?.projectId
   partnerId = this.activatedRoute?.snapshot?.params?.partnerId;
@@ -34,7 +34,10 @@ export class ProjectApplicationFormPartnerDetailComponent extends BaseComponent 
   savePartner$ = new Subject<InputProjectPartnerUpdate>();
   createPartner$ = new Subject<InputProjectPartnerCreate>();
 
-  activeTab$ = this.tabService.currentTab(ProjectApplicationFormPartnerDetailComponent.name);
+  activeTab$ = this.tabService.currentTab(
+    ProjectApplicationFormPartnerDetailComponent.name + this.partnerId
+  );
+
 
   partnerContactSaveSuccess$ = new Subject<boolean>();
   partnerContactSaveError$ = new Subject<I18nValidationError | null>();
@@ -100,18 +103,18 @@ export class ProjectApplicationFormPartnerDetailComponent extends BaseComponent 
     );
 
   private updatedPartnerOrganizationDetails$ = this.savePartnerOrganizationDetails$
-      .pipe(
-          flatMap(partnerOrganizationDetailsUpdate =>
-            this.partnerService.updateProjectPartnerOrganizationDetails(this.partnerId, this.projectId, partnerOrganizationDetailsUpdate)
-          ),
-          tap(() => this.partnerOrganizationDetailsSaveError$.next(null)),
-          tap(() => this.partnerOrganizationDetailsSaveSuccess$.next(true)),
-          tap(saved => Log.info('Updated partner organization details:', this, saved)),
-          catchError((error: HttpErrorResponse) => {
-              this.partnerOrganizationDetailsSaveError$.next(error.error);
-              return of();
-          })
-      )
+    .pipe(
+      flatMap(partnerOrganizationDetailsUpdate =>
+        this.partnerService.updateProjectPartnerOrganizationDetails(this.partnerId, this.projectId, partnerOrganizationDetailsUpdate)
+      ),
+      tap(() => this.partnerOrganizationDetailsSaveError$.next(null)),
+      tap(() => this.partnerOrganizationDetailsSaveSuccess$.next(true)),
+      tap(saved => Log.info('Updated partner organization details:', this, saved)),
+      catchError((error: HttpErrorResponse) => {
+        this.partnerOrganizationDetailsSaveError$.next(error.error);
+        return of();
+      })
+    )
 
   private createdPartner$ = this.createPartner$
     .pipe(
@@ -167,7 +170,11 @@ export class ProjectApplicationFormPartnerDetailComponent extends BaseComponent 
   ngOnInit(): void {
     this.projectStore.init(this.projectId);
     this.projectApplicationFormSidenavService.init(this.destroyed$, this.projectId);
-    this.changeTab(0);
+  }
+
+  ngOnDestroy() {
+    super.ngOnDestroy();
+    this.tabService.cleanupTab(ProjectApplicationFormPartnerDetailComponent.name + this.partnerId);
   }
 
   redirectToPartnerOverview(): void {
@@ -175,7 +182,7 @@ export class ProjectApplicationFormPartnerDetailComponent extends BaseComponent 
   }
 
   changeTab(tabIndex: number): void {
-    this.tabService.changeTab(ProjectApplicationFormPartnerDetailComponent.name, tabIndex);
+    this.tabService.changeTab(ProjectApplicationFormPartnerDetailComponent.name + this.partnerId, tabIndex);
   }
 
 }

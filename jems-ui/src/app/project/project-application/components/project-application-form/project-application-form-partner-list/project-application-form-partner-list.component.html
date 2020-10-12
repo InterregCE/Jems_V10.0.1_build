@@ -17,3 +17,10 @@
             (delete)="delete($event)">
     </app-delete-action-cell>
 </ng-template>
+
+<ng-template #budgetCell let-partner>
+    <button mat-raised-button color="primary" class="button"
+            (click)="goToPartnerBudget(partner.id)">
+        {{'project.application.form.partner.list.budget' | translate}}
+    </button>
+</ng-template>

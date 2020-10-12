@@ -1,5 +1,5 @@
 import {NgModule} from '@angular/core';
-import {CommonModule, DatePipe} from '@angular/common';
+import {CommonModule, CurrencyPipe, DatePipe} from '@angular/common';
 import {routes} from './project-routing.module';
 import {CoreModule} from '../common/core-module';
 import {ProjectApplicationDetailComponent} from './project-application/containers/project-application-detail/project-application-detail.component';
@@ -71,6 +71,11 @@ import {ProjectApplicationFormPartnerAddressComponent} from './project-applicati
 import {ProjectApplicationFormRegionSelectionComponent} from './project-application/containers/project-application-form-page/project-application-form-partner-section/project-application-form-region-selection/project-application-form-region-selection.component';
 import {DeleteActionCellComponent} from './project-application/components/project-application-form/project-application-form-partner-list/delete-action-cell/delete-action-cell.component';
 import {WorkPackageDeleteActionCellComponent} from './project-application/components/project-application-form/project-application-form-work-packages-list/work-package-delete-action-cell/work-package-delete-action-cell.component';
+import {ProjectApplicationPartnerBudgetPageComponent} from './project-application/containers/project-application-form-page/project-application-form-partner-section/project-application-partner-budget-page/project-application-partner-budget-page.component';
+import {ProjectApplicationFormPartnerBudgetComponent} from './project-application/components/project-application-form/project-application-form-partner-budget/project-application-form-partner-budget.component';
+import {BudgetTableComponent} from './project-application/components/project-application-form/project-application-form-partner-budget/budget-table/budget-table.component';
+import {AgGridTemplateRendererComponent} from './project-application/components/project-application-form/project-application-form-partner-budget/budget-table/ag-grid-template-renderer/ag-grid-template-renderer.component';
+import {AgGridModule} from 'ag-grid-angular';
 
 @NgModule({
   declarations: [
@@ -126,7 +131,11 @@ import {WorkPackageDeleteActionCellComponent} from './project-application/compon
     SynergyTableComponent,
     ProjectApplicationFormRegionSelectionComponent,
     DeleteActionCellComponent,
-    WorkPackageDeleteActionCellComponent
+    WorkPackageDeleteActionCellComponent,
+    ProjectApplicationPartnerBudgetPageComponent,
+    ProjectApplicationFormPartnerBudgetComponent,
+    BudgetTableComponent,
+    AgGridTemplateRendererComponent,
   ],
   imports: [
     CommonModule,
@@ -145,6 +154,8 @@ import {WorkPackageDeleteActionCellComponent} from './project-application/compon
     MatCheckboxModule,
     MatButtonToggleModule,
     MatIconModule,
+    AgGridModule,
+    AgGridModule.withComponents([AgGridTemplateRendererComponent])
   ],
   exports: [
     ProjectApplicationDetailComponent

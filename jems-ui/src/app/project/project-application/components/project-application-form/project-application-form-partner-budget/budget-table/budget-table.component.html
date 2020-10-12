@@ -1,0 +1,31 @@
+<ag-grid-angular
+        *ngIf="table?.entries.length"
+        style="width: 100%"
+        class="ag-theme-alpine"
+        [gridOptions]="gridOptions"
+        (gridReady)="gridReady()">
+</ag-grid-angular>
+
+<button *ngIf="enabled && table?.entries.length < 300" mat-icon-button type="button"
+        (click)="addNewEntry()">
+    <mat-icon>add</mat-icon>
+</button>
+
+<ng-template #deleteCell let-params>
+    <button *ngIf="enabled && !params.node.isRowPinned()" class="delete-button"
+            tabindex="-1" mat-icon-button color="accent"
+            matTooltip="{{'common.delete.entry.tooltip' | translate}}"
+            (click)="removeEntry(params.data)">
+        <i class="fas fa-trash"></i>
+    </button>
+</ng-template>
+
+<ng-template #descriptionCell let-params>
+    <span [class.invalid]="!params.data.validDescription">
+        {{params.value}}
+    </span>
+</ng-template>
+
+<ng-template #totalCell let-params>
+    <span>{{Numbers.toLocale(table.total || 0, locale)}}</span>
+</ng-template>

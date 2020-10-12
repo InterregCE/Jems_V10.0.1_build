@@ -27,13 +27,6 @@
                     [editable]="details.editable"
                     (update)="savePartnerOrganizationDetails$.next($event)">
             </app-project-application-form-region-selection>
-<!--            <app-project-application-form-region-selection-->
-<!--                    [success$]="partnerOrganizationDepartmentDetailsSaveSuccess$"-->
-<!--                    [error$]="partnerOrganizationDepartmentDetailsSaveError$"-->
-<!--                    [organizationDetails]="details.partner?.organization?.organizationDetails"-->
-<!--                    [editable]="details.editable"-->
-<!--                    (update)="savePartnerOrganizationDepartmentDetails$.next($event)">-->
-<!--            </app-project-application-form-region-selection>-->
         </mat-tab>
         <mat-tab label="{{'partner.tab.contact' | translate}}">
             <app-project-application-form-partner-contact
@@ -52,6 +45,10 @@
                     [editable]="details.editable"
                     (update)="savePartnerContribution$.next($event)">
             </app-project-application-form-partner-contribution>
+        </mat-tab>
+        <mat-tab *ngIf="partnerId" label="{{'partner.tab.budget' | translate}}">
+            <app-project-application-partner-budget-page>
+            </app-project-application-partner-budget-page>
         </mat-tab>
     </mat-tab-group>
 </div>
