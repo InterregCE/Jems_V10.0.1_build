@@ -28,8 +28,10 @@ export class ProjectApplicationFormSidenavService {
       map(partners => partners
         .sort((a, b) => a.role === OutputProjectPartner.RoleEnum.LEADPARTNER ? -1 : 1)
         .map(partner => ({
-            headline: this.translate.instant('common.label.project.partner.role.shortcut.' + partner.role)
-              + partner.sortNumber + ' ' + partner.name,
+            headline: {
+              i18nKey: 'common.label.project.partner.role.shortcut.' + partner.role,
+              i18nArguments: {partner: `${partner.sortNumber} ${partner.name}`}
+            },
             route: `/app/project/detail/${this.projectId}/applicationForm/partner/detail/${partner.id}`,
           }
         ))
@@ -45,7 +47,10 @@ export class ProjectApplicationFormSidenavService {
       tap(packages => Log.info('Fetched the project work packages:', this, packages)),
       map(packages => packages
         .map(workPackage => ({
-            headline: this.translate.instant('common.label.workpackage.shortcut') + workPackage.number,
+            headline: {
+              i18nKey:  'common.label.workpackage.shortcut',
+              i18nArguments: {workpackage: `${workPackage.number}`},
+            },
             route: `/app/project/detail/${this.projectId}/applicationForm/workPackage/detail/${workPackage.id}`,
           }
         ))
@@ -55,7 +60,7 @@ export class ProjectApplicationFormSidenavService {
   private isNotApplicant$: Observable<boolean> = this.permissionService.permissionsChanged()
     .pipe(
       map(permissions => !permissions.includes(Permission.APPLICANT_USER))
-    )
+    );
 
   constructor(private sideNavService: SideNavService,
               private projectPartnerService: ProjectPartnerService,
@@ -78,9 +83,9 @@ export class ProjectApplicationFormSidenavService {
       .pipe(
         takeUntil(destroyed),
         tap(([isNotApplicant, partners, packages, project]) => {
-          const status = project.projectStatus.status
+          const status = project.projectStatus.status;
           const isNotOpen = status !== OutputProjectStatus.StatusEnum.DRAFT
-            && status !== OutputProjectStatus.StatusEnum.RETURNEDTOAPPLICANT
+            && status !== OutputProjectStatus.StatusEnum.RETURNEDTOAPPLICANT;
           this.setHeadlines(isNotApplicant && isNotOpen, projectId, partners, packages)
         })
       ).subscribe();
@@ -104,10 +109,10 @@ export class ProjectApplicationFormSidenavService {
   private setHeadlines(showAssessment: boolean, projectId: number, partners: HeadlineRoute[], packages: HeadlineRoute[]): void {
     // extracted this because Assessment is now on the same level with other headlines
     const applicationTreeHeadlines = {
-      headline: 'project.application.form.tree.title',
+      headline: { i18nKey: 'project.application.form.tree.title'},
       bullets: [
         {
-          headline: 'project.application.form.lifecycle.title',
+          headline: { i18nKey: 'project.application.form.lifecycle.title'},
             route: '/app/project/detail/' + projectId,
           scrollToTop: true,
           scrollRoute: ''
@@ -117,7 +122,7 @@ export class ProjectApplicationFormSidenavService {
     if (showAssessment){
       applicationTreeHeadlines.bullets.push(
         {
-          headline: 'project.assessment.header',
+          headline: { i18nKey: 'project.assessment.header'},
           scrollRoute: 'applicationFormLifecycleAssessment',
           route: '/app/project/detail/' + projectId,
           scrollToTop: false
@@ -126,7 +131,7 @@ export class ProjectApplicationFormSidenavService {
     }
     applicationTreeHeadlines.bullets.push(
       {
-        headline: 'file.tab.header',
+        headline: { i18nKey: 'file.tab.header'},
         scrollRoute: 'applicationFormLifecycleAttachments',
         route: '/app/project/detail/' + projectId,
         scrollToTop: false
@@ -135,64 +140,64 @@ export class ProjectApplicationFormSidenavService {
     this.sideNavService.setHeadlines(this.pageDestroyed$, [
       applicationTreeHeadlines,
       {
-        headline: 'project.application.form.title',
+        headline: { i18nKey: 'project.application.form.title'},
         bullets: [
           {
-            headline: 'project.application.form.section.part.a',
+            headline: { i18nKey: 'project.application.form.section.part.a'},
             route: '/app/project/detail/' + projectId + '/applicationForm',
             scrollToTop: true,
             bullets: [
               {
-                headline: 'project.application.form.section.part.a.subsection.one',
+                headline: { i18nKey: 'project.application.form.section.part.a.subsection.one'},
                 scrollRoute: 'projectIdentificationHeading',
                 route: '/app/project/detail/' + projectId + '/applicationForm',
               },
               {
-                headline: 'project.application.form.section.part.a.subsection.two',
+                headline: { i18nKey: 'project.application.form.section.part.a.subsection.two'},
                 scrollRoute: 'projectSummaryHeading',
                 route: '/app/project/detail/' + projectId + '/applicationForm',
               },
             ]
           },
           {
-            headline: 'project.application.form.section.part.b',
+            headline: { i18nKey: 'project.application.form.section.part.b'},
             scrollRoute: 'projectPartnersHeading',
             route: '/app/project/detail/' + projectId + '/applicationForm',
             bullets: [...partners],
           },
           {
-            headline: 'project.application.form.section.part.c',
+            headline: { i18nKey: 'project.application.form.section.part.c'},
             scrollRoute: 'projectDescriptionHeading',
             route: '/app/project/detail/' + projectId + '/applicationForm',
             bullets: [
               {
-                headline: 'project.application.form.section.part.c.subsection.one',
+                headline: { i18nKey: 'project.application.form.section.part.c.subsection.one'},
                 scrollRoute: 'projectOverallObjectiveHeading',
                 route: '/app/project/detail/' + projectId + '/applicationForm',
               },
               {
-                headline: 'project.application.form.section.part.c.subsection.two',
+                headline: { i18nKey: 'project.application.form.section.part.c.subsection.two'},
                 scrollRoute: 'projectRelevanceHeading',
                 route: '/app/project/detail/' + projectId + '/applicationForm',
               },
               {
-                headline: 'project.application.form.section.part.c.subsection.three',
+                headline: { i18nKey: 'project.application.form.section.part.c.subsection.three'},
                 scrollRoute: 'projectPartnershipHeading',
                 route: '/app/project/detail/' + projectId + '/applicationForm',
               },
               {
-                headline: 'project.application.form.section.part.c.subsection.four',
+                headline: { i18nKey: 'project.application.form.section.part.c.subsection.four'},
                 scrollRoute: 'projectWorkPlanHeading',
                 route: '/app/project/detail/' + projectId + '/applicationForm',
                 bullets: [...packages],
               },
               {
-                headline: 'project.application.form.section.part.c.subsection.seven',
+                headline: { i18nKey: 'project.application.form.section.part.c.subsection.seven'},
                 scrollRoute: 'projectManagementHeading',
                 route: '/app/project/detail/' + projectId + '/applicationForm',
               },
               {
-                headline: 'project.application.form.section.part.c.subsection.eight',
+                headline: { i18nKey: 'project.application.form.section.part.c.subsection.eight'},
                 scrollRoute: 'projectFuturePlansHeading',
                 route: '/app/project/detail/' + projectId + '/applicationForm',
               }

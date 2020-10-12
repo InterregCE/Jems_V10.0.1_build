@@ -103,23 +103,23 @@ export class CallConfigurationComponent extends BaseComponent {
     this.callStore.init(this.callId);
     this.sideNavService.setHeadlines(this.destroyed$, [
       {
-        headline: 'call.detail.title',
+        headline: { i18nKey: 'call.detail.title'},
         scrollToTop: true,
         bullets: [
           {
-            headline: 'call.section.basic.data',
+            headline: { i18nKey: 'call.section.basic.data'},
             scrollRoute: 'callTitle'
           },
           {
-            headline: 'call.programme.priorities.title',
+            headline: { i18nKey: 'call.programme.priorities.title'},
             scrollRoute: 'callPriorities'
           },
           {
-            headline: 'call.strategy.title',
+            headline: { i18nKey: 'call.strategy.title'},
             scrollRoute: 'callStrategies'
           },
           {
-            headline: 'call.funds.title',
+            headline: { i18nKey: 'call.funds.title'},
             scrollRoute: 'callFunds'
           }
         ]
@@ -152,7 +152,7 @@ export class CallConfigurationComponent extends BaseComponent {
   }
 
   redirectToCallOverview(): void {
-    this.sideNavService.navigate({headline: 'calls', route: '/app/call'})
+    this.sideNavService.navigate({headline: { i18nKey: 'calls'}, route: '/app/call'})
   }
 
   private getStrategies(allActiveStrategies: OutputProgrammeStrategy[], call: OutputCall): OutputProgrammeStrategy[] {

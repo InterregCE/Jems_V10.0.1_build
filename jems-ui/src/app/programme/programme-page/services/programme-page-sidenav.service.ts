@@ -6,17 +6,17 @@ import {Subject} from 'rxjs';
 export class ProgrammePageSidenavService {
 
   private indicatorsPage = {
-    headline: 'programme.tab.indicators',
+    headline: { i18nKey: 'programme.tab.indicators'},
     route: '/app/programme/indicators'
   };
 
   private prioritiesPage = {
-    headline: 'programme.tab.priority',
+    headline: { i18nKey: 'programme.tab.priority'},
     route: '/app/programme/priorities',
   };
 
   private languagesPage = {
-    headline: 'programme.tab.languages',
+    headline: { i18nKey: 'programme.tab.languages'},
     route: '/app/programme/languages',
   };
 
@@ -26,31 +26,31 @@ export class ProgrammePageSidenavService {
   public init(destroyed$: Subject<any>): void {
     this.sideNavService.setHeadlines(destroyed$, [
       {
-        headline: 'programme.data.page.title',
+        headline: { i18nKey: 'programme.data.page.title'},
         bullets: [
           {
-            headline: 'programme.tab.data',
+            headline: { i18nKey: 'programme.tab.data'},
             route: '/app/programme',
             scrollToTop: true
           },
           {
-            headline: 'programme.fund.list.title',
+            headline: { i18nKey: 'programme.fund.list.title'},
             scrollRoute: 'funds',
             route: '/app/programme',
           },
           this.languagesPage,
           this.prioritiesPage,
           {
-            headline: 'programme.tab.area',
+            headline: { i18nKey: 'programme.tab.area'},
             route: '/app/programme/areas',
           },
           this.indicatorsPage,
           {
-            headline: 'programme.tab.strategies',
+            headline: { i18nKey: 'programme.tab.strategies'},
             route: '/app/programme/strategies',
           },
           {
-            headline: 'programme.tab.legal.status',
+            headline: { i18nKey: 'programme.tab.legal.status'},
             route: '/app/programme/legalStatus',
           }
         ]
