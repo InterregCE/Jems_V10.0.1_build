@@ -4,7 +4,7 @@ import {MatSort} from '@angular/material/sort';
 import {mergeMap, map, startWith, take, tap} from 'rxjs/operators';
 import {Tables} from '../../../../../common/utils/tables';
 import {Log} from '../../../../../common/utils/log';
-import {ProjectPartnerService} from '@cat/api';
+import {ProjectPartnerService, ProjectAssociatedOrganizationService} from '@cat/api';
 import {Permission} from '../../../../../security/permissions/permission';
 import {ProjectApplicationFormSidenavService} from '../services/project-application-form-sidenav.service';
 
@@ -26,6 +26,10 @@ export class ProjectApplicationFormPartnerSectionComponent {
   newPageIndex$ = new Subject<number>();
   newSort$ = new Subject<Partial<MatSort>>();
 
+  newPageSizeAO$ = new Subject<number>();
+  newPageIndexAO$ = new Subject<number>();
+  newSortAO$ = new Subject<Partial<MatSort>>();
+
   partnerPage$ =
     combineLatest([
       this.newPageIndex$.pipe(startWith(Tables.DEFAULT_INITIAL_PAGE_INDEX)),
@@ -43,8 +47,26 @@ export class ProjectApplicationFormPartnerSectionComponent {
         tap(page => Log.info('Fetched the project partners:', this, page.content)),
       );
 
+  associatedOrganizationsPage$ =
+    combineLatest([
+      this.newPageIndexAO$.pipe(startWith(Tables.DEFAULT_INITIAL_PAGE_INDEX)),
+      this.newPageSizeAO$.pipe(startWith(Tables.DEFAULT_INITIAL_PAGE_SIZE)),
+      this.newSortAO$.pipe(
+        startWith({active: 'sortNumber', direction: 'asc'}),
+        map(sort => sort?.direction ? sort : {active: 'sortNumber', direction: 'asc'}),
+        map(sort => `${sort.active},${sort.direction}`)
+      )
+    ])
+      .pipe(
+        flatMap(([pageIndex, pageSize, sort]) =>
+          this.projectAssociatedOrganizationService.getAssociatedOrganizations(this.projectId, pageIndex, pageSize, [sort])),
+        tap(page => Log.info('Fetched the project associated organizations:', this, page.content)),
+      );
+
   constructor(private projectPartnerService: ProjectPartnerService,
-              private projectApplicationFormSidenavService: ProjectApplicationFormSidenavService) { }
+              private projectApplicationFormSidenavService: ProjectApplicationFormSidenavService,
+              private projectAssociatedOrganizationService: ProjectAssociatedOrganizationService) {
+  }
 
   deletePartner(partnerId: number): void {
     this.projectPartnerService.deleteProjectPartner(partnerId, this.projectId)
@@ -53,6 +75,15 @@ export class ProjectApplicationFormPartnerSectionComponent {
         tap(() => this.newPageIndex$.next(Tables.DEFAULT_INITIAL_PAGE_INDEX)),
         tap(() => Log.info('Deleted partner: ', this, partnerId)),
         tap(() => this.projectApplicationFormSidenavService.refreshPartners())
+      ).subscribe();
+  }
+
+  deleteAssociatedOrganization(associatedOrganizationId: number): void {
+    this.projectAssociatedOrganizationService.deleteAssociatedOrganization(associatedOrganizationId, this.projectId)
+      .pipe(
+        take(1),
+        tap(() => this.newPageIndexAO$.next(Tables.DEFAULT_INITIAL_PAGE_INDEX)),
+        tap(() => Log.info('Deleted associated organization: ', this, associatedOrganizationId)),
       ).subscribe();
   }
 }

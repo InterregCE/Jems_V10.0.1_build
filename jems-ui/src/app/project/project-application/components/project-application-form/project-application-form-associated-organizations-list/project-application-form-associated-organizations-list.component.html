@@ -1,0 +1,19 @@
+<p *ngIf="!associatedOrganizationPage?.content.length">{{'project.application.form.associatedOrganization.list.empty' | translate}}</p>
+<app-table *ngIf="associatedOrganizationPage.content.length"
+           [configuration]="tableConfiguration"
+           [rows]="associatedOrganizationPage.content"
+           [totalElements]="associatedOrganizationPage?.totalElements"
+           [pageIndex]="pageIndex"
+           (newPageIndex)="newPageIndex.emit($event)"
+           (newPageSize)="newPageSize.emit($event)"
+           (sortRows)="newSort.emit($event)">
+</app-table>
+
+<ng-template #deletionCellAssociatedOrganization let-associatedOrganization>
+    <app-delete-action-cell-associated-organization
+            (click)="$event.stopPropagation()"
+            [element]="associatedOrganization"
+            [disabled]="!editable"
+            (delete)="delete($event)">
+    </app-delete-action-cell-associated-organization>
+</ng-template>

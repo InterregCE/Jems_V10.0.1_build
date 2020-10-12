@@ -1,3 +1,4 @@
+
 <p *ngIf="!partnerPage?.content.length">{{'project.application.form.partner.list.empty' | translate}}</p>
 <app-table *ngIf="partnerPage.content.length"
            [configuration]="tableConfiguration"

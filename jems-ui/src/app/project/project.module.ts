@@ -79,7 +79,10 @@ import {AgGridModule} from 'ag-grid-angular';
 import {ProjectApplicationFormStore} from './project-application/containers/project-application-form-page/services/project-application-form-store.service';
 import {ProjectPartnerStore} from './project-application/containers/project-application-form-page/services/project-partner-store.service';
 import {ProjectApplicationPartnerIdentityComponent} from './project-application/containers/project-application-form-page/project-application-form-partner-section/project-application-partner-identity/project-application-partner-identity.component';
-
+import {ProjectApplicationFormAssociatedOrganizationsListComponent} from './project-application/components/project-application-form/project-application-form-associated-organizations-list/project-application-form-associated-organizations-list.component';
+import {ProjectApplicationFormAssociatedOrgDetailComponent} from './project-application/containers/project-application-form-page/project-application-form-partner-section/project-application-form-associated-org-detail/project-application-form-associated-org-detail.component';
+import {DeleteActionCellAssociatedOrganizationComponent} from './project-application/components/project-application-form/project-application-form-associated-organizations-list/delete-action-cell-associated-organization/delete-action-cell-associated-organization.component';
+import {ProjectApplicationFormAssociatedOrganizationEditComponent} from './project-application/components/project-application-form/project-application-form-associated-organization-edit/project-application-form-associated-organization-edit.component';
 
 @NgModule({
   declarations: [
@@ -130,17 +133,21 @@ import {ProjectApplicationPartnerIdentityComponent} from './project-application/
     ProjectApplicationFormProjectPartnershipDetailComponent,
     ProjectApplicationFormProjectRelevanceAndContextSectionComponent,
     ProjectApplicationFormProjectRelevanceAndContextDetailComponent,
+    ProjectApplicationFormAssociatedOrganizationsListComponent,
+    ProjectApplicationFormAssociatedOrgDetailComponent,
     BenefitsTableComponent,
     StrategyTableComponent,
     SynergyTableComponent,
     ProjectApplicationFormRegionSelectionComponent,
     DeleteActionCellComponent,
+    DeleteActionCellAssociatedOrganizationComponent,
     WorkPackageDeleteActionCellComponent,
     ProjectApplicationPartnerBudgetPageComponent,
     ProjectApplicationFormPartnerBudgetComponent,
     BudgetTableComponent,
     AgGridTemplateRendererComponent,
-    ProjectApplicationPartnerIdentityComponent
+    ProjectApplicationPartnerIdentityComponent,
+    ProjectApplicationFormAssociatedOrganizationEditComponent,
   ],
   imports: [
     CommonModule,

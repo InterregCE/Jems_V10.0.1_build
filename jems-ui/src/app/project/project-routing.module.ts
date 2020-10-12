@@ -13,6 +13,7 @@ import {PermissionGuard} from '../security/permission.guard';
 import {Permission} from '../security/permissions/permission';
 import {ProjectApplyToCallComponent} from './project-application/containers/project-application-page/project-apply-to-call.component';
 import {ProjectApplicationPartnerIdentityComponent} from './project-application/containers/project-application-form-page/project-application-form-partner-section/project-application-partner-identity/project-application-partner-identity.component';
+import {ProjectApplicationFormAssociatedOrgDetailComponent} from './project-application/containers/project-application-form-page/project-application-form-partner-section/project-application-form-associated-org-detail/project-application-form-associated-org-detail.component';
 
 export const routes: Routes = [
   {
@@ -102,6 +103,21 @@ export const routes: Routes = [
                     path: 'detail/:partnerId',
                     component: ProjectApplicationFormPartnerDetailComponent,
                     data: {breadcrumb: 'project.breadcrumb.partnerName'},
+                  },
+                ]
+              },
+              {
+                path: 'associatedOrganization',
+                children: [
+                  {
+                    path: 'create',
+                    component: ProjectApplicationFormAssociatedOrgDetailComponent,
+                    data: {breadcrumb: 'project.breadcrumb.associatedOrganizationCreate'},
+                  },
+                  {
+                    path: 'detail/:associatedOrganizationId',
+                    component: ProjectApplicationFormAssociatedOrgDetailComponent,
+                    data: {breadcrumb: 'project.breadcrumb.associatedOrganizationName'},
                   },
                 ]
               },

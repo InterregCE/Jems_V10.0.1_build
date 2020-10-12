@@ -1,0 +1,227 @@
+<form [formGroup]="associatedOrganizationForm" class="wrapper">
+    <mat-form-field class="field">
+        <mat-label>{{'project.partner.partner.organization.original.name.label' | translate}}</mat-label>
+        <input name="nameInOriginalLanguage" formControlName="nameInOriginalLanguage" matInput
+               placeholder="{{'project.partner.partner.organization.original.name.label' | translate}}">
+        <mat-error>
+            <app-form-field-errors
+                    [errors]="associatedOrganizationForm.controls?.nameInOriginalLanguage?.errors"
+                    [messages]="nameInOriginalLanguageErrors">
+            </app-form-field-errors>
+        </mat-error>
+    </mat-form-field>
+    <mat-form-field class="field">
+        <mat-label>{{'project.partner.organization.english.name.label' | translate}}</mat-label>
+        <input name="nameInEnglish" formControlName="nameInEnglish" matInput
+               placeholder="{{'project.partner.organization.english.name.label' | translate}}">
+        <mat-error>
+            <app-form-field-errors
+                    [errors]="associatedOrganizationForm.controls?.nameInEnglish?.errors"
+                    [messages]="nameInEnglishErrors">
+            </app-form-field-errors>
+        </mat-error>
+    </mat-form-field>
+
+
+    <mat-form-field *ngIf="partner"
+                    class="field">
+        <mat-label>{{'project.partner.main-address.country' | translate}}</mat-label>
+        <mat-select (selectionChange)="partnerChanged(partner[$event.value])" name="responsiblePartner"
+                    panelClass="material-select-panel" formControlName="responsiblePartner">
+
+            <mat-option *ngFor="let region of Object.keys(nutsCountry)" [value]="region">
+                {{region}}
+            </mat-option>
+        </mat-select>
+    </mat-form-field>
+
+
+    <mat-form-field *ngIf="nutsCountry"
+                    class="field">
+        <mat-label>{{'project.partner.main-address.country' | translate}}</mat-label>
+        <mat-select (selectionChange)="countryChanged(nutsCountry[$event.value])" name="associatedOrganizationCountry"
+                    panelClass="material-select-panel" formControlName="associatedOrganizationCountry">
+
+            <mat-option *ngFor="let region of Object.keys(nutsCountry)" [value]="region">
+                {{region}}
+            </mat-option>
+        </mat-select>
+    </mat-form-field>
+
+    <mat-form-field *ngIf="nutsRegion2"
+                    class="field">
+        <mat-label>{{'project.partner.main-address.region2' | translate}}</mat-label>
+        <mat-select [disabled]="nutsRegion2.length === 0"
+                    (selectionChange)="regionChanged(nutsRegion2.get($event.value))"
+                    name="associatedOrganizationRegion2"
+                    panelClass="material-select-panel" formControlName="associatedOrganizationRegion2">
+            <mat-option *ngFor="let region of nutsRegion2.keys()" [value]="region">
+                {{region}}
+            </mat-option>
+        </mat-select>
+    </mat-form-field>
+
+    <mat-form-field *ngIf="nutsRegion3"
+                    class="field">
+        <mat-label>{{'project.partner.main-address.region3' | translate}}</mat-label>
+        <mat-select [disabled]="nutsRegion3.length === 0"
+                    name="associatedOrganizationRegion3"
+                    panelClass="material-select-panel" formControlName="associatedOrganizationRegion3">
+
+            <mat-option *ngFor="let region of nutsRegion3" [value]="region">
+                {{region}}
+            </mat-option>
+        </mat-select>
+    </mat-form-field>
+
+    <mat-form-field class="field">
+        <mat-label>{{'project.partner.main-address.street' | translate}}</mat-label>
+        <input name="associatedOrganizationStreet" formControlName="associatedOrganizationStreet" matInput
+               placeholder="{{'project.partner.main-address.street' | translate}}">
+        <mat-error>
+            <app-form-field-errors
+                    [errors]="associatedOrganizationForm?.controls?.associatedOrganizationStreet?.errors"
+                    [messages]="associatedOrganizationStreetErrors">
+            </app-form-field-errors>
+        </mat-error>
+    </mat-form-field>
+
+    <mat-form-field class="field">
+        <mat-label>{{'project.partner.main-address.housenumber' | translate}}</mat-label>
+        <input name="associatedOrganizationHouseNumber" formControlName="associatedOrganizationHouseNumber" matInput
+               placeholder="{{'project.partner.main-address.housenumber' | translate}}">
+        <mat-error>
+            <app-form-field-errors
+                    [errors]="associatedOrganizationForm?.controls?.associatedOrganizationHouseNumber?.errors"
+                    [messages]="associatedOrganizationHouseNumberErrors">
+            </app-form-field-errors>
+        </mat-error>
+    </mat-form-field>
+
+    <mat-form-field class="field">
+        <mat-label>{{'project.partner.main-address.postalcode' | translate}}</mat-label>
+        <input name="associatedOrganizationPostalCode" formControlName="associatedOrganizationPostalCode" matInput
+               placeholder="{{'project.partner.main-address.postalcode' | translate}}">
+        <mat-error>
+            <app-form-field-errors
+                    [errors]="associatedOrganizationForm?.controls?.associatedOrganizationPostalCode?.errors"
+                    [messages]="associatedOrganizationPostalCodeErrors">
+            </app-form-field-errors>
+        </mat-error>
+    </mat-form-field>
+
+    <mat-form-field class="field">
+        <mat-label>{{'project.partner.main-address.city' | translate}}</mat-label>
+        <input name="associatedOrganizationCity" formControlName="associatedOrganizationCity" matInput
+               placeholder="{{'project.partner.main-address.city' | translate}}">
+        <mat-error>
+            <app-form-field-errors
+                    [errors]="associatedOrganizationForm?.controls?.associatedOrganizationCity?.errors"
+                    [messages]="associatedOrganizationCityErrors">
+            </app-form-field-errors>
+        </mat-error>
+    </mat-form-field>
+
+<!--    LEGAL REPRESENTATIVE-->
+
+    <h5><span>{{'project.partner.representative.header.detail' | translate}}</span></h5>
+    <mat-form-field class="field">
+        <mat-label>{{'project.partner.representative.title' | translate}}</mat-label>
+        <input name="associatedOrganizationRepresentativeTitle" formControlName="associatedOrganizationRepresentativeTitle" matInput
+               placeholder="{{'project.partner.representative.title' | translate}}">
+        <mat-error>
+            <app-form-field-errors
+                    [errors]="associatedOrganizationForm?.controls?.associatedOrganizationRepresentativeTitle?.errors"
+                    [messages]="associatedOrganizationRepresentativeTitleErrors">
+            </app-form-field-errors>
+        </mat-error>
+    </mat-form-field>
+
+    <mat-form-field class="field">
+        <mat-label>{{'project.partner.representative.first.name' | translate}}</mat-label>
+        <input name="associatedOrganizationRepresentativeFirstName" formControlName="associatedOrganizationRepresentativeFirstName" matInput
+               placeholder="{{'project.partner.representative.first.name' | translate}}">
+        <mat-error>
+            <app-form-field-errors
+                    [errors]="associatedOrganizationForm?.controls?.associatedOrganizationRepresentativeFirstName?.errors"
+                    [messages]="associatedOrganizationRepresentativeFirstNameErrors">
+            </app-form-field-errors>
+        </mat-error>
+    </mat-form-field>
+
+    <mat-form-field class="field">
+        <mat-label>{{'project.partner.representative.last.name' | translate}}</mat-label>
+        <input name="associatedOrganizationRepresentativeLastName" formControlName="associatedOrganizationRepresentativeLastName" matInput
+               placeholder="{{'project.partner.representative.last.name' | translate}}">
+        <mat-error>
+            <app-form-field-errors
+                    [errors]="associatedOrganizationForm?.controls?.associatedOrganizationRepresentativeLastName?.errors"
+                    [messages]="associatedOrganizationRepresentativeLastNameErrors">
+            </app-form-field-errors>
+        </mat-error>
+    </mat-form-field>
+
+    <!--    CONTACT-->
+    <h5>{{'project.partner.contact.header.detail' | translate}}</h5>
+
+    <mat-form-field class="field">
+        <mat-label>{{'project.partner.contact.title' | translate}}</mat-label>
+        <input name="associatedOrganizationContactTitle" formControlName="associatedOrganizationContactTitle" matInput
+               placeholder="{{'project.partner.contact.title' | translate}}">
+        <mat-error>
+            <app-form-field-errors
+                    [errors]="associatedOrganizationForm?.controls?.associatedOrganizationContactTitle?.errors"
+                    [messages]="associatedOrganizationContactTitleErrors">
+            </app-form-field-errors>
+        </mat-error>
+    </mat-form-field>
+
+    <mat-form-field class="field">
+        <mat-label>{{'project.partner.contact.first.name' | translate}}</mat-label>
+        <input name="associatedOrganizationContactFirstName" formControlName="associatedOrganizationContactFirstName" matInput
+               placeholder="{{'project.partner.contact.first.name' | translate}}">
+        <mat-error>
+            <app-form-field-errors
+                    [errors]="associatedOrganizationForm?.controls?.associatedOrganizationContactFirstName?.errors"
+                    [messages]="associatedOrganizationContactFirstNameErrors">
+            </app-form-field-errors>
+        </mat-error>
+    </mat-form-field>
+
+    <mat-form-field class="field">
+        <mat-label>{{'project.partner.contact.last.name' | translate}}</mat-label>
+        <input name="associatedOrganizationContactLastName" formControlName="associatedOrganizationContactLastName" matInput
+               placeholder="{{'project.partner.contact.last.name' | translate}}">
+        <mat-error>
+            <app-form-field-errors
+                    [errors]="associatedOrganizationForm?.controls?.associatedOrganizationContactLastName?.errors"
+                    [messages]="associatedOrganizationContactLastNameErrors">
+            </app-form-field-errors>
+        </mat-error>
+    </mat-form-field>
+
+    <mat-form-field class="field">
+        <mat-label>{{'project.partner.contact.email' | translate}}</mat-label>
+        <input name="associatedOrganizationContactEmail" formControlName="associatedOrganizationContactEmail" matInput
+               placeholder="{{'project.partner.contact.email' | translate}}">
+        <mat-error>
+            <app-form-field-errors
+                    [errors]="associatedOrganizationForm?.controls?.associatedOrganizationContactEmail?.errors"
+                    [messages]="associatedOrganizationContactEmailErrors">
+            </app-form-field-errors>
+        </mat-error>
+    </mat-form-field>
+
+    <mat-form-field class="field">
+        <mat-label>{{'project.partner.contact.telephone' | translate}}</mat-label>
+        <input name="associatedOrganizationContactTelephone" formControlName="associatedOrganizationContactTelephone" matInput
+               placeholder="{{'project.partner.contact.telephone' | translate}}">
+        <mat-error>
+            <app-form-field-errors
+                    [errors]="associatedOrganizationForm?.controls?.associatedOrganizationContactTelephone?.errors"
+                    [messages]="associatedOrganizationContactTelephoneErrors">
+            </app-form-field-errors>
+        </mat-error>
+    </mat-form-field>
+
+</form>

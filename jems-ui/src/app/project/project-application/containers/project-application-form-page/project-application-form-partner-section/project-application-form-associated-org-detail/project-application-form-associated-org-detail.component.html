@@ -1,0 +1,16 @@
+<div>
+    <app-breadcrumb></app-breadcrumb>
+    <app-project-application-form-associated-organization-edit
+        [nutsCountry]="nuts$ | async"
+        [nutsRegion2]="nuts2$ | async"
+        [nutsRegion3]="nuts3$ | async"
+        [partner]="partner$ | async"
+        (changeCountry)="changeCountry($event)"
+        (changeRegion)="changeRegion($event)"
+        (changePartner)="changePartner($event)"
+        (create)="createAO$.next($event)"
+        (update)="saveAO$.next($event)"
+        (cancel)="redirectToAOOverview()">
+
+    </app-project-application-form-associated-organization-edit>
+</div>
