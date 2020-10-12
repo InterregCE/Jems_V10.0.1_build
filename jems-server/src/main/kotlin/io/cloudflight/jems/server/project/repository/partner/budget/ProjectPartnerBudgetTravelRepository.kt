@@ -5,8 +5,5 @@ import org.springframework.data.repository.CrudRepository
 import org.springframework.stereotype.Repository
 
 @Repository
-interface ProjectPartnerBudgetTravelRepository : CrudRepository<ProjectPartnerBudgetTravel, Long> {
-
-    fun findAllByPartnerIdOrderByIdAsc(partnerId: Long): List<ProjectPartnerBudgetTravel>
-
-}
+interface ProjectPartnerBudgetTravelRepository
+    : ProjectPartnerBudgetCommonRepository<ProjectPartnerBudgetTravel>
