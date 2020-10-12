@@ -7,4 +7,9 @@ export class Tables {
   static DEFAULT_INITIAL_SORT: Partial<MatSort> = {active: 'id', direction: 'desc'}
   static DEFAULT_DATE_FORMAT = 'dd.MM.yyyy HH:mm';
   static DEFAULT_DATE_FORMAT_NO_TIME = 'dd.MM.yyyy';
+
+  static getNextId(entries: any[]): number {
+    const next = Math.max(...entries.map(entry => entry.id)) + 1;
+    return next < 0 ? 0 : next;
+  }
 }

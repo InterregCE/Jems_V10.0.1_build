@@ -11,6 +11,7 @@ import {ViewEditForm} from '@common/components/forms/view-edit-form';
 import {FormControl, FormGroup, Validators} from '@angular/forms';
 import {InputProgrammeLegalStatus, InputProgrammeLegalStatusWrapper} from '@cat/api';
 import {MatTableDataSource} from '@angular/material/table';
+import {Tables} from '../../../../common/utils/tables';
 
 @Component({
   selector: 'app-programme-legal-status-list',
@@ -52,7 +53,7 @@ export class ProgrammeLegalStatusListComponent extends ViewEditForm implements O
 
   addNewLegalStatus(): void {
     const legalStatus = {
-      id: this.getNextId(),
+      id: Tables.getNextId(this.dataSource.data),
       description: '',
     };
     this.dataSource.data = [...this.dataSource.data, legalStatus];
@@ -101,9 +102,5 @@ export class ProgrammeLegalStatusListComponent extends ViewEditForm implements O
 
   protected enterEditMode() {
     this.toDelete = [];
-  }
-
-  private getNextId(): number {
-    return Math.max(...this.dataSource.data.map(legalStatus => legalStatus.id)) + 1;
   }
 }

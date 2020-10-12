@@ -1,0 +1,11 @@
+.delete-button ::ng-deep.mat-button-wrapper {
+  float: left;
+}
+
+::ng-deep.ag-center-cols-container, ::ng-deep.ag-center-cols-clipper {
+  min-height: unset !important;
+}
+
+.invalid {
+  color: var(--warn-color);
+}
