@@ -1,12 +1,12 @@
 <form [formGroup]="partnerAddressForm" class="container">
-    <h4><span>{{'project.partner.address.header' | translate}}</span></h4>
-    <h6><span>{{'project.partner.main-address.header' | translate}}</span>
+    <h4><span>{{'project.partner.address.header' | translate}}</span>
         <span class="header-button" *ngxPermissionsExcept="Permission.PROGRAMME_USER">
             <button *ngIf="(formState === FormState.VIEW && editable)"
-                    (click)="changeFormState$.next(FormState.EDIT)" mat-raised-button>
+                    (click)="changeFormState$.next(FormState.EDIT)" color="primary" mat-raised-button>
                 {{'common.edit.label' | translate}}
             </button>
-        </span></h6>
+        </span></h4>
+    <h6><span>{{'project.partner.main-address.header' | translate}}</span></h6>
     <mat-form-field *ngIf="nutsCountry"
                     class="field">
         <mat-label>{{'project.partner.main-address.country' | translate}}</mat-label>
@@ -153,7 +153,7 @@
                placeholder="{{'project.partner.main-address.street' | translate}}">
         <mat-error>
             <app-form-field-errors
-                    [errors]="partnerAddressForm?.controls?.partnerStreet?.errors"
+                    [errors]="partnerAddressForm?.controls?.partnerDepartmentStreet?.errors"
                     [messages]="partnerStreetErrors">
             </app-form-field-errors>
         </mat-error>
@@ -165,7 +165,7 @@
                placeholder="{{'project.partner.main-address.housenumber' | translate}}">
         <mat-error>
             <app-form-field-errors
-                    [errors]="partnerAddressForm?.controls?.partnerHouseNumber?.errors"
+                    [errors]="partnerAddressForm?.controls?.partnerDepartmentHouseNumber?.errors"
                     [messages]="partnerHouseNumberErrors">
             </app-form-field-errors>
         </mat-error>
@@ -177,7 +177,7 @@
                placeholder="{{'project.partner.main-address.postalcode' | translate}}">
         <mat-error>
             <app-form-field-errors
-                    [errors]="partnerAddressForm?.controls?.partnerPostalCode?.errors"
+                    [errors]="partnerAddressForm?.controls?.partnerDepartmentPostalCode?.errors"
                     [messages]="partnerPostalCodeErrors">
             </app-form-field-errors>
         </mat-error>
@@ -190,7 +190,7 @@
                placeholder="{{'project.partner.main-address.city' | translate}}">
         <mat-error>
             <app-form-field-errors
-                    [errors]="partnerAddressForm?.controls?.partnerCity?.errors"
+                    [errors]="partnerAddressForm?.controls?.partnerDepartmentCity?.errors"
                     [messages]="partnerCityErrors">
             </app-form-field-errors>
         </mat-error>
