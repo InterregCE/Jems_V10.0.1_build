@@ -1,6 +1,7 @@
 import {Component, HostBinding} from '@angular/core';
 import {TranslateService} from '@ngx-translate/core';
 import {Title} from '@angular/platform-browser';
+import {Router} from '@angular/router';
 import {BaseComponent} from '@common/components/base-component';
 import {ThemeService} from './theme/theme.service';
 
@@ -15,8 +16,10 @@ export class AppComponent extends BaseComponent {
 
   constructor(public translate: TranslateService,
               public themeService: ThemeService,
-              private titleService: Title) {
+              private titleService: Title,
+              private router: Router) {
     super();
+    this.router.routeReuseStrategy.shouldReuseRoute = () => false;
     this.titleService.setTitle('Jems');
     themeService.$currentTheme
       .subscribe(theme => this.componentCssClass = theme);
