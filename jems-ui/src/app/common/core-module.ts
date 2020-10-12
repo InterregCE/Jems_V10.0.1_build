@@ -19,10 +19,8 @@ import {BreadcrumbComponent} from '@common/components/breadcrumb/breadcrumb.comp
 import {TopBarComponent} from './components/top-bar/top-bar.component';
 import {MenuComponent} from './components/menu/menu.component';
 import {SharedModule} from './shared-module';
-import {TabService} from './services/tab.service';
 import {SideNavComponent} from '@common/components/side-nav/component/side-nav.component';
 import {MatExpansionModule} from '@angular/material/expansion';
-import {NutsStoreService} from './services/nuts-store.service';
 
 const declarations = [
   TopBarComponent,
@@ -56,9 +54,7 @@ const declarations = [
     DatePipe,
     TopBarService,
     KeyValuePipe,
-    MatSortHeader,
-    TabService,
-    NutsStoreService,
+    MatSortHeader
   ],
   exports: [
     declarations

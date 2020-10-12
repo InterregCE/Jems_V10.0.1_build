@@ -60,7 +60,6 @@ export class ProgrammeAreaComponent extends BaseComponent implements OnInit {
           .pipe(
             take(1),
             takeUntil(this.destroyed$),
-            tap(nuts => Log.info('Fetched programme nuts', this, nuts)),
             tap(nuts => this.savedNuts$.next(nuts))
           ).subscribe()
       })
