@@ -26,7 +26,7 @@ import {takeUntil, tap} from 'rxjs/operators';
   styleUrls: ['./budget-table.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class BudgetTableComponent extends BaseComponent {
+export class BudgetTableComponent extends BaseComponent implements AfterViewInit {
   Numbers = Numbers;
 
   @Input()
@@ -49,6 +49,7 @@ export class BudgetTableComponent extends BaseComponent {
   gridApi?: GridApi;
   columnDefs: Partial<ColDef>[] = [];
   locale = 'de-DE';
+  formState: FormState;
 
   gridOptions: GridOptions = {
     domLayout: 'autoHeight',
@@ -71,6 +72,18 @@ export class BudgetTableComponent extends BaseComponent {
     return formState === FormState.EDIT && !node.isRowPinned();
   }
 
+  ngAfterViewInit() {
+    this.changeFormState$
+      .pipe(
+        takeUntil(this.destroyed$),
+        tap(state => {
+          this.formState = state;
+          this.setColumnDefs();
+        })
+      )
+      .subscribe();
+  }
+
   addNewEntry(): void {
     this.table.entries = [...this.table.entries, new PartnerBudgetTableEntry({
       id: Tables.getNextId(this.table.entries),
@@ -88,16 +101,8 @@ export class BudgetTableComponent extends BaseComponent {
 
   gridReady(): void {
     this.gridApi = this.gridOptions.api as any;
-    this.gridApi?.setRowData(this.table.entries);
     this.gridApi?.setPinnedBottomRowData([this.getTotalRow()]);
-
-    this.setColumnDefs(FormState.VIEW);
-    this.changeFormState$
-      .pipe(
-        takeUntil(this.destroyed$),
-        tap(state => this.setColumnDefs(state))
-      )
-      .subscribe();
+    this.setColumnDefs();
   }
 
   getTotalRow(): PartnerBudgetTableEntry {
@@ -107,12 +112,12 @@ export class BudgetTableComponent extends BaseComponent {
     });
   }
 
-  private setColumnDefs(state: FormState): void {
+  private setColumnDefs(): void {
     const columnDefs: ColDef[] = [
       {
         headerName: this.translateService.instant('project.partner.budget.table.description'),
         field: 'description',
-        editable: params => BudgetTableComponent.editableRow(state, params.node),
+        editable: params => BudgetTableComponent.editableRow(this.formState, params.node),
         sortable: true,
         singleClickEdit: true,
         valueSetter: (params: any) => {
@@ -128,7 +133,7 @@ export class BudgetTableComponent extends BaseComponent {
       {
         headerName: this.translateService.instant('project.partner.budget.table.number.of.units'),
         field: 'numberOfUnits',
-        editable: params => BudgetTableComponent.editableRow(state, params.node),
+        editable: params => BudgetTableComponent.editableRow(this.formState, params.node),
         sortable: true,
         singleClickEdit: true,
         type: 'numericColumn',
@@ -143,7 +148,7 @@ export class BudgetTableComponent extends BaseComponent {
       {
         headerName: this.translateService.instant('project.partner.budget.table.price.per.unit'),
         field: 'pricePerUnit',
-        editable: params => BudgetTableComponent.editableRow(state, params.node),
+        editable: params => BudgetTableComponent.editableRow(this.formState, params.node),
         sortable: true,
         singleClickEdit: true,
         type: 'numericColumn',
@@ -169,7 +174,7 @@ export class BudgetTableComponent extends BaseComponent {
         flex: 2
       }
     ];
-    if (state === FormState.EDIT) {
+    if (this.formState === FormState.EDIT) {
       columnDefs.push({
         headerName: '',
         colId: 'delete',
