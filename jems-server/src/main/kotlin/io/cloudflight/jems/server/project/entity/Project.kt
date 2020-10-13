@@ -58,9 +58,6 @@ data class Project(
     val fundingDecision: ProjectStatus? = null,
 
     @OneToOne(mappedBy = "project", cascade = [CascadeType.ALL])
-    val projectData: ProjectData? = null,
-
-    @OneToMany(mappedBy = "project", cascade = [CascadeType.REMOVE])
-    val projectPartners: Set<ProjectPartner>? = emptySet()
+    val projectData: ProjectData? = null
 
 )

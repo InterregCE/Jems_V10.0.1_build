@@ -1,5 +1,6 @@
 package io.cloudflight.jems.server.project.entity
 
+import io.cloudflight.jems.server.project.entity.partner.ProjectPartnerContactId
 import javax.persistence.Column
 import javax.persistence.EmbeddedId
 import javax.persistence.Entity
@@ -8,7 +9,7 @@ import javax.persistence.Entity
 data class AssociatedOrganizationContact (
 
     @EmbeddedId
-    val associatedOrganizationContactId: PartnerContactPersonId,
+    val associatedOrganizationContactId: ProjectPartnerContactId,
 
     @Column
     val title: String?,

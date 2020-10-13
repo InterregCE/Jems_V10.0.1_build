@@ -6,7 +6,7 @@ import io.cloudflight.jems.api.project.dto.OutputProjectAssociatedOrganization
 import io.cloudflight.jems.api.project.dto.OutputProjectAssociatedOrganizationDetail
 import io.cloudflight.jems.server.exception.ResourceNotFoundException
 import io.cloudflight.jems.server.project.repository.ProjectAssociatedOrganizationRepository
-import io.cloudflight.jems.server.project.repository.ProjectPartnerRepository
+import io.cloudflight.jems.server.project.repository.partner.ProjectPartnerRepository
 import io.cloudflight.jems.server.project.repository.ProjectRepository
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
@@ -16,9 +16,9 @@ import org.springframework.transaction.annotation.Transactional
 
 @Service
 class ProjectAssociatedOrganizationServiceImpl(
-    private val projectPartnerRepo: ProjectPartnerRepository,
-    private val projectRepo: ProjectRepository,
-    private val projectAssociatedOrganizationRepo: ProjectAssociatedOrganizationRepository
+        private val projectPartnerRepo: ProjectPartnerRepository,
+        private val projectRepo: ProjectRepository,
+        private val projectAssociatedOrganizationRepo: ProjectAssociatedOrganizationRepository
 ) : ProjectAssociatedOrganizationService {
     @Transactional(readOnly = true)
     override fun getById(projectId: Long, id: Long): OutputProjectAssociatedOrganizationDetail {

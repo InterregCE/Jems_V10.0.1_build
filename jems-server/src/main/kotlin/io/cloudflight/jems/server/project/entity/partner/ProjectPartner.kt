@@ -1,6 +1,7 @@
-package io.cloudflight.jems.server.project.entity
+package io.cloudflight.jems.server.project.entity.partner
 
-import io.cloudflight.jems.api.project.dto.ProjectPartnerRole
+import io.cloudflight.jems.api.project.dto.partner.ProjectPartnerRole
+import io.cloudflight.jems.server.project.entity.Project
 import javax.persistence.CascadeType
 import javax.persistence.Column
 import javax.persistence.Entity
@@ -27,7 +28,7 @@ data class ProjectPartner(
     val project: Project,
 
     @Column(nullable = false)
-    val name: String,
+    val abbreviation: String,
 
     @Column(nullable = false)
     @Enumerated(EnumType.STRING)
@@ -36,18 +37,26 @@ data class ProjectPartner(
     @Column
     val sortNumber: Int? = null,
 
-    @OneToMany(mappedBy = "partnerContactPersonId.partnerId", cascade = [CascadeType.ALL], orphanRemoval = true)
-    val partnerContactPersons: Set<PartnerContactPerson>? = emptySet(),
+    @Column
+    val nameInOriginalLanguage: String? = null,
+
+    @Column
+    val nameInEnglish: String? = null,
+
+    @Column
+    val department: String? = null,
+
+    @OneToMany(mappedBy = "addressId.partnerId", cascade = [CascadeType.ALL], orphanRemoval = true)
+    val addresses: Set<ProjectPartnerAddress>?= emptySet(),
+
+    @OneToMany(mappedBy = "contactId.partnerId", cascade = [CascadeType.ALL], orphanRemoval = true)
+    val contacts: Set<ProjectPartnerContact>? = emptySet(),
 
     @OneToOne(mappedBy = "partner", cascade = [CascadeType.ALL])
-    val partnerContribution: ProjectPartnerContribution? = null,
-
-    @ManyToOne(optional = true, cascade = [CascadeType.ALL])
-    @JoinColumn(name = "organization_id")
-    val organization: ProjectPartnerOrganization? = null
+    val partnerContribution: ProjectPartnerContribution? = null
 
 ) {
     override fun toString(): String {
-        return "${this.javaClass.simpleName}(id=$id, projectId=$project.id, name=$name, role=$role, sortNumber=$sortNumber, partnerContact=$partnerContactPersons, partnerContribution=$partnerContribution, organization=$organization)"
+        return "${this.javaClass.simpleName}(id=$id, projectId=$project.id, abbreviation=$abbreviation, role=$role)"
     }
 }

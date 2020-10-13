@@ -1,5 +1,6 @@
 package io.cloudflight.jems.api.project.dto
 
+import io.cloudflight.jems.api.project.dto.partner.InputProjectPartnerContact
 import javax.validation.constraints.NotNull
 import javax.validation.constraints.Size
 

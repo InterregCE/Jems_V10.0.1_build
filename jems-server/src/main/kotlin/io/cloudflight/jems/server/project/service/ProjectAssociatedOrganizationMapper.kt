@@ -2,17 +2,18 @@ package io.cloudflight.jems.server.project.service
 
 import io.cloudflight.jems.api.project.dto.InputProjectAssociatedOrganizationAddressDetails
 import io.cloudflight.jems.api.project.dto.InputProjectAssociatedOrganizationCreate
-import io.cloudflight.jems.api.project.dto.InputProjectPartnerContact
+import io.cloudflight.jems.api.project.dto.partner.InputProjectPartnerContact
 import io.cloudflight.jems.api.project.dto.OutputProjectAssociatedOrganization
 import io.cloudflight.jems.api.project.dto.OutputProjectAssociatedOrganizationAddressDetails
 import io.cloudflight.jems.api.project.dto.OutputProjectAssociatedOrganizationDetail
-import io.cloudflight.jems.api.project.dto.OutputProjectPartnerContact
+import io.cloudflight.jems.api.project.dto.partner.OutputProjectPartnerContact
 import io.cloudflight.jems.server.project.entity.AssociatedOrganizationContact
-import io.cloudflight.jems.server.project.entity.PartnerContactPersonId
+import io.cloudflight.jems.server.project.entity.partner.ProjectPartnerContactId
 import io.cloudflight.jems.server.project.entity.Project
 import io.cloudflight.jems.server.project.entity.ProjectAssociatedOrganization
 import io.cloudflight.jems.server.project.entity.ProjectAssociatedOrganizationDetail
-import io.cloudflight.jems.server.project.entity.ProjectPartner
+import io.cloudflight.jems.server.project.entity.partner.ProjectPartner
+import io.cloudflight.jems.server.project.service.partner.toOutputProjectPartner
 
 fun InputProjectAssociatedOrganizationCreate.toEntity(project: Project,
                                                       partner: ProjectPartner) = ProjectAssociatedOrganization(
@@ -43,7 +44,7 @@ fun ProjectAssociatedOrganization.toOutputProjectAssociatedOrganizationDetail() 
 
 
 fun InputProjectPartnerContact.toAssociatedOrganizationContact(associatedOrganization: ProjectAssociatedOrganization) = AssociatedOrganizationContact(
-    associatedOrganizationContactId = PartnerContactPersonId(associatedOrganization.id!!, type),
+    associatedOrganizationContactId = ProjectPartnerContactId(associatedOrganization.id!!, type),
     title = title,
     firstName =  firstName,
     lastName = lastName,

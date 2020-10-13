@@ -10,7 +10,7 @@ import {FormBuilder, FormGroup, Validators} from '@angular/forms';
 import {ViewEditForm} from '@common/components/forms/view-edit-form';
 import {SideNavService} from '@common/components/side-nav/side-nav.service';
 import {FormState} from '@common/components/forms/form-state';
-import {InputProjectPartnerOrganizationDetails, NutsImportService, OutputProjectPartnerOrganizationDetails} from '@cat/api';
+import {InputProjectPartnerAddress, NutsImportService, OutputProjectPartnerAddress} from '@cat/api';
 import {Permission} from '../../../../../security/permissions/permission';
 
 @Component({
@@ -34,7 +34,7 @@ export class ProjectApplicationFormPartnerAddressComponent extends ViewEditForm 
   @Input()
   nutsRegion3Department: any[];
   @Input()
-  organizationDetails: OutputProjectPartnerOrganizationDetails[];
+  organizationDetails: OutputProjectPartnerAddress[];
   @Input()
   editable: boolean;
   @Input()
@@ -49,7 +49,7 @@ export class ProjectApplicationFormPartnerAddressComponent extends ViewEditForm 
   @Output()
   changeDepartmentRegion = new EventEmitter<any>();
   @Output()
-  update = new EventEmitter<InputProjectPartnerOrganizationDetails[]>();
+  update = new EventEmitter<InputProjectPartnerAddress[]>();
   @Output()
   cancel = new EventEmitter<void>();
 
@@ -90,15 +90,15 @@ export class ProjectApplicationFormPartnerAddressComponent extends ViewEditForm 
     maxlength: 'project.partner.address.homepage.size.too.long'
   };
 
-  private static isOrganizationDtoEmpty(partnerOrganizationDetails: InputProjectPartnerOrganizationDetails): boolean {
+  private static isOrganizationDtoEmpty(partnerOrganizationDetails: InputProjectPartnerAddress): boolean {
     return !(partnerOrganizationDetails.country || partnerOrganizationDetails.nutsRegion2 || partnerOrganizationDetails.nutsRegion3 ||
         partnerOrganizationDetails.street || partnerOrganizationDetails.houseNumber || partnerOrganizationDetails.postalCode ||
         partnerOrganizationDetails.city );
   }
 
-  private static getValidatedDataToEmit(partnerOrganizationMainAddress: InputProjectPartnerOrganizationDetails,
-                                        partnerOrganizationDepartmentAddress: InputProjectPartnerOrganizationDetails): InputProjectPartnerOrganizationDetails[]{
-    const dataToEmit : InputProjectPartnerOrganizationDetails[] = [];
+  private static getValidatedDataToEmit(partnerOrganizationMainAddress: InputProjectPartnerAddress,
+                                        partnerOrganizationDepartmentAddress: InputProjectPartnerAddress): InputProjectPartnerAddress[]{
+    const dataToEmit : InputProjectPartnerAddress[] = [];
     if (!ProjectApplicationFormPartnerAddressComponent.isOrganizationDtoEmpty(partnerOrganizationMainAddress)) {
       dataToEmit.push(partnerOrganizationMainAddress);
     }
@@ -131,7 +131,7 @@ export class ProjectApplicationFormPartnerAddressComponent extends ViewEditForm 
 
   onSubmit(): void {
     const partnerOrganizationAddress = {
-      type: InputProjectPartnerOrganizationDetails.TypeEnum.Organization,
+      type: InputProjectPartnerAddress.TypeEnum.Organization,
       country: this.partnerAddressForm.controls.partnerCountry.value,
       nutsRegion2: this.partnerAddressForm.controls.partnerRegion2.value,
       nutsRegion3: this.partnerAddressForm.controls.partnerRegion3.value,
@@ -142,7 +142,7 @@ export class ProjectApplicationFormPartnerAddressComponent extends ViewEditForm 
       homepage: this.partnerAddressForm.controls.partnerHomepage.value
     }
     const partnerDepartmentAddress = {
-      type: InputProjectPartnerOrganizationDetails.TypeEnum.Department,
+      type: InputProjectPartnerAddress.TypeEnum.Department,
       country: this.partnerAddressForm.controls.partnerDepartmentCountry.value,
       nutsRegion2: this.partnerAddressForm.controls.partnerDepartmentRegion2.value,
       nutsRegion3: this.partnerAddressForm.controls.partnerDepartmentRegion3.value,
@@ -182,7 +182,7 @@ export class ProjectApplicationFormPartnerAddressComponent extends ViewEditForm 
   }
 
   private initPartnerOrganizationMainAddressFields(): void {
-    const partnerMainAddress = this.organizationDetails?.find( person => person.type === OutputProjectPartnerOrganizationDetails.TypeEnum.Organization)
+    const partnerMainAddress = this.organizationDetails?.find( person => person.type === OutputProjectPartnerAddress.TypeEnum.Organization)
     this.partnerAddressForm.controls.partnerCountry.setValue(partnerMainAddress?.country);
     this.partnerAddressForm.controls.partnerRegion2.setValue(partnerMainAddress?.nutsRegion2);
     this.partnerAddressForm.controls.partnerRegion3.setValue(partnerMainAddress?.nutsRegion3);
@@ -194,7 +194,7 @@ export class ProjectApplicationFormPartnerAddressComponent extends ViewEditForm 
   }
 
   private initPartnerOrganizationDepartmentAddressFields(): void {
-    const partnerMainAddress = this.organizationDetails?.find( person => person.type === OutputProjectPartnerOrganizationDetails.TypeEnum.Department)
+    const partnerMainAddress = this.organizationDetails?.find( person => person.type === OutputProjectPartnerAddress.TypeEnum.Department)
     this.partnerAddressForm.controls.partnerDepartmentCountry.setValue(partnerMainAddress?.country);
     this.partnerAddressForm.controls.partnerDepartmentRegion2.setValue(partnerMainAddress?.nutsRegion2);
     this.partnerAddressForm.controls.partnerDepartmentRegion3.setValue(partnerMainAddress?.nutsRegion3);

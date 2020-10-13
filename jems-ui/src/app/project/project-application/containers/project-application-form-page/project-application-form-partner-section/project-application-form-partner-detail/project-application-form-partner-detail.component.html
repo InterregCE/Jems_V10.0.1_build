@@ -23,8 +23,8 @@
                     [showHomePage]="true"
                     [success$]="partnerOrganizationDetailsSaveSuccess$"
                     [error$]="partnerOrganizationDetailsSaveError$"
-                    [organizationDetails]="details.partner?.organization?.organizationDetails"
-                    [editable]="details.editable && details.partner?.organization?.id"
+                    [partner]="details.partner"
+                    [editable]="details.editable"
                     (update)="savePartnerOrganizationDetails$.next($event)">
             </app-project-application-form-region-selection>
         </mat-tab>

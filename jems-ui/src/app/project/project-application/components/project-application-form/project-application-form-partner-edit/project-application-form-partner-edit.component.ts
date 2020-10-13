@@ -14,7 +14,6 @@ import {
   InputProjectPartnerUpdate,
   OutputProjectPartner,
   OutputProjectPartnerDetail,
-  InputProjectPartnerOrganization
 } from '@cat/api';
 import {FormState} from '@common/components/forms/form-state';
 import {filter, take, takeUntil, tap} from 'rxjs/operators';
@@ -104,12 +103,12 @@ export class ProjectApplicationFormPartnerEditComponent extends ViewEditForm imp
   }
 
   private checkOrganization(controls: any) {
-    const organization ={
-      id: this.partner?.organization?.id,
+    const organization = {
+      id: this.partner?.id,
       nameInOriginalLanguage: controls?.nameInOriginalLanguage.value,
       nameInEnglish: controls?.nameInEnglish.value,
       department:  controls?.department.value
-    } as InputProjectPartnerOrganization
+    }
     if (organization.nameInOriginalLanguage || organization.nameInEnglish || organization.department){
       return organization;
     }
@@ -118,22 +117,25 @@ export class ProjectApplicationFormPartnerEditComponent extends ViewEditForm imp
 
   onSubmit(controls: any, oldPartnerId?: number): void {
     const organization = this.checkOrganization(controls)
-    if (!controls.id?.value) {
+    if (!controls.id?.value)
       this.create.emit({
-        name: controls?.name.value,
+        abbreviation: controls?.name.value,
         role: controls?.role.value,
         oldLeadPartnerId: oldPartnerId as any,
-        organization
+        nameInOriginalLanguage: organization?.nameInOriginalLanguage,
+        nameInEnglish: organization?.nameInEnglish,
+        department: organization?.department,
       });
-      return;
-    }
-    this.update.emit({
-      id: controls?.id.value,
-      name: controls?.name.value,
-      role: controls?.role.value,
-      oldLeadPartnerId: oldPartnerId as any,
-      organization
-    })
+    else
+      this.update.emit({
+        id: controls?.id.value,
+        abbreviation: controls?.name.value,
+        role: controls?.role.value,
+        oldLeadPartnerId: oldPartnerId as any,
+        nameInOriginalLanguage: organization?.nameInOriginalLanguage,
+        nameInEnglish: organization?.nameInEnglish,
+        department: organization?.department,
+      });
   }
 
   onCancel(): void {
@@ -156,11 +158,11 @@ export class ProjectApplicationFormPartnerEditComponent extends ViewEditForm imp
   private initFields(){
     this.controls?.id.setValue(this.partner?.id);
     this.controls?.role.setValue(this.partner?.role);
-    this.controls?.name.setValue(this.partner?.name);
+    this.controls?.name.setValue(this.partner?.abbreviation);
     this.sideNavService.setAlertStatus(true);
-    this.controls?.nameInOriginalLanguage.setValue(this.partner?.organization?.nameInOriginalLanguage);
-    this.controls?.nameInEnglish.setValue(this.partner?.organization?.nameInEnglish);
-    this.controls?.department.setValue(this.partner?.organization?.department);
+    this.controls?.nameInOriginalLanguage.setValue(this.partner?.nameInOriginalLanguage);
+    this.controls?.nameInEnglish.setValue(this.partner?.nameInEnglish);
+    this.controls?.department.setValue(this.partner?.department);
   }
 
   private handleLeadAlreadyExisting(controls: any, error: I18nValidationError): void {

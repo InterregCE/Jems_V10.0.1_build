@@ -1,14 +1,13 @@
 package io.cloudflight.jems.server.project.service.partner.budget
 
 import io.cloudflight.jems.api.call.dto.CallStatus
-import io.cloudflight.jems.api.project.dto.ProjectPartnerRole
+import io.cloudflight.jems.api.project.dto.partner.ProjectPartnerRole
 import io.cloudflight.jems.api.project.dto.partner.budget.InputBudget
 import io.cloudflight.jems.api.project.dto.status.ProjectApplicationStatus
 import io.cloudflight.jems.server.call.entity.Call
 import io.cloudflight.jems.server.exception.I18nValidationException
-import io.cloudflight.jems.server.exception.ResourceNotFoundException
 import io.cloudflight.jems.server.project.entity.Project
-import io.cloudflight.jems.server.project.entity.ProjectPartner
+import io.cloudflight.jems.server.project.entity.partner.ProjectPartner
 import io.cloudflight.jems.server.project.entity.ProjectStatus
 import io.cloudflight.jems.server.project.entity.partner.budget.Budget
 import io.cloudflight.jems.server.project.entity.partner.budget.CommonBudget
@@ -17,7 +16,7 @@ import io.cloudflight.jems.server.project.entity.partner.budget.ProjectPartnerBu
 import io.cloudflight.jems.server.project.entity.partner.budget.ProjectPartnerBudgetInfrastructure
 import io.cloudflight.jems.server.project.entity.partner.budget.ProjectPartnerBudgetStaffCost
 import io.cloudflight.jems.server.project.entity.partner.budget.ProjectPartnerBudgetTravel
-import io.cloudflight.jems.server.project.repository.ProjectPartnerRepository
+import io.cloudflight.jems.server.project.repository.partner.ProjectPartnerRepository
 import io.cloudflight.jems.server.project.repository.partner.budget.ProjectPartnerBudgetCommonRepository
 import io.cloudflight.jems.server.project.repository.partner.budget.ProjectPartnerBudgetEquipmentRepository
 import io.cloudflight.jems.server.project.repository.partner.budget.ProjectPartnerBudgetExternalRepository
@@ -33,8 +32,6 @@ import io.mockk.slot
 import io.mockk.verify
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeAll
-import org.junit.jupiter.api.BeforeEach
-import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.TestInstance
 import org.junit.jupiter.api.assertThrows
 import org.junit.jupiter.params.ParameterizedTest
@@ -85,7 +82,7 @@ internal class ProjectPartnerBudgetServiceTest {
         private val projectPartner = ProjectPartner(
             id = 1,
             project = project,
-            name = "partner",
+            abbreviation = "partner",
             role = ProjectPartnerRole.LEAD_PARTNER)
 
         private fun staffCost(id: Long, numberOfUnits: Double, pricePerUnit: Double): ProjectPartnerBudgetStaffCost {

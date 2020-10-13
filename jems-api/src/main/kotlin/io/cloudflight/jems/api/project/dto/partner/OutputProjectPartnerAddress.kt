@@ -1,7 +1,7 @@
-package io.cloudflight.jems.api.project.dto
+package io.cloudflight.jems.api.project.dto.partner
 
-data class OutputProjectPartnerOrganizationDetails(
-    val type: OrganizationDetailType,
+data class OutputProjectPartnerAddress(
+    val type: ProjectPartnerAddressType,
     val country: String?,
     val nutsRegion2: String?,
     val nutsRegion3: String?,
@@ -11,4 +11,3 @@ data class OutputProjectPartnerOrganizationDetails(
     val city: String?,
     val homepage: String?
 )
-

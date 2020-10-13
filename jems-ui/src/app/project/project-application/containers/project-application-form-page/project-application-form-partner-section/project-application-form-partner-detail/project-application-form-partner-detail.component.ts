@@ -6,10 +6,10 @@ import {catchError, flatMap, map, switchMap, tap} from 'rxjs/operators';
 import {Log} from '../../../../../../common/utils/log';
 import {ActivatedRoute, Router} from '@angular/router';
 import {
+  InputProjectPartnerAddress,
   InputProjectPartnerContact,
   InputProjectPartnerContribution,
   InputProjectPartnerCreate,
-  InputProjectPartnerOrganizationDetails,
   InputProjectPartnerUpdate,
   OutputProjectStatus,
   ProjectPartnerService
@@ -49,7 +49,7 @@ export class ProjectApplicationFormPartnerDetailComponent extends BaseComponent 
 
   partnerOrganizationDetailsSaveSuccess$ = new Subject<boolean>();
   partnerOrganizationDetailsSaveError$ = new Subject<I18nValidationError | null>();
-  savePartnerOrganizationDetails$ = new Subject<InputProjectPartnerOrganizationDetails[]>();
+  savePartnerOrganizationDetails$ = new Subject<InputProjectPartnerAddress[]>();
 
   private partnerById$ = this.partnerId
     ? this.partnerService.getProjectPartnerById(this.partnerId, this.projectId)
@@ -105,7 +105,7 @@ export class ProjectApplicationFormPartnerDetailComponent extends BaseComponent 
   private updatedPartnerOrganizationDetails$ = this.savePartnerOrganizationDetails$
     .pipe(
       flatMap(partnerOrganizationDetailsUpdate =>
-        this.partnerService.updateProjectPartnerOrganizationDetails(this.partnerId, this.projectId, partnerOrganizationDetailsUpdate)
+        this.partnerService.updateProjectPartnerAddress(this.partnerId, this.projectId, partnerOrganizationDetailsUpdate)
       ),
       tap(() => this.partnerOrganizationDetailsSaveError$.next(null)),
       tap(() => this.partnerOrganizationDetailsSaveSuccess$.next(true)),

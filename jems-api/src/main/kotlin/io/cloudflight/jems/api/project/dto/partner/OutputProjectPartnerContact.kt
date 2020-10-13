@@ -1,7 +1,7 @@
-package io.cloudflight.jems.api.project.dto
+package io.cloudflight.jems.api.project.dto.partner
 
 data class OutputProjectPartnerContact (
-    val type: PartnerContactPersonType,
+    val type: ProjectPartnerContactType,
     val title: String?,
     val firstName: String?,
     val lastName: String?,
