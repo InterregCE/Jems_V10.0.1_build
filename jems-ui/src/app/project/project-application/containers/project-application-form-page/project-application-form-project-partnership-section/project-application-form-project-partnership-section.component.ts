@@ -7,6 +7,7 @@ import {Log} from '../../../../../common/utils/log';
 import {HttpErrorResponse} from '@angular/common/http';
 import {InputProjectPartnership, ProjectDescriptionService} from '@cat/api';
 import {Permission} from 'src/app/security/permissions/permission';
+import {ProjectApplicationFormStore} from '../services/project-application-form-store.service';
 
 @Component({
   selector: 'app-project-application-form-project-partnership-section',
@@ -27,14 +28,15 @@ export class ProjectApplicationFormProjectPartnershipSectionComponent extends Ba
   updateProjectDescription$ = new Subject<InputProjectPartnership>();
   projectDescriptionDetails$: Observable<any>;
 
-  constructor(private projectDescriptionService: ProjectDescriptionService) {
+  constructor(private projectDescriptionService: ProjectDescriptionService,
+              private projectApplicationFormStore: ProjectApplicationFormStore) {
     super();
   }
 
   ngOnInit(): void {
-    const savedDescription$ = this.projectDescriptionService.getProjectDescription(this.projectId)
+    const savedDescription$ = this.projectApplicationFormStore.getProjectDescription()
       .pipe(
-        map(project => {return {partnership: project.projectPartnership} as InputProjectPartnership})
+        map(project => ({partnership: project.projectPartnership}))
       )
 
     const updatedProjectDescription$ = this.updateProjectDescription$

@@ -7,6 +7,7 @@ import {Log} from '../../../../../common/utils/log';
 import {HttpErrorResponse} from '@angular/common/http';
 import {Permission} from 'src/app/security/permissions/permission';
 import {InputProjectRelevance, ProjectDescriptionService, OutputCall} from '@cat/api';
+import {ProjectApplicationFormStore} from '../services/project-application-form-store.service';
 
 @Component({
   selector: 'app-project-application-form-project-relevance-and-context-section',
@@ -22,7 +23,7 @@ export class ProjectApplicationFormProjectRelevanceAndContextSectionComponent ex
   @Input()
   editable: boolean;
   @Input()
-  strategies:OutputCall.StrategiesEnum[];
+  strategies: OutputCall.StrategiesEnum[];
 
   saveError$ = new Subject<I18nValidationError | null>();
   saveSuccess$ = new Subject<boolean>();
@@ -30,12 +31,13 @@ export class ProjectApplicationFormProjectRelevanceAndContextSectionComponent ex
   projectDescriptionDetails$: Observable<any>;
   deleteEntriesFromTables$ = new Subject<InputProjectRelevance>();
 
-  constructor(private projectDescriptionService: ProjectDescriptionService) {
+  constructor(private projectDescriptionService: ProjectDescriptionService,
+              private projectApplicationFormStore: ProjectApplicationFormStore) {
     super();
   }
 
   ngOnInit(): void {
-    const savedDescription$ = this.projectDescriptionService.getProjectDescription(this.projectId)
+    const savedDescription$ = this.projectApplicationFormStore.getProjectDescription()
       .pipe(
         map(project => project.projectRelevance)
       )
