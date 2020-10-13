@@ -106,7 +106,7 @@ export class ProjectApplicationPartnerBudgetPageComponent implements OnInit {
       update$ = this.projectPartnerBudgetService.updateBudgetStaffCost(this.partnerId, this.projectId, entries);
     if (type === PartnerBudgetTableType.TRAVEL)
       update$ = this.projectPartnerBudgetService.updateBudgetTravel(this.partnerId, this.projectId, entries);
-    if (type === PartnerBudgetTableType.TRAVEL)
+    if (type === PartnerBudgetTableType.EXTERNAL)
       update$ = this.projectPartnerBudgetService.updateBudgetExternal(this.partnerId, this.projectId, entries);
     if (type === PartnerBudgetTableType.EQUIPMENT)
       update$ = this.projectPartnerBudgetService.updateBudgetEquipment(this.partnerId, this.projectId, entries);

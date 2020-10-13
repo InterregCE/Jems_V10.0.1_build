@@ -6,6 +6,7 @@ import {ProjectModule} from '../../../../../project.module';
 import {HttpTestingController} from '@angular/common/http/testing';
 import {ActivatedRoute} from '@angular/router';
 import {PartnerBudgetTable} from '../../../../model/partner-budget-table';
+import {PartnerBudgetTableType} from '../../../../model/partner-budget-table-type';
 
 describe('ProjectApplicationPartnerBudgetPageComponent', () => {
   let component: ProjectApplicationPartnerBudgetPageComponent;
@@ -67,11 +68,11 @@ describe('ProjectApplicationPartnerBudgetPageComponent', () => {
     });
 
     component.saveBudgets$.next({
-      staff: new PartnerBudgetTable([]),
-      travel: new PartnerBudgetTable([]),
-      external: new PartnerBudgetTable([]),
-      equipment: new PartnerBudgetTable([]),
-      infrastructure: new PartnerBudgetTable([])
+      staff: new PartnerBudgetTable(PartnerBudgetTableType.STAFF, []),
+      travel: new PartnerBudgetTable(PartnerBudgetTableType.TRAVEL, []),
+      external: new PartnerBudgetTable(PartnerBudgetTableType.EXTERNAL, []),
+      equipment: new PartnerBudgetTable(PartnerBudgetTableType.EQUIPMENT, []),
+      infrastructure: new PartnerBudgetTable(PartnerBudgetTableType.INFRASTRUCTURE, [])
     });
     tick();
 

@@ -6,7 +6,7 @@ import {Log} from '../../../../common/utils/log';
 import {PermissionService} from '../../../../security/permissions/permission.service';
 import {Permission} from '../../../../security/permissions/permission';
 
-@Injectable()
+@Injectable({providedIn: 'root'})
 export class RolePageService {
 
   private userRoles$ = this.permissionService.permissionsChanged()

@@ -19,7 +19,7 @@ import {PartnerBudgetTable} from '../../../../model/partner-budget-table';
 import {Numbers} from '../../../../../../common/utils/numbers';
 import {BaseComponent} from '@common/components/base-component';
 import {takeUntil, tap} from 'rxjs/operators';
-import {PartnerBudgetTableType} from "../../../../model/partner-budget-table-type";
+import {PartnerBudgetTableType} from '../../../../model/partner-budget-table-type';
 
 @Component({
   selector: 'app-budget-table',
