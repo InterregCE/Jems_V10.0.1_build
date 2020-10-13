@@ -20,6 +20,8 @@ import {PartnerBudgetTable} from '../../../model/partner-budget-table';
 })
 export class ProjectApplicationFormPartnerBudgetComponent extends ViewEditForm {
   @Input()
+  editable: boolean;
+  @Input()
   budgets: { [key: string]: PartnerBudgetTable };
 
   @Output()

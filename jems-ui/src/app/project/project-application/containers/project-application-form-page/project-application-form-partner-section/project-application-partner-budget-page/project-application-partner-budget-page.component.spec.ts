@@ -24,7 +24,7 @@ describe('ProjectApplicationPartnerBudgetPageComponent', () => {
         {
           provide: ActivatedRoute,
           useValue: {
-            snapshot: {params: {projectId: 1, partnerId: 2}}
+            snapshot: {params: {projectId: 1}}
           }
         }
       ]
@@ -36,6 +36,7 @@ describe('ProjectApplicationPartnerBudgetPageComponent', () => {
   beforeEach(() => {
     fixture = TestBed.createComponent(ProjectApplicationPartnerBudgetPageComponent);
     component = fixture.componentInstance;
+    component.partnerId = 2;
     fixture.detectChanges();
   });
 

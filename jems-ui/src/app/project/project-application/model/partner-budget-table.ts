@@ -1,12 +1,15 @@
 import {PartnerBudgetTableEntry} from './partner-budget-table-entry';
 import {InputBudget} from '@cat/api';
 import {Numbers} from '../../../common/utils/numbers';
+import {PartnerBudgetTableType} from './partner-budget-table-type';
 
 export class PartnerBudgetTable {
+  type: PartnerBudgetTableType;
   entries: PartnerBudgetTableEntry[] = [];
   total?: number;
 
-  constructor(rawEntries: InputBudget[]) {
+  constructor(type: PartnerBudgetTableType, rawEntries: InputBudget[]) {
+    this.type = type;
     this.entries = rawEntries.map(entry => new PartnerBudgetTableEntry(entry));
     this.computeTotal();
   }

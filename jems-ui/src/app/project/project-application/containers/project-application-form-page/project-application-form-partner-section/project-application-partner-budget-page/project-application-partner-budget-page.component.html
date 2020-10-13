@@ -1,8 +1,8 @@
 <app-project-application-form-partner-budget
-        *ngIf="budgets$ | async as budgets"
         [success$]="saveSuccess$"
         [error$]="saveError$"
-        [budgets]="budgets"
+        [editable]="editable && !!partnerId"
+        [budgets]="budgets$ | async"
         (save)="saveBudgets$.next($event)"
         (cancelEdit)="cancelEdit$.next()">
 </app-project-application-form-partner-budget>
