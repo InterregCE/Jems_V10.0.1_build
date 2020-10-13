@@ -1,8 +1,9 @@
-import { TestBed } from '@angular/core/testing';
-import { LanguageService } from './language.service';
+import {TestBed} from '@angular/core/testing';
+import {LanguageService} from './language.service';
 import {TestModule} from '../test-module';
 import {HttpTestingController} from '@angular/common/http/testing';
 import {TranslateService} from '@ngx-translate/core';
+import {RouterTestingModule} from '@angular/router/testing';
 
 describe('LanguageService', () => {
   let httpTestingController: HttpTestingController;
@@ -11,7 +12,11 @@ describe('LanguageService', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      imports: [TestModule],
+      imports: [
+        TestModule,
+        RouterTestingModule.withRoutes(
+          [{path: 'app/project/detail/1', component: LanguageService}])
+      ],
     });
     httpTestingController = TestBed.inject(HttpTestingController);
     service = TestBed.inject(LanguageService);

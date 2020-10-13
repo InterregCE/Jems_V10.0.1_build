@@ -4,6 +4,7 @@ import {ProjectApplicationFormProjectRelevanceAndContextSectionComponent} from '
 import {HttpTestingController} from '@angular/common/http/testing';
 import {TestModule} from '../../../../../common/test-module';
 import {ProjectModule} from '../../../../project.module';
+import {RouterTestingModule} from '@angular/router/testing';
 
 describe('ProjectApplicationFormProjectRelevanceAndContextSectionComponent', () => {
   let component: ProjectApplicationFormProjectRelevanceAndContextSectionComponent;
@@ -14,7 +15,9 @@ describe('ProjectApplicationFormProjectRelevanceAndContextSectionComponent', () 
     TestBed.configureTestingModule({
       imports: [
         TestModule,
-        ProjectModule
+        ProjectModule,
+        RouterTestingModule.withRoutes(
+          [{path: 'app/project/detail/1', component: ProjectApplicationFormProjectRelevanceAndContextSectionComponent}])
       ],
       declarations: [ProjectApplicationFormProjectRelevanceAndContextSectionComponent]
     })

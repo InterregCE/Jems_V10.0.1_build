@@ -5,6 +5,7 @@ import {WorkPackageDetailsComponent} from './work-package-details.component';
 import {Router} from '@angular/router';
 import {HttpTestingController} from '@angular/common/http/testing';
 import {OutputWorkPackage, InputWorkPackageCreate, InputWorkPackageUpdate} from '@cat/api';
+import {RouterTestingModule} from '@angular/router/testing';
 
 describe('WorkPackageDetailsComponent', () => {
   let component: WorkPackageDetailsComponent;
@@ -15,7 +16,9 @@ describe('WorkPackageDetailsComponent', () => {
     TestBed.configureTestingModule({
       imports: [
         TestModule,
-        ProjectModule
+        ProjectModule,
+        RouterTestingModule.withRoutes(
+          [{path: 'app/project/detail/1/applicationForm', component: WorkPackageDetailsComponent}])
       ],
       declarations: [WorkPackageDetailsComponent],
     })

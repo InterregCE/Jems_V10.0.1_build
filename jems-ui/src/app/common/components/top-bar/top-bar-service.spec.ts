@@ -4,13 +4,18 @@ import {TestModule} from '../../test-module';
 import {MenuItemConfiguration} from '@common/components/menu/model/menu-item.configuration';
 import {Permission} from '../../../security/permissions/permission';
 import {SecurityService} from '../../../security/security.service';
+import {RouterTestingModule} from '@angular/router/testing';
 
 describe('TopBarService', () => {
   let service: TopBarService;
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      imports: [TestModule],
+      imports: [
+        TestModule,
+        RouterTestingModule.withRoutes(
+          [{path: 'app/project/detail/1', component: TopBarService}])
+      ],
       providers: [
         {
           provide: TopBarService,
