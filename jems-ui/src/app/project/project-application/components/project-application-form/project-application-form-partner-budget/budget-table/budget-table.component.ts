@@ -19,6 +19,7 @@ import {PartnerBudgetTable} from '../../../../model/partner-budget-table';
 import {Numbers} from '../../../../../../common/utils/numbers';
 import {BaseComponent} from '@common/components/base-component';
 import {takeUntil, tap} from 'rxjs/operators';
+import {PartnerBudgetTableType} from "../../../../model/partner-budget-table-type";
 
 @Component({
   selector: 'app-budget-table',
@@ -115,7 +116,11 @@ export class BudgetTableComponent extends BaseComponent implements AfterViewInit
   private setColumnDefs(): void {
     const columnDefs: ColDef[] = [
       {
-        headerName: this.translateService.instant('project.partner.budget.table.description'),
+        headerName: this.translateService.instant(
+          this.table.type === PartnerBudgetTableType.STAFF
+            ? 'project.partner.budget.table.staff.description'
+            : 'project.partner.budget.table.description'
+        ),
         field: 'description',
         editable: params => BudgetTableComponent.editableRow(this.formState, params.node),
         sortable: true,
