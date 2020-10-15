@@ -4,6 +4,7 @@ import {ProjectApplicationFundingPageComponent} from './project-application-fund
 import {ProjectModule} from '../../../../project.module';
 import {TestModule} from '../../../../../common/test-module';
 import {Router} from '@angular/router';
+import {RouterTestingModule} from '@angular/router/testing';
 
 describe('ProjectApplicationFundingPageComponent', () => {
   let component: ProjectApplicationFundingPageComponent;
@@ -13,7 +14,9 @@ describe('ProjectApplicationFundingPageComponent', () => {
     TestBed.configureTestingModule({
       imports: [
         TestModule,
-        ProjectModule
+        ProjectModule,
+        RouterTestingModule.withRoutes(
+          [{path: 'app/project/detail/1', component: ProjectApplicationFundingPageComponent}])
       ],
       declarations: [ProjectApplicationFundingPageComponent],
     })

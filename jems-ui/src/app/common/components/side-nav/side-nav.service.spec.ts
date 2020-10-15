@@ -4,6 +4,7 @@ import {TestModule} from '../../test-module';
 import {SideNavService} from '@common/components/side-nav/side-nav.service';
 import {HeadlineRoute} from '@common/components/side-nav/headline-route';
 import {Subject} from 'rxjs';
+import {RouterTestingModule} from '@angular/router/testing';
 
 describe('SideNavService', () => {
   let httpTestingController: HttpTestingController;
@@ -11,7 +12,10 @@ describe('SideNavService', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      imports: [TestModule],
+      imports: [
+        TestModule,
+        RouterTestingModule.withRoutes([{path: 'app/project/detail/1', component: SideNavService}])
+      ],
     });
     httpTestingController = TestBed.inject(HttpTestingController);
     service = TestBed.inject(SideNavService);
