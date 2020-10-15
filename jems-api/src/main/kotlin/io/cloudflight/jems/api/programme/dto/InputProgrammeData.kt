@@ -1,9 +1,7 @@
 package io.cloudflight.jems.api.programme.dto
 
-import io.cloudflight.jems.api.programme.SystemLanguage
 import io.cloudflight.jems.api.validators.StartDateBeforeEndDate
 import java.time.LocalDate
-import java.util.stream.Collectors
 import javax.validation.constraints.Max
 import javax.validation.constraints.Min
 import javax.validation.constraints.Size
@@ -40,16 +38,6 @@ data class InputProgrammeData(
     @field:Size(max = 255, message = "programme.programmeAmendingDecisionNumber.size.too.long")
     val programmeAmendingDecisionNumber: String?,
 
-    val programmeAmendingDecisionDate: LocalDate?,
-
-    @field:Size(max = 127, message = "programme.languages.system.size.too.long")
-    val systemLanguageSelections: List<SystemLanguageSelection>
+    val programmeAmendingDecisionDate: LocalDate?
 )
-
-fun InputProgrammeData.getSystemLanguageSelectionsAsString(): String {
-    return systemLanguageSelections.stream()
-        .filter { it.selected }
-        .map { it.name.name }
-        .collect(Collectors.joining(","))
-}
 

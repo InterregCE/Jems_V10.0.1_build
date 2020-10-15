@@ -1,13 +1,10 @@
 package io.cloudflight.jems.server.programme.service
 
-import io.cloudflight.jems.api.programme.SystemLanguage
-import io.cloudflight.jems.api.user.dto.OutputUserRole
-import io.cloudflight.jems.api.user.dto.OutputUserWithRole
 import io.cloudflight.jems.api.programme.dto.InputProgrammeData
 import io.cloudflight.jems.api.programme.dto.OutputProgrammeData
-import io.cloudflight.jems.api.programme.dto.SystemLanguageSelection
 import io.cloudflight.jems.server.audit.entity.AuditAction
 import io.cloudflight.jems.server.audit.service.AuditCandidate
+import io.cloudflight.jems.server.audit.service.AuditService
 import io.cloudflight.jems.server.entity.ProgrammeData
 import io.cloudflight.jems.server.exception.ResourceNotFoundException
 import io.cloudflight.jems.server.nuts.entity.NutsCountry
@@ -17,7 +14,6 @@ import io.cloudflight.jems.server.nuts.entity.NutsRegion3
 import io.cloudflight.jems.server.nuts.repository.NutsRegion3Repository
 import io.cloudflight.jems.server.nuts.service.NutsIdentifier
 import io.cloudflight.jems.server.repository.ProgrammeDataRepository
-import io.cloudflight.jems.server.audit.service.AuditService
 import io.mockk.MockKAnnotations
 import io.mockk.every
 import io.mockk.impl.annotations.MockK
@@ -36,14 +32,6 @@ import java.util.Optional
  */
 internal class ProgrammeDataServiceTest {
 
-    private val user = OutputUserWithRole(
-        id = 1,
-        email = "admin@admin.dev",
-        name = "Name",
-        surname = "Surname",
-        userRole = OutputUserRole(id = 1, name = "ADMIN")
-    )
-
     private val existingProgrammeData =
         ProgrammeData(
             1,
@@ -56,11 +44,8 @@ internal class ProgrammeDataServiceTest {
             null,
             null,
             null,
-            null,
             null
         )
-    private val systemLanguages =
-        existingProgrammeData.getSystemLanguageSelectionList()
 
     @MockK
     lateinit var programmeDataRepository: ProgrammeDataRepository
@@ -84,7 +69,7 @@ internal class ProgrammeDataServiceTest {
     @Test
     fun get() {
         val programmeDataInput =
-            OutputProgrammeData("cci", "title", "version", 2020, 2024, null, null, null, null, null, null, systemLanguages, emptyMap<String, String>())
+            OutputProgrammeData("cci", "title", "version", 2020, 2024, null, null, null, null, null, null, emptyMap<String, String>())
         every { programmeDataRepository.findById(1) } returns Optional.of(existingProgrammeData)
 
         val programmeData = programmeDataService.get()
@@ -95,11 +80,11 @@ internal class ProgrammeDataServiceTest {
     @Test
     fun `update existing programme data`() {
         val programmeDataInput =
-            InputProgrammeData("cci-updated", "title", "version", 2020, 2024, null, null, null, null, null, null, systemLanguages)
+            InputProgrammeData("cci-updated", "title", "version", 2020, 2024, null, null, null, null, null, null)
         val programmeDataUpdated =
-            ProgrammeData(1, "cci-updated", "title", "version", 2020, 2024, null, null, null, null, null, null, null)
+            ProgrammeData(1, "cci-updated", "title", "version", 2020, 2024, null, null, null, null, null, null)
         val programmeDataExpectedOutput =
-            OutputProgrammeData("cci-updated", "title", "version", 2020, 2024, null, null, null, null, null, null, systemLanguages, emptyMap<String, String>())
+            OutputProgrammeData("cci-updated", "title", "version", 2020, 2024, null, null, null, null, null, null, emptyMap<String, String>())
 
         every { programmeDataRepository.save(any<ProgrammeData>()) } returns programmeDataUpdated
         every { programmeDataRepository.findById(1) } returns Optional.of(existingProgrammeData)
@@ -119,12 +104,11 @@ internal class ProgrammeDataServiceTest {
 
     @Test
     fun `update existing programme data with different data`() {
-        val updatedSystemLanguages = selectSystemLanguage(systemLanguages, SystemLanguage.DE)
         val programmeDataInput =
             InputProgrammeData("cci-updated", "title-updated", "version-updated", 2021, 2025,
                 LocalDate.of(2020, 1, 1), LocalDate.of(2021, 2, 2),
                 "d1",  LocalDate.of(2022, 3, 3),
-                "d2", LocalDate.of(2022, 4, 4), updatedSystemLanguages)
+                "d2", LocalDate.of(2022, 4, 4))
         val programmeDataUpdated = programmeDataInput.toEntity(emptySet())
         val programmeDataExpectedOutput = programmeDataUpdated.toOutputProgrammeData()
 
@@ -150,8 +134,7 @@ internal class ProgrammeDataServiceTest {
                 "commissionDecisionNumber changed from null to d1,\n" +
                 "commissionDecisionDate changed from null to 2022-03-03,\n" +
                 "programmeAmendingDecisionNumber changed from null to d2,\n" +
-                "programmeAmendingDecisionDate changed from null to 2022-04-04,\n" +
-                "languagesSystem changed from EN to DE,EN")
+                "programmeAmendingDecisionDate changed from null to 2022-04-04")
         }
     }
 
@@ -189,24 +172,4 @@ internal class ProgrammeDataServiceTest {
         )
     }
 
-    fun selectSystemLanguage(systemLanguageSelections: List<SystemLanguageSelection>,
-                             systemLanguage: SystemLanguage): List<SystemLanguageSelection> {
-        // success if already selected
-        if (systemLanguageSelections.any { it.name == systemLanguage && it.selected })
-            return systemLanguageSelections
-
-        // otherwise add
-        val updatedSystemLanguageSelections: ArrayList<SystemLanguageSelection> = ArrayList()
-        SystemLanguage.values().forEach {
-            val selected = if (it.name == systemLanguage.name) { true } else { isSelected(systemLanguageSelections, it.name) }
-            updatedSystemLanguageSelections.add(
-                SystemLanguageSelection(it, it.translationKey, selected))
-        }
-        return updatedSystemLanguageSelections
-    }
-
-    private fun isSelected(systemLanguageSelections: List<SystemLanguageSelection>,
-                   systemLanguage: String): Boolean {
-        return systemLanguageSelections.any { it.name.name == systemLanguage && it.selected }
-    }
 }

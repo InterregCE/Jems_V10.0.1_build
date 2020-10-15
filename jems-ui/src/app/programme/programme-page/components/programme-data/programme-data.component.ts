@@ -146,8 +146,7 @@ export class ProgrammeDataComponent extends ViewEditForm implements OnInit {
       commissionDecisionNumber: controls?.commissionDecisionNumber?.value,
       commissionDecisionDate: controls?.commissionDecisionDate?.value,
       programmeAmendingDecisionNumber: controls?.programmeAmendingDecisionNumber?.value,
-      programmeAmendingDecisionDate: controls?.programmeAmendingDecisionDate?.value,
-      systemLanguageSelections: this.programme.systemLanguageSelections
+      programmeAmendingDecisionDate: controls?.programmeAmendingDecisionDate?.value
     });
   }
 

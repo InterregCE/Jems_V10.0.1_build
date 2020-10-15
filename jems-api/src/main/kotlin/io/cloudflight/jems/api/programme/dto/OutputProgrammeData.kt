@@ -1,7 +1,6 @@
 package io.cloudflight.jems.api.programme.dto
 
 import java.time.LocalDate
-import java.util.stream.Collectors
 
 data class OutputProgrammeData(
 
@@ -16,7 +15,6 @@ data class OutputProgrammeData(
     val commissionDecisionDate: LocalDate?,
     val programmeAmendingDecisionNumber: String?,
     val programmeAmendingDecisionDate: LocalDate?,
-    val systemLanguageSelections: List<SystemLanguageSelection>,
     val programmeNuts: Any
 ) {
     fun getChange(newData: OutputProgrammeData): Map<String, Pair<Any?, Any?>> {
@@ -56,18 +54,8 @@ data class OutputProgrammeData(
             changes["programmeAmendingDecisionDate"] =
                 Pair(programmeAmendingDecisionDate, newData.programmeAmendingDecisionDate)
         }
-        if (getSystemLanguageSelectionsAsString() != newData.getSystemLanguageSelectionsAsString()) {
-            changes["languagesSystem"] =
-                Pair(getSystemLanguageSelectionsAsString(), newData.getSystemLanguageSelectionsAsString())
-        }
 
         return changes
     }
 
-    private fun getSystemLanguageSelectionsAsString(): String {
-        return systemLanguageSelections.stream()
-            .filter { it.selected }
-            .map { it.name.name }
-            .collect(Collectors.joining(","))
-    }
 }

@@ -1,6 +1,5 @@
 package io.cloudflight.jems.server.security.service.authorization
 
-import io.cloudflight.jems.api.project.dto.OutputProject
 import io.cloudflight.jems.server.security.APPLICANT_USER
 import io.cloudflight.jems.server.security.service.SecurityService
 
