@@ -88,14 +88,14 @@ export class ProjectApplicationFormPartnerListComponent implements OnInit {
           sortProperty: 'role',
         },
         {
-          displayedColumn: ' ',
-          columnType: ColumnType.CustomComponent,
-          customCellTemplate: this.deletionCell
-        },
-        {
           displayedColumn: 'project.application.form.partner.list.budget',
           columnType: ColumnType.CustomComponent,
           customCellTemplate: this.budgetCell
+        },
+        {
+          displayedColumn: ' ',
+          columnType: ColumnType.CustomComponent,
+          customCellTemplate: this.deletionCell
         }
       ]
     });
