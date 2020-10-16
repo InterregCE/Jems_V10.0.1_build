@@ -1,5 +1,4 @@
-import {ChangeDetectionStrategy, Component, Input} from '@angular/core';
-import {SelectionModel} from '@angular/cdk/collections';
+import {ChangeDetectionStrategy, Component, EventEmitter, Input, Output} from '@angular/core';
 import {OutputProgrammeFund} from '@cat/api';
 
 @Component({
@@ -13,6 +12,7 @@ export class CallFundsComponent {
   disabled: boolean;
   @Input()
   funds: OutputProgrammeFund[];
-  @Input()
-  selection: SelectionModel<OutputProgrammeFund>;
+
+  @Output()
+  selectionChanged = new EventEmitter<void>();
 }

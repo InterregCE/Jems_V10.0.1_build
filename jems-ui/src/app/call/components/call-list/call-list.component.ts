@@ -31,8 +31,6 @@ export class CallListComponent extends BaseComponent implements OnInit {
   Permission = Permission;
 
   @Input()
-  publishedCall: string;
-  @Input()
   callPage: PageOutputCallList;
   @Input()
   pageIndex: number;

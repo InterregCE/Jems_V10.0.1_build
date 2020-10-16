@@ -14,6 +14,9 @@ import {MatTabsModule} from '@angular/material/tabs';
 import {MatDialogModule} from '@angular/material/dialog';
 import {RouterModule} from '@angular/router';
 import {ProjectApplicationListComponent} from '../project/project-application/components/project-application-list/project-application-list.component';
+import {EditFormComponent} from '@common/components/section/edit-form/edit-form.component';
+import {MatCardModule} from '@angular/material/card';
+import {TemplateCardComponent} from '@common/components/section/template-card/template-card.component';
 
 const modules = [
   CommonModule,
@@ -35,6 +38,8 @@ const declarations = [
   ProjectApplicationListComponent,
   TableComponent,
   PaginatorComponent,
+  EditFormComponent,
+  TemplateCardComponent
 ];
 
 @NgModule({
@@ -43,6 +48,7 @@ const declarations = [
   ],
   imports: [
     modules,
+    MatCardModule,
   ],
   exports: [
     modules,

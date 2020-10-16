@@ -1,0 +1,50 @@
+<mat-card class="edit-form-wrapper"
+          [class.active-card]="editActive$ | async">
+
+    <mat-card-content class="content">
+        <ng-content></ng-content>
+    </mat-card-content>
+
+    <app-template-card
+            [componentName]="componentName"
+            [cardTemplateRef]="footerTemplateRef">
+    </app-template-card>
+</mat-card>
+
+
+<ng-template #saveDiscard>
+    <mat-card-footer class="footer">
+        <button mat-stroked-button class="action-button discard" type="button"
+                (click)="onDiscard()">
+            {{'common.cancel.label' | translate}}
+        </button>
+        <button [disabled]="(formValid$ | async) === false"
+                mat-raised-button class="action-button" color="primary" type="button"
+                (click)="onSave()">
+            {{(createNew ? 'common.create.label' : 'common.save.label') | translate}}
+        </button>
+    </mat-card-footer>
+</ng-template>
+
+<ng-template #saveSuccess let-message>
+    <mat-card-footer class="footer">
+        <div class="message-wrapper">
+            <div class="message alert-success">
+                <i class="far fa-check-circle"></i>
+                <span *ngIf="message.i18nKey">{{message.i18nKey | translate : message.i18nArguments}}</span>
+                <span *ngIf="!message.i18nKey">{{message | translate}}</span>
+            </div>
+        </div>
+    </mat-card-footer>
+</ng-template>
+
+<ng-template #saveError let-error>
+    <mat-card-footer class="footer">
+        <div class="message-wrapper">
+            <div class="message alert-danger">
+                <i class="fas fa-exclamation-triangle"></i>{{error?.i18nKey | translate}}
+            </div>
+        </div>
+        <ng-container *ngTemplateOutlet="saveDiscard"></ng-container>
+    </mat-card-footer>
+</ng-template>

@@ -22,6 +22,8 @@ import {PermissionService} from '../../../security/permissions/permission.servic
 import {Tables} from '../../../common/utils/tables';
 import {CallPriorityCheckbox} from '../model/call-priority-checkbox';
 import {SideNavService} from '@common/components/side-nav/side-nav.service';
+import {CallPageComponent} from '../call-page/call-page.component';
+import {EventBusService} from '../../../common/services/event-bus/event-bus.service';
 
 @Component({
   selector: 'app-call-configuration',
@@ -56,12 +58,15 @@ export class CallConfigurationComponent extends BaseComponent {
   private publishedCall$ = this.publishCall$
     .pipe(
       flatMap(callUpdate => this.callService.publishCall(callUpdate)),
-      tap(() => this.callStore.callSaveError$.next(null)),
       tap(() => this.redirectToCallOverview()),
-      tap(published => this.callStore.callPublished(published)),
+      tap(published => this.eventBusService.newSuccessMessage(
+        CallPageComponent.name,
+        {i18nKey: 'call.detail.publish.success', i18nArguments: {name: published.name}}
+        )
+      ),
       tap(saved => Log.info('Published call:', this, saved)),
       catchError((error: HttpErrorResponse) => {
-        this.callStore.callSaveError$.next(error.error);
+        this.eventBusService.newErrorMessage(CallPageComponent.name, error.error);
         throw error;
       })
     );
@@ -96,6 +101,7 @@ export class CallConfigurationComponent extends BaseComponent {
               private activatedRoute: ActivatedRoute,
               private permissionService: PermissionService,
               private sideNavService: SideNavService,
+              private eventBusService: EventBusService,
               private programmePriorityService: ProgrammePriorityService,
               private programmeStrategyService: ProgrammeStrategyService,
               private programmeFundService: ProgrammeFundService,) {
@@ -103,23 +109,23 @@ export class CallConfigurationComponent extends BaseComponent {
     this.callStore.init(this.callId);
     this.sideNavService.setHeadlines(this.destroyed$, [
       {
-        headline: { i18nKey: 'call.detail.title'},
+        headline: {i18nKey: 'call.detail.title'},
         scrollToTop: true,
         bullets: [
           {
-            headline: { i18nKey: 'call.section.basic.data'},
+            headline: {i18nKey: 'call.section.basic.data'},
             scrollRoute: 'callTitle'
           },
           {
-            headline: { i18nKey: 'call.programme.priorities.title'},
+            headline: {i18nKey: 'call.programme.priorities.title'},
             scrollRoute: 'callPriorities'
           },
           {
-            headline: { i18nKey: 'call.strategy.title'},
+            headline: {i18nKey: 'call.strategy.title'},
             scrollRoute: 'callStrategies'
           },
           {
-            headline: { i18nKey: 'call.funds.title'},
+            headline: {i18nKey: 'call.funds.title'},
             scrollRoute: 'callFunds'
           }
         ]
@@ -132,11 +138,15 @@ export class CallConfigurationComponent extends BaseComponent {
       .pipe(
         take(1),
         takeUntil(this.destroyed$),
-        tap(() => this.callStore.callSaveError$.next(null)),
         tap(() => this.redirectToCallOverview()),
         tap(saved => Log.info('Created call:', this, saved)),
+        tap(created => this.eventBusService.newSuccessMessage(
+          CallPageComponent.name,
+          {i18nKey: 'call.detail.created.success', i18nArguments: {name: created.name}}
+          )
+        ),
         catchError((error: HttpErrorResponse) => {
-          this.callStore.callSaveError$.next(error.error);
+          this.eventBusService.newErrorMessage(CallPageComponent.name, error.error);
           throw error;
         })
       )
@@ -152,7 +162,7 @@ export class CallConfigurationComponent extends BaseComponent {
   }
 
   redirectToCallOverview(): void {
-    this.sideNavService.navigate({headline: { i18nKey: 'calls'}, route: '/app/call'})
+    this.sideNavService.navigate({headline: {i18nKey: 'calls'}, route: '/app/call'})
   }
 
   private getStrategies(allActiveStrategies: OutputProgrammeStrategy[], call: OutputCall): OutputProgrammeStrategy[] {
@@ -185,7 +195,12 @@ export class CallConfigurationComponent extends BaseComponent {
     const savedFunds = allFunds
       .filter(fund => fund.selected)
       .map(element =>
-        ({id: element.id, abbreviation: element.abbreviation, description: element.description, selected: false} as OutputProgrammeFund)
+        ({
+          id: element.id,
+          abbreviation: element.abbreviation,
+          description: element.description,
+          selected: false
+        } as OutputProgrammeFund)
       );
     if (!call || !(call as OutputCall).funds?.length) {
       return savedFunds;

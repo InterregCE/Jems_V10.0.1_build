@@ -1,5 +1,7 @@
+import {I18nLabel} from '../../i18n/i18n-label';
+
 export class HeadlineRoute {
-  headline: {i18nKey: string, i18nArguments?: any};
+  headline: I18nLabel;
   route?: string;
   scrollRoute?: string;
   scrollToTop? = false;

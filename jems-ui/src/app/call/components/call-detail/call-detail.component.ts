@@ -1,31 +1,23 @@
-import {
-  ChangeDetectionStrategy,
-  ChangeDetectorRef,
-  Component,
-  EventEmitter,
-  Input,
-  OnInit,
-  Output
-} from '@angular/core';
+import {ChangeDetectionStrategy, Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
 import {FormBuilder, FormGroup, Validators} from '@angular/forms';
-import {InputCallCreate, InputCallUpdate, OutputCall, OutputProgrammeStrategy, OutputProgrammeFund} from '@cat/api'
-import {ViewEditForm} from '@common/components/forms/view-edit-form';
-import {FormState} from '@common/components/forms/form-state';
+import {InputCallCreate, InputCallUpdate, OutputCall, OutputProgrammeFund, OutputProgrammeStrategy} from '@cat/api'
 import {Forms} from '../../../common/utils/forms';
 import {filter, take, takeUntil} from 'rxjs/operators';
 import {MatDialog} from '@angular/material/dialog';
 import {CallPriorityCheckbox} from '../../containers/model/call-priority-checkbox';
 import {Tools} from '../../../common/utils/tools';
-import {SelectionModel} from '@angular/cdk/collections';
+import {BaseComponent} from '@common/components/base-component';
+import {EventBusService} from '../../../common/services/event-bus/event-bus.service';
 
 @Component({
   selector: 'app-call-detail',
   templateUrl: './call-detail.component.html',
   styleUrls: ['./call-detail.component.scss'],
-  changeDetection: ChangeDetectionStrategy.OnPush
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class CallDetailComponent extends ViewEditForm implements OnInit {
+export class CallDetailComponent extends BaseComponent implements OnInit {
   tools = Tools;
+  CallDetailComponent = CallDetailComponent;
 
   @Input()
   call: OutputCall
@@ -67,8 +59,6 @@ export class CallDetailComponent extends ViewEditForm implements OnInit {
     min: 'call.lengthOfPeriod.invalid.period',
   };
   published = false;
-  selection = new SelectionModel<OutputProgrammeStrategy>(true, []);
-  selectionFunds = new SelectionModel<OutputProgrammeFund>(true, []);
 
   callForm = this.formBuilder.group({
     name: ['', Validators.compose([
@@ -84,14 +74,16 @@ export class CallDetailComponent extends ViewEditForm implements OnInit {
 
   constructor(private formBuilder: FormBuilder,
               private dialog: MatDialog,
-              protected changeDetectorRef: ChangeDetectorRef) {
-    super(changeDetectorRef)
+              private eventBusService: EventBusService) {
+    super();
   }
 
   ngOnInit(): void {
-    super.ngOnInit();
     this.published = this.call?.status === OutputCall.StatusEnum.PUBLISHED;
-    this.changeFormState$.next(this.call?.id ? FormState.VIEW : FormState.EDIT);
+    if (this.published) {
+      this.getForm()?.disable();
+    }
+    this.resetForm();
   }
 
   getForm(): FormGroup | null {
@@ -122,7 +114,7 @@ export class CallDetailComponent extends ViewEditForm implements OnInit {
 
   onCancel(): void {
     if (this.call?.id) {
-      this.changeFormState$.next(FormState.VIEW);
+      this.resetForm();
     }
     this.cancel.emit();
   }
@@ -148,33 +140,27 @@ export class CallDetailComponent extends ViewEditForm implements OnInit {
       || this.buildUpdateEntityFunds().length === 0);
   }
 
-  private buildUpdateEntityStrategies():  OutputProgrammeStrategy.StrategyEnum[] {
+  private buildUpdateEntityStrategies(): OutputProgrammeStrategy.StrategyEnum[] {
     return this.strategies
-      .filter(strategy => this.selection.isSelected(strategy))
+      .filter(strategy => strategy.active)
       .map(strategy => strategy.strategy);
   }
 
-  private buildUpdateEntityFunds():  number[] {
+  private buildUpdateEntityFunds(): number[] {
     return this.funds
-      .filter(fund => this.selectionFunds.isSelected(fund))
+      .filter(fund => fund.selected)
       .map(fund => fund.id);
   }
 
-  protected enterViewMode(): void {
+  formChanged(): void {
+    this.eventBusService.setDirty(CallDetailComponent.name, true);
+  }
+
+  resetForm(): void {
     this.callForm.controls.name.setValue(this.call.name);
     this.callForm.controls.startDate.setValue(this.call.startDate);
     this.callForm.controls.endDate.setValue(this.call.endDate);
     this.callForm.controls.description.setValue(this.call.description);
     this.callForm.controls.lengthOfPeriod.setValue(this.call.lengthOfPeriod);
-    if (this.strategies) {
-      this.selection.select(...this.strategies.filter(element => element.active));
-      this.selection.deselect(...this.strategies.filter(element => !element.active));
-      this.changeDetectorRef.markForCheck();
-    }
-    if (this.funds) {
-      this.selectionFunds.select(...this.funds.filter(element => element.selected));
-      this.selectionFunds.deselect(...this.funds.filter(element => !element.selected));
-      this.changeDetectorRef.markForCheck();
-    }
   }
 }

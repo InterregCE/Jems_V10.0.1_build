@@ -1,4 +1,4 @@
-import {ChangeDetectionStrategy, Component, Input} from '@angular/core';
+import {ChangeDetectionStrategy, Component, EventEmitter, Input, Output} from '@angular/core';
 import {BaseComponent} from '@common/components/base-component';
 import {CallPriorityCheckbox} from '../../containers/model/call-priority-checkbox';
 
@@ -13,4 +13,7 @@ export class CallPriorityTreeComponent extends BaseComponent {
   priorityCheckboxes: CallPriorityCheckbox[];
   @Input()
   disabled: boolean;
+
+  @Output()
+  selectionChanged = new EventEmitter<void>();
 }
