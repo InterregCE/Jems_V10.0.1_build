@@ -90,7 +90,8 @@ class ProjectPartnerServiceImpl(
         val oldProjectPartner = projectPartnerRepo.findFirstByProjectIdAndId(projectId, projectPartner.id)
             .orElseThrow { ResourceNotFoundException("projectPartner") }
 
-        if (!oldProjectPartner.role.isLead && projectPartner.role!!.isLead)
+        val makingThisLead = !oldProjectPartner.role.isLead && projectPartner.role!!.isLead
+        if (makingThisLead)
             validateLeadPartnerChange(projectId, projectPartner.oldLeadPartnerId)
 
         val partnerUpdated = projectPartnerRepo.save(
@@ -103,7 +104,7 @@ class ProjectPartnerServiceImpl(
             )
         )
         // update sorting if leadPartner changed
-        if (projectPartner.oldLeadPartnerId != null)
+        if (projectPartner.oldLeadPartnerId != null || makingThisLead)
             updateSortByRole(projectId)
 
         return partnerUpdated.toOutputProjectPartnerDetail()

@@ -29,6 +29,7 @@ import io.cloudflight.jems.server.user.service.toOutputUserWithRole
 import io.mockk.MockKAnnotations
 import io.mockk.every
 import io.mockk.impl.annotations.MockK
+import io.mockk.slot
 import io.mockk.verify
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeEach
@@ -102,6 +103,11 @@ internal class ProjectPartnerServiceTest {
         nameInEnglish = "test",
         department = "test"
     )
+    private fun partner(id: Long, role: ProjectPartnerRole) = projectPartnerWithOrganization
+        .copy(
+            id = id,
+            role = role
+        )
 
     private val outputProjectPartner = projectPartner.toOutputProjectPartner()
     private val outputProjectPartnerDetail = projectPartner.toOutputProjectPartnerDetail()
@@ -174,11 +180,35 @@ internal class ProjectPartnerServiceTest {
         val projectPartnerUpdate = InputProjectPartnerUpdate(1, "updated", ProjectPartnerRole.PARTNER)
         val updatedProjectPartner = ProjectPartner(1, project, projectPartnerUpdate.abbreviation!!, projectPartnerUpdate.role!!)
         every { projectPartnerRepository.findFirstByProjectIdAndId(1, 1) } returns Optional.of(projectPartner)
-        every { projectRepository.findById(1) } returns Optional.of(project)
         every { projectPartnerRepository.save(updatedProjectPartner) } returns updatedProjectPartner
 
         assertThat(projectPartnerService.update(1, projectPartnerUpdate))
             .isEqualTo(updatedProjectPartner.toOutputProjectPartnerDetail())
+    }
+
+    @Test
+    fun `updateProjectPartner to lead when no other leads`() {
+        val projectPartnerUpdate = InputProjectPartnerUpdate(3, "updated", ProjectPartnerRole.LEAD_PARTNER)
+        val updatedProjectPartner = ProjectPartner(3, project, projectPartnerUpdate.abbreviation!!, projectPartnerUpdate.role!!)
+        // we are changing partner to Lead Partner
+        every { projectPartnerRepository.findFirstByProjectIdAndId(1, 3) } returns Optional.of(projectPartner.copy(id = 3, role = ProjectPartnerRole.PARTNER))
+        every { projectPartnerRepository.findFirstByProjectIdAndRole(1, ProjectPartnerRole.LEAD_PARTNER) } returns Optional.empty()
+        // to update role of Partner (id=3):
+        every { projectPartnerRepository.save(updatedProjectPartner) } returns updatedProjectPartner
+        // to update sort-numbers for both Partners:
+        val projectPartners = listOf(partner(3, ProjectPartnerRole.LEAD_PARTNER), partner(2, ProjectPartnerRole.PARTNER))
+        every { projectPartnerRepository.findAllByProjectId(1, any<Sort>()) } returns projectPartners
+        every { projectPartnerRepository.saveAll(any<Iterable<ProjectPartner>>()) } returnsArgument 0
+
+        projectPartnerService.update(1, projectPartnerUpdate)
+
+        val updatedPartners = slot<Iterable<ProjectPartner>>()
+        verify { projectPartnerRepository.saveAll(capture(updatedPartners)) }
+        assertThat(updatedPartners.captured)
+            .isEqualTo(listOf(
+                partner(3, ProjectPartnerRole.LEAD_PARTNER).copy(sortNumber = 1),
+                partner(2, ProjectPartnerRole.PARTNER).copy(sortNumber = 2)
+            ))
     }
 
     @Test
@@ -196,7 +226,6 @@ internal class ProjectPartnerServiceTest {
             contacts = contactPersonsEntity)
 
         every { projectPartnerRepository.findFirstByProjectIdAndId(1,1) } returns Optional.of(projectPartner)
-        every { projectRepository.findById(1) } returns Optional.of(project)
         every { projectPartnerRepository.save(updatedProjectPartner) } returns updatedProjectPartner
 
         assertThat(projectPartnerService.updatePartnerContacts(1,1, setOf(projectPartnerContactUpdate)))
@@ -229,7 +258,6 @@ internal class ProjectPartnerServiceTest {
             partnerContribution = projectPartnerContributionUpdate.toEntity(projectPartner))
 
         every { projectPartnerRepository.findFirstByProjectIdAndId(1,1) } returns Optional.of(projectPartner)
-        every { projectRepository.findById(1) } returns Optional.of(project)
         every { projectPartnerRepository.save(updatedProjectPartner) } returns updatedProjectPartner
 
         assertThat(projectPartnerService.updatePartnerContribution(1,1, projectPartnerContributionUpdate))
@@ -285,7 +313,6 @@ internal class ProjectPartnerServiceTest {
             department = projectPartnerWithOrganization.department
         )
         every { projectPartnerRepository.findFirstByProjectIdAndId(1, 1) } returns Optional.of(projectPartner)
-        every { projectRepository.findById(1) } returns Optional.of(project)
         every { projectPartnerRepository.save(updatedProjectPartner) } returns updatedProjectPartner
 
         assertThat(projectPartnerService.update(1, projectPartnerUpdate))
