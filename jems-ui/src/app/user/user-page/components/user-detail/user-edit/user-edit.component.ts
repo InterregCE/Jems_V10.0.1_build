@@ -20,8 +20,6 @@ export class UserEditComponent extends ViewEditForm {
   @Input()
   userRoles: OutputUserRole[];
   @Input()
-  userId?: number;
-  @Input()
   user: OutputUserWithRole;
   @Input()
   disabled = false;

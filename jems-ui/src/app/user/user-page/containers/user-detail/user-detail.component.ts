@@ -56,7 +56,7 @@ export class UserDetailComponent extends BaseComponent implements OnInit {
   }
 
   changePassword(password: InputPassword): void {
-    this.userService.changePassword(this.userId, password)
+    (this.userId ? this.userService.changePassword(this.userId, password) : this.userService.changeMyPassword(password))
       .pipe(
         take(1),
         takeUntil(this.destroyed$),

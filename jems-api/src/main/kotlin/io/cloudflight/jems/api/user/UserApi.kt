@@ -44,8 +44,12 @@ interface UserApi {
     @GetMapping("/{id}")
     fun getById(@PathVariable id: Long): OutputUserWithRole
 
-    @ApiOperation("Changes user password")
-    @PutMapping("/{userId}", consumes = [MediaType.APPLICATION_JSON_VALUE])
+    @ApiOperation("Changes password of any user (admin only)")
+    @PutMapping("/password/{userId}", consumes = [MediaType.APPLICATION_JSON_VALUE])
     fun changePassword(@PathVariable userId: Long, @Valid @RequestBody passwordData: InputPassword)
+
+    @ApiOperation("Changes my password")
+    @PutMapping("/mypassword", consumes = [MediaType.APPLICATION_JSON_VALUE])
+    fun changeMyPassword(@Valid @RequestBody passwordData: InputPassword)
 
 }

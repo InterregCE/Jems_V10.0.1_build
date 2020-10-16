@@ -4,7 +4,6 @@
             [success$]="userStore.userSaveSuccess$"
             [error$]="userStore.userSaveError$"
             [user]="details.user"
-            [userId]="details.user?.id"
             [userRoles]="details.roles"
             [disabled]="userEditDisabled"
             (submitUser)="userStore.saveUser$.next($event)"
@@ -13,7 +12,6 @@
     <app-user-password
             [success$]="passwordSaveSuccess$"
             [error$]="passwordSaveError$"
-            [userId]="details.user?.id"
             [ownUser]="details.currentUser.id === details.user.id"
             [disabled]="passwordEditDisabled"
             (submitPassword)="changePassword($event)"

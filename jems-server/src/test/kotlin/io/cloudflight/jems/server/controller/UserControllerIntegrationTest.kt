@@ -215,7 +215,7 @@ class UserControllerIntegrationTest {
     @WithUserDetails(value = ADMINISTRATOR_EMAIL)
     fun `change password short`() {
         mockMvc.perform(
-            put("/api/user/${userFactory.adminUser.id}")
+            put("/api/user/password/${userFactory.adminUser.id}")
                 .accept(MediaType.APPLICATION_JSON_VALUE)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .content(jsonMapper.writeValueAsString(InputPassword("short", null)))
@@ -231,7 +231,7 @@ class UserControllerIntegrationTest {
     @WithUserDetails(value = ADMINISTRATOR_EMAIL)
     fun `change password long`() {
         mockMvc.perform(
-            put("/api/user/${userFactory.adminUser.id}")
+            put("/api/user/password/${userFactory.adminUser.id}")
                 .accept(MediaType.APPLICATION_JSON_VALUE)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .content(jsonMapper.writeValueAsString(InputPassword("password_long_enough", null)))
