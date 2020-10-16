@@ -107,7 +107,7 @@ export class ProjectApplicationFormPartnerListComponent implements OnInit {
       'project.application.form.partner.table.action.delete.dialog.header',
       'project.application.form.partner.table.action.delete.dialog.message',
       {
-        name: partner.name,
+        name: partner.abbreviation,
         boldWarningMessage: 'project.application.form.partner.table.action.delete.dialog.warning'
       })
       .pipe(

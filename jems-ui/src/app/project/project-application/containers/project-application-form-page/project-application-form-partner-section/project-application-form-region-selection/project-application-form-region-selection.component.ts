@@ -11,7 +11,7 @@ import {
 import {NutsStoreService} from '../../../../../../common/services/nuts-store.service';
 import {Observable, of, Subject} from 'rxjs';
 import {I18nValidationError} from '@common/validation/i18n-validation-error';
-import {InputProjectPartnerOrganizationDetails, OutputProjectPartnerOrganizationDetails} from '@cat/api';
+import {InputProjectPartnerAddress, OutputProjectPartnerDetail} from '@cat/api';
 import {tap} from 'rxjs/operators';
 
 @Component({
@@ -23,7 +23,7 @@ import {tap} from 'rxjs/operators';
 export class ProjectApplicationFormRegionSelectionComponent implements OnInit, OnChanges{
 
   @Input()
-  organizationDetails: OutputProjectPartnerOrganizationDetails[];
+  partner: OutputProjectPartnerDetail;
   @Input()
   editable: boolean;
   @Input()
@@ -34,7 +34,7 @@ export class ProjectApplicationFormRegionSelectionComponent implements OnInit, O
   showHomePage = false;
 
   @Output()
-  update = new EventEmitter<InputProjectPartnerOrganizationDetails[]>();
+  update = new EventEmitter<InputProjectPartnerAddress[]>();
 
   nuts$ = of();
   nuts2$ = new Subject<any>();
@@ -51,7 +51,7 @@ export class ProjectApplicationFormRegionSelectionComponent implements OnInit, O
     this.nuts$ = this.nutsStore.getNuts()
         .pipe(
             tap(nuts => {
-                const organizationDetailsMainAddress = this.organizationDetails?.find(org => org.type === InputProjectPartnerOrganizationDetails.TypeEnum.Organization);
+                const organizationDetailsMainAddress = this.partner?.addresses?.find(org => org.type === InputProjectPartnerAddress.TypeEnum.Organization);
                 if (!organizationDetailsMainAddress?.country) {
                     this.nuts2$.next([])
                     this.nuts3$.next([])
@@ -77,7 +77,7 @@ export class ProjectApplicationFormRegionSelectionComponent implements OnInit, O
       this.nutsDepartment$ = this.nutsStore.getNuts()
           .pipe(
               tap(nuts => {
-                  const organizationDetailsMainAddress = this.organizationDetails?.find(org => org.type === InputProjectPartnerOrganizationDetails.TypeEnum.Department);
+                  const organizationDetailsMainAddress = this.partner?.addresses?.find(org => org.type === InputProjectPartnerAddress.TypeEnum.Department);
                   if (!organizationDetailsMainAddress?.country) {
                       this.nuts2Department$.next([])
                       this.nuts3Department$.next([])

@@ -1,5 +1,7 @@
 package io.cloudflight.jems.api.project.dto
 
+import io.cloudflight.jems.api.project.dto.partner.OutputProjectPartner
+
 
 data class OutputProjectAssociatedOrganization (
     val id: Long,

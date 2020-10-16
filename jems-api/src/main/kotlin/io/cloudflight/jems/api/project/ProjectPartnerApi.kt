@@ -1,12 +1,12 @@
 package io.cloudflight.jems.api.project
 
-import io.cloudflight.jems.api.project.dto.InputProjectPartnerContact
+import io.cloudflight.jems.api.project.dto.partner.InputProjectPartnerContact
 import io.cloudflight.jems.api.project.dto.InputProjectPartnerContribution
-import io.cloudflight.jems.api.project.dto.InputProjectPartnerCreate
-import io.cloudflight.jems.api.project.dto.InputProjectPartnerOrganizationDetails
-import io.cloudflight.jems.api.project.dto.InputProjectPartnerUpdate
-import io.cloudflight.jems.api.project.dto.OutputProjectPartner
-import io.cloudflight.jems.api.project.dto.OutputProjectPartnerDetail
+import io.cloudflight.jems.api.project.dto.partner.InputProjectPartnerCreate
+import io.cloudflight.jems.api.project.dto.partner.InputProjectPartnerAddress
+import io.cloudflight.jems.api.project.dto.partner.InputProjectPartnerUpdate
+import io.cloudflight.jems.api.project.dto.partner.OutputProjectPartner
+import io.cloudflight.jems.api.project.dto.partner.OutputProjectPartnerDetail
 import io.swagger.annotations.Api
 import io.swagger.annotations.ApiImplicitParam
 import io.swagger.annotations.ApiImplicitParams
@@ -38,36 +38,45 @@ interface ProjectPartnerApi {
 
     @ApiOperation("Returns a project partner by id")
     @GetMapping("/{id}")
-    fun getProjectPartnerById(@PathVariable projectId: Long,
-                              @PathVariable id: Long): OutputProjectPartnerDetail
+    fun getProjectPartnerById(@PathVariable projectId: Long, @PathVariable id: Long): OutputProjectPartnerDetail
 
     @ApiOperation("Creates new project partner")
     @PostMapping(consumes = [MediaType.APPLICATION_JSON_VALUE])
-    fun createProjectPartner(@PathVariable projectId: Long,
-                             @Valid @RequestBody projectPartner: InputProjectPartnerCreate): OutputProjectPartnerDetail
+    fun createProjectPartner(
+        @PathVariable projectId: Long,
+        @Valid @RequestBody projectPartner: InputProjectPartnerCreate
+    ): OutputProjectPartnerDetail
 
     @ApiOperation("Update project partner")
     @PutMapping(consumes = [MediaType.APPLICATION_JSON_VALUE])
-    fun updateProjectPartner(@PathVariable projectId: Long,
-                             @Valid @RequestBody projectPartner: InputProjectPartnerUpdate): OutputProjectPartnerDetail
+    fun updateProjectPartner(
+        @PathVariable projectId: Long,
+        @Valid @RequestBody projectPartner: InputProjectPartnerUpdate
+    ): OutputProjectPartnerDetail
+
+    @ApiOperation("Update project partner addresses")
+    @PutMapping("/{id}/address", consumes = [MediaType.APPLICATION_JSON_VALUE])
+    fun updateProjectPartnerAddress(
+        @PathVariable projectId: Long,
+        @PathVariable id: Long,
+        @Valid @RequestBody addresses: Set<InputProjectPartnerAddress>
+    ): OutputProjectPartnerDetail
 
     @ApiOperation("Update project partner contact")
     @PutMapping("/{id}/contact", consumes = [MediaType.APPLICATION_JSON_VALUE])
-    fun updateProjectPartnerContact(@PathVariable projectId: Long,
-                                    @PathVariable id: Long,
-                                    @Valid @RequestBody projectPartner: Set<InputProjectPartnerContact>): OutputProjectPartnerDetail
+    fun updateProjectPartnerContact(
+        @PathVariable projectId: Long,
+        @PathVariable id: Long,
+        @Valid @RequestBody contacts: Set<InputProjectPartnerContact>
+    ): OutputProjectPartnerDetail
 
     @ApiOperation("Update project partner contribution")
     @PutMapping("/{id}/contribution", consumes = [MediaType.APPLICATION_JSON_VALUE])
-    fun updateProjectPartnerContribution(@PathVariable projectId: Long,
-                                    @PathVariable id: Long,
-                                    @Valid @RequestBody partnerContribution: InputProjectPartnerContribution): OutputProjectPartnerDetail
-
-    @ApiOperation("Update project partner organization details")
-    @PutMapping("/{id}/details", consumes = [MediaType.APPLICATION_JSON_VALUE])
-    fun updateProjectPartnerOrganizationDetails(@PathVariable projectId: Long,
-                                                @PathVariable id: Long,
-                                                @Valid @RequestBody partnerOrganizationDetails: Set<InputProjectPartnerOrganizationDetails>): OutputProjectPartnerDetail
+    fun updateProjectPartnerContribution(
+        @PathVariable projectId: Long,
+        @PathVariable id: Long,
+        @Valid @RequestBody partnerContribution: InputProjectPartnerContribution
+    ): OutputProjectPartnerDetail
 
     @ApiOperation("Delete a project partner")
     @DeleteMapping("/{id}")

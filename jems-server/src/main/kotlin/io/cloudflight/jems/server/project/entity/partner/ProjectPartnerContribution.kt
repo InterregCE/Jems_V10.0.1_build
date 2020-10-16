@@ -1,4 +1,4 @@
-package io.cloudflight.jems.server.project.entity
+package io.cloudflight.jems.server.project.entity.partner
 
 import javax.persistence.Column
 import javax.persistence.Entity
@@ -25,7 +25,7 @@ data class ProjectPartnerContribution(
 
     @Column
     val organizationExperience: String?
-){
+) {
     override fun toString(): String {
         return "${this.javaClass.simpleName}(partnerId=$partnerId, organizationRelevance=$organizationRelevance, organizationRole=$organizationRole, organizationExperience=$organizationExperience)"
     }

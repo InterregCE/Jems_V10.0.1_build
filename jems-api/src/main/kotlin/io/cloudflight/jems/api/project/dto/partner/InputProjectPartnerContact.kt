@@ -1,4 +1,4 @@
-package io.cloudflight.jems.api.project.dto
+package io.cloudflight.jems.api.project.dto.partner
 
 import javax.validation.constraints.Email
 import javax.validation.constraints.NotNull
@@ -11,7 +11,7 @@ data class InputProjectPartnerContact (
     val title: String?,
 
     @field:NotNull(message = "partner.contact.type.should.not.be.empty")
-    val type: PartnerContactPersonType,
+    val type: ProjectPartnerContactType,
 
     @field:Size(max = 50, message = "partner.contact.first.name.size.too.long")
     val firstName: String?,

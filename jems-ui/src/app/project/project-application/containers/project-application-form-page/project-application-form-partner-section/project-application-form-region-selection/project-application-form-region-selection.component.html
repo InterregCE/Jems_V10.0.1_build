@@ -7,7 +7,7 @@
         [nutsRegion3Department]="nuts3Department$ | async"
         [success$]="success$"
         [error$]="error$"
-        [organizationDetails]="organizationDetails"
+        [organizationDetails]="partner?.addresses"
         [editable]="editable"
         [showHomePage]="showHomePage"
         (update)="update.emit($event)"

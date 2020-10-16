@@ -1,17 +1,16 @@
-package io.cloudflight.jems.server.project.service
+package io.cloudflight.jems.server.project.service.partner
 
-import io.cloudflight.jems.api.project.dto.InputProjectPartnerContact
+import io.cloudflight.jems.api.project.dto.partner.InputProjectPartnerContact
 import io.cloudflight.jems.api.project.dto.InputProjectPartnerContribution
-import io.cloudflight.jems.api.project.dto.InputProjectPartnerCreate
-import io.cloudflight.jems.api.project.dto.InputProjectPartnerOrganizationDetails
-import io.cloudflight.jems.api.project.dto.InputProjectPartnerUpdate
-import io.cloudflight.jems.api.project.dto.OutputProjectPartner
-import io.cloudflight.jems.api.project.dto.OutputProjectPartnerDetail
-import io.cloudflight.jems.api.project.dto.ProjectPartnerRole
+import io.cloudflight.jems.api.project.dto.partner.InputProjectPartnerCreate
+import io.cloudflight.jems.api.project.dto.partner.InputProjectPartnerAddress
+import io.cloudflight.jems.api.project.dto.partner.InputProjectPartnerUpdate
+import io.cloudflight.jems.api.project.dto.partner.OutputProjectPartner
+import io.cloudflight.jems.api.project.dto.partner.OutputProjectPartnerDetail
+import io.cloudflight.jems.api.project.dto.partner.ProjectPartnerRole
 import io.cloudflight.jems.server.exception.I18nValidationException
 import io.cloudflight.jems.server.exception.ResourceNotFoundException
-import io.cloudflight.jems.server.project.repository.ProjectPartnerOrganizationRepository
-import io.cloudflight.jems.server.project.repository.ProjectPartnerRepository
+import io.cloudflight.jems.server.project.repository.partner.ProjectPartnerRepository
 import io.cloudflight.jems.server.project.repository.ProjectRepository
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
@@ -23,8 +22,7 @@ import org.springframework.transaction.annotation.Transactional
 @Service
 class ProjectPartnerServiceImpl(
     private val projectPartnerRepo: ProjectPartnerRepository,
-    private val projectRepo: ProjectRepository,
-    private val projectPartnerOrganizationRepo: ProjectPartnerOrganizationRepository
+    private val projectRepo: ProjectRepository
 ) : ProjectPartnerService {
 
     @Transactional(readOnly = true)
@@ -46,13 +44,7 @@ class ProjectPartnerServiceImpl(
         if (projectPartner.role!!.isLead)
             validateLeadPartnerChange(projectId, projectPartner.oldLeadPartnerId)
 
-        val organization = if (projectPartner.organization == null){
-            null
-        } else {
-            this.projectPartnerOrganizationRepo.save(projectPartner.organization!!.toEntity())
-        }
-
-        val partnerCreated = projectPartnerRepo.save(projectPartner.toEntity(project = project).copy(organization = organization));
+        val partnerCreated = projectPartnerRepo.save(projectPartner.toEntity(project = project))
         updateSortByRole(projectId)
         // entity is attached, number will have been updated
         return partnerCreated.toOutputProjectPartnerDetail()
@@ -75,7 +67,7 @@ class ProjectPartnerServiceImpl(
             throw I18nValidationException(
                 httpStatus = HttpStatus.UNPROCESSABLE_ENTITY,
                 i18nKey = "project.partner.role.lead.already.existing",
-                i18nArguments = listOf(currentLead.id.toString(), currentLead.name)
+                i18nArguments = listOf(currentLead.id.toString(), currentLead.abbreviation)
             )
         }
     }
@@ -101,17 +93,13 @@ class ProjectPartnerServiceImpl(
         if (!oldProjectPartner.role.isLead && projectPartner.role!!.isLead)
             validateLeadPartnerChange(projectId, projectPartner.oldLeadPartnerId)
 
-        val organization = if (projectPartner.organization == null){
-            null
-        } else {
-            this.projectPartnerOrganizationRepo.save(projectPartner.organization!!.toEntity())
-        }
-
         val partnerUpdated = projectPartnerRepo.save(
             oldProjectPartner.copy(
-                name = projectPartner.name!!,
+                abbreviation = projectPartner.abbreviation!!,
                 role = projectPartner.role!!,
-                organization = organization
+                nameInOriginalLanguage = projectPartner.nameInOriginalLanguage,
+                nameInEnglish = projectPartner.nameInEnglish,
+                department = projectPartner.department
             )
         )
         // update sorting if leadPartner changed
@@ -136,12 +124,23 @@ class ProjectPartnerServiceImpl(
     }
 
     @Transactional
-    override fun updatePartnerContact(projectId: Long, partnerId: Long, projectPartnerContact: Set<InputProjectPartnerContact>): OutputProjectPartnerDetail {
+    override fun updatePartnerAddresses(projectId: Long, partnerId: Long, addresses: Set<InputProjectPartnerAddress>): OutputProjectPartnerDetail {
         val projectPartner = projectPartnerRepo.findFirstByProjectIdAndId(projectId, partnerId)
             .orElseThrow { ResourceNotFoundException("projectPartner") }
         return projectPartnerRepo.save(
             projectPartner.copy(
-                partnerContactPersons = projectPartnerContact.map{ it.toEntity(projectPartner) }.toHashSet()
+                addresses = addresses.mapTo(HashSet()) { it.toEntity(projectPartner) }
+            )
+        ).toOutputProjectPartnerDetail()
+    }
+
+    @Transactional
+    override fun updatePartnerContacts(projectId: Long, partnerId: Long, contacts: Set<InputProjectPartnerContact>): OutputProjectPartnerDetail {
+        val projectPartner = projectPartnerRepo.findFirstByProjectIdAndId(projectId, partnerId)
+            .orElseThrow { ResourceNotFoundException("projectPartner") }
+        return projectPartnerRepo.save(
+            projectPartner.copy(
+                contacts = contacts.mapTo(HashSet()) { it.toEntity(projectPartner) }
             )
         ).toOutputProjectPartnerDetail()
     }
@@ -155,26 +154,6 @@ class ProjectPartnerServiceImpl(
                 partnerContribution = partnerContribution.toEntity(projectPartner)
             )
         ).toOutputProjectPartnerDetail()
-    }
-
-    @Transactional
-    override fun updatePartnerOrganizationDetails(projectId: Long, partnerId: Long, partnerOrganizationDetails: Set<InputProjectPartnerOrganizationDetails>): OutputProjectPartnerDetail {
-        val projectPartner = projectPartnerRepo.findFirstByProjectIdAndId(projectId, partnerId)
-            .orElseThrow { ResourceNotFoundException("projectPartner") }
-        val partnerOrganization =
-            projectPartnerOrganizationRepo.findById(projectPartner.organization?.id!!)
-                .orElseThrow { ResourceNotFoundException("projectPartnerOrganization") }
-        val updatePartnerOrganization = projectPartnerOrganizationRepo.save(
-            partnerOrganization.copy(
-                organizationsDetails = partnerOrganizationDetails.map{ it.toEntity(partnerOrganization) }.toHashSet()
-            )
-        )
-
-        return projectPartnerRepo.save(
-                    projectPartner.copy(
-                        organization = updatePartnerOrganization
-                    )
-                ).toOutputProjectPartnerDetail()
     }
 
     @Transactional

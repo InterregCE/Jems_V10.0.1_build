@@ -4,11 +4,11 @@ import io.cloudflight.jems.api.call.dto.CallStatus
 import io.cloudflight.jems.api.project.dto.InputProjectAssociatedOrganizationAddressDetails
 import io.cloudflight.jems.api.project.dto.InputProjectAssociatedOrganizationCreate
 import io.cloudflight.jems.api.project.dto.InputProjectAssociatedOrganizationUpdate
-import io.cloudflight.jems.api.project.dto.InputProjectPartnerContact
+import io.cloudflight.jems.api.project.dto.partner.InputProjectPartnerContact
 import io.cloudflight.jems.api.project.dto.OutputProjectAssociatedOrganizationDetail
-import io.cloudflight.jems.api.project.dto.OutputProjectPartnerContact
-import io.cloudflight.jems.api.project.dto.PartnerContactPersonType
-import io.cloudflight.jems.api.project.dto.ProjectPartnerRole
+import io.cloudflight.jems.api.project.dto.partner.OutputProjectPartnerContact
+import io.cloudflight.jems.api.project.dto.partner.ProjectPartnerContactType
+import io.cloudflight.jems.api.project.dto.partner.ProjectPartnerRole
 import io.cloudflight.jems.api.project.dto.status.ProjectApplicationStatus
 import io.cloudflight.jems.server.call.entity.Call
 import io.cloudflight.jems.server.exception.ResourceNotFoundException
@@ -16,11 +16,12 @@ import io.cloudflight.jems.server.project.entity.AssociatedOrganizationContact
 import io.cloudflight.jems.server.project.entity.Project
 import io.cloudflight.jems.server.project.entity.ProjectAssociatedOrganization
 import io.cloudflight.jems.server.project.entity.ProjectAssociatedOrganizationDetail
-import io.cloudflight.jems.server.project.entity.ProjectPartner
+import io.cloudflight.jems.server.project.entity.partner.ProjectPartner
 import io.cloudflight.jems.server.project.entity.ProjectStatus
 import io.cloudflight.jems.server.project.repository.ProjectAssociatedOrganizationRepository
-import io.cloudflight.jems.server.project.repository.ProjectPartnerRepository
+import io.cloudflight.jems.server.project.repository.partner.ProjectPartnerRepository
 import io.cloudflight.jems.server.project.repository.ProjectRepository
+import io.cloudflight.jems.server.project.service.partner.toOutputProjectPartner
 import io.cloudflight.jems.server.security.model.LocalCurrentUser
 import io.cloudflight.jems.server.security.service.SecurityService
 import io.cloudflight.jems.server.user.entity.User
@@ -93,7 +94,7 @@ internal class ProjectAssociatedOrganizationServiceTest {
     private val projectPartner = ProjectPartner(
         id = 1,
         project = project,
-        name = "partner",
+        abbreviation = "partner",
         role = ProjectPartnerRole.LEAD_PARTNER)
     private val organization = ProjectAssociatedOrganization(
         1,
@@ -107,8 +108,8 @@ internal class ProjectAssociatedOrganizationServiceTest {
     private val outputOrganization = organization.toOutputProjectAssociatedOrganization()
     private val outputOrganizationDetail = organization.toOutputProjectAssociatedOrganizationDetail()
     private val inputOrganizationAddress = InputProjectAssociatedOrganizationAddressDetails("country", "", "", "", "" ,"" ,"", "")
-    private val inputProjectPartnerContactCreateOne = InputProjectPartnerContact("test", PartnerContactPersonType.LegalRepresentative, "test", "test", "", "")
-    private val inputProjectPartnerContactCreateTwo = InputProjectPartnerContact("test", PartnerContactPersonType.ContactPerson, "test", "test", "test@ems.eu", "test")
+    private val inputProjectPartnerContactCreateOne = InputProjectPartnerContact("test", ProjectPartnerContactType.LegalRepresentative, "test", "test", "", "")
+    private val inputProjectPartnerContactCreateTwo = InputProjectPartnerContact("test", ProjectPartnerContactType.ContactPerson, "test", "test", "test@ems.eu", "test")
     private val inputAssociatedOrganization = InputProjectAssociatedOrganizationCreate(null, "associatedOrganization", "associatedOrganizationInEnglish", null, projectPartner.id!!, setOf())
 
 

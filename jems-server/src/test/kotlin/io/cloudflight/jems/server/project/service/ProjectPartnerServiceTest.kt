@@ -1,25 +1,26 @@
 package io.cloudflight.jems.server.project.service
 
 import io.cloudflight.jems.api.call.dto.CallStatus
-import io.cloudflight.jems.api.project.dto.InputProjectPartnerContact
+import io.cloudflight.jems.api.project.dto.partner.InputProjectPartnerContact
 import io.cloudflight.jems.api.project.dto.InputProjectPartnerContribution
-import io.cloudflight.jems.api.project.dto.InputProjectPartnerCreate
-import io.cloudflight.jems.api.project.dto.InputProjectPartnerOrganization
-import io.cloudflight.jems.api.project.dto.InputProjectPartnerUpdate
-import io.cloudflight.jems.api.project.dto.PartnerContactPersonType
-import io.cloudflight.jems.api.project.dto.ProjectPartnerRole
+import io.cloudflight.jems.api.project.dto.partner.InputProjectPartnerCreate
+import io.cloudflight.jems.api.project.dto.partner.InputProjectPartnerUpdate
+import io.cloudflight.jems.api.project.dto.partner.ProjectPartnerContactType
+import io.cloudflight.jems.api.project.dto.partner.ProjectPartnerRole
 import io.cloudflight.jems.api.project.dto.status.ProjectApplicationStatus
 import io.cloudflight.jems.server.call.entity.Call
 import io.cloudflight.jems.server.exception.I18nValidationException
 import io.cloudflight.jems.server.exception.ResourceNotFoundException
-import io.cloudflight.jems.server.project.entity.PartnerContactPerson
 import io.cloudflight.jems.server.project.entity.Project
-import io.cloudflight.jems.server.project.entity.ProjectPartner
-import io.cloudflight.jems.server.project.entity.ProjectPartnerOrganization
+import io.cloudflight.jems.server.project.entity.partner.ProjectPartner
 import io.cloudflight.jems.server.project.entity.ProjectStatus
-import io.cloudflight.jems.server.project.repository.ProjectPartnerOrganizationRepository
-import io.cloudflight.jems.server.project.repository.ProjectPartnerRepository
+import io.cloudflight.jems.server.project.repository.partner.ProjectPartnerRepository
 import io.cloudflight.jems.server.project.repository.ProjectRepository
+import io.cloudflight.jems.server.project.service.partner.ProjectPartnerService
+import io.cloudflight.jems.server.project.service.partner.ProjectPartnerServiceImpl
+import io.cloudflight.jems.server.project.service.partner.toEntity
+import io.cloudflight.jems.server.project.service.partner.toOutputProjectPartner
+import io.cloudflight.jems.server.project.service.partner.toOutputProjectPartnerDetail
 import io.cloudflight.jems.server.security.model.LocalCurrentUser
 import io.cloudflight.jems.server.security.service.SecurityService
 import io.cloudflight.jems.server.user.entity.User
@@ -37,18 +38,13 @@ import org.junit.jupiter.api.assertThrows
 import org.springframework.data.domain.PageImpl
 import org.springframework.data.domain.Pageable
 import org.springframework.data.domain.Sort
-import org.springframework.data.repository.findByIdOrNull
 import java.time.ZonedDateTime
 import java.util.Optional
-import kotlin.collections.HashSet
 
 internal class ProjectPartnerServiceTest {
 
     @MockK
     lateinit var projectPartnerRepository: ProjectPartnerRepository
-
-    @MockK
-    lateinit var projectPartnerOrganizationRepository: ProjectPartnerOrganizationRepository
 
     @MockK
     lateinit var projectRepository: ProjectRepository
@@ -95,19 +91,17 @@ internal class ProjectPartnerServiceTest {
     private val projectPartner = ProjectPartner(
         id = 1,
         project = project,
-        name = "partner",
+        abbreviation = "partner",
         role = ProjectPartnerRole.LEAD_PARTNER)
-    private val organization = ProjectPartnerOrganization(
-        1,
-        "test",
-        "test",
-        "test")
     private val projectPartnerWithOrganization = ProjectPartner(
         id = 1,
         project = project,
-        name = "partner",
+        abbreviation = "partner",
         role = ProjectPartnerRole.LEAD_PARTNER,
-        organization = organization)
+        nameInOriginalLanguage = "test",
+        nameInEnglish = "test",
+        department = "test"
+    )
 
     private val outputProjectPartner = projectPartner.toOutputProjectPartner()
     private val outputProjectPartnerDetail = projectPartner.toOutputProjectPartnerDetail()
@@ -116,7 +110,7 @@ internal class ProjectPartnerServiceTest {
     fun setup() {
         MockKAnnotations.init(this)
         every { securityService.currentUser } returns LocalCurrentUser(outputUser, user.password, emptyList())
-        projectPartnerService = ProjectPartnerServiceImpl(projectPartnerRepository, projectRepository, projectPartnerOrganizationRepository)
+        projectPartnerService = ProjectPartnerServiceImpl(projectPartnerRepository, projectRepository)
     }
 
     @Test
@@ -140,7 +134,7 @@ internal class ProjectPartnerServiceTest {
     @Test
     fun createProjectPartner() {
         val inputProjectPartner = InputProjectPartnerCreate("partner", ProjectPartnerRole.LEAD_PARTNER)
-        val projectPartnerWithProject = ProjectPartner(null, project, inputProjectPartner.name!!, inputProjectPartner.role!!)
+        val projectPartnerWithProject = ProjectPartner(null, project, inputProjectPartner.abbreviation!!, inputProjectPartner.role!!)
         every { projectRepository.findById(0) } returns Optional.empty()
         every { projectRepository.findById(1) } returns Optional.of(project)
         every { projectPartnerRepository.findFirstByProjectIdAndRole(1, ProjectPartnerRole.LEAD_PARTNER) } returns Optional.empty()
@@ -159,7 +153,7 @@ internal class ProjectPartnerServiceTest {
     fun `error on multiple LEAD_PARTNER partner creation attempt`() {
         val inputProjectPartner = InputProjectPartnerCreate("partner", ProjectPartnerRole.PARTNER)
         val inputProjectPartnerLead = InputProjectPartnerCreate("partner", ProjectPartnerRole.LEAD_PARTNER)
-        val projectPartnerWithProject = ProjectPartner(null, project, inputProjectPartner.name!!, inputProjectPartner.role!!)
+        val projectPartnerWithProject = ProjectPartner(null, project, inputProjectPartner.abbreviation!!, inputProjectPartner.role!!)
         every { projectRepository.findById(1) } returns Optional.of(project)
         every { projectPartnerRepository.findFirstByProjectIdAndRole(1, ProjectPartnerRole.LEAD_PARTNER) } returns Optional.of(projectPartnerWithProject)
         every { projectPartnerRepository.save(projectPartnerWithProject) } returns projectPartner
@@ -178,7 +172,7 @@ internal class ProjectPartnerServiceTest {
     @Test
     fun updateProjectPartner() {
         val projectPartnerUpdate = InputProjectPartnerUpdate(1, "updated", ProjectPartnerRole.PARTNER)
-        val updatedProjectPartner = ProjectPartner(1, project, projectPartnerUpdate.name!!, projectPartnerUpdate.role!!)
+        val updatedProjectPartner = ProjectPartner(1, project, projectPartnerUpdate.abbreviation!!, projectPartnerUpdate.role!!)
         every { projectPartnerRepository.findFirstByProjectIdAndId(1, 1) } returns Optional.of(projectPartner)
         every { projectRepository.findById(1) } returns Optional.of(project)
         every { projectPartnerRepository.save(updatedProjectPartner) } returns updatedProjectPartner
@@ -191,24 +185,21 @@ internal class ProjectPartnerServiceTest {
     fun updatePartnerContact() {
         val projectPartnerContactUpdate = InputProjectPartnerContact(
             "test",
-            PartnerContactPersonType.ContactPerson,
+            ProjectPartnerContactType.ContactPerson,
             "test",
             "test",
             "test@ems.eu",
             "test")
         val projectPartner = ProjectPartner(1, project, "updated", ProjectPartnerRole.PARTNER)
-        val contactPersonsEntity = HashSet<PartnerContactPerson>()
-            contactPersonsEntity.add(projectPartnerContactUpdate.toEntity(projectPartner))
-        val updatedProjectPartner = ProjectPartner(1, project, "updated", ProjectPartnerRole.PARTNER,
-            null, contactPersonsEntity)
-        val contactPersonsDto = HashSet<InputProjectPartnerContact>()
-            contactPersonsDto.add(projectPartnerContactUpdate)
+        val contactPersonsEntity = setOf(projectPartnerContactUpdate.toEntity(projectPartner))
+        val updatedProjectPartner = ProjectPartner(id = 1, project =  project, abbreviation = "updated", role = ProjectPartnerRole.PARTNER,
+            contacts = contactPersonsEntity)
 
         every { projectPartnerRepository.findFirstByProjectIdAndId(1,1) } returns Optional.of(projectPartner)
         every { projectRepository.findById(1) } returns Optional.of(project)
         every { projectPartnerRepository.save(updatedProjectPartner) } returns updatedProjectPartner
 
-        assertThat(projectPartnerService.updatePartnerContact(1,1, contactPersonsDto))
+        assertThat(projectPartnerService.updatePartnerContacts(1,1, setOf(projectPartnerContactUpdate)))
             .isEqualTo(updatedProjectPartner.toOutputProjectPartnerDetail())
     }
 
@@ -216,15 +207,14 @@ internal class ProjectPartnerServiceTest {
     fun updatePartnerContact_notExisting() {
         val projectPartnerContactUpdate = InputProjectPartnerContact(
             "test",
-            PartnerContactPersonType.LegalRepresentative,
+            ProjectPartnerContactType.LegalRepresentative,
             "test",
             "test",
             "test@ems.eu",
             "test")
-        val contactPersonsDto = HashSet<InputProjectPartnerContact>()
-            contactPersonsDto.add(projectPartnerContactUpdate)
+        val contactPersonsDto = setOf(projectPartnerContactUpdate)
         every { projectPartnerRepository.findFirstByProjectIdAndId(1,eq(-1)) } returns Optional.empty()
-        val exception = assertThrows<ResourceNotFoundException> { projectPartnerService.updatePartnerContact(1,-1, contactPersonsDto) }
+        val exception = assertThrows<ResourceNotFoundException> { projectPartnerService.updatePartnerContacts(1,-1, contactPersonsDto) }
         assertThat(exception.entity).isEqualTo("projectPartner")
     }
 
@@ -235,8 +225,8 @@ internal class ProjectPartnerServiceTest {
             "test",
             "test")
         val projectPartner = ProjectPartner(1, project, "updated", ProjectPartnerRole.PARTNER)
-        val updatedProjectPartner = ProjectPartner(1, project, "updated", ProjectPartnerRole.PARTNER,
-            null, emptySet(), projectPartnerContributionUpdate.toEntity(projectPartner))
+        val updatedProjectPartner = ProjectPartner(id = 1, project = project, abbreviation = "updated", role = ProjectPartnerRole.PARTNER,
+            partnerContribution = projectPartnerContributionUpdate.toEntity(projectPartner))
 
         every { projectPartnerRepository.findFirstByProjectIdAndId(1,1) } returns Optional.of(projectPartner)
         every { projectRepository.findById(1) } returns Optional.of(project)
@@ -259,15 +249,19 @@ internal class ProjectPartnerServiceTest {
 
     @Test
     fun createProjectPartnerWithOrganization() {
-        val inputProjectPartner = InputProjectPartnerCreate("partner", ProjectPartnerRole.LEAD_PARTNER, null,
-            InputProjectPartnerOrganization(null, "test", "test", "test"))
-        val projectPartnerWithProject = ProjectPartner(null, project, inputProjectPartner.name!!, inputProjectPartner.role!!, null,
-            emptySet(), null, organization)
+        val inputProjectPartner = InputProjectPartnerCreate("partner", ProjectPartnerRole.LEAD_PARTNER, null, "test", "test", "test")
+        val projectPartnerWithProject = ProjectPartner(
+            project = project,
+            abbreviation = inputProjectPartner.abbreviation!!,
+            role =  inputProjectPartner.role!!,
+            nameInOriginalLanguage = projectPartnerWithOrganization.nameInOriginalLanguage,
+            nameInEnglish = projectPartnerWithOrganization.nameInEnglish,
+            department = projectPartnerWithOrganization.department
+        )
         every { projectRepository.findById(0) } returns Optional.empty()
         every { projectRepository.findById(1) } returns Optional.of(project)
         every { projectPartnerRepository.findFirstByProjectIdAndRole(1, ProjectPartnerRole.LEAD_PARTNER) } returns Optional.empty()
         every { projectPartnerRepository.save(projectPartnerWithProject) } returns projectPartnerWithOrganization
-        every { projectPartnerOrganizationRepository.save(inputProjectPartner.organization!!.toEntity()) } returns organization
         // also handle sorting
         val projectPartners = listOf(projectPartner, projectPartnerWithProject)
         every { projectPartnerRepository.findAllByProjectId(1, any<Sort>()) } returns projectPartners
@@ -280,15 +274,19 @@ internal class ProjectPartnerServiceTest {
 
     @Test
     fun updateProjectPartnerWithOrganization() {
-        val projectPartnerUpdate =  InputProjectPartnerUpdate(1, "updated", ProjectPartnerRole.PARTNER, null,
-            InputProjectPartnerOrganization(null, "test", "test", "test"))
-        val updatedProjectPartner = ProjectPartner(1, project, projectPartnerUpdate.name!!, projectPartnerUpdate.role!!, null,
-            emptySet(), null, organization)
+        val projectPartnerUpdate =  InputProjectPartnerUpdate(1, "updated", ProjectPartnerRole.PARTNER, null, "test", "test", "test")
+        val updatedProjectPartner = ProjectPartner(
+            id = 1,
+            project = project,
+            abbreviation = projectPartnerUpdate.abbreviation!!,
+            role = projectPartnerUpdate.role!!,
+            nameInOriginalLanguage = projectPartnerWithOrganization.nameInOriginalLanguage,
+            nameInEnglish = projectPartnerWithOrganization.nameInEnglish,
+            department = projectPartnerWithOrganization.department
+        )
         every { projectPartnerRepository.findFirstByProjectIdAndId(1, 1) } returns Optional.of(projectPartner)
         every { projectRepository.findById(1) } returns Optional.of(project)
         every { projectPartnerRepository.save(updatedProjectPartner) } returns updatedProjectPartner
-        every { projectPartnerOrganizationRepository.findByIdOrNull(1) } returns organization
-        every { projectPartnerOrganizationRepository.save(projectPartnerUpdate.organization!!.toEntity()) } returns organization
 
         assertThat(projectPartnerService.update(1, projectPartnerUpdate))
             .isEqualTo(updatedProjectPartner.toOutputProjectPartnerDetail())
@@ -296,17 +294,15 @@ internal class ProjectPartnerServiceTest {
 
     @Test
     fun deleteProjectPartnerWithOrganization() {
-        val organization = ProjectPartnerOrganization(
-            1,
-            "test",
-            "test",
-            "test")
         val projectPartnerWithOrganization = ProjectPartner(
             id = 1,
             project = project,
-            name = "partner",
+            abbreviation = "partner",
             role = ProjectPartnerRole.LEAD_PARTNER,
-            organization = organization)
+            nameInOriginalLanguage = projectPartnerWithOrganization.nameInOriginalLanguage,
+            nameInEnglish = projectPartnerWithOrganization.nameInEnglish,
+            department = projectPartnerWithOrganization.department
+        )
         every { projectPartnerRepository.deleteById(projectPartnerWithOrganization.id!!) } returns Unit
         every { projectPartnerRepository.findAllByProjectId(project.id!!, any<Sort>()) } returns emptySet()
         every { projectPartnerRepository.saveAll(emptyList()) } returns emptySet()

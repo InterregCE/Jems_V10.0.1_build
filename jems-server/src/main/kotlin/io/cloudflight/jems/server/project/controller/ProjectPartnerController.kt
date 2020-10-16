@@ -1,14 +1,14 @@
 package io.cloudflight.jems.server.project.controller
 
 import io.cloudflight.jems.api.project.ProjectPartnerApi
-import io.cloudflight.jems.api.project.dto.InputProjectPartnerContact
+import io.cloudflight.jems.api.project.dto.partner.InputProjectPartnerContact
 import io.cloudflight.jems.api.project.dto.InputProjectPartnerContribution
-import io.cloudflight.jems.api.project.dto.InputProjectPartnerCreate
-import io.cloudflight.jems.api.project.dto.InputProjectPartnerOrganizationDetails
-import io.cloudflight.jems.api.project.dto.InputProjectPartnerUpdate
-import io.cloudflight.jems.api.project.dto.OutputProjectPartner
-import io.cloudflight.jems.api.project.dto.OutputProjectPartnerDetail
-import io.cloudflight.jems.server.project.service.ProjectPartnerService
+import io.cloudflight.jems.api.project.dto.partner.InputProjectPartnerCreate
+import io.cloudflight.jems.api.project.dto.partner.InputProjectPartnerAddress
+import io.cloudflight.jems.api.project.dto.partner.InputProjectPartnerUpdate
+import io.cloudflight.jems.api.project.dto.partner.OutputProjectPartner
+import io.cloudflight.jems.api.project.dto.partner.OutputProjectPartnerDetail
+import io.cloudflight.jems.server.project.service.partner.ProjectPartnerService
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
 import org.springframework.security.access.prepost.PreAuthorize
@@ -40,18 +40,18 @@ class ProjectPartnerController(
     }
 
     @PreAuthorize("@projectAuthorization.canUpdateProject(#projectId)")
-    override fun updateProjectPartnerContact(projectId: Long, id: Long, projectPartner: Set<InputProjectPartnerContact>): OutputProjectPartnerDetail {
-        return projectPartnerService.updatePartnerContact(projectId, id, projectPartner)
+    override fun updateProjectPartnerAddress(projectId: Long, id: Long, addresses: Set<InputProjectPartnerAddress>): OutputProjectPartnerDetail {
+        return projectPartnerService.updatePartnerAddresses(projectId, id, addresses)
+    }
+
+    @PreAuthorize("@projectAuthorization.canUpdateProject(#projectId)")
+    override fun updateProjectPartnerContact(projectId: Long, id: Long, contacts: Set<InputProjectPartnerContact>): OutputProjectPartnerDetail {
+        return projectPartnerService.updatePartnerContacts(projectId, id, contacts)
     }
 
     @PreAuthorize("@projectAuthorization.canUpdateProject(#projectId)")
     override fun updateProjectPartnerContribution(projectId: Long, id: Long, partnerContribution: InputProjectPartnerContribution): OutputProjectPartnerDetail {
         return projectPartnerService.updatePartnerContribution(projectId, id, partnerContribution)
-    }
-
-    @PreAuthorize("@projectAuthorization.canUpdateProject(#projectId)")
-    override fun updateProjectPartnerOrganizationDetails(projectId: Long, id: Long, partnerOrganizationDetails: Set<InputProjectPartnerOrganizationDetails>): OutputProjectPartnerDetail {
-        return projectPartnerService.updatePartnerOrganizationDetails(projectId, id, partnerOrganizationDetails)
     }
 
     @PreAuthorize("@projectAuthorization.canUpdateProject(#projectId)")

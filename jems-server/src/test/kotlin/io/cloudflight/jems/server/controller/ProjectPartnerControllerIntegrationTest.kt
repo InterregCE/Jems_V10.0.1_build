@@ -1,8 +1,8 @@
 package io.cloudflight.jems.server.controller
 
 import com.fasterxml.jackson.databind.ObjectMapper
-import io.cloudflight.jems.api.project.dto.InputProjectPartnerCreate
-import io.cloudflight.jems.api.project.dto.ProjectPartnerRole
+import io.cloudflight.jems.api.project.dto.partner.InputProjectPartnerCreate
+import io.cloudflight.jems.api.project.dto.partner.ProjectPartnerRole
 import io.cloudflight.jems.server.factory.CallFactory
 import io.cloudflight.jems.server.factory.ProjectFileFactory
 import io.cloudflight.jems.server.factory.UserFactory
@@ -52,7 +52,7 @@ class ProjectPartnerControllerIntegrationTest {
         )
             .andExpect(status().isOk)
             .andExpect(jsonPath("$.id").isNotEmpty)
-            .andExpect(jsonPath("$.name").value(inputProjectPartner.name.toString()))
+            .andExpect(jsonPath("$.abbreviation").value(inputProjectPartner.abbreviation.toString()))
     }
 
     @Test
@@ -67,7 +67,7 @@ class ProjectPartnerControllerIntegrationTest {
         )
             .andExpect(status().isBadRequest)
             .andExpect(
-                jsonPath("$.i18nFieldErrors.name.i18nKey")
+                jsonPath("$.i18nFieldErrors.abbreviation.i18nKey")
                     .value("project.partner.name.should.not.be.empty")
             )
     }
@@ -84,7 +84,7 @@ class ProjectPartnerControllerIntegrationTest {
         )
             .andExpect(status().isBadRequest)
             .andExpect(
-                jsonPath("$.i18nFieldErrors.name.i18nKey")
+                jsonPath("$.i18nFieldErrors.abbreviation.i18nKey")
                     .value("project.partner.name.size.too.long")
             )
     }

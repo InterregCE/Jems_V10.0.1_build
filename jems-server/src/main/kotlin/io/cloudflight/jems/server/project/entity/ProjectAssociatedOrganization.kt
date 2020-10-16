@@ -1,5 +1,6 @@
 package io.cloudflight.jems.server.project.entity
 
+import io.cloudflight.jems.server.project.entity.partner.ProjectPartner
 import javax.persistence.CascadeType
 import javax.persistence.Column
 import javax.persistence.Entity

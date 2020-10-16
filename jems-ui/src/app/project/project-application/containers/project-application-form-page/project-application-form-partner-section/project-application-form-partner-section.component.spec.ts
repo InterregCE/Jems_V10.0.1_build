@@ -39,8 +39,8 @@ describe('ProjectApplicationFormPartnerSectionComponent', () => {
     component.partnerPage$.subscribe(result => results = result.content);
 
     const projectPartners = [
-      {name: 'test1'} as OutputProjectPartner,
-      {name: 'test2'} as OutputProjectPartner
+      {abbreviation: 'test1'} as OutputProjectPartner,
+      {abbreviation: 'test2'} as OutputProjectPartner
     ];
 
     httpTestingController.match({method: 'GET', url: `//api/project/1/partner?page=0&size=25&sort=role,asc&sort=sortNumber,asc`})

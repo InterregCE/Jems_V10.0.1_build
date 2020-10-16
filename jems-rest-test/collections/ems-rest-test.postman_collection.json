@@ -6750,8 +6750,8 @@
 									"    pm.variables.set('partnerIdA', partner.id);\r",
 									"});\r",
 									"\r",
-									"pm.test('partner has correct name', function() {\r",
-									"    pm.expect(partner.name).to.eql(\"Partner A\");\r",
+									"pm.test('partner has correct abbreviation', function() {\r",
+									"    pm.expect(partner.abbreviation).to.eql(\"Partner A\");\r",
 									"});\r",
 									""
 								],
@@ -6779,7 +6779,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"name\": \"Partner A\",\r\n    \"role\": \"PARTNER\"\r\n}\r\n",
+							"raw": "{\r\n    \"abbreviation\": \"Partner A\",\r\n    \"role\": \"PARTNER\"\r\n}\r\n",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -6826,8 +6826,8 @@
 									"    pm.variables.set('partnerIdB', partner.id);\r",
 									"});\r",
 									"\r",
-									"pm.test('partner has correct name', function() {\r",
-									"    pm.expect(partner.name).to.eql(\"Partner B\");\r",
+									"pm.test('partner has correct abbreviation', function() {\r",
+									"    pm.expect(partner.abbreviation).to.eql(\"Partner B\");\r",
 									"});\r",
 									""
 								],
@@ -6855,7 +6855,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"name\": \"Partner B\",\r\n    \"role\": \"PARTNER\"\r\n}\r\n",
+							"raw": "{\r\n    \"abbreviation\": \"Partner B\",\r\n    \"role\": \"PARTNER\"\r\n}\r\n",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -6902,8 +6902,8 @@
 									"    pm.expect(partner.role).to.eql(\"LEAD_PARTNER\");\r",
 									"});\r",
 									"\r",
-									"pm.test('partner has correct name', function() {\r",
-									"    pm.expect(partner.name).to.eql(\"Partner A LEAD\");\r",
+									"pm.test('partner has correct abbreviation', function() {\r",
+									"    pm.expect(partner.abbreviation).to.eql(\"Partner A LEAD\");\r",
 									"});\r",
 									""
 								],
@@ -6931,7 +6931,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"id\": \"{{partnerIdA}}\",\r\n    \"name\": \"Partner A LEAD\",\r\n    \"role\": \"LEAD_PARTNER\"\r\n}\r\n",
+							"raw": "{\r\n    \"id\": \"{{partnerIdA}}\",\r\n    \"abbreviation\": \"Partner A LEAD\",\r\n    \"role\": \"LEAD_PARTNER\"\r\n}\r\n",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -7007,7 +7007,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"id\": \"{{partnerIdB}}\",\r\n    \"name\": \"Partner B LEAD\",\r\n    \"role\": \"LEAD_PARTNER\"\r\n}\r\n",
+							"raw": "{\r\n    \"id\": \"{{partnerIdB}}\",\r\n    \"abbreviation\": \"Partner B LEAD\",\r\n    \"role\": \"LEAD_PARTNER\"\r\n}\r\n",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -7079,7 +7079,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"id\": \"{{partnerIdB}}\",\r\n    \"name\": \"Partner B LEAD\",\r\n    \"role\": \"LEAD_PARTNER\",\r\n    \"oldLeadPartnerId\": \"{{partnerIdA}}\"\r\n}\r\n",
+							"raw": "{\r\n    \"id\": \"{{partnerIdB}}\",\r\n    \"abbreviation\": \"Partner B LEAD\",\r\n    \"role\": \"LEAD_PARTNER\",\r\n    \"oldLeadPartnerId\": \"{{partnerIdA}}\"\r\n}\r\n",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -7151,7 +7151,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"name\": \"Partner C\",\r\n    \"role\": \"LEAD_PARTNER\"\r\n}\r\n",
+							"raw": "{\r\n    \"abbreviation\": \"Partner C\",\r\n    \"role\": \"LEAD_PARTNER\"\r\n}\r\n",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -7223,7 +7223,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"name\": \"Partner C\",\r\n    \"role\": \"LEAD_PARTNER\",\r\n    \"oldLeadPartnerId\": \"{{partnerIdA}}\"\r\n}\r\n",
+							"raw": "{\r\n    \"abbreviation\": \"Partner C\",\r\n    \"role\": \"LEAD_PARTNER\",\r\n    \"oldLeadPartnerId\": \"{{partnerIdA}}\"\r\n}\r\n",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -7310,7 +7310,7 @@
 	],
 	"variable": [
 		{
-			"id": "a3a7b3db-4470-4f54-addf-c3c522b037a0",
+			"id": "eb74a8ad-c3db-4cb1-b405-60257c6290a8",
 			"key": "url",
 			"value": "specify_url_here"
 		}

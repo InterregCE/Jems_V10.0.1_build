@@ -144,14 +144,14 @@ export class ProjectApplicationFormPartnerContactComponent extends ViewEditForm 
   }
 
   private initLegalRepresentative() {
-    const legalRepresentative = this.partner?.partnerContactPersons?.find( person => person.type === InputProjectPartnerContact.TypeEnum.LegalRepresentative)
+    const legalRepresentative = this.partner?.contacts?.find( person => person.type === InputProjectPartnerContact.TypeEnum.LegalRepresentative)
     this.partnerContactForm.controls.partnerRepresentativeTitle.setValue(legalRepresentative?.title);
     this.partnerContactForm.controls.partnerRepresentativeFirstName.setValue(legalRepresentative?.firstName);
     this.partnerContactForm.controls.partnerRepresentativeLastName.setValue(legalRepresentative?.lastName);
   }
 
   private initContactPerson() {
-    const contactPerson = this.partner?.partnerContactPersons?.find( person => person.type === InputProjectPartnerContact.TypeEnum.ContactPerson)
+    const contactPerson = this.partner?.contacts?.find( person => person.type === InputProjectPartnerContact.TypeEnum.ContactPerson)
     this.partnerContactForm.controls.partnerContactTitle.setValue(contactPerson?.title);
     this.partnerContactForm.controls.partnerContactFirstName.setValue(contactPerson?.firstName);
     this.partnerContactForm.controls.partnerContactLastName.setValue(contactPerson?.lastName);
