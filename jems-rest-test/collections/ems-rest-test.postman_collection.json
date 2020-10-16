@@ -6650,7 +6650,7 @@
 			"protocolProfileBehavior": {}
 		},
 		{
-			"name": "project-partner",
+			"name": "Project Partner and Associated Organization",
 			"item": [
 				{
 					"name": "create project application",
@@ -7244,6 +7244,388 @@
 						}
 					},
 					"response": []
+				},
+				{
+					"name": "create associated organization for Partner A",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "73c5dbfb-8977-48d7-a8ce-faf253c6e790",
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"id": "3241f31a-9f6a-4836-885a-e10262748153",
+								"exec": [
+									"const organization = pm.response.json();\r",
+									"\r",
+									"pm.test('applicant can create associated organization', function() {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"pm.test('associated organization has correct name', function() {\r",
+									"    pm.expect(organization.nameInOriginalLanguage).to.eql(\"Name Original for \" + pm.variables.get('partnerIdA'));\r",
+									"    pm.expect(organization.nameInEnglish).to.eql(\"Name EN for \" + pm.variables.get('partnerIdA'));\r",
+									"});\r",
+									"\r",
+									"pm.test('associated organization is created with address', function() {\r",
+									"    pm.expect(organization.address.street).to.eql(\"test street\");\r",
+									"});\r",
+									"\r",
+									"pm.test('associated organization is created with both contacts', function() {\r",
+									"    pm.expect(organization.contacts).to.have.deep.members([\r",
+									"        {\r",
+									"            \"type\": \"LegalRepresentative\",\r",
+									"            \"title\": null,\r",
+									"            \"firstName\": \"Rafael\",\r",
+									"            \"lastName\": \"Nadal\",\r",
+									"            \"email\": \"rafael@atp.com\",\r",
+									"            \"telephone\": \"+6 30 216 896\"\r",
+									"        },\r",
+									"        {\r",
+									"            \"type\": \"ContactPerson\",\r",
+									"            \"title\": \"Champion\",\r",
+									"            \"firstName\": \"Roger\",\r",
+									"            \"lastName\": \"Federer\",\r",
+									"            \"email\": \"roger@atp.com\",\r",
+									"            \"telephone\": \"+6 20 542 265\"\r",
+									"        }\r",
+									"    ]);\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "basic",
+							"basic": [
+								{
+									"key": "password",
+									"value": "{{applicant_email}}",
+									"type": "string"
+								},
+								{
+									"key": "username",
+									"value": "{{applicant_email}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"partnerId\": \"{{partnerIdA}}\",\r\n    \"nameInOriginalLanguage\": \"Name Original for {{partnerIdA}}\",\r\n    \"nameInEnglish\": \"Name EN for {{partnerIdA}}\",\r\n    \"address\": {\r\n        \"street\": \"test street\"\r\n    },\r\n    \"contacts\": [\r\n        {\r\n            \"type\": \"ContactPerson\",\r\n            \"title\": \"Champion\",\r\n            \"firstName\": \"Roger\",\r\n            \"lastName\": \"Federer\",\r\n            \"email\": \"roger@atp.com\",\r\n            \"telephone\": \"+6 20 542 265\"\r\n        },\r\n        {\r\n            \"type\": \"LegalRepresentative\",\r\n            \"firstName\": \"Rafael\",\r\n            \"lastName\": \"Nadal\",\r\n            \"email\": \"rafael@atp.com\",\r\n            \"telephone\": \"+6 30 216 896\"\r\n        }\r\n    ]\r\n}\r\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{url}}/api/project/{{application_id}}/organization",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"api",
+								"project",
+								"{{application_id}}",
+								"organization"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "create project partner D",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "bb2e5240-87b5-4342-acdb-61190c6f66bc",
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"id": "8225973f-3148-4e94-902b-29d6f80684d1",
+								"exec": [
+									"const partner = pm.response.json();\r",
+									"\r",
+									"pm.test('applicant can create project Partner D', function() {\r",
+									"    pm.response.to.have.status(200);\r",
+									"    pm.variables.set('partnerIdD', partner.id);\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "basic",
+							"basic": [
+								{
+									"key": "password",
+									"value": "{{applicant_email}}",
+									"type": "string"
+								},
+								{
+									"key": "username",
+									"value": "{{applicant_email}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"abbreviation\": \"Partner D\",\r\n    \"role\": \"PARTNER\"\r\n}\r\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{url}}/api/project/{{application_id}}/partner",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"api",
+								"project",
+								"{{application_id}}",
+								"partner"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "create associated organization for Partner D",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "a79fe805-7a45-45b5-a116-22944417a411",
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"id": "f082eaef-cfa6-44cd-b071-51c89fbce099",
+								"exec": [
+									"const organization = pm.response.json();\r",
+									"\r",
+									"pm.test('applicant can create associated organization for Partner D', function() {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"pm.test('associated organization has correct name', function() {\r",
+									"    pm.expect(organization.nameInOriginalLanguage).to.eql(\"Name Original for \" + pm.variables.get('partnerIdD'));\r",
+									"    pm.expect(organization.nameInEnglish).to.eql(\"Name EN for \" + pm.variables.get('partnerIdD'));\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "basic",
+							"basic": [
+								{
+									"key": "password",
+									"value": "{{applicant_email}}",
+									"type": "string"
+								},
+								{
+									"key": "username",
+									"value": "{{applicant_email}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"partnerId\": \"{{partnerIdD}}\",\r\n    \"nameInOriginalLanguage\": \"Name Original for {{partnerIdD}}\",\r\n    \"nameInEnglish\": \"Name EN for {{partnerIdD}}\"\r\n}\r\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{url}}/api/project/{{application_id}}/organization",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"api",
+								"project",
+								"{{application_id}}",
+								"organization"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "delete project partner D together with AO",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "c65ed9ec-c450-4745-8ef2-16e19d6be553",
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"id": "84e015b6-75dc-403c-9c67-a63dd62a578d",
+								"exec": [
+									"pm.test('applicant can delete project Partner D', function() {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "basic",
+							"basic": [
+								{
+									"key": "password",
+									"value": "{{applicant_email}}",
+									"type": "string"
+								},
+								{
+									"key": "username",
+									"value": "{{applicant_email}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{url}}/api/project/{{application_id}}/partner/{{partnerIdD}}",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"api",
+								"project",
+								"{{application_id}}",
+								"partner",
+								"{{partnerIdD}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "check AssociatedOrganization D deleted A stays",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "b470739f-ad3d-4699-8c96-e7af00f36722",
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"id": "d629a4f3-1dcf-41ba-9155-11946c03019d",
+								"exec": [
+									"const page = pm.response.json();\r",
+									"\r",
+									"pm.test('applicant can fetch associated organizations for Project', function() {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"pm.test('there is now only one associated organization', function() {\r",
+									"    pm.expect(page.totalElements).to.eql(1);\r",
+									"    pm.expect(page.content[0].nameInEnglish).to.eql(\"Name EN for \" + pm.variables.get('partnerIdA'));\r",
+									"    pm.expect(page.content[0].nameInOriginalLanguage).to.eql(\"Name Original for \" + pm.variables.get('partnerIdA'));\r",
+									"});\r",
+									"\r",
+									"pm.test('when only one associated organization, sortNumber is 1', function() {\r",
+									"    pm.expect(page.content[0].sortNumber).to.eql(1);\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "basic",
+							"basic": [
+								{
+									"key": "password",
+									"value": "{{applicant_email}}",
+									"type": "string"
+								},
+								{
+									"key": "username",
+									"value": "{{applicant_email}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{url}}/api/project/{{application_id}}/organization",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"api",
+								"project",
+								"{{application_id}}",
+								"organization"
+							]
+						}
+					},
+					"response": []
 				}
 			],
 			"event": [
@@ -7310,7 +7692,7 @@
 	],
 	"variable": [
 		{
-			"id": "eb74a8ad-c3db-4cb1-b405-60257c6290a8",
+			"id": "bb72c51e-5864-427f-b01b-04f4eb00511d",
 			"key": "url",
 			"value": "specify_url_here"
 		}

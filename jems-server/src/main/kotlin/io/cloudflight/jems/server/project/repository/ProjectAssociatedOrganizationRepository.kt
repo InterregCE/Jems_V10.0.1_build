@@ -1,15 +1,21 @@
 package io.cloudflight.jems.server.project.repository
 
-import io.cloudflight.jems.server.project.entity.ProjectAssociatedOrganization
+import io.cloudflight.jems.server.project.entity.associatedorganization.ProjectAssociatedOrganization
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
 import org.springframework.data.domain.Sort
-import org.springframework.data.repository.PagingAndSortingRepository
+import org.springframework.data.jpa.repository.JpaRepository
 import java.util.Optional
 
-interface ProjectAssociatedOrganizationRepository : PagingAndSortingRepository<ProjectAssociatedOrganization, Long> {
+interface ProjectAssociatedOrganizationRepository : JpaRepository<ProjectAssociatedOrganization, Long> {
 
-    override fun findById(id: Long): Optional<ProjectAssociatedOrganization>
+    override fun findById(id: Long): Optional<ProjectAssociatedOrganization> {
+        throw UnsupportedOperationException("use findFirstByProjectIdAndId")
+    }
+
+    override fun deleteById(id: Long) {
+        throw UnsupportedOperationException("use delete with findFirstByProjectIdAndId")
+    }
 
     fun findFirstByProjectIdAndId(projectId: Long, id: Long): Optional<ProjectAssociatedOrganization>
 

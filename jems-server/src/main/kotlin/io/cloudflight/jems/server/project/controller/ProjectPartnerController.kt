@@ -1,7 +1,7 @@
 package io.cloudflight.jems.server.project.controller
 
 import io.cloudflight.jems.api.project.ProjectPartnerApi
-import io.cloudflight.jems.api.project.dto.partner.InputProjectPartnerContact
+import io.cloudflight.jems.api.project.dto.InputProjectContact
 import io.cloudflight.jems.api.project.dto.InputProjectPartnerContribution
 import io.cloudflight.jems.api.project.dto.partner.InputProjectPartnerCreate
 import io.cloudflight.jems.api.project.dto.partner.InputProjectPartnerAddress
@@ -25,6 +25,11 @@ class ProjectPartnerController(
     }
 
     @PreAuthorize("@projectAuthorization.canReadProject(#projectId)")
+    override fun getProjectPartnersForDropdown(projectId: Long, pageable: Pageable): List<OutputProjectPartner> {
+        return projectPartnerService.findAllByProjectIdForDropdown(projectId, pageable.sort)
+    }
+
+    @PreAuthorize("@projectAuthorization.canReadProject(#projectId)")
     override fun getProjectPartnerById(projectId: Long, id: Long): OutputProjectPartnerDetail {
         return projectPartnerService.getById(projectId, id)
     }
@@ -45,7 +50,7 @@ class ProjectPartnerController(
     }
 
     @PreAuthorize("@projectAuthorization.canUpdateProject(#projectId)")
-    override fun updateProjectPartnerContact(projectId: Long, id: Long, contacts: Set<InputProjectPartnerContact>): OutputProjectPartnerDetail {
+    override fun updateProjectPartnerContact(projectId: Long, id: Long, contacts: Set<InputProjectContact>): OutputProjectPartnerDetail {
         return projectPartnerService.updatePartnerContacts(projectId, id, contacts)
     }
 

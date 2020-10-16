@@ -1,13 +1,12 @@
-package io.cloudflight.jems.server.project.service
+package io.cloudflight.jems.server.project.service.associatedorganization
 
-import io.cloudflight.jems.api.project.dto.InputProjectAssociatedOrganizationCreate
-import io.cloudflight.jems.api.project.dto.InputProjectAssociatedOrganizationUpdate
-import io.cloudflight.jems.api.project.dto.OutputProjectAssociatedOrganization
-import io.cloudflight.jems.api.project.dto.OutputProjectAssociatedOrganizationDetail
+import io.cloudflight.jems.api.project.dto.associatedorganization.InputProjectAssociatedOrganizationCreate
+import io.cloudflight.jems.api.project.dto.associatedorganization.InputProjectAssociatedOrganizationUpdate
+import io.cloudflight.jems.api.project.dto.associatedorganization.OutputProjectAssociatedOrganization
+import io.cloudflight.jems.api.project.dto.associatedorganization.OutputProjectAssociatedOrganizationDetail
 import io.cloudflight.jems.server.exception.ResourceNotFoundException
 import io.cloudflight.jems.server.project.repository.ProjectAssociatedOrganizationRepository
 import io.cloudflight.jems.server.project.repository.partner.ProjectPartnerRepository
-import io.cloudflight.jems.server.project.repository.ProjectRepository
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
 import org.springframework.data.domain.Sort
@@ -17,54 +16,61 @@ import org.springframework.transaction.annotation.Transactional
 @Service
 class ProjectAssociatedOrganizationServiceImpl(
         private val projectPartnerRepo: ProjectPartnerRepository,
-        private val projectRepo: ProjectRepository,
         private val projectAssociatedOrganizationRepo: ProjectAssociatedOrganizationRepository
 ) : ProjectAssociatedOrganizationService {
+
     @Transactional(readOnly = true)
     override fun getById(projectId: Long, id: Long): OutputProjectAssociatedOrganizationDetail {
-        return projectAssociatedOrganizationRepo.findFirstByProjectIdAndId(projectId, id).map { it.toOutputProjectAssociatedOrganizationDetail() }
+        return projectAssociatedOrganizationRepo.findFirstByProjectIdAndId(projectId, id)
+            .map { it.toOutputProjectAssociatedOrganizationDetail() }
             .orElseThrow { ResourceNotFoundException("projectAssociatedOrganisation") }
     }
 
     @Transactional(readOnly = true)
     override fun findAllByProjectId(projectId: Long, page: Pageable): Page<OutputProjectAssociatedOrganization> {
-        return projectAssociatedOrganizationRepo.findAllByProjectId(projectId, page).map { it.toOutputProjectAssociatedOrganization() }
+        return projectAssociatedOrganizationRepo.findAllByProjectId(projectId, page)
+            .map { it.toOutputProjectAssociatedOrganization() }
     }
 
     @Transactional
     override fun create(projectId: Long, associatedOrganization: InputProjectAssociatedOrganizationCreate): OutputProjectAssociatedOrganizationDetail {
-        val project = projectRepo.findById(projectId).orElseThrow { ResourceNotFoundException("project") }
-        val partner = projectPartnerRepo.findById(associatedOrganization.partnerId).orElseThrow { ResourceNotFoundException("projectPartner") }
+        val partner = projectPartnerRepo.findFirstByProjectIdAndId(projectId, associatedOrganization.partnerId)
+            .orElseThrow { ResourceNotFoundException("projectPartner") }
 
-        val savedAssociatedOrganisation = projectAssociatedOrganizationRepo.save(associatedOrganization.toEntity(project = project, partner = partner))
+        var savedEntity = projectAssociatedOrganizationRepo.save(
+            associatedOrganization.toEntity(partner = partner)
+        )
 
-        val updatedAssociatedOrganisation = projectAssociatedOrganizationRepo.save(
-            savedAssociatedOrganisation.copy(
-                organizationAddress = associatedOrganization.organizationAddress?.toEntity(savedAssociatedOrganisation),
-                associatedOrganizationContacts = associatedOrganization.associatedOrganizationContacts?.map { it.toAssociatedOrganizationContact(savedAssociatedOrganisation) }?.toHashSet()))
+        savedEntity = savedEntity.copy(contacts = associatedOrganization.contacts.mapTo(HashSet()) { it.toEntity(savedEntity) })
+        if (associatedOrganization.address != null)
+            savedEntity = savedEntity.copy(addresses = mutableSetOf(associatedOrganization.address!!.toEntity(savedEntity.id!!)))
 
-        this.updateSort(projectId);
-
-        return updatedAssociatedOrganisation.toOutputProjectAssociatedOrganizationDetail()
+        savedEntity = projectAssociatedOrganizationRepo.save(savedEntity)
+        this.updateSort(projectId)
+        return savedEntity.toOutputProjectAssociatedOrganizationDetail()
     }
 
     @Transactional
     override fun update(projectId: Long, associatedOrganization: InputProjectAssociatedOrganizationUpdate): OutputProjectAssociatedOrganizationDetail {
         val oldAssociatedOrganisation = projectAssociatedOrganizationRepo.findFirstByProjectIdAndId(projectId, associatedOrganization.id)
             .orElseThrow { ResourceNotFoundException("projectAssociatedOrganisation") }
-        val projectPartner = projectPartnerRepo.findById(associatedOrganization.partnerId)
+        val projectPartner = projectPartnerRepo.findFirstByProjectIdAndId(projectId, associatedOrganization.partnerId)
             .orElseThrow { ResourceNotFoundException("projectPartner") }
+
+        val addressToSave = associatedOrganization.address?.toEntity(oldAssociatedOrganisation.id!!)
 
         val savedAssociatedOrganisation = projectAssociatedOrganizationRepo.save(
             oldAssociatedOrganisation.copy(
+                project = projectPartner.project,
                 partner = projectPartner,
-                organizationAddress = associatedOrganization.organizationAddress?.toEntity(oldAssociatedOrganisation),
-                associatedOrganizationContacts = associatedOrganization.associatedOrganizationContacts?.map { it.toAssociatedOrganizationContact(oldAssociatedOrganisation) }?.toHashSet()
+                nameInOriginalLanguage = associatedOrganization.nameInOriginalLanguage,
+                nameInEnglish = associatedOrganization.nameInEnglish,
+                addresses = if (addressToSave == null) mutableSetOf() else mutableSetOf(addressToSave),
+                contacts = associatedOrganization.contacts.mapTo(HashSet()) { it.toEntity(oldAssociatedOrganisation) }
             )
         )
 
         this.updateSort(projectId);
-
         return savedAssociatedOrganisation.toOutputProjectAssociatedOrganizationDetail()
     }
 
@@ -82,7 +88,10 @@ class ProjectAssociatedOrganizationServiceImpl(
 
     @Transactional
     override fun delete(projectId: Long, associatedOrganizationId: Long) {
-        this.projectAssociatedOrganizationRepo.deleteById(associatedOrganizationId)
+        projectAssociatedOrganizationRepo.delete(
+            projectAssociatedOrganizationRepo.findFirstByProjectIdAndId(projectId, associatedOrganizationId)
+                .orElseThrow { ResourceNotFoundException("projectAssociatedOrganisation") }
+        )
         this.updateSort(projectId)
     }
 }

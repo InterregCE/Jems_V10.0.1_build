@@ -7,18 +7,18 @@ import javax.persistence.Embeddable
 data class Contact(
 
     @Column
-    val title: String?,
+    val title: String? = null,
 
     @Column
-    val firstName: String?,
+    val firstName: String? = null,
 
     @Column
-    val lastName: String?,
+    val lastName: String? = null,
 
     @Column
-    val email: String?,
+    val email: String? = null,
 
     @Column
-    val telephone: String?
+    val telephone: String? = null
 
 )

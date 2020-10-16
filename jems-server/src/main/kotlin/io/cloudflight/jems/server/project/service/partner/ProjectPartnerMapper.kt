@@ -1,7 +1,7 @@
 package io.cloudflight.jems.server.project.service.partner
 
 import io.cloudflight.jems.api.project.dto.partner.InputProjectPartnerAddress
-import io.cloudflight.jems.api.project.dto.partner.InputProjectPartnerContact
+import io.cloudflight.jems.api.project.dto.InputProjectContact
 import io.cloudflight.jems.api.project.dto.InputProjectPartnerContribution
 import io.cloudflight.jems.api.project.dto.partner.InputProjectPartnerCreate
 import io.cloudflight.jems.api.project.dto.partner.OutputProjectPartner
@@ -62,7 +62,7 @@ fun InputProjectPartnerAddress.toEntity(partner: ProjectPartner) = ProjectPartne
     )
 )
 
-fun InputProjectPartnerContact.toEntity(partner: ProjectPartner) = ProjectPartnerContact(
+fun InputProjectContact.toEntity(partner: ProjectPartner) = ProjectPartnerContact(
     contactId = ProjectPartnerContactId(partner.id!!, type),
     contact = Contact(
         title = title,

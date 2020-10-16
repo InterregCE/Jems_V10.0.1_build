@@ -1,12 +1,8 @@
-package io.cloudflight.jems.api.project.dto.partner
+package io.cloudflight.jems.api.project.dto.associatedorganization
 
 import io.cloudflight.jems.api.project.dto.InputAddress
-import javax.validation.constraints.NotNull
 
-data class InputProjectPartnerAddress(
-
-    @field:NotNull(message = "project.partner.type.should.not.be.empty")
-    val type: ProjectPartnerAddressType,
+data class InputProjectAssociatedOrganizationAddress (
 
     override val country: String? = null,
     override val nutsRegion2: String? = null,

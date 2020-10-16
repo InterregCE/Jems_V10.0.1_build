@@ -1,9 +1,9 @@
 package io.cloudflight.jems.api.project
 
-import io.cloudflight.jems.api.project.dto.InputProjectAssociatedOrganizationCreate
-import io.cloudflight.jems.api.project.dto.InputProjectAssociatedOrganizationUpdate
-import io.cloudflight.jems.api.project.dto.OutputProjectAssociatedOrganization
-import io.cloudflight.jems.api.project.dto.OutputProjectAssociatedOrganizationDetail
+import io.cloudflight.jems.api.project.dto.associatedorganization.InputProjectAssociatedOrganizationCreate
+import io.cloudflight.jems.api.project.dto.associatedorganization.InputProjectAssociatedOrganizationUpdate
+import io.cloudflight.jems.api.project.dto.associatedorganization.OutputProjectAssociatedOrganization
+import io.cloudflight.jems.api.project.dto.associatedorganization.OutputProjectAssociatedOrganizationDetail
 import io.swagger.annotations.Api
 import io.swagger.annotations.ApiImplicitParam
 import io.swagger.annotations.ApiImplicitParams
@@ -23,6 +23,7 @@ import javax.validation.Valid
 @Api("Project Associated Organization")
 @RequestMapping("/api/project/{projectId}/organization")
 interface ProjectAssociatedOrganizationApi {
+
     @ApiOperation("Returns all associated organization")
     @ApiImplicitParams(
         ApiImplicitParam(paramType = "query", name = "page", dataType = "integer"),
@@ -30,27 +31,36 @@ interface ProjectAssociatedOrganizationApi {
         ApiImplicitParam(paramType = "query", name = "sort", dataType = "string", allowMultiple = true)
     )
     @GetMapping
-    fun getAssociatedOrganizations(@PathVariable projectId: Long, pageable: Pageable): Page<OutputProjectAssociatedOrganization>
+    fun getAssociatedOrganizations(
+        @PathVariable projectId: Long, pageable: Pageable
+    ): Page<OutputProjectAssociatedOrganization>
 
     @ApiOperation("Returns an associated organization by id")
     @GetMapping("/{id}")
-    fun getAssociatedOrganizationById(@PathVariable projectId: Long,
-                                      @PathVariable id: Long): OutputProjectAssociatedOrganizationDetail
+    fun getAssociatedOrganizationById(
+        @PathVariable projectId: Long,
+        @PathVariable id: Long
+    ): OutputProjectAssociatedOrganizationDetail
 
     @ApiOperation("Creates new associated organization")
     @PostMapping(consumes = [MediaType.APPLICATION_JSON_VALUE])
-    fun createAssociatedOrganization(@PathVariable projectId: Long,
-                                     @Valid @RequestBody associatedOrganization: InputProjectAssociatedOrganizationCreate
+    fun createAssociatedOrganization(
+        @PathVariable projectId: Long,
+        @Valid @RequestBody associatedOrganization: InputProjectAssociatedOrganizationCreate
     ): OutputProjectAssociatedOrganizationDetail
 
     @ApiOperation("Update an associated organization")
     @PutMapping(consumes = [MediaType.APPLICATION_JSON_VALUE])
-    fun updateAssociatedOrganization(@PathVariable projectId: Long,
-                                     @Valid @RequestBody associatedOrganization: InputProjectAssociatedOrganizationUpdate
+    fun updateAssociatedOrganization(
+        @PathVariable projectId: Long,
+        @Valid @RequestBody associatedOrganization: InputProjectAssociatedOrganizationUpdate
     ): OutputProjectAssociatedOrganizationDetail
 
     @ApiOperation("Delete an associated organization")
     @DeleteMapping("/{id}")
-    fun deleteAssociatedOrganization(@PathVariable projectId: Long,
-                                     @PathVariable id: Long)
+    fun deleteAssociatedOrganization(
+        @PathVariable projectId: Long,
+        @PathVariable id: Long
+    )
+
 }

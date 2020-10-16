@@ -1,11 +1,11 @@
 package io.cloudflight.jems.server.project.controller
 
 import io.cloudflight.jems.api.project.ProjectAssociatedOrganizationApi
-import io.cloudflight.jems.api.project.dto.OutputProjectAssociatedOrganization
-import io.cloudflight.jems.api.project.dto.OutputProjectAssociatedOrganizationDetail
-import io.cloudflight.jems.api.project.dto.InputProjectAssociatedOrganizationCreate
-import io.cloudflight.jems.api.project.dto.InputProjectAssociatedOrganizationUpdate
-import io.cloudflight.jems.server.project.service.ProjectAssociatedOrganizationService
+import io.cloudflight.jems.api.project.dto.associatedorganization.OutputProjectAssociatedOrganization
+import io.cloudflight.jems.api.project.dto.associatedorganization.OutputProjectAssociatedOrganizationDetail
+import io.cloudflight.jems.api.project.dto.associatedorganization.InputProjectAssociatedOrganizationCreate
+import io.cloudflight.jems.api.project.dto.associatedorganization.InputProjectAssociatedOrganizationUpdate
+import io.cloudflight.jems.server.project.service.associatedorganization.ProjectAssociatedOrganizationService
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
 import org.springframework.security.access.prepost.PreAuthorize
