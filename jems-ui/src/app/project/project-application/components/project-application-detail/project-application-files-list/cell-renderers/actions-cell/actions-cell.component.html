@@ -1,6 +1,6 @@
 <button *ngIf="canChangeFile()" mat-icon-button color="accent"
         (click)="edit.emit(file)"
-        matTooltip="Test">
+        matTooltip="{{'file.table.action.description.tooltip' | translate}}">
     <i class="fas fa-edit"></i>
 </button>
 <button mat-icon-button color="accent"
