@@ -57,6 +57,6 @@ data class ProjectPartner(
 
 ) {
     override fun toString(): String {
-        return "${this.javaClass.simpleName}(id=$id, projectId=$project.id, abbreviation=$abbreviation, role=$role)"
+        return "${this.javaClass.simpleName}(id=$id, projectId=${project.id}, abbreviation=$abbreviation, role=$role, sortNumber=$sortNumber)"
     }
 }
