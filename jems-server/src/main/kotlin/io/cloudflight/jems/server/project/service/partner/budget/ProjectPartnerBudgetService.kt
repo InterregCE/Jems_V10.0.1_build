@@ -39,4 +39,8 @@ interface ProjectPartnerBudgetService {
     fun updateInfrastructure(projectId: Long, partnerId: Long, infrastructures: List<InputBudget>): List<InputBudget>
     //endregion Infrastructure
 
+    fun getOfficeAdministrationFlatRate(projectId: Long, partnerId: Long): Int?
+
+    fun updateOfficeAdministrationFlatRate(projectId: Long, partnerId: Long, flatRate: Int?): Int?
+
 }

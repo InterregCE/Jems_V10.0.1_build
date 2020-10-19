@@ -2,6 +2,7 @@ package io.cloudflight.jems.server.project.controller
 
 import io.cloudflight.jems.api.project.ProjectPartnerBudgetApi
 import io.cloudflight.jems.api.project.dto.partner.budget.InputBudget
+import io.cloudflight.jems.api.project.dto.partner.budget.InputFlatRate
 import io.cloudflight.jems.server.project.service.partner.budget.ProjectPartnerBudgetService
 import org.springframework.security.access.prepost.PreAuthorize
 import org.springframework.web.bind.annotation.RestController
@@ -59,6 +60,16 @@ class ProjectPartnerBudgetController(
     @PreAuthorize("@projectAuthorization.canUpdateProject(#projectId)")
     override fun updateBudgetInfrastructure(projectId: Long, partnerId: Long, infrastructures: List<InputBudget>): List<InputBudget> {
         return projectPartnerBudgetService.updateInfrastructure(projectId, partnerId, infrastructures)
+    }
+
+    @PreAuthorize("@projectAuthorization.canReadProject(#projectId)")
+    override fun getOfficeAdministrationFlatRate(projectId: Long, partnerId: Long): Int? {
+        return projectPartnerBudgetService.getOfficeAdministrationFlatRate(projectId, partnerId)
+    }
+
+    @PreAuthorize("@projectAuthorization.canUpdateProject(#projectId)")
+    override fun updateOfficeAdministrationFlatRate(projectId: Long, partnerId: Long, flatRate: InputFlatRate): Int? {
+        return projectPartnerBudgetService.updateOfficeAdministrationFlatRate(projectId, partnerId, flatRate.value)
     }
 
 }

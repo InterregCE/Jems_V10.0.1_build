@@ -1,6 +1,7 @@
 package io.cloudflight.jems.api.project
 
 import io.cloudflight.jems.api.project.dto.partner.budget.InputBudget
+import io.cloudflight.jems.api.project.dto.partner.budget.InputFlatRate
 import io.swagger.annotations.Api
 import io.swagger.annotations.ApiOperation
 import org.springframework.http.MediaType
@@ -104,5 +105,23 @@ interface ProjectPartnerBudgetApi {
         @Valid @RequestBody infrastructures: List<InputBudget>
     ): List<InputBudget>
     //endregion Infrastructure
+
+    //region Office and Administration
+
+    @ApiOperation("Get project partner Budget: Office and Administration flat rate")
+    @GetMapping("/officeadministration")
+    fun getOfficeAdministrationFlatRate(
+        @PathVariable projectId: Long,
+        @PathVariable partnerId: Long
+    ): Int?
+
+    @ApiOperation("Update project partner Budget: Infrastructure")
+    @PutMapping("/officeadministration", consumes = [MediaType.APPLICATION_JSON_VALUE])
+    fun updateOfficeAdministrationFlatRate(
+        @PathVariable projectId: Long,
+        @PathVariable partnerId: Long,
+        @Valid @RequestBody flatRate: InputFlatRate
+    ): Int?
+    //endregion Office and Administration
 
 }

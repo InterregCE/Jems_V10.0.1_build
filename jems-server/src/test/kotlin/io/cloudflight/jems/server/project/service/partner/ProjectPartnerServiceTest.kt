@@ -1,4 +1,4 @@
-package io.cloudflight.jems.server.project.service
+package io.cloudflight.jems.server.project.service.partner
 
 import io.cloudflight.jems.api.call.dto.CallStatus
 import io.cloudflight.jems.api.project.dto.partner.InputProjectPartnerContact
@@ -16,11 +16,6 @@ import io.cloudflight.jems.server.project.entity.partner.ProjectPartner
 import io.cloudflight.jems.server.project.entity.ProjectStatus
 import io.cloudflight.jems.server.project.repository.partner.ProjectPartnerRepository
 import io.cloudflight.jems.server.project.repository.ProjectRepository
-import io.cloudflight.jems.server.project.service.partner.ProjectPartnerService
-import io.cloudflight.jems.server.project.service.partner.ProjectPartnerServiceImpl
-import io.cloudflight.jems.server.project.service.partner.toEntity
-import io.cloudflight.jems.server.project.service.partner.toOutputProjectPartner
-import io.cloudflight.jems.server.project.service.partner.toOutputProjectPartnerDetail
 import io.cloudflight.jems.server.security.model.LocalCurrentUser
 import io.cloudflight.jems.server.security.service.SecurityService
 import io.cloudflight.jems.server.user.entity.User

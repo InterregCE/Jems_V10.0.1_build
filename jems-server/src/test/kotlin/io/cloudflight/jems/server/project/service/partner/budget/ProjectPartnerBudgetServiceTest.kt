@@ -21,6 +21,7 @@ import io.cloudflight.jems.server.project.repository.partner.budget.ProjectPartn
 import io.cloudflight.jems.server.project.repository.partner.budget.ProjectPartnerBudgetEquipmentRepository
 import io.cloudflight.jems.server.project.repository.partner.budget.ProjectPartnerBudgetExternalRepository
 import io.cloudflight.jems.server.project.repository.partner.budget.ProjectPartnerBudgetInfrastructureRepository
+import io.cloudflight.jems.server.project.repository.partner.budget.ProjectPartnerBudgetOfficeAdministrationRepository
 import io.cloudflight.jems.server.project.repository.partner.budget.ProjectPartnerBudgetStaffCostRepository
 import io.cloudflight.jems.server.project.repository.partner.budget.ProjectPartnerBudgetTravelRepository
 import io.cloudflight.jems.server.user.entity.User
@@ -28,6 +29,7 @@ import io.cloudflight.jems.server.user.entity.UserRole
 import io.mockk.MockKAnnotations
 import io.mockk.every
 import io.mockk.impl.annotations.MockK
+import io.mockk.impl.annotations.RelaxedMockK
 import io.mockk.slot
 import io.mockk.verify
 import org.assertj.core.api.Assertions.assertThat
@@ -79,7 +81,7 @@ internal class ProjectPartnerBudgetServiceTest {
             applicant = user,
             projectStatus = projectStatus)
 
-        private val projectPartner = ProjectPartner(
+        val projectPartner = ProjectPartner(
             id = 1,
             project = project,
             abbreviation = "partner",
@@ -170,6 +172,9 @@ internal class ProjectPartnerBudgetServiceTest {
     @MockK
     lateinit var projectPartnerBudgetInfrastructureRepository: ProjectPartnerBudgetInfrastructureRepository
 
+    @RelaxedMockK
+    lateinit var projectPartnerBudgetOfficeAdministrationRepository: ProjectPartnerBudgetOfficeAdministrationRepository
+
     lateinit var projectPartnerBudgetService: ProjectPartnerBudgetService
 
     @BeforeAll
@@ -181,7 +186,8 @@ internal class ProjectPartnerBudgetServiceTest {
             projectPartnerBudgetTravelRepository,
             projectPartnerBudgetExternalRepository,
             projectPartnerBudgetEquipmentRepository,
-            projectPartnerBudgetInfrastructureRepository
+            projectPartnerBudgetInfrastructureRepository,
+            projectPartnerBudgetOfficeAdministrationRepository
         )
     }
 
