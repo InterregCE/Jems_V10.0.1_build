@@ -1,7 +1,7 @@
 import {ChangeDetectionStrategy, Component, OnDestroy} from '@angular/core';
 import {BaseComponent} from '@common/components/base-component';
 import {OutputProgrammeData, ProgrammeDataService} from '@cat/api';
-import {catchError, flatMap, tap} from 'rxjs/operators';
+import {catchError, mergeMap, tap} from 'rxjs/operators';
 import {Log} from '../../../../common/utils/log';
 import {HttpErrorResponse} from '@angular/common/http';
 import {merge, Subject} from 'rxjs';
@@ -30,7 +30,7 @@ export class ProgrammeLanguagesPageComponent extends BaseComponent implements On
 
   private savedProgramme$ = this.saveProgrammeData$
     .pipe(
-      flatMap(programmeUpdate => this.programmeDataService.update(programmeUpdate)),
+      mergeMap(programmeUpdate => this.programmeDataService.update(programmeUpdate)),
       tap(saved => Log.info('Updated programme:', this, saved)),
       tap(() => this.programmeSaveSuccess$.next(true)),
       tap(() => this.programmeSaveError$.next(null)),

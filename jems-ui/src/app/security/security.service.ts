@@ -1,7 +1,7 @@
 import {Injectable} from '@angular/core';
 import {AuthenticationService, LoginRequest, OutputCurrentUser, OutputUserWithRole, UserService} from '@cat/api';
 import {Observable, of, ReplaySubject} from 'rxjs';
-import {catchError, flatMap, map, shareReplay, take, tap} from 'rxjs/operators';
+import {catchError, mergeMap, map, shareReplay, take, tap} from 'rxjs/operators';
 import {Log} from '../common/utils/log';
 
 @Injectable({providedIn: 'root'})
@@ -12,7 +12,7 @@ export class SecurityService {
   private currentUserDetails$ = this.myCurrentUser
     .pipe(
       map(user => user?.id),
-      flatMap(id => (id && id > 0) ? this.userService.getById(id) : of(null)),
+      mergeMap(id => (id && id > 0) ? this.userService.getById(id) : of(null)),
       tap(user => Log.info('Current user details loaded', this, user)),
       shareReplay(1)
     );

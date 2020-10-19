@@ -1,7 +1,7 @@
 import {ChangeDetectionStrategy, Component, Input} from '@angular/core';
 import {combineLatest, Subject} from 'rxjs';
 import {MatSort} from '@angular/material/sort';
-import {flatMap, map, startWith, take, tap} from 'rxjs/operators';
+import {mergeMap, map, startWith, take, tap} from 'rxjs/operators';
 import {Tables} from '../../../../../common/utils/tables';
 import {Log} from '../../../../../common/utils/log';
 import {ProjectPartnerService} from '@cat/api';
@@ -37,7 +37,7 @@ export class ProjectApplicationFormPartnerSectionComponent {
       )
     ])
       .pipe(
-        flatMap(([pageIndex, pageSize, sort]) =>
+        mergeMap(([pageIndex, pageSize, sort]) =>
           // put lead partner on top by default
           this.projectPartnerService.getProjectPartners(this.projectId, pageIndex, pageSize, ['role,asc', sort])),
         tap(page => Log.info('Fetched the project partners:', this, page.content)),

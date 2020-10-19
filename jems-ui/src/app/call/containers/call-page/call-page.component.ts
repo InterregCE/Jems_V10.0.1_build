@@ -1,6 +1,6 @@
 import {ChangeDetectionStrategy, Component} from '@angular/core';
 import {combineLatest, Subject} from 'rxjs';
-import {flatMap, map, startWith, tap} from 'rxjs/operators';
+import {mergeMap, map, startWith, tap} from 'rxjs/operators';
 import {Tables} from '../../../common/utils/tables';
 import {Log} from '../../../common/utils/log';
 import {MatSort} from '@angular/material/sort';
@@ -32,7 +32,7 @@ export class CallPageComponent {
       )
     ])
       .pipe(
-        flatMap(([pageIndex, pageSize, sort]) =>
+        mergeMap(([pageIndex, pageSize, sort]) =>
           this.callService.getCalls(pageIndex, pageSize, sort)),
         tap(page => Log.info('Fetched the Calls:', this, page.content)),
       );

@@ -11,7 +11,7 @@ import {
   ProgrammeFundService
 } from '@cat/api'
 import {BaseComponent} from '@common/components/base-component';
-import {catchError, flatMap, map, startWith, take, takeUntil, tap} from 'rxjs/operators';
+import {catchError, mergeMap, map, startWith, take, takeUntil, tap} from 'rxjs/operators';
 import {Log} from '../../../common/utils/log';
 import {ActivatedRoute} from '@angular/router';
 import {combineLatest, merge, Subject} from 'rxjs';
@@ -57,7 +57,7 @@ export class CallConfigurationComponent extends BaseComponent {
 
   private publishedCall$ = this.publishCall$
     .pipe(
-      flatMap(callUpdate => this.callService.publishCall(callUpdate)),
+      mergeMap(callUpdate => this.callService.publishCall(callUpdate)),
       tap(() => this.redirectToCallOverview()),
       tap(published => this.eventBusService.newSuccessMessage(
         CallPageComponent.name,

@@ -2,7 +2,7 @@ import {ChangeDetectionStrategy, Component, Input, OnInit} from '@angular/core';
 import {BaseComponent} from '@common/components/base-component';
 import {merge, Observable, Subject} from 'rxjs';
 import {I18nValidationError} from '@common/validation/i18n-validation-error';
-import {catchError, flatMap, map, tap} from 'rxjs/operators';
+import {catchError, mergeMap, map, tap} from 'rxjs/operators';
 import {Log} from '../../../../../common/utils/log';
 import {HttpErrorResponse} from '@angular/common/http';
 import {InputProjectPartnership, ProjectDescriptionService} from '@cat/api';
@@ -41,7 +41,7 @@ export class ProjectApplicationFormProjectPartnershipSectionComponent extends Ba
 
     const updatedProjectDescription$ = this.updateProjectDescription$
       .pipe(
-        flatMap((data) => this.projectDescriptionService.updateProjectPartnership(this.projectId, data)),
+        mergeMap((data) => this.projectDescriptionService.updateProjectPartnership(this.projectId, data)),
         tap(() => this.saveSuccess$.next(true)),
         tap(() => this.saveError$.next(null)),
         tap(saved => Log.info('Updated project partnership:', this, saved)),

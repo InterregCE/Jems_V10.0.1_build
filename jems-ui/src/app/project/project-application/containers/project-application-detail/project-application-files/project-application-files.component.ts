@@ -2,7 +2,7 @@ import {ChangeDetectionStrategy, Component, Input} from '@angular/core';
 import {PermissionService} from '../../../../../security/permissions/permission.service';
 import {ProjectStore} from '../services/project-store.service';
 import {combineLatest, ReplaySubject, Subject} from 'rxjs';
-import {catchError, flatMap, map, startWith, take, takeUntil, tap} from 'rxjs/operators';
+import {catchError, mergeMap, map, startWith, take, takeUntil, tap} from 'rxjs/operators';
 import {BaseComponent} from '@common/components/base-component';
 import {Permission} from '../../../../../security/permissions/permission';
 import {OutputProject, OutputProjectFile, OutputProjectStatus, ProjectFileStorageService} from '@cat/api';
@@ -45,7 +45,7 @@ export class ProjectApplicationFilesComponent extends BaseComponent {
     this.refreshPage$.pipe(startWith(null))
   ])
     .pipe(
-      flatMap(([pageIndex, pageSize, sort]) =>
+      mergeMap(([pageIndex, pageSize, sort]) =>
         this.projectFileStorageService.getFilesForProject(this.fileType, this.projectId, pageIndex, pageSize, sort)),
       tap(page => Log.info('Fetched the project files:', this, page.content)),
     );

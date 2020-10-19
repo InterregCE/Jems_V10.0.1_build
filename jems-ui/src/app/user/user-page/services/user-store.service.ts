@@ -1,7 +1,7 @@
 import {Injectable} from '@angular/core';
 import {merge, Observable, ReplaySubject, Subject} from 'rxjs';
 import {InputUserUpdate, OutputUserWithRole, UserService} from '@cat/api';
-import {catchError, flatMap, tap} from 'rxjs/operators';
+import {catchError, mergeMap, tap} from 'rxjs/operators';
 import {Log} from '../../../common/utils/log';
 import {I18nValidationError} from '@common/validation/i18n-validation-error';
 import {HttpErrorResponse} from '@angular/common/http';
@@ -18,14 +18,14 @@ export class UserStore {
 
   private userById$ = this.userId$
     .pipe(
-      flatMap(id => this.userService.getById(id)),
+      mergeMap(id => this.userService.getById(id)),
       tap(user => Log.info('Fetched user:', this, user)),
       tap(user => this.userName$.next(`${user.name} ${user.surname}`))
     );
 
   private savedUser$ = this.saveUser$
     .pipe(
-      flatMap(userUpdate => this.userService.update(userUpdate)),
+      mergeMap(userUpdate => this.userService.update(userUpdate)),
       tap(saved => Log.info('Updated user:', this, saved)),
       tap(user => this.userName$.next(`${user.name} ${user.surname}`)),
       tap(() => this.userSaveSuccess$.next(true)),

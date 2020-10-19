@@ -2,7 +2,7 @@ import {ChangeDetectionStrategy, Component} from '@angular/core';
 import {Permission} from '../../../../security/permissions/permission';
 import {combineLatest, Subject} from 'rxjs';
 import {MatSort} from '@angular/material/sort';
-import {flatMap, map, startWith, tap} from 'rxjs/operators';
+import {mergeMap, map, startWith, tap} from 'rxjs/operators';
 import {Tables} from '../../../../common/utils/tables';
 import {Log} from '../../../../common/utils/log';
 import {IndicatorsStore} from '../../services/indicators-store.service';
@@ -41,7 +41,7 @@ export class ProgrammeIndicatorsOverviewPageComponent extends BaseComponent {
       )
     ])
       .pipe(
-        flatMap(([pageIndex, pageSize, sort]) =>
+        mergeMap(([pageIndex, pageSize, sort]) =>
           this.programmeIndicatorService.getAllIndicatorOutput(pageIndex, pageSize, sort)),
         tap(page => Log.info('Fetched the Final Indicators:', this, page.content)),
       );
@@ -57,7 +57,7 @@ export class ProgrammeIndicatorsOverviewPageComponent extends BaseComponent {
       )
     ])
       .pipe(
-        flatMap(([pageIndex, pageSize, sort]) =>
+        mergeMap(([pageIndex, pageSize, sort]) =>
           this.programmeIndicatorService.getAllIndicatorResult(pageIndex, pageSize, sort)),
         tap(page => Log.info('Fetched the Result Indicators:', this, page.content)),
       );

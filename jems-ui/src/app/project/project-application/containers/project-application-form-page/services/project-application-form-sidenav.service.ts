@@ -1,7 +1,7 @@
 import {Injectable} from '@angular/core';
 import {SideNavService} from '@common/components/side-nav/side-nav.service';
 import {combineLatest, Observable, Subject} from 'rxjs';
-import {flatMap, map, takeUntil, tap} from 'rxjs/operators';
+import {mergeMap, map, takeUntil, tap} from 'rxjs/operators';
 import {OutputProjectPartner, OutputProjectStatus, ProjectPartnerService, WorkPackageService} from '@cat/api';
 import {HeadlineRoute} from '@common/components/side-nav/headline-route';
 import {Log} from '../../../../../common/utils/log';
@@ -20,7 +20,7 @@ export class ProjectApplicationFormSidenavService {
 
   private partners$: Observable<HeadlineRoute[]> = this.fetchPartners$
     .pipe(
-      flatMap(() =>
+      mergeMap(() =>
         this.projectPartnerService.getProjectPartners(this.projectId, 0, 100, ['role,asc', 'sortNumber,asc'])
       ),
       map(page => page.content),
@@ -40,7 +40,7 @@ export class ProjectApplicationFormSidenavService {
 
   private packages$: Observable<HeadlineRoute[]> = this.fetchPackages$
     .pipe(
-      flatMap(() =>
+      mergeMap(() =>
         this.workPackageService.getWorkPackagesByProjectId(this.projectId, 0, 100, 'id,asc')
       ),
       map(page => page.content),

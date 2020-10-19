@@ -1,7 +1,7 @@
 import {ChangeDetectionStrategy, Component} from '@angular/core';
 import {BaseComponent} from '@common/components/base-component';
 import {InputProgrammeStrategy, ProgrammeStrategyService} from '@cat/api';
-import {catchError, flatMap, tap} from 'rxjs/operators';
+import {catchError, mergeMap, tap} from 'rxjs/operators';
 import {Log} from '../../../../common/utils/log';
 import {HttpErrorResponse} from '@angular/common/http';
 import {merge, Subject} from 'rxjs';
@@ -28,7 +28,7 @@ export class ProgrammeStrategiesPageComponent extends BaseComponent {
 
   private savedStrategies$ = this.saveStrategies$
     .pipe(
-      flatMap(strategies => this.programmeStrategyService.updateProgrammeStrategies(strategies)),
+      mergeMap(strategies => this.programmeStrategyService.updateProgrammeStrategies(strategies)),
       tap(() => this.strategiesSaveSuccess$.next(true)),
       tap(() => this.strategiesSaveError$.next(null)),
       tap(saved => Log.info('Saved strategies:', this, saved)),

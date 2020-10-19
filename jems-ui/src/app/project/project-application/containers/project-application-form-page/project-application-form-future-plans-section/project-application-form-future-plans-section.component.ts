@@ -3,7 +3,7 @@ import {BaseComponent} from '@common/components/base-component';
 import {merge, Observable, Subject} from 'rxjs';
 import {ProjectDescriptionService, InputProjectLongTermPlans} from '@cat/api';
 import {I18nValidationError} from '@common/validation/i18n-validation-error';
-import {catchError, flatMap, map, tap} from 'rxjs/operators';
+import {catchError, mergeMap, map, tap} from 'rxjs/operators';
 import {Log} from '../../../../../common/utils/log';
 import {HttpErrorResponse} from '@angular/common/http';
 import {ProjectApplicationFormStore} from '../services/project-application-form-store.service';
@@ -39,7 +39,7 @@ export class ProjectApplicationFormFuturePlansSectionComponent extends BaseCompo
 
     const updatedProjectDescription$ = this.updateProjectDescription$
       .pipe(
-        flatMap((data) => this.projectDescriptionService.updateProjectLongTermPlans(this.projectId, data)),
+        mergeMap((data) => this.projectDescriptionService.updateProjectLongTermPlans(this.projectId, data)),
         tap(() => this.saveSuccess$.next(true)),
         tap(() => this.saveError$.next(null)),
         tap(saved => Log.info('Updated project long-term plans:', this, saved)),

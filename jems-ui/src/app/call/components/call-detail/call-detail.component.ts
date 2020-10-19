@@ -98,7 +98,7 @@ export class CallDetailComponent extends BaseComponent implements OnInit {
       description: this.callForm?.controls?.description?.value,
       lengthOfPeriod: this.callForm?.controls?.lengthOfPeriod?.value,
       priorityPolicies: this.priorityCheckboxes
-        .flatMap(checkbox => checkbox.getCheckedChildPolicies()),
+        .mergeMap(checkbox => checkbox.getCheckedChildPolicies()),
       strategies: this.buildUpdateEntityStrategies(),
       funds: this.buildUpdateEntityFunds(),
     }
