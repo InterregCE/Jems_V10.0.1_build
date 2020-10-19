@@ -6,6 +6,7 @@ import io.cloudflight.jems.api.user.dto.InputUserCreate
 import io.cloudflight.jems.api.user.dto.InputUserUpdate
 import io.cloudflight.jems.api.user.dto.OutputUserWithRole
 import io.cloudflight.jems.server.security.ADMINISTRATOR
+import io.cloudflight.jems.server.security.service.SecurityService
 import io.cloudflight.jems.server.user.service.UserService
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
@@ -14,7 +15,8 @@ import org.springframework.web.bind.annotation.RestController
 
 @RestController
 class UserController(
-    val userService: UserService
+    val userService: UserService,
+    val securityService: SecurityService
 ) : UserApi {
 
     @PreAuthorize("hasRole('$ADMINISTRATOR')")
@@ -37,8 +39,13 @@ class UserController(
         return userService.update(user)
     }
 
-    @PreAuthorize("@userAuthorization.canUpdateUser(#userId)")
+    @PreAuthorize("@userAuthorization.isAdmin()")
     override fun changePassword(userId: Long, passwordData: InputPassword) {
         this.userService.changePassword(userId, passwordData)
     }
+
+    override fun changeMyPassword(passwordData: InputPassword) {
+        this.userService.changePassword(securityService.currentUser?.user?.id!!, passwordData)
+    }
+
 }

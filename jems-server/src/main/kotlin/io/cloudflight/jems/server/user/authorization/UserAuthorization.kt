@@ -2,14 +2,15 @@ package io.cloudflight.jems.server.user.authorization
 
 import io.cloudflight.jems.api.user.dto.InputUserUpdate
 import io.cloudflight.jems.server.security.service.SecurityService
+import io.cloudflight.jems.server.security.service.authorization.Authorization
 import io.cloudflight.jems.server.user.service.UserService
 import org.springframework.stereotype.Component
 
 @Component
 class UserAuthorization(
-    val securityService: SecurityService,
+    override val securityService: SecurityService,
     val userService: UserService
-) {
+): Authorization(securityService) {
 
     fun canUpdateUser(userId: Long): Boolean =
         securityService.currentUser?.isAdmin!! ||
