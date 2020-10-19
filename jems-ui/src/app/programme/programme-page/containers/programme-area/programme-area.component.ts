@@ -76,7 +76,7 @@ export class ProgrammeAreaComponent extends BaseComponent implements OnInit {
       tap(() => this.regionSaveSuccess$.next(true)),
       map(programmeData => programmeData.programmeNuts)
     );
-  selectionChanged$ = new ReplaySubject<ProgrammeRegionCheckbox[]>();
+  selectionChanged$ = new ReplaySubject<ProgrammeRegionCheckbox[]>(1);
   selectedRegions$ = this.selectionChanged$
     .pipe(
       map(selected => this.getSelected(selected)),

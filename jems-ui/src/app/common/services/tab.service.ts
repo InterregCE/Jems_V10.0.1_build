@@ -28,7 +28,7 @@ export class TabService {
   }
 
   private getCurrentTab(key: string): ReplaySubject<number> {
-    const currentTab$ = this.currentTabs.get(key) || new ReplaySubject<number>();
+    const currentTab$ = this.currentTabs.get(key) || new ReplaySubject<number>(1);
     this.currentTabs.set(key, currentTab$);
     return currentTab$;
   }

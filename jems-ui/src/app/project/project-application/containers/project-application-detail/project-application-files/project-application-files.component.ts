@@ -27,7 +27,7 @@ export class ProjectApplicationFilesComponent extends BaseComponent {
   fileType: OutputProjectFile.TypeEnum;
 
   uploadSuccess$ = new Subject<boolean>();
-  uploadError$ = new ReplaySubject<I18nValidationError | null>();
+  uploadError$ = new ReplaySubject<I18nValidationError | null>(1);
 
   newPageSize$ = new Subject<number>();
   newPageIndex$ = new Subject<number>();

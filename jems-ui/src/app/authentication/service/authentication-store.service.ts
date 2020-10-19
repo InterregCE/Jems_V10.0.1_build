@@ -7,7 +7,7 @@ import {I18nValidationError} from '@common/validation/i18n-validation-error';
 })
 export class AuthenticationStore {
 
-  private authenticationProblem$: ReplaySubject<I18nValidationError | null> = new ReplaySubject();
+  private authenticationProblem$: ReplaySubject<I18nValidationError | null> = new ReplaySubject(1);
 
   getAuthenticationProblem(): Observable<I18nValidationError | null> {
     return this.authenticationProblem$.asObservable();
