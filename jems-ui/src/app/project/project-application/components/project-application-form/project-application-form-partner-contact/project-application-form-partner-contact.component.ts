@@ -3,9 +3,9 @@ import {
   ChangeDetectorRef,
   Component,
   EventEmitter,
-  Input,
+  Input, OnChanges,
   OnInit,
-  Output
+  Output, SimpleChanges
 } from '@angular/core';
 import {FormBuilder, FormGroup, Validators} from '@angular/forms';
 import {ActivatedRoute} from '@angular/router';
@@ -21,7 +21,7 @@ import {Permission} from '../../../../../security/permissions/permission';
   styleUrls: ['./project-application-form-partner-contact.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class ProjectApplicationFormPartnerContactComponent extends ViewEditForm implements OnInit {
+export class ProjectApplicationFormPartnerContactComponent extends ViewEditForm implements OnInit, OnChanges {
   Permission = Permission;
 
   @Input()
@@ -39,7 +39,7 @@ export class ProjectApplicationFormPartnerContactComponent extends ViewEditForm 
     partnerContactTitle: ['', Validators.maxLength(25)],
     partnerContactFirstName: ['', Validators.maxLength(50)],
     partnerContactLastName: ['', Validators.maxLength(50)],
-    partnerContactEmail:['', Validators.compose([
+    partnerContactEmail: ['', Validators.compose([
       Validators.maxLength(255),
       Validators.email
     ])],
@@ -82,8 +82,8 @@ export class ProjectApplicationFormPartnerContactComponent extends ViewEditForm 
   }
 
   private static getValidatedDataToEmit(legalRepresentative: InputProjectPartnerContact,
-                                        contactPerson: InputProjectPartnerContact): InputProjectPartnerContact[]{
-    const dataToEmit : InputProjectPartnerContact[] = [];
+                                        contactPerson: InputProjectPartnerContact): InputProjectPartnerContact[] {
+    const dataToEmit: InputProjectPartnerContact[] = [];
     if (!ProjectApplicationFormPartnerContactComponent.isContactDtoEmpty(legalRepresentative)) {
       dataToEmit.push(legalRepresentative);
     }
@@ -103,6 +103,12 @@ export class ProjectApplicationFormPartnerContactComponent extends ViewEditForm 
   ngOnInit(): void {
     super.ngOnInit();
     this.enterViewMode();
+  }
+
+  ngOnChanges(changes: SimpleChanges) {
+    if (changes.partner) {
+      this.changeFormState$.next(FormState.VIEW);
+    }
   }
 
   protected enterViewMode(): void {

@@ -7,12 +7,14 @@ import {HttpTestingController} from '@angular/common/http/testing';
 import {ActivatedRoute} from '@angular/router';
 import {PartnerBudgetTable} from '../../../../model/partner-budget-table';
 import {PartnerBudgetTableType} from '../../../../model/partner-budget-table-type';
+import {ProjectPartnerStore} from '../../services/project-partner-store.service';
+import {of} from 'rxjs';
 
 describe('ProjectApplicationPartnerBudgetPageComponent', () => {
   let component: ProjectApplicationPartnerBudgetPageComponent;
   let fixture: ComponentFixture<ProjectApplicationPartnerBudgetPageComponent>;
-
   let httpTestingController: HttpTestingController;
+  let partnerStore: ProjectPartnerStore;
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
@@ -32,9 +34,11 @@ describe('ProjectApplicationPartnerBudgetPageComponent', () => {
     })
       .compileComponents();
     httpTestingController = TestBed.inject(HttpTestingController);
+    partnerStore = TestBed.inject(ProjectPartnerStore);
   }));
 
   beforeEach(() => {
+    spyOn(partnerStore, 'getProjectPartner').and.returnValue(of({id: 2}));
     fixture = TestBed.createComponent(ProjectApplicationPartnerBudgetPageComponent);
     component = fixture.componentInstance;
     component.partnerId = 2;

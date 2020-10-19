@@ -4,7 +4,9 @@ import {
   Component,
   EventEmitter,
   Input,
+  OnChanges,
   Output,
+  SimpleChanges,
 } from '@angular/core';
 import {FormBuilder, FormGroup, Validators} from '@angular/forms';
 import {ViewEditForm} from '@common/components/forms/view-edit-form';
@@ -19,8 +21,10 @@ import {Permission} from '../../../../../security/permissions/permission';
   styleUrls: ['./project-application-form-partner-address.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class ProjectApplicationFormPartnerAddressComponent extends ViewEditForm {
+export class ProjectApplicationFormPartnerAddressComponent extends ViewEditForm implements OnChanges {
 
+  @Input()
+  partnerId: number;
   @Input()
   nutsCountry: any;
   @Input()
@@ -37,8 +41,6 @@ export class ProjectApplicationFormPartnerAddressComponent extends ViewEditForm 
   organizationDetails: OutputProjectPartnerAddress[];
   @Input()
   editable: boolean;
-  @Input()
-  showHomePage: boolean;
 
   @Output()
   changeCountry = new EventEmitter<any>();
@@ -92,8 +94,8 @@ export class ProjectApplicationFormPartnerAddressComponent extends ViewEditForm 
 
   private static isOrganizationDtoEmpty(partnerOrganizationDetails: InputProjectPartnerAddress): boolean {
     return !(partnerOrganizationDetails.country || partnerOrganizationDetails.nutsRegion2 || partnerOrganizationDetails.nutsRegion3 ||
-        partnerOrganizationDetails.street || partnerOrganizationDetails.houseNumber || partnerOrganizationDetails.postalCode ||
-        partnerOrganizationDetails.city );
+      partnerOrganizationDetails.street || partnerOrganizationDetails.houseNumber || partnerOrganizationDetails.postalCode ||
+      partnerOrganizationDetails.city);
   }
 
   private static getValidatedDataToEmit(partnerOrganizationMainAddress: InputProjectPartnerAddress,
@@ -125,6 +127,12 @@ export class ProjectApplicationFormPartnerAddressComponent extends ViewEditForm 
     this.sideNavService.setAlertStatus(true);
   }
 
+  ngOnChanges(changes: SimpleChanges) {
+    if (changes.partnerId) {
+      this.changeFormState$.next(FormState.VIEW);
+    }
+  }
+
   getForm(): FormGroup | null {
     return this.partnerAddressForm;
   }
@@ -152,7 +160,7 @@ export class ProjectApplicationFormPartnerAddressComponent extends ViewEditForm 
       city: this.partnerAddressForm.controls.partnerDepartmentCity.value,
       homepage: '',
     }
-    this.update.emit( ProjectApplicationFormPartnerAddressComponent.getValidatedDataToEmit(partnerOrganizationAddress, partnerDepartmentAddress))
+    this.update.emit(ProjectApplicationFormPartnerAddressComponent.getValidatedDataToEmit(partnerOrganizationAddress, partnerDepartmentAddress))
   }
 
   onCancel(): void {

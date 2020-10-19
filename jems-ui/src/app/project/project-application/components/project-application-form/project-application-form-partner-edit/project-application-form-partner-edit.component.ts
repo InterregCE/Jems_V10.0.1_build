@@ -4,8 +4,10 @@ import {
   Component,
   EventEmitter,
   Input,
+  OnChanges,
   OnInit,
-  Output
+  Output,
+  SimpleChanges
 } from '@angular/core';
 import {ViewEditForm} from '@common/components/forms/view-edit-form';
 import {FormBuilder, FormGroup, Validators} from '@angular/forms';
@@ -29,7 +31,7 @@ import {Permission} from '../../../../../security/permissions/permission';
   styleUrls: ['./project-application-form-partner-edit.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class ProjectApplicationFormPartnerEditComponent extends ViewEditForm implements OnInit {
+export class ProjectApplicationFormPartnerEditComponent extends ViewEditForm implements OnInit, OnChanges {
   Permission = Permission;
   RoleEnum = OutputProjectPartner.RoleEnum;
 
@@ -98,6 +100,12 @@ export class ProjectApplicationFormPartnerEditComponent extends ViewEditForm imp
       ).subscribe()
   }
 
+  ngOnChanges(changes: SimpleChanges) {
+    if (changes.partner || changes.editable) {
+      this.changeFormState$.next(this.editable && !this.partner.id ? FormState.EDIT : FormState.VIEW);
+    }
+  }
+
   getForm(): FormGroup | null {
     return this.partnerForm;
   }
@@ -155,7 +163,7 @@ export class ProjectApplicationFormPartnerEditComponent extends ViewEditForm imp
     this.sideNavService.setAlertStatus(true);
   }
 
-  private initFields(){
+  private initFields() {
     this.controls?.id.setValue(this.partner?.id);
     this.controls?.role.setValue(this.partner?.role);
     this.controls?.name.setValue(this.partner?.abbreviation);

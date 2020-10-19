@@ -77,6 +77,9 @@ import {BudgetTableComponent} from './project-application/components/project-app
 import {AgGridTemplateRendererComponent} from './project-application/components/project-application-form/project-application-form-partner-budget/budget-table/ag-grid-template-renderer/ag-grid-template-renderer.component';
 import {AgGridModule} from 'ag-grid-angular';
 import {ProjectApplicationFormStore} from './project-application/containers/project-application-form-page/services/project-application-form-store.service';
+import {ProjectPartnerStore} from './project-application/containers/project-application-form-page/services/project-partner-store.service';
+import {ProjectApplicationPartnerIdentityComponent} from './project-application/containers/project-application-form-page/project-application-form-partner-section/project-application-partner-identity/project-application-partner-identity.component';
+
 
 @NgModule({
   declarations: [
@@ -137,6 +140,7 @@ import {ProjectApplicationFormStore} from './project-application/containers/proj
     ProjectApplicationFormPartnerBudgetComponent,
     BudgetTableComponent,
     AgGridTemplateRendererComponent,
+    ProjectApplicationPartnerIdentityComponent
   ],
   imports: [
     CommonModule,
@@ -168,6 +172,7 @@ import {ProjectApplicationFormStore} from './project-application/containers/proj
     ProjectApplicationFormStore,
     MatDatepickerModule,
     ProjectAcronymResolver,
+    ProjectPartnerStore,
     {provide: MAT_MOMENT_DATE_ADAPTER_OPTIONS, useValue: {useUtc: true}},
     {provide: MAT_DATE_LOCALE, useValue: 'en-GB'}
   ]

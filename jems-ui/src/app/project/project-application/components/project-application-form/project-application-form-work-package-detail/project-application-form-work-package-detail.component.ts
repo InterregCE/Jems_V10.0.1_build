@@ -4,14 +4,16 @@ import {
   Component,
   EventEmitter,
   Input,
+  OnChanges,
   OnInit,
-  Output
+  Output,
+  SimpleChanges
 } from '@angular/core';
 import {FormBuilder, FormGroup, Validators} from '@angular/forms';
 import {FormState} from '@common/components/forms/form-state';
 import {ViewEditForm} from '@common/components/forms/view-edit-form';
 import {SideNavService} from '@common/components/side-nav/side-nav.service';
-import {OutputWorkPackage, InputWorkPackageUpdate, InputWorkPackageCreate} from '@cat/api'
+import {InputWorkPackageCreate, InputWorkPackageUpdate, OutputWorkPackage} from '@cat/api'
 import {Permission} from '../../../../../security/permissions/permission';
 import {ActivatedRoute} from '@angular/router';
 
@@ -21,7 +23,7 @@ import {ActivatedRoute} from '@angular/router';
   styleUrls: ['./project-application-form-work-package-detail.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class ProjectApplicationFormWorkPackageDetailComponent extends ViewEditForm implements OnInit {
+export class ProjectApplicationFormWorkPackageDetailComponent extends ViewEditForm implements OnInit, OnChanges {
   Permission = Permission;
 
   @Input()
@@ -65,13 +67,14 @@ export class ProjectApplicationFormWorkPackageDetailComponent extends ViewEditFo
 
   ngOnInit(): void {
     super.ngOnInit();
-    if (this.editable && !this.workPackage.id) {
-      this.changeFormState$.next(FormState.EDIT);
-    } else {
-      this.enterViewMode();
-    }
-    if (this.workPackage?.number){
-      this.workPackageNumber = this.workPackage.number;
+    this.changeFormState$.next(this.editable && !this.workPackage.id ? FormState.EDIT : FormState.VIEW);
+    this.workPackageNumber = this.workPackage?.number;
+  }
+
+  ngOnChanges(changes: SimpleChanges) {
+    if (changes.workPackage) {
+      this.changeFormState$.next(this.editable && !this.workPackage.id ? FormState.EDIT : FormState.VIEW);
+      this.workPackageNumber = this.workPackage?.number;
     }
   }
 
@@ -93,9 +96,9 @@ export class ProjectApplicationFormWorkPackageDetailComponent extends ViewEditFo
 
   onSubmit(): void {
     const workPackage = {
-      name:  this.workPackageForm.controls.workPackageTitle.value,
-      specificObjective:  this.workPackageForm.controls.workPackageSpecificObjective.value,
-      objectiveAndAudience:  this.workPackageForm.controls.workPackageTargetAudience.value,
+      name: this.workPackageForm.controls.workPackageTitle.value,
+      specificObjective: this.workPackageForm.controls.workPackageSpecificObjective.value,
+      objectiveAndAudience: this.workPackageForm.controls.workPackageTargetAudience.value,
     }
     if (!this.workPackage.id) {
       this.createData.emit(workPackage);

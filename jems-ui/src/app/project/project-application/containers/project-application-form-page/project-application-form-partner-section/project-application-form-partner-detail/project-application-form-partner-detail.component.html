@@ -1,39 +1,24 @@
-<div *ngIf="details$ | async as details">
+<div *ngIf="partner$ | async as partner">
     <app-breadcrumb></app-breadcrumb>
-    <h5 *ngIf="details.partner.name">
-        {{'common.label.project.partner.role.' + details.partner.role | translate}}
-        {{details.partner.name}}
+    <h5 *ngIf="partner.name">
+        {{'common.label.project.partner.role.' + partner.role | translate}}
+        {{partner.name}}
     </h5>
     <mat-tab-group class="partner-tab-menu"
                    (selectedIndexChange)="changeTab($event)"
                    [selectedIndex]="activeTab$ | async">
         <mat-tab label="{{'partner.tab.identity' | translate}}">
-            <app-project-application-form-partner-edit
-                    [success$]="partnerSaveSuccess$"
-                    [error$]="partnerSaveError$"
-                    [partner]="details.partner"
-                    [editable]="details.editable"
-                    (create)="createPartner$.next($event)"
-                    (update)="savePartner$.next($event)"
-                    (cancel)="redirectToPartnerOverview()">
-            </app-project-application-form-partner-edit>
+            <app-project-application-partner-identity></app-project-application-partner-identity>
         </mat-tab>
         <mat-tab label="{{'partner.tab.address' | translate}}">
-            <app-project-application-form-region-selection
-                    [showHomePage]="true"
-                    [success$]="partnerOrganizationDetailsSaveSuccess$"
-                    [error$]="partnerOrganizationDetailsSaveError$"
-                    [partner]="details.partner"
-                    [editable]="details.editable"
-                    (update)="savePartnerOrganizationDetails$.next($event)">
-            </app-project-application-form-region-selection>
+            <app-project-application-form-region-selection></app-project-application-form-region-selection>
         </mat-tab>
         <mat-tab label="{{'partner.tab.contact' | translate}}">
             <app-project-application-form-partner-contact
                     [success$]="partnerContactSaveSuccess$"
                     [error$]="partnerContactSaveError$"
-                    [partner]="details.partner"
-                    [editable]="details.editable"
+                    [partner]="partner"
+                    [editable]="partnerStore.projectEditable$ | async"
                     (update)="savePartnerContact$.next($event)">
             </app-project-application-form-partner-contact>
         </mat-tab>
@@ -41,16 +26,13 @@
             <app-project-application-form-partner-contribution
                     [success$]="partnerContributionSaveSuccess$"
                     [error$]="partnerContributionSaveError$"
-                    [partner]="details.partner"
-                    [editable]="details.editable"
+                    [partner]="partner"
+                    [editable]="partnerStore.projectEditable$ | async"
                     (update)="savePartnerContribution$.next($event)">
             </app-project-application-form-partner-contribution>
         </mat-tab>
         <mat-tab label="{{'partner.tab.budget' | translate}}">
-            <app-project-application-partner-budget-page
-                    [editable]="details.editable"
-                    [partnerId]="details.partner.id">
-            </app-project-application-partner-budget-page>
+            <app-project-application-partner-budget-page></app-project-application-partner-budget-page>
         </mat-tab>
     </mat-tab-group>
 </div>

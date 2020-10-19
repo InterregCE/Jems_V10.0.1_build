@@ -12,6 +12,7 @@ import {ProjectAcronymResolver} from './project-application/containers/project-a
 import {PermissionGuard} from '../security/permission.guard';
 import {Permission} from '../security/permissions/permission';
 import {ProjectApplyToCallComponent} from './project-application/containers/project-application-page/project-apply-to-call.component';
+import {ProjectApplicationPartnerIdentityComponent} from './project-application/containers/project-application-form-page/project-application-form-partner-section/project-application-partner-identity/project-application-partner-identity.component';
 
 export const routes: Routes = [
   {
@@ -94,7 +95,7 @@ export const routes: Routes = [
                 children: [
                   {
                     path: 'create',
-                    component: ProjectApplicationFormPartnerDetailComponent,
+                    component: ProjectApplicationPartnerIdentityComponent,
                     data: {breadcrumb: 'project.breadcrumb.partnerCreate'},
                   },
                   {

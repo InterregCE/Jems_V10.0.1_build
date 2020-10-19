@@ -30,12 +30,12 @@ describe('WorkPackageDetailsComponent', () => {
     fixture = TestBed.createComponent(WorkPackageDetailsComponent);
     component = fixture.componentInstance;
     component.projectId = 1;
-    component.workPackageId = 1;
     fixture.detectChanges();
   });
 
   it('should be created', () => {
     expect(component).toBeTruthy();
+    component.workPackageId$.next(1);
   });
 
   it('should navigate to work package overview', () => {
@@ -44,7 +44,7 @@ describe('WorkPackageDetailsComponent', () => {
 
     component.redirectToWorkPackageOverview();
 
-    expect(router.navigate).toHaveBeenCalledWith(['app', 'project', 'detail', 1,'applicationForm']);
+    expect(router.navigate).toHaveBeenCalledWith(['app', 'project', 'detail', 1, 'applicationForm']);
   });
 
   it('should list work packages details', fakeAsync(() => {

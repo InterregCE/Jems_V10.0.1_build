@@ -2,8 +2,8 @@ import {ChangeDetectionStrategy, Component, EventEmitter, OnInit} from '@angular
 import {BaseComponent} from '@common/components/base-component';
 import {ActivatedRoute, Router} from '@angular/router';
 import {InputWorkPackageCreate, InputWorkPackageUpdate, OutputProjectStatus, WorkPackageService} from '@cat/api'
-import {combineLatest, merge, of, Subject} from 'rxjs';
-import {catchError, flatMap, map, tap} from 'rxjs/operators';
+import {combineLatest, merge, of, ReplaySubject, Subject} from 'rxjs';
+import {catchError, distinctUntilChanged, map, mergeMap, takeUntil, tap} from 'rxjs/operators';
 import {Log} from '../../../../../../common/utils/log';
 import {HttpErrorResponse} from '@angular/common/http';
 import {I18nValidationError} from '@common/validation/i18n-validation-error';
@@ -18,7 +18,7 @@ import {ProjectApplicationFormSidenavService} from '../../services/project-appli
 })
 export class WorkPackageDetailsComponent extends BaseComponent implements OnInit {
   projectId = this.activatedRoute?.snapshot?.params?.projectId;
-  workPackageId = this.activatedRoute?.snapshot?.params?.workPackageId;
+  workPackageId$ = new ReplaySubject<number>(1);
 
   saveError$ = new Subject<I18nValidationError | null>();
   saveSuccess$ = new Subject<boolean>();
@@ -35,7 +35,7 @@ export class WorkPackageDetailsComponent extends BaseComponent implements OnInit
 
   private updatedWorkPackageData$ = this.updateWorkPackageData$
     .pipe(
-      flatMap((data) => this.workPackageService.updateWorkPackage(this.projectId, data)),
+      mergeMap((data) => this.workPackageService.updateWorkPackage(this.projectId, data)),
       tap(() => this.saveSuccess$.next(true)),
       tap(() => this.saveError$.next(null)),
       tap(saved => Log.info('Updated work package data:', this, saved)),
@@ -47,7 +47,7 @@ export class WorkPackageDetailsComponent extends BaseComponent implements OnInit
 
   private createdWorkPackageData$ = this.createWorkPackageData$
     .pipe(
-      flatMap((data) => this.workPackageService.createWorkPackage(this.projectId, data)),
+      mergeMap((data) => this.workPackageService.createWorkPackage(this.projectId, data)),
       tap(() => this.saveSuccess$.next(true)),
       tap(() => this.saveError$.next(null)),
       tap(saved => Log.info('Created work package data:', this, saved)),
@@ -58,10 +58,13 @@ export class WorkPackageDetailsComponent extends BaseComponent implements OnInit
       })
     );
 
+  private workPackageById$ = this.workPackageId$
+    .pipe(
+      mergeMap(id => id ? this.workPackageService.getWorkPackageById(id, this.projectId) : of({}))
+    )
+
   public workPackageDetails$ = merge(
-    this.workPackageId
-      ? this.workPackageService.getWorkPackageById(this.workPackageId, this.projectId)
-      : of({}),
+    this.workPackageById$,
     this.updatedWorkPackageData$,
     this.createdWorkPackageData$
   )
@@ -86,6 +89,13 @@ export class WorkPackageDetailsComponent extends BaseComponent implements OnInit
   ngOnInit(): void {
     this.projectStore.init(this.projectId);
     this.projectApplicationFormSidenavService.init(this.destroyed$, this.projectId);
+
+    this.activatedRoute.params.pipe(
+      takeUntil(this.destroyed$),
+      map(params => params.workPackageId),
+      distinctUntilChanged(),
+      tap(id => this.workPackageId$.next(Number(id))),
+    ).subscribe();
   }
 
   redirectToWorkPackageOverview(): void {

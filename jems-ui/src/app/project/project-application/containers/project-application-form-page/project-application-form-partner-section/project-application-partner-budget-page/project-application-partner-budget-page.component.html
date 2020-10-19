@@ -1,7 +1,7 @@
 <app-project-application-form-partner-budget
         [success$]="saveSuccess$"
         [error$]="saveError$"
-        [editable]="editable && !!partnerId"
+        [editable]="partnerStore.projectEditable$ | async"
         [budgets]="budgets$ | async"
         (save)="saveBudgets$.next($event)"
         (cancelEdit)="cancelEdit$.next()">
