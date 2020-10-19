@@ -1,7 +1,5 @@
-import {ChangeDetectionStrategy, Component, Input} from '@angular/core';
+import {ChangeDetectionStrategy, Component, EventEmitter, Input, Output} from '@angular/core';
 import {OutputProgrammeStrategy} from '@cat/api';
-import {SelectionModel} from '@angular/cdk/collections';
-
 
 @Component({
   selector: 'app-call-strategies',
@@ -14,6 +12,7 @@ export class CallStrategiesComponent {
   disabled: boolean;
   @Input()
   strategies: OutputProgrammeStrategy[];
-  @Input()
-  selection: SelectionModel<OutputProgrammeStrategy>;
+
+  @Output()
+  selectionChanged = new EventEmitter<void>();
 }

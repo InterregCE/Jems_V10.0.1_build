@@ -1,9 +1,3 @@
-<app-alert
-        [show]="!!publishedCall"
-        [type]="Alert.SUCCESS">
-    <p>Successfully published Call {{publishedCall}}</p>
-</app-alert>
-
 <p *ngIf="!callPage?.content.length">No calls submitted</p>
 <ng-container>
     <app-table *ngIf="callPage.content.length"

@@ -3,7 +3,7 @@
             [disabled]="disabled"
             [checked]="priority.checked"
             [indeterminate]="priority.someChecked()"
-            (change)="priority.checkOrUncheckAll()">
+            (change)="priority.checkOrUncheckAll(); selectionChanged.emit()">
         {{priority.name | translate}}
     </mat-checkbox>
     <ul class="no-bullets">
@@ -11,7 +11,7 @@
             <mat-checkbox
                     [(ngModel)]="policy.checked"
                     [disabled]="disabled"
-                    (ngModelChange)="priority.updateChecked()">
+                    (ngModelChange)="priority.updateChecked(); selectionChanged.emit()">
                 {{policy.name | translate}}
             </mat-checkbox>
         </li>

@@ -1,139 +1,111 @@
-<form [formGroup]="callForm" class="wrapper">
-    <h2 id="callTitle" class="col-md-12">{{'call.detail.title' | translate}}
-        <button *ngIf="!published && formState === FormState.VIEW" mat-raised-button color="primary"
-                (click)="changeFormState$.next(FormState.EDIT)">
-            {{'call.detail.button.edit' | translate}}
+<app-edit-form [componentName]="CallDetailComponent.name"
+               [createNew]="!call?.id"
+               [form]="callForm"
+               (discard)="onCancel()"
+               (save)="onSubmit()">
+    <form [formGroup]="callForm" class="wrapper">
+        <h2 id="callTitle" class="col-md-12">{{'call.detail.title' | translate}}</h2>
+        <h4 class="col-md-12">{{'call.identification.title' | translate}}</h4>
+        <button *ngIf="call?.id && !published"
+                mat-raised-button color="primary"
+                class="button"
+                [disabled]="publishingRequirementsNotAchieved()"
+                (click)="publishCall()">
+            {{'call.detail.button.publish' | translate}}
         </button>
-    </h2>
-    <h4 class="col-md-12">{{'call.identification.title' | translate}}</h4>
-    <button *ngIf="call?.id && !published && formState === FormState.VIEW"
-            mat-raised-button color="primary"
-            class="button"
-            [disabled]="publishingRequirementsNotAchieved()"
-            (click)="publishCall()">
-        {{'call.detail.button.publish' | translate}}
-    </button>
-    <mat-form-field class="field col-md-12">
-        <mat-label>{{'call.detail.field.name' | translate}}</mat-label>
-        <input name="name" formControlName="name" matInput placeholder="{{'call.detail.field.name' | translate}}"
-               required>
-        <mat-error>
-            <app-form-field-errors
-                    [errors]="callForm?.controls?.name?.errors"
-                    [messages]="nameErrors">
-            </app-form-field-errors>
-        </mat-error>
-    </mat-form-field>
+        <mat-form-field class="field col-md-12">
+            <mat-label>{{'call.detail.field.name' | translate}}</mat-label>
+            <input name="name" formControlName="name" matInput placeholder="{{'call.detail.field.name' | translate}}">
+            <mat-error>
+                <app-form-field-errors
+                        [errors]="callForm?.controls?.name?.errors"
+                        [messages]="nameErrors">
+                </app-form-field-errors>
+            </mat-error>
+        </mat-form-field>
 
-    <mat-form-field class="field col-md-6">
-        <mat-label>{{'call.detail.field.start' | translate}}</mat-label>
-        <input required formControlName="startDate" matInput name="startDate"
-               [max]="callForm?.controls?.endDate?.value"
-               [ngxMatDatetimePicker]="start">
-        <mat-datepicker-toggle matSuffix [for]="start">
-        </mat-datepicker-toggle>
-        <ngx-mat-datetime-picker #start></ngx-mat-datetime-picker>
-        <mat-error>
-            <app-form-field-errors
-                    [errors]="callForm?.controls?.startDate?.errors"
-                    [messages]="startDateErrors">
-            </app-form-field-errors>
-        </mat-error>
-    </mat-form-field>
+        <mat-form-field class="field col-md-6">
+            <mat-label>{{'call.detail.field.start' | translate}}</mat-label>
+            <input required formControlName="startDate" matInput name="startDate"
+                   [max]="callForm?.controls?.endDate?.value"
+                   [ngxMatDatetimePicker]="start">
+            <mat-datepicker-toggle matSuffix [for]="start">
+            </mat-datepicker-toggle>
+            <ngx-mat-datetime-picker #start></ngx-mat-datetime-picker>
+            <mat-error>
+                <app-form-field-errors
+                        [errors]="callForm?.controls?.startDate?.errors"
+                        [messages]="startDateErrors">
+                </app-form-field-errors>
+            </mat-error>
+        </mat-form-field>
 
-    <mat-form-field class="field col-md-6">
-        <mat-label>{{'call.detail.field.end' | translate}}</mat-label>
-        <input required formControlName="endDate" matInput name="endDate"
-               [min]="callForm?.controls?.startDate?.value"
-               [ngxMatDatetimePicker]="end">
-        <mat-datepicker-toggle matSuffix [for]="end">
-        </mat-datepicker-toggle>
-        <ngx-mat-datetime-picker #end></ngx-mat-datetime-picker>
-        <mat-error>
-            <app-form-field-errors
-                    [errors]="callForm?.controls?.endDate?.errors"
-                    [messages]="endDateErrors">
-            </app-form-field-errors>
-        </mat-error>
-    </mat-form-field>
+        <mat-form-field class="field col-md-6">
+            <mat-label>{{'call.detail.field.end' | translate}}</mat-label>
+            <input required formControlName="endDate" matInput name="endDate"
+                   [min]="callForm?.controls?.startDate?.value"
+                   [ngxMatDatetimePicker]="end">
+            <mat-datepicker-toggle matSuffix [for]="end">
+            </mat-datepicker-toggle>
+            <ngx-mat-datetime-picker #end></ngx-mat-datetime-picker>
+            <mat-error>
+                <app-form-field-errors
+                        [errors]="callForm?.controls?.endDate?.errors"
+                        [messages]="endDateErrors">
+                </app-form-field-errors>
+            </mat-error>
+        </mat-form-field>
 
-    <p class="col-md-12">{{'call.detail.field.lengthOfPeriod.help' | translate}}</p>
-    <mat-form-field class="field col-md-12">
-        <mat-label>{{'call.detail.field.lengthOfPeriod' | translate}}</mat-label>
-        <input type="number" name="lengthOfPeriod" formControlName="lengthOfPeriod" matInput
-               placeholder="{{'call.detail.field.lengthOfPeriod' | translate}}"
-               (paste)="tools.checkDigitsOnPaste($event)" (keypress)="tools.checkDigitsOnInput($event)">
-        <mat-error>
-            <app-form-field-errors
-                    [errors]="callForm?.controls?.lengthOfPeriod?.errors"
-                    [messages]="lengthOfPeriodErrors">
-            </app-form-field-errors>
-        </mat-error>
-    </mat-form-field>
+        <p class="col-md-12">{{'call.detail.field.lengthOfPeriod.help' | translate}}</p>
+        <mat-form-field class="field col-md-12">
+            <mat-label>{{'call.detail.field.lengthOfPeriod' | translate}}</mat-label>
+            <input type="number" name="lengthOfPeriod" formControlName="lengthOfPeriod" matInput
+                   placeholder="{{'call.detail.field.lengthOfPeriod' | translate}}"
+                   (paste)="tools.checkDigitsOnPaste($event)" (keypress)="tools.checkDigitsOnInput($event)">
+            <mat-error>
+                <app-form-field-errors
+                        [errors]="callForm?.controls?.lengthOfPeriod?.errors"
+                        [messages]="lengthOfPeriodErrors">
+                </app-form-field-errors>
+            </mat-error>
+        </mat-form-field>
 
-    <app-expandable-textarea
-            class="field col-md-12"
-            [control]="callForm?.controls?.description"
-            [errors]="callForm?.controls?.description?.errors"
-            [messages]="descriptionErrors"
-            [characterLimit]="1000"
-            [label]="'call.detail.field.description'"
-            [disabled]="formState === FormState.VIEW">
-    </app-expandable-textarea>
+        <app-expandable-textarea
+                class="field col-md-12"
+                [control]="callForm?.controls?.description"
+                [errors]="callForm?.controls?.description?.errors"
+                [messages]="descriptionErrors"
+                [characterLimit]="1000"
+                [label]="'call.detail.field.description'"
+                [disabled]="published">
+        </app-expandable-textarea>
 
-    <div class="section col-md-12">
-        <h4 id="callPriorities">{{'call.programme.priorities.title' | translate}}</h4>
-        <app-call-priority-tree
-                *ngIf="priorityCheckboxes"
-                [priorityCheckboxes]="priorityCheckboxes"
-                [disabled]="formState === FormState.VIEW">
-        </app-call-priority-tree>
-    </div>
+        <div class="section col-md-12">
+            <h4 id="callPriorities">{{'call.programme.priorities.title' | translate}}</h4>
+            <app-call-priority-tree
+                    *ngIf="priorityCheckboxes"
+                    [priorityCheckboxes]="priorityCheckboxes"
+                    [disabled]="published"
+                    (selectionChanged)="formChanged()">
+            </app-call-priority-tree>
+        </div>
 
-    <div class="section col-md-12">
-        <h4 id="callStrategies">{{'call.strategy.title' | translate}}</h4>
-        <app-call-strategies
-                [selection]="selection"
-                [strategies]="strategies"
-                [disabled]="formState === FormState.VIEW">
-        </app-call-strategies>
-    </div>
+        <div class="section col-md-12">
+            <h4 id="callStrategies">{{'call.strategy.title' | translate}}</h4>
+            <app-call-strategies
+                    [strategies]="strategies"
+                    [disabled]="published"
+                    (selectionChanged)="formChanged()">
+            </app-call-strategies>
+        </div>
 
-    <div class="section col-md-12">
-        <h4 id="callFunds">{{'call.funds.title' | translate}}</h4>
-        <app-call-funds
-                [selection]="selectionFunds"
-                [funds]="funds"
-                [disabled]="formState === FormState.VIEW">
-        </app-call-funds>
-    </div>
-
-    <div class="section col-md-12">
-        <ng-container *ngIf="!published && formState === FormState.EDIT" class="col-md-12">
-            <button mat-stroked-button
-                    type="button"
-                    (click)="onCancel()">
-                {{'call.detail.button.cancel' | translate}}
-            </button>
-            <button mat-raised-button color="primary"
-                    [disabled]="callForm.invalid"
-                    type="button"
-                    (click)="onSubmit()">
-                {{'call.detail.button.save' | translate}}
-            </button>
-        </ng-container>
-    </div>
-    <div class="section col-md-12">
-        <app-alert
-                [show]="!submitted && (showSuccessMessage$ | async)"
-                [type]="Alert.SUCCESS">
-            <p>{{'call.detail.save.success' | translate}}</p>
-        </app-alert>
-        <app-alert *ngIf="error$ | async as error"
-                   [show]="!submitted && !!error.i18nKey"
-                   [type]="Alert.ERROR">
-            <p>{{error.i18nKey | translate}}</p>
-        </app-alert>
-    </div>
-</form>
-
+        <div class="section col-md-12">
+            <h4 id="callFunds">{{'call.funds.title' | translate}}</h4>
+            <app-call-funds
+                    [funds]="funds"
+                    [disabled]="published"
+                    (selectionChanged)="formChanged()">
+            </app-call-funds>
+        </div>
+    </form>
+</app-edit-form>

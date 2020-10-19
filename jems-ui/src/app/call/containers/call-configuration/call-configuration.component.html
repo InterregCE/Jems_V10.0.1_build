@@ -3,8 +3,6 @@
     <app-call-detail
             *ngIf="details.applicantCanAccessCall"
             [call]="details.call"
-            [success$]="callStore.callSaveSuccess$"
-            [error$]="callStore.callSaveError$"
             [strategies]="details.strategies"
             [funds]="details.funds"
             [priorityCheckboxes]="details.priorities"

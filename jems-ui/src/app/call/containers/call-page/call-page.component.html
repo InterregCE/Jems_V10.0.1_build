@@ -8,9 +8,9 @@
     </button>
     <div *ngIf="currentPage$ | async as callPage">
         <h4>{{'call.list.header' | translate}}</h4>
+        <app-template-card [componentName]="CallPageComponent.name"></app-template-card>
         <app-call-list
                 [isApplicant]="false"
-                [publishedCall]="publishedCall$ | async"
                 [callPage]="callPage"
                 [pageIndex]="newPageIndex$ | async"
                 (newPageSize)="newPageSize$.next($event)"
@@ -25,7 +25,6 @@
         <h4>{{'call.list.open.title' | translate}}</h4>
         <app-call-list
                 [isApplicant]="true"
-                [publishedCall]="publishedCall$ | async"
                 [callPage]="callPage"
                 [pageIndex]="newPageIndex$ | async"
                 (newPageSize)="newPageSize$.next($event)"
