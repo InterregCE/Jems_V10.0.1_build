@@ -60,13 +60,12 @@ export class CallConfigurationComponent extends BaseComponent {
       mergeMap(callUpdate => this.callService.publishCall(callUpdate)),
       tap(() => this.redirectToCallOverview()),
       tap(published => this.eventBusService.newSuccessMessage(
-        CallPageComponent.name,
-        {i18nKey: 'call.detail.publish.success', i18nArguments: {name: published.name}}
+        CallPageComponent.ID, {i18nKey: 'call.detail.publish.success', i18nArguments: {name: published.name}}
         )
       ),
       tap(saved => Log.info('Published call:', this, saved)),
       catchError((error: HttpErrorResponse) => {
-        this.eventBusService.newErrorMessage(CallPageComponent.name, error.error);
+        this.eventBusService.newErrorMessage(CallPageComponent.ID, error.error);
         throw error;
       })
     );
@@ -141,12 +140,12 @@ export class CallConfigurationComponent extends BaseComponent {
         tap(() => this.redirectToCallOverview()),
         tap(saved => Log.info('Created call:', this, saved)),
         tap(created => this.eventBusService.newSuccessMessage(
-          CallPageComponent.name,
+          CallPageComponent.ID,
           {i18nKey: 'call.detail.created.success', i18nArguments: {name: created.name}}
           )
         ),
         catchError((error: HttpErrorResponse) => {
-          this.eventBusService.newErrorMessage(CallPageComponent.name, error.error);
+          this.eventBusService.newErrorMessage(CallPageComponent.ID, error.error);
           throw error;
         })
       )

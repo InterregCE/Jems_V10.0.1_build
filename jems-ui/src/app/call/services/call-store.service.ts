@@ -30,7 +30,7 @@ export class CallStore {
         this.callService.updateCall(callUpdate)
           .pipe(
             tap(() => this.eventBusService.newSuccessMessage(
-              CallDetailComponent.name, 'call.detail.save.success')
+              CallDetailComponent.ID, 'call.detail.save.success')
             ),
             tap(saved => Log.info('Updated call:', this, saved)),
             tap(saved => this.callName$.next(saved.name)),
