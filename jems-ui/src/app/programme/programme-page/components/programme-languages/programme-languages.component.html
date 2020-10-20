@@ -9,13 +9,24 @@
     <form [formGroup]="editableLanguageForm" class="mat-elevation-z8 general-application-table">
         <table mat-table [dataSource]="dataSource">
 
-            <ng-container matColumnDef="selection">
-                <th mat-header-cell *matHeaderCellDef>{{'programme.languages.list.select' | translate}}</th>
+            <ng-container matColumnDef="system">
+                <th mat-header-cell *matHeaderCellDef>{{'programme.languages.list.select.system' | translate}}</th>
                 <td mat-cell *matCellDef="let element">
                     <mat-checkbox (click)="$event.stopPropagation()"
-                                  (change)="langselection.toggle(element)"
+                                  (change)="systemLangSelection.toggle(element)"
                                   [disabled]="formState === FormState.VIEW"
-                                  [checked]="langselection.isSelected(element)">
+                                  [checked]="systemLangSelection.isSelected(element)">
+                    </mat-checkbox>
+                </td>
+            </ng-container>
+
+            <ng-container matColumnDef="input">
+                <th mat-header-cell *matHeaderCellDef>{{'programme.languages.list.select.input' | translate}}</th>
+                <td mat-cell *matCellDef="let element">
+                    <mat-checkbox (click)="$event.stopPropagation()"
+                                  (change)="inputLangSelection.toggle(element)"
+                                  [disabled]="formState === FormState.VIEW"
+                                  [checked]="inputLangSelection.isSelected(element)">
                     </mat-checkbox>
                 </td>
             </ng-container>
@@ -23,14 +34,14 @@
             <ng-container matColumnDef="name">
                 <th mat-header-cell *matHeaderCellDef>{{'programme.languages.list.name' | translate}}</th>
                 <td mat-cell *matCellDef="let element">
-                    {{element.name}}
+                    {{element.code}}
                 </td>
             </ng-container>
 
             <ng-container matColumnDef="translation">
                 <th mat-header-cell *matHeaderCellDef>{{'programme.languages.list.description' | translate}}</th>
                 <td mat-cell *matCellDef="let element">
-                    {{element.translationKey | translate}}
+                    {{'language.' + element.code.toLowerCase() | translate}}
                 </td>
             </ng-container>
 

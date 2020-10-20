@@ -1,6 +1,6 @@
 import {ChangeDetectionStrategy, Component, OnDestroy} from '@angular/core';
 import {BaseComponent} from '@common/components/base-component';
-import {OutputProgrammeData, ProgrammeDataService} from '@cat/api';
+import {OutputProgrammeLanguage, ProgrammeLanguageService} from '@cat/api';
 import {catchError, mergeMap, tap} from 'rxjs/operators';
 import {Log} from '../../../../common/utils/log';
 import {HttpErrorResponse} from '@angular/common/http';
@@ -19,38 +19,37 @@ import {LanguageService} from '../../../../common/services/language.service';
 export class ProgrammeLanguagesPageComponent extends BaseComponent implements OnDestroy {
   Permission = Permission;
 
-  programmeSaveError$ = new Subject<I18nValidationError | null>();
-  programmeSaveSuccess$ = new Subject<boolean>();
-  saveProgrammeData$ = new Subject<OutputProgrammeData>();
+  languagesSaveError$ = new Subject<I18nValidationError | null>();
+  languagesSaveSuccess$ = new Subject<boolean>();
+  saveLanguages$ = new Subject<OutputProgrammeLanguage[]>();
 
-  private programmeById$ = this.programmeDataService.get()
+  private initLanguages$ = this.programmeLanguageService.get()
     .pipe(
-      tap(programmeData => Log.info('Fetched programme data:', this, programmeData))
+      tap(languages => Log.info('Fetched programme languages:', this, languages))
     );
 
-  private savedProgramme$ = this.saveProgrammeData$
+  private savedLanguages$ = this.saveLanguages$
     .pipe(
-      mergeMap(programmeUpdate => this.programmeDataService.update(programmeUpdate)),
-      tap(saved => Log.info('Updated programme:', this, saved)),
-      tap(() => this.programmeSaveSuccess$.next(true)),
-      tap(() => this.programmeSaveError$.next(null)),
+      mergeMap(programmeLanguage => this.programmeLanguageService.update(programmeLanguage)),
+      tap(saved => Log.info('Updated languages:', this, saved)),
+      tap(() => this.languagesSaveSuccess$.next(true)),
+      tap(() => this.languagesSaveError$.next(null)),
       tap((response) => this.reloadLanguages(response)),
       catchError((error: HttpErrorResponse) => {
-        this.programmeSaveError$.next(error.error);
+        this.languagesSaveError$.next(error.error);
         throw error;
       })
     );
+  languages$ = merge(this.initLanguages$, this.savedLanguages$);
 
-  programme$ = merge(this.programmeById$, this.savedProgramme$);
-
-  constructor(private programmeDataService: ProgrammeDataService,
+  constructor(private programmeLanguageService: ProgrammeLanguageService,
               private programmePageSidenavService: ProgrammePageSidenavService,
               private languageService: LanguageService) {
     super();
     this.programmePageSidenavService.init(this.destroyed$);
   }
 
-  reloadLanguages(response: OutputProgrammeData) {
+  reloadLanguages(response: OutputProgrammeLanguage[]) {
     this.languageService.languagesChanged$
       .next(response);
   }

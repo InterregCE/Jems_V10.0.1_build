@@ -1,11 +1,11 @@
-<ng-container *ngIf="programme$ | async as programme">
+<ng-container *ngIf="languages$ | async as languages">
     <app-breadcrumb></app-breadcrumb>
     <div *ngxPermissionsExcept="Permission.APPLICANT_USER">
         <app-programme-languages
-                [programme]="programme"
-                [success$]="programmeSaveSuccess$"
-                [error$]="programmeSaveError$"
-                (saveProgrammeData)="saveProgrammeData$.next($event)">
+                [languages]="languages"
+                [success$]="languagesSaveSuccess$"
+                [error$]="languagesSaveError$"
+                (saveLanguages)="saveLanguages$.next($event)">
         </app-programme-languages>
     </div>
 </ng-container>

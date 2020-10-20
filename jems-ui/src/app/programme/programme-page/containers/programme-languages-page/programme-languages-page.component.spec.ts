@@ -3,7 +3,7 @@ import {async, ComponentFixture, fakeAsync, TestBed, tick} from '@angular/core/t
 import {ProgrammeLanguagesPageComponent} from './programme-languages-page.component';
 import {TestModule} from '../../../../common/test-module';
 import {ProgrammeModule} from '../../../programme.module';
-import {OutputProgrammeData} from '@cat/api';
+import {OutputProgrammeLanguage} from '@cat/api';
 import {HttpTestingController} from '@angular/common/http/testing';
 
 describe('ProgrammeLanguagesPageComponent', () => {
@@ -33,22 +33,21 @@ describe('ProgrammeLanguagesPageComponent', () => {
     expect(component).toBeTruthy();
   });
 
-  it('should update a programme', fakeAsync(() => {
+  it('should update programme languages', fakeAsync(() => {
     const spyOnReload = spyOn(component, 'reloadLanguages');
-    const programme = {cci: 'some cci'} as OutputProgrammeData;
-    programme.systemLanguageSelections = new Array({ name: 'EN', selected: true, translationKey: 'translation.en'});
+    const languages = new Array({ code: OutputProgrammeLanguage.CodeEnum.EN, ui: true, fallback: false, input: false} as OutputProgrammeLanguage );
 
-    component.saveProgrammeData$.next(programme);
+    component.saveLanguages$.next(languages);
     let success = false;
-    component.programmeSaveSuccess$.subscribe(result => success = result);
+    component.languagesSaveSuccess$.subscribe(result => success = result);
 
     httpTestingController.expectOne({ method: 'GET', url: `//api/auth/current` });
-    httpTestingController.match({ method: 'GET', url: `//api/programmedata` });
+    httpTestingController.match({ method: 'GET', url: `//api/programmelanguage` });
 
     httpTestingController.expectOne({
       method: 'PUT',
-      url: `//api/programmedata`
-    }).flush(programme);
+      url: `//api/programmelanguage`
+    }).flush(languages);
     httpTestingController.verify();
 
     tick();

@@ -1,9 +1,9 @@
 import {Injectable} from '@angular/core';
 import {
   InputUserProfile,
-  OutputProgrammeData,
+  OutputProgrammeLanguage,
   OutputUserProfile,
-  ProgrammeDataService,
+  ProgrammeLanguageService,
   UserProfileService
 } from '@cat/api'
 import {filter, map, shareReplay, take, tap} from 'rxjs/operators';
@@ -15,21 +15,21 @@ import {merge, ReplaySubject, Subject} from 'rxjs';
 @Injectable({providedIn: 'root'})
 export class LanguageService {
   private profileChanged$ = new Subject<OutputUserProfile>();
-  public languagesChanged$: ReplaySubject<OutputProgrammeData> = new ReplaySubject(1);
+  public languagesChanged$: ReplaySubject<OutputProgrammeLanguage[]> = new ReplaySubject(1);
 
-  languagesInitialized$ = this.programmeDataService.get()
+  languagesInitialized$ = this.programmeLanguageService.get()
     .pipe(
       take(1),
-      tap(programmeData => Log.info('Fetched programmeData', this, programmeData)),
+      tap(programmeLanguages => Log.info('Fetched programmeLanguages', this, programmeLanguages)),
       shareReplay(1)
     );
 
   languageList$ = merge(this.languagesInitialized$, this.languagesChanged$)
     .pipe(
-      map(programmeData => {
-        return programmeData.systemLanguageSelections
-          .filter(selections => selections?.selected)
-          .map(selections => selections.name)
+      map(programmeLanguages => {
+        return programmeLanguages
+          .filter(selections => selections?.ui)
+          .map(selections => selections.code)
       }),
       map(value => ({isEnglishAvailable: this.isDefaultLanguageIncluded(value), languages: value})));
 
@@ -40,16 +40,16 @@ export class LanguageService {
   constructor(private userProfileService: UserProfileService,
               private translate: TranslateService,
               private securityService: SecurityService,
-              private programmeDataService: ProgrammeDataService) {
+              private programmeLanguageService: ProgrammeLanguageService) {
 
-    this.programmeDataService.get()
+    this.programmeLanguageService.get()
       .pipe(
         take(1),
       )
       .subscribe( response => {
-        const availableLanguages = response.systemLanguageSelections
-          .filter(value => value.selected)
-          .map(value => value.name);
+        const availableLanguages = response
+          .filter(value => value.ui)
+          .map(value => value.code);
         translate.addLangs(availableLanguages);
       });
 

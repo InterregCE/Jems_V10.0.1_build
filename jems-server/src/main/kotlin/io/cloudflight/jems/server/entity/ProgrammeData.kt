@@ -48,9 +48,6 @@ data class ProgrammeData(
     @Column
     val programmeAmendingDecisionDate: LocalDate?,
 
-    @Column
-    val languagesSystem: String?,
-
     @OneToMany
     @JoinTable(
         name = "programme_nuts",

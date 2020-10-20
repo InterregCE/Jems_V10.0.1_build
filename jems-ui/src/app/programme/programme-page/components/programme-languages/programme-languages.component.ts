@@ -9,7 +9,7 @@ import {
 } from '@angular/core';
 import {ViewEditForm} from '@common/components/forms/view-edit-form';
 import {FormBuilder, FormGroup} from '@angular/forms';
-import {InputProgrammeData, OutputProgrammeData, SystemLanguageSelection} from '@cat/api';
+import {InputProgrammeLanguage, OutputProgrammeLanguage} from '@cat/api';
 import {MatTableDataSource} from '@angular/material/table';
 import {SelectionModel} from '@angular/cdk/collections';
 
@@ -22,15 +22,15 @@ import {SelectionModel} from '@angular/cdk/collections';
 export class ProgrammeLanguagesComponent extends ViewEditForm implements OnInit {
 
   @Input()
-  programme: OutputProgrammeData;
+  languages: OutputProgrammeLanguage[];
 
   @Output()
-  saveProgrammeData: EventEmitter<InputProgrammeData> = new EventEmitter<InputProgrammeData>();
+  saveLanguages: EventEmitter<InputProgrammeLanguage[]> = new EventEmitter<InputProgrammeLanguage[]>();
 
-  displayedColumns: string[] = ['selection', 'name', 'translation'];
-  langselection = new SelectionModel<SystemLanguageSelection>(true, []);
-  dataSource: MatTableDataSource<SystemLanguageSelection>;
-
+  displayedColumns: string[] = ['system', 'input', 'name', 'translation'];
+  dataSource: MatTableDataSource<OutputProgrammeLanguage>;
+  systemLangSelection = new SelectionModel<OutputProgrammeLanguage>(true, []);
+  inputLangSelection = new SelectionModel<OutputProgrammeLanguage>(true, []);
   editableLanguageForm = this.formBuilder.group({});
 
   constructor(private formBuilder: FormBuilder,
@@ -40,7 +40,7 @@ export class ProgrammeLanguagesComponent extends ViewEditForm implements OnInit 
 
   ngOnInit(): void {
     super.ngOnInit();
-    this.dataSource = new MatTableDataSource(this.programme?.systemLanguageSelections);
+    this.dataSource = new MatTableDataSource(this.languages);
     this.enterViewMode();
   }
 
@@ -49,25 +49,15 @@ export class ProgrammeLanguagesComponent extends ViewEditForm implements OnInit 
   }
 
   onSubmit(): void {
-    this.saveProgrammeData.emit({
-      cci: this.programme.cci,
-      title: this.programme.title,
-      version: this.programme.version,
-      firstYear: this.programme.firstYear,
-      lastYear: this.programme.lastYear,
-      eligibleFrom: this.programme.eligibleFrom,
-      eligibleUntil: this.programme.eligibleUntil,
-      commissionDecisionNumber: this.programme.commissionDecisionNumber,
-      commissionDecisionDate: this.programme.commissionDecisionDate,
-      programmeAmendingDecisionNumber: this.programme.programmeAmendingDecisionNumber,
-      programmeAmendingDecisionDate: this.programme.programmeAmendingDecisionDate,
-      systemLanguageSelections: this.dataSource.data
-        .map(element => ({
-          selected: this.langselection.isSelected(element),
-          name: element.name,
-          translationKey: element.translationKey
-        }))
-    });
+   this.saveLanguages.emit(
+    this.dataSource.data
+       .map(element => ({
+         ui: this.systemLangSelection.isSelected(element),
+         input: this.inputLangSelection.isSelected(element),
+         code: element.code,
+         fallback: element.fallback
+       }))
+   );
   }
 
   protected enterViewMode(): void {
@@ -75,9 +65,11 @@ export class ProgrammeLanguagesComponent extends ViewEditForm implements OnInit 
     if (!this.dataSource) {
       return;
     }
-    this.dataSource.data = this.programme?.systemLanguageSelections;
-    this.langselection.clear();
-    this.langselection.select(...this.dataSource.data.filter(element => element.selected));
+    this.dataSource.data = this.languages;
+    this.systemLangSelection.clear();
+    this.inputLangSelection.clear();
+    this.systemLangSelection.select(...this.dataSource.data.filter(element => element.ui));
+    this.inputLangSelection.select(...this.dataSource.data.filter(element => element.input));
   }
 
 }

@@ -6,6 +6,7 @@ import io.cloudflight.jems.server.audit.service.AuditBuilder
 import io.cloudflight.jems.server.audit.service.AuditCandidate
 import io.cloudflight.jems.server.nuts.service.NutsIdentifier
 import io.cloudflight.jems.server.programme.entity.ProgrammeFund
+import io.cloudflight.jems.server.programme.entity.ProgrammeLanguage
 import io.cloudflight.jems.server.programme.entity.ProgrammeLegalStatus
 import java.util.stream.Collectors
 
@@ -51,5 +52,25 @@ fun programmeLegalStatusesChanged(statuses: Iterable<ProgrammeLegalStatus>): Aud
 
     return AuditBuilder(AuditAction.LEGAL_STATUS_EDITED)
         .description("Values for partner legal status set to:\n$statusesAsString")
+        .build()
+}
+
+fun programmeUILanguagesChanged(languages: Iterable<ProgrammeLanguage>): AuditCandidate {
+    val systemLanguagesAsString = languages.asSequence()
+        .filter { it.ui }
+        .map { it.code }.joinToString(", ")
+
+    return AuditBuilder(AuditAction.PROGRAMME_UI_LANGUAGES_CHANGED)
+        .description("Programme UI languages available set to:\n$systemLanguagesAsString")
+        .build()
+}
+
+fun programmeInputLanguagesChanged(languages: Iterable<ProgrammeLanguage>): AuditCandidate {
+    val inputLanguagesAsString = languages.asSequence()
+        .filter { it.input }
+        .map { it.code }.joinToString(", ")
+
+    return AuditBuilder(AuditAction.PROGRAMME_INPUT_LANGUAGES_CHANGED)
+        .description("Programme INPUT languages set to:\n$inputLanguagesAsString")
         .build()
 }
