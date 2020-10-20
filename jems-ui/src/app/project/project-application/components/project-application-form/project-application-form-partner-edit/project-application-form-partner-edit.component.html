@@ -8,9 +8,9 @@
             </button>
         </span>
     </h5>
-    <mat-form-field *ngIf="formState === FormState.VIEW && partner.id" class="field">
-        <mat-label>{{'project.partner.id.label' | translate}}</mat-label>
-        <input name="id" formControlName="id" matInput required>
+    <mat-form-field *ngIf="formState === FormState.VIEW && partner.sortNumber" class="field">
+        <mat-label>{{'project.application.form.partner.table.number' | translate}}</mat-label>
+        <input name="sortNumber" formControlName="sortNumber" matInput required>
     </mat-form-field>
     <mat-form-field *ngIf="formState === FormState.VIEW" class="field">
         <mat-label>{{'project.partner.role.label' | translate}}</mat-label>
@@ -44,6 +44,17 @@
         </mat-error>
     </div>
     <mat-form-field class="field">
+        <mat-label>{{'project.partner.name.label' | translate}}</mat-label>
+        <input name="name" formControlName="name" matInput placeholder="{{'project.partner.name.label' | translate}}"
+               required>
+        <mat-error>
+            <app-form-field-errors
+                    [errors]="controls?.name?.errors"
+                    [messages]="nameErrors">
+            </app-form-field-errors>
+        </mat-error>
+    </mat-form-field>
+    <mat-form-field class="field">
         <mat-label>{{'project.partner.partner.organization.original.name.label' | translate}}</mat-label>
         <input name="nameInOriginalLanguage" formControlName="nameInOriginalLanguage" matInput
                placeholder="{{'project.partner.partner.organization.original.name.label' | translate}}">
@@ -73,17 +84,6 @@
             <app-form-field-errors
                     [errors]="controls?.department?.errors"
                     [messages]="departmentErrors">
-            </app-form-field-errors>
-        </mat-error>
-    </mat-form-field>
-    <mat-form-field class="field">
-        <mat-label>{{'project.partner.name.label' | translate}}</mat-label>
-        <input name="name" formControlName="name" matInput placeholder="{{'project.partner.name.label' | translate}}"
-               required>
-        <mat-error>
-            <app-form-field-errors
-                    [errors]="controls?.name?.errors"
-                    [messages]="nameErrors">
             </app-form-field-errors>
         </mat-error>
     </mat-form-field>
