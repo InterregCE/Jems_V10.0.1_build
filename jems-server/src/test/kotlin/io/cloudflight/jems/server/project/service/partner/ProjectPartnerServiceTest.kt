@@ -138,7 +138,7 @@ internal class ProjectPartnerServiceTest {
         val inputProjectPartner = InputProjectPartnerCreate("partner", ProjectPartnerRole.LEAD_PARTNER)
         val projectPartnerWithProject = ProjectPartner(null, project, inputProjectPartner.abbreviation!!, inputProjectPartner.role!!)
         every { projectRepository.findById(1) } returns Optional.of(project)
-        every { projectPartnerRepository.count() } returns 0
+        every { projectPartnerRepository.countByProjectId(eq(1)) } returns 0
         every { projectPartnerRepository.findFirstByProjectIdAndRole(1, ProjectPartnerRole.LEAD_PARTNER) } returns Optional.empty()
         every { projectPartnerRepository.save(projectPartnerWithProject) } returns projectPartner
         // also handle sorting
@@ -161,7 +161,7 @@ internal class ProjectPartnerServiceTest {
     @Test
     fun `error createProjectPartner when MAX count exceeded`() {
         every { projectRepository.findById(1) } returns Optional.of(project)
-        every { projectPartnerRepository.count() } returns 30
+        every { projectPartnerRepository.countByProjectId(eq(1)) } returns 30
 
         val ex = assertThrows<I18nValidationException> {
             projectPartnerService.create(1, InputProjectPartnerCreate("partner", ProjectPartnerRole.PARTNER))
@@ -176,7 +176,7 @@ internal class ProjectPartnerServiceTest {
         val inputProjectPartnerLead = InputProjectPartnerCreate("partner", ProjectPartnerRole.LEAD_PARTNER)
         val projectPartnerWithProject = ProjectPartner(null, project, inputProjectPartner.abbreviation!!, inputProjectPartner.role!!)
         every { projectRepository.findById(1) } returns Optional.of(project)
-        every { projectPartnerRepository.count() } returns 2
+        every { projectPartnerRepository.countByProjectId(eq(1)) } returns 2
         every { projectPartnerRepository.findFirstByProjectIdAndRole(1, ProjectPartnerRole.LEAD_PARTNER) } returns Optional.of(projectPartnerWithProject)
         every { projectPartnerRepository.save(projectPartnerWithProject) } returns projectPartner
         // also handle sorting
@@ -304,7 +304,7 @@ internal class ProjectPartnerServiceTest {
         )
         every { projectRepository.findById(0) } returns Optional.empty()
         every { projectRepository.findById(1) } returns Optional.of(project)
-        every { projectPartnerRepository.count() } returns 0
+        every { projectPartnerRepository.countByProjectId(any()) } returns 0
         every { projectPartnerRepository.findFirstByProjectIdAndRole(1, ProjectPartnerRole.LEAD_PARTNER) } returns Optional.empty()
         every { projectPartnerRepository.save(projectPartnerWithProject) } returns projectPartnerWithOrganization
         // also handle sorting
