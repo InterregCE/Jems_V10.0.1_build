@@ -9,7 +9,7 @@ import {Forms} from '../../utils/forms';
 
 @Injectable({providedIn: 'root'})
 export class SideNavService {
-  private headlines$ = new ReplaySubject<HeadlineRoute[]>();
+  private headlines$ = new ReplaySubject<HeadlineRoute[]>(1);
   private navigateTo$ = new Subject<HeadlineRoute>();
   private alertStatus: boolean;
 

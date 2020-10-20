@@ -1,5 +1,5 @@
 import {ChangeDetectionStrategy, Component, OnInit} from '@angular/core';
-import {catchError, flatMap, map, takeUntil, tap} from 'rxjs/operators';
+import {catchError, mergeMap, map, takeUntil, tap} from 'rxjs/operators';
 import {ProjectStore} from '../project-application-detail/services/project-store.service';
 import {ActivatedRoute} from '@angular/router';
 import {
@@ -48,7 +48,7 @@ export class ProjectApplicationFormPageComponent extends BaseComponent implement
   private fetchStrategies$ = new Subject<OutputProject>()
   private updatedProjectData$ = this.updateProjectData$
     .pipe(
-      flatMap((data) => this.projectService.updateProjectData(this.projectId, data)),
+      mergeMap((data) => this.projectService.updateProjectData(this.projectId, data)),
       tap(() => this.saveSuccess$.next(true)),
       tap(() => this.saveError$.next(null)),
       tap(saved => Log.info('Updated project data:', this, saved)),
@@ -60,7 +60,7 @@ export class ProjectApplicationFormPageComponent extends BaseComponent implement
 
   private callObjectives$ = this.fetchObjectives$
     .pipe(
-      flatMap(project => this.callService.getCallObjectives(project.call.id)),
+      mergeMap(project => this.callService.getCallObjectives(project.call.id)),
       tap(objectives => Log.info('Fetched objectives', this, objectives)),
       map(objectives => ({
         priorities: objectives
@@ -75,7 +75,7 @@ export class ProjectApplicationFormPageComponent extends BaseComponent implement
 
   private callStrategies$ = this.fetchStrategies$
     .pipe(
-      flatMap(project => this.callService.getCallById(project.call.id)),
+      mergeMap(project => this.callService.getCallById(project.call.id)),
       tap(call => Log.info('Fetched strategies from call', this, call.strategies)),
       map(call => ({
         strategies: call.strategies

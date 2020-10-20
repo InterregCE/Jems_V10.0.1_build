@@ -1,7 +1,7 @@
 import {Injectable} from '@angular/core';
 import {Observable, ReplaySubject} from 'rxjs';
 import {OutputProjectDescription, ProjectDescriptionService} from '@cat/api';
-import {flatMap, shareReplay, tap} from 'rxjs/operators';
+import {mergeMap, shareReplay, tap} from 'rxjs/operators';
 import {Log} from '../../../../../common/utils/log';
 
 @Injectable()
@@ -10,7 +10,7 @@ export class ProjectApplicationFormStore {
 
   projectDescription$ = this.projectId$
     .pipe(
-      flatMap(id => this.projectDescriptionService.getProjectDescription(id)),
+      mergeMap(id => this.projectDescriptionService.getProjectDescription(id)),
       tap(desc => Log.info('Fetched project description', this, desc)),
       shareReplay(1)
     );

@@ -1,5 +1,5 @@
 import {Injectable} from '@angular/core';
-import {flatMap, map, shareReplay, tap} from 'rxjs/operators';
+import {mergeMap, map, shareReplay, tap} from 'rxjs/operators';
 import {OutputUserRole, UserRoleService} from '@cat/api';
 import {Observable, of} from 'rxjs';
 import {Log} from '../../../../common/utils/log';
@@ -11,7 +11,7 @@ export class RolePageService {
 
   private userRoles$ = this.permissionService.permissionsChanged()
     .pipe(
-      flatMap(permissions => {
+      mergeMap(permissions => {
         if (permissions.includes(Permission.ADMINISTRATOR)) return this.userRoleService.list();
         return of(null)
       }),

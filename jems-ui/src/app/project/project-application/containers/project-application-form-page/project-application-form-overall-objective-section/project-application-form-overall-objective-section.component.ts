@@ -2,7 +2,7 @@ import {ChangeDetectionStrategy, Component, Input, OnInit} from '@angular/core';
 import {Permission} from '../../../../../security/permissions/permission';
 import {merge, Observable, Subject} from 'rxjs';
 import {I18nValidationError} from '@common/validation/i18n-validation-error';
-import {catchError, flatMap, map, tap} from 'rxjs/operators';
+import {catchError, mergeMap, map, tap} from 'rxjs/operators';
 import {Log} from '../../../../../common/utils/log';
 import {HttpErrorResponse} from '@angular/common/http';
 import {InputProjectOverallObjective, ProjectDescriptionService, OutputProject} from '@cat/api';
@@ -43,7 +43,7 @@ export class ProjectApplicationFormOverallObjectiveSectionComponent extends Base
 
     const updatedProjectDescription$ = this.updateProjectDescription$
       .pipe(
-        flatMap((data) => this.projectDescriptionService.updateProjectOverallObjective(this.projectId, data)),
+        mergeMap((data) => this.projectDescriptionService.updateProjectOverallObjective(this.projectId, data)),
         tap(() => this.saveSuccess$.next(true)),
         tap(() => this.saveError$.next(null)),
         tap(saved => Log.info('Updated project overall objective:', this, saved)),

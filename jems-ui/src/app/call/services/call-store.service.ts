@@ -1,7 +1,7 @@
 import {Injectable} from '@angular/core';
 import {CallService, InputCallUpdate, OutputCall} from '@cat/api'
 import {merge, Observable, of, ReplaySubject, Subject} from 'rxjs';
-import {catchError, distinctUntilChanged, flatMap, switchMap, tap} from 'rxjs/operators';
+import {catchError, distinctUntilChanged, mergeMap, switchMap, tap} from 'rxjs/operators';
 import {Log} from '../../common/utils/log';
 import {HttpErrorResponse} from '@angular/common/http';
 import {CallDetailComponent} from '../components/call-detail/call-detail.component';
@@ -17,7 +17,7 @@ export class CallStore {
   private callById$ = this.callId$
     .pipe(
       distinctUntilChanged(),
-      flatMap(id => id ? this.callService.getCallById(id) : of({})),
+      mergeMap(id => id ? this.callService.getCallById(id) : of({})),
       tap(call => Log.info('Fetched call:', this, call)),
       tap((call: OutputCall) => {
         if (call.name) this.callName$.next(call.name);

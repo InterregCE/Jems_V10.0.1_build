@@ -9,7 +9,7 @@ import {Log} from '../../common/utils/log';
 @Injectable({providedIn: 'root'})
 export class PermissionService {
 
-  private permissionsChanged$: ReplaySubject<string[]> = new ReplaySubject();
+  private permissionsChanged$: ReplaySubject<string[]> = new ReplaySubject(1);
 
   constructor(private ngxPermissionsService: NgxPermissionsService,
               private securityService: SecurityService) {

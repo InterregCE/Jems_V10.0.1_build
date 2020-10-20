@@ -3,7 +3,7 @@ import {InputProject, ProjectService} from '@cat/api';
 import {I18nValidationError} from '@common/validation/i18n-validation-error';
 import {Permission} from '../../../../security/permissions/permission';
 import {HttpErrorResponse} from '@angular/common/http';
-import {catchError, flatMap, map, startWith, take, takeUntil, tap} from 'rxjs/operators';
+import {catchError, mergeMap, map, startWith, take, takeUntil, tap} from 'rxjs/operators';
 import {Log} from '../../../../common/utils/log';
 import {BaseComponent} from '@common/components/base-component';
 import {combineLatest, Subject} from 'rxjs';
@@ -37,7 +37,7 @@ export class ProjectApplicationComponent extends BaseComponent {
       )
     ])
       .pipe(
-        flatMap(([pageIndex, pageSize, sort]) =>
+        mergeMap(([pageIndex, pageSize, sort]) =>
           this.projectService.getProjects(pageIndex, pageSize, sort)),
         tap(page => Log.info('Fetched the projects:', this, page.content)),
       );

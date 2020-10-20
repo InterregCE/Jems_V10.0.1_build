@@ -10,7 +10,7 @@ import {
   ProgrammeFundService,
   ProgrammePriorityService
 } from '@cat/api';
-import {catchError, flatMap, map, tap} from 'rxjs/operators';
+import {catchError, mergeMap, map, tap} from 'rxjs/operators';
 import {Log} from '../../../../common/utils/log';
 import {HttpErrorResponse} from '@angular/common/http';
 import {MatSort} from '@angular/material/sort';
@@ -44,7 +44,7 @@ export class ProgrammePageComponent extends BaseComponent {
 
   private savedProgramme$ = this.saveProgrammeData$
     .pipe(
-      flatMap(programmeUpdate => this.programmeDataService.update(programmeUpdate)),
+      mergeMap(programmeUpdate => this.programmeDataService.update(programmeUpdate)),
       tap(saved => Log.info('Updated programme:', this, saved)),
       tap(() => this.programmeSaveSuccess$.next(true)),
       tap(() => this.programmeSaveError$.next(null)),
@@ -63,7 +63,7 @@ export class ProgrammePageComponent extends BaseComponent {
 
   private savedFunds$ = this.saveFunds$
     .pipe(
-      flatMap(funds => this.programmeFundService.updateProgrammeFundList(funds)),
+      mergeMap(funds => this.programmeFundService.updateProgrammeFundList(funds)),
       tap(saved => Log.info('Updated programme funds:', this, saved)),
       tap(() => this.fundsSaveSuccess$.next(true)),
       tap(() => this.fundsSaveError$.next(null)),

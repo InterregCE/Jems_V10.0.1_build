@@ -1,7 +1,7 @@
 import {ChangeDetectionStrategy, Component, OnInit} from '@angular/core';
 import {NutsImportService, ProgrammeDataService} from '@cat/api';
 import {combineLatest, merge, ReplaySubject, Subject} from 'rxjs';
-import {catchError, flatMap, map, startWith, take, takeUntil, tap} from 'rxjs/operators';
+import {catchError, mergeMap, map, startWith, take, takeUntil, tap} from 'rxjs/operators';
 import {BaseComponent} from '@common/components/base-component';
 import {Log} from '../../../../common/utils/log';
 import {I18nValidationError} from '@common/validation/i18n-validation-error';
@@ -36,7 +36,7 @@ export class ProgrammeAreaComponent extends BaseComponent implements OnInit {
 
   private latestNutsMetadata$ = this.downloadLatestNuts$
     .pipe(
-      flatMap(() => this.nutsService.downloadLatestNuts()),
+      mergeMap(() => this.nutsService.downloadLatestNuts()),
       tap(() => this.downloadSuccess$.next(true)),
       tap(() => this.downloadError$.next(null)),
       catchError((error: HttpErrorResponse) => {
@@ -69,14 +69,14 @@ export class ProgrammeAreaComponent extends BaseComponent implements OnInit {
   saveSelectedRegions$ = new Subject<void>();
   savedSelectedRegions$ = this.saveSelectedRegions$
     .pipe(
-      flatMap(() => this.programmeDataService.updateNuts(
+      mergeMap(() => this.programmeDataService.updateNuts(
         this.collectSelectedIds(this.regionTreeDataSource.data))
       ),
       tap(saved => Log.info('Saved selected regions', this, saved)),
       tap(() => this.regionSaveSuccess$.next(true)),
       map(programmeData => programmeData.programmeNuts)
     );
-  selectionChanged$ = new ReplaySubject<ProgrammeRegionCheckbox[]>();
+  selectionChanged$ = new ReplaySubject<ProgrammeRegionCheckbox[]>(1);
   selectedRegions$ = this.selectionChanged$
     .pipe(
       map(selected => this.getSelected(selected)),

@@ -11,7 +11,7 @@ import {
   ProjectService,
   ProjectStatusService
 } from '@cat/api';
-import {catchError, flatMap, shareReplay, startWith, tap, withLatestFrom} from 'rxjs/operators';
+import {catchError, mergeMap, shareReplay, startWith, tap, withLatestFrom} from 'rxjs/operators';
 import {Log} from '../../../../../common/utils/log';
 import {Router} from '@angular/router';
 import {PermissionService} from '../../../../../security/permissions/permission.service';
@@ -35,14 +35,14 @@ export class ProjectStore {
 
   private projectById$ = this.projectId$
     .pipe(
-      flatMap(id => this.projectService.getProjectById(id)),
+      mergeMap(id => this.projectService.getProjectById(id)),
       tap(project => Log.info('Fetched project:', this, project))
     );
 
   private changedStatus$ = this.newStatus$
     .pipe(
       withLatestFrom(this.projectId$),
-      flatMap(([newStatus, id]) =>
+      mergeMap(([newStatus, id]) =>
         this.projectStatusService.setProjectStatus(id, newStatus)),
       tap(saved => this.projectStatus$.next(saved.projectStatus.status)),
       tap(saved => Log.info('Updated project status status:', this, saved)),
@@ -56,7 +56,7 @@ export class ProjectStore {
   private changedEligibilityAssessment$ = this.newEligibilityAssessment$
     .pipe(
       withLatestFrom(this.projectId$),
-      flatMap(([assessment, id]) => this.projectStatusService.setEligibilityAssessment(id, assessment)),
+      mergeMap(([assessment, id]) => this.projectStatusService.setEligibilityAssessment(id, assessment)),
       tap(saved => Log.info('Updated project eligibility assessment:', this, saved)),
       tap(saved => this.router.navigate(['app', 'project', 'detail', saved.id]))
     );
@@ -64,7 +64,7 @@ export class ProjectStore {
   private changedQualityAssessment$ = this.newQualityAssessment$
     .pipe(
       withLatestFrom(this.projectId$),
-      flatMap(([assessment, id]) => this.projectStatusService.setQualityAssessment(id, assessment)),
+      mergeMap(([assessment, id]) => this.projectStatusService.setQualityAssessment(id, assessment)),
       tap(saved => Log.info('Updated project quality assessment:', this, saved)),
       tap(saved => this.router.navigate(['app', 'project', 'detail', saved.id]))
     )
@@ -72,7 +72,7 @@ export class ProjectStore {
   private revertedProjectStatus$ = this.newRevertProjectStatus$
     .pipe(
       withLatestFrom(this.projectId$),
-      flatMap(([status, id]) => this.projectStatusService.revertLastDecision(id, status)),
+      mergeMap(([status, id]) => this.projectStatusService.revertLastDecision(id, status)),
       tap(() => this.revertStatusChanged$.next()),
       tap(saved => Log.info('Reverted project status:', this, saved))
     );
@@ -83,7 +83,7 @@ export class ProjectStore {
     this.revertStatusChanged$.pipe(startWith(null))
   ])
     .pipe(
-      flatMap(([permissions, id]) => permissions[0] === Permission.ADMINISTRATOR
+      mergeMap(([permissions, id]) => permissions[0] === Permission.ADMINISTRATOR
         ? this.projectStatusService.findPossibleDecisionRevertStatus(id)
         : of(null)
       ),

@@ -2,7 +2,7 @@ import {ChangeDetectionStrategy, Component, Input, OnInit} from '@angular/core';
 import {BaseComponent} from '@common/components/base-component';
 import {merge, Observable, Subject} from 'rxjs';
 import {I18nValidationError} from '@common/validation/i18n-validation-error';
-import {catchError, flatMap, map, tap} from 'rxjs/operators';
+import {catchError, mergeMap, map, tap} from 'rxjs/operators';
 import {Log} from '../../../../../common/utils/log';
 import {HttpErrorResponse} from '@angular/common/http';
 import {ProjectDescriptionService, InputProjectManagement} from '@cat/api';
@@ -39,7 +39,7 @@ export class ProjectApplicationFormManagementSectionComponent extends BaseCompon
 
     const updatedProjectDescription$ = this.updateProjectDescription$
       .pipe(
-        flatMap((data) => this.projectDescriptionService.updateProjectManagement(this.projectId, data)),
+        mergeMap((data) => this.projectDescriptionService.updateProjectManagement(this.projectId, data)),
         tap(() => this.saveSuccess$.next(true)),
         tap(() => this.saveError$.next(null)),
         tap(saved => Log.info('Updated project management:', this, saved)),

@@ -2,7 +2,7 @@ import {ChangeDetectionStrategy, Component} from '@angular/core';
 import {InputUserCreate, UserService} from '@cat/api';
 import {Permission} from '../../../../security/permissions/permission';
 import {RolePageService} from '../../../user-role/services/role-page/role-page.service';
-import {catchError, flatMap, map, startWith, take, takeUntil, tap} from 'rxjs/operators';
+import {catchError, mergeMap, map, startWith, take, takeUntil, tap} from 'rxjs/operators';
 import {HttpErrorResponse} from '@angular/common/http';
 import {combineLatest, Subject} from 'rxjs';
 import {I18nValidationError} from '@common/validation/i18n-validation-error';
@@ -35,7 +35,7 @@ export class UserPageComponent extends BaseComponent {
       )
     ])
       .pipe(
-        flatMap(([pageIndex, pageSize, sort]) =>
+        mergeMap(([pageIndex, pageSize, sort]) =>
           this.userService.list(pageIndex, pageSize, sort)),
         tap(page => Log.info('Fetched the users:', this, page.content)),
       );
