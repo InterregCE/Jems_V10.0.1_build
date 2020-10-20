@@ -1,11 +1,11 @@
 package io.cloudflight.jems.server.project.service.partner
 
 import io.cloudflight.jems.api.call.dto.CallStatus
-import io.cloudflight.jems.api.project.dto.partner.InputProjectPartnerContact
+import io.cloudflight.jems.api.project.dto.InputProjectContact
 import io.cloudflight.jems.api.project.dto.InputProjectPartnerContribution
 import io.cloudflight.jems.api.project.dto.partner.InputProjectPartnerCreate
 import io.cloudflight.jems.api.project.dto.partner.InputProjectPartnerUpdate
-import io.cloudflight.jems.api.project.dto.partner.ProjectPartnerContactType
+import io.cloudflight.jems.api.project.dto.ProjectContactType
 import io.cloudflight.jems.api.project.dto.partner.ProjectPartnerRole
 import io.cloudflight.jems.api.project.dto.status.ProjectApplicationStatus
 import io.cloudflight.jems.server.call.entity.Call
@@ -34,6 +34,7 @@ import org.junit.jupiter.api.assertThrows
 import org.springframework.data.domain.PageImpl
 import org.springframework.data.domain.Pageable
 import org.springframework.data.domain.Sort
+import org.springframework.http.HttpStatus
 import java.time.ZonedDateTime
 import java.util.Optional
 
@@ -136,8 +137,8 @@ internal class ProjectPartnerServiceTest {
     fun createProjectPartner() {
         val inputProjectPartner = InputProjectPartnerCreate("partner", ProjectPartnerRole.LEAD_PARTNER)
         val projectPartnerWithProject = ProjectPartner(null, project, inputProjectPartner.abbreviation!!, inputProjectPartner.role!!)
-        every { projectRepository.findById(0) } returns Optional.empty()
         every { projectRepository.findById(1) } returns Optional.of(project)
+        every { projectPartnerRepository.count() } returns 0
         every { projectPartnerRepository.findFirstByProjectIdAndRole(1, ProjectPartnerRole.LEAD_PARTNER) } returns Optional.empty()
         every { projectPartnerRepository.save(projectPartnerWithProject) } returns projectPartner
         // also handle sorting
@@ -145,9 +146,28 @@ internal class ProjectPartnerServiceTest {
         every { projectPartnerRepository.findAllByProjectId(1, any<Sort>()) } returns projectPartners
         every { projectPartnerRepository.saveAll(any<Iterable<ProjectPartner>>()) } returnsArgument 0
 
-        assertThrows<ResourceNotFoundException> { projectPartnerService.create(0, inputProjectPartner) }
         assertThat(projectPartnerService.create(1, inputProjectPartner)).isEqualTo(outputProjectPartnerDetail)
         verify { projectPartnerRepository.save(projectPartnerWithProject) }
+    }
+
+    @Test
+    fun `createProjectPartner not existing`() {
+        val inputProjectPartner = InputProjectPartnerCreate("partner", ProjectPartnerRole.LEAD_PARTNER)
+        every { projectRepository.findById(-1) } returns Optional.empty()
+        val ex = assertThrows<ResourceNotFoundException> { projectPartnerService.create(-1, inputProjectPartner) }
+        assertThat(ex.entity).isEqualTo("project")
+    }
+
+    @Test
+    fun `error createProjectPartner when MAX count exceeded`() {
+        every { projectRepository.findById(1) } returns Optional.of(project)
+        every { projectPartnerRepository.count() } returns 30
+
+        val ex = assertThrows<I18nValidationException> {
+            projectPartnerService.create(1, InputProjectPartnerCreate("partner", ProjectPartnerRole.PARTNER))
+        }
+        assertThat(ex.i18nKey).isEqualTo("project.partner.max.allowed.count.reached")
+        assertThat(ex.httpStatus).isEqualTo(HttpStatus.UNPROCESSABLE_ENTITY)
     }
 
     @Test
@@ -156,6 +176,7 @@ internal class ProjectPartnerServiceTest {
         val inputProjectPartnerLead = InputProjectPartnerCreate("partner", ProjectPartnerRole.LEAD_PARTNER)
         val projectPartnerWithProject = ProjectPartner(null, project, inputProjectPartner.abbreviation!!, inputProjectPartner.role!!)
         every { projectRepository.findById(1) } returns Optional.of(project)
+        every { projectPartnerRepository.count() } returns 2
         every { projectPartnerRepository.findFirstByProjectIdAndRole(1, ProjectPartnerRole.LEAD_PARTNER) } returns Optional.of(projectPartnerWithProject)
         every { projectPartnerRepository.save(projectPartnerWithProject) } returns projectPartner
         // also handle sorting
@@ -208,9 +229,9 @@ internal class ProjectPartnerServiceTest {
 
     @Test
     fun updatePartnerContact() {
-        val projectPartnerContactUpdate = InputProjectPartnerContact(
+        val projectPartnerContactUpdate = InputProjectContact(
             "test",
-            ProjectPartnerContactType.ContactPerson,
+            ProjectContactType.ContactPerson,
             "test",
             "test",
             "test@ems.eu",
@@ -229,9 +250,9 @@ internal class ProjectPartnerServiceTest {
 
     @Test
     fun updatePartnerContact_notExisting() {
-        val projectPartnerContactUpdate = InputProjectPartnerContact(
+        val projectPartnerContactUpdate = InputProjectContact(
             "test",
-            ProjectPartnerContactType.LegalRepresentative,
+            ProjectContactType.LegalRepresentative,
             "test",
             "test",
             "test@ems.eu",
@@ -283,6 +304,7 @@ internal class ProjectPartnerServiceTest {
         )
         every { projectRepository.findById(0) } returns Optional.empty()
         every { projectRepository.findById(1) } returns Optional.of(project)
+        every { projectPartnerRepository.count() } returns 0
         every { projectPartnerRepository.findFirstByProjectIdAndRole(1, ProjectPartnerRole.LEAD_PARTNER) } returns Optional.empty()
         every { projectPartnerRepository.save(projectPartnerWithProject) } returns projectPartnerWithOrganization
         // also handle sorting

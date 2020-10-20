@@ -1,59 +1,57 @@
 package io.cloudflight.jems.server.project.service
 
 import io.cloudflight.jems.api.call.dto.CallStatus
-import io.cloudflight.jems.api.project.dto.InputProjectAssociatedOrganizationAddressDetails
-import io.cloudflight.jems.api.project.dto.InputProjectAssociatedOrganizationCreate
-import io.cloudflight.jems.api.project.dto.InputProjectAssociatedOrganizationUpdate
-import io.cloudflight.jems.api.project.dto.partner.InputProjectPartnerContact
-import io.cloudflight.jems.api.project.dto.OutputProjectAssociatedOrganizationDetail
+import io.cloudflight.jems.api.project.dto.InputProjectContact
+import io.cloudflight.jems.api.project.dto.ProjectContactType
+import io.cloudflight.jems.api.project.dto.associatedorganization.InputProjectAssociatedOrganizationAddress
+import io.cloudflight.jems.api.project.dto.associatedorganization.InputProjectAssociatedOrganizationCreate
+import io.cloudflight.jems.api.project.dto.associatedorganization.InputProjectAssociatedOrganizationUpdate
+import io.cloudflight.jems.api.project.dto.associatedorganization.OutputProjectAssociatedOrganization
+import io.cloudflight.jems.api.project.dto.associatedorganization.OutputProjectAssociatedOrganizationAddress
+import io.cloudflight.jems.api.project.dto.associatedorganization.OutputProjectAssociatedOrganizationDetail
+import io.cloudflight.jems.api.project.dto.partner.OutputProjectPartner
 import io.cloudflight.jems.api.project.dto.partner.OutputProjectPartnerContact
-import io.cloudflight.jems.api.project.dto.partner.ProjectPartnerContactType
 import io.cloudflight.jems.api.project.dto.partner.ProjectPartnerRole
 import io.cloudflight.jems.api.project.dto.status.ProjectApplicationStatus
 import io.cloudflight.jems.server.call.entity.Call
 import io.cloudflight.jems.server.exception.ResourceNotFoundException
-import io.cloudflight.jems.server.project.entity.AssociatedOrganizationContact
+import io.cloudflight.jems.server.project.entity.Address
+import io.cloudflight.jems.server.project.entity.Contact
 import io.cloudflight.jems.server.project.entity.Project
-import io.cloudflight.jems.server.project.entity.ProjectAssociatedOrganization
-import io.cloudflight.jems.server.project.entity.ProjectAssociatedOrganizationDetail
+import io.cloudflight.jems.server.project.entity.associatedorganization.ProjectAssociatedOrganization
 import io.cloudflight.jems.server.project.entity.partner.ProjectPartner
 import io.cloudflight.jems.server.project.entity.ProjectStatus
+import io.cloudflight.jems.server.project.entity.associatedorganization.ProjectAssociatedOrganizationAddress
+import io.cloudflight.jems.server.project.entity.associatedorganization.ProjectAssociatedOrganizationContact
+import io.cloudflight.jems.server.project.entity.associatedorganization.ProjectAssociatedOrganizationContactId
 import io.cloudflight.jems.server.project.repository.ProjectAssociatedOrganizationRepository
 import io.cloudflight.jems.server.project.repository.partner.ProjectPartnerRepository
-import io.cloudflight.jems.server.project.repository.ProjectRepository
-import io.cloudflight.jems.server.project.service.partner.toOutputProjectPartner
-import io.cloudflight.jems.server.security.model.LocalCurrentUser
-import io.cloudflight.jems.server.security.service.SecurityService
+import io.cloudflight.jems.server.project.service.associatedorganization.ProjectAssociatedOrganizationService
+import io.cloudflight.jems.server.project.service.associatedorganization.ProjectAssociatedOrganizationServiceImpl
 import io.cloudflight.jems.server.user.entity.User
 import io.cloudflight.jems.server.user.entity.UserRole
-import io.cloudflight.jems.server.user.service.toOutputUserWithRole
 import io.mockk.MockKAnnotations
 import io.mockk.every
 import io.mockk.impl.annotations.MockK
+import io.mockk.slot
+import io.mockk.verify
 import java.time.ZonedDateTime
-import java.util.*
-import kotlin.collections.HashSet
-import org.assertj.core.api.Assertions
+import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
-import org.junit.jupiter.api.assertDoesNotThrow
 import org.junit.jupiter.api.assertThrows
 import org.springframework.data.domain.PageImpl
 import org.springframework.data.domain.Pageable
 import org.springframework.data.domain.Sort
+import java.util.Optional
 
 internal class ProjectAssociatedOrganizationServiceTest {
+
     @MockK
     lateinit var projectPartnerRepository: ProjectPartnerRepository
 
     @MockK
     lateinit var projectAssociatedOrganizationRepository: ProjectAssociatedOrganizationRepository
-
-    @MockK
-    lateinit var projectRepository: ProjectRepository
-
-    @MockK
-    lateinit var securityService: SecurityService
 
     lateinit var projectAssociatedOrganizationService: ProjectAssociatedOrganizationService
 
@@ -67,7 +65,6 @@ internal class ProjectAssociatedOrganizationServiceTest {
         email = "admin@admin.dev",
         surname = "Surname",
         userRole = userRole)
-    private val outputUser = user.toOutputUserWithRole()
 
     private val call = Call(
         id = 1,
@@ -91,153 +88,220 @@ internal class ProjectAssociatedOrganizationServiceTest {
         call = call,
         applicant = user,
         projectStatus = projectStatus)
+
     private val projectPartner = ProjectPartner(
         id = 1,
         project = project,
         abbreviation = "partner",
         role = ProjectPartnerRole.LEAD_PARTNER)
-    private val organization = ProjectAssociatedOrganization(
-        1,
-        "test",
-        "test",
-        organizationAddress = null,
-        partner = projectPartner,
-        project = project)
 
-    private val outputProjectPartner = projectPartner.toOutputProjectPartner()
-    private val outputOrganization = organization.toOutputProjectAssociatedOrganization()
-    private val outputOrganizationDetail = organization.toOutputProjectAssociatedOrganizationDetail()
-    private val inputOrganizationAddress = InputProjectAssociatedOrganizationAddressDetails("country", "", "", "", "" ,"" ,"", "")
-    private val inputProjectPartnerContactCreateOne = InputProjectPartnerContact("test", ProjectPartnerContactType.LegalRepresentative, "test", "test", "", "")
-    private val inputProjectPartnerContactCreateTwo = InputProjectPartnerContact("test", ProjectPartnerContactType.ContactPerson, "test", "test", "test@ems.eu", "test")
-    private val inputAssociatedOrganization = InputProjectAssociatedOrganizationCreate(null, "associatedOrganization", "associatedOrganizationInEnglish", null, projectPartner.id!!, setOf())
+    private val outputProjectPartner = OutputProjectPartner(
+        id = 1,
+        abbreviation = projectPartner.abbreviation,
+        role = ProjectPartnerRole.LEAD_PARTNER)
 
+    private fun organization(id: Long? = null, partner: ProjectPartner, name: String, sortNr: Int? = null) = ProjectAssociatedOrganization(
+        id = id,
+        project = partner.project,
+        partner = partner,
+        nameInOriginalLanguage = name,
+        nameInEnglish = name,
+        sortNumber = sortNr
+    )
+
+    private fun outputOrganization(id: Long, partnerAbbr: String, name: String, sortNr: Int? = null) = OutputProjectAssociatedOrganization(
+        id = id,
+        partnerAbbreviation = partnerAbbr,
+        nameInOriginalLanguage = name,
+        nameInEnglish = name,
+        sortNumber = sortNr
+    )
+
+    private fun outputOrganizationDetail(id: Long, partner: OutputProjectPartner, name: String, sortNr: Int? = null) = OutputProjectAssociatedOrganizationDetail(
+        id = id,
+        partner = partner,
+        nameInOriginalLanguage = name,
+        nameInEnglish = name,
+        sortNumber = sortNr
+    )
 
     @BeforeEach
     fun setup() {
         MockKAnnotations.init(this)
-        every { securityService.currentUser } returns LocalCurrentUser(outputUser, user.password, emptyList())
-        projectAssociatedOrganizationService = ProjectAssociatedOrganizationServiceImpl(projectPartnerRepository, projectRepository, projectAssociatedOrganizationRepository)
+        projectAssociatedOrganizationService = ProjectAssociatedOrganizationServiceImpl(projectPartnerRepository, projectAssociatedOrganizationRepository)
     }
 
     @Test
     fun getById() {
-        every { projectAssociatedOrganizationRepository.findFirstByProjectIdAndId(1, 0) } returns Optional.empty()
-        every { projectAssociatedOrganizationRepository.findFirstByProjectIdAndId(1, 1) } returns Optional.of(organization)
+        val org = organization(1, projectPartner, "test", 1)
+        every { projectAssociatedOrganizationRepository.findFirstByProjectIdAndId(1, 1) } returns Optional.of(org)
 
-        assertThrows<ResourceNotFoundException> { projectAssociatedOrganizationService.getById(1,0) }
-        Assertions.assertThat(projectAssociatedOrganizationService.getById(1, 1)).isEqualTo(outputOrganizationDetail)
+        assertThat(projectAssociatedOrganizationService.getById(1, 1))
+            .isEqualTo(outputOrganizationDetail(1, outputProjectPartner, "test", 1))
+    }
+
+    @Test
+    fun `getById not-existing`() {
+        every { projectAssociatedOrganizationRepository.findFirstByProjectIdAndId(1, -1) } returns Optional.empty()
+
+        val ex = assertThrows<ResourceNotFoundException> { projectAssociatedOrganizationService.getById(1,-1) }
+        assertThat(ex.entity).isEqualTo("projectAssociatedOrganisation")
     }
 
     @Test
     fun findAllByProjectId() {
-        every { projectAssociatedOrganizationRepository.findAllByProjectId(0, UNPAGED) } returns PageImpl(emptyList())
-        every { projectAssociatedOrganizationRepository.findAllByProjectId(1, UNPAGED) } returns PageImpl(listOf(organization))
+        every { projectAssociatedOrganizationRepository.findAllByProjectId(1, UNPAGED) } returns
+            PageImpl(listOf(organization(1, projectPartner, "test", 1)))
 
-        Assertions.assertThat(projectAssociatedOrganizationService.findAllByProjectId(0, UNPAGED)).isEmpty()
-        Assertions.assertThat(projectAssociatedOrganizationService.findAllByProjectId(1, UNPAGED)).containsExactly(outputOrganization)
+        assertThat(projectAssociatedOrganizationService.findAllByProjectId(1, UNPAGED))
+            .containsExactly(outputOrganization(1, projectPartner.abbreviation, "test", 1))
     }
 
     @Test
-    fun createProjectPartner() {
-        val initialAssociatedOrganization = inputAssociatedOrganization.toEntity(project, projectPartner)
-        val associatedOrganization = inputAssociatedOrganization.toEntity(project, projectPartner).copy(id = 1L)
+    fun `create associated organization`() {
+        every { projectPartnerRepository.findFirstByProjectIdAndId(1, 1) } returns Optional.of(projectPartner)
 
-        val organizationAddress = inputOrganizationAddress.toEntity(associatedOrganization)
-        val contacts = HashSet<AssociatedOrganizationContact>();
-        contacts.add(inputProjectPartnerContactCreateOne.toAssociatedOrganizationContact(associatedOrganization))
-        contacts.add(inputProjectPartnerContactCreateTwo.toAssociatedOrganizationContact(associatedOrganization))
-        val associatedOrganizationUpdated = associatedOrganization.copy(organizationAddress = organizationAddress, associatedOrganizationContacts = contacts)
+        // mock 2 repo.save() method calls
+        val toBePersistedContact = ProjectAssociatedOrganizationContact(
+            contactId = ProjectAssociatedOrganizationContactId(10, ProjectContactType.ContactPerson),
+            contact = Contact(firstName = "test contact")
+        )
+        val toBePersistedAddress = ProjectAssociatedOrganizationAddress(
+            organizationId = 10,
+            address = Address(country = "AT")
+        )
+        val toFirstSave = organization(10, projectPartner, "to create")
+        val toSecondSave = toFirstSave.copy(contacts = mutableSetOf(toBePersistedContact), addresses = mutableSetOf(toBePersistedAddress))
+        every { projectAssociatedOrganizationRepository.save(any<ProjectAssociatedOrganization>()) } returnsMany
+            listOf(
+                // first save just persist AssociatedOrganization without contacts and address
+                toFirstSave,
+                // second one will add contacts and address once we have organizationId
+                toSecondSave
+            )
 
-        val outputOrganizationAddressDetails = organizationAddress.toOutputProjectAssociatedOrganizationDetails()
-        val outputContacts = HashSet<OutputProjectPartnerContact>();
-        outputContacts.add(inputProjectPartnerContactCreateOne.toAssociatedOrganizationContact(associatedOrganizationUpdated).toOutputProjectPartnerContact())
-        outputContacts.add(inputProjectPartnerContactCreateTwo.toAssociatedOrganizationContact(associatedOrganizationUpdated).toOutputProjectPartnerContact())
-        val outputAssociatedOrganizationUpdatedDetail = OutputProjectAssociatedOrganizationDetail(1, "associatedOrganization", "associatedOrganizationInEnglish", outputOrganizationAddressDetails, null,  outputProjectPartner, outputContacts)
-
-        every { projectRepository.findById(0) } returns Optional.empty()
-        every { projectRepository.findById(1) } returns Optional.of(project)
-        every { projectPartnerRepository.findById(1) } returns Optional.of(projectPartner)
-        every { projectAssociatedOrganizationRepository.save(initialAssociatedOrganization) } returns initialAssociatedOrganization
-        every { projectAssociatedOrganizationRepository.save(initialAssociatedOrganization.copy(
-            organizationAddress = inputAssociatedOrganization.organizationAddress?.toEntity(initialAssociatedOrganization),
-            associatedOrganizationContacts = inputAssociatedOrganization.associatedOrganizationContacts?.map { it.toAssociatedOrganizationContact(initialAssociatedOrganization) }?.toHashSet())
-            ) } returns associatedOrganizationUpdated
-        // also handle sorting
-        val associatedOrganizations = listOf(organization, associatedOrganizationUpdated)
-        every { projectAssociatedOrganizationRepository.findAllByProjectId(1, any<Sort>()) } returns associatedOrganizations
-        every { projectAssociatedOrganizationRepository.saveAll(any<Iterable<ProjectAssociatedOrganization>>()) } returnsArgument 0
-
-        assertThrows<ResourceNotFoundException> { projectAssociatedOrganizationService.create(0, inputAssociatedOrganization) }
-        Assertions.assertThat(projectAssociatedOrganizationService.create(1, inputAssociatedOrganization)).isEqualTo(outputAssociatedOrganizationUpdatedDetail)
-    }
-
-    @Test
-    fun updateProjectPartner() {
-
-        val initialAssociatedOrganization = inputAssociatedOrganization.toEntity(project, projectPartner)
-        val associatedOrganization = inputAssociatedOrganization.toEntity(project, projectPartner).copy(id = 1L)
-
-        val organizationAddress = inputOrganizationAddress.toEntity(associatedOrganization)
-        val contacts = HashSet<AssociatedOrganizationContact>();
-        contacts.add(inputProjectPartnerContactCreateOne.toAssociatedOrganizationContact(associatedOrganization))
-        contacts.add(inputProjectPartnerContactCreateTwo.toAssociatedOrganizationContact(associatedOrganization))
-        val associatedOrganizationUpdated = associatedOrganization.copy(organizationAddress = organizationAddress, associatedOrganizationContacts = contacts)
-        val inputAssociatedOrganizationUpdate = InputProjectAssociatedOrganizationUpdate(1, "updated", "updated", null, 1, setOf())
-        every { projectAssociatedOrganizationRepository.findFirstByProjectIdAndId(1, 1) } returns Optional.of(initialAssociatedOrganization)
-        every { projectPartnerRepository.findById(1) } returns Optional.of(projectPartner)
-        every { projectAssociatedOrganizationRepository.save(initialAssociatedOrganization.copy(
-            organizationAddress = inputAssociatedOrganization.organizationAddress?.toEntity(initialAssociatedOrganization),
-            associatedOrganizationContacts = inputAssociatedOrganization.associatedOrganizationContacts?.map { it.toAssociatedOrganizationContact(initialAssociatedOrganization) }?.toHashSet())
-        ) } returns associatedOrganizationUpdated
-
-        // also handle sorting
-        val associatedOrganizations = listOf(organization, associatedOrganizationUpdated)
-        every { projectAssociatedOrganizationRepository.findAllByProjectId(1, any<Sort>()) } returns associatedOrganizations
-        every { projectAssociatedOrganizationRepository.saveAll(any<Iterable<ProjectAssociatedOrganization>>()) } returnsArgument 0
-
-
-        Assertions.assertThat(projectAssociatedOrganizationService.update(1, inputAssociatedOrganizationUpdate))
-            .isEqualTo(associatedOrganizationUpdated.toOutputProjectAssociatedOrganizationDetail())
-    }
-
-    @Test
-    fun deleteAssociatedOrganizationWithDetails() {
-        val associatedOrganizationWithoutDetail = ProjectAssociatedOrganization(
-            id = 1,
-            nameInOriginalLanguage = "",
-            nameInEnglish = "",
+        // mock updating sort
+        val alreadyExistingOrganization = organization(
+            id = 9,
+            name = "old",
             partner = projectPartner,
-            project = project,
-            organizationAddress = null,
-            sortNumber = null,
-            associatedOrganizationContacts = emptySet() )
-        val organization = ProjectAssociatedOrganizationDetail(
-            1,
-            associatedOrganizationWithoutDetail,
-            "test",
-            "test",
-            "",
-            "",
-            "",
-            "",
-            "",
-            "")
-        val associatedOrganizationWithDetails = associatedOrganizationWithoutDetail.copy(organizationAddress = organization)
-        every { projectAssociatedOrganizationRepository.deleteById(associatedOrganizationWithDetails.id!!) } returns Unit
-        every { projectAssociatedOrganizationRepository.findAllByProjectId(project.id!!, any<Sort>()) } returns emptySet()
-        every { projectAssociatedOrganizationRepository.saveAll(emptyList()) } returns emptySet()
+            sortNr = 5 // old, to be replaced by 1
+        )
+        every { projectAssociatedOrganizationRepository.findAllByProjectId(eq(projectPartner.project.id!!), eq(Sort.by("id"))) } returns listOf(alreadyExistingOrganization, toSecondSave)
+        every { projectAssociatedOrganizationRepository.saveAll(any<Iterable<ProjectAssociatedOrganization>>()) } returnsArgument 0
 
-        assertDoesNotThrow { projectAssociatedOrganizationService.delete(project.id!!, associatedOrganizationWithDetails.id!!) }
+        // test create
+        val toCreate = InputProjectAssociatedOrganizationCreate(
+            partnerId = projectPartner.id!!,
+            nameInOriginalLanguage = "to create",
+            nameInEnglish = "to create",
+            address = InputProjectAssociatedOrganizationAddress(country = "AT"),
+            contacts = listOf(InputProjectContact(type = ProjectContactType.ContactPerson, firstName = "test contact"))
+        )
+        val result = projectAssociatedOrganizationService.create(projectPartner.id!!, toCreate)
+        assertThat(result).isEqualTo(outputOrganizationDetail(
+            id = 10,
+            partner = outputProjectPartner,
+            name = "to create",
+            sortNr = null // this will be updated to 2 during updateSort, but for unit test we mock hibernate so object is not tightly connected to entity
+        ).copy(
+            address = OutputProjectAssociatedOrganizationAddress(country = "AT"),
+            contacts = listOf(OutputProjectPartnerContact(type = toBePersistedContact.contactId.type, firstName = toBePersistedContact.contact!!.firstName))
+        ))
+
+        val slotOrganizations = mutableListOf<ProjectAssociatedOrganization>()
+        verify { projectAssociatedOrganizationRepository.save(capture(slotOrganizations)) }
+
+        // assert that address and contacts are persisted on second repo.save() call
+        with(slotOrganizations[0]) {
+            assertThat(id).isNull()
+            assertThat(nameInOriginalLanguage).isEqualTo("to create")
+            assertThat(nameInEnglish).isEqualTo("to create")
+            assertThat(addresses).isEmpty()
+            assertThat(contacts).isEmpty()
+        }
+        with(slotOrganizations[1]) {
+            assertThat(id).isEqualTo(10)
+            assertThat(addresses).containsExactly(toBePersistedAddress)
+            assertThat(contacts).containsExactly(toBePersistedContact)
+        }
+
+        val updatedSortNrs = slot<List<ProjectAssociatedOrganization>>()
+        verify { projectAssociatedOrganizationRepository.saveAll(capture(updatedSortNrs)) }
+
+        // assert that sortNumbers are correctly recalculated
+        with (updatedSortNrs.captured) {
+            assertThat(get(0).id).isEqualTo(9)
+            assertThat(get(0).sortNumber).isEqualTo(1)
+            assertThat(get(1).id).isEqualTo(10)
+            assertThat(get(1).sortNumber).isEqualTo(2)
+        }
     }
 
     @Test
-    fun deleteAssociatedOrganization_notExisting() {
-        every { projectAssociatedOrganizationRepository.deleteById(100) } returns Unit
-        every { projectAssociatedOrganizationRepository.findAllByProjectId(project.id!!, any<Sort>()) } returns emptySet()
-        every { projectAssociatedOrganizationRepository.saveAll(emptyList()) } returns emptySet()
+    fun `create associated organization not-existing partner`() {
+        every { projectPartnerRepository.findFirstByProjectIdAndId(1, 1) } returns Optional.empty()
 
-        assertDoesNotThrow { projectAssociatedOrganizationService.delete(project.id!!, 100) }
+        val toCreate = InputProjectAssociatedOrganizationCreate(partnerId = projectPartner.id!!)
+        val ex = assertThrows<ResourceNotFoundException> { projectAssociatedOrganizationService.create(1, toCreate) }
+        assertThat(ex.entity).isEqualTo("projectPartner")
+    }
+
+    @Test
+    fun `update associated organization remove address and contacts`() {
+        val oldOrganization = organization(
+            id = 1,
+            partner = projectPartner,
+            name = "old name",
+            sortNr = 13
+        )
+        every { projectAssociatedOrganizationRepository.findFirstByProjectIdAndId(1, 1) } returns Optional.of(oldOrganization)
+        every { projectPartnerRepository.findFirstByProjectIdAndId(1, 1) } returns Optional.of(oldOrganization.partner)
+        every { projectAssociatedOrganizationRepository.save(any<ProjectAssociatedOrganization>()) } returnsArgument 0
+
+        val newValues = InputProjectAssociatedOrganizationUpdate(
+            id = oldOrganization.id!!,
+            partnerId = oldOrganization.partner.id!!,
+            nameInOriginalLanguage = "new name",
+            nameInEnglish = "new name",
+            address = null,
+            contacts = emptySet()
+        )
+
+        // mock updating sort after entity updated
+        every { projectAssociatedOrganizationRepository.findAllByProjectId(eq(projectPartner.project.id!!), eq(Sort.by("id"))) } returns
+            listOf(organization(id = oldOrganization.id, partner = projectPartner, name = "new name", sortNr = oldOrganization.sortNumber).copy(addresses = mutableSetOf(), contacts = mutableSetOf()))
+        every { projectAssociatedOrganizationRepository.saveAll(any<Iterable<ProjectAssociatedOrganization>>()) } returnsArgument 0
+
+        // test update
+        val result = projectAssociatedOrganizationService.update(1, newValues)
+        assertThat(result).isEqualTo(outputOrganizationDetail(
+            id = 1,
+            partner = outputProjectPartner,
+            name = "new name",
+            sortNr = 13 // this will be updated to 1, but for unit test we mock hibernate so object is not tightly connected to entity
+        ))
+    }
+
+    @Test
+    fun deleteAssociatedOrganization() {
+        val orgToBeRemoved = organization(id = 1, partner = projectPartner, name = "test name")
+        every { projectAssociatedOrganizationRepository.findFirstByProjectIdAndId(orgToBeRemoved.project.id!!, orgToBeRemoved.id!!) } returns Optional.of(orgToBeRemoved)
+        every { projectAssociatedOrganizationRepository.delete(eq(orgToBeRemoved)) } answers {}
+
+        // mock updating sort after entity updated
+        every { projectAssociatedOrganizationRepository.findAllByProjectId(eq(projectPartner.project.id!!), eq(Sort.by("id"))) } returns emptyList()
+        every { projectAssociatedOrganizationRepository.saveAll(any<Iterable<ProjectAssociatedOrganization>>()) } returnsArgument 0
+
+        projectAssociatedOrganizationService.delete(orgToBeRemoved.project.id!!, orgToBeRemoved.id!!)
+    }
+
+    @Test
+    fun `deleteAssociatedOrganization not existing`() {
+        every { projectAssociatedOrganizationRepository.findFirstByProjectIdAndId(1, -1) } returns Optional.empty()
+
+        val ex = assertThrows<ResourceNotFoundException> { projectAssociatedOrganizationService.delete(1,-1) }
+        assertThat(ex.entity).isEqualTo("projectAssociatedOrganisation")
     }
 
 }

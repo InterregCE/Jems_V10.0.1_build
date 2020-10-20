@@ -2,14 +2,11 @@ import {async, ComponentFixture, fakeAsync, TestBed, tick} from '@angular/core/t
 import {TestModule} from '../../../../../../common/test-module';
 import {ProjectModule} from '../../../../../project.module';
 import {ProjectApplicationFormPartnerDetailComponent} from './project-application-form-partner-detail.component';
-import {Router} from '@angular/router';
 import {HttpTestingController} from '@angular/common/http/testing';
 import {
-  OutputProjectPartner,
-  InputProjectPartnerCreate,
-  InputProjectPartnerUpdate,
+  InputProjectContact,
   InputProjectPartnerContribution,
-  InputProjectPartnerContact
+  OutputProjectPartner,
 } from '@cat/api';
 import {RouterTestingModule} from '@angular/router/testing';
 
@@ -58,7 +55,7 @@ describe('ProjectApplicationFormPartnerDetailComponent', () => {
   }));
 
   it('should update a project partner contact', fakeAsync(() => {
-    component.savePartnerContact$.next({} as InputProjectPartnerContact[]);
+    component.savePartnerContact$.next({} as InputProjectContact[]);
 
     httpTestingController.expectOne({
       method: 'PUT',

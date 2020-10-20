@@ -78,8 +78,8 @@ export class ProjectApplicationFormPartnerListComponent implements OnInit {
         },
         {
           displayedColumn: 'project.application.form.partner.table.name',
-          elementProperty: 'name',
-          sortProperty: 'name',
+          elementProperty: 'abbreviation',
+          sortProperty: 'abbreviation',
         },
         {
           displayedColumn: 'project.application.form.partner.table.role',

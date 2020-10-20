@@ -13,8 +13,9 @@ import java.util.Optional
 @Repository
 interface ProjectPartnerRepository : PagingAndSortingRepository<ProjectPartner, Long> {
 
-    @EntityGraph(attributePaths = ["contacts"])
-    override fun findById(id: Long): Optional<ProjectPartner>
+    override fun findById(id: Long): Optional<ProjectPartner> {
+        throw UnsupportedOperationException("use method findFirstByProjectIdAndId")
+    }
 
     @EntityGraph(attributePaths = ["contacts"])
     fun findFirstByProjectIdAndId(projectId: Long, id: Long): Optional<ProjectPartner>

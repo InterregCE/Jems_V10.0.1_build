@@ -6,7 +6,7 @@ import {catchError, distinctUntilChanged, mergeMap, map, takeUntil, tap} from 'r
 import {Log} from '../../../../../../common/utils/log';
 import {ActivatedRoute, Router} from '@angular/router';
 import {
-  InputProjectPartnerContact,
+  InputProjectContact,
   InputProjectPartnerContribution,
   ProjectPartnerService
 } from '@cat/api';
@@ -33,7 +33,7 @@ export class ProjectApplicationFormPartnerDetailComponent extends BaseComponent 
 
   partnerContactSaveSuccess$ = new Subject<boolean>();
   partnerContactSaveError$ = new Subject<I18nValidationError | null>();
-  savePartnerContact$ = new Subject<InputProjectPartnerContact[]>();
+  savePartnerContact$ = new Subject<InputProjectContact[]>();
 
   partnerContributionSaveSuccess$ = new Subject<boolean>();
   partnerContributionSaveError$ = new Subject<I18nValidationError | null>();

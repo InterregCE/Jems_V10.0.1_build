@@ -1,6 +1,6 @@
 package io.cloudflight.jems.server.project.service.partner
 
-import io.cloudflight.jems.api.project.dto.partner.InputProjectPartnerContact
+import io.cloudflight.jems.api.project.dto.InputProjectContact
 import io.cloudflight.jems.api.project.dto.InputProjectPartnerContribution
 import io.cloudflight.jems.api.project.dto.partner.InputProjectPartnerCreate
 import io.cloudflight.jems.api.project.dto.partner.InputProjectPartnerAddress
@@ -18,12 +18,18 @@ import org.springframework.data.domain.Sort
 import org.springframework.http.HttpStatus
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
+import java.util.stream.Collectors
+import java.util.stream.StreamSupport
 
 @Service
 class ProjectPartnerServiceImpl(
     private val projectPartnerRepo: ProjectPartnerRepository,
     private val projectRepo: ProjectRepository
 ) : ProjectPartnerService {
+
+    companion object {
+        const val MAX_PROJECT_PARTNERS = 30
+    }
 
     @Transactional(readOnly = true)
     override fun getById(projectId: Long, id: Long): OutputProjectPartnerDetail {
@@ -36,9 +42,24 @@ class ProjectPartnerServiceImpl(
         return projectPartnerRepo.findAllByProjectId(projectId, page).map { it.toOutputProjectPartner() }
     }
 
+    @Transactional(readOnly = true)
+    override fun findAllByProjectIdForDropdown(projectId: Long, sort: Sort): List<OutputProjectPartner> {
+        return StreamSupport.stream(
+            projectPartnerRepo.findAllByProjectId(projectId, sort).spliterator(),
+            false
+        ).map { it.toOutputProjectPartner() }.collect(Collectors.toList())
+    }
+
     @Transactional
     override fun create(projectId: Long, projectPartner: InputProjectPartnerCreate): OutputProjectPartnerDetail {
         val project = projectRepo.findById(projectId).orElseThrow { ResourceNotFoundException("project") }
+
+        // to be possible to list all partners for dropdowns we decided to limit total amount of them
+        if (projectPartnerRepo.count() >= MAX_PROJECT_PARTNERS)
+            throw I18nValidationException(
+                httpStatus = HttpStatus.UNPROCESSABLE_ENTITY,
+                i18nKey = "project.partner.max.allowed.count.reached"
+            )
 
         // prevent multiple role LEAD_PARTNER entries
         if (projectPartner.role!!.isLead)
@@ -136,7 +157,7 @@ class ProjectPartnerServiceImpl(
     }
 
     @Transactional
-    override fun updatePartnerContacts(projectId: Long, partnerId: Long, contacts: Set<InputProjectPartnerContact>): OutputProjectPartnerDetail {
+    override fun updatePartnerContacts(projectId: Long, partnerId: Long, contacts: Set<InputProjectContact>): OutputProjectPartnerDetail {
         val projectPartner = projectPartnerRepo.findFirstByProjectIdAndId(projectId, partnerId)
             .orElseThrow { ResourceNotFoundException("projectPartner") }
         return projectPartnerRepo.save(

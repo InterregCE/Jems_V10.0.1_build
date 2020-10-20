@@ -1,6 +1,6 @@
 package io.cloudflight.jems.api.project
 
-import io.cloudflight.jems.api.project.dto.partner.InputProjectPartnerContact
+import io.cloudflight.jems.api.project.dto.InputProjectContact
 import io.cloudflight.jems.api.project.dto.InputProjectPartnerContribution
 import io.cloudflight.jems.api.project.dto.partner.InputProjectPartnerCreate
 import io.cloudflight.jems.api.project.dto.partner.InputProjectPartnerAddress
@@ -36,6 +36,12 @@ interface ProjectPartnerApi {
     @GetMapping
     fun getProjectPartners(@PathVariable projectId: Long, pageable: Pageable): Page<OutputProjectPartner>
 
+    @ApiImplicitParams(
+        ApiImplicitParam(paramType = "query", name = "sort", dataType = "string", allowMultiple = true)
+    )
+    @GetMapping("/ids")
+    fun getProjectPartnersForDropdown(@PathVariable projectId: Long, pageable: Pageable): List<OutputProjectPartner>
+
     @ApiOperation("Returns a project partner by id")
     @GetMapping("/{id}")
     fun getProjectPartnerById(@PathVariable projectId: Long, @PathVariable id: Long): OutputProjectPartnerDetail
@@ -67,7 +73,7 @@ interface ProjectPartnerApi {
     fun updateProjectPartnerContact(
         @PathVariable projectId: Long,
         @PathVariable id: Long,
-        @Valid @RequestBody contacts: Set<InputProjectPartnerContact>
+        @Valid @RequestBody contacts: Set<InputProjectContact>
     ): OutputProjectPartnerDetail
 
     @ApiOperation("Update project partner contribution")

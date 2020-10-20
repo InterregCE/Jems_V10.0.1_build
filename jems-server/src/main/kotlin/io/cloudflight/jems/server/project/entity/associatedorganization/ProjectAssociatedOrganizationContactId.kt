@@ -1,4 +1,4 @@
-package io.cloudflight.jems.server.project.entity.partner
+package io.cloudflight.jems.server.project.entity.associatedorganization
 
 import io.cloudflight.jems.api.project.dto.ProjectContactType
 import java.io.Serializable
@@ -8,13 +8,14 @@ import javax.persistence.EnumType
 import javax.persistence.Enumerated
 
 @Embeddable
-data class ProjectPartnerContactId (
+data class ProjectAssociatedOrganizationContactId (
 
-    @Column(name = "partner_id", nullable = false)
-    val partnerId: Long,
+    @Column(name = "organization_id", nullable = false)
+    val associatedOrganizationId: Long,
 
     @Column(nullable = false)
     @Enumerated(EnumType.STRING)
     val type: ProjectContactType
 
 ) : Serializable
+

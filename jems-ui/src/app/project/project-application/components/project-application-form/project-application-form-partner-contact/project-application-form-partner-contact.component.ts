@@ -12,7 +12,7 @@ import {ActivatedRoute} from '@angular/router';
 import {SideNavService} from '@common/components/side-nav/side-nav.service';
 import {FormState} from '@common/components/forms/form-state';
 import {ViewEditForm} from '@common/components/forms/view-edit-form';
-import {OutputProjectPartnerDetail, InputProjectPartnerContact} from '@cat/api'
+import {OutputProjectPartnerDetail, InputProjectContact} from '@cat/api'
 import {Permission} from '../../../../../security/permissions/permission';
 
 @Component({
@@ -30,7 +30,7 @@ export class ProjectApplicationFormPartnerContactComponent extends ViewEditForm 
   editable: boolean;
 
   @Output()
-  update = new EventEmitter<InputProjectPartnerContact[]>();
+  update = new EventEmitter<InputProjectContact[]>();
 
   partnerContactForm: FormGroup = this.formBuilder.group({
     partnerRepresentativeTitle: ['', Validators.maxLength(25)],
@@ -76,14 +76,14 @@ export class ProjectApplicationFormPartnerContactComponent extends ViewEditForm 
     pattern: 'partner.contact.telephone.wrong.format'
   };
 
-  private static isContactDtoEmpty(contactDto: InputProjectPartnerContact): boolean {
+  private static isContactDtoEmpty(contactDto: InputProjectContact): boolean {
     return !(contactDto.title || contactDto.firstName || contactDto.lastName ||
       contactDto.email || contactDto.telephone);
   }
 
-  private static getValidatedDataToEmit(legalRepresentative: InputProjectPartnerContact,
-                                        contactPerson: InputProjectPartnerContact): InputProjectPartnerContact[] {
-    const dataToEmit: InputProjectPartnerContact[] = [];
+  private static getValidatedDataToEmit(legalRepresentative: InputProjectContact,
+                                        contactPerson: InputProjectContact): InputProjectContact[] {
+    const dataToEmit: InputProjectContact[] = [];
     if (!ProjectApplicationFormPartnerContactComponent.isContactDtoEmpty(legalRepresentative)) {
       dataToEmit.push(legalRepresentative);
     }
@@ -127,7 +127,7 @@ export class ProjectApplicationFormPartnerContactComponent extends ViewEditForm 
 
   onSubmit(): void {
     const legalRepresentative = {
-      type: InputProjectPartnerContact.TypeEnum.LegalRepresentative,
+      type: InputProjectContact.TypeEnum.LegalRepresentative,
       title: this.partnerContactForm.controls.partnerRepresentativeTitle.value,
       firstName: this.partnerContactForm.controls.partnerRepresentativeFirstName.value,
       lastName: this.partnerContactForm.controls.partnerRepresentativeLastName.value,
@@ -135,7 +135,7 @@ export class ProjectApplicationFormPartnerContactComponent extends ViewEditForm 
       telephone: ''
     };
     const contactPerson = {
-      type: InputProjectPartnerContact.TypeEnum.ContactPerson,
+      type: InputProjectContact.TypeEnum.ContactPerson,
       title: this.partnerContactForm.controls.partnerContactTitle.value,
       firstName: this.partnerContactForm.controls.partnerContactFirstName.value,
       lastName: this.partnerContactForm.controls.partnerContactLastName.value,
@@ -150,14 +150,14 @@ export class ProjectApplicationFormPartnerContactComponent extends ViewEditForm 
   }
 
   private initLegalRepresentative() {
-    const legalRepresentative = this.partner?.contacts?.find( person => person.type === InputProjectPartnerContact.TypeEnum.LegalRepresentative)
+    const legalRepresentative = this.partner?.contacts?.find( person => person.type === InputProjectContact.TypeEnum.LegalRepresentative)
     this.partnerContactForm.controls.partnerRepresentativeTitle.setValue(legalRepresentative?.title);
     this.partnerContactForm.controls.partnerRepresentativeFirstName.setValue(legalRepresentative?.firstName);
     this.partnerContactForm.controls.partnerRepresentativeLastName.setValue(legalRepresentative?.lastName);
   }
 
   private initContactPerson() {
-    const contactPerson = this.partner?.contacts?.find( person => person.type === InputProjectPartnerContact.TypeEnum.ContactPerson)
+    const contactPerson = this.partner?.contacts?.find( person => person.type === InputProjectContact.TypeEnum.ContactPerson)
     this.partnerContactForm.controls.partnerContactTitle.setValue(contactPerson?.title);
     this.partnerContactForm.controls.partnerContactFirstName.setValue(contactPerson?.firstName);
     this.partnerContactForm.controls.partnerContactLastName.setValue(contactPerson?.lastName);
