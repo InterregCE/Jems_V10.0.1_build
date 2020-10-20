@@ -55,7 +55,7 @@ class ProjectPartnerServiceImpl(
         val project = projectRepo.findById(projectId).orElseThrow { ResourceNotFoundException("project") }
 
         // to be possible to list all partners for dropdowns we decided to limit total amount of them
-        if (projectPartnerRepo.count() >= MAX_PROJECT_PARTNERS)
+        if (projectPartnerRepo.countByProjectId(projectId) >= MAX_PROJECT_PARTNERS)
             throw I18nValidationException(
                 httpStatus = HttpStatus.UNPROCESSABLE_ENTITY,
                 i18nKey = "project.partner.max.allowed.count.reached"

@@ -26,4 +26,6 @@ interface ProjectPartnerRepository : PagingAndSortingRepository<ProjectPartner, 
 
     fun findFirstByProjectIdAndRole(projectId: Long, role: ProjectPartnerRole): Optional<ProjectPartner>
 
+    fun countByProjectId(projectId: Long): Long
+
 }
