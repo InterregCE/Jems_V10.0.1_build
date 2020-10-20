@@ -1,13 +1,14 @@
-import {ChangeDetectionStrategy, Component, Input, OnInit} from '@angular/core';
+import {ChangeDetectionStrategy, Component} from '@angular/core';
 import {InputBudget, ProjectPartnerBudgetService} from '@cat/api';
 import {ActivatedRoute} from '@angular/router';
 import {Log} from '../../../../../../common/utils/log';
-import {catchError, flatMap, map, startWith, tap} from 'rxjs/operators';
-import {combineLatest, forkJoin, merge, Observable, of, ReplaySubject, Subject} from 'rxjs';
+import {catchError, filter, mergeMap, map, startWith, tap, withLatestFrom} from 'rxjs/operators';
+import {combineLatest, forkJoin, merge, Observable, of, Subject} from 'rxjs';
 import {I18nValidationError} from '@common/validation/i18n-validation-error';
 import {HttpErrorResponse} from '@angular/common/http';
 import {PartnerBudgetTable} from '../../../../model/partner-budget-table';
 import {PartnerBudgetTableType} from '../../../../model/partner-budget-table-type';
+import {ProjectPartnerStore} from '../../services/project-partner-store.service';
 
 @Component({
   selector: 'app-project-application-partner-budget-page',
@@ -15,34 +16,31 @@ import {PartnerBudgetTableType} from '../../../../model/partner-budget-table-typ
   styleUrls: ['./project-application-partner-budget-page.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class ProjectApplicationPartnerBudgetPageComponent implements OnInit {
+export class ProjectApplicationPartnerBudgetPageComponent {
 
-  @Input()
-  partnerId: number;
-  @Input()
-  editable: boolean
+  projectId = this.activatedRoute?.snapshot?.params?.projectId;
+  partnerId = this.activatedRoute?.snapshot?.params?.partnerId;
 
-  projectId = this.activatedRoute?.snapshot?.params?.projectId
-  partnerInitialized$ = new ReplaySubject<number>();
   saveBudgets$ = new Subject<{ [key: string]: PartnerBudgetTable }>();
 
   saveError$ = new Subject<I18nValidationError | null>();
   saveSuccess$ = new Subject<boolean>();
   cancelEdit$ = new Subject<void>();
 
-  private initialBudgets$ = this.partnerInitialized$
+  private initialBudgets$ = this.partnerStore.getProjectPartner()
     .pipe(
-      flatMap(id =>
+      filter(partner => !!partner.id),
+      mergeMap(partner =>
         forkJoin({
-          staff: this.projectPartnerBudgetService.getBudgetStaffCost(id, this.projectId)
+          staff: this.projectPartnerBudgetService.getBudgetStaffCost(partner.id, this.projectId)
             .pipe(tap(staff => Log.info('Fetched the staff budget', this, staff))),
-          travel: this.projectPartnerBudgetService.getBudgetTravel(id, this.projectId)
+          travel: this.projectPartnerBudgetService.getBudgetTravel(partner.id, this.projectId)
             .pipe(tap(travel => Log.info('Fetched the travel budget', this, travel))),
-          external: this.projectPartnerBudgetService.getBudgetExternal(id, this.projectId)
+          external: this.projectPartnerBudgetService.getBudgetExternal(partner.id, this.projectId)
             .pipe(tap(external => Log.info('Fetched the external budget', this, external))),
-          equipment: this.projectPartnerBudgetService.getBudgetEquipment(id, this.projectId)
+          equipment: this.projectPartnerBudgetService.getBudgetEquipment(partner.id, this.projectId)
             .pipe(tap(equipment => Log.info('Fetched the equipment budget', this, equipment))),
-          infrastructure: this.projectPartnerBudgetService.getBudgetInfrastructure(id, this.projectId)
+          infrastructure: this.projectPartnerBudgetService.getBudgetInfrastructure(partner.id, this.projectId)
             .pipe(tap(infrastructure => Log.info('Fetched the infrastructure budget', this, infrastructure))),
         })
       )
@@ -50,13 +48,14 @@ export class ProjectApplicationPartnerBudgetPageComponent implements OnInit {
 
   private savedBudgets$ = this.saveBudgets$
     .pipe(
-      flatMap(budgets =>
+      withLatestFrom(this.partnerStore.getProjectPartner()),
+      mergeMap(([budgets, partner]) =>
         forkJoin({
-          staff: this.updateBudget(PartnerBudgetTableType.STAFF, this.getBudgetEntries(budgets.staff)),
-          travel: this.updateBudget(PartnerBudgetTableType.TRAVEL, this.getBudgetEntries(budgets.travel)),
-          external: this.updateBudget(PartnerBudgetTableType.EXTERNAL, this.getBudgetEntries(budgets.external)),
-          equipment: this.updateBudget(PartnerBudgetTableType.EQUIPMENT, this.getBudgetEntries(budgets.equipment)),
-          infrastructure: this.updateBudget(PartnerBudgetTableType.INFRASTRUCTURE, this.getBudgetEntries(budgets.infrastructure))
+          staff: this.updateBudget(partner.id, PartnerBudgetTableType.STAFF, this.getBudgetEntries(budgets.staff)),
+          travel: this.updateBudget(partner.id, PartnerBudgetTableType.TRAVEL, this.getBudgetEntries(budgets.travel)),
+          external: this.updateBudget(partner.id, PartnerBudgetTableType.EXTERNAL, this.getBudgetEntries(budgets.external)),
+          equipment: this.updateBudget(partner.id, PartnerBudgetTableType.EQUIPMENT, this.getBudgetEntries(budgets.equipment)),
+          infrastructure: this.updateBudget(partner.id, PartnerBudgetTableType.INFRASTRUCTURE, this.getBudgetEntries(budgets.infrastructure))
         })),
       tap(() => this.saveSuccess$.next(true)),
       tap(() => this.saveError$.next(null)),
@@ -82,13 +81,8 @@ export class ProjectApplicationPartnerBudgetPageComponent implements OnInit {
     );
 
   constructor(private projectPartnerBudgetService: ProjectPartnerBudgetService,
-              private activatedRoute: ActivatedRoute) {
-  }
-
-  ngOnInit() {
-    if (this.partnerId) {
-      this.partnerInitialized$.next(this.partnerId);
-    }
+              private activatedRoute: ActivatedRoute,
+              public partnerStore: ProjectPartnerStore) {
   }
 
   private getBudgetEntries(table: PartnerBudgetTable): InputBudget[] {
@@ -100,18 +94,18 @@ export class ProjectApplicationPartnerBudgetPageComponent implements OnInit {
     }));
   }
 
-  private updateBudget(type: string, entries: InputBudget[]): Observable<Array<InputBudget>> {
+  private updateBudget(partnerId: number, type: string, entries: InputBudget[]): Observable<Array<InputBudget>> {
     let update$;
     if (type === PartnerBudgetTableType.STAFF)
-      update$ = this.projectPartnerBudgetService.updateBudgetStaffCost(this.partnerId, this.projectId, entries);
+      update$ = this.projectPartnerBudgetService.updateBudgetStaffCost(partnerId, this.projectId, entries);
     if (type === PartnerBudgetTableType.TRAVEL)
-      update$ = this.projectPartnerBudgetService.updateBudgetTravel(this.partnerId, this.projectId, entries);
+      update$ = this.projectPartnerBudgetService.updateBudgetTravel(partnerId, this.projectId, entries);
     if (type === PartnerBudgetTableType.EXTERNAL)
-      update$ = this.projectPartnerBudgetService.updateBudgetExternal(this.partnerId, this.projectId, entries);
+      update$ = this.projectPartnerBudgetService.updateBudgetExternal(partnerId, this.projectId, entries);
     if (type === PartnerBudgetTableType.EQUIPMENT)
-      update$ = this.projectPartnerBudgetService.updateBudgetEquipment(this.partnerId, this.projectId, entries);
+      update$ = this.projectPartnerBudgetService.updateBudgetEquipment(partnerId, this.projectId, entries);
     if (type === PartnerBudgetTableType.INFRASTRUCTURE)
-      update$ = this.projectPartnerBudgetService.updateBudgetInfrastructure(this.partnerId, this.projectId, entries);
+      update$ = this.projectPartnerBudgetService.updateBudgetInfrastructure(partnerId, this.projectId, entries);
 
     return !update$ ? of([]) : update$
       .pipe(

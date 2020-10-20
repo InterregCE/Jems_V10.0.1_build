@@ -3,9 +3,9 @@ import {
   ChangeDetectorRef,
   Component,
   EventEmitter,
-  Input,
+  Input, OnChanges,
   OnInit,
-  Output
+  Output, SimpleChanges
 } from '@angular/core';
 import {ViewEditForm} from '@common/components/forms/view-edit-form';
 import {FormBuilder, FormGroup, Validators} from '@angular/forms';
@@ -13,7 +13,7 @@ import {ActivatedRoute} from '@angular/router';
 import {SideNavService} from '@common/components/side-nav/side-nav.service';
 import {Permission} from '../../../../../security/permissions/permission';
 import {FormState} from '@common/components/forms/form-state';
-import {OutputProjectPartnerDetail,InputProjectPartnerContribution} from '@cat/api';
+import {OutputProjectPartnerDetail, InputProjectPartnerContribution} from '@cat/api';
 
 @Component({
   selector: 'app-project-application-form-partner-contribution',
@@ -21,7 +21,7 @@ import {OutputProjectPartnerDetail,InputProjectPartnerContribution} from '@cat/a
   styleUrls: ['./project-application-form-partner-contribution.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class ProjectApplicationFormPartnerContributionComponent extends ViewEditForm implements OnInit {
+export class ProjectApplicationFormPartnerContributionComponent extends ViewEditForm implements OnInit, OnChanges {
   Permission = Permission;
 
   @Input()
@@ -69,15 +69,21 @@ export class ProjectApplicationFormPartnerContributionComponent extends ViewEdit
     this.enterViewMode();
   }
 
+  ngOnChanges(changes: SimpleChanges) {
+    if (changes.partner) {
+      this.changeFormState$.next(FormState.VIEW);
+    }
+  }
+
   getForm(): FormGroup | null {
     return this.partnerContributionForm;
   }
 
   onSubmit(): void {
     this.update.emit({
-      organizationRelevance:  this.partnerContributionForm.controls.organizationRelevance.value,
-      organizationRole:  this.partnerContributionForm.controls.organizationRole.value,
-      organizationExperience:  this.partnerContributionForm.controls.organizationExperience.value,
+      organizationRelevance: this.partnerContributionForm.controls.organizationRelevance.value,
+      organizationRole: this.partnerContributionForm.controls.organizationRole.value,
+      organizationExperience: this.partnerContributionForm.controls.organizationExperience.value,
     });
   }
 

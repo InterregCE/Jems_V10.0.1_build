@@ -1,18 +1,12 @@
 import {
   ChangeDetectionStrategy,
-  Component,
-  EventEmitter,
-  Input,
-  OnChanges,
-  OnInit,
-  Output,
-  SimpleChanges
+  Component
 } from '@angular/core';
 import {NutsStoreService} from '../../../../../../common/services/nuts-store.service';
-import {Observable, of, Subject} from 'rxjs';
-import {I18nValidationError} from '@common/validation/i18n-validation-error';
-import {InputProjectPartnerAddress, OutputProjectPartnerDetail} from '@cat/api';
-import {tap} from 'rxjs/operators';
+import {combineLatest, Subject} from 'rxjs';
+import {InputProjectPartnerAddress, OutputProjectPartnerDetail, OutputProjectPartnerAddress} from '@cat/api';
+import {map, startWith} from 'rxjs/operators';
+import {ProjectPartnerStore} from '../../services/project-partner-store.service';
 
 @Component({
   selector: 'app-project-application-form-region-selection',
@@ -20,122 +14,107 @@ import {tap} from 'rxjs/operators';
   styleUrls: ['./project-application-form-region-selection.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class ProjectApplicationFormRegionSelectionComponent implements OnInit, OnChanges{
+export class ProjectApplicationFormRegionSelectionComponent {
+  mainCountryChanged$ = new Subject<string>();
+  mainRegion2Changed$ = new Subject<any[]>();
 
-  @Input()
-  partner: OutputProjectPartnerDetail;
-  @Input()
-  editable: boolean;
-  @Input()
-  success$: Observable<boolean>;
-  @Input()
-  error$: Observable<I18nValidationError | null>;
-  @Input()
-  showHomePage = false;
+  mainAddress$ = combineLatest([
+    this.partnerStore.getProjectPartner(),
+    this.nutsStore.getNuts(),
+    this.mainCountryChanged$.pipe(startWith(null)),
+    this.mainRegion2Changed$.pipe(startWith(null))
+  ])
+    .pipe(
+      map(([partner, nuts, changedCountry, changedRegion2]) => ({
+        partner,
+        country: nuts,
+        region2: this.getRegion2(partner, nuts, changedCountry, InputProjectPartnerAddress.TypeEnum.Organization),
+        region3: this.getRegion3(partner, nuts, changedRegion2, InputProjectPartnerAddress.TypeEnum.Organization),
+      }))
+    );
 
-  @Output()
-  update = new EventEmitter<InputProjectPartnerAddress[]>();
+  departmentCountryChanged$ = new Subject<string>();
+  departmentRegion2Changed$ = new Subject<any[]>();
 
-  nuts$ = of();
-  nuts2$ = new Subject<any>();
-  nuts3$ = new Subject<any[]>();
+  departmentAddress$ = combineLatest([
+    this.partnerStore.getProjectPartner(),
+    this.nutsStore.getNuts(),
+    this.departmentCountryChanged$.pipe(startWith(null)),
+    this.departmentRegion2Changed$.pipe(startWith(null))
+  ])
+    .pipe(
+      map(([partner, nuts, changedCountry, changedRegion2]) => ({
+        partner,
+        country: nuts,
+        region2: this.getRegion2(partner, nuts, changedCountry, InputProjectPartnerAddress.TypeEnum.Department),
+        region3: this.getRegion3(partner, nuts, changedRegion2, InputProjectPartnerAddress.TypeEnum.Department),
+      }))
+    );
 
-  nutsDepartment$ = of();
-  nuts2Department$ = new Subject<any>();
-  nuts3Department$ = new Subject<any[]>();
+  details$ = combineLatest([
+    this.partnerStore.getProjectPartner(),
+    this.mainAddress$,
+    this.departmentAddress$
+  ])
+    .pipe(
+      map(([partner, main, department]) => ({partner, main, department}))
+    );
 
-  constructor(private nutsStore: NutsStoreService) {
+  constructor(private nutsStore: NutsStoreService,
+              public partnerStore: ProjectPartnerStore) {
   }
 
-  ngOnInit(): void {
-    this.nuts$ = this.nutsStore.getNuts()
-        .pipe(
-            tap(nuts => {
-                const organizationDetailsMainAddress = this.partner?.addresses?.find(org => org.type === InputProjectPartnerAddress.TypeEnum.Organization);
-                if (!organizationDetailsMainAddress?.country) {
-                    this.nuts2$.next([])
-                    this.nuts3$.next([])
-                    return;
-                }
-                const country = nuts[organizationDetailsMainAddress.country];
-                if (!country) return;
-
-                const newNuts = new Map<string, any>();
-                Object.values(country).forEach((nut: any) => {
-                    Object.keys(nut).forEach(secondLayerNut => {
-                        newNuts.set(secondLayerNut, nut[secondLayerNut]);
-                    })
-                })
-                this.nuts2$.next(newNuts);
-
-                if (organizationDetailsMainAddress.nutsRegion2)
-                    this.nuts3$.next(newNuts
-                        .get(organizationDetailsMainAddress.nutsRegion2)
-                        .map( (region: any) => region.title));
-            })
-        );
-      this.nutsDepartment$ = this.nutsStore.getNuts()
-          .pipe(
-              tap(nuts => {
-                  const organizationDetailsMainAddress = this.partner?.addresses?.find(org => org.type === InputProjectPartnerAddress.TypeEnum.Department);
-                  if (!organizationDetailsMainAddress?.country) {
-                      this.nuts2Department$.next([])
-                      this.nuts3Department$.next([])
-                      return;
-                  }
-                  const country = nuts[organizationDetailsMainAddress.country];
-                  if (!country) return;
-
-                  const newNuts = new Map<string, any>();
-                  Object.values(country).forEach((nut: any) => {
-                      Object.keys(nut).forEach(secondLayerNut => {
-                          newNuts.set(secondLayerNut, nut[secondLayerNut]);
-                      })
-                  })
-                  this.nuts2Department$.next(newNuts);
-
-                  if (organizationDetailsMainAddress.nutsRegion2)
-                      this.nuts3Department$.next(newNuts
-                          .get(organizationDetailsMainAddress.nutsRegion2)
-                          .map( (region: any) => region.title));
-              })
-          );
+  private getPartnerAddress(partner: OutputProjectPartnerDetail,
+                            addressType: InputProjectPartnerAddress.TypeEnum): OutputProjectPartnerAddress | undefined {
+    return partner?.addresses.find((addr: OutputProjectPartnerAddress) => addr.type === addressType);
   }
 
-  ngOnChanges(changes: SimpleChanges) {
+  private getPartnerCountry(nuts: any, address?: OutputProjectPartnerAddress) {
+    if (!address?.country) {
+      return null;
+    }
+    return nuts[address.country];
   }
 
-  changeCountry(country: any) {
+  private getRegion2(partner: OutputProjectPartnerDetail,
+                     nuts: any,
+                     changedCountry: string | null,
+                     addressType: InputProjectPartnerAddress.TypeEnum): any {
+    const address = this.getPartnerAddress(partner, addressType);
+    const country = changedCountry || this.getPartnerCountry(nuts, address);
+    if (!country) return [];
+
     const newNuts = new Map<string, any>();
     Object.values(country).forEach((nut: any) => {
       Object.keys(nut).forEach(secondLayerNut => {
         newNuts.set(secondLayerNut, nut[secondLayerNut]);
       })
-
     })
-    this.nuts2$.next(newNuts)
-    this.nuts3$.next([])
+    return newNuts;
   }
 
-  changeRegion( regions: any[]) {
-    this.nuts3$.next(regions.map( region => region.title));
-  }
+  private getRegion3(partner: OutputProjectPartnerDetail,
+                     nuts: any,
+                     changedRegion2: any[] | null,
+                     addressType: InputProjectPartnerAddress.TypeEnum): any {
+    if (changedRegion2) {
+      return changedRegion2.map(region => region.title);
+    }
 
-  changeDepartmentCountry(country: any) {
+    const address = this.getPartnerAddress(partner, addressType);
+    const country = this.getPartnerCountry(nuts, address);
+    if (!country) return [];
+
     const newNuts = new Map<string, any>();
     Object.values(country).forEach((nut: any) => {
-        Object.keys(nut).forEach(secondLayerNut => {
-            newNuts.set(secondLayerNut, nut[secondLayerNut]);
-        })
-
+      Object.keys(nut).forEach(secondLayerNut => {
+        newNuts.set(secondLayerNut, nut[secondLayerNut]);
+      })
     })
-    this.nuts2Department$.next(newNuts)
-    this.nuts3Department$.next([])
-  }
 
-  changeDepartmentRegion( regions: any[]) {
-    this.nuts3Department$.next(regions.map( region => region.title));
+    if (address?.nutsRegion2)
+      return newNuts
+        .get(address.nutsRegion2)
+        .map((region: any) => region.title);
   }
 }
-
-

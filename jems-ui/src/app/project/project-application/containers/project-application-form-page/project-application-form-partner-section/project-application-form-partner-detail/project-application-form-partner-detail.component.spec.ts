@@ -4,7 +4,13 @@ import {ProjectModule} from '../../../../../project.module';
 import {ProjectApplicationFormPartnerDetailComponent} from './project-application-form-partner-detail.component';
 import {Router} from '@angular/router';
 import {HttpTestingController} from '@angular/common/http/testing';
-import {OutputProjectPartner, InputProjectPartnerCreate, InputProjectPartnerUpdate, InputProjectPartnerContribution, InputProjectPartnerContact} from '@cat/api';
+import {
+  OutputProjectPartner,
+  InputProjectPartnerCreate,
+  InputProjectPartnerUpdate,
+  InputProjectPartnerContribution,
+  InputProjectPartnerContact
+} from '@cat/api';
 import {RouterTestingModule} from '@angular/router/testing';
 
 describe('ProjectApplicationFormPartnerDetailComponent', () => {
@@ -38,15 +44,6 @@ describe('ProjectApplicationFormPartnerDetailComponent', () => {
     expect(component).toBeTruthy();
   });
 
-  it('should navigate to project partner overview', () => {
-    const router = TestBed.inject(Router);
-    spyOn(router, 'navigate').and.callThrough();
-
-    component.redirectToPartnerOverview();
-
-    expect(router.navigate).toHaveBeenCalledWith(['app', 'project', 'detail', 1, 'applicationForm']);
-  });
-
   it('should list project partner details', fakeAsync(() => {
     let resultPartner: OutputProjectPartner = {} as OutputProjectPartner;
     component.partner$.subscribe(result => resultPartner = result as OutputProjectPartner);
@@ -58,24 +55,6 @@ describe('ProjectApplicationFormPartnerDetailComponent', () => {
 
     tick();
     expect(resultPartner).toEqual(projectPartner);
-  }));
-
-  it('should update a project partner', fakeAsync(() => {
-    component.savePartner$.next({} as InputProjectPartnerUpdate);
-
-    httpTestingController.expectOne({
-      method: 'PUT',
-      url: `//api/project/1/partner`
-    })
-  }));
-
-  it('should create a project partner', fakeAsync(() => {
-    component.createPartner$.next({} as InputProjectPartnerCreate);
-
-    httpTestingController.expectOne({
-      method: 'POST',
-      url: `//api/project/1/partner`
-    })
   }));
 
   it('should update a project partner contact', fakeAsync(() => {

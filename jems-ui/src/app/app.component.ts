@@ -1,14 +1,15 @@
-import {Component, HostBinding} from '@angular/core';
+import {ChangeDetectionStrategy, Component, HostBinding} from '@angular/core';
 import {TranslateService} from '@ngx-translate/core';
 import {Title} from '@angular/platform-browser';
-import {Router} from '@angular/router';
 import {BaseComponent} from '@common/components/base-component';
 import {ThemeService} from './theme/theme.service';
+import {takeUntil} from 'rxjs/operators';
 
 @Component({
   selector: 'app-root',
   styleUrls: ['./app.component.scss'],
-  templateUrl: './app.component.html'
+  templateUrl: './app.component.html',
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class AppComponent extends BaseComponent {
 
@@ -16,12 +17,13 @@ export class AppComponent extends BaseComponent {
 
   constructor(public translate: TranslateService,
               public themeService: ThemeService,
-              private titleService: Title,
-              private router: Router) {
+              private titleService: Title) {
     super();
-    this.router.routeReuseStrategy.shouldReuseRoute = () => false;
     this.titleService.setTitle('Jems');
     themeService.$currentTheme
+      .pipe(
+        takeUntil(this.destroyed$)
+      )
       .subscribe(theme => this.componentCssClass = theme);
   }
 
