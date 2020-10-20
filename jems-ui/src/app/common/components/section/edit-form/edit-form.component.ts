@@ -32,8 +32,13 @@ import {EventType} from '../../../services/event-bus/event-type';
 export class EditFormComponent extends BaseComponent implements OnInit {
   Alert = Alert;
 
+  /**
+   * A unique identifier for the component. Make sure the provided id is unique
+   * across the whole context. Avoid using static strings like `Component.name`
+   * which is changed during minification.
+   */
   @Input()
-  componentName: string;
+  componentId: string;
   @Input()
   createNew: boolean;
   @Input()
@@ -64,13 +69,13 @@ export class EditFormComponent extends BaseComponent implements OnInit {
     if (!this.form) {
       return;
     }
-    this.eventBusService.getEventByType(this.componentName, EventType.SUCCESS_MESSAGE)
+    this.eventBusService.getEventByType(this.componentId, EventType.SUCCESS_MESSAGE)
       .pipe(
         takeUntil(this.destroyed$),
         tap(() => this.footerTemplateRef = this.saveSuccess),
       ).subscribe();
 
-    this.eventBusService.getEventByType(this.componentName, EventType.ERROR_MESSAGE)
+    this.eventBusService.getEventByType(this.componentId, EventType.ERROR_MESSAGE)
       .pipe(
         takeUntil(this.destroyed$),
         filter(error => !!error),
@@ -85,7 +90,7 @@ export class EditFormComponent extends BaseComponent implements OnInit {
       .pipe(
         takeUntil(this.destroyed$),
         filter(() => this.form.dirty),
-        tap(footer => this.eventBusService.setDirty(this.componentName, footer)),
+        tap(footer => this.eventBusService.setDirty(this.componentId, footer)),
       ).subscribe();
 
     const createNew$ = of(this.createNew)
@@ -93,10 +98,10 @@ export class EditFormComponent extends BaseComponent implements OnInit {
         filter(isCreate => isCreate),
         delay(500),
         tap(() => this.footerTemplateRef = this.saveDiscard),
-        tap(isCreate => this.eventBusService.setDirty(this.componentName, isCreate)),
+        tap(isCreate => this.eventBusService.setDirty(this.componentId, isCreate)),
       )
 
-    const dirtyChanged$ = this.eventBusService.getEventByType(this.componentName, EventType.DIRTY_FORM)
+    const dirtyChanged$ = this.eventBusService.getEventByType(this.componentId, EventType.DIRTY_FORM)
       .pipe(
         tap(() => this.formValid$.next(this.form.valid)),
         tap(() => this.footerTemplateRef = this.saveDiscard),
@@ -112,14 +117,14 @@ export class EditFormComponent extends BaseComponent implements OnInit {
     // mark form as pristine in order to ignore 'dirty' statuses from formChanged$
     this.form.markAsPristine();
     this.save.emit();
-    this.eventBusService.setDirty(this.componentName, false);
+    this.eventBusService.setDirty(this.componentId, false);
   }
 
   onDiscard(): void {
     // mark form as pristine in order to ignore 'dirty' statuses from formChanged$
     this.form.markAsPristine();
     this.discard.emit();
-    this.eventBusService.setDirty(this.componentName, false);
+    this.eventBusService.setDirty(this.componentId, false);
   }
 
   private setFieldErrors(error: I18nValidationError): void {

@@ -14,8 +14,9 @@ import {Permission} from '../../../security/permissions/permission';
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class CallPageComponent {
+  static ID = 'CallPageComponent';
   CallPageComponent = CallPageComponent;
-  Permission = Permission
+  Permission = Permission;
 
   newPageSize$ = new Subject<number>();
   newPageIndex$ = new Subject<number>();

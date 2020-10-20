@@ -16,6 +16,7 @@ import {EventBusService} from '../../../common/services/event-bus/event-bus.serv
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class CallDetailComponent extends BaseComponent implements OnInit {
+  static ID = 'CallDetailComponent';
   tools = Tools;
   CallDetailComponent = CallDetailComponent;
 
@@ -153,14 +154,10 @@ export class CallDetailComponent extends BaseComponent implements OnInit {
   }
 
   formChanged(): void {
-    this.eventBusService.setDirty(CallDetailComponent.name, true);
+    this.eventBusService.setDirty(CallDetailComponent.ID, true);
   }
 
   resetForm(): void {
-    this.callForm.controls.name.setValue(this.call.name);
-    this.callForm.controls.startDate.setValue(this.call.startDate);
-    this.callForm.controls.endDate.setValue(this.call.endDate);
-    this.callForm.controls.description.setValue(this.call.description);
-    this.callForm.controls.lengthOfPeriod.setValue(this.call.lengthOfPeriod);
+    this.callForm.patchValue(this.call);
   }
 }

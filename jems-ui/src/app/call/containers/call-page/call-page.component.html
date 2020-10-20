@@ -8,7 +8,7 @@
     </button>
     <div *ngIf="currentPage$ | async as callPage">
         <h4>{{'call.list.header' | translate}}</h4>
-        <app-template-card [componentName]="CallPageComponent.name"></app-template-card>
+        <app-template-card [componentId]="CallPageComponent.ID"></app-template-card>
         <app-call-list
                 [isApplicant]="false"
                 [callPage]="callPage"

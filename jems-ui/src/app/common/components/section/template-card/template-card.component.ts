@@ -26,8 +26,13 @@ import {EventType} from '../../../services/event-bus/event-type';
 })
 export class TemplateCardComponent implements OnInit, OnDestroy {
 
+  /**
+   * A unique identifier for the component. Make sure the provided id is unique
+   * across the whole context. Avoid using static strings like `Component.name`
+   * which is changed during minification.
+   */
   @Input()
-  componentName: string
+  componentId: string
   @Input()
   cardTemplateRef: TemplateRef<any>;
 
@@ -38,10 +43,10 @@ export class TemplateCardComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
-    if (!this.componentName) {
+    if (!this.componentId) {
       return;
     }
-    this.event$ = this.eventBusService.getEvent(this.componentName)
+    this.event$ = this.eventBusService.getEvent(this.componentId)
       .pipe(
         tap(event => this.setExpiration(event)),
         map(event => event.context)
@@ -49,8 +54,8 @@ export class TemplateCardComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy() {
-    if (this.componentName) {
-      this.eventBusService.setDirty(this.componentName, false);
+    if (this.componentId) {
+      this.eventBusService.setDirty(this.componentId, false);
     }
   }
 
