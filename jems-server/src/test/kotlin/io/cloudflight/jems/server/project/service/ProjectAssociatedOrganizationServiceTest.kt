@@ -268,11 +268,6 @@ internal class ProjectAssociatedOrganizationServiceTest {
             contacts = emptySet()
         )
 
-        // mock updating sort after entity updated
-        every { projectAssociatedOrganizationRepository.findAllByProjectId(eq(projectPartner.project.id!!), eq(Sort.by("id"))) } returns
-            listOf(organization(id = oldOrganization.id, partner = projectPartner, name = "new name", sortNr = oldOrganization.sortNumber).copy(addresses = mutableSetOf(), contacts = mutableSetOf()))
-        every { projectAssociatedOrganizationRepository.saveAll(any<Iterable<ProjectAssociatedOrganization>>()) } returnsArgument 0
-
         // test update
         val result = projectAssociatedOrganizationService.update(1, newValues)
         assertThat(result).isEqualTo(outputOrganizationDetail(

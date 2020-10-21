@@ -19,4 +19,6 @@ interface ProjectAssociatedOrganizationService {
 
     fun delete(projectId: Long, associatedOrganizationId: Long)
 
+    fun refreshSortNumbers(projectId: Long)
+
 }

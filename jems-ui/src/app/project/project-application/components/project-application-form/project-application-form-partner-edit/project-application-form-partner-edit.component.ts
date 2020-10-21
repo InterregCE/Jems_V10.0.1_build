@@ -69,13 +69,13 @@ export class ProjectApplicationFormPartnerEditComponent extends ViewEditForm imp
     required: 'project.partner.role.should.not.be.empty',
   };
   nameInOriginalLanguageErrors = {
-    maxlength: 'partner.organization.original.name.size.too.long'
+    maxlength: 'project.organization.original.name.size.too.long'
   };
   nameInEnglishErrors = {
-    maxlength: 'partner.organization.english.name.size.too.long'
+    maxlength: 'project.organization.english.name.size.too.long'
   };
   departmentErrors = {
-    maxlength: 'partner.organization.department.size.too.long'
+    maxlength: 'project.organization.department.size.too.long'
   };
 
   constructor(private formBuilder: FormBuilder,
@@ -169,7 +169,6 @@ export class ProjectApplicationFormPartnerEditComponent extends ViewEditForm imp
     this.controls?.sortNumber.setValue(this.partner?.sortNumber);
     this.controls?.role.setValue(this.partner?.role);
     this.controls?.name.setValue(this.partner?.abbreviation);
-    this.sideNavService.setAlertStatus(true);
     this.controls?.nameInOriginalLanguage.setValue(this.partner?.nameInOriginalLanguage);
     this.controls?.nameInEnglish.setValue(this.partner?.nameInEnglish);
     this.controls?.department.setValue(this.partner?.department);

@@ -4,17 +4,24 @@ import {
   Component,
   EventEmitter,
   Input,
+  OnChanges,
   OnInit,
-  Output
+  Output,
+  SimpleChanges
 } from '@angular/core';
 import {FormBuilder, FormGroup, Validators} from '@angular/forms';
-import {AbstractForm} from '@common/components/forms/abstract-form';
 import {
-  OutputProjectPartner,
   InputProjectAssociatedOrganizationCreate,
-  OutputProjectAssociatedOrganization,
-  OutputProjectAssociatedOrganizationDetail
+  InputProjectAssociatedOrganizationUpdate,
+  InputProjectContact,
+  InputProjectAssociatedOrganizationAddress,
+  OutputProjectAssociatedOrganizationDetail,
+  OutputProjectPartner,
 } from '@cat/api';
+import {SideNavService} from '@common/components/side-nav/side-nav.service';
+import {FormState} from '@common/components/forms/form-state';
+import {ViewEditForm} from '@common/components/forms/view-edit-form';
+import {Permission} from '../../../../../security/permissions/permission';
 
 @Component({
   selector: 'app-project-application-form-associated-organization-edit',
@@ -22,7 +29,9 @@ import {
   styleUrls: ['./project-application-form-associated-organization-edit.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class ProjectApplicationFormAssociatedOrganizationEditComponent extends AbstractForm implements OnInit {
+export class ProjectApplicationFormAssociatedOrganizationEditComponent extends ViewEditForm implements OnInit, OnChanges {
+  Permission = Permission;
+  Object = Object
 
   @Input()
   nutsCountry: any;
@@ -30,154 +39,248 @@ export class ProjectApplicationFormAssociatedOrganizationEditComponent extends A
   nutsRegion2: any;
   @Input()
   nutsRegion3: any[];
+
   @Input()
-  partner: OutputProjectPartner[];
+  partners: OutputProjectPartner[];
   @Input()
   associatedOrganization: OutputProjectAssociatedOrganizationDetail;
+  @Input()
+  editable: boolean;
 
   @Output()
   changeCountry = new EventEmitter<any>();
   @Output()
   changeRegion = new EventEmitter<any>();
   @Output()
-  changePartner = new EventEmitter<any>();
+  create = new EventEmitter<InputProjectAssociatedOrganizationCreate>();
   @Output()
-  update = new EventEmitter<InputProjectAssociatedOrganizationCreate[]>();
+  update = new EventEmitter<InputProjectAssociatedOrganizationUpdate>();
   @Output()
   cancel = new EventEmitter<void>();
 
-  Object = Object
-
   associatedOrganizationForm: FormGroup = this.formBuilder.group({
-    nameInOriginalLanguage: ['', Validators.maxLength(100)],
-    nameInEnglish: ['', Validators.maxLength(100)],
-    responsiblePartner: [],
-    associatedOrganizationCountry: [''],
-    associatedOrganizationRegion2: [''],
-    associatedOrganizationRegion3: [''],
-    associatedOrganizationStreet: ['', Validators.maxLength(50)],
-    associatedOrganizationHouseNumber: ['', Validators.maxLength(20)],
-    associatedOrganizationPostalCode: ['', Validators.maxLength(20)],
-    associatedOrganizationCity: ['', Validators.maxLength(50)],
-    associatedOrganizationRepresentativeTitle: ['', Validators.maxLength(25)],
-    associatedOrganizationRepresentativeFirstName: ['', Validators.maxLength(50)],
-    associatedOrganizationRepresentativeLastName: ['', Validators.maxLength(50)],
-    associatedOrganizationContactTitle: ['', Validators.maxLength(25)],
-    associatedOrganizationContactFirstName: ['', Validators.maxLength(50)],
-    associatedOrganizationContactLastName: ['', Validators.maxLength(50)],
-    associatedOrganizationContactEmail: ['', Validators.compose([
+    id: [],
+    nameInOriginalLanguage: ['', Validators.compose([
+      Validators.maxLength(100),
+      Validators.required])
+    ],
+    nameInEnglish: ['', Validators.compose([
+      Validators.maxLength(100),
+      Validators.required])
+    ],
+    partnerId: [null, Validators.required],
+    country: [''],
+    nutsRegion2: [''],
+    nutsRegion3: [''],
+    street: ['', Validators.maxLength(50)],
+    houseNumber: ['', Validators.maxLength(20)],
+    postalCode: ['', Validators.maxLength(20)],
+    city: ['', Validators.maxLength(50)],
+    representativeTitle: ['', Validators.maxLength(25)],
+    representativeFirstName: ['', Validators.maxLength(50)],
+    representativeLastName: ['', Validators.maxLength(50)],
+    contactTitle: ['', Validators.maxLength(25)],
+    contactFirstName: ['', Validators.maxLength(50)],
+    contactLastName: ['', Validators.maxLength(50)],
+    contactEmail: ['', Validators.compose([
       Validators.maxLength(255),
       Validators.email
     ])],
-    associatedOrganizationContactTelephone: ['', Validators.compose([
+    contactTelephone: ['', Validators.compose([
       Validators.maxLength(25),
       Validators.pattern('^[0-9+()/-]*$')
     ])],
-    associatedOrganizationRole: [],
+    roleDescription: ['', Validators.maxLength(2000)],
   })
 
   nameInOriginalLanguageErrors = {
-    maxlength: 'partner.organization.original.name.size.too.long'
+    maxlength: 'project.organization.original.name.size.too.long',
+    required: 'project.organization.original.should.not.be.empty',
   };
   nameInEnglishErrors = {
-    maxlength: 'partner.organization.english.name.size.too.long'
+    maxlength: 'project.organization.english.name.size.too.long',
+    required: 'project.organization.english.should.not.be.empty',
   };
-  associatedOrganizationStreetErrors = {
-    maxlength: 'partner.organization.english.name.size.too.long'
+  partnerIdErrors = {
+    required: 'project.organization.partner.should.not.be.empty',
   };
-  associatedOrganizationHouseNumberErrors = {
-    maxlength: 'partner.organization.english.name.size.too.long'
+  streetErrors = {
+    maxlength: 'address.street.size.too.long'
   };
-  associatedOrganizationPostalCodeErrors = {
-    maxlength: 'partner.organization.english.name.size.too.long'
+  houseNumberErrors = {
+    maxlength: 'address.houseNumber.size.too.long'
   };
-  associatedOrganizationCityErrors = {
-    maxlength: 'partner.organization.english.name.size.too.long'
+  postalCodeErrors = {
+    maxlength: 'address.postalCode.size.too.long'
   };
-  associatedOrganizationRepresentativeTitleErrors = {
-    maxlength: 'partner.contact.representative.title.size.too.long'
+  cityErrors = {
+    maxlength: 'address.city.size.too.long'
   };
-  associatedOrganizationRepresentativeFirstNameErrors = {
-    maxlength: 'partner.contact.representative.first.name.size.too.long'
+  representativeTitleErrors = {
+    maxlength: 'project.contact.title.size.too.long'
   };
-  associatedOrganizationRepresentativeLastNameErrors = {
-    maxlength: 'partner.contact.representative.last.name.size.too.long'
+  representativeFirstNameErrors = {
+    maxlength: 'project.contact.first.name.size.too.long'
   };
-  associatedOrganizationContactTitleErrors = {
-    maxlength: 'partner.contact.title.size.too.long'
+  representativeLastNameErrors = {
+    maxlength: 'project.contact.last.name.size.too.long'
   };
-  associatedOrganizationContactFirstNameErrors = {
-    maxlength: 'partner.contact.first.name.size.too.long'
+  contactTitleErrors = {
+    maxlength: 'project.contact.title.size.too.long'
   };
-  associatedOrganizationContactLastNameErrors = {
-    maxlength: 'partner.contact.last.name.size.too.long'
+  contactFirstNameErrors = {
+    maxlength: 'project.contact.first.name.size.too.long'
   };
-  associatedOrganizationContactEmailErrors = {
-    maxlength: 'partner.contact.email.size.too.long',
-    email: 'partner.contact.email.wrong.format'
+  contactLastNameErrors = {
+    maxlength: 'project.contact.last.name.size.too.long'
   };
-  associatedOrganizationContactTelephoneErrors = {
-    maxlength: 'partner.contact.telephone.size.too.long',
-    pattern: 'partner.contact.telephone.wrong.format'
+  contactEmailErrors = {
+    maxlength: 'project.contact.email.size.too.long',
+    email: 'project.contact.email.wrong.format'
+  };
+  contactTelephoneErrors = {
+    maxlength: 'project.contact.telephone.size.too.long',
+    pattern: 'project.contact.telephone.wrong.format'
+  };
+  roleDescriptionErrors = {
+    maxlength: 'project.organization.roleDescription.size.too.long',
   };
 
   constructor(private formBuilder: FormBuilder,
-              protected changeDetectorRef: ChangeDetectorRef) {
+              protected changeDetectorRef: ChangeDetectorRef,
+              private sideNavService: SideNavService) {
     super(changeDetectorRef);
   }
 
   ngOnInit(): void {
+    super.ngOnInit();
+    if (this.editable && !this.associatedOrganization?.id) {
+      this.changeFormState$.next(FormState.EDIT);
+    }
+  }
+
+  ngOnChanges(changes: SimpleChanges) {
+    if (changes.associatedOrganization || changes.editable) {
+      this.changeFormState$.next(this.editable && !this.associatedOrganization.id ? FormState.EDIT : FormState.VIEW);
+    }
   }
 
   getForm(): FormGroup | null {
     return this.associatedOrganizationForm;
   }
 
-  protected enterViewMode() {
-    // this.sideNavService.setAlertStatus(false);
-    this.initAssociatedOrganizationAddressFields();
-    // this.initPartnerOrganizationDepartmentAddressFields();
-  }
-
-  private initAssociatedOrganizationAddressFields(): void {
-    const associatedOrganizationAddress = this.associatedOrganization?.organizationAddress
-    this.associatedOrganizationForm.controls.partnerCountry.setValue(associatedOrganizationAddress?.country);
-    this.associatedOrganizationForm.controls.partnerRegion2.setValue(associatedOrganizationAddress?.nutsRegion2);
-    this.associatedOrganizationForm.controls.partnerRegion3.setValue(associatedOrganizationAddress?.nutsRegion3);
-    this.associatedOrganizationForm.controls.partnerStreet.setValue(associatedOrganizationAddress?.street);
-    this.associatedOrganizationForm.controls.partnerHouseNumber.setValue(associatedOrganizationAddress?.houseNumber);
-    this.associatedOrganizationForm.controls.partnerPostalCode.setValue(associatedOrganizationAddress?.postalCode);
-    this.associatedOrganizationForm.controls.partnerCity.setValue(associatedOrganizationAddress?.city);
-  }
-
-  private initLegalRepresentative() {
-    const legalRepresentative = this.associatedOrganization?.associatedOrganizationContacts?.find(person => person.type === InputProjectPartnerContact.TypeEnum.LegalRepresentative)
-    this.partnerContactForm.controls.partnerRepresentativeTitle.setValue(legalRepresentative?.title);
-    this.partnerContactForm.controls.partnerRepresentativeFirstName.setValue(legalRepresentative?.firstName);
-    this.partnerContactForm.controls.partnerRepresentativeLastName.setValue(legalRepresentative?.lastName);
-  }
-
-  private initContactPerson() {
-    const contactPerson = this.partner?.partnerContactPersons?.find(person => person.type === InputProjectPartnerContact.TypeEnum.ContactPerson)
-    this.partnerContactForm.controls.partnerContactTitle.setValue(contactPerson?.title);
-    this.partnerContactForm.controls.partnerContactFirstName.setValue(contactPerson?.firstName);
-    this.partnerContactForm.controls.partnerContactLastName.setValue(contactPerson?.lastName);
-    this.partnerContactForm.controls.partnerContactEmail.setValue(contactPerson?.email);
-    this.partnerContactForm.controls.partnerContactTelephone.setValue(contactPerson?.telephone);
-  }
-
   countryChanged(country: any): void {
-    this.associatedOrganizationForm.controls.associatedOrganizationRegion2.reset();
-    this.associatedOrganizationForm.controls.associatedOrganizationRegion3.reset();
+    this.associatedOrganizationForm.controls.nutsRegion2.reset();
+    this.associatedOrganizationForm.controls.nutsRegion3.reset();
     this.changeCountry.emit(country);
   }
 
   regionChanged(region: any): void {
-    this.associatedOrganizationForm.controls.associatedOrganizationRegion3.reset();
+    this.associatedOrganizationForm.controls.nutsRegion3.reset();
     this.changeRegion.emit(region);
   }
 
-  partnerChanged(partner: any): void {
-    this.changePartner.emit(partner);
+  onSubmit(): void {
+    console.log('submit');
+    const toSave = {
+      partnerId: this.controls?.partnerId.value,
+      nameInOriginalLanguage: this.controls?.nameInOriginalLanguage.value,
+      nameInEnglish: this.controls?.nameInEnglish.value,
+      address: {
+        country: this.controls?.country.value,
+        nutsRegion2: this.controls?.nutsRegion2.value,
+        nutsRegion3: this.controls?.nutsRegion3.value,
+        street: this.controls?.street.value,
+        houseNumber: this.controls?.houseNumber.value,
+        postalCode: this.controls?.postalCode.value,
+        city: this.controls?.city.value,
+      } as InputProjectAssociatedOrganizationAddress,
+      contacts: this.getContacts(),
+      roleDescription: this.controls?.roleDescription.value,
+    }
+
+    if (!this.controls?.id?.value)
+      this.create.emit({...toSave} as InputProjectAssociatedOrganizationCreate);
+    else
+      this.update.emit({id: this.controls.id.value, ...toSave} as InputProjectAssociatedOrganizationUpdate);
   }
+
+  private getContacts(): InputProjectContact[] {
+    const contacts: InputProjectContact[] = [];
+
+    const contactRepresentative = {
+      type: InputProjectContact.TypeEnum.LegalRepresentative,
+      title: this.controls?.representativeTitle.value,
+      firstName: this.controls?.representativeFirstName.value,
+      lastName: this.controls?.representativeLastName.value,
+    } as InputProjectContact
+
+    if (contactRepresentative.title || contactRepresentative.firstName || contactRepresentative.lastName)
+      contacts.push(contactRepresentative);
+
+    const person = {
+      type: InputProjectContact.TypeEnum.ContactPerson,
+      title: this.controls?.contactTitle.value,
+      firstName: this.controls?.contactFirstName.value,
+      lastName: this.controls?.contactLastName.value,
+      email: this.controls?.contactEmail.value,
+      telephone: this.controls?.contactTelephone.value,
+    } as InputProjectContact
+
+    if (person.title || person.firstName || person.lastName || person.email || person.telephone)
+      contacts.push(person);
+
+    return contacts;
+  }
+
+  onCancel(): void {
+    if (!this.associatedOrganization?.id) {
+      this.cancel.emit();
+    }
+    this.changeFormState$.next(FormState.VIEW);
+  }
+
+  protected enterViewMode(): void {
+    this.initFields();
+    this.sideNavService.setAlertStatus(false);
+  }
+
+  protected enterEditMode(): void {
+    this.initFields();
+    this.sideNavService.setAlertStatus(true);
+  }
+
+  private initFields() {
+    this.controls?.id.setValue(this.associatedOrganization?.id);
+    this.controls?.nameInOriginalLanguage.setValue(this.associatedOrganization?.nameInOriginalLanguage);
+    this.controls?.nameInEnglish.setValue(this.associatedOrganization?.nameInEnglish);
+    this.controls?.partnerId.setValue(this.associatedOrganization?.partner?.id);
+    this.controls?.country.setValue(this.associatedOrganization?.address?.country);
+    this.controls?.nutsRegion2.setValue(this.associatedOrganization?.address?.nutsRegion2);
+    this.controls?.nutsRegion3.setValue(this.associatedOrganization?.address?.nutsRegion3);
+    this.controls?.street.setValue(this.associatedOrganization?.address?.street);
+    this.controls?.houseNumber.setValue(this.associatedOrganization?.address?.houseNumber);
+    this.controls?.postalCode.setValue(this.associatedOrganization?.address?.postalCode);
+    this.controls?.city.setValue(this.associatedOrganization?.address?.city);
+    this.initLegalRepresentative();
+    this.initContactPerson();
+    this.controls?.roleDescription.setValue(this.associatedOrganization?.roleDescription);
+  }
+
+  private initLegalRepresentative() {
+    const legalRepresentative = this.associatedOrganization?.contacts?.find(person => person.type === InputProjectContact.TypeEnum.LegalRepresentative)
+    this.associatedOrganizationForm.controls.representativeTitle.setValue(legalRepresentative?.title);
+    this.associatedOrganizationForm.controls.representativeFirstName.setValue(legalRepresentative?.firstName);
+    this.associatedOrganizationForm.controls.representativeLastName.setValue(legalRepresentative?.lastName);
+  }
+
+  private initContactPerson() {
+    const contactPerson = this.associatedOrganization?.contacts?.find(person => person.type === InputProjectContact.TypeEnum.ContactPerson)
+    this.associatedOrganizationForm.controls.contactTitle.setValue(contactPerson?.title);
+    this.associatedOrganizationForm.controls.contactFirstName.setValue(contactPerson?.firstName);
+    this.associatedOrganizationForm.controls.contactLastName.setValue(contactPerson?.lastName);
+    this.associatedOrganizationForm.controls.contactEmail.setValue(contactPerson?.email);
+    this.associatedOrganizationForm.controls.contactTelephone.setValue(contactPerson?.telephone);
+  }
+
 }

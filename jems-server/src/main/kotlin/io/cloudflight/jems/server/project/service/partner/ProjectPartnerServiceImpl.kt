@@ -12,6 +12,7 @@ import io.cloudflight.jems.server.exception.I18nValidationException
 import io.cloudflight.jems.server.exception.ResourceNotFoundException
 import io.cloudflight.jems.server.project.repository.partner.ProjectPartnerRepository
 import io.cloudflight.jems.server.project.repository.ProjectRepository
+import io.cloudflight.jems.server.project.service.associatedorganization.ProjectAssociatedOrganizationService
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
 import org.springframework.data.domain.Sort
@@ -24,6 +25,7 @@ import java.util.stream.StreamSupport
 @Service
 class ProjectPartnerServiceImpl(
     private val projectPartnerRepo: ProjectPartnerRepository,
+    private val projectAssociatedOrganizationService: ProjectAssociatedOrganizationService,
     private val projectRepo: ProjectRepository
 ) : ProjectPartnerService {
 
@@ -134,7 +136,7 @@ class ProjectPartnerServiceImpl(
     /**
      * sets or updates the sort number for all partners for the specified project.
      */
-    protected fun updateSortByRole(projectId: Long) {
+    private fun updateSortByRole(projectId: Long) {
         val sort = Sort.by(listOf(
             Sort.Order(Sort.Direction.ASC, "role"),
             Sort.Order(Sort.Direction.ASC, "id")
@@ -180,8 +182,9 @@ class ProjectPartnerServiceImpl(
 
     @Transactional
     override fun deletePartner(projectId: Long, partnerId: Long) {
-        this.projectPartnerRepo.deleteById(partnerId)
-        this.updateSortByRole(projectId)
+        projectPartnerRepo.deleteById(partnerId)
+        updateSortByRole(projectId)
+        projectAssociatedOrganizationService.refreshSortNumbers(projectId)
     }
 
 }

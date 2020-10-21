@@ -1,31 +1,22 @@
 import {
   ChangeDetectionStrategy,
-  ChangeDetectorRef,
   Component,
-  EventEmitter,
-  Input, OnDestroy,
+  OnDestroy,
   OnInit,
-  Output
 } from '@angular/core';
-import {FormBuilder, FormGroup, Validators} from '@angular/forms';
-import {AbstractForm} from '@common/components/forms/abstract-form';
-import {of, Subject} from 'rxjs';
+import {combineLatest, Subject} from 'rxjs';
 import {NutsStoreService} from '../../../../../../common/services/nuts-store.service';
-import {catchError, flatMap, switchMap, take, tap} from 'rxjs/operators';
+import {distinctUntilChanged, map, startWith, takeUntil, tap} from 'rxjs/operators';
 import {ActivatedRoute, Router} from '@angular/router';
 import {
-  InputProjectAssociatedOrganizationAddressDetails,
-  ProjectAssociatedOrganizationService,
+  ProjectPartnerService,
   OutputProjectAssociatedOrganizationDetail,
-  InputProjectPartnerOrganizationDetails,
-  OutputProjectAssociatedOrganization,
-  InputProjectAssociatedOrganizationCreate
+  OutputProjectAssociatedOrganizationAddress,
 } from '@cat/api';
-import {Log} from '../../../../../../common/utils/log';
-import {HttpErrorResponse} from '@angular/common/http';
-import {I18nValidationError} from '@common/validation/i18n-validation-error';
 import {ProjectApplicationFormSidenavService} from '../../services/project-application-form-sidenav.service';
 import {BaseComponent} from '@common/components/base-component';
+import {ProjectAssociatedOrganizationStore} from '../../services/project-associated-organization-store.service';
+import {ProjectStore} from '../../../project-application-detail/services/project-store.service';
 
 @Component({
   selector: 'app-project-application-form-associated-org-detail',
@@ -38,113 +29,111 @@ export class ProjectApplicationFormAssociatedOrgDetailComponent extends BaseComp
   projectId = this.activatedRoute?.snapshot?.params?.projectId
   associatedOrganizationId = this.activatedRoute?.snapshot?.params?.associatedOrganizationId;
 
-  associatedOrganization:  OutputProjectAssociatedOrganization;
-  partnerSaveSuccess$ = new Subject<boolean>();
-  partnerSaveError$ = new Subject<I18nValidationError | null>();
-  saveAssociatedOrganization$ = new Subject<OutputProjectAssociatedOrganization>();
-  createPartner$ = new Subject<OutputProjectAssociatedOrganization>();
+  mainCountryChanged$ = new Subject<string>();
+  mainRegion2Changed$ = new Subject<any[]>();
 
-  nuts$ = of();
-  nuts2$ = new Subject<any>();
-  nuts3$ = new Subject<any[]>();
+  mainAddress$ = combineLatest([
+    this.associatedOrganizationStore.getProjectAssociatedOrganization(),
+    this.nutsStore.getNuts(),
+    this.mainCountryChanged$.pipe(startWith(null)),
+    this.mainRegion2Changed$.pipe(startWith(null))
+  ])
+    .pipe(
+      map(([organization, nuts, changedCountry, changedRegion2]) => ({
+        organization,
+        country: nuts,
+        region2: this.getRegion2(organization, nuts, changedCountry),
+        region3: this.getRegion3(organization, nuts, changedRegion2),
+      }))
+    );
 
-  partner$ = new Subject<any[]>();
+  details$ = combineLatest([
+    this.associatedOrganizationStore.getProjectAssociatedOrganization(),
+    this.mainAddress$,
+    this.partnerService.getProjectPartnersForDropdown(this.projectId, ['sortNumber,asc'])
+  ]).pipe(
+    takeUntil(this.destroyed$),
+    map(([organization, main, partners]) => ({organization, main, partners})),
+  )
 
-  // private associatedOrganizationById$ = this.associatedOrganizationId
-  //   ? this.projectAssociatedOrganizationService.getAssociatedOrganizationById(this.associatedOrganizationId, this.projectId)
-  //     .pipe(
-  //       tap(partner => Log.info('Fetched associated organization:', this, partner))
-  //     )
-  //   : of({});
-  //
-  // private assocOrg = this.projectAssociatedOrganizationService.getAssociatedOrganizationById(this.associatedOrganizationId, this.projectId)
-  //     .pipe(
-  //       take(1),
-  //       tap(partner => this.associatedOrganization = partner),
-  //       tap(partner => Log.info('Fetched associated organization:', this, partner))
-  //     );
-  //
-
-  // private savedPartner$ = this.savePartner$
-  //   .pipe(
-  //     switchMap(partnerUpdate =>
-  //       this.partnerService.updateProjectPartner(this.projectId, partnerUpdate)
-  //         .pipe(
-  //           catchError((error: HttpErrorResponse) => {
-  //             this.partnerSaveError$.next(error.error);
-  //             return of();
-  //           })
-  //         )
-  //     ),
-  //     tap(() => this.partnerSaveError$.next(null)),
-  //     tap(() => this.partnerSaveSuccess$.next(true)),
-  //     tap(saved => Log.info('Updated partner:', this, saved))
-  //   );
-
-  constructor(private nutsStore: NutsStoreService,
-              private activatedRoute: ActivatedRoute,
-              private projectAssociatedOrganizationService: ProjectAssociatedOrganizationService,
+  constructor(public associatedOrganizationStore: ProjectAssociatedOrganizationStore,
+              private partnerService: ProjectPartnerService,
+              private projectStore: ProjectStore,
+              private nutsStore: NutsStoreService,
               private projectApplicationFormSidenavService: ProjectApplicationFormSidenavService,
+              private activatedRoute: ActivatedRoute,
               private router: Router) {
     super();
+    this.activatedRoute.params.pipe(
+      takeUntil(this.destroyed$),
+      map(params => params.associatedOrganizationId),
+      distinctUntilChanged(),
+      tap(id => this.associatedOrganizationStore.init(id)),
+    ).subscribe();
   }
 
   ngOnInit(): void {
-    this.nuts$ = this.nutsStore.getNuts()
-      .pipe(
-        tap(nuts => {
-          const associatedOrganizationAddress = this.associatedOrganization?.organizationAddress;
-          if (!associatedOrganizationAddress?.country) {
-            this.nuts2$.next([])
-            this.nuts3$.next([])
-            return;
-          }
-          const country = nuts[associatedOrganizationAddress.country];
-          if (!country) return;
-
-          const newNuts = new Map<string, any>();
-          Object.values(country).forEach((nut: any) => {
-            Object.keys(nut).forEach(secondLayerNut => {
-              newNuts.set(secondLayerNut, nut[secondLayerNut]);
-            })
-          })
-          this.nuts2$.next(newNuts);
-
-          if (associatedOrganizationAddress.nutsRegion2)
-            this.nuts3$.next(newNuts
-              .get(associatedOrganizationAddress.nutsRegion2)
-              .map((region: any) => region.title));
-        })
-      );
-
+    this.projectStore.init(this.projectId);
     this.projectApplicationFormSidenavService.init(this.destroyed$, this.projectId);
+
+    if (this.associatedOrganizationId) {
+      return;
+    }
+    // creating a new associated organization
+    this.associatedOrganizationStore.init(null);
   }
 
-  changeCountry(country: any) {
-    const newNuts = new Map<string, any>();
-    Object.values(country).forEach((nut: any) => {
-      Object.keys(nut).forEach(secondLayerNut => {
-        newNuts.set(secondLayerNut, nut[secondLayerNut]);
-      })
-
-    })
-    this.nuts2$.next(newNuts)
-    this.nuts3$.next([])
-  }
-
-  changeRegion( regions: any[]) {
-    this.nuts3$.next(regions.map( region => region.title));
-  }
-
-  changePartner(partner : any) {
-    this.partner$.next(partner)
-  }
-
-  redirectToAOOverview(): void {
+  redirectToAssociatedOrganizationOverview(): void {
     this.router.navigate(['app', 'project', 'detail', this.projectId, 'applicationForm']);
   }
 
   ngOnDestroy(): void {
     super.ngOnDestroy();
+  }
+
+  private getPartnerCountry(nuts: any, address?: OutputProjectAssociatedOrganizationAddress) {
+    if (!address?.country) {
+      return null;
+    }
+    return nuts[address.country];
+  }
+
+  private getRegion2(partner: OutputProjectAssociatedOrganizationDetail,
+                     nuts: any,
+                     changedCountry: string | null): any {
+    const country = changedCountry || this.getPartnerCountry(nuts, partner.address);
+    if (!country) return [];
+
+    const newNuts = new Map<string, any>();
+    Object.values(country).forEach((nut: any) => {
+      Object.keys(nut).forEach(secondLayerNut => {
+        newNuts.set(secondLayerNut, nut[secondLayerNut]);
+      })
+    })
+    return newNuts;
+  }
+
+  private getRegion3(partner: OutputProjectAssociatedOrganizationDetail,
+                     nuts: any,
+                     changedRegion2: any[] | null): any {
+    if (changedRegion2) {
+      return changedRegion2.map(region => region.title);
+    }
+
+    const address = partner.address;
+    const country = this.getPartnerCountry(nuts, address);
+    if (!country) return [];
+
+    const newNuts = new Map<string, any>();
+    Object.values(country).forEach((nut: any) => {
+      Object.keys(nut).forEach(secondLayerNut => {
+        newNuts.set(secondLayerNut, nut[secondLayerNut]);
+      })
+    })
+
+    if (address?.nutsRegion2)
+      return newNuts
+        .get(address.nutsRegion2)
+        .map((region: any) => region.title);
   }
 }

@@ -1,16 +1,19 @@
 <div>
     <app-breadcrumb></app-breadcrumb>
     <app-project-application-form-associated-organization-edit
-        [nutsCountry]="nuts$ | async"
-        [nutsRegion2]="nuts2$ | async"
-        [nutsRegion3]="nuts3$ | async"
-        [partner]="partner$ | async"
-        (changeCountry)="changeCountry($event)"
-        (changeRegion)="changeRegion($event)"
-        (changePartner)="changePartner($event)"
-        (create)="createAO$.next($event)"
-        (update)="saveAO$.next($event)"
-        (cancel)="redirectToAOOverview()">
-
+            *ngIf="details$ | async as details"
+            [nutsCountry]="details.main.country"
+            [nutsRegion2]="details.main.region2"
+            [nutsRegion3]="details.main.region3"
+            [partners]="details.partners"
+            [success$]="associatedOrganizationStore.associatedOrganizationSaveSuccess$"
+            [error$]="associatedOrganizationStore.associatedOrganizationSaveError$"
+            [associatedOrganization]="details.organization"
+            [editable]="associatedOrganizationStore.projectEditable$ | async"
+            (create)="associatedOrganizationStore.createAssociatedOrganization$.next($event)"
+            (update)="associatedOrganizationStore.saveAssociatedOrganization$.next($event)"
+            (changeCountry)="mainCountryChanged$.next($event)"
+            (changeRegion)="mainRegion2Changed$.next($event)"
+            (cancel)="redirectToAssociatedOrganizationOverview()">
     </app-project-application-form-associated-organization-edit>
 </div>

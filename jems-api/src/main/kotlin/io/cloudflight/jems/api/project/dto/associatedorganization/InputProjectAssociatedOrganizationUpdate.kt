@@ -12,11 +12,11 @@ data class InputProjectAssociatedOrganizationUpdate (
     @field:NotNull(message = "project.partner.should.not.be.empty")
     val partnerId: Long,
 
-    @field:Size(max = 100, message = "partner.organization.original.name.size.too.long")
+    @field:Size(max = 100, message = "project.organization.original.name.size.too.long")
     @field:NotNull(message = "project.organization.original.should.not.be.empty")
     override val nameInOriginalLanguage: String? = null,
 
-    @field:Size(max = 100, message = "partner.organization.english.name.size.too.long")
+    @field:Size(max = 100, message = "project.organization.english.name.size.too.long")
     @field:NotNull(message = "project.organization.english.should.not.be.empty")
     override val nameInEnglish: String? = null,
 

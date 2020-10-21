@@ -40,7 +40,10 @@ data class ProjectAssociatedOrganization (
     val addresses: MutableSet<ProjectAssociatedOrganizationAddress> = mutableSetOf(),
 
     @OneToMany(mappedBy = "contactId.associatedOrganizationId", cascade = [CascadeType.ALL], orphanRemoval = true)
-    val contacts: MutableSet<ProjectAssociatedOrganizationContact> = mutableSetOf()
+    val contacts: MutableSet<ProjectAssociatedOrganizationContact> = mutableSetOf(),
+
+    @Column
+    val roleDescription: String? = null
 
 ) {
     override fun toString(): String {

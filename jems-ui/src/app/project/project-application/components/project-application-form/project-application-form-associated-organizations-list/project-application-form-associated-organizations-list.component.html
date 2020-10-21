@@ -10,10 +10,9 @@
 </app-table>
 
 <ng-template #deletionCellAssociatedOrganization let-associatedOrganization>
-    <app-delete-action-cell-associated-organization
-            (click)="$event.stopPropagation()"
-            [element]="associatedOrganization"
-            [disabled]="!editable"
-            (delete)="delete($event)">
-    </app-delete-action-cell-associated-organization>
+    <button *ngIf="editable" mat-icon-button color="accent"
+            (click)="delete(associatedOrganization);$event.stopPropagation();"
+            matTooltip="{{'project.application.form.associatedOrganization.table.action.delete.tooltip' | translate}}">
+        <i class="fas fa-trash"></i>
+    </button>
 </ng-template>

@@ -54,9 +54,10 @@ export class ProjectApplicationFormAssociatedOrganizationsListComponent implemen
       isTableClickable: true,
       columns: [
         {
-          displayedColumn: 'project.application.form.associatedOrganization.table.id',
-          elementProperty: 'id',
-          sortProperty: 'id'
+          displayedColumn: 'project.application.form.associatedOrganization.table.number',
+          elementProperty: 'sortNumber',
+          i18nFixedKey: 'project.organization.number.format',
+          i18nArgs: (element: any) => { return { sortNumber: element.sortNumber} },
         },
         {
           displayedColumn: 'project.application.form.associatedOrganization.table.associatedOrganization',
@@ -65,8 +66,8 @@ export class ProjectApplicationFormAssociatedOrganizationsListComponent implemen
         },
         {
           displayedColumn: 'project.application.form.associatedOrganization.table.partner',
-          elementProperty: 'partner.name',
-          sortProperty: 'partner.name',
+          elementProperty: 'partnerAbbreviation',
+          sortProperty: 'partner.abbreviation',
         },
         {
           displayedColumn: ' ',

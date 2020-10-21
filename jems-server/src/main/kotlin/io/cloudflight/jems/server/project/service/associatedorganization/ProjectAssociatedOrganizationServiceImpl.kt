@@ -46,7 +46,7 @@ class ProjectAssociatedOrganizationServiceImpl(
             savedEntity = savedEntity.copy(addresses = mutableSetOf(associatedOrganization.address!!.toEntity(savedEntity.id!!)))
 
         savedEntity = projectAssociatedOrganizationRepo.save(savedEntity)
-        this.updateSort(projectId)
+        refreshSortNumbers(projectId)
         return savedEntity.toOutputProjectAssociatedOrganizationDetail()
     }
 
@@ -59,7 +59,7 @@ class ProjectAssociatedOrganizationServiceImpl(
 
         val addressToSave = associatedOrganization.address?.toEntity(oldAssociatedOrganisation.id!!)
 
-        val savedAssociatedOrganisation = projectAssociatedOrganizationRepo.save(
+        return projectAssociatedOrganizationRepo.save(
             oldAssociatedOrganisation.copy(
                 project = projectPartner.project,
                 partner = projectPartner,
@@ -68,22 +68,7 @@ class ProjectAssociatedOrganizationServiceImpl(
                 addresses = if (addressToSave == null) mutableSetOf() else mutableSetOf(addressToSave),
                 contacts = associatedOrganization.contacts.mapTo(HashSet()) { it.toEntity(oldAssociatedOrganisation) }
             )
-        )
-
-        this.updateSort(projectId);
-        return savedAssociatedOrganisation.toOutputProjectAssociatedOrganizationDetail()
-    }
-
-    /**
-     * sets or updates the sort number for all associated organizations for the specified project.
-     */
-    protected fun updateSort(projectId: Long) {
-        val sort = Sort.by(listOf(
-            Sort.Order(Sort.Direction.ASC, "id")
-        ))
-        val projectAssociatedOrganisations = projectAssociatedOrganizationRepo.findAllByProjectId(projectId, sort)
-            .mapIndexed { index, old -> old.copy(sortNumber = index.plus(1)) }
-        projectAssociatedOrganizationRepo.saveAll(projectAssociatedOrganisations)
+        ).toOutputProjectAssociatedOrganizationDetail()
     }
 
     @Transactional
@@ -92,6 +77,16 @@ class ProjectAssociatedOrganizationServiceImpl(
             projectAssociatedOrganizationRepo.findFirstByProjectIdAndId(projectId, associatedOrganizationId)
                 .orElseThrow { ResourceNotFoundException("projectAssociatedOrganisation") }
         )
-        this.updateSort(projectId)
+        refreshSortNumbers(projectId)
+    }
+
+    @Transactional
+    override fun refreshSortNumbers(projectId: Long) {
+        val sort = Sort.by(listOf(
+            Sort.Order(Sort.Direction.ASC, "id")
+        ))
+        val projectAssociatedOrganisations = projectAssociatedOrganizationRepo.findAllByProjectId(projectId, sort)
+            .mapIndexed { index, old -> old.copy(sortNumber = index.plus(1)) }
+        projectAssociatedOrganizationRepo.saveAll(projectAssociatedOrganisations)
     }
 }

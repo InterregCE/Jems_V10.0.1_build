@@ -59,21 +59,21 @@ export class ProjectApplicationFormPartnerContactComponent extends ViewEditForm 
     maxlength: 'partner.contact.representative.last.name.size.too.long'
   };
   partnerContactTitleErrors = {
-    maxlength: 'partner.contact.title.size.too.long'
+    maxlength: 'project.contact.title.size.too.long'
   };
   partnerContactFirstNameErrors = {
-    maxlength: 'partner.contact.first.name.size.too.long'
+    maxlength: 'project.contact.first.name.size.too.long'
   };
   partnerContactLastNameErrors = {
-    maxlength: 'partner.contact.last.name.size.too.long'
+    maxlength: 'project.contact.last.name.size.too.long'
   };
   partnerContactEmailErrors = {
-    maxlength: 'partner.contact.email.size.too.long',
-    email: 'partner.contact.email.wrong.format'
+    maxlength: 'project.contact.email.size.too.long',
+    email: 'project.contact.email.wrong.format'
   };
   partnerContactTelephoneErrors = {
-    maxlength: 'partner.contact.telephone.size.too.long',
-    pattern: 'partner.contact.telephone.wrong.format'
+    maxlength: 'project.contact.telephone.size.too.long',
+    pattern: 'project.contact.telephone.wrong.format'
   };
 
   private static isContactDtoEmpty(contactDto: InputProjectContact): boolean {

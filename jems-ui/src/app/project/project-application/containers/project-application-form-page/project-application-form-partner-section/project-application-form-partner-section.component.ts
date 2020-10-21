@@ -58,7 +58,7 @@ export class ProjectApplicationFormPartnerSectionComponent {
       )
     ])
       .pipe(
-        flatMap(([pageIndex, pageSize, sort]) =>
+        mergeMap(([pageIndex, pageSize, sort]) =>
           this.projectAssociatedOrganizationService.getAssociatedOrganizations(this.projectId, pageIndex, pageSize, [sort])),
         tap(page => Log.info('Fetched the project associated organizations:', this, page.content)),
       );
@@ -73,6 +73,7 @@ export class ProjectApplicationFormPartnerSectionComponent {
       .pipe(
         take(1),
         tap(() => this.newPageIndex$.next(Tables.DEFAULT_INITIAL_PAGE_INDEX)),
+        tap(() => this.newPageIndexAO$.next(Tables.DEFAULT_INITIAL_PAGE_INDEX)), // deletion of partner can result to deletion of AO as well
         tap(() => Log.info('Deleted partner: ', this, partnerId)),
         tap(() => this.projectApplicationFormSidenavService.refreshPartners())
       ).subscribe();

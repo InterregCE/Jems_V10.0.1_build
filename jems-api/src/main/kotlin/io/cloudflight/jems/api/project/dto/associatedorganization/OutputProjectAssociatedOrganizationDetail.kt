@@ -12,6 +12,7 @@ data class OutputProjectAssociatedOrganizationDetail (
     override val nameInEnglish: String? = null,
     val sortNumber: Int? = null,
     val address: OutputProjectAssociatedOrganizationAddress? = null,
-    val contacts: List<OutputProjectPartnerContact> = emptyList()
+    val contacts: List<OutputProjectPartnerContact> = emptyList(),
+    val roleDescription: String? = null
 
 ): InputOrganization

@@ -77,19 +77,19 @@ export class ProjectApplicationFormPartnerAddressComponent extends ViewEditForm 
   })
 
   partnerStreetErrors = {
-    maxlength: 'project.partner.address.street.size.too.long'
+    maxlength: 'address.street.size.too.long'
   };
   partnerHouseNumberErrors = {
-    maxlength: 'project.partner.address.housenumber.size.too.long'
+    maxlength: 'address.houseNumber.size.too.long'
   };
   partnerPostalCodeErrors = {
-    maxlength: 'project.partner.address.postalcode.size.too.long'
+    maxlength: 'address.postalCode.size.too.long'
   };
   partnerCityErrors = {
-    maxlength: 'project.partner.address.city.size.too.long'
+    maxlength: 'address.city.size.too.long'
   };
   partnerHomepageErrors = {
-    maxlength: 'project.partner.address.homepage.size.too.long'
+    maxlength: 'address.homepage.size.too.long'
   };
 
   private static isOrganizationDtoEmpty(partnerOrganizationDetails: InputProjectPartnerAddress): boolean {
