@@ -63,11 +63,6 @@ export class ProjectApplicationFormPartnerListComponent implements OnInit {
       isTableClickable: true,
       columns: [
         {
-          displayedColumn: 'project.application.form.partner.table.id',
-          elementProperty: 'id',
-          sortProperty: 'id'
-        },
-        {
           displayedColumn: 'project.application.form.partner.table.number',
           elementProperty: 'sortNumber',
           alternativeValueCondition: (element: any) => {

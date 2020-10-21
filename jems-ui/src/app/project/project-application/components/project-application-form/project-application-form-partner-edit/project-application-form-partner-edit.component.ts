@@ -50,6 +50,7 @@ export class ProjectApplicationFormPartnerEditComponent extends ViewEditForm imp
   partnerForm: FormGroup = this.formBuilder.group({
     fakeRole: [], // needed for the fake role field in view mode
     id: [],
+    sortNumber: [],
     name: ['', Validators.compose([
       Validators.maxLength(15),
       Validators.required])
@@ -165,6 +166,7 @@ export class ProjectApplicationFormPartnerEditComponent extends ViewEditForm imp
 
   private initFields() {
     this.controls?.id.setValue(this.partner?.id);
+    this.controls?.sortNumber.setValue(this.partner?.sortNumber);
     this.controls?.role.setValue(this.partner?.role);
     this.controls?.name.setValue(this.partner?.abbreviation);
     this.sideNavService.setAlertStatus(true);
