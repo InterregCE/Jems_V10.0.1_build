@@ -24,7 +24,10 @@ export class OfficeAndAdministrationTableComponent {
       headerName: this.translateService.instant('project.partner.budget.table.total'),
       field: 'total',
       type: 'numericColumn',
-      valueGetter: (params: any) => Numbers.toLocale(params.data.total, this.locale),
+      valueGetter: (params: any) => Numbers.toLocale(
+        Numbers.floorNumber(params.data.total),
+        this.locale
+      ),
     }
   ];
   locale = 'de-DE';
