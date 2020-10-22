@@ -77,7 +77,16 @@ export class ProjectApplicationFormPartnerBudgetOptionsComponent extends ViewEdi
     this.changeFormState$.next(FormState.VIEW);
   }
 
+  protected enterEditMode() {
+    if (!this.optionsForm.controls.officeAdministrationFlatRateActive.value) {
+      this.optionsForm.controls.officeAdministrationFlatRate.disable();
+    } else {
+      this.optionsForm.controls.officeAdministrationFlatRate.enable();
+    }
+  }
+
   toggleOfficeAdministrationFlatRate(checked: boolean) {
     this.optionsForm.controls.officeAdministrationFlatRate.patchValue(checked ? 15 : null);
+    this.enterEditMode();
   }
 }
