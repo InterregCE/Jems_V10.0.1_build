@@ -16,6 +16,8 @@ import {merge, ReplaySubject, Subject} from 'rxjs';
 export class LanguageService {
   private profileChanged$ = new Subject<OutputUserProfile>();
   public languagesChanged$: ReplaySubject<OutputProgrammeLanguage[]> = new ReplaySubject(1);
+  public currentLanguage$ = new Subject<OutputProgrammeLanguage.CodeEnum>();
+  private MAX_NUMBER_AVAILABLE_LANGUAGES = 4;
 
   languagesInitialized$ = this.programmeLanguageService.get()
     .pipe(
@@ -33,7 +35,22 @@ export class LanguageService {
       }),
       map(value => ({isEnglishAvailable: this.isDefaultLanguageIncluded(value), languages: value})));
 
-  public inputLanguageList$ = merge(this.languagesInitialized$, this.languagesChanged$);
+  public inputLanguageList$ = merge(this.languagesInitialized$, this.languagesChanged$).pipe(
+    map(languages => {
+          let availableLanguages = languages
+            .filter(value => value.input)
+            .slice(0, this.MAX_NUMBER_AVAILABLE_LANGUAGES)
+            .map(value => value.code);
+          // if there is no input language selected in the programme setup, use the fallback language
+          if (availableLanguages.length < 1) {
+            availableLanguages = languages
+              .filter(value => value.fallback)
+              .slice(0, this.MAX_NUMBER_AVAILABLE_LANGUAGES)
+              .map(value => value.code);
+          }
+          return availableLanguages;
+    })
+  );
 
   isDefaultLanguageIncluded(langs: string[]): boolean {
     return !!langs.find((language: string) => language === this.default());
