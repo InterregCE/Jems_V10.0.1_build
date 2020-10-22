@@ -9,8 +9,6 @@ import io.cloudflight.jems.api.project.dto.associatedorganization.OutputProjectA
 import io.cloudflight.jems.api.project.dto.partner.OutputProjectPartnerContact
 import io.cloudflight.jems.server.project.entity.Address
 import io.cloudflight.jems.server.project.entity.Contact
-import io.cloudflight.jems.server.project.entity.partner.ProjectPartnerContactId
-import io.cloudflight.jems.server.project.entity.Project
 import io.cloudflight.jems.server.project.entity.associatedorganization.ProjectAssociatedOrganization
 import io.cloudflight.jems.server.project.entity.associatedorganization.ProjectAssociatedOrganizationAddress
 import io.cloudflight.jems.server.project.entity.associatedorganization.ProjectAssociatedOrganizationContact
@@ -24,7 +22,8 @@ fun InputProjectAssociatedOrganizationCreate.toEntity(
     project = partner.project,
     partner = partner,
     nameInOriginalLanguage = nameInOriginalLanguage,
-    nameInEnglish = nameInEnglish
+    nameInEnglish = nameInEnglish,
+    roleDescription = roleDescription
     // addresses - need organization Id
     // contacts - need organization Id
 )
@@ -58,7 +57,8 @@ fun ProjectAssociatedOrganization.toOutputProjectAssociatedOrganizationDetail() 
     nameInEnglish = nameInEnglish,
     sortNumber = sortNumber,
     address = addresses.map { it.toOutputProjectAssociatedOrganizationDetails() }.firstOrNull(),
-    contacts = contacts.map { it.toOutputProjectAssociatedOrganizationContact() }
+    contacts = contacts.map { it.toOutputProjectAssociatedOrganizationContact() },
+    roleDescription = roleDescription
 )
 
 fun InputProjectContact.toEntity(associatedOrganization: ProjectAssociatedOrganization) = ProjectAssociatedOrganizationContact(

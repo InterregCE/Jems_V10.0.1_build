@@ -9,6 +9,10 @@ export class ColumnConfiguration {
   elementProperty?: string;
   // main translation key for that element
   elementTranslationKey?: string;
+  // fixed i18n translation key to use with argument
+  i18nFixedKey?: string
+  // args object for translation keys
+  i18nArgs?: (element: any) => any;
   // optional function as condition to replace element value
   alternativeValueCondition?: (element: any) => {};
   // optional value if condition is set and applies

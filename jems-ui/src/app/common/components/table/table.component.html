@@ -27,7 +27,7 @@
         <td mat-cell *matCellDef="let row">
             <div *ngIf="!column.customCellTemplate; else customCellTemplate"
                  [title]="column.tooltip ? (formatColumnTooltip(column, row) | translate) : ''">
-                {{ formatColumnValue(column, row) | translate }}
+                {{ formatColumnValue(column, row) | translate : getI18nArgs(column, row) }}
             </div>
 
             <ng-template #customCellTemplate>

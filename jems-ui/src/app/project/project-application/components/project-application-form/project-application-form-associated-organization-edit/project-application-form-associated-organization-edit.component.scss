@@ -1,0 +1,25 @@
+.wrapper {
+  margin-top: 2rem;
+
+  .field {
+    max-width: 35rem;
+    width: 100%;
+    padding-top: 1rem;
+    display: block;
+  }
+
+  .header-button {
+    margin-left: 0.5rem;
+    margin-right: 2rem;
+    margin-bottom: 0.25rem;
+  }
+
+  .button {
+    margin-right: 3rem;
+  }
+
+  .mat-input-element {
+    color: var(--font-color-primary);
+  }
+
+}

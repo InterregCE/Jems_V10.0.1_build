@@ -19,13 +19,13 @@ data class InputProjectPartnerCreate(
      */
     val oldLeadPartnerId: Long? = null,
 
-    @field:Size(max = 100, message = "partner.organization.original.name.size.too.long")
+    @field:Size(max = 100, message = "project.organization.original.name.size.too.long")
     override val nameInOriginalLanguage: String? = null,
 
-    @field:Size(max = 100, message = "partner.organization.english.name.size.too.long")
+    @field:Size(max = 100, message = "project.organization.english.name.size.too.long")
     override val nameInEnglish: String? = null,
 
-    @field:Size(max = 250, message = "partner.organization.department.size.too.long")
+    @field:Size(max = 250, message = "project.organization.department.size.too.long")
     val department: String? = null
 
 ): InputOrganization

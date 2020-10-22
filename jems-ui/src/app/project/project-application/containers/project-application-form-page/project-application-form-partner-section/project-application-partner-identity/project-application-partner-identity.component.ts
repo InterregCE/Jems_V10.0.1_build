@@ -25,13 +25,14 @@ export class ProjectApplicationPartnerIdentityComponent extends BaseComponent im
   }
 
   ngOnInit(): void {
+    this.projectStore.init(this.projectId);
+    this.projectApplicationFormSidenavService.init(this.destroyed$, this.projectId);
+
     if (this.partnerId) {
       return;
     }
     // creating a new partner
     this.partnerStore.init(null);
-    this.projectStore.init(this.projectId);
-    this.projectApplicationFormSidenavService.init(this.destroyed$, this.projectId);
   }
 
   redirectToPartnerOverview(): void {

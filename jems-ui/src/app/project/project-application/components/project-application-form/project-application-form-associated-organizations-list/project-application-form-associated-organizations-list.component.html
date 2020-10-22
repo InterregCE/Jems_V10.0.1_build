@@ -1,0 +1,18 @@
+<p *ngIf="!associatedOrganizationPage?.content.length">{{'project.application.form.associatedOrganization.list.empty' | translate}}</p>
+<app-table *ngIf="associatedOrganizationPage.content.length"
+           [configuration]="tableConfiguration"
+           [rows]="associatedOrganizationPage.content"
+           [totalElements]="associatedOrganizationPage?.totalElements"
+           [pageIndex]="pageIndex"
+           (newPageIndex)="newPageIndex.emit($event)"
+           (newPageSize)="newPageSize.emit($event)"
+           (sortRows)="newSort.emit($event)">
+</app-table>
+
+<ng-template #deletionCellAssociatedOrganization let-associatedOrganization>
+    <button *ngIf="editable" mat-icon-button color="accent"
+            (click)="delete(associatedOrganization);$event.stopPropagation();"
+            matTooltip="{{'project.application.form.associatedOrganization.table.action.delete.tooltip' | translate}}">
+        <i class="fas fa-trash"></i>
+    </button>
+</ng-template>

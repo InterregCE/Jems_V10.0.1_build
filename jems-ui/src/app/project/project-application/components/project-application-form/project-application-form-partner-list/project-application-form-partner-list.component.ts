@@ -19,6 +19,7 @@ import {Router} from '@angular/router';
 import {ProjectApplicationFormPartnerDetailComponent} from '../../../containers/project-application-form-page/project-application-form-partner-section/project-application-form-partner-detail/project-application-form-partner-detail.component';
 import {TabService} from '../../../../../common/services/tab.service';
 
+
 @Component({
   selector: 'app-project-application-form-partner-list',
   templateUrl: './project-application-form-partner-list.component.html',

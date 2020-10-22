@@ -1,5 +1,5 @@
 import {NgModule} from '@angular/core';
-import {CommonModule, CurrencyPipe, DatePipe} from '@angular/common';
+import {CommonModule, DatePipe} from '@angular/common';
 import {routes} from './project-routing.module';
 import {CoreModule} from '../common/core-module';
 import {ProjectApplicationDetailComponent} from './project-application/containers/project-application-detail/project-application-detail.component';
@@ -79,7 +79,10 @@ import {AgGridModule} from 'ag-grid-angular';
 import {ProjectApplicationFormStore} from './project-application/containers/project-application-form-page/services/project-application-form-store.service';
 import {ProjectPartnerStore} from './project-application/containers/project-application-form-page/services/project-partner-store.service';
 import {ProjectApplicationPartnerIdentityComponent} from './project-application/containers/project-application-form-page/project-application-form-partner-section/project-application-partner-identity/project-application-partner-identity.component';
-
+import {ProjectApplicationFormAssociatedOrganizationsListComponent} from './project-application/components/project-application-form/project-application-form-associated-organizations-list/project-application-form-associated-organizations-list.component';
+import {ProjectApplicationFormAssociatedOrgDetailComponent} from './project-application/containers/project-application-form-page/project-application-form-partner-section/project-application-form-associated-org-detail/project-application-form-associated-org-detail.component';
+import {ProjectApplicationFormAssociatedOrganizationEditComponent} from './project-application/components/project-application-form/project-application-form-associated-organization-edit/project-application-form-associated-organization-edit.component';
+import {ProjectAssociatedOrganizationStore} from './project-application/containers/project-application-form-page/services/project-associated-organization-store.service';
 
 @NgModule({
   declarations: [
@@ -130,6 +133,8 @@ import {ProjectApplicationPartnerIdentityComponent} from './project-application/
     ProjectApplicationFormProjectPartnershipDetailComponent,
     ProjectApplicationFormProjectRelevanceAndContextSectionComponent,
     ProjectApplicationFormProjectRelevanceAndContextDetailComponent,
+    ProjectApplicationFormAssociatedOrganizationsListComponent,
+    ProjectApplicationFormAssociatedOrgDetailComponent,
     BenefitsTableComponent,
     StrategyTableComponent,
     SynergyTableComponent,
@@ -140,7 +145,8 @@ import {ProjectApplicationPartnerIdentityComponent} from './project-application/
     ProjectApplicationFormPartnerBudgetComponent,
     BudgetTableComponent,
     AgGridTemplateRendererComponent,
-    ProjectApplicationPartnerIdentityComponent
+    ProjectApplicationPartnerIdentityComponent,
+    ProjectApplicationFormAssociatedOrganizationEditComponent,
   ],
   imports: [
     CommonModule,
@@ -173,6 +179,7 @@ import {ProjectApplicationPartnerIdentityComponent} from './project-application/
     MatDatepickerModule,
     ProjectAcronymResolver,
     ProjectPartnerStore,
+    ProjectAssociatedOrganizationStore,
     {provide: MAT_MOMENT_DATE_ADAPTER_OPTIONS, useValue: {useUtc: true}},
     {provide: MAT_DATE_LOCALE, useValue: 'en-GB'}
   ]

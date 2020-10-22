@@ -50,6 +50,8 @@ export class TableComponent implements OnInit {
     if (!column.elementProperty) {
       return element;
     }
+    if (column.i18nFixedKey)
+      return column.i18nFixedKey
     const elementValue = Tools.getChainedProperty(element, column.elementProperty, '');
     if (column.elementTranslationKey) {
       return column.elementTranslationKey + '.' + elementValue;
@@ -61,6 +63,12 @@ export class TableComponent implements OnInit {
       return this.datepipe.transform(elementValue, Tables.DEFAULT_DATE_FORMAT);
     }
     return elementValue;
+  }
+
+  getI18nArgs(column: ColumnConfiguration, element: any): any {
+    if (column.i18nArgs)
+      return column.i18nArgs(element)
+    return null;
   }
 
   /**

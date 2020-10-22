@@ -16,11 +16,9 @@ import io.cloudflight.jems.server.project.entity.partner.ProjectPartner
 import io.cloudflight.jems.server.project.entity.ProjectStatus
 import io.cloudflight.jems.server.project.repository.partner.ProjectPartnerRepository
 import io.cloudflight.jems.server.project.repository.ProjectRepository
-import io.cloudflight.jems.server.security.model.LocalCurrentUser
-import io.cloudflight.jems.server.security.service.SecurityService
+import io.cloudflight.jems.server.project.service.associatedorganization.ProjectAssociatedOrganizationService
 import io.cloudflight.jems.server.user.entity.User
 import io.cloudflight.jems.server.user.entity.UserRole
-import io.cloudflight.jems.server.user.service.toOutputUserWithRole
 import io.mockk.MockKAnnotations
 import io.mockk.every
 import io.mockk.impl.annotations.MockK
@@ -47,7 +45,7 @@ internal class ProjectPartnerServiceTest {
     lateinit var projectRepository: ProjectRepository
 
     @MockK
-    lateinit var securityService: SecurityService
+    lateinit var projectAssociatedOrganizationService: ProjectAssociatedOrganizationService
 
     lateinit var projectPartnerService: ProjectPartnerService
 
@@ -61,7 +59,6 @@ internal class ProjectPartnerServiceTest {
         email = "admin@admin.dev",
         surname = "Surname",
         userRole = userRole)
-    private val outputUser = user.toOutputUserWithRole()
 
     private val call = Call(
         id = 1,
@@ -111,8 +108,13 @@ internal class ProjectPartnerServiceTest {
     @BeforeEach
     fun setup() {
         MockKAnnotations.init(this)
-        every { securityService.currentUser } returns LocalCurrentUser(outputUser, user.password, emptyList())
-        projectPartnerService = ProjectPartnerServiceImpl(projectPartnerRepository, projectRepository)
+        projectPartnerService = ProjectPartnerServiceImpl(
+            projectPartnerRepository,
+            projectAssociatedOrganizationService,
+            projectRepository
+        )
+        //for all delete tests
+        every { projectAssociatedOrganizationService.refreshSortNumbers(any()) } answers {}
     }
 
     @Test
@@ -352,6 +354,7 @@ internal class ProjectPartnerServiceTest {
         every { projectPartnerRepository.saveAll(emptyList()) } returns emptySet()
 
         assertDoesNotThrow { projectPartnerService.deletePartner(project.id!!, projectPartnerWithOrganization.id!!) }
+        verify { projectAssociatedOrganizationService.refreshSortNumbers(project.id!!) }
     }
 
     @Test
@@ -361,6 +364,7 @@ internal class ProjectPartnerServiceTest {
         every { projectPartnerRepository.saveAll(emptyList()) } returns emptySet()
 
         assertDoesNotThrow { projectPartnerService.deletePartner(project.id!!, projectPartner.id!!) }
+        verify { projectAssociatedOrganizationService.refreshSortNumbers(project.id!!) }
     }
 
     @Test
@@ -370,6 +374,7 @@ internal class ProjectPartnerServiceTest {
         every { projectPartnerRepository.saveAll(emptyList()) } returns emptySet()
 
         assertDoesNotThrow { projectPartnerService.deletePartner(project.id!!, 100) }
+        verify { projectAssociatedOrganizationService.refreshSortNumbers(project.id!!) }
     }
 
 }

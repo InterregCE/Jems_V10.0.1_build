@@ -19,3 +19,25 @@
         (newSort)="newSort$.next($event)"
         (deletePartner)="deletePartner($event)">
 </app-project-application-form-partner-list>
+
+<h4 class="spaced-elements" id="projectAssociatedOrganizationsHeading">{{'project.application.form.section.part.b.subsection' | translate}}</h4>
+
+<span class="header-button" *ngxPermissionsExcept="Permission.PROGRAMME_USER">
+    <button class="spaced-elements" mat-raised-button color="primary"
+            [routerLink]="'/app/project/detail/' + projectId + '/applicationForm/associatedOrganization/create'"
+            [disabled]="!editable">
+        + {{'project.application.form.associatedOrganization.add' | translate}}
+    </button>
+</span>
+
+<app-project-application-form-associated-organizations-list
+        *ngIf="associatedOrganizationsPage$ | async as associatedOrganizationPage"
+        [projectId]="projectId"
+        [editable]="editable"
+        [associatedOrganizationPage]="associatedOrganizationPage"
+        [pageIndex]="newPageIndexAO$ | async"
+        (newPageSize)="newPageSizeAO$.next($event)"
+        (newPageIndex)="newPageIndexAO$.next($event)"
+        (newSort)="newSortAO$.next($event)"
+        (deleteAssociatedOrganization)="deleteAssociatedOrganization($event)">
+</app-project-application-form-associated-organizations-list>
