@@ -41,7 +41,7 @@ fun Project.toOutputProject() = OutputProject(
     eligibilityAssessment = eligibilityAssessment?.toOutputProjectEligibilityAssessment(),
     eligibilityDecision = eligibilityDecision?.toOutputProjectStatus(),
     fundingDecision = fundingDecision?.toOutputProjectStatus(),
-    projectData = projectData?.toOutputProjectData()
+    projectData = projectData?.toOutputProjectData(priorityPolicy)
 )
 
 fun Project.toOutputProjectSimple() = OutputProjectSimple(
@@ -51,8 +51,8 @@ fun Project.toOutputProjectSimple() = OutputProjectSimple(
     projectStatus = projectStatus.status,
     firstSubmissionDate = firstSubmission?.updated,
     lastResubmissionDate = lastResubmission?.updated,
-    specificObjectiveCode = projectData?.priorityPolicy?.code,
-    programmePriorityCode = projectData?.priorityPolicy?.programmePriority?.code
+    specificObjectiveCode = priorityPolicy?.code,
+    programmePriorityCode = priorityPolicy?.programmePriority?.code
 )
 
 fun Project.toApplicantAndStatus() = ProjectApplicantAndStatus(
@@ -60,17 +60,14 @@ fun Project.toApplicantAndStatus() = ProjectApplicantAndStatus(
     projectStatus = projectStatus.status
 )
 
-fun InputProjectData.toEntity(project: Project, priorityPolicy: ProgrammePriorityPolicy?) = ProjectData(
-    projectId = project.id!!,
-    project = project,
+fun InputProjectData.toEntity() = ProjectData(
     title = title,
     duration = duration,
     intro = intro,
-    priorityPolicy = priorityPolicy,
     introProgrammeLanguage = introProgrammeLanguage
 )
 
-fun ProjectData.toOutputProjectData() = OutputProjectData(
+fun ProjectData.toOutputProjectData(priorityPolicy: ProgrammePriorityPolicy?) = OutputProjectData(
     title = title,
     duration = duration,
     intro = intro,

@@ -129,16 +129,17 @@ class ProjectServiceImpl(
         return projectRepo.save(
             project.copy(
                 acronym = projectData.acronym!!,
-                projectData = projectData.toEntity(
-                    project,
-                    priorityPolicy = policyToEntity(projectData.specificObjective)
-                )
+                projectData = projectData.toEntity(),
+                priorityPolicy = policyToEntity(projectData.specificObjective)
             )
         ).toOutputProject()
     }
 
-    private fun policyToEntity(policy: ProgrammeObjectivePolicy?): ProgrammePriorityPolicy {
-        return programmePriorityPolicyRepository.findById(policy!!).get()
+    private fun policyToEntity(policy: ProgrammeObjectivePolicy?): ProgrammePriorityPolicy? {
+        if (policy != null)
+            return programmePriorityPolicyRepository.findById(policy)
+                .orElseThrow { ResourceNotFoundException("programme_priority_policy") }
+        return null
     }
 
 }

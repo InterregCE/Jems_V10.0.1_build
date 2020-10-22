@@ -11,13 +11,13 @@ import org.springframework.stereotype.Repository
 @Repository
 interface ProjectRepository : PagingAndSortingRepository<Project, Long> {
 
-    @EntityGraph(attributePaths = ["call", "projectStatus", "projectData.priorityPolicy.programmePriority"])
+    @EntityGraph(attributePaths = ["call", "projectStatus", "priorityPolicy.programmePriority"])
     override fun findAll(pageable: Pageable): Page<Project>
 
-    @EntityGraph(attributePaths = ["call", "projectStatus", "projectData.priorityPolicy.programmePriority"])
+    @EntityGraph(attributePaths = ["call", "projectStatus", "priorityPolicy.programmePriority"])
     fun findAllByApplicantId(applicantId: Long, pageable: Pageable): Page<Project>
 
-    @EntityGraph(attributePaths = ["call", "projectStatus", "projectData.priorityPolicy.programmePriority"])
+    @EntityGraph(attributePaths = ["call", "projectStatus", "priorityPolicy.programmePriority"])
     fun findAllByProjectStatusStatusNot(status: ProjectApplicationStatus, pageable: Pageable): Page<Project>
 
 }

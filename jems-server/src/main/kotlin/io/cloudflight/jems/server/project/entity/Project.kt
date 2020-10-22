@@ -1,9 +1,11 @@
 package io.cloudflight.jems.server.project.entity
 
 import io.cloudflight.jems.server.call.entity.Call
+import io.cloudflight.jems.server.programme.entity.ProgrammePriorityPolicy
 import io.cloudflight.jems.server.user.entity.User
 import javax.persistence.CascadeType
 import javax.persistence.Column
+import javax.persistence.Embedded
 import javax.persistence.Entity
 import javax.persistence.FetchType
 import javax.persistence.GeneratedValue
@@ -56,7 +58,11 @@ data class Project(
     @JoinColumn(name = "funding_decision_id")
     val fundingDecision: ProjectStatus? = null,
 
-    @OneToOne(mappedBy = "project", cascade = [CascadeType.ALL])
-    val projectData: ProjectData? = null
+    @Embedded
+    val projectData: ProjectData? = null,
+
+    @ManyToOne(optional = true, fetch = FetchType.LAZY)
+    @JoinColumn(name = "project_call_priority_policy_programme_priority_policy")
+    val priorityPolicy: ProgrammePriorityPolicy? = null
 
 )
