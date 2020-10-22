@@ -17,7 +17,6 @@ interface ProjectPartnerRepository : PagingAndSortingRepository<ProjectPartner, 
         throw UnsupportedOperationException("use method findFirstByProjectIdAndId")
     }
 
-    @EntityGraph(attributePaths = ["contacts"])
     fun findFirstByProjectIdAndId(projectId: Long, id: Long): Optional<ProjectPartner>
 
     fun findAllByProjectId(projectId: Long, pageable: Pageable): Page<ProjectPartner>
