@@ -76,7 +76,6 @@ export class ProjectApplicationFormPartnerSectionComponent {
         tap(() => this.newPageIndexAO$.next(Tables.DEFAULT_INITIAL_PAGE_INDEX)), // deletion of partner can result to deletion of AO as well
         tap(() => Log.info('Deleted partner: ', this, partnerId)),
         tap(() => this.projectApplicationFormSidenavService.refreshPartners()),
-        tap(() => this.projectApplicationFormSidenavService.refreshOrganizations()),
       ).subscribe();
   }
 
@@ -86,7 +85,6 @@ export class ProjectApplicationFormPartnerSectionComponent {
         take(1),
         tap(() => this.newPageIndexAO$.next(Tables.DEFAULT_INITIAL_PAGE_INDEX)),
         tap(() => Log.info('Deleted associated organization: ', this, associatedOrganizationId)),
-        tap(() => this.projectApplicationFormSidenavService.refreshOrganizations()),
       ).subscribe();
   }
 }
