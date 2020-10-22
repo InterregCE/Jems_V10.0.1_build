@@ -17,17 +17,9 @@ data class ProjectRelevance(
     @Column(name = "project_id")
     val projectId: Long,
 
-    // C2.1
-    @Column
-    val territorialChallenge: String? = null,
-
-    // C2.2
-    @Column
-    val commonChallenge: String? = null,
-
-    // C2.3
-    @Column
-    val transnationalCooperation: String? = null,
+    // C2.1, C2.2, C2.3
+    @OneToMany(cascade = [CascadeType.ALL], orphanRemoval = true, mappedBy = "translationId.projectId")
+    val translatedValues: Set<ProjectRelevanceTransl> = emptySet(),
 
     // C2.4
     @OneToMany(cascade = [CascadeType.ALL], orphanRemoval = true)

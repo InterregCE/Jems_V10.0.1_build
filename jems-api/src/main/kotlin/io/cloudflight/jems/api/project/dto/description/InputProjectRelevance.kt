@@ -1,19 +1,18 @@
 package io.cloudflight.jems.api.project.dto.description
 
+import io.cloudflight.jems.api.project.dto.InputTranslation
 import javax.validation.constraints.Size
 
 /**
  * C2
  */
 data class InputProjectRelevance(
-    @field:Size(max = 5000, message = "project.description.territorialChallenge.too.long")
-    val territorialChallenge: String?,   // C2.1
 
-    @field:Size(max = 5000, message = "project.description.commonChallenge.too.long")
-    val commonChallenge: String?,   // C2.2
+    val territorialChallenge: Set<InputTranslation> = emptySet(),   // C2.1
 
-    @field:Size(max = 5000, message = "project.description.transnationalCooperation.too.long")
-    val transnationalCooperation: String?,  // C2.3
+    val commonChallenge: Set<InputTranslation> = emptySet(),   // C2.2
+
+    val transnationalCooperation: Set<InputTranslation> = emptySet(),  // C2.3
 
     @field:Size(max = 20, message = "project.description.benefits.too.long")
     val projectBenefits: Collection<InputProjectRelevanceBenefit>?,    // C2.4

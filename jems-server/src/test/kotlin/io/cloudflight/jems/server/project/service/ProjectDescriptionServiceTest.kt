@@ -1,5 +1,7 @@
 package io.cloudflight.jems.server.project.service
 
+import io.cloudflight.jems.api.programme.SystemLanguage
+import io.cloudflight.jems.api.project.dto.InputTranslation
 import io.cloudflight.jems.api.project.dto.description.InputProjectCooperationCriteria
 import io.cloudflight.jems.api.project.dto.description.InputProjectHorizontalPrinciples
 import io.cloudflight.jems.api.project.dto.description.InputProjectLongTermPlans
@@ -42,9 +44,18 @@ class ProjectDescriptionServiceTest {
 
     companion object {
         private val projectRelevance = InputProjectRelevance(
-            territorialChallenge = "territorial value",
-            commonChallenge = "common value",
-            transnationalCooperation = "transnational value",
+            territorialChallenge = setOf(
+                InputTranslation(SystemLanguage.DE, "ein andrer Wert"),
+                InputTranslation(SystemLanguage.EN, "territorial value")
+            ),
+            commonChallenge = setOf(
+                InputTranslation(SystemLanguage.DE, null),
+                InputTranslation(SystemLanguage.EN, "common value")
+            ),
+            transnationalCooperation = setOf(
+                InputTranslation(SystemLanguage.DE, null),
+                InputTranslation(SystemLanguage.EN, "transnational value")
+            ),
             projectBenefits = listOf(
                 InputProjectRelevanceBenefit(
                     group = ProjectTargetGroup.Egtc,
@@ -63,9 +74,12 @@ class ProjectDescriptionServiceTest {
 
         private val projectRelevanceEntity = ProjectRelevance(
             projectId = 1,
-            territorialChallenge = projectRelevance.territorialChallenge,
-            commonChallenge = projectRelevance.commonChallenge,
-            transnationalCooperation = projectRelevance.transnationalCooperation,
+            translatedValues = combineTranslatedValues(
+                1,
+                projectRelevance.territorialChallenge,
+                projectRelevance.commonChallenge,
+                projectRelevance.transnationalCooperation
+            ),
             projectBenefits = setOf(
                 ProjectRelevanceBenefit(
                     targetGroup = ProjectTargetGroup.Egtc,
