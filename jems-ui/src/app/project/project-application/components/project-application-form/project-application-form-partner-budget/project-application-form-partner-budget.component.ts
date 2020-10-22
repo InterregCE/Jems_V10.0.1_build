@@ -4,7 +4,6 @@ import {
   Component,
   EventEmitter,
   Input,
-  OnInit,
   Output
 } from '@angular/core';
 import {ViewEditForm} from '@common/components/forms/view-edit-form';
@@ -19,8 +18,12 @@ import {PartnerBudgetTable} from '../../../model/partner-budget-table';
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class ProjectApplicationFormPartnerBudgetComponent extends ViewEditForm {
+  Number = Number;
+
   @Input()
   editable: boolean;
+  @Input()
+  officeAdministrationFlatRate: number;
   @Input()
   budgets: { [key: string]: PartnerBudgetTable };
 

@@ -1,0 +1,42 @@
+.header {
+  display: inline-block;
+  margin-bottom: 2rem;
+}
+
+.button {
+  margin-right: 1rem;
+  margin-top: 2rem;
+}
+
+.header-button {
+  margin-left: 0.5rem;
+}
+
+button {
+  width: unset !important;
+  margin-bottom: 1rem;
+}
+
+.wrapper {
+  ::ng-deep.mat-checkbox-disabled .mat-checkbox-label, ::ng-deep.mat-input-element:disabled {
+    color: var(--font-color-primary) !important;
+  }
+
+  ::ng-deep.mat-form-field-wrapper {
+    line-height: .8rem;
+    margin-left: .5rem;
+    width: 2.5rem;
+  }
+
+  ::ng-deep.mat-form-field-subscript-wrapper {
+    overflow: visible;
+  }
+
+  ::ng-deep.mat-error {
+    width: 8rem;
+  }
+
+  .percent {
+    vertical-align: text-bottom;
+  }
+}
