@@ -1,5 +1,5 @@
 import {ChangeDetectionStrategy, Component} from '@angular/core';
-import {InputBudget, ProjectPartnerBudgetService} from '@cat/api';
+import {InputBudget, ProjectPartnerBudgetService, InputFlatRate} from '@cat/api';
 import {ActivatedRoute} from '@angular/router';
 import {Log} from '../../../../../../common/utils/log';
 import {catchError, filter, mergeMap, map, startWith, tap, withLatestFrom} from 'rxjs/operators';
@@ -21,8 +21,31 @@ export class ProjectApplicationPartnerBudgetPageComponent {
   projectId = this.activatedRoute?.snapshot?.params?.projectId;
   partnerId = this.activatedRoute?.snapshot?.params?.partnerId;
 
-  saveBudgets$ = new Subject<{ [key: string]: PartnerBudgetTable }>();
+  optionsSaveError$ = new Subject<I18nValidationError | null>();
+  optionsSaveSuccess$ = new Subject<boolean>();
+  saveBudgetOptions = new Subject<InputFlatRate>();
+  private initialOfficeAdministrationFlatRate$ = this.partnerStore.getProjectPartner()
+    .pipe(
+      filter(partner => !!partner.id),
+      map(partner => partner.id),
+      mergeMap(id => this.projectPartnerBudgetService.getOfficeAdministrationFlatRate(id, this.projectId))
+    );
 
+  private saveOfficeAdministrationFlatRate = this.saveBudgetOptions
+    .pipe(
+      withLatestFrom(this.partnerStore.getProjectPartner()),
+      mergeMap(([flatRate, partner]) =>
+        this.projectPartnerBudgetService.updateOfficeAdministrationFlatRate(partner.id, this.projectId, flatRate)
+      ),
+      tap(() => this.optionsSaveSuccess$.next(true)),
+      tap(() => this.optionsSaveError$.next(null)),
+      catchError((error: HttpErrorResponse) => {
+        this.optionsSaveError$.next(error.error);
+        throw error;
+      })
+    );
+
+  saveBudgets$ = new Subject<{ [key: string]: PartnerBudgetTable }>();
   saveError$ = new Subject<I18nValidationError | null>();
   saveSuccess$ = new Subject<boolean>();
   cancelEdit$ = new Subject<void>();
@@ -30,17 +53,18 @@ export class ProjectApplicationPartnerBudgetPageComponent {
   private initialBudgets$ = this.partnerStore.getProjectPartner()
     .pipe(
       filter(partner => !!partner.id),
-      mergeMap(partner =>
+      map(partner => partner.id),
+      mergeMap(id =>
         forkJoin({
-          staff: this.projectPartnerBudgetService.getBudgetStaffCost(partner.id, this.projectId)
+          staff: this.projectPartnerBudgetService.getBudgetStaffCost(id, this.projectId)
             .pipe(tap(staff => Log.info('Fetched the staff budget', this, staff))),
-          travel: this.projectPartnerBudgetService.getBudgetTravel(partner.id, this.projectId)
+          travel: this.projectPartnerBudgetService.getBudgetTravel(id, this.projectId)
             .pipe(tap(travel => Log.info('Fetched the travel budget', this, travel))),
-          external: this.projectPartnerBudgetService.getBudgetExternal(partner.id, this.projectId)
+          external: this.projectPartnerBudgetService.getBudgetExternal(id, this.projectId)
             .pipe(tap(external => Log.info('Fetched the external budget', this, external))),
-          equipment: this.projectPartnerBudgetService.getBudgetEquipment(partner.id, this.projectId)
+          equipment: this.projectPartnerBudgetService.getBudgetEquipment(id, this.projectId)
             .pipe(tap(equipment => Log.info('Fetched the equipment budget', this, equipment))),
-          infrastructure: this.projectPartnerBudgetService.getBudgetInfrastructure(partner.id, this.projectId)
+          infrastructure: this.projectPartnerBudgetService.getBudgetInfrastructure(id, this.projectId)
             .pipe(tap(infrastructure => Log.info('Fetched the infrastructure budget', this, infrastructure))),
         })
       )
@@ -66,17 +90,21 @@ export class ProjectApplicationPartnerBudgetPageComponent {
       })
     );
 
-  budgets$ = combineLatest([
+  details$ = combineLatest([
+    merge(this.initialOfficeAdministrationFlatRate$, this.saveOfficeAdministrationFlatRate),
     merge(this.initialBudgets$, this.savedBudgets$),
     this.cancelEdit$.pipe(startWith(null))
   ])
     .pipe(
-      map(([budgets]) => ({
-        staff: new PartnerBudgetTable(PartnerBudgetTableType.STAFF, budgets.staff),
-        travel: new PartnerBudgetTable(PartnerBudgetTableType.TRAVEL, budgets.travel),
-        external: new PartnerBudgetTable(PartnerBudgetTableType.EXTERNAL, budgets.external),
-        equipment: new PartnerBudgetTable(PartnerBudgetTableType.EQUIPMENT, budgets.equipment),
-        infrastructure: new PartnerBudgetTable(PartnerBudgetTableType.INFRASTRUCTURE, budgets.infrastructure)
+      map(([flatRate, budgets]) => ({
+        officeAdministrationFlatRate: flatRate,
+        budgets: {
+          staff: new PartnerBudgetTable(PartnerBudgetTableType.STAFF, budgets.staff),
+          travel: new PartnerBudgetTable(PartnerBudgetTableType.TRAVEL, budgets.travel),
+          external: new PartnerBudgetTable(PartnerBudgetTableType.EXTERNAL, budgets.external),
+          equipment: new PartnerBudgetTable(PartnerBudgetTableType.EQUIPMENT, budgets.equipment),
+          infrastructure: new PartnerBudgetTable(PartnerBudgetTableType.INFRASTRUCTURE, budgets.infrastructure)
+        }
       }))
     );
 

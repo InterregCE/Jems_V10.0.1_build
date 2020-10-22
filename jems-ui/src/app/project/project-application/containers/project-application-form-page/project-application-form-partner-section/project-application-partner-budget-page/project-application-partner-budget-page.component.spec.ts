@@ -49,6 +49,23 @@ describe('ProjectApplicationPartnerBudgetPageComponent', () => {
     expect(component).toBeTruthy();
   });
 
+  it('should fetch and save budget options', fakeAsync(() => {
+    httpTestingController.expectOne({
+      method: 'GET',
+      url: '//api/project/1/partner/2/officeadministration'
+    });
+
+    component.saveBudgetOptions.next({
+      value: 8
+    });
+    tick();
+
+    httpTestingController.expectOne({
+      method: 'PUT',
+      url: '//api/project/1/partner/2/officeadministration'
+    });
+  }));
+
   it('should fetch and save budgets', fakeAsync(() => {
     httpTestingController.expectOne({
       method: 'GET',

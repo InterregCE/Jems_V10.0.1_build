@@ -1,8 +1,18 @@
-<app-project-application-form-partner-budget
-        [success$]="saveSuccess$"
-        [error$]="saveError$"
-        [editable]="partnerStore.projectEditable$ | async"
-        [budgets]="budgets$ | async"
-        (save)="saveBudgets$.next($event)"
-        (cancelEdit)="cancelEdit$.next()">
-</app-project-application-form-partner-budget>
+<ng-container *ngIf="details$ | async as details">
+    <app-project-application-form-partner-budget-options
+            [success$]="optionsSaveSuccess$"
+            [error$]="optionsSaveError$"
+            [editable]="partnerStore.projectEditable$ | async"
+            [officeAdministrationFlatRate]="details.officeAdministrationFlatRate"
+            (saveOfficeAdministrationFlatRate)="saveBudgetOptions.next($event)">
+    </app-project-application-form-partner-budget-options>
+    <app-project-application-form-partner-budget
+            [success$]="saveSuccess$"
+            [error$]="saveError$"
+            [editable]="partnerStore.projectEditable$ | async"
+            [officeAdministrationFlatRate]="details.officeAdministrationFlatRate"
+            [budgets]="details.budgets"
+            (save)="saveBudgets$.next($event)"
+            (cancelEdit)="cancelEdit$.next()">
+    </app-project-application-form-partner-budget>
+</ng-container>

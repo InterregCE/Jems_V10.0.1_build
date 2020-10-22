@@ -16,6 +16,17 @@
             (validityChange)="adaptValidity()">
     </app-budget-table>
 
+    <ng-container *ngIf="Number.isInteger(officeAdministrationFlatRate)">
+        <br>
+        <h5 id="officeAdministration"
+            class="header">{{'project.partner.budget.office.and.admin.header' | translate}}</h5>
+        <app-office-and-administration-table [total]="{
+                description: 'project.partner.budget.table.total' | translate,
+                total: budgets.staff?.total * (officeAdministrationFlatRate / 100)
+        }">
+        </app-office-and-administration-table>
+    </ng-container>
+
     <br>
     <h5 id="travel" class="header">{{'project.partner.budget.travel' | translate}}</h5>
     <app-budget-table

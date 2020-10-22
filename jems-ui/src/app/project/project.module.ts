@@ -83,6 +83,8 @@ import {ProjectApplicationFormAssociatedOrganizationsListComponent} from './proj
 import {ProjectApplicationFormAssociatedOrgDetailComponent} from './project-application/containers/project-application-form-page/project-application-form-partner-section/project-application-form-associated-org-detail/project-application-form-associated-org-detail.component';
 import {ProjectApplicationFormAssociatedOrganizationEditComponent} from './project-application/components/project-application-form/project-application-form-associated-organization-edit/project-application-form-associated-organization-edit.component';
 import {ProjectAssociatedOrganizationStore} from './project-application/containers/project-application-form-page/services/project-associated-organization-store.service';
+import {ProjectApplicationFormPartnerBudgetOptionsComponent} from './project-application/components/project-application-form/project-application-form-partner-budget-options/project-application-form-partner-budget-options.component';
+import {OfficeAndAdministrationTableComponent} from './project-application/components/project-application-form/project-application-form-partner-budget/office-and-administration-table/office-and-administration-table.component';
 
 @NgModule({
   declarations: [
@@ -143,6 +145,8 @@ import {ProjectAssociatedOrganizationStore} from './project-application/containe
     WorkPackageDeleteActionCellComponent,
     ProjectApplicationPartnerBudgetPageComponent,
     ProjectApplicationFormPartnerBudgetComponent,
+    ProjectApplicationFormPartnerBudgetOptionsComponent,
+    OfficeAndAdministrationTableComponent,
     BudgetTableComponent,
     AgGridTemplateRendererComponent,
     ProjectApplicationPartnerIdentityComponent,
