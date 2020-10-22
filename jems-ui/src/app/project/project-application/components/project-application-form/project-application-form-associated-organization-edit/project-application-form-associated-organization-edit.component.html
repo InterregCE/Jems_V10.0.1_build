@@ -1,6 +1,6 @@
 <form [formGroup]="associatedOrganizationForm" class="wrapper">
     <h4 *ngIf="!associatedOrganization?.sortNumber">{{'project.application.form.associatedOrganization.add' | translate}}</h4>
-    <h4 *ngIf="associatedOrganization?.sortNumber">{{'project.breadcrumb.associatedOrganizationName' | translate}} {{ 'project.organization.number.format' | translate : {sortNumber: associatedOrganization.sortNumber} }}</h4>
+    <h4 *ngIf="associatedOrganization?.sortNumber">{{'project.breadcrumb.associatedOrganizationName' | translate}} {{ 'project.organization.number.format.short' | translate : {sortNumber: associatedOrganization.sortNumber} }}</h4>
     <h5><span>{{'project.breadcrumb.associatedOrganizationName' | translate}}</span>
         <span class="header-button" *ngxPermissionsExcept="Permission.PROGRAMME_USER">
             <button *ngIf="formState === FormState.VIEW && editable" color="primary" mat-raised-button

@@ -1,4 +1,5 @@
 <h4 class="spaced-elements" id="projectPartnersHeading">{{'project.application.form.section.part.b' | translate}}</h4>
+<h6 class="spaced-elements" id="projectPartnersOverview">{{'project.application.form.section.part.b.partners' | translate}}</h6>
 
 <span class="header-button" *ngxPermissionsExcept="Permission.PROGRAMME_USER">
     <button class="spaced-elements" mat-raised-button color="primary"
@@ -20,7 +21,7 @@
         (deletePartner)="deletePartner($event)">
 </app-project-application-form-partner-list>
 
-<h4 class="spaced-elements" id="projectAssociatedOrganizationsHeading">{{'project.application.form.section.part.b.subsection' | translate}}</h4>
+<h6 class="spaced-elements" id="projectAssociatedOrganizationsHeading">{{'project.application.form.section.part.b.associatedOrganizations' | translate}}</h6>
 
 <span class="header-button" *ngxPermissionsExcept="Permission.PROGRAMME_USER">
     <button class="spaced-elements" mat-raised-button color="primary"

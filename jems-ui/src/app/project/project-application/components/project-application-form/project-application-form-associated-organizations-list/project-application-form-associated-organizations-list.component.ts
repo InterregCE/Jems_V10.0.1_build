@@ -56,7 +56,7 @@ export class ProjectApplicationFormAssociatedOrganizationsListComponent implemen
         {
           displayedColumn: 'project.application.form.associatedOrganization.table.number',
           elementProperty: 'sortNumber',
-          i18nFixedKey: 'project.organization.number.format',
+          i18nFixedKey: 'project.organization.number.format.short',
           i18nArgs: (element: any) => { return { sortNumber: element.sortNumber} },
         },
         {

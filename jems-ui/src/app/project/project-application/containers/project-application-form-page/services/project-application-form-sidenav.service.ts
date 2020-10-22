@@ -2,7 +2,7 @@ import {Injectable} from '@angular/core';
 import {SideNavService} from '@common/components/side-nav/side-nav.service';
 import {combineLatest, Observable, Subject} from 'rxjs';
 import {mergeMap, map, takeUntil, tap} from 'rxjs/operators';
-import {OutputProjectPartner, OutputProjectStatus, ProjectPartnerService, WorkPackageService} from '@cat/api';
+import {OutputProjectPartner, OutputProjectStatus, ProjectPartnerService, ProjectAssociatedOrganizationService, WorkPackageService} from '@cat/api';
 import {HeadlineRoute} from '@common/components/side-nav/headline-route';
 import {Log} from '../../../../../common/utils/log';
 import {TranslateService} from '@ngx-translate/core';
@@ -16,23 +16,41 @@ export class ProjectApplicationFormSidenavService {
   private acronym$ = new Subject<string>();
   private projectId: number;
   private fetchPartners$ = new Subject<void>();
+  private fetchOrganizations$ = new Subject<void>();
   private fetchPackages$ = new Subject<void>();
 
   private partners$: Observable<HeadlineRoute[]> = this.fetchPartners$
     .pipe(
       mergeMap(() =>
-        this.projectPartnerService.getProjectPartners(this.projectId, 0, 100, ['role,asc', 'sortNumber,asc'])
+        this.projectPartnerService.getProjectPartners(this.projectId, 0, 100, ['sortNumber,asc'])
       ),
       map(page => page.content),
       tap(partners => Log.info('Fetched the project partners:', this, partners)),
       map(partners => partners
-        .sort((a, b) => a.role === OutputProjectPartner.RoleEnum.LEADPARTNER ? -1 : 1)
         .map(partner => ({
             headline: {
               i18nKey: 'common.label.project.partner.role.shortcut.' + partner.role,
               i18nArguments: {partner: `${partner.sortNumber} ${partner.abbreviation}`}
             },
             route: `/app/project/detail/${this.projectId}/applicationForm/partner/detail/${partner.id}`,
+          }
+        ))
+      )
+    );
+
+  private organizations$: Observable<HeadlineRoute[]> = this.fetchOrganizations$
+    .pipe(
+      mergeMap(() => this.projectAssociatedOrganizationService
+        .getAssociatedOrganizations(this.projectId, 0, 100, ['sortNumber,asc'])),
+      map(page => page.content),
+      tap(organizations => Log.info('Fetched the project organizations:', this, organizations)),
+      map(organizations => organizations
+        .map(organization => ({
+            headline: {
+              i18nKey: 'project.organization.number.format',
+              i18nArguments: {sortNumber: organization.sortNumber, name: organization.nameInOriginalLanguage}
+            },
+            route: `/app/project/detail/${this.projectId}/applicationForm/associatedOrganization/detail/${organization.id}`,
           }
         ))
       )
@@ -64,6 +82,7 @@ export class ProjectApplicationFormSidenavService {
 
   constructor(private sideNavService: SideNavService,
               private projectPartnerService: ProjectPartnerService,
+              private projectAssociatedOrganizationService: ProjectAssociatedOrganizationService,
               private workPackageService: WorkPackageService,
               private projectStore: ProjectStore,
               private translate: TranslateService,
@@ -77,20 +96,22 @@ export class ProjectApplicationFormSidenavService {
     combineLatest([
       this.isNotApplicant$,
       this.partners$,
+      this.organizations$,
       this.packages$,
       this.projectStore.getProject()
     ])
       .pipe(
         takeUntil(destroyed),
-        tap(([isNotApplicant, partners, packages, project]) => {
+        tap(([isNotApplicant, partners, organizations, packages, project]) => {
           const status = project.projectStatus.status;
           const isNotOpen = status !== OutputProjectStatus.StatusEnum.DRAFT
             && status !== OutputProjectStatus.StatusEnum.RETURNEDTOAPPLICANT;
-          this.setHeadlines(isNotApplicant && isNotOpen, projectId, partners, packages)
+          this.setHeadlines(isNotApplicant && isNotOpen, projectId, partners, organizations, packages)
         })
       ).subscribe();
 
     this.refreshPartners();
+    this.refreshOrganizations();
     this.refreshPackages();
   }
 
@@ -102,11 +123,15 @@ export class ProjectApplicationFormSidenavService {
     this.fetchPartners$.next();
   }
 
+  refreshOrganizations(): void {
+    this.fetchOrganizations$.next();
+  }
+
   refreshPackages(): void {
     this.fetchPackages$.next();
   }
 
-  private setHeadlines(showAssessment: boolean, projectId: number, partners: HeadlineRoute[], packages: HeadlineRoute[]): void {
+  private setHeadlines(showAssessment: boolean, projectId: number, partners: HeadlineRoute[], organizations: HeadlineRoute[], packages: HeadlineRoute[]): void {
     // extracted this because Assessment is now on the same level with other headlines
     const applicationTreeHeadlines = {
       headline: { i18nKey: 'project.application.form.tree.title'},
@@ -163,7 +188,20 @@ export class ProjectApplicationFormSidenavService {
             headline: { i18nKey: 'project.application.form.section.part.b'},
             scrollRoute: 'projectPartnersHeading',
             route: '/app/project/detail/' + projectId + '/applicationForm',
-            bullets: [...partners],
+            bullets: [
+              {
+                headline: { i18nKey: 'project.application.form.section.part.b.partners'},
+                scrollRoute: 'projectPartnersOverview',
+                route: '/app/project/detail/' + projectId + '/applicationForm',
+                bullets: [...partners],
+              },
+              {
+                headline: { i18nKey: 'project.application.form.section.part.b.associatedOrganizations'},
+                scrollRoute: 'projectAssociatedOrganizationsHeading',
+                route: '/app/project/detail/' + projectId + '/applicationForm',
+                bullets: [...organizations],
+              },
+            ]
           },
           {
             headline: { i18nKey: 'project.application.form.section.part.c'},
