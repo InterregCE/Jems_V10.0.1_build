@@ -1,7 +1,7 @@
 <form [formGroup]="partnerContactForm" class="wrapper">
     <h5><span>{{'project.partner.representative.header' | translate}}</span>
-        <span class="header-button" *ngxPermissionsExcept="Permission.PROGRAMME_USER">
-            <button *ngIf="(formState === FormState.VIEW && editable) && partner?.id"
+        <span *ngxPermissionsExcept="Permission.PROGRAMME_USER">
+            <button class="header-button" *ngIf="(formState === FormState.VIEW && editable) && partner?.id"
                     (click)="changeFormState$.next(FormState.EDIT)" color="primary" mat-raised-button>
                 {{'common.edit.label' | translate}}
             </button>

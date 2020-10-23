@@ -53,6 +53,7 @@ export class BudgetTableComponent extends BaseComponent implements AfterViewInit
   formState: FormState;
 
   gridOptions: GridOptions = {
+    stopEditingWhenGridLosesFocus: true,
     domLayout: 'autoHeight',
     defaultColDef: {
       resizable: true,

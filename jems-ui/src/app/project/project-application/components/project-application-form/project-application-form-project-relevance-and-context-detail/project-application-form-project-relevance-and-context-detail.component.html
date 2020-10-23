@@ -1,8 +1,8 @@
 <form [formGroup]="projectRelevanceForm">
     <h5 class="header" id="projectRelevanceHeading">
         {{'project.application.form.section.part.c.subsection.two' | translate}}
-        <span class="header-button" *ngxPermissionsExcept="Permission.PROGRAMME_USER">
-        <button color="primary" mat-raised-button
+        <span *ngxPermissionsExcept="Permission.PROGRAMME_USER">
+        <button class="header-button" color="primary" mat-raised-button
                 *ngIf="formState === FormState.VIEW && editable"
                 (click)="changeFormState$.next(FormState.EDIT)">
             {{'common.edit.label' | translate}}
@@ -12,8 +12,7 @@
 
     <div class="intro-text">
         <h6>{{'project.application.form.relevance.field.1' | translate}}</h6>
-        <p class="intro-text-small">{{'project.application.form.relevance.field.1.intro.one' | translate}}</p>
-        <p class="intro-text-small">{{'project.application.form.relevance.field.1.intro.two' | translate}}</p>
+        <p class="intro-text-small">{{'project.application.form.relevance.field.1.intro' | translate}}</p>
     </div>
     <app-multi-language-field class="field"
                              [control]="projectRelevanceForm?.controls?.territorialChallenge"
@@ -33,8 +32,7 @@
 
     <div class="intro-text">
         <h6>{{'project.application.form.relevance.field.2' | translate}}</h6>
-        <p class="intro-text-small">{{'project.application.form.relevance.field.2.intro.one' | translate}}</p>
-        <p class="intro-text-small">{{'project.application.form.relevance.field.2.intro.two' | translate}}</p>
+        <p class="intro-text-small">{{'project.application.form.relevance.field.2.intro' | translate}}</p>
     </div>
     <app-multi-language-field class="field"
                              [control]="projectRelevanceForm?.controls?.commonChallenge"
@@ -54,8 +52,7 @@
 
     <div class="intro-text">
         <h6>{{'project.application.form.relevance.field.3' | translate}}</h6>
-        <p class="intro-text-small">{{'project.application.form.relevance.field.3.intro.one' | translate}}</p>
-        <p class="intro-text-small">{{'project.application.form.relevance.field.3.intro.two' | translate}}</p>
+        <p class="intro-text-small">{{'project.application.form.relevance.field.3.intro' | translate}}</p>
     </div>
     <app-multi-language-field class="field"
                              [control]="projectRelevanceForm?.controls?.internationalCooperation"
@@ -75,9 +72,7 @@
 
     <div class="intro-text">
         <h6>{{'project.application.form.relevance.field.4' | translate}}</h6>
-        <p class="intro-text-small">{{'project.application.form.relevance.field.4.intro.one' | translate}}</p>
-        <p class="intro-text-small">{{'project.application.form.relevance.field.4.intro.two' | translate}}</p>
-        <p class="intro-text-small">{{'project.application.form.relevance.field.4.intro.three' | translate}}</p>
+        <p class="intro-text-small">{{'project.application.form.relevance.field.4.intro' | translate}}</p>
     </div>
     <app-benefits-table
             [benefitsDataSource]="benefitsDataSource"
@@ -88,7 +83,7 @@
 
     <div class="intro-text">
         <h6>{{'project.application.form.relevance.field.5' | translate}}</h6>
-        <p class="intro-text-small">{{'project.application.form.relevance.field.5.intro.one' | translate}}</p>
+        <p class="intro-text-small">{{'project.application.form.relevance.field.5.intro' | translate}}</p>
     </div>
     <app-strategy-table
             [strategyDataSource]="strategiesDataSource"

@@ -20,19 +20,29 @@
 @import "src/app/theme/override-material-in-component/top-bar.scss";
 @import "src/app/theme/override-material-in-component/disable-underline-on-disabled-forms";
 @import "src/app/theme/override-material-in-component/disable-padding-on-mat-lists";
+@import "src/app/theme/override-material-in-component/customize-form-fields-and-buttons";
+@import "src/app/theme/override-material-in-component/customize-ag-grid-material";
 @import "src/app/theme/override-material-in-component/style-multi-language-selection-buttons";
 
 /**
  * Ag-grid imports
  */
 @import "../node_modules/ag-grid-community/dist/styles/ag-grid.css";
-@import "../node_modules/ag-grid-community/dist/styles/ag-theme-alpine.css";
+@import "../node_modules/ag-grid-community/dist/styles/ag-theme-material.css";
+
+@import "./common-classes.scss";
+@import "./layout-classes.scss";
 
 /**
  * Following styles are applied globally to every HTML tag in this app
  */
-@import "./common-classes.scss";
-@import "./layout-classes.scss";
+html {
+  scroll-behavior: smooth;
+}
+
+html, body {
+  height: 100%;
+}
 
 body {
   font-family: Roboto, "Helvetica Neue", sans-serif;
@@ -41,27 +51,18 @@ body {
   margin: 0;
 }
 
-h1,
-h2,
-h3,
-h4,
-h5,
-h6 {
+h1,h2,h3,h4,h5,h6 {
   margin: 1rem 0;
 }
-
-h1, h2, h3, h4 {
-  font-weight: 300;
-  margin: 1rem 0;
-}
-
-h5 {
-  font-weight: 400;
-}
-
-h6 {
-  font-weight: 500;
-}
+h1, h2 { font-weight: 200; }
+h3, h4 { font-weight: 300; }
+h5, h6 { font-weight: 400; }
+h1 { font-size: 3rem; }
+h2 { font-size: 2.5rem; }
+h3 { font-size: 2.25rem; }
+h4 { font-size: 1.75rem; }
+h5 { font-size: 1.5rem; }
+h6 { font-size: 1.25rem; }
 
 p {
   margin: 0;
@@ -86,12 +87,24 @@ form .form-group {
   }
 }
 
-html {
-  scroll-behavior: smooth;
+form.container {
+  margin: 2rem 0 !important;
 }
 
-html, body {
-  height: 100%;
+.intro-text {
+  width: 100%;
+  padding-top: 1rem;
+}
+.intro-text-small {
+  font-size: 0.875rem;
+  line-height: 1.5rem;
+  ul {
+    padding: 0.25rem 1rem;
+    line-height: 1.5rem;
+  }
+}
+p.intro-text-small {
+  padding-bottom: 1rem;
 }
 
 .material-select-panel {
@@ -101,6 +114,10 @@ html, body {
 textarea:read-only,
 textarea:disabled {
   overflow: hidden !important;
+}
+
+.no-bullets {
+  list-style-type: none;
 }
 
 // disable thick border when focusing button

@@ -1,5 +1,5 @@
 <div class="wrapper">
-    <h4 id="funds" class="header">{{'project.partner.budget.header' | translate}}</h4>
+    <h5 id="funds" class="header">{{'project.partner.budget.header' | translate}}</h5>
     <button class="header-button" color="primary"
             *ngIf="editable && formState === FormState.VIEW" mat-raised-button
             (click)="changeFormState$.next(FormState.EDIT)">
@@ -8,7 +8,7 @@
 
     <br>
     <ng-container *ngIf="!Number.isInteger(staffCostsFlatRate)">
-        <h5 id="staff" class="header">{{'project.partner.budget.staff' | translate}}</h5>
+        <h6 id="staff" class="header">{{'project.partner.budget.staff' | translate}}</h6>
         <app-budget-table
                 *ngIf="budgets?.staff"
                 [enabled]="formState === FormState.EDIT"
@@ -20,8 +20,8 @@
 
     <ng-container *ngIf="Number.isInteger(staffCostsFlatRate)">
         <br>
-        <h5 id="staffCostsFlatRate"
-            class="header">{{'project.partner.budget.staff.costs.flat.rate.header' | translate}}</h5>
+        <h6 id="staffCostsFlatRate"
+            class="header">{{'project.partner.budget.staff.costs.flat.rate.header' | translate}}</h6>
         <p class="intro-text-small">{{'project.partner.budget.staff.costs.flat.rate.description' | translate}}</p>
         <app-staff-costs-flat-rate-table [total]="{
                 description: 'project.partner.budget.table.total' | translate,
@@ -32,8 +32,8 @@
 
     <ng-container *ngIf="Number.isInteger(officeAdministrationFlatRate)">
         <br>
-        <h5 id="officeAdministration"
-            class="header">{{'project.partner.budget.office.and.admin.header' | translate}}</h5>
+        <h6 id="officeAdministration"
+            class="header">{{'project.partner.budget.office.and.admin.header' | translate}}</h6>
         <p class="intro-text-small">{{'project.partner.budget.office.and.admin.description' | translate}}</p>
         <app-office-and-administration-table
                 [total]="officeAndAdministrationTotal">
@@ -41,7 +41,7 @@
     </ng-container>
 
     <br>
-    <h5 id="travel" class="header">{{'project.partner.budget.travel' | translate}}</h5>
+    <h6 id="travel" class="header">{{'project.partner.budget.travel' | translate}}</h6>
     <app-budget-table
             *ngIf="budgets?.travel"
             [enabled]="formState === FormState.EDIT"
@@ -51,7 +51,7 @@
     </app-budget-table>
 
     <br>
-    <h5 id="external" class="header">{{'project.partner.budget.external' | translate}}</h5>
+    <h6 id="external" class="header">{{'project.partner.budget.external' | translate}}</h6>
     <app-budget-table
             *ngIf="budgets?.external"
             [enabled]="formState === FormState.EDIT"
@@ -61,7 +61,7 @@
     </app-budget-table>
 
     <br>
-    <h5 id="equipment" class="header">{{'project.partner.budget.equipment' | translate}}</h5>
+    <h6 id="equipment" class="header">{{'project.partner.budget.equipment' | translate}}</h6>
     <app-budget-table
             *ngIf="budgets?.equipment"
             [enabled]="formState === FormState.EDIT"
@@ -71,7 +71,7 @@
     </app-budget-table>
 
     <br>
-    <h5 id="infrastructure" class="header">{{'project.partner.budget.infrastructure' | translate}}</h5>
+    <h6 id="infrastructure" class="header">{{'project.partner.budget.infrastructure' | translate}}</h6>
     <app-budget-table
             *ngIf="budgets?.infrastructure"
             [enabled]="formState === FormState.EDIT"
