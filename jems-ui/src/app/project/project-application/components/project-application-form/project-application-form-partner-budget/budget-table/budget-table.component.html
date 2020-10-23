@@ -1,13 +1,18 @@
 <ag-grid-angular
         *ngIf="table?.entries.length"
         style="width: 100%"
-        class="ag-theme-alpine"
+        class="ag-theme-material"
         [gridOptions]="gridOptions"
         [rowData]="table?.entries"
         (gridReady)="gridReady()">
 </ag-grid-angular>
 
-<button *ngIf="enabled && table?.entries.length < 300" mat-icon-button type="button"
+<p *ngIf="enabled && table?.entries.length < 1">
+    <button mat-raised-button color="primary"
+            (click)="addNewEntry()">+ {{'project.partner.budget.button.add' | translate}}
+    </button>
+</p>
+<button *ngIf="enabled && table?.entries.length > 0 && table?.entries.length < 300" mat-icon-button type="button"
         (click)="addNewEntry()">
     <mat-icon>add</mat-icon>
 </button>

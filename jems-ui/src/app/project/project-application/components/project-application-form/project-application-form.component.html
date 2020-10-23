@@ -2,8 +2,8 @@
     <h4 id="projectIdentification" class="header">
         {{'project.application.form.section.part.a' | translate}}
     </h4>
-    <span class="header-button" *ngxPermissionsExcept="Permission.PROGRAMME_USER">
-        <button color="primary" mat-raised-button
+    <span *ngxPermissionsExcept="Permission.PROGRAMME_USER">
+        <button class="header-button" color="primary" mat-raised-button
                 *ngIf="formState === FormState.VIEW && editable"
                 (click)="changeFormState$.next(FormState.EDIT)">
             {{'common.edit.label' | translate}}
@@ -110,13 +110,16 @@
 
     <h5 id="projectSummaryHeading">{{'project.application.form.section.part.a.subsection.two' | translate}}</h5>
     <div>
-        <p class="intro-text-small">{{'project.application.form.summary.intro.row.one' | translate}}</p>
-        <p class="intro-text-small">{{'project.application.form.summary.intro.row.two' | translate}}</p>
-        <p class="intro-text-small">{{'project.application.form.summary.intro.row.three' | translate}}</p>
-        <p class="intro-text-small">{{'project.application.form.summary.intro.row.four' | translate}}</p>
-        <p class="intro-text-small">{{'project.application.form.summary.intro.row.five' | translate}}</p>
-        <p class="intro-text-small">{{'project.application.form.summary.intro.row.six' | translate}}</p>
-        <br>
+        <div class="intro-text-small">
+            <span>{{'project.application.form.summary.intro.row.one' | translate}}</span>
+            <ul>
+                <li>{{'project.application.form.summary.intro.row.two' | translate}}</li>
+                <li>{{'project.application.form.summary.intro.row.three' | translate}}</li>
+                <li>{{'project.application.form.summary.intro.row.four' | translate}}</li>
+                <li>{{'project.application.form.summary.intro.row.five' | translate}}</li>
+                <li>{{'project.application.form.summary.intro.row.six' | translate}}</li>
+            </ul>
+        </div>
     </div>
 
     <app-expandable-textarea
@@ -131,7 +134,7 @@
 
     <div *ngIf="formState === FormState.EDIT">
         <br>
-        <button mat-raised-button class="button"
+        <button mat-stroked-button class="button"
                 type="button"
                 (click)="changeFormState$.next(FormState.VIEW)">
             {{'common.cancel.label' | translate}}

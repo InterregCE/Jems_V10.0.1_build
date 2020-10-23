@@ -1,7 +1,7 @@
 <form [formGroup]="partnerContributionForm" class="wrapper">
     <h5><span>{{'project.partner.motivation.header' | translate}}</span>
-        <span class="header-button" *ngxPermissionsExcept="Permission.PROGRAMME_USER">
-            <button *ngIf="(formState === FormState.VIEW && editable) && partner?.id"
+        <span *ngxPermissionsExcept="Permission.PROGRAMME_USER">
+            <button class="header-button" *ngIf="(formState === FormState.VIEW && editable) && partner?.id"
                     (click)="changeFormState$.next(FormState.EDIT)" color="primary" mat-raised-button>
                 {{'common.edit.label' | translate}}
             </button>
@@ -54,7 +54,7 @@
     </p>
 
     <div *ngIf="formState === FormState.EDIT">
-        <button mat-raised-button class="button" type="button"
+        <button mat-stroked-button class="button" type="button"
                 (click)="onCancel()">
             {{'common.cancel.label' | translate}}
         </button>

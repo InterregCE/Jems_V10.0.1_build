@@ -1,0 +1,23 @@
+
+
+.header {
+  display: inline-block;
+}
+
+button.header-button {
+  margin-left: 0.5rem;
+  margin-right: 2rem;
+  margin-bottom: 0.25rem;
+}
+
+.wrapper .field, .container .field, .container .field-wide, .mat-form-field-wrapper {
+  padding-top: 0.25rem !important;
+}
+
+.mat-button-toggle-group {
+  margin-bottom: 1rem;
+}
+
+.mat-button-toggle-appearance-standard div.mat-button-toggle-label-content {
+  line-height: 2.5em;
+}

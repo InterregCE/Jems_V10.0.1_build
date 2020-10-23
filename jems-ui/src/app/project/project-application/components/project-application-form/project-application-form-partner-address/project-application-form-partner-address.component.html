@@ -1,11 +1,11 @@
 <form [formGroup]="partnerAddressForm" class="container">
-    <h4><span>{{'project.partner.address.header' | translate}}</span>
-        <span class="header-button" *ngxPermissionsExcept="Permission.PROGRAMME_USER">
-            <button *ngIf="formState === FormState.VIEW && editable"
+    <h5><span>{{'project.partner.address.header' | translate}}</span>
+        <span *ngxPermissionsExcept="Permission.PROGRAMME_USER">
+            <button class="header-button" *ngIf="formState === FormState.VIEW && editable"
                     (click)="changeFormState$.next(FormState.EDIT)" color="primary" mat-raised-button>
                 {{'common.edit.label' | translate}}
             </button>
-        </span></h4>
+        </span></h5>
     <h6><span>{{'project.partner.main-address.header' | translate}}</span></h6>
     <app-project-application-form-address
             *ngIf="partnerAddressForm?.controls"
@@ -22,7 +22,7 @@
     </app-project-application-form-address>
 
     <div *ngIf="formState === FormState.EDIT">
-        <button mat-raised-button class="button" type="button"
+        <button mat-stroked-button class="button" type="button"
                 (click)="onCancel()">
             {{'common.cancel.label' | translate}}
         </button>
