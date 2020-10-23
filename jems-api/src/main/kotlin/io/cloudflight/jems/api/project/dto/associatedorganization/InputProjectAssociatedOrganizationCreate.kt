@@ -21,7 +21,7 @@ data class  InputProjectAssociatedOrganizationCreate(
     val address: InputProjectAssociatedOrganizationAddress? = null,
 
     @field:Size(max = 2, message = "project.organization.contacts.size.too.long")
-    val contacts: List<InputProjectContact> = emptyList(),
+    val contacts: Set<InputProjectContact> = emptySet(),
 
     @field:Size(max = 2000, message = "project.organization.roleDescription.size.too.long")
     val roleDescription: String? = null

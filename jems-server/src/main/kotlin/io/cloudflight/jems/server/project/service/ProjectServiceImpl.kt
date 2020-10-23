@@ -14,7 +14,6 @@ import io.cloudflight.jems.server.exception.I18nValidationException
 import io.cloudflight.jems.server.exception.ResourceNotFoundException
 import io.cloudflight.jems.server.call.repository.CallRepository
 import io.cloudflight.jems.server.programme.entity.ProgrammePriorityPolicy
-import io.cloudflight.jems.server.programme.repository.ProgrammePriorityPolicyRepository
 import io.cloudflight.jems.server.project.repository.ProjectRepository
 import io.cloudflight.jems.server.project.repository.ProjectStatusRepository
 import io.cloudflight.jems.server.user.repository.UserRepository
@@ -39,7 +38,6 @@ class ProjectServiceImpl(
     private val callRepository: CallRepository,
     private val userRepository: UserRepository,
     private val auditService: AuditService,
-    private val programmePriorityPolicyRepository: ProgrammePriorityPolicyRepository,
     private val securityService: SecurityService
 ) : ProjectService {
 
@@ -130,16 +128,23 @@ class ProjectServiceImpl(
             project.copy(
                 acronym = projectData.acronym!!,
                 projectData = projectData.toEntity(),
-                priorityPolicy = policyToEntity(projectData.specificObjective)
+                priorityPolicy = policyToEntity(projectData.specificObjective, project.call.priorityPolicies)
             )
         ).toOutputProject()
     }
 
-    private fun policyToEntity(policy: ProgrammeObjectivePolicy?): ProgrammePriorityPolicy? {
-        if (policy != null)
-            return programmePriorityPolicyRepository.findById(policy)
-                .orElseThrow { ResourceNotFoundException("programme_priority_policy") }
-        return null
+    /**
+     * Take policy only if available for this particular Call.
+     */
+    private fun policyToEntity(
+        policy: ProgrammeObjectivePolicy?,
+        availablePoliciesForCall: Set<ProgrammePriorityPolicy>
+    ): ProgrammePriorityPolicy? {
+        if (policy == null)
+            return null
+        return availablePoliciesForCall
+            .find { it.programmeObjectivePolicy == policy }
+            ?: throw ResourceNotFoundException("programme_priority_policy")
     }
 
 }

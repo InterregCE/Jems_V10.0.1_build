@@ -28,19 +28,27 @@ fun InputProjectAssociatedOrganizationCreate.toEntity(
     // contacts - need organization Id
 )
 
-fun InputProjectAssociatedOrganizationAddress.toEntity(organizationId: Long) = ProjectAssociatedOrganizationAddress(
-    organizationId = organizationId,
-    address = Address(
-        country = country,
-        nutsRegion2 = nutsRegion2,
-        nutsRegion3 = nutsRegion3,
-        street = street,
-        houseNumber = houseNumber,
-        postalCode = postalCode,
-        city = city,
-        homepage = homepage
-    )
-)
+fun InputProjectAssociatedOrganizationAddress?.toEntity(organizationId: Long): MutableSet<ProjectAssociatedOrganizationAddress> {
+    var address: ProjectAssociatedOrganizationAddress? = null
+    if (this != null)
+        address = ProjectAssociatedOrganizationAddress(
+            organizationId = organizationId,
+            address = Address(
+                country = country,
+                nutsRegion2 = nutsRegion2,
+                nutsRegion3 = nutsRegion3,
+                street = street,
+                houseNumber = houseNumber,
+                postalCode = postalCode,
+                city = city,
+                homepage = homepage
+            )
+        ).nullIfBlank()
+
+    if (address == null)
+        return mutableSetOf()
+    return mutableSetOf(address)
+}
 
 fun ProjectAssociatedOrganization.toOutputProjectAssociatedOrganization() = OutputProjectAssociatedOrganization(
     id = id!!,
@@ -61,16 +69,18 @@ fun ProjectAssociatedOrganization.toOutputProjectAssociatedOrganizationDetail() 
     roleDescription = roleDescription
 )
 
-fun InputProjectContact.toEntity(associatedOrganization: ProjectAssociatedOrganization) = ProjectAssociatedOrganizationContact(
-    contactId = ProjectAssociatedOrganizationContactId(associatedOrganization.id!!, type),
-    contact = Contact(
-        title = title,
-        firstName = firstName,
-        lastName = lastName,
-        email = email,
-        telephone = telephone
+fun Set<InputProjectContact>.toEntity(organizationId: Long): MutableSet<ProjectAssociatedOrganizationContact> = mapTo(HashSet()) {
+    ProjectAssociatedOrganizationContact(
+        contactId = ProjectAssociatedOrganizationContactId(organizationId, it.type),
+        contact = Contact(
+            title = it.title,
+            firstName = it.firstName,
+            lastName = it.lastName,
+            email = it.email,
+            telephone = it.telephone
+        )
     )
-)
+}
 
 fun ProjectAssociatedOrganizationContact.toOutputProjectAssociatedOrganizationContact() = OutputProjectPartnerContact(
     type = contactId.type,

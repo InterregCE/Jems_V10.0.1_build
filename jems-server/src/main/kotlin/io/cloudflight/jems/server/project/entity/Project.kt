@@ -26,6 +26,10 @@ data class Project(
     @JoinColumn(name = "project_call_id")
     val call: Call,
 
+    @ManyToOne(optional = true, fetch = FetchType.LAZY)
+    @JoinColumn(name = "programme_priority_policy_objective_policy")
+    val priorityPolicy: ProgrammePriorityPolicy? = null,
+
     @Column(nullable = false)
     val acronym: String,
 
@@ -59,10 +63,6 @@ data class Project(
     val fundingDecision: ProjectStatus? = null,
 
     @Embedded
-    val projectData: ProjectData? = null,
-
-    @ManyToOne(optional = true, fetch = FetchType.LAZY)
-    @JoinColumn(name = "project_call_priority_policy_programme_priority_policy")
-    val priorityPolicy: ProgrammePriorityPolicy? = null
+    val projectData: ProjectData? = null
 
 )

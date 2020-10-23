@@ -5,6 +5,6 @@ import javax.validation.constraints.Min
 
 data class InputFlatRate(
     @field:Max(15)
-    @field:Min(0)
+    @field:Min(1)
     val value: Int?
 )

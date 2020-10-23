@@ -145,7 +145,7 @@ internal class ProjectPartnerServiceTest {
         every { projectPartnerRepository.save(projectPartnerWithProject) } returns projectPartner
         // also handle sorting
         val projectPartners = listOf(projectPartner, projectPartnerWithProject)
-        every { projectPartnerRepository.findAllByProjectId(1, any<Sort>()) } returns projectPartners
+        every { projectPartnerRepository.findTop30ByProjectId(1, any<Sort>()) } returns projectPartners
         every { projectPartnerRepository.saveAll(any<Iterable<ProjectPartner>>()) } returnsArgument 0
 
         assertThat(projectPartnerService.create(1, inputProjectPartner)).isEqualTo(outputProjectPartnerDetail)
@@ -183,7 +183,7 @@ internal class ProjectPartnerServiceTest {
         every { projectPartnerRepository.save(projectPartnerWithProject) } returns projectPartner
         // also handle sorting
         val projectPartners = listOf(projectPartner, projectPartnerWithProject)
-        every { projectPartnerRepository.findAllByProjectId(1, any<Sort>()) } returns projectPartners
+        every { projectPartnerRepository.findTop30ByProjectId(1, any<Sort>()) } returns projectPartners
         every { projectPartnerRepository.saveAll(any<Iterable<ProjectPartner>>()) } returnsArgument 0
 
         // new with Partner role creation will work
@@ -215,7 +215,7 @@ internal class ProjectPartnerServiceTest {
         every { projectPartnerRepository.save(updatedProjectPartner) } returns updatedProjectPartner
         // to update sort-numbers for both Partners:
         val projectPartners = listOf(partner(3, ProjectPartnerRole.LEAD_PARTNER), partner(2, ProjectPartnerRole.PARTNER))
-        every { projectPartnerRepository.findAllByProjectId(1, any<Sort>()) } returns projectPartners
+        every { projectPartnerRepository.findTop30ByProjectId(1, any<Sort>()) } returns projectPartners
         every { projectPartnerRepository.saveAll(any<Iterable<ProjectPartner>>()) } returnsArgument 0
 
         projectPartnerService.update(1, projectPartnerUpdate)
@@ -232,8 +232,8 @@ internal class ProjectPartnerServiceTest {
     @Test
     fun updatePartnerContact() {
         val projectPartnerContactUpdate = InputProjectContact(
-            "test",
             ProjectContactType.ContactPerson,
+            "test",
             "test",
             "test",
             "test@ems.eu",
@@ -253,8 +253,8 @@ internal class ProjectPartnerServiceTest {
     @Test
     fun updatePartnerContact_notExisting() {
         val projectPartnerContactUpdate = InputProjectContact(
-            "test",
             ProjectContactType.LegalRepresentative,
+            "test",
             "test",
             "test",
             "test@ems.eu",
@@ -273,7 +273,7 @@ internal class ProjectPartnerServiceTest {
             "test")
         val projectPartner = ProjectPartner(1, project, "updated", ProjectPartnerRole.PARTNER)
         val updatedProjectPartner = ProjectPartner(id = 1, project = project, abbreviation = "updated", role = ProjectPartnerRole.PARTNER,
-            partnerContribution = projectPartnerContributionUpdate.toEntity(projectPartner))
+            partnerContribution = projectPartnerContributionUpdate.toEntity(projectPartner.id!!))
 
         every { projectPartnerRepository.findFirstByProjectIdAndId(1,1) } returns Optional.of(projectPartner)
         every { projectPartnerRepository.save(updatedProjectPartner) } returns updatedProjectPartner
@@ -311,7 +311,7 @@ internal class ProjectPartnerServiceTest {
         every { projectPartnerRepository.save(projectPartnerWithProject) } returns projectPartnerWithOrganization
         // also handle sorting
         val projectPartners = listOf(projectPartner, projectPartnerWithProject)
-        every { projectPartnerRepository.findAllByProjectId(1, any<Sort>()) } returns projectPartners
+        every { projectPartnerRepository.findTop30ByProjectId(1, any<Sort>()) } returns projectPartners
         every { projectPartnerRepository.saveAll(any<Iterable<ProjectPartner>>()) } returnsArgument 0
 
         assertThrows<ResourceNotFoundException> { projectPartnerService.create(0, inputProjectPartner) }
@@ -350,7 +350,7 @@ internal class ProjectPartnerServiceTest {
             department = projectPartnerWithOrganization.department
         )
         every { projectPartnerRepository.deleteById(projectPartnerWithOrganization.id!!) } returns Unit
-        every { projectPartnerRepository.findAllByProjectId(project.id!!, any<Sort>()) } returns emptySet()
+        every { projectPartnerRepository.findTop30ByProjectId(project.id!!, any<Sort>()) } returns emptySet()
         every { projectPartnerRepository.saveAll(emptyList()) } returns emptySet()
 
         assertDoesNotThrow { projectPartnerService.deletePartner(project.id!!, projectPartnerWithOrganization.id!!) }
@@ -360,7 +360,7 @@ internal class ProjectPartnerServiceTest {
     @Test
     fun deleteProjectPartnerWithoutOrganization() {
         every { projectPartnerRepository.deleteById(projectPartner.id!!) } returns Unit
-        every { projectPartnerRepository.findAllByProjectId(project.id!!, any<Sort>()) } returns emptySet()
+        every { projectPartnerRepository.findTop30ByProjectId(project.id!!, any<Sort>()) } returns emptySet()
         every { projectPartnerRepository.saveAll(emptyList()) } returns emptySet()
 
         assertDoesNotThrow { projectPartnerService.deletePartner(project.id!!, projectPartner.id!!) }
@@ -370,7 +370,7 @@ internal class ProjectPartnerServiceTest {
     @Test
     fun deleteProjectPartner_notExisting() {
         every { projectPartnerRepository.deleteById(100) } returns Unit
-        every { projectPartnerRepository.findAllByProjectId(project.id!!, any<Sort>()) } returns emptySet()
+        every { projectPartnerRepository.findTop30ByProjectId(project.id!!, any<Sort>()) } returns emptySet()
         every { projectPartnerRepository.saveAll(emptyList()) } returns emptySet()
 
         assertDoesNotThrow { projectPartnerService.deletePartner(project.id!!, 100) }

@@ -20,7 +20,7 @@ interface ProjectPartnerRepository : PagingAndSortingRepository<ProjectPartner, 
 
     fun findAllByProjectId(projectId: Long, pageable: Pageable): Page<ProjectPartner>
 
-    fun findAllByProjectId(projectId: Long, sort: Sort): Iterable<ProjectPartner>
+    fun findTop30ByProjectId(projectId: Long, sort: Sort): Iterable<ProjectPartner>
 
     fun findFirstByProjectIdAndRole(projectId: Long, role: ProjectPartnerRole): Optional<ProjectPartner>
 

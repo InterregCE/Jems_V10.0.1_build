@@ -196,7 +196,7 @@ internal class ProjectAssociatedOrganizationServiceTest {
             nameInOriginalLanguage = "to create",
             nameInEnglish = "to create",
             address = InputProjectAssociatedOrganizationAddress(country = "AT"),
-            contacts = listOf(InputProjectContact(type = ProjectContactType.ContactPerson, firstName = "test contact"))
+            contacts = setOf(InputProjectContact(type = ProjectContactType.ContactPerson, firstName = "test contact"))
         )
         val result = projectAssociatedOrganizationService.create(projectPartner.id!!, toCreate)
         assertThat(result).isEqualTo(outputOrganizationDetail(

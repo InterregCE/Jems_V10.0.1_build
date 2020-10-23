@@ -16,4 +16,10 @@ data class ProjectAssociatedOrganizationAddress (
     @Embedded
     val address: Address?
 
-)
+) {
+    fun nullIfBlank(): ProjectAssociatedOrganizationAddress? {
+        if (address == null || address!!.isBlank())
+            return null
+        return this
+    }
+}

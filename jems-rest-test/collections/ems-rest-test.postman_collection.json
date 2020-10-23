@@ -7651,6 +7651,506 @@
 				}
 			],
 			"protocolProfileBehavior": {}
+		},
+		{
+			"name": "Project Partner - Details",
+			"item": [
+				{
+					"name": "create project application",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "6cebbf0a-d060-49d0-b4cd-840d3a7a565a",
+								"exec": [
+									"const projectName = pm.variables.replaceIn('{{$randomCompanyName}}')\r",
+									"pm.variables.set(\r",
+									"    'application_acronym',\r",
+									"    projectName.substr(0,25)\r",
+									");\r",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"id": "f5b6daaa-72ee-4546-8631-7e5eef00d9b3",
+								"exec": [
+									"pm.test('applicant can create project application', function() {\r",
+									"    pm.response.to.have.status(200);\r",
+									"    pm.variables.set('application_id', pm.response.json().id);\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "basic",
+							"basic": [
+								{
+									"key": "password",
+									"value": "{{applicant_email}}",
+									"type": "string"
+								},
+								{
+									"key": "username",
+									"value": "{{applicant_email}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"acronym\": \"{{application_acronym}}\",\r\n    \"projectCallId\": {{callId}}\r\n}\r\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{url}}/api/project",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"api",
+								"project"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "create project partner",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "68180e38-4275-45ef-b3b7-74540327e055",
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"id": "d119f7f3-c5cf-42a2-b9c2-eb9968c88100",
+								"exec": [
+									"const partner = pm.response.json();\r",
+									"\r",
+									"pm.test('applicant can create project partner', function() {\r",
+									"    pm.response.to.have.status(200);\r",
+									"    pm.variables.set('partner_id', partner.id);\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "basic",
+							"basic": [
+								{
+									"key": "password",
+									"value": "{{applicant_email}}",
+									"type": "string"
+								},
+								{
+									"key": "username",
+									"value": "{{applicant_email}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"abbreviation\": \"{{$randomAbbreviation}}\",\r\n    \"role\": \"PARTNER\"\r\n}\r\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{url}}/api/project/{{application_id}}/partner",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"api",
+								"project",
+								"{{application_id}}",
+								"partner"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "set both addresses to partner",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "e765b4bf-8255-4671-bc95-f3c32eeb8699",
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"id": "9f13d606-0a63-4538-a300-a261612a69a3",
+								"exec": [
+									"const partner = pm.response.json();\r",
+									"\r",
+									"pm.test('applicant can set addresses to partner', function() {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"pm.test('both addresses are there', function() {\r",
+									"    pm.expect(partner.addresses.length).to.eql(2);\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "basic",
+							"basic": [
+								{
+									"key": "password",
+									"value": "{{applicant_email}}",
+									"type": "string"
+								},
+								{
+									"key": "username",
+									"value": "{{applicant_email}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "[\r\n    {\r\n        \"type\": \"Organization\",\r\n        \"street\": \"test org\"\r\n    },\r\n    {\r\n        \"type\": \"Department\",\r\n        \"street\": \"test dprt\"\r\n    }\r\n]\r\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{url}}/api/project/{{application_id}}/partner/{{partner_id}}/address",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"api",
+								"project",
+								"{{application_id}}",
+								"partner",
+								"{{partner_id}}",
+								"address"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "remove 1st address and update 2nd",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "b2c74c5b-59bc-4b98-b1dc-7fddeb5686e0",
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"id": "c3f43a53-d1b7-4a14-b445-bccecf6deebf",
+								"exec": [
+									"const partner = pm.response.json();\r",
+									"\r",
+									"pm.test('applicant can remove addresses from partner', function() {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"pm.test('just one address is now returned', function() {\r",
+									"    pm.expect(partner.addresses.length).to.eql(1);\r",
+									"});\r",
+									"\r",
+									"pm.test('address is saved correctly', function() {\r",
+									"    const addr = partner.addresses[0];\r",
+									"    pm.expect(addr.street).to.eql(\"Pennsylvania Avenue\");\r",
+									"    pm.expect(addr.houseNumber).to.eql(\"1600\");\r",
+									"    pm.expect(addr.postalCode).to.eql(\"20500\");\r",
+									"    pm.expect(addr.city).to.eql(\"Washington, DC\");\r",
+									"    pm.expect(addr.homepage).to.eql(\"https://www.whitehouse.gov/\");\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "basic",
+							"basic": [
+								{
+									"key": "password",
+									"value": "{{applicant_email}}",
+									"type": "string"
+								},
+								{
+									"key": "username",
+									"value": "{{applicant_email}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "[\r\n    {\r\n        \"type\": \"Organization\",\r\n        \"street\": \"Pennsylvania Avenue\",\r\n        \"houseNumber\": \"1600\",\r\n        \"postalCode\": \"20500\",\r\n        \"city\": \"Washington, DC\",\r\n        \"homepage\": \"https://www.whitehouse.gov/\"\r\n    }\r\n]\r\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{url}}/api/project/{{application_id}}/partner/{{partner_id}}/address",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"api",
+								"project",
+								"{{application_id}}",
+								"partner",
+								"{{partner_id}}",
+								"address"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "set both contacts to partner",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "0b4b2a82-d2f0-4a20-970e-03380f274ca6",
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"id": "aa4f3789-f456-40f9-ab96-eb6604cab944",
+								"exec": [
+									"const partner = pm.response.json();\r",
+									"\r",
+									"pm.test('applicant can set contacts to partner', function() {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"pm.test('both contacts are there', function() {\r",
+									"    pm.expect(partner.contacts.length).to.eql(2);\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "basic",
+							"basic": [
+								{
+									"key": "password",
+									"value": "{{applicant_email}}",
+									"type": "string"
+								},
+								{
+									"key": "username",
+									"value": "{{applicant_email}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "[\r\n    {\r\n        \"type\": \"LegalRepresentative\",\r\n        \"firstName\": \"test LR\"\r\n    },\r\n    {\r\n        \"type\": \"ContactPerson\",\r\n        \"firstName\": \"test CP\"\r\n    }\r\n]\r\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{url}}/api/project/{{application_id}}/partner/{{partner_id}}/contact",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"api",
+								"project",
+								"{{application_id}}",
+								"partner",
+								"{{partner_id}}",
+								"contact"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "remove 1st contact and update 2nd",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "cbb6d2da-8fcd-4892-8893-24b6d755544d",
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"id": "4c212644-a8e6-41d5-a573-fbabb549642d",
+								"exec": [
+									"const partner = pm.response.json();\r",
+									"\r",
+									"pm.test('applicant can remove contacts from partner', function() {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"pm.test('just one contact is now returned', function() {\r",
+									"    pm.expect(partner.contacts.length).to.eql(1);\r",
+									"}); \r",
+									"\r",
+									"pm.test('contact is saved correctly', function() {\r",
+									"    const contact = partner.contacts[0];\r",
+									"    pm.expect(contact.type).to.eql(\"ContactPerson\");\r",
+									"    pm.expect(contact.title).to.eql(\"Bachelor\");\r",
+									"    pm.expect(contact.firstName).to.eql(\"Donald\");\r",
+									"    pm.expect(contact.lastName).to.eql(\"Trump\");\r",
+									"    pm.expect(contact.email).to.eql(\"mc.donald@whitehouse.gov\");\r",
+									"    pm.expect(contact.telephone).to.eql(\"202-456-6213\");\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "basic",
+							"basic": [
+								{
+									"key": "password",
+									"value": "{{applicant_email}}",
+									"type": "string"
+								},
+								{
+									"key": "username",
+									"value": "{{applicant_email}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "[\r\n    {\r\n        \"type\": \"ContactPerson\",\r\n        \"title\": \"Bachelor\",\r\n        \"firstName\": \"Donald\",\r\n        \"lastName\": \"Trump\",\r\n        \"email\": \"mc.donald@whitehouse.gov\",\r\n        \"telephone\": \"202-456-6213\"\r\n    }\r\n]\r\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{url}}/api/project/{{application_id}}/partner/{{partner_id}}/contact",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"api",
+								"project",
+								"{{application_id}}",
+								"partner",
+								"{{partner_id}}",
+								"contact"
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"id": "83b2e485-51dc-44f5-9542-cc7c45cb12b6",
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"id": "5883ea42-15a7-4f24-ad2f-35a203a253ce",
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
+				}
+			],
+			"protocolProfileBehavior": {}
 		}
 	],
 	"auth": {
@@ -7692,7 +8192,7 @@
 	],
 	"variable": [
 		{
-			"id": "bb72c51e-5864-427f-b01b-04f4eb00511d",
+			"id": "dcb016a9-c8ef-45b5-9208-d8bd1e0141f3",
 			"key": "url",
 			"value": "specify_url_here"
 		}
