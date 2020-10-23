@@ -66,7 +66,7 @@ export class ProjectApplicationFormRegionSelectionComponent {
 
   private getPartnerAddress(partner: OutputProjectPartnerDetail,
                             addressType: InputProjectPartnerAddress.TypeEnum): OutputProjectPartnerAddress | undefined {
-    return partner?.addresses.find((addr: OutputProjectPartnerAddress) => addr.type === addressType);
+    return partner?.addresses?.find((addr: OutputProjectPartnerAddress) => addr.type === addressType);
   }
 
   private getPartnerCountry(nuts: any, address?: OutputProjectPartnerAddress) {
