@@ -33,6 +33,8 @@ export class LanguageService {
       }),
       map(value => ({isEnglishAvailable: this.isDefaultLanguageIncluded(value), languages: value})));
 
+  public inputLanguageList$ = merge(this.languagesInitialized$, this.languagesChanged$);
+
   isDefaultLanguageIncluded(langs: string[]): boolean {
     return !!langs.find((language: string) => language === this.default());
   }

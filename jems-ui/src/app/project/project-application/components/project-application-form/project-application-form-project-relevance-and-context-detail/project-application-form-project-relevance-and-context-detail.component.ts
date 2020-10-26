@@ -12,12 +12,14 @@ import {FormBuilder, FormGroup, Validators} from '@angular/forms';
 import {SideNavService} from '@common/components/side-nav/side-nav.service';
 import {FormState} from '@common/components/forms/form-state';
 import {Permission} from 'src/app/security/permissions/permission';
-import {InputProjectRelevance, InputProjectRelevanceBenefit, InputProjectRelevanceStrategy, InputProjectRelevanceSynergy} from '@cat/api';
+import {InputProjectRelevance, InputProjectRelevanceBenefit, InputProjectRelevanceStrategy, InputProjectRelevanceSynergy, OutputProgrammeLanguage, InputTranslation} from '@cat/api';
 import {MatTableDataSource} from '@angular/material/table';
 import {ProjectRelevanceBenefit} from './dtos/project-relevance-benefit';
 import {Subject} from 'rxjs';
 import {ProjectRelevanceStrategy} from './dtos/project-relevance-strategy';
 import {ProjectRelevanceSynergy} from './dtos/project-relevance-synergy';
+import {LanguageService} from '../../../../../common/services/language.service';
+import {takeUntil} from 'rxjs/operators';
 
 @Component({
   selector: 'app-project-application-form-project-relevance-and-context-detail',
@@ -27,6 +29,7 @@ import {ProjectRelevanceSynergy} from './dtos/project-relevance-synergy';
 })
 export class ProjectApplicationFormProjectRelevanceAndContextDetailComponent extends ViewEditForm implements OnInit {
   Permission = Permission;
+  MAX_NUMBER_AVAILABLE_LANGUAGES = 4;
 
   @Input()
   editable: boolean;
@@ -73,10 +76,31 @@ export class ProjectApplicationFormProjectRelevanceAndContextDetailComponent ext
     maxlength: 'project.application.form.relevance.entered.text.size.too.long'
   };
 
+  availableLanguages: OutputProgrammeLanguage.CodeEnum[];
+
   constructor(private formBuilder: FormBuilder,
               protected changeDetectorRef: ChangeDetectorRef,
-              private sideNavService: SideNavService) {
+              private sideNavService: SideNavService,
+              private languageService: LanguageService) {
     super(changeDetectorRef);
+    this.languageService.inputLanguageList$
+      .pipe(
+        takeUntil(this.destroyed$)
+      )
+      .subscribe(
+        languages => {
+          this.availableLanguages = languages
+            .filter(value => value.input)
+            .slice(0, this.MAX_NUMBER_AVAILABLE_LANGUAGES)
+            .map(value => value.code);
+          // if there is no input language selected in the programme setup, use tha fallback language
+          if (this.availableLanguages.length < 1) {
+            this.availableLanguages = languages
+              .filter(value => value.fallback)
+              .slice(0, this.MAX_NUMBER_AVAILABLE_LANGUAGES)
+              .map(value => value.code);
+          }
+    })
   }
 
   ngOnInit() {
@@ -93,9 +117,9 @@ export class ProjectApplicationFormProjectRelevanceAndContextDetailComponent ext
 
   onSubmit(): void {
     this.updateData.emit({
-      territorialChallenge: this.projectRelevanceForm.controls.territorialChallenge.value,
-      commonChallenge: this.projectRelevanceForm.controls.commonChallenge.value,
-      transnationalCooperation: this.projectRelevanceForm.controls.internationalCooperation.value,
+      territorialChallenge: [{translation: this.projectRelevanceForm.controls.territorialChallenge.value, language: this?.availableLanguages[0]} as InputTranslation],
+      commonChallenge: [{translation: this.projectRelevanceForm.controls.commonChallenge.value, language: this?.availableLanguages[0]} as InputTranslation],
+      transnationalCooperation: [{translation: this.projectRelevanceForm.controls.internationalCooperation.value, language: this?.availableLanguages[0]} as InputTranslation],
       projectBenefits: this.buildBenefitsToSave(),
       projectStrategies: this.buildStrategiesToSave(),
       projectSynergies: this.buildSynergiesToSave(),
@@ -111,9 +135,9 @@ export class ProjectApplicationFormProjectRelevanceAndContextDetailComponent ext
   synergy = (id: number): string => id + 'syn';
 
   private initFields() {
-    this.projectRelevanceForm.controls.territorialChallenge.setValue(this.project?.territorialChallenge);
-    this.projectRelevanceForm.controls.commonChallenge.setValue(this.project?.commonChallenge);
-    this.projectRelevanceForm.controls.internationalCooperation.setValue(this.project?.transnationalCooperation);
+    this.projectRelevanceForm.controls.territorialChallenge.setValue(this.project?.territorialChallenge[0]?.translation);
+    this.projectRelevanceForm.controls.commonChallenge.setValue(this.project?.commonChallenge[0]?.translation);
+    this.projectRelevanceForm.controls.internationalCooperation.setValue(this.project?.transnationalCooperation[0]?.translation);
     this.projectRelevanceForm.controls.availableKnowledge.setValue(this.project?.availableKnowledge);
   }
 
