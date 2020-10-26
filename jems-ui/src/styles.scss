@@ -21,6 +21,11 @@
 @import "src/app/theme/override-material-in-component/top-bar.scss";
 @import "src/app/theme/override-material-in-component/disable-underline-on-disabled-forms";
 @import "src/app/theme/override-material-in-component/disable-padding-on-mat-lists";
+@import "src/app/theme/override-material-in-component/style-multi-language-selection-buttons";
+
+/**
+ * Ag-grid imports
+ */
 @import "../node_modules/ag-grid-community/dist/styles/ag-grid.css";
 @import "../node_modules/ag-grid-community/dist/styles/ag-theme-alpine.css";
 

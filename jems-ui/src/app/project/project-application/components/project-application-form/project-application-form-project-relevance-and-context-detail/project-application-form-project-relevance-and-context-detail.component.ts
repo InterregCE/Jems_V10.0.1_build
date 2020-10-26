@@ -1,4 +1,5 @@
 import {
+  AfterViewInit,
   ChangeDetectionStrategy,
   ChangeDetectorRef,
   Component,
@@ -27,7 +28,7 @@ import {takeUntil} from 'rxjs/operators';
   styleUrls: ['./project-application-form-project-relevance-and-context-detail.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class ProjectApplicationFormProjectRelevanceAndContextDetailComponent extends ViewEditForm implements OnInit {
+export class ProjectApplicationFormProjectRelevanceAndContextDetailComponent extends ViewEditForm implements OnInit, AfterViewInit {
   Permission = Permission;
   MAX_NUMBER_AVAILABLE_LANGUAGES = 4;
 
@@ -55,6 +56,16 @@ export class ProjectApplicationFormProjectRelevanceAndContextDetailComponent ext
   synergyCounter = 1;
 
   changeTableState$ = new Subject<null>();
+  resetTerritorialChallengeField$ = new Subject<InputTranslation[]>();
+  resetCommonChallengeField$ = new Subject<InputTranslation[]>();
+  resetTransnationalCooperationChallengeField$ = new Subject<InputTranslation[]>();
+
+  territorialChallengeCurrentValues: InputTranslation[] = [];
+  territorialChallengeValidity = new Map<OutputProgrammeLanguage.CodeEnum, boolean>();
+  commonChallengeCurrentValues: InputTranslation[] = [];
+  commonChallengeValidity = new Map<OutputProgrammeLanguage.CodeEnum, boolean>();
+  transnationalCooperationCurrentValues: InputTranslation[] = [];
+  transnationalCooperationValidity = new Map<OutputProgrammeLanguage.CodeEnum, boolean>();
 
   projectRelevanceForm: FormGroup = this.formBuilder.group({
     territorialChallenge: ['', Validators.maxLength(5000)],
@@ -81,7 +92,7 @@ export class ProjectApplicationFormProjectRelevanceAndContextDetailComponent ext
   constructor(private formBuilder: FormBuilder,
               protected changeDetectorRef: ChangeDetectorRef,
               private sideNavService: SideNavService,
-              private languageService: LanguageService) {
+              public languageService: LanguageService) {
     super(changeDetectorRef);
     this.languageService.inputLanguageList$
       .pipe(
@@ -89,18 +100,19 @@ export class ProjectApplicationFormProjectRelevanceAndContextDetailComponent ext
       )
       .subscribe(
         languages => {
-          this.availableLanguages = languages
-            .filter(value => value.input)
-            .slice(0, this.MAX_NUMBER_AVAILABLE_LANGUAGES)
-            .map(value => value.code);
-          // if there is no input language selected in the programme setup, use tha fallback language
-          if (this.availableLanguages.length < 1) {
-            this.availableLanguages = languages
-              .filter(value => value.fallback)
-              .slice(0, this.MAX_NUMBER_AVAILABLE_LANGUAGES)
-              .map(value => value.code);
-          }
-    })
+          this.availableLanguages = languages;
+          this.availableLanguages.forEach(language => {
+            if (!this.territorialChallengeValidity.get(language)) {
+              this.territorialChallengeValidity.set(language, false);
+            }
+            if (!this.commonChallengeValidity.get(language)) {
+              this.commonChallengeValidity.set(language, false);
+            }
+            if (!this.transnationalCooperationValidity.get(language)) {
+              this.transnationalCooperationValidity.set(language, false);
+            }
+          })
+    });
   }
 
   ngOnInit() {
@@ -111,20 +123,44 @@ export class ProjectApplicationFormProjectRelevanceAndContextDetailComponent ext
     this.changeFormState$.next(FormState.VIEW);
   }
 
+  ngAfterViewInit() {
+    this.languageService.currentLanguage$.next(this?.availableLanguages[0]);
+  }
+
   getForm(): FormGroup | null {
     return this.projectRelevanceForm;
   }
 
   onSubmit(): void {
     this.updateData.emit({
-      territorialChallenge: [{translation: this.projectRelevanceForm.controls.territorialChallenge.value, language: this?.availableLanguages[0]} as InputTranslation],
-      commonChallenge: [{translation: this.projectRelevanceForm.controls.commonChallenge.value, language: this?.availableLanguages[0]} as InputTranslation],
-      transnationalCooperation: [{translation: this.projectRelevanceForm.controls.internationalCooperation.value, language: this?.availableLanguages[0]} as InputTranslation],
+      territorialChallenge: this.territorialChallengeCurrentValues,
+      commonChallenge: this.commonChallengeCurrentValues,
+      transnationalCooperation: this.transnationalCooperationCurrentValues,
       projectBenefits: this.buildBenefitsToSave(),
       projectStrategies: this.buildStrategiesToSave(),
       projectSynergies: this.buildSynergiesToSave(),
       availableKnowledge: this.projectRelevanceForm.controls.availableKnowledge.value,
     });
+  }
+
+  changeLanguage($event: OutputProgrammeLanguage.CodeEnum): void {
+    this.languageService.currentLanguage$.next($event);
+  }
+
+  isValidForm(): boolean {
+    let field1Validity = false;
+    let field2Validity = false;
+    let field3Validity = false;
+    this.territorialChallengeValidity.forEach(((value) => {
+      field1Validity = field1Validity || value;
+    }))
+    this.commonChallengeValidity.forEach(((value) => {
+      field2Validity = field2Validity || value;
+    }))
+    this.transnationalCooperationValidity.forEach(((value) => {
+      field3Validity = field3Validity || value;
+    }))
+    return field1Validity || field2Validity || field3Validity;
   }
 
   targetGroup = (id: number): string => id + 'targ';
@@ -135,10 +171,13 @@ export class ProjectApplicationFormProjectRelevanceAndContextDetailComponent ext
   synergy = (id: number): string => id + 'syn';
 
   private initFields() {
-    this.projectRelevanceForm.controls.territorialChallenge.setValue(this.project?.territorialChallenge[0]?.translation);
-    this.projectRelevanceForm.controls.commonChallenge.setValue(this.project?.commonChallenge[0]?.translation);
-    this.projectRelevanceForm.controls.internationalCooperation.setValue(this.project?.transnationalCooperation[0]?.translation);
+    this.territorialChallengeCurrentValues = this.buildMultiLanguageFieldValues(this.project?.territorialChallenge);
+    this.commonChallengeCurrentValues = this.buildMultiLanguageFieldValues(this.project?.commonChallenge);
+    this.transnationalCooperationCurrentValues = this.buildMultiLanguageFieldValues(this.project?.transnationalCooperation);
     this.projectRelevanceForm.controls.availableKnowledge.setValue(this.project?.availableKnowledge);
+    this.resetTerritorialChallengeField$.next(this.territorialChallengeCurrentValues);
+    this.resetCommonChallengeField$.next(this.commonChallengeCurrentValues);
+    this.resetTransnationalCooperationChallengeField$.next(this.transnationalCooperationCurrentValues);
   }
 
   protected enterViewMode(): void {
@@ -236,5 +275,18 @@ export class ProjectApplicationFormProjectRelevanceAndContextDetailComponent ext
         synergy: this.editableSynergyForm.get(this.synergy(element.id))?.value
       }))
       .filter(element => element.specification || element.synergy);
+  }
+
+  private buildMultiLanguageFieldValues(values: InputTranslation[]): InputTranslation[] {
+    let result:InputTranslation[] = []
+    if (values) {
+      result = values.map(value => ({language: value.language, translation: value.translation} as InputTranslation));
+    }
+    this.availableLanguages.forEach(language => {
+      if (!result.find(value => value.language === language)) {
+        result.push({language, translation:''})
+      }
+    });
+    return result;
   }
 }

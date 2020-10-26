@@ -21,6 +21,8 @@ import {MenuComponent} from './components/menu/menu.component';
 import {SharedModule} from './shared-module';
 import {SideNavComponent} from '@common/components/side-nav/component/side-nav.component';
 import {MatExpansionModule} from '@angular/material/expansion';
+import {MultiLanguageFieldComponent} from '@common/components/multi-language-field/multi-language-field.component';
+import {MatButtonToggleModule} from '@angular/material/button-toggle';
 
 const declarations = [
   TopBarComponent,
@@ -32,7 +34,8 @@ const declarations = [
   ExpandableTextareaComponent,
   BreadcrumbComponent,
   BreadcrumbComponent,
-  SideNavComponent
+  SideNavComponent,
+  MultiLanguageFieldComponent
 ];
 
 @NgModule({
@@ -49,6 +52,7 @@ const declarations = [
     MatSidenavModule,
     MatSelectModule,
     MatExpansionModule,
+    MatButtonToggleModule,
   ],
   providers: [
     DatePipe,
