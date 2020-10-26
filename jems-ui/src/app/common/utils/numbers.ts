@@ -30,7 +30,13 @@ export class Numbers {
     );
   }
 
-  static floorNumber(toFloor: number): number {
-    return Math.floor(toFloor * 100) / 100;
+  /**
+   * Converts the number to its string representation, truncates it up to two decimals and
+   * converts it back to a number.
+   * This is the safest way to avoid rounding precision errors.
+   */
+  static truncateNumber(toFloor: number): number {
+    const truncatedAsString = toFloor.toString().match(/^-?\d+(?:\.\d{0,2})?/);
+    return Number(truncatedAsString?.length ? truncatedAsString[0] : NaN);
   }
 }

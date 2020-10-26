@@ -29,7 +29,7 @@ export class PartnerBudgetTableEntry {
     if (valueNumber > 999999999999999) {
       return NaN;
     }
-    return Numbers.floorNumber(valueNumber);
+    return Numbers.truncateNumber(valueNumber);
   }
 
   private static validNumber(nr: number) {
@@ -57,7 +57,7 @@ export class PartnerBudgetTableEntry {
 
   computeTotal(): void {
     const total = (this.numberOfUnits || 0) * (this.pricePerUnit || 0);
-    this.total = Numbers.floorNumber(total);
+    this.total = Numbers.truncateNumber(total);
     this.validTotal = PartnerBudgetTableEntry.validNumber(this.total);
   }
 

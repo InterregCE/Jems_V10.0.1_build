@@ -25,7 +25,7 @@ export class OfficeAndAdministrationTableComponent {
       field: 'total',
       type: 'numericColumn',
       valueGetter: (params: any) => Numbers.toLocale(
-        Numbers.floorNumber(params.data.total),
+        Numbers.truncateNumber(params.data.total),
         this.locale
       ),
     }

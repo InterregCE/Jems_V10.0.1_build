@@ -20,6 +20,6 @@ export class PartnerBudgetTable {
 
   computeTotal(): void {
     const sum = this.entries.reduce((a, b) => a + (b.total || 0), 0);
-    this.total = Numbers.floorNumber(sum);
+    this.total = Numbers.truncateNumber(sum);
   }
 }
