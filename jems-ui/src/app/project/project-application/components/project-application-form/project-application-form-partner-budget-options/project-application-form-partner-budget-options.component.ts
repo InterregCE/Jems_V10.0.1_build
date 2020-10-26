@@ -35,12 +35,13 @@ export class ProjectApplicationFormPartnerBudgetOptionsComponent extends ViewEdi
   optionsForm = this.formBuilder.group({
     officeAdministrationFlatRateActive: [''],
     officeAdministrationFlatRate: ['',
-      Validators.compose([Validators.max(15), Validators.min(0)])
+      Validators.compose([Validators.max(15), Validators.min(1)])
     ]
   });
 
   officeAdministrationFlatRateErrors = {
     max: 'project.partner.budget.options.flat.rate.max',
+    min: 'project.partner.budget.options.flat.rate.max',
   };
 
   constructor(private formBuilder: FormBuilder,
