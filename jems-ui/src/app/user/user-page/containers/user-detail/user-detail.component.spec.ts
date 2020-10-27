@@ -3,6 +3,7 @@ import {UserModule} from '../../../user.module';
 import {TestModule} from '../../../../common/test-module';
 import {UserDetailComponent} from './user-detail.component';
 import {ActivatedRoute} from '@angular/router';
+import {RouterTestingModule} from '@angular/router/testing';
 
 describe('UserDetailComponent', () => {
   let component: UserDetailComponent;
@@ -13,7 +14,9 @@ describe('UserDetailComponent', () => {
       declarations: [UserDetailComponent],
       imports: [
         UserModule,
-        TestModule
+        TestModule,
+        RouterTestingModule.withRoutes(
+          [{path: 'app/project/detail/1/applicationForm', component: UserDetailComponent}])
       ],
       providers: [
         {

@@ -17,7 +17,7 @@ describe('ProjectApplicationFormProjectRelevanceAndContextSectionComponent', () 
         TestModule,
         ProjectModule,
         RouterTestingModule.withRoutes(
-          [{path: 'app/project/detail/1', component: ProjectApplicationFormProjectRelevanceAndContextSectionComponent}])
+          [{path: 'app/project/detail/1/applicationForm', component: ProjectApplicationFormProjectRelevanceAndContextSectionComponent}])
       ],
       declarations: [ProjectApplicationFormProjectRelevanceAndContextSectionComponent]
     })

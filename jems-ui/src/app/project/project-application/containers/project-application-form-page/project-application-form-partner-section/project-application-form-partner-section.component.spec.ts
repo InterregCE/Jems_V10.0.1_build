@@ -4,6 +4,7 @@ import {ProjectModule} from '../../../../project.module';
 import {HttpTestingController} from '@angular/common/http/testing';
 import {OutputProjectPartner} from '@cat/api'
 import {ProjectApplicationFormPartnerSectionComponent} from './project-application-form-partner-section.component';
+import {RouterTestingModule} from '@angular/router/testing';
 
 describe('ProjectApplicationFormPartnerSectionComponent', () => {
   let component: ProjectApplicationFormPartnerSectionComponent;
@@ -14,7 +15,9 @@ describe('ProjectApplicationFormPartnerSectionComponent', () => {
     TestBed.configureTestingModule({
       imports: [
         TestModule,
-        ProjectModule
+        ProjectModule,
+        RouterTestingModule.withRoutes(
+          [{path: 'app/project/detail/1/applicationForm', component: ProjectApplicationFormPartnerSectionComponent}])
       ],
       declarations: [ProjectApplicationFormPartnerSectionComponent],
     })
