@@ -8,7 +8,7 @@ import {
   Output
 } from '@angular/core';
 import {ViewEditForm} from '@common/components/forms/view-edit-form';
-import {FormBuilder, FormGroup} from '@angular/forms';
+import {FormGroup} from '@angular/forms';
 import {InputProgrammeLanguage, OutputProgrammeLanguage} from '@cat/api';
 import {MatTableDataSource} from '@angular/material/table';
 import {SelectionModel} from '@angular/cdk/collections';
@@ -31,10 +31,8 @@ export class ProgrammeLanguagesComponent extends ViewEditForm implements OnInit 
   dataSource: MatTableDataSource<OutputProgrammeLanguage>;
   systemLangSelection = new SelectionModel<OutputProgrammeLanguage>(true, []);
   inputLangSelection = new SelectionModel<OutputProgrammeLanguage>(true, []);
-  editableLanguageForm = this.formBuilder.group({});
 
-  constructor(private formBuilder: FormBuilder,
-              protected changeDetectorRef: ChangeDetectorRef) {
+  constructor(protected changeDetectorRef: ChangeDetectorRef) {
     super(changeDetectorRef);
   }
 
@@ -45,7 +43,7 @@ export class ProgrammeLanguagesComponent extends ViewEditForm implements OnInit 
   }
 
   getForm(): FormGroup | null {
-    return this.editableLanguageForm;
+    return null;
   }
 
   onSubmit(): void {
@@ -58,6 +56,14 @@ export class ProgrammeLanguagesComponent extends ViewEditForm implements OnInit 
          fallback: element.fallback
        }))
    );
+  }
+
+  isSubmitDisabled(): boolean {
+    return this.systemLangSelection.selected.length < 1
+      || this.systemLangSelection.selected.length > 40
+      || this.inputLangSelection.selected.length < 1
+      || this.inputLangSelection.selected.length > 4
+      || this.submitted;
   }
 
   protected enterViewMode(): void {
