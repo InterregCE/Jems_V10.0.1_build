@@ -1,25 +1,29 @@
-.field {
-  width: 100% !important;
-  padding-top: 1rem;
-}
+.multi-language-field-container {
+  position: relative;
 
-.button {
-  height: 1.5rem;
-  width: 3rem;
-}
+  .field {
+    width: 100% !important;
+    padding-top: 1rem;
+  }
 
-.button-group {
-  position: absolute;
-  right: 16.5%;
-  z-index: 99;
-}
+  .button {
+    height: 1.5rem;
+    width: 3rem;
+  }
 
-.button-group-filled {
-  transition: margin-top 0.2s ease-in;
-  margin-top: 0.5rem;
-}
+  .button-group {
+    position: absolute;
+    right: 0;
+    z-index: 99;
+  }
 
-.button-group-empty {
-  transition: margin-top 0.2s ease-out;
-  margin-top: 1.8rem;
+  .button-group-filled {
+    transition: margin-top 0.2s ease-in;
+    margin-top: 0.5rem;
+  }
+
+  .button-group-empty {
+    transition: margin-top 0.2s ease-out;
+    margin-top: 1.8rem;
+  }
 }

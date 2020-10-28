@@ -1,25 +1,27 @@
-<div class="translation-toggle">
-    <mat-button-toggle-group
-            [value]="selectedLanguage"
-            (change)="changeCurrentSelectedLanguage($event)"
-            *ngIf="languages.length > 1"
-            [class]="control.value || isFieldFocused ? 'button-group button-group-filled' : 'button-group button-group-empty'">
-        <mat-button-toggle *ngFor="let language of languages; let index = index" [value]="language" class="button">
-            <p>{{language}}</p>
-        </mat-button-toggle>
-    </mat-button-toggle-group>
-</div>
+<div class="multi-language-field-container">
+    <div class="translation-toggle">
+        <mat-button-toggle-group
+                [value]="selectedLanguage"
+                (change)="changeCurrentSelectedLanguage($event)"
+                *ngIf="languages.length > 1"
+                [class]="control.value || isFieldFocused ? 'button-group button-group-filled' : 'button-group button-group-empty'">
+            <mat-button-toggle *ngFor="let language of languages; let index = index" [value]="language" class="button">
+                <p>{{language}}</p>
+            </mat-button-toggle>
+        </mat-button-toggle-group>
+    </div>
 
-<app-expandable-textarea class="field"
-                         [control]="control"
-                         [errors]="errors"
-                         [messages]="messages"
-                         [characterLimit]="characterLimit"
-                         [minRows]="minRows"
-                         [maxRows]="maxRows"
-                         [label]="label"
-                         [disabled]="disabled"
-                         [customStyle]="customStyle"
-                         (focusin)="changeFocus()"
-                         (focusout)="storeChanges()">
-</app-expandable-textarea>
+    <app-expandable-textarea class="field"
+                             [control]="control"
+                             [errors]="errors"
+                             [messages]="messages"
+                             [characterLimit]="characterLimit"
+                             [minRows]="minRows"
+                             [maxRows]="maxRows"
+                             [label]="label"
+                             [disabled]="disabled"
+                             [customStyle]="customStyle"
+                             (focusin)="changeFocus()"
+                             (focusout)="storeChanges()">
+    </app-expandable-textarea>
+</div>
