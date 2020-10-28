@@ -19,7 +19,7 @@ export class PartnerBudgetTable {
   }
 
   computeTotal(): void {
-    const sum = this.entries.reduce((a, b) => a + (b.total || 0), 0);
+    const sum = Numbers.sum(this.entries.map(entry => entry.total || 0));
     this.total = Numbers.truncateNumber(sum);
   }
 }

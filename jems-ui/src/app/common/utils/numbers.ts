@@ -1,3 +1,5 @@
+import {Big, RoundingMode} from 'big.js';
+
 export class Numbers {
 
   /**
@@ -31,12 +33,33 @@ export class Numbers {
   }
 
   /**
-   * Converts the number to its string representation, truncates it up to two decimals and
-   * converts it back to a number.
-   * This is the safest way to avoid rounding precision errors.
+   * Sums the numbers from the given array using Big.js in order to avoid rounding errors.
+   */
+  static sum(arr: number[]): number {
+    if (!arr || !arr.length) {
+      return 0;
+    }
+    let sum = new Big(0);
+    arr.forEach(nr => sum = sum.plus(nr));
+    return Number(sum);
+  }
+
+  /**
+   * Multiplies the numbers from the given array using Big.js in order to avoid rounding errors.
+   */
+  static product(arr: number[]): number {
+    if (!arr || !arr.length) {
+      return 0;
+    }
+    let prod = new Big(1);
+    arr.forEach(nr => prod = prod.mul(nr));
+    return Number(prod);
+  }
+
+  /**
+   * Truncates (rounds down) the given number to a fixed number of two decimals.
    */
   static truncateNumber(toFloor: number): number {
-    const truncatedAsString = toFloor.toString().match(/^-?\d+(?:\.\d{0,2})?/);
-    return Number(truncatedAsString?.length ? truncatedAsString[0] : NaN);
+    return Number(Big(toFloor).round(2, RoundingMode.RoundDown));
   }
 }
