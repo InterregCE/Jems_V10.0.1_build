@@ -16,7 +16,9 @@ class ProgrammeLanguageServiceImpl(
 ) : ProgrammeLanguageService {
 
     companion object {
-        const val MAX_ALLOWED = 50
+        const val MAX_ALLOWED_SYSTEM = 40
+        const val MIN_ALLOWED_INPUT = 1
+        const val MAX_ALLOWED_INPUT = 4
     }
 
     @Transactional(readOnly = true)
@@ -27,10 +29,21 @@ class ProgrammeLanguageServiceImpl(
     @Transactional
     override fun update(programmeLanguages: Collection<InputProgrammeLanguage>): List<OutputProgrammeLanguage> {
 
-        if (programmeLanguages.size > MAX_ALLOWED)
+        if (programmeLanguages.size > MAX_ALLOWED_SYSTEM)
             throw I18nValidationException(
                 httpStatus = HttpStatus.UNPROCESSABLE_ENTITY,
                 i18nKey = "programme.language.max.allowed.reached"
+            )
+        val selectedInputLanguages = programmeLanguages.filter{ it.input }.size
+        if (selectedInputLanguages < MIN_ALLOWED_INPUT)
+            throw I18nValidationException(
+                httpStatus = HttpStatus.UNPROCESSABLE_ENTITY,
+                i18nKey = "programme.language.min.allowed.input.languages"
+            )
+        if (selectedInputLanguages > MAX_ALLOWED_INPUT)
+            throw I18nValidationException(
+                httpStatus = HttpStatus.UNPROCESSABLE_ENTITY,
+                i18nKey = "programme.language.max.allowed.input.languages"
             )
 
         val result = programmeLanguageRepository.saveAll(programmeLanguages.map { it.toEntity() })

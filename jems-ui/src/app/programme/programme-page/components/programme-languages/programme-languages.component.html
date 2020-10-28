@@ -6,11 +6,11 @@
         {{'common.edit.label' | translate}}
     </button>
 
-    <form [formGroup]="editableLanguageForm" class="mat-elevation-z8 general-application-table">
+    <form class="mat-elevation-z8 general-application-table">
         <table mat-table [dataSource]="dataSource">
 
             <ng-container matColumnDef="system">
-                <th mat-header-cell *matHeaderCellDef>{{'programme.languages.list.select.system' | translate}}</th>
+                <th mat-header-cell class="column-small" *matHeaderCellDef>{{'programme.languages.list.select.system' | translate}}</th>
                 <td mat-cell *matCellDef="let element">
                     <mat-checkbox (click)="$event.stopPropagation()"
                                   (change)="systemLangSelection.toggle(element)"
@@ -21,7 +21,7 @@
             </ng-container>
 
             <ng-container matColumnDef="input">
-                <th mat-header-cell *matHeaderCellDef>{{'programme.languages.list.select.input' | translate}}</th>
+                <th mat-header-cell class="column-small" *matHeaderCellDef>{{'programme.languages.list.select.input' | translate}}</th>
                 <td mat-cell *matCellDef="let element">
                     <mat-checkbox (click)="$event.stopPropagation()"
                                   (change)="inputLangSelection.toggle(element)"
@@ -49,13 +49,14 @@
             <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
         </table>
     </form>
+
     <div *ngIf="formState === FormState.EDIT">
         <button class="button" mat-raised-button type="button"
                 (click)="changeFormState$.next(FormState.VIEW)">
             {{'common.cancel.label' | translate}}
         </button>
         <button class="button" mat-raised-button color="primary" type="button"
-                [disabled]="submitted"
+                [disabled]="isSubmitDisabled()"
                 (click)="onSubmit()">
             {{'common.save.label' | translate}}
         </button>
