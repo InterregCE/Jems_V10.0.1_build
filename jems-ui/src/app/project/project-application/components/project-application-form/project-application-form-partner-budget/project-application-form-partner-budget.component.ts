@@ -3,13 +3,14 @@ import {
   ChangeDetectorRef,
   Component,
   EventEmitter,
-  Input,
-  Output
+  Input, OnChanges,
+  Output, SimpleChanges
 } from '@angular/core';
 import {ViewEditForm} from '@common/components/forms/view-edit-form';
 import {FormGroup} from '@angular/forms';
 import {FormState} from '@common/components/forms/form-state';
 import {PartnerBudgetTable} from '../../../model/partner-budget-table';
+import {Numbers} from '../../../../../common/utils/numbers';
 
 @Component({
   selector: 'app-project-application-form-partner-budget',
@@ -17,7 +18,7 @@ import {PartnerBudgetTable} from '../../../model/partner-budget-table';
   styleUrls: ['./project-application-form-partner-budget.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class ProjectApplicationFormPartnerBudgetComponent extends ViewEditForm {
+export class ProjectApplicationFormPartnerBudgetComponent extends ViewEditForm implements OnChanges {
   Number = Number;
 
   @Input()
@@ -33,9 +34,19 @@ export class ProjectApplicationFormPartnerBudgetComponent extends ViewEditForm {
   cancelEdit = new EventEmitter<void>();
 
   saveEnabled = true;
+  officeAndAdministrationTotal = 0;
 
   constructor(protected changeDetectorRef: ChangeDetectorRef) {
     super(changeDetectorRef);
+  }
+
+  ngOnChanges(changes: SimpleChanges) {
+    if (changes.budgets || changes.officeAdministrationFlatRate) {
+      this.officeAndAdministrationTotal = Numbers.product([
+        this.budgets?.staff?.total || 0,
+        this.officeAdministrationFlatRate / 100
+      ]);
+    }
   }
 
   getForm(): FormGroup | null {
@@ -56,4 +67,5 @@ export class ProjectApplicationFormPartnerBudgetComponent extends ViewEditForm {
   adaptValidity() {
     this.saveEnabled = Object.values(this.budgets).every(table => table.valid());
   }
+
 }

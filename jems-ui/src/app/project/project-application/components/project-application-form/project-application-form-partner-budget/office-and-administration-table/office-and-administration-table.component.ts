@@ -12,12 +12,12 @@ import {TranslateService} from '@ngx-translate/core';
 export class OfficeAndAdministrationTableComponent {
 
   @Input()
-  total: { description: string, total: number };
+  total: number;
 
   columnDefs: Partial<ColDef>[] = [
     {
       headerName: this.translateService.instant('project.partner.budget.office.and.admin.flat.rate'),
-      field: 'description',
+      cellRenderer: () => this.translateService.instant('project.partner.budget.table.total'),
       flex: 1,
     },
     {
@@ -25,7 +25,7 @@ export class OfficeAndAdministrationTableComponent {
       field: 'total',
       type: 'numericColumn',
       valueGetter: (params: any) => Numbers.toLocale(
-        Numbers.truncateNumber(params.data.total),
+        Numbers.truncateNumber(this.total),
         this.locale
       ),
     }
