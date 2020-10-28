@@ -56,7 +56,7 @@ export class PartnerBudgetTableEntry {
   }
 
   computeTotal(): void {
-    const total = (this.numberOfUnits || 0) * (this.pricePerUnit || 0);
+    const total = Numbers.product([this.numberOfUnits || 0, this.pricePerUnit || 0]);
     this.total = Numbers.truncateNumber(total);
     this.validTotal = PartnerBudgetTableEntry.validNumber(this.total);
   }
