@@ -188,11 +188,11 @@
                 {{'project.application.form.management.principles.table.row.1' | translate}}
             </td>
             <td>
-                <app-contribution-radio-column
+                <app-contribution-toggle-column
                         [disabled]="formState === FormState.VIEW"
                         (selected)="selectedContributionPrincipleDevelopment = $event"
                         [previousSelection]="selectedContributionPrincipleDevelopment">
-                </app-contribution-radio-column>
+                </app-contribution-toggle-column>
             </td>
             <td>
                 <app-expandable-textarea class="field"
@@ -211,11 +211,11 @@
                 {{'project.application.form.management.principles.table.row.2' | translate}}
             </td>
             <td>
-                <app-contribution-radio-column
+                <app-contribution-toggle-column
                         [disabled]="formState === FormState.VIEW"
                         (selected)="selectedContributionPrincipleOpportunities = $event"
                         [previousSelection]="selectedContributionPrincipleOpportunities">
-                </app-contribution-radio-column>
+                </app-contribution-toggle-column>
             </td>
             <td>
                 <app-expandable-textarea class="field"
@@ -234,11 +234,11 @@
                 {{'project.application.form.management.principles.table.row.3' | translate}}
             </td>
             <td>
-                <app-contribution-radio-column
+                <app-contribution-toggle-column
                         [disabled]="formState === FormState.VIEW"
                         (selected)="selectedContributionPrincipleEquality = $event"
                         [previousSelection]="selectedContributionPrincipleEquality">
-                </app-contribution-radio-column>
+                </app-contribution-toggle-column>
             </td>
             <td>
                 <app-expandable-textarea class="field"
