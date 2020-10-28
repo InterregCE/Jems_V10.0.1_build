@@ -1,22 +1,17 @@
 package io.cloudflight.jems.server.project.service.partner.budget
 
-import io.cloudflight.jems.api.call.dto.CallStatus
 import io.cloudflight.jems.api.project.dto.partner.ProjectPartnerRole
 import io.cloudflight.jems.api.project.dto.partner.budget.InputBudget
-import io.cloudflight.jems.api.project.dto.status.ProjectApplicationStatus
-import io.cloudflight.jems.server.call.entity.Call
 import io.cloudflight.jems.server.exception.I18nValidationException
-import io.cloudflight.jems.server.project.entity.Project
 import io.cloudflight.jems.server.project.entity.partner.ProjectPartner
-import io.cloudflight.jems.server.project.entity.ProjectStatus
 import io.cloudflight.jems.server.project.entity.partner.budget.Budget
 import io.cloudflight.jems.server.project.entity.partner.budget.CommonBudget
 import io.cloudflight.jems.server.project.entity.partner.budget.ProjectPartnerBudgetEquipment
 import io.cloudflight.jems.server.project.entity.partner.budget.ProjectPartnerBudgetExternal
 import io.cloudflight.jems.server.project.entity.partner.budget.ProjectPartnerBudgetInfrastructure
+import io.cloudflight.jems.server.project.entity.partner.budget.ProjectPartnerBudgetOfficeAdministration
 import io.cloudflight.jems.server.project.entity.partner.budget.ProjectPartnerBudgetStaffCost
 import io.cloudflight.jems.server.project.entity.partner.budget.ProjectPartnerBudgetTravel
-import io.cloudflight.jems.server.project.repository.partner.ProjectPartnerRepository
 import io.cloudflight.jems.server.project.repository.partner.budget.ProjectPartnerBudgetCommonRepository
 import io.cloudflight.jems.server.project.repository.partner.budget.ProjectPartnerBudgetEquipmentRepository
 import io.cloudflight.jems.server.project.repository.partner.budget.ProjectPartnerBudgetExternalRepository
@@ -24,8 +19,7 @@ import io.cloudflight.jems.server.project.repository.partner.budget.ProjectPartn
 import io.cloudflight.jems.server.project.repository.partner.budget.ProjectPartnerBudgetOfficeAdministrationRepository
 import io.cloudflight.jems.server.project.repository.partner.budget.ProjectPartnerBudgetStaffCostRepository
 import io.cloudflight.jems.server.project.repository.partner.budget.ProjectPartnerBudgetTravelRepository
-import io.cloudflight.jems.server.user.entity.User
-import io.cloudflight.jems.server.user.entity.UserRole
+import io.cloudflight.jems.server.project.service.partner.ProjectPartnerTestUtil.Companion.project
 import io.mockk.MockKAnnotations
 import io.mockk.every
 import io.mockk.impl.annotations.MockK
@@ -34,13 +28,13 @@ import io.mockk.slot
 import io.mockk.verify
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeAll
+import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.TestInstance
 import org.junit.jupiter.api.assertThrows
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.Arguments
 import org.junit.jupiter.params.provider.MethodSource
 import java.math.BigDecimal
-import java.time.ZonedDateTime
 import java.util.Optional
 import java.util.stream.Stream
 
@@ -49,113 +43,89 @@ internal class ProjectPartnerBudgetServiceTest {
 
     companion object {
 
-        private val userRole = UserRole(1, "ADMIN")
-        private val user = User(
-            id = 1,
-            name = "Name",
-            password = "hash",
-            email = "admin@admin.dev",
-            surname = "Surname",
-            userRole = userRole)
-
-        private val dummyCall = Call(
-            id = 1,
-            creator = user,
-            name = "call",
-            status = CallStatus.DRAFT,
-            startDate = ZonedDateTime.now(),
-            endDate = ZonedDateTime.now(),
-            priorityPolicies = emptySet(),
-            strategies = emptySet(),
-            funds = emptySet(),
-            lengthOfPeriod = 1
-        )
-        private val projectStatus = ProjectStatus(
-            status = ProjectApplicationStatus.APPROVED,
-            user = user,
-            updated = ZonedDateTime.now())
-        private val project = Project(
-            id = 1,
-            acronym = "acronym",
-            call = dummyCall,
-            applicant = user,
-            projectStatus = projectStatus)
-
-        val projectPartner = ProjectPartner(
+        private val projectPartner = ProjectPartner(
             id = 1,
             project = project,
             abbreviation = "partner",
             role = ProjectPartnerRole.LEAD_PARTNER)
 
-        private fun staffCost(id: Long, numberOfUnits: Double, pricePerUnit: Double): ProjectPartnerBudgetStaffCost {
+        private fun staffCost(id: Long, numberOfUnits: Double, pricePerUnit: Double, rowSum: Double): ProjectPartnerBudgetStaffCost {
             return ProjectPartnerBudgetStaffCost(
                 id = id,
                 partnerId = projectPartner.id!!,
                 budget = Budget(
                     numberOfUnits = BigDecimal.valueOf(numberOfUnits),
-                    pricePerUnit = BigDecimal.valueOf(pricePerUnit)
+                    pricePerUnit = BigDecimal.valueOf(pricePerUnit),
+                    rowSum = BigDecimal.valueOf(rowSum)
                 )
             )
         }
 
-        private fun travel(id: Long, numberOfUnits: Double, pricePerUnit: Double): ProjectPartnerBudgetTravel {
+        private fun travel(id: Long, numberOfUnits: Double, pricePerUnit: Double, rowSum: Double): ProjectPartnerBudgetTravel {
             return ProjectPartnerBudgetTravel(
                 id = id,
                 partnerId = projectPartner.id!!,
                 budget = Budget(
                     numberOfUnits = BigDecimal.valueOf(numberOfUnits),
-                    pricePerUnit = BigDecimal.valueOf(pricePerUnit)
+                    pricePerUnit = BigDecimal.valueOf(pricePerUnit),
+                    rowSum = BigDecimal.valueOf(rowSum)
                 )
             )
         }
 
-        private fun external(id: Long, numberOfUnits: Double, pricePerUnit: Double): ProjectPartnerBudgetExternal {
+        private fun external(id: Long, numberOfUnits: Double, pricePerUnit: Double, rowSum: Double): ProjectPartnerBudgetExternal {
             return ProjectPartnerBudgetExternal(
                 id = id,
                 partnerId = projectPartner.id!!,
                 budget = Budget(
                     numberOfUnits = BigDecimal.valueOf(numberOfUnits),
-                    pricePerUnit = BigDecimal.valueOf(pricePerUnit)
+                    pricePerUnit = BigDecimal.valueOf(pricePerUnit),
+                    rowSum = BigDecimal.valueOf(rowSum)
                 )
             )
         }
 
-        private fun equipment(id: Long, numberOfUnits: Double, pricePerUnit: Double): ProjectPartnerBudgetEquipment {
+        private fun equipment(id: Long, numberOfUnits: Double, pricePerUnit: Double, rowSum: Double): ProjectPartnerBudgetEquipment {
             return ProjectPartnerBudgetEquipment(
                 id = id,
                 partnerId = projectPartner.id!!,
                 budget = Budget(
                     numberOfUnits = BigDecimal.valueOf(numberOfUnits),
-                    pricePerUnit = BigDecimal.valueOf(pricePerUnit)
+                    pricePerUnit = BigDecimal.valueOf(pricePerUnit),
+                    rowSum = BigDecimal.valueOf(rowSum)
                 )
             )
         }
 
-        private fun infrastructure(id: Long, numberOfUnits: Double, pricePerUnit: Double): ProjectPartnerBudgetInfrastructure {
+        private fun infrastructure(id: Long, numberOfUnits: Double, pricePerUnit: Double, rowSum: Double): ProjectPartnerBudgetInfrastructure {
             return ProjectPartnerBudgetInfrastructure(
                 id = id,
                 partnerId = projectPartner.id!!,
                 budget = Budget(
                     numberOfUnits = BigDecimal.valueOf(numberOfUnits),
-                    pricePerUnit = BigDecimal.valueOf(pricePerUnit)
+                    pricePerUnit = BigDecimal.valueOf(pricePerUnit),
+                    rowSum = BigDecimal.valueOf(rowSum)
                 )
             )
         }
 
         const val TO_CHANGE_NUM_OF_UNITS_OLD = 2000.00
         const val TO_CHANGE_PRICE_PER_UNIT_OLD = 662.25
+        const val TO_CHANGE_ROW_SUM_OLD = 1_324_500.00
         const val TO_CHANGE_NUM_OF_UNITS_NEW = 1500.00
         const val TO_CHANGE_PRICE_PER_UNIT_NEW = 773.36
+        const val TO_CHANGE_ROW_SUM_NEW = 1_160_040.00
         const val TO_STAY_NUM_OF_UNITS = 18.00
         const val TO_STAY_PRICE_PER_UNIT = 220_000_000.0
+        const val TO_STAY_ROW_SUM = 3_960_000_000.00
 
+        private fun toBd(value: Double): BigDecimal {
+            return BigDecimal.valueOf((value * 100).toLong(), 2)
+        }
     }
 
     @MockK
     lateinit var veryBigList: List<InputBudget>
-
-    @MockK
-    lateinit var projectPartnerRepository: ProjectPartnerRepository
 
     @MockK
     lateinit var projectPartnerBudgetStaffCostRepository: ProjectPartnerBudgetStaffCostRepository
@@ -175,13 +145,12 @@ internal class ProjectPartnerBudgetServiceTest {
     @RelaxedMockK
     lateinit var projectPartnerBudgetOfficeAdministrationRepository: ProjectPartnerBudgetOfficeAdministrationRepository
 
-    lateinit var projectPartnerBudgetService: ProjectPartnerBudgetService
+    lateinit private var projectPartnerBudgetService: ProjectPartnerBudgetService
 
     @BeforeAll
     fun setup() {
         MockKAnnotations.init(this)
         projectPartnerBudgetService = ProjectPartnerBudgetServiceImpl(
-            projectPartnerRepository,
             projectPartnerBudgetStaffCostRepository,
             projectPartnerBudgetTravelRepository,
             projectPartnerBudgetExternalRepository,
@@ -196,7 +165,6 @@ internal class ProjectPartnerBudgetServiceTest {
     fun `save Budget test maximum`(
         repository: ProjectPartnerBudgetCommonRepository<CommonBudget>
     ) {
-        every { projectPartnerRepository.findFirstByProjectIdAndId(1, 1) } returns Optional.of(projectPartner)
         every { repository.findAllByPartnerIdOrderByIdAsc(1) } returns emptyList()
         every { repository.deleteAll(any<List<ProjectPartnerBudgetStaffCost>>()) } answers {}
         every { repository.saveAll(any<List<ProjectPartnerBudgetStaffCost>>()) } returnsArgument 0
@@ -208,28 +176,30 @@ internal class ProjectPartnerBudgetServiceTest {
         )
 
         assertThat(
-            callUpdateBudgetServiceMethod(repository,1, 1, toBeSavedMaxNumberOfUnits)
+            callUpdateBudgetServiceMethod(repository,1, toBeSavedMaxNumberOfUnits)
         ).overridingErrorMessage("numberOfUnits could be up to 999.999.999.999.999,99").isEqualTo(
             listOf(
                 InputBudget(
                     numberOfUnits = BigDecimal.valueOf(999_999_999_999_999_99L, 2),
-                    pricePerUnit = BigDecimal.valueOf(100L, 2))
+                    pricePerUnit = BigDecimal.valueOf(100L, 2),
+                    rowSum = BigDecimal.valueOf(999_999_999_999_999_99L, 2))
             )
         )
 
         val toBeSavedMaxPricePerUnit = listOf(
             InputBudget(
-                numberOfUnits = BigDecimal.valueOf(999_999_999_999_999_99L, 2),
-                pricePerUnit = BigDecimal.ONE)
+                numberOfUnits = BigDecimal.ONE,
+                pricePerUnit = BigDecimal.valueOf(999_999_999_999_999_99L, 2))
         )
 
         assertThat(
-            callUpdateBudgetServiceMethod(repository, 1, 1, toBeSavedMaxPricePerUnit)
+            callUpdateBudgetServiceMethod(repository, 1, toBeSavedMaxPricePerUnit)
         ).overridingErrorMessage("pricePerUnit could be up to 999.999.999.999.999,99").isEqualTo(
             listOf(
                 InputBudget(
-                    numberOfUnits = BigDecimal.valueOf(999_999_999_999_999_99L, 2),
-                    pricePerUnit = BigDecimal.valueOf(100L, 2))
+                    numberOfUnits = BigDecimal.valueOf(100L, 2),
+                    pricePerUnit = BigDecimal.valueOf(999_999_999_999_999_99L, 2),
+                    rowSum = BigDecimal.valueOf(999_999_999_999_999_99L, 2))
             )
         )
     }
@@ -240,10 +210,9 @@ internal class ProjectPartnerBudgetServiceTest {
         repository: ProjectPartnerBudgetCommonRepository<CommonBudget>
     ) {
         every { veryBigList.size } returns 301
-        every { projectPartnerRepository.findFirstByProjectIdAndId(1, 1) } returns Optional.of(projectPartner)
 
         assertThat(
-            assertThrows<I18nValidationException> { callUpdateBudgetServiceMethod(repository, 1, 1, veryBigList) }.i18nKey
+            assertThrows<I18nValidationException> { callUpdateBudgetServiceMethod(repository, 1, veryBigList) }.i18nKey
         ).isEqualTo("project.partner.budget.max.allowed.reached")
     }
 
@@ -252,11 +221,9 @@ internal class ProjectPartnerBudgetServiceTest {
     fun `save Budget StuffCosts number out of range`(
         repository: ProjectPartnerBudgetCommonRepository<CommonBudget>
     ) {
-        every { projectPartnerRepository.findFirstByProjectIdAndId(1, 1) } returns Optional.of(projectPartner)
-
         assertThat(
             assertThrows<I18nValidationException> {
-                callUpdateBudgetServiceMethod(repository, 1, 1, listOf(
+                callUpdateBudgetServiceMethod(repository, 1, listOf(
                     InputBudget(
                         numberOfUnits = BigDecimal.valueOf(999_999_999_999_999_991L, 3),
                         pricePerUnit = BigDecimal.ONE
@@ -267,7 +234,7 @@ internal class ProjectPartnerBudgetServiceTest {
 
         assertThat(
             assertThrows<I18nValidationException> {
-                callUpdateBudgetServiceMethod(repository, 1, 1, listOf(
+                callUpdateBudgetServiceMethod(repository, 1, listOf(
                     InputBudget(
                         numberOfUnits = BigDecimal.ONE,
                         pricePerUnit = BigDecimal.valueOf(999_999_999_999_999_991L, 3)
@@ -278,7 +245,7 @@ internal class ProjectPartnerBudgetServiceTest {
 
         assertThat(
             assertThrows<I18nValidationException> {
-                callUpdateBudgetServiceMethod(repository, 1, 1, listOf(
+                callUpdateBudgetServiceMethod(repository, 1, listOf(
                     InputBudget(
                         numberOfUnits = BigDecimal.TEN,
                         pricePerUnit = BigDecimal.valueOf(100_000_000_000_000_00L, 2)
@@ -295,15 +262,14 @@ internal class ProjectPartnerBudgetServiceTest {
         repository: ProjectPartnerBudgetCommonRepository<CommonBudget>,
         existing: List<CommonBudget>
     ) {
-        every { projectPartnerRepository.findFirstByProjectIdAndId(1, 1) } returns Optional.of(projectPartner)
         every { repository.findAllByPartnerIdOrderByIdAsc(1) } returns existing
 
-        assertThat(callGetBudgetServiceMethod(repository, 1, 1))
+        assertThat(callGetBudgetServiceMethod(repository, 1))
             .isEqualTo(
                 listOf(
-                    InputBudget(id = 1, numberOfUnits = BigDecimal.valueOf(TO_CHANGE_NUM_OF_UNITS_OLD), pricePerUnit = BigDecimal.valueOf(TO_CHANGE_PRICE_PER_UNIT_OLD)),
-                    InputBudget(id = 2, numberOfUnits = BigDecimal.valueOf(TO_STAY_NUM_OF_UNITS), pricePerUnit = BigDecimal.valueOf(TO_STAY_PRICE_PER_UNIT)),
-                    InputBudget(id = 3, numberOfUnits = BigDecimal.valueOf(1.00), pricePerUnit = BigDecimal.valueOf(1000000.1))
+                    InputBudget(id = 1, numberOfUnits = BigDecimal.valueOf(TO_CHANGE_NUM_OF_UNITS_OLD), pricePerUnit = BigDecimal.valueOf(TO_CHANGE_PRICE_PER_UNIT_OLD), rowSum = BigDecimal.valueOf(TO_CHANGE_ROW_SUM_OLD)),
+                    InputBudget(id = 2, numberOfUnits = BigDecimal.valueOf(TO_STAY_NUM_OF_UNITS), pricePerUnit = BigDecimal.valueOf(TO_STAY_PRICE_PER_UNIT), rowSum = BigDecimal.valueOf(TO_STAY_ROW_SUM)),
+                    InputBudget(id = 3, numberOfUnits = BigDecimal.valueOf(1.00), pricePerUnit = BigDecimal.valueOf(1000000.1), rowSum = BigDecimal.valueOf(1000000.1))
                 )
             )
 
@@ -327,19 +293,18 @@ internal class ProjectPartnerBudgetServiceTest {
             InputBudget(id = null, numberOfUnits = BigDecimal.valueOf(550), pricePerUnit = BigDecimal.valueOf(10.0))
         )
 
-        every { projectPartnerRepository.findFirstByProjectIdAndId(1, 1) } returns Optional.of(projectPartner)
         every { repository.findAllByPartnerIdOrderByIdAsc(1) } returns existing
         every { repository.deleteAll(any<List<ProjectPartnerBudgetTravel>>()) } answers {}
         every { repository.saveAll(any<List<ProjectPartnerBudgetTravel>>()) } returnsArgument 0
 
         assertThat(
-            callUpdateBudgetServiceMethod(repository, 1, 1, toBeSaved)
+            callUpdateBudgetServiceMethod(repository, 1, toBeSaved)
         ).isEqualTo(
             listOf(
-                InputBudget(id = 1, numberOfUnits = BigDecimal.valueOf((TO_CHANGE_NUM_OF_UNITS_NEW * 100).toLong(), 2), pricePerUnit = BigDecimal.valueOf((TO_CHANGE_PRICE_PER_UNIT_NEW * 100).toLong(), 2)),
-                InputBudget(id = 2, numberOfUnits = BigDecimal.valueOf((TO_STAY_NUM_OF_UNITS * 100).toLong(), 2), pricePerUnit = BigDecimal.valueOf((TO_STAY_PRICE_PER_UNIT * 100).toLong(), 2)),
+                InputBudget(id = 1, numberOfUnits = toBd(TO_CHANGE_NUM_OF_UNITS_NEW), pricePerUnit = toBd(TO_CHANGE_PRICE_PER_UNIT_NEW), rowSum = toBd(TO_CHANGE_ROW_SUM_NEW)),
+                InputBudget(id = 2, numberOfUnits = toBd(TO_STAY_NUM_OF_UNITS), pricePerUnit = toBd(TO_STAY_PRICE_PER_UNIT), rowSum = toBd(TO_STAY_ROW_SUM)),
                 // here there should be id=4 normally
-                InputBudget(id = null, numberOfUnits = BigDecimal.valueOf(55000, 2), pricePerUnit = BigDecimal.valueOf(1000, 2))
+                InputBudget(id = null, numberOfUnits = toBd(550.0), pricePerUnit = toBd(10.0), rowSum = toBd(5500.0))
             )
         )
 
@@ -354,38 +319,36 @@ internal class ProjectPartnerBudgetServiceTest {
 
     private fun callUpdateBudgetServiceMethod(
         repo: ProjectPartnerBudgetCommonRepository<CommonBudget>,
-        projectId: Long,
         partnerId: Long,
         toBeSaved: List<InputBudget>
     ): List<InputBudget> {
         if (repo is ProjectPartnerBudgetStaffCostRepository)
-            return projectPartnerBudgetService.updateStaffCosts(projectId, partnerId, toBeSaved)
+            return projectPartnerBudgetService.updateStaffCosts(partnerId, toBeSaved)
         if (repo is ProjectPartnerBudgetTravelRepository)
-            return projectPartnerBudgetService.updateTravel(projectId, partnerId, toBeSaved)
+            return projectPartnerBudgetService.updateTravel(partnerId, toBeSaved)
         if (repo is ProjectPartnerBudgetExternalRepository)
-            return projectPartnerBudgetService.updateExternal(projectId, partnerId, toBeSaved)
+            return projectPartnerBudgetService.updateExternal(partnerId, toBeSaved)
         if (repo is ProjectPartnerBudgetEquipmentRepository)
-            return projectPartnerBudgetService.updateEquipment(projectId, partnerId, toBeSaved)
+            return projectPartnerBudgetService.updateEquipment(partnerId, toBeSaved)
         if (repo is ProjectPartnerBudgetInfrastructureRepository)
-            return projectPartnerBudgetService.updateInfrastructure(projectId, partnerId, toBeSaved)
+            return projectPartnerBudgetService.updateInfrastructure(partnerId, toBeSaved)
         throw UnsupportedOperationException()
     }
 
     private fun callGetBudgetServiceMethod(
         repo: ProjectPartnerBudgetCommonRepository<CommonBudget>,
-        projectId: Long,
         partnerId: Long
     ): List<InputBudget> {
         if (repo is ProjectPartnerBudgetStaffCostRepository)
-            return projectPartnerBudgetService.getStaffCosts(projectId, partnerId)
+            return projectPartnerBudgetService.getStaffCosts(partnerId)
         if (repo is ProjectPartnerBudgetTravelRepository)
-            return projectPartnerBudgetService.getTravel(projectId, partnerId)
+            return projectPartnerBudgetService.getTravel(partnerId)
         if (repo is ProjectPartnerBudgetExternalRepository)
-            return projectPartnerBudgetService.getExternal(projectId, partnerId)
+            return projectPartnerBudgetService.getExternal(partnerId)
         if (repo is ProjectPartnerBudgetEquipmentRepository)
-            return projectPartnerBudgetService.getEquipment(projectId, partnerId)
+            return projectPartnerBudgetService.getEquipment(partnerId)
         if (repo is ProjectPartnerBudgetInfrastructureRepository)
-            return projectPartnerBudgetService.getInfrastructure(projectId, partnerId)
+            return projectPartnerBudgetService.getInfrastructure(partnerId)
         throw UnsupportedOperationException()
     }
 
@@ -395,63 +358,89 @@ internal class ProjectPartnerBudgetServiceTest {
                 projectPartnerBudgetStaffCostRepository,
                 // existing budget lines
                 listOf(
-                    staffCost(id = 1, numberOfUnits = TO_CHANGE_NUM_OF_UNITS_OLD, pricePerUnit = TO_CHANGE_PRICE_PER_UNIT_OLD),
-                    staffCost(id = 2, numberOfUnits = TO_STAY_NUM_OF_UNITS, pricePerUnit = TO_STAY_PRICE_PER_UNIT),
-                    staffCost(id = 3, numberOfUnits = 1.00, pricePerUnit = 1000_000.10)
+                    staffCost(id = 1, numberOfUnits = TO_CHANGE_NUM_OF_UNITS_OLD, pricePerUnit = TO_CHANGE_PRICE_PER_UNIT_OLD, rowSum = TO_CHANGE_ROW_SUM_OLD),
+                    staffCost(id = 2, numberOfUnits = TO_STAY_NUM_OF_UNITS, pricePerUnit = TO_STAY_PRICE_PER_UNIT, rowSum = TO_STAY_ROW_SUM),
+                    staffCost(id = 3, numberOfUnits = 1.00, pricePerUnit = 1000_000.10, rowSum = 1000_000.10)
                 ),
                 // to be removed budget lines
                 setOf(
-                    staffCost(id = 3, numberOfUnits = 1.00, pricePerUnit = 1000_000.10)
+                    staffCost(id = 3, numberOfUnits = 1.00, pricePerUnit = 1000_000.10, rowSum = 1000_000.10)
                 )),
             Arguments.of(
                 projectPartnerBudgetTravelRepository,
                 // existing budget lines
                 listOf(
-                    travel(id = 1, numberOfUnits = TO_CHANGE_NUM_OF_UNITS_OLD, pricePerUnit = TO_CHANGE_PRICE_PER_UNIT_OLD),
-                    travel(id = 2, numberOfUnits = TO_STAY_NUM_OF_UNITS, pricePerUnit = TO_STAY_PRICE_PER_UNIT),
-                    travel(id = 3, numberOfUnits = 1.00, pricePerUnit = 1000_000.10)
+                    travel(id = 1, numberOfUnits = TO_CHANGE_NUM_OF_UNITS_OLD, pricePerUnit = TO_CHANGE_PRICE_PER_UNIT_OLD, rowSum = TO_CHANGE_ROW_SUM_OLD),
+                    travel(id = 2, numberOfUnits = TO_STAY_NUM_OF_UNITS, pricePerUnit = TO_STAY_PRICE_PER_UNIT, rowSum = TO_STAY_ROW_SUM),
+                    travel(id = 3, numberOfUnits = 1.00, pricePerUnit = 1000_000.10, rowSum = 1000_000.10)
                 ),
                 // to be removed budget lines
                 setOf(
-                    travel(id = 3, numberOfUnits = 1.00, pricePerUnit = 1000_000.10)
+                    travel(id = 3, numberOfUnits = 1.00, pricePerUnit = 1000_000.10, rowSum = 1000_000.10)
                 )),
             Arguments.of(
                 projectPartnerBudgetExternalRepository,
                 // existing budget lines
                 listOf(
-                    external(id = 1, numberOfUnits = TO_CHANGE_NUM_OF_UNITS_OLD, pricePerUnit = TO_CHANGE_PRICE_PER_UNIT_OLD),
-                    external(id = 2, numberOfUnits = TO_STAY_NUM_OF_UNITS, pricePerUnit = TO_STAY_PRICE_PER_UNIT),
-                    external(id = 3, numberOfUnits = 1.00, pricePerUnit = 1000_000.10)
+                    external(id = 1, numberOfUnits = TO_CHANGE_NUM_OF_UNITS_OLD, pricePerUnit = TO_CHANGE_PRICE_PER_UNIT_OLD, rowSum = TO_CHANGE_ROW_SUM_OLD),
+                    external(id = 2, numberOfUnits = TO_STAY_NUM_OF_UNITS, pricePerUnit = TO_STAY_PRICE_PER_UNIT, rowSum = TO_STAY_ROW_SUM),
+                    external(id = 3, numberOfUnits = 1.00, pricePerUnit = 1000_000.10, rowSum = 1000_000.10)
                 ),
                 // to be removed budget lines
                 setOf(
-                    external(id = 3, numberOfUnits = 1.00, pricePerUnit = 1000_000.10)
+                    external(id = 3, numberOfUnits = 1.00, pricePerUnit = 1000_000.10, rowSum = 1000_000.10)
                 )),
             Arguments.of(
                 projectPartnerBudgetEquipmentRepository,
                 // existing budget lines
                 listOf(
-                    equipment(id = 1, numberOfUnits = TO_CHANGE_NUM_OF_UNITS_OLD, pricePerUnit = TO_CHANGE_PRICE_PER_UNIT_OLD),
-                    equipment(id = 2, numberOfUnits = TO_STAY_NUM_OF_UNITS, pricePerUnit = TO_STAY_PRICE_PER_UNIT),
-                    equipment(id = 3, numberOfUnits = 1.00, pricePerUnit = 1000_000.10)
+                    equipment(id = 1, numberOfUnits = TO_CHANGE_NUM_OF_UNITS_OLD, pricePerUnit = TO_CHANGE_PRICE_PER_UNIT_OLD, rowSum = TO_CHANGE_ROW_SUM_OLD),
+                    equipment(id = 2, numberOfUnits = TO_STAY_NUM_OF_UNITS, pricePerUnit = TO_STAY_PRICE_PER_UNIT, rowSum = TO_STAY_ROW_SUM),
+                    equipment(id = 3, numberOfUnits = 1.00, pricePerUnit = 1000_000.10, rowSum = 1000_000.10)
                 ),
                 // to be removed budget lines
                 setOf(
-                    equipment(id = 3, numberOfUnits = 1.00, pricePerUnit = 1000_000.10)
+                    equipment(id = 3, numberOfUnits = 1.00, pricePerUnit = 1000_000.10, rowSum = 1000_000.10)
                 )),
             Arguments.of(
                 projectPartnerBudgetInfrastructureRepository,
                 // existing budget lines
                 listOf(
-                    infrastructure(id = 1, numberOfUnits = TO_CHANGE_NUM_OF_UNITS_OLD, pricePerUnit = TO_CHANGE_PRICE_PER_UNIT_OLD),
-                    infrastructure(id = 2, numberOfUnits = TO_STAY_NUM_OF_UNITS, pricePerUnit = TO_STAY_PRICE_PER_UNIT),
-                    infrastructure(id = 3, numberOfUnits = 1.00, pricePerUnit = 1000_000.10)
+                    infrastructure(id = 1, numberOfUnits = TO_CHANGE_NUM_OF_UNITS_OLD, pricePerUnit = TO_CHANGE_PRICE_PER_UNIT_OLD, rowSum = TO_CHANGE_ROW_SUM_OLD),
+                    infrastructure(id = 2, numberOfUnits = TO_STAY_NUM_OF_UNITS, pricePerUnit = TO_STAY_PRICE_PER_UNIT, rowSum = TO_STAY_ROW_SUM),
+                    infrastructure(id = 3, numberOfUnits = 1.00, pricePerUnit = 1000_000.10, rowSum = 1000_000.10)
                 ),
                 // to be removed budget lines
                 setOf(
-                    infrastructure(id = 3, numberOfUnits = 1.00, pricePerUnit = 1000_000.10)
+                    infrastructure(id = 3, numberOfUnits = 1.00, pricePerUnit = 1000_000.10, rowSum = 1000_000.10)
                 ))
         )
+    }
+
+    @Test
+    fun `test total null`() {
+        every { projectPartnerBudgetOfficeAdministrationRepository.findById(1) } returns Optional.empty()
+        every { projectPartnerBudgetStaffCostRepository.sumTotalForPartner(1) } returns null
+        every { projectPartnerBudgetTravelRepository.sumTotalForPartner(1) } returns null
+        every { projectPartnerBudgetExternalRepository.sumTotalForPartner(1) } returns null
+        every { projectPartnerBudgetEquipmentRepository.sumTotalForPartner(1) } returns null
+        every { projectPartnerBudgetInfrastructureRepository.sumTotalForPartner(1) } returns null
+
+        assertThat(projectPartnerBudgetService.getTotal(1)).isEqualTo(BigDecimal.ZERO)
+    }
+
+    @Test
+    fun `test total`() {
+        val id = 598L
+        every { projectPartnerBudgetOfficeAdministrationRepository.findById(id) } returns
+            Optional.of(ProjectPartnerBudgetOfficeAdministration(partnerId = id, flatRate = 10))
+        every { projectPartnerBudgetStaffCostRepository.sumTotalForPartner(id) } returns BigDecimal.valueOf(5)
+        every { projectPartnerBudgetTravelRepository.sumTotalForPartner(id) } returns BigDecimal.valueOf(20)
+        every { projectPartnerBudgetExternalRepository.sumTotalForPartner(id) } returns BigDecimal.valueOf(8)
+        every { projectPartnerBudgetEquipmentRepository.sumTotalForPartner(id) } returns BigDecimal.ZERO
+        every { projectPartnerBudgetInfrastructureRepository.sumTotalForPartner(id) } returns BigDecimal.valueOf(3)
+
+        assertThat(projectPartnerBudgetService.getTotal(id)).isEqualTo(toBd(36.5))
     }
 
 }

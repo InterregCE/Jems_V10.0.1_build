@@ -6,5 +6,6 @@ data class InputBudget(
     val id: Long? = null,
     val description: String? = null,
     val numberOfUnits: BigDecimal,
-    val pricePerUnit: BigDecimal
+    val pricePerUnit: BigDecimal,
+    val rowSum: BigDecimal? = null
 )

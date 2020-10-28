@@ -8,55 +8,69 @@ import io.cloudflight.jems.server.project.entity.partner.budget.ProjectPartnerBu
 import io.cloudflight.jems.server.project.entity.partner.budget.ProjectPartnerBudgetInfrastructure
 import io.cloudflight.jems.server.project.entity.partner.budget.ProjectPartnerBudgetStaffCost
 import io.cloudflight.jems.server.project.entity.partner.budget.ProjectPartnerBudgetTravel
-import java.math.RoundingMode
+import java.math.BigDecimal
+
+fun InputBudget.getNumberOfUnits(): BigDecimal = numberOfUnits.truncate()
+fun InputBudget.getPricePerUnit(): BigDecimal = pricePerUnit.truncate()
+
+private fun toBudget(
+    description: String?,
+    numberOfUnits: BigDecimal,
+    pricePerUnit: BigDecimal
+): Budget = Budget(
+    description = description,
+    numberOfUnits = numberOfUnits,
+    pricePerUnit = pricePerUnit,
+    rowSum = numberOfUnits.multiply(pricePerUnit).truncate()
+)
 
 fun InputBudget.toStaffCost(partnerId: Long) = ProjectPartnerBudgetStaffCost(
     id = id,
     partnerId = partnerId,
-    budget = Budget(
+    budget = toBudget(
         description = description,
-        numberOfUnits = numberOfUnits.setScale(2, RoundingMode.FLOOR),
-        pricePerUnit = pricePerUnit.setScale(2, RoundingMode.FLOOR)
+        numberOfUnits = getNumberOfUnits(),
+        pricePerUnit =  getPricePerUnit()
     )
 )
 
 fun InputBudget.toTravel(partnerId: Long) = ProjectPartnerBudgetTravel(
     id = id,
     partnerId = partnerId,
-    budget = Budget(
+    budget = toBudget(
         description = description,
-        numberOfUnits = numberOfUnits.setScale(2, RoundingMode.FLOOR),
-        pricePerUnit = pricePerUnit.setScale(2, RoundingMode.FLOOR)
+        numberOfUnits = getNumberOfUnits(),
+        pricePerUnit =  getPricePerUnit()
     )
 )
 
 fun InputBudget.toExternal(partnerId: Long) = ProjectPartnerBudgetExternal(
     id = id,
     partnerId = partnerId,
-    budget = Budget(
+    budget = toBudget(
         description = description,
-        numberOfUnits = numberOfUnits.setScale(2, RoundingMode.FLOOR),
-        pricePerUnit = pricePerUnit.setScale(2, RoundingMode.FLOOR)
+        numberOfUnits = getNumberOfUnits(),
+        pricePerUnit =  getPricePerUnit()
     )
 )
 
 fun InputBudget.toEquipment(partnerId: Long) = ProjectPartnerBudgetEquipment(
     id = id,
     partnerId = partnerId,
-    budget = Budget(
+    budget = toBudget(
         description = description,
-        numberOfUnits = numberOfUnits.setScale(2, RoundingMode.FLOOR),
-        pricePerUnit = pricePerUnit.setScale(2, RoundingMode.FLOOR)
+        numberOfUnits = getNumberOfUnits(),
+        pricePerUnit =  getPricePerUnit()
     )
 )
 
 fun InputBudget.toInfrastructure(partnerId: Long) = ProjectPartnerBudgetInfrastructure(
     id = id,
     partnerId = partnerId,
-    budget = Budget(
+    budget = toBudget(
         description = description,
-        numberOfUnits = numberOfUnits.setScale(2, RoundingMode.FLOOR),
-        pricePerUnit = pricePerUnit.setScale(2, RoundingMode.FLOOR)
+        numberOfUnits = getNumberOfUnits(),
+        pricePerUnit =  getPricePerUnit()
     )
 )
 
@@ -64,5 +78,6 @@ fun CommonBudget.toOutput() = InputBudget(
     id = id,
     description = budget!!.description,
     numberOfUnits = budget!!.numberOfUnits,
-    pricePerUnit = budget!!.pricePerUnit
+    pricePerUnit = budget!!.pricePerUnit,
+    rowSum = budget!!.rowSum
 )

@@ -18,6 +18,7 @@ import io.cloudflight.jems.server.project.entity.partner.ProjectPartnerContact
 import io.cloudflight.jems.server.project.entity.partner.ProjectPartnerContribution
 import io.cloudflight.jems.server.project.entity.partner.ProjectPartnerAddress
 import io.cloudflight.jems.server.project.entity.partner.ProjectPartnerAddressId
+import io.cloudflight.jems.server.project.service.partner.cofinancing.toOutputProjectCoFinancing
 
 fun InputProjectPartnerCreate.toEntity(project: Project) = ProjectPartner(
     project = project,
@@ -45,7 +46,8 @@ fun ProjectPartner.toOutputProjectPartnerDetail() = OutputProjectPartnerDetail(
     department = department,
     addresses = addresses?.map { it.toOutputProjectPartnerAddress() } ?: emptyList(),
     contacts = contacts?.map { it.toOutputProjectPartnerContact() } ?: emptyList(),
-    partnerContribution = partnerContribution.map { it.toOutputProjectPartnerContribution() }.firstOrNull()
+    partnerContribution = partnerContribution.map { it.toOutputProjectPartnerContribution() }.firstOrNull(),
+    financing = financing.map { it.toOutputProjectCoFinancing() }
 )
 
 fun InputProjectPartnerAddress.toEntity(partner: ProjectPartner) = ProjectPartnerAddress(

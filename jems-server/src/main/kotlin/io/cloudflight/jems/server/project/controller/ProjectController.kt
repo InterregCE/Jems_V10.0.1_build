@@ -5,6 +5,8 @@ import io.cloudflight.jems.api.project.dto.InputProject
 import io.cloudflight.jems.api.project.dto.InputProjectData
 import io.cloudflight.jems.api.project.dto.OutputProject
 import io.cloudflight.jems.api.project.dto.OutputProjectSimple
+import io.cloudflight.jems.server.project.authorization.CanReadProject
+import io.cloudflight.jems.server.project.authorization.CanUpdateProject
 import io.cloudflight.jems.server.project.service.ProjectService
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
@@ -23,9 +25,9 @@ class ProjectController(
         return projectService.findAll(pageable)
     }
 
-    @PreAuthorize("@projectAuthorization.canReadProject(#id)")
-    override fun getProjectById(id: Long): OutputProject {
-        return projectService.getById(id)
+    @CanReadProject
+    override fun getProjectById(projectId: Long): OutputProject {
+        return projectService.getById(projectId)
     }
 
     @PreAuthorize("@projectAuthorization.canCreateProjectForCall(#project.projectCallId)")
@@ -33,9 +35,9 @@ class ProjectController(
         return projectService.createProject(project)
     }
 
-    @PreAuthorize("@projectAuthorization.canUpdateProject(#id)")
-    override fun updateProjectData(id: Long, project: InputProjectData): OutputProject {
-        return projectService.update(id, project)
+    @CanUpdateProject
+    override fun updateProjectData(projectId: Long, project: InputProjectData): OutputProject {
+        return projectService.update(projectId, project)
     }
 
 }

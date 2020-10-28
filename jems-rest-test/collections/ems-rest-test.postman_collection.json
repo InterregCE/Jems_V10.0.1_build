@@ -8126,6 +8126,388 @@
 						}
 					},
 					"response": []
+				},
+				{
+					"name": "set contribution to partner",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "77e34bec-64e3-4c40-a570-ea32517b203f",
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"id": "8785c796-689a-40b6-889b-218d8384b7e4",
+								"exec": [
+									"const contribution = pm.response.json().partnerContribution;\r",
+									"\r",
+									"pm.test('applicant can set contribution to partner', function() {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"pm.test('contribution is set correctly', function() {\r",
+									"    pm.expect(contribution.organizationRelevance).to.eql('This project is definitely relevant enough to be founded.');\r",
+									"    pm.expect(contribution.organizationRole).to.eql('test latin àâçéèêëîïôùûüÿ');\r",
+									"    pm.expect(contribution.organizationExperience).to.eql('We have 16 millions years of experience in this particular area.');\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "basic",
+							"basic": [
+								{
+									"key": "password",
+									"value": "{{applicant_email}}",
+									"type": "string"
+								},
+								{
+									"key": "username",
+									"value": "{{applicant_email}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"organizationRelevance\": \"This project is definitely relevant enough to be founded.\",\r\n    \"organizationRole\": \"test latin àâçéèêëîïôùûüÿ\",\r\n    \"organizationExperience\": \"We have 16 millions years of experience in this particular area.\"\r\n}\r\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{url}}/api/project/{{application_id}}/partner/{{partner_id}}/contribution",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"api",
+								"project",
+								"{{application_id}}",
+								"partner",
+								"{{partner_id}}",
+								"contribution"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "set budget - staff costs",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "d5c473bc-8ca4-49c0-aedb-60a3f572326d",
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"id": "1c69d1fa-258b-4a86-887b-92ac2d943fa9",
+								"exec": [
+									"const staffCosts = pm.response.json();\r",
+									"\r",
+									"pm.test('applicant can set budget staff costs', function() {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"pm.test('staffcosts are set correctly', function() {\r",
+									"    pm.expect(staffCosts.length).to.eql(2);\r",
+									"});\r",
+									"\r",
+									"pm.test('staffcosts sums are calculated correctly', function() {\r",
+									"    pm.expect(staffCosts[0].rowSum + staffCosts[1].rowSum).to.eql(48800);\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "basic",
+							"basic": [
+								{
+									"key": "password",
+									"value": "{{applicant_email}}",
+									"type": "string"
+								},
+								{
+									"key": "username",
+									"value": "{{applicant_email}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "[\r\n    {\r\n        \"description\": \"Project Manager\",\r\n        \"numberOfUnits\": 10,\r\n        \"pricePerUnit\": 4500\r\n    },\r\n    {\r\n        \"description\": \"Doctor\",\r\n        \"numberOfUnits\": 1,\r\n        \"pricePerUnit\": 3800\r\n    }\r\n]\r\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{url}}/api/project/partner/{{partner_id}}/budget/staffcost",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"api",
+								"project",
+								"partner",
+								"{{partner_id}}",
+								"budget",
+								"staffcost"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "set budget - travel",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "d6101599-08c1-4bbd-9cd9-2d3c896983ea",
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"id": "21cb5759-cab3-479d-ab63-91db6a0271e3",
+								"exec": [
+									"const travel = pm.response.json();\r",
+									"\r",
+									"pm.test('applicant can set budgettravel', function() {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"pm.test('travel is set correctly', function() {\r",
+									"    pm.expect(travel.length).to.eql(1);\r",
+									"    pm.expect(travel[0].numberOfUnits).to.eql(0.19);\r",
+									"    pm.expect(travel[0].pricePerUnit).to.eql(0.99);\r",
+									"    pm.expect(travel[0].rowSum).to.eql(0.18);\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "basic",
+							"basic": [
+								{
+									"key": "password",
+									"value": "{{applicant_email}}",
+									"type": "string"
+								},
+								{
+									"key": "username",
+									"value": "{{applicant_email}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "[\r\n    {\r\n        \"description\": \"Gran Canaria\",\r\n        \"numberOfUnits\": 0.19,\r\n        \"pricePerUnit\": 0.99\r\n    }\r\n]\r\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{url}}/api/project/partner/{{partner_id}}/budget/travel",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"api",
+								"project",
+								"partner",
+								"{{partner_id}}",
+								"budget",
+								"travel"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "set office and administration flatRate",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "1bc2ccb6-7a8d-48e7-b602-4d1ab10c1c38",
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"id": "e8757a68-a1b2-44b7-b46c-3dce1e5821f6",
+								"exec": [
+									"const flatRate = pm.response.json();\r",
+									"\r",
+									"pm.test('applicant can set officeadministration flatRate', function() {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"pm.test('officeadministration flatRate is set correctly', function() {\r",
+									"    pm.expect(flatRate).to.eql(10);\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "basic",
+							"basic": [
+								{
+									"key": "password",
+									"value": "{{applicant_email}}",
+									"type": "string"
+								},
+								{
+									"key": "username",
+									"value": "{{applicant_email}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"value\": 10\r\n}\r\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{url}}/api/project/partner/{{partner_id}}/budget/officeadministration",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"api",
+								"project",
+								"partner",
+								"{{partner_id}}",
+								"budget",
+								"officeadministration"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "calculate total",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "3fab6fb3-57e1-48b3-831a-71eded24d75b",
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"id": "8dcbae42-cb74-4915-b2ba-f09b6a25b1ca",
+								"exec": [
+									"const flatRate = pm.response.json();\r",
+									"\r",
+									"pm.test('total is calculated correctly', function() {\r",
+									"    pm.response.to.have.status(200);\r",
+									"    pm.expect(pm.response.json()).to.eql(53680.18);\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "basic",
+							"basic": [
+								{
+									"key": "password",
+									"value": "{{applicant_email}}",
+									"type": "string"
+								},
+								{
+									"key": "username",
+									"value": "{{applicant_email}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{url}}/api/project/partner/{{partner_id}}/budget/total",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"api",
+								"project",
+								"partner",
+								"{{partner_id}}",
+								"budget",
+								"total"
+							]
+						}
+					},
+					"response": []
 				}
 			],
 			"event": [
@@ -8192,7 +8574,7 @@
 	],
 	"variable": [
 		{
-			"id": "dcb016a9-c8ef-45b5-9208-d8bd1e0141f3",
+			"id": "7e5bdf7d-0ef1-4d85-8dfc-d76b0a1a7350",
 			"key": "url",
 			"value": "specify_url_here"
 		}

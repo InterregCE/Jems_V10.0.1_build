@@ -28,14 +28,14 @@ export class ProjectApplicationPartnerBudgetPageComponent {
     .pipe(
       filter(partner => !!partner.id),
       map(partner => partner.id),
-      mergeMap(id => this.projectPartnerBudgetService.getOfficeAdministrationFlatRate(id, this.projectId))
+      mergeMap(id => this.projectPartnerBudgetService.getOfficeAdministrationFlatRate(id))
     );
 
   private saveOfficeAdministrationFlatRate = this.saveBudgetOptions
     .pipe(
       withLatestFrom(this.partnerStore.getProjectPartner()),
       mergeMap(([flatRate, partner]) =>
-        this.projectPartnerBudgetService.updateOfficeAdministrationFlatRate(partner.id, this.projectId, flatRate)
+        this.projectPartnerBudgetService.updateOfficeAdministrationFlatRate(partner.id, flatRate)
       ),
       tap(() => this.optionsSaveSuccess$.next(true)),
       tap(() => this.optionsSaveError$.next(null)),
@@ -56,15 +56,15 @@ export class ProjectApplicationPartnerBudgetPageComponent {
       map(partner => partner.id),
       mergeMap(id =>
         forkJoin({
-          staff: this.projectPartnerBudgetService.getBudgetStaffCost(id, this.projectId)
+          staff: this.projectPartnerBudgetService.getBudgetStaffCost(id)
             .pipe(tap(staff => Log.info('Fetched the staff budget', this, staff))),
-          travel: this.projectPartnerBudgetService.getBudgetTravel(id, this.projectId)
+          travel: this.projectPartnerBudgetService.getBudgetTravel(id)
             .pipe(tap(travel => Log.info('Fetched the travel budget', this, travel))),
-          external: this.projectPartnerBudgetService.getBudgetExternal(id, this.projectId)
+          external: this.projectPartnerBudgetService.getBudgetExternal(id)
             .pipe(tap(external => Log.info('Fetched the external budget', this, external))),
-          equipment: this.projectPartnerBudgetService.getBudgetEquipment(id, this.projectId)
+          equipment: this.projectPartnerBudgetService.getBudgetEquipment(id)
             .pipe(tap(equipment => Log.info('Fetched the equipment budget', this, equipment))),
-          infrastructure: this.projectPartnerBudgetService.getBudgetInfrastructure(id, this.projectId)
+          infrastructure: this.projectPartnerBudgetService.getBudgetInfrastructure(id)
             .pipe(tap(infrastructure => Log.info('Fetched the infrastructure budget', this, infrastructure))),
         })
       )
@@ -118,22 +118,22 @@ export class ProjectApplicationPartnerBudgetPageComponent {
       id: (entry.new ? null : entry.id) as any,
       description: entry.description as any,
       numberOfUnits: entry.numberOfUnits as any,
-      pricePerUnit: entry.pricePerUnit as any
-    }));
+      pricePerUnit: entry.pricePerUnit as any,
+    } as InputBudget));
   }
 
   private updateBudget(partnerId: number, type: string, entries: InputBudget[]): Observable<Array<InputBudget>> {
     let update$;
     if (type === PartnerBudgetTableType.STAFF)
-      update$ = this.projectPartnerBudgetService.updateBudgetStaffCost(partnerId, this.projectId, entries);
+      update$ = this.projectPartnerBudgetService.updateBudgetStaffCost(partnerId, entries);
     if (type === PartnerBudgetTableType.TRAVEL)
-      update$ = this.projectPartnerBudgetService.updateBudgetTravel(partnerId, this.projectId, entries);
+      update$ = this.projectPartnerBudgetService.updateBudgetTravel(partnerId, entries);
     if (type === PartnerBudgetTableType.EXTERNAL)
-      update$ = this.projectPartnerBudgetService.updateBudgetExternal(partnerId, this.projectId, entries);
+      update$ = this.projectPartnerBudgetService.updateBudgetExternal(partnerId, entries);
     if (type === PartnerBudgetTableType.EQUIPMENT)
-      update$ = this.projectPartnerBudgetService.updateBudgetEquipment(partnerId, this.projectId, entries);
+      update$ = this.projectPartnerBudgetService.updateBudgetEquipment(partnerId, entries);
     if (type === PartnerBudgetTableType.INFRASTRUCTURE)
-      update$ = this.projectPartnerBudgetService.updateBudgetInfrastructure(partnerId, this.projectId, entries);
+      update$ = this.projectPartnerBudgetService.updateBudgetInfrastructure(partnerId, entries);
 
     return !update$ ? of([]) : update$
       .pipe(

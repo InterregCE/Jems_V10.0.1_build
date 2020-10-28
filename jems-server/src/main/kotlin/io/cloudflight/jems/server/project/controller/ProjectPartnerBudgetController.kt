@@ -3,73 +3,80 @@ package io.cloudflight.jems.server.project.controller
 import io.cloudflight.jems.api.project.ProjectPartnerBudgetApi
 import io.cloudflight.jems.api.project.dto.partner.budget.InputBudget
 import io.cloudflight.jems.api.project.dto.partner.budget.InputFlatRate
+import io.cloudflight.jems.server.project.authorization.CanReadProjectPartner
+import io.cloudflight.jems.server.project.authorization.CanUpdateProjectPartner
 import io.cloudflight.jems.server.project.service.partner.budget.ProjectPartnerBudgetService
-import org.springframework.security.access.prepost.PreAuthorize
 import org.springframework.web.bind.annotation.RestController
+import java.math.BigDecimal
 
 @RestController
 class ProjectPartnerBudgetController(
     private val projectPartnerBudgetService: ProjectPartnerBudgetService
 ) : ProjectPartnerBudgetApi {
 
-    @PreAuthorize("@projectAuthorization.canReadProject(#projectId)")
-    override fun getBudgetStaffCost(projectId: Long, partnerId: Long): List<InputBudget> {
-        return projectPartnerBudgetService.getStaffCosts(projectId, partnerId)
+    @CanReadProjectPartner
+    override fun getBudgetStaffCost(partnerId: Long): List<InputBudget> {
+        return projectPartnerBudgetService.getStaffCosts(partnerId)
     }
 
-    @PreAuthorize("@projectAuthorization.canUpdateProject(#projectId)")
-    override fun updateBudgetStaffCost(projectId: Long, partnerId: Long, budgetCosts: List<InputBudget>): List<InputBudget> {
-        return projectPartnerBudgetService.updateStaffCosts(projectId, partnerId, budgetCosts)
+    @CanUpdateProjectPartner
+    override fun updateBudgetStaffCost(partnerId: Long, budgetCosts: List<InputBudget>): List<InputBudget> {
+        return projectPartnerBudgetService.updateStaffCosts(partnerId, budgetCosts)
     }
 
-    @PreAuthorize("@projectAuthorization.canReadProject(#projectId)")
-    override fun getBudgetTravel(projectId: Long, partnerId: Long): List<InputBudget> {
-        return projectPartnerBudgetService.getTravel(projectId, partnerId)
+    @CanReadProjectPartner
+    override fun getBudgetTravel(partnerId: Long): List<InputBudget> {
+        return projectPartnerBudgetService.getTravel(partnerId)
     }
 
-    @PreAuthorize("@projectAuthorization.canUpdateProject(#projectId)")
-    override fun updateBudgetTravel(projectId: Long, partnerId: Long, travels: List<InputBudget>): List<InputBudget> {
-        return projectPartnerBudgetService.updateTravel(projectId, partnerId, travels)
+    @CanUpdateProjectPartner
+    override fun updateBudgetTravel(partnerId: Long, travels: List<InputBudget>): List<InputBudget> {
+        return projectPartnerBudgetService.updateTravel(partnerId, travels)
     }
 
-    @PreAuthorize("@projectAuthorization.canReadProject(#projectId)")
-    override fun getBudgetExternal(projectId: Long, partnerId: Long): List<InputBudget> {
-        return projectPartnerBudgetService.getExternal(projectId, partnerId)
+    @CanReadProjectPartner
+    override fun getBudgetExternal(partnerId: Long): List<InputBudget> {
+        return projectPartnerBudgetService.getExternal(partnerId)
     }
 
-    @PreAuthorize("@projectAuthorization.canUpdateProject(#projectId)")
-    override fun updateBudgetExternal(projectId: Long, partnerId: Long, externals: List<InputBudget>): List<InputBudget> {
-        return projectPartnerBudgetService.updateExternal(projectId, partnerId, externals)
+    @CanUpdateProjectPartner
+    override fun updateBudgetExternal(partnerId: Long, externals: List<InputBudget>): List<InputBudget> {
+        return projectPartnerBudgetService.updateExternal(partnerId, externals)
     }
 
-    @PreAuthorize("@projectAuthorization.canReadProject(#projectId)")
-    override fun getBudgetEquipment(projectId: Long, partnerId: Long): List<InputBudget> {
-        return projectPartnerBudgetService.getEquipment(projectId, partnerId)
+    @CanReadProjectPartner
+    override fun getBudgetEquipment(partnerId: Long): List<InputBudget> {
+        return projectPartnerBudgetService.getEquipment(partnerId)
     }
 
-    @PreAuthorize("@projectAuthorization.canUpdateProject(#projectId)")
-    override fun updateBudgetEquipment(projectId: Long, partnerId: Long, equipments: List<InputBudget>): List<InputBudget> {
-        return projectPartnerBudgetService.updateEquipment(projectId, partnerId, equipments)
+    @CanUpdateProjectPartner
+    override fun updateBudgetEquipment(partnerId: Long, equipments: List<InputBudget>): List<InputBudget> {
+        return projectPartnerBudgetService.updateEquipment(partnerId, equipments)
     }
 
-    @PreAuthorize("@projectAuthorization.canReadProject(#projectId)")
-    override fun getBudgetInfrastructure(projectId: Long, partnerId: Long): List<InputBudget> {
-        return projectPartnerBudgetService.getInfrastructure(projectId, partnerId)
+    @CanReadProjectPartner
+    override fun getBudgetInfrastructure(partnerId: Long): List<InputBudget> {
+        return projectPartnerBudgetService.getInfrastructure(partnerId)
     }
 
-    @PreAuthorize("@projectAuthorization.canUpdateProject(#projectId)")
-    override fun updateBudgetInfrastructure(projectId: Long, partnerId: Long, infrastructures: List<InputBudget>): List<InputBudget> {
-        return projectPartnerBudgetService.updateInfrastructure(projectId, partnerId, infrastructures)
+    @CanUpdateProjectPartner
+    override fun updateBudgetInfrastructure(partnerId: Long, infrastructures: List<InputBudget>): List<InputBudget> {
+        return projectPartnerBudgetService.updateInfrastructure(partnerId, infrastructures)
     }
 
-    @PreAuthorize("@projectAuthorization.canReadProject(#projectId)")
-    override fun getOfficeAdministrationFlatRate(projectId: Long, partnerId: Long): Int? {
-        return projectPartnerBudgetService.getOfficeAdministrationFlatRate(projectId, partnerId)
+    @CanReadProjectPartner
+    override fun getOfficeAdministrationFlatRate(partnerId: Long): Int? {
+        return projectPartnerBudgetService.getOfficeAdministrationFlatRate(partnerId)
     }
 
-    @PreAuthorize("@projectAuthorization.canUpdateProject(#projectId)")
-    override fun updateOfficeAdministrationFlatRate(projectId: Long, partnerId: Long, flatRate: InputFlatRate): Int? {
-        return projectPartnerBudgetService.updateOfficeAdministrationFlatRate(projectId, partnerId, flatRate.value)
+    @CanUpdateProjectPartner
+    override fun updateOfficeAdministrationFlatRate(partnerId: Long, flatRate: InputFlatRate): Int? {
+        return projectPartnerBudgetService.updateOfficeAdministrationFlatRate(partnerId, flatRate.value)
+    }
+
+    @CanReadProjectPartner
+    override fun getTotal(partnerId: Long): BigDecimal {
+        return projectPartnerBudgetService.getTotal(partnerId)
     }
 
 }

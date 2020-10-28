@@ -13,7 +13,9 @@ import org.springframework.data.domain.Sort
 
 interface ProjectPartnerService {
 
-    fun getById(projectId: Long, id: Long): OutputProjectPartnerDetail
+    fun getById(id: Long): OutputProjectPartnerDetail
+
+    fun getProjectIdForPartnerId(id: Long): Long
 
     fun findAllByProjectId(projectId: Long, page: Pageable): Page<OutputProjectPartner>
 
@@ -21,13 +23,13 @@ interface ProjectPartnerService {
 
     fun create(projectId: Long, projectPartner: InputProjectPartnerCreate): OutputProjectPartnerDetail
 
-    fun update(projectId: Long, projectPartner: InputProjectPartnerUpdate): OutputProjectPartnerDetail
+    fun update(projectPartner: InputProjectPartnerUpdate): OutputProjectPartnerDetail
 
-    fun updatePartnerAddresses(projectId: Long, partnerId: Long, addresses: Set<InputProjectPartnerAddress>): OutputProjectPartnerDetail
+    fun updatePartnerAddresses(partnerId: Long, addresses: Set<InputProjectPartnerAddress>): OutputProjectPartnerDetail
 
-    fun updatePartnerContacts(projectId: Long, partnerId: Long, contacts: Set<InputProjectContact>): OutputProjectPartnerDetail
+    fun updatePartnerContacts(partnerId: Long, contacts: Set<InputProjectContact>): OutputProjectPartnerDetail
 
-    fun updatePartnerContribution(projectId: Long, partnerId: Long, partnerContribution: InputProjectPartnerContribution): OutputProjectPartnerDetail
+    fun updatePartnerContribution(partnerId: Long, partnerContribution: InputProjectPartnerContribution): OutputProjectPartnerDetail
 
-    fun deletePartner(projectId: Long, partnerId: Long)
+    fun deletePartner(partnerId: Long)
 }
