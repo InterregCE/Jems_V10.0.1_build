@@ -21,7 +21,7 @@ const val REGION_3_CODE_LENGTH = 5
 const val GISCO_NUTS_URL = "https://gisco-services.ec.europa.eu/distribution/v2/nuts"
 const val GISCO_DATASETS_FILE = "datasets.json"
 const val NUTS_ID = "NUTS_ID"
-const val NUTS_NAME = "NUTS_NAME"
+const val NUTS_NAME = "NAME_LATN"
 
 fun String.removeWrappingQuotes() = replace(TRAILING_QUOTES, "")
 
