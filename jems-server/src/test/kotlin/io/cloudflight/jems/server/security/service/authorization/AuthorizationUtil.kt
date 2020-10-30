@@ -2,7 +2,7 @@ package io.cloudflight.jems.server.security.service.authorization
 
 import io.cloudflight.jems.api.user.dto.OutputUserRole
 import io.cloudflight.jems.api.user.dto.OutputUserWithRole
-import io.cloudflight.jems.server.security.model.LocalCurrentUser
+import io.cloudflight.jems.server.authentication.model.LocalCurrentUser
 import org.springframework.security.core.authority.SimpleGrantedAuthority
 
 internal class AuthorizationUtil {

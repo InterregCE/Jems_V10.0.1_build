@@ -2,7 +2,7 @@ package io.cloudflight.jems.server.project.service.partner.budget
 
 import io.cloudflight.jems.api.project.dto.partner.ProjectPartnerRole
 import io.cloudflight.jems.api.project.dto.partner.budget.InputBudget
-import io.cloudflight.jems.server.exception.I18nValidationException
+import io.cloudflight.jems.server.common.exception.I18nValidationException
 import io.cloudflight.jems.server.programme.entity.ProgrammeLegalStatus
 import io.cloudflight.jems.server.project.entity.partner.ProjectPartner
 import io.cloudflight.jems.server.project.entity.partner.budget.Budget
@@ -50,7 +50,7 @@ internal class ProjectPartnerBudgetServiceTest {
             project = project,
             abbreviation = "partner",
             role = ProjectPartnerRole.LEAD_PARTNER,
-        legalStatus = ProgrammeLegalStatus(1, "test")
+            legalStatus = ProgrammeLegalStatus(1, "test")
         )
 
         val budgetOptions = ProjectPartnerBudgetOptions(

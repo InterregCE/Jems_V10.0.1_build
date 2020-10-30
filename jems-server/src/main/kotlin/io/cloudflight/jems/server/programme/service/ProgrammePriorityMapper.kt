@@ -1,16 +1,16 @@
 package io.cloudflight.jems.server.programme.service
 
-import io.cloudflight.jems.api.programme.dto.InputProgrammePriorityCreate
-import io.cloudflight.jems.api.programme.dto.InputProgrammePriorityPolicy
-import io.cloudflight.jems.api.programme.dto.InputProgrammePriorityUpdate
-import io.cloudflight.jems.api.programme.dto.OutputProgrammePriority
-import io.cloudflight.jems.api.programme.dto.OutputProgrammePriorityPolicySimple
-import io.cloudflight.jems.api.programme.dto.ProgrammeObjective
-import io.cloudflight.jems.api.programme.dto.ProgrammeObjectivePolicy
-import io.cloudflight.jems.api.programme.dto.OutputProgrammePrioritySimple
+import io.cloudflight.jems.api.programme.dto.priority.InputProgrammePriorityCreate
+import io.cloudflight.jems.api.programme.dto.priority.InputProgrammePriorityPolicy
+import io.cloudflight.jems.api.programme.dto.priority.InputProgrammePriorityUpdate
+import io.cloudflight.jems.api.programme.dto.priority.OutputProgrammePriority
+import io.cloudflight.jems.api.programme.dto.priority.OutputProgrammePriorityPolicySimple
+import io.cloudflight.jems.api.programme.dto.priority.ProgrammeObjective
+import io.cloudflight.jems.api.programme.dto.priority.ProgrammeObjectivePolicy
+import io.cloudflight.jems.api.programme.dto.priority.OutputProgrammePrioritySimple
 import io.cloudflight.jems.server.programme.entity.ProgrammePriority
 import io.cloudflight.jems.server.programme.entity.ProgrammePriorityPolicy
-import io.cloudflight.jems.server.exception.I18nValidationException
+import io.cloudflight.jems.server.common.exception.I18nValidationException
 import org.springframework.http.HttpStatus
 
 fun ProgrammePriority.toOutputProgrammePriority() = OutputProgrammePriority(

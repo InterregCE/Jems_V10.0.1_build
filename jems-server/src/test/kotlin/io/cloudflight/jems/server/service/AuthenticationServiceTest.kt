@@ -1,13 +1,13 @@
 package io.cloudflight.jems.server.service
 
-import io.cloudflight.jems.api.dto.LoginRequest
+import io.cloudflight.jems.api.authentication.dto.LoginRequest
 import io.cloudflight.jems.api.user.dto.OutputUserRole
 import io.cloudflight.jems.api.user.dto.OutputUserWithRole
 import io.cloudflight.jems.server.audit.service.AuditCandidateWithUser
 import io.cloudflight.jems.server.audit.service.AuditService
-import io.cloudflight.jems.server.security.model.LocalCurrentUser
-import io.cloudflight.jems.server.security.service.SecurityService
-import io.cloudflight.jems.server.security.service.impl.AuthenticationServiceImpl
+import io.cloudflight.jems.server.authentication.model.LocalCurrentUser
+import io.cloudflight.jems.server.authentication.service.SecurityService
+import io.cloudflight.jems.server.authentication.service.AuthenticationServiceImpl
 import io.mockk.MockKAnnotations
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
@@ -79,15 +79,15 @@ class AuthenticationServiceTest {
 
         val currentUser = authenticationService.getCurrentUser()
 
-        assertThat(currentUser?.name).isEqualTo("test@test.net")
-        assertThat(currentUser?.role).isEqualTo("Role")
+        assertThat(currentUser.name).isEqualTo("test@test.net")
+        assertThat(currentUser.role).isEqualTo("Role")
     }
 
     @Test
     fun `current user is null`() {
         val currentUser = authenticationService.getCurrentUser()
 
-        assertThat(currentUser?.name).isEqualTo("")
-        assertThat(currentUser?.role).isEqualTo("")
+        assertThat(currentUser.name).isEqualTo("")
+        assertThat(currentUser.role).isEqualTo("")
     }
 }

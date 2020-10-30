@@ -5,7 +5,7 @@ import io.cloudflight.jems.server.user.entity.User
 import io.cloudflight.jems.server.user.entity.UserProfile
 import io.cloudflight.jems.server.user.entity.UserRole
 import io.cloudflight.jems.server.user.repository.UserProfileRepository
-import io.cloudflight.jems.server.security.service.SecurityService
+import io.cloudflight.jems.server.authentication.service.SecurityService
 import io.cloudflight.jems.server.user.service.UserProfileService
 import io.cloudflight.jems.server.user.service.UserProfileServiceImpl
 import io.cloudflight.jems.server.user.service.toOutputUserProfile

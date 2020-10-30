@@ -1,6 +1,6 @@
 package io.cloudflight.jems.server.project.entity.description
 
-import io.cloudflight.jems.api.strategy.ProgrammeStrategy
+import io.cloudflight.jems.api.programme.dto.strategy.ProgrammeStrategy
 import java.util.Objects
 import java.util.UUID
 import javax.persistence.Column
@@ -28,7 +28,7 @@ data class ProjectRelevanceStrategy(
     @Column
     val specification: String?
 
-){
+) {
 
     override fun hashCode(): Int {
         return Objects.hash(projectRelevance?.projectId, strategy)

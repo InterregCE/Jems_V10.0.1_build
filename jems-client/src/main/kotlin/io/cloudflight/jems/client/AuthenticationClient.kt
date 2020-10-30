@@ -1,6 +1,6 @@
 package io.cloudflight.jems.client
 
-import io.cloudflight.jems.api.AuthenticationApi
+import io.cloudflight.jems.api.authentication.AuthenticationApi
 import org.springframework.cloud.openfeign.FeignClient
 
 /**

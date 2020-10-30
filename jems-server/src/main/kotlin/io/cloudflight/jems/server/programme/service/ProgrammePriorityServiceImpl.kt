@@ -1,12 +1,12 @@
 package io.cloudflight.jems.server.programme.service
 
-import io.cloudflight.jems.api.programme.dto.InputProgrammePriorityCreate
-import io.cloudflight.jems.api.programme.dto.InputProgrammePriorityUpdate
-import io.cloudflight.jems.api.programme.dto.OutputProgrammePriority
-import io.cloudflight.jems.api.programme.dto.OutputProgrammePriorityPolicySimple
-import io.cloudflight.jems.api.programme.dto.ProgrammeObjective
-import io.cloudflight.jems.api.programme.dto.ProgrammeObjectivePolicy
-import io.cloudflight.jems.server.exception.ResourceNotFoundException
+import io.cloudflight.jems.api.programme.dto.priority.InputProgrammePriorityCreate
+import io.cloudflight.jems.api.programme.dto.priority.InputProgrammePriorityUpdate
+import io.cloudflight.jems.api.programme.dto.priority.OutputProgrammePriority
+import io.cloudflight.jems.api.programme.dto.priority.OutputProgrammePriorityPolicySimple
+import io.cloudflight.jems.api.programme.dto.priority.ProgrammeObjective
+import io.cloudflight.jems.api.programme.dto.priority.ProgrammeObjectivePolicy
+import io.cloudflight.jems.server.common.exception.ResourceNotFoundException
 import io.cloudflight.jems.server.programme.repository.ProgrammePriorityPolicyRepository
 import io.cloudflight.jems.server.programme.repository.ProgrammePriorityRepository
 import io.cloudflight.jems.server.audit.service.AuditService

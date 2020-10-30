@@ -1,6 +1,6 @@
 package io.cloudflight.jems.api.project.dto
 
-import io.cloudflight.jems.api.programme.SystemLanguage
+import io.cloudflight.jems.api.programme.dto.SystemLanguage
 import javax.validation.constraints.Size
 
 /**

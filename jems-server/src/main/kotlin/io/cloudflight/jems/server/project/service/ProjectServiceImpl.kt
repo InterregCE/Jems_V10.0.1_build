@@ -1,7 +1,7 @@
 package io.cloudflight.jems.server.project.service
 
 import io.cloudflight.jems.api.call.dto.CallStatus
-import io.cloudflight.jems.api.programme.dto.ProgrammeObjectivePolicy
+import io.cloudflight.jems.api.programme.dto.priority.ProgrammeObjectivePolicy
 import io.cloudflight.jems.api.project.dto.InputProject
 import io.cloudflight.jems.api.project.dto.OutputProject
 import io.cloudflight.jems.api.project.dto.OutputProjectSimple
@@ -10,17 +10,17 @@ import io.cloudflight.jems.api.project.dto.InputProjectData
 import io.cloudflight.jems.server.call.entity.Call
 import io.cloudflight.jems.server.project.entity.ProjectStatus
 import io.cloudflight.jems.server.user.entity.User
-import io.cloudflight.jems.server.exception.I18nValidationException
-import io.cloudflight.jems.server.exception.ResourceNotFoundException
+import io.cloudflight.jems.server.common.exception.I18nValidationException
+import io.cloudflight.jems.server.common.exception.ResourceNotFoundException
 import io.cloudflight.jems.server.call.repository.CallRepository
 import io.cloudflight.jems.server.programme.entity.ProgrammePriorityPolicy
 import io.cloudflight.jems.server.project.repository.ProjectRepository
 import io.cloudflight.jems.server.project.repository.ProjectStatusRepository
 import io.cloudflight.jems.server.user.repository.UserRepository
-import io.cloudflight.jems.server.security.ADMINISTRATOR
-import io.cloudflight.jems.server.security.APPLICANT_USER
-import io.cloudflight.jems.server.security.PROGRAMME_USER
-import io.cloudflight.jems.server.security.service.SecurityService
+import io.cloudflight.jems.server.authentication.model.ADMINISTRATOR
+import io.cloudflight.jems.server.authentication.model.APPLICANT_USER
+import io.cloudflight.jems.server.authentication.model.PROGRAMME_USER
+import io.cloudflight.jems.server.authentication.service.SecurityService
 import io.cloudflight.jems.server.audit.service.AuditService
 import io.cloudflight.jems.server.project.dto.ProjectApplicantAndStatus
 import org.springframework.data.domain.Page
@@ -137,8 +137,8 @@ class ProjectServiceImpl(
      * Take policy only if available for this particular Call.
      */
     private fun policyToEntity(
-        policy: ProgrammeObjectivePolicy?,
-        availablePoliciesForCall: Set<ProgrammePriorityPolicy>
+            policy: ProgrammeObjectivePolicy?,
+            availablePoliciesForCall: Set<ProgrammePriorityPolicy>
     ): ProgrammePriorityPolicy? {
         if (policy == null)
             return null

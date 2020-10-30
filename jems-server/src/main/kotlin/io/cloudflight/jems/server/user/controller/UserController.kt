@@ -5,8 +5,8 @@ import io.cloudflight.jems.api.user.dto.InputPassword
 import io.cloudflight.jems.api.user.dto.InputUserCreate
 import io.cloudflight.jems.api.user.dto.InputUserUpdate
 import io.cloudflight.jems.api.user.dto.OutputUserWithRole
-import io.cloudflight.jems.server.security.ADMINISTRATOR
-import io.cloudflight.jems.server.security.service.SecurityService
+import io.cloudflight.jems.server.authentication.model.ADMINISTRATOR
+import io.cloudflight.jems.server.authentication.service.SecurityService
 import io.cloudflight.jems.server.user.service.UserService
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable

@@ -1,6 +1,6 @@
 package io.cloudflight.jems.server.project.service
 
-import io.cloudflight.jems.api.programme.SystemLanguage
+import io.cloudflight.jems.api.programme.dto.SystemLanguage
 import io.cloudflight.jems.api.project.dto.InputTranslation
 import io.cloudflight.jems.api.project.dto.description.InputProjectCooperationCriteria
 import io.cloudflight.jems.api.project.dto.description.InputProjectHorizontalPrinciples
@@ -17,7 +17,7 @@ import io.cloudflight.jems.api.project.dto.description.OutputProjectLongTermPlan
 import io.cloudflight.jems.api.project.dto.description.OutputProjectManagement
 import io.cloudflight.jems.api.project.dto.description.ProjectHorizontalPrinciplesEffect
 import io.cloudflight.jems.api.project.dto.description.ProjectTargetGroup
-import io.cloudflight.jems.api.strategy.ProgrammeStrategy
+import io.cloudflight.jems.api.programme.dto.strategy.ProgrammeStrategy
 import io.cloudflight.jems.server.project.entity.description.ProjectCooperationCriteria
 import io.cloudflight.jems.server.project.entity.description.ProjectHorizontalPrinciples
 import io.cloudflight.jems.server.project.entity.description.ProjectLongTermPlans

@@ -1,6 +1,6 @@
 package io.cloudflight.jems.api.user.dto
 
-import io.cloudflight.jems.api.validators.UniqueUserEmail
+import io.cloudflight.jems.api.user.validator.UniqueUserEmail
 import javax.validation.constraints.Email
 import javax.validation.constraints.NotBlank
 import javax.validation.constraints.NotNull

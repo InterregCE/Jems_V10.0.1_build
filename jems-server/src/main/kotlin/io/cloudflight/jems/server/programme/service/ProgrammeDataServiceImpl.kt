@@ -2,9 +2,9 @@ package io.cloudflight.jems.server.programme.service
 
 import io.cloudflight.jems.api.programme.dto.InputProgrammeData
 import io.cloudflight.jems.api.programme.dto.OutputProgrammeData
-import io.cloudflight.jems.server.exception.ResourceNotFoundException
+import io.cloudflight.jems.server.common.exception.ResourceNotFoundException
 import io.cloudflight.jems.server.nuts.repository.NutsRegion3Repository
-import io.cloudflight.jems.server.repository.ProgrammeDataRepository
+import io.cloudflight.jems.server.programme.repository.ProgrammeDataRepository
 import io.cloudflight.jems.server.audit.service.AuditService
 import io.cloudflight.jems.server.nuts.service.toOutput
 import org.springframework.stereotype.Service

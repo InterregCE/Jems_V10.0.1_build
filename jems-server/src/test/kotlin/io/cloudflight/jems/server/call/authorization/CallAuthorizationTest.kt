@@ -3,9 +3,9 @@ package io.cloudflight.jems.server.call.authorization
 import io.cloudflight.jems.api.call.dto.CallStatus
 import io.cloudflight.jems.api.call.dto.OutputCall
 import io.cloudflight.jems.server.call.service.CallService
-import io.cloudflight.jems.server.exception.ResourceNotFoundException
-import io.cloudflight.jems.server.security.model.LocalCurrentUser
-import io.cloudflight.jems.server.security.service.SecurityService
+import io.cloudflight.jems.server.common.exception.ResourceNotFoundException
+import io.cloudflight.jems.server.authentication.model.LocalCurrentUser
+import io.cloudflight.jems.server.authentication.service.SecurityService
 import io.cloudflight.jems.server.security.service.authorization.AuthorizationUtil.Companion.adminUser
 import io.cloudflight.jems.server.security.service.authorization.AuthorizationUtil.Companion.applicantUser
 import io.cloudflight.jems.server.security.service.authorization.AuthorizationUtil.Companion.programmeUser

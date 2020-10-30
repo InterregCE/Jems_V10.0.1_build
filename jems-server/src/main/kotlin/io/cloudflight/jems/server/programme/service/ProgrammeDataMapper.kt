@@ -2,7 +2,7 @@ package io.cloudflight.jems.server.programme.service
 
 import io.cloudflight.jems.api.programme.dto.InputProgrammeData
 import io.cloudflight.jems.api.programme.dto.OutputProgrammeData
-import io.cloudflight.jems.server.entity.ProgrammeData
+import io.cloudflight.jems.server.programme.entity.ProgrammeData
 import io.cloudflight.jems.server.nuts.entity.NutsRegion3
 import io.cloudflight.jems.server.nuts.service.groupNuts
 

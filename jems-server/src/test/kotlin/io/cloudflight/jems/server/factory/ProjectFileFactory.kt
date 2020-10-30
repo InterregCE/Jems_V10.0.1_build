@@ -1,13 +1,13 @@
 package io.cloudflight.jems.server.factory
 
 import io.cloudflight.jems.api.project.dto.status.ProjectApplicationStatus
-import io.cloudflight.jems.api.dto.ProjectFileType
+import io.cloudflight.jems.api.project.dto.file.ProjectFileType
 import io.cloudflight.jems.server.call.entity.Call
 import io.cloudflight.jems.server.user.entity.User
 import io.cloudflight.jems.server.project.entity.Project
-import io.cloudflight.jems.server.entity.ProjectFile
+import io.cloudflight.jems.server.project.entity.file.ProjectFile
 import io.cloudflight.jems.server.project.entity.ProjectStatus
-import io.cloudflight.jems.server.repository.ProjectFileRepository
+import io.cloudflight.jems.server.project.repository.ProjectFileRepository
 import io.cloudflight.jems.server.project.repository.ProjectRepository
 import io.cloudflight.jems.server.project.repository.ProjectStatusRepository
 import org.springframework.stereotype.Component

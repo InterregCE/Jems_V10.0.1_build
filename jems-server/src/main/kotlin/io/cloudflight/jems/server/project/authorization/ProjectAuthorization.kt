@@ -3,10 +3,10 @@ package io.cloudflight.jems.server.project.authorization
 import io.cloudflight.jems.api.project.dto.status.ProjectApplicationStatus.Companion.isNotSubmittedNow
 import io.cloudflight.jems.api.project.dto.status.ProjectApplicationStatus.DRAFT
 import io.cloudflight.jems.server.call.authorization.CallAuthorization
-import io.cloudflight.jems.server.exception.ResourceNotFoundException
-import io.cloudflight.jems.server.security.service.SecurityService
+import io.cloudflight.jems.server.common.exception.ResourceNotFoundException
+import io.cloudflight.jems.server.authentication.service.SecurityService
 import io.cloudflight.jems.server.project.service.ProjectService
-import io.cloudflight.jems.server.security.service.authorization.Authorization
+import io.cloudflight.jems.server.authentication.authorization.Authorization
 import org.springframework.security.access.prepost.PreAuthorize
 import org.springframework.stereotype.Component
 
@@ -23,7 +23,7 @@ class ProjectAuthorization(
     override val securityService: SecurityService,
     val projectService: ProjectService,
     val callAuthorization: CallAuthorization
-): Authorization(securityService) {
+) : Authorization(securityService) {
 
     fun canReadProject(id: Long): Boolean {
         val project = projectService.getApplicantAndStatusById(id)

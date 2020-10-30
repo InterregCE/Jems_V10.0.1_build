@@ -5,18 +5,18 @@ import io.cloudflight.jems.api.user.dto.InputUserCreate
 import io.cloudflight.jems.api.user.dto.InputUserRegistration
 import io.cloudflight.jems.api.user.dto.InputUserUpdate
 import io.cloudflight.jems.api.user.dto.OutputUserWithRole
-import io.cloudflight.jems.server.dto.UserWithCredentials
+import io.cloudflight.jems.server.user.model.UserWithCredentials
 import io.cloudflight.jems.server.user.entity.User
 import io.cloudflight.jems.server.user.entity.UserRole
 import io.cloudflight.jems.server.audit.service.AuditService
-import io.cloudflight.jems.server.exception.I18nFieldError
-import io.cloudflight.jems.server.exception.I18nValidationException
-import io.cloudflight.jems.server.exception.ResourceNotFoundException
+import io.cloudflight.jems.server.common.exception.I18nFieldError
+import io.cloudflight.jems.server.common.exception.I18nValidationException
+import io.cloudflight.jems.server.common.exception.ResourceNotFoundException
 import io.cloudflight.jems.server.user.repository.UserRepository
 import io.cloudflight.jems.server.user.repository.UserRoleRepository
-import io.cloudflight.jems.server.security.ADMINISTRATOR
-import io.cloudflight.jems.server.security.APPLICANT_USER
-import io.cloudflight.jems.server.security.service.SecurityService
+import io.cloudflight.jems.server.authentication.model.ADMINISTRATOR
+import io.cloudflight.jems.server.authentication.model.APPLICANT_USER
+import io.cloudflight.jems.server.authentication.service.SecurityService
 import org.slf4j.LoggerFactory
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
@@ -115,7 +115,7 @@ class UserServiceImpl(
         auditService.logEvent(passwordChanged(securityService.currentUser, account.toOutputUser()))
     }
 
-    private fun <T>throwNotFound(msg: String): T {
+    private fun <T> throwNotFound(msg: String): T {
         logger.error(msg)
         throw ResourceNotFoundException()
     }

@@ -9,8 +9,8 @@ import io.cloudflight.jems.api.project.dto.status.ProjectApplicationStatus
 import io.cloudflight.jems.api.project.dto.status.ProjectEligibilityAssessmentResult
 import io.cloudflight.jems.api.project.dto.status.ProjectQualityAssessmentResult
 import io.cloudflight.jems.api.user.dto.OutputUser
-import io.cloudflight.jems.server.security.model.LocalCurrentUser
-import io.cloudflight.jems.server.security.service.SecurityService
+import io.cloudflight.jems.server.authentication.model.LocalCurrentUser
+import io.cloudflight.jems.server.authentication.service.SecurityService
 import io.cloudflight.jems.server.security.service.authorization.AuthorizationUtil.Companion.adminUser
 import io.cloudflight.jems.server.security.service.authorization.AuthorizationUtil.Companion.applicantUser
 import io.cloudflight.jems.server.security.service.authorization.AuthorizationUtil.Companion.programmeUser

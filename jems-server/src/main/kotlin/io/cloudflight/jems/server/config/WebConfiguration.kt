@@ -1,6 +1,6 @@
 package io.cloudflight.jems.server.config
 
-import io.cloudflight.jems.server.security.service.impl.HttpSessionService
+import io.cloudflight.jems.server.authentication.service.HttpSessionService
 import org.springframework.boot.web.server.ErrorPage
 import org.springframework.boot.web.server.WebServerFactoryCustomizer
 import org.springframework.boot.web.servlet.ServletListenerRegistrationBean

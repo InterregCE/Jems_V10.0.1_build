@@ -1,6 +1,6 @@
 package io.cloudflight.jems.server.project.entity
 
-import io.cloudflight.jems.api.programme.SystemLanguage
+import io.cloudflight.jems.api.programme.dto.SystemLanguage
 import java.io.Serializable
 import javax.persistence.Column
 import javax.persistence.Embeddable

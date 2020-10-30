@@ -1,13 +1,15 @@
 package io.cloudflight.jems.server.strategy.service
 
-import io.cloudflight.jems.api.strategy.InputProgrammeStrategy
-import io.cloudflight.jems.api.strategy.OutputProgrammeStrategy
-import io.cloudflight.jems.api.strategy.ProgrammeStrategy
+import io.cloudflight.jems.api.programme.dto.strategy.InputProgrammeStrategy
+import io.cloudflight.jems.api.programme.dto.strategy.OutputProgrammeStrategy
+import io.cloudflight.jems.api.programme.dto.strategy.ProgrammeStrategy
 import io.cloudflight.jems.server.audit.entity.AuditAction
 import io.cloudflight.jems.server.audit.service.AuditCandidate
 import io.cloudflight.jems.server.audit.service.AuditService
-import io.cloudflight.jems.server.strategy.entity.Strategy
-import io.cloudflight.jems.server.strategy.repository.StrategyRepository
+import io.cloudflight.jems.server.programme.entity.Strategy
+import io.cloudflight.jems.server.programme.repository.StrategyRepository
+import io.cloudflight.jems.server.programme.service.strategy.StrategyService
+import io.cloudflight.jems.server.programme.service.strategy.StrategyServiceImpl
 import io.mockk.MockKAnnotations
 import io.mockk.every
 import io.mockk.impl.annotations.MockK

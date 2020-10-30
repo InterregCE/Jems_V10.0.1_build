@@ -7,7 +7,7 @@ import io.cloudflight.jems.server.audit.entity.AuditUser
 import io.cloudflight.jems.server.audit.service.AuditBuilder
 import io.cloudflight.jems.server.audit.service.AuditCandidate
 import io.cloudflight.jems.server.audit.service.AuditCandidateWithUser
-import io.cloudflight.jems.server.security.model.CurrentUser
+import io.cloudflight.jems.server.authentication.model.CurrentUser
 import java.util.stream.Collectors
 
 fun userCreated(currentUser: CurrentUser?, createdUser: OutputUserWithRole): AuditCandidate {

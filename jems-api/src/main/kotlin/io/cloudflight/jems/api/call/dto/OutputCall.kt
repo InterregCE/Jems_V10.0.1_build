@@ -1,8 +1,8 @@
 package io.cloudflight.jems.api.call.dto
 
 import io.cloudflight.jems.api.programme.dto.OutputProgrammeFund
-import io.cloudflight.jems.api.programme.dto.OutputProgrammePriorityPolicySimple
-import io.cloudflight.jems.api.strategy.ProgrammeStrategy
+import io.cloudflight.jems.api.programme.dto.priority.OutputProgrammePriorityPolicySimple
+import io.cloudflight.jems.api.programme.dto.strategy.ProgrammeStrategy
 import java.time.ZonedDateTime
 
 data class OutputCall (

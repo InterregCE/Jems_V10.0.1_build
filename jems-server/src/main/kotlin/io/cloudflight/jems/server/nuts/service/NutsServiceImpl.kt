@@ -1,8 +1,8 @@
 package io.cloudflight.jems.server.nuts.service
 
 import io.cloudflight.jems.api.nuts.dto.OutputNutsMetadata
-import io.cloudflight.jems.server.exception.I18nValidationException
-import io.cloudflight.jems.server.exception.ResourceNotFoundException
+import io.cloudflight.jems.server.common.exception.I18nValidationException
+import io.cloudflight.jems.server.common.exception.ResourceNotFoundException
 import io.cloudflight.jems.server.nuts.entity.NutsMetadata
 import io.cloudflight.jems.server.nuts.repository.NutsCountryRepository
 import io.cloudflight.jems.server.nuts.repository.NutsMetadataRepository

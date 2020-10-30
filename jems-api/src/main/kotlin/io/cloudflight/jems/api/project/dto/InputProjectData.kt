@@ -1,6 +1,6 @@
 package io.cloudflight.jems.api.project.dto
 
-import io.cloudflight.jems.api.programme.dto.ProgrammeObjectivePolicy
+import io.cloudflight.jems.api.programme.dto.priority.ProgrammeObjectivePolicy
 import org.hibernate.validator.constraints.Range
 import javax.validation.constraints.NotBlank
 import javax.validation.constraints.Size

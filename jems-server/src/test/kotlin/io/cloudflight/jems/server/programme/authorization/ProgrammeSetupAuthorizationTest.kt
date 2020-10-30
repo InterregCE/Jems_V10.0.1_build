@@ -1,7 +1,7 @@
 package io.cloudflight.jems.server.programme.authorization
 
-import io.cloudflight.jems.server.security.model.LocalCurrentUser
-import io.cloudflight.jems.server.security.service.SecurityService
+import io.cloudflight.jems.server.authentication.model.LocalCurrentUser
+import io.cloudflight.jems.server.authentication.service.SecurityService
 import io.cloudflight.jems.server.security.service.authorization.AuthorizationUtil.Companion.adminUser
 import io.cloudflight.jems.server.security.service.authorization.AuthorizationUtil.Companion.applicantUser
 import io.cloudflight.jems.server.security.service.authorization.AuthorizationUtil.Companion.programmeUser

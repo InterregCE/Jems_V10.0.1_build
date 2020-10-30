@@ -1,11 +1,11 @@
 package io.cloudflight.jems.server.programme.controller
 
 import io.cloudflight.jems.api.programme.ProgrammePriorityApi
-import io.cloudflight.jems.api.programme.dto.InputProgrammePriorityCreate
-import io.cloudflight.jems.api.programme.dto.InputProgrammePriorityUpdate
-import io.cloudflight.jems.api.programme.dto.OutputProgrammePriority
-import io.cloudflight.jems.api.programme.dto.ProgrammeObjective
-import io.cloudflight.jems.api.programme.dto.ProgrammeObjectivePolicy
+import io.cloudflight.jems.api.programme.dto.priority.InputProgrammePriorityCreate
+import io.cloudflight.jems.api.programme.dto.priority.InputProgrammePriorityUpdate
+import io.cloudflight.jems.api.programme.dto.priority.OutputProgrammePriority
+import io.cloudflight.jems.api.programme.dto.priority.ProgrammeObjective
+import io.cloudflight.jems.api.programme.dto.priority.ProgrammeObjectivePolicy
 import io.cloudflight.jems.server.programme.service.ProgrammePriorityService
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
