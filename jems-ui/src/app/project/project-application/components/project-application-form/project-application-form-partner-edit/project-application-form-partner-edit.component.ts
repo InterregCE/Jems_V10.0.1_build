@@ -16,6 +16,7 @@ import {
   InputProjectPartnerUpdate,
   OutputProjectPartner,
   OutputProjectPartnerDetail,
+  OutputProgrammeLegalStatus
 } from '@cat/api';
 import {FormState} from '@common/components/forms/form-state';
 import {filter, take, takeUntil, tap} from 'rxjs/operators';
@@ -39,6 +40,8 @@ export class ProjectApplicationFormPartnerEditComponent extends ViewEditForm imp
   partner: OutputProjectPartnerDetail;
   @Input()
   editable: boolean;
+  @Input()
+  legalStatuses: OutputProgrammeLegalStatus[];
 
   @Output()
   create = new EventEmitter<InputProjectPartnerCreate>();
@@ -58,7 +61,11 @@ export class ProjectApplicationFormPartnerEditComponent extends ViewEditForm imp
     role: ['', Validators.required],
     nameInOriginalLanguage: ['', Validators.maxLength(100)],
     nameInEnglish: ['', Validators.maxLength(100)],
-    department: ['', Validators.maxLength(250)]
+    department: ['', Validators.maxLength(250)],
+    partnerType: [''],
+    legalStatus: ['', Validators.required],
+    vat: ['', Validators.maxLength(50)],
+    recoverVat: ['']
   });
 
   nameErrors = {
@@ -77,6 +84,30 @@ export class ProjectApplicationFormPartnerEditComponent extends ViewEditForm imp
   departmentErrors = {
     maxlength: 'project.organization.department.size.too.long'
   };
+  legalStatusErrors = {
+    required: 'project.partner.legal.status.should.not.be.empty'
+  }
+  vatErrors = {
+    maxlength: 'project.partner.vat.size.too.long'
+  };
+
+  partnerTypeEnums = [
+    'LocalPublicAuthority',
+    'RegionalPublicAuthority',
+    'NationalPublicAuthority',
+    'SectoralAgency',
+    'InfrastructureAndServiceProvider',
+    'InterestGroups',
+    'HigherEducationOrganisations',
+    'EducationTrainingCentreAndSchool',
+    'EnterpriseExceptSme',
+    'Sme',
+    'BusinessSupportOrganisation',
+    'Egtc',
+    'InternationalOrganisationEeig',
+    'GeneralPublic',
+    'Hospitals',
+    'Other'];
 
   constructor(private formBuilder: FormBuilder,
               private dialog: MatDialog,
@@ -134,10 +165,10 @@ export class ProjectApplicationFormPartnerEditComponent extends ViewEditForm imp
         nameInOriginalLanguage: organization?.nameInOriginalLanguage,
         nameInEnglish: organization?.nameInEnglish,
         department: organization?.department,
-        partnerType: this.partner.partnerType,
-        legalStatusId: 1,
-        vat: '',
-        vatRecovery: true
+        partnerType: controls?.partnerType.value,
+        legalStatusId: controls?.legalStatus.value,
+        vat: controls?.vat.value,
+        vatRecovery: controls?.recoverVat.value
       });
     else
       this.update.emit({
@@ -148,10 +179,10 @@ export class ProjectApplicationFormPartnerEditComponent extends ViewEditForm imp
         nameInOriginalLanguage: organization?.nameInOriginalLanguage,
         nameInEnglish: organization?.nameInEnglish,
         department: organization?.department,
-        partnerType: this.partner.partnerType,
-        legalStatusId: 1,
-        vat: '',
-        vatRecovery: true
+        partnerType: controls?.partnerType.value,
+        legalStatusId: controls?.legalStatus.value,
+        vat: controls?.vat.value,
+        vatRecovery: controls?.recoverVat.value
       });
   }
 
@@ -180,6 +211,10 @@ export class ProjectApplicationFormPartnerEditComponent extends ViewEditForm imp
     this.controls?.nameInOriginalLanguage.setValue(this.partner?.nameInOriginalLanguage);
     this.controls?.nameInEnglish.setValue(this.partner?.nameInEnglish);
     this.controls?.department.setValue(this.partner?.department);
+    this.controls?.partnerType.setValue(this.partner?.partnerType);
+    this.controls?.legalStatus.setValue(this.partner?.legalStatusId);
+    this.controls?.vat.setValue(this.partner?.vat);
+    this.controls?.recoverVat.setValue(this.partner?.vatRecovery);
   }
 
   private handleLeadAlreadyExisting(controls: any, error: I18nValidationError): void {

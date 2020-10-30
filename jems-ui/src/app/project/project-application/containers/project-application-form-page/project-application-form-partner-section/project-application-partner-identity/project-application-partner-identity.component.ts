@@ -4,6 +4,7 @@ import {ProjectApplicationFormSidenavService} from '../../services/project-appli
 import {BaseComponent} from '@common/components/base-component';
 import {ActivatedRoute, Router} from '@angular/router';
 import {ProjectStore} from '../../../project-application-detail/services/project-store.service';
+import {ProgrammeLegalStatusService} from '@cat/api';
 
 @Component({
   selector: 'app-project-application-partner-identity',
@@ -16,9 +17,12 @@ export class ProjectApplicationPartnerIdentityComponent extends BaseComponent im
   projectId = this.activatedRoute?.snapshot?.params?.projectId;
   partnerId = this.activatedRoute?.snapshot?.params?.partnerId
 
+  legalStatuses$ = this.programmeLegalStatusService.getProgrammeLegalStatusList();
+
   constructor(public partnerStore: ProjectPartnerStore,
               private projectStore: ProjectStore,
               private projectApplicationFormSidenavService: ProjectApplicationFormSidenavService,
+              private programmeLegalStatusService: ProgrammeLegalStatusService,
               private activatedRoute: ActivatedRoute,
               private router: Router) {
     super();
