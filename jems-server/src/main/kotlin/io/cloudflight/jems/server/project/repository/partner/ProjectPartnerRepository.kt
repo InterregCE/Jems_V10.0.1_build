@@ -5,7 +5,6 @@ import io.cloudflight.jems.server.project.entity.partner.ProjectPartner
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
 import org.springframework.data.domain.Sort
-import org.springframework.data.jpa.repository.EntityGraph
 import org.springframework.data.repository.PagingAndSortingRepository
 import org.springframework.stereotype.Repository
 import java.util.Optional
@@ -21,7 +20,7 @@ interface ProjectPartnerRepository : PagingAndSortingRepository<ProjectPartner, 
 
     fun findAllByProjectId(projectId: Long, pageable: Pageable): Page<ProjectPartner>
 
-    fun findAllByProjectId(projectId: Long, sort: Sort): Iterable<ProjectPartner>
+    fun findTop30ByProjectId(projectId: Long, sort: Sort): Iterable<ProjectPartner>
 
     fun findFirstByProjectIdAndRole(projectId: Long, role: ProjectPartnerRole): Optional<ProjectPartner>
 

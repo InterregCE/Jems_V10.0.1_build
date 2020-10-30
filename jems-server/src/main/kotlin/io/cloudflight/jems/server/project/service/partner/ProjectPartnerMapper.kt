@@ -45,7 +45,7 @@ fun ProjectPartner.toOutputProjectPartnerDetail() = OutputProjectPartnerDetail(
     department = department,
     addresses = addresses?.map { it.toOutputProjectPartnerAddress() } ?: emptyList(),
     contacts = contacts?.map { it.toOutputProjectPartnerContact() } ?: emptyList(),
-    partnerContribution = partnerContribution?.toOutputProjectPartnerContribution()
+    partnerContribution = partnerContribution.map { it.toOutputProjectPartnerContribution() }.firstOrNull()
 )
 
 fun InputProjectPartnerAddress.toEntity(partner: ProjectPartner) = ProjectPartnerAddress(
@@ -82,13 +82,16 @@ fun ProjectPartnerContact.toOutputProjectPartnerContact() = OutputProjectPartner
     telephone = contact?.telephone
 )
 
-fun InputProjectPartnerContribution.toEntity(partner: ProjectPartner) = ProjectPartnerContribution(
-    partnerId = partner.id!!,
-    partner = partner,
-    organizationRelevance = organizationRelevance,
-    organizationRole = organizationRole,
-    organizationExperience = organizationExperience
-)
+fun InputProjectPartnerContribution.toEntity(partnerId: Long): Set<ProjectPartnerContribution> {
+    val contribution = ProjectPartnerContribution(
+        partnerId = partnerId,
+        organizationRelevance = organizationRelevance,
+        organizationRole = organizationRole,
+        organizationExperience = organizationExperience
+    ).nullIfBlank() ?: return emptySet()
+
+    return setOf(contribution)
+}
 
 fun ProjectPartnerContribution.toOutputProjectPartnerContribution() = OutputProjectPartnerContribution(
     organizationRelevance = organizationRelevance,

@@ -11,6 +11,7 @@ import io.cloudflight.jems.api.user.dto.OutputUserWithRole
 import io.cloudflight.jems.api.programme.dto.OutputProgrammePriorityPolicySimple
 import io.cloudflight.jems.api.programme.dto.ProgrammeObjectivePolicy.AdvancedTechnologies
 import io.cloudflight.jems.api.programme.dto.ProgrammeObjectivePolicy.HealthcareAcrossBorders
+import io.cloudflight.jems.api.programme.dto.ProgrammeObjectivePolicy.SocialInnovation
 import io.cloudflight.jems.api.project.dto.InputProjectData
 import io.cloudflight.jems.api.project.dto.OutputProjectData
 import io.cloudflight.jems.api.strategy.ProgrammeStrategy
@@ -133,9 +134,6 @@ class ProjectServiceTest {
     @MockK
     lateinit var securityService: SecurityService
 
-    @MockK
-    lateinit var programmePriorityPolicyRepository: ProgrammePriorityPolicyRepository
-
     lateinit var projectService: ProjectService
 
     @BeforeEach
@@ -150,7 +148,6 @@ class ProjectServiceTest {
             callRepository,
             userRepository,
             auditService,
-            programmePriorityPolicyRepository,
             securityService
         )
     }
@@ -223,11 +220,11 @@ class ProjectServiceTest {
     fun projectCreation_OK() {
         every { callRepository.findById(eq(dummyCall.id!!)) } returns Optional.of(dummyCall.copy(endDate = ZonedDateTime.now().plusDays(1)))
         every { projectRepository.save(any<Project>()) } returns Project(
-            612,
-            dummyCall,
-            "test",
-            account,
-            statusDraft
+            id = 612,
+            call = dummyCall,
+            acronym = "test",
+            applicant = account,
+            projectStatus = statusDraft
         )
 
         val result = projectService.createProject(InputProject("test", dummyCall.id))
@@ -252,7 +249,7 @@ class ProjectServiceTest {
     @Test
     fun projectGet_OK() {
         every { projectRepository.findById(eq(1)) } returns
-            Optional.of(Project(1, dummyCall, "test", account, statusSubmitted, statusSubmitted))
+            Optional.of(Project(id = 1, call = dummyCall, acronym = "test", applicant = account, projectStatus = statusSubmitted, firstSubmission = statusSubmitted))
 
         val result = projectService.getById(1);
 
@@ -308,21 +305,37 @@ class ProjectServiceTest {
         )
         every { projectRepository.findById(eq(1)) } returns Optional.of(projectToReturn)
         every { projectRepository.save(any<Project>()) } returnsArgument 0
-        every { programmePriorityPolicyRepository.findById(eq(AdvancedTechnologies)) } returns
-            Optional.of(ProgrammePriorityPolicy(programmeObjectivePolicy = AdvancedTechnologies, code = "AT"))
+
+        val result = projectService.update(1, projectData.copy(specificObjective = HealthcareAcrossBorders))
 
         val expectedData = OutputProjectData(
             title = projectData.title,
             duration = projectData.duration,
             intro = projectData.intro,
             introProgrammeLanguage = projectData.introProgrammeLanguage,
-            specificObjective = OutputProgrammePriorityPolicySimple(programmeObjectivePolicy = AdvancedTechnologies, code = "AT"),
+            specificObjective = OutputProgrammePriorityPolicySimple(programmeObjectivePolicy = HealthcareAcrossBorders, code = "HAB"),
             programmePriority = null
         )
-
-        val result = projectService.update(1, projectData)
         assertThat(result.projectData).isEqualTo(expectedData)
         assertThat(result.acronym).isEqualTo(projectData.acronym)
+    }
+
+    @Test
+    fun `projectUpdate not existing policy`() {
+        val projectToReturn = Project(
+            id = 1,
+            call = dummyCall,
+            acronym = "test acronym",
+            applicant = account,
+            projectStatus = statusSubmitted,
+            firstSubmission = statusSubmitted
+        )
+        every { projectRepository.findById(eq(1)) } returns Optional.of(projectToReturn)
+
+        val ex = assertThrows<ResourceNotFoundException> {
+            projectService.update(1, projectData.copy(specificObjective = SocialInnovation))
+        }
+        assertThat(ex.entity).isEqualTo("programme_priority_policy")
     }
 
 }

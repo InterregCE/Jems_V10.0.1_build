@@ -14,7 +14,6 @@ import javax.persistence.Id
 import javax.persistence.JoinColumn
 import javax.persistence.ManyToOne
 import javax.persistence.OneToMany
-import javax.persistence.OneToOne
 
 @Entity(name = "project_partner")
 data class ProjectPartner(
@@ -52,8 +51,8 @@ data class ProjectPartner(
     @OneToMany(mappedBy = "contactId.partnerId", cascade = [CascadeType.ALL], orphanRemoval = true)
     val contacts: Set<ProjectPartnerContact>? = emptySet(),
 
-    @OneToOne(mappedBy = "partner", cascade = [CascadeType.ALL])
-    val partnerContribution: ProjectPartnerContribution? = null
+    @OneToMany(mappedBy = "partnerId", cascade = [CascadeType.ALL], orphanRemoval = true)
+    val partnerContribution: Set<ProjectPartnerContribution> = emptySet()
 
 ) {
     override fun toString(): String {

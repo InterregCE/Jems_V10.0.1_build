@@ -10,6 +10,7 @@ import io.cloudflight.jems.api.project.dto.partner.OutputProjectPartnerDetail
 import io.cloudflight.jems.api.project.dto.partner.ProjectPartnerRole
 import io.cloudflight.jems.server.exception.I18nValidationException
 import io.cloudflight.jems.server.exception.ResourceNotFoundException
+import io.cloudflight.jems.server.project.entity.partner.ProjectPartner
 import io.cloudflight.jems.server.project.repository.partner.ProjectPartnerRepository
 import io.cloudflight.jems.server.project.repository.ProjectRepository
 import io.cloudflight.jems.server.project.service.associatedorganization.ProjectAssociatedOrganizationService
@@ -30,13 +31,13 @@ class ProjectPartnerServiceImpl(
 ) : ProjectPartnerService {
 
     companion object {
+        // when changing also change repository findTop*() methods
         const val MAX_PROJECT_PARTNERS = 30
     }
 
     @Transactional(readOnly = true)
     override fun getById(projectId: Long, id: Long): OutputProjectPartnerDetail {
-        return projectPartnerRepo.findFirstByProjectIdAndId(projectId, id).map { it.toOutputProjectPartnerDetail() }
-            .orElseThrow { ResourceNotFoundException("projectPartner") }
+        return getPartnerOrThrow(projectId, id).toOutputProjectPartnerDetail()
     }
 
     @Transactional(readOnly = true)
@@ -47,7 +48,7 @@ class ProjectPartnerServiceImpl(
     @Transactional(readOnly = true)
     override fun findAllByProjectIdForDropdown(projectId: Long, sort: Sort): List<OutputProjectPartner> {
         return StreamSupport.stream(
-            projectPartnerRepo.findAllByProjectId(projectId, sort).spliterator(),
+            projectPartnerRepo.findTop30ByProjectId(projectId, sort).spliterator(),
             false
         ).map { it.toOutputProjectPartner() }.collect(Collectors.toList())
     }
@@ -110,8 +111,7 @@ class ProjectPartnerServiceImpl(
 
     @Transactional
     override fun update(projectId: Long, projectPartner: InputProjectPartnerUpdate): OutputProjectPartnerDetail {
-        val oldProjectPartner = projectPartnerRepo.findFirstByProjectIdAndId(projectId, projectPartner.id)
-            .orElseThrow { ResourceNotFoundException("projectPartner") }
+        val oldProjectPartner = getPartnerOrThrow(projectId, projectPartner.id)
 
         val makingThisLead = !oldProjectPartner.role.isLead && projectPartner.role!!.isLead
         if (makingThisLead)
@@ -142,15 +142,14 @@ class ProjectPartnerServiceImpl(
             Sort.Order(Sort.Direction.ASC, "id")
         ))
 
-        val projectPartners = projectPartnerRepo.findAllByProjectId(projectId, sort)
+        val projectPartners = projectPartnerRepo.findTop30ByProjectId(projectId, sort)
             .mapIndexed { index, old -> old.copy(sortNumber = index.plus(1)) }
         projectPartnerRepo.saveAll(projectPartners)
     }
 
     @Transactional
     override fun updatePartnerAddresses(projectId: Long, partnerId: Long, addresses: Set<InputProjectPartnerAddress>): OutputProjectPartnerDetail {
-        val projectPartner = projectPartnerRepo.findFirstByProjectIdAndId(projectId, partnerId)
-            .orElseThrow { ResourceNotFoundException("projectPartner") }
+        val projectPartner = getPartnerOrThrow(projectId, partnerId)
         return projectPartnerRepo.save(
             projectPartner.copy(
                 addresses = addresses.mapTo(HashSet()) { it.toEntity(projectPartner) }
@@ -160,8 +159,7 @@ class ProjectPartnerServiceImpl(
 
     @Transactional
     override fun updatePartnerContacts(projectId: Long, partnerId: Long, contacts: Set<InputProjectContact>): OutputProjectPartnerDetail {
-        val projectPartner = projectPartnerRepo.findFirstByProjectIdAndId(projectId, partnerId)
-            .orElseThrow { ResourceNotFoundException("projectPartner") }
+        val projectPartner = getPartnerOrThrow(projectId, partnerId)
         return projectPartnerRepo.save(
             projectPartner.copy(
                 contacts = contacts.mapTo(HashSet()) { it.toEntity(projectPartner) }
@@ -171,11 +169,10 @@ class ProjectPartnerServiceImpl(
 
     @Transactional
     override fun updatePartnerContribution(projectId: Long, partnerId: Long, partnerContribution: InputProjectPartnerContribution): OutputProjectPartnerDetail {
-        val projectPartner = projectPartnerRepo.findFirstByProjectIdAndId(projectId, partnerId)
-            .orElseThrow { ResourceNotFoundException("projectPartner") }
+        val projectPartner = getPartnerOrThrow(projectId, partnerId)
         return projectPartnerRepo.save(
             projectPartner.copy(
-                partnerContribution = partnerContribution.toEntity(projectPartner)
+                partnerContribution = partnerContribution.toEntity(projectPartner.id!!)
             )
         ).toOutputProjectPartnerDetail()
     }
@@ -185,6 +182,11 @@ class ProjectPartnerServiceImpl(
         projectPartnerRepo.deleteById(partnerId)
         updateSortByRole(projectId)
         projectAssociatedOrganizationService.refreshSortNumbers(projectId)
+    }
+
+    private fun getPartnerOrThrow(projectId: Long, partnerId: Long): ProjectPartner {
+        return projectPartnerRepo.findFirstByProjectIdAndId(projectId, partnerId)
+            .orElseThrow { ResourceNotFoundException("projectPartner") }
     }
 
 }

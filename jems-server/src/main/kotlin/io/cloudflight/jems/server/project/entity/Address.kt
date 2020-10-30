@@ -29,4 +29,13 @@ data class Address(
 
     @Column
     val homepage: String? = null
-)
+) {
+    fun isBlank(): Boolean = country.isNullOrBlank()
+            && nutsRegion2.isNullOrBlank()
+            && nutsRegion3.isNullOrBlank()
+            && street.isNullOrBlank()
+            && houseNumber.isNullOrBlank()
+            && postalCode.isNullOrBlank()
+            && city.isNullOrBlank()
+            && homepage.isNullOrBlank()
+}

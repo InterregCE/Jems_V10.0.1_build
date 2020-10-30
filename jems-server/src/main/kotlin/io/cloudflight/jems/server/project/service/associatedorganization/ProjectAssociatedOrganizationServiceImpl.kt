@@ -41,11 +41,10 @@ class ProjectAssociatedOrganizationServiceImpl(
             associatedOrganization.toEntity(partner = partner)
         )
 
-        savedEntity = savedEntity.copy(contacts = associatedOrganization.contacts.mapTo(HashSet()) { it.toEntity(savedEntity) })
-        if (associatedOrganization.address != null)
-            savedEntity = savedEntity.copy(addresses = mutableSetOf(associatedOrganization.address!!.toEntity(savedEntity.id!!)))
-
-        savedEntity = projectAssociatedOrganizationRepo.save(savedEntity)
+        savedEntity = projectAssociatedOrganizationRepo.save(savedEntity.copy(
+            contacts = associatedOrganization.contacts.toEntity(savedEntity.id!!),
+            addresses = associatedOrganization.address.toEntity(savedEntity.id!!)
+        ))
         refreshSortNumbers(projectId)
         return savedEntity.toOutputProjectAssociatedOrganizationDetail()
     }
@@ -57,16 +56,14 @@ class ProjectAssociatedOrganizationServiceImpl(
         val projectPartner = projectPartnerRepo.findFirstByProjectIdAndId(projectId, associatedOrganization.partnerId)
             .orElseThrow { ResourceNotFoundException("projectPartner") }
 
-        val addressToSave = associatedOrganization.address?.toEntity(oldAssociatedOrganisation.id!!)
-
         return projectAssociatedOrganizationRepo.save(
             oldAssociatedOrganisation.copy(
                 project = projectPartner.project,
                 partner = projectPartner,
                 nameInOriginalLanguage = associatedOrganization.nameInOriginalLanguage,
                 nameInEnglish = associatedOrganization.nameInEnglish,
-                addresses = if (addressToSave == null) mutableSetOf() else mutableSetOf(addressToSave),
-                contacts = associatedOrganization.contacts.mapTo(HashSet()) { it.toEntity(oldAssociatedOrganisation) }
+                addresses = associatedOrganization.address.toEntity(oldAssociatedOrganisation.id!!),
+                contacts = associatedOrganization.contacts.toEntity(oldAssociatedOrganisation.id!!)
             )
         ).toOutputProjectAssociatedOrganizationDetail()
     }

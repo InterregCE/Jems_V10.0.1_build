@@ -7,11 +7,11 @@ import javax.validation.constraints.Size
 
 data class InputProjectContact (
 
-    @field:Size(max = 25, message = "project.contact.title.size.too.long")
-    val title: String? = null,
-
     @field:NotNull(message = "project.contact.type.should.not.be.empty")
     val type: ProjectContactType,
+
+    @field:Size(max = 25, message = "project.contact.title.size.too.long")
+    val title: String? = null,
 
     @field:Size(max = 50, message = "project.contact.first.name.size.too.long")
     val firstName: String? = null,
