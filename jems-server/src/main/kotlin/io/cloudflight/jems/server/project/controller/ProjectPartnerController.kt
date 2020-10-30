@@ -8,7 +8,13 @@ import io.cloudflight.jems.api.project.dto.partner.InputProjectPartnerAddress
 import io.cloudflight.jems.api.project.dto.partner.InputProjectPartnerUpdate
 import io.cloudflight.jems.api.project.dto.partner.OutputProjectPartner
 import io.cloudflight.jems.api.project.dto.partner.OutputProjectPartnerDetail
+import io.cloudflight.jems.api.project.dto.partner.cofinancing.InputProjectPartnerCoFinancingWrapper
+import io.cloudflight.jems.server.project.authorization.CanReadProject
+import io.cloudflight.jems.server.project.authorization.CanReadProjectPartner
+import io.cloudflight.jems.server.project.authorization.CanUpdateProject
+import io.cloudflight.jems.server.project.authorization.CanUpdateProjectPartner
 import io.cloudflight.jems.server.project.service.partner.ProjectPartnerService
+import io.cloudflight.jems.server.project.service.partner.cofinancing.ProjectPartnerCoFinancingService
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
 import org.springframework.security.access.prepost.PreAuthorize
@@ -16,52 +22,58 @@ import org.springframework.web.bind.annotation.RestController
 
 @RestController
 class ProjectPartnerController(
-    private val projectPartnerService: ProjectPartnerService
+    private val projectPartnerService: ProjectPartnerService,
+    private val projectPartnerCoFinancingService: ProjectPartnerCoFinancingService
 ) : ProjectPartnerApi {
 
-    @PreAuthorize("@projectAuthorization.canReadProject(#projectId)")
+    @CanReadProject
     override fun getProjectPartners(projectId: Long, pageable: Pageable): Page<OutputProjectPartner> {
         return projectPartnerService.findAllByProjectId(projectId, pageable)
     }
 
-    @PreAuthorize("@projectAuthorization.canReadProject(#projectId)")
+    @CanReadProject
     override fun getProjectPartnersForDropdown(projectId: Long, pageable: Pageable): List<OutputProjectPartner> {
         return projectPartnerService.findAllByProjectIdForDropdown(projectId, pageable.sort)
     }
 
-    @PreAuthorize("@projectAuthorization.canReadProject(#projectId)")
-    override fun getProjectPartnerById(projectId: Long, id: Long): OutputProjectPartnerDetail {
-        return projectPartnerService.getById(projectId, id)
+    @CanReadProjectPartner
+    override fun getProjectPartnerById(projectId: Long, partnerId: Long): OutputProjectPartnerDetail {
+        return projectPartnerService.getById(partnerId)
     }
 
-    @PreAuthorize("@projectAuthorization.canUpdateProject(#projectId)")
+    @CanUpdateProject
     override fun createProjectPartner(projectId: Long, projectPartner: InputProjectPartnerCreate): OutputProjectPartnerDetail {
         return projectPartnerService.create(projectId = projectId, projectPartner = projectPartner)
     }
 
     @PreAuthorize("@projectAuthorization.canUpdateProject(#projectId)")
     override fun updateProjectPartner(projectId: Long, projectPartner: InputProjectPartnerUpdate): OutputProjectPartnerDetail {
-        return projectPartnerService.update(projectId, projectPartner)
+        return projectPartnerService.update(projectPartner)
     }
 
-    @PreAuthorize("@projectAuthorization.canUpdateProject(#projectId)")
-    override fun updateProjectPartnerAddress(projectId: Long, id: Long, addresses: Set<InputProjectPartnerAddress>): OutputProjectPartnerDetail {
-        return projectPartnerService.updatePartnerAddresses(projectId, id, addresses)
+    @CanUpdateProjectPartner
+    override fun updateProjectPartnerAddress(projectId: Long, partnerId: Long, addresses: Set<InputProjectPartnerAddress>): OutputProjectPartnerDetail {
+        return projectPartnerService.updatePartnerAddresses(partnerId, addresses)
     }
 
-    @PreAuthorize("@projectAuthorization.canUpdateProject(#projectId)")
-    override fun updateProjectPartnerContact(projectId: Long, id: Long, contacts: Set<InputProjectContact>): OutputProjectPartnerDetail {
-        return projectPartnerService.updatePartnerContacts(projectId, id, contacts)
+    @CanUpdateProjectPartner
+    override fun updateProjectPartnerContact(projectId: Long, partnerId: Long, contacts: Set<InputProjectContact>): OutputProjectPartnerDetail {
+        return projectPartnerService.updatePartnerContacts(partnerId, contacts)
     }
 
-    @PreAuthorize("@projectAuthorization.canUpdateProject(#projectId)")
-    override fun updateProjectPartnerContribution(projectId: Long, id: Long, partnerContribution: InputProjectPartnerContribution): OutputProjectPartnerDetail {
-        return projectPartnerService.updatePartnerContribution(projectId, id, partnerContribution)
+    @CanUpdateProjectPartner
+    override fun updateProjectPartnerContribution(projectId: Long, partnerId: Long, partnerContribution: InputProjectPartnerContribution): OutputProjectPartnerDetail {
+        return projectPartnerService.updatePartnerContribution(partnerId, partnerContribution)
     }
 
-    @PreAuthorize("@projectAuthorization.canUpdateProject(#projectId)")
-    override fun deleteProjectPartner(projectId: Long, id: Long) {
-        return projectPartnerService.deletePartner(projectId, id)
+    @CanUpdateProjectPartner
+    override fun updateProjectPartnerCoFinancing(projectId: Long, partnerId: Long, partnerCoFinancing: InputProjectPartnerCoFinancingWrapper): OutputProjectPartnerDetail {
+        return projectPartnerCoFinancingService.updatePartnerCoFinancing(partnerId, partnerCoFinancing.finances)
+    }
+
+    @CanUpdateProjectPartner
+    override fun deleteProjectPartner(projectId: Long, partnerId: Long) {
+        return projectPartnerService.deletePartner(partnerId)
     }
 
 }

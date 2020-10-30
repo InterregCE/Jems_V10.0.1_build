@@ -36,8 +36,14 @@ class ProjectPartnerServiceImpl(
     }
 
     @Transactional(readOnly = true)
-    override fun getById(projectId: Long, id: Long): OutputProjectPartnerDetail {
-        return getPartnerOrThrow(projectId, id).toOutputProjectPartnerDetail()
+    override fun getById(id: Long): OutputProjectPartnerDetail {
+        return getPartnerOrThrow(id).toOutputProjectPartnerDetail()
+    }
+
+    // used for authorization
+    @Transactional(readOnly = true)
+    override fun getProjectIdForPartnerId(id: Long): Long {
+        return getPartnerOrThrow(id).project.id!!
     }
 
     @Transactional(readOnly = true)
@@ -110,8 +116,9 @@ class ProjectPartnerServiceImpl(
     }
 
     @Transactional
-    override fun update(projectId: Long, projectPartner: InputProjectPartnerUpdate): OutputProjectPartnerDetail {
-        val oldProjectPartner = getPartnerOrThrow(projectId, projectPartner.id)
+    override fun update(projectPartner: InputProjectPartnerUpdate): OutputProjectPartnerDetail {
+        val oldProjectPartner = getPartnerOrThrow(projectPartner.id)
+        val projectId = oldProjectPartner.project.id!!
 
         val makingThisLead = !oldProjectPartner.role.isLead && projectPartner.role!!.isLead
         if (makingThisLead)
@@ -148,8 +155,8 @@ class ProjectPartnerServiceImpl(
     }
 
     @Transactional
-    override fun updatePartnerAddresses(projectId: Long, partnerId: Long, addresses: Set<InputProjectPartnerAddress>): OutputProjectPartnerDetail {
-        val projectPartner = getPartnerOrThrow(projectId, partnerId)
+    override fun updatePartnerAddresses(partnerId: Long, addresses: Set<InputProjectPartnerAddress>): OutputProjectPartnerDetail {
+        val projectPartner = getPartnerOrThrow(partnerId)
         return projectPartnerRepo.save(
             projectPartner.copy(
                 addresses = addresses.mapTo(HashSet()) { it.toEntity(projectPartner) }
@@ -158,8 +165,8 @@ class ProjectPartnerServiceImpl(
     }
 
     @Transactional
-    override fun updatePartnerContacts(projectId: Long, partnerId: Long, contacts: Set<InputProjectContact>): OutputProjectPartnerDetail {
-        val projectPartner = getPartnerOrThrow(projectId, partnerId)
+    override fun updatePartnerContacts(partnerId: Long, contacts: Set<InputProjectContact>): OutputProjectPartnerDetail {
+        val projectPartner = getPartnerOrThrow(partnerId)
         return projectPartnerRepo.save(
             projectPartner.copy(
                 contacts = contacts.mapTo(HashSet()) { it.toEntity(projectPartner) }
@@ -168,8 +175,8 @@ class ProjectPartnerServiceImpl(
     }
 
     @Transactional
-    override fun updatePartnerContribution(projectId: Long, partnerId: Long, partnerContribution: InputProjectPartnerContribution): OutputProjectPartnerDetail {
-        val projectPartner = getPartnerOrThrow(projectId, partnerId)
+    override fun updatePartnerContribution(partnerId: Long, partnerContribution: InputProjectPartnerContribution): OutputProjectPartnerDetail {
+        val projectPartner = getPartnerOrThrow(partnerId)
         return projectPartnerRepo.save(
             projectPartner.copy(
                 partnerContribution = partnerContribution.toEntity(projectPartner.id!!)
@@ -178,14 +185,15 @@ class ProjectPartnerServiceImpl(
     }
 
     @Transactional
-    override fun deletePartner(projectId: Long, partnerId: Long) {
+    override fun deletePartner(partnerId: Long) {
+        val projectId = getPartnerOrThrow(partnerId).project.id!!
         projectPartnerRepo.deleteById(partnerId)
         updateSortByRole(projectId)
         projectAssociatedOrganizationService.refreshSortNumbers(projectId)
     }
 
-    private fun getPartnerOrThrow(projectId: Long, partnerId: Long): ProjectPartner {
-        return projectPartnerRepo.findFirstByProjectIdAndId(projectId, partnerId)
+    private fun getPartnerOrThrow(partnerId: Long): ProjectPartner {
+        return projectPartnerRepo.findById(partnerId)
             .orElseThrow { ResourceNotFoundException("projectPartner") }
     }
 

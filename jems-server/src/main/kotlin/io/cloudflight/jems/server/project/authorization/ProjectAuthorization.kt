@@ -7,7 +7,16 @@ import io.cloudflight.jems.server.exception.ResourceNotFoundException
 import io.cloudflight.jems.server.security.service.SecurityService
 import io.cloudflight.jems.server.project.service.ProjectService
 import io.cloudflight.jems.server.security.service.authorization.Authorization
+import org.springframework.security.access.prepost.PreAuthorize
 import org.springframework.stereotype.Component
+
+@Retention(AnnotationRetention.RUNTIME)
+@PreAuthorize("@projectAuthorization.canUpdateProject(#projectId)")
+annotation class CanUpdateProject
+
+@Retention(AnnotationRetention.RUNTIME)
+@PreAuthorize("@projectAuthorization.canReadProject(#projectId)")
+annotation class CanReadProject
 
 @Component
 class ProjectAuthorization(

@@ -2,6 +2,7 @@ package io.cloudflight.jems.server.project.entity.partner
 
 import io.cloudflight.jems.api.project.dto.partner.ProjectPartnerRole
 import io.cloudflight.jems.server.project.entity.Project
+import io.cloudflight.jems.server.project.entity.partner.cofinancing.ProjectPartnerCoFinancing
 import javax.persistence.CascadeType
 import javax.persistence.Column
 import javax.persistence.Entity
@@ -52,9 +53,12 @@ data class ProjectPartner(
     val contacts: Set<ProjectPartnerContact>? = emptySet(),
 
     @OneToMany(mappedBy = "partnerId", cascade = [CascadeType.ALL], orphanRemoval = true)
-    val partnerContribution: Set<ProjectPartnerContribution> = emptySet()
+    val partnerContribution: Set<ProjectPartnerContribution> = emptySet(),
 
-) {
+    @OneToMany(mappedBy = "partnerId", cascade = [CascadeType.ALL], orphanRemoval = true)
+    val financing: Set<ProjectPartnerCoFinancing> = emptySet()
+
+    ) {
     override fun toString(): String {
         return "${this.javaClass.simpleName}(id=$id, projectId=${project.id}, abbreviation=$abbreviation, role=$role, sortNumber=$sortNumber)"
     }

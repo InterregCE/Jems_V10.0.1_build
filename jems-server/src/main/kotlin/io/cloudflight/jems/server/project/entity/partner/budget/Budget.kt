@@ -14,6 +14,9 @@ data class Budget (
     val numberOfUnits: BigDecimal,
 
     @Column(nullable = false)
-    val pricePerUnit: BigDecimal
+    val pricePerUnit: BigDecimal,
+
+    @Column(nullable = false)
+    val rowSum: BigDecimal
 
 )

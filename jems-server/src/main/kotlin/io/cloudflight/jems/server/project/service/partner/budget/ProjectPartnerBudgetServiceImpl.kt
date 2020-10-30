@@ -2,10 +2,8 @@ package io.cloudflight.jems.server.project.service.partner.budget
 
 import io.cloudflight.jems.api.project.dto.partner.budget.InputBudget
 import io.cloudflight.jems.server.exception.I18nValidationException
-import io.cloudflight.jems.server.exception.ResourceNotFoundException
 import io.cloudflight.jems.server.project.entity.partner.budget.CommonBudget
 import io.cloudflight.jems.server.project.entity.partner.budget.ProjectPartnerBudgetOfficeAdministration
-import io.cloudflight.jems.server.project.repository.partner.ProjectPartnerRepository
 import io.cloudflight.jems.server.project.repository.partner.budget.ProjectPartnerBudgetEquipmentRepository
 import io.cloudflight.jems.server.project.repository.partner.budget.ProjectPartnerBudgetExternalRepository
 import io.cloudflight.jems.server.project.repository.partner.budget.ProjectPartnerBudgetInfrastructureRepository
@@ -20,7 +18,6 @@ import java.util.stream.Collectors
 
 @Service
 class ProjectPartnerBudgetServiceImpl(
-        private val projectPartnerRepository: ProjectPartnerRepository,
         private val projectPartnerBudgetStaffCostRepository: ProjectPartnerBudgetStaffCostRepository,
         private val projectPartnerBudgetTravelRepository: ProjectPartnerBudgetTravelRepository,
         private val projectPartnerBudgetExternalRepository: ProjectPartnerBudgetExternalRepository,
@@ -37,17 +34,15 @@ class ProjectPartnerBudgetServiceImpl(
     //region StuffCosts
 
     @Transactional(readOnly = true)
-    override fun getStaffCosts(projectId: Long, partnerId: Long): List<InputBudget> {
-        validateInput(projectId, partnerId)
-
+    override fun getStaffCosts(partnerId: Long): List<InputBudget> {
         return projectPartnerBudgetStaffCostRepository
             .findAllByPartnerIdOrderByIdAsc(partnerId)
             .map { it.toOutput() }
     }
 
     @Transactional
-    override fun updateStaffCosts(projectId: Long, partnerId: Long, staffCosts: List<InputBudget>): List<InputBudget> {
-        validateInput(projectId, partnerId, staffCosts)
+    override fun updateStaffCosts(partnerId: Long, staffCosts: List<InputBudget>): List<InputBudget> {
+        validateInput(staffCosts)
 
         val toBeRemoved = retrieveToBeRemoved(
             newData = staffCosts,
@@ -64,17 +59,15 @@ class ProjectPartnerBudgetServiceImpl(
     //region Travel
 
     @Transactional(readOnly = true)
-    override fun getTravel(projectId: Long, partnerId: Long): List<InputBudget> {
-        validateInput(projectId, partnerId)
-
+    override fun getTravel(partnerId: Long): List<InputBudget> {
         return projectPartnerBudgetTravelRepository
             .findAllByPartnerIdOrderByIdAsc(partnerId)
             .map { it.toOutput() }
     }
 
     @Transactional
-    override fun updateTravel(projectId: Long, partnerId: Long, travel: List<InputBudget>): List<InputBudget> {
-        validateInput(projectId, partnerId, travel)
+    override fun updateTravel(partnerId: Long, travel: List<InputBudget>): List<InputBudget> {
+        validateInput(travel)
 
         val toBeRemoved = retrieveToBeRemoved(
             newData = travel,
@@ -91,17 +84,15 @@ class ProjectPartnerBudgetServiceImpl(
     //region External
 
     @Transactional(readOnly = true)
-    override fun getExternal(projectId: Long, partnerId: Long): List<InputBudget> {
-        validateInput(projectId, partnerId)
-
+    override fun getExternal(partnerId: Long): List<InputBudget> {
         return projectPartnerBudgetExternalRepository
             .findAllByPartnerIdOrderByIdAsc(partnerId)
             .map { it.toOutput() }
     }
 
     @Transactional
-    override fun updateExternal(projectId: Long, partnerId: Long, externals: List<InputBudget>): List<InputBudget> {
-        validateInput(projectId, partnerId, externals)
+    override fun updateExternal(partnerId: Long, externals: List<InputBudget>): List<InputBudget> {
+        validateInput(externals)
 
         val toBeRemoved = retrieveToBeRemoved(
             newData = externals,
@@ -118,17 +109,15 @@ class ProjectPartnerBudgetServiceImpl(
     // region Equipment
 
     @Transactional(readOnly = true)
-    override fun getEquipment(projectId: Long, partnerId: Long): List<InputBudget> {
-        validateInput(projectId, partnerId)
-
+    override fun getEquipment(partnerId: Long): List<InputBudget> {
         return projectPartnerBudgetEquipmentRepository
             .findAllByPartnerIdOrderByIdAsc(partnerId)
             .map { it.toOutput() }
     }
 
     @Transactional
-    override fun updateEquipment(projectId: Long, partnerId: Long, equipments: List<InputBudget>): List<InputBudget> {
-        validateInput(projectId, partnerId, equipments)
+    override fun updateEquipment(partnerId: Long, equipments: List<InputBudget>): List<InputBudget> {
+        validateInput(equipments)
 
         val toBeRemoved = retrieveToBeRemoved(
             newData = equipments,
@@ -145,17 +134,15 @@ class ProjectPartnerBudgetServiceImpl(
     //region Infrastructure
 
     @Transactional(readOnly = true)
-    override fun getInfrastructure(projectId: Long, partnerId: Long): List<InputBudget> {
-        validateInput(projectId, partnerId)
-
+    override fun getInfrastructure(partnerId: Long): List<InputBudget> {
         return projectPartnerBudgetInfrastructureRepository
             .findAllByPartnerIdOrderByIdAsc(partnerId)
             .map { it.toOutput() }
     }
 
     @Transactional
-    override fun updateInfrastructure(projectId: Long, partnerId: Long, infrastructures: List<InputBudget>): List<InputBudget> {
-        validateInput(projectId, partnerId, infrastructures)
+    override fun updateInfrastructure(partnerId: Long, infrastructures: List<InputBudget>): List<InputBudget> {
+        validateInput(infrastructures)
 
         val toBeRemoved = retrieveToBeRemoved(
             newData = infrastructures,
@@ -170,19 +157,13 @@ class ProjectPartnerBudgetServiceImpl(
     //endregion Infrastructure
 
     @Transactional(readOnly = true)
-    override fun getOfficeAdministrationFlatRate(projectId: Long, partnerId: Long): Int? {
-        if (projectPartnerRepository.findFirstByProjectIdAndId(projectId, partnerId).isEmpty)
-            throw ResourceNotFoundException("projectPartner")
-
+    override fun getOfficeAdministrationFlatRate(partnerId: Long): Int? {
         return projectPartnerBudgetOfficeAdministrationRepository.findById(partnerId)
             .map { it?.flatRate }.orElse(null)
     }
 
     @Transactional
-    override fun updateOfficeAdministrationFlatRate(projectId: Long, partnerId: Long, flatRate: Int?): Int? {
-        if (projectPartnerRepository.findFirstByProjectIdAndId(projectId, partnerId).isEmpty)
-            throw ResourceNotFoundException("projectPartner")
-
+    override fun updateOfficeAdministrationFlatRate(partnerId: Long, flatRate: Int?): Int? {
         if (flatRate != null)
             return projectPartnerBudgetOfficeAdministrationRepository.save(
                 ProjectPartnerBudgetOfficeAdministration(partnerId, flatRate)
@@ -192,9 +173,28 @@ class ProjectPartnerBudgetServiceImpl(
         return null
     }
 
-    private fun validateInput(projectId: Long, partnerId: Long, budgetList: List<InputBudget> = emptyList()) {
-        if (projectPartnerRepository.findFirstByProjectIdAndId(projectId, partnerId).isEmpty)
-            throw ResourceNotFoundException("projectPartner")
+    @Transactional(readOnly = true)
+    override fun getTotal(partnerId: Long): BigDecimal {
+        val officeAndAdministrationFlatRate = getOfficeAdministrationFlatRate(partnerId)
+
+        val staffCosts = projectPartnerBudgetStaffCostRepository.sumTotalForPartner(partnerId) ?: BigDecimal.ZERO
+        val travelCosts = projectPartnerBudgetTravelRepository.sumTotalForPartner(partnerId) ?: BigDecimal.ZERO
+        val externalCosts = projectPartnerBudgetExternalRepository.sumTotalForPartner(partnerId) ?: BigDecimal.ZERO
+        val equipmentCosts = projectPartnerBudgetEquipmentRepository.sumTotalForPartner(partnerId) ?: BigDecimal.ZERO
+        val infrastructureCosts = projectPartnerBudgetInfrastructureRepository.sumTotalForPartner(partnerId) ?: BigDecimal.ZERO
+
+        val officeAndAdministrationCosts = if (officeAndAdministrationFlatRate == null) BigDecimal.ZERO else
+            staffCosts.percentage(officeAndAdministrationFlatRate)
+
+        return staffCosts
+            .add(travelCosts)
+            .add(externalCosts)
+            .add(equipmentCosts)
+            .add(infrastructureCosts)
+            .add(officeAndAdministrationCosts)
+    }
+
+    private fun validateInput(budgetList: List<InputBudget>) {
 
         if (budgetList.size > MAX_ALLOWED_AMOUNT)
             throw I18nValidationException(

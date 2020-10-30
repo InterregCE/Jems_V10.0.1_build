@@ -52,7 +52,7 @@ describe('ProjectApplicationPartnerBudgetPageComponent', () => {
   it('should fetch and save budget options', fakeAsync(() => {
     httpTestingController.expectOne({
       method: 'GET',
-      url: '//api/project/1/partner/2/officeadministration'
+      url: '//api/project/partner/2/budget/officeadministration'
     });
 
     component.saveBudgetOptions.next({
@@ -62,30 +62,30 @@ describe('ProjectApplicationPartnerBudgetPageComponent', () => {
 
     httpTestingController.expectOne({
       method: 'PUT',
-      url: '//api/project/1/partner/2/officeadministration'
+      url: '//api/project/partner/2/budget/officeadministration'
     });
   }));
 
   it('should fetch and save budgets', fakeAsync(() => {
     httpTestingController.expectOne({
       method: 'GET',
-      url: '//api/project/1/partner/2/staffcost'
+      url: '//api/project/partner/2/budget/staffcost'
     });
     httpTestingController.expectOne({
       method: 'GET',
-      url: '//api/project/1/partner/2/travel'
+      url: '//api/project/partner/2/budget/travel'
     })
     httpTestingController.expectOne({
       method: 'GET',
-      url: '//api/project/1/partner/2/external'
+      url: '//api/project/partner/2/budget/external'
     })
     httpTestingController.expectOne({
       method: 'GET',
-      url: '//api/project/1/partner/2/equipment'
+      url: '//api/project/partner/2/budget/equipment'
     })
     httpTestingController.expectOne({
       method: 'GET',
-      url: '//api/project/1/partner/2/infrastructure'
+      url: '//api/project/partner/2/budget/infrastructure'
     });
 
     component.saveBudgets$.next({
@@ -99,23 +99,23 @@ describe('ProjectApplicationPartnerBudgetPageComponent', () => {
 
     httpTestingController.expectOne({
       method: 'PUT',
-      url: '//api/project/1/partner/2/staffcost'
+      url: '//api/project/partner/2/budget/staffcost'
     });
     httpTestingController.expectOne({
       method: 'PUT',
-      url: '//api/project/1/partner/2/travel'
+      url: '//api/project/partner/2/budget/travel'
     })
     httpTestingController.expectOne({
       method: 'PUT',
-      url: '//api/project/1/partner/2/external'
+      url: '//api/project/partner/2/budget/external'
     })
     httpTestingController.expectOne({
       method: 'PUT',
-      url: '//api/project/1/partner/2/equipment'
+      url: '//api/project/partner/2/budget/equipment'
     })
     httpTestingController.expectOne({
       method: 'PUT',
-      url: '//api/project/1/partner/2/infrastructure'
+      url: '//api/project/partner/2/budget/infrastructure'
     });
   }));
 

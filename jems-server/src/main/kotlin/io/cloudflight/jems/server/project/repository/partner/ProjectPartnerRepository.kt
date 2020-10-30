@@ -12,10 +12,6 @@ import java.util.Optional
 @Repository
 interface ProjectPartnerRepository : PagingAndSortingRepository<ProjectPartner, Long> {
 
-    override fun findById(id: Long): Optional<ProjectPartner> {
-        throw UnsupportedOperationException("use method findFirstByProjectIdAndId")
-    }
-
     fun findFirstByProjectIdAndId(projectId: Long, id: Long): Optional<ProjectPartner>
 
     fun findAllByProjectId(projectId: Long, pageable: Pageable): Page<ProjectPartner>
