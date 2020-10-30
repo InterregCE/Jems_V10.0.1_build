@@ -1,0 +1,16 @@
+.header-button {
+  margin-left: 0.5rem;
+}
+.field {
+  &-tiny {
+    max-width: 5rem;
+  }
+}
+
+.thick-row {
+  line-height: 5rem;
+}
+
+.mat-input-element {
+  color: var(--font-color-primary) !important;
+}

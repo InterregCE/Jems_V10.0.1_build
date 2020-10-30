@@ -41,6 +41,7 @@ export class ProjectPartnerStore {
   partnerSaveError$ = new Subject<I18nValidationError | null>();
 
   savePartnerAddresses$ = new Subject<InputProjectPartnerAddress[]>();
+  totalAmountChanged$ = new Subject<boolean>();
 
   private partnerById$ = combineLatest([this.partnerId$, this.projectId$])
     .pipe(
@@ -117,7 +118,7 @@ export class ProjectPartnerStore {
     this.partnerById$,
     this.savedPartner$,
     this.createdPartner$,
-    this.updatedPartnerAddresses$
+    this.updatedPartnerAddresses$,
   )
     .pipe(
       shareReplay(1)

@@ -6779,7 +6779,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"abbreviation\": \"Partner A\",\r\n    \"role\": \"PARTNER\"\r\n}\r\n",
+							"raw": "{\r\n    \"abbreviation\": \"Partner A\",\r\n    \"role\": \"PARTNER\",\r\n    \"legalStatusId\": 1\r\n}\r\n",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -6855,7 +6855,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"abbreviation\": \"Partner B\",\r\n    \"role\": \"PARTNER\"\r\n}\r\n",
+							"raw": "{\r\n    \"abbreviation\": \"Partner B\",\r\n    \"role\": \"PARTNER\",\r\n    \"legalStatusId\": 2\r\n}\r\n",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -7151,7 +7151,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"abbreviation\": \"Partner C\",\r\n    \"role\": \"LEAD_PARTNER\"\r\n}\r\n",
+							"raw": "{\r\n    \"abbreviation\": \"Partner C\",\r\n    \"role\": \"LEAD_PARTNER\",\r\n    \"legalStatusId\": 1\r\n}\r\n",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -7223,7 +7223,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"abbreviation\": \"Partner C\",\r\n    \"role\": \"LEAD_PARTNER\",\r\n    \"oldLeadPartnerId\": \"{{partnerIdA}}\"\r\n}\r\n",
+							"raw": "{\r\n    \"abbreviation\": \"Partner C\",\r\n    \"role\": \"LEAD_PARTNER\",\r\n    \"legalStatusId\": 1,\r\n    \"oldLeadPartnerId\": \"{{partnerIdA}}\"\r\n}\r\n",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -7396,7 +7396,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"abbreviation\": \"Partner D\",\r\n    \"role\": \"PARTNER\"\r\n}\r\n",
+							"raw": "{\r\n    \"abbreviation\": \"Partner D\",\r\n    \"role\": \"PARTNER\",\r\n    \"legalStatusId\": 2\r\n}\r\n",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -7778,7 +7778,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"abbreviation\": \"{{$randomAbbreviation}}\",\r\n    \"role\": \"PARTNER\"\r\n}\r\n",
+							"raw": "{\r\n    \"abbreviation\": \"{{$randomAbbreviation}}\",\r\n    \"role\": \"PARTNER\",\r\n    \"legalStatusId\": 1\r\n}\r\n",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -8574,7 +8574,7 @@
 	],
 	"variable": [
 		{
-			"id": "7e5bdf7d-0ef1-4d85-8dfc-d76b0a1a7350",
+			"id": "bc95e203-b8cd-4e4f-b168-63b02faa6ce1",
 			"key": "url",
 			"value": "specify_url_here"
 		}
