@@ -1,5 +1,7 @@
 package io.cloudflight.jems.api.project.dto.partner
 
+import io.cloudflight.jems.api.programme.dto.OutputProgrammeLegalStatus
+import io.cloudflight.jems.api.project.dto.description.ProjectTargetGroup
 import javax.validation.constraints.NotBlank
 import javax.validation.constraints.NotNull
 import javax.validation.constraints.Size
@@ -27,6 +29,16 @@ data class InputProjectPartnerUpdate(
     val nameInEnglish: String? = null,
 
     @field:Size(max = 250, message = "project.organization.department.size.too.long")
-    val department: String? = null
+    val department: String? = null,
+
+    val partnerType: ProjectTargetGroup? = null,
+
+    @field:NotNull(message = "project.partner.legalstatus.should.not.be.empty")
+    val legalStatusId: Long?,
+
+    @field:Size(max = 50, message = "project.partner.vat.size.too.long")
+    val vat: String? = null,
+
+    val vatRecovery: Boolean? = null
 
 )

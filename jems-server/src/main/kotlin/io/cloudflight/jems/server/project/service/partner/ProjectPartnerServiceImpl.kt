@@ -10,6 +10,7 @@ import io.cloudflight.jems.api.project.dto.partner.OutputProjectPartnerDetail
 import io.cloudflight.jems.api.project.dto.partner.ProjectPartnerRole
 import io.cloudflight.jems.server.exception.I18nValidationException
 import io.cloudflight.jems.server.exception.ResourceNotFoundException
+import io.cloudflight.jems.server.programme.repository.ProgrammeLegalStatusRepository
 import io.cloudflight.jems.server.project.entity.partner.ProjectPartner
 import io.cloudflight.jems.server.project.repository.partner.ProjectPartnerRepository
 import io.cloudflight.jems.server.project.repository.ProjectRepository
@@ -27,7 +28,8 @@ import java.util.stream.StreamSupport
 class ProjectPartnerServiceImpl(
     private val projectPartnerRepo: ProjectPartnerRepository,
     private val projectAssociatedOrganizationService: ProjectAssociatedOrganizationService,
-    private val projectRepo: ProjectRepository
+    private val projectRepo: ProjectRepository,
+    private val legalStatusRepo: ProgrammeLegalStatusRepository
 ) : ProjectPartnerService {
 
     companion object {
@@ -62,6 +64,7 @@ class ProjectPartnerServiceImpl(
     @Transactional
     override fun create(projectId: Long, projectPartner: InputProjectPartnerCreate): OutputProjectPartnerDetail {
         val project = projectRepo.findById(projectId).orElseThrow { ResourceNotFoundException("project") }
+        val legalStatus = legalStatusRepo.findById(projectPartner.legalStatusId!!).orElseThrow { ResourceNotFoundException("legalstatus") }
 
         // to be possible to list all partners for dropdowns we decided to limit total amount of them
         if (projectPartnerRepo.countByProjectId(projectId) >= MAX_PROJECT_PARTNERS)
@@ -74,7 +77,7 @@ class ProjectPartnerServiceImpl(
         if (projectPartner.role!!.isLead)
             validateLeadPartnerChange(projectId, projectPartner.oldLeadPartnerId)
 
-        val partnerCreated = projectPartnerRepo.save(projectPartner.toEntity(project = project))
+        val partnerCreated = projectPartnerRepo.save(projectPartner.toEntity(project = project, legalStatus = legalStatus))
         updateSortByRole(projectId)
         // entity is attached, number will have been updated
         return partnerCreated.toOutputProjectPartnerDetail()
@@ -119,6 +122,7 @@ class ProjectPartnerServiceImpl(
     override fun update(projectPartner: InputProjectPartnerUpdate): OutputProjectPartnerDetail {
         val oldProjectPartner = getPartnerOrThrow(projectPartner.id)
         val projectId = oldProjectPartner.project.id!!
+        val legalStatus = legalStatusRepo.findById(projectPartner.legalStatusId!!).orElseThrow { ResourceNotFoundException("legalstatus") }
 
         val makingThisLead = !oldProjectPartner.role.isLead && projectPartner.role!!.isLead
         if (makingThisLead)
@@ -130,7 +134,11 @@ class ProjectPartnerServiceImpl(
                 role = projectPartner.role!!,
                 nameInOriginalLanguage = projectPartner.nameInOriginalLanguage,
                 nameInEnglish = projectPartner.nameInEnglish,
-                department = projectPartner.department
+                department = projectPartner.department,
+                partnerType = projectPartner.partnerType,
+                legalStatus = legalStatus,
+                vat = projectPartner.vat,
+                vatRecovery = projectPartner.vatRecovery
             )
         )
         // update sorting if leadPartner changed

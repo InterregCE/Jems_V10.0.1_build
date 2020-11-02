@@ -7,6 +7,7 @@ import io.cloudflight.jems.api.project.dto.partner.cofinancing.OutputProjectPart
 import io.cloudflight.jems.server.exception.I18nValidationException
 import io.cloudflight.jems.server.exception.ResourceNotFoundException
 import io.cloudflight.jems.server.programme.entity.ProgrammeFund
+import io.cloudflight.jems.server.programme.entity.ProgrammeLegalStatus
 import io.cloudflight.jems.server.project.entity.partner.ProjectPartner
 import io.cloudflight.jems.server.project.repository.partner.ProjectPartnerRepository
 import io.cloudflight.jems.server.project.service.partner.ProjectPartnerTestUtil.Companion.call
@@ -32,7 +33,9 @@ internal class ProjectPartnerCoFinancingServiceTest {
             id = 1,
             project = project.copy(call = callWithFunds),
             abbreviation = "partner",
-            role = ProjectPartnerRole.LEAD_PARTNER)
+            role = ProjectPartnerRole.LEAD_PARTNER,
+            legalStatus = ProgrammeLegalStatus(1, "test")
+        )
 
         private val outputFund = OutputProgrammeFund(
             id = fund.id!!,
