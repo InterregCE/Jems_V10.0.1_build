@@ -9,7 +9,6 @@ import org.springframework.security.access.prepost.PreAuthorize
 import org.springframework.web.bind.annotation.RestController
 
 @RestController
-@PreAuthorize("@programmeSetupAuthorization.canAccessSetup()")
 class ProgrammeLegalStatusController(
     private val programmeLegalStatusService: ProgrammeLegalStatusService
 ) : ProgrammeLegalStatusApi {
@@ -18,6 +17,7 @@ class ProgrammeLegalStatusController(
         return programmeLegalStatusService.get()
     }
 
+    @PreAuthorize("@programmeSetupAuthorization.canAccessSetup()")
     override fun updateProgrammeLegalStatuses(statusData: InputProgrammeLegalStatusWrapper): List<OutputProgrammeLegalStatus> {
         return programmeLegalStatusService.save(statusData.toPersist, statusData.toDelete)
     }

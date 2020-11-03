@@ -9,6 +9,8 @@ import io.cloudflight.jems.api.project.dto.partner.OutputProjectPartnerContact
 import io.cloudflight.jems.api.project.dto.OutputProjectPartnerContribution
 import io.cloudflight.jems.api.project.dto.partner.OutputProjectPartnerDetail
 import io.cloudflight.jems.api.project.dto.partner.OutputProjectPartnerAddress
+import io.cloudflight.jems.server.programme.entity.ProgrammeLegalStatus
+import io.cloudflight.jems.server.programme.service.toOutputProgrammeLegalStatus
 import io.cloudflight.jems.server.project.entity.Address
 import io.cloudflight.jems.server.project.entity.Contact
 import io.cloudflight.jems.server.project.entity.Project
@@ -20,13 +22,17 @@ import io.cloudflight.jems.server.project.entity.partner.ProjectPartnerAddress
 import io.cloudflight.jems.server.project.entity.partner.ProjectPartnerAddressId
 import io.cloudflight.jems.server.project.service.partner.cofinancing.toOutputProjectCoFinancing
 
-fun InputProjectPartnerCreate.toEntity(project: Project) = ProjectPartner(
+fun InputProjectPartnerCreate.toEntity(project: Project, legalStatus: ProgrammeLegalStatus) = ProjectPartner(
     project = project,
     abbreviation = abbreviation!!,
     role = role!!,
     nameInOriginalLanguage = nameInOriginalLanguage,
     nameInEnglish = nameInEnglish,
-    department = department
+    department = department,
+    partnerType = partnerType,
+    legalStatus = legalStatus,
+    vat = vat,
+    vatRecovery = vatRecovery
 )
 
 fun ProjectPartner.toOutputProjectPartner() = OutputProjectPartner(
@@ -44,6 +50,10 @@ fun ProjectPartner.toOutputProjectPartnerDetail() = OutputProjectPartnerDetail(
     nameInOriginalLanguage = nameInOriginalLanguage,
     nameInEnglish = nameInEnglish,
     department = department,
+    partnerType = partnerType,
+    legalStatusId = legalStatus.id,
+    vat = vat,
+    vatRecovery = vatRecovery,
     addresses = addresses?.map { it.toOutputProjectPartnerAddress() } ?: emptyList(),
     contacts = contacts?.map { it.toOutputProjectPartnerContact() } ?: emptyList(),
     partnerContribution = partnerContribution.map { it.toOutputProjectPartnerContribution() }.firstOrNull(),

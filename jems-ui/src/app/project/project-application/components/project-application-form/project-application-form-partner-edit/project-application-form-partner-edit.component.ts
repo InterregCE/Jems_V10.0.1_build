@@ -134,6 +134,10 @@ export class ProjectApplicationFormPartnerEditComponent extends ViewEditForm imp
         nameInOriginalLanguage: organization?.nameInOriginalLanguage,
         nameInEnglish: organization?.nameInEnglish,
         department: organization?.department,
+        partnerType: this.partner.partnerType,
+        legalStatusId: 1,
+        vat: '',
+        vatRecovery: true
       });
     else
       this.update.emit({
@@ -144,6 +148,10 @@ export class ProjectApplicationFormPartnerEditComponent extends ViewEditForm imp
         nameInOriginalLanguage: organization?.nameInOriginalLanguage,
         nameInEnglish: organization?.nameInEnglish,
         department: organization?.department,
+        partnerType: this.partner.partnerType,
+        legalStatusId: 1,
+        vat: '',
+        vatRecovery: true
       });
   }
 

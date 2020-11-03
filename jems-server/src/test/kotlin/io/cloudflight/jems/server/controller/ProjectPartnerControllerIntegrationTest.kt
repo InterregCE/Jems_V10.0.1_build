@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper
 import io.cloudflight.jems.api.project.dto.partner.InputProjectPartnerCreate
 import io.cloudflight.jems.api.project.dto.partner.ProjectPartnerRole
 import io.cloudflight.jems.server.factory.CallFactory
+import io.cloudflight.jems.server.factory.ProgrammeDataFactory
 import io.cloudflight.jems.server.factory.ProjectFileFactory
 import io.cloudflight.jems.server.factory.UserFactory
 import io.cloudflight.jems.server.factory.UserFactory.Companion.ADMINISTRATOR_EMAIL
@@ -36,6 +37,9 @@ class ProjectPartnerControllerIntegrationTest {
     private lateinit var projectFileFactory: ProjectFileFactory
 
     @Autowired
+    private lateinit var programmeDataFactory: ProgrammeDataFactory
+
+    @Autowired
     private lateinit var jsonMapper: ObjectMapper
 
     @Test
@@ -43,7 +47,8 @@ class ProjectPartnerControllerIntegrationTest {
     fun `project partner created`() {
         val call = callFactory.savePublishedCallWithoutPolicy(userFactory.adminUser)
         val project = projectFileFactory.saveProject(userFactory.adminUser, call)
-        val inputProjectPartner = InputProjectPartnerCreate("partner", ProjectPartnerRole.LEAD_PARTNER)
+        programmeDataFactory.saveLegalStatus()
+        val inputProjectPartner = InputProjectPartnerCreate("partner", ProjectPartnerRole.LEAD_PARTNER, legalStatusId = 1)
 
         mockMvc.perform(
             post("/api/project/${project.id}/partner")
@@ -58,7 +63,7 @@ class ProjectPartnerControllerIntegrationTest {
     @Test
     @WithUserDetails(value = ADMINISTRATOR_EMAIL)
     fun `project partner create fails with missing required fields`() {
-        val inputProjectPartner = InputProjectPartnerCreate(null, null)
+        val inputProjectPartner = InputProjectPartnerCreate(null, null, legalStatusId = null)
 
         mockMvc.perform(
             post("/api/project/1/partner")
@@ -75,7 +80,7 @@ class ProjectPartnerControllerIntegrationTest {
     @Test
     @WithUserDetails(value = ADMINISTRATOR_EMAIL)
     fun `project partner create fails with invalid fields`() {
-        val inputProjectPartner = InputProjectPartnerCreate(RandomString.make(16), ProjectPartnerRole.LEAD_PARTNER)
+        val inputProjectPartner = InputProjectPartnerCreate(RandomString.make(16), ProjectPartnerRole.LEAD_PARTNER, legalStatusId = 1)
 
         mockMvc.perform(
             post("/api/project/1/partner")

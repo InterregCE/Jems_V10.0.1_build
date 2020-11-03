@@ -15,6 +15,7 @@ import io.cloudflight.jems.api.project.dto.partner.ProjectPartnerRole
 import io.cloudflight.jems.api.project.dto.status.ProjectApplicationStatus
 import io.cloudflight.jems.server.call.entity.Call
 import io.cloudflight.jems.server.exception.ResourceNotFoundException
+import io.cloudflight.jems.server.programme.entity.ProgrammeLegalStatus
 import io.cloudflight.jems.server.project.entity.Address
 import io.cloudflight.jems.server.project.entity.Contact
 import io.cloudflight.jems.server.project.entity.Project
@@ -93,7 +94,9 @@ internal class ProjectAssociatedOrganizationServiceTest {
         id = 1,
         project = project,
         abbreviation = "partner",
-        role = ProjectPartnerRole.LEAD_PARTNER)
+        role = ProjectPartnerRole.LEAD_PARTNER,
+        legalStatus = ProgrammeLegalStatus(1, "test")
+    )
 
     private val outputProjectPartner = OutputProjectPartner(
         id = 1,

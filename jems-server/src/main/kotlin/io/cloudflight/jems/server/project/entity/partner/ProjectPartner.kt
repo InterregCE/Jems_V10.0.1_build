@@ -1,6 +1,8 @@
 package io.cloudflight.jems.server.project.entity.partner
 
+import io.cloudflight.jems.api.project.dto.description.ProjectTargetGroup
 import io.cloudflight.jems.api.project.dto.partner.ProjectPartnerRole
+import io.cloudflight.jems.server.programme.entity.ProgrammeLegalStatus
 import io.cloudflight.jems.server.project.entity.Project
 import io.cloudflight.jems.server.project.entity.partner.cofinancing.ProjectPartnerCoFinancing
 import javax.persistence.CascadeType
@@ -45,6 +47,20 @@ data class ProjectPartner(
 
     @Column
     val department: String? = null,
+
+    @Column
+    @Enumerated(EnumType.STRING)
+    val partnerType: ProjectTargetGroup? = null,
+
+    @ManyToOne(optional = false)
+    @JoinColumn(name = "legal_status_id")
+    val legalStatus: ProgrammeLegalStatus,
+
+    @Column
+    val vat: String? = null,
+
+    @Column
+    val vatRecovery: Boolean? = null,
 
     @OneToMany(mappedBy = "addressId.partnerId", cascade = [CascadeType.ALL], orphanRemoval = true)
     val addresses: Set<ProjectPartnerAddress>?= emptySet(),
