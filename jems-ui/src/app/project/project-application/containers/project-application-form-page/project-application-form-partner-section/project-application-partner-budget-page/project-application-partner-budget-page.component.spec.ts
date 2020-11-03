@@ -9,6 +9,7 @@ import {PartnerBudgetTable} from '../../../../model/partner-budget-table';
 import {PartnerBudgetTableType} from '../../../../model/partner-budget-table-type';
 import {ProjectPartnerStore} from '../../services/project-partner-store.service';
 import {of} from 'rxjs';
+import {BudgetOptions} from '../../../../model/budget-options';
 
 describe('ProjectApplicationPartnerBudgetPageComponent', () => {
   let component: ProjectApplicationPartnerBudgetPageComponent;
@@ -52,17 +53,17 @@ describe('ProjectApplicationPartnerBudgetPageComponent', () => {
   it('should fetch and save budget options', fakeAsync(() => {
     httpTestingController.expectOne({
       method: 'GET',
-      url: '//api/project/partner/2/budget/officeadministration'
+      url: '//api/project/partner/2/budget/options'
     });
 
-    component.saveBudgetOptions.next({
-      value: 8
-    });
+    component.saveBudgetOptions.next(
+      new BudgetOptions(8, 10)
+    );
     tick();
 
     httpTestingController.expectOne({
       method: 'PUT',
-      url: '//api/project/partner/2/budget/officeadministration'
+      url: '//api/project/partner/2/budget/options'
     });
   }));
 

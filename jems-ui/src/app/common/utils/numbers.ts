@@ -57,6 +57,16 @@ export class Numbers {
   }
 
   /**
+   * Divides the numbers from the given array using Big.js in order to avoid rounding errors.
+   */
+  static divide(dividend: number, divisor: number) {
+    if (!dividend || !divisor) {
+      return 0;
+    }
+    return Number(new Big(dividend).div(divisor));
+  }
+
+  /**
    * Truncates (rounds down) the given number to a fixed number of two decimals.
    */
   static truncateNumber(toFloor: number): number {

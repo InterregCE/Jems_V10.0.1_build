@@ -1,12 +1,11 @@
 <component name="ProjectRunConfigurationManager">
   <configuration default="false" name="Frontend Build Watch" type="js.build_tools.npm">
-    <package-json value="$PROJECT_DIR$/ems-ui/package.json" />
+    <package-json value="$PROJECT_DIR$/jems-ui/package.json" />
     <command value="run" />
     <scripts>
       <script value="build:dev" />
     </scripts>
-    <node-interpreter value="$PROJECT_DIR$/.gradle/nodejs/node-v12.13.1-win-x64/node" />
-    <package-manager value="$PROJECT_DIR$/.gradle/nodejs/node-v12.13.1-win-x64/node_modules/npm" />
+    <node-interpreter value="node" />
     <envs />
     <method v="2" />
   </configuration>

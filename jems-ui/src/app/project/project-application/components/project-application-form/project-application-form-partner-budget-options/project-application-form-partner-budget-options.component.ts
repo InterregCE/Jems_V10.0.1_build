@@ -10,7 +10,7 @@ import {
 import {Tools} from '../../../../../common/utils/tools';
 import {FormBuilder, FormGroup, Validators} from '@angular/forms';
 import {ViewEditForm} from '@common/components/forms/view-edit-form';
-import {InputFlatRate} from '@cat/api';
+import {BudgetOptions} from '../../../model/budget-options';
 import {FormState} from '@common/components/forms/form-state';
 
 @Component({
@@ -28,20 +28,33 @@ export class ProjectApplicationFormPartnerBudgetOptionsComponent extends ViewEdi
   editable: boolean;
   @Input()
   officeAdministrationFlatRate: number | null;
+  @Input()
+  staffCostsFlatRate: number | null;
 
   @Output()
-  saveOfficeAdministrationFlatRate = new EventEmitter<InputFlatRate>();
+  saveBudgetOptions = new EventEmitter<BudgetOptions>();
 
   optionsForm = this.formBuilder.group({
     officeAdministrationFlatRateActive: [''],
     officeAdministrationFlatRate: ['',
-      Validators.compose([Validators.max(15), Validators.min(1)])
+      Validators.compose([Validators.max(15), Validators.min(1), Validators.required])
+    ],
+    staffCostsFlatRateActive: [''],
+    staffCostsFlatRate: ['',
+      Validators.compose([Validators.max(20), Validators.min(1), Validators.required])
     ]
   });
 
   officeAdministrationFlatRateErrors = {
+    required: 'project.partner.budget.options.flat.rate.empty',
     max: 'project.partner.budget.options.flat.rate.max',
     min: 'project.partner.budget.options.flat.rate.max',
+  };
+
+  staffCostsFlatRateErrors = {
+    required: 'project.partner.budget.options.staff.costs.flat.rate.empty',
+    max: 'project.partner.budget.options.staff.costs.flat.rate.max',
+    min: 'project.partner.budget.options.staff.costs.flat.rate.max',
   };
 
   constructor(private formBuilder: FormBuilder,
@@ -55,7 +68,7 @@ export class ProjectApplicationFormPartnerBudgetOptionsComponent extends ViewEdi
   }
 
   ngOnChanges(changes: SimpleChanges) {
-    if (changes.officeAdministrationFlatRate) {
+    if (changes.officeAdministrationFlatRate || changes.staffCostsFlatRate) {
       this.discard();
     }
   }
@@ -65,15 +78,19 @@ export class ProjectApplicationFormPartnerBudgetOptionsComponent extends ViewEdi
   }
 
   save() {
-    this.saveOfficeAdministrationFlatRate.emit({
-      value: this.optionsForm.controls.officeAdministrationFlatRate.value
-    });
+    this.saveBudgetOptions.emit(
+      new BudgetOptions(
+        this.optionsForm.controls.officeAdministrationFlatRate.value,
+        this.optionsForm.controls.staffCostsFlatRate.value
+      ))
   }
 
   discard() {
     this.optionsForm.patchValue({
       officeAdministrationFlatRateActive: Number.isInteger(this.officeAdministrationFlatRate as any),
-      officeAdministrationFlatRate: this.officeAdministrationFlatRate
+      officeAdministrationFlatRate: this.officeAdministrationFlatRate,
+      staffCostsFlatRateActive: Number.isInteger(this.staffCostsFlatRate as any),
+      staffCostsFlatRate: this.staffCostsFlatRate
     });
     this.changeFormState$.next(FormState.VIEW);
   }
@@ -84,10 +101,21 @@ export class ProjectApplicationFormPartnerBudgetOptionsComponent extends ViewEdi
     } else {
       this.optionsForm.controls.officeAdministrationFlatRate.enable();
     }
+
+    if (!this.optionsForm.controls.staffCostsFlatRateActive.value) {
+      this.optionsForm.controls.staffCostsFlatRate.disable();
+    } else {
+      this.optionsForm.controls.staffCostsFlatRate.enable();
+    }
   }
 
   toggleOfficeAdministrationFlatRate(checked: boolean) {
     this.optionsForm.controls.officeAdministrationFlatRate.patchValue(checked ? 15 : null);
+    this.enterEditMode();
+  }
+
+  toggleStaffCostsFlatRate(checked: boolean) {
+    this.optionsForm.controls.staffCostsFlatRate.patchValue(checked ? 20 : null);
     this.enterEditMode();
   }
 }

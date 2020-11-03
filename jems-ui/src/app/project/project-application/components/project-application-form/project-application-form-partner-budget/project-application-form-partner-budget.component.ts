@@ -26,6 +26,8 @@ export class ProjectApplicationFormPartnerBudgetComponent extends ViewEditForm i
   @Input()
   officeAdministrationFlatRate: number;
   @Input()
+  staffCostsFlatRate: number;
+  @Input()
   budgets: { [key: string]: PartnerBudgetTable };
 
   @Output()
@@ -35,17 +37,24 @@ export class ProjectApplicationFormPartnerBudgetComponent extends ViewEditForm i
 
   saveEnabled = true;
   officeAndAdministrationTotal = 0;
+  staffCostsTotal = 0;
 
   constructor(protected changeDetectorRef: ChangeDetectorRef) {
     super(changeDetectorRef);
   }
 
   ngOnChanges(changes: SimpleChanges) {
-    if (changes.budgets || changes.officeAdministrationFlatRate) {
-      this.officeAndAdministrationTotal = Numbers.product([
-        this.budgets?.staff?.total || 0,
-        this.officeAdministrationFlatRate / 100
-      ]);
+
+    if (changes.budgets || changes.staffCostsFlatRate) {
+      this.updateStaffCostsTotal()
+    }
+
+    if (changes.budgets || changes.officeAdministrationFlatRate || changes.staffCostsFlatRate) {
+      const staffTotal = Number.isInteger(this.staffCostsFlatRate) && Number.isInteger(this.officeAdministrationFlatRate) ?
+        this.staffCostsTotal :
+        (this.budgets?.staff?.total || 0)
+
+      this.updateOfficeAndAdministrationTotal(staffTotal)
     }
   }
 
@@ -68,4 +77,21 @@ export class ProjectApplicationFormPartnerBudgetComponent extends ViewEditForm i
     this.saveEnabled = Object.values(this.budgets).every(table => table.valid());
   }
 
+  private updateStaffCostsTotal(): void {
+    const travelTotal = this.budgets.travel?.total || 0;
+    const externalTotal = this.budgets.external?.total || 0;
+    const equipmentTotal = this.budgets.equipment?.total || 0;
+    const infrastructureTotal = this.budgets.infrastructure?.total || 0;
+    this.staffCostsTotal = Numbers.product([
+      Numbers.divide(this.staffCostsFlatRate, 100),
+      Numbers.sum([travelTotal, externalTotal, equipmentTotal, infrastructureTotal])
+    ])
+  }
+
+  private updateOfficeAndAdministrationTotal(staffTotal: number): void {
+    this.officeAndAdministrationTotal = Numbers.product([
+      Numbers.divide(this.officeAdministrationFlatRate, 100),
+      staffTotal
+    ])
+  }
 }

@@ -3,13 +3,12 @@ package io.cloudflight.jems.server.project.service.partner.budget
 import io.cloudflight.jems.api.project.dto.partner.budget.InputBudget
 import io.cloudflight.jems.server.exception.I18nValidationException
 import io.cloudflight.jems.server.project.entity.partner.budget.CommonBudget
-import io.cloudflight.jems.server.project.entity.partner.budget.ProjectPartnerBudgetOfficeAdministration
 import io.cloudflight.jems.server.project.repository.partner.budget.ProjectPartnerBudgetEquipmentRepository
 import io.cloudflight.jems.server.project.repository.partner.budget.ProjectPartnerBudgetExternalRepository
 import io.cloudflight.jems.server.project.repository.partner.budget.ProjectPartnerBudgetInfrastructureRepository
-import io.cloudflight.jems.server.project.repository.partner.budget.ProjectPartnerBudgetOfficeAdministrationRepository
 import io.cloudflight.jems.server.project.repository.partner.budget.ProjectPartnerBudgetStaffCostRepository
 import io.cloudflight.jems.server.project.repository.partner.budget.ProjectPartnerBudgetTravelRepository
+import io.cloudflight.jems.server.project.service.partner.budget.get_budget_options.GetBudgetOptionsInteractor
 import org.springframework.http.HttpStatus
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
@@ -18,12 +17,12 @@ import java.util.stream.Collectors
 
 @Service
 class ProjectPartnerBudgetServiceImpl(
-        private val projectPartnerBudgetStaffCostRepository: ProjectPartnerBudgetStaffCostRepository,
-        private val projectPartnerBudgetTravelRepository: ProjectPartnerBudgetTravelRepository,
-        private val projectPartnerBudgetExternalRepository: ProjectPartnerBudgetExternalRepository,
-        private val projectPartnerBudgetEquipmentRepository: ProjectPartnerBudgetEquipmentRepository,
-        private val projectPartnerBudgetInfrastructureRepository: ProjectPartnerBudgetInfrastructureRepository,
-        private val projectPartnerBudgetOfficeAdministrationRepository: ProjectPartnerBudgetOfficeAdministrationRepository
+    private val projectPartnerBudgetStaffCostRepository: ProjectPartnerBudgetStaffCostRepository,
+    private val projectPartnerBudgetTravelRepository: ProjectPartnerBudgetTravelRepository,
+    private val projectPartnerBudgetExternalRepository: ProjectPartnerBudgetExternalRepository,
+    private val projectPartnerBudgetEquipmentRepository: ProjectPartnerBudgetEquipmentRepository,
+    private val projectPartnerBudgetInfrastructureRepository: ProjectPartnerBudgetInfrastructureRepository,
+    private val getBudgetOptionsInteractor: GetBudgetOptionsInteractor
 ) : ProjectPartnerBudgetService {
 
     companion object {
@@ -156,32 +155,17 @@ class ProjectPartnerBudgetServiceImpl(
     }
     //endregion Infrastructure
 
-    @Transactional(readOnly = true)
-    override fun getOfficeAdministrationFlatRate(partnerId: Long): Int? {
-        return projectPartnerBudgetOfficeAdministrationRepository.findById(partnerId)
-            .map { it?.flatRate }.orElse(null)
-    }
-
-    @Transactional
-    override fun updateOfficeAdministrationFlatRate(partnerId: Long, flatRate: Int?): Int? {
-        if (flatRate != null)
-            return projectPartnerBudgetOfficeAdministrationRepository.save(
-                ProjectPartnerBudgetOfficeAdministration(partnerId, flatRate)
-            ).flatRate
-
-        projectPartnerBudgetOfficeAdministrationRepository.deleteById(partnerId)
-        return null
-    }
 
     @Transactional(readOnly = true)
     override fun getTotal(partnerId: Long): BigDecimal {
-        val officeAndAdministrationFlatRate = getOfficeAdministrationFlatRate(partnerId)
+        val officeAndAdministrationFlatRate = getBudgetOptionsInteractor.getBudgetOptions(partnerId)?.officeAdministrationFlatRate
 
         val staffCosts = projectPartnerBudgetStaffCostRepository.sumTotalForPartner(partnerId) ?: BigDecimal.ZERO
         val travelCosts = projectPartnerBudgetTravelRepository.sumTotalForPartner(partnerId) ?: BigDecimal.ZERO
         val externalCosts = projectPartnerBudgetExternalRepository.sumTotalForPartner(partnerId) ?: BigDecimal.ZERO
         val equipmentCosts = projectPartnerBudgetEquipmentRepository.sumTotalForPartner(partnerId) ?: BigDecimal.ZERO
-        val infrastructureCosts = projectPartnerBudgetInfrastructureRepository.sumTotalForPartner(partnerId) ?: BigDecimal.ZERO
+        val infrastructureCosts = projectPartnerBudgetInfrastructureRepository.sumTotalForPartner(partnerId)
+            ?: BigDecimal.ZERO
 
         val officeAndAdministrationCosts = if (officeAndAdministrationFlatRate == null) BigDecimal.ZERO else
             staffCosts.percentage(officeAndAdministrationFlatRate)

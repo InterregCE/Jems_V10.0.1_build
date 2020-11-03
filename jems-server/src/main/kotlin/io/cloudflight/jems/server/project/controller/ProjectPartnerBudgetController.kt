@@ -2,16 +2,20 @@ package io.cloudflight.jems.server.project.controller
 
 import io.cloudflight.jems.api.project.ProjectPartnerBudgetApi
 import io.cloudflight.jems.api.project.dto.partner.budget.InputBudget
-import io.cloudflight.jems.api.project.dto.partner.budget.InputFlatRate
+import io.cloudflight.jems.api.project.dto.partner.budget.ProjectPartnerBudgetOptionsDto
 import io.cloudflight.jems.server.project.authorization.CanReadProjectPartner
 import io.cloudflight.jems.server.project.authorization.CanUpdateProjectPartner
 import io.cloudflight.jems.server.project.service.partner.budget.ProjectPartnerBudgetService
+import io.cloudflight.jems.server.project.service.partner.budget.get_budget_options.GetBudgetOptionsInteractor
+import io.cloudflight.jems.server.project.service.partner.budget.update_budget_options.UpdateBudgetOptionsInteractor
 import org.springframework.web.bind.annotation.RestController
 import java.math.BigDecimal
 
 @RestController
 class ProjectPartnerBudgetController(
-    private val projectPartnerBudgetService: ProjectPartnerBudgetService
+    private val projectPartnerBudgetService: ProjectPartnerBudgetService,
+    private val getBudgetOptionsInteractor: GetBudgetOptionsInteractor,
+    private val updateBudgetOptionsInteractor: UpdateBudgetOptionsInteractor
 ) : ProjectPartnerBudgetApi {
 
     @CanReadProjectPartner
@@ -23,6 +27,13 @@ class ProjectPartnerBudgetController(
     override fun updateBudgetStaffCost(partnerId: Long, budgetCosts: List<InputBudget>): List<InputBudget> {
         return projectPartnerBudgetService.updateStaffCosts(partnerId, budgetCosts)
     }
+
+    override fun getBudgetOptions(partnerId: Long): ProjectPartnerBudgetOptionsDto =
+        getBudgetOptionsInteractor.getBudgetOptions(partnerId)?.toProjectPartnerBudgetOptionsDto()
+            ?: ProjectPartnerBudgetOptionsDto(null, null)
+
+    override fun updateBudgetOptions(partnerId: Long, budgetOptionsDto: ProjectPartnerBudgetOptionsDto) =
+        updateBudgetOptionsInteractor.updateBudgetOptions(partnerId, budgetOptionsDto.officeAdministrationFlatRate, budgetOptionsDto.staffCostsFlatRate)
 
     @CanReadProjectPartner
     override fun getBudgetTravel(partnerId: Long): List<InputBudget> {
@@ -62,16 +73,6 @@ class ProjectPartnerBudgetController(
     @CanUpdateProjectPartner
     override fun updateBudgetInfrastructure(partnerId: Long, infrastructures: List<InputBudget>): List<InputBudget> {
         return projectPartnerBudgetService.updateInfrastructure(partnerId, infrastructures)
-    }
-
-    @CanReadProjectPartner
-    override fun getOfficeAdministrationFlatRate(partnerId: Long): Int? {
-        return projectPartnerBudgetService.getOfficeAdministrationFlatRate(partnerId)
-    }
-
-    @CanUpdateProjectPartner
-    override fun updateOfficeAdministrationFlatRate(partnerId: Long, flatRate: InputFlatRate): Int? {
-        return projectPartnerBudgetService.updateOfficeAdministrationFlatRate(partnerId, flatRate.value)
     }
 
     @CanReadProjectPartner

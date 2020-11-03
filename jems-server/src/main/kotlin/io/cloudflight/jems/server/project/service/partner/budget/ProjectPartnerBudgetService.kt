@@ -40,10 +40,6 @@ interface ProjectPartnerBudgetService {
     fun updateInfrastructure(partnerId: Long, infrastructures: List<InputBudget>): List<InputBudget>
     //endregion Infrastructure
 
-    fun getOfficeAdministrationFlatRate(partnerId: Long): Int?
-
-    fun updateOfficeAdministrationFlatRate(partnerId: Long, flatRate: Int?): Int?
-
     fun getTotal(partnerId: Long): BigDecimal
 
 }

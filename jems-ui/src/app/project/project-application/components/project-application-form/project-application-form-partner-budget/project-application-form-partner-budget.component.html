@@ -7,19 +7,34 @@
     </button>
 
     <br>
-    <h5 id="staff" class="header">{{'project.partner.budget.staff' | translate}}</h5>
-    <app-budget-table
-            *ngIf="budgets?.staff"
-            [enabled]="formState === FormState.EDIT"
-            [table]="budgets.staff"
-            [changeFormState$]="changeFormState$"
-            (validityChange)="adaptValidity()">
-    </app-budget-table>
+    <ng-container *ngIf="!Number.isInteger(staffCostsFlatRate)">
+        <h5 id="staff" class="header">{{'project.partner.budget.staff' | translate}}</h5>
+        <app-budget-table
+                *ngIf="budgets?.staff"
+                [enabled]="formState === FormState.EDIT"
+                [table]="budgets.staff"
+                [changeFormState$]="changeFormState$"
+                (validityChange)="adaptValidity()">
+        </app-budget-table>
+    </ng-container>
+
+    <ng-container *ngIf="Number.isInteger(staffCostsFlatRate)">
+        <br>
+        <h5 id="staffCostsFlatRate"
+            class="header">{{'project.partner.budget.staff.costs.flat.rate.header' | translate}}</h5>
+        <p class="intro-text-small">{{'project.partner.budget.staff.costs.flat.rate.description' | translate}}</p>
+        <app-staff-costs-flat-rate-table [total]="{
+                description: 'project.partner.budget.table.total' | translate,
+                total: staffCostsTotal
+        }">
+        </app-staff-costs-flat-rate-table>
+    </ng-container>
 
     <ng-container *ngIf="Number.isInteger(officeAdministrationFlatRate)">
         <br>
         <h5 id="officeAdministration"
             class="header">{{'project.partner.budget.office.and.admin.header' | translate}}</h5>
+        <p class="intro-text-small">{{'project.partner.budget.office.and.admin.description' | translate}}</p>
         <app-office-and-administration-table
                 [total]="officeAndAdministrationTotal">
         </app-office-and-administration-table>

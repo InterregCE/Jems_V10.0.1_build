@@ -1,14 +1,26 @@
 import {ChangeDetectionStrategy, Component} from '@angular/core';
-import {InputBudget, ProjectPartnerBudgetService, InputFlatRate} from '@cat/api';
+import {InputBudget, ProjectPartnerBudgetOptionsDto, ProjectPartnerBudgetService} from '@cat/api';
 import {ActivatedRoute} from '@angular/router';
 import {Log} from '../../../../../../common/utils/log';
-import {catchError, filter, mergeMap, map, startWith, tap, withLatestFrom} from 'rxjs/operators';
+import {
+  catchError,
+  distinctUntilChanged,
+  filter,
+  map,
+  mergeMap,
+  share,
+  startWith,
+  switchMap,
+  tap,
+  withLatestFrom
+} from 'rxjs/operators';
 import {combineLatest, forkJoin, merge, Observable, of, Subject} from 'rxjs';
 import {I18nValidationError} from '@common/validation/i18n-validation-error';
 import {HttpErrorResponse} from '@angular/common/http';
 import {PartnerBudgetTable} from '../../../../model/partner-budget-table';
 import {PartnerBudgetTableType} from '../../../../model/partner-budget-table-type';
 import {ProjectPartnerStore} from '../../services/project-partner-store.service';
+import {BudgetOptions} from '../../../../model/budget-options';
 
 @Component({
   selector: 'app-project-application-partner-budget-page',
@@ -23,20 +35,24 @@ export class ProjectApplicationPartnerBudgetPageComponent {
 
   optionsSaveError$ = new Subject<I18nValidationError | null>();
   optionsSaveSuccess$ = new Subject<boolean>();
-  saveBudgetOptions = new Subject<InputFlatRate>();
-  private initialOfficeAdministrationFlatRate$ = this.partnerStore.getProjectPartner()
+  saveBudgetOptions = new Subject<BudgetOptions>();
+  private initialBudgetOptions$ = this.partnerStore.getProjectPartner()
     .pipe(
       filter(partner => !!partner.id),
       map(partner => partner.id),
-      mergeMap(id => this.projectPartnerBudgetService.getOfficeAdministrationFlatRate(id))
+      switchMap(id =>
+        this.projectPartnerBudgetService.getBudgetOptions(id)
+      ),
+      map((it: ProjectPartnerBudgetOptionsDto) => new BudgetOptions(it.officeAdministrationFlatRate, it.staffCostsFlatRate))
     );
 
-  private saveOfficeAdministrationFlatRate = this.saveBudgetOptions
+  private saveBudgetOptions$ = this.saveBudgetOptions
     .pipe(
       withLatestFrom(this.partnerStore.getProjectPartner()),
-      mergeMap(([flatRate, partner]) =>
-        this.projectPartnerBudgetService.updateOfficeAdministrationFlatRate(partner.id, flatRate)
+      switchMap(([budgetOptions, partner]) =>
+        this.projectPartnerBudgetService.updateBudgetOptions(partner.id, budgetOptions).pipe(map(() => budgetOptions))
       ),
+      tap(() => this.fetchBudgetsFor$.next([PartnerBudgetTableType.STAFF])),
       tap(() => this.optionsSaveSuccess$.next(true)),
       tap(() => this.optionsSaveError$.next(null)),
       catchError((error: HttpErrorResponse) => {
@@ -46,6 +62,7 @@ export class ProjectApplicationPartnerBudgetPageComponent {
     );
 
   saveBudgets$ = new Subject<{ [key: string]: PartnerBudgetTable }>();
+  fetchBudgetsFor$ = new Subject<PartnerBudgetTableType[]>();
   saveError$ = new Subject<I18nValidationError | null>();
   saveSuccess$ = new Subject<boolean>();
   cancelEdit$ = new Subject<void>();
@@ -54,6 +71,7 @@ export class ProjectApplicationPartnerBudgetPageComponent {
     .pipe(
       filter(partner => !!partner.id),
       map(partner => partner.id),
+      distinctUntilChanged(),
       mergeMap(id =>
         forkJoin({
           staff: this.projectPartnerBudgetService.getBudgetStaffCost(id)
@@ -67,13 +85,14 @@ export class ProjectApplicationPartnerBudgetPageComponent {
           infrastructure: this.projectPartnerBudgetService.getBudgetInfrastructure(id)
             .pipe(tap(infrastructure => Log.info('Fetched the infrastructure budget', this, infrastructure))),
         })
-      )
+      ),
+      share()
     );
 
   private savedBudgets$ = this.saveBudgets$
     .pipe(
       withLatestFrom(this.partnerStore.getProjectPartner()),
-      mergeMap(([budgets, partner]) =>
+      switchMap(([budgets, partner]) =>
         forkJoin({
           staff: this.updateBudget(partner.id, PartnerBudgetTableType.STAFF, this.getBudgetEntries(budgets.staff)),
           travel: this.updateBudget(partner.id, PartnerBudgetTableType.TRAVEL, this.getBudgetEntries(budgets.travel)),
@@ -81,6 +100,28 @@ export class ProjectApplicationPartnerBudgetPageComponent {
           equipment: this.updateBudget(partner.id, PartnerBudgetTableType.EQUIPMENT, this.getBudgetEntries(budgets.equipment)),
           infrastructure: this.updateBudget(partner.id, PartnerBudgetTableType.INFRASTRUCTURE, this.getBudgetEntries(budgets.infrastructure))
         })),
+      tap(() => this.saveSuccess$.next(true)),
+      tap(() => this.saveError$.next(null)),
+      share(),
+      catchError((error: HttpErrorResponse) => {
+        this.cancelEdit$.next();
+        this.saveError$.next(error.error);
+        throw error;
+      })
+    );
+
+  fetchedBudgets$ = this.fetchBudgetsFor$
+    .pipe(
+      withLatestFrom(this.partnerStore.getProjectPartner(), merge(this.savedBudgets$, this.initialBudgets$)),
+      switchMap(([budgetsKeys, partner, currentBudgets]) =>
+        forkJoin({
+          staff: budgetsKeys.indexOf(PartnerBudgetTableType.STAFF) >= 0 ? this.projectPartnerBudgetService.getBudgetStaffCost(partner.id) : of(currentBudgets.staff),
+          travel: budgetsKeys.indexOf(PartnerBudgetTableType.TRAVEL) >= 0 ? this.projectPartnerBudgetService.getBudgetTravel(partner.id) : of(currentBudgets.travel),
+          external: budgetsKeys.indexOf(PartnerBudgetTableType.EXTERNAL) >= 0 ? this.projectPartnerBudgetService.getBudgetExternal(partner.id) : of(currentBudgets.external),
+          equipment: budgetsKeys.indexOf(PartnerBudgetTableType.EQUIPMENT) >= 0 ? this.projectPartnerBudgetService.getBudgetEquipment(partner.id) : of(currentBudgets.equipment),
+          infrastructure: budgetsKeys.indexOf(PartnerBudgetTableType.INFRASTRUCTURE) >= 0 ? this.projectPartnerBudgetService.getBudgetInfrastructure(partner.id) : of(currentBudgets.infrastructure),
+        })
+      ),
       tap(() => this.saveSuccess$.next(true)),
       tap(() => this.saveError$.next(null)),
       catchError((error: HttpErrorResponse) => {
@@ -91,13 +132,14 @@ export class ProjectApplicationPartnerBudgetPageComponent {
     );
 
   details$ = combineLatest([
-    merge(this.initialOfficeAdministrationFlatRate$, this.saveOfficeAdministrationFlatRate),
-    merge(this.initialBudgets$, this.savedBudgets$),
+    merge(this.initialBudgetOptions$, this.saveBudgetOptions$),
+    merge(this.initialBudgets$, this.savedBudgets$, this.fetchedBudgets$),
     this.cancelEdit$.pipe(startWith(null))
   ])
     .pipe(
-      map(([flatRate, budgets]) => ({
-        officeAdministrationFlatRate: flatRate,
+      map(([budgetOptions, budgets]) => ({
+        officeAdministrationFlatRate: budgetOptions.officeAdministrationFlatRate,
+        staffCostsFlatRate: budgetOptions.staffCostsFlatRate,
         budgets: {
           staff: new PartnerBudgetTable(PartnerBudgetTableType.STAFF, budgets.staff),
           travel: new PartnerBudgetTable(PartnerBudgetTableType.TRAVEL, budgets.travel),
