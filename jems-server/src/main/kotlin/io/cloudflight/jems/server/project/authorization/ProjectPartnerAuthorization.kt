@@ -1,8 +1,8 @@
 package io.cloudflight.jems.server.project.authorization
 
-import io.cloudflight.jems.server.security.service.SecurityService
+import io.cloudflight.jems.server.authentication.service.SecurityService
 import io.cloudflight.jems.server.project.service.partner.ProjectPartnerService
-import io.cloudflight.jems.server.security.service.authorization.Authorization
+import io.cloudflight.jems.server.authentication.authorization.Authorization
 import org.springframework.security.access.prepost.PreAuthorize
 import org.springframework.stereotype.Component
 
@@ -19,7 +19,7 @@ class ProjectPartnerAuthorization(
     override val securityService: SecurityService,
     val projectPartnerService: ProjectPartnerService,
     val projectAuthorization: ProjectAuthorization
-): Authorization(securityService) {
+) : Authorization(securityService) {
 
     fun canReadProjectPartner(partnerId: Long): Boolean {
         return projectAuthorization.canReadProject(projectPartnerService.getProjectIdForPartnerId(partnerId))

@@ -5,7 +5,7 @@ import io.cloudflight.jems.api.programme.dto.OutputProgrammeFund
 import io.cloudflight.jems.server.audit.entity.AuditAction
 import io.cloudflight.jems.server.audit.service.AuditCandidate
 import io.cloudflight.jems.server.audit.service.AuditService
-import io.cloudflight.jems.server.exception.I18nValidationException
+import io.cloudflight.jems.server.common.exception.I18nValidationException
 import io.cloudflight.jems.server.programme.entity.ProgrammeFund
 import io.cloudflight.jems.server.programme.repository.ProgrammeFundRepository
 import io.mockk.MockKAnnotations

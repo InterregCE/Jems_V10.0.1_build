@@ -1,9 +1,9 @@
 package io.cloudflight.jems.api.project.dto
 
-import io.cloudflight.jems.api.programme.dto.OutputProgrammePriorityPolicySimple
-import io.cloudflight.jems.api.programme.dto.OutputProgrammePrioritySimple
+import io.cloudflight.jems.api.programme.dto.priority.OutputProgrammePriorityPolicySimple
+import io.cloudflight.jems.api.programme.dto.priority.OutputProgrammePrioritySimple
 
-data class OutputProjectData (
+data class OutputProjectData(
     val title: String?,
     val duration: Int?,
     val intro: String?,

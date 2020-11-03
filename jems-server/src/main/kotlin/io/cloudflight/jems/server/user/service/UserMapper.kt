@@ -4,10 +4,10 @@ import io.cloudflight.jems.api.user.dto.InputUserCreate
 import io.cloudflight.jems.api.user.dto.InputUserRegistration
 import io.cloudflight.jems.api.user.dto.OutputUser
 import io.cloudflight.jems.api.user.dto.OutputUserWithRole
-import io.cloudflight.jems.server.dto.UserWithCredentials
+import io.cloudflight.jems.server.user.model.UserWithCredentials
 import io.cloudflight.jems.server.user.entity.User
 import io.cloudflight.jems.server.user.entity.UserRole
-import io.cloudflight.jems.server.security.model.LocalCurrentUser
+import io.cloudflight.jems.server.authentication.model.LocalCurrentUser
 import org.springframework.security.core.authority.SimpleGrantedAuthority
 
 fun UserWithCredentials.toLocalCurrentUser() = LocalCurrentUser(

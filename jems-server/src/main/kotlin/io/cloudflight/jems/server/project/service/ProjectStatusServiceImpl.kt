@@ -21,12 +21,12 @@ import io.cloudflight.jems.server.project.entity.ProjectEligibilityAssessment
 import io.cloudflight.jems.server.project.entity.ProjectQualityAssessment
 import io.cloudflight.jems.server.project.entity.ProjectStatus
 import io.cloudflight.jems.server.user.entity.User
-import io.cloudflight.jems.server.exception.I18nValidationException
-import io.cloudflight.jems.server.exception.ResourceNotFoundException
+import io.cloudflight.jems.server.common.exception.I18nValidationException
+import io.cloudflight.jems.server.common.exception.ResourceNotFoundException
 import io.cloudflight.jems.server.project.repository.ProjectRepository
 import io.cloudflight.jems.server.project.repository.ProjectStatusRepository
 import io.cloudflight.jems.server.user.repository.UserRepository
-import io.cloudflight.jems.server.security.service.SecurityService
+import io.cloudflight.jems.server.authentication.service.SecurityService
 import io.cloudflight.jems.server.audit.service.AuditService
 import org.slf4j.LoggerFactory
 import org.springframework.data.repository.findByIdOrNull

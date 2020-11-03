@@ -4,8 +4,8 @@ import io.cloudflight.jems.server.user.entity.User
 import io.cloudflight.jems.server.user.entity.UserRole
 import io.cloudflight.jems.server.user.repository.UserRepository
 import io.cloudflight.jems.server.user.repository.UserRoleRepository
-import io.cloudflight.jems.server.security.ADMINISTRATOR
-import io.cloudflight.jems.server.security.APPLICANT_USER
+import io.cloudflight.jems.server.authentication.model.ADMINISTRATOR
+import io.cloudflight.jems.server.authentication.model.APPLICANT_USER
 import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.stereotype.Component
 import javax.transaction.Transactional

@@ -1,7 +1,7 @@
 package io.cloudflight.jems.api.programme.validator
 
-import io.cloudflight.jems.api.programme.dto.InputProgrammePriorityCreate
-import io.cloudflight.jems.api.programme.dto.InputProgrammePriorityUpdate
+import io.cloudflight.jems.api.programme.dto.priority.InputProgrammePriorityCreate
+import io.cloudflight.jems.api.programme.dto.priority.InputProgrammePriorityUpdate
 import javax.validation.Constraint
 import javax.validation.ConstraintValidator
 import javax.validation.ConstraintValidatorContext

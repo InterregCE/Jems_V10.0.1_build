@@ -6931,7 +6931,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"id\": \"{{partnerIdA}}\",\r\n    \"abbreviation\": \"Partner A LEAD\",\r\n    \"role\": \"LEAD_PARTNER\"\r\n}\r\n",
+							"raw": "{\r\n    \"id\": \"{{partnerIdA}}\",\r\n    \"abbreviation\": \"Partner A LEAD\",\r\n    \"role\": \"LEAD_PARTNER\",\r\n    \"legalStatusId\": 1\r\n}\r\n",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -7007,7 +7007,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"id\": \"{{partnerIdB}}\",\r\n    \"abbreviation\": \"Partner B LEAD\",\r\n    \"role\": \"LEAD_PARTNER\"\r\n}\r\n",
+							"raw": "{\r\n    \"id\": \"{{partnerIdB}}\",\r\n    \"abbreviation\": \"Partner B LEAD\",\r\n    \"role\": \"LEAD_PARTNER\",\r\n    \"legalStatusId\": 2\r\n}\r\n",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -7079,7 +7079,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"id\": \"{{partnerIdB}}\",\r\n    \"abbreviation\": \"Partner B LEAD\",\r\n    \"role\": \"LEAD_PARTNER\",\r\n    \"oldLeadPartnerId\": \"{{partnerIdA}}\"\r\n}\r\n",
+							"raw": "{\r\n    \"id\": \"{{partnerIdB}}\",\r\n    \"abbreviation\": \"Partner B LEAD\",\r\n    \"role\": \"LEAD_PARTNER\",\r\n    \"oldLeadPartnerId\": \"{{partnerIdA}}\",\r\n    \"legalStatusId\": 2\r\n}\r\n",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -8368,12 +8368,12 @@
 					"response": []
 				},
 				{
-					"name": "set office and administration flatRate",
+					"name": "set budget - infrastructure",
 					"event": [
 						{
 							"listen": "prerequest",
 							"script": {
-								"id": "1bc2ccb6-7a8d-48e7-b602-4d1ab10c1c38",
+								"id": "721915d8-387b-40cb-a0d7-90219f387756",
 								"exec": [
 									""
 								],
@@ -8383,16 +8383,19 @@
 						{
 							"listen": "test",
 							"script": {
-								"id": "e8757a68-a1b2-44b7-b46c-3dce1e5821f6",
+								"id": "5a009955-187d-4b12-887f-36981bf7a406",
 								"exec": [
-									"const flatRate = pm.response.json();\r",
+									"const infrastructure = pm.response.json();\r",
 									"\r",
-									"pm.test('applicant can set officeadministration flatRate', function() {\r",
+									"pm.test('applicant can set infrastructure budget', function() {\r",
 									"    pm.response.to.have.status(200);\r",
 									"});\r",
 									"\r",
-									"pm.test('officeadministration flatRate is set correctly', function() {\r",
-									"    pm.expect(flatRate).to.eql(10);\r",
+									"pm.test('infrastructure budget is set correctly', function() {\r",
+									"    pm.expect(infrastructure.length).to.eql(1);\r",
+									"    pm.expect(infrastructure[0].numberOfUnits).to.eql(2);\r",
+									"    pm.expect(infrastructure[0].pricePerUnit).to.eql(550);\r",
+									"    pm.expect(infrastructure[0].rowSum).to.eql(1100);\r",
 									"});\r",
 									""
 								],
@@ -8420,7 +8423,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"value\": 10\r\n}\r\n",
+							"raw": "[\r\n    {\r\n        \"description\": \"Dell Aspiron\",\r\n        \"numberOfUnits\": 2,\r\n        \"pricePerUnit\": 550\r\n    }\r\n]\r\n",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -8428,7 +8431,7 @@
 							}
 						},
 						"url": {
-							"raw": "{{url}}/api/project/partner/{{partner_id}}/budget/officeadministration",
+							"raw": "{{url}}/api/project/partner/{{partner_id}}/budget/infrastructure",
 							"host": [
 								"{{url}}"
 							],
@@ -8438,7 +8441,78 @@
 								"partner",
 								"{{partner_id}}",
 								"budget",
-								"officeadministration"
+								"infrastructure"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "set office and administration flatRate",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "1bc2ccb6-7a8d-48e7-b602-4d1ab10c1c38",
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"id": "e8757a68-a1b2-44b7-b46c-3dce1e5821f6",
+								"exec": [
+									"pm.test('applicant can set officeadministration flatRate', function() {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "basic",
+							"basic": [
+								{
+									"key": "password",
+									"value": "{{applicant_email}}",
+									"type": "string"
+								},
+								{
+									"key": "username",
+									"value": "{{applicant_email}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"officeAdministrationFlatRate\": 10\r\n}\r\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{url}}/api/project/partner/{{partner_id}}/budget/options",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"api",
+								"project",
+								"partner",
+								"{{partner_id}}",
+								"budget",
+								"options"
 							]
 						}
 					},
@@ -8466,7 +8540,143 @@
 									"\r",
 									"pm.test('total is calculated correctly', function() {\r",
 									"    pm.response.to.have.status(200);\r",
-									"    pm.expect(pm.response.json()).to.eql(53680.18);\r",
+									"    pm.expect(pm.response.json()).to.eql(54780.18);\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "basic",
+							"basic": [
+								{
+									"key": "password",
+									"value": "{{applicant_email}}",
+									"type": "string"
+								},
+								{
+									"key": "username",
+									"value": "{{applicant_email}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{url}}/api/project/partner/{{partner_id}}/budget/total",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"api",
+								"project",
+								"partner",
+								"{{partner_id}}",
+								"budget",
+								"total"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "set staff costs flatRate",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "da063936-460a-41d3-892a-b3f4125cf7c8",
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"id": "a076e9a4-9299-4ef7-9ef1-0a71c05fff1a",
+								"exec": [
+									"pm.test('applicant can set staffCosts flatRate', function() {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "basic",
+							"basic": [
+								{
+									"key": "password",
+									"value": "{{applicant_email}}",
+									"type": "string"
+								},
+								{
+									"key": "username",
+									"value": "{{applicant_email}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"staffCostsFlatRate\": 10\r\n}\r\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{url}}/api/project/partner/{{partner_id}}/budget/options",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"api",
+								"project",
+								"partner",
+								"{{partner_id}}",
+								"budget",
+								"options"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "calculate total",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "8d2e3e8c-ff8f-417f-af1a-a9a7d441f71e",
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"id": "7bb2ea92-745b-4ab6-8434-373e3313a2d9",
+								"exec": [
+									"const flatRate = pm.response.json();\r",
+									"\r",
+									"pm.test('total is calculated correctly', function() {\r",
+									"    pm.response.to.have.status(200);\r",
+									"    pm.expect(pm.response.json()).to.eql(1210.19);\r",
 									"});\r",
 									""
 								],
@@ -8574,7 +8784,7 @@
 	],
 	"variable": [
 		{
-			"id": "bc95e203-b8cd-4e4f-b168-63b02faa6ce1",
+			"id": "11d06194-f451-47d5-9b1d-89e0f89798c6",
 			"key": "url",
 			"value": "specify_url_here"
 		}

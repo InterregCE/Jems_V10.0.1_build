@@ -2,7 +2,7 @@ package io.cloudflight.jems.server.security.service.authorization
 
 import io.cloudflight.jems.api.call.dto.OutputCallWithDates
 import io.cloudflight.jems.api.project.dto.OutputProject
-import io.cloudflight.jems.api.dto.OutputProjectFile
+import io.cloudflight.jems.api.project.dto.file.OutputProjectFile
 import io.cloudflight.jems.api.project.dto.status.OutputProjectStatus
 import io.cloudflight.jems.api.project.dto.status.ProjectApplicationStatus
 import io.cloudflight.jems.api.project.dto.status.ProjectApplicationStatus.APPROVED
@@ -13,16 +13,17 @@ import io.cloudflight.jems.api.project.dto.status.ProjectApplicationStatus.INELI
 import io.cloudflight.jems.api.project.dto.status.ProjectApplicationStatus.NOT_APPROVED
 import io.cloudflight.jems.api.project.dto.status.ProjectApplicationStatus.RETURNED_TO_APPLICANT
 import io.cloudflight.jems.api.project.dto.status.ProjectApplicationStatus.SUBMITTED
-import io.cloudflight.jems.api.dto.ProjectFileType
+import io.cloudflight.jems.api.project.dto.file.ProjectFileType
 import io.cloudflight.jems.api.user.dto.OutputUser
-import io.cloudflight.jems.server.exception.ResourceNotFoundException
+import io.cloudflight.jems.server.common.exception.ResourceNotFoundException
 import io.cloudflight.jems.server.project.authorization.ProjectAuthorization
 import io.cloudflight.jems.server.project.dto.ProjectApplicantAndStatus
-import io.cloudflight.jems.server.security.service.SecurityService
+import io.cloudflight.jems.server.authentication.service.SecurityService
+import io.cloudflight.jems.server.project.authorization.ProjectFileAuthorization
 import io.cloudflight.jems.server.security.service.authorization.AuthorizationUtil.Companion.adminUser
 import io.cloudflight.jems.server.security.service.authorization.AuthorizationUtil.Companion.applicantUser
 import io.cloudflight.jems.server.security.service.authorization.AuthorizationUtil.Companion.programmeUser
-import io.cloudflight.jems.server.service.FileStorageService
+import io.cloudflight.jems.server.project.service.file.FileStorageService
 import io.cloudflight.jems.server.project.service.ProjectService
 import io.mockk.MockKAnnotations
 import io.mockk.every

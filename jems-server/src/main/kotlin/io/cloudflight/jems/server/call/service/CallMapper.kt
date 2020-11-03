@@ -11,7 +11,7 @@ import io.cloudflight.jems.server.user.entity.User
 import io.cloudflight.jems.server.programme.entity.ProgrammePriorityPolicy
 import io.cloudflight.jems.server.programme.service.toOutputProgrammeFund
 import io.cloudflight.jems.server.programme.service.toOutputProgrammePriorityPolicy
-import io.cloudflight.jems.server.strategy.entity.Strategy
+import io.cloudflight.jems.server.programme.entity.Strategy
 
 /**
  * Map InputCallCreate to entity Call.

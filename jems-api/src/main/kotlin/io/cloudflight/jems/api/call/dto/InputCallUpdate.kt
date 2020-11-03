@@ -1,8 +1,8 @@
 package io.cloudflight.jems.api.call.dto
 
-import io.cloudflight.jems.api.validators.StartDateBeforeEndDate
-import io.cloudflight.jems.api.programme.dto.ProgrammeObjectivePolicy
-import io.cloudflight.jems.api.strategy.ProgrammeStrategy
+import io.cloudflight.jems.api.common.validator.StartDateBeforeEndDate
+import io.cloudflight.jems.api.programme.dto.priority.ProgrammeObjectivePolicy
+import io.cloudflight.jems.api.programme.dto.strategy.ProgrammeStrategy
 import java.time.ZonedDateTime
 import javax.validation.constraints.Max
 import javax.validation.constraints.Min

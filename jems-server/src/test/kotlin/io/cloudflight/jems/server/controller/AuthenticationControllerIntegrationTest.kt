@@ -1,7 +1,7 @@
 package io.cloudflight.jems.server.controller
 
 import com.fasterxml.jackson.databind.ObjectMapper
-import io.cloudflight.jems.api.dto.LoginRequest
+import io.cloudflight.jems.api.authentication.dto.LoginRequest
 import io.cloudflight.jems.server.factory.UserFactory.Companion.ADMINISTRATOR_EMAIL
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired

@@ -4,7 +4,7 @@ import io.cloudflight.jems.server.config.AUDIT_ENABLED
 import io.cloudflight.jems.server.config.AUDIT_PROPERTY_PREFIX
 import io.cloudflight.jems.server.audit.entity.Audit
 import io.cloudflight.jems.server.audit.repository.AuditRepository
-import io.cloudflight.jems.server.security.service.SecurityService
+import io.cloudflight.jems.server.authentication.service.SecurityService
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional

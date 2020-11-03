@@ -1,6 +1,6 @@
 package io.cloudflight.jems.server.programme.repository
 
-import io.cloudflight.jems.api.programme.dto.ProgrammeObjectivePolicy
+import io.cloudflight.jems.api.programme.dto.priority.ProgrammeObjectivePolicy
 import io.cloudflight.jems.server.programme.entity.ProgrammePriorityPolicy
 import org.springframework.data.jpa.repository.Query
 import org.springframework.data.repository.PagingAndSortingRepository

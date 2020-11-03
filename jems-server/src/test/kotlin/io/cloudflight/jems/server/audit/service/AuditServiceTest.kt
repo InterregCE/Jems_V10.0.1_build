@@ -8,7 +8,7 @@ import io.cloudflight.jems.server.audit.entity.Audit
 import io.cloudflight.jems.server.audit.entity.AuditAction
 import io.cloudflight.jems.server.audit.entity.AuditUser
 import io.cloudflight.jems.server.audit.repository.AuditRepository
-import io.cloudflight.jems.server.security.service.SecurityService
+import io.cloudflight.jems.server.authentication.service.SecurityService
 import io.cloudflight.jems.server.security.service.authorization.AuthorizationUtil.Companion.applicantUser
 import io.mockk.MockKAnnotations
 import io.mockk.every

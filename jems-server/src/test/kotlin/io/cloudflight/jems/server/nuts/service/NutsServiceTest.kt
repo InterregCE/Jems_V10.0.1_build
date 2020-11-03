@@ -3,7 +3,7 @@ package io.cloudflight.jems.server.nuts.service
 import io.cloudflight.jems.api.nuts.dto.OutputNutsMetadata
 import io.cloudflight.jems.server.audit.entity.AuditAction
 import io.cloudflight.jems.server.audit.service.AuditCandidate
-import io.cloudflight.jems.server.exception.I18nValidationException
+import io.cloudflight.jems.server.common.exception.I18nValidationException
 import io.cloudflight.jems.server.nuts.entity.NutsCountry
 import io.cloudflight.jems.server.nuts.entity.NutsMetadata
 import io.cloudflight.jems.server.nuts.entity.NutsRegion1

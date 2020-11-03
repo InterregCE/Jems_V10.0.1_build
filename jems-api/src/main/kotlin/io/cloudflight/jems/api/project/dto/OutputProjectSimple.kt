@@ -1,7 +1,5 @@
 package io.cloudflight.jems.api.project.dto
 
-import io.cloudflight.jems.api.programme.dto.OutputProgrammePriorityPolicySimple
-import io.cloudflight.jems.api.programme.dto.OutputProgrammePrioritySimple
 import io.cloudflight.jems.api.project.dto.status.ProjectApplicationStatus
 import java.time.ZonedDateTime
 

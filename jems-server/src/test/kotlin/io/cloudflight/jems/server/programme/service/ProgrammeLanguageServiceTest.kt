@@ -1,12 +1,12 @@
 package io.cloudflight.jems.server.programme.service
 
-import io.cloudflight.jems.api.programme.SystemLanguage
+import io.cloudflight.jems.api.programme.dto.SystemLanguage
 import io.cloudflight.jems.api.programme.dto.InputProgrammeLanguage
 import io.cloudflight.jems.api.programme.dto.OutputProgrammeLanguage
 import io.cloudflight.jems.server.audit.entity.AuditAction
 import io.cloudflight.jems.server.audit.service.AuditCandidate
 import io.cloudflight.jems.server.audit.service.AuditService
-import io.cloudflight.jems.server.exception.I18nValidationException
+import io.cloudflight.jems.server.common.exception.I18nValidationException
 import io.cloudflight.jems.server.programme.entity.ProgrammeLanguage
 import io.cloudflight.jems.server.programme.repository.ProgrammeLanguageRepository
 import io.mockk.MockKAnnotations

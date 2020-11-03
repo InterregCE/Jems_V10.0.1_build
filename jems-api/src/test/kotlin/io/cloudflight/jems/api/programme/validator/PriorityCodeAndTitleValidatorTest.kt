@@ -1,8 +1,8 @@
 package io.cloudflight.jems.api.programme.validator
 
-import io.cloudflight.jems.api.programme.dto.InputProgrammePriorityCreate
-import io.cloudflight.jems.api.programme.dto.InputProgrammePriorityUpdate
-import io.cloudflight.jems.api.programme.dto.ProgrammeObjective
+import io.cloudflight.jems.api.programme.dto.priority.InputProgrammePriorityCreate
+import io.cloudflight.jems.api.programme.dto.priority.InputProgrammePriorityUpdate
+import io.cloudflight.jems.api.programme.dto.priority.ProgrammeObjective
 import io.mockk.MockKAnnotations
 import io.mockk.every
 import io.mockk.impl.annotations.MockK

@@ -5,7 +5,7 @@ import io.cloudflight.jems.api.user.dto.InputUserCreate
 import io.cloudflight.jems.api.user.dto.InputUserRegistration
 import io.cloudflight.jems.api.user.dto.InputUserUpdate
 import io.cloudflight.jems.api.user.dto.OutputUserWithRole
-import io.cloudflight.jems.server.dto.UserWithCredentials
+import io.cloudflight.jems.server.user.model.UserWithCredentials
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
 

@@ -1,7 +1,7 @@
 package io.cloudflight.jems.server.programme.service.validators
 
-import io.cloudflight.jems.api.programme.dto.OutputProgrammePriority
-import io.cloudflight.jems.api.programme.dto.ProgrammeObjective.PO1
+import io.cloudflight.jems.api.programme.dto.priority.OutputProgrammePriority
+import io.cloudflight.jems.api.programme.dto.priority.ProgrammeObjective.PO1
 import io.cloudflight.jems.api.programme.validator.UniqueProgrammePriorityCodeAndTitleValidator
 import io.cloudflight.jems.server.programme.service.ProgrammePriorityService
 import io.cloudflight.jems.server.programme.service.validator.UniqueProgrammePriorityCodeAndTitleValidatorImpl

@@ -10,9 +10,9 @@ import io.cloudflight.jems.api.project.dto.status.ProjectApplicationStatus.APPRO
 import io.cloudflight.jems.api.project.dto.status.ProjectApplicationStatus.NOT_APPROVED
 import io.cloudflight.jems.api.project.dto.status.ProjectApplicationStatus.RETURNED_TO_APPLICANT
 import io.cloudflight.jems.api.project.dto.status.ProjectApplicationStatus.SUBMITTED
-import io.cloudflight.jems.server.security.service.SecurityService
+import io.cloudflight.jems.server.authentication.service.SecurityService
 import io.cloudflight.jems.server.project.service.ProjectService
-import io.cloudflight.jems.server.security.service.authorization.Authorization
+import io.cloudflight.jems.server.authentication.authorization.Authorization
 import org.springframework.stereotype.Component
 
 @Component
@@ -20,7 +20,7 @@ class ProjectStatusAuthorization(
     override val securityService: SecurityService,
     val projectAuthorization: ProjectAuthorization,
     val projectService: ProjectService
-): Authorization(securityService) {
+) : Authorization(securityService) {
 
     fun canChangeStatusTo(projectId: Long, newStatus: ProjectApplicationStatus): Boolean {
         return projectAuthorization.canReadProject(projectId)
@@ -77,8 +77,8 @@ class ProjectStatusAuthorization(
         val oldStatus = project.projectStatus.status
 
         return oldStatus == SUBMITTED
-                && newPossibilities.contains(newStatus)
-                && project.eligibilityAssessment != null
+            && newPossibilities.contains(newStatus)
+            && project.eligibilityAssessment != null
     }
 
     fun canSetQualityAssessment(projectId: Long): Boolean {
@@ -86,16 +86,16 @@ class ProjectStatusAuthorization(
         val allowedStatuses = listOf(SUBMITTED, ELIGIBLE)
 
         return project.qualityAssessment == null
-                && (isProgrammeUser() || isAdmin())
-                && allowedStatuses.contains(project.projectStatus.status)
+            && (isProgrammeUser() || isAdmin())
+            && allowedStatuses.contains(project.projectStatus.status)
     }
 
     fun canSetEligibilityAssessment(projectId: Long): Boolean {
         val project = projectService.getById(projectId)
 
         return project.eligibilityAssessment == null
-                && (isProgrammeUser() || isAdmin())
-                && project.projectStatus.status == SUBMITTED
+            && (isProgrammeUser() || isAdmin())
+            && project.projectStatus.status == SUBMITTED
     }
 
 }

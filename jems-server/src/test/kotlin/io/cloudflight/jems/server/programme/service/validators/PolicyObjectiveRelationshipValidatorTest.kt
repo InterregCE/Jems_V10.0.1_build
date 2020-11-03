@@ -1,11 +1,11 @@
 package io.cloudflight.jems.server.programme.service.validators
 
-import io.cloudflight.jems.api.programme.dto.InputProgrammePriorityPolicy
-import io.cloudflight.jems.api.programme.dto.ProgrammeObjective.PO1
-import io.cloudflight.jems.api.programme.dto.ProgrammeObjectivePolicy.AdvancedTechnologies
-import io.cloudflight.jems.api.programme.dto.ProgrammeObjectivePolicy.ClimateChange
-import io.cloudflight.jems.api.programme.dto.ProgrammeObjectivePolicy.Digitalization
-import io.cloudflight.jems.api.programme.dto.ProgrammeObjectivePolicy.EnergyEfficiency
+import io.cloudflight.jems.api.programme.dto.priority.InputProgrammePriorityPolicy
+import io.cloudflight.jems.api.programme.dto.priority.ProgrammeObjective.PO1
+import io.cloudflight.jems.api.programme.dto.priority.ProgrammeObjectivePolicy.AdvancedTechnologies
+import io.cloudflight.jems.api.programme.dto.priority.ProgrammeObjectivePolicy.ClimateChange
+import io.cloudflight.jems.api.programme.dto.priority.ProgrammeObjectivePolicy.Digitalization
+import io.cloudflight.jems.api.programme.dto.priority.ProgrammeObjectivePolicy.EnergyEfficiency
 import io.cloudflight.jems.api.programme.validator.PolicyObjectiveRelationshipValidator
 import io.cloudflight.jems.server.programme.service.validator.PolicyObjectiveRelationshipValidatorImpl
 import org.junit.jupiter.api.Assertions.assertFalse

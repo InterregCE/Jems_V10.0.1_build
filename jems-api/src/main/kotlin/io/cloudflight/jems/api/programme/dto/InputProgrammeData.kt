@@ -1,6 +1,6 @@
 package io.cloudflight.jems.api.programme.dto
 
-import io.cloudflight.jems.api.validators.StartDateBeforeEndDate
+import io.cloudflight.jems.api.common.validator.StartDateBeforeEndDate
 import java.time.LocalDate
 import javax.validation.constraints.Max
 import javax.validation.constraints.Min

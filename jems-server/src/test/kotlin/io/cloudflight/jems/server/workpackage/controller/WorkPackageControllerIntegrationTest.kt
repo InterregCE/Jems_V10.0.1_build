@@ -1,7 +1,7 @@
 package io.cloudflight.jems.server.workpackage.controller
 
 import com.fasterxml.jackson.databind.ObjectMapper
-import io.cloudflight.jems.api.workpackage.dto.InputWorkPackageCreate
+import io.cloudflight.jems.api.project.dto.workpackage.InputWorkPackageCreate
 import io.cloudflight.jems.server.factory.CallFactory
 import io.cloudflight.jems.server.factory.ProjectFactory
 import io.cloudflight.jems.server.factory.UserFactory

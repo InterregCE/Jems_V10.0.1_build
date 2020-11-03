@@ -1,9 +1,6 @@
 package io.cloudflight.jems.api.programme.dto
 
-import io.cloudflight.jems.api.programme.SystemLanguage
-
 data class OutputProgrammeLanguage(
-
     val code: SystemLanguage,
     val ui: Boolean,
     val fallback: Boolean,

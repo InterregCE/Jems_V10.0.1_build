@@ -1,13 +1,13 @@
 package io.cloudflight.jems.server.programme.service.validators
 
-import io.cloudflight.jems.api.programme.dto.InputProgrammePriorityPolicy
-import io.cloudflight.jems.api.programme.dto.OutputProgrammePriorityPolicySimple
-import io.cloudflight.jems.api.programme.dto.ProgrammeObjectivePolicy
-import io.cloudflight.jems.api.programme.dto.ProgrammeObjectivePolicy.AdvancedTechnologies
-import io.cloudflight.jems.api.programme.dto.ProgrammeObjectivePolicy.ClimateChange
+import io.cloudflight.jems.api.programme.dto.priority.InputProgrammePriorityPolicy
+import io.cloudflight.jems.api.programme.dto.priority.OutputProgrammePriorityPolicySimple
+import io.cloudflight.jems.api.programme.dto.priority.ProgrammeObjectivePolicy
+import io.cloudflight.jems.api.programme.dto.priority.ProgrammeObjectivePolicy.AdvancedTechnologies
+import io.cloudflight.jems.api.programme.dto.priority.ProgrammeObjectivePolicy.ClimateChange
 import io.cloudflight.jems.api.programme.validator.PriorityPolicyUniqueCodeValidator
-import io.cloudflight.jems.server.exception.I18nFieldError
-import io.cloudflight.jems.server.exception.I18nValidationException
+import io.cloudflight.jems.server.common.exception.I18nFieldError
+import io.cloudflight.jems.server.common.exception.I18nValidationException
 import io.cloudflight.jems.server.programme.service.ProgrammePriorityService
 import io.cloudflight.jems.server.programme.service.validator.PriorityPolicyUniqueCodeValidatorImpl
 import io.mockk.MockKAnnotations

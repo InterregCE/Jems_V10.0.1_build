@@ -7,7 +7,7 @@ import io.cloudflight.jems.api.user.dto.InputUserUpdate
 import io.cloudflight.jems.server.factory.UserFactory
 import io.cloudflight.jems.server.factory.UserFactory.Companion.ADMINISTRATOR_EMAIL
 import io.cloudflight.jems.server.factory.UserFactory.Companion.APPLICANT_USER_EMAIL
-import io.cloudflight.jems.server.security.ADMINISTRATOR
+import io.cloudflight.jems.server.authentication.model.ADMINISTRATOR
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc

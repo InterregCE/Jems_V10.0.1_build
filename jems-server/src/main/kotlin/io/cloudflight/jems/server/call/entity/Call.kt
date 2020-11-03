@@ -4,7 +4,7 @@ import io.cloudflight.jems.api.call.dto.CallStatus
 import io.cloudflight.jems.server.programme.entity.ProgrammeFund
 import io.cloudflight.jems.server.user.entity.User
 import io.cloudflight.jems.server.programme.entity.ProgrammePriorityPolicy
-import io.cloudflight.jems.server.strategy.entity.Strategy
+import io.cloudflight.jems.server.programme.entity.Strategy
 import java.time.ZonedDateTime
 import javax.persistence.Column
 import javax.persistence.Entity

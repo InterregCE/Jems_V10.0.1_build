@@ -1,7 +1,7 @@
 package io.cloudflight.jems.server.project.service.partner.budget
 
 import io.cloudflight.jems.api.project.dto.partner.budget.InputBudget
-import io.cloudflight.jems.server.exception.I18nValidationException
+import io.cloudflight.jems.server.common.exception.I18nValidationException
 import io.cloudflight.jems.server.project.entity.partner.budget.CommonBudget
 import io.cloudflight.jems.server.project.repository.partner.budget.ProjectPartnerBudgetEquipmentRepository
 import io.cloudflight.jems.server.project.repository.partner.budget.ProjectPartnerBudgetExternalRepository

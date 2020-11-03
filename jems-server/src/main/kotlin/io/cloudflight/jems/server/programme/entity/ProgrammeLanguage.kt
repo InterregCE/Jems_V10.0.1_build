@@ -1,7 +1,6 @@
 package io.cloudflight.jems.server.programme.entity
 
-import io.cloudflight.jems.api.programme.SystemLanguage
-import java.util.Objects
+import io.cloudflight.jems.api.programme.dto.SystemLanguage
 import javax.persistence.Column
 import javax.persistence.Entity
 import javax.persistence.EnumType

@@ -1,6 +1,6 @@
 package io.cloudflight.jems.server.programme.service
 
-import io.cloudflight.jems.api.programme.dto.OutputProgrammePriority
+import io.cloudflight.jems.api.programme.dto.priority.OutputProgrammePriority
 import io.cloudflight.jems.server.audit.entity.AuditAction
 import io.cloudflight.jems.server.audit.service.AuditBuilder
 import io.cloudflight.jems.server.audit.service.AuditCandidate

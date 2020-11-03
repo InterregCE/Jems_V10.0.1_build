@@ -1,6 +1,5 @@
 package io.cloudflight.jems.api.programme.dto
 
-import io.cloudflight.jems.api.programme.SystemLanguage
 import javax.validation.constraints.NotBlank
 
 data class InputProgrammeLanguage(

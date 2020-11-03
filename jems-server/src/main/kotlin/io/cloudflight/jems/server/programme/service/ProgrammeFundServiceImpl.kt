@@ -3,7 +3,7 @@ package io.cloudflight.jems.server.programme.service
 import io.cloudflight.jems.api.programme.dto.InputProgrammeFund
 import io.cloudflight.jems.api.programme.dto.OutputProgrammeFund
 import io.cloudflight.jems.server.audit.service.AuditService
-import io.cloudflight.jems.server.exception.I18nValidationException
+import io.cloudflight.jems.server.common.exception.I18nValidationException
 import io.cloudflight.jems.server.programme.repository.ProgrammeFundRepository
 import org.springframework.http.HttpStatus
 import org.springframework.stereotype.Service

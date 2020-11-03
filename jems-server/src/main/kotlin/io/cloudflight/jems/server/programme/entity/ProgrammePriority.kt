@@ -1,6 +1,6 @@
 package io.cloudflight.jems.server.programme.entity
 
-import io.cloudflight.jems.api.programme.dto.ProgrammeObjective
+import io.cloudflight.jems.api.programme.dto.priority.ProgrammeObjective
 import javax.persistence.CascadeType
 import javax.persistence.Column
 import javax.persistence.Entity
