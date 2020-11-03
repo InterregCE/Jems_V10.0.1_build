@@ -56,6 +56,7 @@ export class CallDetailComponent extends BaseComponent implements OnInit {
     maxlength: 'call.description.wrong.size'
   };
   lengthOfPeriodErrors = {
+    required: 'call.lengthOfPeriod.unknown',
     max: 'call.lengthOfPeriod.invalid.period',
     min: 'call.lengthOfPeriod.invalid.period',
   };
@@ -70,7 +71,7 @@ export class CallDetailComponent extends BaseComponent implements OnInit {
     endDate: ['', Validators.required],
     description: ['', Validators.maxLength(1000)],
     lengthOfPeriod: ['', Validators.compose(
-      [Validators.max(99), Validators.min(1)])]
+      [Validators.required, Validators.max(99), Validators.min(1)])]
   });
 
   constructor(private formBuilder: FormBuilder,

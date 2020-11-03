@@ -6,5 +6,6 @@ data class OutputCallWithDates (
     val id: Long,
     val name: String,
     val startDate: ZonedDateTime,
-    val endDate: ZonedDateTime
+    val endDate: ZonedDateTime,
+    val lengthOfPeriod: Int
 )

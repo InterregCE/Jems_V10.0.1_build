@@ -217,7 +217,8 @@ class CallServiceTest {
             priorityPolicies = null,
             startDate = call.startDate,
             endDate = call.endDate,
-            description = call.description
+            description = call.description,
+            lengthOfPeriod = 12
         )
         val endDate = call.endDate.withSecond(59).withNano(999999999)
 
@@ -254,7 +255,8 @@ class CallServiceTest {
             strategies = setOf(ProgrammeStrategy.EUStrategyBalticSeaRegion),
             funds = setOf(1L),
             startDate = call.startDate,
-            endDate = call.endDate
+            endDate = call.endDate,
+            lengthOfPeriod = 12
         )
 
         val result = callService.createCall(newCall)
@@ -282,7 +284,8 @@ class CallServiceTest {
             name = call.name,
             priorityPolicies = setOf(DigitalConnectivity),
             startDate = call.startDate,
-            endDate = call.endDate
+            endDate = call.endDate,
+            lengthOfPeriod = 12
         )
 
         val exception = assertThrows<ResourceNotFoundException> { callService.createCall(newCall) }
@@ -298,7 +301,8 @@ class CallServiceTest {
             priorityPolicies = null,
             startDate = call.startDate,
             endDate = call.endDate,
-            description = call.description
+            description = call.description,
+            lengthOfPeriod = 12
         )
 
         assertThrows<ResourceNotFoundException> { callService.createCall(newCall) }
@@ -324,7 +328,8 @@ class CallServiceTest {
             priorityPolicies = setOf(AdvancedTechnologies),
             startDate = startDate,
             endDate = endDate,
-            description = "new description"
+            description = "new description",
+            lengthOfPeriod = 12
         )
         every { callRepository.findOneByName("new name") } returns null
 
@@ -358,7 +363,8 @@ class CallServiceTest {
             priorityPolicies = emptySet(),
             startDate = startDate,
             endDate = endDate,
-            description = "new description"
+            description = "new description",
+            lengthOfPeriod = 12
         )
         every { callRepository.findOneByName("existing name") } returns callWithId(ID_35)
 
@@ -385,7 +391,8 @@ class CallServiceTest {
             priorityPolicies = emptySet(),
             startDate = startDate,
             endDate = endDate,
-            description = "new description"
+            description = "new description",
+            lengthOfPeriod = 12
         )
         every { callRepository.findOneByName(eq(call.name)) } returns callWithId(existingId)
 
@@ -407,7 +414,8 @@ class CallServiceTest {
             priorityPolicies = emptySet(),
             startDate = call.startDate,
             endDate = call.endDate,
-            description = call.description
+            description = call.description,
+            lengthOfPeriod = 12
         )
 
         assertThrows<ResourceNotFoundException> { callService.updateCall(newCall) }

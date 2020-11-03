@@ -41,6 +41,7 @@
             </app-form-field-errors>
         </mat-error>
     </mat-form-field>
+
     <mat-form-field class="field">
         <mat-label>{{'project.application.form.field.project.duration' | translate}}</mat-label>
         <input type="number" name="projectDuration" formControlName="projectDuration" matInput
@@ -53,6 +54,19 @@
             </app-form-field-errors>
         </mat-error>
     </mat-form-field>
+    <mat-form-field class="field">
+        <mat-label>{{'project.application.form.field.project.periodlength' | translate}}</mat-label>
+        <input name="projectPeriodLength" formControlName="projectPeriodLength" matInput
+               placeholder="{{'project.application.form.field.project.periodlength' | translate}}" />
+        <p class="intro-text-small">{{'project.application.form.field.project.periodlength.info' | translate}}</p>
+    </mat-form-field>
+    <mat-form-field class="field">
+        <mat-label>{{'project.application.form.field.project.periodcount' | translate}}</mat-label>
+        <input name="projectPeriodCount" formControlName="projectPeriodCount" matInput
+               placeholder="{{'project.application.form.field.project.periodcount' | translate}}" />
+        <p class="intro-text-small">{{'project.application.form.field.project.periodcount.info' | translate}}</p>
+    </mat-form-field>
+
     <div *ngIf="formState === FormState.EDIT">
         <mat-form-field class="field-full">
             <mat-label>{{'project.application.form.field.project.priority' | translate}}</mat-label>

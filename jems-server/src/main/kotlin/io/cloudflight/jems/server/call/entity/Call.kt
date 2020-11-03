@@ -66,8 +66,8 @@ data class Call(
     @Enumerated(EnumType.STRING)
     val status: CallStatus,
 
-    @Column
-    val lengthOfPeriod: Int?,
+    @Column(nullable = false)
+    val lengthOfPeriod: Int,
 
     @Column
     val description: String? = null

@@ -36,6 +36,6 @@ data class InputCallCreate (
 
     @field:Min(1, message = "call.lengthOfPeriod.invalid")
     @field:Max(99, message = "call.lengthOfPeriod.invalid")
-    val lengthOfPeriod: Int? = null
+    val lengthOfPeriod: Int
 
 )

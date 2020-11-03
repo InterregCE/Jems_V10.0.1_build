@@ -355,7 +355,8 @@ internal class ProjectStatusAuthorizationTest {
                 id = 1,
                 name = "call",
                 startDate = ZonedDateTime.now(),
-                endDate = ZonedDateTime.now()
+                endDate = ZonedDateTime.now(),
+                lengthOfPeriod = 12
             ),
             acronym = "acronym",
             applicant = userApplicantWithoutRole,

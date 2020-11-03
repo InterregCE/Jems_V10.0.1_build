@@ -37,7 +37,8 @@ class CallControllerIntegrationTest {
             null,
             ZonedDateTime.now(),
             ZonedDateTime.now().plusDays(3L),
-            "Short description"
+            "Short description",
+            12
         )
 
         mockMvc.perform(

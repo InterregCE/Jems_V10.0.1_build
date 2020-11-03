@@ -228,7 +228,13 @@ class ProjectServiceTest {
 
         val result = projectService.createProject(InputProject("test", dummyCall.id))
 
-        assertEquals(OutputCallWithDates(id = dummyCall.id!!, name = dummyCall.name, startDate = dummyCall.startDate, endDate = dummyCall.endDate), result.call)
+        assertEquals(OutputCallWithDates(
+            id = dummyCall.id!!,
+            name = dummyCall.name,
+            startDate = dummyCall.startDate,
+            endDate = dummyCall.endDate,
+            lengthOfPeriod = 1
+        ), result.call)
         assertEquals(result.acronym, "test")
         assertEquals(result.firstSubmission, null)
         assertEquals(result.lastResubmission, null)
