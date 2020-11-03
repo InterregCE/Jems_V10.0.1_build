@@ -6,11 +6,13 @@
 
 .side-nav-main {
   margin-bottom: .25rem;
+
   &_title {
     font-size: 1rem;
     cursor: pointer;
     color: #210C38;
-    &_white-text{
+
+    &_white-text {
       color: white;
     }
   }
@@ -38,47 +40,35 @@ hr.solid {
   border-top: 0.125rem solid white;
 }
 
-mat-expansion-panel{
+mat-expansion-panel {
   background: #5FB3D9 !important;
 }
 
-mat-expansion-panel-header{
+mat-expansion-panel-header {
   height: 2rem !important;
 }
 
-::ng-deep .mat-elevation-z0 .mat-expansion-panel-body{
+::ng-deep .mat-elevation-z0 .mat-expansion-panel-body {
   padding-bottom: 0;
   padding-left: 0;
   padding-right: 0;
 }
 
-li{
+li {
   padding-top: 0.25rem;
 }
 
-.header-with-left-arrow{
-  flex-direction: row-reverse;
-}
-
-.title-with-left-arrow{
-  padding-left: 0.625rem;
-}
-
-.side-nav{
+.side-nav {
   padding-top: 0.5rem;
 }
 
-ul{
+ul {
   margin: 0;
 }
-.side-nav-main_title:hover{
-  text-decoration: underline #210C38 ;
-  text-decoration-width: 0.07rem;
 
-}
 .first-list-item:hover,
 .second-list-item:hover,
-.side-nav-main_title_white-text:hover{
+.side-nav-main_title_white-text:hover {
   text-decoration: underline white;
   text-decoration-width: 0.07rem;
 }
