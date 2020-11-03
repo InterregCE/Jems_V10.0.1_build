@@ -1,0 +1,12 @@
+<ng-container *ngIf="details$ | async as details">
+    <app-project-application-form-partner-co-financing
+            [success$]="saveSuccess$"
+            [error$]="saveError$"
+            [editable]="partnerStore.projectEditable$ | async"
+            [finances]="details.finances"
+            [callFunds]="details.callFunds"
+            [totalAmount]="details.totalAmount"
+            (save)="saveFinances$.next($event)"
+            (cancelEdit)="cancelEdit$.next()">
+    </app-project-application-form-partner-co-financing>
+</ng-container>

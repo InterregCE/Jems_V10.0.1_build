@@ -17,6 +17,7 @@ import {ProjectApplicationListComponent} from '../project/project-application/co
 import {EditFormComponent} from '@common/components/section/edit-form/edit-form.component';
 import {MatCardModule} from '@angular/material/card';
 import {TemplateCardComponent} from '@common/components/section/template-card/template-card.component';
+import {MoneyPipe} from './pipe/money.pipe';
 
 const modules = [
   CommonModule,
@@ -39,7 +40,8 @@ const declarations = [
   TableComponent,
   PaginatorComponent,
   EditFormComponent,
-  TemplateCardComponent
+  TemplateCardComponent,
+  MoneyPipe,
 ];
 
 @NgModule({

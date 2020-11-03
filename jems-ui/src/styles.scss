@@ -32,6 +32,8 @@
 /**
  * Following styles are applied globally to every HTML tag in this app
  */
+@import "./common-classes.scss";
+
 body {
   font-family: Roboto, "Helvetica Neue", sans-serif;
   -webkit-font-smoothing: antialiased;
@@ -84,10 +86,6 @@ form .form-group {
   }
 }
 
-.intro-text-small {
-  font-size: 0.75rem;
-}
-
 html {
   scroll-behavior: smooth;
 }
@@ -103,10 +101,6 @@ html, body {
 textarea:read-only,
 textarea:disabled {
   overflow: hidden !important;
-}
-
-.no-bullets {
-  list-style-type: none;
 }
 
 // disable thick border when focusing button

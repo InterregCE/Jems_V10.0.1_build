@@ -28,5 +28,5 @@
 </ng-template>
 
 <ng-template #totalCell let-params>
-    <span>{{Numbers.toLocale(table.total || 0, locale)}}</span>
+    <span>{{ (table.total || 0) | asMoney: locale }}</span>
 </ng-template>

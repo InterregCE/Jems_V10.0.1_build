@@ -58,7 +58,8 @@ export class ProjectApplicationPartnerBudgetPageComponent {
       catchError((error: HttpErrorResponse) => {
         this.optionsSaveError$.next(error.error);
         throw error;
-      })
+      }),
+      tap(() => this.partnerStore.totalAmountChanged$.next()),
     );
 
   saveBudgets$ = new Subject<{ [key: string]: PartnerBudgetTable }>();
@@ -128,7 +129,8 @@ export class ProjectApplicationPartnerBudgetPageComponent {
         this.cancelEdit$.next();
         this.saveError$.next(error.error);
         throw error;
-      })
+      }),
+      tap(() => this.partnerStore.totalAmountChanged$.next()),
     );
 
   details$ = combineLatest([
