@@ -4,14 +4,16 @@ import javax.persistence.Column
 import javax.persistence.Entity
 import javax.persistence.Id
 
-@Entity(name = "project_partner_budget_office_administration")
-data class ProjectPartnerBudgetOfficeAdministration(
+@Entity(name = "project_partner_budget_options")
+data class ProjectPartnerBudgetOptions(
 
     @Id
     @Column(nullable = false)
     val partnerId: Long,
 
-    @Column(nullable = false)
-    val flatRate: Int
+    @Column
+    var officeAdministrationFlatRate: Int?,
 
+    @Column
+    var staffCostsFlatRate: Int?
 )

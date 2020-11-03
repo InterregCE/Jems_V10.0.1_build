@@ -9,21 +9,20 @@ import io.cloudflight.jems.server.project.entity.partner.budget.CommonBudget
 import io.cloudflight.jems.server.project.entity.partner.budget.ProjectPartnerBudgetEquipment
 import io.cloudflight.jems.server.project.entity.partner.budget.ProjectPartnerBudgetExternal
 import io.cloudflight.jems.server.project.entity.partner.budget.ProjectPartnerBudgetInfrastructure
-import io.cloudflight.jems.server.project.entity.partner.budget.ProjectPartnerBudgetOfficeAdministration
+import io.cloudflight.jems.server.project.entity.partner.budget.ProjectPartnerBudgetOptions
 import io.cloudflight.jems.server.project.entity.partner.budget.ProjectPartnerBudgetStaffCost
 import io.cloudflight.jems.server.project.entity.partner.budget.ProjectPartnerBudgetTravel
 import io.cloudflight.jems.server.project.repository.partner.budget.ProjectPartnerBudgetCommonRepository
 import io.cloudflight.jems.server.project.repository.partner.budget.ProjectPartnerBudgetEquipmentRepository
 import io.cloudflight.jems.server.project.repository.partner.budget.ProjectPartnerBudgetExternalRepository
 import io.cloudflight.jems.server.project.repository.partner.budget.ProjectPartnerBudgetInfrastructureRepository
-import io.cloudflight.jems.server.project.repository.partner.budget.ProjectPartnerBudgetOfficeAdministrationRepository
 import io.cloudflight.jems.server.project.repository.partner.budget.ProjectPartnerBudgetStaffCostRepository
 import io.cloudflight.jems.server.project.repository.partner.budget.ProjectPartnerBudgetTravelRepository
 import io.cloudflight.jems.server.project.service.partner.ProjectPartnerTestUtil.Companion.project
+import io.cloudflight.jems.server.project.service.partner.budget.get_budget_options.GetBudgetOptionsInteractor
 import io.mockk.MockKAnnotations
 import io.mockk.every
 import io.mockk.impl.annotations.MockK
-import io.mockk.impl.annotations.RelaxedMockK
 import io.mockk.slot
 import io.mockk.verify
 import org.assertj.core.api.Assertions.assertThat
@@ -43,16 +42,24 @@ internal class ProjectPartnerBudgetServiceTest {
 
     companion object {
 
+        const val PARTNER_ID = 1L
+
         private val projectPartner = ProjectPartner(
             id = 1,
             project = project,
             abbreviation = "partner",
             role = ProjectPartnerRole.LEAD_PARTNER)
 
+        val budgetOptions = ProjectPartnerBudgetOptions(
+            PARTNER_ID,
+            15,
+            20
+        )
+
         private fun staffCost(id: Long, numberOfUnits: Double, pricePerUnit: Double, rowSum: Double): ProjectPartnerBudgetStaffCost {
             return ProjectPartnerBudgetStaffCost(
                 id = id,
-                partnerId = projectPartner.id!!,
+                partnerId = PARTNER_ID,
                 budget = Budget(
                     numberOfUnits = BigDecimal.valueOf(numberOfUnits),
                     pricePerUnit = BigDecimal.valueOf(pricePerUnit),
@@ -64,7 +71,7 @@ internal class ProjectPartnerBudgetServiceTest {
         private fun travel(id: Long, numberOfUnits: Double, pricePerUnit: Double, rowSum: Double): ProjectPartnerBudgetTravel {
             return ProjectPartnerBudgetTravel(
                 id = id,
-                partnerId = projectPartner.id!!,
+                partnerId = PARTNER_ID,
                 budget = Budget(
                     numberOfUnits = BigDecimal.valueOf(numberOfUnits),
                     pricePerUnit = BigDecimal.valueOf(pricePerUnit),
@@ -76,7 +83,7 @@ internal class ProjectPartnerBudgetServiceTest {
         private fun external(id: Long, numberOfUnits: Double, pricePerUnit: Double, rowSum: Double): ProjectPartnerBudgetExternal {
             return ProjectPartnerBudgetExternal(
                 id = id,
-                partnerId = projectPartner.id!!,
+                partnerId = PARTNER_ID,
                 budget = Budget(
                     numberOfUnits = BigDecimal.valueOf(numberOfUnits),
                     pricePerUnit = BigDecimal.valueOf(pricePerUnit),
@@ -88,7 +95,7 @@ internal class ProjectPartnerBudgetServiceTest {
         private fun equipment(id: Long, numberOfUnits: Double, pricePerUnit: Double, rowSum: Double): ProjectPartnerBudgetEquipment {
             return ProjectPartnerBudgetEquipment(
                 id = id,
-                partnerId = projectPartner.id!!,
+                partnerId = PARTNER_ID,
                 budget = Budget(
                     numberOfUnits = BigDecimal.valueOf(numberOfUnits),
                     pricePerUnit = BigDecimal.valueOf(pricePerUnit),
@@ -100,7 +107,7 @@ internal class ProjectPartnerBudgetServiceTest {
         private fun infrastructure(id: Long, numberOfUnits: Double, pricePerUnit: Double, rowSum: Double): ProjectPartnerBudgetInfrastructure {
             return ProjectPartnerBudgetInfrastructure(
                 id = id,
-                partnerId = projectPartner.id!!,
+                partnerId = PARTNER_ID,
                 budget = Budget(
                     numberOfUnits = BigDecimal.valueOf(numberOfUnits),
                     pricePerUnit = BigDecimal.valueOf(pricePerUnit),
@@ -142,8 +149,8 @@ internal class ProjectPartnerBudgetServiceTest {
     @MockK
     lateinit var projectPartnerBudgetInfrastructureRepository: ProjectPartnerBudgetInfrastructureRepository
 
-    @RelaxedMockK
-    lateinit var projectPartnerBudgetOfficeAdministrationRepository: ProjectPartnerBudgetOfficeAdministrationRepository
+    @MockK
+    lateinit var getBudgetOptionsInteractor: GetBudgetOptionsInteractor
 
     lateinit private var projectPartnerBudgetService: ProjectPartnerBudgetService
 
@@ -156,7 +163,7 @@ internal class ProjectPartnerBudgetServiceTest {
             projectPartnerBudgetExternalRepository,
             projectPartnerBudgetEquipmentRepository,
             projectPartnerBudgetInfrastructureRepository,
-            projectPartnerBudgetOfficeAdministrationRepository
+            getBudgetOptionsInteractor
         )
     }
 
@@ -419,7 +426,7 @@ internal class ProjectPartnerBudgetServiceTest {
 
     @Test
     fun `test total null`() {
-        every { projectPartnerBudgetOfficeAdministrationRepository.findById(1) } returns Optional.empty()
+        every { getBudgetOptionsInteractor.getBudgetOptions(1) } returns null
         every { projectPartnerBudgetStaffCostRepository.sumTotalForPartner(1) } returns null
         every { projectPartnerBudgetTravelRepository.sumTotalForPartner(1) } returns null
         every { projectPartnerBudgetExternalRepository.sumTotalForPartner(1) } returns null
@@ -432,8 +439,7 @@ internal class ProjectPartnerBudgetServiceTest {
     @Test
     fun `test total`() {
         val id = 598L
-        every { projectPartnerBudgetOfficeAdministrationRepository.findById(id) } returns
-            Optional.of(ProjectPartnerBudgetOfficeAdministration(partnerId = id, flatRate = 10))
+        every { getBudgetOptionsInteractor.getBudgetOptions(id) } returns ProjectPartnerBudgetOptions(partnerId = id, officeAdministrationFlatRate = 10, staffCostsFlatRate = 10)
         every { projectPartnerBudgetStaffCostRepository.sumTotalForPartner(id) } returns BigDecimal.valueOf(5)
         every { projectPartnerBudgetTravelRepository.sumTotalForPartner(id) } returns BigDecimal.valueOf(20)
         every { projectPartnerBudgetExternalRepository.sumTotalForPartner(id) } returns BigDecimal.valueOf(8)

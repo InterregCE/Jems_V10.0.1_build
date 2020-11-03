@@ -86,6 +86,7 @@ import {ProjectAssociatedOrganizationStore} from './project-application/containe
 import {ProjectApplicationFormPartnerBudgetOptionsComponent} from './project-application/components/project-application-form/project-application-form-partner-budget-options/project-application-form-partner-budget-options.component';
 import {OfficeAndAdministrationTableComponent} from './project-application/components/project-application-form/project-application-form-partner-budget/office-and-administration-table/office-and-administration-table.component';
 import {ContributionToggleColumnComponent} from './project-application/components/project-application-form/project-application-form-management-detail/contribution-toggle-column/contribution-toggle-column.component';
+import { StaffCostsFlatRateTableComponent } from './project-application/components/project-application-form/project-application-form-partner-budget/staff-costs-flat-rate-table/staff-costs-flat-rate-table.component';
 
 @NgModule({
   declarations: [
@@ -153,6 +154,7 @@ import {ContributionToggleColumnComponent} from './project-application/component
     AgGridTemplateRendererComponent,
     ProjectApplicationPartnerIdentityComponent,
     ProjectApplicationFormAssociatedOrganizationEditComponent,
+    StaffCostsFlatRateTableComponent,
   ],
   imports: [
     CommonModule,

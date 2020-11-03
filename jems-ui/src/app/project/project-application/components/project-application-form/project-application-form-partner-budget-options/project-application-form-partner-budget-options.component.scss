@@ -22,6 +22,12 @@ button {
     color: var(--font-color-primary) !important;
   }
 
+  ::ng-deep .mat-form-field-appearance-legacy {
+    .mat-form-field-infix {
+      border-top: 0;
+    }
+  }
+
   ::ng-deep.mat-form-field-wrapper {
     line-height: .8rem;
     margin-left: .5rem;
@@ -33,7 +39,7 @@ button {
   }
 
   ::ng-deep.mat-error {
-    width: 8rem;
+    width: 20rem;
   }
 
   .percent {

@@ -12,27 +12,52 @@
     </button>
 
     <form [formGroup]="optionsForm" class="wrapper">
-        <mat-checkbox formControlName="officeAdministrationFlatRateActive"
-                      (click)="$event.stopPropagation()"
-                      (change)="toggleOfficeAdministrationFlatRate($event.checked)"
-                      [disabled]="!editable"
-                      [checked]="!!officeAdministrationFlatRate">
-            {{'project.partner.budget.options.flat.rate.enabled' | translate}}
-        </mat-checkbox>
-        <mat-form-field *ngIf="optionsForm?.controls?.officeAdministrationFlatRateActive">
-            <input type="number" formControlName="officeAdministrationFlatRate" matInput
-                   [min]="1"
-                   [max]="15"
-                   (paste)="Tools.checkDigitsOnPaste($event)"
-                   (keypress)="Tools.checkDigitsOnInput($event)">
-            <mat-error>
-                <app-form-field-errors
-                        [errors]="optionsForm?.controls?.officeAdministrationFlatRate?.errors"
-                        [messages]="officeAdministrationFlatRateErrors">
-                </app-form-field-errors>
-            </mat-error>
-        </mat-form-field>
-        <span class="percent">{{'project.partner.budget.options.flat.rate.percent' | translate}}</span>
+        <div>
+            <mat-checkbox formControlName="staffCostsFlatRateActive"
+                          (click)="$event.stopPropagation()"
+                          (change)="toggleStaffCostsFlatRate($event.checked)"
+                          [disabled]="!editable"
+                          [checked]="!!staffCostsFlatRate">
+                {{'project.partner.budget.options.staff.costs.flat.rate.enabled' | translate}}
+            </mat-checkbox>
+            <mat-form-field class="wrapper" *ngIf="optionsForm?.controls?.staffCostsFlatRateActive">
+                <input type="number" formControlName="staffCostsFlatRate" matInput
+                       [min]="1"
+                       [max]="20"
+                       (paste)="Tools.checkDigitsOnPaste($event)"
+                       (keypress)="Tools.checkDigitsOnInput($event)">
+                <mat-error>
+                    <app-form-field-errors
+                            [errors]="optionsForm?.controls?.staffCostsFlatRate?.errors"
+                            [messages]="staffCostsFlatRateErrors">
+                    </app-form-field-errors>
+                </mat-error>
+            </mat-form-field>
+            <span class="percent">{{'project.partner.budget.options.staff.costs.flat.rate.percent' | translate}}</span>
+        </div>
+        <div>
+            <mat-checkbox formControlName="officeAdministrationFlatRateActive"
+                          (click)="$event.stopPropagation()"
+                          (change)="toggleOfficeAdministrationFlatRate($event.checked)"
+                          [disabled]="!editable"
+                          [checked]="!!officeAdministrationFlatRate">
+                {{'project.partner.budget.options.flat.rate.enabled' | translate}}
+            </mat-checkbox>
+            <mat-form-field class="wrapper" *ngIf="optionsForm?.controls?.officeAdministrationFlatRateActive">
+                <input type="number" formControlName="officeAdministrationFlatRate" matInput
+                       [min]="1"
+                       [max]="15"
+                       (paste)="Tools.checkDigitsOnPaste($event)"
+                       (keypress)="Tools.checkDigitsOnInput($event)">
+                <mat-error>
+                    <app-form-field-errors
+                            [errors]="optionsForm?.controls?.officeAdministrationFlatRate?.errors"
+                            [messages]="officeAdministrationFlatRateErrors">
+                    </app-form-field-errors>
+                </mat-error>
+            </mat-form-field>
+            <span class="percent">{{'project.partner.budget.options.flat.rate.percent' | translate}}</span>
+        </div>
     </form>
 
     <div *ngIf="formState === FormState.EDIT">
