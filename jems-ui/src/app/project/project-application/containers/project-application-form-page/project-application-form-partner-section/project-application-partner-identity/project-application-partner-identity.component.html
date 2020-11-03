@@ -4,6 +4,7 @@
         [error$]="partnerStore.partnerSaveError$"
         [partner]="partner"
         [editable]="partnerStore.projectEditable$ | async"
+        [legalStatuses]="legalStatuses$ | async"
         (create)="partnerStore.createPartner$.next($event)"
         (update)="partnerStore.savePartner$.next($event)"
         (cancel)="redirectToPartnerOverview()">

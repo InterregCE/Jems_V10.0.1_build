@@ -88,6 +88,66 @@
         </mat-error>
     </mat-form-field>
 
+    <h5>{{'project.partner.detail.title.legal.financial' | translate}}</h5>
+
+    <mat-form-field class="field">
+        <mat-label>{{'project.partner.type' | translate}}</mat-label>
+        <mat-select name="partnerType" formControlName="partnerType"
+                    [disableOptionCentering]="true"
+                    panelClass="material-select-panel">
+            <mat-option *ngFor="let type of partnerTypeEnums" [value]="type">
+                {{'project.application.form.relevance.target.group.' + type | translate}}
+            </mat-option>
+        </mat-select>
+    </mat-form-field>
+
+    <mat-form-field  class="field">
+        <mat-label>{{'project.partner.legal.status' | translate}}</mat-label>
+        <mat-select name="legalStatus" formControlName="legalStatus"
+                    [disableOptionCentering]="true"
+                    required
+                    panelClass="material-select-panel">
+            <mat-option *ngFor="let status of legalStatuses" [value]="status.id">
+                {{status.description || 'programme.legal.status.' + status.id | translate}}
+            </mat-option>
+        </mat-select>
+        <mat-error>
+            <app-form-field-errors
+                    [errors]="controls?.legalStatus?.errors"
+                    [messages]="legalStatusErrors">
+            </app-form-field-errors>
+        </mat-error>
+    </mat-form-field>
+
+    <mat-form-field class="field">
+        <mat-label>{{'project.partner.vat' | translate}}</mat-label>
+        <input name="vat" formControlName="vat" matInput>
+        <mat-error>
+            <app-form-field-errors
+                    [errors]="controls?.vat?.errors"
+                    [messages]="vatErrors">
+            </app-form-field-errors>
+        </mat-error>
+    </mat-form-field>
+
+    <p class="intro-text-small">{{'project.partner.recoverVat.intro.text' | translate}}</p>
+    <div class="field toggle-button-field">
+        <mat-button-toggle-group>
+            <mat-button-toggle
+                    [checked]="controls?.recoverVat.value === true"
+                    (change)="controls?.recoverVat.setValue(true)"
+                    [value]="true">
+                {{'common.label.project.partner.recoverVat.true' | translate}}
+            </mat-button-toggle>
+            <mat-button-toggle
+                    [checked]="controls?.recoverVat.value === false"
+                    (change)="controls?.recoverVat.setValue(false)"
+                    [value]="false">
+                {{'common.label.project.partner.recoverVat.false' | translate}}
+            </mat-button-toggle>
+        </mat-button-toggle-group>
+    </div>
+
     <div *ngIf="formState === FormState.EDIT" class="buttons">
         <button mat-stroked-button class="button"
                 type="button"
