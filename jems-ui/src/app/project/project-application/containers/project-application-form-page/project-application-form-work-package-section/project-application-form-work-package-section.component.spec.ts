@@ -26,7 +26,6 @@ describe('ProjectApplicationFormWorkPackageSectionComponent', () => {
     fixture = TestBed.createComponent(ProjectApplicationFormWorkPackageSectionComponent);
     component = fixture.componentInstance;
     component.projectId = 1;
-    component.editable = true;
     fixture.detectChanges();
   });
 

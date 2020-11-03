@@ -1,13 +1,14 @@
-import {ChangeDetectionStrategy, Component, Input, OnInit} from '@angular/core';
-import {BaseComponent} from '@common/components/base-component';
-import {merge, Observable, Subject} from 'rxjs';
+import {ChangeDetectionStrategy, Component} from '@angular/core';
+import {combineLatest, merge, Subject} from 'rxjs';
 import {I18nValidationError} from '@common/validation/i18n-validation-error';
 import {catchError, mergeMap, map, tap} from 'rxjs/operators';
 import {Log} from '../../../../../common/utils/log';
 import {HttpErrorResponse} from '@angular/common/http';
-import {Permission} from 'src/app/security/permissions/permission';
-import {InputProjectRelevance, ProjectDescriptionService, OutputCall} from '@cat/api';
+import {InputProjectRelevance, ProjectDescriptionService, CallService} from '@cat/api';
 import {ProjectApplicationFormStore} from '../services/project-application-form-store.service';
+import {ProjectStore} from '../../project-application-detail/services/project-store.service';
+import {ActivatedRoute} from '@angular/router';
+import {ProjectApplicationFormSidenavService} from '../services/project-application-form-sidenav.service';
 
 @Component({
   selector: 'app-project-application-form-project-relevance-and-context-section',
@@ -15,62 +16,70 @@ import {ProjectApplicationFormStore} from '../services/project-application-form-
   styleUrls: ['./project-application-form-project-relevance-and-context-section.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class ProjectApplicationFormProjectRelevanceAndContextSectionComponent extends BaseComponent implements OnInit {
-  Permission = Permission;
-
-  @Input()
-  projectId: number;
-  @Input()
-  editable: boolean;
-  @Input()
-  strategies: OutputCall.StrategiesEnum[];
+export class ProjectApplicationFormProjectRelevanceAndContextSectionComponent {
+  projectId = this.activatedRoute?.snapshot?.params?.projectId;
 
   saveError$ = new Subject<I18nValidationError | null>();
   saveSuccess$ = new Subject<boolean>();
-  updateProjectDescription$ = new Subject<InputProjectRelevance>();
-  projectDescriptionDetails$: Observable<any>;
+  updateProjectRelevance$ = new Subject<InputProjectRelevance>();
   deleteEntriesFromTables$ = new Subject<InputProjectRelevance>();
 
-  constructor(private projectDescriptionService: ProjectDescriptionService,
+  private savedDescription$ = this.projectApplicationFormStore.getProjectDescription()
+    .pipe(
+      map(project => project.projectRelevance)
+    )
+
+  private updatedProjectRelevance$ = this.updateProjectRelevance$
+    .pipe(
+      mergeMap((data) => this.projectDescriptionService.updateProjectRelevance(this.projectId, data)),
+      tap(() => this.saveSuccess$.next(true)),
+      tap(() => this.saveError$.next(null)),
+      tap(saved => Log.info('Updated project relevance and context:', this, saved)),
+      catchError((error: HttpErrorResponse) => {
+        this.saveError$.next(error.error);
+        throw error;
+      })
+    );
+
+  private deletedEntriesFromTables$ = this.deleteEntriesFromTables$
+    .pipe(
+      mergeMap((data) => this.projectDescriptionService.updateProjectRelevance(this.projectId, data)),
+      tap(() => this.saveError$.next(null)),
+      tap(saved => Log.info('Deleted entries from project relevance tables:', this, saved)),
+      catchError((error: HttpErrorResponse) => {
+        this.saveError$.next(error.error);
+        throw error;
+      })
+    );
+
+  private callStrategies$ = this.projectStore.getProject()
+    .pipe(
+      mergeMap(project => this.callService.getCallById(project.call.id)),
+      tap(call => Log.info('Fetched strategies from call', this, call.strategies)),
+      map(call => call.strategies)
+    );
+
+
+  details$ = combineLatest([
+    merge(this.savedDescription$, this.updatedProjectRelevance$, this.deletedEntriesFromTables$),
+    this.projectStore.getProject(),
+    this.callStrategies$
+  ])
+    .pipe(
+      map(([relevance, project, strategies]) => ({
+        relevance,
+        project,
+        strategies
+      })),
+    );
+
+  constructor(public projectStore: ProjectStore,
+              private activatedRoute: ActivatedRoute,
+              private callService: CallService,
+              private projectApplicationFormSidenavService: ProjectApplicationFormSidenavService,
+              private projectDescriptionService: ProjectDescriptionService,
               private projectApplicationFormStore: ProjectApplicationFormStore) {
-    super();
-  }
-
-  ngOnInit(): void {
-    const savedDescription$ = this.projectApplicationFormStore.getProjectDescription()
-      .pipe(
-        map(project => project.projectRelevance)
-      )
-
-    const updatedProjectDescription$ = this.updateProjectDescription$
-      .pipe(
-        mergeMap((data) => this.projectDescriptionService.updateProjectRelevance(this.projectId, data)),
-        tap(() => this.saveSuccess$.next(true)),
-        tap(() => this.saveError$.next(null)),
-        tap(saved => Log.info('Updated project relevance and context:', this, saved)),
-        catchError((error: HttpErrorResponse) => {
-          this.saveError$.next(error.error);
-          throw error;
-        })
-      );
-
-    const deletedEntriesFromTables$ = this.deleteEntriesFromTables$
-      .pipe(
-        mergeMap((data) => this.projectDescriptionService.updateProjectRelevance(this.projectId, data)),
-        tap(() => this.saveError$.next(null)),
-        tap(saved => Log.info('Deleted entries from project relevance tables:', this, saved)),
-        catchError((error: HttpErrorResponse) => {
-          this.saveError$.next(error.error);
-          throw error;
-        })
-      );
-
-    this.projectDescriptionDetails$ = merge(savedDescription$, updatedProjectDescription$, deletedEntriesFromTables$)
-      .pipe(
-        map(project => ({
-          project,
-          editable: this.editable
-        })),
-      );
+    this.projectStore.init(this.projectId);
+    this.projectApplicationFormStore.init(this.projectId);
   }
 }

@@ -1,13 +1,14 @@
-import {ChangeDetectionStrategy, Component, Input, OnInit} from '@angular/core';
-import {BaseComponent} from '@common/components/base-component';
-import {merge, Observable, Subject} from 'rxjs';
+import {ChangeDetectionStrategy, Component} from '@angular/core';
+import {merge, Subject} from 'rxjs';
 import {I18nValidationError} from '@common/validation/i18n-validation-error';
 import {catchError, mergeMap, map, tap} from 'rxjs/operators';
 import {Log} from '../../../../../common/utils/log';
 import {HttpErrorResponse} from '@angular/common/http';
 import {InputProjectPartnership, ProjectDescriptionService} from '@cat/api';
-import {Permission} from 'src/app/security/permissions/permission';
 import {ProjectApplicationFormStore} from '../services/project-application-form-store.service';
+import {ProjectStore} from '../../project-application-detail/services/project-store.service';
+import {ActivatedRoute} from '@angular/router';
+import {ProjectApplicationFormSidenavService} from '../services/project-application-form-sidenav.service';
 
 @Component({
   selector: 'app-project-application-form-project-partnership-section',
@@ -15,48 +16,39 @@ import {ProjectApplicationFormStore} from '../services/project-application-form-
   styleUrls: ['./project-application-form-project-partnership-section.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class ProjectApplicationFormProjectPartnershipSectionComponent extends BaseComponent implements OnInit {
-  Permission = Permission;
-
-  @Input()
-  projectId: number;
-  @Input()
-  editable: boolean;
+export class ProjectApplicationFormProjectPartnershipSectionComponent {
+  projectId = this.activatedRoute?.snapshot?.params?.projectId;
 
   saveError$ = new Subject<I18nValidationError | null>();
   saveSuccess$ = new Subject<boolean>();
-  updateProjectDescription$ = new Subject<InputProjectPartnership>();
-  projectDescriptionDetails$: Observable<any>;
+  updatePartnership$ = new Subject<InputProjectPartnership>();
 
-  constructor(private projectDescriptionService: ProjectDescriptionService,
+  private savedDescription$ = this.projectApplicationFormStore.getProjectDescription()
+    .pipe(
+      map(project => ({partnership: project.projectPartnership}))
+    );
+
+  private updatedPartnership$ = this.updatePartnership$
+    .pipe(
+      mergeMap((data) => this.projectDescriptionService.updateProjectPartnership(this.projectId, data)),
+      tap(() => this.saveSuccess$.next(true)),
+      tap(() => this.saveError$.next(null)),
+      tap(saved => Log.info('Updated project partnership:', this, saved)),
+      catchError((error: HttpErrorResponse) => {
+        this.saveError$.next(error.error);
+        throw error;
+      })
+    );
+
+  partnership$ = merge(this.savedDescription$, this.updatedPartnership$);
+
+  constructor(public projectStore: ProjectStore,
+              private activatedRoute: ActivatedRoute,
+              private projectApplicationFormSidenavService: ProjectApplicationFormSidenavService,
+              private projectDescriptionService: ProjectDescriptionService,
               private projectApplicationFormStore: ProjectApplicationFormStore) {
-    super();
+    this.projectStore.init(this.projectId);
+    this.projectApplicationFormStore.init(this.projectId);
   }
 
-  ngOnInit(): void {
-    const savedDescription$ = this.projectApplicationFormStore.getProjectDescription()
-      .pipe(
-        map(project => ({partnership: project.projectPartnership}))
-      )
-
-    const updatedProjectDescription$ = this.updateProjectDescription$
-      .pipe(
-        mergeMap((data) => this.projectDescriptionService.updateProjectPartnership(this.projectId, data)),
-        tap(() => this.saveSuccess$.next(true)),
-        tap(() => this.saveError$.next(null)),
-        tap(saved => Log.info('Updated project partnership:', this, saved)),
-        catchError((error: HttpErrorResponse) => {
-          this.saveError$.next(error.error);
-          throw error;
-        })
-      );
-
-    this.projectDescriptionDetails$ = merge(savedDescription$, updatedProjectDescription$)
-      .pipe(
-        map(project => ({
-          project,
-          editable: this.editable
-        })),
-      );
-  }
 }

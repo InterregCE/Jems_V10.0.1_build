@@ -18,7 +18,7 @@
                     [success$]="partnerContactSaveSuccess$"
                     [error$]="partnerContactSaveError$"
                     [partner]="partner"
-                    [editable]="partnerStore.projectEditable$ | async"
+                    [editable]="projectStore.projectEditable$ | async"
                     (update)="savePartnerContact$.next($event)">
             </app-project-application-form-partner-contact>
         </mat-tab>
@@ -27,7 +27,7 @@
                     [success$]="partnerContributionSaveSuccess$"
                     [error$]="partnerContributionSaveError$"
                     [partner]="partner"
-                    [editable]="partnerStore.projectEditable$ | async"
+                    [editable]="projectStore.projectEditable$ | async"
                     (update)="savePartnerContribution$.next($event)">
             </app-project-application-form-partner-contribution>
         </mat-tab>

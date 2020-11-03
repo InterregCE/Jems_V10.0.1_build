@@ -26,28 +26,26 @@ describe('SideNavService', () => {
   });
 
   it('should store and pass the headlines', fakeAsync(() => {
-    const destroyed$ = new Subject();
-
     let headlines: HeadlineRoute[] = [];
     service.getHeadlines().subscribe((items: HeadlineRoute[]) => headlines = items);
 
-    service.setHeadlines(destroyed$, [
+    service.setHeadlines('root', [
       {
-        headline: { i18nKey: 'back.project.overview'},
+        headline: {i18nKey: 'back.project.overview'},
         route: '/app/project/1',
       },
       {
-        headline: { i18nKey: 'project.application.form.title'},
+        headline: {i18nKey: 'project.application.form.title'},
       },
       {
-        headline: { i18nKey: 'Test'},
+        headline: {i18nKey: 'Test'},
       },
       {
-        headline: { i18nKey: 'A - Project Identification'},
+        headline: {i18nKey: 'A - Project Identification'},
         scrollRoute: 'applicationFormHeading',
       },
       {
-        headline: { i18nKey: 'A.1 Project Identification'},
+        headline: {i18nKey: 'A.1 Project Identification'},
         scrollRoute: 'projectIdentificationHeading',
       }]);
 

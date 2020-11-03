@@ -4,6 +4,7 @@ import {ProjectApplicationFormManagementSectionComponent} from './project-applic
 import {HttpTestingController} from '@angular/common/http/testing';
 import {TestModule} from '../../../../../common/test-module';
 import {ProjectModule} from '../../../../project.module';
+import {ActivatedRoute} from '@angular/router';
 
 describe('ProjectApplicationFormManagementSectionComponent', () => {
   let component: ProjectApplicationFormManagementSectionComponent;
@@ -20,12 +21,13 @@ describe('ProjectApplicationFormManagementSectionComponent', () => {
     })
       .compileComponents();
     httpTestingController = TestBed.inject(HttpTestingController);
+    const activatedRoute = TestBed.inject(ActivatedRoute);
+    activatedRoute.snapshot.params = {projectId: '1'};
   }));
 
   beforeEach(() => {
     fixture = TestBed.createComponent(ProjectApplicationFormManagementSectionComponent);
     component = fixture.componentInstance;
-    component.projectId = 1;
     fixture.detectChanges();
   });
 
@@ -34,7 +36,7 @@ describe('ProjectApplicationFormManagementSectionComponent', () => {
   });
 
   it('should update project management', fakeAsync(() => {
-    component.updateProjectDescription$.next({} as InputProjectManagement);
+    component.updateManagement$.next({} as InputProjectManagement);
 
     httpTestingController.expectOne({
       method: 'PUT',

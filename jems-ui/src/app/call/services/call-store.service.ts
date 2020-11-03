@@ -9,6 +9,7 @@ import {EventBusService} from '../../common/services/event-bus/event-bus.service
 
 @Injectable()
 export class CallStore {
+  public static CALL_DETAIL_PATH = '/app/call/detail';
   private callId$ = new ReplaySubject<number>(1);
   private callName$ = new ReplaySubject<string>(1);
 

@@ -1,21 +1,20 @@
 <div class="side-nav">
     <div *ngFor="let data of headlines">
         <mat-expansion-panel class="mat-elevation-z0"
-                             [expanded]="expanded.isSelected(data)"
+                             [expanded]="data.bullets?.length"
                              [disabled]="!data.bullets?.length">
             <mat-expansion-panel-header>
-                <mat-panel-title (click)="expanded.toggle(data)">
+                <mat-panel-title>
                     <div class="side-nav-title">{{data.headline.i18nKey | translate}}</div>
                 </mat-panel-title>
             </mat-expansion-panel-header>
             <div *ngFor="let subtitle of data.bullets" class="side-nav-main">
                 <mat-expansion-panel class="mat-elevation-z0"
-                                     [expanded]="expanded.isSelected(subtitle)"
+                                     [expanded]="subtitle.bullets?.length"
                                      [disabled]="!subtitle.bullets?.length">
                     <mat-expansion-panel-header>
-                        <mat-panel-title (click)="$event.stopPropagation()">
-                            <p *ngIf="subtitle.bullets?.length"
-                               (click)="expanded.toggle(subtitle)">
+                        <mat-panel-title>
+                            <p *ngIf="subtitle.bullets?.length">
                                 {{subtitle.headline.i18nKey | translate}}
                             </p>
                             <p *ngIf="!subtitle.bullets?.length" class="side-nav-main_title_white-text"

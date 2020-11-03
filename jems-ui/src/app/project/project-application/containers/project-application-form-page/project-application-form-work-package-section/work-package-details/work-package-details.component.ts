@@ -27,7 +27,7 @@ export class WorkPackageDetailsComponent extends BaseComponent implements OnInit
 
   constructor(private workPackageService: WorkPackageService,
               private activatedRoute: ActivatedRoute,
-              private projectStore: ProjectStore,
+              public projectStore: ProjectStore,
               private projectApplicationFormSidenavService: ProjectApplicationFormSidenavService,
               private router: Router) {
     super();
@@ -51,7 +51,7 @@ export class WorkPackageDetailsComponent extends BaseComponent implements OnInit
       tap(() => this.saveSuccess$.next(true)),
       tap(() => this.saveError$.next(null)),
       tap(saved => Log.info('Created work package data:', this, saved)),
-      tap(() => this.projectApplicationFormSidenavService.refreshPackages()),
+      tap(() => this.projectApplicationFormSidenavService.refreshPackages(this.projectId)),
       catchError((error: HttpErrorResponse) => {
         this.saveError$.next(error.error);
         throw error;
@@ -69,26 +69,8 @@ export class WorkPackageDetailsComponent extends BaseComponent implements OnInit
     this.createdWorkPackageData$
   )
 
-  details$ = combineLatest([
-    this.workPackageDetails$,
-    this.projectStore.getProject()
-  ])
-    .pipe(
-      tap(([workPackage, project]) =>
-        this.projectApplicationFormSidenavService.setAcronym(project.acronym)
-      ),
-      map(
-        ([workPackage, project]) => ({
-          workPackage,
-          editable: project.projectStatus.status === OutputProjectStatus.StatusEnum.DRAFT
-            || project.projectStatus.status === OutputProjectStatus.StatusEnum.RETURNEDTOAPPLICANT
-        })
-      )
-    )
-
   ngOnInit(): void {
     this.projectStore.init(this.projectId);
-    this.projectApplicationFormSidenavService.init(this.destroyed$, this.projectId);
 
     this.activatedRoute.params.pipe(
       takeUntil(this.destroyed$),

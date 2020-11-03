@@ -3,7 +3,6 @@ import {
   InputProjectPartnerCreate,
   InputProjectPartnerUpdate,
   OutputProjectPartnerDetail,
-  OutputProjectStatus,
   ProjectPartnerService,
   InputProjectPartnerAddress
 } from '@cat/api';
@@ -85,8 +84,9 @@ export class ProjectPartnerStore {
           )
       ),
       tap(saved => Log.info('Created partner:', this, saved)),
+      tap((created: any) => this.projectApplicationFormSidenavService.refreshPartners(created.projectId)),
       tap((created: any) => this.router.navigate([
-        'app', 'project', 'detail', created.projectId, 'applicationForm', 'partner', 'detail', created.partner.id
+        'app', 'project', 'detail', created.projectId, 'applicationFormPartner', 'detail', created.partner.id
       ])),
     );
 
@@ -103,15 +103,6 @@ export class ProjectPartnerStore {
         this.partnerSaveError$.next(error.error);
         return of();
       })
-    );
-
-  projectEditable$ = this.projectStore.getProject()
-    .pipe(
-      tap(project => this.projectApplicationFormSidenavService.setAcronym(project.acronym)),
-      map(project => project.projectStatus.status === OutputProjectStatus.StatusEnum.DRAFT
-        || project.projectStatus.status === OutputProjectStatus.StatusEnum.RETURNEDTOAPPLICANT
-      ),
-      shareReplay(1)
     );
 
   private partner$ = merge(

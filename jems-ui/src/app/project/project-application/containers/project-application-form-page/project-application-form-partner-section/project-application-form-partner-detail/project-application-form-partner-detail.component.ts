@@ -12,7 +12,6 @@ import {
 } from '@cat/api';
 import {BaseComponent} from '@common/components/base-component';
 import {ProjectStore} from '../../../project-application-detail/services/project-store.service';
-import {ProjectApplicationFormSidenavService} from '../../services/project-application-form-sidenav.service';
 import {TabService} from '../../../../../../common/services/tab.service';
 import {ProjectPartnerStore} from '../../services/project-partner-store.service';
 
@@ -75,10 +74,9 @@ export class ProjectApplicationFormPartnerDetailComponent extends BaseComponent 
 
   constructor(private partnerService: ProjectPartnerService,
               private activatedRoute: ActivatedRoute,
-              private projectStore: ProjectStore,
+              public projectStore: ProjectStore,
               public partnerStore: ProjectPartnerStore,
               private router: Router,
-              private projectApplicationFormSidenavService: ProjectApplicationFormSidenavService,
               private tabService: TabService) {
     super();
     this.activatedRoute.params.pipe(
@@ -91,7 +89,6 @@ export class ProjectApplicationFormPartnerDetailComponent extends BaseComponent 
 
   ngOnInit(): void {
     this.projectStore.init(this.projectId);
-    this.projectApplicationFormSidenavService.init(this.destroyed$, this.projectId);
   }
 
   ngOnDestroy() {

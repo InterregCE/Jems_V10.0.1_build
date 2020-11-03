@@ -39,7 +39,7 @@ describe('ProjectApplicationPartnerIdentityComponent', () => {
 
     component.redirectToPartnerOverview();
 
-    expect(router.navigate).toHaveBeenCalledWith(['app', 'project', 'detail', 1, 'applicationForm']);
+    expect(router.navigate).toHaveBeenCalledWith(['app', 'project', 'detail', 1, 'applicationFormPartner']);
   });
 
 });

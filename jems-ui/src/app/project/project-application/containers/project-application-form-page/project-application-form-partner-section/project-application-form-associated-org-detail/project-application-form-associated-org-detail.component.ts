@@ -13,7 +13,6 @@ import {
   OutputProjectAssociatedOrganizationDetail,
   OutputProjectAssociatedOrganizationAddress,
 } from '@cat/api';
-import {ProjectApplicationFormSidenavService} from '../../services/project-application-form-sidenav.service';
 import {BaseComponent} from '@common/components/base-component';
 import {ProjectAssociatedOrganizationStore} from '../../services/project-associated-organization-store.service';
 import {ProjectStore} from '../../../project-application-detail/services/project-store.service';
@@ -57,10 +56,9 @@ export class ProjectApplicationFormAssociatedOrgDetailComponent extends BaseComp
   )
 
   constructor(public associatedOrganizationStore: ProjectAssociatedOrganizationStore,
+              public projectStore: ProjectStore,
               private partnerService: ProjectPartnerService,
-              private projectStore: ProjectStore,
               private nutsStore: NutsStoreService,
-              private projectApplicationFormSidenavService: ProjectApplicationFormSidenavService,
               private activatedRoute: ActivatedRoute,
               private router: Router) {
     super();
@@ -74,7 +72,6 @@ export class ProjectApplicationFormAssociatedOrgDetailComponent extends BaseComp
 
   ngOnInit(): void {
     this.projectStore.init(this.projectId);
-    this.projectApplicationFormSidenavService.init(this.destroyed$, this.projectId);
 
     if (this.associatedOrganizationId) {
       return;
@@ -84,7 +81,7 @@ export class ProjectApplicationFormAssociatedOrgDetailComponent extends BaseComp
   }
 
   redirectToAssociatedOrganizationOverview(): void {
-    this.router.navigate(['app', 'project', 'detail', this.projectId, 'applicationForm']);
+    this.router.navigate(['app', 'project', 'detail', this.projectId, 'applicationFormAssociatedOrganization']);
   }
 
   ngOnDestroy(): void {

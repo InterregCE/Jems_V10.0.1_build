@@ -5,6 +5,7 @@ import {HttpTestingController} from '@angular/common/http/testing';
 import {TestModule} from '../../../../../common/test-module';
 import {ProjectModule} from '../../../../project.module';
 import {RouterTestingModule} from '@angular/router/testing';
+import {ActivatedRoute} from '@angular/router';
 
 describe('ProjectApplicationFormProjectRelevanceAndContextSectionComponent', () => {
   let component: ProjectApplicationFormProjectRelevanceAndContextSectionComponent;
@@ -17,18 +18,22 @@ describe('ProjectApplicationFormProjectRelevanceAndContextSectionComponent', () 
         TestModule,
         ProjectModule,
         RouterTestingModule.withRoutes(
-          [{path: 'app/project/detail/1/applicationForm', component: ProjectApplicationFormProjectRelevanceAndContextSectionComponent}])
+          [{
+            path: 'app/project/detail/1/applicationForm',
+            component: ProjectApplicationFormProjectRelevanceAndContextSectionComponent
+          }])
       ],
       declarations: [ProjectApplicationFormProjectRelevanceAndContextSectionComponent]
     })
       .compileComponents();
     httpTestingController = TestBed.inject(HttpTestingController);
+    const activatedRoute = TestBed.inject(ActivatedRoute);
+    activatedRoute.snapshot.params = {projectId: '1'};
   }));
 
   beforeEach(() => {
     fixture = TestBed.createComponent(ProjectApplicationFormProjectRelevanceAndContextSectionComponent);
     component = fixture.componentInstance;
-    component.projectId = 1;
     fixture.detectChanges();
   });
 
@@ -37,7 +42,7 @@ describe('ProjectApplicationFormProjectRelevanceAndContextSectionComponent', () 
   });
 
   it('should update project relevance', fakeAsync(() => {
-    component.updateProjectDescription$.next({} as InputProjectRelevance);
+    component.updateProjectRelevance$.next({} as InputProjectRelevance);
 
     httpTestingController.expectOne({
       method: 'PUT',

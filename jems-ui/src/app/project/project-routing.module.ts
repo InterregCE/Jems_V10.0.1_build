@@ -6,7 +6,6 @@ import {ProjectApplicationEligibilityCheckComponent} from './project-application
 import {ProjectApplicationFundingPageComponent} from './project-application/containers/project-application-detail/project-application-funding-page/project-application-funding-page.component';
 import {ProjectApplicationEligibilityDecisionPageComponent} from './project-application/containers/project-application-detail/project-application-eligibility-decision-page/project-application-eligibility-decision-page.component';
 import {WorkPackageDetailsComponent} from './project-application/containers/project-application-form-page/project-application-form-work-package-section/work-package-details/work-package-details.component';
-import {ProjectApplicationFormPageComponent} from './project-application/containers/project-application-form-page/project-application-form-page.component';
 import {ProjectApplicationFormPartnerDetailComponent} from './project-application/containers/project-application-form-page/project-application-form-partner-section/project-application-form-partner-detail/project-application-form-partner-detail.component';
 import {ProjectAcronymResolver} from './project-application/containers/project-application-detail/services/project-acronym.resolver';
 import {PermissionGuard} from '../security/permission.guard';
@@ -14,6 +13,15 @@ import {Permission} from '../security/permissions/permission';
 import {ProjectApplyToCallComponent} from './project-application/containers/project-application-page/project-apply-to-call.component';
 import {ProjectApplicationPartnerIdentityComponent} from './project-application/containers/project-application-form-page/project-application-form-partner-section/project-application-partner-identity/project-application-partner-identity.component';
 import {ProjectApplicationFormAssociatedOrgDetailComponent} from './project-application/containers/project-application-form-page/project-application-form-partner-section/project-application-form-associated-org-detail/project-application-form-associated-org-detail.component';
+import {ProjectApplicationFormIdentificationPageComponent} from './project-application/containers/project-application-form-page/project-application-form-identification-page/project-application-form-identification-page.component';
+import {ProjectApplicationFormPartnerSectionComponent} from './project-application/containers/project-application-form-page/project-application-form-partner-section/project-application-form-partner-section.component';
+import {ProjectApplicationFormAssociatedOrgPageComponent} from './project-application/containers/project-application-form-page/project-application-form-associated-org-page/project-application-form-associated-org-page.component';
+import {ProjectApplicationFormOverallObjectiveSectionComponent} from './project-application/containers/project-application-form-page/project-application-form-overall-objective-section/project-application-form-overall-objective-section.component';
+import {ProjectApplicationFormProjectRelevanceAndContextSectionComponent} from './project-application/containers/project-application-form-page/project-application-form-project-relevance-and-context-section/project-application-form-project-relevance-and-context-section.component';
+import {ProjectApplicationFormProjectPartnershipSectionComponent} from './project-application/containers/project-application-form-page/project-application-form-project-partnership-section/project-application-form-project-partnership-section.component';
+import {ProjectApplicationFormWorkPackageSectionComponent} from './project-application/containers/project-application-form-page/project-application-form-work-package-section/project-application-form-work-package-section.component';
+import {ProjectApplicationFormFuturePlansSectionComponent} from './project-application/containers/project-application-form-page/project-application-form-future-plans-section/project-application-form-future-plans-section.component';
+import {ProjectApplicationFormManagementSectionComponent} from './project-application/containers/project-application-form-page/project-application-form-management-section/project-application-form-management-section.component';
 
 export const routes: Routes = [
   {
@@ -84,59 +92,94 @@ export const routes: Routes = [
             ],
           },
           {
-            path: 'applicationForm',
-            data: {breadcrumb: 'project.breadcrumb.applicationForm'},
+            path: 'applicationFormIdentification',
+            data: {breadcrumb: 'project.breadcrumb.applicationForm.identification'},
+            component: ProjectApplicationFormIdentificationPageComponent,
+          },
+          {
+            path: 'applicationFormPartner',
+            data: {breadcrumb: 'project.breadcrumb.applicationForm.partner'},
             children: [
               {
                 path: '',
-                component: ProjectApplicationFormPageComponent,
+                component: ProjectApplicationFormPartnerSectionComponent,
               },
               {
-                path: 'partner',
-                children: [
-                  {
-                    path: 'create',
-                    component: ProjectApplicationPartnerIdentityComponent,
-                    data: {breadcrumb: 'project.breadcrumb.partnerCreate'},
-                  },
-                  {
-                    path: 'detail/:partnerId',
-                    component: ProjectApplicationFormPartnerDetailComponent,
-                    data: {breadcrumb: 'project.breadcrumb.partnerName'},
-                  },
-                ]
+                path: 'create',
+                component: ProjectApplicationPartnerIdentityComponent,
+                data: {breadcrumb: 'project.breadcrumb.partnerCreate'},
               },
               {
-                path: 'associatedOrganization',
-                children: [
-                  {
-                    path: 'create',
-                    component: ProjectApplicationFormAssociatedOrgDetailComponent,
-                    data: {breadcrumb: 'project.breadcrumb.associatedOrganizationCreate'},
-                  },
-                  {
-                    path: 'detail/:associatedOrganizationId',
-                    component: ProjectApplicationFormAssociatedOrgDetailComponent,
-                    data: {breadcrumb: 'project.breadcrumb.associatedOrganizationName'},
-                  },
-                ]
-              },
-              {
-                path: 'workPackage',
-                children: [
-                  {
-                    path: 'create',
-                    component: WorkPackageDetailsComponent,
-                    data: {breadcrumb: 'project.breadcrumb.workPackageCreate'},
-                  },
-                  {
-                    path: 'detail/:workPackageId',
-                    component: WorkPackageDetailsComponent,
-                    data: {breadcrumb: 'project.breadcrumb.workPackageName'},
-                  }
-                ]
+                path: 'detail/:partnerId',
+                component: ProjectApplicationFormPartnerDetailComponent,
+                data: {breadcrumb: 'project.breadcrumb.partnerName'},
               },
             ]
+          },
+          {
+            path: 'applicationFormAssociatedOrganization',
+            data: {breadcrumb: 'project.breadcrumb.applicationForm.associated.org'},
+            children: [
+              {
+                path: '',
+                component: ProjectApplicationFormAssociatedOrgPageComponent,
+              },
+              {
+                path: 'create',
+                component: ProjectApplicationFormAssociatedOrgDetailComponent,
+                data: {breadcrumb: 'project.breadcrumb.associatedOrganizationCreate'},
+              },
+              {
+                path: 'detail/:associatedOrganizationId',
+                component: ProjectApplicationFormAssociatedOrgDetailComponent,
+                data: {breadcrumb: 'project.breadcrumb.associatedOrganizationName'},
+              },
+            ]
+          },
+          {
+            path: 'applicationFormOverallObjective',
+            component: ProjectApplicationFormOverallObjectiveSectionComponent,
+            data: {breadcrumb: 'project.breadcrumb.applicationForm.overallObjective'},
+          },
+          {
+            path: 'applicationFormRelevanceAndContext',
+            component: ProjectApplicationFormProjectRelevanceAndContextSectionComponent,
+            data: {breadcrumb: 'project.breadcrumb.applicationForm.relevanceAndContext'},
+          },
+          {
+            path: 'applicationFormPartnership',
+            component: ProjectApplicationFormProjectPartnershipSectionComponent,
+            data: {breadcrumb: 'project.breadcrumb.applicationForm.partnership'},
+          },
+          {
+            path: 'applicationFormWorkPackage',
+            data: {breadcrumb: 'project.breadcrumb.applicationForm.workPackage'},
+            children: [
+              {
+                path: '',
+                component: ProjectApplicationFormWorkPackageSectionComponent
+              },
+              {
+                path: 'create',
+                component: WorkPackageDetailsComponent,
+                data: {breadcrumb: 'project.breadcrumb.workPackageCreate'},
+              },
+              {
+                path: 'detail/:workPackageId',
+                component: WorkPackageDetailsComponent,
+                data: {breadcrumb: 'project.breadcrumb.workPackageName'},
+              }
+            ]
+          },
+          {
+            path: 'applicationFormFuturePlans',
+            component: ProjectApplicationFormFuturePlansSectionComponent,
+            data: {breadcrumb: 'project.breadcrumb.applicationForm.futurePlans'},
+          },
+          {
+            path: 'applicationFormManagement',
+            component: ProjectApplicationFormManagementSectionComponent,
+            data: {breadcrumb: 'project.breadcrumb.applicationForm.management'},
           },
         ]
       },

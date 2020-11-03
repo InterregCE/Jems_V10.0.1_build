@@ -4,6 +4,7 @@ import {ProjectApplicationFormOverallObjectiveSectionComponent} from './project-
 import {TestModule} from '../../../../../common/test-module';
 import {ProjectModule} from '../../../../project.module';
 import {HttpTestingController} from '@angular/common/http/testing';
+import {ActivatedRoute} from '@angular/router';
 
 describe('ProjectApplicationFormOverallObjectiveSectionComponent', () => {
   let component: ProjectApplicationFormOverallObjectiveSectionComponent;
@@ -20,6 +21,8 @@ describe('ProjectApplicationFormOverallObjectiveSectionComponent', () => {
     })
       .compileComponents();
     httpTestingController = TestBed.inject(HttpTestingController);
+    const activatedRoute = TestBed.inject(ActivatedRoute);
+    activatedRoute.snapshot.params = {projectId: '1'};
   }));
 
   beforeEach(() => {

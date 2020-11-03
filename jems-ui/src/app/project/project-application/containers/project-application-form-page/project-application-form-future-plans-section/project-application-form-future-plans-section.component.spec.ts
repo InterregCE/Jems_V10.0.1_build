@@ -4,6 +4,7 @@ import {ProjectApplicationFormFuturePlansSectionComponent} from './project-appli
 import {HttpTestingController} from '@angular/common/http/testing';
 import {TestModule} from '../../../../../common/test-module';
 import {ProjectModule} from '../../../../project.module';
+import {ActivatedRoute} from '@angular/router';
 
 describe('ProjectApplicationFormFuturePlansSectionComponent', () => {
   let component: ProjectApplicationFormFuturePlansSectionComponent;
@@ -20,12 +21,13 @@ describe('ProjectApplicationFormFuturePlansSectionComponent', () => {
     })
       .compileComponents();
     httpTestingController = TestBed.inject(HttpTestingController);
+    const activatedRoute = TestBed.inject(ActivatedRoute);
+    activatedRoute.snapshot.params = {projectId: '1'};
   }));
 
   beforeEach(() => {
     fixture = TestBed.createComponent(ProjectApplicationFormFuturePlansSectionComponent);
     component = fixture.componentInstance;
-    component.projectId = 1;
     fixture.detectChanges();
   });
 
@@ -34,7 +36,7 @@ describe('ProjectApplicationFormFuturePlansSectionComponent', () => {
   });
 
   it('should update project long-term plans', fakeAsync(() => {
-    component.updateProjectDescription$.next({} as InputProjectLongTermPlans);
+    component.updateFuturePlans$.next({} as InputProjectLongTermPlans);
 
     httpTestingController.expectOne({
       method: 'PUT',

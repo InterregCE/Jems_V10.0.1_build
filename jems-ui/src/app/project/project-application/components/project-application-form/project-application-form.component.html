@@ -1,7 +1,4 @@
 <form [formGroup]="applicationForm" class="wrapper">
-    <h2>{{'project.application.form.title' | translate}}</h2>
-    <h4>{{project.acronym}}</h4>
-
     <h4 id="projectIdentification" class="header">
         {{'project.application.form.section.part.a' | translate}}
     </h4>
@@ -95,7 +92,7 @@
     <div *ngIf="formState === FormState.VIEW">
         <p class="policy-label">{{'project.application.form.field.project.priority' | translate}}</p>
         <p class="policy-data" *ngIf="previousObjective">
-            {{project.projectData.programmePriority.code +  ' - '}}
+            {{project.projectData.programmePriority.code + ' - '}}
             {{project.projectData.programmePriority.title}}
         </p>
         <p class="policy-data" *ngIf="!previousObjective">

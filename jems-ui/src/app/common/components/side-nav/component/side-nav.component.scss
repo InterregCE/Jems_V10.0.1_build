@@ -1,6 +1,5 @@
 .side-nav-title {
   font-size: 1rem;
-  cursor: default;
   color: #210C38;
 }
 
@@ -13,7 +12,7 @@
     color: #210C38;
 
     &_white-text {
-      color: white;
+      color: var(--font-color-contrast);
     }
   }
 }
@@ -23,7 +22,7 @@
   padding-left: 1rem !important;
   cursor: pointer;
   list-style-type: none;
-  color: white;
+  color: var(--font-color-contrast);
   border-left: 0.07rem solid #210C38;
   left: 1.8rem;
   position: relative;
@@ -37,7 +36,7 @@
 }
 
 hr.solid {
-  border-top: 0.125rem solid white;
+  border-top: 0.125rem solid var(--font-color-contrast);
 }
 
 mat-expansion-panel {
@@ -69,6 +68,6 @@ ul {
 .first-list-item:hover,
 .second-list-item:hover,
 .side-nav-main_title_white-text:hover {
-  text-decoration: underline white;
+  text-decoration: underline var(--font-color-contrast);
   text-decoration-width: 0.07rem;
 }

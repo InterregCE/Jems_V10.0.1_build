@@ -1,6 +1,5 @@
 import {ChangeDetectionStrategy, Component, OnInit} from '@angular/core';
 import {ProjectPartnerStore} from '../../services/project-partner-store.service';
-import {ProjectApplicationFormSidenavService} from '../../services/project-application-form-sidenav.service';
 import {BaseComponent} from '@common/components/base-component';
 import {ActivatedRoute, Router} from '@angular/router';
 import {ProjectStore} from '../../../project-application-detail/services/project-store.service';
@@ -20,8 +19,7 @@ export class ProjectApplicationPartnerIdentityComponent extends BaseComponent im
   legalStatuses$ = this.programmeLegalStatusService.getProgrammeLegalStatusList();
 
   constructor(public partnerStore: ProjectPartnerStore,
-              private projectStore: ProjectStore,
-              private projectApplicationFormSidenavService: ProjectApplicationFormSidenavService,
+              public projectStore: ProjectStore,
               private programmeLegalStatusService: ProgrammeLegalStatusService,
               private activatedRoute: ActivatedRoute,
               private router: Router) {
@@ -30,7 +28,6 @@ export class ProjectApplicationPartnerIdentityComponent extends BaseComponent im
 
   ngOnInit(): void {
     this.projectStore.init(this.projectId);
-    this.projectApplicationFormSidenavService.init(this.destroyed$, this.projectId);
 
     if (this.partnerId) {
       return;
@@ -40,6 +37,6 @@ export class ProjectApplicationPartnerIdentityComponent extends BaseComponent im
   }
 
   redirectToPartnerOverview(): void {
-    this.router.navigate(['app', 'project', 'detail', this.projectId, 'applicationForm']);
+    this.router.navigate(['app', 'project', 'detail', this.projectId, 'applicationFormPartner']);
   }
 }

@@ -1,8 +1,8 @@
 import {Injectable} from '@angular/core';
 import {SideNavService} from '@common/components/side-nav/side-nav.service';
-import {combineLatest, Observable, Subject} from 'rxjs';
-import {mergeMap, map, takeUntil, tap} from 'rxjs/operators';
-import {OutputProjectPartner, OutputProjectStatus, ProjectPartnerService, WorkPackageService} from '@cat/api';
+import {combineLatest, forkJoin, merge, Observable, of, Subject} from 'rxjs';
+import {mergeMap, map, tap} from 'rxjs/operators';
+import {OutputProjectStatus, ProjectPartnerService, WorkPackageService} from '@cat/api';
 import {HeadlineRoute} from '@common/components/side-nav/headline-route';
 import {Log} from '../../../../../common/utils/log';
 import {TranslateService} from '@ngx-translate/core';
@@ -12,49 +12,55 @@ import {ProjectStore} from '../../project-application-detail/services/project-st
 
 @Injectable()
 export class ProjectApplicationFormSidenavService {
-  private pageDestroyed$: Subject<any>;
-  private acronym$ = new Subject<string>();
-  private projectId: number;
-  private fetchPartners$ = new Subject<void>();
-  private fetchPackages$ = new Subject<void>();
 
-  private partners$: Observable<HeadlineRoute[]> = this.fetchPartners$
+  private projectId$ = this.projectStore.getProject()
     .pipe(
-      mergeMap(() =>
-        this.projectPartnerService.getProjectPartners(this.projectId, 0, 100, ['sortNumber,asc'])
-      ),
-      map(page => page.content),
-      tap(partners => Log.info('Fetched the project partners:', this, partners)),
-      map(partners => partners
-        .map(partner => ({
-            headline: {
-              i18nKey: 'common.label.project.partner.role.shortcut.' + partner.role,
-              i18nArguments: {partner: `${partner.sortNumber} ${partner.abbreviation}`}
-            },
-            route: `/app/project/detail/${this.projectId}/applicationForm/partner/detail/${partner.id}`,
-          }
-        ))
-      )
+      map(project => project.id)
     );
+  private fetchPartners$ = new Subject<number>();
+  private fetchPackages$ = new Subject<number>();
 
-  private packages$: Observable<HeadlineRoute[]> = this.fetchPackages$
-    .pipe(
-      mergeMap(() =>
-        this.workPackageService.getWorkPackagesByProjectId(this.projectId, 0, 100, 'id,asc')
-      ),
-      map(page => page.content),
-      tap(packages => Log.info('Fetched the project work packages:', this, packages)),
-      map(packages => packages
-        .map(workPackage => ({
-            headline: {
-              i18nKey:  'common.label.workpackage.shortcut',
-              i18nArguments: {workpackage: `${workPackage.number}`},
-            },
-            route: `/app/project/detail/${this.projectId}/applicationForm/workPackage/detail/${workPackage.id}`,
-          }
-        ))
-      )
-    );
+  private partners$: Observable<HeadlineRoute[]> =
+    merge(this.projectId$, this.fetchPartners$)
+      .pipe(
+        mergeMap(projectId => forkJoin([
+            of(projectId),
+            this.projectPartnerService.getProjectPartners(projectId, 0, 100, ['sortNumber,asc'])
+          ])
+        ),
+        tap(([projectId, partners]) => Log.info('Fetched the project partners:', this, partners.content)),
+        map(([projectId, partners]) => partners.content
+          .map(partner => ({
+              headline: {
+                i18nKey: 'common.label.project.partner.role.shortcut.' + partner.role,
+                i18nArguments: {partner: `${partner.sortNumber} ${partner.abbreviation}`}
+              },
+              route: `/app/project/detail/${projectId}/applicationFormPartner/detail/${partner.id}`,
+            }
+          ))
+        )
+      );
+
+  private packages$: Observable<HeadlineRoute[]> =
+    merge(this.projectId$, this.fetchPackages$)
+      .pipe(
+        mergeMap(projectId => forkJoin([
+            of(projectId),
+            this.workPackageService.getWorkPackagesByProjectId(projectId, 0, 100, 'id,asc')
+          ])
+        ),
+        tap(([projectId, packages]) => Log.info('Fetched the project work packages:', this, packages.content)),
+        map(([projectId, packages]) => packages.content
+          .map(workPackage => ({
+              headline: {
+                i18nKey: 'common.label.workpackage.shortcut',
+                i18nArguments: {workpackage: `${workPackage.number}`},
+              },
+              route: `/app/project/detail/${projectId}/applicationFormWorkPackage/detail/${workPackage.id}`,
+            }
+          ))
+        )
+      );
 
   private isNotApplicant$: Observable<boolean> = this.permissionService.permissionsChanged()
     .pipe(
@@ -67,61 +73,50 @@ export class ProjectApplicationFormSidenavService {
               private projectStore: ProjectStore,
               private translate: TranslateService,
               private permissionService: PermissionService) {
-  }
-
-  init(destroyed: Subject<any>, projectId: number): void {
-    this.pageDestroyed$ = destroyed;
-    this.projectId = projectId;
-
     combineLatest([
       this.isNotApplicant$,
+      this.projectStore.getProject(),
       this.partners$,
       this.packages$,
-      this.projectStore.getProject()
     ])
       .pipe(
-        takeUntil(destroyed),
-        tap(([isNotApplicant, partners, packages, project]) => {
+        tap(([isNotApplicant, project, partners, packages]) => {
+          if (!project) {
+            return;
+          }
           const status = project.projectStatus.status;
           const isNotOpen = status !== OutputProjectStatus.StatusEnum.DRAFT
             && status !== OutputProjectStatus.StatusEnum.RETURNEDTOAPPLICANT;
-          this.setHeadlines(isNotApplicant && isNotOpen, projectId, partners, packages)
+          this.setHeadlines(isNotApplicant && isNotOpen, project.id, partners, packages)
         })
       ).subscribe();
-
-    this.refreshPartners();
-    this.refreshPackages();
   }
 
-  setAcronym(acronym: string): void {
-    this.acronym$.next(acronym);
+  refreshPartners(projectId: number): void {
+    this.fetchPartners$.next(projectId);
   }
 
-  refreshPartners(): void {
-    this.fetchPartners$.next();
-  }
-
-  refreshPackages(): void {
-    this.fetchPackages$.next();
+  refreshPackages(projectId: number): void {
+    this.fetchPackages$.next(projectId);
   }
 
   private setHeadlines(showAssessment: boolean, projectId: number, partners: HeadlineRoute[], packages: HeadlineRoute[]): void {
     // extracted this because Assessment is now on the same level with other headlines
     const applicationTreeHeadlines = {
-      headline: { i18nKey: 'project.application.form.tree.title'},
+      headline: {i18nKey: 'project.application.form.tree.title'},
       bullets: [
         {
-          headline: { i18nKey: 'project.application.form.lifecycle.title'},
-            route: '/app/project/detail/' + projectId,
+          headline: {i18nKey: 'project.application.form.lifecycle.title'},
+          route: '/app/project/detail/' + projectId,
           scrollToTop: true,
           scrollRoute: ''
         },
       ]
     };
-    if (showAssessment){
+    if (showAssessment) {
       applicationTreeHeadlines.bullets.push(
         {
-          headline: { i18nKey: 'project.assessment.header'},
+          headline: {i18nKey: 'project.assessment.header'},
           scrollRoute: 'applicationFormLifecycleAssessment',
           route: '/app/project/detail/' + projectId,
           scrollToTop: false
@@ -130,87 +125,67 @@ export class ProjectApplicationFormSidenavService {
     }
     applicationTreeHeadlines.bullets.push(
       {
-        headline: { i18nKey: 'file.tab.header'},
+        headline: {i18nKey: 'file.tab.header'},
         scrollRoute: 'applicationFormLifecycleAttachments',
         route: '/app/project/detail/' + projectId,
         scrollToTop: false
       }
     );
-    this.sideNavService.setHeadlines(this.pageDestroyed$, [
+    this.sideNavService.setHeadlines(ProjectStore.PROJECT_DETAIL_PATH, [
       applicationTreeHeadlines,
       {
-        headline: { i18nKey: 'project.application.form.title'},
+        headline: {i18nKey: 'project.application.form.title'},
         bullets: [
           {
-            headline: { i18nKey: 'project.application.form.section.part.a'},
-            route: '/app/project/detail/' + projectId + '/applicationForm',
-            scrollToTop: true,
+            headline: {i18nKey: 'project.application.form.section.part.a'},
             bullets: [
               {
-                headline: { i18nKey: 'project.application.form.section.part.a.subsection.one'},
-                scrollRoute: 'projectIdentificationHeading',
-                route: '/app/project/detail/' + projectId + '/applicationForm',
-              },
-              {
-                headline: { i18nKey: 'project.application.form.section.part.a.subsection.two'},
-                scrollRoute: 'projectSummaryHeading',
-                route: '/app/project/detail/' + projectId + '/applicationForm',
+                headline: {i18nKey: 'project.application.form.section.part.a'},
+                route: '/app/project/detail/' + projectId + '/applicationFormIdentification',
               },
             ]
           },
           {
-            headline: { i18nKey: 'project.application.form.section.part.b'},
-            scrollRoute: 'projectPartnersHeading',
-            route: '/app/project/detail/' + projectId + '/applicationForm',
+            headline: {i18nKey: 'project.application.form.section.part.b'},
             bullets: [
               {
-                headline: { i18nKey: 'project.application.form.section.part.b.partners'},
-                scrollRoute: 'projectPartnersOverview',
-                route: '/app/project/detail/' + projectId + '/applicationForm',
+                headline: {i18nKey: 'project.application.form.section.part.b.partners'},
+                route: '/app/project/detail/' + projectId + '/applicationFormPartner',
                 bullets: [...partners],
               },
               {
-                headline: { i18nKey: 'project.application.form.section.part.b.associatedOrganizations'},
-                scrollRoute: 'projectAssociatedOrganizationsHeading',
-                route: '/app/project/detail/' + projectId + '/applicationForm',
+                headline: {i18nKey: 'project.application.form.section.part.b.associatedOrganizations'},
+                route: '/app/project/detail/' + projectId + '/applicationFormAssociatedOrganization',
               },
             ]
           },
           {
-            headline: { i18nKey: 'project.application.form.section.part.c'},
-            scrollRoute: 'projectDescriptionHeading',
-            route: '/app/project/detail/' + projectId + '/applicationForm',
+            headline: {i18nKey: 'project.application.form.section.part.c'},
             bullets: [
               {
-                headline: { i18nKey: 'project.application.form.section.part.c.subsection.one'},
-                scrollRoute: 'projectOverallObjectiveHeading',
-                route: '/app/project/detail/' + projectId + '/applicationForm',
+                headline: {i18nKey: 'project.application.form.section.part.c.subsection.one'},
+                route: '/app/project/detail/' + projectId + '/applicationFormOverallObjective',
               },
               {
-                headline: { i18nKey: 'project.application.form.section.part.c.subsection.two'},
-                scrollRoute: 'projectRelevanceHeading',
-                route: '/app/project/detail/' + projectId + '/applicationForm',
+                headline: {i18nKey: 'project.application.form.section.part.c.subsection.two'},
+                route: '/app/project/detail/' + projectId + '/applicationFormRelevanceAndContext',
               },
               {
-                headline: { i18nKey: 'project.application.form.section.part.c.subsection.three'},
-                scrollRoute: 'projectPartnershipHeading',
-                route: '/app/project/detail/' + projectId + '/applicationForm',
+                headline: {i18nKey: 'project.application.form.section.part.c.subsection.three'},
+                route: '/app/project/detail/' + projectId + '/applicationFormPartnership',
               },
               {
-                headline: { i18nKey: 'project.application.form.section.part.c.subsection.four'},
-                scrollRoute: 'projectWorkPlanHeading',
-                route: '/app/project/detail/' + projectId + '/applicationForm',
+                headline: {i18nKey: 'project.application.form.section.part.c.subsection.four'},
+                route: '/app/project/detail/' + projectId + '/applicationFormWorkPackage',
                 bullets: [...packages],
               },
               {
-                headline: { i18nKey: 'project.application.form.section.part.c.subsection.seven'},
-                scrollRoute: 'projectManagementHeading',
-                route: '/app/project/detail/' + projectId + '/applicationForm',
+                headline: {i18nKey: 'project.application.form.section.part.c.subsection.seven'},
+                route: '/app/project/detail/' + projectId + '/applicationFormManagement',
               },
               {
-                headline: { i18nKey: 'project.application.form.section.part.c.subsection.eight'},
-                scrollRoute: 'projectFuturePlansHeading',
-                route: '/app/project/detail/' + projectId + '/applicationForm',
+                headline: {i18nKey: 'project.application.form.section.part.c.subsection.eight'},
+                route: '/app/project/detail/' + projectId + '/applicationFormFuturePlans',
               }
             ],
           },
