@@ -158,14 +158,19 @@ class ProjectPartnerBudgetServiceImpl(
 
     @Transactional(readOnly = true)
     override fun getTotal(partnerId: Long): BigDecimal {
-        val officeAndAdministrationFlatRate = getBudgetOptionsInteractor.getBudgetOptions(partnerId)?.officeAdministrationFlatRate
+        val budgetOptions = getBudgetOptionsInteractor.getBudgetOptions(partnerId)
+        val officeAndAdministrationFlatRate = budgetOptions?.officeAdministrationFlatRate
+        val staffCostsFlatRate = budgetOptions?.staffCostsFlatRate
 
-        val staffCosts = projectPartnerBudgetStaffCostRepository.sumTotalForPartner(partnerId) ?: BigDecimal.ZERO
+        var staffCosts = projectPartnerBudgetStaffCostRepository.sumTotalForPartner(partnerId) ?: BigDecimal.ZERO
         val travelCosts = projectPartnerBudgetTravelRepository.sumTotalForPartner(partnerId) ?: BigDecimal.ZERO
         val externalCosts = projectPartnerBudgetExternalRepository.sumTotalForPartner(partnerId) ?: BigDecimal.ZERO
         val equipmentCosts = projectPartnerBudgetEquipmentRepository.sumTotalForPartner(partnerId) ?: BigDecimal.ZERO
         val infrastructureCosts = projectPartnerBudgetInfrastructureRepository.sumTotalForPartner(partnerId)
             ?: BigDecimal.ZERO
+        if (staffCostsFlatRate != null) {
+            staffCosts = travelCosts.add(externalCosts).add(equipmentCosts).add(infrastructureCosts).percentage(staffCostsFlatRate)
+        }
 
         val officeAndAdministrationCosts = if (officeAndAdministrationFlatRate == null) BigDecimal.ZERO else
             staffCosts.percentage(officeAndAdministrationFlatRate)

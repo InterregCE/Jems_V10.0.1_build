@@ -45,14 +45,6 @@ internal class ProjectPartnerBudgetServiceTest {
 
         const val PARTNER_ID = 1L
 
-        private val projectPartner = ProjectPartner(
-            id = 1,
-            project = project,
-            abbreviation = "partner",
-            role = ProjectPartnerRole.LEAD_PARTNER,
-            legalStatus = ProgrammeLegalStatus(1, "test")
-        )
-
         val budgetOptions = ProjectPartnerBudgetOptions(
             PARTNER_ID,
             15,
@@ -440,16 +432,50 @@ internal class ProjectPartnerBudgetServiceTest {
     }
 
     @Test
-    fun `test total`() {
+    fun `test total with office flatRate`() {
         val id = 598L
-        every { getBudgetOptionsInteractor.getBudgetOptions(id) } returns ProjectPartnerBudgetOptions(partnerId = id, officeAdministrationFlatRate = 10, staffCostsFlatRate = 10)
-        every { projectPartnerBudgetStaffCostRepository.sumTotalForPartner(id) } returns BigDecimal.valueOf(5)
-        every { projectPartnerBudgetTravelRepository.sumTotalForPartner(id) } returns BigDecimal.valueOf(20)
-        every { projectPartnerBudgetExternalRepository.sumTotalForPartner(id) } returns BigDecimal.valueOf(8)
-        every { projectPartnerBudgetEquipmentRepository.sumTotalForPartner(id) } returns BigDecimal.ZERO
-        every { projectPartnerBudgetInfrastructureRepository.sumTotalForPartner(id) } returns BigDecimal.valueOf(3)
+        every { getBudgetOptionsInteractor.getBudgetOptions(id) } returns ProjectPartnerBudgetOptions(
+            partnerId = id,
+            officeAdministrationFlatRate = 10,
+            staffCostsFlatRate = null
+        )
+        initCommonTestBudgets(id)
 
         assertThat(projectPartnerBudgetService.getTotal(id)).isEqualTo(toBd(36.5))
+    }
+
+    @Test
+    fun `test total with stuffCosts flatRate`() {
+        val id = 321L
+        every { getBudgetOptionsInteractor.getBudgetOptions(id) } returns ProjectPartnerBudgetOptions(
+            partnerId = id,
+            officeAdministrationFlatRate = null,
+            staffCostsFlatRate = 10
+        )
+        initCommonTestBudgets(id)
+
+        assertThat(projectPartnerBudgetService.getTotal(id)).isEqualTo(toBd(34.1))
+    }
+
+    @Test
+    fun `test total with stuffCosts flatRate and office flatRate`() {
+        val id = 281L
+        every { getBudgetOptionsInteractor.getBudgetOptions(id) } returns ProjectPartnerBudgetOptions(
+            partnerId = id,
+            officeAdministrationFlatRate = 10,
+            staffCostsFlatRate = 10
+        )
+        initCommonTestBudgets(id)
+
+        assertThat(projectPartnerBudgetService.getTotal(id)).isEqualTo(BigDecimal.valueOf(3441, 2))
+    }
+
+    private fun initCommonTestBudgets(partnerId: Long) {
+        every { projectPartnerBudgetStaffCostRepository.sumTotalForPartner(partnerId) } returns BigDecimal.valueOf(5)
+        every { projectPartnerBudgetTravelRepository.sumTotalForPartner(partnerId) } returns BigDecimal.valueOf(20)
+        every { projectPartnerBudgetExternalRepository.sumTotalForPartner(partnerId) } returns BigDecimal.valueOf(8)
+        every { projectPartnerBudgetEquipmentRepository.sumTotalForPartner(partnerId) } returns BigDecimal.ZERO
+        every { projectPartnerBudgetInfrastructureRepository.sumTotalForPartner(partnerId) } returns BigDecimal.valueOf(3)
     }
 
 }

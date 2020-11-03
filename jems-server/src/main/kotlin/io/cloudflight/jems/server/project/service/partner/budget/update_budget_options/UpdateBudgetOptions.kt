@@ -13,7 +13,7 @@ class UpdateBudgetOptions(private val persistence: ProjectBudgetPersistence) : U
     override fun updateBudgetOptions(partnerId: Long, officeAdministrationFlatRate: Int?, staffCostsFlatRate: Int?) =
         if (officeAdministrationFlatRate == null && staffCostsFlatRate == null) persistence.deleteBudgetOptions(partnerId)
         else {
-            persistence.deleteStaffCosts(partnerId)
+            if (staffCostsFlatRate != null) persistence.deleteStaffCosts(partnerId)
             persistence.updateBudgetOptions(partnerId, officeAdministrationFlatRate, staffCostsFlatRate)
         }
 
