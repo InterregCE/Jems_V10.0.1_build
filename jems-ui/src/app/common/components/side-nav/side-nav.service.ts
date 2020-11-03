@@ -1,6 +1,6 @@
 import {Injectable} from '@angular/core';
 import {combineLatest, Observable, ReplaySubject, Subject} from 'rxjs';
-import {delay, filter, take, takeUntil, tap} from 'rxjs/operators';
+import {delay, filter, take, tap} from 'rxjs/operators';
 import {Log} from '../../utils/log';
 import {HeadlineRoute} from '@common/components/side-nav/headline-route';
 import {MatDialog} from '@angular/material/dialog';
@@ -11,6 +11,7 @@ import {Forms} from '../../utils/forms';
 export class SideNavService {
   private headlines$ = new ReplaySubject<HeadlineRoute[]>(1);
   private navigateTo$ = new Subject<HeadlineRoute>();
+  private headlineRoot: string;
   private alertStatus: boolean;
 
   private routeChanged$ = this.router.events
@@ -20,20 +21,11 @@ export class SideNavService {
 
   constructor(private router: Router,
               private dialog: MatDialog) {
-  }
-
-  setHeadlines(destroyed$: Subject<any>, newHeadlines: HeadlineRoute[]): void {
-    this.headlines$.next(newHeadlines);
-    Log.debug('Setting headlines', this, this.headlines$);
-    const headlinesRoutes: string[] = [];
-    newHeadlines.forEach(headline => this.getAllRoutes(headline, headlinesRoutes));
-
     combineLatest([
       this.routeChanged$,
       this.navigateTo$,
     ])
       .pipe(
-        takeUntil(destroyed$),
         filter(([val, to]) => to.route === (val as ResolveEnd).url),
         delay(500), // wait for dom to render
         tap(([val, to]) => this.scrollToRoute(to.scrollRoute as any))
@@ -41,10 +33,20 @@ export class SideNavService {
 
     this.routeChanged$
       .pipe(
-        takeUntil(destroyed$),
-        tap(route => this.resetOnLeave(route as ResolveEnd, headlinesRoutes))
+        tap(route => this.resetOnLeave(route as ResolveEnd, this.headlineRoot))
       )
       .subscribe();
+  }
+
+  /**
+   * Sets the sidebar links
+   *
+   * @param headlineRoot the common url headline path for which the sidebar will not destroy itself
+   * @param newHeadlines the headlines (sidebar links)
+   */
+  setHeadlines(headlineRoot: string, newHeadlines: HeadlineRoute[]): void {
+    this.headlineRoot = headlineRoot;
+    this.headlines$.next(newHeadlines);
   }
 
   getHeadlines(): Observable<HeadlineRoute[]> {
@@ -104,11 +106,11 @@ export class SideNavService {
     headline?.bullets?.forEach(child => this.getAllRoutes(child, allRoutes));
   }
 
-  private resetOnLeave(val: ResolveEnd, headlinesRoutes: string[]): void {
-    if (!headlinesRoutes.includes(val.url)) {
-      Log.debug('Setting headlines', this, []);
-      this.headlines$.next([]);
-      this.alertStatus = false;
+  private resetOnLeave(val: ResolveEnd, headlinesRoot: string): void {
+    if (headlinesRoot && val.url && val.url.startsWith(headlinesRoot)) {
+      return;
     }
+    this.headlines$.next([]);
+    this.alertStatus = false;
   }
 }
