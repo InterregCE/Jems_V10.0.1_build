@@ -96,8 +96,8 @@ export class ProjectApplicationFormPartnerCoFinancingComponent extends ViewEditF
 
   private performCalculation(percentage: number): void {
     this.myPercentage = Numbers.sum([100, -percentage]);
-    this.myAmount = Numbers.truncateNumber(Numbers.product([this.totalAmount, (this.myPercentage / 100)]));
-    this.fundAmount = Numbers.sum([this.totalAmount, -this.myAmount]);
+    this.fundAmount = Numbers.truncateNumber(Numbers.product([this.totalAmount, (percentage / 100)]));
+    this.myAmount = Numbers.sum([this.totalAmount, -this.fundAmount]);
   }
 
   protected enterViewMode() {
@@ -129,13 +129,13 @@ export class ProjectApplicationFormPartnerCoFinancingComponent extends ViewEditF
   cancel(): void {
     this.changeFormState$.next(FormState.VIEW);
     this.cancelEdit.emit();
+    this.coFinancingForm.reset();
+    this.initForm();
   }
 
   ngOnChanges(changes: SimpleChanges): void {
     if (changes.totalAmount) {
       this.cancel();
-      this.coFinancingForm.reset();
-      this.initForm();
     }
   }
 }
