@@ -82,16 +82,16 @@ export class ProjectApplicationFormPartnerBudgetComponent extends ViewEditForm i
     const externalTotal = this.budgets.external?.total || 0;
     const equipmentTotal = this.budgets.equipment?.total || 0;
     const infrastructureTotal = this.budgets.infrastructure?.total || 0;
-    this.staffCostsTotal = Numbers.product([
+    this.staffCostsTotal = Numbers.truncateNumber(Numbers.product([
       Numbers.divide(this.staffCostsFlatRate, 100),
       Numbers.sum([travelTotal, externalTotal, equipmentTotal, infrastructureTotal])
-    ])
+    ]));
   }
 
   private updateOfficeAndAdministrationTotal(staffTotal: number): void {
-    this.officeAndAdministrationTotal = Numbers.product([
+    this.officeAndAdministrationTotal = Numbers.truncateNumber(Numbers.product([
       Numbers.divide(this.officeAdministrationFlatRate, 100),
       staffTotal
-    ])
+    ]));
   }
 }
