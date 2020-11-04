@@ -10,7 +10,7 @@
         [success$]="partnerStore.partnerSaveSuccess$"
         [error$]="partnerStore.partnerSaveError$"
         [organizationDetails]="details.partner?.addresses"
-        [editable]="partnerStore.projectEditable$ | async"
+        [editable]="projectStore.projectEditable$ | async"
         (update)="partnerStore.savePartnerAddresses$.next($event)"
         (changeCountry)="mainCountryChanged$.next($event)"
         (changeRegion)="mainRegion2Changed$.next($event)"

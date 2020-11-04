@@ -31,7 +31,6 @@ import {MAT_DATE_LOCALE} from '@angular/material/core';
 import {ProjectApplicationFundingPageComponent} from './project-application/containers/project-application-detail/project-application-funding-page/project-application-funding-page.component';
 import {ProjectApplicationFundingDecisionComponent} from './project-application/components/project-application-detail/project-application-funding-decision/project-application-funding-decision.component';
 import {ProjectApplicationEligibilityDecisionPageComponent} from './project-application/containers/project-application-detail/project-application-eligibility-decision-page/project-application-eligibility-decision-page.component';
-import {ProjectApplicationFormPageComponent} from './project-application/containers/project-application-form-page/project-application-form-page.component';
 import {MatSidenavModule} from '@angular/material/sidenav';
 import {ProjectApplicationFormComponent} from './project-application/components/project-application-form/project-application-form.component';
 import {MatTooltipModule} from '@angular/material/tooltip';
@@ -89,6 +88,8 @@ import {OfficeAndAdministrationTableComponent} from './project-application/compo
 import {ContributionToggleColumnComponent} from './project-application/components/project-application-form/project-application-form-management-detail/contribution-toggle-column/contribution-toggle-column.component';
 import {ProjectApplicationFormPartnerCoFinancingComponent} from './project-application/components/project-application-form/project-application-form-partner-co-financing/project-application-form-partner-co-financing.component';
 import { StaffCostsFlatRateTableComponent } from './project-application/components/project-application-form/project-application-form-partner-budget/staff-costs-flat-rate-table/staff-costs-flat-rate-table.component';
+import {ProjectApplicationFormIdentificationPageComponent} from './project-application/containers/project-application-form-page/project-application-form-identification-page/project-application-form-identification-page.component';
+import {ProjectApplicationFormAssociatedOrgPageComponent} from './project-application/containers/project-application-form-page/project-application-form-associated-org-page/project-application-form-associated-org-page.component';
 
 @NgModule({
   declarations: [
@@ -112,7 +113,6 @@ import { StaffCostsFlatRateTableComponent } from './project-application/componen
     ProjectApplicationFundingPageComponent,
     ProjectApplicationFundingDecisionComponent,
     ProjectApplicationEligibilityDecisionPageComponent,
-    ProjectApplicationFormPageComponent,
     ProjectApplicationFormComponent,
     ProjectApplicationFormPolicyRadioButtonComponent,
     ProjectApplicationFormPartnerSectionComponent,
@@ -158,7 +158,9 @@ import { StaffCostsFlatRateTableComponent } from './project-application/componen
     AgGridTemplateRendererComponent,
     ProjectApplicationPartnerIdentityComponent,
     ProjectApplicationFormAssociatedOrganizationEditComponent,
-    StaffCostsFlatRateTableComponent,
+    ProjectApplicationFormIdentificationPageComponent,
+    ProjectApplicationFormAssociatedOrgPageComponent,
+    StaffCostsFlatRateTableComponent
   ],
   imports: [
     CommonModule,

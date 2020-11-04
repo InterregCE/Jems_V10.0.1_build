@@ -1,24 +1,24 @@
 <app-breadcrumb></app-breadcrumb>
 <h2>{{'project.application.form.acronym' | translate : {acronym: projectStore.getAcronym() | async} }}</h2>
 <h4>{{'project.application.form.section.part.b' | translate}}</h4>
-<h5 class="spaced-elements">{{'project.application.form.section.part.b.partners' | translate}}</h5>
+<h5 class="spaced-elements">{{'project.application.form.section.part.b.associatedOrganizations' | translate}}</h5>
 
 <span class="header-button" *ngxPermissionsExcept="Permission.PROGRAMME_USER">
     <button class="spaced-elements" mat-raised-button color="primary"
-            [routerLink]="'/app/project/detail/' + projectId + '/applicationFormPartner/create'"
+            [routerLink]="'/app/project/detail/' + projectId + '/applicationFormAssociatedOrganization/create'"
             [disabled]="(projectStore.projectEditable$ | async) === false">
-        + {{'project.application.form.partner.add' | translate}}
+        + {{'project.application.form.associatedOrganization.add' | translate}}
     </button>
 </span>
 
-<app-project-application-form-partner-list
-        *ngIf="partnerPage$ | async as partnerPage"
+<app-project-application-form-associated-organizations-list
+        *ngIf="associatedOrganizationsPage$ | async as associatedOrganizationPage"
         [projectId]="projectId"
         [editable]="projectStore.projectEditable$ | async"
-        [partnerPage]="partnerPage"
+        [associatedOrganizationPage]="associatedOrganizationPage"
         [pageIndex]="newPageIndex$ | async"
         (newPageSize)="newPageSize$.next($event)"
         (newPageIndex)="newPageIndex$.next($event)"
         (newSort)="newSort$.next($event)"
-        (deletePartner)="deletePartner($event)">
-</app-project-application-form-partner-list>
+        (deleteAssociatedOrganization)="deleteAssociatedOrganization($event)">
+</app-project-application-form-associated-organizations-list>

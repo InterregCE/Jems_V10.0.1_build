@@ -106,7 +106,7 @@ export class CallConfigurationComponent extends BaseComponent {
               private programmeFundService: ProgrammeFundService,) {
     super();
     this.callStore.init(this.callId);
-    this.sideNavService.setHeadlines(this.destroyed$, [
+    this.sideNavService.setHeadlines(CallStore.CALL_DETAIL_PATH, [
       {
         headline: {i18nKey: 'call.detail.title'},
         scrollToTop: true,

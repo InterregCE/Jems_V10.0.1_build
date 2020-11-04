@@ -1,8 +1,12 @@
+<app-breadcrumb></app-breadcrumb>
+<h2>{{'project.application.form.acronym' | translate : {acronym: projectStore.getAcronym() | async} }}</h2>
+<h4>{{'project.application.form.section.part.c' | translate}}</h4>
+
 <app-project-application-form-project-partnership-detail
-        *ngIf="projectDescriptionDetails$ | async as details"
+        *ngIf="partnership$ | async as partnership"
         [success$]="saveSuccess$"
-        [project]="details.project"
-        [editable]="details.editable"
+        [project]="partnership"
+        [editable]="projectStore.projectEditable$ | async"
         [error$]="saveError$"
-        (updateData)="updateProjectDescription$.next($event)">
+        (updateData)="updatePartnership$.next($event)">
 </app-project-application-form-project-partnership-detail>

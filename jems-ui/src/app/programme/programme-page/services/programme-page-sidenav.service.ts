@@ -4,19 +4,20 @@ import {Subject} from 'rxjs';
 
 @Injectable()
 export class ProgrammePageSidenavService {
+  public static PROGRAMME_DETAIL_PATH = '/app/programme';
 
   private indicatorsPage = {
-    headline: { i18nKey: 'programme.tab.indicators'},
+    headline: {i18nKey: 'programme.tab.indicators'},
     route: '/app/programme/indicators'
   };
 
   private prioritiesPage = {
-    headline: { i18nKey: 'programme.tab.priority'},
+    headline: {i18nKey: 'programme.tab.priority'},
     route: '/app/programme/priorities',
   };
 
   private languagesPage = {
-    headline: { i18nKey: 'programme.tab.languages'},
+    headline: {i18nKey: 'programme.tab.languages'},
     route: '/app/programme/languages',
   };
 
@@ -24,33 +25,33 @@ export class ProgrammePageSidenavService {
   }
 
   public init(destroyed$: Subject<any>): void {
-    this.sideNavService.setHeadlines(destroyed$, [
+    this.sideNavService.setHeadlines(ProgrammePageSidenavService.PROGRAMME_DETAIL_PATH, [
       {
-        headline: { i18nKey: 'programme.data.page.title'},
+        headline: {i18nKey: 'programme.data.page.title'},
         bullets: [
           {
-            headline: { i18nKey: 'programme.tab.data'},
+            headline: {i18nKey: 'programme.tab.data'},
             route: '/app/programme',
             scrollToTop: true
           },
           {
-            headline: { i18nKey: 'programme.fund.list.title'},
+            headline: {i18nKey: 'programme.fund.list.title'},
             scrollRoute: 'funds',
             route: '/app/programme',
           },
           this.languagesPage,
           this.prioritiesPage,
           {
-            headline: { i18nKey: 'programme.tab.area'},
+            headline: {i18nKey: 'programme.tab.area'},
             route: '/app/programme/areas',
           },
           this.indicatorsPage,
           {
-            headline: { i18nKey: 'programme.tab.strategies'},
+            headline: {i18nKey: 'programme.tab.strategies'},
             route: '/app/programme/strategies',
           },
           {
-            headline: { i18nKey: 'programme.tab.legal.status'},
+            headline: {i18nKey: 'programme.tab.legal.status'},
             route: '/app/programme/legalStatus',
           }
         ]

@@ -21,6 +21,7 @@ import {PartnerBudgetTable} from '../../../../model/partner-budget-table';
 import {PartnerBudgetTableType} from '../../../../model/partner-budget-table-type';
 import {ProjectPartnerStore} from '../../services/project-partner-store.service';
 import {BudgetOptions} from '../../../../model/budget-options';
+import {ProjectStore} from '../../../project-application-detail/services/project-store.service';
 
 @Component({
   selector: 'app-project-application-partner-budget-page',
@@ -152,10 +153,11 @@ export class ProjectApplicationPartnerBudgetPageComponent {
       }))
     );
 
-  constructor(private projectPartnerBudgetService: ProjectPartnerBudgetService,
-              private activatedRoute: ActivatedRoute,
-              public partnerStore: ProjectPartnerStore) {
-  }
+    constructor(private projectPartnerBudgetService: ProjectPartnerBudgetService,
+                private activatedRoute: ActivatedRoute,
+                public projectStore: ProjectStore,
+                public partnerStore: ProjectPartnerStore) {
+    }
 
   private getBudgetEntries(table: PartnerBudgetTable): InputBudget[] {
     return table.entries.map(entry => ({

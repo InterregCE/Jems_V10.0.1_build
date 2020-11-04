@@ -1,4 +1,4 @@
-import {ChangeDetectionStrategy, Component, Input} from '@angular/core';
+import {ChangeDetectionStrategy, Component} from '@angular/core';
 import {combineLatest, Subject} from 'rxjs';
 import {MatSort} from '@angular/material/sort';
 import {mergeMap, map, startWith, take, tap} from 'rxjs/operators';
@@ -7,6 +7,8 @@ import {Log} from '../../../../../common/utils/log';
 import {WorkPackageService} from '@cat/api'
 import {Permission} from '../../../../../security/permissions/permission';
 import {ProjectApplicationFormSidenavService} from '../services/project-application-form-sidenav.service';
+import {ActivatedRoute} from '@angular/router';
+import {ProjectStore} from '../../project-application-detail/services/project-store.service';
 
 @Component({
   selector: 'app-project-application-form-work-package-section',
@@ -14,13 +16,9 @@ import {ProjectApplicationFormSidenavService} from '../services/project-applicat
   styleUrls: ['./project-application-form-work-package-section.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class ProjectApplicationFormWorkPackageSectionComponent{
+export class ProjectApplicationFormWorkPackageSectionComponent {
   Permission = Permission;
-
-  @Input()
-  projectId: number;
-  @Input()
-  editable: boolean;
+  projectId = this.activatedRoute?.snapshot?.params?.projectId;
 
   newPageSize$ = new Subject<number>();
   newPageIndex$ = new Subject<number>();
@@ -42,8 +40,12 @@ export class ProjectApplicationFormWorkPackageSectionComponent{
         tap(page => Log.info('Fetched the work packages:', this, page.content)),
       );
 
-  constructor(private workPackageService: WorkPackageService,
-              private projectApplicationFormSidenavService: ProjectApplicationFormSidenavService) { }
+  constructor(public projectStore: ProjectStore,
+              private activatedRoute: ActivatedRoute,
+              private workPackageService: WorkPackageService,
+              private projectApplicationFormSidenavService: ProjectApplicationFormSidenavService) {
+    this.projectStore.init(this.projectId);
+  }
 
   deleteWorkPackage(workPackageId: number): void {
     this.workPackageService.deleteWorkPackage(workPackageId, this.projectId)
@@ -51,7 +53,7 @@ export class ProjectApplicationFormWorkPackageSectionComponent{
         take(1),
         tap(() => this.newPageIndex$.next(Tables.DEFAULT_INITIAL_PAGE_INDEX)),
         tap(() => Log.info('Deleted work package: ', this, workPackageId)),
-        tap(() => this.projectApplicationFormSidenavService.refreshPackages())
+        tap(() => this.projectApplicationFormSidenavService.refreshPackages(this.projectId))
       ).subscribe();
   }
 

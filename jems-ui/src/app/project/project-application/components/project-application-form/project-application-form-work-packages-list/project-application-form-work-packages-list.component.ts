@@ -23,7 +23,7 @@ import {MatDialog} from '@angular/material/dialog';
   styleUrls: ['./project-application-form-work-packages-list.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class ProjectApplicationFormWorkPackagesListComponent implements OnInit{
+export class ProjectApplicationFormWorkPackagesListComponent implements OnInit {
   projectId = this.activatedRoute.snapshot.params.projectId
 
   @Input()
@@ -48,11 +48,12 @@ export class ProjectApplicationFormWorkPackagesListComponent implements OnInit{
   tableConfiguration: TableConfiguration;
 
   constructor(private activatedRoute: ActivatedRoute,
-              private dialog: MatDialog) {}
+              private dialog: MatDialog) {
+  }
 
   ngOnInit(): void {
     this.tableConfiguration = new TableConfiguration({
-      routerLink: '/app/project/detail/' + this.projectId + '/applicationForm/workPackage/detail',
+      routerLink: '/app/project/detail/' + this.projectId + '/applicationFormWorkPackage/detail',
       isTableClickable: true,
       columns: [
         {
@@ -79,9 +80,9 @@ export class ProjectApplicationFormWorkPackagesListComponent implements OnInit{
   }
 
   delete(workPackage: OutputWorkPackageSimple) {
-    let message : string;
-    let name : string;
-    if (workPackage.name){
+    let message: string;
+    let name: string;
+    if (workPackage.name) {
       message = 'project.application.form.workpackage.table.action.delete.dialog.message';
       name = workPackage.name;
     } else {
@@ -92,7 +93,7 @@ export class ProjectApplicationFormWorkPackagesListComponent implements OnInit{
       this.dialog,
       'project.application.form.workpackage.table.action.delete.dialog.header',
       message,
-      {name, boldWarningMessage: 'project.application.form.workpackage.table.action.delete.dialog.warning' })
+      {name, boldWarningMessage: 'project.application.form.workpackage.table.action.delete.dialog.warning'})
       .pipe(
         take(1),
         filter(answer => !!answer),

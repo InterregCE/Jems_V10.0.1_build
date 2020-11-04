@@ -13,10 +13,6 @@ export class SideNavComponent {
   @Input()
   headlines: HeadlineRoute[];
 
-  constructor( public sideNavService: SideNavService){}
-
-  getExpansionDisabledStatus(bullets: HeadlineRoute[]): boolean{
-    return !bullets || bullets.length === 0;
+  constructor(public sideNavService: SideNavService) {
   }
-
 }

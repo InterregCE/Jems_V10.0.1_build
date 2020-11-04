@@ -9,11 +9,19 @@ import {
   OutputProjectStatus,
   OutputRevertProjectStatus,
   ProjectService,
-  ProjectStatusService
+  ProjectStatusService,
+  InputProjectData
 } from '@cat/api';
-import {catchError, mergeMap, shareReplay, startWith, tap, withLatestFrom} from 'rxjs/operators';
+import {
+  catchError,
+  distinctUntilChanged, filter, map,
+  mergeMap,
+  shareReplay,
+  startWith, switchMap, tap,
+  withLatestFrom
+} from 'rxjs/operators';
 import {Log} from '../../../../../common/utils/log';
-import {Router} from '@angular/router';
+import {ResolveEnd, Router} from '@angular/router';
 import {PermissionService} from '../../../../../security/permissions/permission.service';
 import {Permission} from '../../../../../security/permissions/permission';
 import {I18nValidationError} from '@common/validation/i18n-validation-error';
@@ -24,6 +32,8 @@ import {HttpErrorResponse} from '@angular/common/http';
  */
 @Injectable()
 export class ProjectStore {
+  public static PROJECT_DETAIL_PATH = '/app/project/detail/';
+
   private projectId$ = new ReplaySubject<number>(1);
   private projectAcronym$ = new ReplaySubject<string>(1);
   private newStatus$ = new Subject<InputProjectStatus>();
@@ -32,9 +42,16 @@ export class ProjectStore {
   private newRevertProjectStatus$ = new Subject<InputRevertProjectStatus>();
   private revertStatusChanged$ = new Subject<void>();
   private changeStatusError$ = new Subject<I18nValidationError | null>();
+  updateProjectData$ = new Subject<InputProjectData>();
+  // TODO remove when switching to new edit mode
+  projectDataSaveError$ = new Subject<I18nValidationError | null>();
+  projectDataSaveSuccess$ = new Subject<boolean>();
+
 
   private projectById$ = this.projectId$
     .pipe(
+      distinctUntilChanged(),
+      filter(id => !!id),
       mergeMap(id => this.projectService.getProjectById(id)),
       tap(project => Log.info('Fetched project:', this, project))
     );
@@ -77,13 +94,26 @@ export class ProjectStore {
       tap(saved => Log.info('Reverted project status:', this, saved))
     );
 
+  private updatedProjectData$ = this.updateProjectData$
+    .pipe(
+      withLatestFrom(this.projectId$),
+      switchMap(([data, id]) => this.projectService.updateProjectData(id, data)),
+      tap(() => this.projectDataSaveSuccess$.next(true)),
+      tap(() => this.projectDataSaveError$.next(null)),
+      tap(saved => Log.info('Updated project data:', this, saved)),
+      catchError((error: HttpErrorResponse) => {
+        this.projectDataSaveError$.next(error.error);
+        throw error;
+      })
+    );
+
   private revertStatus$ = combineLatest([
     this.permissionService.permissionsChanged(),
     this.projectId$,
     this.revertStatusChanged$.pipe(startWith(null))
   ])
     .pipe(
-      mergeMap(([permissions, id]) => permissions[0] === Permission.ADMINISTRATOR
+      mergeMap(([permissions, id]) => id && permissions[0] === Permission.ADMINISTRATOR
         ? this.projectStatusService.findPossibleDecisionRevertStatus(id)
         : of(null)
       ),
@@ -97,18 +127,39 @@ export class ProjectStore {
       this.changedStatus$,
       this.changedEligibilityAssessment$,
       this.changedQualityAssessment$,
-      this.revertedProjectStatus$
+      this.revertedProjectStatus$,
+      this.updatedProjectData$
     )
       .pipe(
-        tap(project => this.projectAcronym$.next(project.acronym)),
+        tap(project => this.projectAcronym$.next(project?.acronym)),
         shareReplay(1)
       );
 
+
+  projectEditable$ = this.getProject()
+    .pipe(
+      map(project => project.projectStatus.status === OutputProjectStatus.StatusEnum.DRAFT
+        || project.projectStatus.status === OutputProjectStatus.StatusEnum.RETURNEDTOAPPLICANT
+      ),
+      shareReplay(1)
+    );
 
   constructor(private projectService: ProjectService,
               private projectStatusService: ProjectStatusService,
               private router: Router,
               private permissionService: PermissionService) {
+    this.router.events
+      .pipe(
+        filter(val => val instanceof ResolveEnd),
+        map(e => (e as ResolveEnd).url),
+        distinctUntilChanged((oldUrl, newUrl) => this.isProjectUrl(oldUrl) === this.isProjectUrl(newUrl)),
+        tap(url => {
+          if (!this.isProjectUrl(url)) {
+            this.projectId$.next(null as any);
+          }
+        })
+      )
+      .subscribe();
   }
 
   init(projectId: number) {
@@ -149,5 +200,9 @@ export class ProjectStore {
 
   getAcronym(): Observable<string> {
     return this.projectAcronym$.asObservable();
+  }
+
+  private isProjectUrl(url: string): boolean {
+    return !!url && url.startsWith(ProjectStore.PROJECT_DETAIL_PATH);
   }
 }

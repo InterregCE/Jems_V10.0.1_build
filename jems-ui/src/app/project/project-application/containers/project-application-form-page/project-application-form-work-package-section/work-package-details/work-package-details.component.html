@@ -1,8 +1,8 @@
 <app-breadcrumb></app-breadcrumb>
 <app-project-application-form-work-package-detail
-        *ngIf="details$ | async as details"
-        [workPackage]="details.workPackage"
-        [editable]="details.editable"
+        *ngIf="workPackageDetails$ | async as workPackage"
+        [workPackage]="workPackage"
+        [editable]="projectStore.projectEditable$ | async"
         [projectId]="projectId"
         [success$]="saveSuccess$"
         [error$]="saveError$"

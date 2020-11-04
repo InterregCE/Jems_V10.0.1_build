@@ -86,7 +86,7 @@ export class ProjectApplicationPartnerCoFinancingPageComponent {
 
   constructor(public partnerStore: ProjectPartnerStore,
               private callService: CallService,
-              private projectStore: ProjectStore,
+              public projectStore: ProjectStore,
               private activatedRoute: ActivatedRoute,
               private projectPartnerBudgetService: ProjectPartnerBudgetService,
               private projectPartnerService: ProjectPartnerService) {

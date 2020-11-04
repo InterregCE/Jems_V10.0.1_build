@@ -1,0 +1,12 @@
+<app-breadcrumb></app-breadcrumb>
+<h2>{{'project.application.form.acronym' | translate : {acronym: projectStore.getAcronym() | async} }}</h2>
+<app-project-application-form
+        *ngIf="details$ | async as details"
+        [project]="details.project"
+        [editable]="projectStore.projectEditable$ | async"
+        [priorities]="details.callObjectives.priorities"
+        [objectivesWithPolicies]="details.callObjectives.objectivesWithPolicies"
+        [success$]="projectStore.projectDataSaveSuccess$"
+        [error$]="projectStore.projectDataSaveError$"
+        (updateData)="projectStore.updateProjectData$.next($event)">
+</app-project-application-form>

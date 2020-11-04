@@ -1,23 +1,23 @@
 import {ChangeDetectionStrategy, Component} from '@angular/core';
 import {combineLatest, Subject} from 'rxjs';
 import {MatSort} from '@angular/material/sort';
-import {mergeMap, map, startWith, take, tap, takeUntil} from 'rxjs/operators';
+import {map, mergeMap, startWith, take, takeUntil, tap} from 'rxjs/operators';
 import {Tables} from '../../../../../common/utils/tables';
 import {Log} from '../../../../../common/utils/log';
-import {ProjectPartnerService} from '@cat/api';
-import {Permission} from '../../../../../security/permissions/permission';
+import {ProjectAssociatedOrganizationService, ProjectPartnerService} from '@cat/api';
 import {ProjectApplicationFormSidenavService} from '../services/project-application-form-sidenav.service';
 import {ActivatedRoute} from '@angular/router';
 import {ProjectStore} from '../../project-application-detail/services/project-store.service';
+import {Permission} from '../../../../../security/permissions/permission';
 import {BaseComponent} from '@common/components/base-component';
 
 @Component({
-  selector: 'app-project-application-form-partner-section',
-  templateUrl: './project-application-form-partner-section.component.html',
-  styleUrls: ['./project-application-form-partner-section.component.scss'],
+  selector: 'app-project-application-form-associated-org-page',
+  templateUrl: './project-application-form-associated-org-page.component.html',
+  styleUrls: ['./project-application-form-associated-org-page.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class ProjectApplicationFormPartnerSectionComponent extends BaseComponent {
+export class ProjectApplicationFormAssociatedOrgPageComponent extends BaseComponent {
   Permission = Permission;
 
   projectId = this.activatedRoute?.snapshot?.params?.projectId;
@@ -26,7 +26,7 @@ export class ProjectApplicationFormPartnerSectionComponent extends BaseComponent
   newPageIndex$ = new Subject<number>();
   newSort$ = new Subject<Partial<MatSort>>();
 
-  partnerPage$ =
+  associatedOrganizationsPage$ =
     combineLatest([
       this.newPageIndex$.pipe(startWith(Tables.DEFAULT_INITIAL_PAGE_INDEX)),
       this.newPageSize$.pipe(startWith(Tables.DEFAULT_INITIAL_PAGE_SIZE)),
@@ -38,27 +38,25 @@ export class ProjectApplicationFormPartnerSectionComponent extends BaseComponent
     ])
       .pipe(
         mergeMap(([pageIndex, pageSize, sort]) =>
-          // put lead partner on top by default
-          this.projectPartnerService.getProjectPartners(this.projectId, pageIndex, pageSize, ['role,asc', sort])),
-        tap(page => Log.info('Fetched the project partners:', this, page.content)),
+          this.projectAssociatedOrganizationService.getAssociatedOrganizations(this.projectId, pageIndex, pageSize, [sort])),
+        tap(page => Log.info('Fetched the project associated organizations:', this, page.content)),
       );
 
   constructor(public projectStore: ProjectStore,
-              private projectPartnerService: ProjectPartnerService,
               private projectApplicationFormSidenavService: ProjectApplicationFormSidenavService,
+              private projectAssociatedOrganizationService: ProjectAssociatedOrganizationService,
               private activatedRoute: ActivatedRoute) {
     super();
     this.projectStore.init(this.projectId);
   }
 
-  deletePartner(partnerId: number): void {
-    this.projectPartnerService.deleteProjectPartner(partnerId, this.projectId)
+  deleteAssociatedOrganization(associatedOrganizationId: number): void {
+    this.projectAssociatedOrganizationService.deleteAssociatedOrganization(associatedOrganizationId, this.projectId)
       .pipe(
         take(1),
         takeUntil(this.destroyed$),
         tap(() => this.newPageIndex$.next(Tables.DEFAULT_INITIAL_PAGE_INDEX)),
-        tap(() => Log.info('Deleted partner: ', this, partnerId)),
-        tap(() => this.projectApplicationFormSidenavService.refreshPartners(this.projectId)),
+        tap(() => Log.info('Deleted associated organization: ', this, associatedOrganizationId)),
       ).subscribe();
   }
 }

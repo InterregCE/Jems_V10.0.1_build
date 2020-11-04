@@ -4,6 +4,7 @@ import {ProjectApplicationFormProjectPartnershipSectionComponent} from './projec
 import {HttpTestingController} from '@angular/common/http/testing';
 import {TestModule} from '../../../../../common/test-module';
 import {ProjectModule} from '../../../../project.module';
+import {ActivatedRoute} from '@angular/router';
 
 describe('ProjectApplicationFormProjectPartnershipSectionComponent', () => {
   let component: ProjectApplicationFormProjectPartnershipSectionComponent;
@@ -20,12 +21,13 @@ describe('ProjectApplicationFormProjectPartnershipSectionComponent', () => {
     })
       .compileComponents();
     httpTestingController = TestBed.inject(HttpTestingController);
+    const activatedRoute = TestBed.inject(ActivatedRoute);
+    activatedRoute.snapshot.params = {projectId: '1'};
   }));
 
   beforeEach(() => {
     fixture = TestBed.createComponent(ProjectApplicationFormProjectPartnershipSectionComponent);
     component = fixture.componentInstance;
-    component.projectId = 1;
     fixture.detectChanges();
   });
 
@@ -34,7 +36,7 @@ describe('ProjectApplicationFormProjectPartnershipSectionComponent', () => {
   });
 
   it('should update project parthenrship', fakeAsync(() => {
-    component.updateProjectDescription$.next({} as InputProjectPartnership);
+    component.updatePartnership$.next({} as InputProjectPartnership);
 
     httpTestingController.expectOne({
       method: 'PUT',

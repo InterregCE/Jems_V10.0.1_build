@@ -3,7 +3,6 @@ import {
   InputProjectAssociatedOrganizationCreate,
   InputProjectAssociatedOrganizationUpdate,
   OutputProjectAssociatedOrganizationDetail,
-  OutputProjectStatus,
   ProjectAssociatedOrganizationService,
 } from '@cat/api';
 import {combineLatest, merge, Observable, of, ReplaySubject, Subject} from 'rxjs';
@@ -82,17 +81,8 @@ export class ProjectAssociatedOrganizationStore {
       ),
       tap(saved => Log.info('Created associatedOrganization:', this, saved)),
       tap((created: any) => this.router.navigate([
-        'app', 'project', 'detail', created.projectId, 'applicationForm', 'associatedOrganization', 'detail', created.associatedOrganization.id
+        'app', 'project', 'detail', created.projectId, 'applicationFormAssociatedOrganization', 'detail', created.associatedOrganization.id
       ])),
-    );
-
-  projectEditable$ = this.projectStore.getProject()
-    .pipe(
-      tap(project => this.projectApplicationFormSidenavService.setAcronym(project.acronym)),
-      map(project => project.projectStatus.status === OutputProjectStatus.StatusEnum.DRAFT
-        || project.projectStatus.status === OutputProjectStatus.StatusEnum.RETURNEDTOAPPLICANT
-      ),
-      shareReplay(1)
     );
 
   private associatedOrganization$ = merge(

@@ -1,19 +1,17 @@
-<div>
-    <app-breadcrumb></app-breadcrumb>
-    <app-project-application-form-associated-organization-edit
-            *ngIf="details$ | async as details"
-            [nutsCountry]="details.main.country"
-            [nutsRegion2]="details.main.region2"
-            [nutsRegion3]="details.main.region3"
-            [partners]="details.partners"
-            [success$]="associatedOrganizationStore.associatedOrganizationSaveSuccess$"
-            [error$]="associatedOrganizationStore.associatedOrganizationSaveError$"
-            [associatedOrganization]="details.organization"
-            [editable]="associatedOrganizationStore.projectEditable$ | async"
-            (create)="associatedOrganizationStore.createAssociatedOrganization$.next($event)"
-            (update)="associatedOrganizationStore.saveAssociatedOrganization$.next($event)"
-            (changeCountry)="mainCountryChanged$.next($event)"
-            (changeRegion)="mainRegion2Changed$.next($event)"
-            (cancel)="redirectToAssociatedOrganizationOverview()">
-    </app-project-application-form-associated-organization-edit>
-</div>
+<app-breadcrumb></app-breadcrumb>
+<app-project-application-form-associated-organization-edit
+        *ngIf="details$ | async as details"
+        [nutsCountry]="details.main.country"
+        [nutsRegion2]="details.main.region2"
+        [nutsRegion3]="details.main.region3"
+        [partners]="details.partners"
+        [success$]="associatedOrganizationStore.associatedOrganizationSaveSuccess$"
+        [error$]="associatedOrganizationStore.associatedOrganizationSaveError$"
+        [associatedOrganization]="details.organization"
+        [editable]="projectStore.projectEditable$ | async"
+        (create)="associatedOrganizationStore.createAssociatedOrganization$.next($event)"
+        (update)="associatedOrganizationStore.saveAssociatedOrganization$.next($event)"
+        (changeCountry)="mainCountryChanged$.next($event)"
+        (changeRegion)="mainRegion2Changed$.next($event)"
+        (cancel)="redirectToAssociatedOrganizationOverview()">
+</app-project-application-form-associated-organization-edit>

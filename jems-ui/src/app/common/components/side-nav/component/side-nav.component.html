@@ -1,26 +1,23 @@
 <div class="side-nav">
     <div *ngFor="let data of headlines">
         <mat-expansion-panel class="mat-elevation-z0"
-                             [expanded]="data.bullets?.length !== 0"
-                             [disabled]="getExpansionDisabledStatus(data.bullets)">
-            <mat-expansion-panel-header class="header-with-left-arrow">
-                <mat-panel-title (click)="$event.stopPropagation()" class="title-with-left-arrow">
+                             [expanded]="data.bullets?.length"
+                             [disabled]="!data.bullets?.length">
+            <mat-expansion-panel-header>
+                <mat-panel-title>
                     <div class="side-nav-title">{{data.headline.i18nKey | translate}}</div>
                 </mat-panel-title>
             </mat-expansion-panel-header>
             <div *ngFor="let subtitle of data.bullets" class="side-nav-main">
                 <mat-expansion-panel class="mat-elevation-z0"
-                                     [expanded]="subtitle.bullets?.length !== 0"
-                                     [disabled]="getExpansionDisabledStatus(subtitle.bullets)">
+                                     [expanded]="subtitle.bullets?.length"
+                                     [disabled]="!subtitle.bullets?.length">
                     <mat-expansion-panel-header>
-                        <mat-panel-title (click)="$event.stopPropagation()">
-                            <p *ngIf="!getExpansionDisabledStatus(subtitle.bullets) || subtitle.headline.i18nKey.includes('project.application.form.section')"
-                               class="side-nav-main_title"
-                               (click)="sideNavService.navigate(subtitle)">
+                        <mat-panel-title>
+                            <p *ngIf="subtitle.bullets?.length">
                                 {{subtitle.headline.i18nKey | translate}}
                             </p>
-                            <p *ngIf="getExpansionDisabledStatus(subtitle.bullets) && !subtitle.headline.i18nKey.includes('project.application.form.section')"
-                               class="side-nav-main_title_white-text"
+                            <p *ngIf="!subtitle.bullets?.length" class="side-nav-main_title_white-text"
                                (click)="sideNavService.navigate(subtitle)">
                                 {{subtitle.headline.i18nKey | translate}}
                             </p>

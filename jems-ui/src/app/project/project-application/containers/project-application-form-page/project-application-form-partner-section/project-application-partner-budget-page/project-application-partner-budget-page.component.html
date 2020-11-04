@@ -2,7 +2,7 @@
     <app-project-application-form-partner-budget-options
             [success$]="optionsSaveSuccess$"
             [error$]="optionsSaveError$"
-            [editable]="partnerStore.projectEditable$ | async"
+            [editable]="projectStore.projectEditable$ | async"
             [officeAdministrationFlatRate]="details.officeAdministrationFlatRate"
             [staffCostsFlatRate]="details.staffCostsFlatRate"
             (saveBudgetOptions)="saveBudgetOptions.next($event)">
@@ -10,7 +10,7 @@
     <app-project-application-form-partner-budget
             [success$]="saveSuccess$"
             [error$]="saveError$"
-            [editable]="partnerStore.projectEditable$ | async"
+            [editable]="projectStore.projectEditable$ | async"
             [officeAdministrationFlatRate]="details.officeAdministrationFlatRate"
             [staffCostsFlatRate]="details.staffCostsFlatRate"
             [budgets]="details.budgets"

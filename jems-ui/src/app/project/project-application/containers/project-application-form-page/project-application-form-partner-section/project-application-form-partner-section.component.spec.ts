@@ -29,7 +29,6 @@ describe('ProjectApplicationFormPartnerSectionComponent', () => {
     fixture = TestBed.createComponent(ProjectApplicationFormPartnerSectionComponent);
     component = fixture.componentInstance;
     component.projectId = 1;
-    component.editable = true;
     fixture.detectChanges();
   });
 
@@ -46,7 +45,10 @@ describe('ProjectApplicationFormPartnerSectionComponent', () => {
       {abbreviation: 'test2'} as OutputProjectPartner
     ];
 
-    httpTestingController.match({method: 'GET', url: `//api/project/1/partner?page=0&size=25&sort=role,asc&sort=sortNumber,asc`})
+    httpTestingController.match({
+      method: 'GET',
+      url: `//api/project/1/partner?page=0&size=25&sort=role,asc&sort=sortNumber,asc`
+    })
       .forEach(req => req.flush({content: projectPartners}));
 
     tick();

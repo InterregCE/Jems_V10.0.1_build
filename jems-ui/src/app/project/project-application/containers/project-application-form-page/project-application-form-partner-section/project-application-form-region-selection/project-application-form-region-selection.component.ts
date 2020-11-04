@@ -7,6 +7,7 @@ import {combineLatest, Subject} from 'rxjs';
 import {InputProjectPartnerAddress, OutputProjectPartnerDetail, OutputProjectPartnerAddress} from '@cat/api';
 import {map, startWith} from 'rxjs/operators';
 import {ProjectPartnerStore} from '../../services/project-partner-store.service';
+import {ProjectStore} from '../../../project-application-detail/services/project-store.service';
 
 @Component({
   selector: 'app-project-application-form-region-selection',
@@ -61,6 +62,7 @@ export class ProjectApplicationFormRegionSelectionComponent {
     );
 
   constructor(private nutsStore: NutsStoreService,
+              public projectStore: ProjectStore,
               public partnerStore: ProjectPartnerStore) {
   }
 
