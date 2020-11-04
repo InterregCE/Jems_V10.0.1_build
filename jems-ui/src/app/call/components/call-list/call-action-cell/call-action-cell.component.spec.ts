@@ -37,6 +37,7 @@ describe('CallActionCellComponent', () => {
       status = OutputCall.StatusEnum.PUBLISHED;
       description = 'test';
       lengthOfPeriod = 1;
+      flatRates = [];
     } ();
 
     tick();
@@ -53,6 +54,7 @@ describe('CallActionCellComponent', () => {
       status = OutputCall.StatusEnum.PUBLISHED;
       description = 'test';
       lengthOfPeriod = 1;
+      flatRates = [];
     } ();
 
     tick();

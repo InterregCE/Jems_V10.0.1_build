@@ -6,10 +6,12 @@ import io.cloudflight.jems.server.user.entity.User
 import io.cloudflight.jems.server.programme.entity.ProgrammePriorityPolicy
 import io.cloudflight.jems.server.programme.entity.Strategy
 import java.time.ZonedDateTime
+import javax.persistence.CascadeType
 import javax.persistence.Column
 import javax.persistence.Entity
 import javax.persistence.EnumType
 import javax.persistence.Enumerated
+import javax.persistence.FetchType
 import javax.persistence.Id
 import javax.persistence.GeneratedValue
 import javax.persistence.GenerationType
@@ -70,5 +72,30 @@ data class Call(
     val lengthOfPeriod: Int,
 
     @Column
-    val description: String? = null
-)
+    val description: String? = null,
+
+    @OneToMany(mappedBy = "setupId.callId", cascade = [CascadeType.ALL], orphanRemoval = true, fetch = FetchType.LAZY)
+    var flatRateSetup: MutableSet<FlatRateSetup> = mutableSetOf()
+
+) {
+    fun updateFlatRateSetup(flatRates: Set<FlatRateSetup>) {
+        val groupedByType = flatRates.associateBy { it.setupId.type }.toMutableMap()
+        // update existing
+        flatRateSetup.forEach {
+            if (groupedByType.keys.contains(it.setupId.type)) {
+                val newValue = groupedByType.getValue(it.setupId.type)
+                it.rate = newValue.rate
+                it.isAdjustable = newValue.isAdjustable
+            }
+        }
+        // remove those that needs to be removed
+        flatRateSetup.removeIf { !groupedByType.keys.contains(it.setupId.type) }
+
+        // add those that are not yet there
+        val existingTypes = flatRateSetup.associateBy { it.setupId.type }.keys
+        groupedByType.filterKeys { !existingTypes.contains(it) }
+            .forEach {
+                flatRateSetup.add(it.value)
+            }
+    }
+}

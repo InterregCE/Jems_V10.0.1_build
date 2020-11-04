@@ -5,6 +5,7 @@ import io.cloudflight.jems.api.call.dto.InputCallUpdate
 import io.cloudflight.jems.api.call.dto.OutputCall
 import io.cloudflight.jems.api.call.dto.OutputCallList
 import io.cloudflight.jems.api.call.dto.OutputCallProgrammePriority
+import io.cloudflight.jems.api.call.dto.flatrate.InputCallFlatRateSetup
 import io.swagger.annotations.Api
 import io.swagger.annotations.ApiImplicitParam
 import io.swagger.annotations.ApiImplicitParams
@@ -49,7 +50,14 @@ interface CallApi {
     @PutMapping("/{id}/publish")
     fun publishCall(@PathVariable id: Long): OutputCall
 
-    @GetMapping("/objectives/{id}")
+    @GetMapping("/{id}/objectives")
     fun getCallObjectives(@PathVariable id: Long): List<OutputCallProgrammePriority>
+
+    @ApiOperation("Setup Call FlatRates for partner budget")
+    @PutMapping("/{callId}/flatrate")
+    fun updateCallFlatRateSetup(
+        @PathVariable callId: Long,
+        @RequestBody flatRates: Set<InputCallFlatRateSetup>
+    )
 
 }

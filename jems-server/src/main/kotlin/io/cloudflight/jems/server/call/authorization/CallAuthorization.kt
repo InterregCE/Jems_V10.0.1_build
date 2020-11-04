@@ -6,7 +6,12 @@ import io.cloudflight.jems.server.common.exception.ResourceNotFoundException
 import io.cloudflight.jems.server.authentication.service.SecurityService
 import io.cloudflight.jems.server.authentication.authorization.Authorization
 import io.cloudflight.jems.server.call.service.CallService
+import org.springframework.security.access.prepost.PreAuthorize
 import org.springframework.stereotype.Component
+
+@Retention(AnnotationRetention.RUNTIME)
+@PreAuthorize("@callAuthorization.canUpdateCall(#callId)")
+annotation class CanUpdateCall
 
 @Component
 class CallAuthorization(
