@@ -49,7 +49,8 @@ internal class ProjectAuthorizationTest {
             id = 1,
             name = "call",
             startDate = ZonedDateTime.now().minusDays(1),
-            endDate = ZonedDateTime.now().plusDays(1)
+            endDate = ZonedDateTime.now().plusDays(1),
+            lengthOfPeriod = 12
         )
 
         private fun testProject(status: ProjectApplicationStatus) = ProjectApplicantAndStatus(

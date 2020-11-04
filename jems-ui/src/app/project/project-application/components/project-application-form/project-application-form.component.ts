@@ -14,6 +14,7 @@ import { Permission } from '../../../../security/permissions/permission';
 import { FormState } from '@common/components/forms/form-state';
 import { SideNavService } from '@common/components/side-nav/side-nav.service';
 import { Tools } from '../../../../common/utils/tools';
+import {distinctUntilChanged, takeUntil} from 'rxjs/operators';
 
 @Component({
     selector: 'app-project-application-form',
@@ -52,6 +53,8 @@ export class ProjectApplicationFormComponent extends ViewEditForm implements OnI
             Validators.max(999),
             Validators.min(1)
         ])],
+        projectPeriodLength: [''],
+        projectPeriodCount: [''],
         projectSummary: ['', Validators.maxLength(2000)],
         programmePriority: ['', Validators.required],
         specificObjective: ['', Validators.required]
@@ -73,7 +76,7 @@ export class ProjectApplicationFormComponent extends ViewEditForm implements OnI
     };
     programmePriorityErrors = {
         required: 'project.priority.should.not.be.empty'
-    }
+    };
 
     constructor(private formBuilder: FormBuilder,
         protected changeDetectorRef: ChangeDetectorRef,
@@ -84,6 +87,13 @@ export class ProjectApplicationFormComponent extends ViewEditForm implements OnI
     ngOnInit() {
         super.ngOnInit();
         this.changeFormState$.next(FormState.VIEW);
+        this.applicationForm.get('projectDuration')
+          ?.valueChanges
+          .pipe(
+            takeUntil(this.destroyed$),
+            distinctUntilChanged()
+          )
+          .subscribe(projectDuration => this.applicationForm.controls.projectPeriodCount.setValue(this.projectPeriodCount(projectDuration)));
     }
 
     protected enterViewMode(): void {
@@ -98,6 +108,8 @@ export class ProjectApplicationFormComponent extends ViewEditForm implements OnI
         this.sideNavService.setAlertStatus(true);
         this.currentObjectives = [];
         this.applicationForm.controls.projectId.disable();
+        this.applicationForm.controls.projectPeriodLength.disable();
+        this.applicationForm.controls.projectPeriodCount.disable();
     }
 
     getForm(): FormGroup | null {
@@ -120,16 +132,24 @@ export class ProjectApplicationFormComponent extends ViewEditForm implements OnI
         this.applicationForm.controls.projectAcronym.setValue(this.project.acronym);
         this.applicationForm.controls.projectTitle.setValue(this.project?.projectData?.title);
         this.applicationForm.controls.projectDuration.setValue(this.project?.projectData?.duration);
+        this.applicationForm.controls.projectPeriodLength.setValue(this.project?.call.lengthOfPeriod);
+        this.applicationForm.controls.projectPeriodCount.setValue(
+          this.projectPeriodCount(this.project?.projectData?.duration)
+        );
         this.applicationForm.controls.projectSummary.setValue(this.project?.projectData?.introProgrammeLanguage);
         if (this.project?.projectData?.specificObjective) {
             this.previousObjective = this.project?.projectData?.specificObjective.programmeObjectivePolicy;
             this.selectedSpecificObjective = this.project?.projectData?.specificObjective.programmeObjectivePolicy;
             const prevPriority = this.project?.projectData?.programmePriority.code
                 + ' - ' + this.project?.projectData?.programmePriority.title;
-            this.currentPriority = prevPriority
+            this.currentPriority = prevPriority;
             this.applicationForm.controls.programmePriority.setValue(prevPriority);
             this.applicationForm.controls.specificObjective.setValue(this.selectedSpecificObjective);
         }
+    }
+
+    private projectPeriodCount(projectDuration: number): number {
+      return projectDuration ? Math.ceil(projectDuration / this.project?.call.lengthOfPeriod) : 0;
     }
 
     changeCurrentPriority(selectedPriority: string){

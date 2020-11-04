@@ -61,5 +61,6 @@ fun Call.toOutputCallWithDates() = OutputCallWithDates(
     id = id!!,
     name = name,
     startDate = startDate,
-    endDate = endDate
+    endDate = endDate,
+    lengthOfPeriod = lengthOfPeriod
 )

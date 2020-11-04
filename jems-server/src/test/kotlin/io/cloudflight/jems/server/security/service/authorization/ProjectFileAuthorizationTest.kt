@@ -96,7 +96,8 @@ internal class ProjectFileAuthorizationTest {
             id = 1,
             name = "call",
             startDate = ZonedDateTime.now(),
-            endDate = ZonedDateTime.now()
+            endDate = ZonedDateTime.now(),
+            lengthOfPeriod = 12
         )
 
         private fun getProject(id: Long, applicantId: Long, status: ProjectApplicationStatus): OutputProject {
