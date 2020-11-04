@@ -108,7 +108,8 @@ export class ProjectApplicationPartnerBudgetPageComponent {
         this.cancelEdit$.next();
         this.saveError$.next(error.error);
         throw error;
-      })
+      }),
+      tap(() => this.partnerStore.totalAmountChanged$.next()),
     );
 
   fetchedBudgets$ = this.fetchBudgetsFor$
@@ -130,7 +131,6 @@ export class ProjectApplicationPartnerBudgetPageComponent {
         this.saveError$.next(error.error);
         throw error;
       }),
-      tap(() => this.partnerStore.totalAmountChanged$.next()),
     );
 
   details$ = combineLatest([
