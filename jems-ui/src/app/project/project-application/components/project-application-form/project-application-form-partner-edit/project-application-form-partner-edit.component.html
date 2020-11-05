@@ -132,7 +132,7 @@
 
     <p class="intro-text-small">{{'project.partner.recoverVat.intro.text' | translate}}</p>
     <div class="field toggle-button-field">
-        <mat-button-toggle-group>
+        <mat-button-toggle-group [disabled]="formState === FormState.VIEW">
             <mat-button-toggle
                     [checked]="controls?.recoverVat.value === true"
                     (change)="controls?.recoverVat.setValue(true)"
