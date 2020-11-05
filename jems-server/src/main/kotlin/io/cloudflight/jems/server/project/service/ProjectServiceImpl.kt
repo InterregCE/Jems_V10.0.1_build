@@ -3,26 +3,28 @@ package io.cloudflight.jems.server.project.service
 import io.cloudflight.jems.api.call.dto.CallStatus
 import io.cloudflight.jems.api.programme.dto.priority.ProgrammeObjectivePolicy
 import io.cloudflight.jems.api.project.dto.InputProject
+import io.cloudflight.jems.api.project.dto.InputProjectData
 import io.cloudflight.jems.api.project.dto.OutputProject
 import io.cloudflight.jems.api.project.dto.OutputProjectSimple
 import io.cloudflight.jems.api.project.dto.status.ProjectApplicationStatus
-import io.cloudflight.jems.api.project.dto.InputProjectData
-import io.cloudflight.jems.server.call.entity.Call
-import io.cloudflight.jems.server.project.entity.ProjectStatus
-import io.cloudflight.jems.server.user.entity.User
-import io.cloudflight.jems.server.common.exception.I18nValidationException
-import io.cloudflight.jems.server.common.exception.ResourceNotFoundException
-import io.cloudflight.jems.server.call.repository.CallRepository
-import io.cloudflight.jems.server.programme.entity.ProgrammePriorityPolicy
-import io.cloudflight.jems.server.project.repository.ProjectRepository
-import io.cloudflight.jems.server.project.repository.ProjectStatusRepository
-import io.cloudflight.jems.server.user.repository.UserRepository
+import io.cloudflight.jems.server.audit.service.AuditService
 import io.cloudflight.jems.server.authentication.model.ADMINISTRATOR
 import io.cloudflight.jems.server.authentication.model.APPLICANT_USER
 import io.cloudflight.jems.server.authentication.model.PROGRAMME_USER
 import io.cloudflight.jems.server.authentication.service.SecurityService
-import io.cloudflight.jems.server.audit.service.AuditService
+import io.cloudflight.jems.server.call.entity.Call
+import io.cloudflight.jems.server.call.repository.CallRepository
+import io.cloudflight.jems.server.common.exception.I18nValidationException
+import io.cloudflight.jems.server.common.exception.ResourceNotFoundException
+import io.cloudflight.jems.server.programme.entity.ProgrammePriorityPolicy
 import io.cloudflight.jems.server.project.dto.ProjectApplicantAndStatus
+import io.cloudflight.jems.server.project.entity.ProjectPeriod
+import io.cloudflight.jems.server.project.entity.ProjectPeriodId
+import io.cloudflight.jems.server.project.entity.ProjectStatus
+import io.cloudflight.jems.server.project.repository.ProjectRepository
+import io.cloudflight.jems.server.project.repository.ProjectStatusRepository
+import io.cloudflight.jems.server.user.entity.User
+import io.cloudflight.jems.server.user.repository.UserRepository
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
 import org.springframework.data.repository.findByIdOrNull
@@ -30,6 +32,7 @@ import org.springframework.http.HttpStatus
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import java.time.ZonedDateTime
+import kotlin.math.ceil
 
 @Service
 class ProjectServiceImpl(
@@ -124,13 +127,40 @@ class ProjectServiceImpl(
     @Transactional
     override fun update(id: Long, projectData: InputProjectData): OutputProject {
         val project = projectRepo.findById(id).orElseThrow { ResourceNotFoundException("project") }
+        val periods =
+            if (project.projectData?.duration == projectData.duration) project.periods
+            else calculatePeriods(id, project.call.lengthOfPeriod, projectData.duration)
+
         return projectRepo.save(
             project.copy(
                 acronym = projectData.acronym!!,
                 projectData = projectData.toEntity(),
-                priorityPolicy = policyToEntity(projectData.specificObjective, project.call.priorityPolicies)
+                priorityPolicy = policyToEntity(projectData.specificObjective, project.call.priorityPolicies),
+                periods = periods
             )
         ).toOutputProject()
+    }
+
+    /**
+     * Calculate all necessary project periods with the given periodLength and duration.
+     */
+    private fun calculatePeriods(
+        projectId: Long,
+        periodLength: Int,
+        duration: Int?
+    ): List<ProjectPeriod> {
+        if (duration == null || duration < 1)
+            return emptyList()
+
+        val count = ceil(duration.toDouble() / periodLength).toInt()
+
+        return (1 .. count).mapIndexed { index, period ->
+            ProjectPeriod(
+                id = ProjectPeriodId(projectId = projectId, number = period),
+                start = periodLength * index + 1,
+                end = if (period == count) duration else periodLength * period
+            )
+        }
     }
 
     /**

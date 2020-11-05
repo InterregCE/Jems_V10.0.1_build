@@ -2,39 +2,40 @@ package io.cloudflight.jems.server.project.service
 
 import io.cloudflight.jems.api.call.dto.CallStatus
 import io.cloudflight.jems.api.call.dto.OutputCallWithDates
+import io.cloudflight.jems.api.programme.dto.priority.OutputProgrammePriorityPolicySimple
+import io.cloudflight.jems.api.programme.dto.priority.ProgrammeObjectivePolicy.AdvancedTechnologies
+import io.cloudflight.jems.api.programme.dto.priority.ProgrammeObjectivePolicy.HealthcareAcrossBorders
+import io.cloudflight.jems.api.programme.dto.priority.ProgrammeObjectivePolicy.SocialInnovation
+import io.cloudflight.jems.api.programme.dto.strategy.ProgrammeStrategy
 import io.cloudflight.jems.api.project.dto.InputProject
+import io.cloudflight.jems.api.project.dto.InputProjectData
+import io.cloudflight.jems.api.project.dto.OutputProjectData
+import io.cloudflight.jems.api.project.dto.OutputProjectPeriod
 import io.cloudflight.jems.api.project.dto.OutputProjectSimple
 import io.cloudflight.jems.api.project.dto.status.ProjectApplicationStatus
 import io.cloudflight.jems.api.user.dto.OutputUser
 import io.cloudflight.jems.api.user.dto.OutputUserRole
 import io.cloudflight.jems.api.user.dto.OutputUserWithRole
-import io.cloudflight.jems.api.programme.dto.priority.OutputProgrammePriorityPolicySimple
-import io.cloudflight.jems.api.programme.dto.priority.ProgrammeObjectivePolicy.AdvancedTechnologies
-import io.cloudflight.jems.api.programme.dto.priority.ProgrammeObjectivePolicy.HealthcareAcrossBorders
-import io.cloudflight.jems.api.programme.dto.priority.ProgrammeObjectivePolicy.SocialInnovation
-import io.cloudflight.jems.api.project.dto.InputProjectData
-import io.cloudflight.jems.api.project.dto.OutputProjectData
-import io.cloudflight.jems.api.programme.dto.strategy.ProgrammeStrategy
 import io.cloudflight.jems.server.audit.entity.AuditAction
 import io.cloudflight.jems.server.audit.service.AuditCandidate
-import io.cloudflight.jems.server.call.entity.Call
-import io.cloudflight.jems.server.project.entity.Project
-import io.cloudflight.jems.server.project.entity.ProjectStatus
-import io.cloudflight.jems.server.user.entity.User
-import io.cloudflight.jems.server.user.entity.UserRole
-import io.cloudflight.jems.server.common.exception.ResourceNotFoundException
-import io.cloudflight.jems.server.call.repository.CallRepository
-import io.cloudflight.jems.server.programme.entity.ProgrammePriorityPolicy
-import io.cloudflight.jems.server.project.repository.ProjectRepository
-import io.cloudflight.jems.server.project.repository.ProjectStatusRepository
-import io.cloudflight.jems.server.user.repository.UserRepository
+import io.cloudflight.jems.server.audit.service.AuditService
 import io.cloudflight.jems.server.authentication.model.ADMINISTRATOR
 import io.cloudflight.jems.server.authentication.model.APPLICANT_USER
-import io.cloudflight.jems.server.authentication.model.PROGRAMME_USER
 import io.cloudflight.jems.server.authentication.model.LocalCurrentUser
+import io.cloudflight.jems.server.authentication.model.PROGRAMME_USER
 import io.cloudflight.jems.server.authentication.service.SecurityService
-import io.cloudflight.jems.server.audit.service.AuditService
+import io.cloudflight.jems.server.call.entity.Call
+import io.cloudflight.jems.server.call.repository.CallRepository
+import io.cloudflight.jems.server.common.exception.ResourceNotFoundException
+import io.cloudflight.jems.server.programme.entity.ProgrammePriorityPolicy
 import io.cloudflight.jems.server.programme.entity.Strategy
+import io.cloudflight.jems.server.project.entity.Project
+import io.cloudflight.jems.server.project.entity.ProjectStatus
+import io.cloudflight.jems.server.project.repository.ProjectRepository
+import io.cloudflight.jems.server.project.repository.ProjectStatusRepository
+import io.cloudflight.jems.server.user.entity.User
+import io.cloudflight.jems.server.user.entity.UserRole
+import io.cloudflight.jems.server.user.repository.UserRepository
 import io.mockk.MockKAnnotations
 import io.mockk.every
 import io.mockk.impl.annotations.MockK
@@ -343,4 +344,47 @@ class ProjectServiceTest {
         assertThat(ex.entity).isEqualTo("programme_priority_policy")
     }
 
+    @Test
+    fun `projectUpdate with periods successful`() {
+        val callWithDuration = Call(
+            id = 5,
+            creator = account,
+            name = "call",
+            priorityPolicies = setOf(ProgrammePriorityPolicy(HealthcareAcrossBorders, "HAB")),
+            strategies = setOf(Strategy(ProgrammeStrategy.MediterraneanSeaBasin, true)),
+            funds = emptySet(),
+            startDate = ZonedDateTime.now(),
+            endDate = ZonedDateTime.now(),
+            status = CallStatus.PUBLISHED,
+            lengthOfPeriod = 6
+        )
+        val projectData = InputProjectData(acronym = "acronym", duration = 13)
+        val projectToReturn = Project(
+            id = 1,
+            call = callWithDuration,
+            acronym = "acronym",
+            applicant = account,
+            projectStatus = statusDraft
+        )
+        every { projectRepository.findById(eq(1)) } returns Optional.of(projectToReturn)
+        every { projectRepository.save(any<Project>()) } returnsArgument 0
+
+        val result = projectService.update(1, projectData)
+
+        val expectedData = OutputProjectData(
+            title = projectData.title,
+            duration = projectData.duration,
+            intro = projectData.intro,
+            introProgrammeLanguage = projectData.introProgrammeLanguage,
+            specificObjective = null,
+            programmePriority = null
+        )
+        assertThat(result.projectData).isEqualTo(expectedData)
+        assertThat(result.acronym).isEqualTo(projectData.acronym)
+        assertThat(result.periods).containsExactly(
+            OutputProjectPeriod(1, 1, 1, 6),
+            OutputProjectPeriod(1, 2, 7, 12),
+            OutputProjectPeriod(1, 3, 13, 13)
+        )
+    }
 }
