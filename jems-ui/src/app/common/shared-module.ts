@@ -18,6 +18,7 @@ import {EditFormComponent} from '@common/components/section/edit-form/edit-form.
 import {MatCardModule} from '@angular/material/card';
 import {TemplateCardComponent} from '@common/components/section/template-card/template-card.component';
 import {MoneyPipe} from './pipe/money.pipe';
+import {RowListTemplateComponent} from './templates/row-list-template/row-list-template.component';
 
 const modules = [
   CommonModule,
@@ -37,6 +38,7 @@ const modules = [
 
 const declarations = [
   ProjectApplicationListComponent,
+  RowListTemplateComponent,
   TableComponent,
   PaginatorComponent,
   EditFormComponent,

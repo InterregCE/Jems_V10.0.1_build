@@ -9,6 +9,8 @@ import {FormControl, ValidationErrors} from '@angular/forms';
 })
 export class ExpandableTextareaComponent {
   @Input()
+  placeholder: string;
+  @Input()
   label: string;
   @Input()
   errors: ValidationErrors | null;
