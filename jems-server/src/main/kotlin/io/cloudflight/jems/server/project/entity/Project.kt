@@ -13,6 +13,7 @@ import javax.persistence.GenerationType
 import javax.persistence.Id
 import javax.persistence.JoinColumn
 import javax.persistence.ManyToOne
+import javax.persistence.OneToMany
 import javax.persistence.OneToOne
 
 @Entity(name = "project")
@@ -63,6 +64,9 @@ data class Project(
     val fundingDecision: ProjectStatus? = null,
 
     @Embedded
-    val projectData: ProjectData? = null
+    val projectData: ProjectData? = null,
+
+    @OneToMany(mappedBy = "id.projectId", cascade = [CascadeType.ALL], orphanRemoval = true)
+    val periods: Collection<ProjectPeriod> = emptyList()
 
 )
