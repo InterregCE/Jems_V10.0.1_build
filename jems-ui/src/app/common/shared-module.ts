@@ -2,38 +2,35 @@ import {NgModule} from '@angular/core';
 import {CommonModule} from '@angular/common';
 import {FormsModule, ReactiveFormsModule} from '@angular/forms';
 import {TranslateModule} from '@ngx-translate/core';
-import {MatInputModule} from '@angular/material/input';
-import {MatButtonModule} from '@angular/material/button';
 import {TableComponent} from './components/table/table.component';
-import {MatTableModule} from '@angular/material/table';
 import {NgxPermissionsModule} from 'ngx-permissions';
-import {MatPaginatorModule} from '@angular/material/paginator';
-import {MatSortModule} from '@angular/material/sort';
 import {PaginatorComponent} from '@common/components/table/paginator/paginator.component';
-import {MatTabsModule} from '@angular/material/tabs';
-import {MatDialogModule} from '@angular/material/dialog';
 import {RouterModule} from '@angular/router';
 import {ProjectApplicationListComponent} from '../project/project-application/components/project-application-list/project-application-list.component';
 import {EditFormComponent} from '@common/components/section/edit-form/edit-form.component';
-import {MatCardModule} from '@angular/material/card';
 import {TemplateCardComponent} from '@common/components/section/template-card/template-card.component';
 import {MoneyPipe} from './pipe/money.pipe';
 import {RowListTemplateComponent} from './templates/row-list-template/row-list-template.component';
+import {MaterialModule} from './material/material-module';
+import {MultiLanguageFieldComponent} from '@common/components/multi-language-field/multi-language-field.component';
+import {BreadcrumbComponent} from '@common/components/breadcrumb/breadcrumb.component';
+import {AlertComponent} from '@common/components/forms/form-validation/alert.component';
+import {ExpandableTextareaComponent} from '@common/components/expandable-textarea/expandable-textarea.component';
+import {TopBarComponent} from '@common/components/top-bar/top-bar.component';
+import {MenuComponent} from '@common/components/menu/menu.component';
+import {FormFieldErrorsComponent} from '@common/components/forms/form-field-errors/form-field-errors.component';
+import {ConfirmDialogComponent} from '@common/components/modals/confirm-dialog/confirm-dialog.component';
+import {HelpMenuComponent} from '@common/components/top-bar/help-menu/help-menu.component';
+import {SideNavComponent} from '@common/components/side-nav/component/side-nav.component';
 
 const modules = [
   CommonModule,
   TranslateModule,
   FormsModule,
   ReactiveFormsModule,
-  MatButtonModule,
-  MatInputModule,
-  MatTableModule,
-  MatDialogModule,
-  MatPaginatorModule,
-  MatSortModule,
-  MatTabsModule,
   NgxPermissionsModule.forChild(),
   RouterModule,
+  MaterialModule
 ];
 
 const declarations = [
@@ -44,6 +41,16 @@ const declarations = [
   EditFormComponent,
   TemplateCardComponent,
   MoneyPipe,
+  MultiLanguageFieldComponent,
+  BreadcrumbComponent,
+  AlertComponent,
+  ExpandableTextareaComponent,
+  TopBarComponent,
+  MenuComponent,
+  FormFieldErrorsComponent,
+  ConfirmDialogComponent,
+  HelpMenuComponent,
+  SideNavComponent
 ];
 
 @NgModule({
@@ -51,8 +58,7 @@ const declarations = [
     declarations
   ],
   imports: [
-    modules,
-    MatCardModule,
+    modules
   ],
   exports: [
     modules,

@@ -1,16 +1,7 @@
 import {NgModule} from '@angular/core';
-import {MatDatepickerModule} from '@angular/material/datepicker';
-import {MatSelectModule} from '@angular/material/select';
-import {MatCheckboxModule} from '@angular/material/checkbox';
-import {MatTreeModule} from '@angular/material/tree';
-import {MatIconModule} from '@angular/material/icon';
-import {MatAutocompleteModule} from '@angular/material/autocomplete';
 import {RouterModule} from '@angular/router';
-import {MatMomentDateModule} from '@angular/material-moment-adapter';
-
 import {routes} from './programme-routing.module';
 import {SharedModule} from '../common/shared-module';
-import {CoreModule} from '../common/core-module';
 import {ProgrammePageComponent} from './programme-page/containers/programme-page/programme-page.component';
 import {ProgrammeDataComponent} from './programme-page/components/programme-data/programme-data.component';
 import {ProgrammePrioritiesComponent} from './programme-page/containers/programme-priorities/programme-priorities.component';
@@ -39,7 +30,6 @@ import {ProgrammeLanguagesComponent} from './programme-page/components/programme
 import {ProgrammeLanguagesPageComponent} from './programme-page/containers/programme-languages-page/programme-languages-page.component';
 import {ProgrammeLegalStatusComponent} from './programme-page/containers/programme-legal-status/programme-legal-status.component';
 import {ProgrammeLegalStatusListComponent} from './programme-page/components/programme-legal-status-list/programme-legal-status-list.component';
-import {MatTooltipModule} from '@angular/material/tooltip';
 
 @NgModule({
   declarations: [
@@ -78,17 +68,7 @@ import {MatTooltipModule} from '@angular/material/tooltip';
   ],
   imports: [
     SharedModule,
-    RouterModule.forChild(routes),
-    CoreModule,
-    MatDatepickerModule,
-    MatSelectModule,
-    MatCheckboxModule,
-    MatTreeModule,
-    MatIconModule,
-    MatCheckboxModule,
-    MatAutocompleteModule,
-    MatMomentDateModule,
-    MatTooltipModule,
+    RouterModule.forChild(routes)
   ]
 })
 export class ProgrammeModule {

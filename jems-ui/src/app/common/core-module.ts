@@ -1,68 +1,53 @@
-import {NgModule} from '@angular/core';
-import {MatTabsModule} from '@angular/material/tabs';
+import {NgModule, Optional, SkipSelf} from '@angular/core';
 import {TopBarService} from '@common/components/top-bar/top-bar.service';
-import {FormFieldErrorsComponent} from '@common/components/forms/form-field-errors/form-field-errors.component';
 import {DatePipe, KeyValuePipe} from '@angular/common';
-import {ConfirmDialogComponent} from '@common/components/modals/confirm-dialog/confirm-dialog.component';
-import {MatDialogModule} from '@angular/material/dialog';
-import {MatMenuModule} from '@angular/material/menu';
-import {MatIconModule} from '@angular/material/icon';
-import {MatSelectModule} from '@angular/material/select';
 import {MatSortHeader} from '@angular/material/sort';
-import {MatSidenavModule} from '@angular/material/sidenav';
-import {RouterModule} from '@angular/router';
-
-import {HelpMenuComponent} from '@common/components/top-bar/help-menu/help-menu.component';
-import {AlertComponent} from '@common/components/forms/form-validation/alert.component';
-import {ExpandableTextareaComponent} from '@common/components/expandable-textarea/expandable-textarea.component';
-import {BreadcrumbComponent} from '@common/components/breadcrumb/breadcrumb.component';
-import {TopBarComponent} from './components/top-bar/top-bar.component';
-import {MenuComponent} from './components/menu/menu.component';
-import {SharedModule} from './shared-module';
-import {SideNavComponent} from '@common/components/side-nav/component/side-nav.component';
-import {MatExpansionModule} from '@angular/material/expansion';
-import {MultiLanguageFieldComponent} from '@common/components/multi-language-field/multi-language-field.component';
-import {MatButtonToggleModule} from '@angular/material/button-toggle';
-
-const declarations = [
-  TopBarComponent,
-  MenuComponent,
-  FormFieldErrorsComponent,
-  ConfirmDialogComponent,
-  HelpMenuComponent,
-  AlertComponent,
-  ExpandableTextareaComponent,
-  BreadcrumbComponent,
-  BreadcrumbComponent,
-  SideNavComponent,
-  MultiLanguageFieldComponent
-];
+import {SecurityService} from '../security/security.service';
+import {LoginPageService} from '../authentication/login/services/login-page-service';
+import {SideNavService} from '@common/components/side-nav/side-nav.service';
+import {PermissionService} from '../security/permissions/permission.service';
+import {ThemeService} from '../theme/theme.service';
+import {HTTP_INTERCEPTORS} from '@angular/common/http';
+import {AuthenticationInterceptor} from '../security/authentication.interceptor';
+import {HttpErrorInterceptor} from './interceptors/http-error.interceptor';
+import {BASE_PATH} from '@cat/api';
+import {MaterialConfigModule} from './material/material-config-module';
 
 @NgModule({
-  declarations: [
-    declarations
-  ],
   imports: [
-    RouterModule,
-    SharedModule,
-    MatTabsModule,
-    MatDialogModule,
-    MatMenuModule,
-    MatIconModule,
-    MatSidenavModule,
-    MatSelectModule,
-    MatExpansionModule,
-    MatButtonToggleModule,
+    MaterialConfigModule
   ],
   providers: [
     DatePipe,
     TopBarService,
     KeyValuePipe,
-    MatSortHeader
-  ],
-  exports: [
-    declarations
+    MatSortHeader,
+    SecurityService,
+    LoginPageService,
+    SideNavService,
+    PermissionService,
+    ThemeService,
+    {
+      provide: BASE_PATH,
+      useValue: '.'
+    },
+    {
+      provide: HTTP_INTERCEPTORS,
+      useClass: AuthenticationInterceptor,
+      multi: true
+    },
+    {
+      provide: HTTP_INTERCEPTORS,
+      useClass: HttpErrorInterceptor,
+      multi: true
+    }
   ]
 })
 export class CoreModule {
+  constructor(@Optional() @SkipSelf() parentModule?: CoreModule) {
+    if (parentModule) {
+      throw new Error(
+        'CoreModule is already loaded. Import it in the AppModule only');
+    }
+  }
 }
