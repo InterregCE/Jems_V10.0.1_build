@@ -24,7 +24,7 @@ export class StrategyTableComponent extends BaseComponent implements OnInit {
   @Input()
   editableStrategyForm = new FormGroup({});
   @Input()
-  disabled: boolean
+  disabled: boolean;
   @Input()
   changedFormState$: Observable<null>;
   @Input()
@@ -41,7 +41,7 @@ export class StrategyTableComponent extends BaseComponent implements OnInit {
   };
   contributionErrors = {
     maxlength: 'project.application.form.relevance.contribution.size.too.long'
-  }
+  };
 
   constructor(private dialog: MatDialog,
               private translateService: TranslateService) {
@@ -55,7 +55,7 @@ export class StrategyTableComponent extends BaseComponent implements OnInit {
       )
       .subscribe(() => {
         this.strategyDataSource.data.forEach(strategy => this.addControl(strategy));
-      })
+      });
     this.strategyCounter = this.strategyDataSource.data.length + 1;
     this.buildStrategyEnum();
   }
@@ -94,17 +94,17 @@ export class StrategyTableComponent extends BaseComponent implements OnInit {
     );
   }
 
-  private buildStrategyEnum() {
+  private buildStrategyEnum(): void {
     console.log(this.strategies);
     this.strategies.forEach((strategy) => {
-      this.strategyEnum.push(InputProjectRelevanceStrategy.StrategyEnum[strategy])
+      this.strategyEnum.push(InputProjectRelevanceStrategy.StrategyEnum[strategy]);
     });
     this.strategyEnum.push('Other');
   }
 
   deleteEntry(element: ProjectRelevanceStrategy): void {
     const index = this.strategyDataSource.data.indexOf(element);
-    this.strategyDataSource.data.splice(index,1);
+    this.strategyDataSource.data.splice(index, 1);
     this.strategyDataSource._updateChangeSubscription();
   }
 }

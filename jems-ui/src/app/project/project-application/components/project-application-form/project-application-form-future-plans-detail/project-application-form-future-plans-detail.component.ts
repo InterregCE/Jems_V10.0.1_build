@@ -12,7 +12,7 @@ import {FormBuilder, FormGroup, Validators} from '@angular/forms';
 import {SideNavService} from '@common/components/side-nav/side-nav.service';
 import {FormState} from '@common/components/forms/form-state';
 import {Permission} from '../../../../../security/permissions/permission';
-import {OutputProjectLongTermPlans, InputProjectLongTermPlans} from '@cat/api'
+import {OutputProjectLongTermPlans, InputProjectLongTermPlans} from '@cat/api';
 
 @Component({
   selector: 'app-project-application-form-future-plans-detail',
@@ -52,7 +52,7 @@ export class ProjectApplicationFormFuturePlansDetailComponent extends ViewEditFo
     super(changeDetectorRef);
   }
 
-  ngOnInit() {
+  ngOnInit(): void {
     super.ngOnInit();
     this.changeFormState$.next(FormState.VIEW);
   }
@@ -78,7 +78,7 @@ export class ProjectApplicationFormFuturePlansDetailComponent extends ViewEditFo
     });
   }
 
-  private initFields() {
+  private initFields(): void {
     this.futurePlansForm.controls.ownership.setValue(this.project?.projectOwnership);
     this.futurePlansForm.controls.durability.setValue(this.project?.projectDurability);
     this.futurePlansForm.controls.transferability.setValue(this.project?.projectTransferability);

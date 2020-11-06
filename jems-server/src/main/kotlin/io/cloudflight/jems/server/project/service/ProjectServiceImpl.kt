@@ -92,7 +92,7 @@ class ProjectServiceImpl(
         projectStatusRepo.save(projectStatus.copy(project = createdProject))
 
         projectStatusChanged(
-            projectId = createdProject.id!!,
+            projectId = createdProject.id,
             newStatus = createdProject.projectStatus.status
         ).logWith(auditService)
 

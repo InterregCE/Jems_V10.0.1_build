@@ -19,13 +19,13 @@ class ProjectPartnerCoFinancingServiceImpl(
     @Transactional
     override fun updatePartnerCoFinancing(partnerId: Long, financing: Set<InputProjectPartnerCoFinancing>): OutputProjectPartnerDetail {
         val projectPartner = getPartnerOrThrow(partnerId)
-        val availableFundsForCall = projectPartner.project.call.funds.associateBy { it.id!! }
+        val availableFundsForCall = projectPartner.project.call.funds.associateBy { it.id }
 
         validateOnlyFundsAvailableForCallAreUsed(financing, availableFundsForCall.keys)
 
         return projectPartnerRepo.save(
             projectPartner.copy(
-                financing = financing.toEntity(projectPartner.id!!, availableFundsForCall)
+                financing = financing.toEntity(projectPartner.id, availableFundsForCall)
             )
         ).toOutputProjectPartnerDetail()
     }

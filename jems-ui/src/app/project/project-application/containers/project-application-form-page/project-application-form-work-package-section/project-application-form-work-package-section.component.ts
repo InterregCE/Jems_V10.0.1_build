@@ -4,7 +4,7 @@ import {MatSort} from '@angular/material/sort';
 import {mergeMap, map, startWith, take, tap} from 'rxjs/operators';
 import {Tables} from '../../../../../common/utils/tables';
 import {Log} from '../../../../../common/utils/log';
-import {WorkPackageService} from '@cat/api'
+import {WorkPackageService} from '@cat/api';
 import {Permission} from '../../../../../security/permissions/permission';
 import {ProjectApplicationFormSidenavService} from '../services/project-application-form-sidenav.service';
 import {ActivatedRoute} from '@angular/router';

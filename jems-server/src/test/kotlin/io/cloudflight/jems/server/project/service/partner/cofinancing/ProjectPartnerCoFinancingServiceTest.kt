@@ -38,7 +38,7 @@ internal class ProjectPartnerCoFinancingServiceTest {
         )
 
         private val outputFund = OutputProgrammeFund(
-            id = fund.id!!,
+            id = fund.id,
             selected = fund.selected
         )
     }
@@ -68,28 +68,28 @@ internal class ProjectPartnerCoFinancingServiceTest {
 
     @Test
     fun `update financing forbidden or not-existing fund`() {
-        every { projectPartnerRepository.findById(projectPartner.id!!) } returns Optional.of(projectPartner)
+        every { projectPartnerRepository.findById(projectPartner.id) } returns Optional.of(projectPartner)
 
         val toSave = setOf(
             InputProjectPartnerCoFinancing(fundId = -1, percentage = 20),
             InputProjectPartnerCoFinancing(fundId = null, percentage = 80)
         )
         val ex = assertThrows<I18nValidationException> {
-            projectPartnerCoFinancingService.updatePartnerCoFinancing(projectPartner.id!!, toSave)
+            projectPartnerCoFinancingService.updatePartnerCoFinancing(projectPartner.id, toSave)
         }
         assertThat(ex.i18nKey).isEqualTo("project.partner.coFinancing.fundId.not.allowed.for.call")
     }
 
     @Test
     fun `update financing OK`() {
-        every { projectPartnerRepository.findById(projectPartner.id!!) } returns Optional.of(projectPartner)
+        every { projectPartnerRepository.findById(projectPartner.id) } returns Optional.of(projectPartner)
         every { projectPartnerRepository.save(any<ProjectPartner>()) } returnsArgument 0
 
         val toSave = setOf(
             InputProjectPartnerCoFinancing(fundId = 1, percentage = 20),
             InputProjectPartnerCoFinancing(fundId = null, percentage = 80)
         )
-        val result = projectPartnerCoFinancingService.updatePartnerCoFinancing(projectPartner.id!!, toSave)
+        val result = projectPartnerCoFinancingService.updatePartnerCoFinancing(projectPartner.id, toSave)
 
         assertThat(result.financing).containsExactlyInAnyOrder(
             OutputProjectPartnerCoFinancing(percentage = 20, fund = outputFund),

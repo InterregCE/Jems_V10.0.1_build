@@ -78,7 +78,7 @@ class ProjectStatusServiceImpl(
         project = projectRepo.save(updateProject(project, projectStatus))
 
         projectStatusChanged(
-            projectId = project.id!!,
+            projectId = project.id,
             oldStatus = oldStatus,
             newStatus = projectStatus.status
         ).logWith(auditService)
@@ -102,7 +102,7 @@ class ProjectStatusServiceImpl(
             (ZonedDateTime.now().isBefore(project.call.startDate)
                 || ZonedDateTime.now().isAfter(project.call.endDate))
         ) {
-            auditService.logEvent(callAlreadyEnded(project.call.id!!))
+            auditService.logEvent(callAlreadyEnded(project.call.id))
 
             log.error("Attempted unsuccessfully to submit or to apply for call '${project.call.id.toString()}' that has already ended")
 
@@ -277,7 +277,7 @@ class ProjectStatusServiceImpl(
         if (oldStatus == RETURNED_TO_APPLICANT && newStatus == SUBMITTED) {
             newStatus = projectStatusRepo
                 .findFirstByProjectIdAndStatusNotInOrderByUpdatedDesc(
-                    projectId = project.id!!,
+                    projectId = project.id,
                     ignoreStatuses = setOf(RETURNED_TO_APPLICANT, DRAFT)
                 )?.status ?: throw ResourceNotFoundException("project_status")
         }

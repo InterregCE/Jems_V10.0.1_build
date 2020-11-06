@@ -63,7 +63,7 @@ export class BudgetTableComponent extends BaseComponent implements AfterViewInit
         this.gridApi?.setPinnedBottomRowData([this.getTotalRow()]);
       }
     },
-  }
+  };
 
   constructor(private translateService: TranslateService) {
     super();
@@ -73,7 +73,7 @@ export class BudgetTableComponent extends BaseComponent implements AfterViewInit
     return formState === FormState.EDIT && !node.isRowPinned();
   }
 
-  ngAfterViewInit() {
+  ngAfterViewInit(): void {
     this.changeFormState$
       .pipe(
         takeUntil(this.destroyed$),
@@ -189,7 +189,7 @@ export class BudgetTableComponent extends BaseComponent implements AfterViewInit
         },
         suppressNavigable: true,
         width: 30
-      })
+      });
     }
     this.gridApi?.setColumnDefs(columnDefs);
   }

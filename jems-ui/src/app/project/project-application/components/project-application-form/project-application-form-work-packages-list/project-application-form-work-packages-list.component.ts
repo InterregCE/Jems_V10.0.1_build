@@ -10,7 +10,7 @@ import {
 } from '@angular/core';
 import {MatSort} from '@angular/material/sort';
 import {TableConfiguration} from '@common/components/table/model/table.configuration';
-import {PageOutputWorkPackageSimple, OutputWorkPackageSimple} from '@cat/api'
+import {PageOutputWorkPackageSimple, OutputWorkPackageSimple} from '@cat/api';
 import {ActivatedRoute} from '@angular/router';
 import {ColumnType} from '@common/components/table/model/column-type.enum';
 import {Forms} from '../../../../../common/utils/forms';
@@ -24,7 +24,7 @@ import {MatDialog} from '@angular/material/dialog';
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class ProjectApplicationFormWorkPackagesListComponent implements OnInit {
-  projectId = this.activatedRoute.snapshot.params.projectId
+  projectId = this.activatedRoute.snapshot.params.projectId;
 
   @Input()
   workPackagePage: PageOutputWorkPackageSimple;
@@ -60,7 +60,7 @@ export class ProjectApplicationFormWorkPackagesListComponent implements OnInit {
           displayedColumn: 'project.application.form.workpackage.number',
           elementProperty: 'number',
           alternativeValueCondition: (element: any) => {
-            return element === null
+            return element === null;
           },
           alternativeValue: 'project.application.form.partner.number.info.auto',
           sortProperty: 'number'
@@ -79,7 +79,7 @@ export class ProjectApplicationFormWorkPackagesListComponent implements OnInit {
     });
   }
 
-  delete(workPackage: OutputWorkPackageSimple) {
+  delete(workPackage: OutputWorkPackageSimple): void {
     let message: string;
     let name: string;
     if (workPackage.name) {

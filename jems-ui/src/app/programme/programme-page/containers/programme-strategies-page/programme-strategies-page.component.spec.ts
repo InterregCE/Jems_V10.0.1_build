@@ -52,7 +52,7 @@ describe('ProgrammeStrategiesPageComponent', () => {
   it('should update funds', fakeAsync(() => {
     let result: OutputProgrammeStrategy[] = [];
     component.details$.subscribe(res => result = res);
-    component.saveStrategies$.next([{strategy: InputProgrammeStrategy.StrategyEnum.EUStrategyAdriaticIonianRegion, active:true} as InputProgrammeStrategy])
+    component.saveStrategies$.next([{strategy: InputProgrammeStrategy.StrategyEnum.EUStrategyAdriaticIonianRegion, active: true} as InputProgrammeStrategy]);
 
     httpTestingController.match({method: 'PUT', url: `//api/programmestrategy`})
       .forEach(req => req.flush([{

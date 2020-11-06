@@ -25,7 +25,6 @@ fun InputCallCreate.toEntity(
     strategies: Set<Strategy>,
     funds: Set<ProgrammeFund>
 ) = Call(
-    id = null,
     creator = creator,
     name = name!!,
     priorityPolicies = priorityPolicies,
@@ -61,7 +60,7 @@ fun Call.toOutputCallList() = OutputCallList(
 )
 
 fun Call.toOutputCallWithDates() = OutputCallWithDates(
-    id = id!!,
+    id = id,
     name = name,
     startDate = startDate,
     endDate = endDate,

@@ -52,7 +52,7 @@ class ProgrammeLegalStatusServiceTest {
             .isEqualTo(
                 listOf(
                     OutputProgrammeLegalStatus(
-                        id = programmeLegalStatus.id!!,
+                        id = programmeLegalStatus.id,
                         description = programmeLegalStatus.description
                     )
                 )

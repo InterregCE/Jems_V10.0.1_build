@@ -37,11 +37,11 @@ export class ProjectApplicationFormPartnerBudgetOptionsComponent extends ViewEdi
   optionsForm = this.formBuilder.group({
     officeAdministrationFlatRateActive: [''],
     officeAdministrationFlatRate: ['',
-      Validators.compose([Validators.max(15), Validators.min(1), Validators.required])
+                                   Validators.compose([Validators.max(15), Validators.min(1), Validators.required])
     ],
     staffCostsFlatRateActive: [''],
     staffCostsFlatRate: ['',
-      Validators.compose([Validators.max(20), Validators.min(1), Validators.required])
+                         Validators.compose([Validators.max(20), Validators.min(1), Validators.required])
     ]
   });
 
@@ -67,7 +67,7 @@ export class ProjectApplicationFormPartnerBudgetOptionsComponent extends ViewEdi
     this.discard();
   }
 
-  ngOnChanges(changes: SimpleChanges) {
+  ngOnChanges(changes: SimpleChanges): void {
     if (changes.officeAdministrationFlatRate || changes.staffCostsFlatRate) {
       this.discard();
     }
@@ -77,15 +77,15 @@ export class ProjectApplicationFormPartnerBudgetOptionsComponent extends ViewEdi
     return this.optionsForm;
   }
 
-  save() {
+  save(): void {
     this.saveBudgetOptions.emit(
       new BudgetOptions(
         this.optionsForm.controls.officeAdministrationFlatRate.value,
         this.optionsForm.controls.staffCostsFlatRate.value
-      ))
+      ));
   }
 
-  discard() {
+  discard(): void {
     this.optionsForm.patchValue({
       officeAdministrationFlatRateActive: Number.isInteger(this.officeAdministrationFlatRate as any),
       officeAdministrationFlatRate: this.officeAdministrationFlatRate,
@@ -95,7 +95,7 @@ export class ProjectApplicationFormPartnerBudgetOptionsComponent extends ViewEdi
     this.changeFormState$.next(FormState.VIEW);
   }
 
-  protected enterEditMode() {
+  protected enterEditMode(): void {
     if (!this.optionsForm.controls.officeAdministrationFlatRateActive.value) {
       this.optionsForm.controls.officeAdministrationFlatRate.disable();
     } else {
@@ -109,12 +109,12 @@ export class ProjectApplicationFormPartnerBudgetOptionsComponent extends ViewEdi
     }
   }
 
-  toggleOfficeAdministrationFlatRate(checked: boolean) {
+  toggleOfficeAdministrationFlatRate(checked: boolean): void {
     this.optionsForm.controls.officeAdministrationFlatRate.patchValue(checked ? 15 : null);
     this.enterEditMode();
   }
 
-  toggleStaffCostsFlatRate(checked: boolean) {
+  toggleStaffCostsFlatRate(checked: boolean): void {
     this.optionsForm.controls.staffCostsFlatRate.patchValue(checked ? 20 : null);
     this.enterEditMode();
   }

@@ -120,7 +120,7 @@ internal class ProjectPartnerServiceTest {
     @Test
     fun createProjectPartner() {
         val inputProjectPartner = InputProjectPartnerCreate("partner", ProjectPartnerRole.LEAD_PARTNER, legalStatusId = 1)
-        val projectPartnerWithProject = ProjectPartner(null, project, inputProjectPartner.abbreviation!!, inputProjectPartner.role!!, legalStatus = legalStatus)
+        val projectPartnerWithProject = ProjectPartner(0, project, inputProjectPartner.abbreviation!!, inputProjectPartner.role!!, legalStatus = legalStatus)
         every { projectRepository.findById(1) } returns Optional.of(project)
         every { projectPartnerRepository.countByProjectId(eq(1)) } returns 0
         every { projectPartnerRepository.findFirstByProjectIdAndRole(1, ProjectPartnerRole.LEAD_PARTNER) } returns Optional.empty()
@@ -163,7 +163,7 @@ internal class ProjectPartnerServiceTest {
     fun `error on multiple LEAD_PARTNER partner creation attempt`() {
         val inputProjectPartner = InputProjectPartnerCreate("partner", ProjectPartnerRole.PARTNER, legalStatusId = 1)
         val inputProjectPartnerLead = InputProjectPartnerCreate("partner", ProjectPartnerRole.LEAD_PARTNER, legalStatusId = 1)
-        val projectPartnerWithProject = ProjectPartner(null, project, inputProjectPartner.abbreviation!!, inputProjectPartner.role!!, legalStatus = legalStatus)
+        val projectPartnerWithProject = ProjectPartner(0, project, inputProjectPartner.abbreviation!!, inputProjectPartner.role!!, legalStatus = legalStatus)
 
         every { projectRepository.findById(1) } returns Optional.of(project)
         every { projectPartnerRepository.countByProjectId(eq(1)) } returns 2
@@ -267,7 +267,7 @@ internal class ProjectPartnerServiceTest {
             "test")
         val projectPartner = ProjectPartner(1, project, "updated", ProjectPartnerRole.PARTNER, legalStatus = ProgrammeLegalStatus(1, "test description"), partnerType = ProjectTargetGroup.EducationTrainingCentreAndSchool)
         val updatedProjectPartner = ProjectPartner(id = 1, project = project, abbreviation = "updated", role = ProjectPartnerRole.PARTNER,
-            partnerContribution = projectPartnerContributionUpdate.toEntity(projectPartner.id!!), legalStatus = ProgrammeLegalStatus(1, "test description"), partnerType = ProjectTargetGroup.EducationTrainingCentreAndSchool)
+            partnerContribution = projectPartnerContributionUpdate.toEntity(projectPartner.id), legalStatus = ProgrammeLegalStatus(1, "test description"), partnerType = ProjectTargetGroup.EducationTrainingCentreAndSchool)
 
         every { projectPartnerRepository.findById(1) } returns Optional.of(projectPartner)
         every { projectPartnerRepository.save(updatedProjectPartner) } returns updatedProjectPartner
@@ -351,24 +351,24 @@ internal class ProjectPartnerServiceTest {
             department = projectPartnerWithOrganization.department,
             legalStatus = ProgrammeLegalStatus(1, "test description")
         )
-        every { projectPartnerRepository.findById(projectPartnerWithOrganization.id!!) } returns Optional.of(projectPartnerWithOrganization)
-        every { projectPartnerRepository.deleteById(projectPartnerWithOrganization.id!!) } returns Unit
-        every { projectPartnerRepository.findTop30ByProjectId(project.id!!, any<Sort>()) } returns emptySet()
+        every { projectPartnerRepository.findById(projectPartnerWithOrganization.id) } returns Optional.of(projectPartnerWithOrganization)
+        every { projectPartnerRepository.deleteById(projectPartnerWithOrganization.id) } returns Unit
+        every { projectPartnerRepository.findTop30ByProjectId(project.id, any<Sort>()) } returns emptySet()
         every { projectPartnerRepository.saveAll(emptyList()) } returns emptySet()
 
-        assertDoesNotThrow { projectPartnerService.deletePartner(projectPartnerWithOrganization.id!!) }
-        verify { projectAssociatedOrganizationService.refreshSortNumbers(project.id!!) }
+        assertDoesNotThrow { projectPartnerService.deletePartner(projectPartnerWithOrganization.id) }
+        verify { projectAssociatedOrganizationService.refreshSortNumbers(project.id) }
     }
 
     @Test
     fun deleteProjectPartnerWithoutOrganization() {
-        every { projectPartnerRepository.findById(projectPartner.id!!) } returns Optional.of(projectPartner)
-        every { projectPartnerRepository.deleteById(projectPartner.id!!) } returns Unit
-        every { projectPartnerRepository.findTop30ByProjectId(project.id!!, any<Sort>()) } returns emptySet()
+        every { projectPartnerRepository.findById(projectPartner.id) } returns Optional.of(projectPartner)
+        every { projectPartnerRepository.deleteById(projectPartner.id) } returns Unit
+        every { projectPartnerRepository.findTop30ByProjectId(project.id, any<Sort>()) } returns emptySet()
         every { projectPartnerRepository.saveAll(emptyList()) } returns emptySet()
 
-        assertDoesNotThrow { projectPartnerService.deletePartner(projectPartner.id!!) }
-        verify { projectAssociatedOrganizationService.refreshSortNumbers(project.id!!) }
+        assertDoesNotThrow { projectPartnerService.deletePartner(projectPartner.id) }
+        verify { projectAssociatedOrganizationService.refreshSortNumbers(project.id) }
     }
 
     @Test

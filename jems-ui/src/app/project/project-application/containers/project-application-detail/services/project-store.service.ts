@@ -84,7 +84,7 @@ export class ProjectStore {
       mergeMap(([assessment, id]) => this.projectStatusService.setQualityAssessment(id, assessment)),
       tap(saved => Log.info('Updated project quality assessment:', this, saved)),
       tap(saved => this.router.navigate(['app', 'project', 'detail', saved.id]))
-    )
+    );
 
   private revertedProjectStatus$ = this.newRevertProjectStatus$
     .pipe(
@@ -162,7 +162,7 @@ export class ProjectStore {
       .subscribe();
   }
 
-  init(projectId: number) {
+  init(projectId: number): void {
     this.projectId$.next(projectId);
   }
 
@@ -174,8 +174,8 @@ export class ProjectStore {
     return this.projectStatus$.asObservable();
   }
 
-  changeStatus(newStatus: InputProjectStatus) {
-    this.newStatus$.next(newStatus)
+  changeStatus(newStatus: InputProjectStatus): void {
+    this.newStatus$.next(newStatus);
   }
 
   getChangeStatusError(): Observable<I18nValidationError | null> {

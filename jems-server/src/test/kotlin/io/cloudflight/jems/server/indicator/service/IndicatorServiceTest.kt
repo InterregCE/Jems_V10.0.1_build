@@ -166,7 +166,7 @@ class IndicatorServiceTest {
             finalTarget = testIndicatorOutput.finalTarget
         )
         assertThat(indicatorService.save(indicatorCreate))
-            .isEqualTo(testOutputIndicatorOutput.copy(id = null)) // not a real repository
+            .isEqualTo(testOutputIndicatorOutput.copy(id = 0)) // not a real repository
 
         val auditLog = slot<AuditCandidate>()
         verify { auditService.logEvent(capture(auditLog)) }
@@ -305,7 +305,7 @@ class IndicatorServiceTest {
             comment = testIndicatorResult.comment
         )
         assertThat(indicatorService.save(indicatorCreate))
-            .isEqualTo(testOutputIndicatorResult.copy(id = null)) // not a real repository
+            .isEqualTo(testOutputIndicatorResult.copy(id = 0)) // not a real repository
 
         val auditLog = slot<AuditCandidate>()
         verify { auditService.logEvent(capture(auditLog)) }

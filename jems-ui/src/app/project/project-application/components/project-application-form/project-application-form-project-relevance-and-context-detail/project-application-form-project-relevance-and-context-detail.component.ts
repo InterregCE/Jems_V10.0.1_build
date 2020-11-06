@@ -111,11 +111,11 @@ export class ProjectApplicationFormProjectRelevanceAndContextDetailComponent ext
             if (!this.transnationalCooperationValidity.get(language)) {
               this.transnationalCooperationValidity.set(language, false);
             }
-          })
+          });
     });
   }
 
-  ngOnInit() {
+  ngOnInit(): void {
     super.ngOnInit();
     this.benefitsDataSource = new MatTableDataSource(this.constructBenefitsDataSource());
     this.strategiesDataSource = new MatTableDataSource(this.constructStrategyDataSource());
@@ -123,7 +123,7 @@ export class ProjectApplicationFormProjectRelevanceAndContextDetailComponent ext
     this.changeFormState$.next(FormState.VIEW);
   }
 
-  ngAfterViewInit() {
+  ngAfterViewInit(): void {
     this.languageService.currentLanguage$.next(this?.availableLanguages[0]);
   }
 
@@ -153,13 +153,13 @@ export class ProjectApplicationFormProjectRelevanceAndContextDetailComponent ext
     let field3Validity = false;
     this.territorialChallengeValidity.forEach(((value) => {
       field1Validity = field1Validity || value;
-    }))
+    }));
     this.commonChallengeValidity.forEach(((value) => {
       field2Validity = field2Validity || value;
-    }))
+    }));
     this.transnationalCooperationValidity.forEach(((value) => {
       field3Validity = field3Validity || value;
-    }))
+    }));
     return field1Validity || field2Validity || field3Validity;
   }
 
@@ -170,7 +170,7 @@ export class ProjectApplicationFormProjectRelevanceAndContextDetailComponent ext
   projectInitiative = (id: number): string => id + 'projIn';
   synergy = (id: number): string => id + 'syn';
 
-  private initFields() {
+  private initFields(): void {
     this.territorialChallengeCurrentValues = this.buildMultiLanguageFieldValues(this.project?.territorialChallenge);
     this.commonChallengeCurrentValues = this.buildMultiLanguageFieldValues(this.project?.commonChallenge);
     this.transnationalCooperationCurrentValues = this.buildMultiLanguageFieldValues(this.project?.transnationalCooperation);
@@ -218,7 +218,7 @@ export class ProjectApplicationFormProjectRelevanceAndContextDetailComponent ext
         specification: element.specification
       } as ProjectRelevanceBenefit);
       this.benefitCounter = this.benefitCounter + 1;
-    })
+    });
     return data;
   }
 
@@ -232,7 +232,7 @@ export class ProjectApplicationFormProjectRelevanceAndContextDetailComponent ext
         specification: element.specification
       } as ProjectRelevanceStrategy);
       this.strategyCounter = this.strategyCounter + 1;
-    })
+    });
     return data;
   }
 
@@ -246,7 +246,7 @@ export class ProjectApplicationFormProjectRelevanceAndContextDetailComponent ext
         synergy: element.synergy
       } as ProjectRelevanceSynergy);
       this.synergyCounter = this.synergyCounter + 1;
-    })
+    });
     return data;
   }
 
@@ -255,7 +255,7 @@ export class ProjectApplicationFormProjectRelevanceAndContextDetailComponent ext
       .map(element => ({
         group: this.editableBenefitsForm.get(this.targetGroup(element.id))?.value,
         specification: this.editableBenefitsForm.get(this.specification(element.id))?.value
-      }))
+      }));
   }
 
   private buildStrategiesToSave(): InputProjectRelevanceStrategy[] {
@@ -265,7 +265,7 @@ export class ProjectApplicationFormProjectRelevanceAndContextDetailComponent ext
           ? this.editableStrategyForm.get(this.strategy(element.id))?.value
           : null,
         specification: this.editableStrategyForm.get(this.contribution(element.id))?.value
-      }))
+      }));
   }
 
   private buildSynergiesToSave(): InputProjectRelevanceSynergy[] {
@@ -278,13 +278,13 @@ export class ProjectApplicationFormProjectRelevanceAndContextDetailComponent ext
   }
 
   private buildMultiLanguageFieldValues(values: InputTranslation[]): InputTranslation[] {
-    let result:InputTranslation[] = []
+    let result: InputTranslation[] = [];
     if (values) {
       result = values.map(value => ({language: value.language, translation: value.translation} as InputTranslation));
     }
     this.availableLanguages.forEach(language => {
       if (!result.find(value => value.language === language)) {
-        result.push({language, translation:''})
+        result.push({language, translation: ''});
       }
     });
     return result;

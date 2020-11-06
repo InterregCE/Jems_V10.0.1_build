@@ -31,7 +31,7 @@ export class ProgrammePolicyCheckboxComponent extends AbstractForm implements On
 
   originalOrder = (): number => 0;
 
-  setCheckedStatus(key: string, value: boolean) {
+  setCheckedStatus(key: string, value: boolean): void {
     this.checked.set(key, value);
     if (value) {
       this.policyForm.controls[key].setValidators(Validators.compose([Validators.required, Validators.maxLength(50)]));

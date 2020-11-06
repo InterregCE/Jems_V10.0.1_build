@@ -10,7 +10,7 @@ export class ColumnConfiguration {
   // main translation key for that element
   elementTranslationKey?: string;
   // fixed i18n translation key to use with argument
-  i18nFixedKey?: string
+  i18nFixedKey?: string;
   // args object for translation keys
   i18nArgs?: (element: any) => any;
   // optional function as condition to replace element value
@@ -18,13 +18,13 @@ export class ColumnConfiguration {
   // optional value if condition is set and applies
   alternativeValue?: string;
   // if present the table will be sorted by the given property
-  sortProperty?: string
+  sortProperty?: string;
   // type of the column
   columnType?: ColumnType;
   // the custom template
-  customCellTemplate?: TemplateRef<any>
+  customCellTemplate?: TemplateRef<any>;
   // the cell tooltip
-  tooltip?: TooltipConfiguration
+  tooltip?: TooltipConfiguration;
 
   public constructor(init?: Partial<ColumnConfiguration>) {
     Object.assign(this, init);

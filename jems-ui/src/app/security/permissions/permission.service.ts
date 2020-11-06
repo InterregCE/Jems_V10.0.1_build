@@ -17,7 +17,7 @@ export class PermissionService {
       .pipe(
         tap((user: OutputCurrentUser) => this.setPermissions(user ? [user.role] : []))
       )
-      .subscribe()
+      .subscribe();
   }
 
   setPermissions(permissions: string[]): void {

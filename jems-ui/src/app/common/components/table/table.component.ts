@@ -33,7 +33,7 @@ export class TableComponent implements OnInit {
   columnsToDisplay: string[] = [];
   currentPageSize = Tables.DEFAULT_INITIAL_PAGE_SIZE;
 
-  constructor(private datepipe: DatePipe,) {
+  constructor(private datepipe: DatePipe) {
   }
 
   ngOnInit(): void {
@@ -50,8 +50,9 @@ export class TableComponent implements OnInit {
     if (!column.elementProperty) {
       return element;
     }
-    if (column.i18nFixedKey)
-      return column.i18nFixedKey
+    if (column.i18nFixedKey) {
+      return column.i18nFixedKey;
+    }
     const elementValue = Tools.getChainedProperty(element, column.elementProperty, '');
     if (column.elementTranslationKey) {
       return column.elementTranslationKey + '.' + elementValue;
@@ -66,8 +67,9 @@ export class TableComponent implements OnInit {
   }
 
   getI18nArgs(column: ColumnConfiguration, element: any): any {
-    if (column.i18nArgs)
-      return column.i18nArgs(element)
+    if (column.i18nArgs) {
+      return column.i18nArgs(element);
+    }
     return null;
   }
 

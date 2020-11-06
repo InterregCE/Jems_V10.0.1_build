@@ -1,7 +1,7 @@
 
 export class TooltipConfiguration {
 
-  tooltipContent: string
+  tooltipContent: string;
 
   tooltipTranslationKey?: string;
 

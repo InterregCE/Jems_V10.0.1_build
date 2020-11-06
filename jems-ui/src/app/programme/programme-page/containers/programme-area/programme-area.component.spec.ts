@@ -117,5 +117,5 @@ describe('ProgrammeAreaComponent', () => {
 
       expect(selectedRegions.get('Romania')[0].title).toEqual('cluj');
     }));
-  })
+  });
 });

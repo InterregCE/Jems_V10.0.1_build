@@ -47,7 +47,7 @@ describe('ProjectApplicationFormProjectRelevanceAndContextSectionComponent', () 
     httpTestingController.expectOne({
       method: 'PUT',
       url: '//api/project/1/description/c2'
-    })
+    });
   }));
 
   it('should delete an entry from project relevance tables', fakeAsync(() => {
@@ -56,6 +56,6 @@ describe('ProjectApplicationFormProjectRelevanceAndContextSectionComponent', () 
     httpTestingController.expectOne({
       method: 'PUT',
       url: '//api/project/1/description/c2'
-    })
+    });
   }));
 });

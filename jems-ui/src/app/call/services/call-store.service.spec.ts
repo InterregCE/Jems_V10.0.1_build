@@ -29,6 +29,6 @@ describe('CallStoreService', () => {
     httpTestingController.expectOne({
       method: 'PUT',
       url: `//api/call`
-    })
+    });
   }));
 });

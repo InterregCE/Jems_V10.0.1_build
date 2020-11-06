@@ -1,13 +1,13 @@
 export class ProgrammeResultIndicatorConstants {
   static indicatorCodes = ['RCR01', 'RCR02', 'RCR03', 'RCR04', 'RCR05', 'RCR06', 'RCR07', 'RCR08', 'RCR11', 'RCR12',
-    'RCR13', 'RCR14', 'RCR16', 'RCR17', 'RCR18', 'RCR19', 'RCR25', 'RCR24', 'RCR97', 'RCR98',
-    'RCR99', 'RCR100', 'RCR26', 'RCR27', 'RCR28', 'RCR29', 'RCR30', 'RCR31', 'RCR32', 'RCR33',
-    'RCR34', 'RCR35', 'RCR36', 'RCR37', 'RCR96', 'RCR38', 'RCR41', 'RCR42', 'RCR43', 'RCR44',
-    'RCR46', 'RCR47', 'RCR48', 'RCR49', 'RCR50', 'RCR95', 'RCR51', 'RCR52', 'RCR53', 'RCR54',
-    'RCR55', 'RCR56', 'RCR101', 'RCR57', 'RCR58', 'RCR59', 'RCR60', 'RCR62', 'RCR63', 'RCR64',
-    'RCR65', 'RCR66', 'RCR67', 'RCR68', 'RCR70', 'RCR71', 'RCR72', 'RCR73', 'RCR74', 'RCR75',
-    'RCR76', 'RCR77', 'RCR78', 'RCR91', 'RCR92', 'RCR93', 'RCR94', 'RCR79', 'RCR80', 'RCR81',
-    'RCR82', 'RCR83', 'RCR84', 'RCR85', 'RCR86'
+                           'RCR13', 'RCR14', 'RCR16', 'RCR17', 'RCR18', 'RCR19', 'RCR25', 'RCR24', 'RCR97', 'RCR98',
+                           'RCR99', 'RCR100', 'RCR26', 'RCR27', 'RCR28', 'RCR29', 'RCR30', 'RCR31', 'RCR32', 'RCR33',
+                           'RCR34', 'RCR35', 'RCR36', 'RCR37', 'RCR96', 'RCR38', 'RCR41', 'RCR42', 'RCR43', 'RCR44',
+                           'RCR46', 'RCR47', 'RCR48', 'RCR49', 'RCR50', 'RCR95', 'RCR51', 'RCR52', 'RCR53', 'RCR54',
+                           'RCR55', 'RCR56', 'RCR101', 'RCR57', 'RCR58', 'RCR59', 'RCR60', 'RCR62', 'RCR63', 'RCR64',
+                           'RCR65', 'RCR66', 'RCR67', 'RCR68', 'RCR70', 'RCR71', 'RCR72', 'RCR73', 'RCR74', 'RCR75',
+                           'RCR76', 'RCR77', 'RCR78', 'RCR91', 'RCR92', 'RCR93', 'RCR94', 'RCR79', 'RCR80', 'RCR81',
+                           'RCR82', 'RCR83', 'RCR84', 'RCR85', 'RCR86'
   ];
 
   static indicatorNames = [

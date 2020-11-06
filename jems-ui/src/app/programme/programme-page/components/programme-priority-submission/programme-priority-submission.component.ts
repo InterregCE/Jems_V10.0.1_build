@@ -57,7 +57,7 @@ export class ProgrammePrioritySubmissionComponent extends AbstractForm implement
 
   policyObjectiveErrors = {
     required: 'programme.priority.objective.should.not.be.empty'
-  }
+  };
 
   constructor(private formBuilder: FormBuilder,
               private dialog: MatDialog,
@@ -87,13 +87,13 @@ export class ProgrammePrioritySubmissionComponent extends AbstractForm implement
     });
   }
 
-  changeCurrentObjective(objective: string) {
+  changeCurrentObjective(objective: string): void {
     this.currentObjective = objective;
     const policies = new Map<string, ValidatorFn[]>();
     this.objectivesWithPolicies[objective].forEach((obj => {
       policies.set(obj, [Validators.maxLength(50)]);
-    }))
-    this.policyForm = Forms.toFormGroup(policies)
+    }));
+    this.policyForm = Forms.toFormGroup(policies);
   }
 
   submitPriority(): void {
@@ -107,7 +107,7 @@ export class ProgrammePrioritySubmissionComponent extends AbstractForm implement
   }
 
   buildPolicyList(): InputProgrammePriorityPolicy[] {
-    const currentlySelected: InputProgrammePriorityPolicy[] = []
+    const currentlySelected: InputProgrammePriorityPolicy[] = [];
     this.checked.forEach((value, key) => {
       if (value) {
         currentlySelected.push({
@@ -115,7 +115,7 @@ export class ProgrammePrioritySubmissionComponent extends AbstractForm implement
           programmeObjectivePolicy: key,
         } as InputProgrammePriorityPolicy);
       }
-    })
+    });
     return currentlySelected;
   }
 }

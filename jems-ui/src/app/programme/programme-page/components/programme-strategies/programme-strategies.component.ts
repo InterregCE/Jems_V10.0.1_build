@@ -1,13 +1,6 @@
-import {
-  ChangeDetectionStrategy,
-  ChangeDetectorRef,
-  Component,
-  EventEmitter,
-  Input, OnInit,
-  Output
-} from '@angular/core';
+import {ChangeDetectionStrategy, ChangeDetectorRef, Component, EventEmitter, Input, Output} from '@angular/core';
 import {ViewEditForm} from '@common/components/forms/view-edit-form';
-import {OutputProgrammeStrategy, InputProgrammeStrategy} from '@cat/api';
+import {InputProgrammeStrategy, OutputProgrammeStrategy} from '@cat/api';
 import {FormBuilder, FormGroup} from '@angular/forms';
 import {MatDialog} from '@angular/material/dialog';
 import {Permission} from '../../../../security/permissions/permission';
@@ -66,7 +59,7 @@ export class ProgrammeStrategiesComponent extends ViewEditForm {
       .map(strategy => ({
         strategy: strategy.strategy,
         active: this.selection.isSelected(strategy),
-      } as InputProgrammeStrategy))
+      } as InputProgrammeStrategy));
   }
 
   protected enterViewMode(): void {

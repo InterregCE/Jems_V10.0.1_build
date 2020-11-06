@@ -5,38 +5,41 @@ import io.cloudflight.jems.server.user.entity.User
 import java.time.ZonedDateTime
 import javax.persistence.Column
 import javax.persistence.Entity
-import javax.persistence.Enumerated
 import javax.persistence.EnumType
+import javax.persistence.Enumerated
 import javax.persistence.FetchType
 import javax.persistence.Id
 import javax.persistence.JoinColumn
 import javax.persistence.ManyToOne
 import javax.persistence.MapsId
 import javax.persistence.OneToOne
+import javax.validation.constraints.NotNull
 
 @Entity(name = "project_quality_assessment")
 data class ProjectQualityAssessment(
 
     @Id
-    @Column(name = "project_id", nullable = false)
+    @Column(name = "project_id")
+    @field:NotNull
     val id: Long,
 
     @OneToOne(optional = false)
     @MapsId
+    @field:NotNull
     val project: Project,
 
-    @Column(nullable = false)
     @Enumerated(EnumType.STRING)
+    @field:NotNull
     val result: ProjectQualityAssessmentResult,
 
     @ManyToOne(optional = false, fetch = FetchType.LAZY)
     @JoinColumn(name = "account_id")
+    @field:NotNull
     val user: User,
 
-    @Column(nullable = false)
+    @field:NotNull
     val updated: ZonedDateTime = ZonedDateTime.now(),
 
-    @Column
     val note: String? = null
 
 ) {

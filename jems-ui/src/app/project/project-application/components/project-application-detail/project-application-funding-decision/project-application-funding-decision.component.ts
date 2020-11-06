@@ -46,7 +46,7 @@ export class ProjectApplicationFundingDecisionComponent extends AbstractForm imp
   };
   noteErrors = {
     maxlength: 'project.decision.notes.too.long'
-  }
+  };
 
   decisionForm = this.formBuilder.group({
     status: ['', Validators.required],

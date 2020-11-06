@@ -40,9 +40,7 @@ describe('ProjectApplicationDetailComponent', () => {
 
   beforeEach(() => {
     fixture = TestBed.createComponent(ProjectApplicationDetailComponent);
-    projectApplicationDetailComponent = (
-      fixture.componentInstance
-    ) as ProjectApplicationDetailComponent;
+    projectApplicationDetailComponent = fixture.componentInstance;
     httpTestingController = TestBed.inject(HttpTestingController);
   });
 

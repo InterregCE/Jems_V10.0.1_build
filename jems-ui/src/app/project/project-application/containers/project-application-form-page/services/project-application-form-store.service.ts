@@ -18,7 +18,7 @@ export class ProjectApplicationFormStore {
   constructor(private projectDescriptionService: ProjectDescriptionService) {
   }
 
-  init(projectId: number) {
+  init(projectId: number): void {
     this.projectId$.next(projectId);
   }
 

@@ -61,7 +61,7 @@ fun ProjectPartner.toOutputProjectPartnerDetail() = OutputProjectPartnerDetail(
 )
 
 fun InputProjectPartnerAddress.toEntity(partner: ProjectPartner) = ProjectPartnerAddress(
-    addressId = ProjectPartnerAddressId(partner.id!!, type),
+    addressId = ProjectPartnerAddressId(partner.id, type),
     address = Address(
         country = country,
         nutsRegion2 = nutsRegion2,
@@ -75,7 +75,7 @@ fun InputProjectPartnerAddress.toEntity(partner: ProjectPartner) = ProjectPartne
 )
 
 fun InputProjectContact.toEntity(partner: ProjectPartner) = ProjectPartnerContact(
-    contactId = ProjectPartnerContactId(partner.id!!, type),
+    contactId = ProjectPartnerContactId(partner.id, type),
     contact = Contact(
         title = title,
         firstName = firstName,

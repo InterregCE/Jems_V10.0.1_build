@@ -76,7 +76,7 @@ export class SideNavService {
     }
   }
 
-  private confirmNavigate(headline: HeadlineRoute) {
+  private confirmNavigate(headline: HeadlineRoute): void {
     Forms.confirmDialog(
       this.dialog,
       'common.sidebar.dialog.title',
@@ -88,18 +88,18 @@ export class SideNavService {
     ).subscribe();
   }
 
-  private navigateToRoute(headline: HeadlineRoute) {
+  private navigateToRoute(headline: HeadlineRoute): void {
     this.navigateTo$.next(headline);
     Log.debug('Navigating to route', this, headline.route);
     this.router.navigate([headline.route]);
   }
 
-  private scrollToRoute(scrollRoute: string) {
+  private scrollToRoute(scrollRoute: string): void {
     Log.debug('Scrolling to anchor', this, scrollRoute);
     document.getElementById(scrollRoute)?.scrollIntoView({behavior: 'smooth'});
   }
 
-  private getAllRoutes(headline: HeadlineRoute, allRoutes: string[]) {
+  private getAllRoutes(headline: HeadlineRoute, allRoutes: string[]): void {
     if (headline.route) {
       allRoutes.push(headline.route);
     }

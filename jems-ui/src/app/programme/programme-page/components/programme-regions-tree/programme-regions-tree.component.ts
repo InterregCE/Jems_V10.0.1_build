@@ -32,12 +32,12 @@ export class ProgrammeRegionsTreeComponent extends BaseComponent implements OnIn
 
   hasChild = (_: number, node: ProgrammeRegionCheckbox) => !!node.children && node.children.length > 0;
 
-  leafChanged(checkbox: ProgrammeRegionCheckbox) {
+  leafChanged(checkbox: ProgrammeRegionCheckbox): void {
     checkbox.updateChecked();
     this.selectionChanged.emit();
   }
 
-  parentChanged(checkbox: ProgrammeRegionCheckbox) {
+  parentChanged(checkbox: ProgrammeRegionCheckbox): void {
     checkbox.checkOrUncheckAll(checkbox.checked);
     this.selectionChanged.emit();
   }

@@ -60,7 +60,7 @@ describe('ProjectApplicationFormPartnerDetailComponent', () => {
     httpTestingController.expectOne({
       method: 'PUT',
       url: `//api/project/1/partner/2/contact`
-    })
+    });
   }));
 
   it('should update a project partner contribution', fakeAsync(() => {
@@ -69,6 +69,6 @@ describe('ProjectApplicationFormPartnerDetailComponent', () => {
     httpTestingController.expectOne({
       method: 'PUT',
       url: `//api/project/1/partner/2/contribution`
-    })
+    });
   }));
 });

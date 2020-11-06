@@ -18,8 +18,9 @@ export class AuthenticationGuard implements CanActivate {
   private authGuard(url: string): Observable<boolean> {
     return this.authenticationService.getCurrentUser().pipe(
       tap((cu: OutputCurrentUser) => {
-        if (!cu || cu.id === -1)
-          throw {}
+        if (!cu || cu.id === -1) {
+          throw {};
+        }
       }),
       map(() => true),
       catchError(() => {
@@ -29,7 +30,7 @@ export class AuthenticationGuard implements CanActivate {
     );
   }
 
-  private unauthorized(url: string) {
+  private unauthorized(url: string): void {
     this.router.navigate(['no-auth', 'login'], {queryParams: {ref: url}});
   }
 

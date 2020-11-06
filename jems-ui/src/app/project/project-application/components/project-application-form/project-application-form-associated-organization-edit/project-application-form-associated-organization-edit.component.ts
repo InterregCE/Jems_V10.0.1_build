@@ -82,7 +82,7 @@ export class ProjectApplicationFormAssociatedOrganizationEditComponent extends V
       Validators.pattern('^[0-9+()/-]*$')
     ])],
     roleDescription: ['', Validators.maxLength(2000)],
-  })
+  });
 
   nameInOriginalLanguageErrors = {
     maxlength: 'project.organization.original.name.size.too.long',
@@ -138,7 +138,7 @@ export class ProjectApplicationFormAssociatedOrganizationEditComponent extends V
     }
   }
 
-  ngOnChanges(changes: SimpleChanges) {
+  ngOnChanges(changes: SimpleChanges): void {
     if (changes.associatedOrganization || changes.editable) {
       this.changeFormState$.next(this.editable && !this.associatedOrganization.id ? FormState.EDIT : FormState.VIEW);
     }
@@ -164,12 +164,13 @@ export class ProjectApplicationFormAssociatedOrganizationEditComponent extends V
       } as InputProjectAssociatedOrganizationAddress,
       contacts: this.getContacts(),
       roleDescription: this.controls?.roleDescription.value,
-    }
+    };
 
-    if (!this.controls?.id?.value)
+    if (!this.controls?.id?.value) {
       this.create.emit({...toSave} as InputProjectAssociatedOrganizationCreate);
-    else
+    } else {
       this.update.emit({id: this.controls.id.value, ...toSave} as InputProjectAssociatedOrganizationUpdate);
+    }
   }
 
   private getContacts(): InputProjectContact[] {
@@ -180,10 +181,11 @@ export class ProjectApplicationFormAssociatedOrganizationEditComponent extends V
       title: this.controls?.representativeTitle.value,
       firstName: this.controls?.representativeFirstName.value,
       lastName: this.controls?.representativeLastName.value,
-    } as InputProjectContact
+    } as InputProjectContact;
 
-    if (contactRepresentative.title || contactRepresentative.firstName || contactRepresentative.lastName)
+    if (contactRepresentative.title || contactRepresentative.firstName || contactRepresentative.lastName) {
       contacts.push(contactRepresentative);
+    }
 
     const person = {
       type: InputProjectContact.TypeEnum.ContactPerson,
@@ -192,10 +194,11 @@ export class ProjectApplicationFormAssociatedOrganizationEditComponent extends V
       lastName: this.controls?.contactLastName.value,
       email: this.controls?.contactEmail.value,
       telephone: this.controls?.contactTelephone.value,
-    } as InputProjectContact
+    } as InputProjectContact;
 
-    if (person.title || person.firstName || person.lastName || person.email || person.telephone)
+    if (person.title || person.firstName || person.lastName || person.email || person.telephone) {
       contacts.push(person);
+    }
 
     return contacts;
   }
@@ -217,7 +220,7 @@ export class ProjectApplicationFormAssociatedOrganizationEditComponent extends V
     this.sideNavService.setAlertStatus(true);
   }
 
-  private initFields() {
+  private initFields(): void {
     this.controls?.id.setValue(this.associatedOrganization?.id);
     this.controls?.nameInOriginalLanguage.setValue(this.associatedOrganization?.nameInOriginalLanguage);
     this.controls?.nameInEnglish.setValue(this.associatedOrganization?.nameInEnglish);
@@ -234,15 +237,15 @@ export class ProjectApplicationFormAssociatedOrganizationEditComponent extends V
     this.controls?.roleDescription.setValue(this.associatedOrganization?.roleDescription);
   }
 
-  private initLegalRepresentative() {
-    const legalRepresentative = this.associatedOrganization?.contacts?.find(person => person.type === InputProjectContact.TypeEnum.LegalRepresentative)
+  private initLegalRepresentative(): void {
+    const legalRepresentative = this.associatedOrganization?.contacts?.find(person => person.type === InputProjectContact.TypeEnum.LegalRepresentative);
     this.associatedOrganizationForm.controls.representativeTitle.setValue(legalRepresentative?.title);
     this.associatedOrganizationForm.controls.representativeFirstName.setValue(legalRepresentative?.firstName);
     this.associatedOrganizationForm.controls.representativeLastName.setValue(legalRepresentative?.lastName);
   }
 
-  private initContactPerson() {
-    const contactPerson = this.associatedOrganization?.contacts?.find(person => person.type === InputProjectContact.TypeEnum.ContactPerson)
+  private initContactPerson(): void {
+    const contactPerson = this.associatedOrganization?.contacts?.find(person => person.type === InputProjectContact.TypeEnum.ContactPerson);
     this.associatedOrganizationForm.controls.contactTitle.setValue(contactPerson?.title);
     this.associatedOrganizationForm.controls.contactFirstName.setValue(contactPerson?.firstName);
     this.associatedOrganizationForm.controls.contactLastName.setValue(contactPerson?.lastName);

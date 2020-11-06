@@ -19,7 +19,7 @@ export class PermissionGuard implements CanActivate {
       allowed = permissionsOnly.some((only: string) => user?.role === only);
     }
     if (!allowed) {
-      this.router.navigate(['app'])
+      this.router.navigate(['app']);
     }
     return allowed;
   }

@@ -86,7 +86,7 @@ export class ProgrammeOutputIndicatorDetailComponent extends ViewEditForm implem
 
   specificObjectiveErrors = {
     required: 'indicator.specific.objective.not.be.empty',
-  }
+  };
 
   constructor(private formBuilder: FormBuilder,
               private dialog: MatDialog,
@@ -145,7 +145,7 @@ export class ProgrammeOutputIndicatorDetailComponent extends ViewEditForm implem
           measurementUnit: this.outputIndicatorForm?.controls?.measurementUnit?.value,
           milestone: this.outputIndicatorForm?.controls?.milestone?.value,
           finalTarget: this.outputIndicatorForm?.controls?.finalTarget?.value,
-        })
+        });
       } else {
         this.updateOutputIndicator.emit({
           id: this.outputIndicator?.id,
@@ -156,7 +156,7 @@ export class ProgrammeOutputIndicatorDetailComponent extends ViewEditForm implem
           measurementUnit: this.outputIndicatorForm?.controls?.measurementUnit?.value,
           milestone: this.outputIndicatorForm?.controls?.milestone?.value,
           finalTarget: this.outputIndicatorForm?.controls?.finalTarget?.value,
-        })
+        });
       }
     });
   }

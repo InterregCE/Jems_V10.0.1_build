@@ -7,13 +7,13 @@ import io.cloudflight.jems.server.project.entity.Project
 import io.cloudflight.jems.server.project.entity.WorkPackage
 
 fun WorkPackage.toOutputWorkPackageSimple() = OutputWorkPackageSimple (
-    id = id!!,
+    id = id,
     number = number,
     name = name
 )
 
 fun WorkPackage.toOutputWorkPackage() = OutputWorkPackage (
-    id = id!!,
+    id = id,
     number = number,
     name = name,
     specificObjective = specificObjective,
@@ -21,7 +21,6 @@ fun WorkPackage.toOutputWorkPackage() = OutputWorkPackage (
 )
 
 fun InputWorkPackageCreate.toEntity(project: Project) = WorkPackage (
-    id = null,
     name = name,
     project = project,
     specificObjective = specificObjective,

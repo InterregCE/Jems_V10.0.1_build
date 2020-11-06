@@ -15,8 +15,9 @@ export class NoDoubleLoginGuard implements CanActivate {
     return this.authenticationService.getCurrentUser()
       .pipe(
         tap((cu: OutputCurrentUser) => {
-          if (cu.id > 0)
+          if (cu.id > 0) {
             this.router.navigate(['app']);
+          }
         }),
         map(() => true),
         catchError(() => of(true)),

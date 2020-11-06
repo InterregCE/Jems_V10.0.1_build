@@ -8,16 +8,18 @@ import javax.persistence.GenerationType
 import javax.persistence.Id
 import javax.persistence.JoinColumn
 import javax.persistence.ManyToOne
+import javax.validation.constraints.NotNull
 
 @Entity(name = "project_work_package")
 data class WorkPackage(
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    val id: Long?,
+    val id: Long = 0,
 
     @ManyToOne(optional = false, fetch = FetchType.LAZY)
     @JoinColumn(name = "project_id")
+    @field:NotNull
     val project: Project,
 
     @Column

@@ -42,6 +42,6 @@ describe('ProjectApplicationFormOverallObjectiveSectionComponent', () => {
     httpTestingController.expectOne({
       method: 'PUT',
       url: '//api/project/1/description/c1'
-    })
+    });
   }));
 });

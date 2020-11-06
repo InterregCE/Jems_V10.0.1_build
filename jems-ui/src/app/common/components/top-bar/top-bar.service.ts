@@ -33,7 +33,7 @@ export class TopBarService {
     name: 'topbar.main.call',
     isInternal: true,
     route: '/app/call',
-  }
+  };
   private auditItem: MenuItemConfiguration;
   private editUserItem: MenuItemConfiguration;
 

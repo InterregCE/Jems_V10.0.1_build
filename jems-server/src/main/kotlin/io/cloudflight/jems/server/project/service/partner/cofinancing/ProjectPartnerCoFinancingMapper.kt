@@ -8,7 +8,7 @@ import io.cloudflight.jems.server.project.entity.partner.cofinancing.ProjectPart
 
 fun Set<InputProjectPartnerCoFinancing>.toEntity(partnerId: Long, availableFunds: Map<Long, ProgrammeFund>) = mapTo(HashSet()) {
     ProjectPartnerCoFinancing(
-        id = it.id,
+        id = it.id ?: 0,
         partnerId = partnerId,
         percentage = it.percentage!!,
         programmeFund = availableFunds[it.fundId]

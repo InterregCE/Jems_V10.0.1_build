@@ -2,7 +2,7 @@ import {async, ComponentFixture, fakeAsync, TestBed, tick} from '@angular/core/t
 import {TestModule} from '../../../../../common/test-module';
 import {ProjectModule} from '../../../../project.module';
 import {HttpTestingController} from '@angular/common/http/testing';
-import {OutputWorkPackageSimple} from '@cat/api'
+import {OutputWorkPackageSimple} from '@cat/api';
 import {ProjectApplicationFormWorkPackageSectionComponent} from './project-application-form-work-package-section.component';
 
 describe('ProjectApplicationFormWorkPackageSectionComponent', () => {
@@ -55,11 +55,11 @@ describe('ProjectApplicationFormWorkPackageSectionComponent', () => {
     httpTestingController.expectOne({
       method: 'DELETE',
       url: `//api/project/1/workpackage/1`
-    })
+    });
     httpTestingController.expectOne({
       method: 'GET',
       url: `//api/project/1/workpackage?page=0&size=25&sort=id,asc`
-    })
+    });
   }));
 
 });

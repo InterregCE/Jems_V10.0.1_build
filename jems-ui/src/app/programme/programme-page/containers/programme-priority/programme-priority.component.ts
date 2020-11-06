@@ -28,7 +28,7 @@ export class ProgrammePriorityComponent extends BaseComponent {
       })),
       tap(freePriorityData =>
         Log.info('Fetched free programme priorities with policies:', this, freePriorityData)),
-    )
+    );
 
   constructor(private programmePriorityService: ProgrammePriorityService,
               private tabService: TabService,
@@ -37,7 +37,7 @@ export class ProgrammePriorityComponent extends BaseComponent {
     this.programmePageSidenavService.init(this.destroyed$);
   }
 
-  savePriority(priority: InputProgrammePriorityCreate) {
+  savePriority(priority: InputProgrammePriorityCreate): void {
     this.programmePriorityService.create(priority)
       .pipe(
         take(1),
@@ -53,7 +53,7 @@ export class ProgrammePriorityComponent extends BaseComponent {
       ).subscribe();
   }
 
-  cancelPriority() {
+  cancelPriority(): void {
     this.programmePageSidenavService.goToPriorities();
   }
 }

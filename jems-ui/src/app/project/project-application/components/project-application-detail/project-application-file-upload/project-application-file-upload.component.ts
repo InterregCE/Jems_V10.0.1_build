@@ -1,5 +1,5 @@
 import {ChangeDetectionStrategy, ChangeDetectorRef, Component, EventEmitter, Input, Output} from '@angular/core';
-import {OutputProjectStatus} from '@cat/api'
+import {OutputProjectStatus} from '@cat/api';
 import {Alert} from '@common/components/forms/alert';
 import {AbstractForm} from '@common/components/forms/abstract-form';
 import {FormGroup} from '@angular/forms';
@@ -30,7 +30,7 @@ export class ProjectApplicationFileUploadComponent extends AbstractForm {
   }
 
   addNewFilesForUpload($event: any): void {
-    this.uploadedFileName = $event?.target?.files[0]?.name
+    this.uploadedFileName = $event?.target?.files[0]?.name;
     this.uploadFile.emit($event.target.files[0]);
   }
 

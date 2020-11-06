@@ -8,18 +8,18 @@ import {AfterViewInit, ChangeDetectionStrategy, Component, ElementRef, Input, Vi
 })
 export class RowListTemplateComponent implements AfterViewInit {
 
-  @ViewChild('container') container: ElementRef
-  @Input() columnClassList: string[]
+  @ViewChild('container') container: ElementRef;
+  @Input() columnClassList: string[];
 
   ngAfterViewInit(): void {
-    if (!this.container.nativeElement) return;
+    if (!this.container.nativeElement) { return; }
 
     const rows = this.container.nativeElement.children;
     for (const row of rows) {
       const columns = row.children;
       for (let i = 0; i < columns.length; ++i) {
         if (this.columnClassList[i] && this.columnClassList[i].length > 0) {
-          columns[i].classList.add(this.columnClassList[i])
+          columns[i].classList.add(this.columnClassList[i]);
         }
       }
     }

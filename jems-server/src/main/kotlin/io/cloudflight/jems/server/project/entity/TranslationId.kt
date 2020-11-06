@@ -6,6 +6,7 @@ import javax.persistence.Column
 import javax.persistence.Embeddable
 import javax.persistence.EnumType
 import javax.persistence.Enumerated
+import javax.validation.constraints.NotNull
 
 /**
  * ID for the use to embed the PK for translation tables.
@@ -13,11 +14,12 @@ import javax.persistence.Enumerated
 @Embeddable
 data class TranslationId(
 
-    @Column(name = "project_id", nullable = false)
+    @Column(name = "project_id")
+    @field:NotNull
     val projectId: Long,
 
-    @Column(nullable = false)
     @Enumerated(EnumType.STRING)
+    @field:NotNull
     val language: SystemLanguage
 
 ) : Serializable

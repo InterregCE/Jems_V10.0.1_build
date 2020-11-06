@@ -1,13 +1,13 @@
 export class ProgrammeOutputIndicatorConstants {
   static indicatorCodes = ['RCO01', 'RCO02', 'RCO03', 'RCO04', 'RCO05', 'RCO06', 'RCO08', 'RCO10', 'RCO96', 'RCO12',
-    'RCO13', 'RCO14', 'RCO15', 'RCO16', 'RCO17', 'RCO101', 'RCO102', 'RCO18', 'RCO19', 'RCO20',
-    'RCO22', 'RCO97', 'RCO23', 'RCO98', 'RCO24', 'RCO25', 'RCO26', 'RCO27', 'RCO28', 'RCO30',
-    'RCO31', 'RCO32', 'RCO34', 'RCO36', 'RCO37', 'RCO99', 'RCO38', 'RCO39', 'RCO41', 'RCO42',
-    'RCO43', 'RCO44', 'RCO45', 'RCO46', 'RCO47', 'RCO48', 'RCO49', 'RCO50', 'RCO51', 'RCO52',
-    'RCO53', 'RCO54', 'RCO100', 'RCO55', 'RCO56', 'RCO57', 'RCO58', 'RCO59', 'RCO60', 'RCO61',
-    'RCO63', 'RCO64', 'RCO65', 'RCO66', 'RCO67', 'RCO69', 'RCO70', 'RCO74', 'RCO75', 'RCO76',
-    'RCO77', 'RCO80', 'RCO95', 'RCO81', 'RCO82', 'RCO83', 'RCO84', 'RCO85', 'RCO96', 'RCO86',
-    'RCO87', 'RCO88', 'RCO89', 'RCO90'
+                           'RCO13', 'RCO14', 'RCO15', 'RCO16', 'RCO17', 'RCO101', 'RCO102', 'RCO18', 'RCO19', 'RCO20',
+                           'RCO22', 'RCO97', 'RCO23', 'RCO98', 'RCO24', 'RCO25', 'RCO26', 'RCO27', 'RCO28', 'RCO30',
+                           'RCO31', 'RCO32', 'RCO34', 'RCO36', 'RCO37', 'RCO99', 'RCO38', 'RCO39', 'RCO41', 'RCO42',
+                           'RCO43', 'RCO44', 'RCO45', 'RCO46', 'RCO47', 'RCO48', 'RCO49', 'RCO50', 'RCO51', 'RCO52',
+                           'RCO53', 'RCO54', 'RCO100', 'RCO55', 'RCO56', 'RCO57', 'RCO58', 'RCO59', 'RCO60', 'RCO61',
+                           'RCO63', 'RCO64', 'RCO65', 'RCO66', 'RCO67', 'RCO69', 'RCO70', 'RCO74', 'RCO75', 'RCO76',
+                           'RCO77', 'RCO80', 'RCO95', 'RCO81', 'RCO82', 'RCO83', 'RCO84', 'RCO85', 'RCO96', 'RCO86',
+                           'RCO87', 'RCO88', 'RCO89', 'RCO90'
   ];
 
   static indicatorNames = [

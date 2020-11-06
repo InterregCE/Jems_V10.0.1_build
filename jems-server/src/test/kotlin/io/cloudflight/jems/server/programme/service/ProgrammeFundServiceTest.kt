@@ -29,7 +29,7 @@ internal class ProgrammeFundServiceTest {
             selected = false
         )
         val  outputProgrammeFund = OutputProgrammeFund(
-            id = programmeFund.id!!,
+            id = programmeFund.id,
             abbreviation = programmeFund.abbreviation,
             description = programmeFund.description,
             selected = programmeFund.selected
@@ -55,7 +55,7 @@ internal class ProgrammeFundServiceTest {
     @Test
     fun get() {
         every { programmeFundRepository.findAll() } returns listOf(programmeFund)
-        assertThat(programmeFundService.get()).isEqualTo(listOf(OutputProgrammeFund(id = programmeFund.id!!, selected = programmeFund.selected)))
+        assertThat(programmeFundService.get()).isEqualTo(listOf(OutputProgrammeFund(id = programmeFund.id, selected = programmeFund.selected)))
     }
 
     @Test

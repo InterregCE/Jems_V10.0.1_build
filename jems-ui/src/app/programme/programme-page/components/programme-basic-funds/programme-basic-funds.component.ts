@@ -41,7 +41,7 @@ export class ProgrammeBasicFundsComponent extends ViewEditForm implements OnInit
 
   descErrors = {
     maxlength: 'programme.fund.description.size.too.long'
-  }
+  };
 
   constructor(protected changeDetectorRef: ChangeDetectorRef) {
     super(changeDetectorRef);

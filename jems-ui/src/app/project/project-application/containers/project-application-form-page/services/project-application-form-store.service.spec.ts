@@ -31,6 +31,6 @@ describe('ProjectApplicationFormStoreService', () => {
     httpTestingController.expectOne({
       method: 'GET',
       url: '//api/project/1/description'
-    })
+    });
   }));
 });

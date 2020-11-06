@@ -7,28 +7,31 @@ import javax.persistence.GenerationType
 import javax.persistence.Id
 import javax.persistence.JoinColumn
 import javax.persistence.ManyToOne
+import javax.validation.constraints.NotNull
 
 @Entity(name = "account")
 data class User (
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    val id: Long?,
+    val id: Long = 0,
 
-    @Column(nullable = false, unique = true)
+    @Column(unique = true)
+    @field:NotNull
     val email: String,
 
-    @Column(nullable = false)
+    @field:NotNull
     val name: String,
 
-    @Column(nullable = false)
+    @field:NotNull
     val surname: String,
 
     @ManyToOne(optional = false)
     @JoinColumn(name = "account_role_id")
+    @field:NotNull
     val userRole: UserRole,
 
-    @Column(nullable = false)
+    @field:NotNull
     val password: String
 
 )

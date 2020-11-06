@@ -31,8 +31,8 @@ export class ProjectApplicationEligibilityDecisionComponent extends AbstractForm
   @Output()
   cancel = new EventEmitter<void>();
 
-  ELIGIBLE = 'ELIGIBLE'
-  INELIGIBLE = 'INELIGIBLE'
+  ELIGIBLE = 'ELIGIBLE';
+  INELIGIBLE = 'INELIGIBLE';
   options: string[] = [this.ELIGIBLE, this.INELIGIBLE];
   projectId = this.activatedRoute.snapshot.params.projectId;
 
@@ -51,7 +51,7 @@ export class ProjectApplicationEligibilityDecisionComponent extends AbstractForm
 
   notesErrors = {
     maxlength: 'eligibility.decision.notes.size.too.long',
-  }
+  };
 
   selectedAssessment: string;
 
@@ -84,7 +84,7 @@ export class ProjectApplicationEligibilityDecisionComponent extends AbstractForm
     this.router.navigate(['app', 'project', 'detail', this.projectId]);
   }
 
-  assessmentChangeHandler(event: any) {
+  assessmentChangeHandler(event: any): void {
     this.selectedAssessment = event.value;
   }
 
@@ -103,14 +103,14 @@ export class ProjectApplicationEligibilityDecisionComponent extends AbstractForm
         status: this.getEligibilityDecisionValue(),
         note: this.notesForm?.controls?.notes?.value,
         date: this.notesForm?.controls?.decisionDate?.value.format('YYYY-MM-DD')
-      })
+      });
     });
   }
 
   private getEligibilityDecisionValue(): OutputProjectStatus.StatusEnum {
     return this.selectedAssessment === this.INELIGIBLE
       ? OutputProjectStatus.StatusEnum.INELIGIBLE
-      : OutputProjectStatus.StatusEnum.ELIGIBLE
+      : OutputProjectStatus.StatusEnum.ELIGIBLE;
   }
 
   private setEligibilityDecisionValue(): void {

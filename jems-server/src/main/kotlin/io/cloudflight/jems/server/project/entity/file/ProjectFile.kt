@@ -4,7 +4,6 @@ import io.cloudflight.jems.api.project.dto.file.ProjectFileType
 import io.cloudflight.jems.server.project.entity.Project
 import io.cloudflight.jems.server.user.entity.User
 import java.time.ZonedDateTime
-import javax.persistence.Column
 import javax.persistence.Entity
 import javax.persistence.EnumType
 import javax.persistence.Enumerated
@@ -12,40 +11,42 @@ import javax.persistence.GeneratedValue
 import javax.persistence.GenerationType
 import javax.persistence.Id
 import javax.persistence.ManyToOne
+import javax.validation.constraints.NotNull
 
 @Entity(name = "project_file")
 data class ProjectFile(
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    val id: Long?,
+    val id: Long = 0,
 
-    @Column(nullable = false)
+    @field:NotNull
     val bucket: String,
 
-    @Column(nullable = false)
+    @field:NotNull
     val identifier: String,
 
-    @Column(nullable = false)
+    @field:NotNull
     val name: String,
 
     @ManyToOne(optional = false)
+    @field:NotNull
     val project: Project,
 
     @ManyToOne(optional = false)
+    @field:NotNull
     val author: User,
 
-    @Column(nullable = false)
     @Enumerated(EnumType.STRING)
+    @field:NotNull
     val type: ProjectFileType,
 
-    @Column
     var description: String? = null,
 
-    @Column(nullable = false)
+    @field:NotNull
     val size: Long,
 
-    @Column(nullable = false)
+    @field:NotNull
     val updated: ZonedDateTime
 
 )

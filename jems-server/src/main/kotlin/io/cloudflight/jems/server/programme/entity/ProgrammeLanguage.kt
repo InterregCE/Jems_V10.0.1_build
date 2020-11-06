@@ -1,11 +1,11 @@
 package io.cloudflight.jems.server.programme.entity
 
 import io.cloudflight.jems.api.programme.dto.SystemLanguage
-import javax.persistence.Column
 import javax.persistence.Entity
 import javax.persistence.EnumType
 import javax.persistence.Enumerated
 import javax.persistence.Id
+import javax.validation.constraints.NotNull
 
 /**
  * programme_language as language is a reserved sql:2016 keyword.
@@ -19,13 +19,13 @@ data class ProgrammeLanguage(
     @Enumerated(EnumType.STRING)
     val code: SystemLanguage,
 
-    @Column(nullable = false)
+    @field:NotNull
     val ui: Boolean = false,
 
-    @Column(nullable = false)
+    @field:NotNull
     val fallback: Boolean = false,
 
-    @Column(nullable = false)
+    @field:NotNull
     val input: Boolean = false
 
 )

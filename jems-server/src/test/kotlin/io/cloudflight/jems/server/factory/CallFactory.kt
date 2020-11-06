@@ -25,7 +25,7 @@ class CallFactory(
             return call
         return callRepository.save(
             Call(
-                null,
+                0,
                 user,
                 callName,
                 emptySet(),

@@ -2,7 +2,7 @@ import {async, ComponentFixture, fakeAsync, TestBed, tick} from '@angular/core/t
 import {TestModule} from '../../../../../common/test-module';
 import {ProjectModule} from '../../../../project.module';
 import {HttpTestingController} from '@angular/common/http/testing';
-import {OutputProjectPartner} from '@cat/api'
+import {OutputProjectPartner} from '@cat/api';
 import {ProjectApplicationFormPartnerSectionComponent} from './project-application-form-partner-section.component';
 import {RouterTestingModule} from '@angular/router/testing';
 
@@ -65,7 +65,7 @@ describe('ProjectApplicationFormPartnerSectionComponent', () => {
     httpTestingController.expectOne({
       method: 'GET',
       url: `//api/project/1/partner?page=0&size=25&sort=role,asc&sort=sortNumber,asc`
-    })
+    });
   }));
 
 });

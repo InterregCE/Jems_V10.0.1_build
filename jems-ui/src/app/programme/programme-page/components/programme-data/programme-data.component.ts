@@ -44,7 +44,7 @@ export class ProgrammeDataComponent extends ViewEditForm implements OnInit {
     commissionDecisionDate: [''],
     programmeAmendingDecisionNumber: ['', Validators.maxLength(255)],
     programmeAmendingDecisionDate: [''],
-  }, {
+  },                                     {
     validator: this.firstYearBeforeLastYear
   });
 
@@ -122,7 +122,7 @@ export class ProgrammeDataComponent extends ViewEditForm implements OnInit {
     controls.programmeAmendingDecisionDate.setValue(this.programme.programmeAmendingDecisionDate);
   }
 
-  protected enterEditMode() {
+  protected enterEditMode(): void {
     super.enterEditMode();
     const controls = this.programmeForm.controls;
     controls.title.setValue(this.programme.title);

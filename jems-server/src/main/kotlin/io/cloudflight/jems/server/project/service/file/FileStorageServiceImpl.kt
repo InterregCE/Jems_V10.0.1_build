@@ -52,7 +52,6 @@ class FileStorageServiceImpl(
 
         val filePath = getFilePath(fileMetadata)
         val projectFileEntity = ProjectFile(
-            id = null,
             bucket = PROJECT_FILES_BUCKET,
             identifier = filePath,
             name = fileMetadata.name,

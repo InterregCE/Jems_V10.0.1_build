@@ -54,7 +54,7 @@ export class ProgrammePageComponent extends BaseComponent {
       })
     );
 
-  programme$ = merge(this.programmeById$, this.savedProgramme$)
+  programme$ = merge(this.programmeById$, this.savedProgramme$);
 
   private initialFunds$ = this.programmeFundService.getProgrammeFundList()
     .pipe(

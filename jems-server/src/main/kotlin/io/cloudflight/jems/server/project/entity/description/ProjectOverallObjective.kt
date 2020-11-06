@@ -1,6 +1,5 @@
 package io.cloudflight.jems.server.project.entity.description
 
-import javax.persistence.Column
 import javax.persistence.Entity
 import javax.persistence.Id
 
@@ -11,10 +10,8 @@ import javax.persistence.Id
 data class ProjectOverallObjective(
 
     @Id
-    @Column(name = "project_id", nullable = false)
     val projectId: Long,
 
-    @Column
     val projectOverallObjective: String?
 
 )

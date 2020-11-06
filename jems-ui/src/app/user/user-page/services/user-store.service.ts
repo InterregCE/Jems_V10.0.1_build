@@ -40,7 +40,7 @@ export class UserStore {
               private securityService: SecurityService) {
   }
 
-  init(userId: number | string) {
+  init(userId: number | string): void {
     if (userId) {
       this.userId$.next(Number(userId));
       return;

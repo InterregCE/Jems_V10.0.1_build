@@ -10,43 +10,38 @@ import javax.persistence.GenerationType
 import javax.persistence.Id
 import javax.persistence.JoinColumn
 import javax.persistence.ManyToOne
+import javax.validation.constraints.NotNull
 
 @Entity(name = "programme_indicator_result")
 data class IndicatorResult(
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    val id: Long? = null,
+    val id: Long = 0,
 
-    @Column(nullable = false, unique = true)
+    @Column(unique = true)
+    @field:NotNull
     val identifier: String,
 
-    @Column
     val code: String?,
 
-    @Column(nullable = false)
+    @field:NotNull
     val name: String,
 
     @ManyToOne(optional = true, fetch = FetchType.EAGER)
     @JoinColumn(name = "programme_priority_policy_id")
     val programmePriorityPolicy: ProgrammePriorityPolicy?,
 
-    @Column
     val measurementUnit: String?,
 
-    @Column
     val baseline: BigDecimal? = null,
 
-    @Column
     val referenceYear: String? = null,
 
-    @Column
     val finalTarget: BigDecimal? = null,
 
-    @Column
     val sourceOfData: String? = null,
 
-    @Column
     val comment: String? = null
 
 )

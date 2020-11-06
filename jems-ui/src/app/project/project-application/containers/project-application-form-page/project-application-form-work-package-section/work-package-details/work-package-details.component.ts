@@ -1,8 +1,8 @@
 import {ChangeDetectionStrategy, Component, EventEmitter, OnInit} from '@angular/core';
 import {BaseComponent} from '@common/components/base-component';
 import {ActivatedRoute, Router} from '@angular/router';
-import {InputWorkPackageCreate, InputWorkPackageUpdate, OutputProjectStatus, WorkPackageService} from '@cat/api'
-import {combineLatest, merge, of, ReplaySubject, Subject} from 'rxjs';
+import {InputWorkPackageCreate, InputWorkPackageUpdate, WorkPackageService} from '@cat/api';
+import {merge, of, ReplaySubject, Subject} from 'rxjs';
 import {catchError, distinctUntilChanged, map, mergeMap, takeUntil, tap} from 'rxjs/operators';
 import {Log} from '../../../../../../common/utils/log';
 import {HttpErrorResponse} from '@angular/common/http';
@@ -22,8 +22,8 @@ export class WorkPackageDetailsComponent extends BaseComponent implements OnInit
 
   saveError$ = new Subject<I18nValidationError | null>();
   saveSuccess$ = new Subject<boolean>();
-  updateWorkPackageData$ = new EventEmitter<InputWorkPackageUpdate>()
-  createWorkPackageData$ = new EventEmitter<InputWorkPackageCreate>()
+  updateWorkPackageData$ = new EventEmitter<InputWorkPackageUpdate>();
+  createWorkPackageData$ = new EventEmitter<InputWorkPackageCreate>();
 
   constructor(private workPackageService: WorkPackageService,
               private activatedRoute: ActivatedRoute,
@@ -61,13 +61,13 @@ export class WorkPackageDetailsComponent extends BaseComponent implements OnInit
   private workPackageById$ = this.workPackageId$
     .pipe(
       mergeMap(id => id ? this.workPackageService.getWorkPackageById(id, this.projectId) : of({}))
-    )
+    );
 
   public workPackageDetails$ = merge(
     this.workPackageById$,
     this.updatedWorkPackageData$,
     this.createdWorkPackageData$
-  )
+  );
 
   ngOnInit(): void {
     this.projectStore.init(this.projectId);

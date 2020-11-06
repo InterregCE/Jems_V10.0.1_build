@@ -19,7 +19,7 @@ export class Forms {
 
     items.forEach((value, item) => {
       group[item] = new FormControl('', value);
-    })
+    });
     return new FormGroup(group);
   }
 }

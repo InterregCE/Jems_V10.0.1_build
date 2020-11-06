@@ -35,7 +35,7 @@ export abstract class ViewEditForm extends AbstractForm implements OnInit {
           filter(success => !!success),
           delay(50)
         )
-        .subscribe(() => this.changeFormState$.next(FormState.VIEW))
+        .subscribe(() => this.changeFormState$.next(FormState.VIEW));
     }
 
     this.changeFormState$
@@ -61,9 +61,9 @@ export abstract class ViewEditForm extends AbstractForm implements OnInit {
   }
 
   protected enterViewMode(): void {
-  };
+  }
 
   protected enterEditMode(): void {
-  };
+  }
 
 }

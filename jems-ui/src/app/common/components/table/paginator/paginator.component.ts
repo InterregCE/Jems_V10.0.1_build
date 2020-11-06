@@ -20,11 +20,11 @@ export class PaginatorComponent {
   @Output()
   pageIndexChanged: EventEmitter<number> = new EventEmitter<number>();
   @Output()
-  pageSizeChanged: EventEmitter<number> = new EventEmitter<number>()
+  pageSizeChanged: EventEmitter<number> = new EventEmitter<number>();
 
   newPage(pageEvent: PageEvent): void {
     if (pageEvent.pageSize !== this.currentPageSize) {
-      this.currentPageSize = pageEvent.pageSize
+      this.currentPageSize = pageEvent.pageSize;
       this.pageSizeChanged.emit(this.currentPageSize);
     }
     if (pageEvent.pageIndex !== this.currentPageIndex) {

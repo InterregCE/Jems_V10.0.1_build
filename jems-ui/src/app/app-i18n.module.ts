@@ -14,7 +14,7 @@ import {CommonModule} from '@angular/common';
       deps: [HttpClient]
     },
     isolate: true,
-      extend: true
+    extend: true
   })],
   exports: [TranslateModule]
 })
@@ -22,11 +22,11 @@ export class AppI18nModule {
   static forRoot(): ModuleWithProviders {
     return {
       ngModule: AppI18nModule
-    }
+    };
   }
 }
 
 
-export function HttpLoaderFactory(http: HttpClient) {
+export function HttpLoaderFactory(http: HttpClient): TranslateHttpLoader {
   return new TranslateHttpLoader(http, '/api/i18n/', '');
 }

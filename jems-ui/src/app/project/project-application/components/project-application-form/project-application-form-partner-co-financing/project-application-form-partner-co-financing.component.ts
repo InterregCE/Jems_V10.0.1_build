@@ -16,8 +16,8 @@ import {Permission} from '../../../../../security/permissions/permission';
 import {filter, map, takeUntil} from 'rxjs/operators';
 import {Numbers} from '../../../../../common/utils/numbers';
 
-const MAX_100_NUMBER_REGEX = '^([0-9]{1,2}|100)$'
-const MAX_100_REGEXP = RegExp(MAX_100_NUMBER_REGEX)
+const MAX_100_NUMBER_REGEX = '^([0-9]{1,2}|100)$';
+const MAX_100_REGEXP = RegExp(MAX_100_NUMBER_REGEX);
 
 @Component({
   selector: 'app-project-application-form-partner-co-financing',
@@ -42,9 +42,9 @@ export class ProjectApplicationFormPartnerCoFinancingComponent extends ViewEditF
   @Output()
   cancelEdit = new EventEmitter<void>();
 
-  fundAmount = -1
-  myPercentage = -1
-  myAmount = -1
+  fundAmount = -1;
+  myPercentage = -1;
+  myAmount = -1;
 
   Permission = Permission;
 
@@ -89,7 +89,7 @@ export class ProjectApplicationFormPartnerCoFinancingComponent extends ViewEditF
   }
 
   private initForm(): void {
-    const inputValues = this.finances.find(x => !!x.fund)
+    const inputValues = this.finances.find(x => !!x.fund);
     this.coFinancingForm.controls.fundId.setValue(inputValues?.fund.id);
     this.coFinancingForm.controls.percentage.setValue(inputValues?.percentage || 0);
   }
@@ -100,7 +100,7 @@ export class ProjectApplicationFormPartnerCoFinancingComponent extends ViewEditF
     this.myAmount = Numbers.sum([this.totalAmount, -this.fundAmount]);
   }
 
-  protected enterViewMode() {
+  protected enterViewMode(): void {
     this.sideNavService.setAlertStatus(false);
   }
 
@@ -112,7 +112,7 @@ export class ProjectApplicationFormPartnerCoFinancingComponent extends ViewEditF
     return this.coFinancingForm;
   }
 
-  onSubmit() {
+  onSubmit(): void {
     this.submitted = true;
     this.save.emit({ finances: [
         {

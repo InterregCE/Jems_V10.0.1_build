@@ -87,7 +87,7 @@ export class ProjectApplicationFormSidenavService {
           const status = project.projectStatus.status;
           const isNotOpen = status !== OutputProjectStatus.StatusEnum.DRAFT
             && status !== OutputProjectStatus.StatusEnum.RETURNEDTOAPPLICANT;
-          this.setHeadlines(isNotApplicant && isNotOpen, project.id, partners, packages)
+          this.setHeadlines(isNotApplicant && isNotOpen, project.id, partners, packages);
         })
       ).subscribe();
   }

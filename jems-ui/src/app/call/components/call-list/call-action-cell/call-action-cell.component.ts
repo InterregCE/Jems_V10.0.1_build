@@ -18,5 +18,5 @@ export class CallActionCellComponent {
   isOpen(): boolean {
     const currentDate = moment(new Date());
     return currentDate.isBefore(this.call.endDate) && currentDate.isAfter(this.call.startDate);
-  };
+  }
 }

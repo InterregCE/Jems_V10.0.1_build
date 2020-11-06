@@ -1,5 +1,5 @@
 import {Injectable} from '@angular/core';
-import {CallService, InputCallUpdate, OutputCall} from '@cat/api'
+import {CallService, InputCallUpdate, OutputCall} from '@cat/api';
 import {merge, Observable, of, ReplaySubject, Subject} from 'rxjs';
 import {catchError, distinctUntilChanged, mergeMap, switchMap, tap} from 'rxjs/operators';
 import {Log} from '../../common/utils/log';
@@ -21,7 +21,7 @@ export class CallStore {
       mergeMap(id => id ? this.callService.getCallById(id) : of({})),
       tap(call => Log.info('Fetched call:', this, call)),
       tap((call: OutputCall) => {
-        if (call.name) this.callName$.next(call.name);
+        if (call.name) { this.callName$.next(call.name); }
       }),
     );
 
@@ -47,7 +47,7 @@ export class CallStore {
               private eventBusService: EventBusService) {
   }
 
-  init(callId: number | string) {
+  init(callId: number | string): void {
     this.callId$.next(Number(callId));
   }
 

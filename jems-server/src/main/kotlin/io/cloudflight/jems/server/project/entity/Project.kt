@@ -15,30 +15,34 @@ import javax.persistence.JoinColumn
 import javax.persistence.ManyToOne
 import javax.persistence.OneToMany
 import javax.persistence.OneToOne
+import javax.validation.constraints.NotNull
 
 @Entity(name = "project")
 data class Project(
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    val id: Long?,
+    val id: Long = 0,
 
     @ManyToOne(optional = false, fetch = FetchType.LAZY)
     @JoinColumn(name = "project_call_id")
+    @field:NotNull
     val call: Call,
 
     @ManyToOne(optional = true, fetch = FetchType.LAZY)
     @JoinColumn(name = "programme_priority_policy_objective_policy")
     val priorityPolicy: ProgrammePriorityPolicy? = null,
 
-    @Column(nullable = false)
+    @field:NotNull
     val acronym: String,
 
     @ManyToOne(optional = false, fetch = FetchType.LAZY)
+    @field:NotNull
     val applicant: User,
 
     @ManyToOne(optional = false)
     @JoinColumn(name = "project_status_id")
+    @field:NotNull
     val projectStatus: ProjectStatus,
 
     @ManyToOne(optional = true)

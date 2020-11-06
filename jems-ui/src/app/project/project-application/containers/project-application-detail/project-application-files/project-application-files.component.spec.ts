@@ -66,21 +66,21 @@ describe('ProjectApplicationFilesComponent', () => {
     });
 
     // change sorting
-    component.newSort$.next({active: 'userRole.name', direction: 'asc'})
+    component.newSort$.next({active: 'userRole.name', direction: 'asc'});
     httpTestingController.expectOne({
       method: 'GET',
       url: '//api/project/1/file?fileType=APPLICANT_FILE&page=0&size=25&sort=userRole.name,asc'
     });
 
     // change page index
-    component.newPageIndex$.next(2)
+    component.newPageIndex$.next(2);
     httpTestingController.expectOne({
       method: 'GET',
       url: '//api/project/1/file?fileType=APPLICANT_FILE&page=2&size=25&sort=userRole.name,asc'
     });
 
     // change page size
-    component.newPageSize$.next(3)
+    component.newPageSize$.next(3);
     httpTestingController.expectOne({
       method: 'GET',
       url: '//api/project/1/file?fileType=APPLICANT_FILE&page=2&size=3&sort=userRole.name,asc'

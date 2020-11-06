@@ -30,8 +30,8 @@ export class CallPriorityCheckbox {
         copy.name = child.name;
         copy.children = [];
         copy.policy = child.policy;
-        copy.checked = checked.includes(child.policy)
-      return copy;
+        copy.checked = checked.includes(child.policy);
+        return copy;
       }
     );
     checkbox.policy = priorityCheckbox.policy;
@@ -55,6 +55,6 @@ export class CallPriorityCheckbox {
   getCheckedChildPolicies(): OutputProgrammePriorityPolicySimple.ProgrammeObjectivePolicyEnum[] {
     return this.children
       .filter(child => child.checked)
-      .map(child => child.policy)
+      .map(child => child.policy);
   }
 }

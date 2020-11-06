@@ -1,23 +1,23 @@
 package io.cloudflight.jems.server.project.entity.partner.budget
 
-import javax.persistence.Column
 import javax.persistence.Embedded
 import javax.persistence.Entity
 import javax.persistence.GeneratedValue
 import javax.persistence.GenerationType
 import javax.persistence.Id
+import javax.validation.constraints.NotNull
 
 @Entity(name = "project_partner_budget_infrastructure")
 data class ProjectPartnerBudgetInfrastructure(
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    override val id: Long? = null,
+    override val id: Long = 0,
 
-    @Column(nullable = false)
+    @field:NotNull
     override val partnerId: Long,
 
     @Embedded
-    override val budget: Budget?
+    override val budget: Budget
 
 ): CommonBudget

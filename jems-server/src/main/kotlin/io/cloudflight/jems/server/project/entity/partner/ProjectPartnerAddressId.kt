@@ -6,15 +6,17 @@ import javax.persistence.Column
 import javax.persistence.Embeddable
 import javax.persistence.EnumType
 import javax.persistence.Enumerated
+import javax.validation.constraints.NotNull
 
 @Embeddable
 data class ProjectPartnerAddressId (
 
-    @Column(name = "partner_id", nullable = false)
+    @Column(name = "partner_id")
+    @field:NotNull
     val partnerId: Long,
 
-    @Column(nullable = false)
     @Enumerated(EnumType.STRING)
+    @field:NotNull
     val type: ProjectPartnerAddressType
 
 ) : Serializable

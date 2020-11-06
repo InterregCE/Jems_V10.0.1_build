@@ -9,7 +9,7 @@ import {
   ProgrammePriorityService,
   ProgrammeStrategyService,
   ProgrammeFundService
-} from '@cat/api'
+} from '@cat/api';
 import {BaseComponent} from '@common/components/base-component';
 import {catchError, mergeMap, map, startWith, take, takeUntil, tap} from 'rxjs/operators';
 import {Log} from '../../../common/utils/log';
@@ -82,7 +82,7 @@ export class CallConfigurationComponent extends BaseComponent {
       map(([call, permissions, allActiveStrategies, allPriorities, allFunds]) => ({
         call,
         applicantCanAccessCall: permissions[0] !== Permission.APPLICANT_USER
-          || (call as OutputCall).status !== OutputCall.StatusEnum.PUBLISHED,
+          || call.status !== OutputCall.StatusEnum.PUBLISHED,
         strategies: this.getStrategies(allActiveStrategies, call),
         priorities: this.getPriorities(allPriorities, call),
         funds: this.getFunds(allFunds, call)
@@ -103,7 +103,7 @@ export class CallConfigurationComponent extends BaseComponent {
               private eventBusService: EventBusService,
               private programmePriorityService: ProgrammePriorityService,
               private programmeStrategyService: ProgrammeStrategyService,
-              private programmeFundService: ProgrammeFundService,) {
+              private programmeFundService: ProgrammeFundService) {
     super();
     this.callStore.init(this.callId);
     this.sideNavService.setHeadlines(CallStore.CALL_DETAIL_PATH, [
@@ -161,7 +161,7 @@ export class CallConfigurationComponent extends BaseComponent {
   }
 
   redirectToCallOverview(): void {
-    this.sideNavService.navigate({headline: {i18nKey: 'calls'}, route: '/app/call'})
+    this.sideNavService.navigate({headline: {i18nKey: 'calls'}, route: '/app/call'});
   }
 
   private getStrategies(allActiveStrategies: OutputProgrammeStrategy[], call: OutputCall): OutputProgrammeStrategy[] {
@@ -170,21 +170,21 @@ export class CallConfigurationComponent extends BaseComponent {
       .map(element =>
         ({strategy: element.strategy, active: false} as OutputProgrammeStrategy)
       );
-    if (!call || !(call as OutputCall).strategies?.length) {
+    if (!call || !call.strategies?.length) {
       return savedStrategies;
     }
-    Log.debug('Adapting the selected strategies', this, allActiveStrategies, (call as OutputCall).strategies);
+    Log.debug('Adapting the selected strategies', this, allActiveStrategies, call.strategies);
     savedStrategies
-      .filter(element => (call as OutputCall).strategies.includes(element.strategy))
-      .forEach(element => element.active = true)
+      .filter(element => call.strategies.includes(element.strategy))
+      .forEach(element => element.active = true);
     return savedStrategies;
   }
 
   private getPriorities(allPriorities: CallPriorityCheckbox[], call: OutputCall): CallPriorityCheckbox[] {
-    if (!call || !(call as OutputCall).priorityPolicies) {
+    if (!call || !call.priorityPolicies) {
       return allPriorities;
     }
-    const savedPolicies = (call as OutputCall).priorityPolicies
+    const savedPolicies = call.priorityPolicies
       .map(policy => policy.programmeObjectivePolicy ? policy.programmeObjectivePolicy : policy) as any;
     Log.debug('Adapting the priority policies', this, allPriorities, savedPolicies);
     return allPriorities.map(priority => CallPriorityCheckbox.fromSavedPolicies(priority, savedPolicies));
@@ -208,7 +208,7 @@ export class CallConfigurationComponent extends BaseComponent {
     const callFundIds = (call as OutputCall).funds.map(element => element.id ? element.id : element);
     savedFunds
       .filter(element => callFundIds.includes(element.id))
-      .forEach(element => element.selected = true)
+      .forEach(element => element.selected = true);
     return savedFunds;
   }
 }

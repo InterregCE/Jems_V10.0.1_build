@@ -10,7 +10,7 @@ import {
 } from '@angular/core';
 import {MatSort} from '@angular/material/sort';
 import {TableConfiguration} from '@common/components/table/model/table.configuration';
-import {OutputProjectPartner, PageOutputProjectPartner} from '@cat/api'
+import {OutputProjectPartner, PageOutputProjectPartner} from '@cat/api';
 import {ColumnType} from '@common/components/table/model/column-type.enum';
 import {Forms} from '../../../../../common/utils/forms';
 import {filter, map, take} from 'rxjs/operators';
@@ -67,7 +67,7 @@ export class ProjectApplicationFormPartnerListComponent implements OnInit {
           displayedColumn: 'project.application.form.partner.table.number',
           elementProperty: 'sortNumber',
           alternativeValueCondition: (element: any) => {
-            return element === null
+            return element === null;
           },
           alternativeValue: 'project.application.form.partner.number.info.auto',
           sortProperty: 'sortNumber'
@@ -97,7 +97,7 @@ export class ProjectApplicationFormPartnerListComponent implements OnInit {
     });
   }
 
-  delete(partner: OutputProjectPartner) {
+  delete(partner: OutputProjectPartner): void {
     Forms.confirmDialog(
       this.dialog,
       'project.application.form.partner.table.action.delete.dialog.header',

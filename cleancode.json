@@ -1,0 +1,8 @@
+{
+  "suppressedRules": [
+    {
+      "rule": "archunit.jpa.entities.no-column-names",
+      "reason": "specific usages like account for user entity and embedded relations are needed"
+    }
+  ]
+}

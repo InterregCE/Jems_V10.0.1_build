@@ -1,10 +1,7 @@
 package io.cloudflight.jems.server.project.service.partner.budget
 
-import io.cloudflight.jems.api.project.dto.partner.ProjectPartnerRole
 import io.cloudflight.jems.api.project.dto.partner.budget.InputBudget
 import io.cloudflight.jems.server.common.exception.I18nValidationException
-import io.cloudflight.jems.server.programme.entity.ProgrammeLegalStatus
-import io.cloudflight.jems.server.project.entity.partner.ProjectPartner
 import io.cloudflight.jems.server.project.entity.partner.budget.Budget
 import io.cloudflight.jems.server.project.entity.partner.budget.CommonBudget
 import io.cloudflight.jems.server.project.entity.partner.budget.ProjectPartnerBudgetEquipment
@@ -19,7 +16,6 @@ import io.cloudflight.jems.server.project.repository.partner.budget.ProjectPartn
 import io.cloudflight.jems.server.project.repository.partner.budget.ProjectPartnerBudgetInfrastructureRepository
 import io.cloudflight.jems.server.project.repository.partner.budget.ProjectPartnerBudgetStaffCostRepository
 import io.cloudflight.jems.server.project.repository.partner.budget.ProjectPartnerBudgetTravelRepository
-import io.cloudflight.jems.server.project.service.partner.ProjectPartnerTestUtil.Companion.project
 import io.cloudflight.jems.server.project.service.partner.budget.get_budget_options.GetBudgetOptionsInteractor
 import io.mockk.MockKAnnotations
 import io.mockk.every
@@ -35,7 +31,6 @@ import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.Arguments
 import org.junit.jupiter.params.provider.MethodSource
 import java.math.BigDecimal
-import java.util.Optional
 import java.util.stream.Stream
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
@@ -182,6 +177,7 @@ internal class ProjectPartnerBudgetServiceTest {
         ).overridingErrorMessage("numberOfUnits could be up to 999.999.999.999.999,99").isEqualTo(
             listOf(
                 InputBudget(
+                    id = 0,
                     numberOfUnits = BigDecimal.valueOf(999_999_999_999_999_99L, 2),
                     pricePerUnit = BigDecimal.valueOf(100L, 2),
                     rowSum = BigDecimal.valueOf(999_999_999_999_999_99L, 2))
@@ -199,6 +195,7 @@ internal class ProjectPartnerBudgetServiceTest {
         ).overridingErrorMessage("pricePerUnit could be up to 999.999.999.999.999,99").isEqualTo(
             listOf(
                 InputBudget(
+                    id = 0,
                     numberOfUnits = BigDecimal.valueOf(100L, 2),
                     pricePerUnit = BigDecimal.valueOf(999_999_999_999_999_99L, 2),
                     rowSum = BigDecimal.valueOf(999_999_999_999_999_99L, 2))
@@ -306,7 +303,7 @@ internal class ProjectPartnerBudgetServiceTest {
                 InputBudget(id = 1, numberOfUnits = toBd(TO_CHANGE_NUM_OF_UNITS_NEW), pricePerUnit = toBd(TO_CHANGE_PRICE_PER_UNIT_NEW), rowSum = toBd(TO_CHANGE_ROW_SUM_NEW)),
                 InputBudget(id = 2, numberOfUnits = toBd(TO_STAY_NUM_OF_UNITS), pricePerUnit = toBd(TO_STAY_PRICE_PER_UNIT), rowSum = toBd(TO_STAY_ROW_SUM)),
                 // here there should be id=4 normally
-                InputBudget(id = null, numberOfUnits = toBd(550.0), pricePerUnit = toBd(10.0), rowSum = toBd(5500.0))
+                InputBudget(id = 0, numberOfUnits = toBd(550.0), pricePerUnit = toBd(10.0), rowSum = toBd(5500.0))
             )
         )
 

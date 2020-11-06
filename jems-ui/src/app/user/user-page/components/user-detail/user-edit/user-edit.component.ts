@@ -127,6 +127,6 @@ export class UserEditComponent extends ViewEditForm {
   }
 
   getUserRole(): OutputUserRole | undefined {
-    return this.userRoles.find(role => role.id === this.user.userRole.id)
+    return this.userRoles.find(role => role.id === this.user.userRole.id);
   }
 }

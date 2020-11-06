@@ -1,5 +1,5 @@
 plugins {
-    id "cloudflight-gradle-plugin" version "5.5.22"
+    id "cloudflight-gradle-plugin" version "5.8.3"
 }
 
 description "Jems Project"

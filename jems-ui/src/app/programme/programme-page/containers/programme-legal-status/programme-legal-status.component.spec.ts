@@ -46,7 +46,7 @@ describe('ProgrammeLegalStatusComponent', () => {
   it('should update legal statuses', fakeAsync(() => {
     let result: InputProgrammeLegalStatus[] = [];
     component.legalStatuses$.subscribe(res => result = res);
-    component.saveStatuses$.next({toPersist: [], toDelete: []})
+    component.saveStatuses$.next({toPersist: [], toDelete: []});
 
     httpTestingController.match({method: 'GET', url: `//api/programmelegalstatus`});
     httpTestingController.match({method: 'POST', url: `//api/programmelegalstatus`})

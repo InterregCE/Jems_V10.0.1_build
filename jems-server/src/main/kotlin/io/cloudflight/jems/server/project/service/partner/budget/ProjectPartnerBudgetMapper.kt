@@ -25,7 +25,7 @@ private fun toBudget(
 )
 
 fun InputBudget.toStaffCost(partnerId: Long) = ProjectPartnerBudgetStaffCost(
-    id = id,
+    id = id ?: 0,
     partnerId = partnerId,
     budget = toBudget(
         description = description,
@@ -35,7 +35,7 @@ fun InputBudget.toStaffCost(partnerId: Long) = ProjectPartnerBudgetStaffCost(
 )
 
 fun InputBudget.toTravel(partnerId: Long) = ProjectPartnerBudgetTravel(
-    id = id,
+    id = id ?: 0,
     partnerId = partnerId,
     budget = toBudget(
         description = description,
@@ -45,7 +45,7 @@ fun InputBudget.toTravel(partnerId: Long) = ProjectPartnerBudgetTravel(
 )
 
 fun InputBudget.toExternal(partnerId: Long) = ProjectPartnerBudgetExternal(
-    id = id,
+    id = id ?: 0,
     partnerId = partnerId,
     budget = toBudget(
         description = description,
@@ -55,7 +55,7 @@ fun InputBudget.toExternal(partnerId: Long) = ProjectPartnerBudgetExternal(
 )
 
 fun InputBudget.toEquipment(partnerId: Long) = ProjectPartnerBudgetEquipment(
-    id = id,
+    id = id ?: 0,
     partnerId = partnerId,
     budget = toBudget(
         description = description,
@@ -65,7 +65,7 @@ fun InputBudget.toEquipment(partnerId: Long) = ProjectPartnerBudgetEquipment(
 )
 
 fun InputBudget.toInfrastructure(partnerId: Long) = ProjectPartnerBudgetInfrastructure(
-    id = id,
+    id = id ?: 0,
     partnerId = partnerId,
     budget = toBudget(
         description = description,
@@ -76,8 +76,8 @@ fun InputBudget.toInfrastructure(partnerId: Long) = ProjectPartnerBudgetInfrastr
 
 fun CommonBudget.toOutput() = InputBudget(
     id = id,
-    description = budget!!.description,
-    numberOfUnits = budget!!.numberOfUnits,
-    pricePerUnit = budget!!.pricePerUnit,
-    rowSum = budget!!.rowSum
+    description = budget.description,
+    numberOfUnits = budget.numberOfUnits,
+    pricePerUnit = budget.pricePerUnit,
+    rowSum = budget.rowSum
 )

@@ -28,7 +28,7 @@ describe('LanguageService', () => {
   });
 
   it('should set the new language', () => {
-    service.changeLanguage('de')
+    service.changeLanguage('de');
 
     expect(translate.currentLang).toBe('de');
   });

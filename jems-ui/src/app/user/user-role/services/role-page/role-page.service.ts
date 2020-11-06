@@ -12,8 +12,8 @@ export class RolePageService {
   private userRoles$ = this.permissionService.permissionsChanged()
     .pipe(
       mergeMap(permissions => {
-        if (permissions.includes(Permission.ADMINISTRATOR)) return this.userRoleService.list();
-        return of(null)
+        if (permissions.includes(Permission.ADMINISTRATOR)) { return this.userRoleService.list(); }
+        return of(null);
       }),
       map(page => page ? page.content : []),
       tap(roles => Log.info('Fetched the user roles:', this, roles)),

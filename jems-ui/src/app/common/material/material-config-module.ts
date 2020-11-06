@@ -48,9 +48,9 @@ export class MaterialConfigModule {
   ) {
     this.languageService.systemLanguage$.subscribe(language => {
       // since moment.js is using different dialect than us for the Norway, we should map 'no' to 'nb' (we are using 'NO' for the Norway while moment.js is using 'nb' for that)
-      const local = language.toLowerCase() === 'no' ? 'nb' : language
-      this.dateAdapter.setLocale(local)
-      this.ngxDateAdapter.setLocale(local)
-    })
+      const local = language.toLowerCase() === 'no' ? 'nb' : language;
+      this.dateAdapter.setLocale(local);
+      this.ngxDateAdapter.setLocale(local);
+    });
   }
 }

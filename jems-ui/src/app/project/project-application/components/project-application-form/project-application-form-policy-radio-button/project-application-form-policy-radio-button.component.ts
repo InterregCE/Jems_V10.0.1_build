@@ -1,5 +1,5 @@
 import {ChangeDetectionStrategy, Component, EventEmitter, Input, Output} from '@angular/core';
-import {InputProjectData} from '@cat/api'
+import {InputProjectData} from '@cat/api';
 import {FormGroup} from '@angular/forms';
 
 @Component({
@@ -12,11 +12,11 @@ export class ProjectApplicationFormPolicyRadioButtonComponent{
   @Input()
   objectives: InputProjectData.SpecificObjectiveEnum[];
   @Input()
-  applicationForm: FormGroup
+  applicationForm: FormGroup;
   @Output()
   selected = new EventEmitter<InputProjectData.SpecificObjectiveEnum>();
 
   specificObjectiveErrors = {
     required: 'project.objective.should.not.be.empty'
-  }
+  };
 }

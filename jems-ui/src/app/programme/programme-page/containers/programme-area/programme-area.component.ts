@@ -61,7 +61,7 @@ export class ProgrammeAreaComponent extends BaseComponent implements OnInit {
             take(1),
             takeUntil(this.destroyed$),
             tap(nuts => this.savedNuts$.next(nuts))
-          ).subscribe()
+          ).subscribe();
       })
     );
 
@@ -108,7 +108,7 @@ export class ProgrammeAreaComponent extends BaseComponent implements OnInit {
         ),
         tap(regions => this.selectionChanged$.next(regions)),
         tap(regions => this.regionTreeDataSource.data = regions)
-      ).subscribe()
+      ).subscribe();
   }
 
   private getSelected(checkboxes: ProgrammeRegionCheckbox[]): Map<string, ProgrammeRegionCheckbox[]> {
@@ -134,7 +134,7 @@ export class ProgrammeAreaComponent extends BaseComponent implements OnInit {
     }
     checkbox.children.forEach(child => {
       this.collectSelectedGrouped(child, results);
-    })
+    });
   }
 
   private collectSelectedChildren(checkbox: ProgrammeRegionCheckbox, results: string[]): void {
@@ -143,7 +143,7 @@ export class ProgrammeAreaComponent extends BaseComponent implements OnInit {
     }
     checkbox.children.forEach(child => {
       this.collectSelectedChildren(child, results);
-    })
+    });
   }
 
   private collectSelectedIds(regions: ProgrammeRegionCheckbox[]): string[] {
@@ -151,6 +151,6 @@ export class ProgrammeAreaComponent extends BaseComponent implements OnInit {
       const children: string[] = [];
       this.collectSelectedChildren(region, children);
       return children;
-    })
+    });
   }
 }
