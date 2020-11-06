@@ -1,5 +1,6 @@
 package io.cloudflight.jems.server.nuts.service
 
+import io.cloudflight.jems.api.nuts.dto.OutputNuts
 import io.cloudflight.jems.api.nuts.dto.OutputNutsMetadata
 import io.cloudflight.jems.server.common.exception.I18nValidationException
 import io.cloudflight.jems.server.common.exception.ResourceNotFoundException
@@ -80,13 +81,13 @@ class NutsServiceImpl(
     }
 
     @Transactional(readOnly = true)
-    override fun getNuts(): Map<NutsIdentifier, Map<NutsIdentifier, Map<NutsIdentifier, Set<NutsIdentifier>>>> {
+    override fun getNuts(): List<OutputNuts> {
         if (getNutsMetadata() == null)
             throw I18nValidationException(
                 httpStatus = HttpStatus.UNPROCESSABLE_ENTITY,
                 i18nKey = "nuts.not.yet.downloaded"
             )
-        return groupNuts(nutsRegion3Repository.findAll())
+        return groupNuts(nutsRegion3Repository.findAll()).toOutputNuts()
     }
 
     private fun extractNutsFromDatasets(): LinkedHashMap<String, String> {

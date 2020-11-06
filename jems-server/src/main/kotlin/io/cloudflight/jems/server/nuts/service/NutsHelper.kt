@@ -1,5 +1,6 @@
 package io.cloudflight.jems.server.nuts.service
 
+import io.cloudflight.jems.api.nuts.dto.OutputNuts
 import io.cloudflight.jems.server.nuts.entity.NutsCountry
 import io.cloudflight.jems.server.nuts.entity.NutsRegion1
 import io.cloudflight.jems.server.nuts.entity.NutsRegion2
@@ -9,6 +10,10 @@ import org.springframework.util.StreamUtils
 import org.springframework.web.client.ResponseExtractor
 import java.io.File
 import java.io.FileOutputStream
+import java.text.Collator
+import java.util.Locale
+import java.util.TreeMap
+import java.util.TreeSet
 
 private val CSV_DELIMITER = Regex(",(?=(?:[^\"]*\"[^\"]*\")*[^\"]*\$)")
 private val TRAILING_QUOTES = Regex("^\"+|\"+$")
@@ -23,6 +28,8 @@ const val GISCO_DATASETS_FILE = "datasets.json"
 const val NUTS_ID = "NUTS_ID"
 const val NUTS_NAME = "NAME_LATN"
 
+private val collatorGerman = Collator.getInstance(Locale.GERMAN)
+
 fun String.removeWrappingQuotes() = replace(TRAILING_QUOTES, "")
 
 fun String.splitCsvLine() = split(CSV_DELIMITER, 0).map { it.removeWrappingQuotes() }
@@ -36,19 +43,44 @@ fun groupNuts(
         Map<
             NutsIdentifier, // NUTS_2
             Set<NutsIdentifier>>>> {
-    val result: MutableMap<NutsIdentifier, MutableMap<NutsIdentifier, MutableMap<NutsIdentifier, MutableSet<NutsIdentifier>>>> = HashMap()
+    val result: MutableMap<NutsIdentifier, MutableMap<NutsIdentifier, MutableMap<NutsIdentifier, MutableSet<NutsIdentifier>>>> = TreeMap()
 
     nuts.forEach {
         val countryId = it.region2.region1.country.toOutput()
         val nuts1Id = it.region2.region1.toOutput()
         val nuts2Id = it.region2.toOutput()
         val nuts3Id = it.toOutput()
-        result.getOrPut(countryId) { HashMap() }
-            .getOrPut(nuts1Id) { HashMap() }
-            .getOrPut(nuts2Id) { HashSet() }
+        result.getOrPut(countryId) { TreeMap() }
+            .getOrPut(nuts1Id) { TreeMap() }
+            .getOrPut(nuts2Id) { TreeSet() }
             .add(nuts3Id)
     }
     return result
+}
+
+fun Map<NutsIdentifier, Map<NutsIdentifier, Map<NutsIdentifier, Set<NutsIdentifier>>>>.toOutputNuts() = map {
+    OutputNuts(
+        code = it.key.id,
+        title = it.key.title,
+        areas = it.value.map {
+            OutputNuts(
+                code = it.key.id,
+                title = it.key.title,
+                areas = it.value.map {
+                    OutputNuts(
+                        code = it.key.id,
+                        title = it.key.title,
+                        areas = it.value.map {
+                            OutputNuts(
+                                code = it.id,
+                                title = it.title
+                            )
+                        }
+                    )
+                }
+            )
+        }
+    )
 }
 
 /**
@@ -57,7 +89,7 @@ fun groupNuts(
 data class NutsIdentifier(
     val id: String,
     val title: String
-) {
+): Comparable<NutsIdentifier> {
 
     override fun equals(other: Any?): Boolean = (other is NutsIdentifier) && id == other.id
 
@@ -68,6 +100,8 @@ data class NutsIdentifier(
     override fun toString(): String {
         return "$id|$title"
     }
+
+    override fun compareTo(other: NutsIdentifier): Int = collatorGerman.compare(this.title, other.title)
 
 }
 

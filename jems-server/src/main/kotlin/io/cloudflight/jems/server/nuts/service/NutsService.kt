@@ -1,5 +1,6 @@
 package io.cloudflight.jems.server.nuts.service
 
+import io.cloudflight.jems.api.nuts.dto.OutputNuts
 import io.cloudflight.jems.api.nuts.dto.OutputNutsMetadata
 
 interface NutsService {
@@ -8,6 +9,6 @@ interface NutsService {
 
     fun downloadLatestNutsFromGisco(): OutputNutsMetadata
 
-    fun getNuts(): Map<NutsIdentifier, Map<NutsIdentifier, Map<NutsIdentifier, Set<NutsIdentifier>>>>
+    fun getNuts(): List<OutputNuts>
 
 }
