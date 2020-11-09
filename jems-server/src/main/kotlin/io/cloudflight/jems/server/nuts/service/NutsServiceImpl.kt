@@ -41,6 +41,7 @@ class NutsServiceImpl(
     override fun getNutsMetadata(): OutputNutsMetadata? {
         return nutsMetadataRepository.findById(1L)
             .map { it.toOutputNutsMetadata() }
+            .map { if (it.date == null && it.title == null) null else it }
             .orElse(null)
     }
 
