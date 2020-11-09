@@ -1,5 +1,6 @@
 package io.cloudflight.jems.api.programme.dto
 
+import io.cloudflight.jems.api.nuts.dto.OutputNuts
 import java.time.LocalDate
 
 data class OutputProgrammeData(
@@ -15,7 +16,7 @@ data class OutputProgrammeData(
     val commissionDecisionDate: LocalDate?,
     val programmeAmendingDecisionNumber: String?,
     val programmeAmendingDecisionDate: LocalDate?,
-    val programmeNuts: Any
+    val programmeNuts: List<OutputNuts>
 ) {
     fun getChange(newData: OutputProgrammeData): Map<String, Pair<Any?, Any?>> {
         val changes = mutableMapOf<String, Pair<Any?, Any?>>()

@@ -39,12 +39,9 @@ class NutsServiceImpl(
 
     @Transactional(readOnly = true)
     override fun getNutsMetadata(): OutputNutsMetadata? {
-        val metadata = nutsMetadataRepository.findById(1L).get()
-
-        return if (metadata.nutsDate == null && metadata.nutsTitle == null)
-            null
-        else
-            metadata.toOutputNutsMetadata()
+        return nutsMetadataRepository.findById(1L)
+            .map { it.toOutputNutsMetadata() }
+            .orElse(null)
     }
 
     @Transactional
