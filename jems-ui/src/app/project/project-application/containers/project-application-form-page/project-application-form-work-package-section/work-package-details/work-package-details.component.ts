@@ -81,6 +81,6 @@ export class WorkPackageDetailsComponent extends BaseComponent implements OnInit
   }
 
   redirectToWorkPackageOverview(): void {
-    this.router.navigate(['app', 'project', 'detail', this.projectId, 'applicationForm']);
+    this.router.navigate(['app', 'project', 'detail', this.projectId, 'applicationFormWorkPackage']);
   }
 }
