@@ -44,7 +44,7 @@ describe('WorkPackageDetailsComponent', () => {
 
     component.redirectToWorkPackageOverview();
 
-    expect(router.navigate).toHaveBeenCalledWith(['app', 'project', 'detail', 1, 'applicationForm']);
+    expect(router.navigate).toHaveBeenCalledWith(['app', 'project', 'detail', 1, 'applicationFormWorkPackage']);
   });
 
   it('should list work packages details', fakeAsync(() => {
