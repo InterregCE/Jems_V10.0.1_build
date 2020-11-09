@@ -22,7 +22,7 @@ VALUES (1, 'administrator'),
        (3, 'applicant user');
 
 INSERT INTO account (email, name, surname, account_role_id, password)
-VALUES ('admin@ems.eu', 'Admin', 'Admin', 1, '{bcrypt}$2a$10$YbArQmvqQJVXXGehyHrJK.HlZv.FH29ropwqf/WaIRMKjOWVmMrqm');
+VALUES ('admin@jems.eu', 'Admin', 'Admin', 1, '{bcrypt}$2a$10$YbArQmvqQJVXXGehyHrJK.HlZv.FH29ropwqf/WaIRMKjOWVmMrqm');
 
 DELIMITER $$
 
@@ -258,8 +258,8 @@ CREATE TABLE programme_priority
 CREATE TABLE programme_priority_policy
 (
     programme_objective_policy_code VARCHAR(127) PRIMARY KEY,
-    programme_priority_id           INT UNSIGNED     NOT NULL,
-    code                            VARCHAR(50) NOT NULL UNIQUE,
+    programme_priority_id           INT UNSIGNED NOT NULL,
+    code                            VARCHAR(50)  NOT NULL UNIQUE,
     CONSTRAINT fk_programme_priority_policy_programme_objective_policy
         FOREIGN KEY (programme_objective_policy_code) REFERENCES programme_objective_policy (code)
             ON DELETE RESTRICT
@@ -372,26 +372,36 @@ VALUES ('EUStrategyAdriaticIonianRegion'),
 CREATE TABLE project_call
 (
     id               INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
-    creator_id       INT UNSIGNED  NOT NULL,
-    name             VARCHAR(255)  NOT NULL UNIQUE,
-    status           VARCHAR(127)  NOT NULL,
-    start_date       DATETIME(3)   NOT NULL,
-    end_date         DATETIME(3)   NOT NULL,
-    length_of_period INT           NULL,
-    description      VARCHAR(1000) NULL,
+    creator_id       INT UNSIGNED     NOT NULL,
+    name             VARCHAR(255)     NOT NULL UNIQUE,
+    status           VARCHAR(127)     NOT NULL,
+    start_date       DATETIME(3)      NOT NULL,
+    end_date         DATETIME(3)      NOT NULL,
+    length_of_period TINYINT UNSIGNED NOT NULL,
+    description      VARCHAR(1000)    NULL,
     CONSTRAINT fk_call_creator_user
         FOREIGN KEY (creator_id) REFERENCES account (id)
 );
 
 CREATE TABLE project
 (
-    id              INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
-    project_call_id INT UNSIGNED NOT NULL,
-    acronym         VARCHAR(25)  NOT NULL,
-    applicant_id    INT UNSIGNED NOT NULL,
+    id                                         INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    project_call_id                            INT UNSIGNED NOT NULL,
+    programme_priority_policy_objective_policy VARCHAR(127) DEFAULT NULL,
+    acronym                                    VARCHAR(25)  NOT NULL,
+    applicant_id                               INT UNSIGNED NOT NULL,
+    title                                      VARCHAR(255) DEFAULT NULL,
+    duration                                   INTEGER      DEFAULT NULL,
+    intro                                      TEXT         DEFAULT NULL,
+    intro_programme_language                   TEXT         DEFAULT NULL,
     CONSTRAINT fk_project_project_call
         FOREIGN KEY (project_call_id) REFERENCES project_call (id)
             ON DELETE CASCADE
+            ON UPDATE RESTRICT,
+    CONSTRAINT fk_project_to_programme_priority_policy
+        FOREIGN KEY (programme_priority_policy_objective_policy)
+            REFERENCES programme_priority_policy (programme_objective_policy_code)
+            ON DELETE RESTRICT
             ON UPDATE RESTRICT,
     CONSTRAINT fk_applicant_user
         FOREIGN KEY (applicant_id) REFERENCES account (id)
@@ -487,23 +497,6 @@ CREATE TABLE project_call_strategy
         FOREIGN KEY (programme_strategy) REFERENCES programme_strategy (strategy)
 );
 
-CREATE TABLE project_data
-(
-    project_id               INT UNSIGNED PRIMARY KEY,
-    title                    VARCHAR(255) DEFAULT NULL,
-    duration                 INTEGER      DEFAULT NULL,
-    priority_policy_id       VARCHAR(127) DEFAULT NULL,
-    intro                    TEXT         DEFAULT NULL,
-    intro_programme_language TEXT         DEFAULT NULL,
-    CONSTRAINT fk_project_data_to_project FOREIGN KEY (project_id) REFERENCES project (id)
-        ON DELETE CASCADE
-        ON UPDATE RESTRICT,
-    CONSTRAINT fk_project_priority_policy_call_priority_policy
-        FOREIGN KEY (priority_policy_id) REFERENCES project_call_priority_policy (programme_priority_policy)
-            ON DELETE RESTRICT
-            ON UPDATE RESTRICT
-);
-
 CREATE TABLE project_eligibility_assessment
 (
     project_id INT UNSIGNED PRIMARY KEY,
@@ -544,16 +537,40 @@ CREATE TABLE project_file
 
 CREATE TABLE project_partner
 (
-    id          INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
-    project_id  INT UNSIGNED NOT NULL,
-    name        VARCHAR(15)  NOT NULL,
-    role        VARCHAR(127) NOT NULL,
-    sort_number INT DEFAULT NULL,
+    id                        INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    project_id                INT UNSIGNED NOT NULL,
+    abbreviation              VARCHAR(15)  NOT NULL,
+    role                      VARCHAR(127) NOT NULL,
+    sort_number               INT          DEFAULT NULL,
+    name_in_original_language VARCHAR(127) DEFAULT NULL,
+    name_in_english           VARCHAR(127) DEFAULT NULL,
+    department                VARCHAR(255) DEFAULT NULL,
+    partner_type              VARCHAR(127) DEFAULT NULL,
+    vat                       VARCHAR(50)  DEFAULT NULL,
+    vat_recovery              BOOLEAN      DEFAULT TRUE,
     CONSTRAINT fk_project_partner_project
         FOREIGN KEY (project_id) REFERENCES project (id)
             ON DELETE CASCADE
             ON UPDATE RESTRICT,
-    UNIQUE KEY project_partner_project_name (project_id, name)
+    UNIQUE KEY project_partner_project_name (project_id, abbreviation)
+);
+
+CREATE TABLE project_partner_address
+(
+    partner_id   INT UNSIGNED                        NOT NULL,
+    type         ENUM ('Organization', 'Department') NOT NULL,
+    country      VARCHAR(100) DEFAULT NULL,
+    nuts_region2 VARCHAR(100) DEFAULT NULL,
+    nuts_region3 VARCHAR(100) DEFAULT NULL,
+    street       VARCHAR(50)  DEFAULT NULL,
+    house_number VARCHAR(20)  DEFAULT NULL,
+    postal_code  VARCHAR(20)  DEFAULT NULL,
+    city         VARCHAR(50)  DEFAULT NULL,
+    homepage     VARCHAR(250) DEFAULT NULL,
+    PRIMARY KEY (partner_id, type),
+    CONSTRAINT fk_project_partner_address_to_project_partner FOREIGN KEY (partner_id) REFERENCES project_partner (id)
+        ON DELETE CASCADE
+        ON UPDATE RESTRICT
 );
 
 CREATE TABLE project_quality_assessment
@@ -598,12 +615,22 @@ CREATE TABLE project_description_c1_overall_objective
 
 CREATE TABLE project_description_c2_relevance
 (
-    project_id                INT UNSIGNED PRIMARY KEY,
+    project_id          INT UNSIGNED PRIMARY KEY,
+    available_knowledge TEXT(5000) DEFAULT NULL,
+    CONSTRAINT fk_project_description_c2_to_project FOREIGN KEY (project_id) REFERENCES project (id)
+        ON DELETE CASCADE
+        ON UPDATE RESTRICT
+);
+
+CREATE TABLE project_description_c2_relevance_transl
+(
+    project_id                INT UNSIGNED NOT NULL,
+    language                  VARCHAR(3)   NOT NULL,
     territorial_challenge     TEXT(5000) DEFAULT NULL,
     common_challenge          TEXT(5000) DEFAULT NULL,
     transnational_cooperation TEXT(5000) DEFAULT NULL,
-    available_knowledge       TEXT(5000) DEFAULT NULL,
-    CONSTRAINT fk_project_description_c2_to_project FOREIGN KEY (project_id) REFERENCES project (id)
+    PRIMARY KEY (project_id, language),
+    CONSTRAINT fk_project_description_c2_relevance_transl_to_project_c2 FOREIGN KEY (project_id) REFERENCES project_description_c2_relevance (project_id)
         ON DELETE CASCADE
         ON UPDATE RESTRICT
 );
@@ -623,8 +650,8 @@ CREATE TABLE project_description_c2_relevance_strategy
 (
     id                   BINARY(16) PRIMARY KEY NOT NULL, # UUID
     project_relevance_id INT UNSIGNED           NOT NULL,
-    strategy             VARCHAR(127)           NOT NULL,
-    specification        TEXT(2000) DEFAULT NULL,
+    strategy             VARCHAR(127) DEFAULT NULL,
+    specification        TEXT(2000)   DEFAULT NULL,
     CONSTRAINT fk_project_strategy_to_project_description_c2_relevance FOREIGN KEY (project_relevance_id) REFERENCES project_description_c2_relevance (project_id)
         ON DELETE CASCADE
         ON UPDATE RESTRICT,
@@ -637,8 +664,8 @@ CREATE TABLE project_description_c2_relevance_synergy
 (
     id                   BINARY(16) PRIMARY KEY NOT NULL, # UUID
     project_relevance_id INT UNSIGNED           NOT NULL,
-    synergy              VARCHAR(500)           NOT NULL,
-    specification        TEXT(2000) DEFAULT NULL,
+    synergy              VARCHAR(500) DEFAULT NULL,
+    specification        TEXT(2000)   DEFAULT NULL,
     CONSTRAINT fk_project_synergy_to_project_description_c2_relevance FOREIGN KEY (project_relevance_id) REFERENCES project_description_c2_relevance (project_id)
         ON DELETE CASCADE
         ON UPDATE RESTRICT
@@ -692,7 +719,7 @@ CREATE TABLE project_description_c8_long_term_plans
         ON UPDATE RESTRICT
 );
 
-CREATE TABLE partner_contact_person
+CREATE TABLE project_partner_contact
 (
     partner_id INT UNSIGNED                                  NOT NULL,
     type       ENUM ('LegalRepresentative', 'ContactPerson') NOT NULL,
@@ -703,6 +730,259 @@ CREATE TABLE partner_contact_person
     telephone  VARCHAR(25)  DEFAULT NULL,
     PRIMARY KEY (partner_id, type),
     CONSTRAINT fk_project_partner_contact_project_partner FOREIGN KEY (partner_id) REFERENCES project_partner (id)
+        ON DELETE CASCADE
+        ON UPDATE RESTRICT
+);
+
+CREATE TABLE project_call_fund
+(
+    programme_fund INT UNSIGNED NOT NULL,
+    call_id        INT UNSIGNED NOT NULL,
+    CONSTRAINT fk_project_call_fund_to_programme_fund
+        FOREIGN KEY (programme_fund)
+            REFERENCES programme_fund (id)
+            ON DELETE RESTRICT
+            ON UPDATE RESTRICT,
+    CONSTRAINT fk_project_call_fund_to_call
+        FOREIGN KEY (call_id)
+            REFERENCES project_call (id)
+            ON DELETE CASCADE
+            ON UPDATE RESTRICT,
+    CONSTRAINT pk_project_call_fund PRIMARY KEY (programme_fund, call_id)
+);
+
+CREATE TABLE project_partner_contribution
+(
+    partner_id              INT UNSIGNED PRIMARY KEY,
+    organization_relevance  TEXT DEFAULT NULL,
+    organization_role       TEXT DEFAULT NULL,
+    organization_experience TEXT DEFAULT NULL,
+    CONSTRAINT fk_partner_contribution_to_partner FOREIGN KEY (partner_id) REFERENCES project_partner (id)
+        ON DELETE CASCADE
+        ON UPDATE RESTRICT
+);
+
+CREATE TABLE programme_legal_status
+(
+    id          INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    description VARCHAR(127) DEFAULT NULL
+);
+
+INSERT INTO programme_legal_status (id, description)
+VALUES (1, 'Public'),
+       (2, 'Private');
+
+ALTER TABLE project_partner
+    ADD COLUMN legal_status_id INT UNSIGNED NOT NULL AFTER partner_type,
+    ADD CONSTRAINT fk_project_partner_to_programme_legal_status
+        FOREIGN KEY (legal_status_id)
+            REFERENCES programme_legal_status (id)
+            ON DELETE RESTRICT
+            ON UPDATE RESTRICT;
+
+CREATE TABLE project_partner_budget_staff_cost
+(
+    id              INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    partner_id      INT UNSIGNED            NOT NULL,
+    description     VARCHAR(255)                     DEFAULT NULL,
+    number_of_units DECIMAL(17, 2) UNSIGNED NOT NULL DEFAULT 1.00,
+    price_per_unit  DECIMAL(17, 2) UNSIGNED NOT NULL,
+    row_sum         DECIMAL(17, 2) UNSIGNED NOT NULL,
+    CONSTRAINT fk_project_partner_budget_staff_cost_to_project_partner FOREIGN KEY (partner_id) REFERENCES project_partner (id)
+        ON DELETE CASCADE
+        ON UPDATE RESTRICT
+);
+
+CREATE TABLE project_partner_budget_travel
+(
+    id              INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    partner_id      INT UNSIGNED            NOT NULL,
+    description     VARCHAR(255)                     DEFAULT NULL,
+    number_of_units DECIMAL(17, 2) UNSIGNED NOT NULL DEFAULT 1.00,
+    price_per_unit  DECIMAL(17, 2) UNSIGNED NOT NULL,
+    row_sum         DECIMAL(17, 2) UNSIGNED NOT NULL,
+    CONSTRAINT fk_project_partner_budget_travel_to_project_partner FOREIGN KEY (partner_id) REFERENCES project_partner (id)
+        ON DELETE CASCADE
+        ON UPDATE RESTRICT
+);
+
+CREATE TABLE project_partner_budget_external
+(
+    id              INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    partner_id      INT UNSIGNED            NOT NULL,
+    description     VARCHAR(255)                     DEFAULT NULL,
+    number_of_units DECIMAL(17, 2) UNSIGNED NOT NULL DEFAULT 1.00,
+    price_per_unit  DECIMAL(17, 2) UNSIGNED NOT NULL,
+    row_sum         DECIMAL(17, 2) UNSIGNED NOT NULL,
+    CONSTRAINT fk_project_partner_budget_external_to_project_partner FOREIGN KEY (partner_id) REFERENCES project_partner (id)
+        ON DELETE CASCADE
+        ON UPDATE RESTRICT
+);
+
+CREATE TABLE project_partner_budget_equipment
+(
+    id              INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    partner_id      INT UNSIGNED            NOT NULL,
+    description     VARCHAR(255)                     DEFAULT NULL,
+    number_of_units DECIMAL(17, 2) UNSIGNED NOT NULL DEFAULT 1.00,
+    price_per_unit  DECIMAL(17, 2) UNSIGNED NOT NULL,
+    row_sum         DECIMAL(17, 2) UNSIGNED NOT NULL,
+    CONSTRAINT fk_project_partner_budget_equipment_to_project_partner FOREIGN KEY (partner_id) REFERENCES project_partner (id)
+        ON DELETE CASCADE
+        ON UPDATE RESTRICT
+);
+
+CREATE TABLE project_partner_budget_infrastructure
+(
+    id              INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    partner_id      INT UNSIGNED            NOT NULL,
+    description     VARCHAR(255)                     DEFAULT NULL,
+    number_of_units DECIMAL(17, 2) UNSIGNED NOT NULL DEFAULT 1.00,
+    price_per_unit  DECIMAL(17, 2) UNSIGNED NOT NULL,
+    row_sum         DECIMAL(17, 2) UNSIGNED NOT NULL,
+    CONSTRAINT fk_project_partner_budget_infrastructure_to_project_partner FOREIGN KEY (partner_id) REFERENCES project_partner (id)
+        ON DELETE CASCADE
+        ON UPDATE RESTRICT
+);
+
+CREATE TABLE project_partner_co_financing
+(
+    id                INT UNSIGNED AUTO_INCREMENT PRIMARY KEY KEY,
+    partner_id        INT UNSIGNED     NOT NULL,
+    percentage        TINYINT UNSIGNED NOT NULL,
+    programme_fund_id INT UNSIGNED DEFAULT NULL,
+    CONSTRAINT fk_project_partner_co_financing_to_project_partner FOREIGN KEY (partner_id) REFERENCES project_partner (id)
+        ON DELETE CASCADE
+        ON UPDATE RESTRICT,
+    CONSTRAINT fk_project_partner_co_financing_to_programme_fund FOREIGN KEY (programme_fund_id) REFERENCES programme_fund (id)
+        ON DELETE SET NULL
+        ON UPDATE RESTRICT
+);
+
+CREATE TABLE programme_language
+(
+    code     VARCHAR(3) NOT NULL PRIMARY KEY,
+    ui       BOOLEAN    NOT NULL DEFAULT FALSE,
+    fallback BOOLEAN    NOT NULL DEFAULT FALSE,
+    input    BOOLEAN    NOT NULL DEFAULT FALSE
+);
+
+INSERT INTO programme_language (code, ui, fallback, input)
+VALUES ('BE', false, false, false),
+       ('BG', false, false, false),
+       ('CS', false, false, false),
+       ('DA', false, false, false),
+       ('DE', false, false, false),
+       ('EL', false, false, false),
+       ('EN', true, true, true),
+       ('ES', false, false, false),
+       ('ET', false, false, false),
+       ('FI', false, false, false),
+       ('FR', false, false, false),
+       ('GA', false, false, false),
+       ('HR', false, false, false),
+       ('HU', false, false, false),
+       ('IT', false, false, false),
+       ('JA', false, false, false),
+       ('LB', false, false, false),
+       ('LT', false, false, false),
+       ('LV', false, false, false),
+       ('MT', false, false, false),
+       ('MK', false, false, false),
+       ('NL', false, false, false),
+       ('NO', false, false, false),
+       ('PL', false, false, false),
+       ('PT', false, false, false),
+       ('RO', false, false, false),
+       ('RU', false, false, false),
+       ('SK', false, false, false),
+       ('SL', false, false, false),
+       ('SQ', false, false, false),
+       ('SR', false, false, false),
+       ('SV', false, false, false),
+       ('TR', false, false, false),
+       ('UK', false, false, false);
+
+CREATE TABLE project_associated_organization
+(
+    id                        INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    project_id                INT UNSIGNED NOT NULL,
+    partner_id                INT UNSIGNED NOT NULL,
+    name_in_original_language VARCHAR(127) NOT NULL,
+    name_in_english           VARCHAR(127) NOT NULL,
+    sort_number               INT        DEFAULT NULL,
+    role_description          TEXT(2000) DEFAULT NULL,
+    CONSTRAINT fk_project_associated_organization_to_project
+        FOREIGN KEY (project_id) REFERENCES project (id)
+            ON DELETE CASCADE
+            ON UPDATE RESTRICT,
+    CONSTRAINT fk_project_associated_organization_to_partner
+        FOREIGN KEY (partner_id) REFERENCES project_partner (id)
+            ON DELETE CASCADE
+            ON UPDATE RESTRICT
+);
+
+CREATE TABLE project_associated_organization_contact
+(
+    organization_id INT UNSIGNED                                  NOT NULL,
+    type            ENUM ('LegalRepresentative', 'ContactPerson') NOT NULL,
+    title           VARCHAR(25)  DEFAULT NULL,
+    first_name      VARCHAR(50)  DEFAULT NULL,
+    last_name       VARCHAR(50)  DEFAULT NULL,
+    email           VARCHAR(255) DEFAULT NULL,
+    telephone       VARCHAR(25)  DEFAULT NULL,
+    PRIMARY KEY (organization_id, type),
+    CONSTRAINT fk_project_as_org_contact_to_project_associated_organization FOREIGN KEY (organization_id) REFERENCES project_associated_organization (id)
+        ON DELETE CASCADE
+        ON UPDATE RESTRICT
+);
+
+CREATE TABLE project_associated_organization_address
+(
+    organization_id INT UNSIGNED PRIMARY KEY,
+    country         VARCHAR(100) DEFAULT NULL,
+    nuts_region2    VARCHAR(100) DEFAULT NULL,
+    nuts_region3    VARCHAR(100) DEFAULT NULL,
+    street          VARCHAR(50)  DEFAULT NULL,
+    house_number    VARCHAR(20)  DEFAULT NULL,
+    postal_code     VARCHAR(20)  DEFAULT NULL,
+    city            VARCHAR(50)  DEFAULT NULL,
+    homepage        VARCHAR(250) DEFAULT NULL,
+    CONSTRAINT fk_project_as_org_address_to_project_associated_organization FOREIGN KEY (organization_id) REFERENCES project_associated_organization (id)
+        ON DELETE CASCADE
+        ON UPDATE RESTRICT
+);
+
+CREATE TABLE project_partner_budget_options
+(
+    partner_id                      INT UNSIGNED PRIMARY KEY,
+    office_administration_flat_rate TINYINT UNSIGNED DEFAULT NULL,
+    staff_costs_flat_rate           TINYINT UNSIGNED DEFAULT NULL,
+    CONSTRAINT fk_project_partner_budget_options_to_project_partner FOREIGN KEY (partner_id) REFERENCES project_partner (id)
+        ON DELETE CASCADE
+        ON UPDATE RESTRICT
+);
+
+CREATE TABLE project_period
+(
+    project_id INT UNSIGNED      NOT NULL,
+    number     SMALLINT UNSIGNED NOT NULL,
+    start      SMALLINT UNSIGNED NOT NULL,
+    end        SMALLINT UNSIGNED NOT NULL,
+    PRIMARY KEY (project_id, number),
+    CONSTRAINT fk_project_period_to_project FOREIGN KEY (project_id) REFERENCES project (id)
+        ON DELETE CASCADE
+        ON UPDATE RESTRICT
+);
+
+CREATE TABLE project_call_flat_rate
+(
+    call_id       INT UNSIGNED                                                                        NOT NULL,
+    type          ENUM ('StaffCost','OfficeOnStaff','OfficeOnOther', 'TravelOnStaff', 'OtherOnStaff') NOT NULL,
+    rate          TINYINT UNSIGNED                                                                    NOT NULL,
+    is_adjustable BOOLEAN                                                                             NOT NULL,
+    CONSTRAINT pk_project_call_flat_rate PRIMARY KEY (call_id, type),
+    CONSTRAINT fk_project_call_flat_rate_to_project_call FOREIGN KEY (call_id) REFERENCES project_call (id)
         ON DELETE CASCADE
         ON UPDATE RESTRICT
 );
