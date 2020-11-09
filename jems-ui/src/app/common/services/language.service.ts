@@ -10,11 +10,13 @@ import {filter, map, shareReplay, take, tap} from 'rxjs/operators';
 import {TranslateService} from '@ngx-translate/core';
 import {SecurityService} from '../../security/security.service';
 import {Log} from '../utils/log';
-import {merge, ReplaySubject, Subject} from 'rxjs';
+import {BehaviorSubject, merge, ReplaySubject, Subject} from 'rxjs';
 
 @Injectable({providedIn: 'root'})
 export class LanguageService {
   private profileChanged$ = new Subject<OutputUserProfile>();
+  private systemLanguageSubject = new BehaviorSubject<string>(this.default())
+  public systemLanguage$ = this.systemLanguageSubject.asObservable();
   public languagesChanged$: ReplaySubject<OutputProgrammeLanguage[]> = new ReplaySubject(1);
   public currentLanguage$ = new Subject<OutputProgrammeLanguage.CodeEnum>();
   private MAX_NUMBER_AVAILABLE_LANGUAGES = 4;
@@ -92,13 +94,9 @@ export class LanguageService {
             translate.use(this.default());
             return;
           }
-          const currentLang = translate.getLangs().find( lang => lang === user.language);
-          if (currentLang) {
-            translate.use(user.language);
-            return;
-          }
-          translate.use(this.default());
-        })
+          translate.use(this.getDefaultIfNotAvailable(user.language));
+        }),
+        tap(user => this.systemLanguageSubject.next(this.getDefaultIfNotAvailable(user.language))),
       )
       .subscribe()
   }
@@ -124,5 +122,10 @@ export class LanguageService {
 
   default(): string {
     return 'EN';
+  }
+
+  getDefaultIfNotAvailable(newLanguage: string): string {
+    const currentLang = this.translate.getLangs().find(lang => lang === newLanguage);
+    return currentLang ? currentLang : this.default();
   }
 }

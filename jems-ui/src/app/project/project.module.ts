@@ -1,14 +1,10 @@
 import {NgModule} from '@angular/core';
-import {CommonModule, DatePipe} from '@angular/common';
+import {DatePipe} from '@angular/common';
 import {routes} from './project-routing.module';
-import {CoreModule} from '../common/core-module';
 import {ProjectApplicationDetailComponent} from './project-application/containers/project-application-detail/project-application-detail.component';
 import {ProjectApplicationSubmissionComponent} from './project-application/components/project-application-submission/project-application-submission.component';
 import {ProjectApplicationComponent} from './project-application/containers/project-application-page/project-application.component';
 import {SharedModule} from '../common/shared-module';
-import {MatDialogModule} from '@angular/material/dialog';
-import {MatSelectModule} from '@angular/material/select';
-import {MatListModule} from '@angular/material/list';
 import {ProjectApplicationDataComponent} from './project-application/containers/project-application-detail/project-application-data/project-application-data.component';
 import {ProjectApplicationFilesListComponent} from './project-application/components/project-application-detail/project-application-files-list/project-application-files-list.component';
 import {ProjectApplicationInformationComponent} from './project-application/components/project-application-detail/project-application-information/project-application-information.component';
@@ -17,25 +13,17 @@ import {ProjectApplicationAssessmentsComponent} from './project-application/comp
 import {ProjectApplicationFilesComponent} from './project-application/containers/project-application-detail/project-application-files/project-application-files.component';
 import {DescriptionCellComponent} from './project-application/components/project-application-detail/project-application-files-list/cell-renderers/description-cell/description-cell.component';
 import {ProjectApplicationEligibilityDecisionComponent} from './project-application/components/project-application-detail/project-application-eligibility-decision/project-application-eligibility-decision.component';
-import {MatRadioModule} from '@angular/material/radio';
 import {ProjectApplicationEligibilityCheckComponent} from './project-application/components/project-application-detail/project-application-eligibility-check/project-application-eligibility-check.component';
 import {ProjectApplicationQualityCheckComponent} from './project-application/components/project-application-detail/project-application-quality-check/project-application-quality-check.component';
 import {ProjectStore} from './project-application/containers/project-application-detail/services/project-store.service';
-import {MatExpansionModule} from '@angular/material/expansion';
 import {ActionsCellComponent} from './project-application/components/project-application-detail/project-application-files-list/cell-renderers/actions-cell/actions-cell.component';
 import {ProjectApplicationDecisionsComponent} from './project-application/components/project-application-detail/project-application-decisions/project-application-decisions.component';
 import {ProjectApplicationActionsComponent} from './project-application/components/project-application-detail/project-application-actions/project-application-actions.component';
-import {MatDatepickerModule} from '@angular/material/datepicker';
-import {MAT_MOMENT_DATE_ADAPTER_OPTIONS, MatMomentDateModule} from '@angular/material-moment-adapter';
-import {MAT_DATE_LOCALE} from '@angular/material/core';
 import {ProjectApplicationFundingPageComponent} from './project-application/containers/project-application-detail/project-application-funding-page/project-application-funding-page.component';
 import {ProjectApplicationFundingDecisionComponent} from './project-application/components/project-application-detail/project-application-funding-decision/project-application-funding-decision.component';
 import {ProjectApplicationEligibilityDecisionPageComponent} from './project-application/containers/project-application-detail/project-application-eligibility-decision-page/project-application-eligibility-decision-page.component';
-import {MatSidenavModule} from '@angular/material/sidenav';
 import {ProjectApplicationFormComponent} from './project-application/components/project-application-form/project-application-form.component';
-import {MatTooltipModule} from '@angular/material/tooltip';
 import {ProjectApplicationFormPolicyRadioButtonComponent} from './project-application/components/project-application-form/project-application-form-policy-radio-button/project-application-form-policy-radio-button.component';
-import {MatCheckboxModule} from '@angular/material/checkbox';
 import {ProjectApplicationFormWorkPackagesListComponent} from './project-application/components/project-application-form/project-application-form-work-packages-list/project-application-form-work-packages-list.component';
 import {ProjectApplicationFormWorkPackageDetailComponent} from './project-application/components/project-application-form/project-application-form-work-package-detail/project-application-form-work-package-detail.component';
 import {WorkPackageDetailsComponent} from './project-application/containers/project-application-form-page/project-application-form-work-package-section/work-package-details/work-package-details.component';
@@ -44,7 +32,6 @@ import {ProjectApplicationFormPartnerSectionComponent} from './project-applicati
 import {ProjectApplicationFormPartnerListComponent} from './project-application/components/project-application-form/project-application-form-partner-list/project-application-form-partner-list.component';
 import {ProjectApplicationFormPartnerDetailComponent} from './project-application/containers/project-application-form-page/project-application-form-partner-section/project-application-form-partner-detail/project-application-form-partner-detail.component';
 import {ProjectApplicationFormPartnerEditComponent} from './project-application/components/project-application-form/project-application-form-partner-edit/project-application-form-partner-edit.component';
-import {MatButtonToggleModule} from '@angular/material/button-toggle';
 import {ProjectApplicationFormSidenavService} from './project-application/containers/project-application-form-page/services/project-application-form-sidenav.service';
 import {ProjectApplicationFormManagementSectionComponent} from './project-application/containers/project-application-form-page/project-application-form-management-section/project-application-form-management-section.component';
 import {ProjectApplicationFormFuturePlansSectionComponent} from './project-application/containers/project-application-form-page/project-application-form-future-plans-section/project-application-form-future-plans-section.component';
@@ -61,7 +48,6 @@ import {ProjectApplicationFormProjectPartnershipSectionComponent} from './projec
 import {ProjectApplicationFormProjectPartnershipDetailComponent} from './project-application/components/project-application-form/project-application-form-project-partnership-detail/project-application-form-project-partnership-detail.component';
 import {ProjectApplicationFormProjectRelevanceAndContextSectionComponent} from './project-application/containers/project-application-form-page/project-application-form-project-relevance-and-context-section/project-application-form-project-relevance-and-context-section.component';
 import {ProjectApplicationFormProjectRelevanceAndContextDetailComponent} from './project-application/components/project-application-form/project-application-form-project-relevance-and-context-detail/project-application-form-project-relevance-and-context-detail.component';
-import {MatIconModule} from '@angular/material/icon';
 import {BenefitsTableComponent} from './project-application/components/project-application-form/project-application-form-project-relevance-and-context-detail/tables/benefits-table/benefits-table.component';
 import {StrategyTableComponent} from './project-application/components/project-application-form/project-application-form-project-relevance-and-context-detail/tables/strategy-table/strategy-table.component';
 import {SynergyTableComponent} from './project-application/components/project-application-form/project-application-form-project-relevance-and-context-detail/tables/synergy-table/synergy-table.component';
@@ -87,7 +73,7 @@ import {ProjectApplicationFormPartnerBudgetOptionsComponent} from './project-app
 import {OfficeAndAdministrationTableComponent} from './project-application/components/project-application-form/project-application-form-partner-budget/office-and-administration-table/office-and-administration-table.component';
 import {ContributionToggleColumnComponent} from './project-application/components/project-application-form/project-application-form-management-detail/contribution-toggle-column/contribution-toggle-column.component';
 import {ProjectApplicationFormPartnerCoFinancingComponent} from './project-application/components/project-application-form/project-application-form-partner-co-financing/project-application-form-partner-co-financing.component';
-import { StaffCostsFlatRateTableComponent } from './project-application/components/project-application-form/project-application-form-partner-budget/staff-costs-flat-rate-table/staff-costs-flat-rate-table.component';
+import {StaffCostsFlatRateTableComponent} from './project-application/components/project-application-form/project-application-form-partner-budget/staff-costs-flat-rate-table/staff-costs-flat-rate-table.component';
 import {ProjectApplicationFormIdentificationPageComponent} from './project-application/containers/project-application-form-page/project-application-form-identification-page/project-application-form-identification-page.component';
 import {ProjectApplicationFormAssociatedOrgPageComponent} from './project-application/containers/project-application-form-page/project-application-form-associated-org-page/project-application-form-associated-org-page.component';
 
@@ -163,24 +149,10 @@ import {ProjectApplicationFormAssociatedOrgPageComponent} from './project-applic
     StaffCostsFlatRateTableComponent
   ],
   imports: [
-    CommonModule,
     SharedModule,
-    CoreModule,
     RouterModule.forChild(routes),
-    MatListModule,
-    MatSelectModule,
-    MatDialogModule,
-    MatRadioModule,
-    MatExpansionModule,
-    MatDatepickerModule,
-    MatMomentDateModule,
-    MatSidenavModule,
-    MatTooltipModule,
-    MatCheckboxModule,
-    MatButtonToggleModule,
-    MatIconModule,
     AgGridModule,
-    AgGridModule.withComponents([AgGridTemplateRendererComponent])
+    AgGridModule.withComponents([AgGridTemplateRendererComponent]),
   ],
   exports: [
     ProjectApplicationDetailComponent
@@ -190,12 +162,9 @@ import {ProjectApplicationFormAssociatedOrgPageComponent} from './project-applic
     ProjectStore,
     ProjectApplicationFormSidenavService,
     ProjectApplicationFormStore,
-    MatDatepickerModule,
     ProjectAcronymResolver,
     ProjectPartnerStore,
     ProjectAssociatedOrganizationStore,
-    {provide: MAT_MOMENT_DATE_ADAPTER_OPTIONS, useValue: {useUtc: true}},
-    {provide: MAT_DATE_LOCALE, useValue: 'en-GB'}
   ]
 })
 export class ProjectModule {
