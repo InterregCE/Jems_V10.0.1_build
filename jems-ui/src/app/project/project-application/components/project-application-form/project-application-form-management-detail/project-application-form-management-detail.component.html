@@ -69,7 +69,7 @@
         <h6>{{'project.application.form.management.field.5' | translate}}</h6>
         <p class="intro-text-small">{{'project.application.form.management.field.5.intro' | translate}}</p>
     </div>
-    <app-row-list-template [columnClassList]="['max-10-rem']">
+    <app-row-list-template [columnClassList]="['max-15-rem']">
         <div>
             <span>{{'project.application.form.management.cooperation.table.header.criteria' | translate}}</span>
             <span>{{'project.application.form.management.cooperation.table.header.description' | translate}}</span>
@@ -80,7 +80,7 @@
                     (change)="changeSelection('criteria_development')"
                     [disabled]="formState === FormState.VIEW"
                     [checked]="selection.isSelected('criteria_development')">
-                <div class="intro-text-small">
+                <div>
                     {{'project.application.form.management.cooperation.table.row.1' | translate}}
                 </div>
             </mat-checkbox>
@@ -100,7 +100,7 @@
                     (change)="changeSelection('criteria_implementation')"
                     [disabled]="formState === FormState.VIEW"
                     [checked]="selection.isSelected('criteria_implementation')">
-                <div class="intro-text-small">
+                <div>
                     {{'project.application.form.management.cooperation.table.row.2' | translate}}
                 </div>
             </mat-checkbox>
@@ -121,7 +121,7 @@
                     (change)="changeSelection('criteria_staffing')"
                     [disabled]="formState === FormState.VIEW"
                     [checked]="selection.isSelected('criteria_staffing')">
-                <div class="intro-text-small">
+                <div>
                     {{'project.application.form.management.cooperation.table.row.3' | translate}}
                 </div>
             </mat-checkbox>
@@ -140,7 +140,7 @@
                           (change)="changeSelection('criteria_financing')"
                           [disabled]="formState === FormState.VIEW"
                           [checked]="selection.isSelected('criteria_financing')">
-                <div class="intro-text-small">
+                <div>
                     {{'project.application.form.management.cooperation.table.row.4' | translate}}
                 </div>
             </mat-checkbox>
@@ -169,7 +169,7 @@
             <span>{{'project.application.form.management.principles.table.header.description' | translate}}</span>
         </div>
         <div>
-            <span class="intro-text-small">{{'project.application.form.management.principles.table.row.1' | translate}}</span>
+            <span class="pad-top-1">{{'project.application.form.management.principles.table.row.1' | translate}}</span>
             <app-contribution-toggle-column
                     [disabled]="formState === FormState.VIEW"
                     (selected)="selectedContributionPrincipleDevelopment = $event"
@@ -185,7 +185,7 @@
             </app-expandable-textarea>
         </div>
         <div>
-            <span class="intro-text-small">{{'project.application.form.management.principles.table.row.2' | translate}}</span>
+            <span class="pad-top-1">{{'project.application.form.management.principles.table.row.2' | translate}}</span>
             <app-contribution-toggle-column
                     [disabled]="formState === FormState.VIEW"
                     (selected)="selectedContributionPrincipleOpportunities = $event"
@@ -201,7 +201,7 @@
             </app-expandable-textarea>
         </div>
         <div>
-            <span class="intro-text-small">{{'project.application.form.management.principles.table.row.3' | translate}}</span>
+            <span class="pad-top-1">{{'project.application.form.management.principles.table.row.3' | translate}}</span>
             <app-contribution-toggle-column
                     [disabled]="formState === FormState.VIEW"
                     (selected)="selectedContributionPrincipleEquality = $event"

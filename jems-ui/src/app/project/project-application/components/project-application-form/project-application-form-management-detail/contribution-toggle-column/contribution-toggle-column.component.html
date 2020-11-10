@@ -3,19 +3,16 @@
         (change)="selected.emit($event.value)"
         [(ngModel)]="previousSelection">
     <mat-button-toggle
-            class="intro-text-small"
             value="PositiveEffects"
             (change)="selected.emit($event.value)">
         {{'project.application.form.management.principles.table.contribution.type.positive' | translate}}
     </mat-button-toggle>
     <mat-button-toggle
-            class="intro-text-small"
             value="Neutral"
             (change)="selected.emit($event.value)">
         {{'project.application.form.management.principles.table.contribution.type.neutral' | translate}}
     </mat-button-toggle>
     <mat-button-toggle
-            class="intro-text-small"
             value="NegativeEffects"
             (change)="selected.emit($event.value)">
         {{'project.application.form.management.principles.table.contribution.type.negative' | translate}}
