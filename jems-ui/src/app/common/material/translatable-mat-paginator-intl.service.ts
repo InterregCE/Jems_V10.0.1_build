@@ -8,32 +8,39 @@ import {LanguageService} from '../services/language.service';
 })
 export class TranslatableMatPaginatorIntl extends MatPaginatorIntl {
 
+  rangeLabel: string;
+
   constructor(private translateService: TranslateService, private languageService: LanguageService) {
     super();
-    this.languageService.systemLanguage$.subscribe(() => {
-      this.translateLabels();
-    })
+    this.translateService.stream([
+        'common.paginator.range.label',
+        'common.paginator.items.per.page.label',
+        'common.paginator.next.page.label',
+        'common.paginator.previous.page.label',
+        'common.paginator.first.page.label',
+        'common.paginator.last.page.label'
+      ]
+    ).subscribe((value) => {
+        this.rangeLabel = value['common.paginator.range.label'];
+        this.itemsPerPageLabel = value['common.paginator.items.per.page.label'];
+        this.nextPageLabel = value['common.paginator.next.page.label'];
+        this.previousPageLabel = value['common.paginator.previous.page.label'];
+        this.firstPageLabel = value['common.paginator.first.page.label'];
+        this.lastPageLabel = value['common.paginator.last.page.label'];
+        this.changes.next();
+      }
+    )
   }
 
   getRangeLabel = (page: number, pageSize: number, length: number) => {
-    const rangeLabel = this.translateService.instant('common.paginator.range.label');
     if (length === 0 || pageSize === 0) {
-      return `0 ${rangeLabel} ` + length;
+      return `0 ${this.rangeLabel} ` + length;
     }
     length = Math.max(length, 0);
     const startIndex = page * pageSize;
     const endIndex = startIndex < length ?
       Math.min(startIndex + pageSize, length) :
       startIndex + pageSize;
-    return startIndex + 1 + ' - ' + endIndex + ` ${rangeLabel} ` + length;
+    return startIndex + 1 + ' - ' + endIndex + ` ${this.rangeLabel} ` + length;
   };
-
-  translateLabels(): void {
-    this.itemsPerPageLabel = this.translateService.instant('common.paginator.items.per.page.label');
-    this.nextPageLabel = this.translateService.instant('common.paginator.next.page.label');
-    this.previousPageLabel = this.translateService.instant('common.paginator.previous.page.label');
-    this.firstPageLabel = this.translateService.instant('common.paginator.first.page.label');
-    this.lastPageLabel = this.translateService.instant('common.paginator.last.page.label');
-    this.changes.next();
-  }
 }
