@@ -1,5 +1,6 @@
 package io.cloudflight.jems.server.programme.service
 
+import io.cloudflight.jems.api.nuts.dto.OutputNuts
 import io.cloudflight.jems.api.programme.dto.InputProgrammeData
 import io.cloudflight.jems.api.programme.dto.OutputProgrammeData
 import io.cloudflight.jems.server.audit.entity.AuditAction
@@ -69,7 +70,7 @@ internal class ProgrammeDataServiceTest {
     @Test
     fun get() {
         val programmeDataInput =
-            OutputProgrammeData("cci", "title", "version", 2020, 2024, null, null, null, null, null, null, emptyMap<String, String>())
+            OutputProgrammeData("cci", "title", "version", 2020, 2024, null, null, null, null, null, null, emptyList())
         every { programmeDataRepository.findById(1) } returns Optional.of(existingProgrammeData)
 
         val programmeData = programmeDataService.get()
@@ -84,7 +85,7 @@ internal class ProgrammeDataServiceTest {
         val programmeDataUpdated =
             ProgrammeData(1, "cci-updated", "title", "version", 2020, 2024, null, null, null, null, null, null)
         val programmeDataExpectedOutput =
-            OutputProgrammeData("cci-updated", "title", "version", 2020, 2024, null, null, null, null, null, null, emptyMap<String, String>())
+            OutputProgrammeData("cci-updated", "title", "version", 2020, 2024, null, null, null, null, null, null, emptyList())
 
         every { programmeDataRepository.save(any<ProgrammeData>()) } returns programmeDataUpdated
         every { programmeDataRepository.findById(1) } returns Optional.of(existingProgrammeData)
@@ -161,14 +162,13 @@ internal class ProgrammeDataServiceTest {
 
         val result = programmeDataService.saveProgrammeNuts(setOf("nuts_3_id"))
         assertThat(result.programmeNuts).isEqualTo(
-            mapOf(NutsIdentifier("CO", "CO title") to
-                mapOf(NutsIdentifier("CO0", "CO0 title") to
-                    mapOf(
-                        NutsIdentifier("CO01", "CO01 title") to
-                            setOf(NutsIdentifier("CO011", "CO011 title"))
-                        )
-                )
-            )
+            listOf(OutputNuts("CO", "CO title", listOf(
+                OutputNuts("CO0", "CO0 title", listOf(
+                    OutputNuts("CO01", "CO01 title", listOf(
+                        OutputNuts("CO011", "CO011 title")
+                    ))
+                ))
+            )))
         )
     }
 

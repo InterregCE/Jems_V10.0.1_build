@@ -1,0 +1,100 @@
+<div [formGroup]="addressForm">
+    <mat-form-field *ngIf="nuts" class="field">
+        <mat-label>{{'project.partner.main-address.country' | translate}}</mat-label>
+        <input name="country" formControlName="country" matInput
+               [matAutocomplete]="country"
+               (focusout)="countryUnfocused($event)">
+        <mat-autocomplete #country="matAutocomplete"
+                          (optionSelected)="countryChanged($event.option?.value)">
+            <mat-option *ngFor="let region of filteredCountry | async" [value]="region">
+                {{region}}
+            </mat-option>
+        </mat-autocomplete>
+    </mat-form-field>
+
+    <mat-form-field *ngIf="addressForm.controls.country?.value" class="field">
+        <mat-label>{{'project.partner.main-address.region2' | translate}}</mat-label>
+        <input name="region2" formControlName="region2" matInput
+               [matAutocomplete]="region2"
+               (focusout)="region2Unfocused($event)">
+        <mat-autocomplete #region2="matAutocomplete"
+                          (optionSelected)="region2Changed($event.option?.value)">
+            <mat-option *ngFor="let region of filteredRegion2 | async" [value]="region">
+                {{region}}
+            </mat-option>
+        </mat-autocomplete>
+    </mat-form-field>
+
+    <mat-form-field *ngIf="addressForm.controls.region2?.value" class="field">
+        <mat-label>{{'project.partner.main-address.region3' | translate}}</mat-label>
+        <input name="region3" formControlName="region3" matInput
+               [matAutocomplete]="region3"
+               (focusout)="region3Unfocused($event)">
+        <mat-autocomplete #region3="matAutocomplete">
+            <mat-option *ngFor="let region of filteredRegion3 | async" [value]="region">
+                {{region}}
+            </mat-option>
+        </mat-autocomplete>
+    </mat-form-field>
+
+    <mat-form-field class="field">
+        <mat-label>{{'project.partner.main-address.street' | translate}}</mat-label>
+        <input name="street" formControlName="street" matInput
+               placeholder="{{'project.partner.main-address.street' | translate}}">
+        <mat-error>
+            <app-form-field-errors
+                    [errors]="addressForm?.controls?.street?.errors"
+                    [messages]="streetErrors">
+            </app-form-field-errors>
+        </mat-error>
+    </mat-form-field>
+
+    <mat-form-field class="field">
+        <mat-label>{{'project.partner.main-address.housenumber' | translate}}</mat-label>
+        <input name="houseNumber" formControlName="houseNumber" matInput
+               placeholder="{{'project.partner.main-address.housenumber' | translate}}">
+        <mat-error>
+            <app-form-field-errors
+                    [errors]="addressForm?.controls?.houseNumber?.errors"
+                    [messages]="houseNumberErrors">
+            </app-form-field-errors>
+        </mat-error>
+    </mat-form-field>
+
+    <mat-form-field class="field">
+        <mat-label>{{'project.partner.main-address.postalcode' | translate}}</mat-label>
+        <input name="postalCode" formControlName="postalCode" matInput
+               placeholder="{{'project.partner.main-address.postalcode' | translate}}">
+        <mat-error>
+            <app-form-field-errors
+                    [errors]="addressForm?.controls?.postalCode?.errors"
+                    [messages]="postalCodeErrors">
+            </app-form-field-errors>
+        </mat-error>
+    </mat-form-field>
+
+
+    <mat-form-field class="field">
+        <mat-label>{{'project.partner.main-address.city' | translate}}</mat-label>
+        <input name="city" formControlName="city" matInput
+               placeholder="{{'project.partner.main-address.city' | translate}}">
+        <mat-error>
+            <app-form-field-errors
+                    [errors]="addressForm?.controls?.city?.errors"
+                    [messages]="cityErrors">
+            </app-form-field-errors>
+        </mat-error>
+    </mat-form-field>
+
+    <mat-form-field *ngIf="addressForm.controls?.homepage" class="field-wide">
+        <mat-label>{{'project.partner.main-address.homepage' | translate}}</mat-label>
+        <input name="homepage" formControlName="homepage" matInput
+               placeholder="{{'project.partner.main-address.homepage' | translate}}">
+        <mat-error>
+            <app-form-field-errors
+                    [errors]="addressForm?.controls?.homepage?.errors"
+                    [messages]="homepageErrors">
+            </app-form-field-errors>
+        </mat-error>
+    </mat-form-field>
+</div>

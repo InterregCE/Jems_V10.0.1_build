@@ -24,7 +24,7 @@
                         [(ngModel)]="node.checked"
                         [disabled]="disabled"
                         (change)="parentChanged(node)">
-                    {{node.title}}
+                    {{node.code}} {{node.title}}
                 </mat-checkbox>
             </div>
             <ul *ngIf="treeControl.isExpanded(node)">

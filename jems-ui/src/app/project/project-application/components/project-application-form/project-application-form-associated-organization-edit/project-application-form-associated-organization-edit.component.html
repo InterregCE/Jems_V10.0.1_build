@@ -48,93 +48,12 @@
         </mat-error>
     </mat-form-field>
 
-    <mat-form-field *ngIf="nutsCountry"
-                    class="field">
-        <mat-label>{{'project.partner.main-address.country' | translate}}</mat-label>
-        <mat-select (selectionChange)="countryChanged(nutsCountry[$event.value])" name="country"
-                    panelClass="material-select-panel" formControlName="country">
+    <app-project-application-form-address
+            [addressForm]="associatedOrganizationForm"
+            [nuts]="nuts">
+    </app-project-application-form-address>
 
-            <mat-option *ngFor="let region of Object.keys(nutsCountry)" [value]="region">
-                {{region}}
-            </mat-option>
-        </mat-select>
-    </mat-form-field>
-
-    <mat-form-field *ngIf="nutsRegion2"
-                    class="field">
-        <mat-label>{{'project.partner.main-address.region2' | translate}}</mat-label>
-        <mat-select [disabled]="nutsRegion2.length === 0"
-                    (selectionChange)="regionChanged(nutsRegion2.get($event.value))"
-                    name="nutsRegion2"
-                    panelClass="material-select-panel" formControlName="nutsRegion2">
-            <mat-option *ngFor="let region of nutsRegion2.keys()" [value]="region">
-                {{region}}
-            </mat-option>
-        </mat-select>
-    </mat-form-field>
-
-    <mat-form-field *ngIf="nutsRegion3"
-                    class="field">
-        <mat-label>{{'project.partner.main-address.region3' | translate}}</mat-label>
-        <mat-select [disabled]="nutsRegion3.length === 0"
-                    name="nutsRegion3"
-                    panelClass="material-select-panel" formControlName="nutsRegion3">
-
-            <mat-option *ngFor="let region of nutsRegion3" [value]="region">
-                {{region}}
-            </mat-option>
-        </mat-select>
-    </mat-form-field>
-
-    <mat-form-field class="field">
-        <mat-label>{{'project.partner.main-address.street' | translate}}</mat-label>
-        <input name="street" formControlName="street" matInput
-               placeholder="{{'project.partner.main-address.street' | translate}}">
-        <mat-error>
-            <app-form-field-errors
-                    [errors]="associatedOrganizationForm?.controls?.street?.errors"
-                    [messages]="streetErrors">
-            </app-form-field-errors>
-        </mat-error>
-    </mat-form-field>
-
-    <mat-form-field class="field">
-        <mat-label>{{'project.partner.main-address.housenumber' | translate}}</mat-label>
-        <input name="houseNumber" formControlName="houseNumber" matInput
-               placeholder="{{'project.partner.main-address.housenumber' | translate}}">
-        <mat-error>
-            <app-form-field-errors
-                    [errors]="associatedOrganizationForm?.controls?.houseNumber?.errors"
-                    [messages]="houseNumberErrors">
-            </app-form-field-errors>
-        </mat-error>
-    </mat-form-field>
-
-    <mat-form-field class="field">
-        <mat-label>{{'project.partner.main-address.postalcode' | translate}}</mat-label>
-        <input name="postalCode" formControlName="postalCode" matInput
-               placeholder="{{'project.partner.main-address.postalcode' | translate}}">
-        <mat-error>
-            <app-form-field-errors
-                    [errors]="associatedOrganizationForm?.controls?.postalCode?.errors"
-                    [messages]="postalCodeErrors">
-            </app-form-field-errors>
-        </mat-error>
-    </mat-form-field>
-
-    <mat-form-field class="field">
-        <mat-label>{{'project.partner.main-address.city' | translate}}</mat-label>
-        <input name="city" formControlName="city" matInput
-               placeholder="{{'project.partner.main-address.city' | translate}}">
-        <mat-error>
-            <app-form-field-errors
-                    [errors]="associatedOrganizationForm?.controls?.city?.errors"
-                    [messages]="cityErrors">
-            </app-form-field-errors>
-        </mat-error>
-    </mat-form-field>
-
-<!--    LEGAL REPRESENTATIVE-->
+    <!--    LEGAL REPRESENTATIVE-->
 
     <h5><span>{{'project.partner.representative.header.detail' | translate}}</span></h5>
     <mat-form-field class="field">

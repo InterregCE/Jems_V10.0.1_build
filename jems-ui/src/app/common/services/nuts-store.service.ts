@@ -1,4 +1,4 @@
-import {NutsImportService} from '@cat/api';
+import {NutsImportService, OutputNuts} from '@cat/api';
 import {Injectable} from '@angular/core';
 import {shareReplay, take, tap} from 'rxjs/operators';
 import {Log} from '../utils/log';
@@ -17,7 +17,7 @@ export class NutsStoreService {
   constructor(private nutsService: NutsImportService) {
   }
 
-  getNuts(): Observable<any> {
+  getNuts(): Observable<OutputNuts[]> {
     return this.nuts$;
   }
 

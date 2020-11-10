@@ -1,5 +1,6 @@
 package io.cloudflight.jems.server.nuts.service
 
+import io.cloudflight.jems.api.nuts.dto.OutputNuts
 import io.cloudflight.jems.api.nuts.dto.OutputNutsMetadata
 import io.cloudflight.jems.server.audit.entity.AuditAction
 import io.cloudflight.jems.server.audit.service.AuditCandidate
@@ -227,18 +228,17 @@ class NutsServiceTest {
         every { nutsRegion3Repository.findAll() } returns regions
 
         assertThat(nutsService.getNuts()).isEqualTo(
-            mapOf(NutsIdentifier("CO", "CO title") to
-                mapOf(NutsIdentifier("CO0", "CO0 title") to
-                    mapOf(
-                        NutsIdentifier("CO0A", "CO0A title") to
-                            setOf(
-                                NutsIdentifier("CO0A0", "CO0A0 title"),
-                                NutsIdentifier("CO0A1", "CO0A1 title")
-                            ),
-                        NutsIdentifier("CO0B", "CO0B title")
-                            to setOf(NutsIdentifier("CO0B1", "CO0B1 title")))
-                    )
-            )
+            listOf(OutputNuts("CO", "CO title", listOf(
+                OutputNuts("CO0", "CO0 title", listOf(
+                    OutputNuts("CO0A", "CO0A title", listOf(
+                        OutputNuts("CO0A0", "CO0A0 title"),
+                        OutputNuts("CO0A1", "CO0A1 title")
+                    )),
+                    OutputNuts("CO0B", "CO0B title", listOf(
+                        OutputNuts("CO0B1", "CO0B1 title")
+                    ))
+                ))
+            )))
         )
     }
 

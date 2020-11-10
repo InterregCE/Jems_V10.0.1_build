@@ -1,5 +1,6 @@
 package io.cloudflight.jems.api.nuts
 
+import io.cloudflight.jems.api.nuts.dto.OutputNuts
 import io.cloudflight.jems.api.nuts.dto.OutputNutsMetadata
 import io.swagger.annotations.Api
 import io.swagger.annotations.ApiOperation
@@ -21,6 +22,6 @@ interface NutsApi {
 
     @ApiOperation("Retrieve all possible NUTS from the system")
     @GetMapping
-    fun getNuts(): Any
+    fun getNuts(): List<OutputNuts>
 
 }
