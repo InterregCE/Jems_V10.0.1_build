@@ -1,13 +1,22 @@
 package io.cloudflight.jems.server.call.repository
 
 import io.cloudflight.jems.api.call.dto.flatrate.FlatRateType
+import io.cloudflight.jems.api.project.dto.partner.ProjectPartnerRole
+import io.cloudflight.jems.api.project.dto.status.ProjectApplicationStatus
 import io.cloudflight.jems.server.audit.service.AuditService
 import io.cloudflight.jems.server.call.callWithId
-import io.cloudflight.jems.server.call.entity.FlatRateSetup
+import io.cloudflight.jems.server.call.entity.Call
+import io.cloudflight.jems.server.call.entity.ProjectCallFlatRateEntity
 import io.cloudflight.jems.server.call.entity.FlatRateSetupId
 import io.cloudflight.jems.server.call.service.flatrate.CallFlatRateSetupPersistence
-import io.cloudflight.jems.server.call.service.flatrate.model.FlatRateModel
+import io.cloudflight.jems.server.call.service.flatrate.model.ProjectCallFlatRate
 import io.cloudflight.jems.server.common.exception.ResourceNotFoundException
+import io.cloudflight.jems.server.programme.entity.ProgrammeLegalStatus
+import io.cloudflight.jems.server.project.entity.Project
+import io.cloudflight.jems.server.project.entity.ProjectStatus
+import io.cloudflight.jems.server.project.entity.partner.ProjectPartner
+import io.cloudflight.jems.server.project.repository.partner.ProjectPartnerRepository
+import io.cloudflight.jems.server.project.service.partner.ProjectPartnerTestUtil.Companion.user
 import io.mockk.MockKAnnotations
 import io.mockk.every
 import io.mockk.impl.annotations.MockK
@@ -21,13 +30,28 @@ import java.util.Optional
 class CallFlatRateSetupPersistenceTest {
 
     companion object {
-        private fun callWithIdAndFlatRate(id: Long, flatRate: Set<FlatRateSetup>) = callWithId(id).copy(
-            flatRateSetup = flatRate.toMutableSet()
+        private fun callWithIdAndFlatRate(id: Long, flatRate: Set<ProjectCallFlatRateEntity>) = callWithId(id).copy(
+            flatRates = flatRate.toMutableSet()
+        )
+        private fun dummyPartner(call: Call) = ProjectPartner(
+            project = Project(
+                id = 1,
+                call = call,
+                acronym = "test",
+                applicant = user,
+                projectStatus = ProjectStatus(status = ProjectApplicationStatus.DRAFT, user = user)
+            ),
+            abbreviation = "test",
+            role = ProjectPartnerRole.PARTNER,
+            legalStatus = ProgrammeLegalStatus()
         )
     }
 
     @MockK
     lateinit var callRepository: CallRepository
+
+    @MockK
+    lateinit var projectPartnerRepository: ProjectPartnerRepository
 
     @RelaxedMockK
     lateinit var auditService: AuditService
@@ -38,36 +62,37 @@ class CallFlatRateSetupPersistenceTest {
     fun setup() {
         MockKAnnotations.init(this)
         callFlatRateSetupPersistence = CallFlatRateSetupPersistenceProvider(
-            callRepository
+            callRepository,
+            projectPartnerRepository
         )
     }
 
     @Test
     fun `updateFlatRateSetup not-existing`() {
         every { callRepository.findById(eq(-1)) } returns Optional.empty()
-        val ex = assertThrows<ResourceNotFoundException> { callFlatRateSetupPersistence.updateFlatRateSetup(-1, emptySet()) }
+        val ex = assertThrows<ResourceNotFoundException> { callFlatRateSetupPersistence.updateProjectCallFlatRate(-1, emptySet()) }
         assertThat(ex.entity).isEqualTo("call")
     }
 
     @Test
     fun updateFlatRateSetup() {
-        val flatRateToUpdate = FlatRateSetup(
+        val flatRateToUpdate = ProjectCallFlatRateEntity(
             setupId = FlatRateSetupId(callId = 1, type = FlatRateType.OtherOnStaff),
             rate = 10,
             isAdjustable = true
         )
-        val flatRateToDelete = FlatRateSetup(
+        val flatRateToDelete = ProjectCallFlatRateEntity(
             setupId = FlatRateSetupId(callId = 1, type = FlatRateType.TravelOnStaff),
             rate = 2,
             isAdjustable = false
         )
-        val modelToUpdate = FlatRateModel(
+        val modelToUpdate = ProjectCallFlatRate(
             callId = 1,
             type = flatRateToUpdate.setupId.type, // existing
             rate = 5, // changed
             isAdjustable = false // changed
         )
-        val modelToCreate = FlatRateModel(
+        val modelToCreate = ProjectCallFlatRate(
             callId = 1,
             type = FlatRateType.OfficeOnOther, // new
             rate = 5,
@@ -75,14 +100,14 @@ class CallFlatRateSetupPersistenceTest {
         )
         val call = callWithIdAndFlatRate(1, setOf(flatRateToUpdate, flatRateToDelete))
         every { callRepository.findById(eq(1)) } returns Optional.of(call)
-        callFlatRateSetupPersistence.updateFlatRateSetup(1, setOf(modelToCreate, modelToUpdate))
-        assertThat(call.flatRateSetup).containsExactly(
-            FlatRateSetup(
+        callFlatRateSetupPersistence.updateProjectCallFlatRate(1, setOf(modelToCreate, modelToUpdate))
+        assertThat(call.flatRates).containsExactly(
+            ProjectCallFlatRateEntity(
                 setupId = flatRateToUpdate.setupId,
                 rate = modelToUpdate.rate,
                 isAdjustable = modelToUpdate.isAdjustable
             ),
-            FlatRateSetup(
+            ProjectCallFlatRateEntity(
                 setupId = FlatRateSetupId(callId = 1, type = modelToCreate.type),
                 rate = modelToCreate.rate,
                 isAdjustable = modelToCreate.isAdjustable
@@ -92,14 +117,14 @@ class CallFlatRateSetupPersistenceTest {
 
     @Test
     fun getFlatRateSetup() {
-        val flatRate = setOf(FlatRateSetup(
+        val flatRate = setOf(ProjectCallFlatRateEntity(
             setupId = FlatRateSetupId(callId = 1, type = FlatRateType.OtherOnStaff),
             rate = 10,
             isAdjustable = true
         ))
         every { callRepository.findById(eq(1)) } returns Optional.of(callWithIdAndFlatRate(1, flatRate))
-        assertThat(callFlatRateSetupPersistence.getFlatRateSetup(1)).isEqualTo(
-            setOf(FlatRateModel(
+        assertThat(callFlatRateSetupPersistence.getProjectCallFlatRate(1)).isEqualTo(
+            setOf(ProjectCallFlatRate(
                 callId = 1,
                 type = FlatRateType.OtherOnStaff,
                 rate = 10,
@@ -111,14 +136,42 @@ class CallFlatRateSetupPersistenceTest {
     @Test
     fun `getFlatRateSetup empty`() {
         every { callRepository.findById(eq(1)) } returns Optional.of(callWithIdAndFlatRate(1, emptySet()))
-        assertThat(callFlatRateSetupPersistence.getFlatRateSetup(1)).isEmpty()
+        assertThat(callFlatRateSetupPersistence.getProjectCallFlatRate(1)).isEmpty()
     }
 
     @Test
     fun `getFlatRateSetup not-existing`() {
         every { callRepository.findById(eq(-1)) } returns Optional.empty()
-        val ex = assertThrows<ResourceNotFoundException> { callFlatRateSetupPersistence.getFlatRateSetup(-1) }
+        val ex = assertThrows<ResourceNotFoundException> { callFlatRateSetupPersistence.getProjectCallFlatRate(-1) }
         assertThat(ex.entity).isEqualTo("call")
+    }
+
+    @Test
+    fun getProjectCallFlatRate() {
+        val flatRate = setOf(ProjectCallFlatRateEntity(
+            setupId = FlatRateSetupId(callId = 10, type = FlatRateType.OtherOnStaff),
+            rate = 15,
+            isAdjustable = true
+        ))
+        every { projectPartnerRepository.findById(eq(1)) } returns Optional.of(
+            dummyPartner(callWithIdAndFlatRate(10, flatRate))
+        )
+
+        assertThat(callFlatRateSetupPersistence.getProjectCallFlatRateByPartnerId(1)).containsExactly(
+            ProjectCallFlatRate(
+                callId = 10,
+                type = FlatRateType.OtherOnStaff,
+                rate = 15,
+                isAdjustable = true
+            )
+        )
+    }
+
+    @Test
+    fun `getProjectCallFlatRate not-existing`() {
+        every { projectPartnerRepository.findById(eq(-1)) } returns Optional.empty()
+        val ex = assertThrows<ResourceNotFoundException> { callFlatRateSetupPersistence.getProjectCallFlatRateByPartnerId(-1) }
+        assertThat(ex.entity).isEqualTo("projectPartner")
     }
 
 }

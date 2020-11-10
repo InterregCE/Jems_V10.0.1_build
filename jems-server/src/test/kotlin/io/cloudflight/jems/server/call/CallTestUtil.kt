@@ -1,9 +1,12 @@
 package io.cloudflight.jems.server.call
 
 import io.cloudflight.jems.api.call.dto.CallStatus
+import io.cloudflight.jems.api.call.dto.flatrate.FlatRateType
 import io.cloudflight.jems.api.user.dto.OutputUserRole
 import io.cloudflight.jems.api.user.dto.OutputUserWithRole
 import io.cloudflight.jems.server.call.entity.Call
+import io.cloudflight.jems.server.call.entity.FlatRateSetupId
+import io.cloudflight.jems.server.call.entity.ProjectCallFlatRateEntity
 import io.cloudflight.jems.server.user.entity.User
 import io.cloudflight.jems.server.user.entity.UserRole
 import java.time.ZonedDateTime
@@ -35,8 +38,13 @@ private val testCall = Call(
     startDate = ZonedDateTime.now(),
     endDate = ZonedDateTime.now().plusDays(5L),
     status = CallStatus.DRAFT,
+    lengthOfPeriod = 1,
     description = "This is a dummy call",
-    lengthOfPeriod = 1
+    flatRates = mutableSetOf(ProjectCallFlatRateEntity(
+        setupId = FlatRateSetupId(callId = 0, type = FlatRateType.StaffCost),
+        rate = 5,
+        isAdjustable = true
+    ))
 )
 
 fun callWithId(id: Long) = testCall.copy(id = id)

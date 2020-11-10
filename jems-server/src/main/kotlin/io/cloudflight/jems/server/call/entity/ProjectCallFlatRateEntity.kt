@@ -5,7 +5,7 @@ import javax.persistence.Entity
 import javax.validation.constraints.NotNull
 
 @Entity(name = "project_call_flat_rate")
-data class FlatRateSetup(
+data class ProjectCallFlatRateEntity(
 
     @EmbeddedId
     val setupId: FlatRateSetupId,

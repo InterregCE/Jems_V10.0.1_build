@@ -7,7 +7,7 @@ import io.cloudflight.jems.api.call.dto.OutputCall
 import io.cloudflight.jems.api.call.dto.OutputCallList
 import io.cloudflight.jems.api.call.dto.flatrate.InputCallFlatRateSetup
 import io.cloudflight.jems.server.call.service.CallService
-import io.cloudflight.jems.server.call.service.flatrate.update_flat_rate_setup.UpdateFlatRateSetup
+import io.cloudflight.jems.server.call.service.flatrate.update_flat_rate_setup.UpdateFlatRateSetupInteractor
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
 import org.springframework.security.access.prepost.PreAuthorize
@@ -16,7 +16,7 @@ import org.springframework.web.bind.annotation.RestController
 @RestController
 class CallController(
     private val callService: CallService,
-    private val updateFlatRateSetup: UpdateFlatRateSetup
+    private val updateFlatRateSetup: UpdateFlatRateSetupInteractor
 ) : CallApi {
 
     /**

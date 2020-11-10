@@ -77,13 +77,13 @@ data class Call(
     val description: String? = null,
 
     @OneToMany(mappedBy = "setupId.callId", cascade = [CascadeType.ALL], orphanRemoval = true, fetch = FetchType.LAZY)
-    var flatRateSetup: MutableSet<FlatRateSetup> = mutableSetOf()
+    var flatRates: MutableSet<ProjectCallFlatRateEntity> = mutableSetOf()
 
 ) {
-    fun updateFlatRateSetup(flatRates: Set<FlatRateSetup>) {
+    fun updateFlatRateSetup(flatRates: Set<ProjectCallFlatRateEntity>) {
         val groupedByType = flatRates.associateBy { it.setupId.type }.toMutableMap()
         // update existing
-        flatRateSetup.forEach {
+        this.flatRates.forEach {
             if (groupedByType.keys.contains(it.setupId.type)) {
                 val newValue = groupedByType.getValue(it.setupId.type)
                 it.rate = newValue.rate
@@ -91,13 +91,13 @@ data class Call(
             }
         }
         // remove those that needs to be removed
-        flatRateSetup.removeIf { !groupedByType.keys.contains(it.setupId.type) }
+        this.flatRates.removeIf { !groupedByType.keys.contains(it.setupId.type) }
 
         // add those that are not yet there
-        val existingTypes = flatRateSetup.associateBy { it.setupId.type }.keys
+        val existingTypes = this.flatRates.associateBy { it.setupId.type }.keys
         groupedByType.filterKeys { !existingTypes.contains(it) }
             .forEach {
-                flatRateSetup.add(it.value)
+                this.flatRates.add(it.value)
             }
     }
 }

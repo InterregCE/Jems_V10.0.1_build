@@ -18,15 +18,16 @@ private val maxFlatRates = mapOf(
 
 fun validateFlatRates(flatRates: Set<InputCallFlatRateSetup>) {
     val groupedByType = flatRates.associateBy { it.type }
-    if (groupedByType.keys.size != flatRates.size)
+    if (groupedByType.keys.size != flatRates.size) {
         invalid("call.flatRateSetup.duplicates")
-
+    }
     val errors = flatRates
         .filter { it.rate > getMaxRateForType(it.type) || it.rate < 1 }
         .associateBy({ it.type.name }, { I18nFieldError(i18nKey = OUT_OF_RANGE_ERR) })
 
-    if (errors.isNotEmpty())
+    if (errors.isNotEmpty()) {
         invalid(OUT_OF_RANGE_ERR, errors)
+    }
 }
 
 private fun getMaxRateForType(type: FlatRateType): Int {

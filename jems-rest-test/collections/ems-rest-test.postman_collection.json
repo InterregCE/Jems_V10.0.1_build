@@ -587,6 +587,81 @@
 					"response": []
 				},
 				{
+					"name": "setup possible flatRates",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "640e5a40-6211-43fe-92b9-72a306fd5129",
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"id": "d9ba38d0-41f9-4940-905b-c17d504d7eef",
+								"exec": [
+									"pm.test('call flatrate setup is saved successfully', function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "basic",
+							"basic": [
+								{
+									"key": "password",
+									"value": "{{programme_user_email}}",
+									"type": "string"
+								},
+								{
+									"key": "username",
+									"value": "{{programme_user_email}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"type": "text",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "[\r\n    {\r\n        \"type\": \"StaffCost\",\r\n        \"rate\": 20,\r\n        \"isAdjustable\": true\r\n    },\r\n    {\r\n        \"type\": \"OfficeOnStaff\",\r\n        \"rate\": 15,\r\n        \"isAdjustable\": true\r\n    },\r\n    {\r\n        \"type\": \"OfficeOnOther\",\r\n        \"rate\": 25,\r\n        \"isAdjustable\": true\r\n    },\r\n    {\r\n        \"type\": \"TravelOnStaff\",\r\n        \"rate\": 15,\r\n        \"isAdjustable\": true\r\n    },\r\n    {\r\n        \"type\": \"OtherOnStaff\",\r\n        \"rate\": 40,\r\n        \"isAdjustable\": true\r\n    }\r\n]\r\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{url}}/api/call/{{callId}}/flatrate",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"api",
+								"call",
+								"{{callId}}",
+								"flatrate"
+							]
+						}
+					},
+					"response": []
+				},
+				{
 					"name": "publish call",
 					"event": [
 						{
@@ -8784,7 +8859,7 @@
 	],
 	"variable": [
 		{
-			"id": "11d06194-f451-47d5-9b1d-89e0f89798c6",
+			"id": "aaf5b6a6-5053-4c20-a757-0c73ca29155e",
 			"key": "url",
 			"value": "specify_url_here"
 		}
