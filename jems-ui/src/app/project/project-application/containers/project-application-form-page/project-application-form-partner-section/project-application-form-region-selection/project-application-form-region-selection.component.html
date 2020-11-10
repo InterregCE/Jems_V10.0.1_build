@@ -1,19 +1,10 @@
 <app-project-application-form-partner-address
         *ngIf="details$ | async as details"
         [partnerId]="details.partner.id"
-        [nutsCountry]="details.main.country"
-        [nutsRegion2]="details.main.region2"
-        [nutsRegion3]="details.main.region3"
-        [nutsCountryDepartment]="details.department.country"
-        [nutsRegion2Department]="details.department.region2"
-        [nutsRegion3Department]="details.department.region3"
+        [nuts]="details.nuts"
         [success$]="partnerStore.partnerSaveSuccess$"
         [error$]="partnerStore.partnerSaveError$"
         [organizationDetails]="details.partner?.addresses"
         [editable]="projectStore.projectEditable$ | async"
-        (update)="partnerStore.savePartnerAddresses$.next($event)"
-        (changeCountry)="mainCountryChanged$.next($event)"
-        (changeRegion)="mainRegion2Changed$.next($event)"
-        (changeDepartmentCountry)="departmentCountryChanged$.next($event)"
-        (changeDepartmentRegion)="departmentRegion2Changed$.next($event)">
+        (update)="partnerStore.savePartnerAddresses$.next($event)">
 </app-project-application-form-partner-address>

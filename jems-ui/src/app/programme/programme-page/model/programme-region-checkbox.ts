@@ -1,55 +1,54 @@
+import {OutputNuts} from '@cat/api';
+
 export class ProgrammeRegionCheckbox {
-  id: string;
+  code: string;
   title: string
   checked: boolean;
   someChecked: boolean;
   parent: ProgrammeRegionCheckbox | null;
   children: ProgrammeRegionCheckbox[] = [];
 
-  static fromNuts(nuts: any): ProgrammeRegionCheckbox[] {
+  static fromNuts(nuts: OutputNuts[]): ProgrammeRegionCheckbox[] {
     if (!nuts) {
       return [];
     }
-    return Object.keys(nuts).map(key => this.fromRegion(null, key, nuts[key]));
+    return nuts.map(area => this.fromRegion(null, area));
   }
 
-  static fromRegion(parent: ProgrammeRegionCheckbox | null, title: string, region: any): ProgrammeRegionCheckbox {
+  static fromRegion(parent: ProgrammeRegionCheckbox | null, region: OutputNuts): ProgrammeRegionCheckbox {
     const checkbox = new ProgrammeRegionCheckbox();
     if (!region) {
       return checkbox;
     }
     checkbox.parent = parent;
-    if (region.id && region.title) {
-      checkbox.id = region.id;
-      checkbox.title = region.title.replace('|', ' ');
-      return checkbox;
+    checkbox.code = region.code;
+    checkbox.title = region.title;
+    if (region.areas?.length) {
+      checkbox.children = region.areas.map(area => this.fromRegion(checkbox, area));
     }
-    checkbox.title = title.replace('|', ' ');
-    checkbox.children = Object.keys(region)
-      .map(key => this.fromRegion(checkbox, key, region[key]));
     return checkbox;
   }
 
   static fromSelected(all: ProgrammeRegionCheckbox[], selected: ProgrammeRegionCheckbox[]): ProgrammeRegionCheckbox[] {
-    const selectedIds: string[] = [];
-    selected.forEach(checkbox => ProgrammeRegionCheckbox.getAllIds(checkbox, selectedIds));
-    all.forEach(checkbox => ProgrammeRegionCheckbox.checkAllWithIds(checkbox, selectedIds));
+    const selectedCodes: string[] = [];
+    selected.forEach(checkbox => ProgrammeRegionCheckbox.getAllCodes(checkbox, selectedCodes));
+    all.forEach(checkbox => ProgrammeRegionCheckbox.checkAllWithCodes(checkbox, selectedCodes));
     return all;
   }
 
-  static getAllIds(checkbox: ProgrammeRegionCheckbox, ids: string[]): void {
-    if (checkbox.id) {
-      ids.push(checkbox.id);
+  static getAllCodes(checkbox: ProgrammeRegionCheckbox, codes: string[]): void {
+    if (checkbox.code) {
+      codes.push(checkbox.code);
     }
-    checkbox.children.forEach(child => this.getAllIds(child, ids));
+    checkbox.children.forEach(child => this.getAllCodes(child, codes));
   }
 
-  static checkAllWithIds(checkbox: ProgrammeRegionCheckbox, ids: string[]): void {
-    if (checkbox.id && ids.includes(checkbox.id)) {
+  static checkAllWithCodes(checkbox: ProgrammeRegionCheckbox, codes: string[]): void {
+    if (checkbox.code && codes.includes(checkbox.code)) {
       checkbox.checked = true;
       checkbox.updateChecked();
     }
-    checkbox.children.forEach(child => ProgrammeRegionCheckbox.checkAllWithIds(child, ids));
+    checkbox.children.forEach(child => ProgrammeRegionCheckbox.checkAllWithCodes(child, codes));
   }
 
   updateChecked(): void {

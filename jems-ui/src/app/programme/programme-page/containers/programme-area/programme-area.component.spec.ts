@@ -47,14 +47,18 @@ describe('ProgrammeAreaComponent', () => {
   }));
 
   describe('Nuts regions', () => {
-    const nuts = {
-      Romania: {
-        Transilvania: {
-          Cluj: {id: 'cluj', title: 'cluj'},
-          Bistrita: {id: 'bistrita', title: 'bistrita'}
-        }
-      }
-    };
+    const nuts = [{
+      code: 'RO',
+      title: 'Romania',
+      areas: [{
+        code: 'TR',
+        title: 'Transilvania',
+        areas: [
+          {code: 'CJ', title: 'cluj'},
+          {code: 'BT', title: 'bistrita'}
+        ]
+      }]
+    }];
 
     beforeEach(() => {
       component.metaData$.subscribe();

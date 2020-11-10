@@ -3,7 +3,7 @@
     <ul>
         <li *ngFor="let subRegion of region.value">
             {{subRegion.title}}
-            <span *ngIf="subRegion.id">({{subRegion.id}})</span>
+            <span *ngIf="subRegion.code">({{subRegion.code}})</span>
         </li>
     </ul>
 </div>

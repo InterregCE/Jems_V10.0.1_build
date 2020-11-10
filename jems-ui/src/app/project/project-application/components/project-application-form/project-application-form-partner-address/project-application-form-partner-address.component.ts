@@ -8,11 +8,11 @@ import {
   Output,
   SimpleChanges,
 } from '@angular/core';
-import {FormBuilder, FormGroup, Validators} from '@angular/forms';
+import {AbstractControl, FormBuilder, FormGroup, Validators} from '@angular/forms';
 import {ViewEditForm} from '@common/components/forms/view-edit-form';
 import {SideNavService} from '@common/components/side-nav/side-nav.service';
 import {FormState} from '@common/components/forms/form-state';
-import {InputProjectPartnerAddress, NutsImportService, OutputProjectPartnerAddress} from '@cat/api';
+import {InputProjectPartnerAddress, NutsImportService, OutputProjectPartnerAddress, OutputNuts} from '@cat/api';
 import {Permission} from '../../../../../security/permissions/permission';
 
 @Component({
@@ -22,75 +22,41 @@ import {Permission} from '../../../../../security/permissions/permission';
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class ProjectApplicationFormPartnerAddressComponent extends ViewEditForm implements OnChanges {
+  Permission = Permission;
 
   @Input()
   partnerId: number;
   @Input()
-  nutsCountry: any;
-  @Input()
-  nutsRegion2: any;
-  @Input()
-  nutsRegion3: any[];
-  @Input()
-  nutsCountryDepartment: any;
-  @Input()
-  nutsRegion2Department: any;
-  @Input()
-  nutsRegion3Department: any[];
+  nuts: OutputNuts[];
   @Input()
   organizationDetails: OutputProjectPartnerAddress[];
   @Input()
   editable: boolean;
 
   @Output()
-  changeCountry = new EventEmitter<any>();
-  @Output()
-  changeRegion = new EventEmitter<any>();
-  @Output()
-  changeDepartmentCountry = new EventEmitter<any>();
-  @Output()
-  changeDepartmentRegion = new EventEmitter<any>();
-  @Output()
   update = new EventEmitter<InputProjectPartnerAddress[]>();
-  @Output()
-  cancel = new EventEmitter<void>();
-
-  Permission = Permission;
-  Object = Object
 
   partnerAddressForm: FormGroup = this.formBuilder.group({
-    partnerCountry: [''],
-    partnerRegion2: [''],
-    partnerRegion3: [''],
-    partnerStreet: ['', Validators.maxLength(50)],
-    partnerHouseNumber: ['', Validators.maxLength(20)],
-    partnerPostalCode: ['', Validators.maxLength(20)],
-    partnerCity: ['', Validators.maxLength(50)],
-    partnerHomepage: ['', Validators.maxLength(250)],
-    partnerDepartmentCountry: [''],
-    partnerDepartmentRegion2: [''],
-    partnerDepartmentRegion3: [''],
-    partnerDepartmentStreet: ['', Validators.maxLength(50)],
-    partnerDepartmentHouseNumber: ['', Validators.maxLength(20)],
-    partnerDepartmentPostalCode: ['', Validators.maxLength(20)],
-    partnerDepartmentCity: ['', Validators.maxLength(50)]
+    organization: this.formBuilder.group({
+      country: [''],
+      region2: [''],
+      region3: [''],
+      street: ['', Validators.maxLength(50)],
+      houseNumber: ['', Validators.maxLength(20)],
+      postalCode: ['', Validators.maxLength(20)],
+      city: ['', Validators.maxLength(50)],
+      homepage: ['', Validators.maxLength(250)],
+    }),
+    department: this.formBuilder.group({
+      country: [''],
+      region2: [''],
+      region3: [''],
+      street: ['', Validators.maxLength(50)],
+      houseNumber: ['', Validators.maxLength(20)],
+      postalCode: ['', Validators.maxLength(20)],
+      city: ['', Validators.maxLength(50)],
+    })
   })
-
-  partnerStreetErrors = {
-    maxlength: 'address.street.size.too.long'
-  };
-  partnerHouseNumberErrors = {
-    maxlength: 'address.houseNumber.size.too.long'
-  };
-  partnerPostalCodeErrors = {
-    maxlength: 'address.postalCode.size.too.long'
-  };
-  partnerCityErrors = {
-    maxlength: 'address.city.size.too.long'
-  };
-  partnerHomepageErrors = {
-    maxlength: 'address.homepage.size.too.long'
-  };
 
   private static isOrganizationDtoEmpty(partnerOrganizationDetails: InputProjectPartnerAddress): boolean {
     return !(partnerOrganizationDetails.country || partnerOrganizationDetails.nutsRegion2 || partnerOrganizationDetails.nutsRegion3 ||
@@ -137,79 +103,69 @@ export class ProjectApplicationFormPartnerAddressComponent extends ViewEditForm 
     return this.partnerAddressForm;
   }
 
+  get organization(): {[key: string]: AbstractControl} {
+    return (this.partnerAddressForm.controls?.organization as FormGroup).controls;
+  }
+
+  get department(): {[key: string]: AbstractControl} {
+    return (this.partnerAddressForm.controls?.department as FormGroup).controls;
+  }
+
   onSubmit(): void {
     const partnerOrganizationAddress = {
       type: InputProjectPartnerAddress.TypeEnum.Organization,
-      country: this.partnerAddressForm.controls.partnerCountry.value,
-      nutsRegion2: this.partnerAddressForm.controls.partnerRegion2.value,
-      nutsRegion3: this.partnerAddressForm.controls.partnerRegion3.value,
-      street: this.partnerAddressForm.controls.partnerStreet.value,
-      houseNumber: this.partnerAddressForm.controls.partnerHouseNumber.value,
-      postalCode: this.partnerAddressForm.controls.partnerPostalCode.value,
-      city: this.partnerAddressForm.controls.partnerCity.value,
-      homepage: this.partnerAddressForm.controls.partnerHomepage.value
+      country: this.organization.country.value,
+      nutsRegion2: this.organization.region2.value,
+      nutsRegion3: this.organization.region3.value,
+      street: this.organization.street.value,
+      houseNumber: this.organization.houseNumber.value,
+      postalCode: this.organization.postalCode.value,
+      city: this.organization.city.value,
+      homepage: this.organization.homepage.value
     }
     const partnerDepartmentAddress = {
       type: InputProjectPartnerAddress.TypeEnum.Department,
-      country: this.partnerAddressForm.controls.partnerDepartmentCountry.value,
-      nutsRegion2: this.partnerAddressForm.controls.partnerDepartmentRegion2.value,
-      nutsRegion3: this.partnerAddressForm.controls.partnerDepartmentRegion3.value,
-      street: this.partnerAddressForm.controls.partnerDepartmentStreet.value,
-      houseNumber: this.partnerAddressForm.controls.partnerDepartmentHouseNumber.value,
-      postalCode: this.partnerAddressForm.controls.partnerDepartmentPostalCode.value,
-      city: this.partnerAddressForm.controls.partnerDepartmentCity.value,
-      homepage: '',
+      country: this.department.country.value,
+      nutsRegion2: this.department.region2.value,
+      nutsRegion3: this.department.region3.value,
+      street: this.department.street.value,
+      houseNumber: this.department.houseNumber.value,
+      postalCode: this.department.postalCode.value,
+      city: this.department.city.value,
+      homepage: ''
     }
-    this.update.emit(ProjectApplicationFormPartnerAddressComponent.getValidatedDataToEmit(partnerOrganizationAddress, partnerDepartmentAddress))
+    this.update.emit(ProjectApplicationFormPartnerAddressComponent.getValidatedDataToEmit(
+        partnerOrganizationAddress, partnerDepartmentAddress)
+    )
   }
 
   onCancel(): void {
     this.changeFormState$.next(FormState.VIEW);
   }
 
-  countryChanged(country: any): void {
-    this.partnerAddressForm.controls.partnerRegion2.reset();
-    this.partnerAddressForm.controls.partnerRegion3.reset();
-    this.changeCountry.emit(country);
-  }
-
-  regionChanged(region: any): void {
-    this.partnerAddressForm.controls.partnerRegion3.reset();
-    this.changeRegion.emit(region);
-  }
-
-  countryDepartmentChanged(country: any): void {
-    this.partnerAddressForm.controls.partnerDepartmentRegion2.reset();
-    this.partnerAddressForm.controls.partnerDepartmentRegion3.reset();
-    this.changeDepartmentCountry.emit(country);
-  }
-
-  regionDepartmentChanged(region: any): void {
-    this.partnerAddressForm.controls.partnerDepartmentRegion3.reset();
-    this.changeDepartmentRegion.emit(region);
-  }
-
   private initPartnerOrganizationMainAddressFields(): void {
-    const partnerMainAddress = this.organizationDetails?.find( person => person.type === OutputProjectPartnerAddress.TypeEnum.Organization)
-    this.partnerAddressForm.controls.partnerCountry.setValue(partnerMainAddress?.country);
-    this.partnerAddressForm.controls.partnerRegion2.setValue(partnerMainAddress?.nutsRegion2);
-    this.partnerAddressForm.controls.partnerRegion3.setValue(partnerMainAddress?.nutsRegion3);
-    this.partnerAddressForm.controls.partnerStreet.setValue(partnerMainAddress?.street);
-    this.partnerAddressForm.controls.partnerHouseNumber.setValue(partnerMainAddress?.houseNumber);
-    this.partnerAddressForm.controls.partnerPostalCode.setValue(partnerMainAddress?.postalCode);
-    this.partnerAddressForm.controls.partnerCity.setValue(partnerMainAddress?.city);
-    this.partnerAddressForm.controls.partnerHomepage.setValue(partnerMainAddress?.homepage);
+    const partnerMainAddress = this.organizationDetails?.find(
+        person => person.type === OutputProjectPartnerAddress.TypeEnum.Organization)
+    this.organization.country.setValue(partnerMainAddress?.country);
+    this.organization.region2.setValue(partnerMainAddress?.nutsRegion2);
+    this.organization.region3.setValue(partnerMainAddress?.nutsRegion3);
+    this.organization.street.setValue(partnerMainAddress?.street);
+    this.organization.houseNumber.setValue(partnerMainAddress?.houseNumber);
+    this.organization.postalCode.setValue(partnerMainAddress?.postalCode);
+    this.organization.city.setValue(partnerMainAddress?.city);
+    this.organization.homepage.setValue(partnerMainAddress?.homepage);
   }
 
   private initPartnerOrganizationDepartmentAddressFields(): void {
-    const partnerMainAddress = this.organizationDetails?.find( person => person.type === OutputProjectPartnerAddress.TypeEnum.Department)
-    this.partnerAddressForm.controls.partnerDepartmentCountry.setValue(partnerMainAddress?.country);
-    this.partnerAddressForm.controls.partnerDepartmentRegion2.setValue(partnerMainAddress?.nutsRegion2);
-    this.partnerAddressForm.controls.partnerDepartmentRegion3.setValue(partnerMainAddress?.nutsRegion3);
-    this.partnerAddressForm.controls.partnerDepartmentStreet.setValue(partnerMainAddress?.street);
-    this.partnerAddressForm.controls.partnerDepartmentHouseNumber.setValue(partnerMainAddress?.houseNumber);
-    this.partnerAddressForm.controls.partnerDepartmentPostalCode.setValue(partnerMainAddress?.postalCode);
-    this.partnerAddressForm.controls.partnerDepartmentCity.setValue(partnerMainAddress?.city);
+    const partnerMainAddress = this.organizationDetails?.find(
+        person => person.type === OutputProjectPartnerAddress.TypeEnum.Department)
+    this.department.country.setValue(partnerMainAddress?.country);
+    this.department.region2.setValue(partnerMainAddress?.nutsRegion2);
+    this.department.region3.setValue(partnerMainAddress?.nutsRegion3);
+    this.department.street.setValue(partnerMainAddress?.street);
+    this.department.houseNumber.setValue(partnerMainAddress?.houseNumber);
+    this.department.postalCode.setValue(partnerMainAddress?.postalCode);
+    this.department.city.setValue(partnerMainAddress?.city);
   }
 
 }

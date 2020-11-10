@@ -76,6 +76,7 @@ import {ProjectApplicationFormPartnerCoFinancingComponent} from './project-appli
 import {StaffCostsFlatRateTableComponent} from './project-application/components/project-application-form/project-application-form-partner-budget/staff-costs-flat-rate-table/staff-costs-flat-rate-table.component';
 import {ProjectApplicationFormIdentificationPageComponent} from './project-application/containers/project-application-form-page/project-application-form-identification-page/project-application-form-identification-page.component';
 import {ProjectApplicationFormAssociatedOrgPageComponent} from './project-application/containers/project-application-form-page/project-application-form-associated-org-page/project-application-form-associated-org-page.component';
+import {ProjectApplicationFormAddressComponent} from './project-application/components/project-application-form/project-application-form-address/project-application-form-address.component';
 
 @NgModule({
   declarations: [
@@ -146,7 +147,8 @@ import {ProjectApplicationFormAssociatedOrgPageComponent} from './project-applic
     ProjectApplicationFormAssociatedOrganizationEditComponent,
     ProjectApplicationFormIdentificationPageComponent,
     ProjectApplicationFormAssociatedOrgPageComponent,
-    StaffCostsFlatRateTableComponent
+    StaffCostsFlatRateTableComponent,
+    ProjectApplicationFormAddressComponent
   ],
   imports: [
     SharedModule,

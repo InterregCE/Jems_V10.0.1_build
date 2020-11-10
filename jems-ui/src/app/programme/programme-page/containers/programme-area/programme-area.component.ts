@@ -1,5 +1,5 @@
 import {ChangeDetectionStrategy, Component, OnInit} from '@angular/core';
-import {NutsImportService, ProgrammeDataService} from '@cat/api';
+import {NutsImportService, ProgrammeDataService, OutputNuts} from '@cat/api';
 import {combineLatest, merge, ReplaySubject, Subject} from 'rxjs';
 import {catchError, mergeMap, map, startWith, take, takeUntil, tap} from 'rxjs/operators';
 import {BaseComponent} from '@common/components/base-component';
@@ -65,7 +65,7 @@ export class ProgrammeAreaComponent extends BaseComponent implements OnInit {
       })
     );
 
-  savedNuts$ = new Subject<any>();
+  savedNuts$ = new Subject<OutputNuts[]>();
   saveSelectedRegions$ = new Subject<void>();
   savedSelectedRegions$ = this.saveSelectedRegions$
     .pipe(
@@ -128,7 +128,7 @@ export class ProgrammeAreaComponent extends BaseComponent implements OnInit {
   }
 
   private collectSelectedGrouped(checkbox: ProgrammeRegionCheckbox, results: ProgrammeRegionCheckbox[]): void {
-    if (checkbox.allChildrenChecked() || (checkbox.id && checkbox.checked)) {
+    if (checkbox.allChildrenChecked() || (checkbox.code && checkbox.checked)) {
       results.push(checkbox);
       return;
     }
@@ -138,8 +138,8 @@ export class ProgrammeAreaComponent extends BaseComponent implements OnInit {
   }
 
   private collectSelectedChildren(checkbox: ProgrammeRegionCheckbox, results: string[]): void {
-    if (checkbox.id && checkbox.checked) {
-      results.push(checkbox.id);
+    if (checkbox.code && checkbox.checked) {
+      results.push(checkbox.code);
     }
     checkbox.children.forEach(child => {
       this.collectSelectedChildren(child, results);

@@ -17,6 +17,7 @@ import {
   InputProjectAssociatedOrganizationAddress,
   OutputProjectAssociatedOrganizationDetail,
   OutputProjectPartner,
+  OutputNuts,
 } from '@cat/api';
 import {SideNavService} from '@common/components/side-nav/side-nav.service';
 import {FormState} from '@common/components/forms/form-state';
@@ -31,15 +32,9 @@ import {Permission} from '../../../../../security/permissions/permission';
 })
 export class ProjectApplicationFormAssociatedOrganizationEditComponent extends ViewEditForm implements OnInit, OnChanges {
   Permission = Permission;
-  Object = Object
 
   @Input()
-  nutsCountry: any;
-  @Input()
-  nutsRegion2: any;
-  @Input()
-  nutsRegion3: any[];
-
+  nuts: OutputNuts[];
   @Input()
   partners: OutputProjectPartner[];
   @Input()
@@ -47,10 +42,6 @@ export class ProjectApplicationFormAssociatedOrganizationEditComponent extends V
   @Input()
   editable: boolean;
 
-  @Output()
-  changeCountry = new EventEmitter<any>();
-  @Output()
-  changeRegion = new EventEmitter<any>();
   @Output()
   create = new EventEmitter<InputProjectAssociatedOrganizationCreate>();
   @Output()
@@ -70,8 +61,8 @@ export class ProjectApplicationFormAssociatedOrganizationEditComponent extends V
     ],
     partnerId: [null, Validators.required],
     country: [''],
-    nutsRegion2: [''],
-    nutsRegion3: [''],
+    region2: [''],
+    region3: [''],
     street: ['', Validators.maxLength(50)],
     houseNumber: ['', Validators.maxLength(20)],
     postalCode: ['', Validators.maxLength(20)],
@@ -103,18 +94,6 @@ export class ProjectApplicationFormAssociatedOrganizationEditComponent extends V
   };
   partnerIdErrors = {
     required: 'project.organization.partner.should.not.be.empty',
-  };
-  streetErrors = {
-    maxlength: 'address.street.size.too.long'
-  };
-  houseNumberErrors = {
-    maxlength: 'address.houseNumber.size.too.long'
-  };
-  postalCodeErrors = {
-    maxlength: 'address.postalCode.size.too.long'
-  };
-  cityErrors = {
-    maxlength: 'address.city.size.too.long'
   };
   representativeTitleErrors = {
     maxlength: 'project.contact.title.size.too.long'
@@ -169,27 +148,15 @@ export class ProjectApplicationFormAssociatedOrganizationEditComponent extends V
     return this.associatedOrganizationForm;
   }
 
-  countryChanged(country: any): void {
-    this.associatedOrganizationForm.controls.nutsRegion2.reset();
-    this.associatedOrganizationForm.controls.nutsRegion3.reset();
-    this.changeCountry.emit(country);
-  }
-
-  regionChanged(region: any): void {
-    this.associatedOrganizationForm.controls.nutsRegion3.reset();
-    this.changeRegion.emit(region);
-  }
-
   onSubmit(): void {
-    console.log('submit');
     const toSave = {
       partnerId: this.controls?.partnerId.value,
       nameInOriginalLanguage: this.controls?.nameInOriginalLanguage.value,
       nameInEnglish: this.controls?.nameInEnglish.value,
       address: {
         country: this.controls?.country.value,
-        nutsRegion2: this.controls?.nutsRegion2.value,
-        nutsRegion3: this.controls?.nutsRegion3.value,
+        nutsRegion2: this.controls?.region2.value,
+        nutsRegion3: this.controls?.region3.value,
         street: this.controls?.street.value,
         houseNumber: this.controls?.houseNumber.value,
         postalCode: this.controls?.postalCode.value,
@@ -256,8 +223,8 @@ export class ProjectApplicationFormAssociatedOrganizationEditComponent extends V
     this.controls?.nameInEnglish.setValue(this.associatedOrganization?.nameInEnglish);
     this.controls?.partnerId.setValue(this.associatedOrganization?.partner?.id);
     this.controls?.country.setValue(this.associatedOrganization?.address?.country);
-    this.controls?.nutsRegion2.setValue(this.associatedOrganization?.address?.nutsRegion2);
-    this.controls?.nutsRegion3.setValue(this.associatedOrganization?.address?.nutsRegion3);
+    this.controls?.region2.setValue(this.associatedOrganization?.address?.nutsRegion2);
+    this.controls?.region3.setValue(this.associatedOrganization?.address?.nutsRegion3);
     this.controls?.street.setValue(this.associatedOrganization?.address?.street);
     this.controls?.houseNumber.setValue(this.associatedOrganization?.address?.houseNumber);
     this.controls?.postalCode.setValue(this.associatedOrganization?.address?.postalCode);
