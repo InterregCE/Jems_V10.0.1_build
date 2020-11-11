@@ -29,6 +29,8 @@ import io.cloudflight.jems.server.security.service.authorization.AuthorizationUt
 import io.cloudflight.jems.server.security.service.authorization.AuthorizationUtil.Companion.applicantUser
 import io.cloudflight.jems.server.security.service.authorization.AuthorizationUtil.Companion.programmeUser
 import io.cloudflight.jems.server.audit.service.AuditService
+import io.cloudflight.jems.server.call.callWithId
+import io.cloudflight.jems.server.call.testUser
 import io.cloudflight.jems.server.programme.entity.ProgrammeFund
 import io.cloudflight.jems.server.programme.repository.ProgrammeFundRepository
 import io.cloudflight.jems.server.programme.entity.Strategy
@@ -58,38 +60,7 @@ import java.util.stream.Stream
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class CallServiceTest {
 
-    private val account = User(
-        id = 1,
-        email = "admin@admin.dev",
-        name = "Name",
-        surname = "Surname",
-        userRole = UserRole(id = 1, name = "ADMIN"),
-        password = "hash_pass"
-    )
-
-    private val user = OutputUserWithRole(
-        id = 1,
-        email = "admin@admin.dev",
-        name = "Name",
-        surname = "Surname",
-        userRole = OutputUserRole(id = 1, name = "ADMIN")
-    )
-
-    private val call = Call(
-        id = 0,
-        creator = account,
-        name = "Test call name",
-        priorityPolicies = emptySet(),
-        strategies = emptySet(),
-        funds = emptySet(),
-        startDate = ZonedDateTime.now(),
-        endDate = ZonedDateTime.now().plusDays(5L),
-        status = CallStatus.DRAFT,
-        description = "This is a dummy call",
-        lengthOfPeriod = 1
-    )
-
-    private fun callWithId(id: Long) = call.copy(id = id)
+    private val call = callWithId(id = 0)
 
     private fun outputCallWithId(id: Long) = OutputCall(
         id = id,
@@ -138,7 +109,7 @@ class CallServiceTest {
     @BeforeEach
     fun setup() {
         MockKAnnotations.init(this)
-        every { securityService.currentUser } returns LocalCurrentUser(user, "hash_pass", emptyList())
+        every { securityService.currentUser } returns LocalCurrentUser(testUser, "hash_pass", emptyList())
         callService = CallServiceImpl(
             callRepository,
             userRepository,
@@ -196,10 +167,10 @@ class CallServiceTest {
     @Test
     fun `createCall Successful empty policies`() {
         every { securityService.currentUser } returns adminUser
-        every { userRepository.findById(eq(adminUser.user.id!!)) } returns Optional.of(account)
+        every { userRepository.findById(eq(adminUser.user.id!!)) } returns Optional.of(call.creator)
         every { callRepository.save(any<Call>()) } returns Call(
             100,
-            account,
+            call.creator,
             call.name,
             call.priorityPolicies,
             call.strategies,
@@ -240,7 +211,7 @@ class CallServiceTest {
     @Test
     fun `createCall Successful with policies`() {
         every { securityService.currentUser } returns adminUser
-        every { userRepository.findById(eq(adminUser.user.id!!)) } returns Optional.of(account)
+        every { userRepository.findById(eq(adminUser.user.id!!)) } returns Optional.of(call.creator)
         every { callRepository.save(any<Call>()) } returnsArgument 0
         every { programmePriorityPolicyRepository.findAllById(eq(setOf(AdvancedTechnologies))) } returns
                 listOf(ProgrammePriorityPolicy(programmeObjectivePolicy = AdvancedTechnologies, code = "AT"))
@@ -276,7 +247,7 @@ class CallServiceTest {
     @Test
     fun `createCall Unsuccessful with not existing policies`() {
         every { securityService.currentUser } returns adminUser
-        every { userRepository.findById(eq(adminUser.user.id!!)) } returns Optional.of(account)
+        every { userRepository.findById(eq(adminUser.user.id!!)) } returns Optional.of(call.creator)
         every { callRepository.save(any<Call>()) } returnsArgument 0
         every { programmePriorityPolicyRepository.findAllById(eq(setOf(DigitalConnectivity))) } returns emptyList()
 
@@ -294,7 +265,7 @@ class CallServiceTest {
 
     @Test
     fun `createCall no user`() {
-        every { userRepository.findById(eq(user.id!!)) } returns Optional.empty()
+        every { userRepository.findById(eq(testUser.id!!)) } returns Optional.empty()
 
         val newCall = InputCallCreate(
             name = call.name,

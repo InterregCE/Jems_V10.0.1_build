@@ -5,8 +5,9 @@ import io.cloudflight.jems.api.call.dto.InputCallCreate
 import io.cloudflight.jems.api.call.dto.InputCallUpdate
 import io.cloudflight.jems.api.call.dto.OutputCall
 import io.cloudflight.jems.api.call.dto.OutputCallList
-import io.cloudflight.jems.api.call.dto.OutputCallProgrammePriority
+import io.cloudflight.jems.api.call.dto.flatrate.InputCallFlatRateSetup
 import io.cloudflight.jems.server.call.service.CallService
+import io.cloudflight.jems.server.call.service.flatrate.update_flat_rate_setup.UpdateFlatRateSetup
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
 import org.springframework.security.access.prepost.PreAuthorize
@@ -14,7 +15,8 @@ import org.springframework.web.bind.annotation.RestController
 
 @RestController
 class CallController(
-    private val callService: CallService
+    private val callService: CallService,
+    private val updateFlatRateSetup: UpdateFlatRateSetup
 ) : CallApi {
 
     /**
@@ -40,13 +42,14 @@ class CallController(
     }
 
     @PreAuthorize("@callAuthorization.canUpdateCall(#id)")
-    override fun publishCall(id: Long): OutputCall {
-        return callService.publishCall(id)
-    }
+    override fun publishCall(id: Long) =
+        callService.publishCall(id)
 
     @PreAuthorize("@callAuthorization.canReadCallDetail(#id)")
-    override fun getCallObjectives(id: Long): List<OutputCallProgrammePriority> {
-        return callService.getPriorityAndPoliciesForCall(id)
-    }
+    override fun getCallObjectives(id: Long) =
+        callService.getPriorityAndPoliciesForCall(id)
+
+    override fun updateCallFlatRateSetup(callId: Long, flatRates: Set<InputCallFlatRateSetup>) =
+        updateFlatRateSetup.updateFlatRateSetup(callId, flatRates)
 
 }
