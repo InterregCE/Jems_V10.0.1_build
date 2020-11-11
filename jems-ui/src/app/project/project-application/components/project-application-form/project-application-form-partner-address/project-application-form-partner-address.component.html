@@ -8,6 +8,7 @@
         </span></h4>
     <h6><span>{{'project.partner.main-address.header' | translate}}</span></h6>
     <app-project-application-form-address
+            *ngIf="partnerAddressForm?.controls"
             [addressForm]="partnerAddressForm.controls.organization"
             [nuts]="nuts">
     </app-project-application-form-address>
@@ -15,6 +16,7 @@
 
     <h6><span>{{'project.partner.department-address.header' | translate}}</span></h6>
     <app-project-application-form-address
+            *ngIf="partnerAddressForm?.controls"
             [addressForm]="partnerAddressForm.controls.department"
             [nuts]="nuts">
     </app-project-application-form-address>

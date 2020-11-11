@@ -36,27 +36,7 @@ export class ProjectApplicationFormPartnerAddressComponent extends ViewEditForm 
   @Output()
   update = new EventEmitter<InputProjectPartnerAddress[]>();
 
-  partnerAddressForm: FormGroup = this.formBuilder.group({
-    organization: this.formBuilder.group({
-      country: [''],
-      region2: [''],
-      region3: [''],
-      street: ['', Validators.maxLength(50)],
-      houseNumber: ['', Validators.maxLength(20)],
-      postalCode: ['', Validators.maxLength(20)],
-      city: ['', Validators.maxLength(50)],
-      homepage: ['', Validators.maxLength(250)],
-    }),
-    department: this.formBuilder.group({
-      country: [''],
-      region2: [''],
-      region3: [''],
-      street: ['', Validators.maxLength(50)],
-      houseNumber: ['', Validators.maxLength(20)],
-      postalCode: ['', Validators.maxLength(20)],
-      city: ['', Validators.maxLength(50)],
-    })
-  })
+  partnerAddressForm: FormGroup = this.getAddressForm();
 
   private static isOrganizationDtoEmpty(partnerOrganizationDetails: InputProjectPartnerAddress): boolean {
     return !(partnerOrganizationDetails.country || partnerOrganizationDetails.nutsRegion2 || partnerOrganizationDetails.nutsRegion3 ||
@@ -65,8 +45,8 @@ export class ProjectApplicationFormPartnerAddressComponent extends ViewEditForm 
   }
 
   private static getValidatedDataToEmit(partnerOrganizationMainAddress: InputProjectPartnerAddress,
-                                        partnerOrganizationDepartmentAddress: InputProjectPartnerAddress): InputProjectPartnerAddress[]{
-    const dataToEmit : InputProjectPartnerAddress[] = [];
+                                        partnerOrganizationDepartmentAddress: InputProjectPartnerAddress): InputProjectPartnerAddress[] {
+    const dataToEmit: InputProjectPartnerAddress[] = [];
     if (!ProjectApplicationFormPartnerAddressComponent.isOrganizationDtoEmpty(partnerOrganizationMainAddress)) {
       dataToEmit.push(partnerOrganizationMainAddress);
     }
@@ -95,6 +75,7 @@ export class ProjectApplicationFormPartnerAddressComponent extends ViewEditForm 
 
   ngOnChanges(changes: SimpleChanges) {
     if (changes.partnerId) {
+      this.partnerAddressForm = this.getAddressForm();
       this.changeFormState$.next(FormState.VIEW);
     }
   }
@@ -103,11 +84,11 @@ export class ProjectApplicationFormPartnerAddressComponent extends ViewEditForm 
     return this.partnerAddressForm;
   }
 
-  get organization(): {[key: string]: AbstractControl} {
+  get organization(): { [key: string]: AbstractControl } {
     return (this.partnerAddressForm.controls?.organization as FormGroup).controls;
   }
 
-  get department(): {[key: string]: AbstractControl} {
+  get department(): { [key: string]: AbstractControl } {
     return (this.partnerAddressForm.controls?.department as FormGroup).controls;
   }
 
@@ -135,7 +116,7 @@ export class ProjectApplicationFormPartnerAddressComponent extends ViewEditForm 
       homepage: ''
     }
     this.update.emit(ProjectApplicationFormPartnerAddressComponent.getValidatedDataToEmit(
-        partnerOrganizationAddress, partnerDepartmentAddress)
+      partnerOrganizationAddress, partnerDepartmentAddress)
     )
   }
 
@@ -145,7 +126,7 @@ export class ProjectApplicationFormPartnerAddressComponent extends ViewEditForm 
 
   private initPartnerOrganizationMainAddressFields(): void {
     const partnerMainAddress = this.organizationDetails?.find(
-        person => person.type === OutputProjectPartnerAddress.TypeEnum.Organization)
+      person => person.type === OutputProjectPartnerAddress.TypeEnum.Organization)
     this.organization.country.setValue(partnerMainAddress?.country);
     this.organization.region2.setValue(partnerMainAddress?.nutsRegion2);
     this.organization.region3.setValue(partnerMainAddress?.nutsRegion3);
@@ -158,7 +139,7 @@ export class ProjectApplicationFormPartnerAddressComponent extends ViewEditForm 
 
   private initPartnerOrganizationDepartmentAddressFields(): void {
     const partnerMainAddress = this.organizationDetails?.find(
-        person => person.type === OutputProjectPartnerAddress.TypeEnum.Department)
+      person => person.type === OutputProjectPartnerAddress.TypeEnum.Department)
     this.department.country.setValue(partnerMainAddress?.country);
     this.department.region2.setValue(partnerMainAddress?.nutsRegion2);
     this.department.region3.setValue(partnerMainAddress?.nutsRegion3);
@@ -168,4 +149,27 @@ export class ProjectApplicationFormPartnerAddressComponent extends ViewEditForm 
     this.department.city.setValue(partnerMainAddress?.city);
   }
 
+  private getAddressForm(): FormGroup {
+    return this.formBuilder.group({
+      organization: this.formBuilder.group({
+        country: [''],
+        region2: [''],
+        region3: [''],
+        street: ['', Validators.maxLength(50)],
+        houseNumber: ['', Validators.maxLength(20)],
+        postalCode: ['', Validators.maxLength(20)],
+        city: ['', Validators.maxLength(50)],
+        homepage: ['', Validators.maxLength(250)],
+      }),
+      department: this.formBuilder.group({
+        country: [''],
+        region2: [''],
+        region3: [''],
+        street: ['', Validators.maxLength(50)],
+        houseNumber: ['', Validators.maxLength(20)],
+        postalCode: ['', Validators.maxLength(20)],
+        city: ['', Validators.maxLength(50)],
+      })
+    });
+  }
 }

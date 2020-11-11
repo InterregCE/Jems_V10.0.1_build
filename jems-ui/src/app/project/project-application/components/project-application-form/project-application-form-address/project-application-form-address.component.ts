@@ -1,4 +1,4 @@
-import {ChangeDetectionStrategy, Component, Input, OnInit} from '@angular/core';
+import {ChangeDetectionStrategy, Component, Input, OnChanges, OnInit, SimpleChanges} from '@angular/core';
 import {FormGroup} from '@angular/forms';
 import {OutputNuts} from '@cat/api';
 import {map, startWith} from 'rxjs/operators';
@@ -10,7 +10,7 @@ import {Observable} from 'rxjs';
   styleUrls: ['./project-application-form-address.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class ProjectApplicationFormAddressComponent implements OnInit {
+export class ProjectApplicationFormAddressComponent implements OnInit, OnChanges {
 
   @Input()
   addressForm: FormGroup;
@@ -40,28 +40,14 @@ export class ProjectApplicationFormAddressComponent implements OnInit {
   };
 
   ngOnInit() {
-    this.selectedCountry = this.findByName(this.addressForm.controls.country.value, this.nuts);
-    this.selectedRegion2 = this.findByName(this.addressForm.controls.region2.value, this.selectedCountry?.areas || []);
-
-    this.filteredCountry = this.addressForm.controls.country.valueChanges
-      .pipe(
-        startWith(''),
-        map(value => this.filter(value, this.nuts))
-      );
-
-    this.filteredRegion2 = this.addressForm.controls.region2.valueChanges
-      .pipe(
-        startWith(''),
-        map(value => this.filter(value, this.selectedCountry?.areas || []))
-      );
-
-    this.filteredRegion3 = this.addressForm.controls.region3.valueChanges
-      .pipe(
-        startWith(''),
-        map(value => this.filter(value, this.selectedRegion2?.areas || []))
-      );
+    this.initializeFilters();
   }
 
+  ngOnChanges(changes: SimpleChanges) {
+    if (changes.addressForm) {
+      this.initializeFilters();
+    }
+  }
 
   countryChanged(countryTitle: string) {
     this.selectedCountry = this.findByName(countryTitle, this.nuts);
@@ -105,6 +91,28 @@ export class ProjectApplicationFormAddressComponent implements OnInit {
     if (!selected) {
       this.addressForm.controls.region3.patchValue('');
     }
+  }
+
+  private initializeFilters(): void {
+    this.selectedCountry = this.findByName(this.addressForm.controls.country.value, this.nuts);
+    this.selectedRegion2 = this.findByName(this.addressForm.controls.region2.value, this.selectedCountry?.areas || []);
+    this.filteredCountry = this.addressForm.controls.country.valueChanges
+      .pipe(
+        startWith(''),
+        map(value => this.filter(value, this.nuts))
+      );
+
+    this.filteredRegion2 = this.addressForm.controls.region2.valueChanges
+      .pipe(
+        startWith(''),
+        map(value => this.filter(value, this.selectedCountry?.areas || []))
+      );
+
+    this.filteredRegion3 = this.addressForm.controls.region3.valueChanges
+      .pipe(
+        startWith(''),
+        map(value => this.filter(value, this.selectedRegion2?.areas || []))
+      );
   }
 
   private findByName(value: string, nuts: OutputNuts[]): OutputNuts | undefined {
