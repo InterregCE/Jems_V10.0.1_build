@@ -16,7 +16,7 @@ class CallFlatRateSetupPersistenceProvider(
         getCallOrThrow(callId).updateFlatRateSetup(flatRates.toEntity())
 
     @Transactional(readOnly = true)
-    override fun getFlatRateSetup(callId: Long) =
+    override fun getFlatRateSetup(callId: Long): Set<FlatRateModel> =
         getCallOrThrow(callId).flatRateSetup.toModel()
 
     private fun getCallOrThrow(callId: Long) =
