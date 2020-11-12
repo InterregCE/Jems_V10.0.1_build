@@ -14,7 +14,7 @@ class UpdateFlatRateSetup(private val persistence: CallFlatRateSetupPersistence)
     @CanUpdateCall
     override fun updateFlatRateSetup(callId: Long, flatRates: Set<InputCallFlatRateSetup>) {
         validateFlatRates(flatRates)
-        persistence.updateFlatRateSetup(callId, flatRates.toModel(callId))
+        persistence.updateProjectCallFlatRate(callId, flatRates.toModel(callId))
     }
 
 }

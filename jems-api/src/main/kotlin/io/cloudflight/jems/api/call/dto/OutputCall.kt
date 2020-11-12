@@ -12,10 +12,10 @@ data class OutputCall (
     val priorityPolicies: List<OutputProgrammePriorityPolicySimple>,
     val strategies: List<ProgrammeStrategy>,
     val funds: List<OutputProgrammeFund>,
-    val status: CallStatus,
     val startDate: ZonedDateTime,
     val endDate: ZonedDateTime,
-    val description: String? = null,
+    val status: CallStatus,
     val lengthOfPeriod: Int?,
+    val description: String? = null,
     val flatRates: List<InputCallFlatRateSetup> = emptyList()
 )

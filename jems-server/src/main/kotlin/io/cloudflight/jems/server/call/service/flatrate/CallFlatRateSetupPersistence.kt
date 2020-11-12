@@ -1,11 +1,13 @@
 package io.cloudflight.jems.server.call.service.flatrate
 
-import io.cloudflight.jems.server.call.service.flatrate.model.FlatRateModel
+import io.cloudflight.jems.server.call.service.flatrate.model.ProjectCallFlatRate
 
 interface CallFlatRateSetupPersistence {
 
-    fun updateFlatRateSetup(callId: Long, flatRates: Set<FlatRateModel>)
+    fun updateProjectCallFlatRate(callId: Long, flatRates: Set<ProjectCallFlatRate>)
 
-    fun getFlatRateSetup(callId: Long): Set<FlatRateModel>
+    fun getProjectCallFlatRate(callId: Long): Set<ProjectCallFlatRate>
+
+    fun getProjectCallFlatRateByPartnerId(partnerId: Long): Set<ProjectCallFlatRate>
 
 }

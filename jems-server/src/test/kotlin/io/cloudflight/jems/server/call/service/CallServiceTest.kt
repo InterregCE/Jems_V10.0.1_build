@@ -5,8 +5,8 @@ import io.cloudflight.jems.api.call.dto.InputCallCreate
 import io.cloudflight.jems.api.call.dto.InputCallUpdate
 import io.cloudflight.jems.api.call.dto.OutputCall
 import io.cloudflight.jems.api.call.dto.OutputCallList
-import io.cloudflight.jems.api.user.dto.OutputUserRole
-import io.cloudflight.jems.api.user.dto.OutputUserWithRole
+import io.cloudflight.jems.api.call.dto.flatrate.FlatRateType
+import io.cloudflight.jems.api.call.dto.flatrate.InputCallFlatRateSetup
 import io.cloudflight.jems.api.programme.dto.priority.OutputProgrammePriorityPolicySimple
 import io.cloudflight.jems.api.programme.dto.priority.ProgrammeObjectivePolicy.AdvancedTechnologies
 import io.cloudflight.jems.api.programme.dto.priority.ProgrammeObjectivePolicy.DigitalConnectivity
@@ -14,8 +14,6 @@ import io.cloudflight.jems.api.programme.dto.strategy.ProgrammeStrategy
 import io.cloudflight.jems.server.audit.entity.AuditAction
 import io.cloudflight.jems.server.audit.service.AuditCandidate
 import io.cloudflight.jems.server.call.entity.Call
-import io.cloudflight.jems.server.user.entity.User
-import io.cloudflight.jems.server.user.entity.UserRole
 import io.cloudflight.jems.server.common.exception.I18nFieldError
 import io.cloudflight.jems.server.common.exception.I18nValidationException
 import io.cloudflight.jems.server.common.exception.ResourceNotFoundException
@@ -71,8 +69,11 @@ class CallServiceTest {
         startDate = call.startDate,
         endDate = call.endDate,
         status = call.status,
+        lengthOfPeriod = call.lengthOfPeriod,
         description = call.description,
-        lengthOfPeriod = 1
+        flatRates = listOf(
+            InputCallFlatRateSetup(type = FlatRateType.StaffCost, rate = 5, isAdjustable = true)
+        )
     )
 
     private fun outputCallListWithId(id: Long) = OutputCallList(

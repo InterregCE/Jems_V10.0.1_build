@@ -1,22 +1,22 @@
 package io.cloudflight.jems.server.call.repository
 
-import io.cloudflight.jems.server.call.entity.FlatRateSetup
+import io.cloudflight.jems.server.call.entity.ProjectCallFlatRateEntity
 import io.cloudflight.jems.server.call.entity.FlatRateSetupId
-import io.cloudflight.jems.server.call.service.flatrate.model.FlatRateModel
+import io.cloudflight.jems.server.call.service.flatrate.model.ProjectCallFlatRate
 
-fun FlatRateModel.toEntity() = FlatRateSetup(
+fun ProjectCallFlatRate.toEntity() = ProjectCallFlatRateEntity(
     setupId = FlatRateSetupId(callId = callId, type = type),
     rate = rate,
     isAdjustable = isAdjustable
 )
 
-fun Set<FlatRateModel>.toEntity() = mapTo(HashSet()) { it.toEntity() }
+fun Set<ProjectCallFlatRate>.toEntity() = mapTo(HashSet()) { it.toEntity() }
 
-fun FlatRateSetup.toModel() = FlatRateModel(
+fun ProjectCallFlatRateEntity.toProjectCallFlatRate() = ProjectCallFlatRate(
     callId = setupId.callId,
     type = setupId.type,
     rate = rate,
     isAdjustable = isAdjustable
 )
 
-fun Set<FlatRateSetup>.toModel() = mapTo(HashSet()) { it.toModel() }
+fun Set<ProjectCallFlatRateEntity>.toProjectCallFlatRate() = mapTo(HashSet()) { it.toProjectCallFlatRate() }

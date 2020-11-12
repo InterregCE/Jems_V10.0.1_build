@@ -4,7 +4,7 @@ import io.cloudflight.jems.api.call.dto.flatrate.FlatRateType
 import io.cloudflight.jems.api.call.dto.flatrate.InputCallFlatRateSetup
 import io.cloudflight.jems.server.audit.service.AuditService
 import io.cloudflight.jems.server.call.service.flatrate.CallFlatRateSetupPersistence
-import io.cloudflight.jems.server.call.service.flatrate.model.FlatRateModel
+import io.cloudflight.jems.server.call.service.flatrate.model.ProjectCallFlatRate
 import io.cloudflight.jems.server.common.exception.I18nFieldError
 import io.cloudflight.jems.server.common.exception.I18nValidationException
 import io.mockk.MockKAnnotations
@@ -32,7 +32,7 @@ class UpdateFlatRateSetupInteractorTest {
     fun setup() {
         MockKAnnotations.init(this)
         updateFlatRateSetupInteractor = UpdateFlatRateSetup(persistence)
-        every { persistence.updateFlatRateSetup(eq(1), any()) } answers {}
+        every { persistence.updateProjectCallFlatRate(eq(1), any()) } answers {}
     }
 
     @Test
@@ -44,10 +44,10 @@ class UpdateFlatRateSetupInteractorTest {
         )
         updateFlatRateSetupInteractor.updateFlatRateSetup(1, setOf(toBeSet))
 
-        val event = slot<Set<FlatRateModel>>()
-        verify { persistence.updateFlatRateSetup(1, capture(event)) }
+        val event = slot<Set<ProjectCallFlatRate>>()
+        verify { persistence.updateProjectCallFlatRate(1, capture(event)) }
         assertThat(event.captured).containsExactly(
-            FlatRateModel(
+            ProjectCallFlatRate(
                 callId = 1,
                 type = toBeSet.type,
                 rate = toBeSet.rate,
