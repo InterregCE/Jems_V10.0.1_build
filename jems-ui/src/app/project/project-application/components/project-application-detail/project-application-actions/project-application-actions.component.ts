@@ -114,5 +114,5 @@ export class ProjectApplicationActionsComponent extends AbstractForm {
   isOpen(): boolean {
     const currentDate = moment(new Date());
     return currentDate.isBefore(this.projectCallEndDate);
-  };
+  }
 }

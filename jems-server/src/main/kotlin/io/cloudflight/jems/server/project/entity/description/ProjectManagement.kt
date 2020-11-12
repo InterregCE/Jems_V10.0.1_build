@@ -4,6 +4,7 @@ import javax.persistence.Column
 import javax.persistence.Embedded
 import javax.persistence.Entity
 import javax.persistence.Id
+import javax.validation.constraints.NotNull
 
 /**
  * C7
@@ -12,19 +13,16 @@ import javax.persistence.Id
 data class ProjectManagement(
 
     @Id
-    @Column(name = "project_id", nullable = false)
+    @Column(name = "project_id")
+    @field:NotNull
     val projectId: Long,
 
-    @Column
     val projectCoordination: String?,
 
-    @Column
     val projectQualityAssurance: String?,
 
-    @Column
     val projectCommunication: String?,
 
-    @Column
     val projectFinancialManagement: String?,
 
     @Embedded

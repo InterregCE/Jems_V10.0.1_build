@@ -32,7 +32,6 @@ fun User.toOutputUserWithRole() = OutputUserWithRole(
 )
 
 fun InputUserCreate.toEntity(role: UserRole, password: String) = User(
-    id = null,
     email = this.email,
     name = this.name,
     surname = this.surname,
@@ -41,7 +40,6 @@ fun InputUserCreate.toEntity(role: UserRole, password: String) = User(
 )
 
 fun InputUserRegistration.toEntity(role: UserRole, password: String) = User(
-    id = null,
     email = this.email,
     name = this.name,
     surname = this.surname,

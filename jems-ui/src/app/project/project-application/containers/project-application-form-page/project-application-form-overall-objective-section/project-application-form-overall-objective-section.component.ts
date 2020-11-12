@@ -20,7 +20,7 @@ import {ProjectApplicationFormSidenavService} from '../services/project-applicat
 export class ProjectApplicationFormOverallObjectiveSectionComponent {
   Permission = Permission;
 
-  projectId = this.activatedRoute?.snapshot?.params?.projectId
+  projectId = this.activatedRoute?.snapshot?.params?.projectId;
 
   saveError$ = new Subject<I18nValidationError | null>();
   saveSuccess$ = new Subject<boolean>();

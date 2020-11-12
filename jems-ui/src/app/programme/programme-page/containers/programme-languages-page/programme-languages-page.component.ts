@@ -49,7 +49,7 @@ export class ProgrammeLanguagesPageComponent extends BaseComponent implements On
     this.programmePageSidenavService.init(this.destroyed$);
   }
 
-  reloadLanguages(response: OutputProgrammeLanguage[]) {
+  reloadLanguages(response: OutputProgrammeLanguage[]): void {
     this.languageService.languagesChanged$
       .next(response);
   }

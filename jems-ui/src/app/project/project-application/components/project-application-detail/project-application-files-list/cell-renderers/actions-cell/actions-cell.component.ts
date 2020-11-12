@@ -17,7 +17,7 @@ export class ActionsCellComponent {
   permission: Permission;
 
   @Output()
-  edit = new EventEmitter<OutputProjectFile>()
+  edit = new EventEmitter<OutputProjectFile>();
   @Output()
   download = new EventEmitter<OutputProjectFile>();
   @Output()

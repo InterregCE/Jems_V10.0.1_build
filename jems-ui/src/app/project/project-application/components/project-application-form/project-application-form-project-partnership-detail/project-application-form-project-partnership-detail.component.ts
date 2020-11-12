@@ -12,7 +12,7 @@ import {FormBuilder, FormGroup, Validators} from '@angular/forms';
 import {SideNavService} from '@common/components/side-nav/side-nav.service';
 import {FormState} from '@common/components/forms/form-state';
 import {Permission} from 'src/app/security/permissions/permission';
-import {InputProjectPartnership, OutputProjectDescription} from '@cat/api';
+import {InputProjectPartnership} from '@cat/api';
 
 @Component({
   selector: 'app-project-application-form-project-partnership-detail',
@@ -44,7 +44,7 @@ export class ProjectApplicationFormProjectPartnershipDetailComponent extends Vie
     super(changeDetectorRef);
   }
 
-  ngOnInit() {
+  ngOnInit(): void {
     super.ngOnInit();
     this.changeFormState$.next(FormState.VIEW);
   }
@@ -68,7 +68,7 @@ export class ProjectApplicationFormProjectPartnershipDetailComponent extends Vie
     this.sideNavService.setAlertStatus(true);
   }
 
-  private initFields() {
+  private initFields(): void {
     this.projectPartnershipForm.controls.projectPartnership.setValue(this.project?.partnership);
   }
 }

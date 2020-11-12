@@ -2,7 +2,7 @@ import {OutputNuts} from '@cat/api';
 
 export class ProgrammeRegionCheckbox {
   code: string;
-  title: string
+  title: string;
   checked: boolean;
   someChecked: boolean;
   parent: ProgrammeRegionCheckbox | null;
@@ -76,7 +76,7 @@ export class ProgrammeRegionCheckbox {
   checkOrUncheckAll(value: boolean): void {
     this.checked = value;
     if (this.children.length === 0) {
-      this.checked = value
+      this.checked = value;
       return;
     }
     this.children.forEach(child => child.checkOrUncheckAll(value));

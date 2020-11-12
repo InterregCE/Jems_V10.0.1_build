@@ -167,7 +167,7 @@ class UserControllerIntegrationTest {
             APPLICANT_USER_EMAIL,
             APPLICANT_USER_EMAIL,
             APPLICANT_USER_EMAIL,
-            userFactory.applicantUser.userRole.id!!
+            userFactory.applicantUser.userRole.id
         )
         mockMvc.perform(
             put("/api/user")
@@ -188,7 +188,7 @@ class UserControllerIntegrationTest {
             APPLICANT_USER_EMAIL,
             APPLICANT_USER_EMAIL,
             APPLICANT_USER_EMAIL,
-            userFactory.saveRole(ADMINISTRATOR).id!!
+            userFactory.saveRole(ADMINISTRATOR).id
         )
         mockMvc.perform(
             put("/api/user")

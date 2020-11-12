@@ -32,7 +32,7 @@ export class TemplateCardComponent implements OnInit, OnDestroy {
    * which is changed during minification.
    */
   @Input()
-  componentId: string
+  componentId: string;
   @Input()
   cardTemplateRef: TemplateRef<any>;
 
@@ -53,7 +53,7 @@ export class TemplateCardComponent implements OnInit, OnDestroy {
       );
   }
 
-  ngOnDestroy() {
+  ngOnDestroy(): void {
     if (this.componentId) {
       this.eventBusService.setDirty(this.componentId, false);
     }
@@ -68,8 +68,9 @@ export class TemplateCardComponent implements OnInit, OnDestroy {
       return;
     }
     setTimeout(() => {
-      if (this.currentEventId === event.id)
+      if (this.currentEventId === event.id) {
         this.eventBusService.newSuccessMessage(event.source as any, null);
-    }, 3000);
+      }
+    },         3000);
   }
 }

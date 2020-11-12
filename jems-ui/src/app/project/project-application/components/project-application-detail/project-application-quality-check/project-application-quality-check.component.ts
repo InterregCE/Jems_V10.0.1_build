@@ -32,7 +32,7 @@ export class ProjectApplicationQualityCheckComponent extends AbstractForm implem
 
   notesErrors = {
     maxlength: 'quality.check.notes.size.too.long',
-  }
+  };
 
   constructor(
     private dialog: MatDialog,
@@ -53,7 +53,7 @@ export class ProjectApplicationQualityCheckComponent extends AbstractForm implem
         this.setQualityCheckValue(project);
         this.notesForm.controls.notes.setValue(project.qualityAssessment.note);
       }
-    })
+    });
   }
 
   getForm(): FormGroup | null {
@@ -69,7 +69,7 @@ export class ProjectApplicationQualityCheckComponent extends AbstractForm implem
     this.router.navigate(['app', 'project', 'detail', this.projectId]);
   }
 
-  assessmentChangeHandler(event: any) {
+  assessmentChangeHandler(event: any): void {
     this.selectedAssessment = event.value;
   }
 

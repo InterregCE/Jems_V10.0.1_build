@@ -1,25 +1,25 @@
 package io.cloudflight.jems.server.project.entity.partner.cofinancing
 
 import io.cloudflight.jems.server.programme.entity.ProgrammeFund
-import javax.persistence.Column
 import javax.persistence.Entity
 import javax.persistence.GeneratedValue
 import javax.persistence.GenerationType
 import javax.persistence.Id
 import javax.persistence.JoinColumn
 import javax.persistence.ManyToOne
+import javax.validation.constraints.NotNull
 
 @Entity(name = "project_partner_co_financing")
 data class ProjectPartnerCoFinancing(
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    val id: Long? = null,
+    val id: Long = 0,
 
-    @Column(name = "partner_id", nullable = false)
+    @field:NotNull
     val partnerId: Long,
 
-    @Column(nullable = false)
+    @field:NotNull
     val percentage: Int,
 
     @ManyToOne

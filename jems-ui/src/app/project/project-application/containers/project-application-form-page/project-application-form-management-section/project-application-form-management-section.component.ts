@@ -26,7 +26,7 @@ export class ProjectApplicationFormManagementSectionComponent {
   private savedDescription$ = this.projectApplicationFormStore.getProjectDescription()
     .pipe(
       map(project => project.projectManagement)
-    )
+    );
 
   private updatedManagement$ = this.updateManagement$
     .pipe(

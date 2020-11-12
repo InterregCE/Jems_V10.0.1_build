@@ -20,6 +20,6 @@ export class ProjectApplicationDecisionsComponent {
   updateOrViewFundingLabel(): string {
     return this.projectStatus === OutputProjectStatus.StatusEnum.APPROVEDWITHCONDITIONS
       ? 'project.assessment.fundingDecision.assessment.update'
-      : 'project.assessment.fundingDecision.assessment.view'
+      : 'project.assessment.fundingDecision.assessment.view';
   }
 }

@@ -19,10 +19,10 @@ class ProjectFactory(
 
     @Transactional
     fun saveProject(author: User, call: Call): Project {
-        val projectStatus = projectStatusRepository.save(ProjectStatus(null, null, ProjectApplicationStatus.DRAFT, author, ZonedDateTime.now(), null))
+        val projectStatus = projectStatusRepository.save(ProjectStatus(0, null, ProjectApplicationStatus.DRAFT, author, ZonedDateTime.now(), null))
         return projectRepository.save(
             Project(
-                id = null,
+                id = 0,
                 call = call,
                 acronym = "test_project",
                 applicant = author,

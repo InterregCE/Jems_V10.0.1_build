@@ -39,28 +39,28 @@ export class ProjectApplicationFormAddressComponent implements OnInit, OnChanges
     maxlength: 'address.homepage.size.too.long'
   };
 
-  ngOnInit() {
+  ngOnInit(): void {
     this.initializeFilters();
   }
 
-  ngOnChanges(changes: SimpleChanges) {
+  ngOnChanges(changes: SimpleChanges): void {
     if (changes.addressForm) {
       this.initializeFilters();
     }
   }
 
-  countryChanged(countryTitle: string) {
+  countryChanged(countryTitle: string): void {
     this.selectedCountry = this.findByName(countryTitle, this.nuts);
     this.addressForm.controls.region2.patchValue('');
     this.region2Changed('');
   }
 
-  region2Changed(region2Title: string) {
+  region2Changed(region2Title: string): void {
     this.selectedRegion2 = this.findByName(region2Title, this.selectedCountry?.areas || []);
     this.addressForm.controls.region3.patchValue('');
   }
 
-  countryUnfocused(event: FocusEvent) {
+  countryUnfocused(event: FocusEvent): void {
     if (this.selectOptionClicked(event)) {
       return;
     }
@@ -72,7 +72,7 @@ export class ProjectApplicationFormAddressComponent implements OnInit, OnChanges
     }
   }
 
-  region2Unfocused(event: FocusEvent) {
+  region2Unfocused(event: FocusEvent): void {
     if (this.selectOptionClicked(event)) {
       return;
     }
@@ -83,7 +83,7 @@ export class ProjectApplicationFormAddressComponent implements OnInit, OnChanges
     }
   }
 
-  region3Unfocused(event: FocusEvent) {
+  region3Unfocused(event: FocusEvent): void {
     if (this.selectOptionClicked(event)) {
       return;
     }
@@ -130,7 +130,7 @@ export class ProjectApplicationFormAddressComponent implements OnInit, OnChanges
     return !!event.relatedTarget && (event.relatedTarget as any).tagName === 'MAT-OPTION';
   }
 
-  private formatRegion(region: OutputNuts) {
+  private formatRegion(region: OutputNuts): string {
     return region.code + '|' + region.title;
   }
 }

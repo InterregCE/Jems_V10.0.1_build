@@ -177,11 +177,6 @@ class CallServiceImpl(
                 httpStatus = HttpStatus.UNPROCESSABLE_ENTITY,
                 i18nKey = "call.priorityPolicies.is.empty"
             )
-        if (call.lengthOfPeriod == null)
-            throw I18nValidationException(
-                httpStatus = HttpStatus.UNPROCESSABLE_ENTITY,
-                i18nKey = "call.lengthOfPeriod.is.empty"
-            )
         if (call.funds.isEmpty())
             throw I18nValidationException(
                 httpStatus = HttpStatus.UNPROCESSABLE_ENTITY,

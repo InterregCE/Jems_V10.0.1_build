@@ -71,15 +71,15 @@ describe('UserPageComponent', () => {
     httpTestingController.expectOne({method: 'GET', url: `//api/user?page=0&size=25&sort=id,desc`});
 
     // change sorting
-    component.newSort$.next({active: 'userRole.name', direction: 'asc'})
+    component.newSort$.next({active: 'userRole.name', direction: 'asc'});
     httpTestingController.expectOne({method: 'GET', url: `//api/user?page=0&size=25&sort=userRole.name,asc`});
 
     // change page index
-    component.newPageIndex$.next(2)
+    component.newPageIndex$.next(2);
     httpTestingController.expectOne({method: 'GET', url: `//api/user?page=2&size=25&sort=userRole.name,asc`});
 
     // change page size
-    component.newPageSize$.next(3)
+    component.newPageSize$.next(3);
     httpTestingController.expectOne({method: 'GET', url: `//api/user?page=2&size=3&sort=userRole.name,asc`});
 
     httpTestingController.verify();

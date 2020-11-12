@@ -41,6 +41,6 @@ describe('ProjectApplicationFormManagementSectionComponent', () => {
     httpTestingController.expectOne({
       method: 'PUT',
       url: '//api/project/1/description/c7'
-    })
+    });
   }));
 });

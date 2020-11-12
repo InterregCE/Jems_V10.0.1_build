@@ -86,7 +86,7 @@ export class ProjectApplicationFormPartnerEditComponent extends ViewEditForm imp
   };
   legalStatusErrors = {
     required: 'project.partner.legal.status.should.not.be.empty'
-  }
+  };
   vatErrors = {
     maxlength: 'project.partner.vat.size.too.long'
   };
@@ -129,10 +129,10 @@ export class ProjectApplicationFormPartnerEditComponent extends ViewEditForm imp
         takeUntil(this.destroyed$),
         filter(error => !!error && error.i18nKey === 'project.partner.role.lead.already.existing'),
         tap(error => this.handleLeadAlreadyExisting(this.controls, error as I18nValidationError))
-      ).subscribe()
+      ).subscribe();
   }
 
-  ngOnChanges(changes: SimpleChanges) {
+  ngOnChanges(changes: SimpleChanges): void {
     if (changes.partner || changes.editable) {
       this.changeFormState$.next(this.editable && !this.partner.id ? FormState.EDIT : FormState.VIEW);
     }
@@ -142,13 +142,13 @@ export class ProjectApplicationFormPartnerEditComponent extends ViewEditForm imp
     return this.partnerForm;
   }
 
-  private checkOrganization(controls: any) {
+  private checkOrganization(controls: any): { nameInOriginalLanguage: any; id: number; nameInEnglish: any; department: any } | any {
     const organization = {
       id: this.partner?.id,
       nameInOriginalLanguage: controls?.nameInOriginalLanguage.value,
       nameInEnglish: controls?.nameInEnglish.value,
       department:  controls?.department.value
-    }
+    };
     if (organization.nameInOriginalLanguage || organization.nameInEnglish || organization.department){
       return organization;
     }
@@ -156,8 +156,8 @@ export class ProjectApplicationFormPartnerEditComponent extends ViewEditForm imp
   }
 
   onSubmit(controls: any, oldPartnerId?: number): void {
-    const organization = this.checkOrganization(controls)
-    if (!controls.id?.value)
+    const organization = this.checkOrganization(controls);
+    if (!controls.id?.value) {
       this.create.emit({
         abbreviation: controls?.name.value,
         role: controls?.role.value,
@@ -170,7 +170,7 @@ export class ProjectApplicationFormPartnerEditComponent extends ViewEditForm imp
         vat: controls?.vat.value,
         vatRecovery: controls?.recoverVat.value
       });
-    else
+    } else {
       this.update.emit({
         id: controls?.id.value,
         abbreviation: controls?.name.value,
@@ -184,6 +184,7 @@ export class ProjectApplicationFormPartnerEditComponent extends ViewEditForm imp
         vat: controls?.vat.value,
         vatRecovery: controls?.recoverVat.value
       });
+    }
   }
 
   onCancel(): void {
@@ -203,7 +204,7 @@ export class ProjectApplicationFormPartnerEditComponent extends ViewEditForm imp
     this.sideNavService.setAlertStatus(true);
   }
 
-  private initFields() {
+  private initFields(): void {
     this.controls?.id.setValue(this.partner?.id);
     this.controls?.sortNumber.setValue(this.partner?.sortNumber);
     this.controls?.role.setValue(this.partner?.role);

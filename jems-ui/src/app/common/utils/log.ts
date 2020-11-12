@@ -10,7 +10,7 @@ export class Log {
   }
 
   static debug(message: any, ...optionalParams: any[]): void {
-    if(!isDevMode()) {
+    if (!isDevMode()) {
       return;
     }
     console.debug(
@@ -34,9 +34,9 @@ export class Log {
   }
 
   private static getMessage(message: any, optionalParams: any[]): string {
-    const location:string = optionalParams && optionalParams[0]?.constructor?.name;
+    const location: string = optionalParams && optionalParams[0]?.constructor?.name;
     if (location) {
-      return `${new Date().toLocaleTimeString()} - ${location}: ${message}`
+      return `${new Date().toLocaleTimeString()} - ${location}: ${message}`;
     }
     return `${new Date().toLocaleTimeString()}: ${message}`;
   }

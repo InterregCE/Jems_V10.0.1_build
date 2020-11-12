@@ -5,7 +5,7 @@ import io.cloudflight.jems.api.programme.dto.OutputProgrammeLegalStatus
 import io.cloudflight.jems.server.programme.entity.ProgrammeLegalStatus
 
 fun InputProgrammeLegalStatus.toEntity() = ProgrammeLegalStatus(
-    id = id,
+    id = id ?: 0,
     description = description
 )
 
@@ -15,9 +15,9 @@ fun OutputProgrammeLegalStatus.toEntity() = ProgrammeLegalStatus(
 )
 
 fun ProgrammeLegalStatus.toOutputProgrammeLegalStatus(): OutputProgrammeLegalStatus {
-    return if (id!! <= 2) { // only first 2 statuses are translated
-        OutputProgrammeLegalStatus(id = id!!)
+    return if (id <= 2) { // only first 2 statuses are translated
+        OutputProgrammeLegalStatus(id = id)
     } else {
-        OutputProgrammeLegalStatus(id = id!!, description = description)
+        OutputProgrammeLegalStatus(id = id, description = description)
     }
 }

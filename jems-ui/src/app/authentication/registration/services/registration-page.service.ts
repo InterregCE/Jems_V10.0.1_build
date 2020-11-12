@@ -36,6 +36,6 @@ export class RegistrationPageService {
 
   redirectToLogin(): void {
     this.userSaveSuccess$.next(false);
-    this.router.navigate(['login'])
+    this.router.navigate(['login']);
   }
 }

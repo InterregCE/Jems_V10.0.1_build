@@ -17,7 +17,7 @@ import {Observable} from 'rxjs';
 })
 export class ProjectApplicationEligibilityCheckComponent extends AbstractForm implements OnInit {
   ELIGIBLE = 'ELIGIBLE';
-  INELIGIBLE = 'INELIGIBLE'
+  INELIGIBLE = 'INELIGIBLE';
   // TODO move id to a container
   projectId = this.activatedRoute.snapshot.params.projectId;
   options: string[] = [this.ELIGIBLE, this.INELIGIBLE];
@@ -31,7 +31,7 @@ export class ProjectApplicationEligibilityCheckComponent extends AbstractForm im
 
   notesErrors = {
     maxlength: 'eligibility.check.notes.size.too.long',
-  }
+  };
 
   constructor(
     private dialog: MatDialog,
@@ -54,7 +54,7 @@ export class ProjectApplicationEligibilityCheckComponent extends AbstractForm im
           this.setEligibilityCheckValue(project);
           this.notesForm.controls.notes.setValue(project.eligibilityAssessment.note);
         }
-      })
+      });
   }
 
   getForm(): FormGroup | null {
@@ -69,7 +69,7 @@ export class ProjectApplicationEligibilityCheckComponent extends AbstractForm im
     this.router.navigate(['app', 'project', 'detail', this.projectId]);
   }
 
-  assessmentChangeHandler(event: any) {
+  assessmentChangeHandler(event: any): void {
     this.selectedAssessment = event.value;
   }
 

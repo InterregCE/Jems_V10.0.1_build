@@ -296,13 +296,13 @@ class UserServiceTest {
         every { userRepository.save(any<User>()) } returnsArgument (0)
 
         val newUser = InputUserUpdate(
-            id = oldUser.id!!,
+            id = oldUser.id,
             email = "new@email.eu",
             name = "NewName",
             surname = "NewSurname",
-            userRoleId = oldRole.id!!
+            userRoleId = oldRole.id
         )
-        every { userRepository.findByIdOrNull(eq(oldUser.id!!)) } returns oldUser
+        every { userRepository.findByIdOrNull(eq(oldUser.id)) } returns oldUser
         every { userRepository.findOneByEmail(eq(newUser.email)) } returns null
 
         val result = userService.update(newUser)
@@ -319,16 +319,16 @@ class UserServiceTest {
         every { userRepository.save(any<User>()) } returnsArgument (0)
 
         val newRole = UserRole(id = 9, name = "role_applicant")
-        every { userRoleRepository.findById(eq(newRole.id!!)) } returns Optional.of(newRole)
+        every { userRoleRepository.findById(eq(newRole.id)) } returns Optional.of(newRole)
 
         val newUser = InputUserUpdate(
-            id = oldUser.id!!,
+            id = oldUser.id,
             email = oldUser.email,
             name = oldUser.name,
             surname = oldUser.surname,
-            userRoleId = newRole.id!!
+            userRoleId = newRole.id
         )
-        every { userRepository.findByIdOrNull(eq(oldUser.id!!)) } returns oldUser
+        every { userRepository.findByIdOrNull(eq(oldUser.id)) } returns oldUser
         every { userRepository.findOneByEmail(eq(newUser.email)) } returns null
 
         if (role != ADMINISTRATOR) {
@@ -347,14 +347,14 @@ class UserServiceTest {
         every { userRepository.save(any<User>()) } returnsArgument (0)
 
         val newUser = InputUserUpdate(
-            id = oldUser.id!!,
+            id = oldUser.id,
             email = "already@taken.eu",
             name = "NewName",
             surname = "NewSurname",
-            userRoleId = oldRole.id!!
+            userRoleId = oldRole.id
         )
-        every { userRepository.findByIdOrNull(eq(oldUser.id!!)) } returns oldUser
-        every { userRepository.findOneByEmail(eq("already@taken.eu")) } returns User(id = 345, email = "", name = "", surname = "", userRole = UserRole(id = null, name = ""), password = "")
+        every { userRepository.findByIdOrNull(eq(oldUser.id)) } returns oldUser
+        every { userRepository.findOneByEmail(eq("already@taken.eu")) } returns User(id = 345, email = "", name = "", surname = "", userRole = UserRole(id = 0, name = ""), password = "")
 
         val exception = assertThrows<I18nValidationException> { userService.update(newUser) }
 
@@ -374,13 +374,13 @@ class UserServiceTest {
         every { securityService.currentUser } returns
             LocalCurrentUser(user, "hash_pass", listOf(SimpleGrantedAuthority("ROLE_$APPLICANT_USER")))
 
-        every { userRepository.findByIdOrNull(eq(oldUser.id!!)) } returns oldUser
+        every { userRepository.findByIdOrNull(eq(oldUser.id)) } returns oldUser
 
         val inputPassword = InputPassword(
             password = "new_pass",
             oldPassword = "old_pass_wrong"
         )
-        val exception = assertThrows<I18nValidationException> { userService.changePassword(oldUser.id!!, inputPassword) }
+        val exception = assertThrows<I18nValidationException> { userService.changePassword(oldUser.id, inputPassword) }
         assertThat(exception.httpStatus).isEqualTo(HttpStatus.UNPROCESSABLE_ENTITY)
         assertThat(exception.i18nFieldErrors)
             .containsAllEntriesOf(mapOf("password" to I18nFieldError("user.password.not.match")))
@@ -391,7 +391,7 @@ class UserServiceTest {
         every { securityService.currentUser } returns
             LocalCurrentUser(user, "hash_pass", listOf(SimpleGrantedAuthority("ROLE_$APPLICANT_USER")))
 
-        every { userRepository.findByIdOrNull(eq(oldUser.id!!)) } returns oldUser
+        every { userRepository.findByIdOrNull(eq(oldUser.id)) } returns oldUser
         every { userRepository.save(any<User>()) } returnsArgument (0)
 
         val inputPassword = InputPassword(
@@ -399,7 +399,7 @@ class UserServiceTest {
             oldPassword = "old_pass"
         )
 
-        userService.changePassword(oldUser.id!!, inputPassword)
+        userService.changePassword(oldUser.id, inputPassword)
 
         val event = slot<User>()
         verify { userRepository.save(capture(event)) }
@@ -411,10 +411,10 @@ class UserServiceTest {
         every { securityService.currentUser } returns
             LocalCurrentUser(user, "hash_pass", listOf(SimpleGrantedAuthority("ROLE_$ADMINISTRATOR")))
 
-        every { userRepository.findByIdOrNull(eq(oldUser.id!!)) } returns oldUser
+        every { userRepository.findByIdOrNull(eq(oldUser.id)) } returns oldUser
         every { userRepository.save(any<User>()) } returnsArgument (0)
 
-        userService.changePassword(oldUser.id!!, InputPassword("new_pass"))
+        userService.changePassword(oldUser.id, InputPassword("new_pass"))
 
         val event = slot<User>()
         verify { userRepository.save(capture(event)) }

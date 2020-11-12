@@ -1,33 +1,29 @@
 package io.cloudflight.jems.server.project.entity.description
 
-import javax.persistence.Column
 import javax.persistence.Embeddable
+import javax.validation.constraints.NotNull
 
 @Embeddable
 data class ProjectCooperationCriteria(
 
-    @Column(nullable = false)
+    @field:NotNull
     val projectJointDevelopment: Boolean = false,
 
-    @Column
     val projectJointDevelopmentDescription: String? = null,
 
-    @Column(nullable = false)
+    @field:NotNull
     val projectJointImplementation: Boolean = false,
 
-    @Column
     val projectJointImplementationDescription: String? = null,
 
-    @Column(nullable = false)
+    @field:NotNull
     val projectJointStaffing: Boolean = false,
 
-    @Column
     val projectJointStaffingDescription: String? = null,
 
-    @Column(nullable = false)
+    @field:NotNull
     val projectJointFinancing: Boolean = false,
 
-    @Column
     val projectJointFinancingDescription: String? = null
 
 ) {

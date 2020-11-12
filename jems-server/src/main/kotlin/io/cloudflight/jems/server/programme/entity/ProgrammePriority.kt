@@ -12,22 +12,26 @@ import javax.persistence.GenerationType
 import javax.persistence.Id
 import javax.persistence.JoinColumn
 import javax.persistence.OneToMany
+import javax.validation.constraints.NotNull
 
 @Entity(name = "programme_priority")
 data class ProgrammePriority(
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    val id: Long? = null,
+    val id: Long = 0,
 
-    @Column(nullable = false, unique = true)
+    @Column(unique = true)
+    @field:NotNull
     val code: String,
 
-    @Column(nullable = false, unique = true)
+    @Column(unique = true)
+    @field:NotNull
     val title: String,
 
-    @Column(name = "objective_id", nullable = false)
+    @Column(name = "objective_id")
     @Enumerated(EnumType.STRING)
+    @field:NotNull
     val objective: ProgrammeObjective,
 
     @OneToMany(cascade = [CascadeType.ALL], orphanRemoval = true, fetch = FetchType.LAZY)

@@ -14,7 +14,7 @@ import io.cloudflight.jems.server.common.exception.I18nValidationException
 import org.springframework.http.HttpStatus
 
 fun ProgrammePriority.toOutputProgrammePriority() = OutputProgrammePriority(
-    id = id!!,
+    id = id,
     code = code,
     title = title,
     objective = objective,

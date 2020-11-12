@@ -66,7 +66,7 @@ describe('WorkPackageDetailsComponent', () => {
     httpTestingController.expectOne({
       method: 'PUT',
       url: `//api/project/1/workpackage`
-    })
+    });
   }));
 
   it('should create a work package', fakeAsync(() => {
@@ -75,6 +75,6 @@ describe('WorkPackageDetailsComponent', () => {
     httpTestingController.expectOne({
       method: 'POST',
       url: `//api/project/1/workpackage`
-    })
+    });
   }));
 });

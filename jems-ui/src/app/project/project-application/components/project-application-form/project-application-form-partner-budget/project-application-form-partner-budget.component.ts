@@ -43,18 +43,18 @@ export class ProjectApplicationFormPartnerBudgetComponent extends ViewEditForm i
     super(changeDetectorRef);
   }
 
-  ngOnChanges(changes: SimpleChanges) {
+  ngOnChanges(changes: SimpleChanges): void {
 
     if (changes.budgets || changes.staffCostsFlatRate) {
-      this.updateStaffCostsTotal()
+      this.updateStaffCostsTotal();
     }
 
     if (changes.budgets || changes.officeAdministrationFlatRate || changes.staffCostsFlatRate) {
       const staffTotal = Number.isInteger(this.staffCostsFlatRate) && Number.isInteger(this.officeAdministrationFlatRate) ?
         this.staffCostsTotal :
-        (this.budgets?.staff?.total || 0)
+        (this.budgets?.staff?.total || 0);
 
-      this.updateOfficeAndAdministrationTotal(staffTotal)
+      this.updateOfficeAndAdministrationTotal(staffTotal);
     }
   }
 
@@ -62,7 +62,7 @@ export class ProjectApplicationFormPartnerBudgetComponent extends ViewEditForm i
     return null;
   }
 
-  onSubmit() {
+  onSubmit(): void {
     this.submitted = true;
     this.save.emit(this.budgets);
     this.changeFormState$.next(FormState.VIEW);
@@ -73,7 +73,7 @@ export class ProjectApplicationFormPartnerBudgetComponent extends ViewEditForm i
     this.cancelEdit.emit();
   }
 
-  adaptValidity() {
+  adaptValidity(): void {
     this.saveEnabled = Object.values(this.budgets).every(table => table.valid());
   }
 

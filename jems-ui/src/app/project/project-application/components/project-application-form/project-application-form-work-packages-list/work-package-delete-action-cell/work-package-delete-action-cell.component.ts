@@ -1,5 +1,5 @@
 import {ChangeDetectionStrategy, Component, EventEmitter, Input, Output} from '@angular/core';
-import {OutputWorkPackageSimple} from '@cat/api'
+import {OutputWorkPackageSimple} from '@cat/api';
 
 @Component({
   selector: 'app-work-package-delete-action-cell',

@@ -2,7 +2,7 @@ import {ChangeDetectionStrategy, Component, EventEmitter, Input, Output} from '@
 import {BaseComponent} from '@common/components/base-component';
 import {MatSort} from '@angular/material/sort';
 import {TableConfiguration} from '@common/components/table/model/table.configuration';
-import {PageOutputIndicatorOutput} from '@cat/api'
+import {PageOutputIndicatorOutput} from '@cat/api';
 import {Alert} from '@common/components/forms/alert';
 
 @Component({

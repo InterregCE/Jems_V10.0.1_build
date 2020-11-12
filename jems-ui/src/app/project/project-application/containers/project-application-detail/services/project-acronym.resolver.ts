@@ -10,6 +10,6 @@ export class ProjectAcronymResolver implements Resolve<Observable<string>> {
   }
 
   resolve(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): Observable<Observable<string>> {
-    return of(this.projectStore.getAcronym())
+    return of(this.projectStore.getAcronym());
   }
 }

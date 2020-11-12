@@ -37,7 +37,7 @@ export class StaffCostsFlatRateTableComponent {
     defaultColDef: {
       resizable: true,
     },
-  }
+  };
 
   constructor(private translateService: TranslateService) {
   }

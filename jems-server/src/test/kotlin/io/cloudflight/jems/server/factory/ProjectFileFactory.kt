@@ -26,10 +26,10 @@ class ProjectFileFactory(
 
     @Transactional
     fun saveProject(author: User, call: Call): Project {
-        val projectStatus = projectStatusRepository.save(ProjectStatus(null, null, ProjectApplicationStatus.DRAFT, author, ZonedDateTime.now(), null))
+        val projectStatus = projectStatusRepository.save(ProjectStatus(0, null, ProjectApplicationStatus.DRAFT, author, ZonedDateTime.now(), null))
         return projectRepository.save(
             Project(
-                id = null,
+                id = 0,
                 call = call,
                 acronym = "test_project",
                 applicant = author,
@@ -43,7 +43,7 @@ class ProjectFileFactory(
     fun saveProjectFile(project: Project, applicant: User): ProjectFile {
         return projectFileRepository.save(
             ProjectFile(
-                null,
+                0,
                 "project-files",
                 "project-1/cat.jpg",
                 "cat.jpg",

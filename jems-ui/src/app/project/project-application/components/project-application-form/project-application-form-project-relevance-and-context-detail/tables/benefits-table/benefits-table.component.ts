@@ -24,7 +24,7 @@ export class BenefitsTableComponent extends BaseComponent implements OnInit {
   @Input()
   editableBenefitsForm = new FormGroup({});
   @Input()
-  disabled: boolean
+  disabled: boolean;
   @Input()
   changedFormState$: Observable<null>;
 
@@ -54,7 +54,7 @@ export class BenefitsTableComponent extends BaseComponent implements OnInit {
   };
   specificationErrors = {
     maxlength: 'project.application.form.relevance.specification.size.too.long'
-  }
+  };
 
   constructor(private dialog: MatDialog,
               private translateService: TranslateService) {
@@ -68,7 +68,7 @@ export class BenefitsTableComponent extends BaseComponent implements OnInit {
     )
       .subscribe(() => {
       this.benefitsDataSource.data.forEach(benefit => this.addControl(benefit));
-    })
+    });
     this.benefitCounter = this.benefitsDataSource.data.length + 1;
   }
 
@@ -108,7 +108,7 @@ export class BenefitsTableComponent extends BaseComponent implements OnInit {
 
   deleteEntry(element: ProjectRelevanceBenefit): void {
     const index = this.benefitsDataSource.data.indexOf(element);
-    this.benefitsDataSource.data.splice(index,1);
+    this.benefitsDataSource.data.splice(index, 1);
     this.benefitsDataSource._updateChangeSubscription();
   }
 }

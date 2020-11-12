@@ -24,7 +24,7 @@ class UserFactory(
     @Transactional
     fun saveRole(roleName: String): UserRole {
         return userRoleRepository.findOneByName(roleName)
-            ?: userRoleRepository.save(UserRole(null, roleName))
+            ?: userRoleRepository.save(UserRole(0, roleName))
     }
 
     @Transactional
@@ -32,7 +32,7 @@ class UserFactory(
         return userRepository.findOneByEmail(email)
             ?: userRepository.save(
                     User(
-                            id = null,
+                            id = 0,
                             email = email,
                             password = passwordEncoder.encode(email),
                             name = email,

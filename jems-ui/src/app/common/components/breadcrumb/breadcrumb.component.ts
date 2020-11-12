@@ -23,29 +23,29 @@ export class BreadcrumbComponent extends BaseComponent implements OnInit {
       .pipe(
         takeUntil(this.destroyed$),
         tap(() => this.breadcrumbs = this.buildBreadcrumbs(this.route.root, '/'))
-      ).subscribe()
+      ).subscribe();
   }
 
   private buildBreadcrumbs(route: ActivatedRoute, url: string, previous: Breadcrumb[] = []): Breadcrumb[] {
     let newBreadcrumbs = previous;
     let nextUrl = url;
 
-    const data = route.routeConfig?.data
+    const data = route.routeConfig?.data;
 
     if (data) {
-      nextUrl = `${url}/${this.extractPathFrom(route)}`
+      nextUrl = `${url}/${this.extractPathFrom(route)}`;
       if (!data.skipBreadcrumb) {
         const breadcrumb = {
           i18nKey: !data.dynamicBreadcrumb && data.breadcrumb,
           dynamicValue: data.dynamicBreadcrumb && route.snapshot?.data?.breadcrumb$,
           url: nextUrl
-        }
+        };
         newBreadcrumbs = [...newBreadcrumbs, breadcrumb];
       }
     }
 
     if (route.firstChild) {
-      return this.buildBreadcrumbs(route.firstChild, nextUrl, newBreadcrumbs)
+      return this.buildBreadcrumbs(route.firstChild, nextUrl, newBreadcrumbs);
     }
 
     return newBreadcrumbs;
@@ -53,13 +53,14 @@ export class BreadcrumbComponent extends BaseComponent implements OnInit {
 
   private extractPathFrom(currentRoute: ActivatedRoute): string {
     let path = '';
-    if (currentRoute.routeConfig?.path) // this is always true
-      path = currentRoute.routeConfig?.path
+    if (currentRoute.routeConfig?.path) { // this is always true
+      path = currentRoute.routeConfig?.path;
+    }
 
     const params = currentRoute.snapshot.params;
     // replace parameter placeholders
     Object.entries(params)
-      .forEach(([key, value]) => path = path?.replace(`:${key}`, value))
+      .forEach(([key, value]) => path = path?.replace(`:${key}`, value));
 
     return path;
   }

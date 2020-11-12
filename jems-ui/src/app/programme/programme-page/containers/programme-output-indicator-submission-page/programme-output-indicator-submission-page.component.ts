@@ -49,7 +49,7 @@ export class ProgrammeOutputIndicatorSubmissionPageComponent extends BaseCompone
     this.programmePageSidenavService.init(this.destroyed$);
   }
 
-  createOutputIndicator(indicator: InputIndicatorOutputCreate) {
+  createOutputIndicator(indicator: InputIndicatorOutputCreate): void {
     this.programmeIndicatorService.createIndicatorOutput(indicator)
       .pipe(
         take(1),
@@ -65,7 +65,7 @@ export class ProgrammeOutputIndicatorSubmissionPageComponent extends BaseCompone
       ).subscribe();
   }
 
-  updateOutputIndicator(indicator: InputIndicatorOutputUpdate) {
+  updateOutputIndicator(indicator: InputIndicatorOutputUpdate): void {
     this.programmeIndicatorService.updateIndicatorOutput(indicator)
       .pipe(
         take(1),
@@ -80,7 +80,7 @@ export class ProgrammeOutputIndicatorSubmissionPageComponent extends BaseCompone
       ).subscribe();
   }
 
-  cancelCreate() {
+  cancelCreate(): void {
     this.programmePageSidenavService.goToIndicators();
   }
 

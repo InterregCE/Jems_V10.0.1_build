@@ -12,7 +12,7 @@ import {ActivatedRoute} from '@angular/router';
 import {SideNavService} from '@common/components/side-nav/side-nav.service';
 import {FormState} from '@common/components/forms/form-state';
 import {ViewEditForm} from '@common/components/forms/view-edit-form';
-import {OutputProjectPartnerDetail, InputProjectContact} from '@cat/api'
+import {OutputProjectPartnerDetail, InputProjectContact} from '@cat/api';
 import {Permission} from '../../../../../security/permissions/permission';
 
 @Component({
@@ -105,7 +105,7 @@ export class ProjectApplicationFormPartnerContactComponent extends ViewEditForm 
     this.enterViewMode();
   }
 
-  ngOnChanges(changes: SimpleChanges) {
+  ngOnChanges(changes: SimpleChanges): void {
     if (changes.partner) {
       this.changeFormState$.next(FormState.VIEW);
     }
@@ -149,15 +149,15 @@ export class ProjectApplicationFormPartnerContactComponent extends ViewEditForm 
     this.changeFormState$.next(FormState.VIEW);
   }
 
-  private initLegalRepresentative() {
-    const legalRepresentative = this.partner?.contacts?.find(person => person.type === InputProjectContact.TypeEnum.LegalRepresentative)
+  private initLegalRepresentative(): void {
+    const legalRepresentative = this.partner?.contacts?.find(person => person.type === InputProjectContact.TypeEnum.LegalRepresentative);
     this.partnerContactForm.controls.partnerRepresentativeTitle.setValue(legalRepresentative?.title);
     this.partnerContactForm.controls.partnerRepresentativeFirstName.setValue(legalRepresentative?.firstName);
     this.partnerContactForm.controls.partnerRepresentativeLastName.setValue(legalRepresentative?.lastName);
   }
 
-  private initContactPerson() {
-    const contactPerson = this.partner?.contacts?.find(person => person.type === InputProjectContact.TypeEnum.ContactPerson)
+  private initContactPerson(): void {
+    const contactPerson = this.partner?.contacts?.find(person => person.type === InputProjectContact.TypeEnum.ContactPerson);
     this.partnerContactForm.controls.partnerContactTitle.setValue(contactPerson?.title);
     this.partnerContactForm.controls.partnerContactFirstName.setValue(contactPerson?.firstName);
     this.partnerContactForm.controls.partnerContactLastName.setValue(contactPerson?.lastName);

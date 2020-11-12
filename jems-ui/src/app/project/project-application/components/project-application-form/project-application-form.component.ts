@@ -79,12 +79,12 @@ export class ProjectApplicationFormComponent extends ViewEditForm implements OnI
     };
 
     constructor(private formBuilder: FormBuilder,
-        protected changeDetectorRef: ChangeDetectorRef,
-        private sideNavService: SideNavService) {
+                protected changeDetectorRef: ChangeDetectorRef,
+                private sideNavService: SideNavService) {
         super(changeDetectorRef);
     }
 
-    ngOnInit() {
+    ngOnInit(): void {
         super.ngOnInit();
         this.changeFormState$.next(FormState.VIEW);
         this.applicationForm.get('projectDuration')
@@ -127,7 +127,7 @@ export class ProjectApplicationFormComponent extends ViewEditForm implements OnI
         });
     }
 
-    private initFields() {
+    private initFields(): void {
         this.applicationForm.controls.projectId.setValue(this.project.id);
         this.applicationForm.controls.projectAcronym.setValue(this.project.acronym);
         this.applicationForm.controls.projectTitle.setValue(this.project?.projectData?.title);
@@ -152,7 +152,7 @@ export class ProjectApplicationFormComponent extends ViewEditForm implements OnI
       return projectDuration ? Math.ceil(projectDuration / this.project?.call.lengthOfPeriod) : 0;
     }
 
-    changeCurrentPriority(selectedPriority: string){
+    changeCurrentPriority(selectedPriority: string): void {
       this.currentPriority = selectedPriority;
       this.applicationForm.controls.specificObjective.setValue('');
     }

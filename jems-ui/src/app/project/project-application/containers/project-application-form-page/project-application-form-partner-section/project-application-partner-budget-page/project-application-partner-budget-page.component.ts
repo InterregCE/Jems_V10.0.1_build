@@ -153,11 +153,11 @@ export class ProjectApplicationPartnerBudgetPageComponent {
       }))
     );
 
-    constructor(private projectPartnerBudgetService: ProjectPartnerBudgetService,
-                private activatedRoute: ActivatedRoute,
-                public projectStore: ProjectStore,
-                public partnerStore: ProjectPartnerStore) {
-    }
+  constructor(private projectPartnerBudgetService: ProjectPartnerBudgetService,
+              private activatedRoute: ActivatedRoute,
+              public projectStore: ProjectStore,
+              public partnerStore: ProjectPartnerStore) {
+  }
 
   private getBudgetEntries(table: PartnerBudgetTable): InputBudget[] {
     return table.entries.map(entry => ({
@@ -170,21 +170,26 @@ export class ProjectApplicationPartnerBudgetPageComponent {
 
   private updateBudget(partnerId: number, type: string, entries: InputBudget[]): Observable<Array<InputBudget>> {
     let update$;
-    if (type === PartnerBudgetTableType.STAFF)
+    if (type === PartnerBudgetTableType.STAFF) {
       update$ = this.projectPartnerBudgetService.updateBudgetStaffCost(partnerId, entries);
-    if (type === PartnerBudgetTableType.TRAVEL)
+    }
+    if (type === PartnerBudgetTableType.TRAVEL) {
       update$ = this.projectPartnerBudgetService.updateBudgetTravel(partnerId, entries);
-    if (type === PartnerBudgetTableType.EXTERNAL)
+    }
+    if (type === PartnerBudgetTableType.EXTERNAL) {
       update$ = this.projectPartnerBudgetService.updateBudgetExternal(partnerId, entries);
-    if (type === PartnerBudgetTableType.EQUIPMENT)
+    }
+    if (type === PartnerBudgetTableType.EQUIPMENT) {
       update$ = this.projectPartnerBudgetService.updateBudgetEquipment(partnerId, entries);
-    if (type === PartnerBudgetTableType.INFRASTRUCTURE)
+    }
+    if (type === PartnerBudgetTableType.INFRASTRUCTURE) {
       update$ = this.projectPartnerBudgetService.updateBudgetInfrastructure(partnerId, entries);
+    }
 
     return !update$ ? of([]) : update$
       .pipe(
         tap(budget => Log.info('Updated the' + type + ' budget', this, budget))
-      )
+      );
   }
 
 }

@@ -9,22 +9,24 @@ import javax.persistence.FetchType
 import javax.persistence.GeneratedValue
 import javax.persistence.GenerationType
 import javax.persistence.Id
-import javax.persistence.JoinColumn
-import javax.persistence.OneToMany
 import javax.persistence.ManyToOne
+import javax.persistence.OneToMany
+import javax.validation.constraints.NotNull
 
 @Entity(name = "project_associated_organization")
-data class ProjectAssociatedOrganization (
+data class ProjectAssociatedOrganization(
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    val id: Long? = null,
+    val id: Long = 0,
 
     // consider removal of this in future (transitive dependency through partner -> project)
     @ManyToOne(optional = false, fetch = FetchType.LAZY)
+    @field:NotNull
     val project: Project,
 
     @ManyToOne(optional = false, fetch = FetchType.LAZY)
+    @field:NotNull
     val partner: ProjectPartner,
 
     @Column

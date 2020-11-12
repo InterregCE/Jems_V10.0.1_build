@@ -100,7 +100,7 @@ export class ProgrammeLegalStatusListComponent extends ViewEditForm implements O
     this.dataSource.data = this.legalStatuses;
   }
 
-  protected enterEditMode() {
+  protected enterEditMode(): void {
     this.toDelete = [];
   }
 }

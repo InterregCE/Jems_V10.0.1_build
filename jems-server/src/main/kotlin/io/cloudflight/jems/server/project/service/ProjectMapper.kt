@@ -24,7 +24,6 @@ fun InputProject.toEntity(
     applicant: User,
     status: ProjectStatus
 ) = Project(
-    id = null,
     call = call,
     acronym = this.acronym!!,
     applicant = applicant,
@@ -59,7 +58,7 @@ fun Project.toOutputProjectSimple() = OutputProjectSimple(
 )
 
 fun Project.toApplicantAndStatus() = ProjectApplicantAndStatus(
-    applicantId = applicant.id!!,
+    applicantId = applicant.id,
     projectStatus = projectStatus.status
 )
 

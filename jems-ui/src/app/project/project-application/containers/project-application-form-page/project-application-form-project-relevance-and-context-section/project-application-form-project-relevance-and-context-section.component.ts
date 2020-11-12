@@ -27,7 +27,7 @@ export class ProjectApplicationFormProjectRelevanceAndContextSectionComponent {
   private savedDescription$ = this.projectApplicationFormStore.getProjectDescription()
     .pipe(
       map(project => project.projectRelevance)
-    )
+    );
 
   private updatedProjectRelevance$ = this.updateProjectRelevance$
     .pipe(

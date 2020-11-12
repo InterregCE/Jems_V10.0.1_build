@@ -12,7 +12,7 @@ export class Tools {
     return newObject === undefined ? defaultVal : newObject;
   }
 
-  static checkDigitsOnPaste(event: ClipboardEvent) {
+  static checkDigitsOnPaste(event: ClipboardEvent): void {
     const clipboardData = event.clipboardData?.getData('text').toUpperCase() || '';
     if (clipboardData.includes('E') || clipboardData.includes('-') || clipboardData.includes('+')
       || clipboardData.includes('.') || clipboardData.includes(',')) {
@@ -21,10 +21,11 @@ export class Tools {
     }
   }
 
-  static checkDigitsOnInput(event: KeyboardEvent) {
+  static checkDigitsOnInput(event: KeyboardEvent): false | boolean {
     const charCode = (event.which) ? event.which : event.keyCode;
-    if (charCode === 101)
+    if (charCode === 101) {
       return false;
+    }
     return (charCode >= 48 && charCode <= 57);
   }
 }

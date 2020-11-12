@@ -37,7 +37,7 @@ export class OfficeAndAdministrationTableComponent {
     defaultColDef: {
       resizable: true,
     },
-  }
+  };
 
   constructor(private translateService: TranslateService) {
   }

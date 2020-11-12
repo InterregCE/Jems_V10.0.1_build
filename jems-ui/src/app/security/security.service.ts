@@ -21,7 +21,7 @@ export class SecurityService {
               private userService: UserService) {
     this.reloadCurrentUser().pipe(
       take(1)
-    ).subscribe()
+    ).subscribe();
   }
 
   get currentUser(): Observable<OutputCurrentUser | null> {
@@ -61,12 +61,12 @@ export class SecurityService {
     this.myCurrentUser.next(null);
   }
 
-  logout() {
+  logout(): Observable<any> {
     return this.authenticationService.logout()
       .pipe(
         take(1),
         tap(() => Log.info('Current user logged out', this)),
         tap(() => this.clearAuthentication()),
-      )
+      );
   }
 }

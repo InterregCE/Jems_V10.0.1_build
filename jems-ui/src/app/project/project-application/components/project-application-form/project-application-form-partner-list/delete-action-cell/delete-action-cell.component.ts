@@ -1,5 +1,5 @@
 import {ChangeDetectionStrategy, Component, EventEmitter, Input, Output} from '@angular/core';
-import {OutputProjectPartner} from '@cat/api'
+import {OutputProjectPartner} from '@cat/api';
 
 @Component({
   selector: 'app-delete-action-cell',

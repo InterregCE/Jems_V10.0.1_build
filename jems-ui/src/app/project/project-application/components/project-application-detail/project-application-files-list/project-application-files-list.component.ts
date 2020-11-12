@@ -62,7 +62,7 @@ export class ProjectApplicationFilesListComponent extends BaseComponent implemen
     super();
   }
 
-  ngOnInit() {
+  ngOnInit(): void {
     this.tableConfiguration = new TableConfiguration({
       routerLink: '/app/project/',
       isTableClickable: false,
@@ -97,7 +97,7 @@ export class ProjectApplicationFilesListComponent extends BaseComponent implemen
     });
   }
 
-  delete(file: OutputProjectFile) {
+  delete(file: OutputProjectFile): void {
     Forms.confirmDialog(
       this.dialog,
       file.name,

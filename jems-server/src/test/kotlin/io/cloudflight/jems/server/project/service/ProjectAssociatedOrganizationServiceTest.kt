@@ -103,7 +103,7 @@ internal class ProjectAssociatedOrganizationServiceTest {
         abbreviation = projectPartner.abbreviation,
         role = ProjectPartnerRole.LEAD_PARTNER)
 
-    private fun organization(id: Long? = null, partner: ProjectPartner, name: String, sortNr: Int? = null) = ProjectAssociatedOrganization(
+    private fun organization(id: Long, partner: ProjectPartner, name: String, sortNr: Int? = null) = ProjectAssociatedOrganization(
         id = id,
         project = partner.project,
         partner = partner,
@@ -190,18 +190,18 @@ internal class ProjectAssociatedOrganizationServiceTest {
             partner = projectPartner,
             sortNr = 5 // old, to be replaced by 1
         )
-        every { projectAssociatedOrganizationRepository.findAllByProjectId(eq(projectPartner.project.id!!), eq(Sort.by("id"))) } returns listOf(alreadyExistingOrganization, toSecondSave)
+        every { projectAssociatedOrganizationRepository.findAllByProjectId(eq(projectPartner.project.id), eq(Sort.by("id"))) } returns listOf(alreadyExistingOrganization, toSecondSave)
         every { projectAssociatedOrganizationRepository.saveAll(any<Iterable<ProjectAssociatedOrganization>>()) } returnsArgument 0
 
         // test create
         val toCreate = InputProjectAssociatedOrganizationCreate(
-            partnerId = projectPartner.id!!,
+            partnerId = projectPartner.id,
             nameInOriginalLanguage = "to create",
             nameInEnglish = "to create",
             address = InputProjectAssociatedOrganizationAddress(country = "AT"),
             contacts = setOf(InputProjectContact(type = ProjectContactType.ContactPerson, firstName = "test contact"))
         )
-        val result = projectAssociatedOrganizationService.create(projectPartner.id!!, toCreate)
+        val result = projectAssociatedOrganizationService.create(projectPartner.id, toCreate)
         assertThat(result).isEqualTo(outputOrganizationDetail(
             id = 10,
             partner = outputProjectPartner,
@@ -217,7 +217,7 @@ internal class ProjectAssociatedOrganizationServiceTest {
 
         // assert that address and contacts are persisted on second repo.save() call
         with(slotOrganizations[0]) {
-            assertThat(id).isNull()
+            assertThat(id).isEqualTo(0)
             assertThat(nameInOriginalLanguage).isEqualTo("to create")
             assertThat(nameInEnglish).isEqualTo("to create")
             assertThat(addresses).isEmpty()
@@ -245,7 +245,7 @@ internal class ProjectAssociatedOrganizationServiceTest {
     fun `create associated organization not-existing partner`() {
         every { projectPartnerRepository.findFirstByProjectIdAndId(1, 1) } returns Optional.empty()
 
-        val toCreate = InputProjectAssociatedOrganizationCreate(partnerId = projectPartner.id!!)
+        val toCreate = InputProjectAssociatedOrganizationCreate(partnerId = projectPartner.id)
         val ex = assertThrows<ResourceNotFoundException> { projectAssociatedOrganizationService.create(1, toCreate) }
         assertThat(ex.entity).isEqualTo("projectPartner")
     }
@@ -263,8 +263,8 @@ internal class ProjectAssociatedOrganizationServiceTest {
         every { projectAssociatedOrganizationRepository.save(any<ProjectAssociatedOrganization>()) } returnsArgument 0
 
         val newValues = InputProjectAssociatedOrganizationUpdate(
-            id = oldOrganization.id!!,
-            partnerId = oldOrganization.partner.id!!,
+            id = oldOrganization.id,
+            partnerId = oldOrganization.partner.id,
             nameInOriginalLanguage = "new name",
             nameInEnglish = "new name",
             address = null,
@@ -284,14 +284,14 @@ internal class ProjectAssociatedOrganizationServiceTest {
     @Test
     fun deleteAssociatedOrganization() {
         val orgToBeRemoved = organization(id = 1, partner = projectPartner, name = "test name")
-        every { projectAssociatedOrganizationRepository.findFirstByProjectIdAndId(orgToBeRemoved.project.id!!, orgToBeRemoved.id!!) } returns Optional.of(orgToBeRemoved)
+        every { projectAssociatedOrganizationRepository.findFirstByProjectIdAndId(orgToBeRemoved.project.id, orgToBeRemoved.id) } returns Optional.of(orgToBeRemoved)
         every { projectAssociatedOrganizationRepository.delete(eq(orgToBeRemoved)) } answers {}
 
         // mock updating sort after entity updated
-        every { projectAssociatedOrganizationRepository.findAllByProjectId(eq(projectPartner.project.id!!), eq(Sort.by("id"))) } returns emptyList()
+        every { projectAssociatedOrganizationRepository.findAllByProjectId(eq(projectPartner.project.id), eq(Sort.by("id"))) } returns emptyList()
         every { projectAssociatedOrganizationRepository.saveAll(any<Iterable<ProjectAssociatedOrganization>>()) } returnsArgument 0
 
-        projectAssociatedOrganizationService.delete(orgToBeRemoved.project.id!!, orgToBeRemoved.id!!)
+        projectAssociatedOrganizationService.delete(orgToBeRemoved.project.id, orgToBeRemoved.id)
     }
 
     @Test

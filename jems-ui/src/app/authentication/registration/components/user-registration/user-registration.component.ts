@@ -54,7 +54,7 @@ export class UserRegistrationComponent extends AbstractForm implements OnInit{
   };
 
   emailErrors = {
-    required:'user.email.should.not.be.empty',
+    required: 'user.email.should.not.be.empty',
     maxlength: 'user.email.wrong.size',
     email: 'user.email.wrong.format'
   };
@@ -65,7 +65,7 @@ export class UserRegistrationComponent extends AbstractForm implements OnInit{
   };
 
   constructor(private formBuilder: FormBuilder,
-              protected changeDetectorRef: ChangeDetectorRef,) {
+              protected changeDetectorRef: ChangeDetectorRef) {
     super(changeDetectorRef);
   }
 
@@ -87,7 +87,7 @@ export class UserRegistrationComponent extends AbstractForm implements OnInit{
     });
   }
 
-  redirectToLogin() {
+  redirectToLogin(): void {
     this.loginRedirect.emit();
   }
 }

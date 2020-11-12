@@ -3,7 +3,7 @@ import {combineLatest} from 'rxjs';
 import {NutsStoreService} from '../../../../../../common/services/nuts-store.service';
 import {distinctUntilChanged, map, takeUntil, tap} from 'rxjs/operators';
 import {ActivatedRoute, Router} from '@angular/router';
-import {ProjectPartnerService,} from '@cat/api';
+import {ProjectPartnerService} from '@cat/api';
 import {BaseComponent} from '@common/components/base-component';
 import {ProjectAssociatedOrganizationStore} from '../../services/project-associated-organization-store.service';
 import {ProjectStore} from '../../../project-application-detail/services/project-store.service';
@@ -16,7 +16,7 @@ import {ProjectStore} from '../../../project-application-detail/services/project
 })
 export class ProjectApplicationFormAssociatedOrgDetailComponent extends BaseComponent implements OnInit {
 
-  projectId = this.activatedRoute?.snapshot?.params?.projectId
+  projectId = this.activatedRoute?.snapshot?.params?.projectId;
   associatedOrganizationId = this.activatedRoute?.snapshot?.params?.associatedOrganizationId;
 
   details$ = combineLatest([

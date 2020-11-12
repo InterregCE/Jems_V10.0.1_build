@@ -14,7 +14,7 @@ import {ProgrammeLegalStatusService} from '@cat/api';
 export class ProjectApplicationPartnerIdentityComponent extends BaseComponent implements OnInit {
 
   projectId = this.activatedRoute?.snapshot?.params?.projectId;
-  partnerId = this.activatedRoute?.snapshot?.params?.partnerId
+  partnerId = this.activatedRoute?.snapshot?.params?.partnerId;
 
   legalStatuses$ = this.programmeLegalStatusService.getProgrammeLegalStatusList();
 

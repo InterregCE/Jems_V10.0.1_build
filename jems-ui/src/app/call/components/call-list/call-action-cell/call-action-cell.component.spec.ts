@@ -1,6 +1,6 @@
 import {fakeAsync, TestBed, tick} from '@angular/core/testing';
 import {CallActionCellComponent} from './call-action-cell.component';
-import {OutputCall} from '@cat/api'
+import {OutputCall} from '@cat/api';
 import * as moment from 'moment';
 import {TranslateModule} from '@ngx-translate/core';
 

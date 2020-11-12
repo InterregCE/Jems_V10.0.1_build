@@ -2,7 +2,7 @@ import {ChangeDetectorRef, Component, EventEmitter, Input, OnInit, Output} from 
 import {FormBuilder, FormGroup, Validators} from '@angular/forms';
 import {FormState} from '@common/components/forms/form-state';
 import {AbstractForm} from '@common/components/forms/abstract-form';
-import {OutputProjectFile} from '@cat/api'
+import {OutputProjectFile} from '@cat/api';
 
 @Component({
   selector: 'app-description-cell',

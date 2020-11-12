@@ -75,15 +75,15 @@ describe('ProjectApplicationPartnerBudgetPageComponent', () => {
     httpTestingController.expectOne({
       method: 'GET',
       url: '//api/project/partner/2/budget/travel'
-    })
+    });
     httpTestingController.expectOne({
       method: 'GET',
       url: '//api/project/partner/2/budget/external'
-    })
+    });
     httpTestingController.expectOne({
       method: 'GET',
       url: '//api/project/partner/2/budget/equipment'
-    })
+    });
     httpTestingController.expectOne({
       method: 'GET',
       url: '//api/project/partner/2/budget/infrastructure'
@@ -105,15 +105,15 @@ describe('ProjectApplicationPartnerBudgetPageComponent', () => {
     httpTestingController.expectOne({
       method: 'PUT',
       url: '//api/project/partner/2/budget/travel'
-    })
+    });
     httpTestingController.expectOne({
       method: 'PUT',
       url: '//api/project/partner/2/budget/external'
-    })
+    });
     httpTestingController.expectOne({
       method: 'PUT',
       url: '//api/project/partner/2/budget/equipment'
-    })
+    });
     httpTestingController.expectOne({
       method: 'PUT',
       url: '//api/project/partner/2/budget/infrastructure'

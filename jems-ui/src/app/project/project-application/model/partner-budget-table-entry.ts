@@ -32,7 +32,7 @@ export class PartnerBudgetTableEntry {
     return Numbers.truncateNumber(valueNumber);
   }
 
-  private static validNumber(nr: number) {
+  private static validNumber(nr: number): boolean {
     return isNotNullOrUndefined(nr) && isNumeric(nr) && nr <= 999999999999999;
   }
 
@@ -43,14 +43,14 @@ export class PartnerBudgetTableEntry {
 
   setNumberOfUnits(newValue: string): void {
     const newNumberOfUnits = PartnerBudgetTableEntry.toNumber(newValue);
-    this.validNumberOfUnits = PartnerBudgetTableEntry.validNumber(newNumberOfUnits as number);
+    this.validNumberOfUnits = PartnerBudgetTableEntry.validNumber(newNumberOfUnits);
     this.numberOfUnits = isNaN(newNumberOfUnits as any) ? NaN : newNumberOfUnits;
     this.computeTotal();
   }
 
   setPricePerUnit(newValue: string): void {
     const newPricePerUnit = PartnerBudgetTableEntry.toNumber(newValue);
-    this.validPricePerUnit = PartnerBudgetTableEntry.validNumber(newPricePerUnit as number);
+    this.validPricePerUnit = PartnerBudgetTableEntry.validNumber(newPricePerUnit);
     this.pricePerUnit = isNaN(newPricePerUnit as any) ? NaN : newPricePerUnit;
     this.computeTotal();
   }

@@ -39,7 +39,7 @@ describe('CallConfigurationComponent', () => {
     httpTestingController.expectOne({
       method: 'PUT',
       url: `//api/call/1/publish`
-    })
+    });
   }));
 
   it('should create a call', fakeAsync(() => {
@@ -48,6 +48,6 @@ describe('CallConfigurationComponent', () => {
     httpTestingController.expectOne({
       method: 'POST',
       url: `//api/call`
-    })
+    });
   }));
 });

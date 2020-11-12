@@ -1,8 +1,8 @@
-import {ChangeDetectionStrategy, Component, EventEmitter, Input, OnInit, Output, ViewChild} from '@angular/core';
+import {ChangeDetectionStrategy, Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
 import {FormControl, ValidationErrors} from '@angular/forms';
-import {MatButtonToggleChange, MatButtonToggleGroup} from '@angular/material/button-toggle';
+import {MatButtonToggleChange} from '@angular/material/button-toggle';
 import {Observable} from 'rxjs';
-import {OutputProgrammeLanguage, InputTranslation} from '@cat/api';
+import {InputTranslation, OutputProgrammeLanguage} from '@cat/api';
 import {takeUntil} from 'rxjs/operators';
 import {BaseComponent} from '@common/components/base-component';
 
@@ -28,17 +28,17 @@ export class MultiLanguageFieldComponent extends BaseComponent implements OnInit
   @Input()
   languages: string[];
   @Input()
-  currentControlValues: InputTranslation[]
+  currentControlValues: InputTranslation[];
   @Input()
-  currentLanguage$: Observable<OutputProgrammeLanguage.CodeEnum>
+  currentLanguage$: Observable<OutputProgrammeLanguage.CodeEnum>;
   @Input()
-  validity: Map<OutputProgrammeLanguage.CodeEnum, boolean>
+  validity: Map<OutputProgrammeLanguage.CodeEnum, boolean>;
   @Input()
   customStyle?: string;
   @Input()
-  minRows? = 3;
+  minRows ? = 3;
   @Input()
-  maxRows? = 50;
+  maxRows ? = 50;
   @Input()
   changeControlValue$: Observable<InputTranslation[]>;
   @Output()
@@ -48,7 +48,7 @@ export class MultiLanguageFieldComponent extends BaseComponent implements OnInit
   isFieldFocused = false;
   selectedLanguage: string;
 
-  ngOnInit() {
+  ngOnInit(): void {
     this.control.setValue(this.currentControlValues[0]?.translation);
     this.selectedLanguage = this.languages[0];
     this.currentLanguage$
@@ -57,14 +57,14 @@ export class MultiLanguageFieldComponent extends BaseComponent implements OnInit
       )
       .subscribe(language => {
       this.changeFieldValueBasedOnLanguage(language, false);
-    })
+    });
     this.changeControlValue$
       .pipe(
         takeUntil(this.destroyed$)
       )
       .subscribe((values) => {
         this.changeFieldValuesOnReset(values);
-    })
+    });
   }
 
   changeCurrentSelectedLanguage($event: MatButtonToggleChange): void {
@@ -73,19 +73,20 @@ export class MultiLanguageFieldComponent extends BaseComponent implements OnInit
 
   storeChanges(): void {
     this.currentControlValues.forEach(value => {
-      if (value.language === this.currentLanguage)
+      if (value.language === this.currentLanguage) {
         value.translation = this.control.value;
-    })
+      }
+    });
     this.validity.set(this.currentLanguage, this.control.invalid);
     this.isFieldFocused = false;
   }
 
-  changeFocus() {
+  changeFocus(): void {
     this.isFieldFocused = true;
   }
 
   private changeFieldValueBasedOnLanguage(language: OutputProgrammeLanguage.CodeEnum, isButtonEvent: boolean): void {
-    const currentLanguageValue = this.currentControlValues.find(value => value.language === language)
+    const currentLanguageValue = this.currentControlValues.find(value => value.language === language);
     this.control.setValue(currentLanguageValue?.translation || '');
     this.validity.set(language, this.control.invalid);
     if (isButtonEvent) {
@@ -96,9 +97,9 @@ export class MultiLanguageFieldComponent extends BaseComponent implements OnInit
     }
   }
 
-  private changeFieldValuesOnReset(values: InputTranslation[]) {
+  private changeFieldValuesOnReset(values: InputTranslation[]): void {
     this.currentControlValues = values;
-    const currentLanguageValue = this.currentControlValues.find(value => value.language === this.currentLanguage)
+    const currentLanguageValue = this.currentControlValues.find(value => value.language === this.currentLanguage);
     this.control.setValue(currentLanguageValue?.translation || '');
   }
 }

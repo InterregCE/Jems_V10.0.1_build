@@ -27,7 +27,7 @@ export class AppComponent extends BaseComponent {
       .subscribe(theme => this.componentCssClass = theme);
   }
 
-  onSetTheme(theme: string) {
+  onSetTheme(theme: string): void {
     this.themeService.$currentTheme.next(theme);
   }
 

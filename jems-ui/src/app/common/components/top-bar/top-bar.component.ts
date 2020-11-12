@@ -30,7 +30,7 @@ export class TopBarComponent implements OnInit {
               public languageService: LanguageService,
               public translate: TranslateService) {
     const auditUrl = this.prepareAuditUrl(window.location.href);
-    this.topBarService.newAuditUrl(auditUrl)
+    this.topBarService.newAuditUrl(auditUrl);
   }
 
   ngOnInit(): void {
@@ -52,7 +52,7 @@ export class TopBarComponent implements OnInit {
       .pipe(finalize(() => this.logoutOngoing = false))
       .subscribe(() => {
         this.isNavBarCollapsed = true;
-        this.router.navigate(['/login'])
+        this.router.navigate(['/login']);
       });
   }
 

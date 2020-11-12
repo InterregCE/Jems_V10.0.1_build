@@ -1,6 +1,6 @@
 import {ChangeDetectionStrategy, Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
 import {FormBuilder, FormGroup, Validators} from '@angular/forms';
-import {InputCallCreate, InputCallUpdate, OutputCall, OutputProgrammeFund, OutputProgrammeStrategy} from '@cat/api'
+import {InputCallCreate, InputCallUpdate, OutputCall, OutputProgrammeFund, OutputProgrammeStrategy} from '@cat/api';
 import {Forms} from '../../../common/utils/forms';
 import {filter, take, takeUntil} from 'rxjs/operators';
 import {MatDialog} from '@angular/material/dialog';
@@ -21,7 +21,7 @@ export class CallDetailComponent extends BaseComponent implements OnInit {
   CallDetailComponent = CallDetailComponent;
 
   @Input()
-  call: OutputCall
+  call: OutputCall;
   @Input()
   priorityCheckboxes: CallPriorityCheckbox[];
   @Input()
@@ -30,13 +30,13 @@ export class CallDetailComponent extends BaseComponent implements OnInit {
   funds: OutputProgrammeFund[];
 
   @Output()
-  create: EventEmitter<InputCallCreate> = new EventEmitter<InputCallCreate>()
+  create: EventEmitter<InputCallCreate> = new EventEmitter<InputCallCreate>();
   @Output()
-  update: EventEmitter<InputCallUpdate> = new EventEmitter<InputCallUpdate>()
+  update: EventEmitter<InputCallUpdate> = new EventEmitter<InputCallUpdate>();
   @Output()
-  publish: EventEmitter<number> = new EventEmitter<number>()
+  publish: EventEmitter<number> = new EventEmitter<number>();
   @Output()
-  cancel: EventEmitter<void> = new EventEmitter<void>()
+  cancel: EventEmitter<void> = new EventEmitter<void>();
 
   startDateErrors = {
     required: 'call.startDate.unknown',
@@ -103,7 +103,7 @@ export class CallDetailComponent extends BaseComponent implements OnInit {
         .flatMap(checkbox => checkbox.getCheckedChildPolicies()),
       strategies: this.buildUpdateEntityStrategies(),
       funds: this.buildUpdateEntityFunds(),
-    }
+    };
     if (!this.call.id) {
       this.create.emit(call);
       return;

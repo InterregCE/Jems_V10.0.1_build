@@ -22,10 +22,10 @@ export class LoginComponent extends AbstractForm {
 
   constructor(private formBuilder: FormBuilder,
               protected changeDetectorRef: ChangeDetectorRef) {
-    super(changeDetectorRef)
+    super(changeDetectorRef);
   }
 
-  onSubmit() {
+  onSubmit(): void {
     this.submitted = true;
     this.submitLogin.emit({
       email: this.loginForm.controls.email.value,

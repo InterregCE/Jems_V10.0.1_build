@@ -10,7 +10,7 @@ import javax.persistence.Column
 data class ProgrammeLegalStatus (
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    val id: Long? = null,
+    val id: Long = 0,
 
     @Column
     val description: String? = null

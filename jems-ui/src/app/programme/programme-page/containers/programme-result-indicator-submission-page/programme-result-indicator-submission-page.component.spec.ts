@@ -39,7 +39,7 @@ describe('ProgrammeResultIndicatorSubmissionPageComponent', () => {
     httpTestingController.expectOne({
       method: 'PUT',
       url: `//api/programmeindicator/result`
-    })
+    });
   }));
 
   it('should create an indicator', fakeAsync(() => {
@@ -48,6 +48,6 @@ describe('ProgrammeResultIndicatorSubmissionPageComponent', () => {
     httpTestingController.expectOne({
       method: 'POST',
       url: `//api/programmeindicator/result`
-    })
+    });
   }));
 });

@@ -4,6 +4,6 @@ export class HeadlineRoute {
   headline: I18nLabel;
   route?: string;
   scrollRoute?: string;
-  scrollToTop? = false;
+  scrollToTop ? = false;
   bullets?: HeadlineRoute[] = [];
 }

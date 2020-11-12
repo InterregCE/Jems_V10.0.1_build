@@ -4,43 +4,42 @@ import io.cloudflight.jems.api.project.dto.status.ProjectApplicationStatus
 import io.cloudflight.jems.server.user.entity.User
 import java.time.LocalDate
 import java.time.ZonedDateTime
-import javax.persistence.Column
 import javax.persistence.Entity
-import javax.persistence.Enumerated
 import javax.persistence.EnumType
+import javax.persistence.Enumerated
 import javax.persistence.FetchType
 import javax.persistence.GeneratedValue
 import javax.persistence.GenerationType
 import javax.persistence.Id
 import javax.persistence.JoinColumn
 import javax.persistence.ManyToOne
+import javax.validation.constraints.NotNull
 
 @Entity(name = "project_status")
 data class ProjectStatus(
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    val id: Long? = null,
+    val id: Long = 0,
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "project_id")
     val project: Project? = null,
 
-    @Column(nullable = false)
     @Enumerated(EnumType.STRING)
+    @field:NotNull
     val status: ProjectApplicationStatus,
 
     @ManyToOne(optional = false, fetch = FetchType.LAZY)
     @JoinColumn(name = "account_id")
+    @field:NotNull
     val user: User,
 
-    @Column(nullable = false)
+    @field:NotNull
     val updated: ZonedDateTime = ZonedDateTime.now(),
 
-    @Column
     val decisionDate: LocalDate? = null,
 
-    @Column
     val note: String? = null
 
 ) {

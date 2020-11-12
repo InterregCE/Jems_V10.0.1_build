@@ -57,7 +57,7 @@ export class ProjectApplicationFormAssociatedOrganizationsListComponent implemen
           displayedColumn: 'project.application.form.associatedOrganization.table.number',
           elementProperty: 'sortNumber',
           i18nFixedKey: 'project.organization.number.format.short',
-          i18nArgs: (element: any) => { return { sortNumber: element.sortNumber} },
+          i18nArgs: (element: any) => ({ sortNumber: element.sortNumber}),
         },
         {
           displayedColumn: 'project.application.form.associatedOrganization.table.associatedOrganization',
@@ -78,13 +78,13 @@ export class ProjectApplicationFormAssociatedOrganizationsListComponent implemen
     });
   }
 
-  delete(associatedOrganization: OutputProjectAssociatedOrganization) {
+  delete(associatedOrganization: OutputProjectAssociatedOrganization): void {
     Forms.confirmDialog(
       this.dialog,
       'project.application.form.associatedOrganization.table.action.delete.dialog.header',
       'project.application.form.associatedOrganization.table.action.delete.dialog.message',
       {name: associatedOrganization.nameInOriginalLanguage,
-        boldWarningMessage: 'project.application.form.associatedOrganization.table.action.delete.dialog.warning' })
+       boldWarningMessage: 'project.application.form.associatedOrganization.table.action.delete.dialog.warning' })
       .pipe(
         take(1),
         filter(answer => !!answer),

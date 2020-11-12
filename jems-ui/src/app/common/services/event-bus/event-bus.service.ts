@@ -16,7 +16,7 @@ export class EventBusService {
     return this.event$
       .pipe(
         filter(event => event.source === source)
-      )
+      );
   }
 
   getEventByType(source: string, type: string): Observable<any | null> {
@@ -24,7 +24,7 @@ export class EventBusService {
       .pipe(
         filter(event => event.source === source && event.type === type),
         map(event => event.context)
-      )
+      );
   }
 
   newEvent(source: string, type: EventType, context: any | null): void {

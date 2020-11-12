@@ -31,7 +31,7 @@ export class ProjectAssociatedOrganizationStore {
     .pipe(
       map(project => project.id),
       shareReplay(1)
-    )
+    );
 
   saveAssociatedOrganization$ = new Subject<InputProjectAssociatedOrganizationUpdate>();
   createAssociatedOrganization$ = new Subject<InputProjectAssociatedOrganizationCreate>();
@@ -92,7 +92,7 @@ export class ProjectAssociatedOrganizationStore {
   )
     .pipe(
       shareReplay(1)
-    )
+    );
 
   constructor(private associatedOrganizationService: ProjectAssociatedOrganizationService,
               private projectStore: ProjectStore,
@@ -100,7 +100,7 @@ export class ProjectAssociatedOrganizationStore {
               private projectApplicationFormSidenavService: ProjectApplicationFormSidenavService) {
   }
 
-  init(associatedOrganizationId: number | string | null) {
+  init(associatedOrganizationId: number | string | null): void {
     this.associatedOrganizationId$.next(Number(associatedOrganizationId));
   }
 

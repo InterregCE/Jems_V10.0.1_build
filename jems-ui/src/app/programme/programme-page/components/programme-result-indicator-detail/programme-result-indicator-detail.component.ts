@@ -88,7 +88,7 @@ export class ProgrammeResultIndicatorDetailComponent extends ViewEditForm implem
 
   specificObjectiveErrors = {
     required: 'indicator.specific.objective.not.be.empty',
-  }
+  };
 
   referenceYearErrors = {
     maxlength: 'indicator.referenceYear.size.too.long',
@@ -165,7 +165,7 @@ export class ProgrammeResultIndicatorDetailComponent extends ViewEditForm implem
           finalTarget: this.resultIndicatorForm?.controls?.finalTarget?.value,
           sourceOfData: this.resultIndicatorForm?.controls?.sourceOfData?.value,
           comment: this.resultIndicatorForm?.controls?.comments?.value,
-        })
+        });
       } else {
         this.updateResultIndicator.emit({
           id: this.resultIndicator?.id,
@@ -179,7 +179,7 @@ export class ProgrammeResultIndicatorDetailComponent extends ViewEditForm implem
           finalTarget: this.resultIndicatorForm?.controls?.finalTarget?.value,
           sourceOfData: this.resultIndicatorForm?.controls?.sourceOfData?.value,
           comment: this.resultIndicatorForm?.controls?.comments?.value,
-        })
+        });
       }
     });
   }

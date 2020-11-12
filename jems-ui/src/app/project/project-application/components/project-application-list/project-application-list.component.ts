@@ -13,7 +13,7 @@ import {Permission} from '../../../../security/permissions/permission';
 })
 
 export class ProjectApplicationListComponent {
-  Permission = Permission
+  Permission = Permission;
 
   @Input()
   projectPage: PageOutputProjectSimple;

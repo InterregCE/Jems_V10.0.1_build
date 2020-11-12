@@ -42,8 +42,8 @@ class ProjectAssociatedOrganizationServiceImpl(
         )
 
         savedEntity = projectAssociatedOrganizationRepo.save(savedEntity.copy(
-            contacts = associatedOrganization.contacts.toEntity(savedEntity.id!!),
-            addresses = associatedOrganization.address.toEntity(savedEntity.id!!)
+            contacts = associatedOrganization.contacts.toEntity(savedEntity.id),
+            addresses = associatedOrganization.address.toEntity(savedEntity.id)
         ))
         refreshSortNumbers(projectId)
         return savedEntity.toOutputProjectAssociatedOrganizationDetail()
@@ -62,8 +62,8 @@ class ProjectAssociatedOrganizationServiceImpl(
                 partner = projectPartner,
                 nameInOriginalLanguage = associatedOrganization.nameInOriginalLanguage,
                 nameInEnglish = associatedOrganization.nameInEnglish,
-                addresses = associatedOrganization.address.toEntity(oldAssociatedOrganisation.id!!),
-                contacts = associatedOrganization.contacts.toEntity(oldAssociatedOrganisation.id!!)
+                addresses = associatedOrganization.address.toEntity(oldAssociatedOrganisation.id),
+                contacts = associatedOrganization.contacts.toEntity(oldAssociatedOrganisation.id)
             )
         ).toOutputProjectAssociatedOrganizationDetail()
     }

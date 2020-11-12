@@ -12,7 +12,7 @@ import {FormBuilder, FormGroup, Validators} from '@angular/forms';
 import {SideNavService} from '@common/components/side-nav/side-nav.service';
 import {FormState} from '@common/components/forms/form-state';
 import {Permission} from '../../../../../security/permissions/permission';
-import {OutputProjectManagement, InputProjectManagement, InputProjectHorizontalPrinciples} from '@cat/api'
+import {OutputProjectManagement, InputProjectManagement, InputProjectHorizontalPrinciples} from '@cat/api';
 import {SelectionModel} from '@angular/cdk/collections';
 
 @Component({
@@ -75,7 +75,7 @@ export class ProjectApplicationFormManagementDetailComponent extends ViewEditFor
     super(changeDetectorRef);
   }
 
-  ngOnInit() {
+  ngOnInit(): void {
     super.ngOnInit();
     this.changeFormState$.next(FormState.VIEW);
   }
@@ -120,7 +120,7 @@ export class ProjectApplicationFormManagementDetailComponent extends ViewEditFor
     });
   }
 
-  private initFields() {
+  private initFields(): void {
     this.managementForm.controls.coordination.setValue(this.project?.projectCoordination);
     this.managementForm.controls.quality.setValue(this.project?.projectQualityAssurance);
     this.managementForm.controls.communication.setValue(this.project?.projectCommunication);
@@ -149,7 +149,7 @@ export class ProjectApplicationFormManagementDetailComponent extends ViewEditFor
     this.managementForm.controls.principles_equality.setValue(this.project?.projectHorizontalPrinciples?.sexualEqualityDescription);
   }
 
-  changeSelection(key: string){
+  changeSelection(key: string): void {
     this.selection.toggle(key);
     this.managementForm.get(key)?.setValue(null);
   }

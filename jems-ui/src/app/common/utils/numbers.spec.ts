@@ -16,7 +16,7 @@ describe('Numbers', () => {
     let y = 0; // 0.0001 to 0.0050
     for (let i = 0; i < 50; i++) {
       for (let j = 0; j < 51; j++) {
-        expect(Numbers.truncateNumber(Numbers.sum([x, y]))).toBe(0)
+        expect(Numbers.truncateNumber(Numbers.sum([x, y]))).toBe(0);
 
         y = Numbers.sum([y, 0.0001]);
       }
@@ -34,7 +34,7 @@ describe('Numbers', () => {
     let y = 0; // 0.001 to 0.100
     for (let i = 0; i < 100; i++) {
       for (let j = 0; j < 101; j++) {
-        expect(Numbers.truncateNumber(Numbers.product([x, y]))).toBe(0)
+        expect(Numbers.truncateNumber(Numbers.product([x, y]))).toBe(0);
 
         y = Numbers.sum([y, 0.001]);
       }
@@ -50,7 +50,7 @@ describe('Numbers', () => {
   it('truncateNumber', () => {
     let x = 0; // 0.0001 to 0.0099
     for (let i = 0; i < 100; i++) {
-      expect(Numbers.truncateNumber(x)).toBe(0)
+      expect(Numbers.truncateNumber(x)).toBe(0);
       x = Numbers.sum([x, 0.0001]);
     }
 

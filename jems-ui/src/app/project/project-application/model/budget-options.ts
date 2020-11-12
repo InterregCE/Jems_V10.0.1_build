@@ -1,6 +1,6 @@
 export class BudgetOptions {
-  officeAdministrationFlatRate: number
-  staffCostsFlatRate: number
+  officeAdministrationFlatRate: number;
+  staffCostsFlatRate: number;
 
   constructor(officeAdministrationFlatRate: number, staffCostsFlatRate: number) {
     this.officeAdministrationFlatRate = officeAdministrationFlatRate;

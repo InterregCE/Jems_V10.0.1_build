@@ -190,20 +190,20 @@ class WorkPackageServiceTest {
 
     @Test
     fun deleteWorkPackage() {
-        every { workPackageRepository.deleteById(mockWorkPackage.id!!) } returns Unit
-        every { workPackageRepository.findAllByProjectId(project.id!!, any<Sort>()) } returns emptySet()
+        every { workPackageRepository.deleteById(mockWorkPackage.id) } returns Unit
+        every { workPackageRepository.findAllByProjectId(project.id, any<Sort>()) } returns emptySet()
         every { workPackageRepository.saveAll(emptyList()) } returns emptySet()
 
-        assertDoesNotThrow { workPackageService.deleteWorkPackage(project.id!!, mockWorkPackage.id!!) }
+        assertDoesNotThrow { workPackageService.deleteWorkPackage(project.id, mockWorkPackage.id) }
     }
 
     @Test
     fun deleteWorkPackage_notExisting() {
         every { workPackageRepository.deleteById(100) } returns Unit
-        every { workPackageRepository.findAllByProjectId(project.id!!, any<Sort>()) } returns emptySet()
+        every { workPackageRepository.findAllByProjectId(project.id, any<Sort>()) } returns emptySet()
         every { workPackageRepository.saveAll(emptyList()) } returns emptySet()
 
-        assertDoesNotThrow { workPackageService.deleteWorkPackage(project.id!!, 100) }
+        assertDoesNotThrow { workPackageService.deleteWorkPackage(project.id, 100) }
     }
 
 }

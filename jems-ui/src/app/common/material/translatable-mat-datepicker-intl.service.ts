@@ -34,6 +34,6 @@ export class TranslatableMatDatepickerIntl extends MatDatepickerIntl {
         this.switchToMultiYearViewLabel = value['common.datepicker.switch.to.multi.year.view.label'];
         this.changes.next();
       }
-    )
+    );
   }
 }

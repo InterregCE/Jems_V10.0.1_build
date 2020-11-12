@@ -23,7 +23,7 @@ import {ProjectPartnerStore} from '../../services/project-partner-store.service'
 })
 export class ProjectApplicationFormPartnerDetailComponent extends BaseComponent implements OnInit, OnDestroy {
 
-  projectId = this.activatedRoute?.snapshot?.params?.projectId
+  projectId = this.activatedRoute?.snapshot?.params?.projectId;
   partnerId = this.activatedRoute?.snapshot?.params?.partnerId;
 
   activeTab$ = this.tabService.currentTab(
@@ -91,7 +91,7 @@ export class ProjectApplicationFormPartnerDetailComponent extends BaseComponent 
     this.projectStore.init(this.projectId);
   }
 
-  ngOnDestroy() {
+  ngOnDestroy(): void {
     super.ngOnDestroy();
     this.tabService.cleanupTab(ProjectApplicationFormPartnerDetailComponent.name + this.partnerId);
   }

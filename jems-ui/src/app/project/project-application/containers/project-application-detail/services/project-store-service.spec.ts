@@ -55,7 +55,7 @@ describe('ProjectStoreService', () => {
     service.getStatus().subscribe(res => status = res);
 
     service.init(1);
-    service.changeStatus({status: InputProjectStatus.StatusEnum.DRAFT, note: '', date: ''})
+    service.changeStatus({status: InputProjectStatus.StatusEnum.DRAFT, note: '', date: ''});
 
     httpTestingController.expectOne({method: 'PUT', url: '//api/project/1/status'})
       .flush({id: 1, projectStatus: {status: InputProjectStatus.StatusEnum.DRAFT}});
@@ -70,7 +70,7 @@ describe('ProjectStoreService', () => {
     service.getStatus().subscribe(res => status = res);
 
     service.init(1);
-    service.changeStatus({status: InputProjectStatus.StatusEnum.ELIGIBLE, note: 'Passed', date: '20/07/2020'})
+    service.changeStatus({status: InputProjectStatus.StatusEnum.ELIGIBLE, note: 'Passed', date: '20/07/2020'});
 
     httpTestingController.expectOne({method: 'PUT', url: '//api/project/1/status'})
       .flush({
@@ -87,7 +87,7 @@ describe('ProjectStoreService', () => {
     service.getProject().subscribe(res => project = res);
 
     service.init(1);
-    service.setEligibilityAssessment({note: '', result: InputProjectEligibilityAssessment.ResultEnum.PASSED})
+    service.setEligibilityAssessment({note: '', result: InputProjectEligibilityAssessment.ResultEnum.PASSED});
 
     httpTestingController.expectOne({method: 'POST', url: '//api/project/1/status/eligibility'})
       .flush({
@@ -104,7 +104,7 @@ describe('ProjectStoreService', () => {
     service.getProject().subscribe(res => project = res);
 
     service.init(1);
-    service.setQualityAssessment({note: '', result: InputProjectQualityAssessment.ResultEnum.NOTRECOMMENDED})
+    service.setQualityAssessment({note: '', result: InputProjectQualityAssessment.ResultEnum.NOTRECOMMENDED});
 
     httpTestingController.expectOne({method: 'POST', url: '//api/project/1/status/quality'})
       .flush({

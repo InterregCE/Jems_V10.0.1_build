@@ -8,7 +8,7 @@ import {
   Output
 } from '@angular/core';
 import {ViewEditForm} from '@common/components/forms/view-edit-form';
-import {InputProjectOverallObjective, OutputProjectDescription, OutputProgrammePriorityPolicySimple} from '@cat/api';
+import {InputProjectOverallObjective, OutputProgrammePriorityPolicySimple} from '@cat/api';
 import {Permission} from '../../../../../security/permissions/permission';
 import {FormBuilder, FormGroup, Validators} from '@angular/forms';
 import {SideNavService} from '@common/components/side-nav/side-nav.service';
@@ -24,13 +24,13 @@ import {TranslateService} from '@ngx-translate/core';
 export class ProjectApplicationFormOverallObjectiveDetailComponent extends ViewEditForm implements OnInit {
   Permission = Permission;
 
-@Input()
+  @Input()
   editable: boolean;
-@Input()
+  @Input()
   project: InputProjectOverallObjective;
-@Input()
-specificObjective: OutputProgrammePriorityPolicySimple;
-@Output()
+  @Input()
+  specificObjective: OutputProgrammePriorityPolicySimple;
+  @Output()
   updateData = new EventEmitter<InputProjectOverallObjective>();
 
   overallObjectiveForm: FormGroup = this.formBuilder.group({
@@ -49,7 +49,7 @@ specificObjective: OutputProgrammePriorityPolicySimple;
     super(changeDetectorRef);
   }
 
-  ngOnInit() {
+  ngOnInit(): void {
     super.ngOnInit();
     this.changeFormState$.next(FormState.VIEW);
   }
@@ -79,7 +79,7 @@ specificObjective: OutputProgrammePriorityPolicySimple;
     }
   }
 
-  private initFields() {
+  private initFields(): void {
     if (this.specificObjective) {
       this.overallObjectiveForm.controls.projectSpecificObjective.setValue(this.translate.instant('programme.policy.' + this.specificObjective.programmeObjectivePolicy));
     }

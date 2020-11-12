@@ -32,7 +32,7 @@ export class ProjectPartnerStore {
     .pipe(
       map(project => project.id),
       shareReplay(1)
-    )
+    );
 
   savePartner$ = new Subject<InputProjectPartnerUpdate>();
   createPartner$ = new Subject<InputProjectPartnerCreate>();
@@ -113,7 +113,7 @@ export class ProjectPartnerStore {
   )
     .pipe(
       shareReplay(1)
-    )
+    );
 
   constructor(private partnerService: ProjectPartnerService,
               private projectStore: ProjectStore,
@@ -121,7 +121,7 @@ export class ProjectPartnerStore {
               private projectApplicationFormSidenavService: ProjectApplicationFormSidenavService) {
   }
 
-  init(partnerId: number | string | null) {
+  init(partnerId: number | string | null): void {
     this.partnerId$.next(Number(partnerId));
   }
 

@@ -5,7 +5,7 @@ import {
   OutputUserProfile,
   ProgrammeLanguageService,
   UserProfileService
-} from '@cat/api'
+} from '@cat/api';
 import {filter, map, shareReplay, take, tap} from 'rxjs/operators';
 import {TranslateService} from '@ngx-translate/core';
 import {SecurityService} from '../../security/security.service';
@@ -15,7 +15,7 @@ import {BehaviorSubject, merge, ReplaySubject, Subject} from 'rxjs';
 @Injectable({providedIn: 'root'})
 export class LanguageService {
   private profileChanged$ = new Subject<OutputUserProfile>();
-  private systemLanguageSubject = new BehaviorSubject<string>(this.default())
+  private systemLanguageSubject = new BehaviorSubject<string>(this.default());
   public systemLanguage$ = this.systemLanguageSubject.asObservable();
   public languagesChanged$: ReplaySubject<OutputProgrammeLanguage[]> = new ReplaySubject(1);
   public currentLanguage$ = new Subject<OutputProgrammeLanguage.CodeEnum>();
@@ -33,7 +33,7 @@ export class LanguageService {
       map(programmeLanguages => {
         return programmeLanguages
           .filter(selections => selections?.ui)
-          .map(selections => selections.code)
+          .map(selections => selections.code);
       }),
       map(value => ({isEnglishAvailable: this.isDefaultLanguageIncluded(value), languages: value})));
 
@@ -84,7 +84,7 @@ export class LanguageService {
           take(1),
           tap( profile => this.profileChanged$.next(profile))
           )
-        .subscribe()
+        .subscribe();
     });
 
     this.profileChanged$
@@ -98,7 +98,7 @@ export class LanguageService {
         }),
         tap(user => this.systemLanguageSubject.next(this.getDefaultIfNotAvailable(user.language))),
       )
-      .subscribe()
+      .subscribe();
   }
 
   changeLanguage(newLanguage: string): void {
@@ -117,7 +117,7 @@ export class LanguageService {
             tap(profile => this.profileChanged$.next(profile))
           )
           .subscribe();
-      })
+      });
   }
 
   default(): string {

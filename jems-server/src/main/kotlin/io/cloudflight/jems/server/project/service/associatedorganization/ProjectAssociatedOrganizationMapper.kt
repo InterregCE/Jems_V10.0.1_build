@@ -51,7 +51,7 @@ fun InputProjectAssociatedOrganizationAddress?.toEntity(organizationId: Long): M
 }
 
 fun ProjectAssociatedOrganization.toOutputProjectAssociatedOrganization() = OutputProjectAssociatedOrganization(
-    id = id!!,
+    id = id,
     partnerAbbreviation = partner.abbreviation,
     nameInOriginalLanguage = nameInOriginalLanguage,
     nameInEnglish = nameInEnglish,
@@ -59,7 +59,7 @@ fun ProjectAssociatedOrganization.toOutputProjectAssociatedOrganization() = Outp
 )
 
 fun ProjectAssociatedOrganization.toOutputProjectAssociatedOrganizationDetail() = OutputProjectAssociatedOrganizationDetail(
-    id = id!!,
+    id = id,
     partner = partner.toOutputProjectPartner(),
     nameInOriginalLanguage = nameInOriginalLanguage,
     nameInEnglish = nameInEnglish,

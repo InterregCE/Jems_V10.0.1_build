@@ -218,7 +218,7 @@ class ProjectServiceTest {
 
     @Test
     fun projectCreation_OK() {
-        every { callRepository.findById(eq(dummyCall.id!!)) } returns Optional.of(dummyCall.copy(endDate = ZonedDateTime.now().plusDays(1)))
+        every { callRepository.findById(eq(dummyCall.id)) } returns Optional.of(dummyCall.copy(endDate = ZonedDateTime.now().plusDays(1)))
         every { projectRepository.save(any<Project>()) } returns Project(
             id = 612,
             call = dummyCall,
@@ -230,7 +230,7 @@ class ProjectServiceTest {
         val result = projectService.createProject(InputProject("test", dummyCall.id))
 
         assertEquals(OutputCallWithDates(
-            id = dummyCall.id!!,
+            id = dummyCall.id,
             name = dummyCall.name,
             startDate = dummyCall.startDate,
             endDate = dummyCall.endDate,

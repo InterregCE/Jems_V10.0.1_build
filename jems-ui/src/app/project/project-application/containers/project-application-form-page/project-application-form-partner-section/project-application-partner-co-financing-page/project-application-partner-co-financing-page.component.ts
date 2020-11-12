@@ -49,13 +49,13 @@ export class ProjectApplicationPartnerCoFinancingPageComponent {
         this.saveError$.next(error.error);
         throw error;
       })
-    )
+    );
 
   private amountChanged$ = this.partnerStore.totalAmountChanged$
     .pipe(
       withLatestFrom(this.partnerStore.getProjectPartner()),
       mergeMap(([, partner]) => this.projectPartnerBudgetService.getTotal(partner.id)),
-    )
+    );
 
   private initialAmount$: Observable<number> = this.partnerStore.getProjectPartner()
     .pipe(

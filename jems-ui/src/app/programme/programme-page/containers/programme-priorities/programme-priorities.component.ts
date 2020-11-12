@@ -1,5 +1,5 @@
 import {ChangeDetectionStrategy, Component} from '@angular/core';
-import {ProgrammePriorityService} from '@cat/api'
+import {ProgrammePriorityService} from '@cat/api';
 import {tap} from 'rxjs/operators';
 import {Log} from '../../../../common/utils/log';
 import {Permission} from '../../../../security/permissions/permission';

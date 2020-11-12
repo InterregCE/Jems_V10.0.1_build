@@ -40,13 +40,13 @@ export class ProjectApplicationFormPartnerContributionComponent extends ViewEdit
 
   organizationRelevanceErrors = {
     maxlength: 'partner.organization.relevance.textarea.size.too.long'
-  }
+  };
   organizationRoleErrors = {
     maxlength: 'partner.organization.role.textarea.size.too.long'
-  }
+  };
   organizationExperienceErrors = {
     maxlength: 'partner.organization.experience.textarea.size.too.long'
-  }
+  };
 
   constructor(private formBuilder: FormBuilder,
               protected changeDetectorRef: ChangeDetectorRef,
@@ -69,7 +69,7 @@ export class ProjectApplicationFormPartnerContributionComponent extends ViewEdit
     this.enterViewMode();
   }
 
-  ngOnChanges(changes: SimpleChanges) {
+  ngOnChanges(changes: SimpleChanges): void {
     if (changes.partner) {
       this.changeFormState$.next(FormState.VIEW);
     }
@@ -91,7 +91,7 @@ export class ProjectApplicationFormPartnerContributionComponent extends ViewEdit
     this.changeFormState$.next(FormState.VIEW);
   }
 
-  private initFields() {
+  private initFields(): void {
     this.partnerContributionForm.controls.organizationRelevance.setValue(this.partner?.partnerContribution?.organizationRelevance);
     this.partnerContributionForm.controls.organizationRole.setValue(this.partner?.partnerContribution?.organizationRole);
     this.partnerContributionForm.controls.organizationExperience.setValue(this.partner?.partnerContribution?.organizationExperience);

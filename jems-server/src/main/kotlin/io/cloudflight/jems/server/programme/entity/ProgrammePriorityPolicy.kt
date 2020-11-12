@@ -10,16 +10,19 @@ import javax.persistence.FetchType
 import javax.persistence.Id
 import javax.persistence.JoinColumn
 import javax.persistence.ManyToOne
+import javax.validation.constraints.NotNull
 
 @Entity(name = "programme_priority_policy")
 data class ProgrammePriorityPolicy(
 
     @Id
-    @Column(name = "programme_objective_policy_code", nullable = false)
+    @Column(name = "programme_objective_policy_code")
     @Enumerated(EnumType.STRING)
+    @field:NotNull
     val programmeObjectivePolicy: ProgrammeObjectivePolicy,
 
-    @Column(nullable = false, unique = true)
+    @Column(unique = true)
+    @field:NotNull
     val code: String,
 
     @ManyToOne(fetch = FetchType.LAZY)

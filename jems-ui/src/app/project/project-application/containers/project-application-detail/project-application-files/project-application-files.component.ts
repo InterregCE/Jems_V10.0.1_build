@@ -62,7 +62,7 @@ export class ProjectApplicationFilesComponent extends BaseComponent {
         permission: permissions[0],
         uploadPossible: this.canUploadFiles(project, permissions[0])
       }))
-    )
+    );
 
   constructor(private permissionService: PermissionService,
               private projectStore: ProjectStore,
@@ -79,7 +79,7 @@ export class ProjectApplicationFilesComponent extends BaseComponent {
         tap(() => this.uploadSuccess$.next(true)),
         tap(() => this.uploadError$.next(null)),
         catchError((error: HttpErrorResponse) => {
-          this.uploadError$.next({httpStatus: error.status})
+          this.uploadError$.next({httpStatus: error.status});
           throw error;
         })
       ).subscribe();
@@ -124,6 +124,6 @@ export class ProjectApplicationFilesComponent extends BaseComponent {
       return false;
     }
     return project.projectStatus.status === OutputProjectStatus.StatusEnum.DRAFT
-      || project.projectStatus.status === OutputProjectStatus.StatusEnum.RETURNEDTOAPPLICANT
+      || project.projectStatus.status === OutputProjectStatus.StatusEnum.RETURNEDTOAPPLICANT;
   }
 }

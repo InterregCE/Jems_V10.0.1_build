@@ -32,7 +32,7 @@ describe('LoginPageService', () => {
     authenticationStore.getAuthenticationProblem()
       .subscribe((error: I18nValidationError | null) => authError = error);
 
-    authenticationStore.newAuthenticationError({i18nKey: 'authentication.expired', httpStatus: 401})
+    authenticationStore.newAuthenticationError({i18nKey: 'authentication.expired', httpStatus: 401});
 
     tick();
     expect(authError).toBeTruthy();

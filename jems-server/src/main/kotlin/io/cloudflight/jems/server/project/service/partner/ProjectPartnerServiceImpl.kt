@@ -45,7 +45,7 @@ class ProjectPartnerServiceImpl(
     // used for authorization
     @Transactional(readOnly = true)
     override fun getProjectIdForPartnerId(id: Long): Long {
-        return getPartnerOrThrow(id).project.id!!
+        return getPartnerOrThrow(id).project.id
     }
 
     @Transactional(readOnly = true)
@@ -121,7 +121,7 @@ class ProjectPartnerServiceImpl(
     @Transactional
     override fun update(projectPartner: InputProjectPartnerUpdate): OutputProjectPartnerDetail {
         val oldProjectPartner = getPartnerOrThrow(projectPartner.id)
-        val projectId = oldProjectPartner.project.id!!
+        val projectId = oldProjectPartner.project.id
         val legalStatus = legalStatusRepo.findById(projectPartner.legalStatusId!!).orElseThrow { ResourceNotFoundException("legalstatus") }
 
         val makingThisLead = !oldProjectPartner.role.isLead && projectPartner.role!!.isLead
@@ -187,14 +187,14 @@ class ProjectPartnerServiceImpl(
         val projectPartner = getPartnerOrThrow(partnerId)
         return projectPartnerRepo.save(
             projectPartner.copy(
-                partnerContribution = partnerContribution.toEntity(projectPartner.id!!)
+                partnerContribution = partnerContribution.toEntity(projectPartner.id)
             )
         ).toOutputProjectPartnerDetail()
     }
 
     @Transactional
     override fun deletePartner(partnerId: Long) {
-        val projectId = getPartnerOrThrow(partnerId).project.id!!
+        val projectId = getPartnerOrThrow(partnerId).project.id
         projectPartnerRepo.deleteById(partnerId)
         updateSortByRole(projectId)
         projectAssociatedOrganizationService.refreshSortNumbers(projectId)

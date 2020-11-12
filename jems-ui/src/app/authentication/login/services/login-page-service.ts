@@ -20,8 +20,8 @@ export class LoginPageService extends BaseComponent {
 
   login(loginRequest: LoginRequest): void {
 
-    const queryRef = this.route.snapshot.queryParamMap.get('ref')
-    const redirectTo = queryRef ? [queryRef] : ['app']
+    const queryRef = this.route.snapshot.queryParamMap.get('ref');
+    const redirectTo = queryRef ? [queryRef] : ['app'];
 
     this.securityService.login(loginRequest)
       .pipe(

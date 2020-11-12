@@ -17,49 +17,45 @@ import javax.persistence.Id
 import javax.persistence.JoinColumn
 import javax.persistence.ManyToOne
 import javax.persistence.OneToMany
+import javax.validation.constraints.NotNull
 
 @Entity(name = "project_partner")
 data class ProjectPartner(
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    val id: Long? = null,
+    val id: Long = 0,
 
     @ManyToOne(optional = false, fetch = FetchType.LAZY)
     @JoinColumn(name = "project_id")
+    @field:NotNull
     val project: Project,
 
-    @Column(nullable = false)
+    @field:NotNull
     val abbreviation: String,
 
-    @Column(nullable = false)
     @Enumerated(EnumType.STRING)
+    @field:NotNull
     val role: ProjectPartnerRole,
 
-    @Column
     val sortNumber: Int? = null,
 
-    @Column
     val nameInOriginalLanguage: String? = null,
 
-    @Column
     val nameInEnglish: String? = null,
 
-    @Column
     val department: String? = null,
 
-    @Column
     @Enumerated(EnumType.STRING)
     val partnerType: ProjectTargetGroup? = null,
 
     @ManyToOne(optional = false)
     @JoinColumn(name = "legal_status_id")
+    @field:NotNull
     val legalStatus: ProgrammeLegalStatus,
 
-    @Column
     val vat: String? = null,
 
-    @Column
     val vatRecovery: Boolean? = null,
 
     @OneToMany(mappedBy = "addressId.partnerId", cascade = [CascadeType.ALL], orphanRemoval = true)

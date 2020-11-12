@@ -51,14 +51,14 @@ describe('SideNavService', () => {
 
     tick(60);
     expect(headlines.length).toBe(5);
-    expect(headlines[0].headline.i18nKey).toBe('back.project.overview')
-    expect(headlines[0].route).toBe('/app/project/1')
-    expect(headlines[1].headline.i18nKey).toBe('project.application.form.title')
-    expect(headlines[2].headline.i18nKey).toBe('Test')
-    expect(headlines[3].headline.i18nKey).toBe('A - Project Identification')
-    expect(headlines[3].scrollRoute).toBe('applicationFormHeading')
-    expect(headlines[4].headline.i18nKey).toBe('A.1 Project Identification')
-    expect(headlines[4].scrollRoute).toBe('projectIdentificationHeading')
+    expect(headlines[0].headline.i18nKey).toBe('back.project.overview');
+    expect(headlines[0].route).toBe('/app/project/1');
+    expect(headlines[1].headline.i18nKey).toBe('project.application.form.title');
+    expect(headlines[2].headline.i18nKey).toBe('Test');
+    expect(headlines[3].headline.i18nKey).toBe('A - Project Identification');
+    expect(headlines[3].scrollRoute).toBe('applicationFormHeading');
+    expect(headlines[4].headline.i18nKey).toBe('A.1 Project Identification');
+    expect(headlines[4].scrollRoute).toBe('projectIdentificationHeading');
   }));
 
   it('scroll to anchor', fakeAsync(() => {

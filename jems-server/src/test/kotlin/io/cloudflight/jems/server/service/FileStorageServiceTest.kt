@@ -186,7 +186,7 @@ class FileStorageServiceTest {
         fileStorageService.saveFile(streamToSave, fileMetadata)
 
         with(projectFileSlot.captured) {
-            assertEquals(null, id)
+            assertEquals(0, id)
             assertEquals(PROJECT_FILES_BUCKET, bucket)
             assertEquals("project-$PROJECT_ID/${ProjectFileType.APPLICANT_FILE}/proj-file-1.png", identifier)
             assertEquals("proj-file-1.png", name)

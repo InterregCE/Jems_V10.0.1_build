@@ -5,7 +5,7 @@ export class TableConfiguration {
   columns: ColumnConfiguration[];
   // boolean that defines if a table row has a click action.
   isTableClickable: boolean;
-  sortable? = true;
+  sortable ? = true;
   // If the table row has a click action, this link is used by the router to determine what page should be shown.
   routerLink?: string;
 

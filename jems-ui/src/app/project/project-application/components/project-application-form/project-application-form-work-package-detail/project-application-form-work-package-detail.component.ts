@@ -13,7 +13,7 @@ import {FormBuilder, FormGroup, Validators} from '@angular/forms';
 import {FormState} from '@common/components/forms/form-state';
 import {ViewEditForm} from '@common/components/forms/view-edit-form';
 import {SideNavService} from '@common/components/side-nav/side-nav.service';
-import {InputWorkPackageCreate, InputWorkPackageUpdate, OutputWorkPackage} from '@cat/api'
+import {InputWorkPackageCreate, InputWorkPackageUpdate, OutputWorkPackage} from '@cat/api';
 import {Permission} from '../../../../../security/permissions/permission';
 import {ActivatedRoute} from '@angular/router';
 
@@ -53,7 +53,7 @@ export class ProjectApplicationFormWorkPackageDetailComponent extends ViewEditFo
   };
   workPackageSpecificObjectiveErrors = {
     maxlength: 'workpackage.specific.objective.size.too.long'
-  }
+  };
   workPackageTargetAudienceErrors = {
     maxlength: 'workpackage.target.audience.size.too.long'
   };
@@ -71,7 +71,7 @@ export class ProjectApplicationFormWorkPackageDetailComponent extends ViewEditFo
     this.workPackageNumber = this.workPackage?.number;
   }
 
-  ngOnChanges(changes: SimpleChanges) {
+  ngOnChanges(changes: SimpleChanges): void {
     if (changes.workPackage) {
       this.changeFormState$.next(this.editable && !this.workPackage.id ? FormState.EDIT : FormState.VIEW);
       this.workPackageNumber = this.workPackage?.number;
@@ -99,7 +99,7 @@ export class ProjectApplicationFormWorkPackageDetailComponent extends ViewEditFo
       name: this.workPackageForm.controls.workPackageTitle.value,
       specificObjective: this.workPackageForm.controls.workPackageSpecificObjective.value,
       objectiveAndAudience: this.workPackageForm.controls.workPackageTargetAudience.value,
-    }
+    };
     if (!this.workPackage.id) {
       this.createData.emit(workPackage);
       return;
@@ -117,7 +117,7 @@ export class ProjectApplicationFormWorkPackageDetailComponent extends ViewEditFo
     this.changeFormState$.next(FormState.VIEW);
   }
 
-  private initFields() {
+  private initFields(): void {
     this.workPackageForm.controls.workPackageNumber.setValue(this.workPackage?.number || this.workPackageNumber);
     this.workPackageForm.controls.workPackageTitle.setValue(this.workPackage?.name);
     this.workPackageForm.controls.workPackageSpecificObjective.setValue(this.workPackage?.specificObjective);

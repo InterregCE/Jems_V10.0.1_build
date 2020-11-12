@@ -81,7 +81,7 @@ export class EditFormComponent extends BaseComponent implements OnInit {
         filter(error => !!error),
         tap(error => this.setFieldErrors(error as I18nValidationError)),
         tap(error => {
-          if (!error?.i18nKey) (error as any).i18nKey = 'incomplete.form';
+          if (!error?.i18nKey) { error.i18nKey = 'incomplete.form'; }
         }),
         tap(() => this.footerTemplateRef = this.saveError),
       ).subscribe();
@@ -99,7 +99,7 @@ export class EditFormComponent extends BaseComponent implements OnInit {
         delay(500),
         tap(() => this.footerTemplateRef = this.saveDiscard),
         tap(isCreate => this.eventBusService.setDirty(this.componentId, isCreate)),
-      )
+      );
 
     const dirtyChanged$ = this.eventBusService.getEventByType(this.componentId, EventType.DIRTY_FORM)
       .pipe(

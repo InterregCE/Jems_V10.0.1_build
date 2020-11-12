@@ -1,5 +1,5 @@
 import {Injectable} from '@angular/core';
-import {OutputIndicatorOutput, OutputIndicatorResult} from '@cat/api'
+import {OutputIndicatorOutput, OutputIndicatorResult} from '@cat/api';
 import {Observable, ReplaySubject} from 'rxjs';
 
 @Injectable()

@@ -1,4 +1,4 @@
-import {ChangeDetectionStrategy, Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
+import {ChangeDetectionStrategy, Component, Input, OnInit} from '@angular/core';
 import {BaseComponent} from '@common/components/base-component';
 import {MatTableDataSource} from '@angular/material/table';
 import {ProjectRelevanceSynergy} from '../../dtos/project-relevance-synergy';
@@ -22,7 +22,7 @@ export class SynergyTableComponent extends BaseComponent implements OnInit {
   @Input()
   editableSynergyForm = new FormGroup({});
   @Input()
-  disabled: boolean
+  disabled: boolean;
   @Input()
   changedFormState$: Observable<null>;
 
@@ -35,7 +35,7 @@ export class SynergyTableComponent extends BaseComponent implements OnInit {
   };
   synergyErrors = {
     maxlength: 'project.application.form.relevance.synergy.size.too.long'
-  }
+  };
 
   constructor(private dialog: MatDialog) {
     super();
@@ -48,8 +48,8 @@ export class SynergyTableComponent extends BaseComponent implements OnInit {
       )
       .subscribe(() => {
         this.synergyDataSource.data.forEach(synergy => this.addControl(synergy));
-      })
-     this.synergyCounter = this.synergyDataSource.data.length + 1;
+      });
+    this.synergyCounter = this.synergyDataSource.data.length + 1;
   }
 
   addNewSynergy(): void {
@@ -88,7 +88,7 @@ export class SynergyTableComponent extends BaseComponent implements OnInit {
 
   deleteEntry(element: ProjectRelevanceSynergy): void {
     const index = this.synergyDataSource.data.indexOf(element);
-    this.synergyDataSource.data.splice(index,1);
+    this.synergyDataSource.data.splice(index, 1);
     this.synergyDataSource._updateChangeSubscription();
   }
 }

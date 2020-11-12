@@ -26,7 +26,7 @@ export class ProjectApplicationFormFuturePlansSectionComponent {
   private savedDescription$ = this.projectApplicationFormStore.getProjectDescription()
     .pipe(
       map(project => project.projectLongTermPlans)
-    )
+    );
 
   private updatedFuturePlans$ = this.updateFuturePlans$
     .pipe(

@@ -57,7 +57,7 @@ export class UserPasswordComponent extends ViewEditForm implements OnInit {
     if (this.ownUser) {
       controls.oldPassword = ['', Validators.compose([
         Validators.required
-      ])]
+      ])];
     }
     this.passwordForm = this.formBuilder.group(controls);
 
@@ -68,7 +68,7 @@ export class UserPasswordComponent extends ViewEditForm implements OnInit {
     return this.passwordForm;
   }
 
-  onSubmit() {
+  onSubmit(): void {
     if (!this.ownUser) {
       // admin is editing the password, no confirmation
       this.savePassword();
@@ -92,7 +92,7 @@ export class UserPasswordComponent extends ViewEditForm implements OnInit {
     this.submitPassword.emit({
       password: this.passwordForm?.controls?.password?.value,
       oldPassword: this.passwordForm?.controls?.oldPassword?.value
-    })
+    });
   }
 
   enterEditMode(): void {

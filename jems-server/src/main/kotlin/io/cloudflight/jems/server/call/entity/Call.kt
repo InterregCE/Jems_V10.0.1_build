@@ -19,19 +19,22 @@ import javax.persistence.JoinColumn
 import javax.persistence.JoinTable
 import javax.persistence.ManyToOne
 import javax.persistence.OneToMany
+import javax.validation.constraints.NotNull
 
 @Entity(name = "project_call")
 data class Call(
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    val id: Long?,
+    val id: Long = 0,
 
     @ManyToOne(optional = false)
     @JoinColumn(name = "creator_id")
+    @field:NotNull
     val creator: User,
 
-    @Column(nullable = false, unique = true)
+    @Column(unique = true)
+    @field:NotNull
     val name: String,
 
     @OneToMany
@@ -58,20 +61,19 @@ data class Call(
     )
     val funds: Set<ProgrammeFund>,
 
-    @Column(nullable = false, name = "start_date")
+    @field:NotNull
     val startDate: ZonedDateTime,
 
-    @Column(nullable = false, name = "end_date")
+    @field:NotNull
     val endDate: ZonedDateTime,
 
-    @Column(nullable = false)
     @Enumerated(EnumType.STRING)
+    @field:NotNull
     val status: CallStatus,
 
-    @Column(nullable = false)
+    @field:NotNull
     val lengthOfPeriod: Int,
 
-    @Column
     val description: String? = null,
 
     @OneToMany(mappedBy = "setupId.callId", cascade = [CascadeType.ALL], orphanRemoval = true, fetch = FetchType.LAZY)

@@ -74,7 +74,7 @@ describe('ProgrammePageComponent', () => {
   it('should update funds', fakeAsync(() => {
     let result: InputProgrammeFund[] = [];
     component.funds$.subscribe(res => result = res);
-    component.saveFunds$.next({funds: []})
+    component.saveFunds$.next({funds: []});
 
     httpTestingController.expectOne({method: 'PUT', url: `//api/programmefund`})
       .flush([{id: 1}]);
