@@ -27,7 +27,7 @@
         <button [disabled]="(formService.valid$ | async) === false"
                 mat-raised-button class="action-button" color="primary" type="button"
                 (click)="formService.setDirty(false); save.emit()">
-            {{(createNew ? 'common.create.label' : 'common.save.label') | translate}}
+            {{formService.saveLabel | translate}}
         </button>
     </mat-card-footer>
 </ng-template>

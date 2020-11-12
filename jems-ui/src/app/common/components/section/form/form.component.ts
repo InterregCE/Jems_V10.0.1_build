@@ -1,4 +1,4 @@
-import {ChangeDetectionStrategy, Component, EventEmitter, Input, Output} from '@angular/core';
+import {ChangeDetectionStrategy, Component, EventEmitter, Output} from '@angular/core';
 import {FormService} from '@common/components/section/form/form.service';
 import {animate, style, transition, trigger} from '@angular/animations';
 
@@ -20,9 +20,6 @@ import {animate, style, transition, trigger} from '@angular/animations';
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class FormComponent {
-
-  @Input()
-  createNew: boolean;
 
   @Output()
   save = new EventEmitter<void>();

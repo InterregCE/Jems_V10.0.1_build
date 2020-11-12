@@ -62,12 +62,10 @@ export class ProjectApplicationFormFuturePlansDetailComponent extends ViewEditFo
   }
 
   protected enterViewMode(): void {
-    this.sideNavService.setAlertStatus(false);
     this.initFields();
   }
 
   protected enterEditMode(): void {
-    this.sideNavService.setAlertStatus(true);
   }
 
   onSubmit(): void {

@@ -11,16 +11,21 @@ import {RoutingService} from '../../../services/routing.service';
 export class FormService {
   private form: FormGroup;
 
+  saveLabel = 'common.save.label';
   valid$ = new ReplaySubject<boolean>(1);
-  dirty$ = new Subject<boolean>();
+  dirty$ = new ReplaySubject<boolean>(1);
   success$ = new Subject<I18nLabel | string | null>();
   error$ = new Subject<I18nValidationError | null>();
 
   constructor(private routingService: RoutingService) {
   }
 
-  init(form: FormGroup): void {
+  init(form: FormGroup, creationForm?: boolean): void {
     this.form = form;
+    if (creationForm) {
+      this.saveLabel = 'common.create.label';
+      this.setDirty(true);
+    }
     this.form.valueChanges
       .pipe(
         filter(() => this.form.dirty),

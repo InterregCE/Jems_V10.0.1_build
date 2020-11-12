@@ -1,71 +1,69 @@
-<form [formGroup]="applicationForm" class="wrapper">
-    <h4 id="projectIdentification" class="header">
-        {{'project.application.form.section.part.a' | translate}}
-    </h4>
-    <span class="header-button" *ngxPermissionsExcept="Permission.PROGRAMME_USER">
-        <button color="primary" mat-raised-button
-                *ngIf="formState === FormState.VIEW && editable"
-                (click)="changeFormState$.next(FormState.EDIT)">
-            {{'common.edit.label' | translate}}
-        </button>
-    </span>
+<app-form (save)="save()"
+          (discard)="resetForm()">
+    <form id="application-form" [formGroup]="applicationForm" class="wrapper">
+        <h2>{{'project.application.form.acronym' | translate : {acronym: projectStore.getAcronym() | async} }}</h2>
+        <h4 id="projectIdentification" class="header">
+            {{'project.application.form.section.part.a' | translate}}
+        </h4>
+        <h5 id="projectIdentificationHeading">{{'project.application.form.section.part.a.subsection.one' | translate}}</h5>
 
-    <h5 id="projectIdentificationHeading">{{'project.application.form.section.part.a.subsection.one' | translate}}</h5>
-    <mat-form-field class="field">
-        <mat-label>{{'project.application.form.field.project.id' | translate}}</mat-label>
-        <input name="projectId" formControlName="projectId" matInput
-               placeholder="{{'project.application.form.field.project.id' | translate}}">
-    </mat-form-field>
-    <mat-form-field class="field">
-        <mat-label>{{'project.application.form.field.project.acronym' | translate}}</mat-label>
-        <input name="projectAcronym" formControlName="projectAcronym" matInput
-               placeholder="{{'project.application.form.field.project.acronym' | translate}}">
-        <mat-error>
-            <app-form-field-errors
-                    [errors]="applicationForm?.controls?.projectAcronym?.errors"
-                    [messages]="projectAcronymErrors">
-            </app-form-field-errors>
-        </mat-error>
-    </mat-form-field>
-    <mat-form-field class="field">
-        <mat-label>{{'project.application.form.field.project.title' | translate}}</mat-label>
-        <input name="projectTitle" formControlName="projectTitle" matInput
-               placeholder="{{'project.application.form.field.project.title' | translate}}">
-        <mat-error>
-            <app-form-field-errors
-                    [errors]="applicationForm?.controls?.projectTitle?.errors"
-                    [messages]="projectTitleErrors">
-            </app-form-field-errors>
-        </mat-error>
-    </mat-form-field>
+        <mat-form-field class="w-50">
+            <mat-label>{{'project.application.form.field.project.id' | translate}}</mat-label>
+            <input name="projectId" formControlName="projectId" matInput
+                   placeholder="{{'project.application.form.field.project.id' | translate}}">
+        </mat-form-field>
 
-    <mat-form-field class="field">
-        <mat-label>{{'project.application.form.field.project.duration' | translate}}</mat-label>
-        <input type="number" name="projectDuration" formControlName="projectDuration" matInput
-               placeholder="{{'project.application.form.field.project.duration' | translate}}"
-               (paste)="tools.checkDigitsOnPaste($event)" (keypress)="tools.checkDigitsOnInput($event)">
-        <mat-error>
-            <app-form-field-errors
-                    [errors]="applicationForm?.controls?.projectDuration?.errors"
-                    [messages]="projectDurationErrors">
-            </app-form-field-errors>
-        </mat-error>
-    </mat-form-field>
-    <mat-form-field class="field">
-        <mat-label>{{'project.application.form.field.project.periodlength' | translate}}</mat-label>
-        <input name="projectPeriodLength" formControlName="projectPeriodLength" matInput
-               placeholder="{{'project.application.form.field.project.periodlength' | translate}}" />
-        <p class="intro-text-small">{{'project.application.form.field.project.periodlength.info' | translate}}</p>
-    </mat-form-field>
-    <mat-form-field class="field">
-        <mat-label>{{'project.application.form.field.project.periodcount' | translate}}</mat-label>
-        <input name="projectPeriodCount" formControlName="projectPeriodCount" matInput
-               placeholder="{{'project.application.form.field.project.periodcount' | translate}}" />
-        <p class="intro-text-small">{{'project.application.form.field.project.periodcount.info' | translate}}</p>
-    </mat-form-field>
+        <mat-form-field class="w-50">
+            <mat-label>{{'project.application.form.field.project.acronym' | translate}}</mat-label>
+            <input name="acronym" formControlName="acronym" matInput
+                   placeholder="{{'project.application.form.field.project.acronym' | translate}}">
+            <mat-error>
+                <app-form-field-errors
+                        [errors]="applicationForm?.controls?.acronym?.errors"
+                        [messages]="projectAcronymErrors">
+                </app-form-field-errors>
+            </mat-error>
+        </mat-form-field>
 
-    <div *ngIf="formState === FormState.EDIT">
-        <mat-form-field class="field-full">
+        <mat-form-field class="w-50">
+            <mat-label>{{'project.application.form.field.project.title' | translate}}</mat-label>
+            <input name="title" formControlName="title" matInput
+                   placeholder="{{'project.application.form.field.project.title' | translate}}">
+            <mat-error>
+                <app-form-field-errors
+                        [errors]="applicationForm?.controls?.title?.errors"
+                        [messages]="projectTitleErrors">
+                </app-form-field-errors>
+            </mat-error>
+        </mat-form-field>
+
+        <mat-form-field class="w-50">
+            <mat-label>{{'project.application.form.field.project.duration' | translate}}</mat-label>
+            <input type="number" name="duration" formControlName="duration" matInput
+                   placeholder="{{'project.application.form.field.project.duration' | translate}}"
+                   (paste)="tools.checkDigitsOnPaste($event)" (keypress)="tools.checkDigitsOnInput($event)">
+            <mat-error>
+                <app-form-field-errors
+                        [errors]="applicationForm?.controls?.duration?.errors"
+                        [messages]="projectDurationErrors">
+                </app-form-field-errors>
+            </mat-error>
+        </mat-form-field>
+
+        <mat-form-field class="w-50">
+            <mat-label>{{'project.application.form.field.project.periodlength' | translate}}</mat-label>
+            <input name="projectPeriodLength" formControlName="projectPeriodLength" matInput
+                   placeholder="{{'project.application.form.field.project.periodlength' | translate}}"/>
+            <p class="intro-text-small w-50">{{'project.application.form.field.project.periodlength.info' | translate}}</p>
+        </mat-form-field>
+        <mat-form-field class="field">
+            <mat-label>{{'project.application.form.field.project.periodcount' | translate}}</mat-label>
+            <input name="projectPeriodCount" formControlName="projectPeriodCount" matInput
+                   placeholder="{{'project.application.form.field.project.periodcount' | translate}}"/>
+            <p class="intro-text-small w-50">{{'project.application.form.field.project.periodcount.info' | translate}}</p>
+        </mat-form-field>
+
+        <mat-form-field *ngIf="editable" class="w-50">
             <mat-label>{{'project.application.form.field.project.priority' | translate}}</mat-label>
             <mat-select (selectionChange)="changeCurrentPriority( $event.value)" required [(value)]=currentPriority
                         panelClass="material-select-panel" formControlName="programmePriority">
@@ -80,79 +78,52 @@
                 </app-form-field-errors>
             </mat-error>
         </mat-form-field>
-        <div *ngIf="currentPriority">
+
+        <div *ngIf="editable && currentPriority">
             <app-project-application-form-policy-radio-button
                     [objectives]="objectivesWithPolicies[currentPriority]"
                     [applicationForm]="applicationForm"
                     (selected)="selectedSpecificObjective = $event">
             </app-project-application-form-policy-radio-button>
         </div>
-    </div>
 
-    <div *ngIf="formState === FormState.VIEW">
-        <p class="policy-label">{{'project.application.form.field.project.priority' | translate}}</p>
-        <p class="policy-data" *ngIf="previousObjective">
-            {{project.projectData.programmePriority.code + ' - '}}
-            {{project.projectData.programmePriority.title}}
-        </p>
-        <p class="policy-data" *ngIf="!previousObjective">
-            {{'project.application.form.field.project.field.empty' | translate}}
-        </p>
-        <p class="policy-label">{{'project.application.form.field.project.objective' | translate}}</p>
-        <p class="policy-data" *ngIf="previousObjective">
-            {{project.projectData.specificObjective.code + ' - '}}
-            {{'programme.policy.' + project.projectData.specificObjective.programmeObjectivePolicy | translate}}
-        </p>
-        <p class="policy-data" *ngIf="!previousObjective">
-            {{'project.application.form.field.project.field.empty' | translate}}
-        </p>
-    </div>
+        <div *ngIf="!editable">
+            <p class="policy-label">{{'project.application.form.field.project.priority' | translate}}</p>
+            <p class="policy-data" *ngIf="previousObjective">
+                {{project.projectData.programmePriority.code + ' - '}}
+                {{project.projectData.programmePriority.title}}
+            </p>
+            <p class="policy-data" *ngIf="!previousObjective">
+                {{'project.application.form.field.project.field.empty' | translate}}
+            </p>
+            <p class="policy-label">{{'project.application.form.field.project.objective' | translate}}</p>
+            <p class="policy-data" *ngIf="previousObjective">
+                {{project.projectData.specificObjective.code + ' - '}}
+                {{'programme.policy.' + project.projectData.specificObjective.programmeObjectivePolicy | translate}}
+            </p>
+            <p class="policy-data" *ngIf="!previousObjective">
+                {{'project.application.form.field.project.field.empty' | translate}}
+            </p>
+        </div>
 
-    <h5 id="projectSummaryHeading">{{'project.application.form.section.part.a.subsection.two' | translate}}</h5>
-    <div>
-        <p class="intro-text-small">{{'project.application.form.summary.intro.row.one' | translate}}</p>
-        <p class="intro-text-small">{{'project.application.form.summary.intro.row.two' | translate}}</p>
-        <p class="intro-text-small">{{'project.application.form.summary.intro.row.three' | translate}}</p>
-        <p class="intro-text-small">{{'project.application.form.summary.intro.row.four' | translate}}</p>
-        <p class="intro-text-small">{{'project.application.form.summary.intro.row.five' | translate}}</p>
-        <p class="intro-text-small">{{'project.application.form.summary.intro.row.six' | translate}}</p>
-        <br>
-    </div>
+        <h5 id="projectSummaryHeading">{{'project.application.form.section.part.a.subsection.two' | translate}}</h5>
+        <div>
+            <p class="intro-text-small">{{'project.application.form.summary.intro.row.one' | translate}}</p>
+            <p class="intro-text-small">{{'project.application.form.summary.intro.row.two' | translate}}</p>
+            <p class="intro-text-small">{{'project.application.form.summary.intro.row.three' | translate}}</p>
+            <p class="intro-text-small">{{'project.application.form.summary.intro.row.four' | translate}}</p>
+            <p class="intro-text-small">{{'project.application.form.summary.intro.row.five' | translate}}</p>
+            <p class="intro-text-small">{{'project.application.form.summary.intro.row.six' | translate}}</p>
+            <br>
+        </div>
 
-    <app-expandable-textarea
-            class="field-wide"
-            [control]="applicationForm?.controls?.projectSummary"
-            [errors]="applicationForm?.controls?.projectSummary?.errors"
-            [messages]="projectSummaryErrors"
-            [characterLimit]="2000"
-            [label]="'project.application.form.field.project.summary'"
-            [disabled]="formState === FormState.VIEW">
-    </app-expandable-textarea>
-
-    <div *ngIf="formState === FormState.EDIT">
-        <br>
-        <button mat-raised-button class="button"
-                type="button"
-                (click)="changeFormState$.next(FormState.VIEW)">
-            {{'common.cancel.label' | translate}}
-        </button>
-        <button mat-raised-button color="primary"
-                class="button"
-                type="button"
-                [disabled]="applicationForm.invalid || applicationForm.invalid || submitted"
-                (click)="onSubmit()">
-            {{'common.save.label' | translate}}
-        </button>
-    </div>
-
-    <app-alert
-            [show]="!submitted && (showSuccessMessage$ | async)"
-            [type]="Alert.SUCCESS">
-        <p>{{'project.application.form.save.success' | translate}}</p>
-    </app-alert>
-    <app-alert *ngIf="error$ | async as error"
-               [show]="!submitted && !!error.i18nKey"
-               [type]="Alert.ERROR">
-        <p>{{error.i18nKey | translate}}</p>
-    </app-alert>
-</form>
+        <app-expandable-textarea
+                class="pb-5"
+                [control]="applicationForm?.controls?.introProgrammeLanguage"
+                [errors]="applicationForm?.controls?.introProgrammeLanguage?.errors"
+                [messages]="projectSummaryErrors"
+                [characterLimit]="2000"
+                [label]="'project.application.form.field.project.summary'">
+        </app-expandable-textarea>
+    </form>
+</app-form>

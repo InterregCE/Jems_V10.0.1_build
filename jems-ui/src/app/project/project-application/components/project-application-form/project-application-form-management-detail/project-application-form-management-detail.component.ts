@@ -85,12 +85,7 @@ export class ProjectApplicationFormManagementDetailComponent extends ViewEditFor
   }
 
   protected enterViewMode(): void {
-    this.sideNavService.setAlertStatus(false);
     this.initFields();
-  }
-
-  protected enterEditMode(): void {
-    this.sideNavService.setAlertStatus(true);
   }
 
   onSubmit(): void {

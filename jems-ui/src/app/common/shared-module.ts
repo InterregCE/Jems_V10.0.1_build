@@ -22,6 +22,7 @@ import {FormFieldErrorsComponent} from '@common/components/forms/form-field-erro
 import {ConfirmDialogComponent} from '@common/components/modals/confirm-dialog/confirm-dialog.component';
 import {HelpMenuComponent} from '@common/components/top-bar/help-menu/help-menu.component';
 import {SideNavComponent} from '@common/components/side-nav/component/side-nav.component';
+import {FormComponent} from '@common/components/section/form/form.component';
 
 const modules = [
   CommonModule,
@@ -39,6 +40,7 @@ const declarations = [
   TableComponent,
   PaginatorComponent,
   EditFormComponent,
+  FormComponent,
   TemplateCardComponent,
   MoneyPipe,
   MultiLanguageFieldComponent,
