@@ -3,16 +3,14 @@ import {combineLatest, Observable, ReplaySubject, Subject} from 'rxjs';
 import {delay, filter, take, tap} from 'rxjs/operators';
 import {Log} from '../../utils/log';
 import {HeadlineRoute} from '@common/components/side-nav/headline-route';
-import {MatDialog} from '@angular/material/dialog';
 import {ResolveEnd, Router} from '@angular/router';
-import {Forms} from '../../utils/forms';
+import {RoutingService} from '../../services/routing.service';
 
 @Injectable({providedIn: 'root'})
 export class SideNavService {
   private headlines$ = new ReplaySubject<HeadlineRoute[]>(1);
   private navigateTo$ = new Subject<HeadlineRoute>();
   private headlineRoot: string;
-  private alertStatus: boolean;
 
   private routeChanged$ = this.router.events
     .pipe(
@@ -20,7 +18,7 @@ export class SideNavService {
     );
 
   constructor(private router: Router,
-              private dialog: MatDialog) {
+              private routingService: RoutingService) {
     combineLatest([
       this.routeChanged$,
       this.navigateTo$,
@@ -54,16 +52,11 @@ export class SideNavService {
   }
 
   setAlertStatus(newAlertStatus: boolean): void {
-    this.alertStatus = newAlertStatus;
-    Log.debug('Setting alert status', this, this.alertStatus);
+    // TODO: remove all usages
   }
 
   navigate(headline: HeadlineRoute): void {
     if (this.router.url !== headline.route) {
-      if (headline.route && this.alertStatus) {
-        this.confirmNavigate(headline);
-        return;
-      }
       if (headline.route) {
         this.navigateToRoute(headline);
         return;
@@ -76,22 +69,9 @@ export class SideNavService {
     }
   }
 
-  private confirmNavigate(headline: HeadlineRoute): void {
-    Forms.confirmDialog(
-      this.dialog,
-      'common.sidebar.dialog.title',
-      'common.sidebar.dialog.message'
-    ).pipe(
-      take(1),
-      filter(yes => !!yes),
-      tap(() => this.navigateToRoute(headline))
-    ).subscribe();
-  }
-
   private navigateToRoute(headline: HeadlineRoute): void {
+    this.routingService.navigate([headline.route]);
     this.navigateTo$.next(headline);
-    Log.debug('Navigating to route', this, headline.route);
-    this.router.navigate([headline.route]);
   }
 
   private scrollToRoute(scrollRoute: string): void {
@@ -111,6 +91,5 @@ export class SideNavService {
       return;
     }
     this.headlines$.next([]);
-    this.alertStatus = false;
   }
 }
