@@ -4,9 +4,9 @@ import io.cloudflight.jems.api.project.dto.partner.OutputProjectPartnerDetail
 import io.cloudflight.jems.api.project.dto.partner.cofinancing.InputProjectPartnerCoFinancing
 import io.cloudflight.jems.server.common.exception.I18nValidationException
 import io.cloudflight.jems.server.common.exception.ResourceNotFoundException
-import io.cloudflight.jems.server.project.entity.partner.ProjectPartner
+import io.cloudflight.jems.server.project.entity.partner.ProjectPartnerEntity
 import io.cloudflight.jems.server.project.repository.partner.ProjectPartnerRepository
-import io.cloudflight.jems.server.project.service.partner.toOutputProjectPartnerDetail
+import io.cloudflight.jems.server.project.repository.partner.toOutputProjectPartnerDetail
 import org.springframework.http.HttpStatus
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
@@ -42,7 +42,7 @@ class ProjectPartnerCoFinancingServiceImpl(
             )
     }
 
-    private fun getPartnerOrThrow(partnerId: Long): ProjectPartner {
+    private fun getPartnerOrThrow(partnerId: Long): ProjectPartnerEntity {
         return projectPartnerRepo.findById(partnerId)
             .orElseThrow { ResourceNotFoundException("projectPartner") }
     }

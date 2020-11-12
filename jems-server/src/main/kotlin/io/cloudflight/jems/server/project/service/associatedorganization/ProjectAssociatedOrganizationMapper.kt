@@ -13,11 +13,11 @@ import io.cloudflight.jems.server.project.entity.associatedorganization.ProjectA
 import io.cloudflight.jems.server.project.entity.associatedorganization.ProjectAssociatedOrganizationAddress
 import io.cloudflight.jems.server.project.entity.associatedorganization.ProjectAssociatedOrganizationContact
 import io.cloudflight.jems.server.project.entity.associatedorganization.ProjectAssociatedOrganizationContactId
-import io.cloudflight.jems.server.project.entity.partner.ProjectPartner
-import io.cloudflight.jems.server.project.service.partner.toOutputProjectPartner
+import io.cloudflight.jems.server.project.entity.partner.ProjectPartnerEntity
+import io.cloudflight.jems.server.project.repository.partner.toOutputProjectPartner
 
 fun InputProjectAssociatedOrganizationCreate.toEntity(
-    partner: ProjectPartner
+    partner: ProjectPartnerEntity
 ) = ProjectAssociatedOrganization(
     project = partner.project,
     partner = partner,

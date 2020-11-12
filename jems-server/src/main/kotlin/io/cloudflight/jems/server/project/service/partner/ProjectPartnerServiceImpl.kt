@@ -11,9 +11,12 @@ import io.cloudflight.jems.api.project.dto.partner.ProjectPartnerRole
 import io.cloudflight.jems.server.common.exception.I18nValidationException
 import io.cloudflight.jems.server.common.exception.ResourceNotFoundException
 import io.cloudflight.jems.server.programme.repository.ProgrammeLegalStatusRepository
-import io.cloudflight.jems.server.project.entity.partner.ProjectPartner
+import io.cloudflight.jems.server.project.entity.partner.ProjectPartnerEntity
 import io.cloudflight.jems.server.project.repository.partner.ProjectPartnerRepository
 import io.cloudflight.jems.server.project.repository.ProjectRepository
+import io.cloudflight.jems.server.project.repository.partner.toEntity
+import io.cloudflight.jems.server.project.repository.partner.toOutputProjectPartner
+import io.cloudflight.jems.server.project.repository.partner.toOutputProjectPartnerDetail
 import io.cloudflight.jems.server.project.service.associatedorganization.ProjectAssociatedOrganizationService
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
@@ -200,7 +203,7 @@ class ProjectPartnerServiceImpl(
         projectAssociatedOrganizationService.refreshSortNumbers(projectId)
     }
 
-    private fun getPartnerOrThrow(partnerId: Long): ProjectPartner {
+    private fun getPartnerOrThrow(partnerId: Long): ProjectPartnerEntity {
         return projectPartnerRepo.findById(partnerId)
             .orElseThrow { ResourceNotFoundException("projectPartner") }
     }

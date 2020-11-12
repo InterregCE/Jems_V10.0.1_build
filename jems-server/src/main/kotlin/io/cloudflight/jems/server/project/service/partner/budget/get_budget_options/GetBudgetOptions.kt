@@ -1,12 +1,12 @@
 package io.cloudflight.jems.server.project.service.partner.budget.get_budget_options
 
 import io.cloudflight.jems.server.project.authorization.CanReadProjectPartner
-import io.cloudflight.jems.server.project.service.partner.budget.ProjectBudgetPersistence
+import io.cloudflight.jems.server.project.service.partner.budget.ProjectPartnerBudgetPersistence
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 
 @Service
-class GetBudgetOptions(private val persistence: ProjectBudgetPersistence) : GetBudgetOptionsInteractor {
+class GetBudgetOptions(private val persistence: ProjectPartnerBudgetPersistence) : GetBudgetOptionsInteractor {
 
     @Transactional(readOnly = true)
     @CanReadProjectPartner

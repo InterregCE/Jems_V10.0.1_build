@@ -20,7 +20,7 @@ import io.cloudflight.jems.server.project.entity.Address
 import io.cloudflight.jems.server.project.entity.Contact
 import io.cloudflight.jems.server.project.entity.Project
 import io.cloudflight.jems.server.project.entity.associatedorganization.ProjectAssociatedOrganization
-import io.cloudflight.jems.server.project.entity.partner.ProjectPartner
+import io.cloudflight.jems.server.project.entity.partner.ProjectPartnerEntity
 import io.cloudflight.jems.server.project.entity.ProjectStatus
 import io.cloudflight.jems.server.project.entity.associatedorganization.ProjectAssociatedOrganizationAddress
 import io.cloudflight.jems.server.project.entity.associatedorganization.ProjectAssociatedOrganizationContact
@@ -90,7 +90,7 @@ internal class ProjectAssociatedOrganizationServiceTest {
         applicant = user,
         projectStatus = projectStatus)
 
-    private val projectPartner = ProjectPartner(
+    private val projectPartner = ProjectPartnerEntity(
         id = 1,
         project = project,
         abbreviation = "partner",
@@ -103,7 +103,7 @@ internal class ProjectAssociatedOrganizationServiceTest {
         abbreviation = projectPartner.abbreviation,
         role = ProjectPartnerRole.LEAD_PARTNER)
 
-    private fun organization(id: Long, partner: ProjectPartner, name: String, sortNr: Int? = null) = ProjectAssociatedOrganization(
+    private fun organization(id: Long, partner: ProjectPartnerEntity, name: String, sortNr: Int? = null) = ProjectAssociatedOrganization(
         id = id,
         project = partner.project,
         partner = partner,

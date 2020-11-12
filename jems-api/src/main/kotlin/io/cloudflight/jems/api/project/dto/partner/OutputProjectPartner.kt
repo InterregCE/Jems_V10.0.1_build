@@ -4,5 +4,6 @@ data class OutputProjectPartner (
     val id: Long?,
     val abbreviation: String,
     val role: ProjectPartnerRole,
-    val sortNumber: Int? = null
+    val sortNumber: Int? = null,
+    val country: String? = null
 )

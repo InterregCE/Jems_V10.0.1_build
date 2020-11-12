@@ -12,6 +12,6 @@ data class ProjectPartnerAddress(
     val addressId: ProjectPartnerAddressId,
 
     @Embedded
-    val address: Address?
+    val address: Address
 
 )

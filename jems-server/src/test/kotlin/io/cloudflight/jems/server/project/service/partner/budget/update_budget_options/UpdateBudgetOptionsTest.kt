@@ -5,7 +5,7 @@ import io.cloudflight.jems.server.call.service.flatrate.CallFlatRateSetupPersist
 import io.cloudflight.jems.server.call.service.flatrate.model.ProjectCallFlatRate
 import io.cloudflight.jems.server.common.exception.I18nFieldError
 import io.cloudflight.jems.server.common.exception.I18nValidationException
-import io.cloudflight.jems.server.project.service.partner.budget.ProjectBudgetPersistence
+import io.cloudflight.jems.server.project.service.partner.budget.ProjectPartnerBudgetPersistence
 import io.cloudflight.jems.server.project.service.partner.budget.ProjectPartnerBudgetServiceTest.Companion.PARTNER_ID
 import io.mockk.confirmVerified
 import io.mockk.every
@@ -38,7 +38,7 @@ internal class UpdateBudgetOptionsTest {
     }
 
     @MockK
-    lateinit var persistence: ProjectBudgetPersistence
+    lateinit var persistence: ProjectPartnerBudgetPersistence
 
     @MockK
     lateinit var callFlatRateSetupPersistence: CallFlatRateSetupPersistence

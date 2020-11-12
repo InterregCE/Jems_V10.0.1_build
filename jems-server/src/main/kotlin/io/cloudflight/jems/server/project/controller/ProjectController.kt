@@ -5,9 +5,11 @@ import io.cloudflight.jems.api.project.dto.InputProject
 import io.cloudflight.jems.api.project.dto.InputProjectData
 import io.cloudflight.jems.api.project.dto.OutputProject
 import io.cloudflight.jems.api.project.dto.OutputProjectSimple
+import io.cloudflight.jems.api.project.dto.budget.ProjectPartnerBudgetDTO
 import io.cloudflight.jems.server.project.authorization.CanReadProject
 import io.cloudflight.jems.server.project.authorization.CanUpdateProject
 import io.cloudflight.jems.server.project.service.ProjectService
+import io.cloudflight.jems.server.project.service.budget.get_project_budget.GetProjectBudgetInteractor
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
 import org.springframework.security.access.prepost.PreAuthorize
@@ -15,7 +17,8 @@ import org.springframework.web.bind.annotation.RestController
 
 @RestController
 class ProjectController(
-    private val projectService: ProjectService
+    private val projectService: ProjectService,
+    private val getProjectBudgetInteractor: GetProjectBudgetInteractor
 ) : ProjectApi {
 
     /**
@@ -39,5 +42,8 @@ class ProjectController(
     override fun updateProjectData(projectId: Long, project: InputProjectData): OutputProject {
         return projectService.update(projectId, project)
     }
+
+    override fun getProjectBudget(projectId: Long): List<ProjectPartnerBudgetDTO> =
+        getProjectBudgetInteractor.getBudget(projectId = projectId).toOutputDto()
 
 }

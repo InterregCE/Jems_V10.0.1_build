@@ -1,8 +1,8 @@
 package io.cloudflight.jems.server.project.repository.partner.budget
 
-import io.cloudflight.jems.server.project.entity.partner.budget.ProjectPartnerBudgetOptions
+import io.cloudflight.jems.server.project.entity.partner.budget.ProjectPartnerBudgetOptionsEntity
 import org.springframework.data.repository.CrudRepository
 import org.springframework.stereotype.Repository
 
 @Repository
-interface ProjectPartnerBudgetOptionsRepository: CrudRepository<ProjectPartnerBudgetOptions, Long>
+interface ProjectPartnerBudgetOptionsRepository: CrudRepository<ProjectPartnerBudgetOptionsEntity, Long>

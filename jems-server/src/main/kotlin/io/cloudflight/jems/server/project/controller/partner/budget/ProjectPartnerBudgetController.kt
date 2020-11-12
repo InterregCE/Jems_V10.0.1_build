@@ -1,4 +1,4 @@
-package io.cloudflight.jems.server.project.controller
+package io.cloudflight.jems.server.project.controller.partner.budget
 
 import io.cloudflight.jems.api.project.ProjectPartnerBudgetApi
 import io.cloudflight.jems.api.project.dto.partner.budget.InputBudget

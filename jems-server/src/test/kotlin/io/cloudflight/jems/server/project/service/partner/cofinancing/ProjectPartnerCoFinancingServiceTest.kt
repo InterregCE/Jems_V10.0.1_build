@@ -8,7 +8,7 @@ import io.cloudflight.jems.server.common.exception.I18nValidationException
 import io.cloudflight.jems.server.common.exception.ResourceNotFoundException
 import io.cloudflight.jems.server.programme.entity.ProgrammeFund
 import io.cloudflight.jems.server.programme.entity.ProgrammeLegalStatus
-import io.cloudflight.jems.server.project.entity.partner.ProjectPartner
+import io.cloudflight.jems.server.project.entity.partner.ProjectPartnerEntity
 import io.cloudflight.jems.server.project.repository.partner.ProjectPartnerRepository
 import io.cloudflight.jems.server.project.service.partner.ProjectPartnerTestUtil.Companion.call
 import io.cloudflight.jems.server.project.service.partner.ProjectPartnerTestUtil.Companion.project
@@ -29,7 +29,7 @@ internal class ProjectPartnerCoFinancingServiceTest {
 
         private val callWithFunds = call.copy(funds = setOf(fund))
 
-        private val projectPartner = ProjectPartner(
+        private val projectPartner = ProjectPartnerEntity(
             id = 1,
             project = project.copy(call = callWithFunds),
             abbreviation = "partner",
@@ -83,7 +83,7 @@ internal class ProjectPartnerCoFinancingServiceTest {
     @Test
     fun `update financing OK`() {
         every { projectPartnerRepository.findById(projectPartner.id) } returns Optional.of(projectPartner)
-        every { projectPartnerRepository.save(any<ProjectPartner>()) } returnsArgument 0
+        every { projectPartnerRepository.save(any<ProjectPartnerEntity>()) } returnsArgument 0
 
         val toSave = setOf(
             InputProjectPartnerCoFinancing(fundId = 1, percentage = 20),

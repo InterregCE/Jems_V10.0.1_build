@@ -1,22 +1,26 @@
-package io.cloudflight.jems.server.project.repository
+package io.cloudflight.jems.server.project.repository.partner
 
-import io.cloudflight.jems.server.project.entity.partner.budget.ProjectPartnerBudgetOptions
-import io.cloudflight.jems.server.project.repository.partner.ProjectPartnerRepository
+import io.cloudflight.jems.server.project.entity.partner.budget.ProjectPartnerBudgetOptionsEntity
 import io.cloudflight.jems.server.project.repository.partner.budget.ProjectPartnerBudgetOptionsRepository
 import io.cloudflight.jems.server.project.repository.partner.budget.ProjectPartnerBudgetStaffCostRepository
-import io.cloudflight.jems.server.project.service.partner.budget.ProjectBudgetPersistence
+import io.cloudflight.jems.server.project.service.budget.model.ProjectPartnerBudgetOptions
+import io.cloudflight.jems.server.project.service.partner.budget.ProjectPartnerBudgetPersistence
 import org.springframework.stereotype.Repository
 import org.springframework.transaction.annotation.Transactional
 
 @Repository
-class ProjectBudgetPersistenceProvider(
+class ProjectPartnerBudgetPersistenceProvider(
     private val budgetOptionsRepository: ProjectPartnerBudgetOptionsRepository,
     private val staffCostRepository: ProjectPartnerBudgetStaffCostRepository
-) : ProjectBudgetPersistence {
+) : ProjectPartnerBudgetPersistence {
 
     @Transactional(readOnly = true)
     override fun getBudgetOptions(partnerId: Long): ProjectPartnerBudgetOptions? =
-        budgetOptionsRepository.findById(partnerId).orElse(null)
+        budgetOptionsRepository.findById(partnerId).map { it.toProjectPartnerBudgetOptions() }.orElse(null)
+
+    @Transactional(readOnly = true)
+    override fun getBudgetOptions(partnerIds: Set<Long>): List<ProjectPartnerBudgetOptions> =
+        budgetOptionsRepository.findAllById(partnerIds).toProjectPartnerBudgetOptions()
 
     @Transactional
     override fun updateBudgetOptions(partnerId: Long, officeAdministrationFlatRate: Int?, staffCostsFlatRate: Int?) {
@@ -26,7 +30,7 @@ class ProjectBudgetPersistenceProvider(
                 it.staffCostsFlatRate = staffCostsFlatRate
             },
             {
-                budgetOptionsRepository.save(ProjectPartnerBudgetOptions(partnerId, officeAdministrationFlatRate, staffCostsFlatRate))
+                budgetOptionsRepository.save(ProjectPartnerBudgetOptionsEntity(partnerId, officeAdministrationFlatRate, staffCostsFlatRate))
             }
         )
     }

@@ -8,6 +8,7 @@ import io.cloudflight.jems.server.project.repository.partner.budget.ProjectPartn
 import io.cloudflight.jems.server.project.repository.partner.budget.ProjectPartnerBudgetInfrastructureRepository
 import io.cloudflight.jems.server.project.repository.partner.budget.ProjectPartnerBudgetStaffCostRepository
 import io.cloudflight.jems.server.project.repository.partner.budget.ProjectPartnerBudgetTravelRepository
+import io.cloudflight.jems.server.project.service.budget.model.PartnerBudget
 import io.cloudflight.jems.server.project.service.partner.budget.get_budget_options.GetBudgetOptionsInteractor
 import org.springframework.http.HttpStatus
 import org.springframework.stereotype.Service
@@ -159,28 +160,15 @@ class ProjectPartnerBudgetServiceImpl(
     @Transactional(readOnly = true)
     override fun getTotal(partnerId: Long): BigDecimal {
         val budgetOptions = getBudgetOptionsInteractor.getBudgetOptions(partnerId)
-        val officeAndAdministrationFlatRate = budgetOptions?.officeAdministrationFlatRate
-        val staffCostsFlatRate = budgetOptions?.staffCostsFlatRate
-
-        var staffCosts = projectPartnerBudgetStaffCostRepository.sumTotalForPartner(partnerId) ?: BigDecimal.ZERO
-        val travelCosts = projectPartnerBudgetTravelRepository.sumTotalForPartner(partnerId) ?: BigDecimal.ZERO
-        val externalCosts = projectPartnerBudgetExternalRepository.sumTotalForPartner(partnerId) ?: BigDecimal.ZERO
-        val equipmentCosts = projectPartnerBudgetEquipmentRepository.sumTotalForPartner(partnerId) ?: BigDecimal.ZERO
-        val infrastructureCosts = projectPartnerBudgetInfrastructureRepository.sumTotalForPartner(partnerId)
-            ?: BigDecimal.ZERO
-        if (staffCostsFlatRate != null) {
-            staffCosts = travelCosts.add(externalCosts).add(equipmentCosts).add(infrastructureCosts).percentage(staffCostsFlatRate)
-        }
-
-        val officeAndAdministrationCosts = if (officeAndAdministrationFlatRate == null) BigDecimal.ZERO else
-            staffCosts.percentage(officeAndAdministrationFlatRate)
-
-        return staffCosts
-            .add(travelCosts)
-            .add(externalCosts)
-            .add(equipmentCosts)
-            .add(infrastructureCosts)
-            .add(officeAndAdministrationCosts)
+        return PartnerBudget(
+            staffCostsFlatRate = budgetOptions?.staffCostsFlatRate,
+            officeOnStaffFlatRate = budgetOptions?.officeAdministrationFlatRate,
+            staffCosts = projectPartnerBudgetStaffCostRepository.sumTotalForPartner(partnerId) ?: BigDecimal.ZERO,
+            travelCosts = projectPartnerBudgetTravelRepository.sumTotalForPartner(partnerId) ?: BigDecimal.ZERO,
+            externalCosts = projectPartnerBudgetExternalRepository.sumTotalForPartner(partnerId) ?: BigDecimal.ZERO,
+            equipmentCosts = projectPartnerBudgetEquipmentRepository.sumTotalForPartner(partnerId) ?: BigDecimal.ZERO,
+            infrastructureCosts = projectPartnerBudgetInfrastructureRepository.sumTotalForPartner(partnerId) ?: BigDecimal.ZERO
+        ).totalSum()
     }
 
     private fun validateInput(budgetList: List<InputBudget>) {
