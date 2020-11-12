@@ -1,4 +1,3 @@
-@import "../node_modules/bootstrap/scss/bootstrap.scss";
 @import "src/app/theme/functions.scss";
 @import '~@angular/material/theming';
 
@@ -33,6 +32,7 @@
  * Following styles are applied globally to every HTML tag in this app
  */
 @import "./common-classes.scss";
+@import "./layout-classes.scss";
 
 body {
   font-family: Roboto, "Helvetica Neue", sans-serif;

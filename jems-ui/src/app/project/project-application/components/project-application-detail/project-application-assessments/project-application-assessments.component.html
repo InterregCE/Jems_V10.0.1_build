@@ -6,46 +6,42 @@
         <mat-panel-title><h6>{{'project.assessment.check.header' | translate}}</h6></mat-panel-title>
     </mat-expansion-panel-header>
     <div *ngIf="projectStatus !== OutputProjectStatus.StatusEnum.DRAFT">
-        <div class="row">
-            <div class="col-4">{{'project.assessment.eligibilityCheck.title' | translate}}</div>
-            <div class="col-5">
+        <div class="fx-row fx-center-space-between">
+            <div>{{'project.assessment.eligibilityCheck.title' | translate}}</div>
+            <div>
                 <div *ngIf="project.eligibilityAssessment">
                     {{'common.label.projecteligibilityassessmentresult.' + project.eligibilityAssessment.result | translate}}
                 </div>
             </div>
-            <div *ngIf="!project.eligibilityAssessment"
-                 class="col-3">
-                <button mat-raised-button color="primary" class="assessment-button"
+            <div *ngIf="!project.eligibilityAssessment">
+                <button mat-raised-button color="primary" class="button"
                         [routerLink]="'./assessment/eligibilityCheck'">
                     {{'project.assessment.eligibilityCheck.assessment' | translate}}
                 </button>
             </div>
-            <div *ngIf="project.eligibilityAssessment"
-                 class="col-3">
-                <button mat-stroked-button class="assessment-button"
+            <div *ngIf="project.eligibilityAssessment">
+                <button mat-stroked-button class="button"
                         [routerLink]="'./assessment/eligibilityCheck'">
                     {{'project.assessment.eligibilityCheck.assessment.view' | translate}}
                 </button>
             </div>
         </div>
-        <div class="row">
-            <div class="col-4">{{'project.assessment.qualityCheck.title' | translate}}</div>
-            <div class="col-5">
+        <div class="fx-row fx-center-space-between mt-4">
+            <div >{{'project.assessment.qualityCheck.title' | translate}}</div>
+            <div>
                 <div *ngIf="project.qualityAssessment">
                     {{'common.label.projectqualityassessmentresult.' + project.qualityAssessment.result | translate}}
                 </div>
             </div>
-            <div *ngIf="!project.qualityAssessment"
-                 class="col-3">
-                <button mat-raised-button color="primary" class="assessment-button"
+            <div *ngIf="!project.qualityAssessment">
+                <button mat-raised-button color="primary" class="button"
                         [disabled]="project.projectStatus.status === OutputProjectStatus.StatusEnum.INELIGIBLE"
                         [routerLink]="'./assessment/qualityCheck'">
                     {{'project.assessment.qualityCheck.assessment' | translate}}
                 </button>
             </div>
-            <div *ngIf="project.qualityAssessment"
-                 class="col-3">
-                <button mat-stroked-button class="assessment-button" disabled
+            <div *ngIf="project.qualityAssessment">
+                <button mat-stroked-button class="button" disabled
                         [routerLink]="'./assessment/qualityCheck'">
                     {{'project.assessment.qualityCheck.assessment.view' | translate}}
                 </button>

@@ -2,3 +2,16 @@
   display: inline-block;
   width: 100%;
 }
+
+#user-page-container {
+  display: flex;
+  flex-direction: row;
+
+  > * {
+    flex: 1;
+  }
+
+  #user-submission-container {
+    flex: 0 0 40%;
+  }
+}

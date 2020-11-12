@@ -51,8 +51,7 @@
                                placeholder="{{'user.registration.field.password' | translate}}" required>
                         <button mat-icon-button matSuffix (click)="hide = !hide" [attr.aria-label]="'Hide password'"
                                 [attr.aria-pressed]="hide">
-                            <em *ngIf="hide" class="far fa-eye"></em>
-                            <em *ngIf="!hide" class="far fa-eye-slash"></em>
+                            <mat-icon>{{hide ? 'visibility_off' : 'visibility'}}</mat-icon>
                         </button>
                         <mat-error>
                             <app-form-field-errors
@@ -81,7 +80,7 @@
                             [type]="Alert.SUCCESS">
                         <p>{{'user.registration.save.success' | translate}}</p>
                         <br>
-                        <a class="alert-link" (click)="redirectToLogin()">
+                        <a class="app-alert-link" (click)="redirectToLogin()">
                             {{'user.registration.save.success.redirect.login' | translate}}
                         </a>
                     </app-alert>

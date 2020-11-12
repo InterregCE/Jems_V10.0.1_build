@@ -7,54 +7,54 @@
     <mat-expansion-panel-header>
         <mat-panel-title><h6>{{'project.assessment.decision.header' | translate}}</h6></mat-panel-title>
     </mat-expansion-panel-header>
-    <div class="row">
-        <div class="col-4">{{'project.assessment.eligibilityDecision.title' | translate}}</div>
-        <div class="col-3">
+    <div class="fx-row fx-center-space-between">
+        <div>{{'project.assessment.eligibilityDecision.title' | translate}}</div>
+        <div>
             <div *ngIf="project.eligibilityDecision">
                 {{'common.label.projectapplicationstatus.' + project.eligibilityDecision.status | translate}}
             </div>
         </div>
-        <div class="col-2">
+        <div>
             <div *ngIf="project.eligibilityDecision">
                 {{project.eligibilityDecision.decisionDate | date : Tables.DEFAULT_DATE_FORMAT_NO_TIME}}
             </div>
         </div>
-        <div *ngIf="!project.eligibilityDecision" class="col-3 column">
-            <button mat-raised-button color="primary" class="assessment-button"
+        <div *ngIf="!project.eligibilityDecision">
+            <button mat-raised-button color="primary" class="button"
                     [disabled]="!project.eligibilityAssessment"
                     [routerLink]="'./assessment/eligibilityDecision'">
                 {{'project.assessment.eligibilityDecision.assessment' | translate}}
             </button>
         </div>
-        <div *ngIf="project.eligibilityDecision" class="col-3 column">
-            <button mat-stroked-button class="assessment-button"
+        <div *ngIf="project.eligibilityDecision">
+            <button mat-stroked-button class="button"
                     [routerLink]="'./assessment/eligibilityDecision'">
                 {{'project.assessment.eligibilityDecision.assessment.view' | translate}}
             </button>
         </div>
     </div>
-    <div class="row">
-        <div class="col-4">{{'project.assessment.fundingDecision.title' | translate}}</div>
-        <div class="col-3">
+    <div class="fx-row fx-center-space-between mt-4">
+        <div>{{'project.assessment.fundingDecision.title' | translate}}</div>
+        <div>
             <div *ngIf="project.fundingDecision">
                 {{'common.label.projectapplicationstatus.' + project.projectStatus.status | translate}}
             </div>
         </div>
-        <div class="col-2">
+        <div>
             <div *ngIf="project.fundingDecision">
                 {{project.projectStatus.decisionDate | date : Tables.DEFAULT_DATE_FORMAT_NO_TIME}}
             </div>
         </div>
-        <div *ngIf="!project.fundingDecision" class="col-3 column">
-            <button mat-raised-button color="primary" class="assessment-button"
+        <div *ngIf="!project.fundingDecision">
+            <button mat-raised-button color="primary" class="button"
                     [disabled]="project.eligibilityDecision?.status !== OutputProjectStatus.StatusEnum.ELIGIBLE
                             || !project.qualityAssessment"
                     [routerLink]="'./assessment/fundingDecision'">
                 {{'project.assessment.fundingDecision.assessment' | translate}}
             </button>
         </div>
-        <div *ngIf="!!project.fundingDecision" class="col-3 column">
-            <button mat-raised-button class="assessment-button"
+        <div *ngIf="!!project.fundingDecision">
+            <button mat-raised-button class="button"
                     [color]="projectStatus === OutputProjectStatus.StatusEnum.APPROVEDWITHCONDITIONS ? 'primary' : null"
                     [routerLink]="'./assessment/fundingDecision'">
                 {{updateOrViewFundingLabel() | translate}}

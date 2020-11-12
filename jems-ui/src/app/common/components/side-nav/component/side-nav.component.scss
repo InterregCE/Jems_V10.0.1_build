@@ -5,6 +5,7 @@
 
 .side-nav-main {
   margin-bottom: .25rem;
+  cursor: pointer;
 
   &_title {
     font-size: 1rem;
@@ -36,6 +37,7 @@
 }
 
 hr.solid {
+  border-bottom: 0;
   border-top: 0.125rem solid var(--font-color-contrast);
 }
 

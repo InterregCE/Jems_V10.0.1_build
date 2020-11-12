@@ -11,7 +11,7 @@
 
 <ng-template #information let-info>
     <div class="message-wrapper">
-        <div class="message alert-success">
+        <div class="message app-alert-success">
             <i class="far fa-check-circle"></i>
             <span *ngIf="info.i18nKey">{{info.i18nKey | translate : info.i18nArguments}}</span>
             <span *ngIf="!info.i18nKey">{{info | translate}}</span>

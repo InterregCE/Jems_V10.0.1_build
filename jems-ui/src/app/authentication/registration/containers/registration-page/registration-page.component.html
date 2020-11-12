@@ -1,10 +1,6 @@
-<div class="row">
-    <div class="col-md-12">
-        <app-user-registration
-                [success$]="saveSuccess$"
-                [error$]="saveError$"
-                (submitUser)="registerApplicant($event)"
-                (loginRedirect)="redirectToLogin()"
-        ></app-user-registration>
-    </div>
-</div>
+<app-user-registration
+        [success$]="saveSuccess$"
+        [error$]="saveError$"
+        (submitUser)="registerApplicant($event)"
+        (loginRedirect)="redirectToLogin()"
+></app-user-registration>

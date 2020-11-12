@@ -2,19 +2,18 @@
     <h2>{{'project.detail.new.title' | translate}}</h2>
     <!--p>{{'project.detail.new.subtitle' | translate}}</p-->
     <form [formGroup]="submissionForm">
-        <div class="form-group">
-            <mat-form-field class="col-md-12 project-application-submission-field">
-                <mat-label>{{'project.detail.new.field.acronym' | translate}}</mat-label>
-                <input name="acronym" formControlName="acronym" matInput
-                       placeholder="{{'project.detail.new.field.acronym' | translate}}" required>
-                <mat-error>
-                    <app-form-field-errors
-                            [errors]="submissionForm?.controls?.acronym?.errors"
-                            [messages]="acronymErrors">
-                    </app-form-field-errors>
-                </mat-error>
-            </mat-form-field>
-        </div>
+        <mat-form-field class="w-100 project-application-submission-field">
+            <mat-label>{{'project.detail.new.field.acronym' | translate}}</mat-label>
+            <input name="acronym" formControlName="acronym" matInput
+                   placeholder="{{'project.detail.new.field.acronym' | translate}}" required>
+            <mat-error>
+                <app-form-field-errors
+                        [errors]="submissionForm?.controls?.acronym?.errors"
+                        [messages]="acronymErrors">
+                </app-form-field-errors>
+            </mat-error>
+        </mat-form-field>
+
         <button *ngxPermissionsOnly="Permission.APPLICANT_USER"
                 mat-stroked-button
                 class="button"
