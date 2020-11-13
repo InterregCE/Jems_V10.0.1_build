@@ -8,11 +8,11 @@
     <ng-container *ngIf="formService.dirty$ | async"
                   [ngTemplateOutlet]="saveDiscard">
     </ng-container>
-    <ng-container [@slideInOut] *ngIf="formService.success$ | async as success"
+    <ng-container *ngIf="formService.success$ | async as success"
                   [ngTemplateOutlet]="saveSuccess"
                   [ngTemplateOutletContext]="{$implicit: success}">
     </ng-container>
-    <ng-container [@slideInOut] *ngIf="formService.error$ | async as error"
+    <ng-container *ngIf="formService.error$ | async as error"
                   [ngTemplateOutlet]="saveError"
                   [ngTemplateOutletContext]="{$implicit: error}">
     </ng-container>
@@ -35,7 +35,7 @@
 <ng-template #saveSuccess let-message>
     <mat-card-footer [@slideInOut] class="footer">
         <div class="message-wrapper">
-            <div class="message alert-success">
+            <div class="message app-alert-success">
                 <i class="far fa-check-circle"></i>
                 <span *ngIf="message.i18nKey">{{message.i18nKey | translate : message.i18nArguments}}</span>
                 <span *ngIf="!message.i18nKey">{{message | translate}}</span>
@@ -47,7 +47,7 @@
 <ng-template #saveError let-error>
     <mat-card-footer [@slideInOut] class="footer">
         <div class="message-wrapper">
-            <div class="message alert-danger">
+            <div class="message app-alert-danger">
                 <i class="fas fa-exclamation-triangle"></i>{{error?.i18nKey | translate}}
             </div>
         </div>

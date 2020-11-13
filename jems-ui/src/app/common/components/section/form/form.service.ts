@@ -49,7 +49,9 @@ export class FormService {
   setSuccess(message: I18nLabel | string | null): void {
     this.success$.next(message);
     this.error$.next(null);
-    setTimeout(() => this.success$.next(null), 3000);
+    if (message) {
+      setTimeout(() => this.success$.next(null), 3000);
+    }
   }
 
   setDirty(dirty: boolean): void {
