@@ -1,10 +1,10 @@
 <div>
     <h4>{{'user.create.header' | translate}}</h4>
-    <form [formGroup]="userForm">
-        <div class="form-group">
-            <mat-form-field class="col-md-12 user-submission-field">
+    <form [formGroup]="userForm" id="creat-user-form" class="pr-3">
+            <mat-form-field>
                 <mat-label>{{'user.detail.field.name' | translate}}</mat-label>
-                <input name="name" formControlName="name" matInput placeholder="{{'user.detail.field.name' | translate}}" required>
+                <input name="name" formControlName="name" matInput
+                       placeholder="{{'user.detail.field.name' | translate}}" required>
                 <mat-error>
                     <app-form-field-errors
                             [errors]="userForm?.controls?.name?.errors"
@@ -12,9 +12,10 @@
                     </app-form-field-errors>
                 </mat-error>
             </mat-form-field>
-            <mat-form-field class="col-md-12 user-submission-field">
+            <mat-form-field>
                 <mat-label>{{'user.detail.field.surname' | translate}}</mat-label>
-                <input name="surname" formControlName="surname" matInput placeholder="{{'user.detail.field.surname' | translate}}" required>
+                <input name="surname" formControlName="surname" matInput
+                       placeholder="{{'user.detail.field.surname' | translate}}" required>
                 <mat-error>
                     <app-form-field-errors
                             [errors]="userForm?.controls?.surname?.errors"
@@ -22,9 +23,10 @@
                     </app-form-field-errors>
                 </mat-error>
             </mat-form-field>
-            <mat-form-field class="col-md-12 user-submission-field">
+            <mat-form-field>
                 <mat-label>{{'user.detail.field.email' | translate}}</mat-label>
-                <input name="email" formControlName="email" matInput placeholder="{{'user.detail.field.email' | translate}}" required>
+                <input name="email" formControlName="email" matInput
+                       placeholder="{{'user.detail.field.email' | translate}}" required>
                 <mat-error>
                     <app-form-field-errors
                             [errors]="userForm?.controls?.email?.errors"
@@ -32,7 +34,7 @@
                     </app-form-field-errors>
                 </mat-error>
             </mat-form-field>
-            <mat-form-field class="col-md-12 user-submission-field">
+            <mat-form-field>
                 <mat-label>{{'user.detail.field.role' | translate}}</mat-label>
                 <mat-select name="role" formControlName="role" [disableOptionCentering]="true" required
                             panelClass="material-select-panel">
@@ -47,10 +49,10 @@
                     </app-form-field-errors>
                 </mat-error>
             </mat-form-field>
-        </div>
         <button mat-raised-button
                 color="primary"
                 type="button"
+                class="mt-3"
                 (click)="onSubmit()"
                 [disabled]="userForm.invalid || submitted">
             + {{'user.create.button.add' | translate}}

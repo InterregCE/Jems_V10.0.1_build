@@ -1,8 +1,8 @@
 <div *ngxPermissionsOnly="Permission.ADMINISTRATOR">
     <app-breadcrumb></app-breadcrumb>
     <h2>{{'user.management.header' | translate}}</h2>
-    <div class="row">
-        <div *ngIf="userRoles$ | async as userRoles" class="col-md-5">
+    <div id="user-page-container">
+        <div id="user-submission-container" class="mr-4" *ngIf="userRoles$ | async as userRoles">
             <app-user-submission
                     [success$]="userSaveSuccess$"
                     [error$]="userSaveError$"
@@ -10,7 +10,7 @@
                     (submitUser)="createUser($event)">
             </app-user-submission>
         </div>
-        <div *ngIf="currentPage$ | async as userPage" class="col-md-7">
+        <div *ngIf="currentPage$ | async as userPage">
             <app-user-list
                     [userPage]="userPage"
                     [pageIndex]="newPageIndex$ | async"

@@ -3,18 +3,20 @@ mat-card-content,
 mat-card-subtitle, {
   display: flex;
   justify-content: center;
-}
+  flex-direction: row;
 
-.row {
-  justify-content: center;
-
-  .register-button {
-    margin-right: 2rem;
+  > * {
+    flex: 1 1 0;
+    min-width: 0;
   }
 }
 
+.register-button {
+  margin-right: 2rem;
+}
+
 .authentication-logo {
-  background: rgb(33,147,176);
+  background: rgb(33, 147, 176);
   color: white;
   font-style: italic;
   font-weight: 400;

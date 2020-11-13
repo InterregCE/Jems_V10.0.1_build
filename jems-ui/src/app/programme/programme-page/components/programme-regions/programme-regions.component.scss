@@ -3,14 +3,16 @@
   width: 100%;
 }
 
+#nuts-explorer-container{
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  > * {
+    flex: 1 1 0;
+    min-width: 0;
+  }
+}
 .pane {
   height: 40rem;
   overflow-y: scroll;
-  padding-top: 1rem;
-}
-
-.button {
-  margin-top: 1.2rem;
-  margin-right: 1rem;
-  float: right;
 }

@@ -1,59 +1,59 @@
 <div class="container">
     <mat-card>
-            <mat-card-content>
-                <div class="section col-md-6 authentication-logo">
-                    <p>{{'authentication.logo.disclaimer' | translate}}</p>
-                </div>
-                <div class="section col-md-6" >
-                    <h2>{{'authentication.login.title.label' | translate}}</h2>
-                    <p>{{'authentication.login.subtitle' | translate}}</p>
-                    <br>
-                        <form [formGroup]="loginForm" (ngSubmit)="onSubmit()">
-                            <div>
-                                <mat-form-field>
-                                    <mat-label>{{'authentication.email.label' | translate}}</mat-label>
-                                    <input matInput autocomplete="email"
-                                           formControlName="email" id="email" name="email" required type="text">
-                                    <mat-error *ngIf="!loginForm.controls.email.valid">
-                                        {{'authentication.email.not.empty' | translate}}
-                                    </mat-error>
-                                </mat-form-field>
-                            </div>
-                            <div>
-                                <mat-form-field>
-                                    <mat-label>{{'authentication.password.label' | translate}}</mat-label>
-                                    <input matInput
-                                           formControlName="password" id="password" name="password" required type="password">
-                                    <mat-error *ngIf="!loginForm.controls.password.valid">
-                                        {{'authentication.password.not.empty' | translate}}
-                                    </mat-error>
-                                </mat-form-field>
-                            </div>
-                            <div>
-                                <button mat-raised-button
-                                        color="primary"
-                                        type="submit"
-                                        [disabled]="!loginForm.valid || submitted">
-                                    {{'user.login.button' | translate}}
-                                </button>
-                            </div>
-                            <hr>
-                            <div>
-                                <span>{{'authentication.create.account.copy' | translate}}&nbsp;</span>
-                                <button mat-stroked-button
-                                        class="register-button"
-                                        type="button"
-                                        [routerLink]="registerLink">
-                                    {{'user.login.button.create' | translate}}
-                                </button>
-                            </div>
-                            <app-alert *ngIf="error$ | async as error"
-                                       [show]="!submitted && !!error.i18nKey"
-                                       [type]="Alert.ERROR">
-                                <p>{{error.i18nKey | translate}}</p>
-                            </app-alert>
-                        </form>
-                </div>
-            </mat-card-content>
+        <mat-card-content>
+            <div class="authentication-logo px-3">
+                <p>{{'authentication.logo.disclaimer' | translate}}</p>
+            </div>
+            <div class="px-3">
+                <h2>{{'authentication.login.title.label' | translate}}</h2>
+                <p>{{'authentication.login.subtitle' | translate}}</p>
+                <br>
+                <form [formGroup]="loginForm" (ngSubmit)="onSubmit()">
+                    <div>
+                        <mat-form-field>
+                            <mat-label>{{'authentication.email.label' | translate}}</mat-label>
+                            <input matInput autocomplete="email"
+                                   formControlName="email" id="email" name="email" required type="text">
+                            <mat-error *ngIf="!loginForm.controls.email.valid">
+                                {{'authentication.email.not.empty' | translate}}
+                            </mat-error>
+                        </mat-form-field>
+                    </div>
+                    <div>
+                        <mat-form-field>
+                            <mat-label>{{'authentication.password.label' | translate}}</mat-label>
+                            <input matInput
+                                   formControlName="password" id="password" name="password" required type="password">
+                            <mat-error *ngIf="!loginForm.controls.password.valid">
+                                {{'authentication.password.not.empty' | translate}}
+                            </mat-error>
+                        </mat-form-field>
+                    </div>
+                    <div>
+                        <button mat-raised-button
+                                color="primary"
+                                type="submit"
+                                [disabled]="!loginForm.valid || submitted">
+                            {{'user.login.button' | translate}}
+                        </button>
+                    </div>
+                    <hr>
+                    <div>
+                        <span>{{'authentication.create.account.copy' | translate}}&nbsp;</span>
+                        <button mat-stroked-button
+                                class="register-button"
+                                type="button"
+                                [routerLink]="registerLink">
+                            {{'user.login.button.create' | translate}}
+                        </button>
+                    </div>
+                    <app-alert *ngIf="error$ | async as error"
+                               [show]="!submitted && !!error.i18nKey"
+                               [type]="Alert.ERROR">
+                        <p>{{error.i18nKey | translate}}</p>
+                    </app-alert>
+                </form>
+            </div>
+        </mat-card-content>
     </mat-card>
 </div>

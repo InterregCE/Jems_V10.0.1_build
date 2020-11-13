@@ -1,4 +1,10 @@
-.user-submission-field {
-  padding-right: 1rem;
-  padding-left: 0;
+#creat-user-form {
+  display: flex;
+  flex-direction: column;
+  justify-content: stretch;
+  align-items: stretch;
+
+  button{
+    align-self: start;
+  }
 }

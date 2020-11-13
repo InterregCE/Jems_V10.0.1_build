@@ -1,29 +1,17 @@
-.wrapper {
-  max-width: 30rem;
+#call-form {
 
-  .section {
-    margin-top: 2rem;
+  > * {
+    margin-top: 1rem;
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    justify-content: stretch;
   }
 
-  .button {
-    margin-left: 1rem;
-    margin-top: 0.5rem;
-    margin-bottom: 1rem;
+  #publish-btn {
+    align-self: start;
   }
-}
-
-.field {
-  padding-bottom: 1rem;
-}
-
-button {
-  margin-right: 1rem;
-}
-
-a {
-  float: left;
-}
-
-.mat-input-element {
-  color: var(--font-color-primary) !important;
+  .mat-input-element {
+    color: var(--font-color-primary) !important;
+  }
 }
