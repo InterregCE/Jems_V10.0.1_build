@@ -7,7 +7,6 @@ import io.cloudflight.jems.server.project.entity.partner.budget.CommonBudget
 import io.cloudflight.jems.server.project.entity.partner.budget.ProjectPartnerBudgetEquipment
 import io.cloudflight.jems.server.project.entity.partner.budget.ProjectPartnerBudgetExternal
 import io.cloudflight.jems.server.project.entity.partner.budget.ProjectPartnerBudgetInfrastructure
-import io.cloudflight.jems.server.project.entity.partner.budget.ProjectPartnerBudgetOptions
 import io.cloudflight.jems.server.project.entity.partner.budget.ProjectPartnerBudgetStaffCost
 import io.cloudflight.jems.server.project.entity.partner.budget.ProjectPartnerBudgetTravel
 import io.cloudflight.jems.server.project.repository.partner.budget.ProjectPartnerBudgetCommonRepository
@@ -16,6 +15,7 @@ import io.cloudflight.jems.server.project.repository.partner.budget.ProjectPartn
 import io.cloudflight.jems.server.project.repository.partner.budget.ProjectPartnerBudgetInfrastructureRepository
 import io.cloudflight.jems.server.project.repository.partner.budget.ProjectPartnerBudgetStaffCostRepository
 import io.cloudflight.jems.server.project.repository.partner.budget.ProjectPartnerBudgetTravelRepository
+import io.cloudflight.jems.server.project.service.budget.model.ProjectPartnerBudgetOptions
 import io.cloudflight.jems.server.project.service.partner.budget.get_budget_options.GetBudgetOptionsInteractor
 import io.mockk.MockKAnnotations
 import io.mockk.every

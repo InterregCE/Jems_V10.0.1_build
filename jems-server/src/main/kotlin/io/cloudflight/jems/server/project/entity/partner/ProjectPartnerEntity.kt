@@ -6,7 +6,6 @@ import io.cloudflight.jems.server.programme.entity.ProgrammeLegalStatus
 import io.cloudflight.jems.server.project.entity.Project
 import io.cloudflight.jems.server.project.entity.partner.cofinancing.ProjectPartnerCoFinancing
 import javax.persistence.CascadeType
-import javax.persistence.Column
 import javax.persistence.Entity
 import javax.persistence.EnumType
 import javax.persistence.Enumerated
@@ -20,7 +19,7 @@ import javax.persistence.OneToMany
 import javax.validation.constraints.NotNull
 
 @Entity(name = "project_partner")
-data class ProjectPartner(
+data class ProjectPartnerEntity(
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

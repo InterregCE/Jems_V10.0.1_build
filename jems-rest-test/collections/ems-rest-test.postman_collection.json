@@ -7982,6 +7982,8 @@
 									"\r",
 									"pm.test('address is saved correctly', function() {\r",
 									"    const addr = partner.addresses[0];\r",
+									"    pm.expect(addr.type).to.eql(\"Organization\");\r",
+									"    pm.expect(addr.country).to.eql(\"SK\");\r",
 									"    pm.expect(addr.street).to.eql(\"Pennsylvania Avenue\");\r",
 									"    pm.expect(addr.houseNumber).to.eql(\"1600\");\r",
 									"    pm.expect(addr.postalCode).to.eql(\"20500\");\r",
@@ -8014,7 +8016,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "[\r\n    {\r\n        \"type\": \"Organization\",\r\n        \"street\": \"Pennsylvania Avenue\",\r\n        \"houseNumber\": \"1600\",\r\n        \"postalCode\": \"20500\",\r\n        \"city\": \"Washington, DC\",\r\n        \"homepage\": \"https://www.whitehouse.gov/\"\r\n    }\r\n]\r\n",
+							"raw": "[\r\n    {\r\n        \"type\": \"Organization\",\r\n        \"country\": \"SK\",\r\n        \"street\": \"Pennsylvania Avenue\",\r\n        \"houseNumber\": \"1600\",\r\n        \"postalCode\": \"20500\",\r\n        \"city\": \"Washington, DC\",\r\n        \"homepage\": \"https://www.whitehouse.gov/\"\r\n    }\r\n]\r\n",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -8611,8 +8613,6 @@
 							"script": {
 								"id": "8dcbae42-cb74-4915-b2ba-f09b6a25b1ca",
 								"exec": [
-									"const flatRate = pm.response.json();\r",
-									"\r",
 									"pm.test('total is calculated correctly', function() {\r",
 									"    pm.response.to.have.status(200);\r",
 									"    pm.expect(pm.response.json()).to.eql(54780.18);\r",
@@ -8747,8 +8747,6 @@
 							"script": {
 								"id": "7bb2ea92-745b-4ab6-8434-373e3313a2d9",
 								"exec": [
-									"const flatRate = pm.response.json();\r",
-									"\r",
 									"pm.test('total is calculated correctly', function() {\r",
 									"    pm.response.to.have.status(200);\r",
 									"    pm.expect(pm.response.json()).to.eql(1210.19);\r",
@@ -8789,6 +8787,388 @@
 								"{{partner_id}}",
 								"budget",
 								"total"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "create project Lead partner",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "5ed97c13-22d4-41b7-9097-1882640124d2",
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"id": "3084327b-e465-4d7d-9ee1-291bb076372a",
+								"exec": [
+									"const partner = pm.response.json();\r",
+									"\r",
+									"pm.test('applicant can create project partner', function() {\r",
+									"    pm.response.to.have.status(200);\r",
+									"    pm.variables.set('partner_id_lead', partner.id);\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "basic",
+							"basic": [
+								{
+									"key": "password",
+									"value": "{{applicant_email}}",
+									"type": "string"
+								},
+								{
+									"key": "username",
+									"value": "{{applicant_email}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"abbreviation\": \"{{$randomAbbreviation}}\",\r\n    \"role\": \"LEAD_PARTNER\",\r\n    \"legalStatusId\": 1\r\n}\r\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{url}}/api/project/{{application_id}}/partner",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"api",
+								"project",
+								"{{application_id}}",
+								"partner"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "set budget - staff costs to Lead",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "bc4e1c27-df7e-4070-9370-564f9a09d6a1",
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"id": "b5da5195-4e62-48be-92ab-094f9851deb8",
+								"exec": [
+									"const staffCosts = pm.response.json();\r",
+									"\r",
+									"pm.test('applicant can set budget staff costs', function() {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"pm.test('staffcosts are set correctly', function() {\r",
+									"    pm.expect(staffCosts.length).to.eql(2);\r",
+									"});\r",
+									"\r",
+									"pm.test('staffcosts sums are calculated correctly', function() {\r",
+									"    pm.expect(staffCosts[0].rowSum + staffCosts[1].rowSum).to.eql(22000);\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "basic",
+							"basic": [
+								{
+									"key": "password",
+									"value": "{{applicant_email}}",
+									"type": "string"
+								},
+								{
+									"key": "username",
+									"value": "{{applicant_email}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "[\r\n    {\r\n        \"description\": \"Teachers\",\r\n        \"numberOfUnits\": 2,\r\n        \"pricePerUnit\": 8800\r\n    },\r\n    {\r\n        \"description\": \"Students\",\r\n        \"numberOfUnits\": 22,\r\n        \"pricePerUnit\": 200\r\n    }\r\n]\r\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{url}}/api/project/partner/{{partner_id_lead}}/budget/staffcost",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"api",
+								"project",
+								"partner",
+								"{{partner_id_lead}}",
+								"budget",
+								"staffcost"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "set office and administration flatRate to Lead Partner",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "69674e65-5235-470d-b311-a3de739ef06f",
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"id": "45c1c8d7-2aa9-4a35-ab54-dace67ce7a35",
+								"exec": [
+									"pm.test('applicant can set officeadministration flatRate', function() {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "basic",
+							"basic": [
+								{
+									"key": "password",
+									"value": "{{applicant_email}}",
+									"type": "string"
+								},
+								{
+									"key": "username",
+									"value": "{{applicant_email}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"officeAdministrationFlatRate\": 10\r\n}\r\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{url}}/api/project/partner/{{partner_id_lead}}/budget/options",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"api",
+								"project",
+								"partner",
+								"{{partner_id_lead}}",
+								"budget",
+								"options"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "calculate total for Lead",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "5b50c95b-401c-49ce-98b1-9b9abbdf3f20",
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"id": "248d347d-aec8-4df6-b6a7-17f36f86f5ec",
+								"exec": [
+									"pm.test('total is calculated correctly', function() {\r",
+									"    pm.response.to.have.status(200);\r",
+									"    pm.expect(pm.response.json()).to.eql(24200);\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "basic",
+							"basic": [
+								{
+									"key": "password",
+									"value": "{{applicant_email}}",
+									"type": "string"
+								},
+								{
+									"key": "username",
+									"value": "{{applicant_email}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{url}}/api/project/partner/{{partner_id_lead}}/budget/total",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"api",
+								"project",
+								"partner",
+								"{{partner_id_lead}}",
+								"budget",
+								"total"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "check project budget for both partners",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "554041f9-1817-4727-b73b-dc38d9e39c81",
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"id": "8be82f61-ffcf-4d1d-9e84-03c1ab7df0c1",
+								"exec": [
+									"pm.test('project budget can be retrieved', function() {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"pm.test('both partners are returned', function() {\r",
+									"    const res = pm.response.json();\r",
+									"    pm.expect(res).to.be.an('array');\r",
+									"    pm.expect(res).to.have.length(2);\r",
+									"});\r",
+									"\r",
+									"pm.test('partners are sorted', function() {\r",
+									"    const res = pm.response.json();\r",
+									"    pm.expect(res[0].partner.id).to.eql(pm.variables.get('partner_id_lead'));\r",
+									"    pm.expect(res[1].partner.id).to.eql(pm.variables.get('partner_id'));\r",
+									"});\r",
+									"\r",
+									"pm.test('partners have correct data filled in', function() {\r",
+									"    const res = pm.response.json();\r",
+									"    pm.expect(res[0].partner.sortNumber).to.eql(1);\r",
+									"    pm.expect(res[1].partner.sortNumber).to.eql(2);\r",
+									"\r",
+									"    pm.expect(res[0].staffCosts).to.eql(22000.0);\r",
+									"    pm.expect(res[0].travelCosts).to.eql(0);\r",
+									"    pm.expect(res[0].externalCosts).to.eql(0);\r",
+									"    pm.expect(res[0].equipmentCosts).to.eql(0);\r",
+									"    pm.expect(res[0].infrastructureCosts).to.eql(0);\r",
+									"    pm.expect(res[0].officeAndAdministrationCosts).to.eql(2200.0);\r",
+									"    pm.expect(res[0].totalSum).to.eql(24200);\r",
+									"\r",
+									"    pm.expect(res[1].partner.country).to.eql('SK');\r",
+									"    pm.expect(res[1].staffCosts).to.eql(110.01);\r",
+									"    pm.expect(res[1].travelCosts).to.eql(0.18);\r",
+									"    pm.expect(res[1].externalCosts).to.eql(0);\r",
+									"    pm.expect(res[1].equipmentCosts).to.eql(0);\r",
+									"    pm.expect(res[1].infrastructureCosts).to.eql(1100);\r",
+									"    pm.expect(res[1].officeAndAdministrationCosts).to.eql(0);\r",
+									"    pm.expect(res[1].totalSum).to.eql(1210.19);\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "basic",
+							"basic": [
+								{
+									"key": "password",
+									"value": "{{applicant_email}}",
+									"type": "string"
+								},
+								{
+									"key": "username",
+									"value": "{{applicant_email}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{url}}/api/project/{{application_id}}/budget",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"api",
+								"project",
+								"{{application_id}}",
+								"budget"
 							]
 						}
 					},
@@ -8859,7 +9239,7 @@
 	],
 	"variable": [
 		{
-			"id": "aaf5b6a6-5053-4c20-a757-0c73ca29155e",
+			"id": "e0094ac8-618f-4262-94d5-06bc1e1d1856",
 			"key": "url",
 			"value": "specify_url_here"
 		}

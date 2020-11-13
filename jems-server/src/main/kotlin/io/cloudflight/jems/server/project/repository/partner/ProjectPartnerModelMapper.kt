@@ -1,28 +1,29 @@
-package io.cloudflight.jems.server.project.service.partner
+package io.cloudflight.jems.server.project.repository.partner
 
 import io.cloudflight.jems.api.project.dto.partner.InputProjectPartnerAddress
 import io.cloudflight.jems.api.project.dto.InputProjectContact
 import io.cloudflight.jems.api.project.dto.InputProjectPartnerContribution
 import io.cloudflight.jems.api.project.dto.partner.InputProjectPartnerCreate
-import io.cloudflight.jems.api.project.dto.partner.OutputProjectPartner
 import io.cloudflight.jems.api.project.dto.partner.OutputProjectPartnerContact
 import io.cloudflight.jems.api.project.dto.OutputProjectPartnerContribution
+import io.cloudflight.jems.api.project.dto.partner.OutputProjectPartner
 import io.cloudflight.jems.api.project.dto.partner.OutputProjectPartnerDetail
 import io.cloudflight.jems.api.project.dto.partner.OutputProjectPartnerAddress
+import io.cloudflight.jems.api.project.dto.partner.ProjectPartnerAddressType
 import io.cloudflight.jems.server.programme.entity.ProgrammeLegalStatus
-import io.cloudflight.jems.server.programme.service.toOutputProgrammeLegalStatus
 import io.cloudflight.jems.server.project.entity.Address
 import io.cloudflight.jems.server.project.entity.Contact
 import io.cloudflight.jems.server.project.entity.Project
-import io.cloudflight.jems.server.project.entity.partner.ProjectPartner
+import io.cloudflight.jems.server.project.entity.partner.ProjectPartnerEntity
 import io.cloudflight.jems.server.project.entity.partner.ProjectPartnerContactId
 import io.cloudflight.jems.server.project.entity.partner.ProjectPartnerContact
 import io.cloudflight.jems.server.project.entity.partner.ProjectPartnerContribution
 import io.cloudflight.jems.server.project.entity.partner.ProjectPartnerAddress
 import io.cloudflight.jems.server.project.entity.partner.ProjectPartnerAddressId
 import io.cloudflight.jems.server.project.service.partner.cofinancing.toOutputProjectCoFinancing
+import io.cloudflight.jems.server.project.service.partner.model.ProjectPartner
 
-fun InputProjectPartnerCreate.toEntity(project: Project, legalStatus: ProgrammeLegalStatus) = ProjectPartner(
+fun InputProjectPartnerCreate.toEntity(project: Project, legalStatus: ProgrammeLegalStatus) = ProjectPartnerEntity(
     project = project,
     abbreviation = abbreviation!!,
     role = role!!,
@@ -35,14 +36,26 @@ fun InputProjectPartnerCreate.toEntity(project: Project, legalStatus: ProgrammeL
     vatRecovery = vatRecovery
 )
 
-fun ProjectPartner.toOutputProjectPartner() = OutputProjectPartner(
+fun ProjectPartnerEntity.toProjectPartner() = ProjectPartner(
     id = id,
     abbreviation = abbreviation,
     role = role,
-    sortNumber = sortNumber
+    sortNumber = sortNumber,
+    country = addresses?.firstOrNull { it.addressId.type == ProjectPartnerAddressType.Organization }?.address?.country
 )
+fun Iterable<ProjectPartnerEntity>.toProjectPartner() = map { it.toProjectPartner() }
 
-fun ProjectPartner.toOutputProjectPartnerDetail() = OutputProjectPartnerDetail(
+// todo remove when everything switched to Models
+fun ProjectPartnerEntity.toOutputProjectPartner() = OutputProjectPartner(
+    id = id,
+    abbreviation = abbreviation,
+    role = role,
+    sortNumber = sortNumber,
+    country = addresses?.firstOrNull { it.addressId.type == ProjectPartnerAddressType.Organization }?.address?.country
+)
+fun Iterable<ProjectPartnerEntity>.toOutputProjectPartner() = map { it.toOutputProjectPartner() }
+
+fun ProjectPartnerEntity.toOutputProjectPartnerDetail() = OutputProjectPartnerDetail(
     id = id,
     abbreviation = abbreviation,
     role = role,
@@ -60,7 +73,7 @@ fun ProjectPartner.toOutputProjectPartnerDetail() = OutputProjectPartnerDetail(
     financing = financing.map { it.toOutputProjectCoFinancing() }
 )
 
-fun InputProjectPartnerAddress.toEntity(partner: ProjectPartner) = ProjectPartnerAddress(
+fun InputProjectPartnerAddress.toEntity(partner: ProjectPartnerEntity) = ProjectPartnerAddress(
     addressId = ProjectPartnerAddressId(partner.id, type),
     address = Address(
         country = country,
@@ -74,7 +87,7 @@ fun InputProjectPartnerAddress.toEntity(partner: ProjectPartner) = ProjectPartne
     )
 )
 
-fun InputProjectContact.toEntity(partner: ProjectPartner) = ProjectPartnerContact(
+fun InputProjectContact.toEntity(partner: ProjectPartnerEntity) = ProjectPartnerContact(
     contactId = ProjectPartnerContactId(partner.id, type),
     contact = Contact(
         title = title,
@@ -113,12 +126,12 @@ fun ProjectPartnerContribution.toOutputProjectPartnerContribution() = OutputProj
 
 fun ProjectPartnerAddress.toOutputProjectPartnerAddress() = OutputProjectPartnerAddress(
     type = addressId.type,
-    country = address?.country,
-    nutsRegion2 = address?.nutsRegion2,
-    nutsRegion3 = address?.nutsRegion3,
-    street = address?.street,
-    houseNumber = address?.houseNumber,
-    postalCode = address?.postalCode,
-    city = address?.city,
-    homepage = address?.homepage
+    country = address.country,
+    nutsRegion2 = address.nutsRegion2,
+    nutsRegion3 = address.nutsRegion3,
+    street = address.street,
+    houseNumber = address.houseNumber,
+    postalCode = address.postalCode,
+    city = address.city,
+    homepage = address.homepage
 )

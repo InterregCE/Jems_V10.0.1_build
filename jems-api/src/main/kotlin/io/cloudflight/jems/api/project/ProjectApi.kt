@@ -4,6 +4,7 @@ import io.cloudflight.jems.api.project.dto.InputProject
 import io.cloudflight.jems.api.project.dto.InputProjectData
 import io.cloudflight.jems.api.project.dto.OutputProject
 import io.cloudflight.jems.api.project.dto.OutputProjectSimple
+import io.cloudflight.jems.api.project.dto.budget.ProjectPartnerBudgetDTO
 import io.swagger.annotations.Api
 import io.swagger.annotations.ApiImplicitParam
 import io.swagger.annotations.ApiImplicitParams
@@ -43,5 +44,9 @@ interface ProjectApi {
     @ApiOperation("Update project-related data")
     @PutMapping("/{projectId}", consumes = [MediaType.APPLICATION_JSON_VALUE])
     fun updateProjectData(@PathVariable projectId: Long, @Valid @RequestBody project: InputProjectData): OutputProject
+
+    @ApiOperation("Returns project budget for all partners")
+    @GetMapping("/{projectId}/budget")
+    fun getProjectBudget(@PathVariable projectId: Long): List<ProjectPartnerBudgetDTO>
 
 }

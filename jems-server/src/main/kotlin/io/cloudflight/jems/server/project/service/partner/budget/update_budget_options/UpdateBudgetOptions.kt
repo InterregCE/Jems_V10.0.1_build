@@ -2,13 +2,13 @@ package io.cloudflight.jems.server.project.service.partner.budget.update_budget_
 
 import io.cloudflight.jems.server.call.service.flatrate.CallFlatRateSetupPersistence
 import io.cloudflight.jems.server.project.authorization.CanUpdateProjectPartner
-import io.cloudflight.jems.server.project.service.partner.budget.ProjectBudgetPersistence
+import io.cloudflight.jems.server.project.service.partner.budget.ProjectPartnerBudgetPersistence
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 
 @Service
 class UpdateBudgetOptions(
-    private val persistence: ProjectBudgetPersistence,
+    private val persistence: ProjectPartnerBudgetPersistence,
     private val callFlatRateSetupPersistence: CallFlatRateSetupPersistence
 ) : UpdateBudgetOptionsInteractor {
 

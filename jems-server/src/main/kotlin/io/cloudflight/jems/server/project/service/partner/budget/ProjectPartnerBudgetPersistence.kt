@@ -1,10 +1,12 @@
 package io.cloudflight.jems.server.project.service.partner.budget
 
-import io.cloudflight.jems.server.project.entity.partner.budget.ProjectPartnerBudgetOptions
+import io.cloudflight.jems.server.project.service.budget.model.ProjectPartnerBudgetOptions
 
-interface ProjectBudgetPersistence {
+interface ProjectPartnerBudgetPersistence {
 
     fun getBudgetOptions(partnerId: Long): ProjectPartnerBudgetOptions?
+
+    fun getBudgetOptions(partnerIds: Set<Long>): List<ProjectPartnerBudgetOptions>
 
     fun updateBudgetOptions(partnerId: Long, officeAdministrationFlatRate: Int?, staffCostsFlatRate: Int?)
 

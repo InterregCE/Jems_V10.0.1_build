@@ -14,7 +14,7 @@ import io.cloudflight.jems.server.common.exception.ResourceNotFoundException
 import io.cloudflight.jems.server.programme.entity.ProgrammeLegalStatus
 import io.cloudflight.jems.server.project.entity.Project
 import io.cloudflight.jems.server.project.entity.ProjectStatus
-import io.cloudflight.jems.server.project.entity.partner.ProjectPartner
+import io.cloudflight.jems.server.project.entity.partner.ProjectPartnerEntity
 import io.cloudflight.jems.server.project.repository.partner.ProjectPartnerRepository
 import io.cloudflight.jems.server.project.service.partner.ProjectPartnerTestUtil.Companion.user
 import io.mockk.MockKAnnotations
@@ -33,7 +33,7 @@ class CallFlatRateSetupPersistenceTest {
         private fun callWithIdAndFlatRate(id: Long, flatRate: Set<ProjectCallFlatRateEntity>) = callWithId(id).copy(
             flatRates = flatRate.toMutableSet()
         )
-        private fun dummyPartner(call: Call) = ProjectPartner(
+        private fun dummyPartner(call: Call) = ProjectPartnerEntity(
             project = Project(
                 id = 1,
                 call = call,
