@@ -15,7 +15,7 @@ describe('ProjectApplicationPartnerIdentityComponent', () => {
         TestModule,
         ProjectModule,
         RouterTestingModule.withRoutes(
-          [{path: 'app/project/detail/1/applicationForm', component: ProjectApplicationPartnerIdentityComponent}])
+          [{path: 'app/project/detail/1/applicationFormPartner', component: ProjectApplicationPartnerIdentityComponent}])
       ],
       declarations: [ProjectApplicationPartnerIdentityComponent]
     })

@@ -1,0 +1,196 @@
+<app-edit-form [componentId]="CallFlatRatesComponent.ID"
+               [createNew]="!call?.id"
+               [form]="callFlatRateForm"
+               (discard)="onCancel()"
+               (save)="onSubmit()">
+    <form [formGroup]="callFlatRateForm" class="table-list">
+        <h5 class="header" id="callFlatRateHeading">
+            {{'call.detail.flat.rates' | translate}}
+        </h5>
+        <app-row-list-template
+                [columnClassList]="['max-2-and-half-rem']"
+                [appearance]="['table-list-header', 'table-list-row', 'table-list-row', 'table-list-row', 'table-list-row', 'table-list-footer']">
+            <div>
+                <span>{{'call.detail.flat.rate.table.activate.option' | translate}}</span>
+                <span class="flat-rates">{{'call.detail.flat.rate.table.flat.rates' | translate}}</span>
+                <span class="flat-rate-including-percentage">{{'call.detail.flat.rate.table.set.rate' | translate}}</span>
+                <span class="fixed-rate">{{'call.detail.flat.rate.table.fixed.rate' | translate}}</span>
+            </div>
+            <div>
+                <mat-checkbox
+                        [disabled]="published"
+                        (click)="$event.stopPropagation()"
+                        (change)="changeSelection(InputCallFlatRateSetup.TypeEnum.StaffCost)"
+                        [checked]="selection.isSelected(InputCallFlatRateSetup.TypeEnum.StaffCost)">
+                </mat-checkbox>
+
+                <span class="flat-rates">{{'call.detail.flat.rate.table.staff.direct.cost' | translate}}</span>
+
+                <div class="flat-rate-including-percentage">
+                    <mat-form-field class="flat-rate-percentage">
+                        <input  [readonly]="!selection.isSelected(InputCallFlatRateSetup.TypeEnum.StaffCost)"
+                                name="staffDirectCostPercent"
+                                formControlName="staffDirectCostPercent"
+                                matInput
+                                type="number">
+                        <mat-error>
+                            <app-form-field-errors
+                                    [errors]="callFlatRateForm?.controls?.staffDirectCostPercent?.errors"
+                                    [messages]="staffDirectCostPercentErrors">
+                            </app-form-field-errors>
+                        </mat-error>
+                    </mat-form-field>
+                    <span class="percent">{{'project.partner.budget.options.staff.costs.flat.rate.percent' | translate}}</span>
+                </div>
+
+                <span class="fixed-rate">
+                    <app-call-flat-rates-toggle-column
+                            [disabled]="published"
+                            (selected)="toggleSelectionChanged($event, InputCallFlatRateSetup.TypeEnum.StaffCost)"
+                            [previousSelection]="selectedStaffDirectCost">
+                    </app-call-flat-rates-toggle-column>
+                </span>
+            </div>
+            <div>
+                <mat-checkbox
+                        [disabled]="published"
+                        (click)="$event.stopPropagation()"
+                        (change)="changeSelection(InputCallFlatRateSetup.TypeEnum.OfficeOnStaff)"
+                        [checked]="selection.isSelected(InputCallFlatRateSetup.TypeEnum.OfficeOnStaff)">
+                </mat-checkbox>
+
+                <span class="flat-rates">{{'call.detail.flat.rate.table.office.administration.direct.staff.cost' | translate}}</span>
+
+                <div class="flat-rate-including-percentage">
+                    <mat-form-field class="flat-rate-percentage">
+                        <input  [readonly]="!selection.isSelected(InputCallFlatRateSetup.TypeEnum.OfficeOnStaff)"
+                                name="officeAdminDirectStaffCostPercent"
+                                formControlName="officeAdminDirectStaffCostPercent"
+                                matInput
+                                type="number">
+                        <mat-error>
+                            <app-form-field-errors
+                                    [errors]="callFlatRateForm?.controls?.officeAdminDirectStaffCostPercent?.errors"
+                                    [messages]="officeAdminDirectStaffCostPercentErrors">
+                            </app-form-field-errors>
+                        </mat-error>
+                    </mat-form-field>
+                    <span class="percent">{{'project.partner.budget.options.staff.costs.flat.rate.percent' | translate}}</span>
+                </div>
+
+                <span class="fixed-rate">
+                    <app-call-flat-rates-toggle-column
+                            [disabled]="published"
+                            (selected)="toggleSelectionChanged($event, InputCallFlatRateSetup.TypeEnum.OfficeOnStaff)"
+                            [previousSelection]="selectedOfficeAdminDirectStaffCost">
+                    </app-call-flat-rates-toggle-column>
+                </span>
+            </div>
+            <div>
+                <mat-checkbox
+                        [disabled]="published"
+                        (click)="$event.stopPropagation()"
+                        (change)="changeSelection(InputCallFlatRateSetup.TypeEnum.OfficeOnOther)"
+                        [checked]="selection.isSelected(InputCallFlatRateSetup.TypeEnum.OfficeOnOther)">
+                </mat-checkbox>
+
+                <span class="flat-rates">{{'call.detail.flat.rate.table.office.administration.direct.cost' | translate}}</span>
+
+                <div class="flat-rate-including-percentage">
+                    <mat-form-field class="flat-rate-percentage">
+                        <input  [readonly]="!selection.isSelected(InputCallFlatRateSetup.TypeEnum.OfficeOnOther)"
+                                name="officeAdministrationDirectCostPercent"
+                                formControlName="officeAdministrationDirectCostPercent"
+                                matInput
+                                type="number">
+                        <mat-error>
+                            <app-form-field-errors
+                                    [errors]="callFlatRateForm?.controls?.officeAdministrationDirectCostPercent?.errors"
+                                    [messages]="officeAdministrationDirectCostPercentErrors">
+                            </app-form-field-errors>
+                        </mat-error>
+                    </mat-form-field>
+                    <span class="percent">{{'project.partner.budget.options.staff.costs.flat.rate.percent' | translate}}</span>
+                </div>
+
+                <span class="fixed-rate">
+                    <app-call-flat-rates-toggle-column
+                            [disabled]="published"
+                            (selected)="toggleSelectionChanged($event, InputCallFlatRateSetup.TypeEnum.OfficeOnOther)"
+                            [previousSelection]="selectedOfficeAdministrationDirectCost">
+                    </app-call-flat-rates-toggle-column>
+                </span>
+            </div>
+            <div>
+                <mat-checkbox
+                        [disabled]="published"
+                        (click)="$event.stopPropagation()"
+                        (change)="changeSelection(InputCallFlatRateSetup.TypeEnum.TravelOnStaff)"
+                        [checked]="selection.isSelected(InputCallFlatRateSetup.TypeEnum.TravelOnStaff)">
+                </mat-checkbox>
+
+                <span class="flat-rates">{{'call.detail.flat.rate.table.travel.accommodation.direct.staff.cost' | translate}}</span>
+
+                <div class="flat-rate-including-percentage">
+                    <mat-form-field class="flat-rate-percentage">
+                        <input  [readonly]="!selection.isSelected(InputCallFlatRateSetup.TypeEnum.TravelOnStaff)"
+                                name="travelAccommodationDirectStaffCostPercent"
+                                formControlName="travelAccommodationDirectStaffCostPercent"
+                                matInput
+                                type="number">
+                        <mat-error>
+                            <app-form-field-errors
+                                    [errors]="callFlatRateForm?.controls?.travelAccommodationDirectStaffCostPercent?.errors"
+                                    [messages]="travelAccommodationDirectStaffCostPercentErrors">
+                            </app-form-field-errors>
+                        </mat-error>
+                    </mat-form-field>
+                    <span class="percent">{{'project.partner.budget.options.staff.costs.flat.rate.percent' | translate}}</span>
+                </div>
+
+                <span class="fixed-rate">
+                    <app-call-flat-rates-toggle-column
+                            [disabled]="published"
+                            (selected)="toggleSelectionChanged($event, InputCallFlatRateSetup.TypeEnum.TravelOnStaff)"
+                            [previousSelection]="selectedTravelAccommodationDirectStaffCost">
+                    </app-call-flat-rates-toggle-column>
+                </span>
+            </div>
+            <div>
+                <mat-checkbox
+                        [disabled]="published"
+                        (click)="$event.stopPropagation()"
+                        (change)="changeSelection(InputCallFlatRateSetup.TypeEnum.OtherOnStaff)"
+                        [checked]="selection.isSelected(InputCallFlatRateSetup.TypeEnum.OtherOnStaff)">
+                </mat-checkbox>
+
+                <span class="flat-rates">{{'call.detail.flat.rate.table.other.cost' | translate}}</span>
+
+                <div class="flat-rate-including-percentage">
+                    <mat-form-field class="flat-rate-percentage">
+                        <input  [readonly]="!selection.isSelected(InputCallFlatRateSetup.TypeEnum.OtherOnStaff)"
+                                name="otherCostsPercent"
+                                formControlName="otherCostsPercent"
+                                matInput
+                                type="number">
+                        <mat-error>
+                            <app-form-field-errors
+                                    [errors]="callFlatRateForm?.controls?.otherCostsPercent?.errors"
+                                    [messages]="otherCostsPercentErrors">
+                            </app-form-field-errors>
+                        </mat-error>
+                    </mat-form-field>
+                    <span class="percent">{{'project.partner.budget.options.staff.costs.flat.rate.percent' | translate}}</span>
+                </div>
+
+                <span class="fixed-rate">
+                    <app-call-flat-rates-toggle-column
+                            [disabled]="published"
+                            (selected)="toggleSelectionChanged($event, InputCallFlatRateSetup.TypeEnum.OtherOnStaff)"
+                            [previousSelection]="selectedOtherCosts">
+                    </app-call-flat-rates-toggle-column>
+                </span>
+            </div>
+        </app-row-list-template>
+    </form>
+</app-edit-form>

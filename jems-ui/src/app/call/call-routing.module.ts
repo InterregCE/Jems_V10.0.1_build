@@ -5,6 +5,8 @@ import {Permission} from '../security/permissions/permission';
 import {RouteData} from '../common/utils/route-data';
 import {PermissionGuard} from '../security/permission.guard';
 import {CallNameResolver} from './services/call-name.resolver';
+import {CallFlatRatesPageComponent} from './containers/call-flat-rates-page/call-flat-rates-page.component';
+import {ProjectApplicationFormPartnerSectionComponent} from '../project/project-application/containers/project-application-form-page/project-application-form-partner-section/project-application-form-partner-section.component';
 
 export const routes: Routes = [
   {
@@ -34,7 +36,21 @@ export const routes: Routes = [
         },
         resolve: {breadcrumb$: CallNameResolver},
         canActivate: [PermissionGuard],
-        component: CallConfigurationComponent,
+        children: [
+          {
+            path: '',
+            component: CallConfigurationComponent,
+          },
+          {
+            path: 'flatRates',
+            data: {
+              breadcrumb: 'call.detail.flat.rates',
+              permissionsOnly: [Permission.ADMINISTRATOR, Permission.PROGRAMME_USER],
+            },
+            canActivate: [PermissionGuard],
+            component: CallFlatRatesPageComponent,
+          },
+        ],
       },
       {
         path: 'apply/:callId',
