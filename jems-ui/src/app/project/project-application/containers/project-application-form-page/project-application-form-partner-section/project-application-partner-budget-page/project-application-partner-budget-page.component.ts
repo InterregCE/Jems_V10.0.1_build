@@ -37,7 +37,7 @@ export class ProjectApplicationPartnerBudgetPageComponent {
   optionsSaveError$ = new Subject<I18nValidationError | null>();
   optionsSaveSuccess$ = new Subject<boolean>();
   saveBudgetOptions = new Subject<BudgetOptions>();
-  private initialBudgetOptions$ = this.partnerStore.getProjectPartner()
+  private initialBudgetOptions$ = this.partnerStore.partner$
     .pipe(
       filter(partner => !!partner.id),
       map(partner => partner.id),
@@ -49,7 +49,7 @@ export class ProjectApplicationPartnerBudgetPageComponent {
 
   private saveBudgetOptions$ = this.saveBudgetOptions
     .pipe(
-      withLatestFrom(this.partnerStore.getProjectPartner()),
+      withLatestFrom(this.partnerStore.partner$),
       switchMap(([budgetOptions, partner]) =>
         this.projectPartnerBudgetService.updateBudgetOptions(partner.id, budgetOptions).pipe(map(() => budgetOptions))
       ),
@@ -69,7 +69,7 @@ export class ProjectApplicationPartnerBudgetPageComponent {
   saveSuccess$ = new Subject<boolean>();
   cancelEdit$ = new Subject<void>();
 
-  private initialBudgets$ = this.partnerStore.getProjectPartner()
+  private initialBudgets$ = this.partnerStore.partner$
     .pipe(
       filter(partner => !!partner.id),
       map(partner => partner.id),
@@ -93,7 +93,7 @@ export class ProjectApplicationPartnerBudgetPageComponent {
 
   private savedBudgets$ = this.saveBudgets$
     .pipe(
-      withLatestFrom(this.partnerStore.getProjectPartner()),
+      withLatestFrom(this.partnerStore.partner$),
       switchMap(([budgets, partner]) =>
         forkJoin({
           staff: this.updateBudget(partner.id, PartnerBudgetTableType.STAFF, this.getBudgetEntries(budgets.staff)),
@@ -115,7 +115,7 @@ export class ProjectApplicationPartnerBudgetPageComponent {
 
   fetchedBudgets$ = this.fetchBudgetsFor$
     .pipe(
-      withLatestFrom(this.partnerStore.getProjectPartner(), merge(this.savedBudgets$, this.initialBudgets$)),
+      withLatestFrom(this.partnerStore.partner$, merge(this.savedBudgets$, this.initialBudgets$)),
       switchMap(([budgetsKeys, partner, currentBudgets]) =>
         forkJoin({
           staff: budgetsKeys.indexOf(PartnerBudgetTableType.STAFF) >= 0 ? this.projectPartnerBudgetService.getBudgetStaffCost(partner.id) : of(currentBudgets.staff),

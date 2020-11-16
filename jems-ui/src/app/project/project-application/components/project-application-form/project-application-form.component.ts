@@ -13,7 +13,6 @@ import {catchError, distinctUntilChanged, take, takeUntil, tap} from 'rxjs/opera
 import {BaseComponent} from '@common/components/base-component';
 import {FormService} from '@common/components/section/form/form.service';
 import {ProjectStore} from '../../containers/project-application-detail/services/project-store.service';
-import {HttpErrorResponse} from '@angular/common/http';
 
 @Component({
   selector: 'app-project-application-form',
@@ -116,11 +115,8 @@ export class ProjectApplicationFormComponent extends BaseComponent implements On
     this.projectStore.updateProjectData(data)
       .pipe(
         take(1),
-        tap(success => this.formService.setSuccess('project.application.form.save.success')),
-        catchError((error: HttpErrorResponse) => {
-          this.formService.setError(error.error);
-          throw error;
-        })
+        tap(() => this.formService.setSuccess('project.application.form.save.success')),
+        catchError(error => this.formService.setError(error))
       ).subscribe();
   }
 

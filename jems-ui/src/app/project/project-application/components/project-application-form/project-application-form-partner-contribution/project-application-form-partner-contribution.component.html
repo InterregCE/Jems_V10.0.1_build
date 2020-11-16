@@ -1,78 +1,52 @@
-<form [formGroup]="partnerContributionForm" class="wrapper">
-    <h5><span>{{'project.partner.motivation.header' | translate}}</span>
-        <span *ngxPermissionsExcept="Permission.PROGRAMME_USER">
-            <button class="header-button" *ngIf="(formState === FormState.VIEW && editable) && partner?.id"
-                    (click)="changeFormState$.next(FormState.EDIT)" color="primary" mat-raised-button>
-                {{'common.edit.label' | translate}}
-            </button>
-        </span>
-    </h5>
+<app-form (save)="onSubmit()"
+          (discard)="resetForm()">
+    <form [formGroup]="partnerContributionForm" class="wrapper">
+        <h5><span>{{'project.partner.motivation.header' | translate}}</span></h5>
+        <h6 class="intro-text">{{'project.partner.motivation.organization.relevance' | translate}}</h6>
 
-    <h6 class="intro-text">
-        {{'project.partner.motivation.organization.relevance' | translate}}
-    </h6>
-    <app-expandable-textarea *ngIf="formState === FormState.EDIT"
-            class="field-wide"
-            [control]="partnerContributionForm?.controls?.organizationRelevance"
-            [errors]="partnerContributionForm?.controls?.organizationRelevance?.errors"
-            [messages]="organizationRelevanceErrors"
-            [characterLimit]="2000"
-            [label]="'project.application.form.motivation.form.field'">
-    </app-expandable-textarea>
-    <p *ngIf="formState === FormState.VIEW" class="view-text">
-        <br>{{partnerContributionForm?.controls?.organizationRelevance.value}}
-    </p>
+        <app-expandable-textarea
+                *ngIf="editable"
+                class="field-wide"
+                [control]="partnerContributionForm?.controls?.organizationRelevance"
+                [errors]="partnerContributionForm?.controls?.organizationRelevance?.errors"
+                [messages]="organizationRelevanceErrors"
+                [characterLimit]="2000"
+                [label]="'project.application.form.motivation.form.field'">
+        </app-expandable-textarea>
+        <p *ngIf="!editable" class="view-text">
+            <br>{{partnerContributionForm?.controls?.organizationRelevance.value}}
+        </p>
 
-    <h6 class="intro-text">
-        {{'project.partner.motivation.organization.role' | translate}}
-    </h6>
-    <app-expandable-textarea *ngIf="formState === FormState.EDIT"
-            class="field-wide"
-            [control]="partnerContributionForm?.controls?.organizationRole"
-            [errors]="partnerContributionForm?.controls?.organizationRole?.errors"
-            [messages]="organizationRoleErrors"
-            [characterLimit]="2000"
-            [label]="'project.application.form.motivation.form.field'">
-    </app-expandable-textarea>
-    <p *ngIf="formState === FormState.VIEW" class="view-text">
-        <br>{{partnerContributionForm?.controls?.organizationRole.value}}
-    </p>
+        <h6 class="intro-text">
+            {{'project.partner.motivation.organization.role' | translate}}
+        </h6>
+        <app-expandable-textarea
+                *ngIf="editable"
+                class="field-wide"
+                [control]="partnerContributionForm?.controls?.organizationRole"
+                [errors]="partnerContributionForm?.controls?.organizationRole?.errors"
+                [messages]="organizationRoleErrors"
+                [characterLimit]="2000"
+                [label]="'project.application.form.motivation.form.field'">
+        </app-expandable-textarea>
+        <p *ngIf="!editable" class="view-text">
+            <br>{{partnerContributionForm?.controls?.organizationRole.value}}
+        </p>
 
-    <h6 class="intro-text">
-        {{'project.partner.motivation.organization.experience' | translate}}
-    </h6>
-    <app-expandable-textarea *ngIf="formState === FormState.EDIT"
-            class="field-wide"
-            [control]="partnerContributionForm?.controls?.organizationExperience"
-            [errors]="partnerContributionForm?.controls?.organizationExperience?.errors"
-            [messages]="organizationExperienceErrors"
-            [characterLimit]="2000"
-            [label]="'project.application.form.motivation.form.field'">
-    </app-expandable-textarea>
-    <p *ngIf="formState === FormState.VIEW" class="view-text">
-        <br>{{partnerContributionForm?.controls?.organizationExperience.value}}
-    </p>
-
-    <div *ngIf="formState === FormState.EDIT">
-        <button mat-stroked-button class="button" type="button"
-                (click)="onCancel()">
-            {{'common.cancel.label' | translate}}
-        </button>
-        <button mat-raised-button color="primary" type="button" class="button"
-                [disabled]="partnerContributionForm.invalid || partnerContributionForm.invalid || submitted"
-                (click)="onSubmit()">
-            {{'common.save.label' | translate}}
-        </button>
-    </div>
-
-    <app-alert
-            [show]="!submitted && (showSuccessMessage$ | async)"
-            [type]="Alert.SUCCESS">
-        <p>{{'project.partner.motivation.save.success' | translate}}</p>
-    </app-alert>
-    <app-alert *ngIf="error$ | async as error"
-               [show]="!submitted && !!error.i18nKey"
-               [type]="Alert.ERROR">
-        <p>{{error.i18nKey | translate}}</p>
-    </app-alert>
-</form>
+        <h6 class="intro-text">
+            {{'project.partner.motivation.organization.experience' | translate}}
+        </h6>
+        <app-expandable-textarea
+                *ngIf="editable"
+                class="field-wide"
+                [control]="partnerContributionForm?.controls?.organizationExperience"
+                [errors]="partnerContributionForm?.controls?.organizationExperience?.errors"
+                [messages]="organizationExperienceErrors"
+                [characterLimit]="2000"
+                [label]="'project.application.form.motivation.form.field'">
+        </app-expandable-textarea>
+        <p *ngIf="!editable" class="view-text">
+            <br>{{partnerContributionForm?.controls?.organizationExperience.value}}
+        </p>
+    </form>
+</app-form>

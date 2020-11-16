@@ -1,46 +1,24 @@
-<form [formGroup]="partnerAddressForm" class="container">
-    <h5><span>{{'project.partner.address.header' | translate}}</span>
-        <span *ngxPermissionsExcept="Permission.PROGRAMME_USER">
-            <button class="header-button" *ngIf="formState === FormState.VIEW && editable"
-                    (click)="changeFormState$.next(FormState.EDIT)" color="primary" mat-raised-button>
-                {{'common.edit.label' | translate}}
-            </button>
-        </span></h5>
-    <h6><span>{{'project.partner.main-address.header' | translate}}</span></h6>
-    <app-project-application-form-address
-            *ngIf="partnerAddressForm?.controls"
-            [addressForm]="partnerAddressForm.controls.organization"
-            [nuts]="nuts">
-    </app-project-application-form-address>
-    <br><br><br>
+<app-form (save)="onSubmit()"
+          (discard)="resetForm()">
+    <form [formGroup]="partnerAddressForm" class="container">
+        <h4><span>{{'project.partner.address.header' | translate}}</span></h4>
+        <h6><span>{{'project.partner.main-address.header' | translate}}</span></h6>
 
-    <h6><span>{{'project.partner.department-address.header' | translate}}</span></h6>
-    <app-project-application-form-address
-            *ngIf="partnerAddressForm?.controls"
-            [addressForm]="partnerAddressForm.controls.department"
-            [nuts]="nuts">
-    </app-project-application-form-address>
+        <app-project-application-form-address
+                *ngIf="partnerAddressForm?.controls"
+                [partnerId]="partnerId"
+                [addressForm]="partnerAddressForm.controls.organization"
+                [nuts]="nuts">
+        </app-project-application-form-address>
 
-    <div *ngIf="formState === FormState.EDIT">
-        <button mat-stroked-button class="button" type="button"
-                (click)="onCancel()">
-            {{'common.cancel.label' | translate}}
-        </button>
-        <button mat-raised-button color="primary" type="button" class="button"
-                [disabled]="partnerAddressForm.invalid || partnerAddressForm.invalid || submitted"
-                (click)="onSubmit()">
-            {{'common.save.label' | translate}}
-        </button>
-    </div>
+        <br><br><br>
 
-    <app-alert
-            [show]="!submitted && (showSuccessMessage$ | async)"
-            [type]="Alert.SUCCESS">
-        <p>{{'project.partner.main-address.save.success' | translate}}</p>
-    </app-alert>
-    <app-alert *ngIf="error$ | async as error"
-               [show]="!submitted && !!error.i18nKey"
-               [type]="Alert.ERROR">
-        <p>{{error.i18nKey | translate}}</p>
-    </app-alert>
-</form>
+        <h6><span>{{'project.partner.department-address.header' | translate}}</span></h6>
+        <app-project-application-form-address
+                *ngIf="partnerAddressForm?.controls"
+                [partnerId]="partnerId"
+                [addressForm]="partnerAddressForm.controls.department"
+                [nuts]="nuts">
+        </app-project-application-form-address>
+    </form>
+</app-form>

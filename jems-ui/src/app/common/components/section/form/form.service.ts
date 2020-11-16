@@ -1,11 +1,12 @@
 import {Injectable} from '@angular/core';
 import {I18nValidationError} from '@common/validation/i18n-validation-error';
-import {ReplaySubject, Subject} from 'rxjs';
+import {Observable, of, ReplaySubject, Subject} from 'rxjs';
 import {FormGroup} from '@angular/forms';
 import {I18nLabel} from '../../../i18n/i18n-label';
 import {Log} from '../../../utils/log';
 import {filter, tap} from 'rxjs/operators';
 import {RoutingService} from '../../../services/routing.service';
+import {HttpErrorResponse} from '@angular/common/http';
 
 @Injectable()
 export class FormService {
@@ -20,30 +21,33 @@ export class FormService {
   constructor(private routingService: RoutingService) {
   }
 
-  init(form: FormGroup, creationForm?: boolean): void {
+  init(form: FormGroup): void {
     this.form = form;
-    if (creationForm) {
-      this.saveLabel = 'common.create.label';
-      this.setDirty(true);
-    }
     this.form.valueChanges
       .pipe(
         filter(() => this.form.dirty),
         tap(() => this.valid$.next(this.form.valid)),
         tap(() => this.setDirty(true)),
-        tap(() => this.success$.next(null)),
       ).subscribe();
   }
 
-  setError(error: I18nValidationError | null): void {
-    this.error$.next(error);
-    if (error) {
-      this.success$.next(null);
-      if (!error?.i18nKey) {
-        (error as any).i18nKey = 'incomplete.form';
-      }
-      this.setFieldErrors(error);
+  setError(error: HttpErrorResponse | null): Observable<any> {
+    if (!error || !error.error) {
+      this.error$.next(null);
+      return of(null);
     }
+
+    const i18nError = error.error;
+    this.error$.next(i18nError);
+    if (i18nError) {
+      this.success$.next(null);
+      if (!i18nError?.i18nKey) {
+        i18nError.i18nKey = 'incomplete.form';
+      }
+      this.setFieldErrors(i18nError);
+    }
+
+    throw error;
   }
 
   setSuccess(message: I18nLabel | string | null): void {
@@ -57,12 +61,28 @@ export class FormService {
   setDirty(dirty: boolean): void {
     if (!dirty) {
       // mark form as pristine in order to ignore 'dirty' statuses from formChanged$
-      this.form.markAsPristine();
+      if (this.form) {
+        this.form.markAsPristine();
+      }
       this.routingService.confirmLeave = false;
     } else {
+      this.success$.next(null);
       this.routingService.confirmLeave = true;
     }
     this.dirty$.next(dirty);
+  }
+
+  setCreation(isCreationForm: boolean): void {
+    this.saveLabel = isCreationForm ? 'common.create.label' : 'common.save.label';
+    this.setDirty(isCreationForm);
+  }
+
+  setEditable(editable: boolean): void {
+    if (editable) {
+      this.form?.enable();
+    } else {
+      this.form?.disable();
+    }
   }
 
   private setFieldErrors(error: I18nValidationError): void {

@@ -1,131 +1,104 @@
-<form [formGroup]="partnerContactForm" class="wrapper">
-    <h5><span>{{'project.partner.representative.header' | translate}}</span>
-        <span *ngxPermissionsExcept="Permission.PROGRAMME_USER">
-            <button class="header-button" *ngIf="(formState === FormState.VIEW && editable) && partner?.id"
-                    (click)="changeFormState$.next(FormState.EDIT)" color="primary" mat-raised-button>
-                {{'common.edit.label' | translate}}
-            </button>
-        </span>
-    </h5>
+<app-form (save)="onSubmit()"
+          (discard)="resetForm()">
+    <form [formGroup]="partnerContactForm" class="wrapper">
+        <h5><span>{{'project.partner.representative.header' | translate}}</span></h5>
 
-    <mat-form-field class="field">
-        <mat-label>{{'project.partner.representative.title' | translate}}</mat-label>
-        <input name="partnerRepresentativeTitle" formControlName="partnerRepresentativeTitle" matInput
-               placeholder="{{'project.partner.representative.title' | translate}}">
-        <mat-error>
-            <app-form-field-errors
-                    [errors]="partnerContactForm?.controls?.partnerRepresentativeTitle?.errors"
-                    [messages]="partnerRepresentativeTitleErrors">
-            </app-form-field-errors>
-        </mat-error>
-    </mat-form-field>
+        <mat-form-field class="field">
+            <mat-label>{{'project.partner.representative.title' | translate}}</mat-label>
+            <input name="partnerRepresentativeTitle" formControlName="partnerRepresentativeTitle" matInput
+                   placeholder="{{'project.partner.representative.title' | translate}}">
+            <mat-error>
+                <app-form-field-errors
+                        [errors]="partnerContactForm?.controls?.partnerRepresentativeTitle?.errors"
+                        [messages]="partnerRepresentativeTitleErrors">
+                </app-form-field-errors>
+            </mat-error>
+        </mat-form-field>
 
-    <mat-form-field class="field">
-        <mat-label>{{'project.partner.representative.first.name' | translate}}</mat-label>
-        <input name="partnerRepresentativeFirstName" formControlName="partnerRepresentativeFirstName" matInput
-               placeholder="{{'project.partner.representative.first.name' | translate}}">
-        <mat-error>
-            <app-form-field-errors
-                    [errors]="partnerContactForm?.controls?.partnerRepresentativeFirstName?.errors"
-                    [messages]="partnerRepresentativeFirstNameErrors">
-            </app-form-field-errors>
-        </mat-error>
-    </mat-form-field>
+        <mat-form-field class="field">
+            <mat-label>{{'project.partner.representative.first.name' | translate}}</mat-label>
+            <input name="partnerRepresentativeFirstName" formControlName="partnerRepresentativeFirstName" matInput
+                   placeholder="{{'project.partner.representative.first.name' | translate}}">
+            <mat-error>
+                <app-form-field-errors
+                        [errors]="partnerContactForm?.controls?.partnerRepresentativeFirstName?.errors"
+                        [messages]="partnerRepresentativeFirstNameErrors">
+                </app-form-field-errors>
+            </mat-error>
+        </mat-form-field>
 
-    <mat-form-field class="field">
-        <mat-label>{{'project.partner.representative.last.name' | translate}}</mat-label>
-        <input name="partnerRepresentativeLastName" formControlName="partnerRepresentativeLastName" matInput
-               placeholder="{{'project.partner.representative.last.name' | translate}}">
-        <mat-error>
-            <app-form-field-errors
-                    [errors]="partnerContactForm?.controls?.partnerRepresentativeLastName?.errors"
-                    [messages]="partnerRepresentativeLastNameErrors">
-            </app-form-field-errors>
-        </mat-error>
-    </mat-form-field>
+        <mat-form-field class="field">
+            <mat-label>{{'project.partner.representative.last.name' | translate}}</mat-label>
+            <input name="partnerRepresentativeLastName" formControlName="partnerRepresentativeLastName" matInput
+                   placeholder="{{'project.partner.representative.last.name' | translate}}">
+            <mat-error>
+                <app-form-field-errors
+                        [errors]="partnerContactForm?.controls?.partnerRepresentativeLastName?.errors"
+                        [messages]="partnerRepresentativeLastNameErrors">
+                </app-form-field-errors>
+            </mat-error>
+        </mat-form-field>
 
-    <h5>{{'project.partner.contact.header' | translate}}</h5>
+        <h5>{{'project.partner.contact.header' | translate}}</h5>
 
-    <mat-form-field class="field">
-        <mat-label>{{'project.partner.contact.title' | translate}}</mat-label>
-        <input name="partnerContactTitle" formControlName="partnerContactTitle" matInput
-               placeholder="{{'project.partner.contact.title' | translate}}">
-        <mat-error>
-            <app-form-field-errors
-                    [errors]="partnerContactForm?.controls?.partnerContactTitle?.errors"
-                    [messages]="partnerContactTitleErrors">
-            </app-form-field-errors>
-        </mat-error>
-    </mat-form-field>
+        <mat-form-field class="field">
+            <mat-label>{{'project.partner.contact.title' | translate}}</mat-label>
+            <input name="partnerContactTitle" formControlName="partnerContactTitle" matInput
+                   placeholder="{{'project.partner.contact.title' | translate}}">
+            <mat-error>
+                <app-form-field-errors
+                        [errors]="partnerContactForm?.controls?.partnerContactTitle?.errors"
+                        [messages]="partnerContactTitleErrors">
+                </app-form-field-errors>
+            </mat-error>
+        </mat-form-field>
 
-    <mat-form-field class="field">
-        <mat-label>{{'project.partner.contact.first.name' | translate}}</mat-label>
-        <input name="partnerContactFirstName" formControlName="partnerContactFirstName" matInput
-               placeholder="{{'project.partner.contact.first.name' | translate}}">
-        <mat-error>
-            <app-form-field-errors
-                    [errors]="partnerContactForm?.controls?.partnerContactFirstName?.errors"
-                    [messages]="partnerContactFirstNameErrors">
-            </app-form-field-errors>
-        </mat-error>
-    </mat-form-field>
+        <mat-form-field class="field">
+            <mat-label>{{'project.partner.contact.first.name' | translate}}</mat-label>
+            <input name="partnerContactFirstName" formControlName="partnerContactFirstName" matInput
+                   placeholder="{{'project.partner.contact.first.name' | translate}}">
+            <mat-error>
+                <app-form-field-errors
+                        [errors]="partnerContactForm?.controls?.partnerContactFirstName?.errors"
+                        [messages]="partnerContactFirstNameErrors">
+                </app-form-field-errors>
+            </mat-error>
+        </mat-form-field>
 
-    <mat-form-field class="field">
-        <mat-label>{{'project.partner.contact.last.name' | translate}}</mat-label>
-        <input name="partnerContactLastName" formControlName="partnerContactLastName" matInput
-               placeholder="{{'project.partner.contact.last.name' | translate}}">
-        <mat-error>
-            <app-form-field-errors
-                    [errors]="partnerContactForm?.controls?.partnerContactLastName?.errors"
-                    [messages]="partnerContactLastNameErrors">
-            </app-form-field-errors>
-        </mat-error>
-    </mat-form-field>
+        <mat-form-field class="field">
+            <mat-label>{{'project.partner.contact.last.name' | translate}}</mat-label>
+            <input name="partnerContactLastName" formControlName="partnerContactLastName" matInput
+                   placeholder="{{'project.partner.contact.last.name' | translate}}">
+            <mat-error>
+                <app-form-field-errors
+                        [errors]="partnerContactForm?.controls?.partnerContactLastName?.errors"
+                        [messages]="partnerContactLastNameErrors">
+                </app-form-field-errors>
+            </mat-error>
+        </mat-form-field>
 
-    <mat-form-field class="field">
-        <mat-label>{{'project.partner.contact.email' | translate}}</mat-label>
-        <input name="partnerContactEmail" formControlName="partnerContactEmail" matInput
-               placeholder="{{'project.partner.contact.email' | translate}}">
-        <mat-error>
-            <app-form-field-errors
-                    [errors]="partnerContactForm?.controls?.partnerContactEmail?.errors"
-                    [messages]="partnerContactEmailErrors">
-            </app-form-field-errors>
-        </mat-error>
-    </mat-form-field>
+        <mat-form-field class="field">
+            <mat-label>{{'project.partner.contact.email' | translate}}</mat-label>
+            <input name="partnerContactEmail" formControlName="partnerContactEmail" matInput
+                   placeholder="{{'project.partner.contact.email' | translate}}">
+            <mat-error>
+                <app-form-field-errors
+                        [errors]="partnerContactForm?.controls?.partnerContactEmail?.errors"
+                        [messages]="partnerContactEmailErrors">
+                </app-form-field-errors>
+            </mat-error>
+        </mat-form-field>
 
-    <mat-form-field class="field">
-        <mat-label>{{'project.partner.contact.telephone' | translate}}</mat-label>
-        <input name="partnerContactTelephone" formControlName="partnerContactTelephone" matInput
-               placeholder="{{'project.partner.contact.telephone' | translate}}">
-        <mat-error>
-            <app-form-field-errors
-                    [errors]="partnerContactForm?.controls?.partnerContactTelephone?.errors"
-                    [messages]="partnerContactTelephoneErrors">
-            </app-form-field-errors>
-        </mat-error>
-    </mat-form-field>
-
-    <div *ngIf="formState === FormState.EDIT">
-        <button mat-stroked-button class="button" type="button"
-                (click)="onCancel()">
-            {{'common.cancel.label' | translate}}
-        </button>
-        <button mat-raised-button color="primary" type="button" class="button"
-                [disabled]="partnerContactForm.invalid || partnerContactForm.invalid || submitted"
-                (click)="onSubmit()">
-            {{'common.save.label' | translate}}
-        </button>
-    </div>
-
-    <app-alert
-            [show]="!submitted && (showSuccessMessage$ | async)"
-            [type]="Alert.SUCCESS">
-        <p>{{'project.partner.contact.save.success' | translate}}</p>
-    </app-alert>
-    <app-alert *ngIf="error$ | async as error"
-               [show]="!submitted && !!error.i18nKey"
-               [type]="Alert.ERROR">
-        <p>{{error.i18nKey | translate}}</p>
-    </app-alert>
-</form>
+        <mat-form-field class="field">
+            <mat-label>{{'project.partner.contact.telephone' | translate}}</mat-label>
+            <input name="partnerContactTelephone" formControlName="partnerContactTelephone" matInput
+                   placeholder="{{'project.partner.contact.telephone' | translate}}">
+            <mat-error>
+                <app-form-field-errors
+                        [errors]="partnerContactForm?.controls?.partnerContactTelephone?.errors"
+                        [messages]="partnerContactTelephoneErrors">
+                </app-form-field-errors>
+            </mat-error>
+        </mat-form-field>
+    </form>
+</app-form>

@@ -31,14 +31,14 @@ export class ProjectApplicationPartnerCoFinancingPageComponent {
   saveFinances$ = new Subject<InputProjectPartnerCoFinancingWrapper>();
   cancelEdit$ = new Subject<void>();
 
-  private initialCoFinancing$: Observable<OutputProjectPartnerCoFinancing[]> = this.partnerStore.getProjectPartner()
+  private initialCoFinancing$: Observable<OutputProjectPartnerCoFinancing[]> = this.partnerStore.partner$
     .pipe(
       filter(partner => !!partner.id),
       map(partner => partner.financing),
     );
   private saveCoFinancing$: Observable<OutputProjectPartnerCoFinancing[]> = this.saveFinances$
     .pipe(
-      withLatestFrom(this.partnerStore.getProjectPartner()),
+      withLatestFrom(this.partnerStore.partner$),
       mergeMap(([finances, partner]) =>
         this.projectPartnerService.updateProjectPartnerCoFinancing(partner.id, this.projectId, finances)
       ),
@@ -53,11 +53,11 @@ export class ProjectApplicationPartnerCoFinancingPageComponent {
 
   private amountChanged$ = this.partnerStore.totalAmountChanged$
     .pipe(
-      withLatestFrom(this.partnerStore.getProjectPartner()),
+      withLatestFrom(this.partnerStore.partner$),
       mergeMap(([, partner]) => this.projectPartnerBudgetService.getTotal(partner.id)),
     );
 
-  private initialAmount$: Observable<number> = this.partnerStore.getProjectPartner()
+  private initialAmount$: Observable<number> = this.partnerStore.partner$
     .pipe(
       filter(partner => !!partner.id),
       mergeMap(partner => this.projectPartnerBudgetService.getTotal(partner.id)),

@@ -1,6 +1,5 @@
 import {
   ChangeDetectionStrategy,
-  ChangeDetectorRef,
   Component,
   EventEmitter,
   Input,
@@ -9,7 +8,6 @@ import {
   Output,
   SimpleChanges
 } from '@angular/core';
-import {ViewEditForm} from '@common/components/forms/view-edit-form';
 import {FormBuilder, FormGroup, Validators} from '@angular/forms';
 import {
   InputProjectPartnerCreate,
@@ -18,26 +16,31 @@ import {
   OutputProjectPartnerDetail,
   OutputProgrammeLegalStatus
 } from '@cat/api';
-import {FormState} from '@common/components/forms/form-state';
-import {filter, take, takeUntil, tap} from 'rxjs/operators';
+import {catchError, take, takeUntil, tap} from 'rxjs/operators';
 import {I18nValidationError} from '@common/validation/i18n-validation-error';
 import {MatDialog} from '@angular/material/dialog';
 import {Forms} from '../../../../../common/utils/forms';
-import {SideNavService} from '@common/components/side-nav/side-nav.service';
-import {Permission} from '../../../../../security/permissions/permission';
+import {FormService} from '@common/components/section/form/form.service';
+import {BaseComponent} from '@common/components/base-component';
+import {ProjectPartnerStore} from '../../../containers/project-application-form-page/services/project-partner-store.service';
+import {HttpErrorResponse} from '@angular/common/http';
+import {Observable, of} from 'rxjs';
+import {Router} from '@angular/router';
 
 @Component({
   selector: 'app-project-application-form-partner-edit',
   templateUrl: './project-application-form-partner-edit.component.html',
   styleUrls: ['./project-application-form-partner-edit.component.scss'],
+  providers: [FormService],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class ProjectApplicationFormPartnerEditComponent extends ViewEditForm implements OnInit, OnChanges {
-  Permission = Permission;
+export class ProjectApplicationFormPartnerEditComponent extends BaseComponent implements OnInit, OnChanges {
   RoleEnum = OutputProjectPartner.RoleEnum;
 
   @Input()
   partner: OutputProjectPartnerDetail;
+  @Input()
+  projectId: number;
   @Input()
   editable: boolean;
   @Input()
@@ -54,7 +57,7 @@ export class ProjectApplicationFormPartnerEditComponent extends ViewEditForm imp
     fakeRole: [], // needed for the fake role field in view mode
     id: [],
     sortNumber: [],
-    name: ['', Validators.compose([
+    abbreviation: ['', Validators.compose([
       Validators.maxLength(15),
       Validators.required])
     ],
@@ -63,12 +66,12 @@ export class ProjectApplicationFormPartnerEditComponent extends ViewEditForm imp
     nameInEnglish: ['', Validators.maxLength(100)],
     department: ['', Validators.maxLength(250)],
     partnerType: [''],
-    legalStatus: ['', Validators.required],
+    legalStatusId: ['', Validators.required],
     vat: ['', Validators.maxLength(50)],
-    recoverVat: ['']
+    vatRecovery: ['']
   });
 
-  nameErrors = {
+  abbreviationErrors = {
     maxlength: 'project.partner.name.size.too.long',
     required: 'project.partner.name.should.not.be.empty'
   };
@@ -111,111 +114,81 @@ export class ProjectApplicationFormPartnerEditComponent extends ViewEditForm imp
 
   constructor(private formBuilder: FormBuilder,
               private dialog: MatDialog,
-              protected changeDetectorRef: ChangeDetectorRef,
-              private sideNavService: SideNavService) {
-    super(changeDetectorRef);
+              public formService: FormService,
+              private partnerStore: ProjectPartnerStore,
+              private router: Router) {
+    super();
   }
 
   ngOnInit(): void {
-    super.ngOnInit();
-    if (this.editable && !this.partner?.id) {
-      this.changeFormState$.next(FormState.EDIT);
-    }
-    if (!this.error$) {
-      return;
-    }
-    this.error$
-      .pipe(
-        takeUntil(this.destroyed$),
-        filter(error => !!error && error.i18nKey === 'project.partner.role.lead.already.existing'),
-        tap(error => this.handleLeadAlreadyExisting(this.controls, error as I18nValidationError))
-      ).subscribe();
+    this.resetForm();
+    this.formService.init(this.partnerForm);
   }
 
   ngOnChanges(changes: SimpleChanges): void {
     if (changes.partner || changes.editable) {
-      this.changeFormState$.next(this.editable && !this.partner.id ? FormState.EDIT : FormState.VIEW);
+      this.resetForm();
     }
   }
 
-  getForm(): FormGroup | null {
-    return this.partnerForm;
-  }
-
-  private checkOrganization(controls: any): { nameInOriginalLanguage: any; id: number; nameInEnglish: any; department: any } | any {
-    const organization = {
-      id: this.partner?.id,
-      nameInOriginalLanguage: controls?.nameInOriginalLanguage.value,
-      nameInEnglish: controls?.nameInEnglish.value,
-      department:  controls?.department.value
-    };
-    if (organization.nameInOriginalLanguage || organization.nameInEnglish || organization.department){
-      return organization;
-    }
-    return null as any;
+  get controls(): any {
+    return this.partnerForm.controls;
   }
 
   onSubmit(controls: any, oldPartnerId?: number): void {
-    const organization = this.checkOrganization(controls);
+    const partner = this.partnerForm.value;
+    partner.oldLeadPartnerId = oldPartnerId;
+    if (!controls.partnerType.value) {
+      partner.partnerType = null;
+    }
+
     if (!controls.id?.value) {
-      this.create.emit({
-        abbreviation: controls?.name.value,
-        role: controls?.role.value,
-        oldLeadPartnerId: oldPartnerId as any,
-        nameInOriginalLanguage: organization?.nameInOriginalLanguage,
-        nameInEnglish: organization?.nameInEnglish,
-        department: organization?.department,
-        partnerType: controls?.partnerType.value,
-        legalStatusId: controls?.legalStatus.value,
-        vat: controls?.vat.value,
-        vatRecovery: controls?.recoverVat.value
-      });
+      this.partnerStore.createPartner(partner)
+        .pipe(
+          take(1),
+          tap(created => this.redirectToPartnerDetail(created)),
+          catchError(error => this.handleError(error))
+        ).subscribe();
     } else {
-      this.update.emit({
-        id: controls?.id.value,
-        abbreviation: controls?.name.value,
-        role: controls?.role.value,
-        oldLeadPartnerId: oldPartnerId as any,
-        nameInOriginalLanguage: organization?.nameInOriginalLanguage,
-        nameInEnglish: organization?.nameInEnglish,
-        department: organization?.department,
-        partnerType: controls?.partnerType.value,
-        legalStatusId: controls?.legalStatus.value,
-        vat: controls?.vat.value,
-        vatRecovery: controls?.recoverVat.value
-      });
+      this.partnerStore.savePartner(partner)
+        .pipe(
+          take(1),
+          tap(() => this.formService.setSuccess('project.partner.save.success')),
+          catchError(error => this.handleError(error))
+        ).subscribe();
     }
   }
 
-  onCancel(): void {
+  setRole(role: OutputProjectPartner.RoleEnum): void {
+    this.controls?.role.setValue(role);
+    this.formService.setDirty(true);
+  }
+
+  setVat(vat: boolean): void {
+    this.controls?.vatRecovery.setValue(vat);
+    this.formService.setDirty(true);
+  }
+
+  discard(): void {
     if (!this.partner?.id) {
-      this.cancel.emit();
+      this.redirectToPartnerOverview();
+    } else {
+      this.resetForm();
     }
-    this.changeFormState$.next(FormState.VIEW);
   }
 
-  protected enterViewMode(): void {
-    this.initFields();
-    this.sideNavService.setAlertStatus(false);
+  private handleError(error: HttpErrorResponse): Observable<any> {
+    if (!!error && error.error?.i18nKey === 'project.partner.role.lead.already.existing') {
+      this.handleLeadAlreadyExisting(this.controls, error.error as I18nValidationError);
+      return of(null);
+    }
+    return this.formService.setError(error);
   }
 
-  protected enterEditMode(): void {
-    this.initFields();
-    this.sideNavService.setAlertStatus(true);
-  }
-
-  private initFields(): void {
-    this.controls?.id.setValue(this.partner?.id);
-    this.controls?.sortNumber.setValue(this.partner?.sortNumber);
-    this.controls?.role.setValue(this.partner?.role);
-    this.controls?.name.setValue(this.partner?.abbreviation);
-    this.controls?.nameInOriginalLanguage.setValue(this.partner?.nameInOriginalLanguage);
-    this.controls?.nameInEnglish.setValue(this.partner?.nameInEnglish);
-    this.controls?.department.setValue(this.partner?.department);
-    this.controls?.partnerType.setValue(this.partner?.partnerType);
-    this.controls?.legalStatus.setValue(this.partner?.legalStatusId);
-    this.controls?.vat.setValue(this.partner?.vat);
-    this.controls?.recoverVat.setValue(this.partner?.vatRecovery);
+  private resetForm(): void {
+    this.formService.setEditable(this.editable);
+    this.formService.setCreation(!this.partner?.id);
+    this.partnerForm.patchValue(this.partner);
   }
 
   private handleLeadAlreadyExisting(controls: any, error: I18nValidationError): void {
@@ -227,14 +200,27 @@ export class ProjectApplicationFormPartnerEditComponent extends ViewEditForm imp
       'project.partner.role.lead.already.existing',
       {
         old_name: partnerName,
-        new_name: controls.name.value
+        new_name: controls.abbreviation.value
       }
     ).pipe(
       take(1),
       takeUntil(this.destroyed$),
-      filter(change => !!change)
-    ).subscribe(() => {
-      this.onSubmit(controls, partnerId as any);
+    ).subscribe(change => {
+      if (change) {
+        this.onSubmit(controls, partnerId as any);
+      } else {
+        this.formService.setDirty(true);
+      }
     });
+  }
+
+  private redirectToPartnerOverview(): void {
+    this.router.navigate(['app', 'project', 'detail', this.projectId, 'applicationFormPartner']);
+  }
+
+  private redirectToPartnerDetail(partner: any): void {
+    this.router.navigate([
+      'app', 'project', 'detail', this.projectId, 'applicationFormPartner', 'detail', partner.id
+    ]);
   }
 }

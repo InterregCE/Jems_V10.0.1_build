@@ -13,6 +13,8 @@ import {Observable} from 'rxjs';
 export class ProjectApplicationFormAddressComponent implements OnInit, OnChanges {
 
   @Input()
+  partnerId: number;
+  @Input()
   addressForm: FormGroup;
   @Input()
   nuts: OutputNuts[];
@@ -44,7 +46,7 @@ export class ProjectApplicationFormAddressComponent implements OnInit, OnChanges
   }
 
   ngOnChanges(changes: SimpleChanges): void {
-    if (changes.addressForm) {
+    if (changes.partnerId) {
       this.initializeFilters();
     }
   }
