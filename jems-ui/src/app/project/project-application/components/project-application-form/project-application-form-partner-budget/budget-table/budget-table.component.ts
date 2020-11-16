@@ -15,6 +15,11 @@ import {PartnerBudgetTable} from '../../../../model/partner-budget-table';
 import {Numbers} from '../../../../../../common/utils/numbers';
 import {BaseComponent} from '@common/components/base-component';
 import {PartnerBudgetTableType} from '../../../../model/partner-budget-table-type';
+import {PartnerBudgetStaffCostTableEntry} from '../../../../model/partner-budget-staffcost-table-entry';
+import {PartnerBudgetTravelTableEntry} from '../../../../model/partner-budget-travel-table-entry';
+import {PartnerBudgetGeneralTableEntry} from '../../../../model/partner-budget-general-table-entry';
+import {LanguageService} from '../../../../../../common/services/language.service';
+import {InputTranslation} from '@cat/api';
 
 @Component({
   selector: 'app-budget-table',
@@ -58,7 +63,8 @@ export class BudgetTableComponent extends BaseComponent implements AfterViewInit
     },
   };
 
-  constructor(private translateService: TranslateService) {
+  constructor(private translateService: TranslateService,
+              public languageService: LanguageService) {
     super();
   }
 
@@ -71,13 +77,23 @@ export class BudgetTableComponent extends BaseComponent implements AfterViewInit
   }
 
   addNewEntry(): void {
-    this.table.entries = [...this.table.entries, new PartnerBudgetTableEntry({
+    this.table.entries = [...this.table.entries, this.getNewTableEntry()];
+    this.tableChanged.emit();
+  }
+
+  private getNewTableEntry(): PartnerBudgetTableEntry {
+    const entry = {
       id: Tables.getNextId(this.table.entries),
       numberOfUnits: 1,
       pricePerUnit: 0,
       new: true
-    })];
-    this.tableChanged.emit();
+    };
+    if (this.table.type === PartnerBudgetTableType.STAFF) {
+      return new PartnerBudgetStaffCostTableEntry(entry, this.languageService);
+    } else if (this.table.type === PartnerBudgetTableType.TRAVEL) {
+      return new PartnerBudgetTravelTableEntry(entry, this.languageService);
+    }
+    return new PartnerBudgetGeneralTableEntry(entry, this.languageService);
   }
 
   removeEntry(entry: PartnerBudgetTableEntry): void {
@@ -94,9 +110,23 @@ export class BudgetTableComponent extends BaseComponent implements AfterViewInit
 
   getTotalRow(): PartnerBudgetTableEntry {
     this.table.computeTotal();
-    return new PartnerBudgetTableEntry({
-      description: this.translateService.instant('project.partner.budget.table.total'),
-    });
+    return this.getNewTableEntryTotal();
+  }
+
+  private getNewTableEntryTotal(): PartnerBudgetTableEntry {
+    const entry = {
+      description: [{
+          language: InputTranslation.LanguageEnum.EN,
+          translation: this.translateService.instant('project.partner.budget.table.total')
+        }]
+    };
+
+    if (this.table.type === PartnerBudgetTableType.STAFF) {
+      return new PartnerBudgetStaffCostTableEntry(entry, this.languageService);
+    } else if (this.table.type === PartnerBudgetTableType.TRAVEL) {
+      return new PartnerBudgetTravelTableEntry(entry, this.languageService);
+    }
+    return new PartnerBudgetGeneralTableEntry(entry, this.languageService);
   }
 
   private setColumnDefs(): void {
@@ -118,6 +148,9 @@ export class BudgetTableComponent extends BaseComponent implements AfterViewInit
         cellRendererFramework: AgGridTemplateRendererComponent,
         cellRendererParams: {
           ngTemplate: this.descriptionCell
+        },
+        valueGetter: (params: any) => {
+          return params.data.getDescription();
         },
         flex: 2,
       },

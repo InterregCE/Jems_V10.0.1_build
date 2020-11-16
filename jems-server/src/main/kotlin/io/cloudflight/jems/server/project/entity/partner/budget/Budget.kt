@@ -7,8 +7,6 @@ import javax.validation.constraints.NotNull
 @Embeddable
 data class Budget (
 
-    val description: String? = null,
-
     @field:NotNull
     val numberOfUnits: BigDecimal,
 

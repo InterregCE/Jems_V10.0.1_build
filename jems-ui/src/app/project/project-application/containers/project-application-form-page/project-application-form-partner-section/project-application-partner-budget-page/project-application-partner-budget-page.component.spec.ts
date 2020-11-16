@@ -8,14 +8,15 @@ import {ActivatedRoute} from '@angular/router';
 import {PartnerBudgetTable} from '../../../../model/partner-budget-table';
 import {PartnerBudgetTableType} from '../../../../model/partner-budget-table-type';
 import {ProjectPartnerStore} from '../../services/project-partner-store.service';
-import {of} from 'rxjs';
 import {BudgetOptions} from '../../../../model/budget-options';
+import {LanguageService} from '../../../../../../common/services/language.service';
 
 describe('ProjectApplicationPartnerBudgetPageComponent', () => {
   let component: ProjectApplicationPartnerBudgetPageComponent;
   let fixture: ComponentFixture<ProjectApplicationPartnerBudgetPageComponent>;
   let httpTestingController: HttpTestingController;
   let partnerStore: ProjectPartnerStore;
+  let languageService: LanguageService;
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
@@ -36,6 +37,7 @@ describe('ProjectApplicationPartnerBudgetPageComponent', () => {
       .compileComponents();
     httpTestingController = TestBed.inject(HttpTestingController);
     partnerStore = TestBed.inject(ProjectPartnerStore);
+    languageService = TestBed.inject(LanguageService);
   }));
 
   beforeEach(() => {
@@ -90,11 +92,11 @@ describe('ProjectApplicationPartnerBudgetPageComponent', () => {
     });
 
     component.saveBudgets$.next({
-      staff: new PartnerBudgetTable(PartnerBudgetTableType.STAFF, []),
-      travel: new PartnerBudgetTable(PartnerBudgetTableType.TRAVEL, []),
-      external: new PartnerBudgetTable(PartnerBudgetTableType.EXTERNAL, []),
-      equipment: new PartnerBudgetTable(PartnerBudgetTableType.EQUIPMENT, []),
-      infrastructure: new PartnerBudgetTable(PartnerBudgetTableType.INFRASTRUCTURE, [])
+      staff: new PartnerBudgetTable(PartnerBudgetTableType.STAFF, [], languageService),
+      travel: new PartnerBudgetTable(PartnerBudgetTableType.TRAVEL, [], languageService),
+      external: new PartnerBudgetTable(PartnerBudgetTableType.EXTERNAL, [], languageService),
+      equipment: new PartnerBudgetTable(PartnerBudgetTableType.EQUIPMENT, [], languageService),
+      infrastructure: new PartnerBudgetTable(PartnerBudgetTableType.INFRASTRUCTURE, [], languageService)
     });
     tick();
 

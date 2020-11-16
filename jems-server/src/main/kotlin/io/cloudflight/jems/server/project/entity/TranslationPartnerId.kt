@@ -9,14 +9,14 @@ import javax.persistence.Enumerated
 import javax.validation.constraints.NotNull
 
 /**
- * ID for the use to embed the PK for translation tables for Project relations.
+ * ID for the use to embed the PK for translation tables for Partner relations.
  */
 @Embeddable
-data class TranslationId(
+data class TranslationPartnerId(
 
-    @Column(name = "project_id")
+    @Column(name = "partner_id")
     @field:NotNull
-    val projectId: Long,
+    val partnerId: Long,
 
     @Enumerated(EnumType.STRING)
     @field:NotNull

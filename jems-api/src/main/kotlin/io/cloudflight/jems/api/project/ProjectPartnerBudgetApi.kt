@@ -1,6 +1,8 @@
 package io.cloudflight.jems.api.project
 
-import io.cloudflight.jems.api.project.dto.partner.budget.InputBudget
+import io.cloudflight.jems.api.project.dto.partner.budget.InputGeneralBudget
+import io.cloudflight.jems.api.project.dto.partner.budget.InputStaffCostBudget
+import io.cloudflight.jems.api.project.dto.partner.budget.InputTravelBudget
 import io.cloudflight.jems.api.project.dto.partner.budget.ProjectPartnerBudgetOptionsDto
 import io.cloudflight.jems.api.project.dto.partner.cofinancing.ProjectPartnerCoFinancingAndContributionOutputDTO
 import io.cloudflight.jems.api.project.dto.partner.cofinancing.ProjectPartnerCoFinancingAndContributionInputDTO
@@ -25,14 +27,14 @@ interface ProjectPartnerBudgetApi {
     @GetMapping("/staffcost")
     fun getBudgetStaffCost(
         @PathVariable partnerId: Long
-    ): List<InputBudget>
+    ): List<InputStaffCostBudget>
 
     @ApiOperation("Update project partner Budget: Staff Costs")
     @PutMapping("/staffcost", consumes = [MediaType.APPLICATION_JSON_VALUE])
     fun updateBudgetStaffCost(
         @PathVariable partnerId: Long,
-        @Valid @RequestBody budgetCosts: List<InputBudget>
-    ): List<InputBudget>
+        @Valid @RequestBody budgetCosts: List<InputStaffCostBudget>
+    ): List<InputStaffCostBudget>
     //endregion StuffCosts
 
 
@@ -56,14 +58,14 @@ interface ProjectPartnerBudgetApi {
     @GetMapping("/travel")
     fun getBudgetTravel(
         @PathVariable partnerId: Long
-    ): List<InputBudget>
+    ): List<InputTravelBudget>
 
     @ApiOperation("Update project partner Budget: Travel")
     @PutMapping("/travel", consumes = [MediaType.APPLICATION_JSON_VALUE])
     fun updateBudgetTravel(
         @PathVariable partnerId: Long,
-        @Valid @RequestBody travels: List<InputBudget>
-    ): List<InputBudget>
+        @Valid @RequestBody travels: List<InputTravelBudget>
+    ): List<InputTravelBudget>
     //endregion Travel
 
     //region External
@@ -72,14 +74,14 @@ interface ProjectPartnerBudgetApi {
     @GetMapping("/external")
     fun getBudgetExternal(
         @PathVariable partnerId: Long
-    ): List<InputBudget>
+    ): List<InputGeneralBudget>
 
     @ApiOperation("Update project partner Budget: External")
     @PutMapping("/external", consumes = [MediaType.APPLICATION_JSON_VALUE])
     fun updateBudgetExternal(
         @PathVariable partnerId: Long,
-        @Valid @RequestBody externals: List<InputBudget>
-    ): List<InputBudget>
+        @Valid @RequestBody externals: List<InputGeneralBudget>
+    ): List<InputGeneralBudget>
     //endregion External
 
     //region Equipment
@@ -88,14 +90,14 @@ interface ProjectPartnerBudgetApi {
     @GetMapping("/equipment")
     fun getBudgetEquipment(
         @PathVariable partnerId: Long
-    ): List<InputBudget>
+    ): List<InputGeneralBudget>
 
     @ApiOperation("Update project partner Budget: Equipment")
     @PutMapping("/equipment", consumes = [MediaType.APPLICATION_JSON_VALUE])
     fun updateBudgetEquipment(
         @PathVariable partnerId: Long,
-        @Valid @RequestBody equipments: List<InputBudget>
-    ): List<InputBudget>
+        @Valid @RequestBody equipments: List<InputGeneralBudget>
+    ): List<InputGeneralBudget>
     //endregion Equipment
 
     //region Infrastructure
@@ -104,14 +106,14 @@ interface ProjectPartnerBudgetApi {
     @GetMapping("/infrastructure")
     fun getBudgetInfrastructure(
         @PathVariable partnerId: Long
-    ): List<InputBudget>
+    ): List<InputGeneralBudget>
 
     @ApiOperation("Update project partner Budget: Infrastructure")
     @PutMapping("/infrastructure", consumes = [MediaType.APPLICATION_JSON_VALUE])
     fun updateBudgetInfrastructure(
         @PathVariable partnerId: Long,
-        @Valid @RequestBody infrastructures: List<InputBudget>
-    ): List<InputBudget>
+        @Valid @RequestBody infrastructures: List<InputGeneralBudget>
+    ): List<InputGeneralBudget>
     //endregion Infrastructure
 
     @ApiOperation("Get project partner Budget: total")

@@ -1,5 +1,5 @@
 import {ChangeDetectionStrategy, Component} from '@angular/core';
-import {InputBudget, ProjectPartnerBudgetOptionsDto, ProjectPartnerBudgetService, InputCallFlatRateSetup, OutputCallWithDates} from '@cat/api';
+import {InputBudget, InputGeneralBudget, InputStaffCostBudget, InputTravelBudget, ProjectPartnerBudgetOptionsDto, ProjectPartnerBudgetService, InputCallFlatRateSetup, OutputCallWithDates} from '@cat/api';
 import {ActivatedRoute} from '@angular/router';
 import {Log} from '../../../../../../common/utils/log';
 import {
@@ -22,6 +22,10 @@ import {ProjectPartnerStore} from '../../services/project-partner-store.service'
 import {BudgetOptions} from '../../../../model/budget-options';
 import {ProjectStore} from '../../../project-application-detail/services/project-store.service';
 import {BudgetOption} from '../../../../model/budget-option';
+import {LanguageService} from '../../../../../../common/services/language.service';
+import {PartnerBudgetStaffCostTableEntry} from '../../../../model/partner-budget-staffcost-table-entry';
+import {PartnerBudgetTravelTableEntry} from '../../../../model/partner-budget-travel-table-entry';
+import {PartnerBudgetGeneralTableEntry} from '../../../../model/partner-budget-general-table-entry';
 
 @Component({
   selector: 'app-project-application-partner-budget-page',
@@ -173,11 +177,11 @@ export class ProjectApplicationPartnerBudgetPageComponent {
       map(([budgetOptions, budgets]) => ({
         flatRates: budgetOptions.flatRates,
         budgets: {
-          staff: new PartnerBudgetTable(PartnerBudgetTableType.STAFF, budgets.staff),
-          travel: new PartnerBudgetTable(PartnerBudgetTableType.TRAVEL, budgets.travel),
-          external: new PartnerBudgetTable(PartnerBudgetTableType.EXTERNAL, budgets.external),
-          equipment: new PartnerBudgetTable(PartnerBudgetTableType.EQUIPMENT, budgets.equipment),
-          infrastructure: new PartnerBudgetTable(PartnerBudgetTableType.INFRASTRUCTURE, budgets.infrastructure)
+          staff: new PartnerBudgetTable(PartnerBudgetTableType.STAFF, budgets.staff, this.languageService),
+          travel: new PartnerBudgetTable(PartnerBudgetTableType.TRAVEL, budgets.travel, this.languageService),
+          external: new PartnerBudgetTable(PartnerBudgetTableType.EXTERNAL, budgets.external, this.languageService),
+          equipment: new PartnerBudgetTable(PartnerBudgetTableType.EQUIPMENT, budgets.equipment, this.languageService),
+          infrastructure: new PartnerBudgetTable(PartnerBudgetTableType.INFRASTRUCTURE, budgets.infrastructure, this.languageService)
         }
       }))
     );
@@ -185,35 +189,51 @@ export class ProjectApplicationPartnerBudgetPageComponent {
   constructor(private projectPartnerBudgetService: ProjectPartnerBudgetService,
               private activatedRoute: ActivatedRoute,
               public projectStore: ProjectStore,
-              public partnerStore: ProjectPartnerStore) {
+              public partnerStore: ProjectPartnerStore,
+              public languageService: LanguageService) {
     this.projectStore.init(this.projectId);
   }
 
   private getBudgetEntries(table: PartnerBudgetTable): InputBudget[] {
-    return table.entries.map(entry => ({
+    if (table.type === PartnerBudgetTableType.STAFF) {
+      return (table.entries as PartnerBudgetStaffCostTableEntry[]).map(entry => ({
+        id: (entry.new ? null : entry.id) as any,
+        description: entry.description as any,
+        numberOfUnits: entry.numberOfUnits as any,
+        pricePerUnit: entry.pricePerUnit as any,
+      } as InputStaffCostBudget));
+    } else if (table.type === PartnerBudgetTableType.TRAVEL) {
+      return (table.entries as PartnerBudgetTravelTableEntry[]).map(entry => ({
+        id: (entry.new ? null : entry.id) as any,
+        description: entry.description as any,
+        numberOfUnits: entry.numberOfUnits as any,
+        pricePerUnit: entry.pricePerUnit as any,
+      } as InputTravelBudget));
+    }
+    return (table.entries as PartnerBudgetGeneralTableEntry[]).map(entry => ({
       id: (entry.new ? null : entry.id) as any,
       description: entry.description as any,
       numberOfUnits: entry.numberOfUnits as any,
       pricePerUnit: entry.pricePerUnit as any,
-    } as InputBudget));
+    } as InputGeneralBudget));
   }
 
   private updateBudget(partnerId: number, type: string, entries: InputBudget[]): Observable<Array<InputBudget>> {
     let update$;
     if (type === PartnerBudgetTableType.STAFF) {
-      update$ = this.projectPartnerBudgetService.updateBudgetStaffCost(partnerId, entries);
+      update$ = this.projectPartnerBudgetService.updateBudgetStaffCost(partnerId, entries as InputStaffCostBudget[]);
     }
     if (type === PartnerBudgetTableType.TRAVEL) {
-      update$ = this.projectPartnerBudgetService.updateBudgetTravel(partnerId, entries);
+      update$ = this.projectPartnerBudgetService.updateBudgetTravel(partnerId, entries as InputTravelBudget[]);
     }
     if (type === PartnerBudgetTableType.EXTERNAL) {
-      update$ = this.projectPartnerBudgetService.updateBudgetExternal(partnerId, entries);
+      update$ = this.projectPartnerBudgetService.updateBudgetExternal(partnerId, entries as InputGeneralBudget[]);
     }
     if (type === PartnerBudgetTableType.EQUIPMENT) {
-      update$ = this.projectPartnerBudgetService.updateBudgetEquipment(partnerId, entries);
+      update$ = this.projectPartnerBudgetService.updateBudgetEquipment(partnerId, entries as InputGeneralBudget[]);
     }
     if (type === PartnerBudgetTableType.INFRASTRUCTURE) {
-      update$ = this.projectPartnerBudgetService.updateBudgetInfrastructure(partnerId, entries);
+      update$ = this.projectPartnerBudgetService.updateBudgetInfrastructure(partnerId, entries as InputGeneralBudget[]);
     }
 
     return !update$ ? of([]) : update$
