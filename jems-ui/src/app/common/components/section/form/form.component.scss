@@ -1,0 +1,49 @@
+::ng-deep .mat-card {
+  border: .1rem solid transparent;
+}
+
+.active-card {
+  border: .1rem solid var(--background-lighter);
+}
+
+.active-border {
+  border-color: var(--background-lighter);
+}
+
+.edit-form-wrapper {
+  .content {
+    padding: .5rem 2rem .5rem 2rem;
+  }
+
+  .footer {
+    border-bottom-left-radius: .3rem;
+    border-bottom-right-radius: .3rem;
+    min-height: 4rem;
+    background-color: var(--background-lighter);
+    bottom: 0;
+    position: sticky;
+
+    .action-button {
+      margin: 1rem 0.3rem 0.2rem 1rem;
+
+      &.discard {
+        background-color: var(--background-card);
+      }
+    }
+  }
+
+  .message-wrapper {
+    border-radius: .3rem;
+    height: 100%;
+  }
+
+  .message {
+    height: 100%;
+    padding: 1.4rem;
+
+    i {
+      margin-right: .5rem;
+    }
+  }
+
+}

@@ -212,12 +212,10 @@ export class ProjectApplicationFormAssociatedOrganizationEditComponent extends V
 
   protected enterViewMode(): void {
     this.initFields();
-    this.sideNavService.setAlertStatus(false);
   }
 
   protected enterEditMode(): void {
     this.initFields();
-    this.sideNavService.setAlertStatus(true);
   }
 
   private initFields(): void {

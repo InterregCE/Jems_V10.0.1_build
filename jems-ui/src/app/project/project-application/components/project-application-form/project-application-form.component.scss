@@ -1,29 +1,12 @@
-.wrapper {
-  .field {
-    width: 30%;
-    padding-top: 1rem;
-    margin-right: 70%;
+#application-form {
+
+  > * {
+    margin-top: 1rem;
+    display: flex;
+    flex-direction: column;
   }
 
-  .header {
-    display: inline-block;
-  }
-
-  .header-button {
-    margin-left: 0.5rem;
-    margin-right: 2rem;
-    margin-bottom: 0.25rem;
-  }
-
-  .button {
-    margin-right: 3rem;
-  }
-
-  input.mat-input-element {
-    color: var(--font-color-primary);
-  }
-
-  .policy-label{
+  .policy-label {
     font-size: 0.75rem;
     color: var(--font-color-secondary);
   }
@@ -32,7 +15,7 @@
     margin-bottom: 1rem;
   }
 
-  .field-wide {
-    width: 70%;
+  .mat-input-element {
+    color: var(--font-color-primary) !important;
   }
 }

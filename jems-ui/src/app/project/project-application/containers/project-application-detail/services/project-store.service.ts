@@ -43,10 +43,6 @@ export class ProjectStore {
   private revertStatusChanged$ = new Subject<void>();
   private changeStatusError$ = new Subject<I18nValidationError | null>();
   updateProjectData$ = new Subject<InputProjectData>();
-  // TODO remove when switching to new edit mode
-  projectDataSaveError$ = new Subject<I18nValidationError | null>();
-  projectDataSaveSuccess$ = new Subject<boolean>();
-
 
   private projectById$ = this.projectId$
     .pipe(
@@ -94,18 +90,7 @@ export class ProjectStore {
       tap(saved => Log.info('Reverted project status:', this, saved))
     );
 
-  private updatedProjectData$ = this.updateProjectData$
-    .pipe(
-      withLatestFrom(this.projectId$),
-      switchMap(([data, id]) => this.projectService.updateProjectData(id, data)),
-      tap(() => this.projectDataSaveSuccess$.next(true)),
-      tap(() => this.projectDataSaveError$.next(null)),
-      tap(saved => Log.info('Updated project data:', this, saved)),
-      catchError((error: HttpErrorResponse) => {
-        this.projectDataSaveError$.next(error.error);
-        throw error;
-      })
-    );
+  private updatedProjectData$ = new Subject<OutputProject>();
 
   private revertStatus$ = combineLatest([
     this.permissionService.permissionsChanged(),
@@ -180,6 +165,15 @@ export class ProjectStore {
 
   getChangeStatusError(): Observable<I18nValidationError | null> {
     return this.changeStatusError$.asObservable();
+  }
+
+  updateProjectData(data: InputProjectData): Observable<OutputProject> {
+    return this.projectId$
+      .pipe(
+        switchMap(id => this.projectService.updateProjectData(id, data)),
+        tap(project => this.updatedProjectData$.next(project)),
+        tap(saved => Log.info('Updated project data:', this, saved)),
+      );
   }
 
   setEligibilityAssessment(assessment: InputProjectEligibilityAssessment): void {
