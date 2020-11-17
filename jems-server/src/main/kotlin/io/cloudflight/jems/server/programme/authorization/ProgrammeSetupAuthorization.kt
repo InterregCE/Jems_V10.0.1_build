@@ -13,4 +13,8 @@ class ProgrammeSetupAuthorization(
         return isAdmin() || isProgrammeUser()
     }
 
+    fun canReadIndicators(): Boolean {
+        return canAccessSetup() || isApplicantUser()
+    }
+
 }

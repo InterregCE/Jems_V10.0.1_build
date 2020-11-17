@@ -1,5 +1,6 @@
 package io.cloudflight.jems.server.programme.service.indicator
 
+import io.cloudflight.jems.api.programme.dto.indicator.IndicatorOutputDto
 import io.cloudflight.jems.api.programme.dto.indicator.InputIndicatorOutputCreate
 import io.cloudflight.jems.api.programme.dto.indicator.InputIndicatorOutputUpdate
 import io.cloudflight.jems.api.programme.dto.indicator.InputIndicatorResultCreate
@@ -40,6 +41,11 @@ class IndicatorServiceImpl(
     @Transactional(readOnly = true)
     override fun getOutputIndicators(pageable: Pageable): Page<OutputIndicatorOutput> {
         return indicatorOutputRepository.findAll(pageable).map { it.toOutputIndicator() }
+    }
+
+    @Transactional(readOnly = true)
+    override fun getOutputIndicatorsDetails(): Set<IndicatorOutputDto> {
+        return indicatorOutputRepository.findAll().map { it.toIndicatorOutputDto() }.toSet()
     }
 
     @Transactional(readOnly = true)

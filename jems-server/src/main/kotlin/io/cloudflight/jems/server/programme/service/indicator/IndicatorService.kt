@@ -1,5 +1,6 @@
 package io.cloudflight.jems.server.programme.service.indicator
 
+import io.cloudflight.jems.api.programme.dto.indicator.IndicatorOutputDto
 import io.cloudflight.jems.api.programme.dto.indicator.InputIndicatorOutputCreate
 import io.cloudflight.jems.api.programme.dto.indicator.InputIndicatorOutputUpdate
 import io.cloudflight.jems.api.programme.dto.indicator.InputIndicatorResultCreate
@@ -16,6 +17,8 @@ interface IndicatorService {
     fun getOutputIndicatorById(id: Long): OutputIndicatorOutput
 
     fun getOutputIndicators(pageable: Pageable): Page<OutputIndicatorOutput>
+
+    fun getOutputIndicatorsDetails(): Set<IndicatorOutputDto>
 
     fun existsOutputByIdentifier(identifier: String): Boolean
 

@@ -1,5 +1,6 @@
-package io.cloudflight.jems.server.project.entity
+package io.cloudflight.jems.server.project.entity.workpackage
 
+import io.cloudflight.jems.server.project.entity.Project
 import javax.persistence.Column
 import javax.persistence.Entity
 import javax.persistence.FetchType
@@ -32,6 +33,6 @@ data class WorkPackage(
     val specificObjective: String?,
 
     @Column(name = "objective_and_audience")
-    val objectiveAndAudience: String?
+    val objectiveAndAudience: String?,
 
     )

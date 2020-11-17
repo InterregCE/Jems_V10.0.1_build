@@ -13,8 +13,8 @@ import io.cloudflight.jems.server.project.entity.ProjectStatus
 import io.cloudflight.jems.server.project.repository.ProjectRepository
 import io.cloudflight.jems.server.user.entity.User
 import io.cloudflight.jems.server.user.entity.UserRole
-import io.cloudflight.jems.server.project.entity.WorkPackage
-import io.cloudflight.jems.server.project.repository.WorkPackageRepository
+import io.cloudflight.jems.server.project.entity.workpackage.WorkPackage
+import io.cloudflight.jems.server.project.repository.workpackage.WorkPackageRepository
 import io.cloudflight.jems.server.project.service.workpackage.WorkPackageService
 import io.cloudflight.jems.server.project.service.workpackage.WorkPackageServiceImpl
 import io.mockk.MockKAnnotations
