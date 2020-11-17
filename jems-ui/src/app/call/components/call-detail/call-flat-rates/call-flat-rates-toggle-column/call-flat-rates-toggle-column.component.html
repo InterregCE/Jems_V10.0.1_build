@@ -1,0 +1,17 @@
+<mat-button-toggle-group
+        [disabled]="disabled"
+        (change)="selected.emit($event.value)"
+        [(ngModel)]="previousSelection">
+    <mat-button-toggle
+            class="intro-text-small"
+            value="Fixed"
+            (change)="selected.emit($event.value)">
+        {{'call.detail.flat.rate.fixed' | translate}}
+    </mat-button-toggle>
+    <mat-button-toggle
+            class="intro-text-small"
+            value="UpTo"
+            (change)="selected.emit($event.value)">
+        {{'call.detail.flat.rate.up.to' | translate}}
+    </mat-button-toggle>
+</mat-button-toggle-group>

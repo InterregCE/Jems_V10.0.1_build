@@ -13,6 +13,10 @@ import {CallPriorityTreeComponent} from './components/call-priority-tree/call-pr
 import {CallNameResolver} from './services/call-name.resolver';
 import {CallStrategiesComponent} from './components/call-detail/call-strategies/call-strategies.component';
 import {CallFundsComponent} from './components/call-detail/call-funds/call-funds.component';
+import { CallFlatRatesComponent } from './components/call-detail/call-flat-rates/call-flat-rates.component';
+import { CallFlatRatesToggleColumnComponent } from './components/call-detail/call-flat-rates/call-flat-rates-toggle-column/call-flat-rates-toggle-column.component';
+import { CallFlatRatesPageComponent } from './containers/call-flat-rates-page/call-flat-rates-page.component';
+import {CallPageSidenavService} from './services/call-page-sidenav.service';
 
 @NgModule({
   declarations: [
@@ -24,6 +28,9 @@ import {CallFundsComponent} from './components/call-detail/call-funds/call-funds
     CallPriorityTreeComponent,
     CallStrategiesComponent,
     CallFundsComponent,
+    CallFlatRatesComponent,
+    CallFlatRatesToggleColumnComponent,
+    CallFlatRatesPageComponent,
   ],
   imports: [
     SharedModule,
@@ -32,6 +39,7 @@ import {CallFundsComponent} from './components/call-detail/call-funds/call-funds
   providers: [
     CallStore,
     CallNameResolver,
+    CallPageSidenavService
   ],
 })
 export class CallModule {

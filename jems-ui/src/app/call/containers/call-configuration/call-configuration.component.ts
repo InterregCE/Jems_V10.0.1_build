@@ -21,9 +21,9 @@ import {Permission} from '../../../security/permissions/permission';
 import {PermissionService} from '../../../security/permissions/permission.service';
 import {Tables} from '../../../common/utils/tables';
 import {CallPriorityCheckbox} from '../model/call-priority-checkbox';
-import {SideNavService} from '@common/components/side-nav/side-nav.service';
 import {CallPageComponent} from '../call-page/call-page.component';
 import {EventBusService} from '../../../common/services/event-bus/event-bus.service';
+import {CallPageSidenavService} from '../../services/call-page-sidenav.service';
 
 @Component({
   selector: 'app-call-configuration',
@@ -99,37 +99,14 @@ export class CallConfigurationComponent extends BaseComponent {
               public callStore: CallStore,
               private activatedRoute: ActivatedRoute,
               private permissionService: PermissionService,
-              private sideNavService: SideNavService,
               private eventBusService: EventBusService,
               private programmePriorityService: ProgrammePriorityService,
               private programmeStrategyService: ProgrammeStrategyService,
-              private programmeFundService: ProgrammeFundService) {
+              private programmeFundService: ProgrammeFundService,
+              private callNavService: CallPageSidenavService) {
     super();
     this.callStore.init(this.callId);
-    this.sideNavService.setHeadlines(CallStore.CALL_DETAIL_PATH, [
-      {
-        headline: {i18nKey: 'call.detail.title'},
-        scrollToTop: true,
-        bullets: [
-          {
-            headline: {i18nKey: 'call.section.basic.data'},
-            scrollRoute: 'callTitle'
-          },
-          {
-            headline: {i18nKey: 'call.programme.priorities.title'},
-            scrollRoute: 'callPriorities'
-          },
-          {
-            headline: {i18nKey: 'call.strategy.title'},
-            scrollRoute: 'callStrategies'
-          },
-          {
-            headline: {i18nKey: 'call.funds.title'},
-            scrollRoute: 'callFunds'
-          }
-        ]
-      }
-    ]);
+    this.callNavService.init(this.callId);
   }
 
   createCall(call: InputCallCreate): void {
@@ -161,7 +138,7 @@ export class CallConfigurationComponent extends BaseComponent {
   }
 
   redirectToCallOverview(): void {
-    this.sideNavService.navigate({headline: {i18nKey: 'calls'}, route: '/app/call'});
+    this.callNavService.redirectToCallOverview();
   }
 
   private getStrategies(allActiveStrategies: OutputProgrammeStrategy[], call: OutputCall): OutputProgrammeStrategy[] {

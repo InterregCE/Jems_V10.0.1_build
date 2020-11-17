@@ -54,10 +54,9 @@ interface CallApi {
     fun getCallObjectives(@PathVariable id: Long): List<OutputCallProgrammePriority>
 
     @ApiOperation("Setup Call FlatRates for partner budget")
-    @PutMapping("/{callId}/flatrate")
+    @PutMapping("/{callId}/flatrate", consumes = [MediaType.APPLICATION_JSON_VALUE])
     fun updateCallFlatRateSetup(
         @PathVariable callId: Long,
         @RequestBody flatRates: Set<InputCallFlatRateSetup>
     )
-
 }

@@ -18,7 +18,7 @@ describe('WorkPackageDetailsComponent', () => {
         TestModule,
         ProjectModule,
         RouterTestingModule.withRoutes(
-          [{path: 'app/project/detail/1/applicationForm', component: WorkPackageDetailsComponent}])
+          [{path: 'app/project/detail/1/applicationFormWorkPackage', component: WorkPackageDetailsComponent}])
       ],
       declarations: [WorkPackageDetailsComponent],
     })
