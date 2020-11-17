@@ -3,20 +3,6 @@
   margin-bottom: 2rem;
 }
 
-.button {
-  margin-right: 1rem;
-  margin-top: 2rem;
-}
-
-.header-button {
-  margin-left: 0.5rem;
-}
-
-button {
-  width: unset !important;
-  margin-bottom: 1rem;
-}
-
 .wrapper {
   ::ng-deep.mat-checkbox-disabled .mat-checkbox-label, ::ng-deep.mat-input-element:disabled {
     color: var(--font-color-primary) !important;

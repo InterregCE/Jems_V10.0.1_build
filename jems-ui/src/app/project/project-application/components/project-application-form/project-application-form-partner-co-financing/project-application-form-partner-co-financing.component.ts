@@ -1,20 +1,26 @@
 import {
   ChangeDetectionStrategy,
-  ChangeDetectorRef,
   Component,
   EventEmitter,
   Input, OnChanges,
   OnInit,
   Output, SimpleChanges,
 } from '@angular/core';
-import {ViewEditForm} from '@common/components/forms/view-edit-form';
-import {FormBuilder, FormGroup, Validators} from '@angular/forms';
-import {FormState} from '@common/components/forms/form-state';
-import {InputProjectPartnerCoFinancingWrapper, InputProjectPartnerCoFinancing, OutputProjectPartnerCoFinancing, OutputProgrammeFund} from '@cat/api';
+import {FormBuilder, Validators} from '@angular/forms';
+import {
+  InputProjectPartnerCoFinancingWrapper,
+  InputProjectPartnerCoFinancing,
+  OutputProjectPartnerCoFinancing,
+  OutputProgrammeFund
+} from '@cat/api';
 import {SideNavService} from '@common/components/side-nav/side-nav.service';
 import {Permission} from '../../../../../security/permissions/permission';
-import {filter, map, takeUntil} from 'rxjs/operators';
+import {filter, map, takeUntil, tap} from 'rxjs/operators';
 import {Numbers} from '../../../../../common/utils/numbers';
+import {BaseComponent} from '@common/components/base-component';
+import {Observable} from 'rxjs';
+import {HttpErrorResponse} from '@angular/common/http';
+import {FormService} from '@common/components/section/form/form.service';
 
 const MAX_100_NUMBER_REGEX = '^([0-9]{1,2}|100)$';
 const MAX_100_REGEXP = RegExp(MAX_100_NUMBER_REGEX);
@@ -23,10 +29,17 @@ const MAX_100_REGEXP = RegExp(MAX_100_NUMBER_REGEX);
   selector: 'app-project-application-form-partner-co-financing',
   templateUrl: './project-application-form-partner-co-financing.component.html',
   styleUrls: ['./project-application-form-partner-co-financing.component.scss'],
+  providers: [FormService],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class ProjectApplicationFormPartnerCoFinancingComponent extends ViewEditForm implements OnInit, OnChanges {
+export class ProjectApplicationFormPartnerCoFinancingComponent extends BaseComponent implements OnInit, OnChanges {
   Numbers = Numbers;
+
+  // TODO: remove these and adapt the component to save independently
+  @Input()
+  error$: Observable<HttpErrorResponse | null>;
+  @Input()
+  success$: Observable<any>;
 
   @Input()
   editable: boolean;
@@ -53,7 +66,7 @@ export class ProjectApplicationFormPartnerCoFinancingComponent extends ViewEditF
     percentage: ['', Validators.compose([
       Validators.pattern(MAX_100_NUMBER_REGEX),
       Validators.required,
-      ])
+    ])
     ],
   });
 
@@ -65,16 +78,25 @@ export class ProjectApplicationFormPartnerCoFinancingComponent extends ViewEditF
     required: 'project.partner.coFinancing.percentage.invalid',
   };
 
-  constructor(
-    protected changeDetectorRef: ChangeDetectorRef,
-    private formBuilder: FormBuilder,
-    private sideNavService: SideNavService,
-  ) {
-    super(changeDetectorRef);
+  constructor(private formService: FormService,
+              private formBuilder: FormBuilder,
+              private sideNavService: SideNavService) {
+    super();
   }
 
   ngOnInit(): void {
-    super.ngOnInit();
+    this.error$
+      .pipe(
+        takeUntil(this.destroyed$),
+        tap(err => this.formService.setError(err))
+      )
+      .subscribe();
+    this.success$
+      .pipe(
+        takeUntil(this.destroyed$),
+        tap(() => this.formService.setSuccess('project.partner.budget.options.save.success'))
+      )
+      .subscribe();
 
     this.coFinancingForm.get('percentage')
       ?.valueChanges
@@ -85,10 +107,11 @@ export class ProjectApplicationFormPartnerCoFinancingComponent extends ViewEditF
       )
       .subscribe(percentage => this.performCalculation(percentage));
 
-    this.initForm();
+    this.formService.init(this.coFinancingForm);
+    this.resetForm();
   }
 
-  private initForm(): void {
+  resetForm(): void {
     const inputValues = this.finances.find(x => !!x.fund);
     this.coFinancingForm.controls.fundId.setValue(inputValues?.fund.id);
     this.coFinancingForm.controls.percentage.setValue(inputValues?.percentage || 0);
@@ -100,21 +123,9 @@ export class ProjectApplicationFormPartnerCoFinancingComponent extends ViewEditF
     this.myAmount = Numbers.sum([this.totalAmount, -this.fundAmount]);
   }
 
-  protected enterViewMode(): void {
-    this.sideNavService.setAlertStatus(false);
-  }
-
-  protected enterEditMode(): void {
-    this.sideNavService.setAlertStatus(true);
-  }
-
-  getForm(): FormGroup | null {
-    return this.coFinancingForm;
-  }
-
   onSubmit(): void {
-    this.submitted = true;
-    this.save.emit({ finances: [
+    this.save.emit({
+      finances: [
         {
           fundId: this.coFinancingForm.controls.fundId.value,
           percentage: this.coFinancingForm.controls.percentage.value,
@@ -122,15 +133,13 @@ export class ProjectApplicationFormPartnerCoFinancingComponent extends ViewEditF
         {
           percentage: this.myPercentage,
         } as InputProjectPartnerCoFinancing,
-      ] });
-    this.changeFormState$.next(FormState.VIEW);
+      ]
+    });
   }
 
   cancel(): void {
-    this.changeFormState$.next(FormState.VIEW);
     this.cancelEdit.emit();
-    this.coFinancingForm.reset();
-    this.initForm();
+    this.resetForm();
   }
 
   ngOnChanges(changes: SimpleChanges): void {

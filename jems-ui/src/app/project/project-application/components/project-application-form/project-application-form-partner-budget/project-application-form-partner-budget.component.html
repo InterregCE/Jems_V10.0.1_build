@@ -1,20 +1,14 @@
-<div class="wrapper">
+<app-form (save)="onSubmit()"
+          (discard)="cancel()">
     <h5 id="funds" class="header">{{'project.partner.budget.header' | translate}}</h5>
-    <button class="header-button" color="primary"
-            *ngIf="editable && formState === FormState.VIEW" mat-raised-button
-            (click)="changeFormState$.next(FormState.EDIT)">
-        {{'common.edit.label' | translate}}
-    </button>
-
     <br>
     <ng-container *ngIf="!Number.isInteger(staffCostsFlatRate)">
         <h6 id="staff" class="header">{{'project.partner.budget.staff' | translate}}</h6>
         <app-budget-table
                 *ngIf="budgets?.staff"
-                [enabled]="formState === FormState.EDIT"
+                [editable]="editable"
                 [table]="budgets.staff"
-                [changeFormState$]="changeFormState$"
-                (validityChange)="adaptValidity()">
+                (tableChanged)="tableChanged()">
         </app-budget-table>
     </ng-container>
 
@@ -44,62 +38,35 @@
     <h6 id="travel" class="header">{{'project.partner.budget.travel' | translate}}</h6>
     <app-budget-table
             *ngIf="budgets?.travel"
-            [enabled]="formState === FormState.EDIT"
+            [editable]="editable"
             [table]="budgets.travel"
-            [changeFormState$]="changeFormState$"
-            (validityChange)="adaptValidity()">
+            (tableChanged)="tableChanged()">
     </app-budget-table>
 
     <br>
     <h6 id="external" class="header">{{'project.partner.budget.external' | translate}}</h6>
     <app-budget-table
             *ngIf="budgets?.external"
-            [enabled]="formState === FormState.EDIT"
+            [editable]="editable"
             [table]="budgets.external"
-            [changeFormState$]="changeFormState$"
-            (validityChange)="adaptValidity()">
+            (tableChanged)="tableChanged()">
     </app-budget-table>
 
     <br>
     <h6 id="equipment" class="header">{{'project.partner.budget.equipment' | translate}}</h6>
     <app-budget-table
             *ngIf="budgets?.equipment"
-            [enabled]="formState === FormState.EDIT"
+            [editable]="editable"
             [table]="budgets.equipment"
-            [changeFormState$]="changeFormState$"
-            (validityChange)="adaptValidity()">
+            (tableChanged)="tableChanged()">
     </app-budget-table>
 
     <br>
     <h6 id="infrastructure" class="header">{{'project.partner.budget.infrastructure' | translate}}</h6>
     <app-budget-table
             *ngIf="budgets?.infrastructure"
-            [enabled]="formState === FormState.EDIT"
+            [editable]="editable"
             [table]="budgets.infrastructure"
-            [changeFormState$]="changeFormState$"
-            (validityChange)="adaptValidity()">
+            (tableChanged)="tableChanged()">
     </app-budget-table>
-
-
-    <div *ngIf="formState === FormState.EDIT">
-        <button class="button" mat-raised-button type="button"
-                (click)="cancel()">
-            {{'common.cancel.label' | translate}}
-        </button>
-        <button class="button" mat-raised-button color="primary" type="button"
-                [disabled]="!saveEnabled || submitted"
-                (click)="onSubmit()">
-            {{'common.save.label' | translate}}
-        </button>
-    </div>
-    <app-alert
-            [show]="!submitted && (showSuccessMessage$ | async)"
-            [type]="Alert.SUCCESS">
-        <p>{{'project.partner.budget.save.success' | translate}}</p>
-    </app-alert>
-    <app-alert *ngIf="error$ | async as error"
-               [show]="!submitted && !!error.i18nKey"
-               [type]="Alert.ERROR">
-        <p>{{error.i18nKey | translate}}</p>
-    </app-alert>
-</div>
+</app-form>

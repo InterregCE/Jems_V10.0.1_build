@@ -23,7 +23,7 @@ export class FormService {
 
   init(form: FormGroup): void {
     this.form = form;
-    this.form.valueChanges
+    this.form?.valueChanges
       .pipe(
         filter(() => this.form.dirty),
         tap(() => this.valid$.next(this.form.valid)),
@@ -63,6 +63,7 @@ export class FormService {
       // mark form as pristine in order to ignore 'dirty' statuses from formChanged$
       if (this.form) {
         this.form.markAsPristine();
+        this.form.markAsUntouched();
       }
       this.routingService.confirmLeave = false;
     } else {
@@ -87,12 +88,12 @@ export class FormService {
 
   private setFieldErrors(error: I18nValidationError): void {
     Log.debug('Set form backend errors.', this, error);
-    Object.keys(this.form.controls).forEach(key => {
+    Object.keys(this.form?.controls).forEach(key => {
       if (!error?.i18nFieldErrors || !error.i18nFieldErrors[key]) {
         return;
       }
-      this.form.controls[key].setErrors({i18nError: error.i18nFieldErrors[key].i18nKey});
-      this.form.controls[key].markAsTouched();
+      this.form?.controls[key].setErrors({i18nError: error.i18nFieldErrors[key].i18nKey});
+      this.form?.controls[key].markAsTouched();
     });
   }
 }

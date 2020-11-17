@@ -9,7 +9,6 @@ import {
   ProjectPartnerBudgetService,
   CallService,
 } from '@cat/api';
-import {I18nValidationError} from '@common/validation/i18n-validation-error';
 import {catchError, filter, map, mergeMap, startWith, tap, withLatestFrom} from 'rxjs/operators';
 import {ActivatedRoute} from '@angular/router';
 import {HttpErrorResponse} from '@angular/common/http';
@@ -26,7 +25,7 @@ export class ProjectApplicationPartnerCoFinancingPageComponent {
 
   projectId = this.activatedRoute?.snapshot?.params?.projectId;
 
-  saveError$ = new Subject<I18nValidationError | null>();
+  saveError$ = new Subject<HttpErrorResponse | null>();
   saveSuccess$ = new Subject<boolean>();
   saveFinances$ = new Subject<InputProjectPartnerCoFinancingWrapper>();
   cancelEdit$ = new Subject<void>();
@@ -46,7 +45,7 @@ export class ProjectApplicationPartnerCoFinancingPageComponent {
       tap(() => this.saveSuccess$.next(true)),
       tap(() => this.saveError$.next(null)),
       catchError((error: HttpErrorResponse) => {
-        this.saveError$.next(error.error);
+        this.saveError$.next(error);
         throw error;
       })
     );

@@ -3,23 +3,33 @@ import {
   ChangeDetectorRef,
   Component,
   EventEmitter,
-  Input, OnChanges,
+  Input, OnChanges, OnInit,
   Output, SimpleChanges
 } from '@angular/core';
-import {ViewEditForm} from '@common/components/forms/view-edit-form';
 import {FormGroup} from '@angular/forms';
-import {FormState} from '@common/components/forms/form-state';
 import {PartnerBudgetTable} from '../../../model/partner-budget-table';
 import {Numbers} from '../../../../../common/utils/numbers';
+import {FormService} from '@common/components/section/form/form.service';
+import {Observable} from 'rxjs';
+import {HttpErrorResponse} from '@angular/common/http';
+import {BaseComponent} from '@common/components/base-component';
+import {takeUntil, tap} from 'rxjs/operators';
 
 @Component({
   selector: 'app-project-application-form-partner-budget',
   templateUrl: './project-application-form-partner-budget.component.html',
   styleUrls: ['./project-application-form-partner-budget.component.scss'],
+  providers: [FormService],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class ProjectApplicationFormPartnerBudgetComponent extends ViewEditForm implements OnChanges {
+export class ProjectApplicationFormPartnerBudgetComponent extends BaseComponent implements OnInit, OnChanges {
   Number = Number;
+
+  // TODO: remove these and adapt the component to save independently
+  @Input()
+  error$: Observable<HttpErrorResponse | null>;
+  @Input()
+  success$: Observable<any>;
 
   @Input()
   editable: boolean;
@@ -39,8 +49,23 @@ export class ProjectApplicationFormPartnerBudgetComponent extends ViewEditForm i
   officeAndAdministrationTotal = 0;
   staffCostsTotal = 0;
 
-  constructor(protected changeDetectorRef: ChangeDetectorRef) {
-    super(changeDetectorRef);
+  constructor(private formService: FormService) {
+    super();
+  }
+
+  ngOnInit(): void {
+    this.error$
+      .pipe(
+        takeUntil(this.destroyed$),
+        tap(err => this.formService.setError(err))
+      )
+      .subscribe();
+    this.success$
+      .pipe(
+        takeUntil(this.destroyed$),
+        tap(() => this.formService.setSuccess('project.partner.budget.save.success'))
+      )
+      .subscribe();
   }
 
   ngOnChanges(changes: SimpleChanges): void {
@@ -63,17 +88,15 @@ export class ProjectApplicationFormPartnerBudgetComponent extends ViewEditForm i
   }
 
   onSubmit(): void {
-    this.submitted = true;
     this.save.emit(this.budgets);
-    this.changeFormState$.next(FormState.VIEW);
   }
 
   cancel(): void {
-    this.changeFormState$.next(FormState.VIEW);
     this.cancelEdit.emit();
   }
 
-  adaptValidity(): void {
+  tableChanged(): void {
+    this.formService.setDirty(true);
     this.saveEnabled = Object.values(this.budgets).every(table => table.valid());
   }
 

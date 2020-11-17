@@ -34,7 +34,7 @@ export class ProjectApplicationPartnerBudgetPageComponent {
   projectId = this.activatedRoute?.snapshot?.params?.projectId;
   partnerId = this.activatedRoute?.snapshot?.params?.partnerId;
 
-  optionsSaveError$ = new Subject<I18nValidationError | null>();
+  optionsSaveError$ = new Subject<HttpErrorResponse | null>();
   optionsSaveSuccess$ = new Subject<boolean>();
   saveBudgetOptions = new Subject<BudgetOptions>();
   private initialBudgetOptions$ = this.partnerStore.partner$
@@ -57,7 +57,7 @@ export class ProjectApplicationPartnerBudgetPageComponent {
       tap(() => this.optionsSaveSuccess$.next(true)),
       tap(() => this.optionsSaveError$.next(null)),
       catchError((error: HttpErrorResponse) => {
-        this.optionsSaveError$.next(error.error);
+        this.optionsSaveError$.next(error);
         throw error;
       }),
       tap(() => this.partnerStore.totalAmountChanged$.next()),
@@ -65,7 +65,7 @@ export class ProjectApplicationPartnerBudgetPageComponent {
 
   saveBudgets$ = new Subject<{ [key: string]: PartnerBudgetTable }>();
   fetchBudgetsFor$ = new Subject<PartnerBudgetTableType[]>();
-  saveError$ = new Subject<I18nValidationError | null>();
+  saveError$ = new Subject<HttpErrorResponse | null>();
   saveSuccess$ = new Subject<boolean>();
   cancelEdit$ = new Subject<void>();
 
@@ -107,7 +107,7 @@ export class ProjectApplicationPartnerBudgetPageComponent {
       share(),
       catchError((error: HttpErrorResponse) => {
         this.cancelEdit$.next();
-        this.saveError$.next(error.error);
+        this.saveError$.next(error);
         throw error;
       }),
       tap(() => this.partnerStore.totalAmountChanged$.next()),
@@ -129,7 +129,7 @@ export class ProjectApplicationPartnerBudgetPageComponent {
       tap(() => this.saveError$.next(null)),
       catchError((error: HttpErrorResponse) => {
         this.cancelEdit$.next();
-        this.saveError$.next(error.error);
+        this.saveError$.next(error);
         throw error;
       }),
     );
