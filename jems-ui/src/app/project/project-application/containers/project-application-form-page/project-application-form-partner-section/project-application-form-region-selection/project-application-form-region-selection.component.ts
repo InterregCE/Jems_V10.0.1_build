@@ -1,7 +1,4 @@
-import {
-  ChangeDetectionStrategy,
-  Component
-} from '@angular/core';
+import {ChangeDetectionStrategy, Component} from '@angular/core';
 import {NutsStoreService} from '../../../../../../common/services/nuts-store.service';
 import {combineLatest} from 'rxjs';
 import {map} from 'rxjs/operators';
@@ -17,7 +14,7 @@ import {ProjectStore} from '../../../project-application-detail/services/project
 export class ProjectApplicationFormRegionSelectionComponent {
 
   details$ = combineLatest([
-    this.partnerStore.getProjectPartner(),
+    this.partnerStore.partner$,
     this.nutsStore.getNuts()
   ])
     .pipe(

@@ -39,7 +39,7 @@ describe('ProjectApplicationPartnerBudgetPageComponent', () => {
   }));
 
   beforeEach(() => {
-    spyOn(partnerStore, 'getProjectPartner').and.returnValue(of({id: 2}));
+    partnerStore.partner$.next({id: 2});
     fixture = TestBed.createComponent(ProjectApplicationPartnerBudgetPageComponent);
     component = fixture.componentInstance;
     component.partnerId = 2;

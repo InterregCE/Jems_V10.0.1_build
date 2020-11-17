@@ -1,36 +1,28 @@
 import {
   ChangeDetectionStrategy,
-  ChangeDetectorRef,
   Component,
-  EventEmitter,
   Input, OnChanges,
   OnInit,
-  Output, SimpleChanges
+  SimpleChanges
 } from '@angular/core';
 import {FormBuilder, FormGroup, Validators} from '@angular/forms';
-import {ActivatedRoute} from '@angular/router';
-import {SideNavService} from '@common/components/side-nav/side-nav.service';
-import {FormState} from '@common/components/forms/form-state';
-import {ViewEditForm} from '@common/components/forms/view-edit-form';
 import {OutputProjectPartnerDetail, InputProjectContact} from '@cat/api';
-import {Permission} from '../../../../../security/permissions/permission';
+import {FormService} from '@common/components/section/form/form.service';
+import {ProjectPartnerStore} from '../../../containers/project-application-form-page/services/project-partner-store.service';
+import {catchError, take, tap} from 'rxjs/operators';
 
 @Component({
   selector: 'app-project-application-form-partner-contact',
   templateUrl: './project-application-form-partner-contact.component.html',
   styleUrls: ['./project-application-form-partner-contact.component.scss'],
+  providers: [FormService],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class ProjectApplicationFormPartnerContactComponent extends ViewEditForm implements OnInit, OnChanges {
-  Permission = Permission;
-
+export class ProjectApplicationFormPartnerContactComponent implements OnInit, OnChanges {
   @Input()
   partner: OutputProjectPartnerDetail;
   @Input()
   editable: boolean;
-
-  @Output()
-  update = new EventEmitter<InputProjectContact[]>();
 
   partnerContactForm: FormGroup = this.formBuilder.group({
     partnerRepresentativeTitle: ['', Validators.maxLength(25)],
@@ -94,35 +86,21 @@ export class ProjectApplicationFormPartnerContactComponent extends ViewEditForm 
   }
 
   constructor(private formBuilder: FormBuilder,
-              protected changeDetectorRef: ChangeDetectorRef,
-              private activatedRoute: ActivatedRoute,
-              private sideNavService: SideNavService) {
-    super(changeDetectorRef);
+              private formService: FormService,
+              private partnerStore: ProjectPartnerStore) {
   }
 
   ngOnInit(): void {
-    super.ngOnInit();
-    this.enterViewMode();
+    this.formService.init(this.partnerContactForm);
+    this.formService.setEditable(this.editable);
+    this.resetForm();
   }
 
   ngOnChanges(changes: SimpleChanges): void {
     if (changes.partner) {
-      this.changeFormState$.next(FormState.VIEW);
+      this.resetForm();
+      this.formService.setDirty(false);
     }
-  }
-
-  protected enterViewMode(): void {
-    this.sideNavService.setAlertStatus(false);
-    this.initLegalRepresentative();
-    this.initContactPerson();
-  }
-
-  protected enterEditMode(): void {
-    this.sideNavService.setAlertStatus(true);
-  }
-
-  getForm(): FormGroup | null {
-    return this.partnerContactForm;
   }
 
   onSubmit(): void {
@@ -142,11 +120,21 @@ export class ProjectApplicationFormPartnerContactComponent extends ViewEditForm 
       email: this.partnerContactForm.controls.partnerContactEmail.value,
       telephone: this.partnerContactForm.controls.partnerContactTelephone.value
     };
-    this.update.emit(ProjectApplicationFormPartnerContactComponent.getValidatedDataToEmit(legalRepresentative, contactPerson));
+
+    this.partnerStore.updatePartnerContact(
+      ProjectApplicationFormPartnerContactComponent.getValidatedDataToEmit(legalRepresentative, contactPerson)
+    )
+      .pipe(
+        take(1),
+        tap(() => this.formService.setSuccess('project.partner.contact.save.success')),
+        catchError(error => this.formService.setError(error))
+      ).subscribe();
   }
 
-  onCancel(): void {
-    this.changeFormState$.next(FormState.VIEW);
+  resetForm(): void {
+    // this.formService.setEditable(this.editable);
+    this.initLegalRepresentative();
+    this.initContactPerson();
   }
 
   private initLegalRepresentative(): void {

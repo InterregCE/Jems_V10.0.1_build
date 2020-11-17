@@ -2,7 +2,6 @@ import {async, ComponentFixture, TestBed} from '@angular/core/testing';
 import {ProjectApplicationPartnerIdentityComponent} from './project-application-partner-identity.component';
 import {TestModule} from '../../../../../../common/test-module';
 import {ProjectModule} from '../../../../../project.module';
-import {Router} from '@angular/router';
 import {RouterTestingModule} from '@angular/router/testing';
 
 describe('ProjectApplicationPartnerIdentityComponent', () => {
@@ -31,15 +30,6 @@ describe('ProjectApplicationPartnerIdentityComponent', () => {
 
   it('should create', () => {
     expect(component).toBeTruthy();
-  });
-
-  it('should navigate to project partner overview', () => {
-    const router = TestBed.inject(Router);
-    spyOn(router, 'navigate').and.callThrough();
-
-    component.redirectToPartnerOverview();
-
-    expect(router.navigate).toHaveBeenCalledWith(['app', 'project', 'detail', 1, 'applicationFormPartner']);
   });
 
 });

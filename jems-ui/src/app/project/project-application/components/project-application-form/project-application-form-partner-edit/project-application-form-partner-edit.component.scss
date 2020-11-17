@@ -1,15 +1,8 @@
-.wrapper {
-  margin-top: 2rem;
-
-  .field {
-    max-width: 35rem;
-    width: 100%;
-    padding-top: 1rem;
-    display: block;
-  }
-
-  .button {
-    margin-right: 3rem;
+#partner-form {
+  > * {
+    margin-top: 1rem;
+    display: flex;
+    flex-direction: column;
   }
 
   .mat-input-element {
@@ -26,11 +19,8 @@
     color: var(--warn-color);
   }
 
-  .intro-text-small{
-    font-size: 0.75rem;
-  }
-
-  .toggle-button-field{
+  .toggle-button-field {
     padding-bottom: 1rem;
+    display: block;
   }
 }

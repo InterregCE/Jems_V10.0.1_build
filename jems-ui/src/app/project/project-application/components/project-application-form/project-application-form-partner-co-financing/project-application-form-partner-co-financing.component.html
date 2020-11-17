@@ -1,42 +1,36 @@
-<form [formGroup]="coFinancingForm" class="container">
-    <h5>
-        <span>{{ 'partner.tab.coFinancing' | translate }}</span>
-        <span class="header-button" *ngxPermissionsExcept="Permission.PROGRAMME_USER">
-            <button *ngIf="formState === FormState.VIEW && editable"
-                    (click)="changeFormState$.next(FormState.EDIT)" color="primary" mat-raised-button>
-                {{'common.edit.label' | translate}}
-            </button>
-        </span>
-    </h5>
+<app-form (save)="onSubmit()"
+          (discard)="resetForm()">
+    <form [formGroup]="coFinancingForm" class="container">
+        <h5><span>{{ 'partner.tab.coFinancing' | translate }}</span></h5>
 
-    <p class="intro-text-small mb-3">{{ 'project.partner.coFinancing.intro' | translate }}</p>
+        <p class="intro-text-small mb-3">{{ 'project.partner.coFinancing.intro' | translate }}</p>
 
-    <table class="w-100">
-        <tr>
-            <th>{{ 'project.partner.coFinancing.source' | translate }}</th>
-            <th class="text-right">{{ 'project.partner.coFinancing.amount' | translate }}</th>
-            <th class="text-right">{{ 'project.partner.coFinancing.percentage' | translate }}</th>
-        </tr>
-        <tr>
-            <td>
-                <mat-form-field class="field w-100">
-                    <mat-select [disabled]="formState === FormState.VIEW"
-                                name="fundId"
-                                panelClass="material-select-panel" formControlName="fundId">
-                        <mat-option *ngFor="let fund of callFunds" [value]="fund.id">
-                            {{fund.abbreviation || 'programme.fund.abbreviation.' + fund.id | translate}}
-                        </mat-option>
-                    </mat-select>
-                    <mat-error>
-                        <app-form-field-errors
-                                [errors]="coFinancingForm?.controls?.fundId?.errors"
-                                [messages]="fundIdErrors">
-                        </app-form-field-errors>
-                    </mat-error>
-                </mat-form-field>
-            </td>
-            <td class="text-right">{{ this.fundAmount | asMoney }}</td>
-            <td class="text-right">
+        <table class="w-100">
+            <tr>
+                <th>{{ 'project.partner.coFinancing.source' | translate }}</th>
+                <th class="text-right">{{ 'project.partner.coFinancing.amount' | translate }}</th>
+                <th class="text-right">{{ 'project.partner.coFinancing.percentage' | translate }}</th>
+            </tr>
+            <tr>
+                <td>
+                    <mat-form-field class="field w-100">
+                        <mat-select [disabled]="!editable"
+                                    name="fundId"
+                                    panelClass="material-select-panel" formControlName="fundId">
+                            <mat-option *ngFor="let fund of callFunds" [value]="fund.id">
+                                {{fund.abbreviation || 'programme.fund.abbreviation.' + fund.id | translate}}
+                            </mat-option>
+                        </mat-select>
+                        <mat-error>
+                            <app-form-field-errors
+                                    [errors]="coFinancingForm?.controls?.fundId?.errors"
+                                    [messages]="fundIdErrors">
+                            </app-form-field-errors>
+                        </mat-error>
+                    </mat-form-field>
+                </td>
+                <td class="text-right">{{ this.fundAmount | asMoney }}</td>
+                <td class="text-right">
                 <span class="w-100">
                 <mat-form-field class="field field-tiny">
                     <input class="text-right" name="percentage" formControlName="percentage" matInput min="0" max="100">
@@ -49,40 +43,18 @@
                 </mat-form-field>
                 %
                 </span>
-            </td>
-        </tr>
-        <tr class="thick-row">
-            <td>{{ 'project.partner.coFinancing.partnerContribution' | translate }}</td>
-            <td class="text-right">{{ this.myAmount | asMoney }}</td>
-            <td class="text-right">{{ this.myPercentage }} %</td>
-        </tr>
-        <tr>
-            <th>{{ 'project.partner.coFinancing.total' | translate }}</th>
-            <th class="text-right">{{ this.totalAmount | asMoney }}</th>
-            <th class="text-right">100 %</th>
-        </tr>
-    </table>
-
-    <div *ngIf="formState === FormState.EDIT" class="my-4">
-        <button mat-raised-button class="button mr-3" type="button"
-                (click)="cancel()">
-            {{'common.cancel.label' | translate}}
-        </button>
-        <button mat-raised-button color="primary" type="button" class="button"
-                [disabled]="coFinancingForm.invalid || submitted"
-                (click)="onSubmit()">
-            {{'common.save.label' | translate}}
-        </button>
-    </div>
-
-    <app-alert
-            [show]="!submitted && (showSuccessMessage$ | async)"
-            [type]="Alert.SUCCESS">
-        <p>{{'project.partner.main-address.save.success' | translate}}</p>
-    </app-alert>
-    <app-alert *ngIf="error$ | async as error"
-               [show]="!submitted && !!error.i18nKey"
-               [type]="Alert.ERROR">
-        <p>{{error.i18nKey | translate}}</p>
-    </app-alert>
-</form>
+                </td>
+            </tr>
+            <tr class="thick-row">
+                <td>{{ 'project.partner.coFinancing.partnerContribution' | translate }}</td>
+                <td class="text-right">{{ this.myAmount | asMoney }}</td>
+                <td class="text-right">{{ this.myPercentage }} %</td>
+            </tr>
+            <tr>
+                <th>{{ 'project.partner.coFinancing.total' | translate }}</th>
+                <th class="text-right">{{ this.totalAmount | asMoney }}</th>
+                <th class="text-right">100 %</th>
+            </tr>
+        </table>
+    </form>
+</app-form>

@@ -3,22 +3,17 @@ import {
   ChangeDetectionStrategy,
   Component,
   EventEmitter,
-  Input,
-  Output,
-  TemplateRef,
+  Input, Output, TemplateRef,
   ViewChild
 } from '@angular/core';
 import {Tables} from '../../../../../../common/utils/tables';
 import {PartnerBudgetTableEntry} from '../../../../model/partner-budget-table-entry';
 import {CellValueChangedEvent, ColDef, GridApi, GridOptions, RowNode} from 'ag-grid-community';
-import {FormState} from '@common/components/forms/form-state';
-import {Subject} from 'rxjs';
 import {AgGridTemplateRendererComponent} from './ag-grid-template-renderer/ag-grid-template-renderer.component';
 import {TranslateService} from '@ngx-translate/core';
 import {PartnerBudgetTable} from '../../../../model/partner-budget-table';
 import {Numbers} from '../../../../../../common/utils/numbers';
 import {BaseComponent} from '@common/components/base-component';
-import {takeUntil, tap} from 'rxjs/operators';
 import {PartnerBudgetTableType} from '../../../../model/partner-budget-table-type';
 
 @Component({
@@ -31,14 +26,12 @@ export class BudgetTableComponent extends BaseComponent implements AfterViewInit
   Numbers = Numbers;
 
   @Input()
-  enabled: boolean;
+  editable: boolean;
   @Input()
   table: PartnerBudgetTable;
-  @Input()
-  changeFormState$ = new Subject<FormState>();
 
   @Output()
-  validityChange = new EventEmitter<void>();
+  tableChanged = new EventEmitter<void>();
 
   @ViewChild('deleteCell', {static: true})
   deleteCell: TemplateRef<any>;
@@ -50,7 +43,6 @@ export class BudgetTableComponent extends BaseComponent implements AfterViewInit
   gridApi?: GridApi;
   columnDefs: Partial<ColDef>[] = [];
   locale = 'de-DE';
-  formState: FormState;
 
   gridOptions: GridOptions = {
     stopEditingWhenGridLosesFocus: true,
@@ -59,7 +51,7 @@ export class BudgetTableComponent extends BaseComponent implements AfterViewInit
       resizable: true,
     },
     onCellValueChanged: (event: CellValueChangedEvent) => {
-      this.validityChange.emit();
+      this.tableChanged.emit();
       if (event.colDef.field === 'numberOfUnits' || event.colDef.field === 'pricePerUnit') {
         this.gridApi?.setPinnedBottomRowData([this.getTotalRow()]);
       }
@@ -70,20 +62,12 @@ export class BudgetTableComponent extends BaseComponent implements AfterViewInit
     super();
   }
 
-  static editableRow(formState: FormState, node: RowNode): boolean {
-    return formState === FormState.EDIT && !node.isRowPinned();
+  static editableRow(editable: boolean, node: RowNode): boolean {
+    return editable && !node.isRowPinned();
   }
 
   ngAfterViewInit(): void {
-    this.changeFormState$
-      .pipe(
-        takeUntil(this.destroyed$),
-        tap(state => {
-          this.formState = state;
-          this.setColumnDefs();
-        })
-      )
-      .subscribe();
+    this.setColumnDefs();
   }
 
   addNewEntry(): void {
@@ -93,11 +77,12 @@ export class BudgetTableComponent extends BaseComponent implements AfterViewInit
       pricePerUnit: 0,
       new: true
     })];
+    this.tableChanged.emit();
   }
 
   removeEntry(entry: PartnerBudgetTableEntry): void {
     this.table.entries = this.table.entries.filter(element => element.id !== entry.id);
-    this.validityChange.emit();
+    this.tableChanged.emit();
     this.gridApi?.setPinnedBottomRowData([this.getTotalRow()]);
   }
 
@@ -123,7 +108,7 @@ export class BudgetTableComponent extends BaseComponent implements AfterViewInit
             : 'project.partner.budget.table.description'
         ),
         field: 'description',
-        editable: params => BudgetTableComponent.editableRow(this.formState, params.node),
+        editable: params => BudgetTableComponent.editableRow(this.editable, params.node),
         sortable: true,
         singleClickEdit: true,
         valueSetter: (params: any) => {
@@ -139,7 +124,7 @@ export class BudgetTableComponent extends BaseComponent implements AfterViewInit
       {
         headerName: this.translateService.instant('project.partner.budget.table.number.of.units'),
         field: 'numberOfUnits',
-        editable: params => BudgetTableComponent.editableRow(this.formState, params.node),
+        editable: params => BudgetTableComponent.editableRow(this.editable, params.node),
         sortable: true,
         singleClickEdit: true,
         type: 'numericColumn',
@@ -154,7 +139,7 @@ export class BudgetTableComponent extends BaseComponent implements AfterViewInit
       {
         headerName: this.translateService.instant('project.partner.budget.table.price.per.unit'),
         field: 'pricePerUnit',
-        editable: params => BudgetTableComponent.editableRow(this.formState, params.node),
+        editable: params => BudgetTableComponent.editableRow(this.editable, params.node),
         sortable: true,
         singleClickEdit: true,
         type: 'numericColumn',
@@ -180,7 +165,7 @@ export class BudgetTableComponent extends BaseComponent implements AfterViewInit
         flex: 2
       }
     ];
-    if (this.formState === FormState.EDIT) {
+    if (this.editable) {
       columnDefs.push({
         headerName: '',
         colId: 'delete',

@@ -1,29 +1,24 @@
 import {
   ChangeDetectionStrategy,
-  ChangeDetectorRef,
   Component,
-  EventEmitter,
   Input,
-  OnChanges,
-  Output,
+  OnChanges, OnInit,
   SimpleChanges,
 } from '@angular/core';
 import {AbstractControl, FormBuilder, FormGroup, Validators} from '@angular/forms';
-import {ViewEditForm} from '@common/components/forms/view-edit-form';
-import {SideNavService} from '@common/components/side-nav/side-nav.service';
-import {FormState} from '@common/components/forms/form-state';
-import {InputProjectPartnerAddress, NutsImportService, OutputProjectPartnerAddress, OutputNuts} from '@cat/api';
-import {Permission} from '../../../../../security/permissions/permission';
+import {InputProjectPartnerAddress, OutputProjectPartnerAddress, OutputNuts} from '@cat/api';
+import {FormService} from '@common/components/section/form/form.service';
+import {ProjectPartnerStore} from '../../../containers/project-application-form-page/services/project-partner-store.service';
+import {catchError, take, tap} from 'rxjs/operators';
 
 @Component({
   selector: 'app-project-application-form-partner-address',
   templateUrl: './project-application-form-partner-address.component.html',
   styleUrls: ['./project-application-form-partner-address.component.scss'],
+  providers: [FormService],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class ProjectApplicationFormPartnerAddressComponent extends ViewEditForm implements OnChanges {
-  Permission = Permission;
-
+export class ProjectApplicationFormPartnerAddressComponent implements OnInit, OnChanges {
   @Input()
   partnerId: number;
   @Input()
@@ -33,10 +28,27 @@ export class ProjectApplicationFormPartnerAddressComponent extends ViewEditForm 
   @Input()
   editable: boolean;
 
-  @Output()
-  update = new EventEmitter<InputProjectPartnerAddress[]>();
-
-  partnerAddressForm: FormGroup = this.getAddressForm();
+  partnerAddressForm: FormGroup = this.formBuilder.group({
+    organization: this.formBuilder.group({
+      country: [''],
+      region2: [''],
+      region3: [''],
+      street: ['', Validators.maxLength(50)],
+      houseNumber: ['', Validators.maxLength(20)],
+      postalCode: ['', Validators.maxLength(20)],
+      city: ['', Validators.maxLength(50)],
+      homepage: ['', Validators.maxLength(250)],
+    }),
+    department: this.formBuilder.group({
+      country: [''],
+      region2: [''],
+      region3: [''],
+      street: ['', Validators.maxLength(50)],
+      houseNumber: ['', Validators.maxLength(20)],
+      postalCode: ['', Validators.maxLength(20)],
+      city: ['', Validators.maxLength(50)],
+    })
+  });
 
   private static isOrganizationDtoEmpty(partnerOrganizationDetails: InputProjectPartnerAddress): boolean {
     return !(partnerOrganizationDetails.country || partnerOrganizationDetails.nutsRegion2 || partnerOrganizationDetails.nutsRegion3 ||
@@ -57,31 +69,20 @@ export class ProjectApplicationFormPartnerAddressComponent extends ViewEditForm 
   }
 
   constructor(private formBuilder: FormBuilder,
-              protected changeDetectorRef: ChangeDetectorRef,
-              private nutsService: NutsImportService,
-              private sideNavService: SideNavService) {
-    super(changeDetectorRef);
+              private formService: FormService,
+              private partnerStore: ProjectPartnerStore) {
   }
 
-  protected enterViewMode(): void {
-    this.sideNavService.setAlertStatus(false);
-    this.initPartnerOrganizationMainAddressFields();
-    this.initPartnerOrganizationDepartmentAddressFields();
-  }
-
-  protected enterEditMode(): void {
-    this.sideNavService.setAlertStatus(true);
+  ngOnInit(): void {
+    this.formService.init(this.partnerAddressForm);
+    this.resetForm();
   }
 
   ngOnChanges(changes: SimpleChanges): void {
     if (changes.partnerId) {
-      this.partnerAddressForm = this.getAddressForm();
-      this.changeFormState$.next(FormState.VIEW);
+      this.resetForm();
+      this.formService.setDirty(false);
     }
-  }
-
-  getForm(): FormGroup | null {
-    return this.partnerAddressForm;
   }
 
   get organization(): { [key: string]: AbstractControl } {
@@ -90,6 +91,12 @@ export class ProjectApplicationFormPartnerAddressComponent extends ViewEditForm 
 
   get department(): { [key: string]: AbstractControl } {
     return (this.partnerAddressForm.controls?.department as FormGroup).controls;
+  }
+
+  resetForm(): void {
+    this.formService.setEditable(this.editable);
+    this.initPartnerOrganizationMainAddressFields();
+    this.initPartnerOrganizationDepartmentAddressFields();
   }
 
   onSubmit(): void {
@@ -115,13 +122,17 @@ export class ProjectApplicationFormPartnerAddressComponent extends ViewEditForm 
       city: this.department.city.value,
       homepage: ''
     };
-    this.update.emit(ProjectApplicationFormPartnerAddressComponent.getValidatedDataToEmit(
-      partnerOrganizationAddress, partnerDepartmentAddress)
-    );
-  }
 
-  onCancel(): void {
-    this.changeFormState$.next(FormState.VIEW);
+    this.partnerStore.updatePartnerAddress(
+      ProjectApplicationFormPartnerAddressComponent.getValidatedDataToEmit(
+        partnerOrganizationAddress, partnerDepartmentAddress
+      )
+    )
+      .pipe(
+        take(1),
+        tap(() => this.formService.setSuccess('project.partner.main-address.save.success')),
+        catchError(error => this.formService.setError(error))
+      ).subscribe();
   }
 
   private initPartnerOrganizationMainAddressFields(): void {
@@ -147,29 +158,5 @@ export class ProjectApplicationFormPartnerAddressComponent extends ViewEditForm 
     this.department.houseNumber.setValue(partnerMainAddress?.houseNumber);
     this.department.postalCode.setValue(partnerMainAddress?.postalCode);
     this.department.city.setValue(partnerMainAddress?.city);
-  }
-
-  private getAddressForm(): FormGroup {
-    return this.formBuilder.group({
-      organization: this.formBuilder.group({
-        country: [''],
-        region2: [''],
-        region3: [''],
-        street: ['', Validators.maxLength(50)],
-        houseNumber: ['', Validators.maxLength(20)],
-        postalCode: ['', Validators.maxLength(20)],
-        city: ['', Validators.maxLength(50)],
-        homepage: ['', Validators.maxLength(250)],
-      }),
-      department: this.formBuilder.group({
-        country: [''],
-        region2: [''],
-        region3: [''],
-        street: ['', Validators.maxLength(50)],
-        houseNumber: ['', Validators.maxLength(20)],
-        postalCode: ['', Validators.maxLength(20)],
-        city: ['', Validators.maxLength(50)],
-      })
-    });
   }
 }

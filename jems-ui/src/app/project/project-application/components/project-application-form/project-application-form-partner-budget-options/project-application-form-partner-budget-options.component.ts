@@ -1,6 +1,5 @@
 import {
   ChangeDetectionStrategy,
-  ChangeDetectorRef,
   Component,
   EventEmitter,
   Input, OnChanges,
@@ -9,20 +8,28 @@ import {
 } from '@angular/core';
 import {Tools} from '../../../../../common/utils/tools';
 import {FormBuilder, FormGroup, Validators} from '@angular/forms';
-import {ViewEditForm} from '@common/components/forms/view-edit-form';
 import {BudgetOptions} from '../../../model/budget-options';
-import {FormState} from '@common/components/forms/form-state';
+import {FormService} from '@common/components/section/form/form.service';
+import {Observable} from 'rxjs';
+import {HttpErrorResponse} from '@angular/common/http';
+import {BaseComponent} from '@common/components/base-component';
+import {takeUntil, tap} from 'rxjs/operators';
 
 @Component({
   selector: 'app-project-application-form-partner-budget-options',
   templateUrl: './project-application-form-partner-budget-options.component.html',
   styleUrls: ['./project-application-form-partner-budget-options.component.scss'],
+  providers: [FormService],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class ProjectApplicationFormPartnerBudgetOptionsComponent extends ViewEditForm implements OnInit, OnChanges {
-  static ID = 'ProjectApplicationFormPartnerBudgetOptionsComponent';
-  ProjectApplicationFormPartnerBudgetOptionsComponent = ProjectApplicationFormPartnerBudgetOptionsComponent;
+export class ProjectApplicationFormPartnerBudgetOptionsComponent extends BaseComponent implements OnInit, OnChanges {
   Tools = Tools;
+
+  // TODO: remove these and adapt the component to save independently
+  @Input()
+  error$: Observable<HttpErrorResponse | null>;
+  @Input()
+  success$: Observable<any>;
 
   @Input()
   editable: boolean;
@@ -36,12 +43,14 @@ export class ProjectApplicationFormPartnerBudgetOptionsComponent extends ViewEdi
 
   optionsForm = this.formBuilder.group({
     officeAdministrationFlatRateActive: [''],
-    officeAdministrationFlatRate: ['',
-                                   Validators.compose([Validators.max(15), Validators.min(1), Validators.required])
+    officeAdministrationFlatRate: [
+      '',
+      Validators.compose([Validators.max(15), Validators.min(1), Validators.required])
     ],
     staffCostsFlatRateActive: [''],
-    staffCostsFlatRate: ['',
-                         Validators.compose([Validators.max(20), Validators.min(1), Validators.required])
+    staffCostsFlatRate: [
+      '',
+      Validators.compose([Validators.max(20), Validators.min(1), Validators.required])
     ]
   });
 
@@ -58,18 +67,30 @@ export class ProjectApplicationFormPartnerBudgetOptionsComponent extends ViewEdi
   };
 
   constructor(private formBuilder: FormBuilder,
-              protected changeDetectorRef: ChangeDetectorRef) {
-    super(changeDetectorRef);
+              private formService: FormService) {
+    super();
   }
 
   ngOnInit(): void {
-    super.ngOnInit();
-    this.discard();
+    this.formService.init(this.optionsForm);
+    this.resetForm();
+    this.error$
+      .pipe(
+        takeUntil(this.destroyed$),
+        tap(err => this.formService.setError(err))
+      )
+      .subscribe();
+    this.success$
+      .pipe(
+        takeUntil(this.destroyed$),
+        tap(() => this.formService.setSuccess('project.partner.budget.options.save.success'))
+      )
+      .subscribe();
   }
 
   ngOnChanges(changes: SimpleChanges): void {
     if (changes.officeAdministrationFlatRate || changes.staffCostsFlatRate) {
-      this.discard();
+      this.resetForm();
     }
   }
 
@@ -85,14 +106,13 @@ export class ProjectApplicationFormPartnerBudgetOptionsComponent extends ViewEdi
       ));
   }
 
-  discard(): void {
+  resetForm(): void {
     this.optionsForm.patchValue({
       officeAdministrationFlatRateActive: Number.isInteger(this.officeAdministrationFlatRate as any),
       officeAdministrationFlatRate: this.officeAdministrationFlatRate,
       staffCostsFlatRateActive: Number.isInteger(this.staffCostsFlatRate as any),
       staffCostsFlatRate: this.staffCostsFlatRate
     });
-    this.changeFormState$.next(FormState.VIEW);
   }
 
   protected enterEditMode(): void {

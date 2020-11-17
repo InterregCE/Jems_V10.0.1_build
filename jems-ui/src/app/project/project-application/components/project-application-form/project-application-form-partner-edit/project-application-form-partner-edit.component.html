@@ -1,175 +1,153 @@
-<form [formGroup]="partnerForm" class="wrapper">
-    <h4 *ngIf="!partner?.abbreviation">{{'project.application.form.partner.add' | translate}}</h4>
-    <h5><span>{{'project.partner.detail.title' | translate}}</span>
-        <span *ngxPermissionsExcept="Permission.PROGRAMME_USER">
-            <button *ngIf="formState === FormState.VIEW && editable" class="header-button" color="primary" mat-raised-button
-                    (click)="changeFormState$.next(FormState.EDIT)">
-                {{'common.edit.label' | translate}}
-            </button>
-        </span>
-    </h5>
-    <mat-form-field *ngIf="formState === FormState.VIEW && partner.sortNumber" class="field">
-        <mat-label>{{'project.application.form.partner.table.number' | translate}}</mat-label>
-        <input name="sortNumber" formControlName="sortNumber" matInput required>
-    </mat-form-field>
-    <mat-form-field *ngIf="formState === FormState.VIEW" class="field">
-        <mat-label>{{'project.partner.role.label' | translate}}</mat-label>
-        <input ngModel="{{('common.label.project.partner.role.' + controls?.role?.value) | translate}}"
-               name="role" formControlName="fakeRole" matInput required>
-    </mat-form-field>
-    <div *ngIf="formState === FormState.EDIT" class="field">
-        <div [class.valid-role]="!controls?.role?.errors"
-             [class.invalid-role]="!!controls?.role?.errors">
-            {{'project.partner.role.label' | translate}} *
+<app-form (save)="onSubmit(controls)"
+          (discard)="discard()">
+    <form id="partner-form" [formGroup]="partnerForm">
+        <h4 *ngIf="!partner?.abbreviation">{{'project.application.form.partner.add' | translate}}</h4>
+        <h5><span>{{'project.partner.detail.title' | translate}}</span></h5>
+
+        <mat-form-field *ngIf="!editable && partner.sortNumber" class="w-50">
+            <mat-label>{{'project.application.form.partner.table.number' | translate}}</mat-label>
+            <input name="sortNumber" formControlName="sortNumber" matInput required>
+        </mat-form-field>
+        <mat-form-field *ngIf="!editable" class="w-50">
+            <mat-label>{{'project.partner.role.label' | translate}}</mat-label>
+            <input ngModel="{{('common.label.project.partner.role.' + controls?.role?.value) | translate}}"
+                   name="role" formControlName="fakeRole" matInput required>
+        </mat-form-field>
+
+        <div *ngIf="editable" class="toggle-button-field">
+            <div [class.valid-role]="!controls?.role?.errors"
+                 [class.invalid-role]="!!controls?.role?.errors">
+                {{'project.partner.role.label' | translate}} *
+            </div>
+            <mat-button-toggle-group>
+                <mat-button-toggle
+                        [checked]="controls?.role.value === RoleEnum.PARTNER"
+                        (change)="setRole(RoleEnum.PARTNER)"
+                        [value]="RoleEnum.PARTNER">
+                    {{'common.label.project.partner.role.PARTNER' | translate}}
+                </mat-button-toggle>
+                <mat-button-toggle
+                        [checked]="controls?.role.value === RoleEnum.LEADPARTNER"
+                        (change)="setRole(RoleEnum.LEADPARTNER)"
+                        [value]="RoleEnum.LEADPARTNER">
+                    {{'common.label.project.partner.role.LEAD_PARTNER' | translate}}
+                </mat-button-toggle>
+            </mat-button-toggle-group>
+            <mat-error>
+                <app-form-field-errors
+                        [errors]="controls?.role?.errors"
+                        [messages]="roleErrors">
+                </app-form-field-errors>
+            </mat-error>
         </div>
-        <mat-button-toggle-group>
-            <mat-button-toggle
-                    [checked]="controls?.role.value === RoleEnum.PARTNER"
-                    (change)="controls?.role.setValue(RoleEnum.PARTNER)"
-                    [value]="RoleEnum.PARTNER">
-                {{'common.label.project.partner.role.PARTNER' | translate}}
-            </mat-button-toggle>
-            <mat-button-toggle
-                    [checked]="controls?.role.value === RoleEnum.LEADPARTNER"
-                    (change)="controls?.role.setValue(RoleEnum.LEADPARTNER)"
-                    [value]="RoleEnum.LEADPARTNER">
-                {{'common.label.project.partner.role.LEAD_PARTNER' | translate}}
-            </mat-button-toggle>
-        </mat-button-toggle-group>
-        <mat-error>
-            <app-form-field-errors
-                    [errors]="controls?.role?.errors"
-                    [messages]="roleErrors">
-            </app-form-field-errors>
-        </mat-error>
-    </div>
-    <mat-form-field class="field">
-        <mat-label>{{'project.partner.name.label' | translate}}</mat-label>
-        <input name="name" formControlName="name" matInput placeholder="{{'project.partner.name.label' | translate}}"
-               required>
-        <mat-error>
-            <app-form-field-errors
-                    [errors]="controls?.name?.errors"
-                    [messages]="nameErrors">
-            </app-form-field-errors>
-        </mat-error>
-    </mat-form-field>
-    <mat-form-field class="field">
-        <mat-label>{{'project.organization.original.name.label' | translate}}</mat-label>
-        <input name="nameInOriginalLanguage" formControlName="nameInOriginalLanguage" matInput
-               placeholder="{{'project.organization.original.name.label' | translate}}">
-        <mat-error>
-            <app-form-field-errors
-                    [errors]="controls?.nameInOriginalLanguage?.errors"
-                    [messages]="nameInOriginalLanguageErrors">
-            </app-form-field-errors>
-        </mat-error>
-    </mat-form-field>
-    <mat-form-field class="field">
-        <mat-label>{{'project.organization.english.name.label' | translate}}</mat-label>
-        <input name="nameInEnglish" formControlName="nameInEnglish" matInput
-               placeholder="{{'project.organization.english.name.label' | translate}}">
-        <mat-error>
-            <app-form-field-errors
-                    [errors]="controls?.nameInEnglish?.errors"
-                    [messages]="nameInEnglishErrors">
-            </app-form-field-errors>
-        </mat-error>
-    </mat-form-field>
-    <mat-form-field class="field">
-        <mat-label>{{'project.organization.department.label' | translate}}</mat-label>
-        <input name="department" formControlName="department" matInput
-               placeholder="{{'project.organization.department.label' | translate}}">
-        <mat-error>
-            <app-form-field-errors
-                    [errors]="controls?.department?.errors"
-                    [messages]="departmentErrors">
-            </app-form-field-errors>
-        </mat-error>
-    </mat-form-field>
 
-    <h5>{{'project.partner.detail.title.legal.financial' | translate}}</h5>
+        <mat-form-field class="w-50">
+            <mat-label>{{'project.partner.name.label' | translate}}</mat-label>
+            <input name="abbreviation" formControlName="abbreviation" matInput
+                   placeholder="{{'project.partner.name.label' | translate}}"
+                   required>
+            <mat-error>
+                <app-form-field-errors
+                        [errors]="controls?.name?.errors"
+                        [messages]="abbreviationErrors">
+                </app-form-field-errors>
+            </mat-error>
+        </mat-form-field>
 
-    <mat-form-field class="field">
-        <mat-label>{{'project.partner.type' | translate}}</mat-label>
-        <mat-select name="partnerType" formControlName="partnerType"
-                    [disableOptionCentering]="true"
-                    panelClass="material-select-panel">
-            <mat-option *ngFor="let type of partnerTypeEnums" [value]="type">
-                {{'project.application.form.relevance.target.group.' + type | translate}}
-            </mat-option>
-        </mat-select>
-    </mat-form-field>
+        <mat-form-field class="w-50">
+            <mat-label>{{'project.organization.original.name.label' | translate}}</mat-label>
+            <input name="nameInOriginalLanguage" formControlName="nameInOriginalLanguage" matInput
+                   placeholder="{{'project.organization.original.name.label' | translate}}">
+            <mat-error>
+                <app-form-field-errors
+                        [errors]="controls?.nameInOriginalLanguage?.errors"
+                        [messages]="nameInOriginalLanguageErrors">
+                </app-form-field-errors>
+            </mat-error>
+        </mat-form-field>
 
-    <mat-form-field  class="field">
-        <mat-label>{{'project.partner.legal.status' | translate}}</mat-label>
-        <mat-select name="legalStatus" formControlName="legalStatus"
-                    [disableOptionCentering]="true"
-                    required
-                    panelClass="material-select-panel">
-            <mat-option *ngFor="let status of legalStatuses" [value]="status.id">
-                {{status.description || 'programme.legal.status.' + status.id | translate}}
-            </mat-option>
-        </mat-select>
-        <mat-error>
-            <app-form-field-errors
-                    [errors]="controls?.legalStatus?.errors"
-                    [messages]="legalStatusErrors">
-            </app-form-field-errors>
-        </mat-error>
-    </mat-form-field>
+        <mat-form-field class="w-50">
+            <mat-label>{{'project.organization.english.name.label' | translate}}</mat-label>
+            <input name="nameInEnglish" formControlName="nameInEnglish" matInput
+                   placeholder="{{'project.organization.english.name.label' | translate}}">
+            <mat-error>
+                <app-form-field-errors
+                        [errors]="controls?.nameInEnglish?.errors"
+                        [messages]="nameInEnglishErrors">
+                </app-form-field-errors>
+            </mat-error>
+        </mat-form-field>
 
-    <mat-form-field class="field">
-        <mat-label>{{'project.partner.vat' | translate}}</mat-label>
-        <input name="vat" formControlName="vat" matInput>
-        <mat-error>
-            <app-form-field-errors
-                    [errors]="controls?.vat?.errors"
-                    [messages]="vatErrors">
-            </app-form-field-errors>
-        </mat-error>
-    </mat-form-field>
+        <mat-form-field class="w-50">
+            <mat-label>{{'project.organization.department.label' | translate}}</mat-label>
+            <input name="department" formControlName="department" matInput
+                   placeholder="{{'project.organization.department.label' | translate}}">
+            <mat-error>
+                <app-form-field-errors
+                        [errors]="controls?.department?.errors"
+                        [messages]="departmentErrors">
+                </app-form-field-errors>
+            </mat-error>
+        </mat-form-field>
 
-    <p class="intro-text-small">{{'project.partner.recoverVat.intro.text' | translate}}</p>
-    <div class="field toggle-button-field">
-        <mat-button-toggle-group [disabled]="formState === FormState.VIEW">
-            <mat-button-toggle
-                    [checked]="controls?.recoverVat.value === true"
-                    (change)="controls?.recoverVat.setValue(true)"
-                    [value]="true">
-                {{'common.label.project.partner.recoverVat.true' | translate}}
-            </mat-button-toggle>
-            <mat-button-toggle
-                    [checked]="controls?.recoverVat.value === false"
-                    (change)="controls?.recoverVat.setValue(false)"
-                    [value]="false">
-                {{'common.label.project.partner.recoverVat.false' | translate}}
-            </mat-button-toggle>
-        </mat-button-toggle-group>
-    </div>
+        <h5>{{'project.partner.detail.title.legal.financial' | translate}}</h5>
 
-    <div *ngIf="formState === FormState.EDIT" class="buttons">
-        <button mat-stroked-button class="button"
-                type="button"
-                (click)="onCancel()">
-            {{'common.cancel.label' | translate}}
-        </button>
-        <button mat-raised-button color="primary" class="button"
-                type="button"
-                [disabled]="partnerForm.invalid"
-                (click)="onSubmit(controls)">
-            {{'common.save.label' | translate}}
-        </button>
-    </div>
-    <app-alert
-            [show]="!submitted && (showSuccessMessage$ | async)"
-            [type]="Alert.SUCCESS">
-        <p>{{'project.partner.save.success' | translate}}</p>
-    </app-alert>
-    <app-alert *ngIf="error$ | async as error"
-               [show]="!submitted && !!error.i18nKey && error.i18nKey !== 'project.partner.role.lead.already.existing'"
-               [type]="Alert.ERROR">
-        <p>{{error.i18nKey | translate}}</p>
-    </app-alert>
-</form>
+        <mat-form-field class="w-50">
+            <mat-label>{{'project.partner.type' | translate}}</mat-label>
+            <mat-select name="partnerType" formControlName="partnerType"
+                        [disableOptionCentering]="true"
+                        panelClass="material-select-panel">
+                <mat-option *ngFor="let type of partnerTypeEnums" [value]="type">
+                    {{'project.application.form.relevance.target.group.' + type | translate}}
+                </mat-option>
+            </mat-select>
+        </mat-form-field>
 
+        <mat-form-field class="w-50">
+            <mat-label>{{'project.partner.legal.status' | translate}}</mat-label>
+            <mat-select name="legalStatusId" formControlName="legalStatusId"
+                        [disableOptionCentering]="true"
+                        required
+                        panelClass="material-select-panel">
+                <mat-option *ngFor="let status of legalStatuses" [value]="status.id">
+                    {{status.description || 'programme.legal.status.' + status.id | translate}}
+                </mat-option>
+            </mat-select>
+            <mat-error>
+                <app-form-field-errors
+                        [errors]="controls?.legalStatus?.errors"
+                        [messages]="legalStatusErrors">
+                </app-form-field-errors>
+            </mat-error>
+        </mat-form-field>
+
+        <mat-form-field class="w-50">
+            <mat-label>{{'project.partner.vat' | translate}}</mat-label>
+            <input name="vat" formControlName="vat" matInput>
+            <mat-error>
+                <app-form-field-errors
+                        [errors]="controls?.vat?.errors"
+                        [messages]="vatErrors">
+                </app-form-field-errors>
+            </mat-error>
+        </mat-form-field>
+
+        <p class="intro-text-small">{{'project.partner.recoverVat.intro.text' | translate}}</p>
+        <div class="toggle-button-field">
+            <mat-button-toggle-group [disabled]="!editable">
+                <mat-button-toggle
+                        [checked]="controls?.vatRecovery.value === true"
+                        (change)="setVat(true)"
+                        [value]="true">
+                    {{'common.label.project.partner.recoverVat.true' | translate}}
+                </mat-button-toggle>
+                <mat-button-toggle
+                        [checked]="controls?.vatRecovery.value === false"
+                        (change)="setVat(false)"
+                        [value]="false">
+                    {{'common.label.project.partner.recoverVat.false' | translate}}
+                </mat-button-toggle>
+            </mat-button-toggle-group>
+        </div>
+    </form>
+</app-form>

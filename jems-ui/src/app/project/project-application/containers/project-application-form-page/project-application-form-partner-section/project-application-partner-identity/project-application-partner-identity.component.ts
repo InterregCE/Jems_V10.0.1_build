@@ -33,10 +33,6 @@ export class ProjectApplicationPartnerIdentityComponent extends BaseComponent im
       return;
     }
     // creating a new partner
-    this.partnerStore.init(null);
-  }
-
-  redirectToPartnerOverview(): void {
-    this.router.navigate(['app', 'project', 'detail', this.projectId, 'applicationFormPartner']);
+    this.partnerStore.init(null, this.projectId);
   }
 }

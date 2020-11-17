@@ -9,7 +9,6 @@ import {
   ProjectPartnerBudgetService,
   CallService,
 } from '@cat/api';
-import {I18nValidationError} from '@common/validation/i18n-validation-error';
 import {catchError, filter, map, mergeMap, startWith, tap, withLatestFrom} from 'rxjs/operators';
 import {ActivatedRoute} from '@angular/router';
 import {HttpErrorResponse} from '@angular/common/http';
@@ -26,19 +25,19 @@ export class ProjectApplicationPartnerCoFinancingPageComponent {
 
   projectId = this.activatedRoute?.snapshot?.params?.projectId;
 
-  saveError$ = new Subject<I18nValidationError | null>();
+  saveError$ = new Subject<HttpErrorResponse | null>();
   saveSuccess$ = new Subject<boolean>();
   saveFinances$ = new Subject<InputProjectPartnerCoFinancingWrapper>();
   cancelEdit$ = new Subject<void>();
 
-  private initialCoFinancing$: Observable<OutputProjectPartnerCoFinancing[]> = this.partnerStore.getProjectPartner()
+  private initialCoFinancing$: Observable<OutputProjectPartnerCoFinancing[]> = this.partnerStore.partner$
     .pipe(
       filter(partner => !!partner.id),
       map(partner => partner.financing),
     );
   private saveCoFinancing$: Observable<OutputProjectPartnerCoFinancing[]> = this.saveFinances$
     .pipe(
-      withLatestFrom(this.partnerStore.getProjectPartner()),
+      withLatestFrom(this.partnerStore.partner$),
       mergeMap(([finances, partner]) =>
         this.projectPartnerService.updateProjectPartnerCoFinancing(partner.id, this.projectId, finances)
       ),
@@ -46,18 +45,18 @@ export class ProjectApplicationPartnerCoFinancingPageComponent {
       tap(() => this.saveSuccess$.next(true)),
       tap(() => this.saveError$.next(null)),
       catchError((error: HttpErrorResponse) => {
-        this.saveError$.next(error.error);
+        this.saveError$.next(error);
         throw error;
       })
     );
 
   private amountChanged$ = this.partnerStore.totalAmountChanged$
     .pipe(
-      withLatestFrom(this.partnerStore.getProjectPartner()),
+      withLatestFrom(this.partnerStore.partner$),
       mergeMap(([, partner]) => this.projectPartnerBudgetService.getTotal(partner.id)),
     );
 
-  private initialAmount$: Observable<number> = this.partnerStore.getProjectPartner()
+  private initialAmount$: Observable<number> = this.partnerStore.partner$
     .pipe(
       filter(partner => !!partner.id),
       mergeMap(partner => this.projectPartnerBudgetService.getTotal(partner.id)),

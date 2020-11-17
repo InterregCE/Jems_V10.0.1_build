@@ -30,48 +30,6 @@ export class ProjectApplicationFormPartnerDetailComponent extends BaseComponent 
     ProjectApplicationFormPartnerDetailComponent.name + this.partnerId
   );
 
-  partnerContactSaveSuccess$ = new Subject<boolean>();
-  partnerContactSaveError$ = new Subject<I18nValidationError | null>();
-  savePartnerContact$ = new Subject<InputProjectContact[]>();
-
-  partnerContributionSaveSuccess$ = new Subject<boolean>();
-  partnerContributionSaveError$ = new Subject<I18nValidationError | null>();
-  savePartnerContribution$ = new Subject<InputProjectPartnerContribution>();
-
-  private updatedPartnerContact$ = this.savePartnerContact$
-    .pipe(
-      mergeMap(partnerUpdate =>
-        this.partnerService.updateProjectPartnerContact(this.partnerId, this.projectId, partnerUpdate)
-      ),
-      tap(() => this.partnerContactSaveError$.next(null)),
-      tap(() => this.partnerContactSaveSuccess$.next(true)),
-      tap(saved => Log.info('Updated partner contact:', this, saved)),
-      catchError((error: HttpErrorResponse) => {
-        this.partnerContactSaveError$.next(error.error);
-        return of();
-      })
-    );
-
-  private updatedPartnerContribution$ = this.savePartnerContribution$
-    .pipe(
-      mergeMap(partnerContributionUpdate =>
-        this.partnerService.updateProjectPartnerContribution(this.partnerId, this.projectId, partnerContributionUpdate)
-      ),
-      tap(() => this.partnerContributionSaveError$.next(null)),
-      tap(() => this.partnerContributionSaveSuccess$.next(true)),
-      tap(saved => Log.info('Updated partner contribution:', this, saved)),
-      catchError((error: HttpErrorResponse) => {
-        this.partnerContributionSaveError$.next(error.error);
-        return of();
-      })
-    );
-
-  partner$ = merge(
-    this.partnerStore.getProjectPartner(),
-    this.updatedPartnerContact$,
-    this.updatedPartnerContribution$,
-  );
-
   constructor(private partnerService: ProjectPartnerService,
               private activatedRoute: ActivatedRoute,
               public projectStore: ProjectStore,
@@ -83,7 +41,7 @@ export class ProjectApplicationFormPartnerDetailComponent extends BaseComponent 
       takeUntil(this.destroyed$),
       map(params => params.partnerId),
       distinctUntilChanged(),
-      tap(id => this.partnerStore.init(id)),
+      tap(id => this.partnerStore.init(id, this.projectId)),
     ).subscribe();
   }
 

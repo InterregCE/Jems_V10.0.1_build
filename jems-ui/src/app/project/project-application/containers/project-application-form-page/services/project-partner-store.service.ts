@@ -4,128 +4,85 @@ import {
   InputProjectPartnerUpdate,
   OutputProjectPartnerDetail,
   ProjectPartnerService,
-  InputProjectPartnerAddress
+  InputProjectPartnerAddress,
+  InputProjectContact,
+  InputProjectPartnerContribution
 } from '@cat/api';
-import {combineLatest, merge, Observable, of, ReplaySubject, Subject} from 'rxjs';
+import {Observable, ReplaySubject, Subject} from 'rxjs';
 import {
-  catchError,
-  distinctUntilChanged,
-  map,
-  mergeMap,
-  shareReplay,
-  switchMap,
-  tap,
-  withLatestFrom
+  tap
 } from 'rxjs/operators';
 import {Log} from '../../../../../common/utils/log';
-import {ProjectStore} from '../../project-application-detail/services/project-store.service';
-import {HttpErrorResponse} from '@angular/common/http';
-import {I18nValidationError} from '@common/validation/i18n-validation-error';
 import {ProjectApplicationFormSidenavService} from './project-application-form-sidenav.service';
-import {Router} from '@angular/router';
 
 @Injectable()
 export class ProjectPartnerStore {
 
-  private partnerId$ = new ReplaySubject<number | null>(1);
-  private projectId$ = this.projectStore.getProject()
-    .pipe(
-      map(project => project.id),
-      shareReplay(1)
-    );
+  private partnerId: number;
+  private projectId: number;
 
-  savePartner$ = new Subject<InputProjectPartnerUpdate>();
-  createPartner$ = new Subject<InputProjectPartnerCreate>();
-  partnerSaveSuccess$ = new Subject<boolean>();
-  partnerSaveError$ = new Subject<I18nValidationError | null>();
-
-  savePartnerAddresses$ = new Subject<InputProjectPartnerAddress[]>();
   totalAmountChanged$ = new Subject<boolean>();
-
-  private partnerById$ = combineLatest([this.partnerId$, this.projectId$])
-    .pipe(
-      distinctUntilChanged(),
-      mergeMap(([partnerId, projectId]) => partnerId
-        ? this.partnerService.getProjectPartnerById(partnerId, projectId)
-        : of({})
-      ),
-      tap(projectPartner => Log.info('Fetched project partner:', this, projectPartner)),
-    );
-
-
-  private savedPartner$ = this.savePartner$
-    .pipe(
-      withLatestFrom(this.projectId$),
-      switchMap(([partnerUpdate, projectId]) =>
-        this.partnerService.updateProjectPartner(projectId, partnerUpdate)
-          .pipe(
-            catchError((error: HttpErrorResponse) => {
-              this.partnerSaveError$.next(error.error);
-              return of();
-            })
-          )
-      ),
-      tap(() => this.partnerSaveError$.next(null)),
-      tap(() => this.partnerSaveSuccess$.next(true)),
-      tap(saved => Log.info('Updated partner:', this, saved))
-    );
-
-  private createdPartner$ = this.createPartner$
-    .pipe(
-      withLatestFrom(this.projectId$),
-      switchMap(([partnerCreate, projectId]) =>
-        this.partnerService.createProjectPartner(projectId, partnerCreate)
-          .pipe(
-            map(created => ({projectId, partner: created})),
-            catchError((error: HttpErrorResponse) => {
-              this.partnerSaveError$.next(error.error);
-              return of();
-            })
-          )
-      ),
-      tap(saved => Log.info('Created partner:', this, saved)),
-      tap((created: any) => this.projectApplicationFormSidenavService.refreshPartners(created.projectId)),
-      tap((created: any) => this.router.navigate([
-        'app', 'project', 'detail', created.projectId, 'applicationFormPartner', 'detail', created.partner.id
-      ])),
-    );
-
-  private updatedPartnerAddresses$ = this.savePartnerAddresses$
-    .pipe(
-      withLatestFrom(this.partnerId$, this.projectId$),
-      mergeMap(([addresses, partnerId, projectId]) =>
-        this.partnerService.updateProjectPartnerAddress(partnerId as any, projectId, addresses)
-      ),
-      tap(() => this.partnerSaveError$.next(null)),
-      tap(() => this.partnerSaveSuccess$.next(true)),
-      tap(saved => Log.info('Updated partner addresses:', this, saved)),
-      catchError((error: HttpErrorResponse) => {
-        this.partnerSaveError$.next(error.error);
-        return of();
-      })
-    );
-
-  private partner$ = merge(
-    this.partnerById$,
-    this.savedPartner$,
-    this.createdPartner$,
-    this.updatedPartnerAddresses$,
-  )
-    .pipe(
-      shareReplay(1)
-    );
+  partner$ = new ReplaySubject<OutputProjectPartnerDetail | any>(1);
 
   constructor(private partnerService: ProjectPartnerService,
-              private projectStore: ProjectStore,
-              private router: Router,
               private projectApplicationFormSidenavService: ProjectApplicationFormSidenavService) {
   }
 
-  init(partnerId: number | string | null): void {
-    this.partnerId$.next(Number(partnerId));
+  init(partnerId: number | string | null, projectId: number): void {
+    if (partnerId === this.partnerId) {
+      return;
+    }
+    this.partnerId = Number(partnerId);
+    this.projectId = projectId;
+    if (!this.partnerId || !this.projectId) {
+      this.partner$.next({});
+      return;
+    }
+    this.partnerService.getProjectPartnerById(this.partnerId, this.projectId)
+      .pipe(
+        tap(projectPartner => Log.info('Fetched project partner:', this, projectPartner)),
+        tap(projectPartner => this.partner$.next(projectPartner)),
+      ).subscribe();
   }
 
-  getProjectPartner(): Observable<OutputProjectPartnerDetail | any> {
-    return this.partner$;
+  savePartner(partner: InputProjectPartnerUpdate): Observable<OutputProjectPartnerDetail> {
+    return this.partnerService.updateProjectPartner(this.projectId, partner)
+      .pipe(
+        tap(saved => this.partner$.next(saved)),
+        tap(saved => Log.info('Updated partner:', this, saved))
+      );
+  }
+
+  createPartner(partner: InputProjectPartnerCreate): Observable<OutputProjectPartnerDetail> {
+    return this.partnerService.createProjectPartner(this.projectId, partner)
+      .pipe(
+        tap(created => this.partner$.next(created)),
+        tap(created => Log.info('Created partner:', this, created)),
+        tap(() => this.projectApplicationFormSidenavService.refreshPartners(this.projectId)),
+      );
+  }
+
+  updatePartnerAddress(addresses: InputProjectPartnerAddress[]): Observable<OutputProjectPartnerDetail> {
+    return this.partnerService.updateProjectPartnerAddress(this.partnerId, this.projectId, addresses)
+      .pipe(
+        tap(saved => this.partner$.next(saved)),
+        tap(saved => Log.info('Updated partner addresses:', this, saved)),
+      );
+  }
+
+  updatePartnerContact(contacts: InputProjectContact[]): Observable<OutputProjectPartnerDetail> {
+    return this.partnerService.updateProjectPartnerContact(this.partnerId, this.projectId, contacts)
+      .pipe(
+        tap(saved => this.partner$.next(saved)),
+        tap(saved => Log.info('Updated partner contact:', this, saved)),
+      );
+  }
+
+  updatePartnerContribution(contribution: InputProjectPartnerContribution): Observable<OutputProjectPartnerDetail> {
+    return this.partnerService.updateProjectPartnerContribution(this.partnerId, this.projectId, contribution)
+      .pipe(
+        tap(saved => this.partner$.next(saved)),
+        tap(saved => Log.info('Updated partner contribution:', this, saved)),
+      );
   }
 }

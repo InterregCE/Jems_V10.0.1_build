@@ -1,4 +1,4 @@
-<div *ngIf="partner$ | async as partner">
+<div *ngIf="partnerStore.partner$ | async as partner">
     <app-breadcrumb></app-breadcrumb>
     <h4 *ngIf="partner.abbreviation">
         {{'common.label.project.partner.role.' + partner.role | translate}}
@@ -15,20 +15,14 @@
         </mat-tab>
         <mat-tab label="{{'partner.tab.contact' | translate}}">
             <app-project-application-form-partner-contact
-                    [success$]="partnerContactSaveSuccess$"
-                    [error$]="partnerContactSaveError$"
                     [partner]="partner"
-                    [editable]="projectStore.projectEditable$ | async"
-                    (update)="savePartnerContact$.next($event)">
+                    [editable]="projectStore.projectEditable$ | async">
             </app-project-application-form-partner-contact>
         </mat-tab>
         <mat-tab label="{{'partner.tab.motivation' | translate}}">
             <app-project-application-form-partner-contribution
-                    [success$]="partnerContributionSaveSuccess$"
-                    [error$]="partnerContributionSaveError$"
                     [partner]="partner"
-                    [editable]="projectStore.projectEditable$ | async"
-                    (update)="savePartnerContribution$.next($event)">
+                    [editable]="projectStore.projectEditable$ | async">
             </app-project-application-form-partner-contribution>
         </mat-tab>
         <mat-tab label="{{'partner.tab.budget' | translate}}">
