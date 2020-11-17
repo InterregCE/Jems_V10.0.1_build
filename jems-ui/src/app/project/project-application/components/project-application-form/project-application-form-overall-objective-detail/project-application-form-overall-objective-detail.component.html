@@ -1,8 +1,8 @@
 <form [formGroup]="overallObjectiveForm">
     <h5 class="header" id="projectOverallObjectiveHeading">
         {{'project.application.form.section.part.c.subsection.one' | translate}}
-    <span class="header-button" *ngxPermissionsExcept="Permission.PROGRAMME_USER">
-        <button color="primary" mat-raised-button
+    <span *ngxPermissionsExcept="Permission.PROGRAMME_USER">
+        <button class="header-button" color="primary" mat-raised-button
                 *ngIf="formState === FormState.VIEW && editable"
                 (click)="changeFormState$.next(FormState.EDIT)">
             {{'common.edit.label' | translate}}
@@ -10,13 +10,15 @@
     </span>
     </h5>
 
-    <div class="intro-text">
-        <p class="intro-text-small">{{'project.application.form.overall.objective.field.row.one' | translate}}</p>
-        <p class="intro-text-small">{{'project.application.form.overall.objective.field.row.two' | translate}}</p>
-        <p class="intro-text-small">{{'project.application.form.overall.objective.field.row.three' | translate}}</p>
-        <p class="intro-text-small">{{'project.application.form.overall.objective.field.row.four' | translate}}</p>
-        <p class="intro-text-small">{{'project.application.form.overall.objective.field.row.five' | translate}}</p>
-        <p class="intro-text-small">{{'project.application.form.overall.objective.field.row.six' | translate}}</p>
+    <div class="intro-text-small">
+        <span>{{'project.application.form.overall.objective.field.row.one' | translate}}</span>
+        <span>{{'project.application.form.overall.objective.field.row.two' | translate}}</span>
+        <span>{{'project.application.form.overall.objective.field.row.three' | translate}}</span>
+        <ul>
+            <li>{{'project.application.form.overall.objective.field.row.four' | translate}}</li>
+            <li>{{'project.application.form.overall.objective.field.row.five' | translate}}</li>
+            <li>{{'project.application.form.overall.objective.field.row.six' | translate}}</li>
+        </ul>
     </div>
     <mat-form-field [ngClass]="!overallObjectiveForm?.controls?.projectSpecificObjective?.value && formState === FormState.EDIT ? 'disable-warning-field' : 'field'" name="projectSpecificObjective">
         <mat-label>{{'project.application.form.overall.objective.field.projectSpecificObjective' | translate}}</mat-label>

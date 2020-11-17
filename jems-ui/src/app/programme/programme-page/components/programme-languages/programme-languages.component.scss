@@ -5,18 +5,9 @@ table {
 .container {
   width: 40rem;
 
-  .header {
-    display: inline-block;
-    margin-bottom: 2rem;
-  }
-
   .button {
     margin-right: 1rem;
     margin-top: 2rem;
-  }
-
-  .header-button {
-    margin-left: 0.5rem;
   }
 
   mat-checkbox {

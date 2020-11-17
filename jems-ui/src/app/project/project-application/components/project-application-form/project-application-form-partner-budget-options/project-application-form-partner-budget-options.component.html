@@ -4,7 +4,7 @@
 <!--               (discard)="discard()"-->
 <!--               (save)="save()">-->
 <div class="wrapper">
-    <h4 id="options" class="header">{{'project.partner.budget.options.header' | translate}}</h4>
+    <h5 id="options" class="header">{{'project.partner.budget.options.header' | translate}}</h5>
     <button class="header-button" color="primary"
             *ngIf="editable && formState === FormState.VIEW" mat-raised-button
             (click)="changeFormState$.next(FormState.EDIT)">

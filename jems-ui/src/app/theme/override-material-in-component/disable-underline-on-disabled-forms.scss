@@ -5,6 +5,6 @@
 .mat-form-field-disabled .mat-select-arrow {
   visibility: hidden;
 }
-.mat-form-field-disabled .mat-select-value-text {
+.mat-form-field-disabled .mat-select-value-text, .light-theme .mat-input-element:disabled {
   color: var(--font-color-primary);
 }

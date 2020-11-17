@@ -14,6 +14,7 @@
 
   $primary-theme: map-get($theme, primary);
   $primary: mat-color(map-get($theme, primary));
+  $primary-halftone: mat-color(map-get($theme, primary), 100);
   $accent: mat-color(map-get($theme, accent));
   $warn: mat-color(map-get($theme, warn));
 
@@ -63,16 +64,16 @@
   }
 
   // changed button-toggle styling to match stroked button
-  .mat-button-toggle-group {
+  .mat-button-toggle-group:not([aria-disabled=true]) {
     border-color: if($is-dark-theme, $outline, $primary);
-  }
-  .mat-button-toggle {
-    background-color: transparent;
-    color: if($is-dark-theme, $text, $primary);
-  }
-  .mat-button-toggle-checked {
-    background-color: $primary;
-    color: $text-contrast !important;
+
+    .mat-button-toggle {
+      background-color: transparent;
+      color: if($is-dark-theme, $text, $primary);
+    }
+    .mat-button-toggle-checked {
+      background-color: $primary-halftone;
+    }
   }
 
 }

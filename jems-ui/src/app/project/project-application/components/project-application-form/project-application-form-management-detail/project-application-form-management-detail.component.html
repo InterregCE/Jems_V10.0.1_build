@@ -2,8 +2,8 @@
     <h5 class="header" id="projectManagementHeading">
         {{'project.application.form.section.part.c.subsection.seven' | translate}}
     </h5>
-    <span class="header-button" *ngxPermissionsExcept="Permission.PROGRAMME_USER">
-        <button color="primary" mat-raised-button
+    <span *ngxPermissionsExcept="Permission.PROGRAMME_USER">
+        <button class="header-button" color="primary" mat-raised-button
                 *ngIf="formState === FormState.VIEW && editable"
                 (click)="changeFormState$.next(FormState.EDIT)">
             {{'common.edit.label' | translate}}
@@ -220,7 +220,7 @@
 
 
     <div *ngIf="formState === FormState.EDIT" class="spaced-elements">
-        <button mat-raised-button class="button"
+        <button mat-stroked-button class="button"
                 (click)="changeFormState$.next(FormState.VIEW)">
             {{'common.cancel.label' | translate}}
         </button>

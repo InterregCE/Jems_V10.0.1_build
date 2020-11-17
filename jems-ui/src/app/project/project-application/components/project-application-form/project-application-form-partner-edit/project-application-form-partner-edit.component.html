@@ -1,8 +1,8 @@
 <form [formGroup]="partnerForm" class="wrapper">
     <h4 *ngIf="!partner?.abbreviation">{{'project.application.form.partner.add' | translate}}</h4>
     <h5><span>{{'project.partner.detail.title' | translate}}</span>
-        <span class="header-button" *ngxPermissionsExcept="Permission.PROGRAMME_USER">
-            <button *ngIf="formState === FormState.VIEW && editable" color="primary" mat-raised-button
+        <span *ngxPermissionsExcept="Permission.PROGRAMME_USER">
+            <button *ngIf="formState === FormState.VIEW && editable" class="header-button" color="primary" mat-raised-button
                     (click)="changeFormState$.next(FormState.EDIT)">
                 {{'common.edit.label' | translate}}
             </button>

@@ -8,12 +8,6 @@
     display: block;
   }
 
-  .header-button {
-    margin-left: 0.5rem;
-    margin-right: 2rem;
-    margin-bottom: 0.25rem;
-  }
-
   .button {
     margin-right: 3rem;
   }
@@ -23,12 +17,12 @@
   }
 
   .valid-role {
-    font-size: 0.75rem;
+    font-size: 0.875rem;
     color: var(--font-color-secondary);
   }
 
   .invalid-role {
-    font-size: 0.75rem;
+    font-size: 0.875rem;
     color: var(--warn-color);
   }
 

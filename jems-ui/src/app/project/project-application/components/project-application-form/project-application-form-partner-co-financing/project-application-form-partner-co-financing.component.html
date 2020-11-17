@@ -1,5 +1,5 @@
 <form [formGroup]="coFinancingForm" class="container">
-    <h4>
+    <h5>
         <span>{{ 'partner.tab.coFinancing' | translate }}</span>
         <span class="header-button" *ngxPermissionsExcept="Permission.PROGRAMME_USER">
             <button *ngIf="formState === FormState.VIEW && editable"
@@ -7,7 +7,7 @@
                 {{'common.edit.label' | translate}}
             </button>
         </span>
-    </h4>
+    </h5>
 
     <p class="intro-text-small mb-3">{{ 'project.partner.coFinancing.intro' | translate }}</p>
 
