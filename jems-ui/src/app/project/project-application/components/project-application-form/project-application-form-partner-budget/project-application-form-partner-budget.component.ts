@@ -14,6 +14,8 @@ import {Observable} from 'rxjs';
 import {HttpErrorResponse} from '@angular/common/http';
 import {BaseComponent} from '@common/components/base-component';
 import {takeUntil, tap} from 'rxjs/operators';
+import {BudgetOption} from '../../../model/budget-option';
+import {InputCallFlatRateSetup} from '@cat/api';
 
 @Component({
   selector: 'app-project-application-form-partner-budget',
@@ -34,9 +36,7 @@ export class ProjectApplicationFormPartnerBudgetComponent extends BaseComponent 
   @Input()
   editable: boolean;
   @Input()
-  officeAdministrationFlatRate: number;
-  @Input()
-  staffCostsFlatRate: number;
+  budgetOptions: BudgetOption[];
   @Input()
   budgets: { [key: string]: PartnerBudgetTable };
 
@@ -48,6 +48,10 @@ export class ProjectApplicationFormPartnerBudgetComponent extends BaseComponent 
   saveEnabled = true;
   officeAndAdministrationTotal = 0;
   staffCostsTotal = 0;
+  officeAdministrationFlatRate: number;
+  officeAdministrationFlatRateActive: boolean;
+  staffCostsFlatRate: number;
+  staffCostsFlatRateActive: boolean;
 
   constructor(private formService: FormService) {
     super();
@@ -66,12 +70,14 @@ export class ProjectApplicationFormPartnerBudgetComponent extends BaseComponent 
         tap(() => this.formService.setSuccess('project.partner.budget.save.success'))
       )
       .subscribe();
+    this.prepareFlatRates();
   }
 
   ngOnChanges(changes: SimpleChanges): void {
 
     if (changes.budgets || changes.staffCostsFlatRate) {
       this.updateStaffCostsTotal();
+      this.updateStateOfTables();
     }
 
     if (changes.budgets || changes.officeAdministrationFlatRate || changes.staffCostsFlatRate) {
@@ -80,6 +86,7 @@ export class ProjectApplicationFormPartnerBudgetComponent extends BaseComponent 
         (this.budgets?.staff?.total || 0);
 
       this.updateOfficeAndAdministrationTotal(staffTotal);
+      this.updateStateOfTables();
     }
   }
 
@@ -116,5 +123,31 @@ export class ProjectApplicationFormPartnerBudgetComponent extends BaseComponent 
       Numbers.divide(this.officeAdministrationFlatRate, 100),
       staffTotal
     ]));
+  }
+
+  private prepareFlatRates(): void {
+    this.budgetOptions.forEach(budgetOption => {
+      if (budgetOption.key === InputCallFlatRateSetup.TypeEnum.StaffCost) {
+        this.staffCostsFlatRate = budgetOption.value;
+        this.staffCostsFlatRateActive = !budgetOption.isDefault;
+      }
+      if (budgetOption.key === InputCallFlatRateSetup.TypeEnum.OfficeOnStaff) {
+        this.officeAdministrationFlatRate = budgetOption.value;
+        this.officeAdministrationFlatRateActive = !budgetOption.isDefault;
+      }
+    });
+  }
+
+  private updateStateOfTables(): void {
+    this.staffCostsFlatRateActive = false;
+    this.officeAdministrationFlatRateActive = false;
+    this.budgetOptions.forEach(budgetOption => {
+      if (budgetOption.key === InputCallFlatRateSetup.TypeEnum.StaffCost) {
+        this.staffCostsFlatRateActive = !budgetOption.isDefault;
+      }
+      if (budgetOption.key === InputCallFlatRateSetup.TypeEnum.OfficeOnStaff) {
+        this.officeAdministrationFlatRateActive = !budgetOption.isDefault;
+      }
+    });
   }
 }

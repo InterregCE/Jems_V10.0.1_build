@@ -7,13 +7,16 @@ import {
   Output, SimpleChanges
 } from '@angular/core';
 import {Tools} from '../../../../../common/utils/tools';
-import {FormBuilder, FormGroup, Validators} from '@angular/forms';
+import {AbstractControl, FormBuilder, FormGroup, Validators} from '@angular/forms';
 import {BudgetOptions} from '../../../model/budget-options';
 import {FormService} from '@common/components/section/form/form.service';
 import {Observable} from 'rxjs';
 import {HttpErrorResponse} from '@angular/common/http';
 import {BaseComponent} from '@common/components/base-component';
 import {takeUntil, tap} from 'rxjs/operators';
+import {FormState} from '@common/components/forms/form-state';
+import {BudgetOption} from '../../../model/budget-option';
+import {InputCallFlatRateSetup} from '@cat/api';
 
 @Component({
   selector: 'app-project-application-form-partner-budget-options',
@@ -34,24 +37,25 @@ export class ProjectApplicationFormPartnerBudgetOptionsComponent extends BaseCom
   @Input()
   editable: boolean;
   @Input()
-  officeAdministrationFlatRate: number | null;
-  @Input()
-  staffCostsFlatRate: number | null;
+  budgetOptions: BudgetOption[];
 
   @Output()
   saveBudgetOptions = new EventEmitter<BudgetOptions>();
 
+  officeAdministrationFlatRatePercent: number;
+  officeAdministrationFlatRateFixed: boolean;
+  officeAdministrationFlatRateAllowed = false;
+  officeAdministrationFlatRateActive = false;
+  staffCostsFlatRatePercent: number;
+  staffCostsFlatRateFixed: boolean;
+  staffCostsFlatRateAllowed = false;
+  staffCostsFlatRateActive = false;
+
   optionsForm = this.formBuilder.group({
     officeAdministrationFlatRateActive: [''],
-    officeAdministrationFlatRate: [
-      '',
-      Validators.compose([Validators.max(15), Validators.min(1), Validators.required])
-    ],
+    officeAdministrationFlatRate: ['', Validators.compose([(control: AbstractControl) => Validators.max(this.officeAdministrationFlatRatePercent)(control), Validators.min(1), Validators.required])],
     staffCostsFlatRateActive: [''],
-    staffCostsFlatRate: [
-      '',
-      Validators.compose([Validators.max(20), Validators.min(1), Validators.required])
-    ]
+    staffCostsFlatRate: ['', Validators.compose([(control: AbstractControl) => Validators.max(this.staffCostsFlatRatePercent)(control), Validators.min(1), Validators.required])]
   });
 
   officeAdministrationFlatRateErrors = {
@@ -60,11 +64,15 @@ export class ProjectApplicationFormPartnerBudgetOptionsComponent extends BaseCom
     min: 'project.partner.budget.options.flat.rate.max',
   };
 
+  officeAdministrationFlatRateErrorsArgs = {};
+
   staffCostsFlatRateErrors = {
     required: 'project.partner.budget.options.staff.costs.flat.rate.empty',
     max: 'project.partner.budget.options.staff.costs.flat.rate.max',
     min: 'project.partner.budget.options.staff.costs.flat.rate.max',
   };
+
+  staffCostsFlatRateErrorsArgs = {};
 
   constructor(private formBuilder: FormBuilder,
               private formService: FormService) {
@@ -86,6 +94,7 @@ export class ProjectApplicationFormPartnerBudgetOptionsComponent extends BaseCom
         tap(() => this.formService.setSuccess('project.partner.budget.options.save.success'))
       )
       .subscribe();
+    this.prepareFlatRates();
   }
 
   ngOnChanges(changes: SimpleChanges): void {
@@ -108,10 +117,10 @@ export class ProjectApplicationFormPartnerBudgetOptionsComponent extends BaseCom
 
   resetForm(): void {
     this.optionsForm.patchValue({
-      officeAdministrationFlatRateActive: Number.isInteger(this.officeAdministrationFlatRate as any),
-      officeAdministrationFlatRate: this.officeAdministrationFlatRate,
-      staffCostsFlatRateActive: Number.isInteger(this.staffCostsFlatRate as any),
-      staffCostsFlatRate: this.staffCostsFlatRate
+      officeAdministrationFlatRateActive: this.officeAdministrationFlatRateActive,
+      officeAdministrationFlatRate: this.officeAdministrationFlatRateActive ? this.officeAdministrationFlatRatePercent : null,
+      staffCostsFlatRateActive: this.staffCostsFlatRateActive,
+      staffCostsFlatRate: this.staffCostsFlatRateActive ? this.staffCostsFlatRatePercent : null
     });
   }
 
@@ -130,12 +139,37 @@ export class ProjectApplicationFormPartnerBudgetOptionsComponent extends BaseCom
   }
 
   toggleOfficeAdministrationFlatRate(checked: boolean): void {
-    this.optionsForm.controls.officeAdministrationFlatRate.patchValue(checked ? 15 : null);
+    this.optionsForm.controls.officeAdministrationFlatRate.patchValue(checked ? this.officeAdministrationFlatRatePercent : null);
     this.enterEditMode();
   }
 
   toggleStaffCostsFlatRate(checked: boolean): void {
-    this.optionsForm.controls.staffCostsFlatRate.patchValue(checked ? 20 : null);
+    this.optionsForm.controls.staffCostsFlatRate.patchValue(checked ? this.staffCostsFlatRatePercent : null);
     this.enterEditMode();
+  }
+
+  private prepareFlatRates(): void {
+    this.budgetOptions.forEach(budgetOption => {
+      if (budgetOption.key === InputCallFlatRateSetup.TypeEnum.StaffCost) {
+        this.staffCostsFlatRatePercent = budgetOption.value;
+        this.staffCostsFlatRateFixed = budgetOption.fixed;
+        this.staffCostsFlatRateAllowed = true;
+        this.staffCostsFlatRateActive = !budgetOption.isDefault;
+      }
+      if (budgetOption.key === InputCallFlatRateSetup.TypeEnum.OfficeOnStaff) {
+        this.officeAdministrationFlatRatePercent = budgetOption.value;
+        this.officeAdministrationFlatRateFixed = budgetOption.fixed;
+        this.officeAdministrationFlatRateAllowed = true;
+        this.officeAdministrationFlatRateActive = !budgetOption.isDefault;
+      }
+    });
+    this.officeAdministrationFlatRateErrorsArgs = {
+      max: {maxValue: this.officeAdministrationFlatRatePercent},
+      min: {maxValue: this.officeAdministrationFlatRatePercent}
+    };
+    this.staffCostsFlatRateErrorsArgs = {
+      max: {maxValue: this.staffCostsFlatRatePercent},
+      min: {maxvalue: this.staffCostsFlatRatePercent}
+    };
   }
 }

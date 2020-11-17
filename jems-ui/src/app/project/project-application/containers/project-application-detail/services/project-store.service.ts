@@ -129,6 +129,12 @@ export class ProjectStore {
       shareReplay(1)
     );
 
+  projectCall$ = this.getProject()
+    .pipe(
+      map(project => project.call),
+      shareReplay(1)
+  );
+
   constructor(private projectService: ProjectService,
               private projectStatusService: ProjectStatusService,
               private router: Router,

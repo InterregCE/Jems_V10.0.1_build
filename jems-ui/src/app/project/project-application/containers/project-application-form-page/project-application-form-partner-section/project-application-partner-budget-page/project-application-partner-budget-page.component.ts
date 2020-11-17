@@ -1,5 +1,5 @@
 import {ChangeDetectionStrategy, Component} from '@angular/core';
-import {InputBudget, ProjectPartnerBudgetOptionsDto, ProjectPartnerBudgetService} from '@cat/api';
+import {InputBudget, ProjectPartnerBudgetOptionsDto, ProjectPartnerBudgetService, InputCallFlatRateSetup, OutputCallWithDates} from '@cat/api';
 import {ActivatedRoute} from '@angular/router';
 import {Log} from '../../../../../../common/utils/log';
 import {
@@ -22,6 +22,7 @@ import {PartnerBudgetTableType} from '../../../../model/partner-budget-table-typ
 import {ProjectPartnerStore} from '../../services/project-partner-store.service';
 import {BudgetOptions} from '../../../../model/budget-options';
 import {ProjectStore} from '../../../project-application-detail/services/project-store.service';
+import {BudgetOption} from '../../../../model/budget-option';
 
 @Component({
   selector: 'app-project-application-partner-budget-page',
@@ -37,8 +38,18 @@ export class ProjectApplicationPartnerBudgetPageComponent {
   optionsSaveError$ = new Subject<HttpErrorResponse | null>();
   optionsSaveSuccess$ = new Subject<boolean>();
   saveBudgetOptions = new Subject<BudgetOptions>();
-  private initialBudgetOptions$ = this.partnerStore.partner$
-    .pipe(
+
+  private callFlatRatesOptions$ = this.projectStore.projectCall$.pipe(
+    map((call: OutputCallWithDates ) => {
+      const result: BudgetOption[] = [];
+      call.flatRates.forEach(flatRate => {
+        result.push(new BudgetOption(flatRate.rate, !flatRate.isAdjustable, true, flatRate.type));
+      });
+      return result;
+    })
+  );
+
+  private initialBudgetOptionsFromPartner$ = this.partnerStore.partner$    .pipe(
       filter(partner => !!partner.id),
       map(partner => partner.id),
       switchMap(id =>
@@ -47,7 +58,17 @@ export class ProjectApplicationPartnerBudgetPageComponent {
       map((it: ProjectPartnerBudgetOptionsDto) => new BudgetOptions(it.officeAdministrationFlatRate, it.staffCostsFlatRate))
     );
 
-  private saveBudgetOptions$ = this.saveBudgetOptions
+  private initialBudgetOptions$ = combineLatest([
+    this.callFlatRatesOptions$,
+    this.initialBudgetOptionsFromPartner$
+  ])
+    .pipe(
+      map(([options, budget]) => ({
+        flatRates: this.updateFlatRatesValues(options, budget)
+      }))
+    );
+
+  private saveBudgetOptionsFromPartner$ = this.saveBudgetOptions
     .pipe(
       withLatestFrom(this.partnerStore.partner$),
       switchMap(([budgetOptions, partner]) =>
@@ -61,6 +82,16 @@ export class ProjectApplicationPartnerBudgetPageComponent {
         throw error;
       }),
       tap(() => this.partnerStore.totalAmountChanged$.next()),
+    );
+
+  private saveBudgetOptions$ = combineLatest([
+    this.callFlatRatesOptions$,
+    this.saveBudgetOptionsFromPartner$
+  ])
+    .pipe(
+      map(([options, budget]) => ({
+        flatRates: this.updateFlatRatesValues(options, budget)
+      }))
     );
 
   saveBudgets$ = new Subject<{ [key: string]: PartnerBudgetTable }>();
@@ -141,8 +172,7 @@ export class ProjectApplicationPartnerBudgetPageComponent {
   ])
     .pipe(
       map(([budgetOptions, budgets]) => ({
-        officeAdministrationFlatRate: budgetOptions.officeAdministrationFlatRate,
-        staffCostsFlatRate: budgetOptions.staffCostsFlatRate,
+        flatRates: budgetOptions.flatRates,
         budgets: {
           staff: new PartnerBudgetTable(PartnerBudgetTableType.STAFF, budgets.staff),
           travel: new PartnerBudgetTable(PartnerBudgetTableType.TRAVEL, budgets.travel),
@@ -157,6 +187,7 @@ export class ProjectApplicationPartnerBudgetPageComponent {
               private activatedRoute: ActivatedRoute,
               public projectStore: ProjectStore,
               public partnerStore: ProjectPartnerStore) {
+    this.projectStore.init(this.projectId);
   }
 
   private getBudgetEntries(table: PartnerBudgetTable): InputBudget[] {
@@ -190,6 +221,26 @@ export class ProjectApplicationPartnerBudgetPageComponent {
       .pipe(
         tap(budget => Log.info('Updated the' + type + ' budget', this, budget))
       );
+  }
+
+  private updateFlatRatesValues(flatRates: BudgetOption[], values: BudgetOptions): BudgetOption[] {
+    flatRates.forEach((option: BudgetOption) => {
+      if (option.key === InputCallFlatRateSetup.TypeEnum.StaffCost && values.staffCostsFlatRate) {
+        option.value = values.staffCostsFlatRate;
+        option.isDefault = false;
+      }
+      if (option.key === InputCallFlatRateSetup.TypeEnum.OfficeOnStaff && values.officeAdministrationFlatRate) {
+        option.value = values.officeAdministrationFlatRate;
+        option.isDefault = false;
+      }
+      if (option.key === InputCallFlatRateSetup.TypeEnum.StaffCost && values.staffCostsFlatRate === null) {
+        option.isDefault = true;
+      }
+      if (option.key === InputCallFlatRateSetup.TypeEnum.OfficeOnStaff && values.officeAdministrationFlatRate === null) {
+        option.isDefault = true;
+      }
+    });
+    return flatRates;
   }
 
 }

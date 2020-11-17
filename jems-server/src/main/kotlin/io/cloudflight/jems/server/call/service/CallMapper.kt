@@ -64,5 +64,6 @@ fun Call.toOutputCallWithDates() = OutputCallWithDates(
     name = name,
     startDate = startDate,
     endDate = endDate,
-    lengthOfPeriod = lengthOfPeriod
+    lengthOfPeriod = lengthOfPeriod,
+    flatRates = flatRates.toProjectCallFlatRate().toOutputDto()
 )
