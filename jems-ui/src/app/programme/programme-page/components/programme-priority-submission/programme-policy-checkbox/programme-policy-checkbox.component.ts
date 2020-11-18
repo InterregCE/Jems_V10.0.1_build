@@ -1,7 +1,6 @@
 import {ChangeDetectionStrategy, ChangeDetectorRef, Component, Input, OnInit} from '@angular/core';
 import {AbstractForm} from '@common/components/forms/abstract-form';
-import {AbstractControl, FormGroup, Validators} from '@angular/forms';
-import {KeyValue} from '@angular/common';
+import {FormGroup, Validators} from '@angular/forms';
 
 @Component({
   selector: 'app-programme-policy-checkbox',

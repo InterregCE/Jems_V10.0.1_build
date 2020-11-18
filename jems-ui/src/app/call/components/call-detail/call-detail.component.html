@@ -27,8 +27,8 @@
                     </app-form-field-errors>
                 </mat-error>
             </mat-form-field>
-            <div>
-                <mat-form-field class="pb-3 w-50 pr-3">
+            <div id="datepicker-container" class="pb-3">
+                <mat-form-field>
                     <mat-label>{{'call.detail.field.start' | translate}}</mat-label>
                     <input required formControlName="startDate" matInput name="startDate"
                            [max]="callForm?.controls?.endDate?.value"
@@ -43,7 +43,7 @@
                         </app-form-field-errors>
                     </mat-error>
                 </mat-form-field>
-                <mat-form-field class="pb-3 w-50 pl-3">
+                <mat-form-field class="pl-3">
                     <mat-label>{{'call.detail.field.end' | translate}}</mat-label>
                     <input required formControlName="endDate" matInput name="endDate"
                            [min]="callForm?.controls?.startDate?.value"
