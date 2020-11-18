@@ -3,8 +3,9 @@
 <h4>{{'project.application.form.section.part.c' | translate}}</h4>
 
 <app-project-application-form-future-plans-detail
+        *ngIf="futurePlans$ | async as plans"
         [success$]="saveSuccess$"
-        [project]="futurePlans$ | async"
+        [project]="plans"
         [editable]="projectStore.projectEditable$ | async"
         [error$]="saveError$"
         (updateData)="updateFuturePlans$.next($event)">

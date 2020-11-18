@@ -1,7 +1,6 @@
 import {ChangeDetectionStrategy, Component} from '@angular/core';
 import {merge, Subject} from 'rxjs';
 import {ProjectDescriptionService, InputProjectLongTermPlans} from '@cat/api';
-import {I18nValidationError} from '@common/validation/i18n-validation-error';
 import {catchError, mergeMap, map, tap} from 'rxjs/operators';
 import {Log} from '../../../../../common/utils/log';
 import {HttpErrorResponse} from '@angular/common/http';
@@ -19,13 +18,13 @@ import {ProjectStore} from '../../project-application-detail/services/project-st
 export class ProjectApplicationFormFuturePlansSectionComponent {
   projectId = this.activatedRoute?.snapshot?.params?.projectId;
 
-  saveError$ = new Subject<I18nValidationError | null>();
+  saveError$ = new Subject<HttpErrorResponse | null>();
   saveSuccess$ = new Subject<boolean>();
   updateFuturePlans$ = new Subject<InputProjectLongTermPlans>();
 
   private savedDescription$ = this.projectApplicationFormStore.getProjectDescription()
     .pipe(
-      map(project => project.projectLongTermPlans)
+      map(project => project.projectLongTermPlans || {})
     );
 
   private updatedFuturePlans$ = this.updateFuturePlans$
@@ -35,7 +34,7 @@ export class ProjectApplicationFormFuturePlansSectionComponent {
       tap(() => this.saveError$.next(null)),
       tap(saved => Log.info('Updated project long-term plans:', this, saved)),
       catchError((error: HttpErrorResponse) => {
-        this.saveError$.next(error.error);
+        this.saveError$.next(error);
         throw error;
       })
     );

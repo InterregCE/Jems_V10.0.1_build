@@ -1,142 +1,115 @@
-<form [formGroup]="projectRelevanceForm">
-    <h5 class="header" id="projectRelevanceHeading">
-        {{'project.application.form.section.part.c.subsection.two' | translate}}
-        <span *ngxPermissionsExcept="Permission.PROGRAMME_USER">
-        <button class="header-button" color="primary" mat-raised-button
-                *ngIf="formState === FormState.VIEW && editable"
-                (click)="changeFormState$.next(FormState.EDIT)">
-            {{'common.edit.label' | translate}}
-        </button>
-    </span>
-    </h5>
+<app-form (save)="onSubmit()"
+          (discard)="resetForm()">
+    <form [formGroup]="projectRelevanceForm">
+        <h5 class="header" id="projectRelevanceHeading">
+            {{'project.application.form.section.part.c.subsection.two' | translate}}
+        </h5>
 
-    <div class="intro-text">
-        <h6>{{'project.application.form.relevance.field.1' | translate}}</h6>
-        <p class="intro-text-small">{{'project.application.form.relevance.field.1.intro' | translate}}</p>
-    </div>
-    <app-multi-language-field class="field"
-                             [control]="projectRelevanceForm?.controls?.territorialChallenge"
-                             [errors]="projectRelevanceForm?.controls?.territorialChallenge?.errors"
-                             [messages]="territorialChallengeErrors"
-                             [characterLimit]="5000"
-                             [minRows]="3"
-                             [label]="'project.application.form.relevance.form.field'"
-                             [disabled]="formState === FormState.VIEW"
-                             [languages]="availableLanguages"
-                             [currentControlValues]="this.territorialChallengeCurrentValues"
-                             [validity]="territorialChallengeValidity"
-                             [currentLanguage$]="languageService.currentLanguage$"
-                             [changeControlValue$]="resetTerritorialChallengeField$"
-                             (changeLanguage)="changeLanguage($event)">
-    </app-multi-language-field>
+        <div class="intro-text">
+            <h6>{{'project.application.form.relevance.field.1' | translate}}</h6>
+            <p class="intro-text-small">{{'project.application.form.relevance.field.1.intro' | translate}}</p>
+        </div>
+        <app-multi-language-field class="field"
+                                  [control]="projectRelevanceForm?.controls?.territorialChallenge"
+                                  [errors]="projectRelevanceForm?.controls?.territorialChallenge?.errors"
+                                  [messages]="territorialChallengeErrors"
+                                  [characterLimit]="5000"
+                                  [minRows]="3"
+                                  [label]="'project.application.form.relevance.form.field'"
+                                  [disabled]="!editable"
+                                  [languages]="availableLanguages"
+                                  [currentControlValues]="this.territorialChallengeCurrentValues"
+                                  [validity]="territorialChallengeValidity"
+                                  [currentLanguage$]="languageService.currentLanguage$"
+                                  [changeControlValue$]="resetTerritorialChallengeField$"
+                                  (changeLanguage)="changeLanguage($event)">
+        </app-multi-language-field>
 
-    <div class="intro-text">
-        <h6>{{'project.application.form.relevance.field.2' | translate}}</h6>
-        <p class="intro-text-small">{{'project.application.form.relevance.field.2.intro' | translate}}</p>
-    </div>
-    <app-multi-language-field class="field"
-                             [control]="projectRelevanceForm?.controls?.commonChallenge"
-                             [errors]="projectRelevanceForm?.controls?.commonChallenge?.errors"
-                             [messages]="commonChallengeErrors"
-                             [characterLimit]="5000"
-                             [minRows]="3"
-                             [label]="'project.application.form.relevance.form.field'"
-                             [disabled]="formState === FormState.VIEW"
-                             [languages]="availableLanguages"
-                             [currentControlValues]="this.commonChallengeCurrentValues"
-                             [validity]="commonChallengeValidity"
-                             [currentLanguage$]="languageService.currentLanguage$"
-                             [changeControlValue$]="resetCommonChallengeField$"
-                             (changeLanguage)="changeLanguage($event)">
-    </app-multi-language-field>
+        <div class="intro-text">
+            <h6>{{'project.application.form.relevance.field.2' | translate}}</h6>
+            <p class="intro-text-small">{{'project.application.form.relevance.field.2.intro' | translate}}</p>
+        </div>
+        <app-multi-language-field class="field"
+                                  [control]="projectRelevanceForm?.controls?.commonChallenge"
+                                  [errors]="projectRelevanceForm?.controls?.commonChallenge?.errors"
+                                  [messages]="commonChallengeErrors"
+                                  [characterLimit]="5000"
+                                  [minRows]="3"
+                                  [label]="'project.application.form.relevance.form.field'"
+                                  [disabled]="!editable"
+                                  [languages]="availableLanguages"
+                                  [currentControlValues]="this.commonChallengeCurrentValues"
+                                  [validity]="commonChallengeValidity"
+                                  [currentLanguage$]="languageService.currentLanguage$"
+                                  [changeControlValue$]="resetCommonChallengeField$"
+                                  (changeLanguage)="changeLanguage($event)">
+        </app-multi-language-field>
 
-    <div class="intro-text">
-        <h6>{{'project.application.form.relevance.field.3' | translate}}</h6>
-        <p class="intro-text-small">{{'project.application.form.relevance.field.3.intro' | translate}}</p>
-    </div>
-    <app-multi-language-field class="field"
-                             [control]="projectRelevanceForm?.controls?.internationalCooperation"
-                             [errors]="projectRelevanceForm?.controls?.internationalCooperation?.errors"
-                             [messages]="internationalCooperationErrors"
-                             [characterLimit]="5000"
-                             [minRows]="3"
-                             [label]="'project.application.form.relevance.form.field'"
-                             [disabled]="formState === FormState.VIEW"
-                             [languages]="availableLanguages"
-                             [currentControlValues]="this.transnationalCooperationCurrentValues"
-                             [validity]="transnationalCooperationValidity"
-                             [currentLanguage$]="languageService.currentLanguage$"
-                             [changeControlValue$]="resetTransnationalCooperationChallengeField$"
-                             (changeLanguage)="changeLanguage($event)">
-    </app-multi-language-field>
+        <div class="intro-text">
+            <h6>{{'project.application.form.relevance.field.3' | translate}}</h6>
+            <p class="intro-text-small">{{'project.application.form.relevance.field.3.intro' | translate}}</p>
+        </div>
+        <app-multi-language-field class="field"
+                                  [control]="projectRelevanceForm?.controls?.internationalCooperation"
+                                  [errors]="projectRelevanceForm?.controls?.internationalCooperation?.errors"
+                                  [messages]="internationalCooperationErrors"
+                                  [characterLimit]="5000"
+                                  [minRows]="3"
+                                  [label]="'project.application.form.relevance.form.field'"
+                                  [disabled]="!editable"
+                                  [languages]="availableLanguages"
+                                  [currentControlValues]="this.transnationalCooperationCurrentValues"
+                                  [validity]="transnationalCooperationValidity"
+                                  [currentLanguage$]="languageService.currentLanguage$"
+                                  [changeControlValue$]="resetTransnationalCooperationChallengeField$"
+                                  (changeLanguage)="changeLanguage($event)">
+        </app-multi-language-field>
 
-    <div class="intro-text">
-        <h6>{{'project.application.form.relevance.field.4' | translate}}</h6>
-        <p class="intro-text-small">{{'project.application.form.relevance.field.4.intro' | translate}}</p>
-    </div>
-    <app-benefits-table
-            [benefitsDataSource]="benefitsDataSource"
-            [editableBenefitsForm]="editableBenefitsForm"
-            [disabled]="formState === FormState.VIEW"
-            [changedFormState$]="changeTableState$.asObservable()">
-    </app-benefits-table>
+        <div class="intro-text">
+            <h6>{{'project.application.form.relevance.field.4' | translate}}</h6>
+            <p class="intro-text-small">{{'project.application.form.relevance.field.4.intro' | translate}}</p>
+        </div>
+        <app-benefits-table
+                [benefitsDataSource]="benefitsDataSource"
+                [editableBenefitsForm]="editableBenefitsForm"
+                [editable]="editable"
+                (changed)="tableChanged()">
+        </app-benefits-table>
 
-    <div class="intro-text">
-        <h6>{{'project.application.form.relevance.field.5' | translate}}</h6>
-        <p class="intro-text-small">{{'project.application.form.relevance.field.5.intro' | translate}}</p>
-    </div>
-    <app-strategy-table
-            [strategyDataSource]="strategiesDataSource"
-            [editableStrategyForm]="editableStrategyForm"
-            [strategies]="strategiesFromCall"
-            [disabled]="formState === FormState.VIEW"
-            [changedFormState$]="changeTableState$.asObservable()">
-    </app-strategy-table>
+        <div class="intro-text">
+            <h6>{{'project.application.form.relevance.field.5' | translate}}</h6>
+            <p class="intro-text-small">{{'project.application.form.relevance.field.5.intro' | translate}}</p>
+        </div>
+        <app-strategy-table
+                [strategyDataSource]="strategiesDataSource"
+                [editableStrategyForm]="editableStrategyForm"
+                [strategies]="strategiesFromCall"
+                [editable]="editable"
+                (changed)="tableChanged()">
+        </app-strategy-table>
 
-    <div class="intro-text">
-        <h6>{{'project.application.form.relevance.field.6' | translate}}</h6>
-    </div>
-    <app-synergy-table
-            [synergyDataSource]="synergiesDataSource"
-            [editableSynergyForm]="editableSynergyForm"
-            [disabled]="formState === FormState.VIEW"
-            [changedFormState$]="changeTableState$.asObservable()">
-    </app-synergy-table>
+        <div class="intro-text">
+            <h6>{{'project.application.form.relevance.field.6' | translate}}</h6>
+        </div>
+        <app-synergy-table
+                [synergyDataSource]="synergiesDataSource"
+                [editableSynergyForm]="editableSynergyForm"
+                [editable]="editable"
+                (changed)="tableChanged()">
+        </app-synergy-table>
 
-    <div class="intro-text">
-        <h6>{{'project.application.form.relevance.field.7' | translate}}</h6>
-        <p class="intro-text-small">{{'project.application.form.relevance.field.7.intro' | translate}}</p>
-    </div>
-    <app-expandable-textarea class="field"
-                             [control]="projectRelevanceForm?.controls?.availableKnowledge"
-                             [errors]="projectRelevanceForm?.controls?.availableKnowledge?.errors"
-                             [messages]="availableKnowledgeErrors"
-                             [characterLimit]="5000"
-                             [minRows]="3"
-                             [label]="'project.application.form.relevance.form.field'"
-                             [disabled]="formState === FormState.VIEW">
-    </app-expandable-textarea>
-
-    <div *ngIf="formState === FormState.EDIT" class="spaced-elements">
-        <button mat-raised-button class="button"
-                (click)="changeFormState$.next(FormState.VIEW)">
-            {{'common.cancel.label' | translate}}
-        </button>
-        <button mat-raised-button color="primary" type="submit" class="button"
-                [disabled]="projectRelevanceForm.invalid || editableSynergyForm.invalid || editableBenefitsForm.invalid || editableStrategyForm.invalid || submitted || isValidForm()"
-                (click)="onSubmit()">
-            {{'common.save.label' | translate}}
-        </button>
-    </div>
-
-    <app-alert
-            [show]="!submitted && (showSuccessMessage$ | async)"
-            [type]="Alert.SUCCESS">
-        <p>{{'project.application.form.relevance.save.success' | translate}}</p>
-    </app-alert>
-    <app-alert *ngIf="error$ | async as error"
-               [show]="!submitted && !!error.i18nKey"
-               [type]="Alert.ERROR">
-        <p>{{error.i18nKey | translate}}</p>
-    </app-alert>
-</form>
+        <div class="intro-text">
+            <h6>{{'project.application.form.relevance.field.7' | translate}}</h6>
+            <p class="intro-text-small">{{'project.application.form.relevance.field.7.intro' | translate}}</p>
+        </div>
+        <app-expandable-textarea class="field"
+                                 [control]="projectRelevanceForm?.controls?.availableKnowledge"
+                                 [errors]="projectRelevanceForm?.controls?.availableKnowledge?.errors"
+                                 [messages]="availableKnowledgeErrors"
+                                 [characterLimit]="5000"
+                                 [minRows]="3"
+                                 [label]="'project.application.form.relevance.form.field'"
+                                 [disabled]="!editable">
+        </app-expandable-textarea>
+    </form>
+</app-form>

@@ -20,7 +20,7 @@ export class WorkPackageDetailsComponent extends BaseComponent implements OnInit
   projectId = this.activatedRoute?.snapshot?.params?.projectId;
   workPackageId$ = new ReplaySubject<number>(1);
 
-  saveError$ = new Subject<I18nValidationError | null>();
+  saveError$ = new Subject<HttpErrorResponse | null>();
   saveSuccess$ = new Subject<boolean>();
   updateWorkPackageData$ = new EventEmitter<InputWorkPackageUpdate>();
   createWorkPackageData$ = new EventEmitter<InputWorkPackageCreate>();
@@ -40,7 +40,7 @@ export class WorkPackageDetailsComponent extends BaseComponent implements OnInit
       tap(() => this.saveError$.next(null)),
       tap(saved => Log.info('Updated work package data:', this, saved)),
       catchError((error: HttpErrorResponse) => {
-        this.saveError$.next(error.error);
+        this.saveError$.next(error);
         throw error;
       })
     );
@@ -52,8 +52,9 @@ export class WorkPackageDetailsComponent extends BaseComponent implements OnInit
       tap(() => this.saveError$.next(null)),
       tap(saved => Log.info('Created work package data:', this, saved)),
       tap(() => this.projectApplicationFormSidenavService.refreshPackages(this.projectId)),
+      tap(() => this.redirectToWorkPackageOverview()),
       catchError((error: HttpErrorResponse) => {
-        this.saveError$.next(error.error);
+        this.saveError$.next(error);
         throw error;
       })
     );

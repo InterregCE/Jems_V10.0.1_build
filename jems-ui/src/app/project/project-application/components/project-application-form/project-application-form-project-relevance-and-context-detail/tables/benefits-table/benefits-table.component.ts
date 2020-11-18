@@ -1,14 +1,18 @@
-import {ChangeDetectionStrategy, Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  EventEmitter,
+  Input,
+  OnChanges,
+  OnInit,
+  Output,
+  SimpleChanges
+} from '@angular/core';
 import {Permission} from 'src/app/security/permissions/permission';
 import {MatTableDataSource} from '@angular/material/table';
 import {ProjectRelevanceBenefit} from '../../dtos/project-relevance-benefit';
 import {FormControl, FormGroup, Validators} from '@angular/forms';
 import {InputProjectRelevanceBenefit} from '@cat/api';
-import {Observable} from 'rxjs';
-import {takeUntil} from 'rxjs/operators';
-import {BaseComponent} from '@common/components/base-component';
-import {MatDialog} from '@angular/material/dialog';
-import {TranslateService} from '@ngx-translate/core';
 
 @Component({
   selector: 'app-benefits-table',
@@ -16,7 +20,7 @@ import {TranslateService} from '@ngx-translate/core';
   styleUrls: ['./benefits-table.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class BenefitsTableComponent extends BaseComponent implements OnInit {
+export class BenefitsTableComponent implements OnInit, OnChanges {
   Permission = Permission;
 
   @Input()
@@ -24,9 +28,10 @@ export class BenefitsTableComponent extends BaseComponent implements OnInit {
   @Input()
   editableBenefitsForm = new FormGroup({});
   @Input()
-  disabled: boolean;
-  @Input()
-  changedFormState$: Observable<null>;
+  editable: boolean;
+
+  @Output()
+  changed = new EventEmitter<void>();
 
   displayedColumns: string[] = ['select', 'targetGroup', 'specification', 'delete'];
 
@@ -56,24 +61,22 @@ export class BenefitsTableComponent extends BaseComponent implements OnInit {
     maxlength: 'project.application.form.relevance.specification.size.too.long'
   };
 
-  constructor(private dialog: MatDialog,
-              private translateService: TranslateService) {
-    super();
+  ngOnInit(): void {
+    if (this.editable) {
+      this.benefitsDataSource.data.forEach(benefit => this.addControl(benefit));
+    }
+    this.benefitCounter = this.benefitsDataSource.data.length + 1;
   }
 
-  ngOnInit(): void {
-    this.changedFormState$
-      .pipe(
-      takeUntil(this.destroyed$)
-    )
-      .subscribe(() => {
+  ngOnChanges(changes: SimpleChanges): void {
+    if (changes.editableBenefitsForm && this.editable) {
       this.benefitsDataSource.data.forEach(benefit => this.addControl(benefit));
-    });
-    this.benefitCounter = this.benefitsDataSource.data.length + 1;
+    }
   }
 
   addNewBenefit(): void {
     this.addControl(this.addLastBenefit());
+    this.changed.emit();
   }
 
   targetGroup = (id: number): string => id + 'targ';
@@ -110,5 +113,6 @@ export class BenefitsTableComponent extends BaseComponent implements OnInit {
     const index = this.benefitsDataSource.data.indexOf(element);
     this.benefitsDataSource.data.splice(index, 1);
     this.benefitsDataSource._updateChangeSubscription();
+    this.changed.emit();
   }
 }

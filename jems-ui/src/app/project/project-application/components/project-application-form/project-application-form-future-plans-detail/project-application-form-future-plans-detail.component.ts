@@ -1,27 +1,33 @@
 import {
   ChangeDetectionStrategy,
-  ChangeDetectorRef,
   Component,
   EventEmitter,
   Input,
   OnInit,
   Output
 } from '@angular/core';
-import {ViewEditForm} from '@common/components/forms/view-edit-form';
 import {FormBuilder, FormGroup, Validators} from '@angular/forms';
-import {SideNavService} from '@common/components/side-nav/side-nav.service';
-import {FormState} from '@common/components/forms/form-state';
-import {Permission} from '../../../../../security/permissions/permission';
 import {OutputProjectLongTermPlans, InputProjectLongTermPlans} from '@cat/api';
+import {BaseComponent} from '@common/components/base-component';
+import {FormService} from '@common/components/section/form/form.service';
+import {Observable} from 'rxjs';
+import {HttpErrorResponse} from '@angular/common/http';
+import {takeUntil, tap} from 'rxjs/operators';
 
 @Component({
   selector: 'app-project-application-form-future-plans-detail',
   templateUrl: './project-application-form-future-plans-detail.component.html',
   styleUrls: ['./project-application-form-future-plans-detail.component.scss'],
+  providers: [FormService],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class ProjectApplicationFormFuturePlansDetailComponent extends ViewEditForm implements OnInit {
-  Permission = Permission;
+export class ProjectApplicationFormFuturePlansDetailComponent extends BaseComponent implements OnInit {
+
+  // TODO: remove these and adapt the component to save independently
+  @Input()
+  error$: Observable<HttpErrorResponse | null>;
+  @Input()
+  success$: Observable<any>;
 
   @Input()
   editable: boolean;
@@ -47,25 +53,25 @@ export class ProjectApplicationFormFuturePlansDetailComponent extends ViewEditFo
   };
 
   constructor(private formBuilder: FormBuilder,
-              protected changeDetectorRef: ChangeDetectorRef,
-              private sideNavService: SideNavService) {
-    super(changeDetectorRef);
+              private formService: FormService) {
+    super();
   }
 
   ngOnInit(): void {
-    super.ngOnInit();
-    this.changeFormState$.next(FormState.VIEW);
-  }
-
-  getForm(): FormGroup | null {
-    return this.futurePlansForm;
-  }
-
-  protected enterViewMode(): void {
-    this.initFields();
-  }
-
-  protected enterEditMode(): void {
+    this.formService.init(this.futurePlansForm);
+    this.resetForm();
+    this.error$
+      .pipe(
+        takeUntil(this.destroyed$),
+        tap(err => this.formService.setError(err))
+      )
+      .subscribe();
+    this.success$
+      .pipe(
+        takeUntil(this.destroyed$),
+        tap(() => this.formService.setSuccess('project.application.form.future.plans.save.success'))
+      )
+      .subscribe();
   }
 
   onSubmit(): void {
@@ -76,7 +82,7 @@ export class ProjectApplicationFormFuturePlansDetailComponent extends ViewEditFo
     });
   }
 
-  private initFields(): void {
+  resetForm(): void {
     this.futurePlansForm.controls.ownership.setValue(this.project?.projectOwnership);
     this.futurePlansForm.controls.durability.setValue(this.project?.projectDurability);
     this.futurePlansForm.controls.transferability.setValue(this.project?.projectTransferability);

@@ -1,36 +1,45 @@
 import {
   AfterViewInit,
   ChangeDetectionStrategy,
-  ChangeDetectorRef,
   Component,
   EventEmitter,
   Input,
   OnInit,
   Output
 } from '@angular/core';
-import {ViewEditForm} from '@common/components/forms/view-edit-form';
 import {FormBuilder, FormGroup, Validators} from '@angular/forms';
-import {SideNavService} from '@common/components/side-nav/side-nav.service';
-import {FormState} from '@common/components/forms/form-state';
-import {Permission} from 'src/app/security/permissions/permission';
-import {InputProjectRelevance, InputProjectRelevanceBenefit, InputProjectRelevanceStrategy, InputProjectRelevanceSynergy, OutputProgrammeLanguage, InputTranslation} from '@cat/api';
+import {
+  InputProjectRelevance,
+  InputProjectRelevanceBenefit,
+  InputProjectRelevanceStrategy,
+  InputProjectRelevanceSynergy,
+  OutputProgrammeLanguage,
+  InputTranslation
+} from '@cat/api';
 import {MatTableDataSource} from '@angular/material/table';
 import {ProjectRelevanceBenefit} from './dtos/project-relevance-benefit';
-import {Subject} from 'rxjs';
+import {Observable, Subject} from 'rxjs';
 import {ProjectRelevanceStrategy} from './dtos/project-relevance-strategy';
 import {ProjectRelevanceSynergy} from './dtos/project-relevance-synergy';
 import {LanguageService} from '../../../../../common/services/language.service';
-import {takeUntil} from 'rxjs/operators';
+import {takeUntil, tap} from 'rxjs/operators';
+import {FormService} from '@common/components/section/form/form.service';
+import {BaseComponent} from '@common/components/base-component';
+import {HttpErrorResponse} from '@angular/common/http';
 
 @Component({
   selector: 'app-project-application-form-project-relevance-and-context-detail',
   templateUrl: './project-application-form-project-relevance-and-context-detail.component.html',
   styleUrls: ['./project-application-form-project-relevance-and-context-detail.component.scss'],
+  providers: [FormService],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class ProjectApplicationFormProjectRelevanceAndContextDetailComponent extends ViewEditForm implements OnInit, AfterViewInit {
-  Permission = Permission;
-  MAX_NUMBER_AVAILABLE_LANGUAGES = 4;
+export class ProjectApplicationFormProjectRelevanceAndContextDetailComponent extends BaseComponent implements OnInit, AfterViewInit {
+  // TODO: remove these and adapt the component to save independently
+  @Input()
+  error$: Observable<HttpErrorResponse | null>;
+  @Input()
+  success$: Observable<any>;
 
   @Input()
   editable: boolean;
@@ -55,7 +64,6 @@ export class ProjectApplicationFormProjectRelevanceAndContextDetailComponent ext
   synergiesDataSource: MatTableDataSource<ProjectRelevanceSynergy>;
   synergyCounter = 1;
 
-  changeTableState$ = new Subject<null>();
   resetTerritorialChallengeField$ = new Subject<InputTranslation[]>();
   resetCommonChallengeField$ = new Subject<InputTranslation[]>();
   resetTransnationalCooperationChallengeField$ = new Subject<InputTranslation[]>();
@@ -90,10 +98,9 @@ export class ProjectApplicationFormProjectRelevanceAndContextDetailComponent ext
   availableLanguages: OutputProgrammeLanguage.CodeEnum[];
 
   constructor(private formBuilder: FormBuilder,
-              protected changeDetectorRef: ChangeDetectorRef,
-              private sideNavService: SideNavService,
+              private formService: FormService,
               public languageService: LanguageService) {
-    super(changeDetectorRef);
+    super();
     this.languageService.inputLanguageList$
       .pipe(
         takeUntil(this.destroyed$)
@@ -112,23 +119,32 @@ export class ProjectApplicationFormProjectRelevanceAndContextDetailComponent ext
               this.transnationalCooperationValidity.set(language, false);
             }
           });
-    });
+        });
   }
 
   ngOnInit(): void {
-    super.ngOnInit();
     this.benefitsDataSource = new MatTableDataSource(this.constructBenefitsDataSource());
     this.strategiesDataSource = new MatTableDataSource(this.constructStrategyDataSource());
     this.synergiesDataSource = new MatTableDataSource(this.constructSynergyDataSource());
-    this.changeFormState$.next(FormState.VIEW);
+    this.resetForm();
+
+    this.formService.init(this.projectRelevanceForm);
+    this.error$
+      .pipe(
+        takeUntil(this.destroyed$),
+        tap(err => this.formService.setError(err))
+      )
+      .subscribe();
+    this.success$
+      .pipe(
+        takeUntil(this.destroyed$),
+        tap(() => this.formService.setSuccess('project.application.form.relevance.save.success'))
+      )
+      .subscribe();
   }
 
   ngAfterViewInit(): void {
     this.languageService.currentLanguage$.next(this?.availableLanguages[0]);
-  }
-
-  getForm(): FormGroup | null {
-    return this.projectRelevanceForm;
   }
 
   onSubmit(): void {
@@ -170,7 +186,14 @@ export class ProjectApplicationFormProjectRelevanceAndContextDetailComponent ext
   projectInitiative = (id: number): string => id + 'projIn';
   synergy = (id: number): string => id + 'syn';
 
-  private initFields(): void {
+  resetForm(): void {
+    this.benefitsDataSource.data = this.constructBenefitsDataSource();
+    this.editableBenefitsForm = new FormGroup({});
+    this.strategiesDataSource.data = this.constructStrategyDataSource();
+    this.editableStrategyForm = new FormGroup({});
+    this.synergiesDataSource.data = this.constructSynergyDataSource();
+    this.editableSynergyForm = new FormGroup({});
+
     this.territorialChallengeCurrentValues = this.buildMultiLanguageFieldValues(this.project?.territorialChallenge);
     this.commonChallengeCurrentValues = this.buildMultiLanguageFieldValues(this.project?.commonChallenge);
     this.transnationalCooperationCurrentValues = this.buildMultiLanguageFieldValues(this.project?.transnationalCooperation);
@@ -178,34 +201,6 @@ export class ProjectApplicationFormProjectRelevanceAndContextDetailComponent ext
     this.resetTerritorialChallengeField$.next(this.territorialChallengeCurrentValues);
     this.resetCommonChallengeField$.next(this.commonChallengeCurrentValues);
     this.resetTransnationalCooperationChallengeField$.next(this.transnationalCooperationCurrentValues);
-  }
-
-  protected enterViewMode(): void {
-    this.editableBenefitsForm = new FormGroup({});
-    if (!this.benefitsDataSource) {
-      return;
-    }
-    this.benefitsDataSource.data = this.constructBenefitsDataSource();
-
-    this.editableStrategyForm = new FormGroup({});
-    if (!this.strategiesDataSource) {
-      return;
-    }
-    this.strategiesDataSource.data = this.constructStrategyDataSource();
-
-    this.editableSynergyForm = new FormGroup({});
-    if (!this.synergiesDataSource) {
-      return;
-    }
-    this.synergiesDataSource.data = this.constructSynergyDataSource();
-
-    this.sideNavService.setAlertStatus(false);
-    this.initFields();
-  }
-
-  protected enterEditMode(): void {
-    this.changeTableState$.next();
-    this.sideNavService.setAlertStatus(true);
   }
 
   private constructBenefitsDataSource(): ProjectRelevanceBenefit[] {
@@ -289,4 +284,16 @@ export class ProjectApplicationFormProjectRelevanceAndContextDetailComponent ext
     });
     return result;
   }
+
+  tableChanged(): void {
+    this.formService.setDirty(true);
+    this.formService.setValid(
+      this.projectRelevanceForm
+      && this.editableBenefitsForm.valid
+      && this.editableStrategyForm.valid
+      && this.editableSynergyForm.valid
+      && !this.isValidForm()
+    );
+  }
+
 }

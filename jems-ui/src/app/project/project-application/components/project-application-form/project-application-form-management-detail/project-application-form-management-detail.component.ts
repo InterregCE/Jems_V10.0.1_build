@@ -14,15 +14,26 @@ import {FormState} from '@common/components/forms/form-state';
 import {Permission} from '../../../../../security/permissions/permission';
 import {OutputProjectManagement, InputProjectManagement, InputProjectHorizontalPrinciples} from '@cat/api';
 import {SelectionModel} from '@angular/cdk/collections';
+import {FormService} from '@common/components/section/form/form.service';
+import {BaseComponent} from '@common/components/base-component';
+import {Observable} from 'rxjs';
+import {HttpErrorResponse} from '@angular/common/http';
+import {takeUntil, tap} from 'rxjs/operators';
 
 @Component({
   selector: 'app-project-application-form-management-detail',
   templateUrl: './project-application-form-management-detail.component.html',
   styleUrls: ['./project-application-form-management-detail.component.scss'],
+  providers: [FormService],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class ProjectApplicationFormManagementDetailComponent extends ViewEditForm implements OnInit {
-  Permission = Permission;
+export class ProjectApplicationFormManagementDetailComponent extends BaseComponent implements OnInit {
+
+  // TODO: remove these and adapt the component to save independently
+  @Input()
+  error$: Observable<HttpErrorResponse | null>;
+  @Input()
+  success$: Observable<any>;
 
   @Input()
   editable: boolean;
@@ -70,22 +81,25 @@ export class ProjectApplicationFormManagementDetailComponent extends ViewEditFor
   };
 
   constructor(private formBuilder: FormBuilder,
-              protected changeDetectorRef: ChangeDetectorRef,
-              private sideNavService: SideNavService) {
-    super(changeDetectorRef);
+              private formService: FormService) {
+    super();
   }
 
   ngOnInit(): void {
-    super.ngOnInit();
-    this.changeFormState$.next(FormState.VIEW);
-  }
-
-  getForm(): FormGroup | null {
-    return this.managementForm;
-  }
-
-  protected enterViewMode(): void {
-    this.initFields();
+    this.formService.init(this.managementForm);
+    this.resetForm();
+    this.error$
+      .pipe(
+        takeUntil(this.destroyed$),
+        tap(err => this.formService.setError(err))
+      )
+      .subscribe();
+    this.success$
+      .pipe(
+        takeUntil(this.destroyed$),
+        tap(() => this.formService.setSuccess('project.application.form.management.save.success'))
+      )
+      .subscribe();
   }
 
   onSubmit(): void {
@@ -115,24 +129,24 @@ export class ProjectApplicationFormManagementDetailComponent extends ViewEditFor
     });
   }
 
-  private initFields(): void {
+  resetForm(): void {
     this.managementForm.controls.coordination.setValue(this.project?.projectCoordination);
     this.managementForm.controls.quality.setValue(this.project?.projectQualityAssurance);
     this.managementForm.controls.communication.setValue(this.project?.projectCommunication);
     this.managementForm.controls.financial.setValue(this.project?.projectFinancialManagement);
-    if (this.project?.projectCooperationCriteria?.projectJointDevelopment){
+    if (this.project?.projectCooperationCriteria?.projectJointDevelopment) {
       this.selection.select('criteria_development');
       this.managementForm.controls.criteria_development.setValue(this.project?.projectCooperationCriteria?.projectJointDevelopmentDescription);
     }
-    if (this.project?.projectCooperationCriteria?.projectJointImplementation){
+    if (this.project?.projectCooperationCriteria?.projectJointImplementation) {
       this.selection.select('criteria_implementation');
       this.managementForm.controls.criteria_implementation.setValue(this.project?.projectCooperationCriteria?.projectJointImplementationDescription);
     }
-    if (this.project?.projectCooperationCriteria?.projectJointStaffing){
+    if (this.project?.projectCooperationCriteria?.projectJointStaffing) {
       this.selection.select('criteria_staffing');
       this.managementForm.controls.criteria_staffing.setValue(this.project?.projectCooperationCriteria?.projectJointStaffingDescription);
     }
-    if (this.project?.projectCooperationCriteria?.projectJointFinancing){
+    if (this.project?.projectCooperationCriteria?.projectJointFinancing) {
       this.selection.select('criteria_financing');
       this.managementForm.controls.criteria_financing.setValue(this.project?.projectCooperationCriteria?.projectJointFinancingDescription);
     }
@@ -147,5 +161,10 @@ export class ProjectApplicationFormManagementDetailComponent extends ViewEditFor
   changeSelection(key: string): void {
     this.selection.toggle(key);
     this.managementForm.get(key)?.setValue(null);
+    this.formChanged();
+  }
+
+  formChanged(): void {
+    this.formService.setDirty(true);
   }
 }

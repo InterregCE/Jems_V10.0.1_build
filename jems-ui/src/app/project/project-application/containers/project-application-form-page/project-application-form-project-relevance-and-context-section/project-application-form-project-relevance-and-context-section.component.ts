@@ -1,6 +1,5 @@
 import {ChangeDetectionStrategy, Component} from '@angular/core';
 import {combineLatest, merge, Subject} from 'rxjs';
-import {I18nValidationError} from '@common/validation/i18n-validation-error';
 import {catchError, mergeMap, map, tap} from 'rxjs/operators';
 import {Log} from '../../../../../common/utils/log';
 import {HttpErrorResponse} from '@angular/common/http';
@@ -19,7 +18,7 @@ import {ProjectApplicationFormSidenavService} from '../services/project-applicat
 export class ProjectApplicationFormProjectRelevanceAndContextSectionComponent {
   projectId = this.activatedRoute?.snapshot?.params?.projectId;
 
-  saveError$ = new Subject<I18nValidationError | null>();
+  saveError$ = new Subject<HttpErrorResponse | null>();
   saveSuccess$ = new Subject<boolean>();
   updateProjectRelevance$ = new Subject<InputProjectRelevance>();
   deleteEntriesFromTables$ = new Subject<InputProjectRelevance>();
@@ -36,7 +35,7 @@ export class ProjectApplicationFormProjectRelevanceAndContextSectionComponent {
       tap(() => this.saveError$.next(null)),
       tap(saved => Log.info('Updated project relevance and context:', this, saved)),
       catchError((error: HttpErrorResponse) => {
-        this.saveError$.next(error.error);
+        this.saveError$.next(error);
         throw error;
       })
     );
