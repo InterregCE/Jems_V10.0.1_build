@@ -16,4 +16,6 @@ export class FormFieldErrorsComponent {
   @Input()
   messages: { [key: string]: string };
 
+  @Input()
+  args: { [key: string]: {} };
 }

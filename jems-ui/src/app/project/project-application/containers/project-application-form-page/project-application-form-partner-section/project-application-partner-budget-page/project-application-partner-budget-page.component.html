@@ -3,16 +3,14 @@
             [success$]="optionsSaveSuccess$"
             [error$]="optionsSaveError$"
             [editable]="projectStore.projectEditable$ | async"
-            [officeAdministrationFlatRate]="details.officeAdministrationFlatRate"
-            [staffCostsFlatRate]="details.staffCostsFlatRate"
+            [budgetOptions]="details.flatRates"
             (saveBudgetOptions)="saveBudgetOptions.next($event)">
     </app-project-application-form-partner-budget-options>
     <app-project-application-form-partner-budget
             [success$]="saveSuccess$"
             [error$]="saveError$"
             [editable]="projectStore.projectEditable$ | async"
-            [officeAdministrationFlatRate]="details.officeAdministrationFlatRate"
-            [staffCostsFlatRate]="details.staffCostsFlatRate"
+            [budgetOptions]="details.flatRates"
             [budgets]="details.budgets"
             (save)="saveBudgets$.next($event)"
             (cancelEdit)="cancelEdit$.next()">

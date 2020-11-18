@@ -4,47 +4,51 @@
         <h5 id="options" class="header">{{'project.partner.budget.options.header' | translate}}</h5>
 
         <form [formGroup]="optionsForm" class="wrapper">
-            <div>
+            <div *ngIf="staffCostsFlatRateAllowed">
                 <mat-checkbox formControlName="staffCostsFlatRateActive"
                               (click)="$event.stopPropagation()"
                               (change)="toggleStaffCostsFlatRate($event.checked)"
                               [disabled]="!editable"
-                              [checked]="!!staffCostsFlatRate">
+                              [checked]="!!staffCostsFlatRateActive">
                     {{'project.partner.budget.options.staff.costs.flat.rate.enabled' | translate}}
                 </mat-checkbox>
                 <mat-form-field class="wrapper" *ngIf="optionsForm?.controls?.staffCostsFlatRateActive">
                     <input type="number" formControlName="staffCostsFlatRate" matInput
                            [min]="1"
                            [max]="20"
+                           [readonly]="staffCostsFlatRateFixed"
                            (paste)="Tools.checkDigitsOnPaste($event)"
                            (keypress)="Tools.checkDigitsOnInput($event)">
                     <mat-error>
                         <app-form-field-errors
                                 [errors]="optionsForm?.controls?.staffCostsFlatRate?.errors"
-                                [messages]="staffCostsFlatRateErrors">
+                                [messages]="staffCostsFlatRateErrors"
+                                [args]="staffCostsFlatRateErrorsArgs">
                         </app-form-field-errors>
                     </mat-error>
                 </mat-form-field>
                 <span class="percent">{{'project.partner.budget.options.staff.costs.flat.rate.percent' | translate}}</span>
             </div>
-            <div>
+            <div *ngIf="officeAdministrationFlatRateAllowed">
                 <mat-checkbox formControlName="officeAdministrationFlatRateActive"
                               (click)="$event.stopPropagation()"
                               (change)="toggleOfficeAdministrationFlatRate($event.checked)"
                               [disabled]="!editable"
-                              [checked]="!!officeAdministrationFlatRate">
+                              [checked]="!!officeAdministrationFlatRateActive">
                     {{'project.partner.budget.options.flat.rate.enabled' | translate}}
                 </mat-checkbox>
                 <mat-form-field class="wrapper" *ngIf="optionsForm?.controls?.officeAdministrationFlatRateActive">
                     <input type="number" formControlName="officeAdministrationFlatRate" matInput
                            [min]="1"
                            [max]="15"
+                           [readonly]="officeAdministrationFlatRateFixed"
                            (paste)="Tools.checkDigitsOnPaste($event)"
                            (keypress)="Tools.checkDigitsOnInput($event)">
                     <mat-error>
                         <app-form-field-errors
                                 [errors]="optionsForm?.controls?.officeAdministrationFlatRate?.errors"
-                                [messages]="officeAdministrationFlatRateErrors">
+                                [messages]="officeAdministrationFlatRateErrors"
+                                [args]="officeAdministrationFlatRateErrorsArgs">
                         </app-form-field-errors>
                     </mat-error>
                 </mat-form-field>

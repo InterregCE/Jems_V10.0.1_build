@@ -37,7 +37,9 @@ class ProjectPartnerBudgetPersistenceProvider(
 
     @Transactional
     override fun deleteBudgetOptions(partnerId: Long) =
-        budgetOptionsRepository.deleteById(partnerId)
+        budgetOptionsRepository.findById(partnerId).ifPresent {
+            budgetOptionsRepository.deleteById(partnerId)
+        }
 
     @Transactional
     override fun deleteStaffCosts(partnerId: Long) =
