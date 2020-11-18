@@ -7,6 +7,15 @@
     align-items: stretch;
     justify-content: stretch;
   }
+  #datepicker-container{
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    > * {
+      flex: 1 1 auto;
+    }
+  }
 
   #publish-btn {
     align-self: start;

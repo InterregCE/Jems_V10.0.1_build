@@ -1,5 +1,5 @@
-<h2>{{'project.application.form.lifecycle.title' | translate}}</h2>
-<div *ngIf="project$ | async as project" class="project-detail-container">
+<h2 id="lifecycle-header">{{'project.application.form.lifecycle.title' | translate}}</h2>
+<div *ngIf="project$ | async as project" id="project-detail-container">
     <app-project-application-information
             [project]="project">
     </app-project-application-information>

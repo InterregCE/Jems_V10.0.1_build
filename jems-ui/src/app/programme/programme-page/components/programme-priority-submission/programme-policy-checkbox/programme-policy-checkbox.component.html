@@ -1,30 +1,31 @@
 <div>
     <h6>{{'programme.priority.objective.title' | translate}}</h6>
     <form [formGroup]="policyForm">
-        <div>
-            <h6 class="inline-title-left">{{'programme.priority.objective.table.column.code' | translate}}</h6>
-            <h6 class="inline-title-right">{{'programme.priority.objective.table.column.title' | translate}}</h6>
-        </div>
-        <ul class="field-full">
-            <li *ngFor="let control of policyForm?.controls | keyvalue: originalOrder">
-                <mat-checkbox (change)="setCheckedStatus(control.key, $event.checked)">
-                </mat-checkbox>
-                <mat-form-field class="checkbox-field">
-                    <mat-label>{{'programme.priority.objective.table.field.code' | translate}}</mat-label>
-                    <input [name]="control?.key"
-                           [formControlName]="control.key" matInput>
-                    <mat-error>
-                        <app-form-field-errors
-                                [errors]="control.value?.errors"
-                                [messages]="specificObjectiveCodeErrors">
-                        </app-form-field-errors>
-                    </mat-error>
-                </mat-form-field>
-                <div class="container">
+        <app-row-list-template [columnClassList]="['max-15-rem','']">
+            <div>
+                <h6><span class="ml-5">{{'programme.priority.objective.table.column.code' | translate}}</span></h6>
+                <h6>{{'programme.priority.objective.table.column.title' | translate}}</h6>
+            </div>
+            <div class="mb-3" *ngFor="let control of policyForm?.controls | keyvalue: originalOrder">
+                <div>
+                    <mat-checkbox (change)="setCheckedStatus(control.key, $event.checked)"></mat-checkbox>
+                    <mat-form-field class="ml-3">
+                        <mat-label>{{'programme.priority.objective.table.field.code' | translate}}</mat-label>
+                        <input [name]="control?.key"
+                               [formControlName]="control.key" matInput>
+                        <mat-error>
+                            <app-form-field-errors
+                                    [errors]="control.value?.errors"
+                                    [messages]="specificObjectiveCodeErrors">
+                            </app-form-field-errors>
+                        </mat-error>
+                    </mat-form-field>
+                </div>
+                <div>
                     {{'programme.policy.' + control.key | translate}}
                 </div>
-            </li>
-        </ul>
+            </div>
+        </app-row-list-template>
     </form>
     <app-alert *ngIf="error$ | async as error"
                [show]="!submitted && !!error.i18nKey"
