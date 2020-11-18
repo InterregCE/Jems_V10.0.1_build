@@ -64,7 +64,7 @@ data class ProjectPartnerEntity(
     val contacts: Set<ProjectPartnerContact>? = emptySet(),
 
     @OneToMany(mappedBy = "partnerId", cascade = [CascadeType.ALL], orphanRemoval = true)
-    val partnerContribution: Set<ProjectPartnerContribution> = emptySet(),
+    val motivation: Set<ProjectPartnerMotivationEntity> = emptySet(),
 
     @OneToMany(mappedBy = "partnerId", cascade = [CascadeType.ALL], orphanRemoval = true)
     val financing: Set<ProjectPartnerCoFinancing> = emptySet()

@@ -1,15 +1,7 @@
 import {ChangeDetectionStrategy, Component, OnDestroy, OnInit} from '@angular/core';
-import {merge, of, Subject} from 'rxjs';
-import {I18nValidationError} from '@common/validation/i18n-validation-error';
-import {HttpErrorResponse} from '@angular/common/http';
-import {catchError, distinctUntilChanged, mergeMap, map, takeUntil, tap} from 'rxjs/operators';
-import {Log} from '../../../../../../common/utils/log';
+import {distinctUntilChanged, map, takeUntil, tap} from 'rxjs/operators';
 import {ActivatedRoute, Router} from '@angular/router';
-import {
-  InputProjectContact,
-  InputProjectPartnerContribution,
-  ProjectPartnerService
-} from '@cat/api';
+import {ProjectPartnerService} from '@cat/api';
 import {BaseComponent} from '@common/components/base-component';
 import {ProjectStore} from '../../../project-application-detail/services/project-store.service';
 import {TabService} from '../../../../../../common/services/tab.service';

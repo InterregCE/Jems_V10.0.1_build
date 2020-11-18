@@ -1,9 +1,9 @@
 package io.cloudflight.jems.server.project.service.partner
 
 import io.cloudflight.jems.api.project.dto.InputProjectContact
-import io.cloudflight.jems.api.project.dto.InputProjectPartnerContribution
+import io.cloudflight.jems.api.project.dto.ProjectPartnerMotivationDTO
 import io.cloudflight.jems.api.project.dto.partner.InputProjectPartnerCreate
-import io.cloudflight.jems.api.project.dto.partner.InputProjectPartnerAddress
+import io.cloudflight.jems.api.project.dto.partner.ProjectPartnerAddressDTO
 import io.cloudflight.jems.api.project.dto.partner.InputProjectPartnerUpdate
 import io.cloudflight.jems.api.project.dto.partner.OutputProjectPartner
 import io.cloudflight.jems.api.project.dto.partner.OutputProjectPartnerDetail
@@ -166,7 +166,7 @@ class ProjectPartnerServiceImpl(
     }
 
     @Transactional
-    override fun updatePartnerAddresses(partnerId: Long, addresses: Set<InputProjectPartnerAddress>): OutputProjectPartnerDetail {
+    override fun updatePartnerAddresses(partnerId: Long, addresses: Set<ProjectPartnerAddressDTO>): OutputProjectPartnerDetail {
         val projectPartner = getPartnerOrThrow(partnerId)
         return projectPartnerRepo.save(
             projectPartner.copy(
@@ -186,11 +186,11 @@ class ProjectPartnerServiceImpl(
     }
 
     @Transactional
-    override fun updatePartnerContribution(partnerId: Long, partnerContribution: InputProjectPartnerContribution): OutputProjectPartnerDetail {
+    override fun updatePartnerMotivation(partnerId: Long, motivation: ProjectPartnerMotivationDTO): OutputProjectPartnerDetail {
         val projectPartner = getPartnerOrThrow(partnerId)
         return projectPartnerRepo.save(
             projectPartner.copy(
-                partnerContribution = partnerContribution.toEntity(projectPartner.id)
+                motivation = motivation.toEntity(projectPartner.id)
             )
         ).toOutputProjectPartnerDetail()
     }

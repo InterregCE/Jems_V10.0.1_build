@@ -1,7 +1,7 @@
 package io.cloudflight.jems.server.project.service.partner
 
 import io.cloudflight.jems.api.project.dto.InputProjectContact
-import io.cloudflight.jems.api.project.dto.InputProjectPartnerContribution
+import io.cloudflight.jems.api.project.dto.ProjectPartnerMotivationDTO
 import io.cloudflight.jems.api.project.dto.ProjectContactType
 import io.cloudflight.jems.api.project.dto.description.ProjectTargetGroup
 import io.cloudflight.jems.api.project.dto.partner.InputProjectPartnerCreate
@@ -263,32 +263,32 @@ internal class ProjectPartnerServiceTest {
     }
 
     @Test
-    fun updatePartnerContribution() {
-        val projectPartnerContributionUpdate = InputProjectPartnerContribution(
+    fun updatePartnerMotivation() {
+        val projectPartnerMotivationUpdate = ProjectPartnerMotivationDTO(
             "test",
             "test",
             "test")
         val projectPartner = ProjectPartnerEntity(1, project, "updated", ProjectPartnerRole.PARTNER, legalStatus = ProgrammeLegalStatus(1, "test description"), partnerType = ProjectTargetGroup.EducationTrainingCentreAndSchool)
         val updatedProjectPartner = ProjectPartnerEntity(id = 1, project = project, abbreviation = "updated", role = ProjectPartnerRole.PARTNER,
-            partnerContribution = projectPartnerContributionUpdate.toEntity(projectPartner.id), legalStatus = ProgrammeLegalStatus(1, "test description"), partnerType = ProjectTargetGroup.EducationTrainingCentreAndSchool)
+            motivation = projectPartnerMotivationUpdate.toEntity(projectPartner.id), legalStatus = ProgrammeLegalStatus(1, "test description"), partnerType = ProjectTargetGroup.EducationTrainingCentreAndSchool)
 
         every { projectPartnerRepository.findById(1) } returns Optional.of(projectPartner)
         every { projectPartnerRepository.save(updatedProjectPartner) } returns updatedProjectPartner
         every { legalStatusRepo.findById(1) } returns Optional.of(legalStatus)
 
-        assertThat(projectPartnerService.updatePartnerContribution(1, projectPartnerContributionUpdate))
+        assertThat(projectPartnerService.updatePartnerMotivation(1, projectPartnerMotivationUpdate))
             .isEqualTo(updatedProjectPartner.toOutputProjectPartnerDetail())
     }
 
     @Test
     fun updatePartnerContribution_notExisting() {
-        val projectPartnerContributionUpdate = InputProjectPartnerContribution(
+        val projectPartnerContributionUpdate = ProjectPartnerMotivationDTO(
             "test",
             "test",
             "test")
         every { projectPartnerRepository.findById(eq(-1)) } returns Optional.empty()
         every { legalStatusRepo.findById(1) } returns Optional.of(legalStatus)
-        val exception = assertThrows<ResourceNotFoundException> { projectPartnerService.updatePartnerContribution(-1, projectPartnerContributionUpdate) }
+        val exception = assertThrows<ResourceNotFoundException> { projectPartnerService.updatePartnerMotivation(-1, projectPartnerContributionUpdate) }
         assertThat(exception.entity).isEqualTo("projectPartner")
     }
 

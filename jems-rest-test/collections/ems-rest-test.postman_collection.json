@@ -8205,7 +8205,7 @@
 					"response": []
 				},
 				{
-					"name": "set contribution to partner",
+					"name": "set motivation to partner",
 					"event": [
 						{
 							"listen": "prerequest",
@@ -8222,16 +8222,16 @@
 							"script": {
 								"id": "8785c796-689a-40b6-889b-218d8384b7e4",
 								"exec": [
-									"const contribution = pm.response.json().partnerContribution;\r",
+									"const motivation = pm.response.json().motivation;\r",
 									"\r",
-									"pm.test('applicant can set contribution to partner', function() {\r",
+									"pm.test('applicant can set motivation to partner', function() {\r",
 									"    pm.response.to.have.status(200);\r",
 									"});\r",
 									"\r",
-									"pm.test('contribution is set correctly', function() {\r",
-									"    pm.expect(contribution.organizationRelevance).to.eql('This project is definitely relevant enough to be founded.');\r",
-									"    pm.expect(contribution.organizationRole).to.eql('test latin àâçéèêëîïôùûüÿ');\r",
-									"    pm.expect(contribution.organizationExperience).to.eql('We have 16 millions years of experience in this particular area.');\r",
+									"pm.test('motivation is set correctly', function() {\r",
+									"    pm.expect(motivation.organizationRelevance).to.eql('This project is definitely relevant enough to be founded.');\r",
+									"    pm.expect(motivation.organizationRole).to.eql('test latin àâçéèêëîïôùûüÿ');\r",
+									"    pm.expect(motivation.organizationExperience).to.eql('We have 16 millions years of experience in this particular area.');\r",
 									"});\r",
 									""
 								],
@@ -8267,7 +8267,7 @@
 							}
 						},
 						"url": {
-							"raw": "{{url}}/api/project/{{application_id}}/partner/{{partner_id}}/contribution",
+							"raw": "{{url}}/api/project/{{application_id}}/partner/{{partner_id}}/motivation",
 							"host": [
 								"{{url}}"
 							],
@@ -8277,7 +8277,7 @@
 								"{{application_id}}",
 								"partner",
 								"{{partner_id}}",
-								"contribution"
+								"motivation"
 							]
 						}
 					},
@@ -9239,7 +9239,7 @@
 	],
 	"variable": [
 		{
-			"id": "e0094ac8-618f-4262-94d5-06bc1e1d1856",
+			"id": "28ebbf4c-9109-40a1-aee0-189cde418f48",
 			"key": "url",
 			"value": "specify_url_here"
 		}

@@ -1,9 +1,9 @@
 package io.cloudflight.jems.api.project
 
 import io.cloudflight.jems.api.project.dto.InputProjectContact
-import io.cloudflight.jems.api.project.dto.InputProjectPartnerContribution
+import io.cloudflight.jems.api.project.dto.ProjectPartnerMotivationDTO
 import io.cloudflight.jems.api.project.dto.partner.InputProjectPartnerCreate
-import io.cloudflight.jems.api.project.dto.partner.InputProjectPartnerAddress
+import io.cloudflight.jems.api.project.dto.partner.ProjectPartnerAddressDTO
 import io.cloudflight.jems.api.project.dto.partner.InputProjectPartnerUpdate
 import io.cloudflight.jems.api.project.dto.partner.OutputProjectPartner
 import io.cloudflight.jems.api.project.dto.partner.OutputProjectPartnerDetail
@@ -66,7 +66,7 @@ interface ProjectPartnerApi {
     fun updateProjectPartnerAddress(
         @PathVariable projectId: Long,
         @PathVariable partnerId: Long,
-        @Valid @RequestBody addresses: Set<InputProjectPartnerAddress>
+        @Valid @RequestBody addresses: Set<ProjectPartnerAddressDTO>
     ): OutputProjectPartnerDetail
 
     @ApiOperation("Update project partner contact")
@@ -77,12 +77,12 @@ interface ProjectPartnerApi {
         @Valid @RequestBody contacts: Set<InputProjectContact>
     ): OutputProjectPartnerDetail
 
-    @ApiOperation("Update project partner contribution")
-    @PutMapping("/{partnerId}/contribution", consumes = [MediaType.APPLICATION_JSON_VALUE])
-    fun updateProjectPartnerContribution(
+    @ApiOperation("Update project partner motivation")
+    @PutMapping("/{partnerId}/motivation", consumes = [MediaType.APPLICATION_JSON_VALUE])
+    fun updateProjectPartnerMotivation(
         @PathVariable projectId: Long,
         @PathVariable partnerId: Long,
-        @Valid @RequestBody partnerContribution: InputProjectPartnerContribution
+        @Valid @RequestBody motivation: ProjectPartnerMotivationDTO
     ): OutputProjectPartnerDetail
 
     @ApiOperation("Update project partner co-financing")

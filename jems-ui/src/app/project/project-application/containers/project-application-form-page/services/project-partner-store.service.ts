@@ -4,9 +4,9 @@ import {
   InputProjectPartnerUpdate,
   OutputProjectPartnerDetail,
   ProjectPartnerService,
-  InputProjectPartnerAddress,
+  ProjectPartnerAddressDTO,
   InputProjectContact,
-  InputProjectPartnerContribution
+  ProjectPartnerMotivationDTO,
 } from '@cat/api';
 import {Observable, ReplaySubject, Subject} from 'rxjs';
 import {
@@ -62,7 +62,7 @@ export class ProjectPartnerStore {
       );
   }
 
-  updatePartnerAddress(addresses: InputProjectPartnerAddress[]): Observable<OutputProjectPartnerDetail> {
+  updatePartnerAddress(addresses: ProjectPartnerAddressDTO[]): Observable<OutputProjectPartnerDetail> {
     return this.partnerService.updateProjectPartnerAddress(this.partnerId, this.projectId, addresses)
       .pipe(
         tap(saved => this.partner$.next(saved)),
@@ -78,11 +78,11 @@ export class ProjectPartnerStore {
       );
   }
 
-  updatePartnerContribution(contribution: InputProjectPartnerContribution): Observable<OutputProjectPartnerDetail> {
-    return this.partnerService.updateProjectPartnerContribution(this.partnerId, this.projectId, contribution)
+  updatePartnerMotivation(motivation: ProjectPartnerMotivationDTO): Observable<OutputProjectPartnerDetail> {
+    return this.partnerService.updateProjectPartnerMotivation(this.partnerId, this.projectId, motivation)
       .pipe(
         tap(saved => this.partner$.next(saved)),
-        tap(saved => Log.info('Updated partner contribution:', this, saved)),
+        tap(saved => Log.info('Updated partner motivation:', this, saved)),
       );
   }
 }
