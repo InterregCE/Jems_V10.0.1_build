@@ -1,6 +1,5 @@
 import {
   ChangeDetectionStrategy,
-  ChangeDetectorRef,
   Component,
   EventEmitter,
   Input,
@@ -10,21 +9,28 @@ import {
   SimpleChanges
 } from '@angular/core';
 import {FormBuilder, FormGroup, Validators} from '@angular/forms';
-import {FormState} from '@common/components/forms/form-state';
-import {ViewEditForm} from '@common/components/forms/view-edit-form';
-import {SideNavService} from '@common/components/side-nav/side-nav.service';
 import {InputWorkPackageCreate, InputWorkPackageUpdate, OutputWorkPackage} from '@cat/api';
-import {Permission} from '../../../../../security/permissions/permission';
 import {ActivatedRoute} from '@angular/router';
+import {FormService} from '@common/components/section/form/form.service';
+import {BaseComponent} from '@common/components/base-component';
+import {Observable} from 'rxjs';
+import {HttpErrorResponse} from '@angular/common/http';
+import {takeUntil, tap} from 'rxjs/operators';
 
 @Component({
   selector: 'app-project-application-form-work-package-detail',
   templateUrl: './project-application-form-work-package-detail.component.html',
   styleUrls: ['./project-application-form-work-package-detail.component.scss'],
+  providers: [FormService],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class ProjectApplicationFormWorkPackageDetailComponent extends ViewEditForm implements OnInit, OnChanges {
-  Permission = Permission;
+export class ProjectApplicationFormWorkPackageDetailComponent extends BaseComponent implements OnInit, OnChanges {
+
+  // TODO: remove these and adapt the component to save independently
+  @Input()
+  error$: Observable<HttpErrorResponse | null>;
+  @Input()
+  success$: Observable<any>;
 
   @Input()
   workPackage: OutputWorkPackage;
@@ -59,39 +65,36 @@ export class ProjectApplicationFormWorkPackageDetailComponent extends ViewEditFo
   };
 
   constructor(private formBuilder: FormBuilder,
-              protected changeDetectorRef: ChangeDetectorRef,
-              private activatedRoute: ActivatedRoute,
-              private sideNavService: SideNavService) {
-    super(changeDetectorRef);
+              private formService: FormService) {
+    super();
   }
 
   ngOnInit(): void {
-    super.ngOnInit();
-    this.changeFormState$.next(this.editable && !this.workPackage.id ? FormState.EDIT : FormState.VIEW);
     this.workPackageNumber = this.workPackage?.number;
+    this.workPackageForm.controls.workPackageNumber.disable();
+    this.resetForm();
+
+    this.formService.init(this.workPackageForm);
+    this.formService.setCreation(!this.workPackage.id);
+    this.error$
+      .pipe(
+        takeUntil(this.destroyed$),
+        tap(err => this.formService.setError(err))
+      )
+      .subscribe();
+    this.success$
+      .pipe(
+        takeUntil(this.destroyed$),
+        tap(() => this.formService.setSuccess('project.application.form.workpackage.save.success'))
+      )
+      .subscribe();
   }
 
   ngOnChanges(changes: SimpleChanges): void {
     if (changes.workPackage) {
-      this.changeFormState$.next(this.editable && !this.workPackage.id ? FormState.EDIT : FormState.VIEW);
       this.workPackageNumber = this.workPackage?.number;
+      this.resetForm();
     }
-  }
-
-  protected enterViewMode(): void {
-    this.sideNavService.setAlertStatus(false);
-    this.workPackageNumber = this.workPackage.number;
-    this.initFields();
-  }
-
-  protected enterEditMode(): void {
-    this.sideNavService.setAlertStatus(true);
-    this.workPackageNumber = this.workPackage.number;
-    this.workPackageForm.controls.workPackageNumber.disable();
-  }
-
-  getForm(): FormGroup | null {
-    return this.workPackageForm;
   }
 
   onSubmit(): void {
@@ -114,10 +117,10 @@ export class ProjectApplicationFormWorkPackageDetailComponent extends ViewEditFo
     if (!this.workPackage.id) {
       this.cancel.emit();
     }
-    this.changeFormState$.next(FormState.VIEW);
+    this.resetForm();
   }
 
-  private initFields(): void {
+  private resetForm(): void {
     this.workPackageForm.controls.workPackageNumber.setValue(this.workPackage?.number || this.workPackageNumber);
     this.workPackageForm.controls.workPackageTitle.setValue(this.workPackage?.name);
     this.workPackageForm.controls.workPackageSpecificObjective.setValue(this.workPackage?.specificObjective);

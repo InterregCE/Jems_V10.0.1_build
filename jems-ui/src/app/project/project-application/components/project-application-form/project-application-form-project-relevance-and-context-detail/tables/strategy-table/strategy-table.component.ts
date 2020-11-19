@@ -1,14 +1,18 @@
-import {ChangeDetectionStrategy, Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
-import {BaseComponent} from '@common/components/base-component';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  EventEmitter,
+  Input,
+  OnChanges,
+  OnInit,
+  Output,
+  SimpleChanges
+} from '@angular/core';
 import {MatTableDataSource} from '@angular/material/table';
 import {ProjectRelevanceStrategy} from '../../dtos/project-relevance-strategy';
 import {FormControl, FormGroup, Validators} from '@angular/forms';
-import {Observable} from 'rxjs';
-import {takeUntil} from 'rxjs/operators';
 import {Permission} from 'src/app/security/permissions/permission';
 import {InputProjectRelevanceStrategy, OutputCall} from '@cat/api';
-import {MatDialog} from '@angular/material/dialog';
-import {TranslateService} from '@ngx-translate/core';
 
 @Component({
   selector: 'app-strategy-table',
@@ -16,7 +20,7 @@ import {TranslateService} from '@ngx-translate/core';
   styleUrls: ['./strategy-table.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class StrategyTableComponent extends BaseComponent implements OnInit {
+export class StrategyTableComponent implements OnInit, OnChanges {
   Permission = Permission;
 
   @Input()
@@ -24,13 +28,14 @@ export class StrategyTableComponent extends BaseComponent implements OnInit {
   @Input()
   editableStrategyForm = new FormGroup({});
   @Input()
-  disabled: boolean;
-  @Input()
-  changedFormState$: Observable<null>;
+  editable: boolean;
   @Input()
   strategies: OutputCall.StrategiesEnum[];
 
-  strategyEnum: string[] =  [];
+  @Output()
+  changed = new EventEmitter<void>();
+
+  strategyEnum: string[] = [];
 
   displayedColumns: string[] = ['select', 'strategy', 'contribution', 'delete'];
 
@@ -43,25 +48,23 @@ export class StrategyTableComponent extends BaseComponent implements OnInit {
     maxlength: 'project.application.form.relevance.contribution.size.too.long'
   };
 
-  constructor(private dialog: MatDialog,
-              private translateService: TranslateService) {
-    super();
-  }
-
   ngOnInit(): void {
-    this.changedFormState$
-      .pipe(
-        takeUntil(this.destroyed$)
-      )
-      .subscribe(() => {
-        this.strategyDataSource.data.forEach(strategy => this.addControl(strategy));
-      });
+    if (this.editable) {
+      this.strategyDataSource.data.forEach(strategy => this.addControl(strategy));
+    }
     this.strategyCounter = this.strategyDataSource.data.length + 1;
     this.buildStrategyEnum();
   }
 
+  ngOnChanges(changes: SimpleChanges): void {
+    if (changes.editableStrategyForm && this.editable) {
+      this.strategyDataSource.data.forEach(strategy => this.addControl(strategy));
+    }
+  }
+
   addNewStrategy(): void {
     this.addControl(this.addLastStrategy());
+    this.changed.emit();
   }
 
   strategy = (id: number): string => id + 'strat';
@@ -106,5 +109,6 @@ export class StrategyTableComponent extends BaseComponent implements OnInit {
     const index = this.strategyDataSource.data.indexOf(element);
     this.strategyDataSource.data.splice(index, 1);
     this.strategyDataSource._updateChangeSubscription();
+    this.changed.emit();
   }
 }

@@ -5,7 +5,7 @@
             <td mat-cell *matCellDef="let element" class="invisible-field">
             </td>
             <td mat-footer-cell *matFooterCellDef class="invisible-field">
-                <button *ngIf="!disabled" mat-icon-button
+                <button *ngIf="editable" mat-icon-button
                         type="button"
                         (click)="addNewBenefit()">
                     <mat-icon>add</mat-icon>
@@ -14,16 +14,18 @@
         </ng-container>
 
         <ng-container matColumnDef="targetGroup">
-            <mat-header-cell *matHeaderCellDef class="small-header">{{'project.application.form.relevance.target.group' | translate}}</mat-header-cell>
+            <mat-header-cell *matHeaderCellDef
+                             class="small-header">{{'project.application.form.relevance.target.group' | translate}}</mat-header-cell>
             <mat-cell *matCellDef="let element" class="small-column">
-                        <span *ngIf="disabled">
+                        <span *ngIf="!editable">
                             {{'project.application.form.relevance.target.group.' + element.targetGroup | translate}}
                         </span>
-                <mat-form-field *ngIf="!disabled" class="small-column">
+                <mat-form-field *ngIf="editable" class="small-column">
                     <mat-label>{{'project.application.form.relevance.target.group' | translate}}</mat-label>
                     <mat-select [formControlName]="targetGroup(element.id)"
                                 [disableOptionCentering]="true"
-                                panelClass="material-select-panel">
+                                panelClass="material-select-panel"
+                                (selectionChange)="changed.emit()">
                         <mat-option *ngFor="let targetGroup of benefitEnums" [value]="targetGroup">
                             {{'project.application.form.relevance.target.group.' + targetGroup | translate}}
                         </mat-option>
@@ -39,17 +41,18 @@
         </ng-container>
 
         <ng-container matColumnDef="specification">
-            <mat-header-cell *matHeaderCellDef class="big-header">{{'project.application.form.relevance.specification' | translate}}</mat-header-cell>
+            <mat-header-cell *matHeaderCellDef
+                             class="big-header">{{'project.application.form.relevance.specification' | translate}}</mat-header-cell>
             <mat-cell *matCellDef="let element" class="big-column">
-                <ng-container *ngIf="disabled">
+                <ng-container *ngIf="!editable">
                     <textarea matInput
                               [cdkTextareaAutosize]
                               [cdkAutosizeMinRows]="3"
                               [cdkAutosizeMaxRows]="50"
-                              [readonly]="disabled"
+                              [readonly]="!editable"
                     >{{element.specification}}</textarea>
                 </ng-container>
-                <app-expandable-textarea *ngIf="!disabled" class="small-field"
+                <app-expandable-textarea *ngIf="editable" class="small-field"
                                          [control]="editableBenefitsForm?.controls[specification(element.id)]"
                                          [errors]="editableBenefitsForm?.controls[specification(element.id)]?.errors"
                                          [messages]="specificationErrors"
@@ -57,7 +60,8 @@
                                          [minRows]="3"
                                          [maxRows]="50"
                                          [label]="'project.application.form.relevance.specification'"
-                                         [disabled]="disabled">
+                                         [disabled]="!editable"
+                                         (changed)="changed.emit()">
                 </app-expandable-textarea>
             </mat-cell>
         </ng-container>
@@ -65,7 +69,7 @@
         <ng-container matColumnDef="delete">
             <mat-header-cell *matHeaderCellDef class="invisible-header"></mat-header-cell>
             <mat-cell *matCellDef="let element" class="small-column">
-                <button *ngIf="!disabled" mat-icon-button color="accent"
+                <button *ngIf="editable" mat-icon-button color="accent"
                         (click)="deleteEntry(element)"
                         matTooltip="{{'project.application.form.description.table.action.delete.tooltip' | translate}}">
                     <i class="fas fa-trash"></i>
@@ -76,7 +80,7 @@
         <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
         <mat-row *matRowDef="let row; columns: displayedColumns;"></mat-row>
         <mat-row *matFooterRowDef="['select']"
-                 [hidden]="disabled">
+                 [hidden]="!editable">
         </mat-row>
     </mat-table>
 </form>

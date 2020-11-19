@@ -5,6 +5,7 @@
               [placeholder]="placeholder | translate"
               [cdkAutosizeMinRows]="minRows"
               [cdkAutosizeMaxRows]="maxRows"
+              (ngModelChange)="changed.emit()"
               #inputText [readonly]="disabled">
     </textarea>
     <mat-hint *ngIf="!disabled">

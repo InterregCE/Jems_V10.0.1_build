@@ -1,28 +1,34 @@
 import {
   ChangeDetectionStrategy,
-  ChangeDetectorRef,
   Component,
   EventEmitter,
   Input,
   OnInit,
   Output
 } from '@angular/core';
-import {ViewEditForm} from '@common/components/forms/view-edit-form';
 import {InputProjectOverallObjective, OutputProgrammePriorityPolicySimple} from '@cat/api';
-import {Permission} from '../../../../../security/permissions/permission';
 import {FormBuilder, FormGroup, Validators} from '@angular/forms';
-import {SideNavService} from '@common/components/side-nav/side-nav.service';
-import {FormState} from '@common/components/forms/form-state';
 import {TranslateService} from '@ngx-translate/core';
+import {BaseComponent} from '@common/components/base-component';
+import {HttpErrorResponse} from '@angular/common/http';
+import {Observable} from 'rxjs';
+import {FormService} from '@common/components/section/form/form.service';
+import {takeUntil, tap} from 'rxjs/operators';
 
 @Component({
   selector: 'app-project-application-form-overall-objective-detail',
   templateUrl: './project-application-form-overall-objective-detail.component.html',
   styleUrls: ['./project-application-form-overall-objective-detail.component.scss'],
+  providers: [FormService],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class ProjectApplicationFormOverallObjectiveDetailComponent extends ViewEditForm implements OnInit {
-  Permission = Permission;
+export class ProjectApplicationFormOverallObjectiveDetailComponent extends BaseComponent implements OnInit {
+
+  // TODO: remove these and adapt the component to save independently
+  @Input()
+  error$: Observable<HttpErrorResponse | null>;
+  @Input()
+  success$: Observable<any>;
 
   @Input()
   editable: boolean;
@@ -43,19 +49,26 @@ export class ProjectApplicationFormOverallObjectiveDetailComponent extends ViewE
   };
 
   constructor(private formBuilder: FormBuilder,
-              protected changeDetectorRef: ChangeDetectorRef,
-              private sideNavService: SideNavService,
+              private formService: FormService,
               private translate: TranslateService) {
-    super(changeDetectorRef);
+    super();
   }
 
   ngOnInit(): void {
-    super.ngOnInit();
-    this.changeFormState$.next(FormState.VIEW);
-  }
-
-  getForm(): FormGroup | null {
-    return this.overallObjectiveForm;
+    this.resetForm();
+    this.formService.init(this.overallObjectiveForm);
+    this.error$
+      .pipe(
+        takeUntil(this.destroyed$),
+        tap(err => this.formService.setError(err))
+      )
+      .subscribe();
+    this.success$
+      .pipe(
+        takeUntil(this.destroyed$),
+        tap(() => this.formService.setSuccess('project.application.form.overall.objective.save.success'))
+      )
+      .subscribe();
   }
 
   onSubmit(): void {
@@ -64,22 +77,7 @@ export class ProjectApplicationFormOverallObjectiveDetailComponent extends ViewE
     });
   }
 
-  protected enterViewMode(): void {
-    this.sideNavService.setAlertStatus(false);
-    this.initFields();
-  }
-
-  protected enterEditMode(): void {
-    this.sideNavService.setAlertStatus(true);
-    if (this.specificObjective) {
-      this.overallObjectiveForm.controls.projectSpecificObjective.setValue(this.translate.instant('programme.policy.' + this.specificObjective.programmeObjectivePolicy));
-    } else {
-      this.overallObjectiveForm.controls.projectSpecificObjective.markAsTouched();
-      this.changeDetectorRef.detectChanges();
-    }
-  }
-
-  private initFields(): void {
+  resetForm(): void {
     if (this.specificObjective) {
       this.overallObjectiveForm.controls.projectSpecificObjective.setValue(this.translate.instant('programme.policy.' + this.specificObjective.programmeObjectivePolicy));
     }

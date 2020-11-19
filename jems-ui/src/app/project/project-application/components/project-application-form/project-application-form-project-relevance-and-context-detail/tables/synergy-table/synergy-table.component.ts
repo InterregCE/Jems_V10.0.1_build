@@ -1,12 +1,17 @@
-import {ChangeDetectionStrategy, Component, Input, OnInit} from '@angular/core';
-import {BaseComponent} from '@common/components/base-component';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  EventEmitter,
+  Input,
+  OnChanges,
+  OnInit,
+  Output,
+  SimpleChanges
+} from '@angular/core';
 import {MatTableDataSource} from '@angular/material/table';
 import {ProjectRelevanceSynergy} from '../../dtos/project-relevance-synergy';
 import {FormControl, FormGroup, Validators} from '@angular/forms';
-import {Observable} from 'rxjs';
-import {takeUntil} from 'rxjs/operators';
 import {Permission} from 'src/app/security/permissions/permission';
-import {MatDialog} from '@angular/material/dialog';
 
 @Component({
   selector: 'app-synergy-table',
@@ -14,7 +19,7 @@ import {MatDialog} from '@angular/material/dialog';
   styleUrls: ['./synergy-table.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class SynergyTableComponent extends BaseComponent implements OnInit {
+export class SynergyTableComponent implements OnInit, OnChanges {
   Permission = Permission;
 
   @Input()
@@ -22,9 +27,10 @@ export class SynergyTableComponent extends BaseComponent implements OnInit {
   @Input()
   editableSynergyForm = new FormGroup({});
   @Input()
-  disabled: boolean;
-  @Input()
-  changedFormState$: Observable<null>;
+  editable: boolean;
+
+  @Output()
+  changed = new EventEmitter<void>();
 
   displayedColumns: string[] = ['select', 'project', 'synergy', 'delete'];
 
@@ -37,23 +43,22 @@ export class SynergyTableComponent extends BaseComponent implements OnInit {
     maxlength: 'project.application.form.relevance.synergy.size.too.long'
   };
 
-  constructor(private dialog: MatDialog) {
-    super();
+  ngOnInit(): void {
+    if (this.editable) {
+      this.synergyDataSource.data.forEach(synergy => this.addControl(synergy));
+    }
+    this.synergyCounter = this.synergyDataSource.data.length + 1;
   }
 
-  ngOnInit(): void {
-    this.changedFormState$
-      .pipe(
-        takeUntil(this.destroyed$)
-      )
-      .subscribe(() => {
-        this.synergyDataSource.data.forEach(synergy => this.addControl(synergy));
-      });
-    this.synergyCounter = this.synergyDataSource.data.length + 1;
+  ngOnChanges(changes: SimpleChanges): void {
+    if (changes.editableSynergyForm && this.editable) {
+      this.synergyDataSource.data.forEach(synergy => this.addControl(synergy));
+    }
   }
 
   addNewSynergy(): void {
     this.addControl(this.addLastSynergy());
+    this.changed.emit();
   }
 
   projectInitiative = (id: number): string => id + 'projIn';
@@ -90,5 +95,6 @@ export class SynergyTableComponent extends BaseComponent implements OnInit {
     const index = this.synergyDataSource.data.indexOf(element);
     this.synergyDataSource.data.splice(index, 1);
     this.synergyDataSource._updateChangeSubscription();
+    this.changed.emit();
   }
 }

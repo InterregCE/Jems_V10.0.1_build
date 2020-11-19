@@ -1,63 +1,41 @@
-<form [formGroup]="overallObjectiveForm">
-    <h5 class="header" id="projectOverallObjectiveHeading">
-        {{'project.application.form.section.part.c.subsection.one' | translate}}
-    <span *ngxPermissionsExcept="Permission.PROGRAMME_USER">
-        <button class="header-button" color="primary" mat-raised-button
-                *ngIf="formState === FormState.VIEW && editable"
-                (click)="changeFormState$.next(FormState.EDIT)">
-            {{'common.edit.label' | translate}}
-        </button>
-    </span>
-    </h5>
+<app-form (save)="onSubmit()"
+          (discard)="resetForm()">
+    <form [formGroup]="overallObjectiveForm">
+        <h5 class="header" id="projectOverallObjectiveHeading">
+            {{'project.application.form.section.part.c.subsection.one' | translate}}
+        </h5>
 
-    <div class="intro-text-small">
-        <span>{{'project.application.form.overall.objective.field.row.one' | translate}}</span>
-        <span>{{'project.application.form.overall.objective.field.row.two' | translate}}</span>
-        <span>{{'project.application.form.overall.objective.field.row.three' | translate}}</span>
-        <ul>
-            <li>{{'project.application.form.overall.objective.field.row.four' | translate}}</li>
-            <li>{{'project.application.form.overall.objective.field.row.five' | translate}}</li>
-            <li>{{'project.application.form.overall.objective.field.row.six' | translate}}</li>
-        </ul>
-    </div>
-    <mat-form-field [ngClass]="!overallObjectiveForm?.controls?.projectSpecificObjective?.value && formState === FormState.EDIT ? 'disable-warning-field' : 'field'" name="projectSpecificObjective">
-        <mat-label>{{'project.application.form.overall.objective.field.projectSpecificObjective' | translate}}</mat-label>
-        <input [readonly]="formState === FormState.EDIT" formControlName="projectSpecificObjective" matInput placeholder="{{'project.application.form.overall.objective.field.projectSpecificObjective' | translate}}">
-        <mat-hint *ngIf="!overallObjectiveForm?.controls?.projectSpecificObjective?.value && formState === FormState.EDIT" class="warning-hint">
-            {{'project.application.form.overall.objective.specific.objective.required' | translate}}
-        </mat-hint>
-    </mat-form-field>
+        <div class="intro-text-small">
+            <span>{{'project.application.form.overall.objective.field.row.one' | translate}}</span>
+            <span>{{'project.application.form.overall.objective.field.row.two' | translate}}</span>
+            <span>{{'project.application.form.overall.objective.field.row.three' | translate}}</span>
+            <ul>
+                <li>{{'project.application.form.overall.objective.field.row.four' | translate}}</li>
+                <li>{{'project.application.form.overall.objective.field.row.five' | translate}}</li>
+                <li>{{'project.application.form.overall.objective.field.row.six' | translate}}</li>
+            </ul>
+        </div>
+        <mat-form-field
+                [ngClass]="!overallObjectiveForm?.controls?.projectSpecificObjective?.value && editable ? 'disable-warning-field' : 'field'"
+                name="projectSpecificObjective">
+            <mat-label>{{'project.application.form.overall.objective.field.projectSpecificObjective' | translate}}</mat-label>
+            <input readonly formControlName="projectSpecificObjective" matInput
+                   placeholder="{{'project.application.form.overall.objective.field.projectSpecificObjective' | translate}}">
+            <mat-hint *ngIf="!overallObjectiveForm?.controls?.projectSpecificObjective?.value && editable"
+                      class="warning-hint">
+                {{'project.application.form.overall.objective.specific.objective.required' | translate}}
+            </mat-hint>
+        </mat-form-field>
 
-    <app-expandable-textarea class="field"
-                             [control]="overallObjectiveForm?.controls?.projectOverallObjective"
-                             [errors]="overallObjectiveForm?.controls?.projectOverallObjective?.errors"
-                             [messages]="projectOverallObjectiveError"
-                             [characterLimit]="500"
-                             [minRows]="3"
-                             [label]="'project.application.form.overall.objective.field.projectOverallObjective'"
-                             [disabled]="formState === FormState.VIEW">
-    </app-expandable-textarea>
-
-    <div *ngIf="formState === FormState.EDIT" class="spaced-elements">
-        <button mat-raised-button class="button"
-                (click)="changeFormState$.next(FormState.VIEW)">
-            {{'common.cancel.label' | translate}}
-        </button>
-        <button mat-raised-button color="primary" type="submit" class="button"
-                [disabled]="overallObjectiveForm.invalid || submitted"
-                (click)="onSubmit()">
-            {{'common.save.label' | translate}}
-        </button>
-    </div>
-
-    <app-alert
-            [show]="!submitted && (showSuccessMessage$ | async)"
-            [type]="Alert.SUCCESS">
-        <p>{{'project.application.form.overall.objective.save.success' | translate}}</p>
-    </app-alert>
-    <app-alert *ngIf="error$ | async as error"
-               [show]="!submitted && !!error.i18nKey"
-               [type]="Alert.ERROR">
-        <p>{{error.i18nKey | translate}}</p>
-    </app-alert>
-</form>
+        <app-expandable-textarea
+                class="field"
+                [control]="overallObjectiveForm?.controls?.projectOverallObjective"
+                [errors]="overallObjectiveForm?.controls?.projectOverallObjective?.errors"
+                [messages]="projectOverallObjectiveError"
+                [characterLimit]="500"
+                [minRows]="3"
+                [label]="'project.application.form.overall.objective.field.projectOverallObjective'"
+                [disabled]="!editable">
+        </app-expandable-textarea>
+    </form>
+</app-form>

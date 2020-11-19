@@ -1,4 +1,4 @@
-import {ChangeDetectionStrategy, Component, Input} from '@angular/core';
+import {ChangeDetectionStrategy, Component, EventEmitter, Input, Output} from '@angular/core';
 import {FormControl, ValidationErrors} from '@angular/forms';
 
 @Component({
@@ -15,7 +15,7 @@ export class ExpandableTextareaComponent {
   @Input()
   errors: ValidationErrors | null;
   @Input()
-  messages: {[key: string]: string};
+  messages: { [key: string]: string };
   @Input()
   characterLimit: number;
   @Input()
@@ -28,4 +28,7 @@ export class ExpandableTextareaComponent {
   minRows ? = 3;
   @Input()
   maxRows ? = 50;
+
+  @Output()
+  changed = new EventEmitter<void>();
 }

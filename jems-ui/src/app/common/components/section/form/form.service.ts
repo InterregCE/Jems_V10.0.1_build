@@ -26,7 +26,6 @@ export class FormService {
     this.form?.valueChanges
       .pipe(
         filter(() => this.form.dirty),
-        tap(() => this.valid$.next(this.form.valid)),
         tap(() => this.setDirty(true)),
       ).subscribe();
   }
@@ -70,7 +69,12 @@ export class FormService {
       this.success$.next(null);
       this.routingService.confirmLeave = true;
     }
+    this.valid$.next(this.form?.valid);
     this.dirty$.next(dirty);
+  }
+
+  setValid(valid: boolean): void {
+    this.valid$.next(valid);
   }
 
   setCreation(isCreationForm: boolean): void {

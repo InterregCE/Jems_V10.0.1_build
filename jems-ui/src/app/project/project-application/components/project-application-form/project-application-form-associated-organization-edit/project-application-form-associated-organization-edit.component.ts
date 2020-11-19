@@ -1,6 +1,5 @@
 import {
   ChangeDetectionStrategy,
-  ChangeDetectorRef,
   Component,
   EventEmitter,
   Input,
@@ -9,7 +8,7 @@ import {
   Output,
   SimpleChanges
 } from '@angular/core';
-import {FormBuilder, FormGroup, Validators} from '@angular/forms';
+import {AbstractControl, FormBuilder, FormGroup, Validators} from '@angular/forms';
 import {
   InputProjectAssociatedOrganizationCreate,
   InputProjectAssociatedOrganizationUpdate,
@@ -19,19 +18,28 @@ import {
   OutputProjectPartner,
   OutputNuts,
 } from '@cat/api';
-import {SideNavService} from '@common/components/side-nav/side-nav.service';
-import {FormState} from '@common/components/forms/form-state';
-import {ViewEditForm} from '@common/components/forms/view-edit-form';
 import {Permission} from '../../../../../security/permissions/permission';
+import {BaseComponent} from '@common/components/base-component';
+import {Observable} from 'rxjs';
+import {HttpErrorResponse} from '@angular/common/http';
+import {FormService} from '@common/components/section/form/form.service';
+import {takeUntil, tap} from 'rxjs/operators';
 
 @Component({
   selector: 'app-project-application-form-associated-organization-edit',
   templateUrl: './project-application-form-associated-organization-edit.component.html',
   styleUrls: ['./project-application-form-associated-organization-edit.component.scss'],
+  providers: [FormService],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class ProjectApplicationFormAssociatedOrganizationEditComponent extends ViewEditForm implements OnInit, OnChanges {
+export class ProjectApplicationFormAssociatedOrganizationEditComponent extends BaseComponent implements OnInit, OnChanges {
   Permission = Permission;
+
+  // TODO: remove these and adapt the component to save independently
+  @Input()
+  error$: Observable<HttpErrorResponse | null>;
+  @Input()
+  success$: Observable<any>;
 
   @Input()
   nuts: OutputNuts[];
@@ -126,26 +134,37 @@ export class ProjectApplicationFormAssociatedOrganizationEditComponent extends V
   };
 
   constructor(private formBuilder: FormBuilder,
-              protected changeDetectorRef: ChangeDetectorRef,
-              private sideNavService: SideNavService) {
-    super(changeDetectorRef);
+              private formService: FormService) {
+    super();
   }
 
   ngOnInit(): void {
-    super.ngOnInit();
-    if (this.editable && !this.associatedOrganization?.id) {
-      this.changeFormState$.next(FormState.EDIT);
-    }
+    this.resetForm();
+    this.formService.init(this.associatedOrganizationForm);
+    this.formService.setCreation(!this.associatedOrganization.id);
+    this.formService.setEditable(this.editable);
+    this.error$
+      .pipe(
+        takeUntil(this.destroyed$),
+        tap(err => this.formService.setError(err))
+      )
+      .subscribe();
+    this.success$
+      .pipe(
+        takeUntil(this.destroyed$),
+        tap(() => this.formService.setSuccess('project.partner.save.success'))
+      )
+      .subscribe();
   }
 
   ngOnChanges(changes: SimpleChanges): void {
-    if (changes.associatedOrganization || changes.editable) {
-      this.changeFormState$.next(this.editable && !this.associatedOrganization.id ? FormState.EDIT : FormState.VIEW);
+    if (changes.associatedOrganization) {
+      this.resetForm();
     }
   }
 
-  getForm(): FormGroup | null {
-    return this.associatedOrganizationForm;
+  get controls(): { [key: string]: AbstractControl } | undefined {
+    return this.associatedOrganizationForm.controls;
   }
 
   onSubmit(): void {
@@ -207,18 +226,10 @@ export class ProjectApplicationFormAssociatedOrganizationEditComponent extends V
     if (!this.associatedOrganization?.id) {
       this.cancel.emit();
     }
-    this.changeFormState$.next(FormState.VIEW);
+    this.resetForm();
   }
 
-  protected enterViewMode(): void {
-    this.initFields();
-  }
-
-  protected enterEditMode(): void {
-    this.initFields();
-  }
-
-  private initFields(): void {
+  resetForm(): void {
     this.controls?.id.setValue(this.associatedOrganization?.id);
     this.controls?.nameInOriginalLanguage.setValue(this.associatedOrganization?.nameInOriginalLanguage);
     this.controls?.nameInEnglish.setValue(this.associatedOrganization?.nameInEnglish);

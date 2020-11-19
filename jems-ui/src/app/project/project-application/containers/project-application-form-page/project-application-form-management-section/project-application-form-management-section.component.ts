@@ -19,13 +19,13 @@ import {ProjectStore} from '../../project-application-detail/services/project-st
 export class ProjectApplicationFormManagementSectionComponent {
   projectId = this.activatedRoute?.snapshot?.params?.projectId;
 
-  saveError$ = new Subject<I18nValidationError | null>();
+  saveError$ = new Subject<HttpErrorResponse | null>();
   saveSuccess$ = new Subject<boolean>();
   updateManagement$ = new Subject<InputProjectManagement>();
 
   private savedDescription$ = this.projectApplicationFormStore.getProjectDescription()
     .pipe(
-      map(project => project.projectManagement)
+      map(project => project.projectManagement || {})
     );
 
   private updatedManagement$ = this.updateManagement$
@@ -35,7 +35,7 @@ export class ProjectApplicationFormManagementSectionComponent {
       tap(() => this.saveError$.next(null)),
       tap(saved => Log.info('Updated project management:', this, saved)),
       catchError((error: HttpErrorResponse) => {
-        this.saveError$.next(error.error);
+        this.saveError$.next(error);
         throw error;
       })
     );

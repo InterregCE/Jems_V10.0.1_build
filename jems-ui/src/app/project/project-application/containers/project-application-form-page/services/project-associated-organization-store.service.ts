@@ -19,7 +19,6 @@ import {
 import {Log} from '../../../../../common/utils/log';
 import {ProjectStore} from '../../project-application-detail/services/project-store.service';
 import {HttpErrorResponse} from '@angular/common/http';
-import {I18nValidationError} from '@common/validation/i18n-validation-error';
 import {ProjectApplicationFormSidenavService} from './project-application-form-sidenav.service';
 import {Router} from '@angular/router';
 
@@ -36,7 +35,7 @@ export class ProjectAssociatedOrganizationStore {
   saveAssociatedOrganization$ = new Subject<InputProjectAssociatedOrganizationUpdate>();
   createAssociatedOrganization$ = new Subject<InputProjectAssociatedOrganizationCreate>();
   associatedOrganizationSaveSuccess$ = new Subject<boolean>();
-  associatedOrganizationSaveError$ = new Subject<I18nValidationError | null>();
+  associatedOrganizationSaveError$ = new Subject<HttpErrorResponse | null>();
 
   private associatedOrganizationById$ = combineLatest([this.associatedOrganizationId$, this.projectId$])
     .pipe(
@@ -56,7 +55,7 @@ export class ProjectAssociatedOrganizationStore {
         this.associatedOrganizationService.updateAssociatedOrganization(projectId, associatedOrganizationUpdate)
           .pipe(
             catchError((error: HttpErrorResponse) => {
-              this.associatedOrganizationSaveError$.next(error.error);
+              this.associatedOrganizationSaveError$.next(error);
               return of();
             })
           )
