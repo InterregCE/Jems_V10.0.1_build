@@ -130,11 +130,11 @@ export class ProjectApplicationFormPartnerBudgetComponent extends BaseComponent 
     this.officeAdministrationFlatRateActive = false;
     this.budgetOptions.forEach(budgetOption => {
       if (budgetOption.key === InputCallFlatRateSetup.TypeEnum.StaffCost) {
-        this.staffCostsFlatRate = budgetOption.value;
+        this.staffCostsFlatRate = budgetOption.currentValue;
         this.staffCostsFlatRateActive = !budgetOption.isDefault;
       }
       if (budgetOption.key === InputCallFlatRateSetup.TypeEnum.OfficeOnStaff) {
-        this.officeAdministrationFlatRate = budgetOption.value;
+        this.officeAdministrationFlatRate = budgetOption.currentValue;
         this.officeAdministrationFlatRateActive = !budgetOption.isDefault;
       }
     });
