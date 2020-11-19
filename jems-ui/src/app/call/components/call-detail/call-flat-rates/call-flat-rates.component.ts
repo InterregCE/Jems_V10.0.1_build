@@ -1,19 +1,21 @@
-import {ChangeDetectionStrategy, Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
-import {BaseComponent} from '@common/components/base-component';
+import {ChangeDetectionStrategy, Component, Input, OnInit} from '@angular/core';
 import {Tools} from '../../../../common/utils/tools';
 import {InputCallFlatRateSetup, OutputCall} from '@cat/api';
 import {FormBuilder, FormGroup, Validators} from '@angular/forms';
 import {MatDialog} from '@angular/material/dialog';
-import {EventBusService} from '../../../../common/services/event-bus/event-bus.service';
 import {SelectionModel} from '@angular/cdk/collections';
+import {FormService} from '@common/components/section/form/form.service';
+import {CallStore} from '../../../services/call-store.service';
+import {catchError, take, tap} from 'rxjs/operators';
 
 @Component({
   selector: 'app-call-flat-rates',
   templateUrl: './call-flat-rates.component.html',
   styleUrls: ['./call-flat-rates.component.scss'],
+  providers: [FormService],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class CallFlatRatesComponent extends BaseComponent implements OnInit {
+export class CallFlatRatesComponent implements OnInit {
   static ID = 'CallFlatRatesComponent';
   tools = Tools;
   CallFlatRatesComponent = CallFlatRatesComponent;
@@ -28,10 +30,6 @@ export class CallFlatRatesComponent extends BaseComponent implements OnInit {
 
   @Input()
   call: OutputCall;
-  @Output()
-  create: EventEmitter<InputCallFlatRateSetup[]> = new EventEmitter<InputCallFlatRateSetup[]>();
-  @Output()
-  cancel: EventEmitter<void> = new EventEmitter<void>();
 
   published = false;
   selection = new SelectionModel<string>(true, []);
@@ -72,21 +70,16 @@ export class CallFlatRatesComponent extends BaseComponent implements OnInit {
 
   constructor(private formBuilder: FormBuilder,
               private dialog: MatDialog,
-              private eventBusService: EventBusService)
-  {
-    super();
+              private formService: FormService,
+              private callStore: CallStore) {
   }
 
   ngOnInit(): void {
+    this.formService.init(this.callFlatRateForm);
+    this.formService.setCreation(!this.call?.id);
     this.published = this.call?.status === OutputCall.StatusEnum.PUBLISHED;
-    if (this.published) {
-      this.getForm()?.disable();
-    }
+    this.formService.setEditable(!this.published);
     this.resetForm();
-  }
-
-  getForm(): FormGroup | null {
-    return this.callFlatRateForm;
   }
 
   onSubmit(): void {
@@ -132,18 +125,17 @@ export class CallFlatRatesComponent extends BaseComponent implements OnInit {
         }
       );
     }
-    this.create.emit(callFlatRates);
-  }
 
-  onCancel(): void {
-    if (this.call?.id) {
-      this.resetForm();
-    }
-    this.cancel.emit();
+    this.callStore.saveFlatRates(callFlatRates)
+      .pipe(
+        take(1),
+        tap(() => this.formService.setSuccess('call.detail.flat.rate.updated.success')),
+        catchError(err => this.formService.setError(err))
+      ).subscribe();
   }
 
   formChanged(): void {
-    this.eventBusService.setDirty(CallFlatRatesComponent.ID, true);
+    this.formService.setDirty(true);
   }
 
   resetForm(): void {
@@ -165,12 +157,12 @@ export class CallFlatRatesComponent extends BaseComponent implements OnInit {
       this.setFieldValueDependingOnKey(key, null, false);
       this.setToggleValueDependingOnKey(key, this.FIXED);
     }
-    this.eventBusService.setDirty(CallFlatRatesComponent.ID, true);
+    this.formChanged();
   }
 
   toggleSelectionChanged($event: string, key: string): void {
     this.setToggleValueDependingOnKey(key, $event);
-    this.eventBusService.setDirty(CallFlatRatesComponent.ID, true);
+    this.formChanged();
   }
 
   private setFieldValueDependingOnKey(key: string, value: string | null, useMaxValue: boolean): void {
@@ -189,7 +181,7 @@ export class CallFlatRatesComponent extends BaseComponent implements OnInit {
         this.callFlatRateForm.controls?.officeAdministrationDirectCostPercent?.setValue(this.OFFICE_ON_OTHER) :
         this.callFlatRateForm.controls?.officeAdministrationDirectCostPercent?.setValue(value);
     }
-    if (key === InputCallFlatRateSetup.TypeEnum.TravelOnStaff){
+    if (key === InputCallFlatRateSetup.TypeEnum.TravelOnStaff) {
       useMaxValue ?
         this.callFlatRateForm.controls?.travelAccommodationDirectStaffCostPercent?.setValue(this.TRAVEL_ON_STAFF) :
         this.callFlatRateForm.controls?.travelAccommodationDirectStaffCostPercent?.setValue(value);
@@ -211,7 +203,7 @@ export class CallFlatRatesComponent extends BaseComponent implements OnInit {
     if (key === InputCallFlatRateSetup.TypeEnum.OfficeOnOther) {
       this.selectedOfficeAdministrationDirectCost = value;
     }
-    if (key === InputCallFlatRateSetup.TypeEnum.TravelOnStaff){
+    if (key === InputCallFlatRateSetup.TypeEnum.TravelOnStaff) {
       this.selectedTravelAccommodationDirectStaffCost = value;
     }
     if (key === InputCallFlatRateSetup.TypeEnum.OtherOnStaff) {

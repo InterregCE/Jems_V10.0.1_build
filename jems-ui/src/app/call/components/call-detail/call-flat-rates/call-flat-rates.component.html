@@ -1,8 +1,5 @@
-<app-edit-form [componentId]="CallFlatRatesComponent.ID"
-               [createNew]="!call?.id"
-               [form]="callFlatRateForm"
-               (discard)="onCancel()"
-               (save)="onSubmit()">
+<app-form (discard)="resetForm()"
+          (save)="onSubmit()">
     <form [formGroup]="callFlatRateForm" class="table-list">
         <h5 class="header" id="callFlatRateHeading">
             {{'call.detail.flat.rates' | translate}}
@@ -28,11 +25,11 @@
 
                 <div class="flat-rate-including-percentage">
                     <mat-form-field class="flat-rate-percentage">
-                        <input  [readonly]="!selection.isSelected(InputCallFlatRateSetup.TypeEnum.StaffCost)"
-                                name="staffDirectCostPercent"
-                                formControlName="staffDirectCostPercent"
-                                matInput
-                                type="number">
+                        <input [readonly]="!selection.isSelected(InputCallFlatRateSetup.TypeEnum.StaffCost)"
+                               name="staffDirectCostPercent"
+                               formControlName="staffDirectCostPercent"
+                               matInput
+                               type="number">
                         <mat-error>
                             <app-form-field-errors
                                     [errors]="callFlatRateForm?.controls?.staffDirectCostPercent?.errors"
@@ -63,11 +60,11 @@
 
                 <div class="flat-rate-including-percentage">
                     <mat-form-field class="flat-rate-percentage">
-                        <input  [readonly]="!selection.isSelected(InputCallFlatRateSetup.TypeEnum.OfficeOnStaff)"
-                                name="officeAdminDirectStaffCostPercent"
-                                formControlName="officeAdminDirectStaffCostPercent"
-                                matInput
-                                type="number">
+                        <input [readonly]="!selection.isSelected(InputCallFlatRateSetup.TypeEnum.OfficeOnStaff)"
+                               name="officeAdminDirectStaffCostPercent"
+                               formControlName="officeAdminDirectStaffCostPercent"
+                               matInput
+                               type="number">
                         <mat-error>
                             <app-form-field-errors
                                     [errors]="callFlatRateForm?.controls?.officeAdminDirectStaffCostPercent?.errors"
@@ -98,11 +95,11 @@
 
                 <div class="flat-rate-including-percentage">
                     <mat-form-field class="flat-rate-percentage">
-                        <input  [readonly]="!selection.isSelected(InputCallFlatRateSetup.TypeEnum.OfficeOnOther)"
-                                name="officeAdministrationDirectCostPercent"
-                                formControlName="officeAdministrationDirectCostPercent"
-                                matInput
-                                type="number">
+                        <input [readonly]="!selection.isSelected(InputCallFlatRateSetup.TypeEnum.OfficeOnOther)"
+                               name="officeAdministrationDirectCostPercent"
+                               formControlName="officeAdministrationDirectCostPercent"
+                               matInput
+                               type="number">
                         <mat-error>
                             <app-form-field-errors
                                     [errors]="callFlatRateForm?.controls?.officeAdministrationDirectCostPercent?.errors"
@@ -133,11 +130,11 @@
 
                 <div class="flat-rate-including-percentage">
                     <mat-form-field class="flat-rate-percentage">
-                        <input  [readonly]="!selection.isSelected(InputCallFlatRateSetup.TypeEnum.TravelOnStaff)"
-                                name="travelAccommodationDirectStaffCostPercent"
-                                formControlName="travelAccommodationDirectStaffCostPercent"
-                                matInput
-                                type="number">
+                        <input [readonly]="!selection.isSelected(InputCallFlatRateSetup.TypeEnum.TravelOnStaff)"
+                               name="travelAccommodationDirectStaffCostPercent"
+                               formControlName="travelAccommodationDirectStaffCostPercent"
+                               matInput
+                               type="number">
                         <mat-error>
                             <app-form-field-errors
                                     [errors]="callFlatRateForm?.controls?.travelAccommodationDirectStaffCostPercent?.errors"
@@ -168,11 +165,11 @@
 
                 <div class="flat-rate-including-percentage">
                     <mat-form-field class="flat-rate-percentage">
-                        <input  [readonly]="!selection.isSelected(InputCallFlatRateSetup.TypeEnum.OtherOnStaff)"
-                                name="otherCostsPercent"
-                                formControlName="otherCostsPercent"
-                                matInput
-                                type="number">
+                        <input [readonly]="!selection.isSelected(InputCallFlatRateSetup.TypeEnum.OtherOnStaff)"
+                               name="otherCostsPercent"
+                               formControlName="otherCostsPercent"
+                               matInput
+                               type="number">
                         <mat-error>
                             <app-form-field-errors
                                     [errors]="callFlatRateForm?.controls?.otherCostsPercent?.errors"
@@ -193,4 +190,4 @@
             </div>
         </app-row-list-template>
     </form>
-</app-edit-form>
+</app-form>

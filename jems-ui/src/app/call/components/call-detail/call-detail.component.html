@@ -1,8 +1,5 @@
-<app-edit-form [componentId]="CallDetailComponent.ID"
-               [createNew]="!call?.id"
-               [form]="callForm"
-               (discard)="onCancel()"
-               (save)="onSubmit()">
+<app-form (discard)="onCancel()"
+          (save)="onSubmit()">
     <form id="call-form" [formGroup]="callForm">
         <h2 id="callTitle">{{'call.detail.title' | translate}}</h2>
 
@@ -113,4 +110,4 @@
             </app-call-funds>
         </div>
     </form>
-</app-edit-form>
+</app-form>

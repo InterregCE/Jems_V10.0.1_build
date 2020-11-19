@@ -32,22 +32,4 @@ describe('CallConfigurationComponent', () => {
   it('should create', () => {
     expect(component).toBeTruthy();
   });
-
-  it('should publish a call', fakeAsync(() => {
-    component.publishCall$.next(1);
-
-    httpTestingController.expectOne({
-      method: 'PUT',
-      url: `//api/call/1/publish`
-    });
-  }));
-
-  it('should create a call', fakeAsync(() => {
-    component.createCall({} as InputCallCreate);
-
-    httpTestingController.expectOne({
-      method: 'POST',
-      url: `//api/call`
-    });
-  }));
 });

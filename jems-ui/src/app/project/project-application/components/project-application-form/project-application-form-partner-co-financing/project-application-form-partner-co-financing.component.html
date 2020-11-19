@@ -7,7 +7,7 @@
 
         <table class="w-100">
             <tr>
-                <th>{{ 'project.partner.coFinancing.source' | translate }}</th>
+                <th class="text-left">{{ 'project.partner.coFinancing.source' | translate }}</th>
                 <th class="text-right">{{ 'project.partner.coFinancing.amount' | translate }}</th>
                 <th class="text-right">{{ 'project.partner.coFinancing.percentage' | translate }}</th>
             </tr>
@@ -46,12 +46,12 @@
                 </td>
             </tr>
             <tr class="thick-row">
-                <td>{{ 'project.partner.coFinancing.partnerContribution' | translate }}</td>
+                <td class="text-left">{{ 'project.partner.coFinancing.partnerContribution' | translate }}</td>
                 <td class="text-right">{{ this.myAmount | asMoney }}</td>
                 <td class="text-right">{{ this.myPercentage }} %</td>
             </tr>
             <tr>
-                <th>{{ 'project.partner.coFinancing.total' | translate }}</th>
+                <th class="text-left">{{ 'project.partner.coFinancing.total' | translate }}</th>
                 <th class="text-right">{{ this.totalAmount | asMoney }}</th>
                 <th class="text-right">100 %</th>
             </tr>

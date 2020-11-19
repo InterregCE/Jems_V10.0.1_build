@@ -8,7 +8,12 @@
     </button>
     <div *ngIf="currentPage$ | async as callPage">
         <h4>{{'call.list.header' | translate}}</h4>
-        <app-template-card [componentId]="CallPageComponent.ID"></app-template-card>
+        <div *ngIf="success" class="success-wrapper">
+            <div class="success app-alert-success">
+                <i class="far fa-check-circle"></i>
+                <span *ngIf="success.i18nKey">{{success.i18nKey | translate : success.i18nArguments}}</span>
+            </div>
+        </div>
         <app-call-list
                 [isApplicant]="false"
                 [callPage]="callPage"
