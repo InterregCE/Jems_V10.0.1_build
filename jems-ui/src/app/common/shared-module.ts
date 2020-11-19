@@ -7,8 +7,6 @@ import {NgxPermissionsModule} from 'ngx-permissions';
 import {PaginatorComponent} from '@common/components/table/paginator/paginator.component';
 import {RouterModule} from '@angular/router';
 import {ProjectApplicationListComponent} from '../project/project-application/components/project-application-list/project-application-list.component';
-import {EditFormComponent} from '@common/components/section/edit-form/edit-form.component';
-import {TemplateCardComponent} from '@common/components/section/template-card/template-card.component';
 import {MoneyPipe} from './pipe/money.pipe';
 import {RowListTemplateComponent} from './templates/row-list-template/row-list-template.component';
 import {MaterialModule} from './material/material-module';
@@ -39,9 +37,7 @@ const declarations = [
   RowListTemplateComponent,
   TableComponent,
   PaginatorComponent,
-  EditFormComponent,
   FormComponent,
-  TemplateCardComponent,
   MoneyPipe,
   MultiLanguageFieldComponent,
   BreadcrumbComponent,

@@ -2,3 +2,16 @@
   display: inline-block;
   width: 100%;
 }
+
+.success-wrapper {
+  border-radius: .3rem;
+
+  .success {
+    padding: 1.4rem;
+
+    i {
+      margin-right: .5rem;
+    }
+  }
+}
+

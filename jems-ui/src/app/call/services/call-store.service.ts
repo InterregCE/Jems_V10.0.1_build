@@ -1,61 +1,62 @@
 import {Injectable} from '@angular/core';
-import {CallService, InputCallUpdate, OutputCall} from '@cat/api';
-import {merge, Observable, of, ReplaySubject, Subject} from 'rxjs';
-import {catchError, distinctUntilChanged, mergeMap, switchMap, tap} from 'rxjs/operators';
+import {CallService, InputCallUpdate, OutputCall, InputCallCreate, InputCallFlatRateSetup} from '@cat/api';
+import {Observable, ReplaySubject, Subject} from 'rxjs';
+import {tap} from 'rxjs/operators';
 import {Log} from '../../common/utils/log';
-import {HttpErrorResponse} from '@angular/common/http';
-import {CallDetailComponent} from '../components/call-detail/call-detail.component';
-import {EventBusService} from '../../common/services/event-bus/event-bus.service';
 
 @Injectable()
 export class CallStore {
   public static CALL_DETAIL_PATH = '/app/call/detail';
-  private callId$ = new ReplaySubject<number>(1);
-  private callName$ = new ReplaySubject<string>(1);
+  private callId: number;
+  call$ = new ReplaySubject<OutputCall | any>(1);
 
-  saveCall$ = new Subject<InputCallUpdate>();
-
-  private callById$ = this.callId$
-    .pipe(
-      distinctUntilChanged(),
-      mergeMap(id => id ? this.callService.getCallById(id) : of({})),
-      tap(call => Log.info('Fetched call:', this, call)),
-      tap((call: OutputCall) => {
-        if (call.name) { this.callName$.next(call.name); }
-      }),
-    );
-
-  private savedCall$ = this.saveCall$
-    .pipe(
-      switchMap(callUpdate =>
-        this.callService.updateCall(callUpdate)
-          .pipe(
-            tap(() => this.eventBusService.newSuccessMessage(
-              CallDetailComponent.ID, 'call.detail.save.success')
-            ),
-            tap(saved => Log.info('Updated call:', this, saved)),
-            tap(saved => this.callName$.next(saved.name)),
-            catchError((error: HttpErrorResponse) => {
-              this.eventBusService.newErrorMessage(CallDetailComponent.name, error.error);
-              return this.getCall();
-            })
-          )
-      ),
-    );
-
-  constructor(private callService: CallService,
-              private eventBusService: EventBusService) {
+  constructor(private callService: CallService) {
   }
 
   init(callId: number | string): void {
-    this.callId$.next(Number(callId));
+    if (callId && callId === this.callId) {
+      return;
+    }
+    if (!callId) {
+      this.call$.next({});
+      return;
+    }
+    this.callId = Number(callId);
+    this.callService.getCallById(this.callId)
+      .pipe(
+        tap(call => Log.info('Fetched project call:', this, call)),
+        tap(call => this.call$.next(call)),
+      ).subscribe();
   }
 
-  getCall(): Observable<OutputCall> {
-    return merge(this.callById$, this.savedCall$);
+  saveCall(call: InputCallUpdate): Observable<OutputCall> {
+    return this.callService.updateCall(call)
+      .pipe(
+        tap(saved => this.call$.next(saved)),
+        tap(saved => Log.info('Updated call:', this, saved))
+      );
   }
 
-  getCallName(): Observable<string> {
-    return this.callName$.asObservable();
+  createCall(call: InputCallCreate): Observable<OutputCall> {
+    return this.callService.createCall(call)
+      .pipe(
+        tap(created => this.call$.next(created)),
+        tap(created => Log.info('Created call:', this, created)),
+      );
+  }
+
+  publishCall(callId: number): Observable<OutputCall> {
+    return this.callService.publishCall(callId)
+      .pipe(
+        tap(saved => this.call$.next(saved)),
+        tap(saved => Log.info('Published call:', this, saved)),
+      );
+  }
+
+  saveFlatRates(flatRates: InputCallFlatRateSetup[]): Observable<OutputCall> {
+    return this.callService.updateCallFlatRateSetup(this.callId, flatRates)
+      .pipe(
+        tap(saved => Log.info('Updated call flat rates:', this, saved))
+      );
   }
 }

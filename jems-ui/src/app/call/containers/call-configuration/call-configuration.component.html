@@ -5,10 +5,6 @@
             [call]="details.call"
             [strategies]="details.strategies"
             [funds]="details.funds"
-            [priorityCheckboxes]="details.priorities"
-            (create)="createCall($event)"
-            (update)="callStore.saveCall$.next($event)"
-            (publish)="publishCall$.next($event)"
-            (cancel)="cancel()">
+            [priorityCheckboxes]="details.priorities">
     </app-call-detail>
 </div>

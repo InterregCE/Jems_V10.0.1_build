@@ -1,24 +1,25 @@
-import {ChangeDetectionStrategy, Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
-import {FormBuilder, FormGroup, Validators} from '@angular/forms';
-import {InputCallCreate, InputCallUpdate, OutputCall, OutputProgrammeFund, OutputProgrammeStrategy} from '@cat/api';
+import {ChangeDetectionStrategy, Component, Input, OnInit} from '@angular/core';
+import {FormBuilder, Validators} from '@angular/forms';
+import {OutputCall, OutputProgrammeFund, OutputProgrammeStrategy} from '@cat/api';
 import {Forms} from '../../../common/utils/forms';
-import {filter, take, takeUntil} from 'rxjs/operators';
+import {catchError, filter, take, tap} from 'rxjs/operators';
 import {MatDialog} from '@angular/material/dialog';
 import {CallPriorityCheckbox} from '../../containers/model/call-priority-checkbox';
 import {Tools} from '../../../common/utils/tools';
-import {BaseComponent} from '@common/components/base-component';
-import {EventBusService} from '../../../common/services/event-bus/event-bus.service';
+import {FormService} from '@common/components/section/form/form.service';
+import {CallStore} from '../../services/call-store.service';
+import {CallPageSidenavService} from '../../services/call-page-sidenav.service';
 
 @Component({
   selector: 'app-call-detail',
   templateUrl: './call-detail.component.html',
   styleUrls: ['./call-detail.component.scss'],
+  providers: [FormService],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class CallDetailComponent extends BaseComponent implements OnInit {
+export class CallDetailComponent implements OnInit {
   static ID = 'CallDetailComponent';
   tools = Tools;
-  CallDetailComponent = CallDetailComponent;
 
   @Input()
   call: OutputCall;
@@ -28,15 +29,6 @@ export class CallDetailComponent extends BaseComponent implements OnInit {
   strategies: OutputProgrammeStrategy[];
   @Input()
   funds: OutputProgrammeFund[];
-
-  @Output()
-  create: EventEmitter<InputCallCreate> = new EventEmitter<InputCallCreate>();
-  @Output()
-  update: EventEmitter<InputCallUpdate> = new EventEmitter<InputCallUpdate>();
-  @Output()
-  publish: EventEmitter<number> = new EventEmitter<number>();
-  @Output()
-  cancel: EventEmitter<void> = new EventEmitter<void>();
 
   startDateErrors = {
     required: 'call.startDate.unknown',
@@ -76,49 +68,56 @@ export class CallDetailComponent extends BaseComponent implements OnInit {
 
   constructor(private formBuilder: FormBuilder,
               private dialog: MatDialog,
-              private eventBusService: EventBusService) {
-    super();
+              private callStore: CallStore,
+              private formService: FormService,
+              private callNavService: CallPageSidenavService) {
   }
 
   ngOnInit(): void {
+    this.formService.init(this.callForm);
+    this.formService.setCreation(!this.call?.id);
     this.published = this.call?.status === OutputCall.StatusEnum.PUBLISHED;
-    if (this.published) {
-      this.getForm()?.disable();
-    }
+    this.formService.setEditable(!this.published);
     this.resetForm();
   }
 
-  getForm(): FormGroup | null {
-    return this.callForm;
-  }
-
   onSubmit(): void {
-    const call = {
-      name: this.callForm?.controls?.name?.value,
-      startDate: this.callForm?.controls?.startDate?.value,
-      endDate: this.callForm?.controls?.endDate?.value,
-      description: this.callForm?.controls?.description?.value,
-      lengthOfPeriod: this.callForm?.controls?.lengthOfPeriod?.value,
-      priorityPolicies: this.priorityCheckboxes
-        .flatMap(checkbox => checkbox.getCheckedChildPolicies()),
-      strategies: this.buildUpdateEntityStrategies(),
-      funds: this.buildUpdateEntityFunds(),
-    };
+    const call = this.callForm.value;
+    call.priorityPolicies = this.priorityCheckboxes
+      .flatMap(checkbox => checkbox.getCheckedChildPolicies());
+    call.strategies = this.buildUpdateEntityStrategies();
+    call.funds = this.buildUpdateEntityFunds();
+
     if (!this.call.id) {
-      this.create.emit(call);
+      this.callStore.createCall(call)
+        .pipe(
+          take(1),
+          tap(created => this.callNavService.redirectToCallOverview(
+            {
+              i18nKey: 'call.detail.created.success',
+              i18nArguments: {name: created.name}
+            })
+          ),
+          catchError(err => this.formService.setError(err))
+        ).subscribe();
       return;
     }
-    this.update.emit({
-      ...call,
-      id: this.call.id
-    });
+
+    call.id = this.call.id;
+    this.callStore.saveCall(call)
+      .pipe(
+        take(1),
+        tap(() => this.formService.setSuccess('call.detail.save.success')),
+        catchError(err => this.formService.setError(err))
+      ).subscribe();
   }
 
   onCancel(): void {
     if (this.call?.id) {
       this.resetForm();
+      return;
     }
-    this.cancel.emit();
+    this.callNavService.redirectToCallOverview();
   }
 
   publishCall(): void {
@@ -128,10 +127,19 @@ export class CallDetailComponent extends BaseComponent implements OnInit {
       'call.dialog.message'
     ).pipe(
       take(1),
-      takeUntil(this.destroyed$),
       filter(yes => !!yes)
     ).subscribe(() => {
-      this.publish.emit(this.call?.id);
+      this.callStore.publishCall(this.call?.id)
+        .pipe(
+          take(1),
+          tap(published => this.callNavService.redirectToCallOverview(
+            {
+              i18nKey: 'call.detail.publish.success',
+              i18nArguments: {name: published.name}
+            })
+          ),
+          catchError(err => this.formService.setError(err))
+        ).subscribe();
     });
   }
 
@@ -155,7 +163,7 @@ export class CallDetailComponent extends BaseComponent implements OnInit {
   }
 
   formChanged(): void {
-    this.eventBusService.setDirty(CallDetailComponent.ID, true);
+    this.formService.setDirty(true);
   }
 
   resetForm(): void {

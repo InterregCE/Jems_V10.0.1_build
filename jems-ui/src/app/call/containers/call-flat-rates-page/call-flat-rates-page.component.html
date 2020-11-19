@@ -1,8 +1,5 @@
 <app-breadcrumb></app-breadcrumb>
-<div *ngIf="details$ | async as details">
-    <app-call-flat-rates
-            [call]="details.call"
-            (create)="updateCallFlatRates($event)"
-            (cancel)="cancel()">
-    </app-call-flat-rates>
-</div>
+<app-call-flat-rates
+        *ngIf="call$ | async as call"
+        [call]="call">
+</app-call-flat-rates>

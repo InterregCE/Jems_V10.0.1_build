@@ -1,7 +1,5 @@
 import {ChangeDetectionStrategy, Component} from '@angular/core';
 import {
-  CallService,
-  InputCallCreate,
   InputCallUpdate,
   OutputCall,
   OutputProgrammeStrategy,
@@ -11,18 +9,15 @@ import {
   ProgrammeFundService
 } from '@cat/api';
 import {BaseComponent} from '@common/components/base-component';
-import {catchError, mergeMap, map, startWith, take, takeUntil, tap} from 'rxjs/operators';
+import {map, tap} from 'rxjs/operators';
 import {Log} from '../../../common/utils/log';
 import {ActivatedRoute} from '@angular/router';
-import {combineLatest, merge, Subject} from 'rxjs';
-import {HttpErrorResponse} from '@angular/common/http';
+import {combineLatest} from 'rxjs';
 import {CallStore} from '../../services/call-store.service';
 import {Permission} from '../../../security/permissions/permission';
 import {PermissionService} from '../../../security/permissions/permission.service';
 import {Tables} from '../../../common/utils/tables';
 import {CallPriorityCheckbox} from '../model/call-priority-checkbox';
-import {CallPageComponent} from '../call-page/call-page.component';
-import {EventBusService} from '../../../common/services/event-bus/event-bus.service';
 import {CallPageSidenavService} from '../../services/call-page-sidenav.service';
 
 @Component({
@@ -34,8 +29,6 @@ import {CallPageSidenavService} from '../../services/call-page-sidenav.service';
 export class CallConfigurationComponent extends BaseComponent {
 
   callId = this.activatedRoute?.snapshot?.params?.callId;
-  publishCall$ = new Subject<number>();
-  canceledEdit$ = new Subject<void>();
 
   private allPriorities$ = this.programmePriorityService
     .get(Tables.DEFAULT_INITIAL_PAGE_INDEX, 100, 'code,asc')
@@ -55,28 +48,12 @@ export class CallConfigurationComponent extends BaseComponent {
       tap(programmeFunds => Log.info('Fetched programme funds:', this, programmeFunds))
     );
 
-  private publishedCall$ = this.publishCall$
-    .pipe(
-      mergeMap(callUpdate => this.callService.publishCall(callUpdate)),
-      tap(() => this.redirectToCallOverview()),
-      tap(published => this.eventBusService.newSuccessMessage(
-        CallPageComponent.ID, {i18nKey: 'call.detail.publish.success', i18nArguments: {name: published.name}}
-        )
-      ),
-      tap(saved => Log.info('Published call:', this, saved)),
-      catchError((error: HttpErrorResponse) => {
-        this.eventBusService.newErrorMessage(CallPageComponent.ID, error.error);
-        throw error;
-      })
-    );
-
   details$ = combineLatest([
-    merge(this.callStore.getCall(), this.publishedCall$),
+    this.callStore.call$,
     this.permissionService.permissionsChanged(),
     this.allActiveStrategies$,
     this.allPriorities$,
     this.allFunds$,
-    this.canceledEdit$.pipe(startWith(null))
   ])
     .pipe(
       map(([call, permissions, allActiveStrategies, allPriorities, allFunds]) => ({
@@ -90,16 +67,15 @@ export class CallConfigurationComponent extends BaseComponent {
       tap(details => {
         // applicant user cannot see published calls
         if (!details.applicantCanAccessCall) {
-          this.redirectToCallOverview();
+          this.callNavService.redirectToCallOverview();
         }
       }),
     );
 
-  constructor(private callService: CallService,
-              public callStore: CallStore,
+  constructor(public callStore: CallStore,
               private activatedRoute: ActivatedRoute,
               private permissionService: PermissionService,
-              private eventBusService: EventBusService,
+              // private eventBusService: EventBusService,
               private programmePriorityService: ProgrammePriorityService,
               private programmeStrategyService: ProgrammeStrategyService,
               private programmeFundService: ProgrammeFundService,
@@ -107,38 +83,6 @@ export class CallConfigurationComponent extends BaseComponent {
     super();
     this.callStore.init(this.callId);
     this.callNavService.init(this.callId);
-  }
-
-  createCall(call: InputCallCreate): void {
-    this.callService.createCall(call)
-      .pipe(
-        take(1),
-        takeUntil(this.destroyed$),
-        tap(() => this.redirectToCallOverview()),
-        tap(saved => Log.info('Created call:', this, saved)),
-        tap(created => this.eventBusService.newSuccessMessage(
-          CallPageComponent.ID,
-          {i18nKey: 'call.detail.created.success', i18nArguments: {name: created.name}}
-          )
-        ),
-        catchError((error: HttpErrorResponse) => {
-          this.eventBusService.newErrorMessage(CallPageComponent.ID, error.error);
-          throw error;
-        })
-      )
-      .subscribe();
-  }
-
-  cancel(): void {
-    if (this.callId) {
-      this.canceledEdit$.next();
-    } else {
-      this.redirectToCallOverview();
-    }
-  }
-
-  redirectToCallOverview(): void {
-    this.callNavService.redirectToCallOverview();
   }
 
   private getStrategies(allActiveStrategies: OutputProgrammeStrategy[], call: OutputCall): OutputProgrammeStrategy[] {
