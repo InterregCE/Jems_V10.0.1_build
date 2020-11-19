@@ -8,13 +8,11 @@ import io.cloudflight.jems.api.project.dto.partner.ProjectPartnerAddressDTO
 import io.cloudflight.jems.api.project.dto.partner.InputProjectPartnerUpdate
 import io.cloudflight.jems.api.project.dto.partner.OutputProjectPartner
 import io.cloudflight.jems.api.project.dto.partner.OutputProjectPartnerDetail
-import io.cloudflight.jems.api.project.dto.partner.cofinancing.InputProjectPartnerCoFinancingWrapper
 import io.cloudflight.jems.server.project.authorization.CanReadProject
 import io.cloudflight.jems.server.project.authorization.CanReadProjectPartner
 import io.cloudflight.jems.server.project.authorization.CanUpdateProject
 import io.cloudflight.jems.server.project.authorization.CanUpdateProjectPartner
 import io.cloudflight.jems.server.project.service.partner.ProjectPartnerService
-import io.cloudflight.jems.server.project.service.partner.cofinancing.ProjectPartnerCoFinancingService
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
 import org.springframework.security.access.prepost.PreAuthorize
@@ -22,8 +20,7 @@ import org.springframework.web.bind.annotation.RestController
 
 @RestController
 class ProjectPartnerController(
-    private val projectPartnerService: ProjectPartnerService,
-    private val projectPartnerCoFinancingService: ProjectPartnerCoFinancingService
+    private val projectPartnerService: ProjectPartnerService
 ) : ProjectPartnerApi {
 
     @CanReadProject
@@ -64,11 +61,6 @@ class ProjectPartnerController(
     @CanUpdateProjectPartner
     override fun updateProjectPartnerMotivation(projectId: Long, partnerId: Long, motivation: ProjectPartnerMotivationDTO): OutputProjectPartnerDetail {
         return projectPartnerService.updatePartnerMotivation(partnerId, motivation)
-    }
-
-    @CanUpdateProjectPartner
-    override fun updateProjectPartnerCoFinancing(projectId: Long, partnerId: Long, partnerCoFinancing: InputProjectPartnerCoFinancingWrapper): OutputProjectPartnerDetail {
-        return projectPartnerCoFinancingService.updatePartnerCoFinancing(partnerId, partnerCoFinancing.finances)
     }
 
     @CanUpdateProjectPartner

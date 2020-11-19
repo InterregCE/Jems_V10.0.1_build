@@ -29,7 +29,7 @@ import io.cloudflight.jems.server.security.service.authorization.AuthorizationUt
 import io.cloudflight.jems.server.audit.service.AuditService
 import io.cloudflight.jems.server.call.callWithId
 import io.cloudflight.jems.server.call.testUser
-import io.cloudflight.jems.server.programme.entity.ProgrammeFund
+import io.cloudflight.jems.server.programme.entity.ProgrammeFundEntity
 import io.cloudflight.jems.server.programme.repository.ProgrammeFundRepository
 import io.cloudflight.jems.server.programme.entity.Strategy
 import io.cloudflight.jems.server.programme.repository.StrategyRepository
@@ -219,7 +219,7 @@ class CallServiceTest {
         every { strategyRepository.findAllById(eq(setOf(ProgrammeStrategy.EUStrategyBalticSeaRegion))) } returns
                 listOf(Strategy(ProgrammeStrategy.EUStrategyBalticSeaRegion, true))
         every { fundRepository.findAllById(eq(setOf(1L))) } returns
-                listOf(ProgrammeFund(1, "test", "test description", true))
+                listOf(ProgrammeFundEntity(1, "test", "test description", true))
 
         val newCall = InputCallCreate(
             name = call.name,
@@ -405,7 +405,7 @@ class CallServiceTest {
         val existingId = 1L
         val policies = setOf(ProgrammePriorityPolicy(programmeObjectivePolicy = AdvancedTechnologies, code = "AT"))
         val funds =
-            setOf(ProgrammeFund(id = 1, abbreviation = "test", description = "test description", selected = true))
+            setOf(ProgrammeFundEntity(id = 1, abbreviation = "test", description = "test description", selected = true))
 
         every { callRepository.findById(eq(existingId)) } returns
                 Optional.of(

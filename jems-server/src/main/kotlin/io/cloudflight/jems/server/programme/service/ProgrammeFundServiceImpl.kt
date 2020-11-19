@@ -1,7 +1,7 @@
 package io.cloudflight.jems.server.programme.service
 
 import io.cloudflight.jems.api.programme.dto.InputProgrammeFund
-import io.cloudflight.jems.api.programme.dto.OutputProgrammeFund
+import io.cloudflight.jems.api.programme.dto.ProgrammeFundOutputDTO
 import io.cloudflight.jems.server.audit.service.AuditService
 import io.cloudflight.jems.server.common.exception.I18nValidationException
 import io.cloudflight.jems.server.programme.repository.ProgrammeFundRepository
@@ -23,12 +23,12 @@ class ProgrammeFundServiceImpl(
     }
 
     @Transactional(readOnly = true)
-    override fun get(): List<OutputProgrammeFund> {
+    override fun get(): List<ProgrammeFundOutputDTO> {
         return programmeFundRepository.findAll().map { it.toOutputProgrammeFund() }
     }
 
     @Transactional
-    override fun update(funds: Collection<InputProgrammeFund>): List<OutputProgrammeFund> {
+    override fun update(funds: Collection<InputProgrammeFund>): List<ProgrammeFundOutputDTO> {
         val groupOfCreatedAndExisting = funds.groupBy { it.isCreation() }
 
         // for existing Funds update only flag selected

@@ -3,7 +3,7 @@
             [success$]="saveSuccess$"
             [error$]="saveError$"
             [editable]="projectStore.projectEditable$ | async"
-            [finances]="details.finances"
+            [financingAndContribution]="details.financingAndContribution"
             [callFunds]="details.callFunds"
             [totalAmount]="details.totalAmount"
             (save)="saveFinances$.next($event)"

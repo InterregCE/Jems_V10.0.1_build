@@ -1,7 +1,7 @@
 package io.cloudflight.jems.server.call.entity
 
 import io.cloudflight.jems.api.call.dto.CallStatus
-import io.cloudflight.jems.server.programme.entity.ProgrammeFund
+import io.cloudflight.jems.server.programme.entity.ProgrammeFundEntity
 import io.cloudflight.jems.server.user.entity.User
 import io.cloudflight.jems.server.programme.entity.ProgrammePriorityPolicy
 import io.cloudflight.jems.server.programme.entity.Strategy
@@ -59,7 +59,7 @@ data class Call(
         joinColumns = [JoinColumn(name = "call_id")],
         inverseJoinColumns = [JoinColumn(name = "programme_fund")]
     )
-    val funds: Set<ProgrammeFund>,
+    val funds: Set<ProgrammeFundEntity>,
 
     @field:NotNull
     val startDate: ZonedDateTime,

@@ -18,7 +18,6 @@ import io.cloudflight.jems.server.project.entity.partner.ProjectPartnerContact
 import io.cloudflight.jems.server.project.entity.partner.ProjectPartnerMotivationEntity
 import io.cloudflight.jems.server.project.entity.partner.ProjectPartnerAddress
 import io.cloudflight.jems.server.project.entity.partner.ProjectPartnerAddressId
-import io.cloudflight.jems.server.project.service.partner.cofinancing.toOutputProjectCoFinancing
 import io.cloudflight.jems.server.project.service.partner.model.ProjectPartner
 
 fun InputProjectPartnerCreate.toEntity(project: Project, legalStatus: ProgrammeLegalStatus) = ProjectPartnerEntity(
@@ -68,7 +67,6 @@ fun ProjectPartnerEntity.toOutputProjectPartnerDetail() = OutputProjectPartnerDe
     addresses = addresses?.map { it.toDto() } ?: emptyList(),
     contacts = contacts?.map { it.toOutputProjectPartnerContact() } ?: emptyList(),
     motivation = motivation.map { it.toDto() }.firstOrNull(),
-    financing = financing.map { it.toOutputProjectCoFinancing() }
 )
 
 fun ProjectPartnerAddressDTO.toEntity(partner: ProjectPartnerEntity) = ProjectPartnerAddress(

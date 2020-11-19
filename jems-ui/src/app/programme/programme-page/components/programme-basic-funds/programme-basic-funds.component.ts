@@ -9,7 +9,7 @@ import {
 } from '@angular/core';
 import {ViewEditForm} from '@common/components/forms/view-edit-form';
 import {FormControl, FormGroup, Validators} from '@angular/forms';
-import {InputProgrammeFund, InputProgrammeFundWrapper, OutputProgrammeFund} from '@cat/api';
+import {InputProgrammeFund, InputProgrammeFundWrapper, ProgrammeFundOutputDTO} from '@cat/api';
 import {MatTableDataSource} from '@angular/material/table';
 import {SelectionModel} from '@angular/cdk/collections';
 
@@ -109,7 +109,7 @@ export class ProgrammeBasicFundsComponent extends ViewEditForm implements OnInit
     return lastFund;
   }
 
-  private addControl(fund: OutputProgrammeFund): void {
+  private addControl(fund: ProgrammeFundOutputDTO): void {
     this.editableFundsForm.addControl(
       this.abbreviation(fund.id),
       new FormControl(fund?.abbreviation, [

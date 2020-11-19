@@ -5,7 +5,7 @@ import io.cloudflight.jems.server.audit.entity.AuditAction
 import io.cloudflight.jems.server.audit.service.AuditBuilder
 import io.cloudflight.jems.server.audit.service.AuditCandidate
 import io.cloudflight.jems.server.nuts.service.NutsIdentifier
-import io.cloudflight.jems.server.programme.entity.ProgrammeFund
+import io.cloudflight.jems.server.programme.entity.ProgrammeFundEntity
 import io.cloudflight.jems.server.programme.entity.ProgrammeLanguage
 import io.cloudflight.jems.server.programme.entity.ProgrammeLegalStatus
 import java.util.stream.Collectors
@@ -36,7 +36,7 @@ fun programmeNutsAreaChanged(updatedNuts: Collection<NutsIdentifier>): AuditCand
         .build()
 }
 
-fun programmeFundsChanged(funds: Iterable<ProgrammeFund>): AuditCandidate {
+fun programmeFundsChanged(funds: Iterable<ProgrammeFundEntity>): AuditCandidate {
     val fundsAsString = funds.asSequence()
         .filter { it.selected }
         .map { it.abbreviation }.joinToString(",\n")

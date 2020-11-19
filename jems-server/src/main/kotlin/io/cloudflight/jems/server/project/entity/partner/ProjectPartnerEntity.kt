@@ -4,7 +4,8 @@ import io.cloudflight.jems.api.project.dto.description.ProjectTargetGroup
 import io.cloudflight.jems.api.project.dto.partner.ProjectPartnerRole
 import io.cloudflight.jems.server.programme.entity.ProgrammeLegalStatus
 import io.cloudflight.jems.server.project.entity.Project
-import io.cloudflight.jems.server.project.entity.partner.cofinancing.ProjectPartnerCoFinancing
+import io.cloudflight.jems.server.project.entity.partner.cofinancing.ProjectPartnerCoFinancingEntity
+import io.cloudflight.jems.server.project.entity.partner.cofinancing.ProjectPartnerContributionEntity
 import javax.persistence.CascadeType
 import javax.persistence.Entity
 import javax.persistence.EnumType
@@ -67,7 +68,10 @@ data class ProjectPartnerEntity(
     val motivation: Set<ProjectPartnerMotivationEntity> = emptySet(),
 
     @OneToMany(mappedBy = "partnerId", cascade = [CascadeType.ALL], orphanRemoval = true)
-    val financing: Set<ProjectPartnerCoFinancing> = emptySet()
+    val financing: Set<ProjectPartnerCoFinancingEntity> = emptySet(),
+
+    @OneToMany(mappedBy = "partnerId", cascade = [CascadeType.ALL], orphanRemoval = true)
+    val partnerContributions: List<ProjectPartnerContributionEntity> = emptyList(),
 
     ) {
     override fun toString(): String {

@@ -1,7 +1,7 @@
 package io.cloudflight.jems.api.programme
 
 import io.cloudflight.jems.api.programme.dto.InputProgrammeFundWrapper
-import io.cloudflight.jems.api.programme.dto.OutputProgrammeFund
+import io.cloudflight.jems.api.programme.dto.ProgrammeFundOutputDTO
 import io.swagger.annotations.Api
 import io.swagger.annotations.ApiOperation
 import org.springframework.data.domain.Pageable
@@ -18,10 +18,10 @@ interface ProgrammeFundApi {
 
     @ApiOperation("Retrieve all programme funds")
     @GetMapping
-    fun getProgrammeFundList(pageable: Pageable): List<OutputProgrammeFund>
+    fun getProgrammeFundList(pageable: Pageable): List<ProgrammeFundOutputDTO>
 
     @ApiOperation("Specify available Funds for this programme")
     @PutMapping(consumes = [MediaType.APPLICATION_JSON_VALUE])
-    fun updateProgrammeFundList(@Valid @RequestBody fundData: InputProgrammeFundWrapper): List<OutputProgrammeFund>
+    fun updateProgrammeFundList(@Valid @RequestBody fundData: InputProgrammeFundWrapper): List<ProgrammeFundOutputDTO>
 
 }
