@@ -15,7 +15,6 @@ import {
   withLatestFrom
 } from 'rxjs/operators';
 import {combineLatest, forkJoin, merge, Observable, of, Subject} from 'rxjs';
-import {I18nValidationError} from '@common/validation/i18n-validation-error';
 import {HttpErrorResponse} from '@angular/common/http';
 import {PartnerBudgetTable} from '../../../../model/partner-budget-table';
 import {PartnerBudgetTableType} from '../../../../model/partner-budget-table-type';
@@ -43,7 +42,7 @@ export class ProjectApplicationPartnerBudgetPageComponent {
     map((call: OutputCallWithDates ) => {
       const result: BudgetOption[] = [];
       call.flatRates.forEach(flatRate => {
-        result.push(new BudgetOption(flatRate.rate, !flatRate.isAdjustable, true, flatRate.type));
+        result.push(new BudgetOption(flatRate.rate, flatRate.rate, !flatRate.isAdjustable, true, flatRate.type));
       });
       return result;
     })
@@ -226,11 +225,11 @@ export class ProjectApplicationPartnerBudgetPageComponent {
   private updateFlatRatesValues(flatRates: BudgetOption[], values: BudgetOptions): BudgetOption[] {
     flatRates.forEach((option: BudgetOption) => {
       if (option.key === InputCallFlatRateSetup.TypeEnum.StaffCost && values.staffCostsFlatRate) {
-        option.value = values.staffCostsFlatRate;
+        option.currentValue = values.staffCostsFlatRate;
         option.isDefault = false;
       }
       if (option.key === InputCallFlatRateSetup.TypeEnum.OfficeOnStaff && values.officeAdministrationFlatRate) {
-        option.value = values.officeAdministrationFlatRate;
+        option.currentValue = values.officeAdministrationFlatRate;
         option.isDefault = false;
       }
       if (option.key === InputCallFlatRateSetup.TypeEnum.StaffCost && values.staffCostsFlatRate === null) {

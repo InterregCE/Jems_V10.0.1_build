@@ -43,19 +43,21 @@ export class ProjectApplicationFormPartnerBudgetOptionsComponent extends BaseCom
   saveBudgetOptions = new EventEmitter<BudgetOptions>();
 
   officeAdministrationFlatRatePercent: number;
+  officeAdministrationFlatRateMaxPercent: number;
   officeAdministrationFlatRateFixed: boolean;
   officeAdministrationFlatRateAllowed = false;
   officeAdministrationFlatRateActive = false;
   staffCostsFlatRatePercent: number;
+  staffCostsFlatRateMaxPercent: number;
   staffCostsFlatRateFixed: boolean;
   staffCostsFlatRateAllowed = false;
   staffCostsFlatRateActive = false;
 
   optionsForm = this.formBuilder.group({
     officeAdministrationFlatRateActive: [''],
-    officeAdministrationFlatRate: ['', Validators.compose([(control: AbstractControl) => Validators.max(this.officeAdministrationFlatRatePercent)(control), Validators.min(1), Validators.required])],
+    officeAdministrationFlatRate: ['', Validators.compose([(control: AbstractControl) => Validators.max(this.officeAdministrationFlatRateMaxPercent)(control), Validators.min(1), Validators.required])],
     staffCostsFlatRateActive: [''],
-    staffCostsFlatRate: ['', Validators.compose([(control: AbstractControl) => Validators.max(this.staffCostsFlatRatePercent)(control), Validators.min(1), Validators.required])]
+    staffCostsFlatRate: ['', Validators.compose([(control: AbstractControl) => Validators.max(this.staffCostsFlatRateMaxPercent)(control), Validators.min(1), Validators.required])]
   });
 
   officeAdministrationFlatRateErrors = {
@@ -152,25 +154,27 @@ export class ProjectApplicationFormPartnerBudgetOptionsComponent extends BaseCom
   private prepareFlatRates(): void {
     this.budgetOptions.forEach(budgetOption => {
       if (budgetOption.key === InputCallFlatRateSetup.TypeEnum.StaffCost) {
-        this.staffCostsFlatRatePercent = budgetOption.value;
+        this.staffCostsFlatRatePercent = budgetOption.currentValue;
+        this.staffCostsFlatRateMaxPercent = budgetOption.callValue;
         this.staffCostsFlatRateFixed = budgetOption.fixed;
         this.staffCostsFlatRateAllowed = true;
         this.staffCostsFlatRateActive = !budgetOption.isDefault;
       }
       if (budgetOption.key === InputCallFlatRateSetup.TypeEnum.OfficeOnStaff) {
-        this.officeAdministrationFlatRatePercent = budgetOption.value;
+        this.officeAdministrationFlatRatePercent = budgetOption.currentValue;
+        this.officeAdministrationFlatRateMaxPercent = budgetOption.callValue;
         this.officeAdministrationFlatRateFixed = budgetOption.fixed;
         this.officeAdministrationFlatRateAllowed = true;
         this.officeAdministrationFlatRateActive = !budgetOption.isDefault;
       }
     });
     this.officeAdministrationFlatRateErrorsArgs = {
-      max: {maxValue: this.officeAdministrationFlatRatePercent},
-      min: {maxValue: this.officeAdministrationFlatRatePercent}
+      max: {maxValue: this.officeAdministrationFlatRateMaxPercent},
+      min: {maxValue: this.officeAdministrationFlatRateMaxPercent}
     };
     this.staffCostsFlatRateErrorsArgs = {
-      max: {maxValue: this.staffCostsFlatRatePercent},
-      min: {maxvalue: this.staffCostsFlatRatePercent}
+      max: {maxValue: this.staffCostsFlatRateMaxPercent},
+      min: {maxvalue: this.staffCostsFlatRateMaxPercent}
     };
   }
 }
