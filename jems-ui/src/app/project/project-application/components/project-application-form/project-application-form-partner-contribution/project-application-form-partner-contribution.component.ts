@@ -51,7 +51,7 @@ export class ProjectApplicationFormPartnerContributionComponent implements OnIni
   }
 
   onSubmit(): void {
-    this.partnerStore.updatePartnerContribution(this.partnerContributionForm.value)
+    this.partnerStore.updatePartnerMotivation(this.partnerContributionForm.value)
       .pipe(
         take(1),
         tap(() => this.formService.setSuccess('project.partner.motivation.save.success')),
@@ -60,11 +60,11 @@ export class ProjectApplicationFormPartnerContributionComponent implements OnIni
   }
 
   resetForm(): void {
-    if (!this.partner?.partnerContribution) {
+    if (!this.partner?.motivation) {
       this.partnerContributionForm.reset();
       return;
     }
-    this.partnerContributionForm.patchValue(this.partner?.partnerContribution);
+    this.partnerContributionForm.patchValue(this.partner?.motivation);
   }
 
 }

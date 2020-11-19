@@ -2,9 +2,9 @@ package io.cloudflight.jems.server.project.controller.partner
 
 import io.cloudflight.jems.api.project.ProjectPartnerApi
 import io.cloudflight.jems.api.project.dto.InputProjectContact
-import io.cloudflight.jems.api.project.dto.InputProjectPartnerContribution
+import io.cloudflight.jems.api.project.dto.ProjectPartnerMotivationDTO
 import io.cloudflight.jems.api.project.dto.partner.InputProjectPartnerCreate
-import io.cloudflight.jems.api.project.dto.partner.InputProjectPartnerAddress
+import io.cloudflight.jems.api.project.dto.partner.ProjectPartnerAddressDTO
 import io.cloudflight.jems.api.project.dto.partner.InputProjectPartnerUpdate
 import io.cloudflight.jems.api.project.dto.partner.OutputProjectPartner
 import io.cloudflight.jems.api.project.dto.partner.OutputProjectPartnerDetail
@@ -52,7 +52,7 @@ class ProjectPartnerController(
     }
 
     @CanUpdateProjectPartner
-    override fun updateProjectPartnerAddress(projectId: Long, partnerId: Long, addresses: Set<InputProjectPartnerAddress>): OutputProjectPartnerDetail {
+    override fun updateProjectPartnerAddress(projectId: Long, partnerId: Long, addresses: Set<ProjectPartnerAddressDTO>): OutputProjectPartnerDetail {
         return projectPartnerService.updatePartnerAddresses(partnerId, addresses)
     }
 
@@ -62,8 +62,8 @@ class ProjectPartnerController(
     }
 
     @CanUpdateProjectPartner
-    override fun updateProjectPartnerContribution(projectId: Long, partnerId: Long, partnerContribution: InputProjectPartnerContribution): OutputProjectPartnerDetail {
-        return projectPartnerService.updatePartnerContribution(partnerId, partnerContribution)
+    override fun updateProjectPartnerMotivation(projectId: Long, partnerId: Long, motivation: ProjectPartnerMotivationDTO): OutputProjectPartnerDetail {
+        return projectPartnerService.updatePartnerMotivation(partnerId, motivation)
     }
 
     @CanUpdateProjectPartner

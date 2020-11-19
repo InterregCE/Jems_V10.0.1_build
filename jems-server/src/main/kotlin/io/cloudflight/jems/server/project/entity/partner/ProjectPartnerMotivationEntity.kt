@@ -4,8 +4,8 @@ import javax.persistence.Column
 import javax.persistence.Entity
 import javax.persistence.Id
 
-@Entity(name = "project_partner_contribution")
-data class ProjectPartnerContribution(
+@Entity(name = "project_partner_motivation")
+data class ProjectPartnerMotivationEntity(
 
     @Id
     val partnerId: Long,
@@ -19,7 +19,7 @@ data class ProjectPartnerContribution(
     @Column
     val organizationExperience: String?
 ) {
-    fun nullIfBlank(): ProjectPartnerContribution? {
+    fun nullIfBlank(): ProjectPartnerMotivationEntity? {
         if (organizationRelevance.isNullOrBlank()
             && organizationRole.isNullOrBlank()
             && organizationExperience.isNullOrBlank())

@@ -46,13 +46,13 @@ describe('ProjectPartnerStoreService', () => {
     });
   }));
 
-  it('should update a project partner contribution', fakeAsync(() => {
+  it('should update a project partner motivation', fakeAsync(() => {
     service.init(2, 1);
-    service.updatePartnerContribution({} as any).subscribe();
+    service.updatePartnerMotivation({} as any).subscribe();
 
     httpTestingController.expectOne({
       method: 'PUT',
-      url: `//api/project/1/partner/2/contribution`
+      url: `//api/project/1/partner/2/motivation`
     });
   }));
 });

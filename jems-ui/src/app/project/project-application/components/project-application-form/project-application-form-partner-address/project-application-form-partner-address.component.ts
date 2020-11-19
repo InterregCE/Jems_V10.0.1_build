@@ -6,7 +6,7 @@ import {
   SimpleChanges,
 } from '@angular/core';
 import {AbstractControl, FormBuilder, FormGroup, Validators} from '@angular/forms';
-import {InputProjectPartnerAddress, OutputProjectPartnerAddress, OutputNuts} from '@cat/api';
+import {OutputNuts, ProjectPartnerAddressDTO} from '@cat/api';
 import {FormService} from '@common/components/section/form/form.service';
 import {ProjectPartnerStore} from '../../../containers/project-application-form-page/services/project-partner-store.service';
 import {catchError, take, tap} from 'rxjs/operators';
@@ -24,7 +24,7 @@ export class ProjectApplicationFormPartnerAddressComponent implements OnInit, On
   @Input()
   nuts: OutputNuts[];
   @Input()
-  organizationDetails: OutputProjectPartnerAddress[];
+  organizationDetails: ProjectPartnerAddressDTO[];
   @Input()
   editable: boolean;
 
@@ -50,15 +50,15 @@ export class ProjectApplicationFormPartnerAddressComponent implements OnInit, On
     })
   });
 
-  private static isOrganizationDtoEmpty(partnerOrganizationDetails: InputProjectPartnerAddress): boolean {
+  private static isOrganizationDtoEmpty(partnerOrganizationDetails: ProjectPartnerAddressDTO): boolean {
     return !(partnerOrganizationDetails.country || partnerOrganizationDetails.nutsRegion2 || partnerOrganizationDetails.nutsRegion3 ||
       partnerOrganizationDetails.street || partnerOrganizationDetails.houseNumber || partnerOrganizationDetails.postalCode ||
       partnerOrganizationDetails.city);
   }
 
-  private static getValidatedDataToEmit(partnerOrganizationMainAddress: InputProjectPartnerAddress,
-                                        partnerOrganizationDepartmentAddress: InputProjectPartnerAddress): InputProjectPartnerAddress[] {
-    const dataToEmit: InputProjectPartnerAddress[] = [];
+  private static getValidatedDataToEmit(partnerOrganizationMainAddress: ProjectPartnerAddressDTO,
+                                        partnerOrganizationDepartmentAddress: ProjectPartnerAddressDTO): ProjectPartnerAddressDTO[] {
+    const dataToEmit: ProjectPartnerAddressDTO[] = [];
     if (!ProjectApplicationFormPartnerAddressComponent.isOrganizationDtoEmpty(partnerOrganizationMainAddress)) {
       dataToEmit.push(partnerOrganizationMainAddress);
     }
@@ -101,7 +101,7 @@ export class ProjectApplicationFormPartnerAddressComponent implements OnInit, On
 
   onSubmit(): void {
     const partnerOrganizationAddress = {
-      type: InputProjectPartnerAddress.TypeEnum.Organization,
+      type: ProjectPartnerAddressDTO.TypeEnum.Organization,
       country: this.organization.country.value,
       nutsRegion2: this.organization.region2.value,
       nutsRegion3: this.organization.region3.value,
@@ -112,7 +112,7 @@ export class ProjectApplicationFormPartnerAddressComponent implements OnInit, On
       homepage: this.organization.homepage.value
     };
     const partnerDepartmentAddress = {
-      type: InputProjectPartnerAddress.TypeEnum.Department,
+      type: ProjectPartnerAddressDTO.TypeEnum.Department,
       country: this.department.country.value,
       nutsRegion2: this.department.region2.value,
       nutsRegion3: this.department.region3.value,
@@ -137,7 +137,7 @@ export class ProjectApplicationFormPartnerAddressComponent implements OnInit, On
 
   private initPartnerOrganizationMainAddressFields(): void {
     const partnerMainAddress = this.organizationDetails?.find(
-      person => person.type === OutputProjectPartnerAddress.TypeEnum.Organization);
+      person => person.type === ProjectPartnerAddressDTO.TypeEnum.Organization);
     this.organization.country.setValue(partnerMainAddress?.country);
     this.organization.region2.setValue(partnerMainAddress?.nutsRegion2);
     this.organization.region3.setValue(partnerMainAddress?.nutsRegion3);
@@ -150,7 +150,7 @@ export class ProjectApplicationFormPartnerAddressComponent implements OnInit, On
 
   private initPartnerOrganizationDepartmentAddressFields(): void {
     const partnerMainAddress = this.organizationDetails?.find(
-      person => person.type === OutputProjectPartnerAddress.TypeEnum.Department);
+      person => person.type === ProjectPartnerAddressDTO.TypeEnum.Department);
     this.department.country.setValue(partnerMainAddress?.country);
     this.department.region2.setValue(partnerMainAddress?.nutsRegion2);
     this.department.region3.setValue(partnerMainAddress?.nutsRegion3);

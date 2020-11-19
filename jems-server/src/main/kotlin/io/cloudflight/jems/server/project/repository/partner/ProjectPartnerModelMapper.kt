@@ -1,14 +1,12 @@
 package io.cloudflight.jems.server.project.repository.partner
 
-import io.cloudflight.jems.api.project.dto.partner.InputProjectPartnerAddress
+import io.cloudflight.jems.api.project.dto.partner.ProjectPartnerAddressDTO
 import io.cloudflight.jems.api.project.dto.InputProjectContact
-import io.cloudflight.jems.api.project.dto.InputProjectPartnerContribution
+import io.cloudflight.jems.api.project.dto.ProjectPartnerMotivationDTO
 import io.cloudflight.jems.api.project.dto.partner.InputProjectPartnerCreate
 import io.cloudflight.jems.api.project.dto.partner.OutputProjectPartnerContact
-import io.cloudflight.jems.api.project.dto.OutputProjectPartnerContribution
 import io.cloudflight.jems.api.project.dto.partner.OutputProjectPartner
 import io.cloudflight.jems.api.project.dto.partner.OutputProjectPartnerDetail
-import io.cloudflight.jems.api.project.dto.partner.OutputProjectPartnerAddress
 import io.cloudflight.jems.api.project.dto.partner.ProjectPartnerAddressType
 import io.cloudflight.jems.server.programme.entity.ProgrammeLegalStatus
 import io.cloudflight.jems.server.project.entity.Address
@@ -17,7 +15,7 @@ import io.cloudflight.jems.server.project.entity.Project
 import io.cloudflight.jems.server.project.entity.partner.ProjectPartnerEntity
 import io.cloudflight.jems.server.project.entity.partner.ProjectPartnerContactId
 import io.cloudflight.jems.server.project.entity.partner.ProjectPartnerContact
-import io.cloudflight.jems.server.project.entity.partner.ProjectPartnerContribution
+import io.cloudflight.jems.server.project.entity.partner.ProjectPartnerMotivationEntity
 import io.cloudflight.jems.server.project.entity.partner.ProjectPartnerAddress
 import io.cloudflight.jems.server.project.entity.partner.ProjectPartnerAddressId
 import io.cloudflight.jems.server.project.service.partner.cofinancing.toOutputProjectCoFinancing
@@ -67,13 +65,13 @@ fun ProjectPartnerEntity.toOutputProjectPartnerDetail() = OutputProjectPartnerDe
     legalStatusId = legalStatus.id,
     vat = vat,
     vatRecovery = vatRecovery,
-    addresses = addresses?.map { it.toOutputProjectPartnerAddress() } ?: emptyList(),
+    addresses = addresses?.map { it.toDto() } ?: emptyList(),
     contacts = contacts?.map { it.toOutputProjectPartnerContact() } ?: emptyList(),
-    partnerContribution = partnerContribution.map { it.toOutputProjectPartnerContribution() }.firstOrNull(),
+    motivation = motivation.map { it.toDto() }.firstOrNull(),
     financing = financing.map { it.toOutputProjectCoFinancing() }
 )
 
-fun InputProjectPartnerAddress.toEntity(partner: ProjectPartnerEntity) = ProjectPartnerAddress(
+fun ProjectPartnerAddressDTO.toEntity(partner: ProjectPartnerEntity) = ProjectPartnerAddress(
     addressId = ProjectPartnerAddressId(partner.id, type),
     address = Address(
         country = country,
@@ -107,24 +105,24 @@ fun ProjectPartnerContact.toOutputProjectPartnerContact() = OutputProjectPartner
     telephone = contact?.telephone
 )
 
-fun InputProjectPartnerContribution.toEntity(partnerId: Long): Set<ProjectPartnerContribution> {
-    val contribution = ProjectPartnerContribution(
+fun ProjectPartnerMotivationDTO.toEntity(partnerId: Long): Set<ProjectPartnerMotivationEntity> {
+    val motivation = ProjectPartnerMotivationEntity(
         partnerId = partnerId,
         organizationRelevance = organizationRelevance,
         organizationRole = organizationRole,
         organizationExperience = organizationExperience
     ).nullIfBlank() ?: return emptySet()
 
-    return setOf(contribution)
+    return setOf(motivation)
 }
 
-fun ProjectPartnerContribution.toOutputProjectPartnerContribution() = OutputProjectPartnerContribution(
+fun ProjectPartnerMotivationEntity.toDto() = ProjectPartnerMotivationDTO(
     organizationRelevance = organizationRelevance,
     organizationRole = organizationRole,
     organizationExperience = organizationExperience
 )
 
-fun ProjectPartnerAddress.toOutputProjectPartnerAddress() = OutputProjectPartnerAddress(
+fun ProjectPartnerAddress.toDto() = ProjectPartnerAddressDTO(
     type = addressId.type,
     country = address.country,
     nutsRegion2 = address.nutsRegion2,

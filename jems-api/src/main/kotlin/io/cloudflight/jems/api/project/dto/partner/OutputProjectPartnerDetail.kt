@@ -1,6 +1,6 @@
 package io.cloudflight.jems.api.project.dto.partner
 
-import io.cloudflight.jems.api.project.dto.OutputProjectPartnerContribution
+import io.cloudflight.jems.api.project.dto.ProjectPartnerMotivationDTO
 import io.cloudflight.jems.api.project.dto.description.ProjectTargetGroup
 import io.cloudflight.jems.api.project.dto.partner.cofinancing.OutputProjectPartnerCoFinancing
 
@@ -16,8 +16,8 @@ data class OutputProjectPartnerDetail (
     val legalStatusId: Long?,
     val vat: String?,
     val vatRecovery: Boolean?,
-    val addresses: List<OutputProjectPartnerAddress> = emptyList(),
+    val addresses: List<ProjectPartnerAddressDTO> = emptyList(),
     val contacts: List<OutputProjectPartnerContact> = emptyList(),
-    val partnerContribution: OutputProjectPartnerContribution? = null,
+    val motivation: ProjectPartnerMotivationDTO? = null,
     val financing: List<OutputProjectPartnerCoFinancing> = emptyList()
 )

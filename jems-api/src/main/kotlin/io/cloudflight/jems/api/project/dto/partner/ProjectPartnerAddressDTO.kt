@@ -3,7 +3,7 @@ package io.cloudflight.jems.api.project.dto.partner
 import io.cloudflight.jems.api.project.dto.InputAddress
 import javax.validation.constraints.NotNull
 
-data class InputProjectPartnerAddress(
+data class ProjectPartnerAddressDTO(
 
     @field:NotNull(message = "project.partner.type.should.not.be.empty")
     val type: ProjectPartnerAddressType,

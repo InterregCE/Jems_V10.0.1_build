@@ -2,7 +2,7 @@ package io.cloudflight.jems.api.project.dto
 
 import javax.validation.constraints.Size
 
-data class InputProjectPartnerContribution (
+data class ProjectPartnerMotivationDTO (
     @field:Size(max = 2000, message = "partner.organization.relevance.size.too.long")
     val organizationRelevance: String? = null,
 
