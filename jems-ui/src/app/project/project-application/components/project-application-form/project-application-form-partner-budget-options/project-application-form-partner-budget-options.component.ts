@@ -81,6 +81,7 @@ export class ProjectApplicationFormPartnerBudgetOptionsComponent extends BaseCom
 
   ngOnInit(): void {
     this.formService.init(this.optionsForm);
+    this.prepareFlatRates();
     this.resetForm();
     this.error$
       .pipe(
@@ -94,7 +95,6 @@ export class ProjectApplicationFormPartnerBudgetOptionsComponent extends BaseCom
         tap(() => this.formService.setSuccess('project.partner.budget.options.save.success'))
       )
       .subscribe();
-    this.prepareFlatRates();
   }
 
   ngOnChanges(changes: SimpleChanges): void {
@@ -122,6 +122,7 @@ export class ProjectApplicationFormPartnerBudgetOptionsComponent extends BaseCom
       staffCostsFlatRateActive: this.staffCostsFlatRateActive,
       staffCostsFlatRate: this.staffCostsFlatRateActive ? this.staffCostsFlatRatePercent : null
     });
+    this.enterEditMode();
   }
 
   protected enterEditMode(): void {

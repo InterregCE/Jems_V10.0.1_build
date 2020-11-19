@@ -76,17 +76,17 @@ export class ProjectApplicationFormPartnerBudgetComponent extends BaseComponent 
   ngOnChanges(changes: SimpleChanges): void {
 
     if (changes.budgets || changes.staffCostsFlatRate) {
+      this.prepareFlatRates();
       this.updateStaffCostsTotal();
-      this.updateStateOfTables();
     }
 
     if (changes.budgets || changes.officeAdministrationFlatRate || changes.staffCostsFlatRate) {
-      const staffTotal = Number.isInteger(this.staffCostsFlatRate) && Number.isInteger(this.officeAdministrationFlatRate) ?
+      this.prepareFlatRates();
+      const staffTotal = this.staffCostsFlatRateActive && this.officeAdministrationFlatRateActive ?
         this.staffCostsTotal :
         (this.budgets?.staff?.total || 0);
 
       this.updateOfficeAndAdministrationTotal(staffTotal);
-      this.updateStateOfTables();
     }
   }
 
@@ -126,6 +126,8 @@ export class ProjectApplicationFormPartnerBudgetComponent extends BaseComponent 
   }
 
   private prepareFlatRates(): void {
+    this.staffCostsFlatRateActive = false;
+    this.officeAdministrationFlatRateActive = false;
     this.budgetOptions.forEach(budgetOption => {
       if (budgetOption.key === InputCallFlatRateSetup.TypeEnum.StaffCost) {
         this.staffCostsFlatRate = budgetOption.value;
@@ -133,19 +135,6 @@ export class ProjectApplicationFormPartnerBudgetComponent extends BaseComponent 
       }
       if (budgetOption.key === InputCallFlatRateSetup.TypeEnum.OfficeOnStaff) {
         this.officeAdministrationFlatRate = budgetOption.value;
-        this.officeAdministrationFlatRateActive = !budgetOption.isDefault;
-      }
-    });
-  }
-
-  private updateStateOfTables(): void {
-    this.staffCostsFlatRateActive = false;
-    this.officeAdministrationFlatRateActive = false;
-    this.budgetOptions.forEach(budgetOption => {
-      if (budgetOption.key === InputCallFlatRateSetup.TypeEnum.StaffCost) {
-        this.staffCostsFlatRateActive = !budgetOption.isDefault;
-      }
-      if (budgetOption.key === InputCallFlatRateSetup.TypeEnum.OfficeOnStaff) {
         this.officeAdministrationFlatRateActive = !budgetOption.isDefault;
       }
     });
