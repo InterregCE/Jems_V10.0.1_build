@@ -8,6 +8,7 @@ export class BudgetOption {
   key: InputCallFlatRateSetup.TypeEnum;
   constructor(value: number, callValue: number, fixed: boolean, isDefault: boolean, key: InputCallFlatRateSetup.TypeEnum) {
     this.currentValue = value;
+    this.callValue = callValue;
     this.fixed = fixed;
     this.isDefault = isDefault;
     this.key = key;

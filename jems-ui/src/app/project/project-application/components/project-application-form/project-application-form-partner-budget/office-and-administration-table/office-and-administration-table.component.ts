@@ -28,6 +28,7 @@ export class OfficeAndAdministrationTableComponent {
         Numbers.truncateNumber(this.total),
         this.locale
       ),
+      cellStyle: { 'text-align': 'right' }
     }
   ];
   locale = 'de-DE';
