@@ -57,5 +57,5 @@ interface WorkPackageApi {
 
     @ApiOperation("Creates work packages outputs for a work package")
     @PostMapping("/{id}/output", consumes = [MediaType.APPLICATION_JSON_VALUE])
-    fun updateWorkPackageOutputs(@PathVariable projectId: Long, @PathVariable id: Long, @Valid @RequestBody inputWorkPackageOutputs: Set<InputWorkPackageOutput>)
+    fun updateWorkPackageOutputs(@PathVariable projectId: Long, @PathVariable id: Long, @Valid @RequestBody inputWorkPackageOutputs: Set<InputWorkPackageOutput>): Set<OutputWorkPackageOutput>
 }

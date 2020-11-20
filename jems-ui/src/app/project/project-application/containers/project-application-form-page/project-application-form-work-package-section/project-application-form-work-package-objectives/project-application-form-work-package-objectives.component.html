@@ -1,0 +1,6 @@
+<app-project-application-form-work-package-detail
+        *ngIf="workPackageStore.workPackage$ | async as workPackage"
+        [workPackage]="workPackage"
+        [editable]="projectStore.projectEditable$ | async"
+        [projectId]="projectId">
+</app-project-application-form-work-package-detail>

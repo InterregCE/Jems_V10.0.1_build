@@ -1,14 +1,11 @@
-import {ChangeDetectionStrategy, Component, EventEmitter, OnInit} from '@angular/core';
+import {ChangeDetectionStrategy, Component, OnDestroy, OnInit} from '@angular/core';
 import {BaseComponent} from '@common/components/base-component';
 import {ActivatedRoute, Router} from '@angular/router';
-import {InputWorkPackageCreate, InputWorkPackageUpdate, WorkPackageService} from '@cat/api';
-import {merge, of, ReplaySubject, Subject} from 'rxjs';
-import {catchError, distinctUntilChanged, map, mergeMap, takeUntil, tap} from 'rxjs/operators';
-import {Log} from '../../../../../../common/utils/log';
-import {HttpErrorResponse} from '@angular/common/http';
-import {I18nValidationError} from '@common/validation/i18n-validation-error';
+import {WorkPackageService} from '@cat/api';
+import {distinctUntilChanged, map, takeUntil, tap} from 'rxjs/operators';
 import {ProjectStore} from '../../../project-application-detail/services/project-store.service';
-import {ProjectApplicationFormSidenavService} from '../../services/project-application-form-sidenav.service';
+import {TabService} from '../../../../../../common/services/tab.service';
+import {ProjectWorkpackageStoreService} from '../../services/project-workpackage-store.service';
 
 @Component({
   selector: 'app-work-package-details',
@@ -16,72 +13,40 @@ import {ProjectApplicationFormSidenavService} from '../../services/project-appli
   styleUrls: ['./work-package-details.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class WorkPackageDetailsComponent extends BaseComponent implements OnInit {
-  projectId = this.activatedRoute?.snapshot?.params?.projectId;
-  workPackageId$ = new ReplaySubject<number>(1);
+export class WorkPackageDetailsComponent extends BaseComponent implements OnInit, OnDestroy {
 
-  saveError$ = new Subject<HttpErrorResponse | null>();
-  saveSuccess$ = new Subject<boolean>();
-  updateWorkPackageData$ = new EventEmitter<InputWorkPackageUpdate>();
-  createWorkPackageData$ = new EventEmitter<InputWorkPackageCreate>();
+  projectId = this.activatedRoute?.snapshot?.params?.projectId;
+  workPackageId = this.activatedRoute?.snapshot?.params?.workPackageId;
+
+  activeTab$ = this.tabService.currentTab(
+    WorkPackageDetailsComponent.name + this.workPackageId
+  );
 
   constructor(private workPackageService: WorkPackageService,
               private activatedRoute: ActivatedRoute,
               public projectStore: ProjectStore,
-              private projectApplicationFormSidenavService: ProjectApplicationFormSidenavService,
-              private router: Router) {
+              public workPackageStore: ProjectWorkpackageStoreService,
+              private router: Router,
+              private tabService: TabService) {
     super();
-  }
-
-  private updatedWorkPackageData$ = this.updateWorkPackageData$
-    .pipe(
-      mergeMap((data) => this.workPackageService.updateWorkPackage(this.projectId, data)),
-      tap(() => this.saveSuccess$.next(true)),
-      tap(() => this.saveError$.next(null)),
-      tap(saved => Log.info('Updated work package data:', this, saved)),
-      catchError((error: HttpErrorResponse) => {
-        this.saveError$.next(error);
-        throw error;
-      })
-    );
-
-  private createdWorkPackageData$ = this.createWorkPackageData$
-    .pipe(
-      mergeMap((data) => this.workPackageService.createWorkPackage(this.projectId, data)),
-      tap(() => this.saveSuccess$.next(true)),
-      tap(() => this.saveError$.next(null)),
-      tap(saved => Log.info('Created work package data:', this, saved)),
-      tap(() => this.projectApplicationFormSidenavService.refreshPackages(this.projectId)),
-      tap(() => this.redirectToWorkPackageOverview()),
-      catchError((error: HttpErrorResponse) => {
-        this.saveError$.next(error);
-        throw error;
-      })
-    );
-
-  private workPackageById$ = this.workPackageId$
-    .pipe(
-      mergeMap(id => id ? this.workPackageService.getWorkPackageById(id, this.projectId) : of({}))
-    );
-
-  public workPackageDetails$ = merge(
-    this.workPackageById$,
-    this.updatedWorkPackageData$,
-    this.createdWorkPackageData$
-  );
-
-  ngOnInit(): void {
-    this.projectStore.init(this.projectId);
-
     this.activatedRoute.params.pipe(
       takeUntil(this.destroyed$),
       map(params => params.workPackageId),
       distinctUntilChanged(),
-      tap(id => this.workPackageId$.next(Number(id))),
+      tap(id => this.workPackageStore.init(id, this.projectId)),
     ).subscribe();
   }
 
-  redirectToWorkPackageOverview(): void {
-    this.router.navigate(['app', 'project', 'detail', this.projectId, 'applicationFormWorkPackage']);
+  ngOnInit(): void {
+    this.projectStore.init(this.projectId);
+  }
+
+  ngOnDestroy(): void {
+    super.ngOnDestroy();
+    this.tabService.cleanupTab(WorkPackageDetailsComponent.name + this.workPackageId);
+  }
+
+  changeTab(tabIndex: number): void {
+    this.tabService.changeTab(WorkPackageDetailsComponent.name + this.workPackageId, tabIndex);
   }
 }

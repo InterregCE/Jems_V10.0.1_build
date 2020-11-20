@@ -1,0 +1,63 @@
+th.mat-header-cell, td.mat-cell, td.mat-footer-cell {
+  border: none;
+}
+
+button {
+  width: unset !important;
+  margin-bottom: 0.1rem;
+  font-size: 1.25rem;
+}
+
+.icon-column {
+  height: 20rem;
+  max-width: 6%;
+  min-width: 6%;
+  padding-left: 1rem;
+  padding-right: 0;
+  align-items: baseline;
+}
+
+.field-column {
+  padding: 0;
+  display: block;
+}
+
+.output-line {
+  width: 100%;
+  display: flex;
+}
+
+.field-row-two {
+  flex: 1;
+  vertical-align: top;
+}
+
+.field-row-three-first {
+  flex: 1;
+  vertical-align: top;
+}
+
+.field-row-three {
+  flex: 1;
+  margin-left: 1rem;
+  vertical-align: top;
+}
+
+.expandable-field-row-one {
+  flex: 1;
+  vertical-align: top;
+  padding-top: 0px !important;
+}
+
+.output-header {
+  padding-bottom: 0;
+  padding-top: 2rem;
+}
+
+mat-form-field {
+  overflow: auto;
+}
+
+.spaced-elements {
+  margin-top: 1rem;
+}

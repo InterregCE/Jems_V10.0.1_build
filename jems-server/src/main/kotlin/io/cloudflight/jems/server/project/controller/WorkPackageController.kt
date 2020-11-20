@@ -55,7 +55,7 @@ class WorkPackageController(
         projectId: Long,
         id: Long,
         inputWorkPackageOutputs: Set<InputWorkPackageOutput>
-    ) {
+    ): Set<OutputWorkPackageOutput> {
         return updateWorkPackageOutputInteractor.updateWorkPackageOutputs(projectId, inputWorkPackageOutputs, id)
     }
 

@@ -1,12 +1,18 @@
-<app-breadcrumb></app-breadcrumb>
-<app-project-application-form-work-package-detail
-        *ngIf="workPackageDetails$ | async as workPackage"
-        [workPackage]="workPackage"
-        [editable]="projectStore.projectEditable$ | async"
-        [projectId]="projectId"
-        [success$]="saveSuccess$"
-        [error$]="saveError$"
-        (updateData)="updateWorkPackageData$.next($event)"
-        (createData)="createWorkPackageData$.next($event)"
-        (cancel)="redirectToWorkPackageOverview()">
-</app-project-application-form-work-package-detail>
+<div *ngIf="workPackageStore.workPackage$ | async as workPackage">
+    <app-breadcrumb></app-breadcrumb>
+    <h5 class="header">
+        {{'project.application.form.workpackage.form.header' | translate}}
+        {{workPackage.number}}
+    </h5>
+    <mat-tab-group class="workpackage-tab-menu"
+                   (selectedIndexChange)="changeTab($event)"
+                   [selectedIndex]="activeTab$ | async">
+        <mat-tab label="{{'workpackage.tab.objectives' | translate}}">
+            <app-project-application-form-work-package-objectives></app-project-application-form-work-package-objectives>
+        </mat-tab>
+        <mat-tab label="{{'workpackage.tab.outputs' | translate}}">
+            <app-project-application-form-work-package-output></app-project-application-form-work-package-output>
+        </mat-tab>
+    </mat-tab-group>
+</div>
+

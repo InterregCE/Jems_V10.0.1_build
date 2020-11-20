@@ -10,12 +10,15 @@ import {
 } from '@angular/core';
 import {FormBuilder, FormGroup, Validators} from '@angular/forms';
 import {InputWorkPackageCreate, InputWorkPackageUpdate, OutputWorkPackage} from '@cat/api';
-import {ActivatedRoute} from '@angular/router';
+import {ActivatedRoute, Router} from '@angular/router';
 import {FormService} from '@common/components/section/form/form.service';
 import {BaseComponent} from '@common/components/base-component';
 import {Observable} from 'rxjs';
 import {HttpErrorResponse} from '@angular/common/http';
-import {takeUntil, tap} from 'rxjs/operators';
+import {catchError, take, takeUntil, tap} from 'rxjs/operators';
+import {ProjectWorkpackageStoreService} from '../../../containers/project-application-form-page/services/project-workpackage-store.service';
+import {Log} from '../../../../../common/utils/log';
+import {ProjectApplicationFormSidenavService} from '../../../containers/project-application-form-page/services/project-application-form-sidenav.service';
 
 @Component({
   selector: 'app-project-application-form-work-package-detail',
@@ -65,7 +68,10 @@ export class ProjectApplicationFormWorkPackageDetailComponent extends BaseCompon
   };
 
   constructor(private formBuilder: FormBuilder,
-              private formService: FormService) {
+              private formService: FormService,
+              private router: Router,
+              public workPackageStore: ProjectWorkpackageStoreService,
+              private projectApplicationFormSidenavService: ProjectApplicationFormSidenavService) {
     super();
   }
 
@@ -73,21 +79,7 @@ export class ProjectApplicationFormWorkPackageDetailComponent extends BaseCompon
     this.workPackageNumber = this.workPackage?.number;
     this.workPackageForm.controls.workPackageNumber.disable();
     this.resetForm();
-
     this.formService.init(this.workPackageForm);
-    this.formService.setCreation(!this.workPackage.id);
-    this.error$
-      .pipe(
-        takeUntil(this.destroyed$),
-        tap(err => this.formService.setError(err))
-      )
-      .subscribe();
-    this.success$
-      .pipe(
-        takeUntil(this.destroyed$),
-        tap(() => this.formService.setSuccess('project.application.form.workpackage.save.success'))
-      )
-      .subscribe();
   }
 
   ngOnChanges(changes: SimpleChanges): void {
@@ -104,27 +96,44 @@ export class ProjectApplicationFormWorkPackageDetailComponent extends BaseCompon
       objectiveAndAudience: this.workPackageForm.controls.workPackageTargetAudience.value,
     };
     if (!this.workPackage.id) {
-      this.createData.emit(workPackage);
+      this.workPackageStore.createWorkPackage(workPackage)
+        .pipe(
+          take(1),
+          tap(saved => Log.info('Created work package data:', this, saved)),
+          tap(() => this.projectApplicationFormSidenavService.refreshPackages(this.projectId)),
+          tap(() => this.redirectToWorkPackageOverview()),
+          catchError(error => this.formService.setError(error))
+        ).subscribe();
       return;
     }
-    this.updateData.emit({
+    this.workPackageStore.saveWorkPackage({
       ...workPackage,
       id: this.workPackage.id
-    });
+  })
+      .pipe(
+        take(1),
+        tap(() => this.formService.setSuccess('project.application.form.workpackage.save.success')),
+        catchError(error => this.formService.setError(error))
+      ).subscribe();
   }
 
   onCancel(): void {
     if (!this.workPackage.id) {
-      this.cancel.emit();
+      this.redirectToWorkPackageOverview();
     }
     this.resetForm();
   }
 
   private resetForm(): void {
+    this.formService.setEditable(this.editable);
+    this.formService.setCreation(!this.workPackage?.id);
     this.workPackageForm.controls.workPackageNumber.setValue(this.workPackage?.number || this.workPackageNumber);
     this.workPackageForm.controls.workPackageTitle.setValue(this.workPackage?.name);
     this.workPackageForm.controls.workPackageSpecificObjective.setValue(this.workPackage?.specificObjective);
     this.workPackageForm.controls.workPackageTargetAudience.setValue(this.workPackage?.objectiveAndAudience);
   }
 
+  redirectToWorkPackageOverview(): void {
+    this.router.navigate(['app', 'project', 'detail', this.projectId, 'applicationFormWorkPackage']);
+  }
 }
