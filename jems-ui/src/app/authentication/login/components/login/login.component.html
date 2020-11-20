@@ -10,8 +10,8 @@
                 <br>
                 <form [formGroup]="loginForm" (ngSubmit)="onSubmit()">
                     <div>
-                        <mat-form-field>
-                            <mat-label>{{'authentication.email.label' | translate}}</mat-label>
+                        <mat-form-field class="w-100">
+                            <mat-label><mat-icon>email</mat-icon>&nbsp;{{'authentication.email.label' | translate}}</mat-label>
                             <input matInput autocomplete="email"
                                    formControlName="email" id="email" name="email" required type="text">
                             <mat-error *ngIf="!loginForm.controls.email.valid">
@@ -20,8 +20,8 @@
                         </mat-form-field>
                     </div>
                     <div>
-                        <mat-form-field>
-                            <mat-label>{{'authentication.password.label' | translate}}</mat-label>
+                        <mat-form-field class="w-100">
+                            <mat-label><mat-icon>lock</mat-icon>&nbsp;{{'authentication.password.label' | translate}}</mat-label>
                             <input matInput
                                    formControlName="password" id="password" name="password" required type="password">
                             <mat-error *ngIf="!loginForm.controls.password.valid">
@@ -37,7 +37,7 @@
                             {{'user.login.button' | translate}}
                         </button>
                     </div>
-                    <hr>
+                    <br>
                     <div>
                         <span>{{'authentication.create.account.copy' | translate}}&nbsp;</span>
                         <button mat-stroked-button
