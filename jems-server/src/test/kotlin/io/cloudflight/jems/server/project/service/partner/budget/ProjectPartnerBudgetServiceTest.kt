@@ -113,8 +113,8 @@ internal class ProjectPartnerBudgetServiceTest {
         const val TO_CHANGE_PRICE_PER_UNIT_NEW = 773.36
         const val TO_CHANGE_ROW_SUM_NEW = 1_160_040.00
         const val TO_STAY_NUM_OF_UNITS = 18.00
-        const val TO_STAY_PRICE_PER_UNIT = 220_000_000.0
-        const val TO_STAY_ROW_SUM = 3_960_000_000.00
+        const val TO_STAY_PRICE_PER_UNIT = 22_000_000.0
+        const val TO_STAY_ROW_SUM = 396_000_000.00
 
         private fun toBd(value: Double): BigDecimal {
             return BigDecimal.valueOf((value * 100).toLong(), 2)
@@ -168,37 +168,37 @@ internal class ProjectPartnerBudgetServiceTest {
 
         val toBeSavedMaxNumberOfUnits = listOf(
             InputBudget(
-                numberOfUnits = BigDecimal.valueOf(999_999_999_999_999_99L, 2),
+                numberOfUnits = BigDecimal.valueOf(999_999_999_99L, 2),
                 pricePerUnit = BigDecimal.ONE)
         )
 
         assertThat(
             callUpdateBudgetServiceMethod(repository,1, toBeSavedMaxNumberOfUnits)
-        ).overridingErrorMessage("numberOfUnits could be up to 999.999.999.999.999,99").isEqualTo(
+        ).overridingErrorMessage("numberOfUnits could be up to 999.999.999,99").isEqualTo(
             listOf(
                 InputBudget(
                     id = 0,
-                    numberOfUnits = BigDecimal.valueOf(999_999_999_999_999_99L, 2),
+                    numberOfUnits = BigDecimal.valueOf(999_999_999_99L, 2),
                     pricePerUnit = BigDecimal.valueOf(100L, 2),
-                    rowSum = BigDecimal.valueOf(999_999_999_999_999_99L, 2))
+                    rowSum = BigDecimal.valueOf(999_999_999_99L, 2))
             )
         )
 
         val toBeSavedMaxPricePerUnit = listOf(
             InputBudget(
                 numberOfUnits = BigDecimal.ONE,
-                pricePerUnit = BigDecimal.valueOf(999_999_999_999_999_99L, 2))
+                pricePerUnit = BigDecimal.valueOf(999_999_999_99L, 2))
         )
 
         assertThat(
             callUpdateBudgetServiceMethod(repository, 1, toBeSavedMaxPricePerUnit)
-        ).overridingErrorMessage("pricePerUnit could be up to 999.999.999.999.999,99").isEqualTo(
+        ).overridingErrorMessage("pricePerUnit could be up to 999.999.999,99").isEqualTo(
             listOf(
                 InputBudget(
                     id = 0,
                     numberOfUnits = BigDecimal.valueOf(100L, 2),
-                    pricePerUnit = BigDecimal.valueOf(999_999_999_999_999_99L, 2),
-                    rowSum = BigDecimal.valueOf(999_999_999_999_999_99L, 2))
+                    pricePerUnit = BigDecimal.valueOf(999_999_999_99L, 2),
+                    rowSum = BigDecimal.valueOf(999_999_999_99L, 2))
             )
         )
     }
@@ -251,7 +251,7 @@ internal class ProjectPartnerBudgetServiceTest {
                     )
                 ))
             }.i18nKey
-        ).overridingErrorMessage("pricePerUnit * numberOfUnits together cannot be more then 999.999.999.999.999,99")
+        ).overridingErrorMessage("pricePerUnit * numberOfUnits together cannot be more then 999.999.999,99")
             .isEqualTo("project.partner.budget.number.out.of.range")
     }
 

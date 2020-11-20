@@ -26,14 +26,14 @@ export class PartnerBudgetTableEntry {
 
   private static toNumber(value: string): number {
     const valueNumber = Numbers.toDecimal(value);
-    if (valueNumber > 999999999999999) {
+    if (valueNumber > 999_999_999) {
       return NaN;
     }
     return Numbers.truncateNumber(valueNumber);
   }
 
   private static validNumber(nr: number): boolean {
-    return isNotNullOrUndefined(nr) && isNumeric(nr) && nr <= 999999999999999;
+    return isNotNullOrUndefined(nr) && isNumeric(nr) && nr <= 999_999_999;
   }
 
   setDescription(newValue: string): void {

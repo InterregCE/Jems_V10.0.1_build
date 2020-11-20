@@ -45,7 +45,6 @@ export class ProjectApplicationFormPartnerBudgetComponent extends BaseComponent 
   @Output()
   cancelEdit = new EventEmitter<void>();
 
-  saveEnabled = true;
   officeAndAdministrationTotal = 0;
   staffCostsTotal = 0;
   officeAdministrationFlatRate: number;
@@ -104,7 +103,7 @@ export class ProjectApplicationFormPartnerBudgetComponent extends BaseComponent 
 
   tableChanged(): void {
     this.formService.setDirty(true);
-    this.saveEnabled = Object.values(this.budgets).every(table => table.valid());
+    this.formService.setValid(Object.values(this.budgets).every(table => table.valid()));
   }
 
   private updateStaffCostsTotal(): void {
