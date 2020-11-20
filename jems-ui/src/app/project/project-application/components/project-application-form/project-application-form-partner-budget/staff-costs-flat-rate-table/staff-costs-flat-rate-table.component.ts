@@ -28,6 +28,7 @@ export class StaffCostsFlatRateTableComponent {
         Numbers.truncateNumber(params.data.total),
         this.locale
       ),
+      cellStyle: { 'text-align': 'right' }
     }
   ];
   locale = 'de-DE';

@@ -15,7 +15,7 @@
                 <mat-form-field class="wrapper" *ngIf="optionsForm?.controls?.staffCostsFlatRateActive">
                     <input type="number" formControlName="staffCostsFlatRate" matInput
                            [min]="1"
-                           [max]="20"
+                           [max]="staffCostsFlatRateMaxPercent"
                            [readonly]="staffCostsFlatRateFixed"
                            (paste)="Tools.checkDigitsOnPaste($event)"
                            (keypress)="Tools.checkDigitsOnInput($event)">
@@ -40,7 +40,7 @@
                 <mat-form-field class="wrapper" *ngIf="optionsForm?.controls?.officeAdministrationFlatRateActive">
                     <input type="number" formControlName="officeAdministrationFlatRate" matInput
                            [min]="1"
-                           [max]="15"
+                           [max]="officeAdministrationFlatRateMaxPercent"
                            [readonly]="officeAdministrationFlatRateFixed"
                            (paste)="Tools.checkDigitsOnPaste($event)"
                            (keypress)="Tools.checkDigitsOnInput($event)">
