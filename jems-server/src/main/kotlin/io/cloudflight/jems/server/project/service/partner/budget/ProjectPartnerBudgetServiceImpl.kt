@@ -28,7 +28,7 @@ class ProjectPartnerBudgetServiceImpl(
 
     companion object {
         const val MAX_ALLOWED_AMOUNT = 300
-        private val MAX_ALLOWED_VALUE = BigDecimal.valueOf(999_999_999_999_999_99L, 2)
+        private val MAX_ALLOWED_VALUE = BigDecimal.valueOf(999_999_999_99L, 2)
     }
 
     //region StuffCosts
