@@ -137,18 +137,26 @@ export class ProjectApplicationFormManagementDetailComponent extends BaseCompone
     if (this.project?.projectCooperationCriteria?.projectJointDevelopment) {
       this.selection.select('criteria_development');
       this.managementForm.controls.criteria_development.setValue(this.project?.projectCooperationCriteria?.projectJointDevelopmentDescription);
+    } else {
+      this.selection.deselect('criteria_development');
     }
     if (this.project?.projectCooperationCriteria?.projectJointImplementation) {
       this.selection.select('criteria_implementation');
       this.managementForm.controls.criteria_implementation.setValue(this.project?.projectCooperationCriteria?.projectJointImplementationDescription);
+    } else {
+      this.selection.deselect('criteria_implementation');
     }
     if (this.project?.projectCooperationCriteria?.projectJointStaffing) {
       this.selection.select('criteria_staffing');
       this.managementForm.controls.criteria_staffing.setValue(this.project?.projectCooperationCriteria?.projectJointStaffingDescription);
+    } else {
+      this.selection.deselect('criteria_staffing');
     }
     if (this.project?.projectCooperationCriteria?.projectJointFinancing) {
       this.selection.select('criteria_financing');
       this.managementForm.controls.criteria_financing.setValue(this.project?.projectCooperationCriteria?.projectJointFinancingDescription);
+    } else {
+      this.selection.deselect('criteria_financing');
     }
     this.selectedContributionPrincipleDevelopment = this.project?.projectHorizontalPrinciples?.sustainableDevelopmentCriteriaEffect;
     this.selectedContributionPrincipleOpportunities = this.project?.projectHorizontalPrinciples?.equalOpportunitiesEffect;
