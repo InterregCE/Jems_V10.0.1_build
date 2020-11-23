@@ -15,11 +15,8 @@ import {PartnerBudgetTable} from '../../../../model/partner-budget-table';
 import {Numbers} from '../../../../../../common/utils/numbers';
 import {BaseComponent} from '@common/components/base-component';
 import {PartnerBudgetTableType} from '../../../../model/partner-budget-table-type';
-import {PartnerBudgetStaffCostTableEntry} from '../../../../model/partner-budget-staffcost-table-entry';
-import {PartnerBudgetTravelTableEntry} from '../../../../model/partner-budget-travel-table-entry';
-import {PartnerBudgetGeneralTableEntry} from '../../../../model/partner-budget-general-table-entry';
-import {LanguageService} from '../../../../../../common/services/language.service';
-import {InputTranslation} from '@cat/api';
+import {MultiLanguageInputService} from '../../../../../../common/services/multi-language-input.service';
+import {takeUntil, tap} from 'rxjs/operators';
 
 @Component({
   selector: 'app-budget-table',
@@ -64,8 +61,14 @@ export class BudgetTableComponent extends BaseComponent implements AfterViewInit
   };
 
   constructor(private translateService: TranslateService,
-              public languageService: LanguageService) {
+              public languageService: MultiLanguageInputService) {
     super();
+    this.languageService.currentLanguage$
+      .pipe(
+        takeUntil(this.destroyed$),
+        tap(() => this.gridApi?.refreshView())
+      )
+      .subscribe();
   }
 
   static editableRow(editable: boolean, node: RowNode): boolean {
@@ -77,23 +80,14 @@ export class BudgetTableComponent extends BaseComponent implements AfterViewInit
   }
 
   addNewEntry(): void {
-    this.table.entries = [...this.table.entries, this.getNewTableEntry()];
-    this.tableChanged.emit();
-  }
-
-  private getNewTableEntry(): PartnerBudgetTableEntry {
-    const entry = {
+    this.table.entries = [...this.table.entries, new PartnerBudgetTableEntry({
       id: Tables.getNextId(this.table.entries),
+      description: this.languageService.initInput([]),
       numberOfUnits: 1,
       pricePerUnit: 0,
       new: true
-    };
-    if (this.table.type === PartnerBudgetTableType.STAFF) {
-      return new PartnerBudgetStaffCostTableEntry(entry, this.languageService);
-    } else if (this.table.type === PartnerBudgetTableType.TRAVEL) {
-      return new PartnerBudgetTravelTableEntry(entry, this.languageService);
-    }
-    return new PartnerBudgetGeneralTableEntry(entry, this.languageService);
+    })];
+    this.tableChanged.emit();
   }
 
   removeEntry(entry: PartnerBudgetTableEntry): void {
@@ -110,23 +104,9 @@ export class BudgetTableComponent extends BaseComponent implements AfterViewInit
 
   getTotalRow(): PartnerBudgetTableEntry {
     this.table.computeTotal();
-    return this.getNewTableEntryTotal();
-  }
-
-  private getNewTableEntryTotal(): PartnerBudgetTableEntry {
-    const entry = {
-      description: [{
-          language: InputTranslation.LanguageEnum.EN,
-          translation: this.translateService.instant('project.partner.budget.table.total')
-        }]
-    };
-
-    if (this.table.type === PartnerBudgetTableType.STAFF) {
-      return new PartnerBudgetStaffCostTableEntry(entry, this.languageService);
-    } else if (this.table.type === PartnerBudgetTableType.TRAVEL) {
-      return new PartnerBudgetTravelTableEntry(entry, this.languageService);
-    }
-    return new PartnerBudgetGeneralTableEntry(entry, this.languageService);
+    return new PartnerBudgetTableEntry({
+      description: this.translateService.instant('project.partner.budget.table.total'),
+    });
   }
 
   private setColumnDefs(): void {
@@ -141,16 +121,15 @@ export class BudgetTableComponent extends BaseComponent implements AfterViewInit
         editable: params => BudgetTableComponent.editableRow(this.editable, params.node),
         sortable: true,
         singleClickEdit: true,
+        valueGetter: (params: any) => this.languageService.getInputValue(params.data.description),
         valueSetter: (params: any) => {
-          params.data.setDescription(params.newValue);
+          this.languageService.updateInputValue(params.newValue, params.data.description);
+          params.data.validDescription = this.languageService.inputValid(params.data.description);
           return true;
         },
         cellRendererFramework: AgGridTemplateRendererComponent,
         cellRendererParams: {
           ngTemplate: this.descriptionCell
-        },
-        valueGetter: (params: any) => {
-          return params.data.getDescription();
         },
         flex: 2,
       },

@@ -50,7 +50,6 @@ export class ProgrammeLanguagesPageComponent extends BaseComponent implements On
   }
 
   reloadLanguages(response: OutputProgrammeLanguage[]): void {
-    this.languageService.languagesChanged$
-      .next(response);
+    this.languageService.updateLanguages(response);
   }
 }

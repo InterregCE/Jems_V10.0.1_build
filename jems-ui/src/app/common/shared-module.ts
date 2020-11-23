@@ -1,5 +1,5 @@
 import {NgModule} from '@angular/core';
-import {CommonModule, PercentPipe} from '@angular/common';
+import {CommonModule} from '@angular/common';
 import {FormsModule, ReactiveFormsModule} from '@angular/forms';
 import {TranslateModule} from '@ngx-translate/core';
 import {TableComponent} from './components/table/table.component';
@@ -22,6 +22,7 @@ import {HelpMenuComponent} from '@common/components/top-bar/help-menu/help-menu.
 import {SideNavComponent} from '@common/components/side-nav/component/side-nav.component';
 import {FormComponent} from '@common/components/section/form/form.component';
 import {PercentagePipe} from './pipe/percentage';
+import {MultiLanguageComponent} from '@common/components/forms/multi-language/multi-language.component';
 
 const modules = [
   CommonModule,
@@ -41,6 +42,7 @@ const declarations = [
   FormComponent,
   MoneyPipe,
   PercentagePipe,
+  MultiLanguageComponent,
   MultiLanguageFieldComponent,
   BreadcrumbComponent,
   AlertComponent,

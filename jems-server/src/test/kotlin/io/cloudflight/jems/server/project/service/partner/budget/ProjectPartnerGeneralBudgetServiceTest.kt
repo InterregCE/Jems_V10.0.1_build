@@ -145,7 +145,7 @@ internal class ProjectPartnerGeneralBudgetServiceTest {
         every { repository.saveAll(any<List<ProjectPartnerBudgetExternal>>()) } returnsArgument 0
 
         val toBeSavedMaxNumberOfUnits = listOf(
-            InputBudget(
+            InputGeneralBudget(
                 numberOfUnits = BigDecimal.valueOf(999_999_999_99L, 2),
                 pricePerUnit = BigDecimal.ONE)
         )
