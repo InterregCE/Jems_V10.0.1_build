@@ -174,7 +174,7 @@ export class ProjectApplicationFormPartnerBudgetOptionsComponent extends BaseCom
     };
     this.staffCostsFlatRateErrorsArgs = {
       max: {maxValue: this.staffCostsFlatRateMaxPercent},
-      min: {maxvalue: this.staffCostsFlatRateMaxPercent}
+      min: {maxValue: this.staffCostsFlatRateMaxPercent}
     };
   }
 }
