@@ -5,7 +5,7 @@ import io.cloudflight.jems.api.project.dto.partner.budget.InputBudget
 import io.cloudflight.jems.api.project.dto.partner.budget.InputGeneralBudget
 import io.cloudflight.jems.api.project.dto.partner.budget.InputStaffCostBudget
 import io.cloudflight.jems.api.project.dto.partner.budget.InputTravelBudget
-import io.cloudflight.jems.server.project.entity.TranslationPartnerId
+import io.cloudflight.jems.server.project.entity.TranslationBudgetId
 import io.cloudflight.jems.server.project.entity.partner.budget.Budget
 import io.cloudflight.jems.server.project.entity.partner.budget.ProjectPartnerBudgetEquipment
 import io.cloudflight.jems.server.project.entity.partner.budget.ProjectPartnerBudgetEquipmentTransl
@@ -46,14 +46,10 @@ fun InputTravelBudget.toTravel(partnerId: Long) = ProjectPartnerBudgetTravel(
     budget = toBudget(
         numberOfUnits = getNumberOfUnits(),
         pricePerUnit =  getPricePerUnit()
-    ),
-    translatedValues = combineTranslatedValuesTravelCost(partnerId, description)
+    )
 )
 
-fun combineTranslatedValuesTravelCost(
-    partnerId: Long,
-    description: Set<InputTranslation>
-): Set<ProjectPartnerBudgetTravelTransl> {
+fun InputTravelBudget.combineTranslatedValuesTravelCost(budgetId: Long): MutableSet<ProjectPartnerBudgetTravelTransl> {
     val descriptionMap = description.associateBy( { it.language }, { it.translation } )
 
     val languages = descriptionMap.keys.toMutableSet()
@@ -61,7 +57,7 @@ fun combineTranslatedValuesTravelCost(
 
     return languages.mapTo(HashSet()) {
         ProjectPartnerBudgetTravelTransl(
-            TranslationPartnerId(partnerId, it),
+            TranslationBudgetId(budgetId, it),
             descriptionMap[it]
         )
     }
@@ -73,14 +69,10 @@ fun InputStaffCostBudget.toStaffCost(partnerId: Long) = ProjectPartnerBudgetStaf
     budget = toBudget(
         numberOfUnits = getNumberOfUnits(),
         pricePerUnit =  getPricePerUnit()
-    ),
-    translatedValues = combineTranslatedValuesStaffCost(partnerId, description)
+    )
 )
 
-fun combineTranslatedValuesStaffCost(
-    partnerId: Long,
-    description: Set<InputTranslation>
-): Set<ProjectPartnerBudgetStaffCostTransl> {
+fun InputStaffCostBudget.combineTranslatedValuesStaffCost(budgetId: Long): MutableSet<ProjectPartnerBudgetStaffCostTransl> {
     val descriptionMap = description.associateBy( { it.language }, { it.translation } )
 
     val languages = descriptionMap.keys.toMutableSet()
@@ -88,7 +80,7 @@ fun combineTranslatedValuesStaffCost(
 
     return languages.mapTo(HashSet()) {
         ProjectPartnerBudgetStaffCostTransl(
-            TranslationPartnerId(partnerId, it),
+            TranslationBudgetId(budgetId, it),
             descriptionMap[it]
         )
     }
@@ -100,14 +92,10 @@ fun InputGeneralBudget.toEquipment(partnerId: Long) = ProjectPartnerBudgetEquipm
     budget = toBudget(
         numberOfUnits = getNumberOfUnits(),
         pricePerUnit =  getPricePerUnit()
-    ),
-    translatedValues = combineTranslatedValuesEquipment(partnerId, description)
+    )
 )
 
-fun combineTranslatedValuesEquipment(
-    partnerId: Long,
-    description: Set<InputTranslation>
-): Set<ProjectPartnerBudgetEquipmentTransl> {
+fun InputGeneralBudget.combineTranslatedValuesEquipment(budgetId: Long): MutableSet<ProjectPartnerBudgetEquipmentTransl> {
     val descriptionMap = description.associateBy( { it.language }, { it.translation } )
 
     val languages = descriptionMap.keys.toMutableSet()
@@ -115,7 +103,7 @@ fun combineTranslatedValuesEquipment(
 
     return languages.mapTo(HashSet()) {
         ProjectPartnerBudgetEquipmentTransl(
-            TranslationPartnerId(partnerId, it),
+            TranslationBudgetId(budgetId, it),
             descriptionMap[it]
         )
     }
@@ -127,14 +115,10 @@ fun InputGeneralBudget.toExternal(partnerId: Long) = ProjectPartnerBudgetExterna
     budget = toBudget(
         numberOfUnits = getNumberOfUnits(),
         pricePerUnit =  getPricePerUnit()
-    ),
-    translatedValues = combineTranslatedValuesExternal(partnerId, description)
+    )
 )
 
-fun combineTranslatedValuesExternal(
-    partnerId: Long,
-    description: Set<InputTranslation>
-): Set<ProjectPartnerBudgetExternalTransl> {
+fun InputGeneralBudget.combineTranslatedValuesExternal(budgetId: Long): MutableSet<ProjectPartnerBudgetExternalTransl> {
     val descriptionMap = description.associateBy( { it.language }, { it.translation } )
 
     val languages = descriptionMap.keys.toMutableSet()
@@ -142,7 +126,7 @@ fun combineTranslatedValuesExternal(
 
     return languages.mapTo(HashSet()) {
         ProjectPartnerBudgetExternalTransl(
-            TranslationPartnerId(partnerId, it),
+            TranslationBudgetId(budgetId, it),
             descriptionMap[it]
         )
     }
@@ -154,14 +138,10 @@ fun InputGeneralBudget.toInfrastructure(partnerId: Long) = ProjectPartnerBudgetI
     budget = toBudget(
         numberOfUnits = getNumberOfUnits(),
         pricePerUnit =  getPricePerUnit()
-    ),
-    translatedValues = combineTranslatedValuesInfrastructure(partnerId, description)
+    )
 )
 
-fun combineTranslatedValuesInfrastructure(
-    partnerId: Long,
-    description: Set<InputTranslation>
-): Set<ProjectPartnerBudgetInfrastructureTransl> {
+fun InputGeneralBudget.combineTranslatedValuesInfrastructure(budgetId: Long): MutableSet<ProjectPartnerBudgetInfrastructureTransl> {
     val descriptionMap = description.associateBy( { it.language }, { it.translation } )
 
     val languages = descriptionMap.keys.toMutableSet()
@@ -169,7 +149,7 @@ fun combineTranslatedValuesInfrastructure(
 
     return languages.mapTo(HashSet()) {
         ProjectPartnerBudgetInfrastructureTransl(
-            TranslationPartnerId(partnerId, it),
+            TranslationBudgetId(budgetId, it),
             descriptionMap[it]
         )
     }

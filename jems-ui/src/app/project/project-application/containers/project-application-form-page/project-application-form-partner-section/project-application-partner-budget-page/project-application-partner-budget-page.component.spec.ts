@@ -8,7 +8,6 @@ import {ActivatedRoute} from '@angular/router';
 import {PartnerBudgetTable} from '../../../../model/partner-budget-table';
 import {PartnerBudgetTableType} from '../../../../model/partner-budget-table-type';
 import {ProjectPartnerStore} from '../../services/project-partner-store.service';
-import {of} from 'rxjs';
 import {BudgetOptions} from '../../../../model/budget-options';
 
 describe('ProjectApplicationPartnerBudgetPageComponent', () => {

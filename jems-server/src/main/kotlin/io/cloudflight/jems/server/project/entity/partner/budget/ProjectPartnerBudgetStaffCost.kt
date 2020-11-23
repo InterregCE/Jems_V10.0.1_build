@@ -22,7 +22,7 @@ data class ProjectPartnerBudgetStaffCost(
     @Embedded
     override val budget: Budget,
 
-    @OneToMany(cascade = [CascadeType.ALL], orphanRemoval = true, mappedBy = "translationId.partnerId")
-    val translatedValues: Set<ProjectPartnerBudgetStaffCostTransl> = emptySet()
+    @OneToMany(cascade = [CascadeType.ALL], orphanRemoval = true, mappedBy = "translationId.budgetId")
+    val translatedValues: MutableSet<ProjectPartnerBudgetStaffCostTransl> = mutableSetOf()
 
 ): CommonBudget

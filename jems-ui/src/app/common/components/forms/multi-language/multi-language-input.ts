@@ -2,14 +2,14 @@ import {InputTranslation} from '@cat/api';
 
 export class MultiLanguageInput {
   inputs: InputTranslation[];
-  validators?: Function[];
+  validators?: ((arg: string) => boolean)[];
 
-  constructor(inputs: InputTranslation[], validators?: Function[]) {
+  constructor(inputs: InputTranslation[], validators?: ((arg: string) => boolean)[]) {
     this.inputs = inputs;
     this.validators = validators;
   }
 
-  valid(language: InputTranslation.LanguageEnum) {
+  valid(language: InputTranslation.LanguageEnum): boolean {
     if (!this.inputs?.length) {
       return true;
     }
@@ -18,7 +18,7 @@ export class MultiLanguageInput {
       .every(input => this.isValid(input.translation));
   }
 
-  private isValid(value: string) {
+  private isValid(value: string): boolean {
     if (!this.validators?.length) {
       return true;
     }

@@ -17,7 +17,7 @@ export class PartnerBudgetTableEntry {
   validDescription = true;
   validTotal = true;
 
-  static validDescription: Function = (description: string) => !description || description.length < 250;
+  static validDescription = (description: string) => !description || description.length < 250;
 
   constructor(data: Partial<PartnerBudgetTableEntry>) {
     this.id = data.id;

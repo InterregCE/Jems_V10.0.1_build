@@ -59,8 +59,8 @@ internal class ProjectPartnerStaffCostBudgetServiceTest {
         const val TO_CHANGE_PRICE_PER_UNIT_NEW = 773.36
         const val TO_CHANGE_ROW_SUM_NEW = 1_160_040.00
         const val TO_STAY_NUM_OF_UNITS = 18.00
-        const val TO_STAY_PRICE_PER_UNIT = 220_000_000.0
-        const val TO_STAY_ROW_SUM = 3_960_000_000.00
+        const val TO_STAY_PRICE_PER_UNIT = 22_000_000.0
+        const val TO_STAY_ROW_SUM = 396_000_000.00
 
         private fun toBd(value: Double): BigDecimal {
             return BigDecimal.valueOf((value * 100).toLong(), 2)
@@ -114,7 +114,7 @@ internal class ProjectPartnerStaffCostBudgetServiceTest {
 
         val toBeSavedMaxNumberOfUnits = listOf(
             InputStaffCostBudget(
-                numberOfUnits = BigDecimal.valueOf(999_999_999_999_999_99L, 2),
+                numberOfUnits = BigDecimal.valueOf(999_999_999_99L, 2),
                 pricePerUnit = BigDecimal.ONE)
         )
 
@@ -124,16 +124,16 @@ internal class ProjectPartnerStaffCostBudgetServiceTest {
             listOf(
                 InputStaffCostBudget(
                     id = 0,
-                    numberOfUnits = BigDecimal.valueOf(999_999_999_999_999_99L, 2),
+                    numberOfUnits = BigDecimal.valueOf(999_999_999_99L, 2),
                     pricePerUnit = BigDecimal.valueOf(100L, 2),
-                    rowSum = BigDecimal.valueOf(999_999_999_999_999_99L, 2))
+                    rowSum = BigDecimal.valueOf(999_999_999_99L, 2))
             )
         )
 
         val toBeSavedMaxPricePerUnit = listOf(
             InputStaffCostBudget(
                 numberOfUnits = BigDecimal.ONE,
-                pricePerUnit = BigDecimal.valueOf(999_999_999_999_999_99L, 2))
+                pricePerUnit = BigDecimal.valueOf(999_999_999_99L, 2))
         )
 
         assertThat(
@@ -143,17 +143,14 @@ internal class ProjectPartnerStaffCostBudgetServiceTest {
                 InputStaffCostBudget(
                     id = 0,
                     numberOfUnits = BigDecimal.valueOf(100L, 2),
-                    pricePerUnit = BigDecimal.valueOf(999_999_999_999_999_99L, 2),
-                    rowSum = BigDecimal.valueOf(999_999_999_999_999_99L, 2))
+                    pricePerUnit = BigDecimal.valueOf(999_999_999_99L, 2),
+                    rowSum = BigDecimal.valueOf(999_999_999_99L, 2))
             )
         )
     }
 
-    @ParameterizedTest
-    @MethodSource("provideAllBudgetRepositories")
-    fun `save Budget more items than allowed`(
-        repository: ProjectPartnerBudgetCommonRepository<CommonBudget>
-    ) {
+    @Test
+    fun `save Budget more items than allowed`() {
         every { veryBigList.size } returns 301
 
         assertThat(
@@ -161,16 +158,13 @@ internal class ProjectPartnerStaffCostBudgetServiceTest {
         ).isEqualTo("project.partner.budget.max.allowed.reached")
     }
 
-    @ParameterizedTest
-    @MethodSource("provideAllBudgetRepositories")
-    fun `save Budget StuffCosts number out of range`(
-        repository: ProjectPartnerBudgetCommonRepository<CommonBudget>
-    ) {
+    @Test
+    fun `save Budget StuffCosts number out of range`() {
         assertThat(
             assertThrows<I18nValidationException> {
                 callUpdateBudgetServiceMethod(1, listOf(
                     InputStaffCostBudget(
-                        numberOfUnits = BigDecimal.valueOf(999_999_999_999_999_991L, 3),
+                        numberOfUnits = BigDecimal.valueOf(999_999_999_991L, 3),
                         pricePerUnit = BigDecimal.ONE
                     )
                 ))
@@ -182,7 +176,7 @@ internal class ProjectPartnerStaffCostBudgetServiceTest {
                 callUpdateBudgetServiceMethod(1, listOf(
                     InputStaffCostBudget(
                         numberOfUnits = BigDecimal.ONE,
-                        pricePerUnit = BigDecimal.valueOf(999_999_999_999_999_991L, 3)
+                        pricePerUnit = BigDecimal.valueOf(999_999_999_991L, 3)
                     )
                 ))
             }.i18nKey
@@ -193,7 +187,7 @@ internal class ProjectPartnerStaffCostBudgetServiceTest {
                 callUpdateBudgetServiceMethod(1, listOf(
                     InputStaffCostBudget(
                         numberOfUnits = BigDecimal.TEN,
-                        pricePerUnit = BigDecimal.valueOf(100_000_000_000_000_00L, 2)
+                        pricePerUnit = BigDecimal.valueOf(100_000_000_00L, 2)
                     )
                 ))
             }.i18nKey

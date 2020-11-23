@@ -1,10 +1,10 @@
 import {ChangeDetectionStrategy, Component} from '@angular/core';
 import {
   InputBudget,
-  ProjectPartnerBudgetOptionsDto,
-  ProjectPartnerBudgetService,
   InputCallFlatRateSetup,
-  OutputCallWithDates
+  OutputCallWithDates,
+  ProjectPartnerBudgetOptionsDto,
+  ProjectPartnerBudgetService
 } from '@cat/api';
 import {ActivatedRoute} from '@angular/router';
 import {Log} from '../../../../../../common/utils/log';
@@ -30,7 +30,6 @@ import {ProjectStore} from '../../../project-application-detail/services/project
 import {BudgetOption} from '../../../../model/budget-option';
 import {PartnerBudgetTableEntry} from '../../../../model/partner-budget-table-entry';
 import {MultiLanguageInputService} from '../../../../../../common/services/multi-language-input.service';
-import {Validators} from '@angular/forms';
 
 @Component({
   selector: 'app-project-application-partner-budget-page',
@@ -258,7 +257,7 @@ export class ProjectApplicationPartnerBudgetPageComponent {
       ...entry,
       description: this.languageService.initInput((entry as any).description, [PartnerBudgetTableEntry.validDescription])
     }));
-    return new PartnerBudgetTable(type, entries)
+    return new PartnerBudgetTable(type, entries);
   }
 
 }

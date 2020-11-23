@@ -1,6 +1,6 @@
 package io.cloudflight.jems.server.project.entity.partner.budget
 
-import io.cloudflight.jems.server.project.entity.TranslationPartnerId
+import io.cloudflight.jems.server.project.entity.TranslationBudgetId
 import javax.persistence.EmbeddedId
 import javax.persistence.Entity
 
@@ -11,7 +11,7 @@ import javax.persistence.Entity
 data class ProjectPartnerBudgetStaffCostTransl(
 
     @EmbeddedId
-    val translationId: TranslationPartnerId,
+    val translationId: TranslationBudgetId,
 
     val description: String? = null
 

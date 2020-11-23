@@ -45,7 +45,7 @@ export class MultiLanguageInputService {
       .subscribe();
   }
 
-  initInput(inputs: InputTranslation[], validators?: Function[]): MultiLanguageInput {
+  initInput(inputs: InputTranslation[], validators?: ((arg: string) => boolean)[]): MultiLanguageInput {
     let allInputs: InputTranslation[] = [];
     if (inputs?.length) {
       allInputs = inputs.map(value => ({language: value.language, translation: value.translation}));

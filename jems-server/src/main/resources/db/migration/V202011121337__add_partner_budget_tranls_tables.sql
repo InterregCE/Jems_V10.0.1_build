@@ -9,11 +9,11 @@
 
 CREATE TABLE project_partner_budget_equipment_transl
 (
-    partner_id              INT UNSIGNED NOT NULL,
+    budget_id              INT UNSIGNED NOT NULL,
     language                VARCHAR(3) NOT NULL,
     description             TEXT(255) DEFAULT NULL,
-    PRIMARY KEY (partner_id, language),
-    CONSTRAINT fk_project_partner_budget_equipment_transl_to_project FOREIGN KEY (partner_id) REFERENCES project_partner (id)
+    PRIMARY KEY (budget_id, language),
+    CONSTRAINT fk_project_partner_budget_equipment_transl_to_project FOREIGN KEY (budget_id) REFERENCES project_partner_budget_equipment (id)
         ON DELETE CASCADE
         ON UPDATE RESTRICT
 );
@@ -23,11 +23,11 @@ ALTER TABLE project_partner_budget_equipment
 
 CREATE TABLE project_partner_budget_external_transl
 (
-    partner_id              INT UNSIGNED NOT NULL,
+    budget_id              INT UNSIGNED NOT NULL,
     language                VARCHAR(3) NOT NULL,
     description             TEXT(255) DEFAULT NULL,
-    PRIMARY KEY (partner_id, language),
-    CONSTRAINT fk_project_partner_budget_external_transl_to_project FOREIGN KEY (partner_id) REFERENCES project_partner (id)
+    PRIMARY KEY (budget_id, language),
+    CONSTRAINT fk_project_partner_budget_external_transl_to_project FOREIGN KEY (budget_id) REFERENCES project_partner_budget_external (id)
         ON DELETE CASCADE
         ON UPDATE RESTRICT
 );
@@ -37,11 +37,11 @@ ALTER TABLE project_partner_budget_external
 
 CREATE TABLE project_partner_budget_infrastructure_transl
 (
-    partner_id              INT UNSIGNED NOT NULL,
+    budget_id              INT UNSIGNED NOT NULL,
     language                VARCHAR(3) NOT NULL,
     description             TEXT(255) DEFAULT NULL,
-    PRIMARY KEY (partner_id, language),
-    CONSTRAINT fk_project_partner_budget_infrastructure_transl_to_project FOREIGN KEY (partner_id) REFERENCES project_partner (id)
+    PRIMARY KEY (budget_id, language),
+    CONSTRAINT fk_project_partner_budget_infrastructure_transl_to_project FOREIGN KEY (budget_id) REFERENCES project_partner_budget_infrastructure (id)
         ON DELETE CASCADE
         ON UPDATE RESTRICT
 );
@@ -51,11 +51,11 @@ ALTER TABLE project_partner_budget_infrastructure
 
 CREATE TABLE project_partner_budget_staff_cost_transl
 (
-    partner_id              INT UNSIGNED NOT NULL,
+    budget_id              INT UNSIGNED NOT NULL,
     language                VARCHAR(3) NOT NULL,
     description             TEXT(255) DEFAULT NULL,
-    PRIMARY KEY (partner_id, language),
-    CONSTRAINT fk_project_partner_budget_staff_cost_transl_to_project FOREIGN KEY (partner_id) REFERENCES project_partner (id)
+    PRIMARY KEY (budget_id, language),
+    CONSTRAINT fk_project_partner_budget_staff_cost_transl_to_project FOREIGN KEY (budget_id) REFERENCES project_partner_budget_staff_cost (id)
         ON DELETE CASCADE
         ON UPDATE RESTRICT
 );
@@ -65,11 +65,11 @@ ALTER TABLE project_partner_budget_staff_cost
 
 CREATE TABLE project_partner_budget_travel_transl
 (
-    partner_id              INT UNSIGNED NOT NULL,
+    budget_id              INT UNSIGNED NOT NULL,
     language                VARCHAR(3) NOT NULL,
     description             TEXT(255) DEFAULT NULL,
-    PRIMARY KEY (partner_id, language),
-    CONSTRAINT fk_project_partner_budget_travel_transl_to_project FOREIGN KEY (partner_id) REFERENCES project_partner (id)
+    PRIMARY KEY (budget_id, language),
+    CONSTRAINT fk_project_partner_budget_travel_transl_to_project FOREIGN KEY (budget_id) REFERENCES project_partner_budget_travel (id)
         ON DELETE CASCADE
         ON UPDATE RESTRICT
 );

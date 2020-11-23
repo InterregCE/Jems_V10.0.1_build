@@ -51,11 +51,16 @@ class ProjectPartnerBudgetServiceImpl(
             newData = staffCosts,
             old = projectPartnerBudgetStaffCostRepository.findAllByPartnerIdOrderByIdAsc(partnerId)
         )
-
         projectPartnerBudgetStaffCostRepository.deleteAll(toBeRemoved)
-        return projectPartnerBudgetStaffCostRepository
+
+        // translation table has to be saved extra, including any new created budgetIds
+        val updated = projectPartnerBudgetStaffCostRepository
             .saveAll(staffCosts.map { it.toStaffCost(partnerId) })
-            .map { it.toStaffCostOutput() }
+            .mapIndexed { index, budget -> budget.copy(
+                translatedValues = staffCosts[index].combineTranslatedValuesStaffCost(budget.id)
+            )}
+        return projectPartnerBudgetStaffCostRepository
+            .saveAll(updated).map { it.toStaffCostOutput() }
     }
     //endregion StuffCosts
 
@@ -76,11 +81,16 @@ class ProjectPartnerBudgetServiceImpl(
             newData = travel,
             old = projectPartnerBudgetTravelRepository.findAllByPartnerIdOrderByIdAsc(partnerId)
         )
-
         projectPartnerBudgetTravelRepository.deleteAll(toBeRemoved)
-        return projectPartnerBudgetTravelRepository
+
+        // translation table has to be saved extra, including any new created budgetIds
+        val updated = projectPartnerBudgetTravelRepository
             .saveAll(travel.map { it.toTravel(partnerId) })
-            .map { it.toTravelOutput() }
+            .mapIndexed { index, budget -> budget.copy(
+                translatedValues = travel[index].combineTranslatedValuesTravelCost(budget.id)
+            )}
+        return projectPartnerBudgetTravelRepository
+            .saveAll(updated).map { it.toTravelOutput() }
     }
     //endregion Travel
 
@@ -101,11 +111,16 @@ class ProjectPartnerBudgetServiceImpl(
             newData = externals,
             old = projectPartnerBudgetExternalRepository.findAllByPartnerIdOrderByIdAsc(partnerId)
         )
-
         projectPartnerBudgetExternalRepository.deleteAll(toBeRemoved)
-        return projectPartnerBudgetExternalRepository
+
+        // translation table has to be saved extra, including any new created budgetIds
+        val updated = projectPartnerBudgetExternalRepository
             .saveAll(externals.map { it.toExternal(partnerId) })
-            .map { it.toExternalOutput() }
+            .mapIndexed { index, budget -> budget.copy(
+                translatedValues = externals[index].combineTranslatedValuesExternal(budget.id)
+            )}
+        return projectPartnerBudgetExternalRepository
+            .saveAll(updated).map { it.toExternalOutput() }
     }
     //endregion External
 
@@ -126,11 +141,16 @@ class ProjectPartnerBudgetServiceImpl(
             newData = equipments,
             old = projectPartnerBudgetEquipmentRepository.findAllByPartnerIdOrderByIdAsc(partnerId)
         )
-
         projectPartnerBudgetEquipmentRepository.deleteAll(toBeRemoved)
-        return projectPartnerBudgetEquipmentRepository
+
+        // translation table has to be saved extra, including any new created budgetIds
+        val updated = projectPartnerBudgetEquipmentRepository
             .saveAll(equipments.map { it.toEquipment(partnerId) })
-            .map { it.toEquipmentOutput() }
+            .mapIndexed { index, budget -> budget.copy(
+                translatedValues = equipments[index].combineTranslatedValuesEquipment(budget.id)
+            )}
+        return projectPartnerBudgetEquipmentRepository
+            .saveAll(updated).map { it.toEquipmentOutput() }
     }
     //endregion Equipment
 
@@ -151,11 +171,16 @@ class ProjectPartnerBudgetServiceImpl(
             newData = infrastructures,
             old = projectPartnerBudgetInfrastructureRepository.findAllByPartnerIdOrderByIdAsc(partnerId)
         )
-
         projectPartnerBudgetInfrastructureRepository.deleteAll(toBeRemoved)
-        return projectPartnerBudgetInfrastructureRepository
+
+        // translation table has to be saved extra, including any new created budgetIds
+        val updated = projectPartnerBudgetInfrastructureRepository
             .saveAll(infrastructures.map { it.toInfrastructure(partnerId) })
-            .map { it.toInfrastructureOutput() }
+            .mapIndexed { index, budget -> budget.copy(
+                translatedValues = infrastructures[index].combineTranslatedValuesInfrastructure(budget.id)
+            )}
+        return projectPartnerBudgetInfrastructureRepository
+            .saveAll(updated).map { it.toInfrastructureOutput() }
     }
     //endregion Infrastructure
 
