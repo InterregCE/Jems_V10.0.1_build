@@ -1,13 +1,13 @@
 import {async, ComponentFixture, TestBed} from '@angular/core/testing';
-import {TestModule} from '../../../../../../common/test-module';
-import {ProjectModule} from '../../../../../project.module';
-import {ProjectApplicationFormPartnerDetailComponent} from './project-application-form-partner-detail.component';
+import {TestModule} from '../../../common/test-module';
+import {ProjectModule} from '../../project.module';
+import {ProjectPartnerDetailPageComponent} from './project-partner-detail-page.component';
 import {HttpTestingController} from '@angular/common/http/testing';
 import {RouterTestingModule} from '@angular/router/testing';
 
 describe('ProjectApplicationFormPartnerDetailComponent', () => {
-  let component: ProjectApplicationFormPartnerDetailComponent;
-  let fixture: ComponentFixture<ProjectApplicationFormPartnerDetailComponent>;
+  let component: ProjectPartnerDetailPageComponent;
+  let fixture: ComponentFixture<ProjectPartnerDetailPageComponent>;
   let httpTestingController: HttpTestingController;
 
   beforeEach(async(() => {
@@ -16,16 +16,16 @@ describe('ProjectApplicationFormPartnerDetailComponent', () => {
         TestModule,
         ProjectModule,
         RouterTestingModule.withRoutes(
-          [{path: 'app/project/detail/1/applicationForm', component: ProjectApplicationFormPartnerDetailComponent}])
+          [{path: 'app/project/detail/1/applicationForm', component: ProjectPartnerDetailPageComponent}])
       ],
-      declarations: [ProjectApplicationFormPartnerDetailComponent],
+      declarations: [ProjectPartnerDetailPageComponent],
     })
       .compileComponents();
     httpTestingController = TestBed.inject(HttpTestingController);
   }));
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(ProjectApplicationFormPartnerDetailComponent);
+    fixture = TestBed.createComponent(ProjectPartnerDetailPageComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

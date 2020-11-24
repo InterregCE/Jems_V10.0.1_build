@@ -1,17 +1,15 @@
 import {Injectable} from '@angular/core';
 import {
+  InputProjectContact,
   InputProjectPartnerCreate,
   InputProjectPartnerUpdate,
   OutputProjectPartnerDetail,
-  ProjectPartnerService,
   ProjectPartnerAddressDTO,
-  InputProjectContact,
   ProjectPartnerMotivationDTO,
+  ProjectPartnerService,
 } from '@cat/api';
 import {Observable, ReplaySubject, Subject} from 'rxjs';
-import {
-  tap
-} from 'rxjs/operators';
+import {tap} from 'rxjs/operators';
 import {Log} from '../../../../../common/utils/log';
 import {ProjectApplicationFormSidenavService} from './project-application-form-sidenav.service';
 

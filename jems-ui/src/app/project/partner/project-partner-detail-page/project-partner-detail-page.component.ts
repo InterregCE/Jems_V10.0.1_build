@@ -3,23 +3,22 @@ import {distinctUntilChanged, map, takeUntil, tap} from 'rxjs/operators';
 import {ActivatedRoute, Router} from '@angular/router';
 import {ProjectPartnerService} from '@cat/api';
 import {BaseComponent} from '@common/components/base-component';
-import {ProjectStore} from '../../../project-application-detail/services/project-store.service';
-import {TabService} from '../../../../../../common/services/tab.service';
-import {ProjectPartnerStore} from '../../services/project-partner-store.service';
+import {ProjectStore} from '../../project-application/containers/project-application-detail/services/project-store.service';
+import {TabService} from '../../../common/services/tab.service';
+import {ProjectPartnerStore} from '../../project-application/containers/project-application-form-page/services/project-partner-store.service';
 
 @Component({
-  selector: 'app-project-application-form-partner-detail',
-  templateUrl: './project-application-form-partner-detail.component.html',
-  styleUrls: ['./project-application-form-partner-detail.component.scss'],
+  templateUrl: './project-partner-detail-page.component.html',
+  styleUrls: ['./project-partner-detail-page.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class ProjectApplicationFormPartnerDetailComponent extends BaseComponent implements OnInit, OnDestroy {
+export class ProjectPartnerDetailPageComponent extends BaseComponent implements OnInit, OnDestroy {
 
   projectId = this.activatedRoute?.snapshot?.params?.projectId;
   partnerId = this.activatedRoute?.snapshot?.params?.partnerId;
 
   activeTab$ = this.tabService.currentTab(
-    ProjectApplicationFormPartnerDetailComponent.name + this.partnerId
+    ProjectPartnerDetailPageComponent.name + this.partnerId
   );
 
   constructor(private partnerService: ProjectPartnerService,
@@ -43,11 +42,11 @@ export class ProjectApplicationFormPartnerDetailComponent extends BaseComponent 
 
   ngOnDestroy(): void {
     super.ngOnDestroy();
-    this.tabService.cleanupTab(ProjectApplicationFormPartnerDetailComponent.name + this.partnerId);
+    this.tabService.cleanupTab(ProjectPartnerDetailPageComponent.name + this.partnerId);
   }
 
   changeTab(tabIndex: number): void {
-    this.tabService.changeTab(ProjectApplicationFormPartnerDetailComponent.name + this.partnerId, tabIndex);
+    this.tabService.changeTab(ProjectPartnerDetailPageComponent.name + this.partnerId, tabIndex);
   }
 
 }

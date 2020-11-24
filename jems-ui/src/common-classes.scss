@@ -492,6 +492,20 @@
   color: #491217;
 }
 
+.app-alert-warning {
+  color: #322200;
+  background-color: #F6D15E;
+  border-color: #997200;
+}
+
+.app-alert-warning hr {
+  border-top-color: #997200;
+}
+
+.app-alert-warning .app-alert-link {
+  color: #322200;
+}
+
 .row {
   display: -ms-flexbox;
   display: flex;

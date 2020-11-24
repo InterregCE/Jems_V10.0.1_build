@@ -5,8 +5,9 @@
             {{'call.detail.flat.rates' | translate}}
         </h5>
         <app-row-list-template
+                class="my-5"
                 [columnClassList]="['max-2-and-half-rem']"
-                [appearance]="['table-list-header', 'table-list-row', 'table-list-row', 'table-list-row', 'table-list-row', 'table-list-footer']">
+                [appearanceRow]="['table-list-header', 'table-list-row', 'table-list-row', 'table-list-row', 'table-list-row', 'table-list-footer']">
             <div>
                 <span>{{'call.detail.flat.rate.table.activate.option' | translate}}</span>
                 <span class="flat-rates">{{'call.detail.flat.rate.table.flat.rates' | translate}}</span>

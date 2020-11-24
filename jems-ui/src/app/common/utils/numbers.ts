@@ -45,6 +45,13 @@ export class Numbers {
   }
 
   /**
+   * Minus the numbers from the given array using Big.js in order to avoid rounding errors.
+   */
+  static minus(minuend: number, subtrahend: number): number {
+    return Number(new Big(minuend).minus(subtrahend));
+  }
+
+  /**
    * Multiplies the numbers from the given array using Big.js in order to avoid rounding errors.
    */
   static product(arr: number[]): number {
@@ -57,7 +64,7 @@ export class Numbers {
   }
 
   /**
-   * Divides the numbers from the given array using Big.js in order to avoid rounding errors.
+   * Divides the numbers using Big.js in order to avoid rounding errors.
    */
   static divide(dividend: number, divisor: number): number {
     if (!dividend || !divisor) {

@@ -3,7 +3,8 @@ import {Numbers} from '../utils/numbers';
 
 @Pipe({name: 'asMoney'})
 export class MoneyPipe implements PipeTransform {
-  transform(value: number, locale?: string): string | number {
+  transform(value: number | null, locale?: string): string | number {
+    if (value === null) { return ''; }
     return Numbers.toLocale(value, locale ? locale : 'de-DE');
   }
 }
