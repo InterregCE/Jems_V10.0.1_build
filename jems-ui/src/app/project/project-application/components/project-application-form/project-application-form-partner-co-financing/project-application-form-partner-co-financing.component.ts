@@ -8,10 +8,11 @@ import {
 } from '@angular/core';
 import {FormBuilder, Validators} from '@angular/forms';
 import {
-  InputProjectPartnerCoFinancingWrapper,
-  InputProjectPartnerCoFinancing,
-  OutputProjectPartnerCoFinancing,
-  OutputProgrammeFund
+  ProjectPartnerCoFinancingAndContributionInputDTO,
+  ProjectPartnerCoFinancingAndContributionOutputDTO,
+  ProjectPartnerCoFinancingOutputDTO,
+  ProjectPartnerCoFinancingInputDTO,
+  ProgrammeFundOutputDTO
 } from '@cat/api';
 import {SideNavService} from '@common/components/side-nav/side-nav.service';
 import {Permission} from '../../../../../security/permissions/permission';
@@ -44,14 +45,14 @@ export class ProjectApplicationFormPartnerCoFinancingComponent extends BaseCompo
   @Input()
   editable: boolean;
   @Input()
-  finances: OutputProjectPartnerCoFinancing[];
+  financingAndContribution: ProjectPartnerCoFinancingAndContributionOutputDTO;
   @Input()
   totalAmount: number;
   @Input()
-  callFunds: OutputProgrammeFund[] = [];
+  callFunds: ProgrammeFundOutputDTO[] = [];
 
   @Output()
-  save = new EventEmitter<InputProjectPartnerCoFinancingWrapper>();
+  save = new EventEmitter<ProjectPartnerCoFinancingAndContributionInputDTO>();
   @Output()
   cancelEdit = new EventEmitter<void>();
 
@@ -112,7 +113,7 @@ export class ProjectApplicationFormPartnerCoFinancingComponent extends BaseCompo
   }
 
   resetForm(): void {
-    const inputValues = this.finances.find(x => !!x.fund);
+    const inputValues = this.financingAndContribution.finances.find((x: ProjectPartnerCoFinancingOutputDTO) => !!x.fund);
     this.coFinancingForm.controls.fundId.setValue(inputValues?.fund.id);
     this.coFinancingForm.controls.percentage.setValue(inputValues?.percentage || 0);
   }
@@ -129,12 +130,12 @@ export class ProjectApplicationFormPartnerCoFinancingComponent extends BaseCompo
         {
           fundId: this.coFinancingForm.controls.fundId.value,
           percentage: this.coFinancingForm.controls.percentage.value,
-        } as InputProjectPartnerCoFinancing,
+        } as ProjectPartnerCoFinancingInputDTO,
         {
           percentage: this.myPercentage,
-        } as InputProjectPartnerCoFinancing,
+        } as ProjectPartnerCoFinancingInputDTO,
       ]
-    });
+    } as ProjectPartnerCoFinancingAndContributionInputDTO);
   }
 
   cancel(): void {

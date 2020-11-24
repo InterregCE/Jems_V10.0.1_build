@@ -2,10 +2,10 @@ import {ChangeDetectionStrategy, Component} from '@angular/core';
 import {ProjectPartnerStore} from '../../services/project-partner-store.service';
 import {combineLatest, merge, Observable, Subject} from 'rxjs';
 import {
-  InputProjectPartnerCoFinancingWrapper,
-  OutputProjectPartnerCoFinancing,
-  OutputProgrammeFund,
-  ProjectPartnerService,
+  ProjectPartnerCoFinancingAndContributionInputDTO,
+  ProjectPartnerCoFinancingAndContributionOutputDTO,
+  ProgrammeFundOutputDTO,
+  OutputCall,
   ProjectPartnerBudgetService,
   CallService,
 } from '@cat/api';
@@ -27,21 +27,20 @@ export class ProjectApplicationPartnerCoFinancingPageComponent {
 
   saveError$ = new Subject<HttpErrorResponse | null>();
   saveSuccess$ = new Subject<boolean>();
-  saveFinances$ = new Subject<InputProjectPartnerCoFinancingWrapper>();
+  saveFinances$ = new Subject<ProjectPartnerCoFinancingAndContributionInputDTO>();
   cancelEdit$ = new Subject<void>();
 
-  private initialCoFinancing$: Observable<OutputProjectPartnerCoFinancing[]> = this.partnerStore.partner$
+  private initialCoFinancing$: Observable<ProjectPartnerCoFinancingAndContributionOutputDTO> = this.partnerStore.partner$
     .pipe(
       filter(partner => !!partner.id),
       map(partner => partner.financing),
     );
-  private saveCoFinancing$: Observable<OutputProjectPartnerCoFinancing[]> = this.saveFinances$
+  private saveCoFinancing$: Observable<ProjectPartnerCoFinancingAndContributionOutputDTO> = this.saveFinances$
     .pipe(
       withLatestFrom(this.partnerStore.partner$),
       mergeMap(([finances, partner]) =>
-        this.projectPartnerService.updateProjectPartnerCoFinancing(partner.id, this.projectId, finances)
+        this.projectPartnerBudgetService.updateProjectPartnerCoFinancing(partner.id, finances)
       ),
-      map(partner => partner.financing),
       tap(() => this.saveSuccess$.next(true)),
       tap(() => this.saveError$.next(null)),
       catchError((error: HttpErrorResponse) => {
@@ -50,7 +49,7 @@ export class ProjectApplicationPartnerCoFinancingPageComponent {
       })
     );
 
-  private amountChanged$ = this.partnerStore.totalAmountChanged$
+  private amountChanged$: Observable<number> = this.partnerStore.totalAmountChanged$
     .pipe(
       withLatestFrom(this.partnerStore.partner$),
       mergeMap(([, partner]) => this.projectPartnerBudgetService.getTotal(partner.id)),
@@ -62,11 +61,11 @@ export class ProjectApplicationPartnerCoFinancingPageComponent {
       mergeMap(partner => this.projectPartnerBudgetService.getTotal(partner.id)),
     );
 
-  private callFunds$: Observable<OutputProgrammeFund[]> = this.projectStore.getProject()
+  private callFunds$: Observable<ProgrammeFundOutputDTO[]> = this.projectStore.getProject()
     .pipe(
       map(project => project.call.id),
       mergeMap(callId => this.callService.getCallById(callId)),
-      map(call => call.funds),
+      map((call: OutputCall) => call.funds),
     );
 
   details$ = combineLatest([
@@ -77,7 +76,7 @@ export class ProjectApplicationPartnerCoFinancingPageComponent {
   ])
     .pipe(
       map(([finances, amount, funds]) => ({
-        finances,
+        financingAndContribution: finances,
         callFunds: funds,
         totalAmount: Numbers.truncateNumber(amount),
       }))
@@ -87,8 +86,7 @@ export class ProjectApplicationPartnerCoFinancingPageComponent {
               private callService: CallService,
               public projectStore: ProjectStore,
               private activatedRoute: ActivatedRoute,
-              private projectPartnerBudgetService: ProjectPartnerBudgetService,
-              private projectPartnerService: ProjectPartnerService) {
+              private projectPartnerBudgetService: ProjectPartnerBudgetService) {
   }
 
 }

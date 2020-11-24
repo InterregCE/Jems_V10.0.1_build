@@ -3,7 +3,7 @@ import {
   InputCallUpdate,
   OutputCall,
   OutputProgrammeStrategy,
-  OutputProgrammeFund,
+  ProgrammeFundOutputDTO,
   ProgrammePriorityService,
   ProgrammeStrategyService,
   ProgrammeFundService
@@ -111,7 +111,7 @@ export class CallConfigurationComponent extends BaseComponent {
     return allPriorities.map(priority => CallPriorityCheckbox.fromSavedPolicies(priority, savedPolicies));
   }
 
-  private getFunds(allFunds: OutputProgrammeFund[], call: OutputCall | InputCallUpdate): OutputProgrammeFund[] {
+  private getFunds(allFunds: ProgrammeFundOutputDTO[], call: OutputCall | InputCallUpdate): ProgrammeFundOutputDTO[] {
     const savedFunds = allFunds
       .filter(fund => fund.selected)
       .map(element =>
@@ -120,7 +120,7 @@ export class CallConfigurationComponent extends BaseComponent {
           abbreviation: element.abbreviation,
           description: element.description,
           selected: false
-        } as OutputProgrammeFund)
+        } as ProgrammeFundOutputDTO)
       );
     if (!call || !(call as OutputCall).funds?.length) {
       return savedFunds;

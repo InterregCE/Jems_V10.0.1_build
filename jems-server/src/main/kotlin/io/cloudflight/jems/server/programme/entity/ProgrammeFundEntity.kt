@@ -7,7 +7,7 @@ import javax.persistence.Id
 import javax.validation.constraints.NotNull
 
 @Entity(name = "programme_fund")
-data class ProgrammeFund(
+data class ProgrammeFundEntity(
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

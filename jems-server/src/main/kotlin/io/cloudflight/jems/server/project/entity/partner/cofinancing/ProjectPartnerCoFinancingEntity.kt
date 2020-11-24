@@ -1,6 +1,6 @@
 package io.cloudflight.jems.server.project.entity.partner.cofinancing
 
-import io.cloudflight.jems.server.programme.entity.ProgrammeFund
+import io.cloudflight.jems.server.programme.entity.ProgrammeFundEntity
 import javax.persistence.Entity
 import javax.persistence.GeneratedValue
 import javax.persistence.GenerationType
@@ -10,7 +10,7 @@ import javax.persistence.ManyToOne
 import javax.validation.constraints.NotNull
 
 @Entity(name = "project_partner_co_financing")
-data class ProjectPartnerCoFinancing(
+data class ProjectPartnerCoFinancingEntity(
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -24,6 +24,6 @@ data class ProjectPartnerCoFinancing(
 
     @ManyToOne
     @JoinColumn(name = "programme_fund_id")
-    val programmeFund: ProgrammeFund?
+    val programmeFund: ProgrammeFundEntity?
 
 )

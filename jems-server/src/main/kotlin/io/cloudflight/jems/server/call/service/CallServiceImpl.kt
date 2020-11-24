@@ -23,7 +23,7 @@ import io.cloudflight.jems.server.user.repository.UserRepository
 import io.cloudflight.jems.server.authentication.model.APPLICANT_USER
 import io.cloudflight.jems.server.authentication.service.SecurityService
 import io.cloudflight.jems.server.audit.service.AuditService
-import io.cloudflight.jems.server.programme.entity.ProgrammeFund
+import io.cloudflight.jems.server.programme.entity.ProgrammeFundEntity
 import io.cloudflight.jems.server.programme.repository.ProgrammeFundRepository
 import io.cloudflight.jems.server.programme.entity.Strategy
 import io.cloudflight.jems.server.programme.repository.StrategyRepository
@@ -135,7 +135,7 @@ class CallServiceImpl(
             return result
     }
 
-    private fun getFundsAsEntities(funds: Set<Long>?): Set<ProgrammeFund> {
+    private fun getFundsAsEntities(funds: Set<Long>?): Set<ProgrammeFundEntity> {
         if (funds == null) return emptySet()
         val result = fundRepository.findAllById(funds)
             .filter { it.selected }

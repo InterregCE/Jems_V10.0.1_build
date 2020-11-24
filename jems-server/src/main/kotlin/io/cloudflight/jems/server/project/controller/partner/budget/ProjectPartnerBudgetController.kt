@@ -3,11 +3,18 @@ package io.cloudflight.jems.server.project.controller.partner.budget
 import io.cloudflight.jems.api.project.ProjectPartnerBudgetApi
 import io.cloudflight.jems.api.project.dto.partner.budget.InputBudget
 import io.cloudflight.jems.api.project.dto.partner.budget.ProjectPartnerBudgetOptionsDto
+import io.cloudflight.jems.api.project.dto.partner.cofinancing.ProjectPartnerCoFinancingAndContributionOutputDTO
+import io.cloudflight.jems.api.project.dto.partner.cofinancing.ProjectPartnerCoFinancingAndContributionInputDTO
 import io.cloudflight.jems.server.project.authorization.CanReadProjectPartner
 import io.cloudflight.jems.server.project.authorization.CanUpdateProjectPartner
 import io.cloudflight.jems.server.project.service.partner.budget.ProjectPartnerBudgetService
 import io.cloudflight.jems.server.project.service.partner.budget.get_budget_options.GetBudgetOptionsInteractor
 import io.cloudflight.jems.server.project.service.partner.budget.update_budget_options.UpdateBudgetOptionsInteractor
+import io.cloudflight.jems.server.project.service.partner.cofinancing.get_cofinancing.GetCoFinancingInteractor
+import io.cloudflight.jems.server.project.service.partner.cofinancing.toContributionModel
+import io.cloudflight.jems.server.project.service.partner.cofinancing.toDto
+import io.cloudflight.jems.server.project.service.partner.cofinancing.toFinancingModel
+import io.cloudflight.jems.server.project.service.partner.cofinancing.update_cofinancing.UpdateCoFinancingInteractor
 import org.springframework.web.bind.annotation.RestController
 import java.math.BigDecimal
 
@@ -15,7 +22,9 @@ import java.math.BigDecimal
 class ProjectPartnerBudgetController(
     private val projectPartnerBudgetService: ProjectPartnerBudgetService,
     private val getBudgetOptionsInteractor: GetBudgetOptionsInteractor,
-    private val updateBudgetOptionsInteractor: UpdateBudgetOptionsInteractor
+    private val updateBudgetOptionsInteractor: UpdateBudgetOptionsInteractor,
+    private val getCoFinancing: GetCoFinancingInteractor,
+    private val updateCoFinancing: UpdateCoFinancingInteractor,
 ) : ProjectPartnerBudgetApi {
 
     @CanReadProjectPartner
@@ -79,5 +88,18 @@ class ProjectPartnerBudgetController(
     override fun getTotal(partnerId: Long): BigDecimal {
         return projectPartnerBudgetService.getTotal(partnerId)
     }
+
+    override fun getProjectPartnerCoFinancing(partnerId: Long): ProjectPartnerCoFinancingAndContributionOutputDTO =
+        getCoFinancing.getCoFinancing(partnerId).toDto()
+
+    override fun updateProjectPartnerCoFinancing(
+        partnerId: Long,
+        partnerCoFinancing: ProjectPartnerCoFinancingAndContributionInputDTO
+    ): ProjectPartnerCoFinancingAndContributionOutputDTO =
+        updateCoFinancing.updateCoFinancing(
+            partnerId,
+            partnerCoFinancing.finances.toFinancingModel(),
+            partnerCoFinancing.partnerContributions.toContributionModel()
+        ).toDto()
 
 }

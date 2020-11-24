@@ -8,7 +8,7 @@ import io.cloudflight.jems.api.call.dto.OutputCallWithDates
 import io.cloudflight.jems.server.call.entity.Call
 import io.cloudflight.jems.server.call.repository.toProjectCallFlatRate
 import io.cloudflight.jems.server.call.service.flatrate.toOutputDto
-import io.cloudflight.jems.server.programme.entity.ProgrammeFund
+import io.cloudflight.jems.server.programme.entity.ProgrammeFundEntity
 import io.cloudflight.jems.server.user.entity.User
 import io.cloudflight.jems.server.programme.entity.ProgrammePriorityPolicy
 import io.cloudflight.jems.server.programme.service.toOutputProgrammeFund
@@ -23,7 +23,7 @@ fun InputCallCreate.toEntity(
     creator: User,
     priorityPolicies: Set<ProgrammePriorityPolicy>,
     strategies: Set<Strategy>,
-    funds: Set<ProgrammeFund>
+    funds: Set<ProgrammeFundEntity>
 ) = Call(
     creator = creator,
     name = name!!,

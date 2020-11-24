@@ -2,6 +2,8 @@ package io.cloudflight.jems.api.project
 
 import io.cloudflight.jems.api.project.dto.partner.budget.InputBudget
 import io.cloudflight.jems.api.project.dto.partner.budget.ProjectPartnerBudgetOptionsDto
+import io.cloudflight.jems.api.project.dto.partner.cofinancing.ProjectPartnerCoFinancingAndContributionOutputDTO
+import io.cloudflight.jems.api.project.dto.partner.cofinancing.ProjectPartnerCoFinancingAndContributionInputDTO
 import io.swagger.annotations.Api
 import io.swagger.annotations.ApiOperation
 import org.springframework.http.MediaType
@@ -117,5 +119,18 @@ interface ProjectPartnerBudgetApi {
     fun getTotal(
         @PathVariable partnerId: Long
     ): BigDecimal
+
+    @ApiOperation("Get project partner Co-Financing")
+    @GetMapping("/cofinancing")
+    fun getProjectPartnerCoFinancing(
+        @PathVariable partnerId: Long
+    ): ProjectPartnerCoFinancingAndContributionOutputDTO
+
+    @ApiOperation("Update project partner co-financing")
+    @PutMapping("/cofinancing", consumes = [MediaType.APPLICATION_JSON_VALUE])
+    fun updateProjectPartnerCoFinancing(
+        @PathVariable partnerId: Long,
+        @Valid @RequestBody partnerCoFinancing: ProjectPartnerCoFinancingAndContributionInputDTO
+    ): ProjectPartnerCoFinancingAndContributionOutputDTO
 
 }

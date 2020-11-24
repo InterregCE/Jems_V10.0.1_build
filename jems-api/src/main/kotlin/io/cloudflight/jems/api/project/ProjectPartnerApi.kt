@@ -7,7 +7,6 @@ import io.cloudflight.jems.api.project.dto.partner.ProjectPartnerAddressDTO
 import io.cloudflight.jems.api.project.dto.partner.InputProjectPartnerUpdate
 import io.cloudflight.jems.api.project.dto.partner.OutputProjectPartner
 import io.cloudflight.jems.api.project.dto.partner.OutputProjectPartnerDetail
-import io.cloudflight.jems.api.project.dto.partner.cofinancing.InputProjectPartnerCoFinancingWrapper
 import io.swagger.annotations.Api
 import io.swagger.annotations.ApiImplicitParam
 import io.swagger.annotations.ApiImplicitParams
@@ -83,14 +82,6 @@ interface ProjectPartnerApi {
         @PathVariable projectId: Long,
         @PathVariable partnerId: Long,
         @Valid @RequestBody motivation: ProjectPartnerMotivationDTO
-    ): OutputProjectPartnerDetail
-
-    @ApiOperation("Update project partner co-financing")
-    @PutMapping("/{partnerId}/cofinancing", consumes = [MediaType.APPLICATION_JSON_VALUE])
-    fun updateProjectPartnerCoFinancing(
-        @PathVariable projectId: Long,
-        @PathVariable partnerId: Long,
-        @Valid @RequestBody partnerCoFinancing: InputProjectPartnerCoFinancingWrapper
     ): OutputProjectPartnerDetail
 
     @ApiOperation("Delete a project partner")

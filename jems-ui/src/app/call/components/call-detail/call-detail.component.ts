@@ -1,6 +1,6 @@
 import {ChangeDetectionStrategy, Component, Input, OnInit} from '@angular/core';
 import {FormBuilder, Validators} from '@angular/forms';
-import {OutputCall, OutputProgrammeFund, OutputProgrammeStrategy} from '@cat/api';
+import {OutputCall, OutputProgrammeStrategy, ProgrammeFundOutputDTO} from '@cat/api';
 import {Forms} from '../../../common/utils/forms';
 import {catchError, filter, take, tap} from 'rxjs/operators';
 import {MatDialog} from '@angular/material/dialog';
@@ -28,7 +28,7 @@ export class CallDetailComponent implements OnInit {
   @Input()
   strategies: OutputProgrammeStrategy[];
   @Input()
-  funds: OutputProgrammeFund[];
+  funds: ProgrammeFundOutputDTO[];
 
   startDateErrors = {
     required: 'call.startDate.unknown',

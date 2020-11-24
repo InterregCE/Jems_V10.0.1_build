@@ -8800,6 +8800,11 @@
 							"script": {
 								"id": "5ed97c13-22d4-41b7-9097-1882640124d2",
 								"exec": [
+									"const partnerAbbr = pm.variables.replaceIn('{{$randomAbbreviation}}')\r",
+									"pm.variables.set(\r",
+									"    'partner_abbreviation',\r",
+									"    partnerAbbr\r",
+									");\r",
 									""
 								],
 								"type": "text/javascript"
@@ -8815,6 +8820,10 @@
 									"pm.test('applicant can create project partner', function() {\r",
 									"    pm.response.to.have.status(200);\r",
 									"    pm.variables.set('partner_id_lead', partner.id);\r",
+									"});\r",
+									"\r",
+									"pm.test('project partner has correct abbreviation', function() {\r",
+									"    pm.expect(partner.abbreviation).to.eql(pm.variables.get('partner_abbreviation'));\r",
 									"});\r",
 									""
 								],
@@ -8842,7 +8851,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"abbreviation\": \"{{$randomAbbreviation}}\",\r\n    \"role\": \"LEAD_PARTNER\",\r\n    \"legalStatusId\": 1\r\n}\r\n",
+							"raw": "{\r\n    \"abbreviation\": \"{{partner_abbreviation}}\",\r\n    \"role\": \"LEAD_PARTNER\",\r\n    \"legalStatusId\": 1\r\n}\r\n",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -9173,6 +9182,115 @@
 						}
 					},
 					"response": []
+				},
+				{
+					"name": "set co-financing to Lead Partner",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "346c4476-bbdd-4462-8713-3c6b9ce46ad1",
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"id": "ef2eeec7-699d-46fc-aa63-fdbaaee87c7e",
+								"exec": [
+									"const finances = pm.response.json().finances;\r",
+									"const contributions = pm.response.json().partnerContributions;\r",
+									"\r",
+									"pm.test('applicant can set Co-Finaning', function() {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"pm.test('financing and funds are correct', function() {\r",
+									"    pm.expect(finances[0].percentage).to.eql(75);\r",
+									"    pm.expect(finances[0].fund).to.not.be.empty;\r",
+									"    pm.expect(finances[1].percentage).to.eql(25);\r",
+									"    pm.expect(finances[1].fund).to.be.null;\r",
+									"});\r",
+									"\r",
+									"pm.test('1st contribution is correct', function() {\r",
+									"    pm.expect(contributions[0].name).to.eql(pm.variables.get('partner_abbreviation'));\r",
+									"    pm.expect(contributions[0].status).to.eql('Private');\r",
+									"    pm.expect(contributions[0].isPartner).to.be.true;\r",
+									"    pm.expect(contributions[0].amount).to.eql(6200);\r",
+									"});\r",
+									"\r",
+									"pm.test('2nd contribution is correct', function() {\r",
+									"    pm.expect(contributions[1].name).to.eql('Source of money 01');\r",
+									"    pm.expect(contributions[1].status).to.eql('Public');\r",
+									"    pm.expect(contributions[1].isPartner).to.be.false;\r",
+									"    pm.expect(contributions[1].amount).to.eql(10000);\r",
+									"});\r",
+									"\r",
+									"pm.test('3rd contribution is correct', function() {\r",
+									"    pm.expect(contributions[2].name).to.eql('Source of money 02');\r",
+									"    pm.expect(contributions[2].status).to.eql('AutomaticPublic');\r",
+									"    pm.expect(contributions[2].isPartner).to.be.false;\r",
+									"    pm.expect(contributions[2].amount).to.eql(5000);\r",
+									"});\r",
+									"\r",
+									"pm.test('4th contribution is correct', function() {\r",
+									"    pm.expect(contributions[3].name).to.eql('Source of money 03');\r",
+									"    pm.expect(contributions[3].status).to.eql('Private');\r",
+									"    pm.expect(contributions[3].isPartner).to.be.false;\r",
+									"    pm.expect(contributions[3].amount).to.eql(3000);\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "basic",
+							"basic": [
+								{
+									"key": "password",
+									"value": "{{applicant_email}}",
+									"type": "string"
+								},
+								{
+									"key": "username",
+									"value": "{{applicant_email}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"finances\": [\r\n        {\r\n            \"percentage\": 25\r\n        },\r\n        {\r\n            \"percentage\": 75,\r\n            \"fundId\": {{programmeFundId}}\r\n        }\r\n    ],\r\n    \"partnerContributions\": [\r\n        {\r\n            \"isPartner\": false,\r\n            \"name\": \"Source of money 01\",\r\n            \"status\": \"Public\",\r\n            \"amount\": 10000\r\n        },\r\n        {\r\n            \"isPartner\": true,\r\n            \"name\": \"THIS NAME SHOULD BE IGNORED\",\r\n            \"status\": \"Private\",\r\n            \"amount\": 6200\r\n        },\r\n        {\r\n            \"isPartner\": false,\r\n            \"name\": \"Source of money 02\",\r\n            \"status\": \"AutomaticPublic\",\r\n            \"amount\": 5000\r\n        },\r\n        {\r\n            \"isPartner\": false,\r\n            \"name\": \"Source of money 03\",\r\n            \"status\": \"Private\",\r\n            \"amount\": 3000\r\n        }\r\n    ]\r\n}\r\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{url}}/api/project/partner/{{partner_id_lead}}/budget/cofinancing",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"api",
+								"project",
+								"partner",
+								"{{partner_id_lead}}",
+								"budget",
+								"cofinancing"
+							]
+						}
+					},
+					"response": []
 				}
 			],
 			"event": [
@@ -9239,7 +9357,7 @@
 	],
 	"variable": [
 		{
-			"id": "28ebbf4c-9109-40a1-aee0-189cde418f48",
+			"id": "7e81a1c9-e994-47e0-be4c-916c2e6cc013",
 			"key": "url",
 			"value": "specify_url_here"
 		}

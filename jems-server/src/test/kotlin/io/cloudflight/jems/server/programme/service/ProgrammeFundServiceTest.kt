@@ -1,12 +1,12 @@
 package io.cloudflight.jems.server.programme.service
 
 import io.cloudflight.jems.api.programme.dto.InputProgrammeFund
-import io.cloudflight.jems.api.programme.dto.OutputProgrammeFund
+import io.cloudflight.jems.api.programme.dto.ProgrammeFundOutputDTO
 import io.cloudflight.jems.server.audit.entity.AuditAction
 import io.cloudflight.jems.server.audit.service.AuditCandidate
 import io.cloudflight.jems.server.audit.service.AuditService
 import io.cloudflight.jems.server.common.exception.I18nValidationException
-import io.cloudflight.jems.server.programme.entity.ProgrammeFund
+import io.cloudflight.jems.server.programme.entity.ProgrammeFundEntity
 import io.cloudflight.jems.server.programme.repository.ProgrammeFundRepository
 import io.mockk.MockKAnnotations
 import io.mockk.every
@@ -22,13 +22,13 @@ import org.junit.jupiter.api.assertThrows
 internal class ProgrammeFundServiceTest {
 
     companion object {
-        val programmeFund = ProgrammeFund(
+        val programmeFund = ProgrammeFundEntity(
             id = 1L,
             abbreviation = "1st Fund",
             description = "1st Fund description",
             selected = false
         )
-        val  outputProgrammeFund = OutputProgrammeFund(
+        val  outputProgrammeFund = ProgrammeFundOutputDTO(
             id = programmeFund.id,
             abbreviation = programmeFund.abbreviation,
             description = programmeFund.description,
@@ -55,20 +55,20 @@ internal class ProgrammeFundServiceTest {
     @Test
     fun get() {
         every { programmeFundRepository.findAll() } returns listOf(programmeFund)
-        assertThat(programmeFundService.get()).isEqualTo(listOf(OutputProgrammeFund(id = programmeFund.id, selected = programmeFund.selected)))
+        assertThat(programmeFundService.get()).isEqualTo(listOf(ProgrammeFundOutputDTO(id = programmeFund.id, selected = programmeFund.selected)))
     }
 
     @Test
-    fun `update existing - select`() {
+    fun `update - select existing`() {
         every { programmeFundRepository.findAllById(eq(setOf(1L))) } returns listOf(programmeFund)
-        every { programmeFundRepository.saveAll(any<List<ProgrammeFund>>()) } returnsArgument 0
+        every { programmeFundRepository.saveAll(any<List<ProgrammeFundEntity>>()) } returnsArgument 0
         val expectedResult = listOf(programmeFund.copy(selected = true))
         every { programmeFundRepository.count() } returns expectedResult.size.toLong()
         every { programmeFundRepository.findAll() } returns expectedResult
 
         val existingFundToSelect = InputProgrammeFund(id = 1L, selected = true)
         val result = programmeFundService.update(listOf(existingFundToSelect))
-        assertThat(result).isEqualTo(listOf(OutputProgrammeFund(id = 1L, selected = true)))
+        assertThat(result).isEqualTo(listOf(ProgrammeFundOutputDTO(id = 1L, selected = true)))
 
         val audit = slot<AuditCandidate>()
         verify { auditService.logEvent(capture(audit)) }
@@ -79,13 +79,13 @@ internal class ProgrammeFundServiceTest {
     }
 
     @Test
-    fun `select new`() {
+    fun `select new - OK`() {
         val toBeCreatedFund = InputProgrammeFund(
             abbreviation = "created fund",
             description = "created fund",
             selected = true
         )
-        val expectedResult = listOf(ProgrammeFund(
+        val expectedResult = listOf(ProgrammeFundEntity(
             id = 10L,
             abbreviation = toBeCreatedFund.abbreviation,
             description = toBeCreatedFund.description,
@@ -93,14 +93,14 @@ internal class ProgrammeFundServiceTest {
         ))
 
         every { programmeFundRepository.findAllById(eq(emptySet())) } returns emptyList()
-        val saveFundSlot = slot<List<ProgrammeFund>>()
+        val saveFundSlot = slot<List<ProgrammeFundEntity>>()
         every { programmeFundRepository.saveAll(capture(saveFundSlot)) } returns expectedResult
         every { programmeFundRepository.count() } returns expectedResult.size.toLong()
         every { programmeFundRepository.findAll() } returns expectedResult
 
         val result = programmeFundService.update(listOf(toBeCreatedFund))
         assertThat(result)
-            .isEqualTo(listOf(OutputProgrammeFund(
+            .isEqualTo(listOf(ProgrammeFundOutputDTO(
                 id = 10L,
                 abbreviation = toBeCreatedFund.abbreviation,
                 description = toBeCreatedFund.description,
@@ -108,7 +108,7 @@ internal class ProgrammeFundServiceTest {
             )))
 
         assertThat(saveFundSlot.captured)
-            .isEqualTo(listOf(ProgrammeFund(
+            .isEqualTo(listOf(ProgrammeFundEntity(
                 abbreviation = toBeCreatedFund.abbreviation,
                 description = toBeCreatedFund.description,
                 selected = toBeCreatedFund.selected
@@ -125,7 +125,7 @@ internal class ProgrammeFundServiceTest {
     @Test
     fun `select new - not allowed count`() {
         every { programmeFundRepository.findAllById(eq(emptySet())) } returns emptyList()
-        every { programmeFundRepository.saveAll(any<List<ProgrammeFund>>()) } returnsArgument 0
+        every { programmeFundRepository.saveAll(any<List<ProgrammeFundEntity>>()) } returnsArgument 0
         every { programmeFundRepository.count() } returns 21
 
         val exception = assertThrows<I18nValidationException> { programmeFundService.update(emptyList()) }
