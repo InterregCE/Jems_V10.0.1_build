@@ -16,7 +16,7 @@ import {Forms} from '../../../../../common/utils/forms';
 import {filter, map, take} from 'rxjs/operators';
 import {MatDialog} from '@angular/material/dialog';
 import {Router} from '@angular/router';
-import {ProjectApplicationFormPartnerDetailComponent} from '../../../containers/project-application-form-page/project-application-form-partner-section/project-application-form-partner-detail/project-application-form-partner-detail.component';
+import {ProjectPartnerDetailPageComponent} from '../../../../partner/project-partner-detail-page/project-partner-detail-page.component';
 import {TabService} from '../../../../../common/services/tab.service';
 
 
@@ -115,7 +115,7 @@ export class ProjectApplicationFormPartnerListComponent implements OnInit {
 
   goToPartnerBudget(id: number): void {
     this.router.navigate([this.getPartnerLink(), id]);
-    this.tabService.changeTab(ProjectApplicationFormPartnerDetailComponent.name + id, 4);
+    this.tabService.changeTab(ProjectPartnerDetailPageComponent.name + id, 4);
   }
 
   private getPartnerLink(): string {

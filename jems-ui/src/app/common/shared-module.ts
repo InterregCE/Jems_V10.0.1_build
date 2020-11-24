@@ -1,5 +1,5 @@
 import {NgModule} from '@angular/core';
-import {CommonModule} from '@angular/common';
+import {CommonModule, PercentPipe} from '@angular/common';
 import {FormsModule, ReactiveFormsModule} from '@angular/forms';
 import {TranslateModule} from '@ngx-translate/core';
 import {TableComponent} from './components/table/table.component';
@@ -21,6 +21,7 @@ import {ConfirmDialogComponent} from '@common/components/modals/confirm-dialog/c
 import {HelpMenuComponent} from '@common/components/top-bar/help-menu/help-menu.component';
 import {SideNavComponent} from '@common/components/side-nav/component/side-nav.component';
 import {FormComponent} from '@common/components/section/form/form.component';
+import {PercentagePipe} from './pipe/percentage';
 
 const modules = [
   CommonModule,
@@ -39,6 +40,7 @@ const declarations = [
   PaginatorComponent,
   FormComponent,
   MoneyPipe,
+  PercentagePipe,
   MultiLanguageFieldComponent,
   BreadcrumbComponent,
   AlertComponent,

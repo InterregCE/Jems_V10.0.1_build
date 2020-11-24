@@ -1,27 +1,27 @@
 import {ChangeDetectionStrategy, Component} from '@angular/core';
-import {ProjectPartnerStore} from '../../services/project-partner-store.service';
+import {ProjectPartnerStore} from '../../../project-application/containers/project-application-form-page/services/project-partner-store.service';
 import {combineLatest, merge, Observable, Subject} from 'rxjs';
 import {
-  ProjectPartnerCoFinancingAndContributionInputDTO,
-  ProjectPartnerCoFinancingAndContributionOutputDTO,
-  ProgrammeFundOutputDTO,
-  OutputCall,
-  ProjectPartnerBudgetService,
   CallService,
+  OutputCall,
+  ProgrammeFundOutputDTO,
+  ProjectPartnerBudgetService,
+  ProjectPartnerCoFinancingAndContributionInputDTO,
+  ProjectPartnerCoFinancingAndContributionOutputDTO
 } from '@cat/api';
 import {catchError, filter, map, mergeMap, startWith, tap, withLatestFrom} from 'rxjs/operators';
 import {ActivatedRoute} from '@angular/router';
 import {HttpErrorResponse} from '@angular/common/http';
-import {ProjectStore} from '../../../project-application-detail/services/project-store.service';
-import {Numbers} from '../../../../../../common/utils/numbers';
+import {ProjectStore} from '../../../project-application/containers/project-application-detail/services/project-store.service';
+import {Numbers} from '../../../../common/utils/numbers';
 
 @Component({
-  selector: 'app-project-application-partner-co-financing-page',
-  templateUrl: './project-application-partner-co-financing-page.component.html',
-  styleUrls: ['./project-application-partner-co-financing-page.component.scss'],
+  selector: 'app-project-partner-co-financing-tab',
+  templateUrl: './project-partner-co-financing-tab.component.html',
+  styleUrls: ['./project-partner-co-financing-tab.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class ProjectApplicationPartnerCoFinancingPageComponent {
+export class ProjectPartnerCoFinancingTabComponent {
 
   projectId = this.activatedRoute?.snapshot?.params?.projectId;
 
@@ -33,7 +33,9 @@ export class ProjectApplicationPartnerCoFinancingPageComponent {
   private initialCoFinancing$: Observable<ProjectPartnerCoFinancingAndContributionOutputDTO> = this.partnerStore.partner$
     .pipe(
       filter(partner => !!partner.id),
-      map(partner => partner.financing),
+      mergeMap((partner) =>
+        this.projectPartnerBudgetService.getProjectPartnerCoFinancing(partner.id)
+      ),
     );
   private saveCoFinancing$: Observable<ProjectPartnerCoFinancingAndContributionOutputDTO> = this.saveFinances$
     .pipe(
@@ -78,7 +80,7 @@ export class ProjectApplicationPartnerCoFinancingPageComponent {
       map(([finances, amount, funds]) => ({
         financingAndContribution: finances,
         callFunds: funds,
-        totalAmount: Numbers.truncateNumber(amount),
+        totalAmount: Numbers.truncateNumber(amount)
       }))
     );
 

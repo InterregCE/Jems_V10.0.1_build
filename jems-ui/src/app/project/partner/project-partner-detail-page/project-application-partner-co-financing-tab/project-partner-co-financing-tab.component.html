@@ -1,5 +1,5 @@
 <ng-container *ngIf="details$ | async as details">
-    <app-project-application-form-partner-co-financing
+    <app-project-partner-co-financing
             [success$]="saveSuccess$"
             [error$]="saveError$"
             [editable]="projectStore.projectEditable$ | async"
@@ -8,5 +8,5 @@
             [totalAmount]="details.totalAmount"
             (save)="saveFinances$.next($event)"
             (cancelEdit)="cancelEdit$.next()">
-    </app-project-application-form-partner-co-financing>
+    </app-project-partner-co-financing>
 </ng-container>
