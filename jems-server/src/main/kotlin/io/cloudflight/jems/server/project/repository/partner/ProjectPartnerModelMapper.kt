@@ -66,7 +66,7 @@ fun ProjectPartnerEntity.toOutputProjectPartnerDetail() = OutputProjectPartnerDe
     vatRecovery = vatRecovery,
     addresses = addresses?.map { it.toDto() } ?: emptyList(),
     contacts = contacts?.map { it.toOutputProjectPartnerContact() } ?: emptyList(),
-    motivation = motivation.map { it.toDto() }.firstOrNull(),
+    motivation = motivation.map { it.toDto() }.firstOrNull()
 )
 
 fun ProjectPartnerAddressDTO.toEntity(partner: ProjectPartnerEntity) = ProjectPartnerAddress(

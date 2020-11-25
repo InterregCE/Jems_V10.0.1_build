@@ -26,7 +26,7 @@ class ProjectPartnerBudgetController(
     private val getBudgetOptionsInteractor: GetBudgetOptionsInteractor,
     private val updateBudgetOptionsInteractor: UpdateBudgetOptionsInteractor,
     private val getCoFinancing: GetCoFinancingInteractor,
-    private val updateCoFinancing: UpdateCoFinancingInteractor,
+    private val updateCoFinancing: UpdateCoFinancingInteractor
 ) : ProjectPartnerBudgetApi {
 
     @CanReadProjectPartner

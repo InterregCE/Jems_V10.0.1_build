@@ -27,7 +27,7 @@ internal class UpdateCoFinancingInteractorTest {
 
         private val financingOk = setOf(
             UpdateProjectPartnerCoFinancing(percentage = 40, fundId = null),
-            UpdateProjectPartnerCoFinancing(percentage = 60, fundId = 1),
+            UpdateProjectPartnerCoFinancing(percentage = 60, fundId = 1)
         )
     }
 
@@ -146,7 +146,7 @@ internal class UpdateCoFinancingInteractorTest {
             ProjectPartnerCoFinancingAndContribution(emptyList(), emptyList(), "")
 
         val toSave = listOf(
-            ProjectPartnerContribution(name = null, amount = BigDecimal.TEN, isPartner = true, status = Public),
+            ProjectPartnerContribution(name = null, amount = BigDecimal.TEN, isPartner = true, status = Public)
         )
         updateInteractor.updateCoFinancing(1, financingOk, toSave)
         assertThat(slotPartnerContributions.captured).containsExactly(
@@ -154,7 +154,7 @@ internal class UpdateCoFinancingInteractorTest {
         )
         assertThat(slotFinances.captured).containsExactlyInAnyOrder(
             UpdateProjectPartnerCoFinancing(fundId = fund.id, percentage = 60),
-            UpdateProjectPartnerCoFinancing(fundId = null, percentage = 40),
+            UpdateProjectPartnerCoFinancing(fundId = null, percentage = 40)
         )
     }
 
@@ -164,7 +164,7 @@ internal class UpdateCoFinancingInteractorTest {
 
         val toSave = listOf(
             ProjectPartnerContribution(name = "not used", amount = BigDecimal.TEN, isPartner = true, status = Public),
-            ProjectPartnerContribution(name = null, amount = BigDecimal.TEN, isPartner = true, status = Private),
+            ProjectPartnerContribution(name = null, amount = BigDecimal.TEN, isPartner = true, status = Private)
         )
 
         assertExceptionMsg(
@@ -179,7 +179,7 @@ internal class UpdateCoFinancingInteractorTest {
         every { persistence.getAvailableFundIds(3) } returns setOf(fund.id)
 
         val toSave = listOf(
-            ProjectPartnerContribution(name = "not used", amount = BigDecimal.TEN, isPartner = true, status = AutomaticPublic),
+            ProjectPartnerContribution(name = "not used", amount = BigDecimal.TEN, isPartner = true, status = AutomaticPublic)
         )
 
         assertExceptionMsg(
@@ -195,7 +195,7 @@ internal class UpdateCoFinancingInteractorTest {
 
         val toSave = listOf(
             ProjectPartnerContribution(name = "ignored", amount = BigDecimal.TEN, isPartner = true, status = Public),
-            ProjectPartnerContribution(name = "", amount = BigDecimal.TEN, isPartner = false, status = Public),
+            ProjectPartnerContribution(name = "", amount = BigDecimal.TEN, isPartner = false, status = Public)
         )
 
         assertExceptionMsg(
@@ -209,7 +209,7 @@ internal class UpdateCoFinancingInteractorTest {
         every { persistence.getAvailableFundIds(6) } returns setOf(fund.id)
 
         val toSave = listOf(
-            ProjectPartnerContribution(name = "ignored", amount = BigDecimal.TEN, isPartner = true, status = null),
+            ProjectPartnerContribution(name = "ignored", amount = BigDecimal.TEN, isPartner = true, status = null)
         )
 
         assertExceptionMsg(
@@ -223,7 +223,7 @@ internal class UpdateCoFinancingInteractorTest {
         every { persistence.getAvailableFundIds(7) } returns setOf(fund.id)
 
         val toSave = listOf(
-            ProjectPartnerContribution(name = "ignored", amount = null, isPartner = true, status = Public),
+            ProjectPartnerContribution(name = "ignored", amount = null, isPartner = true, status = Public)
         )
 
         assertExceptionMsg(

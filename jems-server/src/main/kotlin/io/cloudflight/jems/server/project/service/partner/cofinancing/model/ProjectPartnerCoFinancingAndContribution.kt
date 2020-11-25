@@ -4,6 +4,6 @@ data class ProjectPartnerCoFinancingAndContribution(
 
     val finances: Collection<ProjectPartnerCoFinancing>,
     val partnerContributions: Collection<ProjectPartnerContribution>,
-    val partnerAbbreviation: String,
+    val partnerAbbreviation: String
 
 )

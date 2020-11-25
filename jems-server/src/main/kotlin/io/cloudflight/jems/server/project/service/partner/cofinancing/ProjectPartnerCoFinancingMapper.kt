@@ -30,13 +30,13 @@ fun Collection<ProjectPartnerContributionDTO>.toContributionModel() = map {
 
 fun ProjectPartnerCoFinancingAndContribution.toDto() = ProjectPartnerCoFinancingAndContributionOutputDTO(
     finances = finances.toCoFinancingDto(),
-    partnerContributions = partnerContributions.toContributionDto(partnerAbbreviation),
+    partnerContributions = partnerContributions.toContributionDto(partnerAbbreviation)
 )
 
 fun ProjectPartnerCoFinancing.toDto() = ProjectPartnerCoFinancingOutputDTO(
     id = id!!,
     percentage = percentage,
-    fund = fund?.toDto(),
+    fund = fund?.toDto()
 )
 
 fun Collection<ProjectPartnerCoFinancing>.toCoFinancingDto() = map { it.toDto() }
@@ -47,7 +47,7 @@ fun ProjectPartnerContribution.toDto(partnerAbbreviation: String) = ProjectPartn
     name = if (isPartner) partnerAbbreviation else name,
     status = status,
     isPartner = isPartner,
-    amount = amount,
+    amount = amount
 )
 
 fun Collection<ProjectPartnerContribution>.toContributionDto(partnerAbbreviation: String): List<ProjectPartnerContributionDTO> =

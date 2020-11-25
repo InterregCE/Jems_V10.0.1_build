@@ -12,7 +12,7 @@ import java.math.BigDecimal
 @Service
 class GetProjectBudget(
     private val persistence: ProjectBudgetPersistence,
-    private val optionPersistence: ProjectPartnerBudgetPersistence,
+    private val optionPersistence: ProjectPartnerBudgetPersistence
 ) : GetProjectBudgetInteractor {
 
     @Transactional(readOnly = true)
@@ -36,7 +36,7 @@ class GetProjectBudget(
                 travelCosts = travelPerPartner[partnerId] ?: BigDecimal.ZERO,
                 externalCosts = externalPerPartner[partnerId] ?: BigDecimal.ZERO,
                 equipmentCosts = equipmentPerPartner[partnerId] ?: BigDecimal.ZERO,
-                infrastructureCosts = infrastructurePerPartner[partnerId] ?: BigDecimal.ZERO,
+                infrastructureCosts = infrastructurePerPartner[partnerId] ?: BigDecimal.ZERO
             )
         }
     }

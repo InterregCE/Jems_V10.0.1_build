@@ -9,7 +9,7 @@ import org.springframework.transaction.annotation.Transactional
 
 @Service
 class GetCoFinancing(
-    private val persistence: ProjectPartnerCoFinancingPersistence,
+    private val persistence: ProjectPartnerCoFinancingPersistence
 ) : GetCoFinancingInteractor {
 
     @Transactional(readOnly = true)
