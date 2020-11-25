@@ -5,6 +5,8 @@ import io.cloudflight.jems.api.call.dto.InputCallCreate
 import io.cloudflight.jems.api.call.dto.InputCallUpdate
 import io.cloudflight.jems.api.call.dto.OutputCall
 import io.cloudflight.jems.api.call.dto.OutputCallList
+import io.cloudflight.jems.api.call.dto.flatrate.FlatRateDTO
+import io.cloudflight.jems.api.call.dto.flatrate.FlatRateSetupDTO
 import io.cloudflight.jems.api.call.dto.flatrate.FlatRateType
 import io.cloudflight.jems.api.call.dto.flatrate.InputCallFlatRateSetup
 import io.cloudflight.jems.api.programme.dto.priority.OutputProgrammePriorityPolicySimple
@@ -28,6 +30,7 @@ import io.cloudflight.jems.server.security.service.authorization.AuthorizationUt
 import io.cloudflight.jems.server.security.service.authorization.AuthorizationUtil.Companion.programmeUser
 import io.cloudflight.jems.server.audit.service.AuditService
 import io.cloudflight.jems.server.call.callWithId
+import io.cloudflight.jems.server.call.service.flatrate.model.ProjectCallFlatRate
 import io.cloudflight.jems.server.call.testUser
 import io.cloudflight.jems.server.programme.entity.ProgrammeFundEntity
 import io.cloudflight.jems.server.programme.repository.ProgrammeFundRepository
@@ -71,9 +74,7 @@ class CallServiceTest {
         status = call.status,
         lengthOfPeriod = call.lengthOfPeriod,
         description = call.description,
-        flatRates = listOf(
-            InputCallFlatRateSetup(type = FlatRateType.StaffCost, rate = 5, isAdjustable = true)
-        )
+        flatRates = FlatRateSetupDTO(staffCostFlatRateSetup = FlatRateDTO(rate = 5, isAdjustable = true)),
     )
 
     private fun outputCallListWithId(id: Long) = OutputCallList(

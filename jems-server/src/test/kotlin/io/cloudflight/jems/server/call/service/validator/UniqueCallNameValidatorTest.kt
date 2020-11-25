@@ -2,6 +2,7 @@ package io.cloudflight.jems.server.call.service.validator
 
 import io.cloudflight.jems.api.call.dto.CallStatus
 import io.cloudflight.jems.api.call.dto.OutputCall
+import io.cloudflight.jems.api.call.dto.flatrate.FlatRateSetupDTO
 import io.cloudflight.jems.api.call.validator.UniqueCallNameValidator
 import io.cloudflight.jems.server.call.service.CallService
 import io.mockk.MockKAnnotations
@@ -39,7 +40,7 @@ class UniqueCallNameValidatorTest {
 
     @Test
     fun `existing is not valid`() {
-        every { callService.findOneByName(eq("existing")) } returns OutputCall(id = 1, name = "test call", priorityPolicies = emptyList(), strategies = emptyList(), funds = emptyList(), status = CallStatus.PUBLISHED, startDate = ZonedDateTime.now(), endDate = ZonedDateTime.now(), lengthOfPeriod = 1)
+        every { callService.findOneByName(eq("existing")) } returns OutputCall(id = 1, name = "test call", priorityPolicies = emptyList(), strategies = emptyList(), funds = emptyList(), status = CallStatus.PUBLISHED, startDate = ZonedDateTime.now(), endDate = ZonedDateTime.now(), lengthOfPeriod = 1, flatRates = FlatRateSetupDTO())
         assertFalse(uniqueCallNameValidator.isValid("existing"))
     }
 

@@ -10,6 +10,7 @@ data class PartnerBudget(
 
     val staffCostsFlatRate: Int? = null,
     val officeOnStaffFlatRate: Int? = null,
+    val travelOnStaffFlatRate: Int? = null,
 
     val staffCosts: BigDecimal = BigDecimal.ZERO,
     val travelCosts: BigDecimal = BigDecimal.ZERO,
@@ -19,10 +20,20 @@ data class PartnerBudget(
 
 ) {
     fun extractStaffCosts(): BigDecimal =
-        if (staffCostsFlatRate != null)
-            travelCosts.add(externalCosts).add(equipmentCosts).add(infrastructureCosts).percentage(staffCostsFlatRate)
+        if (staffCostsFlatRate != null) {
+            if (travelOnStaffFlatRate != null)
+                externalCosts.add(equipmentCosts).add(infrastructureCosts).percentage(staffCostsFlatRate)
+            else
+                travelCosts.add(externalCosts).add(equipmentCosts).add(infrastructureCosts).percentage(staffCostsFlatRate)
+        }
         else
             staffCosts
+
+    private fun extractTravelCosts(): BigDecimal =
+        if (travelOnStaffFlatRate != null)
+            extractStaffCosts().percentage(travelOnStaffFlatRate)
+        else
+            travelCosts
 
     fun extractOfficeAndAdministrationCosts(): BigDecimal =
         if (officeOnStaffFlatRate != null)
@@ -31,9 +42,11 @@ data class PartnerBudget(
             BigDecimal.ZERO
 
     fun totalSum(): BigDecimal =
-        extractStaffCosts().add(extractOfficeAndAdministrationCosts())
-            .add(travelCosts)
+        extractStaffCosts()
+            .add(extractTravelCosts())
             .add(externalCosts)
             .add(equipmentCosts)
             .add(infrastructureCosts)
+            .add(extractOfficeAndAdministrationCosts())
+
 }

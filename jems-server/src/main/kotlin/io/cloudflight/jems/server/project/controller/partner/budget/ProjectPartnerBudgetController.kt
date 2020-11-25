@@ -41,10 +41,10 @@ class ProjectPartnerBudgetController(
 
     override fun getBudgetOptions(partnerId: Long): ProjectPartnerBudgetOptionsDto =
         getBudgetOptionsInteractor.getBudgetOptions(partnerId)?.toProjectPartnerBudgetOptionsDto()
-            ?: ProjectPartnerBudgetOptionsDto(null, null)
+            ?: ProjectPartnerBudgetOptionsDto()
 
     override fun updateBudgetOptions(partnerId: Long, budgetOptionsDto: ProjectPartnerBudgetOptionsDto) =
-        updateBudgetOptionsInteractor.updateBudgetOptions(partnerId, budgetOptionsDto.officeAdministrationFlatRate, budgetOptionsDto.staffCostsFlatRate)
+        updateBudgetOptionsInteractor.updateBudgetOptions(partnerId, budgetOptionsDto.toModel(partnerId))
 
     @CanReadProjectPartner
     override fun getBudgetTravel(partnerId: Long): List<InputTravelBudget> {

@@ -1,7 +1,6 @@
 package io.cloudflight.jems.server.call.service.flatrate.update_flat_rate_setup
 
 import io.cloudflight.jems.api.call.dto.flatrate.FlatRateType
-import io.cloudflight.jems.api.call.dto.flatrate.InputCallFlatRateSetup
 import io.cloudflight.jems.server.audit.service.AuditService
 import io.cloudflight.jems.server.call.service.flatrate.CallFlatRateSetupPersistence
 import io.cloudflight.jems.server.call.service.flatrate.model.ProjectCallFlatRate
@@ -37,7 +36,7 @@ class UpdateFlatRateSetupInteractorTest {
 
     @Test
     fun `updateFlatRateSetup valid`() {
-        val toBeSet = InputCallFlatRateSetup(
+        val toBeSet = ProjectCallFlatRate(
             type = FlatRateType.OfficeOnOther,
             rate = 5,
             isAdjustable = true
@@ -48,7 +47,6 @@ class UpdateFlatRateSetupInteractorTest {
         verify { persistence.updateProjectCallFlatRate(1, capture(event)) }
         assertThat(event.captured).containsExactly(
             ProjectCallFlatRate(
-                callId = 1,
                 type = toBeSet.type,
                 rate = toBeSet.rate,
                 isAdjustable = toBeSet.isAdjustable
@@ -59,12 +57,12 @@ class UpdateFlatRateSetupInteractorTest {
     @Test
     fun `updateFlatRateSetup invalid - duplicates`() {
         val toBeSet = setOf(
-            InputCallFlatRateSetup(
+            ProjectCallFlatRate(
                 type = FlatRateType.OfficeOnOther,
                 rate = 5,
                 isAdjustable = true
             ),
-            InputCallFlatRateSetup(
+            ProjectCallFlatRate(
                 type = FlatRateType.OfficeOnOther,
                 rate = 9,
                 isAdjustable = false
@@ -77,25 +75,30 @@ class UpdateFlatRateSetupInteractorTest {
     @Test
     fun `updateFlatRateSetup invalid - over max flat rate`() {
         val toBeSet = setOf(
-            InputCallFlatRateSetup(
+            ProjectCallFlatRate(
                 type = FlatRateType.StaffCost,
-                rate = 21
+                rate = 21,
+                isAdjustable = true,
             ),
-            InputCallFlatRateSetup(
+            ProjectCallFlatRate(
                 type = FlatRateType.OfficeOnStaff,
-                rate = 16
+                rate = 16,
+                isAdjustable = true,
             ),
-            InputCallFlatRateSetup(
+            ProjectCallFlatRate(
                 type = FlatRateType.OfficeOnOther,
-                rate = 26
+                rate = 26,
+                isAdjustable = true,
             ),
-            InputCallFlatRateSetup(
+            ProjectCallFlatRate(
                 type = FlatRateType.TravelOnStaff,
-                rate = 16
+                rate = 16,
+                isAdjustable = true,
             ),
-            InputCallFlatRateSetup(
+            ProjectCallFlatRate(
                 type = FlatRateType.OtherOnStaff,
-                rate = 41
+                rate = 41,
+                isAdjustable = true,
             )
         )
         val ex = assertThrows<I18nValidationException> { updateFlatRateSetupInteractor.updateFlatRateSetup(1, toBeSet) }
@@ -112,25 +115,30 @@ class UpdateFlatRateSetupInteractorTest {
     @Test
     fun `updateFlatRateSetup invalid - below min flat rate`() {
         val toBeSet = setOf(
-            InputCallFlatRateSetup(
+            ProjectCallFlatRate(
                 type = FlatRateType.StaffCost,
-                rate = 0
+                rate = 0,
+                isAdjustable = true,
             ),
-            InputCallFlatRateSetup(
+            ProjectCallFlatRate(
                 type = FlatRateType.OfficeOnStaff,
-                rate = 0
+                rate = 0,
+                isAdjustable = true,
             ),
-            InputCallFlatRateSetup(
+            ProjectCallFlatRate(
                 type = FlatRateType.OfficeOnOther,
-                rate = 0
+                rate = 0,
+                isAdjustable = true,
             ),
-            InputCallFlatRateSetup(
+            ProjectCallFlatRate(
                 type = FlatRateType.TravelOnStaff,
-                rate = 0
+                rate = 0,
+                isAdjustable = true,
             ),
-            InputCallFlatRateSetup(
+            ProjectCallFlatRate(
                 type = FlatRateType.OtherOnStaff,
-                rate = 0
+                rate = 0,
+                isAdjustable = true,
             )
         )
         val ex = assertThrows<I18nValidationException> { updateFlatRateSetupInteractor.updateFlatRateSetup(1, toBeSet) }

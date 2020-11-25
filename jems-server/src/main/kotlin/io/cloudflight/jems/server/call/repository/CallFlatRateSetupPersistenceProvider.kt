@@ -15,7 +15,7 @@ class CallFlatRateSetupPersistenceProvider(
 
     @Transactional
     override fun updateProjectCallFlatRate(callId: Long, flatRates: Set<ProjectCallFlatRate>) =
-        getCallOrThrow(callId).updateFlatRateSetup(flatRates.toEntity())
+        getCallOrThrow(callId).updateFlatRateSetup(flatRates.toEntity(callId))
 
     @Transactional(readOnly = true)
     override fun getProjectCallFlatRate(callId: Long): Set<ProjectCallFlatRate> =

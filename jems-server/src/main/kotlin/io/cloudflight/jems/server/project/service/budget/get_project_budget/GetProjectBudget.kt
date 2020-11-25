@@ -4,7 +4,7 @@ import io.cloudflight.jems.server.project.authorization.CanReadProject
 import io.cloudflight.jems.server.project.service.budget.ProjectBudgetPersistence
 import io.cloudflight.jems.server.project.service.budget.model.PartnerBudget
 import io.cloudflight.jems.server.project.service.budget.model.ProjectPartnerCost
-import io.cloudflight.jems.server.project.service.partner.budget.ProjectPartnerBudgetPersistence
+import io.cloudflight.jems.server.project.service.partner.budget.ProjectPartnerBudgetOptionsPersistence
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import java.math.BigDecimal
@@ -12,7 +12,7 @@ import java.math.BigDecimal
 @Service
 class GetProjectBudget(
     private val persistence: ProjectBudgetPersistence,
-    private val optionPersistence: ProjectPartnerBudgetPersistence
+    private val optionPersistence: ProjectPartnerBudgetOptionsPersistence,
 ) : GetProjectBudgetInteractor {
 
     @Transactional(readOnly = true)
@@ -31,12 +31,12 @@ class GetProjectBudget(
             PartnerBudget(
                 partner = partner,
                 staffCostsFlatRate = options[partnerId]?.staffCostsFlatRate,
-                officeOnStaffFlatRate = options[partnerId]?.officeAdministrationFlatRate,
+                officeOnStaffFlatRate = options[partnerId]?.officeAndAdministrationFlatRate,
                 staffCosts = staffPerPartner[partnerId] ?: BigDecimal.ZERO,
                 travelCosts = travelPerPartner[partnerId] ?: BigDecimal.ZERO,
                 externalCosts = externalPerPartner[partnerId] ?: BigDecimal.ZERO,
                 equipmentCosts = equipmentPerPartner[partnerId] ?: BigDecimal.ZERO,
-                infrastructureCosts = infrastructurePerPartner[partnerId] ?: BigDecimal.ZERO
+                infrastructureCosts = infrastructurePerPartner[partnerId] ?: BigDecimal.ZERO,
             )
         }
     }

@@ -5,7 +5,7 @@ import io.cloudflight.jems.api.call.dto.InputCallCreate
 import io.cloudflight.jems.api.call.dto.InputCallUpdate
 import io.cloudflight.jems.api.call.dto.OutputCall
 import io.cloudflight.jems.api.call.dto.OutputCallList
-import io.cloudflight.jems.api.call.dto.flatrate.InputCallFlatRateSetup
+import io.cloudflight.jems.api.call.dto.flatrate.FlatRateSetupDTO
 import io.cloudflight.jems.server.call.service.CallService
 import io.cloudflight.jems.server.call.service.flatrate.update_flat_rate_setup.UpdateFlatRateSetupInteractor
 import org.springframework.data.domain.Page
@@ -49,7 +49,7 @@ class CallController(
     override fun getCallObjectives(id: Long) =
         callService.getPriorityAndPoliciesForCall(id)
 
-    override fun updateCallFlatRateSetup(callId: Long, flatRates: Set<InputCallFlatRateSetup>) =
-        updateFlatRateSetup.updateFlatRateSetup(callId, flatRates)
+    override fun updateCallFlatRateSetup(callId: Long, flatRateSetup: FlatRateSetupDTO) =
+        updateFlatRateSetup.updateFlatRateSetup(callId, flatRateSetup.toModel())
 
 }

@@ -2,6 +2,7 @@ package io.cloudflight.jems.server.project.service
 
 import io.cloudflight.jems.api.call.dto.CallStatus
 import io.cloudflight.jems.api.call.dto.OutputCallWithDates
+import io.cloudflight.jems.api.call.dto.flatrate.FlatRateSetupDTO
 import io.cloudflight.jems.api.programme.dto.priority.OutputProgrammePriorityPolicySimple
 import io.cloudflight.jems.api.programme.dto.priority.ProgrammeObjectivePolicy.AdvancedTechnologies
 import io.cloudflight.jems.api.programme.dto.priority.ProgrammeObjectivePolicy.HealthcareAcrossBorders
@@ -234,7 +235,8 @@ class ProjectServiceTest {
             name = dummyCall.name,
             startDate = dummyCall.startDate,
             endDate = dummyCall.endDate,
-            lengthOfPeriod = 1
+            lengthOfPeriod = 1,
+            flatRates = FlatRateSetupDTO(),
         ), result.call)
         assertEquals(result.acronym, "test")
         assertEquals(result.firstSubmission, null)

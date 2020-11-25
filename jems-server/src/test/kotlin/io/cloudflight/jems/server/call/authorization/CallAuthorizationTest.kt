@@ -2,6 +2,7 @@ package io.cloudflight.jems.server.call.authorization
 
 import io.cloudflight.jems.api.call.dto.CallStatus
 import io.cloudflight.jems.api.call.dto.OutputCall
+import io.cloudflight.jems.api.call.dto.flatrate.FlatRateSetupDTO
 import io.cloudflight.jems.server.call.service.CallService
 import io.cloudflight.jems.server.common.exception.ResourceNotFoundException
 import io.cloudflight.jems.server.authentication.model.LocalCurrentUser
@@ -44,7 +45,8 @@ internal class CallAuthorizationTest {
         status = status,
         startDate = ZonedDateTime.now().minusDays(2),
         endDate = ZonedDateTime.now().plusDays(2),
-        lengthOfPeriod = 1
+        lengthOfPeriod = 1,
+        flatRates = FlatRateSetupDTO()
     )
 
     @BeforeEach

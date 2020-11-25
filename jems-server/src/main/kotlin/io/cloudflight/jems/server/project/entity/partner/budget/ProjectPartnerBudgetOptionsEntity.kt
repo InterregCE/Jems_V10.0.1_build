@@ -12,6 +12,8 @@ data class ProjectPartnerBudgetOptionsEntity(
     val partnerId: Long,
 
     var officeAdministrationFlatRate: Int? = null,
+    var travelAccommodationFlatRate: Int? = null,
+
     var staffCostsFlatRate: Int? = null
 
 )

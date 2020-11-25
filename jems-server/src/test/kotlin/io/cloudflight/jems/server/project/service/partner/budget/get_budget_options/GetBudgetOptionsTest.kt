@@ -1,6 +1,6 @@
 package io.cloudflight.jems.server.project.service.partner.budget.get_budget_options
 
-import io.cloudflight.jems.server.project.service.partner.budget.ProjectPartnerBudgetPersistence
+import io.cloudflight.jems.server.project.service.partner.budget.ProjectPartnerBudgetOptionsPersistence
 import io.cloudflight.jems.server.project.service.partner.budget.ProjectPartnerGeneralBudgetServiceTest.Companion.PARTNER_ID
 import io.cloudflight.jems.server.project.service.partner.budget.ProjectPartnerGeneralBudgetServiceTest.Companion.budgetOptions
 import io.mockk.confirmVerified
@@ -17,7 +17,7 @@ import org.junit.jupiter.api.extension.ExtendWith
 @ExtendWith(MockKExtension::class)
 internal class GetBudgetOptionsTest {
     @MockK
-    lateinit var persistence: ProjectPartnerBudgetPersistence
+    lateinit var persistence: ProjectPartnerBudgetOptionsPersistence
 
     @InjectMockKs
     lateinit var getBudgetOptions: GetBudgetOptions
@@ -33,7 +33,7 @@ internal class GetBudgetOptionsTest {
         confirmVerified(persistence)
 
         assertEquals(PARTNER_ID, returnedBudgetOptions?.partnerId)
-        assertEquals(budgetOptions.officeAdministrationFlatRate, returnedBudgetOptions?.officeAdministrationFlatRate)
+        assertEquals(budgetOptions.officeAndAdministrationFlatRate, returnedBudgetOptions?.officeAndAdministrationFlatRate)
         assertEquals(budgetOptions.staffCostsFlatRate, returnedBudgetOptions?.staffCostsFlatRate)
     }
 
