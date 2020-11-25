@@ -1,7 +1,9 @@
 package io.cloudflight.jems.server.project.controller.partner.budget
 
 import io.cloudflight.jems.api.project.ProjectPartnerBudgetApi
-import io.cloudflight.jems.api.project.dto.partner.budget.InputBudget
+import io.cloudflight.jems.api.project.dto.partner.budget.InputGeneralBudget
+import io.cloudflight.jems.api.project.dto.partner.budget.InputStaffCostBudget
+import io.cloudflight.jems.api.project.dto.partner.budget.InputTravelBudget
 import io.cloudflight.jems.api.project.dto.partner.budget.ProjectPartnerBudgetOptionsDto
 import io.cloudflight.jems.api.project.dto.partner.cofinancing.ProjectPartnerCoFinancingAndContributionOutputDTO
 import io.cloudflight.jems.api.project.dto.partner.cofinancing.ProjectPartnerCoFinancingAndContributionInputDTO
@@ -28,12 +30,12 @@ class ProjectPartnerBudgetController(
 ) : ProjectPartnerBudgetApi {
 
     @CanReadProjectPartner
-    override fun getBudgetStaffCost(partnerId: Long): List<InputBudget> {
+    override fun getBudgetStaffCost(partnerId: Long): List<InputStaffCostBudget> {
         return projectPartnerBudgetService.getStaffCosts(partnerId)
     }
 
     @CanUpdateProjectPartner
-    override fun updateBudgetStaffCost(partnerId: Long, budgetCosts: List<InputBudget>): List<InputBudget> {
+    override fun updateBudgetStaffCost(partnerId: Long, budgetCosts: List<InputStaffCostBudget>): List<InputStaffCostBudget> {
         return projectPartnerBudgetService.updateStaffCosts(partnerId, budgetCosts)
     }
 
@@ -45,42 +47,42 @@ class ProjectPartnerBudgetController(
         updateBudgetOptionsInteractor.updateBudgetOptions(partnerId, budgetOptionsDto.officeAdministrationFlatRate, budgetOptionsDto.staffCostsFlatRate)
 
     @CanReadProjectPartner
-    override fun getBudgetTravel(partnerId: Long): List<InputBudget> {
+    override fun getBudgetTravel(partnerId: Long): List<InputTravelBudget> {
         return projectPartnerBudgetService.getTravel(partnerId)
     }
 
     @CanUpdateProjectPartner
-    override fun updateBudgetTravel(partnerId: Long, travels: List<InputBudget>): List<InputBudget> {
+    override fun updateBudgetTravel(partnerId: Long, travels: List<InputTravelBudget>): List<InputTravelBudget> {
         return projectPartnerBudgetService.updateTravel(partnerId, travels)
     }
 
     @CanReadProjectPartner
-    override fun getBudgetExternal(partnerId: Long): List<InputBudget> {
+    override fun getBudgetExternal(partnerId: Long): List<InputGeneralBudget> {
         return projectPartnerBudgetService.getExternal(partnerId)
     }
 
     @CanUpdateProjectPartner
-    override fun updateBudgetExternal(partnerId: Long, externals: List<InputBudget>): List<InputBudget> {
+    override fun updateBudgetExternal(partnerId: Long, externals: List<InputGeneralBudget>): List<InputGeneralBudget> {
         return projectPartnerBudgetService.updateExternal(partnerId, externals)
     }
 
     @CanReadProjectPartner
-    override fun getBudgetEquipment(partnerId: Long): List<InputBudget> {
+    override fun getBudgetEquipment(partnerId: Long): List<InputGeneralBudget> {
         return projectPartnerBudgetService.getEquipment(partnerId)
     }
 
     @CanUpdateProjectPartner
-    override fun updateBudgetEquipment(partnerId: Long, equipments: List<InputBudget>): List<InputBudget> {
+    override fun updateBudgetEquipment(partnerId: Long, equipments: List<InputGeneralBudget>): List<InputGeneralBudget> {
         return projectPartnerBudgetService.updateEquipment(partnerId, equipments)
     }
 
     @CanReadProjectPartner
-    override fun getBudgetInfrastructure(partnerId: Long): List<InputBudget> {
+    override fun getBudgetInfrastructure(partnerId: Long): List<InputGeneralBudget> {
         return projectPartnerBudgetService.getInfrastructure(partnerId)
     }
 
     @CanUpdateProjectPartner
-    override fun updateBudgetInfrastructure(partnerId: Long, infrastructures: List<InputBudget>): List<InputBudget> {
+    override fun updateBudgetInfrastructure(partnerId: Long, infrastructures: List<InputGeneralBudget>): List<InputGeneralBudget> {
         return projectPartnerBudgetService.updateInfrastructure(partnerId, infrastructures)
     }
 

@@ -36,7 +36,7 @@
             </li>
 
             <!-- Language selection -->
-            <li class="nav-item" *ngIf="languageService.languageList$ | async as languagelist">
+            <li class="nav-item" *ngIf="languageService.languageSelection$ | async as languagelist">
                 <mat-select #langSelect
                             class="language-select nav-link"
                             [value]="translate.currentLang"

@@ -1,8 +1,8 @@
 package io.cloudflight.jems.server.project.service.partner.budget.get_budget_options
 
 import io.cloudflight.jems.server.project.service.partner.budget.ProjectPartnerBudgetPersistence
-import io.cloudflight.jems.server.project.service.partner.budget.ProjectPartnerBudgetServiceTest.Companion.PARTNER_ID
-import io.cloudflight.jems.server.project.service.partner.budget.ProjectPartnerBudgetServiceTest.Companion.budgetOptions
+import io.cloudflight.jems.server.project.service.partner.budget.ProjectPartnerGeneralBudgetServiceTest.Companion.PARTNER_ID
+import io.cloudflight.jems.server.project.service.partner.budget.ProjectPartnerGeneralBudgetServiceTest.Companion.budgetOptions
 import io.mockk.confirmVerified
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs

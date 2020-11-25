@@ -1,10 +1,12 @@
 import {Numbers} from '../../../common/utils/numbers';
 import {isNotNullOrUndefined} from 'codelyzer/util/isNotNullOrUndefined';
 import {isNumeric} from 'rxjs/internal-compatibility';
+import {MultiLanguageInput} from '@common/components/forms/multi-language/multi-language-input';
 
 export class PartnerBudgetTableEntry {
+
   id?: number;
-  description?: string;
+  description?: MultiLanguageInput;
   numberOfUnits?: number;
   pricePerUnit?: number;
   total?: number;
@@ -14,6 +16,8 @@ export class PartnerBudgetTableEntry {
   validPricePerUnit = true;
   validDescription = true;
   validTotal = true;
+
+  static validDescription = (description: string) => !description || description.length < 250;
 
   constructor(data: Partial<PartnerBudgetTableEntry>) {
     this.id = data.id;
@@ -34,11 +38,6 @@ export class PartnerBudgetTableEntry {
 
   private static validNumber(nr: number): boolean {
     return isNotNullOrUndefined(nr) && isNumeric(nr) && nr <= 999_999_999;
-  }
-
-  setDescription(newValue: string): void {
-    this.validDescription = !newValue || newValue.length < 250;
-    this.description = newValue;
   }
 
   setNumberOfUnits(newValue: string): void {

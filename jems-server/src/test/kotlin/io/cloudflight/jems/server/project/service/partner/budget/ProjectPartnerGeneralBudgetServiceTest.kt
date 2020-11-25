@@ -1,14 +1,13 @@
 package io.cloudflight.jems.server.project.service.partner.budget
 
 import io.cloudflight.jems.api.project.dto.partner.budget.InputBudget
+import io.cloudflight.jems.api.project.dto.partner.budget.InputGeneralBudget
 import io.cloudflight.jems.server.common.exception.I18nValidationException
 import io.cloudflight.jems.server.project.entity.partner.budget.Budget
 import io.cloudflight.jems.server.project.entity.partner.budget.CommonBudget
 import io.cloudflight.jems.server.project.entity.partner.budget.ProjectPartnerBudgetEquipment
 import io.cloudflight.jems.server.project.entity.partner.budget.ProjectPartnerBudgetExternal
 import io.cloudflight.jems.server.project.entity.partner.budget.ProjectPartnerBudgetInfrastructure
-import io.cloudflight.jems.server.project.entity.partner.budget.ProjectPartnerBudgetStaffCost
-import io.cloudflight.jems.server.project.entity.partner.budget.ProjectPartnerBudgetTravel
 import io.cloudflight.jems.server.project.repository.partner.budget.ProjectPartnerBudgetCommonRepository
 import io.cloudflight.jems.server.project.repository.partner.budget.ProjectPartnerBudgetEquipmentRepository
 import io.cloudflight.jems.server.project.repository.partner.budget.ProjectPartnerBudgetExternalRepository
@@ -33,8 +32,11 @@ import org.junit.jupiter.params.provider.MethodSource
 import java.math.BigDecimal
 import java.util.stream.Stream
 
+/**
+ * Tests currently all ProjectPartnerBudget services except for StaffCost and Travel.
+ */
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
-internal class ProjectPartnerBudgetServiceTest {
+internal class ProjectPartnerGeneralBudgetServiceTest {
 
     companion object {
 
@@ -45,30 +47,6 @@ internal class ProjectPartnerBudgetServiceTest {
             15,
             20
         )
-
-        private fun staffCost(id: Long, numberOfUnits: Double, pricePerUnit: Double, rowSum: Double): ProjectPartnerBudgetStaffCost {
-            return ProjectPartnerBudgetStaffCost(
-                id = id,
-                partnerId = PARTNER_ID,
-                budget = Budget(
-                    numberOfUnits = BigDecimal.valueOf(numberOfUnits),
-                    pricePerUnit = BigDecimal.valueOf(pricePerUnit),
-                    rowSum = BigDecimal.valueOf(rowSum)
-                )
-            )
-        }
-
-        private fun travel(id: Long, numberOfUnits: Double, pricePerUnit: Double, rowSum: Double): ProjectPartnerBudgetTravel {
-            return ProjectPartnerBudgetTravel(
-                id = id,
-                partnerId = PARTNER_ID,
-                budget = Budget(
-                    numberOfUnits = BigDecimal.valueOf(numberOfUnits),
-                    pricePerUnit = BigDecimal.valueOf(pricePerUnit),
-                    rowSum = BigDecimal.valueOf(rowSum)
-                )
-            )
-        }
 
         private fun external(id: Long, numberOfUnits: Double, pricePerUnit: Double, rowSum: Double): ProjectPartnerBudgetExternal {
             return ProjectPartnerBudgetExternal(
@@ -122,7 +100,7 @@ internal class ProjectPartnerBudgetServiceTest {
     }
 
     @MockK
-    lateinit var veryBigList: List<InputBudget>
+    lateinit var veryBigList: List<InputGeneralBudget>
 
     @MockK
     lateinit var projectPartnerBudgetStaffCostRepository: ProjectPartnerBudgetStaffCostRepository
@@ -163,11 +141,11 @@ internal class ProjectPartnerBudgetServiceTest {
         repository: ProjectPartnerBudgetCommonRepository<CommonBudget>
     ) {
         every { repository.findAllByPartnerIdOrderByIdAsc(1) } returns emptyList()
-        every { repository.deleteAll(any<List<ProjectPartnerBudgetStaffCost>>()) } answers {}
-        every { repository.saveAll(any<List<ProjectPartnerBudgetStaffCost>>()) } returnsArgument 0
+        every { repository.deleteAll(any<List<ProjectPartnerBudgetExternal>>()) } answers {}
+        every { repository.saveAll(any<List<ProjectPartnerBudgetExternal>>()) } returnsArgument 0
 
         val toBeSavedMaxNumberOfUnits = listOf(
-            InputBudget(
+            InputGeneralBudget(
                 numberOfUnits = BigDecimal.valueOf(999_999_999_99L, 2),
                 pricePerUnit = BigDecimal.ONE)
         )
@@ -176,7 +154,7 @@ internal class ProjectPartnerBudgetServiceTest {
             callUpdateBudgetServiceMethod(repository,1, toBeSavedMaxNumberOfUnits)
         ).overridingErrorMessage("numberOfUnits could be up to 999.999.999,99").isEqualTo(
             listOf(
-                InputBudget(
+                InputGeneralBudget(
                     id = 0,
                     numberOfUnits = BigDecimal.valueOf(999_999_999_99L, 2),
                     pricePerUnit = BigDecimal.valueOf(100L, 2),
@@ -185,7 +163,7 @@ internal class ProjectPartnerBudgetServiceTest {
         )
 
         val toBeSavedMaxPricePerUnit = listOf(
-            InputBudget(
+            InputGeneralBudget(
                 numberOfUnits = BigDecimal.ONE,
                 pricePerUnit = BigDecimal.valueOf(999_999_999_99L, 2))
         )
@@ -194,7 +172,7 @@ internal class ProjectPartnerBudgetServiceTest {
             callUpdateBudgetServiceMethod(repository, 1, toBeSavedMaxPricePerUnit)
         ).overridingErrorMessage("pricePerUnit could be up to 999.999.999,99").isEqualTo(
             listOf(
-                InputBudget(
+                InputGeneralBudget(
                     id = 0,
                     numberOfUnits = BigDecimal.valueOf(100L, 2),
                     pricePerUnit = BigDecimal.valueOf(999_999_999_99L, 2),
@@ -223,7 +201,7 @@ internal class ProjectPartnerBudgetServiceTest {
         assertThat(
             assertThrows<I18nValidationException> {
                 callUpdateBudgetServiceMethod(repository, 1, listOf(
-                    InputBudget(
+                    InputGeneralBudget(
                         numberOfUnits = BigDecimal.valueOf(999_999_999_999_999_991L, 3),
                         pricePerUnit = BigDecimal.ONE
                     )
@@ -234,7 +212,7 @@ internal class ProjectPartnerBudgetServiceTest {
         assertThat(
             assertThrows<I18nValidationException> {
                 callUpdateBudgetServiceMethod(repository, 1, listOf(
-                    InputBudget(
+                    InputGeneralBudget(
                         numberOfUnits = BigDecimal.ONE,
                         pricePerUnit = BigDecimal.valueOf(999_999_999_999_999_991L, 3)
                     )
@@ -245,7 +223,7 @@ internal class ProjectPartnerBudgetServiceTest {
         assertThat(
             assertThrows<I18nValidationException> {
                 callUpdateBudgetServiceMethod(repository, 1, listOf(
-                    InputBudget(
+                    InputGeneralBudget(
                         numberOfUnits = BigDecimal.TEN,
                         pricePerUnit = BigDecimal.valueOf(100_000_000_000_000_00L, 2)
                     )
@@ -266,9 +244,9 @@ internal class ProjectPartnerBudgetServiceTest {
         assertThat(callGetBudgetServiceMethod(repository, 1))
             .isEqualTo(
                 listOf(
-                    InputBudget(id = 1, numberOfUnits = BigDecimal.valueOf(TO_CHANGE_NUM_OF_UNITS_OLD), pricePerUnit = BigDecimal.valueOf(TO_CHANGE_PRICE_PER_UNIT_OLD), rowSum = BigDecimal.valueOf(TO_CHANGE_ROW_SUM_OLD)),
-                    InputBudget(id = 2, numberOfUnits = BigDecimal.valueOf(TO_STAY_NUM_OF_UNITS), pricePerUnit = BigDecimal.valueOf(TO_STAY_PRICE_PER_UNIT), rowSum = BigDecimal.valueOf(TO_STAY_ROW_SUM)),
-                    InputBudget(id = 3, numberOfUnits = BigDecimal.valueOf(1.00), pricePerUnit = BigDecimal.valueOf(1000000.1), rowSum = BigDecimal.valueOf(1000000.1))
+                    InputGeneralBudget(id = 1, numberOfUnits = BigDecimal.valueOf(TO_CHANGE_NUM_OF_UNITS_OLD), pricePerUnit = BigDecimal.valueOf(TO_CHANGE_PRICE_PER_UNIT_OLD), rowSum = BigDecimal.valueOf(TO_CHANGE_ROW_SUM_OLD)),
+                    InputGeneralBudget(id = 2, numberOfUnits = BigDecimal.valueOf(TO_STAY_NUM_OF_UNITS), pricePerUnit = BigDecimal.valueOf(TO_STAY_PRICE_PER_UNIT), rowSum = BigDecimal.valueOf(TO_STAY_ROW_SUM)),
+                    InputGeneralBudget(id = 3, numberOfUnits = BigDecimal.valueOf(1.00), pricePerUnit = BigDecimal.valueOf(1000000.1), rowSum = BigDecimal.valueOf(1000000.1))
                 )
             )
 
@@ -285,25 +263,25 @@ internal class ProjectPartnerBudgetServiceTest {
     ) {
         val toBeSaved = listOf(
             // updated existing
-            InputBudget(id = 1, numberOfUnits = BigDecimal.valueOf(TO_CHANGE_NUM_OF_UNITS_NEW), pricePerUnit = BigDecimal.valueOf(TO_CHANGE_PRICE_PER_UNIT_NEW)),
+            InputGeneralBudget(id = 1, numberOfUnits = BigDecimal.valueOf(TO_CHANGE_NUM_OF_UNITS_NEW), pricePerUnit = BigDecimal.valueOf(TO_CHANGE_PRICE_PER_UNIT_NEW)),
             // no change for existing
-            InputBudget(id = 2, numberOfUnits = BigDecimal.valueOf(TO_STAY_NUM_OF_UNITS), pricePerUnit = BigDecimal.valueOf(TO_STAY_PRICE_PER_UNIT)),
+            InputGeneralBudget(id = 2, numberOfUnits = BigDecimal.valueOf(TO_STAY_NUM_OF_UNITS), pricePerUnit = BigDecimal.valueOf(TO_STAY_PRICE_PER_UNIT)),
             // new to be created
-            InputBudget(id = null, numberOfUnits = BigDecimal.valueOf(550), pricePerUnit = BigDecimal.valueOf(10.0))
+            InputGeneralBudget(id = null, numberOfUnits = BigDecimal.valueOf(550), pricePerUnit = BigDecimal.valueOf(10.0))
         )
 
         every { repository.findAllByPartnerIdOrderByIdAsc(1) } returns existing
-        every { repository.deleteAll(any<List<ProjectPartnerBudgetTravel>>()) } answers {}
-        every { repository.saveAll(any<List<ProjectPartnerBudgetTravel>>()) } returnsArgument 0
+        every { repository.deleteAll(any<List<ProjectPartnerBudgetExternal>>()) } answers {}
+        every { repository.saveAll(any<List<ProjectPartnerBudgetExternal>>()) } returnsArgument 0
 
         assertThat(
             callUpdateBudgetServiceMethod(repository, 1, toBeSaved)
         ).isEqualTo(
             listOf(
-                InputBudget(id = 1, numberOfUnits = toBd(TO_CHANGE_NUM_OF_UNITS_NEW), pricePerUnit = toBd(TO_CHANGE_PRICE_PER_UNIT_NEW), rowSum = toBd(TO_CHANGE_ROW_SUM_NEW)),
-                InputBudget(id = 2, numberOfUnits = toBd(TO_STAY_NUM_OF_UNITS), pricePerUnit = toBd(TO_STAY_PRICE_PER_UNIT), rowSum = toBd(TO_STAY_ROW_SUM)),
+                InputGeneralBudget(id = 1, numberOfUnits = toBd(TO_CHANGE_NUM_OF_UNITS_NEW), pricePerUnit = toBd(TO_CHANGE_PRICE_PER_UNIT_NEW), rowSum = toBd(TO_CHANGE_ROW_SUM_NEW)),
+                InputGeneralBudget(id = 2, numberOfUnits = toBd(TO_STAY_NUM_OF_UNITS), pricePerUnit = toBd(TO_STAY_PRICE_PER_UNIT), rowSum = toBd(TO_STAY_ROW_SUM)),
                 // here there should be id=4 normally
-                InputBudget(id = 0, numberOfUnits = toBd(550.0), pricePerUnit = toBd(10.0), rowSum = toBd(5500.0))
+                InputGeneralBudget(id = 0, numberOfUnits = toBd(550.0), pricePerUnit = toBd(10.0), rowSum = toBd(5500.0))
             )
         )
 
@@ -313,18 +291,14 @@ internal class ProjectPartnerBudgetServiceTest {
 
         // clean context
         every { repository.findAllByPartnerIdOrderByIdAsc(1) } returns emptyList()
-        every { repository.saveAll(any<List<ProjectPartnerBudgetTravel>>()) } throws UnsupportedOperationException()
+        every { repository.saveAll(any<List<ProjectPartnerBudgetExternal>>()) } throws UnsupportedOperationException()
     }
 
     private fun callUpdateBudgetServiceMethod(
         repo: ProjectPartnerBudgetCommonRepository<CommonBudget>,
         partnerId: Long,
-        toBeSaved: List<InputBudget>
-    ): List<InputBudget> {
-        if (repo is ProjectPartnerBudgetStaffCostRepository)
-            return projectPartnerBudgetService.updateStaffCosts(partnerId, toBeSaved)
-        if (repo is ProjectPartnerBudgetTravelRepository)
-            return projectPartnerBudgetService.updateTravel(partnerId, toBeSaved)
+        toBeSaved: List<InputGeneralBudget>
+    ): List<InputGeneralBudget> {
         if (repo is ProjectPartnerBudgetExternalRepository)
             return projectPartnerBudgetService.updateExternal(partnerId, toBeSaved)
         if (repo is ProjectPartnerBudgetEquipmentRepository)
@@ -353,30 +327,6 @@ internal class ProjectPartnerBudgetServiceTest {
 
     private fun provideAllBudgetRepositories(): Stream<Arguments> {
         return Stream.of(
-            Arguments.of(
-                projectPartnerBudgetStaffCostRepository,
-                // existing budget lines
-                listOf(
-                    staffCost(id = 1, numberOfUnits = TO_CHANGE_NUM_OF_UNITS_OLD, pricePerUnit = TO_CHANGE_PRICE_PER_UNIT_OLD, rowSum = TO_CHANGE_ROW_SUM_OLD),
-                    staffCost(id = 2, numberOfUnits = TO_STAY_NUM_OF_UNITS, pricePerUnit = TO_STAY_PRICE_PER_UNIT, rowSum = TO_STAY_ROW_SUM),
-                    staffCost(id = 3, numberOfUnits = 1.00, pricePerUnit = 1000_000.10, rowSum = 1000_000.10)
-                ),
-                // to be removed budget lines
-                setOf(
-                    staffCost(id = 3, numberOfUnits = 1.00, pricePerUnit = 1000_000.10, rowSum = 1000_000.10)
-                )),
-            Arguments.of(
-                projectPartnerBudgetTravelRepository,
-                // existing budget lines
-                listOf(
-                    travel(id = 1, numberOfUnits = TO_CHANGE_NUM_OF_UNITS_OLD, pricePerUnit = TO_CHANGE_PRICE_PER_UNIT_OLD, rowSum = TO_CHANGE_ROW_SUM_OLD),
-                    travel(id = 2, numberOfUnits = TO_STAY_NUM_OF_UNITS, pricePerUnit = TO_STAY_PRICE_PER_UNIT, rowSum = TO_STAY_ROW_SUM),
-                    travel(id = 3, numberOfUnits = 1.00, pricePerUnit = 1000_000.10, rowSum = 1000_000.10)
-                ),
-                // to be removed budget lines
-                setOf(
-                    travel(id = 3, numberOfUnits = 1.00, pricePerUnit = 1000_000.10, rowSum = 1000_000.10)
-                )),
             Arguments.of(
                 projectPartnerBudgetExternalRepository,
                 // existing budget lines

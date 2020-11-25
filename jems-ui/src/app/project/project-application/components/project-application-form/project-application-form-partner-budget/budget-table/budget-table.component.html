@@ -1,11 +1,12 @@
-<ag-grid-angular
-        *ngIf="table?.entries.length"
+<app-multi-language *ngIf="table?.entries.length">
+    <ag-grid-angular
         style="width: 100%"
         class="ag-theme-material mat-elevation-z4"
         [gridOptions]="gridOptions"
         [rowData]="table?.entries"
         (gridReady)="gridReady()">
-</ag-grid-angular>
+    </ag-grid-angular>
+</app-multi-language>
 
 <p *ngIf="editable && table?.entries.length < 1">
     <button mat-raised-button color="primary"
@@ -27,8 +28,9 @@
 </ng-template>
 
 <ng-template #descriptionCell let-params>
-    <span [class.invalid]="!params.data.validDescription">
-        {{params.value}}
+    <span *ngIf="languageService.currentLanguage$ | async as language"
+          [class.invalid]="!languageService.inputValidForLanguage(params.data.description, language)">
+        {{languageService.getInputValue(params.value)}}
     </span>
 </ng-template>
 

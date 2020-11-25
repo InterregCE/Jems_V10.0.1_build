@@ -15,6 +15,8 @@ import {PartnerBudgetTable} from '../../../../model/partner-budget-table';
 import {Numbers} from '../../../../../../common/utils/numbers';
 import {BaseComponent} from '@common/components/base-component';
 import {PartnerBudgetTableType} from '../../../../model/partner-budget-table-type';
+import {MultiLanguageInputService} from '../../../../../../common/services/multi-language-input.service';
+import {takeUntil, tap} from 'rxjs/operators';
 
 @Component({
   selector: 'app-budget-table',
@@ -58,8 +60,15 @@ export class BudgetTableComponent extends BaseComponent implements AfterViewInit
     },
   };
 
-  constructor(private translateService: TranslateService) {
+  constructor(private translateService: TranslateService,
+              public languageService: MultiLanguageInputService) {
     super();
+    this.languageService.currentLanguage$
+      .pipe(
+        takeUntil(this.destroyed$),
+        tap(() => this.gridApi?.refreshView())
+      )
+      .subscribe();
   }
 
   static editableRow(editable: boolean, node: RowNode): boolean {
@@ -73,6 +82,7 @@ export class BudgetTableComponent extends BaseComponent implements AfterViewInit
   addNewEntry(): void {
     this.table.entries = [...this.table.entries, new PartnerBudgetTableEntry({
       id: Tables.getNextId(this.table.entries),
+      description: this.languageService.initInput([]),
       numberOfUnits: 1,
       pricePerUnit: 0,
       new: true
@@ -111,8 +121,10 @@ export class BudgetTableComponent extends BaseComponent implements AfterViewInit
         editable: params => BudgetTableComponent.editableRow(this.editable, params.node),
         sortable: true,
         singleClickEdit: true,
+        valueGetter: (params: any) => this.languageService.getInputValue(params.data.description),
         valueSetter: (params: any) => {
-          params.data.setDescription(params.newValue);
+          this.languageService.updateInputValue(params.newValue, params.data.description);
+          params.data.validDescription = this.languageService.inputValid(params.data.description);
           return true;
         },
         cellRendererFramework: AgGridTemplateRendererComponent,

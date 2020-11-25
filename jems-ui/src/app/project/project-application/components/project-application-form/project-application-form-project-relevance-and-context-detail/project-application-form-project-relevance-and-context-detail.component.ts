@@ -26,6 +26,7 @@ import {takeUntil, tap} from 'rxjs/operators';
 import {FormService} from '@common/components/section/form/form.service';
 import {BaseComponent} from '@common/components/base-component';
 import {HttpErrorResponse} from '@angular/common/http';
+import {MultiLanguageInputService} from '../../../../../common/services/multi-language-input.service';
 
 @Component({
   selector: 'app-project-application-form-project-relevance-and-context-detail',
@@ -99,9 +100,9 @@ export class ProjectApplicationFormProjectRelevanceAndContextDetailComponent ext
 
   constructor(private formBuilder: FormBuilder,
               private formService: FormService,
-              public languageService: LanguageService) {
+              public languageService: MultiLanguageInputService) {
     super();
-    this.languageService.inputLanguageList$
+    this.languageService.languages$
       .pipe(
         takeUntil(this.destroyed$)
       )

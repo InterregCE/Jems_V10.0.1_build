@@ -1,6 +1,9 @@
 package io.cloudflight.jems.server.project.service.partner.budget
 
 import io.cloudflight.jems.api.project.dto.partner.budget.InputBudget
+import io.cloudflight.jems.api.project.dto.partner.budget.InputGeneralBudget
+import io.cloudflight.jems.api.project.dto.partner.budget.InputStaffCostBudget
+import io.cloudflight.jems.api.project.dto.partner.budget.InputTravelBudget
 import io.cloudflight.jems.server.common.exception.I18nValidationException
 import io.cloudflight.jems.server.project.entity.partner.budget.CommonBudget
 import io.cloudflight.jems.server.project.repository.partner.budget.ProjectPartnerBudgetEquipmentRepository
@@ -34,125 +37,150 @@ class ProjectPartnerBudgetServiceImpl(
     //region StuffCosts
 
     @Transactional(readOnly = true)
-    override fun getStaffCosts(partnerId: Long): List<InputBudget> {
+    override fun getStaffCosts(partnerId: Long): List<InputStaffCostBudget> {
         return projectPartnerBudgetStaffCostRepository
             .findAllByPartnerIdOrderByIdAsc(partnerId)
-            .map { it.toOutput() }
+            .map { it.toStaffCostOutput() }
     }
 
     @Transactional
-    override fun updateStaffCosts(partnerId: Long, staffCosts: List<InputBudget>): List<InputBudget> {
+    override fun updateStaffCosts(partnerId: Long, staffCosts: List<InputStaffCostBudget>): List<InputStaffCostBudget> {
         validateInput(staffCosts)
 
         val toBeRemoved = retrieveToBeRemoved(
             newData = staffCosts,
             old = projectPartnerBudgetStaffCostRepository.findAllByPartnerIdOrderByIdAsc(partnerId)
         )
-
         projectPartnerBudgetStaffCostRepository.deleteAll(toBeRemoved)
-        return projectPartnerBudgetStaffCostRepository
+
+        // translation table has to be saved extra, including any new created budgetIds
+        val updated = projectPartnerBudgetStaffCostRepository
             .saveAll(staffCosts.map { it.toStaffCost(partnerId) })
-            .map { it.toOutput() }
+            .mapIndexed { index, budget -> budget.copy(
+                translatedValues = staffCosts[index].combineTranslatedValuesStaffCost(budget.id)
+            )}
+        return projectPartnerBudgetStaffCostRepository
+            .saveAll(updated).map { it.toStaffCostOutput() }
     }
     //endregion StuffCosts
 
     //region Travel
 
     @Transactional(readOnly = true)
-    override fun getTravel(partnerId: Long): List<InputBudget> {
+    override fun getTravel(partnerId: Long): List<InputTravelBudget> {
         return projectPartnerBudgetTravelRepository
             .findAllByPartnerIdOrderByIdAsc(partnerId)
-            .map { it.toOutput() }
+            .map { it.toTravelOutput() }
     }
 
     @Transactional
-    override fun updateTravel(partnerId: Long, travel: List<InputBudget>): List<InputBudget> {
+    override fun updateTravel(partnerId: Long, travel: List<InputTravelBudget>): List<InputTravelBudget> {
         validateInput(travel)
 
         val toBeRemoved = retrieveToBeRemoved(
             newData = travel,
             old = projectPartnerBudgetTravelRepository.findAllByPartnerIdOrderByIdAsc(partnerId)
         )
-
         projectPartnerBudgetTravelRepository.deleteAll(toBeRemoved)
-        return projectPartnerBudgetTravelRepository
+
+        // translation table has to be saved extra, including any new created budgetIds
+        val updated = projectPartnerBudgetTravelRepository
             .saveAll(travel.map { it.toTravel(partnerId) })
-            .map { it.toOutput() }
+            .mapIndexed { index, budget -> budget.copy(
+                translatedValues = travel[index].combineTranslatedValuesTravelCost(budget.id)
+            )}
+        return projectPartnerBudgetTravelRepository
+            .saveAll(updated).map { it.toTravelOutput() }
     }
     //endregion Travel
 
     //region External
 
     @Transactional(readOnly = true)
-    override fun getExternal(partnerId: Long): List<InputBudget> {
+    override fun getExternal(partnerId: Long): List<InputGeneralBudget> {
         return projectPartnerBudgetExternalRepository
             .findAllByPartnerIdOrderByIdAsc(partnerId)
-            .map { it.toOutput() }
+            .map { it.toExternalOutput() }
     }
 
     @Transactional
-    override fun updateExternal(partnerId: Long, externals: List<InputBudget>): List<InputBudget> {
+    override fun updateExternal(partnerId: Long, externals: List<InputGeneralBudget>): List<InputGeneralBudget> {
         validateInput(externals)
 
         val toBeRemoved = retrieveToBeRemoved(
             newData = externals,
             old = projectPartnerBudgetExternalRepository.findAllByPartnerIdOrderByIdAsc(partnerId)
         )
-
         projectPartnerBudgetExternalRepository.deleteAll(toBeRemoved)
-        return projectPartnerBudgetExternalRepository
+
+        // translation table has to be saved extra, including any new created budgetIds
+        val updated = projectPartnerBudgetExternalRepository
             .saveAll(externals.map { it.toExternal(partnerId) })
-            .map { it.toOutput() }
+            .mapIndexed { index, budget -> budget.copy(
+                translatedValues = externals[index].combineTranslatedValuesExternal(budget.id)
+            )}
+        return projectPartnerBudgetExternalRepository
+            .saveAll(updated).map { it.toExternalOutput() }
     }
     //endregion External
 
     // region Equipment
 
     @Transactional(readOnly = true)
-    override fun getEquipment(partnerId: Long): List<InputBudget> {
+    override fun getEquipment(partnerId: Long): List<InputGeneralBudget> {
         return projectPartnerBudgetEquipmentRepository
             .findAllByPartnerIdOrderByIdAsc(partnerId)
-            .map { it.toOutput() }
+            .map { it.toEquipmentOutput() }
     }
 
     @Transactional
-    override fun updateEquipment(partnerId: Long, equipments: List<InputBudget>): List<InputBudget> {
+    override fun updateEquipment(partnerId: Long, equipments: List<InputGeneralBudget>): List<InputGeneralBudget> {
         validateInput(equipments)
 
         val toBeRemoved = retrieveToBeRemoved(
             newData = equipments,
             old = projectPartnerBudgetEquipmentRepository.findAllByPartnerIdOrderByIdAsc(partnerId)
         )
-
         projectPartnerBudgetEquipmentRepository.deleteAll(toBeRemoved)
-        return projectPartnerBudgetEquipmentRepository
+
+        // translation table has to be saved extra, including any new created budgetIds
+        val updated = projectPartnerBudgetEquipmentRepository
             .saveAll(equipments.map { it.toEquipment(partnerId) })
-            .map { it.toOutput() }
+            .mapIndexed { index, budget -> budget.copy(
+                translatedValues = equipments[index].combineTranslatedValuesEquipment(budget.id)
+            )}
+        return projectPartnerBudgetEquipmentRepository
+            .saveAll(updated).map { it.toEquipmentOutput() }
     }
     //endregion Equipment
 
     //region Infrastructure
 
     @Transactional(readOnly = true)
-    override fun getInfrastructure(partnerId: Long): List<InputBudget> {
+    override fun getInfrastructure(partnerId: Long): List<InputGeneralBudget> {
         return projectPartnerBudgetInfrastructureRepository
             .findAllByPartnerIdOrderByIdAsc(partnerId)
-            .map { it.toOutput() }
+            .map { it.toInfrastructureOutput() }
     }
 
     @Transactional
-    override fun updateInfrastructure(partnerId: Long, infrastructures: List<InputBudget>): List<InputBudget> {
+    override fun updateInfrastructure(partnerId: Long, infrastructures: List<InputGeneralBudget>): List<InputGeneralBudget> {
         validateInput(infrastructures)
 
         val toBeRemoved = retrieveToBeRemoved(
             newData = infrastructures,
             old = projectPartnerBudgetInfrastructureRepository.findAllByPartnerIdOrderByIdAsc(partnerId)
         )
-
         projectPartnerBudgetInfrastructureRepository.deleteAll(toBeRemoved)
-        return projectPartnerBudgetInfrastructureRepository
+
+        // translation table has to be saved extra, including any new created budgetIds
+        val updated = projectPartnerBudgetInfrastructureRepository
             .saveAll(infrastructures.map { it.toInfrastructure(partnerId) })
-            .map { it.toOutput() }
+            .mapIndexed { index, budget -> budget.copy(
+                translatedValues = infrastructures[index].combineTranslatedValuesInfrastructure(budget.id)
+            )}
+        return projectPartnerBudgetInfrastructureRepository
+            .saveAll(updated).map { it.toInfrastructureOutput() }
     }
     //endregion Infrastructure
 
