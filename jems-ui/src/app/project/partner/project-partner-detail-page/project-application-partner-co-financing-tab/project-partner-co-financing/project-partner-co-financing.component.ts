@@ -27,7 +27,7 @@ import {Alert} from '@common/components/forms/alert';
 import {Permission} from 'src/app/security/permissions/permission';
 
 const MAX_100_NUMBER_REGEX = '^([0-9]{1,2}|100)$';
-const MAX_NUMBER_OF_CONTRIBUTION_ORIGINS = 10;
+const MAX_NUMBER_OF_PARTNER_CONTRIBUTIONS = 10;
 const MAX_100_REGEXP = RegExp(MAX_100_NUMBER_REGEX);
 const totalContributionValidator = (expectedAmount: number): ValidatorFn => (formArray: FormArray) => {
   const total = formArray.controls.map(item => item.get('amount')?.value).reduce((a, b) => a + b, 0);
@@ -80,20 +80,20 @@ export class ProjectPartnerCoFinancingComponent extends BaseComponent implements
 
   publicContributionSubTotal$ = this.coFinancingForm.valueChanges.pipe(
     startWith(this.coFinancingForm.value),
-    map(value => this.getContributionOriginTotal(value.contributionOrigins, this.partnerContributionStatus.Public)),
+    map(() => this.getPartnerContributionTotal(this.partnerContributions.value, this.partnerContributionStatus.Public)),
   );
 
   privateContributionSubTotal$ = this.coFinancingForm.valueChanges.pipe(
     startWith(this.coFinancingForm.value),
-    map(value => this.getContributionOriginTotal(value.contributionOrigins, this.partnerContributionStatus.Private)),
+    map(() => this.getPartnerContributionTotal(this.partnerContributions.value, this.partnerContributionStatus.Private)),
   );
   automaticPublicContributionSubTotal$ = this.coFinancingForm.valueChanges.pipe(
     startWith(this.coFinancingForm.value),
-    map(value => this.getContributionOriginTotal(value.contributionOrigins, this.partnerContributionStatus.AutomaticPublic)),
+    map(() => this.getPartnerContributionTotal(this.partnerContributions.value, this.partnerContributionStatus.AutomaticPublic)),
   );
   contributionTotal$: Observable<number> = this.coFinancingForm.valueChanges.pipe(
     startWith(this.coFinancingForm.value),
-    map(value => this.getContributionOriginTotal(value.contributionOrigins)),
+    map(() => this.getPartnerContributionTotal(this.partnerContributions.value)),
   );
 
   showTotalContributionWarning$ = combineLatest([this.contributionTotal$, this.formService.dirty$.pipe(startWith(false))]).pipe(
@@ -110,17 +110,17 @@ export class ProjectPartnerCoFinancingComponent extends BaseComponent implements
     pattern: 'project.partner.coFinancing.percentage.invalid',
     required: 'project.partner.coFinancing.percentage.invalid',
   };
-  contributionOriginNameErrors = {
+  partnerContributionNameErrors = {
     required: 'project.partner.coFinancing.contribution.origin.name.required',
   };
-  contributionOriginStatusErrors = {
+  partnerContributionStatusErrors = {
     required: 'project.partner.coFinancing.contribution.origin.amount.required',
   };
-  contributionOriginAmountErrors = {
+  partnerContributionAmountErrors = {
     required: 'project.partner.coFinancing.contribution.origin.amount.required',
     min: 'project.partner.coFinancing.contribution.origin.amount.min.invalid',
   };
-  contributionOriginErrors = {
+  partnerContributionErrors = {
     total: 'project.partner.coFinancing.contribution.origin.total.invalid',
     maxlength: 'project.partner.coFinancing.contribution.origin.max.length',
 
@@ -158,33 +158,32 @@ export class ProjectPartnerCoFinancingComponent extends BaseComponent implements
       this.cancel();
     }
     if (changes.financingAndContribution) {
-      this.resetContributionOrigins();
+      this.resetPartnerContributions();
     }
   }
 
-  addNewContributionOrigin(initialValue?: ProjectPartnerContributionDTO): void {
+  addNewPartnerContribution(initialValue?: ProjectPartnerContributionDTO): void {
     if (!initialValue) {
       this.coFinancingForm.markAsDirty();
     }
-    this.contributionOrigins.push(this.formBuilder.group({
+    this.partnerContributions.push(this.formBuilder.group({
       name: this.formBuilder.control(initialValue ? initialValue.name : '', [Validators.required]),
       status: this.formBuilder.control(initialValue ? initialValue.status : '', [Validators.required]),
       amount: this.formBuilder.control(initialValue ? initialValue.amount : 0, [Validators.required, Validators.min(0)]),
       isPartner: this.formBuilder.control(initialValue ? initialValue.isPartner : false)
     }));
-
   }
 
-  deleteContributionOrigin(index: number): void {
+  deletePartnerContribution(index: number): void {
     this.coFinancingForm.markAsDirty();
-    this.contributionOrigins.removeAt(index);
+    this.partnerContributions.removeAt(index);
   }
 
   resetForm(): void {
     const inputValues = this.financingAndContribution.finances.find((x: ProjectPartnerCoFinancingOutputDTO) => !!x.fund);
     this.coFinancingForm.controls.fundId.setValue(inputValues?.fund.id);
     this.coFinancingForm.controls.percentage.setValue(inputValues?.percentage || 0);
-    this.resetContributionOrigins();
+    this.resetPartnerContributions();
   }
 
   onSubmit(): void {
@@ -198,7 +197,7 @@ export class ProjectPartnerCoFinancingComponent extends BaseComponent implements
           percentage: this.myPercentage,
         } as ProjectPartnerCoFinancingInputDTO,
       ],
-      partnerContributions: this.contributionOrigins.value as ProjectPartnerContributionDTO[]
+      partnerContributions: this.partnerContributions.value as ProjectPartnerContributionDTO[]
     } as ProjectPartnerCoFinancingAndContributionInputDTO);
   }
 
@@ -208,14 +207,14 @@ export class ProjectPartnerCoFinancingComponent extends BaseComponent implements
   }
 
 
-  get contributionOrigins(): FormArray {
-    return this.coFinancingForm.get('contributionOrigins') as FormArray;
+  get partnerContributions(): FormArray {
+    return this.coFinancingForm.get('partnerContributions') as FormArray;
   }
 
-  private resetContributionOrigins(): void {
-    this.contributionOrigins.clear();
+  private resetPartnerContributions(): void {
+    this.partnerContributions.clear();
     this.financingAndContribution.partnerContributions.forEach((item: ProjectPartnerContributionDTO) => {
-      this.addNewContributionOrigin(item);
+      this.addNewPartnerContribution(item);
     });
   }
 
@@ -223,8 +222,8 @@ export class ProjectPartnerCoFinancingComponent extends BaseComponent implements
     this.myPercentage = Numbers.sum([100, -percentage]);
     this.fundAmount = Numbers.truncateNumber(Numbers.product([this.totalAmount, (percentage / 100)]));
     this.myAmount = Numbers.sum([this.totalAmount, -this.fundAmount]);
-    this.contributionOrigins.setValidators([totalContributionValidator(this.myAmount), Validators.maxLength(MAX_NUMBER_OF_CONTRIBUTION_ORIGINS)]);
-    this.contributionOrigins.updateValueAndValidity();
+    this.partnerContributions.setValidators([totalContributionValidator(this.myAmount), Validators.maxLength(MAX_NUMBER_OF_PARTNER_CONTRIBUTIONS)]);
+    this.partnerContributions.updateValueAndValidity();
   }
 
   private createForm(): FormGroup {
@@ -235,14 +234,14 @@ export class ProjectPartnerCoFinancingComponent extends BaseComponent implements
         Validators.required,
       ])
       ],
-      contributionOrigins: this.formBuilder.array([], {
-        validators: [totalContributionValidator(this.myAmount), Validators.maxLength(MAX_NUMBER_OF_CONTRIBUTION_ORIGINS)]
+      partnerContributions: this.formBuilder.array([], {
+        validators: [totalContributionValidator(this.myAmount), Validators.maxLength(MAX_NUMBER_OF_PARTNER_CONTRIBUTIONS)]
       }),
     });
   }
 
-  private getContributionOriginTotal(contributionOrigins: ProjectPartnerContributionDTO[], partnerStatus?: ProjectPartnerContributionDTO.StatusEnum): number {
-    return Numbers.sum(contributionOrigins
+  private getPartnerContributionTotal(partnerContributions: ProjectPartnerContributionDTO[], partnerStatus?: ProjectPartnerContributionDTO.StatusEnum): number {
+    return Numbers.sum(partnerContributions
       .filter(source => source.status === partnerStatus || !partnerStatus)
       .map(item => item.amount ? item.amount : 0)
     );
