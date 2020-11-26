@@ -22,6 +22,7 @@ import {ProjectApplicationFormProjectPartnershipSectionComponent} from './projec
 import {ProjectApplicationFormWorkPackageSectionComponent} from './project-application/containers/project-application-form-page/project-application-form-work-package-section/project-application-form-work-package-section.component';
 import {ProjectApplicationFormFuturePlansSectionComponent} from './project-application/containers/project-application-form-page/project-application-form-future-plans-section/project-application-form-future-plans-section.component';
 import {ProjectApplicationFormManagementSectionComponent} from './project-application/containers/project-application-form-page/project-application-form-management-section/project-application-form-management-section.component';
+import {BudgetPageComponent} from './budget/budget-page/budget-page.component';
 
 export const routes: Routes = [
   {
@@ -180,6 +181,11 @@ export const routes: Routes = [
             path: 'applicationFormManagement',
             component: ProjectApplicationFormManagementSectionComponent,
             data: {breadcrumb: 'project.breadcrumb.applicationForm.management'},
+          },
+          {
+            path: 'applicationFormBudget',
+            data: {breadcrumb: 'project.breadcrumb.applicationForm.budget'},
+            component: BudgetPageComponent,
           },
         ]
       },
