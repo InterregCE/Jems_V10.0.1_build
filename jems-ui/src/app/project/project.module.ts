@@ -77,6 +77,7 @@ import {ProjectApplicationFormAddressComponent} from './project-application/comp
 import {ProjectPartnerCoFinancingComponent} from './partner/project-partner-detail-page/project-application-partner-co-financing-tab/project-partner-co-financing/project-partner-co-financing.component';
 import {ProjectPartnerDetailPageComponent} from './partner/project-partner-detail-page/project-partner-detail-page.component';
 import {ProjectPartnerCoFinancingTabComponent} from './partner/project-partner-detail-page/project-application-partner-co-financing-tab/project-partner-co-financing-tab.component';
+import {BudgetPageComponent} from './budget/budget-page/budget-page.component';
 
 @NgModule({
   declarations: [
@@ -149,6 +150,7 @@ import {ProjectPartnerCoFinancingTabComponent} from './partner/project-partner-d
     ProjectApplicationFormAssociatedOrgPageComponent,
     StaffCostsFlatRateTableComponent,
     ProjectApplicationFormAddressComponent,
+    BudgetPageComponent
   ],
   imports: [
     SharedModule,

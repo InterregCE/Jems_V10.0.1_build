@@ -189,6 +189,10 @@ export class ProjectApplicationFormSidenavService {
               }
             ],
           },
+          {
+            headline: {i18nKey: 'project.application.form.section.part.d'},
+            route: '/app/project/detail/' + projectId + '/applicationFormBudget',
+          }
         ]
       },
     ]);

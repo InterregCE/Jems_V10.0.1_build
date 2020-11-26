@@ -1,0 +1,65 @@
+<app-breadcrumb></app-breadcrumb>
+<h2>{{'project.application.form.acronym' | translate : {acronym: projectStore.getAcronym() | async} }}</h2>
+<h4>{{'project.application.form.section.part.d' | translate}}</h4>
+<h5>{{'project.application.form.budget.title' | translate}}</h5>
+
+<table id="budget-table" mat-table class="mat-elevation-z8 general-application-table"
+       [dataSource]="budget$ | async">
+    <ng-container matColumnDef="partner">
+        <th mat-header-cell *matHeaderCellDef>{{'project.breadcrumb.partnerName' | translate}}</th>
+        <td mat-cell *matCellDef="let budget">{{budget.partner?.abbreviation}}</td>
+        <td mat-footer-cell *matFooterCellDef>{{'project.partner.budget.table.total' | translate}}</td>
+    </ng-container>
+
+    <ng-container matColumnDef="country">
+        <th mat-header-cell *matHeaderCellDef>{{'project.partner.main-address.country' | translate}}</th>
+        <td mat-cell *matCellDef="let budget">{{budget.partner?.country}}</td>
+        <td mat-footer-cell *matFooterCellDef></td>
+    </ng-container>
+
+    <ng-container matColumnDef="staffCosts">
+        <th mat-header-cell *matHeaderCellDef>{{'project.partner.budget.staff' | translate}}</th>
+        <td mat-cell *matCellDef="let budget">{{budget.staffCosts | asMoney}}</td>
+        <td mat-footer-cell *matFooterCellDef> {{totalStaffCosts | asMoney}} </td>
+    </ng-container>
+
+    <ng-container matColumnDef="officeAndAdministrationCosts">
+        <th mat-header-cell *matHeaderCellDef>{{'project.partner.budget.office.and.admin.header' | translate}}</th>
+        <td mat-cell *matCellDef="let budget">{{budget.officeAndAdministrationCosts | asMoney}}</td>
+        <td mat-footer-cell *matFooterCellDef> {{totalOfficeAndAdministrationCosts | asMoney}} </td>
+    </ng-container>
+
+    <ng-container matColumnDef="travelCosts">
+        <th mat-header-cell *matHeaderCellDef>{{'project.partner.budget.travel' | translate}}</th>
+        <td mat-cell *matCellDef="let budget">{{budget.travelCosts | asMoney}}</td>
+        <td mat-footer-cell *matFooterCellDef> {{totalTravelCosts | asMoney}} </td>
+    </ng-container>
+
+    <ng-container matColumnDef="externalCosts">
+        <th mat-header-cell *matHeaderCellDef>{{'project.partner.budget.external' | translate}}</th>
+        <td mat-cell *matCellDef="let budget">{{budget.externalCosts | asMoney}}</td>
+        <td mat-footer-cell *matFooterCellDef> {{totalExternalCosts | asMoney}} </td>
+    </ng-container>
+
+    <ng-container matColumnDef="equipmentCosts">
+        <th mat-header-cell *matHeaderCellDef>{{'project.partner.budget.equipment' | translate}}</th>
+        <td mat-cell *matCellDef="let budget">{{budget.equipmentCosts | asMoney}}</td>
+        <td mat-footer-cell *matFooterCellDef> {{totalEquipmentCosts | asMoney}} </td>
+    </ng-container>
+
+    <ng-container matColumnDef="infrastructureCosts">
+        <th mat-header-cell *matHeaderCellDef>{{'project.partner.budget.infrastructure' | translate}}</th>
+        <td mat-cell *matCellDef="let budget">{{budget.infrastructureCosts | asMoney}}</td>
+        <td mat-footer-cell *matFooterCellDef> {{totalInfrastructureCosts | asMoney}} </td>
+    </ng-container>
+
+    <ng-container matColumnDef="total">
+        <th mat-header-cell *matHeaderCellDef>{{'project.partner.budget.table.total' | translate}}</th>
+        <td mat-cell *matCellDef="let budget">{{budget.totalSum | asMoney}}</td>
+        <td mat-footer-cell *matFooterCellDef> {{total | asMoney}} </td>
+    </ng-container>
+
+    <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+    <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+    <tr mat-footer-row *matFooterRowDef="displayedColumns"></tr>
+</table>
