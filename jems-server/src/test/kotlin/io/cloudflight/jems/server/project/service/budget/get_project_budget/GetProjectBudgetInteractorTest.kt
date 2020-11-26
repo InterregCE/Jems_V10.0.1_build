@@ -82,7 +82,7 @@ class GetProjectBudgetInteractorTest {
                     partner = partner2,
                     travelCosts = decimal(100.0),
                     externalCosts = decimal(1000.0),
-                    infrastructureCosts = decimal(300.0),
+                    infrastructureCosts = decimal(300.0)
                 ),
                 PartnerBudget(
                     partner = partner1,
@@ -90,7 +90,7 @@ class GetProjectBudgetInteractorTest {
                     officeOnStaffFlatRate = 10,
                     staffCosts = decimal(50.0),
                     travelCosts = decimal(800.0),
-                    infrastructureCosts = decimal(300.0),
+                    infrastructureCosts = decimal(300.0)
                 )
             )
     }

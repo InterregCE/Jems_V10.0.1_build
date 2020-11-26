@@ -10,7 +10,7 @@ import org.springframework.transaction.annotation.Transactional
 
 @Service
 class UpdateCoFinancing(
-    private val persistence: ProjectPartnerCoFinancingPersistence,
+    private val persistence: ProjectPartnerCoFinancingPersistence
 ) : UpdateCoFinancingInteractor {
 
     @Transactional

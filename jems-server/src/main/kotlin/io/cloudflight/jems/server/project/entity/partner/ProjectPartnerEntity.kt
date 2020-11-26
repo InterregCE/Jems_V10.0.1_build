@@ -71,7 +71,7 @@ data class ProjectPartnerEntity(
     val financing: Set<ProjectPartnerCoFinancingEntity> = emptySet(),
 
     @OneToMany(mappedBy = "partnerId", cascade = [CascadeType.ALL], orphanRemoval = true)
-    val partnerContributions: List<ProjectPartnerContributionEntity> = emptyList(),
+    val partnerContributions: List<ProjectPartnerContributionEntity> = emptyList()
 
     ) {
     override fun toString(): String {

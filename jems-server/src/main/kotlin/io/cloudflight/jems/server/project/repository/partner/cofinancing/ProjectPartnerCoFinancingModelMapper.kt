@@ -36,7 +36,7 @@ fun Collection<ProjectPartnerContribution>.toContributionEntity(partnerId: Long)
         partnerId = partnerId,
         name = if (it.isPartner) null else it.name,
         status = it.status,
-        amount = it.amount!!,
+        amount = it.amount!!
     )
 }
 

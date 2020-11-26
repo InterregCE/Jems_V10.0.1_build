@@ -69,7 +69,7 @@ class ProjectBudgetCoFinancingPersistenceTest {
     fun setup() {
         MockKAnnotations.init(this)
         persistence = ProjectPartnerCoFinancingPersistenceProvider(
-            projectPartnerRepository,
+            projectPartnerRepository
         )
     }
 
@@ -90,15 +90,15 @@ class ProjectBudgetCoFinancingPersistenceTest {
     fun `get co financing and contributions`() {
         val dummyFinancing = setOf(
             ProjectPartnerCoFinancingEntity(id = 1, partnerId = PARTNER_ID, percentage = 25, programmeFund = fund1),
-            ProjectPartnerCoFinancingEntity(id = 2, partnerId = PARTNER_ID, percentage = 75, programmeFund = null),
+            ProjectPartnerCoFinancingEntity(id = 2, partnerId = PARTNER_ID, percentage = 75, programmeFund = null)
         )
         val dummyPartnerContributions = listOf(
             ProjectPartnerContributionEntity(id = 1, partnerId = PARTNER_ID, name = null, status = Public, amount = BigDecimal.TEN),
-            ProjectPartnerContributionEntity(id = 2, partnerId = PARTNER_ID, name = "source01", status = Private, amount = BigDecimal.ONE),
+            ProjectPartnerContributionEntity(id = 2, partnerId = PARTNER_ID, name = "source01", status = Private, amount = BigDecimal.ONE)
         )
         every { projectPartnerRepository.findById(PARTNER_ID) } returns Optional.of(dummyPartner.copy(
             financing = dummyFinancing,
-            partnerContributions = dummyPartnerContributions,
+            partnerContributions = dummyPartnerContributions
         ))
 
         val result = persistence.getCoFinancingAndContributions(PARTNER_ID)
@@ -106,11 +106,11 @@ class ProjectBudgetCoFinancingPersistenceTest {
         assertThat(result.partnerAbbreviation).isEqualTo(dummyPartner.abbreviation)
         assertThat(result.finances).containsExactlyInAnyOrder(
             ProjectPartnerCoFinancing(id = 1, fund = fund1Model, percentage = 25),
-            ProjectPartnerCoFinancing(id = 2, fund = null, percentage = 75),
+            ProjectPartnerCoFinancing(id = 2, fund = null, percentage = 75)
         )
         assertThat(result.partnerContributions).containsExactlyInAnyOrder(
             ProjectPartnerContribution(id = 1, name = null, status = Public, amount = BigDecimal.TEN, isPartner = true),
-            ProjectPartnerContribution(id = 2, name = "source01", status = Private, amount = BigDecimal.ONE, isPartner = false),
+            ProjectPartnerContribution(id = 2, name = "source01", status = Private, amount = BigDecimal.ONE, isPartner = false)
         )
     }
 
@@ -121,11 +121,11 @@ class ProjectBudgetCoFinancingPersistenceTest {
 
         val toBeSavedFinancing = setOf(
             UpdateProjectPartnerCoFinancing(fundId = fund1.id, percentage = 30),
-            UpdateProjectPartnerCoFinancing(fundId = null, percentage = 70),
+            UpdateProjectPartnerCoFinancing(fundId = null, percentage = 70)
         )
         val toBeSavedContributions = listOf(
             ProjectPartnerContribution(name = null, status = Public, amount = BigDecimal.TEN, isPartner = true),
-            ProjectPartnerContribution(name = "source", status = Private, amount = BigDecimal.ONE, isPartner = false),
+            ProjectPartnerContribution(name = "source", status = Private, amount = BigDecimal.ONE, isPartner = false)
         )
 
         val result = persistence.updateCoFinancingAndContribution(
@@ -137,11 +137,11 @@ class ProjectBudgetCoFinancingPersistenceTest {
         assertThat(result.partnerAbbreviation).isEqualTo(dummyPartner.abbreviation)
         assertThat(result.finances).containsExactlyInAnyOrder(
             ProjectPartnerCoFinancing(id = 0, fund = fund1Model, percentage = 30),
-            ProjectPartnerCoFinancing(id = 0, fund = null, percentage = 70),
+            ProjectPartnerCoFinancing(id = 0, fund = null, percentage = 70)
         )
         assertThat(result.partnerContributions).containsExactlyInAnyOrder(
             ProjectPartnerContribution(id = 0, name = null, status = Public, amount = BigDecimal.TEN, isPartner = true),
-            ProjectPartnerContribution(id = 0, name = "source", status = Private, amount = BigDecimal.ONE, isPartner = false),
+            ProjectPartnerContribution(id = 0, name = "source", status = Private, amount = BigDecimal.ONE, isPartner = false)
         )
     }
 

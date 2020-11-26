@@ -11,7 +11,7 @@ data class ProjectPartnerContribution(
     val name: String? = null,
     val status: ProjectPartnerContributionStatus? = null,
     val amount: BigDecimal? = null,
-    val isPartner: Boolean,
+    val isPartner: Boolean
 
 ) {
     fun isNotPartner() = !isPartner

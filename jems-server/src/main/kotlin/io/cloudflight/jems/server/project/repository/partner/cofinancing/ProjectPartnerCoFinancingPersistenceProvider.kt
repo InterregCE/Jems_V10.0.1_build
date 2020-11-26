@@ -25,7 +25,7 @@ class ProjectPartnerCoFinancingPersistenceProvider(
         return ProjectPartnerCoFinancingAndContribution(
             finances = partner.financing.toCoFinancingModel(),
             partnerContributions = partner.partnerContributions.toContributionModel(),
-            partnerAbbreviation = partner.abbreviation,
+            partnerAbbreviation = partner.abbreviation
         )
     }
 
@@ -41,14 +41,14 @@ class ProjectPartnerCoFinancingPersistenceProvider(
         val updatedPartner = projectPartnerRepo.save(
             partner.copy(
                 financing = finances.toCoFinancingEntity(partnerId, availableFundsGroupedById),
-                partnerContributions = partnerContributions.toContributionEntity(partnerId),
+                partnerContributions = partnerContributions.toContributionEntity(partnerId)
             )
         )
 
         return ProjectPartnerCoFinancingAndContribution(
             finances = updatedPartner.financing.toCoFinancingModel(),
             partnerContributions = updatedPartner.partnerContributions.toContributionModel(),
-            partnerAbbreviation = updatedPartner.abbreviation,
+            partnerAbbreviation = updatedPartner.abbreviation
         )
     }
 

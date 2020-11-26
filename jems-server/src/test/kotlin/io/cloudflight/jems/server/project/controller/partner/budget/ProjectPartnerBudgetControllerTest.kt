@@ -1,14 +1,17 @@
 package io.cloudflight.jems.server.project.controller.partner.budget
 
 import io.cloudflight.jems.api.programme.dto.ProgrammeFundOutputDTO
+import io.cloudflight.jems.api.project.dto.partner.budget.InputGeneralBudget
+import io.cloudflight.jems.api.project.dto.partner.budget.InputStaffCostBudget
+import io.cloudflight.jems.api.project.dto.partner.budget.InputTravelBudget
 import io.cloudflight.jems.api.project.dto.partner.cofinancing.ProjectPartnerCoFinancingAndContributionInputDTO
 import io.cloudflight.jems.api.project.dto.partner.cofinancing.ProjectPartnerCoFinancingAndContributionOutputDTO
 import io.cloudflight.jems.api.project.dto.partner.cofinancing.ProjectPartnerCoFinancingInputDTO
 import io.cloudflight.jems.api.project.dto.partner.cofinancing.ProjectPartnerCoFinancingOutputDTO
 import io.cloudflight.jems.api.project.dto.partner.cofinancing.ProjectPartnerContributionDTO
 import io.cloudflight.jems.api.project.dto.partner.cofinancing.ProjectPartnerContributionStatus.AutomaticPublic
-import io.cloudflight.jems.api.project.dto.partner.cofinancing.ProjectPartnerContributionStatus.Public
 import io.cloudflight.jems.api.project.dto.partner.cofinancing.ProjectPartnerContributionStatus.Private
+import io.cloudflight.jems.api.project.dto.partner.cofinancing.ProjectPartnerContributionStatus.Public
 import io.cloudflight.jems.server.programme.service.model.ProgrammeFund
 import io.cloudflight.jems.server.project.service.partner.budget.ProjectPartnerBudgetService
 import io.cloudflight.jems.server.project.service.partner.budget.get_budget_options.GetBudgetOptionsInteractor
@@ -51,7 +54,7 @@ class ProjectPartnerBudgetControllerTest {
                     percentage = 30,
                     fund = ProgrammeFundOutputDTO(id = 2, selected = true /* abbreviation missing for ids 1..9 */)
                 ),
-                ProjectPartnerCoFinancingOutputDTO(id = 12, percentage = 50, fund = null),
+                ProjectPartnerCoFinancingOutputDTO(id = 12, percentage = 50, fund = null)
             ),
             partnerContributions = listOf(
                 ProjectPartnerContributionDTO(
@@ -74,7 +77,7 @@ class ProjectPartnerBudgetControllerTest {
                     status = AutomaticPublic,
                     isPartner = false,
                     amount = BigDecimal.TEN
-                ),
+                )
             )
         )
 
@@ -117,7 +120,7 @@ class ProjectPartnerBudgetControllerTest {
                     id = 11,
                     percentage = 30,
                     fund = ProgrammeFund(id = 2, selected = true, abbreviation = "abbr 2")
-                ),
+                )
             ),
             partnerContributions = listOf(contribution3, contribution2, contribution1),
             partnerAbbreviation = "PartnerName"
@@ -149,8 +152,85 @@ class ProjectPartnerBudgetControllerTest {
             getBudgetOptionsInteractor,
             updateBudgetOptionsInteractor,
             getCoFinancing,
-            updateCoFinancing,
+            updateCoFinancing
         )
+    }
+
+    @Test
+    fun getBudgetStaffCost() {
+        val budgetCosts = emptyList<InputStaffCostBudget>()
+        every { projectPartnerBudgetService.getStaffCosts(PARTNER_ID) } returns budgetCosts
+        assertThat(controller.getBudgetStaffCost(PARTNER_ID)).isEqualTo(budgetCosts)
+    }
+
+    @Test
+    fun updateBudgetStaffCost() {
+        val budgetCosts = emptyList<InputStaffCostBudget>()
+        every { projectPartnerBudgetService.updateStaffCosts(PARTNER_ID, budgetCosts) } returns budgetCosts
+        assertThat(controller.updateBudgetStaffCost(PARTNER_ID, budgetCosts)).isEqualTo(budgetCosts)
+    }
+
+    @Test
+    fun getBudgetTravel() {
+        val travels = emptyList<InputTravelBudget>()
+        every { projectPartnerBudgetService.getTravel(PARTNER_ID) } returns travels
+        assertThat(controller.getBudgetTravel(PARTNER_ID)).isEqualTo(travels)
+    }
+
+    @Test
+    fun updateBudgetTravel() {
+        val travels = emptyList<InputTravelBudget>()
+        every { projectPartnerBudgetService.updateTravel(PARTNER_ID, travels) } returns travels
+        assertThat(controller.updateBudgetTravel(PARTNER_ID, travels)).isEqualTo(travels)
+    }
+
+    @Test
+    fun getBudgetExternal() {
+        val externals = emptyList<InputGeneralBudget>()
+        every { projectPartnerBudgetService.getExternal(PARTNER_ID) } returns externals
+        assertThat(controller.getBudgetExternal(PARTNER_ID)).isEqualTo(externals)
+    }
+
+    @Test
+    fun updateBudgetExternal() {
+        val externals = emptyList<InputGeneralBudget>()
+        every { projectPartnerBudgetService.updateExternal(PARTNER_ID, externals) } returns externals
+        assertThat(controller.updateBudgetExternal(PARTNER_ID, externals)).isEqualTo(externals)
+    }
+
+    @Test
+    fun getBudgetEquipment() {
+        val equipments = emptyList<InputGeneralBudget>()
+        every { projectPartnerBudgetService.getEquipment(PARTNER_ID) } returns equipments
+        assertThat(controller.getBudgetEquipment(PARTNER_ID)).isEqualTo(equipments)
+    }
+
+    @Test
+    fun updateBudgetEquipment() {
+        val equipments = emptyList<InputGeneralBudget>()
+        every { projectPartnerBudgetService.updateEquipment(PARTNER_ID, equipments) } returns equipments
+        assertThat(controller.updateBudgetEquipment(PARTNER_ID, equipments)).isEqualTo(equipments)
+    }
+
+    @Test
+    fun getBudgetInfrastructure() {
+        val infrastructures = emptyList<InputGeneralBudget>()
+        every { projectPartnerBudgetService.getInfrastructure(PARTNER_ID) } returns infrastructures
+        assertThat(controller.getBudgetInfrastructure(PARTNER_ID)).isEqualTo(infrastructures)
+    }
+
+    @Test
+    fun updateBudgetInfrastructure() {
+        val infrastructures = emptyList<InputGeneralBudget>()
+        every { projectPartnerBudgetService.updateInfrastructure(PARTNER_ID, infrastructures) } returns infrastructures
+        assertThat(controller.updateBudgetInfrastructure(PARTNER_ID, infrastructures)).isEqualTo(infrastructures)
+    }
+
+    @Test
+    fun getTotal() {
+        val total = BigDecimal.ONE
+        every { projectPartnerBudgetService.getTotal(PARTNER_ID) } returns total
+        assertThat(controller.getTotal(PARTNER_ID)).isEqualTo(total)
     }
 
     @Test
@@ -166,7 +246,7 @@ class ProjectPartnerBudgetControllerTest {
         every { getCoFinancing.getCoFinancing(PARTNER_ID) } returns ProjectPartnerCoFinancingAndContribution(
             finances = emptyList(),
             partnerContributions = emptyList(),
-            partnerAbbreviation = "test abbr",
+            partnerAbbreviation = "test abbr"
         )
 
         val result = controller.getProjectPartnerCoFinancing(PARTNER_ID)
@@ -188,7 +268,7 @@ class ProjectPartnerBudgetControllerTest {
         val inputFinances = listOf(
             ProjectPartnerCoFinancingInputDTO(id = 11, fundId = 2, percentage = 30),
             ProjectPartnerCoFinancingInputDTO(id = 10, fundId = 10, percentage = 20),
-            ProjectPartnerCoFinancingInputDTO(id = 12, fundId = null, percentage = 50),
+            ProjectPartnerCoFinancingInputDTO(id = 12, fundId = null, percentage = 50)
         )
         val inputPartnerContributions = expectedDto.partnerContributions
 
@@ -208,7 +288,7 @@ class ProjectPartnerBudgetControllerTest {
         assertThat(slotFinances.captured).containsExactlyInAnyOrder(
             UpdateProjectPartnerCoFinancing(id = 11, fundId = 2, percentage = 30),
             UpdateProjectPartnerCoFinancing(id = 10, fundId = 10, percentage = 20),
-            UpdateProjectPartnerCoFinancing(id = 12, fundId = null, percentage = 50),
+            UpdateProjectPartnerCoFinancing(id = 12, fundId = null, percentage = 50)
         )
         // order matters (to not mix lines after save)
         assertThat(slotPartnerContributions.captured).containsExactly(

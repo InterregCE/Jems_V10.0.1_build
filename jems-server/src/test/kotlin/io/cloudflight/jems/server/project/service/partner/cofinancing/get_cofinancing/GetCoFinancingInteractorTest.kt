@@ -36,7 +36,7 @@ internal class GetCoFinancingInteractorTest {
     fun `test get cofinancing`() {
         val finances = setOf(
             ProjectPartnerCoFinancing(id = 1, fund = fund, percentage = 20),
-            ProjectPartnerCoFinancing(id = 2, fund = null, percentage = 80),
+            ProjectPartnerCoFinancing(id = 2, fund = null, percentage = 80)
         )
         val contributions = listOf(
             ProjectPartnerContribution(
@@ -51,14 +51,14 @@ internal class GetCoFinancingInteractorTest {
                 status = AutomaticPublic,
                 amount = BigDecimal.ONE,
                 isPartner = false
-            ),
+            )
         )
 
         every { persistence.getCoFinancingAndContributions(1) } returns
             ProjectPartnerCoFinancingAndContribution(
                 finances = finances,
                 partnerContributions = contributions,
-                partnerAbbreviation = "mocked abbr",
+                partnerAbbreviation = "mocked abbr"
             )
 
         assertThat(getInteractor.getCoFinancing(1))
@@ -66,7 +66,7 @@ internal class GetCoFinancingInteractorTest {
                 ProjectPartnerCoFinancingAndContribution(
                     finances = finances,
                     partnerContributions = contributions,
-                    partnerAbbreviation = "mocked abbr",
+                    partnerAbbreviation = "mocked abbr"
                 )
             )
     }

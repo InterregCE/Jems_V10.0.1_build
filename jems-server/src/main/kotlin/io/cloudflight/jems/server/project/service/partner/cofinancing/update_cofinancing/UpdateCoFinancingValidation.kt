@@ -9,7 +9,7 @@ import java.math.BigDecimal
 
 fun validateFinancing(
     financing: Collection<UpdateProjectPartnerCoFinancing>,
-    allowedFundIds: Set<Long>,
+    allowedFundIds: Set<Long>
 ) {
     if (!financing.all { it.percentage in 0..100 })
         invalid("project.partner.coFinancing.percentage.invalid")
@@ -33,7 +33,7 @@ fun validateFinancing(
 }
 
 fun validateContribution(
-    partnerContributions: Collection<ProjectPartnerContribution>,
+    partnerContributions: Collection<ProjectPartnerContribution>
 ) {
     // there needs to be exactly 1 partner contribution = which name is null
     if (partnerContributions.count { it.isNotPartner() } + 1 != partnerContributions.count())
