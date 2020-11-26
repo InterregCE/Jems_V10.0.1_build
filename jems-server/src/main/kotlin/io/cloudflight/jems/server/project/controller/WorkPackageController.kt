@@ -5,7 +5,11 @@ import io.cloudflight.jems.api.project.dto.workpackage.InputWorkPackageCreate
 import io.cloudflight.jems.api.project.dto.workpackage.InputWorkPackageUpdate
 import io.cloudflight.jems.api.project.dto.workpackage.OutputWorkPackage
 import io.cloudflight.jems.api.project.dto.workpackage.OutputWorkPackageSimple
+import io.cloudflight.jems.api.project.dto.workpackage.workpackageoutput.InputWorkPackageOutput
+import io.cloudflight.jems.api.project.dto.workpackage.workpackageoutput.OutputWorkPackageOutput
 import io.cloudflight.jems.server.project.service.workpackage.WorkPackageService
+import io.cloudflight.jems.server.project.service.workpackage.get_work_package_output.GetWorkPackageOutputInteractor
+import io.cloudflight.jems.server.project.service.workpackage.update_work_package_output.UpdateWorkPackageOutputInteractor
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
 import org.springframework.security.access.prepost.PreAuthorize
@@ -13,7 +17,9 @@ import org.springframework.web.bind.annotation.RestController
 
 @RestController
 class WorkPackageController(
-    private val workPackageService: WorkPackageService
+    private val workPackageService: WorkPackageService,
+    private val getWorkPackageOutputInteractor: GetWorkPackageOutputInteractor,
+    private val updateWorkPackageOutputInteractor: UpdateWorkPackageOutputInteractor
 ) : WorkPackageApi {
 
     @PreAuthorize("@projectAuthorization.canReadProject(#projectId)")
@@ -39,6 +45,18 @@ class WorkPackageController(
     @PreAuthorize("@projectAuthorization.canUpdateProject(#projectId)")
     override fun deleteWorkPackage(projectId: Long, id: Long) {
         return workPackageService.deleteWorkPackage(projectId, id)
+    }
+
+    override fun getWorkPackageOutputs(projectId: Long, id: Long): Set<OutputWorkPackageOutput> {
+        return getWorkPackageOutputInteractor.getWorkPackageOutputsForWorkPackage(projectId, id)
+    }
+
+    override fun updateWorkPackageOutputs(
+        projectId: Long,
+        id: Long,
+        inputWorkPackageOutputs: Set<InputWorkPackageOutput>
+    ) {
+        return updateWorkPackageOutputInteractor.updateWorkPackageOutputs(projectId, inputWorkPackageOutputs, id)
     }
 
 }

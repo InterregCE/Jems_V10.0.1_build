@@ -1,5 +1,6 @@
 package io.cloudflight.jems.api.programme
 
+import io.cloudflight.jems.api.programme.dto.indicator.IndicatorOutputDto
 import io.cloudflight.jems.api.programme.dto.indicator.InputIndicatorOutputCreate
 import io.cloudflight.jems.api.programme.dto.indicator.InputIndicatorOutputUpdate
 import io.cloudflight.jems.api.programme.dto.indicator.InputIndicatorResultCreate
@@ -35,6 +36,9 @@ interface IndicatorApi {
     )
     @GetMapping("/output")
     fun getAllIndicatorOutput(pageable: Pageable): Page<OutputIndicatorOutput>
+
+    @GetMapping("/output/detail")
+    fun getAllIndicatorOutputDetail(): Set<IndicatorOutputDto>
 
     @ApiOperation("Returns OUTPUT indicator by id")
     @GetMapping("/output/{id}")
