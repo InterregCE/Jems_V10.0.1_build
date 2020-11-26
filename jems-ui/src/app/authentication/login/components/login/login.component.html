@@ -23,7 +23,11 @@
                         <mat-form-field class="w-100">
                             <mat-label><mat-icon>lock</mat-icon>&nbsp;{{'authentication.password.label' | translate}}</mat-label>
                             <input matInput
-                                   formControlName="password" id="password" name="password" required type="password">
+                                   [type]="hide ? 'password' : 'text'" formControlName="password" id="password" name="password" required>
+                            <button mat-icon-button matSuffix (click)="hide = !hide" [attr.aria-label]="'Hide password'"
+                                    [attr.aria-pressed]="hide" type="button">
+                                <mat-icon>{{hide ? 'visibility_off' : 'visibility'}}</mat-icon>
+                            </button>
                             <mat-error *ngIf="!loginForm.controls.password.valid">
                                 {{'authentication.password.not.empty' | translate}}
                             </mat-error>

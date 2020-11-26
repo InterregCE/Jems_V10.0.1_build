@@ -2,10 +2,8 @@
     <mat-card>
         <div class="container form-container">
             <h2>{{'user.registration.title' | translate}}</h2>
-            <mat-card-subtitle>{{'user.registration.subtitle' | translate}}</mat-card-subtitle>
             <mat-card-content>
                 <form class="user-form" [formGroup]="userForm">
-
                     <mat-form-field class="user-registration-field">
                         <mat-label>{{'user.registration.field.name' | translate}}</mat-label>
                         <input name="name" formControlName="name" matInput
@@ -17,8 +15,6 @@
                             </app-form-field-errors>
                         </mat-error>
                     </mat-form-field>
-
-
                     <mat-form-field class="user-registration-field">
                         <mat-label>{{'user.registration.field.surname' | translate}}</mat-label>
                         <input name="surname" formControlName="surname" matInput
@@ -30,10 +26,8 @@
                             </app-form-field-errors>
                         </mat-error>
                     </mat-form-field>
-
-
                     <mat-form-field class="user-registration-field">
-                        <mat-label>{{'user.registration.field.email' | translate}}</mat-label>
+                        <mat-label><mat-icon>email</mat-icon> {{'user.registration.field.email' | translate}}</mat-label>
                         <input name="email" formControlName="email" matInput
                                placeholder="{{'user.registration.field.email' | translate}}" required>
                         <mat-error>
@@ -43,14 +37,12 @@
                             </app-form-field-errors>
                         </mat-error>
                     </mat-form-field>
-
-
                     <mat-form-field class="user-registration-field">
-                        <mat-label>{{'user.registration.field.password' | translate}}</mat-label>
+                        <mat-label><mat-icon>lock</mat-icon> {{'user.registration.field.password' | translate}}</mat-label>
                         <input [type]="hide ? 'password' : 'text'" name="password" formControlName="password" matInput
                                placeholder="{{'user.registration.field.password' | translate}}" required>
                         <button mat-icon-button matSuffix (click)="hide = !hide" [attr.aria-label]="'Hide password'"
-                                [attr.aria-pressed]="hide">
+                                [attr.aria-pressed]="hide" type="button">
                             <mat-icon>{{hide ? 'visibility_off' : 'visibility'}}</mat-icon>
                         </button>
                         <mat-error>

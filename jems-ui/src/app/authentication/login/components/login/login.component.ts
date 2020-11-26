@@ -13,6 +13,7 @@ export class LoginComponent extends AbstractForm {
   @Output()
   submitLogin: EventEmitter<LoginRequest> = new EventEmitter<LoginRequest>();
 
+  hide = true;
   loginForm = this.formBuilder.group({
     email: ['', Validators.required],
     password: ['', Validators.required]
