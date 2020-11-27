@@ -76,7 +76,7 @@ export class Numbers {
   /**
    * Truncates (rounds down) the given number to a fixed number of two decimals.
    */
-  static truncateNumber(toFloor: number): number {
-    return Number(Big(toFloor).round(2, RoundingMode.RoundDown));
+  static truncateNumber(toFloor: number, fractionLength: number = 2): number {
+    return Number(Big(toFloor).round(fractionLength, RoundingMode.RoundDown));
   }
 }

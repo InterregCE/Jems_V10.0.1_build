@@ -3,10 +3,10 @@ import {Numbers} from '../utils/numbers';
 
 @Pipe({name: 'percentage'})
 export class PercentagePipe implements PipeTransform {
-  transform(value: number | null, total: number): string | number {
+  transform(value: number | null, total: number, fractionLength: number = 0): string | number {
     if (total === 0 || value === 0 || value === null) {
       return '0 %';
     }
-    return `${Numbers.truncateNumber(Numbers.divide(Numbers.product([value, 100]), total))} %`;
+    return `${Numbers.truncateNumber(Numbers.divide(Numbers.product([value, 100]), total), fractionLength)} %`;
   }
 }

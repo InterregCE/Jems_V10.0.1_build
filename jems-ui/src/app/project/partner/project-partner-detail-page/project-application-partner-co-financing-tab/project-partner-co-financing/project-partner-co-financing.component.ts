@@ -241,10 +241,10 @@ export class ProjectPartnerCoFinancingComponent extends BaseComponent implements
   }
 
   private getPartnerContributionTotal(partnerContributions: ProjectPartnerContributionDTO[], partnerStatus?: ProjectPartnerContributionDTO.StatusEnum): number {
-    return Numbers.sum(partnerContributions
+    return Numbers.truncateNumber(Numbers.sum(partnerContributions
       .filter(source => source.status === partnerStatus || !partnerStatus)
       .map(item => item.amount ? item.amount : 0)
-    );
+    ));
   }
 
 }
