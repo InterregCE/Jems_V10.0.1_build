@@ -4,7 +4,7 @@
             [value]="languageService.currentLanguage$ | async"
             (change)="languageService.currentLanguage$.next($event.value)">
         <mat-button-toggle *ngFor="let language of languages; let index = index"
-                           [value]="language" class="button">
+                           [value]="language">
             <p>{{language}}</p>
         </mat-button-toggle>
     </mat-button-toggle-group>

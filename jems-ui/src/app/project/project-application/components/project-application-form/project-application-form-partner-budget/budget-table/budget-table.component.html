@@ -29,7 +29,7 @@
 
 <ng-template #descriptionCell let-params>
     <span *ngIf="languageService.currentLanguage$ | async as language"
-          [class.invalid]="!languageService.inputValidForLanguage(params.data.description, language)">
+          [class.invalid]="!isDescriptionValid(params.data.description, language)">
         {{languageService.getInputValue(params.value)}}
     </span>
 </ng-template>

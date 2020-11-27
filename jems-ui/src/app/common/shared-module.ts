@@ -10,7 +10,6 @@ import {ProjectApplicationListComponent} from '../project/project-application/co
 import {MoneyPipe} from './pipe/money.pipe';
 import {RowListTemplateComponent} from './templates/row-list-template/row-list-template.component';
 import {MaterialModule} from './material/material-module';
-import {MultiLanguageFieldComponent} from '@common/components/multi-language-field/multi-language-field.component';
 import {BreadcrumbComponent} from '@common/components/breadcrumb/breadcrumb.component';
 import {AlertComponent} from '@common/components/forms/form-validation/alert.component';
 import {ExpandableTextareaComponent} from '@common/components/expandable-textarea/expandable-textarea.component';
@@ -43,7 +42,6 @@ const declarations = [
   MoneyPipe,
   PercentagePipe,
   MultiLanguageComponent,
-  MultiLanguageFieldComponent,
   BreadcrumbComponent,
   AlertComponent,
   ExpandableTextareaComponent,

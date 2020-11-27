@@ -255,7 +255,7 @@ export class ProjectApplicationPartnerBudgetPageComponent {
   private getBudgetTable(type: PartnerBudgetTableType, rawEntries: InputBudget[]): PartnerBudgetTable {
     const entries = rawEntries.map(entry => new PartnerBudgetTableEntry({
       ...entry,
-      description: this.languageService.initInput((entry as any).description, [PartnerBudgetTableEntry.validDescription])
+      description: this.languageService.initInput((entry as any).description)
     }));
     return new PartnerBudgetTable(type, entries);
   }

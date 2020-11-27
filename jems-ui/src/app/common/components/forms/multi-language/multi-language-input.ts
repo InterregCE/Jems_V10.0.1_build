@@ -2,26 +2,26 @@ import {InputTranslation} from '@cat/api';
 
 export class MultiLanguageInput {
   inputs: InputTranslation[];
-  validators?: ((arg: string) => boolean)[];
+  private valid = new Map<InputTranslation.LanguageEnum, boolean>();
 
-  constructor(inputs: InputTranslation[], validators?: ((arg: string) => boolean)[]) {
+  constructor(inputs: InputTranslation[]) {
     this.inputs = inputs;
-    this.validators = validators;
+    this.inputs.forEach(input => this.valid.set(input.language, true));
   }
 
-  valid(language: InputTranslation.LanguageEnum): boolean {
-    if (!this.inputs?.length) {
-      return true;
+  setValue(value: string, language: InputTranslation.LanguageEnum, valid: boolean): void {
+    const input = this.inputs?.find(trans => trans.language === language);
+    if (input) {
+      input.translation = value;
+      this.valid.set(language, valid);
     }
-    return this.inputs
-      .filter(input => input.language === language)
-      .every(input => this.isValid(input.translation));
   }
 
-  private isValid(value: string): boolean {
-    if (!this.validators?.length) {
-      return true;
-    }
-    return this.validators.every(validator => !!validator(value));
+  isValidForLanguage(language: InputTranslation.LanguageEnum): boolean {
+    return this.valid.has(language) ? this.valid.get(language) as boolean : true;
+  }
+
+  isValid(): boolean {
+    return [...this.valid.values()].every(isValid => isValid);
   }
 }
