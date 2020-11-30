@@ -8,6 +8,9 @@
               (ngModelChange)="changed.emit()"
               #inputText [readonly]="disabled">
     </textarea>
+    <app-context-info *ngIf="contextInfoText"
+                      [infoText]="contextInfoText">
+    </app-context-info>
     <mat-hint *ngIf="!disabled">
         {{inputText.value.length}} / {{characterLimit}} {{'common.textarea.hint' | translate}}
     </mat-hint>
