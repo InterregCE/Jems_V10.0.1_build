@@ -25,7 +25,7 @@ export class ProjectApplicationFormProjectPartnershipSectionComponent {
 
   private savedDescription$ = this.projectApplicationFormStore.getProjectDescription()
     .pipe(
-      map(project => ({partnership: project.projectPartnership}))
+      map(project => project.projectPartnership)
     );
 
   private updatedPartnership$ = this.updatePartnership$

@@ -1,18 +1,10 @@
-import {
-  ChangeDetectionStrategy,
-  Component,
-  EventEmitter,
-  Input,
-  OnInit,
-  Output
-} from '@angular/core';
+import {ChangeDetectionStrategy, Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
 import {FormBuilder, FormGroup, Validators} from '@angular/forms';
 import {
   InputProjectRelevance,
   InputProjectRelevanceBenefit,
   InputProjectRelevanceStrategy,
-  InputProjectRelevanceSynergy,
-  InputTranslation
+  InputProjectRelevanceSynergy
 } from '@cat/api';
 import {MatTableDataSource} from '@angular/material/table';
 import {ProjectRelevanceBenefit} from './dtos/project-relevance-benefit';
@@ -66,6 +58,7 @@ export class ProjectApplicationFormProjectRelevanceAndContextDetailComponent ext
   territorialChallenge: MultiLanguageInput;
   commonChallenge: MultiLanguageInput;
   transnationalCooperation: MultiLanguageInput;
+  availableKnowledge: MultiLanguageInput;
 
   projectRelevanceForm: FormGroup = this.formBuilder.group({
     territorialChallenge: ['', Validators.maxLength(5000)],
@@ -123,7 +116,7 @@ export class ProjectApplicationFormProjectRelevanceAndContextDetailComponent ext
       projectBenefits: this.buildBenefitsToSave(),
       projectStrategies: this.buildStrategiesToSave(),
       projectSynergies: this.buildSynergiesToSave(),
-      availableKnowledge: this.projectRelevanceForm.controls.availableKnowledge.value,
+      availableKnowledge: this.availableKnowledge.inputs,
     });
   }
 
@@ -145,6 +138,7 @@ export class ProjectApplicationFormProjectRelevanceAndContextDetailComponent ext
     this.territorialChallenge = this.languageService.initInput(this.project?.territorialChallenge);
     this.commonChallenge = this.languageService.initInput(this.project?.commonChallenge);
     this.transnationalCooperation = this.languageService.initInput(this.project?.transnationalCooperation);
+    this.availableKnowledge = this.languageService.initInput(this.project?.availableKnowledge);
     this.projectRelevanceForm.controls.availableKnowledge.setValue(this.project?.availableKnowledge);
   }
 
@@ -227,6 +221,7 @@ export class ProjectApplicationFormProjectRelevanceAndContextDetailComponent ext
       && this.editableSynergyForm.valid
       && this.territorialChallenge.isValid()
       && this.commonChallenge.isValid()
-      && this.transnationalCooperation.isValid();
+      && this.transnationalCooperation.isValid()
+      && this.availableKnowledge.isValid();
   }
 }

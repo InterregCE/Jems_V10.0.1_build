@@ -17,7 +17,7 @@ data class ProjectRelevance(
     @Column(name = "project_id")
     val projectId: Long,
 
-    // C2.1, C2.2, C2.3
+    // C2.1, C2.2, C2.3, 2.7
     @OneToMany(cascade = [CascadeType.ALL], orphanRemoval = true, mappedBy = "translationId.projectId")
     val translatedValues: Set<ProjectRelevanceTransl> = emptySet(),
 
@@ -34,11 +34,7 @@ data class ProjectRelevance(
     // C2.6
     @OneToMany(cascade = [CascadeType.ALL], orphanRemoval = true)
     @JoinColumn(name = "project_relevance_id", nullable = false, insertable = true)
-    val projectSynergies: Set<ProjectRelevanceSynergy> = emptySet(),
-
-    // C2.7
-    @Column
-    val availableKnowledge: String? = null
+    val projectSynergies: Set<ProjectRelevanceSynergy> = emptySet()
 
 ) {
 

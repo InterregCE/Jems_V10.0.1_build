@@ -14,6 +14,8 @@ import {HttpErrorResponse} from '@angular/common/http';
 import {Observable} from 'rxjs';
 import {FormService} from '@common/components/section/form/form.service';
 import {takeUntil, tap} from 'rxjs/operators';
+import {MultiLanguageInput} from '@common/components/forms/multi-language/multi-language-input';
+import {MultiLanguageInputService} from '../../../../../common/services/multi-language-input.service';
 
 @Component({
   selector: 'app-project-application-form-overall-objective-detail',
@@ -39,6 +41,8 @@ export class ProjectApplicationFormOverallObjectiveDetailComponent extends BaseC
   @Output()
   updateData = new EventEmitter<InputProjectOverallObjective>();
 
+  projectOverallObjective: MultiLanguageInput;
+
   overallObjectiveForm: FormGroup = this.formBuilder.group({
     projectSpecificObjective: ['', []],
     projectOverallObjective: ['', Validators.maxLength(500)]
@@ -50,13 +54,15 @@ export class ProjectApplicationFormOverallObjectiveDetailComponent extends BaseC
 
   constructor(private formBuilder: FormBuilder,
               private formService: FormService,
-              private translate: TranslateService) {
+              private translate: TranslateService,
+              public languageService: MultiLanguageInputService) {
     super();
   }
 
   ngOnInit(): void {
     this.resetForm();
     this.formService.init(this.overallObjectiveForm);
+    this.formService.setAdditionalValidators([this.formValid.bind(this)]);
     this.error$
       .pipe(
         takeUntil(this.destroyed$),
@@ -73,7 +79,7 @@ export class ProjectApplicationFormOverallObjectiveDetailComponent extends BaseC
 
   onSubmit(): void {
     this.updateData.emit({
-      overallObjective: this.overallObjectiveForm.controls.projectOverallObjective.value
+      overallObjective: this.projectOverallObjective.inputs
     });
   }
 
@@ -81,6 +87,10 @@ export class ProjectApplicationFormOverallObjectiveDetailComponent extends BaseC
     if (this.specificObjective) {
       this.overallObjectiveForm.controls.projectSpecificObjective.setValue(this.translate.instant('programme.policy.' + this.specificObjective.programmeObjectivePolicy));
     }
-    this.overallObjectiveForm.controls.projectOverallObjective.setValue(this.project?.overallObjective);
+    this.projectOverallObjective = this.languageService.initInput(this.project?.overallObjective);
+  }
+
+  private formValid(): boolean {
+    return this.projectOverallObjective.isValid();
   }
 }

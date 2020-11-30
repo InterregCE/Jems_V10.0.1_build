@@ -28,7 +28,7 @@ export class ProjectApplicationFormOverallObjectiveSectionComponent {
 
   private savedDescription$ = this.projectApplicationFormStore.getProjectDescription()
     .pipe(
-      map(project => ({overallObjective: project.projectOverallObjective}))
+      map(project => project.projectOverallObjective)
     );
 
   private updatedProjectDescription$ = this.updateProjectDescription$

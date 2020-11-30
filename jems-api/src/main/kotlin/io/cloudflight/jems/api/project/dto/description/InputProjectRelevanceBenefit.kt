@@ -1,6 +1,8 @@
 package io.cloudflight.jems.api.project.dto.description
 
+import io.cloudflight.jems.api.project.dto.InputTranslation
+
 data class InputProjectRelevanceBenefit(
     val group: ProjectTargetGroup,
-    val specification: String? = null
+    val specification: Set<InputTranslation> = emptySet()
 )

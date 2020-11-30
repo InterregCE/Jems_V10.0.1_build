@@ -7,6 +7,8 @@ import {FormService} from '@common/components/section/form/form.service';
 import {Observable} from 'rxjs';
 import {HttpErrorResponse} from '@angular/common/http';
 import {takeUntil, tap} from 'rxjs/operators';
+import {MultiLanguageInput} from '@common/components/forms/multi-language/multi-language-input';
+import {MultiLanguageInputService} from '../../../../../common/services/multi-language-input.service';
 
 @Component({
   selector: 'app-project-application-form-project-partnership-detail',
@@ -31,6 +33,8 @@ export class ProjectApplicationFormProjectPartnershipDetailComponent extends Bas
   @Output()
   updateData = new EventEmitter<InputProjectPartnership>();
 
+  projectPartnership: MultiLanguageInput;
+
   projectPartnershipForm: FormGroup = this.formBuilder.group({
     projectPartnership: ['', Validators.maxLength(5000)]
   });
@@ -40,13 +44,15 @@ export class ProjectApplicationFormProjectPartnershipDetailComponent extends Bas
   };
 
   constructor(private formBuilder: FormBuilder,
-              private formService: FormService) {
+              private formService: FormService,
+              public languageService: MultiLanguageInputService) {
     super();
   }
 
   ngOnInit(): void {
-    this.formService.init(this.projectPartnershipForm);
     this.resetForm();
+    this.formService.init(this.projectPartnershipForm);
+    this.formService.setAdditionalValidators([this.formValid.bind(this)]);
     this.error$
       .pipe(
         takeUntil(this.destroyed$),
@@ -67,11 +73,15 @@ export class ProjectApplicationFormProjectPartnershipDetailComponent extends Bas
 
   onSubmit(): void {
     this.updateData.emit({
-      partnership: this.projectPartnershipForm.controls.projectPartnership.value
+      partnership: this.projectPartnership.inputs
     });
   }
 
   resetForm(): void {
-    this.projectPartnershipForm.controls.projectPartnership.setValue(this.project?.partnership);
+    this.projectPartnership = this.languageService.initInput(this.project?.partnership);
+  }
+
+  private formValid(): boolean {
+    return this.projectPartnership.isValid();
   }
 }

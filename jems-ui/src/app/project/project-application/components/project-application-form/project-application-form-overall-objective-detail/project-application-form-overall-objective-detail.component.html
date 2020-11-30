@@ -27,15 +27,19 @@
             </mat-hint>
         </mat-form-field>
 
-        <app-expandable-textarea
-                class="field"
-                [control]="overallObjectiveForm?.controls?.projectOverallObjective"
-                [errors]="overallObjectiveForm?.controls?.projectOverallObjective?.errors"
-                [messages]="projectOverallObjectiveError"
-                [characterLimit]="500"
-                [minRows]="3"
-                [label]="'project.application.form.overall.objective.field.projectOverallObjective'"
-                [disabled]="!editable">
-        </app-expandable-textarea>
+        <app-multi-language
+                [inputs]="{projectOverallObjective: projectOverallObjective}"
+                [form]="overallObjectiveForm">
+            <app-expandable-textarea
+                    class="field"
+                    [control]="overallObjectiveForm?.controls?.projectOverallObjective"
+                    [errors]="overallObjectiveForm?.controls?.projectOverallObjective?.errors"
+                    [messages]="projectOverallObjectiveError"
+                    [characterLimit]="500"
+                    [minRows]="3"
+                    [label]="'project.application.form.overall.objective.field.projectOverallObjective'"
+                    [disabled]="!editable">
+            </app-expandable-textarea>
+        </app-multi-language>
     </form>
 </app-form>

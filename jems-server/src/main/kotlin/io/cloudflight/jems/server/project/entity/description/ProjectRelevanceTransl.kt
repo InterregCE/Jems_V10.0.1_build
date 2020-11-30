@@ -24,6 +24,10 @@ data class ProjectRelevanceTransl(
 
     // C2.3
     @Column
-    val transnationalCooperation: String? = null
+    val transnationalCooperation: String? = null,
+
+    // C2.7
+    @Column
+    val availableKnowledge: String? = null
 
 )

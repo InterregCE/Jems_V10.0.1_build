@@ -1,8 +1,10 @@
 package io.cloudflight.jems.server.project.entity.description
 
+import javax.persistence.CascadeType
 import javax.persistence.Column
 import javax.persistence.Entity
 import javax.persistence.Id
+import javax.persistence.OneToMany
 import javax.validation.constraints.NotNull
 
 /**
@@ -16,6 +18,8 @@ data class ProjectPartnership(
     @field:NotNull
     val projectId: Long,
 
-    val projectPartnership: String?
+    // projectPartnership
+    @OneToMany(cascade = [CascadeType.ALL], orphanRemoval = true, mappedBy = "translationId.projectId")
+    val translatedValues: Set<ProjectPartnershipTransl> = emptySet()
 
 )

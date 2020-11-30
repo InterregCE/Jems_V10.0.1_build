@@ -12,6 +12,7 @@ import {MatTableDataSource} from '@angular/material/table';
 import {ProjectRelevanceSynergy} from '../../dtos/project-relevance-synergy';
 import {FormControl, FormGroup, Validators} from '@angular/forms';
 import {Permission} from 'src/app/security/permissions/permission';
+import {InputTranslation} from '@cat/api';
 
 @Component({
   selector: 'app-synergy-table',
@@ -72,8 +73,14 @@ export class SynergyTableComponent implements OnInit, OnChanges {
   private addLastSynergy(): ProjectRelevanceSynergy {
     const lastSynergy = {
       id: this.synergyCounter,
-      specification: '',
-      synergy: ''
+      specification: [{
+        translation: this.editableSynergyForm.controls.synergy?.value,
+        language: 'EN'
+      } as InputTranslation],
+      synergy: [{
+        translation: this.editableSynergyForm.controls.synergy?.value,
+        language: 'EN'
+      } as InputTranslation]
     } as ProjectRelevanceSynergy;
     this.synergyDataSource.data = [...this.synergyDataSource.data, lastSynergy];
     this.synergyCounter = this.synergyCounter + 1;

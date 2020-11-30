@@ -12,7 +12,7 @@ import {MatTableDataSource} from '@angular/material/table';
 import {ProjectRelevanceStrategy} from '../../dtos/project-relevance-strategy';
 import {FormControl, FormGroup, Validators} from '@angular/forms';
 import {Permission} from 'src/app/security/permissions/permission';
-import {InputProjectRelevanceStrategy, OutputCall} from '@cat/api';
+import {InputProjectRelevanceStrategy, OutputCall, InputTranslation} from '@cat/api';
 
 @Component({
   selector: 'app-strategy-table',
@@ -79,7 +79,10 @@ export class StrategyTableComponent implements OnInit, OnChanges {
     const lastStrategy = {
       id: this.strategyCounter,
       projectStrategy: 'Other',
-      specification: ''
+      specification: [{
+        translation: this.editableStrategyForm.controls.strategy?.value,
+        language: 'EN'
+      } as InputTranslation]
     } as ProjectRelevanceStrategy;
     this.strategyDataSource.data = [...this.strategyDataSource.data, lastStrategy];
     this.strategyCounter = this.strategyCounter + 1;

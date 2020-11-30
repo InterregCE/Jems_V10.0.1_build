@@ -12,7 +12,7 @@ import {Permission} from 'src/app/security/permissions/permission';
 import {MatTableDataSource} from '@angular/material/table';
 import {ProjectRelevanceBenefit} from '../../dtos/project-relevance-benefit';
 import {FormControl, FormGroup, Validators} from '@angular/forms';
-import {InputProjectRelevanceBenefit} from '@cat/api';
+import {InputProjectRelevanceBenefit, InputTranslation} from '@cat/api';
 
 @Component({
   selector: 'app-benefits-table',
@@ -91,7 +91,10 @@ export class BenefitsTableComponent implements OnInit, OnChanges {
     const lastBenefit = {
       id: this.benefitCounter,
       targetGroup: InputProjectRelevanceBenefit.GroupEnum.Other,
-      specification: ''
+      specification: [{
+        translation: this.editableBenefitsForm.controls.benefit?.value,
+        language: 'EN'
+      } as InputTranslation]
     } as ProjectRelevanceBenefit;
     this.benefitsDataSource.data = [...this.benefitsDataSource.data, lastBenefit];
     this.benefitCounter = this.benefitCounter + 1;
