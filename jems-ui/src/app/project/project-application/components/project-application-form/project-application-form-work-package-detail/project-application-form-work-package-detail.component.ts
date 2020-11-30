@@ -100,8 +100,8 @@ export class ProjectApplicationFormWorkPackageDetailComponent extends BaseCompon
         .pipe(
           take(1),
           tap(saved => Log.info('Created work package data:', this, saved)),
+          tap(saved => this.redirectToWorkPackageDetail(saved)),
           tap(() => this.projectApplicationFormSidenavService.refreshPackages(this.projectId)),
-          tap(() => this.redirectToWorkPackageOverview()),
           catchError(error => this.formService.setError(error))
         ).subscribe();
       return;
@@ -135,5 +135,11 @@ export class ProjectApplicationFormWorkPackageDetailComponent extends BaseCompon
 
   redirectToWorkPackageOverview(): void {
     this.router.navigate(['app', 'project', 'detail', this.projectId, 'applicationFormWorkPackage']);
+  }
+
+  redirectToWorkPackageDetail(workPackage: any): void {
+    this.router.navigate([
+      'app', 'project', 'detail', this.projectId, 'applicationFormWorkPackage', 'detail', workPackage.id
+    ]);
   }
 }
