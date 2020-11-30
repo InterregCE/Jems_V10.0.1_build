@@ -1,8 +1,24 @@
 #budget-table {
   width: 100%;
 
-  tr.mat-footer-row {
+  mat-header-cell,
+  mat-cell,
+  mat-footer-cell {
+    margin: 0 .25rem;
+
+    &.justify-end {
+      justify-content: flex-end;
+    }
+  }
+
+  .bold,
+  mat-footer-row {
     font-weight: bold;
   }
-}
 
+  mat-header-cell > span {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+}
