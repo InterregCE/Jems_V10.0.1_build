@@ -78,6 +78,11 @@ import {ProjectPartnerCoFinancingComponent} from './partner/project-partner-deta
 import {ProjectPartnerDetailPageComponent} from './partner/project-partner-detail-page/project-partner-detail-page.component';
 import {ProjectPartnerCoFinancingTabComponent} from './partner/project-partner-detail-page/project-application-partner-co-financing-tab/project-partner-co-financing-tab.component';
 import {BudgetPageComponent} from './budget/budget-page/budget-page.component';
+import { ProjectApplicationFormWorkPackageObjectivesComponent } from './project-application/containers/project-application-form-page/project-application-form-work-package-section/project-application-form-work-package-objectives/project-application-form-work-package-objectives.component';
+import {ProjectWorkpackageStoreService} from './project-application/containers/project-application-form-page/services/project-workpackage-store.service';
+import { ProjectApplicationFormWorkPackageOutputComponent } from './project-application/containers/project-application-form-page/project-application-form-work-package-section/project-application-form-work-package-output/project-application-form-work-package-output.component';
+import { ProjectApplicationFormWorkPackageOutputsComponent } from './project-application/components/project-application-form/project-application-form-work-package-outputs/project-application-form-work-package-outputs.component';
+import { WorkPackageOutputTableComponent } from './project-application/components/project-application-form/project-application-form-work-package-outputs/tables/work-package-output-table/work-package-output-table.component';
 
 @NgModule({
   declarations: [
@@ -150,7 +155,11 @@ import {BudgetPageComponent} from './budget/budget-page/budget-page.component';
     ProjectApplicationFormAssociatedOrgPageComponent,
     StaffCostsFlatRateTableComponent,
     ProjectApplicationFormAddressComponent,
-    BudgetPageComponent
+    BudgetPageComponent,
+    ProjectApplicationFormWorkPackageObjectivesComponent,
+    ProjectApplicationFormWorkPackageOutputComponent,
+    ProjectApplicationFormWorkPackageOutputsComponent,
+    WorkPackageOutputTableComponent
   ],
   imports: [
     SharedModule,
@@ -169,6 +178,7 @@ import {BudgetPageComponent} from './budget/budget-page/budget-page.component';
     ProjectAcronymResolver,
     ProjectPartnerStore,
     ProjectAssociatedOrganizationStore,
+    ProjectWorkpackageStoreService
   ]
 })
 export class ProjectModule {

@@ -24,7 +24,7 @@ class WorkPackageOutputPersistenceProvider(
         projectId: Long,
         inputWorkPackageOutputs: Set<InputWorkPackageOutput>,
         workPackageId: Long
-    ) {
+    ): Set<OutputWorkPackageOutput> {
         deleteWorkPackageOutputsOfCurrentWorkPackage(workPackageId)
 
         val workPackage = workPackageRepository.findById(workPackageId)
@@ -42,6 +42,10 @@ class WorkPackageOutputPersistenceProvider(
 
             workPackageOutputRepository.save(it.toEntity(indicatorOutput = indicatorOutput, workPackage = workPackage, projectPeriod = projectPeriod))
         }
+
+        return workPackageOutputRepository.findTop10ByWorkPackageIdOrderByOutputNumberAsc(workPackageId)
+            .map { it.toOutputWorkPackageOutput() }
+            .toSet()
 
     }
 

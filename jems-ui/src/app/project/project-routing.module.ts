@@ -23,6 +23,7 @@ import {ProjectApplicationFormWorkPackageSectionComponent} from './project-appli
 import {ProjectApplicationFormFuturePlansSectionComponent} from './project-application/containers/project-application-form-page/project-application-form-future-plans-section/project-application-form-future-plans-section.component';
 import {ProjectApplicationFormManagementSectionComponent} from './project-application/containers/project-application-form-page/project-application-form-management-section/project-application-form-management-section.component';
 import {BudgetPageComponent} from './budget/budget-page/budget-page.component';
+import {ProjectApplicationFormWorkPackageObjectivesComponent} from './project-application/containers/project-application-form-page/project-application-form-work-package-section/project-application-form-work-package-objectives/project-application-form-work-package-objectives.component';
 
 export const routes: Routes = [
   {
@@ -162,7 +163,7 @@ export const routes: Routes = [
               },
               {
                 path: 'create',
-                component: WorkPackageDetailsComponent,
+                component: ProjectApplicationFormWorkPackageObjectivesComponent,
                 data: {breadcrumb: 'project.breadcrumb.workPackageCreate'},
               },
               {
