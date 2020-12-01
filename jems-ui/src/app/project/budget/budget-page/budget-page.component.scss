@@ -8,17 +8,12 @@
 
     &.justify-end {
       justify-content: flex-end;
+      text-align: right;
     }
   }
 
   .bold,
   mat-footer-row {
     font-weight: bold;
-  }
-
-  mat-header-cell > span {
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
   }
 }
