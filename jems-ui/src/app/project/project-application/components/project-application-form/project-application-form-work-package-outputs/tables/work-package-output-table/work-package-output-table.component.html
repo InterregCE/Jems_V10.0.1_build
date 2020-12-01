@@ -56,7 +56,8 @@
                 </div>
 
                 <div class="output-line">
-                    <mat-form-field class="field-row-two">
+                    <mat-form-field [ngClass]="{'disable-warning-field': !periods.length && editable} "
+                            class="field-row-two">
                         <mat-label>{{'project.application.form.work.package.output.delivery.period' | translate}}</mat-label>
                         <mat-select [formControlName]="deliveryPeriod(element.outputNumber)"
                                     [disableOptionCentering]="true"
@@ -66,6 +67,10 @@
                                 {{'project.application.form.work.package.output.delivery.period.entry' | translate : {periodNumber: period.number, start: period.start, end: period.end} }}
                             </mat-option>
                         </mat-select>
+                        <mat-hint *ngIf="!periods.length && editable"
+                                  class="warning-hint">
+                            {{'project.application.form.work.package.output.delivery.period.required' | translate}}
+                        </mat-hint>
                     </mat-form-field>
                 </div>
 
