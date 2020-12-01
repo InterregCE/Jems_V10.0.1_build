@@ -5,7 +5,7 @@ export class Numbers {
   /**
    * Converts the given number to specific locale (eg. de-DE).
    */
-  static toLocale(value: number, locale: string): string | number {
+  static toLocale(value: number, locale: string = 'de-DE'): string | number {
     if (value === undefined) {
       return '';
     }

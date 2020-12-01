@@ -123,8 +123,15 @@ export class ProjectPartnerCoFinancingComponent extends BaseComponent implements
   partnerContributionErrors = {
     total: 'project.partner.coFinancing.contribution.origin.total.invalid',
     maxlength: 'project.partner.coFinancing.contribution.origin.max.length',
-
   };
+
+  partnerContributionErrorsArgs$: Observable<{}> = this.coFinancingForm.valueChanges.pipe(
+    startWith(this.coFinancingForm.value),
+    map(() => this.getPartnerContributionTotal(this.partnerContributions.value)),
+    map(currentTotal => {
+      return {total: {difference: Numbers.toLocale(Numbers.truncateNumber(Math.abs(Numbers.minus(this.myAmount, currentTotal))))}};
+    })
+  );
 
   ngOnInit(): void {
     this.error$
