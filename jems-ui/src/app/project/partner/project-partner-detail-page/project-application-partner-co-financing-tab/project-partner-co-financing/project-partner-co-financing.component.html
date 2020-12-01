@@ -123,6 +123,7 @@
         <mat-error *ngIf="(formService.dirty$ | async)" class="my-3">
             <app-form-field-errors
                     [errors]="partnerContributions.errors"
+                    [args]="partnerContributionErrorsArgs$ | async"
                     [messages]="partnerContributionErrors">
             </app-form-field-errors>
         </mat-error>
