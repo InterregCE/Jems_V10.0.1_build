@@ -61,3 +61,18 @@ mat-form-field {
 .spaced-elements {
   margin-top: 1rem;
 }
+
+.warning-hint {
+  color: var(--warn-color)
+}
+
+.disable-warning-field {
+
+  ::ng-deep.mat-form-field-label {
+    color: var(--warn-color) !important;
+  }
+
+  ::ng-deep.mat-form-field-underline {
+    background-color: var(--warn-color) !important;
+  }
+}
