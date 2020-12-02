@@ -121,10 +121,16 @@ export class ProjectStore {
       );
 
 
-  projectEditable$ = this.getProject()
+  projectEditable$ = combineLatest([this.getProject(), this.permissionService.permissionsChanged()])
     .pipe(
-      map(project => project.projectStatus.status === OutputProjectStatus.StatusEnum.DRAFT
-        || project.projectStatus.status === OutputProjectStatus.StatusEnum.RETURNEDTOAPPLICANT
+      map(([project, permissions]) => {
+        if (permissions.some(perm => perm === Permission.PROGRAMME_USER)) {
+          // programme users cannot edit projects
+          return false;
+        }
+        return project.projectStatus.status === OutputProjectStatus.StatusEnum.DRAFT
+          || project.projectStatus.status === OutputProjectStatus.StatusEnum.RETURNEDTOAPPLICANT;
+        }
       ),
       shareReplay(1)
     );
@@ -133,7 +139,7 @@ export class ProjectStore {
     .pipe(
       map(project => project.call),
       shareReplay(1)
-  );
+    );
 
   constructor(private projectService: ProjectService,
               private projectStatusService: ProjectStatusService,
