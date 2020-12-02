@@ -11,6 +11,7 @@ import {HttpErrorResponse} from '@angular/common/http';
 @Injectable()
 export class FormService {
   private form: FormGroup;
+  private additionalValidators?: (() => boolean)[];
 
   saveLabel = 'common.save.label';
   valid$ = new ReplaySubject<boolean>(1);
@@ -69,12 +70,14 @@ export class FormService {
       this.success$.next(null);
       this.routingService.confirmLeave = true;
     }
-    this.valid$.next(this.form?.valid);
+    this.setValid(this.form?.valid);
     this.dirty$.next(dirty);
   }
 
   setValid(valid: boolean): void {
-    this.valid$.next(valid);
+    this.valid$.next(
+      valid && this.additionalValidators?.every(validator => validator())
+    );
   }
 
   setCreation(isCreationForm: boolean): void {
@@ -90,7 +93,14 @@ export class FormService {
     }
   }
 
+  setAdditionalValidators(additionalValidators?: (() => boolean)[]): void {
+    this.additionalValidators = additionalValidators;
+  }
+
   private setFieldErrors(error: I18nValidationError): void {
+    if (!this.form) {
+      return;
+    }
     Log.debug('Set form backend errors.', this, error);
     Object.keys(this.form?.controls).forEach(key => {
       if (!error?.i18nFieldErrors || !error.i18nFieldErrors[key]) {

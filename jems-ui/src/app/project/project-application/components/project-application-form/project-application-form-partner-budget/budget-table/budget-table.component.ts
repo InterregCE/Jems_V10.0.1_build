@@ -17,6 +17,8 @@ import {BaseComponent} from '@common/components/base-component';
 import {PartnerBudgetTableType} from '../../../../model/partner-budget-table-type';
 import {MultiLanguageInputService} from '../../../../../../common/services/multi-language-input.service';
 import {takeUntil, tap} from 'rxjs/operators';
+import {MultiLanguageInput} from '@common/components/forms/multi-language/multi-language-input';
+import {InputTranslation} from '@cat/api';
 
 @Component({
   selector: 'app-budget-table',
@@ -123,8 +125,12 @@ export class BudgetTableComponent extends BaseComponent implements AfterViewInit
         singleClickEdit: true,
         valueGetter: (params: any) => this.languageService.getInputValue(params.data.description),
         valueSetter: (params: any) => {
-          this.languageService.updateInputValue(params.newValue, params.data.description);
-          params.data.validDescription = this.languageService.inputValid(params.data.description);
+          this.languageService.updateInputValue(
+            params.newValue,
+            params.data.description,
+            PartnerBudgetTableEntry.validDescription(params.newValue)
+          );
+          params.data.validDescription = params.data.description.isValid();
           return true;
         },
         cellRendererFramework: AgGridTemplateRendererComponent,
@@ -190,5 +196,12 @@ export class BudgetTableComponent extends BaseComponent implements AfterViewInit
       });
     }
     this.gridApi?.setColumnDefs(columnDefs);
+  }
+
+  isDescriptionValid(description: any, language: InputTranslation.LanguageEnum): boolean {
+    if (!description.inputs) {
+      return true;
+    }
+    return (description as MultiLanguageInput).isValidForLanguage(language);
   }
 }

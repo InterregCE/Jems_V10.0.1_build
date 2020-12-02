@@ -10,7 +10,7 @@ import {MultiLanguageInput} from '@common/components/forms/multi-language/multi-
 })
 export class MultiLanguageInputService {
   private static MAX_NUMBER_AVAILABLE_LANGUAGES = 4;
-  private currentLanguage: OutputProgrammeLanguage.CodeEnum;
+  private currentLanguage: InputTranslation.LanguageEnum;
 
   languages$ = new ReplaySubject<OutputProgrammeLanguage.CodeEnum[]>();
   languages: OutputProgrammeLanguage.CodeEnum[];
@@ -45,7 +45,7 @@ export class MultiLanguageInputService {
       .subscribe();
   }
 
-  initInput(inputs: InputTranslation[], validators?: ((arg: string) => boolean)[]): MultiLanguageInput {
+  initInput(inputs: InputTranslation[]): MultiLanguageInput {
     let allInputs: InputTranslation[] = [];
     if (inputs?.length) {
       allInputs = inputs.map(value => ({language: value.language, translation: value.translation}));
@@ -55,14 +55,14 @@ export class MultiLanguageInputService {
         allInputs.push({language, translation: ''});
       }
     });
-    return new MultiLanguageInput(allInputs, validators);
+    return new MultiLanguageInput(allInputs);
   }
 
-  updateInputValue(value: string, input: MultiLanguageInput): void {
-    const translation = input?.inputs?.find(trans => trans.language === this.currentLanguage);
-    if (translation) {
-      translation.translation = value;
+  updateInputValue(value: string, input: MultiLanguageInput, valid?: boolean): void {
+    if (!this.isMultiInput(input)) {
+      return;
     }
+    input.setValue(value, this.currentLanguage, !!valid);
   }
 
   getInputValue(input: MultiLanguageInput): string {
@@ -70,20 +70,6 @@ export class MultiLanguageInputService {
       return input as any;
     }
     return input.inputs.find(trans => trans.language === this.currentLanguage)?.translation || '';
-  }
-
-  inputValidForLanguage(input: MultiLanguageInput, language: InputTranslation.LanguageEnum): boolean {
-    if (!this.isMultiInput(input)) {
-      return true;
-    }
-    return input.valid(language);
-  }
-
-  inputValid(input: MultiLanguageInput): boolean {
-    if (!this.isMultiInput(input)) {
-      return true;
-    }
-    return this.languages.every(language => this.inputValidForLanguage(input, language));
   }
 
   private isMultiInput(input: MultiLanguageInput): boolean {
