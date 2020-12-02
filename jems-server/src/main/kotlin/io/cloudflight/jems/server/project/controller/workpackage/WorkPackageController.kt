@@ -1,12 +1,12 @@
-package io.cloudflight.jems.server.project.controller
+package io.cloudflight.jems.server.project.controller.workpackage
 
 import io.cloudflight.jems.api.project.WorkPackageApi
 import io.cloudflight.jems.api.project.dto.workpackage.InputWorkPackageCreate
 import io.cloudflight.jems.api.project.dto.workpackage.InputWorkPackageUpdate
 import io.cloudflight.jems.api.project.dto.workpackage.OutputWorkPackage
 import io.cloudflight.jems.api.project.dto.workpackage.OutputWorkPackageSimple
-import io.cloudflight.jems.api.project.dto.workpackage.workpackageoutput.InputWorkPackageOutput
-import io.cloudflight.jems.api.project.dto.workpackage.workpackageoutput.OutputWorkPackageOutput
+import io.cloudflight.jems.api.project.dto.workpackage.workpackageoutput.WorkPackageOutputDTO
+import io.cloudflight.jems.api.project.dto.workpackage.workpackageoutput.WorkPackageOutputUpdateDTO
 import io.cloudflight.jems.server.project.service.workpackage.WorkPackageService
 import io.cloudflight.jems.server.project.service.workpackage.get_work_package_output.GetWorkPackageOutputInteractor
 import io.cloudflight.jems.server.project.service.workpackage.update_work_package_output.UpdateWorkPackageOutputInteractor
@@ -47,16 +47,21 @@ class WorkPackageController(
         return workPackageService.deleteWorkPackage(projectId, id)
     }
 
-    override fun getWorkPackageOutputs(projectId: Long, id: Long): Set<OutputWorkPackageOutput> {
+    override fun getWorkPackageOutputs(projectId: Long, id: Long): Set<WorkPackageOutputDTO> {
         return getWorkPackageOutputInteractor.getWorkPackageOutputsForWorkPackage(projectId, id)
+            .toWorkPackageOutputDTOSet()
     }
 
     override fun updateWorkPackageOutputs(
         projectId: Long,
         id: Long,
-        inputWorkPackageOutputs: Set<InputWorkPackageOutput>
-    ): Set<OutputWorkPackageOutput> {
-        return updateWorkPackageOutputInteractor.updateWorkPackageOutputs(projectId, inputWorkPackageOutputs, id)
-    }
+        workPackageOutputUpdateDTO: Set<WorkPackageOutputUpdateDTO>
+    ): Set<WorkPackageOutputDTO> =
+        updateWorkPackageOutputInteractor.updateWorkPackageOutputs(
+            projectId,
+            workPackageOutputUpdateDTO.toWorkPackageOutputUpdateSet(),
+            id
+        ).toWorkPackageOutputDTOSet()
+
 
 }

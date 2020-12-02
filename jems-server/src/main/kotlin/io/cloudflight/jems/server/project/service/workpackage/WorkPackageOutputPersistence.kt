@@ -1,12 +1,16 @@
 package io.cloudflight.jems.server.project.service.workpackage
 
-import io.cloudflight.jems.api.project.dto.workpackage.workpackageoutput.InputWorkPackageOutput
-import io.cloudflight.jems.api.project.dto.workpackage.workpackageoutput.OutputWorkPackageOutput
+import io.cloudflight.jems.server.project.service.workpackage.model.WorkPackageOutput
+import io.cloudflight.jems.server.project.service.workpackage.model.WorkPackageOutputUpdate
 
 interface WorkPackageOutputPersistence {
 
-    fun updateWorkPackageOutputs(projectId: Long, inputWorkPackageOutputs: Set<InputWorkPackageOutput>, workPackageId: Long): Set<OutputWorkPackageOutput>
+    fun updateWorkPackageOutputs(
+        projectId: Long,
+        workPackageOutputs: Set<WorkPackageOutputUpdate>,
+        workPackageId: Long
+    ): Set<WorkPackageOutput>
 
-    fun getWorkPackageOutputsForWorkPackage(workPackageId: Long): Set<OutputWorkPackageOutput>
+    fun getWorkPackageOutputsForWorkPackage(workPackageId: Long): Set<WorkPackageOutput>
 
 }

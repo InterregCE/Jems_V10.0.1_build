@@ -1,12 +1,12 @@
-package io.cloudflight.jems.api.project.dto.workpackage.workpackageoutput
+package io.cloudflight.jems.server.project.service.workpackage.model
 
-data class InputWorkPackageOutput(
+data class WorkPackageOutputUpdate(
 
     val outputNumber: Int,
     val programmeOutputIndicatorId: Long? = null,
     val title: String? = null,
     val targetValue: String? = null,
     val periodNumber: Int? = null,
-    val description: String? = null,
+    val description: String? = null
 
-    )
+)
