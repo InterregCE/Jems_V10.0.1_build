@@ -1,0 +1,48 @@
+
+.context-info {
+  cursor: default;
+  width: 1em;
+  height: 1em;
+  opacity: 0.33;
+
+  &:hover {
+    opacity: 1
+  }
+
+  &.after {
+    position: absolute;
+    right: -1.5em;
+    top: 0;
+  }
+
+  &.before {
+    position: absolute;
+    left: -2.5em;
+    top: 0;
+  }
+
+  &.above {
+    position: absolute;
+    top: -1.5em;
+  }
+
+  &.below {
+    position: absolute;
+    bottom: -1.5em;
+  }
+
+  &.right {
+    position: relative;
+    display: inline-block;
+    margin-bottom: -0.5em;
+  }
+
+  /* appear "hanging" off the left edge of an inline element, e.g. a headline */
+  &.left {
+    position: relative;
+    display: inline-block;
+    width: 1em;
+    margin-left: -1.25em;
+  }
+
+}

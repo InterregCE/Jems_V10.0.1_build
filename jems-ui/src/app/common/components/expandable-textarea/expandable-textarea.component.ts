@@ -28,6 +28,8 @@ export class ExpandableTextareaComponent {
   minRows ? = 3;
   @Input()
   maxRows ? = 50;
+  @Input()
+  contextInfoText?: string;
 
   @Output()
   changed = new EventEmitter<void>();

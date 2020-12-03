@@ -1,0 +1,12 @@
+
+/* tooltip hierarchy:
+div.overlay-panel
+> div.mat-tooltip-panel
+>> mat-tooltip-component
+>>> div.mat-tooltip (contains the tooltip text)
+ */
+
+div.mat-tooltip {
+  font-size: 0.875rem;
+}
+
