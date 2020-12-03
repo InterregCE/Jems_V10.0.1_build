@@ -7,14 +7,14 @@ import {
   ViewChild
 } from '@angular/core';
 import {Tables} from '../../../../../../common/utils/tables';
-import {PartnerBudgetTableEntry} from '../../../../model/partner-budget-table-entry';
+import {PartnerBudgetTableEntry} from '../../../../../project-application/model/partner-budget-table-entry';
 import {CellValueChangedEvent, ColDef, GridApi, GridOptions, RowNode} from 'ag-grid-community';
 import {AgGridTemplateRendererComponent} from './ag-grid-template-renderer/ag-grid-template-renderer.component';
 import {TranslateService} from '@ngx-translate/core';
-import {PartnerBudgetTable} from '../../../../model/partner-budget-table';
+import {PartnerBudgetTable} from '../../../../../project-application/model/partner-budget-table';
 import {Numbers} from '../../../../../../common/utils/numbers';
 import {BaseComponent} from '@common/components/base-component';
-import {PartnerBudgetTableType} from '../../../../model/partner-budget-table-type';
+import {PartnerBudgetTableType} from '../../../../../project-application/model/partner-budget-table-type';
 import {MultiLanguageInputService} from '../../../../../../common/services/multi-language-input.service';
 import {takeUntil, tap} from 'rxjs/operators';
 import {MultiLanguageInput} from '@common/components/forms/multi-language/multi-language-input';

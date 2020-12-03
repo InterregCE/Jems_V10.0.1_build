@@ -1,9 +1,11 @@
 export class BudgetOptions {
-  officeAdministrationFlatRate: number;
-  staffCostsFlatRate: number;
+  officeFlatRateBasedOnStaffCost: number | null;
+  staffCostsFlatRateBasedOnDirectCost: number | null;
+  travelFlatRateBasedOnStaffCost: number | null;
 
-  constructor(officeAdministrationFlatRate: number, staffCostsFlatRate: number) {
-    this.officeAdministrationFlatRate = officeAdministrationFlatRate;
-    this.staffCostsFlatRate = staffCostsFlatRate;
+  constructor(officeFlatRateBasedOnStaffCost: number | null, staffCostsFlatRateBasedOnDirectCost: number | null, travelFlatRateBasedOnStaffCost: number | null) {
+    this.officeFlatRateBasedOnStaffCost = officeFlatRateBasedOnStaffCost;
+    this.staffCostsFlatRateBasedOnDirectCost = staffCostsFlatRateBasedOnDirectCost;
+    this.travelFlatRateBasedOnStaffCost = travelFlatRateBasedOnStaffCost;
   }
 }

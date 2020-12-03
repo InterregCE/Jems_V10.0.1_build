@@ -4,13 +4,13 @@
         [(ngModel)]="previousSelection">
     <mat-button-toggle
             class="intro-text-small"
-            value="Fixed"
+            [value]="false"
             (change)="selected.emit($event.value)">
         {{'call.detail.flat.rate.fixed' | translate}}
     </mat-button-toggle>
     <mat-button-toggle
             class="intro-text-small"
-            value="UpTo"
+            [value]="true"
             (change)="selected.emit($event.value)">
         {{'call.detail.flat.rate.up.to' | translate}}
     </mat-button-toggle>

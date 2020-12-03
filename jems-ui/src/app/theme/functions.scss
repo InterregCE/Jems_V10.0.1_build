@@ -35,8 +35,9 @@
   // CSS VARS
   /////////////////////////////////////////////////
 
+  --blue-gray: #{mat-color($mat-blue-gray,100)};
   --light-blue-gray: #{mat-color($mat-blue-gray,100,0.5)};
-  --pale-blue-gray: #{mat-color($mat-blue-gray,50,0.4)};
+  --pale-blue-gray: #{mat-color($mat-blue-gray,50,0.5)};
   --primary-color: #{$primary};
   --accent-color: #{$accent};
   --warn-color: #{$warn};

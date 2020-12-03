@@ -1,6 +1,7 @@
 import {Injectable} from '@angular/core';
 import {combineLatest, merge, Observable, of, ReplaySubject, Subject} from 'rxjs';
 import {
+  InputProjectData,
   InputProjectEligibilityAssessment,
   InputProjectQualityAssessment,
   InputProjectStatus,
@@ -9,8 +10,7 @@ import {
   OutputProjectStatus,
   OutputRevertProjectStatus,
   ProjectService,
-  ProjectStatusService,
-  InputProjectData
+  ProjectStatusService
 } from '@cat/api';
 import {
   catchError,

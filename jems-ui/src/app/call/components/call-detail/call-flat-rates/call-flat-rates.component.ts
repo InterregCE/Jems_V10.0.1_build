@@ -1,12 +1,11 @@
 import {ChangeDetectionStrategy, Component, Input, OnInit} from '@angular/core';
 import {Tools} from '../../../../common/utils/tools';
-import {InputCallFlatRateSetup, OutputCall} from '@cat/api';
-import {FormBuilder, FormGroup, Validators} from '@angular/forms';
-import {MatDialog} from '@angular/material/dialog';
-import {SelectionModel} from '@angular/cdk/collections';
+import {FlatRateSetupDTO, OutputCall} from '@cat/api';
+import {FormBuilder, FormControl, FormGroup, Validators} from '@angular/forms';
 import {FormService} from '@common/components/section/form/form.service';
 import {CallStore} from '../../../services/call-store.service';
 import {catchError, take, tap} from 'rxjs/operators';
+import { CALL_FLAT_RATE_FORM_ERRORS, FLAT_RATE_MAX_VALUES } from './call-flat-rates.constants';
 
 @Component({
   selector: 'app-call-flat-rates',
@@ -16,116 +15,40 @@ import {catchError, take, tap} from 'rxjs/operators';
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class CallFlatRatesComponent implements OnInit {
-  static ID = 'CallFlatRatesComponent';
+
   tools = Tools;
-  CallFlatRatesComponent = CallFlatRatesComponent;
-  InputCallFlatRateSetup = InputCallFlatRateSetup;
-  FIXED = 'Fixed';
-  UPTO = 'UpTo';
-  STAFF_COST = 20;
-  OFFICE_ON_STAFF = 15;
-  OFFICE_ON_OTHER = 25;
-  TRAVEL_ON_STAFF = 15;
-  OTHER_ON_STAFF = 40;
+  FORM_ERRORS = CALL_FLAT_RATE_FORM_ERRORS;
+  FLAT_RATE_MAX_VALUES = FLAT_RATE_MAX_VALUES;
 
   @Input()
   call: OutputCall;
 
   published = false;
-  selection = new SelectionModel<string>(true, []);
-  selectedStaffDirectCost: string;
-  selectedOfficeAdminDirectStaffCost: string;
-  selectedOfficeAdministrationDirectCost: string;
-  selectedTravelAccommodationDirectStaffCost: string;
-  selectedOtherCosts: string;
 
-  callFlatRateForm = this.formBuilder.group({
-    staffDirectCostPercent: ['', Validators.compose([Validators.max(this.STAFF_COST), Validators.min(1)])],
-    officeAdminDirectStaffCostPercent: ['', Validators.compose([Validators.max(this.OFFICE_ON_STAFF), Validators.min(1)])],
-    officeAdministrationDirectCostPercent: ['', Validators.compose([Validators.max(this.OFFICE_ON_OTHER), Validators.min(1)])],
-    travelAccommodationDirectStaffCostPercent: ['', Validators.compose([Validators.max(this.TRAVEL_ON_STAFF), Validators.min(1)])],
-    otherCostsPercent: ['', Validators.compose([Validators.max(this.OTHER_ON_STAFF), Validators.min(1)])],
-  });
+  callFlatRateForm: FormGroup;
 
-  staffDirectCostPercentErrors = {
-    max: 'call.detail.flat.rate.staff.direct.cost',
-    min: 'call.detail.flat.rate.staff.direct.cost'
-  };
-  officeAdminDirectStaffCostPercentErrors = {
-    max: 'call.detail.flat.rate.office.admin.direct.staff.cost',
-    min: 'call.detail.flat.rate.office.admin.direct.staff.cost'
-  };
-  officeAdministrationDirectCostPercentErrors = {
-    max: 'call.detail.flat.rate.office.admin.direct.cost',
-    min: 'call.detail.flat.rate.office.admin.direct.cost'
-  };
-  travelAccommodationDirectStaffCostPercentErrors = {
-    max: 'call.detail.flat.rate.travel.accommodation.direct.staff.cost',
-    min: 'call.detail.flat.rate.travel.accommodation.direct.staff.cost'
-  };
-  otherCostsPercentErrors = {
-    max: 'call.detail.flat.rate.other.cost',
-    min: 'call.detail.flat.rate.other.cost'
-  };
 
   constructor(private formBuilder: FormBuilder,
-              private dialog: MatDialog,
               private formService: FormService,
               private callStore: CallStore) {
   }
 
   ngOnInit(): void {
+    this.initForm(this.call.flatRates);
     this.formService.init(this.callFlatRateForm);
     this.formService.setCreation(!this.call?.id);
     this.published = this.call?.status === OutputCall.StatusEnum.PUBLISHED;
     this.formService.setEditable(!this.published);
-    this.resetForm();
   }
 
   onSubmit(): void {
-    const callFlatRates: InputCallFlatRateSetup[] = [];
-    this.deselectAndResetEmpty();
-    if (this.selection.isSelected(InputCallFlatRateSetup.TypeEnum.StaffCost)) {
-      callFlatRates.push({
-          type: InputCallFlatRateSetup.TypeEnum.StaffCost,
-          rate: this.callFlatRateForm.controls?.staffDirectCostPercent?.value,
-          isAdjustable: this.selectedStaffDirectCost !== this.FIXED
-        }
-      );
-    }
-    if (this.selection.isSelected(InputCallFlatRateSetup.TypeEnum.OfficeOnStaff)) {
-      callFlatRates.push({
-          type: InputCallFlatRateSetup.TypeEnum.OfficeOnStaff,
-          rate: this.callFlatRateForm.controls?.officeAdminDirectStaffCostPercent?.value,
-          isAdjustable: this.selectedOfficeAdminDirectStaffCost !== this.FIXED
-        }
-      );
-    }
-    if (this.selection.isSelected(InputCallFlatRateSetup.TypeEnum.OfficeOnOther)) {
-      callFlatRates.push({
-          type: InputCallFlatRateSetup.TypeEnum.OfficeOnOther,
-          rate: this.callFlatRateForm.controls?.officeAdministrationDirectCostPercent?.value,
-          isAdjustable: this.selectedOfficeAdministrationDirectCost !== this.FIXED
-        }
-      );
-    }
-    if (this.selection.isSelected(InputCallFlatRateSetup.TypeEnum.TravelOnStaff)) {
-      callFlatRates.push({
-          type: InputCallFlatRateSetup.TypeEnum.TravelOnStaff,
-          rate: this.callFlatRateForm.controls?.travelAccommodationDirectStaffCostPercent?.value,
-          isAdjustable: this.selectedTravelAccommodationDirectStaffCost !== this.FIXED
-        }
-      );
-    }
-    if (this.selection.isSelected(InputCallFlatRateSetup.TypeEnum.OtherOnStaff)) {
-      callFlatRates.push({
-          type: InputCallFlatRateSetup.TypeEnum.OtherOnStaff,
-          rate: this.callFlatRateForm.controls?.otherCostsPercent?.value,
-          isAdjustable: this.selectedOtherCosts !== this.FIXED
-        }
-      );
-    }
-
+    const callFlatRates: FlatRateSetupDTO = {
+      staffCostFlatRateSetup: this.isStaffCostFlatRateActive.value ? this.staffCostFlatRateSetup.value : null,
+      officeOnStaffFlatRateSetup: this.isOfficeOnStaffFlatRateActive.value ? this.officeOnStaffFlatRateSetup.value : null,
+      officeOnOtherFlatRateSetup: this.isOfficeOnOtherFlatRateActive.value ? this.officeOnOtherFlatRateSetup.value : null,
+      travelOnStaffFlatRateSetup: this.isTravelOnStaffFlatRateActive.value ? this.travelOnStaffFlatRateSetup.value : null,
+      otherOnStaffFlatRateSetup: this.isOtherOnStaffFlatRateActive.value ? this.otherOnStaffFlatRateSetup.value : null
+    } as FlatRateSetupDTO;
     this.callStore.saveFlatRates(callFlatRates)
       .pipe(
         take(1),
@@ -134,119 +57,139 @@ export class CallFlatRatesComponent implements OnInit {
       ).subscribe();
   }
 
-  formChanged(): void {
-    this.formService.setDirty(true);
-  }
 
-  resetForm(): void {
-    this.selection.clear();
-    this.resetToggles(this.FIXED);
-    this.resetFields();
-    this.call.flatRates.forEach(flatRate => {
-      this.selection.toggle(flatRate.type);
-      this.setFieldValueDependingOnKey(flatRate.type, flatRate.rate.toString(), false);
-      this.setToggleValueDependingOnKey(flatRate.type, flatRate.isAdjustable ? this.UPTO : this.FIXED);
-    });
-  }
-
-  changeSelection(key: string): void {
-    this.selection.toggle(key);
-    if (this.selection.isSelected(key)) {
-      this.setFieldValueDependingOnKey(key, null, true);
+  toggleFlatRate(checkboxFormControl: FormControl, rateFormControl: FormControl, typeFormControl: FormControl, defaultValue: number, checked: boolean): void {
+    checkboxFormControl
+      .patchValue(checked ? checkboxFormControl.value : null);
+    if (checked) {
+      typeFormControl.enable();
+      rateFormControl.setValue(defaultValue);
+      typeFormControl.setValue(FLAT_RATE_MAX_VALUES.IS_ADJUSTABLE);
     } else {
-      this.setFieldValueDependingOnKey(key, null, false);
-      this.setToggleValueDependingOnKey(key, this.FIXED);
-    }
-    this.formChanged();
-  }
-
-  toggleSelectionChanged($event: string, key: string): void {
-    this.setToggleValueDependingOnKey(key, $event);
-    this.formChanged();
-  }
-
-  private setFieldValueDependingOnKey(key: string, value: string | null, useMaxValue: boolean): void {
-    if (key === InputCallFlatRateSetup.TypeEnum.StaffCost) {
-      useMaxValue ?
-        this.callFlatRateForm.controls?.staffDirectCostPercent?.setValue(this.STAFF_COST) :
-        this.callFlatRateForm.controls?.staffDirectCostPercent?.setValue(value);
-    }
-    if (key === InputCallFlatRateSetup.TypeEnum.OfficeOnStaff) {
-      useMaxValue ?
-        this.callFlatRateForm.controls?.officeAdminDirectStaffCostPercent?.setValue(this.OFFICE_ON_STAFF) :
-        this.callFlatRateForm.controls?.officeAdminDirectStaffCostPercent?.setValue(value);
-    }
-    if (key === InputCallFlatRateSetup.TypeEnum.OfficeOnOther) {
-      useMaxValue ?
-        this.callFlatRateForm.controls?.officeAdministrationDirectCostPercent?.setValue(this.OFFICE_ON_OTHER) :
-        this.callFlatRateForm.controls?.officeAdministrationDirectCostPercent?.setValue(value);
-    }
-    if (key === InputCallFlatRateSetup.TypeEnum.TravelOnStaff) {
-      useMaxValue ?
-        this.callFlatRateForm.controls?.travelAccommodationDirectStaffCostPercent?.setValue(this.TRAVEL_ON_STAFF) :
-        this.callFlatRateForm.controls?.travelAccommodationDirectStaffCostPercent?.setValue(value);
-    }
-    if (key === InputCallFlatRateSetup.TypeEnum.OtherOnStaff) {
-      useMaxValue ?
-        this.callFlatRateForm.controls?.otherCostsPercent?.setValue(this.OTHER_ON_STAFF) :
-        this.callFlatRateForm.controls?.otherCostsPercent?.setValue(value);
+      typeFormControl.disable();
+      rateFormControl.setValue(null);
+      typeFormControl.setValue(null);
     }
   }
 
-  private setToggleValueDependingOnKey(key: string, value: string): void {
-    if (key === InputCallFlatRateSetup.TypeEnum.StaffCost) {
-      this.selectedStaffDirectCost = value;
-    }
-    if (key === InputCallFlatRateSetup.TypeEnum.OfficeOnStaff) {
-      this.selectedOfficeAdminDirectStaffCost = value;
-    }
-    if (key === InputCallFlatRateSetup.TypeEnum.OfficeOnOther) {
-      this.selectedOfficeAdministrationDirectCost = value;
-    }
-    if (key === InputCallFlatRateSetup.TypeEnum.TravelOnStaff) {
-      this.selectedTravelAccommodationDirectStaffCost = value;
-    }
-    if (key === InputCallFlatRateSetup.TypeEnum.OtherOnStaff) {
-      this.selectedOtherCosts = value;
-    }
+  toggleFlatRateType(formControl: FormControl, $event: boolean): void {
+    formControl.setValue($event);
+    this.callFlatRateForm.markAsDirty();
   }
 
-  private resetToggles(value: string): void {
-    this.selectedStaffDirectCost = value;
-    this.selectedOfficeAdminDirectStaffCost = value;
-    this.selectedOfficeAdministrationDirectCost = value;
-    this.selectedTravelAccommodationDirectStaffCost = value;
-    this.selectedOtherCosts = value;
+  initForm(flatRateSetup: FlatRateSetupDTO): void {
+    this.callFlatRateForm = this.formBuilder.group({
+      isStaffCostFlatRateActive: [!!flatRateSetup.staffCostFlatRateSetup],
+      staffCostFlatRateSetup: this.formBuilder.group({
+        rate: [flatRateSetup.staffCostFlatRateSetup ? flatRateSetup.staffCostFlatRateSetup.rate : null, [Validators.max(FLAT_RATE_MAX_VALUES.STAFF_COST), Validators.min(1)]],
+        isAdjustable: [flatRateSetup.staffCostFlatRateSetup?.isAdjustable]
+      }),
+
+      isOfficeOnStaffFlatRateActive: [!!flatRateSetup.officeOnStaffFlatRateSetup],
+      officeOnStaffFlatRateSetup: this.formBuilder.group({
+        rate: [flatRateSetup.officeOnStaffFlatRateSetup ? flatRateSetup.officeOnStaffFlatRateSetup.rate : null, [Validators.max(FLAT_RATE_MAX_VALUES.OFFICE_ON_STAFF), Validators.min(1)]],
+        isAdjustable: [flatRateSetup.officeOnStaffFlatRateSetup?.isAdjustable]
+      }),
+
+      isOfficeOnOtherFlatRateActive: [!!flatRateSetup.officeOnOtherFlatRateSetup],
+      officeOnOtherFlatRateSetup: this.formBuilder.group({
+        rate: [flatRateSetup.officeOnOtherFlatRateSetup ? flatRateSetup.officeOnOtherFlatRateSetup.rate : null, [Validators.max(FLAT_RATE_MAX_VALUES.OFFICE_ON_OTHER), Validators.min(1)]],
+        isAdjustable: [flatRateSetup.officeOnOtherFlatRateSetup?.isAdjustable]
+      }),
+
+      isTravelOnStaffFlatRateActive: [!!flatRateSetup.travelOnStaffFlatRateSetup],
+      travelOnStaffFlatRateSetup: this.formBuilder.group({
+        rate: [flatRateSetup.travelOnStaffFlatRateSetup ? flatRateSetup.travelOnStaffFlatRateSetup.rate : null, [Validators.max(FLAT_RATE_MAX_VALUES.TRAVEL_ON_STAFF), Validators.min(1)]],
+        isAdjustable: [flatRateSetup.travelOnStaffFlatRateSetup?.isAdjustable]
+      }),
+
+      isOtherOnStaffFlatRateActive: [!!flatRateSetup.otherOnStaffFlatRateSetup],
+      otherOnStaffFlatRateSetup: this.formBuilder.group({
+        rate: [flatRateSetup.otherOnStaffFlatRateSetup ? flatRateSetup.otherOnStaffFlatRateSetup.rate : null, [Validators.max(FLAT_RATE_MAX_VALUES.OTHER_ON_STAFF), Validators.min(1)]],
+        isAdjustable: [flatRateSetup.otherOnStaffFlatRateSetup?.isAdjustable]
+      })
+    });
+    this.formService.init(this.callFlatRateForm);
   }
 
-  private resetFields(): void {
-    this.callFlatRateForm.controls?.staffDirectCostPercent?.setValue(null);
-    this.callFlatRateForm.controls?.officeAdminDirectStaffCostPercent?.setValue(null);
-    this.callFlatRateForm.controls?.officeAdministrationDirectCostPercent?.setValue(null);
-    this.callFlatRateForm.controls?.travelAccommodationDirectStaffCostPercent?.setValue(null);
-    this.callFlatRateForm.controls?.otherCostsPercent?.setValue(null);
+
+  get isStaffCostFlatRateActive(): FormControl {
+    return this.callFlatRateForm.get('isStaffCostFlatRateActive') as FormControl;
   }
 
-  private deselectAndResetEmpty(): void {
-    if (!this.callFlatRateForm.controls?.staffDirectCostPercent?.value) {
-      this.selection.deselect(InputCallFlatRateSetup.TypeEnum.StaffCost);
-      this.selectedStaffDirectCost = this.FIXED;
-    }
-    if (!this.callFlatRateForm.controls?.officeAdminDirectStaffCostPercent?.value) {
-      this.selection.deselect(InputCallFlatRateSetup.TypeEnum.OfficeOnStaff);
-      this.selectedOfficeAdminDirectStaffCost = this.FIXED;
-    }
-    if (!this.callFlatRateForm.controls?.officeAdministrationDirectCostPercent?.value) {
-      this.selection.deselect(InputCallFlatRateSetup.TypeEnum.OfficeOnOther);
-      this.selectedOfficeAdministrationDirectCost = this.FIXED;
-    }
-    if (!this.callFlatRateForm.controls?.travelAccommodationDirectStaffCostPercent?.value) {
-      this.selection.deselect(InputCallFlatRateSetup.TypeEnum.TravelOnStaff);
-      this.selectedTravelAccommodationDirectStaffCost = this.FIXED;
-    }
-    if (!this.callFlatRateForm.controls?.otherCostsPercent?.value) {
-      this.selection.deselect(InputCallFlatRateSetup.TypeEnum.OtherOnStaff);
-      this.selectedOtherCosts = this.FIXED;
-    }
+  get staffCostFlatRateSetup(): FormGroup {
+    return this.callFlatRateForm.get('staffCostFlatRateSetup') as FormGroup;
+  }
+
+  get staffCostFlatRate(): FormControl {
+    return this.staffCostFlatRateSetup.get('rate') as FormControl;
+  }
+
+  get staffCostFlatRateType(): FormControl {
+    return this.staffCostFlatRateSetup.get('isAdjustable') as FormControl;
+  }
+
+  get isOfficeOnStaffFlatRateActive(): FormControl {
+    return this.callFlatRateForm.get('isOfficeOnStaffFlatRateActive') as FormControl;
+  }
+
+  get officeOnStaffFlatRateSetup(): FormGroup {
+    return this.callFlatRateForm.get('officeOnStaffFlatRateSetup') as FormGroup;
+  }
+
+  get officeOnStaffFlatRate(): FormControl {
+    return this.officeOnStaffFlatRateSetup.get('rate') as FormControl;
+  }
+
+  get officeOnStaffFlatRateType(): FormControl {
+    return this.officeOnStaffFlatRateSetup.get('isAdjustable') as FormControl;
+  }
+
+  get isOfficeOnOtherFlatRateActive(): FormControl {
+    return this.callFlatRateForm.get('isOfficeOnOtherFlatRateActive') as FormControl;
+  }
+
+  get officeOnOtherFlatRateSetup(): FormGroup {
+    return this.callFlatRateForm.get('officeOnOtherFlatRateSetup') as FormGroup;
+  }
+
+  get officeOnOtherFlatRate(): FormControl {
+    return this.officeOnOtherFlatRateSetup.get('rate') as FormControl;
+  }
+
+  get officeOnOtherFlatRateType(): FormControl {
+    return this.officeOnOtherFlatRateSetup.get('isAdjustable') as FormControl;
+  }
+
+  get isTravelOnStaffFlatRateActive(): FormControl {
+    return this.callFlatRateForm.get('isTravelOnStaffFlatRateActive') as FormControl;
+  }
+
+  get travelOnStaffFlatRateSetup(): FormGroup {
+    return this.callFlatRateForm.get('travelOnStaffFlatRateSetup') as FormGroup;
+  }
+
+  get travelOnStaffFlatRate(): FormControl {
+    return this.travelOnStaffFlatRateSetup.get('rate') as FormControl;
+  }
+
+  get travelOnStaffFlatRateType(): FormControl {
+    return this.travelOnStaffFlatRateSetup.get('isAdjustable') as FormControl;
+  }
+
+  get isOtherOnStaffFlatRateActive(): FormControl {
+    return this.callFlatRateForm.get('isOtherOnStaffFlatRateActive') as FormControl;
+  }
+
+  get otherOnStaffFlatRateSetup(): FormGroup {
+    return this.callFlatRateForm.get('otherOnStaffFlatRateSetup') as FormGroup;
+  }
+
+  get otherOnStaffFlatRateType(): FormControl {
+    return this.otherOnStaffFlatRateSetup.get('isAdjustable') as FormControl;
+  }
+
+  get otherOnStaffFlatRate(): FormControl {
+    return this.otherOnStaffFlatRateSetup.get('rate') as FormControl;
   }
 }

@@ -1,6 +1,6 @@
 import {Injectable} from '@angular/core';
-import {CallService, InputCallUpdate, OutputCall, InputCallCreate, InputCallFlatRateSetup} from '@cat/api';
-import {Observable, ReplaySubject, Subject} from 'rxjs';
+import {CallService, FlatRateSetupDTO, InputCallCreate, InputCallUpdate, OutputCall} from '@cat/api';
+import {Observable, ReplaySubject} from 'rxjs';
 import {tap} from 'rxjs/operators';
 import {Log} from '../../common/utils/log';
 
@@ -53,7 +53,7 @@ export class CallStore {
       );
   }
 
-  saveFlatRates(flatRates: InputCallFlatRateSetup[]): Observable<OutputCall> {
+  saveFlatRates(flatRates: FlatRateSetupDTO): Observable<OutputCall> {
     return this.callService.updateCallFlatRateSetup(this.callId, flatRates)
       .pipe(
         tap(saved => Log.info('Updated call flat rates:', this, saved))

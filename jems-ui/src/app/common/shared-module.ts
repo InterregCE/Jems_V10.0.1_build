@@ -23,6 +23,7 @@ import {FormComponent} from '@common/components/section/form/form.component';
 import {PercentagePipe} from './pipe/percentage';
 import {MultiLanguageComponent} from '@common/components/forms/multi-language/multi-language.component';
 import {ContextInfoComponent} from '@common/components/info-trigger/context-info.component';
+import {ExpectedNumberOfCharsDirective} from './directives/expected-number-of-chars.directive';
 
 const modules = [
   CommonModule,
@@ -52,7 +53,9 @@ const declarations = [
   ConfirmDialogComponent,
   HelpMenuComponent,
   SideNavComponent,
-  ContextInfoComponent
+  ContextInfoComponent,
+  ExpectedNumberOfCharsDirective
+
 ];
 
 @NgModule({
