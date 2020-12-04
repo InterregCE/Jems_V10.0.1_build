@@ -1,6 +1,6 @@
 package io.cloudflight.jems.server.programme.controller.costoption
 
-import io.cloudflight.jems.api.programme.ProgrammeCostOptionApi
+import io.cloudflight.jems.api.programme.costoption.ProgrammeLumpSumApi
 import io.cloudflight.jems.api.programme.dto.costoption.ProgrammeLumpSumDTO
 import io.cloudflight.jems.server.programme.service.costoption.create_lump_sum.CreateLumpSumInteractor
 import io.cloudflight.jems.server.programme.service.costoption.delete_lump_sum.DeleteLumpSumInteractor
@@ -11,12 +11,12 @@ import org.springframework.data.domain.Pageable
 import org.springframework.web.bind.annotation.RestController
 
 @RestController
-class ProgrammeCostOptionController(
+class ProgrammeLumpSumController(
     private val getLumpSum: GetLumpSumInteractor,
     private val createLumpSum: CreateLumpSumInteractor,
     private val updateLumpSum: UpdateLumpSumInteractor,
     private val deleteLumpSum: DeleteLumpSumInteractor,
-) : ProgrammeCostOptionApi {
+) : ProgrammeLumpSumApi {
 
     override fun getProgrammeLumpSums(pageable: Pageable): Page<ProgrammeLumpSumDTO> =
         getLumpSum.getLumpSums(pageable).map { it.toDto() }
