@@ -19,7 +19,7 @@
                         [formControl]="isStaffCostFlatRateActive"
                         [disabled]="published"
                         (click)="$event.stopPropagation()"
-                        (change)="toggleFlatRate(isStaffCostFlatRateActive,staffCostFlatRate,staffCostFlatRateType, FLAT_RATE_MAX_VALUES.STAFF_COST, $event.checked)"
+                        (change)="toggleFlatRate(isStaffCostFlatRateActive,staffCostFlatRate,staffCostFlatRateType, constants.FLAT_RATE_MAX_VALUES.STAFF_COST, $event.checked)"
                         [checked]="isStaffCostFlatRateActive.value">
                 </mat-checkbox>
                 <span>{{'call.detail.flat.rate.table.staff.direct.cost' | translate}}</span>
@@ -27,7 +27,7 @@
                     <input [readonly]="!isStaffCostFlatRateActive.value"
                            name="staffCostFlatRate"
                            [formControl]="staffCostFlatRate"
-                           [max]="FLAT_RATE_MAX_VALUES.STAFF_COST"
+                           [max]="constants.FLAT_RATE_MAX_VALUES.STAFF_COST"
                            min="1"
                            matInput
                            class="text-right"
@@ -36,7 +36,7 @@
                     <mat-error>
                         <app-form-field-errors
                                 [errors]="staffCostFlatRate?.errors"
-                                [messages]="FORM_ERRORS.staffCostErrors">
+                                [messages]="constants.FORM_ERRORS.staffCostErrors">
                         </app-form-field-errors>
                     </mat-error>
                 </mat-form-field>
@@ -51,7 +51,7 @@
                         [formControl]="isOfficeOnStaffFlatRateActive"
                         [disabled]="published"
                         (click)="$event.stopPropagation()"
-                        (change)="toggleFlatRate(isOfficeOnStaffFlatRateActive,officeOnStaffFlatRate,officeOnStaffFlatRateType,FLAT_RATE_MAX_VALUES.OFFICE_ON_STAFF,$event.checked)"
+                        (change)="toggleFlatRate(isOfficeOnStaffFlatRateActive,officeOnStaffFlatRate,officeOnStaffFlatRateType,constants.FLAT_RATE_MAX_VALUES.OFFICE_ON_STAFF,$event.checked)"
                         [checked]="isOfficeOnStaffFlatRateActive.value">
                 </mat-checkbox>
                 <span>{{'call.detail.flat.rate.table.office.administration.direct.staff.cost' | translate}}</span>
@@ -59,7 +59,7 @@
                     <input [readonly]="!isOfficeOnStaffFlatRateActive.value"
                            name="officeOnStaffFlatRate"
                            [formControl]="officeOnStaffFlatRate"
-                           [max]="FLAT_RATE_MAX_VALUES.OFFICE_ON_STAFF"
+                           [max]="constants.FLAT_RATE_MAX_VALUES.OFFICE_ON_STAFF"
                            min="1"
                            matInput
                            class="text-right"
@@ -68,7 +68,7 @@
                     <mat-error>
                         <app-form-field-errors
                                 [errors]="officeOnStaffFlatRate?.errors"
-                                [messages]="FORM_ERRORS.officeAdminDirectStaffCostPercentErrors">
+                                [messages]="constants.FORM_ERRORS.officeAdminDirectStaffCostPercentErrors">
                         </app-form-field-errors>
                     </mat-error>
                 </mat-form-field>
@@ -83,7 +83,7 @@
                         [formControl]="isOfficeOnOtherFlatRateActive"
                         [disabled]="published"
                         (click)="$event.stopPropagation()"
-                        (change)="toggleFlatRate(isOfficeOnOtherFlatRateActive, officeOnOtherFlatRate,officeOnOtherFlatRateType, FLAT_RATE_MAX_VALUES.OFFICE_ON_OTHER, $event.checked)"
+                        (change)="toggleFlatRate(isOfficeOnOtherFlatRateActive, officeOnOtherFlatRate,officeOnOtherFlatRateType, constants.FLAT_RATE_MAX_VALUES.OFFICE_ON_OTHER, $event.checked)"
                         [checked]="isOfficeOnOtherFlatRateActive.value">
                 </mat-checkbox>
                 <span>{{'call.detail.flat.rate.table.office.administration.direct.cost' | translate}}</span>
@@ -92,7 +92,7 @@
                            class="text-right"
                            name="officeOnOtherFlatRate"
                            [formControl]="officeOnOtherFlatRate"
-                           [max]="FLAT_RATE_MAX_VALUES.OFFICE_ON_OTHER"
+                           [max]="constants.FLAT_RATE_MAX_VALUES.OFFICE_ON_OTHER"
                            min="1"
                            matInput
                            type="number">
@@ -100,7 +100,7 @@
                     <mat-error>
                         <app-form-field-errors
                                 [errors]="officeOnOtherFlatRate?.errors"
-                                [messages]="FORM_ERRORS.officeAdministrationDirectCostPercentErrors">
+                                [messages]="constants.FORM_ERRORS.officeAdministrationDirectCostPercentErrors">
                         </app-form-field-errors>
                     </mat-error>
                 </mat-form-field>
@@ -115,7 +115,7 @@
                         [formControl]="isTravelOnStaffFlatRateActive"
                         [disabled]="published"
                         (click)="$event.stopPropagation()"
-                        (change)="toggleFlatRate(isTravelOnStaffFlatRateActive,travelOnStaffFlatRate,travelOnStaffFlatRateType,FLAT_RATE_MAX_VALUES.TRAVEL_ON_STAFF,$event.checked)"
+                        (change)="toggleFlatRate(isTravelOnStaffFlatRateActive,travelOnStaffFlatRate,travelOnStaffFlatRateType,constants.FLAT_RATE_MAX_VALUES.TRAVEL_ON_STAFF,$event.checked)"
                         [checked]="isTravelOnStaffFlatRateActive.value">
                 </mat-checkbox>
                 <span>{{'call.detail.flat.rate.table.travel.accommodation.direct.staff.cost' | translate}}</span>
@@ -124,7 +124,7 @@
                            name="travelOnStaffFlatRate"
                            class="text-right"
                            [formControl]="travelOnStaffFlatRate"
-                           [max]="FLAT_RATE_MAX_VALUES.TRAVEL_ON_STAFF"
+                           [max]="constants.FLAT_RATE_MAX_VALUES.TRAVEL_ON_STAFF"
                            min="1"
                            matInput
                            type="number">
@@ -132,7 +132,7 @@
                     <mat-error>
                         <app-form-field-errors
                                 [errors]="travelOnStaffFlatRate?.errors"
-                                [messages]="FORM_ERRORS.travelAccommodationDirectStaffCostPercentErrors">
+                                [messages]="constants.FORM_ERRORS.travelAccommodationDirectStaffCostPercentErrors">
                         </app-form-field-errors>
                     </mat-error>
                 </mat-form-field>
@@ -147,7 +147,7 @@
                         [formControl]="isOtherOnStaffFlatRateActive"
                         [disabled]="published"
                         (click)="$event.stopPropagation()"
-                        (change)="toggleFlatRate(isOtherOnStaffFlatRateActive, otherOnStaffFlatRate,otherOnStaffFlatRateType,FLAT_RATE_MAX_VALUES.OTHER_ON_STAFF, $event.checked)"
+                        (change)="toggleFlatRate(isOtherOnStaffFlatRateActive, otherOnStaffFlatRate,otherOnStaffFlatRateType,constants.FLAT_RATE_MAX_VALUES.OTHER_ON_STAFF, $event.checked)"
                         [checked]="isOtherOnStaffFlatRateActive.value">
                 </mat-checkbox>
                 <span> {{'call.detail.flat.rate.table.other.cost' | translate}}</span>
@@ -155,7 +155,7 @@
                     <input [readonly]="!isOtherOnStaffFlatRateActive.value"
                            name="otherOnStaffFlatRate"
                            [formControl]="otherOnStaffFlatRate"
-                           [max]="FLAT_RATE_MAX_VALUES.OTHER_ON_STAFF"
+                           [max]="constants.FLAT_RATE_MAX_VALUES.OTHER_ON_STAFF"
                            min="1"
                            matInput
                            class="text-right"
@@ -164,7 +164,7 @@
                     <mat-error>
                         <app-form-field-errors
                                 [errors]="otherOnStaffFlatRate?.errors"
-                                [messages]="FORM_ERRORS.otherCostsPercentErrors">
+                                [messages]="constants.FORM_ERRORS.otherCostsPercentErrors">
                         </app-form-field-errors>
                     </mat-error>
                 </mat-form-field>

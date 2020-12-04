@@ -1,7 +1,6 @@
 <ng-container *ngIf="(data$ | async) as data">
 
-    <app-form (save)="updateBudgets(data.budgetTables)"
-              (discard)="discard()">
+    <app-form (save)="updateBudgets(data.budgetTables)">
         <h5 id="funds" class="header">{{'project.partner.budget.header' | translate}}</h5>
         <br>
         <ng-container *ngIf="!data.isStaffCostFlatRateActive">

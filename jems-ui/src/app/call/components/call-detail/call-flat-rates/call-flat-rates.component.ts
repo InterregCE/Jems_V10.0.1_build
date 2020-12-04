@@ -5,7 +5,7 @@ import {FormBuilder, FormControl, FormGroup, Validators} from '@angular/forms';
 import {FormService} from '@common/components/section/form/form.service';
 import {CallStore} from '../../../services/call-store.service';
 import {catchError, take, tap} from 'rxjs/operators';
-import { CALL_FLAT_RATE_FORM_ERRORS, FLAT_RATE_MAX_VALUES } from './call-flat-rates.constants';
+import {CallFlatRatesConstants} from './call-flat-rates.constants';
 
 @Component({
   selector: 'app-call-flat-rates',
@@ -17,8 +17,7 @@ import { CALL_FLAT_RATE_FORM_ERRORS, FLAT_RATE_MAX_VALUES } from './call-flat-ra
 export class CallFlatRatesComponent implements OnInit {
 
   tools = Tools;
-  FORM_ERRORS = CALL_FLAT_RATE_FORM_ERRORS;
-  FLAT_RATE_MAX_VALUES = FLAT_RATE_MAX_VALUES;
+  constants = CallFlatRatesConstants;
 
   @Input()
   call: OutputCall;
@@ -26,7 +25,6 @@ export class CallFlatRatesComponent implements OnInit {
   published = false;
 
   callFlatRateForm: FormGroup;
-
 
   constructor(private formBuilder: FormBuilder,
               private formService: FormService,
@@ -64,7 +62,7 @@ export class CallFlatRatesComponent implements OnInit {
     if (checked) {
       typeFormControl.enable();
       rateFormControl.setValue(defaultValue);
-      typeFormControl.setValue(FLAT_RATE_MAX_VALUES.IS_ADJUSTABLE);
+      typeFormControl.setValue(this.constants.FLAT_RATE_MAX_VALUES.IS_ADJUSTABLE);
     } else {
       typeFormControl.disable();
       rateFormControl.setValue(null);
@@ -81,31 +79,31 @@ export class CallFlatRatesComponent implements OnInit {
     this.callFlatRateForm = this.formBuilder.group({
       isStaffCostFlatRateActive: [!!flatRateSetup.staffCostFlatRateSetup],
       staffCostFlatRateSetup: this.formBuilder.group({
-        rate: [flatRateSetup.staffCostFlatRateSetup ? flatRateSetup.staffCostFlatRateSetup.rate : null, [Validators.max(FLAT_RATE_MAX_VALUES.STAFF_COST), Validators.min(1)]],
+        rate: [flatRateSetup.staffCostFlatRateSetup?.rate, [Validators.max(this.constants.FLAT_RATE_MAX_VALUES.STAFF_COST), Validators.min(1)]],
         isAdjustable: [flatRateSetup.staffCostFlatRateSetup?.isAdjustable]
       }),
 
       isOfficeOnStaffFlatRateActive: [!!flatRateSetup.officeOnStaffFlatRateSetup],
       officeOnStaffFlatRateSetup: this.formBuilder.group({
-        rate: [flatRateSetup.officeOnStaffFlatRateSetup ? flatRateSetup.officeOnStaffFlatRateSetup.rate : null, [Validators.max(FLAT_RATE_MAX_VALUES.OFFICE_ON_STAFF), Validators.min(1)]],
+        rate: [flatRateSetup.officeOnStaffFlatRateSetup?.rate, [Validators.max(this.constants.FLAT_RATE_MAX_VALUES.OFFICE_ON_STAFF), Validators.min(1)]],
         isAdjustable: [flatRateSetup.officeOnStaffFlatRateSetup?.isAdjustable]
       }),
 
       isOfficeOnOtherFlatRateActive: [!!flatRateSetup.officeOnOtherFlatRateSetup],
       officeOnOtherFlatRateSetup: this.formBuilder.group({
-        rate: [flatRateSetup.officeOnOtherFlatRateSetup ? flatRateSetup.officeOnOtherFlatRateSetup.rate : null, [Validators.max(FLAT_RATE_MAX_VALUES.OFFICE_ON_OTHER), Validators.min(1)]],
+        rate: [flatRateSetup.officeOnOtherFlatRateSetup?.rate, [Validators.max(this.constants.FLAT_RATE_MAX_VALUES.OFFICE_ON_OTHER), Validators.min(1)]],
         isAdjustable: [flatRateSetup.officeOnOtherFlatRateSetup?.isAdjustable]
       }),
 
       isTravelOnStaffFlatRateActive: [!!flatRateSetup.travelOnStaffFlatRateSetup],
       travelOnStaffFlatRateSetup: this.formBuilder.group({
-        rate: [flatRateSetup.travelOnStaffFlatRateSetup ? flatRateSetup.travelOnStaffFlatRateSetup.rate : null, [Validators.max(FLAT_RATE_MAX_VALUES.TRAVEL_ON_STAFF), Validators.min(1)]],
+        rate: [flatRateSetup.travelOnStaffFlatRateSetup?.rate, [Validators.max(this.constants.FLAT_RATE_MAX_VALUES.TRAVEL_ON_STAFF), Validators.min(1)]],
         isAdjustable: [flatRateSetup.travelOnStaffFlatRateSetup?.isAdjustable]
       }),
 
       isOtherOnStaffFlatRateActive: [!!flatRateSetup.otherOnStaffFlatRateSetup],
       otherOnStaffFlatRateSetup: this.formBuilder.group({
-        rate: [flatRateSetup.otherOnStaffFlatRateSetup ? flatRateSetup.otherOnStaffFlatRateSetup.rate : null, [Validators.max(FLAT_RATE_MAX_VALUES.OTHER_ON_STAFF), Validators.min(1)]],
+        rate: [flatRateSetup.otherOnStaffFlatRateSetup?.rate, [Validators.max(this.constants.FLAT_RATE_MAX_VALUES.OTHER_ON_STAFF), Validators.min(1)]],
         isAdjustable: [flatRateSetup.otherOnStaffFlatRateSetup?.isAdjustable]
       })
     });

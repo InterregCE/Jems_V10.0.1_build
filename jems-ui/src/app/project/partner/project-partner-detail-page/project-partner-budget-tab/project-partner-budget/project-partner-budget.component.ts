@@ -2,7 +2,7 @@ import {ChangeDetectionStrategy, Component, OnInit} from '@angular/core';
 import {PartnerBudgetTable} from '../../../../project-application/model/partner-budget-table';
 import {Numbers} from '../../../../../common/utils/numbers';
 import {FormService} from '@common/components/section/form/form.service';
-import {combineLatest, merge, Observable, of, Subject} from 'rxjs';
+import {combineLatest, merge, Observable, Subject} from 'rxjs';
 import {HttpErrorResponse} from '@angular/common/http';
 import {catchError, map, startWith, tap, withLatestFrom} from 'rxjs/operators';
 import {ProjectPartnerDetailPageStore} from '../../project-partner-detail-page.store';
@@ -49,6 +49,11 @@ export class ProjectPartnerBudgetComponent implements OnInit {
 
 
   ngOnInit(): void {
+    this.formService.reset$.pipe(
+      withLatestFrom(this.pageStore.budgets$),
+      tap(([, budgets]) => this.tableChange$.next(budgets)),
+      untilDestroyed(this)).subscribe();
+
     this.pageStore.budgets$.pipe(untilDestroyed(this)).subscribe();
 
     this.budgetTables$ = merge(this.pageStore.budgets$.pipe(map((budgets) => this.deepCloneBudgets(budgets))), this.tableChange$.pipe(map(budgets => this.deepCloneBudgets(budgets))));
@@ -105,13 +110,6 @@ export class ProjectPartnerBudgetComponent implements OnInit {
     this.formService.setValid(Object.values(budgets).every(table => table.valid()));
   }
 
-  discard(): void {
-    of(null).pipe(
-      withLatestFrom(this.pageStore.budgets$),
-      tap(([, budgets]) => this.tableChange$.next(budgets)),
-      untilDestroyed(this),
-    ).subscribe();
-  }
 
   private calculateStaffCostsTotal(budgetOptions: BudgetOptions, budgets: { [key: string]: PartnerBudgetTable }): number {
 
