@@ -8829,6 +8829,140 @@
 							"response": []
 						},
 						{
+							"name": "set officeAndAdm + travel flatRates",
+							"event": [
+								{
+									"listen": "prerequest",
+									"script": {
+										"id": "5f0c4c5a-0be6-48b4-aa41-9e66a88590a4",
+										"exec": [
+											""
+										],
+										"type": "text/javascript"
+									}
+								},
+								{
+									"listen": "test",
+									"script": {
+										"id": "714e6a85-ad8d-4702-9e78-0ba0999765d4",
+										"exec": [
+											"pm.test('applicant can set officeadministration flatRate with travel flatRate', function() {\r",
+											"    pm.response.to.have.status(200);\r",
+											"});\r",
+											""
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"auth": {
+									"type": "basic",
+									"basic": [
+										{
+											"key": "password",
+											"value": "{{applicant_email}}",
+											"type": "string"
+										},
+										{
+											"key": "username",
+											"value": "{{applicant_email}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "PUT",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"officeAndAdministrationFlatRate\": 10,\r\n    \"travelAndAccommodationFlatRate\": 15\r\n}\r\n",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{url}}/api/project/partner/{{partner_id}}/budget/options",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"api",
+										"project",
+										"partner",
+										"{{partner_id}}",
+										"budget",
+										"options"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "calculate total after travel auto-deleted",
+							"event": [
+								{
+									"listen": "prerequest",
+									"script": {
+										"id": "4d996dd4-8b26-47c3-9acf-4d737c12949c",
+										"exec": [
+											""
+										],
+										"type": "text/javascript"
+									}
+								},
+								{
+									"listen": "test",
+									"script": {
+										"id": "10cc483d-7b05-4c48-91bd-1a91614c3c45",
+										"exec": [
+											"pm.test('total is calculated correctly', function() {\r",
+											"    pm.response.to.have.status(200);\r",
+											"    pm.expect(pm.response.json()).to.eql(61001);\r",
+											"});\r",
+											""
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"auth": {
+									"type": "basic",
+									"basic": [
+										{
+											"key": "password",
+											"value": "{{applicant_email}}",
+											"type": "string"
+										},
+										{
+											"key": "username",
+											"value": "{{applicant_email}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{url}}/api/project/partner/{{partner_id}}/budget/total",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"api",
+										"project",
+										"partner",
+										"{{partner_id}}",
+										"budget",
+										"total"
+									]
+								}
+							},
+							"response": []
+						},
+						{
 							"name": "set staff costs flatRate",
 							"event": [
 								{
@@ -8894,6 +9028,90 @@
 										"{{partner_id}}",
 										"budget",
 										"options"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "restore budget - travel",
+							"event": [
+								{
+									"listen": "prerequest",
+									"script": {
+										"id": "071e3040-e2b8-4f22-88dc-bb11bd1e8834",
+										"exec": [
+											""
+										],
+										"type": "text/javascript"
+									}
+								},
+								{
+									"listen": "test",
+									"script": {
+										"id": "f3c1c476-a025-462f-b2c5-b53413c85fb8",
+										"exec": [
+											"pm.test('applicant can set budgettravel', function() {\r",
+											"    pm.response.to.have.status(200);\r",
+											"});\r",
+											"\r",
+											"pm.test('travel is set correctly', function() {\r",
+											"    const travel = pm.response.json();\r",
+											"    pm.expect(travel.length).to.eql(1);\r",
+											"    pm.expect(travel[0].numberOfUnits).to.eql(0.19);\r",
+											"    pm.expect(travel[0].pricePerUnit).to.eql(0.99);\r",
+											"    pm.expect(travel[0].rowSum).to.eql(0.18);\r",
+											"});\r",
+											"\r",
+											"pm.test('description translation is persisted correctly', function() {\r",
+											"    const description = pm.response.json()[0].description.find(desc => desc.language === pm.variables.get('inputLanguage')).translation;\r",
+											"    pm.expect(description).to.eql('Gran Canaria');\r",
+											"});\r",
+											""
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"auth": {
+									"type": "basic",
+									"basic": [
+										{
+											"key": "password",
+											"value": "{{applicant_email}}",
+											"type": "string"
+										},
+										{
+											"key": "username",
+											"value": "{{applicant_email}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "PUT",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "[\r\n    {\r\n        \"description\": [\r\n            {\r\n                \"language\": \"{{inputLanguage}}\",\r\n                \"translation\": \"Gran Canaria\"\r\n            }\r\n        ],\r\n        \"numberOfUnits\": 0.19,\r\n        \"pricePerUnit\": 0.99\r\n    }\r\n]\r\n",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{url}}/api/project/partner/{{partner_id}}/budget/travel",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"api",
+										"project",
+										"partner",
+										"{{partner_id}}",
+										"budget",
+										"travel"
 									]
 								}
 							},
@@ -9440,9 +9658,9 @@
 									"});\r",
 									"\r",
 									"pm.test('financing and funds are correct', function() {\r",
-									"    pm.expect(finances[0].percentage).to.eql(75);\r",
+									"    pm.expect(finances[0].percentage).to.eql(25);\r",
 									"    pm.expect(finances[0].fund).to.not.be.empty;\r",
-									"    pm.expect(finances[1].percentage).to.eql(25);\r",
+									"    pm.expect(finances[1].percentage).to.eql(75);\r",
 									"    pm.expect(finances[1].fund).to.be.null;\r",
 									"});\r",
 									"\r",
@@ -9450,28 +9668,28 @@
 									"    pm.expect(contributions[0].name).to.eql(pm.variables.get('partner_abbreviation'));\r",
 									"    pm.expect(contributions[0].status).to.eql('Private');\r",
 									"    pm.expect(contributions[0].isPartner).to.be.true;\r",
-									"    pm.expect(contributions[0].amount).to.eql(6200);\r",
+									"    pm.expect(contributions[0].amount).to.eql(5100);\r",
 									"});\r",
 									"\r",
 									"pm.test('2nd contribution is correct', function() {\r",
 									"    pm.expect(contributions[1].name).to.eql('Source of money 01');\r",
 									"    pm.expect(contributions[1].status).to.eql('Public');\r",
 									"    pm.expect(contributions[1].isPartner).to.be.false;\r",
-									"    pm.expect(contributions[1].amount).to.eql(10000);\r",
+									"    pm.expect(contributions[1].amount).to.eql(8000);\r",
 									"});\r",
 									"\r",
 									"pm.test('3rd contribution is correct', function() {\r",
 									"    pm.expect(contributions[2].name).to.eql('Source of money 02');\r",
 									"    pm.expect(contributions[2].status).to.eql('AutomaticPublic');\r",
 									"    pm.expect(contributions[2].isPartner).to.be.false;\r",
-									"    pm.expect(contributions[2].amount).to.eql(5000);\r",
+									"    pm.expect(contributions[2].amount).to.eql(3000);\r",
 									"});\r",
 									"\r",
 									"pm.test('4th contribution is correct', function() {\r",
 									"    pm.expect(contributions[3].name).to.eql('Source of money 03');\r",
 									"    pm.expect(contributions[3].status).to.eql('Private');\r",
 									"    pm.expect(contributions[3].isPartner).to.be.false;\r",
-									"    pm.expect(contributions[3].amount).to.eql(3000);\r",
+									"    pm.expect(contributions[3].amount).to.eql(2050);\r",
 									"});\r",
 									""
 								],
@@ -9499,7 +9717,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"finances\": [\r\n        {\r\n            \"percentage\": 25\r\n        },\r\n        {\r\n            \"percentage\": 75,\r\n            \"fundId\": {{programmeFundId}}\r\n        }\r\n    ],\r\n    \"partnerContributions\": [\r\n        {\r\n            \"isPartner\": false,\r\n            \"name\": \"Source of money 01\",\r\n            \"status\": \"Public\",\r\n            \"amount\": 10000\r\n        },\r\n        {\r\n            \"isPartner\": true,\r\n            \"name\": \"THIS NAME SHOULD BE IGNORED\",\r\n            \"status\": \"Private\",\r\n            \"amount\": 6200\r\n        },\r\n        {\r\n            \"isPartner\": false,\r\n            \"name\": \"Source of money 02\",\r\n            \"status\": \"AutomaticPublic\",\r\n            \"amount\": 5000\r\n        },\r\n        {\r\n            \"isPartner\": false,\r\n            \"name\": \"Source of money 03\",\r\n            \"status\": \"Private\",\r\n            \"amount\": 3000\r\n        }\r\n    ]\r\n}\r\n",
+							"raw": "{\r\n    \"finances\": [\r\n        {\r\n            \"percentage\": 75\r\n        },\r\n        {\r\n            \"percentage\": 25,\r\n            \"fundId\": {{programmeFundId}}\r\n        }\r\n    ],\r\n    \"partnerContributions\": [\r\n        {\r\n            \"isPartner\": false,\r\n            \"name\": \"Source of money 01\",\r\n            \"status\": \"Public\",\r\n            \"amount\": 8000\r\n        },\r\n        {\r\n            \"isPartner\": true,\r\n            \"name\": \"THIS NAME SHOULD BE IGNORED\",\r\n            \"status\": \"Private\",\r\n            \"amount\": 5100\r\n        },\r\n        {\r\n            \"isPartner\": false,\r\n            \"name\": \"Source of money 02\",\r\n            \"status\": \"AutomaticPublic\",\r\n            \"amount\": 3000\r\n        },\r\n        {\r\n            \"isPartner\": false,\r\n            \"name\": \"Source of money 03\",\r\n            \"status\": \"Private\",\r\n            \"amount\": 2050\r\n        }\r\n    ]\r\n}\r\n",
 							"options": {
 								"raw": {
 									"language": "json"
