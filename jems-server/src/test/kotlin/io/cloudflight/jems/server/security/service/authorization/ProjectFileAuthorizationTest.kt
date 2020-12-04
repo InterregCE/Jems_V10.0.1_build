@@ -1,6 +1,7 @@
 package io.cloudflight.jems.server.security.service.authorization
 
 import io.cloudflight.jems.api.call.dto.OutputCallWithDates
+import io.cloudflight.jems.api.call.dto.flatrate.FlatRateSetupDTO
 import io.cloudflight.jems.api.project.dto.OutputProject
 import io.cloudflight.jems.api.project.dto.file.OutputProjectFile
 import io.cloudflight.jems.api.project.dto.status.OutputProjectStatus
@@ -97,7 +98,8 @@ internal class ProjectFileAuthorizationTest {
             name = "call",
             startDate = ZonedDateTime.now(),
             endDate = ZonedDateTime.now(),
-            lengthOfPeriod = 12
+            lengthOfPeriod = 12,
+            flatRates = FlatRateSetupDTO(),
         )
 
         private fun getProject(id: Long, applicantId: Long, status: ProjectApplicationStatus): OutputProject {

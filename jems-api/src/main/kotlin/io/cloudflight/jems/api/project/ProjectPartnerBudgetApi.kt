@@ -49,7 +49,7 @@ interface ProjectPartnerBudgetApi {
     @PutMapping("/options", consumes = [MediaType.APPLICATION_JSON_VALUE])
     fun updateBudgetOptions(
         @PathVariable partnerId: Long,
-        @Valid @RequestBody budgetOptionsDto: ProjectPartnerBudgetOptionsDto
+        @RequestBody budgetOptionsDto: ProjectPartnerBudgetOptionsDto
     )
 
     //region Travel
@@ -132,7 +132,7 @@ interface ProjectPartnerBudgetApi {
     @PutMapping("/cofinancing", consumes = [MediaType.APPLICATION_JSON_VALUE])
     fun updateProjectPartnerCoFinancing(
         @PathVariable partnerId: Long,
-        @Valid @RequestBody partnerCoFinancing: ProjectPartnerCoFinancingAndContributionInputDTO
+        @RequestBody partnerCoFinancing: ProjectPartnerCoFinancingAndContributionInputDTO
     ): ProjectPartnerCoFinancingAndContributionOutputDTO
 
 }

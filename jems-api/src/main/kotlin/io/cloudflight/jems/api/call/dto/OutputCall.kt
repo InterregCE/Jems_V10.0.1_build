@@ -1,6 +1,6 @@
 package io.cloudflight.jems.api.call.dto
 
-import io.cloudflight.jems.api.call.dto.flatrate.InputCallFlatRateSetup
+import io.cloudflight.jems.api.call.dto.flatrate.FlatRateSetupDTO
 import io.cloudflight.jems.api.programme.dto.ProgrammeFundOutputDTO
 import io.cloudflight.jems.api.programme.dto.priority.OutputProgrammePriorityPolicySimple
 import io.cloudflight.jems.api.programme.dto.strategy.ProgrammeStrategy
@@ -17,5 +17,5 @@ data class OutputCall (
     val status: CallStatus,
     val lengthOfPeriod: Int?,
     val description: String? = null,
-    val flatRates: List<InputCallFlatRateSetup> = emptyList()
+    val flatRates: FlatRateSetupDTO,
 )

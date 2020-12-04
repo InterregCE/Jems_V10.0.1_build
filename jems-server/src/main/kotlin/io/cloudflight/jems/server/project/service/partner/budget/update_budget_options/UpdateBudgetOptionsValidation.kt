@@ -4,23 +4,31 @@ import io.cloudflight.jems.api.call.dto.flatrate.FlatRateType
 import io.cloudflight.jems.server.call.service.flatrate.model.ProjectCallFlatRate
 import io.cloudflight.jems.server.common.exception.I18nFieldError
 import io.cloudflight.jems.server.common.exception.I18nValidationException
+import io.cloudflight.jems.server.project.service.budget.model.ProjectPartnerBudgetOptions
 import org.springframework.http.HttpStatus
 
 private const val INVALID_ERR_MSG = "project.partner.budget.options.flatRate"
 
-fun validateFlatRates(callFlatRateSetup: Set<ProjectCallFlatRate>, officeAdministrationFlatRate: Int?, staffCostsFlatRate: Int?) {
+fun validateFlatRates(callFlatRateSetup: Set<ProjectCallFlatRate>, options: ProjectPartnerBudgetOptions) {
     val errors: MutableMap<String, I18nFieldError> = mutableMapOf()
 
     validateFlatRate(
-        value = staffCostsFlatRate,
+        value = options.staffCostsFlatRate,
         type = FlatRateType.StaffCost,
         callSetup = callFlatRateSetup,
         errors = errors
     )
 
     validateFlatRate(
-        value = officeAdministrationFlatRate,
+        value = options.officeAndAdministrationFlatRate,
         type = FlatRateType.OfficeOnStaff,
+        callSetup = callFlatRateSetup,
+        errors = errors
+    )
+
+    validateFlatRate(
+        value = options.travelAndAccommodationFlatRate,
+        type = FlatRateType.TravelOnStaff,
         callSetup = callFlatRateSetup,
         errors = errors
     )

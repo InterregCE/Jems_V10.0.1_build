@@ -14,6 +14,8 @@
   @include generate-theme-vars($light-theme);
 }
 
+@import "src/app/common/directives/expected-number-of-chars.scss";
+
 /**
  * Overriding styles: if you want to change colors of default material theme in specific components
  */

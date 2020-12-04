@@ -383,7 +383,7 @@ internal class ProjectPartnerGeneralBudgetServiceTest {
         val id = 598L
         every { getBudgetOptionsInteractor.getBudgetOptions(id) } returns ProjectPartnerBudgetOptions(
             partnerId = id,
-            officeAdministrationFlatRate = 10,
+            officeAndAdministrationFlatRate = 10,
             staffCostsFlatRate = null
         )
         initCommonTestBudgets(id)
@@ -396,7 +396,7 @@ internal class ProjectPartnerGeneralBudgetServiceTest {
         val id = 321L
         every { getBudgetOptionsInteractor.getBudgetOptions(id) } returns ProjectPartnerBudgetOptions(
             partnerId = id,
-            officeAdministrationFlatRate = null,
+            officeAndAdministrationFlatRate = null,
             staffCostsFlatRate = 10
         )
         initCommonTestBudgets(id)
@@ -409,7 +409,7 @@ internal class ProjectPartnerGeneralBudgetServiceTest {
         val id = 281L
         every { getBudgetOptionsInteractor.getBudgetOptions(id) } returns ProjectPartnerBudgetOptions(
             partnerId = id,
-            officeAdministrationFlatRate = 10,
+            officeAndAdministrationFlatRate = 10,
             staffCostsFlatRate = 10
         )
         initCommonTestBudgets(id)

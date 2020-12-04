@@ -5,7 +5,7 @@ import io.cloudflight.jems.api.call.dto.InputCallUpdate
 import io.cloudflight.jems.api.call.dto.OutputCall
 import io.cloudflight.jems.api.call.dto.OutputCallList
 import io.cloudflight.jems.api.call.dto.OutputCallProgrammePriority
-import io.cloudflight.jems.api.call.dto.flatrate.InputCallFlatRateSetup
+import io.cloudflight.jems.api.call.dto.flatrate.FlatRateSetupDTO
 import io.swagger.annotations.Api
 import io.swagger.annotations.ApiImplicitParam
 import io.swagger.annotations.ApiImplicitParams
@@ -57,6 +57,6 @@ interface CallApi {
     @PutMapping("/{callId}/flatrate", consumes = [MediaType.APPLICATION_JSON_VALUE])
     fun updateCallFlatRateSetup(
         @PathVariable callId: Long,
-        @RequestBody flatRates: Set<InputCallFlatRateSetup>
+        @RequestBody flatRateSetup: FlatRateSetupDTO
     )
 }

@@ -6,7 +6,7 @@ import io.cloudflight.jems.server.project.service.budget.ProjectBudgetPersistenc
 import io.cloudflight.jems.server.project.service.budget.model.PartnerBudget
 import io.cloudflight.jems.server.project.service.budget.model.ProjectPartnerCost
 import io.cloudflight.jems.server.project.service.budget.model.ProjectPartnerBudgetOptions
-import io.cloudflight.jems.server.project.service.partner.budget.ProjectPartnerBudgetPersistence
+import io.cloudflight.jems.server.project.service.partner.budget.ProjectPartnerBudgetOptionsPersistence
 import io.cloudflight.jems.server.project.service.partner.model.ProjectPartner
 import io.mockk.MockKAnnotations
 import io.mockk.every
@@ -38,7 +38,7 @@ class GetProjectBudgetInteractorTest {
 
         private val partner1Options = ProjectPartnerBudgetOptions(
             partnerId = partner1.id!!,
-            officeAdministrationFlatRate = 10,
+            officeAndAdministrationFlatRate = 10,
             staffCostsFlatRate = 10
         )
 
@@ -53,7 +53,7 @@ class GetProjectBudgetInteractorTest {
     lateinit var persistence: ProjectBudgetPersistence
 
     @MockK
-    lateinit var optionPersistence: ProjectPartnerBudgetPersistence
+    lateinit var optionPersistence: ProjectPartnerBudgetOptionsPersistence
 
     @RelaxedMockK
     lateinit var auditService: AuditService

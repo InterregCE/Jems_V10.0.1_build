@@ -66,7 +66,7 @@ export class Numbers {
   /**
    * Divides the numbers using Big.js in order to avoid rounding errors.
    */
-  static divide(dividend: number, divisor: number): number {
+  static divide(dividend: number | null, divisor: number | null): number {
     if (!dividend || !divisor) {
       return 0;
     }

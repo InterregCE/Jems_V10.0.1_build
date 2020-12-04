@@ -12,12 +12,14 @@ import {HttpErrorResponse} from '@angular/common/http';
 export class FormService {
   private form: FormGroup;
   private additionalValidators?: (() => boolean)[];
+  private resetSubject = new Subject();
 
   saveLabel = 'common.save.label';
   valid$ = new ReplaySubject<boolean>(1);
   dirty$ = new ReplaySubject<boolean>(1);
   success$ = new Subject<I18nLabel | string | null>();
   error$ = new Subject<I18nValidationError | null>();
+  reset$ = this.resetSubject.asObservable();
 
   constructor(private routingService: RoutingService) {
   }
@@ -95,6 +97,10 @@ export class FormService {
 
   setAdditionalValidators(additionalValidators?: (() => boolean)[]): void {
     this.additionalValidators = additionalValidators;
+  }
+
+  reset(): void {
+    this.resetSubject.next();
   }
 
   private setFieldErrors(error: I18nValidationError): void {

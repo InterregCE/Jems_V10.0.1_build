@@ -5,6 +5,4 @@ import org.springframework.stereotype.Repository
 
 @Repository
 interface ProjectPartnerBudgetStaffCostRepository
-    : ProjectPartnerBudgetCommonRepository<ProjectPartnerBudgetStaffCost> {
-    fun deleteAllByPartnerId(partnerId: Long)
-}
+    : ProjectPartnerBudgetCommonRepository<ProjectPartnerBudgetStaffCost>

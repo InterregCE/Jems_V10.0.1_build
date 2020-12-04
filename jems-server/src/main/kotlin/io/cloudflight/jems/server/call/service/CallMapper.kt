@@ -5,9 +5,9 @@ import io.cloudflight.jems.api.call.dto.InputCallCreate
 import io.cloudflight.jems.api.call.dto.OutputCall
 import io.cloudflight.jems.api.call.dto.OutputCallList
 import io.cloudflight.jems.api.call.dto.OutputCallWithDates
+import io.cloudflight.jems.server.call.controller.toDto
 import io.cloudflight.jems.server.call.entity.Call
 import io.cloudflight.jems.server.call.repository.toProjectCallFlatRate
-import io.cloudflight.jems.server.call.service.flatrate.toOutputDto
 import io.cloudflight.jems.server.programme.entity.ProgrammeFundEntity
 import io.cloudflight.jems.server.user.entity.User
 import io.cloudflight.jems.server.programme.entity.ProgrammePriorityPolicy
@@ -48,7 +48,7 @@ fun Call.toOutputCall() = OutputCall(
     endDate = endDate,
     description = description,
     lengthOfPeriod = lengthOfPeriod,
-    flatRates = flatRates.toProjectCallFlatRate().toOutputDto()
+    flatRates = flatRates.toProjectCallFlatRate().toDto()
 )
 
 fun Call.toOutputCallList() = OutputCallList(
@@ -65,5 +65,5 @@ fun Call.toOutputCallWithDates() = OutputCallWithDates(
     startDate = startDate,
     endDate = endDate,
     lengthOfPeriod = lengthOfPeriod,
-    flatRates = flatRates.toProjectCallFlatRate().toOutputDto()
+    flatRates = flatRates.toProjectCallFlatRate().toDto()
 )

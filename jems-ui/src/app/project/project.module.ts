@@ -55,10 +55,10 @@ import {ProjectApplicationFormPartnerAddressComponent} from './project-applicati
 import {ProjectApplicationFormRegionSelectionComponent} from './project-application/containers/project-application-form-page/project-application-form-partner-section/project-application-form-region-selection/project-application-form-region-selection.component';
 import {DeleteActionCellComponent} from './project-application/components/project-application-form/project-application-form-partner-list/delete-action-cell/delete-action-cell.component';
 import {WorkPackageDeleteActionCellComponent} from './project-application/components/project-application-form/project-application-form-work-packages-list/work-package-delete-action-cell/work-package-delete-action-cell.component';
-import {ProjectApplicationPartnerBudgetPageComponent} from './project-application/containers/project-application-form-page/project-application-form-partner-section/project-application-partner-budget-page/project-application-partner-budget-page.component';
-import {ProjectApplicationFormPartnerBudgetComponent} from './project-application/components/project-application-form/project-application-form-partner-budget/project-application-form-partner-budget.component';
-import {BudgetTableComponent} from './project-application/components/project-application-form/project-application-form-partner-budget/budget-table/budget-table.component';
-import {AgGridTemplateRendererComponent} from './project-application/components/project-application-form/project-application-form-partner-budget/budget-table/ag-grid-template-renderer/ag-grid-template-renderer.component';
+import {ProjectPartnerBudgetTabComponent} from './partner/project-partner-detail-page/project-partner-budget-tab/project-partner-budget-tab.component';
+import {ProjectPartnerBudgetComponent} from './partner/project-partner-detail-page/project-partner-budget-tab/project-partner-budget/project-partner-budget.component';
+import {BudgetTableComponent} from './partner/project-partner-detail-page/project-partner-budget-tab/project-partner-budget/budget-table/budget-table.component';
+import {AgGridTemplateRendererComponent} from './partner/project-partner-detail-page/project-partner-budget-tab/project-partner-budget/budget-table/ag-grid-template-renderer/ag-grid-template-renderer.component';
 import {AgGridModule} from 'ag-grid-angular';
 import {ProjectApplicationFormStore} from './project-application/containers/project-application-form-page/services/project-application-form-store.service';
 import {ProjectPartnerStore} from './project-application/containers/project-application-form-page/services/project-partner-store.service';
@@ -67,22 +67,23 @@ import {ProjectApplicationFormAssociatedOrganizationsListComponent} from './proj
 import {ProjectApplicationFormAssociatedOrgDetailComponent} from './project-application/containers/project-application-form-page/project-application-form-partner-section/project-application-form-associated-org-detail/project-application-form-associated-org-detail.component';
 import {ProjectApplicationFormAssociatedOrganizationEditComponent} from './project-application/components/project-application-form/project-application-form-associated-organization-edit/project-application-form-associated-organization-edit.component';
 import {ProjectAssociatedOrganizationStore} from './project-application/containers/project-application-form-page/services/project-associated-organization-store.service';
-import {ProjectApplicationFormPartnerBudgetOptionsComponent} from './project-application/components/project-application-form/project-application-form-partner-budget-options/project-application-form-partner-budget-options.component';
-import {OfficeAndAdministrationTableComponent} from './project-application/components/project-application-form/project-application-form-partner-budget/office-and-administration-table/office-and-administration-table.component';
+import {ProjectPartnerBudgetOptionsComponent} from './partner/project-partner-detail-page/project-partner-budget-tab/project-partner-budget-options/project-partner-budget-options.component';
+import {OfficeAndAdministrationTableComponent} from './partner/project-partner-detail-page/project-partner-budget-tab/project-partner-budget/office-and-administration-table/office-and-administration-table.component';
 import {ContributionToggleColumnComponent} from './project-application/components/project-application-form/project-application-form-management-detail/contribution-toggle-column/contribution-toggle-column.component';
-import {StaffCostsFlatRateTableComponent} from './project-application/components/project-application-form/project-application-form-partner-budget/staff-costs-flat-rate-table/staff-costs-flat-rate-table.component';
+import {StaffCostsFlatRateTableComponent} from './partner/project-partner-detail-page/project-partner-budget-tab/project-partner-budget/staff-costs-flat-rate-table/staff-costs-flat-rate-table.component';
 import {ProjectApplicationFormIdentificationPageComponent} from './project-application/containers/project-application-form-page/project-application-form-identification-page/project-application-form-identification-page.component';
 import {ProjectApplicationFormAssociatedOrgPageComponent} from './project-application/containers/project-application-form-page/project-application-form-associated-org-page/project-application-form-associated-org-page.component';
 import {ProjectApplicationFormAddressComponent} from './project-application/components/project-application-form/project-application-form-address/project-application-form-address.component';
-import {ProjectPartnerCoFinancingComponent} from './partner/project-partner-detail-page/project-application-partner-co-financing-tab/project-partner-co-financing/project-partner-co-financing.component';
+import {ProjectPartnerCoFinancingComponent} from './partner/project-partner-detail-page/project-partner-co-financing-tab/project-partner-co-financing/project-partner-co-financing.component';
 import {ProjectPartnerDetailPageComponent} from './partner/project-partner-detail-page/project-partner-detail-page.component';
-import {ProjectPartnerCoFinancingTabComponent} from './partner/project-partner-detail-page/project-application-partner-co-financing-tab/project-partner-co-financing-tab.component';
+import {ProjectPartnerCoFinancingTabComponent} from './partner/project-partner-detail-page/project-partner-co-financing-tab/project-partner-co-financing-tab.component';
 import {BudgetPageComponent} from './budget/budget-page/budget-page.component';
 import { ProjectApplicationFormWorkPackageObjectivesComponent } from './project-application/containers/project-application-form-page/project-application-form-work-package-section/project-application-form-work-package-objectives/project-application-form-work-package-objectives.component';
 import {ProjectWorkpackageStoreService} from './project-application/containers/project-application-form-page/services/project-workpackage-store.service';
 import { ProjectApplicationFormWorkPackageOutputComponent } from './project-application/containers/project-application-form-page/project-application-form-work-package-section/project-application-form-work-package-output/project-application-form-work-package-output.component';
 import { ProjectApplicationFormWorkPackageOutputsComponent } from './project-application/components/project-application-form/project-application-form-work-package-outputs/project-application-form-work-package-outputs.component';
 import { WorkPackageOutputTableComponent } from './project-application/components/project-application-form/project-application-form-work-package-outputs/tables/work-package-output-table/work-package-output-table.component';
+import { TravelAndAccommodationFlatRateTableComponent } from './partner/project-partner-detail-page/project-partner-budget-tab/project-partner-budget/travel-and-accommodation-flat-rate-table/travel-and-accommodation-flat-rate-table.component';
 
 @NgModule({
   declarations: [
@@ -141,11 +142,11 @@ import { WorkPackageOutputTableComponent } from './project-application/component
     ProjectApplicationFormRegionSelectionComponent,
     DeleteActionCellComponent,
     WorkPackageDeleteActionCellComponent,
-    ProjectApplicationPartnerBudgetPageComponent,
+    ProjectPartnerBudgetTabComponent,
     ProjectPartnerCoFinancingTabComponent,
-    ProjectApplicationFormPartnerBudgetComponent,
+    ProjectPartnerBudgetComponent,
     ProjectPartnerCoFinancingComponent,
-    ProjectApplicationFormPartnerBudgetOptionsComponent,
+    ProjectPartnerBudgetOptionsComponent,
     OfficeAndAdministrationTableComponent,
     BudgetTableComponent,
     AgGridTemplateRendererComponent,
@@ -159,7 +160,8 @@ import { WorkPackageOutputTableComponent } from './project-application/component
     ProjectApplicationFormWorkPackageObjectivesComponent,
     ProjectApplicationFormWorkPackageOutputComponent,
     ProjectApplicationFormWorkPackageOutputsComponent,
-    WorkPackageOutputTableComponent
+    WorkPackageOutputTableComponent,
+    TravelAndAccommodationFlatRateTableComponent
   ],
   imports: [
     SharedModule,

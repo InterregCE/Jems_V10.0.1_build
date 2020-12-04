@@ -4,7 +4,14 @@ data class ProjectPartnerBudgetOptions(
 
     val partnerId: Long,
 
-    val officeAdministrationFlatRate: Int? = null,
+    val officeAndAdministrationFlatRate: Int? = null,
+    val travelAndAccommodationFlatRate: Int? = null,
+
     val staffCostsFlatRate: Int? = null
 
-)
+) {
+    fun isEmpty() =
+        officeAndAdministrationFlatRate == null
+            && staffCostsFlatRate == null
+            && travelAndAccommodationFlatRate == null
+}

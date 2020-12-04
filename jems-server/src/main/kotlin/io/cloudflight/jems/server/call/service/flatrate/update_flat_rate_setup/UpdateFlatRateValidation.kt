@@ -1,7 +1,7 @@
 package io.cloudflight.jems.server.call.service.flatrate.update_flat_rate_setup
 
 import io.cloudflight.jems.api.call.dto.flatrate.FlatRateType
-import io.cloudflight.jems.api.call.dto.flatrate.InputCallFlatRateSetup
+import io.cloudflight.jems.server.call.service.flatrate.model.ProjectCallFlatRate
 import io.cloudflight.jems.server.common.exception.I18nFieldError
 import io.cloudflight.jems.server.common.exception.I18nValidationException
 import org.springframework.http.HttpStatus
@@ -16,7 +16,7 @@ private val maxFlatRates = mapOf(
     FlatRateType.OtherOnStaff to 40
 )
 
-fun validateFlatRates(flatRates: Set<InputCallFlatRateSetup>) {
+fun validateFlatRates(flatRates: Set<ProjectCallFlatRate>) {
     val groupedByType = flatRates.associateBy { it.type }
     if (groupedByType.keys.size != flatRates.size) {
         invalid("call.flatRateSetup.duplicates")

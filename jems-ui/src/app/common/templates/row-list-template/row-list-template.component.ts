@@ -19,7 +19,7 @@ export class RowListTemplateComponent implements AfterViewInit, AfterContentChec
   @ViewChild('container') container: ElementRef;
   @Input() columnClassList: string[];
   @Input() appearanceRow: string[];
-  @Input() appearance: 'table' | '' = '';
+  @Input() appearance: 'table' | 'material-table' | '' = '';
 
   ngAfterViewInit(): void {
     this.setColumnClasses();

@@ -19,4 +19,6 @@ interface ProjectPartnerBudgetCommonRepository<T : CommonBudget> : CrudRepositor
     @Query("SELECT new io.cloudflight.jems.server.project.entity.partner.budget.ProjectPartnerBudgetEntity(e.partnerId, SUM(e.budget.rowSum)) FROM #{#entityName} e WHERE e.partnerId IN :ids GROUP BY e.partnerId")
     fun sumForAllPartners(@Param("ids") partnerIds: Set<Long>): List<ProjectPartnerBudgetEntity>
 
+    fun deleteAllByPartnerId(partnerId: Long)
+
 }

@@ -8,9 +8,9 @@ import {ChangeDetectionStrategy, Component, EventEmitter, Input, Output} from '@
 })
 export class CallFlatRatesToggleColumnComponent {
   @Output()
-  selected = new EventEmitter<string>();
+  selected = new EventEmitter<boolean>();
   @Input()
-  previousSelection: string;
+  previousSelection: boolean;
   @Input()
   disabled: boolean;
 }

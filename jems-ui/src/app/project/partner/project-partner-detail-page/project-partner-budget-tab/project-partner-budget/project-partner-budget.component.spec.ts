@@ -1,18 +1,19 @@
 import {async, ComponentFixture, fakeAsync, TestBed, tick} from '@angular/core/testing';
-
-import {ProjectApplicationPartnerBudgetPageComponent} from './project-application-partner-budget-page.component';
-import {TestModule} from '../../../../../../common/test-module';
-import {ProjectModule} from '../../../../../project.module';
+import {ProjectPartnerBudgetComponent} from './project-partner-budget.component';
 import {HttpTestingController} from '@angular/common/http/testing';
+import {ProjectPartnerStore} from '../../../../project-application/containers/project-application-form-page/services/project-partner-store.service';
+import {TestModule} from '../../../../../common/test-module';
+import {ProjectModule} from '../../../../project.module';
 import {ActivatedRoute} from '@angular/router';
-import {PartnerBudgetTable} from '../../../../model/partner-budget-table';
-import {PartnerBudgetTableType} from '../../../../model/partner-budget-table-type';
-import {ProjectPartnerStore} from '../../services/project-partner-store.service';
-import {BudgetOptions} from '../../../../model/budget-options';
+import {PartnerBudgetTable} from '../../../../project-application/model/partner-budget-table';
+import {PartnerBudgetTableType} from '../../../../project-application/model/partner-budget-table-type';
+import {ProjectPartnerDetailPageStore} from '../../project-partner-detail-page.store';
+import {AuthenticationStore} from '../../../../../authentication/service/authentication-store.service';
+
 
 describe('ProjectApplicationPartnerBudgetPageComponent', () => {
-  let component: ProjectApplicationPartnerBudgetPageComponent;
-  let fixture: ComponentFixture<ProjectApplicationPartnerBudgetPageComponent>;
+  let component: ProjectPartnerBudgetComponent;
+  let fixture: ComponentFixture<ProjectPartnerBudgetComponent>;
   let httpTestingController: HttpTestingController;
   let partnerStore: ProjectPartnerStore;
 
@@ -22,13 +23,17 @@ describe('ProjectApplicationPartnerBudgetPageComponent', () => {
         TestModule,
         ProjectModule
       ],
-      declarations: [ProjectApplicationPartnerBudgetPageComponent],
+      declarations: [ProjectPartnerBudgetComponent],
       providers: [
         {
           provide: ActivatedRoute,
           useValue: {
             snapshot: {params: {projectId: 1}}
           }
+        },
+        {
+          provide: ProjectPartnerDetailPageStore,
+          useClass: ProjectPartnerDetailPageStore
         }
       ]
     })
@@ -39,32 +44,14 @@ describe('ProjectApplicationPartnerBudgetPageComponent', () => {
 
   beforeEach(() => {
     partnerStore.partner$.next({id: 2});
-    fixture = TestBed.createComponent(ProjectApplicationPartnerBudgetPageComponent);
+    fixture = TestBed.createComponent(ProjectPartnerBudgetComponent);
     component = fixture.componentInstance;
-    component.partnerId = 2;
     fixture.detectChanges();
   });
 
   it('should create', () => {
     expect(component).toBeTruthy();
   });
-
-  it('should fetch and save budget options', fakeAsync(() => {
-    httpTestingController.expectOne({
-      method: 'GET',
-      url: '//api/project/partner/2/budget/options'
-    });
-
-    component.saveBudgetOptions.next(
-      new BudgetOptions(8, 10)
-    );
-    tick();
-
-    httpTestingController.expectOne({
-      method: 'PUT',
-      url: '//api/project/partner/2/budget/options'
-    });
-  }));
 
   it('should fetch and save budgets', fakeAsync(() => {
     httpTestingController.expectOne({
@@ -88,7 +75,7 @@ describe('ProjectApplicationPartnerBudgetPageComponent', () => {
       url: '//api/project/partner/2/budget/infrastructure'
     });
 
-    component.saveBudgets$.next({
+    component.updateBudgets({
       staff: new PartnerBudgetTable(PartnerBudgetTableType.STAFF, []),
       travel: new PartnerBudgetTable(PartnerBudgetTableType.TRAVEL, []),
       external: new PartnerBudgetTable(PartnerBudgetTableType.EXTERNAL, []),

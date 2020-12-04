@@ -21,7 +21,7 @@
 <ng-template #saveDiscard>
     <mat-card-footer [@slideInOut] class="footer">
         <button mat-stroked-button class="action-button discard" type="button"
-                (click)="formService.setDirty(false); discard.emit()">
+                (click)="formService.setDirty(false); this.discard.emit(); formService.reset()">
             {{'common.cancel.label' | translate}}
         </button>
         <button [disabled]="(formService.valid$ | async) === false"

@@ -2,31 +2,36 @@ package io.cloudflight.jems.server.project.service.partner.budget.update_budget_
 
 import io.cloudflight.jems.server.call.service.flatrate.CallFlatRateSetupPersistence
 import io.cloudflight.jems.server.project.authorization.CanUpdateProjectPartner
-import io.cloudflight.jems.server.project.service.partner.budget.ProjectPartnerBudgetPersistence
+import io.cloudflight.jems.server.project.service.budget.model.ProjectPartnerBudgetOptions
+import io.cloudflight.jems.server.project.service.partner.budget.ProjectPartnerBudgetOptionsPersistence
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 
 @Service
 class UpdateBudgetOptions(
-    private val persistence: ProjectPartnerBudgetPersistence,
+    private val persistence: ProjectPartnerBudgetOptionsPersistence,
     private val callFlatRateSetupPersistence: CallFlatRateSetupPersistence
 ) : UpdateBudgetOptionsInteractor {
 
     @Transactional
     @CanUpdateProjectPartner
-    override fun updateBudgetOptions(partnerId: Long, officeAdministrationFlatRate: Int?, staffCostsFlatRate: Int?) {
+    override fun updateBudgetOptions(partnerId: Long, options: ProjectPartnerBudgetOptions) {
         val callFlatRateSetup = callFlatRateSetupPersistence.getProjectCallFlatRateByPartnerId(partnerId)
 
         validateFlatRates(
             callFlatRateSetup = callFlatRateSetup,
-            staffCostsFlatRate = staffCostsFlatRate,
-            officeAdministrationFlatRate = officeAdministrationFlatRate
+            options = options,
         )
 
-        if (officeAdministrationFlatRate == null && staffCostsFlatRate == null) persistence.deleteBudgetOptions(partnerId)
-        else {
-            if (staffCostsFlatRate != null) persistence.deleteStaffCosts(partnerId)
-            persistence.updateBudgetOptions(partnerId, officeAdministrationFlatRate, staffCostsFlatRate)
-        }
+        if (options.isEmpty())
+            return persistence.deleteBudgetOptions(partnerId)
+
+        if (options.staffCostsFlatRate != null)
+            persistence.deleteStaffCosts(partnerId)
+        if (options.travelAndAccommodationFlatRate != null)
+            persistence.deleteTravelAndAccommodationCosts(partnerId)
+
+        persistence.updateBudgetOptions(partnerId, options)
     }
+
 }

@@ -87,13 +87,11 @@ class CallFlatRateSetupPersistenceTest {
             isAdjustable = false
         )
         val modelToUpdate = ProjectCallFlatRate(
-            callId = 1,
             type = flatRateToUpdate.setupId.type, // existing
             rate = 5, // changed
             isAdjustable = false // changed
         )
         val modelToCreate = ProjectCallFlatRate(
-            callId = 1,
             type = FlatRateType.OfficeOnOther, // new
             rate = 5,
             isAdjustable = true
@@ -125,7 +123,6 @@ class CallFlatRateSetupPersistenceTest {
         every { callRepository.findById(eq(1)) } returns Optional.of(callWithIdAndFlatRate(1, flatRate))
         assertThat(callFlatRateSetupPersistence.getProjectCallFlatRate(1)).isEqualTo(
             setOf(ProjectCallFlatRate(
-                callId = 1,
                 type = FlatRateType.OtherOnStaff,
                 rate = 10,
                 isAdjustable = true
@@ -159,7 +156,6 @@ class CallFlatRateSetupPersistenceTest {
 
         assertThat(callFlatRateSetupPersistence.getProjectCallFlatRateByPartnerId(1)).containsExactly(
             ProjectCallFlatRate(
-                callId = 10,
                 type = FlatRateType.OtherOnStaff,
                 rate = 15,
                 isAdjustable = true
