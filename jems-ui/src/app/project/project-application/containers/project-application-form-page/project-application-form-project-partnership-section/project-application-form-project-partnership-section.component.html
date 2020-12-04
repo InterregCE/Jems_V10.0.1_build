@@ -3,9 +3,8 @@
 <h4>{{'project.application.form.section.part.c' | translate}}</h4>
 
 <app-project-application-form-project-partnership-detail
-        *ngIf="partnership$ | async as partnership"
         [success$]="saveSuccess$"
-        [project]="partnership"
+        [project]="partnership$ | async"
         [editable]="projectStore.projectEditable$ | async"
         [error$]="saveError$"
         (updateData)="updatePartnership$.next($event)">

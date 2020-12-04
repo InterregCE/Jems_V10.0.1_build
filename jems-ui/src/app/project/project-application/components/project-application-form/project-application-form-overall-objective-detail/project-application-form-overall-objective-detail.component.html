@@ -28,8 +28,7 @@
         </mat-form-field>
 
         <app-multi-language
-                [inputs]="{projectOverallObjective: projectOverallObjective}"
-                [form]="overallObjectiveForm">
+                [inputs]="[projectOverallObjective]">
             <app-expandable-textarea
                     class="field"
                     [control]="overallObjectiveForm?.controls?.projectOverallObjective"

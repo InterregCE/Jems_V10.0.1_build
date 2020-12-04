@@ -22,7 +22,7 @@ export class ProjectApplicationFormOverallObjectiveSectionComponent {
 
   projectId = this.activatedRoute?.snapshot?.params?.projectId;
 
-  saveError$ = new Subject<I18nValidationError | null>();
+  saveError$ = new Subject<HttpErrorResponse | null>();
   saveSuccess$ = new Subject<boolean>();
   updateProjectDescription$ = new Subject<InputProjectOverallObjective>();
 
@@ -40,7 +40,7 @@ export class ProjectApplicationFormOverallObjectiveSectionComponent {
       tap(() => this.saveError$.next(null)),
       tap(saved => Log.info('Updated project overall objective:', this, saved)),
       catchError((error: HttpErrorResponse) => {
-        this.saveError$.next(error.error);
+        this.saveError$.next(error);
         throw error;
       })
     );

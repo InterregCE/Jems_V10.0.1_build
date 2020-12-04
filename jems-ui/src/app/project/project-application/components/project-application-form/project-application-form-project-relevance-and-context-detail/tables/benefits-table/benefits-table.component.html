@@ -1,86 +1,58 @@
-<form [formGroup]="editableBenefitsForm">
-    <mat-table [dataSource]="benefitsDataSource">
-        <ng-container matColumnDef="select">
-            <mat-header-cell *matHeaderCellDef class="invisible-header"></mat-header-cell>
-            <td mat-cell *matCellDef="let element" class="invisible-field">
-            </td>
-            <td mat-footer-cell *matFooterCellDef class="invisible-field">
-                <button *ngIf="editable" mat-icon-button
-                        type="button"
-                        (click)="addNewBenefit()">
-                    <mat-icon>add</mat-icon>
-                </button>
-            </td>
-        </ng-container>
+<app-multi-language [inputs]="specificationInputs">
+    <div [formGroup]="formGroup">
+        <app-row-list-template [appearance]="'table'"
+                               [columnClassList]="['column','column', 'max-2-rem']">
+            <div>
+                <span class="mat-body-strong">{{ 'project.application.form.relevance.target.group' | translate }}</span>
+                <span class="mat-body-strong">{{ 'project.application.form.relevance.specification' | translate }}</span>
+                <div class="mat-body-strong"></div>
+            </div>
+            <div *ngFor="let benefit of benefitsForm.controls;let i=index">
+                <ng-container formArrayName="benefits">
+                    <ng-container [formGroupName]="i">
 
-        <ng-container matColumnDef="targetGroup">
-            <mat-header-cell *matHeaderCellDef
-                             class="small-header">{{'project.application.form.relevance.target.group' | translate}}</mat-header-cell>
-            <mat-cell *matCellDef="let element" class="small-column">
-                        <span *ngIf="!editable">
-                            {{'project.application.form.relevance.target.group.' + element.targetGroup | translate}}
-                        </span>
-                <mat-form-field *ngIf="editable" class="small-column">
-                    <mat-label>{{'project.application.form.relevance.target.group' | translate}}</mat-label>
-                    <mat-select [formControlName]="targetGroup(element.id)"
-                                [disableOptionCentering]="true"
-                                panelClass="material-select-panel"
-                                (selectionChange)="changed.emit()">
-                        <mat-option *ngFor="let targetGroup of benefitEnums" [value]="targetGroup">
-                            {{'project.application.form.relevance.target.group.' + targetGroup | translate}}
-                        </mat-option>
-                    </mat-select>
-                    <mat-error>
-                        <app-form-field-errors
-                                [errors]="editableBenefitsForm?.controls[targetGroup(element.id)]?.errors"
-                                [messages]="targetGroupErrors">
-                        </app-form-field-errors>
-                    </mat-error>
-                </mat-form-field>
-            </mat-cell>
-        </ng-container>
+                        <mat-form-field>
+                            <mat-label>{{'project.application.form.relevance.target.group' | translate}}</mat-label>
+                            <mat-select [disabled]="!editable"
+                                        panelClass="material-select-panel" formControlName="targetGroup" required>
+                                <mat-option *ngFor="let targetGroup of benefitEnums" [value]="targetGroup">
+                                    {{'project.application.form.relevance.target.group.' + targetGroup | translate}}
+                                </mat-option>
+                            </mat-select>
+                            <mat-error>
+                                <app-form-field-errors [errors]="benefit.get('targetGroup')?.errors"
+                                                       [messages]="targetGroupErrors"></app-form-field-errors>
+                            </mat-error>
+                        </mat-form-field>
 
-        <ng-container matColumnDef="specification">
-            <mat-header-cell *matHeaderCellDef
-                             class="big-header">{{'project.application.form.relevance.specification' | translate}}</mat-header-cell>
-            <mat-cell *matCellDef="let element" class="big-column">
-                <ng-container *ngIf="!editable">
-                    <textarea matInput
-                              [cdkTextareaAutosize]
-                              [cdkAutosizeMinRows]="3"
-                              [cdkAutosizeMaxRows]="50"
-                              [readonly]="!editable"
-                    >{{element.specification}}</textarea>
+                        <div>
+                            <textarea *ngIf="!editable" matInput formControlName="specification"
+                                      [cdkTextareaAutosize]
+                                      [cdkAutosizeMinRows]="3"
+                                      [cdkAutosizeMaxRows]="50"
+                                      [readonly]="!editable">
+                            </textarea>
+                            <app-expandable-textarea *ngIf="editable" class="text-area"
+                                                     [control]="benefit.get('specification')"
+                                                     [errors]="benefit.get('specification')?.errors"
+                                                     [messages]="specificationErrors"
+                                                     [characterLimit]="2000"
+                                                     [label]="'project.application.form.relevance.specification'"
+                                                     [disabled]="!editable">
+                            </app-expandable-textarea>
+                        </div>
+
+                        <div>
+                            <button type="button" (click)="deleteEntry(i)" mat-icon-button color="accent">
+                                <mat-icon>delete</mat-icon>
+                            </button>
+                        </div>
+                    </ng-container>
                 </ng-container>
-                <app-expandable-textarea *ngIf="editable" class="small-field"
-                                         [control]="editableBenefitsForm?.controls[specification(element.id)]"
-                                         [errors]="editableBenefitsForm?.controls[specification(element.id)]?.errors"
-                                         [messages]="specificationErrors"
-                                         [characterLimit]="2000"
-                                         [minRows]="3"
-                                         [maxRows]="50"
-                                         [label]="'project.application.form.relevance.specification'"
-                                         [disabled]="!editable"
-                                         (changed)="changed.emit()">
-                </app-expandable-textarea>
-            </mat-cell>
-        </ng-container>
-
-        <ng-container matColumnDef="delete">
-            <mat-header-cell *matHeaderCellDef class="invisible-header"></mat-header-cell>
-            <mat-cell *matCellDef="let element" class="small-column">
-                <button *ngIf="editable" mat-icon-button color="accent"
-                        (click)="deleteEntry(element)"
-                        matTooltip="{{'project.application.form.description.table.action.delete.tooltip' | translate}}">
-                    <i class="fas fa-trash"></i>
-                </button>
-            </mat-cell>
-        </ng-container>
-
-        <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
-        <mat-row *matRowDef="let row; columns: displayedColumns;"></mat-row>
-        <mat-row *matFooterRowDef="['select']"
-                 [hidden]="!editable">
-        </mat-row>
-    </mat-table>
-</form>
+            </div>
+        </app-row-list-template>
+    </div>
+    <button *ngIf="editable" mat-icon-button type="button" (click)="addNewBenefit()">
+        <mat-icon>add</mat-icon>
+    </button>
+</app-multi-language>

@@ -9,8 +9,7 @@
             <p class="intro-text-small">{{'project.application.form.project.partnership.field.row' | translate}}</p>
         </div>
         <app-multi-language
-                [inputs]="{projectPartnership: projectPartnership}"
-                [form]="projectPartnershipForm">
+                [inputs]="[projectPartnership]">
             <app-expandable-textarea class="field"
                                      [control]="projectPartnershipForm?.controls?.projectPartnership"
                                      [errors]="projectPartnershipForm?.controls?.projectPartnership?.errors"

@@ -8,11 +8,10 @@ import {
   Output,
   SimpleChanges
 } from '@angular/core';
-import {MatTableDataSource} from '@angular/material/table';
-import {ProjectRelevanceSynergy} from '../../dtos/project-relevance-synergy';
-import {FormControl, FormGroup, Validators} from '@angular/forms';
-import {Permission} from 'src/app/security/permissions/permission';
-import {InputTranslation} from '@cat/api';
+import {FormArray, FormBuilder, FormGroup, Validators} from '@angular/forms';
+import {InputProjectRelevanceSynergy} from '@cat/api';
+import {MultiLanguageInput} from '@common/components/forms/multi-language/multi-language-input';
+import {MultiLanguageInputService} from '../../../../../../../common/services/multi-language-input.service';
 
 @Component({
   selector: 'app-synergy-table',
@@ -21,21 +20,20 @@ import {InputTranslation} from '@cat/api';
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class SynergyTableComponent implements OnInit, OnChanges {
-  Permission = Permission;
 
   @Input()
-  synergyDataSource: MatTableDataSource<ProjectRelevanceSynergy>;
+  formGroup: FormGroup;
   @Input()
-  editableSynergyForm = new FormGroup({});
+  synergies: InputProjectRelevanceSynergy[];
   @Input()
   editable: boolean;
 
   @Output()
-  changed = new EventEmitter<void>();
+  changed = new EventEmitter<MultiLanguageInput[]>();
 
-  displayedColumns: string[] = ['select', 'project', 'synergy', 'delete'];
-
-  synergyCounter: number;
+  initiativeInputs: MultiLanguageInput[] = [];
+  synergyInputs: MultiLanguageInput[] = [];
+  allInputs: MultiLanguageInput[] = [];
 
   projectErrors = {
     maxlength: 'project.application.form.relevance.project.size.too.long',
@@ -44,64 +42,58 @@ export class SynergyTableComponent implements OnInit, OnChanges {
     maxlength: 'project.application.form.relevance.synergy.size.too.long'
   };
 
+  constructor(private formBuilder: FormBuilder,
+              private languageService: MultiLanguageInputService) {
+  }
+
   ngOnInit(): void {
-    if (this.editable) {
-      this.synergyDataSource.data.forEach(synergy => this.addControl(synergy));
-    }
-    this.synergyCounter = this.synergyDataSource.data.length + 1;
+    this.resetForm();
   }
 
   ngOnChanges(changes: SimpleChanges): void {
-    if (changes.editableSynergyForm && this.editable) {
-      this.synergyDataSource.data.forEach(synergy => this.addControl(synergy));
+    if (changes.synergies && this.editable) {
+      this.resetForm();
     }
   }
 
+  get synergiesForm(): FormArray {
+    return this.formGroup.get('synergies') as FormArray;
+  }
+
   addNewSynergy(): void {
-    this.addControl(this.addLastSynergy());
+    this.addControl();
     this.changed.emit();
   }
 
-  projectInitiative = (id: number): string => id + 'projIn';
-  synergy = (id: number): string => id + 'syn';
-
-  isValid(): boolean {
-    return Object.keys(this.editableSynergyForm.controls)
-      .every(control => this.editableSynergyForm.get(control)?.valid);
+  private resetForm(): void {
+    this.synergiesForm.clear();
+    this.synergies.forEach(synergy => this.addControl(synergy));
   }
 
-  private addLastSynergy(): ProjectRelevanceSynergy {
-    const lastSynergy = {
-      id: this.synergyCounter,
-      specification: [{
-        translation: this.editableSynergyForm.controls.synergy?.value,
-        language: 'EN'
-      } as InputTranslation],
-      synergy: [{
-        translation: this.editableSynergyForm.controls.synergy?.value,
-        language: 'EN'
-      } as InputTranslation]
-    } as ProjectRelevanceSynergy;
-    this.synergyDataSource.data = [...this.synergyDataSource.data, lastSynergy];
-    this.synergyCounter = this.synergyCounter + 1;
-    return lastSynergy;
+  private addControl(synergy?: InputProjectRelevanceSynergy): void {
+    const initiativeControl = this.formBuilder.control('', [Validators.maxLength(2000)]);
+    const initiativeInput = this.languageService.initInput(synergy?.specification || [], initiativeControl);
+    this.initiativeInputs.push(initiativeInput);
+
+    const synergyControl = this.formBuilder.control('', [Validators.maxLength(2000)]);
+    const synergyInput = this.languageService.initInput(synergy?.synergy || [], synergyControl);
+    this.synergyInputs.push(synergyInput);
+
+    this.allInputs = [...this.initiativeInputs, ...this.synergyInputs];
+
+    this.synergiesForm.push(this.formBuilder.group({
+      initiative: initiativeControl,
+      synergy: synergyControl,
+      initiativeMultiInput: initiativeInput,
+      synergyMultiInput: synergyInput
+    }));
   }
 
-  private addControl(synergy: ProjectRelevanceSynergy): void {
-    this.editableSynergyForm.addControl(
-      this.projectInitiative(synergy.id),
-      new FormControl(synergy?.specification, Validators.maxLength(500))
-    );
-    this.editableSynergyForm.addControl(
-      this.synergy(synergy.id),
-      new FormControl(synergy?.synergy, Validators.maxLength(2000))
-    );
-  }
-
-  deleteEntry(element: ProjectRelevanceSynergy): void {
-    const index = this.synergyDataSource.data.indexOf(element);
-    this.synergyDataSource.data.splice(index, 1);
-    this.synergyDataSource._updateChangeSubscription();
+  deleteEntry(elementIndex: number): void {
+    this.synergiesForm.removeAt(elementIndex);
+    this.initiativeInputs.splice(elementIndex, 1);
+    this.synergyInputs.splice(elementIndex, 1);
+    this.allInputs = [...this.initiativeInputs, ...this.synergyInputs];
     this.changed.emit();
   }
 }

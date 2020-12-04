@@ -44,7 +44,7 @@ export class ProjectApplicationFormOverallObjectiveDetailComponent extends BaseC
   projectOverallObjective: MultiLanguageInput;
 
   overallObjectiveForm: FormGroup = this.formBuilder.group({
-    projectSpecificObjective: ['', []],
+    projectSpecificObjective: ['', Validators.required],
     projectOverallObjective: ['', Validators.maxLength(500)]
   });
 
@@ -87,7 +87,9 @@ export class ProjectApplicationFormOverallObjectiveDetailComponent extends BaseC
     if (this.specificObjective) {
       this.overallObjectiveForm.controls.projectSpecificObjective.setValue(this.translate.instant('programme.policy.' + this.specificObjective.programmeObjectivePolicy));
     }
-    this.projectOverallObjective = this.languageService.initInput(this.project?.overallObjective);
+    this.projectOverallObjective = this.languageService.initInput(
+      this.project?.overallObjective, this.overallObjectiveForm.controls.projectOverallObjective
+    );
   }
 
   private formValid(): boolean {

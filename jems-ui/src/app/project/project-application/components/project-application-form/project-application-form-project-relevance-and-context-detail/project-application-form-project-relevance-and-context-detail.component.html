@@ -10,8 +10,7 @@
             <p class="intro-text-small">{{'project.application.form.relevance.field.1.intro' | translate}}</p>
         </div>
         <app-multi-language
-                [inputs]="{territorialChallenge: territorialChallenge}"
-                [form]="projectRelevanceForm">
+                [inputs]="[territorialChallenge]">
             <app-expandable-textarea
                     class="field"
                     [control]="projectRelevanceForm?.controls?.territorialChallenge"
@@ -28,8 +27,7 @@
             <p class="intro-text-small">{{'project.application.form.relevance.field.2.intro' | translate}}</p>
         </div>
         <app-multi-language
-                [inputs]="{commonChallenge: commonChallenge}"
-                [form]="projectRelevanceForm">
+                [inputs]="[commonChallenge]">
             <app-expandable-textarea
                     class="field"
                     [control]="projectRelevanceForm?.controls?.commonChallenge"
@@ -46,8 +44,7 @@
             <p class="intro-text-small">{{'project.application.form.relevance.field.3.intro' | translate}}</p>
         </div>
         <app-multi-language
-                [inputs]="{transnationalCooperation: transnationalCooperation}"
-                [form]="projectRelevanceForm">
+                [inputs]="[transnationalCooperation]">
             <app-expandable-textarea
                     class="field"
                     [control]="projectRelevanceForm?.controls?.transnationalCooperation"
@@ -64,8 +61,8 @@
             <p class="intro-text-small">{{'project.application.form.relevance.field.4.intro' | translate}}</p>
         </div>
         <app-benefits-table
-                [benefitsDataSource]="benefitsDataSource"
-                [editableBenefitsForm]="editableBenefitsForm"
+                [formGroup]="projectRelevanceForm"
+                [benefits]="benefits"
                 [editable]="editable"
                 (changed)="tableChanged()">
         </app-benefits-table>
@@ -75,9 +72,9 @@
             <p class="intro-text-small">{{'project.application.form.relevance.field.5.intro' | translate}}</p>
         </div>
         <app-strategy-table
-                [strategyDataSource]="strategiesDataSource"
-                [editableStrategyForm]="editableStrategyForm"
-                [strategies]="strategiesFromCall"
+                [formGroup]="projectRelevanceForm"
+                [strategies]="strategies"
+                [callStrategies]="strategiesFromCall"
                 [editable]="editable"
                 (changed)="tableChanged()">
         </app-strategy-table>
@@ -86,8 +83,8 @@
             <h6>{{'project.application.form.relevance.field.6' | translate}}</h6>
         </div>
         <app-synergy-table
-                [synergyDataSource]="synergiesDataSource"
-                [editableSynergyForm]="editableSynergyForm"
+                [formGroup]="projectRelevanceForm"
+                [synergies]="synergies"
                 [editable]="editable"
                 (changed)="tableChanged()">
         </app-synergy-table>
@@ -96,14 +93,16 @@
             <h6>{{'project.application.form.relevance.field.7' | translate}}</h6>
             <p class="intro-text-small">{{'project.application.form.relevance.field.7.intro' | translate}}</p>
         </div>
-        <app-expandable-textarea class="field"
-                                 [control]="projectRelevanceForm?.controls?.availableKnowledge"
-                                 [errors]="projectRelevanceForm?.controls?.availableKnowledge?.errors"
-                                 [messages]="availableKnowledgeErrors"
-                                 [characterLimit]="5000"
-                                 [minRows]="3"
-                                 [label]="'project.application.form.relevance.form.field'"
-                                 [disabled]="!editable">
-        </app-expandable-textarea>
+        <app-multi-language
+                [inputs]="[availableKnowledge]">
+            <app-expandable-textarea class="field"
+                                     [control]="projectRelevanceForm?.controls?.availableKnowledge"
+                                     [errors]="projectRelevanceForm?.controls?.availableKnowledge?.errors"
+                                     [messages]="availableKnowledgeErrors"
+                                     [characterLimit]="5000"
+                                     [label]="'project.application.form.relevance.form.field'"
+                                     [disabled]="!editable">
+            </app-expandable-textarea>
+        </app-multi-language>
     </form>
 </app-form>

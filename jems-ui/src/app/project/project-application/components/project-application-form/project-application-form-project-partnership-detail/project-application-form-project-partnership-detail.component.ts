@@ -1,6 +1,14 @@
-import {ChangeDetectionStrategy, Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  EventEmitter,
+  Input,
+  OnChanges,
+  OnInit,
+  Output,
+  SimpleChanges
+} from '@angular/core';
 import {FormBuilder, FormGroup, Validators} from '@angular/forms';
-import {Permission} from 'src/app/security/permissions/permission';
 import {InputProjectPartnership} from '@cat/api';
 import {BaseComponent} from '@common/components/base-component';
 import {FormService} from '@common/components/section/form/form.service';
@@ -17,9 +25,7 @@ import {MultiLanguageInputService} from '../../../../../common/services/multi-la
   providers: [FormService],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class ProjectApplicationFormProjectPartnershipDetailComponent extends BaseComponent implements OnInit {
-  Permission = Permission;
-
+export class ProjectApplicationFormProjectPartnershipDetailComponent extends BaseComponent implements OnInit, OnChanges {
   // TODO: remove these and adapt the component to save independently
   @Input()
   error$: Observable<HttpErrorResponse | null>;
@@ -67,6 +73,12 @@ export class ProjectApplicationFormProjectPartnershipDetailComponent extends Bas
       .subscribe();
   }
 
+  ngOnChanges(changes: SimpleChanges): void {
+    if (changes.project) {
+      this.resetForm();
+    }
+  }
+
   getForm(): FormGroup | null {
     return this.projectPartnershipForm;
   }
@@ -78,7 +90,9 @@ export class ProjectApplicationFormProjectPartnershipDetailComponent extends Bas
   }
 
   resetForm(): void {
-    this.projectPartnership = this.languageService.initInput(this.project?.partnership);
+    this.projectPartnership = this.languageService.initInput(
+      this.project?.partnership, this.projectPartnershipForm.controls.projectPartnership
+    );
   }
 
   private formValid(): boolean {

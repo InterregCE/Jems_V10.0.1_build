@@ -8,11 +8,10 @@ import {
   Output,
   SimpleChanges
 } from '@angular/core';
-import {Permission} from 'src/app/security/permissions/permission';
-import {MatTableDataSource} from '@angular/material/table';
-import {ProjectRelevanceBenefit} from '../../dtos/project-relevance-benefit';
-import {FormControl, FormGroup, Validators} from '@angular/forms';
-import {InputProjectRelevanceBenefit, InputTranslation} from '@cat/api';
+import {FormArray, FormBuilder, FormGroup, Validators} from '@angular/forms';
+import {InputProjectRelevanceBenefit} from '@cat/api';
+import {MultiLanguageInput} from '@common/components/forms/multi-language/multi-language-input';
+import {MultiLanguageInputService} from '../../../../../../../common/services/multi-language-input.service';
 
 @Component({
   selector: 'app-benefits-table',
@@ -21,38 +20,20 @@ import {InputProjectRelevanceBenefit, InputTranslation} from '@cat/api';
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class BenefitsTableComponent implements OnInit, OnChanges {
-  Permission = Permission;
 
   @Input()
-  benefitsDataSource: MatTableDataSource<ProjectRelevanceBenefit>;
+  formGroup: FormGroup;
   @Input()
-  editableBenefitsForm = new FormGroup({});
+  benefits: InputProjectRelevanceBenefit[];
+
   @Input()
   editable: boolean;
 
   @Output()
-  changed = new EventEmitter<void>();
+  changed = new EventEmitter<MultiLanguageInput[]>();
 
-  displayedColumns: string[] = ['select', 'targetGroup', 'specification', 'delete'];
-
-  benefitCounter: number;
-  benefitEnums = [
-    'LocalPublicAuthority',
-    'RegionalPublicAuthority',
-    'NationalPublicAuthority',
-    'SectoralAgency',
-    'InfrastructureAndServiceProvider',
-    'InterestGroups',
-    'HigherEducationOrganisations',
-    'EducationTrainingCentreAndSchool',
-    'EnterpriseExceptSme',
-    'Sme',
-    'BusinessSupportOrganisation',
-    'Egtc',
-    'InternationalOrganisationEeig',
-    'GeneralPublic',
-    'Hospitals',
-    'Other'];
+  specificationInputs: MultiLanguageInput[] = [];
+  benefitEnums = Object.keys(InputProjectRelevanceBenefit.GroupEnum);
 
   targetGroupErrors = {
     required: 'project.application.form.relevance.target.group.not.empty',
@@ -61,61 +42,51 @@ export class BenefitsTableComponent implements OnInit, OnChanges {
     maxlength: 'project.application.form.relevance.specification.size.too.long'
   };
 
+  constructor(private formBuilder: FormBuilder,
+              private languageService: MultiLanguageInputService) {
+  }
+
   ngOnInit(): void {
-    if (this.editable) {
-      this.benefitsDataSource.data.forEach(benefit => this.addControl(benefit));
-    }
-    this.benefitCounter = this.benefitsDataSource.data.length + 1;
+    this.resetForm();
   }
 
   ngOnChanges(changes: SimpleChanges): void {
-    if (changes.editableBenefitsForm && this.editable) {
-      this.benefitsDataSource.data.forEach(benefit => this.addControl(benefit));
+    if (changes.benefits && this.editable) {
+      this.resetForm();
     }
   }
 
+  get benefitsForm(): FormArray {
+    return this.formGroup.get('benefits') as FormArray;
+  }
+
   addNewBenefit(): void {
-    this.addControl(this.addLastBenefit());
+    this.addControl();
     this.changed.emit();
   }
 
-  targetGroup = (id: number): string => id + 'targ';
-  specification = (id: number): string => id + 'spec';
-
-  isValid(): boolean {
-    return Object.keys(this.editableBenefitsForm.controls)
-      .every(control => this.editableBenefitsForm.get(control)?.valid);
+  private resetForm(): void {
+    this.benefitsForm.clear();
+    this.benefits.forEach(benefit => this.addControl(benefit));
   }
 
-  private addLastBenefit(): ProjectRelevanceBenefit {
-    const lastBenefit = {
-      id: this.benefitCounter,
-      targetGroup: InputProjectRelevanceBenefit.GroupEnum.Other,
-      specification: [{
-        translation: this.editableBenefitsForm.controls.benefit?.value,
-        language: 'EN'
-      } as InputTranslation]
-    } as ProjectRelevanceBenefit;
-    this.benefitsDataSource.data = [...this.benefitsDataSource.data, lastBenefit];
-    this.benefitCounter = this.benefitCounter + 1;
-    return lastBenefit;
+  private addControl(benefit?: InputProjectRelevanceBenefit): void {
+    const specificationControl = this.formBuilder.control('', [Validators.maxLength(2000)]);
+    const specificationInput = this.languageService.initInput(benefit?.specification || [], specificationControl);
+    this.specificationInputs = [...this.specificationInputs, specificationInput];
+
+    this.benefitsForm.push(this.formBuilder.group({
+      targetGroup: this.formBuilder.control(
+        benefit ? benefit.group : InputProjectRelevanceBenefit.GroupEnum.Other, [Validators.required]
+      ),
+      specification: specificationControl,
+      specificationMultiInput: specificationInput
+    }));
   }
 
-  private addControl(benefit: ProjectRelevanceBenefit): void {
-    this.editableBenefitsForm.addControl(
-      this.targetGroup(benefit.id),
-      new FormControl(benefit?.targetGroup, [])
-    );
-    this.editableBenefitsForm.addControl(
-      this.specification(benefit.id),
-      new FormControl(benefit?.specification, Validators.maxLength(2000))
-    );
-  }
-
-  deleteEntry(element: ProjectRelevanceBenefit): void {
-    const index = this.benefitsDataSource.data.indexOf(element);
-    this.benefitsDataSource.data.splice(index, 1);
-    this.benefitsDataSource._updateChangeSubscription();
+  deleteEntry(elementIndex: number): void {
+    this.benefitsForm.removeAt(elementIndex);
+    this.specificationInputs = this.specificationInputs.filter((element, index) => index !== elementIndex);
     this.changed.emit();
   }
 }
