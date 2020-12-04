@@ -1,10 +1,9 @@
 package io.cloudflight.jems.api.project.dto.description
 
-import javax.validation.constraints.Size
+import io.cloudflight.jems.api.project.dto.InputTranslation
 
 data class InputProjectPartnership(
 
-    @field:Size(max = 5000, message = "project.description.partnership.size.too.long")
-    val partnership: String?
+    val partnership: Set<InputTranslation> = emptySet()
 
 )

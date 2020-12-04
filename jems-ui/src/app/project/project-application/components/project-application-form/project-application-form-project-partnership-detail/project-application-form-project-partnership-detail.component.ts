@@ -1,12 +1,22 @@
-import {ChangeDetectionStrategy, Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  EventEmitter,
+  Input,
+  OnChanges,
+  OnInit,
+  Output,
+  SimpleChanges
+} from '@angular/core';
 import {FormBuilder, FormGroup, Validators} from '@angular/forms';
-import {Permission} from 'src/app/security/permissions/permission';
 import {InputProjectPartnership} from '@cat/api';
 import {BaseComponent} from '@common/components/base-component';
 import {FormService} from '@common/components/section/form/form.service';
 import {Observable} from 'rxjs';
 import {HttpErrorResponse} from '@angular/common/http';
 import {takeUntil, tap} from 'rxjs/operators';
+import {MultiLanguageInput} from '@common/components/forms/multi-language/multi-language-input';
+import {MultiLanguageInputService} from '../../../../../common/services/multi-language-input.service';
 
 @Component({
   selector: 'app-project-application-form-project-partnership-detail',
@@ -15,9 +25,7 @@ import {takeUntil, tap} from 'rxjs/operators';
   providers: [FormService],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class ProjectApplicationFormProjectPartnershipDetailComponent extends BaseComponent implements OnInit {
-  Permission = Permission;
-
+export class ProjectApplicationFormProjectPartnershipDetailComponent extends BaseComponent implements OnInit, OnChanges {
   // TODO: remove these and adapt the component to save independently
   @Input()
   error$: Observable<HttpErrorResponse | null>;
@@ -31,6 +39,8 @@ export class ProjectApplicationFormProjectPartnershipDetailComponent extends Bas
   @Output()
   updateData = new EventEmitter<InputProjectPartnership>();
 
+  projectPartnership: MultiLanguageInput;
+
   projectPartnershipForm: FormGroup = this.formBuilder.group({
     projectPartnership: ['', Validators.maxLength(5000)]
   });
@@ -40,13 +50,15 @@ export class ProjectApplicationFormProjectPartnershipDetailComponent extends Bas
   };
 
   constructor(private formBuilder: FormBuilder,
-              private formService: FormService) {
+              private formService: FormService,
+              public languageService: MultiLanguageInputService) {
     super();
   }
 
   ngOnInit(): void {
-    this.formService.init(this.projectPartnershipForm);
     this.resetForm();
+    this.formService.init(this.projectPartnershipForm);
+    this.formService.setAdditionalValidators([this.formValid.bind(this)]);
     this.error$
       .pipe(
         takeUntil(this.destroyed$),
@@ -61,17 +73,29 @@ export class ProjectApplicationFormProjectPartnershipDetailComponent extends Bas
       .subscribe();
   }
 
+  ngOnChanges(changes: SimpleChanges): void {
+    if (changes.project) {
+      this.resetForm();
+    }
+  }
+
   getForm(): FormGroup | null {
     return this.projectPartnershipForm;
   }
 
   onSubmit(): void {
     this.updateData.emit({
-      partnership: this.projectPartnershipForm.controls.projectPartnership.value
+      partnership: this.projectPartnership.inputs
     });
   }
 
   resetForm(): void {
-    this.projectPartnershipForm.controls.projectPartnership.setValue(this.project?.partnership);
+    this.projectPartnership = this.languageService.initInput(
+      this.project?.partnership, this.projectPartnershipForm.controls.projectPartnership
+    );
+  }
+
+  private formValid(): boolean {
+    return this.projectPartnership.isValid();
   }
 }

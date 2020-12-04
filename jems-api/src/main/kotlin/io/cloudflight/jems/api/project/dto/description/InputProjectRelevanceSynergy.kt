@@ -1,6 +1,10 @@
 package io.cloudflight.jems.api.project.dto.description
 
+import io.cloudflight.jems.api.project.dto.InputTranslation
+
 data class InputProjectRelevanceSynergy(
-    val synergy: String? = null,
-    val specification: String? = null
+
+    val synergy: Set<InputTranslation> = emptySet(),
+    val specification: Set<InputTranslation> = emptySet()
+
 )

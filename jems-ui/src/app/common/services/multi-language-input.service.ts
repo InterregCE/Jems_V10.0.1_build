@@ -4,6 +4,7 @@ import {tap} from 'rxjs/operators';
 import {InputTranslation, OutputProgrammeLanguage} from '@cat/api';
 import {LanguageService} from './language.service';
 import {MultiLanguageInput} from '@common/components/forms/multi-language/multi-language-input';
+import {AbstractControl} from '@angular/forms';
 
 @Injectable({
   providedIn: 'root'
@@ -45,17 +46,9 @@ export class MultiLanguageInputService {
       .subscribe();
   }
 
-  initInput(inputs: InputTranslation[]): MultiLanguageInput {
-    let allInputs: InputTranslation[] = [];
-    if (inputs?.length) {
-      allInputs = inputs.map(value => ({language: value.language, translation: value.translation}));
-    }
-    this.languages.forEach(language => {
-      if (!allInputs.find(value => value.language === language)) {
-        allInputs.push({language, translation: ''});
-      }
-    });
-    return new MultiLanguageInput(allInputs);
+  initInput(inputs: InputTranslation[], formControl?: AbstractControl): MultiLanguageInput {
+    const allInputs: InputTranslation[] = this.getAvailableInputs(inputs);
+    return new MultiLanguageInput(allInputs, formControl);
   }
 
   updateInputValue(value: string, input: MultiLanguageInput, valid?: boolean): void {
@@ -70,6 +63,23 @@ export class MultiLanguageInputService {
       return input as any;
     }
     return input.inputs.find(trans => trans.language === this.currentLanguage)?.translation || '';
+  }
+
+  private getAvailableInputs(inputs: InputTranslation[]): InputTranslation[] {
+    if (!this.languages) {
+      return inputs;
+    }
+
+    let allInputs: InputTranslation[] = [];
+    if (inputs?.length) {
+      allInputs = inputs.map(value => ({language: value.language, translation: value.translation}));
+    }
+    this.languages.forEach(language => {
+      if (!allInputs.find(value => value.language === language)) {
+        allInputs.push({language, translation: ''});
+      }
+    });
+    return allInputs;
   }
 
   private isMultiInput(input: MultiLanguageInput): boolean {

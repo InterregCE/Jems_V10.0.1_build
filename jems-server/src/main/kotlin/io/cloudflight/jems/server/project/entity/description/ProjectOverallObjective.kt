@@ -1,7 +1,9 @@
 package io.cloudflight.jems.server.project.entity.description
 
+import javax.persistence.CascadeType
 import javax.persistence.Entity
 import javax.persistence.Id
+import javax.persistence.OneToMany
 
 /**
  * C1
@@ -12,6 +14,8 @@ data class ProjectOverallObjective(
     @Id
     val projectId: Long,
 
-    val projectOverallObjective: String?
+    // projectOverallObjective
+    @OneToMany(cascade = [CascadeType.ALL], orphanRemoval = true, mappedBy = "translationId.projectId")
+    val translatedValues: Set<ProjectOverallObjectiveTransl> = emptySet()
 
 )

@@ -31,11 +31,11 @@ class ProjectDescriptionServiceImpl(
     override fun getProjectDescription(id: Long): OutputProjectDescription {
         return OutputProjectDescription(
             // C1
-            projectOverallObjective = projectOverallObjectiveRepository.findFirstByProjectId(id)?.projectOverallObjective,
+            projectOverallObjective = projectOverallObjectiveRepository.findFirstByProjectId(id)?.toOutputProjectOverallObjective(),
             // C2
             projectRelevance = projectRelevanceRepository.findFirstByProjectId(id)?.toOutputProjectRelevance(),
             // C3
-            projectPartnership = projectPartnershipRepository.findFirstByProjectId(id)?.projectPartnership,
+            projectPartnership = projectPartnershipRepository.findFirstByProjectId(id)?.toOutputProjectPartnership(),
             // C7
             projectManagement = projectManagementRepository.findFirstByProjectId(id)?.toOutputProjectManagement(),
             // C8
