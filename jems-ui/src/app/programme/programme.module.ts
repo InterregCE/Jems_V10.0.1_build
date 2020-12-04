@@ -30,6 +30,11 @@ import {ProgrammeLanguagesComponent} from './programme-page/components/programme
 import {ProgrammeLanguagesPageComponent} from './programme-page/containers/programme-languages-page/programme-languages-page.component';
 import {ProgrammeLegalStatusComponent} from './programme-page/containers/programme-legal-status/programme-legal-status.component';
 import {ProgrammeLegalStatusListComponent} from './programme-page/components/programme-legal-status-list/programme-legal-status-list.component';
+import { ProgrammeSimplifiedCostOptionsComponent } from './programme-page/containers/programme-simplified-cost-options/programme-simplified-cost-options.component';
+import {LumpSumsStore} from './programme-page/services/lump-sums-store.service';
+import { ProgrammeLumpSumsListComponent } from './programme-page/components/programme-lump-sums-list/programme-lump-sums-list.component';
+import { ProgrammeLumpSumsSubmissionPageComponent } from './programme-page/containers/programme-lump-sums-submission-page/programme-lump-sums-submission-page.component';
+import { ProgrammeLumpSumDetailComponent } from './programme-page/components/programme-lump-sum-detail/programme-lump-sum-detail.component';
 
 @NgModule({
   declarations: [
@@ -60,10 +65,15 @@ import {ProgrammeLegalStatusListComponent} from './programme-page/components/pro
     ProgrammeStrategiesPageComponent,
     ProgrammeStrategiesComponent,
     ProgrammeLegalStatusComponent,
-    ProgrammeLegalStatusListComponent
+    ProgrammeLegalStatusListComponent,
+    ProgrammeSimplifiedCostOptionsComponent,
+    ProgrammeLumpSumsListComponent,
+    ProgrammeLumpSumsSubmissionPageComponent,
+    ProgrammeLumpSumDetailComponent
   ],
   providers: [
     IndicatorsStore,
+    LumpSumsStore,
     ProgrammePageSidenavService
   ],
   imports: [

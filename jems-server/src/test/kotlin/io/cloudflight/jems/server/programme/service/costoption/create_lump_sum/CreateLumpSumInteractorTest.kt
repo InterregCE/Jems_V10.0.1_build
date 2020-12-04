@@ -50,8 +50,8 @@ class CreateLumpSumInteractorTest {
         val ex = assertThrows<I18nValidationException> { createLumpSumInteractor.createLumpSum(wrongLumpSum) }
         assertThat(ex.i18nFieldErrors).containsExactlyInAnyOrderEntriesOf(mapOf(
             "name" to I18nFieldError(i18nKey = "programme.lumpSum.name.should.not.be.empty"),
-            "cost" to I18nFieldError(i18nKey = "programme.lumpSum.cost.invalid"),
-            "phase" to I18nFieldError(i18nKey = "programme.lumpSum.phase.invalid"),
+            "cost" to I18nFieldError(i18nKey = "lump.sum.out.of.range"),
+            "phase" to I18nFieldError(i18nKey = "lump.sum.phase.should.not.be.empty"),
             "categories" to I18nFieldError(i18nKey = "programme.lumpSum.categories.min.2"),
         ))
     }

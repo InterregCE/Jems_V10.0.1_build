@@ -29,6 +29,11 @@ interface ProgrammeCostOptionApi {
     @GetMapping("/lumpSum")
     fun getProgrammeLumpSums(pageable: Pageable): Page<ProgrammeLumpSumDTO>
 
+
+    @ApiOperation("Retrieve programme lump sum by id")
+    @GetMapping("/lumpSum/{id}")
+    fun getProgrammeLumpSum(@PathVariable id: Long): ProgrammeLumpSumDTO
+
     @ApiOperation("Create programme lump sum")
     @PostMapping("/lumpSum", consumes = [MediaType.APPLICATION_JSON_VALUE])
     fun createProgrammeLumpSum(@RequestBody lumpSum: ProgrammeLumpSumDTO): ProgrammeLumpSumDTO

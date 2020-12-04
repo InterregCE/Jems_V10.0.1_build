@@ -1,0 +1,16 @@
+<app-alert
+        [show]="!!lumpSum"
+        [type]="Alert.SUCCESS">
+    <p>{{'lump.sum.save.success' | translate: {lumpSum: lumpSum} }}</p>
+</app-alert>
+
+<p *ngIf="!lumpSumPage?.content.length">{{'lump.sum.empty.list' | translate}}</p>
+<app-table *ngIf="lumpSumPage.content.length"
+           [configuration]="lumpSumTableConfiguration"
+           [rows]="lumpSumPage.content"
+           [totalElements]="lumpSumPage?.totalElements"
+           [pageIndex]="pageIndex"
+           (newPageIndex)="newPageIndex.emit($event)"
+           (newPageSize)="newPageSize.emit($event)"
+           (sortRows)="newSort.emit($event)">>
+</app-table>

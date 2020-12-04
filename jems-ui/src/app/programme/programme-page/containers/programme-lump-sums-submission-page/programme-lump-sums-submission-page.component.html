@@ -1,0 +1,12 @@
+<div *ngIf="lumpSum$ | async as details" class="container">
+    <app-breadcrumb></app-breadcrumb>
+    <app-programme-lump-sum-detail
+            [lumpSum]="details"
+            [success$]="lumpSumSaveSuccess$"
+            [error$]="lumpSumSaveError$"
+            [isCreate]="isCreate"
+            (createLumpSum)="createLumpSum($event)"
+            (updateLumpSum)="updateLumpSum($event)"
+            (cancelCreate)="cancelCreate()">
+    </app-programme-lump-sum-detail>
+</div>
