@@ -8,7 +8,7 @@ fun PartnerBudget.toOutputDto() =
     ProjectPartnerBudgetDTO(
         partner = partner?.toOutputProjectPartner(),
         staffCosts = extractStaffCosts(),
-        travelCosts = travelCosts,
+        travelCosts = extractTravelCosts(),
         externalCosts = externalCosts,
         equipmentCosts = equipmentCosts,
         infrastructureCosts = infrastructureCosts,
