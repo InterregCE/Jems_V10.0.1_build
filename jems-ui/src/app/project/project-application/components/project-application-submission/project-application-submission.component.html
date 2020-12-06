@@ -6,6 +6,9 @@
             <mat-label>{{'project.detail.new.field.acronym' | translate}}</mat-label>
             <input name="acronym" formControlName="acronym" matInput
                    placeholder="{{'project.detail.new.field.acronym' | translate}}" required>
+            <app-context-info
+                              infoText="{{'project.application.form.field.project.acronym.info' | translate}}">
+            </app-context-info>
             <mat-error>
                 <app-form-field-errors
                         [errors]="submissionForm?.controls?.acronym?.errors"
