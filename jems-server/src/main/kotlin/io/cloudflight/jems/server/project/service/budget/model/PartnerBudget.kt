@@ -8,9 +8,9 @@ data class PartnerBudget(
 
     val partner: ProjectPartner? = null,
 
-    val staffCostsFlatRate: Int? = null,
-    val officeOnStaffFlatRate: Int? = null,
-    val travelOnStaffFlatRate: Int? = null,
+    val staffCostsFlatRate: Int?,
+    val officeOnStaffFlatRate: Int?,
+    val travelOnStaffFlatRate: Int?,
 
     val staffCosts: BigDecimal = BigDecimal.ZERO,
     val travelCosts: BigDecimal = BigDecimal.ZERO,
@@ -29,7 +29,7 @@ data class PartnerBudget(
         else
             staffCosts
 
-    private fun extractTravelCosts(): BigDecimal =
+    fun extractTravelCosts(): BigDecimal =
         if (travelOnStaffFlatRate != null)
             extractStaffCosts().percentage(travelOnStaffFlatRate)
         else
