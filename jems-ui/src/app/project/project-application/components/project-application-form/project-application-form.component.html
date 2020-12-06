@@ -17,7 +17,7 @@
             <mat-label>{{'project.application.form.field.project.acronym' | translate}}</mat-label>
             <input name="acronym" formControlName="acronym" matInput
                    placeholder="{{'project.application.form.field.project.acronym' | translate}}">
-            <app-context-info
+            <app-context-info *ngIf="editable"
                     infoText="{{'project.application.form.field.project.acronym.info' | translate}}">
             </app-context-info>
             <mat-error>
