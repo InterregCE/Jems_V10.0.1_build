@@ -21,6 +21,9 @@ class ProgrammeCostOptionController(
     override fun getProgrammeLumpSums(pageable: Pageable): Page<ProgrammeLumpSumDTO> =
         getLumpSum.getLumpSums(pageable).map { it.toDto() }
 
+    override fun getProgrammeLumpSum(id: Long): ProgrammeLumpSumDTO =
+        getLumpSum.getLumpSum(id).toDto()
+
     override fun createProgrammeLumpSum(lumpSum: ProgrammeLumpSumDTO): ProgrammeLumpSumDTO =
         createLumpSum.createLumpSum(lumpSum.toModel()).toDto()
 

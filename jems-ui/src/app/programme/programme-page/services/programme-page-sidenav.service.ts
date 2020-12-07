@@ -21,6 +21,11 @@ export class ProgrammePageSidenavService {
     route: '/app/programme/languages',
   };
 
+  private costsPage = {
+    headline: {i18nKey: 'programme.tab.costs.option'},
+    route: '/app/programme/costs'
+  };
+
   constructor(private sideNavService: SideNavService) {
   }
 
@@ -53,7 +58,8 @@ export class ProgrammePageSidenavService {
           {
             headline: {i18nKey: 'programme.tab.legal.status'},
             route: '/app/programme/legalStatus',
-          }
+          },
+          this.costsPage
         ]
       },
     ]);
@@ -69,5 +75,9 @@ export class ProgrammePageSidenavService {
 
   public goToLanguages(): void {
     this.sideNavService.navigate(this.languagesPage);
+  }
+
+  public goToCosts(): void {
+    this.sideNavService.navigate(this.costsPage);
   }
 }

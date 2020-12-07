@@ -38,11 +38,11 @@ private fun validateCommonLumpSum(lumpSum: ProgrammeLumpSum) {
         errors.put("description", I18nFieldError(i18nKey = "programme.lumpSum.description.too.long"))
 
     val cost = lumpSum.cost
-    if (cost == null || cost < BigDecimal.ZERO || cost > MAX_COST)
-        errors.put("cost", I18nFieldError(i18nKey = "programme.lumpSum.cost.invalid"))
+    if (cost == null || cost < BigDecimal.ZERO || cost > MAX_COST || cost.scale() > 2)
+        errors.put("cost", I18nFieldError(i18nKey = "lump.sum.out.of.range"))
 
     if (lumpSum.phase == null)
-        errors.put("phase", I18nFieldError(i18nKey = "programme.lumpSum.phase.invalid"))
+        errors.put("phase", I18nFieldError(i18nKey = "lump.sum.phase.should.not.be.empty"))
 
     if (lumpSum.categories.size < 2)
         errors.put("categories", I18nFieldError(i18nKey = "programme.lumpSum.categories.min.2"))

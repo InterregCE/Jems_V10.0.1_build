@@ -9,6 +9,8 @@ import {ProgrammeIndicatorsOverviewPageComponent} from './programme-page/contain
 import {ProgrammeStrategiesPageComponent} from './programme-page/containers/programme-strategies-page/programme-strategies-page.component';
 import {ProgrammeLanguagesPageComponent} from './programme-page/containers/programme-languages-page/programme-languages-page.component';
 import {ProgrammeLegalStatusComponent} from './programme-page/containers/programme-legal-status/programme-legal-status.component';
+import {ProgrammeSimplifiedCostOptionsComponent} from './programme-page/containers/programme-simplified-cost-options/programme-simplified-cost-options.component';
+import {ProgrammeLumpSumsSubmissionPageComponent} from './programme-page/containers/programme-lump-sums-submission-page/programme-lump-sums-submission-page.component';
 
 export const routes: Routes = [
   {
@@ -101,6 +103,35 @@ export const routes: Routes = [
         path: 'legalStatus',
         component: ProgrammeLegalStatusComponent,
         data: {breadcrumb: 'programme.breadcrumb.legal.status'},
+      },
+      {
+        path: 'costs',
+        data: {breadcrumb: 'programme.breadcrumb.costs'},
+        children: [
+          {
+            path: '',
+            component: ProgrammeSimplifiedCostOptionsComponent,
+          },
+          {
+            path: 'lumpSum',
+            children: [
+              {
+                path: '',
+                component: ProgrammeSimplifiedCostOptionsComponent,
+              },
+              {
+                path: 'create',
+                component: ProgrammeLumpSumsSubmissionPageComponent,
+                data: {breadcrumb: 'programme.breadcrumb.lumpSum.create'},
+              },
+              {
+                path: 'detail/:lumpSumId',
+                data: {breadcrumb: 'programme.breadcrumb.lumpSum.name'},
+                component: ProgrammeLumpSumsSubmissionPageComponent,
+              },
+            ]
+          },
+        ],
       },
     ]
   }
