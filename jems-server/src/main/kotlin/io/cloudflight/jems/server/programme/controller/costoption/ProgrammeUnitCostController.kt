@@ -30,4 +30,7 @@ class ProgrammeUnitCostController(
     override fun deleteProgrammeUnitCost(unitCostId: Long) =
         deleteUnitCost.deleteUnitCost(unitCostId)
 
+    override fun getProgrammeUnitCost(id: Long): ProgrammeUnitCostDTO =
+        getUnitCost.getUnitCost(id).toDto()
+
 }

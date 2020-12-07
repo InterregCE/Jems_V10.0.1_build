@@ -35,6 +35,10 @@ import {LumpSumsStore} from './programme-page/services/lump-sums-store.service';
 import { ProgrammeLumpSumsListComponent } from './programme-page/components/programme-lump-sums-list/programme-lump-sums-list.component';
 import { ProgrammeLumpSumsSubmissionPageComponent } from './programme-page/containers/programme-lump-sums-submission-page/programme-lump-sums-submission-page.component';
 import { ProgrammeLumpSumDetailComponent } from './programme-page/components/programme-lump-sum-detail/programme-lump-sum-detail.component';
+import { ProgrammeUnitCostsListComponent } from './programme-page/components/programme-unit-costs-list/programme-unit-costs-list.component';
+import {UnitCostStore} from './programme-page/services/unit-cost-store.service';
+import { ProgrammeUnitCostDetailComponent } from './programme-page/components/programme-unit-cost-detail/programme-unit-cost-detail.component';
+import { ProgrammeUnitCostsSubmissionPageComponent } from './programme-page/containers/programme-unit-costs-submission-page/programme-unit-costs-submission-page.component';
 
 @NgModule({
   declarations: [
@@ -69,11 +73,15 @@ import { ProgrammeLumpSumDetailComponent } from './programme-page/components/pro
     ProgrammeSimplifiedCostOptionsComponent,
     ProgrammeLumpSumsListComponent,
     ProgrammeLumpSumsSubmissionPageComponent,
-    ProgrammeLumpSumDetailComponent
+    ProgrammeLumpSumDetailComponent,
+    ProgrammeUnitCostsListComponent,
+    ProgrammeUnitCostDetailComponent,
+    ProgrammeUnitCostsSubmissionPageComponent
   ],
   providers: [
     IndicatorsStore,
     LumpSumsStore,
+    UnitCostStore,
     ProgrammePageSidenavService
   ],
   imports: [

@@ -1,0 +1,12 @@
+<div *ngIf="unitCost$ | async as details" class="container">
+    <app-breadcrumb></app-breadcrumb>
+    <app-programme-unit-cost-detail
+            [unitCost]="details"
+            [success$]="unitCostSaveSuccess$"
+            [error$]="unitCostSaveError$"
+            [isCreate]="isCreate"
+            (createUnitCost)="createUnitCost($event)"
+            (updateUnitCost)="updateUnitCost($event)"
+            (cancelCreate)="cancelCreate()">
+    </app-programme-unit-cost-detail>
+</div>

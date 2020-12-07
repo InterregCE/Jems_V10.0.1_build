@@ -44,7 +44,7 @@ private fun validateCommonUnitCost(unitCost: ProgrammeUnitCost) {
         errors.put("type", I18nFieldError(i18nKey = "programme.unitCost.type.too.long"))
 
     val costPerUnit = unitCost.costPerUnit
-    if (costPerUnit == null || costPerUnit < BigDecimal.ZERO || costPerUnit > MAX_COST)
+    if (costPerUnit == null || costPerUnit < BigDecimal.ZERO || costPerUnit > MAX_COST || costPerUnit.scale() > 2)
         errors.put("costPerUnit", I18nFieldError(i18nKey = "programme.unitCost.costPerUnit.invalid"))
 
     if (unitCost.categories.size < 2)
