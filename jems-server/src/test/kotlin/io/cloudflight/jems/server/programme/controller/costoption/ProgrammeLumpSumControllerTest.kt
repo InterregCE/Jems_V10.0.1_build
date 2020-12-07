@@ -21,7 +21,7 @@ import org.springframework.data.domain.PageImpl
 import org.springframework.data.domain.Pageable
 import java.math.BigDecimal
 
-class ProgrammeCostOptionControllerTest {
+class ProgrammeLumpSumControllerTest {
 
     companion object {
 
@@ -59,12 +59,12 @@ class ProgrammeCostOptionControllerTest {
     @MockK
     lateinit var deleteLumpSum: DeleteLumpSumInteractor
 
-    private lateinit var controller: ProgrammeCostOptionController
+    private lateinit var controller: ProgrammeLumpSumController
 
     @BeforeEach
     fun setup() {
         MockKAnnotations.init(this)
-        controller = ProgrammeCostOptionController(
+        controller = ProgrammeLumpSumController(
             getLumpSum,
             createLumpSum,
             updateLumpSum,

@@ -1,6 +1,7 @@
-package io.cloudflight.jems.api.programme
+package io.cloudflight.jems.api.programme.costoption
 
 import io.cloudflight.jems.api.programme.dto.costoption.ProgrammeLumpSumDTO
+import io.cloudflight.jems.api.programme.dto.costoption.ProgrammeUnitCostDTO
 import io.swagger.annotations.Api
 import io.swagger.annotations.ApiImplicitParam
 import io.swagger.annotations.ApiImplicitParams
@@ -17,33 +18,28 @@ import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
 
 @Api("Programme Cost Option")
-@RequestMapping("/api/costOption")
-interface ProgrammeCostOptionApi {
+@RequestMapping("/api/costOption/unitCost")
+interface ProgrammeUnitCostApi {
 
-    @ApiOperation("Retrieve all programme lump sums")
+    @ApiOperation("Retrieve all programme unit costs")
     @ApiImplicitParams(
         ApiImplicitParam(paramType = "query", name = "page", dataType = "integer"),
         ApiImplicitParam(paramType = "query", name = "size", dataType = "integer"),
         ApiImplicitParam(paramType = "query", name = "sort", dataType = "string")
     )
-    @GetMapping("/lumpSum")
-    fun getProgrammeLumpSums(pageable: Pageable): Page<ProgrammeLumpSumDTO>
+    @GetMapping
+    fun getProgrammeUnitCosts(pageable: Pageable): Page<ProgrammeUnitCostDTO>
 
+    @ApiOperation("Create programme unit cost")
+    @PostMapping(consumes = [MediaType.APPLICATION_JSON_VALUE])
+    fun createProgrammeUnitCost(@RequestBody unitCost: ProgrammeUnitCostDTO): ProgrammeUnitCostDTO
 
-    @ApiOperation("Retrieve programme lump sum by id")
-    @GetMapping("/lumpSum/{id}")
-    fun getProgrammeLumpSum(@PathVariable id: Long): ProgrammeLumpSumDTO
+    @ApiOperation("Update existing programme unit cost")
+    @PutMapping(consumes = [MediaType.APPLICATION_JSON_VALUE])
+    fun updateProgrammeUnitCost(@RequestBody unitCost: ProgrammeUnitCostDTO): ProgrammeUnitCostDTO
 
-    @ApiOperation("Create programme lump sum")
-    @PostMapping("/lumpSum", consumes = [MediaType.APPLICATION_JSON_VALUE])
-    fun createProgrammeLumpSum(@RequestBody lumpSum: ProgrammeLumpSumDTO): ProgrammeLumpSumDTO
-
-    @ApiOperation("Update existing programme lump sum")
-    @PutMapping("/lumpSum", consumes = [MediaType.APPLICATION_JSON_VALUE])
-    fun updateProgrammeLumpSum(@RequestBody lumpSum: ProgrammeLumpSumDTO): ProgrammeLumpSumDTO
-
-    @ApiOperation("Delete programme lump sum")
-    @DeleteMapping("/lumpSum/{lumpSumId}")
-    fun deleteProgrammeLumpSum(@PathVariable lumpSumId: Long)
+    @ApiOperation("Delete programme unit cost")
+    @DeleteMapping("/{unitCostId}")
+    fun deleteProgrammeUnitCost(@PathVariable unitCostId: Long)
 
 }
