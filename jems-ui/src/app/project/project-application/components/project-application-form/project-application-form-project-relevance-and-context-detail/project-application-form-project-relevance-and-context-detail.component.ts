@@ -114,9 +114,9 @@ export class ProjectApplicationFormProjectRelevanceAndContextDetailComponent ext
     this.transnationalCooperation = this.languageService.initInput(this.project?.transnationalCooperation, this.projectRelevanceForm.controls.transnationalCooperation);
     this.availableKnowledge = this.languageService.initInput(this.project?.availableKnowledge, this.projectRelevanceForm.controls.availableKnowledge);
 
-    this.benefits = [...this.project.projectBenefits];
-    this.strategies = [...this.project.projectStrategies];
-    this.synergies = [...this.project.projectSynergies];
+    this.benefits = this.project?.projectBenefits ? [...this.project.projectBenefits] : [];
+    this.strategies = this.project?.projectStrategies ? [...this.project.projectStrategies] : [];
+    this.synergies = this.project?.projectSynergies ? [...this.project.projectSynergies] : [];
   }
 
   private buildBenefitsToSave(): InputProjectRelevanceBenefit[] {
