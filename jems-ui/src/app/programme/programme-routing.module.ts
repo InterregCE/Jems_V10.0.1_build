@@ -11,6 +11,7 @@ import {ProgrammeLanguagesPageComponent} from './programme-page/containers/progr
 import {ProgrammeLegalStatusComponent} from './programme-page/containers/programme-legal-status/programme-legal-status.component';
 import {ProgrammeSimplifiedCostOptionsComponent} from './programme-page/containers/programme-simplified-cost-options/programme-simplified-cost-options.component';
 import {ProgrammeLumpSumsSubmissionPageComponent} from './programme-page/containers/programme-lump-sums-submission-page/programme-lump-sums-submission-page.component';
+import {ProgrammeUnitCostsSubmissionPageComponent} from './programme-page/containers/programme-unit-costs-submission-page/programme-unit-costs-submission-page.component';
 
 export const routes: Routes = [
   {
@@ -128,6 +129,25 @@ export const routes: Routes = [
                 path: 'detail/:lumpSumId',
                 data: {breadcrumb: 'programme.breadcrumb.lumpSum.name'},
                 component: ProgrammeLumpSumsSubmissionPageComponent,
+              },
+            ]
+          },
+          {
+            path: 'unitCost',
+            children: [
+              {
+                path: '',
+                component: ProgrammeSimplifiedCostOptionsComponent,
+              },
+              {
+                path: 'create',
+                component: ProgrammeUnitCostsSubmissionPageComponent,
+                data: {breadcrumb: 'programme.breadcrumb.unitCost.create'},
+              },
+              {
+                path: 'detail/:unitCostId',
+                data: {breadcrumb: 'programme.breadcrumb.unitCost.name'},
+                component: ProgrammeUnitCostsSubmissionPageComponent,
               },
             ]
           },

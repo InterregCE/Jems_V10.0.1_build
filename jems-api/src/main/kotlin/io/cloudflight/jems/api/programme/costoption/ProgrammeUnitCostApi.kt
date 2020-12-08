@@ -1,6 +1,5 @@
 package io.cloudflight.jems.api.programme.costoption
 
-import io.cloudflight.jems.api.programme.dto.costoption.ProgrammeLumpSumDTO
 import io.cloudflight.jems.api.programme.dto.costoption.ProgrammeUnitCostDTO
 import io.swagger.annotations.Api
 import io.swagger.annotations.ApiImplicitParam
@@ -41,5 +40,9 @@ interface ProgrammeUnitCostApi {
     @ApiOperation("Delete programme unit cost")
     @DeleteMapping("/{unitCostId}")
     fun deleteProgrammeUnitCost(@PathVariable unitCostId: Long)
+
+    @ApiOperation("Retrieve programme unit cost by id")
+    @GetMapping("/unitCost/{id}")
+    fun getProgrammeUnitCost(@PathVariable id: Long): ProgrammeUnitCostDTO
 
 }

@@ -1,0 +1,16 @@
+<app-alert
+        [show]="!!unitCost"
+        [type]="Alert.SUCCESS">
+    <p>{{'unit.cost.save.success' | translate: {unitCost: unitCost} }}</p>
+</app-alert>
+
+<p *ngIf="!unitCostPage?.content.length">{{'unit.cost.empty.list' | translate}}</p>
+<app-table *ngIf="unitCostPage.content.length"
+           [configuration]="unitCostTableConfiguration"
+           [rows]="unitCostPage.content"
+           [totalElements]="unitCostPage?.totalElements"
+           [pageIndex]="pageIndex"
+           (newPageIndex)="newPageIndex.emit($event)"
+           (newPageSize)="newPageSize.emit($event)"
+           (sortRows)="newSort.emit($event)">>
+</app-table>

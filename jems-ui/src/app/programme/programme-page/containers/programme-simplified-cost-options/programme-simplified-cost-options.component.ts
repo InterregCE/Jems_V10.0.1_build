@@ -9,6 +9,7 @@ import {ProgrammePageSidenavService} from '../../services/programme-page-sidenav
 import { Permission } from 'src/app/security/permissions/permission';
 import {LumpSumsStore} from '../../services/lump-sums-store.service';
 import {ProgrammeCostOptionService} from '@cat/api';
+import {UnitCostStore} from '../../services/unit-cost-store.service';
 
 @Component({
   selector: 'app-programme-simplified-cost-options',
@@ -20,10 +21,15 @@ export class ProgrammeSimplifiedCostOptionsComponent extends BaseComponent {
 
   Permission = Permission;
   lumpSum$ = this.lumpSumsStore.lumpSum();
+  unitCost$ = this.unitCostStore.unitCost();
 
   newLumpSumPageSize$ = new Subject<number>();
   newLumpSumPageIndex$ = new Subject<number>();
   newLumpSumSort$ = new Subject<Partial<MatSort>>();
+
+  newUnitCostPageSize$ = new Subject<number>();
+  newUnitCostPageIndex$ = new Subject<number>();
+  newUnitCostSort$ = new Subject<Partial<MatSort>>();
 
   currentLumpSumsPage$ =
     combineLatest([
@@ -41,7 +47,24 @@ export class ProgrammeSimplifiedCostOptionsComponent extends BaseComponent {
         tap(page => Log.info('Fetched the Lump Sums:', this, page.content)),
       );
 
+  currentUnitCostPage$ =
+    combineLatest([
+      this.newUnitCostPageIndex$.pipe(startWith(Tables.DEFAULT_INITIAL_PAGE_INDEX)),
+      this.newUnitCostPageSize$.pipe(startWith(Tables.DEFAULT_INITIAL_PAGE_SIZE)),
+      this.newUnitCostSort$.pipe(
+        startWith(Tables.DEFAULT_INITIAL_SORT),
+        map(sort => sort?.direction ? sort : Tables.DEFAULT_INITIAL_SORT),
+        map(sort => `${sort.active},${sort.direction}`)
+      )
+    ])
+      .pipe(
+        mergeMap(([pageIndex, pageSize, sort]) =>
+          this.programmeCostOptionService.getProgrammeUnitCosts(pageIndex, pageSize, sort)),
+        tap(page => Log.info('Fetched the Unit Costs:', this, page.content)),
+      );
+
   constructor(private lumpSumsStore: LumpSumsStore,
+              private unitCostStore: UnitCostStore,
               private programmeCostOptionService: ProgrammeCostOptionService,
               private programmePageSidenavService: ProgrammePageSidenavService) {
     super();
