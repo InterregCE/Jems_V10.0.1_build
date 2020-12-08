@@ -127,7 +127,7 @@ export class ProgrammeUnitCostDetailComponent extends ViewEditForm implements On
           name: this.unitCostForm?.controls?.name?.value,
           description: this.unitCostForm?.controls?.description?.value,
           type: this.unitCostForm?.controls?.type?.value,
-          costPerUnit: this.unitCostForm?.controls?.cost?.value,
+          costPerUnit: this.unitCostForm?.controls?.costPerUnit?.value,
           categories: this.selection.selected
         } as ProgrammeUnitCostDTO);
       } else {
@@ -136,7 +136,7 @@ export class ProgrammeUnitCostDetailComponent extends ViewEditForm implements On
           name: this.unitCostForm?.controls?.name?.value,
           description: this.unitCostForm?.controls?.description?.value,
           type: this.unitCostForm?.controls?.type?.value,
-          costPerUnit: this.unitCostForm?.controls?.cost?.value,
+          costPerUnit: this.unitCostForm?.controls?.costPerUnit?.value,
           categories: this.selection.selected
         });
       }
