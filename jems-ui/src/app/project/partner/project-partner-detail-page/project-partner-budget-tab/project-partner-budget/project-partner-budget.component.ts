@@ -112,7 +112,7 @@ export class ProjectPartnerBudgetComponent implements OnInit {
 
 
   private calculateStaffCostsTotal(budgetOptions: BudgetOptions, budgets: { [key: string]: PartnerBudgetTable }): number {
-
+    if (!budgetOptions?.staffCostsFlatRateBasedOnDirectCost) { return budgets.staff?.total || 0; }
     const travelTotal = budgetOptions.travelFlatRateBasedOnStaffCost ? 0 : budgets.travel?.total || 0;
     const externalTotal = budgets.external?.total || 0;
     const equipmentTotal = budgets.equipment?.total || 0;
@@ -142,8 +142,6 @@ export class ProjectPartnerBudgetComponent implements OnInit {
   // since ag-grid mutate the data  we have to create new objects to avoid mutability issues
   // todo this should be removed after ag-grid's removed
   private deepCloneBudgets(budgets: { [key: string]: PartnerBudgetTable }): { [key: string]: PartnerBudgetTable } {
-    // since ag-grid mutate the data here we have to create new objects to avoid mutability issues
-    // todo this should change after ag-grid's removed
     return {
       staff: this.createBudgetTable(PartnerBudgetTableType.STAFF, budgets.staff.entries),
       travel: this.createBudgetTable(PartnerBudgetTableType.TRAVEL, budgets.travel.entries),

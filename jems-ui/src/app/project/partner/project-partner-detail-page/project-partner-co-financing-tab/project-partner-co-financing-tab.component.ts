@@ -1,4 +1,4 @@
-import {ChangeDetectionStrategy, Component} from '@angular/core';
+import {ChangeDetectionStrategy, Component, OnInit} from '@angular/core';
 import {ProjectPartnerStore} from '../../../project-application/containers/project-application-form-page/services/project-partner-store.service';
 import {combineLatest, merge, Observable, Subject} from 'rxjs';
 import {
@@ -13,15 +13,17 @@ import {catchError, filter, map, mergeMap, startWith, tap, withLatestFrom} from 
 import {ActivatedRoute} from '@angular/router';
 import {HttpErrorResponse} from '@angular/common/http';
 import {ProjectStore} from '../../../project-application/containers/project-application-detail/services/project-store.service';
-import {Numbers} from '../../../../common/utils/numbers';
+import {ProjectPartnerDetailPageStore} from '../project-partner-detail-page.store';
+import {UntilDestroy, untilDestroyed} from '@ngneat/until-destroy';
 
+@UntilDestroy()
 @Component({
   selector: 'app-project-partner-co-financing-tab',
   templateUrl: './project-partner-co-financing-tab.component.html',
   styleUrls: ['./project-partner-co-financing-tab.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class ProjectPartnerCoFinancingTabComponent {
+export class ProjectPartnerCoFinancingTabComponent implements OnInit {
 
   projectId = this.activatedRoute?.snapshot?.params?.projectId;
 
@@ -29,6 +31,12 @@ export class ProjectPartnerCoFinancingTabComponent {
   saveSuccess$ = new Subject<boolean>();
   saveFinances$ = new Subject<ProjectPartnerCoFinancingAndContributionInputDTO>();
   cancelEdit$ = new Subject<void>();
+
+  details$: Observable<{
+    financingAndContribution: ProjectPartnerCoFinancingAndContributionOutputDTO,
+    callFunds: ProgrammeFundOutputDTO[],
+    totalAmount: number
+  }>;
 
   private initialCoFinancing$: Observable<ProjectPartnerCoFinancingAndContributionOutputDTO> = this.partnerStore.partner$
     .pipe(
@@ -51,18 +59,6 @@ export class ProjectPartnerCoFinancingTabComponent {
       })
     );
 
-  private amountChanged$: Observable<number> = this.partnerStore.totalAmountChanged$
-    .pipe(
-      withLatestFrom(this.partnerStore.partner$),
-      mergeMap(([, partner]) => this.projectPartnerBudgetService.getTotal(partner.id)),
-    );
-
-  private initialAmount$: Observable<number> = this.partnerStore.partner$
-    .pipe(
-      filter(partner => !!partner.id),
-      mergeMap(partner => this.projectPartnerBudgetService.getTotal(partner.id)),
-    );
-
   private callFunds$: Observable<ProgrammeFundOutputDTO[]> = this.projectStore.getProject()
     .pipe(
       map(project => project.call.id),
@@ -70,25 +66,31 @@ export class ProjectPartnerCoFinancingTabComponent {
       map((call: OutputCall) => call.funds),
     );
 
-  details$ = combineLatest([
-    merge(this.initialCoFinancing$, this.saveCoFinancing$),
-    merge(this.initialAmount$, this.amountChanged$),
-    this.callFunds$,
-    this.cancelEdit$.pipe(startWith(null))
-  ])
-    .pipe(
-      map(([finances, amount, funds]) => ({
-        financingAndContribution: finances,
-        callFunds: funds,
-        totalAmount: Numbers.truncateNumber(amount)
-      }))
-    );
 
   constructor(public partnerStore: ProjectPartnerStore,
               private callService: CallService,
               public projectStore: ProjectStore,
               private activatedRoute: ActivatedRoute,
+              private pageStore: ProjectPartnerDetailPageStore,
               private projectPartnerBudgetService: ProjectPartnerBudgetService) {
+  }
+
+  ngOnInit(): void {
+    this.pageStore.totalBudget$.pipe(untilDestroyed(this)).subscribe();
+    this.details$ = combineLatest([
+      merge(this.initialCoFinancing$, this.saveCoFinancing$),
+      this.pageStore.totalBudget$,
+      this.callFunds$,
+      this.cancelEdit$.pipe(startWith(null))
+    ])
+      .pipe(
+        map(([finances, amount, funds]) => ({
+          financingAndContribution: finances,
+          callFunds: funds,
+          totalAmount: amount
+        }))
+      );
+
   }
 
 }
