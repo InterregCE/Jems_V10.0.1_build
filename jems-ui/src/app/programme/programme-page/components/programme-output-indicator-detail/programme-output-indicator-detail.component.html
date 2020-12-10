@@ -87,7 +87,8 @@
         </mat-form-field>
         <mat-form-field class="field-third">
             <mat-label>{{'output.indicator.form.field.milestone' | translate}}</mat-label>
-            <input name="milestone" formControlName="milestone" matInput type="number"
+            <input currencyMask type="decimal"
+                   name="milestone" formControlName="milestone" matInput
                    placeholder="{{'output.indicator.form.field.milestone' | translate}}">
             <mat-error>
                 <app-form-field-errors
@@ -97,7 +98,8 @@
         </mat-form-field>
         <mat-form-field class="field-third">
             <mat-label>{{'output.indicator.form.field.final.target' | translate}}</mat-label>
-            <input name="finalTarget" formControlName="finalTarget" matInput type="number"
+            <input currencyMask type="decimal"
+                   name="finalTarget" formControlName="finalTarget" matInput
                    placeholder="{{'output.indicator.form.field.final.target' | translate}}">
             <mat-error>
                 <app-form-field-errors

@@ -1,5 +1,6 @@
 export enum ColumnType {
   String,
   Date,
-  CustomComponent
+  CustomComponent,
+  Decimal
 }

@@ -1,6 +1,6 @@
 import {PartnerBudgetTableEntry} from './partner-budget-table-entry';
-import {Numbers} from '../../../common/utils/numbers';
 import {PartnerBudgetTableType} from './partner-budget-table-type';
+import {NumberService} from '../../../common/services/number.service';
 
 export class PartnerBudgetTable {
   type: PartnerBudgetTableType;
@@ -18,7 +18,7 @@ export class PartnerBudgetTable {
   }
 
   computeTotal(): void {
-    const sum = Numbers.sum(this.entries.map(entry => entry.total || 0));
-    this.total = Numbers.truncateNumber(sum);
+    const sum = NumberService.sum(this.entries.map(entry => entry.total || 0));
+    this.total = NumberService.truncateNumber(sum);
   }
 }

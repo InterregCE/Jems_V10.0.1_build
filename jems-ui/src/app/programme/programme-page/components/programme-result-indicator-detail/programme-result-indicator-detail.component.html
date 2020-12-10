@@ -87,7 +87,8 @@
         </mat-form-field>
         <mat-form-field class="field-third">
             <mat-label>{{'result.indicator.form.field.baseline' | translate}}</mat-label>
-            <input name="baseline" formControlName="baseline" matInput type="number"
+            <input currencyMask type="decimal"
+                   name="baseline" formControlName="baseline" matInput
                    placeholder="{{'result.indicator.form.field.baseline' | translate}}">
             <mat-error>
                 <app-form-field-errors [errors]="resultIndicatorForm?.controls?.baseline?.errors">
@@ -107,7 +108,8 @@
         </mat-form-field>
         <mat-form-field class="field-third">
             <mat-label>{{'result.indicator.form.field.final.target' | translate}}</mat-label>
-            <input name="finalTarget" formControlName="finalTarget" matInput type="number" s
+            <input currencyMask type="decimal"
+                   name="finalTarget" formControlName="finalTarget" matInput
                    placeholder="{{'result.indicator.form.field.final.target' | translate}}">
             <mat-error>
                 <app-form-field-errors [errors]="resultIndicatorForm?.controls?.finalTarget?.errors">

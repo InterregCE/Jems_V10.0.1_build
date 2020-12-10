@@ -7,6 +7,7 @@ import {Observable} from 'rxjs';
 import {Tools} from '../../utils/tools';
 import {MatSort} from '@angular/material/sort';
 import {Tables} from '../../utils/tables';
+import {MoneyPipe} from '../../pipe/money.pipe';
 
 @Component({
   selector: 'app-table',
@@ -33,7 +34,8 @@ export class TableComponent implements OnInit {
   columnsToDisplay: string[] = [];
   currentPageSize = Tables.DEFAULT_INITIAL_PAGE_SIZE;
 
-  constructor(private datepipe: DatePipe) {
+  constructor(private datePipe: DatePipe,
+              private moneyPipe: MoneyPipe) {
   }
 
   ngOnInit(): void {
@@ -61,7 +63,10 @@ export class TableComponent implements OnInit {
       return column.alternativeValue;
     }
     if (column.columnType === ColumnType.Date) {
-      return this.datepipe.transform(elementValue, Tables.DEFAULT_DATE_FORMAT);
+      return this.datePipe.transform(elementValue, Tables.DEFAULT_DATE_FORMAT);
+    }
+    if (column.columnType === ColumnType.Decimal) {
+      return this.moneyPipe.transform(elementValue);
     }
     return elementValue;
   }

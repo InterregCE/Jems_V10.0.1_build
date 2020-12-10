@@ -51,7 +51,7 @@ export class ProgrammeOutputIndicatorDetailComponent extends ViewEditForm implem
 
   indicatorNames = this.programmeOutputIndicatorConstants.indicatorNames;
 
-  measurementUnits =  this.programmeOutputIndicatorConstants.measurementUnits;
+  measurementUnits = this.programmeOutputIndicatorConstants.measurementUnits;
 
   filteredIndicatorNames: Observable<string[]>;
   filteredMeasurementUnits: Observable<string[]>;
@@ -62,8 +62,8 @@ export class ProgrammeOutputIndicatorDetailComponent extends ViewEditForm implem
     indicatorName: ['', Validators.compose([Validators.required, Validators.maxLength(250)])],
     specificObjective: ['', Validators.required],
     measurementUnit: ['', Validators.maxLength(255)],
-    milestone: [''],
-    finalTarget: ['']
+    milestone: [null],
+    finalTarget: [null]
   });
 
   identifierErrors = {

@@ -1,5 +1,5 @@
 import {Pipe, PipeTransform} from '@angular/core';
-import {Numbers} from '../utils/numbers';
+import {NumberService} from '../services/number.service';
 
 @Pipe({name: 'percentage'})
 export class PercentagePipe implements PipeTransform {
@@ -7,6 +7,6 @@ export class PercentagePipe implements PipeTransform {
     if (total === 0 || value === 0 || value === null) {
       return '0 %';
     }
-    return `${Numbers.truncateNumber(Numbers.divide(Numbers.product([value, 100]), total), fractionLength)} %`;
+    return `${NumberService.truncateNumber(NumberService.divide(NumberService.product([value, 100]), total), fractionLength)} %`;
   }
 }

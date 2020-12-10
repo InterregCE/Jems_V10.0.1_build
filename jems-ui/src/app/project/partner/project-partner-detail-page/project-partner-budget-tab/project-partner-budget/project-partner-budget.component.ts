@@ -1,6 +1,5 @@
 import {ChangeDetectionStrategy, Component, OnInit} from '@angular/core';
 import {PartnerBudgetTable} from '../../../../project-application/model/partner-budget-table';
-import {Numbers} from '../../../../../common/utils/numbers';
 import {FormService} from '@common/components/section/form/form.service';
 import {combineLatest, merge, Observable, Subject} from 'rxjs';
 import {HttpErrorResponse} from '@angular/common/http';
@@ -13,6 +12,7 @@ import {PartnerBudgetTableEntry} from '../../../../project-application/model/par
 import {MultiLanguageInputService} from '../../../../../common/services/multi-language-input.service';
 import {MultiLanguageInput} from '@common/components/forms/multi-language/multi-language-input';
 import {InputTranslation} from '@cat/api';
+import {NumberService} from '../../../../../common/services/number.service';
 
 @UntilDestroy()
 @Component({
@@ -118,23 +118,23 @@ export class ProjectPartnerBudgetComponent implements OnInit {
     const equipmentTotal = budgets.equipment?.total || 0;
     const infrastructureTotal = budgets.infrastructure?.total || 0;
 
-    return Numbers.truncateNumber(Numbers.product([
-      Numbers.divide(budgetOptions.staffCostsFlatRateBasedOnDirectCost, 100),
-      Numbers.sum([travelTotal, externalTotal, equipmentTotal, infrastructureTotal])
+    return NumberService.truncateNumber(NumberService.product([
+      NumberService.divide(budgetOptions.staffCostsFlatRateBasedOnDirectCost, 100),
+      NumberService.sum([travelTotal, externalTotal, equipmentTotal, infrastructureTotal])
     ]));
 
   }
 
   private calculateOfficeAndAdministrationTotal(officeFlatRateBasedOnStaffCost: number, staffTotal: number): number {
-    return Numbers.truncateNumber(Numbers.product([
-      Numbers.divide(officeFlatRateBasedOnStaffCost, 100),
+    return NumberService.truncateNumber(NumberService.product([
+      NumberService.divide(officeFlatRateBasedOnStaffCost, 100),
       staffTotal
     ]));
   }
 
   private calculateTravelAndAccommodationTotal(travelFlatRateBasedOnStaffCost: number, staffTotal: number): number {
-    return Numbers.truncateNumber(Numbers.product([
-      Numbers.divide(travelFlatRateBasedOnStaffCost, 100),
+    return NumberService.truncateNumber(NumberService.product([
+      NumberService.divide(travelFlatRateBasedOnStaffCost, 100),
       staffTotal
     ]));
   }

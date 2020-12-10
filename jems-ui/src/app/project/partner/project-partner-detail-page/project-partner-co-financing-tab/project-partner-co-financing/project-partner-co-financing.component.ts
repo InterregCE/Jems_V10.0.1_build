@@ -18,13 +18,13 @@ import {
   ProjectPartnerContributionDTO
 } from '@cat/api';
 import {filter, map, startWith, takeUntil, tap} from 'rxjs/operators';
-import {Numbers} from '../../../../../common/utils/numbers';
 import {BaseComponent} from '@common/components/base-component';
 import {combineLatest, Observable} from 'rxjs';
 import {HttpErrorResponse} from '@angular/common/http';
 import {FormService} from '@common/components/section/form/form.service';
 import {Alert} from '@common/components/forms/alert';
 import {Permission} from 'src/app/security/permissions/permission';
+import {NumberService} from '../../../../../common/services/number.service';
 
 const MAX_100_NUMBER_REGEX = '^([0-9]{1,2}|100)$';
 const MAX_NUMBER_OF_PARTNER_CONTRIBUTIONS = 10;
@@ -48,7 +48,7 @@ export class ProjectPartnerCoFinancingComponent extends BaseComponent implements
 
   partnerContributionStatus = ProjectPartnerContributionDTO.StatusEnum;
   Alert = Alert;
-  Numbers = Numbers;
+  NumberService = NumberService;
   Permission = Permission;
 
 
@@ -129,7 +129,13 @@ export class ProjectPartnerCoFinancingComponent extends BaseComponent implements
     startWith(this.coFinancingForm.value),
     map(() => this.getPartnerContributionTotal(this.partnerContributions.value)),
     map(currentTotal => {
-      return {total: {difference: Numbers.toLocale(Numbers.truncateNumber(Math.abs(Numbers.minus(this.myAmount, currentTotal))))}};
+      return {
+        total: {
+          difference: NumberService.toLocale(
+            NumberService.truncateNumber(Math.abs(NumberService.minus(this.myAmount, currentTotal)))
+          )
+        }
+      };
     })
   );
 
@@ -226,9 +232,9 @@ export class ProjectPartnerCoFinancingComponent extends BaseComponent implements
   }
 
   private performCalculation(percentage: number): void {
-    this.myPercentage = Numbers.sum([100, -percentage]);
-    this.fundAmount = Numbers.truncateNumber(Numbers.product([this.totalAmount, (percentage / 100)]));
-    this.myAmount = Numbers.sum([this.totalAmount, -this.fundAmount]);
+    this.myPercentage = NumberService.sum([100, -percentage]);
+    this.fundAmount = NumberService.truncateNumber(NumberService.product([this.totalAmount, (percentage / 100)]));
+    this.myAmount = NumberService.sum([this.totalAmount, -this.fundAmount]);
     this.partnerContributions.setValidators([totalContributionValidator(this.myAmount), Validators.maxLength(MAX_NUMBER_OF_PARTNER_CONTRIBUTIONS)]);
     this.partnerContributions.updateValueAndValidity();
   }
@@ -248,7 +254,7 @@ export class ProjectPartnerCoFinancingComponent extends BaseComponent implements
   }
 
   private getPartnerContributionTotal(partnerContributions: ProjectPartnerContributionDTO[], partnerStatus?: ProjectPartnerContributionDTO.StatusEnum): number {
-    return Numbers.truncateNumber(Numbers.sum(partnerContributions
+    return NumberService.truncateNumber(NumberService.sum(partnerContributions
       .filter(source => source.status === partnerStatus || !partnerStatus)
       .map(item => item.amount ? item.amount : 0)
     ));

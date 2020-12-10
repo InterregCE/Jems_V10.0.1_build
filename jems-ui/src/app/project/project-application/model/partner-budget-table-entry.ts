@@ -1,7 +1,7 @@
-import {Numbers} from '../../../common/utils/numbers';
 import {isNotNullOrUndefined} from 'codelyzer/util/isNotNullOrUndefined';
 import {isNumeric} from 'rxjs/internal-compatibility';
 import {MultiLanguageInput} from '@common/components/forms/multi-language/multi-language-input';
+import {NumberService} from '../../../common/services/number.service';
 
 export class PartnerBudgetTableEntry {
 
@@ -29,11 +29,11 @@ export class PartnerBudgetTableEntry {
   }
 
   private static toNumber(value: string): number {
-    const valueNumber = Numbers.toDecimal(value);
+    const valueNumber = NumberService.toDecimal(value);
     if (valueNumber > 999_999_999) {
       return NaN;
     }
-    return Numbers.truncateNumber(valueNumber);
+    return NumberService.truncateNumber(valueNumber);
   }
 
   private static validNumber(nr: number): boolean {
@@ -55,8 +55,8 @@ export class PartnerBudgetTableEntry {
   }
 
   computeTotal(): void {
-    const total = Numbers.product([this.numberOfUnits || 0, this.pricePerUnit || 0]);
-    this.total = Numbers.truncateNumber(total);
+    const total = NumberService.product([this.numberOfUnits || 0, this.pricePerUnit || 0]);
+    this.total = NumberService.truncateNumber(total);
     this.validTotal = PartnerBudgetTableEntry.validNumber(this.total);
   }
 
