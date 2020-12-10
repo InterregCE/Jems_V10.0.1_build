@@ -41,7 +41,8 @@
         </mat-form-field>
         <mat-form-field class="field-third pad-top-1">
             <mat-label>{{'unit.cost.form.field.cost' | translate}}</mat-label>
-            <input name="costPerUnit" formControlName="costPerUnit" matInput type="number" required
+            <input currencyMask type="decimal"
+                   name="costPerUnit" formControlName="costPerUnit" matInput required
                    placeholder="{{'unit.cost.form.field.cost' | translate}}">
             <mat-error>
                 <app-form-field-errors

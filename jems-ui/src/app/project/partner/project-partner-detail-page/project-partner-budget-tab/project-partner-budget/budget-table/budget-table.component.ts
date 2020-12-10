@@ -12,13 +12,13 @@ import {CellValueChangedEvent, ColDef, GridApi, GridOptions, RowNode} from 'ag-g
 import {AgGridTemplateRendererComponent} from './ag-grid-template-renderer/ag-grid-template-renderer.component';
 import {TranslateService} from '@ngx-translate/core';
 import {PartnerBudgetTable} from '../../../../../project-application/model/partner-budget-table';
-import {Numbers} from '../../../../../../common/utils/numbers';
 import {BaseComponent} from '@common/components/base-component';
 import {PartnerBudgetTableType} from '../../../../../project-application/model/partner-budget-table-type';
 import {MultiLanguageInputService} from '../../../../../../common/services/multi-language-input.service';
 import {takeUntil, tap} from 'rxjs/operators';
 import {MultiLanguageInput} from '@common/components/forms/multi-language/multi-language-input';
 import {InputTranslation} from '@cat/api';
+import {NumberService} from 'src/app/common/services/number.service';
 
 @Component({
   selector: 'app-budget-table',
@@ -27,7 +27,7 @@ import {InputTranslation} from '@cat/api';
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class BudgetTableComponent extends BaseComponent implements AfterViewInit {
-  Numbers = Numbers;
+  NumberService = NumberService;
 
   @Input()
   editable: boolean;
@@ -46,7 +46,6 @@ export class BudgetTableComponent extends BaseComponent implements AfterViewInit
 
   gridApi?: GridApi;
   columnDefs: Partial<ColDef>[] = [];
-  locale = 'de-DE';
 
   gridOptions: GridOptions = {
     stopEditingWhenGridLosesFocus: true,
@@ -146,7 +145,7 @@ export class BudgetTableComponent extends BaseComponent implements AfterViewInit
         sortable: true,
         singleClickEdit: true,
         type: 'numericColumn',
-        valueGetter: (params: any) => Numbers.toLocale(params.data.numberOfUnits, this.locale),
+        valueGetter: (params: any) => NumberService.toLocale(params.data.numberOfUnits),
         valueSetter: (params: any) => {
           params.data.setNumberOfUnits(params.newValue);
           return true;
@@ -161,7 +160,7 @@ export class BudgetTableComponent extends BaseComponent implements AfterViewInit
         sortable: true,
         singleClickEdit: true,
         type: 'numericColumn',
-        valueGetter: (params: any) => Numbers.toLocale(params.data.pricePerUnit, this.locale),
+        valueGetter: (params: any) => NumberService.toLocale(params.data.pricePerUnit),
         valueSetter: (params: any) => {
           params.data.setPricePerUnit(params.newValue);
           return true;
@@ -173,7 +172,7 @@ export class BudgetTableComponent extends BaseComponent implements AfterViewInit
         headerName: this.translateService.instant('project.partner.budget.table.total'),
         field: 'total',
         type: 'numericColumn',
-        valueGetter: (params: any) => Numbers.toLocale(params.data.total, this.locale),
+        valueGetter: (params: any) => NumberService.toLocale(params.data.total),
         sortable: true,
         cellStyle: (params: any) => params.data.validTotal ? {color: 'black'} : {color: 'red'},
         pinnedRowCellRendererFramework: AgGridTemplateRendererComponent,

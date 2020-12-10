@@ -30,7 +30,8 @@
         </mat-form-field>
         <mat-form-field class="field-third pad-top-1">
             <mat-label>{{'lump.sum.form.field.cost' | translate}}</mat-label>
-            <input name="cost" formControlName="cost" matInput type="number" required
+            <input currencyMask type="decimal"
+                   name="cost" formControlName="cost" matInput required
                    placeholder="{{'lump.sum.form.field.cost' | translate}}">
             <mat-error>
                 <app-form-field-errors
@@ -116,9 +117,9 @@
         </div>
         <span *ngFor="let element of categories">
             <mat-checkbox (click)="$event.stopPropagation()"
-                                  (change)="checkSelection(element)"
-                                  [disabled]="formState === FormState.VIEW"
-                                  [checked]="selection.isSelected(element)">
+                          (change)="checkSelection(element)"
+                          [disabled]="formState === FormState.VIEW"
+                          [checked]="selection.isSelected(element)">
                 {{'lump.sum.cost.category.' + element | translate}}
             </mat-checkbox>
             <br>

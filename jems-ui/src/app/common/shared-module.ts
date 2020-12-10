@@ -24,6 +24,8 @@ import {PercentagePipe} from './pipe/percentage';
 import {MultiLanguageComponent} from '@common/components/forms/multi-language/multi-language.component';
 import {ContextInfoComponent} from '@common/components/info-trigger/context-info.component';
 import {ExpectedNumberOfCharsDirective} from './directives/expected-number-of-chars.directive';
+import {NgxCurrencyModule} from 'ngx-currency';
+import {CurrencyDirective} from './directives/currency.directive';
 
 const modules = [
   CommonModule,
@@ -32,7 +34,8 @@ const modules = [
   ReactiveFormsModule,
   NgxPermissionsModule.forChild(),
   RouterModule,
-  MaterialModule
+  MaterialModule,
+  NgxCurrencyModule
 ];
 
 const declarations = [
@@ -54,8 +57,12 @@ const declarations = [
   HelpMenuComponent,
   SideNavComponent,
   ContextInfoComponent,
-  ExpectedNumberOfCharsDirective
+  ExpectedNumberOfCharsDirective,
+  CurrencyDirective
+];
 
+const providers = [
+  MoneyPipe
 ];
 
 @NgModule({
@@ -68,6 +75,9 @@ const declarations = [
   exports: [
     modules,
     declarations
+  ],
+  providers: [
+    ...providers
   ]
 })
 export class SharedModule {

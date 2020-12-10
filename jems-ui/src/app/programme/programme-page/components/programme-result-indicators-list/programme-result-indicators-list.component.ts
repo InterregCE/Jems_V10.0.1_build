@@ -4,6 +4,7 @@ import {MatSort} from '@angular/material/sort';
 import {TableConfiguration} from '@common/components/table/model/table.configuration';
 import {PageOutputIndicatorResult} from '@cat/api';
 import {Alert} from '@common/components/forms/alert';
+import {ColumnType} from '@common/components/table/model/column-type.enum';
 
 @Component({
   selector: 'app-programme-result-indicators-list',
@@ -67,7 +68,8 @@ export class ProgrammeResultIndicatorsListComponent extends BaseComponent {
       {
         displayedColumn: 'result.indicator.table.column.name.baseline',
         elementProperty: 'baseline',
-        sortProperty: 'baseline'
+        sortProperty: 'baseline',
+        columnType: ColumnType.Decimal
       },
       {
         displayedColumn: 'result.indicator.table.column.name.reference.year',
@@ -77,7 +79,8 @@ export class ProgrammeResultIndicatorsListComponent extends BaseComponent {
       {
         displayedColumn: 'result.indicator.table.column.name.final.target',
         elementProperty: 'finalTarget',
-        sortProperty: 'finalTarget'
+        sortProperty: 'finalTarget',
+        columnType: ColumnType.Decimal
       }
     ]
   });

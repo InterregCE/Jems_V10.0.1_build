@@ -1,17 +1,17 @@
 import {Injectable} from '@angular/core';
-import {Numbers} from '../../../../../common/utils/numbers';
 import {isNotNullOrUndefined} from 'codelyzer/util/isNotNullOrUndefined';
 import {isNumeric} from 'rxjs/internal-compatibility';
+import {NumberService} from '../../../../../common/services/number.service';
 
 @Injectable()
 export class ProjectPartnerBudget {
 
   static toNumber(value: string): number {
-    const valueNumber = Numbers.toDecimal(value);
+    const valueNumber = NumberService.toDecimal(value);
     if (valueNumber > 999999999999999) {
       return NaN;
     }
-    return Numbers.truncateNumber(valueNumber);
+    return NumberService.truncateNumber(valueNumber);
   }
 
   static validNumber(nr: number): boolean {
@@ -20,8 +20,8 @@ export class ProjectPartnerBudget {
 
   static computeTotal(numberOfUnits?: number,
                       pricePerUnit?: number): number {
-    const total = Numbers.product([numberOfUnits || 0, pricePerUnit || 0]);
-    return Numbers.truncateNumber(total);
+    const total = NumberService.product([numberOfUnits || 0, pricePerUnit || 0]);
+    return NumberService.truncateNumber(total);
   }
 
 }

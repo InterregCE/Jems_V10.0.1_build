@@ -1,10 +1,10 @@
 <app-multi-language *ngIf="table?.entries.length">
     <ag-grid-angular
-        style="width: 100%"
-        class="ag-theme-material mat-elevation-z4"
-        [gridOptions]="gridOptions"
-        [rowData]="table?.entries"
-        (gridReady)="gridReady()">
+            style="width: 100%"
+            class="ag-theme-material mat-elevation-z4"
+            [gridOptions]="gridOptions"
+            [rowData]="table?.entries"
+            (gridReady)="gridReady()">
     </ag-grid-angular>
 </app-multi-language>
 
@@ -35,5 +35,5 @@
 </ng-template>
 
 <ng-template #totalCell let-params>
-    <span>{{ (table.total || 0) | asMoney: locale }}</span>
+    <span>{{ (table.total || 0) | asMoney }}</span>
 </ng-template>

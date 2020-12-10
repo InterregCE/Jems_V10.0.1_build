@@ -4,6 +4,7 @@ import {MatSort} from '@angular/material/sort';
 import {TableConfiguration} from '@common/components/table/model/table.configuration';
 import {PageOutputIndicatorOutput} from '@cat/api';
 import {Alert} from '@common/components/forms/alert';
+import {ColumnType} from '@common/components/table/model/column-type.enum';
 
 @Component({
   selector: 'app-programme-output-indicators-list',
@@ -67,12 +68,14 @@ export class ProgrammeOutputIndicatorsListComponent extends BaseComponent {
       {
         displayedColumn: 'output.indicator.table.column.name.milestone',
         elementProperty: 'milestone',
-        sortProperty: 'milestone'
+        sortProperty: 'milestone',
+        columnType: ColumnType.Decimal
       },
       {
         displayedColumn: 'output.indicator.table.column.name.final.target',
         elementProperty: 'finalTarget',
-        sortProperty: 'finalTarget'
+        sortProperty: 'finalTarget',
+        columnType: ColumnType.Decimal
       }
     ]
   });

@@ -13,11 +13,12 @@ import {MatDialog} from '@angular/material/dialog';
 import {FormState} from '@common/components/forms/form-state';
 import {Forms} from '../../../../common/utils/forms';
 import {filter, take, takeUntil} from 'rxjs/operators';
-import { Permission } from 'src/app/security/permissions/permission';
+import {Permission} from 'src/app/security/permissions/permission';
 import {
   ProgrammeUnitCostDTO
 } from '@cat/api';
 import {SelectionModel} from '@angular/cdk/collections';
+import {NumberService} from '../../../../common/services/number.service';
 
 @Component({
   selector: 'app-programme-unit-cost-detail',
@@ -44,7 +45,7 @@ export class ProgrammeUnitCostDetailComponent extends ViewEditForm implements On
     name: ['', Validators.compose([Validators.required, Validators.maxLength(50)])],
     description: ['', Validators.maxLength(500)],
     type: ['', Validators.compose([Validators.required, Validators.maxLength(25)])],
-    costPerUnit: ['', Validators.required],
+    costPerUnit: [null, Validators.required],
     categories: ['', Validators.required]
   });
 
@@ -85,7 +86,8 @@ export class ProgrammeUnitCostDetailComponent extends ViewEditForm implements On
 
   constructor(private formBuilder: FormBuilder,
               private dialog: MatDialog,
-              protected changeDetectorRef: ChangeDetectorRef) {
+              protected changeDetectorRef: ChangeDetectorRef,
+              public numberService: NumberService) {
     super(changeDetectorRef);
   }
 

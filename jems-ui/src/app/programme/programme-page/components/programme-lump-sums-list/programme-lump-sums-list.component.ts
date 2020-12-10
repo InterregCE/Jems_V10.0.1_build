@@ -1,9 +1,10 @@
 import {ChangeDetectionStrategy, Component, EventEmitter, Input, Output} from '@angular/core';
 import {MatSort} from '@angular/material/sort';
 import {TableConfiguration} from '@common/components/table/model/table.configuration';
-import { Alert } from '@common/components/forms/alert';
+import {Alert} from '@common/components/forms/alert';
 import {PageProgrammeLumpSumDTO} from '@cat/api';
 import {UntilDestroy} from '@ngneat/until-destroy';
+import {ColumnType} from '@common/components/table/model/column-type.enum';
 
 @Component({
   selector: 'app-programme-lump-sums-list',
@@ -44,6 +45,7 @@ export class ProgrammeLumpSumsListComponent {
         displayedColumn: 'lump.sum.table.column.name.cost',
         elementProperty: 'cost',
         sortProperty: 'cost',
+        columnType: ColumnType.Decimal
       }
     ]
   });

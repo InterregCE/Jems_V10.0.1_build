@@ -1,9 +1,10 @@
-import {ChangeDetectionStrategy, Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
+import {ChangeDetectionStrategy, Component, EventEmitter, Input, Output} from '@angular/core';
 import {UntilDestroy} from '@ngneat/until-destroy';
 import {MatSort} from '@angular/material/sort';
 import {TableConfiguration} from '@common/components/table/model/table.configuration';
-import { Alert } from '@common/components/forms/alert';
+import {Alert} from '@common/components/forms/alert';
 import {PageProgrammeUnitCostDTO} from '@cat/api';
+import {ColumnType} from '@common/components/table/model/column-type.enum';
 
 @Component({
   selector: 'app-programme-unit-costs-list',
@@ -48,6 +49,7 @@ export class ProgrammeUnitCostsListComponent {
         displayedColumn: 'unit.cost.table.column.name.cost.unit',
         elementProperty: 'costPerUnit',
         sortProperty: 'costPerUnit',
+        columnType: ColumnType.Decimal
       }
     ]
   });

@@ -1,7 +1,7 @@
 import {ChangeDetectionStrategy, Component, Input} from '@angular/core';
 import {ColDef, GridOptions} from 'ag-grid-community';
-import {Numbers} from '../../../../../../common/utils/numbers';
 import {TranslateService} from '@ngx-translate/core';
+import {NumberService} from '../../../../../../common/services/number.service';
 
 @Component({
   selector: 'app-office-and-administration-table',
@@ -24,14 +24,10 @@ export class OfficeAndAdministrationTableComponent {
       headerName: this.translateService.instant('project.partner.budget.table.total'),
       field: 'total',
       type: 'numericColumn',
-      valueGetter: (params: any) => Numbers.toLocale(
-        Numbers.truncateNumber(this.total),
-        this.locale
-      ),
-      cellStyle: { 'text-align': 'right' }
+      valueGetter: (params: any) => NumberService.toLocale(NumberService.truncateNumber(this.total)),
+      cellStyle: {'text-align': 'right'}
     }
   ];
-  locale = 'de-DE';
 
   gridOptions: GridOptions = {
     domLayout: 'autoHeight',

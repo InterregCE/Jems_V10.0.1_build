@@ -22,6 +22,7 @@ import {
 } from '@cat/api';
 import {Permission} from '../../../../security/permissions/permission';
 import {ProgrammeResultIndicatorConstants} from './constants/programme-result-indicator-constants';
+import {NumberService} from '../../../../common/services/number.service';
 
 @Component({
   selector: 'app-programme-result-indicator-detail',
@@ -61,9 +62,9 @@ export class ProgrammeResultIndicatorDetailComponent extends ViewEditForm implem
     indicatorName: ['', Validators.compose([Validators.required, Validators.maxLength(250)])],
     specificObjective: ['', Validators.required],
     measurementUnit: ['', Validators.maxLength(255)],
-    baseline: [''],
+    baseline: [null],
     referenceYear: ['', Validators.maxLength(10)],
-    finalTarget: [''],
+    finalTarget: [null],
     sourceOfData: ['', Validators.maxLength(1000)],
     comments: ['', Validators.maxLength(1000)]
   });
@@ -104,7 +105,8 @@ export class ProgrammeResultIndicatorDetailComponent extends ViewEditForm implem
 
   constructor(private formBuilder: FormBuilder,
               private dialog: MatDialog,
-              protected changeDetectorRef: ChangeDetectorRef) {
+              protected changeDetectorRef: ChangeDetectorRef,
+              public numberService: NumberService) {
     super(changeDetectorRef);
   }
 
