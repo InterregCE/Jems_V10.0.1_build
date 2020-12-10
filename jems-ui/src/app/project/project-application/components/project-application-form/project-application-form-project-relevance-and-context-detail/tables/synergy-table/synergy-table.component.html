@@ -1,6 +1,7 @@
 <app-multi-language [inputs]="allInputs">
     <div [formGroup]="formGroup">
-        <app-row-list-template [appearance]="'table'"
+        <app-row-list-template class="align-cells-to-top"
+                               [appearance]="'table'"
                                [columnClassList]="['column','column', 'max-2-rem']">
             <div>
                 <span class="mat-body-strong">{{'project.application.form.relevance.project.or.initiative' | translate}}</span>
@@ -13,7 +14,7 @@
                         <div>
                             <textarea *ngIf="!editable" matInput formControlName="initiative"
                                       [cdkTextareaAutosize]
-                                      [cdkAutosizeMinRows]="3"
+                                      [cdkAutosizeMinRows]="1"
                                       [cdkAutosizeMaxRows]="50"
                                       [readonly]="!editable">
                             </textarea>
@@ -22,6 +23,7 @@
                                                      [errors]="synergy.get('initiative')?.errors"
                                                      [messages]="projectErrors"
                                                      [characterLimit]="2000"
+                                                     [minRows]="1"
                                                      [label]="'project.application.form.relevance.project.or.initiative'"
                                                      [disabled]="!editable">
                             </app-expandable-textarea>
@@ -30,7 +32,7 @@
                         <div>
                             <textarea *ngIf="!editable" matInput formControlName="synergy"
                                       [cdkTextareaAutosize]
-                                      [cdkAutosizeMinRows]="3"
+                                      [cdkAutosizeMinRows]="1"
                                       [cdkAutosizeMaxRows]="50"
                                       [readonly]="!editable">
                             </textarea>
@@ -39,6 +41,7 @@
                                                      [errors]="synergy.get('synergy')?.errors"
                                                      [messages]="synergyErrors"
                                                      [characterLimit]="2000"
+                                                     [minRows]="1"
                                                      [label]="'project.application.form.relevance.synergy'"
                                                      [disabled]="!editable">
                             </app-expandable-textarea>

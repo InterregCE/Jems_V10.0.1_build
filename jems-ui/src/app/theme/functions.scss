@@ -25,6 +25,7 @@
   $text-contrast-darker: mat-color($primary-theme, darker-contrast);
   $text-link: if($is-dark-theme, $text, $primary);
 
+  $background: mat-color($background-palette, background);
   $background-card: mat-color($background-palette, card);
   $background-lighter: mat-color($primary-theme, if($is-dark-theme, darker, lighter));
   $app-bar: mat-color($background-palette, app-bar);
@@ -51,6 +52,7 @@
   --font-text-link: #{$text-link};
 
   --hover-color: #{$hover};
+  --background: #{$background};
   --background-card: #{$background-card};
   --background-lighter: #{$background-lighter};
   --app-bar: #{$app-bar};

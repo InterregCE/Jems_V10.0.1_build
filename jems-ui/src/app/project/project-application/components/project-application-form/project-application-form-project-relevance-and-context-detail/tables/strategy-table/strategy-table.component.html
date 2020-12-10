@@ -1,6 +1,7 @@
 <app-multi-language [inputs]="contributionInputs">
     <div [formGroup]="formGroup">
-        <app-row-list-template [appearance]="'table'"
+        <app-row-list-template class="align-cells-to-top"
+                               [appearance]="'table'"
                                [columnClassList]="['column','column', 'max-2-rem']">
             <div>
                 <span class="mat-body-strong">{{ 'project.application.form.relevance.strategy' | translate }}</span>
@@ -28,7 +29,7 @@
                         <div>
                             <textarea *ngIf="!editable" matInput formControlName="contribution"
                                       [cdkTextareaAutosize]
-                                      [cdkAutosizeMinRows]="3"
+                                      [cdkAutosizeMinRows]="1"
                                       [cdkAutosizeMaxRows]="50"
                                       [readonly]="!editable">
                             </textarea>
@@ -37,6 +38,7 @@
                                                      [errors]="strategy.get('contribution')?.errors"
                                                      [messages]="contributionErrors"
                                                      [characterLimit]="2000"
+                                                     [minRows]="1"
                                                      [label]="'project.application.form.relevance.contribution'"
                                                      [disabled]="!editable">
                             </app-expandable-textarea>

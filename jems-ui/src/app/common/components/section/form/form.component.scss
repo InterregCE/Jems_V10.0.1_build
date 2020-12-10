@@ -22,6 +22,7 @@
     background-color: var(--background-lighter);
     bottom: 0;
     position: sticky;
+    z-index: 2;
 
     .action-button {
       margin: 1rem 0.3rem 0.2rem 1rem;
