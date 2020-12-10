@@ -12,7 +12,6 @@ import {LanguageService} from '../services/language.service';
 
 @NgModule({
   providers: [
-    {provide: MAT_MOMENT_DATE_ADAPTER_OPTIONS, useValue: {useUtc: true}},
     {provide: MAT_DATE_LOCALE, useValue: 'en-GB'},
     {provide: MAT_DATE_FORMATS, useValue: MAT_MOMENT_DATE_FORMATS},
     {
