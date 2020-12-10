@@ -7,14 +7,14 @@ import org.springframework.http.HttpStatus
 import java.math.BigDecimal
 
 private val MAX_COST = BigDecimal.valueOf(999_999_999_99, 2)
+private const val MAX_ALLOWED_LUMP_SUMS = 25
 
-fun validateCreateLumpSum(lumpSum: ProgrammeLumpSum) {
-    if (lumpSum.id != null)
-        throw I18nValidationException(
-            i18nKey = "programme.lumpSum.id.not.allowed",
-            httpStatus = HttpStatus.UNPROCESSABLE_ENTITY,
-        )
-    validateCommonLumpSum(lumpSum = lumpSum)
+fun validateCreateLumpSum(lumpSumToValidate: ProgrammeLumpSum, currentCount: Long) {
+    if (lumpSumToValidate.id != null)
+        throw I18nValidationException(i18nKey = "programme.lumpSum.id.not.allowed")
+    if (currentCount >= MAX_ALLOWED_LUMP_SUMS)
+        throw I18nValidationException(i18nKey = "programme.lumpSum.max.allowed.reached")
+    validateCommonLumpSum(lumpSum = lumpSumToValidate)
 }
 
 fun validateUpdateLumpSum(lumpSum: ProgrammeLumpSum) {

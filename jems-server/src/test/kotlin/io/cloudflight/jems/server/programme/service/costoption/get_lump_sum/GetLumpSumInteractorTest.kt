@@ -46,8 +46,8 @@ class GetLumpSumInteractorTest {
 
     @Test
     fun `get lump sums`() {
-        every { persistence.getLumpSums(any()) } returns PageImpl(listOf(testLumpSum))
-        assertThat(getLumpSumInteractor.getLumpSums(Pageable.unpaged()).content).containsExactly(
+        every { persistence.getLumpSums() } returns listOf(testLumpSum)
+        assertThat(getLumpSumInteractor.getLumpSums()).containsExactly(
             testLumpSum.copy()
         )
     }

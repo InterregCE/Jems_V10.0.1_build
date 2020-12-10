@@ -74,8 +74,8 @@ class ProgrammeLumpSumPersistenceTest {
 
     @Test
     fun getLumpSums() {
-        every { repository.findAll(any<Pageable>()) } returns PageImpl(listOf(testLumpSum))
-        assertThat(programmeLumpSumPersistence.getLumpSums(Pageable.unpaged()).content).containsExactly(
+        every { repository.findTop25ByOrderById() } returns listOf(testLumpSum)
+        assertThat(programmeLumpSumPersistence.getLumpSums()).containsExactly(
             expectedLumpSum
         )
     }

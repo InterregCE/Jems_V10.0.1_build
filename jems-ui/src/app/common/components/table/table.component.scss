@@ -3,32 +3,24 @@
   width: 100%;
 }
 
-table {
-  width: 100%;
-  overflow-x: auto;
+mat-header-cell,
+mat-cell,
+mat-footer-cell {
+  margin: 0 .25rem;
+}
 
-  mat-footer-row, mat-header-row, mat-row {
-    border-bottom-width: 10px;
-  }
+.justify-end {
+  justify-content: flex-end;
+}
 
-  td {
-    padding-right: 0.75rem;
-  }
+.clickable-table-row{
+  cursor: pointer;
+}
 
-  .clickable-table-row{
-    cursor: pointer;
-  }
+.clickable-table-row:hover {
+  background-color: var(--hover-color);
+}
 
-  .clickable-table-row:hover {
-    background-color: var(--hover-color);
-  }
-
-  .clickable-table-row:active {
-    background-color: var(--hover-color);
-  }
-
-  .description-component {
-    min-width: 12rem;
-    max-width: 30rem;
-  }
+.clickable-table-row:active {
+  background-color: var(--hover-color);
 }

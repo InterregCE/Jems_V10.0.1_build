@@ -4,7 +4,7 @@ import { ProgrammeSimplifiedCostOptionsComponent } from './programme-simplified-
 import {HttpTestingController} from '@angular/common/http/testing';
 import {TestModule} from '../../../../common/test-module';
 import {ProgrammeModule} from '../../../programme.module';
-import {ProgrammeLumpSumDTO, ProgrammeUnitCostDTO} from '@cat/api';
+import {ProgrammeLumpSumListDTO, ProgrammeUnitCostDTO} from '@cat/api';
 
 describe('ProgrammeSimplifiedCostOptionsComponent', () => {
   let httpTestingController: HttpTestingController;
@@ -34,16 +34,16 @@ describe('ProgrammeSimplifiedCostOptionsComponent', () => {
   });
 
   it('should list lumpSums', fakeAsync(() => {
-    let results: ProgrammeLumpSumDTO[] = [];
-    component.currentLumpSumsPage$.subscribe(result => results = result.content);
+    let results: ProgrammeLumpSumListDTO[] = [];
+    component.lumpSumsDataSource$.subscribe(result => results = result.data);
 
     const sums = [
-      {name: 'test1'} as ProgrammeLumpSumDTO,
-      {name: 'test2'} as ProgrammeLumpSumDTO
+      {name: 'test1'} as ProgrammeLumpSumListDTO,
+      {name: 'test2'} as ProgrammeLumpSumListDTO
     ];
 
-    httpTestingController.match({method: 'GET', url: `//api/costOption/lumpSum?page=0&size=25&sort=id,desc`})
-      .forEach(req => req.flush({content: sums}));
+    httpTestingController.match({method: 'GET', url: `//api/costOption/lumpSum`})
+      .forEach(req => req.flush(sums));
 
     tick();
     expect(results).toEqual(sums);

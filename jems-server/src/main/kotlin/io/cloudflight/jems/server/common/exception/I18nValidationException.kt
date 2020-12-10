@@ -6,7 +6,7 @@ import java.util.Objects
 class I18nValidationException(
     val i18nKey: String? = null,
     val i18nArguments: List<String>? = null,
-    val httpStatus: HttpStatus,
+    val httpStatus: HttpStatus = HttpStatus.UNPROCESSABLE_ENTITY,
     val i18nFieldErrors: Map<String, I18nFieldError>? = null,
     val additionalInfo: String? = null
 ) : Exception() {

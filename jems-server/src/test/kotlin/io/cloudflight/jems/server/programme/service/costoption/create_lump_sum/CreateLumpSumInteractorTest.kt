@@ -38,6 +38,7 @@ class CreateLumpSumInteractorTest {
 
     @Test
     fun `create lump sum - invalid`() {
+        every { persistence.getCount() } returns 15
         val wrongLumpSum = ProgrammeLumpSum(
             id = null,
             name = " ",
@@ -57,7 +58,24 @@ class CreateLumpSumInteractorTest {
     }
 
     @Test
+    fun `create lump sum - reached max allowed amount`() {
+        every { persistence.getCount() } returns 25
+        val lumpSum = ProgrammeLumpSum(
+            id = null,
+            name = "LS1",
+            description = "test lump sum 1",
+            cost = BigDecimal.ONE,
+            splittingAllowed = true,
+            phase = Implementation,
+            categories = setOf(OfficeAndAdministrationCosts, StaffCosts),
+        )
+        val ex = assertThrows<I18nValidationException> { createLumpSumInteractor.createLumpSum(lumpSum) }
+        assertThat(ex.i18nKey).isEqualTo("programme.lumpSum.max.allowed.reached")
+    }
+
+    @Test
     fun `create lump sum - OK`() {
+        every { persistence.getCount() } returns 5
         every { persistence.createLumpSum(any()) } returnsArgument 0
         val lumpSum = ProgrammeLumpSum(
             id = null,
@@ -80,6 +98,7 @@ class CreateLumpSumInteractorTest {
 
     @Test
     fun `create lump sum - wrong ID filled in`() {
+        every { persistence.getCount() } returns 10
         val lumpSum = ProgrammeLumpSum(
             id = 1L,
             name = "LS1",

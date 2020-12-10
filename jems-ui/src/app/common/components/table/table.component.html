@@ -6,25 +6,27 @@
         (pageIndexChanged)="newPageIndex.emit($event)"
         (pageSizeChanged)="currentPageSize = $event;newPageSize.emit($event)">
 </app-paginator>
-<table mat-table matSort
-       [dataSource]="rows"
-       (matSortChange)="sortRows.emit($event)"
-       class="mat-elevation-z8 general-application-table">
+<mat-table matSort
+           [dataSource]="rows"
+           (matSortChange)="sortRows.emit($event)"
+           class="mat-elevation-z8 general-application-table">
 
     <ng-container *ngFor="let column of configuration.columns; let i = index"
                   matColumnDef="{{column.displayedColumn}}">
         <ng-container *ngIf="column.sortProperty; else noSort">
-            <th mat-header-cell *matHeaderCellDef
-                [mat-sort-header]="column.sortProperty">
+            <mat-header-cell *matHeaderCellDef
+                             [mat-sort-header]="column.sortProperty"
+                             [class.justify-end]="column.columnType === ColumnType.Decimal" class="cell"
+                             [arrowPosition]="column.columnType === ColumnType.Decimal ? 'before' : 'after'">
                 {{column.displayedColumn | translate}}
-            </th>
+            </mat-header-cell>
         </ng-container>
 
         <ng-template #noSort>
-            <th mat-header-cell *matHeaderCellDef>{{column.displayedColumn | translate}}</th>
+            <mat-header-cell *matHeaderCellDef class="cell">{{column.displayedColumn | translate}}</mat-header-cell>
         </ng-template>
 
-        <td mat-cell *matCellDef="let row">
+        <mat-cell *matCellDef="let row" [class.justify-end]="column.columnType === ColumnType.Decimal" class="cell">
             <div *ngIf="!column.customCellTemplate; else customCellTemplate"
                  [title]="column.tooltip ? (formatColumnTooltip(column, row) | translate) : ''">
                 {{ formatColumnValue(column, row) | translate : getI18nArgs(column, row) }}
@@ -34,15 +36,15 @@
                 <ng-template [ngTemplateOutlet]="column.customCellTemplate"
                              [ngTemplateOutletContext]="{ $implicit: row }"></ng-template>
             </ng-template>
-        </td>
+        </mat-cell>
     </ng-container>
 
-    <tr mat-header-row *matHeaderRowDef="columnsToDisplay; sticky: true"></tr>
-    <tr mat-row
-        [class.clickable-table-row]="configuration.isTableClickable"
-        *matRowDef="let row; columns: columnsToDisplay;"
-        [routerLink]="configuration.isTableClickable ? [configuration.routerLink, row.id] : []"></tr>
-</table>
+    <mat-header-row *matHeaderRowDef="columnsToDisplay; sticky: true"></mat-header-row>
+    <mat-row
+            [class.clickable-table-row]="configuration.isTableClickable"
+            *matRowDef="let row; columns: columnsToDisplay;"
+            [routerLink]="configuration.isTableClickable ? [configuration.routerLink, row.id] : []"></mat-row>
+</mat-table>
 <app-paginator
         *ngIf="configuration?.sortable"
         [length]="totalElements"
