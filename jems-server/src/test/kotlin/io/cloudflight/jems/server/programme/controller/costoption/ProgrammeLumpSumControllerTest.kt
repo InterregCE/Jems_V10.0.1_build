@@ -3,6 +3,7 @@ package io.cloudflight.jems.server.programme.controller.costoption
 import io.cloudflight.jems.api.programme.dto.costoption.BudgetCategory.StaffCosts
 import io.cloudflight.jems.api.programme.dto.costoption.BudgetCategory.OfficeAndAdministrationCosts
 import io.cloudflight.jems.api.programme.dto.costoption.ProgrammeLumpSumDTO
+import io.cloudflight.jems.api.programme.dto.costoption.ProgrammeLumpSumListDTO
 import io.cloudflight.jems.api.programme.dto.costoption.ProgrammeLumpSumPhase.Implementation
 import io.cloudflight.jems.server.programme.service.costoption.create_lump_sum.CreateLumpSumInteractor
 import io.cloudflight.jems.server.programme.service.costoption.delete_lump_sum.DeleteLumpSumInteractor
@@ -17,8 +18,6 @@ import io.mockk.verify
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
-import org.springframework.data.domain.PageImpl
-import org.springframework.data.domain.Pageable
 import java.math.BigDecimal
 
 class ProgrammeLumpSumControllerTest {
@@ -35,7 +34,7 @@ class ProgrammeLumpSumControllerTest {
             categories = setOf(StaffCosts, OfficeAndAdministrationCosts),
         )
 
-        private val expectedLumpSum = ProgrammeLumpSumDTO(
+        private val expectedLumpSumDTO = ProgrammeLumpSumDTO(
             id = 1,
             name = "LS1",
             description = "test lump sum 1",
@@ -43,6 +42,12 @@ class ProgrammeLumpSumControllerTest {
             splittingAllowed = true,
             phase = Implementation,
             categories = setOf(StaffCosts, OfficeAndAdministrationCosts),
+        )
+
+        private val expectedLumpSumListDTO = ProgrammeLumpSumListDTO(
+            id = 1,
+            name = "LS1",
+            cost = BigDecimal.ONE,
         )
 
     }
@@ -74,9 +79,9 @@ class ProgrammeLumpSumControllerTest {
 
     @Test
     fun getLumpSums() {
-        every { getLumpSum.getLumpSums(any()) } returns PageImpl(listOf(testLumpSum))
-        val lumpSum = controller.getProgrammeLumpSums(Pageable.unpaged())
-        assertThat(lumpSum.content).containsExactly(expectedLumpSum)
+        every { getLumpSum.getLumpSums() } returns listOf(testLumpSum)
+        val lumpSums = controller.getProgrammeLumpSums()
+        assertThat(lumpSums).containsExactly(expectedLumpSumListDTO)
     }
 
     @Test
@@ -84,7 +89,7 @@ class ProgrammeLumpSumControllerTest {
         val slotLumpSum = slot<ProgrammeLumpSum>()
         every { createLumpSum.createLumpSum(capture(slotLumpSum)) } returnsArgument 0
 
-        assertThat(controller.createProgrammeLumpSum(expectedLumpSum)).isEqualTo(expectedLumpSum)
+        assertThat(controller.createProgrammeLumpSum(expectedLumpSumDTO)).isEqualTo(expectedLumpSumDTO)
         assertThat(slotLumpSum.captured).isEqualTo(testLumpSum)
     }
 
@@ -93,7 +98,7 @@ class ProgrammeLumpSumControllerTest {
         val slotLumpSum = slot<ProgrammeLumpSum>()
         every { updateLumpSum.updateLumpSum(capture(slotLumpSum)) } returnsArgument 0
 
-        assertThat(controller.updateProgrammeLumpSum(expectedLumpSum)).isEqualTo(expectedLumpSum)
+        assertThat(controller.updateProgrammeLumpSum(expectedLumpSumDTO)).isEqualTo(expectedLumpSumDTO)
         assertThat(slotLumpSum.captured).isEqualTo(testLumpSum)
     }
 

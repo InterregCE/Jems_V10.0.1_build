@@ -2,12 +2,11 @@ package io.cloudflight.jems.server.programme.controller.costoption
 
 import io.cloudflight.jems.api.programme.costoption.ProgrammeLumpSumApi
 import io.cloudflight.jems.api.programme.dto.costoption.ProgrammeLumpSumDTO
+import io.cloudflight.jems.api.programme.dto.costoption.ProgrammeLumpSumListDTO
 import io.cloudflight.jems.server.programme.service.costoption.create_lump_sum.CreateLumpSumInteractor
 import io.cloudflight.jems.server.programme.service.costoption.delete_lump_sum.DeleteLumpSumInteractor
 import io.cloudflight.jems.server.programme.service.costoption.get_lump_sum.GetLumpSumInteractor
 import io.cloudflight.jems.server.programme.service.costoption.update_lump_sum.UpdateLumpSumInteractor
-import org.springframework.data.domain.Page
-import org.springframework.data.domain.Pageable
 import org.springframework.web.bind.annotation.RestController
 
 @RestController
@@ -18,11 +17,11 @@ class ProgrammeLumpSumController(
     private val deleteLumpSum: DeleteLumpSumInteractor,
 ) : ProgrammeLumpSumApi {
 
-    override fun getProgrammeLumpSums(pageable: Pageable): Page<ProgrammeLumpSumDTO> =
-        getLumpSum.getLumpSums(pageable).map { it.toDto() }
+    override fun getProgrammeLumpSums(): List<ProgrammeLumpSumListDTO> =
+        getLumpSum.getLumpSums().toDto()
 
-    override fun getProgrammeLumpSum(id: Long): ProgrammeLumpSumDTO =
-        getLumpSum.getLumpSum(id).toDto()
+    override fun getProgrammeLumpSum(lumpSumId: Long): ProgrammeLumpSumDTO =
+        getLumpSum.getLumpSum(lumpSumId).toDto()
 
     override fun createProgrammeLumpSum(lumpSum: ProgrammeLumpSumDTO): ProgrammeLumpSumDTO =
         createLumpSum.createLumpSum(lumpSum.toModel()).toDto()

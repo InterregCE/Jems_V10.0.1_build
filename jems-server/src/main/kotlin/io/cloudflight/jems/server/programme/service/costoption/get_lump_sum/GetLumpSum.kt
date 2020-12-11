@@ -3,8 +3,6 @@ package io.cloudflight.jems.server.programme.service.costoption.get_lump_sum
 import io.cloudflight.jems.server.programme.authorization.CanUpdateProgrammeSetup
 import io.cloudflight.jems.server.programme.service.costoption.ProgrammeLumpSumPersistence
 import io.cloudflight.jems.server.programme.service.costoption.model.ProgrammeLumpSum
-import org.springframework.data.domain.Page
-import org.springframework.data.domain.Pageable
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 
@@ -15,8 +13,8 @@ class GetLumpSum(
 
     @CanUpdateProgrammeSetup
     @Transactional(readOnly = true)
-    override fun getLumpSums(pageable: Pageable): Page<ProgrammeLumpSum> =
-        persistence.getLumpSums(pageable)
+    override fun getLumpSums(): List<ProgrammeLumpSum> =
+        persistence.getLumpSums()
 
     @CanUpdateProgrammeSetup
     @Transactional(readOnly = true)

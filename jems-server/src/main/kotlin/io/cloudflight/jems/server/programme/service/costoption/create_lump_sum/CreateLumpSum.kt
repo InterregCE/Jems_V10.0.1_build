@@ -20,7 +20,7 @@ class CreateLumpSum(
     @CanUpdateProgrammeSetup
     @Transactional
     override fun createLumpSum(lumpSum: ProgrammeLumpSum): ProgrammeLumpSum {
-        validateCreateLumpSum(lumpSum)
+        validateCreateLumpSum(lumpSumToValidate = lumpSum, currentCount = persistence.getCount())
         val saved = persistence.createLumpSum(lumpSum)
 
         lumpSumCreatedAudit(saved).logWith(audit)

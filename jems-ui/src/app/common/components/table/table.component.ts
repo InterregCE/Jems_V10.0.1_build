@@ -15,6 +15,8 @@ import {MoneyPipe} from '../../pipe/money.pipe';
   styleUrls: ['./table.component.scss']
 })
 export class TableComponent implements OnInit {
+  ColumnType = ColumnType;
+
   @Input()
   configuration: TableConfiguration;
   @Input()

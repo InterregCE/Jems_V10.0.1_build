@@ -1,18 +1,14 @@
 <div *ngxPermissionsExcept="Permission.APPLICANT_USER">
     <app-breadcrumb></app-breadcrumb>
-    <div *ngIf="currentLumpSumsPage$ | async as lumpSumsPage">
+    <div *ngIf="lumpSumsDataSource$ | async as lumpSumsDataSource">
         <h4 id="lumpSums">{{'lump.sums.table.title' | translate}}</h4>
         <button mat-raised-button color="primary"
                 [routerLink]="'/app/programme/costs/lumpSum/create'">
-            + Add Lump Sum
+            + {{ 'programme.lumpSum.add' | translate }}
         </button>
         <app-programme-lump-sums-list
                 [lumpSum]="lumpSum$ | async"
-                [lumpSumPage]="lumpSumsPage"
-                [pageIndex]="newLumpSumPageIndex$ | async"
-                (newPageSize)="newLumpSumPageSize$.next($event)"
-                (newPageIndex)="newLumpSumPageIndex$.next($event)"
-                (newSort)="newLumpSumSort$.next($event)">
+                [dataSource]="lumpSumsDataSource">
         </app-programme-lump-sums-list>
     </div>
 

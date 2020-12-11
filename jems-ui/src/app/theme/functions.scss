@@ -14,7 +14,7 @@
 
   $primary-theme: map-get($theme, primary);
   $primary: mat-color(map-get($theme, primary));
-  $primary-halftone: mat-color(map-get($theme, primary), 100);
+  $primary-halftone: mat-color(map-get($theme, primary), if($is-dark-theme, darker, lighter));
   $accent: mat-color(map-get($theme, accent));
   $warn: mat-color(map-get($theme, warn));
 
@@ -35,9 +35,10 @@
   // CSS VARS
   /////////////////////////////////////////////////
 
-  --blue-gray: #{mat-color($mat-blue-gray,100)};
-  --light-blue-gray: #{mat-color($mat-blue-gray,100,0.5)};
-  --pale-blue-gray: #{mat-color($mat-blue-gray,50,0.5)};
+  --blue-gray: #{mat-color($mat-blue-gray, if($is-dark-theme, 50, 100))};
+  --light-blue-gray: #{mat-color($mat-blue-gray, 100, if($is-dark-theme, 0.25, 0.5))};
+  --pale-blue-gray: #{mat-color($mat-blue-gray, 50, if($is-dark-theme, 0.0625, 0.375))};
+
   --primary-color: #{$primary};
   --accent-color: #{$accent};
   --warn-color: #{$warn};

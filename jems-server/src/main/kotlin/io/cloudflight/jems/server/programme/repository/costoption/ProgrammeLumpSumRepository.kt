@@ -5,4 +5,8 @@ import org.springframework.data.jpa.repository.JpaRepository
 import org.springframework.stereotype.Repository
 
 @Repository
-interface ProgrammeLumpSumRepository : JpaRepository<ProgrammeLumpSumEntity, Long>
+interface ProgrammeLumpSumRepository : JpaRepository<ProgrammeLumpSumEntity, Long> {
+
+    fun findTop25ByOrderById(): Iterable<ProgrammeLumpSumEntity>
+
+}

@@ -4,8 +4,6 @@ import io.cloudflight.jems.server.common.exception.ResourceNotFoundException
 import io.cloudflight.jems.server.programme.entity.costoption.ProgrammeLumpSumEntity
 import io.cloudflight.jems.server.programme.service.costoption.ProgrammeLumpSumPersistence
 import io.cloudflight.jems.server.programme.service.costoption.model.ProgrammeLumpSum
-import org.springframework.data.domain.Page
-import org.springframework.data.domain.Pageable
 import org.springframework.stereotype.Repository
 import org.springframework.transaction.annotation.Transactional
 
@@ -15,12 +13,15 @@ class ProgrammeLumpSumPersistenceProvider(
 ) : ProgrammeLumpSumPersistence {
 
     @Transactional(readOnly = true)
-    override fun getLumpSums(pageable: Pageable): Page<ProgrammeLumpSum> =
-        repository.findAll(pageable).map { it.toModel() }
+    override fun getLumpSums(): List<ProgrammeLumpSum> =
+        repository.findTop25ByOrderById().map { it.toModel() }
 
     @Transactional(readOnly = true)
     override fun getLumpSum(lumpSumId: Long): ProgrammeLumpSum =
         getLumpSumOrThrow(lumpSumId).toModel()
+
+    @Transactional(readOnly = true)
+    override fun getCount(): Long = repository.count()
 
     @Transactional
     override fun createLumpSum(lumpSum: ProgrammeLumpSum): ProgrammeLumpSum {
