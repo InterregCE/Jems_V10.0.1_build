@@ -7,5 +7,5 @@ interface AddWorkPackageInvestmentInteractor {
     fun addWorkPackageInvestment(
         workPackageId: Long,
         workPackageInvestment: WorkPackageInvestment,
-    ): UUID
+    ): Long
 }

@@ -39,12 +39,12 @@ class ProjectWorkPackageAuthorization(
     fun canUpdateProjectWorkPackage(workPackageId: Long): Boolean =
         projectAuthorization.canUpdateProject(workPackageService.getProjectIdForWorkPackageId(workPackageId))
 
-    fun canReadProjectWorkPackageInvestment(investmentId: UUID): Boolean =
+    fun canReadProjectWorkPackageInvestment(investmentId: Long): Boolean =
         projectAuthorization.canReadProject(
             workPackagePersistence.getProjectIdFromWorkPackageInvestment(investmentId)
         )
 
-    fun canUpdateProjectWorkPackageInvestment(investmentId: UUID): Boolean =
+    fun canUpdateProjectWorkPackageInvestment(investmentId: Long): Boolean =
         projectAuthorization.canUpdateProject(
             workPackagePersistence.getProjectIdFromWorkPackageInvestment(investmentId)
         )

@@ -54,7 +54,7 @@ class WorkPackagePersistenceProvider(
             .toWorkPackageOutputSet()
 
     @Transactional(readOnly = true)
-    override fun getWorkPackageInvestment(workPackageInvestmentId: UUID) =
+    override fun getWorkPackageInvestment(workPackageInvestmentId: Long) =
         getWorkPackageInvestmentOrThrow(workPackageInvestmentId).toWorkPackageInvestment()
 
     @Transactional(readOnly = true)
@@ -90,7 +90,7 @@ class WorkPackagePersistenceProvider(
         else throw ResourceNotFoundException("workPackageInvestment id is null")
 
     @Transactional
-    override fun deleteWorkPackageInvestment(workPackageInvestmentId: UUID) =
+    override fun deleteWorkPackageInvestment(workPackageInvestmentId: Long) =
         workPackageInvestmentRepository.deleteById(workPackageInvestmentId)
 
     @Transactional(readOnly = true)
@@ -109,13 +109,13 @@ class WorkPackagePersistenceProvider(
         ).activities.toModel()
 
     @Transactional(readOnly = true)
-    override fun getProjectIdFromWorkPackageInvestment(workPackageInvestmentId: UUID): Long =
+    override fun getProjectIdFromWorkPackageInvestment(workPackageInvestmentId: Long): Long =
         getWorkPackageInvestmentOrThrow(workPackageInvestmentId).workPackage.project.id
 
     private fun getWorkPackageOrThrow(workPackageId: Long): WorkPackageEntity =
         workPackageRepository.findById(workPackageId).orElseThrow { ResourceNotFoundException("workPackage") }
 
-    private fun getWorkPackageInvestmentOrThrow(workPackageInvestmentId: UUID): WorkPackageInvestmentEntity =
+    private fun getWorkPackageInvestmentOrThrow(workPackageInvestmentId: Long): WorkPackageInvestmentEntity =
         workPackageInvestmentRepository.findById(workPackageInvestmentId)
             .orElseThrow { ResourceNotFoundException("WorkPackageInvestmentEntity") }
 

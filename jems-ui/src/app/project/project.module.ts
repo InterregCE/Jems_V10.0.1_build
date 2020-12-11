@@ -79,6 +79,9 @@ import {ProjectWorkPackageDetailPageComponent} from './work-package/work-package
 import {StaffCostTableComponent} from './partner/project-partner-detail-page/project-partner-budget-tab/project-partner-budget/staff-cost-table/staff-cost-table.component';
 import {BudgetTableComponent} from './partner/project-partner-detail-page/project-partner-budget-tab/project-partner-budget/budget-table/budget-table.component';
 import {BudgetFlatRateTableComponent} from './partner/project-partner-detail-page/project-partner-budget-tab/project-partner-budget/budget-flat-rate-table/budget-flat-rate-table.component';
+import {ProjectWorkPackageInvestmentsTabComponent} from './work-package/work-package-detail-page/project-work-package-investments-tab/project-work-package-investments-tab.component';
+import {ProjectWorkPackageInvestmentDetailPageComponent} from './work-package/work-package-detail-page/project-work-package-investments-tab/project-work-package-investment-detail-page/project-work-package-investment-detail-page.component';
+import {WorkPackageInvestmentDeleteActionCellComponent} from './work-package/work-package-detail-page/project-work-package-investments-tab/work-package-investment-delete-action-cell/work-package-investment-delete-action-cell.component';
 import {ProjectWorkPackageActivitiesTabComponent} from './work-package/work-package-detail-page/project-work-package-activities-tab/project-work-package-activities-tab.component';
 
 @NgModule({
@@ -155,6 +158,9 @@ import {ProjectWorkPackageActivitiesTabComponent} from './work-package/work-pack
     ProjectApplicationFormWorkPackageOutputComponent,
     ProjectApplicationFormWorkPackageOutputsComponent,
     WorkPackageOutputTableComponent,
+    ProjectWorkPackageInvestmentsTabComponent,
+    ProjectWorkPackageInvestmentDetailPageComponent,
+    WorkPackageInvestmentDeleteActionCellComponent,
     StaffCostTableComponent,
     BudgetFlatRateTableComponent
   ],

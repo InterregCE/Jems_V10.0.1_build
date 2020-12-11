@@ -1,0 +1,146 @@
+<app-breadcrumb></app-breadcrumb>
+<app-form (save)="onSubmit()"
+          (discard)="onCancel()">
+    <form [formGroup]="workPackageInvestmentForm" class="container">
+
+        <h5>{{'project.application.form.workpackage.investment.form.title' | translate}}
+            {{workPackageInvestmentNumber}}
+        </h5>
+
+        <mat-form-field class="field">
+            <mat-label>{{'project.application.form.workpackage.investment.number' | translate}}</mat-label>
+            <input name="number" formControlName="number" matInput
+                   placeholder="{{'project.application.form.workpackage.investment.number' | translate}}" readonly>
+        </mat-form-field>
+
+        <mat-form-field class="field">
+            <mat-label>{{'project.application.form.workpackage.investment.title' | translate}}</mat-label>
+            <input name="title" formControlName="title" matInput
+                   placeholder="{{'project.application.form.workpackage.investment.title' | translate}}"
+                   [disabled]="(projectStore.projectEditable$ | async) === false">
+            <mat-error>
+                <app-form-field-errors
+                        [errors]="workPackageInvestmentForm?.controls?.title?.errors"
+                        [messages]="titleErrors">
+                </app-form-field-errors>
+            </mat-error>
+        </mat-form-field>
+
+        <div class="subsection">
+            <h6>{{'project.application.form.workpackage.investment.justification' | translate}}</h6>
+        </div>
+
+        <app-expandable-textarea
+                class="field-wide"
+                [control]="workPackageInvestmentForm?.controls?.justificationExplanation"
+                [errors]="workPackageInvestmentForm?.controls?.justificationExplanation?.errors"
+                [messages]="titleErrors"
+                [characterLimit]="2000"
+                [label]="'project.application.form.workpackage.investment.justification.explanation'"
+                [disabled]="(projectStore.projectEditable$ | async) === false">
+        </app-expandable-textarea>
+
+        <app-expandable-textarea
+                class="field-wide"
+                [control]="workPackageInvestmentForm?.controls?.justificationTransactionalRelevance"
+                [errors]="workPackageInvestmentForm?.controls?.justificationTransactionalRelevance?.errors"
+                [messages]="titleErrors"
+                [characterLimit]="2000"
+                [label]="'project.application.form.workpackage.investment.justification.transactional.relevance'"
+                [disabled]="(projectStore.projectEditable$ | async) === false">
+        </app-expandable-textarea>
+
+        <app-expandable-textarea
+                class="field-wide"
+                [control]="workPackageInvestmentForm?.controls?.justificationBenefits"
+                [errors]="workPackageInvestmentForm?.controls?.justificationBenefits?.errors"
+                [messages]="titleErrors"
+                [characterLimit]="2000"
+                [label]="'project.application.form.workpackage.investment.justification.benefits'"
+                [disabled]="(projectStore.projectEditable$ | async) === false">
+        </app-expandable-textarea>
+
+        <app-expandable-textarea
+                class="field-wide"
+                [control]="workPackageInvestmentForm?.controls?.justificationPilot"
+                [errors]="workPackageInvestmentForm?.controls?.justificationPilot?.errors"
+                [messages]="titleErrors"
+                [characterLimit]="2000"
+                [label]="'project.application.form.workpackage.investment.justification.pilot'"
+                [disabled]="(projectStore.projectEditable$ | async) === false">
+        </app-expandable-textarea>
+
+        <div class="subsection">
+            <h6>{{'project.application.form.workpackage.investment.location' | translate}}</h6>
+        </div>
+        <span>{{'project.application.form.workpackage.investment.location.description' | translate}}</span>
+
+        <app-project-application-form-address
+                *ngIf="workPackageInvestmentForm?.controls"
+                [addressForm]="workPackageInvestmentForm.controls.address"
+                [nuts]="nuts$ | async">
+        </app-project-application-form-address>
+
+        <div class="subsection">
+            <h6>{{'project.application.form.workpackage.investment.risk' | translate}}</h6>
+        </div>
+
+        <app-expandable-textarea
+                class="field-wide"
+                [control]="workPackageInvestmentForm?.controls?.risk"
+                [errors]="workPackageInvestmentForm?.controls?.risk?.errors"
+                [messages]="titleErrors"
+                [characterLimit]="2000"
+                [label]="'project.application.form.workpackage.investment.risk.description'"
+                [disabled]="(projectStore.projectEditable$ | async) === false">
+        </app-expandable-textarea>
+
+        <div class="subsection">
+            <h6>{{'project.application.form.workpackage.investment.documentation' | translate}}</h6>
+        </div>
+
+        <app-expandable-textarea
+                class="field-wide"
+                [control]="workPackageInvestmentForm?.controls?.documentation"
+                [errors]="workPackageInvestmentForm?.controls?.documentation?.errors"
+                [messages]="titleErrors"
+                [characterLimit]="2000"
+                [label]="'project.application.form.workpackage.investment.documentation.description'"
+                [disabled]="(projectStore.projectEditable$ | async) === false">
+        </app-expandable-textarea>
+
+        <div class="subsection">
+            <h6>{{'project.application.form.workpackage.investment.ownership' | translate}}</h6>
+        </div>
+
+        <app-expandable-textarea
+                class="field-wide"
+                [control]="workPackageInvestmentForm?.controls?.ownershipSiteLocation"
+                [errors]="workPackageInvestmentForm?.controls?.ownershipSiteLocation?.errors"
+                [messages]="titleErrors"
+                [characterLimit]="500"
+                [label]="'project.application.form.workpackage.investment.ownership.site.location'"
+                [disabled]="(projectStore.projectEditable$ | async) === false">
+        </app-expandable-textarea>
+
+        <app-expandable-textarea
+                class="field-wide"
+                [control]="workPackageInvestmentForm?.controls?.ownershipRetain"
+                [errors]="workPackageInvestmentForm?.controls?.ownershipRetain?.errors"
+                [messages]="titleErrors"
+                [characterLimit]="500"
+                [label]="'project.application.form.workpackage.investment.ownership.retain'"
+                [disabled]="(projectStore.projectEditable$ | async) === false">
+        </app-expandable-textarea>
+
+        <app-expandable-textarea
+                class="field-wide"
+                [control]="workPackageInvestmentForm?.controls?.ownershipMaintenance"
+                [errors]="workPackageInvestmentForm?.controls?.ownershipMaintenance?.errors"
+                [messages]="titleErrors"
+                [characterLimit]="2000"
+                [label]="'project.application.form.workpackage.investment.ownership.maintenance'"
+                [disabled]="(projectStore.projectEditable$ | async) === false">
+        </app-expandable-textarea>
+    </form>
+</app-form>

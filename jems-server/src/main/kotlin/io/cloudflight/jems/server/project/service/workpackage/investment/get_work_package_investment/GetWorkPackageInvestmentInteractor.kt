@@ -5,6 +5,6 @@ import java.util.*
 
 interface GetWorkPackageInvestmentInteractor {
 
-    fun getWorkPackageInvestment(investmentId: UUID): WorkPackageInvestment
+    fun getWorkPackageInvestment(investmentId: Long): WorkPackageInvestment
 
 }

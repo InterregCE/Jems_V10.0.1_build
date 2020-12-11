@@ -24,7 +24,7 @@ interface ProjectWorkPackageInvestmentApi {
 
     @ApiOperation("Returns investment for the work package")
     @GetMapping("/{investmentId}")
-    fun getWorkPackageInvestment(@PathVariable investmentId: UUID): WorkPackageInvestmentDTO
+    fun getWorkPackageInvestment(@PathVariable investmentId: Long): WorkPackageInvestmentDTO
 
     @ApiOperation("Returns one page of investments for the work package")
     @ApiImplicitParams(
@@ -40,7 +40,7 @@ interface ProjectWorkPackageInvestmentApi {
     fun addWorkPackageInvestment(
         @PathVariable workPackageId: Long,
         @Valid @RequestBody workPackageInvestmentDTO: WorkPackageInvestmentDTO
-    ): UUID
+    ): Long
 
     @ApiOperation("Update Investment of the work package")
     @PutMapping(consumes = [MediaType.APPLICATION_JSON_VALUE])
@@ -51,7 +51,7 @@ interface ProjectWorkPackageInvestmentApi {
     @ApiOperation("Delete Investment of the work package")
     @DeleteMapping("/{investmentId}", consumes = [MediaType.APPLICATION_JSON_VALUE])
     fun deleteWorkPackageInvestment(
-        @PathVariable investmentId: UUID,
+        @PathVariable investmentId: Long,
     )
 
 }

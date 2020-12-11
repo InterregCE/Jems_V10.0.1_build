@@ -13,6 +13,6 @@ class DeleteWorkPackageInvestment(
 
     @CanUpdateProjectWorkPackageInvestment
     @Transactional
-    override fun deleteWorkPackageInvestment(investmentId: UUID) =
+    override fun deleteWorkPackageInvestment(investmentId: Long) =
         workPackagePersistence.deleteWorkPackageInvestment(investmentId)
 }

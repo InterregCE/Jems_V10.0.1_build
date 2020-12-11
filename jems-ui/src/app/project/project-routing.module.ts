@@ -23,6 +23,7 @@ import {ProjectApplicationFormFuturePlansSectionComponent} from './project-appli
 import {ProjectApplicationFormManagementSectionComponent} from './project-application/containers/project-application-form-page/project-application-form-management-section/project-application-form-management-section.component';
 import {BudgetPageComponent} from './budget/budget-page/budget-page.component';
 import {ProjectWorkPackageDetailPageComponent} from './work-package/work-package-detail-page/project-work-package-detail-page.component';
+import {ProjectWorkPackageInvestmentDetailPageComponent} from './work-package/work-package-detail-page/project-work-package-investments-tab/project-work-package-investment-detail-page/project-work-package-investment-detail-page.component';
 
 export const routes: Routes = [
   {
@@ -167,9 +168,25 @@ export const routes: Routes = [
               },
               {
                 path: 'detail/:workPackageId',
-                component: ProjectWorkPackageDetailPageComponent,
                 data: {breadcrumb: 'project.breadcrumb.workPackageName'},
-              }
+                children: [
+                  {
+                    path: '',
+                    component: ProjectWorkPackageDetailPageComponent
+                  },
+                  {
+                    path: 'investment/create',
+                    component: ProjectWorkPackageInvestmentDetailPageComponent,
+                    data: {breadcrumb: 'project.breadcrumb.workPackageInvestment.create'},
+                  },
+                  {
+                    path: 'investment/detail/:workPackageInvestmentId',
+                    component: ProjectWorkPackageInvestmentDetailPageComponent,
+                    data: {breadcrumb: 'project.breadcrumb.workPackageInvestment.name'},
+                  }
+                ]
+              },
+
             ]
           },
           {

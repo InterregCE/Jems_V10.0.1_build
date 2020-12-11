@@ -13,13 +13,27 @@ abstract class UnitTestWorkPackageInvestmentBase : UnitTest() {
     protected val projectId = 1L
     protected val workPackageId = 2L
     protected val pageRequest = PageRequest.of(1, 2)
-    protected val workPackageInvestmentId: UUID = UUID.randomUUID()
+    protected val workPackageInvestmentId: Long = Math.random().toLong()
 
 
     @MockK
     lateinit var persistence: WorkPackagePersistence
 
-    protected fun createWorkPackageInvestment(workPackageInvestmentId: UUID = UUID.randomUUID()) =
-        WorkPackageInvestment(workPackageInvestmentId, Math.random().toInt(), null, null, null, null, null, null, null, null, null, null, null)
+    protected fun createWorkPackageInvestment(workPackageInvestmentId: Long = Math.random().toLong()) =
+        WorkPackageInvestment(
+            workPackageInvestmentId,
+            Math.random().toInt(),
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null
+        )
 
 }

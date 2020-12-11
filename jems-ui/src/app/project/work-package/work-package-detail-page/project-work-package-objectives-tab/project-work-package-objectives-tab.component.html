@@ -1,13 +1,9 @@
 <app-form (save)="onSubmit()"
           (discard)="onCancel()">
     <form [formGroup]="workPackageForm" class="container">
-
-        <h5 class="header">
-            {{'project.application.form.workpackage.form.header' | translate}}
-            {{workPackageNumber}}
-        </h5>
-        <h6>{{'project.application.form.workpackage.form.objectives' | translate}}</h6>
-
+        <div>
+            <h6>{{'project.application.form.workpackage.form.objectives' | translate}}</h6>
+        </div>
         <mat-form-field class="field">
             <mat-label>{{'project.application.form.workpackage.field.number' | translate}}</mat-label>
             <input name="workPackageNumber" formControlName="workPackageNumber" matInput
