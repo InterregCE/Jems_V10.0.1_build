@@ -5,4 +5,8 @@ import org.springframework.data.jpa.repository.JpaRepository
 import org.springframework.stereotype.Repository
 
 @Repository
-interface ProgrammeUnitCostRepository : JpaRepository<ProgrammeUnitCostEntity, Long>
+interface ProgrammeUnitCostRepository : JpaRepository<ProgrammeUnitCostEntity, Long> {
+
+    fun findTop25ByOrderById(): Iterable<ProgrammeUnitCostEntity>
+
+}

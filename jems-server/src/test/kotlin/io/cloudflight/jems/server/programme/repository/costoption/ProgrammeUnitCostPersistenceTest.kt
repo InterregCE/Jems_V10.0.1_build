@@ -71,10 +71,8 @@ class ProgrammeUnitCostPersistenceTest {
 
     @Test
     fun getUnitCosts() {
-        every { repository.findAll(any<Pageable>()) } returns PageImpl(listOf(testUnitCost))
-        assertThat(programmeUnitCostPersistence.getUnitCosts(Pageable.unpaged()).content).containsExactly(
-            expectedUnitCost
-        )
+        every { repository.findTop25ByOrderById() } returns listOf(testUnitCost)
+        assertThat(programmeUnitCostPersistence.getUnitCosts()).containsExactly(expectedUnitCost)
     }
 
     @Test

@@ -2,6 +2,7 @@ package io.cloudflight.jems.server.programme.controller.costoption
 
 import io.cloudflight.jems.api.programme.costoption.ProgrammeUnitCostApi
 import io.cloudflight.jems.api.programme.dto.costoption.ProgrammeUnitCostDTO
+import io.cloudflight.jems.api.programme.dto.costoption.ProgrammeUnitCostListDTO
 import io.cloudflight.jems.server.programme.service.costoption.create_unit_cost.CreateUnitCostInteractor
 import io.cloudflight.jems.server.programme.service.costoption.delete_unit_cost.DeleteUnitCostInteractor
 import io.cloudflight.jems.server.programme.service.costoption.get_unit_cost.GetUnitCostInteractor
@@ -18,8 +19,11 @@ class ProgrammeUnitCostController(
     private val deleteUnitCost: DeleteUnitCostInteractor,
 ) : ProgrammeUnitCostApi {
 
-    override fun getProgrammeUnitCosts(pageable: Pageable): Page<ProgrammeUnitCostDTO> =
-        getUnitCost.getUnitCosts(pageable).map { it.toDto() }
+    override fun getProgrammeUnitCosts(): List<ProgrammeUnitCostListDTO> =
+        getUnitCost.getUnitCosts().toDto()
+
+    override fun getProgrammeUnitCost(unitCostId: Long): ProgrammeUnitCostDTO =
+        getUnitCost.getUnitCost(unitCostId).toDto()
 
     override fun createProgrammeUnitCost(unitCost: ProgrammeUnitCostDTO): ProgrammeUnitCostDTO =
         createUnitCost.createUnitCost(unitCost.toModel()).toDto()
@@ -30,7 +34,5 @@ class ProgrammeUnitCostController(
     override fun deleteProgrammeUnitCost(unitCostId: Long) =
         deleteUnitCost.deleteUnitCost(unitCostId)
 
-    override fun getProgrammeUnitCost(id: Long): ProgrammeUnitCostDTO =
-        getUnitCost.getUnitCost(id).toDto()
 
 }

@@ -12,19 +12,15 @@
         </app-programme-lump-sums-list>
     </div>
 
-    <div *ngIf="currentUnitCostPage$ | async as unitCostPage">
+    <div *ngIf="unitCostDataSource$ | async as unitCostDataSource">
         <h4 id="unitCosts">{{'unit.cost.table.title' | translate}}</h4>
         <button mat-raised-button color="primary"
                 [routerLink]="'/app/programme/costs/unitCost/create'">
-            + Add Unit Cost
+            + {{ 'programme.unitCost.add' | translate }}
         </button>
         <app-programme-unit-costs-list
                 [unitCost]="unitCost$ | async"
-                [unitCostPage]="unitCostPage"
-                [pageIndex]="newUnitCostPageIndex$ | async"
-                (newPageSize)="newUnitCostPageSize$.next($event)"
-                (newPageIndex)="newUnitCostPageIndex$.next($event)"
-                (newSort)="newUnitCostSort$.next($event)">
+                [dataSource]="unitCostDataSource">
         </app-programme-unit-costs-list>
     </div>
 </div>

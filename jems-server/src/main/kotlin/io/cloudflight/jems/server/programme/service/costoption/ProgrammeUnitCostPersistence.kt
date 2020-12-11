@@ -6,8 +6,9 @@ import org.springframework.data.domain.Pageable
 
 interface ProgrammeUnitCostPersistence {
 
-    fun getUnitCosts(pageable: Pageable): Page<ProgrammeUnitCost>
+    fun getUnitCosts(): List<ProgrammeUnitCost>
     fun getUnitCost(unitCostId: Long): ProgrammeUnitCost
+    fun getCount(): Long
     fun createUnitCost(unitCost: ProgrammeUnitCost): ProgrammeUnitCost
     fun updateUnitCost(unitCost: ProgrammeUnitCost): ProgrammeUnitCost
     fun deleteUnitCost(unitCostId: Long)

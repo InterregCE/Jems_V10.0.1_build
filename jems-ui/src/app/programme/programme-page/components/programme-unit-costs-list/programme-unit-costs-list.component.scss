@@ -1,0 +1,12 @@
+mat-row:hover,
+mat-row:active {
+  background-color: var(--hover-color);
+}
+
+mat-row {
+  cursor: pointer;
+}
+
+.justify-end {
+  justify-content: flex-end;
+}

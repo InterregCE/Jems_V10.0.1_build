@@ -3,6 +3,7 @@ package io.cloudflight.jems.server.programme.controller.costoption
 import io.cloudflight.jems.api.programme.dto.costoption.BudgetCategory.EquipmentCosts
 import io.cloudflight.jems.api.programme.dto.costoption.BudgetCategory.TravelAndAccommodationCosts
 import io.cloudflight.jems.api.programme.dto.costoption.ProgrammeUnitCostDTO
+import io.cloudflight.jems.api.programme.dto.costoption.ProgrammeUnitCostListDTO
 import io.cloudflight.jems.server.programme.service.costoption.create_unit_cost.CreateUnitCostInteractor
 import io.cloudflight.jems.server.programme.service.costoption.delete_unit_cost.DeleteUnitCostInteractor
 import io.cloudflight.jems.server.programme.service.costoption.get_unit_cost.GetUnitCostInteractor
@@ -35,13 +36,20 @@ class ProgrammeUnitCostControllerTest {
             categories = setOf(EquipmentCosts, TravelAndAccommodationCosts),
         )
 
-        private val expectedUnitCost = ProgrammeUnitCostDTO(
+        private val expectedUnitCostDTO = ProgrammeUnitCostDTO(
             id = 1,
             name = "UC1",
             description = "test unit cost 1",
             type = "type 1",
             costPerUnit = BigDecimal.ONE,
             categories = setOf(EquipmentCosts, TravelAndAccommodationCosts),
+        )
+
+        private val expectedUnitCostListDTO = ProgrammeUnitCostListDTO(
+            id = 1,
+            name = "UC1",
+            type = "type 1",
+            costPerUnit = BigDecimal.ONE,
         )
 
     }
@@ -63,9 +71,9 @@ class ProgrammeUnitCostControllerTest {
 
     @Test
     fun `should get ProgrammeUnitCosts`() {
-        every { getUnitCost.getUnitCosts(any()) } returns PageImpl(listOf(testUnitCost))
-        val unitCost = controller.getProgrammeUnitCosts(Pageable.unpaged())
-        assertThat(unitCost.content).containsExactly(expectedUnitCost)
+        every { getUnitCost.getUnitCosts() } returns listOf(testUnitCost)
+        val unitCosts = controller.getProgrammeUnitCosts()
+        assertThat(unitCosts).containsExactly(expectedUnitCostListDTO)
     }
 
     @Test
@@ -73,7 +81,7 @@ class ProgrammeUnitCostControllerTest {
         val slotUnitCost = slot<ProgrammeUnitCost>()
         every { createUnitCost.createUnitCost(capture(slotUnitCost)) } returnsArgument 0
 
-        assertThat(controller.createProgrammeUnitCost(expectedUnitCost)).isEqualTo(expectedUnitCost)
+        assertThat(controller.createProgrammeUnitCost(expectedUnitCostDTO)).isEqualTo(expectedUnitCostDTO)
         assertThat(slotUnitCost.captured).isEqualTo(testUnitCost)
     }
 
@@ -82,7 +90,7 @@ class ProgrammeUnitCostControllerTest {
         val slotUnitCost = slot<ProgrammeUnitCost>()
         every { updateUnitCost.updateUnitCost(capture(slotUnitCost)) } returnsArgument 0
 
-        assertThat(controller.updateProgrammeUnitCost(expectedUnitCost)).isEqualTo(expectedUnitCost)
+        assertThat(controller.updateProgrammeUnitCost(expectedUnitCostDTO)).isEqualTo(expectedUnitCostDTO)
         assertThat(slotUnitCost.captured).isEqualTo(testUnitCost)
     }
 

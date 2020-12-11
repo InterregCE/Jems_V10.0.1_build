@@ -44,10 +44,8 @@ class GetUnitCostInteractorTest {
 
     @Test
     fun `get unit costs`() {
-        every { persistence.getUnitCosts(any()) } returns PageImpl(listOf(testUnitCost))
-        assertThat(getUnitCostInteractor.getUnitCosts(Pageable.unpaged()).content).containsExactly(
-            testUnitCost.copy()
-        )
+        every { persistence.getUnitCosts() } returns listOf(testUnitCost)
+        assertThat(getUnitCostInteractor.getUnitCosts()).containsExactly(testUnitCost.copy())
     }
 
     @Test

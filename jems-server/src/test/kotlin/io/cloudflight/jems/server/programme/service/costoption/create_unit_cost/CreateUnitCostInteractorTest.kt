@@ -37,6 +37,7 @@ class CreateUnitCostInteractorTest {
 
     @Test
     fun `create unit cost - invalid`() {
+        every { persistence.getCount() } returns 15
         val wrongUnitCost = ProgrammeUnitCost(
             id = null,
             name = " ",
@@ -55,7 +56,23 @@ class CreateUnitCostInteractorTest {
     }
 
     @Test
+    fun `create unit cost - reached max allowed amount`() {
+        every { persistence.getCount() } returns 25
+        val unitCost = ProgrammeUnitCost(
+            id = null,
+            name = "UC1",
+            description = "test unit cost 1",
+            type = "type 1",
+            costPerUnit = BigDecimal.ONE,
+            categories = setOf(OfficeAndAdministrationCosts, StaffCosts),
+        )
+        val ex = assertThrows<I18nValidationException> { createUnitCostInteractor.createUnitCost(unitCost) }
+        assertThat(ex.i18nKey).isEqualTo("programme.unitCost.max.allowed.reached")
+    }
+
+    @Test
     fun `create unit cost - OK`() {
+        every { persistence.getCount() } returns 5
         every { persistence.createUnitCost(any()) } returnsArgument 0
         val unitCost = ProgrammeUnitCost(
             id = null,
@@ -77,6 +94,7 @@ class CreateUnitCostInteractorTest {
 
     @Test
     fun `create unit cost - wrong ID filled in`() {
+        every { persistence.getCount() } returns 10
         val unitCost = ProgrammeUnitCost(
             id = 1L,
             name = "UC1",
