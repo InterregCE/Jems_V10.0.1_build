@@ -22,12 +22,12 @@
     <mat-card-footer [@slideInOut] class="footer">
         <button mat-stroked-button class="action-button discard" type="button"
                 (click)="formService.setDirty(false); this.discard.emit(); formService.reset()">
-            {{'common.cancel.label' | translate}}
+            <mat-icon>cancel</mat-icon>&nbsp;{{'common.cancel.label' | translate}}
         </button>
         <button [disabled]="(formService.valid$ | async) === false"
                 mat-raised-button class="action-button" color="primary" type="button"
                 (click)="formService.setDirty(false); save.emit()">
-            {{formService.saveLabel | translate}}
+            <mat-icon>save</mat-icon>&nbsp;{{formService.saveLabel | translate}}
         </button>
     </mat-card-footer>
 </ng-template>

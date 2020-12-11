@@ -10,10 +10,22 @@ button.header-button {
   margin-bottom: 0.25rem;
 }
 
+.action-button mat-icon {
+  font-size: 1.33em;
+  line-height: 1.33em;
+}
+
 .wrapper .field, .container .field, .container .field-wide, .mat-form-field-wrapper {
   padding-top: 0.25rem !important;
 }
 
 .mat-button-toggle-appearance-standard div.mat-button-toggle-label-content {
   line-height: 2.5em;
+}
+
+// Use on table to align content to vertical top within table cells, not center
+.align-cells-to-top {
+  div#row-list-container.table-appearance > *:not(:first-child){
+    align-items: flex-start;
+  }
 }

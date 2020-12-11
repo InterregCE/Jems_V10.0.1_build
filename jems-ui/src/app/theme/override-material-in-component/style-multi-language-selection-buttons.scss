@@ -1,7 +1,8 @@
 
 #language-switcher {
-  float: right;
-  margin-bottom: -1.7rem;
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: 0.25rem;
 
   .mat-button-toggle-group {
     z-index: 1;
@@ -9,5 +10,14 @@
     .mat-button-toggle-appearance-standard div.mat-button-toggle-label-content {
       line-height: 1.75em;
     }
+  }
+}
+
+// Adapt layout when paired with specific components:
+app-multi-language {
+
+  // Specifically allow for an overlap between language-switcher and textarea
+  > app-expandable-textarea {
+    margin-top: -2rem;
   }
 }
