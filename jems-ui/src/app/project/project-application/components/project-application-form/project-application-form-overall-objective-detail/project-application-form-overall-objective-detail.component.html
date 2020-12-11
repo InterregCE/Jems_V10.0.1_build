@@ -4,16 +4,8 @@
         <h5 class="header" id="projectOverallObjectiveHeading">
             {{'project.application.form.section.part.c.subsection.one' | translate}}
         </h5>
-
         <div class="intro-text-small">
             <span>{{'project.application.form.overall.objective.field.row.one' | translate}}</span>
-            <span>{{'project.application.form.overall.objective.field.row.two' | translate}}</span>
-            <span>{{'project.application.form.overall.objective.field.row.three' | translate}}</span>
-            <ul>
-                <li>{{'project.application.form.overall.objective.field.row.four' | translate}}</li>
-                <li>{{'project.application.form.overall.objective.field.row.five' | translate}}</li>
-                <li>{{'project.application.form.overall.objective.field.row.six' | translate}}</li>
-            </ul>
         </div>
         <mat-form-field
                 [ngClass]="!overallObjectiveForm?.controls?.projectSpecificObjective?.value && editable ? 'disable-warning-field' : 'field'"
@@ -26,7 +18,19 @@
                 {{'project.application.form.overall.objective.specific.objective.required' | translate}}
             </mat-hint>
         </mat-form-field>
-
+        <h6 class="header">
+            {{'project.application.form.overall.objective.field.projectOverallObjective' | translate}}
+        </h6>
+        <div class="intro-text-small">
+            <span>{{'project.application.form.overall.objective.field.row.two' | translate}}</span>
+            <br>
+            <span>{{'project.application.form.overall.objective.field.row.three' | translate}}</span>
+            <ul>
+                <li>{{'project.application.form.overall.objective.field.row.four' | translate}}</li>
+                <li>{{'project.application.form.overall.objective.field.row.five' | translate}}</li>
+                <li>{{'project.application.form.overall.objective.field.row.six' | translate}}</li>
+            </ul>
+        </div>
         <app-multi-language
                 [inputs]="[projectOverallObjective]">
             <app-expandable-textarea
