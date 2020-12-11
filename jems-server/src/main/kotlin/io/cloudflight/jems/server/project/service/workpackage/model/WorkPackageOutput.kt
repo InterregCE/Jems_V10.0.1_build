@@ -1,8 +1,8 @@
-package io.cloudflight.jems.api.project.dto.workpackage.workpackageoutput
+package io.cloudflight.jems.server.project.service.workpackage.model
 
 import io.cloudflight.jems.api.programme.dto.indicator.IndicatorOutputDto
 
-data class OutputWorkPackageOutput(
+data class WorkPackageOutput(
 
     val outputNumber: Int,
     val programmeOutputIndicator: IndicatorOutputDto? = null,

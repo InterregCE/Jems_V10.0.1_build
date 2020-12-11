@@ -16,7 +16,7 @@ import {FormBuilder, FormGroup} from '@angular/forms';
 import {FormService} from '@common/components/section/form/form.service';
 import {takeUntil, tap} from 'rxjs/operators';
 import {MatTableDataSource} from '@angular/material/table';
-import {InputWorkPackageOutput, OutputWorkPackageOutput, OutputProjectPeriod, IndicatorOutputDto} from '@cat/api';
+import {WorkPackageOutputUpdateDTO, WorkPackageOutputDTO, OutputProjectPeriod, IndicatorOutputDto} from '@cat/api';
 import {ProjectStore} from '../../../containers/project-application-detail/services/project-store.service';
 import {WorkPackageOutputDetails} from './tables/work-package-output-table/dto/work-package-output-details';
 
@@ -42,13 +42,13 @@ export class ProjectApplicationFormWorkPackageOutputsComponent extends BaseCompo
   @Input()
   projectId: number;
   @Input()
-  workPackageOutputs: OutputWorkPackageOutput[];
+  workPackageOutputs: WorkPackageOutputDTO[];
   @Input()
   periods: OutputProjectPeriod[];
   @Input()
   indicators: IndicatorOutputDto[];
   @Output()
-  updateData = new EventEmitter<InputWorkPackageOutput[]>();
+  updateData = new EventEmitter<WorkPackageOutputUpdateDTO[]>();
   @Output()
   cancel = new EventEmitter<void>();
 
@@ -144,7 +144,7 @@ export class ProjectApplicationFormWorkPackageOutputsComponent extends BaseCompo
     return data;
   }
 
-  private buildOutputsToSave(): InputWorkPackageOutput[] {
+  private buildOutputsToSave(): WorkPackageOutputUpdateDTO[] {
     return this.workPackageOutputDataSource.data
       .map(element => ({
         outputNumber: element.id,

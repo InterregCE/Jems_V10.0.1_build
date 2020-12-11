@@ -5,7 +5,7 @@ import {ActivatedRoute, Router} from '@angular/router';
 import {ProjectStore} from '../../../project-application-detail/services/project-store.service';
 import {ProjectApplicationFormSidenavService} from '../../services/project-application-form-sidenav.service';
 import {BaseComponent} from '@common/components/base-component';
-import {InputWorkPackageOutput, WorkPackageService, ProgrammeIndicatorService} from '@cat/api';
+import {WorkPackageOutputUpdateDTO, WorkPackageService, ProgrammeIndicatorService} from '@cat/api';
 import {catchError, distinctUntilChanged, filter, map, mergeMap, tap, withLatestFrom} from 'rxjs/operators';
 import {Log} from '../../../../../../common/utils/log';
 import {ProjectWorkpackageStoreService} from '../../services/project-workpackage-store.service';
@@ -22,7 +22,7 @@ export class ProjectApplicationFormWorkPackageOutputComponent extends BaseCompon
 
   saveError$ = new Subject<HttpErrorResponse | null>();
   saveSuccess$ = new Subject<boolean>();
-  updateWorkPackageOutputData$ = new EventEmitter<InputWorkPackageOutput[]>();
+  updateWorkPackageOutputData$ = new EventEmitter<WorkPackageOutputUpdateDTO[]>();
 
   private savedWorkPackageOutputData$ = this.workPackageStore.workPackage$
     .pipe(

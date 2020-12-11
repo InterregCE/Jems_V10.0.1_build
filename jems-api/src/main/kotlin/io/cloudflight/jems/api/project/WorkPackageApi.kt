@@ -4,8 +4,8 @@ import io.cloudflight.jems.api.project.dto.workpackage.InputWorkPackageCreate
 import io.cloudflight.jems.api.project.dto.workpackage.InputWorkPackageUpdate
 import io.cloudflight.jems.api.project.dto.workpackage.OutputWorkPackage
 import io.cloudflight.jems.api.project.dto.workpackage.OutputWorkPackageSimple
-import io.cloudflight.jems.api.project.dto.workpackage.workpackageoutput.InputWorkPackageOutput
-import io.cloudflight.jems.api.project.dto.workpackage.workpackageoutput.OutputWorkPackageOutput
+import io.cloudflight.jems.api.project.dto.workpackage.workpackageoutput.WorkPackageOutputDTO
+import io.cloudflight.jems.api.project.dto.workpackage.workpackageoutput.WorkPackageOutputUpdateDTO
 import io.swagger.annotations.Api
 import io.swagger.annotations.ApiImplicitParam
 import io.swagger.annotations.ApiImplicitParams
@@ -53,9 +53,13 @@ interface WorkPackageApi {
 
     @ApiOperation("Returns all work package outputs for a work package")
     @GetMapping("/{id}/output")
-    fun getWorkPackageOutputs(@PathVariable projectId: Long, @PathVariable id: Long): Set<OutputWorkPackageOutput>
+    fun getWorkPackageOutputs(@PathVariable projectId: Long, @PathVariable id: Long): Set<WorkPackageOutputDTO>
 
     @ApiOperation("Creates work packages outputs for a work package")
     @PostMapping("/{id}/output", consumes = [MediaType.APPLICATION_JSON_VALUE])
-    fun updateWorkPackageOutputs(@PathVariable projectId: Long, @PathVariable id: Long, @Valid @RequestBody inputWorkPackageOutputs: Set<InputWorkPackageOutput>): Set<OutputWorkPackageOutput>
+    fun updateWorkPackageOutputs(
+        @PathVariable projectId: Long,
+        @PathVariable id: Long,
+        @Valid @RequestBody workPackageOutputUpdateDTO: Set<WorkPackageOutputUpdateDTO>
+    ): Set<WorkPackageOutputDTO>
 }
