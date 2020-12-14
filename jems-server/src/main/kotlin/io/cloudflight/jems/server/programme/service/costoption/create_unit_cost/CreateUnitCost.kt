@@ -20,7 +20,7 @@ class CreateUnitCost(
     @CanUpdateProgrammeSetup
     @Transactional
     override fun createUnitCost(unitCost: ProgrammeUnitCost): ProgrammeUnitCost {
-        validateCreateUnitCost(unitCost)
+        validateCreateUnitCost(unitCostToValidate = unitCost, currentCount = persistence.getCount())
         val saved = persistence.createUnitCost(unitCost)
 
         unitCostCreatedAudit(saved).logWith(audit)

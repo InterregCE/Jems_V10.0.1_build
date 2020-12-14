@@ -15,8 +15,8 @@ class GetUnitCost(
 
     @CanUpdateProgrammeSetup
     @Transactional(readOnly = true)
-    override fun getUnitCosts(pageable: Pageable): Page<ProgrammeUnitCost> =
-        persistence.getUnitCosts(pageable)
+    override fun getUnitCosts(): List<ProgrammeUnitCost> =
+        persistence.getUnitCosts()
 
     @CanUpdateProgrammeSetup
     @Transactional(readOnly = true)

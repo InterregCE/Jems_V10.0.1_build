@@ -1,12 +1,9 @@
 package io.cloudflight.jems.api.programme.costoption
 
 import io.cloudflight.jems.api.programme.dto.costoption.ProgrammeUnitCostDTO
+import io.cloudflight.jems.api.programme.dto.costoption.ProgrammeUnitCostListDTO
 import io.swagger.annotations.Api
-import io.swagger.annotations.ApiImplicitParam
-import io.swagger.annotations.ApiImplicitParams
 import io.swagger.annotations.ApiOperation
-import org.springframework.data.domain.Page
-import org.springframework.data.domain.Pageable
 import org.springframework.http.MediaType
 import org.springframework.web.bind.annotation.DeleteMapping
 import org.springframework.web.bind.annotation.GetMapping
@@ -21,13 +18,12 @@ import org.springframework.web.bind.annotation.RequestMapping
 interface ProgrammeUnitCostApi {
 
     @ApiOperation("Retrieve all programme unit costs")
-    @ApiImplicitParams(
-        ApiImplicitParam(paramType = "query", name = "page", dataType = "integer"),
-        ApiImplicitParam(paramType = "query", name = "size", dataType = "integer"),
-        ApiImplicitParam(paramType = "query", name = "sort", dataType = "string")
-    )
     @GetMapping
-    fun getProgrammeUnitCosts(pageable: Pageable): Page<ProgrammeUnitCostDTO>
+    fun getProgrammeUnitCosts(): List<ProgrammeUnitCostListDTO>
+
+    @ApiOperation("Retrieve programme unit cost by id")
+    @GetMapping("/{unitCostId}")
+    fun getProgrammeUnitCost(@PathVariable unitCostId: Long): ProgrammeUnitCostDTO
 
     @ApiOperation("Create programme unit cost")
     @PostMapping(consumes = [MediaType.APPLICATION_JSON_VALUE])
@@ -40,9 +36,5 @@ interface ProgrammeUnitCostApi {
     @ApiOperation("Delete programme unit cost")
     @DeleteMapping("/{unitCostId}")
     fun deleteProgrammeUnitCost(@PathVariable unitCostId: Long)
-
-    @ApiOperation("Retrieve programme unit cost by id")
-    @GetMapping("/unitCost/{id}")
-    fun getProgrammeUnitCost(@PathVariable id: Long): ProgrammeUnitCostDTO
 
 }

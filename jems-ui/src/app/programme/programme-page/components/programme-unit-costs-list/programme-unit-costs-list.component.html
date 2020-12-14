@@ -4,13 +4,25 @@
     <p>{{'unit.cost.save.success' | translate: {unitCost: unitCost} }}</p>
 </app-alert>
 
-<p *ngIf="!unitCostPage?.content.length">{{'unit.cost.empty.list' | translate}}</p>
-<app-table *ngIf="unitCostPage.content.length"
-           [configuration]="unitCostTableConfiguration"
-           [rows]="unitCostPage.content"
-           [totalElements]="unitCostPage?.totalElements"
-           [pageIndex]="pageIndex"
-           (newPageIndex)="newPageIndex.emit($event)"
-           (newPageSize)="newPageSize.emit($event)"
-           (sortRows)="newSort.emit($event)">>
-</app-table>
+<p *ngIf="!dataSource?.data.length">{{'unit.cost.empty.list' | translate}}</p>
+<mat-table *ngIf="dataSource?.data.length" [dataSource]="dataSource" class="mat-elevation-z8 mt-4">
+
+    <ng-container matColumnDef="name">
+        <mat-header-cell *matHeaderCellDef>{{ 'unit.cost.table.column.name.name' | translate }}</mat-header-cell>
+        <mat-cell *matCellDef="let element">{{ element?.name }}</mat-cell>
+    </ng-container>
+
+    <ng-container matColumnDef="type">
+        <mat-header-cell *matHeaderCellDef>{{ 'unit.cost.table.column.name.unit.type' | translate }}</mat-header-cell>
+        <mat-cell *matCellDef="let element">{{ element?.type }}</mat-cell>
+    </ng-container>
+
+    <ng-container matColumnDef="costPerUnit">
+        <mat-header-cell *matHeaderCellDef class="justify-end">{{ 'unit.cost.table.column.name.cost.unit' | translate }}</mat-header-cell>
+        <mat-cell *matCellDef="let element" class="justify-end">{{ element?.costPerUnit | asMoney }}</mat-cell>
+    </ng-container>
+
+    <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
+    <mat-row *matRowDef="let row; columns: displayedColumns;" [routerLink]="['unitCost', 'detail', row.id]"></mat-row>
+
+</mat-table>

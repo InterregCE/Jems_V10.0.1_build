@@ -14,6 +14,8 @@ fun ProgrammeUnitCostEntity.toModel() = ProgrammeUnitCost(
     categories = categories.mapTo(HashSet()) { it.category }
 )
 
+fun Iterable<ProgrammeUnitCostEntity>.toModel() = map { it.toModel() }
+
 fun ProgrammeUnitCost.toEntity() = ProgrammeUnitCostEntity(
     id = id ?: 0,
     name = name!!,

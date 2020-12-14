@@ -7,14 +7,14 @@ import org.springframework.http.HttpStatus
 import java.math.BigDecimal
 
 private val MAX_COST = BigDecimal.valueOf(999_999_999_99, 2)
+private const val MAX_ALLOWED_UNIT_COSTS = 25
 
-fun validateCreateUnitCost(unitCost: ProgrammeUnitCost) {
-    if (unitCost.id != null)
-        throw I18nValidationException(
-            i18nKey = "programme.unitCost.id.not.allowed",
-            httpStatus = HttpStatus.UNPROCESSABLE_ENTITY,
-        )
-    validateCommonUnitCost(unitCost = unitCost)
+fun validateCreateUnitCost(unitCostToValidate: ProgrammeUnitCost, currentCount: Long) {
+    if (unitCostToValidate.id != null)
+        throw I18nValidationException(i18nKey = "programme.unitCost.id.not.allowed")
+    if (currentCount >= MAX_ALLOWED_UNIT_COSTS)
+        throw I18nValidationException(i18nKey = "programme.unitCost.max.allowed.reached")
+    validateCommonUnitCost(unitCost = unitCostToValidate)
 }
 
 fun validateUpdateUnitCost(unitCost: ProgrammeUnitCost) {

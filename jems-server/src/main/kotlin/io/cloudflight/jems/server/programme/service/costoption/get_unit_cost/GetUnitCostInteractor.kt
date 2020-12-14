@@ -6,7 +6,7 @@ import org.springframework.data.domain.Pageable
 
 interface GetUnitCostInteractor {
 
-    fun getUnitCosts(pageable: Pageable): Page<ProgrammeUnitCost>
+    fun getUnitCosts(): List<ProgrammeUnitCost>
 
     fun getUnitCost(unitCostId: Long): ProgrammeUnitCost
 

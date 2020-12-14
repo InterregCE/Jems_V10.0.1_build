@@ -15,12 +15,15 @@ class ProgrammeUnitCostPersistenceProvider(
 ) : ProgrammeUnitCostPersistence {
 
     @Transactional(readOnly = true)
-    override fun getUnitCosts(pageable: Pageable): Page<ProgrammeUnitCost> =
-        repository.findAll(pageable).map { it.toModel() }
+    override fun getUnitCosts(): List<ProgrammeUnitCost> =
+        repository.findTop25ByOrderById().toModel()
 
     @Transactional(readOnly = true)
     override fun getUnitCost(unitCostId: Long): ProgrammeUnitCost =
         getUnitCostOrThrow(unitCostId).toModel()
+
+    @Transactional(readOnly = true)
+    override fun getCount(): Long = repository.count()
 
     @Transactional
     override fun createUnitCost(unitCost: ProgrammeUnitCost): ProgrammeUnitCost {
