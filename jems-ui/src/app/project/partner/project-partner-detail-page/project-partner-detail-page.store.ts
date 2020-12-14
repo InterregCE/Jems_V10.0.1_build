@@ -11,7 +11,7 @@ import {Log} from '../../../common/utils/log';
 import {PartnerBudgetTableType} from '../../project-application/model/partner-budget-table-type';
 import {PartnerBudgetTableEntry} from '../../project-application/model/partner-budget-table-entry';
 import {MultiLanguageInputService} from '../../../common/services/multi-language-input.service';
-import {Numbers} from '../../../common/utils/numbers';
+import {NumberService} from '../../../common/services/number.service';
 
 @Injectable()
 export class ProjectPartnerDetailPageStore {
@@ -132,7 +132,7 @@ export class ProjectPartnerDetailPageStore {
     return combineLatest([this.updateBudgetOptionsEvent$.pipe(startWith(null)), this.updateBudgetEvent$.pipe(startWith(null))]).pipe(
       withLatestFrom(this.partnerStore.partner$),
       switchMap(([, partner]) => this.projectPartnerBudgetService.getTotal(partner.id)),
-      map(total => Numbers.truncateNumber(total)),
+      map(total => NumberService.truncateNumber(total)),
       shareReplay(1)
     );
   }

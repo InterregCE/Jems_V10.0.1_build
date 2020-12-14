@@ -31,8 +31,8 @@
                 </mat-form-field>
                 <div>{{ this.fundAmount | asMoney }}</div>
                 <mat-form-field class="text-right">
-                    <input class="text-right" name="percentage" formControlName="percentage" matInput min="0"
-                           max="100">
+                    <input currencyMask type="integer" [options]="{min: 0, max: 100, align: 'right'}"
+                           name="percentage" formControlName="percentage" matInput>
                     <div matSuffix class="pl-1">%</div>
                     <mat-error>
                         <app-form-field-errors
@@ -101,14 +101,14 @@
                             </mat-error>
                         </mat-form-field>
                         <mat-form-field>
-                            <input type="number" formControlName="amount" matInput min="0"
-                            >
+                            <input currencyMask type="decimal" [options]="{min: 0, align: 'right'}"
+                                   formControlName="amount" matInput>
                             <mat-error>
                                 <app-form-field-errors [errors]="partnerContribution.get('amount')?.errors"
                                                        [messages]="partnerContributionAmountErrors"></app-form-field-errors>
                             </mat-error>
                         </mat-form-field>
-                        <div>{{partnerContribution.value.amount | percentage: totalAmount}}</div>
+                        <div class="text-right">{{partnerContribution.value.amount | percentage: totalAmount}}</div>
                         <div>
                             <button type="button" *ngIf="!partnerContribution.value.isPartner"
                                     (click)="deletePartnerContribution(i)"
@@ -137,23 +137,23 @@
             <div class="hidden"></div>
             <div>
                 <span>{{ 'project.partner.coFinancing.contribution.sub.total.public.contribution' | translate }}</span>
-                <div>{{ (publicContributionSubTotal$ | async) | asMoney}}</div>
-                <span>{{ (publicContributionSubTotal$ | async) | percentage:totalAmount}}</span>
+                <div class="text-right">{{ (publicContributionSubTotal$ | async) | asMoney}}</div>
+                <span class="text-right">{{ (publicContributionSubTotal$ | async) | percentage:totalAmount}}</span>
             </div>
             <div>
                 <div>{{ 'project.partner.coFinancing.contribution.sub.total.automatic.public.contribution' | translate }}</div>
-                <div>{{ (automaticPublicContributionSubTotal$ | async) | asMoney}}</div>
-                <span>{{ (automaticPublicContributionSubTotal$ | async) | percentage:totalAmount}}</span>
+                <div class="text-right">{{ (automaticPublicContributionSubTotal$ | async) | asMoney}}</div>
+                <span class="text-right">{{ (automaticPublicContributionSubTotal$ | async) | percentage:totalAmount}}</span>
             </div>
             <div>
                 <div>{{ 'project.partner.coFinancing.contribution.sub.total.private.contribution' | translate }}</div>
-                <div>{{ (privateContributionSubTotal$ | async) | asMoney}}</div>
-                <span>{{ (privateContributionSubTotal$ | async) | percentage:totalAmount}}</span>
+                <div class="text-right">{{ (privateContributionSubTotal$ | async) | asMoney}}</div>
+                <span class="text-right">{{ (privateContributionSubTotal$ | async) | percentage:totalAmount}}</span>
             </div>
             <div class="mat-body-strong">
                 <div>{{ 'project.partner.coFinancing.contribution.total' | translate }}</div>
-                <div>{{ (contributionTotal$ | async) | asMoney}}</div>
-                <div>{{ (contributionTotal$ | async) | percentage: totalAmount}}</div>
+                <div class="text-right">{{ (contributionTotal$ | async) | asMoney}}</div>
+                <div class="text-right">{{ (contributionTotal$ | async) | percentage: totalAmount}}</div>
             </div>
         </app-row-list-template>
     </form>
