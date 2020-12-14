@@ -2,11 +2,17 @@ package io.cloudflight.jems.server.project.repository.workpackage
 
 import io.cloudflight.jems.server.programme.entity.indicator.IndicatorOutput
 import io.cloudflight.jems.server.programme.service.indicator.toIndicatorOutputDto
+import io.cloudflight.jems.server.project.entity.AddressEntity
 import io.cloudflight.jems.server.project.entity.ProjectPeriod
 import io.cloudflight.jems.server.project.entity.workpackage.WorkPackage
+import io.cloudflight.jems.server.project.entity.workpackage.WorkPackageInvestmentEntity
 import io.cloudflight.jems.server.project.entity.workpackage.WorkPackageOutputEntity
+import io.cloudflight.jems.server.project.service.model.Address
+import io.cloudflight.jems.server.project.service.workpackage.model.WorkPackageInvestment
 import io.cloudflight.jems.server.project.service.workpackage.model.WorkPackageOutput
 import io.cloudflight.jems.server.project.service.workpackage.model.WorkPackageOutputUpdate
+import org.springframework.data.domain.Page
+import org.springframework.data.domain.PageImpl
 
 
 fun WorkPackageOutputUpdate.toEntity(
@@ -34,3 +40,40 @@ fun WorkPackageOutputEntity.toWorkPackageOutput() = WorkPackageOutput(
 
 fun Set<WorkPackageOutputEntity>.toWorkPackageOutputSet() =
     this.map { it.toWorkPackageOutput() }.sortedBy { it.outputNumber }.toSet()
+
+fun Page<WorkPackageInvestmentEntity>.toWorkPackageInvestmentPage() = PageImpl(this.content.map { it.toWorkPackageInvestment() }, this.pageable, this.totalPages.toLong())
+
+fun WorkPackageInvestmentEntity.toWorkPackageInvestment() = WorkPackageInvestment(
+    id = id,
+    investmentNumber = investmentNumber,
+    title = title,
+    justificationExplanation = justificationExplanation,
+    justificationTransactionalRelevance = justificationTransactionalRelevance,
+    justificationBenefits = justificationBenefits,
+    justificationPilot = justificationPilot,
+    address = address?.toAddress(),
+    risk = risk,
+    documentation = documentation,
+    ownershipSiteLocation = ownershipSiteLocation,
+    ownershipRetain = ownershipRetain,
+    ownershipMaintenance = ownershipMaintenance
+)
+
+fun WorkPackageInvestment.toWorkPackageInvestmentEntity(workPackageEntity: WorkPackage) = WorkPackageInvestmentEntity(
+    workPackage = workPackageEntity,
+    investmentNumber = investmentNumber,
+    title = title,
+    justificationExplanation = justificationExplanation,
+    justificationTransactionalRelevance = justificationTransactionalRelevance,
+    justificationBenefits = justificationBenefits,
+    justificationPilot = justificationPilot,
+    address = address?.toAddressEntity(),
+    risk = risk,
+    documentation = documentation,
+    ownershipSiteLocation = ownershipSiteLocation,
+    ownershipRetain = ownershipRetain,
+    ownershipMaintenance = ownershipMaintenance
+)
+
+fun Address.toAddressEntity() = AddressEntity(this.country, this.nutsRegion2, this.nutsRegion3, this.street, this.houseNumber, this.postalCode, this.city)
+fun AddressEntity.toAddress() = Address(this.country, this.nutsRegion2, this.nutsRegion3, this.street, this.houseNumber, this.postalCode, this.city)

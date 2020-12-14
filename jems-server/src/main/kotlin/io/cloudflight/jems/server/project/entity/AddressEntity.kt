@@ -4,7 +4,7 @@ import javax.persistence.Column
 import javax.persistence.Embeddable
 
 @Embeddable
-data class Address(
+data class AddressEntity(
 
     @Column
     val country: String? = null,

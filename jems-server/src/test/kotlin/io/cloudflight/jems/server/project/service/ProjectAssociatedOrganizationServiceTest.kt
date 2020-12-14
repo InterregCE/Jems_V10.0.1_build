@@ -16,7 +16,7 @@ import io.cloudflight.jems.api.project.dto.status.ProjectApplicationStatus
 import io.cloudflight.jems.server.call.entity.Call
 import io.cloudflight.jems.server.common.exception.ResourceNotFoundException
 import io.cloudflight.jems.server.programme.entity.ProgrammeLegalStatus
-import io.cloudflight.jems.server.project.entity.Address
+import io.cloudflight.jems.server.project.entity.AddressEntity
 import io.cloudflight.jems.server.project.entity.Contact
 import io.cloudflight.jems.server.project.entity.Project
 import io.cloudflight.jems.server.project.entity.associatedorganization.ProjectAssociatedOrganization
@@ -171,7 +171,7 @@ internal class ProjectAssociatedOrganizationServiceTest {
         )
         val toBePersistedAddress = ProjectAssociatedOrganizationAddress(
             organizationId = 10,
-            address = Address(country = "AT")
+            address = AddressEntity(country = "AT")
         )
         val toFirstSave = organization(10, projectPartner, "to create")
         val toSecondSave = toFirstSave.copy(contacts = mutableSetOf(toBePersistedContact), addresses = mutableSetOf(toBePersistedAddress))

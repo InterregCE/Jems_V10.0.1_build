@@ -1,11 +1,10 @@
 package io.cloudflight.jems.server.project.repository.budget
 
-import io.cloudflight.jems.api.project.dto.partner.OutputProjectPartner
 import io.cloudflight.jems.api.project.dto.partner.ProjectPartnerAddressType
 import io.cloudflight.jems.api.project.dto.partner.ProjectPartnerRole
 import io.cloudflight.jems.server.audit.service.AuditService
 import io.cloudflight.jems.server.programme.entity.ProgrammeLegalStatus
-import io.cloudflight.jems.server.project.entity.Address
+import io.cloudflight.jems.server.project.entity.AddressEntity
 import io.cloudflight.jems.server.project.entity.partner.ProjectPartnerAddress
 import io.cloudflight.jems.server.project.entity.partner.ProjectPartnerAddressId
 import io.cloudflight.jems.server.project.entity.partner.ProjectPartnerEntity
@@ -118,7 +117,7 @@ class ProjectBudgetPersistenceTest {
                 sortNumber = 1,
                 addresses = setOf(ProjectPartnerAddress(
                     addressId = ProjectPartnerAddressId(5, ProjectPartnerAddressType.Organization),
-                    address = Address(country = "SK")
+                    address = AddressEntity(country = "SK")
                 ))
             )
         )
