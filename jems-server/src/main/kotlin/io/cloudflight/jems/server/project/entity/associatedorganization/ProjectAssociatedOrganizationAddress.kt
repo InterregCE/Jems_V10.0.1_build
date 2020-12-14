@@ -1,6 +1,6 @@
 package io.cloudflight.jems.server.project.entity.associatedorganization
 
-import io.cloudflight.jems.server.project.entity.Address
+import io.cloudflight.jems.server.project.entity.AddressEntity
 import javax.persistence.Column
 import javax.persistence.Embedded
 import javax.persistence.Entity
@@ -16,7 +16,7 @@ data class ProjectAssociatedOrganizationAddress (
     val organizationId: Long,
 
     @Embedded
-    val address: Address?
+    val address: AddressEntity?
 
 ) {
     fun nullIfBlank(): ProjectAssociatedOrganizationAddress? {

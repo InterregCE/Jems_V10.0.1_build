@@ -1,6 +1,6 @@
 package io.cloudflight.jems.server.workpackage.service.workpackageoutput.get_work_package_output
 
-import io.cloudflight.jems.server.project.service.workpackage.WorkPackageOutputPersistence
+import io.cloudflight.jems.server.project.service.workpackage.WorkPackagePersistence
 import io.cloudflight.jems.server.project.service.workpackage.get_work_package_output.GetWorkPackageOutput
 import io.cloudflight.jems.server.project.service.workpackage.get_work_package_output.GetWorkPackageOutputInteractor
 import io.cloudflight.jems.server.project.service.workpackage.model.WorkPackageOutput
@@ -34,7 +34,7 @@ class GetWorkPackageOutputInteractorTest {
 
 
     @MockK
-    lateinit var persistence: WorkPackageOutputPersistence
+    lateinit var persistence: WorkPackagePersistence
 
     private lateinit var getWorkPackageOutputInteractor: GetWorkPackageOutputInteractor
 

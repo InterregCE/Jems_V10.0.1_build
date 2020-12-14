@@ -7,7 +7,7 @@ import io.cloudflight.jems.api.project.dto.associatedorganization.OutputProjectA
 import io.cloudflight.jems.api.project.dto.associatedorganization.OutputProjectAssociatedOrganizationAddress
 import io.cloudflight.jems.api.project.dto.associatedorganization.OutputProjectAssociatedOrganizationDetail
 import io.cloudflight.jems.api.project.dto.partner.OutputProjectPartnerContact
-import io.cloudflight.jems.server.project.entity.Address
+import io.cloudflight.jems.server.project.entity.AddressEntity
 import io.cloudflight.jems.server.project.entity.Contact
 import io.cloudflight.jems.server.project.entity.associatedorganization.ProjectAssociatedOrganization
 import io.cloudflight.jems.server.project.entity.associatedorganization.ProjectAssociatedOrganizationAddress
@@ -33,7 +33,7 @@ fun InputProjectAssociatedOrganizationAddress?.toEntity(organizationId: Long): M
     if (this != null)
         address = ProjectAssociatedOrganizationAddress(
             organizationId = organizationId,
-            address = Address(
+            address = AddressEntity(
                 country = country,
                 nutsRegion2 = nutsRegion2,
                 nutsRegion3 = nutsRegion3,

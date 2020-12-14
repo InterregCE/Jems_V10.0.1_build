@@ -1,6 +1,6 @@
 package io.cloudflight.jems.server.project.entity.partner
 
-import io.cloudflight.jems.server.project.entity.Address
+import io.cloudflight.jems.server.project.entity.AddressEntity
 import javax.persistence.Embedded
 import javax.persistence.EmbeddedId
 import javax.persistence.Entity
@@ -12,6 +12,6 @@ data class ProjectPartnerAddress(
     val addressId: ProjectPartnerAddressId,
 
     @Embedded
-    val address: Address
+    val address: AddressEntity
 
 )

@@ -1,9 +1,46 @@
 package io.cloudflight.jems.server.project.controller.workpackage
 
+import io.cloudflight.jems.api.common.dto.AddressDTO
+import io.cloudflight.jems.api.project.dto.workpackage.workpackageoutput.WorkPackageInvestmentDTO
 import io.cloudflight.jems.api.project.dto.workpackage.workpackageoutput.WorkPackageOutputDTO
 import io.cloudflight.jems.api.project.dto.workpackage.workpackageoutput.WorkPackageOutputUpdateDTO
+import io.cloudflight.jems.server.project.service.model.Address
+import io.cloudflight.jems.server.project.service.workpackage.model.WorkPackageInvestment
 import io.cloudflight.jems.server.project.service.workpackage.model.WorkPackageOutput
 import io.cloudflight.jems.server.project.service.workpackage.model.WorkPackageOutputUpdate
+import org.springframework.data.domain.Page
+import org.springframework.data.domain.PageImpl
+
+fun Page<WorkPackageInvestment>.toWorkPackageInvestmentDTOPage() = PageImpl(this.content.map { it.toWorkPackageInvestmentDTO() }, this.pageable, this.totalPages.toLong())
+fun WorkPackageInvestment.toWorkPackageInvestmentDTO() = WorkPackageInvestmentDTO(
+    id = id,
+    investmentNumber = investmentNumber,
+    title = title,
+    justificationExplanation = justificationExplanation,
+    justificationTransactionalRelevance = justificationTransactionalRelevance,
+    justificationBenefits = justificationBenefits,
+    justificationPilot = justificationPilot,
+    address = address?.toAddressDTO(),
+    risk = risk,
+    documentation = documentation,
+    ownershipSiteLocation = ownershipSiteLocation,
+    ownershipRetain = ownershipRetain,
+    ownershipMaintenance = ownershipMaintenance)
+
+fun WorkPackageInvestmentDTO.toWorkPackageInvestment() = WorkPackageInvestment(
+    id = id,
+    investmentNumber = investmentNumber,
+    title = title,
+    justificationExplanation = justificationExplanation,
+    justificationTransactionalRelevance = justificationTransactionalRelevance,
+    justificationBenefits = justificationBenefits,
+    justificationPilot = justificationPilot,
+    address = address?.toAddress(),
+    risk = risk,
+    documentation = documentation,
+    ownershipSiteLocation = ownershipSiteLocation,
+    ownershipRetain = ownershipRetain,
+    ownershipMaintenance = ownershipMaintenance)
 
 fun WorkPackageOutputUpdateDTO.toWorkPackageOutputUpdate() = WorkPackageOutputUpdate(
     outputNumber = outputNumber,
@@ -27,3 +64,5 @@ fun Set<WorkPackageOutputUpdateDTO>.toWorkPackageOutputUpdateSet() = this.map { 
 
 fun Set<WorkPackageOutput>.toWorkPackageOutputDTOSet() = this.map { it.toWorkPackageOutputDTO() }.toSet()
 
+fun Address.toAddressDTO() = AddressDTO(this.country, this.nutsRegion2, this.nutsRegion3, this.street, this.houseNumber, this.postalCode, this.city)
+fun AddressDTO.toAddress() = Address(this.country, this.nutsRegion2, this.nutsRegion3, this.street, this.houseNumber, this.postalCode, this.city)

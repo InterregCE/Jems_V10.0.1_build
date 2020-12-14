@@ -4,6 +4,7 @@ import io.cloudflight.jems.api.project.dto.workpackage.InputWorkPackageCreate
 import io.cloudflight.jems.api.project.dto.workpackage.InputWorkPackageUpdate
 import io.cloudflight.jems.api.project.dto.workpackage.OutputWorkPackage
 import io.cloudflight.jems.api.project.dto.workpackage.OutputWorkPackageSimple
+import io.cloudflight.jems.api.project.dto.workpackage.workpackageoutput.WorkPackageInvestmentDTO
 import io.cloudflight.jems.api.project.dto.workpackage.workpackageoutput.WorkPackageOutputDTO
 import io.cloudflight.jems.api.project.dto.workpackage.workpackageoutput.WorkPackageOutputUpdateDTO
 import io.swagger.annotations.Api
@@ -20,6 +21,7 @@ import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.PutMapping
 import org.springframework.web.bind.annotation.RequestBody
+import java.util.*
 import javax.validation.Valid
 
 @Api("WorkPackage")
@@ -62,4 +64,37 @@ interface WorkPackageApi {
         @PathVariable id: Long,
         @Valid @RequestBody workPackageOutputUpdateDTO: Set<WorkPackageOutputUpdateDTO>
     ): Set<WorkPackageOutputDTO>
+
+    @ApiOperation("Returns investment for the work package")
+    @GetMapping("{id}/investments/{investmentId}")
+    fun getWorkPackageInvestment(@PathVariable projectId: Long, @PathVariable id: Long, @PathVariable investmentId: UUID): WorkPackageInvestmentDTO
+
+    @ApiOperation("Returns one page of investments for the work package")
+    @GetMapping("/{id}/investments")
+    fun getWorkPackageInvestments(@PathVariable projectId: Long, @PathVariable id: Long, pageable: Pageable): Page<WorkPackageInvestmentDTO>
+
+    @ApiOperation("Adds Investment to the work package")
+    @PostMapping("/{id}/investments", consumes = [MediaType.APPLICATION_JSON_VALUE])
+    fun addWorkPackageInvestment(
+        @PathVariable projectId: Long,
+        @PathVariable id: Long,
+        @Valid @RequestBody workPackageInvestmentDTO: WorkPackageInvestmentDTO
+    ): UUID
+
+    @ApiOperation("Update Investment of the work package")
+    @PutMapping("/{id}/investments", consumes = [MediaType.APPLICATION_JSON_VALUE])
+    fun updateWorkPackageInvestment(
+        @PathVariable projectId: Long,
+        @PathVariable id: Long,
+        @Valid @RequestBody workPackageInvestmentDTO: WorkPackageInvestmentDTO
+    )
+
+    @ApiOperation("Delete Investment of the work package")
+    @DeleteMapping("/{id}/investments/{investmentId}", consumes = [MediaType.APPLICATION_JSON_VALUE])
+    fun deleteWorkPackageInvestment(
+        @PathVariable projectId: Long,
+        @PathVariable id: Long,
+        @PathVariable investmentId: UUID
+    )
+
 }
