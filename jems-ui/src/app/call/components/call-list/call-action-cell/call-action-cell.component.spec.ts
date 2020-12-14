@@ -38,6 +38,8 @@ describe('CallActionCellComponent', () => {
       description = 'test';
       lengthOfPeriod = 1;
       flatRates = {} as FlatRateSetupDTO;
+      lumpSums = [];
+      unitCosts = [];
     } ();
 
     tick();
@@ -55,6 +57,8 @@ describe('CallActionCellComponent', () => {
       description = 'test';
       lengthOfPeriod = 1;
       flatRates = {} as FlatRateSetupDTO;
+      lumpSums = [];
+      unitCosts = [];
     } ();
 
     tick();

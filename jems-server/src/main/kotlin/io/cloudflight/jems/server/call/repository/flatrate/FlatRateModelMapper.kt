@@ -1,4 +1,4 @@
-package io.cloudflight.jems.server.call.repository
+package io.cloudflight.jems.server.call.repository.flatrate
 
 import io.cloudflight.jems.server.call.entity.ProjectCallFlatRateEntity
 import io.cloudflight.jems.server.call.entity.FlatRateSetupId

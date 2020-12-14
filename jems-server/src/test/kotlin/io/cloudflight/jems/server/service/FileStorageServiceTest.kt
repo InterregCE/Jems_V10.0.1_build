@@ -13,7 +13,7 @@ import io.cloudflight.jems.server.project.entity.file.FileMetadata
 import io.cloudflight.jems.server.audit.entity.AuditAction
 import io.cloudflight.jems.server.audit.service.AuditCandidate
 import io.cloudflight.jems.server.audit.service.AuditService
-import io.cloudflight.jems.server.call.entity.Call
+import io.cloudflight.jems.server.call.entity.CallEntity
 import io.cloudflight.jems.server.project.entity.Project
 import io.cloudflight.jems.server.project.entity.file.ProjectFile
 import io.cloudflight.jems.server.project.entity.ProjectStatus
@@ -84,7 +84,7 @@ class FileStorageServiceTest {
             userRole = UserRole(id = 1, name = "ADMIN"),
             password = "hash_pass"
     )
-    private val dummyCall = Call(
+    private val dummyCall = CallEntity(
         id = 5,
         creator = account,
         name = "call",

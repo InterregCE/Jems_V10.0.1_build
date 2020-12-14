@@ -8,6 +8,7 @@ import io.cloudflight.jems.api.call.dto.OutputCallList
 import io.cloudflight.jems.api.call.dto.flatrate.FlatRateSetupDTO
 import io.cloudflight.jems.server.call.service.CallService
 import io.cloudflight.jems.server.call.service.flatrate.update_flat_rate_setup.UpdateFlatRateSetupInteractor
+import io.cloudflight.jems.server.call.service.costoption.update_call_cost_options.UpdateCallCostOptionsInteractor
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
 import org.springframework.security.access.prepost.PreAuthorize
@@ -16,7 +17,8 @@ import org.springframework.web.bind.annotation.RestController
 @RestController
 class CallController(
     private val callService: CallService,
-    private val updateFlatRateSetup: UpdateFlatRateSetupInteractor
+    private val updateFlatRateSetup: UpdateFlatRateSetupInteractor,
+    private val updateCostOption: UpdateCallCostOptionsInteractor,
 ) : CallApi {
 
     /**
@@ -51,5 +53,11 @@ class CallController(
 
     override fun updateCallFlatRateSetup(callId: Long, flatRateSetup: FlatRateSetupDTO) =
         updateFlatRateSetup.updateFlatRateSetup(callId, flatRateSetup.toModel())
+
+    override fun updateCallLumpSums(callId: Long, lumpSumIds: Set<Long>) =
+        updateCostOption.updateLumpSums(callId, lumpSumIds)
+
+    override fun updateCallUnitCosts(callId: Long, unitCostIds: Set<Long>) =
+        updateCostOption.updateUnitCosts(callId, unitCostIds)
 
 }

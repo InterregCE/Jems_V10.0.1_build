@@ -2,7 +2,7 @@ package io.cloudflight.jems.server.project.service.partner
 
 import io.cloudflight.jems.api.call.dto.CallStatus
 import io.cloudflight.jems.api.project.dto.status.ProjectApplicationStatus
-import io.cloudflight.jems.server.call.entity.Call
+import io.cloudflight.jems.server.call.entity.CallEntity
 import io.cloudflight.jems.server.project.entity.Project
 import io.cloudflight.jems.server.project.entity.ProjectStatus
 import io.cloudflight.jems.server.user.entity.User
@@ -22,7 +22,7 @@ class ProjectPartnerTestUtil {
             surname = "Surname",
             userRole = userRole)
 
-        val call = Call(
+        val call = CallEntity(
             id = 1,
             creator = user,
             name = "call",

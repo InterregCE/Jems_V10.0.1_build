@@ -10,11 +10,11 @@ import io.cloudflight.jems.api.programme.dto.priority.ProgrammeObjectivePolicy
 import io.cloudflight.jems.api.programme.dto.strategy.ProgrammeStrategy
 import io.cloudflight.jems.server.audit.entity.AuditAction
 import io.cloudflight.jems.server.audit.service.AuditBuilder
-import io.cloudflight.jems.server.call.entity.Call
+import io.cloudflight.jems.server.call.entity.CallEntity
 import io.cloudflight.jems.server.common.exception.I18nFieldError
 import io.cloudflight.jems.server.common.exception.I18nValidationException
 import io.cloudflight.jems.server.common.exception.ResourceNotFoundException
-import io.cloudflight.jems.server.call.repository.CallRepository
+import io.cloudflight.jems.server.call.repository.flatrate.CallRepository
 import io.cloudflight.jems.server.programme.entity.ProgrammePriorityPolicy
 import io.cloudflight.jems.server.programme.repository.ProgrammePriorityPolicyRepository
 import io.cloudflight.jems.server.programme.service.toOutputProgrammePriorityPolicy
@@ -100,7 +100,7 @@ class CallServiceImpl(
         return callRepository.save(toUpdate).toOutputCall()
     }
 
-    private fun getCallNameIfUnique(oldCall: Call, newName: String): String {
+    private fun getCallNameIfUnique(oldCall: CallEntity, newName: String): String {
         if (oldCall.name == newName)
             return oldCall.name
 
@@ -163,7 +163,7 @@ class CallServiceImpl(
         return updatedCall
     }
 
-    private fun validateIsDraft(call: Call) {
+    private fun validateIsDraft(call: CallEntity) {
         if (call.status != CallStatus.DRAFT)
             throw I18nValidationException(
                 httpStatus = HttpStatus.UNPROCESSABLE_ENTITY,
@@ -171,7 +171,7 @@ class CallServiceImpl(
             )
     }
 
-    private fun validatePublishingRequirementsAchieved(call: Call) {
+    private fun validatePublishingRequirementsAchieved(call: CallEntity) {
         if (call.priorityPolicies.isEmpty())
             throw I18nValidationException(
                 httpStatus = HttpStatus.UNPROCESSABLE_ENTITY,

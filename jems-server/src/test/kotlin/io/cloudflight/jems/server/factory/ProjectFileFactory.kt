@@ -2,7 +2,7 @@ package io.cloudflight.jems.server.factory
 
 import io.cloudflight.jems.api.project.dto.status.ProjectApplicationStatus
 import io.cloudflight.jems.api.project.dto.file.ProjectFileType
-import io.cloudflight.jems.server.call.entity.Call
+import io.cloudflight.jems.server.call.entity.CallEntity
 import io.cloudflight.jems.server.user.entity.User
 import io.cloudflight.jems.server.project.entity.Project
 import io.cloudflight.jems.server.project.entity.file.ProjectFile
@@ -25,7 +25,7 @@ class ProjectFileFactory(
     val callEnd = ZonedDateTime.now().plusDays(20)
 
     @Transactional
-    fun saveProject(author: User, call: Call): Project {
+    fun saveProject(author: User, call: CallEntity): Project {
         val projectStatus = projectStatusRepository.save(ProjectStatus(0, null, ProjectApplicationStatus.DRAFT, author, ZonedDateTime.now(), null))
         return projectRepository.save(
             Project(

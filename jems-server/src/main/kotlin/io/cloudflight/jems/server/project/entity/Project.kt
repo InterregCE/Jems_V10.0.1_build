@@ -1,10 +1,9 @@
 package io.cloudflight.jems.server.project.entity
 
-import io.cloudflight.jems.server.call.entity.Call
+import io.cloudflight.jems.server.call.entity.CallEntity
 import io.cloudflight.jems.server.programme.entity.ProgrammePriorityPolicy
 import io.cloudflight.jems.server.user.entity.User
 import javax.persistence.CascadeType
-import javax.persistence.Column
 import javax.persistence.Embedded
 import javax.persistence.Entity
 import javax.persistence.FetchType
@@ -27,7 +26,7 @@ data class Project(
     @ManyToOne(optional = false, fetch = FetchType.LAZY)
     @JoinColumn(name = "project_call_id")
     @field:NotNull
-    val call: Call,
+    val call: CallEntity,
 
     @ManyToOne(optional = true, fetch = FetchType.LAZY)
     @JoinColumn(name = "programme_priority_policy_objective_policy")

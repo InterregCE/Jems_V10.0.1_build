@@ -59,4 +59,19 @@ interface CallApi {
         @PathVariable callId: Long,
         @RequestBody flatRateSetup: FlatRateSetupDTO
     )
+
+    @ApiOperation("Setup LumpSums available for Call")
+    @PutMapping("/{callId}/lumpSum", consumes = [MediaType.APPLICATION_JSON_VALUE])
+    fun updateCallLumpSums(
+        @PathVariable callId: Long,
+        @RequestBody lumpSumIds: Set<Long>
+    )
+
+    @ApiOperation("Setup UnitCosts available for Call")
+    @PutMapping("/{callId}/unitCost", consumes = [MediaType.APPLICATION_JSON_VALUE])
+    fun updateCallUnitCosts(
+        @PathVariable callId: Long,
+        @RequestBody unitCostIds: Set<Long>
+    )
+
 }

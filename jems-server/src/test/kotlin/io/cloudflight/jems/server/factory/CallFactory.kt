@@ -1,9 +1,9 @@
 package io.cloudflight.jems.server.factory
 
 import io.cloudflight.jems.api.call.dto.CallStatus
-import io.cloudflight.jems.server.call.entity.Call
+import io.cloudflight.jems.server.call.entity.CallEntity
 import io.cloudflight.jems.server.user.entity.User
-import io.cloudflight.jems.server.call.repository.CallRepository
+import io.cloudflight.jems.server.call.repository.flatrate.CallRepository
 import org.springframework.stereotype.Component
 import java.time.ZonedDateTime
 import javax.transaction.Transactional
@@ -19,12 +19,12 @@ class CallFactory(
     val callEnd = ZonedDateTime.now().plusDays(20)
 
     @Transactional
-    fun savePublishedCallWithoutPolicy(user: User): Call {
+    fun savePublishedCallWithoutPolicy(user: User): CallEntity {
         val call = callRepository.findOneByName(callName)
         if (call != null)
             return call
         return callRepository.save(
-            Call(
+            CallEntity(
                 0,
                 user,
                 callName,
