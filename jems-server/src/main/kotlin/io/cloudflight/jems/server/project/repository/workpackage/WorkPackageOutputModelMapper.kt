@@ -12,7 +12,6 @@ import io.cloudflight.jems.server.project.service.workpackage.model.WorkPackageI
 import io.cloudflight.jems.server.project.service.workpackage.model.WorkPackageOutput
 import io.cloudflight.jems.server.project.service.workpackage.model.WorkPackageOutputUpdate
 import org.springframework.data.domain.Page
-import org.springframework.data.domain.PageImpl
 
 
 fun WorkPackageOutputUpdate.toEntity(
@@ -41,7 +40,7 @@ fun WorkPackageOutputEntity.toWorkPackageOutput() = WorkPackageOutput(
 fun Set<WorkPackageOutputEntity>.toWorkPackageOutputSet() =
     this.map { it.toWorkPackageOutput() }.sortedBy { it.outputNumber }.toSet()
 
-fun Page<WorkPackageInvestmentEntity>.toWorkPackageInvestmentPage() = PageImpl(this.content.map { it.toWorkPackageInvestment() }, this.pageable, this.totalPages.toLong())
+fun Page<WorkPackageInvestmentEntity>.toWorkPackageInvestmentPage() = this.map { it.toWorkPackageInvestment() }
 
 fun WorkPackageInvestmentEntity.toWorkPackageInvestment() = WorkPackageInvestment(
     id = id,

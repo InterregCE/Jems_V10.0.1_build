@@ -9,9 +9,8 @@ import io.cloudflight.jems.server.project.service.workpackage.model.WorkPackageI
 import io.cloudflight.jems.server.project.service.workpackage.model.WorkPackageOutput
 import io.cloudflight.jems.server.project.service.workpackage.model.WorkPackageOutputUpdate
 import org.springframework.data.domain.Page
-import org.springframework.data.domain.PageImpl
 
-fun Page<WorkPackageInvestment>.toWorkPackageInvestmentDTOPage() = PageImpl(this.content.map { it.toWorkPackageInvestmentDTO() }, this.pageable, this.totalPages.toLong())
+fun Page<WorkPackageInvestment>.toWorkPackageInvestmentDTOPage() = this.map { it.toWorkPackageInvestmentDTO() }
 fun WorkPackageInvestment.toWorkPackageInvestmentDTO() = WorkPackageInvestmentDTO(
     id = id,
     investmentNumber = investmentNumber,
@@ -25,7 +24,8 @@ fun WorkPackageInvestment.toWorkPackageInvestmentDTO() = WorkPackageInvestmentDT
     documentation = documentation,
     ownershipSiteLocation = ownershipSiteLocation,
     ownershipRetain = ownershipRetain,
-    ownershipMaintenance = ownershipMaintenance)
+    ownershipMaintenance = ownershipMaintenance
+)
 
 fun WorkPackageInvestmentDTO.toWorkPackageInvestment() = WorkPackageInvestment(
     id = id,
@@ -40,7 +40,8 @@ fun WorkPackageInvestmentDTO.toWorkPackageInvestment() = WorkPackageInvestment(
     documentation = documentation,
     ownershipSiteLocation = ownershipSiteLocation,
     ownershipRetain = ownershipRetain,
-    ownershipMaintenance = ownershipMaintenance)
+    ownershipMaintenance = ownershipMaintenance
+)
 
 fun WorkPackageOutputUpdateDTO.toWorkPackageOutputUpdate() = WorkPackageOutputUpdate(
     outputNumber = outputNumber,
@@ -64,5 +65,15 @@ fun Set<WorkPackageOutputUpdateDTO>.toWorkPackageOutputUpdateSet() = this.map { 
 
 fun Set<WorkPackageOutput>.toWorkPackageOutputDTOSet() = this.map { it.toWorkPackageOutputDTO() }.toSet()
 
-fun Address.toAddressDTO() = AddressDTO(this.country, this.nutsRegion2, this.nutsRegion3, this.street, this.houseNumber, this.postalCode, this.city)
-fun AddressDTO.toAddress() = Address(this.country, this.nutsRegion2, this.nutsRegion3, this.street, this.houseNumber, this.postalCode, this.city)
+fun Address.toAddressDTO() = AddressDTO(
+    this.country,
+    this.nutsRegion2,
+    this.nutsRegion3,
+    this.street,
+    this.houseNumber,
+    this.postalCode,
+    this.city
+)
+
+fun AddressDTO.toAddress() =
+    Address(this.country, this.nutsRegion2, this.nutsRegion3, this.street, this.houseNumber, this.postalCode, this.city)

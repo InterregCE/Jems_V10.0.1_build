@@ -58,7 +58,7 @@ class WorkPackagePersistenceProvider(
         workPackageInvestmentRepository.findById(workPackageInvestmentId)
             .orElseThrow { ResourceNotFoundException("WorkPackageInvestmentEntity") }.toWorkPackageInvestment()
 
-    @Transactional
+    @Transactional(readOnly = true)
     override fun getWorkPackageInvestments(workPackageId: Long, pageable: Pageable) =
         workPackageInvestmentRepository.findAllByWorkPackageId(workPackageId, pageable).toWorkPackageInvestmentPage()
 
