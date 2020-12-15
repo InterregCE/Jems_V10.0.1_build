@@ -1,11 +1,12 @@
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import {async, ComponentFixture, TestBed} from '@angular/core/testing';
 
-import { ProjectApplicationFormWorkPackageOutputComponent } from './project-application-form-work-package-output.component';
-import {TestModule} from '../../../../../../common/test-module';
-import {ProjectModule} from '../../../../../project.module';
+import {ProjectApplicationFormWorkPackageOutputComponent} from './project-application-form-work-package-output.component';
+import {TestModule} from '../../../../common/test-module';
+import {ProjectModule} from '../../../project.module';
 import {RouterTestingModule} from '@angular/router/testing';
 import {HttpTestingController} from '@angular/common/http/testing';
 import {ActivatedRoute} from '@angular/router';
+import {ProjectWorkPackagePageStore} from '../project-work-package-page-store.service';
 
 describe('ProjectApplicationFormWorkPackageOutputComponent', () => {
   let component: ProjectApplicationFormWorkPackageOutputComponent;
@@ -18,11 +19,15 @@ describe('ProjectApplicationFormWorkPackageOutputComponent', () => {
         TestModule,
         ProjectModule,
         RouterTestingModule.withRoutes(
-          [{path: 'app/project/detail/1/applicationFormWorkPackage/detail/1', component: ProjectApplicationFormWorkPackageOutputComponent}])
+          [{
+            path: 'app/project/detail/1/applicationFormWorkPackage/detail/1',
+            component: ProjectApplicationFormWorkPackageOutputComponent
+          }])
       ],
-      declarations: [ ProjectApplicationFormWorkPackageOutputComponent ]
+      declarations: [ProjectApplicationFormWorkPackageOutputComponent],
+      providers: [ProjectWorkPackagePageStore]
     })
-    .compileComponents();
+      .compileComponents();
     httpTestingController = TestBed.inject(HttpTestingController);
     const activatedRoute = TestBed.inject(ActivatedRoute);
     activatedRoute.snapshot.params = {projectId: '1', workPackageId: '1'};

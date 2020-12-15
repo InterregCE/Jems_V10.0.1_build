@@ -1,39 +1,29 @@
 import {
   ChangeDetectionStrategy,
   Component,
-  EventEmitter,
   Input,
   OnChanges,
   OnInit,
-  Output,
   SimpleChanges
 } from '@angular/core';
 import {FormBuilder, FormGroup, Validators} from '@angular/forms';
-import {InputWorkPackageCreate, InputWorkPackageUpdate, OutputWorkPackage} from '@cat/api';
-import {ActivatedRoute, Router} from '@angular/router';
+import {OutputWorkPackage} from '@cat/api';
+import {Router} from '@angular/router';
 import {FormService} from '@common/components/section/form/form.service';
 import {BaseComponent} from '@common/components/base-component';
-import {Observable} from 'rxjs';
-import {HttpErrorResponse} from '@angular/common/http';
-import {catchError, take, takeUntil, tap} from 'rxjs/operators';
-import {ProjectWorkpackageStoreService} from '../../../containers/project-application-form-page/services/project-workpackage-store.service';
-import {Log} from '../../../../../common/utils/log';
-import {ProjectApplicationFormSidenavService} from '../../../containers/project-application-form-page/services/project-application-form-sidenav.service';
+import {catchError, take, tap} from 'rxjs/operators';
+import {Log} from '../../../../common/utils/log';
+import {ProjectApplicationFormSidenavService} from '../../../project-application/containers/project-application-form-page/services/project-application-form-sidenav.service';
+import {ProjectWorkPackagePageStore} from '../project-work-package-page-store.service';
 
 @Component({
-  selector: 'app-project-application-form-work-package-detail',
-  templateUrl: './project-application-form-work-package-detail.component.html',
-  styleUrls: ['./project-application-form-work-package-detail.component.scss'],
+  selector: 'app-project-work-package-objectives-tab',
+  templateUrl: './project-work-package-objectives-tab.component.html',
+  styleUrls: ['./project-work-package-objectives-tab.component.scss'],
   providers: [FormService],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class ProjectApplicationFormWorkPackageDetailComponent extends BaseComponent implements OnInit, OnChanges {
-
-  // TODO: remove these and adapt the component to save independently
-  @Input()
-  error$: Observable<HttpErrorResponse | null>;
-  @Input()
-  success$: Observable<any>;
+export class ProjectWorkPackageObjectivesTabComponent extends BaseComponent implements OnInit, OnChanges {
 
   @Input()
   workPackage: OutputWorkPackage;
@@ -41,12 +31,6 @@ export class ProjectApplicationFormWorkPackageDetailComponent extends BaseCompon
   editable: boolean;
   @Input()
   projectId: number;
-  @Output()
-  updateData = new EventEmitter<InputWorkPackageUpdate>();
-  @Output()
-  createData = new EventEmitter<InputWorkPackageCreate>();
-  @Output()
-  cancel = new EventEmitter<void>();
 
   workPackageNumber: number;
 
@@ -70,7 +54,7 @@ export class ProjectApplicationFormWorkPackageDetailComponent extends BaseCompon
   constructor(private formBuilder: FormBuilder,
               private formService: FormService,
               private router: Router,
-              public workPackageStore: ProjectWorkpackageStoreService,
+              public workPackageStore: ProjectWorkPackagePageStore,
               private projectApplicationFormSidenavService: ProjectApplicationFormSidenavService) {
     super();
   }
@@ -109,7 +93,7 @@ export class ProjectApplicationFormWorkPackageDetailComponent extends BaseCompon
     this.workPackageStore.saveWorkPackage({
       ...workPackage,
       id: this.workPackage.id
-  })
+    })
       .pipe(
         take(1),
         tap(() => this.formService.setSuccess('project.application.form.workpackage.save.success')),

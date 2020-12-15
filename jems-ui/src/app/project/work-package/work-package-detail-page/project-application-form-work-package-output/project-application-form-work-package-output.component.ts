@@ -2,13 +2,13 @@ import {ChangeDetectionStrategy, Component, EventEmitter, Input} from '@angular/
 import {combineLatest, merge, Subject} from 'rxjs';
 import {HttpErrorResponse} from '@angular/common/http';
 import {ActivatedRoute, Router} from '@angular/router';
-import {ProjectStore} from '../../../project-application-detail/services/project-store.service';
-import {ProjectApplicationFormSidenavService} from '../../services/project-application-form-sidenav.service';
+import {ProjectStore} from '../../../project-application/containers/project-application-detail/services/project-store.service';
+import {ProjectApplicationFormSidenavService} from '../../../project-application/containers/project-application-form-page/services/project-application-form-sidenav.service';
 import {BaseComponent} from '@common/components/base-component';
 import {WorkPackageOutputUpdateDTO, WorkPackageService, ProgrammeIndicatorService} from '@cat/api';
 import {catchError, distinctUntilChanged, filter, map, mergeMap, tap, withLatestFrom} from 'rxjs/operators';
-import {Log} from '../../../../../../common/utils/log';
-import {ProjectWorkpackageStoreService} from '../../services/project-workpackage-store.service';
+import {Log} from '../../../../common/utils/log';
+import {ProjectWorkPackagePageStore} from '../project-work-package-page-store.service';
 
 @Component({
   selector: 'app-project-application-form-work-package-output',
@@ -64,7 +64,7 @@ export class ProjectApplicationFormWorkPackageOutputComponent extends BaseCompon
   constructor(private workPackageService: WorkPackageService,
               private activatedRoute: ActivatedRoute,
               public projectStore: ProjectStore,
-              public workPackageStore: ProjectWorkpackageStoreService,
+              public workPackageStore: ProjectWorkPackagePageStore,
               private projectApplicationFormSidenavService: ProjectApplicationFormSidenavService,
               private router: Router,
               private programmeIndicatorService: ProgrammeIndicatorService) {
