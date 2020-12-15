@@ -5,7 +5,6 @@ import {ProjectApplicationQualityCheckComponent} from './project-application/com
 import {ProjectApplicationEligibilityCheckComponent} from './project-application/components/project-application-detail/project-application-eligibility-check/project-application-eligibility-check.component';
 import {ProjectApplicationFundingPageComponent} from './project-application/containers/project-application-detail/project-application-funding-page/project-application-funding-page.component';
 import {ProjectApplicationEligibilityDecisionPageComponent} from './project-application/containers/project-application-detail/project-application-eligibility-decision-page/project-application-eligibility-decision-page.component';
-import {WorkPackageDetailsComponent} from './project-application/containers/project-application-form-page/project-application-form-work-package-section/work-package-details/work-package-details.component';
 import {ProjectPartnerDetailPageComponent} from './partner/project-partner-detail-page/project-partner-detail-page.component';
 import {ProjectAcronymResolver} from './project-application/containers/project-application-detail/services/project-acronym.resolver';
 import {PermissionGuard} from '../security/permission.guard';
@@ -23,7 +22,7 @@ import {ProjectApplicationFormWorkPackageSectionComponent} from './project-appli
 import {ProjectApplicationFormFuturePlansSectionComponent} from './project-application/containers/project-application-form-page/project-application-form-future-plans-section/project-application-form-future-plans-section.component';
 import {ProjectApplicationFormManagementSectionComponent} from './project-application/containers/project-application-form-page/project-application-form-management-section/project-application-form-management-section.component';
 import {BudgetPageComponent} from './budget/budget-page/budget-page.component';
-import {ProjectApplicationFormWorkPackageObjectivesComponent} from './project-application/containers/project-application-form-page/project-application-form-work-package-section/project-application-form-work-package-objectives/project-application-form-work-package-objectives.component';
+import {ProjectWorkPackageDetailPageComponent} from './work-package/work-package-detail-page/project-work-package-detail-page.component';
 
 export const routes: Routes = [
   {
@@ -163,12 +162,12 @@ export const routes: Routes = [
               },
               {
                 path: 'create',
-                component: ProjectApplicationFormWorkPackageObjectivesComponent,
+                component: ProjectWorkPackageDetailPageComponent,
                 data: {breadcrumb: 'project.breadcrumb.workPackageCreate'},
               },
               {
                 path: 'detail/:workPackageId',
-                component: WorkPackageDetailsComponent,
+                component: ProjectWorkPackageDetailPageComponent,
                 data: {breadcrumb: 'project.breadcrumb.workPackageName'},
               }
             ]

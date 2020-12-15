@@ -1,19 +1,12 @@
 import {Injectable} from '@angular/core';
-import {
-  InputWorkPackageCreate,
-  InputWorkPackageUpdate,
-  OutputWorkPackage,
-  WorkPackageService
-} from '@cat/api';
+import {InputWorkPackageCreate, InputWorkPackageUpdate, OutputWorkPackage, WorkPackageService} from '@cat/api';
 import {Observable, ReplaySubject, Subject} from 'rxjs';
-import {
-  tap
-} from 'rxjs/operators';
-import {Log} from '../../../../../common/utils/log';
-import {ProjectApplicationFormSidenavService} from './project-application-form-sidenav.service';
+import {tap} from 'rxjs/operators';
+import {Log} from '../../../common/utils/log';
+import {ProjectApplicationFormSidenavService} from '../../project-application/containers/project-application-form-page/services/project-application-form-sidenav.service';
 
 @Injectable()
-export class ProjectWorkpackageStoreService {
+export class ProjectWorkPackagePageStore {
 
   private workPackageId: number;
   private projectId: number;
@@ -26,7 +19,7 @@ export class ProjectWorkpackageStoreService {
   }
 
   init(workPackageId: number | string | null, projectId: number): void {
-    if (workPackageId === this.workPackageId) {
+    if (workPackageId && workPackageId === this.workPackageId) {
       return;
     }
     this.workPackageId = Number(workPackageId);

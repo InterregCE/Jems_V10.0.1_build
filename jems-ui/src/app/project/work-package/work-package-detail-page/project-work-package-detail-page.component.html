@@ -1,0 +1,37 @@
+<div *ngIf="workPackageStore.workPackage$ | async as workPackage">
+    <app-breadcrumb></app-breadcrumb>
+    <h5 class="header">
+        {{'project.application.form.workpackage.form.header' | translate}}
+        {{workPackage.number}}
+    </h5>
+
+    <mat-tab-group
+            *ngIf="workPackageId" class="workpackage-tab-menu"
+            (selectedIndexChange)="changeTab($event)"
+            [selectedIndex]="activeTab$ | async">
+        <mat-tab label="{{'workpackage.tab.objectives' | translate}}">
+            <app-project-work-package-objectives-tab
+                    [workPackage]="workPackage"
+                    [editable]="projectStore.projectEditable$ | async"
+                    [projectId]="projectId">
+            </app-project-work-package-objectives-tab>
+        </mat-tab>
+        <mat-tab label="{{'workpackage.tab.outputs' | translate}}">
+            <app-project-application-form-work-package-output></app-project-application-form-work-package-output>
+        </mat-tab>
+        <mat-tab label="{{'workpackage.tab.activities' | translate}}">
+            <div></div>
+        </mat-tab>
+        <mat-tab label="{{'workpackage.tab.investment' | translate}}">
+            <div></div>
+        </mat-tab>
+    </mat-tab-group>
+
+    <app-project-work-package-objectives-tab
+            *ngIf="!workPackageId"
+            [workPackage]="workPackage"
+            [editable]="projectStore.projectEditable$ | async"
+            [projectId]="projectId">
+    </app-project-work-package-objectives-tab>
+</div>
+

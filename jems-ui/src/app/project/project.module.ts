@@ -25,8 +25,6 @@ import {ProjectApplicationEligibilityDecisionPageComponent} from './project-appl
 import {ProjectApplicationFormComponent} from './project-application/components/project-application-form/project-application-form.component';
 import {ProjectApplicationFormPolicyRadioButtonComponent} from './project-application/components/project-application-form/project-application-form-policy-radio-button/project-application-form-policy-radio-button.component';
 import {ProjectApplicationFormWorkPackagesListComponent} from './project-application/components/project-application-form/project-application-form-work-packages-list/project-application-form-work-packages-list.component';
-import {ProjectApplicationFormWorkPackageDetailComponent} from './project-application/components/project-application-form/project-application-form-work-package-detail/project-application-form-work-package-detail.component';
-import {WorkPackageDetailsComponent} from './project-application/containers/project-application-form-page/project-application-form-work-package-section/work-package-details/work-package-details.component';
 import {ProjectApplicationFormWorkPackageSectionComponent} from './project-application/containers/project-application-form-page/project-application-form-work-package-section/project-application-form-work-package-section.component';
 import {ProjectApplicationFormPartnerSectionComponent} from './project-application/containers/project-application-form-page/project-application-form-partner-section/project-application-form-partner-section.component';
 import {ProjectApplicationFormPartnerListComponent} from './project-application/components/project-application-form/project-application-form-partner-list/project-application-form-partner-list.component';
@@ -78,12 +76,12 @@ import {ProjectPartnerCoFinancingComponent} from './partner/project-partner-deta
 import {ProjectPartnerDetailPageComponent} from './partner/project-partner-detail-page/project-partner-detail-page.component';
 import {ProjectPartnerCoFinancingTabComponent} from './partner/project-partner-detail-page/project-partner-co-financing-tab/project-partner-co-financing-tab.component';
 import {BudgetPageComponent} from './budget/budget-page/budget-page.component';
-import { ProjectApplicationFormWorkPackageObjectivesComponent } from './project-application/containers/project-application-form-page/project-application-form-work-package-section/project-application-form-work-package-objectives/project-application-form-work-package-objectives.component';
-import {ProjectWorkpackageStoreService} from './project-application/containers/project-application-form-page/services/project-workpackage-store.service';
-import { ProjectApplicationFormWorkPackageOutputComponent } from './project-application/containers/project-application-form-page/project-application-form-work-package-section/project-application-form-work-package-output/project-application-form-work-package-output.component';
-import { ProjectApplicationFormWorkPackageOutputsComponent } from './project-application/components/project-application-form/project-application-form-work-package-outputs/project-application-form-work-package-outputs.component';
-import { WorkPackageOutputTableComponent } from './project-application/components/project-application-form/project-application-form-work-package-outputs/tables/work-package-output-table/work-package-output-table.component';
-import { TravelAndAccommodationFlatRateTableComponent } from './partner/project-partner-detail-page/project-partner-budget-tab/project-partner-budget/travel-and-accommodation-flat-rate-table/travel-and-accommodation-flat-rate-table.component';
+import {ProjectApplicationFormWorkPackageOutputComponent} from './work-package/work-package-detail-page/project-application-form-work-package-output/project-application-form-work-package-output.component';
+import {ProjectApplicationFormWorkPackageOutputsComponent} from './project-application/components/project-application-form/project-application-form-work-package-outputs/project-application-form-work-package-outputs.component';
+import {WorkPackageOutputTableComponent} from './project-application/components/project-application-form/project-application-form-work-package-outputs/tables/work-package-output-table/work-package-output-table.component';
+import {TravelAndAccommodationFlatRateTableComponent} from './partner/project-partner-detail-page/project-partner-budget-tab/project-partner-budget/travel-and-accommodation-flat-rate-table/travel-and-accommodation-flat-rate-table.component';
+import {ProjectWorkPackageObjectivesTabComponent} from './work-package/work-package-detail-page/project-work-package-objectives-tab/project-work-package-objectives-tab.component';
+import {ProjectWorkPackageDetailPageComponent} from './work-package/work-package-detail-page/project-work-package-detail-page.component';
 
 @NgModule({
   declarations: [
@@ -114,8 +112,8 @@ import { TravelAndAccommodationFlatRateTableComponent } from './partner/project-
     ProjectPartnerDetailPageComponent,
     ProjectApplicationFormPartnerEditComponent,
     ProjectApplicationFormWorkPackagesListComponent,
-    ProjectApplicationFormWorkPackageDetailComponent,
-    WorkPackageDetailsComponent,
+    ProjectWorkPackageObjectivesTabComponent,
+    ProjectWorkPackageDetailPageComponent,
     ProjectApplicationFormWorkPackageSectionComponent,
     ProjectApplicationFormManagementSectionComponent,
     ProjectApplicationFormFuturePlansSectionComponent,
@@ -157,7 +155,6 @@ import { TravelAndAccommodationFlatRateTableComponent } from './partner/project-
     StaffCostsFlatRateTableComponent,
     ProjectApplicationFormAddressComponent,
     BudgetPageComponent,
-    ProjectApplicationFormWorkPackageObjectivesComponent,
     ProjectApplicationFormWorkPackageOutputComponent,
     ProjectApplicationFormWorkPackageOutputsComponent,
     WorkPackageOutputTableComponent,
@@ -179,8 +176,7 @@ import { TravelAndAccommodationFlatRateTableComponent } from './partner/project-
     ProjectApplicationFormStore,
     ProjectAcronymResolver,
     ProjectPartnerStore,
-    ProjectAssociatedOrganizationStore,
-    ProjectWorkpackageStoreService
+    ProjectAssociatedOrganizationStore
   ]
 })
 export class ProjectModule {
