@@ -46,7 +46,6 @@ export class ProjectPartnerDetailPageStore {
         travelAndAccommodationFlatRate: options.travelFlatRateBasedOnStaffCost
       } as ProjectPartnerBudgetOptionsDto)),
       tap(() => this.updateBudgetOptionsEvent$.next()),
-      tap(() => this.updateBudgetEvent$.next(true)),
       share()
     );
   }
@@ -81,8 +80,8 @@ export class ProjectPartnerDetailPageStore {
   }
 
   private budgets(): Observable<{ [key: string]: PartnerBudgetTable }> {
-    return combineLatest([this.updateBudgetEvent$.pipe(startWith(null)), this.partnerStore.partner$]).pipe(
-      map(([, partner]) => partner),
+    return combineLatest([this.updateBudgetEvent$.pipe(startWith(null)), this.updateBudgetOptionsEvent$.pipe(startWith(null)), this.partnerStore.partner$]).pipe(
+      map(([, , partner]) => partner),
       filter(partner => !!partner.id),
       map(partner => partner.id),
       switchMap(id =>
@@ -140,18 +139,16 @@ export class ProjectPartnerDetailPageStore {
   private getBudgetEntries(table: PartnerBudgetTable): InputBudget[] {
     return table.entries.map(entry => ({
       id: (entry.new ? null : entry.id) as any,
-      description: entry.description?.inputs as any,
+      description: entry.description as any,
       numberOfUnits: entry.numberOfUnits as any,
       pricePerUnit: entry.pricePerUnit as any,
-      rowSum: entry.total
+      rowSum: entry.rowSum
     } as InputBudget));
   }
 
   private getBudgetTable(type: PartnerBudgetTableType, rawEntries: InputBudget[]): PartnerBudgetTable {
-    const entries = rawEntries.map(entry => new PartnerBudgetTableEntry({
-      ...entry,
-      description: this.multiLanguageInputService.initInput((entry as any).description)
-    }));
-    return new PartnerBudgetTable(type, entries);
+    const total = NumberService.truncateNumber(NumberService.sum(rawEntries.map(entry => entry.rowSum || 0)));
+    const entries = rawEntries.map(entry => new PartnerBudgetTableEntry({...entry}));
+    return new PartnerBudgetTable(type, total, entries);
   }
 }

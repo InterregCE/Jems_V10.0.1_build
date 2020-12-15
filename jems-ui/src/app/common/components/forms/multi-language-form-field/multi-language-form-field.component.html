@@ -1,0 +1,10 @@
+<ng-container [formGroup]="multiLanguageFormGroup">
+    <ng-container formArrayName="inputs">
+        <ng-container *ngFor="let formGroup of inputs.controls; let i=index;" [formGroupName]="i">
+            <mat-form-field
+                    *ngIf="isInputHidden(languageService.currentLanguage$ |async , formGroup.get('language').value)">
+                <input formControlName="translation" matInput>
+            </mat-form-field>
+        </ng-container>
+    </ng-container>
+</ng-container>

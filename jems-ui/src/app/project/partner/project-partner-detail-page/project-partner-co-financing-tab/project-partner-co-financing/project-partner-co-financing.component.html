@@ -5,8 +5,8 @@
 
         <p class="intro-text-small mb-3">{{ 'project.partner.coFinancing.intro' | translate }}</p>
 
-        <app-row-list-template [appearance]="'table'"
-                               [columnClassList]="['','max-10-rem','max-5-rem']">
+        <div appTableConfig [appearance]="'table'"
+             [widthConfig]="['','max-10-rem','max-5-rem']">
             <div>
                 <span>{{ 'project.partner.coFinancing.source' | translate }}</span>
                 <span>{{ 'project.partner.coFinancing.amount' | translate }}</span>
@@ -52,7 +52,7 @@
                 <div>{{ this.totalAmount | asMoney }}</div>
                 <div class="text-right">100 %</div>
             </div>
-        </app-row-list-template>
+        </div>
 
 
         <h5 class="mt-5"><span>{{ 'project.partner.coFinancing.contribution.title' | translate }}</span></h5>
@@ -61,8 +61,8 @@
                    [type]="Alert.WARNING">
             <p>{{'project.partner.coFinancing.contribution.total.warning' | translate}}</p>
         </app-alert>
-        <app-row-list-template [appearance]="'table'"
-                               [columnClassList]="['min-5-rem','max-10-rem','max-10-rem','max-10-rem', 'max-2-rem']">
+        <div appTableConfig [appearance]="'table'"
+             [widthConfig]="['min-5-rem','max-10-rem','max-10-rem','max-10-rem', 'max-2-rem']">
             <div>
                 <span class="mat-body-strong">{{ 'project.partner.coFinancing.contribution.source.name' | translate }}</span>
                 <span class="mat-body-strong">{{ 'project.partner.coFinancing.contribution.legal.status' | translate }}</span>
@@ -119,7 +119,7 @@
                     </ng-container>
                 </ng-container>
             </div>
-        </app-row-list-template>
+        </div>
         <mat-error *ngIf="(formService.dirty$ | async)" class="my-3">
             <app-form-field-errors
                     [errors]="partnerContributions.errors"
@@ -132,8 +132,8 @@
             <span>{{ 'project.partner.coFinancing.contribution.add.contribution.origin' | translate }}</span>
         </button>
 
-        <app-row-list-template [appearance]="'table'"
-                               [columnClassList]="['min-5-rem','max-10-rem','max-10-rem', 'max-2-rem']">
+        <div appTableConfig [appearance]="'table'"
+             [widthConfig]="['min-5-rem','max-10-rem','max-10-rem', 'max-2-rem']">
             <div class="hidden"></div>
             <div>
                 <span>{{ 'project.partner.coFinancing.contribution.sub.total.public.contribution' | translate }}</span>
@@ -155,6 +155,6 @@
                 <div class="text-right">{{ (contributionTotal$ | async) | asMoney}}</div>
                 <div class="text-right">{{ (contributionTotal$ | async) | percentage: totalAmount}}</div>
             </div>
-        </app-row-list-template>
+        </div>
     </form>
 </app-form>

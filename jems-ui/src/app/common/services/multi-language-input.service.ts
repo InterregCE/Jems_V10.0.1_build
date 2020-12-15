@@ -65,6 +65,13 @@ export class MultiLanguageInputService {
     return input.inputs.find(trans => trans.language === this.currentLanguage)?.translation || '';
   }
 
+  multiLanguageFormFieldDefaultValue(): InputTranslation[] {
+    return this.languages.map(language => {
+      return {translation: '', language} as InputTranslation;
+    });
+
+  }
+
   private getAvailableInputs(inputs: InputTranslation[]): InputTranslation[] {
     if (!this.languages) {
       return inputs;

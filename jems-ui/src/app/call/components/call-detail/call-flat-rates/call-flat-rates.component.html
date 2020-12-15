@@ -4,10 +4,11 @@
         <h5>
             {{'call.detail.flat.rates' | translate}}
         </h5>
-        <app-row-list-template
+        <div
                 class="my-5"
+                appTableConfig
                 [appearance]="'material-table'"
-                [columnClassList]="['max-3-rem','','max-5-rem','max-10-rem']">
+                [widthConfig]="['max-3-rem','','max-5-rem','max-10-rem']">
             <div>
                 <span>{{'call.detail.flat.rate.table.activate.option' | translate}}</span>
                 <span>{{'call.detail.flat.rate.table.flat.rates' | translate}}</span>
@@ -174,6 +175,6 @@
                         [previousSelection]="otherOnStaffFlatRateType.value">
                 </app-call-flat-rates-toggle-column>
             </div>
-        </app-row-list-template>
+        </div>
     </form>
 </app-form>

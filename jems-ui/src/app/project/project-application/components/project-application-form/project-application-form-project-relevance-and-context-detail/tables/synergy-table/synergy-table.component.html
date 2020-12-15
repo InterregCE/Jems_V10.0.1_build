@@ -1,8 +1,7 @@
 <app-multi-language [inputs]="allInputs">
     <div [formGroup]="formGroup">
-        <app-row-list-template class="align-cells-to-top"
-                               [appearance]="'table'"
-                               [columnClassList]="['column','column', 'max-2-rem']">
+        <div appTableConfig [appearance]="'table'"
+             [widthConfig]="['','', 'max-2-rem']">
             <div>
                 <span class="mat-body-strong">{{'project.application.form.relevance.project.or.initiative' | translate}}</span>
                 <span class="mat-body-strong">{{'project.application.form.relevance.synergy' | translate}}</span>
@@ -55,7 +54,7 @@
                     </ng-container>
                 </ng-container>
             </div>
-        </app-row-list-template>
+        </div>
     </div>
     <button *ngIf="editable" mat-icon-button type="button" (click)="addNewSynergy()">
         <mat-icon>add</mat-icon>
