@@ -48,7 +48,7 @@ export class ProjectApplicationFormWorkPackageSectionComponent {
   }
 
   deleteWorkPackage(workPackageId: number): void {
-    this.workPackageService.deleteWorkPackage(workPackageId, this.projectId)
+    this.workPackageService.deleteWorkPackage(workPackageId)
       .pipe(
         take(1),
         tap(() => this.newPageIndex$.next(Tables.DEFAULT_INITIAL_PAGE_INDEX)),

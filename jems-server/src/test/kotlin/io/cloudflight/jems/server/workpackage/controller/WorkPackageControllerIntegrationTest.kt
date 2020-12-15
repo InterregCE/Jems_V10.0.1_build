@@ -46,7 +46,7 @@ class WorkPackageControllerIntegrationTest {
         val inputWorkPackage = InputWorkPackageCreate("Work package name", "", "")
 
         mockMvc.perform(
-            post("/api/project/${project.id}/workpackage")
+            post("/api/project/workPackage/forProject/${project.id}")
 
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .content(jsonMapper.writeValueAsString(inputWorkPackage))
@@ -66,7 +66,7 @@ class WorkPackageControllerIntegrationTest {
         val firstWorkPackage = InputWorkPackageCreate("Work package name", "", "")
 
         mockMvc.perform(
-            post("/api/project/${project.id}/workpackage")
+            post("/api/project/workPackage/forProject/${project.id}")
 
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .content(jsonMapper.writeValueAsString(firstWorkPackage))
@@ -74,7 +74,7 @@ class WorkPackageControllerIntegrationTest {
             .andExpect(MockMvcResultMatchers.status().isOk)
 
         mockMvc.perform(
-            get("/api/project/${project.id}/workpackage?page=0")
+            get("/api/project/workPackage/perProject/${project.id}?page=0")
         )
             .andExpect(MockMvcResultMatchers.jsonPath("$.numberOfElements").value(1))
     }

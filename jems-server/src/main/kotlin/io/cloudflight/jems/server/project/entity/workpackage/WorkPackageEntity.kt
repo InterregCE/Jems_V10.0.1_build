@@ -14,7 +14,7 @@ import javax.persistence.OneToMany
 import javax.validation.constraints.NotNull
 
 @Entity(name = "project_work_package")
-data class WorkPackage(
+data class WorkPackageEntity(
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

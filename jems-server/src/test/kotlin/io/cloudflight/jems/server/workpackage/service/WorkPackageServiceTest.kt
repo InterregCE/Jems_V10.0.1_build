@@ -13,7 +13,7 @@ import io.cloudflight.jems.server.project.entity.ProjectStatus
 import io.cloudflight.jems.server.project.repository.ProjectRepository
 import io.cloudflight.jems.server.user.entity.User
 import io.cloudflight.jems.server.user.entity.UserRole
-import io.cloudflight.jems.server.project.entity.workpackage.WorkPackage
+import io.cloudflight.jems.server.project.entity.workpackage.WorkPackageEntity
 import io.cloudflight.jems.server.project.repository.workpackage.WorkPackageRepository
 import io.cloudflight.jems.server.project.service.workpackage.WorkPackageService
 import io.cloudflight.jems.server.project.service.workpackage.WorkPackageServiceImpl
@@ -84,7 +84,7 @@ class WorkPackageServiceTest {
         projectStatus = statusDraft
     )
 
-    private val mockWorkPackage = WorkPackage(
+    private val mockWorkPackage = WorkPackageEntity(
         1,
         project,
         1,
@@ -145,7 +145,7 @@ class WorkPackageServiceTest {
     @Test
     fun createWorkPackage() {
         every { projectRepository.findById(1L) } returns Optional.of(project)
-        every { workPackageRepository.save(any<WorkPackage>()) } returns WorkPackage(
+        every { workPackageRepository.save(any<WorkPackageEntity>()) } returns WorkPackageEntity(
             2,
             project,
             2,
@@ -162,7 +162,7 @@ class WorkPackageServiceTest {
 
     @Test
     fun updateWorkPackage() {
-        val workPackageUpdated = WorkPackage(
+        val workPackageUpdated = WorkPackageEntity(
             1,
             project,
             1,
@@ -171,8 +171,8 @@ class WorkPackageServiceTest {
             ""
         )
 
-        every { workPackageRepository.findFirstByProjectIdAndId(1L, 1L) } returns workPackageUpdated
-        every { workPackageRepository.save(any<WorkPackage>()) } returnsArgument 0
+        every { workPackageRepository.findById(1L) } returns Optional.of(workPackageUpdated)
+        every { workPackageRepository.save(any<WorkPackageEntity>()) } returnsArgument 0
 
         val expectedData = OutputWorkPackage (
             id = 1,
@@ -182,7 +182,7 @@ class WorkPackageServiceTest {
             objectiveAndAudience = ""
         )
 
-        val result = workPackageService.updateWorkPackage(1L, mockWorkPackageToUpdate)
+        val result = workPackageService.updateWorkPackage(mockWorkPackageToUpdate)
 
         assertThat(result).isNotNull
         assertThat(result.number).isEqualTo(expectedData.number)
@@ -194,16 +194,17 @@ class WorkPackageServiceTest {
         every { workPackageRepository.findAllByProjectId(project.id, any<Sort>()) } returns emptySet()
         every { workPackageRepository.saveAll(emptyList()) } returns emptySet()
 
-        assertDoesNotThrow { workPackageService.deleteWorkPackage(project.id, mockWorkPackage.id) }
+        assertDoesNotThrow { workPackageService.deleteWorkPackage(mockWorkPackage.id) }
     }
 
     @Test
     fun deleteWorkPackage_notExisting() {
+        every { workPackageRepository.findById(100) } returns Optional.of(mockWorkPackage.copy(id = 100))
         every { workPackageRepository.deleteById(100) } returns Unit
         every { workPackageRepository.findAllByProjectId(project.id, any<Sort>()) } returns emptySet()
         every { workPackageRepository.saveAll(emptyList()) } returns emptySet()
 
-        assertDoesNotThrow { workPackageService.deleteWorkPackage(project.id, 100) }
+        assertDoesNotThrow { workPackageService.deleteWorkPackage(100) }
     }
 
 }

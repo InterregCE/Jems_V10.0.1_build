@@ -19,7 +19,7 @@ internal class AddWorkPackageInvestmentTestWorkPackageInvestmentBase : UnitTestW
         val workPackageInvestment = createWorkPackageInvestment(workPackageInvestmentId)
         every { persistence.addWorkPackageInvestment(workPackageId, any()) } returns workPackageInvestmentId
 
-        val createdWorkPackageInvestmentId = addWorkPackageInvestment.addWorkPackageInvestment(projectId, workPackageId, workPackageInvestment)
+        val createdWorkPackageInvestmentId = addWorkPackageInvestment.addWorkPackageInvestment(workPackageId, workPackageInvestment)
 
         verify(exactly = 1) { persistence.addWorkPackageInvestment(workPackageId, any()) }
         confirmVerified(persistence)

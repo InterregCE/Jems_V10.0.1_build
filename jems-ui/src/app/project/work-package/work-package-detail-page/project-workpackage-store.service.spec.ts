@@ -30,7 +30,7 @@ describe('ProjectWorkPackagePageStore', () => {
     service.workPackage$.subscribe(result => resultWorkPackage = result as OutputWorkPackage);
     service.init(2, 1);
 
-    httpTestingController.match({method: 'GET', url: `//api/project/1/workpackage/2`})
+    httpTestingController.match({method: 'GET', url: `//api/project/workPackage/2`})
       .forEach(req => req.flush({id: 2}));
 
     tick();

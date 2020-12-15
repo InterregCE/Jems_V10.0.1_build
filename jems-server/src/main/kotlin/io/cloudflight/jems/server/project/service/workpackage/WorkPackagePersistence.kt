@@ -9,11 +9,13 @@ import java.util.*
 
 interface WorkPackagePersistence {
 
-    fun updateWorkPackageOutputs(projectId: Long, workPackageOutputs: Set<WorkPackageOutputUpdate>, workPackageId: Long): Set<WorkPackageOutput>
+    fun updateWorkPackageOutputs(workPackageId: Long, workPackageOutputs: Set<WorkPackageOutputUpdate>): Set<WorkPackageOutput>
     fun getWorkPackageOutputsForWorkPackage(workPackageId: Long): Set<WorkPackageOutput>
     fun getWorkPackageInvestment(workPackageInvestmentId: UUID): WorkPackageInvestment
     fun getWorkPackageInvestments(workPackageId: Long, pageable: Pageable): Page<WorkPackageInvestment>
     fun addWorkPackageInvestment(workPackageId: Long, workPackageInvestment: WorkPackageInvestment): UUID
     fun updateWorkPackageInvestment(workPackageInvestment: WorkPackageInvestment)
     fun deleteWorkPackageInvestment(workPackageInvestmentId: UUID)
+
+    fun getProjectIdFromWorkPackageInvestment(workPackageInvestmentId: UUID): Long
 }

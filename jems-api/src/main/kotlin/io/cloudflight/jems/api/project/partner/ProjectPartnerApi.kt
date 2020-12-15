@@ -1,4 +1,4 @@
-package io.cloudflight.jems.api.project
+package io.cloudflight.jems.api.project.partner
 
 import io.cloudflight.jems.api.project.dto.InputProjectContact
 import io.cloudflight.jems.api.project.dto.ProjectPartnerMotivationDTO

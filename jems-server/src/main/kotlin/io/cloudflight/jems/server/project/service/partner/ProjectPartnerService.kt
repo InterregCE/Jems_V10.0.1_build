@@ -15,6 +15,7 @@ interface ProjectPartnerService {
 
     fun getById(id: Long): OutputProjectPartnerDetail
 
+    // used for authorization
     fun getProjectIdForPartnerId(id: Long): Long
 
     fun findAllByProjectId(projectId: Long, page: Pageable): Page<OutputProjectPartner>

@@ -1,4 +1,4 @@
-package io.cloudflight.jems.server.project.service.workpackage
+package io.cloudflight.jems.server.project.service.workpackage.output
 
 import io.cloudflight.jems.server.common.exception.I18nValidationException
 import io.cloudflight.jems.server.project.service.workpackage.model.WorkPackageOutputUpdate

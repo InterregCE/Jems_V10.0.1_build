@@ -1,6 +1,6 @@
 package io.cloudflight.jems.server.project.repository.workpackage
 
-import io.cloudflight.jems.server.project.entity.workpackage.WorkPackage
+import io.cloudflight.jems.server.project.entity.workpackage.WorkPackageEntity
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
 import org.springframework.data.domain.Sort
@@ -8,12 +8,12 @@ import org.springframework.data.repository.PagingAndSortingRepository
 import org.springframework.stereotype.Repository
 
 @Repository
-interface WorkPackageRepository: PagingAndSortingRepository<WorkPackage, Long> {
+interface WorkPackageRepository: PagingAndSortingRepository<WorkPackageEntity, Long> {
 
-    fun findAllByProjectId(projectId: Long, pageable: Pageable): Page<WorkPackage>
+    fun findAllByProjectId(projectId: Long, pageable: Pageable): Page<WorkPackageEntity>
 
-    fun findAllByProjectId(projectId: Long, sort: Sort): Iterable<WorkPackage>
+    fun findAllByProjectId(projectId: Long, sort: Sort): Iterable<WorkPackageEntity>
 
-    fun findFirstByProjectIdAndId(projectId: Long, workPackageId: Long): WorkPackage
+    fun findFirstByProjectIdAndId(projectId: Long, workPackageId: Long): WorkPackageEntity
 
 }

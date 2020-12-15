@@ -5,7 +5,7 @@ import {ActivatedRoute, Router} from '@angular/router';
 import {ProjectStore} from '../../../project-application/containers/project-application-detail/services/project-store.service';
 import {ProjectApplicationFormSidenavService} from '../../../project-application/containers/project-application-form-page/services/project-application-form-sidenav.service';
 import {BaseComponent} from '@common/components/base-component';
-import {WorkPackageOutputUpdateDTO, WorkPackageService, ProgrammeIndicatorService} from '@cat/api';
+import {WorkPackageOutputUpdateDTO, WorkPackageOutputService, ProgrammeIndicatorService} from '@cat/api';
 import {catchError, distinctUntilChanged, filter, map, mergeMap, tap, withLatestFrom} from 'rxjs/operators';
 import {Log} from '../../../../common/utils/log';
 import {ProjectWorkPackagePageStore} from '../project-work-package-page-store.service';
@@ -29,14 +29,14 @@ export class ProjectApplicationFormWorkPackageOutputComponent extends BaseCompon
       filter(workPackage => !!workPackage.id),
       map(workPackage => workPackage.id),
       distinctUntilChanged(),
-      mergeMap(id => this.workPackageService.getWorkPackageOutputs(id, this.projectId)),
+      mergeMap(id => this.workPackageOutputService.getWorkPackageOutputs(id)),
       tap(data => Log.info('Fetched the workPackage outputs', this, data)),
     );
 
   private updatedWorkPackageOutputData$ = this.updateWorkPackageOutputData$
     .pipe(
       withLatestFrom(this.workPackageStore.workPackage$),
-      mergeMap(([data, workPackage]) => this.workPackageService.updateWorkPackageOutputs(workPackage.id, this.projectId, data)),
+      mergeMap(([data, workPackage]) => this.workPackageOutputService.updateWorkPackageOutputs(workPackage.id, data)),
       tap(() => this.saveSuccess$.next(true)),
       tap(() => this.saveError$.next(null)),
       tap(saved => Log.info('Updated workPackage outputs:', this, saved)),
@@ -61,7 +61,7 @@ export class ProjectApplicationFormWorkPackageOutputComponent extends BaseCompon
       })),
     );
 
-  constructor(private workPackageService: WorkPackageService,
+  constructor(private workPackageOutputService: WorkPackageOutputService,
               private activatedRoute: ActivatedRoute,
               public projectStore: ProjectStore,
               public workPackageStore: ProjectWorkPackagePageStore,

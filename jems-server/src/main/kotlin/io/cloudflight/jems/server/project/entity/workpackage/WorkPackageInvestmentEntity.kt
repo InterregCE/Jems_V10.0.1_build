@@ -19,7 +19,7 @@ data class WorkPackageInvestmentEntity(
     @ManyToOne(optional = false, fetch = FetchType.LAZY)
     @JoinColumn(name = "work_package_id")
     @field:NotNull
-    var workPackage: WorkPackage,
+    var workPackage: WorkPackageEntity,
 
     @Column
     var investmentNumber: Int,

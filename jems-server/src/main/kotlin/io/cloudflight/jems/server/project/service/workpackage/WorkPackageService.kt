@@ -9,14 +9,16 @@ import org.springframework.data.domain.Pageable
 
 interface WorkPackageService {
 
-    fun getWorkPackageById(id: Long): OutputWorkPackage
+    fun getWorkPackageById(workPackageId: Long): OutputWorkPackage
+
+    fun getProjectIdForWorkPackageId(id: Long): Long
 
     fun getWorkPackagesByProjectId(projectId: Long, pageable: Pageable): Page<OutputWorkPackageSimple>
 
     fun createWorkPackage(projectId: Long, inputWorkPackageCreate: InputWorkPackageCreate): OutputWorkPackage
 
-    fun updateWorkPackage(projectId: Long, inputWorkPackageUpdate: InputWorkPackageUpdate): OutputWorkPackage
+    fun updateWorkPackage(inputWorkPackageUpdate: InputWorkPackageUpdate): OutputWorkPackage
 
-    fun deleteWorkPackage(projectId: Long, id: Long)
+    fun deleteWorkPackage(workPackageId: Long)
 
 }

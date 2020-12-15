@@ -1,4 +1,4 @@
-package io.cloudflight.jems.api.project.dto.workpackage.workpackageoutput
+package io.cloudflight.jems.api.project.dto.workpackage.investment
 
 import io.cloudflight.jems.api.common.dto.AddressDTO
 import java.util.*

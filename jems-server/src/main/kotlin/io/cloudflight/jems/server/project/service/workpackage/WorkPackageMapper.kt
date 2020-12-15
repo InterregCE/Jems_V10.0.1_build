@@ -4,15 +4,15 @@ import io.cloudflight.jems.api.project.dto.workpackage.InputWorkPackageCreate
 import io.cloudflight.jems.api.project.dto.workpackage.OutputWorkPackage
 import io.cloudflight.jems.api.project.dto.workpackage.OutputWorkPackageSimple
 import io.cloudflight.jems.server.project.entity.Project
-import io.cloudflight.jems.server.project.entity.workpackage.WorkPackage
+import io.cloudflight.jems.server.project.entity.workpackage.WorkPackageEntity
 
-fun WorkPackage.toOutputWorkPackageSimple() = OutputWorkPackageSimple (
+fun WorkPackageEntity.toOutputWorkPackageSimple() = OutputWorkPackageSimple (
     id = id,
     number = number,
     name = name
 )
 
-fun WorkPackage.toOutputWorkPackage() = OutputWorkPackage (
+fun WorkPackageEntity.toOutputWorkPackage() = OutputWorkPackage (
     id = id,
     number = number,
     name = name,
@@ -20,7 +20,7 @@ fun WorkPackage.toOutputWorkPackage() = OutputWorkPackage (
     objectiveAndAudience = objectiveAndAudience
 )
 
-fun InputWorkPackageCreate.toEntity(project: Project) = WorkPackage (
+fun InputWorkPackageCreate.toEntity(project: Project) = WorkPackageEntity (
     name = name,
     project = project,
     specificObjective = specificObjective,

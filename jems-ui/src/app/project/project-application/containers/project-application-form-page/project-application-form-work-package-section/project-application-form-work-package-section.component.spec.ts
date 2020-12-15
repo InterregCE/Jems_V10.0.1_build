@@ -42,7 +42,7 @@ describe('ProjectApplicationFormWorkPackageSectionComponent', () => {
       {name: 'test2'} as OutputWorkPackageSimple
     ];
 
-    httpTestingController.match({method: 'GET', url: `//api/project/1/workpackage?page=0&size=25&sort=id,asc`})
+    httpTestingController.match({method: 'GET', url: `//api/project/workPackage/perProject/1?page=0&size=25&sort=id,asc`})
       .forEach(req => req.flush({content: workPackages}));
 
     tick();
@@ -54,11 +54,11 @@ describe('ProjectApplicationFormWorkPackageSectionComponent', () => {
 
     httpTestingController.expectOne({
       method: 'DELETE',
-      url: `//api/project/1/workpackage/1`
+      url: `//api/project/workPackage/1`
     });
     httpTestingController.expectOne({
       method: 'GET',
-      url: `//api/project/1/workpackage?page=0&size=25&sort=id,asc`
+      url: `//api/project/workPackage/perProject/1?page=0&size=25&sort=id,asc`
     });
   }));
 

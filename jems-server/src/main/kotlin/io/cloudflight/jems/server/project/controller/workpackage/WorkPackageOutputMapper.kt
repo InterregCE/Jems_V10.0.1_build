@@ -1,9 +1,9 @@
 package io.cloudflight.jems.server.project.controller.workpackage
 
 import io.cloudflight.jems.api.common.dto.AddressDTO
-import io.cloudflight.jems.api.project.dto.workpackage.workpackageoutput.WorkPackageInvestmentDTO
-import io.cloudflight.jems.api.project.dto.workpackage.workpackageoutput.WorkPackageOutputDTO
-import io.cloudflight.jems.api.project.dto.workpackage.workpackageoutput.WorkPackageOutputUpdateDTO
+import io.cloudflight.jems.api.project.dto.workpackage.investment.WorkPackageInvestmentDTO
+import io.cloudflight.jems.api.project.dto.workpackage.output.WorkPackageOutputDTO
+import io.cloudflight.jems.api.project.dto.workpackage.output.WorkPackageOutputUpdateDTO
 import io.cloudflight.jems.server.project.service.model.Address
 import io.cloudflight.jems.server.project.service.workpackage.model.WorkPackageInvestment
 import io.cloudflight.jems.server.project.service.workpackage.model.WorkPackageOutput
