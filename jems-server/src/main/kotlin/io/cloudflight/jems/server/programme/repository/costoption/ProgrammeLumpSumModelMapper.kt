@@ -4,8 +4,6 @@ import io.cloudflight.jems.api.programme.dto.costoption.BudgetCategory
 import io.cloudflight.jems.server.programme.entity.costoption.ProgrammeLumpSumBudgetCategoryEntity
 import io.cloudflight.jems.server.programme.entity.costoption.ProgrammeLumpSumEntity
 import io.cloudflight.jems.server.programme.service.costoption.model.ProgrammeLumpSum
-import io.cloudflight.jems.server.project.entity.partner.budget.ProjectPartnerBudgetEntity
-import io.cloudflight.jems.server.project.service.budget.model.ProjectPartnerCost
 
 fun ProgrammeLumpSumEntity.toModel() = ProgrammeLumpSum(
     id = id,

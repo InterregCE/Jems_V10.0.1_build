@@ -5,6 +5,8 @@ import io.cloudflight.jems.server.programme.entity.ProgrammeFundEntity
 import io.cloudflight.jems.server.user.entity.User
 import io.cloudflight.jems.server.programme.entity.ProgrammePriorityPolicy
 import io.cloudflight.jems.server.programme.entity.Strategy
+import io.cloudflight.jems.server.programme.entity.costoption.ProgrammeLumpSumEntity
+import io.cloudflight.jems.server.programme.entity.costoption.ProgrammeUnitCostEntity
 import java.time.ZonedDateTime
 import javax.persistence.CascadeType
 import javax.persistence.Column
@@ -22,7 +24,7 @@ import javax.persistence.OneToMany
 import javax.validation.constraints.NotNull
 
 @Entity(name = "project_call")
-data class Call(
+data class CallEntity(
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -77,7 +79,23 @@ data class Call(
     val description: String? = null,
 
     @OneToMany(mappedBy = "setupId.callId", cascade = [CascadeType.ALL], orphanRemoval = true, fetch = FetchType.LAZY)
-    var flatRates: MutableSet<ProjectCallFlatRateEntity> = mutableSetOf()
+    var flatRates: MutableSet<ProjectCallFlatRateEntity> = mutableSetOf(),
+
+    @OneToMany
+    @JoinTable(
+        name = "project_call_lump_sum",
+        joinColumns = [JoinColumn(name = "project_call_id")],
+        inverseJoinColumns = [JoinColumn(name = "programme_lump_sum_id")]
+    )
+    val lumpSums: Set<ProgrammeLumpSumEntity> = emptySet(),
+
+    @OneToMany
+    @JoinTable(
+        name = "project_call_unit_cost",
+        joinColumns = [JoinColumn(name = "project_call_id")],
+        inverseJoinColumns = [JoinColumn(name = "programme_unit_cost_id")]
+    )
+    val unitCosts: Set<ProgrammeUnitCostEntity> = emptySet()
 
 ) {
     fun updateFlatRateSetup(flatRates: Set<ProjectCallFlatRateEntity>) {

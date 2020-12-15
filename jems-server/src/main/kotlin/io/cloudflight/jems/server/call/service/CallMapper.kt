@@ -6,14 +6,16 @@ import io.cloudflight.jems.api.call.dto.OutputCall
 import io.cloudflight.jems.api.call.dto.OutputCallList
 import io.cloudflight.jems.api.call.dto.OutputCallWithDates
 import io.cloudflight.jems.server.call.controller.toDto
-import io.cloudflight.jems.server.call.entity.Call
-import io.cloudflight.jems.server.call.repository.toProjectCallFlatRate
+import io.cloudflight.jems.server.call.entity.CallEntity
+import io.cloudflight.jems.server.call.repository.flatrate.toProjectCallFlatRate
+import io.cloudflight.jems.server.programme.controller.costoption.toDto
 import io.cloudflight.jems.server.programme.entity.ProgrammeFundEntity
 import io.cloudflight.jems.server.user.entity.User
 import io.cloudflight.jems.server.programme.entity.ProgrammePriorityPolicy
 import io.cloudflight.jems.server.programme.service.toOutputProgrammeFund
 import io.cloudflight.jems.server.programme.service.toOutputProgrammePriorityPolicy
 import io.cloudflight.jems.server.programme.entity.Strategy
+import io.cloudflight.jems.server.programme.repository.costoption.toModel
 
 /**
  * Map InputCallCreate to entity Call.
@@ -24,7 +26,7 @@ fun InputCallCreate.toEntity(
     priorityPolicies: Set<ProgrammePriorityPolicy>,
     strategies: Set<Strategy>,
     funds: Set<ProgrammeFundEntity>
-) = Call(
+) = CallEntity(
     creator = creator,
     name = name!!,
     priorityPolicies = priorityPolicies,
@@ -37,7 +39,7 @@ fun InputCallCreate.toEntity(
     lengthOfPeriod = lengthOfPeriod
 )
 
-fun Call.toOutputCall() = OutputCall(
+fun CallEntity.toOutputCall() = OutputCall(
     id = id,
     name = name,
     priorityPolicies = priorityPolicies.map { it.toOutputProgrammePriorityPolicy() },
@@ -48,10 +50,12 @@ fun Call.toOutputCall() = OutputCall(
     endDate = endDate,
     description = description,
     lengthOfPeriod = lengthOfPeriod,
-    flatRates = flatRates.toProjectCallFlatRate().toDto()
+    flatRates = flatRates.toProjectCallFlatRate().toDto(),
+    lumpSums = lumpSums.map { it.toModel().toDto() },
+    unitCosts = unitCosts.map { it.toModel().toDto() },
 )
 
-fun Call.toOutputCallList() = OutputCallList(
+fun CallEntity.toOutputCallList() = OutputCallList(
     id = id,
     name = name,
     status = status,
@@ -59,7 +63,7 @@ fun Call.toOutputCallList() = OutputCallList(
     endDate = endDate
 )
 
-fun Call.toOutputCallWithDates() = OutputCallWithDates(
+fun CallEntity.toOutputCallWithDates() = OutputCallWithDates(
     id = id,
     name = name,
     startDate = startDate,

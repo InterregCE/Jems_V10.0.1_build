@@ -7,19 +7,17 @@ import io.cloudflight.jems.api.call.dto.OutputCall
 import io.cloudflight.jems.api.call.dto.OutputCallList
 import io.cloudflight.jems.api.call.dto.flatrate.FlatRateDTO
 import io.cloudflight.jems.api.call.dto.flatrate.FlatRateSetupDTO
-import io.cloudflight.jems.api.call.dto.flatrate.FlatRateType
-import io.cloudflight.jems.api.call.dto.flatrate.InputCallFlatRateSetup
 import io.cloudflight.jems.api.programme.dto.priority.OutputProgrammePriorityPolicySimple
 import io.cloudflight.jems.api.programme.dto.priority.ProgrammeObjectivePolicy.AdvancedTechnologies
 import io.cloudflight.jems.api.programme.dto.priority.ProgrammeObjectivePolicy.DigitalConnectivity
 import io.cloudflight.jems.api.programme.dto.strategy.ProgrammeStrategy
 import io.cloudflight.jems.server.audit.entity.AuditAction
 import io.cloudflight.jems.server.audit.service.AuditCandidate
-import io.cloudflight.jems.server.call.entity.Call
+import io.cloudflight.jems.server.call.entity.CallEntity
 import io.cloudflight.jems.server.common.exception.I18nFieldError
 import io.cloudflight.jems.server.common.exception.I18nValidationException
 import io.cloudflight.jems.server.common.exception.ResourceNotFoundException
-import io.cloudflight.jems.server.call.repository.CallRepository
+import io.cloudflight.jems.server.call.repository.flatrate.CallRepository
 import io.cloudflight.jems.server.programme.entity.ProgrammePriorityPolicy
 import io.cloudflight.jems.server.programme.repository.ProgrammePriorityPolicyRepository
 import io.cloudflight.jems.server.user.repository.UserRepository
@@ -30,7 +28,6 @@ import io.cloudflight.jems.server.security.service.authorization.AuthorizationUt
 import io.cloudflight.jems.server.security.service.authorization.AuthorizationUtil.Companion.programmeUser
 import io.cloudflight.jems.server.audit.service.AuditService
 import io.cloudflight.jems.server.call.callWithId
-import io.cloudflight.jems.server.call.service.flatrate.model.ProjectCallFlatRate
 import io.cloudflight.jems.server.call.testUser
 import io.cloudflight.jems.server.programme.entity.ProgrammeFundEntity
 import io.cloudflight.jems.server.programme.repository.ProgrammeFundRepository
@@ -170,7 +167,7 @@ class CallServiceTest {
     fun `createCall Successful empty policies`() {
         every { securityService.currentUser } returns adminUser
         every { userRepository.findById(eq(adminUser.user.id!!)) } returns Optional.of(call.creator)
-        every { callRepository.save(any<Call>()) } returns Call(
+        every { callRepository.save(any<CallEntity>()) } returns CallEntity(
             100,
             call.creator,
             call.name,
@@ -214,7 +211,7 @@ class CallServiceTest {
     fun `createCall Successful with policies`() {
         every { securityService.currentUser } returns adminUser
         every { userRepository.findById(eq(adminUser.user.id!!)) } returns Optional.of(call.creator)
-        every { callRepository.save(any<Call>()) } returnsArgument 0
+        every { callRepository.save(any<CallEntity>()) } returnsArgument 0
         every { programmePriorityPolicyRepository.findAllById(eq(setOf(AdvancedTechnologies))) } returns
                 listOf(ProgrammePriorityPolicy(programmeObjectivePolicy = AdvancedTechnologies, code = "AT"))
         every { strategyRepository.findAllById(eq(setOf(ProgrammeStrategy.EUStrategyBalticSeaRegion))) } returns
@@ -250,7 +247,7 @@ class CallServiceTest {
     fun `createCall Unsuccessful with not existing policies`() {
         every { securityService.currentUser } returns adminUser
         every { userRepository.findById(eq(adminUser.user.id!!)) } returns Optional.of(call.creator)
-        every { callRepository.save(any<Call>()) } returnsArgument 0
+        every { callRepository.save(any<CallEntity>()) } returnsArgument 0
         every { programmePriorityPolicyRepository.findAllById(eq(setOf(DigitalConnectivity))) } returns emptyList()
 
         val newCall = InputCallCreate(
@@ -287,7 +284,7 @@ class CallServiceTest {
         val startDate = ZonedDateTime.now().minusDays(2)
         val endDate = ZonedDateTime.now().plusDays(5)
         every { callRepository.findById(eq(existingId)) } returns Optional.of(callWithId(existingId))
-        every { callRepository.save(any<Call>()) } returnsArgument 0
+        every { callRepository.save(any<CallEntity>()) } returnsArgument 0
 
         val programmePriorityPolicy =
             ProgrammePriorityPolicy(programmeObjectivePolicy = AdvancedTechnologies, code = "AT")
@@ -328,7 +325,7 @@ class CallServiceTest {
         val startDate = ZonedDateTime.now().minusDays(2)
         val endDate = ZonedDateTime.now().plusDays(5)
         every { callRepository.findById(eq(ID_10)) } returns Optional.of(callWithId(ID_10))
-        every { callRepository.save(any<Call>()) } returnsArgument 0
+        every { callRepository.save(any<CallEntity>()) } returnsArgument 0
 
         val newDataForCall = InputCallUpdate(
             id = ID_10,
@@ -355,7 +352,7 @@ class CallServiceTest {
         val startDate = ZonedDateTime.now().minusDays(2)
         val endDate = ZonedDateTime.now().plusDays(5)
         every { callRepository.findById(eq(existingId)) } returns Optional.of(callWithId(existingId))
-        every { callRepository.save(any<Call>()) } returnsArgument 0
+        every { callRepository.save(any<CallEntity>()) } returnsArgument 0
         every { programmePriorityPolicyRepository.findAllById(eq(emptySet())) } returns emptyList()
 
         val newDataForCall = InputCallUpdate(
@@ -416,7 +413,7 @@ class CallServiceTest {
                         funds = funds
                     )
                 )
-        every { callRepository.save(any<Call>()) } returnsArgument 0
+        every { callRepository.save(any<CallEntity>()) } returnsArgument 0
 
         val result = callService.publishCall(existingId)
         assertThat(result.status).isEqualTo(CallStatus.PUBLISHED)
@@ -435,7 +432,7 @@ class CallServiceTest {
         val existingId = 1L
         every { callRepository.findById(eq(existingId)) } returns
                 Optional.of(callWithId(existingId).copy(status = CallStatus.PUBLISHED))
-        every { callRepository.save(any<Call>()) } returnsArgument 0
+        every { callRepository.save(any<CallEntity>()) } returnsArgument 0
 
         val expectedException = I18nValidationException(
             httpStatus = HttpStatus.UNPROCESSABLE_ENTITY,
@@ -451,7 +448,7 @@ class CallServiceTest {
         val policies = emptySet<ProgrammePriorityPolicy>()
         every { callRepository.findById(eq(existingId)) } returns
                 Optional.of(callWithId(existingId).copy(status = CallStatus.DRAFT, priorityPolicies = policies))
-        every { callRepository.save(any<Call>()) } returnsArgument 0
+        every { callRepository.save(any<CallEntity>()) } returnsArgument 0
 
         val expectedException = I18nValidationException(
             httpStatus = HttpStatus.UNPROCESSABLE_ENTITY,

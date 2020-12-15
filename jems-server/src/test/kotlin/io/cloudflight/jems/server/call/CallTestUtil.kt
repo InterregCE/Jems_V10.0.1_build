@@ -4,7 +4,7 @@ import io.cloudflight.jems.api.call.dto.CallStatus
 import io.cloudflight.jems.api.call.dto.flatrate.FlatRateType
 import io.cloudflight.jems.api.user.dto.OutputUserRole
 import io.cloudflight.jems.api.user.dto.OutputUserWithRole
-import io.cloudflight.jems.server.call.entity.Call
+import io.cloudflight.jems.server.call.entity.CallEntity
 import io.cloudflight.jems.server.call.entity.FlatRateSetupId
 import io.cloudflight.jems.server.call.entity.ProjectCallFlatRateEntity
 import io.cloudflight.jems.server.user.entity.User
@@ -28,7 +28,7 @@ val testUser = OutputUserWithRole(
     userRole = OutputUserRole(id = 1, name = "ADMIN")
 )
 
-private val testCall = Call(
+private val testCall = CallEntity(
     id = 0,
     creator = account,
     name = "Test call name",

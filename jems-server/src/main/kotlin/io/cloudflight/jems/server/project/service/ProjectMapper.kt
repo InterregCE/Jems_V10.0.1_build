@@ -6,7 +6,7 @@ import io.cloudflight.jems.api.project.dto.OutputProject
 import io.cloudflight.jems.api.project.dto.OutputProjectData
 import io.cloudflight.jems.api.project.dto.OutputProjectPeriod
 import io.cloudflight.jems.api.project.dto.OutputProjectSimple
-import io.cloudflight.jems.server.call.entity.Call
+import io.cloudflight.jems.server.call.entity.CallEntity
 import io.cloudflight.jems.server.call.service.toOutputCallWithDates
 import io.cloudflight.jems.server.programme.entity.ProgrammePriorityPolicy
 import io.cloudflight.jems.server.programme.service.toOutputProgrammePriorityPolicy
@@ -20,7 +20,7 @@ import io.cloudflight.jems.server.user.entity.User
 import io.cloudflight.jems.server.user.service.toOutputUser
 
 fun InputProject.toEntity(
-    call: Call,
+    call: CallEntity,
     applicant: User,
     status: ProjectStatus
 ) = Project(

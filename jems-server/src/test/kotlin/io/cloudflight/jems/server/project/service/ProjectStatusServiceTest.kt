@@ -16,7 +16,7 @@ import io.cloudflight.jems.api.user.dto.OutputUserWithRole
 import io.cloudflight.jems.server.audit.entity.AuditAction
 import io.cloudflight.jems.server.audit.service.AuditCandidate
 import io.cloudflight.jems.server.audit.service.AuditService
-import io.cloudflight.jems.server.call.entity.Call
+import io.cloudflight.jems.server.call.entity.CallEntity
 import io.cloudflight.jems.server.common.exception.I18nValidationException
 import io.cloudflight.jems.server.common.exception.ResourceNotFoundException
 import io.cloudflight.jems.server.programme.entity.ProgrammePriorityPolicy
@@ -95,7 +95,7 @@ internal class ProjectStatusServiceTest {
     )
     private val userProgramme = OutputUserWithRole(16, "programme@email", "", "", OutputUserRole(7, "programme"))
 
-    private val dummyCall = Call(
+    private val dummyCall = CallEntity(
         id = 5,
         creator = user,
         name = "call",

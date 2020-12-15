@@ -1,11 +1,11 @@
-package io.cloudflight.jems.server.call.repository
+package io.cloudflight.jems.server.call.repository.flatrate
 
 import io.cloudflight.jems.api.call.dto.flatrate.FlatRateType
 import io.cloudflight.jems.api.project.dto.partner.ProjectPartnerRole
 import io.cloudflight.jems.api.project.dto.status.ProjectApplicationStatus
 import io.cloudflight.jems.server.audit.service.AuditService
 import io.cloudflight.jems.server.call.callWithId
-import io.cloudflight.jems.server.call.entity.Call
+import io.cloudflight.jems.server.call.entity.CallEntity
 import io.cloudflight.jems.server.call.entity.ProjectCallFlatRateEntity
 import io.cloudflight.jems.server.call.entity.FlatRateSetupId
 import io.cloudflight.jems.server.call.service.flatrate.CallFlatRateSetupPersistence
@@ -33,7 +33,7 @@ class CallFlatRateSetupPersistenceTest {
         private fun callWithIdAndFlatRate(id: Long, flatRate: Set<ProjectCallFlatRateEntity>) = callWithId(id).copy(
             flatRates = flatRate.toMutableSet()
         )
-        private fun dummyPartner(call: Call) = ProjectPartnerEntity(
+        private fun dummyPartner(call: CallEntity) = ProjectPartnerEntity(
             project = Project(
                 id = 1,
                 call = call,

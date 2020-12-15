@@ -7,7 +7,7 @@ import io.cloudflight.jems.api.user.dto.OutputUserWithRole
 import io.cloudflight.jems.api.project.dto.workpackage.InputWorkPackageCreate
 import io.cloudflight.jems.api.project.dto.workpackage.InputWorkPackageUpdate
 import io.cloudflight.jems.api.project.dto.workpackage.OutputWorkPackage
-import io.cloudflight.jems.server.call.entity.Call
+import io.cloudflight.jems.server.call.entity.CallEntity
 import io.cloudflight.jems.server.project.entity.Project
 import io.cloudflight.jems.server.project.entity.ProjectStatus
 import io.cloudflight.jems.server.project.repository.ProjectRepository
@@ -55,7 +55,7 @@ class WorkPackageServiceTest {
         userRole = OutputUserRole(id = 1, name = "ADMIN")
     )
 
-    private val call = Call(
+    private val call = CallEntity(
         id = 1,
         creator = account,
         name = "Test call name",

@@ -1,7 +1,0 @@
-{
-  "/api/*": {
-    "target": "https://ems-dev.internal.cloudflight.dev",
-    "secure": true,
-    "changeOrigin": true
-  }
-}
