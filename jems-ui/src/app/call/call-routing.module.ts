@@ -5,8 +5,7 @@ import {Permission} from '../security/permissions/permission';
 import {RouteData} from '../common/utils/route-data';
 import {PermissionGuard} from '../security/permission.guard';
 import {CallNameResolver} from './services/call-name.resolver';
-import {CallFlatRatesPageComponent} from './containers/call-flat-rates-page/call-flat-rates-page.component';
-import {ProjectApplicationFormPartnerSectionComponent} from '../project/project-application/containers/project-application-form-page/project-application-form-partner-section/project-application-form-partner-section.component';
+import {CallBudgetSettingsPageComponent} from './containers/call-budget-settings-page/call-budget-settings-page.component';
 
 export const routes: Routes = [
   {
@@ -42,13 +41,13 @@ export const routes: Routes = [
             component: CallConfigurationComponent,
           },
           {
-            path: 'flatRates',
+            path: 'budgetSettings',
             data: {
-              breadcrumb: 'call.detail.flat.rates',
+              breadcrumb: 'call.detail.budget.settings',
               permissionsOnly: [Permission.ADMINISTRATOR, Permission.PROGRAMME_USER],
             },
             canActivate: [PermissionGuard],
-            component: CallFlatRatesPageComponent,
+            component: CallBudgetSettingsPageComponent,
           },
         ],
       },

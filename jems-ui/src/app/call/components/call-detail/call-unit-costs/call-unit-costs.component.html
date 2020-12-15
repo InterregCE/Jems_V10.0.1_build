@@ -1,0 +1,29 @@
+<app-form (discard)="initForm()"
+          (save)="onSubmit()">
+    <h5>
+        {{'unit.cost.table.title' | translate}}
+    </h5>
+    <div *ngIf="unitCostDataSource.data.length"
+         class="my-5"
+         appTableConfig
+         [appearance]="'material-table'"
+         [widthConfig]="['max-3-rem','','max-5-rem','max-5-rem']">
+        <div>
+            <span>{{'unit.cost.table.column.name.activate.option' | translate}}</span>
+            <span>{{'unit.cost.table.column.name.name' | translate}}</span>
+            <span>{{'unit.cost.table.column.name.unit.type' | translate}}</span>
+            <span class="display-flex justify-end">{{'unit.cost.table.column.name.cost.unit' | translate}}</span>
+        </div>
+        <span *ngFor="let element of unitCostDataSource.data">
+            <mat-checkbox
+                    [disabled]="published"
+                    (click)="$event.stopPropagation()"
+                    (change)="toggleUnitCost(element)"
+                    [checked]="selection.isSelected(element)">
+            </mat-checkbox>
+            <span>{{ element?.name }}</span>
+            <span>{{ element?.type }}</span>
+            <span class="display-flex justify-end">{{ element?.costPerUnit | asMoney}}</span>
+        </span>
+    </div>
+</app-form>

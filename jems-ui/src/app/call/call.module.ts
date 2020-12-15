@@ -15,8 +15,10 @@ import {CallStrategiesComponent} from './components/call-detail/call-strategies/
 import {CallFundsComponent} from './components/call-detail/call-funds/call-funds.component';
 import { CallFlatRatesComponent } from './components/call-detail/call-flat-rates/call-flat-rates.component';
 import { CallFlatRatesToggleColumnComponent } from './components/call-detail/call-flat-rates/call-flat-rates-toggle-column/call-flat-rates-toggle-column.component';
-import { CallFlatRatesPageComponent } from './containers/call-flat-rates-page/call-flat-rates-page.component';
+import { CallBudgetSettingsPageComponent } from './containers/call-budget-settings-page/call-budget-settings-page.component';
 import {CallPageSidenavService} from './services/call-page-sidenav.service';
+import { CallLumpSumsComponent } from './components/call-detail/call-lump-sums/call-lump-sums.component';
+import { CallUnitCostsComponent } from './components/call-detail/call-unit-costs/call-unit-costs.component';
 
 @NgModule({
   declarations: [
@@ -30,7 +32,9 @@ import {CallPageSidenavService} from './services/call-page-sidenav.service';
     CallFundsComponent,
     CallFlatRatesComponent,
     CallFlatRatesToggleColumnComponent,
-    CallFlatRatesPageComponent,
+    CallBudgetSettingsPageComponent,
+    CallLumpSumsComponent,
+    CallUnitCostsComponent,
   ],
   imports: [
     SharedModule,

@@ -1,0 +1,27 @@
+<app-form (discard)="initForm()"
+          (save)="onSubmit()">
+    <h5>
+        {{'lump.sums.table.title' | translate}}
+    </h5>
+    <div *ngIf="lumpSumDataSource.data.length"
+         class="my-5"
+         appTableConfig
+         [appearance]="'material-table'"
+         [widthConfig]="['max-3-rem','','max-8-rem']">
+        <div>
+            <span>{{'lump.sum.table.column.name.activate.option' | translate}}</span>
+            <span>{{'lump.sum.table.column.name.name' | translate}}</span>
+            <span class="display-flex justify-end">{{'lump.sum.table.column.name.cost' | translate}}</span>
+        </div>
+        <span *ngFor="let element of lumpSumDataSource.data">
+            <mat-checkbox
+                    [disabled]="published"
+                    (click)="$event.stopPropagation()"
+                    (change)="toggleLumpSum(element)"
+                    [checked]="selection.isSelected(element)">
+            </mat-checkbox>
+            <span>{{ element?.name }}</span>
+            <span class="display-flex justify-end">{{ element?.cost | asMoney}}</span>
+        </span>
+    </div>
+</app-form>

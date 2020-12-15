@@ -31,6 +31,10 @@
         max-width: 5rem;
       }
 
+      &.max-8-rem {
+        max-width: 8rem;
+      }
+
       &.max-10-rem {
         max-width: 10rem;
       }
@@ -54,6 +58,10 @@
 
       &.min-10-rem {
         min-width: 10rem;
+      }
+
+      &.min-8-rem {
+        min-width: 8rem;
       }
 
       &.min-5-rem {
