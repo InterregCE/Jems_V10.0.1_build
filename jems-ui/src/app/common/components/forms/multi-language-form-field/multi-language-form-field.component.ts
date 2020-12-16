@@ -44,15 +44,15 @@ export class MultiLanguageFormFieldComponent implements OnInit, ControlValueAcce
 
   multiLanguageFormGroup: FormGroup;
 
-  constructor(public languageService: MultiLanguageInputService, public formBuilder: FormBuilder) {
+  constructor(public multiLanguageService: MultiLanguageInputService, public formBuilder: FormBuilder) {
   }
 
   ngOnInit(): void {
     this.initForm();
   }
 
-  isInputHidden(currentLanguage: InputTranslation.LanguageEnum | null, language: InputTranslation.LanguageEnum): boolean {
-    return currentLanguage !== language;
+  isInputVisible(currentLanguage: InputTranslation.LanguageEnum | null, language: InputTranslation.LanguageEnum): boolean {
+    return currentLanguage === language;
   }
 
   registerOnChange(fn: any): void {
@@ -66,9 +66,19 @@ export class MultiLanguageFormFieldComponent implements OnInit, ControlValueAcce
     isDisabled ? this.multiLanguageFormGroup.disable() : this.multiLanguageFormGroup.enable();
   }
 
-  writeValue(obj: InputTranslation[]): void {
-    if (obj) {
-      this.inputs.setValue(obj, {emitEvent: false});
+  writeValue(newValue: InputTranslation[]): void {
+    if (newValue && Array.isArray(newValue)) {
+      if (newValue.length !== this.multiLanguageService.languages.length) {
+        const inputTranslations = this.multiLanguageService.multiLanguageFormFieldDefaultValue();
+        inputTranslations.forEach(defaultItem => {
+          defaultItem.translation = newValue.find(it => it.language === defaultItem.language)?.translation || '';
+        });
+        this.inputs.setValue(inputTranslations, {emitEvent: false});
+      } else {
+        this.inputs.setValue(newValue, {emitEvent: false});
+      }
+    } else {
+      this.inputs.setValue(this.multiLanguageService.multiLanguageFormFieldDefaultValue());
     }
   }
 
@@ -88,7 +98,7 @@ export class MultiLanguageFormFieldComponent implements OnInit, ControlValueAcce
     this.multiLanguageFormGroup = this.formBuilder.group({
       inputs: this.formBuilder.array([])
     });
-    this.languageService.languages.forEach(language => {
+    this.multiLanguageService.languages.forEach(language => {
         this.inputs.push(
           this.formBuilder.group({
             translation: this.formBuilder.control('', this.validators),
