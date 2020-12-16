@@ -1,6 +1,7 @@
 package io.cloudflight.jems.server.project.entity.workpackage
 
 import io.cloudflight.jems.server.project.entity.Project
+import io.cloudflight.jems.server.project.entity.workpackage.activity.WorkPackageActivityEntity
 import javax.persistence.CascadeType
 import javax.persistence.Column
 import javax.persistence.Entity
@@ -29,18 +30,21 @@ data class WorkPackageEntity(
     val number: Int? = null,
 
     @Column
-    val name: String?,
+    val name: String? = null,
 
     @Column(name = "specific_objective")
-    val specificObjective: String?,
+    val specificObjective: String? = null,
 
     @Column(name = "objective_and_audience")
-    val objectiveAndAudience: String?,
+    val objectiveAndAudience: String? = null,
 
     @OneToMany(
         mappedBy = "workPackage",
         cascade = [CascadeType.ALL],
         orphanRemoval = true
     )
-    val workPackageOutputs: MutableSet<WorkPackageOutputEntity> = mutableSetOf()
+    val workPackageOutputs: MutableSet<WorkPackageOutputEntity> = mutableSetOf(),
+
+    @OneToMany(mappedBy = "activityId.workPackageId", cascade = [CascadeType.ALL], orphanRemoval = true)
+    val activities: List<WorkPackageActivityEntity> = emptyList(),
 )
