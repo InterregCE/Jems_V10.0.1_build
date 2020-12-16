@@ -22,8 +22,8 @@
                             *matHeaderCellDef> {{'project.partner.budget.table.number.of.units' | translate}} </mat-header-cell>
                     <mat-cell *matCellDef="let control;  let i = index" [formGroupName]="i">
                         <mat-form-field class="text-right" [appFormFieldWidth]="5">
-                            <input [min]="constants.MIN_VALUE" [max]="constants.MAX_VALUE"
-                                   [formControlName]="constants.FORM_CONTROL_NAMES.numberOfUnits" type="number"
+                            <input currencyMask [min]="constants.MIN_VALUE" [max]="constants.MAX_VALUE"
+                                   [formControlName]="constants.FORM_CONTROL_NAMES.numberOfUnits" type="decimal"
                                    matInput>
                         </mat-form-field>
                     </mat-cell>
@@ -35,8 +35,8 @@
                             *matHeaderCellDef> {{'project.partner.budget.table.price.per.unit' | translate}} </mat-header-cell>
                     <mat-cell *matCellDef="let control;  let i = index" [formGroupName]="i">
                         <mat-form-field class="text-right" [appFormFieldWidth]="'medium'">
-                            <input [min]="constants.MIN_VALUE" [max]="constants.MAX_VALUE"
-                                   [formControlName]="constants.FORM_CONTROL_NAMES.pricePerUnit" type="number" matInput>
+                            <input currencyMask [min]="constants.MIN_VALUE" [max]="constants.MAX_VALUE"
+                                   [formControlName]="constants.FORM_CONTROL_NAMES.pricePerUnit" type="decimal" matInput>
                         </mat-form-field>
                     </mat-cell>
                     <mat-footer-cell *matFooterCellDef></mat-footer-cell>
