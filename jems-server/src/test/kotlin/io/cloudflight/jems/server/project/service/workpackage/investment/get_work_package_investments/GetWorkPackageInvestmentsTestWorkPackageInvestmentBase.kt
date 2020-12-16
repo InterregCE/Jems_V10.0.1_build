@@ -20,7 +20,7 @@ internal class GetWorkPackageInvestmentsTestWorkPackageInvestmentBase : UnitTest
         val expectedResult = PageImpl(listOf(createWorkPackageInvestment(), createWorkPackageInvestment()), pageRequest, 2)
         every { persistence.getWorkPackageInvestments(workPackageId, pageRequest) } returns expectedResult
 
-        val workPackageInvestments = getWorkPackageInvestments.getWorkPackageInvestments(projectId, workPackageId, pageRequest)
+        val workPackageInvestments = getWorkPackageInvestments.getWorkPackageInvestments(workPackageId, pageRequest)
 
         verify(exactly = 1) { persistence.getWorkPackageInvestments(workPackageId, pageRequest) }
         confirmVerified(persistence)

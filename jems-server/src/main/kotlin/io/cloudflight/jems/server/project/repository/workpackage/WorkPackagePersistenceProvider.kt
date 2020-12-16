@@ -2,7 +2,8 @@ package io.cloudflight.jems.server.project.repository.workpackage
 
 import io.cloudflight.jems.server.common.exception.ResourceNotFoundException
 import io.cloudflight.jems.server.programme.repository.indicator.IndicatorOutputRepository
-import io.cloudflight.jems.server.project.entity.workpackage.WorkPackage
+import io.cloudflight.jems.server.project.entity.workpackage.WorkPackageEntity
+import io.cloudflight.jems.server.project.entity.workpackage.WorkPackageInvestmentEntity
 import io.cloudflight.jems.server.project.repository.description.ProjectPeriodRepository
 import io.cloudflight.jems.server.project.service.workpackage.WorkPackagePersistence
 import io.cloudflight.jems.server.project.service.workpackage.model.WorkPackageInvestment
@@ -24,9 +25,8 @@ class WorkPackagePersistenceProvider(
 
     @Transactional
     override fun updateWorkPackageOutputs(
-        projectId: Long,
+        workPackageId: Long,
         workPackageOutputs: Set<WorkPackageOutputUpdate>,
-        workPackageId: Long
     ): Set<WorkPackageOutput> {
         val workPackage = getWorkPackageOrThrow(workPackageId)
 
@@ -38,7 +38,7 @@ class WorkPackagePersistenceProvider(
                 else null
             val projectPeriod =
                 if (it.periodNumber != null)
-                    projectPeriodRepository.findByIdProjectIdAndIdNumber(projectId, it.periodNumber)
+                    projectPeriodRepository.findByIdProjectIdAndIdNumber(workPackage.project.id, it.periodNumber)
                 else null
 
             workPackage.workPackageOutputs.add(it.toEntity(indicatorOutput, workPackage, projectPeriod))
@@ -55,8 +55,7 @@ class WorkPackagePersistenceProvider(
 
     @Transactional(readOnly = true)
     override fun getWorkPackageInvestment(workPackageInvestmentId: UUID) =
-        workPackageInvestmentRepository.findById(workPackageInvestmentId)
-            .orElseThrow { ResourceNotFoundException("WorkPackageInvestmentEntity") }.toWorkPackageInvestment()
+        getWorkPackageInvestmentOrThrow(workPackageInvestmentId).toWorkPackageInvestment()
 
     @Transactional(readOnly = true)
     override fun getWorkPackageInvestments(workPackageId: Long, pageable: Pageable) =
@@ -94,8 +93,15 @@ class WorkPackagePersistenceProvider(
     override fun deleteWorkPackageInvestment(workPackageInvestmentId: UUID) =
         workPackageInvestmentRepository.deleteById(workPackageInvestmentId)
 
-    private fun getWorkPackageOrThrow(workPackageId: Long): WorkPackage =
+    @Transactional(readOnly = true)
+    override fun getProjectIdFromWorkPackageInvestment(workPackageInvestmentId: UUID): Long =
+        getWorkPackageInvestmentOrThrow(workPackageInvestmentId).workPackage.project.id
+
+    private fun getWorkPackageOrThrow(workPackageId: Long): WorkPackageEntity =
         workPackageRepository.findById(workPackageId).orElseThrow { ResourceNotFoundException("workpackage") }
 
-}
+    private fun getWorkPackageInvestmentOrThrow(workPackageInvestmentId: UUID): WorkPackageInvestmentEntity =
+        workPackageInvestmentRepository.findById(workPackageInvestmentId)
+            .orElseThrow { ResourceNotFoundException("WorkPackageInvestmentEntity") }
 
+}

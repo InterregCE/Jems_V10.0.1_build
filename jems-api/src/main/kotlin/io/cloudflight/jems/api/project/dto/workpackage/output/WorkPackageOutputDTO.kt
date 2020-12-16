@@ -1,4 +1,4 @@
-package io.cloudflight.jems.api.project.dto.workpackage.workpackageoutput
+package io.cloudflight.jems.api.project.dto.workpackage.output
 
 import io.cloudflight.jems.api.programme.dto.indicator.IndicatorOutputDto
 

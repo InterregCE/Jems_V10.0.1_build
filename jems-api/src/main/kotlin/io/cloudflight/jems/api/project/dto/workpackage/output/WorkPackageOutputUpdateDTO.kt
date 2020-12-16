@@ -1,4 +1,4 @@
-package io.cloudflight.jems.api.project.dto.workpackage.workpackageoutput
+package io.cloudflight.jems.api.project.dto.workpackage.output
 
 data class WorkPackageOutputUpdateDTO(
 

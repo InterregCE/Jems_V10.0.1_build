@@ -5,5 +5,5 @@ import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
 
 interface GetWorkPackageInvestmentsInteractor {
-    fun getWorkPackageInvestments(projectId: Long, workPackageId: Long, pageable: Pageable): Page<WorkPackageInvestment>
+    fun getWorkPackageInvestments(workPackageId: Long, pageable: Pageable): Page<WorkPackageInvestment>
 }

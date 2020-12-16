@@ -4,5 +4,7 @@ import io.cloudflight.jems.server.project.service.workpackage.model.WorkPackageI
 import java.util.*
 
 interface GetWorkPackageInvestmentInteractor {
-    fun getWorkPackageInvestment(projectId: Long, workPackageInvestmentId: UUID): WorkPackageInvestment
+
+    fun getWorkPackageInvestment(investmentId: UUID): WorkPackageInvestment
+
 }

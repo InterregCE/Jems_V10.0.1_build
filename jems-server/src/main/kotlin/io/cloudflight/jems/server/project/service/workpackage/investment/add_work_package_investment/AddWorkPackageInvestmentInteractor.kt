@@ -5,7 +5,6 @@ import java.util.*
 
 interface AddWorkPackageInvestmentInteractor {
     fun addWorkPackageInvestment(
-        projectId: Long,
         workPackageId: Long,
         workPackageInvestment: WorkPackageInvestment,
     ): UUID

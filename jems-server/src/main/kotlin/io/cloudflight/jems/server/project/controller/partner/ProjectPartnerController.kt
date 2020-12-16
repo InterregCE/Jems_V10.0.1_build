@@ -1,6 +1,6 @@
 package io.cloudflight.jems.server.project.controller.partner
 
-import io.cloudflight.jems.api.project.ProjectPartnerApi
+import io.cloudflight.jems.api.project.partner.ProjectPartnerApi
 import io.cloudflight.jems.api.project.dto.InputProjectContact
 import io.cloudflight.jems.api.project.dto.ProjectPartnerMotivationDTO
 import io.cloudflight.jems.api.project.dto.partner.InputProjectPartnerCreate

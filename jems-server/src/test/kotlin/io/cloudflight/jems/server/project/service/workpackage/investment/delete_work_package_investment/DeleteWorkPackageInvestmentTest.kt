@@ -18,7 +18,7 @@ internal class DeleteWorkPackageInvestmentTest : UnitTestWorkPackageInvestmentBa
         val expectedWorkPackageInvestmentId = UUID.randomUUID()
         every { persistence.deleteWorkPackageInvestment(expectedWorkPackageInvestmentId) } returns Unit
 
-        deleteWorkPackageInvestment.deleteWorkPackageInvestment(projectId, expectedWorkPackageInvestmentId)
+        deleteWorkPackageInvestment.deleteWorkPackageInvestment(expectedWorkPackageInvestmentId)
 
         verify(exactly = 1) { persistence.deleteWorkPackageInvestment(expectedWorkPackageInvestmentId) }
         confirmVerified(persistence)

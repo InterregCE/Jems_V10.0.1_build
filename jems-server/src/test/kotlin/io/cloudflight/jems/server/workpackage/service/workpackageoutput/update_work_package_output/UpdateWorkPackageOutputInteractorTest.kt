@@ -3,8 +3,8 @@ package io.cloudflight.jems.server.workpackage.service.workpackageoutput.update_
 import io.cloudflight.jems.server.project.service.workpackage.WorkPackagePersistence
 import io.cloudflight.jems.server.project.service.workpackage.model.WorkPackageOutput
 import io.cloudflight.jems.server.project.service.workpackage.model.WorkPackageOutputUpdate
-import io.cloudflight.jems.server.project.service.workpackage.update_work_package_output.UpdateWorkPackageOutput
-import io.cloudflight.jems.server.project.service.workpackage.update_work_package_output.UpdateWorkPackageOutputInteractor
+import io.cloudflight.jems.server.project.service.workpackage.output.update_work_package_output.UpdateWorkPackageOutput
+import io.cloudflight.jems.server.project.service.workpackage.output.update_work_package_output.UpdateWorkPackageOutputInteractor
 import io.mockk.MockKAnnotations
 import io.mockk.every
 import io.mockk.impl.annotations.MockK
@@ -60,21 +60,19 @@ class UpdateWorkPackageOutputInteractorTest {
 
     @Test
     fun `delete work package outputs from a work package`() {
-        every { persistence.updateWorkPackageOutputs(any(), any(), any()) } returns emptySet<WorkPackageOutput>()
-        Assertions.assertThat(updateWorkPackageOutputInteractor.updateWorkPackageOutputs(1L, emptySet(), 1L)).isEmpty()
+        every { persistence.updateWorkPackageOutputs(any(), any()) } returns emptySet<WorkPackageOutput>()
+        Assertions.assertThat(updateWorkPackageOutputInteractor.updateWorkPackageOutputs(1L, emptySet())).isEmpty()
     }
 
     @Test
     fun `update `() {
-        every { persistence.updateWorkPackageOutputs(1L, any(), 1L) } returns workPackageOutputsUpdated
+        every { persistence.updateWorkPackageOutputs(1L, any()) } returns workPackageOutputsUpdated
         Assertions.assertThat(
             updateWorkPackageOutputInteractor.updateWorkPackageOutputs(
                 1L,
                 workPackageOutputsToUpdate,
-                1L
             )
         ).isEqualTo(workPackageOutputsUpdated)
     }
-
 
 }

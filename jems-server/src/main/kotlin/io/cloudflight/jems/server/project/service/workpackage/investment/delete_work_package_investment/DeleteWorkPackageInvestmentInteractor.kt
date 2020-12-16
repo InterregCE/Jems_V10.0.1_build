@@ -3,5 +3,5 @@ package io.cloudflight.jems.server.project.service.workpackage.investment.delete
 import java.util.*
 
 interface DeleteWorkPackageInvestmentInteractor {
-    fun deleteWorkPackageInvestment(projectId: Long, workPackageInvestmentId: UUID)
+    fun deleteWorkPackageInvestment(investmentId: UUID)
 }

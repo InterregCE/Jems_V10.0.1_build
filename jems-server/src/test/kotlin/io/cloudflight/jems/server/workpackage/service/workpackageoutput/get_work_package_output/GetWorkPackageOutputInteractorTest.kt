@@ -1,8 +1,8 @@
 package io.cloudflight.jems.server.workpackage.service.workpackageoutput.get_work_package_output
 
 import io.cloudflight.jems.server.project.service.workpackage.WorkPackagePersistence
-import io.cloudflight.jems.server.project.service.workpackage.get_work_package_output.GetWorkPackageOutput
-import io.cloudflight.jems.server.project.service.workpackage.get_work_package_output.GetWorkPackageOutputInteractor
+import io.cloudflight.jems.server.project.service.workpackage.output.get_work_package_output.GetWorkPackageOutput
+import io.cloudflight.jems.server.project.service.workpackage.output.get_work_package_output.GetWorkPackageOutputInteractor
 import io.cloudflight.jems.server.project.service.workpackage.model.WorkPackageOutput
 import io.mockk.MockKAnnotations
 import io.mockk.every
@@ -47,13 +47,13 @@ class GetWorkPackageOutputInteractorTest {
     @Test
     fun `get work package outputs returns empty list`() {
         every { persistence.getWorkPackageOutputsForWorkPackage(any()) } returns emptySet<WorkPackageOutput>()
-        assertThat(getWorkPackageOutputInteractor.getWorkPackageOutputsForWorkPackage(1L, 1L)).isEmpty()
+        assertThat(getWorkPackageOutputInteractor.getWorkPackageOutputsForWorkPackage(1L)).isEmpty()
     }
 
     @Test
     fun `get work package outputs`() {
         every { persistence.getWorkPackageOutputsForWorkPackage(any()) } returns workPackageOutputs
-        assertThat(getWorkPackageOutputInteractor.getWorkPackageOutputsForWorkPackage(1L, 1L)).isEqualTo(
+        assertThat(getWorkPackageOutputInteractor.getWorkPackageOutputsForWorkPackage(1L)).isEqualTo(
             workPackageOutputs
         )
     }

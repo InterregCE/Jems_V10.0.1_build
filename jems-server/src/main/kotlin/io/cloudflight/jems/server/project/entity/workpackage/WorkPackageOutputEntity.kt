@@ -20,7 +20,7 @@ data class WorkPackageOutputEntity(
 
     @ManyToOne(optional = false, fetch = FetchType.LAZY)
     @field:NotNull
-    val workPackage: WorkPackage,
+    val workPackage: WorkPackageEntity,
 
     @ManyToOne
     val period: ProjectPeriod? = null,

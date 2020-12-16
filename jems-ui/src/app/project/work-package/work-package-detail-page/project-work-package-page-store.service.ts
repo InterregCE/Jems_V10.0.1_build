@@ -28,7 +28,7 @@ export class ProjectWorkPackagePageStore {
       this.workPackage$.next({});
       return;
     }
-    this.workPackageService.getWorkPackageById(this.workPackageId, this.projectId)
+    this.workPackageService.getWorkPackageById(this.workPackageId)
       .pipe(
         tap(workPackage => Log.info('Fetched project work package:', this, workPackage)),
         tap(workPackage => this.workPackage$.next(workPackage)),
@@ -36,7 +36,7 @@ export class ProjectWorkPackagePageStore {
   }
 
   saveWorkPackage(workPackage: InputWorkPackageUpdate): Observable<OutputWorkPackage> {
-    return this.workPackageService.updateWorkPackage(this.projectId, workPackage)
+    return this.workPackageService.updateWorkPackage(workPackage)
       .pipe(
         tap(saved => this.workPackage$.next(saved)),
         tap(saved => Log.info('Updated workPackage:', this, saved))

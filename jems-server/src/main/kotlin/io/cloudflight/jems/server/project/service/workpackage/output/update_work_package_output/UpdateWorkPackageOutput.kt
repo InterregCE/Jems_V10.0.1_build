@@ -1,10 +1,10 @@
-package io.cloudflight.jems.server.project.service.workpackage.update_work_package_output
+package io.cloudflight.jems.server.project.service.workpackage.output.update_work_package_output
 
-import io.cloudflight.jems.server.project.authorization.CanUpdateProject
+import io.cloudflight.jems.server.project.authorization.CanUpdateProjectWorkPackage
 import io.cloudflight.jems.server.project.service.workpackage.WorkPackagePersistence
 import io.cloudflight.jems.server.project.service.workpackage.model.WorkPackageOutput
 import io.cloudflight.jems.server.project.service.workpackage.model.WorkPackageOutputUpdate
-import io.cloudflight.jems.server.project.service.workpackage.validateWorkPackageOutputsLimit
+import io.cloudflight.jems.server.project.service.workpackage.output.validateWorkPackageOutputsLimit
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 
@@ -13,14 +13,13 @@ class UpdateWorkPackageOutput(
     private val workPackagePersistence: WorkPackagePersistence
 ) : UpdateWorkPackageOutputInteractor {
 
-    @CanUpdateProject
+    @CanUpdateProjectWorkPackage
     @Transactional
     override fun updateWorkPackageOutputs(
-        projectId: Long,
+        workPackageId: Long,
         workPackageOutputUpdate: Set<WorkPackageOutputUpdate>,
-        workPackageId: Long
     ): Set<WorkPackageOutput> {
         validateWorkPackageOutputsLimit(workPackageOutputUpdate)
-        return workPackagePersistence.updateWorkPackageOutputs(projectId, workPackageOutputUpdate, workPackageId)
+        return workPackagePersistence.updateWorkPackageOutputs(workPackageId, workPackageOutputUpdate)
     }
 }
