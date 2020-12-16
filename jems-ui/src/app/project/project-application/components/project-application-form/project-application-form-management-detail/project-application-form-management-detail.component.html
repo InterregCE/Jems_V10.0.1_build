@@ -63,8 +63,8 @@
             <h6>{{'project.application.form.management.field.5' | translate}}</h6>
             <p class="intro-text-small">{{'project.application.form.management.field.5.intro' | translate}}</p>
         </div>
-        <app-row-list-template [columnClassList]="['max-15-rem']">
-            <div>
+        <div appTableConfig [widthConfig]="['max-15-rem','']">
+            <div class="pb-3">
                 <span>{{'project.application.form.management.cooperation.table.header.criteria' | translate}}</span>
                 <span>{{'project.application.form.management.cooperation.table.header.description' | translate}}</span>
             </div>
@@ -149,15 +149,15 @@
                         [disabled]="!editable || !selection.isSelected('criteria_financing')">
                 </app-expandable-textarea>
             </div>
-        </app-row-list-template>
+        </div>
 
         <div class="intro-text">
             <h6>{{'project.application.form.management.field.6' | translate}}</h6>
             <p class="intro-text-small">{{'project.application.form.management.field.6.intro' | translate}}</p>
         </div>
 
-        <app-row-list-template [columnClassList]="['min-15-rem','min-20-rem']">
-            <div>
+        <div  appTableConfig [widthConfig]="['min-15-rem','min-20-rem','']">
+            <div class="pb-3">
                 <span>{{'project.application.form.management.principles.table.header.principles' | translate}}</span>
                 <span>{{'project.application.form.management.principles.table.header.contribution' | translate}}</span>
                 <span>{{'project.application.form.management.principles.table.header.description' | translate}}</span>
@@ -210,7 +210,7 @@
                                          [disabled]="!editable || !selectedContributionPrincipleEquality">
                 </app-expandable-textarea>
             </div>
-        </app-row-list-template>
+        </div>
 
     </form>
 </app-form>

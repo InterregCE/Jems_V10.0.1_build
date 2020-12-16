@@ -8,7 +8,6 @@ import {PaginatorComponent} from '@common/components/table/paginator/paginator.c
 import {RouterModule} from '@angular/router';
 import {ProjectApplicationListComponent} from '../project/project-application/components/project-application-list/project-application-list.component';
 import {MoneyPipe} from './pipe/money.pipe';
-import {RowListTemplateComponent} from './templates/row-list-template/row-list-template.component';
 import {MaterialModule} from './material/material-module';
 import {BreadcrumbComponent} from '@common/components/breadcrumb/breadcrumb.component';
 import {AlertComponent} from '@common/components/forms/form-validation/alert.component';
@@ -23,9 +22,11 @@ import {FormComponent} from '@common/components/section/form/form.component';
 import {PercentagePipe} from './pipe/percentage';
 import {MultiLanguageComponent} from '@common/components/forms/multi-language/multi-language.component';
 import {ContextInfoComponent} from '@common/components/info-trigger/context-info.component';
-import {ExpectedNumberOfCharsDirective} from './directives/expected-number-of-chars.directive';
+import {FormFieldWidthDirective} from './directives/form-field-width/form-field-width.directive';
 import {NgxCurrencyModule} from 'ngx-currency';
 import {CurrencyDirective} from './directives/currency.directive';
+import {TableConfigDirective} from './directives/table-config/table-config.directive';
+import {MultiLanguageFormFieldComponent} from '@common/components/forms/multi-language-form-field/multi-language-form-field.component';
 
 const modules = [
   CommonModule,
@@ -40,7 +41,6 @@ const modules = [
 
 const declarations = [
   ProjectApplicationListComponent,
-  RowListTemplateComponent,
   TableComponent,
   PaginatorComponent,
   FormComponent,
@@ -57,8 +57,10 @@ const declarations = [
   HelpMenuComponent,
   SideNavComponent,
   ContextInfoComponent,
-  ExpectedNumberOfCharsDirective,
-  CurrencyDirective
+  FormFieldWidthDirective,
+  CurrencyDirective,
+  TableConfigDirective,
+  MultiLanguageFormFieldComponent
 ];
 
 const providers = [

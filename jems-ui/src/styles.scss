@@ -14,7 +14,8 @@
   @include generate-theme-vars($light-theme);
 }
 
-@import "src/app/common/directives/expected-number-of-chars.scss";
+@import "src/app/common/directives/form-field-width/form-feild-width";
+@import "src/app/common/directives/table-config/table-config";
 
 /**
  * Overriding styles: if you want to change colors of default material theme in specific components
@@ -23,16 +24,10 @@
 @import "src/app/theme/override-material-in-component/disable-underline-on-disabled-forms";
 @import "src/app/theme/override-material-in-component/disable-padding-on-mat-lists";
 @import "src/app/theme/override-material-in-component/customize-form-fields-and-buttons";
-@import "src/app/theme/override-material-in-component/customize-ag-grid-material";
 @import "src/app/theme/override-material-in-component/customize-tooltip";
 @import "src/app/theme/override-material-in-component/style-multi-language-selection-buttons";
 @import "src/app/theme/override-material-in-component/tab-group";
 
-/**
- * Ag-grid imports
- */
-@import "../node_modules/ag-grid-community/dist/styles/ag-grid.css";
-@import "../node_modules/ag-grid-community/dist/styles/ag-theme-material.css";
 
 @import "./common-classes.scss";
 @import "./layout-classes.scss";

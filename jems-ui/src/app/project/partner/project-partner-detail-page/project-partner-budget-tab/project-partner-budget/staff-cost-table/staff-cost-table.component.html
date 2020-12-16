@@ -1,14 +1,14 @@
 <ng-container [formGroup]="budgetForm" *ngIf="items.length>0">
-    <ng-container [formGroup]="table">
+    <ng-container [formGroup]="staff">
         <app-multi-language>
             <mat-table
                     appTableConfig
                     [widthConfig]="['min-15-rem','','','max-10-rem','max-2-rem']"
                     [dataSource]="dataSource" [formArrayName]="constants.FORM_CONTROL_NAMES.items"
-                    class="mat-elevation-z2 budget-table">
+                    class="mat-elevation-z2 staff-budget-table">
                 <ng-container matColumnDef="description">
                     <mat-header-cell
-                            *matHeaderCellDef> {{'project.partner.budget.table.description' | translate}} </mat-header-cell>
+                            *matHeaderCellDef> {{'project.partner.budget.table.staff.description' | translate}} </mat-header-cell>
                     <mat-cell *matCellDef="let control;  let i = index" [formGroupName]="i">
                         <app-multi-language-form-field
                                 [formControlName]="constants.FORM_CONTROL_NAMES.description">
@@ -38,8 +38,7 @@
                         <mat-form-field [appFormFieldWidth]="'medium'">
                             <input currencyMask
                                    [options]="{min: constants.MIN_VALUE, max: constants.MAX_VALUE, align: 'right'}"
-                                   [formControlName]="constants.FORM_CONTROL_NAMES.pricePerUnit" type="decimal"
-                                   matInput>
+                                   [formControlName]="constants.FORM_CONTROL_NAMES.pricePerUnit" type="decimal" matInput>
                         </mat-form-field>
                     </mat-cell>
                     <mat-footer-cell *matFooterCellDef></mat-footer-cell>
@@ -55,7 +54,7 @@
                     <mat-footer-cell *matFooterCellDef
                                      class="justify-end"
                                      [class.invalid]="!total.valid">
-                        <div class="text-overflow-ellipsis">{{total.value | asMoney}} </div>
+                        <div class="text-overflow-ellipsis">{{total.value | asMoney}}</div>
                     </mat-footer-cell>
                 </ng-container>
 
@@ -87,16 +86,14 @@
             </app-form-field-errors>
         </mat-error>
         <button *ngIf="editable" mat-icon-button type="button" class="mt-2"
-                [disabled]="isAddNewItemDisabled$ | async"
                 (click)="addNewItem()">
             <mat-icon>add</mat-icon>
         </button>
     </ng-container>
 </ng-container>
+
 <p *ngIf="editable && items.length < 1">
     <button mat-raised-button color="primary"
             (click)="addNewItem()">+ {{'project.partner.budget.button.add' | translate}}
     </button>
 </p>
-
-

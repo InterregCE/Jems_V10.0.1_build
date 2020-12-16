@@ -75,13 +75,7 @@ describe('ProjectApplicationPartnerBudgetPageComponent', () => {
       url: '//api/project/partner/2/budget/infrastructure'
     });
 
-    component.updateBudgets({
-      staff: new PartnerBudgetTable(PartnerBudgetTableType.STAFF, []),
-      travel: new PartnerBudgetTable(PartnerBudgetTableType.TRAVEL, []),
-      external: new PartnerBudgetTable(PartnerBudgetTableType.EXTERNAL, []),
-      equipment: new PartnerBudgetTable(PartnerBudgetTableType.EQUIPMENT, []),
-      infrastructure: new PartnerBudgetTable(PartnerBudgetTableType.INFRASTRUCTURE, [])
-    });
+    component.updateBudgets();
     tick();
 
     httpTestingController.expectOne({

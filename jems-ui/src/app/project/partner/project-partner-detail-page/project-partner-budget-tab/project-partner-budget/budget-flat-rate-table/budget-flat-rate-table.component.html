@@ -1,0 +1,22 @@
+<mat-table
+        appTableConfig
+        [widthConfig]="['','min-5-rem']"
+        [dataSource]="[]" class="mat-elevation-z2">
+    <ng-container matColumnDef="description">
+        <mat-header-cell
+                *matHeaderCellDef> {{description}} </mat-header-cell>
+        <mat-footer-cell *matFooterCellDef></mat-footer-cell>
+    </ng-container>
+
+    <ng-container matColumnDef="total">
+        <mat-header-cell class="justify-end"
+                         *matHeaderCellDef> {{'project.partner.budget.table.total' | translate}} </mat-header-cell>
+        <mat-footer-cell *matFooterCellDef
+                         class="justify-end"> {{total | asMoney}} </mat-footer-cell>
+    </ng-container>
+
+    <mat-header-row *matHeaderRowDef="columnsToDisplay"></mat-header-row>
+    <mat-row *matRowDef="let myRowData; columns: columnsToDisplay;"></mat-row>
+    <mat-footer-row *matFooterRowDef="columnsToDisplay"></mat-footer-row>
+
+</mat-table>

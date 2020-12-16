@@ -1,5 +1,4 @@
 import {ChangeDetectionStrategy, Component, Input, OnInit} from '@angular/core';
-import {ProjectPartnerBudgetConstants} from '../project-partner-budget.constants';
 import {
   AbstractControl,
   ControlContainer,
@@ -10,28 +9,28 @@ import {
   Validators
 } from '@angular/forms';
 import {MatTableDataSource} from '@angular/material/table';
-import {map, startWith} from 'rxjs/operators';
+import {ProjectPartnerBudgetConstants} from '../project-partner-budget.constants';
 import {Observable} from 'rxjs';
+import {map, startWith} from 'rxjs/operators';
 import {NumberService} from '../../../../../../common/services/number.service';
 import {Tables} from '../../../../../../common/utils/tables';
 import {FormService} from '@common/components/section/form/form.service';
 import {MultiLanguageInputService} from '../../../../../../common/services/multi-language-input.service';
 
 @Component({
-  selector: 'app-budget-table',
-  templateUrl: './budget-table.component.html',
-  styleUrls: ['./budget-table.component.scss'],
+  selector: 'app-staff-cost-table',
+  templateUrl: './staff-cost-table.component.html',
+  styleUrls: ['./staff-cost-table.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush
+
 })
-export class BudgetTableComponent implements OnInit {
+export class StaffCostTableComponent implements OnInit {
 
   constants = ProjectPartnerBudgetConstants;
   columnsToDisplay = ['description', 'numberOfUnits', 'pricePerUnit', 'total', 'action'];
 
   @Input()
-  editable = true;
-  @Input()
-  tableName: string;
+  editable: boolean;
 
   budgetForm: FormGroup;
   dataSource: MatTableDataSource<AbstractControl>;
@@ -42,16 +41,15 @@ export class BudgetTableComponent implements OnInit {
   }
 
   ngOnInit(): void {
-
     this.dataSource = new MatTableDataSource<AbstractControl>(this.items.controls);
     this.isAddNewItemDisabled$ = this.items.valueChanges.pipe(startWith(null), map(() => this.items.length >= this.constants.MAX_NUMBER_OF_ITEMS));
 
     this.items.valueChanges.subscribe(() => {
       this.dataSource.data = this.items.controls;
       this.items.controls.forEach(control => {
-        this.setRowTotal(control as FormGroup);
+        this.setRowSum(control as FormGroup);
       });
-      this.setTableTotal();
+      this.setTotal();
     });
   }
 
@@ -72,7 +70,7 @@ export class BudgetTableComponent implements OnInit {
     this.formService.setDirty(true);
   }
 
-  private setTableTotal(): void {
+  private setTotal(): void {
     let total = 0;
     this.items.controls.forEach(control => {
       total = NumberService.sum([control.get(this.constants.FORM_CONTROL_NAMES.rowSum)?.value || 0, total]);
@@ -80,22 +78,22 @@ export class BudgetTableComponent implements OnInit {
     this.total.setValue(NumberService.truncateNumber(total));
   }
 
-  private setRowTotal(control: FormGroup): void {
+  private setRowSum(control: FormGroup): void {
     const numberOfUnits = control.get(this.constants.FORM_CONTROL_NAMES.numberOfUnits)?.value || 0;
     const pricePerUnit = control.get(this.constants.FORM_CONTROL_NAMES.pricePerUnit)?.value || 0;
     control.get(this.constants.FORM_CONTROL_NAMES.rowSum)?.setValue(NumberService.truncateNumber(NumberService.product([numberOfUnits, pricePerUnit])), {emitEvent: false});
   }
 
-  get table(): FormGroup {
-    return this.budgetForm.get(this.tableName) as FormGroup;
+  get staff(): FormGroup {
+    return this.budgetForm.get(this.constants.FORM_CONTROL_NAMES.staff) as FormGroup;
   }
 
   get items(): FormArray {
-    return this.table.get(this.constants.FORM_CONTROL_NAMES.items) as FormArray;
+    return this.staff.get(this.constants.FORM_CONTROL_NAMES.items) as FormArray;
   }
 
   get total(): FormControl {
-    return this.table.get(this.constants.FORM_CONTROL_NAMES.total) as FormControl;
+    return this.staff.get(this.constants.FORM_CONTROL_NAMES.total) as FormControl;
   }
 
 }

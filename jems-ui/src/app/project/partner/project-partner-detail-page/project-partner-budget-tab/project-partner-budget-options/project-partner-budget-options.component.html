@@ -13,7 +13,7 @@
                         {{'project.partner.budget.options.staff.costs.on.direct.cost.flat.rate.enabled' | translate}}
                     </mat-checkbox>
                     <mat-form-field
-                            [appExpectedNumberOfChars]="3" class="wrapper pl-1"
+                            [appFormFieldWidth]="3" class="wrapper pl-1"
                             [extendError]="true"
                             *ngIf="getFormControl(data.budgetOptionsForm,constants.FORM_CONTROL_NAMES.isStaffCostsFlatRateBasedOnDirectCostActive).value">
                         <input type="number"
@@ -46,7 +46,7 @@
                         {{'project.partner.budget.options.office.on.staff.cost.flat.rate.enabled' | translate}}
                     </mat-checkbox>
                     <mat-form-field
-                            [appExpectedNumberOfChars]="3"
+                            [appFormFieldWidth]="3"
                             [extendError]="true"
                             class="wrapper pl-1"
                             *ngIf="getFormControl(data.budgetOptionsForm,constants.FORM_CONTROL_NAMES.isOfficeFlatRateBasedOnStaffCostActive).value">
@@ -81,7 +81,7 @@
                         {{'project.partner.budget.options.travel.based.on.staff.cost.flat.rate.enabled' | translate}}
                     </mat-checkbox>
                     <mat-form-field
-                            [appExpectedNumberOfChars]="3"
+                            [appFormFieldWidth]="3"
                             [extendError]="true"
                             class="wrapper pl-1"
                             *ngIf="getFormControl(data.budgetOptionsForm,constants.FORM_CONTROL_NAMES.isTravelFlatRateBasedOnStaffCostActive).value">

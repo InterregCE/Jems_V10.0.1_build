@@ -1,8 +1,8 @@
 <div>
     <h6>{{'programme.priority.objective.title' | translate}}</h6>
     <form [formGroup]="policyForm">
-        <app-row-list-template [columnClassList]="['max-15-rem','']">
-            <div>
+        <div appTableConfig [widthConfig]="['max-15-rem','']">
+            <div class="pb-3">
                 <h6><span class="ml-5">{{'programme.priority.objective.table.column.code' | translate}}</span></h6>
                 <h6>{{'programme.priority.objective.table.column.title' | translate}}</h6>
             </div>
@@ -25,7 +25,7 @@
                     {{'programme.policy.' + control.key | translate}}
                 </div>
             </div>
-        </app-row-list-template>
+        </div>
     </form>
     <app-alert *ngIf="error$ | async as error"
                [show]="!submitted && !!error.i18nKey"

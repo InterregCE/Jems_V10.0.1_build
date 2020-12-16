@@ -22,8 +22,19 @@
   text-align: left;
 }
 
+.text-overflow-ellipsis {
+  display: block;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
 .intro-text-small {
   font-size: 0.75rem;
+}
+
+.justify-end {
+  justify-content: flex-end !important;
 }
 
 .no-bullets {
