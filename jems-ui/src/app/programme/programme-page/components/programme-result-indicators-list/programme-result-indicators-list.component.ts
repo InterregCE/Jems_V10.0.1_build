@@ -66,15 +66,15 @@ export class ProgrammeResultIndicatorsListComponent extends BaseComponent {
         sortProperty: 'measurementUnit'
       },
       {
+        displayedColumn: 'result.indicator.table.column.name.reference.year',
+        elementProperty: 'referenceYear',
+        sortProperty: 'referenceYear'
+      },
+      {
         displayedColumn: 'result.indicator.table.column.name.baseline',
         elementProperty: 'baseline',
         sortProperty: 'baseline',
         columnType: ColumnType.Decimal
-      },
-      {
-        displayedColumn: 'result.indicator.table.column.name.reference.year',
-        elementProperty: 'referenceYear',
-        sortProperty: 'referenceYear'
       },
       {
         displayedColumn: 'result.indicator.table.column.name.final.target',
