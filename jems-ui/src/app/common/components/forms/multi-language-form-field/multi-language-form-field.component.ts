@@ -15,6 +15,7 @@ import {
 } from '@angular/forms';
 import {InputTranslation} from '@cat/api';
 import {UntilDestroy, untilDestroyed} from '@ngneat/until-destroy';
+import {MultiLanguageFormFieldConstants} from '@common/components/forms/multi-language-form-field/multi-language-form-field.constants';
 
 @UntilDestroy()
 @Component({
@@ -35,6 +36,8 @@ import {UntilDestroy, untilDestroyed} from '@ngneat/until-destroy';
   ]
 })
 export class MultiLanguageFormFieldComponent implements OnInit, ControlValueAccessor, Validator {
+
+  constants = MultiLanguageFormFieldConstants;
 
   @Input()
   validators: ValidatorFn[] = [Validators.maxLength(255)];

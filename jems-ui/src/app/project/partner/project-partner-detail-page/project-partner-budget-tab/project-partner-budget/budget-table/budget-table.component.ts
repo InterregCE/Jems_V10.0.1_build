@@ -1,4 +1,4 @@
-import {Component, Input, OnInit} from '@angular/core';
+import {ChangeDetectionStrategy, Component, Input, OnInit} from '@angular/core';
 import {ProjectPartnerBudgetConstants} from '../project-partner-budget.constants';
 import {
   AbstractControl,
@@ -20,7 +20,8 @@ import {MultiLanguageInputService} from '../../../../../../common/services/multi
 @Component({
   selector: 'app-budget-table',
   templateUrl: './budget-table.component.html',
-  styleUrls: ['./budget-table.component.scss']
+  styleUrls: ['./budget-table.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class BudgetTableComponent implements OnInit {
 

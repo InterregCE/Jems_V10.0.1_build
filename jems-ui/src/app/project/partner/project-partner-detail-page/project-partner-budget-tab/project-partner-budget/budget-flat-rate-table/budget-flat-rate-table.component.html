@@ -16,7 +16,7 @@
     </ng-container>
 
     <mat-header-row *matHeaderRowDef="columnsToDisplay"></mat-header-row>
-    <mat-row *matRowDef="let myRowData; columns: columnsToDisplay;  let i = index;"></mat-row>
+    <mat-row *matRowDef="let myRowData; columns: columnsToDisplay;"></mat-row>
     <mat-footer-row *matFooterRowDef="columnsToDisplay"></mat-footer-row>
 
 </mat-table>

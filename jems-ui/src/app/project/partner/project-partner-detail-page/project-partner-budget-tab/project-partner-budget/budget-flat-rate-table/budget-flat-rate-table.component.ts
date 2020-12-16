@@ -1,9 +1,10 @@
-import {Component, Input} from '@angular/core';
+import {ChangeDetectionStrategy, Component, Input} from '@angular/core';
 
 @Component({
   selector: 'app-budget-flat-rate-table',
   templateUrl: './budget-flat-rate-table.component.html',
-  styleUrls: ['./budget-flat-rate-table.component.scss']
+  styleUrls: ['./budget-flat-rate-table.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class BudgetFlatRateTableComponent {
 
@@ -13,8 +14,5 @@ export class BudgetFlatRateTableComponent {
   description: string;
 
   columnsToDisplay = ['description', 'total'];
-
-  constructor() {
-  }
 
 }

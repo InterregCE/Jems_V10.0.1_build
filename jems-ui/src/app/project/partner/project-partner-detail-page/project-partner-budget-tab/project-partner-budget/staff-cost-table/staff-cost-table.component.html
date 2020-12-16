@@ -21,8 +21,9 @@
                     <mat-header-cell
                             *matHeaderCellDef> {{'project.partner.budget.table.number.of.units' | translate}} </mat-header-cell>
                     <mat-cell *matCellDef="let control;  let i = index" [formGroupName]="i">
-                        <mat-form-field class="text-right" [appFormFieldWidth]="5">
-                            <input currencyMask [min]="constants.MIN_VALUE" [max]="constants.MAX_VALUE"
+                        <mat-form-field [appFormFieldWidth]="5">
+                            <input currencyMask
+                                   [options]="{min: constants.MIN_VALUE, max: constants.MAX_VALUE, align: 'right'}"
                                    [formControlName]="constants.FORM_CONTROL_NAMES.numberOfUnits" type="decimal"
                                    matInput>
                         </mat-form-field>
@@ -34,8 +35,9 @@
                     <mat-header-cell
                             *matHeaderCellDef> {{'project.partner.budget.table.price.per.unit' | translate}} </mat-header-cell>
                     <mat-cell *matCellDef="let control;  let i = index" [formGroupName]="i">
-                        <mat-form-field class="text-right" [appFormFieldWidth]="'medium'">
-                            <input currencyMask [min]="constants.MIN_VALUE" [max]="constants.MAX_VALUE"
+                        <mat-form-field [appFormFieldWidth]="'medium'">
+                            <input currencyMask
+                                   [options]="{min: constants.MIN_VALUE, max: constants.MAX_VALUE, align: 'right'}"
                                    [formControlName]="constants.FORM_CONTROL_NAMES.pricePerUnit" type="decimal" matInput>
                         </mat-form-field>
                     </mat-cell>
@@ -71,7 +73,7 @@
                 </ng-container>
 
                 <mat-header-row *matHeaderRowDef="columnsToDisplay"></mat-header-row>
-                <mat-row *matRowDef="let myRowData; columns: columnsToDisplay;  let i = index;"></mat-row>
+                <mat-row *matRowDef="let myRowData; columns: columnsToDisplay;"></mat-row>
                 <mat-footer-row *matFooterRowDef="columnsToDisplay"></mat-footer-row>
 
             </mat-table>

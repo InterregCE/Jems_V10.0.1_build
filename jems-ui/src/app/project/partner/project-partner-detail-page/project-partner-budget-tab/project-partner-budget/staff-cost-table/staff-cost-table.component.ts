@@ -1,4 +1,4 @@
-import {Component, Input, OnInit} from '@angular/core';
+import {ChangeDetectionStrategy, Component, Input, OnInit} from '@angular/core';
 import {
   AbstractControl,
   ControlContainer,
@@ -20,7 +20,9 @@ import {MultiLanguageInputService} from '../../../../../../common/services/multi
 @Component({
   selector: 'app-staff-cost-table',
   templateUrl: './staff-cost-table.component.html',
-  styleUrls: ['./staff-cost-table.component.scss']
+  styleUrls: ['./staff-cost-table.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush
+
 })
 export class StaffCostTableComponent implements OnInit {
 
