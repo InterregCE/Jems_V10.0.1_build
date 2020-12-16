@@ -2,7 +2,7 @@
     <ng-container formArrayName="inputs">
         <ng-container *ngFor="let formGroup of inputs.controls; let i=index;" [formGroupName]="i">
             <ng-container
-                    *ngIf="isInputHidden(languageService.currentLanguage$ |async , formGroup.get('language').value)">
+                    *ngIf="isInputVisible(multiLanguageService.currentLanguage$ |async , formGroup.get('language').value)">
                 <mat-form-field>
                     <input formControlName="translation" matInput>
                     <mat-error>

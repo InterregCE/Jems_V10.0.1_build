@@ -35,7 +35,7 @@ export class BudgetTableComponent implements OnInit {
 
   budgetForm: FormGroup;
   dataSource: MatTableDataSource<AbstractControl>;
-  isAddNewItemDisabled$: Observable<boolean>;
+  numberOfItems$: Observable<number>;
 
   constructor(private formService: FormService, private controlContainer: ControlContainer, private formBuilder: FormBuilder, private multiLanguageInputService: MultiLanguageInputService) {
     this.budgetForm = this.controlContainer.control as FormGroup;
@@ -44,7 +44,7 @@ export class BudgetTableComponent implements OnInit {
   ngOnInit(): void {
 
     this.dataSource = new MatTableDataSource<AbstractControl>(this.items.controls);
-    this.isAddNewItemDisabled$ = this.items.valueChanges.pipe(startWith(null), map(() => this.items.length >= this.constants.MAX_NUMBER_OF_ITEMS));
+    this.numberOfItems$ = this.items.valueChanges.pipe(startWith(0), map(() => this.items.length));
 
     this.items.valueChanges.subscribe(() => {
       this.dataSource.data = this.items.controls;

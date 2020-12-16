@@ -6,7 +6,7 @@
             <ng-container *ngIf="!data.isStaffCostFlatRateActive">
                 <h6 id="staff-2" class="header">{{'project.partner.budget.staff' | translate}}</h6>
                 <app-staff-cost-table
-                        *ngIf="budgetsForm"
+                        *ngIf="staff"
                         [editable]="data.isProjectEditable"></app-staff-cost-table>
             </ng-container>
             <ng-container *ngIf="data.isStaffCostFlatRateActive">
@@ -32,7 +32,7 @@
             <ng-container *ngIf="!data.isTravelAndAccommodationFlatRateActive">
                 <h6 id="travel" class="header">{{'project.partner.budget.travel' | translate}}</h6>
                 <app-budget-table
-                        *ngIf="budgetsForm"
+                        *ngIf="travel"
                         [editable]="data.isProjectEditable"
                         [tableName]="constants.FORM_CONTROL_NAMES.travel">
                 </app-budget-table>
@@ -48,14 +48,14 @@
             <br>
             <h6 id="external" class="header">{{'project.partner.budget.external' | translate}}</h6>
             <app-budget-table
-                    *ngIf="budgetsForm"
+                    *ngIf="external"
                     [editable]="data.isProjectEditable"
                     [tableName]="constants.FORM_CONTROL_NAMES.external">
             </app-budget-table>
             <br>
             <h6 id="equipment" class="header">{{'project.partner.budget.equipment' | translate}}</h6>
             <app-budget-table
-                    *ngIf="budgetsForm"
+                    *ngIf="equipment"
                     [editable]="data.isProjectEditable"
                     [tableName]="constants.FORM_CONTROL_NAMES.equipment">
             </app-budget-table>
@@ -63,7 +63,7 @@
             <br>
             <h6 id="infrastructure" class="header">{{'project.partner.budget.infrastructure' | translate}}</h6>
             <app-budget-table
-                    *ngIf="budgetsForm"
+                    *ngIf="infrastructure"
                     [editable]="data.isProjectEditable"
                     [tableName]="constants.FORM_CONTROL_NAMES.infrastructure">
             </app-budget-table>
