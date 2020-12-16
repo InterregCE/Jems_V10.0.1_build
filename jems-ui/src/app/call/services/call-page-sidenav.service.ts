@@ -16,38 +16,17 @@ export class CallPageSidenavService {
   }
 
   private setHeadlines(callId: number): void {
-    const bulletsArray = [{
-      headline: {i18nKey: 'call.identification.title'},
-      route: '/app/call/detail/' + callId,
-      scrollToTop: true,
-      bullets: [
-        {
-          headline: {i18nKey: 'call.section.basic.data'},
-          scrollRoute: 'callTitle',
-          route: '/app/call/detail/' + callId,
-        },
-        {
-          headline: {i18nKey: 'call.programme.priorities.title'},
-          scrollRoute: 'callPriorities',
-          route: '/app/call/detail/' + callId,
-        },
-        {
-          headline: {i18nKey: 'call.strategy.title'},
-          scrollRoute: 'callStrategies',
-          route: '/app/call/detail/' + callId,
-        },
-        {
-          headline: {i18nKey: 'call.funds.title'},
-          scrollRoute: 'callFunds',
-          route: '/app/call/detail/' + callId,
-        }
-      ]
-    }
+    const bulletsArray = [
+      {
+        headline: {i18nKey: 'call.general.settings'},
+        route: '/app/call/detail/' + callId,
+        scrollToTop: true,
+      }
     ];
 
     const flatRates = {
-      headline: {i18nKey: 'call.detail.flat.rates'},
-      route: '/app/call/detail/' + callId + '/flatRates',
+      headline: {i18nKey: 'call.detail.budget.settings'},
+      route: '/app/call/detail/' + callId + '/budgetSettings',
     };
 
     if (callId) {
@@ -64,5 +43,9 @@ export class CallPageSidenavService {
 
   redirectToCallOverview(successMessage?: I18nLabel): void {
     this.routingService.navigate(['/app/call'], {state: {success: successMessage}});
+  }
+
+  redirectToCallDetail(callId: number, successMessage?: I18nLabel): void {
+    this.routingService.navigate(['/app/call/detail/' + callId], {state: {success: successMessage}});
   }
 }

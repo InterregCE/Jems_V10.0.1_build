@@ -92,7 +92,8 @@ export class CallDetailComponent implements OnInit {
       this.callStore.createCall(call)
         .pipe(
           take(1),
-          tap(created => this.callNavService.redirectToCallOverview(
+          tap(created => this.callNavService.redirectToCallDetail(
+            created.id,
             {
               i18nKey: 'call.detail.created.success',
               i18nArguments: {name: created.name}
@@ -150,6 +151,14 @@ export class CallDetailComponent implements OnInit {
       || this.buildUpdateEntityFunds().length === 0);
   }
 
+  formChanged(): void {
+    this.formService.setDirty(true);
+  }
+
+  resetForm(): void {
+    this.callForm.patchValue(this.call);
+  }
+
   private buildUpdateEntityStrategies(): OutputProgrammeStrategy.StrategyEnum[] {
     return this.strategies
       .filter(strategy => strategy.active)
@@ -160,13 +169,5 @@ export class CallDetailComponent implements OnInit {
     return this.funds
       .filter(fund => fund.selected)
       .map(fund => fund.id);
-  }
-
-  formChanged(): void {
-    this.formService.setDirty(true);
-  }
-
-  resetForm(): void {
-    this.callForm.patchValue(this.call);
   }
 }
