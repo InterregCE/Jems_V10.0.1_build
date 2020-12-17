@@ -86,6 +86,7 @@ export class MultiLanguageFormFieldComponent implements OnInit, ControlValueAcce
   }
 
   validate(control: AbstractControl): ValidationErrors | null {
+    this.multiLanguageFormGroup.updateValueAndValidity();
     return this.multiLanguageFormGroup.valid ? null : {
       multiLanguageError: {
         valid: false,

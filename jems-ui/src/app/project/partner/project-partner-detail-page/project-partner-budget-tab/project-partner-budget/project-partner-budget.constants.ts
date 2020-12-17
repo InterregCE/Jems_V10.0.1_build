@@ -1,3 +1,5 @@
+import {NumberService} from '../../../../../common/services/number.service';
+
 export class ProjectPartnerBudgetConstants {
 
   public static MAX_NUMBER_OF_ITEMS = 300;
@@ -26,7 +28,7 @@ export class ProjectPartnerBudgetConstants {
 
   public static FORM_ERRORS_ARGS = {
     total: {
-      max: {maxValue: ProjectPartnerBudgetConstants.MAX_VALUE}
+      max: {maxValue: NumberService.toLocale(ProjectPartnerBudgetConstants.MAX_VALUE)}
     },
   };
 
