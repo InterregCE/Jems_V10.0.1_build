@@ -15,7 +15,6 @@ import {HttpErrorResponse} from '@angular/common/http';
 import {ProjectStore} from '../../../project-application/containers/project-application-detail/services/project-store.service';
 import {ProjectPartnerDetailPageStore} from '../project-partner-detail-page.store';
 import {UntilDestroy, untilDestroyed} from '@ngneat/until-destroy';
-import {NumberService} from '../../../../common/services/number.service';
 
 @UntilDestroy()
 @Component({

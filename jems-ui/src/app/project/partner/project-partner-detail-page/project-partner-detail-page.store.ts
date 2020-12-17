@@ -10,7 +10,6 @@ import {PartnerBudgetTable} from '../../project-application/model/partner-budget
 import {Log} from '../../../common/utils/log';
 import {PartnerBudgetTableType} from '../../project-application/model/partner-budget-table-type';
 import {PartnerBudgetTableEntry} from '../../project-application/model/partner-budget-table-entry';
-import {MultiLanguageInputService} from '../../../common/services/multi-language-input.service';
 import {NumberService} from '../../../common/services/number.service';
 
 @Injectable()
@@ -28,8 +27,7 @@ export class ProjectPartnerDetailPageStore {
 
   constructor(private projectStore: ProjectStore,
               private partnerStore: ProjectPartnerStore,
-              private projectPartnerBudgetService: ProjectPartnerBudgetService,
-              private multiLanguageInputService: MultiLanguageInputService
+              private projectPartnerBudgetService: ProjectPartnerBudgetService
   ) {
     this.budgets$ = this.budgets();
     this.budgetOptions$ = this.budgetOptions();
@@ -64,7 +62,6 @@ export class ProjectPartnerDetailPageStore {
       share()
     );
   }
-
 
   private budgetOptions(): Observable<BudgetOptions> {
     return combineLatest([this.updateBudgetOptionsEvent$.pipe(startWith(null)), this.partnerStore.partner$]).pipe(
@@ -128,9 +125,8 @@ export class ProjectPartnerDetailPageStore {
   }
 
   private totalBudget(): Observable<number> {
-    return combineLatest([this.updateBudgetOptionsEvent$.pipe(startWith(null)), this.updateBudgetEvent$.pipe(startWith(null))]).pipe(
-      withLatestFrom(this.partnerStore.partner$),
-      switchMap(([, partner]) => this.projectPartnerBudgetService.getTotal(partner.id)),
+    return combineLatest([this.partnerStore.partner$, this.updateBudgetOptionsEvent$.pipe(startWith(null)), this.updateBudgetEvent$.pipe(startWith(null))]).pipe(
+      switchMap(([partner]) => this.projectPartnerBudgetService.getTotal(partner.id)),
       map(total => NumberService.truncateNumber(total)),
       shareReplay(1)
     );
