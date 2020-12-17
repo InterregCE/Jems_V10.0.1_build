@@ -72,7 +72,7 @@ export class ProjectPartnerDetailPageStore {
       switchMap(id =>
         this.projectPartnerBudgetService.getBudgetOptions(id)
       ),
-      map((it: ProjectPartnerBudgetOptionsDto) => new BudgetOptions(it.officeAndAdministrationOnStaffCostsFlatRate, it.staffCostsFlatRate, it.travelAndAccommodationOnStaffCostsFlatRate, it.otherCostsOnStaffCostsFlatRate)),
+      map((it: ProjectPartnerBudgetOptionsDto) => new BudgetOptions(it.officeAndAdministrationFlatRate, it.staffCostsFlatRate, it.travelAndAccommodationFlatRate)),
       shareReplay(1)
     );
   }
