@@ -12,7 +12,7 @@
         <mat-tab label="{{'workpackage.tab.objectives' | translate}}">
             <app-project-work-package-objectives-tab
                     [workPackage]="workPackage"
-                    [editable]="projectStore.projectEditable$ | async"
+                    [editable]="workPackageStore.isProjectEditable$ | async"
                     [projectId]="projectId">
             </app-project-work-package-objectives-tab>
         </mat-tab>
@@ -20,7 +20,7 @@
             <app-project-application-form-work-package-output></app-project-application-form-work-package-output>
         </mat-tab>
         <mat-tab label="{{'workpackage.tab.activities' | translate}}">
-            <div></div>
+            <app-project-work-package-activities-tab></app-project-work-package-activities-tab>
         </mat-tab>
         <mat-tab label="{{'workpackage.tab.investment' | translate}}">
             <div></div>
@@ -30,7 +30,7 @@
     <app-project-work-package-objectives-tab
             *ngIf="!workPackageId"
             [workPackage]="workPackage"
-            [editable]="projectStore.projectEditable$ | async"
+            [editable]="workPackageStore.isProjectEditable$ | async"
             [projectId]="projectId">
     </app-project-work-package-objectives-tab>
 </div>

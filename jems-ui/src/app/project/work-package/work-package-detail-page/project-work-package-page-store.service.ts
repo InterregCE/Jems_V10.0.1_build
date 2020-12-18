@@ -1,9 +1,19 @@
 import {Injectable} from '@angular/core';
-import {InputWorkPackageCreate, InputWorkPackageUpdate, OutputWorkPackage, WorkPackageService} from '@cat/api';
-import {Observable, ReplaySubject, Subject} from 'rxjs';
-import {tap} from 'rxjs/operators';
+import {
+  InputWorkPackageCreate,
+  InputWorkPackageUpdate,
+  OutputProject,
+  OutputWorkPackage,
+  ProgrammeIndicatorService,
+  WorkPackageActivityService,
+  WorkPackageService
+} from '@cat/api';
+import {merge, Observable, ReplaySubject, Subject} from 'rxjs';
+import {shareReplay, switchMap, tap} from 'rxjs/operators';
 import {Log} from '../../../common/utils/log';
 import {ProjectApplicationFormSidenavService} from '../../project-application/containers/project-application-form-page/services/project-application-form-sidenav.service';
+import {ProjectStore} from '../../project-application/containers/project-application-detail/services/project-store.service';
+import {WorkPackageActivityDTO} from 'build/generated-sources/openapi/model/workPackageActivityDTO';
 
 @Injectable()
 export class ProjectWorkPackagePageStore {
@@ -13,9 +23,20 @@ export class ProjectWorkPackagePageStore {
 
   totalAmountChanged$ = new Subject<boolean>();
   workPackage$ = new ReplaySubject<OutputWorkPackage | any>(1);
+  isProjectEditable$: Observable<boolean>;
+  project$: Observable<OutputProject>;
+  activities$: Observable<WorkPackageActivityDTO[]>;
+
+  private savedActivities$ = new Subject<WorkPackageActivityDTO[]>();
 
   constructor(private workPackageService: WorkPackageService,
+              private projectStore: ProjectStore,
+              private programmeIndicatorService: ProgrammeIndicatorService,
+              private workPackageActivityService: WorkPackageActivityService,
               private projectApplicationFormSidenavService: ProjectApplicationFormSidenavService) {
+    this.isProjectEditable$ = this.projectStore.projectEditable$;
+    this.project$ = this.projectStore.getProject();
+    this.activities$ = this.workPackageActivities();
   }
 
   init(workPackageId: number | string | null, projectId: number): void {
@@ -28,6 +49,7 @@ export class ProjectWorkPackagePageStore {
       this.workPackage$.next({});
       return;
     }
+    this.projectStore.init(this.projectId);
     this.workPackageService.getWorkPackageById(this.workPackageId)
       .pipe(
         tap(workPackage => Log.info('Fetched project work package:', this, workPackage)),
@@ -49,6 +71,27 @@ export class ProjectWorkPackagePageStore {
         tap(created => this.workPackage$.next(created)),
         tap(created => Log.info('Created workPackage:', this, created)),
         tap(() => this.projectApplicationFormSidenavService.refreshPackages(this.projectId)),
+      );
+  }
+
+  saveWorkPackageActivities(activities: WorkPackageActivityDTO[]): Observable<WorkPackageActivityDTO[]> {
+    return this.workPackageActivityService.updateActivities(this.workPackageId, activities)
+      .pipe(
+        tap(saved => this.savedActivities$.next(saved)),
+        tap(saved => Log.info('Saved project activities', saved)),
+      );
+  }
+
+  private workPackageActivities(): Observable<WorkPackageActivityDTO[]> {
+    const initialActivities$ = this.workPackage$
+      .pipe(
+        switchMap(workPackage => this.workPackageActivityService.getActivities(workPackage.id)),
+        tap(activities => Log.info('Fetched project activities', activities)),
+      );
+
+    return merge(this.savedActivities$, initialActivities$)
+      .pipe(
+        shareReplay(1)
       );
   }
 }

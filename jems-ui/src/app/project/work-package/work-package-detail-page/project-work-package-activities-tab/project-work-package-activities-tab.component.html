@@ -1,0 +1,135 @@
+<ng-container *ngIf="(data$ | async) as data">
+    <app-form (save)="updateActivities()">
+        <form id="activitiesForm" [formGroup]="form">
+            <h5>
+                {{'project.application.form.workpackage.form.header' | translate}}
+                {{data.workPackageNumber}}
+            </h5>
+            <div>
+                <h6>{{'project.work.package.tab.title' | translate}}</h6>
+                <div class="intro-text-small">{{'project.work.package.tab.intro' | translate}}</div>
+            </div>
+
+            <app-multi-language *ngFor="let activity of activities.controls;let i=index" class="mt-4">
+                <ng-container [formArrayName]="constants.ACTIVITIES.name">
+                    <ng-container [formGroupName]="i">
+                        <div appTableConfig [widthConfig]="['activity-index','activity-title', 'max-2-rem']">
+                            <div>
+                                <h5>{{('project.work.package.tab.activity' | translate) + ' ' + data.workPackageNumber + '.' + (i + 1) }}</h5>
+                                <h5 class="text-overflow-ellipsis">
+                                    {{languageService.getCurrentValue(activity.get(constants.TITLE.name).value)}}
+                                </h5>
+                                <button type="button" (click)="removeActivity(i)" mat-icon-button color="accent">
+                                    <mat-icon>delete</mat-icon>
+                                </button>
+                            </div>
+                        </div>
+
+                        <app-multi-language-form-field
+                                [label]="'project.work.package.tab.activity.title'"
+                                [formControlName]="constants.TITLE.name"
+                                [validators]="constants.TITLE.validators">
+                        </app-multi-language-form-field>
+
+                        <div class="w-100">
+                            <mat-form-field class="w-50 warning-hint">
+                                <mat-label>{{'project.work.package.tab.activity.start.period' | translate}}</mat-label>
+                                <mat-select panelClass="material-select-panel"
+                                            [formControlName]="constants.START_PERIOD.name">
+                                    <mat-option *ngFor="let period of data.periods" [value]="period.number">
+                                        {{'project.application.form.work.package.output.delivery.period.entry' | translate : getPeriodArguments(period) }}
+                                    </mat-option>
+                                </mat-select>
+                                <mat-hint *ngIf="!data.periods?.length" class="warning-hint">
+                                    {{'project.application.form.work.package.output.delivery.period.required' | translate}}
+                                </mat-hint>
+                            </mat-form-field>
+
+                            <mat-form-field class="w-50">
+                                <mat-label>{{'project.work.package.tab.activity.end.period' | translate}}</mat-label>
+                                <mat-select panelClass="material-select-panel"
+                                            [formControlName]="constants.END_PERIOD.name">
+                                    <mat-option *ngFor="let period of data.periods" [value]="period.number">
+                                        {{'project.application.form.work.package.output.delivery.period.entry' | translate : getPeriodArguments(period) }}
+                                    </mat-option>
+                                </mat-select>
+                                <mat-hint *ngIf="!data.periods?.length" class="warning-hint">
+                                    {{'project.application.form.work.package.output.delivery.period.required' | translate}}
+                                </mat-hint>
+                            </mat-form-field>
+                            <mat-error>
+                                <app-form-field-errors
+                                        [errors]="activity.errors"
+                                        [messages]="constants.PERIODS.errorMessages"></app-form-field-errors>
+                            </mat-error>
+                        </div>
+
+                        <app-multi-language-form-field
+                                [label]="'project.work.package.tab.activity.description'"
+                                [formControlName]="constants.DESCRIPTION.name"
+                                [validators]="constants.DESCRIPTION.validators">
+                        </app-multi-language-form-field>
+
+                        <div class="pl-5">
+                            <h6>{{'Deliverables' | translate}}</h6>
+                            <div class="intro-text-small">{{'project.work.package.tab.deliverables.intro' | translate}}</div>
+                            <div *ngIf="deliverables(i).controls?.length" appTableConfig
+                                 [appearance]="'table'" class="mt-2"
+                                 [widthConfig]="['max-3-rem','min-15-rem','min-10-rem', 'max-2-rem']">
+                                <div>
+                                    <span class="mat-body-strong">{{'project.work.package.tab.deliverables.number' | translate }}</span>
+                                    <span class="mat-body-strong">{{'project.work.package.tab.deliverables.deliverable' | translate }}</span>
+                                    <span class="mat-body-strong">{{'project.work.package.tab.deliverables.period' | translate }}</span>
+                                    <div class="mat-body-strong"></div>
+                                </div>
+                                <div *ngFor="let deliverable of deliverables(i).controls;let j=index">
+                                    <ng-container [formArrayName]="constants.DELIVERABLES.name">
+                                        <ng-container [formGroupName]="j">
+                                            <div>{{j + 1}}</div>
+
+                                            <app-multi-language-form-field
+                                                    [label]="'project.work.package.tab.deliverables.deliverable'"
+                                                    [formControlName]="constants.DELIVERABLE.name"
+                                                    [validators]="constants.DELIVERABLE.validators">
+                                            </app-multi-language-form-field>
+
+                                            <mat-form-field>
+                                                <mat-label>{{'project.work.package.tab.deliverables.period' | translate}}</mat-label>
+                                                <mat-select panelClass="material-select-panel"
+                                                            [formControlName]="constants.PERIOD.name">
+                                                    <mat-option *ngFor="let period of data.periods"
+                                                                [value]="period.number">
+                                                        {{'project.work.package.tab.deliverables.period' | translate : getPeriodArguments(period) }}
+                                                    </mat-option>
+                                                </mat-select>
+                                                <mat-hint *ngIf="!data.periods?.length" class="warning-hint">
+                                                    {{'project.application.form.work.package.output.delivery.period.required' | translate}}
+                                                </mat-hint>
+                                            </mat-form-field>
+
+                                            <div>
+                                                <button type="button" (click)="removeDeliverable(i, j)"
+                                                        mat-icon-button
+                                                        color="accent">
+                                                    <mat-icon>delete</mat-icon>
+                                                </button>
+                                            </div>
+                                        </ng-container>
+                                    </ng-container>
+                                </div>
+                            </div>
+                            <button *ngIf="addDeliverableVisible(i)" mat-icon-button type="button"
+                                    (click)="addNewDeliverable(i)">
+                                <mat-icon>add</mat-icon>
+                            </button>
+                        </div>
+                    </ng-container>
+                </ng-container>
+            </app-multi-language>
+            <button *ngIf="addActivityVisible()" class="spaced-elements mt-4" mat-raised-button color="primary"
+                    (click)="addNewActivity()">
+                + {{'project.work.package.tab.activity.add' | translate}}
+            </button>
+        </form>
+    </app-form>
+</ng-container>

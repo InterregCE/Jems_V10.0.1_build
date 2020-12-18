@@ -1,7 +1,7 @@
 <app-project-application-form-work-package-outputs
         *ngIf="details$ | async as details"
         [workPackage]="details.workPackage"
-        [editable]="projectStore.projectEditable$ | async"
+        [editable]="workPackageStore.isProjectEditable$ | async"
         [projectId]="projectId"
         [success$]="saveSuccess$"
         [error$]="saveError$"
