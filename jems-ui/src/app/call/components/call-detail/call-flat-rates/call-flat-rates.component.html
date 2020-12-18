@@ -1,5 +1,6 @@
 <app-form (discard)="initForm(call.flatRates)"
           (save)="onSubmit()">
+    <h4>{{'call.detail.budget.settings' | translate}}</h4>
     <form [formGroup]="callFlatRateForm">
         <h5>
             {{'call.detail.flat.rates' | translate}}
