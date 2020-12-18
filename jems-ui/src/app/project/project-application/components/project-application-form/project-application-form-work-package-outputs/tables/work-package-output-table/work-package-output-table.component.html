@@ -1,12 +1,12 @@
-
 <form [formGroup]="workPackageForm">
     <mat-table [dataSource]="workPackageOutputDataSource">
 
         <ng-container matColumnDef="output">
             <mat-cell *matCellDef="let element" class="field-column">
 
-                <div class="output-header">
+                <div class="output-header text-overflow-ellipsis">
                     <h5>{{('project.application.form.work.package.output' | translate) + ' ' + workPackageNumber + '.' + element.id }}</h5>
+                    <h5 class="pl-3">{{getControl(title(element.outputNumber)).value}}</h5>
                 </div>
 
                 <div class="output-line">

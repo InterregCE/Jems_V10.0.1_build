@@ -52,6 +52,11 @@ button {
 .output-header {
   padding-bottom: 0;
   padding-top: 2rem;
+  max-width: 60rem;
+
+  h5 {
+    display: inline;
+  }
 }
 
 mat-form-field {

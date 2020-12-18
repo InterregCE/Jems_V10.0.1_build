@@ -85,7 +85,7 @@
                                 <div *ngFor="let deliverable of deliverables(i).controls;let j=index">
                                     <ng-container [formArrayName]="constants.DELIVERABLES.name">
                                         <ng-container [formGroupName]="j">
-                                            <div>{{j + 1}}</div>
+                                            <div>D.{{data.workPackageNumber}}.{{i + 1}}.{{j + 1}}</div>
 
                                             <app-multi-language-form-field
                                                     [label]="'project.work.package.tab.deliverables.deliverable'"
