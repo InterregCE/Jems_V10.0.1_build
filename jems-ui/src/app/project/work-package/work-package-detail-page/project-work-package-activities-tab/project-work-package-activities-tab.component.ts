@@ -73,7 +73,7 @@ export class ProjectWorkPackageActivitiesTabComponent implements OnInit {
     this.workPackageStore.saveWorkPackageActivities(this.activities.value)
       .pipe(
         take(1),
-        tap(() => this.formService.setSuccess('call.detail.flat.rate.updated.success')),
+        tap(() => this.formService.setSuccess('project.work.package.tab.activities.saved')),
         catchError(err => this.formService.setError(err))
       ).subscribe();
   }

@@ -99,7 +99,7 @@
                                                             [formControlName]="constants.PERIOD.name">
                                                     <mat-option *ngFor="let period of data.periods"
                                                                 [value]="period.number">
-                                                        {{'project.work.package.tab.deliverables.period' | translate : getPeriodArguments(period) }}
+                                                        {{'project.application.form.work.package.output.delivery.period.entry' | translate : getPeriodArguments(period) }}
                                                     </mat-option>
                                                 </mat-select>
                                                 <mat-hint *ngIf="!data.periods?.length" class="warning-hint">
