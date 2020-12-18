@@ -44,8 +44,9 @@ data class ProjectAssociatedOrganization(
     @OneToMany(mappedBy = "contactId.associatedOrganizationId", cascade = [CascadeType.ALL], orphanRemoval = true)
     val contacts: MutableSet<ProjectAssociatedOrganizationContact> = mutableSetOf(),
 
-    @Column
-    val roleDescription: String? = null
+    // roleDescription
+    @OneToMany(cascade = [CascadeType.ALL], orphanRemoval = true, mappedBy = "translationId.partnerId")
+    val translatedValues: Set<ProjectAssociatedOrganizationTransl> = emptySet()
 
 ) {
     override fun toString(): String {

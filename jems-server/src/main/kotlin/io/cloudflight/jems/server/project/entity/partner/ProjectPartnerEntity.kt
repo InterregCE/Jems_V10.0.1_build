@@ -44,7 +44,9 @@ data class ProjectPartnerEntity(
 
     val nameInEnglish: String? = null,
 
-    val department: String? = null,
+    // department
+    @OneToMany(cascade = [CascadeType.ALL], orphanRemoval = true, mappedBy = "translationId.partnerId")
+    val translatedValues: Set<ProjectPartnerTranslEntity> = emptySet(),
 
     @Enumerated(EnumType.STRING)
     val partnerType: ProjectTargetGroup? = null,

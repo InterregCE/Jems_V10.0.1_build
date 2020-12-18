@@ -1,8 +1,10 @@
 package io.cloudflight.jems.server.project.entity.partner
 
+import javax.persistence.CascadeType
 import javax.persistence.Column
 import javax.persistence.Entity
 import javax.persistence.Id
+import javax.persistence.OneToMany
 
 @Entity(name = "project_partner_motivation")
 data class ProjectPartnerMotivationEntity(
@@ -10,19 +12,13 @@ data class ProjectPartnerMotivationEntity(
     @Id
     val partnerId: Long,
 
-    @Column
-    val organizationRelevance: String?,
+    // organizationRelevance, organizationRole, organizationExperience
+    @OneToMany(cascade = [CascadeType.ALL], orphanRemoval = true, mappedBy = "translationId.partnerId")
+    val translatedValues: Set<ProjectPartnerMotivationTranslEntity> = emptySet()
 
-    @Column
-    val organizationRole: String?,
-
-    @Column
-    val organizationExperience: String?
 ) {
     fun nullIfBlank(): ProjectPartnerMotivationEntity? {
-        if (organizationRelevance.isNullOrBlank()
-            && organizationRole.isNullOrBlank()
-            && organizationExperience.isNullOrBlank())
+        if (translatedValues.isNullOrEmpty())
             return null
         return this
     }

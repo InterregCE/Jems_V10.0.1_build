@@ -1,7 +1,7 @@
 package io.cloudflight.jems.api.project.dto.partner
 
-import io.cloudflight.jems.api.programme.dto.OutputProgrammeLegalStatus
 import io.cloudflight.jems.api.project.dto.InputOrganization
+import io.cloudflight.jems.api.project.dto.InputTranslation
 import io.cloudflight.jems.api.project.dto.description.ProjectTargetGroup
 import javax.validation.constraints.NotBlank
 import javax.validation.constraints.NotNull
@@ -27,8 +27,7 @@ data class InputProjectPartnerCreate(
     @field:Size(max = 100, message = "project.organization.english.name.size.too.long")
     override val nameInEnglish: String? = null,
 
-    @field:Size(max = 250, message = "project.organization.department.size.too.long")
-    val department: String? = null,
+    val department: Set<InputTranslation> = emptySet(),
 
     val partnerType: ProjectTargetGroup? = null,
 

@@ -2,6 +2,7 @@ package io.cloudflight.jems.api.project.dto.associatedorganization
 
 import io.cloudflight.jems.api.project.dto.InputOrganization
 import io.cloudflight.jems.api.project.dto.InputProjectContact
+import io.cloudflight.jems.api.project.dto.InputTranslation
 import javax.validation.constraints.NotNull
 import javax.validation.constraints.Size
 
@@ -23,7 +24,6 @@ data class  InputProjectAssociatedOrganizationCreate(
     @field:Size(max = 2, message = "project.organization.contacts.size.too.long")
     val contacts: Set<InputProjectContact> = emptySet(),
 
-    @field:Size(max = 2000, message = "project.organization.roleDescription.size.too.long")
-    val roleDescription: String? = null
+    val roleDescription: Set<InputTranslation> = emptySet()
 
 ): InputOrganization
