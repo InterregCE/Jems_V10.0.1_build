@@ -3,7 +3,8 @@
         <ng-container *ngFor="let formGroup of inputs.controls; let i=index;" [formGroupName]="i">
             <ng-container
                     *ngIf="isInputVisible(multiLanguageService.currentLanguage$ |async , formGroup.get('language').value)">
-                <mat-form-field>
+                <mat-form-field class="w-100">
+                    <mat-label *ngIf="label">{{label | translate}}</mat-label>
                     <input formControlName="translation" matInput>
                     <mat-error>
                         <app-form-field-errors

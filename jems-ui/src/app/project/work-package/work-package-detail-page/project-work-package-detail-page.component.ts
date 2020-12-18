@@ -3,7 +3,6 @@ import {BaseComponent} from '@common/components/base-component';
 import {ActivatedRoute} from '@angular/router';
 import {WorkPackageService} from '@cat/api';
 import {distinctUntilChanged, map, takeUntil, tap} from 'rxjs/operators';
-import {ProjectStore} from '../../project-application/containers/project-application-detail/services/project-store.service';
 import {TabService} from '../../../common/services/tab.service';
 import {ProjectWorkPackagePageStore} from './project-work-package-page-store.service';
 
@@ -14,7 +13,7 @@ import {ProjectWorkPackagePageStore} from './project-work-package-page-store.ser
   providers: [ProjectWorkPackagePageStore],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class ProjectWorkPackageDetailPageComponent extends BaseComponent implements OnInit, OnDestroy {
+export class ProjectWorkPackageDetailPageComponent extends BaseComponent implements OnDestroy {
 
   projectId = this.activatedRoute?.snapshot?.params?.projectId;
   workPackageId = this.activatedRoute?.snapshot?.params?.workPackageId;
@@ -25,7 +24,6 @@ export class ProjectWorkPackageDetailPageComponent extends BaseComponent impleme
 
   constructor(private workPackageService: WorkPackageService,
               private activatedRoute: ActivatedRoute,
-              public projectStore: ProjectStore,
               public workPackageStore: ProjectWorkPackagePageStore,
               private tabService: TabService) {
     super();
@@ -35,10 +33,6 @@ export class ProjectWorkPackageDetailPageComponent extends BaseComponent impleme
       distinctUntilChanged(),
       tap(id => this.workPackageStore.init(id, this.projectId)),
     ).subscribe();
-  }
-
-  ngOnInit(): void {
-    this.projectStore.init(this.projectId);
   }
 
   ngOnDestroy(): void {

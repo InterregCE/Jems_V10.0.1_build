@@ -79,6 +79,7 @@ import {ProjectWorkPackageDetailPageComponent} from './work-package/work-package
 import {StaffCostTableComponent} from './partner/project-partner-detail-page/project-partner-budget-tab/project-partner-budget/staff-cost-table/staff-cost-table.component';
 import {BudgetTableComponent} from './partner/project-partner-detail-page/project-partner-budget-tab/project-partner-budget/budget-table/budget-table.component';
 import {BudgetFlatRateTableComponent} from './partner/project-partner-detail-page/project-partner-budget-tab/project-partner-budget/budget-flat-rate-table/budget-flat-rate-table.component';
+import {ProjectWorkPackageActivitiesTabComponent} from './work-package/work-package-detail-page/project-work-package-activities-tab/project-work-package-activities-tab.component';
 
 @NgModule({
   declarations: [
@@ -111,6 +112,7 @@ import {BudgetFlatRateTableComponent} from './partner/project-partner-detail-pag
     ProjectApplicationFormWorkPackagesListComponent,
     ProjectWorkPackageObjectivesTabComponent,
     ProjectWorkPackageDetailPageComponent,
+    ProjectWorkPackageActivitiesTabComponent,
     ProjectApplicationFormWorkPackageSectionComponent,
     ProjectApplicationFormManagementSectionComponent,
     ProjectApplicationFormFuturePlansSectionComponent,

@@ -2,9 +2,7 @@ import {ChangeDetectionStrategy, Component, EventEmitter, Input} from '@angular/
 import {combineLatest, merge, Subject} from 'rxjs';
 import {HttpErrorResponse} from '@angular/common/http';
 import {ActivatedRoute, Router} from '@angular/router';
-import {ProjectStore} from '../../../project-application/containers/project-application-detail/services/project-store.service';
 import {ProjectApplicationFormSidenavService} from '../../../project-application/containers/project-application-form-page/services/project-application-form-sidenav.service';
-import {BaseComponent} from '@common/components/base-component';
 import {WorkPackageOutputUpdateDTO, WorkPackageOutputService, ProgrammeIndicatorService} from '@cat/api';
 import {catchError, distinctUntilChanged, filter, map, mergeMap, tap, withLatestFrom} from 'rxjs/operators';
 import {Log} from '../../../../common/utils/log';
@@ -16,7 +14,7 @@ import {ProjectWorkPackagePageStore} from '../project-work-package-page-store.se
   styleUrls: ['./project-application-form-work-package-output.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class ProjectApplicationFormWorkPackageOutputComponent extends BaseComponent {
+export class ProjectApplicationFormWorkPackageOutputComponent {
 
   projectId = this.activatedRoute?.snapshot?.params?.projectId;
 
@@ -48,7 +46,7 @@ export class ProjectApplicationFormWorkPackageOutputComponent extends BaseCompon
 
   details$ = combineLatest([
     merge(this.updatedWorkPackageOutputData$, this.savedWorkPackageOutputData$),
-    this.projectStore.getProject(),
+    this.workPackageStore.project$,
     this.programmeIndicatorService.getAllIndicatorOutputDetail(),
     this.workPackageStore.workPackage$
   ])
@@ -63,12 +61,9 @@ export class ProjectApplicationFormWorkPackageOutputComponent extends BaseCompon
 
   constructor(private workPackageOutputService: WorkPackageOutputService,
               private activatedRoute: ActivatedRoute,
-              public projectStore: ProjectStore,
               public workPackageStore: ProjectWorkPackagePageStore,
               private projectApplicationFormSidenavService: ProjectApplicationFormSidenavService,
               private router: Router,
               private programmeIndicatorService: ProgrammeIndicatorService) {
-    super();
-    this.projectStore.init(this.projectId);
   }
 }
