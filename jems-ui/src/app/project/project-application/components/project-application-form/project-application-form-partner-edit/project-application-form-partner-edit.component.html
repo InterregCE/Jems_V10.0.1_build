@@ -78,17 +78,20 @@
             </mat-error>
         </mat-form-field>
 
-        <mat-form-field class="w-50">
-            <mat-label>{{'project.organization.department.label' | translate}}</mat-label>
-            <input name="department" formControlName="department" matInput
-                   placeholder="{{'project.organization.department.label' | translate}}">
-            <mat-error>
-                <app-form-field-errors
-                        [errors]="controls?.department?.errors"
-                        [messages]="departmentErrors">
-                </app-form-field-errors>
-            </mat-error>
-        </mat-form-field>
+        <app-multi-language
+                [inputs]="[department]">
+            <mat-form-field class="w-50">
+                <mat-label>{{'project.organization.department.label' | translate}}</mat-label>
+                <input name="department" formControlName="department" matInput
+                       placeholder="{{'project.organization.department.label' | translate}}">
+                <mat-error>
+                    <app-form-field-errors
+                            [errors]="controls?.department?.errors"
+                            [messages]="departmentErrors">
+                    </app-form-field-errors>
+                </mat-error>
+            </mat-form-field>
+        </app-multi-language>
 
         <h5>{{'project.partner.detail.title.legal.financial' | translate}}</h5>
 

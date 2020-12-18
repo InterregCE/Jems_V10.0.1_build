@@ -24,6 +24,8 @@ import {Observable} from 'rxjs';
 import {HttpErrorResponse} from '@angular/common/http';
 import {FormService} from '@common/components/section/form/form.service';
 import {takeUntil, tap} from 'rxjs/operators';
+import {MultiLanguageInput} from '@common/components/forms/multi-language/multi-language-input';
+import {MultiLanguageInputService} from '../../../../../common/services/multi-language-input.service';
 
 @Component({
   selector: 'app-project-application-form-associated-organization-edit',
@@ -56,6 +58,8 @@ export class ProjectApplicationFormAssociatedOrganizationEditComponent extends B
   update = new EventEmitter<InputProjectAssociatedOrganizationUpdate>();
   @Output()
   cancel = new EventEmitter<void>();
+
+  roleDescription: MultiLanguageInput;
 
   associatedOrganizationForm: FormGroup = this.formBuilder.group({
     id: [],
@@ -134,7 +138,8 @@ export class ProjectApplicationFormAssociatedOrganizationEditComponent extends B
   };
 
   constructor(private formBuilder: FormBuilder,
-              private formService: FormService) {
+              private formService: FormService,
+              public languageService: MultiLanguageInputService) {
     super();
   }
 
@@ -143,6 +148,7 @@ export class ProjectApplicationFormAssociatedOrganizationEditComponent extends B
     this.formService.init(this.associatedOrganizationForm);
     this.formService.setCreation(!this.associatedOrganization.id);
     this.formService.setEditable(this.editable);
+    this.formService.setAdditionalValidators([this.formValid.bind(this)]);
     this.error$
       .pipe(
         takeUntil(this.destroyed$),
@@ -182,7 +188,7 @@ export class ProjectApplicationFormAssociatedOrganizationEditComponent extends B
         city: this.controls?.city.value,
       } as InputProjectAssociatedOrganizationAddress,
       contacts: this.getContacts(),
-      roleDescription: this.controls?.roleDescription.value,
+      roleDescription: this.roleDescription.inputs,
     };
 
     if (!this.controls?.id?.value) {
@@ -243,7 +249,7 @@ export class ProjectApplicationFormAssociatedOrganizationEditComponent extends B
     this.controls?.city.setValue(this.associatedOrganization?.address?.city);
     this.initLegalRepresentative();
     this.initContactPerson();
-    this.controls?.roleDescription.setValue(this.associatedOrganization?.roleDescription);
+    this.roleDescription = this.languageService.initInput(this.associatedOrganization?.roleDescription, this.controls?.roleDescription);
   }
 
   private initLegalRepresentative(): void {
@@ -262,4 +268,7 @@ export class ProjectApplicationFormAssociatedOrganizationEditComponent extends B
     this.associatedOrganizationForm.controls.contactTelephone.setValue(contactPerson?.telephone);
   }
 
+  private formValid(): boolean {
+    return this.roleDescription.isValid();
+  }
 }

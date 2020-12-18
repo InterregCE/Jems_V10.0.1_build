@@ -4,15 +4,18 @@
         <h5><span>{{'project.partner.motivation.header' | translate}}</span></h5>
         <h6 class="intro-text">{{'project.partner.motivation.organization.relevance' | translate}}</h6>
 
-        <app-expandable-textarea
-                *ngIf="editable"
-                class="field-wide"
-                [control]="partnerContributionForm?.controls?.organizationRelevance"
-                [errors]="partnerContributionForm?.controls?.organizationRelevance?.errors"
-                [messages]="organizationRelevanceErrors"
-                [characterLimit]="2000"
-                [label]="'project.application.form.motivation.form.field'">
-        </app-expandable-textarea>
+        <app-multi-language
+                [inputs]="[organizationRelevance]">
+            <app-expandable-textarea
+                    *ngIf="editable"
+                    class="field-wide"
+                    [control]="partnerContributionForm?.controls?.organizationRelevance"
+                    [errors]="partnerContributionForm?.controls?.organizationRelevance?.errors"
+                    [messages]="organizationRelevanceErrors"
+                    [characterLimit]="2000"
+                    [label]="'project.application.form.motivation.form.field'">
+            </app-expandable-textarea>
+        </app-multi-language>
         <p *ngIf="!editable" class="view-text">
             <br>{{partnerContributionForm?.controls?.organizationRelevance.value}}
         </p>
@@ -20,15 +23,18 @@
         <h6 class="intro-text">
             {{'project.partner.motivation.organization.role' | translate}}
         </h6>
-        <app-expandable-textarea
-                *ngIf="editable"
-                class="field-wide"
-                [control]="partnerContributionForm?.controls?.organizationRole"
-                [errors]="partnerContributionForm?.controls?.organizationRole?.errors"
-                [messages]="organizationRoleErrors"
-                [characterLimit]="2000"
-                [label]="'project.application.form.motivation.form.field'">
-        </app-expandable-textarea>
+        <app-multi-language
+                [inputs]="[organizationRole]">
+            <app-expandable-textarea
+                    *ngIf="editable"
+                    class="field-wide"
+                    [control]="partnerContributionForm?.controls?.organizationRole"
+                    [errors]="partnerContributionForm?.controls?.organizationRole?.errors"
+                    [messages]="organizationRoleErrors"
+                    [characterLimit]="2000"
+                    [label]="'project.application.form.motivation.form.field'">
+            </app-expandable-textarea>
+        </app-multi-language>
         <p *ngIf="!editable" class="view-text">
             <br>{{partnerContributionForm?.controls?.organizationRole.value}}
         </p>
@@ -36,15 +42,18 @@
         <h6 class="intro-text">
             {{'project.partner.motivation.organization.experience' | translate}}
         </h6>
-        <app-expandable-textarea
-                *ngIf="editable"
-                class="field-wide"
-                [control]="partnerContributionForm?.controls?.organizationExperience"
-                [errors]="partnerContributionForm?.controls?.organizationExperience?.errors"
-                [messages]="organizationExperienceErrors"
-                [characterLimit]="2000"
-                [label]="'project.application.form.motivation.form.field'">
-        </app-expandable-textarea>
+        <app-multi-language
+                [inputs]="[organizationExperience]">
+            <app-expandable-textarea
+                    *ngIf="editable"
+                    class="field-wide"
+                    [control]="partnerContributionForm?.controls?.organizationExperience"
+                    [errors]="partnerContributionForm?.controls?.organizationExperience?.errors"
+                    [messages]="organizationExperienceErrors"
+                    [characterLimit]="2000"
+                    [label]="'project.application.form.motivation.form.field'">
+            </app-expandable-textarea>
+        </app-multi-language>
         <p *ngIf="!editable" class="view-text">
             <br>{{partnerContributionForm?.controls?.organizationExperience.value}}
         </p>
