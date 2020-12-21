@@ -5,10 +5,7 @@ import {ProjectPartnerStore} from '../../../../project-application/containers/pr
 import {TestModule} from '../../../../../common/test-module';
 import {ProjectModule} from '../../../../project.module';
 import {ActivatedRoute} from '@angular/router';
-import {PartnerBudgetTable} from '../../../../project-application/model/partner-budget-table';
-import {PartnerBudgetTableType} from '../../../../project-application/model/partner-budget-table-type';
 import {ProjectPartnerDetailPageStore} from '../../project-partner-detail-page.store';
-import {AuthenticationStore} from '../../../../../authentication/service/authentication-store.service';
 
 
 describe('ProjectApplicationPartnerBudgetPageComponent', () => {

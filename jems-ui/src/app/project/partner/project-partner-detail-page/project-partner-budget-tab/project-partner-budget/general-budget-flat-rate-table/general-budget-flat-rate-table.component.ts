@@ -1,12 +1,12 @@
 import {ChangeDetectionStrategy, Component, Input} from '@angular/core';
 
 @Component({
-  selector: 'app-budget-flat-rate-table',
-  templateUrl: './budget-flat-rate-table.component.html',
-  styleUrls: ['./budget-flat-rate-table.component.scss'],
+  selector: 'app-general-budget-flat-rate-table',
+  templateUrl: './general-budget-flat-rate-table.component.html',
+  styleUrls: ['./general-budget-flat-rate-table.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class BudgetFlatRateTableComponent {
+export class GeneralBudgetFlatRateTableComponent {
 
   @Input()
   total: number;

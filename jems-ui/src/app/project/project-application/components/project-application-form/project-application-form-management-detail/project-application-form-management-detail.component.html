@@ -63,7 +63,7 @@
             <h6>{{'project.application.form.management.field.5' | translate}}</h6>
             <p class="intro-text-small">{{'project.application.form.management.field.5.intro' | translate}}</p>
         </div>
-        <div appTableConfig [widthConfig]="['max-15-rem','']">
+        <div appTableConfig [widthConfig]="[{maxInRem:15},{}]">
             <div class="pb-3">
                 <span>{{'project.application.form.management.cooperation.table.header.criteria' | translate}}</span>
                 <span>{{'project.application.form.management.cooperation.table.header.description' | translate}}</span>
@@ -156,7 +156,7 @@
             <p class="intro-text-small">{{'project.application.form.management.field.6.intro' | translate}}</p>
         </div>
 
-        <div  appTableConfig [widthConfig]="['min-15-rem','min-20-rem','']">
+        <div  appTableConfig [widthConfig]="[{minInRem:12},{minInRem:20},{}]">
             <div class="pb-3">
                 <span>{{'project.application.form.management.principles.table.header.principles' | translate}}</span>
                 <span>{{'project.application.form.management.principles.table.header.contribution' | translate}}</span>

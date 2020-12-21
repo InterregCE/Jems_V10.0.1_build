@@ -1,7 +1,7 @@
 <app-multi-language [inputs]="allInputs">
     <div [formGroup]="formGroup">
         <div appTableConfig [appearance]="'table'"
-             [widthConfig]="['','', 'max-2-rem']">
+             [widthConfig]="[{},{}, {maxInRem:2}]">
             <div>
                 <span class="mat-body-strong">{{'project.application.form.relevance.project.or.initiative' | translate}}</span>
                 <span class="mat-body-strong">{{'project.application.form.relevance.synergy' | translate}}</span>

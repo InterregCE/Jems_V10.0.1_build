@@ -1,18 +1,30 @@
 <ng-container *ngIf="(numberOfItems$ | async) as numberOfItems; else addTableButton">
     <ng-container [formGroup]="budgetForm">
-        <ng-container [formGroup]="staff">
+        <ng-container [formGroup]="travel">
             <app-multi-language>
                 <mat-table
                         appTableConfig
-                        [widthConfig]="['min-15-rem','','','max-10-rem','max-2-rem']"
+                        [widthConfig]="[{minInRem:12},{minInRem:12},{minInRem:5},{minInRem:8},{minInRem:8},{minInRem:3}]"
                         [dataSource]="dataSource" [formArrayName]="constants.FORM_CONTROL_NAMES.items"
-                        class="mat-elevation-z2 staff-budget-table">
-                    <ng-container matColumnDef="description">
+                        class="mat-elevation-z2 travel-budget-table">
+                    <ng-container sticky matColumnDef="description">
                         <mat-header-cell
-                                *matHeaderCellDef> {{'project.partner.budget.table.staff.description' | translate}} </mat-header-cell>
+                                *matHeaderCellDef> {{'project.partner.budget.table.description' | translate}} </mat-header-cell>
                         <mat-cell *matCellDef="let control;  let i = index" [formGroupName]="i">
                             <app-multi-language-form-field
                                     [formControlName]="constants.FORM_CONTROL_NAMES.description">
+                            </app-multi-language-form-field>
+                        </mat-cell>
+                        <mat-footer-cell *matFooterCellDef></mat-footer-cell>
+                    </ng-container>
+
+                    <ng-container matColumnDef="unitType">
+                        <mat-header-cell
+                                *matHeaderCellDef> {{'project.partner.budget.table.unit.type' | translate}} </mat-header-cell>
+                        <mat-cell *matCellDef="let control;  let i = index" [formGroupName]="i">
+                            <app-multi-language-form-field
+                                    [maxLength]="constants.MAX_UNIT_TYPE_TEXT_LENGTH"
+                                    [formControlName]="constants.FORM_CONTROL_NAMES.unitType">
                             </app-multi-language-form-field>
                         </mat-cell>
                         <mat-footer-cell *matFooterCellDef></mat-footer-cell>
@@ -60,7 +72,7 @@
                         </mat-footer-cell>
                     </ng-container>
 
-                    <ng-container matColumnDef="action">
+                    <ng-container stickyEnd matColumnDef="action">
                         <mat-header-cell *matHeaderCellDef></mat-header-cell>
                         <mat-cell *matCellDef="let control;let index=index">
                             <button *ngIf="editable" class="delete-button"

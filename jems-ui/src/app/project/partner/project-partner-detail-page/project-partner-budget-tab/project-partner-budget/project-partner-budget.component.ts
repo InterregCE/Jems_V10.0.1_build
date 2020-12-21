@@ -1,5 +1,4 @@
 import {ChangeDetectionStrategy, Component, OnInit} from '@angular/core';
-import {PartnerBudgetTable} from '../../../../project-application/model/partner-budget-table';
 import {FormService} from '@common/components/section/form/form.service';
 import {combineLatest, Observable} from 'rxjs';
 import {catchError, map, startWith, tap} from 'rxjs/operators';
@@ -8,11 +7,17 @@ import {UntilDestroy, untilDestroyed} from '@ngneat/until-destroy';
 import {BudgetOptions} from '../../../../project-application/model/budget-options';
 import {MultiLanguageInputService} from '../../../../../common/services/multi-language-input.service';
 import {NumberService} from '../../../../../common/services/number.service';
-import {FormArray, FormBuilder, FormGroup, Validators} from '@angular/forms';
+import {FormBuilder, FormGroup, Validators} from '@angular/forms';
 import {ProjectPartnerBudgetConstants} from './project-partner-budget.constants';
-import {PartnerBudgetTableType} from '../../../../project-application/model/partner-budget-table-type';
-import {PartnerBudgetTableEntry} from '../../../../project-application/model/partner-budget-table-entry';
+import {GeneralBudgetTableEntry} from '../../../../project-application/model/general-budget-table-entry';
 import {HttpErrorResponse} from '@angular/common/http';
+import {StaffCostsBudgetTable} from '../../../../project-application/model/staff-costs-budget-table';
+import {StaffCostsBudgetTableEntry} from '../../../../project-application/model/staff-costs-budget-table-entry';
+import {PartnerBudgetTables} from '../../../../project-application/model/partner-budget-tables';
+import {GeneralBudgetTable} from '../../../../project-application/model/general-budget-table';
+import {TravelAndAccommodationCostsBudgetTable} from '../../../../project-application/model/travel-and-accommodation-costs-budget-table';
+import {TravelAndAccommodationCostsBudgetTableEntry} from '../../../../project-application/model/travel-and-accommodation-costs-budget-table-entry';
+import { WorkPackageInvestmentDTO } from '@cat/api';
 
 @UntilDestroy()
 @Component({
@@ -25,13 +30,15 @@ import {HttpErrorResponse} from '@angular/common/http';
 export class ProjectPartnerBudgetComponent implements OnInit {
 
   constants = ProjectPartnerBudgetConstants;
-  budgetsForm = this.creatForm();
+  budgetsForm = this.initForm();
 
   data$: Observable<{
-    staffCostTotal: number,
-    officeFlatRateBasedOnStaffCostTotal: number,
-    travelFlatRateBasedOnStaffCostTotal: number,
-    otherCostsTotal: number,
+    budgetTables: PartnerBudgetTables,
+    investments: WorkPackageInvestmentDTO[],
+    staffCostsFlatRateTotal: number,
+    officeAndAdministrationFlatRateTotal: number,
+    travelAndAccommodationFlatRateTotal: number,
+    otherCostsFlatRateTotal: number,
     isProjectEditable: boolean,
     isStaffCostFlatRateActive: boolean,
     isOfficeAdministrationFlatRateActive: boolean,
@@ -39,10 +46,10 @@ export class ProjectPartnerBudgetComponent implements OnInit {
     isOtherFlatRateBasedOnStaffCostActive: boolean,
   }>;
 
-  private otherCostsTotal$: Observable<number>;
-  private staffCostTotal$: Observable<number>;
-  private officeFlatRateBasedOnStaffCostTotal$: Observable<number>;
-  private travelFlatRateBasedOnStaffCostTotal$: Observable<number>;
+  private otherCostsFlatRateTotal$: Observable<number>;
+  private staffCostsFlatRateTotal$: Observable<number>;
+  private officeAndAdministrationFlatRateTotal$: Observable<number>;
+  private travelAndAccommodationFlatRateTotal$: Observable<number>;
 
   constructor(private formService: FormService, private formBuilder: FormBuilder, private multiLanguageInputService: MultiLanguageInputService, private pageStore: ProjectPartnerDetailPageStore) {
   }
@@ -52,45 +59,44 @@ export class ProjectPartnerBudgetComponent implements OnInit {
 
     this.pageStore.budgets$.pipe(untilDestroyed(this)).subscribe();
 
-    combineLatest([this.pageStore.budgets$, this.formService.reset$.pipe(startWith(null))]).pipe(
-      map(([budgets]) => this.resetForm(budgets)),
-      untilDestroyed(this)
-    ).subscribe();
-
-    this.staffCostTotal$ = combineLatest([this.pageStore.budgetOptions$, this.budgetsForm.valueChanges]).pipe(
-      map(([budgetOptions]) => this.calculateStaffCostsTotal(budgetOptions)),
+    this.staffCostsFlatRateTotal$ = combineLatest([this.pageStore.budgetOptions$, this.budgetsForm.valueChanges]).pipe(
+      map(([budgetOptions]) => this.calculateStaffCostsFlatRateTotal(budgetOptions)),
       startWith(0)
     );
 
-    this.officeFlatRateBasedOnStaffCostTotal$ = combineLatest([this.pageStore.budgetOptions$, this.staffCostTotal$]).pipe(
-      map(([budgetOptions, staffCostTotal]) => this.calculateOfficeAndAdministrationTotal(budgetOptions.officeAndAdministrationOnStaffCostsFlatRate || 0, staffCostTotal)),
+    this.officeAndAdministrationFlatRateTotal$ = combineLatest([this.pageStore.budgetOptions$, this.staffCostsFlatRateTotal$]).pipe(
+      map(([budgetOptions, staffCostTotal]) => this.calculateOfficeAndAdministrationFlatRateTotal(budgetOptions.officeAndAdministrationOnStaffCostsFlatRate || 0, staffCostTotal)),
       startWith(0)
     );
 
-    this.travelFlatRateBasedOnStaffCostTotal$ = combineLatest([this.pageStore.budgetOptions$, this.staffCostTotal$]).pipe(
-      map(([budgetOptions, staffCostTotal]) => this.calculateTravelAndAccommodationTotal(budgetOptions.travelAndAccommodationOnStaffCostsFlatRate || 0, staffCostTotal)),
+    this.travelAndAccommodationFlatRateTotal$ = combineLatest([this.pageStore.budgetOptions$, this.staffCostsFlatRateTotal$]).pipe(
+      map(([budgetOptions, staffCostTotal]) => this.calculateTravelAndAccommodationFlatRateTotal(budgetOptions.travelAndAccommodationOnStaffCostsFlatRate || 0, staffCostTotal)),
       startWith(0),
     );
 
-    this.otherCostsTotal$ = combineLatest([this.pageStore.budgetOptions$, this.staffCostTotal$]).pipe(
-      map(([budgetOptions, staffCostTotal]) => this.calculateOtherTotal(budgetOptions.staffCostsFlatRate, budgetOptions.otherCostsOnStaffCostsFlatRate || 0, staffCostTotal)),
+    this.otherCostsFlatRateTotal$ = combineLatest([this.pageStore.budgetOptions$, this.staffCostsFlatRateTotal$]).pipe(
+      map(([budgetOptions, staffCostTotal]) => this.calculateOtherCostsFlatRateTotal(budgetOptions.staffCostsFlatRate, budgetOptions.otherCostsOnStaffCostsFlatRate || 0, staffCostTotal)),
       startWith(0)
     );
 
     this.data$ = combineLatest([
+      this.pageStore.budgets$,
       this.pageStore.budgetOptions$,
+      this.pageStore.investments$,
       this.pageStore.isProjectEditable$.pipe(startWith(false)),
-      this.staffCostTotal$,
-      this.officeFlatRateBasedOnStaffCostTotal$,
-      this.travelFlatRateBasedOnStaffCostTotal$,
-      this.otherCostsTotal$
+      this.staffCostsFlatRateTotal$,
+      this.officeAndAdministrationFlatRateTotal$,
+      this.travelAndAccommodationFlatRateTotal$,
+      this.otherCostsFlatRateTotal$
     ]).pipe(
-      map(([budgetOptions, isProjectEditable, staffCostTotal, officeFlatRateBasedOnStaffCostTotal, travelFlatRateBasedOnStaffCostTotal, otherCostsTotal]) => {
+      map(([budgetTables, budgetOptions, investments, isProjectEditable, staffCostsFlatRateTotal, officeAndAdministrationFlatRateTotal, travelAndAccommodationFlatRateTotal, otherCostsFlatRateTotal]: any) => {
         return {
-          staffCostTotal,
-          officeFlatRateBasedOnStaffCostTotal,
-          travelFlatRateBasedOnStaffCostTotal,
-          otherCostsTotal,
+          budgetTables,
+          investments,
+          staffCostsFlatRateTotal,
+          officeAndAdministrationFlatRateTotal,
+          travelAndAccommodationFlatRateTotal,
+          otherCostsFlatRateTotal,
           isProjectEditable,
           isStaffCostFlatRateActive: !!budgetOptions.staffCostsFlatRate,
           isOfficeAdministrationFlatRateActive: !!budgetOptions.officeAndAdministrationOnStaffCostsFlatRate,
@@ -109,7 +115,7 @@ export class ProjectPartnerBudgetComponent implements OnInit {
     ).subscribe();
   }
 
-  private calculateStaffCostsTotal(budgetOptions: BudgetOptions): number {
+  private calculateStaffCostsFlatRateTotal(budgetOptions: BudgetOptions): number {
     if (!budgetOptions?.staffCostsFlatRate) {
       return this.getTotalOf(this.staff);
     }
@@ -125,56 +131,39 @@ export class ProjectPartnerBudgetComponent implements OnInit {
 
   }
 
-  private calculateOfficeAndAdministrationTotal(officeFlatRateBasedOnStaffCost: number, staffTotal: number): number {
+  private calculateOfficeAndAdministrationFlatRateTotal(officeFlatRateBasedOnStaffCost: number, staffTotal: number): number {
     return NumberService.truncateNumber(NumberService.product([
       NumberService.divide(officeFlatRateBasedOnStaffCost, 100),
       staffTotal
     ]));
   }
 
-  private calculateOtherTotal(staffCostsFlatRateBasedOnDirectCost: number | null, otherCostsFlatRateBasedOnStaffCost: number, staffTotal: number): number {
-    if (staffCostsFlatRateBasedOnDirectCost != null) { return 0; }
+  private calculateOtherCostsFlatRateTotal(staffCostsFlatRateBasedOnDirectCost: number | null, otherCostsFlatRateBasedOnStaffCost: number, staffTotal: number): number {
+    if (staffCostsFlatRateBasedOnDirectCost != null) {return 0; }
     return NumberService.truncateNumber(NumberService.product([
       NumberService.divide(otherCostsFlatRateBasedOnStaffCost, 100),
       staffTotal
     ]));
   }
 
-  private calculateTravelAndAccommodationTotal(travelFlatRateBasedOnStaffCost: number, staffTotal: number): number {
+  private calculateTravelAndAccommodationFlatRateTotal(travelFlatRateBasedOnStaffCost: number, staffTotal: number): number {
     return NumberService.truncateNumber(NumberService.product([
       NumberService.divide(travelFlatRateBasedOnStaffCost, 100),
       staffTotal
     ]));
   }
 
-  private formToBudgetTables(): { [key: string]: PartnerBudgetTable } {
-    return {
-      staff: new PartnerBudgetTable(PartnerBudgetTableType.STAFF, this.getTotalOf(this.staff), this.budgetsForm.get(this.constants.FORM_CONTROL_NAMES.staff)?.value.items.map((item: any) => new PartnerBudgetTableEntry({...item}))),
-      travel: new PartnerBudgetTable(PartnerBudgetTableType.TRAVEL, this.getTotalOf(this.travel), this.budgetsForm.get(this.constants.FORM_CONTROL_NAMES.travel)?.value.items.map((item: any) => new PartnerBudgetTableEntry({...item}))),
-      external: new PartnerBudgetTable(PartnerBudgetTableType.EXTERNAL, this.getTotalOf(this.external), this.budgetsForm.get(this.constants.FORM_CONTROL_NAMES.external)?.value.items.map((item: any) => new PartnerBudgetTableEntry({...item}))),
-      equipment: new PartnerBudgetTable(PartnerBudgetTableType.EQUIPMENT, this.getTotalOf(this.equipment), this.budgetsForm.get(this.constants.FORM_CONTROL_NAMES.equipment)?.value.items.map((item: any) => new PartnerBudgetTableEntry({...item}))),
-      infrastructure: new PartnerBudgetTable(PartnerBudgetTableType.INFRASTRUCTURE, this.getTotalOf(this.infrastructure), this.budgetsForm.get(this.constants.FORM_CONTROL_NAMES.infrastructure)?.value.items.map((item: any) => new PartnerBudgetTableEntry({...item})))
-    };
+  private formToBudgetTables(): PartnerBudgetTables {
+    return new PartnerBudgetTables(
+      new StaffCostsBudgetTable(this.getTotalOf(this.staff), this.staff?.value.items.map((item: any) => new StaffCostsBudgetTableEntry({...item}))),
+      new TravelAndAccommodationCostsBudgetTable(this.getTotalOf(this.travel), this.travel?.value.items.map((item: any) => new TravelAndAccommodationCostsBudgetTableEntry({...item}))),
+      new GeneralBudgetTable(this.getTotalOf(this.external), this.external?.value.items.map((item: any) => new GeneralBudgetTableEntry({...item}))),
+      new GeneralBudgetTable(this.getTotalOf(this.equipment), this.equipment?.value.items.map((item: any) => new GeneralBudgetTableEntry({...item}))),
+      new GeneralBudgetTable(this.getTotalOf(this.infrastructure), this.infrastructure?.value.items.map((item: any) => new GeneralBudgetTableEntry({...item})))
+    );
   }
 
-  private resetForm(budgets: { [key: string]: PartnerBudgetTable }): void {
-    Object.keys(budgets).forEach(key => {
-      const tableFormGroup = this.budgetsForm.get(key) as FormGroup;
-      const itemsFormArray = tableFormGroup.controls.items as FormArray;
-      tableFormGroup.controls.total.setValue(budgets[key].total);
-      itemsFormArray.clear();
-      budgets[key].entries.forEach(item => {
-        itemsFormArray.push(this.formBuilder.group({
-          description: this.formBuilder.control(item.description),
-          numberOfUnits: this.formBuilder.control(item.numberOfUnits, [Validators.max(this.constants.MAX_VALUE), Validators.min(this.constants.MIN_VALUE)]),
-          pricePerUnit: this.formBuilder.control(item.pricePerUnit, [Validators.max(this.constants.MAX_VALUE), Validators.min(this.constants.MIN_VALUE)]),
-          rowSum: this.formBuilder.control(item.rowSum, [Validators.max(this.constants.MAX_VALUE), Validators.min(this.constants.MIN_VALUE)]),
-        }));
-      });
-    });
-  }
-
-  private creatForm(): FormGroup {
+  private initForm(): FormGroup {
     return this.formBuilder.group({
       staff: this.formBuilder.group({
         items: this.formBuilder.array([], [Validators.maxLength(this.constants.MAX_NUMBER_OF_ITEMS)]),

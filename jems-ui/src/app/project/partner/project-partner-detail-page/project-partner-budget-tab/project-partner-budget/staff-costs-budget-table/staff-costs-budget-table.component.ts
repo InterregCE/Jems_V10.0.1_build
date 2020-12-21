@@ -1,4 +1,4 @@
-import {ChangeDetectionStrategy, Component, Input, OnInit} from '@angular/core';
+import {ChangeDetectionStrategy, Component, Input, OnChanges, OnInit, SimpleChanges} from '@angular/core';
 import {
   AbstractControl,
   ControlContainer,
@@ -16,21 +16,31 @@ import {NumberService} from '../../../../../../common/services/number.service';
 import {Tables} from '../../../../../../common/utils/tables';
 import {FormService} from '@common/components/section/form/form.service';
 import {MultiLanguageInputService} from '../../../../../../common/services/multi-language-input.service';
+import {StaffCostsBudgetTable} from '../../../../../project-application/model/staff-costs-budget-table';
+import {UntilDestroy, untilDestroyed} from '@ngneat/until-destroy';
+import {StaffCostTypeEnum} from '../../../../../project-application/model/staff-cost-type.enum';
+import {StaffCostUnitTypeEnum} from '../../../../../project-application/model/staff-cost-unit-type.enum';
 
+@UntilDestroy()
 @Component({
-  selector: 'app-staff-cost-table',
-  templateUrl: './staff-cost-table.component.html',
-  styleUrls: ['./staff-cost-table.component.scss'],
+  selector: 'app-staff-costs-budget-table',
+  templateUrl: './staff-costs-budget-table.component.html',
+  styleUrls: ['./staff-costs-budget-table.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush
 
 })
-export class StaffCostTableComponent implements OnInit {
+export class StaffCostsBudgetTableComponent implements OnInit, OnChanges {
 
   constants = ProjectPartnerBudgetConstants;
-  columnsToDisplay = ['description', 'numberOfUnits', 'pricePerUnit', 'total', 'action'];
+  staffCostType = StaffCostTypeEnum;
+  staffCostUnitType = StaffCostUnitTypeEnum;
+
+  columnsToDisplay = ['description', 'typeOfStaff', 'comments', 'unitType', 'numberOfUnits', 'pricePerUnit', 'total', 'action'];
 
   @Input()
   editable: boolean;
+  @Input()
+  staffCostTable: StaffCostsBudgetTable;
 
   budgetForm: FormGroup;
   dataSource: MatTableDataSource<AbstractControl>;
@@ -50,6 +60,17 @@ export class StaffCostTableComponent implements OnInit {
       });
       this.setTotal();
     });
+
+    this.formService.reset$.pipe(
+      map(() => this.resetStaffFormGroup(this.staffCostTable)),
+      untilDestroyed(this)
+    ).subscribe();
+  }
+
+  ngOnChanges(changes: SimpleChanges): void {
+    if (changes.staffCostTable) {
+      this.resetStaffFormGroup(this.staffCostTable);
+    }
   }
 
   removeItem(index: number): void {
@@ -61,12 +82,31 @@ export class StaffCostTableComponent implements OnInit {
     this.items.push(this.formBuilder.group({
       id: Tables.getNextId(this.items.controls),
       description: this.formBuilder.control(this.multiLanguageInputService.multiLanguageFormFieldDefaultValue()),
+      typeOfStaff: this.formBuilder.control(StaffCostTypeEnum.NONE),
+      unitType: this.formBuilder.control(StaffCostUnitTypeEnum.NONE),
+      comments: this.formBuilder.control(this.multiLanguageInputService.multiLanguageFormFieldDefaultValue()),
       numberOfUnits: this.formBuilder.control(1, [Validators.max(this.constants.MAX_VALUE), Validators.min(this.constants.MIN_VALUE)]),
       pricePerUnit: this.formBuilder.control(0, [Validators.max(this.constants.MAX_VALUE), Validators.min(this.constants.MIN_VALUE)]),
       rowSum: this.formBuilder.control(0, [Validators.max(this.constants.MAX_VALUE), Validators.min(this.constants.MIN_VALUE)]),
       new: true
     }));
     this.formService.setDirty(true);
+  }
+
+  private resetStaffFormGroup(staffTable: StaffCostsBudgetTable): void {
+    this.total.setValue(staffTable.total);
+    this.items.clear();
+    staffTable.entries.forEach(item => {
+      this.items.push(this.formBuilder.group({
+        description: this.formBuilder.control(item.description),
+        typeOfStaff: this.formBuilder.control(item.typeOfStaff),
+        unitType: this.formBuilder.control(item.unitType),
+        comments: this.formBuilder.control(item.description),
+        numberOfUnits: this.formBuilder.control(item.numberOfUnits, [Validators.max(this.constants.MAX_VALUE), Validators.min(this.constants.MIN_VALUE)]),
+        pricePerUnit: this.formBuilder.control(item.pricePerUnit, [Validators.max(this.constants.MAX_VALUE), Validators.min(this.constants.MIN_VALUE)]),
+        rowSum: this.formBuilder.control(item.rowSum, [Validators.max(this.constants.MAX_VALUE), Validators.min(this.constants.MIN_VALUE)]),
+      }));
+    });
   }
 
   private setTotal(): void {

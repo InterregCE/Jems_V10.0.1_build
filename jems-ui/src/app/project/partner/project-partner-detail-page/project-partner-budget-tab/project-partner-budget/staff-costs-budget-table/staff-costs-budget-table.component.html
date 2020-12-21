@@ -1,19 +1,71 @@
 <ng-container *ngIf="(numberOfItems$ | async) as numberOfItems; else addTableButton">
     <ng-container [formGroup]="budgetForm">
-        <ng-container [formGroup]="table">
+        <ng-container [formGroup]="staff">
             <app-multi-language>
                 <mat-table
                         appTableConfig
-                        [widthConfig]="['min-15-rem','','','max-10-rem','max-2-rem']"
+                        [widthConfig]="[{minInRem:12},{minInRem:5},{minInRem:12},{minInRem:5},{minInRem:5},{minInRem:8},{minInRem:8},{minInRem:3}]"
                         [dataSource]="dataSource" [formArrayName]="constants.FORM_CONTROL_NAMES.items"
-                        class="mat-elevation-z2 budget-table">
-                    <ng-container matColumnDef="description">
+                        class="mat-elevation-z2 staff-budget-table">
+                    <ng-container sticky matColumnDef="description">
                         <mat-header-cell
-                                *matHeaderCellDef> {{'project.partner.budget.table.description' | translate}} </mat-header-cell>
+                                *matHeaderCellDef> {{'project.partner.budget.table.staff.description' | translate}} </mat-header-cell>
                         <mat-cell *matCellDef="let control;  let i = index" [formGroupName]="i">
                             <app-multi-language-form-field
                                     [formControlName]="constants.FORM_CONTROL_NAMES.description">
                             </app-multi-language-form-field>
+                        </mat-cell>
+                        <mat-footer-cell *matFooterCellDef></mat-footer-cell>
+                    </ng-container>
+
+                    <ng-container matColumnDef="typeOfStaff">
+                        <mat-header-cell
+                                *matHeaderCellDef> {{'project.partner.budget.table.staff.type.of.staff' | translate}} </mat-header-cell>
+                        <mat-cell *matCellDef="let control;  let i = index" [formGroupName]="i">
+                            <mat-form-field [appFormFieldWidth]="'small'">
+                                <mat-select name="indicatorCode"
+                                            [formControlName]="constants.FORM_CONTROL_NAMES.typeOfStaff"
+                                            [disableOptionCentering]="true">
+                                    <mat-option [value]="staffCostType.NONE"></mat-option>
+                                    <mat-option
+                                            [value]="staffCostType.REAL_COST">{{'project.partner.budget.table.staff.type.of.staff.fixed.percentage' | translate}}</mat-option>
+                                    <mat-option
+                                            [value]="staffCostType.UNIT_COST">{{'project.partner.budget.table.staff.type.of.staff.unit.cost' | translate}}</mat-option>
+                                </mat-select>
+                            </mat-form-field>
+                        </mat-cell>
+                        <mat-footer-cell *matFooterCellDef></mat-footer-cell>
+                    </ng-container>
+
+                    <ng-container matColumnDef="comments">
+                        <mat-header-cell
+                                *matHeaderCellDef> {{'project.partner.budget.table.staff.comments' | translate}} </mat-header-cell>
+                        <mat-cell *matCellDef="let control;  let i = index" [formGroupName]="i">
+                            <app-multi-language-form-field
+                                    [maxLength]="constants.MAX_STAFF_COMMENT_TEXT_LENGTH"
+                                    [formControlName]="constants.FORM_CONTROL_NAMES.comments">
+                            </app-multi-language-form-field>
+                        </mat-cell>
+                        <mat-footer-cell *matFooterCellDef></mat-footer-cell>
+                    </ng-container>
+
+                    <ng-container matColumnDef="unitType">
+                        <mat-header-cell
+                                *matHeaderCellDef> {{'project.partner.budget.table.unit.type' | translate}} </mat-header-cell>
+                        <mat-cell *matCellDef="let control;  let i = index" [formGroupName]="i">
+                            <mat-form-field [appFormFieldWidth]="'small'">
+                                <mat-select name="indicatorCode"
+                                            [formControlName]="constants.FORM_CONTROL_NAMES.unitType"
+                                            [disableOptionCentering]="true" panelClass="material-select-panel">
+                                    <mat-option [value]="staffCostUnitType.NONE"></mat-option>
+                                    <mat-option
+                                            [value]="staffCostUnitType.PERIOD">{{'project.partner.budget.table.staff.unit.type.period' | translate}}</mat-option>
+                                    <mat-option
+                                            [value]="staffCostUnitType.MONTH">{{'project.partner.budget.table.staff.unit.type.month' | translate}}</mat-option>
+                                    <mat-option
+                                            [value]="staffCostUnitType.HOUR">{{'project.partner.budget.table.staff.unit.type.hour' | translate}}</mat-option>
+                                </mat-select>
+                            </mat-form-field>
                         </mat-cell>
                         <mat-footer-cell *matFooterCellDef></mat-footer-cell>
                     </ng-container>
@@ -56,11 +108,11 @@
                         <mat-footer-cell *matFooterCellDef
                                          class="justify-end"
                                          [class.invalid]="!total.valid">
-                            <div class="text-overflow-ellipsis">{{total.value | asMoney}} </div>
+                            <div class="text-overflow-ellipsis">{{total.value | asMoney}}</div>
                         </mat-footer-cell>
                     </ng-container>
 
-                    <ng-container matColumnDef="action">
+                    <ng-container stickyEnd matColumnDef="action">
                         <mat-header-cell *matHeaderCellDef></mat-header-cell>
                         <mat-cell *matCellDef="let control;let index=index">
                             <button *ngIf="editable" class="delete-button"
@@ -88,14 +140,13 @@
                 </app-form-field-errors>
             </mat-error>
             <button *ngIf="editable" mat-icon-button type="button" class="mt-2"
-                    [disabled]="numberOfItems >= constants.MAX_NUMBER_OF_ITEMS"
+                    [disabled]="numberOfItems  >= constants.MAX_NUMBER_OF_ITEMS"
                     (click)="addNewItem()">
                 <mat-icon>add</mat-icon>
             </button>
         </ng-container>
     </ng-container>
 </ng-container>
-
 <ng-template #addTableButton>
     <p *ngIf="editable">
         <button mat-raised-button color="primary"
