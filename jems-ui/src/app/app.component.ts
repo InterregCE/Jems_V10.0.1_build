@@ -13,6 +13,8 @@ import {takeUntil} from 'rxjs/operators';
 })
 export class AppComponent extends BaseComponent {
 
+  isChristmas = false;
+
   @HostBinding('class') componentCssClass = 'light-theme';
 
   constructor(public translate: TranslateService,
@@ -25,6 +27,9 @@ export class AppComponent extends BaseComponent {
         takeUntil(this.destroyed$)
       )
       .subscribe(theme => this.componentCssClass = theme);
+
+    const today = new Date();
+    this.isChristmas = today.getMonth() === 11 && today.getDate() >= 24;
   }
 
   onSetTheme(theme: string): void {
