@@ -1,7 +1,6 @@
 package io.cloudflight.jems.api.project.dto.workpackage
 
 import javax.validation.constraints.Size
-import javax.validation.constraints.NotNull
 
 data class InputWorkPackageCreate(
 
