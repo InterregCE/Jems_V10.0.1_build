@@ -5,7 +5,10 @@
                     *ngIf="isInputVisible(multiLanguageService.currentLanguage$ |async , formGroup.get('language').value)">
                 <mat-form-field class="w-100">
                     <mat-label *ngIf="label">{{label | translate}}</mat-label>
-                    <input formControlName="translation" matInput>
+                    <input #inputText formControlName="translation" matInput>
+                    <mat-hint>
+                        {{inputText.value.length}} / {{maxLength}} {{'common.textarea.hint' | translate}}
+                    </mat-hint>
                     <mat-error>
                         <app-form-field-errors
                                 [errors]="formGroup.get('translation').errors"

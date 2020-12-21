@@ -9,7 +9,7 @@ export class ProjectWorkPackageActivitiesTabConstants {
 
   public static TITLE: AppControl = {
     name: 'title',
-    validators: [Validators.maxLength(200)]
+    maxLength: 200,
   };
 
   public static START_PERIOD: AppControl = {
@@ -30,7 +30,7 @@ export class ProjectWorkPackageActivitiesTabConstants {
 
   public static DESCRIPTION: AppControl = {
     name: 'description',
-    validators: [Validators.maxLength(500)]
+    maxLength: 500,
   };
 
   public static DELIVERABLES: AppControl = {
@@ -39,7 +39,7 @@ export class ProjectWorkPackageActivitiesTabConstants {
 
   public static DELIVERABLE: AppControl = {
     name: 'description',
-    validators: [Validators.maxLength(200)]
+    maxLength: 200,
   };
 
   public static PERIOD: AppControl = {

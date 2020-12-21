@@ -27,8 +27,7 @@
 
                         <app-multi-language-form-field
                                 [label]="'project.work.package.tab.activity.title'"
-                                [formControlName]="constants.TITLE.name"
-                                [validators]="constants.TITLE.validators">
+                                [formControlName]="constants.TITLE.name">
                         </app-multi-language-form-field>
 
                         <div class="w-100">
@@ -66,8 +65,7 @@
 
                         <app-multi-language-form-field
                                 [label]="'project.work.package.tab.activity.description'"
-                                [formControlName]="constants.DESCRIPTION.name"
-                                [validators]="constants.DESCRIPTION.validators">
+                                [formControlName]="constants.DESCRIPTION.name">
                         </app-multi-language-form-field>
 
                         <div class="pl-5">
@@ -89,8 +87,7 @@
 
                                             <app-multi-language-form-field
                                                     [label]="'project.work.package.tab.deliverables.deliverable'"
-                                                    [formControlName]="constants.DELIVERABLE.name"
-                                                    [validators]="constants.DELIVERABLE.validators">
+                                                    [maxLength]="constants.DELIVERABLE.maxLength">
                                             </app-multi-language-form-field>
 
                                             <mat-form-field>
