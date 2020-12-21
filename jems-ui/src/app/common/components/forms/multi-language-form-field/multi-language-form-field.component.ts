@@ -16,7 +16,6 @@ import {
 import {InputTranslation} from '@cat/api';
 import {UntilDestroy, untilDestroyed} from '@ngneat/until-destroy';
 import {MultiLanguageFormFieldConstants} from '@common/components/forms/multi-language-form-field/multi-language-form-field.constants';
-import {MatFormFieldControl} from '@angular/material/form-field';
 
 @UntilDestroy()
 @Component({
@@ -43,7 +42,7 @@ export class MultiLanguageFormFieldComponent implements OnInit, ControlValueAcce
   @Input()
   label: string;
   @Input()
-  validators: ValidatorFn[] = [Validators.maxLength(255)];
+  maxLength = 255;
 
   multiLanguageFormGroup: FormGroup;
 
@@ -105,7 +104,7 @@ export class MultiLanguageFormFieldComponent implements OnInit, ControlValueAcce
     this.multiLanguageService.languages.forEach(language => {
         this.inputs.push(
           this.formBuilder.group({
-            translation: this.formBuilder.control('', this.validators),
+            translation: this.formBuilder.control('', Validators.maxLength(this.maxLength)),
             language: this.formBuilder.control(language)
           }));
       }
