@@ -1,8 +1,9 @@
 <div class="container">
     <mat-card>
         <mat-card-content>
-            <div class="authentication-logo px-3">
-                <p>{{'authentication.logo.disclaimer' | translate}}</p>
+            <div class="authentication-logo px-3" [class.isChristmas]="isChristmas">
+                <p *ngIf="!isChristmas">{{'authentication.logo.disclaimer' | translate}}</p>
+                <h2 *ngIf="isChristmas">Merry Christmas from Cloudflight devs!</h2>
             </div>
             <div class="px-3">
                 <h2>{{'authentication.login.title.label' | translate}}</h2>
