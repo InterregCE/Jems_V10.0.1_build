@@ -7616,7 +7616,7 @@
 								"header": [],
 								"body": {
 									"mode": "raw",
-									"raw": "{\r\n    \"abbreviation\": \"{{$randomAbbreviation}}\",\r\n    \"role\": \"PARTNER\",\r\n    \"legalStatusId\": 1\r\n}\r\n",
+									"raw": "{\r\n    \"abbreviation\": \"{{$randomAbbreviation}} {{$randomCompanySuffix}}\",\r\n    \"role\": \"PARTNER\",\r\n    \"legalStatusId\": 1\r\n}\r\n",
 									"options": {
 										"raw": {
 											"language": "json"
@@ -8109,7 +8109,7 @@
 								"header": [],
 								"body": {
 									"mode": "raw",
-									"raw": "{\r\n    \"abbreviation\": \"{{$randomAbbreviation}}\",\r\n    \"role\": \"PARTNER\",\r\n    \"legalStatusId\": 1\r\n}\r\n",
+									"raw": "{\r\n    \"abbreviation\": \"{{$randomAbbreviation}} {{$randomCompanySuffix}}\",\r\n    \"role\": \"PARTNER\",\r\n    \"legalStatusId\": 1\r\n}\r\n",
 									"options": {
 										"raw": {
 											"language": "json"
@@ -8878,10 +8878,10 @@
 									"listen": "prerequest",
 									"script": {
 										"exec": [
-											"const partnerAbbr = pm.variables.replaceIn('{{$randomAbbreviation}}')\r",
+											"const partnerAbbr = pm.variables.replaceIn('{{$randomAbbreviation}}') + ' ' + pm.variables.replaceIn('{{$randomCompanySuffix}}')\r",
 											"pm.variables.set(\r",
 											"    'partner_abbreviation',\r",
-											"    partnerAbbr\r",
+											"    partnerAbbr.substr(0, 15)\r",
 											");\r",
 											""
 										],
