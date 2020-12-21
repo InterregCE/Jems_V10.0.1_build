@@ -30,8 +30,8 @@
                 </div>
                 <div class="my-2">
                     <ng-container *ngIf="!data.isTravelAndAccommodationFlatRateActive">
-                        <h6 id="travel" class="header">{{'project.partner.budget.travel' | translate}}</h6>
-                        <app-budget-table
+                        <h6 class="header">{{'project.partner.budget.travel' | translate}}</h6>
+                        <app-travel-and-accommodation-costs-budget-table
                                 *ngIf="travel"
                                 [travelAndAccommodationTable]="data.budgetTables.travelCosts"
                                 [editable]="data.isProjectEditable">
@@ -47,7 +47,7 @@
                 </div>
                 <div class="my-2">
                     <h6 class="header">{{'project.partner.budget.external' | translate}}</h6>
-                    <app-budget-table
+                    <app-general-budget-table
                             *ngIf="external"
                             [investments]="data.investments"
                             [budgetTable]="data.budgetTables.externalCosts"
@@ -57,7 +57,7 @@
                 </div>
                 <div class="my-2">
                     <h6 class="header">{{'project.partner.budget.equipment' | translate}}</h6>
-                    <app-budget-table
+                    <app-general-budget-table
                             *ngIf="equipment"
                             [investments]="data.investments"
                             [budgetTable]="data.budgetTables.equipmentCosts"
@@ -67,7 +67,7 @@
                 </div>
                 <div class="my-2">
                     <h6 class="header">{{'project.partner.budget.infrastructure' | translate}}</h6>
-                    <app-budget-table
+                    <app-general-budget-table
                             *ngIf="infrastructure"
                             [investments]="data.investments"
                             [budgetTable]="data.budgetTables.infrastructureCosts"
