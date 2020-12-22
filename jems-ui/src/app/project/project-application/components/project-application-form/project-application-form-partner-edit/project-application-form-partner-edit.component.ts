@@ -12,9 +12,9 @@ import {FormBuilder, FormGroup, Validators} from '@angular/forms';
 import {
   InputProjectPartnerCreate,
   InputProjectPartnerUpdate,
+  OutputProgrammeLegalStatus,
   OutputProjectPartner,
-  OutputProjectPartnerDetail,
-  OutputProgrammeLegalStatus
+  OutputProjectPartnerDetail
 } from '@cat/api';
 import {catchError, take, takeUntil, tap} from 'rxjs/operators';
 import {I18nValidationError} from '@common/validation/i18n-validation-error';
@@ -26,7 +26,6 @@ import {ProjectPartnerStore} from '../../../containers/project-application-form-
 import {HttpErrorResponse} from '@angular/common/http';
 import {Observable, of} from 'rxjs';
 import {Router} from '@angular/router';
-import {MultiLanguageInput} from '@common/components/forms/multi-language/multi-language-input';
 import {MultiLanguageInputService} from '../../../../../common/services/multi-language-input.service';
 
 @Component({
@@ -55,20 +54,18 @@ export class ProjectApplicationFormPartnerEditComponent extends BaseComponent im
   @Output()
   cancel = new EventEmitter<void>();
 
-  department: MultiLanguageInput;
-
   partnerForm: FormGroup = this.formBuilder.group({
     fakeRole: [], // needed for the fake role field in view mode
     id: [],
     sortNumber: [],
-    abbreviation: ['', Validators.compose([
+    abbreviation: ['', [
       Validators.maxLength(15),
-      Validators.required])
+      Validators.required]
     ],
     role: ['', Validators.required],
     nameInOriginalLanguage: ['', Validators.maxLength(100)],
     nameInEnglish: ['', Validators.maxLength(100)],
-    department: ['', Validators.maxLength(250)],
+    department: this.formBuilder.control(this.languageService.multiLanguageFormFieldDefaultValue()),
     partnerType: [''],
     legalStatusId: ['', Validators.required],
     vat: ['', Validators.maxLength(50)],
@@ -87,9 +84,6 @@ export class ProjectApplicationFormPartnerEditComponent extends BaseComponent im
   };
   nameInEnglishErrors = {
     maxlength: 'project.organization.english.name.size.too.long'
-  };
-  departmentErrors = {
-    maxlength: 'project.organization.department.size.too.long'
   };
   legalStatusErrors = {
     required: 'project.partner.legal.status.should.not.be.empty'
@@ -128,7 +122,6 @@ export class ProjectApplicationFormPartnerEditComponent extends BaseComponent im
   ngOnInit(): void {
     this.resetForm();
     this.formService.init(this.partnerForm);
-    this.formService.setAdditionalValidators([this.formValid.bind(this)]);
   }
 
   ngOnChanges(changes: SimpleChanges): void {
@@ -149,12 +142,12 @@ export class ProjectApplicationFormPartnerEditComponent extends BaseComponent im
         oldLeadPartnerId: oldPartnerId,
         nameInOriginalLanguage: this.controls.nameInOriginalLanguage.value,
         nameInEnglish: this.controls.nameInEnglish.value,
-        department: this.department.inputs,
+        department: this.controls.department.value,
         partnerType: this.controls.partnerType.value,
         legalStatusId: this.controls.legalStatusId.value,
         vat: this.controls.vat.value,
         vatRecovery: this.controls.vatRecovery.value,
-      }
+      };
 
       partnerToCreate.oldLeadPartnerId = oldPartnerId;
       if (!controls.partnerType.value) {
@@ -175,12 +168,12 @@ export class ProjectApplicationFormPartnerEditComponent extends BaseComponent im
         oldLeadPartnerId: oldPartnerId,
         nameInOriginalLanguage: this.controls.nameInOriginalLanguage.value,
         nameInEnglish: this.controls.nameInEnglish.value,
-        department: this.department.inputs,
+        department: this.controls.department.value,
         partnerType: this.controls.partnerType.value,
         legalStatusId: this.controls.legalStatusId.value,
         vat: this.controls.vat.value,
         vatRecovery: this.controls.vatRecovery.value,
-      }
+      };
 
       partnerToUpdate.oldLeadPartnerId = oldPartnerId;
       if (!controls.partnerType.value) {
@@ -229,7 +222,7 @@ export class ProjectApplicationFormPartnerEditComponent extends BaseComponent im
     this.controls.role.setValue(this.partner?.role);
     this.controls.nameInOriginalLanguage.setValue(this.partner?.nameInOriginalLanguage);
     this.controls.nameInEnglish.setValue(this.partner?.nameInEnglish);
-    this.department = this.languageService.initInput(this.partner?.department, this.controls.department);
+    this.controls.department.setValue(this.partner?.department);
     this.controls.partnerType.setValue(this.partner?.partnerType);
     this.controls.legalStatusId.setValue(this.partner?.legalStatusId);
     this.controls.vat.setValue(this.partner?.vat);
@@ -269,7 +262,4 @@ export class ProjectApplicationFormPartnerEditComponent extends BaseComponent im
     ]);
   }
 
-  private formValid(): boolean {
-    return this.department.isValid();
-  }
 }

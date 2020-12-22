@@ -20,25 +20,11 @@ export class ProjectApplicationFormPartnerContributionComponent implements OnIni
   @Input()
   editable: boolean;
 
-  organizationRelevance: MultiLanguageInput;
-  organizationRole: MultiLanguageInput
-  organizationExperience: MultiLanguageInput;
-
   partnerContributionForm: FormGroup = this.formBuilder.group({
-    organizationRelevance: ['', Validators.maxLength(2000)],
-    organizationRole: ['', Validators.maxLength(2000)],
-    organizationExperience: ['', Validators.maxLength(2000)],
+    organizationRelevance: [this.languageService.multiLanguageFormFieldDefaultValue()],
+    organizationRole: [this.languageService.multiLanguageFormFieldDefaultValue()],
+    organizationExperience: [this.languageService.multiLanguageFormFieldDefaultValue()],
   });
-
-  organizationRelevanceErrors = {
-    maxlength: 'partner.organization.relevance.textarea.size.too.long'
-  };
-  organizationRoleErrors = {
-    maxlength: 'partner.organization.role.textarea.size.too.long'
-  };
-  organizationExperienceErrors = {
-    maxlength: 'partner.organization.experience.textarea.size.too.long'
-  };
 
   constructor(private formBuilder: FormBuilder,
               private partnerStore: ProjectPartnerStore,
@@ -48,7 +34,6 @@ export class ProjectApplicationFormPartnerContributionComponent implements OnIni
 
   ngOnInit(): void {
     this.formService.init(this.partnerContributionForm);
-    this.formService.setAdditionalValidators([this.formValid.bind(this)]);
     this.resetForm();
   }
 
@@ -60,9 +45,9 @@ export class ProjectApplicationFormPartnerContributionComponent implements OnIni
 
   onSubmit(): void {
     const partnerContribution = {
-      organizationRelevance: this.organizationRelevance.inputs,
-      organizationRole: this.organizationRole.inputs,
-      organizationExperience: this.organizationExperience.inputs,
+      organizationRelevance: this.controls.organizationRelevance.value,
+      organizationRole: this.controls.organizationRole.value,
+      organizationExperience: this.controls.organizationExperience.value,
     } as ProjectPartnerMotivationDTO;
     this.partnerStore.updatePartnerMotivation(partnerContribution)
       .pipe(
@@ -73,19 +58,13 @@ export class ProjectApplicationFormPartnerContributionComponent implements OnIni
   }
 
   resetForm(): void {
-    if (!this.partner?.motivation) {
-      this.partnerContributionForm.reset();
-      return;
-    }
-    this.organizationRelevance = this.languageService.initInput(this.partner?.motivation.organizationRelevance, this.partnerContributionForm.controls.organizationRelevance);
-    this.organizationRole = this.languageService.initInput(this.partner?.motivation.organizationRole, this.partnerContributionForm.controls.organizationRole);
-    this.organizationExperience = this.languageService.initInput(this.partner?.motivation.organizationExperience, this.partnerContributionForm.controls.organizationExperience);
+    this.partnerContributionForm.controls.organizationRelevance.setValue(this.partner?.motivation?.organizationRelevance);
+    this.partnerContributionForm.controls.organizationRole.setValue(this.partner?.motivation?.organizationRole);
+    this.partnerContributionForm.controls.organizationExperience.setValue(this.partner?.motivation?.organizationExperience);
   }
 
-  private formValid(): boolean {
-    return this.organizationRelevance.isValid()
-      && this.organizationRole.isValid()
-      && this.organizationExperience.isValid();
+  get controls(): any {
+    return this.partnerContributionForm.controls;
   }
 
 }

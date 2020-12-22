@@ -59,8 +59,6 @@ export class ProjectApplicationFormAssociatedOrganizationEditComponent extends B
   @Output()
   cancel = new EventEmitter<void>();
 
-  roleDescription: MultiLanguageInput;
-
   associatedOrganizationForm: FormGroup = this.formBuilder.group({
     id: [],
     nameInOriginalLanguage: ['', Validators.compose([
@@ -93,7 +91,7 @@ export class ProjectApplicationFormAssociatedOrganizationEditComponent extends B
       Validators.maxLength(25),
       Validators.pattern('^[0-9+()/-]*$')
     ])],
-    roleDescription: ['', Validators.maxLength(2000)],
+    roleDescription: [this.languageService.multiLanguageFormFieldDefaultValue()],
   });
 
   nameInOriginalLanguageErrors = {
@@ -133,9 +131,6 @@ export class ProjectApplicationFormAssociatedOrganizationEditComponent extends B
     maxlength: 'project.contact.telephone.size.too.long',
     pattern: 'project.contact.telephone.wrong.format'
   };
-  roleDescriptionErrors = {
-    maxlength: 'project.organization.roleDescription.size.too.long',
-  };
 
   constructor(private formBuilder: FormBuilder,
               private formService: FormService,
@@ -148,7 +143,6 @@ export class ProjectApplicationFormAssociatedOrganizationEditComponent extends B
     this.formService.init(this.associatedOrganizationForm);
     this.formService.setCreation(!this.associatedOrganization.id);
     this.formService.setEditable(this.editable);
-    this.formService.setAdditionalValidators([this.formValid.bind(this)]);
     this.error$
       .pipe(
         takeUntil(this.destroyed$),
@@ -188,7 +182,7 @@ export class ProjectApplicationFormAssociatedOrganizationEditComponent extends B
         city: this.controls?.city.value,
       } as InputProjectAssociatedOrganizationAddress,
       contacts: this.getContacts(),
-      roleDescription: this.roleDescription.inputs,
+      roleDescription: this.controls?.roleDescription.value,
     };
 
     if (!this.controls?.id?.value) {
@@ -249,7 +243,7 @@ export class ProjectApplicationFormAssociatedOrganizationEditComponent extends B
     this.controls?.city.setValue(this.associatedOrganization?.address?.city);
     this.initLegalRepresentative();
     this.initContactPerson();
-    this.roleDescription = this.languageService.initInput(this.associatedOrganization?.roleDescription, this.controls?.roleDescription);
+    this.controls?.roleDescription.setValue(this.associatedOrganization?.roleDescription);
   }
 
   private initLegalRepresentative(): void {
@@ -268,7 +262,4 @@ export class ProjectApplicationFormAssociatedOrganizationEditComponent extends B
     this.associatedOrganizationForm.controls.contactTelephone.setValue(contactPerson?.telephone);
   }
 
-  private formValid(): boolean {
-    return this.roleDescription.isValid();
-  }
 }

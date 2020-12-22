@@ -81,8 +81,12 @@ class ProjectPartnerServiceImpl(
         if (projectPartner.role!!.isLead)
             validateLeadPartnerChange(projectId, projectPartner.oldLeadPartnerId)
 
-        // todo integrate update of transl values (has to incl partnerId)
         val partnerCreated = projectPartnerRepo.save(projectPartner.toEntity(project = project, legalStatus = legalStatus))
+        // save translations for which the just created Id is needed
+        projectPartnerRepo.save(
+            partnerCreated.copy(
+                translatedValues = projectPartner.combineTranslatedValues(partnerCreated.id))
+        )
         updateSortByRole(projectId)
         // entity is attached, number will have been updated
         return partnerCreated.toOutputProjectPartnerDetail()

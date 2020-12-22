@@ -40,7 +40,7 @@ fun InputProjectPartnerCreate.toEntity(project: Project, legalStatus: ProgrammeL
 
 fun InputProjectPartnerCreate.combineTranslatedValues(
     partnerId: Long
-): Set<ProjectPartnerTranslEntity> {
+): MutableSet<ProjectPartnerTranslEntity> {
     val departmentMap = department.associateBy( { it.language }, { it.translation } )
     val languages = departmentMap.keys.toMutableSet()
 
@@ -54,7 +54,7 @@ fun InputProjectPartnerCreate.combineTranslatedValues(
 
 fun InputProjectPartnerUpdate.combineTranslatedValues(
     partnerId: Long
-): Set<ProjectPartnerTranslEntity> {
+): MutableSet<ProjectPartnerTranslEntity> {
     val departmentMap = department.associateBy( { it.language }, { it.translation } )
     val languages = departmentMap.keys.toMutableSet()
 

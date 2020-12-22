@@ -34,7 +34,7 @@ fun InputProjectAssociatedOrganizationCreate.toEntity(
 
 fun InputProjectAssociatedOrganizationCreate.combineTranslatedValues(
     organizationId: Long
-): Set<ProjectAssociatedOrganizationTransl> {
+): MutableSet<ProjectAssociatedOrganizationTransl> {
     val roleDescriptionMap = roleDescription.associateBy( { it.language }, { it.translation } )
     val languages = roleDescriptionMap.keys.toMutableSet()
 
@@ -48,7 +48,7 @@ fun InputProjectAssociatedOrganizationCreate.combineTranslatedValues(
 
 fun InputProjectAssociatedOrganizationUpdate.combineTranslatedValues(
     organizationId: Long
-): Set<ProjectAssociatedOrganizationTransl> {
+): MutableSet<ProjectAssociatedOrganizationTransl> {
     val roleDescriptionMap = roleDescription.associateBy( { it.language }, { it.translation } )
     val languages = roleDescriptionMap.keys.toMutableSet()
 
