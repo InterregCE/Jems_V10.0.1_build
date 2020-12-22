@@ -9013,7 +9013,7 @@
 									}
 								},
 								"url": {
-									"raw": "{{url}}/api/project/partner/{{partner_id_lead}}/budget/staffcost",
+									"raw": "{{url}}/api/project/partner/{{partner_id_lead}}/budget/staffcosts",
 									"host": [
 										"{{url}}"
 									],
@@ -9023,7 +9023,7 @@
 										"partner",
 										"{{partner_id_lead}}",
 										"budget",
-										"staffcost"
+										"staffcosts"
 									]
 								}
 							},
@@ -9074,7 +9074,7 @@
 								"header": [],
 								"body": {
 									"mode": "raw",
-									"raw": "{\r\n    \"officeAndAdministrationFlatRate\": 10\r\n}\r\n",
+									"raw": "{\r\n    \"officeAndAdministrationOnStaffCostsFlatRate\": 10\r\n}\r\n",
 									"options": {
 										"raw": {
 											"language": "json"
