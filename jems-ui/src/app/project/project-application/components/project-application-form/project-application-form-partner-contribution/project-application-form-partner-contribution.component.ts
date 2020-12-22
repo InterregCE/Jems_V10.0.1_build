@@ -20,6 +20,10 @@ export class ProjectApplicationFormPartnerContributionComponent implements OnIni
   @Input()
   editable: boolean;
 
+  organizationRelevance: MultiLanguageInput;
+  organizationRole: MultiLanguageInput
+  organizationExperience: MultiLanguageInput;
+
   partnerContributionForm: FormGroup = this.formBuilder.group({
     organizationRelevance: [this.languageService.multiLanguageFormFieldDefaultValue()],
     organizationRole: [this.languageService.multiLanguageFormFieldDefaultValue()],
