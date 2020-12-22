@@ -24,6 +24,7 @@
   $text-contrast-lighter: mat-color($primary-theme, lighter-contrast);
   $text-contrast-darker: mat-color($primary-theme, darker-contrast);
   $text-link: if($is-dark-theme, $text, $primary);
+  $underline-color: mat-color($foreground-palette, text, if($is-dark-theme, .7, .42));
 
   $background: mat-color($background-palette, background);
   $background-card: mat-color($background-palette, card);
@@ -56,6 +57,7 @@
   --background-card: #{$background-card};
   --background-lighter: #{$background-lighter};
   --app-bar: #{$app-bar};
+  --underline-color: #{$underline-color};
 
   /**
    * Our custom coloring to global components:

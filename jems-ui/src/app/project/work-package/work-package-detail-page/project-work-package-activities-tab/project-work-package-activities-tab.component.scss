@@ -8,4 +8,14 @@
     max-width: 9rem;
   }
 
+  .warn-color {
+    mat-label {
+      color: var(--warn-color);
+    }
+    ::ng-deep.mat-form-field-underline {
+      background-color: var(--underline-color) !important;
+      background-image: none;
+      height: 1px !important;
+    }
+  }
 }

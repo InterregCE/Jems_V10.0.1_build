@@ -660,7 +660,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"staffCostFlatRateSetup\": {\r\n        \"rate\": 20,\r\n        \"isAdjustable\": true\r\n    },\r\n    \"officeOnStaffFlatRateSetup\": {\r\n        \"type\": \"OfficeOnStaff\",\r\n        \"rate\": 15,\r\n        \"isAdjustable\": true\r\n    },\r\n    \"officeOnOtherFlatRateSetup\": {\r\n        \"type\": \"OfficeOnOther\",\r\n        \"rate\": 25,\r\n        \"isAdjustable\": true\r\n    },\r\n    \"travelOnStaffFlatRateSetup\": {\r\n        \"type\": \"TravelOnStaff\",\r\n        \"rate\": 15,\r\n        \"isAdjustable\": true\r\n    },\r\n    \"otherOnStaffFlatRateSetup\": {\r\n        \"type\": \"OtherOnStaff\",\r\n        \"rate\": 40,\r\n        \"isAdjustable\": true\r\n    }\r\n}\r\n",
+							"raw": "{\r\n    \"staffCostFlatRateSetup\": {\r\n        \"rate\": 20,\r\n        \"isAdjustable\": true\r\n    },\r\n    \"officeAndAdministrationOnStaffCostsFlatRate\": {\r\n        \"rate\": 15,\r\n        \"isAdjustable\": true\r\n    },\r\n    \"officeAndAdministrationOnOtherCostsFlatRateSetup\": {\r\n        \"rate\": 25,\r\n        \"isAdjustable\": true\r\n    },\r\n    \"travelAndAccommodationOnStaffCostsFlatRateSetup\": {\r\n        \"rate\": 15,\r\n        \"isAdjustable\": true\r\n    },\r\n    \"otherCostsOnStaffCostsFlatRateSetup\": {\r\n        \"rate\": 40,\r\n        \"isAdjustable\": true\r\n    }\r\n}\r\n",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -8194,7 +8194,7 @@
 									}
 								},
 								"url": {
-									"raw": "{{url}}/api/project/partner/{{partner_id}}/budget/staffcost",
+									"raw": "{{url}}/api/project/partner/{{partner_id}}/budget/staffcosts",
 									"host": [
 										"{{url}}"
 									],
@@ -8204,7 +8204,7 @@
 										"partner",
 										"{{partner_id}}",
 										"budget",
-										"staffcost"
+										"staffcosts"
 									]
 								}
 							},
@@ -8419,7 +8419,7 @@
 								"header": [],
 								"body": {
 									"mode": "raw",
-									"raw": "{\r\n    \"officeAndAdministrationFlatRate\": 10\r\n}\r\n",
+									"raw": "{\r\n    \"officeAndAdministrationOnStaffCostsFlatRate\": 10\r\n}\r\n",
 									"options": {
 										"raw": {
 											"language": "json"
@@ -8549,7 +8549,7 @@
 								"header": [],
 								"body": {
 									"mode": "raw",
-									"raw": "{\r\n    \"officeAndAdministrationFlatRate\": 10,\r\n    \"travelAndAccommodationFlatRate\": 15\r\n}\r\n",
+									"raw": "{\r\n    \"officeAndAdministrationOnStaffCostsFlatRate\": 10,\r\n    \"travelAndAccommodationOnStaffCostsFlatRate\": 15\r\n}\r\n",
 									"options": {
 										"raw": {
 											"language": "json"

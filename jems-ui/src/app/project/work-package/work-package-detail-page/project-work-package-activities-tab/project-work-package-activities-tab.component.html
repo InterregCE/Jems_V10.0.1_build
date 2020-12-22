@@ -27,13 +27,14 @@
 
                         <app-multi-language-form-field
                                 [label]="'project.work.package.tab.activity.title'"
-                                [formControlName]="constants.TITLE.name">
+                                [formControlName]="constants.TITLE.name"
+                                [maxLength]="constants.TITLE.maxLength">
                         </app-multi-language-form-field>
 
                         <div class="w-100">
-                            <mat-form-field class="w-50 warning-hint">
+                            <mat-form-field class="w-50" [class.warn-color]="!data.periods.length">
                                 <mat-label>{{'project.work.package.tab.activity.start.period' | translate}}</mat-label>
-                                <mat-select panelClass="material-select-panel"
+                                <mat-select panelClass="material-select-panel" [disabled]="!data.periods.length"
                                             [formControlName]="constants.START_PERIOD.name">
                                     <mat-option *ngFor="let period of data.periods" [value]="period.number">
                                         {{'project.application.form.work.package.output.delivery.period.entry' | translate : getPeriodArguments(period) }}
@@ -44,9 +45,9 @@
                                 </mat-hint>
                             </mat-form-field>
 
-                            <mat-form-field class="w-50">
+                            <mat-form-field class="w-50" [class.warn-color]="!data.periods.length">
                                 <mat-label>{{'project.work.package.tab.activity.end.period' | translate}}</mat-label>
-                                <mat-select panelClass="material-select-panel"
+                                <mat-select panelClass="material-select-panel" [disabled]="!data.periods.length"
                                             [formControlName]="constants.END_PERIOD.name">
                                     <mat-option *ngFor="let period of data.periods" [value]="period.number">
                                         {{'project.application.form.work.package.output.delivery.period.entry' | translate : getPeriodArguments(period) }}
@@ -65,7 +66,8 @@
 
                         <app-multi-language-form-field
                                 [label]="'project.work.package.tab.activity.description'"
-                                [formControlName]="constants.DESCRIPTION.name">
+                                [formControlName]="constants.DESCRIPTION.name"
+                                [maxLength]="constants.DESCRIPTION.maxLength">
                         </app-multi-language-form-field>
 
                         <div class="pl-5">
@@ -90,9 +92,9 @@
                                                     [maxLength]="constants.DELIVERABLE.maxLength">
                                             </app-multi-language-form-field>
 
-                                            <mat-form-field>
+                                            <mat-form-field [class.warn-color]="!data.periods.length">
                                                 <mat-label>{{'project.work.package.tab.deliverables.period' | translate}}</mat-label>
-                                                <mat-select panelClass="material-select-panel"
+                                                <mat-select panelClass="material-select-panel" [disabled]="!data.periods.length"
                                                             [formControlName]="constants.PERIOD.name">
                                                     <mat-option *ngFor="let period of data.periods"
                                                                 [value]="period.number">
