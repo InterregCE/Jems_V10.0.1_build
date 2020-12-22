@@ -9,11 +9,11 @@ import org.springframework.http.HttpStatus
 private const val OUT_OF_RANGE_ERR = "call.flatRateSetup.rate.out.of.range"
 
 private val maxFlatRates = mapOf(
-    FlatRateType.StaffCost to 20,
-    FlatRateType.OfficeOnStaff to 15,
-    FlatRateType.OfficeOnOther to 25,
-    FlatRateType.TravelOnStaff to 15,
-    FlatRateType.OtherOnStaff to 40
+    FlatRateType.STAFF_COSTS to 20,
+    FlatRateType.OFFICE_AND_ADMINISTRATION_ON_STAFF_COSTS to 15,
+    FlatRateType.OFFICE_AND_ADMINISTRATION_ON_OTHER_COSTS to 25,
+    FlatRateType.TRAVEL_AND_ACCOMMODATION_ON_STAFF_COSTS to 15,
+    FlatRateType.OTHER_COSTS_ON_STAFF_COSTS to 40
 )
 
 fun validateFlatRates(flatRates: Set<ProjectCallFlatRate>) {

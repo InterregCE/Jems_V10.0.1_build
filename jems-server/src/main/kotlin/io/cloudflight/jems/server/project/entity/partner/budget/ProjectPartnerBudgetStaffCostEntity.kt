@@ -9,8 +9,8 @@ import javax.persistence.Id
 import javax.persistence.OneToMany
 import javax.validation.constraints.NotNull
 
-@Entity(name = "project_partner_budget_infrastructure")
-data class ProjectPartnerBudgetInfrastructure(
+@Entity(name = "project_partner_budget_staff_cost")
+data class ProjectPartnerBudgetStaffCostEntity(
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -23,6 +23,6 @@ data class ProjectPartnerBudgetInfrastructure(
     override val budget: Budget,
 
     @OneToMany(cascade = [CascadeType.ALL], orphanRemoval = true, mappedBy = "translationId.budgetId")
-    val translatedValues: MutableSet<ProjectPartnerBudgetInfrastructureTransl> = mutableSetOf()
+    val translatedValues: MutableSet<ProjectPartnerBudgetStaffCostTransl> = mutableSetOf()
 
 ): CommonBudget

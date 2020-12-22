@@ -5,7 +5,7 @@ import io.cloudflight.jems.api.project.dto.partner.budget.InputStaffCostBudget
 import io.cloudflight.jems.server.common.exception.I18nValidationException
 import io.cloudflight.jems.server.project.entity.partner.budget.Budget
 import io.cloudflight.jems.server.project.entity.partner.budget.CommonBudget
-import io.cloudflight.jems.server.project.entity.partner.budget.ProjectPartnerBudgetStaffCost
+import io.cloudflight.jems.server.project.entity.partner.budget.ProjectPartnerBudgetStaffCostEntity
 import io.cloudflight.jems.server.project.repository.partner.budget.ProjectPartnerBudgetCommonRepository
 import io.cloudflight.jems.server.project.repository.partner.budget.ProjectPartnerBudgetEquipmentRepository
 import io.cloudflight.jems.server.project.repository.partner.budget.ProjectPartnerBudgetExternalRepository
@@ -40,8 +40,8 @@ internal class ProjectPartnerStaffCostBudgetServiceTest {
 
         const val PARTNER_ID = 1L
 
-        private fun staffCost(id: Long, numberOfUnits: Double, pricePerUnit: Double, rowSum: Double): ProjectPartnerBudgetStaffCost {
-            return ProjectPartnerBudgetStaffCost(
+        private fun staffCost(id: Long, numberOfUnits: Double, pricePerUnit: Double, rowSum: Double): ProjectPartnerBudgetStaffCostEntity {
+            return ProjectPartnerBudgetStaffCostEntity(
                 id = id,
                 partnerId = PARTNER_ID,
                 budget = Budget(
@@ -109,8 +109,8 @@ internal class ProjectPartnerStaffCostBudgetServiceTest {
         repository: ProjectPartnerBudgetCommonRepository<CommonBudget>
     ) {
         every { repository.findAllByPartnerIdOrderByIdAsc(1) } returns emptyList()
-        every { repository.deleteAll(any<List<ProjectPartnerBudgetStaffCost>>()) } answers {}
-        every { repository.saveAll(any<List<ProjectPartnerBudgetStaffCost>>()) } returnsArgument 0
+        every { repository.deleteAll(any<List<ProjectPartnerBudgetStaffCostEntity>>()) } answers {}
+        every { repository.saveAll(any<List<ProjectPartnerBudgetStaffCostEntity>>()) } returnsArgument 0
 
         val toBeSavedMaxNumberOfUnits = listOf(
             InputStaffCostBudget(
@@ -233,8 +233,8 @@ internal class ProjectPartnerStaffCostBudgetServiceTest {
         )
 
         every { repository.findAllByPartnerIdOrderByIdAsc(1) } returns existing
-        every { repository.deleteAll(any<List<ProjectPartnerBudgetStaffCost>>()) } answers {}
-        every { repository.saveAll(any<List<ProjectPartnerBudgetStaffCost>>()) } returnsArgument 0
+        every { repository.deleteAll(any<List<ProjectPartnerBudgetStaffCostEntity>>()) } answers {}
+        every { repository.saveAll(any<List<ProjectPartnerBudgetStaffCostEntity>>()) } returnsArgument 0
 
         assertThat(
             callUpdateBudgetServiceMethod(1, toBeSaved)
@@ -253,7 +253,7 @@ internal class ProjectPartnerStaffCostBudgetServiceTest {
 
         // clean context
         every { repository.findAllByPartnerIdOrderByIdAsc(1) } returns emptyList()
-        every { repository.saveAll(any<List<ProjectPartnerBudgetStaffCost>>()) } throws UnsupportedOperationException()
+        every { repository.saveAll(any<List<ProjectPartnerBudgetStaffCostEntity>>()) } throws UnsupportedOperationException()
     }
 
     private fun callUpdateBudgetServiceMethod(
@@ -314,7 +314,7 @@ internal class ProjectPartnerStaffCostBudgetServiceTest {
         val id = 598L
         every { getBudgetOptionsInteractor.getBudgetOptions(id) } returns ProjectPartnerBudgetOptions(
             partnerId = id,
-            officeAndAdministrationFlatRate = 10,
+            officeAndAdministrationOnStaffCostsFlatRate = 10,
             staffCostsFlatRate = null
         )
         initCommonTestBudgets(id)
@@ -327,7 +327,7 @@ internal class ProjectPartnerStaffCostBudgetServiceTest {
         val id = 321L
         every { getBudgetOptionsInteractor.getBudgetOptions(id) } returns ProjectPartnerBudgetOptions(
             partnerId = id,
-            officeAndAdministrationFlatRate = null,
+            officeAndAdministrationOnStaffCostsFlatRate = null,
             staffCostsFlatRate = 10
         )
         initCommonTestBudgets(id)
@@ -340,7 +340,7 @@ internal class ProjectPartnerStaffCostBudgetServiceTest {
         val id = 281L
         every { getBudgetOptionsInteractor.getBudgetOptions(id) } returns ProjectPartnerBudgetOptions(
             partnerId = id,
-            officeAndAdministrationFlatRate = 10,
+            officeAndAdministrationOnStaffCostsFlatRate = 10,
             staffCostsFlatRate = 10
         )
         initCommonTestBudgets(id)

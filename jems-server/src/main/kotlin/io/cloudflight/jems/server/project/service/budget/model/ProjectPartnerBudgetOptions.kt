@@ -1,17 +1,15 @@
 package io.cloudflight.jems.server.project.service.budget.model
 
 data class ProjectPartnerBudgetOptions(
-
     val partnerId: Long,
-
-    val officeAndAdministrationFlatRate: Int? = null,
-    val travelAndAccommodationFlatRate: Int? = null,
-
-    val staffCostsFlatRate: Int? = null
-
-) {
+    val officeAndAdministrationOnStaffCostsFlatRate: Int? = null,
+    val travelAndAccommodationOnStaffCostsFlatRate: Int? = null,
+    val staffCostsFlatRate: Int? = null,
+    val otherCostsOnStaffCostsFlatRate: Int? = null
+){
     fun isEmpty() =
-        officeAndAdministrationFlatRate == null
+        officeAndAdministrationOnStaffCostsFlatRate == null
             && staffCostsFlatRate == null
-            && travelAndAccommodationFlatRate == null
+            && travelAndAccommodationOnStaffCostsFlatRate == null
+            && otherCostsOnStaffCostsFlatRate == null
 }

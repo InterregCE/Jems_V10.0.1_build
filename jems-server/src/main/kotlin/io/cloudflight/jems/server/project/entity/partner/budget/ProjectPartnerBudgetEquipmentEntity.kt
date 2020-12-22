@@ -10,7 +10,7 @@ import javax.persistence.OneToMany
 import javax.validation.constraints.NotNull
 
 @Entity(name = "project_partner_budget_equipment")
-data class ProjectPartnerBudgetEquipment(
+data class ProjectPartnerBudgetEquipmentEntity(
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

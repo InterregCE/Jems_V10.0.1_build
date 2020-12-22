@@ -5,9 +5,9 @@ import io.cloudflight.jems.api.project.dto.partner.budget.InputGeneralBudget
 import io.cloudflight.jems.server.common.exception.I18nValidationException
 import io.cloudflight.jems.server.project.entity.partner.budget.Budget
 import io.cloudflight.jems.server.project.entity.partner.budget.CommonBudget
-import io.cloudflight.jems.server.project.entity.partner.budget.ProjectPartnerBudgetEquipment
-import io.cloudflight.jems.server.project.entity.partner.budget.ProjectPartnerBudgetExternal
-import io.cloudflight.jems.server.project.entity.partner.budget.ProjectPartnerBudgetInfrastructure
+import io.cloudflight.jems.server.project.entity.partner.budget.ProjectPartnerBudgetEquipmentEntity
+import io.cloudflight.jems.server.project.entity.partner.budget.ProjectPartnerBudgetExternalEntity
+import io.cloudflight.jems.server.project.entity.partner.budget.ProjectPartnerBudgetInfrastructureEntity
 import io.cloudflight.jems.server.project.repository.partner.budget.ProjectPartnerBudgetCommonRepository
 import io.cloudflight.jems.server.project.repository.partner.budget.ProjectPartnerBudgetEquipmentRepository
 import io.cloudflight.jems.server.project.repository.partner.budget.ProjectPartnerBudgetExternalRepository
@@ -48,8 +48,8 @@ internal class ProjectPartnerGeneralBudgetServiceTest {
             20
         )
 
-        private fun external(id: Long, numberOfUnits: Double, pricePerUnit: Double, rowSum: Double): ProjectPartnerBudgetExternal {
-            return ProjectPartnerBudgetExternal(
+        private fun external(id: Long, numberOfUnits: Double, pricePerUnit: Double, rowSum: Double): ProjectPartnerBudgetExternalEntity {
+            return ProjectPartnerBudgetExternalEntity(
                 id = id,
                 partnerId = PARTNER_ID,
                 budget = Budget(
@@ -60,8 +60,8 @@ internal class ProjectPartnerGeneralBudgetServiceTest {
             )
         }
 
-        private fun equipment(id: Long, numberOfUnits: Double, pricePerUnit: Double, rowSum: Double): ProjectPartnerBudgetEquipment {
-            return ProjectPartnerBudgetEquipment(
+        private fun equipment(id: Long, numberOfUnits: Double, pricePerUnit: Double, rowSum: Double): ProjectPartnerBudgetEquipmentEntity {
+            return ProjectPartnerBudgetEquipmentEntity(
                 id = id,
                 partnerId = PARTNER_ID,
                 budget = Budget(
@@ -72,8 +72,8 @@ internal class ProjectPartnerGeneralBudgetServiceTest {
             )
         }
 
-        private fun infrastructure(id: Long, numberOfUnits: Double, pricePerUnit: Double, rowSum: Double): ProjectPartnerBudgetInfrastructure {
-            return ProjectPartnerBudgetInfrastructure(
+        private fun infrastructure(id: Long, numberOfUnits: Double, pricePerUnit: Double, rowSum: Double): ProjectPartnerBudgetInfrastructureEntity {
+            return ProjectPartnerBudgetInfrastructureEntity(
                 id = id,
                 partnerId = PARTNER_ID,
                 budget = Budget(
@@ -141,8 +141,8 @@ internal class ProjectPartnerGeneralBudgetServiceTest {
         repository: ProjectPartnerBudgetCommonRepository<CommonBudget>
     ) {
         every { repository.findAllByPartnerIdOrderByIdAsc(1) } returns emptyList()
-        every { repository.deleteAll(any<List<ProjectPartnerBudgetExternal>>()) } answers {}
-        every { repository.saveAll(any<List<ProjectPartnerBudgetExternal>>()) } returnsArgument 0
+        every { repository.deleteAll(any<List<ProjectPartnerBudgetExternalEntity>>()) } answers {}
+        every { repository.saveAll(any<List<ProjectPartnerBudgetExternalEntity>>()) } returnsArgument 0
 
         val toBeSavedMaxNumberOfUnits = listOf(
             InputGeneralBudget(
@@ -271,8 +271,8 @@ internal class ProjectPartnerGeneralBudgetServiceTest {
         )
 
         every { repository.findAllByPartnerIdOrderByIdAsc(1) } returns existing
-        every { repository.deleteAll(any<List<ProjectPartnerBudgetExternal>>()) } answers {}
-        every { repository.saveAll(any<List<ProjectPartnerBudgetExternal>>()) } returnsArgument 0
+        every { repository.deleteAll(any<List<ProjectPartnerBudgetExternalEntity>>()) } answers {}
+        every { repository.saveAll(any<List<ProjectPartnerBudgetExternalEntity>>()) } returnsArgument 0
 
         assertThat(
             callUpdateBudgetServiceMethod(repository, 1, toBeSaved)
@@ -291,7 +291,7 @@ internal class ProjectPartnerGeneralBudgetServiceTest {
 
         // clean context
         every { repository.findAllByPartnerIdOrderByIdAsc(1) } returns emptyList()
-        every { repository.saveAll(any<List<ProjectPartnerBudgetExternal>>()) } throws UnsupportedOperationException()
+        every { repository.saveAll(any<List<ProjectPartnerBudgetExternalEntity>>()) } throws UnsupportedOperationException()
     }
 
     private fun callUpdateBudgetServiceMethod(
@@ -383,7 +383,7 @@ internal class ProjectPartnerGeneralBudgetServiceTest {
         val id = 598L
         every { getBudgetOptionsInteractor.getBudgetOptions(id) } returns ProjectPartnerBudgetOptions(
             partnerId = id,
-            officeAndAdministrationFlatRate = 10,
+            officeAndAdministrationOnStaffCostsFlatRate = 10,
             staffCostsFlatRate = null
         )
         initCommonTestBudgets(id)
@@ -396,7 +396,7 @@ internal class ProjectPartnerGeneralBudgetServiceTest {
         val id = 321L
         every { getBudgetOptionsInteractor.getBudgetOptions(id) } returns ProjectPartnerBudgetOptions(
             partnerId = id,
-            officeAndAdministrationFlatRate = null,
+            officeAndAdministrationOnStaffCostsFlatRate = null,
             staffCostsFlatRate = 10
         )
         initCommonTestBudgets(id)
@@ -409,7 +409,7 @@ internal class ProjectPartnerGeneralBudgetServiceTest {
         val id = 281L
         every { getBudgetOptionsInteractor.getBudgetOptions(id) } returns ProjectPartnerBudgetOptions(
             partnerId = id,
-            officeAndAdministrationFlatRate = 10,
+            officeAndAdministrationOnStaffCostsFlatRate = 10,
             staffCostsFlatRate = 10
         )
         initCommonTestBudgets(id)

@@ -1,11 +1,13 @@
 export class BudgetOptions {
-  officeFlatRateBasedOnStaffCost: number | null;
-  staffCostsFlatRateBasedOnDirectCost: number | null;
-  travelFlatRateBasedOnStaffCost: number | null;
+  officeAndAdministrationOnStaffCostsFlatRate: number | null;
+  staffCostsFlatRate: number | null;
+  travelAndAccommodationOnStaffCostsFlatRate: number | null;
+  otherCostsOnStaffCostsFlatRate: number | null;
 
-  constructor(officeFlatRateBasedOnStaffCost: number | null, staffCostsFlatRateBasedOnDirectCost: number | null, travelFlatRateBasedOnStaffCost: number | null) {
-    this.officeFlatRateBasedOnStaffCost = officeFlatRateBasedOnStaffCost;
-    this.staffCostsFlatRateBasedOnDirectCost = staffCostsFlatRateBasedOnDirectCost;
-    this.travelFlatRateBasedOnStaffCost = travelFlatRateBasedOnStaffCost;
+  constructor(officeAndAdministrationOnStaffCostsFlatRate: number | null, staffCostsFlatRate: number | null, travelAndAccommodationOnStaffCostsFlatRate: number | null, otherCostsOnStaffCostsFlatRate: number | null) {
+    this.officeAndAdministrationOnStaffCostsFlatRate = officeAndAdministrationOnStaffCostsFlatRate;
+    this.staffCostsFlatRate = staffCostsFlatRate;
+    this.travelAndAccommodationOnStaffCostsFlatRate = travelAndAccommodationOnStaffCostsFlatRate;
+    this.otherCostsOnStaffCostsFlatRate = otherCostsOnStaffCostsFlatRate;
   }
 }

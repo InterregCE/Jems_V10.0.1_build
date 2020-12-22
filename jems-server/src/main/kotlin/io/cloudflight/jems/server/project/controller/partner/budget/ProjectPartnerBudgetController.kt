@@ -30,12 +30,12 @@ class ProjectPartnerBudgetController(
 ) : ProjectPartnerBudgetApi {
 
     @CanReadProjectPartner
-    override fun getBudgetStaffCost(partnerId: Long): List<InputStaffCostBudget> {
+    override fun getBudgetStaffCosts(partnerId: Long): List<InputStaffCostBudget> {
         return projectPartnerBudgetService.getStaffCosts(partnerId)
     }
 
     @CanUpdateProjectPartner
-    override fun updateBudgetStaffCost(partnerId: Long, budgetCosts: List<InputStaffCostBudget>): List<InputStaffCostBudget> {
+    override fun updateBudgetStaffCosts(partnerId: Long, budgetCosts: List<InputStaffCostBudget>): List<InputStaffCostBudget> {
         return projectPartnerBudgetService.updateStaffCosts(partnerId, budgetCosts)
     }
 
@@ -44,7 +44,7 @@ class ProjectPartnerBudgetController(
             ?: ProjectPartnerBudgetOptionsDto()
 
     override fun updateBudgetOptions(partnerId: Long, budgetOptionsDto: ProjectPartnerBudgetOptionsDto) =
-        updateBudgetOptionsInteractor.updateBudgetOptions(partnerId, budgetOptionsDto.toModel(partnerId))
+        updateBudgetOptionsInteractor.updateBudgetOptions(partnerId, budgetOptionsDto.toProjectPartnerBudgetOptions(partnerId))
 
     @CanReadProjectPartner
     override fun getBudgetTravel(partnerId: Long): List<InputTravelBudget> {

@@ -157,17 +157,17 @@ class ProjectPartnerBudgetControllerTest {
     }
 
     @Test
-    fun getBudgetStaffCost() {
+    fun getBudgetStaffCosts() {
         val budgetCosts = emptyList<InputStaffCostBudget>()
         every { projectPartnerBudgetService.getStaffCosts(PARTNER_ID) } returns budgetCosts
-        assertThat(controller.getBudgetStaffCost(PARTNER_ID)).isEqualTo(budgetCosts)
+        assertThat(controller.getBudgetStaffCosts(PARTNER_ID)).isEqualTo(budgetCosts)
     }
 
     @Test
     fun updateBudgetStaffCost() {
         val budgetCosts = emptyList<InputStaffCostBudget>()
         every { projectPartnerBudgetService.updateStaffCosts(PARTNER_ID, budgetCosts) } returns budgetCosts
-        assertThat(controller.updateBudgetStaffCost(PARTNER_ID, budgetCosts)).isEqualTo(budgetCosts)
+        assertThat(controller.updateBudgetStaffCosts(PARTNER_ID, budgetCosts)).isEqualTo(budgetCosts)
     }
 
     @Test

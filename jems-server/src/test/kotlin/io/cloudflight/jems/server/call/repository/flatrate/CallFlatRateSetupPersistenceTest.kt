@@ -77,12 +77,12 @@ class CallFlatRateSetupPersistenceTest {
     @Test
     fun updateFlatRateSetup() {
         val flatRateToUpdate = ProjectCallFlatRateEntity(
-            setupId = FlatRateSetupId(callId = 1, type = FlatRateType.OtherOnStaff),
+            setupId = FlatRateSetupId(callId = 1, type = FlatRateType.OTHER_COSTS_ON_STAFF_COSTS),
             rate = 10,
             isAdjustable = true
         )
         val flatRateToDelete = ProjectCallFlatRateEntity(
-            setupId = FlatRateSetupId(callId = 1, type = FlatRateType.TravelOnStaff),
+            setupId = FlatRateSetupId(callId = 1, type = FlatRateType.TRAVEL_AND_ACCOMMODATION_ON_STAFF_COSTS),
             rate = 2,
             isAdjustable = false
         )
@@ -92,7 +92,7 @@ class CallFlatRateSetupPersistenceTest {
             isAdjustable = false // changed
         )
         val modelToCreate = ProjectCallFlatRate(
-            type = FlatRateType.OfficeOnOther, // new
+            type = FlatRateType.OFFICE_AND_ADMINISTRATION_ON_OTHER_COSTS, // new
             rate = 5,
             isAdjustable = true
         )
@@ -116,14 +116,14 @@ class CallFlatRateSetupPersistenceTest {
     @Test
     fun getFlatRateSetup() {
         val flatRate = setOf(ProjectCallFlatRateEntity(
-            setupId = FlatRateSetupId(callId = 1, type = FlatRateType.OtherOnStaff),
+            setupId = FlatRateSetupId(callId = 1, type = FlatRateType.OTHER_COSTS_ON_STAFF_COSTS),
             rate = 10,
             isAdjustable = true
         ))
         every { callRepository.findById(eq(1)) } returns Optional.of(callWithIdAndFlatRate(1, flatRate))
         assertThat(callFlatRateSetupPersistence.getProjectCallFlatRate(1)).isEqualTo(
             setOf(ProjectCallFlatRate(
-                type = FlatRateType.OtherOnStaff,
+                type = FlatRateType.OTHER_COSTS_ON_STAFF_COSTS,
                 rate = 10,
                 isAdjustable = true
             ))
@@ -146,7 +146,7 @@ class CallFlatRateSetupPersistenceTest {
     @Test
     fun getProjectCallFlatRate() {
         val flatRate = setOf(ProjectCallFlatRateEntity(
-            setupId = FlatRateSetupId(callId = 10, type = FlatRateType.OtherOnStaff),
+            setupId = FlatRateSetupId(callId = 10, type = FlatRateType.OTHER_COSTS_ON_STAFF_COSTS),
             rate = 15,
             isAdjustable = true
         ))
@@ -156,7 +156,7 @@ class CallFlatRateSetupPersistenceTest {
 
         assertThat(callFlatRateSetupPersistence.getProjectCallFlatRateByPartnerId(1)).containsExactly(
             ProjectCallFlatRate(
-                type = FlatRateType.OtherOnStaff,
+                type = FlatRateType.OTHER_COSTS_ON_STAFF_COSTS,
                 rate = 15,
                 isAdjustable = true
             )

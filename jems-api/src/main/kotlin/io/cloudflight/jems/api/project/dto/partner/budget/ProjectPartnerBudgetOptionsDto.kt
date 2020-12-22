@@ -1,10 +1,8 @@
 package io.cloudflight.jems.api.project.dto.partner.budget
 
 data class ProjectPartnerBudgetOptionsDto(
-
-    val officeAndAdministrationFlatRate: Int? = null,
-    val travelAndAccommodationFlatRate: Int? = null,
-
+    val officeAndAdministrationOnStaffCostsFlatRate: Int? = null,
+    val travelAndAccommodationOnStaffCostsFlatRate: Int? = null,
     val staffCostsFlatRate: Int? = null,
-
+    val otherCostsOnStaffCostsFlatRate: Int? = null,
 )

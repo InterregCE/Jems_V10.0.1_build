@@ -2,29 +2,31 @@ package io.cloudflight.jems.server.call.controller
 
 import io.cloudflight.jems.api.call.dto.flatrate.FlatRateDTO
 import io.cloudflight.jems.api.call.dto.flatrate.FlatRateSetupDTO
-import io.cloudflight.jems.api.call.dto.flatrate.FlatRateType.OfficeOnOther
-import io.cloudflight.jems.api.call.dto.flatrate.FlatRateType.OfficeOnStaff
-import io.cloudflight.jems.api.call.dto.flatrate.FlatRateType.OtherOnStaff
-import io.cloudflight.jems.api.call.dto.flatrate.FlatRateType.StaffCost
-import io.cloudflight.jems.api.call.dto.flatrate.FlatRateType.TravelOnStaff
+import io.cloudflight.jems.api.call.dto.flatrate.FlatRateType.OFFICE_AND_ADMINISTRATION_ON_OTHER_COSTS
+import io.cloudflight.jems.api.call.dto.flatrate.FlatRateType.OFFICE_AND_ADMINISTRATION_ON_STAFF_COSTS
+import io.cloudflight.jems.api.call.dto.flatrate.FlatRateType.OTHER_COSTS_ON_STAFF_COSTS
+import io.cloudflight.jems.api.call.dto.flatrate.FlatRateType.STAFF_COSTS
+import io.cloudflight.jems.api.call.dto.flatrate.FlatRateType.TRAVEL_AND_ACCOMMODATION_ON_STAFF_COSTS
 import io.cloudflight.jems.server.call.service.flatrate.model.ProjectCallFlatRate
 import java.util.stream.Collectors
 import java.util.stream.Stream
 
 fun FlatRateSetupDTO.toModel(): Set<ProjectCallFlatRate> =
     Stream.of(
-        Pair(StaffCost, staffCostFlatRateSetup),
-        Pair(OfficeOnStaff, officeOnStaffFlatRateSetup),
-        Pair(OfficeOnOther, officeOnOtherFlatRateSetup),
-        Pair(TravelOnStaff, travelOnStaffFlatRateSetup),
-        Pair(OtherOnStaff, otherOnStaffFlatRateSetup),
+        Pair(STAFF_COSTS, staffCostFlatRateSetup),
+        Pair(OFFICE_AND_ADMINISTRATION_ON_STAFF_COSTS, officeAndAdministrationOnStaffCostsFlatRate),
+        Pair(OFFICE_AND_ADMINISTRATION_ON_OTHER_COSTS, officeAndAdministrationOnOtherCostsFlatRateSetup),
+        Pair(TRAVEL_AND_ACCOMMODATION_ON_STAFF_COSTS, travelAndAccommodationOnStaffCostsFlatRateSetup),
+        Pair(OTHER_COSTS_ON_STAFF_COSTS, otherCostsOnStaffCostsFlatRateSetup),
     )
         .filter { it.second != null }
-        .map { ProjectCallFlatRate(
-            type = it.first,
-            rate = it.second!!.rate,
-            isAdjustable = it.second!!.isAdjustable
-        ) }
+        .map {
+            ProjectCallFlatRate(
+                type = it.first,
+                rate = it.second!!.rate,
+                isAdjustable = it.second!!.isAdjustable
+            )
+        }
         .collect(Collectors.toSet())
 
 fun ProjectCallFlatRate.toDto() = FlatRateDTO(
@@ -35,10 +37,10 @@ fun ProjectCallFlatRate.toDto() = FlatRateDTO(
 fun Set<ProjectCallFlatRate>.toDto(): FlatRateSetupDTO {
     val groupedByType = associateBy { it.type }
     return FlatRateSetupDTO(
-        staffCostFlatRateSetup = groupedByType[StaffCost]?.toDto(),
-        officeOnStaffFlatRateSetup = groupedByType[OfficeOnStaff]?.toDto(),
-        officeOnOtherFlatRateSetup = groupedByType[OfficeOnOther]?.toDto(),
-        travelOnStaffFlatRateSetup = groupedByType[TravelOnStaff]?.toDto(),
-        otherOnStaffFlatRateSetup = groupedByType[OtherOnStaff]?.toDto(),
+        staffCostFlatRateSetup = groupedByType[STAFF_COSTS]?.toDto(),
+        officeAndAdministrationOnStaffCostsFlatRate = groupedByType[OFFICE_AND_ADMINISTRATION_ON_STAFF_COSTS]?.toDto(),
+        officeAndAdministrationOnOtherCostsFlatRateSetup = groupedByType[OFFICE_AND_ADMINISTRATION_ON_OTHER_COSTS]?.toDto(),
+        travelAndAccommodationOnStaffCostsFlatRateSetup = groupedByType[TRAVEL_AND_ACCOMMODATION_ON_STAFF_COSTS]?.toDto(),
+        otherCostsOnStaffCostsFlatRateSetup = groupedByType[OTHER_COSTS_ON_STAFF_COSTS]?.toDto(),
     )
 }

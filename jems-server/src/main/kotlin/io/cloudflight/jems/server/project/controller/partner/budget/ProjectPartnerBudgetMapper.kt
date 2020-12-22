@@ -4,14 +4,16 @@ import io.cloudflight.jems.api.project.dto.partner.budget.ProjectPartnerBudgetOp
 import io.cloudflight.jems.server.project.service.budget.model.ProjectPartnerBudgetOptions
 
 fun ProjectPartnerBudgetOptions.toProjectPartnerBudgetOptionsDto() = ProjectPartnerBudgetOptionsDto(
-    officeAndAdministrationFlatRate = this.officeAndAdministrationFlatRate,
-    travelAndAccommodationFlatRate = travelAndAccommodationFlatRate,
+    officeAndAdministrationOnStaffCostsFlatRate = this.officeAndAdministrationOnStaffCostsFlatRate,
+    travelAndAccommodationOnStaffCostsFlatRate = travelAndAccommodationOnStaffCostsFlatRate,
     staffCostsFlatRate = this.staffCostsFlatRate,
+    otherCostsOnStaffCostsFlatRate = otherCostsOnStaffCostsFlatRate
 )
 
-fun ProjectPartnerBudgetOptionsDto.toModel(partnerId: Long) = ProjectPartnerBudgetOptions(
+fun ProjectPartnerBudgetOptionsDto.toProjectPartnerBudgetOptions(partnerId: Long) = ProjectPartnerBudgetOptions(
     partnerId = partnerId,
-    officeAndAdministrationFlatRate = this.officeAndAdministrationFlatRate,
-    travelAndAccommodationFlatRate = travelAndAccommodationFlatRate,
+    officeAndAdministrationOnStaffCostsFlatRate = this.officeAndAdministrationOnStaffCostsFlatRate,
+    travelAndAccommodationOnStaffCostsFlatRate = travelAndAccommodationOnStaffCostsFlatRate,
     staffCostsFlatRate = this.staffCostsFlatRate,
+    otherCostsOnStaffCostsFlatRate = this.otherCostsOnStaffCostsFlatRate,
 )

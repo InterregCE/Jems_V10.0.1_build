@@ -190,8 +190,9 @@ class ProjectPartnerBudgetServiceImpl(
         val budgetOptions = getBudgetOptionsInteractor.getBudgetOptions(partnerId)
         return PartnerBudget(
             staffCostsFlatRate = budgetOptions?.staffCostsFlatRate,
-            officeOnStaffFlatRate = budgetOptions?.officeAndAdministrationFlatRate,
-            travelOnStaffFlatRate = budgetOptions?.travelAndAccommodationFlatRate,
+            officeAndAdministrationOnStaffCostsFlatRate = budgetOptions?.officeAndAdministrationOnStaffCostsFlatRate,
+            travelAndAccommodationOnStaffCostsFlatRate = budgetOptions?.travelAndAccommodationOnStaffCostsFlatRate,
+            otherCostsOnStaffCostsFlatRate = budgetOptions?.otherCostsOnStaffCostsFlatRate,
             staffCosts = projectPartnerBudgetStaffCostRepository.sumTotalForPartner(partnerId) ?: BigDecimal.ZERO,
             travelCosts = projectPartnerBudgetTravelRepository.sumTotalForPartner(partnerId) ?: BigDecimal.ZERO,
             externalCosts = projectPartnerBudgetExternalRepository.sumTotalForPartner(partnerId) ?: BigDecimal.ZERO,

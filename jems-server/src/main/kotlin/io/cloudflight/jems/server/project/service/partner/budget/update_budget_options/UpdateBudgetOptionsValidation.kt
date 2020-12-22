@@ -12,26 +12,47 @@ private const val INVALID_ERR_MSG = "project.partner.budget.options.flatRate"
 fun validateFlatRates(callFlatRateSetup: Set<ProjectCallFlatRate>, options: ProjectPartnerBudgetOptions) {
     val errors: MutableMap<String, I18nFieldError> = mutableMapOf()
 
+    val areOtherCostsAppliable = options.officeAndAdministrationOnStaffCostsFlatRate != null || options.travelAndAccommodationOnStaffCostsFlatRate != null || options.staffCostsFlatRate != null
+    if (options.otherCostsOnStaffCostsFlatRate != null && areOtherCostsAppliable)
+        throw I18nValidationException(
+            httpStatus = HttpStatus.UNPROCESSABLE_ENTITY,
+            i18nKey = INVALID_ERR_MSG,
+            i18nFieldErrors = errors.apply {
+                this[FlatRateType.OTHER_COSTS_ON_STAFF_COSTS.name] = I18nFieldError(i18nKey = "$INVALID_ERR_MSG.combination.is.not.valid")
+            }
+        )
+
+
+    validateFlatRate(
+        value = options.otherCostsOnStaffCostsFlatRate,
+        type = FlatRateType.OTHER_COSTS_ON_STAFF_COSTS,
+        callSetup = callFlatRateSetup,
+        errors = errors
+    )
+
+
     validateFlatRate(
         value = options.staffCostsFlatRate,
-        type = FlatRateType.StaffCost,
+        type = FlatRateType.STAFF_COSTS,
         callSetup = callFlatRateSetup,
         errors = errors
     )
 
     validateFlatRate(
-        value = options.officeAndAdministrationFlatRate,
-        type = FlatRateType.OfficeOnStaff,
+        value = options.officeAndAdministrationOnStaffCostsFlatRate,
+        type = FlatRateType.OFFICE_AND_ADMINISTRATION_ON_STAFF_COSTS,
         callSetup = callFlatRateSetup,
         errors = errors
     )
 
     validateFlatRate(
-        value = options.travelAndAccommodationFlatRate,
-        type = FlatRateType.TravelOnStaff,
+        value = options.travelAndAccommodationOnStaffCostsFlatRate,
+        type = FlatRateType.TRAVEL_AND_ACCOMMODATION_ON_STAFF_COSTS,
         callSetup = callFlatRateSetup,
         errors = errors
     )
+
+
 
     if (errors.isNotEmpty())
         throw I18nValidationException(

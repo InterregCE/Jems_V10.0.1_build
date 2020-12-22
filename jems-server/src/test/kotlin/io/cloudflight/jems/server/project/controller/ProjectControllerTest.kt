@@ -75,8 +75,9 @@ class ProjectControllerTest {
             PartnerBudget(
                 partner = partner2,
                 staffCostsFlatRate = 15,
-                officeOnStaffFlatRate = 7,
-                travelOnStaffFlatRate = 12,
+                officeAndAdministrationOnStaffCostsFlatRate = 7,
+                travelAndAccommodationOnStaffCostsFlatRate = 12,
+                otherCostsOnStaffCostsFlatRate = null,
                 staffCosts = toBd(4865), // should be ignored because of flat rate
                 travelCosts = toBd(9004), // should be ignored because of flat rate
                 externalCosts = toBd(10000),
@@ -86,8 +87,9 @@ class ProjectControllerTest {
             PartnerBudget(
                 partner = partner1,
                 staffCostsFlatRate = 15,
-                officeOnStaffFlatRate = 7,
-                travelOnStaffFlatRate = null,
+                officeAndAdministrationOnStaffCostsFlatRate = 7,
+                travelAndAccommodationOnStaffCostsFlatRate = null,
+                otherCostsOnStaffCostsFlatRate = null,
                 staffCosts = toBd(4865), // should be ignored because of flat rate
                 travelCosts = toBd(2000),
                 externalCosts = toBd(10000),
@@ -126,8 +128,9 @@ class ProjectControllerTest {
             PartnerBudget(
                 partner = partner2,
                 staffCostsFlatRate = null,
-                officeOnStaffFlatRate = 7,
-                travelOnStaffFlatRate = 12,
+                officeAndAdministrationOnStaffCostsFlatRate = 7,
+                travelAndAccommodationOnStaffCostsFlatRate = 12,
+                otherCostsOnStaffCostsFlatRate = null,
                 staffCosts = toBd(6200),
                 travelCosts = toBd(9004), // should be ignored because of flat rate
                 externalCosts = toBd(10000),
@@ -137,8 +140,9 @@ class ProjectControllerTest {
             PartnerBudget(
                 partner = partner1,
                 staffCostsFlatRate = null,
-                officeOnStaffFlatRate = 7,
-                travelOnStaffFlatRate = null,
+                officeAndAdministrationOnStaffCostsFlatRate = 7,
+                travelAndAccommodationOnStaffCostsFlatRate = null,
+                otherCostsOnStaffCostsFlatRate = null,
                 staffCosts = toBd(6200),
                 travelCosts = toBd(2000),
                 externalCosts = toBd(10000),

@@ -1,11 +1,3 @@
-#options-form{
-  display: flex;
-  flex-direction: column;
-  > * {
-    height: 3rem;
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    justify-content: flex-start;
-  }
+.mat-list-base .mat-list-item{
+  font-size: inherit;
 }

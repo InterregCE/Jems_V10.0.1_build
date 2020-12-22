@@ -37,7 +37,7 @@ class UpdateFlatRateSetupInteractorTest {
     @Test
     fun `updateFlatRateSetup valid`() {
         val toBeSet = ProjectCallFlatRate(
-            type = FlatRateType.OfficeOnOther,
+            type = FlatRateType.OFFICE_AND_ADMINISTRATION_ON_OTHER_COSTS,
             rate = 5,
             isAdjustable = true
         )
@@ -58,12 +58,12 @@ class UpdateFlatRateSetupInteractorTest {
     fun `updateFlatRateSetup invalid - duplicates`() {
         val toBeSet = setOf(
             ProjectCallFlatRate(
-                type = FlatRateType.OfficeOnOther,
+                type = FlatRateType.OFFICE_AND_ADMINISTRATION_ON_OTHER_COSTS,
                 rate = 5,
                 isAdjustable = true
             ),
             ProjectCallFlatRate(
-                type = FlatRateType.OfficeOnOther,
+                type = FlatRateType.OFFICE_AND_ADMINISTRATION_ON_OTHER_COSTS,
                 rate = 9,
                 isAdjustable = false
             )
@@ -76,27 +76,27 @@ class UpdateFlatRateSetupInteractorTest {
     fun `updateFlatRateSetup invalid - over max flat rate`() {
         val toBeSet = setOf(
             ProjectCallFlatRate(
-                type = FlatRateType.StaffCost,
+                type = FlatRateType.STAFF_COSTS,
                 rate = 21,
                 isAdjustable = true,
             ),
             ProjectCallFlatRate(
-                type = FlatRateType.OfficeOnStaff,
+                type = FlatRateType.OFFICE_AND_ADMINISTRATION_ON_STAFF_COSTS,
                 rate = 16,
                 isAdjustable = true,
             ),
             ProjectCallFlatRate(
-                type = FlatRateType.OfficeOnOther,
+                type = FlatRateType.OFFICE_AND_ADMINISTRATION_ON_OTHER_COSTS,
                 rate = 26,
                 isAdjustable = true,
             ),
             ProjectCallFlatRate(
-                type = FlatRateType.TravelOnStaff,
+                type = FlatRateType.TRAVEL_AND_ACCOMMODATION_ON_STAFF_COSTS,
                 rate = 16,
                 isAdjustable = true,
             ),
             ProjectCallFlatRate(
-                type = FlatRateType.OtherOnStaff,
+                type = FlatRateType.OTHER_COSTS_ON_STAFF_COSTS,
                 rate = 41,
                 isAdjustable = true,
             )
@@ -104,11 +104,11 @@ class UpdateFlatRateSetupInteractorTest {
         val ex = assertThrows<I18nValidationException> { updateFlatRateSetupInteractor.updateFlatRateSetup(1, toBeSet) }
         assertThat(ex.i18nKey).isEqualTo("call.flatRateSetup.rate.out.of.range")
         assertThat(ex.i18nFieldErrors).isEqualTo(mapOf(
-            "StaffCost" to I18nFieldError(i18nKey = "call.flatRateSetup.rate.out.of.range"),
-            "OfficeOnStaff" to I18nFieldError(i18nKey = "call.flatRateSetup.rate.out.of.range"),
-            "OfficeOnOther" to I18nFieldError(i18nKey = "call.flatRateSetup.rate.out.of.range"),
-            "TravelOnStaff" to I18nFieldError(i18nKey = "call.flatRateSetup.rate.out.of.range"),
-            "OtherOnStaff" to I18nFieldError(i18nKey = "call.flatRateSetup.rate.out.of.range")
+            FlatRateType.STAFF_COSTS.name to I18nFieldError(i18nKey = "call.flatRateSetup.rate.out.of.range"),
+            FlatRateType.OFFICE_AND_ADMINISTRATION_ON_STAFF_COSTS.name to I18nFieldError(i18nKey = "call.flatRateSetup.rate.out.of.range"),
+            FlatRateType.OFFICE_AND_ADMINISTRATION_ON_OTHER_COSTS.name to I18nFieldError(i18nKey = "call.flatRateSetup.rate.out.of.range"),
+            FlatRateType.TRAVEL_AND_ACCOMMODATION_ON_STAFF_COSTS.name to I18nFieldError(i18nKey = "call.flatRateSetup.rate.out.of.range"),
+            FlatRateType.OTHER_COSTS_ON_STAFF_COSTS.name to I18nFieldError(i18nKey = "call.flatRateSetup.rate.out.of.range")
         ))
     }
 
@@ -116,27 +116,27 @@ class UpdateFlatRateSetupInteractorTest {
     fun `updateFlatRateSetup invalid - below min flat rate`() {
         val toBeSet = setOf(
             ProjectCallFlatRate(
-                type = FlatRateType.StaffCost,
+                type = FlatRateType.STAFF_COSTS,
                 rate = 0,
                 isAdjustable = true,
             ),
             ProjectCallFlatRate(
-                type = FlatRateType.OfficeOnStaff,
+                type = FlatRateType.OFFICE_AND_ADMINISTRATION_ON_STAFF_COSTS,
                 rate = 0,
                 isAdjustable = true,
             ),
             ProjectCallFlatRate(
-                type = FlatRateType.OfficeOnOther,
+                type = FlatRateType.OFFICE_AND_ADMINISTRATION_ON_OTHER_COSTS,
                 rate = 0,
                 isAdjustable = true,
             ),
             ProjectCallFlatRate(
-                type = FlatRateType.TravelOnStaff,
+                type = FlatRateType.TRAVEL_AND_ACCOMMODATION_ON_STAFF_COSTS,
                 rate = 0,
                 isAdjustable = true,
             ),
             ProjectCallFlatRate(
-                type = FlatRateType.OtherOnStaff,
+                type = FlatRateType.OTHER_COSTS_ON_STAFF_COSTS,
                 rate = 0,
                 isAdjustable = true,
             )
@@ -144,11 +144,11 @@ class UpdateFlatRateSetupInteractorTest {
         val ex = assertThrows<I18nValidationException> { updateFlatRateSetupInteractor.updateFlatRateSetup(1, toBeSet) }
         assertThat(ex.i18nKey).isEqualTo("call.flatRateSetup.rate.out.of.range")
         assertThat(ex.i18nFieldErrors).isEqualTo(mapOf(
-            "OtherOnStaff" to I18nFieldError(i18nKey = "call.flatRateSetup.rate.out.of.range"),
-            "TravelOnStaff" to I18nFieldError(i18nKey = "call.flatRateSetup.rate.out.of.range"),
-            "OfficeOnOther" to I18nFieldError(i18nKey = "call.flatRateSetup.rate.out.of.range"),
-            "OfficeOnStaff" to I18nFieldError(i18nKey = "call.flatRateSetup.rate.out.of.range"),
-            "StaffCost" to I18nFieldError(i18nKey = "call.flatRateSetup.rate.out.of.range")
+            FlatRateType.OTHER_COSTS_ON_STAFF_COSTS.name to I18nFieldError(i18nKey = "call.flatRateSetup.rate.out.of.range"),
+            FlatRateType.TRAVEL_AND_ACCOMMODATION_ON_STAFF_COSTS.name to I18nFieldError(i18nKey = "call.flatRateSetup.rate.out.of.range"),
+            FlatRateType.OFFICE_AND_ADMINISTRATION_ON_OTHER_COSTS.name to I18nFieldError(i18nKey = "call.flatRateSetup.rate.out.of.range"),
+            FlatRateType.OFFICE_AND_ADMINISTRATION_ON_STAFF_COSTS.name to I18nFieldError(i18nKey = "call.flatRateSetup.rate.out.of.range"),
+            FlatRateType.STAFF_COSTS.name to I18nFieldError(i18nKey = "call.flatRateSetup.rate.out.of.range")
         ))
     }
 

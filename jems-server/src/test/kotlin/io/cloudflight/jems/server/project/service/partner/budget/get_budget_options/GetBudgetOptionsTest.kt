@@ -1,21 +1,29 @@
 package io.cloudflight.jems.server.project.service.partner.budget.get_budget_options
 
+import io.cloudflight.jems.server.UnitTest
+import io.cloudflight.jems.server.project.service.budget.model.ProjectPartnerBudgetOptions
 import io.cloudflight.jems.server.project.service.partner.budget.ProjectPartnerBudgetOptionsPersistence
 import io.cloudflight.jems.server.project.service.partner.budget.ProjectPartnerGeneralBudgetServiceTest.Companion.PARTNER_ID
-import io.cloudflight.jems.server.project.service.partner.budget.ProjectPartnerGeneralBudgetServiceTest.Companion.budgetOptions
 import io.mockk.confirmVerified
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
 import io.mockk.impl.annotations.MockK
-import io.mockk.junit5.MockKExtension
 import io.mockk.verify
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertNull
 import org.junit.jupiter.api.Test
-import org.junit.jupiter.api.extension.ExtendWith
 
-@ExtendWith(MockKExtension::class)
-internal class GetBudgetOptionsTest {
+
+internal class GetBudgetOptionsTest : UnitTest() {
+
+    private val budgetOptions = ProjectPartnerBudgetOptions(
+        PARTNER_ID,
+        15,
+        20,
+        12,
+        10
+    )
+
     @MockK
     lateinit var persistence: ProjectPartnerBudgetOptionsPersistence
 
@@ -29,12 +37,14 @@ internal class GetBudgetOptionsTest {
 
         val returnedBudgetOptions = getBudgetOptions.getBudgetOptions(PARTNER_ID)
 
-        verify(exactly = 1) { persistence.getBudgetOptions(PARTNER_ID) }
+        verify(atLeast = 1) { persistence.getBudgetOptions(PARTNER_ID) }
         confirmVerified(persistence)
 
         assertEquals(PARTNER_ID, returnedBudgetOptions?.partnerId)
-        assertEquals(budgetOptions.officeAndAdministrationFlatRate, returnedBudgetOptions?.officeAndAdministrationFlatRate)
+        assertEquals(budgetOptions.officeAndAdministrationOnStaffCostsFlatRate, returnedBudgetOptions?.officeAndAdministrationOnStaffCostsFlatRate)
         assertEquals(budgetOptions.staffCostsFlatRate, returnedBudgetOptions?.staffCostsFlatRate)
+        assertEquals(budgetOptions.travelAndAccommodationOnStaffCostsFlatRate, returnedBudgetOptions?.travelAndAccommodationOnStaffCostsFlatRate)
+        assertEquals(budgetOptions.otherCostsOnStaffCostsFlatRate, returnedBudgetOptions?.otherCostsOnStaffCostsFlatRate)
     }
 
     @Test
@@ -43,7 +53,7 @@ internal class GetBudgetOptionsTest {
 
         val returnedBudgetOptions = getBudgetOptions.getBudgetOptions(PARTNER_ID)
 
-        verify(exactly = 1) { persistence.getBudgetOptions(PARTNER_ID) }
+        verify(atLeast = 1) { persistence.getBudgetOptions(PARTNER_ID) }
         confirmVerified(persistence)
 
         assertNull(returnedBudgetOptions)

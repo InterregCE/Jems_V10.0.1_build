@@ -9,8 +9,9 @@ data class PartnerBudget(
     val partner: ProjectPartner? = null,
 
     val staffCostsFlatRate: Int?,
-    val officeOnStaffFlatRate: Int?,
-    val travelOnStaffFlatRate: Int?,
+    val officeAndAdministrationOnStaffCostsFlatRate: Int?,
+    val travelAndAccommodationOnStaffCostsFlatRate: Int?,
+    val otherCostsOnStaffCostsFlatRate: Int?,
 
     val staffCosts: BigDecimal = BigDecimal.ZERO,
     val travelCosts: BigDecimal = BigDecimal.ZERO,
@@ -21,7 +22,7 @@ data class PartnerBudget(
 ) {
     fun extractStaffCosts(): BigDecimal =
         if (staffCostsFlatRate != null) {
-            if (travelOnStaffFlatRate != null)
+            if (travelAndAccommodationOnStaffCostsFlatRate != null)
                 externalCosts.add(equipmentCosts).add(infrastructureCosts).percentage(staffCostsFlatRate)
             else
                 travelCosts.add(externalCosts).add(equipmentCosts).add(infrastructureCosts).percentage(staffCostsFlatRate)
@@ -30,14 +31,24 @@ data class PartnerBudget(
             staffCosts
 
     fun extractTravelCosts(): BigDecimal =
-        if (travelOnStaffFlatRate != null)
-            extractStaffCosts().percentage(travelOnStaffFlatRate)
+        if (travelAndAccommodationOnStaffCostsFlatRate != null)
+            extractStaffCosts().percentage(travelAndAccommodationOnStaffCostsFlatRate)
         else
             travelCosts
 
     fun extractOfficeAndAdministrationCosts(): BigDecimal =
-        if (officeOnStaffFlatRate != null)
-            extractStaffCosts().percentage(officeOnStaffFlatRate)
+        if (officeAndAdministrationOnStaffCostsFlatRate != null)
+            extractStaffCosts().percentage(officeAndAdministrationOnStaffCostsFlatRate)
+        else
+            BigDecimal.ZERO
+
+    fun extractOtherCosts(): BigDecimal =
+        if (otherCostsOnStaffCostsFlatRate != null) {
+            if (staffCostsFlatRate == null)
+                extractStaffCosts().percentage(otherCostsOnStaffCostsFlatRate)
+            else
+                BigDecimal.ZERO
+        }
         else
             BigDecimal.ZERO
 
@@ -48,5 +59,6 @@ data class PartnerBudget(
             .add(equipmentCosts)
             .add(infrastructureCosts)
             .add(extractOfficeAndAdministrationCosts())
+            .add(extractOtherCosts())
 
 }

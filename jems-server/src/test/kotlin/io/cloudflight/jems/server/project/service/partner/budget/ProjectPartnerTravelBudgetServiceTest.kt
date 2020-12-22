@@ -5,7 +5,7 @@ import io.cloudflight.jems.api.project.dto.partner.budget.InputTravelBudget
 import io.cloudflight.jems.server.common.exception.I18nValidationException
 import io.cloudflight.jems.server.project.entity.partner.budget.Budget
 import io.cloudflight.jems.server.project.entity.partner.budget.CommonBudget
-import io.cloudflight.jems.server.project.entity.partner.budget.ProjectPartnerBudgetTravel
+import io.cloudflight.jems.server.project.entity.partner.budget.ProjectPartnerBudgetTravelEntity
 import io.cloudflight.jems.server.project.repository.partner.budget.ProjectPartnerBudgetCommonRepository
 import io.cloudflight.jems.server.project.repository.partner.budget.ProjectPartnerBudgetEquipmentRepository
 import io.cloudflight.jems.server.project.repository.partner.budget.ProjectPartnerBudgetExternalRepository
@@ -39,8 +39,8 @@ internal class ProjectPartnerTravelBudgetServiceTest {
 
         const val PARTNER_ID = 1L
 
-        private fun travel(id: Long, numberOfUnits: Double, pricePerUnit: Double, rowSum: Double): ProjectPartnerBudgetTravel {
-            return ProjectPartnerBudgetTravel(
+        private fun travel(id: Long, numberOfUnits: Double, pricePerUnit: Double, rowSum: Double): ProjectPartnerBudgetTravelEntity {
+            return ProjectPartnerBudgetTravelEntity(
                 id = id,
                 partnerId = PARTNER_ID,
                 budget = Budget(
@@ -108,8 +108,8 @@ internal class ProjectPartnerTravelBudgetServiceTest {
         repository: ProjectPartnerBudgetCommonRepository<CommonBudget>
     ) {
         every { repository.findAllByPartnerIdOrderByIdAsc(1) } returns emptyList()
-        every { repository.deleteAll(any<List<ProjectPartnerBudgetTravel>>()) } answers {}
-        every { repository.saveAll(any<List<ProjectPartnerBudgetTravel>>()) } returnsArgument 0
+        every { repository.deleteAll(any<List<ProjectPartnerBudgetTravelEntity>>()) } answers {}
+        every { repository.saveAll(any<List<ProjectPartnerBudgetTravelEntity>>()) } returnsArgument 0
 
         val toBeSavedMaxNumberOfUnits = listOf(
             InputTravelBudget(
@@ -232,8 +232,8 @@ internal class ProjectPartnerTravelBudgetServiceTest {
         )
 
         every { repository.findAllByPartnerIdOrderByIdAsc(1) } returns existing
-        every { repository.deleteAll(any<List<ProjectPartnerBudgetTravel>>()) } answers {}
-        every { repository.saveAll(any<List<ProjectPartnerBudgetTravel>>()) } returnsArgument 0
+        every { repository.deleteAll(any<List<ProjectPartnerBudgetTravelEntity>>()) } answers {}
+        every { repository.saveAll(any<List<ProjectPartnerBudgetTravelEntity>>()) } returnsArgument 0
 
         assertThat(
             callUpdateBudgetServiceMethod(1, toBeSaved)
@@ -252,7 +252,7 @@ internal class ProjectPartnerTravelBudgetServiceTest {
 
         // clean context
         every { repository.findAllByPartnerIdOrderByIdAsc(1) } returns emptyList()
-        every { repository.saveAll(any<List<ProjectPartnerBudgetTravel>>()) } throws UnsupportedOperationException()
+        every { repository.saveAll(any<List<ProjectPartnerBudgetTravelEntity>>()) } throws UnsupportedOperationException()
     }
 
     private fun callUpdateBudgetServiceMethod(

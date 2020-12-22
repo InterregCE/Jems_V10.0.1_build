@@ -31,8 +31,9 @@ class GetProjectBudget(
             PartnerBudget(
                 partner = partner,
                 staffCostsFlatRate = options[partnerId]?.staffCostsFlatRate,
-                officeOnStaffFlatRate = options[partnerId]?.officeAndAdministrationFlatRate,
-                travelOnStaffFlatRate = options[partnerId]?.travelAndAccommodationFlatRate,
+                officeAndAdministrationOnStaffCostsFlatRate = options[partnerId]?.officeAndAdministrationOnStaffCostsFlatRate,
+                travelAndAccommodationOnStaffCostsFlatRate = options[partnerId]?.travelAndAccommodationOnStaffCostsFlatRate,
+                otherCostsOnStaffCostsFlatRate = options[partnerId]?.otherCostsOnStaffCostsFlatRate,
                 staffCosts = staffPerPartner[partnerId] ?: BigDecimal.ZERO,
                 travelCosts = travelPerPartner[partnerId] ?: BigDecimal.ZERO,
                 externalCosts = externalPerPartner[partnerId] ?: BigDecimal.ZERO,
