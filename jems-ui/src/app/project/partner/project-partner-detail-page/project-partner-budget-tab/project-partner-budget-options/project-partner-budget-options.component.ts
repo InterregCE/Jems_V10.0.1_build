@@ -25,19 +25,27 @@ export class ProjectPartnerBudgetOptionsComponent implements OnInit {
   constants = ProjectPartnerBudgetOptionsConstants;
   Tools = Tools;
 
+  budgetOptionForm: FormGroup;
   data$: Observable<{
-    budgetOptionsForm: FormGroup
     callFlatRateSettings: CallFlatRateSetting,
     staffCostsFlatRateErrorsArgs: { [key: string]: {} },
     officeOnStaffCostFlatRateErrorsArgs: { [key: string]: {} },
-    travelFlatRateErrorsArgs: { [key: string]: {} }
-    isProjectEditable: boolean
+    travelFlatRateErrorsArgs: { [key: string]: {} },
+    otherFlatRateErrorsArgs: { [key: string]: {} },
+    isDividerVisible: boolean,
+    isAnyOptionAvailable: boolean,
+    isOtherCostsOnStaffCostsFlatRateDisabled: boolean
+    areFlatRatesInFirstCategoryDisabled: boolean
   }>;
 
-  private budgetOptionsForm$: Observable<FormGroup>;
   private staffCostsFlatRateErrorsArgs$: Observable<{ [key: string]: {} }>;
   private officeOnStaffCostFlatRateErrorsArgs$: Observable<{ [key: string]: {} }>;
   private travelFlatRateErrorsArgs$: Observable<{ [key: string]: {} }>;
+  private otherFlatRateErrorsArgs$: Observable<{ [key: string]: {} }>;
+  private isAnyOptionAvailable$: Observable<boolean>;
+  private isDividerVisible$: Observable<boolean>;
+  private isOtherCostsOnStaffCostsFlatRateDisabled$: Observable<boolean>;
+  private areFlatRatesInFirstCategoryDisabled$: Observable<boolean>;
 
 
   constructor(private formBuilder: FormBuilder,
@@ -47,35 +55,64 @@ export class ProjectPartnerBudgetOptionsComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.budgetOptionsForm$ = combineLatest([this.formService.reset$.pipe(startWith(null)), this.pageStore.budgetOptions$, this.pageStore.callFlatRatesSettings$]).pipe(
-      map(([, budgetOptions, callFlatRateSettings]) => this.initForm(budgetOptions, callFlatRateSettings)),
-    );
+    this.initForm();
+    combineLatest([this.formService.reset$.pipe(startWith(null)), this.pageStore.budgetOptions$, this.pageStore.callFlatRatesSettings$]).pipe(
+      map(([, budgetOptions, callFlatRateSettings]) => this.resetForm(budgetOptions, callFlatRateSettings)),
+      untilDestroyed(this)
+    ).subscribe();
+
     this.staffCostsFlatRateErrorsArgs$ = this.pageStore.callFlatRatesSettings$.pipe(
-      map(callFlatRateSettings => this.getFlatRateErrorArgs(callFlatRateSettings.staffCostBasedOnDirectCost)),
+      map(callFlatRateSettings => this.getFlatRateErrorArgs(callFlatRateSettings.staffCostFlatRateSetup)),
     );
     this.officeOnStaffCostFlatRateErrorsArgs$ = this.pageStore.callFlatRatesSettings$.pipe(
-      map(callFlatRateSettings => this.getFlatRateErrorArgs(callFlatRateSettings.officeBasedOnStaffCost))
+      map(callFlatRateSettings => this.getFlatRateErrorArgs(callFlatRateSettings.officeAndAdministrationOnStaffCostsFlatRateSetup))
     );
     this.travelFlatRateErrorsArgs$ = this.pageStore.callFlatRatesSettings$.pipe(
-      map(callFlatRateSettings => this.getFlatRateErrorArgs(callFlatRateSettings.travelBasedOnStaffCost))
+      map(callFlatRateSettings => this.getFlatRateErrorArgs(callFlatRateSettings.travelAndAccommodationOnStaffCostsFlatRateSetup))
     );
+    this.otherFlatRateErrorsArgs$ = this.pageStore.callFlatRatesSettings$.pipe(
+      map(callFlatRateSettings => this.getFlatRateErrorArgs(callFlatRateSettings.otherCostsOnStaffCostsFlatRateSetup))
+    );
+    this.isDividerVisible$ = this.pageStore.callFlatRatesSettings$.pipe(
+      map(flatRateSetting => flatRateSetting.otherCostsOnStaffCostsFlatRateSetup !== null && (flatRateSetting.travelAndAccommodationOnStaffCostsFlatRateSetup !== null || flatRateSetting.officeAndAdministrationOnStaffCostsFlatRateSetup !== null || flatRateSetting.staffCostFlatRateSetup !== null))
+    );
+    this.isAnyOptionAvailable$ = this.pageStore.callFlatRatesSettings$.pipe(map(callFlatRateSetting => callFlatRateSetting.staffCostFlatRateSetup !== null || callFlatRateSetting.officeAndAdministrationOnStaffCostsFlatRateSetup !== null || callFlatRateSetting.travelAndAccommodationOnStaffCostsFlatRateSetup !== null || callFlatRateSetting.otherCostsOnStaffCostsFlatRateSetup !== null || callFlatRateSetting.officeAndAdministrationOnOtherCostsFlatRateSetup !== null));
+
+    this.isOtherCostsOnStaffCostsFlatRateDisabled$ = combineLatest([this.pageStore.isProjectEditable$.pipe(startWith(false)), this.budgetOptionForm.valueChanges.pipe(startWith(null))]).pipe(
+      map(([isProjectEditable]) =>
+        !isProjectEditable ||
+        this.isOfficeAndAdministrationOnStaffCostsFlatRateActive?.value ||
+        this.isStaffCostsFlatRateActive?.value ||
+        this.isTravelAndAccommodationOnStaffCostsFlatRateActive?.value
+      )
+    );
+    this.areFlatRatesInFirstCategoryDisabled$ = combineLatest([this.pageStore.isProjectEditable$.pipe(startWith(false)), this.budgetOptionForm.valueChanges.pipe(startWith(null))]).pipe(
+      map(([isProjectEditable]) =>
+        !isProjectEditable || this.isOtherCostsOnStaffCostsFlatRateActive?.value
+      ));
 
     this.data$ = combineLatest([
-      this.budgetOptionsForm$,
       this.pageStore.callFlatRatesSettings$,
-      this.pageStore.isProjectEditable$.pipe(startWith(false)),
       this.staffCostsFlatRateErrorsArgs$,
       this.officeOnStaffCostFlatRateErrorsArgs$,
-      this.travelFlatRateErrorsArgs$
+      this.travelFlatRateErrorsArgs$,
+      this.otherFlatRateErrorsArgs$,
+      this.isDividerVisible$,
+      this.isAnyOptionAvailable$,
+      this.isOtherCostsOnStaffCostsFlatRateDisabled$,
+      this.areFlatRatesInFirstCategoryDisabled$
     ]).pipe(
-      map(([budgetOptionsForm, callFlatRateSettings, isProjectEditable, staffCostsFlatRateErrorsArgs, officeOnStaffCostFlatRateErrorsArgs, travelFlatRateErrorsArgs]) => {
+      map(([callFlatRateSettings, staffCostsFlatRateErrorsArgs, officeOnStaffCostFlatRateErrorsArgs, travelFlatRateErrorsArgs, otherFlatRateErrorsArgs, isDividerVisible, isAnyOptionAvailable, isOtherCostsOnStaffCostsFlatRateDisabled, areFlatRatesInFirstCategoryDisabled]: any) => {
         return {
-          budgetOptionsForm,
           callFlatRateSettings,
-          isProjectEditable,
           staffCostsFlatRateErrorsArgs,
           officeOnStaffCostFlatRateErrorsArgs,
-          travelFlatRateErrorsArgs
+          travelFlatRateErrorsArgs,
+          otherFlatRateErrorsArgs,
+          isDividerVisible,
+          isAnyOptionAvailable,
+          isOtherCostsOnStaffCostsFlatRateDisabled,
+          areFlatRatesInFirstCategoryDisabled
         };
       }));
   }
@@ -88,20 +125,20 @@ export class ProjectPartnerBudgetOptionsComponent implements OnInit {
     ).subscribe();
   }
 
-  formToBudgetOptions(form: FormGroup): BudgetOptions {
-    const isStaffCostActive = this.getFormControl(form, this.constants.FORM_CONTROL_NAMES.isStaffCostsFlatRateBasedOnDirectCostActive)?.value;
-    const isOfficeActive = this.getFormControl(form, this.constants.FORM_CONTROL_NAMES.isOfficeFlatRateBasedOnStaffCostActive)?.value;
-    const isTravelActive = this.getFormControl(form, this.constants.FORM_CONTROL_NAMES.isTravelFlatRateBasedOnStaffCostActive)?.value;
+  formToBudgetOptions(): BudgetOptions {
+    const isStaffCostActive = this.isStaffCostsFlatRateActive?.value;
+    const isOfficeActive = this.isOfficeAndAdministrationOnStaffCostsFlatRateActive?.value;
+    const isTravelActive = this.isTravelAndAccommodationOnStaffCostsFlatRateActive?.value;
+    const isOtherActive = this.isOtherCostsOnStaffCostsFlatRateActive?.value;
     return new BudgetOptions(
-      isOfficeActive ? this.getFormControl(form, this.constants.FORM_CONTROL_NAMES.officeFlatRateBasedOnStaffCost)?.value || null : null,
-      isStaffCostActive ? this.getFormControl(form, this.constants.FORM_CONTROL_NAMES.staffCostsFlatRateBasedOnDirectCost)?.value || null : null,
-      isTravelActive ? this.getFormControl(form, this.constants.FORM_CONTROL_NAMES.travelFlatRateBasedOnStaffCost)?.value || null : null,
+      isOfficeActive ? this.officeAndAdministrationOnStaffCostsFlatRate?.value || null : null,
+      isStaffCostActive ? this.staffCostsFlatRate?.value || null : null,
+      isTravelActive ? this.travelAndAccommodationOnStaffCostsFlatRate?.value || null : null,
+      isOtherActive ? this.otherCostsOnStaffCostsFlatRate?.value || null : null,
     );
   }
 
-  toggleFlatRate(form: FormGroup, checkboxFormControlName: string, valueFormControlName: string, flatRateSetting: FlatRateSetting, checked: boolean): void {
-    const checkboxFormControl = this.getFormControl(form, checkboxFormControlName);
-    const valueFormControl = this.getFormControl(form, valueFormControlName);
+  toggleFlatRate(checkboxFormControl: FormControl, valueFormControl: FormControl, flatRateSetting: FlatRateSetting, checked: boolean): void {
     checkboxFormControl
       .patchValue(checked ? checkboxFormControl?.value : null);
     if (checked) {
@@ -113,32 +150,43 @@ export class ProjectPartnerBudgetOptionsComponent implements OnInit {
     }
   }
 
-  getFormControl(form: FormGroup, controlName: string): FormControl {
-    return form.get(controlName) as FormControl;
+  private initForm(): void {
+    this.budgetOptionForm = this.formBuilder.group({});
+    this.formService.init(this.budgetOptionForm);
   }
 
-  private initForm(budgetOptions: BudgetOptions, callFlatRateSettings: CallFlatRateSetting): FormGroup {
-    const form = this.formBuilder.group({});
-    if (callFlatRateSettings.staffCostBasedOnDirectCost !== null) {
-      form.addControl(this.constants.FORM_CONTROL_NAMES.isStaffCostsFlatRateBasedOnDirectCostActive, this.formBuilder.control(budgetOptions.staffCostsFlatRateBasedOnDirectCost !== null));
-      form.addControl(this.constants.FORM_CONTROL_NAMES.staffCostsFlatRateBasedOnDirectCost, this.formBuilder.control(
-        budgetOptions.staffCostsFlatRateBasedOnDirectCost ? budgetOptions.staffCostsFlatRateBasedOnDirectCost : callFlatRateSettings.staffCostBasedOnDirectCost.rate,
-        [Validators.max(callFlatRateSettings.staffCostBasedOnDirectCost.rate), Validators.min(1), Validators.required]));
+  private resetForm(budgetOptions: BudgetOptions, callFlatRateSettings: CallFlatRateSetting): void {
+    this.removeAllControls();
+    if (callFlatRateSettings.staffCostFlatRateSetup !== null) {
+      this.budgetOptionForm.addControl(this.constants.FORM_CONTROL_NAMES.isStaffCostsFlatRateActive, this.formBuilder.control(budgetOptions.staffCostsFlatRate !== null));
+      this.budgetOptionForm.addControl(this.constants.FORM_CONTROL_NAMES.staffCostsFlatRate, this.formBuilder.control(
+        budgetOptions.staffCostsFlatRate ? budgetOptions.staffCostsFlatRate : callFlatRateSettings.staffCostFlatRateSetup.rate,
+        [Validators.max(callFlatRateSettings.staffCostFlatRateSetup.rate), Validators.min(1), Validators.required]));
     }
-    if (callFlatRateSettings.officeBasedOnStaffCost !== null) {
-      form.addControl(this.constants.FORM_CONTROL_NAMES.isOfficeFlatRateBasedOnStaffCostActive, this.formBuilder.control(budgetOptions.officeFlatRateBasedOnStaffCost !== null));
-      form.addControl(this.constants.FORM_CONTROL_NAMES.officeFlatRateBasedOnStaffCost, this.formBuilder.control(
-        budgetOptions.officeFlatRateBasedOnStaffCost ? budgetOptions.officeFlatRateBasedOnStaffCost : callFlatRateSettings.officeBasedOnStaffCost.rate,
-        [Validators.max(callFlatRateSettings.officeBasedOnStaffCost.rate), Validators.min(1), Validators.required]));
+    if (callFlatRateSettings.officeAndAdministrationOnStaffCostsFlatRateSetup !== null) {
+      this.budgetOptionForm.addControl(this.constants.FORM_CONTROL_NAMES.isOfficeAndAdministrationOnStaffCostsFlatRateActive, this.formBuilder.control(budgetOptions.officeAndAdministrationOnStaffCostsFlatRate !== null));
+      this.budgetOptionForm.addControl(this.constants.FORM_CONTROL_NAMES.officeAndAdministrationOnStaffCostsFlatRate, this.formBuilder.control(
+        budgetOptions.officeAndAdministrationOnStaffCostsFlatRate ? budgetOptions.officeAndAdministrationOnStaffCostsFlatRate : callFlatRateSettings.officeAndAdministrationOnStaffCostsFlatRateSetup.rate,
+        [Validators.max(callFlatRateSettings.officeAndAdministrationOnStaffCostsFlatRateSetup.rate), Validators.min(1), Validators.required]));
     }
-    if (callFlatRateSettings.travelBasedOnStaffCost !== null) {
-      form.addControl(this.constants.FORM_CONTROL_NAMES.isTravelFlatRateBasedOnStaffCostActive, this.formBuilder.control(budgetOptions.travelFlatRateBasedOnStaffCost !== null));
-      form.addControl(this.constants.FORM_CONTROL_NAMES.travelFlatRateBasedOnStaffCost, this.formBuilder.control(
-        budgetOptions.travelFlatRateBasedOnStaffCost ? budgetOptions.travelFlatRateBasedOnStaffCost : callFlatRateSettings.travelBasedOnStaffCost.rate,
-        [Validators.max(callFlatRateSettings.travelBasedOnStaffCost.rate), Validators.min(1), Validators.required]));
+    if (callFlatRateSettings.travelAndAccommodationOnStaffCostsFlatRateSetup !== null) {
+      this.budgetOptionForm.addControl(this.constants.FORM_CONTROL_NAMES.isTravelAndAccommodationOnStaffCostsFlatRateActive, this.formBuilder.control(budgetOptions.travelAndAccommodationOnStaffCostsFlatRate !== null));
+      this.budgetOptionForm.addControl(this.constants.FORM_CONTROL_NAMES.travelAndAccommodationOnStaffCostsFlatRate, this.formBuilder.control(
+        budgetOptions.travelAndAccommodationOnStaffCostsFlatRate ? budgetOptions.travelAndAccommodationOnStaffCostsFlatRate : callFlatRateSettings.travelAndAccommodationOnStaffCostsFlatRateSetup.rate,
+        [Validators.max(callFlatRateSettings.travelAndAccommodationOnStaffCostsFlatRateSetup.rate), Validators.min(1), Validators.required]));
     }
-    this.formService.init(form);
-    return form;
+    if (callFlatRateSettings.otherCostsOnStaffCostsFlatRateSetup !== null) {
+      this.budgetOptionForm.addControl(this.constants.FORM_CONTROL_NAMES.isOtherCostsOnStaffCostsFlatRateActive, this.formBuilder.control(budgetOptions.otherCostsOnStaffCostsFlatRate !== null));
+      this.budgetOptionForm.addControl(this.constants.FORM_CONTROL_NAMES.otherCostsOnStaffCostsFlatRate, this.formBuilder.control(
+        budgetOptions.otherCostsOnStaffCostsFlatRate ? budgetOptions.otherCostsOnStaffCostsFlatRate : callFlatRateSettings.otherCostsOnStaffCostsFlatRateSetup.rate,
+        [Validators.max(callFlatRateSettings.otherCostsOnStaffCostsFlatRateSetup.rate), Validators.min(1), Validators.required]));
+    }
+  }
+
+  private removeAllControls(): void {
+    Object.keys(this.budgetOptionForm.controls).forEach(name => {
+      this.budgetOptionForm.removeControl(name);
+    });
   }
 
   private getFlatRateErrorArgs(flatRateSetting: FlatRateSetting | null): { [key: string]: {} } {
@@ -146,6 +194,38 @@ export class ProjectPartnerBudgetOptionsComponent implements OnInit {
       max: {maxValue: flatRateSetting?.rate},
       min: {maxValue: flatRateSetting?.rate}
     };
+  }
+
+  get staffCostsFlatRate(): FormControl {
+    return this.budgetOptionForm.get(this.constants.FORM_CONTROL_NAMES.staffCostsFlatRate) as FormControl;
+  }
+
+  get isStaffCostsFlatRateActive(): FormControl {
+    return this.budgetOptionForm.get(this.constants.FORM_CONTROL_NAMES.isStaffCostsFlatRateActive) as FormControl;
+  }
+
+  get officeAndAdministrationOnStaffCostsFlatRate(): FormControl {
+    return this.budgetOptionForm.get(this.constants.FORM_CONTROL_NAMES.officeAndAdministrationOnStaffCostsFlatRate) as FormControl;
+  }
+
+  get isOfficeAndAdministrationOnStaffCostsFlatRateActive(): FormControl {
+    return this.budgetOptionForm.get(this.constants.FORM_CONTROL_NAMES.isOfficeAndAdministrationOnStaffCostsFlatRateActive) as FormControl;
+  }
+
+  get travelAndAccommodationOnStaffCostsFlatRate(): FormControl {
+    return this.budgetOptionForm.get(this.constants.FORM_CONTROL_NAMES.travelAndAccommodationOnStaffCostsFlatRate) as FormControl;
+  }
+
+  get isTravelAndAccommodationOnStaffCostsFlatRateActive(): FormControl {
+    return this.budgetOptionForm.get(this.constants.FORM_CONTROL_NAMES.isTravelAndAccommodationOnStaffCostsFlatRateActive) as FormControl;
+  }
+
+  get otherCostsOnStaffCostsFlatRate(): FormControl {
+    return this.budgetOptionForm.get(this.constants.FORM_CONTROL_NAMES.otherCostsOnStaffCostsFlatRate) as FormControl;
+  }
+
+  get isOtherCostsOnStaffCostsFlatRateActive(): FormControl {
+    return this.budgetOptionForm.get(this.constants.FORM_CONTROL_NAMES.isOtherCostsOnStaffCostsFlatRateActive) as FormControl;
   }
 
 }

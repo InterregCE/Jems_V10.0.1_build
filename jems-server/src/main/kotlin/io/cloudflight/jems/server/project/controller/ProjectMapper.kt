@@ -13,6 +13,7 @@ fun PartnerBudget.toOutputDto() =
         equipmentCosts = equipmentCosts,
         infrastructureCosts = infrastructureCosts,
         officeAndAdministrationCosts = extractOfficeAndAdministrationCosts(),
+        otherCosts = extractOtherCosts(),
         totalSum = totalSum()
     )
 

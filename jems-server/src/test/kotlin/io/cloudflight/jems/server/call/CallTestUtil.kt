@@ -41,7 +41,7 @@ private val testCall = CallEntity(
     lengthOfPeriod = 1,
     description = "This is a dummy call",
     flatRates = mutableSetOf(ProjectCallFlatRateEntity(
-        setupId = FlatRateSetupId(callId = 0, type = FlatRateType.StaffCost),
+        setupId = FlatRateSetupId(callId = 0, type = FlatRateType.STAFF_COSTS),
         rate = 5,
         isAdjustable = true
     ))

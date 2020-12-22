@@ -3,18 +3,20 @@ package io.cloudflight.jems.server.project.repository.partner.budget
 import io.cloudflight.jems.server.project.entity.partner.budget.ProjectPartnerBudgetOptionsEntity
 import io.cloudflight.jems.server.project.service.budget.model.ProjectPartnerBudgetOptions
 
-fun ProjectPartnerBudgetOptions.toEntity() = ProjectPartnerBudgetOptionsEntity(
+fun ProjectPartnerBudgetOptions.toProjectPartnerBudgetOptionsEntity() = ProjectPartnerBudgetOptionsEntity(
     partnerId = partnerId,
-    officeAdministrationFlatRate = officeAndAdministrationFlatRate,
-    travelAccommodationFlatRate = travelAndAccommodationFlatRate,
+    officeAndAdministrationOnStaffCostsFlatRate = officeAndAdministrationOnStaffCostsFlatRate,
+    travelAndAccommodationOnStaffCostsFlatRate = travelAndAccommodationOnStaffCostsFlatRate,
     staffCostsFlatRate = staffCostsFlatRate,
+    otherCostsOnStaffCostsFlatRate = otherCostsOnStaffCostsFlatRate
 )
 
-fun ProjectPartnerBudgetOptionsEntity.toModel() = ProjectPartnerBudgetOptions(
+fun ProjectPartnerBudgetOptionsEntity.toProjectPartnerBudgetOptions() = ProjectPartnerBudgetOptions(
     partnerId = partnerId,
-    officeAndAdministrationFlatRate = officeAdministrationFlatRate,
-    travelAndAccommodationFlatRate = travelAccommodationFlatRate,
+    officeAndAdministrationOnStaffCostsFlatRate = officeAndAdministrationOnStaffCostsFlatRate,
+    travelAndAccommodationOnStaffCostsFlatRate = travelAndAccommodationOnStaffCostsFlatRate,
     staffCostsFlatRate = staffCostsFlatRate,
+    otherCostsOnStaffCostsFlatRate = otherCostsOnStaffCostsFlatRate
 )
 
-fun Iterable<ProjectPartnerBudgetOptionsEntity>.toModel() = map { it.toModel() }
+fun Iterable<ProjectPartnerBudgetOptionsEntity>.toProjectPartnerBudgetOptions() = map { it.toProjectPartnerBudgetOptions() }

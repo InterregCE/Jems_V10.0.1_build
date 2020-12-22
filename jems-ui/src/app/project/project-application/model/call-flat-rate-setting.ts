@@ -1,18 +1,18 @@
 import {FlatRateSetting} from './flat-rate-setting';
 
 export class CallFlatRateSetting {
-  staffCostBasedOnDirectCost: FlatRateSetting | null;
-  officeBasedOnStaffCost: FlatRateSetting | null;
-  officeBasedOnDirectCost: FlatRateSetting | null;
-  travelBasedOnStaffCost: FlatRateSetting | null;
-  otherBasedOnStaffCost: FlatRateSetting | null;
+  staffCostFlatRateSetup: FlatRateSetting | null;
+  officeAndAdministrationOnStaffCostsFlatRateSetup: FlatRateSetting | null;
+  officeAndAdministrationOnOtherCostsFlatRateSetup: FlatRateSetting | null;
+  travelAndAccommodationOnStaffCostsFlatRateSetup: FlatRateSetting | null;
+  otherCostsOnStaffCostsFlatRateSetup: FlatRateSetting | null;
 
-  constructor(staffCostBasedOnDirectCost: FlatRateSetting | null, officeBasedOnStaffCost: FlatRateSetting | null, officeBasedOnDirectCost: FlatRateSetting | null, travelBasedOnStaffCost: FlatRateSetting | null, otherBasedOnStaffCost: FlatRateSetting | null) {
-    this.staffCostBasedOnDirectCost = staffCostBasedOnDirectCost;
-    this.officeBasedOnStaffCost = officeBasedOnStaffCost;
-    this.officeBasedOnDirectCost = officeBasedOnDirectCost;
-    this.travelBasedOnStaffCost = travelBasedOnStaffCost;
-    this.otherBasedOnStaffCost = otherBasedOnStaffCost;
+  constructor(staffCostFlatRateSetup: FlatRateSetting | null, officeAndAdministrationOnStaffCostsFlatRateSetup: FlatRateSetting | null, officeAndAdministrationOnOtherCostsFlatRateSetup: FlatRateSetting | null, travelAndAccommodationOnStaffCostsFlatRateSetup: FlatRateSetting | null, otherCostsOnStaffCostsFlatRateSetup: FlatRateSetting | null) {
+    this.staffCostFlatRateSetup = staffCostFlatRateSetup;
+    this.officeAndAdministrationOnStaffCostsFlatRateSetup = officeAndAdministrationOnStaffCostsFlatRateSetup;
+    this.officeAndAdministrationOnOtherCostsFlatRateSetup = officeAndAdministrationOnOtherCostsFlatRateSetup;
+    this.travelAndAccommodationOnStaffCostsFlatRateSetup = travelAndAccommodationOnStaffCostsFlatRateSetup;
+    this.otherCostsOnStaffCostsFlatRateSetup = otherCostsOnStaffCostsFlatRateSetup;
   }
 }
 

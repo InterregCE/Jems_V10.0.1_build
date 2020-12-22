@@ -2,8 +2,8 @@ package io.cloudflight.jems.server.call.controller
 
 import io.cloudflight.jems.api.call.dto.flatrate.FlatRateDTO
 import io.cloudflight.jems.api.call.dto.flatrate.FlatRateSetupDTO
-import io.cloudflight.jems.api.call.dto.flatrate.FlatRateType.OfficeOnStaff
-import io.cloudflight.jems.api.call.dto.flatrate.FlatRateType.StaffCost
+import io.cloudflight.jems.api.call.dto.flatrate.FlatRateType.OFFICE_AND_ADMINISTRATION_ON_STAFF_COSTS
+import io.cloudflight.jems.api.call.dto.flatrate.FlatRateType.STAFF_COSTS
 import io.cloudflight.jems.server.call.service.CallService
 import io.cloudflight.jems.server.call.service.flatrate.model.ProjectCallFlatRate
 import io.cloudflight.jems.server.call.service.flatrate.update_flat_rate_setup.UpdateFlatRateSetupInteractor
@@ -42,15 +42,15 @@ class CallControllerTest {
 
         val testOptions = FlatRateSetupDTO(
             staffCostFlatRateSetup = FlatRateDTO(rate = 10, isAdjustable = true),
-            officeOnStaffFlatRateSetup = FlatRateDTO(rate = 15, isAdjustable = false),
+            officeAndAdministrationOnStaffCostsFlatRate = FlatRateDTO(rate = 15, isAdjustable = false),
         )
 
         controller.updateCallFlatRateSetup(1L, testOptions)
 
         assertThat(slotCallId.captured).isEqualTo(1L)
         assertThat(slotFlatRate.captured).containsExactlyInAnyOrder(
-            ProjectCallFlatRate(type = OfficeOnStaff, rate = 15, isAdjustable = false),
-            ProjectCallFlatRate(type = StaffCost, rate = 10, isAdjustable = true),
+            ProjectCallFlatRate(type = OFFICE_AND_ADMINISTRATION_ON_STAFF_COSTS, rate = 15, isAdjustable = false),
+            ProjectCallFlatRate(type = STAFF_COSTS, rate = 10, isAdjustable = true),
         )
     }
 

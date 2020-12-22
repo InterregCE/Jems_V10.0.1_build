@@ -26,9 +26,15 @@ class UpdateBudgetOptions(
         if (options.isEmpty())
             return persistence.deleteBudgetOptions(partnerId)
 
+        if (options.otherCostsOnStaffCostsFlatRate != null) {
+            persistence.deleteTravelAndAccommodationCosts(partnerId)
+            persistence.deleteEquipmentCosts(partnerId)
+            persistence.deleteExternalCosts(partnerId)
+            persistence.deleteInfrastructureCosts(partnerId)
+        }
         if (options.staffCostsFlatRate != null)
             persistence.deleteStaffCosts(partnerId)
-        if (options.travelAndAccommodationFlatRate != null)
+        if (options.travelAndAccommodationOnStaffCostsFlatRate != null)
             persistence.deleteTravelAndAccommodationCosts(partnerId)
 
         persistence.updateBudgetOptions(partnerId, options)

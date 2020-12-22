@@ -56,7 +56,7 @@ describe('ProjectApplicationPartnerBudgetPageComponent', () => {
   it('should fetch and save budgets', fakeAsync(() => {
     httpTestingController.expectOne({
       method: 'GET',
-      url: '//api/project/partner/2/budget/staffcost'
+      url: '//api/project/partner/2/budget/staffcosts'
     });
     httpTestingController.expectOne({
       method: 'GET',
@@ -80,7 +80,7 @@ describe('ProjectApplicationPartnerBudgetPageComponent', () => {
 
     httpTestingController.expectOne({
       method: 'PUT',
-      url: '//api/project/partner/2/budget/staffcost'
+      url: '//api/project/partner/2/budget/staffcosts'
     });
     httpTestingController.expectOne({
       method: 'PUT',

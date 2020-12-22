@@ -24,14 +24,14 @@ interface ProjectPartnerBudgetApi {
     //region StuffCosts
 
     @ApiOperation("Get project partner Budget: Staff Costs")
-    @GetMapping("/staffcost")
-    fun getBudgetStaffCost(
+    @GetMapping("/staffcosts")
+    fun getBudgetStaffCosts(
         @PathVariable partnerId: Long
     ): List<InputStaffCostBudget>
 
     @ApiOperation("Update project partner Budget: Staff Costs")
-    @PutMapping("/staffcost", consumes = [MediaType.APPLICATION_JSON_VALUE])
-    fun updateBudgetStaffCost(
+    @PutMapping("/staffcosts", consumes = [MediaType.APPLICATION_JSON_VALUE])
+    fun updateBudgetStaffCosts(
         @PathVariable partnerId: Long,
         @Valid @RequestBody budgetCosts: List<InputStaffCostBudget>
     ): List<InputStaffCostBudget>

@@ -10,10 +10,9 @@ data class ProjectPartnerBudgetOptionsEntity(
     @Id
     @field:NotNull
     val partnerId: Long,
-
-    var officeAdministrationFlatRate: Int? = null,
-    var travelAccommodationFlatRate: Int? = null,
-
-    var staffCostsFlatRate: Int? = null
+    var officeAndAdministrationOnStaffCostsFlatRate: Int? = null,
+    var travelAndAccommodationOnStaffCostsFlatRate: Int? = null,
+    var staffCostsFlatRate: Int? = null,
+    var otherCostsOnStaffCostsFlatRate: Int? = null
 
 )

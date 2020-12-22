@@ -18,7 +18,7 @@ export class BudgetPageComponent implements OnInit {
   projectId = this.activatedRoute?.snapshot?.params?.projectId;
   displayedColumns: string[] = [
     'partner', 'country', 'staffCosts', 'officeAndAdministrationCosts', 'travelCosts',
-    'externalCosts', 'equipmentCosts', 'infrastructureCosts', 'total'
+    'externalCosts', 'equipmentCosts', 'infrastructureCosts', 'otherCosts', 'total'
   ];
 
   totalStaffCosts: number;
@@ -27,6 +27,7 @@ export class BudgetPageComponent implements OnInit {
   totalExternalCosts: number;
   totalEquipmentCosts: number;
   totalInfrastructureCosts: number;
+  totalOtherCosts: number;
   total: number;
 
   budget$: Observable<ProjectPartnerBudgetDTO[]> = this.projectService.getProjectBudget(this.projectId)
@@ -38,6 +39,7 @@ export class BudgetPageComponent implements OnInit {
       tap(budgets => this.totalExternalCosts = NumberService.sum(budgets.map(budget => budget.externalCosts))),
       tap(budgets => this.totalEquipmentCosts = NumberService.sum(budgets.map(budget => budget.equipmentCosts))),
       tap(budgets => this.totalInfrastructureCosts = NumberService.sum(budgets.map(budget => budget.infrastructureCosts))),
+      tap(budgets => this.totalOtherCosts = NumberService.sum(budgets.map(budget => budget.otherCosts))),
       tap(budgets => this.total = NumberService.sum(budgets.map(budget => budget.totalSum))),
       tap(budget => Log.info('Fetching the project budget', this, budget))
     );

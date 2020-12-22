@@ -7,15 +7,15 @@ import io.cloudflight.jems.api.project.dto.partner.budget.InputStaffCostBudget
 import io.cloudflight.jems.api.project.dto.partner.budget.InputTravelBudget
 import io.cloudflight.jems.server.project.entity.TranslationBudgetId
 import io.cloudflight.jems.server.project.entity.partner.budget.Budget
-import io.cloudflight.jems.server.project.entity.partner.budget.ProjectPartnerBudgetEquipment
+import io.cloudflight.jems.server.project.entity.partner.budget.ProjectPartnerBudgetEquipmentEntity
 import io.cloudflight.jems.server.project.entity.partner.budget.ProjectPartnerBudgetEquipmentTransl
-import io.cloudflight.jems.server.project.entity.partner.budget.ProjectPartnerBudgetExternal
+import io.cloudflight.jems.server.project.entity.partner.budget.ProjectPartnerBudgetExternalEntity
 import io.cloudflight.jems.server.project.entity.partner.budget.ProjectPartnerBudgetExternalTransl
-import io.cloudflight.jems.server.project.entity.partner.budget.ProjectPartnerBudgetInfrastructure
+import io.cloudflight.jems.server.project.entity.partner.budget.ProjectPartnerBudgetInfrastructureEntity
 import io.cloudflight.jems.server.project.entity.partner.budget.ProjectPartnerBudgetInfrastructureTransl
-import io.cloudflight.jems.server.project.entity.partner.budget.ProjectPartnerBudgetStaffCost
+import io.cloudflight.jems.server.project.entity.partner.budget.ProjectPartnerBudgetStaffCostEntity
 import io.cloudflight.jems.server.project.entity.partner.budget.ProjectPartnerBudgetStaffCostTransl
-import io.cloudflight.jems.server.project.entity.partner.budget.ProjectPartnerBudgetTravel
+import io.cloudflight.jems.server.project.entity.partner.budget.ProjectPartnerBudgetTravelEntity
 import io.cloudflight.jems.server.project.entity.partner.budget.ProjectPartnerBudgetTravelTransl
 import java.math.BigDecimal
 
@@ -40,7 +40,7 @@ private fun toBudget(
     rowSum = numberOfUnits.multiply(pricePerUnit).truncate()
 )
 
-fun InputTravelBudget.toTravel(partnerId: Long) = ProjectPartnerBudgetTravel(
+fun InputTravelBudget.toTravel(partnerId: Long) = ProjectPartnerBudgetTravelEntity(
     id = id ?: 0,
     partnerId = partnerId,
     budget = toBudget(
@@ -63,7 +63,7 @@ fun InputTravelBudget.combineTranslatedValuesTravelCost(budgetId: Long): Mutable
     }
 }
 
-fun InputStaffCostBudget.toStaffCost(partnerId: Long) = ProjectPartnerBudgetStaffCost(
+fun InputStaffCostBudget.toStaffCost(partnerId: Long) = ProjectPartnerBudgetStaffCostEntity(
     id = id ?: 0,
     partnerId = partnerId,
     budget = toBudget(
@@ -86,7 +86,7 @@ fun InputStaffCostBudget.combineTranslatedValuesStaffCost(budgetId: Long): Mutab
     }
 }
 
-fun InputGeneralBudget.toEquipment(partnerId: Long) = ProjectPartnerBudgetEquipment(
+fun InputGeneralBudget.toEquipment(partnerId: Long) = ProjectPartnerBudgetEquipmentEntity(
     id = id ?: 0,
     partnerId = partnerId,
     budget = toBudget(
@@ -109,7 +109,7 @@ fun InputGeneralBudget.combineTranslatedValuesEquipment(budgetId: Long): Mutable
     }
 }
 
-fun InputGeneralBudget.toExternal(partnerId: Long) = ProjectPartnerBudgetExternal(
+fun InputGeneralBudget.toExternal(partnerId: Long) = ProjectPartnerBudgetExternalEntity(
     id = id ?: 0,
     partnerId = partnerId,
     budget = toBudget(
@@ -132,7 +132,7 @@ fun InputGeneralBudget.combineTranslatedValuesExternal(budgetId: Long): MutableS
     }
 }
 
-fun InputGeneralBudget.toInfrastructure(partnerId: Long) = ProjectPartnerBudgetInfrastructure(
+fun InputGeneralBudget.toInfrastructure(partnerId: Long) = ProjectPartnerBudgetInfrastructureEntity(
     id = id ?: 0,
     partnerId = partnerId,
     budget = toBudget(
@@ -157,7 +157,7 @@ fun InputGeneralBudget.combineTranslatedValuesInfrastructure(budgetId: Long): Mu
 
 /* output mappings */
 
-fun ProjectPartnerBudgetStaffCost.toStaffCostOutput() = InputStaffCostBudget(
+fun ProjectPartnerBudgetStaffCostEntity.toStaffCostOutput() = InputStaffCostBudget(
     id = id,
     description = translatedValues.mapTo(HashSet()) {
         InputTranslation(it.translationId.language, it.description)
@@ -167,7 +167,7 @@ fun ProjectPartnerBudgetStaffCost.toStaffCostOutput() = InputStaffCostBudget(
     rowSum = budget.rowSum
 )
 
-fun ProjectPartnerBudgetTravel.toTravelOutput() = InputTravelBudget(
+fun ProjectPartnerBudgetTravelEntity.toTravelOutput() = InputTravelBudget(
     id = id,
     description = translatedValues.mapTo(HashSet()) {
         InputTranslation(it.translationId.language, it.description)
@@ -177,7 +177,7 @@ fun ProjectPartnerBudgetTravel.toTravelOutput() = InputTravelBudget(
     rowSum = budget.rowSum
 )
 
-fun ProjectPartnerBudgetEquipment.toEquipmentOutput() = InputGeneralBudget(
+fun ProjectPartnerBudgetEquipmentEntity.toEquipmentOutput() = InputGeneralBudget(
     id = id,
     description = translatedValues.mapTo(HashSet()) {
         InputTranslation(it.translationId.language, it.description)
@@ -187,7 +187,7 @@ fun ProjectPartnerBudgetEquipment.toEquipmentOutput() = InputGeneralBudget(
     rowSum = budget.rowSum
 )
 
-fun ProjectPartnerBudgetExternal.toExternalOutput() = InputGeneralBudget(
+fun ProjectPartnerBudgetExternalEntity.toExternalOutput() = InputGeneralBudget(
     id = id,
     description = translatedValues.mapTo(HashSet()) {
         InputTranslation(it.translationId.language, it.description)
@@ -197,7 +197,7 @@ fun ProjectPartnerBudgetExternal.toExternalOutput() = InputGeneralBudget(
     rowSum = budget.rowSum
 )
 
-fun ProjectPartnerBudgetInfrastructure.toInfrastructureOutput() = InputGeneralBudget(
+fun ProjectPartnerBudgetInfrastructureEntity.toInfrastructureOutput() = InputGeneralBudget(
     id = id,
     description = translatedValues.mapTo(HashSet()) {
         InputTranslation(it.translationId.language, it.description)

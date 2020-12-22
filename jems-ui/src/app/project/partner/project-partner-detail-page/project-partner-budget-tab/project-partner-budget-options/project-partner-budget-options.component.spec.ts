@@ -57,7 +57,7 @@ describe('ProjectApplicationFormPartnerBudgetOptionsComponent', () => {
       url: '//api/project/partner/2/budget/options'
     });
 
-    component.updateBudgetOptions(new BudgetOptions(8, 10, 10));
+    component.updateBudgetOptions(new BudgetOptions(8, 10, 10, null));
     tick();
 
     httpTestingController.expectOne({

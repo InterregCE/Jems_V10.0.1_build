@@ -1,7 +1,7 @@
 export enum PartnerBudgetTableType {
   STAFF = 'staff',
   TRAVEL = 'travel',
-  EXTERNAL = 'EXTERNAL',
-  EQUIPMENT = 'EQUIPMENT',
+  EXTERNAL = 'external',
+  EQUIPMENT = 'equipment',
   INFRASTRUCTURE = 'infrastructure'
 }

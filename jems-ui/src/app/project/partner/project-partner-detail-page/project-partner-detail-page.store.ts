@@ -39,9 +39,10 @@ export class ProjectPartnerDetailPageStore {
   updateBudgetOptions(budgetOptions: BudgetOptions): Observable<any> {
     return of(budgetOptions).pipe(withLatestFrom(this.partnerStore.partner$)).pipe(
       switchMap(([options, partner]) => this.projectPartnerBudgetService.updateBudgetOptions(partner.id, {
-        officeAndAdministrationFlatRate: options.officeFlatRateBasedOnStaffCost,
-        staffCostsFlatRate: options.staffCostsFlatRateBasedOnDirectCost,
-        travelAndAccommodationFlatRate: options.travelFlatRateBasedOnStaffCost
+        officeAndAdministrationOnStaffCostsFlatRate: options.officeAndAdministrationOnStaffCostsFlatRate,
+        staffCostsFlatRate: options.staffCostsFlatRate,
+        travelAndAccommodationOnStaffCostsFlatRate: options.travelAndAccommodationOnStaffCostsFlatRate,
+        otherCostsOnStaffCostsFlatRate: options.otherCostsOnStaffCostsFlatRate
       } as ProjectPartnerBudgetOptionsDto)),
       tap(() => this.updateBudgetOptionsEvent$.next()),
       share()
@@ -52,7 +53,7 @@ export class ProjectPartnerDetailPageStore {
     return of(budgets).pipe(withLatestFrom(this.partnerStore.partner$)).pipe(
       switchMap(([newBudgets, partner]: any) =>
         forkJoin({
-          staff: this.projectPartnerBudgetService.updateBudgetStaffCost(partner.id, this.getBudgetEntries(newBudgets.staff) as any),
+          staff: this.projectPartnerBudgetService.updateBudgetStaffCosts(partner.id, this.getBudgetEntries(newBudgets.staff) as any),
           travel: this.projectPartnerBudgetService.updateBudgetTravel(partner.id, this.getBudgetEntries(newBudgets.travel) as any),
           external: this.projectPartnerBudgetService.updateBudgetExternal(partner.id, this.getBudgetEntries(newBudgets.external) as any),
           equipment: this.projectPartnerBudgetService.updateBudgetEquipment(partner.id, this.getBudgetEntries(newBudgets.equipment) as any),
@@ -71,7 +72,7 @@ export class ProjectPartnerDetailPageStore {
       switchMap(id =>
         this.projectPartnerBudgetService.getBudgetOptions(id)
       ),
-      map((it: ProjectPartnerBudgetOptionsDto) => new BudgetOptions(it.officeAndAdministrationFlatRate, it.staffCostsFlatRate, it.travelAndAccommodationFlatRate)),
+      map((it: ProjectPartnerBudgetOptionsDto) => new BudgetOptions(it.officeAndAdministrationOnStaffCostsFlatRate, it.staffCostsFlatRate, it.travelAndAccommodationOnStaffCostsFlatRate, it.otherCostsOnStaffCostsFlatRate)),
       shareReplay(1)
     );
   }
@@ -83,7 +84,7 @@ export class ProjectPartnerDetailPageStore {
       map(partner => partner.id),
       switchMap(id =>
         forkJoin({
-          staff: this.projectPartnerBudgetService.getBudgetStaffCost(id).pipe(
+          staff: this.projectPartnerBudgetService.getBudgetStaffCosts(id).pipe(
             tap(staff => Log.info('Fetched the staff budget', this, staff)),
             map(staff => this.getBudgetTable(PartnerBudgetTableType.STAFF, staff)),
           ),
@@ -116,10 +117,10 @@ export class ProjectPartnerDetailPageStore {
       map((call: OutputCallWithDates) =>
         new CallFlatRateSetting(
           call.flatRates.staffCostFlatRateSetup,
-          call.flatRates.officeOnStaffFlatRateSetup,
-          call.flatRates.officeOnOtherFlatRateSetup,
-          call.flatRates.travelOnStaffFlatRateSetup,
-          call.flatRates.otherOnStaffFlatRateSetup)
+          call.flatRates.officeAndAdministrationOnStaffCostsFlatRate,
+          call.flatRates.officeAndAdministrationOnOtherCostsFlatRateSetup,
+          call.flatRates.travelAndAccommodationOnStaffCostsFlatRateSetup,
+          call.flatRates.otherCostsOnStaffCostsFlatRateSetup)
       ),
     );
   }

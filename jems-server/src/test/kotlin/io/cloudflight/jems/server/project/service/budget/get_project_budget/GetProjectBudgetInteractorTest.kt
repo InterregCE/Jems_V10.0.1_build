@@ -38,9 +38,9 @@ class GetProjectBudgetInteractorTest {
 
         private val partner1Options = ProjectPartnerBudgetOptions(
             partnerId = partner1.id!!,
-            officeAndAdministrationFlatRate = 10,
+            officeAndAdministrationOnStaffCostsFlatRate = 10,
             staffCostsFlatRate = 10,
-            travelAndAccommodationFlatRate = 15,
+            travelAndAccommodationOnStaffCostsFlatRate = 15,
         )
 
         private fun budget(partnerId: Long, sum: Double) = ProjectPartnerCost(
@@ -82,8 +82,9 @@ class GetProjectBudgetInteractorTest {
                 PartnerBudget(
                     partner = partner2,
                     staffCostsFlatRate = null,
-                    officeOnStaffFlatRate = null,
-                    travelOnStaffFlatRate = null,
+                    officeAndAdministrationOnStaffCostsFlatRate = null,
+                    travelAndAccommodationOnStaffCostsFlatRate = null,
+                    otherCostsOnStaffCostsFlatRate = null,
                     travelCosts = decimal(100.0),
                     externalCosts = decimal(1000.0),
                     infrastructureCosts = decimal(300.0)
@@ -91,8 +92,9 @@ class GetProjectBudgetInteractorTest {
                 PartnerBudget(
                     partner = partner1,
                     staffCostsFlatRate = 10,
-                    officeOnStaffFlatRate = 10,
-                    travelOnStaffFlatRate = 15,
+                    officeAndAdministrationOnStaffCostsFlatRate = 10,
+                    travelAndAccommodationOnStaffCostsFlatRate = 15,
+                    otherCostsOnStaffCostsFlatRate = null,
                     staffCosts = decimal(50.0),
                     travelCosts = decimal(800.0),
                     infrastructureCosts = decimal(300.0)
