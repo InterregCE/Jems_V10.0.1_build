@@ -52,6 +52,7 @@ data class PartnerBudget(
         else
             BigDecimal.ZERO
 
+
     fun totalSum(): BigDecimal =
         extractStaffCosts()
             .add(extractTravelCosts())
