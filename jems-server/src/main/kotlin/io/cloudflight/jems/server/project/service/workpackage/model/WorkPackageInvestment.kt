@@ -1,10 +1,9 @@
 package io.cloudflight.jems.server.project.service.workpackage.model
 
 import io.cloudflight.jems.server.project.service.model.Address
-import java.util.*
 
 data class WorkPackageInvestment(
-    val id: UUID?,
+    val id: Long?,
     val investmentNumber: Int,
     val title: String? = null,
     val justificationExplanation: String? = null,

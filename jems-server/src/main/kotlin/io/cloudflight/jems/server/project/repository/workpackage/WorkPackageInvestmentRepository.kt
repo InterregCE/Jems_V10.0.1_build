@@ -5,10 +5,9 @@ import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
 import org.springframework.data.repository.PagingAndSortingRepository
 import org.springframework.stereotype.Repository
-import java.util.*
 
 @Repository
-interface WorkPackageInvestmentRepository : PagingAndSortingRepository<WorkPackageInvestmentEntity, UUID> {
+interface WorkPackageInvestmentRepository : PagingAndSortingRepository<WorkPackageInvestmentEntity, Long> {
 
     fun findAllByWorkPackageId(workPackageId: Long, pageable: Pageable): Page<WorkPackageInvestmentEntity>
 

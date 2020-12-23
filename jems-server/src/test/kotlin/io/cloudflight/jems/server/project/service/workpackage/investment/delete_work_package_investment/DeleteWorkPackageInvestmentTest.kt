@@ -15,7 +15,7 @@ internal class DeleteWorkPackageInvestmentTest : UnitTestWorkPackageInvestmentBa
 
     @Test
     fun `should delete the workPackageInvestment from the specified workPackage without any exception`() {
-        val expectedWorkPackageInvestmentId = UUID.randomUUID()
+        val expectedWorkPackageInvestmentId: Long = Math.random().toLong()
         every { persistence.deleteWorkPackageInvestment(expectedWorkPackageInvestmentId) } returns Unit
 
         deleteWorkPackageInvestment.deleteWorkPackageInvestment(expectedWorkPackageInvestmentId)

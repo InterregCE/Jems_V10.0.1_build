@@ -1,10 +1,9 @@
 package io.cloudflight.jems.api.project.dto.workpackage.investment
 
 import io.cloudflight.jems.api.common.dto.AddressDTO
-import java.util.*
 
 data class WorkPackageInvestmentDTO(
-    val id: UUID?,
+    val id: Long?,
     val investmentNumber: Int,
     val title: String? = null,
     val justificationExplanation: String? = null,

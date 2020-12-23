@@ -4,9 +4,11 @@ import {
   InputWorkPackageUpdate,
   OutputProject,
   OutputWorkPackage,
+  WorkPackageInvestmentDTO,
+  WorkPackageService,
+  WorkPackageInvestmentService,
   ProgrammeIndicatorService,
   WorkPackageActivityService,
-  WorkPackageService
 } from '@cat/api';
 import {merge, Observable, ReplaySubject, Subject} from 'rxjs';
 import {shareReplay, switchMap, tap} from 'rxjs/operators';
@@ -23,6 +25,7 @@ export class ProjectWorkPackagePageStore {
 
   totalAmountChanged$ = new Subject<boolean>();
   workPackage$ = new ReplaySubject<OutputWorkPackage | any>(1);
+  workPackageInvestment$ = new ReplaySubject<WorkPackageInvestmentDTO | any>(1);
   isProjectEditable$: Observable<boolean>;
   project$: Observable<OutputProject>;
   activities$: Observable<WorkPackageActivityDTO[]>;
@@ -33,6 +36,7 @@ export class ProjectWorkPackagePageStore {
               private projectStore: ProjectStore,
               private programmeIndicatorService: ProgrammeIndicatorService,
               private workPackageActivityService: WorkPackageActivityService,
+              private workPackageInvestmentService: WorkPackageInvestmentService,
               private projectApplicationFormSidenavService: ProjectApplicationFormSidenavService) {
     this.isProjectEditable$ = this.projectStore.projectEditable$;
     this.project$ = this.projectStore.getProject();
@@ -71,6 +75,40 @@ export class ProjectWorkPackagePageStore {
         tap(created => this.workPackage$.next(created)),
         tap(created => Log.info('Created workPackage:', this, created)),
         tap(() => this.projectApplicationFormSidenavService.refreshPackages(this.projectId)),
+      );
+  }
+
+  getWorkPackageInvestmentById(projectId: number, investmentId: number): Observable<WorkPackageInvestmentDTO> {
+    return this.workPackageInvestmentService.getWorkPackageInvestment(investmentId)
+      .pipe(
+        tap(workPackageInvestment => Log.info('Fetched work package investment:', this, workPackageInvestment)),
+        tap(workPackageInvestment => this.workPackageInvestment$.next(workPackageInvestment)),
+      );
+  }
+
+  createWorkPackageInvestment(workPackageId: number, projectId: number, workPackageInvestment: WorkPackageInvestmentDTO): Observable<number> {
+    return this.workPackageInvestmentService.addWorkPackageInvestment(workPackageId, workPackageInvestment)
+      .pipe(
+        tap(created => Log.info('Created work package investment:', this, created)),
+        tap(created => this.workPackageInvestment$.next(created)),
+        tap(() => this.projectApplicationFormSidenavService.refreshPackages(projectId)),
+      );
+  }
+
+  updateWorkPackageInvestment(workPackageId: number, projectId: number, workPackageInvestment: WorkPackageInvestmentDTO): Observable<number> {
+    return this.workPackageInvestmentService.updateWorkPackageInvestment(workPackageInvestment)
+      .pipe(
+        tap(updated => Log.info('Updated work package investment:', this, updated)),
+        tap(updated => this.workPackageInvestment$.next(updated)),
+        tap(() => this.projectApplicationFormSidenavService.refreshPackages(projectId)),
+      );
+  }
+
+  deleteWorkPackageInvestment(workPackageId: number, projectId: number, workPackageInvestmentId: number): Observable<any> {
+    return this.workPackageInvestmentService.deleteWorkPackageInvestment(workPackageInvestmentId)
+      .pipe(
+        tap(deleted => Log.info('Deleted work package investment:', this, deleted)),
+        tap(() => this.projectApplicationFormSidenavService.refreshPackages(projectId)),
       );
   }
 

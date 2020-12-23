@@ -1,0 +1,37 @@
+<app-form *ngIf="currentPage$ | async as workPackageInvestmentsPage">
+    <div>
+        <h6>{{'project.application.form.workpackage.investment.form.list.title' | translate}}</h6>
+    </div>
+
+    <span class="header-button" *ngxPermissionsExcept="Permission.PROGRAMME_USER">
+    <button class="spaced-elements" mat-raised-button color="primary"
+            [routerLink]="'/app/project/detail/' + projectId + '/applicationFormWorkPackage/detail/' + workPackageId +  '/investment/create'"
+            [disabled]="!editable">
+        + {{'project.application.form.add.workpackage.investment' | translate}}
+    </button>
+    </span>
+
+    <p class="spaced-elements" *ngIf="!workPackageInvestmentsPage?.content.length">
+        {{'project.application.form.workpackage.investment.list.empty' | translate}}
+    </p>
+
+    <app-table *ngIf="workPackageInvestmentsPage.content.length"
+               [configuration]="tableConfiguration"
+               [rows]="workPackageInvestmentsPage.content"
+               [totalElements]="workPackageInvestmentsPage?.totalElements"
+               [pageIndex]="pageIndex"
+               (newPageIndex)="newPageIndex$.next($event)"
+               (newPageSize)="newPageSize$.next($event)"
+               (sortRows)="newSort$.next($event)">
+    </app-table>
+
+</app-form>
+
+<ng-template #deletionCell let-workPackageInvestment>
+    <app-work-package-investment-delete-action-cell
+            (click)="$event.stopPropagation()"
+            [element]="workPackageInvestment"
+            [disabled]="!editable"
+            (delete)="delete($event)">
+    </app-work-package-investment-delete-action-cell>
+</ng-template>

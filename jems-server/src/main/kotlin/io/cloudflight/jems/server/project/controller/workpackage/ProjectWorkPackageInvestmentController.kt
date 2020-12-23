@@ -7,9 +7,9 @@ import io.cloudflight.jems.server.project.service.workpackage.investment.delete_
 import io.cloudflight.jems.server.project.service.workpackage.investment.get_work_package_investment.GetWorkPackageInvestmentInteractor
 import io.cloudflight.jems.server.project.service.workpackage.investment.get_work_package_investments.GetWorkPackageInvestmentsInteractor
 import io.cloudflight.jems.server.project.service.workpackage.investment.update_work_package_investment.UpdateWorkPackageInvestment
+import java.util.*
 import org.springframework.data.domain.Pageable
 import org.springframework.web.bind.annotation.RestController
-import java.util.*
 
 @RestController
 class ProjectWorkPackageInvestmentController(
@@ -21,7 +21,7 @@ class ProjectWorkPackageInvestmentController(
 
 ) : ProjectWorkPackageInvestmentApi {
 
-    override fun getWorkPackageInvestment(investmentId: UUID) =
+    override fun getWorkPackageInvestment(investmentId: Long) =
         getWorkPackageInvestmentInteractor.getWorkPackageInvestment(investmentId).toWorkPackageInvestmentDTO()
 
     override fun getWorkPackageInvestments(workPackageId: Long, pageable: Pageable) =
@@ -33,7 +33,7 @@ class ProjectWorkPackageInvestmentController(
     override fun updateWorkPackageInvestment(workPackageInvestmentDTO: WorkPackageInvestmentDTO) =
         updateWorkPackageInvestmentInteractor.updateWorkPackageInvestment(workPackageInvestmentDTO.toWorkPackageInvestment())
 
-    override fun deleteWorkPackageInvestment(investmentId: UUID) =
+    override fun deleteWorkPackageInvestment(investmentId: Long) =
         deleteWorkPackageInvestmentInteractor.deleteWorkPackageInvestment(investmentId)
 
 }

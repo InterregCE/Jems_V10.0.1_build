@@ -12,14 +12,14 @@ interface WorkPackagePersistence {
 
     fun updateWorkPackageOutputs(workPackageId: Long, workPackageOutputs: Set<WorkPackageOutputUpdate>): Set<WorkPackageOutput>
     fun getWorkPackageOutputsForWorkPackage(workPackageId: Long): Set<WorkPackageOutput>
-    fun getWorkPackageInvestment(workPackageInvestmentId: UUID): WorkPackageInvestment
+    fun getWorkPackageInvestment(workPackageInvestmentId: Long): WorkPackageInvestment
     fun getWorkPackageInvestments(workPackageId: Long, pageable: Pageable): Page<WorkPackageInvestment>
-    fun addWorkPackageInvestment(workPackageId: Long, workPackageInvestment: WorkPackageInvestment): UUID
+    fun addWorkPackageInvestment(workPackageId: Long, workPackageInvestment: WorkPackageInvestment): Long
     fun updateWorkPackageInvestment(workPackageInvestment: WorkPackageInvestment)
-    fun deleteWorkPackageInvestment(workPackageInvestmentId: UUID)
+    fun deleteWorkPackageInvestment(workPackageInvestmentId: Long)
 
     fun getWorkPackageActivitiesForWorkPackage(workPackageId: Long): List<WorkPackageActivity>
     fun updateWorkPackageActivities(workPackageId: Long, workPackageActivities: List<WorkPackageActivity>): List<WorkPackageActivity>
 
-    fun getProjectIdFromWorkPackageInvestment(workPackageInvestmentId: UUID): Long
+    fun getProjectIdFromWorkPackageInvestment(workPackageInvestmentId: Long): Long
 }

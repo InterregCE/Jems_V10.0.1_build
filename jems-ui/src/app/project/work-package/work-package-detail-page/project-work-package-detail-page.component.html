@@ -16,14 +16,16 @@
                     [projectId]="projectId">
             </app-project-work-package-objectives-tab>
         </mat-tab>
-        <mat-tab label="{{'workpackage.tab.outputs' | translate}}">
-            <app-project-application-form-work-package-output></app-project-application-form-work-package-output>
+        <mat-tab label="{{'workpackage.tab.investments' | translate}}">
+            <app-project-work-package-investments-tab
+                    [editable]="workPackageStore.isProjectEditable$ | async">
+            </app-project-work-package-investments-tab>
         </mat-tab>
         <mat-tab label="{{'workpackage.tab.activities' | translate}}">
             <app-project-work-package-activities-tab></app-project-work-package-activities-tab>
         </mat-tab>
-        <mat-tab label="{{'workpackage.tab.investment' | translate}}">
-            <div></div>
+        <mat-tab label="{{'workpackage.tab.outputs' | translate}}">
+            <app-project-application-form-work-package-output></app-project-application-form-work-package-output>
         </mat-tab>
     </mat-tab-group>
 

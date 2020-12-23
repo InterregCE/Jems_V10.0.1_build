@@ -1,10 +1,6 @@
 <app-form (save)="onSubmit()"
           (discard)="onCancel()">
     <form [formGroup]="workPackageForm">
-        <h5>
-            {{'project.application.form.workpackage.form.header' | translate}}
-            {{workPackageNumber}}
-        </h5>
         <div>
             <h6>{{'project.application.form.workpackage.form.outputs' | translate}}</h6>
             <p class="intro-text-small">{{'project.application.form.workpackage.form.intro' | translate}}</p>
