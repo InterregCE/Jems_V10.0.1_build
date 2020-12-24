@@ -73,9 +73,9 @@ export class MultiLanguageInputService {
   }
 
   multiLanguageFormFieldDefaultValue(): InputTranslation[] {
-    return this.languages.map(language => {
+    return this.languages?.map(language => {
       return {translation: '', language} as InputTranslation;
-    });
+    }) || [];
 
   }
 

@@ -1,11 +1,12 @@
 <app-form (save)="onSubmit()"
-          (discard)="resetForm()">
+          (discard)="initForm()">
     <form [formGroup]="partnerContributionForm" class="wrapper">
         <h5><span>{{'project.partner.motivation.header' | translate}}</span></h5>
         <h6 class="intro-text">{{'project.partner.motivation.organization.relevance' | translate}}</h6>
 
         <app-multi-language>
             <app-multi-language-form-field *ngIf="editable"
+                                           type="textarea"
                                            [label]="'project.application.form.motivation.form.field'"
                                            formControlName="organizationRelevance"
                                            [maxLength]="2000">
@@ -20,6 +21,7 @@
         </h6>
         <app-multi-language>
             <app-multi-language-form-field *ngIf="editable"
+                                           type="textarea"
                                            [label]="'project.application.form.motivation.form.field'"
                                            formControlName="organizationRole"
                                            [maxLength]="2000">
@@ -34,6 +36,7 @@
         </h6>
         <app-multi-language>
             <app-multi-language-form-field *ngIf="editable"
+                                           type="textarea"
                                            [label]="'project.application.form.motivation.form.field'"
                                            formControlName="organizationExperience"
                                            [maxLength]="2000">

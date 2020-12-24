@@ -1,11 +1,10 @@
 import {ChangeDetectionStrategy, Component, Input, OnChanges, OnInit, SimpleChanges} from '@angular/core';
-import {FormBuilder, FormGroup, Validators} from '@angular/forms';
+import {FormBuilder, FormGroup} from '@angular/forms';
 import {OutputProjectPartnerDetail, ProjectPartnerMotivationDTO} from '@cat/api';
 import {FormService} from '@common/components/section/form/form.service';
 import {ProjectPartnerStore} from '../../../containers/project-application-form-page/services/project-partner-store.service';
 import {catchError, take, tap} from 'rxjs/operators';
 import {MultiLanguageInput} from '@common/components/forms/multi-language/multi-language-input';
-import {MultiLanguageInputService} from '../../../../../common/services/multi-language-input.service';
 
 @Component({
   selector: 'app-project-application-form-partner-contribution',
@@ -21,29 +20,23 @@ export class ProjectApplicationFormPartnerContributionComponent implements OnIni
   editable: boolean;
 
   organizationRelevance: MultiLanguageInput;
-  organizationRole: MultiLanguageInput
+  organizationRole: MultiLanguageInput;
   organizationExperience: MultiLanguageInput;
 
-  partnerContributionForm: FormGroup = this.formBuilder.group({
-    organizationRelevance: [this.languageService.multiLanguageFormFieldDefaultValue()],
-    organizationRole: [this.languageService.multiLanguageFormFieldDefaultValue()],
-    organizationExperience: [this.languageService.multiLanguageFormFieldDefaultValue()],
-  });
+  partnerContributionForm: FormGroup;
 
   constructor(private formBuilder: FormBuilder,
               private partnerStore: ProjectPartnerStore,
-              private formService: FormService,
-              public languageService: MultiLanguageInputService) {
+              private formService: FormService) {
   }
 
   ngOnInit(): void {
-    this.formService.init(this.partnerContributionForm);
-    this.resetForm();
+    this.initForm();
   }
 
   ngOnChanges(changes: SimpleChanges): void {
     if (changes.partner) {
-      this.resetForm();
+      this.initForm();
     }
   }
 
@@ -61,10 +54,13 @@ export class ProjectApplicationFormPartnerContributionComponent implements OnIni
       ).subscribe();
   }
 
-  resetForm(): void {
-    this.partnerContributionForm.controls.organizationRelevance.setValue(this.partner?.motivation?.organizationRelevance);
-    this.partnerContributionForm.controls.organizationRole.setValue(this.partner?.motivation?.organizationRole);
-    this.partnerContributionForm.controls.organizationExperience.setValue(this.partner?.motivation?.organizationExperience);
+  initForm(): void {
+    this.partnerContributionForm = this.formBuilder.group({
+      organizationRelevance: [this.partner?.motivation?.organizationRelevance || []],
+      organizationRole: [this.partner?.motivation?.organizationRole || []],
+      organizationExperience: [this.partner?.motivation?.organizationExperience || []],
+    });
+    this.formService.init(this.partnerContributionForm);
   }
 
   get controls(): any {

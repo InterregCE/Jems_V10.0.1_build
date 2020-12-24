@@ -10,13 +10,13 @@ import {
 } from '@angular/core';
 import {AbstractControl, FormBuilder, FormGroup, Validators} from '@angular/forms';
 import {
+  InputProjectAssociatedOrganizationAddress,
   InputProjectAssociatedOrganizationCreate,
   InputProjectAssociatedOrganizationUpdate,
   InputProjectContact,
-  InputProjectAssociatedOrganizationAddress,
+  OutputNuts,
   OutputProjectAssociatedOrganizationDetail,
   OutputProjectPartner,
-  OutputNuts,
 } from '@cat/api';
 import {Permission} from '../../../../../security/permissions/permission';
 import {BaseComponent} from '@common/components/base-component';
@@ -24,8 +24,6 @@ import {Observable} from 'rxjs';
 import {HttpErrorResponse} from '@angular/common/http';
 import {FormService} from '@common/components/section/form/form.service';
 import {takeUntil, tap} from 'rxjs/operators';
-import {MultiLanguageInput} from '@common/components/forms/multi-language/multi-language-input';
-import {MultiLanguageInputService} from '../../../../../common/services/multi-language-input.service';
 
 @Component({
   selector: 'app-project-application-form-associated-organization-edit',
@@ -91,7 +89,7 @@ export class ProjectApplicationFormAssociatedOrganizationEditComponent extends B
       Validators.maxLength(25),
       Validators.pattern('^[0-9+()/-]*$')
     ])],
-    roleDescription: [this.languageService.multiLanguageFormFieldDefaultValue()],
+    roleDescription: [],
   });
 
   nameInOriginalLanguageErrors = {
@@ -133,8 +131,7 @@ export class ProjectApplicationFormAssociatedOrganizationEditComponent extends B
   };
 
   constructor(private formBuilder: FormBuilder,
-              private formService: FormService,
-              public languageService: MultiLanguageInputService) {
+              private formService: FormService) {
     super();
   }
 

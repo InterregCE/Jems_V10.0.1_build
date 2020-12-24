@@ -26,7 +26,6 @@ import {ProjectPartnerStore} from '../../../containers/project-application-form-
 import {HttpErrorResponse} from '@angular/common/http';
 import {Observable, of} from 'rxjs';
 import {Router} from '@angular/router';
-import {MultiLanguageInputService} from '../../../../../common/services/multi-language-input.service';
 
 @Component({
   selector: 'app-project-application-form-partner-edit',
@@ -65,7 +64,7 @@ export class ProjectApplicationFormPartnerEditComponent extends BaseComponent im
     role: ['', Validators.required],
     nameInOriginalLanguage: ['', Validators.maxLength(100)],
     nameInEnglish: ['', Validators.maxLength(100)],
-    department: this.formBuilder.control(this.languageService.multiLanguageFormFieldDefaultValue()),
+    department: [],
     partnerType: [''],
     legalStatusId: ['', Validators.required],
     vat: ['', Validators.maxLength(50)],
@@ -114,8 +113,7 @@ export class ProjectApplicationFormPartnerEditComponent extends BaseComponent im
               private dialog: MatDialog,
               public formService: FormService,
               private partnerStore: ProjectPartnerStore,
-              private router: Router,
-              public languageService: MultiLanguageInputService) {
+              private router: Router) {
     super();
   }
 

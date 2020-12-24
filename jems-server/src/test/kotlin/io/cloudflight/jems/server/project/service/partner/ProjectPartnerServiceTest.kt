@@ -68,7 +68,7 @@ internal class ProjectPartnerServiceTest {
         vatRecovery = true
         )
     private val partnerTranslatedValues =
-        setOf(ProjectPartnerTranslEntity(TranslationPartnerId(1, SystemLanguage.EN), "test"))
+        mutableSetOf(ProjectPartnerTranslEntity(TranslationPartnerId(1, SystemLanguage.EN), "test"))
     private val projectPartnerInclTransl =
         projectPartner.copy(translatedValues = partnerTranslatedValues)
     private val projectPartnerWithOrganization = ProjectPartnerEntity(
