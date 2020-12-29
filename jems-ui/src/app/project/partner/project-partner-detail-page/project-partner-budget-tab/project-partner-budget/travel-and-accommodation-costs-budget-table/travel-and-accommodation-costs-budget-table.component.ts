@@ -15,7 +15,6 @@ import {FormService} from '@common/components/section/form/form.service';
 import {MultiLanguageInputService} from '../../../../../../common/services/multi-language-input.service';
 import {map, startWith} from 'rxjs/operators';
 import {UntilDestroy, untilDestroyed} from '@ngneat/until-destroy';
-import {Tables} from '../../../../../../common/utils/tables';
 import {NumberService} from '../../../../../../common/services/number.service';
 import {TravelAndAccommodationCostsBudgetTable} from '../../../../../project-application/model/travel-and-accommodation-costs-budget-table';
 
@@ -74,13 +73,13 @@ export class TravelAndAccommodationCostsBudgetTableComponent implements OnInit, 
 
   addNewItem(): void {
     this.items.push(this.formBuilder.group({
-      id: Tables.getNextId(this.items.controls),
-      description: this.formBuilder.control(this.multiLanguageInputService.multiLanguageFormFieldDefaultValue()),
-      unitType: this.formBuilder.control(this.multiLanguageInputService.multiLanguageFormFieldDefaultValue()),
-      numberOfUnits: this.formBuilder.control(1, [Validators.max(this.constants.MAX_VALUE), Validators.min(this.constants.MIN_VALUE)]),
-      pricePerUnit: this.formBuilder.control(0, [Validators.max(this.constants.MAX_VALUE), Validators.min(this.constants.MIN_VALUE)]),
-      rowSum: this.formBuilder.control(0, [Validators.max(this.constants.MAX_VALUE), Validators.min(this.constants.MIN_VALUE)]),
-      new: true
+      id: null,
+      description: [this.multiLanguageInputService.multiLanguageFormFieldDefaultValue()],
+      unitType: [this.multiLanguageInputService.multiLanguageFormFieldDefaultValue()],
+      numberOfUnits: [1, [Validators.max(this.constants.MAX_VALUE), Validators.min(this.constants.MIN_VALUE)]],
+      pricePerUnit: [0, [Validators.max(this.constants.MAX_VALUE), Validators.min(this.constants.MIN_VALUE)]],
+      rowSum: [0, [Validators.max(this.constants.MAX_VALUE), Validators.min(this.constants.MIN_VALUE)]],
+      new: [true]
     }));
     this.formService.setDirty(true);
   }
@@ -90,11 +89,12 @@ export class TravelAndAccommodationCostsBudgetTableComponent implements OnInit, 
     this.items.clear();
     travelTable.entries.forEach(item => {
       this.items.push(this.formBuilder.group({
-        description: this.formBuilder.control(item.description),
-        unitType: this.formBuilder.control(item.unitType),
-        numberOfUnits: this.formBuilder.control(item.numberOfUnits, [Validators.max(this.constants.MAX_VALUE), Validators.min(this.constants.MIN_VALUE)]),
-        pricePerUnit: this.formBuilder.control(item.pricePerUnit, [Validators.max(this.constants.MAX_VALUE), Validators.min(this.constants.MIN_VALUE)]),
-        rowSum: this.formBuilder.control(item.rowSum, [Validators.max(this.constants.MAX_VALUE), Validators.min(this.constants.MIN_VALUE)]),
+        id: [item.id],
+        description: [item.description],
+        unitType: [item.unitType],
+        numberOfUnits: [item.numberOfUnits, [Validators.max(this.constants.MAX_VALUE), Validators.min(this.constants.MIN_VALUE)]],
+        pricePerUnit: [item.pricePerUnit, [Validators.max(this.constants.MAX_VALUE), Validators.min(this.constants.MIN_VALUE)]],
+        rowSum: [item.rowSum, [Validators.max(this.constants.MAX_VALUE), Validators.min(this.constants.MIN_VALUE)]],
       }));
     });
   }

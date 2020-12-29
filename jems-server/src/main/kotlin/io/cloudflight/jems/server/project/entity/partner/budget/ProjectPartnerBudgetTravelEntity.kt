@@ -14,15 +14,26 @@ data class ProjectPartnerBudgetTravelEntity(
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    override val id: Long = 0,
-
-    @field:NotNull
-    override val partnerId: Long,
+     val id: Long = 0,
 
     @Embedded
-    override val budget: Budget,
+    @field:NotNull
+     val baseProperties: BaseBudgetProperties,
 
-    @OneToMany(cascade = [CascadeType.ALL], orphanRemoval = true, mappedBy = "translationId.budgetId")
+    @OneToMany(cascade = [CascadeType.ALL], orphanRemoval = true, mappedBy = "budgetTranslation.budget")
     val translatedValues: MutableSet<ProjectPartnerBudgetTravelTransl> = mutableSetOf()
 
-): CommonBudget
+){
+
+    override fun equals(other: Any?) =
+        if (this === other) true
+        else
+            other !== null &&
+                other is ProjectPartnerBudgetStaffCostEntity &&
+                id > 0 &&
+                id == other.id
+
+    override fun hashCode() =
+        if (id > 0) id.toInt() else super.hashCode()
+
+}

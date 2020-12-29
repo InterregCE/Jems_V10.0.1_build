@@ -117,8 +117,8 @@ export class MultiLanguageFormFieldComponent implements OnInit, ControlValueAcce
     languages.forEach(language => {
         this.inputs.push(
           this.formBuilder.group({
-            translation: this.formBuilder.control('', Validators.maxLength(this.maxLength)),
-            language: this.formBuilder.control(language)
+            translation: ['', Validators.maxLength(this.maxLength)],
+            language: [language]
           }));
       }
     );

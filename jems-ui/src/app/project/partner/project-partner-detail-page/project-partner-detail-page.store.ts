@@ -5,14 +5,12 @@ import {CallFlatRateSetting} from '../../project-application/model/call-flat-rat
 import {filter, map, share, shareReplay, startWith, switchMap, tap, withLatestFrom} from 'rxjs/operators';
 import {ProjectStore} from '../../project-application/containers/project-application-detail/services/project-store.service';
 import {
-  InputBudget,
-  InputGeneralBudget,
-  InputStaffCostBudget,
-  InputTravelBudget,
+  BaseBudgetEntryDTO,
+  BudgetGeneralCostEntryDTO,
+  BudgetTravelAndAccommodationCostEntryDTO,
   OutputCallWithDates,
   ProjectPartnerBudgetOptionsDto,
-  ProjectPartnerBudgetService,
-  WorkPackageInvestmentDTO
+  ProjectPartnerBudgetService
 } from '@cat/api';
 import {ProjectPartnerStore} from '../../project-application/containers/project-application-form-page/services/project-partner-store.service';
 import {Log} from '../../../common/utils/log';
@@ -24,6 +22,8 @@ import {StaffCostsBudgetTableEntry} from '../../project-application/model/staff-
 import {GeneralBudgetTableEntry} from '../../project-application/model/general-budget-table-entry';
 import {TravelAndAccommodationCostsBudgetTable} from '../../project-application/model/travel-and-accommodation-costs-budget-table';
 import {TravelAndAccommodationCostsBudgetTableEntry} from '../../project-application/model/travel-and-accommodation-costs-budget-table-entry';
+import {ProjectWorkPackagePageStore} from '../../work-package/work-package-detail-page/project-work-package-page-store.service';
+import { BudgetStaffCostEntryDTO } from 'build/generated-sources/openapi/model/budgetStaffCostEntryDTO';
 
 @Injectable()
 export class ProjectPartnerDetailPageStore {
@@ -33,17 +33,17 @@ export class ProjectPartnerDetailPageStore {
   budgets$: Observable<PartnerBudgetTables>;
   totalBudget$: Observable<number>;
   isProjectEditable$: Observable<boolean>;
-  investments$: Observable<WorkPackageInvestmentDTO[]>;
+  investmentIds$: Observable<number[]>;
 
   private updateBudgetOptionsEvent$ = new Subject();
   private updateBudgetEvent$ = new Subject();
 
   constructor(private projectStore: ProjectStore,
               private partnerStore: ProjectPartnerStore,
+              private projectWorkPackagePageStore: ProjectWorkPackagePageStore,
               private projectPartnerBudgetService: ProjectPartnerBudgetService
   ) {
-    // todo this should be updated after #MP2-920
-    this.investments$ = of([]).pipe(shareReplay(1));
+    this.investmentIds$ = this.projectWorkPackagePageStore.workPackageInvestmentIdsOfProject$.pipe(shareReplay(1));
     this.budgets$ = this.budgets();
     this.budgetOptions$ = this.budgetOptions();
     this.callFlatRatesSettings$ = this.callFlatRateSettings();
@@ -68,11 +68,11 @@ export class ProjectPartnerDetailPageStore {
     return of(budgets).pipe(withLatestFrom(this.partnerStore.partner$)).pipe(
       switchMap(([newBudgets, partner]: any) =>
         forkJoin({
-          staff: this.projectPartnerBudgetService.updateBudgetStaffCosts(partner.id, this.toInputStaffCostBudgetArray(newBudgets.staffCosts)),
-          travel: this.projectPartnerBudgetService.updateBudgetTravel(partner.id, this.toInputTravelBudgetArray(newBudgets.travelCosts)),
-          external: this.projectPartnerBudgetService.updateBudgetExternal(partner.id, this.toInputGeneralBudgetArray(newBudgets.externalCosts)),
-          equipment: this.projectPartnerBudgetService.updateBudgetEquipment(partner.id, this.toInputGeneralBudgetArray(newBudgets.equipmentCosts)),
-          infrastructure: this.projectPartnerBudgetService.updateBudgetInfrastructure(partner.id, this.toInputGeneralBudgetArray(newBudgets.infrastructureCosts)),
+          staff: this.projectPartnerBudgetService.updateBudgetStaffCosts(partner.id, this.toBudgetStaffCostEntryDTOArray(newBudgets.staffCosts)),
+          travel: this.projectPartnerBudgetService.updateBudgetTravel(partner.id, this.toBudgetTravelAndAccommodationCostEntryDTOArray(newBudgets.travelCosts)),
+          external: this.projectPartnerBudgetService.updateBudgetExternal(partner.id, this.toGeneralBudgetEntryDTOArray(newBudgets.externalCosts)),
+          equipment: this.projectPartnerBudgetService.updateBudgetEquipment(partner.id, this.toGeneralBudgetEntryDTOArray(newBudgets.equipmentCosts)),
+          infrastructure: this.projectPartnerBudgetService.updateBudgetInfrastructure(partner.id, this.toGeneralBudgetEntryDTOArray(newBudgets.infrastructureCosts)),
         })),
       tap(() => this.updateBudgetEvent$.next(true)),
       share()
@@ -148,56 +148,59 @@ export class ProjectPartnerDetailPageStore {
     );
   }
 
-  private toInputStaffCostBudgetArray(table: StaffCostsBudgetTable): InputStaffCostBudget[] {
+  private toBudgetStaffCostEntryDTOArray(table: StaffCostsBudgetTable): BudgetStaffCostEntryDTO[] {
     return table.entries.map(entry => ({
-      id: (entry.new ? null : entry.id) as any,
+      id: entry.id as any,
       description: entry.description as any,
-      typeOfStaff: entry.typeOfStaff,
+      type: entry.type,
       unitType: entry.unitType,
-      comments: entry.comments,
+      comment: entry.comment,
       numberOfUnits: entry.numberOfUnits as any,
       pricePerUnit: entry.pricePerUnit as any,
       rowSum: entry.rowSum
-    } as InputStaffCostBudget));
+    } as BudgetStaffCostEntryDTO));
   }
 
-  private toInputTravelBudgetArray(table: StaffCostsBudgetTable): InputTravelBudget[] {
+  private toBudgetTravelAndAccommodationCostEntryDTOArray(table: StaffCostsBudgetTable): BudgetTravelAndAccommodationCostEntryDTO[] {
     return table.entries.map(entry => ({
-      id: (entry.new ? null : entry.id) as any,
+      id: entry.id as any,
       description: entry.description as any,
-      unitType: entry.unitType,
+      unitType: entry.unitType as any,
       numberOfUnits: entry.numberOfUnits as any,
       pricePerUnit: entry.pricePerUnit as any,
       rowSum: entry.rowSum
-    } as InputTravelBudget));
+    } as BudgetTravelAndAccommodationCostEntryDTO));
   }
 
-  private toInputGeneralBudgetArray(table: GeneralBudgetTable): InputGeneralBudget[] {
+  private toGeneralBudgetEntryDTOArray(table: GeneralBudgetTable): BudgetGeneralCostEntryDTO[] {
     return table.entries.map(entry => ({
-      id: (entry.new ? null : entry.id) as any,
+      id: entry.id as any,
       description: entry.description as any,
+      unitType: entry.unitType as any,
+      awardProcedures: entry.awardProcedures as any,
+      investmentId: entry.investmentId as any,
       numberOfUnits: entry.numberOfUnits as any,
       pricePerUnit: entry.pricePerUnit as any,
       rowSum: entry.rowSum
-    } as InputGeneralBudget));
+    } as BudgetGeneralCostEntryDTO));
   }
 
-  private toStaffCostsTable(rawEntries: InputBudget[]): StaffCostsBudgetTable {
+  private toStaffCostsTable(rawEntries: BudgetStaffCostEntryDTO[]): StaffCostsBudgetTable {
     const entries = rawEntries.map(entry => new StaffCostsBudgetTableEntry({...entry}));
     return new StaffCostsBudgetTable(this.calculateTableTotal(rawEntries), entries);
   }
 
-  private toTravelAndAccommodationCostsTable(rawEntries: InputBudget[]): TravelAndAccommodationCostsBudgetTable {
+  private toTravelAndAccommodationCostsTable(rawEntries: BudgetTravelAndAccommodationCostEntryDTO[]): TravelAndAccommodationCostsBudgetTable {
     const entries = rawEntries.map(entry => new TravelAndAccommodationCostsBudgetTableEntry({...entry}));
     return new TravelAndAccommodationCostsBudgetTable(this.calculateTableTotal(rawEntries), entries);
   }
 
-  private toBudgetTable(rawEntries: InputBudget[]): GeneralBudgetTable {
+  private toBudgetTable(rawEntries: BudgetGeneralCostEntryDTO[]): GeneralBudgetTable {
     const entries = rawEntries.map(entry => new GeneralBudgetTableEntry({...entry}));
     return new GeneralBudgetTable(this.calculateTableTotal(rawEntries), entries);
   }
 
-  private calculateTableTotal(rawEntries: InputBudget[]): number {
+  private calculateTableTotal(rawEntries: BaseBudgetEntryDTO[]): number {
     return NumberService.truncateNumber(NumberService.sum(rawEntries.map(entry => entry.rowSum || 0)));
   }
 }

@@ -18,13 +18,13 @@
                         <mat-footer-cell *matFooterCellDef></mat-footer-cell>
                     </ng-container>
 
-                    <ng-container matColumnDef="typeOfStaff">
+                    <ng-container matColumnDef="type">
                         <mat-header-cell
                                 *matHeaderCellDef> {{'project.partner.budget.table.staff.type.of.staff' | translate}} </mat-header-cell>
                         <mat-cell *matCellDef="let control;  let i = index" [formGroupName]="i">
                             <mat-form-field [appFormFieldWidth]="'small'">
                                 <mat-select name="indicatorCode"
-                                            [formControlName]="constants.FORM_CONTROL_NAMES.typeOfStaff"
+                                            [formControlName]="constants.FORM_CONTROL_NAMES.type"
                                             [disableOptionCentering]="true">
                                     <mat-option [value]="staffCostType.NONE"></mat-option>
                                     <mat-option
@@ -37,13 +37,13 @@
                         <mat-footer-cell *matFooterCellDef></mat-footer-cell>
                     </ng-container>
 
-                    <ng-container matColumnDef="comments">
+                    <ng-container matColumnDef="comment">
                         <mat-header-cell
-                                *matHeaderCellDef> {{'project.partner.budget.table.staff.comments' | translate}} </mat-header-cell>
+                                *matHeaderCellDef> {{'project.partner.budget.table.staff.comment' | translate}} </mat-header-cell>
                         <mat-cell *matCellDef="let control;  let i = index" [formGroupName]="i">
                             <app-multi-language-form-field
                                     [maxLength]="constants.MAX_STAFF_COMMENT_TEXT_LENGTH"
-                                    [formControlName]="constants.FORM_CONTROL_NAMES.comments">
+                                    [formControlName]="constants.FORM_CONTROL_NAMES.comment">
                             </app-multi-language-form-field>
                         </mat-cell>
                         <mat-footer-cell *matFooterCellDef></mat-footer-cell>

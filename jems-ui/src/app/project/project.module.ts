@@ -85,6 +85,11 @@ import {ProjectPeriodsSelectComponent} from './components/project-periods-select
 import {ProjectWorkPackageInvestmentsTabComponent} from './work-package/work-package-detail-page/project-work-package-investments-tab/project-work-package-investments-tab.component';
 import {ProjectWorkPackageInvestmentDetailPageComponent} from './work-package/work-package-detail-page/project-work-package-investments-tab/project-work-package-investment-detail-page/project-work-package-investment-detail-page.component';
 import {WorkPackageInvestmentDeleteActionCellComponent} from './work-package/work-package-detail-page/project-work-package-investments-tab/work-package-investment-delete-action-cell/work-package-investment-delete-action-cell.component';
+import {StaffCostsBudgetTableComponent} from './partner/project-partner-detail-page/project-partner-budget-tab/project-partner-budget/staff-costs-budget-table/staff-costs-budget-table.component';
+import {GeneralBudgetFlatRateTableComponent} from './partner/project-partner-detail-page/project-partner-budget-tab/project-partner-budget/general-budget-flat-rate-table/general-budget-flat-rate-table.component';
+import {GeneralBudgetTableComponent} from './partner/project-partner-detail-page/project-partner-budget-tab/project-partner-budget/general-budget-table/general-budget-table.component';
+import {ProjectWorkPackagePageStore} from './work-package/work-package-detail-page/project-work-package-page-store.service';
+import {ProjectPartnerDetailPageStore} from './partner/project-partner-detail-page/project-partner-detail-page.store';
 
 @NgModule({
   declarations: [
@@ -149,19 +154,18 @@ import {WorkPackageInvestmentDeleteActionCellComponent} from './work-package/wor
     ProjectPartnerBudgetComponent,
     ProjectPartnerCoFinancingComponent,
     ProjectPartnerBudgetOptionsComponent,
-    GeneralBudgetTableComponent,
     ProjectApplicationPartnerIdentityComponent,
     ProjectApplicationFormAssociatedOrganizationEditComponent,
     ProjectApplicationFormIdentificationPageComponent,
     ProjectApplicationFormAssociatedOrgPageComponent,
-    GeneralBudgetFlatRateTableComponent,
     ProjectApplicationFormAddressComponent,
     BudgetPageComponent,
     ProjectApplicationFormWorkPackageOutputComponent,
     ProjectApplicationFormWorkPackageOutputsComponent,
     WorkPackageOutputTableComponent,
-    StaffCostsBudgetTableComponent,
     GeneralBudgetFlatRateTableComponent,
+    GeneralBudgetTableComponent,
+    StaffCostsBudgetTableComponent,
     TravelAndAccommodationCostsBudgetTableComponent,
     ProjectWorkPackageInvestmentsTabComponent,
     ProjectWorkPackageInvestmentDetailPageComponent,
@@ -182,7 +186,9 @@ import {WorkPackageInvestmentDeleteActionCellComponent} from './work-package/wor
     ProjectApplicationFormStore,
     ProjectAcronymResolver,
     ProjectPartnerStore,
-    ProjectAssociatedOrganizationStore
+    ProjectAssociatedOrganizationStore,
+    ProjectWorkPackagePageStore,
+    ProjectPartnerDetailPageStore
   ]
 })
 export class ProjectModule {

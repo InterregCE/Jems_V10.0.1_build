@@ -37,8 +37,8 @@
                                             [formControlName]="constants.FORM_CONTROL_NAMES.investmentId"
                                             [disableOptionCentering]="true" panelClass="material-select-panel">
                                     <mat-option></mat-option>
-                                    <mat-option *ngFor="let investment of investments" [value]="investment.id">
-                                        {{investment.title}}
+                                    <mat-option *ngFor="let investmentId of investmentIds" [value]="investmentId">
+                                        {{investmentId}}
                                     </mat-option>
                                 </mat-select>
                             </mat-form-field>

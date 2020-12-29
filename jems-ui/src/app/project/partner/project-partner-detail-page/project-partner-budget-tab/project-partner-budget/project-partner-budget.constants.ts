@@ -18,11 +18,11 @@ export class ProjectPartnerBudgetConstants {
     numberOfUnits: 'numberOfUnits',
     pricePerUnit: 'pricePerUnit',
     description: 'description',
-    typeOfStaff: 'typeOfStaff',
+    type: 'type',
     unitType: 'unitType',
     awardProcedures: 'awardProcedures',
     investmentId: 'investmentId',
-    comments: 'comments',
+    comment: 'comment',
     rowSum: 'rowSum',
     total: 'total'
   };

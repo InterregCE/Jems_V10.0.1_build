@@ -8,9 +8,9 @@ export class StaffCostsBudgetTableEntry {
   pricePerUnit?: number;
   rowSum?: number;
   new?: boolean;
-  typeOfStaff?: string;
+  type?: string;
   unitType?: string;
-  comments?: string;
+  comment?: InputTranslation[] = [];
 
   constructor(data: Partial<StaffCostsBudgetTableEntry>) {
     this.id = data.id;
@@ -19,9 +19,9 @@ export class StaffCostsBudgetTableEntry {
     this.pricePerUnit = data.pricePerUnit;
     this.new = data.new;
     this.rowSum = data.rowSum;
-    this.typeOfStaff = data.typeOfStaff;
+    this.type = data.type;
     this.unitType = data.unitType;
-    this.comments = data.comments;
+    this.comment = data.comment;
   }
 
 }

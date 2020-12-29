@@ -17,7 +17,6 @@ import {PartnerBudgetTables} from '../../../../project-application/model/partner
 import {GeneralBudgetTable} from '../../../../project-application/model/general-budget-table';
 import {TravelAndAccommodationCostsBudgetTable} from '../../../../project-application/model/travel-and-accommodation-costs-budget-table';
 import {TravelAndAccommodationCostsBudgetTableEntry} from '../../../../project-application/model/travel-and-accommodation-costs-budget-table-entry';
-import { WorkPackageInvestmentDTO } from '@cat/api';
 
 @UntilDestroy()
 @Component({
@@ -34,7 +33,7 @@ export class ProjectPartnerBudgetComponent implements OnInit {
 
   data$: Observable<{
     budgetTables: PartnerBudgetTables,
-    investments: WorkPackageInvestmentDTO[],
+    investments: number[],
     staffCostsFlatRateTotal: number,
     officeAndAdministrationFlatRateTotal: number,
     travelAndAccommodationFlatRateTotal: number,
@@ -82,7 +81,7 @@ export class ProjectPartnerBudgetComponent implements OnInit {
     this.data$ = combineLatest([
       this.pageStore.budgets$,
       this.pageStore.budgetOptions$,
-      this.pageStore.investments$,
+      this.pageStore.investmentIds$,
       this.pageStore.isProjectEditable$.pipe(startWith(false)),
       this.staffCostsFlatRateTotal$,
       this.officeAndAdministrationFlatRateTotal$,
@@ -139,7 +138,9 @@ export class ProjectPartnerBudgetComponent implements OnInit {
   }
 
   private calculateOtherCostsFlatRateTotal(staffCostsFlatRateBasedOnDirectCost: number | null, otherCostsFlatRateBasedOnStaffCost: number, staffTotal: number): number {
-    if (staffCostsFlatRateBasedOnDirectCost != null) {return 0; }
+    if (staffCostsFlatRateBasedOnDirectCost != null) {
+      return 0;
+    }
     return NumberService.truncateNumber(NumberService.product([
       NumberService.divide(otherCostsFlatRateBasedOnStaffCost, 100),
       staffTotal
@@ -167,23 +168,23 @@ export class ProjectPartnerBudgetComponent implements OnInit {
     return this.formBuilder.group({
       staff: this.formBuilder.group({
         items: this.formBuilder.array([], [Validators.maxLength(this.constants.MAX_NUMBER_OF_ITEMS)]),
-        total: this.formBuilder.control(0, [Validators.max(this.constants.MAX_VALUE), Validators.min(this.constants.MIN_VALUE)])
+        total: [0, [Validators.max(this.constants.MAX_VALUE), Validators.min(this.constants.MIN_VALUE)]]
       }),
       travel: this.formBuilder.group({
         items: this.formBuilder.array([], [Validators.maxLength(this.constants.MAX_NUMBER_OF_ITEMS)]),
-        total: this.formBuilder.control(0, [Validators.max(this.constants.MAX_VALUE), Validators.min(this.constants.MIN_VALUE)])
+        total: [0, [Validators.max(this.constants.MAX_VALUE), Validators.min(this.constants.MIN_VALUE)]]
       }),
       infrastructure: this.formBuilder.group({
         items: this.formBuilder.array([], [Validators.maxLength(this.constants.MAX_NUMBER_OF_ITEMS)]),
-        total: this.formBuilder.control(0, [Validators.max(this.constants.MAX_VALUE), Validators.min(this.constants.MIN_VALUE)])
+        total: [0, [Validators.max(this.constants.MAX_VALUE), Validators.min(this.constants.MIN_VALUE)]]
       }),
       equipment: this.formBuilder.group({
         items: this.formBuilder.array([], [Validators.maxLength(this.constants.MAX_NUMBER_OF_ITEMS)]),
-        total: this.formBuilder.control(0, [Validators.max(this.constants.MAX_VALUE), Validators.min(this.constants.MIN_VALUE)])
+        total: [0, [Validators.max(this.constants.MAX_VALUE), Validators.min(this.constants.MIN_VALUE)]]
       }),
       external: this.formBuilder.group({
         items: this.formBuilder.array([], [Validators.maxLength(this.constants.MAX_NUMBER_OF_ITEMS)]),
-        total: this.formBuilder.control(0, [Validators.max(this.constants.MAX_VALUE), Validators.min(this.constants.MIN_VALUE)])
+        total: [0, [Validators.max(this.constants.MAX_VALUE), Validators.min(this.constants.MIN_VALUE)]]
       })
     });
   }

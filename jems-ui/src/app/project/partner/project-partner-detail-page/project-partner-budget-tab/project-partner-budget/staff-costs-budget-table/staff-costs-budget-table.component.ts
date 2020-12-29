@@ -13,7 +13,6 @@ import {ProjectPartnerBudgetConstants} from '../project-partner-budget.constants
 import {Observable} from 'rxjs';
 import {map, startWith} from 'rxjs/operators';
 import {NumberService} from '../../../../../../common/services/number.service';
-import {Tables} from '../../../../../../common/utils/tables';
 import {FormService} from '@common/components/section/form/form.service';
 import {MultiLanguageInputService} from '../../../../../../common/services/multi-language-input.service';
 import {StaffCostsBudgetTable} from '../../../../../project-application/model/staff-costs-budget-table';
@@ -35,7 +34,7 @@ export class StaffCostsBudgetTableComponent implements OnInit, OnChanges {
   staffCostType = StaffCostTypeEnum;
   staffCostUnitType = StaffCostUnitTypeEnum;
 
-  columnsToDisplay = ['description', 'typeOfStaff', 'comments', 'unitType', 'numberOfUnits', 'pricePerUnit', 'total', 'action'];
+  columnsToDisplay = ['description', 'type', 'comment', 'unitType', 'numberOfUnits', 'pricePerUnit', 'total', 'action'];
 
   @Input()
   editable: boolean;
@@ -80,15 +79,15 @@ export class StaffCostsBudgetTableComponent implements OnInit, OnChanges {
 
   addNewItem(): void {
     this.items.push(this.formBuilder.group({
-      id: Tables.getNextId(this.items.controls),
-      description: this.formBuilder.control(this.multiLanguageInputService.multiLanguageFormFieldDefaultValue()),
-      typeOfStaff: this.formBuilder.control(StaffCostTypeEnum.NONE),
-      unitType: this.formBuilder.control(StaffCostUnitTypeEnum.NONE),
-      comments: this.formBuilder.control(this.multiLanguageInputService.multiLanguageFormFieldDefaultValue()),
-      numberOfUnits: this.formBuilder.control(1, [Validators.max(this.constants.MAX_VALUE), Validators.min(this.constants.MIN_VALUE)]),
-      pricePerUnit: this.formBuilder.control(0, [Validators.max(this.constants.MAX_VALUE), Validators.min(this.constants.MIN_VALUE)]),
-      rowSum: this.formBuilder.control(0, [Validators.max(this.constants.MAX_VALUE), Validators.min(this.constants.MIN_VALUE)]),
-      new: true
+      id: null,
+      description: [this.multiLanguageInputService.multiLanguageFormFieldDefaultValue()],
+      type: [StaffCostTypeEnum.NONE],
+      unitType: [StaffCostUnitTypeEnum.NONE],
+      comment: [this.multiLanguageInputService.multiLanguageFormFieldDefaultValue()],
+      numberOfUnits: [1, [Validators.max(this.constants.MAX_VALUE), Validators.min(this.constants.MIN_VALUE)]],
+      pricePerUnit: [0, [Validators.max(this.constants.MAX_VALUE), Validators.min(this.constants.MIN_VALUE)]],
+      rowSum: [0, [Validators.max(this.constants.MAX_VALUE), Validators.min(this.constants.MIN_VALUE)]],
+      new: [true]
     }));
     this.formService.setDirty(true);
   }
@@ -98,13 +97,14 @@ export class StaffCostsBudgetTableComponent implements OnInit, OnChanges {
     this.items.clear();
     staffTable.entries.forEach(item => {
       this.items.push(this.formBuilder.group({
-        description: this.formBuilder.control(item.description),
-        typeOfStaff: this.formBuilder.control(item.typeOfStaff),
-        unitType: this.formBuilder.control(item.unitType),
-        comments: this.formBuilder.control(item.description),
-        numberOfUnits: this.formBuilder.control(item.numberOfUnits, [Validators.max(this.constants.MAX_VALUE), Validators.min(this.constants.MIN_VALUE)]),
-        pricePerUnit: this.formBuilder.control(item.pricePerUnit, [Validators.max(this.constants.MAX_VALUE), Validators.min(this.constants.MIN_VALUE)]),
-        rowSum: this.formBuilder.control(item.rowSum, [Validators.max(this.constants.MAX_VALUE), Validators.min(this.constants.MIN_VALUE)]),
+        id: [item.id],
+        description: [item.description],
+        type: [item.type],
+        unitType: [item.unitType],
+        comment: [item.comment],
+        numberOfUnits: [item.numberOfUnits, [Validators.max(this.constants.MAX_VALUE), Validators.min(this.constants.MIN_VALUE)]],
+        pricePerUnit: [item.pricePerUnit, [Validators.max(this.constants.MAX_VALUE), Validators.min(this.constants.MIN_VALUE)]],
+        rowSum: [item.rowSum, [Validators.max(this.constants.MAX_VALUE), Validators.min(this.constants.MIN_VALUE)]],
       }));
     });
   }

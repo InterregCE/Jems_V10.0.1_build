@@ -4,18 +4,18 @@ import {
   InputWorkPackageUpdate,
   OutputProject,
   OutputWorkPackage,
-  WorkPackageInvestmentDTO,
-  WorkPackageService,
-  WorkPackageInvestmentService,
   ProgrammeIndicatorService,
   WorkPackageActivityService,
+  WorkPackageInvestmentDTO,
+  WorkPackageInvestmentService,
+  WorkPackageService,
 } from '@cat/api';
-import {merge, Observable, ReplaySubject, Subject} from 'rxjs';
-import {shareReplay, switchMap, tap} from 'rxjs/operators';
+import {combineLatest, merge, Observable, ReplaySubject, Subject} from 'rxjs';
+import {shareReplay, startWith, switchMap, tap} from 'rxjs/operators';
 import {Log} from '../../../common/utils/log';
 import {ProjectApplicationFormSidenavService} from '../../project-application/containers/project-application-form-page/services/project-application-form-sidenav.service';
 import {ProjectStore} from '../../project-application/containers/project-application-detail/services/project-store.service';
-import {WorkPackageActivityDTO} from 'build/generated-sources/openapi/model/workPackageActivityDTO';
+import { WorkPackageActivityDTO } from '@cat/api';
 
 @Injectable()
 export class ProjectWorkPackagePageStore {
@@ -26,6 +26,7 @@ export class ProjectWorkPackagePageStore {
   totalAmountChanged$ = new Subject<boolean>();
   workPackage$ = new ReplaySubject<OutputWorkPackage | any>(1);
   workPackageInvestment$ = new ReplaySubject<WorkPackageInvestmentDTO | any>(1);
+  workPackageInvestmentIdsOfProject$: Observable<number[]>;
   isProjectEditable$: Observable<boolean>;
   project$: Observable<OutputProject>;
   activities$: Observable<WorkPackageActivityDTO[]>;
@@ -41,6 +42,11 @@ export class ProjectWorkPackagePageStore {
     this.isProjectEditable$ = this.projectStore.projectEditable$;
     this.project$ = this.projectStore.getProject();
     this.activities$ = this.workPackageActivities();
+
+    this.workPackageInvestmentIdsOfProject$ = combineLatest([this.project$, this.workPackageInvestment$.pipe(startWith(null))]).pipe(
+      switchMap(([project]) => this.workPackageInvestmentService.getWorkPackageInvestmentIdsOfProject(project.id)),
+      shareReplay(1)
+    );
   }
 
   init(workPackageId: number | string | null, projectId: number): void {

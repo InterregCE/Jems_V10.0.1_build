@@ -62,6 +62,10 @@ class WorkPackagePersistenceProvider(
     override fun getWorkPackageInvestments(workPackageId: Long, pageable: Pageable) =
         workPackageInvestmentRepository.findAllByWorkPackageId(workPackageId, pageable).toWorkPackageInvestmentPage()
 
+    @Transactional(readOnly = true)
+    override fun getWorkPackageInvestmentIdsOfProject(projectId: Long)=
+        workPackageInvestmentRepository.findInvestmentIds(projectId)
+
     @Transactional
     override fun addWorkPackageInvestment(workPackageId: Long, workPackageInvestment: WorkPackageInvestment) =
         getWorkPackageOrThrow(workPackageId).let {

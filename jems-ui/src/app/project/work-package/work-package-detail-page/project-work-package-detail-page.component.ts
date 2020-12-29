@@ -10,7 +10,6 @@ import {ProjectWorkPackagePageStore} from './project-work-package-page-store.ser
   selector: 'app-project-work-package-detail-page',
   templateUrl: './project-work-package-detail-page.component.html',
   styleUrls: ['./project-work-package-detail-page.component.scss'],
-  providers: [ProjectWorkPackagePageStore],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class ProjectWorkPackageDetailPageComponent extends BaseComponent implements OnDestroy {

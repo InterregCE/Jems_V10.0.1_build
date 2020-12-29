@@ -5,7 +5,7 @@ import io.cloudflight.jems.server.audit.service.AuditService
 import io.cloudflight.jems.server.project.service.budget.ProjectBudgetPersistence
 import io.cloudflight.jems.server.project.service.budget.model.PartnerBudget
 import io.cloudflight.jems.server.project.service.budget.model.ProjectPartnerCost
-import io.cloudflight.jems.server.project.service.budget.model.ProjectPartnerBudgetOptions
+import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerBudgetOptions
 import io.cloudflight.jems.server.project.service.partner.budget.ProjectPartnerBudgetOptionsPersistence
 import io.cloudflight.jems.server.project.service.partner.model.ProjectPartner
 import io.mockk.MockKAnnotations
@@ -37,10 +37,10 @@ class GetProjectBudgetInteractorTest {
         )
 
         private val partner1Options = ProjectPartnerBudgetOptions(
-            partnerId = partner1.id!!,
-            officeAndAdministrationOnStaffCostsFlatRate = 10,
-            staffCostsFlatRate = 10,
-            travelAndAccommodationOnStaffCostsFlatRate = 15,
+                partnerId = partner1.id!!,
+                officeAndAdministrationOnStaffCostsFlatRate = 10,
+                staffCostsFlatRate = 10,
+                travelAndAccommodationOnStaffCostsFlatRate = 15,
         )
 
         private fun budget(partnerId: Long, sum: Double) = ProjectPartnerCost(
@@ -54,7 +54,7 @@ class GetProjectBudgetInteractorTest {
     lateinit var persistence: ProjectBudgetPersistence
 
     @MockK
-    lateinit var optionPersistence: ProjectPartnerBudgetOptionsPersistence
+    lateinit var optionOptionsPersistence: ProjectPartnerBudgetOptionsPersistence
 
     @RelaxedMockK
     lateinit var auditService: AuditService
@@ -64,13 +64,13 @@ class GetProjectBudgetInteractorTest {
     @BeforeEach
     fun setup() {
         MockKAnnotations.init(this)
-        getProjectBudgetInteractor = GetProjectBudget(persistence, optionPersistence)
+        getProjectBudgetInteractor = GetProjectBudget(persistence, optionOptionsPersistence)
     }
 
     @Test
     fun getBudget() {
         every { persistence.getPartnersForProjectId(1) } returns listOf(partner1, partner2)
-        every { optionPersistence.getBudgetOptions(setOf(P1_ID, P2_ID)) } returns listOf(partner1Options)
+        every { optionOptionsPersistence.getBudgetOptions(setOf(P1_ID, P2_ID)) } returns listOf(partner1Options)
         every { persistence.getStaffCosts(setOf(P1_ID, P2_ID)) } returns listOf(budget(P1_ID, 50.0))
         every { persistence.getTravelCosts(setOf(P1_ID, P2_ID)) } returns listOf(budget(P1_ID, 800.0), budget(P2_ID, 100.0))
         every { persistence.getExternalCosts(setOf(P1_ID, P2_ID)) } returns listOf(budget(P2_ID, 1000.0))

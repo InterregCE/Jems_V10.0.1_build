@@ -35,6 +35,9 @@ interface ProjectWorkPackageInvestmentApi {
     @GetMapping("/forWorkPackage/{workPackageId}")
     fun getWorkPackageInvestments(@PathVariable workPackageId: Long, pageable: Pageable): Page<WorkPackageInvestmentDTO>
 
+    @GetMapping("/forProject/{projectId}")
+    fun getWorkPackageInvestmentIdsOfProject(@PathVariable projectId: Long): List<Long>
+
     @ApiOperation("Adds Investment to the work package")
     @PostMapping("/forWorkPackage/{workPackageId}", consumes = [MediaType.APPLICATION_JSON_VALUE])
     fun addWorkPackageInvestment(

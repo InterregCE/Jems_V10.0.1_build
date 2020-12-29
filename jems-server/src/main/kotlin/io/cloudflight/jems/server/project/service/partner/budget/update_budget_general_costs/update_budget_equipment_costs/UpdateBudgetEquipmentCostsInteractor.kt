@@ -1,0 +1,5 @@
+package io.cloudflight.jems.server.project.service.partner.budget.update_budget_general_costs.update_budget_equipment_costs
+
+import io.cloudflight.jems.server.project.service.partner.budget.update_budget_general_costs.UpdateBudgetGeneralCostsInteractor
+
+interface UpdateBudgetEquipmentCostsInteractor : UpdateBudgetGeneralCostsInteractor
