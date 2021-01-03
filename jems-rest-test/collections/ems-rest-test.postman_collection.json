@@ -1,6 +1,6 @@
 {
 	"info": {
-		"_postman_id": "37313c96-4f29-4409-b1db-e02bc0707e08",
+		"_postman_id": "ae902f9d-b432-44b9-b823-a4e85875adea",
 		"name": "ems-rest-test",
 		"description": "Check EMS application for common use-cases",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
@@ -8012,7 +8012,7 @@
 								"header": [],
 								"body": {
 									"mode": "raw",
-									"raw": "{\r\n    \"organizationRelevance\": \"This project is definitely relevant enough to be founded.\",\r\n    \"organizationRole\": \"test latin àâçéèêëîïôùûüÿ\",\r\n    \"organizationExperience\": \"We have 16 millions years of experience in this particular area.\"\r\n}\r\n",
+									"raw": "{\r\n    \"organizationRelevance\": [\r\n            {\r\n                \"language\": \"{{inputLanguage}}\",\r\n                \"translation\": \"This project is definitely relevant enough to be founded.\"\r\n            }\r\n        ],\r\n    \"organizationRole\": [\r\n            {\r\n                \"language\": \"{{inputLanguage}}\",\r\n                \"translation\": \"test latin àâçéèêëîïôùûüÿ\"\r\n            }\r\n        ],\r\n    \"organizationExperience\": [\r\n            {\r\n                \"language\": \"{{inputLanguage}}\",\r\n                \"translation\": \"We have 16 millions years of experience in this particular area.\"\r\n            }\r\n        ]\r\n}\r\n",
 									"options": {
 										"raw": {
 											"language": "json"
