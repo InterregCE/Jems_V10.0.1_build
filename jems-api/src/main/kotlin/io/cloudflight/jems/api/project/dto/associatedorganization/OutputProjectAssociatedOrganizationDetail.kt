@@ -1,6 +1,7 @@
 package io.cloudflight.jems.api.project.dto.associatedorganization
 
 import io.cloudflight.jems.api.project.dto.InputOrganization
+import io.cloudflight.jems.api.project.dto.InputTranslation
 import io.cloudflight.jems.api.project.dto.partner.OutputProjectPartner
 import io.cloudflight.jems.api.project.dto.partner.OutputProjectPartnerContact
 
@@ -13,6 +14,6 @@ data class OutputProjectAssociatedOrganizationDetail (
     val sortNumber: Int? = null,
     val address: OutputProjectAssociatedOrganizationAddress? = null,
     val contacts: List<OutputProjectPartnerContact> = emptyList(),
-    val roleDescription: String? = null
+    val roleDescription: Set<InputTranslation> = emptySet()
 
 ): InputOrganization

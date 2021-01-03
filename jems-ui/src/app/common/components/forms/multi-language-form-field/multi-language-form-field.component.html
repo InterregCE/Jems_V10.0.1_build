@@ -1,21 +1,32 @@
-<ng-container [formGroup]="multiLanguageFormGroup">
+<ng-container *ngIf="multiLanguageFormGroup" [formGroup]="multiLanguageFormGroup">
     <ng-container formArrayName="inputs">
-        <ng-container *ngFor="let formGroup of inputs.controls; let i=index;" [formGroupName]="i">
+        <ng-container *ngFor="let formGroup of inputs?.controls; let i=index;" [formGroupName]="i">
             <ng-container
-                    *ngIf="isInputVisible(multiLanguageService.currentLanguage$ |async , formGroup.get('language').value)">
+                    *ngIf="isInputVisible(multiLanguageService.currentLanguage$ |async , formGroup.get('language')?.value)">
                 <mat-form-field class="w-100">
                     <mat-label *ngIf="label">{{label | translate}}</mat-label>
-                    <input #inputText formControlName="translation" matInput>
+                    <input *ngIf="type==='input'" formControlName="translation" matInput>
+
+                    <textarea *ngIf="type==='textarea'" formControlName="translation" matInput
+                              [cdkTextareaAutosize]
+                              [cdkAutosizeMinRows]="minRows"
+                              [cdkAutosizeMaxRows]="maxRows">
+                    </textarea>
+                    <app-context-info *ngIf="contextInfoText"
+                                      [infoText]="contextInfoText">
+                    </app-context-info>
                     <mat-hint>
-                        {{inputText.value.length}} / {{maxLength}} {{'common.textarea.hint' | translate}}
+                        {{formGroup.get('translation')?.value?.length}}
+                        / {{maxLength}} {{'common.textarea.hint' | translate}}
                     </mat-hint>
                     <mat-error>
                         <app-form-field-errors
                                 [errors]="formGroup.get('translation').errors"
                                 [messages]="constants.FORM_ERRORS.translation">
                         </app-form-field-errors>
-                        <div *ngIf="inputText.value.length > maxLength" class="inline-block">
-                            ({{inputText.value.length}}/{{maxLength}} {{'common.textarea.hint' | translate}})
+                        <div *ngIf="formGroup.get('translation')?.value?.length > maxLength" class="inline-block">
+                            ({{formGroup.get('translation')?.value?.length}}
+                            /{{maxLength}} {{'common.textarea.hint' | translate}})
                         </div>
                     </mat-error>
                 </mat-form-field>

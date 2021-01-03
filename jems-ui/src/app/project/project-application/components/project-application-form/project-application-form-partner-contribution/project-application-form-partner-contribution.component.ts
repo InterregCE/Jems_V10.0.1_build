@@ -1,9 +1,10 @@
 import {ChangeDetectionStrategy, Component, Input, OnChanges, OnInit, SimpleChanges} from '@angular/core';
-import {FormBuilder, FormGroup, Validators} from '@angular/forms';
-import {OutputProjectPartnerDetail} from '@cat/api';
+import {FormBuilder, FormGroup} from '@angular/forms';
+import {OutputProjectPartnerDetail, ProjectPartnerMotivationDTO} from '@cat/api';
 import {FormService} from '@common/components/section/form/form.service';
 import {ProjectPartnerStore} from '../../../containers/project-application-form-page/services/project-partner-store.service';
 import {catchError, take, tap} from 'rxjs/operators';
+import {MultiLanguageInput} from '@common/components/forms/multi-language/multi-language-input';
 
 @Component({
   selector: 'app-project-application-form-partner-contribution',
@@ -18,21 +19,11 @@ export class ProjectApplicationFormPartnerContributionComponent implements OnIni
   @Input()
   editable: boolean;
 
-  partnerContributionForm: FormGroup = this.formBuilder.group({
-    organizationRelevance: ['', Validators.maxLength(2000)],
-    organizationRole: ['', Validators.maxLength(2000)],
-    organizationExperience: ['', Validators.maxLength(2000)],
-  });
+  organizationRelevance: MultiLanguageInput;
+  organizationRole: MultiLanguageInput;
+  organizationExperience: MultiLanguageInput;
 
-  organizationRelevanceErrors = {
-    maxlength: 'partner.organization.relevance.textarea.size.too.long'
-  };
-  organizationRoleErrors = {
-    maxlength: 'partner.organization.role.textarea.size.too.long'
-  };
-  organizationExperienceErrors = {
-    maxlength: 'partner.organization.experience.textarea.size.too.long'
-  };
+  partnerContributionForm: FormGroup;
 
   constructor(private formBuilder: FormBuilder,
               private partnerStore: ProjectPartnerStore,
@@ -40,18 +31,22 @@ export class ProjectApplicationFormPartnerContributionComponent implements OnIni
   }
 
   ngOnInit(): void {
-    this.formService.init(this.partnerContributionForm);
-    this.resetForm();
+    this.initForm();
   }
 
   ngOnChanges(changes: SimpleChanges): void {
     if (changes.partner) {
-      this.resetForm();
+      this.initForm();
     }
   }
 
   onSubmit(): void {
-    this.partnerStore.updatePartnerMotivation(this.partnerContributionForm.value)
+    const partnerContribution = {
+      organizationRelevance: this.controls.organizationRelevance.value,
+      organizationRole: this.controls.organizationRole.value,
+      organizationExperience: this.controls.organizationExperience.value,
+    } as ProjectPartnerMotivationDTO;
+    this.partnerStore.updatePartnerMotivation(partnerContribution)
       .pipe(
         take(1),
         tap(() => this.formService.setSuccess('project.partner.motivation.save.success')),
@@ -59,12 +54,17 @@ export class ProjectApplicationFormPartnerContributionComponent implements OnIni
       ).subscribe();
   }
 
-  resetForm(): void {
-    if (!this.partner?.motivation) {
-      this.partnerContributionForm.reset();
-      return;
-    }
-    this.partnerContributionForm.patchValue(this.partner?.motivation);
+  initForm(): void {
+    this.partnerContributionForm = this.formBuilder.group({
+      organizationRelevance: [this.partner?.motivation?.organizationRelevance || []],
+      organizationRole: [this.partner?.motivation?.organizationRole || []],
+      organizationExperience: [this.partner?.motivation?.organizationExperience || []],
+    });
+    this.formService.init(this.partnerContributionForm);
+  }
+
+  get controls(): any {
+    return this.partnerContributionForm.controls;
   }
 
 }

@@ -1,4 +1,4 @@
-import {NgModule, Optional, SkipSelf} from '@angular/core';
+import {APP_INITIALIZER, NgModule, Optional, SkipSelf} from '@angular/core';
 import {TopBarService} from '@common/components/top-bar/top-bar.service';
 import {DatePipe, KeyValuePipe} from '@angular/common';
 import {MatSortHeader} from '@angular/material/sort';
@@ -10,8 +10,13 @@ import {ThemeService} from '../theme/theme.service';
 import {HTTP_INTERCEPTORS} from '@angular/common/http';
 import {AuthenticationInterceptor} from '../security/authentication.interceptor';
 import {HttpErrorInterceptor} from './interceptors/http-error.interceptor';
-import {BASE_PATH} from '@cat/api';
+import {BASE_PATH, OutputProgrammeLanguage} from '@cat/api';
 import {MaterialConfigModule} from './material/material-config-module';
+import {AppInitializerService} from './services/app-initializer.service';
+
+export function loadLanguages(appInitializerService: AppInitializerService): () => Promise<OutputProgrammeLanguage[]> {
+  return () => appInitializerService.loadLanguages();
+}
 
 @NgModule({
   imports: [
@@ -39,6 +44,12 @@ import {MaterialConfigModule} from './material/material-config-module';
     {
       provide: HTTP_INTERCEPTORS,
       useClass: HttpErrorInterceptor,
+      multi: true
+    },
+    {
+      provide: APP_INITIALIZER,
+      useFactory: loadLanguages,
+      deps: [AppInitializerService],
       multi: true
     }
   ]

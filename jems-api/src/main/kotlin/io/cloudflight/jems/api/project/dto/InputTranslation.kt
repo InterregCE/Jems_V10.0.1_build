@@ -8,5 +8,5 @@ import javax.validation.constraints.Size
  */
 data class InputTranslation(
     val language: SystemLanguage,
-    val translation: String? = null,
+    val translation: String? = null
 )

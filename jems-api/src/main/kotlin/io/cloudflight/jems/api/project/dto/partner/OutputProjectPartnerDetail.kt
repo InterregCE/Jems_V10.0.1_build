@@ -1,5 +1,6 @@
 package io.cloudflight.jems.api.project.dto.partner
 
+import io.cloudflight.jems.api.project.dto.InputTranslation
 import io.cloudflight.jems.api.project.dto.ProjectPartnerMotivationDTO
 import io.cloudflight.jems.api.project.dto.description.ProjectTargetGroup
 
@@ -10,7 +11,7 @@ data class OutputProjectPartnerDetail (
     val sortNumber: Int? = null,
     val nameInOriginalLanguage: String?,
     val nameInEnglish: String?,
-    val department: String?,
+    val department: Set<InputTranslation> = emptySet(),
     val partnerType: ProjectTargetGroup?,
     val legalStatusId: Long?,
     val vat: String?,

@@ -14,6 +14,7 @@ import io.cloudflight.jems.server.programme.repository.ProgrammeLegalStatusRepos
 import io.cloudflight.jems.server.project.entity.partner.ProjectPartnerEntity
 import io.cloudflight.jems.server.project.repository.partner.ProjectPartnerRepository
 import io.cloudflight.jems.server.project.repository.ProjectRepository
+import io.cloudflight.jems.server.project.repository.partner.combineTranslatedValues
 import io.cloudflight.jems.server.project.repository.partner.toEntity
 import io.cloudflight.jems.server.project.repository.partner.toOutputProjectPartner
 import io.cloudflight.jems.server.project.repository.partner.toOutputProjectPartnerDetail
@@ -81,6 +82,11 @@ class ProjectPartnerServiceImpl(
             validateLeadPartnerChange(projectId, projectPartner.oldLeadPartnerId)
 
         val partnerCreated = projectPartnerRepo.save(projectPartner.toEntity(project = project, legalStatus = legalStatus))
+        // save translations for which the just created Id is needed
+        projectPartnerRepo.save(
+            partnerCreated.copy(
+                translatedValues = projectPartner.combineTranslatedValues(partnerCreated.id))
+        )
         updateSortByRole(projectId)
         // entity is attached, number will have been updated
         return partnerCreated.toOutputProjectPartnerDetail()
@@ -137,7 +143,7 @@ class ProjectPartnerServiceImpl(
                 role = projectPartner.role!!,
                 nameInOriginalLanguage = projectPartner.nameInOriginalLanguage,
                 nameInEnglish = projectPartner.nameInEnglish,
-                department = projectPartner.department,
+                translatedValues = projectPartner.combineTranslatedValues(oldProjectPartner.id),
                 partnerType = projectPartner.partnerType,
                 legalStatus = legalStatus,
                 vat = projectPartner.vat,

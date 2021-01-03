@@ -12,9 +12,9 @@ import {FormBuilder, FormGroup, Validators} from '@angular/forms';
 import {
   InputProjectPartnerCreate,
   InputProjectPartnerUpdate,
+  OutputProgrammeLegalStatus,
   OutputProjectPartner,
-  OutputProjectPartnerDetail,
-  OutputProgrammeLegalStatus
+  OutputProjectPartnerDetail
 } from '@cat/api';
 import {catchError, take, takeUntil, tap} from 'rxjs/operators';
 import {I18nValidationError} from '@common/validation/i18n-validation-error';
@@ -57,14 +57,14 @@ export class ProjectApplicationFormPartnerEditComponent extends BaseComponent im
     fakeRole: [], // needed for the fake role field in view mode
     id: [],
     sortNumber: [],
-    abbreviation: ['', Validators.compose([
+    abbreviation: ['', [
       Validators.maxLength(15),
-      Validators.required])
+      Validators.required]
     ],
     role: ['', Validators.required],
     nameInOriginalLanguage: ['', Validators.maxLength(100)],
     nameInEnglish: ['', Validators.maxLength(100)],
-    department: ['', Validators.maxLength(250)],
+    department: [],
     partnerType: [''],
     legalStatusId: ['', Validators.required],
     vat: ['', Validators.maxLength(50)],
@@ -83,9 +83,6 @@ export class ProjectApplicationFormPartnerEditComponent extends BaseComponent im
   };
   nameInEnglishErrors = {
     maxlength: 'project.organization.english.name.size.too.long'
-  };
-  departmentErrors = {
-    maxlength: 'project.organization.department.size.too.long'
   };
   legalStatusErrors = {
     required: 'project.partner.legal.status.should.not.be.empty'
@@ -136,21 +133,51 @@ export class ProjectApplicationFormPartnerEditComponent extends BaseComponent im
   }
 
   onSubmit(controls: any, oldPartnerId?: number): void {
-    const partner = this.partnerForm.value;
-    partner.oldLeadPartnerId = oldPartnerId;
-    if (!controls.partnerType.value) {
-      partner.partnerType = null;
-    }
-
     if (!controls.id?.value) {
-      this.partnerStore.createPartner(partner)
+      const partnerToCreate = {
+        abbreviation: this.controls.abbreviation.value,
+        role: this.controls.role.value,
+        oldLeadPartnerId: oldPartnerId,
+        nameInOriginalLanguage: this.controls.nameInOriginalLanguage.value,
+        nameInEnglish: this.controls.nameInEnglish.value,
+        department: this.controls.department.value,
+        partnerType: this.controls.partnerType.value,
+        legalStatusId: this.controls.legalStatusId.value,
+        vat: this.controls.vat.value,
+        vatRecovery: this.controls.vatRecovery.value,
+      };
+
+      partnerToCreate.oldLeadPartnerId = oldPartnerId;
+      if (!controls.partnerType.value) {
+        partnerToCreate.partnerType = null;
+      }
+
+      this.partnerStore.createPartner(partnerToCreate as InputProjectPartnerCreate)
         .pipe(
           take(1),
           tap(created => this.redirectToPartnerDetail(created)),
           catchError(error => this.handleError(error))
         ).subscribe();
     } else {
-      this.partnerStore.savePartner(partner)
+      const partnerToUpdate = {
+        id: this.partner.id,
+        abbreviation: this.controls.abbreviation.value,
+        role: this.controls.role.value,
+        oldLeadPartnerId: oldPartnerId,
+        nameInOriginalLanguage: this.controls.nameInOriginalLanguage.value,
+        nameInEnglish: this.controls.nameInEnglish.value,
+        department: this.controls.department.value,
+        partnerType: this.controls.partnerType.value,
+        legalStatusId: this.controls.legalStatusId.value,
+        vat: this.controls.vat.value,
+        vatRecovery: this.controls.vatRecovery.value,
+      };
+
+      partnerToUpdate.oldLeadPartnerId = oldPartnerId;
+      if (!controls.partnerType.value) {
+        partnerToUpdate.partnerType = null;
+      }
+      this.partnerStore.savePartner(partnerToUpdate as InputProjectPartnerUpdate)
         .pipe(
           take(1),
           tap(() => this.formService.setSuccess('project.partner.save.success')),
@@ -188,7 +215,16 @@ export class ProjectApplicationFormPartnerEditComponent extends BaseComponent im
   private resetForm(): void {
     this.formService.setEditable(this.editable);
     this.formService.setCreation(!this.partner?.id);
-    this.partnerForm.patchValue(this.partner);
+    this.controls.id.setValue(this.partner?.id);
+    this.controls.abbreviation.setValue(this.partner?.abbreviation);
+    this.controls.role.setValue(this.partner?.role);
+    this.controls.nameInOriginalLanguage.setValue(this.partner?.nameInOriginalLanguage);
+    this.controls.nameInEnglish.setValue(this.partner?.nameInEnglish);
+    this.controls.department.setValue(this.partner?.department);
+    this.controls.partnerType.setValue(this.partner?.partnerType);
+    this.controls.legalStatusId.setValue(this.partner?.legalStatusId);
+    this.controls.vat.setValue(this.partner?.vat);
+    this.controls.vatRecovery.setValue(this.partner?.vatRecovery);
   }
 
   private handleLeadAlreadyExisting(controls: any, error: I18nValidationError): void {
@@ -223,4 +259,5 @@ export class ProjectApplicationFormPartnerEditComponent extends BaseComponent im
       'app', 'project', 'detail', this.projectId, 'applicationFormPartner', 'detail', partner.id
     ]);
   }
+
 }

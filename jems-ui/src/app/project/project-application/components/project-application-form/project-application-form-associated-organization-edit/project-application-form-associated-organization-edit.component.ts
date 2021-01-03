@@ -10,13 +10,13 @@ import {
 } from '@angular/core';
 import {AbstractControl, FormBuilder, FormGroup, Validators} from '@angular/forms';
 import {
+  InputProjectAssociatedOrganizationAddress,
   InputProjectAssociatedOrganizationCreate,
   InputProjectAssociatedOrganizationUpdate,
   InputProjectContact,
-  InputProjectAssociatedOrganizationAddress,
+  OutputNuts,
   OutputProjectAssociatedOrganizationDetail,
   OutputProjectPartner,
-  OutputNuts,
 } from '@cat/api';
 import {Permission} from '../../../../../security/permissions/permission';
 import {BaseComponent} from '@common/components/base-component';
@@ -89,7 +89,7 @@ export class ProjectApplicationFormAssociatedOrganizationEditComponent extends B
       Validators.maxLength(25),
       Validators.pattern('^[0-9+()/-]*$')
     ])],
-    roleDescription: ['', Validators.maxLength(2000)],
+    roleDescription: [],
   });
 
   nameInOriginalLanguageErrors = {
@@ -128,9 +128,6 @@ export class ProjectApplicationFormAssociatedOrganizationEditComponent extends B
   contactTelephoneErrors = {
     maxlength: 'project.contact.telephone.size.too.long',
     pattern: 'project.contact.telephone.wrong.format'
-  };
-  roleDescriptionErrors = {
-    maxlength: 'project.organization.roleDescription.size.too.long',
   };
 
   constructor(private formBuilder: FormBuilder,

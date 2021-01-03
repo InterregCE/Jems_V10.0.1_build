@@ -150,16 +150,12 @@
             </mat-error>
         </mat-form-field>
 
-        <mat-form-field class="field">
-            <mat-label>{{'project.organization.roleDescription' | translate}}</mat-label>
-            <textarea name="roleDescription" formControlName="roleDescription" matInput
-                      placeholder="{{'project.organization.roleDescription' | translate}}" rows="5"></textarea>
-            <mat-error>
-                <app-form-field-errors
-                        [errors]="associatedOrganizationForm?.controls?.roleDescription?.errors"
-                        [messages]="roleDescriptionErrors">
-                </app-form-field-errors>
-            </mat-error>
-        </mat-form-field>
+        <app-multi-language>
+            <app-multi-language-form-field [label]="'project.organization.roleDescription'"
+                                           type="textarea"
+                                           formControlName="roleDescription"
+                                           [maxLength]="2000">
+            </app-multi-language-form-field>
+        </app-multi-language>
     </form>
 </app-form>
