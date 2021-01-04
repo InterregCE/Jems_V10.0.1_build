@@ -26,6 +26,7 @@ import {ProjectApplicationFormSidenavService} from '../../../project-application
 export class ProjectWorkPackageInvestmentsTabComponent implements OnInit {
   projectId = this.activatedRoute.snapshot.params.projectId;
   workPackageId = this.activatedRoute.snapshot.params.workPackageId;
+  workPackageNumber: number;
 
   tableConfiguration: TableConfiguration;
   Permission = Permission;
@@ -38,6 +39,9 @@ export class ProjectWorkPackageInvestmentsTabComponent implements OnInit {
   @ViewChild('deletionCell', {static: true})
   deletionCell: TemplateRef<any>;
 
+  @ViewChild('numberingCell', {static: true})
+  numberingCell: TemplateRef<any>;
+
   newPageSize$ = new Subject<number>();
   newPageIndex$ = new Subject<number>();
   newSort$ = new Subject<Partial<MatSort>>();
@@ -47,13 +51,14 @@ export class ProjectWorkPackageInvestmentsTabComponent implements OnInit {
       this.newPageIndex$.pipe(startWith(Tables.DEFAULT_INITIAL_PAGE_INDEX)),
       this.newPageSize$.pipe(startWith(Tables.DEFAULT_INITIAL_PAGE_SIZE)),
       this.newSort$.pipe(
-        startWith(Tables.DEFAULT_INITIAL_SORT),
+        startWith({active: 'id', direction: 'asc'}),
         map(sort => sort?.direction ? sort : Tables.DEFAULT_INITIAL_SORT),
         map(sort => `${sort.active},${sort.direction}`)
       ),
       this.workPackageStore.workPackage$
         .pipe(
           tap(workPackage => this.workPackageId = workPackage.id),
+          tap(workPackage => this.workPackageNumber = workPackage.number),
           tap(() => this.setRouterLink())
         )
     ])
@@ -78,11 +83,8 @@ export class ProjectWorkPackageInvestmentsTabComponent implements OnInit {
       columns: [
         {
           displayedColumn: 'project.application.form.workpackage.investments.number',
-          elementProperty: 'investmentNumber',
-          alternativeValueCondition: (element: any) => {
-            return element === null;
-          },
-          alternativeValue: 'project.application.form.partner.number.info.auto',
+          columnType: ColumnType.CustomComponent,
+          customCellTemplate: this.numberingCell,
           sortProperty: 'investmentNumber'
         },
         {

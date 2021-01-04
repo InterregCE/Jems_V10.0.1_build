@@ -10,7 +10,7 @@
         <mat-form-field class="field">
             <mat-label>{{'project.application.form.workpackage.investment.number' | translate}}</mat-label>
             <input name="number" formControlName="number" matInput
-                   placeholder="{{'project.application.form.workpackage.investment.number' | translate}}" readonly>
+                   placeholder="{{'project.application.form.workpackage.investment.number' | translate}}">
         </mat-form-field>
 
         <mat-form-field class="field">
@@ -30,43 +30,47 @@
             <h6>{{'project.application.form.workpackage.investment.justification' | translate}}</h6>
         </div>
 
+        <mat-label>{{'project.application.form.workpackage.investment.justification.explanation' | translate}}</mat-label>
         <app-expandable-textarea
-                class="field-wide"
+                class="field-wide pb-3"
                 [control]="workPackageInvestmentForm?.controls?.justificationExplanation"
                 [errors]="workPackageInvestmentForm?.controls?.justificationExplanation?.errors"
                 [messages]="titleErrors"
                 [characterLimit]="2000"
-                [label]="'project.application.form.workpackage.investment.justification.explanation'"
+                [label]="'common.textarea.enter.text'"
                 [disabled]="(projectStore.projectEditable$ | async) === false">
         </app-expandable-textarea>
 
+        <mat-label>{{'project.application.form.workpackage.investment.justification.transactional.relevance' | translate}}</mat-label>
         <app-expandable-textarea
-                class="field-wide"
+                class="field-wide pb-3"
                 [control]="workPackageInvestmentForm?.controls?.justificationTransactionalRelevance"
                 [errors]="workPackageInvestmentForm?.controls?.justificationTransactionalRelevance?.errors"
                 [messages]="titleErrors"
                 [characterLimit]="2000"
-                [label]="'project.application.form.workpackage.investment.justification.transactional.relevance'"
+                [label]="'common.textarea.enter.text'"
                 [disabled]="(projectStore.projectEditable$ | async) === false">
         </app-expandable-textarea>
 
+        <mat-label>{{'project.application.form.workpackage.investment.justification.benefits' | translate}}</mat-label>
         <app-expandable-textarea
-                class="field-wide"
+                class="field-wide pb-3"
                 [control]="workPackageInvestmentForm?.controls?.justificationBenefits"
                 [errors]="workPackageInvestmentForm?.controls?.justificationBenefits?.errors"
                 [messages]="titleErrors"
                 [characterLimit]="2000"
-                [label]="'project.application.form.workpackage.investment.justification.benefits'"
+                [label]="'common.textarea.enter.text'"
                 [disabled]="(projectStore.projectEditable$ | async) === false">
         </app-expandable-textarea>
 
+        <mat-label>{{'project.application.form.workpackage.investment.justification.pilot' | translate}}</mat-label>
         <app-expandable-textarea
-                class="field-wide"
+                class="field-wide pb-3"
                 [control]="workPackageInvestmentForm?.controls?.justificationPilot"
                 [errors]="workPackageInvestmentForm?.controls?.justificationPilot?.errors"
                 [messages]="titleErrors"
                 [characterLimit]="2000"
-                [label]="'project.application.form.workpackage.investment.justification.pilot'"
+                [label]="'common.textarea.enter.text'"
                 [disabled]="(projectStore.projectEditable$ | async) === false">
         </app-expandable-textarea>
 
@@ -75,23 +79,24 @@
         </div>
         <span>{{'project.application.form.workpackage.investment.location.description' | translate}}</span>
 
-        <!--        <app-project-application-form-address-->
-        <!--                *ngIf="nuts$ | async as nuts"-->
-        <!--                [addressForm]="workPackageInvestmentForm.controls.address"-->
-        <!--                [nuts]="nuts">-->
-        <!--        </app-project-application-form-address>-->
+        <app-project-application-form-address
+                *ngIf="nuts$ | async as nuts"
+                [addressForm]="workPackageInvestmentForm.controls.address"
+                [nuts]="nuts">
+        </app-project-application-form-address>
 
         <div class="subsection">
             <h6>{{'project.application.form.workpackage.investment.risk' | translate}}</h6>
         </div>
 
+        <mat-label>{{'project.application.form.workpackage.investment.risk.description' | translate}}</mat-label>
         <app-expandable-textarea
-                class="field-wide"
+                class="field-wide pb-3"
                 [control]="workPackageInvestmentForm?.controls?.risk"
                 [errors]="workPackageInvestmentForm?.controls?.risk?.errors"
                 [messages]="titleErrors"
                 [characterLimit]="2000"
-                [label]="'project.application.form.workpackage.investment.risk.description'"
+                [label]="'common.textarea.enter.text'"
                 [disabled]="(projectStore.projectEditable$ | async) === false">
         </app-expandable-textarea>
 
@@ -99,13 +104,14 @@
             <h6>{{'project.application.form.workpackage.investment.documentation' | translate}}</h6>
         </div>
 
+        <mat-label>{{'project.application.form.workpackage.investment.documentation.description' | translate}}</mat-label>
         <app-expandable-textarea
-                class="field-wide"
+                class="field-wide pb-3"
                 [control]="workPackageInvestmentForm?.controls?.documentation"
                 [errors]="workPackageInvestmentForm?.controls?.documentation?.errors"
                 [messages]="titleErrors"
                 [characterLimit]="2000"
-                [label]="'project.application.form.workpackage.investment.documentation.description'"
+                [label]="'common.textarea.enter.text'"
                 [disabled]="(projectStore.projectEditable$ | async) === false">
         </app-expandable-textarea>
 
@@ -113,33 +119,36 @@
             <h6>{{'project.application.form.workpackage.investment.ownership' | translate}}</h6>
         </div>
 
+        <mat-label>{{'project.application.form.workpackage.investment.ownership.site.location' | translate}}</mat-label>
         <app-expandable-textarea
-                class="field-wide"
+                class="field-wide pb-3"
                 [control]="workPackageInvestmentForm?.controls?.ownershipSiteLocation"
                 [errors]="workPackageInvestmentForm?.controls?.ownershipSiteLocation?.errors"
                 [messages]="titleErrors"
                 [characterLimit]="500"
-                [label]="'project.application.form.workpackage.investment.ownership.site.location'"
+                [label]="'common.textarea.enter.text'"
                 [disabled]="(projectStore.projectEditable$ | async) === false">
         </app-expandable-textarea>
 
+        <mat-label>{{'project.application.form.workpackage.investment.ownership.retain' | translate}}</mat-label>
         <app-expandable-textarea
-                class="field-wide"
+                class="field-wide pb-3"
                 [control]="workPackageInvestmentForm?.controls?.ownershipRetain"
                 [errors]="workPackageInvestmentForm?.controls?.ownershipRetain?.errors"
                 [messages]="titleErrors"
                 [characterLimit]="500"
-                [label]="'project.application.form.workpackage.investment.ownership.retain'"
+                [label]="'common.textarea.enter.text'"
                 [disabled]="(projectStore.projectEditable$ | async) === false">
         </app-expandable-textarea>
 
+        <mat-label>{{'project.application.form.workpackage.investment.ownership.maintenance' | translate}}</mat-label>
         <app-expandable-textarea
                 class="field-wide"
                 [control]="workPackageInvestmentForm?.controls?.ownershipMaintenance"
                 [errors]="workPackageInvestmentForm?.controls?.ownershipMaintenance?.errors"
                 [messages]="titleErrors"
                 [characterLimit]="2000"
-                [label]="'project.application.form.workpackage.investment.ownership.maintenance'"
+                [label]="'common.textarea.enter.text'"
                 [disabled]="(projectStore.projectEditable$ | async) === false">
         </app-expandable-textarea>
     </form>

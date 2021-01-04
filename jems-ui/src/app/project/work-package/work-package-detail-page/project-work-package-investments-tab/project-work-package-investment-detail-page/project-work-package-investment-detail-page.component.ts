@@ -70,7 +70,6 @@ export class ProjectWorkPackageInvestmentDetailPageComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.workPackageInvestmentForm.controls.number.disable();
     if (this.workPackageInvestmentId) {
       this.workPackageStore.getWorkPackageInvestmentById(this.projectId, this.workPackageInvestmentId)
         .pipe(
@@ -84,6 +83,7 @@ export class ProjectWorkPackageInvestmentDetailPageComponent implements OnInit {
     this.formService.init(this.workPackageInvestmentForm);
     this.formService.setEditable(true);
     this.formService.setCreation(!this.workPackageInvestmentId);
+    this.workPackageInvestmentForm.controls.number.disable();
   }
 
   onCancel(): void {
@@ -150,6 +150,13 @@ export class ProjectWorkPackageInvestmentDetailPageComponent implements OnInit {
     this.workPackageInvestmentForm.controls.justificationTransactionalRelevance.setValue(this.investment?.justificationTransactionalRelevance);
     this.workPackageInvestmentForm.controls.justificationBenefits.setValue(this.investment?.justificationBenefits);
     this.workPackageInvestmentForm.controls.justificationPilot.setValue(this.investment?.justificationPilot);
+    this.address.country.setValue(this.investment?.address.country);
+    this.address.region2.setValue(this.investment?.address.nutsRegion2);
+    this.address.region3.setValue(this.investment?.address.nutsRegion3);
+    this.address.street.setValue(this.investment?.address.street);
+    this.address.houseNumber.setValue(this.investment?.address.houseNumber);
+    this.address.postalCode.setValue(this.investment?.address.postalCode);
+    this.address.city.setValue(this.investment?.address.city);
     this.workPackageInvestmentForm.controls.risk.setValue(this.investment?.risk);
     this.workPackageInvestmentForm.controls.documentation.setValue(this.investment?.documentation);
     this.workPackageInvestmentForm.controls.ownershipSiteLocation.setValue(this.investment?.ownershipSiteLocation);
