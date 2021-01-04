@@ -4,7 +4,6 @@ import io.cloudflight.jems.server.project.authorization.CanUpdateProjectWorkPack
 import io.cloudflight.jems.server.project.service.workpackage.WorkPackagePersistence
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
-import java.util.*
 
 @Service
 class DeleteWorkPackageInvestment(
@@ -13,6 +12,6 @@ class DeleteWorkPackageInvestment(
 
     @CanUpdateProjectWorkPackageInvestment
     @Transactional
-    override fun deleteWorkPackageInvestment(investmentId: Long) =
-        workPackagePersistence.deleteWorkPackageInvestment(investmentId)
+    override fun deleteWorkPackageInvestment(workPackageId: Long, investmentId: Long) =
+        workPackagePersistence.deleteWorkPackageInvestment(workPackageId, investmentId)
 }

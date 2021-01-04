@@ -11,10 +11,6 @@
     </button>
     </span>
 
-    <p class="spaced-elements" *ngIf="!workPackageInvestmentsPage?.content.length">
-        {{'project.application.form.workpackage.investment.list.empty' | translate}}
-    </p>
-
     <app-table *ngIf="workPackageInvestmentsPage.content.length"
                [configuration]="tableConfiguration"
                [rows]="workPackageInvestmentsPage.content"

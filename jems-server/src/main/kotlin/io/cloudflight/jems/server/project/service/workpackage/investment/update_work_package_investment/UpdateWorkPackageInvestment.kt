@@ -13,6 +13,6 @@ class UpdateWorkPackageInvestment(
 
     @PreAuthorize("@projectWorkPackageAuthorization.canUpdateProjectWorkPackageInvestment(#workPackageInvestment.id)")
     @Transactional
-    override fun updateWorkPackageInvestment(workPackageInvestment: WorkPackageInvestment) =
-        workPackagePersistence.updateWorkPackageInvestment(workPackageInvestment)
+    override fun updateWorkPackageInvestment(workPackageId: Long, workPackageInvestment: WorkPackageInvestment) =
+        workPackagePersistence.updateWorkPackageInvestment(workPackageId, workPackageInvestment)
 }

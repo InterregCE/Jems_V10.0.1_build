@@ -6,7 +6,6 @@ import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
 import io.mockk.verify
 import org.junit.jupiter.api.Test
-import java.util.*
 
 internal class DeleteWorkPackageInvestmentTest : UnitTestWorkPackageInvestmentBase() {
 
@@ -16,11 +15,11 @@ internal class DeleteWorkPackageInvestmentTest : UnitTestWorkPackageInvestmentBa
     @Test
     fun `should delete the workPackageInvestment from the specified workPackage without any exception`() {
         val expectedWorkPackageInvestmentId: Long = Math.random().toLong()
-        every { persistence.deleteWorkPackageInvestment(expectedWorkPackageInvestmentId) } returns Unit
+        every { persistence.deleteWorkPackageInvestment(workPackageId, expectedWorkPackageInvestmentId) } returns Unit
 
-        deleteWorkPackageInvestment.deleteWorkPackageInvestment(expectedWorkPackageInvestmentId)
+        deleteWorkPackageInvestment.deleteWorkPackageInvestment(workPackageId, expectedWorkPackageInvestmentId)
 
-        verify(exactly = 1) { persistence.deleteWorkPackageInvestment(expectedWorkPackageInvestmentId) }
+        verify(exactly = 1) { persistence.deleteWorkPackageInvestment(workPackageId, expectedWorkPackageInvestmentId) }
         confirmVerified(persistence)
     }
 

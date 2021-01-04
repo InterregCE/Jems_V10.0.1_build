@@ -6,7 +6,6 @@ import io.cloudflight.jems.server.project.service.workpackage.model.WorkPackageO
 import io.cloudflight.jems.server.project.service.workpackage.model.WorkPackageOutputUpdate
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
-import java.util.*
 
 interface WorkPackagePersistence {
 
@@ -15,8 +14,8 @@ interface WorkPackagePersistence {
     fun getWorkPackageInvestment(workPackageInvestmentId: Long): WorkPackageInvestment
     fun getWorkPackageInvestments(workPackageId: Long, pageable: Pageable): Page<WorkPackageInvestment>
     fun addWorkPackageInvestment(workPackageId: Long, workPackageInvestment: WorkPackageInvestment): Long
-    fun updateWorkPackageInvestment(workPackageInvestment: WorkPackageInvestment)
-    fun deleteWorkPackageInvestment(workPackageInvestmentId: Long)
+    fun updateWorkPackageInvestment(workPackageId: Long, workPackageInvestment: WorkPackageInvestment)
+    fun deleteWorkPackageInvestment(workPackageId: Long, workPackageInvestmentId: Long)
 
     fun getWorkPackageActivitiesForWorkPackage(workPackageId: Long): List<WorkPackageActivity>
     fun updateWorkPackageActivities(workPackageId: Long, workPackageActivities: List<WorkPackageActivity>): List<WorkPackageActivity>

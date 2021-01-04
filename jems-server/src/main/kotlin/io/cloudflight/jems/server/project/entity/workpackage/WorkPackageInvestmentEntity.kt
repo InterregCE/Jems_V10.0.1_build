@@ -1,7 +1,6 @@
 package io.cloudflight.jems.server.project.entity.workpackage
 
 import io.cloudflight.jems.server.project.entity.AddressEntity
-import java.util.*
 import javax.persistence.Column
 import javax.persistence.Embedded
 import javax.persistence.Entity
