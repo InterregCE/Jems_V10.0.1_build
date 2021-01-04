@@ -5,45 +5,33 @@
         <h6 class="intro-text">{{'project.partner.motivation.organization.relevance' | translate}}</h6>
 
         <app-multi-language>
-            <app-multi-language-form-field *ngIf="editable"
-                                           type="textarea"
+            <app-multi-language-form-field type="textarea"
                                            [label]="'project.application.form.motivation.form.field'"
                                            formControlName="organizationRelevance"
                                            [maxLength]="2000">
             </app-multi-language-form-field>
         </app-multi-language>
-        <p *ngIf="!editable" class="view-text">
-            <br>{{partnerContributionForm?.controls?.organizationRelevance.value}}
-        </p>
 
         <h6 class="intro-text">
             {{'project.partner.motivation.organization.role' | translate}}
         </h6>
         <app-multi-language>
-            <app-multi-language-form-field *ngIf="editable"
-                                           type="textarea"
+            <app-multi-language-form-field type="textarea"
                                            [label]="'project.application.form.motivation.form.field'"
                                            formControlName="organizationRole"
                                            [maxLength]="2000">
             </app-multi-language-form-field>
         </app-multi-language>
-        <p *ngIf="!editable" class="view-text">
-            <br>{{partnerContributionForm?.controls?.organizationRole.value}}
-        </p>
 
         <h6 class="intro-text">
             {{'project.partner.motivation.organization.experience' | translate}}
         </h6>
         <app-multi-language>
-            <app-multi-language-form-field *ngIf="editable"
-                                           type="textarea"
+            <app-multi-language-form-field type="textarea"
                                            [label]="'project.application.form.motivation.form.field'"
                                            formControlName="organizationExperience"
                                            [maxLength]="2000">
             </app-multi-language-form-field>
         </app-multi-language>
-        <p *ngIf="!editable" class="view-text">
-            <br>{{partnerContributionForm?.controls?.organizationExperience.value}}
-        </p>
     </form>
 </app-form>
