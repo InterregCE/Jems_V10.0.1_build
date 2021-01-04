@@ -27,7 +27,7 @@
                                 [maxLength]="constants.TITLE.maxLength">
                         </app-multi-language-form-field>
 
-                        <div class="w-100">
+                        <div class="w-100 mt-2">
                             <mat-form-field class="w-50" [class.warn-color]="!data.periods.length">
                                 <mat-label>{{'project.work.package.tab.activity.start.period' | translate}}</mat-label>
                                 <mat-select panelClass="material-select-panel" [disabled]="!data.periods.length"
@@ -53,14 +53,14 @@
                                     {{'project.application.form.work.package.output.delivery.period.required' | translate}}
                                 </mat-hint>
                             </mat-form-field>
-                            <mat-error>
+                            <mat-error class="period-error">
                                 <app-form-field-errors
                                         [errors]="activity.errors"
                                         [messages]="constants.PERIODS.errorMessages"></app-form-field-errors>
                             </mat-error>
                         </div>
 
-                        <app-multi-language-form-field
+                        <app-multi-language-form-field class="mt-2"
                                 [label]="'project.work.package.tab.activity.description'"
                                 [formControlName]="constants.DESCRIPTION.name"
                                 [maxLength]="constants.DESCRIPTION.maxLength">
