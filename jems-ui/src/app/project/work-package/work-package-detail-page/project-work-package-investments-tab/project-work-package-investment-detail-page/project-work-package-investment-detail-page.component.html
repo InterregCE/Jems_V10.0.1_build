@@ -76,9 +76,9 @@
         <span>{{'project.application.form.workpackage.investment.location.description' | translate}}</span>
 
         <app-project-application-form-address
-                *ngIf="workPackageInvestmentForm?.controls"
+                *ngIf="nuts$ | async as nuts"
                 [addressForm]="workPackageInvestmentForm.controls.address"
-                [nuts]="nuts$ | async">
+                [nuts]="nuts">
         </app-project-application-form-address>
 
         <div class="subsection">

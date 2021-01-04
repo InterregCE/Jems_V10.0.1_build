@@ -74,12 +74,16 @@ export class ProjectWorkPackageInvestmentDetailPageComponent implements OnInit {
     if (this.workPackageInvestmentId) {
       this.workPackageStore.getWorkPackageInvestmentById(this.projectId, this.workPackageInvestmentId)
         .pipe(
+          take(1),
           tap((investment) => this.investment = investment),
-          tap((investment) => this.workPackageInvestmentNumber = investment.investmentNumber)
-        );
+          tap((investment) => this.workPackageInvestmentNumber = investment.investmentNumber),
+          tap(() => this.resetForm())
+        )
+        .subscribe();
     }
-    this.resetForm();
     this.formService.init(this.workPackageInvestmentForm);
+    this.formService.setEditable(true);
+    this.formService.setCreation(!this.workPackageInvestmentId);
   }
 
   onCancel(): void {
@@ -131,7 +135,7 @@ export class ProjectWorkPackageInvestmentDetailPageComponent implements OnInit {
       this.workPackageStore.updateWorkPackageInvestment(this.workPackageId, this.projectId, workPackageInvestment)
         .pipe(
           take(1),
-          tap(() => this.redirectToWorkPackageDetail(this.workPackageId)),
+          tap(() => this.formService.setSuccess('project.application.form.workpackage.investment.save.success')),
           catchError(error => this.formService.setError(error))
         ).subscribe();
       return;
@@ -140,8 +144,6 @@ export class ProjectWorkPackageInvestmentDetailPageComponent implements OnInit {
   }
 
   private resetForm(): void {
-    this.formService.setEditable(true);
-    this.formService.setCreation(!this.workPackageInvestmentId);
     this.workPackageInvestmentForm.controls.number.setValue(this.investment?.investmentNumber || this.workPackageInvestmentNumber);
     this.workPackageInvestmentForm.controls.title.setValue(this.investment?.title);
     this.workPackageInvestmentForm.controls.justificationExplanation.setValue(this.investment?.justificationExplanation);
