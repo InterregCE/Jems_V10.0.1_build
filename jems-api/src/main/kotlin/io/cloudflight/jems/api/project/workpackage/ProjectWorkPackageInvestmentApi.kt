@@ -43,14 +43,16 @@ interface ProjectWorkPackageInvestmentApi {
     ): Long
 
     @ApiOperation("Update Investment of the work package")
-    @PutMapping(consumes = [MediaType.APPLICATION_JSON_VALUE])
+    @PutMapping("/forWorkPackage/{workPackageId}", consumes = [MediaType.APPLICATION_JSON_VALUE])
     fun updateWorkPackageInvestment(
+        @PathVariable workPackageId: Long,
         @Valid @RequestBody workPackageInvestmentDTO: WorkPackageInvestmentDTO
     )
 
     @ApiOperation("Delete Investment of the work package")
-    @DeleteMapping("/{investmentId}", consumes = [MediaType.APPLICATION_JSON_VALUE])
+    @DeleteMapping("/forWorkPackage/{workPackageId}/{investmentId}")
     fun deleteWorkPackageInvestment(
+        @PathVariable workPackageId: Long,
         @PathVariable investmentId: Long,
     )
 

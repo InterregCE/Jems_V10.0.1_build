@@ -96,18 +96,10 @@ export class ProjectWorkPackagePageStore {
   }
 
   updateWorkPackageInvestment(workPackageId: number, projectId: number, workPackageInvestment: WorkPackageInvestmentDTO): Observable<number> {
-    return this.workPackageInvestmentService.updateWorkPackageInvestment(workPackageInvestment)
+    return this.workPackageInvestmentService.updateWorkPackageInvestment(workPackageId, workPackageInvestment)
       .pipe(
         tap(updated => Log.info('Updated work package investment:', this, updated)),
         tap(updated => this.workPackageInvestment$.next(updated)),
-        tap(() => this.projectApplicationFormSidenavService.refreshPackages(projectId)),
-      );
-  }
-
-  deleteWorkPackageInvestment(workPackageId: number, projectId: number, workPackageInvestmentId: number): Observable<any> {
-    return this.workPackageInvestmentService.deleteWorkPackageInvestment(workPackageInvestmentId)
-      .pipe(
-        tap(deleted => Log.info('Deleted work package investment:', this, deleted)),
         tap(() => this.projectApplicationFormSidenavService.refreshPackages(projectId)),
       );
   }

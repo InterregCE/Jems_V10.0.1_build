@@ -14,6 +14,7 @@ import {ProjectWorkPackagePageStore} from '../project-work-package-page-store.se
 import {ColumnType} from '@common/components/table/model/column-type.enum';
 import {Forms} from '../../../../common/utils/forms';
 import {MatDialog} from '@angular/material/dialog';
+import {ProjectApplicationFormSidenavService} from '../../../project-application/containers/project-application-form-page/services/project-application-form-sidenav.service';
 
 @Component({
   selector: 'app-project-work-package-investments-tab',
@@ -58,14 +59,15 @@ export class ProjectWorkPackageInvestmentsTabComponent implements OnInit {
     ])
       .pipe(
         mergeMap(([pageIndex, pageSize, sort]) =>
-          this.workPackageService.getWorkPackageInvestments(this.workPackageId, pageIndex, pageSize, sort)),
+          this.workPackageInvestmentService.getWorkPackageInvestments(this.workPackageId, pageIndex, pageSize, sort)),
         tap(page => Log.info('Fetched the work package investments:', this, page.content)),
       );
 
   constructor(private activatedRoute: ActivatedRoute,
               public projectStore: ProjectStore,
               public workPackageStore: ProjectWorkPackagePageStore,
-              private workPackageService: WorkPackageInvestmentService,
+              private workPackageInvestmentService: WorkPackageInvestmentService,
+              private projectApplicationFormSidenavService: ProjectApplicationFormSidenavService,
               private dialog: MatDialog) {
   }
 
@@ -107,21 +109,27 @@ export class ProjectWorkPackageInvestmentsTabComponent implements OnInit {
     let message: string;
     let name: string;
     if (workPackageInvestment.title) {
-      message = 'project.application.form.workpackage.table.action.delete.dialog.message';
+      message = 'project.application.form.workpackage.investment.table.action.delete.dialog.message';
       name = workPackageInvestment.title;
     } else {
-      message = 'project.application.form.workpackage.table.action.delete.dialog.message.no.name';
+      message = 'project.application.form.workpackage.investment.table.action.delete.dialog.message.no.name';
       name = ' ';
     }
     Forms.confirmDialog(
       this.dialog,
       'project.application.form.workpackage.table.action.delete.dialog.header',
       message,
-      {name, boldWarningMessage: 'project.application.form.workpackage.table.action.delete.dialog.warning'})
+      {name, boldWarningMessage: 'project.application.form.workpackage.investment.table.action.delete.dialog.warning'})
       .pipe(
         take(1),
         filter(answer => !!answer),
-        map(() => this.workPackageStore.deleteWorkPackageInvestment(this.workPackageId, this.projectId, workPackageInvestment.id)),
+        map(() => this.workPackageInvestmentService.deleteWorkPackageInvestment(workPackageInvestment.id, this.workPackageId)
+          .pipe(
+            take(1),
+            tap(() => this.newPageIndex$.next(Tables.DEFAULT_INITIAL_PAGE_INDEX)),
+            tap(() => Log.info('Deleted investment: ', this, workPackageInvestment.id)),
+            tap(() => this.projectApplicationFormSidenavService.refreshPackages(this.projectId))
+          ).subscribe()),
       ).subscribe();
   }
 

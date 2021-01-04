@@ -14,6 +14,7 @@ import org.springframework.data.domain.Pageable
 import org.springframework.stereotype.Repository
 import org.springframework.transaction.annotation.Transactional
 import java.util.*
+import org.springframework.data.domain.Sort
 
 @Repository
 class WorkPackagePersistenceProvider(
@@ -64,15 +65,17 @@ class WorkPackagePersistenceProvider(
     @Transactional
     override fun addWorkPackageInvestment(workPackageId: Long, workPackageInvestment: WorkPackageInvestment) =
         getWorkPackageOrThrow(workPackageId).let {
-            workPackageInvestmentRepository.save(workPackageInvestment.toWorkPackageInvestmentEntity(it)).id
+            val savedWorkPackage =
+                workPackageInvestmentRepository.save(workPackageInvestment.toWorkPackageInvestmentEntity(it))
+            updateSortOnNumber(workPackageId)
+            savedWorkPackage.id
         }
 
     @Transactional
-    override fun updateWorkPackageInvestment(workPackageInvestment: WorkPackageInvestment) =
-        if (workPackageInvestment.id != null)
+    override fun updateWorkPackageInvestment(workPackageId: Long, workPackageInvestment: WorkPackageInvestment) =
+        if (workPackageInvestment.id != null) {
             workPackageInvestmentRepository.findById(workPackageInvestment.id).ifPresentOrElse(
                 {
-                    it.investmentNumber = workPackageInvestment.investmentNumber
                     it.title = workPackageInvestment.title
                     it.justificationExplanation = workPackageInvestment.justificationExplanation
                     it.justificationTransactionalRelevance = workPackageInvestment.justificationTransactionalRelevance
@@ -87,11 +90,15 @@ class WorkPackagePersistenceProvider(
                 },
                 { throw ResourceNotFoundException("WorkPackageInvestmentEntity") }
             )
+            updateSortOnNumber(workPackageId)
+        }
         else throw ResourceNotFoundException("workPackageInvestment id is null")
 
     @Transactional
-    override fun deleteWorkPackageInvestment(workPackageInvestmentId: Long) =
+    override fun deleteWorkPackageInvestment(workPackageId: Long, workPackageInvestmentId: Long) {
         workPackageInvestmentRepository.deleteById(workPackageInvestmentId)
+        updateSortOnNumber(workPackageId)
+    }
 
     @Transactional(readOnly = true)
     override fun getWorkPackageActivitiesForWorkPackage(workPackageId: Long): List<WorkPackageActivity> =
@@ -118,5 +125,13 @@ class WorkPackagePersistenceProvider(
     private fun getWorkPackageInvestmentOrThrow(workPackageInvestmentId: Long): WorkPackageInvestmentEntity =
         workPackageInvestmentRepository.findById(workPackageInvestmentId)
             .orElseThrow { ResourceNotFoundException("WorkPackageInvestmentEntity") }
+
+    private fun updateSortOnNumber(workPackageId: Long) {
+        val sort = Sort.by(Sort.Direction.ASC, "id")
+
+        val workPackageInvestments = workPackageInvestmentRepository.findAllByWorkPackageId(workPackageId, sort)
+            .mapIndexed { index, old -> old.copy(investmentNumber = index.plus(1)) }
+        workPackageInvestmentRepository.saveAll(workPackageInvestments)
+    }
 
 }

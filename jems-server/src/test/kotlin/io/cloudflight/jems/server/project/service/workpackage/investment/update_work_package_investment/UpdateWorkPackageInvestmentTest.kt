@@ -16,11 +16,11 @@ internal class UpdateWorkPackageInvestmentTest : UnitTestWorkPackageInvestmentBa
     fun `should update the workPackageInvestment without any exception when workPackageInvestment already exists`() {
         val workPackageInvestment = createWorkPackageInvestment(workPackageInvestmentId)
 
-        every { persistence.updateWorkPackageInvestment(workPackageInvestment) } returns Unit
+        every { persistence.updateWorkPackageInvestment(workPackageId, workPackageInvestment) } returns Unit
 
-        updateWorkPackageInvestment.updateWorkPackageInvestment(workPackageInvestment)
+        updateWorkPackageInvestment.updateWorkPackageInvestment(workPackageId, workPackageInvestment)
 
-        verify(exactly = 1) { persistence.updateWorkPackageInvestment(workPackageInvestment) }
+        verify(exactly = 1) { persistence.updateWorkPackageInvestment(workPackageId, workPackageInvestment) }
         confirmVerified(persistence)
 
     }
