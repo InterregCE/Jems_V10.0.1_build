@@ -7982,9 +7982,9 @@
 											"});\r",
 											"\r",
 											"pm.test('motivation is set correctly', function() {\r",
-											"    pm.expect(motivation.organizationRelevance).to.eql('This project is definitely relevant enough to be founded.');\r",
-											"    pm.expect(motivation.organizationRole).to.eql('test latin àâçéèêëîïôùûüÿ');\r",
-											"    pm.expect(motivation.organizationExperience).to.eql('We have 16 millions years of experience in this particular area.');\r",
+											"    pm.expect(motivation.organizationRelevance[0].translation).to.eql('This project is definitely relevant enough to be founded.');\r",
+											"    pm.expect(motivation.organizationRole[0].translation).to.eql('test latin àâçéèêëîïôùûüÿ');\r",
+											"    pm.expect(motivation.organizationExperience[0].translation).to.eql('We have 16 millions years of experience in this particular area.');\r",
 											"});\r",
 											""
 										],
