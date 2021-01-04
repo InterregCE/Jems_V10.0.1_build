@@ -61,10 +61,10 @@ export class ProjectApplicationFormPartnerContributionComponent implements OnIni
       organizationExperience: [this.partner?.motivation?.organizationExperience || []],
     });
     this.formService.init(this.partnerContributionForm);
+    this.formService.setEditable(this.editable);
   }
 
   get controls(): any {
     return this.partnerContributionForm.controls;
   }
-
 }
