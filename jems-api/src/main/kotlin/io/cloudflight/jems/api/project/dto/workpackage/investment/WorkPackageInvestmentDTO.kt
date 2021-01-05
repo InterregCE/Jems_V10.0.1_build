@@ -12,7 +12,7 @@ data class WorkPackageInvestmentDTO(
     val justificationPilot: String? = null,
     val address: AddressDTO?,
     val risk: String? = null,
-    val documentation: Int? = null,
+    val documentation: String? = null,
     val ownershipSiteLocation: String? = null,
     val ownershipRetain: String? = null,
     val ownershipMaintenance: String? = null

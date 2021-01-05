@@ -45,7 +45,6 @@ export class ProjectWorkPackageInvestmentDetailPageComponent implements OnInit {
       houseNumber: ['', Validators.maxLength(20)],
       postalCode: ['', Validators.maxLength(20)],
       city: ['', Validators.maxLength(50)],
-      homepage: ['', Validators.maxLength(250)],
     }),
     risk: ['', Validators.maxLength(2000)],
     documentation: ['', Validators.maxLength(2000)],
@@ -55,7 +54,26 @@ export class ProjectWorkPackageInvestmentDetailPageComponent implements OnInit {
   });
 
   titleErrors = {
-    maxlength: 'workpackage.title.size.too.long',
+    maxlength: 'project.application.form.workpackage.investment.title.size.too.long',
+  };
+
+  justificationErrors = {
+    maxlength: 'project.application.form.workpackage.investment.justification.size.too.long',
+  };
+
+  riskErrors = {
+    maxlength: 'project.application.form.workpackage.investment.risk.size.too.long',
+  };
+
+  documentationErrors = {
+    maxlength: 'project.application.form.workpackage.investment.documentation.size.too.long',
+  };
+
+  ownershipErrors = {
+    maxlength: 'project.application.form.workpackage.investment.ownership.size.too.long',
+  };
+  ownershipMaintenanceErrors = {
+    maxlength: 'project.application.form.workpackage.investment.ownership.maintenance.size.too.long',
   };
 
   constructor(private formBuilder: FormBuilder,

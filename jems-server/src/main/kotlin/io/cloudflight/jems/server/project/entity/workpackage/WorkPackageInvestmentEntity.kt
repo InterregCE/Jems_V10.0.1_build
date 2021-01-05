@@ -48,7 +48,7 @@ data class WorkPackageInvestmentEntity(
     var risk: String? = null,
 
     @Column
-    var documentation: Int? = null,
+    var documentation: String? = null,
 
     @Column
     var ownershipSiteLocation: String? = null,
