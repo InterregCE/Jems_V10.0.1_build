@@ -35,7 +35,7 @@
                 class="field-wide pb-3"
                 [control]="workPackageInvestmentForm?.controls?.justificationExplanation"
                 [errors]="workPackageInvestmentForm?.controls?.justificationExplanation?.errors"
-                [messages]="titleErrors"
+                [messages]="justificationErrors"
                 [characterLimit]="2000"
                 [label]="'common.textarea.enter.text'"
                 [disabled]="(projectStore.projectEditable$ | async) === false">
@@ -46,7 +46,7 @@
                 class="field-wide pb-3"
                 [control]="workPackageInvestmentForm?.controls?.justificationTransactionalRelevance"
                 [errors]="workPackageInvestmentForm?.controls?.justificationTransactionalRelevance?.errors"
-                [messages]="titleErrors"
+                [messages]="justificationErrors"
                 [characterLimit]="2000"
                 [label]="'common.textarea.enter.text'"
                 [disabled]="(projectStore.projectEditable$ | async) === false">
@@ -57,7 +57,7 @@
                 class="field-wide pb-3"
                 [control]="workPackageInvestmentForm?.controls?.justificationBenefits"
                 [errors]="workPackageInvestmentForm?.controls?.justificationBenefits?.errors"
-                [messages]="titleErrors"
+                [messages]="justificationErrors"
                 [characterLimit]="2000"
                 [label]="'common.textarea.enter.text'"
                 [disabled]="(projectStore.projectEditable$ | async) === false">
@@ -68,7 +68,7 @@
                 class="field-wide pb-3"
                 [control]="workPackageInvestmentForm?.controls?.justificationPilot"
                 [errors]="workPackageInvestmentForm?.controls?.justificationPilot?.errors"
-                [messages]="titleErrors"
+                [messages]="justificationErrors"
                 [characterLimit]="2000"
                 [label]="'common.textarea.enter.text'"
                 [disabled]="(projectStore.projectEditable$ | async) === false">
@@ -94,7 +94,7 @@
                 class="field-wide pb-3"
                 [control]="workPackageInvestmentForm?.controls?.risk"
                 [errors]="workPackageInvestmentForm?.controls?.risk?.errors"
-                [messages]="titleErrors"
+                [messages]="riskErrors"
                 [characterLimit]="2000"
                 [label]="'common.textarea.enter.text'"
                 [disabled]="(projectStore.projectEditable$ | async) === false">
@@ -109,7 +109,7 @@
                 class="field-wide pb-3"
                 [control]="workPackageInvestmentForm?.controls?.documentation"
                 [errors]="workPackageInvestmentForm?.controls?.documentation?.errors"
-                [messages]="titleErrors"
+                [messages]="documentationErrors"
                 [characterLimit]="2000"
                 [label]="'common.textarea.enter.text'"
                 [disabled]="(projectStore.projectEditable$ | async) === false">
@@ -124,7 +124,7 @@
                 class="field-wide pb-3"
                 [control]="workPackageInvestmentForm?.controls?.ownershipSiteLocation"
                 [errors]="workPackageInvestmentForm?.controls?.ownershipSiteLocation?.errors"
-                [messages]="titleErrors"
+                [messages]="ownershipErrors"
                 [characterLimit]="500"
                 [label]="'common.textarea.enter.text'"
                 [disabled]="(projectStore.projectEditable$ | async) === false">
@@ -135,7 +135,7 @@
                 class="field-wide pb-3"
                 [control]="workPackageInvestmentForm?.controls?.ownershipRetain"
                 [errors]="workPackageInvestmentForm?.controls?.ownershipRetain?.errors"
-                [messages]="titleErrors"
+                [messages]="ownershipErrors"
                 [characterLimit]="500"
                 [label]="'common.textarea.enter.text'"
                 [disabled]="(projectStore.projectEditable$ | async) === false">
@@ -146,7 +146,7 @@
                 class="field-wide"
                 [control]="workPackageInvestmentForm?.controls?.ownershipMaintenance"
                 [errors]="workPackageInvestmentForm?.controls?.ownershipMaintenance?.errors"
-                [messages]="titleErrors"
+                [messages]="ownershipMaintenanceErrors"
                 [characterLimit]="2000"
                 [label]="'common.textarea.enter.text'"
                 [disabled]="(projectStore.projectEditable$ | async) === false">
