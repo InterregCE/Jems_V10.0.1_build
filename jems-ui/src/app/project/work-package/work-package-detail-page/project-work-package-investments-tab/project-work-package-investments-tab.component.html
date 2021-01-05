@@ -1,14 +1,15 @@
 <app-form *ngIf="currentPage$ | async as workPackageInvestmentsPage">
     <div>
         <h6>{{'project.application.form.workpackage.investment.form.list.title' | translate}}</h6>
+        <div class="pb-4 intro-text-small">{{'project.work.package.tab.intro' | translate}}</div>
     </div>
 
     <span class="header-button" *ngxPermissionsExcept="Permission.PROGRAMME_USER">
-    <button class="spaced-elements" mat-raised-button color="primary"
-            [routerLink]="'/app/project/detail/' + projectId + '/applicationFormWorkPackage/detail/' + workPackageId +  '/investment/create'"
-            [disabled]="!editable">
-        + {{'project.application.form.add.workpackage.investment' | translate}}
-    </button>
+        <button class="spaced-elements" mat-raised-button color="primary"
+                [routerLink]="'/app/project/detail/' + projectId + '/applicationFormWorkPackage/detail/' + workPackageId +  '/investment/create'"
+                [disabled]="!editable">
+                + {{'project.application.form.add.workpackage.investment' | translate}}
+        </button>
     </span>
 
     <app-table *ngIf="workPackageInvestmentsPage.content.length"
@@ -22,6 +23,12 @@
     </app-table>
 
 </app-form>
+
+<ng-template #numberingCell let-workPackageInvestment>
+    <span *ngIf="workPackageInvestment.investmentNumber">
+        I{{workPackageNumber}}.{{workPackageInvestment.investmentNumber}}</span>
+    <span *ngIf="!workPackageInvestment.investmentNumber"> {{'project.application.form.partner.number.info.auto' | translate}}</span>
+</ng-template>
 
 <ng-template #deletionCell let-workPackageInvestment>
     <app-work-package-investment-delete-action-cell
