@@ -25,7 +25,8 @@
                 <div class="output-line">
                     <mat-form-field class="field-row-two">
                         <mat-label>{{'project.application.form.work.package.output.programme.output.indicator' | translate}}</mat-label>
-                        <mat-select #indicatorSelect [formControlName]="programmeOutputIndicatorId(element.outputNumber)"
+                        <mat-select #indicatorSelect
+                                    [formControlName]="programmeOutputIndicatorId(element.outputNumber)"
                                     [disableOptionCentering]="true"
                                     panelClass="material-select-panel"
                                     (selectionChange)="toggleSelection(indicatorSelect.value, element.outputNumber)">
@@ -39,12 +40,14 @@
                 <div class="output-line">
                     <mat-form-field class="field-row-three-first">
                         <mat-label>{{'project.application.form.work.package.output.measurement.unit' | translate}}</mat-label>
-                        <input [name]="measurementUnit(element.outputNumber)" [formControlName]="measurementUnit(element.outputNumber)" matInput readonly
+                        <input [name]="measurementUnit(element.outputNumber)"
+                               [formControlName]="measurementUnit(element.outputNumber)" matInput readonly
                                placeholder="{{'project.application.form.work.package.output.measurement.unit' | translate}}">
                     </mat-form-field>
                     <mat-form-field class="field-row-three">
                         <mat-label>{{'project.application.form.work.package.output.target.value' | translate}}</mat-label>
-                        <input [name]="targetValue(element.outputNumber)" [formControlName]="targetValue(element.outputNumber)" matInput type="number"
+                        <input [name]="targetValue(element.outputNumber)"
+                               [formControlName]="targetValue(element.outputNumber)" matInput type="number"
                                placeholder="{{'project.application.form.work.package.output.target.value' | translate}}">
                         <mat-error>
                             <app-form-field-errors
@@ -55,25 +58,13 @@
                     </mat-form-field>
                 </div>
 
-                <div class="output-line">
-                    <mat-form-field [class.warn-color]="!periods.length"
-                            class="field-row-two">
-                        <mat-label>{{'project.application.form.work.package.output.delivery.period' | translate}}</mat-label>
-                        <mat-select [formControlName]="deliveryPeriod(element.outputNumber)"
-                                    [disabled]="!periods.length"
-                                    [disableOptionCentering]="true"
-                                    panelClass="material-select-panel"
-                                    (selectionChange)="changed.emit()">
-                            <mat-option *ngFor="let period of periods" [value]="period">
-                                {{'project.application.form.work.package.output.delivery.period.entry' | translate : {periodNumber: period.number, start: period.start, end: period.end} }}
-                            </mat-option>
-                        </mat-select>
-                        <mat-hint *ngIf="!periods.length && editable"
-                                  class="warning-hint">
-                            {{'project.application.form.work.package.output.delivery.period.required' | translate}}
-                        </mat-hint>
-                    </mat-form-field>
-                </div>
+                <app-project-periods-select
+                        [periods]="periods"
+                        [control]="workPackageForm.get(deliveryPeriod(element.outputNumber))"
+                        label='project.application.form.work.package.output.delivery.period'
+                        class="w-100"
+                        (selectionChanged)="changed.emit()">
+                </app-project-periods-select>
 
                 <div class="output-line">
                     <app-expandable-textarea class="expandable-field-row-one"

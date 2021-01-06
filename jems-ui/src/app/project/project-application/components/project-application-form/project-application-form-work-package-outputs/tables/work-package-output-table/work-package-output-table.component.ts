@@ -55,7 +55,7 @@ export class WorkPackageOutputTableComponent extends BaseComponent implements On
   outputCounter: number;
 
   ngOnInit(): void {
-    if (this.editable &&  this.workPackageOutputDataSource) {
+    if (this.editable && this.workPackageOutputDataSource) {
       this.workPackageOutputDataSource.data.forEach(output => this.addControl(output));
     }
     if (this.workPackageOutputDataSource.data) {
@@ -118,7 +118,7 @@ export class WorkPackageOutputTableComponent extends BaseComponent implements On
     );
     this.workPackageForm.addControl(
       this.deliveryPeriod(output.outputNumber),
-      new FormControl(this.selectCorrectPeriod(output?.periodNumber), [])
+      new FormControl(output?.periodNumber, [])
     );
     this.workPackageForm.addControl(
       this.description(output.outputNumber),
@@ -143,10 +143,6 @@ export class WorkPackageOutputTableComponent extends BaseComponent implements On
 
   getControl(identifier: any): any {
     return this.workPackageForm?.controls[identifier];
-  }
-
-  private selectCorrectPeriod(deliveryPeriod: number): OutputProjectPeriod | undefined {
-    return this.periods.find((period) => period.number === deliveryPeriod);
   }
 
   private selectCorrectIndicator(indicatorId: number): IndicatorOutputDto | undefined {
