@@ -10,8 +10,6 @@ import { LoginRequest } from '@cat/api';
 })
 export class LoginComponent extends AbstractForm {
 
-  isChristmas = false;
-
   @Output()
   submitLogin: EventEmitter<LoginRequest> = new EventEmitter<LoginRequest>();
 
@@ -26,8 +24,6 @@ export class LoginComponent extends AbstractForm {
   constructor(private readonly formBuilder: FormBuilder,
               protected changeDetectorRef: ChangeDetectorRef) {
     super(changeDetectorRef);
-    const today = new Date();
-    this.isChristmas = today.getMonth() === 11 && today.getDate() >= 24;
   }
 
   onSubmit(): void {
