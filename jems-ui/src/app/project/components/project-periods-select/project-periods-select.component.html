@@ -1,0 +1,13 @@
+<mat-form-field [class]="class" [class.warn-color]="!periods.length">
+    <mat-label>{{label | translate}}</mat-label>
+    <mat-select panelClass="material-select-panel" [disabled]="!periods.length"
+                [formControl]="control"
+                (selectionChange)="selectionChanged.emit()">
+        <mat-option *ngFor="let period of periods" [value]="period.number">
+            {{'project.application.form.work.package.output.delivery.period.entry' | translate : getPeriodArguments(period) }}
+        </mat-option>
+    </mat-select>
+    <mat-hint *ngIf="!periods?.length" class="warning-hint">
+        {{'project.application.form.work.package.output.delivery.period.required' | translate}}
+    </mat-hint>
+</mat-form-field>

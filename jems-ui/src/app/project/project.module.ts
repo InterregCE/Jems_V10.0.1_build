@@ -83,6 +83,7 @@ import {ProjectWorkPackageInvestmentsTabComponent} from './work-package/work-pac
 import {ProjectWorkPackageInvestmentDetailPageComponent} from './work-package/work-package-detail-page/project-work-package-investments-tab/project-work-package-investment-detail-page/project-work-package-investment-detail-page.component';
 import {WorkPackageInvestmentDeleteActionCellComponent} from './work-package/work-package-detail-page/project-work-package-investments-tab/work-package-investment-delete-action-cell/work-package-investment-delete-action-cell.component';
 import {ProjectWorkPackageActivitiesTabComponent} from './work-package/work-package-detail-page/project-work-package-activities-tab/project-work-package-activities-tab.component';
+import {ProjectPeriodsSelectComponent} from './components/project-periods-select/project-periods-select.component';
 
 @NgModule({
   declarations: [
@@ -162,7 +163,8 @@ import {ProjectWorkPackageActivitiesTabComponent} from './work-package/work-pack
     ProjectWorkPackageInvestmentDetailPageComponent,
     WorkPackageInvestmentDeleteActionCellComponent,
     StaffCostTableComponent,
-    BudgetFlatRateTableComponent
+    BudgetFlatRateTableComponent,
+    ProjectPeriodsSelectComponent
   ],
   imports: [
     SharedModule,

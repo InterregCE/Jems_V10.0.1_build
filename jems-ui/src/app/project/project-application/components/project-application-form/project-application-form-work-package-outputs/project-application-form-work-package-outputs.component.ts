@@ -55,8 +55,7 @@ export class ProjectApplicationFormWorkPackageOutputsComponent extends BaseCompo
   workPackageNumber: number;
   workPackageOutputDataSource: MatTableDataSource<WorkPackageOutputDetails>;
   outputCounter: number;
-  workPackageForm: FormGroup = this.formBuilder.group({
-  });
+  workPackageForm: FormGroup = this.formBuilder.group({});
 
   constructor(private formBuilder: FormBuilder,
               private formService: FormService,
@@ -151,7 +150,7 @@ export class ProjectApplicationFormWorkPackageOutputsComponent extends BaseCompo
         programmeOutputIndicatorId: this.workPackageForm.get(this.programmeOutputIndicatorId(element.outputNumber))?.value?.id,
         title: this.workPackageForm.get(this.title(element.outputNumber))?.value,
         targetValue: this.workPackageForm.get(this.targetValue(element.outputNumber))?.value,
-        periodNumber: this.workPackageForm.get(this.deliveryPeriod(element.outputNumber))?.value?.number,
+        periodNumber: this.workPackageForm.get(this.deliveryPeriod(element.outputNumber))?.value,
         description: this.workPackageForm.get(this.description(element.outputNumber))?.value
       }));
   }

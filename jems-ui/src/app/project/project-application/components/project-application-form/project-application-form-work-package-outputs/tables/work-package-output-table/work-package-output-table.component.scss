@@ -70,14 +70,3 @@ mat-form-field {
 .warning-hint {
   color: var(--warn-color)
 }
-
-.warn-color {
-  mat-label {
-    color: var(--warn-color);
-  }
-  ::ng-deep.mat-form-field-underline {
-    background-color: var(--underline-color) !important;
-    background-image: none !important;
-    height: 1px !important;
-  }
-}

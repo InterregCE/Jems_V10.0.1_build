@@ -34,7 +34,7 @@ export class ProjectWorkPackageActivitiesTabComponent implements OnInit {
 
   private editable = true;
 
-  constructor(private formService: FormService,
+  constructor(public formService: FormService,
               private formBuilder: FormBuilder,
               private workPackageStore: ProjectWorkPackagePageStore,
               public languageService: MultiLanguageInputService) {
@@ -104,14 +104,6 @@ export class ProjectWorkPackageActivitiesTabComponent implements OnInit {
   removeDeliverable(activityIndex: number, deliverableIndex: number): void {
     this.deliverables(activityIndex).removeAt(deliverableIndex);
     this.formService.setDirty(true);
-  }
-
-  getPeriodArguments(period: OutputProjectPeriod): { [key: string]: number } {
-    return {
-      periodNumber: period.number,
-      start: period.start,
-      end: period.end
-    };
   }
 
   addActivityVisible(): boolean {
