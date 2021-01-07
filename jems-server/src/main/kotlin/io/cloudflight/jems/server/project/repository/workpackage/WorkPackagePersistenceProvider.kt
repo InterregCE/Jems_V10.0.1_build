@@ -13,7 +13,6 @@ import io.cloudflight.jems.server.project.service.workpackage.model.WorkPackageO
 import org.springframework.data.domain.Pageable
 import org.springframework.stereotype.Repository
 import org.springframework.transaction.annotation.Transactional
-import java.util.*
 import org.springframework.data.domain.Sort
 
 @Repository

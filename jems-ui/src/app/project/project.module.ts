@@ -76,9 +76,6 @@ import {ProjectApplicationFormWorkPackageOutputsComponent} from './project-appli
 import {WorkPackageOutputTableComponent} from './project-application/components/project-application-form/project-application-form-work-package-outputs/tables/work-package-output-table/work-package-output-table.component';
 import {ProjectWorkPackageObjectivesTabComponent} from './work-package/work-package-detail-page/project-work-package-objectives-tab/project-work-package-objectives-tab.component';
 import {ProjectWorkPackageDetailPageComponent} from './work-package/work-package-detail-page/project-work-package-detail-page.component';
-import {StaffCostsBudgetTableComponent} from './partner/project-partner-detail-page/project-partner-budget-tab/project-partner-budget/staff-costs-budget-table/staff-costs-budget-table.component';
-import {GeneralBudgetTableComponent} from './partner/project-partner-detail-page/project-partner-budget-tab/project-partner-budget/general-budget-table/general-budget-table.component';
-import {GeneralBudgetFlatRateTableComponent} from './partner/project-partner-detail-page/project-partner-budget-tab/project-partner-budget/general-budget-flat-rate-table/general-budget-flat-rate-table.component';
 import {ProjectWorkPackageActivitiesTabComponent} from './work-package/work-package-detail-page/project-work-package-activities-tab/project-work-package-activities-tab.component';
 import {TravelAndAccommodationCostsBudgetTableComponent} from './partner/project-partner-detail-page/project-partner-budget-tab/project-partner-budget/travel-and-accommodation-costs-budget-table/travel-and-accommodation-costs-budget-table.component';
 import {ProjectPeriodsSelectComponent} from './components/project-periods-select/project-periods-select.component';

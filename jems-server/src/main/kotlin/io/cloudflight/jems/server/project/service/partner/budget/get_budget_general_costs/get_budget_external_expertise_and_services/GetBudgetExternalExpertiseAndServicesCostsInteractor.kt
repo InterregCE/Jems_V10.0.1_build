@@ -3,5 +3,3 @@ package io.cloudflight.jems.server.project.service.partner.budget.get_budget_gen
 import io.cloudflight.jems.server.project.service.partner.budget.get_budget_general_costs.GetBudgetGeneralCostsInteractor
 
 interface GetBudgetExternalExpertiseAndServicesCostsInteractor : GetBudgetGeneralCostsInteractor
-
-

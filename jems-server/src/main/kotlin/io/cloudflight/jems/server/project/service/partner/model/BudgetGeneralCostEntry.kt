@@ -7,7 +7,7 @@ data class BudgetGeneralCostEntry(
     override val id: Long? = null,
     override val numberOfUnits: BigDecimal,
     override val pricePerUnit: BigDecimal,
-    override val rowSum: BigDecimal? = null,
+    override val rowSum: BigDecimal,
     val investmentId: Long? = null,
     val unitType: Set<InputTranslation> = emptySet(),
     val awardProcedures: Set<InputTranslation> = emptySet(),

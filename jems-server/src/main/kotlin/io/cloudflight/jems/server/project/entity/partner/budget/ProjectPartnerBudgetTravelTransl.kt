@@ -30,4 +30,3 @@ data class ProjectPartnerBudgetTravelTransl(
         else budgetTranslation.budget.id.toInt().plus(budgetTranslation.language.translationKey.hashCode())
 
 }
-

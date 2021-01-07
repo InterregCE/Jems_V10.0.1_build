@@ -9,7 +9,7 @@ data class BudgetStaffCostEntryDTO(
     override val id: Long? = null,
     override val numberOfUnits: BigDecimal,
     override val pricePerUnit: BigDecimal,
-    override val rowSum: BigDecimal? = null,
+    override val rowSum: BigDecimal,
     val unitType: String,
     val type: String,
     val description: Set<InputTranslation> = emptySet(),

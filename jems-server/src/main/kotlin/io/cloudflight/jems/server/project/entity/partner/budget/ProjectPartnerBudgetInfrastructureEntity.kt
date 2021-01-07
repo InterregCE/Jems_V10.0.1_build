@@ -1,6 +1,5 @@
 package io.cloudflight.jems.server.project.entity.partner.budget
 
-import java.util.*
 import javax.persistence.CascadeType
 import javax.persistence.Column
 import javax.persistence.Embedded

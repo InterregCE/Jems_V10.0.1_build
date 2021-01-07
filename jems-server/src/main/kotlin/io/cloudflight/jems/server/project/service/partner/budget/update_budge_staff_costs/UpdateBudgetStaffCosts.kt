@@ -1,21 +1,21 @@
 package io.cloudflight.jems.server.project.service.partner.budget.update_budge_staff_costs
 
 import io.cloudflight.jems.server.project.authorization.CanUpdateProjectPartner
+import io.cloudflight.jems.server.project.service.partner.budget.BudgetCostEntriesValidator
 import io.cloudflight.jems.server.project.service.partner.budget.ProjectPartnerBudgetPersistence
-import io.cloudflight.jems.server.project.service.partner.budget.validateBudgetEntries
 import io.cloudflight.jems.server.project.service.partner.model.BudgetStaffCostEntry
 import io.cloudflight.jems.server.project.service.partner.model.truncateNumbers
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 
 @Service
-class UpdateBudgetStaffCosts(private val persistence: ProjectPartnerBudgetPersistence) : UpdateBudgetStaffCostsInteractor {
+class UpdateBudgetStaffCosts(private val persistence: ProjectPartnerBudgetPersistence, private val budgetCostEntriesValidator: BudgetCostEntriesValidator) : UpdateBudgetStaffCostsInteractor {
 
     @Transactional
     @CanUpdateProjectPartner
     override fun updateBudgetStaffCosts(partnerId: Long, staffCosts: List<BudgetStaffCostEntry>): List<BudgetStaffCostEntry> {
 
-        validateBudgetEntries(staffCosts)
+        budgetCostEntriesValidator.validate(staffCosts)
 
         persistence.deleteAllBudgetStaffCostsExceptFor(
             partnerId = partnerId,

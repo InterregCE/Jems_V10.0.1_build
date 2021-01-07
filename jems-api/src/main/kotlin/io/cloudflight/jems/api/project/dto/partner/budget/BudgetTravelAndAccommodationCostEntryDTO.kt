@@ -9,7 +9,7 @@ data class BudgetTravelAndAccommodationCostEntryDTO(
     override val id: Long? = null,
     override val numberOfUnits: BigDecimal,
     override val pricePerUnit: BigDecimal,
-    override val rowSum: BigDecimal? = null,
+    override val rowSum: BigDecimal,
     val unitType: Set<InputTranslation> = emptySet(),
     val description: Set<InputTranslation> = emptySet()
 ) : BaseBudgetEntryDTO
