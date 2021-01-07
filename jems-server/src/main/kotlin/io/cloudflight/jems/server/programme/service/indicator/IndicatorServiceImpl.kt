@@ -16,6 +16,9 @@ import io.cloudflight.jems.server.programme.repository.ProgrammePriorityPolicyRe
 import io.cloudflight.jems.server.audit.service.AuditService
 import io.cloudflight.jems.server.common.exception.I18nFieldError
 import io.cloudflight.jems.server.common.exception.I18nValidationException
+import io.cloudflight.jems.server.programme.controller.indicator.toEntity
+import io.cloudflight.jems.server.programme.controller.indicator.toIndicatorOutputDto
+import io.cloudflight.jems.server.programme.controller.indicator.toOutputIndicator
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
 import org.springframework.http.HttpStatus

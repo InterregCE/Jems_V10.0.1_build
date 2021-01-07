@@ -9,6 +9,10 @@ import org.springframework.stereotype.Component
 @PreAuthorize("@programmeSetupAuthorization.canAccessSetup()")
 annotation class CanUpdateProgrammeSetup
 
+@Retention(AnnotationRetention.RUNTIME)
+@PreAuthorize("@programmeSetupAuthorization.canReadIndicators()")
+annotation class CanReadIndicators
+
 @Component
 class ProgrammeSetupAuthorization(
     override val securityService: SecurityService
