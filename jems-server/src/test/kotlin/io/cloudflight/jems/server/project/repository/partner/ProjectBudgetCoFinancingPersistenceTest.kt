@@ -9,7 +9,7 @@ import io.cloudflight.jems.server.common.exception.ResourceNotFoundException
 import io.cloudflight.jems.server.programme.entity.ProgrammeFundEntity
 import io.cloudflight.jems.server.programme.entity.ProgrammeLegalStatus
 import io.cloudflight.jems.server.programme.service.model.ProgrammeFund
-import io.cloudflight.jems.server.project.entity.Project
+import io.cloudflight.jems.server.project.entity.ProjectEntity
 import io.cloudflight.jems.server.project.entity.ProjectStatus
 import io.cloudflight.jems.server.project.entity.partner.ProjectPartnerEntity
 import io.cloudflight.jems.server.project.entity.partner.cofinancing.ProjectPartnerCoFinancingEntity
@@ -43,7 +43,7 @@ class ProjectBudgetCoFinancingPersistenceTest {
 
         private val dummyCall = callWithId(10).copy(funds = funds)
 
-        private val dummyProject = Project(
+        private val dummyProject = ProjectEntity(
             id = 1,
             call = dummyCall,
             acronym = "Test Project",

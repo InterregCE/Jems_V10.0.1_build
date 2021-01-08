@@ -13,6 +13,7 @@ import io.cloudflight.jems.api.project.dto.InputProjectData
 import io.cloudflight.jems.api.project.dto.OutputProjectData
 import io.cloudflight.jems.api.project.dto.OutputProjectPeriod
 import io.cloudflight.jems.api.project.dto.OutputProjectSimple
+import io.cloudflight.jems.api.project.dto.ProjectCallSettingsDTO
 import io.cloudflight.jems.api.project.dto.status.ProjectApplicationStatus
 import io.cloudflight.jems.api.user.dto.OutputUser
 import io.cloudflight.jems.api.user.dto.OutputUserRole
@@ -30,7 +31,7 @@ import io.cloudflight.jems.server.call.repository.flatrate.CallRepository
 import io.cloudflight.jems.server.common.exception.ResourceNotFoundException
 import io.cloudflight.jems.server.programme.entity.ProgrammePriorityPolicy
 import io.cloudflight.jems.server.programme.entity.Strategy
-import io.cloudflight.jems.server.project.entity.Project
+import io.cloudflight.jems.server.project.entity.ProjectEntity
 import io.cloudflight.jems.server.project.entity.ProjectStatus
 import io.cloudflight.jems.server.project.repository.ProjectRepository
 import io.cloudflight.jems.server.project.repository.ProjectStatusRepository
@@ -158,7 +159,7 @@ class ProjectServiceTest {
         every { securityService.currentUser } returns
             LocalCurrentUser(user, "hash_pass", listOf(SimpleGrantedAuthority("ROLE_$ADMINISTRATOR")))
 
-        val projectToReturn = Project(
+        val projectToReturn = ProjectEntity(
             id = 25,
             call = dummyCall,
             acronym = "test acronym",
@@ -220,7 +221,7 @@ class ProjectServiceTest {
     @Test
     fun projectCreation_OK() {
         every { callRepository.findById(eq(dummyCall.id)) } returns Optional.of(dummyCall.copy(endDate = ZonedDateTime.now().plusDays(1)))
-        every { projectRepository.save(any<Project>()) } returns Project(
+        every { projectRepository.save(any<ProjectEntity>()) } returns ProjectEntity(
             id = 612,
             call = dummyCall,
             acronym = "test",
@@ -230,14 +231,16 @@ class ProjectServiceTest {
 
         val result = projectService.createProject(InputProject("test", dummyCall.id))
 
-        assertEquals(OutputCallWithDates(
-            id = dummyCall.id,
-            name = dummyCall.name,
+        assertEquals(ProjectCallSettingsDTO(
+            callId = dummyCall.id,
+            callName = dummyCall.name,
             startDate = dummyCall.startDate,
             endDate = dummyCall.endDate,
             lengthOfPeriod = 1,
             flatRates = FlatRateSetupDTO(),
-        ), result.call)
+            lumpSums = emptyList(),
+            unitCosts = emptyList(),
+        ), result.callSettings)
         assertEquals(result.acronym, "test")
         assertEquals(result.firstSubmission, null)
         assertEquals(result.lastResubmission, null)
@@ -257,7 +260,7 @@ class ProjectServiceTest {
     @Test
     fun projectGet_OK() {
         every { projectRepository.findById(eq(1)) } returns
-            Optional.of(Project(id = 1, call = dummyCall, acronym = "test", applicant = account, projectStatus = statusSubmitted, firstSubmission = statusSubmitted))
+            Optional.of(ProjectEntity(id = 1, call = dummyCall, acronym = "test", applicant = account, projectStatus = statusSubmitted, firstSubmission = statusSubmitted))
 
         val result = projectService.getById(1);
 
@@ -303,7 +306,7 @@ class ProjectServiceTest {
 
     @Test
     fun projectUpdate_successful() {
-        val projectToReturn = Project(
+        val projectToReturn = ProjectEntity(
             id = 1,
             call = dummyCall,
             acronym = "test acronym",
@@ -312,7 +315,7 @@ class ProjectServiceTest {
             firstSubmission = statusSubmitted
         )
         every { projectRepository.findById(eq(1)) } returns Optional.of(projectToReturn)
-        every { projectRepository.save(any<Project>()) } returnsArgument 0
+        every { projectRepository.save(any<ProjectEntity>()) } returnsArgument 0
 
         val result = projectService.update(1, projectData.copy(specificObjective = HealthcareAcrossBorders))
 
@@ -330,7 +333,7 @@ class ProjectServiceTest {
 
     @Test
     fun `projectUpdate not existing policy`() {
-        val projectToReturn = Project(
+        val projectToReturn = ProjectEntity(
             id = 1,
             call = dummyCall,
             acronym = "test acronym",
@@ -361,7 +364,7 @@ class ProjectServiceTest {
             lengthOfPeriod = 6
         )
         val projectData = InputProjectData(acronym = "acronym", duration = 13)
-        val projectToReturn = Project(
+        val projectToReturn = ProjectEntity(
             id = 1,
             call = callWithDuration,
             acronym = "acronym",
@@ -369,7 +372,7 @@ class ProjectServiceTest {
             projectStatus = statusDraft
         )
         every { projectRepository.findById(eq(1)) } returns Optional.of(projectToReturn)
-        every { projectRepository.save(any<Project>()) } returnsArgument 0
+        every { projectRepository.save(any<ProjectEntity>()) } returnsArgument 0
 
         val result = projectService.update(1, projectData)
 

@@ -2,6 +2,7 @@ package io.cloudflight.jems.server.project.entity
 
 import io.cloudflight.jems.server.call.entity.CallEntity
 import io.cloudflight.jems.server.programme.entity.ProgrammePriorityPolicy
+import io.cloudflight.jems.server.project.entity.lumpsum.ProjectLumpSumEntity
 import io.cloudflight.jems.server.project.entity.result.ProjectResultEntity
 import io.cloudflight.jems.server.user.entity.User
 import javax.persistence.CascadeType
@@ -18,7 +19,7 @@ import javax.persistence.OneToOne
 import javax.validation.constraints.NotNull
 
 @Entity(name = "project")
-data class Project(
+data class ProjectEntity(
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -71,8 +72,11 @@ data class Project(
     val projectData: ProjectData? = null,
 
     @OneToMany(mappedBy = "id.projectId", cascade = [CascadeType.ALL], orphanRemoval = true)
-    val periods: Collection<ProjectPeriod> = emptyList(),
+    val periods: Collection<ProjectPeriodEntity> = emptyList(),
 
     @OneToMany(mappedBy = "project", cascade = [CascadeType.ALL], orphanRemoval = true)
     val projectResultEntities: MutableSet<ProjectResultEntity> = mutableSetOf(),
+
+    @OneToMany(mappedBy = "projectId", cascade = [CascadeType.ALL], orphanRemoval = true)
+    val lumpSums: Set<ProjectLumpSumEntity> = emptySet(),
 )

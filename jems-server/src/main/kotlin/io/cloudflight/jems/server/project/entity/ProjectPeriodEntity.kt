@@ -5,7 +5,7 @@ import javax.persistence.Entity
 import javax.validation.constraints.NotNull
 
 @Entity(name = "project_period")
-data class ProjectPeriod(
+data class ProjectPeriodEntity(
 
     @EmbeddedId
     val id: ProjectPeriodId,

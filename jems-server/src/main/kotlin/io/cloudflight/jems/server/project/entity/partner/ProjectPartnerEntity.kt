@@ -3,7 +3,7 @@ package io.cloudflight.jems.server.project.entity.partner
 import io.cloudflight.jems.api.project.dto.description.ProjectTargetGroup
 import io.cloudflight.jems.api.project.dto.partner.ProjectPartnerRole
 import io.cloudflight.jems.server.programme.entity.ProgrammeLegalStatus
-import io.cloudflight.jems.server.project.entity.Project
+import io.cloudflight.jems.server.project.entity.ProjectEntity
 import io.cloudflight.jems.server.project.entity.partner.cofinancing.ProjectPartnerCoFinancingEntity
 import io.cloudflight.jems.server.project.entity.partner.cofinancing.ProjectPartnerContributionEntity
 import javax.persistence.CascadeType
@@ -29,7 +29,7 @@ data class ProjectPartnerEntity(
     @ManyToOne(optional = false, fetch = FetchType.LAZY)
     @JoinColumn(name = "project_id")
     @field:NotNull
-    val project: Project,
+    val project: ProjectEntity,
 
     @field:NotNull
     val abbreviation: String,
@@ -38,7 +38,8 @@ data class ProjectPartnerEntity(
     @field:NotNull
     val role: ProjectPartnerRole,
 
-    val sortNumber: Int? = null,
+    @field:NotNull
+    val sortNumber: Int = 0,
 
     val nameInOriginalLanguage: String? = null,
 

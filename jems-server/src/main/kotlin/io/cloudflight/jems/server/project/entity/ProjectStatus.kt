@@ -4,6 +4,7 @@ import io.cloudflight.jems.api.project.dto.status.ProjectApplicationStatus
 import io.cloudflight.jems.server.user.entity.User
 import java.time.LocalDate
 import java.time.ZonedDateTime
+import java.util.Objects
 import javax.persistence.Entity
 import javax.persistence.EnumType
 import javax.persistence.Enumerated
@@ -24,7 +25,7 @@ data class ProjectStatus(
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "project_id")
-    val project: Project? = null,
+    val project: ProjectEntity? = null,
 
     @Enumerated(EnumType.STRING)
     @field:NotNull
@@ -46,4 +47,12 @@ data class ProjectStatus(
     override fun toString(): String {
         return "${this.javaClass.simpleName}(status=$status, user=$user, updated=$updated, note=$note)"
     }
+
+    override fun equals(other: Any?): Boolean = (other is ProjectStatus)
+        && project?.id == other.project?.id
+        && status == other.status
+        && updated == other.updated
+
+    override fun hashCode(): Int = Objects.hash(project?.id, status)
+
 }

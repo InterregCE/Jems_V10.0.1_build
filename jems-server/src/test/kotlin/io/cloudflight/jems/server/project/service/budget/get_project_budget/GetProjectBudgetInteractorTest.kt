@@ -5,6 +5,8 @@ import io.cloudflight.jems.server.audit.service.AuditService
 import io.cloudflight.jems.server.project.service.budget.ProjectBudgetPersistence
 import io.cloudflight.jems.server.project.service.budget.model.PartnerBudget
 import io.cloudflight.jems.server.project.service.budget.model.ProjectPartnerCost
+import io.cloudflight.jems.server.project.service.lumpsum.ProjectLumpSumPersistence
+import io.cloudflight.jems.server.project.service.lumpsum.model.ProjectLumpSum
 import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerBudgetOptions
 import io.cloudflight.jems.server.project.service.partner.budget.ProjectPartnerBudgetOptionsPersistence
 import io.cloudflight.jems.server.project.service.partner.model.ProjectPartner
@@ -12,10 +14,12 @@ import io.mockk.MockKAnnotations
 import io.mockk.every
 import io.mockk.impl.annotations.MockK
 import io.mockk.impl.annotations.RelaxedMockK
+import io.mockk.slot
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import java.math.BigDecimal
+import java.util.UUID
 
 class GetProjectBudgetInteractorTest {
 
@@ -48,6 +52,14 @@ class GetProjectBudgetInteractorTest {
             sum = decimal(sum)
         )
         private fun decimal(value: Double) = BigDecimal.valueOf((value * 100).toLong(), 2)
+
+        private val lumpSumId1: UUID = UUID.randomUUID()
+        private val lumpSumId2: UUID = UUID.randomUUID()
+
+        private val lumpSums = listOf(
+            ProjectLumpSum(id = lumpSumId1, programmeLumpSumId = 40, period = 1, lumpSumContributions = emptyList()),
+            ProjectLumpSum(id = lumpSumId2, programmeLumpSumId = 40, period = 2, lumpSumContributions = emptyList()),
+        )
     }
 
     @MockK
@@ -55,6 +67,9 @@ class GetProjectBudgetInteractorTest {
 
     @MockK
     lateinit var optionOptionsPersistence: ProjectPartnerBudgetOptionsPersistence
+
+    @MockK
+    lateinit var lumpSumPersistence: ProjectLumpSumPersistence
 
     @RelaxedMockK
     lateinit var auditService: AuditService
@@ -64,7 +79,7 @@ class GetProjectBudgetInteractorTest {
     @BeforeEach
     fun setup() {
         MockKAnnotations.init(this)
-        getProjectBudgetInteractor = GetProjectBudget(persistence, optionOptionsPersistence)
+        getProjectBudgetInteractor = GetProjectBudget(persistence, optionOptionsPersistence, lumpSumPersistence)
     }
 
     @Test
@@ -77,6 +92,13 @@ class GetProjectBudgetInteractorTest {
         every { persistence.getEquipmentCosts(setOf(P1_ID, P2_ID)) } returns emptyList()
         every { persistence.getInfrastructureCosts(setOf(P1_ID, P2_ID)) } returns listOf(budget(P1_ID, 300.0), budget(P2_ID, 300.0))
 
+        every { lumpSumPersistence.getLumpSums(1) } returns lumpSums
+        val lumpSumIds = slot<Set<UUID>>()
+        every { persistence.getLumpSumContributionPerPartner(capture(lumpSumIds)) } returns mapOf(
+            P1_ID to BigDecimal.ONE,
+            P2_ID to BigDecimal.TEN,
+        )
+
         assertThat(getProjectBudgetInteractor.getBudget(1))
             .containsExactlyInAnyOrder(
                 PartnerBudget(
@@ -87,7 +109,8 @@ class GetProjectBudgetInteractorTest {
                     otherCostsOnStaffCostsFlatRate = null,
                     travelCosts = decimal(100.0),
                     externalCosts = decimal(1000.0),
-                    infrastructureCosts = decimal(300.0)
+                    infrastructureCosts = decimal(300.0),
+                    lumpSumContribution = BigDecimal.TEN,
                 ),
                 PartnerBudget(
                     partner = partner1,
@@ -97,9 +120,11 @@ class GetProjectBudgetInteractorTest {
                     otherCostsOnStaffCostsFlatRate = null,
                     staffCosts = decimal(50.0),
                     travelCosts = decimal(800.0),
-                    infrastructureCosts = decimal(300.0)
+                    infrastructureCosts = decimal(300.0),
+                    lumpSumContribution = BigDecimal.ONE,
                 )
             )
+        assertThat(lumpSumIds.captured).containsExactlyInAnyOrder(lumpSumId1, lumpSumId2)
     }
 
 }

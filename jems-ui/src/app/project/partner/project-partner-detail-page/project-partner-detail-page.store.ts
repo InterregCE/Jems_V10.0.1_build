@@ -8,7 +8,7 @@ import {
   BaseBudgetEntryDTO,
   BudgetGeneralCostEntryDTO,
   BudgetTravelAndAccommodationCostEntryDTO,
-  OutputCallWithDates,
+  ProjectCallSettingsDTO,
   ProjectPartnerBudgetOptionsDto,
   ProjectPartnerBudgetService
 } from '@cat/api';
@@ -111,7 +111,7 @@ export class ProjectPartnerDetailPageStore {
 
   private callFlatRateSettings(): Observable<CallFlatRateSetting> {
     return this.projectStore.projectCall$.pipe(
-      map((call: OutputCallWithDates) =>
+      map((call: ProjectCallSettingsDTO) =>
         new CallFlatRateSetting(
           call.flatRates.staffCostFlatRateSetup,
           call.flatRates.officeAndAdministrationOnStaffCostsFlatRate,

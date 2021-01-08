@@ -17,7 +17,9 @@ data class PartnerBudget(
     val travelCosts: BigDecimal = BigDecimal.ZERO,
     val externalCosts: BigDecimal = BigDecimal.ZERO,
     val equipmentCosts: BigDecimal = BigDecimal.ZERO,
-    val infrastructureCosts: BigDecimal = BigDecimal.ZERO
+    val infrastructureCosts: BigDecimal = BigDecimal.ZERO,
+
+    val lumpSumContribution: BigDecimal = BigDecimal.ZERO,
 
 ) {
     fun extractStaffCosts(): BigDecimal =
@@ -61,5 +63,6 @@ data class PartnerBudget(
             .add(infrastructureCosts)
             .add(extractOfficeAndAdministrationCosts())
             .add(extractOtherCosts())
+            .add(lumpSumContribution)
 
 }

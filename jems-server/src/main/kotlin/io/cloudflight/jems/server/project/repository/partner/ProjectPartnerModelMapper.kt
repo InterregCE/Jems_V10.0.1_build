@@ -13,7 +13,7 @@ import io.cloudflight.jems.api.project.dto.partner.ProjectPartnerAddressType
 import io.cloudflight.jems.server.programme.entity.ProgrammeLegalStatus
 import io.cloudflight.jems.server.project.entity.AddressEntity
 import io.cloudflight.jems.server.project.entity.Contact
-import io.cloudflight.jems.server.project.entity.Project
+import io.cloudflight.jems.server.project.entity.ProjectEntity
 import io.cloudflight.jems.server.project.entity.TranslationPartnerId
 import io.cloudflight.jems.server.project.entity.partner.ProjectPartnerAddress
 import io.cloudflight.jems.server.project.entity.partner.ProjectPartnerAddressId
@@ -25,7 +25,7 @@ import io.cloudflight.jems.server.project.entity.partner.ProjectPartnerMotivatio
 import io.cloudflight.jems.server.project.entity.partner.ProjectPartnerTranslEntity
 import io.cloudflight.jems.server.project.service.partner.model.ProjectPartner
 
-fun InputProjectPartnerCreate.toEntity(project: Project, legalStatus: ProgrammeLegalStatus) = ProjectPartnerEntity(
+fun InputProjectPartnerCreate.toEntity(project: ProjectEntity, legalStatus: ProgrammeLegalStatus) = ProjectPartnerEntity(
     project = project,
     abbreviation = abbreviation!!,
     role = role!!,

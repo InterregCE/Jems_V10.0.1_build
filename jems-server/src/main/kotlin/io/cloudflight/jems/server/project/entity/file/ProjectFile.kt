@@ -1,7 +1,7 @@
 package io.cloudflight.jems.server.project.entity.file
 
 import io.cloudflight.jems.api.project.dto.file.ProjectFileType
-import io.cloudflight.jems.server.project.entity.Project
+import io.cloudflight.jems.server.project.entity.ProjectEntity
 import io.cloudflight.jems.server.user.entity.User
 import java.time.ZonedDateTime
 import javax.persistence.Entity
@@ -31,7 +31,7 @@ data class ProjectFile(
 
     @ManyToOne(optional = false)
     @field:NotNull
-    val project: Project,
+    val project: ProjectEntity,
 
     @ManyToOne(optional = false)
     @field:NotNull

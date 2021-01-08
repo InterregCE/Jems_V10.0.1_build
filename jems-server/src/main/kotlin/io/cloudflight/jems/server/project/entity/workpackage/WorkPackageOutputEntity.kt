@@ -1,7 +1,7 @@
 package io.cloudflight.jems.server.project.entity.workpackage
 
 import io.cloudflight.jems.server.programme.entity.indicator.IndicatorOutput
-import io.cloudflight.jems.server.project.entity.ProjectPeriod
+import io.cloudflight.jems.server.project.entity.ProjectPeriodEntity
 import java.util.UUID
 import java.util.Objects
 import javax.persistence.Column
@@ -23,7 +23,7 @@ data class WorkPackageOutputEntity(
     val workPackage: WorkPackageEntity,
 
     @ManyToOne
-    val period: ProjectPeriod? = null,
+    val period: ProjectPeriodEntity? = null,
 
     @Column
     val outputNumber: Int,

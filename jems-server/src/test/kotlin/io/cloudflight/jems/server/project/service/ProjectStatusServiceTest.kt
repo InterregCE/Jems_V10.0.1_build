@@ -20,7 +20,7 @@ import io.cloudflight.jems.server.call.entity.CallEntity
 import io.cloudflight.jems.server.common.exception.I18nValidationException
 import io.cloudflight.jems.server.common.exception.ResourceNotFoundException
 import io.cloudflight.jems.server.programme.entity.ProgrammePriorityPolicy
-import io.cloudflight.jems.server.project.entity.Project
+import io.cloudflight.jems.server.project.entity.ProjectEntity
 import io.cloudflight.jems.server.project.entity.ProjectEligibilityAssessment
 import io.cloudflight.jems.server.project.entity.ProjectStatus
 import io.cloudflight.jems.server.project.repository.ProjectRepository
@@ -129,7 +129,7 @@ internal class ProjectStatusServiceTest {
         every { userRepository.findByIdOrNull(1) } returns user
         every { projectRepository.findById(1) } returns Optional.of(projectDraft)
         every { projectStatusRepository.save(any<ProjectStatus>()) } returnsArgument 0
-        every { projectRepository.save(any<Project>()) } returnsArgument 0
+        every { projectRepository.save(any<ProjectEntity>()) } returnsArgument 0
 
         val result = projectStatusService.setProjectStatus(
             1,
@@ -158,7 +158,7 @@ internal class ProjectStatusServiceTest {
                 eq(ignoreStatuses)
             )
         } returns previousState
-        every { projectRepository.save(any<Project>()) } returnsArgument 0
+        every { projectRepository.save(any<ProjectEntity>()) } returnsArgument 0
 
         val result =
             projectStatusService.setProjectStatus(1, InputProjectStatus(ProjectApplicationStatus.SUBMITTED, null, null))
@@ -186,7 +186,7 @@ internal class ProjectStatusServiceTest {
                 eq(ignoreStatuses)
             )
         } returns previousState
-        every { projectRepository.save(any<Project>()) } returnsArgument 0
+        every { projectRepository.save(any<ProjectEntity>()) } returnsArgument 0
 
         val result =
             projectStatusService.setProjectStatus(1, InputProjectStatus(ProjectApplicationStatus.SUBMITTED, null, null))
@@ -211,7 +211,7 @@ internal class ProjectStatusServiceTest {
         every { userRepository.findByIdOrNull(1) } returns user
         every { projectRepository.findById(1) } returns Optional.of(projectSubmitted.copy(eligibilityAssessment = eligibilityAssessment))
         every { projectStatusRepository.save(any<ProjectStatus>()) } returnsArgument 0
-        every { projectRepository.save(any<Project>()) } returnsArgument 0
+        every { projectRepository.save(any<ProjectEntity>()) } returnsArgument 0
 
         val result = projectStatusService.setProjectStatus(
             projectId = 1,
@@ -242,7 +242,7 @@ internal class ProjectStatusServiceTest {
         every { userRepository.findByIdOrNull(1) } returns user
         every { projectRepository.findById(1) } returns Optional.of(projectSubmitted.copy(eligibilityAssessment = eligibilityAssessment))
         every { projectStatusRepository.save(any<ProjectStatus>()) } returnsArgument 0
-        every { projectRepository.save(any<Project>()) } returnsArgument 0
+        every { projectRepository.save(any<ProjectEntity>()) } returnsArgument 0
 
         val exception = assertThrows<I18nValidationException> {
             projectStatusService.setProjectStatus(
@@ -272,12 +272,12 @@ internal class ProjectStatusServiceTest {
         allowedTransitions.forEach { testAllowedFundingTransitions(it) }
     }
 
-    private fun testAllowedFundingTransitions(pair: Pair<Project, ProjectApplicationStatus>): Unit {
+    private fun testAllowedFundingTransitions(pair: Pair<ProjectEntity, ProjectApplicationStatus>): Unit {
         every { securityService.currentUser } returns LocalCurrentUser(userApplicant, "hash_pass", emptyList())
         every { userRepository.findByIdOrNull(1) } returns user
         every { projectRepository.findById(1) } returns Optional.of(pair.first)
         every { projectStatusRepository.save(any<ProjectStatus>()) } returnsArgument 0
-        every { projectRepository.save(any<Project>()) } returnsArgument 0
+        every { projectRepository.save(any<ProjectEntity>()) } returnsArgument 0
 
         val result = projectStatusService.setProjectStatus(
             projectId = 1,
@@ -303,7 +303,7 @@ internal class ProjectStatusServiceTest {
         every { userRepository.findByIdOrNull(1) } returns user
         every { projectRepository.findById(1) } returns Optional.of(projectEligibleWithDate)
         every { projectStatusRepository.save(any<ProjectStatus>()) } returnsArgument 0
-        every { projectRepository.save(any<Project>()) } returnsArgument 0
+        every { projectRepository.save(any<ProjectEntity>()) } returnsArgument 0
 
         val exception = assertThrows<I18nValidationException> {
             projectStatusService.setProjectStatus(
@@ -328,7 +328,7 @@ internal class ProjectStatusServiceTest {
         }
     }
 
-    private fun createProject(status: ProjectApplicationStatus, note: String? = null): Project {
+    private fun createProject(status: ProjectApplicationStatus, note: String? = null): ProjectEntity {
         var submitTime: ZonedDateTime?
         var statusTime: ZonedDateTime
         if (status == ProjectApplicationStatus.DRAFT) {
@@ -341,7 +341,7 @@ internal class ProjectStatusServiceTest {
             submitTime = SUBMIT_TIME
             statusTime = SUBMIT_TIME.plusDays(1)
         }
-        return Project(
+        return ProjectEntity(
             id = 1,
             call = dummyCall,
             acronym = "acronym",
@@ -359,7 +359,7 @@ internal class ProjectStatusServiceTest {
         )
     }
 
-    private fun createAlreadyApprovedProject(appStatus: ProjectApplicationStatus): Project {
+    private fun createAlreadyApprovedProject(appStatus: ProjectApplicationStatus): ProjectEntity {
         val alreadyApprovedStatuses = setOf(
             ProjectApplicationStatus.APPROVED,
             ProjectApplicationStatus.APPROVED_WITH_CONDITIONS,
@@ -369,7 +369,7 @@ internal class ProjectStatusServiceTest {
             throw IllegalStateException()
 
         val status = ProjectStatus(1, null, appStatus, user, ZonedDateTime.now(), null, null)
-        return Project(
+        return ProjectEntity(
             id = 1,
             call = dummyCall,
             acronym = "acronym",
@@ -391,7 +391,7 @@ internal class ProjectStatusServiceTest {
             "hash_pass"
         )
         every { projectRepository.findById(16) } returns Optional.of(projectSubmitted.copy(id = 16))
-        every { projectRepository.save(any<Project>()) } returnsArgument 0
+        every { projectRepository.save(any<ProjectEntity>()) } returnsArgument 0
 
         val inputData = InputProjectQualityAssessment(
             result = ProjectQualityAssessmentResult.RECOMMENDED_FOR_FUNDING,
@@ -448,7 +448,7 @@ internal class ProjectStatusServiceTest {
                 "hash_pass"
         )
         every { projectRepository.findById(79) } returns Optional.of(projectSubmitted.copy(id = 79))
-        every { projectRepository.save(any<Project>()) } returnsArgument 0
+        every { projectRepository.save(any<ProjectEntity>()) } returnsArgument 0
 
         val inputData = InputProjectEligibilityAssessment(
             result = ProjectEligibilityAssessmentResult.PASSED,
@@ -588,7 +588,7 @@ internal class ProjectStatusServiceTest {
     fun `can revert Eligibility decision`() {
         val projectId = 18L
         every { securityService.currentUser } returns LocalCurrentUser(userApplicant, "hash_pass", emptyList())
-        val projectCapture = slot<Project>()
+        val projectCapture = slot<ProjectEntity>()
         every { projectRepository.save(capture(projectCapture)) } returnsArgument 0
         every { projectStatusRepository.delete(any<ProjectStatus>()) } answers { }
 
@@ -619,7 +619,7 @@ internal class ProjectStatusServiceTest {
     fun `can revert funding to APPROVED_WITH_CONDITIONS decision`() {
         val projectId = 19L
         every { securityService.currentUser } returns LocalCurrentUser(userApplicant, "hash_pass", emptyList())
-        val projectCapture = slot<Project>()
+        val projectCapture = slot<ProjectEntity>()
         every { projectRepository.save(capture(projectCapture)) } returnsArgument 0
         every { projectStatusRepository.delete(any<ProjectStatus>()) } answers { }
 
@@ -648,7 +648,7 @@ internal class ProjectStatusServiceTest {
     fun `can revert funding to ELIGIBLE decision`() {
         val projectId = 20L
         every { securityService.currentUser } returns LocalCurrentUser(userApplicant, "hash_pass", emptyList())
-        val projectCapture = slot<Project>()
+        val projectCapture = slot<ProjectEntity>()
         every { projectRepository.save(capture(projectCapture)) } returnsArgument 0
         every { projectStatusRepository.delete(any<ProjectStatus>()) } answers { }
 

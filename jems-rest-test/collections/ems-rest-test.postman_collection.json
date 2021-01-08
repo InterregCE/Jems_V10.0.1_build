@@ -530,6 +530,183 @@
 					"response": []
 				},
 				{
+					"name": "retrieve some existing programme lumpSum",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('we can retrieve programme lump sums', function() {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"pm.test('we have programme lump sum or we need to create one', function() {\r",
+									"    const response = pm.response.json();\r",
+									"    if (response.length > 0) {\r",
+									"        console.log('There is already a lumpSum ' + response[0].name + ' with id=' + response[0].id + ', which we will use for calls during this test');\r",
+									"        pm.environment.set('programmeLumpSumId', response[0].id);\r",
+									"    } else {\r",
+									"        console.log('There are no any programme lumpSums yet. We need to create one.');\r",
+									"        pm.environment.set('programmeLumpSumId', null);\r",
+									"    }\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{url}}/api/costOption/lumpSum",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"api",
+								"costOption",
+								"lumpSum"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "[IF] not exists, then create splittable programme lumpSum",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"if (pm.environment.get('programmeLumpSumId') == null) {\r",
+									"    console.log('There is no any programme lump sum we can use, so we need to create one.');\r",
+									"    pm.variables.set('lumpSumName', '\\\"[API test] splittable\\\"');\r",
+									"} else {\r",
+									"    console.log('There is already a programme lump sum, so we will use that one.');\r",
+									"    pm.variables.set('lumpSumName', null);\r",
+									"}\r",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('programme lump sum was created (as it was needed)', function() {\r",
+									"    const response = pm.response.json()\r",
+									"    if (pm.environment.get('programmeLumpSumId') == null) {\r",
+									"        pm.response.to.have.status(200);\r",
+									"        console.log('We created new programme lump sum with id=' + response.id);\r",
+									"        pm.environment.set('programmeLumpSumId', response.id);\r",
+									"    } else {\r",
+									"        pm.response.to.have.status(422);\r",
+									"        console.log('We did an invalid POST to NOT create new lump sum.');\r",
+									"    }\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"name\": {{lumpSumName}},\r\n    \"cost\": 10000,\r\n    \"splittingAllowed\": true,\r\n    \"phase\": \"Preparation\",\r\n    \"categories\": [\"StaffCosts\", \"OfficeAndAdministrationCosts\"]\r\n}\r\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{url}}/api/costOption/lumpSum",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"api",
+								"costOption",
+								"lumpSum"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "[IF] not exists, then create splittable programme lumpSum Copy",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('programme lump sum was created', function() {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"pm.test('programme lump sum was created', function() {\r",
+									"    const lumpSum = pm.response.json();\r",
+									"    pm.expect(lumpSum.name).to.eql(\"[API test] splittable\");\r",
+									"    pm.expect(lumpSum.cost).to.eql(10000);\r",
+									"    pm.expect(lumpSum.splittingAllowed).to.be.true;\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"id\": {{programmeLumpSumId}},\r\n    \"name\": \"[API test] splittable\",\r\n    \"cost\": 10000,\r\n    \"splittingAllowed\": true,\r\n    \"phase\": \"Preparation\",\r\n    \"categories\": [\"StaffCosts\", \"OfficeAndAdministrationCosts\"]\r\n}\r\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{url}}/api/costOption/lumpSum",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"api",
+								"costOption",
+								"lumpSum"
+							]
+						}
+					},
+					"response": []
+				},
+				{
 					"name": "create call",
 					"event": [
 						{
@@ -677,6 +854,79 @@
 								"call",
 								"{{callId}}",
 								"flatrate"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "setup lump sums to call",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('call lump sum is saved successfully', function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "basic",
+							"basic": [
+								{
+									"key": "password",
+									"value": "{{programme_user_email}}",
+									"type": "string"
+								},
+								{
+									"key": "username",
+									"value": "{{programme_user_email}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"type": "text",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "[{{programmeLumpSumId}}]",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{url}}/api/call/{{callId}}/lumpSum",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"api",
+								"call",
+								"{{callId}}",
+								"lumpSum"
 							]
 						}
 					},
@@ -7562,6 +7812,64 @@
 								}
 							},
 							"response": []
+						},
+						{
+							"name": "fill in project duration to have periods",
+							"event": [
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											"const projectName = pm.variables.replaceIn('{{$randomBs}}')\r",
+											"pm.variables.set(\r",
+											"    'project_title',\r",
+											"    projectName.substr(0,250)\r",
+											");\r",
+											""
+										],
+										"type": "text/javascript"
+									}
+								},
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test('project duration is saved', function() {\r",
+											"    pm.response.to.have.status(200);\r",
+											"    pm.expect(pm.response.json().projectData.duration).to.eql(50);\r",
+											"});\r",
+											""
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "PUT",
+								"header": [
+									{
+										"key": "Content-Type",
+										"type": "text",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n\t\"acronym\": \"{{application_acronym}}\",\n\t\"specificObjective\": \"{{programmePriorityPolicy}}\",\n    \"title\": \"{{project_title}}\",\n\t\"duration\": 50,\n    \"introProgrammeLanguage\": \"{{$randomLoremParagraph}}\\n{{$randomLoremParagraph}}\\n\\n{{$randomLoremParagraph}}\"\n}\n"
+								},
+								"url": {
+									"raw": "{{url}}/api/project/{{application_id}}",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"api",
+										"project",
+										"{{application_id}}"
+									]
+								}
+							},
+							"response": []
 						}
 					]
 				},
@@ -7588,7 +7896,7 @@
 											"\r",
 											"pm.test('applicant can create project partner', function() {\r",
 											"    pm.response.to.have.status(200);\r",
-											"    pm.variables.set('partner_id', partner.id);\r",
+											"    pm.variables.set('partner_id_1', partner.id);\r",
 											"});\r",
 											""
 										],
@@ -7697,7 +8005,7 @@
 									}
 								},
 								"url": {
-									"raw": "{{url}}/api/project/{{application_id}}/partner/{{partner_id}}/address",
+									"raw": "{{url}}/api/project/{{application_id}}/partner/{{partner_id_1}}/address",
 									"host": [
 										"{{url}}"
 									],
@@ -7706,7 +8014,7 @@
 										"project",
 										"{{application_id}}",
 										"partner",
-										"{{partner_id}}",
+										"{{partner_id_1}}",
 										"address"
 									]
 								}
@@ -7783,7 +8091,7 @@
 									}
 								},
 								"url": {
-									"raw": "{{url}}/api/project/{{application_id}}/partner/{{partner_id}}/address",
+									"raw": "{{url}}/api/project/{{application_id}}/partner/{{partner_id_1}}/address",
 									"host": [
 										"{{url}}"
 									],
@@ -7792,7 +8100,7 @@
 										"project",
 										"{{application_id}}",
 										"partner",
-										"{{partner_id}}",
+										"{{partner_id_1}}",
 										"address"
 									]
 								}
@@ -7815,13 +8123,12 @@
 									"listen": "test",
 									"script": {
 										"exec": [
-											"const partner = pm.response.json();\r",
-											"\r",
 											"pm.test('applicant can set contacts to partner', function() {\r",
 											"    pm.response.to.have.status(200);\r",
 											"});\r",
 											"\r",
 											"pm.test('both contacts are there', function() {\r",
+											"    const partner = pm.response.json();\r",
 											"    pm.expect(partner.contacts.length).to.eql(2);\r",
 											"});\r",
 											""
@@ -7858,7 +8165,7 @@
 									}
 								},
 								"url": {
-									"raw": "{{url}}/api/project/{{application_id}}/partner/{{partner_id}}/contact",
+									"raw": "{{url}}/api/project/{{application_id}}/partner/{{partner_id_1}}/contact",
 									"host": [
 										"{{url}}"
 									],
@@ -7867,7 +8174,7 @@
 										"project",
 										"{{application_id}}",
 										"partner",
-										"{{partner_id}}",
+										"{{partner_id_1}}",
 										"contact"
 									]
 								}
@@ -7890,18 +8197,17 @@
 									"listen": "test",
 									"script": {
 										"exec": [
-											"const partner = pm.response.json();\r",
-											"\r",
 											"pm.test('applicant can remove contacts from partner', function() {\r",
 											"    pm.response.to.have.status(200);\r",
 											"});\r",
 											"\r",
 											"pm.test('just one contact is now returned', function() {\r",
+											"    const partner = pm.response.json();\r",
 											"    pm.expect(partner.contacts.length).to.eql(1);\r",
 											"}); \r",
 											"\r",
 											"pm.test('contact is saved correctly', function() {\r",
-											"    const contact = partner.contacts[0];\r",
+											"    const contact = pm.response.json().contacts[0];\r",
 											"    pm.expect(contact.type).to.eql(\"ContactPerson\");\r",
 											"    pm.expect(contact.title).to.eql(\"Bachelor\");\r",
 											"    pm.expect(contact.firstName).to.eql(\"Donald\");\r",
@@ -7943,7 +8249,7 @@
 									}
 								},
 								"url": {
-									"raw": "{{url}}/api/project/{{application_id}}/partner/{{partner_id}}/contact",
+									"raw": "{{url}}/api/project/{{application_id}}/partner/{{partner_id_1}}/contact",
 									"host": [
 										"{{url}}"
 									],
@@ -7952,7 +8258,7 @@
 										"project",
 										"{{application_id}}",
 										"partner",
-										"{{partner_id}}",
+										"{{partner_id_1}}",
 										"contact"
 									]
 								}
@@ -7975,13 +8281,12 @@
 									"listen": "test",
 									"script": {
 										"exec": [
-											"const motivation = pm.response.json().motivation;\r",
-											"\r",
 											"pm.test('applicant can set motivation to partner', function() {\r",
 											"    pm.response.to.have.status(200);\r",
 											"});\r",
 											"\r",
 											"pm.test('motivation is set correctly', function() {\r",
+											"    const motivation = pm.response.json().motivation;\r",
 											"    pm.expect(motivation.organizationRelevance[0].translation).to.eql('This project is definitely relevant enough to be founded.');\r",
 											"    pm.expect(motivation.organizationRole[0].translation).to.eql('test latin àâçéèêëîïôùûüÿ');\r",
 											"    pm.expect(motivation.organizationExperience[0].translation).to.eql('We have 16 millions years of experience in this particular area.');\r",
@@ -8020,7 +8325,7 @@
 									}
 								},
 								"url": {
-									"raw": "{{url}}/api/project/{{application_id}}/partner/{{partner_id}}/motivation",
+									"raw": "{{url}}/api/project/{{application_id}}/partner/{{partner_id_1}}/motivation",
 									"host": [
 										"{{url}}"
 									],
@@ -8029,7 +8334,7 @@
 										"project",
 										"{{application_id}}",
 										"partner",
-										"{{partner_id}}",
+										"{{partner_id_1}}",
 										"motivation"
 									]
 								}
@@ -8081,7 +8386,7 @@
 											"\r",
 											"pm.test('applicant can create project partner', function() {\r",
 											"    pm.response.to.have.status(200);\r",
-											"    pm.variables.set('partner_id', partner.id);\r",
+											"    pm.variables.set('partner_id_2', partner.id);\r",
 											"});\r",
 											""
 										],
@@ -8194,7 +8499,7 @@
 									}
 								},
 								"url": {
-									"raw": "{{url}}/api/project/partner/{{partner_id}}/budget/staffcosts",
+									"raw": "{{url}}/api/project/partner/{{partner_id_2}}/budget/staffcosts",
 									"host": [
 										"{{url}}"
 									],
@@ -8202,7 +8507,7 @@
 										"api",
 										"project",
 										"partner",
-										"{{partner_id}}",
+										"{{partner_id_2}}",
 										"budget",
 										"staffcosts"
 									]
@@ -8276,7 +8581,7 @@
 									}
 								},
 								"url": {
-									"raw": "{{url}}/api/project/partner/{{partner_id}}/budget/travel",
+									"raw": "{{url}}/api/project/partner/{{partner_id_2}}/budget/travel",
 									"host": [
 										"{{url}}"
 									],
@@ -8284,7 +8589,7 @@
 										"api",
 										"project",
 										"partner",
-										"{{partner_id}}",
+										"{{partner_id_2}}",
 										"budget",
 										"travel"
 									]
@@ -8358,7 +8663,7 @@
 									}
 								},
 								"url": {
-									"raw": "{{url}}/api/project/partner/{{partner_id}}/budget/infrastructure",
+									"raw": "{{url}}/api/project/partner/{{partner_id_2}}/budget/infrastructure",
 									"host": [
 										"{{url}}"
 									],
@@ -8366,7 +8671,7 @@
 										"api",
 										"project",
 										"partner",
-										"{{partner_id}}",
+										"{{partner_id_2}}",
 										"budget",
 										"infrastructure"
 									]
@@ -8427,7 +8732,7 @@
 									}
 								},
 								"url": {
-									"raw": "{{url}}/api/project/partner/{{partner_id}}/budget/options",
+									"raw": "{{url}}/api/project/partner/{{partner_id_2}}/budget/options",
 									"host": [
 										"{{url}}"
 									],
@@ -8435,7 +8740,7 @@
 										"api",
 										"project",
 										"partner",
-										"{{partner_id}}",
+										"{{partner_id_2}}",
 										"budget",
 										"options"
 									]
@@ -8488,7 +8793,7 @@
 								"method": "GET",
 								"header": [],
 								"url": {
-									"raw": "{{url}}/api/project/partner/{{partner_id}}/budget/total",
+									"raw": "{{url}}/api/project/partner/{{partner_id_2}}/budget/total",
 									"host": [
 										"{{url}}"
 									],
@@ -8496,7 +8801,7 @@
 										"api",
 										"project",
 										"partner",
-										"{{partner_id}}",
+										"{{partner_id_2}}",
 										"budget",
 										"total"
 									]
@@ -8557,7 +8862,7 @@
 									}
 								},
 								"url": {
-									"raw": "{{url}}/api/project/partner/{{partner_id}}/budget/options",
+									"raw": "{{url}}/api/project/partner/{{partner_id_2}}/budget/options",
 									"host": [
 										"{{url}}"
 									],
@@ -8565,7 +8870,7 @@
 										"api",
 										"project",
 										"partner",
-										"{{partner_id}}",
+										"{{partner_id_2}}",
 										"budget",
 										"options"
 									]
@@ -8618,7 +8923,7 @@
 								"method": "GET",
 								"header": [],
 								"url": {
-									"raw": "{{url}}/api/project/partner/{{partner_id}}/budget/total",
+									"raw": "{{url}}/api/project/partner/{{partner_id_2}}/budget/total",
 									"host": [
 										"{{url}}"
 									],
@@ -8626,7 +8931,7 @@
 										"api",
 										"project",
 										"partner",
-										"{{partner_id}}",
+										"{{partner_id_2}}",
 										"budget",
 										"total"
 									]
@@ -8687,7 +8992,7 @@
 									}
 								},
 								"url": {
-									"raw": "{{url}}/api/project/partner/{{partner_id}}/budget/options",
+									"raw": "{{url}}/api/project/partner/{{partner_id_2}}/budget/options",
 									"host": [
 										"{{url}}"
 									],
@@ -8695,7 +9000,7 @@
 										"api",
 										"project",
 										"partner",
-										"{{partner_id}}",
+										"{{partner_id_2}}",
 										"budget",
 										"options"
 									]
@@ -8769,7 +9074,7 @@
 									}
 								},
 								"url": {
-									"raw": "{{url}}/api/project/partner/{{partner_id}}/budget/travel",
+									"raw": "{{url}}/api/project/partner/{{partner_id_2}}/budget/travel",
 									"host": [
 										"{{url}}"
 									],
@@ -8777,7 +9082,7 @@
 										"api",
 										"project",
 										"partner",
-										"{{partner_id}}",
+										"{{partner_id_2}}",
 										"budget",
 										"travel"
 									]
@@ -8830,7 +9135,7 @@
 								"method": "GET",
 								"header": [],
 								"url": {
-									"raw": "{{url}}/api/project/partner/{{partner_id}}/budget/total",
+									"raw": "{{url}}/api/project/partner/{{partner_id_2}}/budget/total",
 									"host": [
 										"{{url}}"
 									],
@@ -8838,7 +9143,7 @@
 										"api",
 										"project",
 										"partner",
-										"{{partner_id}}",
+										"{{partner_id_2}}",
 										"budget",
 										"total"
 									]
@@ -9182,6 +9487,73 @@
 					]
 				},
 				{
+					"name": "fill in project lump sums",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('applicant can fill in project lump sum and their respective partner contribution', function() {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "basic",
+							"basic": [
+								{
+									"key": "password",
+									"value": "{{applicant_email}}",
+									"type": "string"
+								},
+								{
+									"key": "username",
+									"value": "{{applicant_email}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "[\r\n    {\r\n        \"programmeLumpSumId\": {{programmeLumpSumId}},\r\n        \"period\": 1,\r\n        \"lumpSumContributions\": [\r\n            {\r\n                \"partnerId\": {{partner_id_1}},\r\n                \"amount\": 2000\r\n            },\r\n            {\r\n                \"partnerId\": {{partner_id_2}},\r\n                \"amount\": 8000\r\n            }\r\n        ]\r\n    },\r\n    {\r\n        \"programmeLumpSumId\": {{programmeLumpSumId}},\r\n        \"period\": 2,\r\n        \"lumpSumContributions\": [\r\n            {\r\n                \"partnerId\": {{partner_id_2}},\r\n                \"amount\": 3956\r\n            },\r\n            {\r\n                \"partnerId\": {{partner_id_1}},\r\n                \"amount\": 4044\r\n            }\r\n        ]\r\n    }\r\n]\r\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{url}}/api/project/{{application_id}}/lumpSum",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"api",
+								"project",
+								"{{application_id}}",
+								"lumpSum"
+							]
+						}
+					},
+					"response": []
+				},
+				{
 					"name": "check project budget for all partners",
 					"event": [
 						{
@@ -9210,7 +9582,8 @@
 									"pm.test('partners are sorted', function() {\r",
 									"    const res = pm.response.json();\r",
 									"    pm.expect(res[0].partner.id).to.eql(pm.variables.get('partner_id_lead'));\r",
-									"    pm.expect(res[2].partner.id).to.eql(pm.variables.get('partner_id'));\r",
+									"    pm.expect(res[1].partner.id).to.eql(pm.variables.get('partner_id_1'));\r",
+									"    pm.expect(res[2].partner.id).to.eql(pm.variables.get('partner_id_2'));\r",
 									"});\r",
 									"\r",
 									"pm.test('partners have correct sort numbers', function() {\r",
@@ -9232,6 +9605,8 @@
 									"    pm.expect(res[0].totalSum).to.eql(24200);\r",
 									"\r",
 									"    pm.expect(res[1].partner.country).to.eql('SK');\r",
+									"    pm.expect(res[1].totalSum).to.eql(6044);\r",
+									"    pm.expect(res[1].lumpSumContribution).to.eql(6044);\r",
 									"\r",
 									"    pm.expect(res[2].staffCosts).to.eql(0.11);\r",
 									"    pm.expect(res[2].travelCosts).to.eql(0.18);\r",
@@ -9239,7 +9614,8 @@
 									"    pm.expect(res[2].equipmentCosts).to.eql(0);\r",
 									"    pm.expect(res[2].infrastructureCosts).to.eql(1);\r",
 									"    pm.expect(res[2].officeAndAdministrationCosts).to.eql(0);\r",
-									"    pm.expect(res[2].totalSum).to.eql(1.29);\r",
+									"    pm.expect(res[2].totalSum).to.eql(11957.29);\r",
+									"    pm.expect(res[2].lumpSumContribution).to.eql(11956);\r",
 									"});\r",
 									""
 								],
@@ -9296,14 +9672,12 @@
 							"listen": "test",
 							"script": {
 								"exec": [
-									"const finances = pm.response.json().finances;\r",
-									"const contributions = pm.response.json().partnerContributions;\r",
-									"\r",
 									"pm.test('applicant can set Co-Finaning', function() {\r",
 									"    pm.response.to.have.status(200);\r",
 									"});\r",
 									"\r",
 									"pm.test('financing and funds are correct', function() {\r",
+									"    const finances = pm.response.json().finances;\r",
 									"    pm.expect(finances[0].percentage).to.eql(25);\r",
 									"    pm.expect(finances[0].fund).to.not.be.empty;\r",
 									"    pm.expect(finances[1].percentage).to.eql(75);\r",
@@ -9311,6 +9685,7 @@
 									"});\r",
 									"\r",
 									"pm.test('1st contribution is correct', function() {\r",
+									"    const contributions = pm.response.json().partnerContributions;\r",
 									"    pm.expect(contributions[0].name).to.eql(pm.variables.get('partner_abbreviation'));\r",
 									"    pm.expect(contributions[0].status).to.eql('Private');\r",
 									"    pm.expect(contributions[0].isPartner).to.be.true;\r",
@@ -9318,6 +9693,7 @@
 									"});\r",
 									"\r",
 									"pm.test('2nd contribution is correct', function() {\r",
+									"    const contributions = pm.response.json().partnerContributions;\r",
 									"    pm.expect(contributions[1].name).to.eql('Source of money 01');\r",
 									"    pm.expect(contributions[1].status).to.eql('Public');\r",
 									"    pm.expect(contributions[1].isPartner).to.be.false;\r",
@@ -9325,6 +9701,7 @@
 									"});\r",
 									"\r",
 									"pm.test('3rd contribution is correct', function() {\r",
+									"    const contributions = pm.response.json().partnerContributions;\r",
 									"    pm.expect(contributions[2].name).to.eql('Source of money 02');\r",
 									"    pm.expect(contributions[2].status).to.eql('AutomaticPublic');\r",
 									"    pm.expect(contributions[2].isPartner).to.be.false;\r",
@@ -9332,6 +9709,7 @@
 									"});\r",
 									"\r",
 									"pm.test('4th contribution is correct', function() {\r",
+									"    const contributions = pm.response.json().partnerContributions;\r",
 									"    pm.expect(contributions[3].name).to.eql('Source of money 03');\r",
 									"    pm.expect(contributions[3].status).to.eql('Private');\r",
 									"    pm.expect(contributions[3].isPartner).to.be.false;\r",
@@ -9485,66 +9863,66 @@
 								}
 							},
 							"response": []
+						},
+						{
+							"name": "fill in project duration to have periods",
+							"event": [
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											"const projectName = pm.variables.replaceIn('{{$randomBs}}')\r",
+											"pm.variables.set(\r",
+											"    'project_title',\r",
+											"    projectName.substr(0,250)\r",
+											");\r",
+											""
+										],
+										"type": "text/javascript"
+									}
+								},
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test('project duration is saved', function() {\r",
+											"    pm.response.to.have.status(200);\r",
+											"    pm.expect(pm.response.json().projectData.duration).to.eql(50);\r",
+											"});\r",
+											""
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "PUT",
+								"header": [
+									{
+										"key": "Content-Type",
+										"type": "text",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n\t\"acronym\": \"{{application_acronym}}\",\n\t\"specificObjective\": \"{{programmePriorityPolicy}}\",\n    \"title\": \"{{project_title}}\",\n\t\"duration\": 50,\n    \"introProgrammeLanguage\": \"{{$randomLoremParagraph}}\\n{{$randomLoremParagraph}}\\n\\n{{$randomLoremParagraph}}\"\n}\n"
+								},
+								"url": {
+									"raw": "{{url}}/api/project/{{application_id}}",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"api",
+										"project",
+										"{{application_id}}"
+									]
+								}
+							},
+							"response": []
 						}
 					]
-				},
-				{
-					"name": "fill in project duration to have periods",
-					"event": [
-						{
-							"listen": "prerequest",
-							"script": {
-								"exec": [
-									"const projectName = pm.variables.replaceIn('{{$randomBs}}')\r",
-									"pm.variables.set(\r",
-									"    'project_title',\r",
-									"    projectName.substr(0,250)\r",
-									");\r",
-									""
-								],
-								"type": "text/javascript"
-							}
-						},
-						{
-							"listen": "test",
-							"script": {
-								"exec": [
-									"pm.test('project duration is saved', function() {\r",
-									"    pm.response.to.have.status(200);\r",
-									"    pm.expect(pm.response.json().projectData.duration).to.eql(50);\r",
-									"});\r",
-									""
-								],
-								"type": "text/javascript"
-							}
-						}
-					],
-					"request": {
-						"method": "PUT",
-						"header": [
-							{
-								"key": "Content-Type",
-								"type": "text",
-								"value": "application/json"
-							}
-						],
-						"body": {
-							"mode": "raw",
-							"raw": "{\n\t\"acronym\": \"{{application_acronym}}\",\n\t\"specificObjective\": \"{{programmePriorityPolicy}}\",\n    \"title\": \"{{project_title}}\",\n\t\"duration\": 50,\n    \"introProgrammeLanguage\": \"{{$randomLoremParagraph}}\\n{{$randomLoremParagraph}}\\n\\n{{$randomLoremParagraph}}\"\n}\n"
-						},
-						"url": {
-							"raw": "{{url}}/api/project/{{application_id}}",
-							"host": [
-								"{{url}}"
-							],
-							"path": [
-								"api",
-								"project",
-								"{{application_id}}"
-							]
-						}
-					},
-					"response": []
 				},
 				{
 					"name": "create project work package",

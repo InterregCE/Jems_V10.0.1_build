@@ -3,7 +3,7 @@ package io.cloudflight.jems.server.project.repository.result
 import io.cloudflight.jems.api.project.dto.result.ProjectResultDTO
 import io.cloudflight.jems.server.common.exception.ResourceNotFoundException
 import io.cloudflight.jems.server.programme.repository.indicator.IndicatorResultRepository
-import io.cloudflight.jems.server.project.entity.Project
+import io.cloudflight.jems.server.project.entity.ProjectEntity
 import io.cloudflight.jems.server.project.repository.ProjectRepository
 import io.cloudflight.jems.server.project.repository.description.ProjectPeriodRepository
 import io.cloudflight.jems.server.project.service.result.ProjectResultPersistence
@@ -55,7 +55,7 @@ class ProjectResultPersistenceProvider(
             .toSet()
     }
 
-    private fun getProjectOrThrow(projectId: Long): Project =
+    private fun getProjectOrThrow(projectId: Long): ProjectEntity =
         projectRepository.findById(projectId).orElseThrow { ResourceNotFoundException("project") }
 
 }

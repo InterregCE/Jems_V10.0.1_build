@@ -26,7 +26,7 @@ data class ProjectEligibilityAssessment(
     @OneToOne(optional = false)
     @MapsId
     @field:NotNull
-    val project: Project,
+    val project: ProjectEntity,
 
     @Enumerated(EnumType.STRING)
     @field:NotNull

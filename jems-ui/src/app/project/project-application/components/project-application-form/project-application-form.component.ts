@@ -125,7 +125,7 @@ export class ProjectApplicationFormComponent extends BaseComponent implements On
     this.applicationForm.controls.acronym.setValue(this.project.acronym);
     this.applicationForm.controls.title.setValue(this.project?.projectData?.title);
     this.applicationForm.controls.duration.setValue(this.project?.projectData?.duration);
-    this.applicationForm.controls.projectPeriodLength.setValue(this.project?.call.lengthOfPeriod);
+    this.applicationForm.controls.projectPeriodLength.setValue(this.project?.callSettings.lengthOfPeriod);
     this.applicationForm.controls.projectPeriodCount.setValue(
       this.projectPeriodCount(this.project?.projectData?.duration)
     );
@@ -146,7 +146,7 @@ export class ProjectApplicationFormComponent extends BaseComponent implements On
   }
 
   private projectPeriodCount(projectDuration: number): number {
-    return projectDuration ? Math.ceil(projectDuration / this.project?.call.lengthOfPeriod) : 0;
+    return projectDuration ? Math.ceil(projectDuration / this.project?.callSettings.lengthOfPeriod) : 0;
   }
 
   changeCurrentPriority(selectedPriority: string): void {

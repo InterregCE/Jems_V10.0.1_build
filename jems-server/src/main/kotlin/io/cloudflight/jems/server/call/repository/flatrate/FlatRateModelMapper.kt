@@ -12,10 +12,10 @@ fun ProjectCallFlatRate.toEntity(callId: Long) = ProjectCallFlatRateEntity(
 
 fun Set<ProjectCallFlatRate>.toEntity(callId: Long) = mapTo(HashSet()) { it.toEntity(callId) }
 
-fun ProjectCallFlatRateEntity.toProjectCallFlatRate() = ProjectCallFlatRate(
+fun ProjectCallFlatRateEntity.toModel() = ProjectCallFlatRate(
     type = setupId.type,
     rate = rate,
     isAdjustable = isAdjustable
 )
 
-fun Set<ProjectCallFlatRateEntity>.toProjectCallFlatRate() = mapTo(HashSet()) { it.toProjectCallFlatRate() }
+fun Set<ProjectCallFlatRateEntity>.toProjectCallFlatRate() = mapTo(HashSet()) { it.toModel() }

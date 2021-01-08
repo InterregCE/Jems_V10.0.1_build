@@ -4,6 +4,7 @@ import io.cloudflight.jems.server.project.authorization.CanReadProject
 import io.cloudflight.jems.server.project.service.budget.ProjectBudgetPersistence
 import io.cloudflight.jems.server.project.service.budget.model.PartnerBudget
 import io.cloudflight.jems.server.project.service.budget.model.ProjectPartnerCost
+import io.cloudflight.jems.server.project.service.lumpsum.ProjectLumpSumPersistence
 import io.cloudflight.jems.server.project.service.partner.budget.ProjectPartnerBudgetOptionsPersistence
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
@@ -13,6 +14,7 @@ import java.math.BigDecimal
 class GetProjectBudget(
     private val persistence: ProjectBudgetPersistence,
     private val optionPersistence: ProjectPartnerBudgetOptionsPersistence,
+    private val lumpSumPersistence: ProjectLumpSumPersistence,
 ) : GetProjectBudgetInteractor {
 
     @Transactional(readOnly = true)
@@ -27,6 +29,9 @@ class GetProjectBudget(
         val equipmentPerPartner = persistence.getEquipmentCosts(partners.keys).groupByPartnerId()
         val infrastructurePerPartner = persistence.getInfrastructureCosts(partners.keys).groupByPartnerId()
 
+        val lumpSumIds = lumpSumPersistence.getLumpSums(projectId).mapTo(HashSet()) { it.id!! }
+        val lumpSumContributionPerPartner = persistence.getLumpSumContributionPerPartner(lumpSumIds)
+
         return partners.map { (partnerId, partner) ->
             PartnerBudget(
                 partner = partner,
@@ -39,6 +44,7 @@ class GetProjectBudget(
                 externalCosts = externalPerPartner[partnerId] ?: BigDecimal.ZERO,
                 equipmentCosts = equipmentPerPartner[partnerId] ?: BigDecimal.ZERO,
                 infrastructureCosts = infrastructurePerPartner[partnerId] ?: BigDecimal.ZERO,
+                lumpSumContribution = lumpSumContributionPerPartner[partnerId] ?: BigDecimal.ZERO,
             )
         }
     }

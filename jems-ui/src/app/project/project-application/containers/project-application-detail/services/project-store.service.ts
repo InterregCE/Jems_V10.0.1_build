@@ -9,6 +9,7 @@ import {
   OutputProject,
   OutputProjectStatus,
   OutputRevertProjectStatus,
+  ProjectCallSettingsDTO,
   ProjectService,
   ProjectStatusService
 } from '@cat/api';
@@ -139,9 +140,9 @@ export class ProjectStore {
       shareReplay(1)
     );
 
-  projectCall$ = this.getProject()
+  projectCall$: Observable<ProjectCallSettingsDTO> = this.getProject()
     .pipe(
-      map(project => project.call),
+      map(project => project.callSettings),
       shareReplay(1)
     );
 

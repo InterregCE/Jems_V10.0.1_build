@@ -8,7 +8,7 @@ import io.cloudflight.jems.api.project.dto.workpackage.InputWorkPackageCreate
 import io.cloudflight.jems.api.project.dto.workpackage.InputWorkPackageUpdate
 import io.cloudflight.jems.api.project.dto.workpackage.OutputWorkPackage
 import io.cloudflight.jems.server.call.entity.CallEntity
-import io.cloudflight.jems.server.project.entity.Project
+import io.cloudflight.jems.server.project.entity.ProjectEntity
 import io.cloudflight.jems.server.project.entity.ProjectStatus
 import io.cloudflight.jems.server.project.repository.ProjectRepository
 import io.cloudflight.jems.server.user.entity.User
@@ -76,7 +76,7 @@ class WorkPackageServiceTest {
         updated = TEST_DATE_TIME
     )
 
-    private val project = Project(
+    private val project = ProjectEntity(
         id = 1,
         call = call,
         acronym = "test",

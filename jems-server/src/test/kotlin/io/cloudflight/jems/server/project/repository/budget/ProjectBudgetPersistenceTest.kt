@@ -3,8 +3,10 @@ package io.cloudflight.jems.server.project.repository.budget
 import io.cloudflight.jems.api.project.dto.partner.ProjectPartnerAddressType
 import io.cloudflight.jems.api.project.dto.partner.ProjectPartnerRole
 import io.cloudflight.jems.server.audit.service.AuditService
+import io.cloudflight.jems.server.call.partnerWithId
 import io.cloudflight.jems.server.programme.entity.ProgrammeLegalStatus
 import io.cloudflight.jems.server.project.entity.AddressEntity
+import io.cloudflight.jems.server.project.entity.lumpsum.ProjectLumpSumPerPartnerSumEntity
 import io.cloudflight.jems.server.project.entity.partner.ProjectPartnerAddress
 import io.cloudflight.jems.server.project.entity.partner.ProjectPartnerAddressId
 import io.cloudflight.jems.server.project.entity.partner.ProjectPartnerEntity
@@ -24,6 +26,7 @@ import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.springframework.data.domain.Sort
 import java.math.BigDecimal
+import java.util.UUID
 
 class ProjectBudgetPersistenceTest {
 
@@ -52,6 +55,9 @@ class ProjectBudgetPersistenceTest {
     @MockK
     lateinit var budgetInfrastructureRepository: ProjectPartnerBudgetInfrastructureRepository
 
+    @MockK
+    lateinit var projectLumpSumRepository: ProjectLumpSumRepository
+
     @RelaxedMockK
     lateinit var auditService: AuditService
 
@@ -66,7 +72,8 @@ class ProjectBudgetPersistenceTest {
             budgetTravelRepository,
             budgetExternalRepository,
             budgetEquipmentRepository,
-            budgetInfrastructureRepository
+            budgetInfrastructureRepository,
+            projectLumpSumRepository,
         )
     }
 
@@ -132,6 +139,22 @@ class ProjectBudgetPersistenceTest {
                     country = "SK"
                 )
             )
+    }
+
+    @Test
+    fun getLumpSumContributionPerPartner() {
+        val id: UUID = UUID.randomUUID()
+        every { projectLumpSumRepository.sumLumpSumsPerPartner(setOf(id)) } returns listOf(
+            ProjectLumpSumPerPartnerSumEntity(
+                partner = partnerWithId(PARTNER_ID),
+                sum = BigDecimal.TEN,
+            ),
+        )
+        assertThat(projectBudgetPersistence.getLumpSumContributionPerPartner(setOf(id))).containsExactlyInAnyOrderEntriesOf(
+            mapOf(
+                PARTNER_ID to BigDecimal.TEN
+            )
+        )
     }
 
 }
