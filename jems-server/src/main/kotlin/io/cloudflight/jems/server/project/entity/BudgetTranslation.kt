@@ -24,12 +24,11 @@ class BudgetTranslation<T>(
 
 ) : Serializable {
     override fun equals(other: Any?) =
-        if (this === other) true
-        else
+        this === other ||
             other !== null &&
-                other is BudgetTranslation<*> &&
-                budget == other.budget &&
-                language == other.language
+            other is BudgetTranslation<*> &&
+            budget == other.budget &&
+            language == other.language
 
     override fun hashCode() =
         if (budget === null) super.hashCode()

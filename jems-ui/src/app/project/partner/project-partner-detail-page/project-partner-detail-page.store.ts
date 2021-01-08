@@ -13,7 +13,6 @@ import {
   ProjectPartnerBudgetService
 } from '@cat/api';
 import {ProjectPartnerStore} from '../../project-application/containers/project-application-form-page/services/project-partner-store.service';
-import {Log} from '../../../common/utils/log';
 import {NumberService} from '../../../common/services/number.service';
 import {PartnerBudgetTables} from '../../project-application/model/partner-budget-tables';
 import {StaffCostsBudgetTable} from '../../project-application/model/staff-costs-budget-table';
@@ -23,7 +22,7 @@ import {GeneralBudgetTableEntry} from '../../project-application/model/general-b
 import {TravelAndAccommodationCostsBudgetTable} from '../../project-application/model/travel-and-accommodation-costs-budget-table';
 import {TravelAndAccommodationCostsBudgetTableEntry} from '../../project-application/model/travel-and-accommodation-costs-budget-table-entry';
 import {ProjectWorkPackagePageStore} from '../../work-package/work-package-detail-page/project-work-package-page-store.service';
-import { BudgetStaffCostEntryDTO } from 'build/generated-sources/openapi/model/budgetStaffCostEntryDTO';
+import {BudgetStaffCostEntryDTO} from 'build/generated-sources/openapi/model/budgetStaffCostEntryDTO';
 
 @Injectable()
 export class ProjectPartnerDetailPageStore {
@@ -97,31 +96,14 @@ export class ProjectPartnerDetailPageStore {
       map(([, , partner]) => partner),
       filter(partner => !!partner.id),
       map(partner => partner.id),
-      switchMap(id =>
-        forkJoin({
-          staffCostsTable: this.projectPartnerBudgetService.getBudgetStaffCosts(id).pipe(
-            tap(staff => Log.info('Fetched the staff budget', this, staff)),
-            map(staff => this.toStaffCostsTable(staff)),
-          ),
-          travelCostsTable: this.projectPartnerBudgetService.getBudgetTravel(id).pipe(
-            tap(travel => Log.info('Fetched the travel budget', this, travel)),
-            map(travel => this.toTravelAndAccommodationCostsTable(travel))),
-
-          externalCostsTable: this.projectPartnerBudgetService.getBudgetExternal(id).pipe(
-            tap(external => Log.info('Fetched the external budget', this, external)),
-            map(external => this.toBudgetTable(external))
-          ),
-          equipmentCostsTable: this.projectPartnerBudgetService.getBudgetEquipment(id).pipe(
-            tap(equipment => Log.info('Fetched the equipment budget', this, equipment)),
-            map(equipment => this.toBudgetTable(equipment))
-          ),
-          infrastructureCostsTable: this.projectPartnerBudgetService.getBudgetInfrastructure(id).pipe(
-            tap(infrastructure => Log.info('Fetched the infrastructure budget', this, infrastructure)),
-            map(infrastructure => this.toBudgetTable(infrastructure))
-          ),
-        })
-      ),
-      map(data => new PartnerBudgetTables(data.staffCostsTable, data.travelCostsTable, data.externalCostsTable, data.equipmentCostsTable, data.infrastructureCostsTable)),
+      switchMap(id => this.projectPartnerBudgetService.getBudgetCosts(id)),
+      map(data => new PartnerBudgetTables(
+        this.toStaffCostsTable(data.staffCosts),
+        this.toTravelAndAccommodationCostsTable(data.travelCosts),
+        this.toBudgetTable(data.externalCosts),
+        this.toBudgetTable(data.equipmentCosts),
+        this.toBudgetTable(data.infrastructureCosts)
+      )),
       shareReplay(1)
     );
 

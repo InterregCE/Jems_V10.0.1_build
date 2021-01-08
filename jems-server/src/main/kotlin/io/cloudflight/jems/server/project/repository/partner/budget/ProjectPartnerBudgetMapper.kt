@@ -19,7 +19,6 @@ import io.cloudflight.jems.server.project.service.partner.model.BudgetStaffCostE
 import io.cloudflight.jems.server.project.service.partner.model.BudgetTravelAndAccommodationCostEntry
 import io.cloudflight.jems.server.project.service.partner.model.StaffCostType
 import io.cloudflight.jems.server.project.service.partner.model.StaffCostUnitType
-import java.math.BigDecimal
 
 
 fun List<ProjectPartnerBudgetStaffCostEntity>.toBudgetStaffCostEntries() = this.map { it.toBudgetStaffCostEntry() }
@@ -39,7 +38,7 @@ fun ProjectPartnerBudgetStaffCostEntity.toBudgetStaffCostEntry() = BudgetStaffCo
 )
 
 fun BudgetStaffCostEntry.toProjectPartnerBudgetStaffCostEntity(partnerId: Long) = ProjectPartnerBudgetStaffCostEntity(
-    baseProperties = BaseBudgetProperties(partnerId, numberOfUnits, pricePerUnit, rowSum ?: BigDecimal.ZERO),
+    baseProperties = BaseBudgetProperties(partnerId, numberOfUnits, pricePerUnit, rowSum),
     type = type,
     unitType = unitType,
     translatedValues = mutableSetOf(),
@@ -75,7 +74,7 @@ fun ProjectPartnerBudgetTravelEntity.toBudgetTravelAndAccommodationCostEntry() =
 )
 
 fun BudgetTravelAndAccommodationCostEntry.toProjectPartnerBudgetTravelEntity(partnerId: Long) = ProjectPartnerBudgetTravelEntity(
-    baseProperties = BaseBudgetProperties(partnerId, numberOfUnits, pricePerUnit, rowSum ?: BigDecimal.ZERO),
+    baseProperties = BaseBudgetProperties(partnerId, numberOfUnits, pricePerUnit, rowSum),
     translatedValues = mutableSetOf(),
     id = id ?: 0L
 ).apply {
@@ -98,7 +97,7 @@ fun List<ProjectPartnerBudgetEquipmentEntity>.equipmentEntitiesToBudgetGeneralEn
 fun BudgetGeneralCostEntry.toProjectPartnerBudgetEquipmentEntity(partnerId: Long) = ProjectPartnerBudgetEquipmentEntity(
     id = id ?: 0L,
     investmentId = investmentId,
-    baseProperties = BaseBudgetProperties(partnerId, numberOfUnits, pricePerUnit, rowSum ?: BigDecimal.ZERO),
+    baseProperties = BaseBudgetProperties(partnerId, numberOfUnits, pricePerUnit, rowSum),
     translatedValues = mutableSetOf()
 ).apply {
     translatedValues.addAll(
@@ -121,7 +120,7 @@ fun List<ProjectPartnerBudgetExternalEntity>.externalEntitiesToBudgetGeneralEntr
 fun BudgetGeneralCostEntry.toProjectPartnerBudgetExternalEntity(partnerId: Long) = ProjectPartnerBudgetExternalEntity(
     id = id ?: 0L,
     investmentId = investmentId,
-    baseProperties = BaseBudgetProperties(partnerId, numberOfUnits, pricePerUnit, rowSum ?: BigDecimal.ZERO),
+    baseProperties = BaseBudgetProperties(partnerId, numberOfUnits, pricePerUnit, rowSum),
     translatedValues = mutableSetOf()
 ).apply {
     translatedValues.addAll(
@@ -144,7 +143,7 @@ fun List<ProjectPartnerBudgetInfrastructureEntity>.infrastructureEntitiesToBudge
 fun BudgetGeneralCostEntry.toProjectPartnerBudgetInfrastructureEntity(partnerId: Long) = ProjectPartnerBudgetInfrastructureEntity(
     id = id ?: 0L,
     investmentId = investmentId,
-    baseProperties = BaseBudgetProperties(partnerId, numberOfUnits, pricePerUnit, rowSum ?: BigDecimal.ZERO),
+    baseProperties = BaseBudgetProperties(partnerId, numberOfUnits, pricePerUnit, rowSum),
     translatedValues = mutableSetOf()
 ).apply {
     translatedValues.addAll(

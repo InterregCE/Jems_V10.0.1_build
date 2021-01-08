@@ -2,8 +2,8 @@ package io.cloudflight.jems.server.project.controller.partner.budget
 
 import io.cloudflight.jems.api.programme.dto.ProgrammeFundOutputDTO
 import io.cloudflight.jems.api.project.dto.partner.budget.BudgetGeneralCostEntryDTO
-import io.cloudflight.jems.api.project.dto.partner.budget.BudgetTravelAndAccommodationCostEntryDTO
 import io.cloudflight.jems.api.project.dto.partner.budget.BudgetStaffCostEntryDTO
+import io.cloudflight.jems.api.project.dto.partner.budget.BudgetTravelAndAccommodationCostEntryDTO
 import io.cloudflight.jems.api.project.dto.partner.cofinancing.ProjectPartnerCoFinancingAndContributionInputDTO
 import io.cloudflight.jems.api.project.dto.partner.cofinancing.ProjectPartnerCoFinancingAndContributionOutputDTO
 import io.cloudflight.jems.api.project.dto.partner.cofinancing.ProjectPartnerCoFinancingInputDTO
@@ -14,13 +14,9 @@ import io.cloudflight.jems.api.project.dto.partner.cofinancing.ProjectPartnerCon
 import io.cloudflight.jems.api.project.dto.partner.cofinancing.ProjectPartnerContributionStatus.Public
 import io.cloudflight.jems.server.UnitTest
 import io.cloudflight.jems.server.programme.service.model.ProgrammeFund
-import io.cloudflight.jems.server.project.service.partner.budget.get_budget_general_costs.get_budget_equipment_costs.GetBudgetEquipmentCosts
-import io.cloudflight.jems.server.project.service.partner.budget.get_budget_general_costs.get_budget_external_expertise_and_services.GetBudgetExternalExpertiseAndServicesCosts
-import io.cloudflight.jems.server.project.service.partner.budget.get_budget_general_costs.get_budget_infrastructure_and_works_costs.GetBudgetInfrastructureAndWorksCosts
+import io.cloudflight.jems.server.project.service.partner.budget.get_budget_costs.GetBudgetCosts
 import io.cloudflight.jems.server.project.service.partner.budget.get_budget_options.GetBudgetOptionsInteractor
-import io.cloudflight.jems.server.project.service.partner.budget.get_budget_staff_costs.GetBudgetStaffCosts
 import io.cloudflight.jems.server.project.service.partner.budget.get_budget_total_cost.GetBudgetTotalCost
-import io.cloudflight.jems.server.project.service.partner.budget.get_budget_travel_and_accommodation_costs.GetBudgetTravelAndAccommodationCosts
 import io.cloudflight.jems.server.project.service.partner.budget.update_budge_staff_costs.UpdateBudgetStaffCosts
 import io.cloudflight.jems.server.project.service.partner.budget.update_budget_general_costs.update_budget_equipment_costs.UpdateBudgetEquipmentCosts
 import io.cloudflight.jems.server.project.service.partner.budget.update_budget_general_costs.update_budget_external_expertise_and_services.UpdateBudgetExternalExpertiseAndServicesCosts
@@ -33,9 +29,7 @@ import io.cloudflight.jems.server.project.service.partner.cofinancing.model.Proj
 import io.cloudflight.jems.server.project.service.partner.cofinancing.model.ProjectPartnerContribution
 import io.cloudflight.jems.server.project.service.partner.cofinancing.model.UpdateProjectPartnerCoFinancing
 import io.cloudflight.jems.server.project.service.partner.cofinancing.update_cofinancing.UpdateCoFinancing
-import io.cloudflight.jems.server.project.service.partner.model.BudgetGeneralCostEntry
-import io.cloudflight.jems.server.project.service.partner.model.BudgetStaffCostEntry
-import io.cloudflight.jems.server.project.service.partner.model.BudgetTravelAndAccommodationCostEntry
+import io.cloudflight.jems.server.project.service.partner.model.BudgetCosts
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
 import io.mockk.impl.annotations.MockK
@@ -152,24 +146,14 @@ class ProjectPartnerBudgetControllerTest : UnitTest() {
     lateinit var updateCoFinancing: UpdateCoFinancing
 
     @MockK
-    lateinit var getBudgetEquipmentCosts: GetBudgetEquipmentCosts
-
-    @MockK
-    lateinit var getBudgetExternalExpertiseAndServicesCosts: GetBudgetExternalExpertiseAndServicesCosts
-    @MockK
-    lateinit var getBudgetInfrastructureAndWorksCosts: GetBudgetInfrastructureAndWorksCosts
-
-    @MockK
-    lateinit var getBudgetTravelAndAccommodationCosts: GetBudgetTravelAndAccommodationCosts
-
-    @MockK
-    lateinit var getBudgetStaffCosts: GetBudgetStaffCosts
+    lateinit var getBudgetCosts: GetBudgetCosts
 
     @MockK
     lateinit var updateBudgetEquipmentCosts: UpdateBudgetEquipmentCosts
 
     @MockK
     lateinit var updateBudgetTravelAndAccommodationCosts: UpdateBudgetTravelAndAccommodationCosts
+
     @MockK
     lateinit var updateBudgetExternalExpertiseAndServicesCosts: UpdateBudgetExternalExpertiseAndServicesCosts
 
@@ -187,10 +171,10 @@ class ProjectPartnerBudgetControllerTest : UnitTest() {
 
 
     @Test
-    fun getBudgetStaffCosts() {
-        val budgetCosts = emptyList<BudgetStaffCostEntry>()
-        every { getBudgetStaffCosts.getBudgetStaffCosts(PARTNER_ID) } returns budgetCosts
-        assertThat(controller.getBudgetStaffCosts(PARTNER_ID)).isEqualTo(budgetCosts.toBudgetStaffCostEntryDTOList())
+    fun getBudgetCosts() {
+        val budgetCosts = BudgetCosts(emptyList(), emptyList(), emptyList(), emptyList(), emptyList())
+        every { getBudgetCosts.getBudgetCosts(PARTNER_ID) } returns budgetCosts
+        assertThat(controller.getBudgetCosts(PARTNER_ID)).isEqualTo(budgetCosts.toBudgetCostsDTO())
     }
 
     @Test
@@ -201,24 +185,10 @@ class ProjectPartnerBudgetControllerTest : UnitTest() {
     }
 
     @Test
-    fun getBudgetTravel() {
-        val travels = emptyList<BudgetTravelAndAccommodationCostEntry>()
-        every { getBudgetTravelAndAccommodationCosts.getBudgetTravelAndAccommodationCosts(PARTNER_ID) } returns travels
-        assertThat(controller.getBudgetTravel(PARTNER_ID)).isEqualTo(travels.toBudgetTravelAndAccommodationCostsEntryDTOList())
-    }
-
-    @Test
     fun updateBudgetTravel() {
         val travels = emptyList<BudgetTravelAndAccommodationCostEntryDTO>()
         every { updateBudgetTravelAndAccommodationCosts.updateBudgetTravelAndAccommodationCosts(PARTNER_ID, travels.toBudgetTravelAndAccommodationCostEntryList()) } returns travels.toBudgetTravelAndAccommodationCostEntryList()
         assertThat(controller.updateBudgetTravel(PARTNER_ID, travels)).isEqualTo(travels)
-    }
-
-    @Test
-    fun getBudgetExternal() {
-        val externals = emptyList<BudgetGeneralCostEntry>()
-        every { getBudgetExternalExpertiseAndServicesCosts.getBudgetGeneralCosts(PARTNER_ID) } returns externals
-        assertThat(controller.getBudgetExternal(PARTNER_ID)).isEqualTo(externals.toBudgetGeneralCostsEntryDTOList())
     }
 
     @Test
@@ -229,24 +199,10 @@ class ProjectPartnerBudgetControllerTest : UnitTest() {
     }
 
     @Test
-    fun getBudgetEquipment() {
-        val equipments = emptyList<BudgetGeneralCostEntry>()
-        every { getBudgetEquipmentCosts.getBudgetGeneralCosts(PARTNER_ID) } returns equipments
-        assertThat(controller.getBudgetEquipment(PARTNER_ID)).isEqualTo(equipments.toBudgetGeneralCostsEntryDTOList())
-    }
-
-    @Test
     fun updateBudgetEquipment() {
         val equipments = emptyList<BudgetGeneralCostEntryDTO>()
         every { updateBudgetEquipmentCosts.updateBudgetGeneralCosts(PARTNER_ID, equipments.toBudgetGeneralCostEntryList()) } returns equipments.toBudgetGeneralCostEntryList()
         assertThat(controller.updateBudgetEquipment(PARTNER_ID, equipments)).isEqualTo(equipments)
-    }
-
-    @Test
-    fun getBudgetInfrastructure() {
-        val infrastructures = emptyList<BudgetGeneralCostEntry>()
-        every { getBudgetInfrastructureAndWorksCosts.getBudgetGeneralCosts(PARTNER_ID) } returns infrastructures
-        assertThat(controller.getBudgetInfrastructure(PARTNER_ID)).isEqualTo(infrastructures.toBudgetGeneralCostsEntryDTOList())
     }
 
     @Test

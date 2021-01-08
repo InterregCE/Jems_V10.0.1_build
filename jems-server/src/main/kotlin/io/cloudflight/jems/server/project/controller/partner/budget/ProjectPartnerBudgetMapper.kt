@@ -1,10 +1,12 @@
 package io.cloudflight.jems.server.project.controller.partner.budget
 
+import io.cloudflight.jems.api.project.dto.partner.budget.BudgetCostsDTO
 import io.cloudflight.jems.api.project.dto.partner.budget.BudgetGeneralCostEntryDTO
+import io.cloudflight.jems.api.project.dto.partner.budget.BudgetStaffCostEntryDTO
 import io.cloudflight.jems.api.project.dto.partner.budget.BudgetTravelAndAccommodationCostEntryDTO
 import io.cloudflight.jems.api.project.dto.partner.budget.ProjectPartnerBudgetOptionsDto
-import io.cloudflight.jems.api.project.dto.partner.budget.BudgetStaffCostEntryDTO
 import io.cloudflight.jems.server.project.service.partner.budget.truncate
+import io.cloudflight.jems.server.project.service.partner.model.BudgetCosts
 import io.cloudflight.jems.server.project.service.partner.model.BudgetGeneralCostEntry
 import io.cloudflight.jems.server.project.service.partner.model.BudgetStaffCostEntry
 import io.cloudflight.jems.server.project.service.partner.model.BudgetTravelAndAccommodationCostEntry
@@ -100,4 +102,12 @@ fun BudgetGeneralCostEntryDTO.toBudgetGeneralCostEntry() = BudgetGeneralCostEntr
     investmentId = investmentId,
     awardProcedures = awardProcedures,
     description = description,
+)
+
+fun BudgetCosts.toBudgetCostsDTO() = BudgetCostsDTO(
+    staffCosts = staffCosts.toBudgetStaffCostEntryDTOList(),
+    travelCosts = travelCosts.toBudgetTravelAndAccommodationCostsEntryDTOList(),
+    externalCosts = externalCosts.toBudgetGeneralCostsEntryDTOList(),
+    equipmentCosts = equipmentCosts.toBudgetGeneralCostsEntryDTOList(),
+    infrastructureCosts = infrastructureCosts.toBudgetGeneralCostsEntryDTOList()
 )

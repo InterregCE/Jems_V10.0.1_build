@@ -19,11 +19,10 @@ data class ProjectPartnerBudgetExternalTransl(
 ) : ProjectPartnerBudgetGeneralTranslBase {
 
     override fun equals(other: Any?) =
-        if (this === other) true
-        else
+        this === other ||
             other !== null &&
-                other is ProjectPartnerBudgetStaffCostTransl &&
-                budgetTranslation == other.budgetTranslation
+            other is ProjectPartnerBudgetStaffCostTransl &&
+            budgetTranslation == other.budgetTranslation
 
     override fun hashCode() =
         if (budgetTranslation.budget.id <= 0) super.hashCode()

@@ -30,12 +30,11 @@ data class ProjectPartnerBudgetExternalEntity(
 ) : ProjectPartnerBudgetGeneralBase {
 
     override fun equals(other: Any?) =
-        if (this === other) true
-        else
+        this === other ||
             other !== null &&
-                other is ProjectPartnerBudgetStaffCostEntity &&
-                id > 0 &&
-                id == other.id
+            other is ProjectPartnerBudgetStaffCostEntity &&
+            id > 0 &&
+            id == other.id
 
     override fun hashCode() =
         if (id > 0) id.toInt() else super.hashCode()

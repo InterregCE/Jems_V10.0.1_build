@@ -53,23 +53,7 @@ describe('ProjectApplicationPartnerBudgetPageComponent', () => {
   it('should fetch and save budgets', fakeAsync(() => {
     httpTestingController.expectOne({
       method: 'GET',
-      url: '//api/project/partner/2/budget/staffcosts'
-    });
-    httpTestingController.expectOne({
-      method: 'GET',
-      url: '//api/project/partner/2/budget/travel'
-    });
-    httpTestingController.expectOne({
-      method: 'GET',
-      url: '//api/project/partner/2/budget/external'
-    });
-    httpTestingController.expectOne({
-      method: 'GET',
-      url: '//api/project/partner/2/budget/equipment'
-    });
-    httpTestingController.expectOne({
-      method: 'GET',
-      url: '//api/project/partner/2/budget/infrastructure'
+      url: '//api/project/partner/2/budget/costs'
     });
 
     component.updateBudgets();
