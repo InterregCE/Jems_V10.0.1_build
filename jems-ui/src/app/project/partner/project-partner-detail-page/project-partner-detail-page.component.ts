@@ -6,12 +6,10 @@ import {BaseComponent} from '@common/components/base-component';
 import {ProjectStore} from '../../project-application/containers/project-application-detail/services/project-store.service';
 import {TabService} from '../../../common/services/tab.service';
 import {ProjectPartnerStore} from '../../project-application/containers/project-application-form-page/services/project-partner-store.service';
-import {ProjectPartnerDetailPageStore} from './project-partner-detail-page.store';
 
 @Component({
   templateUrl: './project-partner-detail-page.component.html',
   styleUrls: ['./project-partner-detail-page.component.scss'],
-  providers: [ProjectPartnerDetailPageStore],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class ProjectPartnerDetailPageComponent extends BaseComponent implements OnInit, OnDestroy {

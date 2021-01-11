@@ -9,7 +9,7 @@
             <app-multi-language *ngFor="let activity of activities.controls;let i=index" class="mt-4">
                 <ng-container [formArrayName]="constants.ACTIVITIES.name">
                     <ng-container [formGroupName]="i">
-                        <div appTableConfig [widthConfig]="['activity-index','activity-title', 'max-2-rem']">
+                        <div appTableConfig [widthConfig]="[{maxInRem:9},{}, {maxInRem:2}]">
                             <div>
                                 <h5>{{('project.work.package.tab.activity' | translate) + ' ' + data.workPackageNumber + '.' + (i + 1) }}</h5>
                                 <h5 class="text-overflow-ellipsis">
@@ -63,7 +63,7 @@
                             <div class="intro-text-small">{{'project.work.package.tab.deliverables.intro' | translate}}</div>
                             <div *ngIf="deliverables(i).controls?.length" appTableConfig
                                  [appearance]="'table'" class="mt-2"
-                                 [widthConfig]="['max-3-rem','min-15-rem','min-10-rem', 'max-2-rem']">
+                                 [widthConfig]="[{maxInRem:3},{minInRem:15},{minInRem:10}, {maxInRem:2}]">
                                 <div>
                                     <span class="mat-body-strong">{{'project.work.package.tab.deliverables.number' | translate }}</span>
                                     <span class="mat-body-strong">{{'project.work.package.tab.deliverables.deliverable' | translate }}</span>

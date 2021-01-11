@@ -1,103 +1,75 @@
 package io.cloudflight.jems.server.project.controller.partner.budget
 
-import io.cloudflight.jems.api.project.partner.ProjectPartnerBudgetApi
-import io.cloudflight.jems.api.project.dto.partner.budget.InputGeneralBudget
-import io.cloudflight.jems.api.project.dto.partner.budget.InputStaffCostBudget
-import io.cloudflight.jems.api.project.dto.partner.budget.InputTravelBudget
+import io.cloudflight.jems.api.project.dto.partner.budget.BudgetGeneralCostEntryDTO
+import io.cloudflight.jems.api.project.dto.partner.budget.BudgetStaffCostEntryDTO
+import io.cloudflight.jems.api.project.dto.partner.budget.BudgetTravelAndAccommodationCostEntryDTO
 import io.cloudflight.jems.api.project.dto.partner.budget.ProjectPartnerBudgetOptionsDto
-import io.cloudflight.jems.api.project.dto.partner.cofinancing.ProjectPartnerCoFinancingAndContributionOutputDTO
 import io.cloudflight.jems.api.project.dto.partner.cofinancing.ProjectPartnerCoFinancingAndContributionInputDTO
-import io.cloudflight.jems.server.project.authorization.CanReadProjectPartner
-import io.cloudflight.jems.server.project.authorization.CanUpdateProjectPartner
-import io.cloudflight.jems.server.project.service.partner.budget.ProjectPartnerBudgetService
+import io.cloudflight.jems.api.project.dto.partner.cofinancing.ProjectPartnerCoFinancingAndContributionOutputDTO
+import io.cloudflight.jems.api.project.partner.ProjectPartnerBudgetApi
+import io.cloudflight.jems.server.project.service.partner.budget.get_budget_costs.GetBudgetCostsInteractor
 import io.cloudflight.jems.server.project.service.partner.budget.get_budget_options.GetBudgetOptionsInteractor
+import io.cloudflight.jems.server.project.service.partner.budget.get_budget_total_cost.GetBudgetTotalCostInteractor
+import io.cloudflight.jems.server.project.service.partner.budget.update_budge_staff_costs.UpdateBudgetStaffCostsInteractor
+import io.cloudflight.jems.server.project.service.partner.budget.update_budget_general_costs.update_budget_equipment_costs.UpdateBudgetEquipmentCosts
+import io.cloudflight.jems.server.project.service.partner.budget.update_budget_general_costs.update_budget_external_expertise_and_services.UpdateBudgetExternalExpertiseAndServicesCostsInteractor
+import io.cloudflight.jems.server.project.service.partner.budget.update_budget_general_costs.update_budget_infrastructure_and_works_costs.UpdateBudgetInfrastructureAndWorksCostsInteractor
 import io.cloudflight.jems.server.project.service.partner.budget.update_budget_options.UpdateBudgetOptionsInteractor
+import io.cloudflight.jems.server.project.service.partner.budget.update_budget_travel_and_accommodation_costs.UpdateBudgetTravelAndAccommodationCostsInteractor
 import io.cloudflight.jems.server.project.service.partner.cofinancing.get_cofinancing.GetCoFinancingInteractor
 import io.cloudflight.jems.server.project.service.partner.cofinancing.toContributionModel
 import io.cloudflight.jems.server.project.service.partner.cofinancing.toDto
 import io.cloudflight.jems.server.project.service.partner.cofinancing.toFinancingModel
 import io.cloudflight.jems.server.project.service.partner.cofinancing.update_cofinancing.UpdateCoFinancingInteractor
 import org.springframework.web.bind.annotation.RestController
-import java.math.BigDecimal
 
 @RestController
 class ProjectPartnerBudgetController(
-    private val projectPartnerBudgetService: ProjectPartnerBudgetService,
-    private val getBudgetOptionsInteractor: GetBudgetOptionsInteractor,
-    private val updateBudgetOptionsInteractor: UpdateBudgetOptionsInteractor,
+    private val getBudgetOptions: GetBudgetOptionsInteractor,
+    private val updateBudgetOptions: UpdateBudgetOptionsInteractor,
     private val getCoFinancing: GetCoFinancingInteractor,
-    private val updateCoFinancing: UpdateCoFinancingInteractor
+    private val getBudgetCosts: GetBudgetCostsInteractor,
+    private val updateCoFinancing: UpdateCoFinancingInteractor,
+    private val updateBudgetEquipmentCosts: UpdateBudgetEquipmentCosts,
+    private val updateBudgetTravelAndAccommodationCosts: UpdateBudgetTravelAndAccommodationCostsInteractor,
+    private val updateBudgetExternalExpertiseAndServicesCosts: UpdateBudgetExternalExpertiseAndServicesCostsInteractor,
+    private val updateBudgetInfrastructureAndWorksCosts: UpdateBudgetInfrastructureAndWorksCostsInteractor,
+    private val updateBudgetStaffCosts: UpdateBudgetStaffCostsInteractor,
+    private val getBudgetTotalCost: GetBudgetTotalCostInteractor
 ) : ProjectPartnerBudgetApi {
 
-    @CanReadProjectPartner
-    override fun getBudgetStaffCosts(partnerId: Long): List<InputStaffCostBudget> {
-        return projectPartnerBudgetService.getStaffCosts(partnerId)
-    }
-
-    @CanUpdateProjectPartner
-    override fun updateBudgetStaffCosts(partnerId: Long, budgetCosts: List<InputStaffCostBudget>): List<InputStaffCostBudget> {
-        return projectPartnerBudgetService.updateStaffCosts(partnerId, budgetCosts)
-    }
+    override fun updateBudgetStaffCosts(partnerId: Long, budgetStaffCostEntryDTOList: List<BudgetStaffCostEntryDTO>) =
+        updateBudgetStaffCosts.updateBudgetStaffCosts(partnerId, budgetStaffCostEntryDTOList.toBudgetStaffCostEntryList()).toBudgetStaffCostEntryDTOList()
 
     override fun getBudgetOptions(partnerId: Long): ProjectPartnerBudgetOptionsDto =
-        getBudgetOptionsInteractor.getBudgetOptions(partnerId)?.toProjectPartnerBudgetOptionsDto()
+        getBudgetOptions.getBudgetOptions(partnerId)?.toProjectPartnerBudgetOptionsDto()
             ?: ProjectPartnerBudgetOptionsDto()
 
     override fun updateBudgetOptions(partnerId: Long, budgetOptionsDto: ProjectPartnerBudgetOptionsDto) =
-        updateBudgetOptionsInteractor.updateBudgetOptions(partnerId, budgetOptionsDto.toProjectPartnerBudgetOptions(partnerId))
+        updateBudgetOptions.updateBudgetOptions(partnerId, budgetOptionsDto.toProjectPartnerBudgetOptions(partnerId))
 
-    @CanReadProjectPartner
-    override fun getBudgetTravel(partnerId: Long): List<InputTravelBudget> {
-        return projectPartnerBudgetService.getTravel(partnerId)
-    }
+    override fun getBudgetCosts(partnerId: Long) =
+        getBudgetCosts.getBudgetCosts(partnerId).toBudgetCostsDTO()
 
-    @CanUpdateProjectPartner
-    override fun updateBudgetTravel(partnerId: Long, travels: List<InputTravelBudget>): List<InputTravelBudget> {
-        return projectPartnerBudgetService.updateTravel(partnerId, travels)
-    }
+    override fun updateBudgetTravel(partnerId: Long, travelAndAccommodationCosts: List<BudgetTravelAndAccommodationCostEntryDTO>) =
+        updateBudgetTravelAndAccommodationCosts.updateBudgetTravelAndAccommodationCosts(partnerId, travelAndAccommodationCosts.toBudgetTravelAndAccommodationCostEntryList()).toBudgetTravelAndAccommodationCostsEntryDTOList()
 
-    @CanReadProjectPartner
-    override fun getBudgetExternal(partnerId: Long): List<InputGeneralBudget> {
-        return projectPartnerBudgetService.getExternal(partnerId)
-    }
+    override fun updateBudgetExternal(partnerId: Long, externals: List<BudgetGeneralCostEntryDTO>) =
+        updateBudgetExternalExpertiseAndServicesCosts.updateBudgetGeneralCosts(partnerId, externals.toBudgetGeneralCostEntryList()).toBudgetGeneralCostsEntryDTOList()
 
-    @CanUpdateProjectPartner
-    override fun updateBudgetExternal(partnerId: Long, externals: List<InputGeneralBudget>): List<InputGeneralBudget> {
-        return projectPartnerBudgetService.updateExternal(partnerId, externals)
-    }
+    override fun updateBudgetEquipment(partnerId: Long, equipment: List<BudgetGeneralCostEntryDTO>) =
+        updateBudgetEquipmentCosts.updateBudgetGeneralCosts(partnerId, equipment.toBudgetGeneralCostEntryList()).toBudgetGeneralCostsEntryDTOList()
 
-    @CanReadProjectPartner
-    override fun getBudgetEquipment(partnerId: Long): List<InputGeneralBudget> {
-        return projectPartnerBudgetService.getEquipment(partnerId)
-    }
+    override fun updateBudgetInfrastructure(partnerId: Long, infrastructures: List<BudgetGeneralCostEntryDTO>) =
+        updateBudgetInfrastructureAndWorksCosts.updateBudgetGeneralCosts(partnerId, infrastructures.toBudgetGeneralCostEntryList()).toBudgetGeneralCostsEntryDTOList()
 
-    @CanUpdateProjectPartner
-    override fun updateBudgetEquipment(partnerId: Long, equipments: List<InputGeneralBudget>): List<InputGeneralBudget> {
-        return projectPartnerBudgetService.updateEquipment(partnerId, equipments)
-    }
-
-    @CanReadProjectPartner
-    override fun getBudgetInfrastructure(partnerId: Long): List<InputGeneralBudget> {
-        return projectPartnerBudgetService.getInfrastructure(partnerId)
-    }
-
-    @CanUpdateProjectPartner
-    override fun updateBudgetInfrastructure(partnerId: Long, infrastructures: List<InputGeneralBudget>): List<InputGeneralBudget> {
-        return projectPartnerBudgetService.updateInfrastructure(partnerId, infrastructures)
-    }
-
-    @CanReadProjectPartner
-    override fun getTotal(partnerId: Long): BigDecimal {
-        return projectPartnerBudgetService.getTotal(partnerId)
-    }
+    override fun getTotal(partnerId: Long) =
+        getBudgetTotalCost.getBudgetTotalCost(partnerId)
 
     override fun getProjectPartnerCoFinancing(partnerId: Long): ProjectPartnerCoFinancingAndContributionOutputDTO =
         getCoFinancing.getCoFinancing(partnerId).toDto()
 
-    override fun updateProjectPartnerCoFinancing(
-        partnerId: Long,
-        partnerCoFinancing: ProjectPartnerCoFinancingAndContributionInputDTO
-    ): ProjectPartnerCoFinancingAndContributionOutputDTO =
+    override fun updateProjectPartnerCoFinancing(partnerId: Long, partnerCoFinancing: ProjectPartnerCoFinancingAndContributionInputDTO) =
         updateCoFinancing.updateCoFinancing(
             partnerId,
             partnerCoFinancing.finances.toFinancingModel(),

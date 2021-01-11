@@ -13,6 +13,7 @@ interface WorkPackagePersistence {
     fun getWorkPackageOutputsForWorkPackage(workPackageId: Long): Set<WorkPackageOutput>
     fun getWorkPackageInvestment(workPackageInvestmentId: Long): WorkPackageInvestment
     fun getWorkPackageInvestments(workPackageId: Long, pageable: Pageable): Page<WorkPackageInvestment>
+    fun getWorkPackageInvestmentIdsOfProject(projectId: Long): List<Long>
     fun addWorkPackageInvestment(workPackageId: Long, workPackageInvestment: WorkPackageInvestment): Long
     fun updateWorkPackageInvestment(workPackageId: Long, workPackageInvestment: WorkPackageInvestment)
     fun deleteWorkPackageInvestment(workPackageId: Long, workPackageInvestmentId: Long)

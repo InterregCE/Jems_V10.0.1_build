@@ -5,4 +5,4 @@ import org.springframework.stereotype.Repository
 
 @Repository
 interface ProjectPartnerBudgetTravelRepository
-    : ProjectPartnerBudgetCommonRepository<ProjectPartnerBudgetTravelEntity>
+    : ProjectPartnerBaseBudgetRepository<ProjectPartnerBudgetTravelEntity>

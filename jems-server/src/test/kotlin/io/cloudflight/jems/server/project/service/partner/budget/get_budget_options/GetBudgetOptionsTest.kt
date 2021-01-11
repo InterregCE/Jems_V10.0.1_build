@@ -1,9 +1,8 @@
 package io.cloudflight.jems.server.project.service.partner.budget.get_budget_options
 
 import io.cloudflight.jems.server.UnitTest
-import io.cloudflight.jems.server.project.service.budget.model.ProjectPartnerBudgetOptions
 import io.cloudflight.jems.server.project.service.partner.budget.ProjectPartnerBudgetOptionsPersistence
-import io.cloudflight.jems.server.project.service.partner.budget.ProjectPartnerGeneralBudgetServiceTest.Companion.PARTNER_ID
+import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerBudgetOptions
 import io.mockk.confirmVerified
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
@@ -16,8 +15,9 @@ import org.junit.jupiter.api.Test
 
 internal class GetBudgetOptionsTest : UnitTest() {
 
+    private val partnerId = 1L
     private val budgetOptions = ProjectPartnerBudgetOptions(
-        PARTNER_ID,
+        partnerId,
         15,
         20,
         12,
@@ -25,7 +25,7 @@ internal class GetBudgetOptionsTest : UnitTest() {
     )
 
     @MockK
-    lateinit var persistence: ProjectPartnerBudgetOptionsPersistence
+    lateinit var optionsPersistence: ProjectPartnerBudgetOptionsPersistence
 
     @InjectMockKs
     lateinit var getBudgetOptions: GetBudgetOptions
@@ -33,14 +33,14 @@ internal class GetBudgetOptionsTest : UnitTest() {
 
     @Test
     fun `should return budget options for the specified partner`() {
-        every { persistence.getBudgetOptions(PARTNER_ID) } returns budgetOptions
+        every { optionsPersistence.getBudgetOptions(partnerId) } returns budgetOptions
 
-        val returnedBudgetOptions = getBudgetOptions.getBudgetOptions(PARTNER_ID)
+        val returnedBudgetOptions = getBudgetOptions.getBudgetOptions(partnerId)
 
-        verify(atLeast = 1) { persistence.getBudgetOptions(PARTNER_ID) }
-        confirmVerified(persistence)
+        verify(atLeast = 1) { optionsPersistence.getBudgetOptions(partnerId) }
+        confirmVerified(optionsPersistence)
 
-        assertEquals(PARTNER_ID, returnedBudgetOptions?.partnerId)
+        assertEquals(partnerId, returnedBudgetOptions?.partnerId)
         assertEquals(budgetOptions.officeAndAdministrationOnStaffCostsFlatRate, returnedBudgetOptions?.officeAndAdministrationOnStaffCostsFlatRate)
         assertEquals(budgetOptions.staffCostsFlatRate, returnedBudgetOptions?.staffCostsFlatRate)
         assertEquals(budgetOptions.travelAndAccommodationOnStaffCostsFlatRate, returnedBudgetOptions?.travelAndAccommodationOnStaffCostsFlatRate)
@@ -49,12 +49,12 @@ internal class GetBudgetOptionsTest : UnitTest() {
 
     @Test
     fun `should return null when budget options for partner not exists`() {
-        every { persistence.getBudgetOptions(PARTNER_ID) } returns null
+        every { optionsPersistence.getBudgetOptions(partnerId) } returns null
 
-        val returnedBudgetOptions = getBudgetOptions.getBudgetOptions(PARTNER_ID)
+        val returnedBudgetOptions = getBudgetOptions.getBudgetOptions(partnerId)
 
-        verify(atLeast = 1) { persistence.getBudgetOptions(PARTNER_ID) }
-        confirmVerified(persistence)
+        verify(atLeast = 1) { optionsPersistence.getBudgetOptions(partnerId) }
+        confirmVerified(optionsPersistence)
 
         assertNull(returnedBudgetOptions)
     }

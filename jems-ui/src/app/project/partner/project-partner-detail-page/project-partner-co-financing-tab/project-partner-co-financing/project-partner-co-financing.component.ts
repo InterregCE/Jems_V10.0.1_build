@@ -180,10 +180,10 @@ export class ProjectPartnerCoFinancingComponent extends BaseComponent implements
       this.coFinancingForm.markAsDirty();
     }
     this.partnerContributions.push(this.formBuilder.group({
-      name: this.formBuilder.control(initialValue ? initialValue.name : '', [Validators.required]),
-      status: this.formBuilder.control(initialValue ? initialValue.status : '', [Validators.required]),
-      amount: this.formBuilder.control(initialValue ? initialValue.amount : 0, [Validators.required, Validators.min(0)]),
-      isPartner: this.formBuilder.control(initialValue ? initialValue.isPartner : false)
+      name: [initialValue ? initialValue.name : '', [Validators.required]],
+      status: [initialValue ? initialValue.status : '', [Validators.required]],
+      amount: [initialValue ? initialValue.amount : 0, [Validators.required, Validators.min(0)]],
+      isPartner: [initialValue ? initialValue.isPartner : false]
     }));
   }
 

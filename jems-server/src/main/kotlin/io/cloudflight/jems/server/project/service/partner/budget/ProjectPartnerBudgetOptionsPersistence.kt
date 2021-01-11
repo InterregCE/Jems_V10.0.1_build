@@ -1,6 +1,6 @@
 package io.cloudflight.jems.server.project.service.partner.budget
 
-import io.cloudflight.jems.server.project.service.budget.model.ProjectPartnerBudgetOptions
+import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerBudgetOptions
 
 interface ProjectPartnerBudgetOptionsPersistence {
 

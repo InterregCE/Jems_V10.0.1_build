@@ -15,7 +15,6 @@ import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.PutMapping
 import org.springframework.web.bind.annotation.RequestBody
-import java.util.*
 import javax.validation.Valid
 
 @Api("WorkPackageInvestment")
@@ -34,6 +33,9 @@ interface ProjectWorkPackageInvestmentApi {
     )
     @GetMapping("/forWorkPackage/{workPackageId}")
     fun getWorkPackageInvestments(@PathVariable workPackageId: Long, pageable: Pageable): Page<WorkPackageInvestmentDTO>
+
+    @GetMapping("/forProject/{projectId}")
+    fun getWorkPackageInvestmentIdsOfProject(@PathVariable projectId: Long): List<Long>
 
     @ApiOperation("Adds Investment to the work package")
     @PostMapping("/forWorkPackage/{workPackageId}", consumes = [MediaType.APPLICATION_JSON_VALUE])

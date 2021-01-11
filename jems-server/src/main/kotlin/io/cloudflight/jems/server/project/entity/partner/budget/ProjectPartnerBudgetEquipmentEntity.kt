@@ -1,6 +1,7 @@
 package io.cloudflight.jems.server.project.entity.partner.budget
 
 import javax.persistence.CascadeType
+import javax.persistence.Column
 import javax.persistence.Embedded
 import javax.persistence.Entity
 import javax.persistence.GeneratedValue
@@ -16,13 +17,26 @@ data class ProjectPartnerBudgetEquipmentEntity(
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     override val id: Long = 0,
 
-    @field:NotNull
-    override val partnerId: Long,
+    @Column
+    override val investmentId: Long?,
 
     @Embedded
-    override val budget: Budget,
+    @field:NotNull
+    override val baseProperties: BaseBudgetProperties,
 
-    @OneToMany(cascade = [CascadeType.ALL], orphanRemoval = true, mappedBy = "translationId.budgetId")
-    val translatedValues: MutableSet<ProjectPartnerBudgetEquipmentTransl> = mutableSetOf()
+    @OneToMany(cascade = [CascadeType.ALL], orphanRemoval = true, mappedBy = "budgetTranslation.budget")
+    override val translatedValues: MutableSet<ProjectPartnerBudgetEquipmentTransl> = mutableSetOf()
 
-): CommonBudget
+) : ProjectPartnerBudgetGeneralBase {
+
+    override fun equals(other: Any?) =
+        this === other ||
+            other !== null &&
+            other is ProjectPartnerBudgetStaffCostEntity &&
+            id > 0 &&
+            id == other.id
+
+    override fun hashCode() =
+        if (id > 0) id.toInt() else super.hashCode()
+
+}

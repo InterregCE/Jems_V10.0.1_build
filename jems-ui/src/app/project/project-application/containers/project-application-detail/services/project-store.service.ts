@@ -14,10 +14,14 @@ import {
 } from '@cat/api';
 import {
   catchError,
-  distinctUntilChanged, filter, map,
+  distinctUntilChanged,
+  filter,
+  map,
   mergeMap,
   shareReplay,
-  startWith, switchMap, tap,
+  startWith,
+  switchMap,
+  tap,
   withLatestFrom
 } from 'rxjs/operators';
 import {Log} from '../../../../../common/utils/log';
@@ -124,12 +128,12 @@ export class ProjectStore {
   projectEditable$ = combineLatest([this.getProject(), this.permissionService.permissionsChanged()])
     .pipe(
       map(([project, permissions]) => {
-        if (permissions.some(perm => perm === Permission.PROGRAMME_USER)) {
-          // programme users cannot edit projects
-          return false;
-        }
-        return project.projectStatus.status === OutputProjectStatus.StatusEnum.DRAFT
-          || project.projectStatus.status === OutputProjectStatus.StatusEnum.RETURNEDTOAPPLICANT;
+          if (permissions.some(perm => perm === Permission.PROGRAMME_USER)) {
+            // programme users cannot edit projects
+            return false;
+          }
+          return project.projectStatus.status === OutputProjectStatus.StatusEnum.DRAFT
+            || project.projectStatus.status === OutputProjectStatus.StatusEnum.RETURNEDTOAPPLICANT;
         }
       ),
       shareReplay(1)

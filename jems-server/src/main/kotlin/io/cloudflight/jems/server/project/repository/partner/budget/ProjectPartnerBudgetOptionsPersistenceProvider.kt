@@ -1,18 +1,18 @@
 package io.cloudflight.jems.server.project.repository.partner.budget
 
-import io.cloudflight.jems.server.project.service.budget.model.ProjectPartnerBudgetOptions
 import io.cloudflight.jems.server.project.service.partner.budget.ProjectPartnerBudgetOptionsPersistence
+import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerBudgetOptions
 import org.springframework.stereotype.Repository
 import org.springframework.transaction.annotation.Transactional
 
 @Repository
 class ProjectPartnerBudgetOptionsPersistenceProvider(
     private val budgetOptionsRepository: ProjectPartnerBudgetOptionsRepository,
-    private val staffCostRepository: ProjectPartnerBudgetStaffCostRepository,
-    private val travelRepository: ProjectPartnerBudgetTravelRepository,
-    private val externalRepository: ProjectPartnerBudgetExternalRepository,
-    private val equipmentRepository: ProjectPartnerBudgetEquipmentRepository,
-    private val infrastructureRepository: ProjectPartnerBudgetInfrastructureRepository,
+    private val budgetStaffCostRepository: ProjectPartnerBudgetStaffCostRepository,
+    private val budgetTravelRepository: ProjectPartnerBudgetTravelRepository,
+    private val budgetExternalRepository: ProjectPartnerBudgetExternalRepository,
+    private val budgetEquipmentRepository: ProjectPartnerBudgetEquipmentRepository,
+    private val budgetInfrastructureRepository: ProjectPartnerBudgetInfrastructureRepository,
 ) : ProjectPartnerBudgetOptionsPersistence {
 
     @Transactional(readOnly = true)
@@ -46,22 +46,22 @@ class ProjectPartnerBudgetOptionsPersistenceProvider(
 
     @Transactional
     override fun deleteStaffCosts(partnerId: Long) =
-        staffCostRepository.deleteAllByPartnerId(partnerId)
+        budgetStaffCostRepository.deleteAllByBasePropertiesPartnerId(partnerId)
 
     @Transactional
     override fun deleteExternalCosts(partnerId: Long) =
-        this.externalRepository.deleteAllByPartnerId(partnerId)
+        this.budgetExternalRepository.deleteAllByBasePropertiesPartnerId(partnerId)
 
     @Transactional
     override fun deleteEquipmentCosts(partnerId: Long) =
-        this.equipmentRepository.deleteAllByPartnerId(partnerId)
+        this.budgetEquipmentRepository.deleteAllByBasePropertiesPartnerId(partnerId)
 
     @Transactional
     override fun deleteInfrastructureCosts(partnerId: Long) =
-        this.infrastructureRepository.deleteAllByPartnerId(partnerId)
+        this.budgetInfrastructureRepository.deleteAllByBasePropertiesPartnerId(partnerId)
 
     @Transactional
     override fun deleteTravelAndAccommodationCosts(partnerId: Long) =
-        travelRepository.deleteAllByPartnerId(partnerId)
+        budgetTravelRepository.deleteAllByBasePropertiesPartnerId(partnerId)
 
 }

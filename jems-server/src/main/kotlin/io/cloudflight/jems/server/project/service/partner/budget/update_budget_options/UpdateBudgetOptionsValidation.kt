@@ -4,7 +4,7 @@ import io.cloudflight.jems.api.call.dto.flatrate.FlatRateType
 import io.cloudflight.jems.server.call.service.flatrate.model.ProjectCallFlatRate
 import io.cloudflight.jems.server.common.exception.I18nFieldError
 import io.cloudflight.jems.server.common.exception.I18nValidationException
-import io.cloudflight.jems.server.project.service.budget.model.ProjectPartnerBudgetOptions
+import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerBudgetOptions
 import org.springframework.http.HttpStatus
 
 private const val INVALID_ERR_MSG = "project.partner.budget.options.flatRate"
