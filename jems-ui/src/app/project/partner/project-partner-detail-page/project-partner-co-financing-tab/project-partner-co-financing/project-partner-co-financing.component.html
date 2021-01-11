@@ -67,7 +67,12 @@
                 <span class="mat-body-strong">{{ 'project.partner.coFinancing.contribution.source.name' | translate }}</span>
                 <span class="mat-body-strong">{{ 'project.partner.coFinancing.contribution.legal.status' | translate }}</span>
                 <span class="mat-body-strong">{{ 'project.partner.coFinancing.contribution.amount' | translate }}</span>
-                <span class="mat-body-strong">{{ 'project.partner.coFinancing.contribution.total.partner.contribution.percentage' | translate }}</span>
+                <span class="mat-body-strong">{{ 'project.partner.coFinancing.contribution.total.partner.contribution.percentage' | translate }}
+                    <app-context-info
+                            infoText="{{ 'project.partner.coFinancing.contribution.total.partner.contribution.percentage.contextinfo' | translate }}"
+                            infoPosition="right">
+                    </app-context-info>
+                </span>
                 <div class="mat-body-strong"></div>
             </div>
 
@@ -151,7 +156,12 @@
                 <span class="text-right">{{ (privateContributionSubTotal$ | async) | percentage:totalAmount}}</span>
             </div>
             <div class="mat-body-strong">
-                <div>{{ 'project.partner.coFinancing.contribution.total' | translate }}</div>
+                <div>{{ 'project.partner.coFinancing.contribution.total' | translate }}
+                    <app-context-info
+                            infoText="{{ 'project.partner.coFinancing.contribution.total.contextinfo' | translate }}"
+                            infoPosition="right">
+                    </app-context-info>
+                </div>
                 <div class="text-right">{{ (contributionTotal$ | async) | asMoney}}</div>
                 <div class="text-right">{{ (contributionTotal$ | async) | percentage: totalAmount}}</div>
             </div>
