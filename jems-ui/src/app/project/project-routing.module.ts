@@ -24,6 +24,7 @@ import {ProjectApplicationFormManagementSectionComponent} from './project-applic
 import {BudgetPageComponent} from './budget/budget-page/budget-page.component';
 import {ProjectWorkPackageDetailPageComponent} from './work-package/work-package-detail-page/project-work-package-detail-page.component';
 import {ProjectWorkPackageInvestmentDetailPageComponent} from './work-package/work-package-detail-page/project-work-package-investments-tab/project-work-package-investment-detail-page/project-work-package-investment-detail-page.component';
+import {ProjectResultsPageComponent} from './results/project-results-page/project-results-page.component';
 
 export const routes: Routes = [
   {
@@ -188,6 +189,11 @@ export const routes: Routes = [
               },
 
             ]
+          },
+          {
+            path: 'applicationFormResults',
+            component: ProjectResultsPageComponent,
+            data: {breadcrumb: 'project.breadcrumb.applicationForm.results'},
           },
           {
             path: 'applicationFormFuturePlans',

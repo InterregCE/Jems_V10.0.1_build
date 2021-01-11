@@ -180,6 +180,10 @@ export class ProjectApplicationFormSidenavService {
                 bullets: [...packages],
               },
               {
+                headline: {i18nKey: 'project.application.form.section.part.c.subsection.five'},
+                route: '/app/project/detail/' + projectId + '/applicationFormResults',
+              },
+              {
                 headline: {i18nKey: 'project.application.form.section.part.c.subsection.seven'},
                 route: '/app/project/detail/' + projectId + '/applicationFormManagement',
               },

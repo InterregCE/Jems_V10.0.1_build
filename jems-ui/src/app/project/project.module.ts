@@ -87,6 +87,7 @@ import {GeneralBudgetFlatRateTableComponent} from './partner/project-partner-det
 import {GeneralBudgetTableComponent} from './partner/project-partner-detail-page/project-partner-budget-tab/project-partner-budget/general-budget-table/general-budget-table.component';
 import {ProjectWorkPackagePageStore} from './work-package/work-package-detail-page/project-work-package-page-store.service';
 import {ProjectPartnerDetailPageStore} from './partner/project-partner-detail-page/project-partner-detail-page.store';
+import {ProjectResultsPageComponent} from './results/project-results-page/project-results-page.component';
 
 @NgModule({
   declarations: [
@@ -167,7 +168,8 @@ import {ProjectPartnerDetailPageStore} from './partner/project-partner-detail-pa
     ProjectWorkPackageInvestmentsTabComponent,
     ProjectWorkPackageInvestmentDetailPageComponent,
     WorkPackageInvestmentDeleteActionCellComponent,
-    ProjectPeriodsSelectComponent
+    ProjectPeriodsSelectComponent,
+    ProjectResultsPageComponent
   ],
   imports: [
     SharedModule,
