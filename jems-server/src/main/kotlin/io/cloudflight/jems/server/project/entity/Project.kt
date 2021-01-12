@@ -2,6 +2,7 @@ package io.cloudflight.jems.server.project.entity
 
 import io.cloudflight.jems.server.call.entity.CallEntity
 import io.cloudflight.jems.server.programme.entity.ProgrammePriorityPolicy
+import io.cloudflight.jems.server.project.entity.result.ProjectResultEntity
 import io.cloudflight.jems.server.user.entity.User
 import javax.persistence.CascadeType
 import javax.persistence.Embedded
@@ -70,6 +71,8 @@ data class Project(
     val projectData: ProjectData? = null,
 
     @OneToMany(mappedBy = "id.projectId", cascade = [CascadeType.ALL], orphanRemoval = true)
-    val periods: Collection<ProjectPeriod> = emptyList()
+    val periods: Collection<ProjectPeriod> = emptyList(),
 
+    @OneToMany(mappedBy = "project", cascade = [CascadeType.ALL], orphanRemoval = true)
+    val projectResultEntities: MutableSet<ProjectResultEntity> = mutableSetOf(),
 )

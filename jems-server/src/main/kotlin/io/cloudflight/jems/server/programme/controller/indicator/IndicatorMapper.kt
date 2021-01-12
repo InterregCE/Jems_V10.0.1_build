@@ -1,6 +1,7 @@
-package io.cloudflight.jems.server.programme.service.indicator
+package io.cloudflight.jems.server.programme.controller.indicator
 
 import io.cloudflight.jems.api.programme.dto.indicator.IndicatorOutputDto
+import io.cloudflight.jems.api.programme.dto.indicator.IndicatorResultDto
 import io.cloudflight.jems.api.programme.dto.indicator.InputIndicatorOutputCreate
 import io.cloudflight.jems.api.programme.dto.indicator.InputIndicatorOutputUpdate
 import io.cloudflight.jems.api.programme.dto.indicator.InputIndicatorResultCreate
@@ -106,5 +107,14 @@ fun InputIndicatorResultUpdate.toEntity(
     finalTarget = finalTarget,
     sourceOfData = sourceOfData,
     comment = comment
+)
+
+fun IndicatorResult.toIndicatorResultDto() = IndicatorResultDto(
+    id = id,
+    identifier = identifier,
+    code = code,
+    name = name,
+    programmePriorityCode = programmePriorityPolicy!!.code,
+    measurementUnit = measurementUnit
 )
 //endregion

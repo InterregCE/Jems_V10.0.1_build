@@ -22,8 +22,8 @@ import io.cloudflight.jems.server.programme.entity.ProgrammePriorityPolicy
 import io.cloudflight.jems.server.programme.repository.ProgrammePriorityPolicyRepository
 import io.cloudflight.jems.server.programme.service.indicator.IndicatorService
 import io.cloudflight.jems.server.programme.service.indicator.IndicatorServiceImpl
-import io.cloudflight.jems.server.programme.service.indicator.toEntity
-import io.cloudflight.jems.server.programme.service.indicator.toOutputIndicator
+import io.cloudflight.jems.server.programme.controller.indicator.toEntity
+import io.cloudflight.jems.server.programme.controller.indicator.toOutputIndicator
 import io.mockk.MockKAnnotations
 import io.mockk.every
 import io.mockk.impl.annotations.MockK

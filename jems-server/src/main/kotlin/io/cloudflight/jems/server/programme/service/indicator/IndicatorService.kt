@@ -1,6 +1,7 @@
 package io.cloudflight.jems.server.programme.service.indicator
 
 import io.cloudflight.jems.api.programme.dto.indicator.IndicatorOutputDto
+import io.cloudflight.jems.api.programme.dto.indicator.IndicatorResultDto
 import io.cloudflight.jems.api.programme.dto.indicator.InputIndicatorOutputCreate
 import io.cloudflight.jems.api.programme.dto.indicator.InputIndicatorOutputUpdate
 import io.cloudflight.jems.api.programme.dto.indicator.InputIndicatorResultCreate
