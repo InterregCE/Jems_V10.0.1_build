@@ -2,7 +2,7 @@
           (discard)="onCancel()">
     <form [formGroup]="workPackageForm" class="container">
         <div>
-            <h6>{{'project.application.form.workpackage.form.objectives' | translate}}</h6>
+            <h6>{{'project.application.form.workpackage.form.header' | translate}}</h6>
         </div>
         <mat-form-field class="field">
             <mat-label>{{'project.application.form.workpackage.field.number' | translate}}</mat-label>
@@ -20,6 +20,15 @@
                 </app-form-field-errors>
             </mat-error>
         </mat-form-field>
+        <div>
+            <h6>{{'project.application.form.workpackage.form.objectives' | translate}}</h6>
+        </div>
+        <span class="intro-text">{{'project.application.form.workpackage.form.objectives.intro.line.three' | translate}}</span>
+        <ul>
+            <li>{{'project.application.form.workpackage.form.objectives.intro.line.four' | translate}}</li>
+            <li>{{'project.application.form.workpackage.form.objectives.intro.line.five' | translate}}</li>
+            <li>{{'project.application.form.workpackage.form.objectives.intro.line.six' | translate}}</li>
+        </ul>
         <div class="intro-text">{{'project.application.form.workpackage.form.objectives.intro.line.one' | translate}}</div>
         <app-expandable-textarea
                 class="field-wide"
@@ -31,11 +40,6 @@
                 [disabled]="!editable">
         </app-expandable-textarea>
         <div class="intro-text"><br>{{'project.application.form.workpackage.form.objectives.intro.line.two' | translate}}</div>
-        <ul>
-            <li>{{'project.application.form.workpackage.form.objectives.intro.line.three' | translate}}</li>
-            <li>{{'project.application.form.workpackage.form.objectives.intro.line.four' | translate}}</li>
-            <li>{{'project.application.form.workpackage.form.objectives.intro.line.five' | translate}}</li>
-        </ul>
         <app-expandable-textarea
                 class="field-wide"
                 [control]="workPackageForm?.controls?.workPackageTargetAudience"
