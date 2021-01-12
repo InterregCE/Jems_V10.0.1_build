@@ -1,24 +1,43 @@
 package io.cloudflight.jems.server.project.controller
 
+import io.cloudflight.jems.api.call.dto.flatrate.FlatRateDTO
+import io.cloudflight.jems.api.call.dto.flatrate.FlatRateSetupDTO
+import io.cloudflight.jems.api.call.dto.flatrate.FlatRateType
+import io.cloudflight.jems.api.programme.dto.costoption.BudgetCategory
+import io.cloudflight.jems.api.programme.dto.costoption.ProgrammeLumpSumDTO
+import io.cloudflight.jems.api.programme.dto.costoption.ProgrammeLumpSumPhase
+import io.cloudflight.jems.api.programme.dto.costoption.ProgrammeUnitCostDTO
+import io.cloudflight.jems.api.project.dto.ProjectCallSettingsDTO
 import io.cloudflight.jems.api.project.dto.budget.ProjectPartnerBudgetDTO
 import io.cloudflight.jems.api.project.dto.partner.OutputProjectPartner
 import io.cloudflight.jems.api.project.dto.partner.ProjectPartnerRole
+import io.cloudflight.jems.server.call.service.flatrate.model.ProjectCallFlatRate
+import io.cloudflight.jems.server.programme.service.costoption.model.ProgrammeLumpSum
+import io.cloudflight.jems.server.programme.service.costoption.model.ProgrammeUnitCost
 import io.cloudflight.jems.server.project.service.ProjectService
 import io.cloudflight.jems.server.project.service.budget.get_project_budget.GetProjectBudgetInteractor
 import io.cloudflight.jems.server.project.service.budget.model.PartnerBudget
+import io.cloudflight.jems.server.project.service.get_project.GetProjectInteractor
+import io.cloudflight.jems.server.project.service.model.ProjectCallSettings
 import io.cloudflight.jems.server.project.service.partner.model.ProjectPartner
-import io.mockk.MockKAnnotations
 import io.mockk.every
+import io.mockk.impl.annotations.InjectMockKs
 import io.mockk.impl.annotations.MockK
 import io.mockk.impl.annotations.RelaxedMockK
+import io.mockk.junit5.MockKExtension
 import org.assertj.core.api.Assertions.assertThat
-import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.extension.ExtendWith
 import java.math.BigDecimal
+import java.time.ZonedDateTime
 
+@ExtendWith(MockKExtension::class)
 class ProjectControllerTest {
 
     companion object {
+        private val startDate = ZonedDateTime.now().minusDays(2)
+        private val endDate = ZonedDateTime.now().plusDays(5)
+
         private val partner1 = ProjectPartner(
             id = 2,
             abbreviation = "Partner 1",
@@ -58,14 +77,79 @@ class ProjectControllerTest {
     @MockK
     lateinit var getProjectBudgetInteractor: GetProjectBudgetInteractor
 
+    @MockK
+    lateinit var getProjectInteractor: GetProjectInteractor
+
+    @InjectMockKs
     private lateinit var controller: ProjectController
 
-    @BeforeEach
-    fun setup() {
-        MockKAnnotations.init(this)
-        controller = ProjectController(
-            projectService,
-            getProjectBudgetInteractor,
+
+    @Test
+    fun getProjectCallSettings() {
+        val callSettings = ProjectCallSettings(
+            callId = 10,
+            callName = "call for applications",
+            startDate = startDate,
+            endDate = endDate,
+            lengthOfPeriod = 6,
+            flatRates = setOf(
+                ProjectCallFlatRate(type = FlatRateType.STAFF_COSTS, rate = 15, isAdjustable = true),
+            ),
+            lumpSums = listOf(
+                ProgrammeLumpSum(
+                    id = 32,
+                    name = "LumpSum",
+                    description = "pls 32",
+                    cost = BigDecimal.TEN,
+                    splittingAllowed = false,
+                    phase = ProgrammeLumpSumPhase.Preparation,
+                    categories = setOf(BudgetCategory.EquipmentCosts, BudgetCategory.TravelAndAccommodationCosts),
+                ),
+            ),
+            unitCosts = listOf(
+                ProgrammeUnitCost(
+                    id = 4,
+                    name = "UnitCost",
+                    description = "pus 4",
+                    type = "type of unit cost",
+                    costPerUnit = BigDecimal.ONE,
+                    categories = setOf(BudgetCategory.ExternalCosts, BudgetCategory.OfficeAndAdministrationCosts),
+                ),
+            ),
+        )
+        every { getProjectInteractor.getProjectCallSettings(1L) } returns callSettings
+        assertThat(controller.getProjectCallSettingsById(1L)).isEqualTo(
+            ProjectCallSettingsDTO(
+                callId = 10,
+                callName = "call for applications",
+                startDate = startDate,
+                endDate = endDate,
+                lengthOfPeriod = 6,
+                flatRates = FlatRateSetupDTO(
+                    staffCostFlatRateSetup = FlatRateDTO(15, true),
+                ),
+                lumpSums = listOf(
+                    ProgrammeLumpSumDTO(
+                        id = 32,
+                        name = "LumpSum",
+                        description = "pls 32",
+                        cost = BigDecimal.TEN,
+                        splittingAllowed = false,
+                        phase = ProgrammeLumpSumPhase.Preparation,
+                        categories = setOf(BudgetCategory.EquipmentCosts, BudgetCategory.TravelAndAccommodationCosts),
+                    ),
+                ),
+                unitCosts = listOf(
+                    ProgrammeUnitCostDTO(
+                        id = 4,
+                        name = "UnitCost",
+                        description = "pus 4",
+                        type = "type of unit cost",
+                        costPerUnit = BigDecimal.ONE,
+                        categories = setOf(BudgetCategory.ExternalCosts, BudgetCategory.OfficeAndAdministrationCosts),
+                    )
+                ),
+            )
         )
     }
 
@@ -83,6 +167,7 @@ class ProjectControllerTest {
                 externalCosts = toBd(10000),
                 equipmentCosts = toBd(7500),
                 infrastructureCosts = toBd(2500),
+                lumpSumContribution = toBd(2787),
             ),
             PartnerBudget(
                 partner = partner1,
@@ -95,6 +180,7 @@ class ProjectControllerTest {
                 externalCosts = toBd(10000),
                 equipmentCosts = toBd(7500),
                 infrastructureCosts = toBd(2500),
+                lumpSumContribution = toBd(1213),
             ),
         )
         every { getProjectBudgetInteractor.getBudget(1L) } returns projectBudget
@@ -107,7 +193,8 @@ class ProjectControllerTest {
                 equipmentCosts = toBd(7500),
                 infrastructureCosts = toBd(2500),
                 officeAndAdministrationCosts = toBd(231), // as 7% from 15% from total
-                totalSum = toBd(25531),
+                totalSum = toBd(26744),
+                lumpSumContribution = toBd(1213),
             ),
             ProjectPartnerBudgetDTO(
                 partner = outputPartner2,
@@ -117,7 +204,8 @@ class ProjectControllerTest {
                 equipmentCosts = toBd(7500),
                 infrastructureCosts = toBd(2500),
                 officeAndAdministrationCosts = toBd(210), // as 7% from 15% from total
-                totalSum = toBd(23570),
+                totalSum = toBd(26357),
+                lumpSumContribution = toBd(2787),
             ),
         )
     }

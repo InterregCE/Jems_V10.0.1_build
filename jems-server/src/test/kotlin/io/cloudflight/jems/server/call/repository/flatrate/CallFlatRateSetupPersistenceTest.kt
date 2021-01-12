@@ -12,7 +12,7 @@ import io.cloudflight.jems.server.call.service.flatrate.CallFlatRateSetupPersist
 import io.cloudflight.jems.server.call.service.flatrate.model.ProjectCallFlatRate
 import io.cloudflight.jems.server.common.exception.ResourceNotFoundException
 import io.cloudflight.jems.server.programme.entity.ProgrammeLegalStatus
-import io.cloudflight.jems.server.project.entity.Project
+import io.cloudflight.jems.server.project.entity.ProjectEntity
 import io.cloudflight.jems.server.project.entity.ProjectStatus
 import io.cloudflight.jems.server.project.entity.partner.ProjectPartnerEntity
 import io.cloudflight.jems.server.project.repository.partner.ProjectPartnerRepository
@@ -34,7 +34,7 @@ class CallFlatRateSetupPersistenceTest {
             flatRates = flatRate.toMutableSet()
         )
         private fun dummyPartner(call: CallEntity) = ProjectPartnerEntity(
-            project = Project(
+            project = ProjectEntity(
                 id = 1,
                 call = call,
                 acronym = "test",

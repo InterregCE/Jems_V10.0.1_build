@@ -53,7 +53,7 @@ export class ProjectApplicationFormProjectRelevanceAndContextSectionComponent {
 
   private callStrategies$ = this.projectStore.getProject()
     .pipe(
-      mergeMap(project => this.callService.getCallById(project.call.id)),
+      mergeMap(project => this.callService.getCallById(project.callSettings.callId)),
       tap(call => Log.info('Fetched strategies from call', this, call.strategies)),
       map(call => call.strategies)
     );

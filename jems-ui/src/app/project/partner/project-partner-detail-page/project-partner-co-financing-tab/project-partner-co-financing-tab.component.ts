@@ -61,7 +61,7 @@ export class ProjectPartnerCoFinancingTabComponent implements OnInit {
 
   private callFunds$: Observable<ProgrammeFundOutputDTO[]> = this.projectStore.getProject()
     .pipe(
-      map(project => project.call.id),
+      map(project => project.callSettings.callId),
       mergeMap(callId => this.callService.getCallById(callId)),
       map((call: OutputCall) => call.funds),
     );

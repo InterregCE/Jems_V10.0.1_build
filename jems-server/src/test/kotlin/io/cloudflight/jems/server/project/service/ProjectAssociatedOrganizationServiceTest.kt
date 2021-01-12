@@ -18,7 +18,7 @@ import io.cloudflight.jems.server.common.exception.ResourceNotFoundException
 import io.cloudflight.jems.server.programme.entity.ProgrammeLegalStatus
 import io.cloudflight.jems.server.project.entity.AddressEntity
 import io.cloudflight.jems.server.project.entity.Contact
-import io.cloudflight.jems.server.project.entity.Project
+import io.cloudflight.jems.server.project.entity.ProjectEntity
 import io.cloudflight.jems.server.project.entity.associatedorganization.ProjectAssociatedOrganization
 import io.cloudflight.jems.server.project.entity.partner.ProjectPartnerEntity
 import io.cloudflight.jems.server.project.entity.ProjectStatus
@@ -83,7 +83,7 @@ internal class ProjectAssociatedOrganizationServiceTest {
         status = ProjectApplicationStatus.APPROVED,
         user = user,
         updated = ZonedDateTime.now())
-    private val project = Project(
+    private val project = ProjectEntity(
         id = 1,
         acronym = "acronym",
         call = call,
@@ -95,13 +95,16 @@ internal class ProjectAssociatedOrganizationServiceTest {
         project = project,
         abbreviation = "partner",
         role = ProjectPartnerRole.LEAD_PARTNER,
-        legalStatus = ProgrammeLegalStatus(1, "test")
+        legalStatus = ProgrammeLegalStatus(1, "test"),
+        sortNumber = 1,
     )
 
     private val outputProjectPartner = OutputProjectPartner(
         id = 1,
         abbreviation = projectPartner.abbreviation,
-        role = ProjectPartnerRole.LEAD_PARTNER)
+        role = ProjectPartnerRole.LEAD_PARTNER,
+        sortNumber = 1,
+    )
 
     private fun organization(id: Long, partner: ProjectPartnerEntity, name: String, sortNr: Int? = null) = ProjectAssociatedOrganization(
         id = id,

@@ -3,7 +3,7 @@ package io.cloudflight.jems.server.project.service.partner
 import io.cloudflight.jems.api.call.dto.CallStatus
 import io.cloudflight.jems.api.project.dto.status.ProjectApplicationStatus
 import io.cloudflight.jems.server.call.entity.CallEntity
-import io.cloudflight.jems.server.project.entity.Project
+import io.cloudflight.jems.server.project.entity.ProjectEntity
 import io.cloudflight.jems.server.project.entity.ProjectStatus
 import io.cloudflight.jems.server.user.entity.User
 import io.cloudflight.jems.server.user.entity.UserRole
@@ -38,7 +38,7 @@ class ProjectPartnerTestUtil {
             status = ProjectApplicationStatus.APPROVED,
             user = user,
             updated = ZonedDateTime.now())
-        val project = Project(
+        val project = ProjectEntity(
             id = 1,
             acronym = "acronym",
             call = call,

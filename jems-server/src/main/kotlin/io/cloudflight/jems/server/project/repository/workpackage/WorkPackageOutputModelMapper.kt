@@ -3,7 +3,7 @@ package io.cloudflight.jems.server.project.repository.workpackage
 import io.cloudflight.jems.server.programme.entity.indicator.IndicatorOutput
 import io.cloudflight.jems.server.programme.controller.indicator.toIndicatorOutputDto
 import io.cloudflight.jems.server.project.entity.AddressEntity
-import io.cloudflight.jems.server.project.entity.ProjectPeriod
+import io.cloudflight.jems.server.project.entity.ProjectPeriodEntity
 import io.cloudflight.jems.server.project.entity.workpackage.WorkPackageEntity
 import io.cloudflight.jems.server.project.entity.workpackage.WorkPackageInvestmentEntity
 import io.cloudflight.jems.server.project.entity.workpackage.WorkPackageOutputEntity
@@ -17,7 +17,7 @@ import org.springframework.data.domain.Page
 fun WorkPackageOutputUpdate.toEntity(
     indicatorOutput: IndicatorOutput?,
     workPackage: WorkPackageEntity,
-    projectPeriod: ProjectPeriod?
+    projectPeriod: ProjectPeriodEntity?
 ) = WorkPackageOutputEntity(
     workPackage = workPackage,
     outputNumber = outputNumber,

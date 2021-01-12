@@ -16,7 +16,7 @@ import io.cloudflight.jems.api.project.dto.status.ProjectApplicationStatus.INELI
 import io.cloudflight.jems.api.project.dto.status.ProjectApplicationStatus.NOT_APPROVED
 import io.cloudflight.jems.api.project.dto.status.ProjectApplicationStatus.RETURNED_TO_APPLICANT
 import io.cloudflight.jems.api.project.dto.status.ProjectApplicationStatus.SUBMITTED
-import io.cloudflight.jems.server.project.entity.Project
+import io.cloudflight.jems.server.project.entity.ProjectEntity
 import io.cloudflight.jems.server.project.entity.ProjectEligibilityAssessment
 import io.cloudflight.jems.server.project.entity.ProjectQualityAssessment
 import io.cloudflight.jems.server.project.entity.ProjectStatus
@@ -86,7 +86,7 @@ class ProjectStatusServiceImpl(
         return project.toOutputProject()
     }
 
-    private fun validateDecisionDateIfFunding(statusChange: InputProjectStatus, project: Project) {
+    private fun validateDecisionDateIfFunding(statusChange: InputProjectStatus, project: ProjectEntity) {
         if (isFundingStatus(statusChange.status!!)
             && statusChange.date!!.isBefore(project.eligibilityDecision!!.decisionDate)
         ) {
@@ -97,7 +97,7 @@ class ProjectStatusServiceImpl(
         }
     }
 
-    private fun validateCallOpen(statusChange: InputProjectStatus, project: Project) {
+    private fun validateCallOpen(statusChange: InputProjectStatus, project: ProjectEntity) {
         if ((statusChange.status == SUBMITTED && project.projectStatus.status == DRAFT) &&
             (ZonedDateTime.now().isBefore(project.call.startDate)
                 || ZonedDateTime.now().isAfter(project.call.endDate))
@@ -233,7 +233,7 @@ class ProjectStatusServiceImpl(
         )
     }
 
-    private fun updateProject(oldProject: Project, newStatus: ProjectStatus): Project {
+    private fun updateProject(oldProject: ProjectEntity, newStatus: ProjectStatus): ProjectEntity {
         val oldStatus = oldProject.projectStatus.status
         return when {
             oldStatus == RETURNED_TO_APPLICANT -> {
@@ -266,7 +266,7 @@ class ProjectStatusServiceImpl(
      * In case of resubmission it will retrieve old status (before RETURNED_TO_APPLICANT) from history.
      */
     private fun getNewStatusEntity(
-        project: Project,
+        project: ProjectEntity,
         statusChange: InputProjectStatus,
         user: User
     ): ProjectStatus {

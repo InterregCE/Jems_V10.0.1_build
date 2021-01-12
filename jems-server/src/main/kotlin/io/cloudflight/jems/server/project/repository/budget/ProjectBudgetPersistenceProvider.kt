@@ -13,6 +13,8 @@ import io.cloudflight.jems.server.project.service.partner.model.ProjectPartner
 import org.springframework.data.domain.Sort
 import org.springframework.stereotype.Repository
 import org.springframework.transaction.annotation.Transactional
+import java.math.BigDecimal
+import java.util.UUID
 
 @Repository
 class ProjectBudgetPersistenceProvider(
@@ -21,7 +23,8 @@ class ProjectBudgetPersistenceProvider(
     private val budgetTravelRepository: ProjectPartnerBudgetTravelRepository,
     private val budgetExternalRepository: ProjectPartnerBudgetExternalRepository,
     private val budgetEquipmentRepository: ProjectPartnerBudgetEquipmentRepository,
-    private val budgetInfrastructureRepository: ProjectPartnerBudgetInfrastructureRepository
+    private val budgetInfrastructureRepository: ProjectPartnerBudgetInfrastructureRepository,
+    private val projectLumpSumRepository: ProjectLumpSumRepository,
 ) : ProjectBudgetPersistence {
 
     @Transactional(readOnly = true)
@@ -43,6 +46,10 @@ class ProjectBudgetPersistenceProvider(
     @Transactional(readOnly = true)
     override fun getInfrastructureCosts(partnerIds: Set<Long>): List<ProjectPartnerCost> =
         budgetInfrastructureRepository.sumForAllPartners(partnerIds).toProjectPartnerBudget()
+
+    @Transactional(readOnly = true)
+    override fun getLumpSumContributionPerPartner(lumpSumIds: Set<UUID>): Map<Long, BigDecimal> =
+        projectLumpSumRepository.sumLumpSumsPerPartner(lumpSumIds).associateBy({ it.partner.id }, { it.sum })
 
     @Transactional(readOnly = true)
     override fun getPartnersForProjectId(projectId: Long): List<ProjectPartner> =

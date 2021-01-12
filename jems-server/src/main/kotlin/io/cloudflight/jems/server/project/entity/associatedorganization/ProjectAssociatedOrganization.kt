@@ -1,6 +1,6 @@
 package io.cloudflight.jems.server.project.entity.associatedorganization
 
-import io.cloudflight.jems.server.project.entity.Project
+import io.cloudflight.jems.server.project.entity.ProjectEntity
 import io.cloudflight.jems.server.project.entity.partner.ProjectPartnerEntity
 import javax.persistence.CascadeType
 import javax.persistence.Column
@@ -23,7 +23,7 @@ data class ProjectAssociatedOrganization(
     // consider removal of this in future (transitive dependency through partner -> project)
     @ManyToOne(optional = false, fetch = FetchType.LAZY)
     @field:NotNull
-    val project: Project,
+    val project: ProjectEntity,
 
     @ManyToOne(optional = false, fetch = FetchType.LAZY)
     @field:NotNull

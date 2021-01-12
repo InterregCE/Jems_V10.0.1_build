@@ -1,6 +1,6 @@
 package io.cloudflight.jems.server.project.entity.workpackage
 
-import io.cloudflight.jems.server.project.entity.Project
+import io.cloudflight.jems.server.project.entity.ProjectEntity
 import io.cloudflight.jems.server.project.entity.workpackage.activity.WorkPackageActivityEntity
 import javax.persistence.CascadeType
 import javax.persistence.Column
@@ -24,7 +24,7 @@ data class WorkPackageEntity(
     @ManyToOne(optional = false, fetch = FetchType.LAZY)
     @JoinColumn(name = "project_id")
     @field:NotNull
-    val project: Project,
+    val project: ProjectEntity,
 
     @Column
     val number: Int? = null,

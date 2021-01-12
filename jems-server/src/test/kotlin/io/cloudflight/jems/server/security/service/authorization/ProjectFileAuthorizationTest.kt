@@ -1,8 +1,8 @@
 package io.cloudflight.jems.server.security.service.authorization
 
-import io.cloudflight.jems.api.call.dto.OutputCallWithDates
 import io.cloudflight.jems.api.call.dto.flatrate.FlatRateSetupDTO
 import io.cloudflight.jems.api.project.dto.OutputProject
+import io.cloudflight.jems.api.project.dto.ProjectCallSettingsDTO
 import io.cloudflight.jems.api.project.dto.file.OutputProjectFile
 import io.cloudflight.jems.api.project.dto.status.OutputProjectStatus
 import io.cloudflight.jems.api.project.dto.status.ProjectApplicationStatus
@@ -93,19 +93,21 @@ internal class ProjectFileAuthorizationTest {
             )
         }
 
-        private val dummyCall = OutputCallWithDates(
-            id = 1,
-            name = "call",
+        private val dummyCall = ProjectCallSettingsDTO(
+            callId = 1,
+            callName = "call",
             startDate = ZonedDateTime.now(),
             endDate = ZonedDateTime.now(),
             lengthOfPeriod = 12,
             flatRates = FlatRateSetupDTO(),
+            lumpSums = emptyList(),
+            unitCosts = emptyList(),
         )
 
         private fun getProject(id: Long, applicantId: Long, status: ProjectApplicationStatus): OutputProject {
             return OutputProject(
                 id = id,
-                call = dummyCall,
+                callSettings = dummyCall,
                 acronym = "",
                 applicant = OutputUser(applicantId, "", "", ""),
                 projectStatus = OutputProjectStatus(null, status, OutputUser(null, "", "", ""), ZonedDateTime.now())
@@ -120,7 +122,7 @@ internal class ProjectFileAuthorizationTest {
         private fun dummyProjectWithStatus(status: OutputProjectStatus): OutputProject {
             return OutputProject(
                 id = null,
-                call = dummyCall,
+                callSettings = dummyCall,
                 acronym = "",
                 applicant = OutputUser(null, "", "", ""),
                 projectStatus = status

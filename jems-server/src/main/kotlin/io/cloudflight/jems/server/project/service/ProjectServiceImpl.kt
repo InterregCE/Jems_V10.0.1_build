@@ -18,7 +18,7 @@ import io.cloudflight.jems.server.common.exception.I18nValidationException
 import io.cloudflight.jems.server.common.exception.ResourceNotFoundException
 import io.cloudflight.jems.server.programme.entity.ProgrammePriorityPolicy
 import io.cloudflight.jems.server.project.dto.ProjectApplicantAndStatus
-import io.cloudflight.jems.server.project.entity.ProjectPeriod
+import io.cloudflight.jems.server.project.entity.ProjectPeriodEntity
 import io.cloudflight.jems.server.project.entity.ProjectPeriodId
 import io.cloudflight.jems.server.project.entity.ProjectStatus
 import io.cloudflight.jems.server.project.repository.ProjectRepository
@@ -148,14 +148,14 @@ class ProjectServiceImpl(
         projectId: Long,
         periodLength: Int,
         duration: Int?
-    ): List<ProjectPeriod> {
+    ): List<ProjectPeriodEntity> {
         if (duration == null || duration < 1)
             return emptyList()
 
         val count = ceil(duration.toDouble() / periodLength).toInt()
 
         return (1 .. count).mapIndexed { index, period ->
-            ProjectPeriod(
+            ProjectPeriodEntity(
                 id = ProjectPeriodId(projectId = projectId, number = period),
                 start = periodLength * index + 1,
                 end = if (period == count) duration else periodLength * period

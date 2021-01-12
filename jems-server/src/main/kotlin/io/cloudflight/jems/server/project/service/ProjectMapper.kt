@@ -7,15 +7,16 @@ import io.cloudflight.jems.api.project.dto.OutputProjectData
 import io.cloudflight.jems.api.project.dto.OutputProjectPeriod
 import io.cloudflight.jems.api.project.dto.OutputProjectSimple
 import io.cloudflight.jems.server.call.entity.CallEntity
-import io.cloudflight.jems.server.call.service.toOutputCallWithDates
 import io.cloudflight.jems.server.programme.entity.ProgrammePriorityPolicy
 import io.cloudflight.jems.server.programme.service.toOutputProgrammePriorityPolicy
 import io.cloudflight.jems.server.programme.service.toOutputProgrammePrioritySimple
+import io.cloudflight.jems.server.project.controller.toDto
 import io.cloudflight.jems.server.project.dto.ProjectApplicantAndStatus
-import io.cloudflight.jems.server.project.entity.Project
+import io.cloudflight.jems.server.project.entity.ProjectEntity
 import io.cloudflight.jems.server.project.entity.ProjectData
-import io.cloudflight.jems.server.project.entity.ProjectPeriod
+import io.cloudflight.jems.server.project.entity.ProjectPeriodEntity
 import io.cloudflight.jems.server.project.entity.ProjectStatus
+import io.cloudflight.jems.server.project.repository.toSettingsModel
 import io.cloudflight.jems.server.user.entity.User
 import io.cloudflight.jems.server.user.service.toOutputUser
 
@@ -23,16 +24,16 @@ fun InputProject.toEntity(
     call: CallEntity,
     applicant: User,
     status: ProjectStatus
-) = Project(
+) = ProjectEntity(
     call = call,
     acronym = this.acronym!!,
     applicant = applicant,
     projectStatus = status
 )
 
-fun Project.toOutputProject() = OutputProject(
+fun ProjectEntity.toOutputProject() = OutputProject(
     id = id,
-    call = call.toOutputCallWithDates(),
+    callSettings = call.toSettingsModel().toDto(),
     acronym = acronym,
     applicant = applicant.toOutputUser(),
     projectStatus = projectStatus.toOutputProjectStatus(),
@@ -46,7 +47,7 @@ fun Project.toOutputProject() = OutputProject(
     periods = periods.map { it.toOutputPeriod() }
 )
 
-fun Project.toOutputProjectSimple() = OutputProjectSimple(
+fun ProjectEntity.toOutputProjectSimple() = OutputProjectSimple(
     id = id,
     callName = call.name,
     acronym = acronym,
@@ -57,7 +58,7 @@ fun Project.toOutputProjectSimple() = OutputProjectSimple(
     programmePriorityCode = priorityPolicy?.programmePriority?.code
 )
 
-fun Project.toApplicantAndStatus() = ProjectApplicantAndStatus(
+fun ProjectEntity.toApplicantAndStatus() = ProjectApplicantAndStatus(
     applicantId = applicant.id,
     projectStatus = projectStatus.status
 )
@@ -78,7 +79,7 @@ fun ProjectData.toOutputProjectData(priorityPolicy: ProgrammePriorityPolicy?) = 
     programmePriority = priorityPolicy?.programmePriority?.toOutputProgrammePrioritySimple()
 )
 
-fun ProjectPeriod.toOutputPeriod() = OutputProjectPeriod(
+fun ProjectPeriodEntity.toOutputPeriod() = OutputProjectPeriod(
     projectId = id.projectId,
     number = id.number,
     start = start,

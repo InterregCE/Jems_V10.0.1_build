@@ -1,5 +1,6 @@
 package io.cloudflight.jems.api.project
 
+import io.cloudflight.jems.api.project.dto.ProjectCallSettingsDTO
 import io.cloudflight.jems.api.project.dto.InputProject
 import io.cloudflight.jems.api.project.dto.InputProjectData
 import io.cloudflight.jems.api.project.dto.OutputProject
@@ -36,6 +37,10 @@ interface ProjectApi {
     @ApiOperation("Returns a project application by id")
     @GetMapping("/{projectId}")
     fun getProjectById(@PathVariable projectId: Long): OutputProject
+
+    @ApiOperation("Returns call setting of a call related to this application")
+    @GetMapping("/{projectId}/callSettings")
+    fun getProjectCallSettingsById(@PathVariable projectId: Long): ProjectCallSettingsDTO
 
     @ApiOperation("Creates new project application")
     @PostMapping(consumes = [MediaType.APPLICATION_JSON_VALUE])

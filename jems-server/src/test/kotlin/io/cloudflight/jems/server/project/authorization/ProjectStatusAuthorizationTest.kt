@@ -3,6 +3,7 @@ package io.cloudflight.jems.server.project.authorization
 import io.cloudflight.jems.api.call.dto.OutputCallWithDates
 import io.cloudflight.jems.api.call.dto.flatrate.FlatRateSetupDTO
 import io.cloudflight.jems.api.project.dto.OutputProject
+import io.cloudflight.jems.api.project.dto.ProjectCallSettingsDTO
 import io.cloudflight.jems.api.project.dto.status.OutputProjectEligibilityAssessment
 import io.cloudflight.jems.api.project.dto.status.OutputProjectQualityAssessment
 import io.cloudflight.jems.api.project.dto.status.OutputProjectStatus
@@ -352,13 +353,15 @@ internal class ProjectStatusAuthorizationTest {
     private fun createProject(id: Long, status: ProjectApplicationStatus): OutputProject {
         return OutputProject(
             id = id,
-            call = OutputCallWithDates(
-                id = 1,
-                name = "call",
+            callSettings = ProjectCallSettingsDTO(
+                callId = 1,
+                callName = "call",
                 startDate = ZonedDateTime.now(),
                 endDate = ZonedDateTime.now(),
                 lengthOfPeriod = 12,
                 flatRates = FlatRateSetupDTO(),
+                lumpSums = emptyList(),
+                unitCosts = emptyList(),
             ),
             acronym = "acronym",
             applicant = userApplicantWithoutRole,

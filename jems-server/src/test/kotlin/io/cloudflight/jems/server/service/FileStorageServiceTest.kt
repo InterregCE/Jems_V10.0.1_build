@@ -14,7 +14,7 @@ import io.cloudflight.jems.server.audit.entity.AuditAction
 import io.cloudflight.jems.server.audit.service.AuditCandidate
 import io.cloudflight.jems.server.audit.service.AuditService
 import io.cloudflight.jems.server.call.entity.CallEntity
-import io.cloudflight.jems.server.project.entity.Project
+import io.cloudflight.jems.server.project.entity.ProjectEntity
 import io.cloudflight.jems.server.project.entity.file.ProjectFile
 import io.cloudflight.jems.server.project.entity.ProjectStatus
 import io.cloudflight.jems.server.user.entity.User
@@ -96,7 +96,7 @@ class FileStorageServiceTest {
         status = CallStatus.PUBLISHED,
         lengthOfPeriod = 1
     )
-    private val testProject = Project(id = PROJECT_ID, call = dummyCall, applicant = account, acronym = "test project",
+    private val testProject = ProjectEntity(id = PROJECT_ID, call = dummyCall, applicant = account, acronym = "test project",
         projectStatus = ProjectStatus(status = ProjectApplicationStatus.DRAFT, user = account, updated = ZonedDateTime.now())
     )
 

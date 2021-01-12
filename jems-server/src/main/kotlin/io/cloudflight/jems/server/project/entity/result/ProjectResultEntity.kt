@@ -1,8 +1,8 @@
 package io.cloudflight.jems.server.project.entity.result
 
 import io.cloudflight.jems.server.programme.entity.indicator.IndicatorResult
-import io.cloudflight.jems.server.project.entity.Project
-import io.cloudflight.jems.server.project.entity.ProjectPeriod
+import io.cloudflight.jems.server.project.entity.ProjectEntity
+import io.cloudflight.jems.server.project.entity.ProjectPeriodEntity
 import java.util.UUID
 import java.util.Objects
 import javax.persistence.CascadeType
@@ -22,10 +22,10 @@ data class ProjectResultEntity (
 
     @ManyToOne(optional = false, fetch = FetchType.LAZY)
     @field:NotNull
-    val project: Project,
+    val project: ProjectEntity,
 
     @ManyToOne
-    val period: ProjectPeriod? = null,
+    val period: ProjectPeriodEntity? = null,
 
     @Column
     val resultNumber: Int,

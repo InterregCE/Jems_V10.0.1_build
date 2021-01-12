@@ -19,7 +19,7 @@ export class ProjectApplicationFormIdentificationPageComponent {
 
   private callObjectives$ = this.projectStore.getProject()
     .pipe(
-      mergeMap(project => this.callService.getCallObjectives(project.call.id)),
+      mergeMap(project => this.callService.getCallObjectives(project.callSettings.callId)),
       tap(objectives => Log.info('Fetched objectives', this, objectives)),
       map(objectives => ({
         priorities: objectives
