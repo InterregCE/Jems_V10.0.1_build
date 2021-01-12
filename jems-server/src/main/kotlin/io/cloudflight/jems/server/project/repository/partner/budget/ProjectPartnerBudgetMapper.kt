@@ -30,8 +30,8 @@ fun ProjectPartnerBudgetStaffCostEntity.toBudgetStaffCostEntry() = BudgetStaffCo
     comment = translatedValues.mapTo(HashSet()) {
         InputTranslation(it.budgetTranslation.language, it.comment)
     },
-    type = type ?: StaffCostType.NONE,
-    unitType = unitType ?: StaffCostUnitType.NONE,
+    type = type,
+    unitType = unitType,
     numberOfUnits = baseProperties.numberOfUnits,
     pricePerUnit = baseProperties.pricePerUnit,
     rowSum = baseProperties.rowSum

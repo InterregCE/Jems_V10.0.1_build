@@ -5,6 +5,8 @@ import io.cloudflight.jems.api.project.dto.partner.budget.BudgetGeneralCostEntry
 import io.cloudflight.jems.api.project.dto.partner.budget.BudgetStaffCostEntryDTO
 import io.cloudflight.jems.api.project.dto.partner.budget.BudgetTravelAndAccommodationCostEntryDTO
 import io.cloudflight.jems.api.project.dto.partner.budget.ProjectPartnerBudgetOptionsDto
+import io.cloudflight.jems.api.project.dto.partner.budget.StaffCostTypeDTO
+import io.cloudflight.jems.api.project.dto.partner.budget.StaffCostUnitTypeDTO
 import io.cloudflight.jems.server.project.service.partner.budget.truncate
 import io.cloudflight.jems.server.project.service.partner.model.BudgetCosts
 import io.cloudflight.jems.server.project.service.partner.model.BudgetGeneralCostEntry
@@ -29,6 +31,11 @@ fun ProjectPartnerBudgetOptionsDto.toProjectPartnerBudgetOptions(partnerId: Long
     otherCostsOnStaffCostsFlatRate = this.otherCostsOnStaffCostsFlatRate,
 )
 
+fun StaffCostUnitType.toStaffCostUnitTypeDTO() = StaffCostUnitTypeDTO.valueOf(this.key)
+fun StaffCostUnitTypeDTO.toStaffCostUnitType() = StaffCostUnitType.valueOf(this.key)
+fun StaffCostType.toStaffCostTypeDTO() = StaffCostTypeDTO.valueOf(this.key)
+fun StaffCostTypeDTO.toStaffCostType() = StaffCostType.valueOf(this.key)
+
 fun List<BudgetStaffCostEntry>.toBudgetStaffCostEntryDTOList() = this.map { it.toBudgetStaffCostEntryDTO() }
 
 fun BudgetStaffCostEntry.toBudgetStaffCostEntryDTO() = BudgetStaffCostEntryDTO(
@@ -36,8 +43,8 @@ fun BudgetStaffCostEntry.toBudgetStaffCostEntryDTO() = BudgetStaffCostEntryDTO(
     numberOfUnits = numberOfUnits.truncate(),
     pricePerUnit = pricePerUnit.truncate(),
     rowSum = rowSum,
-    unitType = unitType.key,
-    type = type.key,
+    unitType = unitType?.toStaffCostUnitTypeDTO(),
+    type = type?.toStaffCostTypeDTO(),
     description = description,
     comment = comment
 )
@@ -49,8 +56,8 @@ fun BudgetStaffCostEntryDTO.toBudgetStaffCostEntry() = BudgetStaffCostEntry(
     numberOfUnits = numberOfUnits,
     pricePerUnit = pricePerUnit,
     rowSum = rowSum,
-    unitType = StaffCostUnitType.valueOf(unitType),
-    type = StaffCostType.valueOf(type),
+    unitType = unitType?.toStaffCostUnitType(),
+    type = type?.toStaffCostType(),
     description = description,
     comment = comment
 )

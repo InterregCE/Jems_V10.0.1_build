@@ -9,6 +9,7 @@ import java.math.BigDecimal
 const val MAX_ALLOWED_NUMBER_OF_BUDGET_ENTRIES = 300
 const val BUDGET_COST_MAX_NUMBER_OF_ENTRIES_ERROR_KEY = "project.partner.budget.max.allowed.reached"
 const val BUDGET_COST_VALUE_LIMIT_ERROR_KEY = "project.partner.budget.number.out.of.range"
+const val BUDGET_COST_INVALID_SUM_ERROR_KEY = "project.partner.budget.sum.not.match"
 val MAX_ALLOWED_BUDGET_VALUE: BigDecimal = BigDecimal.valueOf(999_999_999_99L, 2)
 
 @Service
@@ -22,13 +23,22 @@ class BudgetCostEntriesValidator {
                 i18nKey = BUDGET_COST_MAX_NUMBER_OF_ENTRIES_ERROR_KEY
             )
 
-        if (!budgetDTOList.parallelStream().allMatch {
+
+        if (!budgetDTOList.stream().allMatch {
                 it.numberOfUnits <= MAX_ALLOWED_BUDGET_VALUE && it.pricePerUnit <= MAX_ALLOWED_BUDGET_VALUE
                     && it.rowSum <= MAX_ALLOWED_BUDGET_VALUE
             })
             throw I18nValidationException(
                 httpStatus = HttpStatus.UNPROCESSABLE_ENTITY,
                 i18nKey = BUDGET_COST_VALUE_LIMIT_ERROR_KEY
+            )
+
+        if (budgetDTOList.stream().anyMatch {
+                it.rowSum != it.numberOfUnits.multiply(it.pricePerUnit).truncate()
+            })
+            throw I18nValidationException(
+                httpStatus = HttpStatus.UNPROCESSABLE_ENTITY,
+                i18nKey = BUDGET_COST_INVALID_SUM_ERROR_KEY
             )
     }
 

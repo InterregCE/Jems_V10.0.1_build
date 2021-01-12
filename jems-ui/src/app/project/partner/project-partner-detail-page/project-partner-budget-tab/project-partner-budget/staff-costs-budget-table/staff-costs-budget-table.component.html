@@ -23,10 +23,9 @@
                                 *matHeaderCellDef> {{'project.partner.budget.table.staff.type.of.staff' | translate}} </mat-header-cell>
                         <mat-cell *matCellDef="let control;  let i = index" [formGroupName]="i">
                             <mat-form-field [appFormFieldWidth]="'small'">
-                                <mat-select name="indicatorCode"
-                                            [formControlName]="constants.FORM_CONTROL_NAMES.type"
+                                <mat-select [formControlName]="constants.FORM_CONTROL_NAMES.type"
                                             [disableOptionCentering]="true">
-                                    <mat-option [value]="staffCostType.NONE"></mat-option>
+                                    <mat-option [value]="null"></mat-option>
                                     <mat-option
                                             [value]="staffCostType.REAL_COST">{{'project.partner.budget.table.staff.type.of.staff.fixed.percentage' | translate}}</mat-option>
                                     <mat-option
@@ -54,10 +53,9 @@
                                 *matHeaderCellDef> {{'project.partner.budget.table.unit.type' | translate}} </mat-header-cell>
                         <mat-cell *matCellDef="let control;  let i = index" [formGroupName]="i">
                             <mat-form-field [appFormFieldWidth]="'small'">
-                                <mat-select name="indicatorCode"
-                                            [formControlName]="constants.FORM_CONTROL_NAMES.unitType"
+                                <mat-select [formControlName]="constants.FORM_CONTROL_NAMES.unitType"
                                             [disableOptionCentering]="true" panelClass="material-select-panel">
-                                    <mat-option [value]="staffCostUnitType.NONE"></mat-option>
+                                    <mat-option [value]="null"></mat-option>
                                     <mat-option
                                             [value]="staffCostUnitType.PERIOD">{{'project.partner.budget.table.staff.unit.type.period' | translate}}</mat-option>
                                     <mat-option

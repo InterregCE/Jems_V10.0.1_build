@@ -36,8 +36,26 @@ internal class BudgetCostEntriesValidatorTest : UnitTest() {
         assertEquals(BUDGET_COST_MAX_NUMBER_OF_ENTRIES_ERROR_KEY, ex.i18nKey)
     }
 
+    @Test
+    fun `should throw I18nValidationException when row sum is no equal to multiplication of numberOfUnits and pricePerUnit at least for one entry`() {
+
+        val budgetCostEntries = IntStream.range(0, 5).toList().map {
+            object : BaseBudgetEntry {
+                override val id = it.toLong()
+                override val numberOfUnits = BigDecimal.ONE
+                override val pricePerUnit = BigDecimal.ONE
+                override val rowSum = if (it == 3) BigDecimal.ZERO else BigDecimal.ONE
+            }
+        }
+        val ex = assertThrows<I18nValidationException> {
+            budgetCostEntriesValidator.validate(budgetCostEntries)
+        }
+
+        assertEquals(BUDGET_COST_INVALID_SUM_ERROR_KEY, ex.i18nKey)
+    }
+
     @TestFactory
-    fun `should throw I18nValidationException when at least one of budget cost values is more that allowed`() =
+    fun `should throw I18nValidationException when at least one of budget cost values is more than allowed`() =
         listOf(
             createBaseBudgetEntries(withInvalidNumberOfUnits = true) to "numberOfUnits is more than allowed ",
             createBaseBudgetEntries(withInvalidPricePerUnit = true) to "pricePerUnit is more than allowed ",
@@ -57,17 +75,17 @@ internal class BudgetCostEntriesValidatorTest : UnitTest() {
         IntStream.range(1, 10).toList().map {
             object : BaseBudgetEntry {
                 override val id = it.toLong()
-                override val numberOfUnits = BigDecimal.ZERO
-                override val pricePerUnit = BigDecimal.ZERO
-                override val rowSum = BigDecimal.ZERO
+                override val numberOfUnits = BigDecimal.ZERO.truncate()
+                override val pricePerUnit = BigDecimal.ZERO.truncate()
+                override val rowSum = BigDecimal.ZERO.truncate()
             }
         }.let {
             it.plus(
                 object : BaseBudgetEntry {
                     override val id = 20L
-                    override val numberOfUnits = if (withInvalidNumberOfUnits) MAX_ALLOWED_BUDGET_VALUE.plus(BigDecimal.ONE) else BigDecimal.ZERO
-                    override val pricePerUnit = if (withInvalidPricePerUnit) MAX_ALLOWED_BUDGET_VALUE.plus(BigDecimal.ONE) else BigDecimal.ZERO
-                    override val rowSum = if (withInvalidRowSum) MAX_ALLOWED_BUDGET_VALUE.plus(BigDecimal.ONE) else BigDecimal.ZERO
+                    override val numberOfUnits = if (withInvalidNumberOfUnits) MAX_ALLOWED_BUDGET_VALUE.plus(BigDecimal.ONE).truncate() else BigDecimal.ZERO.truncate()
+                    override val pricePerUnit = if (withInvalidPricePerUnit) MAX_ALLOWED_BUDGET_VALUE.plus(BigDecimal.ONE).truncate() else BigDecimal.ZERO.truncate()
+                    override val rowSum = if (withInvalidRowSum) MAX_ALLOWED_BUDGET_VALUE.plus(BigDecimal.ONE).truncate() else BigDecimal.ZERO.truncate()
                 }
             )
         }
