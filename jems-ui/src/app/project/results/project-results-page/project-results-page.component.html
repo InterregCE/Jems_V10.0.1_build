@@ -1,0 +1,73 @@
+<ng-container *ngIf="data$ | async as data">
+    <app-form (save)="updateResults()">
+        <form id="resultsForm" [formGroup]="form">
+            <div>
+                <app-breadcrumb></app-breadcrumb>
+                <h2>{{'project.application.form.acronym' | translate : {acronym: data.projectAcronym} }}</h2>
+                <h4>{{'project.application.form.section.part.c' | translate}}</h4>
+                <h5 class="spaced-elements">{{'project.application.form.section.part.c.subsection.five' | translate}}</h5>
+                <div class="intro-text-small">{{'project.results.intro' | translate}}</div>
+            </div>
+
+            <app-multi-language *ngFor="let result of results.controls;let i=index">
+                <ng-container [formArrayName]="constants.RESULTS.name">
+                    <ng-container [formGroupName]="i">
+                        <div appTableConfig [widthConfig]="[{}, {maxInRem:2}]">
+                            <div>
+                                <h5>{{('project.results.result.title' | translate) + ' ' + (i + 1) }}</h5>
+                                <button type="button" (click)="removeResult(i)" mat-icon-button color="accent">
+                                    <mat-icon>delete</mat-icon>
+                                </button>
+                            </div>
+                        </div>
+
+                        <div>
+                            <mat-form-field class="indicator">
+                                <mat-label>{{'project.results.result.indicator' | translate}}</mat-label>
+                                <mat-select panelClass="material-select-panel"
+                                            [disabled]="!data.resultIndicators.length"
+                                            [formControlName]="constants.RESULT_INDICATOR.name">
+                                    <mat-option *ngFor="let resultIndicator of data.resultIndicators"
+                                                [value]="resultIndicator.id">
+                                        {{resultIndicator.name}}
+                                    </mat-option>
+                                </mat-select>
+                            </mat-form-field>
+
+                            <mat-form-field class="measurement-unit">
+                                <input readonly matInput
+                                       placeholder="{{'project.results.result.measurement.unit' | translate}}"
+                                       value="{{getMeasurementUnit(result.get(constants.RESULT_INDICATOR.name)?.value, data.resultIndicators)}}">
+                            </mat-form-field>
+
+                            <mat-form-field class="final-target">
+                                <input currencyMask type="integer" [options]="{min: 1, max: 99999}"
+                                       name="targetValue" formControlName="targetValue" matInput
+                                       placeholder="{{'project.results.result.target.value' | translate}}">
+                            </mat-form-field>
+
+                            <app-project-periods-select
+                                    [periods]="data.periods"
+                                    [control]="result.get(constants.PERIOD.name)"
+                                    label='project.results.result.delivery.period'
+                                    (selectionChanged)="formService.setDirty(true)">
+                            </app-project-periods-select>
+                        </div>
+
+                        <app-multi-language-form-field
+                                class="mt-2"
+                                label="project.results.result.description"
+                                [formControlName]="constants.DESCRIPTION.name"
+                                [maxLength]="constants.DESCRIPTION.maxLength">
+                        </app-multi-language-form-field>
+
+                    </ng-container>
+                </ng-container>
+            </app-multi-language>
+            <button *ngIf="addResultVisible()" class="spaced-elements mt-4" mat-raised-button color="primary"
+                    (click)="addNewResult()">
+                + {{'project.results.result.add' | translate}}
+            </button>
+        </form>
+    </app-form>
+</ng-container>
