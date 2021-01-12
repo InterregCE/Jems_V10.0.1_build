@@ -7,10 +7,9 @@ import javax.persistence.Converter
 @Converter(autoApply = true)
 class StaffCostTypeConverter : AttributeConverter<StaffCostType, String?> {
 
-    override fun convertToDatabaseColumn(staffCostType: StaffCostType) =
-        if (staffCostType == StaffCostType.NONE) null else staffCostType.key
+    override fun convertToDatabaseColumn(staffCostType: StaffCostType?) =
+        staffCostType?.key
 
-    override fun convertToEntityAttribute(key: String?) =
-        if (key == null) StaffCostType.NONE else StaffCostType.values().firstOrNull { it.key == key }
-            ?: StaffCostType.NONE
+    override fun convertToEntityAttribute(key: String?)=
+        StaffCostType.values().firstOrNull { it.key == key }
 }

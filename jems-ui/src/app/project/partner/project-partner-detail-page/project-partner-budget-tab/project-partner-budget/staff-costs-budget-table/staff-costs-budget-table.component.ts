@@ -81,8 +81,8 @@ export class StaffCostsBudgetTableComponent implements OnInit, OnChanges {
     this.items.push(this.formBuilder.group({
       id: null,
       description: [this.multiLanguageInputService.multiLanguageFormFieldDefaultValue()],
-      type: [StaffCostTypeEnum.NONE],
-      unitType: [StaffCostUnitTypeEnum.NONE],
+      type: [null],
+      unitType: [null],
       comment: [this.multiLanguageInputService.multiLanguageFormFieldDefaultValue()],
       numberOfUnits: [1, [Validators.max(this.constants.MAX_VALUE), Validators.min(this.constants.MIN_VALUE)]],
       pricePerUnit: [0, [Validators.max(this.constants.MAX_VALUE), Validators.min(this.constants.MIN_VALUE)]],

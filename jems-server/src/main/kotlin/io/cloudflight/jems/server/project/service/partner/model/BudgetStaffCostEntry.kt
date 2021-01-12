@@ -8,8 +8,8 @@ data class BudgetStaffCostEntry(
     override val numberOfUnits: BigDecimal,
     override val pricePerUnit: BigDecimal,
     override val rowSum: BigDecimal,
-    val unitType: StaffCostUnitType,
-    val type: StaffCostType,
+    val unitType: StaffCostUnitType?,
+    val type: StaffCostType?,
     val description: Set<InputTranslation> = emptySet(),
     val comment: Set<InputTranslation> = emptySet()
 ) : BaseBudgetEntry
