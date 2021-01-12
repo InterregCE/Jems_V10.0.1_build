@@ -1,6 +1,6 @@
 {
 	"info": {
-		"_postman_id": "ae902f9d-b432-44b9-b823-a4e85875adea",
+		"_postman_id": "f74ade6a-a434-4329-8579-9acedd483319",
 		"name": "ems-rest-test",
 		"description": "Check EMS application for common use-cases",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
@@ -8147,17 +8147,17 @@
 									"listen": "test",
 									"script": {
 										"exec": [
-											"const staffCosts = pm.response.json();\r",
-											"\r",
 											"pm.test('applicant can set budget staff costs', function() {\r",
 											"    pm.response.to.have.status(200);\r",
 											"});\r",
 											"\r",
 											"pm.test('staffcosts are set correctly', function() {\r",
+											"    const staffCosts = pm.response.json();\r",
 											"    pm.expect(staffCosts.length).to.eql(2);\r",
 											"});\r",
 											"\r",
 											"pm.test('staffcosts sums are calculated correctly', function() {\r",
+											"    const staffCosts = pm.response.json();\r",
 											"    pm.expect(staffCosts[0].rowSum + staffCosts[1].rowSum).to.eql(48800);\r",
 											"});\r",
 											""
@@ -8186,7 +8186,7 @@
 								"header": [],
 								"body": {
 									"mode": "raw",
-									"raw": "[\r\n    {\r\n        \"description\": [\r\n            {\r\n                \"language\": \"{{inputLanguage}}\",\r\n                \"translation\": \"Project Manager\"\r\n            }\r\n        ],\r\n        \"numberOfUnits\": 10,\r\n        \"pricePerUnit\": 4500\r\n    },\r\n    {\r\n        \"description\": [\r\n            {\r\n                \"language\": \"{{inputLanguage}}\",\r\n                \"translation\": \"Doctor\"\r\n            }\r\n        ],\r\n        \"numberOfUnits\": 1,\r\n        \"pricePerUnit\": 3800\r\n    }\r\n]\r\n",
+									"raw": "[\r\n    {\r\n        \"description\": [\r\n            {\r\n                \"language\": \"{{inputLanguage}}\",\r\n                \"translation\": \"Project Manager\"\r\n            }\r\n        ],\r\n        \"numberOfUnits\": 10,\r\n        \"pricePerUnit\": 4500,\r\n        \"rowSum\": 45000\r\n    },\r\n    {\r\n        \"description\": [\r\n            {\r\n                \"language\": \"{{inputLanguage}}\",\r\n                \"translation\": \"Doctor\"\r\n            }\r\n        ],\r\n        \"numberOfUnits\": 1,\r\n        \"pricePerUnit\": 3800,\r\n        \"rowSum\": 3800\r\n    }\r\n]\r\n",
 									"options": {
 										"raw": {
 											"language": "json"
@@ -8268,7 +8268,7 @@
 								"header": [],
 								"body": {
 									"mode": "raw",
-									"raw": "[\r\n    {\r\n        \"description\": [\r\n            {\r\n                \"language\": \"{{inputLanguage}}\",\r\n                \"translation\": \"Gran Canaria\"\r\n            }\r\n        ],\r\n        \"numberOfUnits\": 0.19,\r\n        \"pricePerUnit\": 0.99\r\n    }\r\n]\r\n",
+									"raw": "[\r\n    {\r\n        \"description\": [\r\n            {\r\n                \"language\": \"{{inputLanguage}}\",\r\n                \"translation\": \"Gran Canaria\"\r\n            }\r\n        ],\r\n        \"numberOfUnits\": 0.19,\r\n        \"pricePerUnit\": 0.99,\r\n        \"rowSum\": 0.18\r\n    }\r\n]\r\n",
 									"options": {
 										"raw": {
 											"language": "json"
@@ -8350,7 +8350,7 @@
 								"header": [],
 								"body": {
 									"mode": "raw",
-									"raw": "[\r\n    {\r\n        \"description\": [\r\n            {\r\n                \"language\": \"{{inputLanguage}}\",\r\n                \"translation\": \"Dell Aspiron\"\r\n            }\r\n        ],\r\n        \"numberOfUnits\": 2,\r\n        \"pricePerUnit\": 0.5\r\n    }\r\n]\r\n",
+									"raw": "[\r\n    {\r\n        \"description\": [\r\n            {\r\n                \"language\": \"{{inputLanguage}}\",\r\n                \"translation\": \"Dell Aspiron\"\r\n            }\r\n        ],\r\n        \"numberOfUnits\": 2,\r\n        \"pricePerUnit\": 0.5,\r\n        \"rowSum\": 1\r\n    }\r\n]\r\n",
 									"options": {
 										"raw": {
 											"language": "json"
@@ -8761,7 +8761,7 @@
 								"header": [],
 								"body": {
 									"mode": "raw",
-									"raw": "[\r\n    {\r\n        \"description\": [\r\n            {\r\n                \"language\": \"{{inputLanguage}}\",\r\n                \"translation\": \"Gran Canaria\"\r\n            }\r\n        ],\r\n        \"numberOfUnits\": 0.19,\r\n        \"pricePerUnit\": 0.99\r\n    }\r\n]\r\n",
+									"raw": "[\r\n    {\r\n        \"description\": [\r\n            {\r\n                \"language\": \"{{inputLanguage}}\",\r\n                \"translation\": \"Gran Canaria\"\r\n            }\r\n        ],\r\n        \"numberOfUnits\": 0.19,\r\n        \"pricePerUnit\": 0.99,\r\n        \"rowSum\": 0.18\r\n    }\r\n]\r\n",
 									"options": {
 										"raw": {
 											"language": "json"

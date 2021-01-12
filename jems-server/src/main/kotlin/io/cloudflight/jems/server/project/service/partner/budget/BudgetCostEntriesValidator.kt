@@ -34,7 +34,7 @@ class BudgetCostEntriesValidator {
             )
 
         if (budgetDTOList.stream().anyMatch {
-                it.rowSum != it.numberOfUnits.multiply(it.pricePerUnit).truncate()
+                it.rowSum.compareTo(it.numberOfUnits.multiply(it.pricePerUnit).truncate()) != 0
             })
             throw I18nValidationException(
                 httpStatus = HttpStatus.UNPROCESSABLE_ENTITY,
