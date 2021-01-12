@@ -9005,7 +9005,7 @@
 								"header": [],
 								"body": {
 									"mode": "raw",
-									"raw": "[\r\n    {\r\n        \"description\": [\r\n            {\r\n                \"language\": \"{{inputLanguage}}\",\r\n                \"translation\": \"Teachers\"\r\n            }\r\n        ],\r\n        \"numberOfUnits\": 2,\r\n        \"pricePerUnit\": 8800\r\n    },\r\n    {\r\n        \"description\": [\r\n            {\r\n                \"language\": \"{{inputLanguage}}\",\r\n                \"translation\": \"Students\"\r\n            }\r\n        ],\r\n        \"numberOfUnits\": 22,\r\n        \"pricePerUnit\": 200\r\n    }\r\n]\r\n",
+									"raw": "[\r\n    {\r\n        \"description\": [\r\n            {\r\n                \"language\": \"{{inputLanguage}}\",\r\n                \"translation\": \"Teachers\"\r\n            }\r\n        ],\r\n        \"numberOfUnits\": 2,\r\n        \"pricePerUnit\": 8800,\r\n        \"rowSum\": 17600\r\n    },\r\n    {\r\n        \"description\": [\r\n            {\r\n                \"language\": \"{{inputLanguage}}\",\r\n                \"translation\": \"Students\"\r\n            }\r\n        ],\r\n        \"numberOfUnits\": 22,\r\n        \"pricePerUnit\": 200,\r\n        \"rowSum\": 4400\r\n    }\r\n]\r\n",
 									"options": {
 										"raw": {
 											"language": "json"
