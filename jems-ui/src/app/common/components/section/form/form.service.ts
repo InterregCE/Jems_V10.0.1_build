@@ -7,7 +7,9 @@ import {Log} from '../../../utils/log';
 import {filter, tap} from 'rxjs/operators';
 import {RoutingService} from '../../../services/routing.service';
 import {HttpErrorResponse} from '@angular/common/http';
+import {UntilDestroy, untilDestroyed} from '@ngneat/until-destroy';
 
+@UntilDestroy()
 @Injectable()
 export class FormService {
   private form: FormGroup;
@@ -24,12 +26,21 @@ export class FormService {
   constructor(private routingService: RoutingService) {
   }
 
-  init(form: FormGroup): void {
+  init(form: FormGroup, editable$?: Observable<boolean>): void {
     this.form = form;
     this.form?.valueChanges
       .pipe(
         filter(() => this.form.dirty),
         tap(() => this.setDirty(true)),
+      ).subscribe();
+
+    if (!editable$) {
+      return;
+    }
+    editable$
+      .pipe(
+        tap(editable => this.setEditable(editable)),
+        untilDestroyed(this)
       ).subscribe();
   }
 

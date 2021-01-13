@@ -38,7 +38,7 @@ export class ProjectWorkPackageActivitiesTabComponent implements OnInit {
               private formBuilder: FormBuilder,
               private workPackageStore: ProjectWorkPackagePageStore,
               public languageService: MultiLanguageInputService) {
-    this.formService.init(this.form);
+    this.formService.init(this.form, this.workPackageStore.isProjectEditable$);
   }
 
   ngOnInit(): void {
@@ -120,9 +120,6 @@ export class ProjectWorkPackageActivitiesTabComponent implements OnInit {
       this.addActivity(activity);
       activity.deliverables?.forEach(deliverable => this.addDeliverable(index, deliverable));
     });
-    if (!this.editable) {
-      this.formService.setEditable(false);
-    }
   }
 
   private addActivity(existing?: WorkPackageActivityDTO): void {

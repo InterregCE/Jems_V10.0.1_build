@@ -1,12 +1,6 @@
-import {
-  ChangeDetectionStrategy,
-  Component,
-  Input, OnChanges,
-  OnInit,
-  SimpleChanges
-} from '@angular/core';
+import {ChangeDetectionStrategy, Component, Input, OnChanges, OnInit, SimpleChanges} from '@angular/core';
 import {FormBuilder, FormGroup, Validators} from '@angular/forms';
-import {OutputProjectPartnerDetail, InputProjectContact} from '@cat/api';
+import {InputProjectContact, OutputProjectPartnerDetail} from '@cat/api';
 import {FormService} from '@common/components/section/form/form.service';
 import {ProjectPartnerStore} from '../../../containers/project-application-form-page/services/project-partner-store.service';
 import {catchError, take, tap} from 'rxjs/operators';
@@ -21,8 +15,6 @@ import {catchError, take, tap} from 'rxjs/operators';
 export class ProjectApplicationFormPartnerContactComponent implements OnInit, OnChanges {
   @Input()
   partner: OutputProjectPartnerDetail;
-  @Input()
-  editable: boolean;
 
   partnerContactForm: FormGroup = this.formBuilder.group({
     partnerRepresentativeTitle: ['', Validators.maxLength(25)],
@@ -91,8 +83,7 @@ export class ProjectApplicationFormPartnerContactComponent implements OnInit, On
   }
 
   ngOnInit(): void {
-    this.formService.init(this.partnerContactForm);
-    this.formService.setEditable(this.editable);
+    this.formService.init(this.partnerContactForm, this.partnerStore.isProjectEditable$);
     this.resetForm();
   }
 
@@ -132,7 +123,6 @@ export class ProjectApplicationFormPartnerContactComponent implements OnInit, On
   }
 
   resetForm(): void {
-    // this.formService.setEditable(this.editable);
     this.initLegalRepresentative();
     this.initContactPerson();
   }

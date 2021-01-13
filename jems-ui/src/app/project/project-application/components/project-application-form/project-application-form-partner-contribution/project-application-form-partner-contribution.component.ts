@@ -16,8 +16,6 @@ import {MultiLanguageInput} from '@common/components/forms/multi-language/multi-
 export class ProjectApplicationFormPartnerContributionComponent implements OnInit, OnChanges {
   @Input()
   partner: OutputProjectPartnerDetail;
-  @Input()
-  editable: boolean;
 
   organizationRelevance: MultiLanguageInput;
   organizationRole: MultiLanguageInput;
@@ -60,8 +58,7 @@ export class ProjectApplicationFormPartnerContributionComponent implements OnIni
       organizationRole: [this.partner?.motivation?.organizationRole || []],
       organizationExperience: [this.partner?.motivation?.organizationExperience || []],
     });
-    this.formService.init(this.partnerContributionForm);
-    this.formService.setEditable(this.editable);
+    this.formService.init(this.partnerContributionForm, this.partnerStore.isProjectEditable$);
   }
 
   get controls(): any {

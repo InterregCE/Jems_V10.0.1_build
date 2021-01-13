@@ -16,8 +16,6 @@ export class ProjectPeriodsSelectComponent {
   control: AbstractControl;
   @Input()
   label: string;
-  @Input()
-  class: string;
 
   @Output()
   selectionChanged = new EventEmitter<void>();

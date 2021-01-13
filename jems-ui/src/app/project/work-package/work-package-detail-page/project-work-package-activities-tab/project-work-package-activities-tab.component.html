@@ -27,13 +27,13 @@
                                 [maxLength]="constants.TITLE.maxLength">
                         </app-multi-language-form-field>
 
-                        <div class="mt-2">
+                        <div class="periods mt-2">
 
                             <app-project-periods-select
                                     [periods]="data.periods"
                                     [control]="activity.get(constants.START_PERIOD.name)"
                                     label='project.work.package.tab.activity.start.period'
-                                    class="w-50"
+                                    class="mr-2 w-50"
                                     (selectionChanged)="formService.setDirty(true)">
                             </app-project-periods-select>
 
