@@ -25,45 +25,53 @@
             <h6>{{'project.application.form.workpackage.investment.justification' | translate}}</h6>
         </div>
 
-        <mat-label>{{'project.application.form.workpackage.investment.justification.explanation' | translate}}</mat-label>
-        <app-multi-language>
-            <app-multi-language-form-field
-                    type="textarea"
-                    [label]="'common.textarea.enter.text'"
-                    [formControlName]="constants.JUSTIFICATION_EXPLANATION.name"
-                    [maxLength]="constants.JUSTIFICATION_EXPLANATION.maxLength">
-            </app-multi-language-form-field>
-        </app-multi-language>
+        <div class="pb-3">
+            <mat-label>{{'project.application.form.workpackage.investment.justification.explanation' | translate}}</mat-label>
+            <app-multi-language>
+                <app-multi-language-form-field
+                        type="textarea"
+                        [label]="'common.textarea.enter.text'"
+                        [formControlName]="constants.JUSTIFICATION_EXPLANATION.name"
+                        [maxLength]="constants.JUSTIFICATION_EXPLANATION.maxLength">
+                </app-multi-language-form-field>
+            </app-multi-language>
+        </div>
 
-        <mat-label>{{'project.application.form.workpackage.investment.justification.transactional.relevance' | translate}}</mat-label>
-        <app-multi-language>
-            <app-multi-language-form-field
-                    type="textarea"
-                    [label]="'common.textarea.enter.text'"
-                    [formControlName]="constants.JUSTIFICATION_TRANSNATIONAL_RELEVANCE.name"
-                    [maxLength]="constants.JUSTIFICATION_TRANSNATIONAL_RELEVANCE.maxLength">
-            </app-multi-language-form-field>
-        </app-multi-language>
+        <div class="pb-3">
+            <mat-label>{{'project.application.form.workpackage.investment.justification.transactional.relevance' | translate}}</mat-label>
+            <app-multi-language>
+                <app-multi-language-form-field
+                        type="textarea"
+                        [label]="'common.textarea.enter.text'"
+                        [formControlName]="constants.JUSTIFICATION_TRANSNATIONAL_RELEVANCE.name"
+                        [maxLength]="constants.JUSTIFICATION_TRANSNATIONAL_RELEVANCE.maxLength">
+                </app-multi-language-form-field>
+            </app-multi-language>
+        </div>
 
-        <mat-label>{{'project.application.form.workpackage.investment.justification.benefits' | translate}}</mat-label>
-        <app-multi-language>
-            <app-multi-language-form-field
-                    type="textarea"
-                    [label]="'common.textarea.enter.text'"
-                    [formControlName]="constants.JUSTIFICATION_BENEFITS.name"
-                    [maxLength]="constants.JUSTIFICATION_BENEFITS.maxLength">
-            </app-multi-language-form-field>
-        </app-multi-language>
+        <div class="pb-3">
+            <mat-label>{{'project.application.form.workpackage.investment.justification.benefits' | translate}}</mat-label>
+            <app-multi-language>
+                <app-multi-language-form-field
+                        type="textarea"
+                        [label]="'common.textarea.enter.text'"
+                        [formControlName]="constants.JUSTIFICATION_BENEFITS.name"
+                        [maxLength]="constants.JUSTIFICATION_BENEFITS.maxLength">
+                </app-multi-language-form-field>
+            </app-multi-language>
+        </div>
 
-        <mat-label>{{'project.application.form.workpackage.investment.justification.pilot' | translate}}</mat-label>
-        <app-multi-language>
-            <app-multi-language-form-field
-                    type="textarea"
-                    [label]="'common.textarea.enter.text'"
-                    [formControlName]="constants.JUSTIFICATION_PILOT.name"
-                    [maxLength]="constants.JUSTIFICATION_PILOT.maxLength">
-            </app-multi-language-form-field>
-        </app-multi-language>
+        <div class="pb-3">
+            <mat-label>{{'project.application.form.workpackage.investment.justification.pilot' | translate}}</mat-label>
+            <app-multi-language>
+                <app-multi-language-form-field
+                        type="textarea"
+                        [label]="'common.textarea.enter.text'"
+                        [formControlName]="constants.JUSTIFICATION_PILOT.name"
+                        [maxLength]="constants.JUSTIFICATION_PILOT.maxLength">
+                </app-multi-language-form-field>
+            </app-multi-language>
+        </div>
 
         <div class="subsection">
             <h6>{{'project.application.form.workpackage.investment.location' | translate}}</h6>
@@ -108,25 +116,30 @@
             <h6>{{'project.application.form.workpackage.investment.ownership' | translate}}</h6>
         </div>
 
-        <mat-label>{{'project.application.form.workpackage.investment.ownership.site.location' | translate}}</mat-label>
-        <app-multi-language>
-            <app-multi-language-form-field
-                    type="textarea"
-                    [label]="'common.textarea.enter.text'"
-                    [formControlName]="constants.OWNERSHIP_SITE_LOCATION.name"
-                    [maxLength]="constants.OWNERSHIP_SITE_LOCATION.maxLength">
-            </app-multi-language-form-field>
-        </app-multi-language>
+        <div class="pb-3">
+            <mat-label>{{'project.application.form.workpackage.investment.ownership.site.location' | translate}}</mat-label>
+            <app-multi-language>
+                <app-multi-language-form-field
+                        type="textarea"
+                        [label]="'common.textarea.enter.text'"
+                        [formControlName]="constants.OWNERSHIP_SITE_LOCATION.name"
+                        [maxLength]="constants.OWNERSHIP_SITE_LOCATION.maxLength">
+                </app-multi-language-form-field>
+            </app-multi-language>
+        </div>
 
-        <mat-label>{{'project.application.form.workpackage.investment.ownership.retain' | translate}}</mat-label>
-        <app-multi-language>
-            <app-multi-language-form-field
-                    type="textarea"
-                    [label]="'common.textarea.enter.text'"
-                    [formControlName]="constants.OWNERSHIP_RETAIN.name"
-                    [maxLength]="constants.OWNERSHIP_RETAIN.maxLength">
-            </app-multi-language-form-field>
-        </app-multi-language>
+
+        <div class="pb-3">
+            <mat-label>{{'project.application.form.workpackage.investment.ownership.retain' | translate}}</mat-label>
+            <app-multi-language>
+                <app-multi-language-form-field
+                        type="textarea"
+                        [label]="'common.textarea.enter.text'"
+                        [formControlName]="constants.OWNERSHIP_RETAIN.name"
+                        [maxLength]="constants.OWNERSHIP_RETAIN.maxLength">
+                </app-multi-language-form-field>
+            </app-multi-language>
+        </div>
 
         <mat-label>{{'project.application.form.workpackage.investment.ownership.maintenance' | translate}}</mat-label>
         <app-multi-language>
