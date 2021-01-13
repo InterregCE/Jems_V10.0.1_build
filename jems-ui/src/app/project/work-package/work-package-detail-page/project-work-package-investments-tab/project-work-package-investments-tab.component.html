@@ -32,7 +32,7 @@
 
 <ng-template #titleCell let-workPackageInvestment>
     <span *ngIf="workPackageInvestment?.title"></span>
-    {{workPackageInvestment.title[0]?.translation}}
+    {{getTitleValue(workPackageInvestment)}}
 </ng-template>
 
 <ng-template #deletionCell let-workPackageInvestment>

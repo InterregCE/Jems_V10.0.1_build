@@ -125,8 +125,8 @@ export class ProjectWorkPackageInvestmentDetailPageComponent implements OnInit {
     this.workPackageInvestmentForm.controls.justificationBenefits?.setValue(investment?.justificationBenefits || []);
     this.workPackageInvestmentForm.controls.justificationPilot?.setValue(investment?.justificationPilot || []);
     this.address.country.setValue(investment?.address?.country);
-    this.address.region2.setValue(investment?.address?.nutsRegion2);
-    this.address.region3.setValue(investment?.address?.nutsRegion3);
+    this.address.region2.setValue(investment?.address?.region2);
+    this.address.region3.setValue(investment?.address?.region3);
     this.address.street.setValue(investment?.address?.street);
     this.address.houseNumber.setValue(investment?.address?.houseNumber);
     this.address.postalCode.setValue(investment?.address?.postalCode);
