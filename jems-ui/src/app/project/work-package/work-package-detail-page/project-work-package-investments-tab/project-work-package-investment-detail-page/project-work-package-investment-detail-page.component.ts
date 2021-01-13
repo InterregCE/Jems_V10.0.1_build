@@ -3,40 +3,39 @@ import {WorkPackageInvestmentDTO} from '@cat/api';
 import {ActivatedRoute, Router} from '@angular/router';
 import {AbstractControl, FormBuilder, FormGroup, Validators} from '@angular/forms';
 import {FormService} from '@common/components/section/form/form.service';
-import {ProjectStore} from '../../../../project-application/containers/project-application-detail/services/project-store.service';
-import {catchError, take, tap} from 'rxjs/operators';
-import {ProjectWorkPackagePageStore} from '../../project-work-package-page-store.service';
+import {catchError, take, tap, withLatestFrom} from 'rxjs/operators';
 import {NutsStoreService} from '../../../../../common/services/nuts-store.service';
 import {ProjectApplicationFormSidenavService} from '../../../../project-application/containers/project-application-form-page/services/project-application-form-sidenav.service';
-import {UntilDestroy} from '@ngneat/until-destroy';
+import {UntilDestroy, untilDestroyed} from '@ngneat/until-destroy';
+import {ProjectWorkPackageInvestmentDetailPageConstants} from './project-work-package-investment-detail-page.constants';
+import {Observable} from 'rxjs';
+import {ProjectWorkPackageInvestmentDetailPageStore} from './project-work-package-Investment-detail-page-store.service';
 
 @UntilDestroy()
 @Component({
   selector: 'app-project-work-package-investment-detail-page',
   templateUrl: './project-work-package-investment-detail-page.component.html',
   styleUrls: ['./project-work-package-investment-detail-page.component.scss'],
-  providers: [FormService, ProjectWorkPackagePageStore],
+  providers: [FormService, ProjectWorkPackageInvestmentDetailPageStore],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class ProjectWorkPackageInvestmentDetailPageComponent implements OnInit {
+  constants = ProjectWorkPackageInvestmentDetailPageConstants;
+
+  private projectId = this.activatedRoute?.snapshot?.params?.projectId;
+  private workPackageId = this.activatedRoute?.snapshot?.params?.workPackageId;
+  private workPackageInvestmentId = this.activatedRoute?.snapshot?.params?.workPackageInvestmentId;
 
   nuts$ = this.nutsStore.getNuts();
-
-  projectId = this.activatedRoute?.snapshot?.params?.projectId;
-  workPackageId = this.activatedRoute?.snapshot?.params?.workPackageId;
-  workPackageInvestmentId = this.activatedRoute?.snapshot?.params?.workPackageInvestmentId;
-  editable: boolean;
-
-  workPackageInvestmentNumber: number;
-  investment: WorkPackageInvestmentDTO;
+  workPackageInvestment$: Observable<WorkPackageInvestmentDTO>;
 
   workPackageInvestmentForm: FormGroup = this.formBuilder.group({
     number: [''],
-    title: ['', Validators.maxLength(50)],
-    justificationExplanation: ['', Validators.maxLength(2000)],
-    justificationTransactionalRelevance: ['', Validators.maxLength(2000)],
-    justificationBenefits: ['', Validators.maxLength(2000)],
-    justificationPilot: ['', Validators.maxLength(2000)],
+    title: ['', this.constants.TITLE.validators],
+    justificationExplanation: ['', this.constants.JUSTIFICATION_EXPLANATION.validators],
+    justificationTransactionalRelevance: ['', this.constants.JUSTIFICATION_TRANSNATIONAL_RELEVANCE.validators],
+    justificationBenefits: ['', this.constants.JUSTIFICATION_BENEFITS.validators],
+    justificationPilot: ['', this.constants.JUSTIFICATION_PILOT.validators],
     address: this.formBuilder.group({
       country: [''],
       region2: [''],
@@ -46,149 +45,105 @@ export class ProjectWorkPackageInvestmentDetailPageComponent implements OnInit {
       postalCode: ['', Validators.maxLength(20)],
       city: ['', Validators.maxLength(50)],
     }),
-    risk: ['', Validators.maxLength(2000)],
-    documentation: ['', Validators.maxLength(2000)],
-    ownershipSiteLocation: ['', Validators.maxLength(500)],
-    ownershipRetain: ['', Validators.maxLength(500)],
-    ownershipMaintenance: ['', Validators.maxLength(2000)],
+    risk: ['', this.constants.RISK.validators],
+    documentation: ['', this.constants.DOCUMENTATION.validators],
+    ownershipSiteLocation: ['', this.constants.OWNERSHIP_SITE_LOCATION.validators],
+    ownershipMaintenance: ['', this.constants.OWNERSHIP_MAINTENANCE.validators],
+    ownershipRetain: ['', this.constants.OWNERSHIP_RETAIN.validators],
   });
 
-  titleErrors = {
-    maxlength: 'project.application.form.workpackage.investment.title.size.too.long',
-  };
-
-  justificationErrors = {
-    maxlength: 'project.application.form.workpackage.investment.justification.size.too.long',
-  };
-
-  riskErrors = {
-    maxlength: 'project.application.form.workpackage.investment.risk.size.too.long',
-  };
-
-  documentationErrors = {
-    maxlength: 'project.application.form.workpackage.investment.documentation.size.too.long',
-  };
-
-  ownershipErrors = {
-    maxlength: 'project.application.form.workpackage.investment.ownership.size.too.long',
-  };
-  ownershipMaintenanceErrors = {
-    maxlength: 'project.application.form.workpackage.investment.ownership.maintenance.size.too.long',
-  };
 
   constructor(private formBuilder: FormBuilder,
               private formService: FormService,
               private router: Router,
               private activatedRoute: ActivatedRoute,
-              public projectStore: ProjectStore,
-              public workPackageStore: ProjectWorkPackagePageStore,
+              public investmentPageStore: ProjectWorkPackageInvestmentDetailPageStore,
               public nutsStore: NutsStoreService,
               private projectApplicationFormSidenavService: ProjectApplicationFormSidenavService) {
-    this.projectStore.init(this.projectId);
   }
 
   ngOnInit(): void {
-    if (this.workPackageInvestmentId) {
-      this.workPackageStore.getWorkPackageInvestmentById(this.projectId, this.workPackageInvestmentId)
-        .pipe(
-          take(1),
-          tap((investment) => this.investment = investment),
-          tap((investment) => this.workPackageInvestmentNumber = investment.investmentNumber),
-          tap(() => this.resetForm())
-        )
-        .subscribe();
-    }
     this.formService.init(this.workPackageInvestmentForm);
-    this.formService.setEditable(true);
     this.formService.setCreation(!this.workPackageInvestmentId);
-    this.workPackageInvestmentForm.controls.number.disable();
-  }
 
-  onCancel(): void {
-    if (!this.workPackageInvestmentId) {
-      this.redirectToWorkPackageDetail(this.workPackageId);
-    }
-    this.resetForm();
+    this.investmentPageStore.isProjectEditable$
+      .pipe(
+        take(1),
+        tap(editable => this.formService.setEditable(editable))
+      ).subscribe();
+
+    this.workPackageInvestment$ = this.investmentPageStore.workPackageInvestment(
+      this.workPackageInvestmentId, this.workPackageId, this.projectId
+    )
+      .pipe(
+        tap(investment => this.resetForm(investment)),
+      );
+
+    this.formService.reset$
+      .pipe(
+        withLatestFrom(this.workPackageInvestment$),
+        tap(([reset, investment]) => {
+          if (this.workPackageInvestmentId) {
+            this.resetForm(investment);
+            return;
+          }
+          this.redirectToWorkPackageDetail();
+        }),
+        untilDestroyed(this)
+      ).subscribe();
   }
 
   onSubmit(): void {
-    const workPackageInvestmentFormValues = {
-      title: this.workPackageInvestmentForm.controls.title.value,
-      justificationExplanation: this.workPackageInvestmentForm.controls.justificationExplanation.value,
-      justificationTransactionalRelevance: this.workPackageInvestmentForm.controls.justificationTransactionalRelevance.value,
-      justificationBenefits: this.workPackageInvestmentForm.controls.justificationBenefits.value,
-      justificationPilot: this.workPackageInvestmentForm.controls.justificationPilot.value,
-      address: {
-        country: this.address.country.value,
-        nutsRegion2: this.address.region2.value,
-        nutsRegion3: this.address.region3.value,
-        street: this.address.street.value,
-        houseNumber: this.address.houseNumber.value,
-        postalCode: this.address.postalCode.value,
-        city: this.address.city.value
-      },
-      risk: this.workPackageInvestmentForm.controls.risk.value,
-      documentation: this.workPackageInvestmentForm.controls.documentation.value,
-      ownershipSiteLocation: this.workPackageInvestmentForm.controls.ownershipSiteLocation.value,
-      ownershipRetain: this.workPackageInvestmentForm.controls.ownershipRetain.value,
-      ownershipMaintenance: this.workPackageInvestmentForm.controls.ownershipMaintenance.value,
-    };
     if (!this.workPackageInvestmentId) {
-      const workPackageInvestment = workPackageInvestmentFormValues as WorkPackageInvestmentDTO;
-
-      this.workPackageStore.createWorkPackageInvestment(this.workPackageId, this.projectId, workPackageInvestment)
+      this.investmentPageStore.createWorkPackageInvestment(this.workPackageInvestmentForm.value)
         .pipe(
           take(1),
-          tap(saved => this.redirectToWorkPackageDetail(this.workPackageId)),
+          tap(() => this.redirectToWorkPackageDetail()),
           catchError(error => this.formService.setError(error))
         ).subscribe();
       return;
-
-    } else {
-      const workPackageInvestment = {
-        ...workPackageInvestmentFormValues,
-        id: this.workPackageInvestmentId
-      } as WorkPackageInvestmentDTO;
-
-      this.workPackageStore.updateWorkPackageInvestment(this.workPackageId, this.projectId, workPackageInvestment)
-        .pipe(
-          take(1),
-          tap(() => this.formService.setSuccess('project.application.form.workpackage.investment.save.success')),
-          catchError(error => this.formService.setError(error))
-        ).subscribe();
-      return;
-
     }
+
+    const investment = {
+      id: this.workPackageInvestmentId,
+      ...this.workPackageInvestmentForm.value
+    };
+    this.investmentPageStore.updateWorkPackageInvestment(investment)
+      .pipe(
+        take(1),
+        tap(() => this.formService.setSuccess('project.application.form.workpackage.investment.save.success')),
+        catchError(error => this.formService.setError(error))
+      ).subscribe();
   }
 
-  private resetForm(): void {
-    this.workPackageInvestmentForm.controls.number.setValue(this.investment?.investmentNumber || this.workPackageInvestmentNumber);
-    this.workPackageInvestmentForm.controls.title.setValue(this.investment?.title);
-    this.workPackageInvestmentForm.controls.justificationExplanation.setValue(this.investment?.justificationExplanation);
-    this.workPackageInvestmentForm.controls.justificationTransactionalRelevance.setValue(this.investment?.justificationTransactionalRelevance);
-    this.workPackageInvestmentForm.controls.justificationBenefits.setValue(this.investment?.justificationBenefits);
-    this.workPackageInvestmentForm.controls.justificationPilot.setValue(this.investment?.justificationPilot);
-    this.address.country.setValue(this.investment?.address.country);
-    this.address.region2.setValue(this.investment?.address.nutsRegion2);
-    this.address.region3.setValue(this.investment?.address.nutsRegion3);
-    this.address.street.setValue(this.investment?.address.street);
-    this.address.houseNumber.setValue(this.investment?.address.houseNumber);
-    this.address.postalCode.setValue(this.investment?.address.postalCode);
-    this.address.city.setValue(this.investment?.address.city);
-    this.workPackageInvestmentForm.controls.risk.setValue(this.investment?.risk);
-    this.workPackageInvestmentForm.controls.documentation.setValue(this.investment?.documentation);
-    this.workPackageInvestmentForm.controls.ownershipSiteLocation.setValue(this.investment?.ownershipSiteLocation);
-    this.workPackageInvestmentForm.controls.ownershipRetain.setValue(this.investment?.ownershipRetain);
-    this.workPackageInvestmentForm.controls.ownershipMaintenance.setValue(this.investment?.ownershipMaintenance);
+  private resetForm(investment: WorkPackageInvestmentDTO): void {
+    this.workPackageInvestmentForm.controls.number?.setValue(investment?.investmentNumber || '');
+    this.workPackageInvestmentForm.controls.title?.setValue(investment?.title || []);
+    this.workPackageInvestmentForm.controls.justificationExplanation?.setValue(investment?.justificationExplanation || []);
+    this.workPackageInvestmentForm.controls.justificationTransactionalRelevance?.setValue(investment?.justificationTransactionalRelevance || []);
+    this.workPackageInvestmentForm.controls.justificationBenefits?.setValue(investment?.justificationBenefits || []);
+    this.workPackageInvestmentForm.controls.justificationPilot?.setValue(investment?.justificationPilot || []);
+    this.address.country.setValue(investment?.address?.country);
+    this.address.region2.setValue(investment?.address?.nutsRegion2);
+    this.address.region3.setValue(investment?.address?.nutsRegion3);
+    this.address.street.setValue(investment?.address?.street);
+    this.address.houseNumber.setValue(investment?.address?.houseNumber);
+    this.address.postalCode.setValue(investment?.address?.postalCode);
+    this.address.city.setValue(investment?.address?.city);
+    this.workPackageInvestmentForm.controls.risk?.setValue(investment?.risk || []);
+    this.workPackageInvestmentForm.controls.documentation?.setValue(investment?.documentation || []);
+    this.workPackageInvestmentForm.controls.ownershipSiteLocation?.setValue(investment?.ownershipSiteLocation || []);
+    this.workPackageInvestmentForm.controls.ownershipMaintenance?.setValue(investment?.ownershipMaintenance || []);
+    this.workPackageInvestmentForm.controls.ownershipRetain?.setValue(investment?.ownershipRetain || []);
   }
 
   get address(): { [key: string]: AbstractControl } {
     return (this.workPackageInvestmentForm.controls?.address as FormGroup).controls;
   }
 
-  private redirectToWorkPackageDetail(workPackageId: number): void {
+  private redirectToWorkPackageDetail(): void {
     this.router.navigate([
-      'app', 'project', 'detail', this.projectId, 'applicationFormWorkPackage', 'detail', workPackageId
+      'app', 'project', 'detail', this.projectId, 'applicationFormWorkPackage', 'detail', this.workPackageId
     ]);
   }
 }

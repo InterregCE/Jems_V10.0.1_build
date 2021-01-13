@@ -5,8 +5,8 @@ import {
   OutputProject,
   OutputWorkPackage,
   ProgrammeIndicatorService,
+  WorkPackageActivityDTO,
   WorkPackageActivityService,
-  WorkPackageInvestmentDTO,
   WorkPackageInvestmentService,
   WorkPackageService,
 } from '@cat/api';
@@ -15,7 +15,6 @@ import {shareReplay, startWith, switchMap, tap} from 'rxjs/operators';
 import {Log} from '../../../common/utils/log';
 import {ProjectApplicationFormSidenavService} from '../../project-application/containers/project-application-form-page/services/project-application-form-sidenav.service';
 import {ProjectStore} from '../../project-application/containers/project-application-detail/services/project-store.service';
-import { WorkPackageActivityDTO } from '@cat/api';
 
 @Injectable()
 export class ProjectWorkPackagePageStore {
@@ -25,11 +24,12 @@ export class ProjectWorkPackagePageStore {
 
   totalAmountChanged$ = new Subject<boolean>();
   workPackage$ = new ReplaySubject<OutputWorkPackage | any>(1);
-  workPackageInvestment$ = new ReplaySubject<WorkPackageInvestmentDTO | any>(1);
   workPackageInvestmentIdsOfProject$: Observable<number[]>;
   isProjectEditable$: Observable<boolean>;
   project$: Observable<OutputProject>;
   activities$: Observable<WorkPackageActivityDTO[]>;
+
+  investmentIdsChanged$ = new Subject<void>();
 
   private savedActivities$ = new Subject<WorkPackageActivityDTO[]>();
 
@@ -43,14 +43,14 @@ export class ProjectWorkPackagePageStore {
     this.project$ = this.projectStore.getProject();
     this.activities$ = this.workPackageActivities();
 
-    this.workPackageInvestmentIdsOfProject$ = combineLatest([this.project$, this.workPackageInvestment$.pipe(startWith(null))]).pipe(
+    this.workPackageInvestmentIdsOfProject$ = combineLatest([this.project$, this.investmentIdsChanged$.pipe(startWith(null))]).pipe(
       switchMap(([project]) => this.workPackageInvestmentService.getWorkPackageInvestmentIdsOfProject(project.id)),
       shareReplay(1)
     );
   }
 
   init(workPackageId: number | string | null, projectId: number): void {
-    if (workPackageId && workPackageId === this.workPackageId) {
+    if (workPackageId && Number(workPackageId) === this.workPackageId) {
       return;
     }
     this.workPackageId = Number(workPackageId);
@@ -84,29 +84,11 @@ export class ProjectWorkPackagePageStore {
       );
   }
 
-  getWorkPackageInvestmentById(projectId: number, investmentId: number): Observable<WorkPackageInvestmentDTO> {
-    return this.workPackageInvestmentService.getWorkPackageInvestment(investmentId)
+  deleteWorkPackageInvestment(investmentId: number): Observable<void> {
+    return this.workPackageInvestmentService.deleteWorkPackageInvestment(investmentId, this.workPackageId)
       .pipe(
-        tap(workPackageInvestment => Log.info('Fetched work package investment:', this, workPackageInvestment)),
-        tap(workPackageInvestment => this.workPackageInvestment$.next(workPackageInvestment)),
-      );
-  }
-
-  createWorkPackageInvestment(workPackageId: number, projectId: number, workPackageInvestment: WorkPackageInvestmentDTO): Observable<number> {
-    return this.workPackageInvestmentService.addWorkPackageInvestment(workPackageId, workPackageInvestment)
-      .pipe(
-        tap(created => Log.info('Created work package investment:', this, created)),
-        tap(created => this.workPackageInvestment$.next(created)),
-        tap(() => this.projectApplicationFormSidenavService.refreshPackages(projectId)),
-      );
-  }
-
-  updateWorkPackageInvestment(workPackageId: number, projectId: number, workPackageInvestment: WorkPackageInvestmentDTO): Observable<number> {
-    return this.workPackageInvestmentService.updateWorkPackageInvestment(workPackageId, workPackageInvestment)
-      .pipe(
-        tap(updated => Log.info('Updated work package investment:', this, updated)),
-        tap(updated => this.workPackageInvestment$.next(updated)),
-        tap(() => this.projectApplicationFormSidenavService.refreshPackages(projectId)),
+        tap(deleted => Log.info('Deleted work package investment:', this, deleted)),
+        tap(() => this.investmentIdsChanged$.next())
       );
   }
 

@@ -1,4 +1,4 @@
-import {ChangeDetectionStrategy, Component, OnDestroy, OnInit} from '@angular/core';
+import {ChangeDetectionStrategy, Component} from '@angular/core';
 import {BaseComponent} from '@common/components/base-component';
 import {ActivatedRoute} from '@angular/router';
 import {WorkPackageService} from '@cat/api';
@@ -12,13 +12,13 @@ import {ProjectWorkPackagePageStore} from './project-work-package-page-store.ser
   styleUrls: ['./project-work-package-detail-page.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class ProjectWorkPackageDetailPageComponent extends BaseComponent implements OnDestroy {
+export class ProjectWorkPackageDetailPageComponent extends BaseComponent {
 
   projectId = this.activatedRoute?.snapshot?.params?.projectId;
   workPackageId = this.activatedRoute?.snapshot?.params?.workPackageId;
 
   activeTab$ = this.tabService.currentTab(
-    ProjectWorkPackageDetailPageComponent.name + this.workPackageId
+    'ProjectWorkPackageDetailPageComponent' + this.workPackageId
   );
 
   constructor(private workPackageService: WorkPackageService,
@@ -34,12 +34,7 @@ export class ProjectWorkPackageDetailPageComponent extends BaseComponent impleme
     ).subscribe();
   }
 
-  ngOnDestroy(): void {
-    super.ngOnDestroy();
-    this.tabService.cleanupTab(ProjectWorkPackageDetailPageComponent.name + this.workPackageId);
-  }
-
   changeTab(tabIndex: number): void {
-    this.tabService.changeTab(ProjectWorkPackageDetailPageComponent.name + this.workPackageId, tabIndex);
+    this.tabService.changeTab('ProjectWorkPackageDetailPageComponent' + this.workPackageId, tabIndex);
   }
 }

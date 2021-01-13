@@ -23,17 +23,17 @@ abstract class UnitTestWorkPackageInvestmentBase : UnitTest() {
         WorkPackageInvestment(
             workPackageInvestmentId,
             Math.random().toInt(),
+            emptySet(),
+            emptySet(),
+            emptySet(),
+            emptySet(),
+            emptySet(),
             null,
-            null,
-            null,
-            null,
-            null,
-            null,
-            null,
-            null,
-            null,
-            null,
-            null
+            emptySet(),
+            emptySet(),
+            emptySet(),
+            emptySet(),
+            emptySet()
         )
 
 }

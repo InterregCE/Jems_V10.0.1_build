@@ -1,6 +1,6 @@
 package io.cloudflight.jems.server.project.repository.workpackage
 
-import io.cloudflight.jems.server.project.entity.workpackage.WorkPackageInvestmentEntity
+import io.cloudflight.jems.server.project.entity.workpackage.investment.WorkPackageInvestmentEntity
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
 import org.springframework.data.domain.Sort
