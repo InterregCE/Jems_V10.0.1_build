@@ -606,13 +606,13 @@
 							"script": {
 								"exec": [
 									"pm.test('programme lump sum was created (as it was needed)', function() {\r",
-									"    const response = pm.response.json()\r",
 									"    if (pm.environment.get('programmeLumpSumId') == null) {\r",
+									"        const response = pm.response.json();\r",
 									"        pm.response.to.have.status(200);\r",
 									"        console.log('We created new programme lump sum with id=' + response.id);\r",
 									"        pm.environment.set('programmeLumpSumId', response.id);\r",
 									"    } else {\r",
-									"        pm.response.to.have.status(422);\r",
+									"        pm.expect(pm.response.code).to.be.oneOf([400, 422]);\r",
 									"        console.log('We did an invalid POST to NOT create new lump sum.');\r",
 									"    }\r",
 									"});\r",
@@ -649,7 +649,7 @@
 					"response": []
 				},
 				{
-					"name": "[IF] not exists, then create splittable programme lumpSum Copy",
+					"name": "unify data in splittable programme lumpSum",
 					"event": [
 						{
 							"listen": "prerequest",
