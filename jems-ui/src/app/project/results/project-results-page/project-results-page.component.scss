@@ -1,12 +1,7 @@
 .indicators {
   display: flex;
-  flex-direction: row;
 
-  .indicator {
-    width: 30rem;
-  }
-
-  .measurement-unit {
-    width: 11rem;
+  > * {
+    flex-grow: 1;
   }
 }

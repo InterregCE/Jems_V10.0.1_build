@@ -11,4 +11,11 @@
   .period-error {
     margin-top: -1rem;
   }
+
+  .periods {
+    display: flex;
+    > * {
+      flex-grow: 1;
+    }
+  }
 }
