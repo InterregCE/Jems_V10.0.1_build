@@ -15,14 +15,12 @@
         </mat-tab>
         <mat-tab label="{{'partner.tab.contact' | translate}}">
             <app-project-application-form-partner-contact
-                    [partner]="partner"
-                    [editable]="projectStore.projectEditable$ | async">
+                    [partner]="partner">
             </app-project-application-form-partner-contact>
         </mat-tab>
         <mat-tab label="{{'partner.tab.motivation' | translate}}">
             <app-project-application-form-partner-contribution
-                    [partner]="partner"
-                    [editable]="projectStore.projectEditable$ | async">
+                    [partner]="partner">
             </app-project-application-form-partner-contribution>
         </mat-tab>
         <mat-tab label="{{'partner.tab.budget' | translate}}">

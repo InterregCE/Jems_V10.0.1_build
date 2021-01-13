@@ -8,10 +8,11 @@ import {
   ProjectPartnerMotivationDTO,
   ProjectPartnerService,
 } from '@cat/api';
-import {Observable, ReplaySubject, Subject} from 'rxjs';
+import {Observable, ReplaySubject} from 'rxjs';
 import {tap} from 'rxjs/operators';
 import {Log} from '../../../../../common/utils/log';
 import {ProjectApplicationFormSidenavService} from './project-application-form-sidenav.service';
+import {ProjectStore} from '../../project-application-detail/services/project-store.service';
 
 @Injectable()
 export class ProjectPartnerStore {
@@ -19,11 +20,13 @@ export class ProjectPartnerStore {
   private partnerId: number;
   private projectId: number;
 
-  totalAmountChanged$ = new Subject<boolean>();
+  isProjectEditable$: Observable<boolean>;
   partner$ = new ReplaySubject<OutputProjectPartnerDetail | any>(1);
 
   constructor(private partnerService: ProjectPartnerService,
-              private projectApplicationFormSidenavService: ProjectApplicationFormSidenavService) {
+              private projectApplicationFormSidenavService: ProjectApplicationFormSidenavService,
+              private projectStore: ProjectStore) {
+    this.isProjectEditable$ = this.projectStore.projectEditable$;
   }
 
   init(partnerId: number | string | null, projectId: number): void {
