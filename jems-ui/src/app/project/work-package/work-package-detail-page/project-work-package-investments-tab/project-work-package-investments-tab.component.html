@@ -31,8 +31,8 @@
 </ng-template>
 
 <ng-template #titleCell let-workPackageInvestment>
-    <span *ngIf="workPackageInvestment.title[0]"></span>
-    {{workPackageInvestment.title[0].translation}}
+    <span *ngIf="workPackageInvestment?.title"></span>
+    {{workPackageInvestment.title[0]?.translation}}
 </ng-template>
 
 <ng-template #deletionCell let-workPackageInvestment>

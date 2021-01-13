@@ -69,7 +69,8 @@ export class ProjectWorkPackageInvestmentDetailPageComponent implements OnInit {
     this.investmentPageStore.isProjectEditable$
       .pipe(
         take(1),
-        tap(editable => this.formService.setEditable(editable))
+        tap(editable => this.formService.setEditable(editable)),
+        tap(() => this.workPackageInvestmentForm.controls.number.disable())
       ).subscribe();
 
     this.workPackageInvestment$ = this.investmentPageStore.workPackageInvestment(
