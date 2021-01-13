@@ -1,11 +1,9 @@
 import {ChangeDetectionStrategy, Component, Input, OnInit, TemplateRef, ViewChild} from '@angular/core';
-import {WorkPackageInvestmentService, WorkPackageInvestmentDTO} from '@cat/api';
+import {WorkPackageInvestmentDTO, WorkPackageInvestmentService} from '@cat/api';
 import {TableConfiguration} from '@common/components/table/model/table.configuration';
 import {MatSort} from '@angular/material/sort';
 import {ActivatedRoute} from '@angular/router';
 import {combineLatest, Subject} from 'rxjs';
-import {ProjectStore} from '../../../project-application/containers/project-application-detail/services/project-store.service';
-import {Permission} from '../../../../security/permissions/permission';
 import {filter, map, mergeMap, startWith, take, tap} from 'rxjs/operators';
 import {Tables} from '../../../../common/utils/tables';
 import {Log} from '../../../../common/utils/log';
@@ -27,9 +25,7 @@ export class ProjectWorkPackageInvestmentsTabComponent implements OnInit {
   projectId = this.activatedRoute.snapshot.params.projectId;
   workPackageId = this.activatedRoute.snapshot.params.workPackageId;
   workPackageNumber: number;
-
   tableConfiguration: TableConfiguration;
-  Permission = Permission;
 
   @Input()
   pageIndex: number;
@@ -38,9 +34,10 @@ export class ProjectWorkPackageInvestmentsTabComponent implements OnInit {
 
   @ViewChild('deletionCell', {static: true})
   deletionCell: TemplateRef<any>;
-
   @ViewChild('numberingCell', {static: true})
   numberingCell: TemplateRef<any>;
+  @ViewChild('titleCell', {static: true})
+  titleCell: TemplateRef<any>;
 
   newPageSize$ = new Subject<number>();
   newPageIndex$ = new Subject<number>();
@@ -69,7 +66,6 @@ export class ProjectWorkPackageInvestmentsTabComponent implements OnInit {
       );
 
   constructor(private activatedRoute: ActivatedRoute,
-              public projectStore: ProjectStore,
               public workPackageStore: ProjectWorkPackagePageStore,
               private workPackageInvestmentService: WorkPackageInvestmentService,
               private projectApplicationFormSidenavService: ProjectApplicationFormSidenavService,
@@ -89,8 +85,9 @@ export class ProjectWorkPackageInvestmentsTabComponent implements OnInit {
         },
         {
           displayedColumn: 'project.application.form.workpackage.investments.title',
-          elementProperty: 'title',
-          sortProperty: 'title',
+          columnType: ColumnType.CustomComponent,
+          customCellTemplate: this.titleCell,
+          sortProperty: 'title'
         },
         {
           displayedColumn: 'project.application.form.workpackage.investments.nuts3',
@@ -108,15 +105,11 @@ export class ProjectWorkPackageInvestmentsTabComponent implements OnInit {
   }
 
   delete(workPackageInvestment: WorkPackageInvestmentDTO): void {
-    let message: string;
-    let name: string;
-    if (workPackageInvestment.title) {
-      message = 'project.application.form.workpackage.investment.table.action.delete.dialog.message';
-      name = workPackageInvestment.title;
-    } else {
-      message = 'project.application.form.workpackage.investment.table.action.delete.dialog.message.no.name';
-      name = ' ';
-    }
+    const name = workPackageInvestment.title && workPackageInvestment.title[0].translation;
+    const message = name
+      ? 'project.application.form.workpackage.investment.table.action.delete.dialog.message'
+      : 'project.application.form.workpackage.investment.table.action.delete.dialog.message.no.name';
+
     Forms.confirmDialog(
       this.dialog,
       'project.application.form.workpackage.table.action.delete.dialog.header',
@@ -125,12 +118,11 @@ export class ProjectWorkPackageInvestmentsTabComponent implements OnInit {
       .pipe(
         take(1),
         filter(answer => !!answer),
-        map(() => this.workPackageInvestmentService.deleteWorkPackageInvestment(workPackageInvestment.id, this.workPackageId)
+        map(() => this.workPackageStore.deleteWorkPackageInvestment(workPackageInvestment.id)
           .pipe(
             take(1),
             tap(() => this.newPageIndex$.next(Tables.DEFAULT_INITIAL_PAGE_INDEX)),
-            tap(() => Log.info('Deleted investment: ', this, workPackageInvestment.id)),
-            tap(() => this.projectApplicationFormSidenavService.refreshPackages(this.projectId))
+            tap(() => Log.info('Deleted investment: ', this, workPackageInvestment.id))
           ).subscribe()),
       ).subscribe();
   }

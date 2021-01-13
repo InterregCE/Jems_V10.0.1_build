@@ -3,7 +3,7 @@ package io.cloudflight.jems.server.project.repository.workpackage
 import io.cloudflight.jems.server.common.exception.ResourceNotFoundException
 import io.cloudflight.jems.server.programme.repository.indicator.IndicatorOutputRepository
 import io.cloudflight.jems.server.project.entity.workpackage.WorkPackageEntity
-import io.cloudflight.jems.server.project.entity.workpackage.WorkPackageInvestmentEntity
+import io.cloudflight.jems.server.project.entity.workpackage.investment.WorkPackageInvestmentEntity
 import io.cloudflight.jems.server.project.repository.description.ProjectPeriodRepository
 import io.cloudflight.jems.server.project.service.workpackage.WorkPackagePersistence
 import io.cloudflight.jems.server.project.service.workpackage.activity.model.WorkPackageActivity
@@ -62,7 +62,7 @@ class WorkPackagePersistenceProvider(
         workPackageInvestmentRepository.findAllByWorkPackageId(workPackageId, pageable).toWorkPackageInvestmentPage()
 
     @Transactional(readOnly = true)
-    override fun getWorkPackageInvestmentIdsOfProject(projectId: Long)=
+    override fun getWorkPackageInvestmentIdsOfProject(projectId: Long) =
         workPackageInvestmentRepository.findInvestmentIds(projectId)
 
     @Transactional
@@ -79,23 +79,14 @@ class WorkPackagePersistenceProvider(
         if (workPackageInvestment.id != null) {
             workPackageInvestmentRepository.findById(workPackageInvestment.id).ifPresentOrElse(
                 {
-                    it.title = workPackageInvestment.title
-                    it.justificationExplanation = workPackageInvestment.justificationExplanation
-                    it.justificationTransactionalRelevance = workPackageInvestment.justificationTransactionalRelevance
-                    it.justificationBenefits = workPackageInvestment.justificationBenefits
-                    it.justificationPilot = workPackageInvestment.justificationPilot
-                    it.address = workPackageInvestment.address?.toAddressEntity()
-                    it.risk = workPackageInvestment.risk
-                    it.documentation = workPackageInvestment.documentation
-                    it.ownershipSiteLocation = workPackageInvestment.ownershipSiteLocation
-                    it.ownershipRetain = workPackageInvestment.ownershipRetain
-                    it.ownershipMaintenance = workPackageInvestment.ownershipMaintenance
+                    getWorkPackageOrThrow(workPackageId).let {
+                        workPackageInvestmentRepository.save(workPackageInvestment.toWorkPackageInvestmentEntity(it))
+                    }
                 },
                 { throw ResourceNotFoundException("WorkPackageInvestmentEntity") }
             )
             updateSortOnNumber(workPackageId)
-        }
-        else throw ResourceNotFoundException("workPackageInvestment id is null")
+        } else throw ResourceNotFoundException("workPackageInvestment id is null")
 
     @Transactional
     override fun deleteWorkPackageInvestment(workPackageId: Long, workPackageInvestmentId: Long) {

@@ -1,6 +1,8 @@
-package io.cloudflight.jems.server.project.entity.workpackage
+package io.cloudflight.jems.server.project.entity.workpackage.investment
 
 import io.cloudflight.jems.server.project.entity.AddressEntity
+import io.cloudflight.jems.server.project.entity.workpackage.WorkPackageEntity
+import javax.persistence.CascadeType
 import javax.persistence.Column
 import javax.persistence.Embedded
 import javax.persistence.Entity
@@ -10,6 +12,7 @@ import javax.persistence.GenerationType
 import javax.persistence.Id
 import javax.persistence.JoinColumn
 import javax.persistence.ManyToOne
+import javax.persistence.OneToMany
 import javax.validation.constraints.NotNull
 
 @Entity(name = "project_work_package_investment")
@@ -26,36 +29,21 @@ data class WorkPackageInvestmentEntity(
     @Column
     var investmentNumber: Int,
 
-    @Column
-    var title: String? = null,
-
-    @Column
-    var justificationExplanation: String? = null,
-
-    @Column
-    var justificationTransactionalRelevance: String? = null,
-
-    @Column
-    var justificationBenefits: String? = null,
-
-    @Column
-    var justificationPilot: String? = null,
-
     @Embedded
     var address: AddressEntity?,
 
-    @Column
-    var risk: String? = null,
+    @OneToMany(cascade = [CascadeType.ALL], orphanRemoval = true, mappedBy = "investmentTranslation.investment")
+    val translatedValues: MutableSet<WorkPackageInvestmentTransl> = mutableSetOf()
+) {
 
-    @Column
-    var documentation: String? = null,
+    override fun equals(other: Any?) =
+        this === other ||
+                other !== null &&
+                other is WorkPackageInvestmentEntity &&
+                id > 0 &&
+                id == other.id
 
-    @Column
-    var ownershipSiteLocation: String? = null,
+    override fun hashCode() =
+        if (id > 0) id.toInt() else super.hashCode()
 
-    @Column
-    var ownershipRetain: String? = null,
-
-    @Column
-    var ownershipMaintenance: String? = null
-)
+}

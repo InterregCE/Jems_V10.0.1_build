@@ -4,7 +4,7 @@
         <div class="pb-4 intro-text-small">{{'project.work.package.tab.investment.intro' | translate}}</div>
     </div>
 
-    <span class="header-button" *ngxPermissionsExcept="Permission.PROGRAMME_USER">
+    <span class="header-button" *ngIf="editable">
         <button class="spaced-elements" mat-raised-button color="primary"
                 [routerLink]="'/app/project/detail/' + projectId + '/applicationFormWorkPackage/detail/' + workPackageId +  '/investment/create'"
                 [disabled]="!editable">
@@ -30,11 +30,15 @@
     <span *ngIf="!workPackageInvestment.investmentNumber"> {{'project.application.form.partner.number.info.auto' | translate}}</span>
 </ng-template>
 
+<ng-template #titleCell let-workPackageInvestment>
+    <span *ngIf="workPackageInvestment.title[0]"></span>
+    {{workPackageInvestment.title[0].translation}}
+</ng-template>
+
 <ng-template #deletionCell let-workPackageInvestment>
-    <app-work-package-investment-delete-action-cell
-            (click)="$event.stopPropagation()"
-            [element]="workPackageInvestment"
-            [disabled]="!editable"
-            (delete)="delete($event)">
-    </app-work-package-investment-delete-action-cell>
+    <button *ngIf="editable" mat-icon-button color="accent"
+            (click)="$event.stopPropagation();delete(workPackageInvestment)"
+            matTooltip="{{'project.application.form.workpackage.investment.table.action.delete.tooltip' | translate}}">
+        <i class="mat-column-delete fas fa-trash"></i>
+    </button>
 </ng-template>

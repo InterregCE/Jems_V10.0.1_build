@@ -81,7 +81,6 @@ import {TravelAndAccommodationCostsBudgetTableComponent} from './partner/project
 import {ProjectPeriodsSelectComponent} from './components/project-periods-select/project-periods-select.component';
 import {ProjectWorkPackageInvestmentsTabComponent} from './work-package/work-package-detail-page/project-work-package-investments-tab/project-work-package-investments-tab.component';
 import {ProjectWorkPackageInvestmentDetailPageComponent} from './work-package/work-package-detail-page/project-work-package-investments-tab/project-work-package-investment-detail-page/project-work-package-investment-detail-page.component';
-import {WorkPackageInvestmentDeleteActionCellComponent} from './work-package/work-package-detail-page/project-work-package-investments-tab/work-package-investment-delete-action-cell/work-package-investment-delete-action-cell.component';
 import {StaffCostsBudgetTableComponent} from './partner/project-partner-detail-page/project-partner-budget-tab/project-partner-budget/staff-costs-budget-table/staff-costs-budget-table.component';
 import {GeneralBudgetFlatRateTableComponent} from './partner/project-partner-detail-page/project-partner-budget-tab/project-partner-budget/general-budget-flat-rate-table/general-budget-flat-rate-table.component';
 import {GeneralBudgetTableComponent} from './partner/project-partner-detail-page/project-partner-budget-tab/project-partner-budget/general-budget-table/general-budget-table.component';
@@ -167,7 +166,6 @@ import {ProjectResultsPageComponent} from './results/project-results-page/projec
     TravelAndAccommodationCostsBudgetTableComponent,
     ProjectWorkPackageInvestmentsTabComponent,
     ProjectWorkPackageInvestmentDetailPageComponent,
-    WorkPackageInvestmentDeleteActionCellComponent,
     ProjectPeriodsSelectComponent,
     ProjectResultsPageComponent
   ],
