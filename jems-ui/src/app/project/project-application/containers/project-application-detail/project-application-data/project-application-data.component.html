@@ -9,7 +9,7 @@
             [error$]="changeStatusError$"
             [projectStatus]="project.projectStatus.status"
             [projectRevertStatus]="revertStatus$ | async"
-            [projectCallEndDate]="project.call.endDate"
+            [projectCallEndDate]="project.callSettings.endDate"
             (changeStatus)="changeProjectStatus($event)"
             (revertStatus)="revertStatus($event)">
     </app-project-application-actions>
