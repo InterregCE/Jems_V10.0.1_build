@@ -21,8 +21,8 @@
                             </div>
                         </div>
 
-                        <div>
-                            <mat-form-field class="indicator">
+                        <div class="indicators">
+                            <mat-form-field class="indicator mr-2">
                                 <mat-label>{{'project.results.result.indicator' | translate}}</mat-label>
                                 <mat-select panelClass="material-select-panel"
                                             [disabled]="!data.resultIndicators.length"
@@ -34,13 +34,13 @@
                                 </mat-select>
                             </mat-form-field>
 
-                            <mat-form-field class="measurement-unit">
+                            <mat-form-field class="measurement-unit mr-2">
                                 <input readonly matInput
                                        placeholder="{{'project.results.result.measurement.unit' | translate}}"
                                        value="{{getMeasurementUnit(result.get(constants.RESULT_INDICATOR.name)?.value, data.resultIndicators)}}">
                             </mat-form-field>
 
-                            <mat-form-field class="final-target">
+                            <mat-form-field class="mr-2">
                                 <input currencyMask type="integer" [options]="{min: 1, max: 99999}"
                                        name="targetValue" formControlName="targetValue" matInput
                                        placeholder="{{'project.results.result.target.value' | translate}}">
@@ -55,6 +55,7 @@
                         </div>
 
                         <app-multi-language-form-field
+                                type="textarea"
                                 class="mt-2"
                                 label="project.results.result.description"
                                 [formControlName]="constants.DESCRIPTION.name"

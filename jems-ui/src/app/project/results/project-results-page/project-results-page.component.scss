@@ -1,11 +1,12 @@
-.indicator {
-  width: 30rem;
-}
+.indicators {
+  display: flex;
+  flex-direction: row;
 
-.measurement-unit {
-  width: 11rem;
-}
+  .indicator {
+    width: 30rem;
+  }
 
-.final-target {
-  width: 12rem;
+  .measurement-unit {
+    width: 11rem;
+  }
 }
