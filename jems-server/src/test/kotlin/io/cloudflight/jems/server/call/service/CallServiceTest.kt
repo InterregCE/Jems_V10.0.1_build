@@ -179,8 +179,9 @@ class CallServiceTest {
             CallStatus.DRAFT,
             call.lengthOfPeriod,
             call.description
-
         )
+        val event = slot<AuditCandidate>()
+        every { auditService.logEvent(capture(event)) } answers { }
 
         val newCall = InputCallCreate(
             name = call.name,
@@ -199,11 +200,9 @@ class CallServiceTest {
         assertThat(result.status).isEqualTo(CallStatus.DRAFT)
         assertThat(result.description).isEqualTo(call.description)
 
-        val event = slot<AuditCandidate>()
-        verify { auditService.logEvent(capture(event)) }
-        with(event) {
-            assertThat(AuditAction.CALL_CREATED).isEqualTo(captured.action)
-            assertThat("A new call id=100 'Test call name' was created").isEqualTo(captured.description)
+        with(event.captured) {
+            assertThat(AuditAction.CALL_CREATED).isEqualTo(action)
+            assertThat("A new call id=100 'Test call name' was created").isEqualTo(description)
         }
     }
 
@@ -414,15 +413,15 @@ class CallServiceTest {
                     )
                 )
         every { callRepository.save(any<CallEntity>()) } returnsArgument 0
+        val event = slot<AuditCandidate>()
+        every { auditService.logEvent(capture(event)) } answers { }
 
         val result = callService.publishCall(existingId)
         assertThat(result.status).isEqualTo(CallStatus.PUBLISHED)
 
-        val event = slot<AuditCandidate>()
-        verify { auditService.logEvent(capture(event)) }
-        with(event) {
-            assertThat(captured.action).isEqualTo(AuditAction.CALL_PUBLISHED)
-            assertThat(captured.description)
+        with(event.captured) {
+            assertThat(action).isEqualTo(AuditAction.CALL_PUBLISHED)
+            assertThat(description)
                 .isEqualTo("Call id=1 'Test call name' published")
         }
     }
