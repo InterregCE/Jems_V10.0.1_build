@@ -91,8 +91,8 @@ export class ProjectWorkPackageInvestmentsTabComponent implements OnInit {
         },
         {
           displayedColumn: 'project.application.form.workpackage.investments.nuts3',
-          elementProperty: 'address.nutsRegion3',
-          sortProperty: 'address.nutsRegion3',
+          elementProperty: 'address.region3',
+          sortProperty: 'address.region3',
         },
         {
           displayedColumn: ' ',
@@ -105,7 +105,7 @@ export class ProjectWorkPackageInvestmentsTabComponent implements OnInit {
   }
 
   delete(workPackageInvestment: WorkPackageInvestmentDTO): void {
-    const name = workPackageInvestment.title && workPackageInvestment.title[0].translation;
+    const name = this.getTitleValue(workPackageInvestment);
     const message = name
       ? 'project.application.form.workpackage.investment.table.action.delete.dialog.message'
       : 'project.application.form.workpackage.investment.table.action.delete.dialog.message.no.name';
@@ -129,6 +129,15 @@ export class ProjectWorkPackageInvestmentsTabComponent implements OnInit {
 
   private setRouterLink(): void {
     this.tableConfiguration.routerLink = '/app/project/detail/' + this.projectId + '/applicationFormWorkPackage/detail/' + this.workPackageId + '/investment/detail';
+  }
+
+  getTitleValue(workPackageInvestment: WorkPackageInvestmentDTO): string {
+    if (!workPackageInvestment.title?.length) {
+      return '';
+    }
+
+    return [...workPackageInvestment.title]
+      .sort((a, b) => a.language > b.language ? 1 : -1)[0].translation;
   }
 
 }

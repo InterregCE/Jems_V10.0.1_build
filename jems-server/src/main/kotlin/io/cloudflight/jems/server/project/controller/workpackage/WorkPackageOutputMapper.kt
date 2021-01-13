@@ -76,4 +76,4 @@ fun Address.toAddressDTO() = AddressDTO(
 )
 
 fun AddressDTO.toAddress() =
-    Address(this.country, this.nutsRegion2, this.nutsRegion3, this.street, this.houseNumber, this.postalCode, this.city)
+    Address(this.country, this.region2, this.region3, this.street, this.houseNumber, this.postalCode, this.city)
