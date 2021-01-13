@@ -3,6 +3,7 @@ package io.cloudflight.jems.server.project.controller.partner.budget
 import io.cloudflight.jems.api.project.dto.partner.budget.BudgetGeneralCostEntryDTO
 import io.cloudflight.jems.api.project.dto.partner.budget.BudgetStaffCostEntryDTO
 import io.cloudflight.jems.api.project.dto.partner.budget.BudgetTravelAndAccommodationCostEntryDTO
+import io.cloudflight.jems.api.project.dto.partner.budget.BudgetUnitCostEntryDTO
 import io.cloudflight.jems.api.project.dto.partner.budget.ProjectPartnerBudgetOptionsDto
 import io.cloudflight.jems.api.project.dto.partner.cofinancing.ProjectPartnerCoFinancingAndContributionInputDTO
 import io.cloudflight.jems.api.project.dto.partner.cofinancing.ProjectPartnerCoFinancingAndContributionOutputDTO
@@ -11,6 +12,7 @@ import io.cloudflight.jems.server.project.service.partner.budget.get_budget_cost
 import io.cloudflight.jems.server.project.service.partner.budget.get_budget_options.GetBudgetOptionsInteractor
 import io.cloudflight.jems.server.project.service.partner.budget.get_budget_total_cost.GetBudgetTotalCostInteractor
 import io.cloudflight.jems.server.project.service.partner.budget.update_budge_staff_costs.UpdateBudgetStaffCostsInteractor
+import io.cloudflight.jems.server.project.service.partner.budget.update_budget_unit_costs.UpdateBudgetUnitCostsInteractor
 import io.cloudflight.jems.server.project.service.partner.budget.update_budget_general_costs.update_budget_equipment_costs.UpdateBudgetEquipmentCosts
 import io.cloudflight.jems.server.project.service.partner.budget.update_budget_general_costs.update_budget_external_expertise_and_services.UpdateBudgetExternalExpertiseAndServicesCostsInteractor
 import io.cloudflight.jems.server.project.service.partner.budget.update_budget_general_costs.update_budget_infrastructure_and_works_costs.UpdateBudgetInfrastructureAndWorksCostsInteractor
@@ -35,6 +37,7 @@ class ProjectPartnerBudgetController(
     private val updateBudgetExternalExpertiseAndServicesCosts: UpdateBudgetExternalExpertiseAndServicesCostsInteractor,
     private val updateBudgetInfrastructureAndWorksCosts: UpdateBudgetInfrastructureAndWorksCostsInteractor,
     private val updateBudgetStaffCosts: UpdateBudgetStaffCostsInteractor,
+    private val updateBudgetUnitCosts: UpdateBudgetUnitCostsInteractor,
     private val getBudgetTotalCost: GetBudgetTotalCostInteractor
 ) : ProjectPartnerBudgetApi {
 
@@ -62,6 +65,9 @@ class ProjectPartnerBudgetController(
 
     override fun updateBudgetInfrastructure(partnerId: Long, infrastructures: List<BudgetGeneralCostEntryDTO>) =
         updateBudgetInfrastructureAndWorksCosts.updateBudgetGeneralCosts(partnerId, infrastructures.toBudgetGeneralCostEntryList()).toBudgetGeneralCostsEntryDTOList()
+
+    override fun updateBudgetUnitCosts(partnerId: Long, unitCosts: List<BudgetUnitCostEntryDTO>) =
+        updateBudgetUnitCosts.updateBudgetUnitCosts(partnerId, unitCosts.toBudgetUnitCostEntryList()).toBudgetUnitCostEntryDTOList()
 
     override fun getTotal(partnerId: Long) =
         getBudgetTotalCost.getBudgetTotalCost(partnerId)

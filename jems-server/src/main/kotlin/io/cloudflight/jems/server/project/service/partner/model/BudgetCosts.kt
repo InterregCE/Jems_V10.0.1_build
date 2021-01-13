@@ -6,4 +6,5 @@ data class BudgetCosts(
     val externalCosts: List<BudgetGeneralCostEntry>,
     val equipmentCosts: List<BudgetGeneralCostEntry>,
     val infrastructureCosts: List<BudgetGeneralCostEntry>,
+    val unitCosts: List<BudgetUnitCostEntry>
 )
