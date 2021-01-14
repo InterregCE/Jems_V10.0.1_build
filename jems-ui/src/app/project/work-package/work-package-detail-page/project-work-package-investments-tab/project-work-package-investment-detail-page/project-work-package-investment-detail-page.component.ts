@@ -10,6 +10,7 @@ import {UntilDestroy, untilDestroyed} from '@ngneat/until-destroy';
 import {ProjectWorkPackageInvestmentDetailPageConstants} from './project-work-package-investment-detail-page.constants';
 import {Observable} from 'rxjs';
 import {ProjectWorkPackageInvestmentDetailPageStore} from './project-work-package-Investment-detail-page-store.service';
+import {ProjectWorkPackagePageStore} from '../../project-work-package-page-store.service';
 
 @UntilDestroy()
 @Component({
@@ -25,6 +26,7 @@ export class ProjectWorkPackageInvestmentDetailPageComponent implements OnInit {
   private projectId = this.activatedRoute?.snapshot?.params?.projectId;
   private workPackageId = this.activatedRoute?.snapshot?.params?.workPackageId;
   private workPackageInvestmentId = this.activatedRoute?.snapshot?.params?.workPackageInvestmentId;
+  workPackageNumber: number;
 
   nuts$ = this.nutsStore.getNuts();
   workPackageInvestment$: Observable<WorkPackageInvestmentDTO>;
@@ -58,6 +60,7 @@ export class ProjectWorkPackageInvestmentDetailPageComponent implements OnInit {
               private router: Router,
               private activatedRoute: ActivatedRoute,
               public investmentPageStore: ProjectWorkPackageInvestmentDetailPageStore,
+              public workPackageStore: ProjectWorkPackagePageStore,
               public nutsStore: NutsStoreService,
               private projectApplicationFormSidenavService: ProjectApplicationFormSidenavService) {
   }
@@ -79,6 +82,11 @@ export class ProjectWorkPackageInvestmentDetailPageComponent implements OnInit {
       .pipe(
         tap(investment => this.resetForm(investment)),
       );
+
+    this.workPackageStore.workPackage$
+      .pipe(
+        tap(workPackage => this.workPackageNumber = workPackage.number),
+      ).subscribe();
 
     this.formService.reset$
       .pipe(
@@ -118,7 +126,7 @@ export class ProjectWorkPackageInvestmentDetailPageComponent implements OnInit {
   }
 
   private resetForm(investment: WorkPackageInvestmentDTO): void {
-    this.workPackageInvestmentForm.controls.number?.setValue(investment?.investmentNumber || '');
+    this.workPackageInvestmentForm.controls.number?.setValue(investment?.investmentNumber ? this.workPackageNumber + '.' + investment?.investmentNumber : '');
     this.workPackageInvestmentForm.controls.title?.setValue(investment?.title || []);
     this.workPackageInvestmentForm.controls.justificationExplanation?.setValue(investment?.justificationExplanation || []);
     this.workPackageInvestmentForm.controls.justificationTransactionalRelevance?.setValue(investment?.justificationTransactionalRelevance || []);
