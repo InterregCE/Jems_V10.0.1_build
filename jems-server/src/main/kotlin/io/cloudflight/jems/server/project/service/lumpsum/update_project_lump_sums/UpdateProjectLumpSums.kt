@@ -54,6 +54,7 @@ class UpdateProjectLumpSums(
 
     private fun validatePeriods(lumpSums: List<ProjectLumpSum>, project: Project) {
         val periodNumbers = project.periods.mapTo(HashSet()) { it.number }
+        periodNumbers.add(0) // Preparation = period number 0
         if (lumpSums.any { !periodNumbers.contains(it.period) })
             throw I18nValidationException(i18nKey = "project.lumpSum.period.does.not.exist")
     }

@@ -5,6 +5,6 @@ import java.util.UUID
 data class ProjectLumpSum(
     val id: UUID? = null,
     val programmeLumpSumId: Long,
-    val period: Int,
+    val period: Int? = null,
     val lumpSumContributions: List<ProjectPartnerLumpSum> = emptyList(),
 )
