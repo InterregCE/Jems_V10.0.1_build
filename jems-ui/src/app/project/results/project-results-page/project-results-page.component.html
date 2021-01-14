@@ -37,7 +37,8 @@
                             <mat-form-field class="mr-2">
                                 <input readonly matInput
                                        placeholder="{{'project.results.result.measurement.unit' | translate}}"
-                                       value="{{getMeasurementUnit(result.get(constants.RESULT_INDICATOR.name)?.value, data.resultIndicators)}}">
+                                       value="{{getMeasurementUnit(result.get(constants.RESULT_INDICATOR.name)?.value, data.resultIndicators)}}"
+                                       [disabled]="form.disabled">
                             </mat-form-field>
 
                             <mat-form-field class="mr-2">
