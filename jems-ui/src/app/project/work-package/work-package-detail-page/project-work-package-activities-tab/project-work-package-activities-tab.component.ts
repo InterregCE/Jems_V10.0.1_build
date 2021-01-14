@@ -32,8 +32,6 @@ export class ProjectWorkPackageActivitiesTabComponent implements OnInit {
     workPackageNumber: number
   }>;
 
-  private editable = true;
-
   constructor(public formService: FormService,
               private formBuilder: FormBuilder,
               private workPackageStore: ProjectWorkPackagePageStore,
@@ -42,12 +40,6 @@ export class ProjectWorkPackageActivitiesTabComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.workPackageStore.isProjectEditable$
-      .pipe(
-        tap(projectEditable => this.editable = projectEditable),
-        untilDestroyed(this)
-      ).subscribe();
-
     combineLatest([
       this.workPackageStore.activities$, this.formService.reset$.pipe(startWith(null))
     ])
@@ -107,11 +99,11 @@ export class ProjectWorkPackageActivitiesTabComponent implements OnInit {
   }
 
   addActivityVisible(): boolean {
-    return this.editable && this.activities.length < 20;
+    return this.form.enabled && this.activities.length < 20;
   }
 
   addDeliverableVisible(activityIndex: number): boolean {
-    return this.editable && this.deliverables(activityIndex).length < 20;
+    return this.form.enabled && this.deliverables(activityIndex).length < 20;
   }
 
   private resetForm(activities: WorkPackageActivityDTO[]): void {
@@ -120,6 +112,7 @@ export class ProjectWorkPackageActivitiesTabComponent implements OnInit {
       this.addActivity(activity);
       activity.deliverables?.forEach(deliverable => this.addDeliverable(index, deliverable));
     });
+    this.formService.resetEditable();
   }
 
   private addActivity(existing?: WorkPackageActivityDTO): void {
