@@ -35,3 +35,12 @@ server:
   servlet:
     session:
       timeout: 60m
+
+management:
+  endpoints:
+    enabled-by-default: false
+  endpoint:
+    info:
+      enabled: true
+    health:
+      enabled: true

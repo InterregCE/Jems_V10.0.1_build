@@ -5,6 +5,8 @@ dependencies {
     implementation project(':jems-ui')
 
     implementation('io.cloudflight.platform:platform-i18n')
+    // platform-server-config is used for enabling built-in spring-actuators and to extract version details during build
+    implementation('io.cloudflight.platform:platform-server-config')
 
     runtimeOnly('com.fasterxml.jackson.module:jackson-module-kotlin')
     runtimeOnly('org.flywaydb:flyway-core')

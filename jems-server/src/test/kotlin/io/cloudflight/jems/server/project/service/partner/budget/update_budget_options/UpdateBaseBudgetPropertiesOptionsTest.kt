@@ -56,8 +56,6 @@ internal class UpdateBaseBudgetPropertiesOptionsTest : UnitTest() {
         verify(atLeast = 1) { optionsPersistence.updateBudgetOptions(partnerId, flatRates) }
         verify(atLeast = 1) { optionsPersistence.deleteStaffCosts(partnerId) }
         verify(atLeast = 1) { callFlatRateSetupPersistence.getProjectCallFlatRateByPartnerId(partnerId) }
-        confirmVerified(optionsPersistence, callFlatRateSetupPersistence)
-
     }
 
     @Test
@@ -75,8 +73,6 @@ internal class UpdateBaseBudgetPropertiesOptionsTest : UnitTest() {
 
         verify(atLeast = 1) { optionsPersistence.deleteBudgetOptions(partnerId) }
         verify(atLeast = 1) { callFlatRateSetupPersistence.getProjectCallFlatRateByPartnerId(partnerId) }
-        confirmVerified(optionsPersistence, callFlatRateSetupPersistence)
-
     }
 
 
@@ -241,7 +237,7 @@ internal class UpdateBaseBudgetPropertiesOptionsTest : UnitTest() {
 
         verify(atLeast = 1) { optionsPersistence.deleteTravelAndAccommodationCosts(partnerId) }
         verify(atLeast = 1) { optionsPersistence.deleteStaffCosts(partnerId) }
-        verify(atLeast = 1) { optionsPersistence.updateBudgetOptions(partnerId, capture(slotOptions)) }
+        verify(atLeast = 1) { optionsPersistence.updateBudgetOptions(partnerId, any()) }
         verify(atLeast = 1) { callFlatRateSetupPersistence.getProjectCallFlatRateByPartnerId(partnerId) }
         confirmVerified(optionsPersistence, callFlatRateSetupPersistence)
 
