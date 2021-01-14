@@ -15,7 +15,9 @@
                                 <h5 class="text-overflow-ellipsis">
                                     {{languageService.getCurrentValue(activity.get(constants.TITLE.name).value)}}
                                 </h5>
-                                <button type="button" (click)="removeActivity(i)" mat-icon-button color="accent">
+                                <button *ngIf="form.enabled"
+                                        type="button" mat-icon-button color="accent"
+                                        (click)="removeActivity(i)">
                                     <mat-icon>delete</mat-icon>
                                 </button>
                             </div>
@@ -90,7 +92,9 @@
                                             </app-project-periods-select>
 
                                             <div>
-                                                <button type="button" (click)="removeDeliverable(i, j)"
+                                                <button *ngIf="form.enabled"
+                                                        type="button"
+                                                        (click)="removeDeliverable(i, j)"
                                                         mat-icon-button
                                                         color="accent">
                                                     <mat-icon>delete</mat-icon>
