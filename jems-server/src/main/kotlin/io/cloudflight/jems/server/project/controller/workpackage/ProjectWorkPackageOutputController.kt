@@ -13,18 +13,18 @@ class ProjectWorkPackageOutputController(
     private val updateWorkPackageOutputInteractor: UpdateWorkPackageOutputInteractor,
 ) : ProjectWorkPackageOutputApi {
 
-    override fun getWorkPackageOutputs(workPackageId: Long): Set<WorkPackageOutputDTO> {
-        return getWorkPackageOutputInteractor.getWorkPackageOutputsForWorkPackage(workPackageId)
-            .toWorkPackageOutputDTOSet()
-    }
+    override fun getWorkPackageOutputs(workPackageId: Long): List<WorkPackageOutputDTO> =
+        getWorkPackageOutputInteractor.getWorkPackageOutputsForWorkPackage(workPackageId)
+            .toWorkPackageOutputDTOList()
+
 
     override fun updateWorkPackageOutputs(
         workPackageId: Long,
-        workPackageOutputUpdateDTO: Set<WorkPackageOutputUpdateDTO>
-    ): Set<WorkPackageOutputDTO> =
+        workPackageOutputUpdateDTO: List<WorkPackageOutputUpdateDTO>
+    ): List<WorkPackageOutputDTO> =
         updateWorkPackageOutputInteractor.updateWorkPackageOutputs(
             workPackageId,
-            workPackageOutputUpdateDTO.toWorkPackageOutputUpdateSet(),
-        ).toWorkPackageOutputDTOSet()
+            workPackageOutputUpdateDTO.toWorkPackageOutputList(),
+        ).toWorkPackageOutputDTOList()
 
 }

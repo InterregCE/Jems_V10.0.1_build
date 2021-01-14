@@ -1,13 +1,12 @@
 package io.cloudflight.jems.server.project.service.workpackage.output.update_work_package_output
 
-import io.cloudflight.jems.server.project.service.workpackage.model.WorkPackageOutput
-import io.cloudflight.jems.server.project.service.workpackage.model.WorkPackageOutputUpdate
+import io.cloudflight.jems.server.project.service.workpackage.output.model.WorkPackageOutput
 
 interface UpdateWorkPackageOutputInteractor {
 
     fun updateWorkPackageOutputs(
         workPackageId: Long,
-        workPackageOutputUpdate: Set<WorkPackageOutputUpdate>,
-    ): Set<WorkPackageOutput>
+        workPackageOutputUpdate: List<WorkPackageOutput>,
+    ): List<WorkPackageOutput>
 
 }

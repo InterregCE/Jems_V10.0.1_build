@@ -131,12 +131,12 @@ export class ProjectApplicationFormWorkPackageOutputsComponent extends BaseCompo
       data.push({
         id: element.outputNumber,
         outputNumber: element.outputNumber,
-        programmeOutputIndicatorId: element.programmeOutputIndicator?.id,
-        title: element.title,
+        programmeOutputIndicatorId: element.programmeOutputIndicatorId,
+        title: [],
         targetValue: element.targetValue,
         periodNumber: element.periodNumber,
-        description: element.description,
-        indicator: element.programmeOutputIndicator,
+        description: [],
+        indicator: null,
       } as WorkPackageOutputDetails);
       this.outputCounter = this.outputCounter + 1;
     });

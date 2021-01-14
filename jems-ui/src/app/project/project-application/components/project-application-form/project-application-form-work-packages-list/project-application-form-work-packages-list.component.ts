@@ -10,7 +10,7 @@ import {
 } from '@angular/core';
 import {MatSort} from '@angular/material/sort';
 import {TableConfiguration} from '@common/components/table/model/table.configuration';
-import {PageOutputWorkPackageSimple, OutputWorkPackageSimple} from '@cat/api';
+import {PageOutputWorkPackageSimple, OutputWorkPackageSimple, InputTranslation} from '@cat/api';
 import {ActivatedRoute} from '@angular/router';
 import {ColumnType} from '@common/components/table/model/column-type.enum';
 import {Forms} from '../../../../../common/utils/forms';
@@ -81,13 +81,13 @@ export class ProjectApplicationFormWorkPackagesListComponent implements OnInit {
 
   delete(workPackage: OutputWorkPackageSimple): void {
     let message: string;
-    let name: string;
+    let name: InputTranslation[];
     if (workPackage.name) {
       message = 'project.application.form.workpackage.table.action.delete.dialog.message';
       name = workPackage.name;
     } else {
       message = 'project.application.form.workpackage.table.action.delete.dialog.message.no.name';
-      name = ' ';
+      name = [];
     }
     Forms.confirmDialog(
       this.dialog,

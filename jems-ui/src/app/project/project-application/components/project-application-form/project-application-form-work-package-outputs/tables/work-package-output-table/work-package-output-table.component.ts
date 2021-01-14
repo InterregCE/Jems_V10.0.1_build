@@ -88,10 +88,10 @@ export class WorkPackageOutputTableComponent extends BaseComponent implements On
       id: this.workPackageOutputDataSource.data.length + 1,
       outputNumber: this.outputCounter,
       programmeOutputIndicatorId: 0,
-      title: '',
+      title: [],
       targetValue: '',
       periodNumber: 0,
-      description: '',
+      description: [],
       indicator: null
     } as WorkPackageOutputDetails;
     this.workPackageOutputDataSource.data = [...this.workPackageOutputDataSource.data, lastOutput];

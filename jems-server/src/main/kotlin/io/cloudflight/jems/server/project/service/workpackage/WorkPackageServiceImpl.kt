@@ -11,6 +11,7 @@ import io.cloudflight.jems.server.project.authorization.CanUpdateProject
 import io.cloudflight.jems.server.project.authorization.CanUpdateProjectWorkPackage
 import io.cloudflight.jems.server.project.entity.workpackage.WorkPackageEntity
 import io.cloudflight.jems.server.project.repository.ProjectRepository
+import io.cloudflight.jems.server.project.repository.partner.combineTranslatedValues
 import io.cloudflight.jems.server.project.repository.workpackage.WorkPackageRepository
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
@@ -47,9 +48,13 @@ class WorkPackageServiceImpl(
             .orElseThrow { ResourceNotFoundException("project") }
 
         val workPackageCreated = workPackageRepository.save(inputWorkPackageCreate.toEntity(project))
+        val workPackageSavedWithTranslations = workPackageRepository.save(
+            workPackageCreated.copy(
+                translatedValues = inputWorkPackageCreate.combineTranslatedValues(workPackageCreated.id))
+        )
         updateSortOnNumber(projectId)
         // entity is attached, number will have been updated
-        return workPackageCreated.toOutputWorkPackage()
+        return workPackageSavedWithTranslations.toOutputWorkPackage()
     }
 
     @PreAuthorize("@projectWorkPackageAuthorization.canUpdateProjectWorkPackage(#inputWorkPackageUpdate.id)")
@@ -58,9 +63,7 @@ class WorkPackageServiceImpl(
         val oldWorkPackage = getWorkPackageOrThrow(inputWorkPackageUpdate.id)
 
         val toUpdate = oldWorkPackage.copy(
-            name = inputWorkPackageUpdate.name,
-            specificObjective = inputWorkPackageUpdate.specificObjective,
-            objectiveAndAudience = inputWorkPackageUpdate.objectiveAndAudience
+            translatedValues = inputWorkPackageUpdate.combineTranslatedValues(oldWorkPackage.id)
         )
 
         return workPackageRepository.save(toUpdate).toOutputWorkPackage()

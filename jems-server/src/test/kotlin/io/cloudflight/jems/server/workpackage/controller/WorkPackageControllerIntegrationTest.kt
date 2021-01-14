@@ -1,6 +1,8 @@
 package io.cloudflight.jems.server.workpackage.controller
 
 import com.fasterxml.jackson.databind.ObjectMapper
+import io.cloudflight.jems.api.programme.dto.SystemLanguage
+import io.cloudflight.jems.api.project.dto.InputTranslation
 import io.cloudflight.jems.api.project.dto.workpackage.InputWorkPackageCreate
 import io.cloudflight.jems.server.factory.CallFactory
 import io.cloudflight.jems.server.factory.ProjectFactory
@@ -42,8 +44,9 @@ class WorkPackageControllerIntegrationTest {
     fun `work package created`() {
         val call = callFactory.savePublishedCallWithoutPolicy(userFactory.adminUser)
         val project = projectFactory.saveProject(userFactory.adminUser, call)
+        val translationEn = InputTranslation(SystemLanguage.EN, "Work package name")
 
-        val inputWorkPackage = InputWorkPackageCreate("Work package name", "", "")
+        val inputWorkPackage = InputWorkPackageCreate(setOf(translationEn), setOf(), setOf())
 
         mockMvc.perform(
             post("/api/project/workPackage/forProject/${project.id}")
@@ -53,7 +56,8 @@ class WorkPackageControllerIntegrationTest {
         )
             .andExpect(MockMvcResultMatchers.status().isOk)
             .andExpect(MockMvcResultMatchers.jsonPath("$.id").isNotEmpty)
-            .andExpect(MockMvcResultMatchers.jsonPath("$.name").value(inputWorkPackage.name.toString()))
+            .andExpect(MockMvcResultMatchers.jsonPath("$.name[0].language").value(translationEn.language.name))
+            .andExpect(MockMvcResultMatchers.jsonPath("$.name[0].translation").value(translationEn.translation!!))
             .andExpect(MockMvcResultMatchers.jsonPath("$.number").value(1))
     }
 
@@ -63,7 +67,7 @@ class WorkPackageControllerIntegrationTest {
         val call = callFactory.savePublishedCallWithoutPolicy(userFactory.adminUser)
         val project = projectFactory.saveProject(userFactory.adminUser, call)
 
-        val firstWorkPackage = InputWorkPackageCreate("Work package name", "", "")
+        val firstWorkPackage = InputWorkPackageCreate(setOf(InputTranslation(SystemLanguage.EN, "Work package name")), setOf(), setOf())
 
         mockMvc.perform(
             post("/api/project/workPackage/forProject/${project.id}")
