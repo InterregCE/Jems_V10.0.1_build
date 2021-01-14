@@ -24,7 +24,7 @@ class UpdateBudgetUnitCosts(
 
         budgetCostEntriesValidator.validate(unitCosts, projectUnitCosts)
 
-        persistence.deleteAllBudgetStaffCostsExceptFor(
+        persistence.deleteAllUnitCostsExceptFor(
             partnerId = partnerId,
             idsToKeep = unitCosts.filter { it.id !== null }.map { it.id!! }
         )

@@ -17,6 +17,9 @@ import {PartnerBudgetTables} from '../../../../project-application/model/partner
 import {GeneralBudgetTable} from '../../../../project-application/model/general-budget-table';
 import {TravelAndAccommodationCostsBudgetTable} from '../../../../project-application/model/travel-and-accommodation-costs-budget-table';
 import {TravelAndAccommodationCostsBudgetTableEntry} from '../../../../project-application/model/travel-and-accommodation-costs-budget-table-entry';
+import {UnitCostsBudgetTableEntry} from '../../../../project-application/model/unit-costs-budget-table-entry';
+import {UnitCostsBudgetTable} from '../../../../project-application/model/unit-costs-budget-table';
+import { ProgrammeUnitCostDTO } from '@cat/api';
 
 @UntilDestroy()
 @Component({
@@ -34,6 +37,7 @@ export class ProjectPartnerBudgetComponent implements OnInit {
   data$: Observable<{
     budgetTables: PartnerBudgetTables,
     investments: number[],
+    unitCostIds: ProgrammeUnitCostDTO[],
     staffCostsFlatRateTotal: number,
     officeAndAdministrationFlatRateTotal: number,
     travelAndAccommodationFlatRateTotal: number,
@@ -81,15 +85,18 @@ export class ProjectPartnerBudgetComponent implements OnInit {
       this.pageStore.budgets$,
       this.pageStore.budgetOptions$,
       this.pageStore.investmentIds$,
+      this.pageStore.unitCostIds$,
+      this.pageStore.isProjectEditable$.pipe(startWith(false)),
       this.staffCostsFlatRateTotal$,
       this.officeAndAdministrationFlatRateTotal$,
       this.travelAndAccommodationFlatRateTotal$,
       this.otherCostsFlatRateTotal$
     ]).pipe(
-      map(([budgetTables, budgetOptions, investments, staffCostsFlatRateTotal, officeAndAdministrationFlatRateTotal, travelAndAccommodationFlatRateTotal, otherCostsFlatRateTotal]: any) => {
+      map(([budgetTables, budgetOptions, investments, unitCostIds, staffCostsFlatRateTotal, officeAndAdministrationFlatRateTotal, travelAndAccommodationFlatRateTotal, otherCostsFlatRateTotal]: any) => {
         return {
           budgetTables,
           investments,
+          unitCostIds,
           staffCostsFlatRateTotal,
           officeAndAdministrationFlatRateTotal,
           travelAndAccommodationFlatRateTotal,
@@ -157,7 +164,8 @@ export class ProjectPartnerBudgetComponent implements OnInit {
       new TravelAndAccommodationCostsBudgetTable(this.getTotalOf(this.travel), this.travel?.value.items.map((item: any) => new TravelAndAccommodationCostsBudgetTableEntry({...item}))),
       new GeneralBudgetTable(this.getTotalOf(this.external), this.external?.value.items.map((item: any) => new GeneralBudgetTableEntry({...item}))),
       new GeneralBudgetTable(this.getTotalOf(this.equipment), this.equipment?.value.items.map((item: any) => new GeneralBudgetTableEntry({...item}))),
-      new GeneralBudgetTable(this.getTotalOf(this.infrastructure), this.infrastructure?.value.items.map((item: any) => new GeneralBudgetTableEntry({...item})))
+      new GeneralBudgetTable(this.getTotalOf(this.infrastructure), this.infrastructure?.value.items.map((item: any) => new GeneralBudgetTableEntry({...item}))),
+      new UnitCostsBudgetTable(this.getTotalOf(this.unitCosts), this.unitCosts?.value.items.map((item: any) => new UnitCostsBudgetTableEntry({...item})))
     );
   }
 
@@ -180,6 +188,10 @@ export class ProjectPartnerBudgetComponent implements OnInit {
         total: [0, [Validators.max(this.constants.MAX_VALUE), Validators.min(this.constants.MIN_VALUE)]]
       }),
       external: this.formBuilder.group({
+        items: this.formBuilder.array([], [Validators.maxLength(this.constants.MAX_NUMBER_OF_ITEMS)]),
+        total: [0, [Validators.max(this.constants.MAX_VALUE), Validators.min(this.constants.MIN_VALUE)]]
+      }),
+      unitCosts: this.formBuilder.group({
         items: this.formBuilder.array([], [Validators.maxLength(this.constants.MAX_NUMBER_OF_ITEMS)]),
         total: [0, [Validators.max(this.constants.MAX_VALUE), Validators.min(this.constants.MIN_VALUE)]]
       })
@@ -208,6 +220,10 @@ export class ProjectPartnerBudgetComponent implements OnInit {
 
   get infrastructure(): FormGroup {
     return this.budgetsForm.get(this.constants.FORM_CONTROL_NAMES.infrastructure) as FormGroup;
+  }
+
+  get unitCosts(): FormGroup {
+    return this.budgetsForm.get(this.constants.FORM_CONTROL_NAMES.unitCosts) as FormGroup;
   }
 
 }

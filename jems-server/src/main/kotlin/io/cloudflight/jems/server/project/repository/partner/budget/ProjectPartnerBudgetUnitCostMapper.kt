@@ -8,7 +8,7 @@ fun BudgetUnitCostEntry.toEntity(
     partnerId: Long,
     getProgrammeUnitCost: (Long) -> ProgrammeUnitCostEntity
 ) = ProjectPartnerBudgetUnitCostEntity(
-    id = id!!,
+    id = id ?: 0,
     partnerId = partnerId,
     numberOfUnits = numberOfUnits,
     unitCost = unitCostId?.let { getProgrammeUnitCost.invoke(it) },

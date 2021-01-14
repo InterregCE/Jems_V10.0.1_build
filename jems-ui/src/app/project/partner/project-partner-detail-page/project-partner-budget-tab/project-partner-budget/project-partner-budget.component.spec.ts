@@ -79,6 +79,10 @@ describe('ProjectApplicationPartnerBudgetPageComponent', () => {
       method: 'PUT',
       url: '//api/project/partner/2/budget/infrastructure'
     });
+    httpTestingController.expectOne({
+      method: 'PUT',
+      url: '//api/project/partner/2/budget/unitcosts'
+    });
   }));
 
 });
