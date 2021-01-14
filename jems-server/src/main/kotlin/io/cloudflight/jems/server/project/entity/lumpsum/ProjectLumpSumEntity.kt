@@ -4,8 +4,6 @@ import io.cloudflight.jems.server.programme.entity.costoption.ProgrammeLumpSumEn
 import java.util.UUID
 import javax.persistence.CascadeType
 import javax.persistence.Entity
-import javax.persistence.GeneratedValue
-import javax.persistence.GenerationType
 import javax.persistence.Id
 import javax.persistence.ManyToOne
 import javax.persistence.OneToMany
@@ -24,8 +22,7 @@ data class ProjectLumpSumEntity(
     @field:NotNull
     val programmeLumpSum: ProgrammeLumpSumEntity,
 
-    @field:NotNull
-    val endPeriod: Int,
+    val endPeriod: Int? = null,
 
     @OneToMany(mappedBy = "id.projectLumpSumId", cascade = [CascadeType.ALL], orphanRemoval = true)
     val lumpSumContributions: Set<ProjectPartnerLumpSumEntity> = emptySet(),
