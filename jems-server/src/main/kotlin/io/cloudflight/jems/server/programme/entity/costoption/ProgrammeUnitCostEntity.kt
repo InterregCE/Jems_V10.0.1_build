@@ -28,5 +28,5 @@ data class ProgrammeUnitCostEntity(
     var costPerUnit: BigDecimal,
 
     @OneToMany(mappedBy = "programmeUnitCostId", cascade = [CascadeType.ALL], orphanRemoval = true)
-    var categories: MutableSet<ProgrammeUnitCostBudgetCategoryEntity> = mutableSetOf(),
+    var categories: MutableSet<ProgrammeUnitCostBudgetCategoryEntity> = mutableSetOf()
 )

@@ -9,4 +9,5 @@ data class BudgetCostsDTO(
     val externalCosts: List<BudgetGeneralCostEntryDTO>,
     val equipmentCosts: List<BudgetGeneralCostEntryDTO>,
     val infrastructureCosts: List<BudgetGeneralCostEntryDTO>,
+    val unitCosts: List<BudgetUnitCostEntryDTO>
 )

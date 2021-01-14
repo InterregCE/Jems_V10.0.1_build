@@ -14,11 +14,10 @@ import io.cloudflight.jems.server.project.entity.partner.budget.ProjectPartnerBu
 import io.cloudflight.jems.server.project.entity.partner.budget.ProjectPartnerBudgetStaffCostTransl
 import io.cloudflight.jems.server.project.entity.partner.budget.ProjectPartnerBudgetTravelEntity
 import io.cloudflight.jems.server.project.entity.partner.budget.ProjectPartnerBudgetTravelTransl
+import io.cloudflight.jems.server.project.entity.partner.budget.ProjectPartnerBudgetUnitCostEntity
 import io.cloudflight.jems.server.project.service.partner.model.BudgetGeneralCostEntry
 import io.cloudflight.jems.server.project.service.partner.model.BudgetStaffCostEntry
 import io.cloudflight.jems.server.project.service.partner.model.BudgetTravelAndAccommodationCostEntry
-import io.cloudflight.jems.server.project.service.partner.model.StaffCostType
-import io.cloudflight.jems.server.project.service.partner.model.StaffCostUnitType
 
 
 fun List<ProjectPartnerBudgetStaffCostEntity>.toBudgetStaffCostEntries() = this.map { it.toBudgetStaffCostEntry() }
@@ -52,7 +51,7 @@ fun BudgetStaffCostEntry.toProjectPartnerBudgetStaffCostEntity(partnerId: Long) 
                 ProjectPartnerBudgetStaffCostTransl(
                     budgetTranslation = BudgetTranslation(this, language),
                     description = description.firstOrNull { it.language === language }?.translation ?: "",
-                    comment = comment.firstOrNull { it.language === language }?.translation ?: "",
+                    comment = comment.firstOrNull { it.language === language }?.translation ?: ""
                 )
             }.toMutableSet()
     )
@@ -86,7 +85,7 @@ fun BudgetTravelAndAccommodationCostEntry.toProjectPartnerBudgetTravelEntity(par
                 ProjectPartnerBudgetTravelTransl(
                     budgetTranslation = BudgetTranslation(this, language),
                     description = description.firstOrNull { it.language === language }?.translation ?: "",
-                    unitType = unitType.firstOrNull { it.language === language }?.translation ?: "",
+                    unitType = unitType.firstOrNull { it.language === language }?.translation ?: ""
                 )
             }.toMutableSet()
     )
@@ -109,7 +108,7 @@ fun BudgetGeneralCostEntry.toProjectPartnerBudgetEquipmentEntity(partnerId: Long
                     budgetTranslation = BudgetTranslation(this, language),
                     description = description.firstOrNull { it.language === language }?.translation ?: "",
                     unitType = unitType.firstOrNull { it.language === language }?.translation ?: "",
-                    awardProcedures = awardProcedures.firstOrNull { it.language === language }?.translation ?: "",
+                    awardProcedures = awardProcedures.firstOrNull { it.language === language }?.translation ?: ""
                 )
             }.toMutableSet()
     )
@@ -132,7 +131,7 @@ fun BudgetGeneralCostEntry.toProjectPartnerBudgetExternalEntity(partnerId: Long)
                     budgetTranslation = BudgetTranslation(this, language),
                     description = description.firstOrNull { it.language === language }?.translation ?: "",
                     unitType = unitType.firstOrNull { it.language === language }?.translation ?: "",
-                    awardProcedures = awardProcedures.firstOrNull { it.language === language }?.translation ?: "",
+                    awardProcedures = awardProcedures.firstOrNull { it.language === language }?.translation ?: ""
                 )
             }.toMutableSet()
     )
@@ -155,11 +154,14 @@ fun BudgetGeneralCostEntry.toProjectPartnerBudgetInfrastructureEntity(partnerId:
                     budgetTranslation = BudgetTranslation(this, language),
                     description = description.firstOrNull { it.language === language }?.translation ?: "",
                     unitType = unitType.firstOrNull { it.language === language }?.translation ?: "",
-                    awardProcedures = awardProcedures.firstOrNull { it.language === language }?.translation ?: "",
+                    awardProcedures = awardProcedures.firstOrNull { it.language === language }?.translation ?: ""
                 )
             }.toMutableSet()
     )
 }
+
+
+fun List<ProjectPartnerBudgetUnitCostEntity>.unitCostEntitiesToUnitCostEntries() = this.map { it.toProjectPartnerBudgetUnitCost() }
 
 
 fun ProjectPartnerBudgetGeneralBase.toBudgetGeneralCostEntry() = BudgetGeneralCostEntry(

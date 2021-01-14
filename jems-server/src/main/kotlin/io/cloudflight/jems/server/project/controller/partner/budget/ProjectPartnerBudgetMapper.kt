@@ -4,6 +4,7 @@ import io.cloudflight.jems.api.project.dto.partner.budget.BudgetCostsDTO
 import io.cloudflight.jems.api.project.dto.partner.budget.BudgetGeneralCostEntryDTO
 import io.cloudflight.jems.api.project.dto.partner.budget.BudgetStaffCostEntryDTO
 import io.cloudflight.jems.api.project.dto.partner.budget.BudgetTravelAndAccommodationCostEntryDTO
+import io.cloudflight.jems.api.project.dto.partner.budget.BudgetUnitCostEntryDTO
 import io.cloudflight.jems.api.project.dto.partner.budget.ProjectPartnerBudgetOptionsDto
 import io.cloudflight.jems.api.project.dto.partner.budget.StaffCostTypeDTO
 import io.cloudflight.jems.api.project.dto.partner.budget.StaffCostUnitTypeDTO
@@ -12,6 +13,7 @@ import io.cloudflight.jems.server.project.service.partner.model.BudgetCosts
 import io.cloudflight.jems.server.project.service.partner.model.BudgetGeneralCostEntry
 import io.cloudflight.jems.server.project.service.partner.model.BudgetStaffCostEntry
 import io.cloudflight.jems.server.project.service.partner.model.BudgetTravelAndAccommodationCostEntry
+import io.cloudflight.jems.server.project.service.partner.model.BudgetUnitCostEntry
 import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerBudgetOptions
 import io.cloudflight.jems.server.project.service.partner.model.StaffCostType
 import io.cloudflight.jems.server.project.service.partner.model.StaffCostUnitType
@@ -28,7 +30,7 @@ fun ProjectPartnerBudgetOptionsDto.toProjectPartnerBudgetOptions(partnerId: Long
     officeAndAdministrationOnStaffCostsFlatRate = this.officeAndAdministrationOnStaffCostsFlatRate,
     travelAndAccommodationOnStaffCostsFlatRate = travelAndAccommodationOnStaffCostsFlatRate,
     staffCostsFlatRate = this.staffCostsFlatRate,
-    otherCostsOnStaffCostsFlatRate = this.otherCostsOnStaffCostsFlatRate,
+    otherCostsOnStaffCostsFlatRate = this.otherCostsOnStaffCostsFlatRate
 )
 
 fun StaffCostUnitType.toStaffCostUnitTypeDTO() = StaffCostUnitTypeDTO.valueOf(this.key)
@@ -70,7 +72,7 @@ fun BudgetTravelAndAccommodationCostEntry.toBudgetTravelAndAccommodationCostsEnt
     pricePerUnit = pricePerUnit,
     rowSum = rowSum,
     unitType = unitType,
-    description = description,
+    description = description
 )
 
 fun List<BudgetTravelAndAccommodationCostEntryDTO>.toBudgetTravelAndAccommodationCostEntryList() = this.map { it.toBudgetTravelAndAccommodationCostEntry() }
@@ -81,9 +83,26 @@ fun BudgetTravelAndAccommodationCostEntryDTO.toBudgetTravelAndAccommodationCostE
     pricePerUnit = pricePerUnit,
     rowSum = rowSum,
     unitType = unitType,
-    description = description,
+    description = description
 )
 
+fun List<BudgetUnitCostEntry>.toBudgetUnitCostEntryDTOList() = this.map { it.toBudgetUnitCostEntryDTO() }
+
+fun BudgetUnitCostEntry.toBudgetUnitCostEntryDTO() = BudgetUnitCostEntryDTO(
+    id = id,
+    numberOfUnits = numberOfUnits,
+    rowSum = rowSum,
+    unitCostId = unitCostId
+)
+
+fun List<BudgetUnitCostEntryDTO>.toBudgetUnitCostEntryList() = this.map { it.toBudgetUnitCostEntry() }
+
+fun BudgetUnitCostEntryDTO.toBudgetUnitCostEntry() = BudgetUnitCostEntry(
+    id = id,
+    numberOfUnits = numberOfUnits,
+    rowSum = rowSum,
+    unitCostId = unitCostId
+)
 
 fun List<BudgetGeneralCostEntry>.toBudgetGeneralCostsEntryDTOList() = this.map { it.toBudgetGeneralCostsEntryDTO() }
 
@@ -95,7 +114,7 @@ fun BudgetGeneralCostEntry.toBudgetGeneralCostsEntryDTO() = BudgetGeneralCostEnt
     unitType = unitType,
     investmentId = investmentId,
     awardProcedures = awardProcedures,
-    description = description,
+    description = description
 )
 
 fun List<BudgetGeneralCostEntryDTO>.toBudgetGeneralCostEntryList() = this.map { it.toBudgetGeneralCostEntry() }
@@ -108,7 +127,7 @@ fun BudgetGeneralCostEntryDTO.toBudgetGeneralCostEntry() = BudgetGeneralCostEntr
     unitType = unitType,
     investmentId = investmentId,
     awardProcedures = awardProcedures,
-    description = description,
+    description = description
 )
 
 fun BudgetCosts.toBudgetCostsDTO() = BudgetCostsDTO(
@@ -116,5 +135,6 @@ fun BudgetCosts.toBudgetCostsDTO() = BudgetCostsDTO(
     travelCosts = travelCosts.toBudgetTravelAndAccommodationCostsEntryDTOList(),
     externalCosts = externalCosts.toBudgetGeneralCostsEntryDTOList(),
     equipmentCosts = equipmentCosts.toBudgetGeneralCostsEntryDTOList(),
-    infrastructureCosts = infrastructureCosts.toBudgetGeneralCostsEntryDTOList()
+    infrastructureCosts = infrastructureCosts.toBudgetGeneralCostsEntryDTOList(),
+    unitCosts = unitCosts.toBudgetUnitCostEntryDTOList()
 )

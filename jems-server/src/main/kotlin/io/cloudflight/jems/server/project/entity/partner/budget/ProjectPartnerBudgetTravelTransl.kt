@@ -21,7 +21,7 @@ data class ProjectPartnerBudgetTravelTransl(
     override fun equals(other: Any?) =
         this === other ||
             other !== null &&
-            other is ProjectPartnerBudgetStaffCostTransl &&
+            other is ProjectPartnerBudgetTravelTransl &&
             budgetTranslation == other.budgetTranslation
 
     override fun hashCode() =

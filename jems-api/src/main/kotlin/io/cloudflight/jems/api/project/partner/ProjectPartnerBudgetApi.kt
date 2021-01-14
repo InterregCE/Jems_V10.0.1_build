@@ -4,6 +4,7 @@ import io.cloudflight.jems.api.project.dto.partner.budget.BudgetCostsDTO
 import io.cloudflight.jems.api.project.dto.partner.budget.BudgetGeneralCostEntryDTO
 import io.cloudflight.jems.api.project.dto.partner.budget.BudgetStaffCostEntryDTO
 import io.cloudflight.jems.api.project.dto.partner.budget.BudgetTravelAndAccommodationCostEntryDTO
+import io.cloudflight.jems.api.project.dto.partner.budget.BudgetUnitCostEntryDTO
 import io.cloudflight.jems.api.project.dto.partner.budget.ProjectPartnerBudgetOptionsDto
 import io.cloudflight.jems.api.project.dto.partner.cofinancing.ProjectPartnerCoFinancingAndContributionInputDTO
 import io.cloudflight.jems.api.project.dto.partner.cofinancing.ProjectPartnerCoFinancingAndContributionOutputDTO
@@ -79,6 +80,15 @@ interface ProjectPartnerBudgetApi {
         @PathVariable partnerId: Long,
         @RequestBody infrastructures: List<BudgetGeneralCostEntryDTO>
     ): List<BudgetGeneralCostEntryDTO>
+
+
+    @ApiOperation("Update project partner Budget: Unit Costs")
+    @PutMapping("/unitcosts", consumes = [MediaType.APPLICATION_JSON_VALUE])
+    fun updateBudgetUnitCosts(
+        @PathVariable partnerId: Long,
+        @RequestBody unitCosts: List<BudgetUnitCostEntryDTO>
+    ): List<BudgetUnitCostEntryDTO>
+
 
     @ApiOperation("Get project partner Budget: total")
     @GetMapping("/total")

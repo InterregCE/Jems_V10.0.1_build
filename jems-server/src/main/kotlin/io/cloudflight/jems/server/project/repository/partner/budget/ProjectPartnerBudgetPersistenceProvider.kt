@@ -1,9 +1,12 @@
 package io.cloudflight.jems.server.project.repository.partner.budget
 
+import io.cloudflight.jems.server.common.exception.ResourceNotFoundException
+import io.cloudflight.jems.server.programme.repository.costoption.ProgrammeUnitCostRepository
 import io.cloudflight.jems.server.project.service.partner.budget.ProjectPartnerBudgetPersistence
 import io.cloudflight.jems.server.project.service.partner.model.BudgetGeneralCostEntry
 import io.cloudflight.jems.server.project.service.partner.model.BudgetStaffCostEntry
 import io.cloudflight.jems.server.project.service.partner.model.BudgetTravelAndAccommodationCostEntry
+import io.cloudflight.jems.server.project.service.partner.model.BudgetUnitCostEntry
 import org.springframework.stereotype.Repository
 import org.springframework.transaction.annotation.Transactional
 import java.math.BigDecimal
@@ -14,7 +17,9 @@ class ProjectPartnerBudgetPersistenceProvider(
     private val budgetTravelRepository: ProjectPartnerBudgetTravelRepository,
     private val budgetExternalRepository: ProjectPartnerBudgetExternalRepository,
     private val budgetEquipmentRepository: ProjectPartnerBudgetEquipmentRepository,
-    private val budgetInfrastructureRepository: ProjectPartnerBudgetInfrastructureRepository
+    private val budgetInfrastructureRepository: ProjectPartnerBudgetInfrastructureRepository,
+    private val budgetUnitCostRepository: ProjectPartnerBudgetUnitCostRepository,
+    private val programmeUnitCostRepository: ProgrammeUnitCostRepository
 ) : ProjectPartnerBudgetPersistence {
 
     @Transactional(readOnly = true)
@@ -74,6 +79,32 @@ class ProjectPartnerBudgetPersistenceProvider(
     @Transactional
     override fun deleteInfrastructureCosts(partnerId: Long) =
         this.budgetInfrastructureRepository.deleteAllByBasePropertiesPartnerId(partnerId)
+
+    @Transactional(readOnly = true)
+    override fun getBudgetUnitCosts(partnerId: Long): List<BudgetUnitCostEntry> =
+        budgetUnitCostRepository.findAllByPartnerIdOrderByIdAsc(partnerId).unitCostEntitiesToUnitCostEntries()
+
+    @Transactional(readOnly = true)
+    override fun getBudgetUnitCostTotal(partnerId: Long): BigDecimal =
+        budgetUnitCostRepository.sumTotalForPartner(partnerId) ?: BigDecimal.ZERO
+
+    @Transactional
+    override fun deleteAllUnitCostsExceptFor(partnerId: Long, idsToKeep: List<Long>) =
+        if (idsToKeep.isNotEmpty()) budgetUnitCostRepository.deleteAllByPartnerIdAndIdNotIn(partnerId, idsToKeep) else Unit
+
+    @Transactional
+    override fun createOrUpdateBudgetUnitCosts(partnerId: Long, unitCosts: List<BudgetUnitCostEntry>): List<BudgetUnitCostEntry> =
+        budgetUnitCostRepository.saveAll(unitCosts.map { it.toEntity(
+            partnerId = partnerId,
+            getProgrammeUnitCost = { getProgrammeUnitCostOrThrow(it) }
+        )} ).map { it.toProjectPartnerBudgetUnitCost() }
+
+    private fun getProgrammeUnitCostOrThrow(programmeUnitCostId: Long) =
+        programmeUnitCostRepository.findById(programmeUnitCostId).orElseThrow { ResourceNotFoundException("programmeUnitCost") }
+
+    @Transactional
+    override fun deleteUnitCosts(partnerId: Long) =
+        this.budgetUnitCostRepository.deleteAllByPartnerId(partnerId)
 
     @Transactional(readOnly = true)
     override fun getBudgetInfrastructureAndWorksCostTotal(partnerId: Long): BigDecimal =

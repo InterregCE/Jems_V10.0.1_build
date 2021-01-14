@@ -32,7 +32,7 @@ data class ProjectPartnerBudgetEquipmentEntity(
     override fun equals(other: Any?) =
         this === other ||
             other !== null &&
-            other is ProjectPartnerBudgetStaffCostEntity &&
+            other is ProjectPartnerBudgetEquipmentEntity &&
             id > 0 &&
             id == other.id
 

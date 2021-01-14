@@ -3,6 +3,7 @@ package io.cloudflight.jems.server.project.service.partner.budget
 import io.cloudflight.jems.server.project.service.partner.model.BudgetGeneralCostEntry
 import io.cloudflight.jems.server.project.service.partner.model.BudgetStaffCostEntry
 import io.cloudflight.jems.server.project.service.partner.model.BudgetTravelAndAccommodationCostEntry
+import io.cloudflight.jems.server.project.service.partner.model.BudgetUnitCostEntry
 import java.math.BigDecimal
 
 interface ProjectPartnerBudgetPersistence {
@@ -37,4 +38,9 @@ interface ProjectPartnerBudgetPersistence {
     fun createOrUpdateBudgetInfrastructureAndWorksCosts(partnerId: Long, infrastructureAndWorksCosts: List<BudgetGeneralCostEntry>): List<BudgetGeneralCostEntry>
     fun deleteInfrastructureCosts(partnerId: Long)
 
+    fun getBudgetUnitCosts(partnerId: Long): List<BudgetUnitCostEntry>
+    fun getBudgetUnitCostTotal(partnerId: Long): BigDecimal
+    fun deleteAllUnitCostsExceptFor(partnerId: Long, idsToKeep: List<Long>)
+    fun createOrUpdateBudgetUnitCosts(partnerId: Long, unitCosts: List<BudgetUnitCostEntry>): List<BudgetUnitCostEntry>
+    fun deleteUnitCosts(partnerId: Long)
 }
