@@ -4,7 +4,9 @@
     <form [formGroup]="workPackageInvestmentForm" class="container">
 
         <h5>{{'project.application.form.workpackage.investment.form.title' | translate}}
-            {{investment.investmentNumber}}
+            <span *ngIf="investment.investmentNumber">
+                    {{workPackageNumber}}.{{investment.investmentNumber}}
+            </span>
         </h5>
 
         <mat-form-field class="field">
