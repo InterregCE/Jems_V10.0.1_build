@@ -15,6 +15,7 @@ export class FormService {
   private form: FormGroup;
   private additionalValidators?: (() => boolean)[];
   private resetSubject = new Subject();
+  private editable = true;
 
   saveLabel = 'common.save.label';
   valid$ = new ReplaySubject<boolean>(1);
@@ -39,7 +40,10 @@ export class FormService {
     }
     editable$
       .pipe(
-        tap(editable => this.setEditable(editable)),
+        tap(editable => {
+          this.editable = editable;
+          this.setEditable(editable);
+        }),
         untilDestroyed(this)
       ).subscribe();
   }
@@ -104,6 +108,10 @@ export class FormService {
     } else {
       this.form?.disable();
     }
+  }
+
+  resetEditable(): void {
+    this.setEditable(this.editable);
   }
 
   setAdditionalValidators(additionalValidators?: (() => boolean)[]): void {

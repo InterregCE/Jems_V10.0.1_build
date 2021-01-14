@@ -34,15 +34,13 @@ export class ProjectResultsPageComponent implements OnInit {
     projectAcronym: string
   }>;
 
-  private editable = true;
-
   constructor(public formService: FormService,
               private formBuilder: FormBuilder,
               private projectResultsPageStore: ProjectResultsPageStore,
               private activatedRoute: ActivatedRoute,
               private sidenavService: ProjectApplicationFormSidenavService) {
     this.projectResultsPageStore.init(this.projectId);
-    this.formService.init(this.form);
+    this.formService.init(this.form, this.projectResultsPageStore.isProjectEditable$);
   }
 
   ngOnInit(): void {
@@ -95,7 +93,7 @@ export class ProjectResultsPageComponent implements OnInit {
   }
 
   addResultVisible(): boolean {
-    return this.editable && this.results.length < 20;
+    return this.form.enabled && this.results.length < 20;
   }
 
   getMeasurementUnit(indicatorId: number, indicators: IndicatorResultDto[]): string | undefined {
@@ -105,9 +103,7 @@ export class ProjectResultsPageComponent implements OnInit {
   private resetForm(results: ProjectResultDTO[]): void {
     this.results.clear();
     results.forEach((result, index) => this.addResult(result));
-    if (!this.editable) {
-      this.formService.setEditable(false);
-    }
+    this.formService.resetEditable();
   }
 
   private addResult(existing?: ProjectResultDTO): void {
