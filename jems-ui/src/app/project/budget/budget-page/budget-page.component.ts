@@ -18,7 +18,7 @@ export class BudgetPageComponent implements OnInit {
   projectId = this.activatedRoute?.snapshot?.params?.projectId;
   displayedColumns: string[] = [
     'partner', 'country', 'staffCosts', 'officeAndAdministrationCosts', 'travelCosts',
-    'externalCosts', 'equipmentCosts', 'infrastructureCosts', 'otherCosts', 'total'
+    'externalCosts', 'equipmentCosts', 'infrastructureCosts', 'otherCosts', 'lumpSums', 'total'
   ];
 
   totalStaffCosts: number;
@@ -28,20 +28,13 @@ export class BudgetPageComponent implements OnInit {
   totalEquipmentCosts: number;
   totalInfrastructureCosts: number;
   totalOtherCosts: number;
+  totalLumpSums: number;
   total: number;
 
   budget$: Observable<ProjectPartnerBudgetDTO[]> = this.projectService.getProjectBudget(this.projectId)
     .pipe(
-      tap(budgets => this.totalStaffCosts = NumberService.sum(budgets.map(budget => budget.staffCosts))),
-      tap(budgets => this.totalOfficeAndAdministrationCosts
-        = NumberService.sum(budgets.map(budget => budget.officeAndAdministrationCosts))),
-      tap(budgets => this.totalTravelCosts = NumberService.sum(budgets.map(budget => budget.travelCosts))),
-      tap(budgets => this.totalExternalCosts = NumberService.sum(budgets.map(budget => budget.externalCosts))),
-      tap(budgets => this.totalEquipmentCosts = NumberService.sum(budgets.map(budget => budget.equipmentCosts))),
-      tap(budgets => this.totalInfrastructureCosts = NumberService.sum(budgets.map(budget => budget.infrastructureCosts))),
-      tap(budgets => this.totalOtherCosts = NumberService.sum(budgets.map(budget => budget.otherCosts))),
-      tap(budgets => this.total = NumberService.sum(budgets.map(budget => budget.totalSum))),
-      tap(budget => Log.info('Fetching the project budget', this, budget))
+      tap(budgets => this.calculateFooterSums(budgets)),
+      tap(budgets => Log.info('Fetching the project budget', this, budgets))
     );
 
   constructor(public projectStore: ProjectStore,
@@ -52,5 +45,18 @@ export class BudgetPageComponent implements OnInit {
 
   ngOnInit(): void {
     this.projectStore.init(this.projectId);
+  }
+
+  private calculateFooterSums(budgets: ProjectPartnerBudgetDTO[]): void {
+    this.totalStaffCosts = NumberService.sum(budgets.map(budget => budget.staffCosts));
+    this.totalOfficeAndAdministrationCosts
+      = NumberService.sum(budgets.map(budget => budget.officeAndAdministrationCosts));
+    this.totalTravelCosts = NumberService.sum(budgets.map(budget => budget.travelCosts));
+    this.totalExternalCosts = NumberService.sum(budgets.map(budget => budget.externalCosts));
+    this.totalEquipmentCosts = NumberService.sum(budgets.map(budget => budget.equipmentCosts));
+    this.totalInfrastructureCosts = NumberService.sum(budgets.map(budget => budget.infrastructureCosts));
+    this.totalOtherCosts = NumberService.sum(budgets.map(budget => budget.otherCosts));
+    this.totalLumpSums = NumberService.sum(budgets.map(budget => budget.lumpSumContribution));
+    this.total = NumberService.sum(budgets.map(budget => budget.totalSum));
   }
 }
