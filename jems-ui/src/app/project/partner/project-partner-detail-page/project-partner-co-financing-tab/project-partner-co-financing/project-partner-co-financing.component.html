@@ -15,7 +15,7 @@
 
             <div>
                 <mat-form-field>
-                    <mat-select [disabled]="!editable"
+                    <mat-select [disabled]="coFinancingForm.disabled"
                                 name="fundId"
                                 panelClass="material-select-panel" formControlName="fundId">
                         <mat-option *ngFor="let fund of callFunds" [value]="fund.id">
@@ -132,7 +132,8 @@
                     [messages]="partnerContributionErrors">
             </app-form-field-errors>
         </mat-error>
-        <button type="button" (click)="addNewPartnerContribution()" class="my-3" mat-stroked-button>
+        <button *ngIf="coFinancingForm.enabled" type="button" class="my-3" mat-stroked-button
+                (click)="addNewPartnerContribution()">
             <mat-icon>add</mat-icon>
             <span>{{ 'project.partner.coFinancing.contribution.add.contribution.origin' | translate }}</span>
         </button>

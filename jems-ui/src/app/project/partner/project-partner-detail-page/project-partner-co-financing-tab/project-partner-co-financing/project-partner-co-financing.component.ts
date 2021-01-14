@@ -25,6 +25,7 @@ import {FormService} from '@common/components/section/form/form.service';
 import {Alert} from '@common/components/forms/alert';
 import {Permission} from 'src/app/security/permissions/permission';
 import {NumberService} from '../../../../../common/services/number.service';
+import {ProjectPartnerDetailPageStore} from '../../project-partner-detail-page.store';
 
 const MAX_100_NUMBER_REGEX = '^([0-9]{1,2}|100)$';
 const MAX_NUMBER_OF_PARTNER_CONTRIBUTIONS = 10;
@@ -58,8 +59,6 @@ export class ProjectPartnerCoFinancingComponent extends BaseComponent implements
   @Input()
   success$: Observable<any>;
   @Input()
-  editable: boolean;
-  @Input()
   financingAndContribution: ProjectPartnerCoFinancingAndContributionOutputDTO;
   @Input()
   totalAmount: number;
@@ -72,7 +71,8 @@ export class ProjectPartnerCoFinancingComponent extends BaseComponent implements
   cancelEdit = new EventEmitter<void>();
 
   constructor(public formService: FormService,
-              private formBuilder: FormBuilder) {
+              private formBuilder: FormBuilder,
+              private pageStore: ProjectPartnerDetailPageStore) {
     super();
   }
 
@@ -162,7 +162,7 @@ export class ProjectPartnerCoFinancingComponent extends BaseComponent implements
       )
       .subscribe(percentage => this.performCalculation(percentage));
 
-    this.formService.init(this.coFinancingForm);
+    this.formService.init(this.coFinancingForm, this.pageStore.isProjectEditable$);
     this.resetForm();
   }
 
@@ -197,6 +197,7 @@ export class ProjectPartnerCoFinancingComponent extends BaseComponent implements
     this.coFinancingForm.controls.fundId.setValue(inputValues?.fund.id);
     this.coFinancingForm.controls.percentage.setValue(inputValues?.percentage || 0);
     this.resetPartnerContributions();
+    this.formService.resetEditable();
   }
 
   onSubmit(): void {

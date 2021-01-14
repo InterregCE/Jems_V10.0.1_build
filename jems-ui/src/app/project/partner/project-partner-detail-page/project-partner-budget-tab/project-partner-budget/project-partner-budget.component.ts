@@ -38,7 +38,6 @@ export class ProjectPartnerBudgetComponent implements OnInit {
     officeAndAdministrationFlatRateTotal: number,
     travelAndAccommodationFlatRateTotal: number,
     otherCostsFlatRateTotal: number,
-    isProjectEditable: boolean,
     isStaffCostFlatRateActive: boolean,
     isOfficeAdministrationFlatRateActive: boolean,
     isTravelAndAccommodationFlatRateActive: boolean,
@@ -54,7 +53,7 @@ export class ProjectPartnerBudgetComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.formService.init(this.budgetsForm);
+    this.formService.init(this.budgetsForm, this.pageStore.isProjectEditable$);
 
     this.pageStore.budgets$.pipe(untilDestroyed(this)).subscribe();
 
@@ -82,13 +81,12 @@ export class ProjectPartnerBudgetComponent implements OnInit {
       this.pageStore.budgets$,
       this.pageStore.budgetOptions$,
       this.pageStore.investmentIds$,
-      this.pageStore.isProjectEditable$.pipe(startWith(false)),
       this.staffCostsFlatRateTotal$,
       this.officeAndAdministrationFlatRateTotal$,
       this.travelAndAccommodationFlatRateTotal$,
       this.otherCostsFlatRateTotal$
     ]).pipe(
-      map(([budgetTables, budgetOptions, investments, isProjectEditable, staffCostsFlatRateTotal, officeAndAdministrationFlatRateTotal, travelAndAccommodationFlatRateTotal, otherCostsFlatRateTotal]: any) => {
+      map(([budgetTables, budgetOptions, investments, staffCostsFlatRateTotal, officeAndAdministrationFlatRateTotal, travelAndAccommodationFlatRateTotal, otherCostsFlatRateTotal]: any) => {
         return {
           budgetTables,
           investments,
@@ -96,7 +94,6 @@ export class ProjectPartnerBudgetComponent implements OnInit {
           officeAndAdministrationFlatRateTotal,
           travelAndAccommodationFlatRateTotal,
           otherCostsFlatRateTotal,
-          isProjectEditable,
           isStaffCostFlatRateActive: !!budgetOptions.staffCostsFlatRate,
           isOfficeAdministrationFlatRateActive: !!budgetOptions.officeAndAdministrationOnStaffCostsFlatRate,
           isTravelAndAccommodationFlatRateActive: !!budgetOptions.travelAndAccommodationOnStaffCostsFlatRate,

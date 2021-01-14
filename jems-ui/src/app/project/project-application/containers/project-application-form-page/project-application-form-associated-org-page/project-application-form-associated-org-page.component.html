@@ -4,9 +4,9 @@
 <h5 class="spaced-elements">{{'project.application.form.section.part.b.associatedOrganizations' | translate}}</h5>
 
 <span class="header-button" *ngxPermissionsExcept="Permission.PROGRAMME_USER">
-    <button class="spaced-elements" mat-raised-button color="primary"
-            [routerLink]="'/app/project/detail/' + projectId + '/applicationFormAssociatedOrganization/create'"
-            [disabled]="(projectStore.projectEditable$ | async) === false">
+    <button *ngIf="(projectStore.projectEditable$ | async) === true"
+            class="spaced-elements" mat-raised-button color="primary"
+            [routerLink]="'/app/project/detail/' + projectId + '/applicationFormAssociatedOrganization/create'">
         + {{'project.application.form.associatedOrganization.add' | translate}}
     </button>
 </span>

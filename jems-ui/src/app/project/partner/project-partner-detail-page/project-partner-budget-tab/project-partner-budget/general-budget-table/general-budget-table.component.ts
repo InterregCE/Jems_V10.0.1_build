@@ -106,7 +106,7 @@ export class GeneralBudgetTableComponent implements OnInit, OnChanges {
         rowSum: [item.rowSum, [Validators.max(this.constants.MAX_VALUE), Validators.min(this.constants.MIN_VALUE)]],
       }));
     });
-
+    this.formService.resetEditable();
   }
 
   private setTableTotal(): void {

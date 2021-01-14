@@ -152,7 +152,7 @@ export class ProjectPartnerBudgetOptionsComponent implements OnInit {
 
   private initForm(): void {
     this.budgetOptionForm = this.formBuilder.group({});
-    this.formService.init(this.budgetOptionForm);
+    this.formService.init(this.budgetOptionForm, this.pageStore.isProjectEditable$);
   }
 
   private resetForm(budgetOptions: BudgetOptions, callFlatRateSettings: CallFlatRateSetting): void {
@@ -181,6 +181,7 @@ export class ProjectPartnerBudgetOptionsComponent implements OnInit {
         budgetOptions.otherCostsOnStaffCostsFlatRate ? budgetOptions.otherCostsOnStaffCostsFlatRate : callFlatRateSettings.otherCostsOnStaffCostsFlatRateSetup.rate,
         [Validators.max(callFlatRateSettings.otherCostsOnStaffCostsFlatRateSetup.rate), Validators.min(1), Validators.required]));
     }
+    this.formService.resetEditable();
   }
 
   private removeAllControls(): void {
