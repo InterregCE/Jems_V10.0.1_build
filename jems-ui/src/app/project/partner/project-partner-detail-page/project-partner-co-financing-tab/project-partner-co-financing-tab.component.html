@@ -2,7 +2,6 @@
     <app-project-partner-co-financing
             [success$]="saveSuccess$"
             [error$]="saveError$"
-            [editable]="projectStore.projectEditable$ | async"
             [financingAndContribution]="details.financingAndContribution"
             [callFunds]="details.callFunds"
             [totalAmount]="details.totalAmount"

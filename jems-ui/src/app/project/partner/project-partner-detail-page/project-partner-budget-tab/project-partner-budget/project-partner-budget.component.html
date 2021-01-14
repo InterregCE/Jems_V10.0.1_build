@@ -8,7 +8,7 @@
                     <app-staff-costs-budget-table
                             *ngIf="staff"
                             [staffCostTable]="data.budgetTables.staffCosts"
-                            [editable]="data.isProjectEditable"></app-staff-costs-budget-table>
+                            [editable]="budgetsForm.enabled"></app-staff-costs-budget-table>
                 </div>
                 <div *ngIf="data.isStaffCostFlatRateActive && !data.isOtherFlatRateBasedOnStaffCostActive">
                     <h6 id="staffCostsFlatRate"
@@ -34,7 +34,7 @@
                         <app-travel-and-accommodation-costs-budget-table
                                 *ngIf="travel"
                                 [travelAndAccommodationTable]="data.budgetTables.travelCosts"
-                                [editable]="data.isProjectEditable">
+                                [editable]="budgetsForm.enabled">
                         </app-travel-and-accommodation-costs-budget-table>
                     </ng-container>
                     <ng-container *ngIf="data.isTravelAndAccommodationFlatRateActive">
@@ -51,7 +51,7 @@
                             *ngIf="external"
                             [investmentIds]="data.investments"
                             [budgetTable]="data.budgetTables.externalCosts"
-                            [editable]="data.isProjectEditable"
+                            [editable]="budgetsForm.enabled"
                             [tableName]="constants.FORM_CONTROL_NAMES.external">
                     </app-general-budget-table>
                 </div>
@@ -61,7 +61,7 @@
                             *ngIf="equipment"
                             [investmentIds]="data.investments"
                             [budgetTable]="data.budgetTables.equipmentCosts"
-                            [editable]="data.isProjectEditable"
+                            [editable]="budgetsForm.enabled"
                             [tableName]="constants.FORM_CONTROL_NAMES.equipment">
                     </app-general-budget-table>
                 </div>
@@ -71,7 +71,7 @@
                             *ngIf="infrastructure"
                             [investmentIds]="data.investments"
                             [budgetTable]="data.budgetTables.infrastructureCosts"
-                            [editable]="data.isProjectEditable"
+                            [editable]="budgetsForm.enabled"
                             [tableName]="constants.FORM_CONTROL_NAMES.infrastructure">
                     </app-general-budget-table>
                 </div>

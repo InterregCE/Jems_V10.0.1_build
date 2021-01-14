@@ -15,7 +15,8 @@
                         <div appTableConfig [widthConfig]="[{}, {maxInRem:2}]">
                             <div>
                                 <h5>{{('project.results.result.title' | translate) + ' ' + (i + 1) }}</h5>
-                                <button type="button" (click)="removeResult(i)" mat-icon-button color="accent">
+                                <button *ngIf="form.enabled" type="button"
+                                        (click)="removeResult(i)" mat-icon-button color="accent">
                                     <mat-icon>delete</mat-icon>
                                 </button>
                             </div>
