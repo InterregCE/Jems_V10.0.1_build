@@ -14,6 +14,7 @@ interface ProjectBudgetPersistence {
     fun getInfrastructureCosts(partnerIds: Set<Long>): List<ProjectPartnerCost>
 
     fun getLumpSumContributionPerPartner(lumpSumIds: Set<UUID>): Map<Long, BigDecimal>
+    fun getUnitCostsPerPartner(partnerIds: Set<Long>): Map<Long, BigDecimal>
 
     fun getPartnersForProjectId(projectId: Long): List<ProjectPartner>
 

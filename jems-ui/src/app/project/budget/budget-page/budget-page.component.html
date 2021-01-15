@@ -67,6 +67,12 @@
         <mat-footer-cell *matFooterCellDef class="justify-end">{{ totalLumpSums | asMoney }}</mat-footer-cell>
     </ng-container>
 
+    <ng-container matColumnDef="unitCosts">
+        <mat-header-cell *matHeaderCellDef class="justify-end">{{ 'project.partner.budget.unitCosts' | translate }}</mat-header-cell>
+        <mat-cell *matCellDef="let budget" class="justify-end">{{ budget.unitCosts | asMoney }}</mat-cell>
+        <mat-footer-cell *matFooterCellDef class="justify-end">{{ totalUnitCosts | asMoney }}</mat-footer-cell>
+    </ng-container>
+
     <ng-container matColumnDef="total">
         <mat-header-cell *matHeaderCellDef class="justify-end bold">{{ 'project.partner.budget.table.total' | translate }}</mat-header-cell>
         <mat-cell *matCellDef="let budget" class="justify-end bold">{{ budget.totalSum | asMoney }}</mat-cell>

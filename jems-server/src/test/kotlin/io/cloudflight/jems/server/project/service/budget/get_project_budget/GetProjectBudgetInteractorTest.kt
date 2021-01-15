@@ -93,6 +93,7 @@ class GetProjectBudgetInteractorTest {
         every { persistence.getInfrastructureCosts(setOf(P1_ID, P2_ID)) } returns listOf(budget(P1_ID, 300.0), budget(P2_ID, 300.0))
 
         every { lumpSumPersistence.getLumpSums(1) } returns lumpSums
+        every { persistence.getUnitCostsPerPartner(setOf(P1_ID, P2_ID)) } returns mapOf(P1_ID to decimal(25.0))
         val lumpSumIds = slot<Set<UUID>>()
         every { persistence.getLumpSumContributionPerPartner(capture(lumpSumIds)) } returns mapOf(
             P1_ID to BigDecimal.ONE,
@@ -122,6 +123,7 @@ class GetProjectBudgetInteractorTest {
                     travelCosts = decimal(800.0),
                     infrastructureCosts = decimal(300.0),
                     lumpSumContribution = BigDecimal.ONE,
+                    unitCosts = decimal(25.0),
                 )
             )
         assertThat(lumpSumIds.captured).containsExactlyInAnyOrder(lumpSumId1, lumpSumId2)

@@ -6,6 +6,7 @@ import io.cloudflight.jems.server.project.repository.partner.budget.ProjectPartn
 import io.cloudflight.jems.server.project.repository.partner.budget.ProjectPartnerBudgetInfrastructureRepository
 import io.cloudflight.jems.server.project.repository.partner.budget.ProjectPartnerBudgetStaffCostRepository
 import io.cloudflight.jems.server.project.repository.partner.budget.ProjectPartnerBudgetTravelRepository
+import io.cloudflight.jems.server.project.repository.partner.budget.ProjectPartnerBudgetUnitCostRepository
 import io.cloudflight.jems.server.project.repository.partner.toProjectPartner
 import io.cloudflight.jems.server.project.service.budget.ProjectBudgetPersistence
 import io.cloudflight.jems.server.project.service.budget.model.ProjectPartnerCost
@@ -24,6 +25,7 @@ class ProjectBudgetPersistenceProvider(
     private val budgetExternalRepository: ProjectPartnerBudgetExternalRepository,
     private val budgetEquipmentRepository: ProjectPartnerBudgetEquipmentRepository,
     private val budgetInfrastructureRepository: ProjectPartnerBudgetInfrastructureRepository,
+    private val budgetUnitCostRepository: ProjectPartnerBudgetUnitCostRepository,
     private val projectLumpSumRepository: ProjectLumpSumRepository,
 ) : ProjectBudgetPersistence {
 
@@ -50,6 +52,10 @@ class ProjectBudgetPersistenceProvider(
     @Transactional(readOnly = true)
     override fun getLumpSumContributionPerPartner(lumpSumIds: Set<UUID>): Map<Long, BigDecimal> =
         projectLumpSumRepository.sumLumpSumsPerPartner(lumpSumIds).associateBy({ it.partner.id }, { it.sum })
+
+    @Transactional(readOnly = true)
+    override fun getUnitCostsPerPartner(partnerIds: Set<Long>): Map<Long, BigDecimal> =
+        budgetUnitCostRepository.sumForAllPartners(partnerIds).associateBy({ it.partnerId }, { it.sum })
 
     @Transactional(readOnly = true)
     override fun getPartnersForProjectId(projectId: Long): List<ProjectPartner> =

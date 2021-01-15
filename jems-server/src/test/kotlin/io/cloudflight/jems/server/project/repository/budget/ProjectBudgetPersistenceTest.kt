@@ -58,6 +58,9 @@ class ProjectBudgetPersistenceTest {
     @MockK
     lateinit var projectLumpSumRepository: ProjectLumpSumRepository
 
+    @MockK
+    lateinit var projectPartnerUnitCostRepository: ProjectPartnerBudgetUnitCostRepository
+
     @RelaxedMockK
     lateinit var auditService: AuditService
 
@@ -73,6 +76,7 @@ class ProjectBudgetPersistenceTest {
             budgetExternalRepository,
             budgetEquipmentRepository,
             budgetInfrastructureRepository,
+            projectPartnerUnitCostRepository,
             projectLumpSumRepository,
         )
     }
@@ -151,6 +155,22 @@ class ProjectBudgetPersistenceTest {
             ),
         )
         assertThat(projectBudgetPersistence.getLumpSumContributionPerPartner(setOf(id))).containsExactlyInAnyOrderEntriesOf(
+            mapOf(
+                PARTNER_ID to BigDecimal.TEN
+            )
+        )
+    }
+
+    @Test
+    fun getBudgetUnitCostsPerPartner() {
+        val id = PARTNER_ID
+        every { projectPartnerUnitCostRepository.sumForAllPartners(setOf(PARTNER_ID)) } returns listOf(
+            ProjectPartnerBudgetEntity(
+                partnerId = PARTNER_ID,
+                sum = BigDecimal.TEN,
+            ),
+        )
+        assertThat(projectBudgetPersistence.getUnitCostsPerPartner(setOf(id))).containsExactlyInAnyOrderEntriesOf(
             mapOf(
                 PARTNER_ID to BigDecimal.TEN
             )
