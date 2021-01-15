@@ -87,6 +87,7 @@ import {GeneralBudgetTableComponent} from './partner/project-partner-detail-page
 import {ProjectWorkPackagePageStore} from './work-package/work-package-detail-page/project-work-package-page-store.service';
 import {ProjectPartnerDetailPageStore} from './partner/project-partner-detail-page/project-partner-detail-page.store';
 import {ProjectResultsPageComponent} from './results/project-results-page/project-results-page.component';
+import {UnitCostsBudgetTableComponent} from './partner/project-partner-detail-page/project-partner-budget-tab/project-partner-budget/unit-costs-budget-table/unit-costs-budget-table.component';
 
 @NgModule({
   declarations: [
@@ -164,6 +165,7 @@ import {ProjectResultsPageComponent} from './results/project-results-page/projec
     GeneralBudgetTableComponent,
     StaffCostsBudgetTableComponent,
     TravelAndAccommodationCostsBudgetTableComponent,
+    UnitCostsBudgetTableComponent,
     ProjectWorkPackageInvestmentsTabComponent,
     ProjectWorkPackageInvestmentDetailPageComponent,
     ProjectPeriodsSelectComponent,

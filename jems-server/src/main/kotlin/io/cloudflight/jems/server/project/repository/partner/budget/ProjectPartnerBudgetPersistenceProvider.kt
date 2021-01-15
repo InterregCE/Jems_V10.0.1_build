@@ -89,7 +89,7 @@ class ProjectPartnerBudgetPersistenceProvider(
         budgetUnitCostRepository.sumTotalForPartner(partnerId) ?: BigDecimal.ZERO
 
     @Transactional
-    override fun deleteAllUnitCostsExceptFor(partnerId: Long, idsToKeep: List<Long>) =
+    override fun deleteAllUnitCostsExceptFor(partnerId: Long, idsToKeep: Set<Long>) =
         if (idsToKeep.isNotEmpty()) budgetUnitCostRepository.deleteAllByPartnerIdAndIdNotIn(partnerId, idsToKeep) else Unit
 
     @Transactional

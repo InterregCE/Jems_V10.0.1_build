@@ -84,6 +84,16 @@
                         [total]="data.otherCostsFlatRateTotal"
                         [description]="'project.partner.budget.staff.costs.flat.rate' | translate"></app-general-budget-flat-rate-table>
             </div>
+
+            <div class="my-2">
+                <h6 class="header">{{'project.partner.budget.unitcosts' | translate}}</h6>
+                <app-unit-costs-budget-table
+                        *ngIf="unitCosts"
+                        [availableUnitCosts]="data.unitCosts"
+                        [unitCostTable]="data.budgetTables.unitCosts"
+                        [editable]="budgetsForm.enabled">
+                </app-unit-costs-budget-table>
+            </div>
         </form>
     </app-form>
 </ng-container>

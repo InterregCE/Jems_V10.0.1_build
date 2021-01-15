@@ -14,6 +14,7 @@ export class ProjectPartnerBudgetConstants {
     external: 'external',
     equipment: 'equipment',
     infrastructure: 'infrastructure',
+    unitCost: 'unitCost',
     items: 'items',
     numberOfUnits: 'numberOfUnits',
     pricePerUnit: 'pricePerUnit',

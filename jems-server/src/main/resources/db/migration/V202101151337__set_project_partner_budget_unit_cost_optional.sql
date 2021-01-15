@@ -1,0 +1,1 @@
+ALTER TABLE project_partner_budget_unit_cost MODIFY COLUMN programme_unit_cost_id INT UNSIGNED DEFAULT NULL;
