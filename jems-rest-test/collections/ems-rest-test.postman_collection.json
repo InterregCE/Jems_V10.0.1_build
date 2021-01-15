@@ -1725,6 +1725,7 @@
 									"pm.test('project data should be saved', function() {\r",
 									"    pm.response.to.have.status(200);\r",
 									"});\r",
+									"\r",
 									""
 								],
 								"type": "text/javascript"
@@ -1742,7 +1743,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n\t\"acronym\": \"{{project_acronym_to_create}}\",\n\t\"specificObjective\": \"{{programmePriorityPolicy}}\",\n    \"title\": \"{{project_title}}\",\n\t\"duration\": {{project_duration}},\n    \"introProgrammeLanguage\": \"{{$randomLoremParagraph}}\\n{{$randomLoremParagraph}}\\n\\n{{$randomLoremParagraph}}\"\n}\n"
+							"raw": "{\n\t\"acronym\": \"{{project_acronym_to_create}}\",\n\t\"specificObjective\": \"{{programmePriorityPolicy}}\",\n    \"title\": [\n        {\n            \"language\": \"{{inputLanguage}}\",\n            \"translation\": \"{{project_title}}\"\n        }\n    ],\n\t\"duration\": {{project_duration}},\n    \"introProgrammeLanguage\": \"{{$randomLoremParagraph}}\\n{{$randomLoremParagraph}}\\n\\n{{$randomLoremParagraph}}\"\n}\n"
 						},
 						"url": {
 							"raw": "{{url}}/api/project/{{projectId}}",
@@ -1774,9 +1775,8 @@
 							"listen": "test",
 							"script": {
 								"exec": [
-									"const response = pm.response.json();\r",
-									"\r",
 									"pm.test(\"modified list can be retrieved\", function () {\r",
+									"    const response = pm.response.json();\r",
 									"    pm.expect(response.totalElements).to.be.a('number');\r",
 									"\r",
 									"    const totalAmountBefore = pm.variables.get(\"totalCount\");\r",
@@ -1824,25 +1824,28 @@
 							"listen": "test",
 							"script": {
 								"exec": [
-									"const response = pm.response.json();\r",
-									"\r",
 									"pm.test(\"id should fit\", function () {\r",
+									"    const response = pm.response.json();\r",
 									"    pm.expect(response).to.have.property(\"id\");\r",
 									"    pm.expect(response.id).to.equal(pm.variables.get(\"projectId\"));\r",
 									"});\r",
 									"\r",
 									"pm.test(\"acronym should fit\", function () {\r",
+									"    const response = pm.response.json();\r",
 									"    pm.expect(response).to.have.property(\"acronym\");\r",
 									"    pm.expect(response.acronym).to.equal(pm.variables.get(\"project_acronym_to_create\"));\r",
 									"});\r",
 									"\r",
 									"pm.test('title should fit', function() {\r",
+									"    const response = pm.response.json();\r",
 									"    pm.expect(response).to.have.property(\"projectData\");\r",
 									"    pm.expect(response.projectData).to.have.property(\"title\");\r",
-									"    pm.expect(response.projectData.title).to.eql(pm.variables.get(\"project_title\"));\r",
+									"    const title = pm.response.json().projectData.title.find(title => title.language === pm.variables.get('inputLanguage')).translation;\r",
+									"    pm.expect(title).to.eql(pm.variables.get(\"project_title\"));\r",
 									"});\r",
 									"\r",
 									"pm.test('specificObjective should fit', function() {\r",
+									"    const response = pm.response.json();\r",
 									"    pm.expect(response).to.have.property(\"projectData\");\r",
 									"    pm.expect(response.projectData).to.have.property(\"specificObjective\");\r",
 									"    pm.expect(response.projectData.specificObjective).to.have.property(\"programmeObjectivePolicy\");\r",
@@ -7855,7 +7858,7 @@
 								],
 								"body": {
 									"mode": "raw",
-									"raw": "{\n\t\"acronym\": \"{{application_acronym}}\",\n\t\"specificObjective\": \"{{programmePriorityPolicy}}\",\n    \"title\": \"{{project_title}}\",\n\t\"duration\": 50,\n    \"introProgrammeLanguage\": \"{{$randomLoremParagraph}}\\n{{$randomLoremParagraph}}\\n\\n{{$randomLoremParagraph}}\"\n}\n"
+									"raw": "{\n\t\"acronym\": \"{{application_acronym}}\",\n\t\"specificObjective\": \"{{programmePriorityPolicy}}\",\n    \"title\": [\n        {\n            \"language\": \"{{inputLanguage}}\",\n            \"translation\": \"{{project_title}}\"\n        }\n    ],\n\t\"duration\": 50,\n    \"introProgrammeLanguage\": \"{{$randomLoremParagraph}}\\n{{$randomLoremParagraph}}\\n\\n{{$randomLoremParagraph}}\"\n}\n"
 								},
 								"url": {
 									"raw": "{{url}}/api/project/{{application_id}}",
@@ -9906,7 +9909,7 @@
 								],
 								"body": {
 									"mode": "raw",
-									"raw": "{\n\t\"acronym\": \"{{application_acronym}}\",\n\t\"specificObjective\": \"{{programmePriorityPolicy}}\",\n    \"title\": \"{{project_title}}\",\n\t\"duration\": 50,\n    \"introProgrammeLanguage\": \"{{$randomLoremParagraph}}\\n{{$randomLoremParagraph}}\\n\\n{{$randomLoremParagraph}}\"\n}\n"
+									"raw": "{\n\t\"acronym\": \"{{application_acronym}}\",\n\t\"specificObjective\": \"{{programmePriorityPolicy}}\",\n    \"title\": [\n        {\n            \"language\": \"{{inputLanguage}}\",\n            \"translation\": \"{{project_title}}\"\n        }\n    ],\n\t\"duration\": 50,\n    \"introProgrammeLanguage\": \"{{$randomLoremParagraph}}\\n{{$randomLoremParagraph}}\\n\\n{{$randomLoremParagraph}}\"\n}\n"
 								},
 								"url": {
 									"raw": "{{url}}/api/project/{{application_id}}",
@@ -9945,11 +9948,15 @@
 							"listen": "test",
 							"script": {
 								"exec": [
-									"const workPackage = pm.response.json();\r",
-									"\r",
 									"pm.test('applicant can create project workPackage', function() {\r",
+									"    const workPackage = pm.response.json();\r",
 									"    pm.response.to.have.status(200);\r",
 									"    pm.variables.set('workPackage_id_1', workPackage.id);\r",
+									"});\r",
+									"\r",
+									"pm.test('workPackage has correct name (translated)', function() {\r",
+									"    const name = pm.response.json().name.find(x => x.language === pm.variables.get('inputLanguage')).translation;\r",
+									"    pm.expect(name).to.be.eql(pm.variables.get('workPackage_name'));\r",
 									"});\r",
 									""
 								],
@@ -9977,7 +9984,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"name\": \"{{workPackage_name}}\",\r\n    \"specificObjective\": \"{{$randomDepartment}}\",\r\n    \"objectiveAndAudience\": \"{{$randomLoremParagraph}}\"\r\n}\r\n",
+							"raw": "{\r\n    \"name\": [\r\n        {\r\n            \"language\": \"{{inputLanguage}}\",\r\n            \"translation\": \"{{workPackage_name}}\"\r\n        }\r\n    ],\r\n    \"specificObjective\": [\r\n        {\r\n            \"language\": \"{{inputLanguage}}\",\r\n            \"translation\": \"{{$randomDepartment}}\"\r\n        }\r\n    ],\r\n    \"objectiveAndAudience\": [\r\n        {\r\n            \"language\": \"{{inputLanguage}}\",\r\n            \"translation\": \"{{$randomLoremParagraph}}\"\r\n        }\r\n    ]\r\n}\r\n",
 							"options": {
 								"raw": {
 									"language": "json"
