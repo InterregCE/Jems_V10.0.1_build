@@ -2,6 +2,7 @@ package io.cloudflight.jems.server.project.service
 
 import io.cloudflight.jems.api.project.dto.InputProject
 import io.cloudflight.jems.api.project.dto.InputProjectData
+import io.cloudflight.jems.api.project.dto.InputTranslation
 import io.cloudflight.jems.api.project.dto.OutputProject
 import io.cloudflight.jems.api.project.dto.OutputProjectData
 import io.cloudflight.jems.api.project.dto.OutputProjectPeriod
@@ -12,10 +13,12 @@ import io.cloudflight.jems.server.programme.service.toOutputProgrammePriorityPol
 import io.cloudflight.jems.server.programme.service.toOutputProgrammePrioritySimple
 import io.cloudflight.jems.server.project.controller.toDto
 import io.cloudflight.jems.server.project.dto.ProjectApplicantAndStatus
-import io.cloudflight.jems.server.project.entity.ProjectEntity
 import io.cloudflight.jems.server.project.entity.ProjectData
+import io.cloudflight.jems.server.project.entity.ProjectEntity
 import io.cloudflight.jems.server.project.entity.ProjectPeriodEntity
 import io.cloudflight.jems.server.project.entity.ProjectStatus
+import io.cloudflight.jems.server.project.entity.ProjectTransl
+import io.cloudflight.jems.server.project.entity.TranslationId
 import io.cloudflight.jems.server.project.repository.toSettingsModel
 import io.cloudflight.jems.server.user.entity.User
 import io.cloudflight.jems.server.user.service.toOutputUser
@@ -63,15 +66,32 @@ fun ProjectEntity.toApplicantAndStatus() = ProjectApplicantAndStatus(
     projectStatus = projectStatus.status
 )
 
-fun InputProjectData.toEntity() = ProjectData(
-    title = title,
+fun InputProjectData.toEntity(projectId: Long) = ProjectData(
     duration = duration,
     intro = intro,
-    introProgrammeLanguage = introProgrammeLanguage
+    introProgrammeLanguage = introProgrammeLanguage,
+    translatedValues = combineTranslatedValuesProject(projectId, title)
 )
 
+fun combineTranslatedValuesProject(
+    projectId: Long,
+    title: Set<InputTranslation>
+): Set<ProjectTransl> {
+    val titleMap = title.associateBy({ it.language }, { it.translation })
+    val languages = titleMap.keys.toMutableSet()
+
+    return languages.mapTo(HashSet()) {
+        ProjectTransl(
+            TranslationId(projectId, it),
+            titleMap[it]
+        )
+    }
+}
+
 fun ProjectData.toOutputProjectData(priorityPolicy: ProgrammePriorityPolicy?) = OutputProjectData(
-    title = title,
+    title = translatedValues.mapTo(HashSet()) {
+        InputTranslation(it.translationId.language, it.title)
+    },
     duration = duration,
     intro = intro,
     introProgrammeLanguage = introProgrammeLanguage,

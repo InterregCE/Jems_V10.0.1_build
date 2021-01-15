@@ -18,7 +18,7 @@
             <input name="acronym" formControlName="acronym" matInput
                    placeholder="{{'project.application.form.field.project.acronym' | translate}}">
             <app-context-info *ngIf="editable"
-                    infoText="{{'project.application.form.field.project.acronym.info' | translate}}">
+                              infoText="{{'project.application.form.field.project.acronym.info' | translate}}">
             </app-context-info>
             <mat-error>
                 <app-form-field-errors
@@ -28,17 +28,14 @@
             </mat-error>
         </mat-form-field>
 
-        <mat-form-field class="w-50">
-            <mat-label>{{'project.application.form.field.project.title' | translate}}</mat-label>
-            <input name="title" formControlName="title" matInput
-                   placeholder="{{'project.application.form.field.project.title' | translate}}">
-            <mat-error>
-                <app-form-field-errors
-                        [errors]="applicationForm?.controls?.title?.errors"
-                        [messages]="projectTitleErrors">
-                </app-form-field-errors>
-            </mat-error>
-        </mat-form-field>
+        <app-multi-language>
+            <app-multi-language-form-field
+                    class="w-50"
+                    label="project.application.form.field.project.title"
+                    [formControlName]="'title'"
+                    [maxLength]="200">
+            </app-multi-language-form-field>
+        </app-multi-language>
 
         <mat-form-field class="w-50">
             <mat-label>{{'project.application.form.field.project.duration' | translate}}</mat-label>

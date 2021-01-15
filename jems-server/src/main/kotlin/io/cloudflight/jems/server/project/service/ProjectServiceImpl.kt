@@ -134,7 +134,7 @@ class ProjectServiceImpl(
         return projectRepo.save(
             project.copy(
                 acronym = projectData.acronym!!,
-                projectData = projectData.toEntity(),
+                projectData = projectData.toEntity(project.id),
                 priorityPolicy = policyToEntity(projectData.specificObjective, project.call.priorityPolicies),
                 periods = periods
             )
