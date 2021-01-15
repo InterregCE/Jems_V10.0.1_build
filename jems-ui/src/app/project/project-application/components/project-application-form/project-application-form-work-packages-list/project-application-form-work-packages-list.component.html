@@ -12,10 +12,13 @@
 </app-table>
 
 <ng-template #deletionCell let-workPackage>
-    <app-work-package-delete-action-cell
-            (click)="$event.stopPropagation()"
-            [element]="workPackage"
-            [disabled]="!editable"
-            (delete)="delete($event)">
-    </app-work-package-delete-action-cell>
+    <button *ngIf="editable" mat-icon-button color="accent"
+            (click)="$event.stopPropagation(); delete(workPackage)"
+            matTooltip="{{'project.application.form.workpackage.table.action.delete.tooltip' | translate}}">
+        <i class="fas fa-trash"></i>
+    </button>
+</ng-template>
+
+<ng-template #titleCell let-workPackage>
+    {{getTitleValue(workPackage)}}
 </ng-template>

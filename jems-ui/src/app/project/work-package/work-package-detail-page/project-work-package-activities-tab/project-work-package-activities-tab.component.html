@@ -29,30 +29,32 @@
                                 [maxLength]="constants.TITLE.maxLength">
                         </app-multi-language-form-field>
 
-                        <div class="periods mt-2">
+                        <div class="row mt-2">
 
-                            <app-project-periods-select
-                                    [periods]="data.periods"
-                                    [control]="activity.get(constants.START_PERIOD.name)"
-                                    label='project.work.package.tab.activity.start.period'
-                                    class="mr-2 w-50"
-                                    (selectionChanged)="formService.setDirty(true)">
-                            </app-project-periods-select>
+                            <div class="col">
+                                <app-project-periods-select
+                                        [periods]="data.periods"
+                                        [control]="activity.get(constants.START_PERIOD.name)"
+                                        label='project.work.package.tab.activity.start.period'
+                                        class="mr-2"
+                                        (selectionChanged)="formService.setDirty(true)">
+                                </app-project-periods-select>
+                            </div>
 
-                            <app-project-periods-select
-                                    [periods]="data.periods"
-                                    [control]="activity.get(constants.END_PERIOD.name)"
-                                    label='project.work.package.tab.activity.end.period'
-                                    class="w-50"
-                                    (selectionChanged)="formService.setDirty(true)">
-                            </app-project-periods-select>
-
-                            <mat-error class="period-error">
-                                <app-form-field-errors
-                                        [errors]="activity.errors"
-                                        [messages]="constants.PERIODS.errorMessages"></app-form-field-errors>
-                            </mat-error>
+                            <div class="col">
+                                <app-project-periods-select
+                                        [periods]="data.periods"
+                                        [control]="activity.get(constants.END_PERIOD.name)"
+                                        label='project.work.package.tab.activity.end.period'
+                                        (selectionChanged)="formService.setDirty(true)">
+                                </app-project-periods-select>
+                            </div>
                         </div>
+                        <mat-error class="period-error">
+                            <app-form-field-errors
+                                    [errors]="activity.errors"
+                                    [messages]="constants.PERIODS.errorMessages"></app-form-field-errors>
+                        </mat-error>
 
                         <app-multi-language-form-field class="mt-2"
                                                        [label]="'project.work.package.tab.activity.description'"

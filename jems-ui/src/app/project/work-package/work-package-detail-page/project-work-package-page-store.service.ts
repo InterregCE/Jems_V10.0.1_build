@@ -1,5 +1,6 @@
 import {Injectable} from '@angular/core';
 import {
+  IndicatorOutputDto,
   InputWorkPackageCreate,
   InputWorkPackageUpdate,
   OutputProject,
@@ -8,6 +9,9 @@ import {
   WorkPackageActivityDTO,
   WorkPackageActivityService,
   WorkPackageInvestmentService,
+  WorkPackageOutputDTO,
+  WorkPackageOutputService,
+  WorkPackageOutputUpdateDTO,
   WorkPackageService,
 } from '@cat/api';
 import {combineLatest, merge, Observable, ReplaySubject, Subject} from 'rxjs';
@@ -15,6 +19,7 @@ import {shareReplay, startWith, switchMap, tap} from 'rxjs/operators';
 import {Log} from '../../../common/utils/log';
 import {ProjectApplicationFormSidenavService} from '../../project-application/containers/project-application-form-page/services/project-application-form-sidenav.service';
 import {ProjectStore} from '../../project-application/containers/project-application-detail/services/project-store.service';
+import {filter} from 'rxjs/internal/operators';
 
 @Injectable()
 export class ProjectWorkPackagePageStore {
@@ -22,26 +27,31 @@ export class ProjectWorkPackagePageStore {
   private workPackageId: number;
   private projectId: number;
 
-  totalAmountChanged$ = new Subject<boolean>();
   workPackage$ = new ReplaySubject<OutputWorkPackage | any>(1);
   workPackageInvestmentIdsOfProject$: Observable<number[]>;
   isProjectEditable$: Observable<boolean>;
   project$: Observable<OutputProject>;
   activities$: Observable<WorkPackageActivityDTO[]>;
+  outputs$: Observable<WorkPackageOutputDTO[]>;
+  outputIndicators$: Observable<IndicatorOutputDto[]>;
 
   investmentIdsChanged$ = new Subject<void>();
 
   private savedActivities$ = new Subject<WorkPackageActivityDTO[]>();
+  private savedOutputs$ = new Subject<WorkPackageOutputDTO[]>();
 
   constructor(private workPackageService: WorkPackageService,
               private projectStore: ProjectStore,
               private programmeIndicatorService: ProgrammeIndicatorService,
               private workPackageActivityService: WorkPackageActivityService,
               private workPackageInvestmentService: WorkPackageInvestmentService,
+              private workPackageOutputService: WorkPackageOutputService,
               private projectApplicationFormSidenavService: ProjectApplicationFormSidenavService) {
     this.isProjectEditable$ = this.projectStore.projectEditable$;
     this.project$ = this.projectStore.getProject();
     this.activities$ = this.workPackageActivities();
+    this.outputs$ = this.workPackageOutputs();
+    this.outputIndicators$ = this.outputIndicators();
 
     this.workPackageInvestmentIdsOfProject$ = combineLatest([this.project$, this.investmentIdsChanged$.pipe(startWith(null))]).pipe(
       switchMap(([project]) => this.workPackageInvestmentService.getWorkPackageInvestmentIdsOfProject(project.id)),
@@ -103,6 +113,7 @@ export class ProjectWorkPackagePageStore {
   private workPackageActivities(): Observable<WorkPackageActivityDTO[]> {
     const initialActivities$ = this.workPackage$
       .pipe(
+        filter(workPackage => workPackage && workPackage.id),
         switchMap(workPackage => this.workPackageActivityService.getActivities(workPackage.id)),
         tap(activities => Log.info('Fetched project activities', activities)),
       );
@@ -110,6 +121,35 @@ export class ProjectWorkPackagePageStore {
     return merge(this.savedActivities$, initialActivities$)
       .pipe(
         shareReplay(1)
+      );
+  }
+
+  saveWorkPackageOutputs(outputs: WorkPackageOutputUpdateDTO[]): Observable<WorkPackageOutputDTO[]> {
+    return this.workPackageOutputService.updateWorkPackageOutputs(this.workPackageId, outputs)
+      .pipe(
+        tap(saved => this.savedOutputs$.next(saved)),
+        tap(saved => Log.info('Saved project outputs', saved)),
+      );
+  }
+
+  private workPackageOutputs(): Observable<WorkPackageOutputDTO[]> {
+    const initialOutputs$ = this.workPackage$
+      .pipe(
+        filter(workPackage => workPackage && workPackage.id),
+        switchMap(workPackage => this.workPackageOutputService.getWorkPackageOutputs(workPackage.id)),
+        tap(outputs => Log.info('Fetched project outputs', outputs)),
+      );
+
+    return merge(this.savedOutputs$, initialOutputs$)
+      .pipe(
+        shareReplay(1)
+      );
+  }
+
+  private outputIndicators(): Observable<IndicatorOutputDto[]> {
+    return this.programmeIndicatorService.getAllIndicatorOutputDetail()
+      .pipe(
+        tap(results => Log.info('Fetched programme output indicators', results)),
       );
   }
 }

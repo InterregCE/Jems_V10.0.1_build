@@ -10,12 +10,13 @@ import {
 } from '@angular/core';
 import {MatSort} from '@angular/material/sort';
 import {TableConfiguration} from '@common/components/table/model/table.configuration';
-import {PageOutputWorkPackageSimple, OutputWorkPackageSimple, InputTranslation} from '@cat/api';
+import {OutputWorkPackageSimple, PageOutputWorkPackageSimple} from '@cat/api';
 import {ActivatedRoute} from '@angular/router';
 import {ColumnType} from '@common/components/table/model/column-type.enum';
 import {Forms} from '../../../../../common/utils/forms';
 import {filter, map, take} from 'rxjs/operators';
 import {MatDialog} from '@angular/material/dialog';
+import {MultiLanguageInputService} from '../../../../../common/services/multi-language-input.service';
 
 @Component({
   selector: 'app-project-application-form-work-packages-list',
@@ -44,6 +45,8 @@ export class ProjectApplicationFormWorkPackagesListComponent implements OnInit {
 
   @ViewChild('deletionCell', {static: true})
   deletionCell: TemplateRef<any>;
+  @ViewChild('titleCell', {static: true})
+  titleCell: TemplateRef<any>;
 
   tableConfiguration: TableConfiguration;
 
@@ -67,8 +70,8 @@ export class ProjectApplicationFormWorkPackagesListComponent implements OnInit {
         },
         {
           displayedColumn: 'project.application.form.workpackage.name',
-          elementProperty: 'name',
-          sortProperty: 'name',
+          columnType: ColumnType.CustomComponent,
+          customCellTemplate: this.titleCell
         },
         {
           displayedColumn: ' ',
@@ -80,15 +83,11 @@ export class ProjectApplicationFormWorkPackagesListComponent implements OnInit {
   }
 
   delete(workPackage: OutputWorkPackageSimple): void {
-    let message: string;
-    let name: InputTranslation[];
-    if (workPackage.name) {
-      message = 'project.application.form.workpackage.table.action.delete.dialog.message';
-      name = workPackage.name;
-    } else {
-      message = 'project.application.form.workpackage.table.action.delete.dialog.message.no.name';
-      name = [];
-    }
+    const name = this.getTitleValue(workPackage);
+    const message = name
+      ? 'project.application.form.workpackage.table.action.delete.dialog.message'
+      : 'project.application.form.workpackage.table.action.delete.dialog.message.no.name';
+
     Forms.confirmDialog(
       this.dialog,
       'project.application.form.workpackage.table.action.delete.dialog.header',
@@ -99,6 +98,10 @@ export class ProjectApplicationFormWorkPackagesListComponent implements OnInit {
         filter(answer => !!answer),
         map(() => this.deleteWorkPackage.emit(workPackage.id)),
       ).subscribe();
+  }
+
+  getTitleValue(workPackage: OutputWorkPackageSimple): string {
+    return MultiLanguageInputService.getFirstTranslation(workPackage.name);
   }
 
 }

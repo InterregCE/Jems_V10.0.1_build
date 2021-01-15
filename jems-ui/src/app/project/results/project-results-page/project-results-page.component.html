@@ -33,23 +33,23 @@
                                 </mat-option>
                             </mat-select>
                         </mat-form-field>
-                        <div class="indicators">
+                        <div class="row">
 
-                            <mat-form-field class="mr-2">
+                            <mat-form-field class="col">
                                 <input readonly matInput
                                        placeholder="{{'project.results.result.measurement.unit' | translate}}"
                                        value="{{getMeasurementUnit(result.get(constants.RESULT_INDICATOR.name)?.value, data.resultIndicators)}}"
                                        [disabled]="form.disabled">
                             </mat-form-field>
 
-                            <mat-form-field class="mr-2">
+                            <mat-form-field class="col">
                                 <input currencyMask type="integer" [options]="{min: 1, max: 99999}"
                                        name="targetValue" formControlName="targetValue" matInput
                                        placeholder="{{'project.results.result.target.value' | translate}}">
                             </mat-form-field>
 
                             <app-project-periods-select
-                                    class="period"
+                                    class="col"
                                     [periods]="data.periods"
                                     [control]="result.get(constants.PERIOD.name)"
                                     label='project.results.result.delivery.period'

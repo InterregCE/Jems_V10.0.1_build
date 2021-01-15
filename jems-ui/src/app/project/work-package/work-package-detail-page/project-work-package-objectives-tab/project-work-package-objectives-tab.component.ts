@@ -1,21 +1,16 @@
-import {
-  ChangeDetectionStrategy,
-  Component,
-  Input,
-  OnChanges,
-  OnInit,
-  SimpleChanges
-} from '@angular/core';
+import {ChangeDetectionStrategy, Component, OnChanges, OnInit, SimpleChanges} from '@angular/core';
 import {FormBuilder, FormGroup, Validators} from '@angular/forms';
 import {OutputWorkPackage} from '@cat/api';
-import {Router} from '@angular/router';
+import {ActivatedRoute, Router} from '@angular/router';
 import {FormService} from '@common/components/section/form/form.service';
-import {BaseComponent} from '@common/components/base-component';
-import {catchError, take, tap} from 'rxjs/operators';
-import {Log} from '../../../../common/utils/log';
+import {catchError, take, tap, withLatestFrom} from 'rxjs/operators';
 import {ProjectApplicationFormSidenavService} from '../../../project-application/containers/project-application-form-page/services/project-application-form-sidenav.service';
 import {ProjectWorkPackagePageStore} from '../project-work-package-page-store.service';
+import {UntilDestroy, untilDestroyed} from '@ngneat/until-destroy';
+import {Observable} from 'rxjs';
+import {ProjectStore} from '../../../project-application/containers/project-application-detail/services/project-store.service';
 
+@UntilDestroy()
 @Component({
   selector: 'app-project-work-package-objectives-tab',
   templateUrl: './project-work-package-objectives-tab.component.html',
@@ -23,76 +18,77 @@ import {ProjectWorkPackagePageStore} from '../project-work-package-page-store.se
   providers: [FormService],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class ProjectWorkPackageObjectivesTabComponent extends BaseComponent implements OnInit, OnChanges {
+export class ProjectWorkPackageObjectivesTabComponent implements OnInit, OnChanges {
 
-  @Input()
-  workPackage: OutputWorkPackage;
-  @Input()
-  editable: boolean;
-  @Input()
-  projectId: number;
+  projectId = this.activatedRoute?.snapshot?.params?.projectId;
 
+  workPackage$: Observable<OutputWorkPackage | any>;
+  workPackageId: number;
   workPackageNumber: number;
 
-  workPackageForm: FormGroup = this.formBuilder.group({
-    workPackageNumber: [''],
-    workPackageTitle: ['', Validators.maxLength(100)],
-    workPackageSpecificObjective: ['', Validators.maxLength(250)],
-    workPackageTargetAudience: ['', Validators.maxLength(500)],
+  form: FormGroup = this.formBuilder.group({
+    number: [''],
+    name: ['', Validators.maxLength(100)],
+    specificObjective: ['', Validators.maxLength(250)],
+    objectiveAndAudience: ['', Validators.maxLength(500)],
   });
-
-  workPackageTitleErrors = {
-    maxlength: 'workpackage.title.size.too.long',
-  };
-  workPackageSpecificObjectiveErrors = {
-    maxlength: 'workpackage.specific.objective.size.too.long'
-  };
-  workPackageTargetAudienceErrors = {
-    maxlength: 'workpackage.target.audience.size.too.long'
-  };
 
   constructor(private formBuilder: FormBuilder,
               private formService: FormService,
               private router: Router,
+              private activatedRoute: ActivatedRoute,
               public workPackageStore: ProjectWorkPackagePageStore,
+              private projectStore: ProjectStore,
               private projectApplicationFormSidenavService: ProjectApplicationFormSidenavService) {
-    super();
+    this.projectStore.init(this.projectId);
   }
 
   ngOnInit(): void {
-    this.workPackageNumber = this.workPackage?.number;
-    this.workPackageForm.controls.workPackageNumber.disable();
+    this.formService.init(this.form, this.workPackageStore.isProjectEditable$);
+
+    this.workPackage$ = this.workPackageStore.workPackage$
+      .pipe(
+        tap(workPackage => this.workPackageId = workPackage.id),
+        tap(workPackage => this.workPackageNumber = workPackage.number),
+        tap(workPackage => this.resetForm(workPackage))
+      );
+
+    this.formService.reset$
+      .pipe(
+        withLatestFrom(this.workPackage$),
+        tap(([reset, investment]) => {
+          if (this.workPackageId) {
+            this.resetForm(investment);
+            return;
+          }
+          this.redirectToWorkPackageOverview();
+        }),
+        untilDestroyed(this)
+      ).subscribe();
+
     this.resetForm();
-    this.formService.init(this.workPackageForm);
   }
 
   ngOnChanges(changes: SimpleChanges): void {
     if (changes.workPackage) {
-      this.workPackageNumber = this.workPackage?.number;
       this.resetForm();
     }
   }
 
   onSubmit(): void {
-    const workPackage = {
-      name: this.workPackageForm.controls.workPackageTitle.value,
-      specificObjective: this.workPackageForm.controls.workPackageSpecificObjective.value,
-      objectiveAndAudience: this.workPackageForm.controls.workPackageTargetAudience.value,
-    };
-    if (!this.workPackage.id) {
-      this.workPackageStore.createWorkPackage(workPackage)
+    if (!this.workPackageId) {
+      this.workPackageStore.createWorkPackage(this.form.value)
         .pipe(
           take(1),
-          tap(saved => Log.info('Created work package data:', this, saved)),
-          tap(saved => this.redirectToWorkPackageDetail(saved)),
+          tap(saved => this.redirectToWorkPackageDetail()),
           tap(() => this.projectApplicationFormSidenavService.refreshPackages(this.projectId)),
           catchError(error => this.formService.setError(error))
         ).subscribe();
       return;
     }
     this.workPackageStore.saveWorkPackage({
-      ...workPackage,
-      id: this.workPackage.id
+      id: this.workPackageId,
+      ...this.form.value
     })
       .pipe(
         take(1),
@@ -101,29 +97,21 @@ export class ProjectWorkPackageObjectivesTabComponent extends BaseComponent impl
       ).subscribe();
   }
 
-  onCancel(): void {
-    if (!this.workPackage.id) {
-      this.redirectToWorkPackageOverview();
-    }
-    this.resetForm();
+  private resetForm(existing?: OutputWorkPackage): void {
+    this.formService.setCreation(!this.workPackageId);
+    this.form.patchValue(existing || {});
+    this.form.controls.number.setValue(existing?.number || this.workPackageNumber);
+    this.formService.resetEditable();
+    this.form.controls.number.disable();
   }
 
-  private resetForm(): void {
-    this.formService.setEditable(this.editable);
-    this.formService.setCreation(!this.workPackage?.id);
-    this.workPackageForm.controls.workPackageNumber.setValue(this.workPackage?.number || this.workPackageNumber);
-    this.workPackageForm.controls.workPackageTitle.setValue(this.workPackage?.name);
-    this.workPackageForm.controls.workPackageSpecificObjective.setValue(this.workPackage?.specificObjective);
-    this.workPackageForm.controls.workPackageTargetAudience.setValue(this.workPackage?.objectiveAndAudience);
-  }
-
-  redirectToWorkPackageOverview(): void {
+  private redirectToWorkPackageOverview(): void {
     this.router.navigate(['app', 'project', 'detail', this.projectId, 'applicationFormWorkPackage']);
   }
 
-  redirectToWorkPackageDetail(workPackage: any): void {
+  private redirectToWorkPackageDetail(): void {
     this.router.navigate([
-      'app', 'project', 'detail', this.projectId, 'applicationFormWorkPackage', 'detail', workPackage.id
+      'app', 'project', 'detail', this.projectId, 'applicationFormWorkPackage', 'detail', this.workPackageId
     ]);
   }
 }

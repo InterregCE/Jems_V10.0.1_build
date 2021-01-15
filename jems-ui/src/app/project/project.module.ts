@@ -52,7 +52,6 @@ import {ProjectApplicationFormPartnerContributionComponent} from './project-appl
 import {ProjectApplicationFormPartnerAddressComponent} from './project-application/components/project-application-form/project-application-form-partner-address/project-application-form-partner-address.component';
 import {ProjectApplicationFormRegionSelectionComponent} from './project-application/containers/project-application-form-page/project-application-form-partner-section/project-application-form-region-selection/project-application-form-region-selection.component';
 import {DeleteActionCellComponent} from './project-application/components/project-application-form/project-application-form-partner-list/delete-action-cell/delete-action-cell.component';
-import {WorkPackageDeleteActionCellComponent} from './project-application/components/project-application-form/project-application-form-work-packages-list/work-package-delete-action-cell/work-package-delete-action-cell.component';
 import {ProjectPartnerBudgetTabComponent} from './partner/project-partner-detail-page/project-partner-budget-tab/project-partner-budget-tab.component';
 import {ProjectPartnerBudgetComponent} from './partner/project-partner-detail-page/project-partner-budget-tab/project-partner-budget/project-partner-budget.component';
 import {ProjectApplicationFormStore} from './project-application/containers/project-application-form-page/services/project-application-form-store.service';
@@ -71,9 +70,6 @@ import {ProjectPartnerCoFinancingComponent} from './partner/project-partner-deta
 import {ProjectPartnerDetailPageComponent} from './partner/project-partner-detail-page/project-partner-detail-page.component';
 import {ProjectPartnerCoFinancingTabComponent} from './partner/project-partner-detail-page/project-partner-co-financing-tab/project-partner-co-financing-tab.component';
 import {BudgetPageComponent} from './budget/budget-page/budget-page.component';
-import {ProjectApplicationFormWorkPackageOutputComponent} from './work-package/work-package-detail-page/project-application-form-work-package-output/project-application-form-work-package-output.component';
-import {ProjectApplicationFormWorkPackageOutputsComponent} from './project-application/components/project-application-form/project-application-form-work-package-outputs/project-application-form-work-package-outputs.component';
-import {WorkPackageOutputTableComponent} from './project-application/components/project-application-form/project-application-form-work-package-outputs/tables/work-package-output-table/work-package-output-table.component';
 import {ProjectWorkPackageObjectivesTabComponent} from './work-package/work-package-detail-page/project-work-package-objectives-tab/project-work-package-objectives-tab.component';
 import {ProjectWorkPackageDetailPageComponent} from './work-package/work-package-detail-page/project-work-package-detail-page.component';
 import {ProjectWorkPackageActivitiesTabComponent} from './work-package/work-package-detail-page/project-work-package-activities-tab/project-work-package-activities-tab.component';
@@ -88,6 +84,7 @@ import {ProjectWorkPackagePageStore} from './work-package/work-package-detail-pa
 import {ProjectPartnerDetailPageStore} from './partner/project-partner-detail-page/project-partner-detail-page.store';
 import {ProjectResultsPageComponent} from './results/project-results-page/project-results-page.component';
 import {UnitCostsBudgetTableComponent} from './partner/project-partner-detail-page/project-partner-budget-tab/project-partner-budget/unit-costs-budget-table/unit-costs-budget-table.component';
+import {ProjectWorkPackageOutputsTabComponent} from './work-package/work-package-detail-page/project-work-package-outputs-tab/project-work-package-outputs-tab.component';
 
 @NgModule({
   declarations: [
@@ -121,6 +118,7 @@ import {UnitCostsBudgetTableComponent} from './partner/project-partner-detail-pa
     ProjectWorkPackageObjectivesTabComponent,
     ProjectWorkPackageDetailPageComponent,
     ProjectWorkPackageActivitiesTabComponent,
+    ProjectWorkPackageOutputsTabComponent,
     ProjectApplicationFormWorkPackageSectionComponent,
     ProjectApplicationFormManagementSectionComponent,
     ProjectApplicationFormFuturePlansSectionComponent,
@@ -146,7 +144,6 @@ import {UnitCostsBudgetTableComponent} from './partner/project-partner-detail-pa
     SynergyTableComponent,
     ProjectApplicationFormRegionSelectionComponent,
     DeleteActionCellComponent,
-    WorkPackageDeleteActionCellComponent,
     ProjectPartnerBudgetTabComponent,
     ProjectPartnerCoFinancingTabComponent,
     ProjectPartnerBudgetComponent,
@@ -158,9 +155,6 @@ import {UnitCostsBudgetTableComponent} from './partner/project-partner-detail-pa
     ProjectApplicationFormAssociatedOrgPageComponent,
     ProjectApplicationFormAddressComponent,
     BudgetPageComponent,
-    ProjectApplicationFormWorkPackageOutputComponent,
-    ProjectApplicationFormWorkPackageOutputsComponent,
-    WorkPackageOutputTableComponent,
     GeneralBudgetFlatRateTableComponent,
     GeneralBudgetTableComponent,
     StaffCostsBudgetTableComponent,
