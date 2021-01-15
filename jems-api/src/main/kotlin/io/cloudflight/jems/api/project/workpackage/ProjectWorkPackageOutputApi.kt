@@ -1,4 +1,4 @@
-package io.cloudflight.jems.api.project.workpackage;
+package io.cloudflight.jems.api.project.workpackage
 
 import io.cloudflight.jems.api.project.dto.workpackage.output.WorkPackageOutputDTO
 import io.cloudflight.jems.api.project.dto.workpackage.output.WorkPackageOutputUpdateDTO
@@ -18,13 +18,13 @@ interface ProjectWorkPackageOutputApi {
 
     @ApiOperation("Returns all work package outputs for a work package")
     @GetMapping
-    fun getWorkPackageOutputs(@PathVariable workPackageId: Long): Set<WorkPackageOutputDTO>
+    fun getWorkPackageOutputs(@PathVariable workPackageId: Long): List<WorkPackageOutputDTO>
 
     @ApiOperation("Updates work packages outputs for a work package")
     @PostMapping(consumes = [MediaType.APPLICATION_JSON_VALUE])
     fun updateWorkPackageOutputs(
         @PathVariable workPackageId: Long,
-        @Valid @RequestBody workPackageOutputUpdateDTO: Set<WorkPackageOutputUpdateDTO>
-    ): Set<WorkPackageOutputDTO>
+        @Valid @RequestBody workPackageOutputUpdateDTO: List<WorkPackageOutputUpdateDTO>
+    ): List<WorkPackageOutputDTO>
 
 }

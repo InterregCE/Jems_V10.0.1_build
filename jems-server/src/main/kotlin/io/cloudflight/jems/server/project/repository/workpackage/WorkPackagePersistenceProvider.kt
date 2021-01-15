@@ -4,12 +4,12 @@ import io.cloudflight.jems.server.common.exception.ResourceNotFoundException
 import io.cloudflight.jems.server.programme.repository.indicator.IndicatorOutputRepository
 import io.cloudflight.jems.server.project.entity.workpackage.WorkPackageEntity
 import io.cloudflight.jems.server.project.entity.workpackage.investment.WorkPackageInvestmentEntity
+import io.cloudflight.jems.server.project.entity.workpackage.WorkPackageOutputEntity
 import io.cloudflight.jems.server.project.repository.description.ProjectPeriodRepository
 import io.cloudflight.jems.server.project.service.workpackage.WorkPackagePersistence
 import io.cloudflight.jems.server.project.service.workpackage.activity.model.WorkPackageActivity
 import io.cloudflight.jems.server.project.service.workpackage.model.WorkPackageInvestment
-import io.cloudflight.jems.server.project.service.workpackage.model.WorkPackageOutput
-import io.cloudflight.jems.server.project.service.workpackage.model.WorkPackageOutputUpdate
+import io.cloudflight.jems.server.project.service.workpackage.output.model.WorkPackageOutput
 import org.springframework.data.domain.Pageable
 import org.springframework.stereotype.Repository
 import org.springframework.transaction.annotation.Transactional
@@ -26,32 +26,40 @@ class WorkPackagePersistenceProvider(
     @Transactional
     override fun updateWorkPackageOutputs(
         workPackageId: Long,
-        workPackageOutputs: Set<WorkPackageOutputUpdate>,
-    ): Set<WorkPackageOutput> {
+        workPackageOutputs: List<WorkPackageOutput>,
+    ): List<WorkPackageOutput> {
         val workPackage = getWorkPackageOrThrow(workPackageId)
+        val outputsToSave = mutableListOf<WorkPackageOutputEntity>()
 
-        workPackage.workPackageOutputs.clear()
-        workPackageOutputs.forEach {
-            val indicatorOutput =
-                if (it.programmeOutputIndicatorId != null) indicatorOutputRepository.findById(it.programmeOutputIndicatorId)
-                    .orElse(null)
-                else null
-            val projectPeriod =
-                if (it.periodNumber != null)
-                    projectPeriodRepository.findByIdProjectIdAndIdNumber(workPackage.project.id, it.periodNumber)
-                else null
+        for ((index, it) in workPackageOutputs.withIndex()) {
+                    val indicatorOutput =
+                        if (it.programmeOutputIndicatorId != null) indicatorOutputRepository.findById(it.programmeOutputIndicatorId)
+                            .orElse(null)
+                        else null
+                    val projectPeriod =
+                        if (it.periodNumber != null)
+                            projectPeriodRepository.findByIdProjectIdAndIdNumber(
+                                workPackage.project.id,
+                                it.periodNumber
+                            )
+                        else null
 
-            workPackage.workPackageOutputs.add(it.toEntity(indicatorOutput, workPackage, projectPeriod))
-        }
+                    outputsToSave.add(it.toEntity(indicatorOutput, workPackage, projectPeriod, index))
+                }
 
-        return workPackage.workPackageOutputs.toWorkPackageOutputSet()
+        return workPackageRepository.save(
+            getWorkPackageOrThrow(workPackageId).copy(
+                workPackageOutputs = outputsToSave
+            )
+        ).workPackageOutputs.toWorkPackageOutputList()
 
     }
 
+
     @Transactional(readOnly = true)
-    override fun getWorkPackageOutputsForWorkPackage(workPackageId: Long): Set<WorkPackageOutput> =
+    override fun getWorkPackageOutputsForWorkPackage(workPackageId: Long): List<WorkPackageOutput> =
         getWorkPackageOrThrow(workPackageId).workPackageOutputs
-            .toWorkPackageOutputSet()
+            .toWorkPackageOutputList()
 
     @Transactional(readOnly = true)
     override fun getWorkPackageInvestment(workPackageInvestmentId: Long) =

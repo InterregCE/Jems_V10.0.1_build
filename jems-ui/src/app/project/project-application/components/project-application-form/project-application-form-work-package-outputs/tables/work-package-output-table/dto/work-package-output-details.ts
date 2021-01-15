@@ -1,12 +1,12 @@
-import {IndicatorOutputDto} from '@cat/api';
+import {IndicatorOutputDto, InputTranslation} from '@cat/api';
 
 export interface WorkPackageOutputDetails {
   outputNumber: number;
   programmeOutputIndicatorId: number;
-  title: string;
+  title: Array<InputTranslation>;
   targetValue: string;
   periodNumber: number;
-  description: string;
+  description: Array<InputTranslation>;
   indicator: IndicatorOutputDto | null;
   id: number;
 }

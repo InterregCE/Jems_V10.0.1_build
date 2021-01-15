@@ -1,17 +1,14 @@
 package io.cloudflight.jems.api.project.dto.workpackage
 
-import javax.validation.constraints.Size
+import io.cloudflight.jems.api.project.dto.InputTranslation
 
 data class InputWorkPackageUpdate(
 
     val id: Long,
 
-    @field:Size(max = 100, message = "workpackage.name.wrong.size")
-    val name: String?,
+    val name: Set<InputTranslation> = emptySet(),
 
-    @field:Size(max = 250, message = "workpackage.projectSpecificObjective.wrong.size")
-    val specificObjective: String?,
+    val specificObjective: Set<InputTranslation> = emptySet(),
 
-    @field:Size(max = 500, message = "workpackage.objectiveAndAudience.wrong.size")
-    val objectiveAndAudience: String?
+    val objectiveAndAudience: Set<InputTranslation> = emptySet()
 )

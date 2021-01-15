@@ -1,9 +1,12 @@
 package io.cloudflight.jems.server.workpackage.service.workpackageoutput.get_work_package_output
 
+import io.cloudflight.jems.api.programme.dto.SystemLanguage
+import io.cloudflight.jems.api.project.dto.InputTranslation
 import io.cloudflight.jems.server.project.service.workpackage.WorkPackagePersistence
 import io.cloudflight.jems.server.project.service.workpackage.output.get_work_package_output.GetWorkPackageOutput
 import io.cloudflight.jems.server.project.service.workpackage.output.get_work_package_output.GetWorkPackageOutputInteractor
-import io.cloudflight.jems.server.project.service.workpackage.model.WorkPackageOutput
+import io.cloudflight.jems.server.project.service.workpackage.output.model.WorkPackageOutput
+import io.cloudflight.jems.server.project.service.workpackage.output.model.WorkPackageOutputTranslatedValue
 import io.mockk.MockKAnnotations
 import io.mockk.every
 import io.mockk.impl.annotations.MockK
@@ -18,15 +21,15 @@ class GetWorkPackageOutputInteractorTest {
 
         private val testWorkPackageOutput1 = WorkPackageOutput(
             outputNumber = 1,
-            title = "TEST"
+            translatedValues = setOf(WorkPackageOutputTranslatedValue(SystemLanguage.EN, "Test"))
         )
 
         private val testWorkPackageOutput2 = WorkPackageOutput(
             outputNumber = 2,
-            title = "TEST"
+            translatedValues = setOf(WorkPackageOutputTranslatedValue(SystemLanguage.EN, "Test"))
         )
 
-        private val workPackageOutputs = mutableSetOf<WorkPackageOutput>(
+        private val workPackageOutputs = mutableListOf<WorkPackageOutput>(
             testWorkPackageOutput1,
             testWorkPackageOutput2
         )
@@ -46,7 +49,7 @@ class GetWorkPackageOutputInteractorTest {
 
     @Test
     fun `get work package outputs returns empty list`() {
-        every { persistence.getWorkPackageOutputsForWorkPackage(any()) } returns emptySet<WorkPackageOutput>()
+        every { persistence.getWorkPackageOutputsForWorkPackage(any()) } returns emptyList<WorkPackageOutput>()
         assertThat(getWorkPackageOutputInteractor.getWorkPackageOutputsForWorkPackage(1L)).isEmpty()
     }
 

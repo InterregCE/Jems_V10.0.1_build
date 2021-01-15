@@ -1,6 +1,8 @@
 package io.cloudflight.jems.server.workpackage.service
 
 import io.cloudflight.jems.api.call.dto.CallStatus
+import io.cloudflight.jems.api.programme.dto.SystemLanguage
+import io.cloudflight.jems.api.project.dto.InputTranslation
 import io.cloudflight.jems.api.project.dto.status.ProjectApplicationStatus
 import io.cloudflight.jems.api.user.dto.OutputUserRole
 import io.cloudflight.jems.api.user.dto.OutputUserWithRole
@@ -10,10 +12,12 @@ import io.cloudflight.jems.api.project.dto.workpackage.OutputWorkPackage
 import io.cloudflight.jems.server.call.entity.CallEntity
 import io.cloudflight.jems.server.project.entity.ProjectEntity
 import io.cloudflight.jems.server.project.entity.ProjectStatus
+import io.cloudflight.jems.server.project.entity.TranslationWorkPackageId
 import io.cloudflight.jems.server.project.repository.ProjectRepository
 import io.cloudflight.jems.server.user.entity.User
 import io.cloudflight.jems.server.user.entity.UserRole
 import io.cloudflight.jems.server.project.entity.workpackage.WorkPackageEntity
+import io.cloudflight.jems.server.project.entity.workpackage.WorkPackageTransl
 import io.cloudflight.jems.server.project.repository.workpackage.WorkPackageRepository
 import io.cloudflight.jems.server.project.service.workpackage.WorkPackageService
 import io.cloudflight.jems.server.project.service.workpackage.WorkPackageServiceImpl
@@ -84,26 +88,26 @@ class WorkPackageServiceTest {
         projectStatus = statusDraft
     )
 
+    private val translatedNameInEntity = WorkPackageTransl(TranslationWorkPackageId(1, SystemLanguage.EN), "Test")
+    private val translatedNameInModel = InputTranslation(SystemLanguage.EN, "Test")
+    private val translatedSpecificObjectiveInModel = InputTranslation(SystemLanguage.EN, "Specific Objective")
+
     private val mockWorkPackage = WorkPackageEntity(
         1,
         project,
         1,
-        "Test",
-        "",
-        ""
+        mutableSetOf(translatedNameInEntity)
     )
 
     private val mockWorkPackageToCreate = InputWorkPackageCreate(
-        "Test",
-        "",
-        ""
+        setOf(translatedNameInModel)
     )
 
     private val mockWorkPackageToUpdate = InputWorkPackageUpdate(
         1,
-        "Test",
-        "Specific Objective",
-        ""
+        setOf(translatedNameInModel),
+        setOf(translatedSpecificObjectiveInModel),
+        setOf()
     )
 
     @RelaxedMockK
@@ -130,7 +134,7 @@ class WorkPackageServiceTest {
         val result = workPackageService.getWorkPackageById(1L)
 
         assertThat(result).isNotNull
-        assertThat(result.name).isEqualTo("Test")
+        assertThat(result.name).isEqualTo(setOf(translatedNameInModel))
     }
 
     @Test
@@ -149,9 +153,7 @@ class WorkPackageServiceTest {
             2,
             project,
             2,
-            "Test",
-            "",
-            ""
+            mutableSetOf(WorkPackageTransl(TranslationWorkPackageId(1, SystemLanguage.EN), "Test"))
         )
 
         val result = workPackageService.createWorkPackage(1, mockWorkPackageToCreate)
@@ -166,9 +168,7 @@ class WorkPackageServiceTest {
             1,
             project,
             1,
-            "Test",
-            "Specific Objective",
-            ""
+            mutableSetOf(WorkPackageTransl(TranslationWorkPackageId(1, SystemLanguage.EN), "Test", "Specific Objective"))
         )
 
         every { workPackageRepository.findById(1L) } returns Optional.of(workPackageUpdated)
@@ -177,9 +177,9 @@ class WorkPackageServiceTest {
         val expectedData = OutputWorkPackage (
             id = 1,
             number = 1,
-            name = "Test",
-            specificObjective = "Specific Objective",
-            objectiveAndAudience = ""
+            name = setOf(InputTranslation(SystemLanguage.EN, "Test")),
+            specificObjective = setOf(InputTranslation(SystemLanguage.EN, "Specific Objective")),
+            objectiveAndAudience = setOf()
         )
 
         val result = workPackageService.updateWorkPackage(mockWorkPackageToUpdate)

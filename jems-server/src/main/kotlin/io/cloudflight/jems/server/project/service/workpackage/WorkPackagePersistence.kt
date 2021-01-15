@@ -2,15 +2,14 @@ package io.cloudflight.jems.server.project.service.workpackage
 
 import io.cloudflight.jems.server.project.service.workpackage.activity.model.WorkPackageActivity
 import io.cloudflight.jems.server.project.service.workpackage.model.WorkPackageInvestment
-import io.cloudflight.jems.server.project.service.workpackage.model.WorkPackageOutput
-import io.cloudflight.jems.server.project.service.workpackage.model.WorkPackageOutputUpdate
+import io.cloudflight.jems.server.project.service.workpackage.output.model.WorkPackageOutput
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
 
 interface WorkPackagePersistence {
 
-    fun updateWorkPackageOutputs(workPackageId: Long, workPackageOutputs: Set<WorkPackageOutputUpdate>): Set<WorkPackageOutput>
-    fun getWorkPackageOutputsForWorkPackage(workPackageId: Long): Set<WorkPackageOutput>
+    fun updateWorkPackageOutputs(workPackageId: Long, workPackageOutputs: List<WorkPackageOutput>): List<WorkPackageOutput>
+    fun getWorkPackageOutputsForWorkPackage(workPackageId: Long): List<WorkPackageOutput>
     fun getWorkPackageInvestment(workPackageInvestmentId: Long): WorkPackageInvestment
     fun getWorkPackageInvestments(workPackageId: Long, pageable: Pageable): Page<WorkPackageInvestment>
     fun getWorkPackageInvestmentIdsOfProject(projectId: Long): List<Long>

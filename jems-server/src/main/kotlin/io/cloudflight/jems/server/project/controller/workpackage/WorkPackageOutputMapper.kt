@@ -1,13 +1,14 @@
 package io.cloudflight.jems.server.project.controller.workpackage
 
 import io.cloudflight.jems.api.common.dto.AddressDTO
+import io.cloudflight.jems.api.project.dto.InputTranslation
 import io.cloudflight.jems.api.project.dto.workpackage.investment.WorkPackageInvestmentDTO
 import io.cloudflight.jems.api.project.dto.workpackage.output.WorkPackageOutputDTO
 import io.cloudflight.jems.api.project.dto.workpackage.output.WorkPackageOutputUpdateDTO
 import io.cloudflight.jems.server.project.service.model.Address
 import io.cloudflight.jems.server.project.service.workpackage.model.WorkPackageInvestment
-import io.cloudflight.jems.server.project.service.workpackage.model.WorkPackageOutput
-import io.cloudflight.jems.server.project.service.workpackage.model.WorkPackageOutputUpdate
+import io.cloudflight.jems.server.project.service.workpackage.output.model.WorkPackageOutput
+import io.cloudflight.jems.server.project.service.workpackage.output.model.WorkPackageOutputTranslatedValue
 import org.springframework.data.domain.Page
 
 fun Page<WorkPackageInvestment>.toWorkPackageInvestmentDTOPage() = this.map { it.toWorkPackageInvestmentDTO() }
@@ -43,27 +44,26 @@ fun WorkPackageInvestmentDTO.toWorkPackageInvestment() = WorkPackageInvestment(
     ownershipMaintenance = ownershipMaintenance
 )
 
-fun WorkPackageOutputUpdateDTO.toWorkPackageOutputUpdate() = WorkPackageOutputUpdate(
+fun WorkPackageOutputUpdateDTO.toWorkPackageOutput() = WorkPackageOutput(
     outputNumber = outputNumber,
     programmeOutputIndicatorId = programmeOutputIndicatorId,
-    title = title,
+    translatedValues = combineOutputTranslations(title, description),
     targetValue = targetValue,
-    periodNumber = periodNumber,
-    description = description
+    periodNumber = periodNumber
 )
 
 fun WorkPackageOutput.toWorkPackageOutputDTO() = WorkPackageOutputDTO(
     outputNumber = outputNumber,
-    programmeOutputIndicator = programmeOutputIndicator,
-    title = title,
+    programmeOutputIndicatorId = programmeOutputIndicatorId,
+    title = translatedValues.extractField { it.title },
     targetValue = targetValue,
     periodNumber = periodNumber,
-    description = description
+    description = translatedValues.extractField { it.description }
 )
 
-fun Set<WorkPackageOutputUpdateDTO>.toWorkPackageOutputUpdateSet() = this.map { it.toWorkPackageOutputUpdate() }.toSet()
+fun List<WorkPackageOutputUpdateDTO>.toWorkPackageOutputList() = this.map { it.toWorkPackageOutput() }.toList()
 
-fun Set<WorkPackageOutput>.toWorkPackageOutputDTOSet() = this.map { it.toWorkPackageOutputDTO() }.toSet()
+fun List<WorkPackageOutput>.toWorkPackageOutputDTOList() = this.map { it.toWorkPackageOutputDTO() }.toList()
 
 fun Address.toAddressDTO() = AddressDTO(
     this.country,
@@ -77,3 +77,22 @@ fun Address.toAddressDTO() = AddressDTO(
 
 fun AddressDTO.toAddress() =
     Address(this.country, this.region2, this.region3, this.street, this.houseNumber, this.postalCode, this.city)
+
+fun combineOutputTranslations(
+    title: Set<InputTranslation>,
+    description: Set<InputTranslation>
+): Set<WorkPackageOutputTranslatedValue> {
+    val titleMap = title.groupByLanguage()
+    val descriptionMap = description.groupByLanguage()
+
+    return extractLanguages(titleMap, descriptionMap)
+        .map {
+            WorkPackageOutputTranslatedValue(
+                language = it,
+                title = titleMap[it],
+                description = descriptionMap[it],
+            )
+        }
+        .filter { !it.isEmpty() }
+        .toSet()
+}

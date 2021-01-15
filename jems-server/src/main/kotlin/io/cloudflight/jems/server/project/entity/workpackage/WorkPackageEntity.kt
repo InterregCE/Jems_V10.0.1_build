@@ -29,21 +29,11 @@ data class WorkPackageEntity(
     @Column
     val number: Int? = null,
 
-    @Column
-    val name: String? = null,
+    @OneToMany(cascade = [CascadeType.ALL], orphanRemoval = true, mappedBy = "translationId.workPackageId")
+    val translatedValues: Set<WorkPackageTransl> = mutableSetOf(),
 
-    @Column(name = "specific_objective")
-    val specificObjective: String? = null,
-
-    @Column(name = "objective_and_audience")
-    val objectiveAndAudience: String? = null,
-
-    @OneToMany(
-        mappedBy = "workPackage",
-        cascade = [CascadeType.ALL],
-        orphanRemoval = true
-    )
-    val workPackageOutputs: MutableSet<WorkPackageOutputEntity> = mutableSetOf(),
+    @OneToMany(mappedBy = "outputId.workPackageId", cascade = [CascadeType.ALL], orphanRemoval = true)
+    val workPackageOutputs: List<WorkPackageOutputEntity> = emptyList(),
 
     @OneToMany(mappedBy = "activityId.workPackageId", cascade = [CascadeType.ALL], orphanRemoval = true)
     val activities: List<WorkPackageActivityEntity> = emptyList(),

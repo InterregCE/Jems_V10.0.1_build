@@ -2,7 +2,7 @@ import {async, ComponentFixture, fakeAsync, TestBed, tick} from '@angular/core/t
 import {TestModule} from '../../../../../common/test-module';
 import {ProjectModule} from '../../../../project.module';
 import {HttpTestingController} from '@angular/common/http/testing';
-import {OutputWorkPackageSimple} from '@cat/api';
+import {OutputWorkPackageSimple, InputTranslation} from '@cat/api';
 import {ProjectApplicationFormWorkPackageSectionComponent} from './project-application-form-work-package-section.component';
 
 describe('ProjectApplicationFormWorkPackageSectionComponent', () => {
@@ -38,8 +38,8 @@ describe('ProjectApplicationFormWorkPackageSectionComponent', () => {
     component.currentWorkPackagePage$.subscribe(result => results = result.content);
 
     const workPackages = [
-      {name: 'test1'} as OutputWorkPackageSimple,
-      {name: 'test2'} as OutputWorkPackageSimple
+      {name: [{language: InputTranslation.LanguageEnum.EN, translation: 'test1'} as InputTranslation]} as OutputWorkPackageSimple,
+      {name: [{language: InputTranslation.LanguageEnum.EN, translation: 'test2'} as InputTranslation]} as OutputWorkPackageSimple
     ];
 
     httpTestingController.match({method: 'GET', url: `//api/project/workPackage/perProject/1?page=0&size=25&sort=id,asc`})

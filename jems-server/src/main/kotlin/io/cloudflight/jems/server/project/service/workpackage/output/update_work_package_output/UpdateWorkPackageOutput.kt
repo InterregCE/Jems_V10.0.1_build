@@ -2,8 +2,7 @@ package io.cloudflight.jems.server.project.service.workpackage.output.update_wor
 
 import io.cloudflight.jems.server.project.authorization.CanUpdateProjectWorkPackage
 import io.cloudflight.jems.server.project.service.workpackage.WorkPackagePersistence
-import io.cloudflight.jems.server.project.service.workpackage.model.WorkPackageOutput
-import io.cloudflight.jems.server.project.service.workpackage.model.WorkPackageOutputUpdate
+import io.cloudflight.jems.server.project.service.workpackage.output.model.WorkPackageOutput
 import io.cloudflight.jems.server.project.service.workpackage.output.validateWorkPackageOutputsLimit
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
@@ -17,8 +16,8 @@ class UpdateWorkPackageOutput(
     @Transactional
     override fun updateWorkPackageOutputs(
         workPackageId: Long,
-        workPackageOutputUpdate: Set<WorkPackageOutputUpdate>,
-    ): Set<WorkPackageOutput> {
+        workPackageOutputUpdate: List<WorkPackageOutput>,
+    ): List<WorkPackageOutput> {
         validateWorkPackageOutputsLimit(workPackageOutputUpdate)
         return workPackagePersistence.updateWorkPackageOutputs(workPackageId, workPackageOutputUpdate)
     }

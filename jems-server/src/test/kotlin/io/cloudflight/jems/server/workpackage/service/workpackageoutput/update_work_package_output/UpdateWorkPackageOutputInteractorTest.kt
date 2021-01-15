@@ -1,8 +1,9 @@
 package io.cloudflight.jems.server.workpackage.service.workpackageoutput.update_work_package_output
 
+import io.cloudflight.jems.api.programme.dto.SystemLanguage
 import io.cloudflight.jems.server.project.service.workpackage.WorkPackagePersistence
-import io.cloudflight.jems.server.project.service.workpackage.model.WorkPackageOutput
-import io.cloudflight.jems.server.project.service.workpackage.model.WorkPackageOutputUpdate
+import io.cloudflight.jems.server.project.service.workpackage.output.model.WorkPackageOutput
+import io.cloudflight.jems.server.project.service.workpackage.output.model.WorkPackageOutputTranslatedValue
 import io.cloudflight.jems.server.project.service.workpackage.output.update_work_package_output.UpdateWorkPackageOutput
 import io.cloudflight.jems.server.project.service.workpackage.output.update_work_package_output.UpdateWorkPackageOutputInteractor
 import io.mockk.MockKAnnotations
@@ -19,31 +20,31 @@ class UpdateWorkPackageOutputInteractorTest {
 
         private val testWorkPackageOutput1 = WorkPackageOutput(
             outputNumber = 1,
-            title = "TEST"
+            translatedValues = setOf(WorkPackageOutputTranslatedValue(SystemLanguage.EN, "Test"))
         )
 
 
         private val testWorkPackageOutput2 = WorkPackageOutput(
             outputNumber = 2,
-            title = "TEST"
+            translatedValues = setOf(WorkPackageOutputTranslatedValue(SystemLanguage.EN, "Test"))
         )
 
 
-        private val updateTestWorkPackageOutput1 = WorkPackageOutputUpdate(
+        private val updateTestWorkPackageOutput1 = WorkPackageOutput(
             outputNumber = 1,
-            title = "TEST updated"
+            translatedValues = setOf(WorkPackageOutputTranslatedValue(SystemLanguage.EN, "Test updated"))
         )
 
 
-        private val updateTestWorkPackageOutput2 = WorkPackageOutputUpdate(
+        private val updateTestWorkPackageOutput2 = WorkPackageOutput(
             outputNumber = 2,
-            title = "TEST updated"
+            translatedValues = setOf(WorkPackageOutputTranslatedValue(SystemLanguage.EN, "Test updated"))
         )
 
         private val workPackageOutputsUpdated =
-            mutableSetOf<WorkPackageOutput>(testWorkPackageOutput1, testWorkPackageOutput2)
+            mutableListOf<WorkPackageOutput>(testWorkPackageOutput1, testWorkPackageOutput2)
         private val workPackageOutputsToUpdate =
-            mutableSetOf<WorkPackageOutputUpdate>(updateTestWorkPackageOutput1, updateTestWorkPackageOutput2)
+            mutableListOf<WorkPackageOutput>(updateTestWorkPackageOutput1, updateTestWorkPackageOutput2)
 
     }
 
@@ -60,8 +61,8 @@ class UpdateWorkPackageOutputInteractorTest {
 
     @Test
     fun `delete work package outputs from a work package`() {
-        every { persistence.updateWorkPackageOutputs(any(), any()) } returns emptySet<WorkPackageOutput>()
-        Assertions.assertThat(updateWorkPackageOutputInteractor.updateWorkPackageOutputs(1L, emptySet())).isEmpty()
+        every { persistence.updateWorkPackageOutputs(any(), any()) } returns emptyList<WorkPackageOutput>()
+        Assertions.assertThat(updateWorkPackageOutputInteractor.updateWorkPackageOutputs(1L, emptyList())).isEmpty()
     }
 
     @Test
