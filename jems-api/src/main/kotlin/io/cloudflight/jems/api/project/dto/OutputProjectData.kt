@@ -4,7 +4,7 @@ import io.cloudflight.jems.api.programme.dto.priority.OutputProgrammePriorityPol
 import io.cloudflight.jems.api.programme.dto.priority.OutputProgrammePrioritySimple
 
 data class OutputProjectData(
-    val title: String?,
+    val title: Set<InputTranslation> = emptySet(),
     val duration: Int?,
     val intro: String?,
     val introProgrammeLanguage: String?,

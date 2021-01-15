@@ -14,7 +14,7 @@ data class InputProjectData(
     val specificObjective: ProgrammeObjectivePolicy? = null,
 
     @field:Size(max = 250, message = "project.title.size.too.long")
-    val title: String? = null,
+    val title: Set<InputTranslation> = emptySet(),
 
     @field:Range(min = 1, max = 999, message = "programme.duration.invalid")
     val duration: Int? = null,

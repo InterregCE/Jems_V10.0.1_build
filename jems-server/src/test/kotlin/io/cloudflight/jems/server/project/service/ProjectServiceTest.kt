@@ -3,6 +3,7 @@ package io.cloudflight.jems.server.project.service
 import io.cloudflight.jems.api.call.dto.CallStatus
 import io.cloudflight.jems.api.call.dto.OutputCallWithDates
 import io.cloudflight.jems.api.call.dto.flatrate.FlatRateSetupDTO
+import io.cloudflight.jems.api.programme.dto.SystemLanguage
 import io.cloudflight.jems.api.programme.dto.priority.OutputProgrammePriorityPolicySimple
 import io.cloudflight.jems.api.programme.dto.priority.ProgrammeObjectivePolicy.AdvancedTechnologies
 import io.cloudflight.jems.api.programme.dto.priority.ProgrammeObjectivePolicy.HealthcareAcrossBorders
@@ -10,6 +11,7 @@ import io.cloudflight.jems.api.programme.dto.priority.ProgrammeObjectivePolicy.S
 import io.cloudflight.jems.api.programme.dto.strategy.ProgrammeStrategy
 import io.cloudflight.jems.api.project.dto.InputProject
 import io.cloudflight.jems.api.project.dto.InputProjectData
+import io.cloudflight.jems.api.project.dto.InputTranslation
 import io.cloudflight.jems.api.project.dto.OutputProjectData
 import io.cloudflight.jems.api.project.dto.OutputProjectPeriod
 import io.cloudflight.jems.api.project.dto.OutputProjectSimple
@@ -290,7 +292,7 @@ class ProjectServiceTest {
 
     private val projectData = InputProjectData(
         acronym = "new acronym",
-        title = "new title",
+        title = setOf(InputTranslation(SystemLanguage.EN, "title")),
         duration = 15,
         intro = null,
         introProgrammeLanguage = "english text",
