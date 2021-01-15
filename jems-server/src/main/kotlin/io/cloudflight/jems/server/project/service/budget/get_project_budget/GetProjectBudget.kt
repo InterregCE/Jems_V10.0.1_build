@@ -31,6 +31,7 @@ class GetProjectBudget(
 
         val lumpSumIds = lumpSumPersistence.getLumpSums(projectId).mapTo(HashSet()) { it.id!! }
         val lumpSumContributionPerPartner = persistence.getLumpSumContributionPerPartner(lumpSumIds)
+        val unitCostsPerPartner = persistence.getUnitCostsPerPartner(partners.keys)
 
         return partners.map { (partnerId, partner) ->
             PartnerBudget(
@@ -45,6 +46,7 @@ class GetProjectBudget(
                 equipmentCosts = equipmentPerPartner[partnerId] ?: BigDecimal.ZERO,
                 infrastructureCosts = infrastructurePerPartner[partnerId] ?: BigDecimal.ZERO,
                 lumpSumContribution = lumpSumContributionPerPartner[partnerId] ?: BigDecimal.ZERO,
+                unitCosts = unitCostsPerPartner[partnerId] ?: BigDecimal.ZERO,
             )
         }
     }

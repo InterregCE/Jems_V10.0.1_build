@@ -20,6 +20,7 @@ fun PartnerBudget.toOutputDto() =
         otherCosts = extractOtherCosts(),
         totalSum = totalSum(),
         lumpSumContribution = lumpSumContribution,
+        unitCosts = unitCosts,
     )
 
 fun Collection<PartnerBudget>.toOutputDto() = map { it.toOutputDto() }

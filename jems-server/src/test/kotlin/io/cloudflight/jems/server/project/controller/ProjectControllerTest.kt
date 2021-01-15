@@ -181,6 +181,7 @@ class ProjectControllerTest {
                 equipmentCosts = toBd(7500),
                 infrastructureCosts = toBd(2500),
                 lumpSumContribution = toBd(1213),
+                unitCosts = toBd(1645),
             ),
         )
         every { getProjectBudgetInteractor.getBudget(1L) } returns projectBudget
@@ -193,8 +194,9 @@ class ProjectControllerTest {
                 equipmentCosts = toBd(7500),
                 infrastructureCosts = toBd(2500),
                 officeAndAdministrationCosts = toBd(231), // as 7% from 15% from total
-                totalSum = toBd(26744),
+                totalSum = toBd(28389),
                 lumpSumContribution = toBd(1213),
+                unitCosts = toBd(1645),
             ),
             ProjectPartnerBudgetDTO(
                 partner = outputPartner2,

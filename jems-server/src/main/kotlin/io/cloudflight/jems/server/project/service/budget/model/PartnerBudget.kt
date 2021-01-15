@@ -20,7 +20,7 @@ data class PartnerBudget(
     val infrastructureCosts: BigDecimal = BigDecimal.ZERO,
 
     val lumpSumContribution: BigDecimal = BigDecimal.ZERO,
-
+    val unitCosts: BigDecimal = BigDecimal.ZERO,
 ) {
     fun extractStaffCosts(): BigDecimal =
         if (staffCostsFlatRate != null) {
@@ -64,5 +64,6 @@ data class PartnerBudget(
             .add(extractOfficeAndAdministrationCosts())
             .add(extractOtherCosts())
             .add(lumpSumContribution)
+            .add(unitCosts)
 
 }

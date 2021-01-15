@@ -18,7 +18,7 @@ export class BudgetPageComponent implements OnInit {
   projectId = this.activatedRoute?.snapshot?.params?.projectId;
   displayedColumns: string[] = [
     'partner', 'country', 'staffCosts', 'officeAndAdministrationCosts', 'travelCosts',
-    'externalCosts', 'equipmentCosts', 'infrastructureCosts', 'otherCosts', 'lumpSums', 'total'
+    'externalCosts', 'equipmentCosts', 'infrastructureCosts', 'otherCosts', 'lumpSums', 'unitCosts', 'total'
   ];
 
   totalStaffCosts: number;
@@ -29,6 +29,7 @@ export class BudgetPageComponent implements OnInit {
   totalInfrastructureCosts: number;
   totalOtherCosts: number;
   totalLumpSums: number;
+  totalUnitCosts: number;
   total: number;
 
   budget$: Observable<ProjectPartnerBudgetDTO[]> = this.projectService.getProjectBudget(this.projectId)
@@ -57,6 +58,7 @@ export class BudgetPageComponent implements OnInit {
     this.totalInfrastructureCosts = NumberService.sum(budgets.map(budget => budget.infrastructureCosts));
     this.totalOtherCosts = NumberService.sum(budgets.map(budget => budget.otherCosts));
     this.totalLumpSums = NumberService.sum(budgets.map(budget => budget.lumpSumContribution));
+    this.totalUnitCosts = NumberService.sum(budgets.map(budget => budget.unitCosts));
     this.total = NumberService.sum(budgets.map(budget => budget.totalSum));
   }
 }
