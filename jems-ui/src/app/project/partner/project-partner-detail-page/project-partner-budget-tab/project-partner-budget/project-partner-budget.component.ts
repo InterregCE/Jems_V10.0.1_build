@@ -37,7 +37,7 @@ export class ProjectPartnerBudgetComponent implements OnInit {
   data$: Observable<{
     budgetTables: PartnerBudgetTables,
     investments: number[],
-    unitCostIds: ProgrammeUnitCostDTO[],
+    unitCosts: ProgrammeUnitCostDTO[],
     staffCostsFlatRateTotal: number,
     officeAndAdministrationFlatRateTotal: number,
     travelAndAccommodationFlatRateTotal: number,
@@ -85,18 +85,18 @@ export class ProjectPartnerBudgetComponent implements OnInit {
       this.pageStore.budgets$,
       this.pageStore.budgetOptions$,
       this.pageStore.investmentIds$,
-      this.pageStore.unitCostIds$,
+      this.pageStore.unitCosts$,
       this.pageStore.isProjectEditable$.pipe(startWith(false)),
       this.staffCostsFlatRateTotal$,
       this.officeAndAdministrationFlatRateTotal$,
       this.travelAndAccommodationFlatRateTotal$,
       this.otherCostsFlatRateTotal$
     ]).pipe(
-      map(([budgetTables, budgetOptions, investments, unitCostIds, staffCostsFlatRateTotal, officeAndAdministrationFlatRateTotal, travelAndAccommodationFlatRateTotal, otherCostsFlatRateTotal]: any) => {
+      map(([budgetTables, budgetOptions, investments, unitCosts, staffCostsFlatRateTotal, officeAndAdministrationFlatRateTotal, travelAndAccommodationFlatRateTotal, otherCostsFlatRateTotal]: any) => {
         return {
           budgetTables,
           investments,
-          unitCostIds,
+          unitCosts,
           staffCostsFlatRateTotal,
           officeAndAdministrationFlatRateTotal,
           travelAndAccommodationFlatRateTotal,
@@ -165,7 +165,7 @@ export class ProjectPartnerBudgetComponent implements OnInit {
       new GeneralBudgetTable(this.getTotalOf(this.external), this.external?.value.items.map((item: any) => new GeneralBudgetTableEntry({...item}))),
       new GeneralBudgetTable(this.getTotalOf(this.equipment), this.equipment?.value.items.map((item: any) => new GeneralBudgetTableEntry({...item}))),
       new GeneralBudgetTable(this.getTotalOf(this.infrastructure), this.infrastructure?.value.items.map((item: any) => new GeneralBudgetTableEntry({...item}))),
-      new UnitCostsBudgetTable(this.getTotalOf(this.unitCosts), this.unitCosts?.value.items.map((item: any) => new UnitCostsBudgetTableEntry({...item})))
+      new UnitCostsBudgetTable(this.getTotalOf(this.unitCosts), this.unitCosts?.value.items.map((item: any) => new UnitCostsBudgetTableEntry({...item}, item.unitCost?.id)))
     );
   }
 
@@ -191,10 +191,10 @@ export class ProjectPartnerBudgetComponent implements OnInit {
         items: this.formBuilder.array([], [Validators.maxLength(this.constants.MAX_NUMBER_OF_ITEMS)]),
         total: [0, [Validators.max(this.constants.MAX_VALUE), Validators.min(this.constants.MIN_VALUE)]]
       }),
-      unitCosts: this.formBuilder.group({
+      unitCost: this.formBuilder.group({
         items: this.formBuilder.array([], [Validators.maxLength(this.constants.MAX_NUMBER_OF_ITEMS)]),
         total: [0, [Validators.max(this.constants.MAX_VALUE), Validators.min(this.constants.MIN_VALUE)]]
-      })
+      }),
     });
   }
 
@@ -223,7 +223,7 @@ export class ProjectPartnerBudgetComponent implements OnInit {
   }
 
   get unitCosts(): FormGroup {
-    return this.budgetsForm.get(this.constants.FORM_CONTROL_NAMES.unitCosts) as FormGroup;
+    return this.budgetsForm.get(this.constants.FORM_CONTROL_NAMES.unitCost) as FormGroup;
   }
 
 }

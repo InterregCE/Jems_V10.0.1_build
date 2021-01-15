@@ -26,7 +26,7 @@ class UpdateBudgetUnitCosts(
 
         persistence.deleteAllUnitCostsExceptFor(
             partnerId = partnerId,
-            idsToKeep = unitCosts.filter { it.id !== null }.map { it.id!! }
+            idsToKeep = unitCosts.mapNotNullTo(HashSet()) { it.id }
         )
 
         return persistence.createOrUpdateBudgetUnitCosts(partnerId, unitCosts.map { it.apply { this.truncateNumbers() } })

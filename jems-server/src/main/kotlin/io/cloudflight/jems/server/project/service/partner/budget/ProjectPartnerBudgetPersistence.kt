@@ -40,7 +40,7 @@ interface ProjectPartnerBudgetPersistence {
 
     fun getBudgetUnitCosts(partnerId: Long): List<BudgetUnitCostEntry>
     fun getBudgetUnitCostTotal(partnerId: Long): BigDecimal
-    fun deleteAllUnitCostsExceptFor(partnerId: Long, idsToKeep: List<Long>)
+    fun deleteAllUnitCostsExceptFor(partnerId: Long, idsToKeep: Set<Long>)
     fun createOrUpdateBudgetUnitCosts(partnerId: Long, unitCosts: List<BudgetUnitCostEntry>): List<BudgetUnitCostEntry>
     fun deleteUnitCosts(partnerId: Long)
 }

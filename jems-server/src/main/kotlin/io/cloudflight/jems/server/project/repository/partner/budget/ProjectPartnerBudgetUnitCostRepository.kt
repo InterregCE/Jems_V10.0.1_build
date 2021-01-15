@@ -21,6 +21,6 @@ interface ProjectPartnerBudgetUnitCostRepository : CrudRepository<ProjectPartner
 
     fun deleteAllByPartnerId(partnerId: Long)
 
-    fun deleteAllByPartnerIdAndIdNotIn(partnerId: Long, idList: List<Long>)
+    fun deleteAllByPartnerIdAndIdNotIn(partnerId: Long, idList: Set<Long>)
 
 }

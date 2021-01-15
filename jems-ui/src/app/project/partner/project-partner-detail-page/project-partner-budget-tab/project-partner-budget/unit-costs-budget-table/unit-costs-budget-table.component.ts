@@ -30,14 +30,14 @@ import { ProgrammeUnitCostDTO } from '@cat/api';
 export class UnitCostsBudgetTableComponent implements OnInit, OnChanges {
 
   constants = ProjectPartnerBudgetConstants;
-  columnsToDisplay = ['unitCostId', 'description', 'unitType', 'numberOfUnits', 'pricePerUnit', 'total', 'action'];
+  columnsToDisplay = ['unitCost', 'description', 'unitType', 'numberOfUnits', 'pricePerUnit', 'total', 'action'];
 
   @Input()
   editable: boolean;
   @Input()
   unitCostTable: UnitCostsBudgetTable;
   @Input()
-  unitCostIds: ProgrammeUnitCostDTO[];
+  availableUnitCosts: ProgrammeUnitCostDTO[];
 
   budgetForm: FormGroup;
   dataSource: MatTableDataSource<AbstractControl>;
@@ -48,14 +48,16 @@ export class UnitCostsBudgetTableComponent implements OnInit, OnChanges {
   }
 
   ngOnInit(): void {
+
     this.dataSource = new MatTableDataSource<AbstractControl>(this.items.controls);
     this.numberOfItems$ = this.items.valueChanges.pipe(startWith(null), map(() => this.items.length));
+
     this.items.valueChanges.subscribe(() => {
       this.dataSource.data = this.items.controls;
       this.items.controls.forEach(control => {
-        this.setRowSum(control as FormGroup);
+        this.setRowTotal(control as FormGroup);
       });
-      this.setTotal();
+      this.setTableTotal();
     });
 
     this.formService.reset$.pipe(
@@ -78,11 +80,8 @@ export class UnitCostsBudgetTableComponent implements OnInit, OnChanges {
   addNewItem(): void {
     this.items.push(this.formBuilder.group({
       id: null,
-      unitCostId: [null],
-      description: [this.multiLanguageInputService.multiLanguageFormFieldDefaultValue()],
-      unitType: [null],
+      unitCost: null,
       numberOfUnits: [1, [Validators.max(this.constants.MAX_VALUE), Validators.min(this.constants.MIN_VALUE)]],
-      pricePerUnit: [0, [Validators.max(this.constants.MAX_VALUE), Validators.min(this.constants.MIN_VALUE)]],
       rowSum: [0, [Validators.max(this.constants.MAX_VALUE), Validators.min(this.constants.MIN_VALUE)]],
       new: [true]
     }));
@@ -92,20 +91,18 @@ export class UnitCostsBudgetTableComponent implements OnInit, OnChanges {
   private resetUnitCostFormGroup(unitCostTable: UnitCostsBudgetTable): void {
     this.total.setValue(unitCostTable.total);
     this.items.clear();
-    unitCostTable.entries.forEach(item => {
+    console.log(unitCostTable.entries);
+    this.unitCostTable.entries.forEach(item => {
       this.items.push(this.formBuilder.group({
         id: [item.id],
-        unitCostId: [item.unitCostId],
-        description: [item.description],
-        unitType: [item.unitType],
+        unitCost: this.availableUnitCosts.find(it => it.id === item.unitCostId),
         numberOfUnits: [item.numberOfUnits, [Validators.max(this.constants.MAX_VALUE), Validators.min(this.constants.MIN_VALUE)]],
-        pricePerUnit: [item.pricePerUnit, [Validators.max(this.constants.MAX_VALUE), Validators.min(this.constants.MIN_VALUE)]],
         rowSum: [item.rowSum, [Validators.max(this.constants.MAX_VALUE), Validators.min(this.constants.MIN_VALUE)]],
       }));
     });
   }
 
-  private setTotal(): void {
+  private setTableTotal(): void {
     let total = 0;
     this.items.controls.forEach(control => {
       total = NumberService.sum([control.get(this.constants.FORM_CONTROL_NAMES.rowSum)?.value || 0, total]);
@@ -113,22 +110,22 @@ export class UnitCostsBudgetTableComponent implements OnInit, OnChanges {
     this.total.setValue(NumberService.truncateNumber(total));
   }
 
-  private setRowSum(control: FormGroup): void {
+  private setRowTotal(control: FormGroup): void {
     const numberOfUnits = control.get(this.constants.FORM_CONTROL_NAMES.numberOfUnits)?.value || 0;
-    const pricePerUnit = control.get(this.constants.FORM_CONTROL_NAMES.pricePerUnit)?.value || 0;
+    const pricePerUnit = control.get(this.constants.FORM_CONTROL_NAMES.unitCost)?.value?.costPerUnit || 0;
     control.get(this.constants.FORM_CONTROL_NAMES.rowSum)?.setValue(NumberService.truncateNumber(NumberService.product([numberOfUnits, pricePerUnit])), {emitEvent: false});
   }
 
-  get unitCosts(): FormGroup {
-    return this.budgetForm.get(this.constants.FORM_CONTROL_NAMES.unitCosts) as FormGroup;
+  get table(): FormGroup {
+    return this.budgetForm.get(this.constants.FORM_CONTROL_NAMES.unitCost) as FormGroup;
   }
 
   get items(): FormArray {
-    return this.unitCosts.get(this.constants.FORM_CONTROL_NAMES.items) as FormArray;
+    return this.table.get(this.constants.FORM_CONTROL_NAMES.items) as FormArray;
   }
 
   get total(): FormControl {
-    return this.unitCosts.get(this.constants.FORM_CONTROL_NAMES.total) as FormControl;
+    return this.table.get(this.constants.FORM_CONTROL_NAMES.total) as FormControl;
   }
 
 }

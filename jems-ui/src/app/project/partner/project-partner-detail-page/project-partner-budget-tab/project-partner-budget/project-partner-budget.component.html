@@ -89,9 +89,10 @@
                 <h6 class="header">{{'project.partner.budget.unitcosts' | translate}}</h6>
                 <app-unit-costs-budget-table
                         *ngIf="unitCosts"
-                        [unitCostIds]="data.unitCostIds"
+                        [availableUnitCosts]="data.unitCosts"
                         [unitCostTable]="data.budgetTables.unitCosts"
-                        [editable]="budgetsForm.enabled"></app-unit-costs-budget-table>
+                        [editable]="budgetsForm.enabled">
+                </app-unit-costs-budget-table>
             </div>
         </form>
     </app-form>

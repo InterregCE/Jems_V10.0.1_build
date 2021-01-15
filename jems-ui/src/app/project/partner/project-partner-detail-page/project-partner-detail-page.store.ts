@@ -37,7 +37,7 @@ export class ProjectPartnerDetailPageStore {
   totalBudget$: Observable<number>;
   isProjectEditable$: Observable<boolean>;
   investmentIds$: Observable<number[]>;
-  unitCostIds$: Observable<ProgrammeUnitCostDTO[]>;
+  unitCosts$: Observable<ProgrammeUnitCostDTO[]>;
 
   private updateBudgetOptionsEvent$ = new Subject();
   private updateBudgetEvent$ = new Subject();
@@ -48,7 +48,7 @@ export class ProjectPartnerDetailPageStore {
               private projectPartnerBudgetService: ProjectPartnerBudgetService
   ) {
     this.investmentIds$ = this.projectWorkPackagePageStore.workPackageInvestmentIdsOfProject$.pipe(shareReplay(1));
-    this.unitCostIds$ = this.projectStore.projectCall$.pipe(
+    this.unitCosts$ = this.projectStore.projectCall$.pipe(
       map(projectCall => projectCall.unitCosts),
       shareReplay(1)
     );
@@ -198,7 +198,7 @@ export class ProjectPartnerDetailPageStore {
   }
 
   private toUnitCostsTable(rawEntries: BudgetUnitCostEntryDTO[]): UnitCostsBudgetTable {
-    const entries = rawEntries.map(entry => new UnitCostsBudgetTableEntry({...entry}));
+    const entries = rawEntries.map(entry => new UnitCostsBudgetTableEntry({...entry}, entry.unitCostId));
     return new UnitCostsBudgetTable(this.calculateUnitCostTableTotal(rawEntries), entries);
   }
 

@@ -1,21 +1,21 @@
 <ng-container *ngIf="(numberOfItems$ | async) as numberOfItems; else addTableButton">
     <ng-container [formGroup]="budgetForm">
-        <ng-container [formGroup]="unitCosts">
+        <ng-container [formGroup]="table">
             <mat-table
                     appTableConfig
                     [widthConfig]="[{minInRem:12},{minInRem:12},{minInRem:5},{minInRem:5},{minInRem:8},{minInRem:8},{minInRem:3}]"
                     [dataSource]="dataSource" [formArrayName]="constants.FORM_CONTROL_NAMES.items"
                     class="mat-elevation-z2 unitcost-budget-table">
-                <ng-container sticky matColumnDef="unitCostId">
+                <ng-container sticky matColumnDef="unitCost">
                     <mat-header-cell
                             *matHeaderCellDef> {{'project.partner.budget.table.unitcosts.selection' | translate}} </mat-header-cell>
                     <mat-cell *matCellDef="let control;  let i = index" [formGroupName]="i">
                         <mat-form-field [appFormFieldWidth]="'small'">
                             <mat-select panelClass="material-select-panel"
-                                        [formControlName]="constants.FORM_CONTROL_NAMES.unitCosts"
+                                        [formControlName]="constants.FORM_CONTROL_NAMES.unitCost"
                                         [disableOptionCentering]="true">
-                                <mat-option></mat-option>
-                                <mat-option *ngFor="let unitCost of unitCostIds" [value]="unitCost.id">
+                                <mat-option [value]="null"></mat-option>
+                                <mat-option *ngFor="let unitCost of availableUnitCosts" [value]="unitCost">
                                     {{unitCost.name}}
                                 </mat-option>
                             </mat-select>
@@ -28,7 +28,7 @@
                     <mat-header-cell
                             *matHeaderCellDef> {{'project.partner.budget.table.description' | translate}} </mat-header-cell>
                     <mat-cell *matCellDef="let control;  let i = index" [formGroupName]="i">
-                        <div class="text-overflow-ellipsis">{{control.get(constants.FORM_CONTROL_NAMES.description).value}}</div>
+                        <div class="text-overflow-ellipsis">{{control.get(constants.FORM_CONTROL_NAMES.unitCost)?.value?.description}}</div>
                     </mat-cell>
                     <mat-footer-cell *matFooterCellDef></mat-footer-cell>
                 </ng-container>
@@ -37,15 +37,15 @@
                     <mat-header-cell
                             *matHeaderCellDef> {{'project.partner.budget.table.unit.type' | translate}} </mat-header-cell>
                     <mat-cell *matCellDef="let control;  let i = index" [formGroupName]="i">
-                        <div class="text-overflow-ellipsis">{{control.get(constants.FORM_CONTROL_NAMES.unitType).value}}</div>
+                        <div class="text-overflow-ellipsis">{{control.get(constants.FORM_CONTROL_NAMES.unitCost)?.value?.type}}</div>
                     </mat-cell>
                     <mat-footer-cell *matFooterCellDef></mat-footer-cell>
                 </ng-container>
 
                 <ng-container matColumnDef="numberOfUnits">
-                    <mat-header-cell
+                    <mat-header-cell class="justify-end"
                             *matHeaderCellDef> {{'project.partner.budget.table.number.of.units' | translate}} </mat-header-cell>
-                    <mat-cell *matCellDef="let control;  let i = index" [formGroupName]="i">
+                    <mat-cell *matCellDef="let control;  let i = index" [formGroupName]="i" class="justify-end">
                         <mat-form-field [appFormFieldWidth]="5">
                             <input currencyMask
                                    [options]="{min: constants.MIN_VALUE, max: constants.MAX_VALUE, align: 'right'}"
@@ -57,10 +57,10 @@
                 </ng-container>
 
                 <ng-container matColumnDef="pricePerUnit">
-                    <mat-header-cell
+                    <mat-header-cell class="justify-end"
                             *matHeaderCellDef> {{'project.partner.budget.table.price.per.unit' | translate}} </mat-header-cell>
-                    <mat-cell *matCellDef="let control;  let i = index" [formGroupName]="i">
-                        <div class="text-overflow-ellipsis">{{control.get(constants.FORM_CONTROL_NAMES.pricePerUnit).value | asMoney}}</div>
+                    <mat-cell *matCellDef="let control;  let i = index" [formGroupName]="i" class="justify-end">
+                        <div class="text-overflow-ellipsis">{{control.get(constants.FORM_CONTROL_NAMES.unitCost)?.value?.costPerUnit | asMoney}}</div>
                     </mat-cell>
                     <mat-footer-cell *matFooterCellDef></mat-footer-cell>
                 </ng-container>
