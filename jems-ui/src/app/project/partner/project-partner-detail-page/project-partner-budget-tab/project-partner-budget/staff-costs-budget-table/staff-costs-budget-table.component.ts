@@ -67,7 +67,7 @@ export class StaffCostsBudgetTableComponent implements OnInit, OnChanges {
   }
 
   ngOnChanges(changes: SimpleChanges): void {
-    if (changes.staffCostTable) {
+    if (changes.staffCostTable || changes.editable) {
       this.resetStaffFormGroup(this.staffCostTable);
     }
   }
@@ -107,6 +107,7 @@ export class StaffCostsBudgetTableComponent implements OnInit, OnChanges {
         rowSum: [item.rowSum, [Validators.max(this.constants.MAX_VALUE), Validators.min(this.constants.MIN_VALUE)]],
       }));
     });
+    this.formService.resetEditable();
   }
 
   private setTotal(): void {

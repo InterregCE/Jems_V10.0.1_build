@@ -16,7 +16,7 @@ import {NumberService} from '../../../../../../common/services/number.service';
 import {FormService} from '@common/components/section/form/form.service';
 import {MultiLanguageInputService} from '../../../../../../common/services/multi-language-input.service';
 import {UntilDestroy, untilDestroyed} from '@ngneat/until-destroy';
-import { ProgrammeUnitCostDTO } from '@cat/api';
+import {ProgrammeUnitCostDTO} from '@cat/api';
 import {UnitCostsBudgetTable} from '../../../../../model/budget/unit-costs-budget-table';
 
 @UntilDestroy()
@@ -67,7 +67,7 @@ export class UnitCostsBudgetTableComponent implements OnInit, OnChanges {
   }
 
   ngOnChanges(changes: SimpleChanges): void {
-    if (changes.unitCostTable) {
+    if (changes.unitCostTable || changes.editable) {
       this.resetUnitCostFormGroup(this.unitCostTable);
     }
   }
@@ -100,6 +100,7 @@ export class UnitCostsBudgetTableComponent implements OnInit, OnChanges {
         rowSum: [item.rowSum, [Validators.max(this.constants.MAX_VALUE), Validators.min(this.constants.MIN_VALUE)]],
       }));
     });
+    this.formService.resetEditable();
   }
 
   private setTableTotal(): void {
