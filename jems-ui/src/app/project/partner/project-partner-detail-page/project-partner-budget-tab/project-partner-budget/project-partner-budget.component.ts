@@ -84,7 +84,7 @@ export class ProjectPartnerBudgetComponent implements OnInit {
     this.data$ = combineLatest([
       this.pageStore.budgets$,
       this.pageStore.budgetOptions$,
-      this.pageStore.investmentSummaries$,
+      this.pageStore.investmentIds$,
       this.pageStore.unitCosts$,
       this.staffCostsFlatRateTotal$,
       this.officeAndAdministrationFlatRateTotal$,

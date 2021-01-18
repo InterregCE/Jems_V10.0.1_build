@@ -2,7 +2,6 @@ package io.cloudflight.jems.server.project.repository.partner.budget
 
 import io.cloudflight.jems.server.common.exception.ResourceNotFoundException
 import io.cloudflight.jems.server.programme.repository.costoption.ProgrammeUnitCostRepository
-import io.cloudflight.jems.server.project.repository.budget.ProjectLumpSumRepository
 import io.cloudflight.jems.server.project.service.partner.budget.ProjectPartnerBudgetPersistence
 import io.cloudflight.jems.server.project.service.partner.model.BudgetGeneralCostEntry
 import io.cloudflight.jems.server.project.service.partner.model.BudgetStaffCostEntry
@@ -20,7 +19,6 @@ class ProjectPartnerBudgetPersistenceProvider(
     private val budgetEquipmentRepository: ProjectPartnerBudgetEquipmentRepository,
     private val budgetInfrastructureRepository: ProjectPartnerBudgetInfrastructureRepository,
     private val budgetUnitCostRepository: ProjectPartnerBudgetUnitCostRepository,
-    private val budgetLumpSumRepository: ProjectLumpSumRepository,
     private val programmeUnitCostRepository: ProgrammeUnitCostRepository
 ) : ProjectPartnerBudgetPersistence {
 
@@ -112,6 +110,7 @@ class ProjectPartnerBudgetPersistenceProvider(
     override fun getBudgetInfrastructureAndWorksCostTotal(partnerId: Long): BigDecimal =
         budgetInfrastructureRepository.sumTotalForPartner(partnerId) ?: BigDecimal.ZERO
 
+
     @Transactional(readOnly = true)
     override fun getBudgetExternalExpertiseAndServicesCosts(partnerId: Long) =
         budgetExternalRepository.findAllByBasePropertiesPartnerIdOrderByIdAsc(partnerId).externalEntitiesToBudgetGeneralEntries()
@@ -153,7 +152,4 @@ class ProjectPartnerBudgetPersistenceProvider(
     override fun getBudgetEquipmentCostTotal(partnerId: Long): BigDecimal =
         budgetEquipmentRepository.sumTotalForPartner(partnerId) ?: BigDecimal.ZERO
 
-    @Transactional(readOnly = true)
-    override fun getBudgetLumpSumsCostTotal(partnerId: Long)=
-        budgetLumpSumRepository.getPartnerLumpSumsTotal(partnerId)
 }

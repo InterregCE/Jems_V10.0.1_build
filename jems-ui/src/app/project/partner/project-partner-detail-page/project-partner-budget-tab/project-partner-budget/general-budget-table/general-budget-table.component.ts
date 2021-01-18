@@ -17,7 +17,6 @@ import {FormService} from '@common/components/section/form/form.service';
 import {MultiLanguageInputService} from '../../../../../../common/services/multi-language-input.service';
 import {UntilDestroy, untilDestroyed} from '@ngneat/until-destroy';
 import {GeneralBudgetTable} from '../../../../../model/budget/general-budget-table';
-import {InvestmentSummary} from '../../../../../work-package/work-package-detail-page/workPackageInvestment';
 
 @UntilDestroy()
 @Component({
@@ -38,7 +37,7 @@ export class GeneralBudgetTableComponent implements OnInit, OnChanges {
   @Input()
   budgetTable: GeneralBudgetTable;
   @Input()
-  investmentSummaries: InvestmentSummary[];
+  investmentIds: number[];
 
   budgetForm: FormGroup;
   dataSource: MatTableDataSource<AbstractControl>;

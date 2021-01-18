@@ -1,13 +1,10 @@
 package io.cloudflight.jems.server.project.service.partner.budget.get_budget_total_cost
 
 import io.cloudflight.jems.server.UnitTest
-import io.cloudflight.jems.server.project.service.budget.model.BudgetCostsCalculationResult
-import io.cloudflight.jems.server.project.service.common.BudgetCostsCalculatorService
 import io.cloudflight.jems.server.project.service.partner.budget.ProjectPartnerBudgetPersistence
 import io.cloudflight.jems.server.project.service.partner.budget.get_budget_options.GetBudgetOptionsInteractor
 import io.cloudflight.jems.server.project.service.partner.budget.percentage
 import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerBudgetOptions
-import io.cloudflight.jems.server.toScaledBigDecimal
 import io.mockk.confirmVerified
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
@@ -21,22 +18,17 @@ import java.math.BigDecimal
 internal class GetBudgetTotalCostTest : UnitTest() {
 
     val partnerId = 1L
-    private val staffCostTotal = 1_324_500.0.toScaledBigDecimal()
-    private val travelCostTotal = 1_160_040.toScaledBigDecimal()
-    private val equipmentCostTotal = 321.toScaledBigDecimal()
-    private val externalCostTotal = 662.25.toScaledBigDecimal()
-    private val infrastructureCostTotal = 773.36.toScaledBigDecimal()
-    private val unitCostTotal = 563.36.toScaledBigDecimal()
-    private val lumpSumsTotal = 123.4.toScaledBigDecimal()
+    private val staffCostTotal = BigDecimal.valueOf(1_324_500.00)
+    private val travelAndAccommodationCostTotal = BigDecimal.valueOf(1_160_040.00)
+    private val equipmentCostTotal = BigDecimal.valueOf(321)
+    private val externalExpertiseAndServicesCostTotal = BigDecimal.valueOf(662.25)
+    private val infrastructureAndWorksCostTotal = BigDecimal.valueOf(773.36)
 
     @MockK
     lateinit var persistence: ProjectPartnerBudgetPersistence
 
     @MockK
-    lateinit var getBudgetOptions: GetBudgetOptionsInteractor
-
-    @MockK
-    lateinit var budgetCostsCalculatorService: BudgetCostsCalculatorService
+    lateinit var getBudgetOptionsInteractor: GetBudgetOptionsInteractor
 
     @InjectMockKs
     lateinit var getBudgetTotalCost: GetBudgetTotalCost
@@ -46,431 +38,147 @@ internal class GetBudgetTotalCostTest : UnitTest() {
 
         every { persistence.getBudgetStaffCostTotal(partnerId) } returns staffCostTotal
         every { persistence.getBudgetEquipmentCostTotal(partnerId) } returns equipmentCostTotal
-        every { persistence.getBudgetExternalExpertiseAndServicesCostTotal(partnerId) } returns externalCostTotal
-        every { persistence.getBudgetInfrastructureAndWorksCostTotal(partnerId) } returns infrastructureCostTotal
-        every { persistence.getBudgetTravelAndAccommodationCostTotal(partnerId) } returns travelCostTotal
-        every { persistence.getBudgetUnitCostTotal(partnerId) } returns unitCostTotal
-        every { persistence.getBudgetLumpSumsCostTotal(partnerId) } returns lumpSumsTotal
+        every { persistence.getBudgetExternalExpertiseAndServicesCostTotal(partnerId) } returns externalExpertiseAndServicesCostTotal
+        every { persistence.getBudgetInfrastructureAndWorksCostTotal(partnerId) } returns infrastructureAndWorksCostTotal
+        every { persistence.getBudgetTravelAndAccommodationCostTotal(partnerId) } returns travelAndAccommodationCostTotal
     }
 
     @Test
     fun `should return sum of budget cost entries for the specified partner when budgetOptions is null `() {
 
-        every { getBudgetOptions.getBudgetOptions(partnerId) } returns null
-        every {
-            budgetCostsCalculatorService.calculateCosts(
-                null,
-                externalCostTotal,
-                equipmentCostTotal,
-                infrastructureCostTotal,
-                travelCostTotal,
-                staffCostTotal
-            )
-        } returns BudgetCostsCalculationResult(staffCostTotal, travelCostTotal, BigDecimal.ZERO, BigDecimal.ZERO)
-
+        every { getBudgetOptionsInteractor.getBudgetOptions(partnerId) } returns null
 
         val result = getBudgetTotalCost.getBudgetTotalCost(partnerId)
 
-        verify(atLeast = 1) { getBudgetOptions.getBudgetOptions(partnerId) }
+        verify(atLeast = 1) { getBudgetOptionsInteractor.getBudgetOptions(partnerId) }
         verify(atLeast = 1) { persistence.getBudgetStaffCostTotal(partnerId) }
         verify(atLeast = 1) { persistence.getBudgetEquipmentCostTotal(partnerId) }
         verify(atLeast = 1) { persistence.getBudgetExternalExpertiseAndServicesCostTotal(partnerId) }
         verify(atLeast = 1) { persistence.getBudgetInfrastructureAndWorksCostTotal(partnerId) }
         verify(atLeast = 1) { persistence.getBudgetTravelAndAccommodationCostTotal(partnerId) }
-        verify(atLeast = 1) { persistence.getBudgetUnitCostTotal(partnerId) }
-        verify(atLeast = 1) { persistence.getBudgetLumpSumsCostTotal(partnerId) }
-        verify(atLeast = 1) {
-            budgetCostsCalculatorService.calculateCosts(
-                null,
-                externalCostTotal,
-                equipmentCostTotal,
-                infrastructureCostTotal,
-                travelCostTotal,
-                staffCostTotal
-            )
-        }
-        confirmVerified(persistence, budgetCostsCalculatorService)
+        confirmVerified(persistence)
 
-        assertEquals(
-            sumOf(
-                staffCostTotal,
-                travelCostTotal,
-                equipmentCostTotal,
-                externalCostTotal,
-                infrastructureCostTotal,
-                unitCostTotal,
-                lumpSumsTotal
-            ), result
-        )
+        assertEquals(sumOf(staffCostTotal, travelAndAccommodationCostTotal, equipmentCostTotal, externalExpertiseAndServicesCostTotal, infrastructureAndWorksCostTotal), result)
     }
 
     @Test
     fun `should return sum of budget cost entries for the specified partner when no flat rate is set in the budgetOptions`() {
         val budgetOptions = newBudgetOptionsInstance(partnerId = partnerId)
 
-        every { getBudgetOptions.getBudgetOptions(partnerId) } returns budgetOptions
-        every {
-            budgetCostsCalculatorService.calculateCosts(
-                budgetOptions,
-                externalCostTotal,
-                equipmentCostTotal,
-                infrastructureCostTotal,
-                travelCostTotal,
-                staffCostTotal
-            )
-        } returns BudgetCostsCalculationResult(staffCostTotal, travelCostTotal, BigDecimal.ZERO, BigDecimal.ZERO)
+        every { getBudgetOptionsInteractor.getBudgetOptions(partnerId) } returns budgetOptions
 
         val result = getBudgetTotalCost.getBudgetTotalCost(partnerId)
 
-        verify(atLeast = 1) { getBudgetOptions.getBudgetOptions(partnerId) }
+        verify(atLeast = 1) { getBudgetOptionsInteractor.getBudgetOptions(partnerId) }
         verify(atLeast = 1) { persistence.getBudgetStaffCostTotal(partnerId) }
         verify(atLeast = 1) { persistence.getBudgetEquipmentCostTotal(partnerId) }
         verify(atLeast = 1) { persistence.getBudgetExternalExpertiseAndServicesCostTotal(partnerId) }
         verify(atLeast = 1) { persistence.getBudgetInfrastructureAndWorksCostTotal(partnerId) }
         verify(atLeast = 1) { persistence.getBudgetTravelAndAccommodationCostTotal(partnerId) }
-        verify(atLeast = 1) { persistence.getBudgetUnitCostTotal(partnerId) }
-        verify(atLeast = 1) { persistence.getBudgetLumpSumsCostTotal(partnerId) }
-        verify(atLeast = 1) {
-            budgetCostsCalculatorService.calculateCosts(
-                budgetOptions,
-                externalCostTotal,
-                equipmentCostTotal,
-                infrastructureCostTotal,
-                travelCostTotal,
-                staffCostTotal
-            )
-        }
-        confirmVerified(persistence, budgetCostsCalculatorService)
+        confirmVerified(persistence)
 
-        assertEquals(
-            sumOf(
-                staffCostTotal,
-                travelCostTotal,
-                equipmentCostTotal,
-                externalCostTotal,
-                infrastructureCostTotal,
-                unitCostTotal,
-                lumpSumsTotal
-            ), result
-        )
+        assertEquals(sumOf(staffCostTotal, travelAndAccommodationCostTotal, equipmentCostTotal, externalExpertiseAndServicesCostTotal, infrastructureAndWorksCostTotal), result)
     }
 
     @Test
     fun `should return sum of budget cost entries and flat rate costs for the specified partner when travelAndAccommodationOnStaffCostsFlatRate is set in the budgetOptions`() {
 
-        val budgetOptions =
-            newBudgetOptionsInstance(partnerId = partnerId, travelAndAccommodationOnStaffCostsFlatRate = 10)
-        val expectedTravelCostTotal =
-            staffCostTotal.percentage(budgetOptions.travelAndAccommodationOnStaffCostsFlatRate!!)
-        every { getBudgetOptions.getBudgetOptions(partnerId) } returns budgetOptions
-        every {
-            budgetCostsCalculatorService.calculateCosts(
-                budgetOptions,
-                externalCostTotal,
-                equipmentCostTotal,
-                infrastructureCostTotal,
-                BigDecimal.ZERO,
-                staffCostTotal
-            )
-        } returns BudgetCostsCalculationResult(
-            staffCostTotal,
-            expectedTravelCostTotal,
-            BigDecimal.ZERO,
-            BigDecimal.ZERO
-        )
+        val budgetOptions = newBudgetOptionsInstance(partnerId = partnerId, travelAndAccommodationOnStaffCostsFlatRate = 10)
+        val travelAndAccommodationCostTotal = staffCostTotal.percentage(budgetOptions.travelAndAccommodationOnStaffCostsFlatRate!!)
+        every { getBudgetOptionsInteractor.getBudgetOptions(partnerId) } returns budgetOptions
 
         val result = getBudgetTotalCost.getBudgetTotalCost(partnerId)
 
-        verify(atLeast = 1) { getBudgetOptions.getBudgetOptions(partnerId) }
+        verify(atLeast = 1) { getBudgetOptionsInteractor.getBudgetOptions(partnerId) }
         verify(atLeast = 1) { persistence.getBudgetStaffCostTotal(partnerId) }
         verify(atLeast = 1) { persistence.getBudgetEquipmentCostTotal(partnerId) }
         verify(atLeast = 1) { persistence.getBudgetExternalExpertiseAndServicesCostTotal(partnerId) }
         verify(atLeast = 1) { persistence.getBudgetInfrastructureAndWorksCostTotal(partnerId) }
-        verify(atLeast = 1) { persistence.getBudgetUnitCostTotal(partnerId) }
-        verify(atLeast = 1) { persistence.getBudgetLumpSumsCostTotal(partnerId) }
-        verify(atLeast = 1) {
-            budgetCostsCalculatorService.calculateCosts(
-                budgetOptions,
-                externalCostTotal,
-                equipmentCostTotal,
-                infrastructureCostTotal,
-                BigDecimal.ZERO,
-                staffCostTotal
-            )
-        }
-        confirmVerified(persistence, budgetCostsCalculatorService)
+        confirmVerified(persistence)
 
-        assertEquals(
-            sumOf(
-                expectedTravelCostTotal,
-                externalCostTotal,
-                equipmentCostTotal,
-                infrastructureCostTotal,
-                staffCostTotal,
-                unitCostTotal,
-                lumpSumsTotal
-            ), result
-        )
+        assertEquals(sumOf(travelAndAccommodationCostTotal, externalExpertiseAndServicesCostTotal, equipmentCostTotal, infrastructureAndWorksCostTotal, staffCostTotal), result)
     }
 
     @Test
     fun `should return sum of budget cost entries and flat rate costs for the specified partner when staffCostsFlatRate is set in the budgetOptions`() {
 
         val budgetOptions = newBudgetOptionsInstance(partnerId = partnerId, staffCostsFlatRate = 15)
-        val expectedStaffCostTotal = sumOf(
-            travelCostTotal,
-            externalCostTotal,
-            equipmentCostTotal,
-            infrastructureCostTotal
-        ).percentage(budgetOptions.staffCostsFlatRate!!)
-        every { getBudgetOptions.getBudgetOptions(partnerId) } returns budgetOptions
-
-        every {
-            budgetCostsCalculatorService.calculateCosts(
-                budgetOptions,
-                externalCostTotal,
-                equipmentCostTotal,
-                infrastructureCostTotal,
-                travelCostTotal,
-                BigDecimal.ZERO
-            )
-        } returns BudgetCostsCalculationResult(
-            expectedStaffCostTotal,
-            travelCostTotal,
-            BigDecimal.ZERO,
-            BigDecimal.ZERO
-        )
+        val staffCostTotal = sumOf(travelAndAccommodationCostTotal, externalExpertiseAndServicesCostTotal, equipmentCostTotal, infrastructureAndWorksCostTotal).percentage(budgetOptions.staffCostsFlatRate!!)
+        every { getBudgetOptionsInteractor.getBudgetOptions(partnerId) } returns budgetOptions
 
         val result = getBudgetTotalCost.getBudgetTotalCost(partnerId)
 
-        verify(atLeast = 1) { getBudgetOptions.getBudgetOptions(partnerId) }
+        verify(atLeast = 1) { getBudgetOptionsInteractor.getBudgetOptions(partnerId) }
         verify(atLeast = 1) { persistence.getBudgetTravelAndAccommodationCostTotal(partnerId) }
         verify(atLeast = 1) { persistence.getBudgetEquipmentCostTotal(partnerId) }
         verify(atLeast = 1) { persistence.getBudgetExternalExpertiseAndServicesCostTotal(partnerId) }
         verify(atLeast = 1) { persistence.getBudgetInfrastructureAndWorksCostTotal(partnerId) }
-        verify(atLeast = 1) { persistence.getBudgetUnitCostTotal(partnerId) }
-        verify(atLeast = 1) { persistence.getBudgetLumpSumsCostTotal(partnerId) }
-        verify(atLeast = 1) {
-            budgetCostsCalculatorService.calculateCosts(
-                budgetOptions,
-                externalCostTotal,
-                equipmentCostTotal,
-                infrastructureCostTotal,
-                travelCostTotal,
-                BigDecimal.ZERO
-            )
-        }
-        confirmVerified(persistence, budgetCostsCalculatorService)
+        confirmVerified(persistence)
 
-        assertEquals(
-            sumOf(
-                travelCostTotal,
-                externalCostTotal,
-                equipmentCostTotal,
-                infrastructureCostTotal,
-                expectedStaffCostTotal,
-                unitCostTotal,
-                lumpSumsTotal
-            ), result
-        )
+        assertEquals(sumOf(travelAndAccommodationCostTotal, externalExpertiseAndServicesCostTotal, equipmentCostTotal, infrastructureAndWorksCostTotal, staffCostTotal), result)
     }
 
     @Test
     fun `should return sum of budget cost entries and flat rate costs for the specified partner when staffCostsFlatRate and travelAndAccommodationOnStaffCostsFlatRate are set in the budgetOptions`() {
 
-        val budgetOptions = newBudgetOptionsInstance(
-            partnerId = partnerId,
-            travelAndAccommodationOnStaffCostsFlatRate = 10,
-            staffCostsFlatRate = 20
-        )
-        val expectedStaffCostTotal = sumOf(
-            externalCostTotal,
-            equipmentCostTotal,
-            infrastructureCostTotal
-        ).percentage(budgetOptions.staffCostsFlatRate!!)
-        val expectedTravelCostTotal =
-            expectedStaffCostTotal.percentage(budgetOptions.travelAndAccommodationOnStaffCostsFlatRate!!)
-        every { getBudgetOptions.getBudgetOptions(partnerId) } returns budgetOptions
-
-        every {
-            budgetCostsCalculatorService.calculateCosts(
-                budgetOptions,
-                externalCostTotal,
-                equipmentCostTotal,
-                infrastructureCostTotal,
-                BigDecimal.ZERO,
-                BigDecimal.ZERO
-            )
-        } returns BudgetCostsCalculationResult(
-            expectedStaffCostTotal,
-            expectedTravelCostTotal,
-            BigDecimal.ZERO,
-            BigDecimal.ZERO
-        )
+        val budgetOptions = newBudgetOptionsInstance(partnerId = partnerId, travelAndAccommodationOnStaffCostsFlatRate = 10, staffCostsFlatRate = 20)
+        val staffCostTotal = sumOf(externalExpertiseAndServicesCostTotal, equipmentCostTotal, infrastructureAndWorksCostTotal).percentage(budgetOptions.staffCostsFlatRate!!)
+        val travelAndAccommodationCostTotal = staffCostTotal.percentage(budgetOptions.travelAndAccommodationOnStaffCostsFlatRate!!)
+        every { getBudgetOptionsInteractor.getBudgetOptions(partnerId) } returns budgetOptions
 
         val result = getBudgetTotalCost.getBudgetTotalCost(partnerId)
 
-        verify(atLeast = 1) { getBudgetOptions.getBudgetOptions(partnerId) }
+        verify(atLeast = 1) { getBudgetOptionsInteractor.getBudgetOptions(partnerId) }
         verify(atLeast = 1) { persistence.getBudgetEquipmentCostTotal(partnerId) }
         verify(atLeast = 1) { persistence.getBudgetExternalExpertiseAndServicesCostTotal(partnerId) }
         verify(atLeast = 1) { persistence.getBudgetInfrastructureAndWorksCostTotal(partnerId) }
-        verify(atLeast = 1) { persistence.getBudgetUnitCostTotal(partnerId) }
-        verify(atLeast = 1) { persistence.getBudgetLumpSumsCostTotal(partnerId) }
-        verify(atLeast = 1) {
-            budgetCostsCalculatorService.calculateCosts(
-                budgetOptions,
-                externalCostTotal,
-                equipmentCostTotal,
-                infrastructureCostTotal,
-                BigDecimal.ZERO,
-                BigDecimal.ZERO
-            )
-        }
-        confirmVerified(persistence, budgetCostsCalculatorService)
+        confirmVerified(persistence)
 
-        assertEquals(
-            sumOf(
-                expectedStaffCostTotal,
-                expectedTravelCostTotal,
-                externalCostTotal,
-                equipmentCostTotal,
-                infrastructureCostTotal,
-                unitCostTotal,
-                lumpSumsTotal
-            ), result
-        )
+        assertEquals(sumOf(staffCostTotal, travelAndAccommodationCostTotal, externalExpertiseAndServicesCostTotal, equipmentCostTotal, infrastructureAndWorksCostTotal), result)
     }
 
     @Test
     fun `should return sum of budget cost entries and flat rate costs when officeAndAdministrationOnStaffCostsFlatRate is set in the budgetOptions`() {
 
-        val budgetOptions =
-            newBudgetOptionsInstance(partnerId = partnerId, officeAndAdministrationOnStaffCostsFlatRate = 10)
-        val expectedOfficeCostTotal =
-            staffCostTotal.percentage(budgetOptions.officeAndAdministrationOnStaffCostsFlatRate!!)
-        every { getBudgetOptions.getBudgetOptions(partnerId) } returns budgetOptions
-
-        every {
-            budgetCostsCalculatorService.calculateCosts(
-                budgetOptions,
-                externalCostTotal,
-                equipmentCostTotal,
-                infrastructureCostTotal,
-                travelCostTotal,
-                staffCostTotal
-            )
-        } returns BudgetCostsCalculationResult(
-            staffCostTotal,
-            travelCostTotal,
-            expectedOfficeCostTotal,
-            BigDecimal.ZERO
-        )
-
+        val budgetOptions = newBudgetOptionsInstance(partnerId = partnerId, officeAndAdministrationOnStaffCostsFlatRate = 10)
+        val officeAndAdministrationOnStaffCostTotal = staffCostTotal.percentage(budgetOptions.officeAndAdministrationOnStaffCostsFlatRate!!)
+        every { getBudgetOptionsInteractor.getBudgetOptions(partnerId) } returns budgetOptions
 
         val result = getBudgetTotalCost.getBudgetTotalCost(partnerId)
 
-        verify(atLeast = 1) { getBudgetOptions.getBudgetOptions(partnerId) }
+        verify(atLeast = 1) { getBudgetOptionsInteractor.getBudgetOptions(partnerId) }
         verify(atLeast = 1) { persistence.getBudgetStaffCostTotal(partnerId) }
         verify(atLeast = 1) { persistence.getBudgetTravelAndAccommodationCostTotal(partnerId) }
         verify(atLeast = 1) { persistence.getBudgetEquipmentCostTotal(partnerId) }
         verify(atLeast = 1) { persistence.getBudgetExternalExpertiseAndServicesCostTotal(partnerId) }
         verify(atLeast = 1) { persistence.getBudgetInfrastructureAndWorksCostTotal(partnerId) }
-        verify(atLeast = 1) { persistence.getBudgetUnitCostTotal(partnerId) }
-        verify(atLeast = 1) { persistence.getBudgetLumpSumsCostTotal(partnerId) }
-        verify(atLeast = 1) {
-            budgetCostsCalculatorService.calculateCosts(
-                budgetOptions,
-                externalCostTotal,
-                equipmentCostTotal,
-                infrastructureCostTotal,
-                travelCostTotal,
-                staffCostTotal
-            )
-        }
-        confirmVerified(persistence, budgetCostsCalculatorService)
+        confirmVerified(persistence)
 
-        assertEquals(
-            sumOf(
-                expectedOfficeCostTotal,
-                travelCostTotal,
-                externalCostTotal,
-                equipmentCostTotal,
-                infrastructureCostTotal,
-                staffCostTotal,
-                unitCostTotal,
-                lumpSumsTotal
-            ), result
-        )
+        assertEquals(sumOf(officeAndAdministrationOnStaffCostTotal, travelAndAccommodationCostTotal, externalExpertiseAndServicesCostTotal, equipmentCostTotal, infrastructureAndWorksCostTotal, staffCostTotal), result)
     }
 
     @Test
     fun `should return sum of budget cost entries and flat rate costs for the specified partner when otherCostsOnStaffCostsFlatRate is set in the budgetOptions`() {
 
         val budgetOptions = newBudgetOptionsInstance(partnerId = partnerId, otherCostsOnStaffCostsFlatRate = 30)
-        val expectedOtherCostTotal = staffCostTotal.percentage(budgetOptions.otherCostsOnStaffCostsFlatRate!!)
-        every { getBudgetOptions.getBudgetOptions(partnerId) } returns budgetOptions
-
-        every {
-            budgetCostsCalculatorService.calculateCosts(
-                budgetOptions,
-                externalCostTotal,
-                equipmentCostTotal,
-                infrastructureCostTotal,
-                travelCostTotal,
-                staffCostTotal
-            )
-        } returns BudgetCostsCalculationResult(staffCostTotal, travelCostTotal, BigDecimal.ZERO, expectedOtherCostTotal)
+        val otherCostsOnStaffCostTotal = staffCostTotal.percentage(budgetOptions.otherCostsOnStaffCostsFlatRate!!)
+        every { getBudgetOptionsInteractor.getBudgetOptions(partnerId) } returns budgetOptions
 
         val result = getBudgetTotalCost.getBudgetTotalCost(partnerId)
 
-        verify(atLeast = 1) { getBudgetOptions.getBudgetOptions(partnerId) }
+        verify(atLeast = 1) { getBudgetOptionsInteractor.getBudgetOptions(partnerId) }
         verify(atLeast = 1) { persistence.getBudgetStaffCostTotal(partnerId) }
         verify(atLeast = 1) { persistence.getBudgetTravelAndAccommodationCostTotal(partnerId) }
         verify(atLeast = 1) { persistence.getBudgetEquipmentCostTotal(partnerId) }
         verify(atLeast = 1) { persistence.getBudgetExternalExpertiseAndServicesCostTotal(partnerId) }
         verify(atLeast = 1) { persistence.getBudgetInfrastructureAndWorksCostTotal(partnerId) }
-        verify(atLeast = 1) { persistence.getBudgetUnitCostTotal(partnerId) }
-        verify(atLeast = 1) { persistence.getBudgetLumpSumsCostTotal(partnerId) }
-        verify(atLeast = 1) {
-            budgetCostsCalculatorService.calculateCosts(
-                budgetOptions,
-                externalCostTotal,
-                equipmentCostTotal,
-                infrastructureCostTotal,
-                travelCostTotal,
-                staffCostTotal
-            )
-        }
-        confirmVerified(persistence, budgetCostsCalculatorService)
+        confirmVerified(persistence)
 
-        assertEquals(
-            sumOf(
-                expectedOtherCostTotal,
-                travelCostTotal,
-                externalCostTotal,
-                equipmentCostTotal,
-                infrastructureCostTotal,
-                staffCostTotal,
-                unitCostTotal,
-                lumpSumsTotal
-            ), result
-        )
+        assertEquals(sumOf(otherCostsOnStaffCostTotal, travelAndAccommodationCostTotal, externalExpertiseAndServicesCostTotal, equipmentCostTotal, infrastructureAndWorksCostTotal, staffCostTotal), result)
     }
 
-    private fun newBudgetOptionsInstance(
-        partnerId: Long = 1L,
-        officeAndAdministrationOnStaffCostsFlatRate: Int? = null,
-        travelAndAccommodationOnStaffCostsFlatRate: Int? = null,
-        staffCostsFlatRate: Int? = null,
-        otherCostsOnStaffCostsFlatRate: Int? = null
-    ) =
-        ProjectPartnerBudgetOptions(
-            partnerId,
-            officeAndAdministrationOnStaffCostsFlatRate,
-            travelAndAccommodationOnStaffCostsFlatRate,
-            staffCostsFlatRate,
-            otherCostsOnStaffCostsFlatRate
-        )
+    private fun newBudgetOptionsInstance(partnerId: Long = 1L, officeAndAdministrationOnStaffCostsFlatRate: Int? = null, travelAndAccommodationOnStaffCostsFlatRate: Int? = null, staffCostsFlatRate: Int? = null, otherCostsOnStaffCostsFlatRate: Int? = null) =
+        ProjectPartnerBudgetOptions(partnerId, officeAndAdministrationOnStaffCostsFlatRate, travelAndAccommodationOnStaffCostsFlatRate, staffCostsFlatRate, otherCostsOnStaffCostsFlatRate)
 
     private fun sumOf(vararg values: BigDecimal) = values.reduce { acc, value -> acc.plus(value) }
 }
