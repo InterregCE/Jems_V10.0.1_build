@@ -11,7 +11,7 @@
                     <div appTableConfig [widthConfig]="[{maxInRem:9},{}, {maxInRem:2}]">
                         <div>
                             <h5>{{('project.application.form.work.package.output' | translate) + ' ' + data.workPackageNumber + '.' + (i + 1) }}</h5>
-                            <h5 class="text-overflow-ellipsis">
+                            <h5 class="output-title text-overflow-ellipsis">
                                 {{languageService.getCurrentValue(output.get(constants.TITLE.name).value)}}
                             </h5>
                             <button *ngIf="form.enabled" type="button" mat-icon-button color="accent"
