@@ -1,27 +1,5 @@
 export class CallFlatRatesConstants {
 
-  public static FORM_ERRORS = {
-    staffCostErrors: {
-      max: 'call.detail.flat.rate.staff.direct.cost',
-      min: 'call.detail.flat.rate.staff.direct.cost'
-    },
-    officeAdminDirectStaffCostPercentErrors: {
-      max: 'call.detail.flat.rate.office.admin.direct.staff.cost',
-      min: 'call.detail.flat.rate.office.admin.direct.staff.cost'
-    },
-    officeAdministrationDirectCostPercentErrors: {
-      max: 'call.detail.flat.rate.office.admin.direct.cost',
-      min: 'call.detail.flat.rate.office.admin.direct.cost'
-    },
-    travelAccommodationDirectStaffCostPercentErrors: {
-      max: 'call.detail.flat.rate.travel.accommodation.direct.staff.cost',
-      min: 'call.detail.flat.rate.travel.accommodation.direct.staff.cost'
-    },
-    otherCostsPercentErrors: {
-      max: 'call.detail.flat.rate.other.cost',
-      min: 'call.detail.flat.rate.other.cost'
-    }
-  };
   public static FLAT_RATE_MAX_VALUES = {
     STAFF_COST: 20,
     OFFICE_ON_STAFF: 15,
