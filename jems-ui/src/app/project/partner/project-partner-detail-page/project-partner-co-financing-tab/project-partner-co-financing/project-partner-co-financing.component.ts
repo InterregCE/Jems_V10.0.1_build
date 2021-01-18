@@ -197,7 +197,6 @@ export class ProjectPartnerCoFinancingComponent extends BaseComponent implements
     this.coFinancingForm.controls.fundId.setValue(inputValues?.fund.id);
     this.coFinancingForm.controls.percentage.setValue(inputValues?.percentage || 0);
     this.resetPartnerContributions();
-    this.formService.resetEditable();
   }
 
   onSubmit(): void {
@@ -230,6 +229,7 @@ export class ProjectPartnerCoFinancingComponent extends BaseComponent implements
     this.financingAndContribution.partnerContributions.forEach((item: ProjectPartnerContributionDTO) => {
       this.addNewPartnerContribution(item);
     });
+    this.formService.resetEditable();
   }
 
   private performCalculation(percentage: number): void {

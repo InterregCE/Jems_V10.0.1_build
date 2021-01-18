@@ -67,7 +67,7 @@ export class GeneralBudgetTableComponent implements OnInit, OnChanges {
   }
 
   ngOnChanges(changes: SimpleChanges): void {
-    if (changes.budgetTable) {
+    if (changes.budgetTable || changes.editable) {
       this.resetTableFormGroup(this.budgetTable);
     }
   }

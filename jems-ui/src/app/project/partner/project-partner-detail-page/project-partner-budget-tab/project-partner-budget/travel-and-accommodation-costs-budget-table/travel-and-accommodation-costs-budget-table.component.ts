@@ -61,7 +61,7 @@ export class TravelAndAccommodationCostsBudgetTableComponent implements OnInit, 
   }
 
   ngOnChanges(changes: SimpleChanges): void {
-    if (changes.travelAndAccommodationTable) {
+    if (changes.travelAndAccommodationTable || changes.editable) {
       this.resetTravelFormGroup(this.travelAndAccommodationTable);
     }
   }
@@ -97,6 +97,7 @@ export class TravelAndAccommodationCostsBudgetTableComponent implements OnInit, 
         rowSum: [item.rowSum, [Validators.max(this.constants.MAX_VALUE), Validators.min(this.constants.MIN_VALUE)]],
       }));
     });
+    this.formService.resetEditable();
   }
 
   private setTotal(): void {
