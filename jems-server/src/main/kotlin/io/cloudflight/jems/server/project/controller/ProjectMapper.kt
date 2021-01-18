@@ -8,22 +8,22 @@ import io.cloudflight.jems.server.programme.controller.costoption.toDto
 import io.cloudflight.jems.server.project.controller.partner.toOutputProjectPartner
 import io.cloudflight.jems.server.project.service.budget.model.PartnerBudget
 
-fun PartnerBudget.toOutputDto() =
+fun PartnerBudget.toProjectPartnerBudgetDTO() =
     ProjectPartnerBudgetDTO(
         partner = partner?.toOutputProjectPartner(),
-        staffCosts = extractStaffCosts(),
-        travelCosts = extractTravelCosts(),
+        staffCosts = staffCosts,
+        travelCosts = travelCosts,
         externalCosts = externalCosts,
         equipmentCosts = equipmentCosts,
         infrastructureCosts = infrastructureCosts,
-        officeAndAdministrationCosts = extractOfficeAndAdministrationCosts(),
-        otherCosts = extractOtherCosts(),
-        totalSum = totalSum(),
+        officeAndAdministrationCosts = officeAndAdministrationCosts,
+        otherCosts = otherCosts,
         lumpSumContribution = lumpSumContribution,
         unitCosts = unitCosts,
+        totalSum = totalSum()
     )
 
-fun Collection<PartnerBudget>.toOutputDto() = map { it.toOutputDto() }
+fun Collection<PartnerBudget>.toProjectPartnerBudgetDTO() = map { it.toProjectPartnerBudgetDTO() }
     .sortedBy { it.partner?.sortNumber }
 
 fun ProjectCallSettings.toDto() = ProjectCallSettingsDTO(

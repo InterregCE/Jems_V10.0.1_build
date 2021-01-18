@@ -9,17 +9,18 @@ import {
   WorkPackageActivityDTO,
   WorkPackageActivityService,
   WorkPackageInvestmentService,
+  InvestmentSummaryDTO,
   WorkPackageOutputDTO,
   WorkPackageOutputService,
   WorkPackageOutputUpdateDTO,
   WorkPackageService,
 } from '@cat/api';
 import {combineLatest, merge, Observable, ReplaySubject, Subject} from 'rxjs';
-import {shareReplay, startWith, switchMap, tap} from 'rxjs/operators';
+import {filter, map, shareReplay, startWith, switchMap, tap} from 'rxjs/operators';
 import {Log} from '../../../common/utils/log';
 import {ProjectApplicationFormSidenavService} from '../../project-application/containers/project-application-form-page/services/project-application-form-sidenav.service';
 import {ProjectStore} from '../../project-application/containers/project-application-detail/services/project-store.service';
-import {filter} from 'rxjs/internal/operators';
+import {InvestmentSummary} from './workPackageInvestment';
 
 @Injectable()
 export class ProjectWorkPackagePageStore {
@@ -28,14 +29,14 @@ export class ProjectWorkPackagePageStore {
   private projectId: number;
 
   workPackage$ = new ReplaySubject<OutputWorkPackage | any>(1);
-  workPackageInvestmentIdsOfProject$: Observable<number[]>;
+  projectInvestmentSummaries$: Observable<InvestmentSummary[]>;
   isProjectEditable$: Observable<boolean>;
   project$: Observable<OutputProject>;
   activities$: Observable<WorkPackageActivityDTO[]>;
   outputs$: Observable<WorkPackageOutputDTO[]>;
   outputIndicators$: Observable<IndicatorOutputDto[]>;
 
-  investmentIdsChanged$ = new Subject<void>();
+  investmentChangeEvent$ = new Subject<void>();
 
   private savedActivities$ = new Subject<WorkPackageActivityDTO[]>();
   private savedOutputs$ = new Subject<WorkPackageOutputDTO[]>();
@@ -53,8 +54,9 @@ export class ProjectWorkPackagePageStore {
     this.outputs$ = this.workPackageOutputs();
     this.outputIndicators$ = this.outputIndicators();
 
-    this.workPackageInvestmentIdsOfProject$ = combineLatest([this.project$, this.investmentIdsChanged$.pipe(startWith(null))]).pipe(
-      switchMap(([project]) => this.workPackageInvestmentService.getWorkPackageInvestmentIdsOfProject(project.id)),
+    this.projectInvestmentSummaries$ = combineLatest([this.project$, this.investmentChangeEvent$.pipe(startWith(null))]).pipe(
+      switchMap(([project]) => this.workPackageInvestmentService.getProjectInvestmentSummaries(project.id)),
+      map((investmentSummeryDTOs: InvestmentSummaryDTO[]) => investmentSummeryDTOs.map(it => new InvestmentSummary(it.id, it.investmentNumber, it.workPackageId))),
       shareReplay(1)
     );
   }
@@ -98,7 +100,7 @@ export class ProjectWorkPackagePageStore {
     return this.workPackageInvestmentService.deleteWorkPackageInvestment(investmentId, this.workPackageId)
       .pipe(
         tap(deleted => Log.info('Deleted work package investment:', this, deleted)),
-        tap(() => this.investmentIdsChanged$.next())
+        tap(() => this.investmentChangeEvent$.next())
       );
   }
 

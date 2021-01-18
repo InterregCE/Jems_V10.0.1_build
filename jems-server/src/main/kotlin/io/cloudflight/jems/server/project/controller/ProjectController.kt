@@ -50,6 +50,6 @@ class ProjectController(
     }
 
     override fun getProjectBudget(projectId: Long): List<ProjectPartnerBudgetDTO> =
-        getProjectBudgetInteractor.getBudget(projectId = projectId).toOutputDto()
+        getProjectBudgetInteractor.getBudget(projectId = projectId).toProjectPartnerBudgetDTO()
 
 }

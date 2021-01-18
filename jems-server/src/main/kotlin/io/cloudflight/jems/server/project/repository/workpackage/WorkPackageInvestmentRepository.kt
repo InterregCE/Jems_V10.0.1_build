@@ -16,6 +16,6 @@ interface WorkPackageInvestmentRepository : PagingAndSortingRepository<WorkPacka
 
     fun findAllByWorkPackageId(workPackageId: Long, sort: Sort): Iterable<WorkPackageInvestmentEntity>
 
-    @Query("SELECT investment.id FROM project_work_package_investment investment where investment.workPackage.project.id = :projectId")
-    fun findInvestmentIds(@Param("projectId") projectId: Long): List<Long>
+    @Query("SELECT investment FROM project_work_package_investment investment where investment.workPackage.project.id = :projectId")
+    fun findInvestmentsByProjectId(@Param("projectId") projectId: Long): List<WorkPackageInvestmentEntity>
 }
