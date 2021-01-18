@@ -5,6 +5,6 @@ import java.math.BigDecimal
 data class BudgetUnitCostEntryDTO(
     val id: Long? = null,
     val numberOfUnits: BigDecimal,
-    val unitCostId: Long? = null,
+    val unitCostId: Long,
     val rowSum: BigDecimal
 )

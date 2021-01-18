@@ -13,5 +13,6 @@ interface ProjectPartnerBudgetOptionsPersistence {
     fun deleteEquipmentCosts(partnerId: Long)
     fun deleteInfrastructureCosts(partnerId: Long)
     fun deleteTravelAndAccommodationCosts(partnerId: Long)
+    fun deleteUnitCosts(partnerId: Long)
 
 }

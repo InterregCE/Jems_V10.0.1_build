@@ -1,8 +1,10 @@
 package io.cloudflight.jems.server.project.service.partner.budget.update_budget_unit_costs
 
+import io.cloudflight.jems.server.common.exception.I18nValidationException
 import io.cloudflight.jems.server.project.authorization.CanUpdateProjectPartner
 import io.cloudflight.jems.server.project.service.ProjectPersistence
 import io.cloudflight.jems.server.project.service.partner.ProjectPartnerService
+import io.cloudflight.jems.server.project.service.partner.budget.ProjectPartnerBudgetOptionsPersistence
 import io.cloudflight.jems.server.project.service.partner.budget.ProjectPartnerBudgetPersistence
 import io.cloudflight.jems.server.project.service.partner.budget.truncate
 import io.cloudflight.jems.server.project.service.partner.model.BudgetUnitCostEntry
@@ -14,11 +16,16 @@ class UpdateBudgetUnitCosts(
     private val persistence: ProjectPartnerBudgetPersistence,
     private val projectPersistence: ProjectPersistence,
     private val projectPartnerService: ProjectPartnerService,
-    private val budgetCostEntriesValidator: BudgetUnitCostEntriesValidator) : UpdateBudgetUnitCostsInteractor {
+    private val budgetCostEntriesValidator: BudgetUnitCostEntriesValidator,
+    private val budgetOptionsPersistence: ProjectPartnerBudgetOptionsPersistence,
+) : UpdateBudgetUnitCostsInteractor {
 
     @Transactional
     @CanUpdateProjectPartner
     override fun updateBudgetUnitCosts(partnerId: Long, unitCosts: List<BudgetUnitCostEntry>): List<BudgetUnitCostEntry> {
+        if (budgetOptionsPersistence.getBudgetOptions(partnerId)?.otherCostsOnStaffCostsFlatRate != null)
+            throw I18nValidationException(i18nKey = "project.partner.budget.not.allowed.because.of.otherCostsOnStaffCostsFlatRate")
+
         val projectUnitCosts = projectPersistence
             .getProjectCallSettingsForProject(projectPartnerService.getProjectIdForPartnerId(partnerId)).unitCosts
 
@@ -29,11 +36,7 @@ class UpdateBudgetUnitCosts(
             idsToKeep = unitCosts.mapNotNullTo(HashSet()) { it.id }
         )
 
-        return persistence.createOrUpdateBudgetUnitCosts(partnerId, unitCosts.map { it.apply { this.truncateNumbers() } })
+        return persistence.createOrUpdateBudgetUnitCosts(partnerId, unitCosts)
     }
 
-    fun BudgetUnitCostEntry.truncateNumbers() = this.apply {
-        numberOfUnits.truncate()
-        rowSum.truncate()
-    }
 }

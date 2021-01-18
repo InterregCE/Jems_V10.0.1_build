@@ -245,11 +245,12 @@ internal class UpdateBaseBudgetPropertiesOptionsTest : UnitTest() {
     }
 
     @Test
-    fun `should remove TravelAndAccommodationCosts, EquipmentCosts, ExternalCosts and InfrastructureCosts from the budget table if otherCostsOnStaffCostsFlatRate is set`() {
+    fun `should remove TravelAndAccommodationCosts, EquipmentCosts, ExternalCosts, InfrastructureCosts and UnitCosts from the budget table if otherCostsOnStaffCostsFlatRate is set`() {
         every { optionsPersistence.deleteTravelAndAccommodationCosts(any()) } answers {}
         every { optionsPersistence.deleteEquipmentCosts(any()) } answers {}
         every { optionsPersistence.deleteExternalCosts(any()) } answers {}
         every { optionsPersistence.deleteInfrastructureCosts(any()) } answers {}
+        every { optionsPersistence.deleteUnitCosts(any()) } answers {}
         val slotOptions = slot<ProjectPartnerBudgetOptions>()
         every { optionsPersistence.updateBudgetOptions(partnerId, capture(slotOptions)) } answers {}
         every { callFlatRateSetupPersistence.getProjectCallFlatRateByPartnerId(partnerId) } returns setOf(
@@ -266,6 +267,7 @@ internal class UpdateBaseBudgetPropertiesOptionsTest : UnitTest() {
         verify(atLeast = 1) { optionsPersistence.deleteEquipmentCosts(partnerId) }
         verify(atLeast = 1) { optionsPersistence.deleteExternalCosts(partnerId) }
         verify(atLeast = 1) { optionsPersistence.deleteInfrastructureCosts(partnerId) }
+        verify(atLeast = 1) { optionsPersistence.deleteUnitCosts(partnerId) }
         verify(atLeast = 1) { optionsPersistence.updateBudgetOptions(partnerId, capture(slotOptions)) }
         verify(atLeast = 1) { callFlatRateSetupPersistence.getProjectCallFlatRateByPartnerId(partnerId) }
         confirmVerified(optionsPersistence, callFlatRateSetupPersistence)

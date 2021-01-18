@@ -31,6 +31,7 @@ class UpdateBudgetOptions(
             persistence.deleteEquipmentCosts(partnerId)
             persistence.deleteExternalCosts(partnerId)
             persistence.deleteInfrastructureCosts(partnerId)
+            persistence.deleteUnitCosts(partnerId)
         }
         if (options.staffCostsFlatRate != null)
             persistence.deleteStaffCosts(partnerId)

@@ -80,7 +80,7 @@ export class UnitCostsBudgetTableComponent implements OnInit, OnChanges {
   addNewItem(): void {
     this.items.push(this.formBuilder.group({
       id: null,
-      unitCost: null,
+      unitCost: [null, Validators.required],
       numberOfUnits: [1, [Validators.max(this.constants.MAX_VALUE), Validators.min(this.constants.MIN_VALUE)]],
       rowSum: [0, [Validators.max(this.constants.MAX_VALUE), Validators.min(this.constants.MIN_VALUE)]],
       new: [true]
@@ -95,7 +95,7 @@ export class UnitCostsBudgetTableComponent implements OnInit, OnChanges {
     this.unitCostTable.entries.forEach(item => {
       this.items.push(this.formBuilder.group({
         id: [item.id],
-        unitCost: this.availableUnitCosts.find(it => it.id === item.unitCostId),
+        unitCost: [this.availableUnitCosts.find(it => it.id === item.unitCostId), Validators.required],
         numberOfUnits: [item.numberOfUnits, [Validators.max(this.constants.MAX_VALUE), Validators.min(this.constants.MIN_VALUE)]],
         rowSum: [item.rowSum, [Validators.max(this.constants.MAX_VALUE), Validators.min(this.constants.MIN_VALUE)]],
       }));

@@ -6,7 +6,7 @@ data class BudgetUnitCostEntry(
     val id: Long? = null,
     val numberOfUnits: BigDecimal,
 
-    val unitCostId: Long?,
+    val unitCostId: Long,
 
     val rowSum: BigDecimal
 )

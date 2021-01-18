@@ -10,15 +10,20 @@
                     <mat-header-cell
                             *matHeaderCellDef> {{'project.partner.budget.table.unitcosts.selection' | translate}} </mat-header-cell>
                     <mat-cell *matCellDef="let control;  let i = index" [formGroupName]="i">
-                        <mat-form-field [appFormFieldWidth]="'small'">
+                        <mat-form-field [appFormFieldWidth]="'medium'">
                             <mat-select panelClass="material-select-panel"
                                         [formControlName]="constants.FORM_CONTROL_NAMES.unitCost"
                                         [disableOptionCentering]="true">
-                                <mat-option [value]="null"></mat-option>
                                 <mat-option *ngFor="let unitCost of availableUnitCosts" [value]="unitCost">
                                     {{unitCost.name}}
                                 </mat-option>
                             </mat-select>
+                            <mat-error>
+                                <app-form-field-errors
+                                        [errors]="control.get(constants.FORM_CONTROL_NAMES.unitCost)?.errors"
+                                        [messages]="constants.FORM_ERRORS.unitCost">
+                                </app-form-field-errors>
+                            </mat-error>
                         </mat-form-field>
                     </mat-cell>
                     <mat-footer-cell *matFooterCellDef></mat-footer-cell>
