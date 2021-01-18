@@ -13,6 +13,7 @@ import io.cloudflight.jems.server.project.entity.workpackage.investment.WorkPack
 import io.cloudflight.jems.server.project.entity.workpackage.WorkPackageOutputId
 import io.cloudflight.jems.server.project.entity.workpackage.WorkPackageOutputTransl
 import io.cloudflight.jems.server.project.service.model.Address
+import io.cloudflight.jems.server.project.service.workpackage.model.InvestmentSummary
 import io.cloudflight.jems.server.project.service.workpackage.model.WorkPackageInvestment
 import io.cloudflight.jems.server.project.service.workpackage.output.model.WorkPackageOutput
 import io.cloudflight.jems.server.project.service.workpackage.output.model.WorkPackageOutputTranslatedValue
@@ -48,6 +49,15 @@ fun List<WorkPackageOutputEntity>.toWorkPackageOutputList() =
     this.map { it.toWorkPackageOutput() }.sortedBy { it.outputNumber }.toList()
 
 fun Page<WorkPackageInvestmentEntity>.toWorkPackageInvestmentPage() = this.map { it.toWorkPackageInvestment() }
+
+fun List<WorkPackageInvestmentEntity>.toInvestmentSummaryList() =
+    this.map { it.toInvestmentSummary() }
+
+fun WorkPackageInvestmentEntity.toInvestmentSummary() = InvestmentSummary(
+    id = id,
+    investmentNumber = investmentNumber,
+    workPackageId = workPackage.id
+)
 
 fun WorkPackageInvestmentEntity.toWorkPackageInvestment() = WorkPackageInvestment(
     id = id,
@@ -107,10 +117,10 @@ fun WorkPackageInvestment.toWorkPackageInvestmentEntity(workPackageEntity: WorkP
                 .map { language ->
                     WorkPackageInvestmentTransl(
                         investmentTranslation = WorkPackageInvestmentTranslation(this, language),
-                        title = title.firstOrNull { it.language === language }?.translation ?: "",
-                        justificationExplanation = justificationExplanation.firstOrNull { it.language === language }?.translation
+                        title = title.firstOrNull { it.language == language }?.translation ?: "",
+                        justificationExplanation = justificationExplanation.firstOrNull { it.language == language }?.translation
                             ?: "",
-                        justificationTransactionalRelevance = justificationTransactionalRelevance.firstOrNull { it.language === language }?.translation
+                        justificationTransactionalRelevance = justificationTransactionalRelevance.firstOrNull { it.language == language }?.translation
                             ?: "",
                         justificationBenefits = justificationBenefits.firstOrNull { it.language === language }?.translation
                             ?: "",

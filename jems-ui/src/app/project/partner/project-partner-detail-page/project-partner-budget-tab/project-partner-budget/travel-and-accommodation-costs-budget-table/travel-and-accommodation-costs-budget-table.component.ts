@@ -64,7 +64,7 @@ export class TravelAndAccommodationCostsBudgetTableComponent implements OnInit, 
     if (changes.travelAndAccommodationTable || changes.editable) {
       this.resetTravelFormGroup(this.travelAndAccommodationTable);
     }
-  }
+}
 
   removeItem(index: number): void {
     this.items.removeAt(index);

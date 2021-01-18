@@ -78,7 +78,7 @@ export class ProjectPartnerBudgetOptionsComponent implements OnInit {
     );
     this.isAnyOptionAvailable$ = this.pageStore.callFlatRatesSettings$.pipe(map(callFlatRateSetting => callFlatRateSetting.staffCostFlatRateSetup !== null || callFlatRateSetting.officeAndAdministrationOnStaffCostsFlatRateSetup !== null || callFlatRateSetting.travelAndAccommodationOnStaffCostsFlatRateSetup !== null || callFlatRateSetting.otherCostsOnStaffCostsFlatRateSetup !== null || callFlatRateSetting.officeAndAdministrationOnOtherCostsFlatRateSetup !== null));
 
-    this.isOtherCostsOnStaffCostsFlatRateDisabled$ = combineLatest([this.pageStore.isProjectEditable$.pipe(startWith(false)), this.budgetOptionForm.valueChanges.pipe(startWith(null))]).pipe(
+    this.isOtherCostsOnStaffCostsFlatRateDisabled$ = combineLatest([this.pageStore.isProjectEditable$, this.budgetOptionForm.valueChanges.pipe(startWith(null))]).pipe(
       map(([isProjectEditable]) =>
         !isProjectEditable ||
         this.isOfficeAndAdministrationOnStaffCostsFlatRateActive?.value ||
@@ -86,7 +86,7 @@ export class ProjectPartnerBudgetOptionsComponent implements OnInit {
         this.isTravelAndAccommodationOnStaffCostsFlatRateActive?.value
       )
     );
-    this.areFlatRatesInFirstCategoryDisabled$ = combineLatest([this.pageStore.isProjectEditable$.pipe(startWith(false)), this.budgetOptionForm.valueChanges.pipe(startWith(null))]).pipe(
+    this.areFlatRatesInFirstCategoryDisabled$ = combineLatest([this.pageStore.isProjectEditable$, this.budgetOptionForm.valueChanges.pipe(startWith(null))]).pipe(
       map(([isProjectEditable]) =>
         !isProjectEditable || this.isOtherCostsOnStaffCostsFlatRateActive?.value
       ));
