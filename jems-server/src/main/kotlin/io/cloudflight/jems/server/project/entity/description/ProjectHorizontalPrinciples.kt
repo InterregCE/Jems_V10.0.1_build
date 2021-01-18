@@ -14,30 +14,19 @@ data class ProjectHorizontalPrinciples(
     val sustainableDevelopmentCriteriaEffect: ProjectHorizontalPrinciplesEffect? = null,
 
     @Column
-    val sustainableDevelopmentDescription: String? = null,
-
-    @Column
     @Enumerated(EnumType.STRING)
     val equalOpportunitiesEffect: ProjectHorizontalPrinciplesEffect? = null,
 
     @Column
-    val equalOpportunitiesDescription: String? = null,
-
-    @Column
     @Enumerated(EnumType.STRING)
-    val sexualEqualityEffect: ProjectHorizontalPrinciplesEffect? = null,
-
-    @Column
-    val sexualEqualityDescription: String? = null
+    val sexualEqualityEffect: ProjectHorizontalPrinciplesEffect? = null
 
 ) {
     fun ifNotEmpty(): ProjectHorizontalPrinciples? {
         if (sustainableDevelopmentCriteriaEffect != null
-            || !sustainableDevelopmentDescription.isNullOrEmpty()
             || equalOpportunitiesEffect != null
-            || !equalOpportunitiesDescription.isNullOrEmpty()
             || sexualEqualityEffect != null
-            || !sexualEqualityDescription.isNullOrEmpty())
+        )
             return this
         return null
     }

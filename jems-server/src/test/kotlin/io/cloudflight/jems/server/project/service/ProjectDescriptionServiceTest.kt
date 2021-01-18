@@ -42,7 +42,6 @@ import org.junit.jupiter.api.Test
 import java.util.UUID
 
 class ProjectDescriptionServiceTest {
-
     companion object {
         private val projectRelevance = InputProjectRelevance(
             territorialChallenge = setOf(
@@ -109,7 +108,8 @@ class ProjectDescriptionServiceTest {
                 ProjectRelevanceBenefit(
                     id = projectBenefitUuid,
                     targetGroup = ProjectTargetGroup.Egtc,
-                    translatedValues = combineTranslatedValuesBenefit(projectBenefitUuid,
+                    translatedValues = combineTranslatedValuesBenefit(
+                        projectBenefitUuid,
                         projectRelevance.projectBenefits?.get(0)!!.specification
                     )
                 )
@@ -118,7 +118,8 @@ class ProjectDescriptionServiceTest {
                 ProjectRelevanceStrategy(
                     id = projectStrategyUuid,
                     strategy = ProgrammeStrategy.AtlanticStrategy,
-                    translatedValues = combineTranslatedValuesStrategy(projectStrategyUuid,
+                    translatedValues = combineTranslatedValuesStrategy(
+                        projectStrategyUuid,
                         projectRelevance.projectStrategies?.get(0)!!.specification
                     )
                 )
@@ -137,59 +138,62 @@ class ProjectDescriptionServiceTest {
 
         private val cooperationCriteria = InputProjectCooperationCriteria(
             projectJointDevelopment = true,
-            projectJointDevelopmentDescription = "some value",
             projectJointImplementation = false,
-            projectJointImplementationDescription = null,
             projectJointStaffing = true,
-            projectJointStaffingDescription = "some value",
             projectJointFinancing = false,
-            projectJointFinancingDescription = ""
         )
 
         private val cooperationCriteriaEntity = ProjectCooperationCriteria(
             projectJointDevelopment = cooperationCriteria.projectJointDevelopment,
-            projectJointDevelopmentDescription = cooperationCriteria.projectJointDevelopmentDescription,
             projectJointImplementation = cooperationCriteria.projectJointImplementation,
-            projectJointImplementationDescription = cooperationCriteria.projectJointImplementationDescription,
             projectJointStaffing = cooperationCriteria.projectJointStaffing,
-            projectJointStaffingDescription = cooperationCriteria.projectJointStaffingDescription,
             projectJointFinancing = cooperationCriteria.projectJointFinancing,
-            projectJointFinancingDescription = cooperationCriteria.projectJointFinancingDescription
         )
 
         private val horizontalPrinciples = InputProjectHorizontalPrinciples(
             sustainableDevelopmentCriteriaEffect = ProjectHorizontalPrinciplesEffect.Neutral,
-            sustainableDevelopmentDescription = "",
             equalOpportunitiesEffect = ProjectHorizontalPrinciplesEffect.PositiveEffects,
-            equalOpportunitiesDescription = "some description",
             sexualEqualityEffect = ProjectHorizontalPrinciplesEffect.NegativeEffects,
-            sexualEqualityDescription = null
         )
 
         private val horizontalPrinciplesEntity = ProjectHorizontalPrinciples(
             sustainableDevelopmentCriteriaEffect = horizontalPrinciples.sustainableDevelopmentCriteriaEffect,
-            sustainableDevelopmentDescription = horizontalPrinciples.sustainableDevelopmentDescription,
             equalOpportunitiesEffect = horizontalPrinciples.equalOpportunitiesEffect,
-            equalOpportunitiesDescription = horizontalPrinciples.equalOpportunitiesDescription,
             sexualEqualityEffect = horizontalPrinciples.sexualEqualityEffect,
-            sexualEqualityDescription = horizontalPrinciples.sexualEqualityDescription
         )
 
         private val projectManagement = InputProjectManagement(
-            projectCoordination = "coordination value",
-            projectQualityAssurance = "assurance value",
-            projectCommunication = "communication value",
-            projectFinancialManagement = "financial value",
+            projectCoordination = setOf(InputTranslation(SystemLanguage.EN, "coordination value")),
+            projectQualityAssurance = setOf(InputTranslation(SystemLanguage.EN, "ownership value")),
+            projectCommunication = setOf(InputTranslation(SystemLanguage.EN, "communication value")),
+            projectFinancialManagement = setOf(InputTranslation(SystemLanguage.EN, "financial value")),
             projectCooperationCriteria = cooperationCriteria,
-            projectHorizontalPrinciples = horizontalPrinciples
+            projectJointDevelopmentDescription = setOf(InputTranslation(SystemLanguage.EN, "projectJointDevelopmentDescription")),
+            projectJointImplementationDescription = setOf(InputTranslation(SystemLanguage.EN, "projectJointImplementationDescription")),
+            projectJointStaffingDescription = setOf(InputTranslation(SystemLanguage.EN, "projectJointStaffingDescription")),
+            projectJointFinancingDescription = setOf(InputTranslation(SystemLanguage.EN, "projectJointFinancingDescription")),
+            projectHorizontalPrinciples = horizontalPrinciples,
+            sustainableDevelopmentDescription = setOf(InputTranslation(SystemLanguage.EN, "sustainableDevelopmentDescription")),
+            equalOpportunitiesDescription = setOf(InputTranslation(SystemLanguage.EN, "equalOpportunitiesDescription")),
+            sexualEqualityDescription = setOf(InputTranslation(SystemLanguage.EN, "sexualEqualityDescription"))
         )
 
         private val projectManagementEntity = ProjectManagement(
             projectId = 1,
-            projectCoordination = projectManagement.projectCoordination,
-            projectQualityAssurance = projectManagement.projectQualityAssurance,
-            projectCommunication = projectManagement.projectCommunication,
-            projectFinancialManagement = projectManagement.projectFinancialManagement,
+            translatedValues = combineTranslatedValuesManagement(
+                1,
+                projectManagement.projectCoordination,
+                projectManagement.projectQualityAssurance,
+                projectManagement.projectCommunication,
+                projectManagement.projectFinancialManagement,
+                projectManagement.projectJointDevelopmentDescription,
+                projectManagement.projectJointImplementationDescription,
+                projectManagement.projectJointStaffingDescription,
+                projectManagement.projectJointFinancingDescription,
+                projectManagement.sustainableDevelopmentDescription,
+                projectManagement.equalOpportunitiesDescription,
+                projectManagement.sexualEqualityDescription
+            ),
             projectCooperationCriteria = cooperationCriteriaEntity,
             projectHorizontalPrinciples = horizontalPrinciplesEntity
         )
@@ -200,20 +204,30 @@ class ProjectDescriptionServiceTest {
             projectCommunication = projectManagement.projectCommunication,
             projectFinancialManagement = projectManagement.projectFinancialManagement,
             projectCooperationCriteria = cooperationCriteria.copy(),
-            projectHorizontalPrinciples = horizontalPrinciples.copy()
+            projectJointDevelopmentDescription = projectManagement.projectJointDevelopmentDescription,
+            projectJointImplementationDescription = projectManagement.projectJointImplementationDescription,
+            projectJointStaffingDescription = projectManagement.projectJointStaffingDescription,
+            projectJointFinancingDescription = projectManagement.projectJointFinancingDescription,
+            projectHorizontalPrinciples = horizontalPrinciples.copy(),
+            sustainableDevelopmentDescription = projectManagement.sustainableDevelopmentDescription,
+            equalOpportunitiesDescription = projectManagement.equalOpportunitiesDescription,
+            sexualEqualityDescription = projectManagement.sexualEqualityDescription
         )
 
         private val projectLongTermPlans = InputProjectLongTermPlans(
-            projectOwnership = "ownership value",
-            projectDurability = null,
-            projectTransferability = ""
+            projectOwnership = setOf(InputTranslation(SystemLanguage.EN, "ownership value")),
+            projectDurability = setOf(InputTranslation(SystemLanguage.EN, "durability")),
+            projectTransferability = setOf(InputTranslation(SystemLanguage.EN, "transferability"))
         )
 
         private val projectLongTermPlansEntity = ProjectLongTermPlans(
             projectId = 1,
-            projectOwnership = projectLongTermPlans.projectOwnership,
-            projectDurability = projectLongTermPlans.projectDurability,
-            projectTransferability = projectLongTermPlans.projectTransferability
+            translatedValues = combineTranslatedValuesLongTermPlans(
+                1,
+                projectLongTermPlans.projectOwnership,
+                projectLongTermPlans.projectDurability,
+                projectLongTermPlans.projectTransferability
+            )
         )
 
         private val outputProjectLongTermPlans = OutputProjectLongTermPlans(
@@ -223,6 +237,7 @@ class ProjectDescriptionServiceTest {
         )
 
     }
+
 
     @MockK
     lateinit var projectOverallObjectiveRepository: ProjectOverallObjectiveRepository
@@ -256,9 +271,12 @@ class ProjectDescriptionServiceTest {
 
     @Test
     fun getProjectDescription() {
-        val inputProjectOverallObjective = InputProjectOverallObjective(setOf(InputTranslation(SystemLanguage.EN, "overall-val")))
+        val inputProjectOverallObjective =
+            InputProjectOverallObjective(setOf(InputTranslation(SystemLanguage.EN, "overall-val")))
         val inputProjectPartnership = InputProjectPartnership(setOf(InputTranslation(SystemLanguage.EN, "partner-val")))
-        every { projectOverallObjectiveRepository.findFirstByProjectId(eq(1)) } returns inputProjectOverallObjective.toEntity(1)
+        every { projectOverallObjectiveRepository.findFirstByProjectId(eq(1)) } returns inputProjectOverallObjective.toEntity(
+            1
+        )
         every { projectRelevanceRepository.findFirstByProjectId(eq(1)) } returns projectRelevanceEntity
         every { projectPartnershipRepository.findFirstByProjectId(eq(1)) } returns inputProjectPartnership.toEntity(1)
         every { projectManagementRepository.findFirstByProjectId(eq(1)) } returns projectManagementEntity
@@ -324,12 +342,15 @@ class ProjectDescriptionServiceTest {
     fun `updateProjectManagement empty horizontal and cooperation`() {
         every { projectManagementRepository.save(any<ProjectManagement>()) } returnsArgument 0
 
-        assertThat(projectDescriptionService.updateProjectManagement(2L,
-            projectManagement.copy(
-                projectCooperationCriteria = null,
-                projectHorizontalPrinciples = null
+        assertThat(
+            projectDescriptionService.updateProjectManagement(
+                2L,
+                projectManagement.copy(
+                    projectCooperationCriteria = null,
+                    projectHorizontalPrinciples = null
+                )
             )
-        ))
+        )
             .overridingErrorMessage("empty embedded classes should be omitted")
             .isEqualTo(
                 OutputProjectManagement(
@@ -337,6 +358,13 @@ class ProjectDescriptionServiceTest {
                     projectQualityAssurance = projectManagement.projectQualityAssurance,
                     projectCommunication = projectManagement.projectCommunication,
                     projectFinancialManagement = projectManagement.projectFinancialManagement,
+                    projectJointDevelopmentDescription = projectManagement.projectJointDevelopmentDescription,
+                    projectJointImplementationDescription = projectManagement.projectJointImplementationDescription,
+                    projectJointStaffingDescription = projectManagement.projectJointStaffingDescription,
+                    projectJointFinancingDescription = projectManagement.projectJointFinancingDescription,
+                    sustainableDevelopmentDescription = projectManagement.sustainableDevelopmentDescription,
+                    equalOpportunitiesDescription = projectManagement.equalOpportunitiesDescription,
+                    sexualEqualityDescription = projectManagement.sexualEqualityDescription,
                     projectCooperationCriteria = null,
                     projectHorizontalPrinciples = null
                 )

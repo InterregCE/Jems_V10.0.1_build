@@ -12,39 +12,42 @@
             <h6>{{'project.application.form.future.plans.field.1' | translate}}</h6>
             <p class="intro-text-small">{{'project.application.form.future.plans.field.1.intro' | translate}}</p>
         </div>
-        <app-expandable-textarea class="field"
-                                 [control]="futurePlansForm?.controls?.ownership"
-                                 [errors]="futurePlansForm?.controls?.ownership?.errors"
-                                 [messages]="ownershipErrors"
-                                 [characterLimit]="5000"
-                                 [label]="'common.textarea.enter.text'"
-                                 [disabled]="!editable">
-        </app-expandable-textarea>
+        <app-multi-language>
+            <app-multi-language-form-field
+                    class="field"
+                    type="textarea"
+                    [label]="'common.textarea.enter.text'"
+                    [formControlName]="'ownership'"
+                    [maxLength]="5000">
+            </app-multi-language-form-field>
+        </app-multi-language>
 
         <div class="intro-text">
             <h6>{{'project.application.form.future.plans.field.2' | translate}}</h6>
             <p class="intro-text-small">{{'project.application.form.future.plans.field.2.intro' | translate}}</p>
         </div>
-        <app-expandable-textarea class="field"
-                                 [control]="futurePlansForm?.controls?.durability"
-                                 [errors]="futurePlansForm?.controls?.durability?.errors"
-                                 [messages]="durabilityErrors"
-                                 [characterLimit]="5000"
-                                 [label]="'common.textarea.enter.text'"
-                                 [disabled]="!editable">
-        </app-expandable-textarea>
+        <app-multi-language>
+            <app-multi-language-form-field
+                    class="field"
+                    type="textarea"
+                    [label]="'common.textarea.enter.text'"
+                    [formControlName]="'durability'"
+                    [maxLength]="5000">
+            </app-multi-language-form-field>
+        </app-multi-language>
 
         <div class="intro-text">
             <h6>{{'project.application.form.future.plans.field.3' | translate}}</h6>
             <p class="intro-text-small">{{'project.application.form.future.plans.field.3.intro' | translate}}</p>
         </div>
-        <app-expandable-textarea class="field"
-                                 [control]="futurePlansForm?.controls?.transferability"
-                                 [errors]="futurePlansForm?.controls?.transferability?.errors"
-                                 [messages]="transferabilityErrors"
-                                 [characterLimit]="5000"
-                                 [label]="'common.textarea.enter.text'"
-                                 [disabled]="!editable">
-        </app-expandable-textarea>
+        <app-multi-language>
+            <app-multi-language-form-field
+                    class="field"
+                    type="textarea"
+                    [label]="'common.textarea.enter.text'"
+                    [formControlName]="'transferability'"
+                    [maxLength]="5000">
+            </app-multi-language-form-field>
+        </app-multi-language>
     </form>
 </app-form>

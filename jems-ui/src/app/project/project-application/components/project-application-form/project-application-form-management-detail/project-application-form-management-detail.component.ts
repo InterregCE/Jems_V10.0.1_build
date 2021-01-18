@@ -1,18 +1,6 @@
-import {
-  ChangeDetectionStrategy,
-  ChangeDetectorRef,
-  Component,
-  EventEmitter,
-  Input,
-  OnInit,
-  Output
-} from '@angular/core';
-import {ViewEditForm} from '@common/components/forms/view-edit-form';
+import {ChangeDetectionStrategy, Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
 import {FormBuilder, FormGroup, Validators} from '@angular/forms';
-import {SideNavService} from '@common/components/side-nav/side-nav.service';
-import {FormState} from '@common/components/forms/form-state';
-import {Permission} from '../../../../../security/permissions/permission';
-import {OutputProjectManagement, InputProjectManagement, InputProjectHorizontalPrinciples} from '@cat/api';
+import {InputProjectHorizontalPrinciples, InputProjectManagement, OutputProjectManagement} from '@cat/api';
 import {SelectionModel} from '@angular/cdk/collections';
 import {FormService} from '@common/components/section/form/form.service';
 import {BaseComponent} from '@common/components/base-component';
@@ -104,28 +92,28 @@ export class ProjectApplicationFormManagementDetailComponent extends BaseCompone
 
   onSubmit(): void {
     this.updateData.emit({
-      projectCoordination: this.managementForm.controls.coordination.value,
-      projectQualityAssurance: this.managementForm.controls.quality.value,
-      projectCommunication: this.managementForm.controls.communication.value,
-      projectFinancialManagement: this.managementForm.controls.financial.value,
+      projectCoordination: this.managementForm.controls.coordination.value || [],
+      projectQualityAssurance: this.managementForm.controls.quality.value || [],
+      projectCommunication: this.managementForm.controls.communication.value || [],
+      projectFinancialManagement: this.managementForm.controls.financial.value || [],
       projectCooperationCriteria: {
         projectJointDevelopment: this.selection.isSelected('criteria_development'),
-        projectJointDevelopmentDescription: this.managementForm.controls.criteria_development.value,
         projectJointImplementation: this.selection.isSelected('criteria_implementation'),
-        projectJointImplementationDescription: this.managementForm.controls.criteria_implementation.value,
         projectJointStaffing: this.selection.isSelected('criteria_staffing'),
-        projectJointStaffingDescription: this.managementForm.controls.criteria_staffing.value,
         projectJointFinancing: this.selection.isSelected('criteria_financing'),
-        projectJointFinancingDescription: this.managementForm.controls.criteria_financing.value,
       },
+      projectJointDevelopmentDescription: this.managementForm.controls.criteria_development.value || [],
+      projectJointImplementationDescription: this.managementForm.controls.criteria_implementation.value || [],
+      projectJointStaffingDescription: this.managementForm.controls.criteria_staffing.value || [],
+      projectJointFinancingDescription: this.managementForm.controls.criteria_financing.value || [],
       projectHorizontalPrinciples: {
         sustainableDevelopmentCriteriaEffect: this.selectedContributionPrincipleDevelopment as InputProjectHorizontalPrinciples.SustainableDevelopmentCriteriaEffectEnum,
-        sustainableDevelopmentDescription: this.managementForm.controls.principles_sustainable.value,
         equalOpportunitiesEffect: this.selectedContributionPrincipleOpportunities as InputProjectHorizontalPrinciples.EqualOpportunitiesEffectEnum,
-        equalOpportunitiesDescription: this.managementForm.controls.principles_opportunities.value,
         sexualEqualityEffect: this.selectedContributionPrincipleEquality as InputProjectHorizontalPrinciples.SexualEqualityEffectEnum,
-        sexualEqualityDescription: this.managementForm.controls.principles_equality.value
-      }
+      },
+      sustainableDevelopmentDescription: this.managementForm.controls.principles_sustainable.value || [],
+      equalOpportunitiesDescription: this.managementForm.controls.principles_opportunities.value || [],
+      sexualEqualityDescription: this.managementForm.controls.principles_equality.value || []
     });
   }
 
@@ -136,43 +124,67 @@ export class ProjectApplicationFormManagementDetailComponent extends BaseCompone
     this.managementForm.controls.financial.setValue(this.project?.projectFinancialManagement);
     if (this.project?.projectCooperationCriteria?.projectJointDevelopment) {
       this.selection.select('criteria_development');
-      this.managementForm.controls.criteria_development.setValue(this.project?.projectCooperationCriteria?.projectJointDevelopmentDescription);
+      this.managementForm.controls.criteria_development.setValue(this.project?.projectJointDevelopmentDescription);
+      this.enableSelection('criteria_development');
     } else {
       this.selection.deselect('criteria_development');
+      this.managementForm.get('criteria_development')?.disable();
     }
     if (this.project?.projectCooperationCriteria?.projectJointImplementation) {
       this.selection.select('criteria_implementation');
-      this.managementForm.controls.criteria_implementation.setValue(this.project?.projectCooperationCriteria?.projectJointImplementationDescription);
+      this.managementForm.controls.criteria_implementation.setValue(this.project?.projectJointImplementationDescription);
+      this.enableSelection('criteria_implementation');
     } else {
       this.selection.deselect('criteria_implementation');
+      this.managementForm.get('criteria_implementation')?.disable();
     }
     if (this.project?.projectCooperationCriteria?.projectJointStaffing) {
       this.selection.select('criteria_staffing');
-      this.managementForm.controls.criteria_staffing.setValue(this.project?.projectCooperationCriteria?.projectJointStaffingDescription);
+      this.managementForm.controls.criteria_staffing.setValue(this.project?.projectJointStaffingDescription);
+      this.enableSelection('criteria_staffing');
     } else {
       this.selection.deselect('criteria_staffing');
+      this.managementForm.get('criteria_staffing')?.disable();
     }
     if (this.project?.projectCooperationCriteria?.projectJointFinancing) {
       this.selection.select('criteria_financing');
-      this.managementForm.controls.criteria_financing.setValue(this.project?.projectCooperationCriteria?.projectJointFinancingDescription);
+      this.managementForm.controls.criteria_financing.setValue(this.project?.projectJointFinancingDescription);
+      this.enableSelection('criteria_financing');
     } else {
       this.selection.deselect('criteria_financing');
+      this.managementForm.get('criteria_financing')?.disable();
     }
     this.selectedContributionPrincipleDevelopment = this.project?.projectHorizontalPrinciples?.sustainableDevelopmentCriteriaEffect;
     this.selectedContributionPrincipleOpportunities = this.project?.projectHorizontalPrinciples?.equalOpportunitiesEffect;
     this.selectedContributionPrincipleEquality = this.project?.projectHorizontalPrinciples?.sexualEqualityEffect;
-    this.managementForm.controls.principles_sustainable.setValue(this.project?.projectHorizontalPrinciples?.sustainableDevelopmentDescription);
-    this.managementForm.controls.principles_opportunities.setValue(this.project?.projectHorizontalPrinciples?.equalOpportunitiesDescription);
-    this.managementForm.controls.principles_equality.setValue(this.project?.projectHorizontalPrinciples?.sexualEqualityDescription);
+    this.managementForm.controls.principles_sustainable.setValue(this.project?.sustainableDevelopmentDescription);
+    this.enableSelection('principles_sustainable');
+    this.managementForm.controls.principles_opportunities.setValue(this.project?.equalOpportunitiesDescription);
+    this.enableSelection('principles_opportunities');
+    this.managementForm.controls.principles_equality.setValue(this.project?.sexualEqualityDescription);
+    this.enableSelection('principles_equality');
   }
 
   changeSelection(key: string): void {
     this.selection.toggle(key);
     this.managementForm.get(key)?.setValue(null);
+    if (this.selection.isSelected(key)) {
+      this.managementForm.get(key)?.enable();
+    } else {
+      this.managementForm.get(key)?.disable();
+    }
     this.formChanged();
   }
 
   formChanged(): void {
     this.formService.setDirty(true);
+  }
+
+  enableSelection(key: string): void {
+    if (this.editable) {
+      this.managementForm.get(key)?.enable();
+    } else {
+      this.managementForm.get(key)?.disable();
+    }
   }
 }

@@ -1,9 +1,11 @@
 package io.cloudflight.jems.server.project.entity.description
 
+import javax.persistence.CascadeType
 import javax.persistence.Column
 import javax.persistence.Embedded
 import javax.persistence.Entity
 import javax.persistence.Id
+import javax.persistence.OneToMany
 import javax.validation.constraints.NotNull
 
 /**
@@ -17,18 +19,12 @@ data class ProjectManagement(
     @field:NotNull
     val projectId: Long,
 
-    val projectCoordination: String?,
-
-    val projectQualityAssurance: String?,
-
-    val projectCommunication: String?,
-
-    val projectFinancialManagement: String?,
-
     @Embedded
     val projectCooperationCriteria: ProjectCooperationCriteria?,
 
     @Embedded
-    val projectHorizontalPrinciples: ProjectHorizontalPrinciples?
+    val projectHorizontalPrinciples: ProjectHorizontalPrinciples?,
 
+    @OneToMany(cascade = [CascadeType.ALL], orphanRemoval = true, mappedBy = "translationId.projectId")
+    val translatedValues: Set<ProjectManagementTransl> = emptySet()
 )
