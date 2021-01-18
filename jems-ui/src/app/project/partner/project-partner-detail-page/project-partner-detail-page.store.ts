@@ -26,6 +26,7 @@ import {ProjectWorkPackagePageStore} from '../../work-package/work-package-detai
 import {BudgetStaffCostEntryDTO} from 'build/generated-sources/openapi/model/budgetStaffCostEntryDTO';
 import {UnitCostsBudgetTable} from '../../model/budget/unit-costs-budget-table';
 import {UnitCostsBudgetTableEntry} from '../../model/budget/unit-costs-budget-table-entry';
+import {InvestmentSummary} from '../../work-package/work-package-detail-page/workPackageInvestment';
 
 @Injectable()
 export class ProjectPartnerDetailPageStore {
@@ -35,7 +36,7 @@ export class ProjectPartnerDetailPageStore {
   budgets$: Observable<PartnerBudgetTables>;
   totalBudget$: Observable<number>;
   isProjectEditable$: Observable<boolean>;
-  investmentIds$: Observable<number[]>;
+  investmentSummaries$: Observable<InvestmentSummary[]>;
   unitCosts$: Observable<ProgrammeUnitCostDTO[]>;
 
   private updateBudgetOptionsEvent$ = new Subject();
@@ -46,7 +47,7 @@ export class ProjectPartnerDetailPageStore {
               private projectWorkPackagePageStore: ProjectWorkPackagePageStore,
               private projectPartnerBudgetService: ProjectPartnerBudgetService
   ) {
-    this.investmentIds$ = this.projectWorkPackagePageStore.workPackageInvestmentIdsOfProject$.pipe(shareReplay(1));
+    this.investmentSummaries$ = this.projectWorkPackagePageStore.projectInvestmentSummaries$.pipe(shareReplay(1));
     this.unitCosts$ = this.projectStore.projectCall$.pipe(
       map(projectCall => projectCall.unitCosts),
       shareReplay(1)

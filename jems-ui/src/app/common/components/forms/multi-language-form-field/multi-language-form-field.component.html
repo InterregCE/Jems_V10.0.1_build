@@ -24,10 +24,6 @@
                                 [errors]="formGroup.get('translation').errors"
                                 [messages]="constants.FORM_ERRORS.translation">
                         </app-form-field-errors>
-                        <div *ngIf="formGroup.get('translation')?.value?.length > maxLength" class="inline-block">
-                            ({{formGroup.get('translation')?.value?.length}}
-                            /{{maxLength}} {{'common.textarea.hint' | translate}})
-                        </div>
                     </mat-error>
                 </mat-form-field>
             </ng-container>

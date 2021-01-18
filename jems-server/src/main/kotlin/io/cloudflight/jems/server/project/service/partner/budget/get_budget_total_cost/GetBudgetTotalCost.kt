@@ -1,15 +1,19 @@
 package io.cloudflight.jems.server.project.service.partner.budget.get_budget_total_cost
 
 import io.cloudflight.jems.server.project.authorization.CanReadProjectPartner
+import io.cloudflight.jems.server.project.service.common.BudgetCostsCalculatorService
 import io.cloudflight.jems.server.project.service.partner.budget.ProjectPartnerBudgetPersistence
 import io.cloudflight.jems.server.project.service.partner.budget.get_budget_options.GetBudgetOptionsInteractor
-import io.cloudflight.jems.server.project.service.partner.budget.percentage
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import java.math.BigDecimal
 
 @Service
-class GetBudgetTotalCost(private val persistence: ProjectPartnerBudgetPersistence, private val getBudgetOptions: GetBudgetOptionsInteractor) : GetBudgetTotalCostInteractor {
+class GetBudgetTotalCost(
+    private val persistence: ProjectPartnerBudgetPersistence,
+    private val getBudgetOptions: GetBudgetOptionsInteractor,
+    private val budgetCostsCalculator: BudgetCostsCalculatorService
+) : GetBudgetTotalCostInteractor {
 
     @Transactional(readOnly = true)
     @CanReadProjectPartner
@@ -17,57 +21,46 @@ class GetBudgetTotalCost(private val persistence: ProjectPartnerBudgetPersistenc
 
         val budgetOptions = getBudgetOptions.getBudgetOptions(partnerId)
 
+        val unitCostTotal=persistence.getBudgetUnitCostTotal(partnerId)
+        val lumpSumsTotal=persistence.getBudgetLumpSumsCostTotal(partnerId)
         val equipmentCostTotal = persistence.getBudgetEquipmentCostTotal(partnerId)
-        val externalExpertiseAndServicesCostTotal = persistence.getBudgetExternalExpertiseAndServicesCostTotal(partnerId)
-        val infrastructureAndWorksCostTotal = persistence.getBudgetInfrastructureAndWorksCostTotal(partnerId)
+        val externalCostTotal = persistence.getBudgetExternalExpertiseAndServicesCostTotal(partnerId)
+        val infrastructureCostTotal = persistence.getBudgetInfrastructureAndWorksCostTotal(partnerId)
 
-        var travelAndAccommodationCostTotal =
-            if (budgetOptions?.travelAndAccommodationOnStaffCostsFlatRate == null)
-                persistence.getBudgetTravelAndAccommodationCostTotal(partnerId)
-            else
-                BigDecimal.ZERO
+        val travelCostTotal =
+            fetchTravelCostsOrZero(partnerId, budgetOptions?.travelAndAccommodationOnStaffCostsFlatRate)
 
-        val staffCostTotal =
-            if (budgetOptions?.staffCostsFlatRate == null)
-                persistence.getBudgetStaffCostTotal(partnerId)
-            else
-                calculateStaffCosts(externalExpertiseAndServicesCostTotal, equipmentCostTotal, infrastructureAndWorksCostTotal, travelAndAccommodationCostTotal, budgetOptions.staffCostsFlatRate, budgetOptions.travelAndAccommodationOnStaffCostsFlatRate)
+        val staffCostTotal = fetchStaffCostsOrZero(partnerId, budgetOptions?.staffCostsFlatRate,)
 
-        if (budgetOptions?.travelAndAccommodationOnStaffCostsFlatRate != null)
-            travelAndAccommodationCostTotal = calculateTravelCosts(staffCostTotal, budgetOptions.travelAndAccommodationOnStaffCostsFlatRate)
+        val calculatedCosts = budgetCostsCalculator.calculateCosts(
+            budgetOptions,
+            externalCostTotal,
+            equipmentCostTotal,
+            infrastructureCostTotal,
+            travelCostTotal,
+            staffCostTotal
+        )
 
-        return staffCostTotal
-            .add(travelAndAccommodationCostTotal)
-            .add(externalExpertiseAndServicesCostTotal)
+        return calculatedCosts.staffCosts
+            .add(calculatedCosts.travelCosts)
+            .add(calculatedCosts.officeAndAdministrationCosts)
+            .add(calculatedCosts.otherCosts)
+            .add(externalCostTotal)
             .add(equipmentCostTotal)
-            .add(infrastructureAndWorksCostTotal)
-            .add(calculateOfficeAndAdministrationCosts(staffCostTotal, budgetOptions?.officeAndAdministrationOnStaffCostsFlatRate))
-            .add(calculateOtherCosts(staffCostTotal, budgetOptions?.otherCostsOnStaffCostsFlatRate, budgetOptions?.staffCostsFlatRate))
+            .add(infrastructureCostTotal)
+            .add(unitCostTotal)
+            .add(lumpSumsTotal)
     }
 
-}
-
-private fun calculateStaffCosts(externalCosts: BigDecimal, equipmentCosts: BigDecimal, infrastructureCosts: BigDecimal, travelCosts: BigDecimal, staffCostsFlatRate: Int, travelAndAccommodationOnStaffCostsFlatRate: Int?) =
-    if (travelAndAccommodationOnStaffCostsFlatRate != null)
-        externalCosts.add(equipmentCosts).add(infrastructureCosts).percentage(staffCostsFlatRate)
-    else
-        travelCosts.add(externalCosts).add(equipmentCosts).add(infrastructureCosts).percentage(staffCostsFlatRate)
-
-private fun calculateTravelCosts(staffCostTotal: BigDecimal, travelAndAccommodationOnStaffCostsFlatRate: Int) =
-    staffCostTotal.percentage(travelAndAccommodationOnStaffCostsFlatRate)
-
-
-private fun calculateOfficeAndAdministrationCosts(staffCostTotal: BigDecimal, officeAndAdministrationOnStaffCostsFlatRate: Int?): BigDecimal =
-    if (officeAndAdministrationOnStaffCostsFlatRate != null)
-        staffCostTotal.percentage(officeAndAdministrationOnStaffCostsFlatRate)
-    else
-        BigDecimal.ZERO
-
-private fun calculateOtherCosts(staffCostTotal: BigDecimal, otherCostsOnStaffCostsFlatRate: Int?, staffCostsFlatRate: Int?): BigDecimal =
-    if (otherCostsOnStaffCostsFlatRate != null) {
-        if (staffCostsFlatRate == null)
-            staffCostTotal.percentage(otherCostsOnStaffCostsFlatRate)
+    private fun fetchTravelCostsOrZero(partnerId: Long, travelAndAccommodationOnStaffCostsFlatRate: Int?) =
+        if (travelAndAccommodationOnStaffCostsFlatRate == null)
+            persistence.getBudgetTravelAndAccommodationCostTotal(partnerId)
         else
             BigDecimal.ZERO
-    } else
-        BigDecimal.ZERO
+
+    private fun fetchStaffCostsOrZero(partnerId: Long, staffCostsFlatRate: Int?, ) =
+        if (staffCostsFlatRate == null)
+            persistence.getBudgetStaffCostTotal(partnerId)
+        else
+            BigDecimal.ZERO
+}

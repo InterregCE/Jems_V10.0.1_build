@@ -50,8 +50,8 @@ fun BudgetStaffCostEntry.toProjectPartnerBudgetStaffCostEntity(partnerId: Long) 
             .map { language ->
                 ProjectPartnerBudgetStaffCostTransl(
                     budgetTranslation = BudgetTranslation(this, language),
-                    description = description.firstOrNull { it.language === language }?.translation ?: "",
-                    comment = comment.firstOrNull { it.language === language }?.translation ?: ""
+                    description = description.firstOrNull { it.language == language }?.translation ?: "",
+                    comment = comment.firstOrNull { it.language == language }?.translation ?: ""
                 )
             }.toMutableSet()
     )
@@ -84,8 +84,8 @@ fun BudgetTravelAndAccommodationCostEntry.toProjectPartnerBudgetTravelEntity(par
             .map { language ->
                 ProjectPartnerBudgetTravelTransl(
                     budgetTranslation = BudgetTranslation(this, language),
-                    description = description.firstOrNull { it.language === language }?.translation ?: "",
-                    unitType = unitType.firstOrNull { it.language === language }?.translation ?: ""
+                    description = description.firstOrNull { it.language == language }?.translation ?: "",
+                    unitType = unitType.firstOrNull { it.language == language }?.translation ?: ""
                 )
             }.toMutableSet()
     )
@@ -106,9 +106,9 @@ fun BudgetGeneralCostEntry.toProjectPartnerBudgetEquipmentEntity(partnerId: Long
             .map { language ->
                 ProjectPartnerBudgetEquipmentTransl(
                     budgetTranslation = BudgetTranslation(this, language),
-                    description = description.firstOrNull { it.language === language }?.translation ?: "",
-                    unitType = unitType.firstOrNull { it.language === language }?.translation ?: "",
-                    awardProcedures = awardProcedures.firstOrNull { it.language === language }?.translation ?: ""
+                    description = description.firstOrNull { it.language == language }?.translation ?: "",
+                    unitType = unitType.firstOrNull { it.language == language }?.translation ?: "",
+                    awardProcedures = awardProcedures.firstOrNull { it.language == language }?.translation ?: ""
                 )
             }.toMutableSet()
     )
@@ -129,9 +129,9 @@ fun BudgetGeneralCostEntry.toProjectPartnerBudgetExternalEntity(partnerId: Long)
             .map { language ->
                 ProjectPartnerBudgetExternalTransl(
                     budgetTranslation = BudgetTranslation(this, language),
-                    description = description.firstOrNull { it.language === language }?.translation ?: "",
-                    unitType = unitType.firstOrNull { it.language === language }?.translation ?: "",
-                    awardProcedures = awardProcedures.firstOrNull { it.language === language }?.translation ?: ""
+                    description = description.firstOrNull { it.language == language }?.translation ?: "",
+                    unitType = unitType.firstOrNull { it.language == language }?.translation ?: "",
+                    awardProcedures = awardProcedures.firstOrNull { it.language == language }?.translation ?: ""
                 )
             }.toMutableSet()
     )
@@ -152,9 +152,9 @@ fun BudgetGeneralCostEntry.toProjectPartnerBudgetInfrastructureEntity(partnerId:
             .map { language ->
                 ProjectPartnerBudgetInfrastructureTransl(
                     budgetTranslation = BudgetTranslation(this, language),
-                    description = description.firstOrNull { it.language === language }?.translation ?: "",
-                    unitType = unitType.firstOrNull { it.language === language }?.translation ?: "",
-                    awardProcedures = awardProcedures.firstOrNull { it.language === language }?.translation ?: ""
+                    description = description.firstOrNull { it.language == language }?.translation ?: "",
+                    unitType = unitType.firstOrNull { it.language == language }?.translation ?: "",
+                    awardProcedures = awardProcedures.firstOrNull { it.language == language }?.translation ?: ""
                 )
             }.toMutableSet()
     )

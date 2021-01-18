@@ -1,66 +1,66 @@
 package io.cloudflight.jems.server.project.service.budget.get_project_budget
 
 import io.cloudflight.jems.api.project.dto.partner.ProjectPartnerRole
+import io.cloudflight.jems.server.UnitTest
 import io.cloudflight.jems.server.audit.service.AuditService
 import io.cloudflight.jems.server.project.service.budget.ProjectBudgetPersistence
+import io.cloudflight.jems.server.project.service.budget.model.BudgetCostsCalculationResult
 import io.cloudflight.jems.server.project.service.budget.model.PartnerBudget
 import io.cloudflight.jems.server.project.service.budget.model.ProjectPartnerCost
+import io.cloudflight.jems.server.project.service.common.BudgetCostsCalculatorService
 import io.cloudflight.jems.server.project.service.lumpsum.ProjectLumpSumPersistence
 import io.cloudflight.jems.server.project.service.lumpsum.model.ProjectLumpSum
-import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerBudgetOptions
 import io.cloudflight.jems.server.project.service.partner.budget.ProjectPartnerBudgetOptionsPersistence
 import io.cloudflight.jems.server.project.service.partner.model.ProjectPartner
-import io.mockk.MockKAnnotations
+import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerBudgetOptions
+import io.cloudflight.jems.server.toScaledBigDecimal
 import io.mockk.every
+import io.mockk.impl.annotations.InjectMockKs
 import io.mockk.impl.annotations.MockK
 import io.mockk.impl.annotations.RelaxedMockK
 import io.mockk.slot
 import org.assertj.core.api.Assertions.assertThat
-import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import java.math.BigDecimal
-import java.util.UUID
+import java.util.*
 
-class GetProjectBudgetInteractorTest {
+class GetProjectBudgetInteractorTest: UnitTest() {
 
-    companion object {
-        private const val P1_ID = 1L
-        private const val P2_ID = 2L
-        private val partner1 = ProjectPartner(
-            id = P1_ID,
-            abbreviation = "PP 2",
-            role = ProjectPartnerRole.PARTNER,
-            sortNumber = 2,
-            country = "SK"
-        )
-        private val partner2 = ProjectPartner(
-            id = P2_ID,
-            abbreviation = "LP 1",
-            role = ProjectPartnerRole.LEAD_PARTNER,
-            sortNumber = 1
-        )
+    private  val partner1Id = 1L
+    private  val partner2Id = 2L
+    private val partner1 = ProjectPartner(
+        id = partner1Id,
+        abbreviation = "PP 2",
+        role = ProjectPartnerRole.PARTNER,
+        sortNumber = 2,
+        country = "SK"
+    )
+    private val partner2 = ProjectPartner(
+        id = partner2Id,
+        abbreviation = "LP 1",
+        role = ProjectPartnerRole.LEAD_PARTNER,
+        sortNumber = 1
+    )
 
-        private val partner1Options = ProjectPartnerBudgetOptions(
-                partnerId = partner1.id!!,
-                officeAndAdministrationOnStaffCostsFlatRate = 10,
-                staffCostsFlatRate = 10,
-                travelAndAccommodationOnStaffCostsFlatRate = 15,
-        )
+    private val partner1Options = ProjectPartnerBudgetOptions(
+        partnerId = partner1.id!!,
+        officeAndAdministrationOnStaffCostsFlatRate = 10,
+        staffCostsFlatRate = 10,
+        travelAndAccommodationOnStaffCostsFlatRate = 15,
+    )
 
-        private fun budget(partnerId: Long, sum: Double) = ProjectPartnerCost(
-            partnerId = partnerId,
-            sum = decimal(sum)
-        )
-        private fun decimal(value: Double) = BigDecimal.valueOf((value * 100).toLong(), 2)
+    private fun budget(partnerId: Long, sum: Double) = ProjectPartnerCost(
+        partnerId = partnerId,
+        sum = sum.toScaledBigDecimal()
+    )
 
-        private val lumpSumId1: UUID = UUID.randomUUID()
-        private val lumpSumId2: UUID = UUID.randomUUID()
+    private val lumpSumId1: UUID = UUID.randomUUID()
+    private val lumpSumId2: UUID = UUID.randomUUID()
 
-        private val lumpSums = listOf(
-            ProjectLumpSum(id = lumpSumId1, programmeLumpSumId = 40, period = 1, lumpSumContributions = emptyList()),
-            ProjectLumpSum(id = lumpSumId2, programmeLumpSumId = 40, period = 2, lumpSumContributions = emptyList()),
-        )
-    }
+    private val lumpSums = listOf(
+        ProjectLumpSum(id = lumpSumId1, programmeLumpSumId = 40, period = 1, lumpSumContributions = emptyList()),
+        ProjectLumpSum(id = lumpSumId2, programmeLumpSumId = 40, period = 2, lumpSumContributions = emptyList()),
+    )
 
     @MockK
     lateinit var persistence: ProjectBudgetPersistence
@@ -71,59 +71,67 @@ class GetProjectBudgetInteractorTest {
     @MockK
     lateinit var lumpSumPersistence: ProjectLumpSumPersistence
 
+    @MockK
+    lateinit var budgetCalculator: BudgetCostsCalculatorService
+
     @RelaxedMockK
     lateinit var auditService: AuditService
 
-    private lateinit var getProjectBudgetInteractor: GetProjectBudgetInteractor
+    @InjectMockKs
+    private lateinit var getProjectBudget: GetProjectBudget
 
-    @BeforeEach
-    fun setup() {
-        MockKAnnotations.init(this)
-        getProjectBudgetInteractor = GetProjectBudget(persistence, optionOptionsPersistence, lumpSumPersistence)
-    }
 
     @Test
     fun getBudget() {
         every { persistence.getPartnersForProjectId(1) } returns listOf(partner1, partner2)
-        every { optionOptionsPersistence.getBudgetOptions(setOf(P1_ID, P2_ID)) } returns listOf(partner1Options)
-        every { persistence.getStaffCosts(setOf(P1_ID, P2_ID)) } returns listOf(budget(P1_ID, 50.0))
-        every { persistence.getTravelCosts(setOf(P1_ID, P2_ID)) } returns listOf(budget(P1_ID, 800.0), budget(P2_ID, 100.0))
-        every { persistence.getExternalCosts(setOf(P1_ID, P2_ID)) } returns listOf(budget(P2_ID, 1000.0))
-        every { persistence.getEquipmentCosts(setOf(P1_ID, P2_ID)) } returns emptyList()
-        every { persistence.getInfrastructureCosts(setOf(P1_ID, P2_ID)) } returns listOf(budget(P1_ID, 300.0), budget(P2_ID, 300.0))
+        every { optionOptionsPersistence.getBudgetOptions(setOf(partner1Id, partner2Id)) } returns listOf(partner1Options)
+        every { persistence.getStaffCosts(setOf(partner2Id)) } returns listOf(budget(partner1Id, 50.0))
+        every { persistence.getTravelCosts(setOf(partner2Id)) } returns listOf(budget(partner1Id, 800.0), budget(partner2Id, 100.0))
+        every { persistence.getExternalCosts(setOf(partner1Id, partner2Id)) } returns listOf(budget(partner2Id, 1000.0))
+        every { persistence.getEquipmentCosts(setOf(partner1Id, partner2Id)) } returns emptyList()
+        every { persistence.getInfrastructureCosts(setOf(partner1Id, partner2Id)) } returns listOf(budget(partner1Id, 300.0), budget(partner2Id, 300.0))
+
+        every { budgetCalculator.calculateCosts(partner1Options, BigDecimal.ZERO, BigDecimal.ZERO,300.0.toScaledBigDecimal(),800.0.toScaledBigDecimal(),50.0.toScaledBigDecimal())} returns BudgetCostsCalculationResult(
+            1200.0.toScaledBigDecimal(),165.toScaledBigDecimal(),120.toScaledBigDecimal(),BigDecimal.ZERO)
+
+        every { budgetCalculator.calculateCosts(null, 1000.0.toScaledBigDecimal(), BigDecimal.ZERO,300.0.toScaledBigDecimal(),100.0.toScaledBigDecimal(),
+            BigDecimal.ZERO)} returns  BudgetCostsCalculationResult(
+            BigDecimal.ZERO,100.0.toScaledBigDecimal(),
+            BigDecimal.ZERO,BigDecimal.ZERO)
+
 
         every { lumpSumPersistence.getLumpSums(1) } returns lumpSums
-        every { persistence.getUnitCostsPerPartner(setOf(P1_ID, P2_ID)) } returns mapOf(P1_ID to decimal(25.0))
+        every { persistence.getUnitCostsPerPartner(setOf(partner1Id, partner2Id)) } returns mapOf(partner1Id to 25.0.toScaledBigDecimal())
         val lumpSumIds = slot<Set<UUID>>()
         every { persistence.getLumpSumContributionPerPartner(capture(lumpSumIds)) } returns mapOf(
-            P1_ID to BigDecimal.ONE,
-            P2_ID to BigDecimal.TEN,
+            partner1Id to BigDecimal.ONE,
+            partner2Id to BigDecimal.TEN,
         )
 
-        assertThat(getProjectBudgetInteractor.getBudget(1))
+        assertThat(getProjectBudget.getBudget(1))
             .containsExactlyInAnyOrder(
                 PartnerBudget(
                     partner = partner2,
-                    staffCostsFlatRate = null,
-                    officeAndAdministrationOnStaffCostsFlatRate = null,
-                    travelAndAccommodationOnStaffCostsFlatRate = null,
-                    otherCostsOnStaffCostsFlatRate = null,
-                    travelCosts = decimal(100.0),
-                    externalCosts = decimal(1000.0),
-                    infrastructureCosts = decimal(300.0),
+                    staffCosts = BigDecimal.ZERO,
+                    travelCosts = 100.toScaledBigDecimal(),
+                    externalCosts = 1000.toScaledBigDecimal(),
+                    equipmentCosts = BigDecimal.ZERO,
+                    infrastructureCosts = 300.toScaledBigDecimal(),
+                    officeAndAdministrationCosts = BigDecimal.ZERO,
+                    otherCosts = BigDecimal.ZERO,
                     lumpSumContribution = BigDecimal.TEN,
                 ),
                 PartnerBudget(
                     partner = partner1,
-                    staffCostsFlatRate = 10,
-                    officeAndAdministrationOnStaffCostsFlatRate = 10,
-                    travelAndAccommodationOnStaffCostsFlatRate = 15,
-                    otherCostsOnStaffCostsFlatRate = null,
-                    staffCosts = decimal(50.0),
-                    travelCosts = decimal(800.0),
-                    infrastructureCosts = decimal(300.0),
+                    staffCosts = 1200.toScaledBigDecimal(),
+                    travelCosts = 165.toScaledBigDecimal(),
+                    externalCosts = BigDecimal.ZERO,
+                    equipmentCosts = BigDecimal.ZERO,
+                    infrastructureCosts = 300.toScaledBigDecimal(),
+                    officeAndAdministrationCosts = 120.toScaledBigDecimal(),
+                    otherCosts = BigDecimal.ZERO,
                     lumpSumContribution = BigDecimal.ONE,
-                    unitCosts = decimal(25.0),
+                    unitCosts = 25.0.toScaledBigDecimal(),
                 )
             )
         assertThat(lumpSumIds.captured).containsExactlyInAnyOrder(lumpSumId1, lumpSumId2)

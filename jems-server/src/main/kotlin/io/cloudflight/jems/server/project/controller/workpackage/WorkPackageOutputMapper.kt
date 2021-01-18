@@ -2,10 +2,12 @@ package io.cloudflight.jems.server.project.controller.workpackage
 
 import io.cloudflight.jems.api.common.dto.AddressDTO
 import io.cloudflight.jems.api.project.dto.InputTranslation
+import io.cloudflight.jems.api.project.dto.workpackage.investment.InvestmentSummaryDTO
 import io.cloudflight.jems.api.project.dto.workpackage.investment.WorkPackageInvestmentDTO
 import io.cloudflight.jems.api.project.dto.workpackage.output.WorkPackageOutputDTO
 import io.cloudflight.jems.api.project.dto.workpackage.output.WorkPackageOutputUpdateDTO
 import io.cloudflight.jems.server.project.service.model.Address
+import io.cloudflight.jems.server.project.service.workpackage.model.InvestmentSummary
 import io.cloudflight.jems.server.project.service.workpackage.model.WorkPackageInvestment
 import io.cloudflight.jems.server.project.service.workpackage.output.model.WorkPackageOutput
 import io.cloudflight.jems.server.project.service.workpackage.output.model.WorkPackageOutputTranslatedValue
@@ -26,6 +28,15 @@ fun WorkPackageInvestment.toWorkPackageInvestmentDTO() = WorkPackageInvestmentDT
     ownershipSiteLocation = ownershipSiteLocation,
     ownershipRetain = ownershipRetain,
     ownershipMaintenance = ownershipMaintenance
+)
+
+fun List<InvestmentSummary>.toInvestmentSummaryDTOs() =
+    this.map { it.toInvestmentSummaryDTO() }
+
+fun InvestmentSummary.toInvestmentSummaryDTO() = InvestmentSummaryDTO(
+    id = id,
+    investmentNumber = investmentNumber,
+    workPackageId = workPackageId
 )
 
 fun WorkPackageInvestmentDTO.toWorkPackageInvestment() = WorkPackageInvestment(

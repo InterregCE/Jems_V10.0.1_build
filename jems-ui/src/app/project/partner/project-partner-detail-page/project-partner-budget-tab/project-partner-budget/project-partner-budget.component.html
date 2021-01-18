@@ -49,7 +49,7 @@
                     <h6 class="header">{{'project.partner.budget.external' | translate}}</h6>
                     <app-general-budget-table
                             *ngIf="external"
-                            [investmentIds]="data.investments"
+                            [investmentSummaries]="data.investments"
                             [budgetTable]="data.budgetTables.externalCosts"
                             [editable]="budgetsForm.enabled"
                             [tableName]="constants.FORM_CONTROL_NAMES.external">
@@ -59,7 +59,7 @@
                     <h6 class="header">{{'project.partner.budget.equipment' | translate}}</h6>
                     <app-general-budget-table
                             *ngIf="equipment"
-                            [investmentIds]="data.investments"
+                            [investmentSummaries]="data.investments"
                             [budgetTable]="data.budgetTables.equipmentCosts"
                             [editable]="budgetsForm.enabled"
                             [tableName]="constants.FORM_CONTROL_NAMES.equipment">
@@ -69,7 +69,7 @@
                     <h6 class="header">{{'project.partner.budget.infrastructure' | translate}}</h6>
                     <app-general-budget-table
                             *ngIf="infrastructure"
-                            [investmentIds]="data.investments"
+                            [investmentSummaries]="data.investments"
                             [budgetTable]="data.budgetTables.infrastructureCosts"
                             [editable]="budgetsForm.enabled"
                             [tableName]="constants.FORM_CONTROL_NAMES.infrastructure">
