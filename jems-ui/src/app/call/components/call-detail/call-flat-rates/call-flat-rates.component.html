@@ -27,20 +27,10 @@
                 <span>{{'call.detail.flat.rate.table.staff.direct.cost' | translate}}</span>
                 <mat-form-field>
                     <input [readonly]="!isStaffCostFlatRateActive.value"
-                           name="staffCostFlatRate"
+                           currencyMask type="integer" name="staffCostFlatRate" matInput
                            [formControl]="staffCostFlatRate"
-                           [max]="constants.FLAT_RATE_MAX_VALUES.STAFF_COST"
-                           min="1"
-                           matInput
-                           class="text-right"
-                           type="number">
+                           [options]="{min: 1, max: constants.FLAT_RATE_MAX_VALUES.STAFF_COST, align: 'right', nullable: true}">
                     <span matSuffix>{{'project.partner.budget.options.staff.costs.flat.rate.percent' | translate}}</span>
-                    <mat-error>
-                        <app-form-field-errors
-                                [errors]="staffCostFlatRate?.errors"
-                                [messages]="constants.FORM_ERRORS.staffCostErrors">
-                        </app-form-field-errors>
-                    </mat-error>
                 </mat-form-field>
                 <app-call-flat-rates-toggle-column
                         [disabled]="published || !isStaffCostFlatRateActive.value"
@@ -59,20 +49,10 @@
                 <span>{{'call.detail.flat.rate.table.office.administration.direct.staff.cost' | translate}}</span>
                 <mat-form-field>
                     <input [readonly]="!isOfficeOnStaffFlatRateActive.value"
-                           name="officeOnStaffFlatRate"
+                           currencyMask type="integer" name="officeOnStaffFlatRate" matInput
                            [formControl]="officeOnStaffFlatRate"
-                           [max]="constants.FLAT_RATE_MAX_VALUES.OFFICE_ON_STAFF"
-                           min="1"
-                           matInput
-                           class="text-right"
-                           type="number">
+                           [options]="{min: 1, max: constants.FLAT_RATE_MAX_VALUES.OFFICE_ON_STAFF, align: 'right', nullable: true}">
                     <span matSuffix>{{'project.partner.budget.options.staff.costs.flat.rate.percent' | translate}}</span>
-                    <mat-error>
-                        <app-form-field-errors
-                                [errors]="officeOnStaffFlatRate?.errors"
-                                [messages]="constants.FORM_ERRORS.officeAdminDirectStaffCostPercentErrors">
-                        </app-form-field-errors>
-                    </mat-error>
                 </mat-form-field>
                 <app-call-flat-rates-toggle-column
                         [disabled]="published || !isOfficeOnStaffFlatRateActive.value"
@@ -91,20 +71,10 @@
                 <span>{{'call.detail.flat.rate.table.office.administration.direct.cost' | translate}}</span>
                 <mat-form-field>
                     <input [readonly]="!isOfficeOnOtherFlatRateActive.value"
-                           class="text-right"
-                           name="officeOnOtherFlatRate"
+                           currencyMask type="integer" name="officeOnOtherFlatRate" matInput
                            [formControl]="officeOnOtherFlatRate"
-                           [max]="constants.FLAT_RATE_MAX_VALUES.OFFICE_ON_OTHER"
-                           min="1"
-                           matInput
-                           type="number">
+                           [options]="{min: 1, max: constants.FLAT_RATE_MAX_VALUES.OFFICE_ON_OTHER, align: 'right', nullable: true}">
                     <span matSuffix>{{'project.partner.budget.options.staff.costs.flat.rate.percent' | translate}}</span>
-                    <mat-error>
-                        <app-form-field-errors
-                                [errors]="officeOnOtherFlatRate?.errors"
-                                [messages]="constants.FORM_ERRORS.officeAdministrationDirectCostPercentErrors">
-                        </app-form-field-errors>
-                    </mat-error>
                 </mat-form-field>
                 <app-call-flat-rates-toggle-column
                         [disabled]="published || !isOfficeOnOtherFlatRateActive.value"
@@ -123,20 +93,10 @@
                 <span>{{'call.detail.flat.rate.table.travel.accommodation.direct.staff.cost' | translate}}</span>
                 <mat-form-field>
                     <input [readonly]="!isTravelOnStaffFlatRateActive.value"
-                           name="travelOnStaffFlatRate"
-                           class="text-right"
+                           currencyMask type="integer" name="travelOnStaffFlatRate" matInput
                            [formControl]="travelOnStaffFlatRate"
-                           [max]="constants.FLAT_RATE_MAX_VALUES.TRAVEL_ON_STAFF"
-                           min="1"
-                           matInput
-                           type="number">
+                           [options]="{min: 1, max: constants.FLAT_RATE_MAX_VALUES.TRAVEL_ON_STAFF, align: 'right', nullable: true}">
                     <span matSuffix>{{'project.partner.budget.options.staff.costs.flat.rate.percent' | translate}}</span>
-                    <mat-error>
-                        <app-form-field-errors
-                                [errors]="travelOnStaffFlatRate?.errors"
-                                [messages]="constants.FORM_ERRORS.travelAccommodationDirectStaffCostPercentErrors">
-                        </app-form-field-errors>
-                    </mat-error>
                 </mat-form-field>
                 <app-call-flat-rates-toggle-column
                         [disabled]="published || !isTravelOnStaffFlatRateActive.value"
@@ -155,20 +115,10 @@
                 <span> {{'call.detail.flat.rate.table.other.cost' | translate}}</span>
                 <mat-form-field>
                     <input [readonly]="!isOtherOnStaffFlatRateActive.value"
-                           name="otherOnStaffFlatRate"
+                           currencyMask type="integer" name="otherOnStaffFlatRate" matInput
                            [formControl]="otherOnStaffFlatRate"
-                           [max]="constants.FLAT_RATE_MAX_VALUES.OTHER_ON_STAFF"
-                           min="1"
-                           matInput
-                           class="text-right"
-                           type="number">
+                           [options]="{min: 1, max: constants.FLAT_RATE_MAX_VALUES.OTHER_ON_STAFF, align: 'right', nullable: true}">
                     <span matSuffix>{{'project.partner.budget.options.staff.costs.flat.rate.percent' | translate}}</span>
-                    <mat-error>
-                        <app-form-field-errors
-                                [errors]="otherOnStaffFlatRate?.errors"
-                                [messages]="constants.FORM_ERRORS.otherCostsPercentErrors">
-                        </app-form-field-errors>
-                    </mat-error>
                 </mat-form-field>
                 <app-call-flat-rates-toggle-column
                         [disabled]="published || !isOtherOnStaffFlatRateActive.value"
