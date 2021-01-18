@@ -34,10 +34,6 @@ class ProjectPartnerBudgetPersistenceProvider(
     override fun deleteAllBudgetStaffCostsExceptFor(partnerId: Long, idsToKeep: List<Long>) =
         if (idsToKeep.isNotEmpty()) budgetStaffCostRepository.deleteAllByBasePropertiesPartnerIdAndIdNotIn(partnerId, idsToKeep) else Unit
 
-    @Transactional
-    override fun deleteBudgetStaffCosts(partnerId: Long) =
-        budgetStaffCostRepository.deleteAllByBasePropertiesPartnerId(partnerId)
-
     @Transactional(readOnly = true)
     override fun getBudgetStaffCostTotal(partnerId: Long): BigDecimal =
         budgetStaffCostRepository.sumTotalForPartner(partnerId) ?: BigDecimal.ZERO
@@ -54,10 +50,6 @@ class ProjectPartnerBudgetPersistenceProvider(
     @Transactional
     override fun deleteAllBudgetTravelAndAccommodationCostsExceptFor(partnerId: Long, idsToKeep: List<Long>) =
         if (idsToKeep.isNotEmpty()) budgetTravelRepository.deleteAllByBasePropertiesPartnerIdAndIdNotIn(partnerId, idsToKeep) else Unit
-
-    @Transactional
-    override fun deleteTravelAndAccommodationCosts(partnerId: Long) =
-        budgetTravelRepository.deleteAllByBasePropertiesPartnerId(partnerId)
 
     @Transactional(readOnly = true)
     override fun getBudgetTravelAndAccommodationCostTotal(partnerId: Long): BigDecimal =
@@ -76,13 +68,9 @@ class ProjectPartnerBudgetPersistenceProvider(
     override fun deleteAllBudgetInfrastructureAndWorksCostsExceptFor(partnerId: Long, idsToKeep: List<Long>) =
         if (idsToKeep.isNotEmpty()) budgetInfrastructureRepository.deleteAllByBasePropertiesPartnerIdAndIdNotIn(partnerId, idsToKeep) else Unit
 
-    @Transactional
-    override fun deleteInfrastructureCosts(partnerId: Long) =
-        this.budgetInfrastructureRepository.deleteAllByBasePropertiesPartnerId(partnerId)
-
     @Transactional(readOnly = true)
     override fun getBudgetUnitCosts(partnerId: Long): List<BudgetUnitCostEntry> =
-        budgetUnitCostRepository.findAllByPartnerIdOrderByIdAsc(partnerId).unitCostEntitiesToUnitCostEntries()
+        budgetUnitCostRepository.findAllByPartnerIdOrderByIdAsc(partnerId).toModel()
 
     @Transactional(readOnly = true)
     override fun getBudgetUnitCostTotal(partnerId: Long): BigDecimal =
@@ -94,17 +82,13 @@ class ProjectPartnerBudgetPersistenceProvider(
 
     @Transactional
     override fun createOrUpdateBudgetUnitCosts(partnerId: Long, unitCosts: List<BudgetUnitCostEntry>): List<BudgetUnitCostEntry> =
-        budgetUnitCostRepository.saveAll(unitCosts.map { it.toEntity(
+        budgetUnitCostRepository.saveAll(unitCosts.toEntity(
             partnerId = partnerId,
             getProgrammeUnitCost = { getProgrammeUnitCostOrThrow(it) }
-        )} ).map { it.toProjectPartnerBudgetUnitCost() }
+        )).toModel()
 
     private fun getProgrammeUnitCostOrThrow(programmeUnitCostId: Long) =
         programmeUnitCostRepository.findById(programmeUnitCostId).orElseThrow { ResourceNotFoundException("programmeUnitCost") }
-
-    @Transactional
-    override fun deleteUnitCosts(partnerId: Long) =
-        this.budgetUnitCostRepository.deleteAllByPartnerId(partnerId)
 
     @Transactional(readOnly = true)
     override fun getBudgetInfrastructureAndWorksCostTotal(partnerId: Long): BigDecimal =
@@ -123,10 +107,6 @@ class ProjectPartnerBudgetPersistenceProvider(
     override fun deleteAllBudgetExternalExpertiseAndServicesCostsExceptFor(partnerId: Long, idsToKeep: List<Long>) =
         if (idsToKeep.isNotEmpty()) budgetExternalRepository.deleteAllByBasePropertiesPartnerIdAndIdNotIn(partnerId, idsToKeep) else Unit
 
-    @Transactional
-    override fun deleteExternalCosts(partnerId: Long) =
-        this.budgetExternalRepository.deleteAllByBasePropertiesPartnerId(partnerId)
-
     @Transactional(readOnly = true)
     override fun getBudgetExternalExpertiseAndServicesCostTotal(partnerId: Long): BigDecimal =
         budgetExternalRepository.sumTotalForPartner(partnerId) ?: BigDecimal.ZERO
@@ -143,10 +123,6 @@ class ProjectPartnerBudgetPersistenceProvider(
     @Transactional
     override fun deleteAllBudgetEquipmentCostsExceptFor(partnerId: Long, idsToKeep: List<Long>) =
         if (idsToKeep.isNotEmpty()) budgetEquipmentRepository.deleteAllByBasePropertiesPartnerIdAndIdNotIn(partnerId, idsToKeep) else Unit
-
-    @Transactional
-    override fun deleteEquipmentCosts(partnerId: Long) =
-        this.budgetEquipmentRepository.deleteAllByBasePropertiesPartnerId(partnerId)
 
     @Transactional(readOnly = true)
     override fun getBudgetEquipmentCostTotal(partnerId: Long): BigDecimal =

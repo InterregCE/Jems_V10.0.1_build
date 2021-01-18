@@ -32,6 +32,9 @@ export class ProjectPartnerBudgetConstants {
     total: {
       max: 'project.partner.budget.table.total.max.invalid'
     },
+    unitCost: {
+      required: 'project.partner.budget.table.unitCost.required',
+    },
   };
 
   public static FORM_ERRORS_ARGS = {

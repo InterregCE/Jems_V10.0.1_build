@@ -12,6 +12,8 @@ import io.cloudflight.jems.server.project.service.partner.model.BudgetUnitCostEn
 import org.springframework.http.HttpStatus
 import org.springframework.stereotype.Service
 
+const val BUDGET_COST_MAX_2_DECIMALS = "project.partner.budget.max.2.decimals"
+
 @Service
 class BudgetUnitCostEntriesValidator {
 
@@ -30,14 +32,14 @@ class BudgetUnitCostEntriesValidator {
                 httpStatus = HttpStatus.UNPROCESSABLE_ENTITY,
                 i18nKey = BUDGET_COST_VALUE_LIMIT_ERROR_KEY
             )
+        if (budgetDTOList.any { it.numberOfUnits.scale() > 2 })
+            throw I18nValidationException(i18nKey = BUDGET_COST_MAX_2_DECIMALS)
 
         val unitCostPerUnitById = projectUnitCostList.associateBy({ it.id }, { it.costPerUnit })
 
-        if (budgetDTOList
-                .filter { it.unitCostId != null }
-                .any {
-                    it.rowSum.compareTo(it.numberOfUnits.multiply(unitCostPerUnitById[it.unitCostId]).truncate()) != 0
-                })
+        if (budgetDTOList.any {
+                it.rowSum.compareTo(it.numberOfUnits.multiply(unitCostPerUnitById[it.unitCostId]).truncate()) != 0
+            })
             throw I18nValidationException(
                 httpStatus = HttpStatus.UNPROCESSABLE_ENTITY,
                 i18nKey = BUDGET_COST_INVALID_SUM_ERROR_KEY

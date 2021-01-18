@@ -160,10 +160,6 @@ fun BudgetGeneralCostEntry.toProjectPartnerBudgetInfrastructureEntity(partnerId:
     )
 }
 
-
-fun List<ProjectPartnerBudgetUnitCostEntity>.unitCostEntitiesToUnitCostEntries() = this.map { it.toProjectPartnerBudgetUnitCost() }
-
-
 fun ProjectPartnerBudgetGeneralBase.toBudgetGeneralCostEntry() = BudgetGeneralCostEntry(
     id = id,
     description = translatedValues.mapTo(HashSet()) {

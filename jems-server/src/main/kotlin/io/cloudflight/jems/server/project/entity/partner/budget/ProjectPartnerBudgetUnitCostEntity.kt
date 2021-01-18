@@ -18,9 +18,10 @@ data class ProjectPartnerBudgetUnitCostEntity(
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     val id: Long = 0,
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(optional = false, fetch = FetchType.LAZY)
     @JoinColumn(name = "programme_unit_cost_id")
-    val unitCost: ProgrammeUnitCostEntity?,
+    @field:NotNull
+    val unitCost: ProgrammeUnitCostEntity,
 
     @field:NotNull
     val partnerId: Long,
