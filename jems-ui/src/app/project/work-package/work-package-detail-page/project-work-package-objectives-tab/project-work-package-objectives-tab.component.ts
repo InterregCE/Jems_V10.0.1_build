@@ -99,8 +99,10 @@ export class ProjectWorkPackageObjectivesTabComponent implements OnInit, OnChang
 
   private resetForm(existing?: OutputWorkPackage): void {
     this.formService.setCreation(!this.workPackageId);
-    this.form.patchValue(existing || {});
-    this.form.controls.number.setValue(existing?.number || this.workPackageNumber);
+    this.form.get('number')?.patchValue(existing?.number || this.workPackageNumber);
+    this.form.get('name')?.patchValue(existing?.name || []);
+    this.form.get('specificObjective')?.patchValue(existing?.specificObjective || []);
+    this.form.get('objectiveAndAudience')?.patchValue(existing?.objectiveAndAudience || []);
     this.formService.resetEditable();
     this.form.controls.number.disable();
   }
