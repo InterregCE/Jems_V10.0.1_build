@@ -1,14 +1,14 @@
 import {ChangeDetectionStrategy, Component, OnInit} from '@angular/core';
 import {Tools} from '../../../../../common/utils/tools';
 import {FormBuilder, FormControl, FormGroup, Validators} from '@angular/forms';
-import {BudgetOptions} from '../../../../project-application/model/budget-options';
+import {BudgetOptions} from '../../../../model/budget/budget-options';
 import {FormService} from '@common/components/section/form/form.service';
 import {combineLatest, Observable} from 'rxjs';
 import {HttpErrorResponse} from '@angular/common/http';
 import {catchError, map, startWith, tap} from 'rxjs/operators';
-import {FlatRateSetting} from '../../../../project-application/model/flat-rate-setting';
+import {FlatRateSetting} from '../../../../model/flat-rate-setting';
 import {ProjectPartnerDetailPageStore} from '../../project-partner-detail-page.store';
-import {CallFlatRateSetting} from '../../../../project-application/model/call-flat-rate-setting';
+import {CallFlatRateSetting} from '../../../../model/call-flat-rate-setting';
 import {ProjectPartnerBudgetOptionsConstants} from './project-partner-budget-options.constants';
 import {UntilDestroy, untilDestroyed} from '@ngneat/until-destroy';
 

@@ -8,25 +8,35 @@ import {
   ProjectPartnerMotivationDTO,
   ProjectPartnerService,
 } from '@cat/api';
-import {Observable, ReplaySubject} from 'rxjs';
-import {tap} from 'rxjs/operators';
+import {BehaviorSubject, combineLatest, Observable, ReplaySubject, Subject} from 'rxjs';
+import {map, shareReplay, switchMap, tap} from 'rxjs/operators';
 import {Log} from '../../../../../common/utils/log';
 import {ProjectApplicationFormSidenavService} from './project-application-form-sidenav.service';
 import {ProjectStore} from '../../project-application-detail/services/project-store.service';
+import {ProjectPartner} from '../../../../model/ProjectPartner';
+import {ProjectPartnerRoleEnumUtil} from '../../../../model/ProjectPartnerRoleEnum';
 
 @Injectable()
 export class ProjectPartnerStore {
 
   private partnerId: number;
   private projectId: number;
+  private partnerUpdateEvent$ = new BehaviorSubject(null);
 
   isProjectEditable$: Observable<boolean>;
   partner$ = new ReplaySubject<OutputProjectPartnerDetail | any>(1);
+  partners$: Observable<ProjectPartner[]>;
 
   constructor(private partnerService: ProjectPartnerService,
               private projectApplicationFormSidenavService: ProjectApplicationFormSidenavService,
               private projectStore: ProjectStore) {
     this.isProjectEditable$ = this.projectStore.projectEditable$;
+
+    this.partners$ = combineLatest([this.projectStore.getProject(), this.partnerUpdateEvent$]).pipe(
+      switchMap(([project]) => this.partnerService.getProjectPartnersForDropdown(project.id, ['sortNumber,asc'])),
+      map(projectPartners => projectPartners.map(projectPartner => new ProjectPartner(projectPartner.id, projectPartner.abbreviation, ProjectPartnerRoleEnumUtil.toProjectPartnerRoleEnum(projectPartner.role), projectPartner.sortNumber, projectPartner.country))),
+      shareReplay(1)
+    );
   }
 
   init(partnerId: number | string | null, projectId: number): void {
@@ -58,6 +68,7 @@ export class ProjectPartnerStore {
     return this.partnerService.createProjectPartner(this.projectId, partner)
       .pipe(
         tap(created => this.partner$.next(created)),
+        tap(() => this.partnerUpdateEvent$.next(null)),
         tap(created => Log.info('Created partner:', this, created)),
         tap(() => this.projectApplicationFormSidenavService.refreshPartners(this.projectId)),
       );

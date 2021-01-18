@@ -9,7 +9,6 @@ import {
   OutputProject,
   OutputProjectStatus,
   OutputRevertProjectStatus,
-  ProjectCallSettingsDTO,
   ProjectService,
   ProjectStatusService
 } from '@cat/api';
@@ -31,6 +30,12 @@ import {PermissionService} from '../../../../../security/permissions/permission.
 import {Permission} from '../../../../../security/permissions/permission';
 import {I18nValidationError} from '@common/validation/i18n-validation-error';
 import {HttpErrorResponse} from '@angular/common/http';
+import {ProjectCallSettings} from '../../../../model/projectCallSettings';
+import {CallFlatRateSetting} from '../../../../model/call-flat-rate-setting';
+import {ProgrammeLumpSum} from '../../../../model/lump-sums/programmeLumpSum';
+import {ProgrammeUnitCost} from '../../../../model/programmeUnitCost';
+import {LumpSumPhaseEnumUtils} from '../../../../model/lump-sums/LumpSumPhaseEnum';
+import {BudgetCostCategoryEnumUtils} from '../../../../model/lump-sums/BudgetCostCategoryEnum';
 
 /**
  * Stores project related information.
@@ -140,9 +145,19 @@ export class ProjectStore {
       shareReplay(1)
     );
 
-  projectCall$: Observable<ProjectCallSettingsDTO> = this.getProject()
+  projectCall$: Observable<ProjectCallSettings> = this.getProject()
     .pipe(
       map(project => project.callSettings),
+      map(callSetting => new ProjectCallSettings(
+        callSetting.callId,
+        callSetting.callName,
+        callSetting.startDate,
+        callSetting.endDate,
+        callSetting.lengthOfPeriod,
+        new CallFlatRateSetting(callSetting.flatRates.staffCostFlatRateSetup, callSetting.flatRates.officeAndAdministrationOnStaffCostsFlatRate, callSetting.flatRates.officeAndAdministrationOnOtherCostsFlatRateSetup, callSetting.flatRates.travelAndAccommodationOnStaffCostsFlatRateSetup, callSetting.flatRates.otherCostsOnStaffCostsFlatRateSetup),
+        callSetting.lumpSums.map(lumpSum => new ProgrammeLumpSum(lumpSum.id, lumpSum.name, lumpSum.description, lumpSum.cost, lumpSum.splittingAllowed, LumpSumPhaseEnumUtils.toLumpSumPhaseEnum(lumpSum.phase), BudgetCostCategoryEnumUtils.toBudgetCostCategoryEnums(lumpSum.categories))),
+        callSetting.unitCosts.map(unitCost => new ProgrammeUnitCost(unitCost.id, unitCost.name, unitCost.description, unitCost.type, unitCost.costPerUnit, BudgetCostCategoryEnumUtils.toBudgetCostCategoryEnums(unitCost.categories)))
+      )),
       shareReplay(1)
     );
 

@@ -16,7 +16,7 @@ import {MultiLanguageInputService} from '../../../../../../common/services/multi
 import {map, startWith} from 'rxjs/operators';
 import {UntilDestroy, untilDestroyed} from '@ngneat/until-destroy';
 import {NumberService} from '../../../../../../common/services/number.service';
-import {TravelAndAccommodationCostsBudgetTable} from '../../../../../project-application/model/travel-and-accommodation-costs-budget-table';
+import {TravelAndAccommodationCostsBudgetTable} from '../../../../../model/budget/travel-and-accommodation-costs-budget-table';
 
 @UntilDestroy()
 @Component({
@@ -46,7 +46,7 @@ export class TravelAndAccommodationCostsBudgetTableComponent implements OnInit, 
   ngOnInit(): void {
     this.dataSource = new MatTableDataSource<AbstractControl>(this.items.controls);
     this.numberOfItems$ = this.items.valueChanges.pipe(startWith(null), map(() => this.items.length));
-    this.items.valueChanges.subscribe(() => {
+    this.items.valueChanges.pipe(untilDestroyed(this)).subscribe(() => {
       this.dataSource.data = this.items.controls;
       this.items.controls.forEach(control => {
         this.setRowSum(control as FormGroup);

@@ -85,6 +85,8 @@ import {ProjectPartnerDetailPageStore} from './partner/project-partner-detail-pa
 import {ProjectResultsPageComponent} from './results/project-results-page/project-results-page.component';
 import {UnitCostsBudgetTableComponent} from './partner/project-partner-detail-page/project-partner-budget-tab/project-partner-budget/unit-costs-budget-table/unit-costs-budget-table.component';
 import {ProjectWorkPackageOutputsTabComponent} from './work-package/work-package-detail-page/project-work-package-outputs-tab/project-work-package-outputs-tab.component';
+import {ProjectLumpSumsPageComponent} from './lump-sums/project-lump-sums-page/project-lump-sums-page.component';
+import {ProjectLumpSumsPageStore} from './lump-sums/project-lump-sums-page/project-lump-sums-page.store';
 
 @NgModule({
   declarations: [
@@ -163,7 +165,8 @@ import {ProjectWorkPackageOutputsTabComponent} from './work-package/work-package
     ProjectWorkPackageInvestmentsTabComponent,
     ProjectWorkPackageInvestmentDetailPageComponent,
     ProjectPeriodsSelectComponent,
-    ProjectResultsPageComponent
+    ProjectResultsPageComponent,
+    ProjectLumpSumsPageComponent
   ],
   imports: [
     SharedModule,
@@ -181,7 +184,8 @@ import {ProjectWorkPackageOutputsTabComponent} from './work-package/work-package
     ProjectPartnerStore,
     ProjectAssociatedOrganizationStore,
     ProjectWorkPackagePageStore,
-    ProjectPartnerDetailPageStore
+    ProjectPartnerDetailPageStore,
+    ProjectLumpSumsPageStore
   ]
 })
 export class ProjectModule {

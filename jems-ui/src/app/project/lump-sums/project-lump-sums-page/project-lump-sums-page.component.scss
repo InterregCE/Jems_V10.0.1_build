@@ -1,0 +1,15 @@
+#lump-sums-page {
+  .row-has-error {
+    border-bottom: 1px solid var(--warn-color);
+  }
+  .gap-exists {
+    background-color: var(--light-yellow);
+
+    &.row-sum, &.costs {
+      background-color: var(--pale-yellow);
+    }
+  }
+}
+.warning {
+  color: var(--warn-color);
+}

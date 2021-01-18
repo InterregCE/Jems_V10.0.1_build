@@ -42,9 +42,10 @@ export class NumberService {
     if (!arr || !arr.length) {
       return 0;
     }
-    let sum = new Big(0);
-    arr.forEach(nr => sum = sum.plus(nr));
-    return Number(sum);
+    return Number(
+      arr.filter(item => item !== null)
+        .reduce((accumulator, value) => accumulator.plus(value), new Big(0))
+    );
   }
 
   /**

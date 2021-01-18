@@ -23,17 +23,13 @@
     align-items: center;
     justify-content: flex-start;
 
-    > :last-child {
-      margin-right: 0;
-      padding-right: 1rem;
-    }
-
     > :first-child {
       padding-left: 1rem;
     }
 
     > * {
-      margin-right: 1rem;
+      padding-right: 0.5rem;
+      padding-left: 0.5rem;
       flex: 1 1 0;
       @include widths()
 
