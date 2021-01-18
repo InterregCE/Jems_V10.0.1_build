@@ -1,7 +1,6 @@
 package io.cloudflight.jems.server.project.service.workpackage
 
 import io.cloudflight.jems.server.project.service.workpackage.activity.model.WorkPackageActivity
-import io.cloudflight.jems.server.project.service.workpackage.model.InvestmentSummary
 import io.cloudflight.jems.server.project.service.workpackage.model.WorkPackageInvestment
 import io.cloudflight.jems.server.project.service.workpackage.output.model.WorkPackageOutput
 import org.springframework.data.domain.Page
@@ -13,11 +12,13 @@ interface WorkPackagePersistence {
     fun getWorkPackageOutputsForWorkPackage(workPackageId: Long): List<WorkPackageOutput>
     fun getWorkPackageInvestment(workPackageInvestmentId: Long): WorkPackageInvestment
     fun getWorkPackageInvestments(workPackageId: Long, pageable: Pageable): Page<WorkPackageInvestment>
+    fun getWorkPackageInvestmentIdsOfProject(projectId: Long): List<Long>
     fun addWorkPackageInvestment(workPackageId: Long, workPackageInvestment: WorkPackageInvestment): Long
     fun updateWorkPackageInvestment(workPackageId: Long, workPackageInvestment: WorkPackageInvestment)
     fun deleteWorkPackageInvestment(workPackageId: Long, workPackageInvestmentId: Long)
-    fun getProjectInvestmentSummaries(projectId: Long): List<InvestmentSummary>
+
     fun getWorkPackageActivitiesForWorkPackage(workPackageId: Long): List<WorkPackageActivity>
     fun updateWorkPackageActivities(workPackageId: Long, workPackageActivities: List<WorkPackageActivity>): List<WorkPackageActivity>
+
     fun getProjectIdFromWorkPackageInvestment(workPackageInvestmentId: Long): Long
 }

@@ -25,7 +25,7 @@ export class ProjectWorkPackageInvestmentDetailPageStore {
     return this.workPackageInvestmentService.addWorkPackageInvestment(this.workPackageId, workPackageInvestment)
       .pipe(
         tap(created => Log.info('Created work package investment:', this, created)),
-        tap(() => this.workPackagePageStore.investmentChangeEvent$.next()),
+        tap(() => this.workPackagePageStore.investmentIdsChanged$.next()),
       );
   }
 

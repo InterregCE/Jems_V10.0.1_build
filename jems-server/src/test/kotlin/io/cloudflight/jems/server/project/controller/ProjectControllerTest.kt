@@ -8,6 +8,7 @@ import io.cloudflight.jems.api.programme.dto.costoption.ProgrammeLumpSumDTO
 import io.cloudflight.jems.api.programme.dto.costoption.ProgrammeLumpSumPhase
 import io.cloudflight.jems.api.programme.dto.costoption.ProgrammeUnitCostDTO
 import io.cloudflight.jems.api.project.dto.ProjectCallSettingsDTO
+import io.cloudflight.jems.api.project.dto.budget.ProjectPartnerBudgetDTO
 import io.cloudflight.jems.api.project.dto.partner.OutputProjectPartner
 import io.cloudflight.jems.api.project.dto.partner.ProjectPartnerRole
 import io.cloudflight.jems.server.call.service.flatrate.model.ProjectCallFlatRate
@@ -19,7 +20,6 @@ import io.cloudflight.jems.server.project.service.budget.model.PartnerBudget
 import io.cloudflight.jems.server.project.service.get_project.GetProjectInteractor
 import io.cloudflight.jems.server.project.service.model.ProjectCallSettings
 import io.cloudflight.jems.server.project.service.partner.model.ProjectPartner
-import io.cloudflight.jems.server.toScaledBigDecimal
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
 import io.mockk.impl.annotations.MockK
@@ -154,31 +154,123 @@ class ProjectControllerTest {
     }
 
     @Test
-    fun `test partners sorting 1`() {
-        val partnerBudget2 = PartnerBudget(
-            partner = partner2,
-            staffCosts = 4865.toScaledBigDecimal(),
-            travelCosts = 9004.toScaledBigDecimal(),
-            externalCosts = 10000.toScaledBigDecimal(),
-            equipmentCosts = 7500.toScaledBigDecimal(),
-            infrastructureCosts = 2500.toScaledBigDecimal(),
-            lumpSumContribution = 2787.toScaledBigDecimal(),
+    fun `test various partner budget calculations and partners sorting 1`() {
+        val projectBudget = listOf(
+            PartnerBudget(
+                partner = partner2,
+                staffCostsFlatRate = 15,
+                officeAndAdministrationOnStaffCostsFlatRate = 7,
+                travelAndAccommodationOnStaffCostsFlatRate = 12,
+                otherCostsOnStaffCostsFlatRate = null,
+                staffCosts = toBd(4865), // should be ignored because of flat rate
+                travelCosts = toBd(9004), // should be ignored because of flat rate
+                externalCosts = toBd(10000),
+                equipmentCosts = toBd(7500),
+                infrastructureCosts = toBd(2500),
+                lumpSumContribution = toBd(2787),
+            ),
+            PartnerBudget(
+                partner = partner1,
+                staffCostsFlatRate = 15,
+                officeAndAdministrationOnStaffCostsFlatRate = 7,
+                travelAndAccommodationOnStaffCostsFlatRate = null,
+                otherCostsOnStaffCostsFlatRate = null,
+                staffCosts = toBd(4865), // should be ignored because of flat rate
+                travelCosts = toBd(2000),
+                externalCosts = toBd(10000),
+                equipmentCosts = toBd(7500),
+                infrastructureCosts = toBd(2500),
+                lumpSumContribution = toBd(1213),
+                unitCosts = toBd(1645),
+            ),
         )
-        val partnerBudget1 = PartnerBudget(
-            partner = partner1,
-            staffCosts = 4865.toScaledBigDecimal(),
-            travelCosts = 2000.toScaledBigDecimal(),
-            externalCosts = 10000.toScaledBigDecimal(),
-            equipmentCosts = 7500.toScaledBigDecimal(),
-            infrastructureCosts = 2500.toScaledBigDecimal(),
-            lumpSumContribution = 1213.toScaledBigDecimal(),
-        )
-        val projectBudgetList = listOf(partnerBudget2, partnerBudget1)
-
-        every { getProjectBudgetInteractor.getBudget(1L) } returns projectBudgetList
+        every { getProjectBudgetInteractor.getBudget(1L) } returns projectBudget
         assertThat(controller.getProjectBudget(1L)).containsExactly(
-            partnerBudget1.toProjectPartnerBudgetDTO(),
-            partnerBudget2.toProjectPartnerBudgetDTO()
+            ProjectPartnerBudgetDTO(
+                partner = outputPartner1,
+                staffCosts = toBd(3300), // as 15% from total
+                travelCosts = toBd(2000),
+                externalCosts = toBd(10000),
+                equipmentCosts = toBd(7500),
+                infrastructureCosts = toBd(2500),
+                officeAndAdministrationCosts = toBd(231), // as 7% from 15% from total
+                totalSum = toBd(28389),
+                lumpSumContribution = toBd(1213),
+                unitCosts = toBd(1645),
+            ),
+            ProjectPartnerBudgetDTO(
+                partner = outputPartner2,
+                staffCosts = toBd(3000), // as 15% from total
+                travelCosts = toBd(360), // as 12% from 15% from total
+                externalCosts = toBd(10000),
+                equipmentCosts = toBd(7500),
+                infrastructureCosts = toBd(2500),
+                officeAndAdministrationCosts = toBd(210), // as 7% from 15% from total
+                totalSum = toBd(26357),
+                lumpSumContribution = toBd(2787),
+            ),
         )
     }
+
+    @Test
+    fun `test various partner budget calculations and partners sorting 2`() {
+        val projectBudget = listOf(
+            PartnerBudget(
+                partner = partner2,
+                staffCostsFlatRate = null,
+                officeAndAdministrationOnStaffCostsFlatRate = 7,
+                travelAndAccommodationOnStaffCostsFlatRate = 12,
+                otherCostsOnStaffCostsFlatRate = null,
+                staffCosts = toBd(6200),
+                travelCosts = toBd(9004), // should be ignored because of flat rate
+                externalCosts = toBd(10000),
+                equipmentCosts = toBd(7500),
+                infrastructureCosts = toBd(2500),
+            ),
+            PartnerBudget(
+                partner = partner1,
+                staffCostsFlatRate = null,
+                officeAndAdministrationOnStaffCostsFlatRate = 7,
+                travelAndAccommodationOnStaffCostsFlatRate = null,
+                otherCostsOnStaffCostsFlatRate = null,
+                staffCosts = toBd(6200),
+                travelCosts = toBd(2000),
+                externalCosts = toBd(10000),
+                equipmentCosts = toBd(7500),
+                infrastructureCosts = toBd(2500),
+            ),
+        )
+        every { getProjectBudgetInteractor.getBudget(1L) } returns projectBudget
+        assertThat(controller.getProjectBudget(1L)).containsExactly(
+            ProjectPartnerBudgetDTO(
+                partner = outputPartner1,
+                staffCosts = toBd(6200),
+                travelCosts = toBd(2000),
+                externalCosts = toBd(10000),
+                equipmentCosts = toBd(7500),
+                infrastructureCosts = toBd(2500),
+                officeAndAdministrationCosts = toBd(434), // as 7% from staff
+                totalSum = toBd(28634),
+            ),
+            ProjectPartnerBudgetDTO(
+                partner = outputPartner2,
+                staffCosts = toBd(6200),
+                travelCosts = toBd(744), // as 12% from staff
+                externalCosts = toBd(10000),
+                equipmentCosts = toBd(7500),
+                infrastructureCosts = toBd(2500),
+                officeAndAdministrationCosts = toBd(434), // as 7% from staff
+                totalSum = toBd(27378),
+            ),
+        )
+    }
+
+    private fun toBd(value: Double): BigDecimal {
+        return BigDecimal.valueOf((value * 100).toLong(), 2)
+    }
+
+    private fun toBd(value: Int): BigDecimal {
+        return toBd(value.toDouble())
+    }
+
 }

@@ -8,6 +8,7 @@ import io.cloudflight.jems.api.project.dto.partner.budget.BudgetUnitCostEntryDTO
 import io.cloudflight.jems.api.project.dto.partner.budget.ProjectPartnerBudgetOptionsDto
 import io.cloudflight.jems.api.project.dto.partner.budget.StaffCostTypeDTO
 import io.cloudflight.jems.api.project.dto.partner.budget.StaffCostUnitTypeDTO
+import io.cloudflight.jems.server.project.service.partner.budget.truncate
 import io.cloudflight.jems.server.project.service.partner.model.BudgetCosts
 import io.cloudflight.jems.server.project.service.partner.model.BudgetGeneralCostEntry
 import io.cloudflight.jems.server.project.service.partner.model.BudgetStaffCostEntry
@@ -41,8 +42,8 @@ fun List<BudgetStaffCostEntry>.toBudgetStaffCostEntryDTOList() = this.map { it.t
 
 fun BudgetStaffCostEntry.toBudgetStaffCostEntryDTO() = BudgetStaffCostEntryDTO(
     id = id,
-    numberOfUnits = numberOfUnits,
-    pricePerUnit = pricePerUnit,
+    numberOfUnits = numberOfUnits.truncate(),
+    pricePerUnit = pricePerUnit.truncate(),
     rowSum = rowSum,
     unitType = unitType?.toStaffCostUnitTypeDTO(),
     type = type?.toStaffCostTypeDTO(),

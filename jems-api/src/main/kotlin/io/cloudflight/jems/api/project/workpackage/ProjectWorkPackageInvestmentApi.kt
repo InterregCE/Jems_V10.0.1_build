@@ -1,7 +1,6 @@
 package io.cloudflight.jems.api.project.workpackage;
 
 import io.cloudflight.jems.api.project.dto.workpackage.investment.WorkPackageInvestmentDTO
-import io.cloudflight.jems.api.project.dto.workpackage.investment.InvestmentSummaryDTO
 import io.swagger.annotations.Api
 import io.swagger.annotations.ApiImplicitParam
 import io.swagger.annotations.ApiImplicitParams
@@ -36,7 +35,7 @@ interface ProjectWorkPackageInvestmentApi {
     fun getWorkPackageInvestments(@PathVariable workPackageId: Long, pageable: Pageable): Page<WorkPackageInvestmentDTO>
 
     @GetMapping("/forProject/{projectId}")
-    fun getProjectInvestmentSummaries(@PathVariable projectId: Long): List<InvestmentSummaryDTO>
+    fun getWorkPackageInvestmentIdsOfProject(@PathVariable projectId: Long): List<Long>
 
     @ApiOperation("Adds Investment to the work package")
     @PostMapping("/forWorkPackage/{workPackageId}", consumes = [MediaType.APPLICATION_JSON_VALUE])
