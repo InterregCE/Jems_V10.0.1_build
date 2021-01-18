@@ -1,6 +1,6 @@
 <div id="language-switcher" *ngIf="languageService.languages as languages">
     <mat-button-toggle-group
-            *ngIf="languages?.length"
+            *ngIf="languages?.length > 1"
             [value]="languageService.currentLanguage$ | async"
             (change)="languageService.currentLanguage$.next($event.value)">
         <mat-button-toggle *ngFor="let language of languages; let index = index"
