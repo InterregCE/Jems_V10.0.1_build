@@ -47,8 +47,8 @@ export class TableConfigDirective implements AfterViewInit, AfterContentChecked 
   }
 
   private calculateRowMinWidthToSupportStickyColumns(): number {
-    const cellsRightMargin = 1;
-    const firstAndLastCellsPadding = 2;
-    return (this.widthConfig.map(config => config.minInRem).reduce((accumulator, minValue) => (accumulator ? accumulator : 0) + (minValue ? minValue : 0) + cellsRightMargin, 0) || 0) + firstAndLastCellsPadding;
+    const cellsRightAndLeftPadding = 1;
+    const firstAndLastCellsPadding = 1.5;
+    return (this.widthConfig.map(config => config.minInRem).reduce((accumulator, minValue) => (accumulator || 0) + (minValue || 0) + cellsRightAndLeftPadding, 0) || 0) + firstAndLastCellsPadding;
   }
 }

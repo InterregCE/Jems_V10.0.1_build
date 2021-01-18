@@ -5,7 +5,7 @@ import {ProjectPartnerStore} from '../../../../project-application/containers/pr
 import {TestModule} from '../../../../../common/test-module';
 import {ProjectModule} from '../../../../project.module';
 import {ActivatedRoute} from '@angular/router';
-import {BudgetOptions} from '../../../../project-application/model/budget-options';
+import {BudgetOptions} from '../../../../model/budget/budget-options';
 import {ProjectPartnerDetailPageStore} from '../../project-partner-detail-page.store';
 
 

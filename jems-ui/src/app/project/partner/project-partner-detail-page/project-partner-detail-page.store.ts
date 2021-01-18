@@ -1,7 +1,7 @@
 import {Injectable} from '@angular/core';
 import {combineLatest, forkJoin, Observable, of, Subject} from 'rxjs';
-import {BudgetOptions} from '../../project-application/model/budget-options';
-import {CallFlatRateSetting} from '../../project-application/model/call-flat-rate-setting';
+import {BudgetOptions} from '../../model/budget/budget-options';
+import {CallFlatRateSetting} from '../../model/call-flat-rate-setting';
 import {filter, map, share, shareReplay, startWith, switchMap, tap, withLatestFrom} from 'rxjs/operators';
 import {ProjectStore} from '../../project-application/containers/project-application-detail/services/project-store.service';
 import {
@@ -10,23 +10,22 @@ import {
   BudgetTravelAndAccommodationCostEntryDTO,
   BudgetUnitCostEntryDTO,
   ProgrammeUnitCostDTO,
-  ProjectCallSettingsDTO,
   ProjectPartnerBudgetOptionsDto,
   ProjectPartnerBudgetService
 } from '@cat/api';
 import {ProjectPartnerStore} from '../../project-application/containers/project-application-form-page/services/project-partner-store.service';
 import {NumberService} from '../../../common/services/number.service';
-import {PartnerBudgetTables} from '../../project-application/model/partner-budget-tables';
-import {StaffCostsBudgetTable} from '../../project-application/model/staff-costs-budget-table';
-import {GeneralBudgetTable} from '../../project-application/model/general-budget-table';
-import {StaffCostsBudgetTableEntry} from '../../project-application/model/staff-costs-budget-table-entry';
-import {GeneralBudgetTableEntry} from '../../project-application/model/general-budget-table-entry';
-import {TravelAndAccommodationCostsBudgetTable} from '../../project-application/model/travel-and-accommodation-costs-budget-table';
-import {TravelAndAccommodationCostsBudgetTableEntry} from '../../project-application/model/travel-and-accommodation-costs-budget-table-entry';
+import {PartnerBudgetTables} from '../../model/budget/partner-budget-tables';
+import {StaffCostsBudgetTable} from '../../model/budget/staff-costs-budget-table';
+import {GeneralBudgetTable} from '../../model/budget/general-budget-table';
+import {StaffCostsBudgetTableEntry} from '../../model/budget/staff-costs-budget-table-entry';
+import {GeneralBudgetTableEntry} from '../../model/budget/general-budget-table-entry';
+import {TravelAndAccommodationCostsBudgetTable} from '../../model/budget/travel-and-accommodation-costs-budget-table';
+import {TravelAndAccommodationCostsBudgetTableEntry} from '../../model/budget/travel-and-accommodation-costs-budget-table-entry';
 import {ProjectWorkPackagePageStore} from '../../work-package/work-package-detail-page/project-work-package-page-store.service';
 import {BudgetStaffCostEntryDTO} from 'build/generated-sources/openapi/model/budgetStaffCostEntryDTO';
-import {UnitCostsBudgetTable} from '../../project-application/model/unit-costs-budget-table';
-import {UnitCostsBudgetTableEntry} from '../../project-application/model/unit-costs-budget-table-entry';
+import {UnitCostsBudgetTable} from '../../model/budget/unit-costs-budget-table';
+import {UnitCostsBudgetTableEntry} from '../../model/budget/unit-costs-budget-table-entry';
 
 @Injectable()
 export class ProjectPartnerDetailPageStore {
@@ -122,14 +121,7 @@ export class ProjectPartnerDetailPageStore {
 
   private callFlatRateSettings(): Observable<CallFlatRateSetting> {
     return this.projectStore.projectCall$.pipe(
-      map((call: ProjectCallSettingsDTO) =>
-        new CallFlatRateSetting(
-          call.flatRates.staffCostFlatRateSetup,
-          call.flatRates.officeAndAdministrationOnStaffCostsFlatRate,
-          call.flatRates.officeAndAdministrationOnOtherCostsFlatRateSetup,
-          call.flatRates.travelAndAccommodationOnStaffCostsFlatRateSetup,
-          call.flatRates.otherCostsOnStaffCostsFlatRateSetup)
-      ),
+      map(call => call.flatRates),
     );
   }
 

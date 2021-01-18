@@ -201,7 +201,16 @@ export class ProjectApplicationFormSidenavService {
                 route: '/app/project/detail/' + projectId + '/applicationFormBudget',
               }
             ]
-          }
+          },
+          {
+            headline: {i18nKey: 'project.application.form.section.part.e'},
+            bullets: [
+              {
+                headline: {i18nKey: 'project.application.form.section.part.e'},
+                route: '/app/project/detail/' + projectId + '/applicationFormLumpSums',
+              }
+            ]
+          },
         ]
       },
     ]);

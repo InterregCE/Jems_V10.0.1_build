@@ -4,22 +4,22 @@ import {combineLatest, Observable} from 'rxjs';
 import {catchError, map, startWith, tap} from 'rxjs/operators';
 import {ProjectPartnerDetailPageStore} from '../../project-partner-detail-page.store';
 import {UntilDestroy, untilDestroyed} from '@ngneat/until-destroy';
-import {BudgetOptions} from '../../../../project-application/model/budget-options';
+import {BudgetOptions} from '../../../../model/budget/budget-options';
 import {MultiLanguageInputService} from '../../../../../common/services/multi-language-input.service';
 import {NumberService} from '../../../../../common/services/number.service';
 import {FormBuilder, FormGroup, Validators} from '@angular/forms';
 import {ProjectPartnerBudgetConstants} from './project-partner-budget.constants';
-import {GeneralBudgetTableEntry} from '../../../../project-application/model/general-budget-table-entry';
+import {GeneralBudgetTableEntry} from '../../../../model/budget/general-budget-table-entry';
 import {HttpErrorResponse} from '@angular/common/http';
-import {StaffCostsBudgetTable} from '../../../../project-application/model/staff-costs-budget-table';
-import {StaffCostsBudgetTableEntry} from '../../../../project-application/model/staff-costs-budget-table-entry';
-import {PartnerBudgetTables} from '../../../../project-application/model/partner-budget-tables';
-import {GeneralBudgetTable} from '../../../../project-application/model/general-budget-table';
-import {TravelAndAccommodationCostsBudgetTable} from '../../../../project-application/model/travel-and-accommodation-costs-budget-table';
-import {TravelAndAccommodationCostsBudgetTableEntry} from '../../../../project-application/model/travel-and-accommodation-costs-budget-table-entry';
-import {UnitCostsBudgetTableEntry} from '../../../../project-application/model/unit-costs-budget-table-entry';
-import {UnitCostsBudgetTable} from '../../../../project-application/model/unit-costs-budget-table';
+import {StaffCostsBudgetTable} from '../../../../model/budget/staff-costs-budget-table';
+import {StaffCostsBudgetTableEntry} from '../../../../model/budget/staff-costs-budget-table-entry';
+import {PartnerBudgetTables} from '../../../../model/budget/partner-budget-tables';
+import {GeneralBudgetTable} from '../../../../model/budget/general-budget-table';
+import {TravelAndAccommodationCostsBudgetTable} from '../../../../model/budget/travel-and-accommodation-costs-budget-table';
+import {TravelAndAccommodationCostsBudgetTableEntry} from '../../../../model/budget/travel-and-accommodation-costs-budget-table-entry';
 import { ProgrammeUnitCostDTO } from '@cat/api';
+import {UnitCostsBudgetTable} from '../../../../model/budget/unit-costs-budget-table';
+import {UnitCostsBudgetTableEntry} from '../../../../model/budget/unit-costs-budget-table-entry';
 
 @UntilDestroy()
 @Component({
@@ -86,7 +86,6 @@ export class ProjectPartnerBudgetComponent implements OnInit {
       this.pageStore.budgetOptions$,
       this.pageStore.investmentIds$,
       this.pageStore.unitCosts$,
-      this.pageStore.isProjectEditable$.pipe(startWith(false)),
       this.staffCostsFlatRateTotal$,
       this.officeAndAdministrationFlatRateTotal$,
       this.travelAndAccommodationFlatRateTotal$,

@@ -25,6 +25,7 @@ import {BudgetPageComponent} from './budget/budget-page/budget-page.component';
 import {ProjectWorkPackageDetailPageComponent} from './work-package/work-package-detail-page/project-work-package-detail-page.component';
 import {ProjectWorkPackageInvestmentDetailPageComponent} from './work-package/work-package-detail-page/project-work-package-investments-tab/project-work-package-investment-detail-page/project-work-package-investment-detail-page.component';
 import {ProjectResultsPageComponent} from './results/project-results-page/project-results-page.component';
+import {ProjectLumpSumsPageComponent} from './lump-sums/project-lump-sums-page/project-lump-sums-page.component';
 
 export const routes: Routes = [
   {
@@ -209,6 +210,11 @@ export const routes: Routes = [
             path: 'applicationFormBudget',
             data: {breadcrumb: 'project.breadcrumb.applicationForm.budget'},
             component: BudgetPageComponent,
+          },
+          {
+            path: 'applicationFormLumpSums',
+            data: {breadcrumb: 'project.breadcrumb.applicationForm.lump.sums'},
+            component: ProjectLumpSumsPageComponent,
           },
         ]
       },

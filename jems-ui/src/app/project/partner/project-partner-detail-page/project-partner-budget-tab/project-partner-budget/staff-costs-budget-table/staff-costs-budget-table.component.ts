@@ -15,10 +15,10 @@ import {map, startWith} from 'rxjs/operators';
 import {NumberService} from '../../../../../../common/services/number.service';
 import {FormService} from '@common/components/section/form/form.service';
 import {MultiLanguageInputService} from '../../../../../../common/services/multi-language-input.service';
-import {StaffCostsBudgetTable} from '../../../../../project-application/model/staff-costs-budget-table';
+import {StaffCostsBudgetTable} from '../../../../../model/budget/staff-costs-budget-table';
 import {UntilDestroy, untilDestroyed} from '@ngneat/until-destroy';
-import {StaffCostTypeEnum} from '../../../../../project-application/model/staff-cost-type.enum';
-import {StaffCostUnitTypeEnum} from '../../../../../project-application/model/staff-cost-unit-type.enum';
+import {StaffCostTypeEnum} from '../../../../../model/budget/staff-cost-type.enum';
+import {StaffCostUnitTypeEnum} from '../../../../../model/budget/staff-cost-unit-type.enum';
 
 @UntilDestroy()
 @Component({
@@ -52,7 +52,7 @@ export class StaffCostsBudgetTableComponent implements OnInit, OnChanges {
   ngOnInit(): void {
     this.dataSource = new MatTableDataSource<AbstractControl>(this.items.controls);
     this.numberOfItems$ = this.items.valueChanges.pipe(startWith(null), map(() => this.items.length));
-    this.items.valueChanges.subscribe(() => {
+    this.items.valueChanges.pipe(untilDestroyed(this)).subscribe(() => {
       this.dataSource.data = this.items.controls;
       this.items.controls.forEach(control => {
         this.setRowSum(control as FormGroup);

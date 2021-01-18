@@ -15,9 +15,9 @@ import {map, startWith} from 'rxjs/operators';
 import {NumberService} from '../../../../../../common/services/number.service';
 import {FormService} from '@common/components/section/form/form.service';
 import {MultiLanguageInputService} from '../../../../../../common/services/multi-language-input.service';
-import {UnitCostsBudgetTable} from '../../../../../project-application/model/unit-costs-budget-table';
 import {UntilDestroy, untilDestroyed} from '@ngneat/until-destroy';
 import { ProgrammeUnitCostDTO } from '@cat/api';
+import {UnitCostsBudgetTable} from '../../../../../model/budget/unit-costs-budget-table';
 
 @UntilDestroy()
 @Component({
@@ -52,7 +52,7 @@ export class UnitCostsBudgetTableComponent implements OnInit, OnChanges {
     this.dataSource = new MatTableDataSource<AbstractControl>(this.items.controls);
     this.numberOfItems$ = this.items.valueChanges.pipe(startWith(null), map(() => this.items.length));
 
-    this.items.valueChanges.subscribe(() => {
+    this.items.valueChanges.pipe(untilDestroyed(this)).subscribe(() => {
       this.dataSource.data = this.items.controls;
       this.items.controls.forEach(control => {
         this.setRowTotal(control as FormGroup);
