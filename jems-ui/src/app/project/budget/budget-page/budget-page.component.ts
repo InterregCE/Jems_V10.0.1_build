@@ -60,5 +60,18 @@ export class BudgetPageComponent implements OnInit {
     this.totalLumpSums = NumberService.sum(budgets.map(budget => budget.lumpSumContribution));
     this.totalUnitCosts = NumberService.sum(budgets.map(budget => budget.unitCosts));
     this.total = NumberService.sum(budgets.map(budget => budget.totalSum));
+
+    this.hideEmptySimplifiedCostOptions();
+  }
+
+  private hideEmptySimplifiedCostOptions(): void {
+    if (this.totalUnitCosts === 0) {
+      const unitCostsColumnIndex = this.displayedColumns.indexOf('unitCosts');
+      this.displayedColumns.splice(unitCostsColumnIndex, 1);
+    }
+    if (this.totalLumpSums === 0) {
+      const lumpSumsColumnIndex = this.displayedColumns.indexOf('lumpSums');
+      this.displayedColumns.splice(lumpSumsColumnIndex, 1);
+    }
   }
 }
