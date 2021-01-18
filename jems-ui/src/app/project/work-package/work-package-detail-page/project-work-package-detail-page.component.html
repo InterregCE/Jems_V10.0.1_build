@@ -10,10 +10,7 @@
             (selectedIndexChange)="changeTab($event)"
             [selectedIndex]="activeTab$ | async">
         <mat-tab label="{{'workpackage.tab.objectives' | translate}}">
-            <app-project-work-package-objectives-tab
-                    [workPackage]="workPackage"
-                    [editable]="workPackageStore.isProjectEditable$ | async"
-                    [projectId]="projectId">
+            <app-project-work-package-objectives-tab>
             </app-project-work-package-objectives-tab>
         </mat-tab>
         <mat-tab label="{{'workpackage.tab.investments' | translate}}">
@@ -25,15 +22,11 @@
             <app-project-work-package-activities-tab></app-project-work-package-activities-tab>
         </mat-tab>
         <mat-tab label="{{'workpackage.tab.outputs' | translate}}">
-            <app-project-application-form-work-package-output></app-project-application-form-work-package-output>
+            <app-project-work-package-outputs-tab></app-project-work-package-outputs-tab>
         </mat-tab>
     </mat-tab-group>
 
-    <app-project-work-package-objectives-tab
-            *ngIf="!workPackageId"
-            [workPackage]="workPackage"
-            [editable]="workPackageStore.isProjectEditable$ | async"
-            [projectId]="projectId">
+    <app-project-work-package-objectives-tab *ngIf="!workPackageId">
     </app-project-work-package-objectives-tab>
 </div>
 

@@ -46,6 +46,15 @@ export class MultiLanguageInputService {
       .subscribe();
   }
 
+  public static getFirstTranslation(inputs: InputTranslation[]): string {
+    if (!inputs?.length) {
+      return '';
+    }
+    const sorted = [...inputs]
+      .sort((a, b) => a.language > b.language ? 1 : -1);
+    return sorted[0].translation;
+  }
+
   initInput(inputs: InputTranslation[], formControl?: AbstractControl): MultiLanguageInput {
     const allInputs: InputTranslation[] = this.getAvailableInputs(inputs);
     return new MultiLanguageInput(allInputs, formControl);

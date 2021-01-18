@@ -13,6 +13,7 @@ import {ColumnType} from '@common/components/table/model/column-type.enum';
 import {Forms} from '../../../../common/utils/forms';
 import {MatDialog} from '@angular/material/dialog';
 import {ProjectApplicationFormSidenavService} from '../../../project-application/containers/project-application-form-page/services/project-application-form-sidenav.service';
+import {MultiLanguageInputService} from '../../../../common/services/multi-language-input.service';
 
 @Component({
   selector: 'app-project-work-package-investments-tab',
@@ -132,12 +133,7 @@ export class ProjectWorkPackageInvestmentsTabComponent implements OnInit {
   }
 
   getTitleValue(workPackageInvestment: WorkPackageInvestmentDTO): string {
-    if (!workPackageInvestment.title?.length) {
-      return '';
-    }
-
-    return [...workPackageInvestment.title]
-      .sort((a, b) => a.language > b.language ? 1 : -1)[0].translation;
+    return MultiLanguageInputService.getFirstTranslation(workPackageInvestment.title);
   }
 
 }

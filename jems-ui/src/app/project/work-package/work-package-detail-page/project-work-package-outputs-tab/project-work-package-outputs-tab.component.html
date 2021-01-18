@@ -1,0 +1,81 @@
+<app-form *ngIf="data$ | async as data" (save)="updateOutputs()">
+    <form id="outputsForm" [formGroup]="form">
+        <div>
+            <h6>{{'project.application.form.workpackage.form.outputs' | translate}}</h6>
+            <div class="intro-text-small">{{'project.application.form.workpackage.form.intro' | translate}}</div>
+        </div>
+
+        <app-multi-language *ngFor="let output of outputs.controls;let i=index" class="mt-4">
+            <ng-container [formArrayName]="constants.OUTPUTS.name">
+                <ng-container [formGroupName]="i">
+                    <div appTableConfig [widthConfig]="[{maxInRem:9},{}, {maxInRem:2}]">
+                        <div>
+                            <h5>{{('project.application.form.work.package.output' | translate) + ' ' + data.workPackageNumber + '.' + (i + 1) }}</h5>
+                            <h5 class="text-overflow-ellipsis">
+                                {{languageService.getCurrentValue(output.get(constants.TITLE.name).value)}}
+                            </h5>
+                            <button *ngIf="form.enabled" type="button" mat-icon-button color="accent"
+                                    matTooltip="{{'project.application.form.work.package.output.table.action.delete.tooltip' | translate}}"
+                                    (click)="removeOutput(i)">
+                                <mat-icon>delete</mat-icon>
+                            </button>
+                        </div>
+                    </div>
+
+                    <app-multi-language-form-field
+                            class="pb-3"
+                            label="project.application.form.work.package.output.title"
+                            [formControlName]="constants.TITLE.name"
+                            [maxLength]="constants.TITLE.maxLength">
+                    </app-multi-language-form-field>
+
+                    <mat-form-field class="w-100">
+                        <mat-label>{{'project.application.form.work.package.output.programme.output.indicator' | translate}}</mat-label>
+                        <mat-select panelClass="material-select-panel"
+                                    [disabled]="!data.outputIndicators.length"
+                                    [formControlName]="constants.RESULT_INDICATOR.name">
+                            <mat-option *ngFor="let resultIndicator of data.outputIndicators"
+                                        [value]="resultIndicator.id">
+                                {{resultIndicator.name}}
+                            </mat-option>
+                        </mat-select>
+                    </mat-form-field>
+
+                    <div class="row">
+                        <mat-form-field class="col">
+                            <input readonly matInput
+                                   placeholder="{{'project.application.form.work.package.output.measurement.unit' | translate}}"
+                                   value="{{getMeasurementUnit(output.get(constants.RESULT_INDICATOR.name)?.value, data.outputIndicators)}}"
+                                   [disabled]="form.disabled">
+                        </mat-form-field>
+
+                        <mat-form-field class="col">
+                            <input currencyMask type="integer" [options]="{min: 1, max: 99999}"
+                                   name="targetValue" formControlName="targetValue" matInput
+                                   placeholder="{{'project.application.form.work.package.output.target.value' | translate}}">
+                        </mat-form-field>
+                    </div>
+
+                    <app-project-periods-select
+                            [periods]="data.periods"
+                            [control]="output.get(constants.PERIOD.name)"
+                            label='project.application.form.work.package.output.delivery.period'
+                            class="w-50"
+                            (selectionChanged)="formService.setDirty(true)">
+                    </app-project-periods-select>
+
+                    <app-multi-language-form-field
+                            class="mt-2"
+                            label="project.application.form.work.package.output.description"
+                            [formControlName]="constants.DESCRIPTION.name"
+                            [maxLength]="constants.DESCRIPTION.maxLength">
+                    </app-multi-language-form-field>
+                </ng-container>
+            </ng-container>
+        </app-multi-language>
+        <button *ngIf="addOutputVisible()" class="spaced-elements mt-4" mat-raised-button color="primary"
+                (click)="addNewOutput()">
+            + {{'project.application.form.workpackage.output.add' | translate}}
+        </button>
+    </form>
+</app-form>

@@ -11,6 +11,7 @@ import {ProjectWorkPackageInvestmentDetailPageConstants} from './project-work-pa
 import {Observable} from 'rxjs';
 import {ProjectWorkPackageInvestmentDetailPageStore} from './project-work-package-Investment-detail-page-store.service';
 import {ProjectWorkPackagePageStore} from '../../project-work-package-page-store.service';
+import {filter} from 'rxjs/internal/operators';
 
 @UntilDestroy()
 @Component({
@@ -85,7 +86,9 @@ export class ProjectWorkPackageInvestmentDetailPageComponent implements OnInit {
 
     this.workPackageStore.workPackage$
       .pipe(
+        filter(workPackage => workPackage && workPackage.number),
         tap(workPackage => this.workPackageNumber = workPackage.number),
+        untilDestroyed(this)
       ).subscribe();
 
     this.formService.reset$
