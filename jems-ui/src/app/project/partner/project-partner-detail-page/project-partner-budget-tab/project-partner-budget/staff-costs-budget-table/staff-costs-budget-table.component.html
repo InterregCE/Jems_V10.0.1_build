@@ -100,12 +100,12 @@
                         <mat-header-cell class="justify-end"
                                          *matHeaderCellDef> {{'project.partner.budget.table.total' | translate}} </mat-header-cell>
                         <mat-cell *matCellDef="let control;" class="justify-end"
-                                  [class.invalid]="!control.get(constants.FORM_CONTROL_NAMES.rowSum).valid">
+                                  [class.invalid]="control.get(constants.FORM_CONTROL_NAMES.rowSum).invalid">
                             <div class="text-overflow-ellipsis">{{control.get(constants.FORM_CONTROL_NAMES.rowSum).value | asMoney}}</div>
                         </mat-cell>
                         <mat-footer-cell *matFooterCellDef
                                          class="justify-end"
-                                         [class.invalid]="!total.valid">
+                                         [class.invalid]="total.invalid">
                             <div class="text-overflow-ellipsis">{{total.value | asMoney}}</div>
                         </mat-footer-cell>
                     </ng-container>
