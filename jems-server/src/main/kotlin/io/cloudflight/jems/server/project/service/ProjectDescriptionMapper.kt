@@ -18,7 +18,9 @@ import io.cloudflight.jems.server.project.entity.TranslationUuId
 import io.cloudflight.jems.server.project.entity.description.ProjectCooperationCriteria
 import io.cloudflight.jems.server.project.entity.description.ProjectHorizontalPrinciples
 import io.cloudflight.jems.server.project.entity.description.ProjectLongTermPlans
+import io.cloudflight.jems.server.project.entity.description.ProjectLongTermPlansTransl
 import io.cloudflight.jems.server.project.entity.description.ProjectManagement
+import io.cloudflight.jems.server.project.entity.description.ProjectManagementTransl
 import io.cloudflight.jems.server.project.entity.description.ProjectOverallObjective
 import io.cloudflight.jems.server.project.entity.description.ProjectOverallObjectiveTransl
 import io.cloudflight.jems.server.project.entity.description.ProjectPartnership
@@ -188,75 +190,195 @@ fun ProjectRelevanceSynergy.toOutputProjectSynergy() = InputProjectRelevanceSyne
 fun InputProjectManagement.toEntity(projectId: Long) =
     ProjectManagement(
         projectId = projectId,
-        projectCoordination = projectCoordination,
-        projectQualityAssurance = projectQualityAssurance,
-        projectCommunication = projectCommunication,
-        projectFinancialManagement = projectFinancialManagement,
+        translatedValues = combineTranslatedValuesManagement(
+            projectId,
+            projectCoordination,
+            projectQualityAssurance,
+            projectCommunication,
+            projectFinancialManagement,
+            projectJointDevelopmentDescription,
+            projectJointImplementationDescription,
+            projectJointStaffingDescription,
+            projectJointFinancingDescription,
+            sustainableDevelopmentDescription,
+            equalOpportunitiesDescription,
+            sexualEqualityDescription,
+        ),
         projectCooperationCriteria = projectCooperationCriteria?.toEntity(),
         projectHorizontalPrinciples = projectHorizontalPrinciples?.toEntity()
     )
 
+fun combineTranslatedValuesManagement(
+    projectId: Long,
+    projectCoordination: Set<InputTranslation>,
+    projectQualityAssurance: Set<InputTranslation>,
+    projectCommunication: Set<InputTranslation>,
+    projectFinancialManagement: Set<InputTranslation>,
+    projectJointDevelopmentDescription: Set<InputTranslation>,
+    projectJointImplementationDescription: Set<InputTranslation>,
+    projectJointStaffingDescription: Set<InputTranslation>,
+    projectJointFinancingDescription: Set<InputTranslation>,
+    sustainableDevelopmentDescription: Set<InputTranslation>,
+    equalOpportunitiesDescription: Set<InputTranslation>,
+    sexualEqualityDescription: Set<InputTranslation>,
+): Set<ProjectManagementTransl> {
+    val projectCoordinationMap = projectCoordination.associateBy({ it.language }, { it.translation })
+    val projectQualityAssuranceMap = projectQualityAssurance.associateBy({ it.language }, { it.translation })
+    val projectCommunicationMap = projectCommunication.associateBy({ it.language }, { it.translation })
+    val projectFinancialManagementMap = projectFinancialManagement.associateBy({ it.language }, { it.translation })
+    val projectJointDevelopmentDescriptionMap =
+        projectJointDevelopmentDescription.associateBy({ it.language }, { it.translation })
+    val projectJointImplementationDescriptionMap =
+        projectJointImplementationDescription.associateBy({ it.language }, { it.translation })
+    val projectJointStaffingDescriptionMap =
+        projectJointStaffingDescription.associateBy({ it.language }, { it.translation })
+    val projectJointFinancingDescriptionMap =
+        projectJointFinancingDescription.associateBy({ it.language }, { it.translation })
+    val sustainableDevelopmentDescriptionMap =
+        sustainableDevelopmentDescription.associateBy({ it.language }, { it.translation })
+    val equalOpportunitiesDescriptionMap =
+        equalOpportunitiesDescription.associateBy({ it.language }, { it.translation })
+    val sexualEqualityDescriptionMap = sexualEqualityDescription.associateBy({ it.language }, { it.translation })
+
+    val languages = projectCoordinationMap.keys.toMutableSet()
+    languages.addAll(projectQualityAssuranceMap.keys)
+    languages.addAll(projectCommunicationMap.keys)
+    languages.addAll(projectFinancialManagementMap.keys)
+    languages.addAll(projectJointDevelopmentDescriptionMap.keys)
+    languages.addAll(projectJointImplementationDescriptionMap.keys)
+    languages.addAll(projectJointStaffingDescriptionMap.keys)
+    languages.addAll(projectJointFinancingDescriptionMap.keys)
+    languages.addAll(sustainableDevelopmentDescriptionMap.keys)
+    languages.addAll(equalOpportunitiesDescriptionMap.keys)
+    languages.addAll(sexualEqualityDescriptionMap.keys)
+
+    return languages.mapTo(HashSet()) {
+        ProjectManagementTransl(
+            TranslationId(projectId, it),
+            projectCoordinationMap[it],
+            projectQualityAssuranceMap[it],
+            projectCommunicationMap[it],
+            projectFinancialManagementMap[it],
+            projectJointDevelopmentDescriptionMap[it],
+            projectJointImplementationDescriptionMap[it],
+            projectJointStaffingDescriptionMap[it],
+            projectJointFinancingDescriptionMap[it],
+            sustainableDevelopmentDescriptionMap[it],
+            equalOpportunitiesDescriptionMap[it],
+            sexualEqualityDescriptionMap[it],
+        )
+    }
+}
+
 fun ProjectManagement.toOutputProjectManagement() = OutputProjectManagement(
-    projectCoordination = projectCoordination,
-    projectQualityAssurance = projectQualityAssurance,
-    projectCommunication = projectCommunication,
-    projectFinancialManagement = projectFinancialManagement,
+    projectCoordination = translatedValues.mapTo(HashSet()) {
+        InputTranslation(it.translationId.language, it.projectCoordination)
+    },
+    projectQualityAssurance = translatedValues.mapTo(HashSet()) {
+        InputTranslation(it.translationId.language, it.projectQualityAssurance)
+    },
+    projectCommunication = translatedValues.mapTo(HashSet()) {
+        InputTranslation(it.translationId.language, it.projectCommunication)
+    },
+    projectFinancialManagement = translatedValues.mapTo(HashSet()) {
+        InputTranslation(it.translationId.language, it.projectFinancialManagement)
+    },
     projectCooperationCriteria = projectCooperationCriteria?.ifNotEmpty()?.toOutputCooperationCriteria(),
-    projectHorizontalPrinciples = projectHorizontalPrinciples?.ifNotEmpty()?.toOutputHorizontalPrinciples()
+    projectJointDevelopmentDescription = translatedValues.mapTo(HashSet()) {
+        InputTranslation(it.translationId.language, it.projectJointDevelopmentDescription)
+    },
+    projectJointImplementationDescription = translatedValues.mapTo(HashSet()) {
+        InputTranslation(it.translationId.language, it.projectJointImplementationDescription)
+    },
+    projectJointStaffingDescription = translatedValues.mapTo(HashSet()) {
+        InputTranslation(it.translationId.language, it.projectJointStaffingDescription)
+    },
+    projectJointFinancingDescription = translatedValues.mapTo(HashSet()) {
+        InputTranslation(it.translationId.language, it.projectJointFinancingDescription)
+    },
+    projectHorizontalPrinciples = projectHorizontalPrinciples?.ifNotEmpty()?.toOutputHorizontalPrinciples(),
+    sustainableDevelopmentDescription = translatedValues.mapTo(HashSet()) {
+        InputTranslation(it.translationId.language, it.sustainableDevelopmentDescription)
+    },
+    equalOpportunitiesDescription = translatedValues.mapTo(HashSet()) {
+        InputTranslation(it.translationId.language, it.equalOpportunitiesDescription)
+    },
+    sexualEqualityDescription = translatedValues.mapTo(HashSet()) {
+        InputTranslation(it.translationId.language, it.sexualEqualityDescription)
+    },
 )
 
 fun InputProjectLongTermPlans.toEntity(projectId: Long) =
     ProjectLongTermPlans(
         projectId = projectId,
-        projectOwnership = projectOwnership,
-        projectDurability = projectDurability,
-        projectTransferability = projectTransferability
+        translatedValues = combineTranslatedValuesLongTermPlans(
+            projectId,
+            projectOwnership,
+            projectDurability,
+            projectTransferability
+        )
     )
 
+fun combineTranslatedValuesLongTermPlans(
+    projectId: Long,
+    projectOwnership: Set<InputTranslation>,
+    projectDurability: Set<InputTranslation>,
+    projectTransferability: Set<InputTranslation>
+): Set<ProjectLongTermPlansTransl> {
+    val projectOwnershipMap = projectOwnership.associateBy({ it.language }, { it.translation })
+    val projectDurabilityMap = projectDurability.associateBy({ it.language }, { it.translation })
+    val projectTransferabilityMap = projectTransferability.associateBy({ it.language }, { it.translation })
+
+    val languages = projectOwnershipMap.keys.toMutableSet()
+    languages.addAll(projectDurabilityMap.keys)
+    languages.addAll(projectTransferabilityMap.keys)
+
+    return languages.mapTo(HashSet()) {
+        ProjectLongTermPlansTransl(
+            TranslationId(projectId, it),
+            projectOwnershipMap[it],
+            projectDurabilityMap[it],
+            projectTransferabilityMap[it]
+        )
+    }
+}
+
 fun ProjectLongTermPlans.toOutputProjectLongTermPlans() = OutputProjectLongTermPlans(
-    projectOwnership = projectOwnership,
-    projectDurability = projectDurability,
-    projectTransferability = projectTransferability
+    projectOwnership = translatedValues.mapTo(HashSet()) {
+        InputTranslation(it.translationId.language, it.projectOwnership)
+    },
+    projectDurability = translatedValues.mapTo(HashSet()) {
+        InputTranslation(it.translationId.language, it.projectDurability)
+    },
+    projectTransferability = translatedValues.mapTo(HashSet()) {
+        InputTranslation(it.translationId.language, it.projectTransferability)
+    },
 )
 
 fun InputProjectHorizontalPrinciples.toEntity() = ProjectHorizontalPrinciples(
     sustainableDevelopmentCriteriaEffect = sustainableDevelopmentCriteriaEffect,
-    sustainableDevelopmentDescription = sustainableDevelopmentDescription,
     equalOpportunitiesEffect = equalOpportunitiesEffect,
-    equalOpportunitiesDescription = equalOpportunitiesDescription,
-    sexualEqualityEffect = sexualEqualityEffect,
-    sexualEqualityDescription = sexualEqualityDescription
+    sexualEqualityEffect = sexualEqualityEffect
 )
 
 fun ProjectHorizontalPrinciples.toOutputHorizontalPrinciples() = InputProjectHorizontalPrinciples(
     sustainableDevelopmentCriteriaEffect = sustainableDevelopmentCriteriaEffect,
-    sustainableDevelopmentDescription = sustainableDevelopmentDescription,
     equalOpportunitiesEffect = equalOpportunitiesEffect,
-    equalOpportunitiesDescription = equalOpportunitiesDescription,
-    sexualEqualityEffect = sexualEqualityEffect,
-    sexualEqualityDescription = sexualEqualityDescription
+    sexualEqualityEffect = sexualEqualityEffect
 )
 
 fun InputProjectCooperationCriteria.toEntity() = ProjectCooperationCriteria(
     projectJointDevelopment = projectJointDevelopment,
-    projectJointDevelopmentDescription = projectJointDevelopmentDescription,
     projectJointImplementation = projectJointImplementation,
-    projectJointImplementationDescription = projectJointImplementationDescription,
     projectJointStaffing = projectJointStaffing,
-    projectJointStaffingDescription = projectJointStaffingDescription,
-    projectJointFinancing = projectJointFinancing,
-    projectJointFinancingDescription = projectJointFinancingDescription
+    projectJointFinancing = projectJointFinancing
 )
 
 fun ProjectCooperationCriteria.toOutputCooperationCriteria() = InputProjectCooperationCriteria(
     projectJointDevelopment = projectJointDevelopment,
-    projectJointDevelopmentDescription = projectJointDevelopmentDescription,
     projectJointImplementation = projectJointImplementation,
-    projectJointImplementationDescription = projectJointImplementationDescription,
     projectJointStaffing = projectJointStaffing,
-    projectJointStaffingDescription = projectJointStaffingDescription,
-    projectJointFinancing = projectJointFinancing,
-    projectJointFinancingDescription = projectJointFinancingDescription
+    projectJointFinancing = projectJointFinancing
 )
 
 // region Project Overall Objective
