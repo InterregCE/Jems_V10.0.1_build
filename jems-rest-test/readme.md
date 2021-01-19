@@ -21,6 +21,6 @@ To implement new tests or run existing locally, there is possibility to use Post
 in Postman and import _collection file_ and _environment files_ into Postman.
 
 In Postman Settings (_File > Settings > General > Working Directory_) adjust your working directory to this
-[ems-rest-test](../ems-rest-test) folder. You can run the whole collection or just one specific folder. If you want to
+[jems-rest-test](../jems-rest-test) folder. You can run the whole collection or just one specific folder. If you want to
 run specific folder, you might need to run **setup** folder once-first before the others - this one will create basic
 users and programme data, which are needed for every following test.
