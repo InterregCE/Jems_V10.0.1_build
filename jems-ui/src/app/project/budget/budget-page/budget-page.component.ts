@@ -2,10 +2,11 @@ import {ChangeDetectionStrategy, Component, OnInit} from '@angular/core';
 import {ProjectStore} from '../../project-application/containers/project-application-detail/services/project-store.service';
 import {ActivatedRoute} from '@angular/router';
 import {ProjectApplicationFormSidenavService} from '../../project-application/containers/project-application-form-page/services/project-application-form-sidenav.service';
-import {ProjectPartnerBudgetDTO, ProjectService} from '@cat/api';
+import {ProjectCallSettingsDTO, ProjectPartnerBudgetDTO, ProjectService} from '@cat/api';
 import {tap} from 'rxjs/operators';
 import {Log} from '../../../common/utils/log';
-import {Observable} from 'rxjs';
+import {combineLatest, Observable} from 'rxjs';
+import {map} from 'rxjs/operators';
 import {NumberService} from '../../../common/services/number.service';
 
 @Component({
@@ -32,10 +33,15 @@ export class BudgetPageComponent implements OnInit {
   totalUnitCosts: number;
   total: number;
 
-  budget$: Observable<ProjectPartnerBudgetDTO[]> = this.projectService.getProjectBudget(this.projectId)
+  budget$: Observable<ProjectPartnerBudgetDTO[]> = combineLatest([
+    this.projectService.getProjectBudget(this.projectId),
+    this.projectService.getProjectCallSettingsById(this.projectId),
+  ])
     .pipe(
+      tap(([, callSettings]) => this.hideEmptySimplifiedCostOptions(callSettings)),
+      map(([budgets]) => budgets),
       tap(budgets => this.calculateFooterSums(budgets)),
-      tap(budgets => Log.info('Fetching the project budget', this, budgets))
+      tap(budgets => Log.info('Fetching the project budget', this, budgets)),
     );
 
   constructor(public projectStore: ProjectStore,
@@ -60,16 +66,14 @@ export class BudgetPageComponent implements OnInit {
     this.totalLumpSums = NumberService.sum(budgets.map(budget => budget.lumpSumContribution));
     this.totalUnitCosts = NumberService.sum(budgets.map(budget => budget.unitCosts));
     this.total = NumberService.sum(budgets.map(budget => budget.totalSum));
-
-    this.hideEmptySimplifiedCostOptions();
   }
 
-  private hideEmptySimplifiedCostOptions(): void {
-    if (this.totalUnitCosts === 0) {
+  private hideEmptySimplifiedCostOptions(callSettings: ProjectCallSettingsDTO): void {
+    if (callSettings.unitCosts?.length === 0) {
       const unitCostsColumnIndex = this.displayedColumns.indexOf('unitCosts');
       this.displayedColumns.splice(unitCostsColumnIndex, 1);
     }
-    if (this.totalLumpSums === 0) {
+    if (callSettings.lumpSums?.length === 0) {
       const lumpSumsColumnIndex = this.displayedColumns.indexOf('lumpSums');
       this.displayedColumns.splice(lumpSumsColumnIndex, 1);
     }

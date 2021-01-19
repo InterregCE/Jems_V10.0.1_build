@@ -13,11 +13,9 @@ import io.cloudflight.jems.server.project.service.model.ProjectPeriod
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
 import io.mockk.impl.annotations.MockK
-import io.mockk.junit5.MockKExtension
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
-import org.junit.jupiter.api.extension.ExtendWith
 import java.math.BigDecimal
 import java.time.ZonedDateTime
 import java.util.UUID
@@ -122,6 +120,20 @@ internal class UpdateProjectLumpSumsTest : UnitTest() {
             updateProjectLumpSums.updateLumpSums(PROJECT_ID, listOf(lumpSum))
         }
         assertThat(ex.i18nKey).isEqualTo("project.lumpSum.period.does.not.exist")
+    }
+
+    @Test
+    fun `updateLumpSums - period number is optional`() {
+        val programmeLumpSum = ProgrammeLumpSum(id = PROGRAMME_LUMP_SUM_ID, splittingAllowed = true)
+        every { projectPersistence.getProjectCallSettingsForProject(PROJECT_ID) } returns
+            callSettings(lumpSums = listOf(programmeLumpSum))
+        every { projectPersistence.getProject(PROJECT_ID) } returns Project(id = PROJECT_ID, periods = periods)
+
+        val lumpSumWithoutPeriod = lumpSum.copy(period = null)
+        every { persistence.updateLumpSums(PROJECT_ID, any()) } returnsArgument 1
+
+        assertThat(updateProjectLumpSums.updateLumpSums(PROJECT_ID, listOf(lumpSumWithoutPeriod)))
+            .containsExactly(lumpSumWithoutPeriod.copy())
     }
 
     @Test
