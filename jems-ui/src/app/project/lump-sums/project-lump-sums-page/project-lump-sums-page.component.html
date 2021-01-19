@@ -42,8 +42,13 @@
                         </ng-container>
 
                         <ng-container matColumnDef="period">
-                            <mat-header-cell
-                                    *matHeaderCellDef> {{'project.application.form.section.part.e.period.column.title' | translate}} </mat-header-cell>
+                            <mat-header-cell *matHeaderCellDef>
+                                {{'project.application.form.section.part.e.period.column.title' | translate}}
+                                <app-context-info
+                                        infoText="{{ 'project.application.form.section.part.e.period.column.contextinfo' | translate }}"
+                                        infoPosition="right">
+                                </app-context-info>
+                            </mat-header-cell>
                             <mat-cell *matCellDef="let control;  let i = index" [formGroupName]="i">
                                 <mat-form-field *ngIf="isLumpSumSelectedForRow(control)"
                                                 [appFormFieldWidth]="'small'">
@@ -67,8 +72,13 @@
                         </ng-container>
 
                         <ng-container matColumnDef="isSplittingLumpSumAllowed">
-                            <mat-header-cell
-                                    *matHeaderCellDef> {{'project.application.form.section.part.e.is.splitting.lump.sums.allowed.column.title' | translate}} </mat-header-cell>
+                            <mat-header-cell *matHeaderCellDef>
+                                {{'project.application.form.section.part.e.is.splitting.lump.sums.allowed.column.title' | translate}}
+                                <app-context-info
+                                        infoText="{{ 'project.application.form.section.part.e.is.splitting.lump.sums.allowed.column.contextinfo' | translate }}"
+                                        infoPosition="right">
+                                </app-context-info>
+                            </mat-header-cell>
                             <mat-cell *matCellDef="let control;  let i = index" [formGroupName]="i">
                                 <div *ngIf="isLumpSumSelectedForRow(control)">
                                     {{control.get(constants.FORM_CONTROL_NAMES.lumpSum)?.value?.isSplittingAllowed ?
