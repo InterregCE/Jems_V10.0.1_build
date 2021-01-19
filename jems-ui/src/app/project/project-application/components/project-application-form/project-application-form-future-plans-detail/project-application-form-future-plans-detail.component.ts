@@ -60,6 +60,7 @@ export class ProjectApplicationFormFuturePlansDetailComponent extends BaseCompon
   ngOnInit(): void {
     this.formService.init(this.futurePlansForm);
     this.resetForm();
+    this.formService.setEditable(this.editable);
     this.error$
       .pipe(
         takeUntil(this.destroyed$),
