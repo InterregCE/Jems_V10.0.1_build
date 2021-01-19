@@ -115,9 +115,9 @@
                         </mat-form-field>
                         <div class="text-right">{{partnerContribution.value.amount | percentage: totalAmount}}</div>
                         <div>
-                            <button type="button" *ngIf="!partnerContribution.value.isPartner"
-                                    (click)="deletePartnerContribution(i)"
-                                    mat-icon-button color="accent">
+                            <button type="button" mat-icon-button color="accent"
+                                    *ngIf="!partnerContribution.value.isPartner && coFinancingForm.enabled"
+                                    (click)="deletePartnerContribution(i)">
                                 <mat-icon>delete</mat-icon>
                             </button>
                         </div>
