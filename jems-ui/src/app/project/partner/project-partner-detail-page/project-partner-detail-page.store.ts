@@ -9,9 +9,14 @@ import {
   BudgetGeneralCostEntryDTO,
   BudgetTravelAndAccommodationCostEntryDTO,
   BudgetUnitCostEntryDTO,
+  CallService,
+  OutputCall,
+  ProgrammeFundOutputDTO,
   ProgrammeUnitCostDTO,
   ProjectPartnerBudgetOptionsDto,
-  ProjectPartnerBudgetService
+  ProjectPartnerBudgetService,
+  ProjectPartnerCoFinancingAndContributionInputDTO,
+  ProjectPartnerCoFinancingAndContributionOutputDTO
 } from '@cat/api';
 import {ProjectPartnerStore} from '../../project-application/containers/project-application-form-page/services/project-partner-store.service';
 import {NumberService} from '../../../common/services/number.service';
@@ -38,12 +43,17 @@ export class ProjectPartnerDetailPageStore {
   isProjectEditable$: Observable<boolean>;
   investmentSummaries$: Observable<InvestmentSummary[]>;
   unitCosts$: Observable<ProgrammeUnitCostDTO[]>;
+  financingAndContribution$: Observable<ProjectPartnerCoFinancingAndContributionOutputDTO>;
+  callFunds$: Observable<ProgrammeFundOutputDTO[]>;
+
 
   private updateBudgetOptionsEvent$ = new Subject();
   private updateBudgetEvent$ = new Subject();
+  private updateFinancingAndContributionEvent = new Subject();
 
   constructor(private projectStore: ProjectStore,
               private partnerStore: ProjectPartnerStore,
+              private callService: CallService,
               private projectWorkPackagePageStore: ProjectWorkPackagePageStore,
               private projectPartnerBudgetService: ProjectPartnerBudgetService
   ) {
@@ -56,6 +66,8 @@ export class ProjectPartnerDetailPageStore {
     this.budgetOptions$ = this.budgetOptions();
     this.callFlatRatesSettings$ = this.callFlatRateSettings();
     this.totalBudget$ = this.totalBudget();
+    this.financingAndContribution$ = this.financingAndContribution();
+    this.callFunds$ = this.callFunds();
     this.isProjectEditable$ = this.projectStore.projectEditable$;
   }
 
@@ -86,6 +98,37 @@ export class ProjectPartnerDetailPageStore {
       tap(() => this.updateBudgetEvent$.next(true)),
       share()
     );
+  }
+
+  updateCoFinancingAndContributions(model: ProjectPartnerCoFinancingAndContributionInputDTO): Observable<any> {
+    return of(model).pipe(
+      withLatestFrom(this.partnerStore.partner$),
+      switchMap(([finances, partner]) =>
+        this.projectPartnerBudgetService.updateProjectPartnerCoFinancing(partner.id, finances)
+      ),
+      tap(() => this.updateFinancingAndContributionEvent.next(true)),
+      share()
+    );
+  }
+
+  private callFunds(): Observable<ProgrammeFundOutputDTO[]>{
+    return this.projectStore.getProject()
+      .pipe(
+        map(project => project.callSettings.callId),
+        switchMap(callId => this.callService.getCallById(callId)),
+        map((call: OutputCall) => call.funds),
+      );
+  }
+
+  private financingAndContribution(): Observable<ProjectPartnerCoFinancingAndContributionOutputDTO> {
+    return combineLatest([this.updateFinancingAndContributionEvent.pipe(startWith(null)), this.partnerStore.partner$])
+      .pipe(
+        map(([, partner]) => partner),
+        filter(partner => !!partner.id),
+        switchMap(partner =>
+          this.projectPartnerBudgetService.getProjectPartnerCoFinancing(partner.id)
+        ),
+      );
   }
 
   private budgetOptions(): Observable<BudgetOptions> {

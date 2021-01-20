@@ -1,11 +1,175 @@
-<ng-container *ngIf="details$ | async as details">
-    <app-project-partner-co-financing
-            [success$]="saveSuccess$"
-            [error$]="saveError$"
-            [financingAndContribution]="details.financingAndContribution"
-            [callFunds]="details.callFunds"
-            [totalAmount]="details.totalAmount"
-            (save)="saveFinances$.next($event)"
-            (cancelEdit)="cancelEdit$.next()">
-    </app-project-partner-co-financing>
+<ng-container *ngIf="data$ | async as data">
+    <app-form (save)="updateCoFinancingAndContributions()">
+        <form [formGroup]="coFinancingForm">
+            <h5><span>{{ 'partner.tab.coFinancing' | translate }}</span></h5>
+
+            <p class="intro-text-small mb-3">{{ 'project.partner.coFinancing.intro' | translate }}</p>
+
+            <div appTableConfig [appearance]="'table'"
+                 [widthConfig]="[{},{maxInRem:10},{maxInRem:5}]">
+                <div>
+                    <span>{{ 'project.partner.coFinancing.source' | translate }}</span>
+                    <span>{{ 'project.partner.coFinancing.amount' | translate }}</span>
+                    <span class="text-right">{{ 'project.partner.coFinancing.percentage' | translate }}</span>
+                </div>
+
+                <div>
+                    <mat-form-field>
+                        <mat-select [disabled]="coFinancingForm.disabled"
+                                    name="fundId"
+                                    panelClass="material-select-panel"
+                                    [formControlName]="constants.FORM_CONTROL_NAMES.fundId">
+                            <mat-option *ngFor="let fund of data.callFunds" [value]="fund.id">
+                                {{fund.abbreviation || 'programme.fund.abbreviation.' + fund.id | translate}}
+                            </mat-option>
+                        </mat-select>
+                        <mat-error>
+                            <app-form-field-errors
+                                    [errors]="fundId?.errors"
+                                    [messages]="constants.FORM_ERRORS.fundIdErrors">
+                            </app-form-field-errors>
+                        </mat-error>
+                    </mat-form-field>
+                    <div>{{ fundAmount.value | asMoney }}</div>
+                    <mat-form-field class="text-right">
+                        <input currencyMask type="integer" [options]="{min: 0, max: 100, align: 'right'}"
+                               name="percentage" [formControlName]="constants.FORM_CONTROL_NAMES.fundPercentage"
+                               matInput>
+                        <div matSuffix class="pl-1">%</div>
+                        <mat-error>
+                            <app-form-field-errors
+                                    [errors]="fundPercentage?.errors"
+                                    [messages]="constants.FORM_ERRORS.percentageErrors">
+                            </app-form-field-errors>
+                        </mat-error>
+                    </mat-form-field>
+                </div>
+                <div>
+                    <div>{{ 'project.partner.coFinancing.partnerContribution' | translate }}</div>
+                    <div>{{ partnerAmount.value | asMoney }}</div>
+                    <div class="text-right">{{ partnerPercentage.value }} %</div>
+                </div>
+                <div class="mat-body-strong">
+                    <div>{{ 'project.partner.coFinancing.total' | translate }}</div>
+                    <div>{{ data.totalBudget | asMoney }}</div>
+                    <div class="text-right">100 %</div>
+                </div>
+            </div>
+
+
+            <h5 class="mt-5"><span>{{ 'project.partner.coFinancing.contribution.title' | translate }}</span></h5>
+
+            <app-alert
+                    [show]="data.showTotalContributionWarning"
+                    [type]="Alert.WARNING">
+                <p>{{'project.partner.coFinancing.contribution.total.warning' | translate}}</p>
+            </app-alert>
+            <div appTableConfig [appearance]="'table'"
+                 [widthConfig]="[{minInRem:5},{maxInRem:10},{maxInRem:10},{maxInRem:10}, {maxInRem:2}]">
+                <div>
+                    <span class="mat-body-strong">{{ 'project.partner.coFinancing.contribution.source.name' | translate }}</span>
+                    <span class="mat-body-strong">{{ 'project.partner.coFinancing.contribution.legal.status' | translate }}</span>
+                    <span class="mat-body-strong">{{ 'project.partner.coFinancing.contribution.amount' | translate }}</span>
+                    <span class="mat-body-strong">{{ 'project.partner.coFinancing.contribution.total.partner.contribution.percentage' | translate }}
+                        <app-context-info
+                                infoText="{{ 'project.partner.coFinancing.contribution.total.partner.contribution.percentage.contextinfo' | translate }}"
+                                infoPosition="right">
+                    </app-context-info>
+                </span>
+                    <div class="mat-body-strong"></div>
+                </div>
+
+                <div *ngFor="let partnerContribution of partnerContributions.controls;let i=index">
+                    <ng-container [formArrayName]="constants.FORM_CONTROL_NAMES.partnerContributions">
+                        <ng-container [formGroupName]="i">
+                            <div *ngIf="partnerContribution?.value?.isPartner">{{partnerContribution?.value?.name}}</div>
+                            <mat-form-field
+                                    *ngIf="!partnerContribution.get(constants.FORM_CONTROL_NAMES.isPartner)?.value">
+                                <input [formControlName]="constants.FORM_CONTROL_NAMES.name" matInput required>
+                                <mat-error>
+                                    <app-form-field-errors [errors]="partnerContribution.get(constants.FORM_CONTROL_NAMES.name)?.errors"
+                                                           [messages]="constants.FORM_ERRORS.partnerContributionNameErrors"></app-form-field-errors>
+                                </mat-error>
+                            </mat-form-field>
+
+                            <mat-form-field>
+                                <mat-select panelClass="material-select-panel"
+                                            [formControlName]="constants.FORM_CONTROL_NAMES.status" required>
+                                    <mat-option
+                                            [value]="partnerContributionStatus.Public">{{partnerContributionStatus.Public}}</mat-option>
+                                    <mat-option
+                                            [value]="partnerContributionStatus.Private">{{partnerContributionStatus.Private}}</mat-option>
+                                    <mat-option
+                                            *ngIf="!partnerContribution?.value?.isPartner"
+                                            [value]="partnerContributionStatus.AutomaticPublic">{{partnerContributionStatus.AutomaticPublic}}</mat-option>
+                                </mat-select>
+                                <mat-error>
+                                    <app-form-field-errors [errors]="partnerContribution.get(constants.FORM_CONTROL_NAMES.status)?.errors"
+                                                           [messages]="constants.FORM_ERRORS.partnerContributionStatusErrors"></app-form-field-errors>
+                                </mat-error>
+                            </mat-form-field>
+                            <mat-form-field>
+                                <input currencyMask type="decimal" [options]="{min: 0, align: 'right'}"
+                                       [formControlName]="constants.FORM_CONTROL_NAMES.amount" matInput>
+                                <mat-error>
+                                    <app-form-field-errors [errors]="partnerContribution.get(constants.FORM_CONTROL_NAMES.amount)?.errors"
+                                                           [messages]="constants.FORM_ERRORS.partnerContributionAmountErrors"></app-form-field-errors>
+                                </mat-error>
+                            </mat-form-field>
+                            <div class="text-right">{{partnerContribution.value.amount  | percentage: data.totalBudget}}</div>
+                            <div>
+                                <button type="button" mat-icon-button color="accent"
+                                        *ngIf="!partnerContribution.value.isPartner && coFinancingForm.enabled"
+                                        (click)="deletePartnerContribution(i)">
+                                    <mat-icon>delete</mat-icon>
+                                </button>
+                            </div>
+                        </ng-container>
+                    </ng-container>
+                </div>
+            </div>
+            <mat-error *ngIf="(formService.dirty$ | async)" class="my-3">
+                <app-form-field-errors
+                        [errors]="partnerContributions.errors"
+                        [args]="data.partnerContributionErrorsArgs"
+                        [messages]="constants.FORM_ERRORS.partnerContributionErrors">
+                </app-form-field-errors>
+            </mat-error>
+            <button *ngIf="coFinancingForm.enabled" type="button" class="my-3" mat-stroked-button
+                    (click)="addNewPartnerContribution()">
+                <mat-icon>add</mat-icon>
+                <span>{{ 'project.partner.coFinancing.contribution.add.contribution.origin' | translate }}</span>
+            </button>
+
+            <div appTableConfig [appearance]="'table'"
+                 [widthConfig]="[{minInRem:5},{maxInRem:10},{maxInRem:10}, {maxInRem:2}]">
+                <div class="hidden"></div>
+                <div>
+                    <span>{{ 'project.partner.coFinancing.contribution.sub.total.public.contribution' | translate }}</span>
+                    <div class="text-right">{{ data.publicContributionSubTotal | asMoney}}</div>
+                    <span class="text-right">{{ data.publicContributionSubTotal | percentage:data.totalBudget}}</span>
+                </div>
+                <div>
+                    <div>{{ 'project.partner.coFinancing.contribution.sub.total.automatic.public.contribution' | translate }}</div>
+                    <div class="text-right">{{ data.automaticPublicContributionSubTotal | asMoney}}</div>
+                    <span class="text-right">{{ data.automaticPublicContributionSubTotal | percentage:data.totalBudget}}</span>
+                </div>
+                <div>
+                    <div>{{ 'project.partner.coFinancing.contribution.sub.total.private.contribution' | translate }}</div>
+                    <div class="text-right">{{ data.privateContributionSubTotal | asMoney}}</div>
+                    <span class="text-right">{{ data.privateContributionSubTotal | percentage:data.totalBudget}}</span>
+                </div>
+                <div class="mat-body-strong">
+                    <div>{{ 'project.partner.coFinancing.contribution.total' | translate }}
+                        <app-context-info
+                                infoText="{{ 'project.partner.coFinancing.contribution.total.contextinfo' | translate }}"
+                                infoPosition="right">
+                        </app-context-info>
+                    </div>
+                    <div class="text-right">{{ data.contributionTotal | asMoney}}</div>
+                    <div class="text-right">{{ data.contributionTotal | percentage: data.totalBudget}}</div>
+                </div>
+            </div>
+        </form>
+    </app-form>
 </ng-container>
