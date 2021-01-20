@@ -56,7 +56,7 @@ fun List<WorkPackageInvestmentEntity>.toInvestmentSummaryList() =
 fun WorkPackageInvestmentEntity.toInvestmentSummary() = InvestmentSummary(
     id = id,
     investmentNumber = investmentNumber,
-    workPackageId = workPackage.id
+    workPackageNumber = workPackage.number
 )
 
 fun WorkPackageInvestmentEntity.toWorkPackageInvestment() = WorkPackageInvestment(
