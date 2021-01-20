@@ -23,6 +23,7 @@ dependencies {
     implementation('org.springframework.data:spring-data-elasticsearch')
     implementation('commons-io:commons-io')
     implementation('io.minio:minio')
+    implementation('com.github.doyaaaaaken:kotlin-csv-jvm')
 
     implementation('io.springfox:springfox-swagger-ui')
     implementation('io.springfox:springfox-swagger2')

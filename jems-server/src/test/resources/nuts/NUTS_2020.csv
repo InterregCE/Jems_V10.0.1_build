@@ -7,5 +7,9 @@ CO,CO0E,Country East,Country East localized,,,
 CO,CO0E1,East 01,East 01 localized,,,
 CO,CO0E2,East 02,East 02 localized,,,
 CO,CO0E3,East 03,East 03 localized,,,
-CO,CO0,"Some SubCountry","Some SubCountry localized",,,
+CO,CO0,"Some SubCountry
+        
+","Some SubCountry localized
+        
+",,,
 CO,CO,Country Name,Country Name localized,,,

@@ -15,8 +15,7 @@ import java.util.Locale
 import java.util.TreeMap
 import java.util.TreeSet
 
-private val CSV_DELIMITER = Regex(",(?=(?:[^\"]*\"[^\"]*\")*[^\"]*\$)")
-private val TRAILING_QUOTES = Regex("^\"+|\"+$")
+private val LINE_BREAK_REGEX = Regex("[\\n\\r]+")
 
 const val COUNTRY_CODE_LENGTH = 2
 const val REGION_1_CODE_LENGTH = 3
@@ -30,9 +29,7 @@ const val NUTS_NAME = "NAME_LATN"
 
 private val collatorGerman = Collator.getInstance(Locale.GERMAN)
 
-fun String.removeWrappingQuotes() = replace(TRAILING_QUOTES, "")
-
-fun String.splitCsvLine() = split(CSV_DELIMITER, 0).map { it.removeWrappingQuotes() }
+fun String.removeLineBreaks() = replace(LINE_BREAK_REGEX, "")
 
 fun groupNuts(
     nuts: Iterable<NutsRegion3>

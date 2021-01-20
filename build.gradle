@@ -17,6 +17,10 @@ subprojects {
             annotationProcessor platform("io.cloudflight.platform:platform-bom:$cloudflightPlatformVersion")
             testImplementation platform("io.cloudflight.platform:platform-test-bom:$cloudflightPlatformVersion")
             kapt platform("io.cloudflight.platform:platform-bom:$cloudflightPlatformVersion")
+
+            constraints {
+                implementation "com.github.doyaaaaaken:kotlin-csv-jvm:0.15.0"
+            }
         }
     }
 }

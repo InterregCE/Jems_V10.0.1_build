@@ -155,7 +155,7 @@ class NutsServiceTest {
 
         val expectedRegion1 = NutsRegion1(
             id = "CO0",
-            title = "Some SubCountry",
+            title = "Some SubCountry        ",
             country = NutsCountry(id = "CO", title = ""))
         val regions1 = slot<Iterable<NutsRegion1>>()
         verify { nutsRegion1Repository.saveAll(capture(regions1)) }
