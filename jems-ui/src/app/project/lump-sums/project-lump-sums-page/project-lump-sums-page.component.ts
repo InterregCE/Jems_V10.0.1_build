@@ -226,7 +226,7 @@ export class ProjectLumpSumsPageComponent implements OnInit {
   }
 
   private getWithConfigs(partners: ProjectPartner[]): WidthConfig[] {
-    let widthConfigs = [{minInRem: 8}, {minInRem: 5}, {minInRem: 3}, {minInRem: 8}];
+    let widthConfigs = [{minInRem: 8}, {minInRem: 5}, {minInRem: 4}, {minInRem: 8}];
     widthConfigs = widthConfigs.concat(partners?.map(() => {
       return {minInRem: 8};
     }));
