@@ -34,25 +34,25 @@ class BudgetCostsCalculator : BudgetCostsCalculatorService {
                 )
 
         val finalTravelCosts =
-            if (budgetOptions?.travelAndAccommodationOnStaffCostsFlatRate != null)
+            if (budgetOptions?.travelAndAccommodationOnStaffCostsFlatRate == null)
+                travelCosts
+            else
                 calculateTravelCosts(
                     budgetOptions.travelAndAccommodationOnStaffCostsFlatRate,
-                    staffCosts
+                    finalStaffCosts
                 )
-            else
-                travelCosts
 
         val finalOfficeAndAdministrationCosts =
             calculateOfficeAndAdministrationCosts(
                 budgetOptions?.officeAndAdministrationOnStaffCostsFlatRate,
-                staffCosts
+                finalStaffCosts
             )
 
         val finalOtherCosts =
             calculateOtherCosts(
                 budgetOptions?.staffCostsFlatRate,
                 budgetOptions?.otherCostsOnStaffCostsFlatRate,
-                staffCosts
+                finalStaffCosts
             )
 
         return BudgetCostsCalculationResult(
