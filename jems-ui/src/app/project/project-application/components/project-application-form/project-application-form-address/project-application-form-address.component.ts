@@ -58,7 +58,7 @@ export class ProjectApplicationFormAddressComponent implements OnInit, OnChanges
   }
 
   region2Changed(region2Title: string): void {
-    this.selectedRegion2 = this.findByName(region2Title, this.selectedCountry?.areas || []);
+    this.selectedRegion2 = this.findByName(region2Title, this.getRegion2Areas());
     this.addressForm.controls.region3.patchValue('');
   }
 
@@ -78,7 +78,7 @@ export class ProjectApplicationFormAddressComponent implements OnInit, OnChanges
     if (this.selectOptionClicked(event)) {
       return;
     }
-    const selected = this.findByName(this.addressForm.controls.region2.value, this.selectedCountry?.areas || []);
+    const selected = this.findByName(this.addressForm.controls.region2.value, this.getRegion2Areas());
     if (!selected) {
       this.addressForm.controls.region2.patchValue('');
       this.addressForm.controls.region3.patchValue('');
@@ -95,9 +95,10 @@ export class ProjectApplicationFormAddressComponent implements OnInit, OnChanges
     }
   }
 
+
   private initializeFilters(): void {
     this.selectedCountry = this.findByName(this.addressForm.controls.country.value, this.nuts);
-    this.selectedRegion2 = this.findByName(this.addressForm.controls.region2.value, this.selectedCountry?.areas || []);
+    this.selectedRegion2 = this.findByName(this.addressForm.controls.region2.value, this.getRegion2Areas());
     this.filteredCountry = this.addressForm.controls.country.valueChanges
       .pipe(
         startWith(''),
@@ -107,7 +108,7 @@ export class ProjectApplicationFormAddressComponent implements OnInit, OnChanges
     this.filteredRegion2 = this.addressForm.controls.region2.valueChanges
       .pipe(
         startWith(''),
-        map(value => this.filter(value, this.selectedCountry?.areas || []))
+        map(value => this.filter(value, this.getRegion2Areas()))
       );
 
     this.filteredRegion3 = this.addressForm.controls.region3.valueChanges
@@ -126,6 +127,10 @@ export class ProjectApplicationFormAddressComponent implements OnInit, OnChanges
     return nuts
       .filter(nut => this.formatRegion(nut).toLowerCase().includes(filterValue))
       .map(nut => this.formatRegion(nut));
+  }
+
+  private getRegion2Areas(): OutputNuts[] {
+    return this.selectedCountry?.areas.flatMap(region => region.areas) || [];
   }
 
   private selectOptionClicked(event: FocusEvent): boolean {
