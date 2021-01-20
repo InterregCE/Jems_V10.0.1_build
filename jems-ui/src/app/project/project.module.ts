@@ -66,9 +66,8 @@ import {ContributionToggleColumnComponent} from './project-application/component
 import {ProjectApplicationFormIdentificationPageComponent} from './project-application/containers/project-application-form-page/project-application-form-identification-page/project-application-form-identification-page.component';
 import {ProjectApplicationFormAssociatedOrgPageComponent} from './project-application/containers/project-application-form-page/project-application-form-associated-org-page/project-application-form-associated-org-page.component';
 import {ProjectApplicationFormAddressComponent} from './project-application/components/project-application-form/project-application-form-address/project-application-form-address.component';
-import {ProjectPartnerCoFinancingComponent} from './partner/project-partner-detail-page/project-partner-co-financing-tab/project-partner-co-financing/project-partner-co-financing.component';
-import {ProjectPartnerDetailPageComponent} from './partner/project-partner-detail-page/project-partner-detail-page.component';
 import {ProjectPartnerCoFinancingTabComponent} from './partner/project-partner-detail-page/project-partner-co-financing-tab/project-partner-co-financing-tab.component';
+import {ProjectPartnerDetailPageComponent} from './partner/project-partner-detail-page/project-partner-detail-page.component';
 import {BudgetPageComponent} from './budget/budget-page/budget-page.component';
 import {ProjectWorkPackageObjectivesTabComponent} from './work-package/work-package-detail-page/project-work-package-objectives-tab/project-work-package-objectives-tab.component';
 import {ProjectWorkPackageDetailPageComponent} from './work-package/work-package-detail-page/project-work-package-detail-page.component';
@@ -147,9 +146,8 @@ import {ProjectLumpSumsPageStore} from './lump-sums/project-lump-sums-page/proje
     ProjectApplicationFormRegionSelectionComponent,
     DeleteActionCellComponent,
     ProjectPartnerBudgetTabComponent,
-    ProjectPartnerCoFinancingTabComponent,
     ProjectPartnerBudgetComponent,
-    ProjectPartnerCoFinancingComponent,
+    ProjectPartnerCoFinancingTabComponent,
     ProjectPartnerBudgetOptionsComponent,
     ProjectApplicationPartnerIdentityComponent,
     ProjectApplicationFormAssociatedOrganizationEditComponent,
