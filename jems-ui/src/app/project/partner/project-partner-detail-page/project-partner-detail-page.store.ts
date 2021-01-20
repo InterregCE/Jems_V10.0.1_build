@@ -16,7 +16,8 @@ import {
   ProjectPartnerBudgetOptionsDto,
   ProjectPartnerBudgetService,
   ProjectPartnerCoFinancingAndContributionInputDTO,
-  ProjectPartnerCoFinancingAndContributionOutputDTO
+  ProjectPartnerCoFinancingAndContributionOutputDTO,
+  OutputProjectPartnerDetail
 } from '@cat/api';
 import {ProjectPartnerStore} from '../../project-application/containers/project-application-form-page/services/project-partner-store.service';
 import {NumberService} from '../../../common/services/number.service';
@@ -85,19 +86,26 @@ export class ProjectPartnerDetailPageStore {
   }
 
   updateBudgets(budgets: PartnerBudgetTables): Observable<any> {
-    return of(budgets).pipe(withLatestFrom(this.partnerStore.partner$)).pipe(
-      switchMap(([newBudgets, partner]: any) =>
-        forkJoin({
-          staff: this.projectPartnerBudgetService.updateBudgetStaffCosts(partner.id, this.toBudgetStaffCostEntryDTOArray(newBudgets.staffCosts)),
-          travel: this.projectPartnerBudgetService.updateBudgetTravel(partner.id, this.toBudgetTravelAndAccommodationCostEntryDTOArray(newBudgets.travelCosts)),
-          external: this.projectPartnerBudgetService.updateBudgetExternal(partner.id, this.toGeneralBudgetEntryDTOArray(newBudgets.externalCosts)),
-          equipment: this.projectPartnerBudgetService.updateBudgetEquipment(partner.id, this.toGeneralBudgetEntryDTOArray(newBudgets.equipmentCosts)),
-          infrastructure: this.projectPartnerBudgetService.updateBudgetInfrastructure(partner.id, this.toGeneralBudgetEntryDTOArray(newBudgets.infrastructureCosts)),
-          unitCosts: this.projectPartnerBudgetService.updateBudgetUnitCosts(partner.id, this.toBudgetUnitCostEntryDTOArray(newBudgets.unitCosts))
-        })),
+    return of(budgets).pipe(withLatestFrom(this.partnerStore.partner$, this.budgetOptions$)).pipe(
+      switchMap(([newBudgets, partner, options]: any) =>
+        forkJoin(this.getBudgetsToSave(partner, newBudgets, options))),
       tap(() => this.updateBudgetEvent$.next(true)),
       share()
     );
+  }
+
+  private getBudgetsToSave(partner: OutputProjectPartnerDetail, newBudgets: PartnerBudgetTables, options: BudgetOptions): {[key: string]: Observable<any>} {
+    return options.otherCostsOnStaffCostsFlatRate
+      ? {
+        staff: this.projectPartnerBudgetService.updateBudgetStaffCosts(partner.id, this.toBudgetStaffCostEntryDTOArray(newBudgets.staffCosts))
+    } : {
+        staff: this.projectPartnerBudgetService.updateBudgetStaffCosts(partner.id, this.toBudgetStaffCostEntryDTOArray(newBudgets.staffCosts)),
+        travel: this.projectPartnerBudgetService.updateBudgetTravel(partner.id, this.toBudgetTravelAndAccommodationCostEntryDTOArray(newBudgets.travelCosts)),
+        external: this.projectPartnerBudgetService.updateBudgetExternal(partner.id, this.toGeneralBudgetEntryDTOArray(newBudgets.externalCosts)),
+        equipment: this.projectPartnerBudgetService.updateBudgetEquipment(partner.id, this.toGeneralBudgetEntryDTOArray(newBudgets.equipmentCosts)),
+        infrastructure: this.projectPartnerBudgetService.updateBudgetInfrastructure(partner.id, this.toGeneralBudgetEntryDTOArray(newBudgets.infrastructureCosts)),
+        unitCosts: this.projectPartnerBudgetService.updateBudgetUnitCosts(partner.id, this.toBudgetUnitCostEntryDTOArray(newBudgets.unitCosts))
+    };
   }
 
   updateCoFinancingAndContributions(model: ProjectPartnerCoFinancingAndContributionInputDTO): Observable<any> {
