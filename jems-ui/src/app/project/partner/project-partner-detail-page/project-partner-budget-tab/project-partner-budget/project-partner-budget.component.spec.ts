@@ -6,6 +6,7 @@ import {TestModule} from '../../../../../common/test-module';
 import {ProjectModule} from '../../../../project.module';
 import {ActivatedRoute} from '@angular/router';
 import {ProjectPartnerDetailPageStore} from '../../project-partner-detail-page.store';
+import {of} from 'rxjs';
 
 
 describe('ProjectApplicationPartnerBudgetPageComponent', () => {
@@ -13,6 +14,7 @@ describe('ProjectApplicationPartnerBudgetPageComponent', () => {
   let fixture: ComponentFixture<ProjectPartnerBudgetComponent>;
   let httpTestingController: HttpTestingController;
   let partnerStore: ProjectPartnerStore;
+  let partnerDetailPageStore: ProjectPartnerDetailPageStore;
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
@@ -37,6 +39,7 @@ describe('ProjectApplicationPartnerBudgetPageComponent', () => {
       .compileComponents();
     httpTestingController = TestBed.inject(HttpTestingController);
     partnerStore = TestBed.inject(ProjectPartnerStore);
+    partnerDetailPageStore = TestBed.inject(ProjectPartnerDetailPageStore);
   }));
 
   beforeEach(() => {
@@ -51,9 +54,15 @@ describe('ProjectApplicationPartnerBudgetPageComponent', () => {
   });
 
   it('should fetch and save budgets', fakeAsync(() => {
+    partnerDetailPageStore.budgetOptions$ = of({} as any);
+
     httpTestingController.expectOne({
       method: 'GET',
       url: '//api/project/partner/2/budget/costs'
+    });
+    httpTestingController.expectOne({
+      method: 'GET',
+      url: '//api/project/partner/2/budget/options'
     });
 
     component.updateBudgets();
@@ -82,6 +91,27 @@ describe('ProjectApplicationPartnerBudgetPageComponent', () => {
     httpTestingController.expectOne({
       method: 'PUT',
       url: '//api/project/partner/2/budget/unitcosts'
+    });
+  }));
+
+  it('should fetch and save budgets with other costs option', fakeAsync(() => {
+    partnerDetailPageStore.budgetOptions$ = of({ otherCostsOnStaffCostsFlatRate: 10 } as any);
+
+    httpTestingController.expectOne({
+      method: 'GET',
+      url: '//api/project/partner/2/budget/costs'
+    });
+    httpTestingController.expectOne({
+      method: 'GET',
+      url: '//api/project/partner/2/budget/options'
+    });
+
+    component.updateBudgets();
+    tick();
+
+    httpTestingController.expectOne({
+      method: 'PUT',
+      url: '//api/project/partner/2/budget/staffcosts'
     });
   }));
 
