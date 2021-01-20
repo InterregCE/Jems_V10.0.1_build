@@ -56,7 +56,7 @@ export class ProjectWorkPackagePageStore {
 
     this.projectInvestmentSummaries$ = combineLatest([this.project$, this.investmentChangeEvent$.pipe(startWith(null))]).pipe(
       switchMap(([project]) => this.workPackageInvestmentService.getProjectInvestmentSummaries(project.id)),
-      map((investmentSummeryDTOs: InvestmentSummaryDTO[]) => investmentSummeryDTOs.map(it => new InvestmentSummary(it.id, it.investmentNumber, it.workPackageId))),
+      map((investmentSummeryDTOs: InvestmentSummaryDTO[]) => investmentSummeryDTOs.map(it => new InvestmentSummary(it.id, it.investmentNumber, it.workPackageNumber))),
       shareReplay(1)
     );
   }

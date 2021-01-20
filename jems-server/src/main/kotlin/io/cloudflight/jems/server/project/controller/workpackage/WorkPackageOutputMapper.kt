@@ -36,7 +36,7 @@ fun List<InvestmentSummary>.toInvestmentSummaryDTOs() =
 fun InvestmentSummary.toInvestmentSummaryDTO() = InvestmentSummaryDTO(
     id = id,
     investmentNumber = investmentNumber,
-    workPackageId = workPackageId
+    workPackageNumber = workPackageNumber
 )
 
 fun WorkPackageInvestmentDTO.toWorkPackageInvestment() = WorkPackageInvestment(
