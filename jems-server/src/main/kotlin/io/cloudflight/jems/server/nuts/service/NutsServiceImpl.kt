@@ -1,5 +1,6 @@
 package io.cloudflight.jems.server.nuts.service
 
+import com.github.doyaaaaaken.kotlincsv.dsl.csvReader
 import io.cloudflight.jems.api.nuts.dto.OutputNuts
 import io.cloudflight.jems.api.nuts.dto.OutputNutsMetadata
 import io.cloudflight.jems.server.common.exception.I18nValidationException
@@ -18,9 +19,7 @@ import org.springframework.http.HttpStatus
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import org.springframework.web.client.RestTemplate
-import java.io.BufferedReader
 import java.io.File
-import java.io.FileReader
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 
@@ -51,7 +50,6 @@ class NutsServiceImpl(
 
         if (getNutsMetadata() != null)
             throw I18nValidationException(
-                httpStatus = HttpStatus.UNPROCESSABLE_ENTITY,
                 i18nKey = "nuts.already.downloaded"
             )
 
@@ -116,15 +114,13 @@ class NutsServiceImpl(
 
     private fun groupNutsByLevel(csvFile: File): Map<Int, List<Pair<String, String>>> {
         var groupedByCodeLength: Map<Int, List<Pair<String, String>>>? = null
-        BufferedReader(FileReader(csvFile)).use { reader ->
-            val headers = reader.readLine().splitCsvLine()
-            val nutIdIndex = headers.indexOf(NUTS_ID)
-            val nutNameIndex = headers.indexOf(NUTS_NAME)
-
-            groupedByCodeLength = reader
-                .lineSequence()
-                .map { it.splitCsvLine() }
-                .groupBy({ it[nutIdIndex].length }, { Pair(it[nutIdIndex], it[nutNameIndex]) })
+        csvReader().open(csvFile) {
+            groupedByCodeLength = readAllWithHeaderAsSequence().map { row: Map<String, String> ->
+                if (row[NUTS_ID].isNullOrEmpty() || row[NUTS_NAME].isNullOrEmpty())
+                    throw I18nValidationException(i18nKey = "nuts.unable.to.locate.$NUTS_ID.or.$NUTS_NAME")
+                else
+                    Pair(row[NUTS_ID]!!, row[NUTS_NAME]!!.removeLineBreaks())
+            }.groupBy({ it.first.length }, { it })
         }
         return groupedByCodeLength ?: throw ResourceNotFoundException("nuts")
     }
