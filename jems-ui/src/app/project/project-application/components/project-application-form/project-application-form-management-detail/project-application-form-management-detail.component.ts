@@ -76,6 +76,7 @@ export class ProjectApplicationFormManagementDetailComponent extends BaseCompone
   ngOnInit(): void {
     this.formService.init(this.managementForm);
     this.resetForm();
+    this.formService.setEditable(this.editable);
     this.error$
       .pipe(
         takeUntil(this.destroyed$),
