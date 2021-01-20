@@ -1,7 +1,7 @@
 import {ChangeDetectionStrategy, Component, OnInit} from '@angular/core';
 import {ProjectLumpSumsPageStore} from './project-lump-sums-page.store';
 import {combineLatest, Observable} from 'rxjs';
-import {catchError, map, startWith, tap, withLatestFrom} from 'rxjs/operators';
+import {catchError, map, startWith, tap} from 'rxjs/operators';
 import {
   AbstractControl,
   FormArray,
@@ -23,6 +23,8 @@ import {ProjectPartner} from '../../model/ProjectPartner';
 import {PartnerContribution} from '../../model/lump-sums/partnerContribution';
 import {HttpErrorResponse} from '@angular/common/http';
 import {ProgrammeLumpSum} from '../../model/lump-sums/programmeLumpSum';
+import {Alert} from '@common/components/forms/alert';
+import {ProjectPeriod} from '../../model/ProjectPeriod';
 
 @UntilDestroy()
 @Component({
@@ -35,6 +37,7 @@ import {ProgrammeLumpSum} from '../../model/lump-sums/programmeLumpSum';
 export class ProjectLumpSumsPageComponent implements OnInit {
 
   constants = ProjectLumSumsConstants;
+  Alert = Alert;
 
   lumpSumsForm: FormGroup;
   dataSource: MatTableDataSource<AbstractControl>;
@@ -45,8 +48,9 @@ export class ProjectLumpSumsPageComponent implements OnInit {
     withConfigs: WidthConfig[],
     partners: ProjectPartner[],
     lumpSums: ProgrammeLumpSum[],
-    periods: number[],
-    showAddButton: number,
+    periods: ProjectPeriod[],
+    showAddButton: boolean,
+    showGapExistsWarning: boolean,
     costIsNotSplittableError: ValidationErrors | null,
     partnerColumnsTotal: number[]
   }>;
@@ -56,6 +60,7 @@ export class ProjectLumpSumsPageComponent implements OnInit {
   private showAddButton$: Observable<boolean>;
   private costIsNotSplittableError$: Observable<ValidationErrors | null>;
   private partnerColumnsTotal$: Observable<number[]>;
+  private showGapExistsWarning$: Observable<boolean>;
 
   constructor(public pageStore: ProjectLumpSumsPageStore, private formBuilder: FormBuilder, private formService: FormService) {
   }
@@ -71,6 +76,9 @@ export class ProjectLumpSumsPageComponent implements OnInit {
       this.dataSource.data = this.items.controls;
     });
 
+    this.showGapExistsWarning$ = combineLatest([this.items.valueChanges.pipe(startWith(null)), this.formService.reset$.pipe(startWith(null))]).pipe(
+      map(() => this.items.controls.some(control => this.isGapExistsInRow(control))),
+    );
     this.showAddButton$ = combineLatest([this.items.valueChanges.pipe(startWith(null)), this.pageStore.projectLumpSums$]).pipe(
       map(([, projectLumpSums]) => (projectLumpSums.length === 0 && this.items?.length === 0)),
     );
@@ -86,12 +94,13 @@ export class ProjectLumpSumsPageComponent implements OnInit {
       this.withConfigs$,
       this.pageStore.partners$,
       this.pageStore.projectCallLumpSums$,
-      this.pageStore.projectPeriodNumbers$,
+      this.pageStore.projectPeriods$,
       this.showAddButton$,
+      this.showGapExistsWarning$,
       this.costIsNotSplittableError$,
       this.partnerColumnsTotal$
     ]).pipe(
-      map(([projectAcronym, columnsToDisplay, withConfigs, partners, lumpSums, periods, showAddButton, costIsNotSplittableError, partnerColumnsTotal]: any) => {
+      map(([projectAcronym, columnsToDisplay, withConfigs, partners, lumpSums, periods, showAddButton, showGapExistsWarning, costIsNotSplittableError, partnerColumnsTotal]: any) => {
         return {
           projectAcronym,
           columnsToDisplay,
@@ -100,6 +109,7 @@ export class ProjectLumpSumsPageComponent implements OnInit {
           lumpSums,
           periods,
           showAddButton,
+          showGapExistsWarning,
           costIsNotSplittableError,
           partnerColumnsTotal
         };
@@ -117,7 +127,7 @@ export class ProjectLumpSumsPageComponent implements OnInit {
       rowId: Math.random() * 1000,
       id: null,
       lumpSum: [null, Validators.required],
-      periodId: [null],
+      periodNumber: [null],
       partnersContribution: this.formBuilder.array(partners.map(partner => this.formBuilder.group({
         partnerId: partner.id,
         amount: 0
@@ -138,7 +148,7 @@ export class ProjectLumpSumsPageComponent implements OnInit {
       ).subscribe();
   }
 
-  isGapExists(itemGroupControl: AbstractControl): boolean {
+  isGapExistsInRow(itemGroupControl: AbstractControl): boolean {
     return this.getGapControl(itemGroupControl)?.value !== 0;
   }
 
@@ -147,7 +157,9 @@ export class ProjectLumpSumsPageComponent implements OnInit {
   }
 
   private calculatePartnerColumnsTotal(): number[] {
-    if (!this.items || this.items.controls.length === 0) { return []; }
+    if (!this.items || this.items.controls.length === 0) {
+      return [];
+    }
 
     const totals: number[] = [];
     this.items.controls.forEach(control => {
@@ -172,10 +184,11 @@ export class ProjectLumpSumsPageComponent implements OnInit {
   private handelFormReset(): void {
     combineLatest([
       this.formService.reset$.pipe(startWith(null)),
-      this.pageStore.projectLumpSums$
+      this.pageStore.projectLumpSums$,
+      this.pageStore.projectCallLumpSums$,
+      this.pageStore.partners$
     ]).pipe(
-      withLatestFrom(this.pageStore.projectCallLumpSums$, this.pageStore.partners$),
-      tap(([[, projectLumpSums], projectCallLumpSums, partners]) => this.resetForm(projectLumpSums, projectCallLumpSums, partners)),
+      tap(([, projectLumpSums, projectCallLumpSums, partners]) => this.resetForm(projectLumpSums, projectCallLumpSums, partners)),
       untilDestroyed(this)
     ).subscribe();
   }
@@ -183,17 +196,19 @@ export class ProjectLumpSumsPageComponent implements OnInit {
   private resetForm(projectLumpSums: ProjectLumpSum[], projectCallLumpSums: ProgrammeLumpSum[], partners: ProjectPartner[]): void {
     this.items.clear();
     projectLumpSums.forEach(projectLumpSum => {
+      const lumpSum = projectCallLumpSums.find(it => it.id === projectLumpSum.programmeLumpSumId);
+      const rowSum = this.calculateRowSum(projectLumpSum.lumpSumContributions.map(it => it.amount));
       const item = this.formBuilder.group({
         rowId: Math.random() * 1000,
         id: projectLumpSum.id,
-        lumpSum: [projectCallLumpSums.find(it => it.id === projectLumpSum.programmeLumpSumId), Validators.required],
-        periodId: [projectLumpSum.period],
+        lumpSum: [lumpSum, Validators.required],
+        periodNumber: [projectLumpSum.period],
         partnersContribution: this.formBuilder.array(partners.map(partner => this.formBuilder.group({
           partnerId: partner.id,
           amount: projectLumpSum.lumpSumContributions.find(contribution => contribution.partnerId === partner.id)?.amount || 0
         }))),
-        rowSum: [0],
-        gap: [0],
+        rowSum: [rowSum],
+        gap: [this.calculateGap(lumpSum?.cost || 0, rowSum)],
       });
       this.addItemToItems(item);
     });
@@ -202,7 +217,7 @@ export class ProjectLumpSumsPageComponent implements OnInit {
   private addItemToItems(item: FormGroup): void {
     item.setValidators(this.partnersContributionValidator);
     this.items.push(item);
-    item.valueChanges.pipe(startWith(item.value), untilDestroyed(this)).subscribe(itemValues => {
+    item.valueChanges.pipe(untilDestroyed(this)).subscribe(itemValues => {
       this.setGapAndRowSum(itemValues.rowId);
     });
   }
@@ -212,7 +227,7 @@ export class ProjectLumpSumsPageComponent implements OnInit {
       return new ProjectLumpSum(
         formGroup.get(this.constants.FORM_CONTROL_NAMES.id)?.value,
         this.getLumpSumControl(formGroup)?.value?.id,
-        formGroup.get(this.constants.FORM_CONTROL_NAMES.periodId)?.value,
+        formGroup.get(this.constants.FORM_CONTROL_NAMES.periodNumber)?.value,
         this.getPartnerContributionFormArray(formGroup)?.value,
       );
     });
@@ -220,7 +235,7 @@ export class ProjectLumpSumsPageComponent implements OnInit {
 
   private getColumnsToDisplay(partners: ProjectPartner[]): string[] {
     let columnsToDisplay = ['lumpSum', 'period', 'isSplittingLumpSumAllowed', 'lumpSumCost'];
-    columnsToDisplay = columnsToDisplay.concat(partners?.map(partner => partner.sortNumber === 1 ? 'LP1' : 'PP'.concat(partner.sortNumber.toString())));
+    columnsToDisplay = columnsToDisplay.concat(partners?.map(partner => partner.toPartnerNumberString()));
     columnsToDisplay = columnsToDisplay.concat(['rowSum', 'gap', 'description', 'actions']);
     return columnsToDisplay;
   }
@@ -236,12 +251,18 @@ export class ProjectLumpSumsPageComponent implements OnInit {
 
   private setGapAndRowSum(rowId: number): void {
     const itemFormGroup = this.getItemControlByRowId(rowId);
-    const amounts = this.getPartnerContributionFormArray(itemFormGroup)?.value?.map((it: PartnerContribution) => it.amount) as number[];
-    const cost = this.getLumpSumControl(itemFormGroup)?.value?.cost || 0;
-    const rowSumValue = NumberService.sum(amounts);
-    const gapValue = NumberService.minus(cost, rowSumValue);
+    const rowSumValue = this.calculateRowSum(this.getPartnerContributionFormArray(itemFormGroup)?.value?.map((it: PartnerContribution) => it.amount) as number[]);
+    const gapValue = this.calculateGap(this.getLumpSumControl(itemFormGroup)?.value?.cost || 0, rowSumValue);
     this.getRowSumControl(itemFormGroup)?.setValue(NumberService.truncateNumber(rowSumValue), {emitEvent: false});
     this.getGapControl(itemFormGroup)?.setValue(NumberService.truncateNumber(gapValue), {emitEvent: false});
+  }
+
+  private calculateRowSum(amounts: number[]): number {
+    return NumberService.sum(amounts);
+  }
+
+  private calculateGap(lumpSumCost: number, rowSum: number): number {
+    return NumberService.minus(lumpSumCost, rowSum);
   }
 
   private partnersContributionValidator: ValidatorFn = (itemFormGroup: FormGroup): ValidationErrors | null => {

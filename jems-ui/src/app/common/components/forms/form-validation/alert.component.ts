@@ -14,6 +14,9 @@ export class AlertComponent {
   show = false;
 
   @Input()
+  closable = true;
+
+  @Input()
   type: Alert;
 
 }

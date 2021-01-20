@@ -60,6 +60,7 @@ export class ProjectPartnerStore {
     return this.partnerService.updateProjectPartner(this.projectId, partner)
       .pipe(
         tap(saved => this.partner$.next(saved)),
+        tap(() => this.partnerUpdateEvent$.next(null)),
         tap(saved => Log.info('Updated partner:', this, saved))
       );
   }

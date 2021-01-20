@@ -6,6 +6,7 @@ import {ProjectLumpSumService} from '@cat/api';
 import {ProjectLumpSum} from '../../model/lump-sums/projectLumpSum';
 import {PartnerContribution} from '../../model/lump-sums/partnerContribution';
 import {ProjectPartnerStore} from '../../project-application/containers/project-application-form-page/services/project-partner-store.service';
+import {ProjectPeriod} from '../../model/ProjectPeriod';
 
 @Injectable()
 export class ProjectLumpSumsPageStore {
@@ -15,7 +16,7 @@ export class ProjectLumpSumsPageStore {
   projectAcronym$ = this.projectStore.getAcronym();
   isProjectEditable$ = this.projectStore.projectEditable$;
   partners$ = this.projectPartnerStore.partners$;
-  projectPeriodNumbers$ = this.projectStore.getProject().pipe(map(project => project.periods.map(period => period.number)));
+  projectPeriods$ = this.projectStore.getProject().pipe(map(project => project.periods.map(it => new ProjectPeriod(it.projectId, it.number, it.start, it.end))));
 
   private updateProjectLumpSumsEvent$ = new BehaviorSubject(null);
 

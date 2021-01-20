@@ -5,7 +5,7 @@
      [class.app-alert-danger]="type === Alert.ERROR"
      [class.app-alert-warning]="type === Alert.WARNING"
      id="successMessage" role="alert">
-    <button type="button" data-dismiss="app-alert" class="close-btn" aria-label="Close" (click)="show = false">
+    <button *ngIf="closable" type="button" data-dismiss="app-alert" class="close-btn" aria-label="Close" (click)="show = false">
         <span aria-hidden="true">&times;</span>
     </button>
     <ng-content></ng-content>

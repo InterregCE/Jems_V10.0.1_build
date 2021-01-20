@@ -25,7 +25,7 @@ import {
   withLatestFrom
 } from 'rxjs/operators';
 import {Log} from '../../../../../common/utils/log';
-import {ResolveEnd, Router} from '@angular/router';
+import {ActivatedRouteSnapshot, ResolveEnd, Router} from '@angular/router';
 import {PermissionService} from '../../../../../security/permissions/permission.service';
 import {Permission} from '../../../../../security/permissions/permission';
 import {I18nValidationError} from '@common/validation/i18n-validation-error';
@@ -168,11 +168,13 @@ export class ProjectStore {
     this.router.events
       .pipe(
         filter(val => val instanceof ResolveEnd),
-        map(e => (e as ResolveEnd).url),
-        distinctUntilChanged((oldUrl, newUrl) => this.isProjectUrl(oldUrl) === this.isProjectUrl(newUrl)),
-        tap(url => {
-          if (!this.isProjectUrl(url)) {
+        map(e => (e as ResolveEnd)),
+        distinctUntilChanged((oldRoute, newRoute) => this.isProjectUrl(oldRoute.url) === this.isProjectUrl(newRoute.url)),
+        tap(e => {
+          if (!this.isProjectUrl(e.url)) {
             this.projectId$.next(null as any);
+          } else {
+            this.projectId$.next(this.getLeafRoute(e.state.root).params.projectId);
           }
         })
       )
@@ -230,5 +232,13 @@ export class ProjectStore {
 
   private isProjectUrl(url: string): boolean {
     return !!url && url.startsWith(ProjectStore.PROJECT_DETAIL_PATH);
+  }
+
+  private getLeafRoute(route: ActivatedRouteSnapshot): ActivatedRouteSnapshot {
+    let localRoot = route;
+    while (localRoot.firstChild) {
+      localRoot = localRoot.firstChild;
+    }
+    return localRoot;
   }
 }

@@ -6,7 +6,7 @@ export class ProjectLumSumsConstants {
   public static MAX_NUMBER_OF_ITEMS = 50;
   public static FORM_CONTROL_NAMES = {
     lumpSum: 'lumpSum',
-    periodId: 'periodId',
+    periodNumber: 'periodNumber',
     partnersContribution: 'partnersContribution',
     amount: 'amount',
     id: 'id',
