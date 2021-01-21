@@ -1,15 +1,13 @@
 import {ChangeDetectionStrategy, Component, OnInit} from '@angular/core';
-import {OutputProjectPeriod} from '@cat/api';
+import {OutputProjectPeriod, WorkPackageActivityDeliverableDTO, WorkPackageActivityDTO} from '@cat/api';
 import {UntilDestroy, untilDestroyed} from '@ngneat/until-destroy';
 import {FormService} from '@common/components/section/form/form.service';
-import {FormArray, FormBuilder, FormGroup, ValidatorFn, Validators} from '@angular/forms';
+import {FormArray, FormBuilder} from '@angular/forms';
 import {combineLatest, Observable} from 'rxjs';
 import {catchError, map, startWith, take, tap} from 'rxjs/operators';
 import {ProjectWorkPackagePageStore} from '../project-work-package-page-store.service';
 import {ProjectWorkPackageActivitiesTabConstants} from './project-work-package-activities-tab.constants';
-import {WorkPackageActivityDTO} from 'build/generated-sources/openapi/model/workPackageActivityDTO';
 import {MultiLanguageInputService} from '../../../../common/services/multi-language-input.service';
-import {WorkPackageActivityDeliverableDTO} from 'build/generated-sources/openapi/model/workPackageActivityDeliverableDTO';
 
 @UntilDestroy()
 @Component({

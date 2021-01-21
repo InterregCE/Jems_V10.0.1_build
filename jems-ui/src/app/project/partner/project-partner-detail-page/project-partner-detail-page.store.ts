@@ -7,6 +7,7 @@ import {ProjectStore} from '../../project-application/containers/project-applica
 import {
   BaseBudgetEntryDTO,
   BudgetGeneralCostEntryDTO,
+  BudgetStaffCostEntryDTO,
   BudgetTravelAndAccommodationCostEntryDTO,
   BudgetUnitCostEntryDTO,
   CallService,
@@ -29,7 +30,6 @@ import {GeneralBudgetTableEntry} from '../../model/budget/general-budget-table-e
 import {TravelAndAccommodationCostsBudgetTable} from '../../model/budget/travel-and-accommodation-costs-budget-table';
 import {TravelAndAccommodationCostsBudgetTableEntry} from '../../model/budget/travel-and-accommodation-costs-budget-table-entry';
 import {ProjectWorkPackagePageStore} from '../../work-package/work-package-detail-page/project-work-package-page-store.service';
-import {BudgetStaffCostEntryDTO} from 'build/generated-sources/openapi/model/budgetStaffCostEntryDTO';
 import {UnitCostsBudgetTable} from '../../model/budget/unit-costs-budget-table';
 import {UnitCostsBudgetTableEntry} from '../../model/budget/unit-costs-budget-table-entry';
 import {InvestmentSummary} from '../../work-package/work-package-detail-page/workPackageInvestment';
