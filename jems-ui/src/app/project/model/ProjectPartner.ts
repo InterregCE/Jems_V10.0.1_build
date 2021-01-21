@@ -3,7 +3,7 @@ import {ProjectPartnerRoleEnum} from './ProjectPartnerRoleEnum';
 export class ProjectPartner {
   id: number;
   abbreviation: string;
-  role: ProjectPartnerRoleEnum| null;
+  role: ProjectPartnerRoleEnum | null;
   sortNumber: number;
   country: string;
 
@@ -13,5 +13,9 @@ export class ProjectPartner {
     this.role = role;
     this.sortNumber = sortNumber;
     this.country = country;
+  }
+
+  toPartnerNumberString(): string {
+    return this.role === ProjectPartnerRoleEnum.LEAD_PARTNER ? 'LP1' : 'PP'.concat(this.sortNumber.toString());
   }
 }

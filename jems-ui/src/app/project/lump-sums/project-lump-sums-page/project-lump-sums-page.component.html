@@ -3,14 +3,24 @@
     <h2>{{'project.application.form.acronym' | translate : {acronym: data.projectAcronym} }}</h2>
     <h4>{{'project.application.form.section.part.e' | translate}}</h4>
     <p class="intro-text-small">{{'project.application.form.section.part.e.description' | translate}}</p>
-    <p class=" intro-text-small warning"
-       *ngIf="data.lumpSums.length===0">{{'project.application.form.section.part.e.no.lump.sums.warning' | translate}}</p>
-    <p class="intro-text-small warning"
-       *ngIf="data.partners.length===0">{{'project.application.form.section.part.e.no.partner.warning' | translate}}</p>
+    <app-alert
+            [closable]="false"
+            [show]="data.lumpSums.length===0 || data.partners.length===0"
+            [type]="Alert.WARNING">
+        <p *ngIf="data.lumpSums.length===0">{{'project.application.form.section.part.e.no.lump.sums.warning' | translate}}</p>
+        <p *ngIf="data.lumpSums.length>0">{{'project.application.form.section.part.e.no.partner.warning' | translate}}</p>
+    </app-alert>
+
     <ng-container *ngIf="data.partners.length>0 && data.lumpSums.length>0">
         <ng-container *ngIf="!data.showAddButton; else addItemButton">
             <app-form (save)="updateLumpSums()">
                 <form [formGroup]="lumpSumsForm">
+                    <app-alert
+                            [show]="data.showGapExistsWarning"
+                            [closable]="false"
+                            [type]="Alert.WARNING">
+                        {{'project.application.form.section.part.e.gap.warning' | translate}}
+                    </app-alert>
                     <mat-table
                             id="lump-sums-table"
                             appTableConfig
@@ -52,17 +62,17 @@
                             <mat-cell *matCellDef="let control;  let i = index" [formGroupName]="i">
                                 <mat-form-field *ngIf="isLumpSumSelectedForRow(control)"
                                                 [appFormFieldWidth]="'small'">
-                                    <mat-select [formControlName]="constants.FORM_CONTROL_NAMES.periodId"
+                                    <mat-select [formControlName]="constants.FORM_CONTROL_NAMES.periodNumber"
                                                 [disableOptionCentering]="true" panelClass="material-select-panel">
                                         <mat-option></mat-option>
                                         <mat-option [value]="0">Preparation</mat-option>
-                                        <mat-option *ngFor="let period of data.periods" [value]="period">
-                                            {{period}}
+                                        <mat-option *ngFor="let period of data.periods" [value]="period.periodNumber">
+                                            {{'project.application.form.work.package.output.delivery.period.entry' | translate : period}}
                                         </mat-option>
                                     </mat-select>
                                     <mat-error>
                                         <app-form-field-errors
-                                                [errors]="control?.get(constants.FORM_CONTROL_NAMES.periodId)?.errors"
+                                                [errors]="control?.get(constants.FORM_CONTROL_NAMES.periodNumber)?.errors"
                                                 [messages]="constants.FORM_ERRORS.period"
                                         ></app-form-field-errors>
                                     </mat-error>
@@ -93,7 +103,7 @@
                         <ng-container matColumnDef="lumpSumCost">
                             <mat-header-cell
                                     *matHeaderCellDef> {{'project.application.form.section.part.e.lump.sums.cost.column.title' | translate}} </mat-header-cell>
-                            <mat-cell class="cost" [class.gap-exists]="isGapExists(control)"
+                            <mat-cell class="cost" [class.gap-exists]="isGapExistsInRow(control)"
                                       *matCellDef="let control;  let i = index" [formGroupName]="i">
                                 <div>{{control.get(constants.FORM_CONTROL_NAMES.lumpSum).value?.cost | asMoney}}</div>
                             </mat-cell>
@@ -102,11 +112,11 @@
 
                         <ng-container
                                 *ngFor="let partner of data.partners, let partnerAmountIndex=index"
-                                [matColumnDef]="partner.sortNumber===1?'LP1': 'PP'+partner.sortNumber">
+                                [matColumnDef]="partner.toPartnerNumberString()">
                             <mat-header-cell *matHeaderCellDef
-                                             class="justify-end"> {{partner.sortNumber === 1 ? 'LP1' : 'PP' + partner.sortNumber}} </mat-header-cell>
+                                             class="justify-end"> {{partner.toPartnerNumberString()}} </mat-header-cell>
                             <mat-cell *matCellDef="let control;  let i = index" [formGroupName]="i"
-                                      [class.gap-exists]="isGapExists(control)">
+                                      [class.gap-exists]="isGapExistsInRow(control)">
                                 <ng-container *ngIf="isLumpSumSelectedForRow(control)"
                                               [formArrayName]="constants.FORM_CONTROL_NAMES.partnersContribution">
                                     <ng-container [formGroupName]="partnerAmountIndex">
@@ -128,7 +138,7 @@
                             <mat-header-cell
                                     class="justify-end"
                                     *matHeaderCellDef> {{'project.application.form.section.part.e.lump.sums.row.sum.column.title' | translate}} </mat-header-cell>
-                            <mat-cell class="justify-end row-sum" [class.gap-exists]="isGapExists(control)"
+                            <mat-cell class="justify-end row-sum" [class.gap-exists]="isGapExistsInRow(control)"
                                       *matCellDef="let control;  let i = index" [formGroupName]="i">
                                 <div *ngIf="isLumpSumSelectedForRow(control)">{{control.get(constants.FORM_CONTROL_NAMES.rowSum).value | asMoney}}</div>
                             </mat-cell>
@@ -139,7 +149,7 @@
                             <mat-header-cell class="justify-end"
                                              *matHeaderCellDef> {{'project.application.form.section.part.e.lump.sums.gap.column.title' | translate}} </mat-header-cell>
                             <mat-cell class="justify-end" *matCellDef="let control;  let i = index" [formGroupName]="i"
-                                      [class.gap-exists]="isGapExists(control)">
+                                      [class.gap-exists]="isGapExistsInRow(control)">
                                 <div *ngIf="isLumpSumSelectedForRow(control)">{{control.get(constants.FORM_CONTROL_NAMES.gap)?.value | asMoney}}</div>
                             </mat-cell>
                             <mat-footer-cell *matFooterCellDef></mat-footer-cell>
@@ -149,7 +159,9 @@
                             <mat-header-cell
                                     *matHeaderCellDef> {{'project.application.form.section.part.e.lump.sums.description.column.title' | translate}} </mat-header-cell>
                             <mat-cell *matCellDef="let control;  let i = index" [formGroupName]="i">
-                                <div>{{control.get(constants.FORM_CONTROL_NAMES.lumpSum).value?.description}}</div>
+                                <div [matTooltip]="control.get(constants.FORM_CONTROL_NAMES.lumpSum).value?.description"
+                                     matTooltipShowDelay="500">
+                                    {{control.get(constants.FORM_CONTROL_NAMES.lumpSum).value?.description}}</div>
                             </mat-cell>
                             <mat-footer-cell *matFooterCellDef></mat-footer-cell>
                         </ng-container>
