@@ -5,8 +5,8 @@ import io.cloudflight.jems.server.call.entity.CallEntity
 import io.cloudflight.jems.server.user.entity.User
 import io.cloudflight.jems.server.call.repository.flatrate.CallRepository
 import org.springframework.stereotype.Component
+import org.springframework.transaction.annotation.Transactional
 import java.time.ZonedDateTime
-import javax.transaction.Transactional
 
 @Component
 class CallFactory(

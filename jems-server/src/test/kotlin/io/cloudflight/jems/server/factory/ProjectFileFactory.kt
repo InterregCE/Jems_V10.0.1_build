@@ -11,8 +11,8 @@ import io.cloudflight.jems.server.project.repository.ProjectFileRepository
 import io.cloudflight.jems.server.project.repository.ProjectRepository
 import io.cloudflight.jems.server.project.repository.ProjectStatusRepository
 import org.springframework.stereotype.Component
+import org.springframework.transaction.annotation.Transactional
 import java.time.ZonedDateTime
-import javax.transaction.Transactional
 
 @Component
 class ProjectFileFactory(
