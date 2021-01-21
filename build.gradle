@@ -7,7 +7,7 @@ group "io.cloudflight.jems"
 version "1.0.1"
 
 cloudflight {
-    softwareProjectKey = "cloudflight/jems"
+    softwareProjectKey = "interact/ems"
 }
 
 subprojects {
