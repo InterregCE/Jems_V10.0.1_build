@@ -1,5 +1,5 @@
-<div [formGroup]="addressForm">
-    <mat-form-field *ngIf="nuts" class="field">
+<div [formGroup]="addressForm" id="address-form">
+    <mat-form-field *ngIf="nuts">
         <mat-label>{{'project.partner.main-address.country' | translate}}</mat-label>
         <input name="country" formControlName="country" matInput
                [matAutocomplete]="country"
@@ -12,7 +12,7 @@
         </mat-autocomplete>
     </mat-form-field>
 
-    <mat-form-field *ngIf="addressForm.controls.country?.value" class="field">
+    <mat-form-field *ngIf="addressForm.controls.country?.value">
         <mat-label>{{'project.partner.main-address.region2' | translate}}</mat-label>
         <input name="region2" formControlName="region2" matInput
                [matAutocomplete]="region2"
@@ -25,7 +25,7 @@
         </mat-autocomplete>
     </mat-form-field>
 
-    <mat-form-field *ngIf="addressForm.controls.region2?.value" class="field">
+    <mat-form-field *ngIf="addressForm.controls.region2?.value">
         <mat-label>{{'project.partner.main-address.region3' | translate}}</mat-label>
         <input name="region3" formControlName="region3" matInput
                [matAutocomplete]="region3"
@@ -37,7 +37,7 @@
         </mat-autocomplete>
     </mat-form-field>
 
-    <mat-form-field class="field">
+    <mat-form-field>
         <mat-label>{{'project.partner.main-address.street' | translate}}</mat-label>
         <input name="street" formControlName="street" matInput
                placeholder="{{'project.partner.main-address.street' | translate}}">
@@ -49,7 +49,7 @@
         </mat-error>
     </mat-form-field>
 
-    <mat-form-field class="field">
+    <mat-form-field>
         <mat-label>{{'project.partner.main-address.housenumber' | translate}}</mat-label>
         <input name="houseNumber" formControlName="houseNumber" matInput
                placeholder="{{'project.partner.main-address.housenumber' | translate}}">
@@ -61,7 +61,7 @@
         </mat-error>
     </mat-form-field>
 
-    <mat-form-field class="field">
+    <mat-form-field>
         <mat-label>{{'project.partner.main-address.postalcode' | translate}}</mat-label>
         <input name="postalCode" formControlName="postalCode" matInput
                placeholder="{{'project.partner.main-address.postalcode' | translate}}">
@@ -74,7 +74,7 @@
     </mat-form-field>
 
 
-    <mat-form-field class="field">
+    <mat-form-field>
         <mat-label>{{'project.partner.main-address.city' | translate}}</mat-label>
         <input name="city" formControlName="city" matInput
                placeholder="{{'project.partner.main-address.city' | translate}}">
@@ -86,7 +86,7 @@
         </mat-error>
     </mat-form-field>
 
-    <mat-form-field *ngIf="addressForm.controls?.homepage" class="field-wide">
+    <mat-form-field *ngIf="addressForm.controls?.homepage">
         <mat-label>{{'project.partner.main-address.homepage' | translate}}</mat-label>
         <input name="homepage" formControlName="homepage" matInput
                placeholder="{{'project.partner.main-address.homepage' | translate}}">
