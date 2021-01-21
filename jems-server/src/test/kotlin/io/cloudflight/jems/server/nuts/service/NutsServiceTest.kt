@@ -136,10 +136,14 @@ class NutsServiceTest {
             )
         } returns File(this::class.java.classLoader.getResource("nuts/NUTS_2020.csv").toURI())
 
-        every { nutsCountryRepository.saveAll(any<Iterable<NutsCountry>>()) } returnsArgument 0
-        every { nutsRegion1Repository.saveAll(any<Iterable<NutsRegion1>>()) } returnsArgument 0
-        every { nutsRegion2Repository.saveAll(any<Iterable<NutsRegion2>>()) } returnsArgument 0
-        every { nutsRegion3Repository.saveAll(any<Iterable<NutsRegion3>>()) } returnsArgument 0
+        val countries: MutableList<Iterable<NutsCountry>> = mutableListOf()
+        val regions1: MutableList<Iterable<NutsRegion1>> = mutableListOf()
+        val regions2: MutableList<Iterable<NutsRegion2>> = mutableListOf()
+        val regions3: MutableList<Iterable<NutsRegion3>> = mutableListOf()
+        every { nutsCountryRepository.saveAll(capture(countries)) } returnsArgument 0
+        every { nutsRegion1Repository.saveAll(capture(regions1)) } returnsArgument 0
+        every { nutsRegion2Repository.saveAll(capture(regions2)) } returnsArgument 0
+        every { nutsRegion3Repository.saveAll(capture(regions3)) } returnsArgument 0
         every { nutsMetadataRepository.save(any<NutsMetadata>()) } returnsArgument 0
 
         assertThat(nutsService.downloadLatestNutsFromGisco()).isEqualTo(OutputNutsMetadata(
@@ -147,9 +151,8 @@ class NutsServiceTest {
             date = LocalDate.of(2020, 2, 18)
         ))
 
-        val countries = slot<Iterable<NutsCountry>>()
-        verify { nutsCountryRepository.saveAll(capture(countries)) }
-        assertThat(countries.captured).containsExactlyElementsOf(
+        assertThat(countries.size).isEqualTo(2).overridingErrorMessage("There needs to be 2 imports performed")
+        assertThat(countries[1]).containsExactlyElementsOf(
             setOf(NutsCountry(id = "CO", title = "Country Name"))
         )
 
@@ -157,34 +160,38 @@ class NutsServiceTest {
             id = "CO0",
             title = "Some SubCountry        ",
             country = NutsCountry(id = "CO", title = ""))
-        val regions1 = slot<Iterable<NutsRegion1>>()
-        verify { nutsRegion1Repository.saveAll(capture(regions1)) }
-        assertThat(regions1.captured).containsExactlyElementsOf(setOf(expectedRegion1))
+        val expectedRegion1Extended = NutsRegion1(
+            id = "EX0",
+            title = "Extended Reg1 Name",
+            country = NutsCountry(id = "EX", title = ""))
+        assertThat(regions1.reduce { x, y -> x union y }).containsExactlyInAnyOrder(
+            expectedRegion1,
+            expectedRegion1Extended,
+        )
 
         val region1 = NutsRegion1(
             id = "CO0",
             title = "",
             country = NutsCountry(id = "CO", title = ""))
-        val regions2 = slot<Iterable<NutsRegion2>>()
-        verify { nutsRegion2Repository.saveAll(capture(regions2)) }
-        assertThat(regions2.captured).containsExactlyElementsOf(
-            setOf(
-                NutsRegion2(id = "CO01", title = "Country West", region1 = region1),
-                NutsRegion2(id = "CO02", title = "Country North", region1 = region1),
-                NutsRegion2(id = "CO0E", title = "Country East", region1 = region1)
-            )
+        val region1Extended = NutsRegion1(
+            id = "EX0",
+            title = "",
+            country = NutsCountry(id = "EX", title = "")
+        )
+        assertThat(regions2.reduce { x, y -> x union y }).containsExactlyInAnyOrder(
+            NutsRegion2(id = "EX0A", title = "Extended Reg2 Name", region1 = region1Extended),
+            NutsRegion2(id = "CO01", title = "Country West", region1 = region1),
+            NutsRegion2(id = "CO02", title = "Country North", region1 = region1),
+            NutsRegion2(id = "CO0E", title = "Country East", region1 = region1)
         )
 
-        val regions3 = slot<Iterable<NutsRegion3>>()
-        verify { nutsRegion3Repository.saveAll(capture(regions3)) }
-        assertThat(regions3.captured).containsExactlyElementsOf(
-            setOf(
-                NutsRegion3(id = "CO010", title = "West 01", region2 = getRegion2("CO01", region1)),
-                NutsRegion3(id = "CO021", title = "North 01", region2 = getRegion2("CO02", region1)),
-                NutsRegion3(id = "CO0E1", title = "East 01", region2 = getRegion2("CO0E", region1)),
-                NutsRegion3(id = "CO0E2", title = "East 02", region2 = getRegion2("CO0E", region1)),
-                NutsRegion3(id = "CO0E3", title = "East 03", region2 = getRegion2("CO0E", region1))
-            )
+        assertThat(regions3.reduce { x, y -> x union y }).containsExactlyInAnyOrder(
+            NutsRegion3(id = "EX0A1", title = "Extended Reg3 Name", region2 = getRegion2("EX0A", region1Extended)),
+            NutsRegion3(id = "CO010", title = "West 01", region2 = getRegion2("CO01", region1)),
+            NutsRegion3(id = "CO021", title = "North 01", region2 = getRegion2("CO02", region1)),
+            NutsRegion3(id = "CO0E1", title = "East 01", region2 = getRegion2("CO0E", region1)),
+            NutsRegion3(id = "CO0E2", title = "East 02", region2 = getRegion2("CO0E", region1)),
+            NutsRegion3(id = "CO0E3", title = "East 03", region2 = getRegion2("CO0E", region1))
         )
 
         val audit1 = slot<AuditCandidate>()

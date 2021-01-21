@@ -1,0 +1,5 @@
+CNTR_CODE,NUTS_ID,NAME_LATN,NUTS_NAME,MOUNT_TYPE,URBN_TYPE,COAST_TYPE
+EX,EX,Extended Country Name,Extended Country Name localized,,,
+EX,EX0,Extended Reg1 Name,Extended Reg1 Name localized,,,
+EX,EX0A,Extended Reg2 Name,Extended Reg2 Name localized,,,
+EX,EX0A1,Extended Reg3 Name,Extended Reg3 Name localized,,,
