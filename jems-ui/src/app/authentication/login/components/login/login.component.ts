@@ -23,7 +23,7 @@ export class LoginComponent extends AbstractForm {
 
   registerLink = '/no-auth/register';
 
-  constructor(private formBuilder: FormBuilder,
+  constructor(private readonly formBuilder: FormBuilder,
               protected changeDetectorRef: ChangeDetectorRef) {
     super(changeDetectorRef);
     const today = new Date();

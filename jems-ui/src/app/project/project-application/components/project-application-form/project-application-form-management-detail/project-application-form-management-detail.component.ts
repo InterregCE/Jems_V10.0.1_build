@@ -16,6 +16,7 @@ import {takeUntil, tap} from 'rxjs/operators';
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class ProjectApplicationFormManagementDetailComponent extends BaseComponent implements OnInit {
+  private static readonly TEXT_TOO_LONG = 'project.application.form.management.entered.text.size.too.long';
 
   // TODO: remove these and adapt the component to save independently
   @Input()
@@ -50,22 +51,22 @@ export class ProjectApplicationFormManagementDetailComponent extends BaseCompone
   });
 
   coordinationErrors = {
-    maxlength: 'project.application.form.management.entered.text.size.too.long'
+    maxlength: ProjectApplicationFormManagementDetailComponent.TEXT_TOO_LONG
   };
   qualityErrors = {
-    maxlength: 'project.application.form.management.entered.text.size.too.long'
+    maxlength: ProjectApplicationFormManagementDetailComponent.TEXT_TOO_LONG
   };
   communicationErrors = {
-    maxlength: 'project.application.form.management.entered.text.size.too.long'
+    maxlength: ProjectApplicationFormManagementDetailComponent.TEXT_TOO_LONG
   };
   financialErrors = {
-    maxlength: 'project.application.form.management.entered.text.size.too.long'
+    maxlength: ProjectApplicationFormManagementDetailComponent.TEXT_TOO_LONG
   };
   criteriaErrors = {
-    maxlength: 'project.application.form.management.entered.text.size.too.long'
+    maxlength: ProjectApplicationFormManagementDetailComponent.TEXT_TOO_LONG
   };
   principleErrors = {
-    maxlength: 'project.application.form.management.entered.text.size.too.long'
+    maxlength: ProjectApplicationFormManagementDetailComponent.TEXT_TOO_LONG
   };
 
   constructor(private formBuilder: FormBuilder,

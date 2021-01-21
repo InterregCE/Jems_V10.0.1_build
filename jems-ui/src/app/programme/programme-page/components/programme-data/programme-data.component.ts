@@ -23,6 +23,7 @@ import {Tools} from '../../../../common/utils/tools';
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class ProgrammeDataComponent extends ViewEditForm implements OnInit {
+  private static readonly DATE_SHOULD_BE_VALID = 'common.date.should.be.valid';
   Permission = Permission;
   tools = Tools;
 
@@ -79,16 +80,16 @@ export class ProgrammeDataComponent extends ViewEditForm implements OnInit {
   };
 
   dateErrors = {
-    matDatepickerParse: 'common.date.should.be.valid'
+    matDatepickerParse: ProgrammeDataComponent.DATE_SHOULD_BE_VALID,
   };
 
   eligibleFromErrors = {
-    matDatepickerParse: 'common.date.should.be.valid',
+    matDatepickerParse: ProgrammeDataComponent.DATE_SHOULD_BE_VALID,
     matDatepickerMax: 'programme.eligibleFrom.must.be.before.eligibleUntil',
   };
 
   eligibleUntilErrors = {
-    matDatepickerParse: 'common.date.should.be.valid',
+    matDatepickerParse: ProgrammeDataComponent.DATE_SHOULD_BE_VALID,
     matDatepickerMin: 'programme.eligibleUntil.must.be.after.eligibleFrom',
   };
 

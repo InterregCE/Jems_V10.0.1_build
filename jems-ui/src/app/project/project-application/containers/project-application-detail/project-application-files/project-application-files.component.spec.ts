@@ -9,6 +9,7 @@ import {Permission} from '../../../../../security/permissions/permission';
 import {ProjectStore} from '../services/project-store.service';
 
 describe('ProjectApplicationFilesComponent', () => {
+  const URL = '//api/project/1/file?fileType=APPLICANT_FILE&page=0&size=25&sort=id,desc';
   let component: ProjectApplicationFilesComponent;
   let fixture: ComponentFixture<ProjectApplicationFilesComponent>;
   let httpTestingController: HttpTestingController;
@@ -50,7 +51,7 @@ describe('ProjectApplicationFilesComponent', () => {
     httpTestingController.expectOne({method: 'GET', url: '//api/project/1'}).flush({id: 1});
     httpTestingController.match({
       method: 'GET',
-      url: '//api/project/1/file?fileType=APPLICANT_FILE&page=0&size=25&sort=id,desc'
+      url: URL
     }).forEach(req => req.flush({content: users}));
 
     tick();
@@ -62,7 +63,7 @@ describe('ProjectApplicationFilesComponent', () => {
     // initial sort and page
     httpTestingController.expectOne({
       method: 'GET',
-      url: '//api/project/1/file?fileType=APPLICANT_FILE&page=0&size=25&sort=id,desc'
+      url: URL
     });
 
     // change sorting
@@ -95,7 +96,7 @@ describe('ProjectApplicationFilesComponent', () => {
     httpTestingController.match({method: 'GET', url: `//api/auth/current`});
     httpTestingController.expectOne({
       method: 'GET',
-      url: '//api/project/1/file?fileType=APPLICANT_FILE&page=0&size=25&sort=id,desc'
+      url: URL
     });
     httpTestingController.expectOne({method: 'DELETE', url: '//api/project/1/file/1'});
 
@@ -108,7 +109,7 @@ describe('ProjectApplicationFilesComponent', () => {
     httpTestingController.match({method: 'GET', url: `//api/auth/current`});
     httpTestingController.expectOne({
       method: 'GET',
-      url: '//api/project/1/file?fileType=APPLICANT_FILE&page=0&size=25&sort=id,desc'
+      url: URL
     });
     httpTestingController.expectOne({method: 'PUT', url: '//api/project/1/file/1/description'});
 
