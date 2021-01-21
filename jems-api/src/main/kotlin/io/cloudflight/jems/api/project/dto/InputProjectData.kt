@@ -20,9 +20,6 @@ data class InputProjectData(
     val duration: Int? = null,
 
     @field:Size(max = 2000, message = "project.intro.size.too.long")
-    val intro: String? = null,
-
-    @field:Size(max = 2000, message = "project.introProgrammeLanguage.size.too.long")
-    val introProgrammeLanguage: String? = null
+    val intro: Set<InputTranslation> = emptySet()
 
 )

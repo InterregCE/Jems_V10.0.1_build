@@ -11,5 +11,9 @@ data class ProjectTransl(
     val translationId: TranslationId,
 
     @Column
-    val title: String? = null
+    val title: String? = null,
+
+    @Column
+    val intro: String? = null
+
 )

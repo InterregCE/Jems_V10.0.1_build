@@ -68,22 +68,24 @@ fun ProjectEntity.toApplicantAndStatus() = ProjectApplicantAndStatus(
 
 fun InputProjectData.toEntity(projectId: Long) = ProjectData(
     duration = duration,
-    intro = intro,
-    introProgrammeLanguage = introProgrammeLanguage,
-    translatedValues = combineTranslatedValuesProject(projectId, title)
+    translatedValues = combineTranslatedValuesProject(projectId, title, intro)
 )
 
 fun combineTranslatedValuesProject(
     projectId: Long,
-    title: Set<InputTranslation>
+    title: Set<InputTranslation>,
+    intro: Set<InputTranslation>
 ): Set<ProjectTransl> {
     val titleMap = title.associateBy({ it.language }, { it.translation })
+    val introMap = intro.associateBy({ it.language }, { it.translation })
     val languages = titleMap.keys.toMutableSet()
+    languages.addAll(introMap.keys)
 
     return languages.mapTo(HashSet()) {
         ProjectTransl(
             TranslationId(projectId, it),
-            titleMap[it]
+            titleMap[it],
+            introMap[it]
         )
     }
 }
@@ -92,9 +94,10 @@ fun ProjectData.toOutputProjectData(priorityPolicy: ProgrammePriorityPolicy?) = 
     title = translatedValues.mapTo(HashSet()) {
         InputTranslation(it.translationId.language, it.title)
     },
+    intro = translatedValues.mapTo(HashSet()) {
+        InputTranslation(it.translationId.language, it.intro)
+    },
     duration = duration,
-    intro = intro,
-    introProgrammeLanguage = introProgrammeLanguage,
     specificObjective = priorityPolicy?.toOutputProgrammePriorityPolicy(),
     programmePriority = priorityPolicy?.programmePriority?.toOutputProgrammePrioritySimple()
 )

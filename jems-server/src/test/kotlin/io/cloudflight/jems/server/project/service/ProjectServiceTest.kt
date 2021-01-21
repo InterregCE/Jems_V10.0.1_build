@@ -294,8 +294,7 @@ class ProjectServiceTest {
         acronym = "new acronym",
         title = setOf(InputTranslation(SystemLanguage.EN, "title")),
         duration = 15,
-        intro = null,
-        introProgrammeLanguage = "english text",
+        intro = setOf(InputTranslation(SystemLanguage.EN, "intro")),
         specificObjective = AdvancedTechnologies
     )
 
@@ -325,7 +324,6 @@ class ProjectServiceTest {
             title = projectData.title,
             duration = projectData.duration,
             intro = projectData.intro,
-            introProgrammeLanguage = projectData.introProgrammeLanguage,
             specificObjective = OutputProgrammePriorityPolicySimple(programmeObjectivePolicy = HealthcareAcrossBorders, code = "HAB"),
             programmePriority = null
         )
@@ -382,7 +380,6 @@ class ProjectServiceTest {
             title = projectData.title,
             duration = projectData.duration,
             intro = projectData.intro,
-            introProgrammeLanguage = projectData.introProgrammeLanguage,
             specificObjective = null,
             programmePriority = null
         )

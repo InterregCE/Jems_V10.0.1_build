@@ -11,12 +11,7 @@ data class ProjectData(
     @Column
     val duration: Int? = null,
 
-    @Column
-    val intro: String? = null,
-
-    @Column
-    val introProgrammeLanguage: String? = null,
-
+    // title, intro
     @OneToMany(cascade = [CascadeType.ALL], orphanRemoval = true, mappedBy = "translationId.projectId")
     val translatedValues: Set<ProjectTransl> = emptySet()
 
