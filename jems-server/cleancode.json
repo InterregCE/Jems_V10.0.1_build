@@ -1,0 +1,8 @@
+{
+  "suppressedIssues": [
+    {
+      "hash": "3d13b6fa",
+      "reason": "ProjectPartnerBudgetController.updateBudgetEquipment calls updateBudgetEquipmentCosts.updateBudgetGeneralCosts, which is part of a complex inheritance structure and ArchUnit falsly believes that two methods are being called there (the interface and the abstract class, which is also @Transactional. While this inheritance structure is probably not the best solution, this here is a false positive to the rule archunit.spring.tx.controller-methods-should-not-access-more-than-one-transactional-method"
+    }
+  ]
+}
