@@ -26,7 +26,7 @@ class SecurityConfig(val emsUserDetailsService: EmsUserDetailsService, val passw
 
     companion object {
         private val WHITELIST = arrayOf(
-            "/api/auth/**"
+            "/api/auth/**",
         )
     }
 
@@ -43,7 +43,7 @@ class SecurityConfig(val emsUserDetailsService: EmsUserDetailsService, val passw
             .httpBasic()
             // this exception handling automatically dismiss default browser "Sign in" pop-up for Basic auth
             .and()
-            .exceptionHandling().authenticationEntryPoint { httpServletRequest, httpServletResponse, authException -> run {
+            .exceptionHandling().authenticationEntryPoint { _, httpServletResponse, authException -> run {
                 httpServletResponse.setHeader("WWW-Authenticate", "FormBased")
                 httpServletResponse.sendError(HttpServletResponse.SC_UNAUTHORIZED, authException.message)
             } }

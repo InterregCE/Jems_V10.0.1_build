@@ -8,14 +8,14 @@ dependencies {
     // platform-server-config is used for enabling built-in spring-actuators and to extract version details during build
     implementation('io.cloudflight.platform:platform-server-config')
 
-    runtimeOnly('com.fasterxml.jackson.module:jackson-module-kotlin')
+    runtimeOnly('io.cloudflight.platform:platform-json')
     runtimeOnly('org.flywaydb:flyway-core')
 
     implementation('org.springframework.boot:spring-boot-actuator')
     implementation('org.springframework.boot:spring-boot-devtools')
     implementation('org.springframework.boot:spring-boot-starter-security')
     implementation('org.springframework.boot:spring-boot-starter-web')
-    implementation('org.springframework.boot:spring-boot-starter-data-jpa')
+    implementation('io.cloudflight.platform:platform-jpa')
     implementation('org.springframework.boot:spring-boot-starter-validation')
 
     implementation('com.fasterxml.jackson.datatype:jackson-datatype-jsr310')

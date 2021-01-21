@@ -5,7 +5,6 @@ import io.cloudflight.jems.server.common.exception.I18nFieldError
 import io.cloudflight.jems.server.common.exception.I18nValidationError
 import io.cloudflight.jems.server.common.exception.I18nValidationException
 import io.cloudflight.jems.server.common.exception.ResourceNotFoundException
-import org.hibernate.exception.ConstraintViolationException
 import org.springframework.core.NestedRuntimeException
 import org.springframework.expression.ExpressionInvocationTargetException
 import org.springframework.http.HttpHeaders
@@ -63,7 +62,6 @@ class GlobalExceptionHandler : ResponseEntityExceptionHandler() {
 
     @ExceptionHandler(NestedRuntimeException::class)
     fun nestedRuntimeExceptionTransformer(exception: NestedRuntimeException): ResponseEntity<I18nValidationError> {
-        getI18nErrorIfConstraintViolation(exception)?.let { return ResponseEntity.unprocessableEntity().body(it) }
         if (!DB_ERROR_WHITE_LIST.contains(exception.rootCause?.message))
             throw exception
 
@@ -75,28 +73,6 @@ class GlobalExceptionHandler : ResponseEntityExceptionHandler() {
                     i18nKey = exception.rootCause?.message
                 )
             )
-    }
-
-    /**
-     * This is fall-back solution for MariaDB unique constraint handling.
-     * MariaDB does not support transactions during batch processing, so UNIQUE constraint is not checked before commit,
-     * but is checked before every insert/update on each row.
-     *
-     * This handler provides us with at least a small amount of info why such problem occurred.
-     */
-    private fun getI18nErrorIfConstraintViolation(exception: NestedRuntimeException): I18nValidationError? {
-        val message = exception.rootCause?.message ?: ""
-        val cause = exception.cause
-        if (message.startsWith("Duplicate entry") && cause is ConstraintViolationException) {
-            return I18nValidationError(
-                httpStatus = HttpStatus.UNPROCESSABLE_ENTITY,
-                i18nFieldErrors = mapOf(cause.constraintName to I18nFieldError(
-                    i18nKey = "${cause.constraintName}.already.in.use",
-                    i18nArguments = """Duplicate entry '(.*?)'.*""".toRegex().find(message)?.groups?.get(1)?.value?.let { listOf(it) }
-                ))
-            )
-        }
-        return null
     }
 
     @ExceptionHandler(I18nValidationException::class)
