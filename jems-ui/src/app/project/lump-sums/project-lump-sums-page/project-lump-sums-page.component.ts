@@ -186,15 +186,23 @@ export class ProjectLumpSumsPageComponent implements OnInit {
       this.formService.reset$.pipe(startWith(null)),
       this.pageStore.projectLumpSums$,
       this.pageStore.projectCallLumpSums$,
-      this.pageStore.partners$
+      this.pageStore.partners$,
+      this.pageStore.projectPeriods$
     ]).pipe(
-      tap(([, projectLumpSums, projectCallLumpSums, partners]) => this.resetForm(projectLumpSums, projectCallLumpSums, partners)),
+      tap(([, projectLumpSums, projectCallLumpSums, partners, periods]) =>
+        this.resetForm(projectLumpSums, projectCallLumpSums, partners, periods)),
       untilDestroyed(this)
     ).subscribe();
   }
 
-  private resetForm(projectLumpSums: ProjectLumpSum[], projectCallLumpSums: ProgrammeLumpSum[], partners: ProjectPartner[]): void {
+  private resetForm(
+    projectLumpSums: ProjectLumpSum[],
+    projectCallLumpSums: ProgrammeLumpSum[],
+    partners: ProjectPartner[],
+    periods: ProjectPeriod[]
+  ): void {
     this.items.clear();
+    const periodNumbers = [0].concat(periods.map(period => period.periodNumber));
     projectLumpSums.forEach(projectLumpSum => {
       const lumpSum = projectCallLumpSums.find(it => it.id === projectLumpSum.programmeLumpSumId);
       const rowSum = this.calculateRowSum(projectLumpSum.lumpSumContributions.map(it => it.amount));
@@ -202,7 +210,7 @@ export class ProjectLumpSumsPageComponent implements OnInit {
         rowId: Math.random() * 1000,
         id: projectLumpSum.id,
         lumpSum: [lumpSum, Validators.required],
-        periodNumber: [projectLumpSum.period],
+        periodNumber: periodNumbers.includes(projectLumpSum.period) ? projectLumpSum.period : null,
         partnersContribution: this.formBuilder.array(partners.map(partner => this.formBuilder.group({
           partnerId: partner.id,
           amount: projectLumpSum.lumpSumContributions.find(contribution => contribution.partnerId === partner.id)?.amount || 0
