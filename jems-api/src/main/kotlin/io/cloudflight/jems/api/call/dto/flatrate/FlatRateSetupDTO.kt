@@ -5,5 +5,5 @@ data class FlatRateSetupDTO (
     val officeAndAdministrationOnStaffCostsFlatRate: FlatRateDTO? = null,
     val officeAndAdministrationOnOtherCostsFlatRateSetup: FlatRateDTO? = null,
     val travelAndAccommodationOnStaffCostsFlatRateSetup: FlatRateDTO? = null,
-    val otherCostsOnStaffCostsFlatRateSetup: FlatRateDTO? = null,
+    val otherCostsOnStaffCostsFlatRateSetup: FlatRateDTO? = null
 )

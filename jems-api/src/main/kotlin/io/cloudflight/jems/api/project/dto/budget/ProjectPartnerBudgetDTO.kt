@@ -17,5 +17,5 @@ data class ProjectPartnerBudgetDTO(
     val totalSum: BigDecimal = BigDecimal.ZERO,
 
     val lumpSumContribution: BigDecimal = BigDecimal.ZERO,
-    val unitCosts: BigDecimal = BigDecimal.ZERO,
+    val unitCosts: BigDecimal = BigDecimal.ZERO
 )

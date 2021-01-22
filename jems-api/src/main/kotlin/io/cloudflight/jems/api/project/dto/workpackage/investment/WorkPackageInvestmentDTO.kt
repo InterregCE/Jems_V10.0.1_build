@@ -16,5 +16,5 @@ data class WorkPackageInvestmentDTO(
     val documentation: Set<InputTranslation> = emptySet(),
     val ownershipSiteLocation: Set<InputTranslation> = emptySet(),
     val ownershipRetain: Set<InputTranslation> = emptySet(),
-    val ownershipMaintenance: Set<InputTranslation> = emptySet(),
+    val ownershipMaintenance: Set<InputTranslation> = emptySet()
 )

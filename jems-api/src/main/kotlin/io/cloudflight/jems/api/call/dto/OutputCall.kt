@@ -21,5 +21,5 @@ data class OutputCall (
     val description: String? = null,
     val flatRates: FlatRateSetupDTO,
     val lumpSums: List<ProgrammeLumpSumDTO> = emptyList(),
-    val unitCosts: List<ProgrammeUnitCostDTO> = emptyList(),
+    val unitCosts: List<ProgrammeUnitCostDTO> = emptyList()
 )

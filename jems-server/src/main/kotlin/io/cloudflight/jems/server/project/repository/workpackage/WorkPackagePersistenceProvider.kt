@@ -26,7 +26,7 @@ class WorkPackagePersistenceProvider(
     @Transactional
     override fun updateWorkPackageOutputs(
         workPackageId: Long,
-        workPackageOutputs: List<WorkPackageOutput>,
+        workPackageOutputs: List<WorkPackageOutput>
     ): List<WorkPackageOutput> {
         val workPackage = getWorkPackageOrThrow(workPackageId)
         val outputsToSave = mutableListOf<WorkPackageOutputEntity>()

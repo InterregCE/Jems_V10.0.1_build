@@ -7,5 +7,5 @@ data class InputProjectCooperationCriteria (
     val projectJointDevelopment: Boolean = false,
     val projectJointImplementation: Boolean = false,
     val projectJointStaffing: Boolean = false,
-    val projectJointFinancing: Boolean = false,
+    val projectJointFinancing: Boolean = false
 )

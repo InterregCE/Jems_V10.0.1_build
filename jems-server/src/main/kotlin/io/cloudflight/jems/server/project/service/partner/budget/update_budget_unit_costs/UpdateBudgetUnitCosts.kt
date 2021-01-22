@@ -6,7 +6,6 @@ import io.cloudflight.jems.server.project.service.ProjectPersistence
 import io.cloudflight.jems.server.project.service.partner.ProjectPartnerService
 import io.cloudflight.jems.server.project.service.partner.budget.ProjectPartnerBudgetOptionsPersistence
 import io.cloudflight.jems.server.project.service.partner.budget.ProjectPartnerBudgetPersistence
-import io.cloudflight.jems.server.project.service.partner.budget.truncate
 import io.cloudflight.jems.server.project.service.partner.model.BudgetUnitCostEntry
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
@@ -17,7 +16,7 @@ class UpdateBudgetUnitCosts(
     private val projectPersistence: ProjectPersistence,
     private val projectPartnerService: ProjectPartnerService,
     private val budgetCostEntriesValidator: BudgetUnitCostEntriesValidator,
-    private val budgetOptionsPersistence: ProjectPartnerBudgetOptionsPersistence,
+    private val budgetOptionsPersistence: ProjectPartnerBudgetOptionsPersistence
 ) : UpdateBudgetUnitCostsInteractor {
 
     @Transactional

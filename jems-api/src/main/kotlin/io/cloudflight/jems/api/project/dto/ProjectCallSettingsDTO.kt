@@ -13,5 +13,5 @@ data class ProjectCallSettingsDTO (
     val lengthOfPeriod: Int,
     val flatRates: FlatRateSetupDTO,
     val lumpSums: List<ProgrammeLumpSumDTO>,
-    val unitCosts: List<ProgrammeUnitCostDTO>,
+    val unitCosts: List<ProgrammeUnitCostDTO>
 )

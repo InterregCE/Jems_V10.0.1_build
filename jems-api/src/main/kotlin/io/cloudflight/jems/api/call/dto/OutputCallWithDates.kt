@@ -9,5 +9,5 @@ data class OutputCallWithDates (
     val startDate: ZonedDateTime,
     val endDate: ZonedDateTime,
     val lengthOfPeriod: Int,
-    val flatRates: FlatRateSetupDTO,
+    val flatRates: FlatRateSetupDTO
 )

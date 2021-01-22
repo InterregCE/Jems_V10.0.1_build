@@ -56,7 +56,7 @@ interface ProjectWorkPackageInvestmentApi {
     @DeleteMapping("/forWorkPackage/{workPackageId}/{investmentId}")
     fun deleteWorkPackageInvestment(
         @PathVariable workPackageId: Long,
-        @PathVariable investmentId: Long,
+        @PathVariable investmentId: Long
     )
 
 }

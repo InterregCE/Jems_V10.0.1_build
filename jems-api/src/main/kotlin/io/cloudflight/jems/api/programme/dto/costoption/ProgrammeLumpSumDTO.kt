@@ -10,5 +10,5 @@ data class ProgrammeLumpSumDTO(
     val cost: BigDecimal? = null,
     val splittingAllowed: Boolean,
     val phase: ProgrammeLumpSumPhase? = null,
-    val categories: Set<BudgetCategory> = emptySet(),
+    val categories: Set<BudgetCategory> = emptySet()
 )

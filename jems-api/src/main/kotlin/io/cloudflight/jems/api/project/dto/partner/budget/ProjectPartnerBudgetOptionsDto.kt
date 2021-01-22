@@ -4,5 +4,5 @@ data class ProjectPartnerBudgetOptionsDto(
     val officeAndAdministrationOnStaffCostsFlatRate: Int? = null,
     val travelAndAccommodationOnStaffCostsFlatRate: Int? = null,
     val staffCostsFlatRate: Int? = null,
-    val otherCostsOnStaffCostsFlatRate: Int? = null,
+    val otherCostsOnStaffCostsFlatRate: Int? = null
 )
