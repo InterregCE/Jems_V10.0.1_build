@@ -1,10 +1,13 @@
 package io.cloudflight.jems.server.project.service.partner.cofinancing
 
+import io.cloudflight.jems.api.project.dto.cofinancing.ProjectPartnerBudgetCoFinancingDTO
 import io.cloudflight.jems.api.project.dto.partner.cofinancing.ProjectPartnerCoFinancingAndContributionOutputDTO
 import io.cloudflight.jems.api.project.dto.partner.cofinancing.ProjectPartnerCoFinancingInputDTO
 import io.cloudflight.jems.api.project.dto.partner.cofinancing.ProjectPartnerCoFinancingOutputDTO
 import io.cloudflight.jems.api.project.dto.partner.cofinancing.ProjectPartnerContributionDTO
 import io.cloudflight.jems.server.programme.service.toDto
+import io.cloudflight.jems.server.project.controller.partner.toOutputProjectPartner
+import io.cloudflight.jems.server.project.service.cofinancing.model.PartnerBudgetCoFinancing
 import io.cloudflight.jems.server.project.service.partner.cofinancing.model.ProjectPartnerCoFinancing
 import io.cloudflight.jems.server.project.service.partner.cofinancing.model.ProjectPartnerCoFinancingAndContribution
 import io.cloudflight.jems.server.project.service.partner.cofinancing.model.ProjectPartnerContribution
@@ -38,6 +41,15 @@ fun ProjectPartnerCoFinancing.toDto() = ProjectPartnerCoFinancingOutputDTO(
     percentage = percentage,
     fund = fund?.toDto()
 )
+
+fun PartnerBudgetCoFinancing.toProjectPartnerBudgetCoFinancingDTO() = ProjectPartnerBudgetCoFinancingDTO(
+    partner = partner?.toOutputProjectPartner(),
+    projectPartnerCoFinancingAndContributionOutputDTO = projectPartnerCoFinancingAndContribution?.toDto(),
+    total = total
+)
+
+fun Collection<PartnerBudgetCoFinancing>.toProjectPartnerBudgetDTO() = map { it.toProjectPartnerBudgetCoFinancingDTO() }
+    .sortedBy { it.partner?.sortNumber }
 
 fun Collection<ProjectPartnerCoFinancing>.toCoFinancingDto() = map { it.toDto() }
     .sortedWith(compareBy({ it.fund == null }, { it.id }))

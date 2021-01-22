@@ -6,6 +6,7 @@ import io.cloudflight.jems.api.project.dto.InputProjectData
 import io.cloudflight.jems.api.project.dto.OutputProject
 import io.cloudflight.jems.api.project.dto.OutputProjectSimple
 import io.cloudflight.jems.api.project.dto.budget.ProjectPartnerBudgetDTO
+import io.cloudflight.jems.api.project.dto.cofinancing.ProjectPartnerBudgetCoFinancingDTO
 import io.swagger.annotations.Api
 import io.swagger.annotations.ApiImplicitParam
 import io.swagger.annotations.ApiImplicitParams
@@ -53,5 +54,9 @@ interface ProjectApi {
     @ApiOperation("Returns project budget for all partners")
     @GetMapping("/{projectId}/budget")
     fun getProjectBudget(@PathVariable projectId: Long): List<ProjectPartnerBudgetDTO>
+
+    @ApiOperation("Returns project co-financing for all partners")
+    @GetMapping("/{projectId}/coFinancing")
+    fun getProjectCoFinancing(@PathVariable projectId: Long): List<ProjectPartnerBudgetCoFinancingDTO>
 
 }
