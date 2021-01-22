@@ -7,6 +7,6 @@ data class IndicatorOutputDto (
     val code: String?,
     val name: String,
     val programmePriorityCode: String?,
-    val measurementUnit: String?,
+    val measurementUnit: String?
 
 )

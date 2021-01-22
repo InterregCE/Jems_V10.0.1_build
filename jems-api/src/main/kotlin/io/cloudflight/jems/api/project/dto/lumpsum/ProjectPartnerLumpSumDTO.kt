@@ -4,5 +4,5 @@ import java.math.BigDecimal
 
 data class ProjectPartnerLumpSumDTO (
     val partnerId: Long,
-    val amount: BigDecimal = BigDecimal.ZERO,
+    val amount: BigDecimal = BigDecimal.ZERO
 )

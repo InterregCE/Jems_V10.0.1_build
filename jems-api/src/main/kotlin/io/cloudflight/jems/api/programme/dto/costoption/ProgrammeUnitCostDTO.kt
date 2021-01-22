@@ -8,5 +8,5 @@ data class ProgrammeUnitCostDTO(
     val description: String? = null,
     val type: String? = null,
     val costPerUnit: BigDecimal? = null,
-    val categories: Set<BudgetCategory> = emptySet(),
+    val categories: Set<BudgetCategory> = emptySet()
 )

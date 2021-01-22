@@ -27,6 +27,6 @@ data class WorkPackageOutputEntity(
     val targetValue: String? = null,
 
     @OneToMany(cascade = [CascadeType.ALL], orphanRemoval = true, mappedBy = "translationId.workPackageOutputId")
-    val translatedValues: Set<WorkPackageOutputTransl> = emptySet(),
+    val translatedValues: Set<WorkPackageOutputTransl> = emptySet()
 
-    )
+)

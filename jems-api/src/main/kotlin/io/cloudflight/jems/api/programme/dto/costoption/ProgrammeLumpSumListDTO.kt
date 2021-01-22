@@ -5,5 +5,5 @@ import java.math.BigDecimal
 data class ProgrammeLumpSumListDTO(
     val id: Long? = null,
     val name: String? = null,
-    val cost: BigDecimal? = null,
+    val cost: BigDecimal? = null
 )
