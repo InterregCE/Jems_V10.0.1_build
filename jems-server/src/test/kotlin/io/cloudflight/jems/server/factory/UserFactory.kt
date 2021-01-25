@@ -8,7 +8,7 @@ import io.cloudflight.jems.server.authentication.model.ADMINISTRATOR
 import io.cloudflight.jems.server.authentication.model.APPLICANT_USER
 import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.stereotype.Component
-import javax.transaction.Transactional
+import org.springframework.transaction.annotation.Transactional
 
 @Component
 class UserFactory(

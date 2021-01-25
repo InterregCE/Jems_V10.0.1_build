@@ -15,6 +15,8 @@ import {Log} from '../../../../../common/utils/log';
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class UserEditComponent extends ViewEditForm {
+  private static readonly USER_NAME_WRONG_SIZE = 'user.name.wrong.size';
+  private static readonly USER_SURNAME_WRONG_SIZE = 'user.surname.wrong.size';
   Permission = Permission;
 
   @Input()
@@ -46,15 +48,15 @@ export class UserEditComponent extends ViewEditForm {
   });
 
   nameErrors = {
-    maxlength: 'user.name.wrong.size',
-    minlength: 'user.name.wrong.size',
-    required: 'user.name.wrong.size',
+    maxlength: UserEditComponent.USER_NAME_WRONG_SIZE,
+    minlength: UserEditComponent.USER_NAME_WRONG_SIZE,
+    required: UserEditComponent.USER_NAME_WRONG_SIZE,
   };
 
   surnameErrors = {
-    maxlength: 'user.surname.wrong.size',
-    minlength: 'user.surname.wrong.size',
-    required: 'user.surname.wrong.size'
+    maxlength: UserEditComponent.USER_SURNAME_WRONG_SIZE,
+    minlength: UserEditComponent.USER_SURNAME_WRONG_SIZE,
+    required: UserEditComponent.USER_SURNAME_WRONG_SIZE,
   };
 
   emailErrors = {

@@ -513,7 +513,6 @@ $rfs-breakpoint-unit-cache: unit($rfs-breakpoint);
 
 :host {
   display: inline-block;
-  background-color: var(--app-bar);
   background: linear-gradient(157deg, var(--app-bar) 0%, var(--background-lighter) 100%);
 }
 

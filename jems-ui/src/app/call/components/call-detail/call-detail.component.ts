@@ -18,6 +18,9 @@ import {CallPageSidenavService} from '../../services/call-page-sidenav.service';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class CallDetailComponent implements OnInit {
+  private static readonly DATE_SHOULD_BE_VALID = 'common.date.should.be.valid';
+  private static readonly CALL_INVALID_PERIOD = 'call.lengthOfPeriod.invalid.period';
+
   static ID = 'CallDetailComponent';
   tools = Tools;
 
@@ -32,12 +35,12 @@ export class CallDetailComponent implements OnInit {
 
   startDateErrors = {
     required: 'call.startDate.unknown',
-    matDatetimePickerParse: 'common.date.should.be.valid',
+    matDatetimePickerParse: CallDetailComponent.DATE_SHOULD_BE_VALID,
     matDatetimePickerMax: 'call.startDate.must.be.before.endDate',
   };
   endDateErrors = {
     required: 'call.endDate.unknown',
-    matDatetimePickerParse: 'common.date.should.be.valid',
+    matDatetimePickerParse: CallDetailComponent.DATE_SHOULD_BE_VALID,
     matDatetimePickerMin: 'call.endDate.must.be.after.startDate',
   };
   nameErrors = {
@@ -49,8 +52,8 @@ export class CallDetailComponent implements OnInit {
   };
   lengthOfPeriodErrors = {
     required: 'call.lengthOfPeriod.unknown',
-    max: 'call.lengthOfPeriod.invalid.period',
-    min: 'call.lengthOfPeriod.invalid.period',
+    max: CallDetailComponent.CALL_INVALID_PERIOD,
+    min: CallDetailComponent.CALL_INVALID_PERIOD,
   };
   published = false;
 

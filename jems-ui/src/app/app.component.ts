@@ -19,7 +19,7 @@ export class AppComponent extends BaseComponent {
 
   constructor(public translate: TranslateService,
               public themeService: ThemeService,
-              private titleService: Title) {
+              private readonly titleService: Title) {
     super();
     this.titleService.setTitle('Jems');
     themeService.$currentTheme

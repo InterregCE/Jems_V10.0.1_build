@@ -55,6 +55,16 @@
       "trace"
     ],
     "no-empty": false,
+    "no-implicit-dependencies": [
+      true,
+      [
+        "src",
+        "@cat/api",
+        "@common/components",
+        "@common/validation"
+      ],
+      "dev"
+    ],
     "no-inferrable-types": [
       true,
       "ignore-params"

@@ -8,22 +8,22 @@ export class ProgrammePageSidenavService {
 
   private indicatorsPage = {
     headline: {i18nKey: 'programme.tab.indicators'},
-    route: '/app/programme/indicators'
+    route: `${ProgrammePageSidenavService.PROGRAMME_DETAIL_PATH}/indicators`
   };
 
   private prioritiesPage = {
     headline: {i18nKey: 'programme.tab.priority'},
-    route: '/app/programme/priorities',
+    route: `${ProgrammePageSidenavService.PROGRAMME_DETAIL_PATH}/priorities`,
   };
 
   private languagesPage = {
     headline: {i18nKey: 'programme.tab.languages'},
-    route: '/app/programme/languages',
+    route: `${ProgrammePageSidenavService.PROGRAMME_DETAIL_PATH}/languages`,
   };
 
   private costsPage = {
     headline: {i18nKey: 'programme.tab.costs.option'},
-    route: '/app/programme/costs'
+    route: `${ProgrammePageSidenavService.PROGRAMME_DETAIL_PATH}/costs`
   };
 
   constructor(private sideNavService: SideNavService) {
@@ -36,28 +36,28 @@ export class ProgrammePageSidenavService {
         bullets: [
           {
             headline: {i18nKey: 'programme.tab.data'},
-            route: '/app/programme',
+            route: ProgrammePageSidenavService.PROGRAMME_DETAIL_PATH,
             scrollToTop: true
           },
           {
             headline: {i18nKey: 'programme.fund.list.title'},
             scrollRoute: 'funds',
-            route: '/app/programme',
+            route: ProgrammePageSidenavService.PROGRAMME_DETAIL_PATH,
           },
           this.languagesPage,
           this.prioritiesPage,
           {
             headline: {i18nKey: 'programme.tab.area'},
-            route: '/app/programme/areas',
+            route: `${ProgrammePageSidenavService.PROGRAMME_DETAIL_PATH}/areas`,
           },
           this.indicatorsPage,
           {
             headline: {i18nKey: 'programme.tab.strategies'},
-            route: '/app/programme/strategies',
+            route: `${ProgrammePageSidenavService.PROGRAMME_DETAIL_PATH}/strategies`,
           },
           {
             headline: {i18nKey: 'programme.tab.legal.status'},
-            route: '/app/programme/legalStatus',
+            route: `${ProgrammePageSidenavService.PROGRAMME_DETAIL_PATH}/legalStatus`,
           },
           this.costsPage
         ]

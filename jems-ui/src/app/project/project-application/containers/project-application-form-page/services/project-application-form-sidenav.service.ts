@@ -12,6 +12,7 @@ import {ProjectStore} from '../../project-application-detail/services/project-st
 
 @Injectable()
 export class ProjectApplicationFormSidenavService {
+  private static readonly PROJECT_DETAIL_URL = '/app/project/detail';
 
   private projectId$ = this.projectStore.getProject()
     .pipe(
@@ -107,7 +108,7 @@ export class ProjectApplicationFormSidenavService {
       bullets: [
         {
           headline: {i18nKey: 'project.application.form.lifecycle.title'},
-          route: '/app/project/detail/' + projectId,
+          route: `${ProjectApplicationFormSidenavService.PROJECT_DETAIL_URL}/${projectId}`,
           scrollToTop: true,
           scrollRoute: ''
         },
@@ -118,7 +119,7 @@ export class ProjectApplicationFormSidenavService {
         {
           headline: {i18nKey: 'project.assessment.header'},
           scrollRoute: 'applicationFormLifecycleAssessment',
-          route: '/app/project/detail/' + projectId,
+          route: `${ProjectApplicationFormSidenavService.PROJECT_DETAIL_URL}/${projectId}`,
           scrollToTop: false
         }
       );
@@ -127,7 +128,7 @@ export class ProjectApplicationFormSidenavService {
       {
         headline: {i18nKey: 'file.tab.header'},
         scrollRoute: 'applicationFormLifecycleAttachments',
-        route: '/app/project/detail/' + projectId,
+        route: `${ProjectApplicationFormSidenavService.PROJECT_DETAIL_URL}/${projectId}`,
         scrollToTop: false
       }
     );
@@ -141,7 +142,7 @@ export class ProjectApplicationFormSidenavService {
             bullets: [
               {
                 headline: {i18nKey: 'project.application.form.section.part.a'},
-                route: '/app/project/detail/' + projectId + '/applicationFormIdentification',
+                route: `${ProjectApplicationFormSidenavService.PROJECT_DETAIL_URL}/${projectId}/applicationFormIdentification`,
               },
             ]
           },
@@ -150,12 +151,12 @@ export class ProjectApplicationFormSidenavService {
             bullets: [
               {
                 headline: {i18nKey: 'project.application.form.section.part.b.partners'},
-                route: '/app/project/detail/' + projectId + '/applicationFormPartner',
+                route: `${ProjectApplicationFormSidenavService.PROJECT_DETAIL_URL}/${projectId}/applicationFormPartner`,
                 bullets: [...partners],
               },
               {
                 headline: {i18nKey: 'project.application.form.section.part.b.associatedOrganizations'},
-                route: '/app/project/detail/' + projectId + '/applicationFormAssociatedOrganization',
+                route: `${ProjectApplicationFormSidenavService.PROJECT_DETAIL_URL}/${projectId}/applicationFormAssociatedOrganization`,
               },
             ]
           },
@@ -164,32 +165,32 @@ export class ProjectApplicationFormSidenavService {
             bullets: [
               {
                 headline: {i18nKey: 'project.application.form.section.part.c.subsection.one'},
-                route: '/app/project/detail/' + projectId + '/applicationFormOverallObjective',
+                route: `${ProjectApplicationFormSidenavService.PROJECT_DETAIL_URL}/${projectId}/applicationFormOverallObjective`,
               },
               {
                 headline: {i18nKey: 'project.application.form.section.part.c.subsection.two'},
-                route: '/app/project/detail/' + projectId + '/applicationFormRelevanceAndContext',
+                route: `${ProjectApplicationFormSidenavService.PROJECT_DETAIL_URL}/${projectId}/applicationFormRelevanceAndContext`,
               },
               {
                 headline: {i18nKey: 'project.application.form.section.part.c.subsection.three'},
-                route: '/app/project/detail/' + projectId + '/applicationFormPartnership',
+                route: `${ProjectApplicationFormSidenavService.PROJECT_DETAIL_URL}/${projectId}/applicationFormPartnership`,
               },
               {
                 headline: {i18nKey: 'project.application.form.section.part.c.subsection.four'},
-                route: '/app/project/detail/' + projectId + '/applicationFormWorkPackage',
+                route: `${ProjectApplicationFormSidenavService.PROJECT_DETAIL_URL}/${projectId}/applicationFormWorkPackage`,
                 bullets: [...packages],
               },
               {
                 headline: {i18nKey: 'project.application.form.section.part.c.subsection.five'},
-                route: '/app/project/detail/' + projectId + '/applicationFormResults',
+                route: `${ProjectApplicationFormSidenavService.PROJECT_DETAIL_URL}/${projectId}/applicationFormResults`,
               },
               {
                 headline: {i18nKey: 'project.application.form.section.part.c.subsection.seven'},
-                route: '/app/project/detail/' + projectId + '/applicationFormManagement',
+                route: `${ProjectApplicationFormSidenavService.PROJECT_DETAIL_URL}/${projectId}/applicationFormManagement`,
               },
               {
                 headline: {i18nKey: 'project.application.form.section.part.c.subsection.eight'},
-                route: '/app/project/detail/' + projectId + '/applicationFormFuturePlans',
+                route: `${ProjectApplicationFormSidenavService.PROJECT_DETAIL_URL}/${projectId}/applicationFormFuturePlans`,
               }
             ],
           },
@@ -198,7 +199,7 @@ export class ProjectApplicationFormSidenavService {
             bullets: [
               {
                 headline: {i18nKey: 'project.application.form.section.part.d.subsection.two'},
-                route: '/app/project/detail/' + projectId + '/applicationFormBudget',
+                route: `${ProjectApplicationFormSidenavService.PROJECT_DETAIL_URL}/${projectId}/applicationFormBudget`,
               }
             ]
           },
@@ -207,7 +208,7 @@ export class ProjectApplicationFormSidenavService {
             bullets: [
               {
                 headline: {i18nKey: 'project.application.form.section.part.e'},
-                route: '/app/project/detail/' + projectId + '/applicationFormLumpSums',
+                route: `${ProjectApplicationFormSidenavService.PROJECT_DETAIL_URL}/${projectId}/applicationFormLumpSums`,
               }
             ]
           },

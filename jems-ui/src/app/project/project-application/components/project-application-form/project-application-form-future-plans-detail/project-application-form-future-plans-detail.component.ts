@@ -22,6 +22,7 @@ import {takeUntil, tap} from 'rxjs/operators';
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class ProjectApplicationFormFuturePlansDetailComponent extends BaseComponent implements OnInit {
+  private static readonly FUTURE_PLANS_MAX_LENGTH = 'project.application.form.future.plans.entered.text.size.too.long';
 
   // TODO: remove these and adapt the component to save independently
   @Input()
@@ -43,13 +44,13 @@ export class ProjectApplicationFormFuturePlansDetailComponent extends BaseCompon
   });
 
   ownershipErrors = {
-    maxlength: 'project.application.form.future.plans.entered.text.size.too.long',
+    maxlength: ProjectApplicationFormFuturePlansDetailComponent.FUTURE_PLANS_MAX_LENGTH,
   };
   durabilityErrors = {
-    maxlength: 'project.application.form.future.plans.entered.text.size.too.long',
+    maxlength: ProjectApplicationFormFuturePlansDetailComponent.FUTURE_PLANS_MAX_LENGTH,
   };
   transferabilityErrors = {
-    maxlength: 'project.application.form.future.plans.entered.text.size.too.long',
+    maxlength: ProjectApplicationFormFuturePlansDetailComponent.FUTURE_PLANS_MAX_LENGTH,
   };
 
   constructor(private formBuilder: FormBuilder,

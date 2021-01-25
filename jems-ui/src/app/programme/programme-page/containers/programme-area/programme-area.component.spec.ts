@@ -9,6 +9,7 @@ describe('ProgrammeAreaComponent', () => {
   let httpTestingController: HttpTestingController;
   let component: ProgrammeAreaComponent;
   let fixture: ComponentFixture<ProgrammeAreaComponent>;
+  const API_NUTS_METADATA_URL = '//api/nuts/metadata';
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
@@ -35,14 +36,14 @@ describe('ProgrammeAreaComponent', () => {
   it('should download initial nuts metadata', () => {
     component.metaData$.subscribe();
 
-    httpTestingController.expectOne({method: 'GET', url: '//api/nuts/metadata'});
+    httpTestingController.expectOne({method: 'GET', url: API_NUTS_METADATA_URL});
   });
 
   it('should download nuts metadata', fakeAsync(() => {
     component.metaData$.subscribe();
     component.downloadLatestNuts$.next();
 
-    httpTestingController.expectOne({method: 'GET', url: '//api/nuts/metadata'});
+    httpTestingController.expectOne({method: 'GET', url: API_NUTS_METADATA_URL});
     httpTestingController.expectOne({method: 'POST', url: '//api/nuts/download'});
   }));
 

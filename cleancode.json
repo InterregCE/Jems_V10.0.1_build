@@ -4,5 +4,19 @@
       "rule": "archunit.jpa.entities.no-column-names",
       "reason": "specific usages like account for user entity and embedded relations are needed"
     }
+  ],
+  "suppressedIssues": [
+    {
+      "hash": "22c774bb",
+      "reason": "fill-range has a broken package.json which can't be parsed"
+    },
+    {
+      "hash": "b86cbd6a",
+      "reason": "is-absolute has a broken package.json which can't be parsed"
+    },
+    {
+      "hash": "6290d4c9",
+      "reason": "micromatch has a broken package.json which can't be parsed"
+    }
   ]
 }

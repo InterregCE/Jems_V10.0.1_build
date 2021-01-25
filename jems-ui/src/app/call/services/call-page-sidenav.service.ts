@@ -19,14 +19,14 @@ export class CallPageSidenavService {
     const bulletsArray = [
       {
         headline: {i18nKey: 'call.general.settings'},
-        route: '/app/call/detail/' + callId,
+        route: `/app/call/detail/${callId}`,
         scrollToTop: true,
       }
     ];
 
     const flatRates = {
       headline: {i18nKey: 'call.detail.budget.settings'},
-      route: '/app/call/detail/' + callId + '/budgetSettings',
+      route: `/app/call/detail/${callId}/budgetSettings`,
     };
 
     if (callId) {

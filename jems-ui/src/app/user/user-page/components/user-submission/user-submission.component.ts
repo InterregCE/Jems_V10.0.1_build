@@ -11,6 +11,8 @@ import {AbstractForm} from '@common/components/forms/abstract-form';
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class UserSubmissionComponent extends AbstractForm {
+  private static readonly USER_NAME_WRONG_SIZE = 'user.name.wrong.size';
+  private static readonly USER_SURNAME_WRONG_SIZE = 'user.surname.wrong.size';
 
   @Input()
   userRoles: OutputUserRole[];
@@ -39,15 +41,15 @@ export class UserSubmissionComponent extends AbstractForm {
   });
 
   nameErrors = {
-    maxlength: 'user.name.wrong.size',
-    minlength: 'user.name.wrong.size',
-    required: 'user.name.wrong.size',
+    maxlength: UserSubmissionComponent.USER_NAME_WRONG_SIZE,
+    minlength: UserSubmissionComponent.USER_NAME_WRONG_SIZE,
+    required: UserSubmissionComponent.USER_NAME_WRONG_SIZE,
   };
 
   surnameErrors = {
-    maxlength: 'user.surname.wrong.size',
-    minlength: 'user.surname.wrong.size',
-    required: 'user.surname.wrong.size'
+    maxlength: UserSubmissionComponent.USER_SURNAME_WRONG_SIZE,
+    minlength: UserSubmissionComponent.USER_SURNAME_WRONG_SIZE,
+    required: UserSubmissionComponent.USER_SURNAME_WRONG_SIZE,
   };
 
   emailErrors = {

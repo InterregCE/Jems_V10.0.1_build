@@ -22,6 +22,8 @@ import {MultiLanguageInput} from '@common/components/forms/multi-language/multi-
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class ProjectApplicationFormProjectRelevanceAndContextDetailComponent extends BaseComponent implements OnInit {
+  private static readonly TEXT_TOO_LONG = 'project.application.form.relevance.entered.text.size.too.long';
+
   // TODO: remove these and adapt the component to save independently
   @Input()
   error$: Observable<HttpErrorResponse | null>;
@@ -59,16 +61,16 @@ export class ProjectApplicationFormProjectRelevanceAndContextDetailComponent ext
   });
 
   territorialChallengeErrors = {
-    maxlength: 'project.application.form.relevance.entered.text.size.too.long'
+    maxlength: ProjectApplicationFormProjectRelevanceAndContextDetailComponent.TEXT_TOO_LONG
   };
   commonChallengeErrors = {
-    maxlength: 'project.application.form.relevance.entered.text.size.too.long'
+    maxlength: ProjectApplicationFormProjectRelevanceAndContextDetailComponent.TEXT_TOO_LONG
   };
   transnationalCooperationErrors = {
-    maxlength: 'project.application.form.relevance.entered.text.size.too.long'
+    maxlength: ProjectApplicationFormProjectRelevanceAndContextDetailComponent.TEXT_TOO_LONG
   };
   availableKnowledgeErrors = {
-    maxlength: 'project.application.form.relevance.entered.text.size.too.long'
+    maxlength: ProjectApplicationFormProjectRelevanceAndContextDetailComponent.TEXT_TOO_LONG
   };
 
   constructor(private formBuilder: FormBuilder,

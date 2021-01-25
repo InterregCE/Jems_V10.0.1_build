@@ -1,10 +1,9 @@
 import {Injectable} from '@angular/core';
-import {OutputProjectPeriod, ProgrammeIndicatorService, ProjectResultDTO, ProjectResultService} from '@cat/api';
+import {IndicatorResultDto, OutputProjectPeriod, ProgrammeIndicatorService, ProjectResultDTO, ProjectResultService} from '@cat/api';
 import {merge, Observable, Subject} from 'rxjs';
 import {map, shareReplay, switchMap, tap} from 'rxjs/operators';
 import {Log} from '../../../common/utils/log';
 import {ProjectStore} from '../../project-application/containers/project-application-detail/services/project-store.service';
-import {IndicatorResultDto} from 'build/generated-sources/openapi/model/indicatorResultDto';
 
 @Injectable()
 export class ProjectResultsPageStore {

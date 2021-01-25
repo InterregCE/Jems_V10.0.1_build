@@ -10,6 +10,9 @@ import {InputUserRegistration} from '@cat/api';
 })
 export class UserRegistrationComponent extends AbstractForm implements OnInit{
 
+  private static readonly USER_NAME_WRONG_SIZE = 'user.name.wrong.size';
+  private static readonly USER_SURNAME_WRONG_SIZE = 'user.surname.wrong.size';
+
   @Output()
   submitUser: EventEmitter<InputUserRegistration> = new EventEmitter<InputUserRegistration>();
   @Output()
@@ -42,15 +45,15 @@ export class UserRegistrationComponent extends AbstractForm implements OnInit{
   });
 
   nameErrors = {
-    maxlength: 'user.name.wrong.size',
-    minlength: 'user.name.wrong.size',
-    required: 'user.name.wrong.size'
+    maxlength: UserRegistrationComponent.USER_NAME_WRONG_SIZE,
+    minlength: UserRegistrationComponent.USER_NAME_WRONG_SIZE,
+    required: UserRegistrationComponent.USER_NAME_WRONG_SIZE,
   };
 
   surnameErrors = {
-    maxlength: 'user.surname.wrong.size',
-    minlength: 'user.surname.wrong.size',
-    required: 'user.surname.wrong.size'
+    maxlength: UserRegistrationComponent.USER_SURNAME_WRONG_SIZE,
+    minlength: UserRegistrationComponent.USER_SURNAME_WRONG_SIZE,
+    required: UserRegistrationComponent.USER_SURNAME_WRONG_SIZE,
   };
 
   emailErrors = {

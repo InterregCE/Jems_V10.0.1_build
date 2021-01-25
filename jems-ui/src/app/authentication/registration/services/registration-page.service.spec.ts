@@ -25,7 +25,7 @@ describe('RegistrationPageService', () => {
       name: 'test',
       surname: 'test',
       email: 'test@test.com',
-      password: 'test'
+      password: 'test' // NOSONAR (hardcoded credentials)
     } as InputUserRegistration;
     service.registerApplicant(applicant);
     spyOn((service as any).userSaveSuccess$, 'next').and.callThrough();
