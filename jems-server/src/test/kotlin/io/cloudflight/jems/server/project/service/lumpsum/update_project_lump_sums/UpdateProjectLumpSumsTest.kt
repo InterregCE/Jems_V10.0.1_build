@@ -18,17 +18,14 @@ import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
 import java.math.BigDecimal
 import java.time.ZonedDateTime
-import java.util.UUID
 
 internal class UpdateProjectLumpSumsTest : UnitTest() {
 
     companion object {
         private const val PROJECT_ID: Long = 4L
         private const val PROGRAMME_LUMP_SUM_ID: Long = 19L
-        private val id: UUID = UUID.randomUUID()
 
         private val lumpSum = ProjectLumpSum(
-            id = id,
             programmeLumpSumId = PROGRAMME_LUMP_SUM_ID,
             period = 2,
             lumpSumContributions = listOf(

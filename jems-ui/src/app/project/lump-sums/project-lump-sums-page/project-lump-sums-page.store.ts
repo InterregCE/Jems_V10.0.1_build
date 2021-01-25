@@ -38,7 +38,6 @@ export class ProjectLumpSumsPageStore {
       map(projectLumpSums =>
         projectLumpSums.map(projectLumpSum =>
           new ProjectLumpSum(
-            projectLumpSum.id,
             projectLumpSum.programmeLumpSumId,
             projectLumpSum.period,
             projectLumpSum.lumpSumContributions.map(contribution =>

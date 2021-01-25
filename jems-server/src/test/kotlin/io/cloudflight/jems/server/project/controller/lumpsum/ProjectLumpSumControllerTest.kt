@@ -22,7 +22,6 @@ internal class ProjectLumpSumControllerTest : UnitTest() {
         private val id1: UUID = UUID.randomUUID()
         private val id2: UUID = UUID.randomUUID()
         private val lumpSum1 = ProjectLumpSum(
-            id = id1,
             programmeLumpSumId = 1,
             period = 3,
             lumpSumContributions = listOf(
@@ -31,7 +30,6 @@ internal class ProjectLumpSumControllerTest : UnitTest() {
             )
         )
         private val lumpSum2 = ProjectLumpSum(
-            id = id2,
             programmeLumpSumId = 2,
             period = 4,
         )
@@ -52,7 +50,6 @@ internal class ProjectLumpSumControllerTest : UnitTest() {
 
         assertThat(controller.getProjectLumpSums(1L)).containsExactly(
             ProjectLumpSumDTO(
-                id = id1,
                 programmeLumpSumId = 1,
                 period = 3,
                 lumpSumContributions = listOf(
@@ -61,7 +58,6 @@ internal class ProjectLumpSumControllerTest : UnitTest() {
                 )
             ),
             ProjectLumpSumDTO(
-                id = id2,
                 programmeLumpSumId = 2,
                 period = 4,
             ),
@@ -84,7 +80,6 @@ internal class ProjectLumpSumControllerTest : UnitTest() {
             )
         )
         val lumpSumDto2 = ProjectLumpSumDTO(
-            id = id1,
             programmeLumpSumId = 6,
             period = 8,
             lumpSumContributions = listOf(
@@ -97,13 +92,11 @@ internal class ProjectLumpSumControllerTest : UnitTest() {
 
         assertThat(lumpSumsSlot.captured).containsExactly(
             ProjectLumpSum(
-                id = null,
                 programmeLumpSumId = 5,
                 period = 7,
                 lumpSumContributions = emptyList(), // zero contributions are ignored
             ),
             ProjectLumpSum(
-                id = id1,
                 programmeLumpSumId = 6,
                 period = 8,
                 lumpSumContributions = listOf(

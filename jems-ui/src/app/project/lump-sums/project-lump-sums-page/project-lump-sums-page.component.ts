@@ -208,7 +208,7 @@ export class ProjectLumpSumsPageComponent implements OnInit {
       const rowSum = this.calculateRowSum(projectLumpSum.lumpSumContributions.map(it => it.amount));
       const item = this.formBuilder.group({
         rowId: Math.random() * 1000,
-        id: projectLumpSum.id,
+        id: null,
         lumpSum: [lumpSum, Validators.required],
         periodNumber: periodNumbers.includes(projectLumpSum.period) ? projectLumpSum.period : null,
         partnersContribution: this.formBuilder.array(partners.map(partner => this.formBuilder.group({
@@ -233,7 +233,6 @@ export class ProjectLumpSumsPageComponent implements OnInit {
   private formToProjectLumpSums(): ProjectLumpSum[] {
     return this.items.controls.map((formGroup: FormGroup) => {
       return new ProjectLumpSum(
-        formGroup.get(this.constants.FORM_CONTROL_NAMES.id)?.value,
         this.getLumpSumControl(formGroup)?.value?.id,
         formGroup.get(this.constants.FORM_CONTROL_NAMES.periodNumber)?.value,
         this.getPartnerContributionFormArray(formGroup)?.value,

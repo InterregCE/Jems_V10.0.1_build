@@ -12,10 +12,10 @@ import java.util.UUID
 @Repository
 interface ProjectLumpSumRepository : CrudRepository<ProjectPartnerLumpSumEntity, UUID> {
 
-    @Query("SELECT new io.cloudflight.jems.server.project.entity.lumpsum.ProjectLumpSumPerPartnerSumEntity(e.id.projectPartner, SUM(e.amount)) FROM #{#entityName} e WHERE e.id.projectLumpSumId IN :ids GROUP BY e.id.projectPartner")
-    fun sumLumpSumsPerPartner(@Param("ids") lumpSumIds: Set<UUID>): List<ProjectLumpSumPerPartnerSumEntity>
+    @Query("SELECT new io.cloudflight.jems.server.project.entity.lumpsum.ProjectLumpSumPerPartnerSumEntity(e.id.projectPartner, SUM(e.amount)) FROM #{#entityName} e WHERE e.id.projectPartner.id IN :ids GROUP BY e.id.projectPartner")
+    fun sumLumpSumsPerPartner(@Param("ids") partnerIds: Set<Long>): List<ProjectLumpSumPerPartnerSumEntity>
 
-    @Query("SELECT  SUM(e.amount) FROM project_partner_lump_sum e WHERE e.id.projectPartner.id = :partnerId")
+    @Query("SELECT SUM(e.amount) FROM #{#entityName} e WHERE e.id.projectPartner.id = :partnerId")
     fun getPartnerLumpSumsTotal(@Param("partnerId") partnerId: Long): BigDecimal?
 
 }

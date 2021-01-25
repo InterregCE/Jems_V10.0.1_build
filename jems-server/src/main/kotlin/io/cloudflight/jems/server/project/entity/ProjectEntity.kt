@@ -77,6 +77,6 @@ data class ProjectEntity(
     @OneToMany(mappedBy = "project", cascade = [CascadeType.ALL], orphanRemoval = true)
     val projectResultEntities: MutableSet<ProjectResultEntity> = mutableSetOf(),
 
-    @OneToMany(mappedBy = "projectId", cascade = [CascadeType.ALL], orphanRemoval = true)
-    val lumpSums: Set<ProjectLumpSumEntity> = emptySet(),
+    @OneToMany(mappedBy = "id.projectId", cascade = [CascadeType.ALL], orphanRemoval = true)
+    val lumpSums: List<ProjectLumpSumEntity> = emptyList(),
 )

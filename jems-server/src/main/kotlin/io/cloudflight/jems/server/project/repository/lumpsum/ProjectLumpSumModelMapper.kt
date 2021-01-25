@@ -2,17 +2,16 @@ package io.cloudflight.jems.server.project.repository.lumpsum
 
 import io.cloudflight.jems.server.programme.entity.costoption.ProgrammeLumpSumEntity
 import io.cloudflight.jems.server.project.entity.lumpsum.ProjectLumpSumEntity
+import io.cloudflight.jems.server.project.entity.lumpsum.ProjectLumpSumId
 import io.cloudflight.jems.server.project.entity.lumpsum.ProjectPartnerLumpSumEntity
 import io.cloudflight.jems.server.project.entity.lumpsum.ProjectPartnerLumpSumId
 import io.cloudflight.jems.server.project.entity.partner.ProjectPartnerEntity
 import io.cloudflight.jems.server.project.service.lumpsum.model.ProjectLumpSum
 import io.cloudflight.jems.server.project.service.lumpsum.model.ProjectPartnerLumpSum
-import java.util.UUID
 import kotlin.collections.HashSet
 
-fun Set<ProjectLumpSumEntity>.toModel() = map {
+fun List<ProjectLumpSumEntity>.toModel() = sortedBy { it.id.orderNr }.map {
     ProjectLumpSum(
-        id = it.id,
         period = it.endPeriod,
         programmeLumpSumId = it.programmeLumpSum.id,
         lumpSumContributions = it.lumpSumContributions.toModel(),
@@ -28,17 +27,15 @@ fun Iterable<ProjectPartnerLumpSumEntity>.toModel() = sortedBy { it.id.projectPa
     }
 
 fun ProjectLumpSum.toEntity(
-    projectId: Long,
+    projectLumpSumId: ProjectLumpSumId,
     getProgrammeLumpSum: (Long) -> ProgrammeLumpSumEntity,
     getProjectPartner: (Long) -> ProjectPartnerEntity,
 ): ProjectLumpSumEntity {
-    val assignedId = id ?: UUID.randomUUID()
     return ProjectLumpSumEntity(
-        id = assignedId,
-        projectId = projectId,
+        id = projectLumpSumId,
         programmeLumpSum = getProgrammeLumpSum.invoke(this.programmeLumpSumId),
         endPeriod = period,
-        lumpSumContributions = lumpSumContributions.toPartnerLumpSumEntity(assignedId, getProjectPartner),
+        lumpSumContributions = lumpSumContributions.toPartnerLumpSumEntity(projectLumpSumId, getProjectPartner),
     )
 }
 
@@ -46,12 +43,12 @@ fun List<ProjectLumpSum>.toEntity(
     projectId: Long,
     getProgrammeLumpSum: (Long) -> ProgrammeLumpSumEntity,
     getProjectPartner: (Long) -> ProjectPartnerEntity,
-) = mapTo(HashSet()) {
-    it.toEntity(projectId, getProgrammeLumpSum, getProjectPartner)
+) = mapIndexed { index, model ->
+    model.toEntity(ProjectLumpSumId(projectId, index.plus(1)), getProgrammeLumpSum, getProjectPartner)
 }
 
 fun List<ProjectPartnerLumpSum>.toPartnerLumpSumEntity(
-    projectLumpSumId: UUID,
+    projectLumpSumId: ProjectLumpSumId,
     getProjectPartner: (Long) -> ProjectPartnerEntity
 ) = mapTo(HashSet()) {
     ProjectPartnerLumpSumEntity(
