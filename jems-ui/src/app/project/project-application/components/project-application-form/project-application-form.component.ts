@@ -1,18 +1,13 @@
-import {
-  ChangeDetectionStrategy,
-  ChangeDetectorRef,
-  Component,
-  Input,
-  OnInit
-} from '@angular/core';
+import {ChangeDetectionStrategy, ChangeDetectorRef, Component, Input, OnInit} from '@angular/core';
 import {FormBuilder, FormGroup, Validators} from '@angular/forms';
-import {InputProjectData, OutputProject} from '@cat/api';
+import {InputProjectData, InputTranslation, OutputProgrammeLanguage, OutputProject} from '@cat/api';
 import {Permission} from '../../../../security/permissions/permission';
 import {Tools} from '../../../../common/utils/tools';
 import {catchError, distinctUntilChanged, take, takeUntil, tap} from 'rxjs/operators';
 import {BaseComponent} from '@common/components/base-component';
 import {FormService} from '@common/components/section/form/form.service';
 import {ProjectStore} from '../../containers/project-application-detail/services/project-store.service';
+import {MultiLanguageInputService} from '../../../../common/services/multi-language-input.service';
 
 @Component({
   selector: 'app-project-application-form',
@@ -24,6 +19,7 @@ import {ProjectStore} from '../../containers/project-application-detail/services
 export class ProjectApplicationFormComponent extends BaseComponent implements OnInit {
   Permission = Permission;
   tools = Tools;
+  LANGUAGE = OutputProgrammeLanguage.CodeEnum;
 
   @Input()
   project: OutputProject;
@@ -52,7 +48,8 @@ export class ProjectApplicationFormComponent extends BaseComponent implements On
     ])],
     projectPeriodLength: [''],
     projectPeriodCount: [''],
-    introProgrammeLanguage: ['', Validators.maxLength(2000)],
+    introEn: ['', Validators.maxLength(2000)],
+    intro: ['', Validators.maxLength(2000)],
     programmePriority: ['', Validators.required],
     specificObjective: ['', Validators.required]
   });
@@ -78,7 +75,8 @@ export class ProjectApplicationFormComponent extends BaseComponent implements On
   constructor(private formBuilder: FormBuilder,
               protected changeDetectorRef: ChangeDetectorRef,
               public projectStore: ProjectStore,
-              private formService: FormService) {
+              private formService: FormService,
+              private languageService: MultiLanguageInputService) {
     super();
   }
 
@@ -105,11 +103,10 @@ export class ProjectApplicationFormComponent extends BaseComponent implements On
 
   save(): void {
     const data = {
+      intro: this.getIntroValue(),
       acronym: this.applicationForm.controls.acronym.value,
       title: this.applicationForm.controls.title.value,
       duration: this.applicationForm.controls.duration.value,
-      introProgrammeLanguage: this.applicationForm.controls.introProgrammeLanguage.value,
-      intro: '',
       specificObjective: this.selectedSpecificObjective
     };
     this.projectStore.updateProjectData(data)
@@ -129,7 +126,10 @@ export class ProjectApplicationFormComponent extends BaseComponent implements On
     this.applicationForm.controls.projectPeriodCount.setValue(
       this.projectPeriodCount(this.project?.projectData?.duration)
     );
-    this.applicationForm.controls.introProgrammeLanguage.setValue(this.project?.projectData?.introProgrammeLanguage);
+    this.applicationForm.controls.intro.setValue(this.project?.projectData?.intro || []);
+    if (!this.englishLanguageActive()) {
+      this.applicationForm.controls.introEn.setValue(this.getEnglishIntro(this.project?.projectData?.intro)?.translation);
+    }
     if (this.project?.projectData?.specificObjective) {
       this.previousObjective = this.project?.projectData?.specificObjective.programmeObjectivePolicy;
       this.selectedSpecificObjective = this.project?.projectData?.specificObjective.programmeObjectivePolicy;
@@ -152,5 +152,30 @@ export class ProjectApplicationFormComponent extends BaseComponent implements On
   changeCurrentPriority(selectedPriority: string): void {
     this.currentPriority = selectedPriority;
     this.applicationForm.controls.specificObjective.setValue('');
+  }
+
+  englishLanguageActive(): boolean {
+    return !!this.languageService.languages.find(lang => this.LANGUAGE.EN === lang);
+  }
+
+  private getEnglishIntro(inputs: InputTranslation[]): InputTranslation | undefined {
+    if (!inputs) {
+      return undefined;
+    }
+    return inputs.find(trans => trans.language === this.LANGUAGE.EN);
+  }
+
+  private getIntroValue(): InputTranslation[] {
+    const intro = this.applicationForm.get('intro')?.value;
+    const introEn = this.applicationForm.get('introEn')?.value;
+    if (!this.englishLanguageActive()) {
+      const englishInput = this.getEnglishIntro(intro);
+      if (englishInput) {
+        englishInput.translation = introEn;
+      } else {
+        intro.push({language: this.LANGUAGE.EN, translation: introEn});
+      }
+    }
+    return intro;
   }
 }

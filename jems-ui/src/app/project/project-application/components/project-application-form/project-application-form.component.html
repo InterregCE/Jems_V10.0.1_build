@@ -106,27 +106,38 @@
             </p>
         </div>
 
-    <h5 id="projectSummaryHeading">{{'project.application.form.section.part.a.subsection.two' | translate}}</h5>
-    <div>
-        <div class="intro-text-small">
-            <span>{{'project.application.form.summary.intro.row.one' | translate}}</span>
-            <ul>
-                <li>{{'project.application.form.summary.intro.row.two' | translate}}</li>
-                <li>{{'project.application.form.summary.intro.row.three' | translate}}</li>
-                <li>{{'project.application.form.summary.intro.row.four' | translate}}</li>
-                <li>{{'project.application.form.summary.intro.row.five' | translate}}</li>
-                <li>{{'project.application.form.summary.intro.row.six' | translate}}</li>
-            </ul>
+        <h5 id="projectSummaryHeading">{{'project.application.form.section.part.a.subsection.two' | translate}}</h5>
+        <div>
+            <div class="intro-text-small">
+                <span>{{'project.application.form.summary.intro.row.one' | translate}}</span>
+                <ul>
+                    <li>{{'project.application.form.summary.intro.row.two' | translate}}</li>
+                    <li>{{'project.application.form.summary.intro.row.three' | translate}}</li>
+                    <li>{{'project.application.form.summary.intro.row.four' | translate}}</li>
+                    <li>{{'project.application.form.summary.intro.row.five' | translate}}</li>
+                    <li>{{'project.application.form.summary.intro.row.six' | translate}}</li>
+                </ul>
+            </div>
         </div>
-    </div>
+        <app-multi-language *ngIf="!englishLanguageActive()"
+                            [languages]="[LANGUAGE.EN]">
+            <app-expandable-textarea
+                    class="pb-5"
+                    label="project.application.form.field.project.summary.in.english"
+                    [control]="applicationForm?.controls?.introEn"
+                    [errors]="applicationForm?.controls?.introEn?.errors"
+                    [messages]="projectSummaryErrors"
+                    [characterLimit]="2000">
+            </app-expandable-textarea>
+        </app-multi-language>
 
-        <app-expandable-textarea
-                class="pb-5"
-                [control]="applicationForm?.controls?.introProgrammeLanguage"
-                [errors]="applicationForm?.controls?.introProgrammeLanguage?.errors"
-                [messages]="projectSummaryErrors"
-                [characterLimit]="2000"
-                [label]="'project.application.form.field.project.summary'">
-        </app-expandable-textarea>
+        <app-multi-language>
+            <app-multi-language-form-field
+                    type="textarea"
+                    label="project.application.form.field.project.summary"
+                    formControlName="intro"
+                    [maxLength]="2000">
+            </app-multi-language-form-field>
+        </app-multi-language>
     </form>
 </app-form>
