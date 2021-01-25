@@ -220,6 +220,7 @@ export class ProjectLumpSumsPageComponent implements OnInit {
       });
       this.addItemToItems(item);
     });
+    this.formService.resetEditable();
   }
 
   private addItemToItems(item: FormGroup): void {
