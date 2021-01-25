@@ -29,8 +29,7 @@ class GetProjectBudget(
         val options =
             optionPersistence.getBudgetOptions(partners.keys).iterator().asSequence().associateBy { it.partnerId }
 
-        val lumpSumIds = lumpSumPersistence.getLumpSums(projectId).mapTo(HashSet()) { it.id!! }
-        val lumpSumContributionPerPartner = persistence.getLumpSumContributionPerPartner(lumpSumIds)
+        val lumpSumContributionPerPartner = persistence.getLumpSumContributionPerPartner(partners.keys)
         val unitCostsPerPartner = persistence.getUnitCostsPerPartner(partners.keys)
 
         val externalCostsPerPartner = persistence.getExternalCosts(partners.keys).groupByPartnerId()

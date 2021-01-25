@@ -147,14 +147,13 @@ class ProjectBudgetPersistenceTest {
 
     @Test
     fun getLumpSumContributionPerPartner() {
-        val id: UUID = UUID.randomUUID()
-        every { projectLumpSumRepository.sumLumpSumsPerPartner(setOf(id)) } returns listOf(
+        every { projectLumpSumRepository.sumLumpSumsPerPartner(setOf(PARTNER_ID)) } returns listOf(
             ProjectLumpSumPerPartnerSumEntity(
                 partner = partnerWithId(PARTNER_ID),
                 sum = BigDecimal.TEN,
             ),
         )
-        assertThat(projectBudgetPersistence.getLumpSumContributionPerPartner(setOf(id))).containsExactlyInAnyOrderEntriesOf(
+        assertThat(projectBudgetPersistence.getLumpSumContributionPerPartner(setOf(PARTNER_ID))).containsExactlyInAnyOrderEntriesOf(
             mapOf(
                 PARTNER_ID to BigDecimal.TEN
             )

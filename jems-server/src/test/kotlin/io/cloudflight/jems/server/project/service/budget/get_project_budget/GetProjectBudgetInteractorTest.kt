@@ -22,7 +22,6 @@ import io.mockk.slot
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import java.math.BigDecimal
-import java.util.*
 
 class GetProjectBudgetInteractorTest : UnitTest() {
 
@@ -52,14 +51,6 @@ class GetProjectBudgetInteractorTest : UnitTest() {
     private fun budget(partnerId: Long, sum: Double) = ProjectPartnerCost(
         partnerId = partnerId,
         sum = sum.toScaledBigDecimal()
-    )
-
-    private val lumpSumId1: UUID = UUID.randomUUID()
-    private val lumpSumId2: UUID = UUID.randomUUID()
-
-    private val lumpSums = listOf(
-        ProjectLumpSum(id = lumpSumId1, programmeLumpSumId = 40, period = 1, lumpSumContributions = emptyList()),
-        ProjectLumpSum(id = lumpSumId2, programmeLumpSumId = 40, period = 2, lumpSumContributions = emptyList()),
     )
 
     @MockK
@@ -101,17 +92,10 @@ class GetProjectBudgetInteractorTest : UnitTest() {
             ), budget(partner2Id, 300.0)
         )
 
-        every { lumpSumPersistence.getLumpSums(1) } returns lumpSums
-        every {
-            persistence.getUnitCostsPerPartner(
-                setOf(
-                    partner1Id,
-                    partner2Id
-                )
-            )
-        } returns mapOf(partner1Id to 25.0.toScaledBigDecimal())
-        val lumpSumIds = slot<Set<UUID>>()
-        every { persistence.getLumpSumContributionPerPartner(capture(lumpSumIds)) } returns mapOf(
+        every {persistence.getUnitCostsPerPartner(setOf(partner1Id, partner2Id)) } returns mapOf(
+            partner1Id to 25.0.toScaledBigDecimal()
+        )
+        every { persistence.getLumpSumContributionPerPartner(setOf(partner1Id, partner2Id)) } returns mapOf(
             partner1Id to BigDecimal.ONE,
             partner2Id to BigDecimal.TEN,
         )
@@ -180,7 +164,6 @@ class GetProjectBudgetInteractorTest : UnitTest() {
                     totalCosts = 1811.toScaledBigDecimal()
                 )
             )
-        assertThat(lumpSumIds.captured).containsExactlyInAnyOrder(lumpSumId1, lumpSumId2)
     }
 
 }

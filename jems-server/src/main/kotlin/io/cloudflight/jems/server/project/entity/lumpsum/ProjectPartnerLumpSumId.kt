@@ -2,16 +2,16 @@ package io.cloudflight.jems.server.project.entity.lumpsum
 
 import io.cloudflight.jems.server.project.entity.partner.ProjectPartnerEntity
 import java.io.Serializable
-import java.util.UUID
 import javax.persistence.Embeddable
+import javax.persistence.Embedded
 import javax.persistence.ManyToOne
 import javax.validation.constraints.NotNull
 
 @Embeddable
 data class ProjectPartnerLumpSumId(
 
-    @field:NotNull
-    val projectLumpSumId: UUID,
+    @Embedded
+    val projectLumpSumId: ProjectLumpSumId,
 
     @ManyToOne(optional = false)
     @field:NotNull

@@ -10,14 +10,11 @@ import io.mockk.impl.annotations.MockK
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import java.math.BigDecimal
-import java.util.UUID
 
 internal class GetProjectLumpSumsTest : UnitTest() {
 
     companion object {
-        private val id: UUID = UUID.randomUUID()
         private val lumpSum = ProjectLumpSum(
-            id = id,
             programmeLumpSumId = 51,
             period = 1,
             lumpSumContributions = listOf(

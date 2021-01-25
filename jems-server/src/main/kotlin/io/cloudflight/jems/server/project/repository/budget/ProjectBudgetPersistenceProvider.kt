@@ -50,8 +50,8 @@ class ProjectBudgetPersistenceProvider(
         budgetInfrastructureRepository.sumForAllPartners(partnerIds).toProjectPartnerBudget()
 
     @Transactional(readOnly = true)
-    override fun getLumpSumContributionPerPartner(lumpSumIds: Set<UUID>): Map<Long, BigDecimal> =
-        projectLumpSumRepository.sumLumpSumsPerPartner(lumpSumIds).associateBy({ it.partner.id }, { it.sum })
+    override fun getLumpSumContributionPerPartner(partnerIds: Set<Long>): Map<Long, BigDecimal> =
+        projectLumpSumRepository.sumLumpSumsPerPartner(partnerIds).associateBy({ it.partner.id }, { it.sum })
 
     @Transactional(readOnly = true)
     override fun getUnitCostsPerPartner(partnerIds: Set<Long>): Map<Long, BigDecimal> =

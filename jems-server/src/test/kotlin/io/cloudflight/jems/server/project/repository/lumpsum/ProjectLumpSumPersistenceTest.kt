@@ -12,6 +12,7 @@ import io.cloudflight.jems.server.programme.repository.costoption.ProgrammeLumpS
 import io.cloudflight.jems.server.project.entity.ProjectEntity
 import io.cloudflight.jems.server.project.entity.ProjectStatus
 import io.cloudflight.jems.server.project.entity.lumpsum.ProjectLumpSumEntity
+import io.cloudflight.jems.server.project.entity.lumpsum.ProjectLumpSumId
 import io.cloudflight.jems.server.project.entity.lumpsum.ProjectPartnerLumpSumEntity
 import io.cloudflight.jems.server.project.entity.lumpsum.ProjectPartnerLumpSumId
 import io.cloudflight.jems.server.project.entity.partner.ProjectPartnerEntity
@@ -33,8 +34,6 @@ import java.util.UUID
 internal class ProjectLumpSumPersistenceTest : UnitTest() {
 
     companion object {
-        private val id1: UUID = UUID.randomUUID()
-
         private val dummyCall = callWithId(10)
 
         private val dummyProject = ProjectEntity(
@@ -86,27 +85,31 @@ internal class ProjectLumpSumPersistenceTest : UnitTest() {
     @Test
     fun `lump sums are correctly mapped and sorted`() {
         val programmeLumpSum = programmeLumpSum(id = 50)
+        val projectLumpSumId = ProjectLumpSumId(projectId = dummyProject.id, orderNr = 1)
         val contribution1 = ProjectPartnerLumpSumEntity(
-            id = ProjectPartnerLumpSumId(id1, partner(sortNumber = 1, id = 1)),
+            id = ProjectPartnerLumpSumId(projectLumpSumId, partner(sortNumber = 1, id = 1)),
             amount = BigDecimal.TEN,
         )
         val contribution2 = ProjectPartnerLumpSumEntity(
-            id = ProjectPartnerLumpSumId(id1, partner(sortNumber = 2, id = 2)),
+            id = ProjectPartnerLumpSumId(projectLumpSumId, partner(sortNumber = 2, id = 2)),
             amount = BigDecimal.ONE,
         )
         val lumpSum1 = ProjectLumpSumEntity(
-            id = id1,
-            projectId = dummyProject.id,
+            id = projectLumpSumId,
             programmeLumpSum = programmeLumpSum,
             endPeriod = 7,
             lumpSumContributions = setOf(contribution2, contribution1)
         )
+        val lumpSum2 = ProjectLumpSumEntity(
+            id = ProjectLumpSumId(projectId = dummyProject.id, orderNr = 2),
+            programmeLumpSum = programmeLumpSum,
+            endPeriod = 8,
+        )
 
-        every { projectRepository.findById(eq(1)) } returns Optional.of(dummyProject.copy(lumpSums = setOf(lumpSum1)))
+        every { projectRepository.findById(eq(1)) } returns Optional.of(dummyProject.copy(lumpSums = listOf(lumpSum2, lumpSum1)))
 
         assertThat(persistence.getLumpSums(1L)).containsExactly(
             ProjectLumpSum(
-                id = id1,
                 programmeLumpSumId = 50,
                 period = 7,
                 lumpSumContributions = listOf(
@@ -114,13 +117,17 @@ internal class ProjectLumpSumPersistenceTest : UnitTest() {
                     ProjectPartnerLumpSum(partnerId = 2, amount = BigDecimal.ONE),
                 )
             ),
+            ProjectLumpSum(
+                programmeLumpSumId = 50,
+                period = 8,
+            ),
         )
     }
 
     @Test
     fun `updateLumpSums - everything valid`() {
         val projectSlot = slot<ProjectEntity>()
-        every { projectRepository.findById(10L) } returns Optional.of(dummyProject.copy(id = 10, lumpSums = emptySet()))
+        every { projectRepository.findById(10L) } returns Optional.of(dummyProject.copy(id = 10, lumpSums = emptyList()))
 
         every { programmeLumpSumRepository.findById(20) } returns Optional.of(programmeLumpSum(20))
 
@@ -134,7 +141,6 @@ internal class ProjectLumpSumPersistenceTest : UnitTest() {
 
         val toBeSaved = listOf(
             ProjectLumpSum(
-                id = id1,
                 programmeLumpSumId = 20,
                 period = 7,
                 lumpSumContributions = listOf(
@@ -148,18 +154,18 @@ internal class ProjectLumpSumPersistenceTest : UnitTest() {
 
         assertThat(projectSlot.captured.lumpSums).hasSize(1)
 
+        val expectedProjectLumpSumId = ProjectLumpSumId(projectId = 10, orderNr = 1)
         val outcome = projectSlot.captured.lumpSums.first()
-        assertThat(outcome.id).isEqualTo(id1)
-        assertThat(outcome.projectId).isEqualTo(10)
+        assertThat(outcome.id).isEqualTo(expectedProjectLumpSumId)
         assertThat(outcome.programmeLumpSum).isEqualTo(programmeLumpSum(20))
         assertThat(outcome.endPeriod).isEqualTo(7)
         assertThat(outcome.lumpSumContributions).containsExactlyInAnyOrder(
             ProjectPartnerLumpSumEntity(
-                id = ProjectPartnerLumpSumId(projectLumpSumId = id1, projectPartner = partner17),
+                id = ProjectPartnerLumpSumId(projectLumpSumId = expectedProjectLumpSumId, projectPartner = partner17),
                 amount = BigDecimal.TEN
             ),
             ProjectPartnerLumpSumEntity(
-                id = ProjectPartnerLumpSumId(projectLumpSumId = id1, projectPartner = partner18),
+                id = ProjectPartnerLumpSumId(projectLumpSumId = expectedProjectLumpSumId, projectPartner = partner18),
                 amount = BigDecimal.ONE
             ),
         )
@@ -174,12 +180,11 @@ internal class ProjectLumpSumPersistenceTest : UnitTest() {
 
     @Test
     fun `updateLumpSums - when not existing programme lump sum`() {
-        every { projectRepository.findById(11L) } returns Optional.of(dummyProject.copy(id = 11, lumpSums = emptySet()))
+        every { projectRepository.findById(11L) } returns Optional.of(dummyProject.copy(id = 11, lumpSums = emptyList()))
         every { programmeLumpSumRepository.findById(-1) } returns Optional.empty()
 
         val toBeSaved = listOf(
             ProjectLumpSum(
-                id = id1,
                 programmeLumpSumId = -1,
                 period = 7,
             ),
@@ -192,7 +197,7 @@ internal class ProjectLumpSumPersistenceTest : UnitTest() {
     @Test
     fun `updateLumpSums - when not existing or not visible partner`() {
         val projectSlot = slot<ProjectEntity>()
-        every { projectRepository.findById(12L) } returns Optional.of(dummyProject.copy(id = 12, lumpSums = emptySet()))
+        every { projectRepository.findById(12L) } returns Optional.of(dummyProject.copy(id = 12, lumpSums = emptyList()))
 
         every { programmeLumpSumRepository.findById(20) } returns Optional.of(programmeLumpSum(20))
 
@@ -203,7 +208,6 @@ internal class ProjectLumpSumPersistenceTest : UnitTest() {
 
         val toBeSaved = listOf(
             ProjectLumpSum(
-                id = id1,
                 programmeLumpSumId = 20,
                 period = 7,
                 lumpSumContributions = listOf(
