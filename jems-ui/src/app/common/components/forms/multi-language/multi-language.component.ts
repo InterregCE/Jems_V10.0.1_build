@@ -1,16 +1,10 @@
-import {
-  ChangeDetectionStrategy,
-  Component,
-  Input,
-  OnChanges,
-  OnInit,
-  SimpleChanges
-} from '@angular/core';
+import {ChangeDetectionStrategy, Component, Input, OnChanges, OnInit, SimpleChanges} from '@angular/core';
 import {MultiLanguageInputService} from '../../../services/multi-language-input.service';
 import {BaseComponent} from '@common/components/base-component';
 import {takeUntil, tap} from 'rxjs/operators';
 import {MultiLanguageInput} from '@common/components/forms/multi-language/multi-language-input';
 import {merge, Subject} from 'rxjs';
+import {OutputProgrammeLanguage} from '@cat/api';
 
 @Component({
   selector: 'app-multi-language',
@@ -22,6 +16,8 @@ export class MultiLanguageComponent extends BaseComponent implements OnInit, OnC
 
   @Input()
   inputs: MultiLanguageInput[];
+  @Input()
+  languages?: OutputProgrammeLanguage.CodeEnum[];
 
   inputsChanged$ = new Subject<void>();
 
