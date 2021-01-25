@@ -15,9 +15,12 @@
 
 // Adapt layout when paired with specific components:
 app-multi-language {
-
   // Specifically allow for an overlap between language-switcher and textarea
   > app-expandable-textarea {
     margin-top: -2rem;
+  }
+  // Specifically allow for an overlap between language-switcher and multilang-form-field
+  > app-multi-language-form-field {
+    margin-top: -1.25rem;
   }
 }
