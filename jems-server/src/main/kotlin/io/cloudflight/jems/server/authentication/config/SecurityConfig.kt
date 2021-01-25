@@ -27,6 +27,7 @@ class SecurityConfig(val emsUserDetailsService: EmsUserDetailsService, val passw
     companion object {
         private val WHITELIST = arrayOf(
             "/api/auth/**",
+            "/api/_info/**"
         )
     }
 
