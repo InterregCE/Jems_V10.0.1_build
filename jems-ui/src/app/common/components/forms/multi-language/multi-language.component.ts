@@ -13,11 +13,14 @@ import {OutputProgrammeLanguage} from '@cat/api';
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class MultiLanguageComponent extends BaseComponent implements OnInit, OnChanges {
+  LANGUAGE = OutputProgrammeLanguage.CodeEnum;
 
   @Input()
   inputs: MultiLanguageInput[];
   @Input()
   languages?: OutputProgrammeLanguage.CodeEnum[];
+  @Input()
+  staticLanguages?: OutputProgrammeLanguage.CodeEnum[];
 
   inputsChanged$ = new Subject<void>();
 
@@ -66,5 +69,14 @@ export class MultiLanguageComponent extends BaseComponent implements OnInit, OnC
       return;
     }
     this.inputs.forEach(input => input.formControl?.patchValue(this.languageService.getInputValue(input)));
+  }
+
+  isMoreThanOneLanguageInputEnabled(): boolean {
+    return (this.staticLanguages?.length && !this.englishLanguageActive())
+      || this.languageService.languages.length > 1;
+  }
+
+  private englishLanguageActive(): boolean {
+    return !!this.languageService.languages?.find(lang => this.LANGUAGE.EN === lang);
   }
 }
