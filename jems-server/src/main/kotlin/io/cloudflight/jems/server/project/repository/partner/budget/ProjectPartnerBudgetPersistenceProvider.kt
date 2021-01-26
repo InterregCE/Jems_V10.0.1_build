@@ -35,10 +35,10 @@ class ProjectPartnerBudgetPersistenceProvider(
 
     @Transactional
     override fun deleteAllBudgetStaffCostsExceptFor(partnerId: Long, idsToKeep: List<Long>) =
-        budgetStaffCostRepository.deleteAllByBasePropertiesPartnerIdAndIdNotIn(
+        if (idsToKeep.isNotEmpty()) budgetStaffCostRepository.deleteAllByBasePropertiesPartnerIdAndIdNotIn(
             partnerId,
             idsToKeep
-        )
+        ) else Unit
 
     @Transactional
     override fun deleteBudgetStaffCosts(partnerId: Long) =
@@ -63,10 +63,10 @@ class ProjectPartnerBudgetPersistenceProvider(
 
     @Transactional
     override fun deleteAllBudgetTravelAndAccommodationCostsExceptFor(partnerId: Long, idsToKeep: List<Long>) =
-        budgetTravelRepository.deleteAllByBasePropertiesPartnerIdAndIdNotIn(
+        if (idsToKeep.isNotEmpty()) budgetTravelRepository.deleteAllByBasePropertiesPartnerIdAndIdNotIn(
             partnerId,
             idsToKeep
-        )
+        ) else Unit
 
     @Transactional
     override fun deleteTravelAndAccommodationCosts(partnerId: Long) =
@@ -94,10 +94,10 @@ class ProjectPartnerBudgetPersistenceProvider(
 
     @Transactional
     override fun deleteAllBudgetInfrastructureAndWorksCostsExceptFor(partnerId: Long, idsToKeep: List<Long>) =
-        budgetInfrastructureRepository.deleteAllByBasePropertiesPartnerIdAndIdNotIn(
+        if (idsToKeep.isNotEmpty()) budgetInfrastructureRepository.deleteAllByBasePropertiesPartnerIdAndIdNotIn(
             partnerId,
             idsToKeep
-        )
+        ) else Unit
 
     @Transactional
     override fun deleteInfrastructureCosts(partnerId: Long) =
@@ -158,10 +158,10 @@ class ProjectPartnerBudgetPersistenceProvider(
 
     @Transactional
     override fun deleteAllBudgetExternalExpertiseAndServicesCostsExceptFor(partnerId: Long, idsToKeep: List<Long>) =
-        budgetExternalRepository.deleteAllByBasePropertiesPartnerIdAndIdNotIn(
+        if (idsToKeep.isNotEmpty()) budgetExternalRepository.deleteAllByBasePropertiesPartnerIdAndIdNotIn(
             partnerId,
             idsToKeep
-        )
+        ) else Unit
 
     @Transactional
     override fun deleteExternalCosts(partnerId: Long) =
@@ -183,10 +183,10 @@ class ProjectPartnerBudgetPersistenceProvider(
 
     @Transactional
     override fun deleteAllBudgetEquipmentCostsExceptFor(partnerId: Long, idsToKeep: List<Long>) =
-        budgetEquipmentRepository.deleteAllByBasePropertiesPartnerIdAndIdNotIn(
+        if (idsToKeep.isNotEmpty()) budgetEquipmentRepository.deleteAllByBasePropertiesPartnerIdAndIdNotIn(
             partnerId,
             idsToKeep
-        )
+        ) else Unit
 
     @Transactional
     override fun deleteEquipmentCosts(partnerId: Long) =
