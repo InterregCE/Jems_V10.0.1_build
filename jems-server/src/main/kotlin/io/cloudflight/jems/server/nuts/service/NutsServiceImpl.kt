@@ -1,5 +1,6 @@
 package io.cloudflight.jems.server.nuts.service
 
+import com.github.doyaaaaaken.kotlincsv.client.CsvFileReader
 import com.github.doyaaaaaken.kotlincsv.dsl.csvReader
 import io.cloudflight.jems.api.nuts.dto.OutputNuts
 import io.cloudflight.jems.api.nuts.dto.OutputNutsMetadata
@@ -21,6 +22,7 @@ import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import org.springframework.web.client.RestTemplate
 import java.io.File
+import java.io.InputStream
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 
@@ -58,7 +60,7 @@ class NutsServiceImpl(
                 i18nKey = "nuts.already.downloaded"
             )
 
-        importNutsFromCsv(csvFile = openStaticCsvFile(STATIC_DATASETS_FILE))
+        importNutsFromCsv(stream = openStaticCsvFile(STATIC_DATASETS_FILE))
         log.info("Imported data from static '$STATIC_DATASETS_FILE' file")
 
         val giscoNutsData = extractNutsFromGiscoDatasets(url = GISCO_DATASETS_URL)
@@ -76,7 +78,21 @@ class NutsServiceImpl(
     }
 
     private fun importNutsFromCsv(csvFile: File) {
-        val nutsGroupedByCodeLength = groupNutsByLevel(csvFile)
+        var nutsGroupedByCodeLength: Map<Int, List<Pair<String, String>>>? = null
+        csvReader().open(csvFile) { nutsGroupedByCodeLength = groupNutsByLevel(this) }
+        importNuts(nutsGroupedByCodeLength)
+    }
+
+    private fun importNutsFromCsv(stream: InputStream) {
+        var nutsGroupedByCodeLength: Map<Int, List<Pair<String, String>>>? = null
+        csvReader().open(stream) { nutsGroupedByCodeLength = groupNutsByLevel(this) }
+        importNuts(nutsGroupedByCodeLength)
+    }
+
+    private fun importNuts(nutsGroupedByCodeLength: Map<Int, List<Pair<String, String>>>?) {
+        if (nutsGroupedByCodeLength == null)
+            throw ResourceNotFoundException("nuts")
+
         nutsRepository.saveAll(nutsGroupedByCodeLength.getCountries())
         nutsRegion1Repository.saveAll(nutsGroupedByCodeLength.getRegion1Nuts())
         nutsRegion2Repository.saveAll(nutsGroupedByCodeLength.getRegion2Nuts())
@@ -119,22 +135,16 @@ class NutsServiceImpl(
         ) ?: throw ResourceNotFoundException(csvFileName)
     }
 
-    private fun openStaticCsvFile(csvFileLocation: String): File = File(
-        this::class.java.getResource(csvFileLocation).toURI()
-    )
+    private fun openStaticCsvFile(csvFileLocation: String): InputStream =
+        javaClass.classLoader.getResourceAsStream(csvFileLocation) ?: throw ResourceNotFoundException(csvFileLocation)
 
-    private fun groupNutsByLevel(csvFile: File): Map<Int, List<Pair<String, String>>> {
-        var groupedByCodeLength: Map<Int, List<Pair<String, String>>>? = null
-        csvReader().open(csvFile) {
-            groupedByCodeLength = readAllWithHeaderAsSequence().map { row: Map<String, String> ->
-                if (row[NUTS_ID].isNullOrEmpty() || row[NUTS_NAME].isNullOrEmpty())
-                    throw I18nValidationException(i18nKey = "nuts.unable.to.locate.$NUTS_ID.or.$NUTS_NAME")
-                else
-                    Pair(row[NUTS_ID]!!, row[NUTS_NAME]!!.removeLineBreaks())
-            }.groupBy({ it.first.length }, { it })
-        }
-        return groupedByCodeLength ?: throw ResourceNotFoundException("nuts")
-    }
+    private fun groupNutsByLevel(csvFileReader: CsvFileReader): Map<Int, List<Pair<String, String>>> =
+        csvFileReader.readAllWithHeaderAsSequence().map { row: Map<String, String> ->
+            if (row[NUTS_ID].isNullOrEmpty() || row[NUTS_NAME].isNullOrEmpty())
+                throw I18nValidationException(i18nKey = "nuts.unable.to.locate.$NUTS_ID.or.$NUTS_NAME")
+            else
+                Pair(row[NUTS_ID]!!, row[NUTS_NAME]!!.removeLineBreaks())
+        }.groupBy({ it.first.length }, { it })
 
     private fun createMetadataFromNuts(nuts: LinkedHashMap<String, String>): NutsMetadata {
         val date: LocalDate = LocalDate.parse(nuts["date"], DateTimeFormatter.ofPattern("dd/MM/yyyy"))
