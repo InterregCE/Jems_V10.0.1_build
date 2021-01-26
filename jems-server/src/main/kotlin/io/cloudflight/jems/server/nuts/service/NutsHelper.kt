@@ -26,7 +26,7 @@ const val GISCO_NUTS_URL = "https://gisco-services.ec.europa.eu/distribution/v2/
 const val GISCO_DATASETS_URL = "$GISCO_NUTS_URL/datasets.json"
 const val NUTS_ID = "NUTS_ID"
 const val NUTS_NAME = "NAME_LATN"
-const val STATIC_DATASETS_FILE = "/nuts/NUTS_EXTENDED.csv"
+const val STATIC_DATASETS_FILE = "nuts/NUTS_EXTENDED.csv"
 
 private val collatorGerman = Collator.getInstance(Locale.GERMAN)
 
