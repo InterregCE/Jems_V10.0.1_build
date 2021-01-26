@@ -13,6 +13,7 @@ import io.cloudflight.jems.server.nuts.repository.NutsRegion2Repository
 import io.cloudflight.jems.server.nuts.repository.NutsRegion3Repository
 import io.cloudflight.jems.server.audit.service.AuditService
 import org.apache.tomcat.util.json.JSONParser
+import org.slf4j.LoggerFactory
 import org.springframework.boot.web.client.RestTemplateBuilder
 import org.springframework.http.HttpMethod
 import org.springframework.http.HttpStatus
@@ -34,6 +35,10 @@ class NutsServiceImpl(
     private val auditService: AuditService
 ) : NutsService {
 
+    companion object {
+        private val log = LoggerFactory.getLogger(this::class.java)
+    }
+
     val restTemplate: RestTemplate = restTemplateBuilder.build()
 
     @Transactional(readOnly = true)
@@ -53,27 +58,29 @@ class NutsServiceImpl(
                 i18nKey = "nuts.already.downloaded"
             )
 
-        val nuts = extractNutsFromDatasets()
-        val csvFileName: String = getCsvFileName(nutsFile = nuts.get("files")
-            ?: throw ResourceNotFoundException("nuts"))
-        val groupedByCodeLength = groupNutsByLevel(getTemporaryCsvFile(csvFileName))
+        importNutsFromCsv(csvFile = openStaticCsvFile(STATIC_DATASETS_FILE))
+        log.info("Imported data from static '$STATIC_DATASETS_FILE' file")
 
-        nutsRepository.saveAll(
-            groupedByCodeLength.get(COUNTRY_CODE_LENGTH)?.map { it.toNutsCountry() }!!
+        val giscoNutsData = extractNutsFromGiscoDatasets(url = GISCO_DATASETS_URL)
+        val giscoCsvFileName: String = getCsvFileName(
+            nutsFile = giscoNutsData.get("files") ?: throw ResourceNotFoundException("nuts")
         )
-        nutsRegion1Repository.saveAll(
-            groupedByCodeLength.get(REGION_1_CODE_LENGTH)?.map { it.toNutsRegion1() }!!
-        )
-        nutsRegion2Repository.saveAll(
-            groupedByCodeLength.get(REGION_2_CODE_LENGTH)?.map { it.toNutsRegion2() }!!
-        )
-        nutsRegion3Repository.saveAll(
-            groupedByCodeLength.get(REGION_3_CODE_LENGTH)?.map { it.toNutsRegion3() }!!
-        )
+        log.info("Nuts CSV file downloaded from GISCO $GISCO_DATASETS_URL")
 
-        val metadata = nutsMetadataRepository.save(createMetadataFromNuts(nuts)).toOutputNutsMetadata()
+        importNutsFromCsv(csvFile = retrieveAndOpenCsvFileFromGisco(giscoCsvFileName))
+        log.info("Imported data from GISCO file '${giscoNutsData.get("files")}'")
+
+        val metadata = nutsMetadataRepository.save(createMetadataFromNuts(giscoNutsData)).toOutputNutsMetadata()
         auditService.logEvent(nutsDownloadSuccessful(metadata))
         return metadata
+    }
+
+    private fun importNutsFromCsv(csvFile: File) {
+        val nutsGroupedByCodeLength = groupNutsByLevel(csvFile)
+        nutsRepository.saveAll(nutsGroupedByCodeLength.getCountries())
+        nutsRegion1Repository.saveAll(nutsGroupedByCodeLength.getRegion1Nuts())
+        nutsRegion2Repository.saveAll(nutsGroupedByCodeLength.getRegion2Nuts())
+        nutsRegion3Repository.saveAll(nutsGroupedByCodeLength.getRegion3Nuts())
     }
 
     @Transactional(readOnly = true)
@@ -86,13 +93,13 @@ class NutsServiceImpl(
         return groupNuts(nutsRegion3Repository.findAll()).toOutputNuts()
     }
 
-    private fun extractNutsFromDatasets(): LinkedHashMap<String, String> {
+    private fun extractNutsFromGiscoDatasets(url: String): LinkedHashMap<String, String> {
         val datasets = (JSONParser(restTemplate.getForObject(
-            "$GISCO_NUTS_URL/$GISCO_DATASETS_FILE",
+            url,
             String::class.java)).parse()) as LinkedHashMap<String, *>
         val nutsKeys = datasets.keys.distinct()
-        val lastNutKey = nutsKeys.get(nutsKeys.size - 1)
-        return datasets[lastNutKey] as LinkedHashMap<String, String>
+        val lastNutsKey = nutsKeys.get(nutsKeys.size - 1)
+        return datasets[lastNutsKey] as LinkedHashMap<String, String>
     }
 
     private fun getCsvFileName(nutsFile: String): String {
@@ -103,7 +110,7 @@ class NutsServiceImpl(
         return (nutFile["csv"] as LinkedHashMap<String, String>).values.iterator().next()
     }
 
-    private fun getTemporaryCsvFile(csvFileName: String): File {
+    private fun retrieveAndOpenCsvFileFromGisco(csvFileName: String): File {
         return restTemplate.execute<File>(
             "$GISCO_NUTS_URL/$csvFileName",
             HttpMethod.GET,
@@ -111,6 +118,10 @@ class NutsServiceImpl(
             csvFileExtractor
         ) ?: throw ResourceNotFoundException(csvFileName)
     }
+
+    private fun openStaticCsvFile(csvFileLocation: String): File = File(
+        this::class.java.getResource(csvFileLocation).toURI()
+    )
 
     private fun groupNutsByLevel(csvFile: File): Map<Int, List<Pair<String, String>>> {
         var groupedByCodeLength: Map<Int, List<Pair<String, String>>>? = null

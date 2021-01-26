@@ -1,0 +1,1734 @@
+NUTS_ID,NAME_LATN
+RU,Russian Federation
+RU1,Central
+RU11,Bryansk Oblast
+RU110,Bryansk Oblast
+RU12,Vladimir Oblast
+RU120,Vladimir Oblast
+RU13,Ivanovo Oblast
+RU130,Ivanovo Oblast
+RU14,Kaluga Oblast
+RU140,Kaluga Oblast
+RU15,Kostroma Oblast
+RU150,Kostroma Oblast
+RU16,Moscow Oblast
+RU160,Moscow Oblast
+RU17,Oryol Oblast
+RU170,Oryol Oblast
+RU18,Ryazan Oblast
+RU180,Ryazan Oblast
+RU19,Smolensk Oblast
+RU190,Smolensk Oblast
+RU1A,Tver Oblast
+RU1A0,Tver Oblast
+RU1B,Tula Oblast
+RU1B0,Tula Oblast
+RU1C,Yaroslavl Oblast
+RU1C0,Yaroslavl Oblast
+RU1D,Moscow
+RU1D0,Moscow
+RU2,Central Black Earth
+RU21,Belgorod Oblast
+RU210,Belgorod Oblast
+RU22,Voronezh Oblast
+RU220,Voronezh Oblast
+RU23,Kursk Oblast
+RU230,Kursk Oblast
+RU24,Lipetsk Oblast
+RU240,Lipetsk Oblast
+RU25,Tambov Oblast
+RU250,Tambov Oblast
+RU3,East Siberian
+RU31,"Buryatia, Republic of"
+RU310,"Buryatia, Republic of"
+RU32,Tuva Republic
+RU320,Tuva Republic
+RU33,"Khakassia, Republic of"
+RU330,"Khakassia, Republic of"
+RU34,Krasnoyarsk Krai
+RU340,Krasnoyarsk Krai
+RU35,Irkutsk Oblast
+RU350,Irkutsk Oblast
+RU36,Zabaykalsky Krai
+RU360,Zabaykalsky Krai
+RU4,Far Eastern
+RU41,Sakha (Yakutia) Republic
+RU410,Sakha (Yakutia) Republic
+RU42,Primorsky Krai
+RU420,Primorsky Krai
+RU43,Khabarovsk Krai
+RU430,Khabarovsk Krai
+RU44,Amur Oblast
+RU440,Amur Oblast
+RU45,Kamchatka Krai
+RU450,Kamchatka Krai
+RU46,Magadan Oblast
+RU460,Magadan Oblast
+RU47,Sakhalin Oblast
+RU470,Sakhalin Oblast
+RU48,Jewish Autonomous Oblast
+RU480,Jewish Autonomous Oblast
+RU49,Chukotka Autonomous Okrug
+RU490,Chukotka Autonomous Okrug
+RU5,Kaliningrad
+RU51,Kaliningrad Oblast
+RU510,Kaliningrad Oblast
+RU6,North Caucasus
+RU61,"Adygea, Republic of"
+RU610,"Adygea, Republic of"
+RU62,"Dagestan, Republic of"
+RU620,"Dagestan, Republic of"
+RU63,"Ingushetia, Republic of"
+RU630,"Ingushetia, Republic of"
+RU64,Kabardino-Balkar Republic
+RU640,Kabardino-Balkar Republic
+RU65,Karachay-Cherkess Republic
+RU650,Karachay-Cherkess Republic
+RU66,"North Ossetia-Alania, Republic of"
+RU660,"North Ossetia-Alania, Republic of"
+RU67,Chechen Republic
+RU670,Chechen Republic
+RU68,Krasnodar Krai
+RU680,Krasnodar Krai
+RU69,Stavropol Krai
+RU690,Stavropol Krai
+RU6A,Rostov Oblast
+RU6A0,Rostov Oblast
+RU6B,Republic of Crimea
+RU6B0,Republic of Crimea
+RU6C,Sevastopol
+RU6C0,Sevastopol
+RU7,Northern
+RU71,"Karelia, Republic of"
+RU710,"Karelia, Republic of"
+RU72,Komi Republic
+RU720,Komi Republic
+RU73,Arkhangelsk Oblast
+RU730,Arkhangelsk Oblast
+RU74,Vologda Oblast
+RU740,Vologda Oblast
+RU75,Murmansk Oblast
+RU750,Murmansk Oblast
+RU76,Nenets Autonomous Okrug
+RU760,Nenets Autonomous Okrug
+RU8,Northwestern
+RU81,Leningrad Oblast
+RU810,Leningrad Oblast
+RU82,Novgorod Oblast
+RU820,Novgorod Oblast
+RU83,Pskov Oblast
+RU830,Pskov Oblast
+RU84,Saint Petersburg
+RU840,Saint Petersburg
+RU9,Ural
+RU91,"Bashkortostan, Republic of"
+RU910,"Bashkortostan, Republic of"
+RU92,Udmurt Republic
+RU920,Udmurt Republic
+RU93,Kurgan Oblast
+RU930,Kurgan Oblast
+RU94,Orenburg Oblast
+RU940,Orenburg Oblast
+RU95,Perm Krai
+RU950,Perm Krai
+RU96,Sverdlovsk Oblast
+RU960,Sverdlovsk Oblast
+RU97,Chelyabinsk Oblast
+RU970,Chelyabinsk Oblast
+RUA,Volga
+RUA1,"Kalmykia, Republic of"
+RUA10,"Kalmykia, Republic of"
+RUA2,"Tatarstan, Republic of"
+RUA20,"Tatarstan, Republic of"
+RUA3,Astrakhan Oblast
+RUA30,Astrakhan Oblast
+RUA4,Volgograd Oblast
+RUA40,Volgograd Oblast
+RUA5,Penza Oblast
+RUA50,Penza Oblast
+RUA6,Samara Oblast
+RUA60,Samara Oblast
+RUA7,Saratov Oblast
+RUA70,Saratov Oblast
+RUA8,Ulyanovsk Oblast
+RUA80,Ulyanovsk Oblast
+RUB,Volga-Vyatka
+RUB1,Mari El Republic
+RUB10,Mari El Republic
+RUB2,"Mordovia, Republic of"
+RUB20,"Mordovia, Republic of"
+RUB3,Chuvash Republic
+RUB30,Chuvash Republic
+RUB4,Kirov Oblast
+RUB40,Kirov Oblast
+RUB5,Nizhny Novgorod Oblast
+RUB50,Nizhny Novgorod Oblast
+RUC,West Siberian
+RUC1,Altai Republic
+RUC10,Altai Republic
+RUC2,Altai Krai
+RUC20,Altai Krai
+RUC3,Kemerovo Oblast
+RUC30,Kemerovo Oblast
+RUC4,Novosibirsk Oblast
+RUC40,Novosibirsk Oblast
+RUC5,Omsk Oblast
+RUC50,Omsk Oblast
+RUC6,Tomsk Oblast
+RUC60,Tomsk Oblast
+RUC7,Tyumen Oblast
+RUC70,Tyumen Oblast
+RUC8,Khanty–Mansi Autonomous Okrug – Yugra
+RUC80,Khanty–Mansi Autonomous Okrug – Yugra
+RUC9,Yamalo-Nenets Autonomous Okrug
+RUC90,Yamalo-Nenets Autonomous Okrug
+DZ,Algeria
+DZ0,Algeria North
+DZ01,Adrar
+DZ010,Adrar
+DZ02,Chlef
+DZ020,Chlef
+DZ03,Laghouat
+DZ030,Laghouat
+DZ04,Oum el-Bouaghi
+DZ040,Oum el-Bouaghi
+DZ05,Batna
+DZ050,Batna
+DZ06,Béjaïa
+DZ060,Béjaïa
+DZ07,Biskra
+DZ070,Biskra
+DZ08,Béchar
+DZ080,Béchar
+DZ09,Blida
+DZ090,Blida
+DZ0A,Bouïra
+DZ0A0,Bouïra
+DZ0B,Tamanghasset
+DZ0B0,Tamanghasset
+DZ0C,Tébessa
+DZ0C0,Tébessa
+DZ0D,Tlemcen
+DZ0D0,Tlemcen
+DZ0E,Tiaret
+DZ0E0,Tiaret
+DZ0F,Tizi Ouzou
+DZ0F0,Tizi Ouzou
+DZ0G,Algiers
+DZ0G0,Algiers
+DZ0H,Djelfa
+DZ0H0,Djelfa
+DZ0I,Jijel
+DZ0I0,Jijel
+DZ0J,Sétif
+DZ0J0,Sétif
+DZ0K,Saïda
+DZ0K0,Saïda
+DZ0L,Skikda
+DZ0L0,Skikda
+DZ0M,Sidi Bel Abbès
+DZ0M0,Sidi Bel Abbès
+DZ0N,Annaba
+DZ0N0,Annaba
+DZ0O,Guelma
+DZ0O0,Guelma
+DZ0P,Constantine
+DZ0P0,Constantine
+DZ0Q,Médéa
+DZ0Q0,Médéa
+DZ0R,Mostaganem
+DZ0R0,Mostaganem
+DZ0S,Msila
+DZ0S0,Msila
+DZ0T,Mascara
+DZ0T0,Mascara
+DZ0U,Ouargla
+DZ0U0,Ouargla
+DZ0V,Oran
+DZ0V0,Oran
+DZ0W,El Bayadh
+DZ0W0,El Bayadh
+DZ0X,Illizi
+DZ0X0,Illizi
+DZ0Y,Bordj Bou Arréridj
+DZ0Y0,Bordj Bou Arréridj
+DZ0Z,Boumerdès
+DZ0Z0,Boumerdès
+DZ1,Algeria South
+DZ11,El Taref
+DZ110,El Taref
+DZ12,Tindouf
+DZ120,Tindouf
+DZ13,Tissemsilt
+DZ130,Tissemsilt
+DZ14,El Oued
+DZ140,El Oued
+DZ15,Khenchela
+DZ150,Khenchela
+DZ16,Souk Ahras
+DZ160,Souk Ahras
+DZ17,Tipaza
+DZ170,Tipaza
+DZ18,Mila
+DZ180,Mila
+DZ19,Aïn Defla
+DZ190,Aïn Defla
+DZ1A,Naâma
+DZ1A0,Naâma
+DZ1B,Aïn Témouchent
+DZ1B0,Aïn Témouchent
+DZ1C,Ghardaïa
+DZ1C0,Ghardaïa
+DZ1D,Relizane
+DZ1D0,Relizane
+AD,Andorra
+AD0,Andorra
+AD01,Andorra la Vella
+AD010,Andorra la Vella
+AD02,Canillo
+AD020,Canillo
+AD03,Encamp
+AD030,Encamp
+AD04,EscaldesEngordany
+AD040,EscaldesEngordany
+AD05,La Massana
+AD050,La Massana
+AD06,Ordino
+AD060,Ordino
+AD07,Sant Julià de Lòria
+AD070,Sant Julià de Lòria
+AR,Armenia
+AR0,Armenia
+AR01,Aragac̣otn
+AR010,Aragac̣otn
+AR02,Ararat
+AR020,Ararat
+AR03,Armavir
+AR030,Armavir
+AR04,Erevan
+AR040,Erevan
+AR05,Geġarkunik
+AR050,Geġarkunik
+AR06,Kotayk
+AR060,Kotayk
+AR07,Loṙi
+AR070,Loṙi
+AR08,Syunik
+AR080,Syunik
+AR09,Tavuš
+AR090,Tavuš
+AR0A,Vayoć Jor
+AR0A0,Vayoć Jor
+AR0B,Širak
+AR0B0,Širak
+AZ,Azerbaijan
+AZ0,Azerbaijan
+AZ01,Bakı
+AZ010,Bakı
+AZ02,Gəncə
+AZ020,Gəncə
+AZ03,Lənkəran
+AZ030,Lənkəran
+AZ04,Mingəçevir
+AZ040,Mingəçevir
+AZ05,Naftalan
+AZ050,Naftalan
+AZ06,Naxçıvan
+AZ060,Naxçıvan
+AZ07,Sumqayıt
+AZ070,Sumqayıt
+AZ08,Xankəndi
+AZ080,Xankəndi
+AZ09,Yevlax
+AZ090,Yevlax
+AZ0A,Şirvan
+AZ0A0,Şirvan
+AZ0B,Şəki
+AZ0B0,Şəki
+AZ0C,Abşeron
+AZ0C0,Abşeron
+BY,Belarus
+BY0,Belarus
+BY01,Vitebsk
+BY010,Vitebsk
+BY02,Grodno
+BY020,Grodno
+BY03,Mogilev
+BY030,Mogilev
+BY04,Gomel
+BY040,Gomel
+BY05,Minsk Region
+BY050,Minsk Region
+BY06,Brest
+BY060,Brest
+BY07,City of Minsk
+BY070,City of Minsk
+BA,Bosnia and Herzegovina
+BA0,Bosnia and Herzegovina
+BA01,Brčko distrikt
+BA010,Brčko distrikt
+BA02,Federacija Bosne i Hercegovine
+BA020,Federacija Bosne i Hercegovine
+BA03,Republika Srpska
+BA030,Republika Srpska
+EG,Egypt
+EG0,Egypt
+EG01,Alexandria
+EG010,Alexandria
+EG02,Aswan
+EG020,Aswan
+EG03,Asyut
+EG030,Asyut
+EG04,Beheira
+EG040,Beheira
+EG05,Beni Suef
+EG050,Beni Suef
+EG06,Cairo
+EG060,Cairo
+EG07,Dakahlia
+EG070,Dakahlia
+EG08,Damietta
+EG080,Damietta
+EG09,Faiyum
+EG090,Faiyum
+EG0A,Gharbia
+EG0A0,Gharbia
+EG0B,Giza
+EG0B0,Giza
+EG0C,Ismailia
+EG0C0,Ismailia
+EG0D,Kafr El Sheikh
+EG0D0,Kafr El Sheikh
+EG0E,Luxor
+EG0E0,Luxor
+EG0F,Matruh
+EG0F0,Matruh
+EG0G,Minya
+EG0G0,Minya
+EG0H,Monufia
+EG0H0,Monufia
+EG0I,New Valley
+EG0I0,New Valley
+EG0J,North Sinai
+EG0J0,North Sinai
+EG0K,Port Said
+EG0K0,Port Said
+EG0L,Qalyubia
+EG0L0,Qalyubia
+EG0M,Qena
+EG0M0,Qena
+EG0N,Red Sea
+EG0N0,Red Sea
+EG0O,Sharqia
+EG0O0,Sharqia
+EG0P,Sohag
+EG0P0,Sohag
+EG0Q,South Sinai
+EG0Q0,South Sinai
+EG0R,Suez
+EG0R0,Suez
+FO,Faroe Islands
+GE,Georgia
+GE0,Georgia
+GE01,Abkhazia
+GE010,Abkhazia
+GE02,Ajaria
+GE020,Ajaria
+GE03,Guria
+GE030,Guria
+GE04,Imereti
+GE040,Imereti
+GE05,Kakheti
+GE050,Kakheti
+GE06,Kvemo Kartli
+GE060,Kvemo Kartli
+GE07,Mtskheta-Mtianeti
+GE070,Mtskheta-Mtianeti
+GE08,Racha-Lechkhumi-Kvemo Svaneti
+GE080,Racha-Lechkhumi-Kvemo Svaneti
+GE09,Samegrelo-Zemo Svaneti
+GE090,Samegrelo-Zemo Svaneti
+GE0A,Samtskhe-Javakheti
+GE0A0,Samtskhe-Javakheti
+GE0B,Shida Kartli
+GE0B0,Shida Kartli
+GE0C,Tbilisi
+GE0C0,Tbilisi
+GL,Greenland
+GL0,Greenland
+GL01,Kommune Kujalleq
+GL010,Kommune Kujalleq
+GL02,Kommune Qeqertalik
+GL020,Kommune Qeqertalik
+GL03,Kommuneqarfik Sermersooq
+GL030,Kommuneqarfik Sermersooq
+GL04,Qeqqata Kommunia
+GL040,Qeqqata Kommunia
+IL,Israel
+IL0,Israel
+IL01,Al Awsaţ
+IL010,Al Awsaţ
+IL02,Al Janūbī
+IL020,Al Janūbī
+IL03,Al Quds
+IL030,Al Quds
+IL04,Ash Shamālī
+IL040,Ash Shamālī
+IL05,HaDarom
+IL050,HaDarom
+IL06,HaMerkaz
+IL060,HaMerkaz
+IL07,HaTsafon
+IL070,HaTsafon
+IL08,H̱efa
+IL080,H̱efa
+IL09,Tall Abīb
+IL090,Tall Abīb
+IL0A,Tel Aviv
+IL0A0,Tel Aviv
+IL0B,Yerushalayim
+IL0B0,Yerushalayim
+IL0C,Ḩayfā
+IL0C0,Ḩayfā
+JO,Jordan
+JO0,Jordan
+JO01,Al Karak
+JO010,Al Karak
+JO02,Al Mafraq
+JO020,Al Mafraq
+JO03,Al ‘Aqabah
+JO030,Al ‘Aqabah
+JO04,Al ‘A̅şimah
+JO040,Al ‘A̅şimah
+JO05,Az Zarqā’
+JO050,Az Zarqā’
+JO06,Aţ Ţafīlah
+JO060,Aţ Ţafīlah
+JO07,Irbid
+JO070,Irbid
+JO08,Jarash
+JO080,Jarash
+JO09,Ma‘ān
+JO090,Ma‘ān
+JO0A,Mādabā
+JO0A0,Mādabā
+JO0B,‘Ajlūn
+JO0B0,‘Ajlūn
+LB,Lebanon
+LB0,Lebanon
+LB01,Aakkâr
+LB010,Aakkâr
+LB02,Al Biqā‘
+LB020,Al Biqā‘
+LB03,Al Janūb
+LB030,Al Janūb
+LB04,An Nabaţīyah
+LB040,An Nabaţīyah
+LB05,Ash Shimāl
+LB050,Ash Shimāl
+LB06,Baalbek-Hermel
+LB060,Baalbek-Hermel
+LB07,Bayrūt
+LB070,Bayrūt
+LB08,Beyrouth
+LB080,Beyrouth
+LB09,Béqaa
+LB090,Béqaa
+LB0A,B‘alabak-Al Hirmil
+LB0A0,B‘alabak-Al Hirmil
+LB0B,Jabal Lubnān
+LB0B0,Jabal Lubnān
+LB0C,Liban-Nord
+LB0C0,Liban-Nord
+LB0D,Liban-Sud
+LB0D0,Liban-Sud
+LB0E,Mont-Liban
+LB0E0,Mont-Liban
+LB0F,Nabatîyé
+LB0F0,Nabatîyé
+LB0G,‘Akkār
+LB0G0,‘Akkār
+LY,Libya
+LY0,Libya
+LY01,Ajdabiya
+LY010,Ajdabiya
+LY02,Butnan
+LY020,Butnan
+LY03,Hizam al Akhdar
+LY030,Hizam al Akhdar
+LY04,Jabal al Akhdar
+LY040,Jabal al Akhdar
+LY05,Jafara
+LY050,Jafara
+LY06,Jufra
+LY060,Jufra
+LY07,Kufra
+LY070,Kufra
+LY08,Marj
+LY080,Marj
+LY09,Murqub
+LY090,Murqub
+LY0A,Nuqat al Khams
+LY0A0,Nuqat al Khams
+LY0B,Quba
+LY0B0,Quba
+LY0C,Al Wahat
+LY0C0,Al Wahat
+LY0D,Zawiya
+LY0D0,Zawiya
+LY0E,Benghazi
+LY0E0,Benghazi
+LY0F,Bani Walid
+LY0F0,Bani Walid
+LY0G,Derna
+LY0G0,Derna
+LY0H,Ghat
+LY0H0,Ghat
+LY0I,Ghadames
+LY0I0,Ghadames
+LY0J,Gharyan
+LY0J0,Gharyan
+LY0K,Murzuq
+LY0K0,Murzuq
+LY0L,Mizda
+LY0L0,Mizda
+LY0M,Misrata
+LY0M0,Misrata
+LY0N,Nalut
+LY0N0,Nalut
+LY0O,Tajura wa Arba‘
+LY0O0,Tajura wa Arba‘
+LY0P,Tarhuna wa Msalata
+LY0P0,Tarhuna wa Msalata
+LY0Q,Tripoli
+LY0Q0,Tripoli
+LY0R,Sabha
+LY0R0,Sabha
+LY0S,Sirte
+LY0S0,Sirte
+LY0T,Sabratha wa Sorman
+LY0T0,Sabratha wa Sorman
+LY0U,Wadi al Hayaa
+LY0U0,Wadi al Hayaa
+LY0V,Wadi al Shatii
+LY0V0,Wadi al Shatii
+LY0W,Yafran
+LY0W0,Yafran
+MD,Moldova
+MD0,Moldova
+MD01,Anenii Noi
+MD010,Anenii Noi
+MD02,Basarabeasca
+MD020,Basarabeasca
+MD03,Briceni
+MD030,Briceni
+MD04,Cahul
+MD040,Cahul
+MD05,Cantemir
+MD050,Cantemir
+MD06,Cimișlia
+MD060,Cimișlia
+MD07,Criuleni
+MD070,Criuleni
+MD08,Călărași
+MD080,Călărași
+MD09,Căușeni
+MD090,Căușeni
+MD0A,Dondușeni
+MD0A0,Dondușeni
+MD0B,Drochia
+MD0B0,Drochia
+MD0C,Dubăsari
+MD0C0,Dubăsari
+MD0D,Edineț
+MD0D0,Edineț
+MD0E,Florești
+MD0E0,Florești
+MD0F,Fălești
+MD0F0,Fălești
+MD0G,Glodeni
+MD0G0,Glodeni
+MD0H,Hîncești
+MD0H0,Hîncești
+MD0I,Ialoveni
+MD0I0,Ialoveni
+MD0J,Leova
+MD0J0,Leova
+MD0K,Nisporeni
+MD0K0,Nisporeni
+MD0L,Ocnița
+MD0L0,Ocnița
+MD0M,Orhei
+MD0M0,Orhei
+MD0N,Rezina
+MD0N0,Rezina
+MD0O,Rîșcani
+MD0O0,Rîșcani
+MD0P,Soroca
+MD0P0,Soroca
+MD0Q,Strășeni
+MD0Q0,Strășeni
+MD0R,Sîngerei
+MD0R0,Sîngerei
+MD0S,Taraclia
+MD0S0,Taraclia
+MD0T,Telenești
+MD0T0,Telenești
+MD0U,Ungheni
+MD0U0,Ungheni
+MD0V,Șoldănești
+MD0V0,Șoldănești
+MD0W,Ștefan Vodă
+MD0W0,Ștefan Vodă
+MC,Monaco
+MC0,Monaco
+MC01,Fontvieille
+MC010,Fontvieille
+MC02,Jardin Exotique
+MC020,Jardin Exotique
+MC03,La Colle
+MC030,La Colle
+MC04,La Condamine
+MC040,La Condamine
+MC05,La Gare
+MC050,La Gare
+MC06,La Source
+MC060,La Source
+MC07,Larvotto
+MC070,Larvotto
+MC08,Malbousquet
+MC080,Malbousquet
+MC09,Monaco-Ville
+MC090,Monaco-Ville
+MC0A,Moneghetti
+MC0A0,Moneghetti
+MC0B,Monte-Carlo
+MC0B0,Monte-Carlo
+MC0C,Moulins
+MC0C0,Moulins
+MC0D,Port-Hercule
+MC0D0,Port-Hercule
+MC0E,Saint-Roman
+MC0E0,Saint-Roman
+MC0F,Sainte-Dévote
+MC0F0,Sainte-Dévote
+MC0G,Spélugues
+MC0G0,Spélugues
+MC0H,Vallon de la Rousse
+MC0H0,Vallon de la Rousse
+MA,Morocco
+MA0,Morocco
+MA01,Chaouia-Ouardigha Region
+MA010,Chaouia-Ouardigha Region
+MA02,Doukkala-Abda Region
+MA020,Doukkala-Abda Region
+MA03,Fès-Boulemane Region
+MA030,Fès-Boulemane Region
+MA04,Gharb-Chrarda-Béni Hssen Region
+MA040,Gharb-Chrarda-Béni Hssen Region
+MA05,Greater Casablanca Region
+MA050,Greater Casablanca Region
+MA06,Guelmim-Es Semara Region
+MA060,Guelmim-Es Semara Region
+MA07,Laâyoune-Boujdour-Sakia El Hamra Region
+MA070,Laâyoune-Boujdour-Sakia El Hamra Region
+MA08,Marrakech-Tensift-El Haouz Region
+MA080,Marrakech-Tensift-El Haouz Region
+MA09,Meknès-Tafilalet Region
+MA090,Meknès-Tafilalet Region
+MA0A,Oriental Region
+MA0A0,Oriental Region
+MA0B,Oued Ed-Dahab-Lagouira Region
+MA0B0,Oued Ed-Dahab-Lagouira Region
+MA0C,Rabat-Salé-Zemmour-Zaer Region
+MA0C0,Rabat-Salé-Zemmour-Zaer Region
+MA0D,Souss-Massa-Drâa Region
+MA0D0,Souss-Massa-Drâa Region
+MA0E,Tadla-Azilal Region
+MA0E0,Tadla-Azilal Region
+MA0F,Tangier-Tétouan Region
+MA0F0,Tangier-Tétouan Region
+MA0G,Taza-Al Hoceima-Taounate Region
+MA0G0,Taza-Al Hoceima-Taounate Region
+PS,Palestine
+PS0,Palestine
+PS01,Al Khalīl
+PS010,Al Khalīl
+PS02,Al Quds
+PS020,Al Quds
+PS03,Arīḩā wal Aghwār
+PS030,Arīḩā wal Aghwār
+PS04,Bayt Laḩm
+PS040,Bayt Laḩm
+PS05,Bethlehem
+PS050,Bethlehem
+PS06,Dayr al Balaḩ
+PS060,Dayr al Balaḩ
+PS07,Deir El Balah
+PS070,Deir El Balah
+PS08,Gaza
+PS080,Gaza
+PS09,Ghazzah
+PS090,Ghazzah
+PS0A,Hebron
+PS0A0,Hebron
+PS0B,Janīn
+PS0B0,Janīn
+PS0C,Jenin
+PS0C0,Jenin
+PS0D,Jericho and Al Aghwar
+PS0D0,Jericho and Al Aghwar
+PS0E,Jerusalem
+PS0E0,Jerusalem
+PS0F,Khan Yunis
+PS0F0,Khan Yunis
+PS0G,Khān Yūnis
+PS0G0,Khān Yūnis
+PS0H,Nablus
+PS0H0,Nablus
+PS0I,North Gaza
+PS0I0,North Gaza
+PS0J,Nāblus
+PS0J0,Nāblus
+PS0K,Qalqilya
+PS0K0,Qalqilya
+PS0L,Qalqīlyah
+PS0L0,Qalqīlyah
+PS0M,Rafah
+PS0M0,Rafah
+PS0N,Rafaḩ
+PS0N0,Rafaḩ
+PS0O,Ramallah
+PS0O0,Ramallah
+PS0P,Rām Allāh wal Bīrah
+PS0P0,Rām Allāh wal Bīrah
+PS0Q,Salfit
+PS0Q0,Salfit
+PS0R,Salfīt
+PS0R0,Salfīt
+PS0S,Shamāl Ghazzah
+PS0S0,Shamāl Ghazzah
+PS0T,Tubas
+PS0T0,Tubas
+PS0U,Tulkarm
+PS0U0,Tulkarm
+PS0V,Ţūbās
+PS0V0,Ţūbās
+PS0W,Ţūlkarm
+PS0W0,Ţūlkarm
+SM,San Marino
+SM0,San Marino
+SM01,Acquaviva
+SM010,Acquaviva
+SM02,Borgo Maggiore
+SM020,Borgo Maggiore
+SM03,Chiesanuova
+SM030,Chiesanuova
+SM04,Domagnano
+SM040,Domagnano
+SM05,Faetano
+SM050,Faetano
+SM06,Fiorentino
+SM060,Fiorentino
+SM07,Montegiardino
+SM070,Montegiardino
+SM08,San Marino
+SM080,San Marino
+SM09,Serravalle
+SM090,Serravalle
+SY,Syria
+SY0,Syria
+SY01,Aleppo Governorate
+SY010,Aleppo Governorate
+SY02,Damascus Governorate
+SY020,Damascus Governorate
+SY03,Daraa Governorate
+SY030,Daraa Governorate
+SY04,Deir ez-Zor Governorate
+SY040,Deir ez-Zor Governorate
+SY05,Hama Governorate
+SY050,Hama Governorate
+SY06,Al-Hasakah Governorate
+SY060,Al-Hasakah Governorate
+SY07,Homs Governorate
+SY070,Homs Governorate
+SY08,Idlib Governorate
+SY080,Idlib Governorate
+SY09,Latakia Governorate
+SY090,Latakia Governorate
+SY0A,Quneitra Governorate
+SY0A0,Quneitra Governorate
+SY0B,Raqqa Governorate
+SY0B0,Raqqa Governorate
+SY0C,Rif Dimashq Governorate
+SY0C0,Rif Dimashq Governorate
+SY0D,As-Suwayda Governorate
+SY0D0,As-Suwayda Governorate
+SY0E,Tartus Governorate
+SY0E0,Tartus Governorate
+TN,Tunisia
+TN0,Tunisia
+TN01,Ariana
+TN010,Ariana
+TN02,Béja
+TN020,Béja
+TN03,Ben Arous
+TN030,Ben Arous
+TN04,Bizerte
+TN040,Bizerte
+TN05,Gabès
+TN050,Gabès
+TN06,Gafsa
+TN060,Gafsa
+TN07,Jendouba
+TN070,Jendouba
+TN08,Kairouan
+TN080,Kairouan
+TN09,Kasserine
+TN090,Kasserine
+TN0A,Kebili
+TN0A0,Kebili
+TN0B,Kef
+TN0B0,Kef
+TN0C,Mahdia
+TN0C0,Mahdia
+TN0D,Manouba
+TN0D0,Manouba
+TN0E,Medenine
+TN0E0,Medenine
+TN0F,Monastir
+TN0F0,Monastir
+TN0G,Nabeul
+TN0G0,Nabeul
+TN0H,Sfax
+TN0H0,Sfax
+TN0I,Sidi Bouzid
+TN0I0,Sidi Bouzid
+TN0J,Siliana
+TN0J0,Siliana
+TN0K,Sousse
+TN0K0,Sousse
+TN0L,Tataouine
+TN0L0,Tataouine
+TN0M,Tozeur
+TN0M0,Tozeur
+TN0N,Tunis
+TN0N0,Tunis
+TN0O,Zaghouan
+TN0O0,Zaghouan
+UA,Ukraine
+UA0,Ukraine
+UA01,Zaporizhia Oblast
+UA010,Zaporizhia Oblast
+UA02,Donetsk Oblast
+UA020,Donetsk Oblast
+UA03,Luhansk Oblast
+UA030,Luhansk Oblast
+UA04,Sevastopol City
+UA040,Sevastopol City
+UA05,Crimea Oblast
+UA050,Crimea Oblast
+UA06,Kherson Oblast
+UA060,Kherson Oblast
+UA07,Dnipropetrovsk Oblast
+UA070,Dnipropetrovsk Oblast
+UA08,Kharkiv Oblast
+UA080,Kharkiv Oblast
+UA09,Mykolaiv Oblast
+UA090,Mykolaiv Oblast
+UA0A,Poltava Oblast
+UA0A0,Poltava Oblast
+UA0B,Sumy Oblast
+UA0B0,Sumy Oblast
+UA0C,Chernihiv Oblast
+UA0C0,Chernihiv Oblast
+UA0D,Odessa Oblast
+UA0D0,Odessa Oblast
+UA0E,Kirovohrad Oblast
+UA0E0,Kirovohrad Oblast
+UA0F,Cherkasy Oblast
+UA0F0,Cherkasy Oblast
+UA0G,Kiev Oblast
+UA0G0,Kiev Oblast
+UA0H,Kiev City
+UA0H0,Kiev City
+UA0I,Vinnytsia Oblast
+UA0I0,Vinnytsia Oblast
+UA0J,Zhytomyr Oblast
+UA0J0,Zhytomyr Oblast
+UA0K,Chernivtsi Oblast
+UA0K0,Chernivtsi Oblast
+UA0L,Khmelnytskyi Oblast
+UA0L0,Khmelnytskyi Oblast
+UA0M,Ivano-Frankivsk Oblast
+UA0M0,Ivano-Frankivsk Oblast
+UA0N,Ternopil Oblast
+UA0N0,Ternopil Oblast
+UA0O,Rivne Oblast
+UA0O0,Rivne Oblast
+UA0P,Zakarpattia Oblast
+UA0P0,Zakarpattia Oblast
+UA0Q,Lviv Oblast
+UA0Q0,Lviv Oblast
+UA0R,Volyn Oblast
+UA0R0,Volyn Oblast
+AF,Afghanistan
+AF0,Afghanistan
+AF00,Afghanistan
+AF000,Afghanistan
+AX,Åland Islands
+AX0,Åland Islands
+AX00,Åland Islands
+AX000,Åland Islands
+AS,American Samoa
+AS0,American Samoa
+AS00,American Samoa
+AS000,American Samoa
+AO,Angola
+AO0,Angola
+AO00,Angola
+AO000,Angola
+AI,Anguilla
+AI0,Anguilla
+AI00,Anguilla
+AI000,Anguilla
+AQ,Antarctica
+AQ0,Antarctica
+AQ00,Antarctica
+AQ000,Antarctica
+AG,Antigua and Barbuda
+AG0,Antigua and Barbuda
+AG00,Antigua and Barbuda
+AG000,Antigua and Barbuda
+AM,Armenia
+AM0,Armenia
+AM00,Armenia
+AM000,Armenia
+AW,Aruba
+AW0,Aruba
+AW00,Aruba
+AW000,Aruba
+AU,Australia
+AU0,Australia
+AU00,Australia
+AU000,Australia
+BS,Bahamas (the)
+BS0,Bahamas (the)
+BS00,Bahamas (the)
+BS000,Bahamas (the)
+BH,Bahrain
+BH0,Bahrain
+BH00,Bahrain
+BH000,Bahrain
+BD,Bangladesh
+BD0,Bangladesh
+BD00,Bangladesh
+BD000,Bangladesh
+BB,Barbados
+BB0,Barbados
+BB00,Barbados
+BB000,Barbados
+BZ,Belize
+BZ0,Belize
+BZ00,Belize
+BZ000,Belize
+BJ,Benin
+BJ0,Benin
+BJ00,Benin
+BJ000,Benin
+BM,Bermuda
+BM0,Bermuda
+BM00,Bermuda
+BM000,Bermuda
+BT,Bhutan
+BT0,Bhutan
+BT00,Bhutan
+BT000,Bhutan
+BO,Bolivia (Plurinational State of)
+BO0,Bolivia (Plurinational State of)
+BO00,Bolivia (Plurinational State of)
+BO000,Bolivia (Plurinational State of)
+BQ,"Bonaire, Sint Eustatius and Saba"
+BQ0,"Bonaire, Sint Eustatius and Saba"
+BQ00,"Bonaire, Sint Eustatius and Saba"
+BQ000,"Bonaire, Sint Eustatius and Saba"
+BW,Botswana
+BW0,Botswana
+BW00,Botswana
+BW000,Botswana
+BV,Bouvet Island
+BV0,Bouvet Island
+BV00,Bouvet Island
+BV000,Bouvet Island
+BR,Brazil
+BR0,Brazil
+BR00,Brazil
+BR000,Brazil
+IO,British Indian Ocean Territory (the)
+IO0,British Indian Ocean Territory (the)
+IO00,British Indian Ocean Territory (the)
+IO000,British Indian Ocean Territory (the)
+BN,Brunei Darussalam
+BN0,Brunei Darussalam
+BN00,Brunei Darussalam
+BN000,Brunei Darussalam
+BF,Burkina Faso
+BF0,Burkina Faso
+BF00,Burkina Faso
+BF000,Burkina Faso
+BI,Burundi
+BI0,Burundi
+BI00,Burundi
+BI000,Burundi
+CV,Cabo Verde
+CV0,Cabo Verde
+CV00,Cabo Verde
+CV000,Cabo Verde
+KH,Cambodia
+KH0,Cambodia
+KH00,Cambodia
+KH000,Cambodia
+CM,Cameroon
+CM0,Cameroon
+CM00,Cameroon
+CM000,Cameroon
+CA,Canada
+CA0,Canada
+CA00,Canada
+CA000,Canada
+KY,Cayman Islands (the)
+KY0,Cayman Islands (the)
+KY00,Cayman Islands (the)
+KY000,Cayman Islands (the)
+CF,Central African Republic (the)
+CF0,Central African Republic (the)
+CF00,Central African Republic (the)
+CF000,Central African Republic (the)
+TD,Chad
+TD0,Chad
+TD00,Chad
+TD000,Chad
+CL,Chile
+CL0,Chile
+CL00,Chile
+CL000,Chile
+CN,China
+CN0,China
+CN00,China
+CN000,China
+CX,Christmas Island
+CX0,Christmas Island
+CX00,Christmas Island
+CX000,Christmas Island
+CC,Cocos (Keeling) Islands (the)
+CC0,Cocos (Keeling) Islands (the)
+CC00,Cocos (Keeling) Islands (the)
+CC000,Cocos (Keeling) Islands (the)
+CO,Colombia
+CO0,Colombia
+CO00,Colombia
+CO000,Colombia
+KM,Comoros (the)
+KM0,Comoros (the)
+KM00,Comoros (the)
+KM000,Comoros (the)
+CD,Congo (the Democratic Republic of the)
+CD0,Congo (the Democratic Republic of the)
+CD00,Congo (the Democratic Republic of the)
+CD000,Congo (the Democratic Republic of the)
+CG,Congo (the)
+CG0,Congo (the)
+CG00,Congo (the)
+CG000,Congo (the)
+CK,Cook Islands (the)
+CK0,Cook Islands (the)
+CK00,Cook Islands (the)
+CK000,Cook Islands (the)
+CR,Costa Rica
+CR0,Costa Rica
+CR00,Costa Rica
+CR000,Costa Rica
+CI,Côte d'Ivoire
+CI0,Côte d'Ivoire
+CI00,Côte d'Ivoire
+CI000,Côte d'Ivoire
+CU,Cuba
+CU0,Cuba
+CU00,Cuba
+CU000,Cuba
+CW,Curaçao
+CW0,Curaçao
+CW00,Curaçao
+CW000,Curaçao
+DJ,Djibouti
+DJ0,Djibouti
+DJ00,Djibouti
+DJ000,Djibouti
+DM,Dominica
+DM0,Dominica
+DM00,Dominica
+DM000,Dominica
+DO,Dominican Republic (the)
+DO0,Dominican Republic (the)
+DO00,Dominican Republic (the)
+DO000,Dominican Republic (the)
+EC,Ecuador
+EC0,Ecuador
+EC00,Ecuador
+EC000,Ecuador
+SV,El Salvador
+SV0,El Salvador
+SV00,El Salvador
+SV000,El Salvador
+GQ,Equatorial Guinea
+GQ0,Equatorial Guinea
+GQ00,Equatorial Guinea
+GQ000,Equatorial Guinea
+ER,Eritrea
+ER0,Eritrea
+ER00,Eritrea
+ER000,Eritrea
+SZ,Eswatini
+SZ0,Eswatini
+SZ00,Eswatini
+SZ000,Eswatini
+ET,Ethiopia
+ET0,Ethiopia
+ET00,Ethiopia
+ET000,Ethiopia
+FK,Falkland Islands (the) [Malvinas]
+FK0,Falkland Islands (the) [Malvinas]
+FK00,Falkland Islands (the) [Malvinas]
+FK000,Falkland Islands (the) [Malvinas]
+FJ,Fiji
+FJ0,Fiji
+FJ00,Fiji
+FJ000,Fiji
+GF,French Guiana
+GF0,French Guiana
+GF00,French Guiana
+GF000,French Guiana
+PF,French Polynesia
+PF0,French Polynesia
+PF00,French Polynesia
+PF000,French Polynesia
+TF,French Southern Territories (the)
+TF0,French Southern Territories (the)
+TF00,French Southern Territories (the)
+TF000,French Southern Territories (the)
+GA,Gabon
+GA0,Gabon
+GA00,Gabon
+GA000,Gabon
+GM,Gambia (the)
+GM0,Gambia (the)
+GM00,Gambia (the)
+GM000,Gambia (the)
+GH,Ghana
+GH0,Ghana
+GH00,Ghana
+GH000,Ghana
+GI,Gibraltar
+GI0,Gibraltar
+GI00,Gibraltar
+GI000,Gibraltar
+GD,Grenada
+GD0,Grenada
+GD00,Grenada
+GD000,Grenada
+GP,Guadeloupe
+GP0,Guadeloupe
+GP00,Guadeloupe
+GP000,Guadeloupe
+GU,Guam
+GU0,Guam
+GU00,Guam
+GU000,Guam
+GT,Guatemala
+GT0,Guatemala
+GT00,Guatemala
+GT000,Guatemala
+GG,Guernsey
+GG0,Guernsey
+GG00,Guernsey
+GG000,Guernsey
+GN,Guinea
+GN0,Guinea
+GN00,Guinea
+GN000,Guinea
+GW,Guinea-Bissau
+GW0,Guinea-Bissau
+GW00,Guinea-Bissau
+GW000,Guinea-Bissau
+GY,Guyana
+GY0,Guyana
+GY00,Guyana
+GY000,Guyana
+HT,Haiti
+HT0,Haiti
+HT00,Haiti
+HT000,Haiti
+HM,Heard Island and McDonald Islands
+HM0,Heard Island and McDonald Islands
+HM00,Heard Island and McDonald Islands
+HM000,Heard Island and McDonald Islands
+VA,Holy See (the)
+VA0,Holy See (the)
+VA00,Holy See (the)
+VA000,Holy See (the)
+HN,Honduras
+HN0,Honduras
+HN00,Honduras
+HN000,Honduras
+HK,Hong Kong
+HK0,Hong Kong
+HK00,Hong Kong
+HK000,Hong Kong
+IN,India
+IN0,India
+IN00,India
+IN000,India
+ID,Indonesia
+ID0,Indonesia
+ID00,Indonesia
+ID000,Indonesia
+IR,Iran (Islamic Republic of)
+IR0,Iran (Islamic Republic of)
+IR00,Iran (Islamic Republic of)
+IR000,Iran (Islamic Republic of)
+IQ,Iraq
+IQ0,Iraq
+IQ00,Iraq
+IQ000,Iraq
+IM,Isle of Man
+IM0,Isle of Man
+IM00,Isle of Man
+IM000,Isle of Man
+JM,Jamaica
+JM0,Jamaica
+JM00,Jamaica
+JM000,Jamaica
+JP,Japan
+JP0,Japan
+JP00,Japan
+JP000,Japan
+JE,Jersey
+JE0,Jersey
+JE00,Jersey
+JE000,Jersey
+KZ,Kazakhstan
+KZ0,Kazakhstan
+KZ00,Kazakhstan
+KZ000,Kazakhstan
+KE,Kenya
+KE0,Kenya
+KE00,Kenya
+KE000,Kenya
+KI,Kiribati
+KI0,Kiribati
+KI00,Kiribati
+KI000,Kiribati
+KP,Korea (the Democratic People's Republic of)
+KP0,Korea (the Democratic People's Republic of)
+KP00,Korea (the Democratic People's Republic of)
+KP000,Korea (the Democratic People's Republic of)
+KR,Korea (the Republic of)
+KR0,Korea (the Republic of)
+KR00,Korea (the Republic of)
+KR000,Korea (the Republic of)
+KW,Kuwait
+KW0,Kuwait
+KW00,Kuwait
+KW000,Kuwait
+KG,Kyrgyzstan
+KG0,Kyrgyzstan
+KG00,Kyrgyzstan
+KG000,Kyrgyzstan
+LA,Lao People's Democratic Republic (the)
+LA0,Lao People's Democratic Republic (the)
+LA00,Lao People's Democratic Republic (the)
+LA000,Lao People's Democratic Republic (the)
+LS,Lesotho
+LS0,Lesotho
+LS00,Lesotho
+LS000,Lesotho
+LR,Liberia
+LR0,Liberia
+LR00,Liberia
+LR000,Liberia
+MO,Macao
+MO0,Macao
+MO00,Macao
+MO000,Macao
+MG,Madagascar
+MG0,Madagascar
+MG00,Madagascar
+MG000,Madagascar
+MW,Malawi
+MW0,Malawi
+MW00,Malawi
+MW000,Malawi
+MY,Malaysia
+MY0,Malaysia
+MY00,Malaysia
+MY000,Malaysia
+MV,Maldives
+MV0,Maldives
+MV00,Maldives
+MV000,Maldives
+ML,Mali
+ML0,Mali
+ML00,Mali
+ML000,Mali
+MH,Marshall Islands (the)
+MH0,Marshall Islands (the)
+MH00,Marshall Islands (the)
+MH000,Marshall Islands (the)
+MQ,Martinique
+MQ0,Martinique
+MQ00,Martinique
+MQ000,Martinique
+MR,Mauritania
+MR0,Mauritania
+MR00,Mauritania
+MR000,Mauritania
+MU,Mauritius
+MU0,Mauritius
+MU00,Mauritius
+MU000,Mauritius
+YT,Mayotte
+YT0,Mayotte
+YT00,Mayotte
+YT000,Mayotte
+MX,Mexico
+MX0,Mexico
+MX00,Mexico
+MX000,Mexico
+FM,Micronesia (Federated States of)
+FM0,Micronesia (Federated States of)
+FM00,Micronesia (Federated States of)
+FM000,Micronesia (Federated States of)
+MN,Mongolia
+MN0,Mongolia
+MN00,Mongolia
+MN000,Mongolia
+MS,Montserrat
+MS0,Montserrat
+MS00,Montserrat
+MS000,Montserrat
+MZ,Mozambique
+MZ0,Mozambique
+MZ00,Mozambique
+MZ000,Mozambique
+MM,Myanmar
+MM0,Myanmar
+MM00,Myanmar
+MM000,Myanmar
+NA,Namibia
+NA0,Namibia
+NA00,Namibia
+NA000,Namibia
+NR,Nauru
+NR0,Nauru
+NR00,Nauru
+NR000,Nauru
+NP,Nepal
+NP0,Nepal
+NP00,Nepal
+NP000,Nepal
+NC,New Caledonia
+NC0,New Caledonia
+NC00,New Caledonia
+NC000,New Caledonia
+NZ,New Zealand
+NZ0,New Zealand
+NZ00,New Zealand
+NZ000,New Zealand
+NI,Nicaragua
+NI0,Nicaragua
+NI00,Nicaragua
+NI000,Nicaragua
+NE,Niger (the)
+NE0,Niger (the)
+NE00,Niger (the)
+NE000,Niger (the)
+NG,Nigeria
+NG0,Nigeria
+NG00,Nigeria
+NG000,Nigeria
+NU,Niue
+NU0,Niue
+NU00,Niue
+NU000,Niue
+NF,Norfolk Island
+NF0,Norfolk Island
+NF00,Norfolk Island
+NF000,Norfolk Island
+MP,Northern Mariana Islands (the)
+MP0,Northern Mariana Islands (the)
+MP00,Northern Mariana Islands (the)
+MP000,Northern Mariana Islands (the)
+OM,Oman
+OM0,Oman
+OM00,Oman
+OM000,Oman
+PK,Pakistan
+PK0,Pakistan
+PK00,Pakistan
+PK000,Pakistan
+PW,Palau
+PW0,Palau
+PW00,Palau
+PW000,Palau
+PA,Panama
+PA0,Panama
+PA00,Panama
+PA000,Panama
+PG,Papua New Guinea
+PG0,Papua New Guinea
+PG00,Papua New Guinea
+PG000,Papua New Guinea
+PY,Paraguay
+PY0,Paraguay
+PY00,Paraguay
+PY000,Paraguay
+PE,Peru
+PE0,Peru
+PE00,Peru
+PE000,Peru
+PH,Philippines (the)
+PH0,Philippines (the)
+PH00,Philippines (the)
+PH000,Philippines (the)
+PN,Pitcairn
+PN0,Pitcairn
+PN00,Pitcairn
+PN000,Pitcairn
+PR,Puerto Rico
+PR0,Puerto Rico
+PR00,Puerto Rico
+PR000,Puerto Rico
+QA,Qatar
+QA0,Qatar
+QA00,Qatar
+QA000,Qatar
+RE,Réunion
+RE0,Réunion
+RE00,Réunion
+RE000,Réunion
+RW,Rwanda
+RW0,Rwanda
+RW00,Rwanda
+RW000,Rwanda
+BL,Saint Barthélemy
+BL0,Saint Barthélemy
+BL00,Saint Barthélemy
+BL000,Saint Barthélemy
+SH,"Saint Helena, Ascension and Tristan da Cunha"
+SH0,"Saint Helena, Ascension and Tristan da Cunha"
+SH00,"Saint Helena, Ascension and Tristan da Cunha"
+SH000,"Saint Helena, Ascension and Tristan da Cunha"
+KN,Saint Kitts and Nevis
+KN0,Saint Kitts and Nevis
+KN00,Saint Kitts and Nevis
+KN000,Saint Kitts and Nevis
+LC,Saint Lucia
+LC0,Saint Lucia
+LC00,Saint Lucia
+LC000,Saint Lucia
+MF,Saint Martin (French part)
+MF0,Saint Martin (French part)
+MF00,Saint Martin (French part)
+MF000,Saint Martin (French part)
+PM,Saint Pierre and Miquelon
+PM0,Saint Pierre and Miquelon
+PM00,Saint Pierre and Miquelon
+PM000,Saint Pierre and Miquelon
+VC,Saint Vincent and the Grenadines
+VC0,Saint Vincent and the Grenadines
+VC00,Saint Vincent and the Grenadines
+VC000,Saint Vincent and the Grenadines
+WS,Samoa
+WS0,Samoa
+WS00,Samoa
+WS000,Samoa
+ST,Sao Tome and Principe
+ST0,Sao Tome and Principe
+ST00,Sao Tome and Principe
+ST000,Sao Tome and Principe
+SA,Saudi Arabia
+SA0,Saudi Arabia
+SA00,Saudi Arabia
+SA000,Saudi Arabia
+SN,Senegal
+SN0,Senegal
+SN00,Senegal
+SN000,Senegal
+SC,Seychelles
+SC0,Seychelles
+SC00,Seychelles
+SC000,Seychelles
+SL,Sierra Leone
+SL0,Sierra Leone
+SL00,Sierra Leone
+SL000,Sierra Leone
+SG,Singapore
+SG0,Singapore
+SG00,Singapore
+SG000,Singapore
+SX,Sint Maarten (Dutch part)
+SX0,Sint Maarten (Dutch part)
+SX00,Sint Maarten (Dutch part)
+SX000,Sint Maarten (Dutch part)
+SB,Solomon Islands
+SB0,Solomon Islands
+SB00,Solomon Islands
+SB000,Solomon Islands
+SO,Somalia
+SO0,Somalia
+SO00,Somalia
+SO000,Somalia
+ZA,South Africa
+ZA0,South Africa
+ZA00,South Africa
+ZA000,South Africa
+GS,South Georgia and the South Sandwich Islands
+GS0,South Georgia and the South Sandwich Islands
+GS00,South Georgia and the South Sandwich Islands
+GS000,South Georgia and the South Sandwich Islands
+SS,South Sudan
+SS0,South Sudan
+SS00,South Sudan
+SS000,South Sudan
+LK,Sri Lanka
+LK0,Sri Lanka
+LK00,Sri Lanka
+LK000,Sri Lanka
+SD,Sudan (the)
+SD0,Sudan (the)
+SD00,Sudan (the)
+SD000,Sudan (the)
+SR,Suriname
+SR0,Suriname
+SR00,Suriname
+SR000,Suriname
+SJ,Svalbard and Jan Mayen
+SJ0,Svalbard and Jan Mayen
+SJ00,Svalbard and Jan Mayen
+SJ000,Svalbard and Jan Mayen
+TW,Taiwan (Province of China)
+TW0,Taiwan (Province of China)
+TW00,Taiwan (Province of China)
+TW000,Taiwan (Province of China)
+TJ,Tajikistan
+TJ0,Tajikistan
+TJ00,Tajikistan
+TJ000,Tajikistan
+TZ,"Tanzania, United Republic of"
+TZ0,"Tanzania, United Republic of"
+TZ00,"Tanzania, United Republic of"
+TZ000,"Tanzania, United Republic of"
+TH,Thailand
+TH0,Thailand
+TH00,Thailand
+TH000,Thailand
+TL,Timor-Leste
+TL0,Timor-Leste
+TL00,Timor-Leste
+TL000,Timor-Leste
+TG,Togo
+TG0,Togo
+TG00,Togo
+TG000,Togo
+TK,Tokelau
+TK0,Tokelau
+TK00,Tokelau
+TK000,Tokelau
+TO,Tonga
+TO0,Tonga
+TO00,Tonga
+TO000,Tonga
+TT,Trinidad and Tobago
+TT0,Trinidad and Tobago
+TT00,Trinidad and Tobago
+TT000,Trinidad and Tobago
+TM,Turkmenistan
+TM0,Turkmenistan
+TM00,Turkmenistan
+TM000,Turkmenistan
+TC,Turks and Caicos Islands (the)
+TC0,Turks and Caicos Islands (the)
+TC00,Turks and Caicos Islands (the)
+TC000,Turks and Caicos Islands (the)
+TV,Tuvalu
+TV0,Tuvalu
+TV00,Tuvalu
+TV000,Tuvalu
+UG,Uganda
+UG0,Uganda
+UG00,Uganda
+UG000,Uganda
+AE,United Arab Emirates (the)
+AE0,United Arab Emirates (the)
+AE00,United Arab Emirates (the)
+AE000,United Arab Emirates (the)
+GB,United Kingdom of Great Britain and Northern Ireland (the)
+GB0,United Kingdom of Great Britain and Northern Ireland (the)
+GB00,United Kingdom of Great Britain and Northern Ireland (the)
+GB000,United Kingdom of Great Britain and Northern Ireland (the)
+UM,United States Minor Outlying Islands (the)
+UM0,United States Minor Outlying Islands (the)
+UM00,United States Minor Outlying Islands (the)
+UM000,United States Minor Outlying Islands (the)
+US,United States of America (the)
+US0,United States of America (the)
+US00,United States of America (the)
+US000,United States of America (the)
+UY,Uruguay
+UY0,Uruguay
+UY00,Uruguay
+UY000,Uruguay
+UZ,Uzbekistan
+UZ0,Uzbekistan
+UZ00,Uzbekistan
+UZ000,Uzbekistan
+VU,Vanuatu
+VU0,Vanuatu
+VU00,Vanuatu
+VU000,Vanuatu
+VE,Venezuela (Bolivarian Republic of)
+VE0,Venezuela (Bolivarian Republic of)
+VE00,Venezuela (Bolivarian Republic of)
+VE000,Venezuela (Bolivarian Republic of)
+VN,Viet Nam
+VN0,Viet Nam
+VN00,Viet Nam
+VN000,Viet Nam
+VG,Virgin Islands (British)
+VG0,Virgin Islands (British)
+VG00,Virgin Islands (British)
+VG000,Virgin Islands (British)
+VI,Virgin Islands (U.S.)
+VI0,Virgin Islands (U.S.)
+VI00,Virgin Islands (U.S.)
+VI000,Virgin Islands (U.S.)
+WF,Wallis and Futuna
+WF0,Wallis and Futuna
+WF00,Wallis and Futuna
+WF000,Wallis and Futuna
+EH,Western Sahara
+EH0,Western Sahara
+EH00,Western Sahara
+EH000,Western Sahara
+YE,Yemen
+YE0,Yemen
+YE00,Yemen
+YE000,Yemen
+ZM,Zambia
+ZM0,Zambia
+ZM00,Zambia
+ZM000,Zambia
+ZW,Zimbabwe
+ZW0,Zimbabwe
+ZW00,Zimbabwe
+ZW000,Zimbabwe

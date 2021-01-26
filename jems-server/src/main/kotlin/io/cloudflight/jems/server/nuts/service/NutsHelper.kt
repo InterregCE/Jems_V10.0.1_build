@@ -23,9 +23,10 @@ const val REGION_2_CODE_LENGTH = 4
 const val REGION_3_CODE_LENGTH = 5
 
 const val GISCO_NUTS_URL = "https://gisco-services.ec.europa.eu/distribution/v2/nuts"
-const val GISCO_DATASETS_FILE = "datasets.json"
+const val GISCO_DATASETS_URL = "$GISCO_NUTS_URL/datasets.json"
 const val NUTS_ID = "NUTS_ID"
 const val NUTS_NAME = "NAME_LATN"
+const val STATIC_DATASETS_FILE = "/nuts/NUTS_EXTENDED.csv"
 
 private val collatorGerman = Collator.getInstance(Locale.GERMAN)
 
@@ -142,3 +143,8 @@ val csvFileExtractor: ResponseExtractor<File> = ResponseExtractor { response: Cl
     StreamUtils.copy(response.body, FileOutputStream(file))
     return@ResponseExtractor file
 }
+
+fun Map<Int, List<Pair<String, String>>>.getCountries() = get(COUNTRY_CODE_LENGTH)?.map { it.toNutsCountry() }!!
+fun Map<Int, List<Pair<String, String>>>.getRegion1Nuts() = get(REGION_1_CODE_LENGTH)?.map { it.toNutsRegion1() }!!
+fun Map<Int, List<Pair<String, String>>>.getRegion2Nuts() = get(REGION_2_CODE_LENGTH)?.map { it.toNutsRegion2() }!!
+fun Map<Int, List<Pair<String, String>>>.getRegion3Nuts() = get(REGION_3_CODE_LENGTH)?.map { it.toNutsRegion3() }!!
