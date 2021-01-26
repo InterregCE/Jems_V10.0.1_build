@@ -38,7 +38,7 @@ class ProjectPartnerBudgetPersistenceProvider(
         if (idsToKeep.isNotEmpty()) budgetStaffCostRepository.deleteAllByBasePropertiesPartnerIdAndIdNotIn(
             partnerId,
             idsToKeep
-        ) else Unit
+        ) else budgetStaffCostRepository.deleteAllByBasePropertiesPartnerId(partnerId)
 
     @Transactional
     override fun deleteBudgetStaffCosts(partnerId: Long) =
@@ -66,7 +66,7 @@ class ProjectPartnerBudgetPersistenceProvider(
         if (idsToKeep.isNotEmpty()) budgetTravelRepository.deleteAllByBasePropertiesPartnerIdAndIdNotIn(
             partnerId,
             idsToKeep
-        ) else Unit
+        ) else budgetTravelRepository.deleteAllByBasePropertiesPartnerId(partnerId)
 
     @Transactional
     override fun deleteTravelAndAccommodationCosts(partnerId: Long) =
@@ -97,7 +97,7 @@ class ProjectPartnerBudgetPersistenceProvider(
         if (idsToKeep.isNotEmpty()) budgetInfrastructureRepository.deleteAllByBasePropertiesPartnerIdAndIdNotIn(
             partnerId,
             idsToKeep
-        ) else Unit
+        ) else budgetInfrastructureRepository.deleteAllByBasePropertiesPartnerId(partnerId)
 
     @Transactional
     override fun deleteInfrastructureCosts(partnerId: Long) =
@@ -161,7 +161,7 @@ class ProjectPartnerBudgetPersistenceProvider(
         if (idsToKeep.isNotEmpty()) budgetExternalRepository.deleteAllByBasePropertiesPartnerIdAndIdNotIn(
             partnerId,
             idsToKeep
-        ) else Unit
+        ) else budgetExternalRepository.deleteAllByBasePropertiesPartnerId(partnerId)
 
     @Transactional
     override fun deleteExternalCosts(partnerId: Long) =
@@ -186,7 +186,7 @@ class ProjectPartnerBudgetPersistenceProvider(
         if (idsToKeep.isNotEmpty()) budgetEquipmentRepository.deleteAllByBasePropertiesPartnerIdAndIdNotIn(
             partnerId,
             idsToKeep
-        ) else Unit
+        ) else budgetEquipmentRepository.deleteAllByBasePropertiesPartnerId(partnerId)
 
     @Transactional
     override fun deleteEquipmentCosts(partnerId: Long) =
