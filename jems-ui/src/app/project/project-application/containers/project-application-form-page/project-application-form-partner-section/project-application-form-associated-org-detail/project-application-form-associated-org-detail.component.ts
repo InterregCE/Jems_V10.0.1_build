@@ -1,6 +1,6 @@
 import {ChangeDetectionStrategy, Component, OnInit} from '@angular/core';
 import {combineLatest} from 'rxjs';
-import {NutsStoreService} from '../../../../../../common/services/nuts-store.service';
+import {NutsStore} from '../../../../../../common/services/nuts.store';
 import {distinctUntilChanged, map, takeUntil, tap} from 'rxjs/operators';
 import {ActivatedRoute, Router} from '@angular/router';
 import {ProjectPartnerService} from '@cat/api';
@@ -31,7 +31,7 @@ export class ProjectApplicationFormAssociatedOrgDetailComponent extends BaseComp
   constructor(public associatedOrganizationStore: ProjectAssociatedOrganizationStore,
               public projectStore: ProjectStore,
               private partnerService: ProjectPartnerService,
-              private nutsStore: NutsStoreService,
+              private nutsStore: NutsStore,
               private activatedRoute: ActivatedRoute,
               private router: Router) {
     super();

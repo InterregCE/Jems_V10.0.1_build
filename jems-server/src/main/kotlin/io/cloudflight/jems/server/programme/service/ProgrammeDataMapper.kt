@@ -35,5 +35,7 @@ fun ProgrammeData.toOutputProgrammeData() = OutputProgrammeData(
     commissionDecisionDate = commissionDecisionDate,
     programmeAmendingDecisionNumber = programmeAmendingDecisionNumber,
     programmeAmendingDecisionDate = programmeAmendingDecisionDate,
-    programmeNuts = groupNuts(programmeNuts).toOutputNuts()
+    programmeNuts = programmeNuts.toDto()
 )
+
+fun Set<NutsRegion3>.toDto() = groupNuts(this).toOutputNuts()

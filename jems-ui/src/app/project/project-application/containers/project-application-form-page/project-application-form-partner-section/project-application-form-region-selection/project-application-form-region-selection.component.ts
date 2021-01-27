@@ -1,5 +1,5 @@
 import {ChangeDetectionStrategy, Component} from '@angular/core';
-import {NutsStoreService} from '../../../../../../common/services/nuts-store.service';
+import {NutsStore} from '../../../../../../common/services/nuts.store';
 import {combineLatest} from 'rxjs';
 import {map} from 'rxjs/operators';
 import {ProjectPartnerStore} from '../../services/project-partner-store.service';
@@ -21,7 +21,7 @@ export class ProjectApplicationFormRegionSelectionComponent {
       map(([partner, nuts]) => ({partner, nuts}))
     );
 
-  constructor(private nutsStore: NutsStoreService,
+  constructor(private nutsStore: NutsStore,
               public projectStore: ProjectStore,
               public partnerStore: ProjectPartnerStore) {
   }

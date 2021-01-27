@@ -1,5 +1,6 @@
 package io.cloudflight.jems.api.programme
 
+import io.cloudflight.jems.api.nuts.dto.OutputNuts
 import io.cloudflight.jems.api.programme.dto.InputProgrammeData
 import io.cloudflight.jems.api.programme.dto.OutputProgrammeData
 import io.swagger.annotations.Api
@@ -26,5 +27,9 @@ interface ProgrammeDataApi {
     @ApiOperation("Specify available NUTS regions for this programme")
     @PutMapping("/nuts", consumes = [MediaType.APPLICATION_JSON_VALUE])
     fun updateNuts(@Valid @RequestBody regions: Collection<String>): OutputProgrammeData
+
+    @ApiOperation("Retrieve NUTS available for this programme setup")
+    @GetMapping("/nuts")
+    fun getNuts(): List<OutputNuts>
 
 }

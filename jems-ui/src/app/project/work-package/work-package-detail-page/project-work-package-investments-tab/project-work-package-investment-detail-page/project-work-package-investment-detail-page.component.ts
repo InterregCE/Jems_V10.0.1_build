@@ -4,7 +4,7 @@ import {ActivatedRoute, Router} from '@angular/router';
 import {AbstractControl, FormBuilder, FormGroup, Validators} from '@angular/forms';
 import {FormService} from '@common/components/section/form/form.service';
 import {catchError, take, tap, withLatestFrom} from 'rxjs/operators';
-import {NutsStoreService} from '../../../../../common/services/nuts-store.service';
+import {NutsStore} from '../../../../../common/services/nuts.store';
 import {ProjectApplicationFormSidenavService} from '../../../../project-application/containers/project-application-form-page/services/project-application-form-sidenav.service';
 import {UntilDestroy, untilDestroyed} from '@ngneat/until-destroy';
 import {ProjectWorkPackageInvestmentDetailPageConstants} from './project-work-package-investment-detail-page.constants';
@@ -62,7 +62,7 @@ export class ProjectWorkPackageInvestmentDetailPageComponent implements OnInit {
               private activatedRoute: ActivatedRoute,
               public investmentPageStore: ProjectWorkPackageInvestmentDetailPageStore,
               public workPackageStore: ProjectWorkPackagePageStore,
-              public nutsStore: NutsStoreService,
+              public nutsStore: NutsStore,
               private projectApplicationFormSidenavService: ProjectApplicationFormSidenavService) {
   }
 

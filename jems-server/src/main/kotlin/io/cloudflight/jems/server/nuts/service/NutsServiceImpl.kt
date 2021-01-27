@@ -13,6 +13,7 @@ import io.cloudflight.jems.server.nuts.repository.NutsRegion1Repository
 import io.cloudflight.jems.server.nuts.repository.NutsRegion2Repository
 import io.cloudflight.jems.server.nuts.repository.NutsRegion3Repository
 import io.cloudflight.jems.server.audit.service.AuditService
+import io.cloudflight.jems.server.programme.authorization.CanUpdateProgrammeSetup
 import org.apache.tomcat.util.json.JSONParser
 import org.slf4j.LoggerFactory
 import org.springframework.boot.web.client.RestTemplateBuilder
@@ -27,6 +28,7 @@ import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 
 @Service
+@CanUpdateProgrammeSetup
 class NutsServiceImpl(
     restTemplateBuilder: RestTemplateBuilder,
     private val nutsRepository: NutsCountryRepository,
