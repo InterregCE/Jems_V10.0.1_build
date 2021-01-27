@@ -8,6 +8,7 @@ import io.mockk.impl.annotations.InjectMockKs
 import io.mockk.impl.annotations.MockK
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
+import org.springframework.boot.actuate.info.InfoEndpoint
 import java.util.UUID
 
 internal class InfoControllerTest : UnitTest() {
@@ -19,6 +20,9 @@ internal class InfoControllerTest : UnitTest() {
     @MockK
     lateinit var serverModuleIdentification: ServerModuleIdentification
 
+    @MockK
+    lateinit var infoEndpoint: InfoEndpoint
+
     @InjectMockKs
     private lateinit var controller: InfoController
 
@@ -26,11 +30,13 @@ internal class InfoControllerTest : UnitTest() {
     fun getVersionInfo() {
         every { serverModuleIdentification.getVersion() } returns "1.1.0"
         every { serverModuleIdentification.getId() } returns COMMIT_ID
+        every { infoEndpoint.info() } returns mapOf("helpdesk-url" to "https://unit-test.mock/")
 
         assertThat(controller.getVersionInfo()).isEqualTo(
             VersionDTO(
                 version = "1.1.0",
                 commitId = COMMIT_ID,
+                helpdeskUrl = "https://unit-test.mock/"
             )
         )
     }
