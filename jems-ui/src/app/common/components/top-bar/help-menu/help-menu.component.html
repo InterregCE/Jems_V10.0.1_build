@@ -7,4 +7,8 @@
     <label class="help-category">{{'topbar.help.legal' | translate}}</label>
     <a mat-menu-item>{{'topbar.help.legal.privacy' | translate}}</a>
     <a mat-menu-item>{{'topbar.help.legal.terms' | translate}}</a>
+    <ng-container *ngIf="(version$ | async) as version">
+        <label class="help-category">Version</label>
+        <a disabled mat-menu-item>{{ version.version }}</a>
+    </ng-container>
 </mat-menu>
