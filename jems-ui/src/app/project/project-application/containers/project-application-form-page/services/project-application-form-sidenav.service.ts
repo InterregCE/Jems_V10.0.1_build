@@ -198,6 +198,10 @@ export class ProjectApplicationFormSidenavService {
             headline: {i18nKey: 'project.application.form.section.part.d'},
             bullets: [
               {
+                headline: {i18nKey: 'project.application.form.section.part.d.subsection.one'},
+                route: `${ProjectApplicationFormSidenavService.PROJECT_DETAIL_URL}/${projectId}/applicationFormBudgetPerPartner`,
+              },
+              {
                 headline: {i18nKey: 'project.application.form.section.part.d.subsection.two'},
                 route: `${ProjectApplicationFormSidenavService.PROJECT_DETAIL_URL}/${projectId}/applicationFormBudget`,
               }

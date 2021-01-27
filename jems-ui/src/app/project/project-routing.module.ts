@@ -26,6 +26,7 @@ import {ProjectWorkPackageDetailPageComponent} from './work-package/work-package
 import {ProjectWorkPackageInvestmentDetailPageComponent} from './work-package/work-package-detail-page/project-work-package-investments-tab/project-work-package-investment-detail-page/project-work-package-investment-detail-page.component';
 import {ProjectResultsPageComponent} from './results/project-results-page/project-results-page.component';
 import {ProjectLumpSumsPageComponent} from './lump-sums/project-lump-sums-page/project-lump-sums-page.component';
+import {BudgetPagePerPartnerComponent} from './budget/budget-page-per-partner/budget-page-per-partner.component';
 
 export const routes: Routes = [
   {
@@ -205,6 +206,11 @@ export const routes: Routes = [
             path: 'applicationFormManagement',
             component: ProjectApplicationFormManagementSectionComponent,
             data: {breadcrumb: 'project.breadcrumb.applicationForm.management'},
+          },
+          {
+            path: 'applicationFormBudgetPerPartner',
+            data: {breadcrumb: 'project.breadcrumb.applicationForm.budgetPerPartner'},
+            component: BudgetPagePerPartnerComponent,
           },
           {
             path: 'applicationFormBudget',
