@@ -6,7 +6,7 @@ import java.math.BigDecimal
 
 data class ProjectPartnerBudgetCoFinancingDTO (
 
-    val partner: OutputProjectPartner? = null,
+    val partner: OutputProjectPartner,
     val projectPartnerCoFinancingAndContributionOutputDTO: ProjectPartnerCoFinancingAndContributionOutputDTO? = null,
     val total: BigDecimal? = null
 

@@ -43,13 +43,13 @@ fun ProjectPartnerCoFinancing.toDto() = ProjectPartnerCoFinancingOutputDTO(
 )
 
 fun PartnerBudgetCoFinancing.toProjectPartnerBudgetCoFinancingDTO() = ProjectPartnerBudgetCoFinancingDTO(
-    partner = partner?.toOutputProjectPartner(),
+    partner = partner.toOutputProjectPartner(),
     projectPartnerCoFinancingAndContributionOutputDTO = projectPartnerCoFinancingAndContribution?.toDto(),
     total = total
 )
 
 fun Collection<PartnerBudgetCoFinancing>.toProjectPartnerBudgetDTO() = map { it.toProjectPartnerBudgetCoFinancingDTO() }
-    .sortedBy { it.partner?.sortNumber }
+    .sortedBy { it.partner.sortNumber }
 
 fun Collection<ProjectPartnerCoFinancing>.toCoFinancingDto() = map { it.toDto() }
     .sortedWith(compareBy({ it.fund == null }, { it.id }))

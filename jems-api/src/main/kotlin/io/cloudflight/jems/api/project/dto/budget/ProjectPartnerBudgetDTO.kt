@@ -4,7 +4,7 @@ import io.cloudflight.jems.api.project.dto.partner.OutputProjectPartner
 import java.math.BigDecimal
 
 data class ProjectPartnerBudgetDTO(
-    val partner: OutputProjectPartner? = null,
+    val partner: OutputProjectPartner,
 
     val staffCosts: BigDecimal = BigDecimal.ZERO,
     val travelCosts: BigDecimal = BigDecimal.ZERO,

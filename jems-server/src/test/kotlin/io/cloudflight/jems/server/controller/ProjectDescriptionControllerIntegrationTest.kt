@@ -51,7 +51,6 @@ class ProjectDescriptionControllerIntegrationTest {
     fun `project description read`() {
         val call = callFactory.savePublishedCallWithoutPolicy(userFactory.adminUser)
         val project = projectFactory.saveProject(userFactory.adminUser, call)
-        val translationEn = InputTranslation(SystemLanguage.EN, "overall objective")
 
         mockMvc.perform(
             get("/api/project/${project.id}/description/")
