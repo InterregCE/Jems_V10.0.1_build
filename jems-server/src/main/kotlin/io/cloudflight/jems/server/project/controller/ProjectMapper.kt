@@ -24,7 +24,7 @@ fun PartnerBudget.toProjectPartnerBudgetDTO() =
     )
 
 fun Collection<PartnerBudget>.toProjectPartnerBudgetDTO() = map { it.toProjectPartnerBudgetDTO() }
-    .sortedBy { it.partner?.sortNumber }
+    .sortedBy { it.partner.sortNumber }
 
 fun ProjectCallSettings.toDto() = ProjectCallSettingsDTO(
     callId = callId,

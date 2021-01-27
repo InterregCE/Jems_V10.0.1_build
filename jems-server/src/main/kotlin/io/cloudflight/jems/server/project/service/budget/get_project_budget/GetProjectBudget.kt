@@ -72,7 +72,7 @@ class GetProjectBudget(
     private fun Collection<ProjectPartnerCost>.groupByPartnerId() = associateBy({ it.partnerId }, { it.sum })
 
     private fun BudgetCostsCalculationResult.toPartnerBudget(
-        partner: ProjectPartner?,
+        partner: ProjectPartner,
         unitCosts: BigDecimal,
         lumpSumCosts: BigDecimal,
         externalCosts: BigDecimal,
