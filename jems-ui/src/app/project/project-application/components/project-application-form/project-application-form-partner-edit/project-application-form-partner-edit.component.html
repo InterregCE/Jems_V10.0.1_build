@@ -66,17 +66,20 @@
             </mat-error>
         </mat-form-field>
 
-        <mat-form-field class="w-50">
-            <mat-label>{{'project.organization.english.name.label' | translate}}</mat-label>
-            <input name="nameInEnglish" formControlName="nameInEnglish" matInput
-                   placeholder="{{'project.organization.english.name.label' | translate}}">
-            <mat-error>
-                <app-form-field-errors
-                        [errors]="controls?.nameInEnglish?.errors"
-                        [messages]="nameInEnglishErrors">
-                </app-form-field-errors>
-            </mat-error>
-        </mat-form-field>
+        <app-multi-language class="language-select"
+                            [staticLanguages]="[LANGUAGE.EN]">
+            <mat-form-field>
+                <mat-label>{{'project.organization.english.name.label' | translate}}</mat-label>
+                <input name="nameInEnglish" formControlName="nameInEnglish" matInput
+                       placeholder="{{'project.organization.english.name.label' | translate}}">
+                <mat-error>
+                    <app-form-field-errors
+                            [errors]="controls?.nameInEnglish?.errors"
+                            [messages]="nameInEnglishErrors">
+                    </app-form-field-errors>
+                </mat-error>
+            </mat-form-field>
+        </app-multi-language>
 
         <app-multi-language>
             <app-multi-language-form-field [label]="'project.organization.department.label'"

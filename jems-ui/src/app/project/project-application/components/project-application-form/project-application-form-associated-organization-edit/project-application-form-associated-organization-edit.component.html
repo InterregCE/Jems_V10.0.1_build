@@ -15,17 +15,20 @@
                 </app-form-field-errors>
             </mat-error>
         </mat-form-field>
-        <mat-form-field class="field">
-            <mat-label>{{'project.organization.english.name.label' | translate}}</mat-label>
-            <input name="nameInEnglish" formControlName="nameInEnglish" matInput
-                   placeholder="{{'project.organization.english.name.label' | translate}}" required>
-            <mat-error>
-                <app-form-field-errors
-                        [errors]="associatedOrganizationForm.controls?.nameInEnglish?.errors"
-                        [messages]="nameInEnglishErrors">
-                </app-form-field-errors>
-            </mat-error>
-        </mat-form-field>
+        <app-multi-language class="language-select"
+                            [staticLanguages]="[LANGUAGE.EN]">
+            <mat-form-field class="field">
+                <mat-label>{{'project.organization.english.name.label' | translate}}</mat-label>
+                <input name="nameInEnglish" formControlName="nameInEnglish" matInput
+                       placeholder="{{'project.organization.english.name.label' | translate}}" required>
+                <mat-error>
+                    <app-form-field-errors
+                            [errors]="associatedOrganizationForm.controls?.nameInEnglish?.errors"
+                            [messages]="nameInEnglishErrors">
+                    </app-form-field-errors>
+                </mat-error>
+            </mat-form-field>
+        </app-multi-language>
 
         <mat-form-field class="field">
             <mat-label>{{'project.organization.partner' | translate}}</mat-label>

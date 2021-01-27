@@ -1,6 +1,15 @@
 .wrapper {
   margin-top: 2rem;
 
+  .language-select {
+    max-width: 35rem;
+    width: 100%;
+    display: inline-block;
+    .field {
+      margin-top: -1.25rem;
+    }
+  }
+
   .field {
     max-width: 35rem;
     width: 100%;
