@@ -54,10 +54,40 @@ internal class ProgrammeSetupAuthorizationTest {
         )
     }
 
+    @ParameterizedTest
+    @MethodSource("provideAllUsers")
+    fun `this user can read indicators`(currentUser: LocalCurrentUser) {
+        every { securityService.currentUser } returns currentUser
+
+        assertTrue(
+            programmeSetupAuthorization.canReadIndicators(),
+            "${currentUser.user.email} should be able to read indicators"
+        )
+    }
+
+    @ParameterizedTest
+    @MethodSource("provideAllUsers")
+    fun `this user can read programme nuts`(currentUser: LocalCurrentUser) {
+        every { securityService.currentUser } returns currentUser
+
+        assertTrue(
+            programmeSetupAuthorization.canReadNuts(),
+            "${currentUser.user.email} should be able to read programme nuts"
+        )
+    }
+
     private fun provideAdminAndProgramUsers(): Stream<Arguments> {
         return Stream.of(
             Arguments.of(programmeUser),
             Arguments.of(adminUser)
+        )
+    }
+
+    private fun provideAllUsers(): Stream<Arguments> {
+        return Stream.of(
+            Arguments.of(applicantUser),
+            Arguments.of(programmeUser),
+            Arguments.of(adminUser),
         )
     }
 

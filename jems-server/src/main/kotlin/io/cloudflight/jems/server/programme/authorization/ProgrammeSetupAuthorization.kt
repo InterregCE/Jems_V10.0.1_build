@@ -13,17 +13,19 @@ annotation class CanUpdateProgrammeSetup
 @PreAuthorize("@programmeSetupAuthorization.canReadIndicators()")
 annotation class CanReadIndicators
 
+@Retention(AnnotationRetention.RUNTIME)
+@PreAuthorize("@programmeSetupAuthorization.canReadNuts()")
+annotation class CanReadNuts
+
 @Component
 class ProgrammeSetupAuthorization(
     override val securityService: SecurityService
 ): Authorization(securityService) {
 
-    fun canAccessSetup(): Boolean {
-        return isAdmin() || isProgrammeUser()
-    }
+    fun canAccessSetup() = isAdmin() || isProgrammeUser()
 
-    fun canReadIndicators(): Boolean {
-        return canAccessSetup() || isApplicantUser()
-    }
+    fun canReadIndicators() = canAccessSetup() || isApplicantUser()
+
+    fun canReadNuts() = canAccessSetup() || isApplicantUser()
 
 }

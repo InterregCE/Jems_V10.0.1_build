@@ -172,4 +172,27 @@ internal class ProgrammeDataServiceTest {
         )
     }
 
+    @Test
+    fun getNuts() {
+        val nuts = NutsRegion3(id = "SK010", title = "Slovakia R3",
+            region2 = NutsRegion2(id = "SK01", title = "Slovakia R2",
+                region1 = NutsRegion1(id = "SK0", title = "Slovakia R1",
+                    country = NutsCountry(id = "SK", title = "Slovakia")
+                )
+            )
+        )
+        every { programmeDataRepository.findById(1) } returns Optional.of(existingProgrammeData.copy(programmeNuts = setOf(nuts)))
+
+        assertThat(programmeDataService.getAvailableNuts()).containsExactly(
+            OutputNuts(code = "SK", title = "Slovakia", areas = listOf(
+                OutputNuts(code = "SK0", title = "Slovakia R1", areas = listOf(
+                    OutputNuts(code = "SK01", title = "Slovakia R2", areas = listOf(
+                        OutputNuts(code = "SK010", title = "Slovakia R3")
+                    ))
+                ))
+            ))
+        )
+    }
+
+
 }

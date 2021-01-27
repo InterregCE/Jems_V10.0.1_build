@@ -10,7 +10,6 @@ import {ProgrammeRegionCheckbox} from '../../model/programme-region-checkbox';
 import {MatTreeNestedDataSource} from '@angular/material/tree';
 import {ProgrammePageSidenavService} from '../../services/programme-page-sidenav.service';
 import {Permission} from '../../../../security/permissions/permission';
-import {NutsStoreService} from '../../../../common/services/nuts-store.service';
 
 @Component({
   selector: 'app-programme-area',
@@ -56,7 +55,7 @@ export class ProgrammeAreaComponent extends BaseComponent implements OnInit {
         if (!metadata) {
           return;
         }
-        this.nutsStore.getNuts()
+        this.nutsService.getNuts()
           .pipe(
             take(1),
             takeUntil(this.destroyed$),
@@ -85,8 +84,7 @@ export class ProgrammeAreaComponent extends BaseComponent implements OnInit {
 
   constructor(private nutsService: NutsImportService,
               private programmeDataService: ProgrammeDataService,
-              private programmePageSidenavService: ProgrammePageSidenavService,
-              private nutsStore: NutsStoreService) {
+              private programmePageSidenavService: ProgrammePageSidenavService) {
     super();
     this.programmePageSidenavService.init(this.destroyed$);
   }
