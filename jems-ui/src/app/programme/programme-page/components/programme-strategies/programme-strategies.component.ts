@@ -67,4 +67,5 @@ export class ProgrammeStrategiesComponent extends ViewEditForm {
     this.selection.deselect(...this.strategies.filter(element => !element.active));
     this.changeDetectorRef.markForCheck();
   }
+
 }

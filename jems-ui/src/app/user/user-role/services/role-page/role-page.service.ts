@@ -12,7 +12,9 @@ export class RolePageService {
   private userRoles$ = this.permissionService.permissionsChanged()
     .pipe(
       mergeMap(permissions => {
-        if (permissions.includes(Permission.ADMINISTRATOR)) { return this.userRoleService.list(); }
+        if (permissions.includes(Permission.ADMINISTRATOR)) {
+          return this.userRoleService.list();
+        }
         return of(null);
       }),
       map(page => page ? page.content : []),

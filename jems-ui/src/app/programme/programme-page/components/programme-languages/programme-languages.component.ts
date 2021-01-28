@@ -67,7 +67,6 @@ export class ProgrammeLanguagesComponent extends ViewEditForm implements OnInit 
   }
 
   protected enterViewMode(): void {
-    super.enterViewMode();
     if (!this.dataSource) {
       return;
     }

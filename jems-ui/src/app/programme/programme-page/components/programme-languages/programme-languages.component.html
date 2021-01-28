@@ -8,6 +8,7 @@
 
     <form class="mat-elevation-z8 general-application-table">
         <table mat-table [dataSource]="dataSource">
+            <caption>{{'programme.languages.header' | translate}}</caption>
 
             <ng-container matColumnDef="system">
                 <th id="system" mat-header-cell class="column-small" *matHeaderCellDef>{{'programme.languages.list.select.system' | translate}}</th>

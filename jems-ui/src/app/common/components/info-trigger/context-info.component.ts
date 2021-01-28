@@ -1,5 +1,4 @@
-import {ChangeDetectionStrategy, Component, Input, OnInit} from '@angular/core';
-import {BaseComponent} from '@common/components/base-component';
+import {ChangeDetectionStrategy, Component, Input} from '@angular/core';
 import {TooltipPosition} from '@angular/material/tooltip';
 
 @Component({
@@ -21,8 +20,5 @@ export class ContextInfoComponent {
    */
   @Input()
   infoPosition: TooltipPosition = 'after';
-
-  constructor() {
-  }
 
 }

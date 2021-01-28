@@ -13,7 +13,7 @@ import {MatDialog} from '@angular/material/dialog';
 import {FormState} from '@common/components/forms/form-state';
 import {Forms} from '../../../../common/utils/forms';
 import {filter, take, takeUntil} from 'rxjs/operators';
-import {Permission} from 'src/app/security/permissions/permission';
+import {Permission} from '../../../../security/permissions/permission';
 import {
   ProgrammeUnitCostDTO
 } from '@cat/api';
@@ -168,4 +168,5 @@ export class ProgrammeUnitCostDetailComponent extends ViewEditForm implements On
       this.unitCostForm.controls.categories.setErrors(null);
     }
   }
+
 }

@@ -73,6 +73,7 @@ export class MultiLanguageFormFieldComponent implements OnInit, ControlValueAcce
   }
 
   registerOnTouched(fn: any): void {
+    // This is intentional
   }
 
   setDisabledState(isDisabled: boolean): void {
@@ -102,6 +103,7 @@ export class MultiLanguageFormFieldComponent implements OnInit, ControlValueAcce
   }
 
   registerOnValidatorChange(fn: () => void): void {
+    // This is intentional
   }
 
   validate(control: AbstractControl): ValidationErrors | null {

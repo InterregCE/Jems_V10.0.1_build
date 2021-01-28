@@ -6,7 +6,7 @@ import {filter, map, take, takeUntil} from 'rxjs/operators';
 import {Forms} from '../../../../../common/utils/forms';
 import {InputProjectStatus, InputRevertProjectStatus, OutputProjectStatus, OutputRevertProjectStatus} from '@cat/api';
 import {Alert} from '@common/components/forms/alert';
-import {Permission} from 'src/app/security/permissions/permission';
+import {Permission} from '../../../../../security/permissions/permission';
 import {TranslateService} from '@ngx-translate/core';
 import * as moment from 'moment';
 
