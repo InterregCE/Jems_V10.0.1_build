@@ -125,7 +125,7 @@ export class NumberService {
         prefix: '',
         suffix: '',
         thousands: this.getThousandsSeparator(),
-        nullable: true,
+        nullable: false,
         inputMode: CurrencyMaskInputMode.NATURAL
       },
       custom);
@@ -142,7 +142,7 @@ export class NumberService {
         prefix: '',
         suffix: '',
         thousands: this.getThousandsSeparator(),
-        nullable: true,
+        nullable: false,
         inputMode: CurrencyMaskInputMode.NATURAL
       },
       custom);

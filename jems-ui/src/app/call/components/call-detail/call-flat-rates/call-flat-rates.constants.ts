@@ -1,5 +1,5 @@
 export class CallFlatRatesConstants {
-
+  public static FLAT_RATE_MIN_VALUES = 1;
   public static FLAT_RATE_MAX_VALUES = {
     STAFF_COST: 20,
     OFFICE_ON_STAFF: 15,
