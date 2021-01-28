@@ -74,13 +74,13 @@ export class CallListComponent extends BaseComponent implements OnInit {
         },
         {
           displayedColumn: 'call.table.column.name.started',
-          columnType: ColumnType.Date,
+          columnType: ColumnType.DateColumn,
           elementProperty: 'startDate',
           sortProperty: 'startDate'
         },
         {
           displayedColumn: 'call.table.column.name.end',
-          columnType: ColumnType.Date,
+          columnType: ColumnType.DateColumn,
           elementProperty: 'endDate',
           sortProperty: 'endDate'
         }
@@ -108,13 +108,13 @@ export class CallListComponent extends BaseComponent implements OnInit {
         },
         {
           displayedColumn: 'call.table.column.name.started',
-          columnType: ColumnType.Date,
+          columnType: ColumnType.DateColumn,
           elementProperty: 'startDate',
           sortProperty: 'startDate'
         },
         {
           displayedColumn: 'call.table.column.name.end',
-          columnType: ColumnType.Date,
+          columnType: ColumnType.DateColumn,
           elementProperty: 'endDate',
           sortProperty: 'endDate'
         },
