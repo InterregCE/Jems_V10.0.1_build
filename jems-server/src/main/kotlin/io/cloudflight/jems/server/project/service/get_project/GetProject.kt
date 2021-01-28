@@ -10,6 +10,6 @@ class GetProject(private val persistence: ProjectPersistence) : GetProjectIntera
 
     @CanReadProject
     override fun getProjectCallSettings(projectId: Long): ProjectCallSettings =
-        persistence.getProjectCallSettingsForProject(projectId)
+        persistence.getProjectCallSettings(projectId)
 
 }

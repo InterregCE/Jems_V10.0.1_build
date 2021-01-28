@@ -4,8 +4,6 @@ import io.cloudflight.jems.server.common.exception.ResourceNotFoundException
 import io.cloudflight.jems.server.programme.entity.costoption.ProgrammeUnitCostEntity
 import io.cloudflight.jems.server.programme.service.costoption.ProgrammeUnitCostPersistence
 import io.cloudflight.jems.server.programme.service.costoption.model.ProgrammeUnitCost
-import org.springframework.data.domain.Page
-import org.springframework.data.domain.Pageable
 import org.springframework.stereotype.Repository
 import org.springframework.transaction.annotation.Transactional
 
@@ -16,11 +14,11 @@ class ProgrammeUnitCostPersistenceProvider(
 
     @Transactional(readOnly = true)
     override fun getUnitCosts(): List<ProgrammeUnitCost> =
-        repository.findTop25ByOrderById().toModel()
+        repository.findTop25ByOrderById().toProgrammeUnitCost()
 
     @Transactional(readOnly = true)
     override fun getUnitCost(unitCostId: Long): ProgrammeUnitCost =
-        getUnitCostOrThrow(unitCostId).toModel()
+        getUnitCostOrThrow(unitCostId).toProgrammeUnitCost()
 
     @Transactional(readOnly = true)
     override fun getCount(): Long = repository.count()
@@ -30,7 +28,7 @@ class ProgrammeUnitCostPersistenceProvider(
         val created = repository.save(unitCost.toEntity())
         return repository.save(created.copy(
             categories = unitCost.categories.toBudgetCategoryEntity(created.id)
-        )).toModel()
+        )).toProgrammeUnitCost()
     }
 
     @Transactional
@@ -42,7 +40,7 @@ class ProgrammeUnitCostPersistenceProvider(
         unitCostEntity.costPerUnit = unitCost.costPerUnit!!
         unitCostEntity.categories.clear()
         unitCostEntity.categories.addAll(unitCost.categories.toBudgetCategoryEntity(unitCost.id))
-        return unitCostEntity.toModel()
+        return unitCostEntity.toProgrammeUnitCost()
     }
 
     @Transactional

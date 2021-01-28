@@ -1,27 +1,66 @@
 package io.cloudflight.jems.server.project.service.partner.budget.update_budget_travel_and_accommodation_costs
 
+import io.cloudflight.jems.server.common.exception.I18nValidationException
 import io.cloudflight.jems.server.project.authorization.CanUpdateProjectPartner
-import io.cloudflight.jems.server.project.service.partner.budget.BudgetCostEntriesValidator
-import io.cloudflight.jems.server.project.service.partner.budget.ProjectPartnerBudgetPersistence
+import io.cloudflight.jems.server.project.service.ProjectPersistence
+import io.cloudflight.jems.server.project.service.partner.budget.BudgetCostValidator
+import io.cloudflight.jems.server.project.service.partner.budget.ProjectPartnerBudgetCostsUpdatePersistence
+import io.cloudflight.jems.server.project.service.partner.budget.ProjectPartnerBudgetOptionsPersistence
+import io.cloudflight.jems.server.project.service.partner.budget.truncate
 import io.cloudflight.jems.server.project.service.partner.model.BudgetTravelAndAccommodationCostEntry
-import io.cloudflight.jems.server.project.service.partner.model.truncateNumbers
+import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerBudgetOptions
+import io.cloudflight.jems.server.project.service.partner.model.truncateBaseEntryNumbers
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 
 @Service
-class UpdateBudgetTravelAndAccommodationCosts(private val persistence: ProjectPartnerBudgetPersistence, private val budgetCostEntriesValidator: BudgetCostEntriesValidator) : UpdateBudgetTravelAndAccommodationCostsInteractor {
+class UpdateBudgetTravelAndAccommodationCosts(
+    private val persistence: ProjectPartnerBudgetCostsUpdatePersistence,
+    private val optionsPersistence: ProjectPartnerBudgetOptionsPersistence,
+    private val projectPersistence: ProjectPersistence,
+    private val budgetCostValidator: BudgetCostValidator
+) : UpdateBudgetTravelAndAccommodationCostsInteractor {
 
     @Transactional
     @CanUpdateProjectPartner
-    override fun updateBudgetTravelAndAccommodationCosts(partnerId: Long, travelAndAccommodationCosts: List<BudgetTravelAndAccommodationCostEntry>): List<BudgetTravelAndAccommodationCostEntry> {
-        budgetCostEntriesValidator.validate(travelAndAccommodationCosts)
+    override fun updateBudgetTravelAndAccommodationCosts(
+        partnerId: Long,
+        travelCosts: List<BudgetTravelAndAccommodationCostEntry>
+    ): List<BudgetTravelAndAccommodationCostEntry> {
+
+        budgetCostValidator.validateBaseEntries(travelCosts)
+        budgetCostValidator.validatePricePerUnits(travelCosts.map { it.pricePerUnit })
+
+        throwIfTravelCostFlatRateIsSet(optionsPersistence.getBudgetOptions(partnerId))
+
+        val projectId = projectPersistence.getProjectIdForPartner(partnerId)
+
+        budgetCostValidator.validateBudgetPeriods(
+            travelCosts.map { it.budgetPeriods }.flatten().toSet(),
+            projectPersistence.getProjectPeriods(projectId).map { it.number }.toSet()
+        )
 
         persistence.deleteAllBudgetTravelAndAccommodationCostsExceptFor(
             partnerId = partnerId,
-            idsToKeep = travelAndAccommodationCosts.filter { it.id !== null }.map { it.id!! }
+            idsToKeep = travelCosts.mapNotNullTo(HashSet()) { it.id }
         )
 
-        return persistence.createOrUpdateBudgetTravelAndAccommodationCosts(partnerId, travelAndAccommodationCosts.map { it.apply { this.truncateNumbers() } })
+        return persistence.createOrUpdateBudgetTravelAndAccommodationCosts(
+            projectId,
+            partnerId,
+            travelCosts.map { it.apply {
+                it.rowSum = calculateRowSum(it)
+                this.truncateBaseEntryNumbers()
+                this.pricePerUnit.truncate()
+            } }.toSet())
     }
+
+    private fun throwIfTravelCostFlatRateIsSet(budgetOptions: ProjectPartnerBudgetOptions?) {
+        if (budgetOptions?.travelAndAccommodationOnStaffCostsFlatRate !== null)
+            throw I18nValidationException(i18nKey = "project.partner.budget.not.allowed.because.of.travelAndAccommodationOnStaffCostsFlatRate")
+    }
+
+    private fun calculateRowSum(travelCostEntry: BudgetTravelAndAccommodationCostEntry) =
+        travelCostEntry.pricePerUnit.multiply(travelCostEntry.numberOfUnits).truncate()
 
 }

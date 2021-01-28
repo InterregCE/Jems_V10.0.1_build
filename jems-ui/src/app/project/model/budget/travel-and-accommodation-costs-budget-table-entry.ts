@@ -1,5 +1,5 @@
 import {GeneralBudgetTableEntry} from './general-budget-table-entry';
-import {InputTranslation} from '@cat/api';
+import {BudgetPeriodDTO, InputTranslation} from '@cat/api';
 
 export class TravelAndAccommodationCostsBudgetTableEntry {
 
@@ -10,6 +10,7 @@ export class TravelAndAccommodationCostsBudgetTableEntry {
   pricePerUnit?: number;
   rowSum?: number;
   new?: boolean;
+  budgetPeriods?: BudgetPeriodDTO[];
 
   constructor(data: Partial<GeneralBudgetTableEntry>) {
     this.id = data.id;
@@ -19,6 +20,7 @@ export class TravelAndAccommodationCostsBudgetTableEntry {
     this.pricePerUnit = data.pricePerUnit;
     this.new = data.new;
     this.rowSum = data.rowSum;
+    this.budgetPeriods = data.budgetPeriods;
   }
 
 }

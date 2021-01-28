@@ -8,8 +8,9 @@ import java.math.BigDecimal
 data class BudgetStaffCostEntryDTO(
     override val id: Long? = null,
     override val numberOfUnits: BigDecimal,
-    override val pricePerUnit: BigDecimal,
-    override val rowSum: BigDecimal,
+    override val rowSum: BigDecimal?,
+    override val budgetPeriods: Set<BudgetPeriodDTO> = emptySet(),
+    val pricePerUnit: BigDecimal,
     val unitType: StaffCostUnitTypeDTO? = null,
     val type: StaffCostTypeDTO? = null,
     val description: Set<InputTranslation> = emptySet(),

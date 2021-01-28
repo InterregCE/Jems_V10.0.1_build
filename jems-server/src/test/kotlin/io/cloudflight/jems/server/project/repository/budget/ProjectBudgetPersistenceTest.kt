@@ -10,9 +10,10 @@ import io.cloudflight.jems.server.project.entity.lumpsum.ProjectLumpSumPerPartne
 import io.cloudflight.jems.server.project.entity.partner.ProjectPartnerAddress
 import io.cloudflight.jems.server.project.entity.partner.ProjectPartnerAddressId
 import io.cloudflight.jems.server.project.entity.partner.ProjectPartnerEntity
-import io.cloudflight.jems.server.project.entity.partner.budget.ProjectPartnerBudgetEntity
+import io.cloudflight.jems.server.project.entity.partner.budget.ProjectPartnerBudgetView
 import io.cloudflight.jems.server.project.repository.partner.ProjectPartnerRepository
 import io.cloudflight.jems.server.project.repository.partner.budget.*
+import io.cloudflight.jems.server.project.repository.partner.budget.ProjectPartnerBudgetStaffCostRepository
 import io.cloudflight.jems.server.project.service.budget.ProjectBudgetPersistence
 import io.cloudflight.jems.server.project.service.budget.model.ProjectPartnerCost
 import io.cloudflight.jems.server.project.service.partner.ProjectPartnerTestUtil
@@ -33,7 +34,7 @@ class ProjectBudgetPersistenceTest {
     companion object {
         private const val PARTNER_ID = 1L
         private val PARTNER_IDS = setOf(PARTNER_ID)
-        private val testBudgets = listOf(ProjectPartnerBudgetEntity(partnerId = PARTNER_ID, sum = BigDecimal.TEN))
+        private val testBudgets = listOf(ProjectPartnerBudgetView(partnerId = PARTNER_ID, sum = BigDecimal.TEN))
         private val expectedBudget = ProjectPartnerCost(partnerId = PARTNER_ID, sum = BigDecimal.TEN)
     }
 
@@ -164,7 +165,7 @@ class ProjectBudgetPersistenceTest {
     fun getBudgetUnitCostsPerPartner() {
         val id = PARTNER_ID
         every { projectPartnerUnitCostRepository.sumForAllPartners(setOf(PARTNER_ID)) } returns listOf(
-            ProjectPartnerBudgetEntity(
+            ProjectPartnerBudgetView(
                 partnerId = PARTNER_ID,
                 sum = BigDecimal.TEN,
             ),

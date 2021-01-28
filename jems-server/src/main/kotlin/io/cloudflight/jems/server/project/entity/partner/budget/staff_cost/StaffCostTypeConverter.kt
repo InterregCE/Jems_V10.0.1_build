@@ -1,4 +1,4 @@
-package io.cloudflight.jems.server.project.entity.partner.budget
+package io.cloudflight.jems.server.project.entity.partner.budget.staff_cost
 
 import io.cloudflight.jems.server.project.service.partner.model.StaffCostType
 import javax.persistence.AttributeConverter

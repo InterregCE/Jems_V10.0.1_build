@@ -1,5 +1,9 @@
-.travel-budget-table{
-  .invalid{
+.travel-budget-table {
+  .invalid {
     color: var(--warn-color);
+  }
+
+  .allocation-warn {
+    background-color: var(--pale-yellow);
   }
 }

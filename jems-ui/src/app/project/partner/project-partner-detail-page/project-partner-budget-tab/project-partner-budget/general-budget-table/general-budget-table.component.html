@@ -1,12 +1,16 @@
 <ng-container *ngIf="(numberOfItems$ | async) as numberOfItems; else addTableButton">
     <ng-container [formGroup]="budgetForm">
+        <app-alert [closable]="true"
+                   [show]="warnOpenForPeriods"
+                   [type]="Alert.WARNING">
+            <p>{{'project.partner.budget.table.period.warning' | translate}}</p>
+        </app-alert>
         <ng-container [formGroup]="table">
             <app-multi-language>
-                <mat-table
-                        appTableConfig
-                        [widthConfig]="[{minInRem:12},{minInRem:12},{minInRem:5},{minInRem:12},{minInRem:5},{minInRem:8},{minInRem:8},{minInRem:3}]"
-                        [dataSource]="dataSource" [formArrayName]="constants.FORM_CONTROL_NAMES.items"
-                        class="mat-elevation-z2 budget-table">
+                <mat-table appTableConfig
+                           [widthConfig]="widthConfig"
+                           [dataSource]="dataSource" [formArrayName]="constants.FORM_CONTROL_NAMES.items"
+                           class="mat-elevation-z2 budget-table">
                     <ng-container sticky matColumnDef="description">
                         <mat-header-cell
                                 *matHeaderCellDef> {{'project.partner.budget.table.description' | translate}} </mat-header-cell>
@@ -99,6 +103,34 @@
                                          [class.invalid]="total.invalid">
                             <div class="text-overflow-ellipsis">{{total.value | asMoney}} </div>
                         </mat-footer-cell>
+                    </ng-container>
+
+                    <ng-container *ngFor="let period of projectPeriods; let j = index"
+                                  matColumnDef="{{'period' + period.number}}">
+                        <mat-header-cell *matHeaderCellDef>
+                            {{'project.partner.budget.table.period' | translate }} {{period.number}}
+                        </mat-header-cell>
+                        <mat-cell *matCellDef="let control; let k = index" [formArrayName]="k">
+                            <mat-form-field [formArrayName]="constants.FORM_CONTROL_NAMES.budgetPeriods"
+                                            [appFormFieldWidth]="'medium'">
+                                <ng-container [formGroupName]="j">
+                                    <input currencyMask type="decimal" matInput
+                                           [formControlName]="constants.FORM_CONTROL_NAMES.amount"
+                                           [options]="{min: constants.MIN_VALUE, max: constants.MAX_VALUE, align: 'right'}">
+                                </ng-container>
+                            </mat-form-field>
+                        </mat-cell>
+                        <mat-footer-cell *matFooterCellDef></mat-footer-cell>
+                    </ng-container>
+
+                    <ng-container matColumnDef="openForPeriods">
+                        <mat-header-cell class="justify-end"
+                                         *matHeaderCellDef> {{'project.partner.budget.table.gap' | translate}}</mat-header-cell>
+                        <mat-cell *matCellDef="let control; let k = index" [formArrayName]="k" class="justify-end"
+                                  [class.allocation-warn]="openForPeriods(k).value !== 0">
+                            <div class="text-overflow-ellipsis">{{openForPeriods(k).value | asMoney}}</div>
+                        </mat-cell>
+                        <mat-footer-cell *matFooterCellDef></mat-footer-cell>
                     </ng-container>
 
                     <ng-container stickyEnd matColumnDef="action">

@@ -10,6 +10,6 @@ import java.math.BigDecimal
 interface BaseBudgetEntryDTO {
     val id: Long?
     val numberOfUnits: BigDecimal
-    val pricePerUnit: BigDecimal
     val rowSum: BigDecimal?
+    val budgetPeriods: Set<BudgetPeriodDTO>
 }

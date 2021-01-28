@@ -1,5 +1,9 @@
-.staff-budget-table{
-  .invalid{
+.staff-budget-table {
+  .invalid {
     color: var(--warn-color);
+  }
+
+  .allocation-warn {
+    background-color: var(--pale-yellow);
   }
 }

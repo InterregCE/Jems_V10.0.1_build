@@ -1,6 +1,6 @@
 package io.cloudflight.jems.server.project.repository.partner.budget
 
-import io.cloudflight.jems.server.common.exception.ResourceNotFoundException
+import io.cloudflight.jems.server.project.repository.partner.budget.ProjectPartnerBudgetStaffCostRepository
 import io.cloudflight.jems.server.project.service.partner.budget.ProjectPartnerBudgetOptionsPersistence
 import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerBudgetOptions
 import org.springframework.stereotype.Repository
@@ -68,6 +68,6 @@ class ProjectPartnerBudgetOptionsPersistenceProvider(
 
     @Transactional
     override fun deleteUnitCosts(partnerId: Long) =
-        budgetUnitCostRepository.deleteAllByPartnerId(partnerId)
+        budgetUnitCostRepository.deleteAllByBasePropertiesPartnerId(partnerId)
 
 }

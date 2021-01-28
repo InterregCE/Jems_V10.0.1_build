@@ -1,5 +1,9 @@
-.unitcost-budget-table{
-  .invalid{
+.unitcost-budget-table {
+  .invalid {
     color: var(--warn-color);
+  }
+
+  .allocation-warn {
+    background-color: var(--pale-yellow);
   }
 }

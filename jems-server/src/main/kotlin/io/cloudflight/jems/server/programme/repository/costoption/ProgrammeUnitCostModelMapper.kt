@@ -5,7 +5,7 @@ import io.cloudflight.jems.server.programme.entity.costoption.ProgrammeUnitCostB
 import io.cloudflight.jems.server.programme.entity.costoption.ProgrammeUnitCostEntity
 import io.cloudflight.jems.server.programme.service.costoption.model.ProgrammeUnitCost
 
-fun ProgrammeUnitCostEntity.toModel() = ProgrammeUnitCost(
+fun ProgrammeUnitCostEntity.toProgrammeUnitCost() = ProgrammeUnitCost(
     id = id,
     name = name,
     description = description,
@@ -14,7 +14,7 @@ fun ProgrammeUnitCostEntity.toModel() = ProgrammeUnitCost(
     categories = categories.mapTo(HashSet()) { it.category }
 )
 
-fun Iterable<ProgrammeUnitCostEntity>.toModel() = map { it.toModel() }
+fun Iterable<ProgrammeUnitCostEntity>.toProgrammeUnitCost() = map { it.toProgrammeUnitCost() }
 
 fun ProgrammeUnitCost.toEntity() = ProgrammeUnitCostEntity(
     id = id ?: 0,

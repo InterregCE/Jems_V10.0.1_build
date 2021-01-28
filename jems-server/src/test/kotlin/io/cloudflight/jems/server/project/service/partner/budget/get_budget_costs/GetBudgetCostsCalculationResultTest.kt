@@ -1,13 +1,8 @@
 package io.cloudflight.jems.server.project.service.partner.budget.get_budget_costs
 
 import io.cloudflight.jems.server.UnitTest
-import io.cloudflight.jems.server.project.service.partner.budget.ProjectPartnerBudgetPersistence
-import io.cloudflight.jems.server.project.service.partner.model.BudgetGeneralCostEntry
-import io.cloudflight.jems.server.project.service.partner.model.BudgetStaffCostEntry
-import io.cloudflight.jems.server.project.service.partner.model.BudgetTravelAndAccommodationCostEntry
-import io.cloudflight.jems.server.project.service.partner.model.BudgetUnitCostEntry
-import io.cloudflight.jems.server.project.service.partner.model.StaffCostType
-import io.cloudflight.jems.server.project.service.partner.model.StaffCostUnitType
+import io.cloudflight.jems.server.project.service.partner.budget.ProjectPartnerBudgetCostsPersistence
+import io.cloudflight.jems.server.project.service.partner.model.*
 import io.mockk.confirmVerified
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
@@ -20,7 +15,7 @@ import java.math.BigDecimal
 internal class GetBudgetCostsTest : UnitTest() {
 
     @MockK
-    lateinit var persistence: ProjectPartnerBudgetPersistence
+    lateinit var budgetCostsPersistence: ProjectPartnerBudgetCostsPersistence
 
     @InjectMockKs
     lateinit var getBudgetCosts: GetBudgetCosts
@@ -33,22 +28,22 @@ internal class GetBudgetCostsTest : UnitTest() {
         val budgetGeneralCostEntries = budgetGeneralCostEntries()
         val budgetUnitCostEntries = budgetUnitCostEntries()
 
-        every { persistence.getBudgetEquipmentCosts(partnerId) } returns budgetGeneralCostEntries
-        every { persistence.getBudgetExternalExpertiseAndServicesCosts(partnerId) } returns budgetGeneralCostEntries
-        every { persistence.getBudgetInfrastructureAndWorksCosts(partnerId) } returns budgetGeneralCostEntries
-        every { persistence.getBudgetTravelAndAccommodationCosts(partnerId) } returns budgetTravelAndAccommodationCostEntries
-        every { persistence.getBudgetStaffCosts(partnerId) } returns budgetStaffCostEntries
-        every { persistence.getBudgetUnitCosts(partnerId) } returns budgetUnitCostEntries
+        every { budgetCostsPersistence.getBudgetEquipmentCosts(partnerId) } returns budgetGeneralCostEntries
+        every { budgetCostsPersistence.getBudgetExternalExpertiseAndServicesCosts(partnerId) } returns budgetGeneralCostEntries
+        every { budgetCostsPersistence.getBudgetInfrastructureAndWorksCosts(partnerId) } returns budgetGeneralCostEntries
+        every { budgetCostsPersistence.getBudgetTravelAndAccommodationCosts(partnerId) } returns budgetTravelAndAccommodationCostEntries
+        every { budgetCostsPersistence.getBudgetStaffCosts(partnerId) } returns budgetStaffCostEntries
+        every { budgetCostsPersistence.getBudgetUnitCosts(partnerId) } returns budgetUnitCostEntries
 
         val result = getBudgetCosts.getBudgetCosts(partnerId)
 
-        verify(atLeast = 1) { persistence.getBudgetEquipmentCosts(partnerId) }
-        verify(atLeast = 1) { persistence.getBudgetExternalExpertiseAndServicesCosts(partnerId) }
-        verify(atLeast = 1) { persistence.getBudgetInfrastructureAndWorksCosts(partnerId) }
-        verify(atLeast = 1) { persistence.getBudgetTravelAndAccommodationCosts(partnerId) }
-        verify(atLeast = 1) { persistence.getBudgetStaffCosts(partnerId) }
-        verify(atLeast = 1) { persistence.getBudgetUnitCosts(partnerId) }
-        confirmVerified(persistence)
+        verify(atLeast = 1) { budgetCostsPersistence.getBudgetEquipmentCosts(partnerId) }
+        verify(atLeast = 1) { budgetCostsPersistence.getBudgetExternalExpertiseAndServicesCosts(partnerId) }
+        verify(atLeast = 1) { budgetCostsPersistence.getBudgetInfrastructureAndWorksCosts(partnerId) }
+        verify(atLeast = 1) { budgetCostsPersistence.getBudgetTravelAndAccommodationCosts(partnerId) }
+        verify(atLeast = 1) { budgetCostsPersistence.getBudgetStaffCosts(partnerId) }
+        verify(atLeast = 1) { budgetCostsPersistence.getBudgetUnitCosts(partnerId) }
+        confirmVerified(budgetCostsPersistence)
 
         assertEquals(budgetStaffCostEntries, result.staffCosts)
         assertEquals(budgetTravelAndAccommodationCostEntries, result.travelCosts)
@@ -60,22 +55,78 @@ internal class GetBudgetCostsTest : UnitTest() {
 
 
     private fun budgetStaffCostEntries() = listOf(
-        BudgetStaffCostEntry(1, BigDecimal.ONE, BigDecimal.ONE, BigDecimal.ONE, StaffCostUnitType.HOUR, StaffCostType.UNIT_COST, emptySet(), emptySet()),
-        BudgetStaffCostEntry(2, BigDecimal.ONE, BigDecimal.ONE, BigDecimal.ONE, StaffCostUnitType.HOUR, StaffCostType.UNIT_COST, emptySet(), emptySet())
+        BudgetStaffCostEntry(
+            1,
+            BigDecimal.ONE,
+            BigDecimal.ONE,
+            mutableSetOf(),
+            BigDecimal.ONE,
+            StaffCostUnitType.HOUR,
+            StaffCostType.UNIT_COST,
+            emptySet(),
+            emptySet()
+        ),
+        BudgetStaffCostEntry(
+            2,
+            BigDecimal.ONE,
+            BigDecimal.ONE,
+            mutableSetOf(),
+            BigDecimal.ONE,
+            StaffCostUnitType.HOUR,
+            StaffCostType.UNIT_COST,
+            emptySet(),
+            emptySet()
+        )
     )
 
     private fun budgetTravelAndAccommodationCostEntries() = listOf(
-        BudgetTravelAndAccommodationCostEntry(1, BigDecimal.ONE, BigDecimal.ONE, BigDecimal.ONE, emptySet(), emptySet()),
-        BudgetTravelAndAccommodationCostEntry(2, BigDecimal.ONE, BigDecimal.ONE, BigDecimal.ONE, emptySet(), emptySet())
+        BudgetTravelAndAccommodationCostEntry(
+            1,
+            BigDecimal.ONE,
+            BigDecimal.ONE,
+            mutableSetOf(),
+            BigDecimal.ONE,
+            emptySet(),
+            emptySet()
+        ),
+        BudgetTravelAndAccommodationCostEntry(
+            2,
+            BigDecimal.ONE,
+            BigDecimal.ONE,
+            mutableSetOf(),
+            BigDecimal.ONE,
+            emptySet(),
+            emptySet()
+        )
     )
 
     private fun budgetGeneralCostEntries() = listOf(
-        BudgetGeneralCostEntry(1, BigDecimal.ONE, BigDecimal.ONE, BigDecimal.ONE, 0L, emptySet(), emptySet(), emptySet()),
-        BudgetGeneralCostEntry(2, BigDecimal.ONE, BigDecimal.ONE, BigDecimal.ONE, 0L, emptySet(), emptySet(), emptySet())
+        BudgetGeneralCostEntry(
+            1,
+            BigDecimal.ONE,
+            BigDecimal.ONE,
+            mutableSetOf(),
+            BigDecimal.ONE,
+            0L,
+            emptySet(),
+            emptySet(),
+            emptySet()
+        ),
+        BudgetGeneralCostEntry(
+            2,
+            BigDecimal.ONE,
+            BigDecimal.ONE,
+            mutableSetOf(),
+            BigDecimal.ONE,
+            0L,
+            emptySet(),
+            emptySet(),
+            emptySet()
+        )
     )
 
     private fun budgetUnitCostEntries() = listOf(
-        BudgetUnitCostEntry(1, BigDecimal.ONE, 1, BigDecimal.ONE)
+        BudgetUnitCostEntry(1, BigDecimal.ONE, mutableSetOf(), BigDecimal.ONE, 1)
     )
 
 }
