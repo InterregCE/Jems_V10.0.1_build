@@ -76,7 +76,11 @@ export class MultiLanguageFormFieldComponent implements OnInit, ControlValueAcce
   }
 
   setDisabledState(isDisabled: boolean): void {
-    isDisabled ? this.multiLanguageFormGroup?.disable({emitEvent: false}) : this.multiLanguageFormGroup?.enable({emitEvent: false});
+    if (isDisabled) {
+      this.multiLanguageFormGroup?.disable({emitEvent: false});
+    } else {
+      this.multiLanguageFormGroup?.enable({emitEvent: false});
+    }
   }
 
   writeValue(newValue: InputTranslation[]): void {

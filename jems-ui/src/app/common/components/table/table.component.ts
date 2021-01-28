@@ -64,7 +64,7 @@ export class TableComponent implements OnInit {
     if (column.alternativeValueCondition && column.alternativeValueCondition(elementValue)) {
       return column.alternativeValue;
     }
-    if (column.columnType === ColumnType.Date) {
+    if (column.columnType === ColumnType.DateColumn) {
       return this.datePipe.transform(elementValue, Tables.DEFAULT_DATE_FORMAT);
     }
     if (column.columnType === ColumnType.Decimal) {

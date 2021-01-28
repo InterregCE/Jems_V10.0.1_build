@@ -10,7 +10,7 @@
         <table mat-table [dataSource]="dataSource">
 
             <ng-container matColumnDef="system">
-                <th mat-header-cell class="column-small" *matHeaderCellDef>{{'programme.languages.list.select.system' | translate}}</th>
+                <th id="system" mat-header-cell class="column-small" *matHeaderCellDef>{{'programme.languages.list.select.system' | translate}}</th>
                 <td mat-cell *matCellDef="let element">
                     <mat-checkbox (click)="$event.stopPropagation()"
                                   (change)="systemLangSelection.toggle(element)"
@@ -21,7 +21,7 @@
             </ng-container>
 
             <ng-container matColumnDef="input">
-                <th mat-header-cell class="column-small" *matHeaderCellDef>{{'programme.languages.list.select.input' | translate}}</th>
+                <th id="input" mat-header-cell class="column-small" *matHeaderCellDef>{{'programme.languages.list.select.input' | translate}}</th>
                 <td mat-cell *matCellDef="let element">
                     <mat-checkbox (click)="$event.stopPropagation()"
                                   (change)="inputLangSelection.toggle(element)"
@@ -32,14 +32,14 @@
             </ng-container>
 
             <ng-container matColumnDef="name">
-                <th mat-header-cell *matHeaderCellDef>{{'programme.languages.list.name' | translate}}</th>
+                <th id="name" mat-header-cell *matHeaderCellDef>{{'programme.languages.list.name' | translate}}</th>
                 <td mat-cell *matCellDef="let element">
                     {{element.code}}
                 </td>
             </ng-container>
 
             <ng-container matColumnDef="translation">
-                <th mat-header-cell *matHeaderCellDef>{{'programme.languages.list.description' | translate}}</th>
+                <th id="description" mat-header-cell *matHeaderCellDef>{{'programme.languages.list.description' | translate}}</th>
                 <td mat-cell *matCellDef="let element">
                     {{'language.' + element.code.toLowerCase() | translate}}
                 </td>

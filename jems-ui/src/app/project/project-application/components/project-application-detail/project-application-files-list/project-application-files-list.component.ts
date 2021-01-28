@@ -75,7 +75,7 @@ export class ProjectApplicationFilesListComponent extends BaseComponent implemen
         {
           displayedColumn: 'file.table.column.name.timestamp',
           elementProperty: 'updated',
-          columnType: ColumnType.Date,
+          columnType: ColumnType.DateColumn,
           sortProperty: 'updated'
         },
         {

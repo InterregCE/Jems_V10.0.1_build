@@ -1,6 +1,6 @@
 export enum ColumnType {
-  String,
-  Date,
+  StringColumn,
+  DateColumn,
   CustomComponent,
   Decimal
 }
