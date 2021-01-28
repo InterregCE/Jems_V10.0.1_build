@@ -1,0 +1,93 @@
+<app-breadcrumb></app-breadcrumb>
+<h2>{{'project.application.form.acronym' | translate : {acronym: projectStore.getAcronym() | async} }}</h2>
+<h4>{{'project.application.form.section.part.d' | translate}}</h4>
+<h5>{{'project.application.form.budgetPerPartner.title' | translate}}</h5>
+
+<mat-table *ngIf="budgets$ | async" id="budget-table-per-partner" class="mat-elevation-z8 general-application-table w-150"
+           [dataSource]="budgetColumns">
+
+    <ng-container matColumnDef="partner">
+        <mat-header-cell class="m-1" *matHeaderCellDef>{{ 'project.breadcrumb.partnerName' | translate }}</mat-header-cell>
+        <mat-cell class="m-1" *matCellDef="let budget">
+            {{ 'common.label.project.partner.role.shortcut.' + budget.partnerRole | translate : {partner: budget.partnerSortNumber} }}
+        </mat-cell>
+        <mat-footer-cell class="m-1" *matFooterCellDef>{{ 'project.partner.budget.table.total' | translate }}</mat-footer-cell>
+    </ng-container>
+
+    <ng-container matColumnDef="country">
+        <mat-header-cell class="m-1" *matHeaderCellDef>{{ 'project.partner.main-address.country' | translate }}</mat-header-cell>
+        <mat-cell class="m-1" *matCellDef="let budget">{{ budget.partnerCountry }}</mat-cell>
+        <mat-footer-cell class="m-1" *matFooterCellDef></mat-footer-cell>
+    </ng-container>
+
+    <ng-container *ngFor="let fund of chosenProjectFunds$ | async">
+        <ng-container matColumnDef="{{'budget' + (fund.id || fund.abbreviation)}}">
+            <mat-header-cell *matHeaderCellDef class="justify-end m-1">{{ fund.id ? ('programme.fund.abbreviation.' + fund.id | translate) : fund.abbreviation }}</mat-header-cell>
+            <mat-cell *matCellDef="let budget" class="justify-end m-1">{{ getBudgetAmountForFund(fund, budget.budgets) | asMoney }}</mat-cell>
+            <mat-footer-cell *matFooterCellDef class="justify-end m-1">{{ getTotalBudgetAmountForFund(fund) | asMoney }}</mat-footer-cell>
+        </ng-container>
+        <ng-container matColumnDef="{{'percentage' + (fund.id || fund.abbreviation)}}">
+            <mat-header-cell *matHeaderCellDef class="justify-end m-1">{{ fund.id ? ('programme.fund.abbreviation.' + fund.id | translate) + ('project.partner.percentage'| translate) : (fund.abbreviation + 'project.partner.percentage'| translate ) }}</mat-header-cell>
+            <mat-cell *matCellDef="let budget" class="justify-end m-1">
+                {{getPercentageAmountForFund(fund, budget.budgets)}}
+                <div matSuffix class="pl-1">%</div>
+            </mat-cell>
+            <mat-footer-cell *matFooterCellDef class="justify-end m-1">
+                {{getTotalPercentageAmountForFund(fund)}}
+                <div matSuffix class="pl-1">%</div>
+                </mat-footer-cell>
+        </ng-container>
+    </ng-container>
+
+    <ng-container matColumnDef="publicContribution">
+        <mat-header-cell *matHeaderCellDef class="justify-end m-1">{{ 'project.partner.public.contribution' | translate }}</mat-header-cell>
+        <mat-cell *matCellDef="let budget" class="justify-end m-1">{{ budget.publicContribution | asMoney }}</mat-cell>
+        <mat-footer-cell *matFooterCellDef class="justify-end m-1">{{ totalPublicContribution | asMoney }}</mat-footer-cell>
+    </ng-container>
+
+    <ng-container matColumnDef="autoPublicContribution">
+        <mat-header-cell *matHeaderCellDef class="justify-end m-1">{{ 'project.partner.auto.public.contribution' | translate }}</mat-header-cell>
+        <mat-cell *matCellDef="let budget" class="justify-end m-1">{{ budget.autoPublicContribution | asMoney }}</mat-cell>
+        <mat-footer-cell *matFooterCellDef class="justify-end m-1">{{ totalAutoPublicContribution | asMoney }}</mat-footer-cell>
+    </ng-container>
+
+    <ng-container matColumnDef="privateContribution">
+        <mat-header-cell *matHeaderCellDef class="justify-end m-1">{{ 'project.partner.private.contribution' | translate }}</mat-header-cell>
+        <mat-cell *matCellDef="let budget" class="justify-end m-1">{{ budget.privateContribution | asMoney }}</mat-cell>
+        <mat-footer-cell *matFooterCellDef class="justify-end m-1">{{ totalPrivateContribution | asMoney }}</mat-footer-cell>
+    </ng-container>
+
+    <ng-container matColumnDef="totalContribution">
+        <mat-header-cell *matHeaderCellDef class="justify-end m-1">{{ 'project.partner.total.contribution' | translate }}</mat-header-cell>
+        <mat-cell *matCellDef="let budget" class="justify-end m-1">{{ budget.totalContribution | asMoney }}</mat-cell>
+        <mat-footer-cell *matFooterCellDef class="justify-end m-1">{{ totalPartnerContribution | asMoney }}</mat-footer-cell>
+    </ng-container>
+
+    <ng-container matColumnDef="totalEligibleBudget">
+        <mat-header-cell *matHeaderCellDef class="justify-end m-1">{{ 'project.partner.total.eligible.budget' | translate }}</mat-header-cell>
+        <mat-cell *matCellDef="let budget" class="justify-end m-1">{{ budget.totalEligibleBudget | asMoney }}</mat-cell>
+        <mat-footer-cell *matFooterCellDef class="justify-end m-1">{{ totalEligibleBudget | asMoney }}</mat-footer-cell>
+    </ng-container>
+
+    <ng-container matColumnDef="percentOfTotalBudget">
+        <mat-header-cell *matHeaderCellDef class="justify-end m-1">
+            {{ 'project.partner.percent.total.budget' | translate }}
+            <app-context-info
+                    infoText="{{ 'project.partner.percent.total.budget.contextinfo' | translate }}"
+                    infoPosition="right">
+            </app-context-info>
+        </mat-header-cell>
+        <mat-cell *matCellDef="let budget" class="justify-end m-1">
+            {{budget.percentOfTotalBudget}}
+            <div matSuffix class="pl-1">%</div>
+        </mat-cell>
+        <mat-footer-cell *matFooterCellDef class="justify-end m-1">
+            {{totalPercentage}}
+            <div matSuffix class="pl-1">%</div>
+        </mat-footer-cell>
+    </ng-container>
+
+    <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
+    <mat-row *matRowDef="let row; columns: displayedColumns;"></mat-row>
+    <mat-footer-row *matFooterRowDef="displayedColumns"></mat-footer-row>
+</mat-table>

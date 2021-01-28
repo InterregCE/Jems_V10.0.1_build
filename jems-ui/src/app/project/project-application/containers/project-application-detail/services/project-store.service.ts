@@ -10,7 +10,8 @@ import {
   OutputProjectStatus,
   OutputRevertProjectStatus,
   ProjectService,
-  ProjectStatusService
+  ProjectStatusService,
+  ProjectPartnerBudgetCoFinancingDTO
 } from '@cat/api';
 import {
   catchError,
@@ -208,6 +209,15 @@ export class ProjectStore {
         tap(project => this.updatedProjectData$.next(project)),
         tap(saved => Log.info('Updated project data:', this, saved)),
       );
+  }
+
+  getProjectCoFinancing(): Observable<ProjectPartnerBudgetCoFinancingDTO[]> {
+    return this.projectId$
+        .pipe(
+            distinctUntilChanged(),
+            switchMap(id => this.projectService.getProjectCoFinancing(id)),
+            tap((data: ProjectPartnerBudgetCoFinancingDTO[]) => Log.info('Fetched project co-financing:', this, data))
+        );
   }
 
   setEligibilityAssessment(assessment: InputProjectEligibilityAssessment): void {
