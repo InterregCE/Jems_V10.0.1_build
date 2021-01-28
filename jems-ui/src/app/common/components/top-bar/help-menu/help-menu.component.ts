@@ -1,18 +1,32 @@
-import {Component} from '@angular/core';
-import {InfoService, VersionDTO} from '@cat/api';
-import {Observable} from 'rxjs';
+import {Component, OnInit} from '@angular/core';
+import {InfoService} from '@cat/api';
+import {Permission} from '../../../../security/permissions/permission';
+import {tap} from 'rxjs/operators';
+import {UntilDestroy, untilDestroyed} from '@ngneat/until-destroy';
 
+@UntilDestroy()
 @Component({
   selector: 'app-help-menu',
   templateUrl: './help-menu.component.html',
   styleUrls: ['./help-menu.component.scss']
 })
-export class HelpMenuComponent {
+export class HelpMenuComponent implements OnInit {
+  Permission = Permission;
 
-  version$: Observable<VersionDTO>;
+  version: string;
+  helpdeskUrl: string;
 
   constructor(private infoService: InfoService) {
-    this.version$ = this.infoService.getVersionInfo();
+  }
+
+  ngOnInit(): void {
+    this.infoService.getVersionInfo().pipe(
+      tap(info => {
+        this.version = info.version;
+        this.helpdeskUrl = info.helpdeskUrl;
+      }),
+      untilDestroyed(this),
+    ).subscribe();
   }
 
 }

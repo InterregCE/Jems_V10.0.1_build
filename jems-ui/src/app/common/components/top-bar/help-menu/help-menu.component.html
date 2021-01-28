@@ -3,12 +3,18 @@
 </a>
 <mat-menu #menu="matMenu">
     <label class="help-category">{{'topbar.help.title' | translate}}</label>
+    <ng-container *ngIf="helpdeskUrl">
+        <a mat-menu-item *ngxPermissionsOnly="[Permission.ADMINISTRATOR, Permission.PROGRAMME_USER]"
+           [href]="helpdeskUrl" target="_blank">
+            {{'topbar.help.legal.helpdesk' | translate}}
+        </a>
+    </ng-container>
     <a mat-menu-item>{{'topbar.help.contact' | translate}} <a href="mailto:jems@interact-eu.net">jems@interact-eu.net</a></a>
     <label class="help-category">{{'topbar.help.legal' | translate}}</label>
     <a mat-menu-item>{{'topbar.help.legal.privacy' | translate}}</a>
     <a mat-menu-item>{{'topbar.help.legal.terms' | translate}}</a>
-    <ng-container *ngIf="(version$ | async) as version">
+    <ng-container *ngIf="version">
         <label class="help-category">Version</label>
-        <a disabled mat-menu-item>{{ version.version }}</a>
+        <a disabled mat-menu-item>{{ version }}</a>
     </ng-container>
 </mat-menu>

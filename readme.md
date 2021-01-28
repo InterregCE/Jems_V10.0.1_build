@@ -101,6 +101,18 @@ as _info \[LOG\]_ to stdout.
 For testing the API, the module [jems-rest-test](jems-rest-test) was introduced.
 The generated documentation of the API can be found on the successful started Jems server [7].
 
+### Startup parameters
+You can define following startup parameters (see also [application.yaml](jems-server/src/main/resources/application.yaml)):
+- `audit-service.enabled`=[true,false] (or env variable `AUDIT_ENABLED`), if this one is set to true, you need to provide also:
+  - `audit-service.url-and-port` with address of ElasticSearch (or env variable `AUDIT_ELASTICSEARCH_URL_AND_PORT`)
+- `spring.datasource.url` with address of MariaDB (or env variable `SPRING_DATASOURCE_URL`)
+  - optional `spring.datasource.username` (by default set to `root`)
+  - `spring.datasource.password` (or env variable `SPRING_DATASOURCE_PASSWORD`)
+- `minio-storage.endpoint` with address of Minio (or env variable `MINIO_URL_AND_PORT`)
+  - `minio-storage.accessKey` with access key for Minio (or env variable `MINIO_ACCESS_KEY`)
+  - `minio-storage.secretKey` with secret key for Minio (or env variable `MINIO_SECRET_KEY`)
+- `info.helpdesk-url` URL, which is available in the main HELP tooltip
+
 ## References
 
 1. [Cloudflight Platform](https://git.internal.cloudflight.io/cloudflight/libs/cloudflight-platform)
