@@ -232,6 +232,29 @@ internal class UpdateCoFinancingInteractorTest {
         )
     }
 
+    @Test
+    fun `update financing OK and contribution - amount 0`() {
+        every { persistence.getAvailableFundIds(8) } returns setOf(fund.id)
+
+        val toSave = listOf(
+            ProjectPartnerContribution(name = "zero", amount = BigDecimal.ZERO, isPartner = true, status = Public)
+        )
+
+        val slotFinances = slot<Collection<UpdateProjectPartnerCoFinancing>>()
+        val slotPartnerContributions = slot<List<ProjectPartnerContribution>>()
+        every { persistence.updateCoFinancingAndContribution(8, capture(slotFinances), capture(slotPartnerContributions)) } returns
+                ProjectPartnerCoFinancingAndContribution(emptyList(), emptyList(), "")
+
+        updateInteractor.updateCoFinancing(8, financingOk, toSave)
+        assertThat(slotPartnerContributions.captured).containsExactly(
+            ProjectPartnerContribution(name = "zero", amount = BigDecimal.ZERO, isPartner = true, status = Public)
+        )
+        assertThat(slotFinances.captured).containsExactlyInAnyOrder(
+            UpdateProjectPartnerCoFinancing(fundId = fund.id, percentage = 60),
+            UpdateProjectPartnerCoFinancing(fundId = null, percentage = 40)
+        )
+    }
+
     private fun assertExceptionMsg(executable: () -> Unit, expectedError: String, description: String? = null) {
         val ex = assertThrows<I18nValidationException>(executable)
         if (description != null)

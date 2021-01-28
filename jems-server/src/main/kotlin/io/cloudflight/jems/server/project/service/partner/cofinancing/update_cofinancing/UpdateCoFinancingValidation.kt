@@ -49,7 +49,7 @@ fun validateContribution(
     if (partnerStatus == ProjectPartnerContributionStatus.AutomaticPublic)
         invalid("project.partner.contribution.partner.status.invalid")
 
-    if (!partnerContributions.all { it.amount != null && it.amount > BigDecimal.ZERO })
+    if (!partnerContributions.all { it.amount != null && it.amount >= BigDecimal.ZERO })
         invalid("project.partner.contribution.amount.is.mandatory")
 }
 
