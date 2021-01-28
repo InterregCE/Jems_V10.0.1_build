@@ -73,16 +73,18 @@ export class UnitCostsBudgetTableComponent implements OnInit, OnChanges {
       untilDestroyed(this)
     ).subscribe();
 
+    const periodColumns = this.projectPeriods?.length
+      ? [...this.projectPeriods?.map(period => 'period' + period.number), 'openForPeriods'] : [];
     this.columnsToDisplay = [
-      'unitCost', 'description', 'unitType', 'numberOfUnits', 'pricePerUnit', 'total',
-      ...this.projectPeriods?.map(period => 'period' + period.number),
-      'openForPeriods', 'action',
+      'unitCost', 'description', 'unitType', 'numberOfUnits',
+      'pricePerUnit', 'total', ...periodColumns, 'action',
     ];
 
+    const periodWidths = this.projectPeriods?.length
+      ? [...this.projectPeriods?.map(period => ({minInRem: 8})), {minInRem: 8}] : [];
     this.widthConfig = [
-      {minInRem: 12}, {minInRem: 12}, {minInRem: 5}, {minInRem: 12}, {minInRem: 5}, {minInRem: 8},
-      ...this.projectPeriods?.map(period => ({minInRem: 8})),
-      {minInRem: 8}, {minInRem: 3}
+      {minInRem: 12}, {minInRem: 12}, {minInRem: 5}, {minInRem: 12},
+      {minInRem: 5}, {minInRem: 8}, ...periodWidths, {minInRem: 3}
     ];
   }
 
@@ -182,6 +184,9 @@ export class UnitCostsBudgetTableComponent implements OnInit, OnChanges {
   }
 
   private setOpenForPeriodsWarning(): void {
+    if (!this.projectPeriods?.length) {
+      return;
+    }
     this.warnOpenForPeriods = this.items.controls.some(
       control => control.get(this.constants.FORM_CONTROL_NAMES.openForPeriods)?.value !== 0
     );
