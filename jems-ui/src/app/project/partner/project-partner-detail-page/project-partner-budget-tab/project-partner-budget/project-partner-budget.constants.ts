@@ -25,7 +25,10 @@ export class ProjectPartnerBudgetConstants {
     investmentId: 'investmentId',
     comment: 'comment',
     rowSum: 'rowSum',
-    total: 'total'
+    total: 'total',
+    budgetPeriods: 'budgetPeriods',
+    amount: 'amount',
+    openForPeriods: 'openForPeriods'
   };
 
   public static FORM_ERRORS = {

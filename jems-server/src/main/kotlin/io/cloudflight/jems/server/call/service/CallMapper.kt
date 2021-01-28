@@ -15,7 +15,7 @@ import io.cloudflight.jems.server.programme.entity.ProgrammePriorityPolicy
 import io.cloudflight.jems.server.programme.service.toOutputProgrammeFund
 import io.cloudflight.jems.server.programme.service.toOutputProgrammePriorityPolicy
 import io.cloudflight.jems.server.programme.entity.Strategy
-import io.cloudflight.jems.server.programme.repository.costoption.toModel
+import io.cloudflight.jems.server.programme.repository.costoption.toProgrammeUnitCost
 
 /**
  * Map InputCallCreate to entity Call.
@@ -51,8 +51,8 @@ fun CallEntity.toOutputCall() = OutputCall(
     description = description,
     lengthOfPeriod = lengthOfPeriod,
     flatRates = flatRates.toProjectCallFlatRate().toDto(),
-    lumpSums = lumpSums.map { it.toModel().toDto() },
-    unitCosts = unitCosts.map { it.toModel().toDto() },
+    lumpSums = lumpSums.map { it.toProgrammeUnitCost().toDto() },
+    unitCosts = unitCosts.map { it.toProgrammeUnitCost().toDto() },
 )
 
 fun CallEntity.toOutputCallList() = OutputCallList(

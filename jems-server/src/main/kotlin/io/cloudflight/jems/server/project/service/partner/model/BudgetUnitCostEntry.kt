@@ -3,10 +3,9 @@ package io.cloudflight.jems.server.project.service.partner.model
 import java.math.BigDecimal
 
 data class BudgetUnitCostEntry(
-    val id: Long? = null,
-    val numberOfUnits: BigDecimal,
-
-    val unitCostId: Long,
-
-    val rowSum: BigDecimal
-)
+    override val id: Long? = null,
+    override val numberOfUnits: BigDecimal,
+    override val budgetPeriods: MutableSet<BudgetPeriod>,
+    override var rowSum: BigDecimal?,
+    val unitCostId: Long
+) : BaseBudgetEntry

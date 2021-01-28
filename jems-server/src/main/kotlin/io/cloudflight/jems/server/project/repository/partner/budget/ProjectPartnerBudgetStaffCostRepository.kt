@@ -1,6 +1,6 @@
 package io.cloudflight.jems.server.project.repository.partner.budget
 
-import io.cloudflight.jems.server.project.entity.partner.budget.ProjectPartnerBudgetStaffCostEntity
+import io.cloudflight.jems.server.project.entity.partner.budget.staff_cost.ProjectPartnerBudgetStaffCostEntity
 import org.springframework.stereotype.Repository
 
 @Repository

@@ -1,5 +1,8 @@
-package io.cloudflight.jems.server.project.entity.partner.budget
+package io.cloudflight.jems.server.project.entity.partner.budget.general.infrastructure
 
+import io.cloudflight.jems.server.project.entity.partner.budget.*
+import io.cloudflight.jems.server.project.entity.partner.budget.general.ProjectPartnerBudgetGeneralBase
+import java.math.BigDecimal
 import javax.persistence.CascadeType
 import javax.persistence.Column
 import javax.persistence.Embedded
@@ -25,9 +28,17 @@ data class ProjectPartnerBudgetInfrastructureEntity(
     override val investmentId: Long?,
 
     @OneToMany(cascade = [CascadeType.ALL], orphanRemoval = true, mappedBy = "budgetTranslation.budget")
-    override val translatedValues: MutableSet<ProjectPartnerBudgetInfrastructureTransl> = mutableSetOf()
+    override val translatedValues: MutableSet<ProjectPartnerBudgetInfrastructureTranslEntity> = mutableSetOf(),
 
-) : ProjectPartnerBudgetGeneralBase {
+    @OneToMany(cascade = [CascadeType.ALL], orphanRemoval = true, mappedBy = "budgetPeriodId.budget")
+    override val budgetPeriodEntities: MutableSet<ProjectPartnerBudgetInfrastructurePeriodEntity>,
+
+    @Column
+    @field:NotNull
+    override val pricePerUnit: BigDecimal,
+
+    ) :
+    ProjectPartnerBudgetGeneralBase {
 
     override fun equals(other: Any?) =
         this === other ||

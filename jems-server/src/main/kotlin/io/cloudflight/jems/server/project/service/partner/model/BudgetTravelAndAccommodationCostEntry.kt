@@ -6,8 +6,9 @@ import java.math.BigDecimal
 data class BudgetTravelAndAccommodationCostEntry(
     override val id: Long? = null,
     override val numberOfUnits: BigDecimal,
-    override val pricePerUnit: BigDecimal,
-    override val rowSum: BigDecimal,
+    override var rowSum: BigDecimal?,
+    override val budgetPeriods: MutableSet<BudgetPeriod>,
+    val pricePerUnit: BigDecimal,
     val unitType: Set<InputTranslation> = emptySet(),
     val description: Set<InputTranslation> = emptySet(),
 ) : BaseBudgetEntry

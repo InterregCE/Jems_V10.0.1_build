@@ -2,19 +2,27 @@ package io.cloudflight.jems.server.project.repository.partner.budget
 
 import io.cloudflight.jems.api.project.dto.InputTranslation
 import io.cloudflight.jems.server.project.entity.BudgetTranslation
+import io.cloudflight.jems.server.project.entity.ProjectPeriodEntity
 import io.cloudflight.jems.server.project.entity.partner.budget.BaseBudgetProperties
-import io.cloudflight.jems.server.project.entity.partner.budget.ProjectPartnerBudgetEquipmentEntity
-import io.cloudflight.jems.server.project.entity.partner.budget.ProjectPartnerBudgetEquipmentTransl
-import io.cloudflight.jems.server.project.entity.partner.budget.ProjectPartnerBudgetExternalEntity
-import io.cloudflight.jems.server.project.entity.partner.budget.ProjectPartnerBudgetExternalTransl
-import io.cloudflight.jems.server.project.entity.partner.budget.ProjectPartnerBudgetGeneralBase
-import io.cloudflight.jems.server.project.entity.partner.budget.ProjectPartnerBudgetInfrastructureEntity
-import io.cloudflight.jems.server.project.entity.partner.budget.ProjectPartnerBudgetInfrastructureTransl
-import io.cloudflight.jems.server.project.entity.partner.budget.ProjectPartnerBudgetStaffCostEntity
-import io.cloudflight.jems.server.project.entity.partner.budget.ProjectPartnerBudgetStaffCostTransl
-import io.cloudflight.jems.server.project.entity.partner.budget.ProjectPartnerBudgetTravelEntity
-import io.cloudflight.jems.server.project.entity.partner.budget.ProjectPartnerBudgetTravelTransl
+import io.cloudflight.jems.server.project.entity.partner.budget.BudgetPeriodId
+import io.cloudflight.jems.server.project.entity.partner.budget.general.ProjectPartnerBudgetGeneralBase
+import io.cloudflight.jems.server.project.entity.partner.budget.general.equipment.ProjectPartnerBudgetEquipmentEntity
+import io.cloudflight.jems.server.project.entity.partner.budget.general.equipment.ProjectPartnerBudgetEquipmentPeriodEntity
+import io.cloudflight.jems.server.project.entity.partner.budget.general.equipment.ProjectPartnerBudgetEquipmentTranslEntity
+import io.cloudflight.jems.server.project.entity.partner.budget.general.external.ProjectPartnerBudgetExternalEntity
+import io.cloudflight.jems.server.project.entity.partner.budget.general.external.ProjectPartnerBudgetExternalPeriodEntity
+import io.cloudflight.jems.server.project.entity.partner.budget.general.external.ProjectPartnerBudgetExternalTranslEntity
+import io.cloudflight.jems.server.project.entity.partner.budget.general.infrastructure.ProjectPartnerBudgetInfrastructureEntity
+import io.cloudflight.jems.server.project.entity.partner.budget.general.infrastructure.ProjectPartnerBudgetInfrastructurePeriodEntity
+import io.cloudflight.jems.server.project.entity.partner.budget.general.infrastructure.ProjectPartnerBudgetInfrastructureTranslEntity
+import io.cloudflight.jems.server.project.entity.partner.budget.staff_cost.ProjectPartnerBudgetStaffCostEntity
+import io.cloudflight.jems.server.project.entity.partner.budget.staff_cost.ProjectPartnerBudgetStaffCostPeriodEntity
+import io.cloudflight.jems.server.project.entity.partner.budget.staff_cost.ProjectPartnerBudgetStaffCostTranslEntity
+import io.cloudflight.jems.server.project.entity.partner.budget.travel.ProjectPartnerBudgetTravelEntity
+import io.cloudflight.jems.server.project.entity.partner.budget.travel.ProjectPartnerBudgetTravelPeriodEntity
+import io.cloudflight.jems.server.project.entity.partner.budget.travel.ProjectPartnerBudgetTravelTranslEntity
 import io.cloudflight.jems.server.project.service.partner.model.BudgetGeneralCostEntry
+import io.cloudflight.jems.server.project.service.partner.model.BudgetPeriod
 import io.cloudflight.jems.server.project.service.partner.model.BudgetStaffCostEntry
 import io.cloudflight.jems.server.project.service.partner.model.BudgetTravelAndAccommodationCostEntry
 
@@ -28,36 +36,60 @@ fun ProjectPartnerBudgetStaffCostEntity.toBudgetStaffCostEntry() = BudgetStaffCo
     comment = translatedValues.mapTo(HashSet()) {
         InputTranslation(it.budgetTranslation.language, it.comment)
     },
-    type = type,
+    budgetPeriods = budgetPeriodEntities.map { BudgetPeriod(it.budgetPeriodId.period.id.number, it.amount) }
+        .toMutableSet(),
     unitType = unitType,
+    type = type,
     numberOfUnits = baseProperties.numberOfUnits,
-    pricePerUnit = baseProperties.pricePerUnit,
+    pricePerUnit = pricePerUnit,
     rowSum = baseProperties.rowSum
 )
 
-fun BudgetStaffCostEntry.toProjectPartnerBudgetStaffCostEntity(partnerId: Long) = ProjectPartnerBudgetStaffCostEntity(
-    baseProperties = BaseBudgetProperties(partnerId, numberOfUnits, pricePerUnit, rowSum),
-    type = type,
-    unitType = unitType,
-    translatedValues = mutableSetOf(),
-    id = id ?: 0L
-).apply {
-    translatedValues.addAll(
-        description.plus(comment)
-            .map { it.language }
-            .distinct()
-            .map { language ->
-                ProjectPartnerBudgetStaffCostTransl(
-                    budgetTranslation = BudgetTranslation(this, language),
-                    description = description.firstOrNull { it.language == language }?.translation ?: "",
-                    comment = comment.firstOrNull { it.language == language }?.translation ?: ""
-                )
-            }.toMutableSet()
-    )
-}
+fun Set<BudgetStaffCostEntry>.toProjectPartnerBudgetStaffCostEntities(
+    partnerId: Long,
+    projectPeriodEntityResolver: (Int) -> ProjectPeriodEntity
+) = map { it.toProjectPartnerBudgetStaffCostEntity(partnerId, projectPeriodEntityResolver) }
 
+fun BudgetStaffCostEntry.toProjectPartnerBudgetStaffCostEntity(
+    partnerId: Long,
+    projectPeriodEntityReferenceResolver: (Int) -> ProjectPeriodEntity
+) =
+    ProjectPartnerBudgetStaffCostEntity(
+        baseProperties = BaseBudgetProperties(partnerId, numberOfUnits, rowSum!!),
+        pricePerUnit = pricePerUnit,
+        type = type,
+        unitType = unitType,
+        translatedValues = mutableSetOf(),
+        budgetPeriodEntities = mutableSetOf(),
+        id = id ?: 0L
+    ).apply {
+        translatedValues.addAll(
+            description.plus(comment)
+                .map { it.language }
+                .distinct()
+                .map { language ->
+                    ProjectPartnerBudgetStaffCostTranslEntity(
+                        budgetTranslation = BudgetTranslation(this, language),
+                        description = description.firstOrNull { it.language == language }?.translation ?: "",
+                        comment = comment.firstOrNull { it.language == language }?.translation ?: ""
+                    )
+                }.toMutableSet()
+        )
 
-fun List<ProjectPartnerBudgetTravelEntity>.toBudgetTravelAndAccommodationCostEntries() = this.map { it.toBudgetTravelAndAccommodationCostEntry() }
+        budgetPeriodEntities.addAll(budgetPeriods.map {
+            ProjectPartnerBudgetStaffCostPeriodEntity(
+                BudgetPeriodId(
+                    this,
+                    projectPeriodEntityReferenceResolver.invoke(it.number)
+                ),
+                it.amount
+            )
+        }.toMutableSet())
+    }
+
+fun List<ProjectPartnerBudgetTravelEntity>.toBudgetTravelAndAccommodationCostEntries() =
+    this.map { it.toBudgetTravelAndAccommodationCostEntry() }
+
 fun ProjectPartnerBudgetTravelEntity.toBudgetTravelAndAccommodationCostEntry() = BudgetTravelAndAccommodationCostEntry(
     id = id,
     description = translatedValues.mapTo(HashSet()) {
@@ -66,98 +98,190 @@ fun ProjectPartnerBudgetTravelEntity.toBudgetTravelAndAccommodationCostEntry() =
     unitType = translatedValues.mapTo(HashSet()) {
         InputTranslation(it.budgetTranslation.language, it.unitType)
     },
+    budgetPeriods = budgetPeriodEntities.map { BudgetPeriod(it.budgetPeriodId.period.id.number, it.amount) }
+        .toMutableSet(),
     numberOfUnits = baseProperties.numberOfUnits,
-    pricePerUnit = baseProperties.pricePerUnit,
+    pricePerUnit = pricePerUnit,
     rowSum = baseProperties.rowSum
 )
 
-fun BudgetTravelAndAccommodationCostEntry.toProjectPartnerBudgetTravelEntity(partnerId: Long) = ProjectPartnerBudgetTravelEntity(
-    baseProperties = BaseBudgetProperties(partnerId, numberOfUnits, pricePerUnit, rowSum),
-    translatedValues = mutableSetOf(),
-    id = id ?: 0L
-).apply {
-    translatedValues.addAll(
-        description.plus(unitType)
-            .map { it.language }
-            .distinct()
-            .map { language ->
-                ProjectPartnerBudgetTravelTransl(
-                    budgetTranslation = BudgetTranslation(this, language),
-                    description = description.firstOrNull { it.language == language }?.translation ?: "",
-                    unitType = unitType.firstOrNull { it.language == language }?.translation ?: ""
-                )
-            }.toMutableSet()
-    )
-}
+fun Set<BudgetTravelAndAccommodationCostEntry>.toProjectPartnerBudgetTravelEntities(
+    partnerId: Long,
+    projectPeriodEntityReferenceResolver: (Int) -> ProjectPeriodEntity
+) = map { it.toProjectPartnerBudgetTravelEntity(partnerId, projectPeriodEntityReferenceResolver) }
+
+fun BudgetTravelAndAccommodationCostEntry.toProjectPartnerBudgetTravelEntity(
+    partnerId: Long,
+    projectPeriodEntityReferenceResolver: (Int) -> ProjectPeriodEntity
+) =
+    ProjectPartnerBudgetTravelEntity(
+        baseProperties = BaseBudgetProperties(partnerId, numberOfUnits, rowSum!!),
+        pricePerUnit = pricePerUnit,
+        translatedValues = mutableSetOf(),
+        budgetPeriodEntities = mutableSetOf(),
+        id = id ?: 0L
+    ).apply {
+        translatedValues.addAll(
+            description.plus(unitType)
+                .map { it.language }
+                .distinct()
+                .map { language ->
+                    ProjectPartnerBudgetTravelTranslEntity(
+                        budgetTranslation = BudgetTranslation(this, language),
+                        description = description.firstOrNull { it.language == language }?.translation ?: "",
+                        unitType = unitType.firstOrNull { it.language == language }?.translation ?: ""
+                    )
+                }.toMutableSet()
+        )
+
+        budgetPeriodEntities.addAll(budgetPeriods.map {
+            ProjectPartnerBudgetTravelPeriodEntity(
+                BudgetPeriodId(
+                    this,
+                    projectPeriodEntityReferenceResolver.invoke(it.number)
+                ),
+                it.amount
+            )
+        }.toMutableSet())
+    }
 
 
-fun List<ProjectPartnerBudgetEquipmentEntity>.equipmentEntitiesToBudgetGeneralEntries() = this.map { it.toBudgetGeneralCostEntry() }
-fun BudgetGeneralCostEntry.toProjectPartnerBudgetEquipmentEntity(partnerId: Long) = ProjectPartnerBudgetEquipmentEntity(
-    id = id ?: 0L,
-    investmentId = investmentId,
-    baseProperties = BaseBudgetProperties(partnerId, numberOfUnits, pricePerUnit, rowSum),
-    translatedValues = mutableSetOf()
-).apply {
-    translatedValues.addAll(
-        description.plus(awardProcedures).plus(unitType)
-            .map { it.language }
-            .distinct()
-            .map { language ->
-                ProjectPartnerBudgetEquipmentTransl(
-                    budgetTranslation = BudgetTranslation(this, language),
-                    description = description.firstOrNull { it.language == language }?.translation ?: "",
-                    unitType = unitType.firstOrNull { it.language == language }?.translation ?: "",
-                    awardProcedures = awardProcedures.firstOrNull { it.language == language }?.translation ?: ""
-                )
-            }.toMutableSet()
-    )
-}
+fun List<ProjectPartnerBudgetEquipmentEntity>.equipmentEntitiesToBudgetGeneralEntries() =
+    this.map { it.toBudgetGeneralCostEntry() }
+
+fun Set<BudgetGeneralCostEntry>.toProjectPartnerBudgetEquipmentEntity(
+    partnerId: Long,
+    projectPeriodEntityReferenceResolver: (Int) -> ProjectPeriodEntity
+) = map { it.toProjectPartnerBudgetEquipmentEntity(partnerId, projectPeriodEntityReferenceResolver) }
+
+fun BudgetGeneralCostEntry.toProjectPartnerBudgetEquipmentEntity(
+    partnerId: Long,
+    projectPeriodEntityReferenceResolver: (Int) -> ProjectPeriodEntity
+) =
+    ProjectPartnerBudgetEquipmentEntity(
+        id = id ?: 0L,
+        investmentId = investmentId,
+        baseProperties = BaseBudgetProperties(partnerId, numberOfUnits, rowSum!!),
+        pricePerUnit = pricePerUnit,
+        budgetPeriodEntities = mutableSetOf(),
+        translatedValues = mutableSetOf()
+    ).apply {
+        translatedValues.addAll(
+            description.plus(awardProcedures).plus(unitType)
+                .map { it.language }
+                .distinct()
+                .map { language ->
+                    ProjectPartnerBudgetEquipmentTranslEntity(
+                        budgetTranslation = BudgetTranslation(this, language),
+                        description = description.firstOrNull { it.language == language }?.translation ?: "",
+                        unitType = unitType.firstOrNull { it.language == language }?.translation ?: "",
+                        awardProcedures = awardProcedures.firstOrNull { it.language == language }?.translation ?: ""
+                    )
+                }.toMutableSet()
+        )
+
+        budgetPeriodEntities.addAll(budgetPeriods.map {
+            ProjectPartnerBudgetEquipmentPeriodEntity(
+                BudgetPeriodId(
+                    this,
+                    projectPeriodEntityReferenceResolver.invoke(it.number)
+                ),
+                it.amount
+            )
+        }.toMutableSet())
+    }
 
 
-fun List<ProjectPartnerBudgetExternalEntity>.externalEntitiesToBudgetGeneralEntries() = this.map { it.toBudgetGeneralCostEntry() }
-fun BudgetGeneralCostEntry.toProjectPartnerBudgetExternalEntity(partnerId: Long) = ProjectPartnerBudgetExternalEntity(
-    id = id ?: 0L,
-    investmentId = investmentId,
-    baseProperties = BaseBudgetProperties(partnerId, numberOfUnits, pricePerUnit, rowSum),
-    translatedValues = mutableSetOf()
-).apply {
-    translatedValues.addAll(
-        description.plus(awardProcedures).plus(unitType)
-            .map { it.language }
-            .distinct()
-            .map { language ->
-                ProjectPartnerBudgetExternalTransl(
-                    budgetTranslation = BudgetTranslation(this, language),
-                    description = description.firstOrNull { it.language == language }?.translation ?: "",
-                    unitType = unitType.firstOrNull { it.language == language }?.translation ?: "",
-                    awardProcedures = awardProcedures.firstOrNull { it.language == language }?.translation ?: ""
-                )
-            }.toMutableSet()
-    )
-}
+fun List<ProjectPartnerBudgetExternalEntity>.externalEntitiesToBudgetGeneralEntries() =
+    this.map { it.toBudgetGeneralCostEntry() }
+
+fun Set<BudgetGeneralCostEntry>.toProjectPartnerBudgetExternalEntities(
+    partnerId: Long,
+    projectPeriodEntityReferenceResolver: (Int) -> ProjectPeriodEntity
+) = map { it.toProjectPartnerBudgetExternalEntity(partnerId, projectPeriodEntityReferenceResolver) }
+
+fun BudgetGeneralCostEntry.toProjectPartnerBudgetExternalEntity(
+    partnerId: Long,
+    projectPeriodEntityReferenceResolver: (Int) -> ProjectPeriodEntity
+) =
+    ProjectPartnerBudgetExternalEntity(
+        id = id ?: 0L,
+        investmentId = investmentId,
+        baseProperties = BaseBudgetProperties(partnerId, numberOfUnits, rowSum!!),
+        pricePerUnit = pricePerUnit,
+        budgetPeriodEntities = mutableSetOf(),
+        translatedValues = mutableSetOf()
+    ).apply {
+        translatedValues.addAll(
+            description.plus(awardProcedures).plus(unitType)
+                .map { it.language }
+                .distinct()
+                .map { language ->
+                    ProjectPartnerBudgetExternalTranslEntity(
+                        budgetTranslation = BudgetTranslation(this, language),
+                        description = description.firstOrNull { it.language == language }?.translation ?: "",
+                        unitType = unitType.firstOrNull { it.language == language }?.translation ?: "",
+                        awardProcedures = awardProcedures.firstOrNull { it.language == language }?.translation ?: ""
+                    )
+                }.toMutableSet()
+        )
+
+        budgetPeriodEntities.addAll(budgetPeriods.map {
+            ProjectPartnerBudgetExternalPeriodEntity(
+                BudgetPeriodId(
+                    this,
+                    projectPeriodEntityReferenceResolver.invoke(it.number)
+                ),
+                it.amount
+            )
+        }.toMutableSet())
+    }
 
 
-fun List<ProjectPartnerBudgetInfrastructureEntity>.infrastructureEntitiesToBudgetGeneralEntries() = this.map { it.toBudgetGeneralCostEntry() }
-fun BudgetGeneralCostEntry.toProjectPartnerBudgetInfrastructureEntity(partnerId: Long) = ProjectPartnerBudgetInfrastructureEntity(
-    id = id ?: 0L,
-    investmentId = investmentId,
-    baseProperties = BaseBudgetProperties(partnerId, numberOfUnits, pricePerUnit, rowSum),
-    translatedValues = mutableSetOf()
-).apply {
-    translatedValues.addAll(
-        description.plus(awardProcedures).plus(unitType)
-            .map { it.language }
-            .distinct()
-            .map { language ->
-                ProjectPartnerBudgetInfrastructureTransl(
-                    budgetTranslation = BudgetTranslation(this, language),
-                    description = description.firstOrNull { it.language == language }?.translation ?: "",
-                    unitType = unitType.firstOrNull { it.language == language }?.translation ?: "",
-                    awardProcedures = awardProcedures.firstOrNull { it.language == language }?.translation ?: ""
-                )
-            }.toMutableSet()
-    )
-}
+fun List<ProjectPartnerBudgetInfrastructureEntity>.infrastructureEntitiesToBudgetGeneralEntries() =
+    this.map { it.toBudgetGeneralCostEntry() }
+
+fun Set<BudgetGeneralCostEntry>.toProjectPartnerBudgetInfrastructureEntity(
+    partnerId: Long,
+    projectPeriodEntityReferenceResolver: (Int) -> ProjectPeriodEntity
+) = map { it.toProjectPartnerBudgetInfrastructureEntity(partnerId, projectPeriodEntityReferenceResolver) }
+
+fun BudgetGeneralCostEntry.toProjectPartnerBudgetInfrastructureEntity(
+    partnerId: Long,
+    projectPeriodEntityReferenceResolver: (Int) -> ProjectPeriodEntity
+) =
+    ProjectPartnerBudgetInfrastructureEntity(
+        id = id ?: 0L,
+        investmentId = investmentId,
+        baseProperties = BaseBudgetProperties(partnerId, numberOfUnits, rowSum!!),
+        pricePerUnit = pricePerUnit,
+        budgetPeriodEntities = mutableSetOf(),
+        translatedValues = mutableSetOf()
+    ).apply {
+        translatedValues.addAll(
+            description.plus(awardProcedures).plus(unitType)
+                .map { it.language }
+                .distinct()
+                .map { language ->
+                    ProjectPartnerBudgetInfrastructureTranslEntity(
+                        budgetTranslation = BudgetTranslation(this, language),
+                        description = description.firstOrNull { it.language == language }?.translation ?: "",
+                        unitType = unitType.firstOrNull { it.language == language }?.translation ?: "",
+                        awardProcedures = awardProcedures.firstOrNull { it.language == language }?.translation ?: ""
+                    )
+                }.toMutableSet()
+        )
+
+        budgetPeriodEntities.addAll(budgetPeriods.map {
+            ProjectPartnerBudgetInfrastructurePeriodEntity(
+                BudgetPeriodId(
+                    this,
+                    projectPeriodEntityReferenceResolver.invoke(it.number)
+                ),
+                it.amount
+            )
+        }.toMutableSet())
+    }
 
 fun ProjectPartnerBudgetGeneralBase.toBudgetGeneralCostEntry() = BudgetGeneralCostEntry(
     id = id,
@@ -170,8 +294,10 @@ fun ProjectPartnerBudgetGeneralBase.toBudgetGeneralCostEntry() = BudgetGeneralCo
     awardProcedures = translatedValues.mapTo(HashSet()) {
         InputTranslation(it.budgetTranslation.language, it.awardProcedures)
     },
+    budgetPeriods = budgetPeriodEntities.map { BudgetPeriod(it.budgetPeriodId.period.id.number, it.amount) }
+        .toMutableSet(),
     investmentId = investmentId,
     numberOfUnits = baseProperties.numberOfUnits,
-    pricePerUnit = baseProperties.pricePerUnit,
+    pricePerUnit = pricePerUnit,
     rowSum = baseProperties.rowSum
 )

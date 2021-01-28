@@ -1,4 +1,4 @@
-import {InputTranslation} from '@cat/api';
+import {BudgetPeriodDTO, InputTranslation} from '@cat/api';
 
 export class StaffCostsBudgetTableEntry {
 
@@ -11,6 +11,7 @@ export class StaffCostsBudgetTableEntry {
   type?: string;
   unitType?: string;
   comment?: InputTranslation[] = [];
+  budgetPeriods?: BudgetPeriodDTO[];
 
   constructor(data: Partial<StaffCostsBudgetTableEntry>) {
     this.id = data.id;
@@ -22,6 +23,7 @@ export class StaffCostsBudgetTableEntry {
     this.type = data.type;
     this.unitType = data.unitType;
     this.comment = data.comment;
+    this.budgetPeriods = data.budgetPeriods;
   }
 
 }

@@ -3,7 +3,7 @@ package io.cloudflight.jems.server.project.service.partner.budget.get_budget_tot
 import io.cloudflight.jems.server.UnitTest
 import io.cloudflight.jems.server.project.service.budget.model.BudgetCostsCalculationResult
 import io.cloudflight.jems.server.project.service.common.BudgetCostsCalculatorService
-import io.cloudflight.jems.server.project.service.partner.budget.ProjectPartnerBudgetPersistence
+import io.cloudflight.jems.server.project.service.partner.budget.ProjectPartnerBudgetCostsPersistence
 import io.cloudflight.jems.server.project.service.partner.budget.get_budget_options.GetBudgetOptionsInteractor
 import io.cloudflight.jems.server.project.service.partner.budget.percentage
 import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerBudgetOptions
@@ -30,7 +30,7 @@ internal class GetBudgetTotalCostTest : UnitTest() {
     private val lumpSumsTotal = 123.4.toScaledBigDecimal()
 
     @MockK
-    lateinit var persistence: ProjectPartnerBudgetPersistence
+    lateinit var budgetCostsPersistence: ProjectPartnerBudgetCostsPersistence
 
     @MockK
     lateinit var getBudgetOptions: GetBudgetOptionsInteractor
@@ -44,13 +44,13 @@ internal class GetBudgetTotalCostTest : UnitTest() {
     @BeforeAll
     fun setup() {
 
-        every { persistence.getBudgetStaffCostTotal(partnerId) } returns staffCostTotal
-        every { persistence.getBudgetEquipmentCostTotal(partnerId) } returns equipmentCostTotal
-        every { persistence.getBudgetExternalExpertiseAndServicesCostTotal(partnerId) } returns externalCostTotal
-        every { persistence.getBudgetInfrastructureAndWorksCostTotal(partnerId) } returns infrastructureCostTotal
-        every { persistence.getBudgetTravelAndAccommodationCostTotal(partnerId) } returns travelCostTotal
-        every { persistence.getBudgetUnitCostTotal(partnerId) } returns unitCostTotal
-        every { persistence.getBudgetLumpSumsCostTotal(partnerId) } returns lumpSumsTotal
+        every { budgetCostsPersistence.getBudgetStaffCostTotal(partnerId) } returns staffCostTotal
+        every { budgetCostsPersistence.getBudgetEquipmentCostTotal(partnerId) } returns equipmentCostTotal
+        every { budgetCostsPersistence.getBudgetExternalExpertiseAndServicesCostTotal(partnerId) } returns externalCostTotal
+        every { budgetCostsPersistence.getBudgetInfrastructureAndWorksCostTotal(partnerId) } returns infrastructureCostTotal
+        every { budgetCostsPersistence.getBudgetTravelAndAccommodationCostTotal(partnerId) } returns travelCostTotal
+        every { budgetCostsPersistence.getBudgetUnitCostTotal(partnerId) } returns unitCostTotal
+        every { budgetCostsPersistence.getBudgetLumpSumsCostTotal(partnerId) } returns lumpSumsTotal
     }
 
     @Test
@@ -89,13 +89,13 @@ internal class GetBudgetTotalCostTest : UnitTest() {
         val result = getBudgetTotalCost.getBudgetTotalCost(partnerId)
 
         verify(atLeast = 1) { getBudgetOptions.getBudgetOptions(partnerId) }
-        verify(atLeast = 1) { persistence.getBudgetStaffCostTotal(partnerId) }
-        verify(atLeast = 1) { persistence.getBudgetEquipmentCostTotal(partnerId) }
-        verify(atLeast = 1) { persistence.getBudgetExternalExpertiseAndServicesCostTotal(partnerId) }
-        verify(atLeast = 1) { persistence.getBudgetInfrastructureAndWorksCostTotal(partnerId) }
-        verify(atLeast = 1) { persistence.getBudgetTravelAndAccommodationCostTotal(partnerId) }
-        verify(atLeast = 1) { persistence.getBudgetUnitCostTotal(partnerId) }
-        verify(atLeast = 1) { persistence.getBudgetLumpSumsCostTotal(partnerId) }
+        verify(atLeast = 1) { budgetCostsPersistence.getBudgetStaffCostTotal(partnerId) }
+        verify(atLeast = 1) { budgetCostsPersistence.getBudgetEquipmentCostTotal(partnerId) }
+        verify(atLeast = 1) { budgetCostsPersistence.getBudgetExternalExpertiseAndServicesCostTotal(partnerId) }
+        verify(atLeast = 1) { budgetCostsPersistence.getBudgetInfrastructureAndWorksCostTotal(partnerId) }
+        verify(atLeast = 1) { budgetCostsPersistence.getBudgetTravelAndAccommodationCostTotal(partnerId) }
+        verify(atLeast = 1) { budgetCostsPersistence.getBudgetUnitCostTotal(partnerId) }
+        verify(atLeast = 1) { budgetCostsPersistence.getBudgetLumpSumsCostTotal(partnerId) }
         verify(atLeast = 1) {
             budgetCostsCalculatorService.calculateCosts(
                 null,
@@ -108,7 +108,7 @@ internal class GetBudgetTotalCostTest : UnitTest() {
                 staffCostTotal
             )
         }
-        confirmVerified(persistence, budgetCostsCalculatorService)
+        confirmVerified(budgetCostsPersistence, budgetCostsCalculatorService)
 
         assertEquals(expectedTotalCost, result)
     }
@@ -148,13 +148,13 @@ internal class GetBudgetTotalCostTest : UnitTest() {
         val result = getBudgetTotalCost.getBudgetTotalCost(partnerId)
 
         verify(atLeast = 1) { getBudgetOptions.getBudgetOptions(partnerId) }
-        verify(atLeast = 1) { persistence.getBudgetStaffCostTotal(partnerId) }
-        verify(atLeast = 1) { persistence.getBudgetEquipmentCostTotal(partnerId) }
-        verify(atLeast = 1) { persistence.getBudgetExternalExpertiseAndServicesCostTotal(partnerId) }
-        verify(atLeast = 1) { persistence.getBudgetInfrastructureAndWorksCostTotal(partnerId) }
-        verify(atLeast = 1) { persistence.getBudgetTravelAndAccommodationCostTotal(partnerId) }
-        verify(atLeast = 1) { persistence.getBudgetUnitCostTotal(partnerId) }
-        verify(atLeast = 1) { persistence.getBudgetLumpSumsCostTotal(partnerId) }
+        verify(atLeast = 1) { budgetCostsPersistence.getBudgetStaffCostTotal(partnerId) }
+        verify(atLeast = 1) { budgetCostsPersistence.getBudgetEquipmentCostTotal(partnerId) }
+        verify(atLeast = 1) { budgetCostsPersistence.getBudgetExternalExpertiseAndServicesCostTotal(partnerId) }
+        verify(atLeast = 1) { budgetCostsPersistence.getBudgetInfrastructureAndWorksCostTotal(partnerId) }
+        verify(atLeast = 1) { budgetCostsPersistence.getBudgetTravelAndAccommodationCostTotal(partnerId) }
+        verify(atLeast = 1) { budgetCostsPersistence.getBudgetUnitCostTotal(partnerId) }
+        verify(atLeast = 1) { budgetCostsPersistence.getBudgetLumpSumsCostTotal(partnerId) }
         verify(atLeast = 1) {
             budgetCostsCalculatorService.calculateCosts(
                 budgetOptions,
@@ -167,7 +167,7 @@ internal class GetBudgetTotalCostTest : UnitTest() {
                 staffCostTotal
             )
         }
-        confirmVerified(persistence, budgetCostsCalculatorService)
+        confirmVerified(budgetCostsPersistence, budgetCostsCalculatorService)
 
         assertEquals(expectedTotalCost, result)
     }
@@ -211,12 +211,12 @@ internal class GetBudgetTotalCostTest : UnitTest() {
         val result = getBudgetTotalCost.getBudgetTotalCost(partnerId)
 
         verify(atLeast = 1) { getBudgetOptions.getBudgetOptions(partnerId) }
-        verify(atLeast = 1) { persistence.getBudgetStaffCostTotal(partnerId) }
-        verify(atLeast = 1) { persistence.getBudgetEquipmentCostTotal(partnerId) }
-        verify(atLeast = 1) { persistence.getBudgetExternalExpertiseAndServicesCostTotal(partnerId) }
-        verify(atLeast = 1) { persistence.getBudgetInfrastructureAndWorksCostTotal(partnerId) }
-        verify(atLeast = 1) { persistence.getBudgetUnitCostTotal(partnerId) }
-        verify(atLeast = 1) { persistence.getBudgetLumpSumsCostTotal(partnerId) }
+        verify(atLeast = 1) { budgetCostsPersistence.getBudgetStaffCostTotal(partnerId) }
+        verify(atLeast = 1) { budgetCostsPersistence.getBudgetEquipmentCostTotal(partnerId) }
+        verify(atLeast = 1) { budgetCostsPersistence.getBudgetExternalExpertiseAndServicesCostTotal(partnerId) }
+        verify(atLeast = 1) { budgetCostsPersistence.getBudgetInfrastructureAndWorksCostTotal(partnerId) }
+        verify(atLeast = 1) { budgetCostsPersistence.getBudgetUnitCostTotal(partnerId) }
+        verify(atLeast = 1) { budgetCostsPersistence.getBudgetLumpSumsCostTotal(partnerId) }
         verify(atLeast = 1) {
             budgetCostsCalculatorService.calculateCosts(
                 budgetOptions,
@@ -229,7 +229,7 @@ internal class GetBudgetTotalCostTest : UnitTest() {
                 staffCostTotal
             )
         }
-        confirmVerified(persistence, budgetCostsCalculatorService)
+        confirmVerified(budgetCostsPersistence, budgetCostsCalculatorService)
 
         assertEquals(expectedTotalCost, result)
     }
@@ -277,12 +277,12 @@ internal class GetBudgetTotalCostTest : UnitTest() {
         val result = getBudgetTotalCost.getBudgetTotalCost(partnerId)
 
         verify(atLeast = 1) { getBudgetOptions.getBudgetOptions(partnerId) }
-        verify(atLeast = 1) { persistence.getBudgetTravelAndAccommodationCostTotal(partnerId) }
-        verify(atLeast = 1) { persistence.getBudgetEquipmentCostTotal(partnerId) }
-        verify(atLeast = 1) { persistence.getBudgetExternalExpertiseAndServicesCostTotal(partnerId) }
-        verify(atLeast = 1) { persistence.getBudgetInfrastructureAndWorksCostTotal(partnerId) }
-        verify(atLeast = 1) { persistence.getBudgetUnitCostTotal(partnerId) }
-        verify(atLeast = 1) { persistence.getBudgetLumpSumsCostTotal(partnerId) }
+        verify(atLeast = 1) { budgetCostsPersistence.getBudgetTravelAndAccommodationCostTotal(partnerId) }
+        verify(atLeast = 1) { budgetCostsPersistence.getBudgetEquipmentCostTotal(partnerId) }
+        verify(atLeast = 1) { budgetCostsPersistence.getBudgetExternalExpertiseAndServicesCostTotal(partnerId) }
+        verify(atLeast = 1) { budgetCostsPersistence.getBudgetInfrastructureAndWorksCostTotal(partnerId) }
+        verify(atLeast = 1) { budgetCostsPersistence.getBudgetUnitCostTotal(partnerId) }
+        verify(atLeast = 1) { budgetCostsPersistence.getBudgetLumpSumsCostTotal(partnerId) }
         verify(atLeast = 1) {
             budgetCostsCalculatorService.calculateCosts(
                 budgetOptions,
@@ -295,7 +295,7 @@ internal class GetBudgetTotalCostTest : UnitTest() {
                 BigDecimal.ZERO
             )
         }
-        confirmVerified(persistence, budgetCostsCalculatorService)
+        confirmVerified(budgetCostsPersistence, budgetCostsCalculatorService)
 
         assertEquals(
             expectedTotalCost, result
@@ -350,11 +350,11 @@ internal class GetBudgetTotalCostTest : UnitTest() {
         val result = getBudgetTotalCost.getBudgetTotalCost(partnerId)
 
         verify(atLeast = 1) { getBudgetOptions.getBudgetOptions(partnerId) }
-        verify(atLeast = 1) { persistence.getBudgetEquipmentCostTotal(partnerId) }
-        verify(atLeast = 1) { persistence.getBudgetExternalExpertiseAndServicesCostTotal(partnerId) }
-        verify(atLeast = 1) { persistence.getBudgetInfrastructureAndWorksCostTotal(partnerId) }
-        verify(atLeast = 1) { persistence.getBudgetUnitCostTotal(partnerId) }
-        verify(atLeast = 1) { persistence.getBudgetLumpSumsCostTotal(partnerId) }
+        verify(atLeast = 1) { budgetCostsPersistence.getBudgetEquipmentCostTotal(partnerId) }
+        verify(atLeast = 1) { budgetCostsPersistence.getBudgetExternalExpertiseAndServicesCostTotal(partnerId) }
+        verify(atLeast = 1) { budgetCostsPersistence.getBudgetInfrastructureAndWorksCostTotal(partnerId) }
+        verify(atLeast = 1) { budgetCostsPersistence.getBudgetUnitCostTotal(partnerId) }
+        verify(atLeast = 1) { budgetCostsPersistence.getBudgetLumpSumsCostTotal(partnerId) }
         verify(atLeast = 1) {
             budgetCostsCalculatorService.calculateCosts(
                 budgetOptions,
@@ -367,7 +367,7 @@ internal class GetBudgetTotalCostTest : UnitTest() {
                 BigDecimal.ZERO
             )
         }
-        confirmVerified(persistence, budgetCostsCalculatorService)
+        confirmVerified(budgetCostsPersistence, budgetCostsCalculatorService)
 
         assertEquals(expectedTotalCost, result)
     }
@@ -414,13 +414,13 @@ internal class GetBudgetTotalCostTest : UnitTest() {
         val result = getBudgetTotalCost.getBudgetTotalCost(partnerId)
 
         verify(atLeast = 1) { getBudgetOptions.getBudgetOptions(partnerId) }
-        verify(atLeast = 1) { persistence.getBudgetStaffCostTotal(partnerId) }
-        verify(atLeast = 1) { persistence.getBudgetTravelAndAccommodationCostTotal(partnerId) }
-        verify(atLeast = 1) { persistence.getBudgetEquipmentCostTotal(partnerId) }
-        verify(atLeast = 1) { persistence.getBudgetExternalExpertiseAndServicesCostTotal(partnerId) }
-        verify(atLeast = 1) { persistence.getBudgetInfrastructureAndWorksCostTotal(partnerId) }
-        verify(atLeast = 1) { persistence.getBudgetUnitCostTotal(partnerId) }
-        verify(atLeast = 1) { persistence.getBudgetLumpSumsCostTotal(partnerId) }
+        verify(atLeast = 1) { budgetCostsPersistence.getBudgetStaffCostTotal(partnerId) }
+        verify(atLeast = 1) { budgetCostsPersistence.getBudgetTravelAndAccommodationCostTotal(partnerId) }
+        verify(atLeast = 1) { budgetCostsPersistence.getBudgetEquipmentCostTotal(partnerId) }
+        verify(atLeast = 1) { budgetCostsPersistence.getBudgetExternalExpertiseAndServicesCostTotal(partnerId) }
+        verify(atLeast = 1) { budgetCostsPersistence.getBudgetInfrastructureAndWorksCostTotal(partnerId) }
+        verify(atLeast = 1) { budgetCostsPersistence.getBudgetUnitCostTotal(partnerId) }
+        verify(atLeast = 1) { budgetCostsPersistence.getBudgetLumpSumsCostTotal(partnerId) }
         verify(atLeast = 1) {
             budgetCostsCalculatorService.calculateCosts(
                 budgetOptions,
@@ -433,7 +433,7 @@ internal class GetBudgetTotalCostTest : UnitTest() {
                 staffCostTotal
             )
         }
-        confirmVerified(persistence, budgetCostsCalculatorService)
+        confirmVerified(budgetCostsPersistence, budgetCostsCalculatorService)
 
         assertEquals(expectedTotalCost, result)
     }
@@ -477,13 +477,13 @@ internal class GetBudgetTotalCostTest : UnitTest() {
         val result = getBudgetTotalCost.getBudgetTotalCost(partnerId)
 
         verify(atLeast = 1) { getBudgetOptions.getBudgetOptions(partnerId) }
-        verify(atLeast = 1) { persistence.getBudgetStaffCostTotal(partnerId) }
-        verify(atLeast = 1) { persistence.getBudgetTravelAndAccommodationCostTotal(partnerId) }
-        verify(atLeast = 1) { persistence.getBudgetEquipmentCostTotal(partnerId) }
-        verify(atLeast = 1) { persistence.getBudgetExternalExpertiseAndServicesCostTotal(partnerId) }
-        verify(atLeast = 1) { persistence.getBudgetInfrastructureAndWorksCostTotal(partnerId) }
-        verify(atLeast = 1) { persistence.getBudgetUnitCostTotal(partnerId) }
-        verify(atLeast = 1) { persistence.getBudgetLumpSumsCostTotal(partnerId) }
+        verify(atLeast = 1) { budgetCostsPersistence.getBudgetStaffCostTotal(partnerId) }
+        verify(atLeast = 1) { budgetCostsPersistence.getBudgetTravelAndAccommodationCostTotal(partnerId) }
+        verify(atLeast = 1) { budgetCostsPersistence.getBudgetEquipmentCostTotal(partnerId) }
+        verify(atLeast = 1) { budgetCostsPersistence.getBudgetExternalExpertiseAndServicesCostTotal(partnerId) }
+        verify(atLeast = 1) { budgetCostsPersistence.getBudgetInfrastructureAndWorksCostTotal(partnerId) }
+        verify(atLeast = 1) { budgetCostsPersistence.getBudgetUnitCostTotal(partnerId) }
+        verify(atLeast = 1) { budgetCostsPersistence.getBudgetLumpSumsCostTotal(partnerId) }
         verify(atLeast = 1) {
             budgetCostsCalculatorService.calculateCosts(
                 budgetOptions,
@@ -496,7 +496,7 @@ internal class GetBudgetTotalCostTest : UnitTest() {
                 staffCostTotal
             )
         }
-        confirmVerified(persistence, budgetCostsCalculatorService)
+        confirmVerified(budgetCostsPersistence, budgetCostsCalculatorService)
 
         assertEquals(expectedTotalCost, result)
     }

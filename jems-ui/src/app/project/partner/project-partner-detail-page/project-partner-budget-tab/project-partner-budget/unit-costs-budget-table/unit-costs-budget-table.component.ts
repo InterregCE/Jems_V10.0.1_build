@@ -16,8 +16,10 @@ import {NumberService} from '../../../../../../common/services/number.service';
 import {FormService} from '@common/components/section/form/form.service';
 import {MultiLanguageInputService} from '../../../../../../common/services/multi-language-input.service';
 import {UntilDestroy, untilDestroyed} from '@ngneat/until-destroy';
-import {ProgrammeUnitCostDTO} from '@cat/api';
+import {BudgetPeriodDTO, OutputProjectPeriod, ProgrammeUnitCostDTO} from '@cat/api';
 import {UnitCostsBudgetTable} from '../../../../../model/budget/unit-costs-budget-table';
+import {WidthConfig} from '../../../../../../common/directives/table-config/WidthConfig';
+import {Alert} from '@common/components/forms/alert';
 
 @UntilDestroy()
 @Component({
@@ -28,9 +30,8 @@ import {UnitCostsBudgetTable} from '../../../../../model/budget/unit-costs-budge
 
 })
 export class UnitCostsBudgetTableComponent implements OnInit, OnChanges {
-
+  Alert = Alert;
   constants = ProjectPartnerBudgetConstants;
-  columnsToDisplay = ['unitCost', 'description', 'unitType', 'numberOfUnits', 'pricePerUnit', 'total', 'action'];
 
   @Input()
   editable: boolean;
@@ -38,10 +39,15 @@ export class UnitCostsBudgetTableComponent implements OnInit, OnChanges {
   unitCostTable: UnitCostsBudgetTable;
   @Input()
   availableUnitCosts: ProgrammeUnitCostDTO[];
+  @Input()
+  projectPeriods: OutputProjectPeriod[];
 
   budgetForm: FormGroup;
   dataSource: MatTableDataSource<AbstractControl>;
   numberOfItems$: Observable<number>;
+  warnOpenForPeriods = false;
+  columnsToDisplay: string[];
+  widthConfig: WidthConfig[];
 
   constructor(private formService: FormService, private controlContainer: ControlContainer, private formBuilder: FormBuilder, private multiLanguageInputService: MultiLanguageInputService) {
     this.budgetForm = this.controlContainer.control as FormGroup;
@@ -56,14 +62,28 @@ export class UnitCostsBudgetTableComponent implements OnInit, OnChanges {
       this.dataSource.data = this.items.controls;
       this.items.controls.forEach(control => {
         this.setRowTotal(control as FormGroup);
+        this.setOpenForPeriods(control as FormGroup);
       });
       this.setTableTotal();
+      this.setOpenForPeriodsWarning();
     });
 
     this.formService.reset$.pipe(
       map(() => this.resetUnitCostFormGroup(this.unitCostTable)),
       untilDestroyed(this)
     ).subscribe();
+
+    this.columnsToDisplay = [
+      'unitCost', 'description', 'unitType', 'numberOfUnits', 'pricePerUnit', 'total',
+      ...this.projectPeriods?.map(period => 'period' + period.number),
+      'openForPeriods', 'action',
+    ];
+
+    this.widthConfig = [
+      {minInRem: 12}, {minInRem: 12}, {minInRem: 5}, {minInRem: 12}, {minInRem: 5}, {minInRem: 8},
+      ...this.projectPeriods?.map(period => ({minInRem: 8})),
+      {minInRem: 8}, {minInRem: 3}
+    ];
   }
 
   ngOnChanges(changes: SimpleChanges): void {
@@ -83,8 +103,11 @@ export class UnitCostsBudgetTableComponent implements OnInit, OnChanges {
       unitCost: [null, Validators.required],
       numberOfUnits: [1, [Validators.max(this.constants.MAX_VALUE), Validators.min(this.constants.MIN_VALUE)]],
       rowSum: [0, [Validators.max(this.constants.MAX_VALUE), Validators.min(this.constants.MIN_VALUE)]],
-      new: [true]
+      new: [true],
+      budgetPeriods: this.formBuilder.array([]),
+      openForPeriods: [0],
     }));
+    this.addPeriods(this.items.length - 1);
     this.formService.setDirty(true);
   }
 
@@ -98,7 +121,12 @@ export class UnitCostsBudgetTableComponent implements OnInit, OnChanges {
         unitCost: [this.availableUnitCosts.find(it => it.id === item.unitCostId), Validators.required],
         numberOfUnits: [item.numberOfUnits, [Validators.max(this.constants.MAX_VALUE), Validators.min(this.constants.MIN_VALUE)]],
         rowSum: [item.rowSum, [Validators.max(this.constants.MAX_VALUE), Validators.min(this.constants.MIN_VALUE)]],
+        budgetPeriods: this.formBuilder.array([]),
+        openForPeriods: [0],
       }));
+      this.addPeriods(this.items.length - 1, item.budgetPeriods);
+      this.setOpenForPeriods(this.items.at(this.items.length - 1) as any);
+      this.setOpenForPeriodsWarning();
     });
     this.formService.resetEditable();
   }
@@ -127,6 +155,47 @@ export class UnitCostsBudgetTableComponent implements OnInit, OnChanges {
 
   get total(): FormControl {
     return this.table.get(this.constants.FORM_CONTROL_NAMES.total) as FormControl;
+  }
+
+  openForPeriods(rowIndex: number): FormControl {
+    return this.items.at(rowIndex).get(this.constants.FORM_CONTROL_NAMES.openForPeriods) as FormControl;
+  }
+
+  periods(rowIndex: number): FormArray {
+    return this.items.at(rowIndex).get(this.constants.FORM_CONTROL_NAMES.budgetPeriods) as FormArray;
+  }
+
+  private addPeriods(rowIndex: number, budgetPeriods?: BudgetPeriodDTO[]): void {
+    if (!this.projectPeriods?.length) {
+      return;
+    }
+    this.projectPeriods.forEach(projectPeriod => {
+      const budgetPeriod = budgetPeriods?.find(period => period.number === projectPeriod.number);
+      this.periods(rowIndex).push(this.formBuilder.group({
+        amount: this.formBuilder.control(
+          budgetPeriod?.amount || 0,
+          [Validators.max(this.constants.MAX_VALUE), Validators.min(this.constants.MIN_VALUE)]
+        ),
+        number: this.formBuilder.control(projectPeriod.number)
+      }));
+    });
+  }
+
+  private setOpenForPeriodsWarning(): void {
+    this.warnOpenForPeriods = this.items.controls.some(
+      control => control.get(this.constants.FORM_CONTROL_NAMES.openForPeriods)?.value !== 0
+    );
+  }
+
+  private setOpenForPeriods(control: FormGroup): void {
+    let periodsSum = 0;
+    (control.get(this.constants.FORM_CONTROL_NAMES.budgetPeriods) as FormArray).controls.forEach(period => {
+      periodsSum = NumberService.sum([period.get(this.constants.FORM_CONTROL_NAMES.amount)?.value || 0, periodsSum]);
+    });
+    const rowSum = control.get(this.constants.FORM_CONTROL_NAMES.rowSum)?.value || 0;
+    control.get(this.constants.FORM_CONTROL_NAMES.openForPeriods)?.setValue(
+      NumberService.minus(rowSum, periodsSum), {emitEvent: false}
+    );
   }
 
 }

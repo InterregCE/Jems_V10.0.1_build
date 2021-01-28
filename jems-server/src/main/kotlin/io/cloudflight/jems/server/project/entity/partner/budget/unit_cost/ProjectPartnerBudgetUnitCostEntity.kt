@@ -1,14 +1,9 @@
-package io.cloudflight.jems.server.project.entity.partner.budget
+package io.cloudflight.jems.server.project.entity.partner.budget.unit_cost
 
 import io.cloudflight.jems.server.programme.entity.costoption.ProgrammeUnitCostEntity
-import java.math.BigDecimal
-import javax.persistence.Entity
-import javax.persistence.FetchType
-import javax.persistence.GeneratedValue
-import javax.persistence.GenerationType
-import javax.persistence.Id
-import javax.persistence.JoinColumn
-import javax.persistence.ManyToOne
+import io.cloudflight.jems.server.project.entity.partner.budget.BaseBudgetProperties
+import io.cloudflight.jems.server.project.entity.partner.budget.ProjectPartnerBudgetBase
+import javax.persistence.*
 import javax.validation.constraints.NotNull
 
 @Entity(name = "project_partner_budget_unit_cost")
@@ -16,23 +11,21 @@ data class ProjectPartnerBudgetUnitCostEntity(
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    val id: Long = 0,
+    override val id: Long = 0,
+
+    @Embedded
+    @field:NotNull
+    override val baseProperties: BaseBudgetProperties,
 
     @ManyToOne(optional = false, fetch = FetchType.LAZY)
     @JoinColumn(name = "programme_unit_cost_id")
     @field:NotNull
     val unitCost: ProgrammeUnitCostEntity,
 
-    @field:NotNull
-    val partnerId: Long,
+    @OneToMany(cascade = [CascadeType.ALL], orphanRemoval = true, mappedBy = "budgetPeriodId.budget")
+    val budgetPeriodEntities: MutableSet<ProjectPartnerBudgetUnitCostPeriodEntity>
 
-    @field:NotNull
-    val numberOfUnits: BigDecimal,
-
-    @field:NotNull
-    val rowSum: BigDecimal
-
-) {
+) : ProjectPartnerBudgetBase {
 
     override fun equals(other: Any?) =
         this === other ||

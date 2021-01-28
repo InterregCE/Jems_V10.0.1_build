@@ -26,7 +26,7 @@ class UpdateProjectLumpSums(
     @CanUpdateProject
     override fun updateLumpSums(projectId: Long, lumpSums: List<ProjectLumpSum>): List<ProjectLumpSum> {
         validateMaxAllowedSize(lumpSums)
-        validateWrongSplitting(lumpSums, projectPersistence.getProjectCallSettingsForProject(projectId))
+        validateWrongSplitting(lumpSums, projectPersistence.getProjectCallSettings(projectId))
         validatePeriods(lumpSums, projectPersistence.getProject(projectId))
 
         return persistence.updateLumpSums(projectId, lumpSums)

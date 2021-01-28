@@ -5,7 +5,7 @@ import io.cloudflight.jems.server.programme.entity.costoption.ProgrammeLumpSumBu
 import io.cloudflight.jems.server.programme.entity.costoption.ProgrammeLumpSumEntity
 import io.cloudflight.jems.server.programme.service.costoption.model.ProgrammeLumpSum
 
-fun ProgrammeLumpSumEntity.toModel() = ProgrammeLumpSum(
+fun ProgrammeLumpSumEntity.toProgrammeUnitCost() = ProgrammeLumpSum(
     id = id,
     name = name,
     description = description,

@@ -14,11 +14,11 @@ class ProgrammeLumpSumPersistenceProvider(
 
     @Transactional(readOnly = true)
     override fun getLumpSums(): List<ProgrammeLumpSum> =
-        repository.findTop25ByOrderById().map { it.toModel() }
+        repository.findTop25ByOrderById().map { it.toProgrammeUnitCost() }
 
     @Transactional(readOnly = true)
     override fun getLumpSum(lumpSumId: Long): ProgrammeLumpSum =
-        getLumpSumOrThrow(lumpSumId).toModel()
+        getLumpSumOrThrow(lumpSumId).toProgrammeUnitCost()
 
     @Transactional(readOnly = true)
     override fun getCount(): Long = repository.count()
@@ -28,7 +28,7 @@ class ProgrammeLumpSumPersistenceProvider(
         val created = repository.save(lumpSum.toEntity())
         return repository.save(created.copy(
             categories = lumpSum.categories.toEntity(created.id)
-        )).toModel()
+        )).toProgrammeUnitCost()
     }
 
     @Transactional
@@ -41,7 +41,7 @@ class ProgrammeLumpSumPersistenceProvider(
         lumpSumEntity.phase = lumpSum.phase!!
         lumpSumEntity.categories.clear()
         lumpSumEntity.categories.addAll(lumpSum.categories.toEntity(lumpSum.id))
-        return lumpSumEntity.toModel()
+        return lumpSumEntity.toProgrammeUnitCost()
     }
 
     @Transactional

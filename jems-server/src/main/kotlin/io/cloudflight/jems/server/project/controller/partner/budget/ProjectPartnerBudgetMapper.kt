@@ -1,21 +1,9 @@
 package io.cloudflight.jems.server.project.controller.partner.budget
 
-import io.cloudflight.jems.api.project.dto.partner.budget.BudgetCostsDTO
-import io.cloudflight.jems.api.project.dto.partner.budget.BudgetGeneralCostEntryDTO
-import io.cloudflight.jems.api.project.dto.partner.budget.BudgetStaffCostEntryDTO
-import io.cloudflight.jems.api.project.dto.partner.budget.BudgetTravelAndAccommodationCostEntryDTO
-import io.cloudflight.jems.api.project.dto.partner.budget.BudgetUnitCostEntryDTO
-import io.cloudflight.jems.api.project.dto.partner.budget.ProjectPartnerBudgetOptionsDto
-import io.cloudflight.jems.api.project.dto.partner.budget.StaffCostTypeDTO
-import io.cloudflight.jems.api.project.dto.partner.budget.StaffCostUnitTypeDTO
-import io.cloudflight.jems.server.project.service.partner.model.BudgetCosts
-import io.cloudflight.jems.server.project.service.partner.model.BudgetGeneralCostEntry
-import io.cloudflight.jems.server.project.service.partner.model.BudgetStaffCostEntry
-import io.cloudflight.jems.server.project.service.partner.model.BudgetTravelAndAccommodationCostEntry
-import io.cloudflight.jems.server.project.service.partner.model.BudgetUnitCostEntry
-import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerBudgetOptions
-import io.cloudflight.jems.server.project.service.partner.model.StaffCostType
-import io.cloudflight.jems.server.project.service.partner.model.StaffCostUnitType
+import io.cloudflight.jems.api.project.dto.partner.budget.*
+import io.cloudflight.jems.server.project.service.partner.model.*
+import java.math.BigDecimal
+
 
 fun ProjectPartnerBudgetOptions.toProjectPartnerBudgetOptionsDto() = ProjectPartnerBudgetOptionsDto(
     officeAndAdministrationOnStaffCostsFlatRate = this.officeAndAdministrationOnStaffCostsFlatRate,
@@ -36,6 +24,10 @@ fun StaffCostUnitType.toStaffCostUnitTypeDTO() = StaffCostUnitTypeDTO.valueOf(th
 fun StaffCostUnitTypeDTO.toStaffCostUnitType() = StaffCostUnitType.valueOf(this.key)
 fun StaffCostType.toStaffCostTypeDTO() = StaffCostTypeDTO.valueOf(this.key)
 fun StaffCostTypeDTO.toStaffCostType() = StaffCostType.valueOf(this.key)
+fun BudgetPeriod.toBudgetPeriodDTO()=BudgetPeriodDTO(this.number,this.amount)
+fun Set<BudgetPeriod>.toBudgetPeriodDTOs()=this.map{it.toBudgetPeriodDTO()}.toMutableSet()
+fun BudgetPeriodDTO.toBudgetPeriod()=BudgetPeriod(this.number,this.amount?: BigDecimal.ZERO)
+fun Set<BudgetPeriodDTO>.toBudgetPeriods()=this.map{it.toBudgetPeriod()}.toMutableSet()
 
 fun List<BudgetStaffCostEntry>.toBudgetStaffCostEntryDTOList() = this.map { it.toBudgetStaffCostEntryDTO() }
 
@@ -44,6 +36,7 @@ fun BudgetStaffCostEntry.toBudgetStaffCostEntryDTO() = BudgetStaffCostEntryDTO(
     numberOfUnits = numberOfUnits,
     pricePerUnit = pricePerUnit,
     rowSum = rowSum,
+    budgetPeriods = budgetPeriods.toBudgetPeriodDTOs(),
     unitType = unitType?.toStaffCostUnitTypeDTO(),
     type = type?.toStaffCostTypeDTO(),
     description = description,
@@ -57,6 +50,7 @@ fun BudgetStaffCostEntryDTO.toBudgetStaffCostEntry() = BudgetStaffCostEntry(
     numberOfUnits = numberOfUnits,
     pricePerUnit = pricePerUnit,
     rowSum = rowSum,
+    budgetPeriods = budgetPeriods.toBudgetPeriods(),
     unitType = unitType?.toStaffCostUnitType(),
     type = type?.toStaffCostType(),
     description = description,
@@ -70,6 +64,7 @@ fun BudgetTravelAndAccommodationCostEntry.toBudgetTravelAndAccommodationCostsEnt
     numberOfUnits = numberOfUnits,
     pricePerUnit = pricePerUnit,
     rowSum = rowSum,
+    budgetPeriods = budgetPeriods.toBudgetPeriodDTOs(),
     unitType = unitType,
     description = description
 )
@@ -81,6 +76,7 @@ fun BudgetTravelAndAccommodationCostEntryDTO.toBudgetTravelAndAccommodationCostE
     numberOfUnits = numberOfUnits,
     pricePerUnit = pricePerUnit,
     rowSum = rowSum,
+    budgetPeriods = budgetPeriods.toBudgetPeriods(),
     unitType = unitType,
     description = description
 )
@@ -91,6 +87,7 @@ fun BudgetUnitCostEntry.toBudgetUnitCostEntryDTO() = BudgetUnitCostEntryDTO(
     id = id,
     numberOfUnits = numberOfUnits,
     rowSum = rowSum,
+    budgetPeriods = budgetPeriods.toBudgetPeriodDTOs(),
     unitCostId = unitCostId
 )
 
@@ -100,6 +97,7 @@ fun BudgetUnitCostEntryDTO.toBudgetUnitCostEntry() = BudgetUnitCostEntry(
     id = id,
     numberOfUnits = numberOfUnits,
     rowSum = rowSum,
+    budgetPeriods = budgetPeriods.toBudgetPeriods(),
     unitCostId = unitCostId
 )
 
@@ -110,6 +108,7 @@ fun BudgetGeneralCostEntry.toBudgetGeneralCostsEntryDTO() = BudgetGeneralCostEnt
     numberOfUnits = numberOfUnits,
     pricePerUnit = pricePerUnit,
     rowSum = rowSum,
+    budgetPeriods = budgetPeriods.toBudgetPeriodDTOs(),
     unitType = unitType,
     investmentId = investmentId,
     awardProcedures = awardProcedures,
@@ -123,6 +122,7 @@ fun BudgetGeneralCostEntryDTO.toBudgetGeneralCostEntry() = BudgetGeneralCostEntr
     numberOfUnits = numberOfUnits,
     pricePerUnit = pricePerUnit,
     rowSum = rowSum,
+    budgetPeriods = budgetPeriods.toBudgetPeriods(),
     unitType = unitType,
     investmentId = investmentId,
     awardProcedures = awardProcedures,

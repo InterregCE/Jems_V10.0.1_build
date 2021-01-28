@@ -3,5 +3,5 @@ package io.cloudflight.jems.server.project.service.partner.budget.update_budget_
 import io.cloudflight.jems.server.project.service.partner.model.BudgetTravelAndAccommodationCostEntry
 
 interface UpdateBudgetTravelAndAccommodationCostsInteractor {
-    fun updateBudgetTravelAndAccommodationCosts(partnerId: Long, travelAndAccommodationCosts: List<BudgetTravelAndAccommodationCostEntry>): List<BudgetTravelAndAccommodationCostEntry>
+    fun updateBudgetTravelAndAccommodationCosts(partnerId: Long, travelCosts: List<BudgetTravelAndAccommodationCostEntry>): List<BudgetTravelAndAccommodationCostEntry>
 }

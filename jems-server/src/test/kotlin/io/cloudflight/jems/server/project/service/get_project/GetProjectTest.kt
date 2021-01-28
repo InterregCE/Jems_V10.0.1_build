@@ -36,7 +36,7 @@ internal class GetProjectTest : UnitTest() {
 
     @Test
     fun getProjectCallSettings() {
-        every { persistence.getProjectCallSettingsForProject(1L) } returns callSettings
+        every { persistence.getProjectCallSettings(1L) } returns callSettings
         assertThat(getProject.getProjectCallSettings(1L)).isEqualTo(callSettings.copy())
     }
 

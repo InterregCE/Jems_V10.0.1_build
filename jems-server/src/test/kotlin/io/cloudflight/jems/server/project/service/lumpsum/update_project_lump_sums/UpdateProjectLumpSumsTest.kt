@@ -67,7 +67,7 @@ internal class UpdateProjectLumpSumsTest : UnitTest() {
     @Test
     fun `updateLumpSums - everything OK`() {
         val programmeLumpSum = ProgrammeLumpSum(id = PROGRAMME_LUMP_SUM_ID, splittingAllowed = true)
-        every { projectPersistence.getProjectCallSettingsForProject(PROJECT_ID) } returns
+        every { projectPersistence.getProjectCallSettings(PROJECT_ID) } returns
             callSettings(lumpSums = listOf(programmeLumpSum))
         every { projectPersistence.getProject(PROJECT_ID) } returns Project(id = PROJECT_ID, periods = periods)
 
@@ -79,7 +79,7 @@ internal class UpdateProjectLumpSumsTest : UnitTest() {
     @Test
     fun `updateLumpSums - empty is OK`() {
         val programmeLumpSum = ProgrammeLumpSum(id = PROGRAMME_LUMP_SUM_ID, splittingAllowed = true)
-        every { projectPersistence.getProjectCallSettingsForProject(PROJECT_ID) } returns
+        every { projectPersistence.getProjectCallSettings(PROJECT_ID) } returns
             callSettings(lumpSums = listOf(programmeLumpSum))
         every { projectPersistence.getProject(PROJECT_ID) } returns Project(id = PROJECT_ID, periods = periods)
 
@@ -91,7 +91,7 @@ internal class UpdateProjectLumpSumsTest : UnitTest() {
     @Test
     fun `updateLumpSums - splitting not allowed`() {
         val programmeLumpSum = ProgrammeLumpSum(id = PROGRAMME_LUMP_SUM_ID, splittingAllowed = false)
-        every { projectPersistence.getProjectCallSettingsForProject(PROJECT_ID) } returns
+        every { projectPersistence.getProjectCallSettings(PROJECT_ID) } returns
             callSettings(lumpSums = listOf(programmeLumpSum))
 
         every { persistence.updateLumpSums(PROJECT_ID, any()) } returnsArgument 1
@@ -105,7 +105,7 @@ internal class UpdateProjectLumpSumsTest : UnitTest() {
     @Test
     fun `updateLumpSums - period number out of bounds`() {
         val programmeLumpSum = ProgrammeLumpSum(id = PROGRAMME_LUMP_SUM_ID, splittingAllowed = true)
-        every { projectPersistence.getProjectCallSettingsForProject(PROJECT_ID) } returns
+        every { projectPersistence.getProjectCallSettings(PROJECT_ID) } returns
             callSettings(lumpSums = listOf(programmeLumpSum))
         every { projectPersistence.getProject(PROJECT_ID) } returns Project(id = PROJECT_ID, periods = listOf(
             ProjectPeriod(number = 1, start = 1, end = 6),
@@ -122,7 +122,7 @@ internal class UpdateProjectLumpSumsTest : UnitTest() {
     @Test
     fun `updateLumpSums - period number is optional`() {
         val programmeLumpSum = ProgrammeLumpSum(id = PROGRAMME_LUMP_SUM_ID, splittingAllowed = true)
-        every { projectPersistence.getProjectCallSettingsForProject(PROJECT_ID) } returns
+        every { projectPersistence.getProjectCallSettings(PROJECT_ID) } returns
             callSettings(lumpSums = listOf(programmeLumpSum))
         every { projectPersistence.getProject(PROJECT_ID) } returns Project(id = PROJECT_ID, periods = periods)
 

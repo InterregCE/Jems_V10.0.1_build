@@ -5,7 +5,7 @@ import io.cloudflight.jems.server.call.service.costoption.CallCostOptionsPersist
 import io.cloudflight.jems.server.common.exception.ResourceNotFoundException
 import io.cloudflight.jems.server.programme.repository.costoption.ProgrammeLumpSumRepository
 import io.cloudflight.jems.server.programme.repository.costoption.ProgrammeUnitCostRepository
-import io.cloudflight.jems.server.programme.repository.costoption.toModel
+import io.cloudflight.jems.server.programme.repository.costoption.toProgrammeUnitCost
 import io.cloudflight.jems.server.programme.service.costoption.model.ProgrammeLumpSum
 import io.cloudflight.jems.server.programme.service.costoption.model.ProgrammeUnitCost
 import org.springframework.stereotype.Repository
@@ -30,7 +30,7 @@ class CallCostOptionsPersistenceProvider(
 
     @Transactional(readOnly = true)
     override fun getProjectCallLumpSum(callId: Long): Iterable<ProgrammeLumpSum> =
-        getCallOrThrow(callId).lumpSums.map { it.toModel() }
+        getCallOrThrow(callId).lumpSums.map { it.toProgrammeUnitCost() }
 
     @Transactional
     override fun updateProjectCallUnitCost(callId: Long, unitCostIds: Set<Long>) {
@@ -44,7 +44,7 @@ class CallCostOptionsPersistenceProvider(
 
     @Transactional(readOnly = true)
     override fun getProjectCallUnitCost(callId: Long): Iterable<ProgrammeUnitCost> =
-        getCallOrThrow(callId).unitCosts.map { it.toModel() }
+        getCallOrThrow(callId).unitCosts.map { it.toProgrammeUnitCost() }
 
     private fun getCallOrThrow(callId: Long) =
         callRepo.findById(callId).orElseThrow { ResourceNotFoundException("call") }

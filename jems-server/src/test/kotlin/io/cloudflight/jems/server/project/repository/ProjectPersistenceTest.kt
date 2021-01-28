@@ -20,6 +20,7 @@ import io.cloudflight.jems.server.project.entity.ProjectEntity
 import io.cloudflight.jems.server.project.entity.ProjectPeriodEntity
 import io.cloudflight.jems.server.project.entity.ProjectPeriodId
 import io.cloudflight.jems.server.project.entity.ProjectStatus
+import io.cloudflight.jems.server.project.repository.partner.ProjectPartnerRepository
 import io.cloudflight.jems.server.project.service.model.Project
 import io.cloudflight.jems.server.project.service.model.ProjectCallSettings
 import io.cloudflight.jems.server.project.service.model.ProjectPeriod
@@ -99,6 +100,9 @@ internal class ProjectPersistenceTest : UnitTest() {
     @MockK
     lateinit var projectRepository: ProjectRepository
 
+    @MockK
+    lateinit var projectPartnerRepository: ProjectPartnerRepository
+
     @InjectMockKs
     private lateinit var persistence: ProjectPersistenceProvider
 
@@ -125,14 +129,14 @@ internal class ProjectPersistenceTest : UnitTest() {
     @Test
     fun `getProjectCallSettingsForProject - not existing`() {
         every { projectRepository.findById(-1) } returns Optional.empty()
-        val ex = assertThrows<ResourceNotFoundException> { persistence.getProjectCallSettingsForProject(-1) }
+        val ex = assertThrows<ResourceNotFoundException> { persistence.getProjectCallSettings(-1) }
         assertThat(ex.entity).isEqualTo("project")
     }
 
     @Test
     fun `getProjectCallSettingsForProject - everything OK`() {
         every { projectRepository.findById(PROJECT_ID) } returns Optional.of(dummyProject)
-        assertThat(persistence.getProjectCallSettingsForProject(PROJECT_ID)).isEqualTo(
+        assertThat(persistence.getProjectCallSettings(PROJECT_ID)).isEqualTo(
             ProjectCallSettings(
                 callId = CALL_ID,
                 callName = "call name",

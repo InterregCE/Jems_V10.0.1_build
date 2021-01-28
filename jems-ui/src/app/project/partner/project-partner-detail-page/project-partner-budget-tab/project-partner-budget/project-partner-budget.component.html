@@ -8,7 +8,8 @@
                     <app-staff-costs-budget-table
                             *ngIf="staff"
                             [staffCostTable]="data.budgetTables.staffCosts"
-                            [editable]="budgetsForm.enabled"></app-staff-costs-budget-table>
+                            [editable]="budgetsForm.enabled"
+                            [projectPeriods]="data.periods"></app-staff-costs-budget-table>
                 </div>
                 <div *ngIf="data.isStaffCostFlatRateActive && !data.isOtherFlatRateBasedOnStaffCostActive">
                     <h6 id="staffCostsFlatRate"
@@ -34,7 +35,8 @@
                         <app-travel-and-accommodation-costs-budget-table
                                 *ngIf="travel"
                                 [travelAndAccommodationTable]="data.budgetTables.travelCosts"
-                                [editable]="budgetsForm.enabled">
+                                [editable]="budgetsForm.enabled"
+                                [projectPeriods]="data.periods">
                         </app-travel-and-accommodation-costs-budget-table>
                     </ng-container>
                     <ng-container *ngIf="data.isTravelAndAccommodationFlatRateActive">
@@ -52,7 +54,8 @@
                             [investmentSummaries]="data.investments"
                             [budgetTable]="data.budgetTables.externalCosts"
                             [editable]="budgetsForm.enabled"
-                            [tableName]="constants.FORM_CONTROL_NAMES.external">
+                            [tableName]="constants.FORM_CONTROL_NAMES.external"
+                            [projectPeriods]="data.periods">
                     </app-general-budget-table>
                 </div>
                 <div class="my-2">
@@ -62,7 +65,8 @@
                             [investmentSummaries]="data.investments"
                             [budgetTable]="data.budgetTables.equipmentCosts"
                             [editable]="budgetsForm.enabled"
-                            [tableName]="constants.FORM_CONTROL_NAMES.equipment">
+                            [tableName]="constants.FORM_CONTROL_NAMES.equipment"
+                            [projectPeriods]="data.periods">
                     </app-general-budget-table>
                 </div>
                 <div class="my-2">
@@ -72,7 +76,8 @@
                             [investmentSummaries]="data.investments"
                             [budgetTable]="data.budgetTables.infrastructureCosts"
                             [editable]="budgetsForm.enabled"
-                            [tableName]="constants.FORM_CONTROL_NAMES.infrastructure">
+                            [tableName]="constants.FORM_CONTROL_NAMES.infrastructure"
+                            [projectPeriods]="data.periods">
                     </app-general-budget-table>
                 </div>
                 <div class="my-2" *ngIf="data.unitCosts?.length">
@@ -81,7 +86,8 @@
                             *ngIf="unitCosts"
                             [availableUnitCosts]="data.unitCosts"
                             [unitCostTable]="data.budgetTables.unitCosts"
-                            [editable]="budgetsForm.enabled">
+                            [editable]="budgetsForm.enabled"
+                            [projectPeriods]="data.periods">
                     </app-unit-costs-budget-table>
                 </div>
             </ng-container>

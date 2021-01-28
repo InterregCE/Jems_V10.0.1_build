@@ -18,7 +18,7 @@ import {
   ProjectPartnerBudgetService,
   ProjectPartnerCoFinancingAndContributionInputDTO,
   ProjectPartnerCoFinancingAndContributionOutputDTO,
-  OutputProjectPartnerDetail
+  OutputProjectPartnerDetail, OutputProjectPeriod
 } from '@cat/api';
 import {ProjectPartnerStore} from '../../project-application/containers/project-application-form-page/services/project-partner-store.service';
 import {NumberService} from '../../../common/services/number.service';
@@ -46,7 +46,7 @@ export class ProjectPartnerDetailPageStore {
   unitCosts$: Observable<ProgrammeUnitCostDTO[]>;
   financingAndContribution$: Observable<ProjectPartnerCoFinancingAndContributionOutputDTO>;
   callFunds$: Observable<ProgrammeFundOutputDTO[]>;
-
+  periods$: Observable<OutputProjectPeriod[]>;
 
   private updateBudgetOptionsEvent$ = new Subject();
   private updateBudgetEvent$ = new Subject();
@@ -70,6 +70,10 @@ export class ProjectPartnerDetailPageStore {
     this.financingAndContribution$ = this.financingAndContribution();
     this.callFunds$ = this.callFunds();
     this.isProjectEditable$ = this.projectStore.projectEditable$;
+    this.periods$ = this.projectStore.getProject()
+      .pipe(
+        map(project => project.periods)
+      );
   }
 
   updateBudgetOptions(budgetOptions: BudgetOptions): Observable<any> {
@@ -94,18 +98,18 @@ export class ProjectPartnerDetailPageStore {
     );
   }
 
-  private getBudgetsToSave(partner: OutputProjectPartnerDetail, newBudgets: PartnerBudgetTables, options: BudgetOptions): {[key: string]: Observable<any>} {
+  private getBudgetsToSave(partner: OutputProjectPartnerDetail, newBudgets: PartnerBudgetTables, options: BudgetOptions): { [key: string]: Observable<any> } {
     return options.otherCostsOnStaffCostsFlatRate
       ? {
         staff: this.projectPartnerBudgetService.updateBudgetStaffCosts(partner.id, this.toBudgetStaffCostEntryDTOArray(newBudgets.staffCosts))
-    } : {
+      } : {
         staff: this.projectPartnerBudgetService.updateBudgetStaffCosts(partner.id, this.toBudgetStaffCostEntryDTOArray(newBudgets.staffCosts)),
         travel: this.projectPartnerBudgetService.updateBudgetTravel(partner.id, this.toBudgetTravelAndAccommodationCostEntryDTOArray(newBudgets.travelCosts)),
         external: this.projectPartnerBudgetService.updateBudgetExternal(partner.id, this.toGeneralBudgetEntryDTOArray(newBudgets.externalCosts)),
         equipment: this.projectPartnerBudgetService.updateBudgetEquipment(partner.id, this.toGeneralBudgetEntryDTOArray(newBudgets.equipmentCosts)),
         infrastructure: this.projectPartnerBudgetService.updateBudgetInfrastructure(partner.id, this.toGeneralBudgetEntryDTOArray(newBudgets.infrastructureCosts)),
         unitCosts: this.projectPartnerBudgetService.updateBudgetUnitCosts(partner.id, this.toBudgetUnitCostEntryDTOArray(newBudgets.unitCosts))
-    };
+      };
   }
 
   updateCoFinancingAndContributions(model: ProjectPartnerCoFinancingAndContributionInputDTO): Observable<any> {
@@ -119,7 +123,7 @@ export class ProjectPartnerDetailPageStore {
     );
   }
 
-  private callFunds(): Observable<ProgrammeFundOutputDTO[]>{
+  private callFunds(): Observable<ProgrammeFundOutputDTO[]> {
     return this.projectStore.getProject()
       .pipe(
         map(project => project.callSettings.callId),
@@ -194,7 +198,8 @@ export class ProjectPartnerDetailPageStore {
       comment: entry.comment,
       numberOfUnits: entry.numberOfUnits as any,
       pricePerUnit: entry.pricePerUnit as any,
-      rowSum: entry.rowSum
+      rowSum: entry.rowSum,
+      budgetPeriods: entry.budgetPeriods as any,
     } as BudgetStaffCostEntryDTO));
   }
 
@@ -205,7 +210,8 @@ export class ProjectPartnerDetailPageStore {
       unitType: entry.unitType as any,
       numberOfUnits: entry.numberOfUnits as any,
       pricePerUnit: entry.pricePerUnit as any,
-      rowSum: entry.rowSum
+      rowSum: entry.rowSum,
+      budgetPeriods: entry.budgetPeriods as any,
     } as BudgetTravelAndAccommodationCostEntryDTO));
   }
 
@@ -214,7 +220,8 @@ export class ProjectPartnerDetailPageStore {
       id: entry.id as any,
       unitCostId: entry.unitCostId as any,
       numberOfUnits: entry.numberOfUnits as any,
-      rowSum: entry.rowSum
+      rowSum: entry.rowSum,
+      budgetPeriods: entry.budgetPeriods as any,
     } as BudgetUnitCostEntryDTO));
   }
 
@@ -227,7 +234,8 @@ export class ProjectPartnerDetailPageStore {
       investmentId: entry.investmentId as any,
       numberOfUnits: entry.numberOfUnits as any,
       pricePerUnit: entry.pricePerUnit as any,
-      rowSum: entry.rowSum
+      rowSum: entry.rowSum,
+      budgetPeriods: entry.budgetPeriods as any,
     } as BudgetGeneralCostEntryDTO));
   }
 

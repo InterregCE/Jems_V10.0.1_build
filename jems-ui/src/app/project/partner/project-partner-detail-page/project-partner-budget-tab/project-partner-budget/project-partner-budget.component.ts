@@ -17,7 +17,7 @@ import {PartnerBudgetTables} from '../../../../model/budget/partner-budget-table
 import {GeneralBudgetTable} from '../../../../model/budget/general-budget-table';
 import {TravelAndAccommodationCostsBudgetTable} from '../../../../model/budget/travel-and-accommodation-costs-budget-table';
 import {TravelAndAccommodationCostsBudgetTableEntry} from '../../../../model/budget/travel-and-accommodation-costs-budget-table-entry';
-import { ProgrammeUnitCostDTO } from '@cat/api';
+import {ProgrammeUnitCostDTO, OutputProjectPeriod} from '@cat/api';
 import {UnitCostsBudgetTable} from '../../../../model/budget/unit-costs-budget-table';
 import {UnitCostsBudgetTableEntry} from '../../../../model/budget/unit-costs-budget-table-entry';
 
@@ -42,6 +42,7 @@ export class ProjectPartnerBudgetComponent implements OnInit {
     officeAndAdministrationFlatRateTotal: number,
     travelAndAccommodationFlatRateTotal: number,
     otherCostsFlatRateTotal: number,
+    periods: OutputProjectPeriod[],
     isStaffCostFlatRateActive: boolean,
     isOfficeAdministrationFlatRateActive: boolean,
     isTravelAndAccommodationFlatRateActive: boolean,
@@ -89,9 +90,13 @@ export class ProjectPartnerBudgetComponent implements OnInit {
       this.staffCostsFlatRateTotal$,
       this.officeAndAdministrationFlatRateTotal$,
       this.travelAndAccommodationFlatRateTotal$,
-      this.otherCostsFlatRateTotal$
+      this.otherCostsFlatRateTotal$,
+      this.pageStore.periods$
     ]).pipe(
-      map(([budgetTables, budgetOptions, investments, unitCosts, staffCostsFlatRateTotal, officeAndAdministrationFlatRateTotal, travelAndAccommodationFlatRateTotal, otherCostsFlatRateTotal]: any) => {
+      map(([
+             budgetTables, budgetOptions, investments, unitCosts, staffCostsFlatRateTotal, officeAndAdministrationFlatRateTotal,
+             travelAndAccommodationFlatRateTotal, otherCostsFlatRateTotal, periods
+           ]: any) => {
         return {
           budgetTables,
           investments,
@@ -100,6 +105,7 @@ export class ProjectPartnerBudgetComponent implements OnInit {
           officeAndAdministrationFlatRateTotal,
           travelAndAccommodationFlatRateTotal,
           otherCostsFlatRateTotal,
+          periods,
           isStaffCostFlatRateActive: !!budgetOptions.staffCostsFlatRate,
           isOfficeAdministrationFlatRateActive: !!budgetOptions.officeAndAdministrationOnStaffCostsFlatRate,
           isTravelAndAccommodationFlatRateActive: !!budgetOptions.travelAndAccommodationOnStaffCostsFlatRate,
