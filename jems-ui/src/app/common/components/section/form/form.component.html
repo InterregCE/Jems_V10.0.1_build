@@ -36,7 +36,7 @@
     <mat-card-footer [@slideInOut] class="footer">
         <div class="message-wrapper">
             <div class="message app-alert-success">
-                <i class="far fa-check-circle"></i>
+                <em class="far fa-check-circle"></em>
                 <span *ngIf="message.i18nKey">{{message.i18nKey | translate : message.i18nArguments}}</span>
                 <span *ngIf="!message.i18nKey">{{message | translate}}</span>
             </div>
@@ -48,7 +48,7 @@
     <mat-card-footer [@slideInOut] class="footer">
         <div class="message-wrapper">
             <div class="message app-alert-danger">
-                <i class="fas fa-exclamation-triangle"></i>{{error?.i18nKey | translate}}
+                <em class="fas fa-exclamation-triangle"></em>{{error?.i18nKey | translate}}
             </div>
         </div>
         <ng-container *ngTemplateOutlet="saveDiscard"></ng-container>
