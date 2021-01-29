@@ -153,7 +153,7 @@ export class BudgetPagePerPartnerComponent implements OnInit {
   private getColumnsToDisplay(funds: ProgrammeFundOutputDTO[]): void {
     this.displayedColumns.push('partner', 'country');
     funds.forEach(fund => {
-      this.displayedColumns.push('budget' + (fund.id || fund.abbreviation), 'percentage' + (fund.id || fund.abbreviation));
+      this.displayedColumns.push('budget' + (fund.abbreviation || fund.id), 'percentage' + (fund.abbreviation || fund.id));
     });
     this.displayedColumns.push('publicContribution', 'autoPublicContribution', 'privateContribution', 'totalContribution', 'totalEligibleBudget', 'percentOfTotalBudget');
   }
