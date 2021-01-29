@@ -129,6 +129,7 @@ export class ProjectPartnerDetailPageStore {
         map(project => project.callSettings.callId),
         switchMap(callId => this.callService.getCallById(callId)),
         map((call: OutputCall) => call.funds),
+        map((funds: ProgrammeFundOutputDTO[]) => funds.sort((a, b) => (a.id > b.id) ? 1 : -1)),
       );
   }
 
