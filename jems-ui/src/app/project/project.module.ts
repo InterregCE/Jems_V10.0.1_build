@@ -77,7 +77,7 @@ import {ProjectPeriodsSelectComponent} from './components/project-periods-select
 import {ProjectWorkPackageInvestmentsTabComponent} from './work-package/work-package-detail-page/project-work-package-investments-tab/project-work-package-investments-tab.component';
 import {ProjectWorkPackageInvestmentDetailPageComponent} from './work-package/work-package-detail-page/project-work-package-investments-tab/project-work-package-investment-detail-page/project-work-package-investment-detail-page.component';
 import {StaffCostsBudgetTableComponent} from './partner/project-partner-detail-page/project-partner-budget-tab/project-partner-budget/staff-costs-budget-table/staff-costs-budget-table.component';
-import {GeneralBudgetFlatRateTableComponent} from './partner/project-partner-detail-page/project-partner-budget-tab/project-partner-budget/general-budget-flat-rate-table/general-budget-flat-rate-table.component';
+import {BudgetFlatRateTableComponent} from './partner/project-partner-detail-page/project-partner-budget-tab/project-partner-budget/budget-flat-rate-table/budget-flat-rate-table.component';
 import {GeneralBudgetTableComponent} from './partner/project-partner-detail-page/project-partner-budget-tab/project-partner-budget/general-budget-table/general-budget-table.component';
 import {ProjectWorkPackagePageStore} from './work-package/work-package-detail-page/project-work-package-page-store.service';
 import {ProjectPartnerDetailPageStore} from './partner/project-partner-detail-page/project-partner-detail-page.store';
@@ -156,7 +156,7 @@ import { BudgetPagePerPartnerComponent } from './budget/budget-page-per-partner/
     ProjectApplicationFormAssociatedOrgPageComponent,
     ProjectApplicationFormAddressComponent,
     BudgetPageComponent,
-    GeneralBudgetFlatRateTableComponent,
+    BudgetFlatRateTableComponent,
     GeneralBudgetTableComponent,
     StaffCostsBudgetTableComponent,
     TravelAndAccommodationCostsBudgetTableComponent,

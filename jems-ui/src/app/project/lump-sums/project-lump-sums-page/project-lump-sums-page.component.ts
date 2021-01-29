@@ -36,6 +36,7 @@ import {ProjectPeriod} from '../../model/ProjectPeriod';
 })
 export class ProjectLumpSumsPageComponent implements OnInit {
 
+  rowId = 0;
   constants = ProjectLumSumsConstants;
   Alert = Alert;
 
@@ -124,7 +125,7 @@ export class ProjectLumpSumsPageComponent implements OnInit {
 
   addNewItem(partners: ProjectPartner[]): void {
     const item = this.formBuilder.group({
-      rowId: Math.random() * 1000,
+      rowId: this.newRowId(),
       id: null,
       lumpSum: [null, Validators.required],
       periodNumber: [null],
@@ -207,7 +208,7 @@ export class ProjectLumpSumsPageComponent implements OnInit {
       const lumpSum = projectCallLumpSums.find(it => it.id === projectLumpSum.programmeLumpSumId);
       const rowSum = this.calculateRowSum(projectLumpSum.lumpSumContributions.map(it => it.amount));
       const item = this.formBuilder.group({
-        rowId: Math.random() * 1000,
+        rowId: this.newRowId(),
         id: null,
         lumpSum: [lumpSum, Validators.required],
         periodNumber: periodNumbers.includes(projectLumpSum.period) ? projectLumpSum.period : null,
@@ -292,6 +293,10 @@ export class ProjectLumpSumsPageComponent implements OnInit {
       }
     }
     return null;
+  }
+
+  private newRowId(): number {
+    return ++this.rowId;
   }
 
   private getLumpSumControl(itemFormGroup: AbstractControl): FormControl {

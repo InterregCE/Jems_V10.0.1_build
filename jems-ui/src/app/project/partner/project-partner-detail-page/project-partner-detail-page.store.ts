@@ -80,6 +80,7 @@ export class ProjectPartnerDetailPageStore {
     return of(budgetOptions).pipe(withLatestFrom(this.partnerStore.partner$)).pipe(
       switchMap(([options, partner]) => this.projectPartnerBudgetService.updateBudgetOptions(partner.id, {
         officeAndAdministrationOnStaffCostsFlatRate: options.officeAndAdministrationOnStaffCostsFlatRate,
+        officeAndAdministrationOnDirectCostsFlatRate: options.officeAndAdministrationOnDirectCostsFlatRate,
         staffCostsFlatRate: options.staffCostsFlatRate,
         travelAndAccommodationOnStaffCostsFlatRate: options.travelAndAccommodationOnStaffCostsFlatRate,
         otherCostsOnStaffCostsFlatRate: options.otherCostsOnStaffCostsFlatRate
@@ -129,7 +130,7 @@ export class ProjectPartnerDetailPageStore {
         map(project => project.callSettings.callId),
         switchMap(callId => this.callService.getCallById(callId)),
         map((call: OutputCall) => call.funds),
-        map((funds: ProgrammeFundOutputDTO[]) => funds.sort((a, b) => (a.id > b.id) ? 1 : -1)),
+        map((funds: ProgrammeFundOutputDTO[]) => [...funds].sort((a, b) => (a.id > b.id) ? 1 : -1)),
       );
   }
 
@@ -152,7 +153,7 @@ export class ProjectPartnerDetailPageStore {
       switchMap(id =>
         this.projectPartnerBudgetService.getBudgetOptions(id)
       ),
-      map((it: ProjectPartnerBudgetOptionsDto) => new BudgetOptions(it.officeAndAdministrationOnStaffCostsFlatRate, it.staffCostsFlatRate, it.travelAndAccommodationOnStaffCostsFlatRate, it.otherCostsOnStaffCostsFlatRate)),
+      map((it: ProjectPartnerBudgetOptionsDto) => new BudgetOptions(it.officeAndAdministrationOnStaffCostsFlatRate, it.officeAndAdministrationOnDirectCostsFlatRate, it.staffCostsFlatRate, it.travelAndAccommodationOnStaffCostsFlatRate, it.otherCostsOnStaffCostsFlatRate)),
       shareReplay(1)
     );
   }

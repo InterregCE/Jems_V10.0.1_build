@@ -38,21 +38,22 @@ export class ProjectPartnerBudgetComponent implements OnInit {
     budgetTables: PartnerBudgetTables,
     investments: number[],
     unitCosts: ProgrammeUnitCostDTO[],
-    staffCostsFlatRateTotal: number,
+    staffCostsTotal: number,
     officeAndAdministrationFlatRateTotal: number,
-    travelAndAccommodationFlatRateTotal: number,
+    travelAndAccommodationTotal: number,
     otherCostsFlatRateTotal: number,
     periods: OutputProjectPeriod[],
     isStaffCostFlatRateActive: boolean,
-    isOfficeAdministrationFlatRateActive: boolean,
+    isOfficeOnStaffFlatRateActive: boolean,
+    isOfficeOnDirectFlatRateActive: boolean,
     isTravelAndAccommodationFlatRateActive: boolean,
     isOtherFlatRateBasedOnStaffCostActive: boolean,
   }>;
 
   private otherCostsFlatRateTotal$: Observable<number>;
-  private staffCostsFlatRateTotal$: Observable<number>;
+  private staffCostsTotal$: Observable<number>;
   private officeAndAdministrationFlatRateTotal$: Observable<number>;
-  private travelAndAccommodationFlatRateTotal$: Observable<number>;
+  private travelAndAccommodationTotal$: Observable<number>;
 
   constructor(private formService: FormService, private formBuilder: FormBuilder, private multiLanguageInputService: MultiLanguageInputService, private pageStore: ProjectPartnerDetailPageStore) {
   }
@@ -62,22 +63,22 @@ export class ProjectPartnerBudgetComponent implements OnInit {
 
     this.pageStore.budgets$.pipe(untilDestroyed(this)).subscribe();
 
-    this.staffCostsFlatRateTotal$ = combineLatest([this.pageStore.budgetOptions$, this.budgetsForm.valueChanges]).pipe(
-      map(([budgetOptions]) => this.calculateStaffCostsFlatRateTotal(budgetOptions)),
+    this.staffCostsTotal$ = combineLatest([this.pageStore.budgetOptions$, this.budgetsForm.valueChanges]).pipe(
+      map(([budgetOptions]) => this.calculateStaffCostsTotal(budgetOptions)),
       startWith(0)
     );
 
-    this.officeAndAdministrationFlatRateTotal$ = combineLatest([this.pageStore.budgetOptions$, this.staffCostsFlatRateTotal$]).pipe(
-      map(([budgetOptions, staffCostTotal]) => this.calculateOfficeAndAdministrationFlatRateTotal(budgetOptions.officeAndAdministrationOnStaffCostsFlatRate || 0, staffCostTotal)),
-      startWith(0)
-    );
-
-    this.travelAndAccommodationFlatRateTotal$ = combineLatest([this.pageStore.budgetOptions$, this.staffCostsFlatRateTotal$]).pipe(
-      map(([budgetOptions, staffCostTotal]) => this.calculateTravelAndAccommodationFlatRateTotal(budgetOptions.travelAndAccommodationOnStaffCostsFlatRate || 0, staffCostTotal)),
+    this.travelAndAccommodationTotal$ = combineLatest([this.pageStore.budgetOptions$, this.staffCostsTotal$]).pipe(
+      map(([budgetOptions, staffCostTotal]) => this.calculateTravelAndAccommodationCostsTotal(budgetOptions.travelAndAccommodationOnStaffCostsFlatRate, staffCostTotal)),
       startWith(0),
     );
 
-    this.otherCostsFlatRateTotal$ = combineLatest([this.pageStore.budgetOptions$, this.staffCostsFlatRateTotal$]).pipe(
+    this.officeAndAdministrationFlatRateTotal$ = combineLatest([this.pageStore.budgetOptions$, this.staffCostsTotal$, this.travelAndAccommodationTotal$]).pipe(
+      map(([budgetOptions, staffCostTotal, travelCostTotal]) => this.calculateOfficeAndAdministrationFlatRateTotal(budgetOptions.officeAndAdministrationOnStaffCostsFlatRate, budgetOptions.officeAndAdministrationOnDirectCostsFlatRate, staffCostTotal, travelCostTotal)),
+      startWith(0)
+    );
+
+    this.otherCostsFlatRateTotal$ = combineLatest([this.pageStore.budgetOptions$, this.staffCostsTotal$]).pipe(
       map(([budgetOptions, staffCostTotal]) => this.calculateOtherCostsFlatRateTotal(budgetOptions.staffCostsFlatRate, budgetOptions.otherCostsOnStaffCostsFlatRate || 0, staffCostTotal)),
       startWith(0)
     );
@@ -87,27 +88,25 @@ export class ProjectPartnerBudgetComponent implements OnInit {
       this.pageStore.budgetOptions$,
       this.pageStore.investmentSummaries$,
       this.pageStore.unitCosts$,
-      this.staffCostsFlatRateTotal$,
+      this.staffCostsTotal$,
       this.officeAndAdministrationFlatRateTotal$,
-      this.travelAndAccommodationFlatRateTotal$,
+      this.travelAndAccommodationTotal$,
       this.otherCostsFlatRateTotal$,
       this.pageStore.periods$
     ]).pipe(
-      map(([
-             budgetTables, budgetOptions, investments, unitCosts, staffCostsFlatRateTotal, officeAndAdministrationFlatRateTotal,
-             travelAndAccommodationFlatRateTotal, otherCostsFlatRateTotal, periods
-           ]: any) => {
+      map(([budgetTables, budgetOptions, investments, unitCosts, staffCostsTotal, officeAndAdministrationFlatRateTotal, travelAndAccommodationTotal, otherCostsFlatRateTotal, periods]: any) => {
         return {
           budgetTables,
           investments,
           unitCosts,
-          staffCostsFlatRateTotal,
+          staffCostsTotal,
           officeAndAdministrationFlatRateTotal,
-          travelAndAccommodationFlatRateTotal,
+          travelAndAccommodationTotal,
           otherCostsFlatRateTotal,
           periods,
           isStaffCostFlatRateActive: !!budgetOptions.staffCostsFlatRate,
-          isOfficeAdministrationFlatRateActive: !!budgetOptions.officeAndAdministrationOnStaffCostsFlatRate,
+          isOfficeOnStaffFlatRateActive: !!budgetOptions.officeAndAdministrationOnStaffCostsFlatRate,
+          isOfficeOnDirectFlatRateActive: !!budgetOptions.officeAndAdministrationOnDirectCostsFlatRate,
           isTravelAndAccommodationFlatRateActive: !!budgetOptions.travelAndAccommodationOnStaffCostsFlatRate,
           isOtherFlatRateBasedOnStaffCostActive: !!budgetOptions.otherCostsOnStaffCostsFlatRate,
         };
@@ -123,7 +122,7 @@ export class ProjectPartnerBudgetComponent implements OnInit {
     ).subscribe();
   }
 
-  private calculateStaffCostsFlatRateTotal(budgetOptions: BudgetOptions): number {
+  private calculateStaffCostsTotal(budgetOptions: BudgetOptions): number {
     if (!budgetOptions?.staffCostsFlatRate) {
       return this.getTotalOf(this.staff);
     }
@@ -139,11 +138,11 @@ export class ProjectPartnerBudgetComponent implements OnInit {
 
   }
 
-  private calculateOfficeAndAdministrationFlatRateTotal(officeFlatRateBasedOnStaffCost: number, staffTotal: number): number {
+  private calculateOfficeAndAdministrationFlatRateTotal(officeFlatRateBasedOnStaffCost: number | null, officeFlatRateBasedOnDirectCosts: number | null, staffTotal: number, travelCostTotal: number): number {
     return NumberService.truncateNumber(NumberService.product([
-      NumberService.divide(officeFlatRateBasedOnStaffCost, 100),
-      staffTotal
-    ]));
+      NumberService.divide(officeFlatRateBasedOnStaffCost || officeFlatRateBasedOnDirectCosts, 100),
+      officeFlatRateBasedOnStaffCost !== null ? staffTotal :
+        NumberService.sum([this.getTotalOf(this.external), this.getTotalOf(this.equipment), this.getTotalOf(this.infrastructure), staffTotal, travelCostTotal])]));
   }
 
   private calculateOtherCostsFlatRateTotal(staffCostsFlatRateBasedOnDirectCost: number | null, otherCostsFlatRateBasedOnStaffCost: number, staffTotal: number): number {
@@ -156,7 +155,10 @@ export class ProjectPartnerBudgetComponent implements OnInit {
     ]));
   }
 
-  private calculateTravelAndAccommodationFlatRateTotal(travelFlatRateBasedOnStaffCost: number, staffTotal: number): number {
+  private calculateTravelAndAccommodationCostsTotal(travelFlatRateBasedOnStaffCost: number | null, staffTotal: number): number {
+    if (travelFlatRateBasedOnStaffCost === null) {
+      return this.getTotalOf(this.travel);
+    }
     return NumberService.truncateNumber(NumberService.product([
       NumberService.divide(travelFlatRateBasedOnStaffCost, 100),
       staffTotal

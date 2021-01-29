@@ -1,4 +1,4 @@
-import {Component, Input, OnChanges, OnInit, SimpleChanges} from '@angular/core';
+import {Component, Input, OnChanges, OnDestroy, OnInit, SimpleChanges} from '@angular/core';
 import {ProjectPartnerBudgetConstants} from '../project-partner-budget.constants';
 import {
   AbstractControl,
@@ -27,7 +27,7 @@ import {Alert} from '@common/components/forms/alert';
   templateUrl: './travel-and-accommodation-costs-budget-table.component.html',
   styleUrls: ['./travel-and-accommodation-costs-budget-table.component.scss']
 })
-export class TravelAndAccommodationCostsBudgetTableComponent implements OnInit, OnChanges {
+export class TravelAndAccommodationCostsBudgetTableComponent implements OnInit, OnChanges, OnDestroy {
   Alert = Alert;
   constants = ProjectPartnerBudgetConstants;
 
@@ -86,6 +86,10 @@ export class TravelAndAccommodationCostsBudgetTableComponent implements OnInit, 
     if (changes.travelAndAccommodationTable || changes.editable) {
       this.resetTravelFormGroup(this.travelAndAccommodationTable);
     }
+  }
+
+  ngOnDestroy(): void {
+    this.items.clear();
   }
 
   removeItem(index: number): void {

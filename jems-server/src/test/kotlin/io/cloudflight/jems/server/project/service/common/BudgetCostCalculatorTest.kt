@@ -7,9 +7,9 @@ import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Test
 import java.math.BigDecimal
 
-internal class ProjectBudgetCostCalculatorTest : UnitTest() {
+internal class BudgetCostCalculatorTest : UnitTest() {
 
-    private val partnerId = 1L;
+    private val partnerId = 1L
     private val budgetCostCalculator = BudgetCostsCalculator()
 
     @Test
@@ -64,6 +64,21 @@ internal class ProjectBudgetCostCalculatorTest : UnitTest() {
     }
 
     @Test
+    fun `should calculate officeAndAdministrationCosts correctly when officeAndAdministrationOnDirectCostsFlatRate is set`() {
+        val result = budgetCostCalculator.calculateCosts(
+            budgetOptions = ProjectPartnerBudgetOptions(partnerId, officeAndAdministrationOnDirectCostsFlatRate = 10),
+            unitCosts = BigDecimal.ZERO,
+            lumpSumsCosts = BigDecimal.ZERO,
+            travelCosts = 2000.toScaledBigDecimal(),
+            externalCosts = 10000.toScaledBigDecimal(),
+            equipmentCosts = 7500.toScaledBigDecimal(),
+            infrastructureCosts = 2500.toScaledBigDecimal(),
+            staffCosts = 6200.toScaledBigDecimal(),
+        )
+        Assertions.assertEquals(2820.toScaledBigDecimal(), result.officeAndAdministrationCosts)
+    }
+
+    @Test
     fun `should calculate officeAndAdministrationCosts correctly when officeAndAdministrationOnStaffCostsFlatRate is null`() {
 
         val result = budgetCostCalculator.calculateCosts(
@@ -78,6 +93,61 @@ internal class ProjectBudgetCostCalculatorTest : UnitTest() {
         )
 
         Assertions.assertEquals(BigDecimal.ZERO, result.officeAndAdministrationCosts)
+    }
+
+    @Test
+    fun `should calculate officeAndAdministrationCosts correctly when officeAndAdministrationOnStaffCostsFlatRate and staffCostsFlatRate are set`() {
+        val result = budgetCostCalculator.calculateCosts(
+            budgetOptions = ProjectPartnerBudgetOptions(partnerId,
+                officeAndAdministrationOnDirectCostsFlatRate = 10,
+                staffCostsFlatRate = 15,
+            ),
+            unitCosts = BigDecimal.ZERO,
+            lumpSumsCosts = BigDecimal.ZERO,
+            travelCosts = 2000.toScaledBigDecimal(),
+            externalCosts = 10000.toScaledBigDecimal(),
+            equipmentCosts = 7500.toScaledBigDecimal(),
+            infrastructureCosts = 2500.toScaledBigDecimal(),
+            staffCosts = 6200.toScaledBigDecimal(),
+        )
+        Assertions.assertEquals(2530.toScaledBigDecimal(), result.officeAndAdministrationCosts)
+    }
+
+    @Test
+    fun `should calculate officeAndAdministrationCosts correctly when officeAndAdministrationOnStaffCostsFlatRate and travelAndAccommodationOnStaffCostsFlatRate are set`() {
+        val result = budgetCostCalculator.calculateCosts(
+            budgetOptions = ProjectPartnerBudgetOptions(partnerId,
+                officeAndAdministrationOnDirectCostsFlatRate = 10,
+                travelAndAccommodationOnStaffCostsFlatRate = 15,
+            ),
+            unitCosts = BigDecimal.ZERO,
+            lumpSumsCosts = BigDecimal.ZERO,
+            travelCosts = 2000.toScaledBigDecimal(),
+            externalCosts = 10000.toScaledBigDecimal(),
+            equipmentCosts = 7500.toScaledBigDecimal(),
+            infrastructureCosts = 2500.toScaledBigDecimal(),
+            staffCosts = 6200.toScaledBigDecimal(),
+        )
+        Assertions.assertEquals(2713.toScaledBigDecimal(), result.officeAndAdministrationCosts)
+    }
+
+    @Test
+    fun `should calculate officeAndAdministrationCosts correctly when officeAndAdministrationOnStaffCostsFlatRate, staffCostsFlatRate and travelAndAccommodationOnStaffCostsFlatRate are set`() {
+        val result = budgetCostCalculator.calculateCosts(
+            budgetOptions = ProjectPartnerBudgetOptions(partnerId,
+                officeAndAdministrationOnDirectCostsFlatRate = 10,
+                travelAndAccommodationOnStaffCostsFlatRate = 15,
+                staffCostsFlatRate = 20
+            ),
+            unitCosts = BigDecimal.ZERO,
+            lumpSumsCosts = BigDecimal.ZERO,
+            travelCosts = 2000.toScaledBigDecimal(), // 600
+            externalCosts = 10000.toScaledBigDecimal(),
+            equipmentCosts = 7500.toScaledBigDecimal(),
+            infrastructureCosts = 2500.toScaledBigDecimal(),
+            staffCosts = 6200.toScaledBigDecimal(), // 4000
+        )
+        Assertions.assertEquals(2460.toScaledBigDecimal(), result.officeAndAdministrationCosts)
     }
 
 

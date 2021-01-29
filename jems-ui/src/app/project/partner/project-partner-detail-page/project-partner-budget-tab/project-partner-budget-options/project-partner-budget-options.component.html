@@ -31,7 +31,7 @@
                                 <app-form-field-errors
                                         [errors]="staffCostsFlatRate?.errors"
                                         [messages]="constants.FORM_ERRORS.staffCostsFlatRateErrors"
-                                        [args]="data.staffCostsFlatRateErrorsArgs">
+                                        [args]="data.flatRateErrorsArgs.staff">
                                 </app-form-field-errors>
                             </mat-error>
                         </mat-form-field>
@@ -41,7 +41,7 @@
                                 [formControl]="isOfficeAndAdministrationOnStaffCostsFlatRateActive"
                                 (click)="$event.stopPropagation()"
                                 (change)="toggleFlatRate(isOfficeAndAdministrationOnStaffCostsFlatRateActive, officeAndAdministrationOnStaffCostsFlatRate,data.callFlatRateSettings.officeAndAdministrationOnStaffCostsFlatRateSetup,$event.checked)"
-                                [disabled]="data.areFlatRatesInFirstCategoryDisabled"
+                                [disabled]="data.areFlatRatesInFirstCategoryDisabled || isOfficeAndAdministrationOnDirectCostsFlatRateActive?.value"
                                 [checked]="isOfficeAndAdministrationOnStaffCostsFlatRateActive?.value">
                             {{'project.partner.budget.options.office.on.staff.cost.flat.rate.enabled' | translate}}
                         </mat-checkbox>
@@ -64,7 +64,40 @@
                                 <app-form-field-errors
                                         [errors]="officeAndAdministrationOnStaffCostsFlatRate?.errors"
                                         [messages]="constants.FORM_ERRORS.officeAndAdministrationOnStaffCostsFlatRateErrors"
-                                        [args]="data.officeOnStaffCostFlatRateErrorsArgs">
+                                        [args]="data.flatRateErrorsArgs.officeOnStaff">
+                                </app-form-field-errors>
+                            </mat-error>
+                        </mat-form-field>
+                    </mat-list-item>
+                    <mat-list-item *ngIf="officeAndAdministrationOnDirectCostsFlatRate">
+                        <mat-checkbox
+                                [formControl]="isOfficeAndAdministrationOnDirectCostsFlatRateActive"
+                                (click)="$event.stopPropagation()"
+                                (change)="toggleFlatRate(isOfficeAndAdministrationOnDirectCostsFlatRateActive, officeAndAdministrationOnDirectCostsFlatRate,data.callFlatRateSettings.officeAndAdministrationOnDirectCostsFlatRateSetup,$event.checked)"
+                                [disabled]="data.areFlatRatesInFirstCategoryDisabled || isOfficeAndAdministrationOnStaffCostsFlatRateActive?.value"
+                                [checked]="isOfficeAndAdministrationOnDirectCostsFlatRateActive?.value">
+                            {{'project.partner.budget.options.office.on.direct.cost.flat.rate.enabled' | translate}}
+                        </mat-checkbox>
+                        <mat-form-field
+                                [appFormFieldWidth]="3"
+                                [extendError]="true"
+                                class="pl-1"
+                                *ngIf="isOfficeAndAdministrationOnDirectCostsFlatRateActive?.value">
+                            <input type="number"
+                                   class="text-right"
+                                   matInput
+                                   [formControl]="officeAndAdministrationOnDirectCostsFlatRate"
+                                   [min]="1"
+                                   [max]="data.callFlatRateSettings.officeAndAdministrationOnDirectCostsFlatRateSetup.rate"
+                                   [readonly]="!data.callFlatRateSettings.officeAndAdministrationOnDirectCostsFlatRateSetup.isAdjustable"
+                                   (paste)="Tools.checkDigitsOnPaste($event)"
+                                   (keypress)="Tools.checkDigitsOnInput($event)">
+                            <span matSuffix>{{'project.partner.budget.options.office.on.direct.cost.flat.rate.percent' | translate}}</span>
+                            <mat-error>
+                                <app-form-field-errors
+                                        [errors]="officeAndAdministrationOnDirectCostsFlatRate?.errors"
+                                        [messages]="constants.FORM_ERRORS.officeAndAdministrationOnDirectCostsFlatRateErrors"
+                                        [args]="data.flatRateErrorsArgs.officeOnDirect">
                                 </app-form-field-errors>
                             </mat-error>
                         </mat-form-field>
@@ -97,7 +130,7 @@
                                 <app-form-field-errors
                                         [errors]="travelAndAccommodationOnStaffCostsFlatRate?.errors"
                                         [messages]="constants.FORM_ERRORS.travelAndAccommodationOnStaffCostsFlatRateErrors"
-                                        [args]="data.travelFlatRateErrorsArgs">
+                                        [args]="data.flatRateErrorsArgs.travel">
                                 </app-form-field-errors>
                             </mat-error>
                         </mat-form-field>
@@ -108,7 +141,7 @@
                                 [formControl]="isOtherCostsOnStaffCostsFlatRateActive"
                                 (click)="$event.stopPropagation()"
                                 (change)="toggleFlatRate(isOtherCostsOnStaffCostsFlatRateActive,otherCostsOnStaffCostsFlatRate,data.callFlatRateSettings.otherCostsOnStaffCostsFlatRateSetup,$event.checked)"
-                                [disabled]="data.isOtherCostsOnStaffCostsFlatRateDisabled"
+                                [disabled]="data.isOtherCostFlatRateDisabled"
                                 [checked]="isOtherCostsOnStaffCostsFlatRateActive?.value">
                             {{'project.partner.budget.options.other.costs.on.staff.costs.flat.rate.enabled' | translate}}
                         </mat-checkbox>
@@ -130,7 +163,7 @@
                                 <app-form-field-errors
                                         [errors]="otherCostsOnStaffCostsFlatRate?.errors"
                                         [messages]="constants.FORM_ERRORS.otherCostsOnStaffCostsFlatRateErrors"
-                                        [args]="data.otherFlatRateErrorsArgs">
+                                        [args]="data.flatRateErrorsArgs.other">
                                 </app-form-field-errors>
                             </mat-error>
                         </mat-form-field>

@@ -9,7 +9,6 @@ import io.cloudflight.jems.server.project.service.budget.model.PartnerBudget
 import io.cloudflight.jems.server.project.service.budget.model.ProjectPartnerCost
 import io.cloudflight.jems.server.project.service.common.BudgetCostsCalculatorService
 import io.cloudflight.jems.server.project.service.lumpsum.ProjectLumpSumPersistence
-import io.cloudflight.jems.server.project.service.lumpsum.model.ProjectLumpSum
 import io.cloudflight.jems.server.project.service.partner.budget.ProjectPartnerBudgetOptionsPersistence
 import io.cloudflight.jems.server.project.service.partner.model.ProjectPartner
 import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerBudgetOptions
@@ -18,7 +17,6 @@ import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
 import io.mockk.impl.annotations.MockK
 import io.mockk.impl.annotations.RelaxedMockK
-import io.mockk.slot
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import java.math.BigDecimal
@@ -44,6 +42,7 @@ class GetProjectBudgetInteractorTest : UnitTest() {
     private val partner1Options = ProjectPartnerBudgetOptions(
         partnerId = partner1.id!!,
         officeAndAdministrationOnStaffCostsFlatRate = 10,
+        officeAndAdministrationOnDirectCostsFlatRate = null,
         staffCostsFlatRate = 10,
         travelAndAccommodationOnStaffCostsFlatRate = 15,
     )

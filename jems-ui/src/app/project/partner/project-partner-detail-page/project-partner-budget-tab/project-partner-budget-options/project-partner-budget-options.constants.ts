@@ -4,6 +4,8 @@ export class ProjectPartnerBudgetOptionsConstants {
     isStaffCostsFlatRateActive: 'isStaffCostsFlatRateActive',
     officeAndAdministrationOnStaffCostsFlatRate: 'officeAndAdministrationOnStaffCostsFlatRate',
     isOfficeAndAdministrationOnStaffCostsFlatRateActive: 'isOfficeAndAdministrationOnStaffCostsFlatRateActive',
+    officeAndAdministrationOnDirectCostsFlatRate: 'officeAndAdministrationOnDirectCostsFlatRate',
+    isOfficeAndAdministrationOnDirectCostsFlatRateActive: 'isOfficeAndAdministrationOnDirectCostsFlatRateActive',
     travelAndAccommodationOnStaffCostsFlatRate: 'travelAndAccommodationOnStaffCostsFlatRate',
     isTravelAndAccommodationOnStaffCostsFlatRateActive: 'isTravelAndAccommodationOnStaffCostsFlatRateActive',
     otherCostsOnStaffCostsFlatRate: 'otherCostsOnStaffCostsFlatRate',
@@ -12,6 +14,11 @@ export class ProjectPartnerBudgetOptionsConstants {
 
   public static FORM_ERRORS = {
     officeAndAdministrationOnStaffCostsFlatRateErrors: {
+      required: 'project.partner.budget.options.office.on.staff.cost.flat.rate.empty',
+      max: 'project.partner.budget.options.office.on.staff.cost.flat.rate.range',
+      min: 'project.partner.budget.options.office.on.staff.cost.flat.rate.range',
+    },
+    officeAndAdministrationOnDirectCostsFlatRateErrors: {
       required: 'project.partner.budget.options.office.on.staff.cost.flat.rate.empty',
       max: 'project.partner.budget.options.office.on.staff.cost.flat.rate.range',
       min: 'project.partner.budget.options.office.on.staff.cost.flat.rate.range',

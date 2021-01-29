@@ -42,7 +42,7 @@ class CallControllerTest {
 
         val testOptions = FlatRateSetupDTO(
             staffCostFlatRateSetup = FlatRateDTO(rate = 10, isAdjustable = true),
-            officeAndAdministrationOnStaffCostsFlatRate = FlatRateDTO(rate = 15, isAdjustable = false),
+            officeAndAdministrationOnStaffCostsFlatRateSetup = FlatRateDTO(rate = 15, isAdjustable = false),
         )
 
         controller.updateCallFlatRateSetup(1L, testOptions)
