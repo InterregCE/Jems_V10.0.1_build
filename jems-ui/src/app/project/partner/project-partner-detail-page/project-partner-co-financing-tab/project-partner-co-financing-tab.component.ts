@@ -245,6 +245,7 @@ export class ProjectPartnerCoFinancingTabComponent implements OnInit {
     this.fundId.setValue(inputValues?.fund.id);
     this.fundPercentage.setValue(inputValues?.percentage || 0);
     this.resetPartnerContributions(financingAndContribution);
+    this.formService.setDirty(false);
   }
 
   private resetPartnerContributions(financingAndContribution: ProjectPartnerCoFinancingAndContributionOutputDTO): void {

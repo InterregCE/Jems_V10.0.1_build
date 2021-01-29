@@ -101,6 +101,7 @@ export class ProjectWorkPackageOutputsTabComponent implements OnInit {
     this.outputs.clear();
     outputs.forEach((activity, index) => this.addOutput(activity));
     this.formService.resetEditable();
+    this.formService.setDirty(false);
   }
 
   private addOutput(existing?: WorkPackageOutputDTO): void {
