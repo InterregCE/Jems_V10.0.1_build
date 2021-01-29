@@ -8727,7 +8727,7 @@
 								"header": [],
 								"body": {
 									"mode": "raw",
-									"raw": "{\r\n    \"officeAndAdministrationOnStaffCostsFlatRateSetup\": 10\r\n}\r\n",
+									"raw": "{\r\n    \"officeAndAdministrationOnStaffCostsFlatRate\": 10\r\n}\r\n",
 									"options": {
 										"raw": {
 											"language": "json"
@@ -8857,7 +8857,7 @@
 								"header": [],
 								"body": {
 									"mode": "raw",
-									"raw": "{\r\n    \"officeAndAdministrationOnStaffCostsFlatRateSetup\": 10,\r\n    \"travelAndAccommodationOnStaffCostsFlatRate\": 15\r\n}\r\n",
+									"raw": "{\r\n    \"officeAndAdministrationOnStaffCostsFlatRate\": 10,\r\n    \"travelAndAccommodationOnStaffCostsFlatRate\": 15\r\n}\r\n",
 									"options": {
 										"raw": {
 											"language": "json"
@@ -9382,7 +9382,7 @@
 								"header": [],
 								"body": {
 									"mode": "raw",
-									"raw": "{\r\n    \"officeAndAdministrationOnStaffCostsFlatRateSetup\": 10\r\n}\r\n",
+									"raw": "{\r\n    \"officeAndAdministrationOnStaffCostsFlatRate\": 10\r\n}\r\n",
 									"options": {
 										"raw": {
 											"language": "json"
