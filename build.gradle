@@ -24,3 +24,25 @@ subprojects {
         }
     }
 }
+
+// prevent local compile error
+apply plugin: "org.sonarqube"
+// add rules for sonarqube
+sonarqube {
+    properties {
+        property "sonar.exclusions", "**/*.spec.ts"
+        // exclude frontend files from code coverage
+        property "sonar.coverage.exclusions", "**/*.ts, **/*.html, **/*.scss, **/*.properties"
+
+        property "sonar.issue.ignore.multicriteria", "e1,e2,e3"
+        // ignore rule: readonly was decided to provide no big advantage
+        property "sonar.issue.ignore.multicriteria.e1.ruleKey", "typescript:S2933"
+        property "sonar.issue.ignore.multicriteria.e1.resourceKey", "**/*.ts"
+        // ignore rule: not afraid of long ts lines
+        property "sonar.issue.ignore.multicriteria.e2.ruleKey", "typescript:S103"
+        property "sonar.issue.ignore.multicriteria.e2.resourceKey", "**/*.ts"
+        // ignore rule: empty css files do not matter
+        property "sonar.issue.ignore.multicriteria.e3.ruleKey", "css:S4667"
+        property "sonar.issue.ignore.multicriteria.e3.resourceKey", "**/*.scss"
+    }
+}
