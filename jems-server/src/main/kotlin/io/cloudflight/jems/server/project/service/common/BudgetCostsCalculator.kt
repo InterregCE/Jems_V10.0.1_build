@@ -45,7 +45,12 @@ class BudgetCostsCalculator : BudgetCostsCalculatorService {
         val finalOfficeAndAdministrationCosts =
             calculateOfficeAndAdministrationCosts(
                 budgetOptions?.officeAndAdministrationOnStaffCostsFlatRate,
-                finalStaffCosts
+                budgetOptions?.officeAndAdministrationOnDirectCostsFlatRate,
+                finalStaffCosts,
+                finalTravelCosts,
+                externalCosts,
+                equipmentCosts,
+                infrastructureCosts
             )
 
         val finalOtherCosts =
@@ -88,51 +93,63 @@ class BudgetCostsCalculator : BudgetCostsCalculatorService {
         else
             travelCosts.add(externalCosts).add(equipmentCosts).add(infrastructureCosts).percentage(staffCostsFlatRate)
 
-    private fun calculateTravelCosts(travelAndAccommodationOnStaffCostsFlatRate: Int, staffCostTotal: BigDecimal, ) =
-        staffCostTotal.percentage(travelAndAccommodationOnStaffCostsFlatRate)
+    private fun calculateTravelCosts(travelAndAccommodationOnStaffCostsFlatRate: Int, finalStaffCosts: BigDecimal, ) =
+        finalStaffCosts.percentage(travelAndAccommodationOnStaffCostsFlatRate)
 
     private fun calculateOfficeAndAdministrationCosts(
         officeAndAdministrationOnStaffCostsFlatRate: Int?,
-        staffCostTotal: BigDecimal
+        officeAndAdministrationOnDirectCostsFlatRate: Int?,
+        finalStaffCosts: BigDecimal,
+        finalTravelCosts: BigDecimal,
+        externalCosts: BigDecimal,
+        equipmentCosts: BigDecimal,
+        infrastructureCosts: BigDecimal
     ): BigDecimal =
-        if (officeAndAdministrationOnStaffCostsFlatRate != null)
-            staffCostTotal.percentage(officeAndAdministrationOnStaffCostsFlatRate)
-        else
-            BigDecimal.ZERO
+        when {
+            officeAndAdministrationOnStaffCostsFlatRate != null ->
+                finalStaffCosts.percentage(
+                    officeAndAdministrationOnStaffCostsFlatRate
+                )
+            officeAndAdministrationOnDirectCostsFlatRate != null ->
+                finalStaffCosts
+                    .plus(finalTravelCosts)
+                    .plus(externalCosts)
+                    .plus(equipmentCosts)
+                    .plus(infrastructureCosts)
+                    .percentage(officeAndAdministrationOnDirectCostsFlatRate)
+            else -> BigDecimal.ZERO
+        }
 
     private fun calculateOtherCosts(
         staffCostsFlatRate: Int?,
         otherCostsOnStaffCostsFlatRate: Int?,
-        staffCostTotal: BigDecimal
+        finalStaffCosts: BigDecimal
     ): BigDecimal =
         if (otherCostsOnStaffCostsFlatRate != null) {
             if (staffCostsFlatRate == null)
-                staffCostTotal.percentage(otherCostsOnStaffCostsFlatRate)
+                finalStaffCosts.percentage(otherCostsOnStaffCostsFlatRate)
             else
                 BigDecimal.ZERO
         } else
             BigDecimal.ZERO
-
-
     private fun calculateTotalCosts(
         unitCosts: BigDecimal,
         lumpSumsCosts: BigDecimal,
         externalCosts: BigDecimal,
         equipmentCosts: BigDecimal,
         infrastructureCosts: BigDecimal,
-        travelCosts: BigDecimal,
+        finalTravelCosts: BigDecimal,
+        finalStaffCosts: BigDecimal,
         finalOfficeAndAdministrationCosts: BigDecimal,
-        otherCosts: BigDecimal,
-        staffCosts: BigDecimal
+        finalOtherCosts: BigDecimal
     ) =
-        staffCosts
-            .plus(travelCosts)
+        finalStaffCosts
+            .plus(finalTravelCosts)
+            .plus(finalOfficeAndAdministrationCosts)
+            .plus(finalOtherCosts)
             .plus(externalCosts)
             .plus(equipmentCosts)
             .plus(infrastructureCosts)
             .plus(unitCosts)
             .plus(lumpSumsCosts)
-            .plus(finalOfficeAndAdministrationCosts)
-            .plus(otherCosts)
-
 }

@@ -19,6 +19,7 @@ internal class GetBudgetOptionsTest : UnitTest() {
     private val budgetOptions = ProjectPartnerBudgetOptions(
         partnerId,
         15,
+        23,
         20,
         12,
         10

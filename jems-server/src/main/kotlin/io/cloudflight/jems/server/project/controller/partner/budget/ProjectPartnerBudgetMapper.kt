@@ -7,6 +7,7 @@ import java.math.BigDecimal
 
 fun ProjectPartnerBudgetOptions.toProjectPartnerBudgetOptionsDto() = ProjectPartnerBudgetOptionsDto(
     officeAndAdministrationOnStaffCostsFlatRate = this.officeAndAdministrationOnStaffCostsFlatRate,
+    officeAndAdministrationOnDirectCostsFlatRate = this.officeAndAdministrationOnDirectCostsFlatRate,
     travelAndAccommodationOnStaffCostsFlatRate = travelAndAccommodationOnStaffCostsFlatRate,
     staffCostsFlatRate = this.staffCostsFlatRate,
     otherCostsOnStaffCostsFlatRate = otherCostsOnStaffCostsFlatRate
@@ -15,6 +16,7 @@ fun ProjectPartnerBudgetOptions.toProjectPartnerBudgetOptionsDto() = ProjectPart
 fun ProjectPartnerBudgetOptionsDto.toProjectPartnerBudgetOptions(partnerId: Long) = ProjectPartnerBudgetOptions(
     partnerId = partnerId,
     officeAndAdministrationOnStaffCostsFlatRate = this.officeAndAdministrationOnStaffCostsFlatRate,
+    officeAndAdministrationOnDirectCostsFlatRate = this.officeAndAdministrationOnDirectCostsFlatRate,
     travelAndAccommodationOnStaffCostsFlatRate = travelAndAccommodationOnStaffCostsFlatRate,
     staffCostsFlatRate = this.staffCostsFlatRate,
     otherCostsOnStaffCostsFlatRate = this.otherCostsOnStaffCostsFlatRate

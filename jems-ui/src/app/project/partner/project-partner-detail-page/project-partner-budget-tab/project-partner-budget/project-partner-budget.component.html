@@ -4,7 +4,7 @@
             <div class="my-2">
                 <h5 class="header">{{'project.partner.budget.header' | translate}}</h5>
                 <div *ngIf="!data.isStaffCostFlatRateActive">
-                    <h6 id="staff-2" class="header">{{'project.partner.budget.staff' | translate}}</h6>
+                    <h6 class="header">{{'project.partner.budget.staff' | translate}}</h6>
                     <app-staff-costs-budget-table
                             *ngIf="staff"
                             [staffCostTable]="data.budgetTables.staffCosts"
@@ -15,19 +15,23 @@
                     <h6 id="staffCostsFlatRate"
                         class="header">{{'project.partner.budget.staff.costs.flat.rate.header' | translate}}</h6>
                     <p class="intro-text-small">{{'project.partner.budget.other.costs.flat.rate.description' | translate}}</p>
-                    <app-general-budget-flat-rate-table
-                            [total]="data.staffCostsFlatRateTotal"
-                            [description]="'project.partner.budget.other.costs.flat.rate' | translate"></app-general-budget-flat-rate-table>
+                    <app-budget-flat-rate-table
+                            [total]="data.staffCostsTotal"
+                            [description]="'project.partner.budget.other.costs.flat.rate' | translate"></app-budget-flat-rate-table>
                 </div>
             </div>
 
             <ng-container *ngIf="!data.isOtherFlatRateBasedOnStaffCostActive">
-                <div class="my-2" *ngIf="data.isOfficeAdministrationFlatRateActive">
+                <div class="my-2" *ngIf="data.isOfficeOnStaffFlatRateActive || data.isOfficeOnDirectFlatRateActive">
                     <h6 class="header">{{'project.partner.budget.office.and.admin.header' | translate}}</h6>
-                    <p class="intro-text-small">{{'project.partner.budget.office.and.admin.description' | translate}}</p>
-                    <app-general-budget-flat-rate-table
+                    <p class="intro-text-small">
+                        {{data.isOfficeOnStaffFlatRateActive ?
+                            ('project.partner.budget.office.and.admin.on.staff.description' | translate) :
+                            ('project.partner.budget.office.and.admin.on.direct.description' | translate)}}
+                    </p>
+                    <app-budget-flat-rate-table
                             [total]="data.officeAndAdministrationFlatRateTotal"
-                            [description]="'project.partner.budget.office.and.admin.flat.rate' | translate"></app-general-budget-flat-rate-table>
+                            [description]="'project.partner.budget.office.and.admin.flat.rate' | translate"></app-budget-flat-rate-table>
                 </div>
                 <div class="my-2">
                     <ng-container *ngIf="!data.isTravelAndAccommodationFlatRateActive">
@@ -42,9 +46,9 @@
                     <ng-container *ngIf="data.isTravelAndAccommodationFlatRateActive">
                         <h6 class="header">{{'project.partner.budget.travel.and.accommodation.flat.rate.header' | translate}}</h6>
                         <p class="intro-text-small">{{'project.partner.budget.travel.and.accommodation.flat.rate.description' | translate}}</p>
-                        <app-general-budget-flat-rate-table
-                                [total]="data.travelAndAccommodationFlatRateTotal"
-                                [description]="'project.partner.budget.travel.and.accommodation.flat.rate.header' | translate"></app-general-budget-flat-rate-table>
+                        <app-budget-flat-rate-table
+                                [total]="data.travelAndAccommodationTotal"
+                                [description]="'project.partner.budget.travel.and.accommodation.flat.rate.header' | translate"></app-budget-flat-rate-table>
                     </ng-container>
                 </div>
                 <div class="my-2">
@@ -95,9 +99,9 @@
             <div class="my-2" *ngIf="data.isOtherFlatRateBasedOnStaffCostActive">
                 <h6 class="header">{{'project.partner.budget.other.costs.flat.rate.header' | translate}}</h6>
                 <p class="intro-text-small">{{'project.partner.budget.other.costs.flat.rate.description' | translate}}</p>
-                <app-general-budget-flat-rate-table
+                <app-budget-flat-rate-table
                         [total]="data.otherCostsFlatRateTotal"
-                        [description]="'project.partner.budget.staff.costs.flat.rate' | translate"></app-general-budget-flat-rate-table>
+                        [description]="'project.partner.budget.staff.costs.flat.rate' | translate"></app-budget-flat-rate-table>
             </div>
         </form>
     </app-form>

@@ -8,9 +8,9 @@ import javax.validation.constraints.NotNull
 data class ProjectPartnerBudgetOptionsEntity(
 
     @Id
-    @field:NotNull
     val partnerId: Long,
     var officeAndAdministrationOnStaffCostsFlatRate: Int? = null,
+    var officeAndAdministrationOnDirectCostsFlatRate: Int? = null,
     var travelAndAccommodationOnStaffCostsFlatRate: Int? = null,
     var staffCostsFlatRate: Int? = null,
     var otherCostsOnStaffCostsFlatRate: Int? = null

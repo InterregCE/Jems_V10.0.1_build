@@ -6,6 +6,7 @@ import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerBu
 fun ProjectPartnerBudgetOptions.toProjectPartnerBudgetOptionsEntity() = ProjectPartnerBudgetOptionsEntity(
     partnerId = partnerId,
     officeAndAdministrationOnStaffCostsFlatRate = officeAndAdministrationOnStaffCostsFlatRate,
+    officeAndAdministrationOnDirectCostsFlatRate = officeAndAdministrationOnDirectCostsFlatRate,
     travelAndAccommodationOnStaffCostsFlatRate = travelAndAccommodationOnStaffCostsFlatRate,
     staffCostsFlatRate = staffCostsFlatRate,
     otherCostsOnStaffCostsFlatRate = otherCostsOnStaffCostsFlatRate
@@ -14,6 +15,7 @@ fun ProjectPartnerBudgetOptions.toProjectPartnerBudgetOptionsEntity() = ProjectP
 fun ProjectPartnerBudgetOptionsEntity.toProjectPartnerBudgetOptions() = ProjectPartnerBudgetOptions(
     partnerId = partnerId,
     officeAndAdministrationOnStaffCostsFlatRate = officeAndAdministrationOnStaffCostsFlatRate,
+    officeAndAdministrationOnDirectCostsFlatRate = officeAndAdministrationOnDirectCostsFlatRate,
     travelAndAccommodationOnStaffCostsFlatRate = travelAndAccommodationOnStaffCostsFlatRate,
     staffCostsFlatRate = staffCostsFlatRate,
     otherCostsOnStaffCostsFlatRate = otherCostsOnStaffCostsFlatRate

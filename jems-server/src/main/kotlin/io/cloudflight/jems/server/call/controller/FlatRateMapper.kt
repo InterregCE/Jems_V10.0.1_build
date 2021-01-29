@@ -14,8 +14,8 @@ import java.util.stream.Stream
 fun FlatRateSetupDTO.toModel(): Set<ProjectCallFlatRate> =
     Stream.of(
         Pair(STAFF_COSTS, staffCostFlatRateSetup),
-        Pair(OFFICE_AND_ADMINISTRATION_ON_STAFF_COSTS, officeAndAdministrationOnStaffCostsFlatRate),
-        Pair(OFFICE_AND_ADMINISTRATION_ON_OTHER_COSTS, officeAndAdministrationOnOtherCostsFlatRateSetup),
+        Pair(OFFICE_AND_ADMINISTRATION_ON_STAFF_COSTS, officeAndAdministrationOnStaffCostsFlatRateSetup),
+        Pair(OFFICE_AND_ADMINISTRATION_ON_OTHER_COSTS, officeAndAdministrationOnDirectCostsFlatRateSetup),
         Pair(TRAVEL_AND_ACCOMMODATION_ON_STAFF_COSTS, travelAndAccommodationOnStaffCostsFlatRateSetup),
         Pair(OTHER_COSTS_ON_STAFF_COSTS, otherCostsOnStaffCostsFlatRateSetup),
     )
@@ -38,8 +38,8 @@ fun Set<ProjectCallFlatRate>.toDto(): FlatRateSetupDTO {
     val groupedByType = associateBy { it.type }
     return FlatRateSetupDTO(
         staffCostFlatRateSetup = groupedByType[STAFF_COSTS]?.toDto(),
-        officeAndAdministrationOnStaffCostsFlatRate = groupedByType[OFFICE_AND_ADMINISTRATION_ON_STAFF_COSTS]?.toDto(),
-        officeAndAdministrationOnOtherCostsFlatRateSetup = groupedByType[OFFICE_AND_ADMINISTRATION_ON_OTHER_COSTS]?.toDto(),
+        officeAndAdministrationOnStaffCostsFlatRateSetup = groupedByType[OFFICE_AND_ADMINISTRATION_ON_STAFF_COSTS]?.toDto(),
+        officeAndAdministrationOnDirectCostsFlatRateSetup = groupedByType[OFFICE_AND_ADMINISTRATION_ON_OTHER_COSTS]?.toDto(),
         travelAndAccommodationOnStaffCostsFlatRateSetup = groupedByType[TRAVEL_AND_ACCOMMODATION_ON_STAFF_COSTS]?.toDto(),
         otherCostsOnStaffCostsFlatRateSetup = groupedByType[OTHER_COSTS_ON_STAFF_COSTS]?.toDto(),
     )

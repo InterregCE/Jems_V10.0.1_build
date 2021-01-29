@@ -1,4 +1,4 @@
-import {ChangeDetectionStrategy, Component, Input, OnChanges, OnInit, SimpleChanges} from '@angular/core';
+import {ChangeDetectionStrategy, Component, Input, OnChanges, OnDestroy, OnInit, SimpleChanges} from '@angular/core';
 import {
   AbstractControl,
   ControlContainer,
@@ -31,7 +31,7 @@ import {WidthConfig} from '../../../../../../common/directives/table-config/Widt
   changeDetection: ChangeDetectionStrategy.OnPush
 
 })
-export class StaffCostsBudgetTableComponent implements OnInit, OnChanges {
+export class StaffCostsBudgetTableComponent implements OnInit, OnChanges, OnDestroy {
   Alert = Alert;
   constants = ProjectPartnerBudgetConstants;
   staffCostType = StaffCostTypeEnum;
@@ -92,6 +92,10 @@ export class StaffCostsBudgetTableComponent implements OnInit, OnChanges {
     if (changes.staffCostTable || changes.editable) {
       this.resetStaffFormGroup(this.staffCostTable);
     }
+  }
+
+  ngOnDestroy(): void {
+    this.items.clear();
   }
 
   removeItem(index: number): void {

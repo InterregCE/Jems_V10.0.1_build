@@ -2,8 +2,8 @@ package io.cloudflight.jems.server.project.service.partner.budget.update_budget_
 
 import io.cloudflight.jems.server.call.service.flatrate.CallFlatRateSetupPersistence
 import io.cloudflight.jems.server.project.authorization.CanUpdateProjectPartner
-import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerBudgetOptions
 import io.cloudflight.jems.server.project.service.partner.budget.ProjectPartnerBudgetOptionsPersistence
+import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerBudgetOptions
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 
@@ -16,6 +16,9 @@ class UpdateBudgetOptions(
     @Transactional
     @CanUpdateProjectPartner
     override fun updateBudgetOptions(partnerId: Long, options: ProjectPartnerBudgetOptions) {
+
+        validateFlatRatesCombinations(options)
+
         val callFlatRateSetup = callFlatRateSetupPersistence.getProjectCallFlatRateByPartnerId(partnerId)
 
         validateFlatRates(
@@ -35,6 +38,7 @@ class UpdateBudgetOptions(
         }
         if (options.staffCostsFlatRate != null)
             persistence.deleteStaffCosts(partnerId)
+
         if (options.travelAndAccommodationOnStaffCostsFlatRate != null)
             persistence.deleteTravelAndAccommodationCosts(partnerId)
 
