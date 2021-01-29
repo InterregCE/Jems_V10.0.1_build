@@ -166,6 +166,16 @@ export class TravelAndAccommodationCostsBudgetTableComponent implements OnInit, 
     return this.items.at(rowIndex).get(this.constants.FORM_CONTROL_NAMES.budgetPeriods) as FormArray;
   }
 
+  periodTotal(periodIndex: number): number {
+    let total = 0;
+    this.items.controls.forEach(control => {
+      const periods = control.get(this.constants.FORM_CONTROL_NAMES.budgetPeriods) as FormArray;
+      const periodAmount = periods?.at(periodIndex - 1)?.get(this.constants.FORM_CONTROL_NAMES.amount)?.value;
+      total = NumberService.sum([periodAmount || 0, total]);
+    });
+    return total;
+  }
+
   private addPeriods(rowIndex: number, budgetPeriods?: BudgetPeriodDTO[]): void {
     if (!this.projectPeriods?.length) {
       return;
