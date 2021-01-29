@@ -111,6 +111,7 @@ export class ProjectWorkPackageActivitiesTabComponent implements OnInit {
       activity.deliverables?.forEach(deliverable => this.addDeliverable(index, deliverable));
     });
     this.formService.resetEditable();
+    this.formService.setDirty(false);
   }
 
   private addActivity(existing?: WorkPackageActivityDTO): void {
