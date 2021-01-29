@@ -1,11 +1,12 @@
 import {ChangeDetectionStrategy, ChangeDetectorRef, Component, EventEmitter, Input, Output} from '@angular/core';
-import {InputUserUpdate, OutputUserRole, OutputUserWithRole} from '@cat/api';
-import {FormBuilder, FormGroup, Validators} from '@angular/forms';
-import {Permission} from 'src/app/security/permissions/permission';
-import {Forms} from '../../../../../common/utils/forms';
 import {MatDialog} from '@angular/material/dialog';
+import {FormBuilder, FormGroup, Validators} from '@angular/forms';
 import {take, takeUntil} from 'rxjs/operators';
+
+import {InputUserUpdate, OutputUserRole, OutputUserWithRole} from '@cat/api';
 import {ViewEditForm} from '@common/components/forms/view-edit-form';
+import {Permission} from '../../../../../security/permissions/permission';
+import {Forms} from '../../../../../common/utils/forms';
 import {Log} from '../../../../../common/utils/log';
 
 @Component({
@@ -131,4 +132,5 @@ export class UserEditComponent extends ViewEditForm {
   getUserRole(): OutputUserRole | undefined {
     return this.userRoles.find(role => role.id === this.user.userRole.id);
   }
+
 }

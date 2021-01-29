@@ -13,7 +13,7 @@ import {MatDialog} from '@angular/material/dialog';
 import {filter, take, takeUntil} from 'rxjs/operators';
 import {FormState} from '@common/components/forms/form-state';
 import {Forms} from '../../../../common/utils/forms';
-import {Permission} from 'src/app/security/permissions/permission';
+import {Permission} from '../../../../security/permissions/permission';
 import {
   ProgrammeLumpSumDTO
 } from '@cat/api';
@@ -199,4 +199,5 @@ export class ProgrammeLumpSumDetailComponent extends ViewEditForm implements OnI
       this.lumpSumForm.controls.categories.setErrors(null);
     }
   }
+
 }

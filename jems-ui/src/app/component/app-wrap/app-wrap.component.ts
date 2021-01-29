@@ -1,6 +1,6 @@
 import {ChangeDetectionStrategy, Component} from '@angular/core';
 import {SideNavService} from '@common/components/side-nav/side-nav.service';
-import {SecurityService} from 'src/app/security/security.service';
+import {SecurityService} from '../../security/security.service';
 
 @Component({
   selector: 'app-wrap',

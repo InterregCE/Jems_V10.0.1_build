@@ -12,6 +12,8 @@ export class FormFieldWidthDirective implements OnInit {
 
   ngOnInit(): void {
     this.el.nativeElement.classList.add(`app-form-field-width-${this.formFieldWidth}`);
-    if (this.extendError) { this.el.nativeElement.classList.add('extend-error'); }
+    if (this.extendError) {
+      this.el.nativeElement.classList.add('extend-error');
+    }
   }
 }

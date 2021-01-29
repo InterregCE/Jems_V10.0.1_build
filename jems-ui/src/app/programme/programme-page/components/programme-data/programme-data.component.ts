@@ -108,7 +108,6 @@ export class ProgrammeDataComponent extends ViewEditForm implements OnInit {
   }
 
   enterViewMode(): void {
-    super.enterViewMode();
     const controls = this.programmeForm.controls;
     controls.cci.setValue(this.programme.cci);
     controls.title.setValue(this.getSizedValue(this.programme.title));
@@ -124,7 +123,6 @@ export class ProgrammeDataComponent extends ViewEditForm implements OnInit {
   }
 
   protected enterEditMode(): void {
-    super.enterEditMode();
     const controls = this.programmeForm.controls;
     controls.title.setValue(this.programme.title);
     controls.version.setValue(this.programme.version);

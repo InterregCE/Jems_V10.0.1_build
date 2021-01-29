@@ -61,9 +61,11 @@ export abstract class ViewEditForm extends AbstractForm implements OnInit {
   }
 
   protected enterViewMode(): void {
+    // This is intentional
   }
 
   protected enterEditMode(): void {
+    // This is intentional
   }
 
 }

@@ -4,7 +4,7 @@ import {Observable} from 'rxjs';
 import {map, tap} from 'rxjs/operators';
 import {Log} from '../../../../common/utils/log';
 import {ProgrammePageSidenavService} from '../../services/programme-page-sidenav.service';
-import { Permission } from 'src/app/security/permissions/permission';
+import { Permission } from '../../../../security/permissions/permission';
 import {LumpSumsStore} from '../../services/lump-sums-store.service';
 import {ProgrammeCostOptionService, ProgrammeLumpSumListDTO, ProgrammeUnitCostListDTO} from '@cat/api';
 import {UnitCostStore} from '../../services/unit-cost-store.service';
