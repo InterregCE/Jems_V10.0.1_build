@@ -3,7 +3,7 @@ package io.cloudflight.jems.server.call.entity
 import io.cloudflight.jems.api.call.dto.CallStatus
 import io.cloudflight.jems.server.programme.entity.ProgrammeFundEntity
 import io.cloudflight.jems.server.user.entity.User
-import io.cloudflight.jems.server.programme.entity.ProgrammePriorityPolicy
+import io.cloudflight.jems.server.programme.entity.ProgrammeSpecificObjectiveEntity
 import io.cloudflight.jems.server.programme.entity.Strategy
 import io.cloudflight.jems.server.programme.entity.costoption.ProgrammeLumpSumEntity
 import io.cloudflight.jems.server.programme.entity.costoption.ProgrammeUnitCostEntity
@@ -41,11 +41,11 @@ data class CallEntity(
 
     @OneToMany
     @JoinTable(
-        name = "project_call_priority_policy",
+        name = "project_call_priority_specific_objective",
         joinColumns = [JoinColumn(name = "call_id")],
-        inverseJoinColumns = [JoinColumn(name = "programme_priority_policy")]
+        inverseJoinColumns = [JoinColumn(name = "programme_specific_objective")]
     )
-    val priorityPolicies: Set<ProgrammePriorityPolicy>,
+    val prioritySpecificObjectives: Set<ProgrammeSpecificObjectiveEntity>,
 
     @OneToMany
     @JoinTable(

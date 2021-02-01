@@ -1,6 +1,5 @@
 package io.cloudflight.jems.api.programme.dto.priority
 
-import io.cloudflight.jems.api.programme.dto.priority.ProgrammeObjective
 import io.cloudflight.jems.api.programme.dto.priority.ProgrammeObjective.ISO1
 import io.cloudflight.jems.api.programme.dto.priority.ProgrammeObjective.ISO12
 import io.cloudflight.jems.api.programme.dto.priority.ProgrammeObjective.ISO2

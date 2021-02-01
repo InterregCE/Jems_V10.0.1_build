@@ -17,9 +17,9 @@ import io.cloudflight.jems.server.programme.entity.indicator.IndicatorOutput
 import io.cloudflight.jems.server.programme.entity.indicator.IndicatorResult
 import io.cloudflight.jems.server.programme.repository.indicator.IndicatorOutputRepository
 import io.cloudflight.jems.server.programme.repository.indicator.IndicatorResultRepository
-import io.cloudflight.jems.server.programme.entity.ProgrammePriority
-import io.cloudflight.jems.server.programme.entity.ProgrammePriorityPolicy
-import io.cloudflight.jems.server.programme.repository.ProgrammePriorityPolicyRepository
+import io.cloudflight.jems.server.programme.entity.ProgrammePriorityEntity
+import io.cloudflight.jems.server.programme.entity.ProgrammeSpecificObjectiveEntity
+import io.cloudflight.jems.server.programme.repository.priority.ProgrammeSpecificObjectiveRepository
 import io.cloudflight.jems.server.programme.service.indicator.IndicatorService
 import io.cloudflight.jems.server.programme.service.indicator.IndicatorServiceImpl
 import io.cloudflight.jems.server.programme.controller.indicator.toEntity
@@ -45,15 +45,15 @@ import java.util.Optional.of
 class IndicatorServiceTest {
 
     companion object {
-        private val priority = ProgrammePriority(
+        private val priority = ProgrammePriorityEntity(
             id = 1,
             code = "prio_01",
             title = "prio_01 title",
             objective = ProgrammeObjective.PO2,
-            programmePriorityPolicies = emptySet() // not used here
+            specificObjectives = emptySet() // not used here
         )
 
-        private val priorityPolicy = ProgrammePriorityPolicy(
+        private val priorityPolicy = ProgrammeSpecificObjectiveEntity(
             programmeObjectivePolicy = ProgrammeObjectivePolicy.RenewableEnergy,
             code = "RE",
             programmePriority = priority
@@ -105,7 +105,7 @@ class IndicatorServiceTest {
     @MockK
     lateinit var indicatorOutputRepository: IndicatorOutputRepository
     @MockK
-    lateinit var programmePriorityPolicyRepository: ProgrammePriorityPolicyRepository
+    lateinit var programmePriorityPolicyRepository: ProgrammeSpecificObjectiveRepository
     @RelaxedMockK
     lateinit var auditService: AuditService
 

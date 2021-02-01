@@ -74,7 +74,7 @@ internal class ProjectAssociatedOrganizationServiceTest {
         status = CallStatus.DRAFT,
         startDate = ZonedDateTime.now(),
         endDate = ZonedDateTime.now(),
-        priorityPolicies = emptySet(),
+        prioritySpecificObjectives = emptySet(),
         strategies = emptySet(),
         funds = emptySet(),
         lengthOfPeriod = 1

@@ -19,7 +19,7 @@ import io.cloudflight.jems.server.audit.service.AuditService
 import io.cloudflight.jems.server.call.entity.CallEntity
 import io.cloudflight.jems.server.common.exception.I18nValidationException
 import io.cloudflight.jems.server.common.exception.ResourceNotFoundException
-import io.cloudflight.jems.server.programme.entity.ProgrammePriorityPolicy
+import io.cloudflight.jems.server.programme.entity.ProgrammeSpecificObjectiveEntity
 import io.cloudflight.jems.server.project.entity.ProjectEntity
 import io.cloudflight.jems.server.project.entity.ProjectEligibilityAssessment
 import io.cloudflight.jems.server.project.entity.ProjectStatus
@@ -99,7 +99,7 @@ internal class ProjectStatusServiceTest {
         id = 5,
         creator = user,
         name = "call",
-        priorityPolicies = setOf(ProgrammePriorityPolicy(DisadvantagedGroups, "DG")),
+        prioritySpecificObjectives = setOf(ProgrammeSpecificObjectiveEntity(DisadvantagedGroups, "DG")),
         strategies = setOf(Strategy(ProgrammeStrategy.SeaBasinStrategyArcticOcean, true)),
         funds = emptySet(),
         startDate = ZonedDateTime.now().minusDays(2),

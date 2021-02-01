@@ -16,7 +16,7 @@ import io.cloudflight.jems.server.call.entity.CallEntity
 import io.cloudflight.jems.server.call.repository.flatrate.CallRepository
 import io.cloudflight.jems.server.common.exception.I18nValidationException
 import io.cloudflight.jems.server.common.exception.ResourceNotFoundException
-import io.cloudflight.jems.server.programme.entity.ProgrammePriorityPolicy
+import io.cloudflight.jems.server.programme.entity.ProgrammeSpecificObjectiveEntity
 import io.cloudflight.jems.server.project.dto.ProjectApplicantAndStatus
 import io.cloudflight.jems.server.project.entity.ProjectPeriodEntity
 import io.cloudflight.jems.server.project.entity.ProjectPeriodId
@@ -135,7 +135,7 @@ class ProjectServiceImpl(
             project.copy(
                 acronym = projectData.acronym!!,
                 projectData = projectData.toEntity(project.id),
-                priorityPolicy = policyToEntity(projectData.specificObjective, project.call.priorityPolicies),
+                priorityPolicy = policyToEntity(projectData.specificObjective, project.call.prioritySpecificObjectives),
                 periods = periods
             )
         ).toOutputProject()
@@ -168,13 +168,13 @@ class ProjectServiceImpl(
      */
     private fun policyToEntity(
             policy: ProgrammeObjectivePolicy?,
-            availablePoliciesForCall: Set<ProgrammePriorityPolicy>
-    ): ProgrammePriorityPolicy? {
+            availablePoliciesForCall: Set<ProgrammeSpecificObjectiveEntity>
+    ): ProgrammeSpecificObjectiveEntity? {
         if (policy == null)
             return null
         return availablePoliciesForCall
             .find { it.programmeObjectivePolicy == policy }
-            ?: throw ResourceNotFoundException("programme_priority_policy")
+            ?: throw ResourceNotFoundException("programmeSpecificObjective")
     }
 
 }

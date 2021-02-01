@@ -8,7 +8,7 @@
     </button>
     <div *ngIf="priorities$ | async as priorities" class="priority-items">
         <app-programme-priority-items
-                [priorities]="priorities.content">
+                [priorities]="priorities">
         </app-programme-priority-items>
     </div>
 </div>

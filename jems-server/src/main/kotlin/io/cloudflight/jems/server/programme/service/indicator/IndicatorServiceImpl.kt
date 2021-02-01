@@ -11,8 +11,8 @@ import io.cloudflight.jems.api.programme.dto.priority.ProgrammeObjectivePolicy
 import io.cloudflight.jems.server.common.exception.ResourceNotFoundException
 import io.cloudflight.jems.server.programme.repository.indicator.IndicatorOutputRepository
 import io.cloudflight.jems.server.programme.repository.indicator.IndicatorResultRepository
-import io.cloudflight.jems.server.programme.entity.ProgrammePriorityPolicy
-import io.cloudflight.jems.server.programme.repository.ProgrammePriorityPolicyRepository
+import io.cloudflight.jems.server.programme.entity.ProgrammeSpecificObjectiveEntity
+import io.cloudflight.jems.server.programme.repository.priority.ProgrammeSpecificObjectiveRepository
 import io.cloudflight.jems.server.audit.service.AuditService
 import io.cloudflight.jems.server.common.exception.I18nFieldError
 import io.cloudflight.jems.server.common.exception.I18nValidationException
@@ -29,7 +29,7 @@ import org.springframework.transaction.annotation.Transactional
 class IndicatorServiceImpl(
     private val indicatorResultRepository: IndicatorResultRepository,
     private val indicatorOutputRepository: IndicatorOutputRepository,
-    private val programmePriorityPolicyRepository: ProgrammePriorityPolicyRepository,
+    private val programmePriorityPolicyRepository: ProgrammeSpecificObjectiveRepository,
     private val auditService: AuditService
 ) : IndicatorService {
 
@@ -154,11 +154,11 @@ class IndicatorServiceImpl(
     }
     //endregion
 
-    private fun getProgrammePriorityEntity(programmeObjectivePolicy: ProgrammeObjectivePolicy?): ProgrammePriorityPolicy? {
-        var programmePriorityPolicy: ProgrammePriorityPolicy? = null
+    private fun getProgrammePriorityEntity(programmeObjectivePolicy: ProgrammeObjectivePolicy?): ProgrammeSpecificObjectiveEntity? {
+        var programmePriorityPolicy: ProgrammeSpecificObjectiveEntity? = null
         if (programmeObjectivePolicy != null)
             programmePriorityPolicy = programmePriorityPolicyRepository.findById(programmeObjectivePolicy)
-                .orElseThrow { ResourceNotFoundException("programme_priority_policy") }
+                .orElseThrow { ResourceNotFoundException("programmeSpecificObjective") }
         return programmePriorityPolicy
     }
 

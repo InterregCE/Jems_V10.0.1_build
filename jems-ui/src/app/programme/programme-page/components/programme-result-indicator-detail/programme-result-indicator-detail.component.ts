@@ -18,7 +18,7 @@ import {
   InputIndicatorResultCreate,
   InputIndicatorResultUpdate,
   OutputIndicatorResult,
-  OutputProgrammePriority
+  ProgrammePriorityDTO
 } from '@cat/api';
 import {Permission} from '../../../../security/permissions/permission';
 import {ProgrammeResultIndicatorConstants} from './constants/programme-result-indicator-constants';
@@ -37,7 +37,7 @@ export class ProgrammeResultIndicatorDetailComponent extends ViewEditForm implem
   @Input()
   resultIndicator: OutputIndicatorResult;
   @Input()
-  priorities: Array<OutputProgrammePriority>;
+  priorities: Array<ProgrammePriorityDTO>;
   @Input()
   isCreate: boolean;
   @Output()

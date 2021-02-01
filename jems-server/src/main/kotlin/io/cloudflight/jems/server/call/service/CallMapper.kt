@@ -11,7 +11,7 @@ import io.cloudflight.jems.server.call.repository.flatrate.toProjectCallFlatRate
 import io.cloudflight.jems.server.programme.controller.costoption.toDto
 import io.cloudflight.jems.server.programme.entity.ProgrammeFundEntity
 import io.cloudflight.jems.server.user.entity.User
-import io.cloudflight.jems.server.programme.entity.ProgrammePriorityPolicy
+import io.cloudflight.jems.server.programme.entity.ProgrammeSpecificObjectiveEntity
 import io.cloudflight.jems.server.programme.service.toOutputProgrammeFund
 import io.cloudflight.jems.server.programme.service.toOutputProgrammePriorityPolicy
 import io.cloudflight.jems.server.programme.entity.Strategy
@@ -23,13 +23,13 @@ import io.cloudflight.jems.server.programme.repository.costoption.toProgrammeUni
  */
 fun InputCallCreate.toEntity(
     creator: User,
-    priorityPolicies: Set<ProgrammePriorityPolicy>,
+    priorityPolicies: Set<ProgrammeSpecificObjectiveEntity>,
     strategies: Set<Strategy>,
     funds: Set<ProgrammeFundEntity>
 ) = CallEntity(
     creator = creator,
     name = name!!,
-    priorityPolicies = priorityPolicies,
+    prioritySpecificObjectives = priorityPolicies,
     strategies = strategies,
     funds = funds,
     status = CallStatus.DRAFT,
@@ -42,7 +42,7 @@ fun InputCallCreate.toEntity(
 fun CallEntity.toOutputCall() = OutputCall(
     id = id,
     name = name,
-    priorityPolicies = priorityPolicies.map { it.toOutputProgrammePriorityPolicy() },
+    priorityPolicies = prioritySpecificObjectives.map { it.toOutputProgrammePriorityPolicy() },
     strategies = strategies.map { it.strategy },
     funds = funds.map { it.toOutputProgrammeFund() },
     status = status,

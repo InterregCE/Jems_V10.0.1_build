@@ -286,21 +286,21 @@
 							"listen": "test",
 							"script": {
 								"exec": [
-									"pm.test('we can retrieve programme priorities', function() {\r",
+									"pm.test('we can retrieve priorities and specific objectives', function() {\r",
 									"    pm.response.to.have.status(200);\r",
 									"});\r",
 									"\r",
 									"pm.test('we have programme priority or we need to create one', function() {\r",
 									"    const response = pm.response.json();\r",
-									"    pm.expect(response).to.have.property('totalElements');\r",
-									"    if (response.totalElements > 0) {\r",
-									"        const policies = response.content[0].programmePriorityPolicies;\r",
-									"        if (policies.length) {\r",
-									"            const policy = policies[0].programmeObjectivePolicy\r",
-									"            console.log('There is already a policy ' + policy + ', which we will use for calls during this test');\r",
+									"    pm.expect(response).to.be.an('array');\r",
+									"    if (response.length > 0) {\r",
+									"        const specificObjectives = response[0].specificObjectives;\r",
+									"        if (specificObjectives.length) {\r",
+									"            const policy = specificObjectives[0].programmeObjectivePolicy\r",
+									"            console.log('There is already specific objective ' + policy + ', which we will use for calls during this test');\r",
 									"            pm.environment.set('programmePriorityPolicy', policy);\r",
 									"        } else {\r",
-									"            console.log('There is already a programme priority, but no policy. We have to create one.');\r",
+									"            console.log('There is already a programme priority, but no specific objective. We have to create one.');\r",
 									"            pm.environment.set('programmePriorityPolicy', null);\r",
 									"        }\r",
 									"    } else {\r",
@@ -318,13 +318,13 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "{{url}}/api/programmepriority",
+							"raw": "{{url}}/api/programmePriority",
 							"host": [
 								"{{url}}"
 							],
 							"path": [
 								"api",
-								"programmepriority"
+								"programmePriority"
 							]
 						}
 					},
@@ -346,7 +346,7 @@
 									"pm.variables.set('programmeCode', programmeCode)\r",
 									"\r",
 									"if (pm.environment.get('programmePriorityPolicy') == null) {\r",
-									"    console.log('There is no any programme priority policy we can use, so we need to create one.');\r",
+									"    console.log('There is no any programme priority specific objective we can use, so we need to create one.');\r",
 									"    pm.variables.set(\r",
 									"        'programmePriorityPolicies',\r",
 									"        JSON.stringify([{\r",
@@ -355,7 +355,7 @@
 									"        }])\r",
 									"    );\r",
 									"} else {\r",
-									"    console.log('There is already a programme priority with policy, so we will use that one.');\r",
+									"    console.log('There is already a programme priority with specific objective, so we will use that one.');\r",
 									"    pm.variables.set('programmePriorityPolicies', null);\r",
 									"}\r",
 									""
@@ -391,7 +391,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"code\": \"{{programmeCode}}\",\r\n    \"title\": \"API test Programme Priority {{programmeCode}}\",\r\n    \"objective\": \"PO1\",\r\n    \"programmePriorityPolicies\": {{programmePriorityPolicies}}\r\n}\r\n",
+							"raw": "{\r\n    \"code\": \"{{programmeCode}}\",\r\n    \"title\": \"API test Programme Priority {{programmeCode}}\",\r\n    \"objective\": \"PO1\",\r\n    \"specificObjectives\": {{programmePriorityPolicies}}\r\n}\r\n",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -399,13 +399,13 @@
 							}
 						},
 						"url": {
-							"raw": "{{url}}/api/programmepriority",
+							"raw": "{{url}}/api/programmePriority",
 							"host": [
 								"{{url}}"
 							],
 							"path": [
 								"api",
-								"programmepriority"
+								"programmePriority"
 							]
 						}
 					},

@@ -1,5 +1,5 @@
 import {ChangeDetectionStrategy, Component, Input} from '@angular/core';
-import {OutputProgrammePriority} from '@cat/api';
+import {ProgrammePriorityDTO} from '@cat/api';
 
 @Component({
   selector: 'app-programme-priority-items',
@@ -9,5 +9,5 @@ import {OutputProgrammePriority} from '@cat/api';
 })
 export class ProgrammePriorityItemsComponent {
   @Input()
-  priorities: Array<OutputProgrammePriority>;
+  priorities: Array<ProgrammePriorityDTO>;
 }

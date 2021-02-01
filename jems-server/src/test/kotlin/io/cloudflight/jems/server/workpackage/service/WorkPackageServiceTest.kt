@@ -63,7 +63,7 @@ class WorkPackageServiceTest {
         id = 1,
         creator = account,
         name = "Test call name",
-        priorityPolicies = emptySet(),
+        prioritySpecificObjectives = emptySet(),
         strategies = emptySet(),
         funds = emptySet(),
         startDate = ZonedDateTime.now(),

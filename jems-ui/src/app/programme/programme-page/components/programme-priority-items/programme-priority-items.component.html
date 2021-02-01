@@ -3,7 +3,7 @@
         {{priority.code}} - {{priority.title}}
     </p>
     <ul>
-        <li *ngFor="let policy of priority.programmePriorityPolicies">
+        <li *ngFor="let policy of priority.specificObjectives">
             {{policy.code}} -  {{'programme.policy.' + policy.programmeObjectivePolicy | translate}}
         </li>
     </ul>

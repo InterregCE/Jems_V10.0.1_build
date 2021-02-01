@@ -34,9 +34,8 @@ export class ProgrammeResultIndicatorSubmissionPageComponent extends BaseCompone
       tap(resultIndicatorData => Log.info('Fetched result Indicator data:', this, resultIndicatorData)))
     : of({});
 
-  priorities$ = this.programmePriorityService.get(0, 100, 'code,asc')
+  priorities$ = this.programmePriorityService.get()
     .pipe(
-      map(page => page.content),
       tap(page => Log.info('Fetched the priorities:', this, page)),
     );
 

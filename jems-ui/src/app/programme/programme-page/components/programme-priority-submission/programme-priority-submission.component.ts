@@ -10,7 +10,7 @@ import {
 import {AbstractForm} from '@common/components/forms/abstract-form';
 import {FormBuilder, FormGroup, ValidatorFn, Validators} from '@angular/forms';
 import {MatDialog} from '@angular/material/dialog';
-import {InputProgrammePriorityCreate, InputProgrammePriorityPolicy} from '@cat/api';
+import {ProgrammePriorityDTO, ProgrammeSpecificObjectiveDTO} from '@cat/api';
 import {filter, take, takeUntil} from 'rxjs/operators';
 import {Forms} from '../../../../common/utils/forms';
 
@@ -27,7 +27,7 @@ export class ProgrammePrioritySubmissionComponent extends AbstractForm implement
   @Input()
   objectivesWithPolicies: { [key: string]: string[] };
   @Output()
-  savePriority: EventEmitter<InputProgrammePriorityCreate> = new EventEmitter<InputProgrammePriorityCreate>();
+  savePriority: EventEmitter<ProgrammePriorityDTO> = new EventEmitter<ProgrammePriorityDTO>();
   @Output()
   cancelPriority: EventEmitter<void> = new EventEmitter<void>();
 
@@ -101,19 +101,19 @@ export class ProgrammePrioritySubmissionComponent extends AbstractForm implement
       code: this.priorityForm.controls.priorityCode.value,
       title: this.priorityForm.controls.priorityTitle.value,
       objective: this.currentObjective,
-      programmePriorityPolicies: this.buildPolicyList()
-    } as InputProgrammePriorityCreate;
+      specificObjectives: this.buildPolicyList()
+    } as ProgrammePriorityDTO;
     this.savePriority.emit(priority);
   }
 
-  buildPolicyList(): InputProgrammePriorityPolicy[] {
-    const currentlySelected: InputProgrammePriorityPolicy[] = [];
+  buildPolicyList(): ProgrammeSpecificObjectiveDTO[] {
+    const currentlySelected: ProgrammeSpecificObjectiveDTO[] = [];
     this.checked.forEach((value, key) => {
       if (value) {
         currentlySelected.push({
           code: this.policyForm.controls[key].value,
           programmeObjectivePolicy: key,
-        } as InputProgrammePriorityPolicy);
+        } as ProgrammeSpecificObjectiveDTO);
       }
     });
     return currentlySelected;

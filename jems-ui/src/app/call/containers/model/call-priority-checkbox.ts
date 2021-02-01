@@ -1,4 +1,4 @@
-import {OutputProgrammePriority, OutputProgrammePriorityPolicySimple} from '@cat/api';
+import {ProgrammePriorityDTO, OutputProgrammePriorityPolicySimple} from '@cat/api';
 
 export class CallPriorityCheckbox {
   name: string;
@@ -6,10 +6,10 @@ export class CallPriorityCheckbox {
   children: CallPriorityCheckbox[] = [];
   policy: OutputProgrammePriorityPolicySimple.ProgrammeObjectivePolicyEnum;
 
-  static fromPriority(from: OutputProgrammePriority): CallPriorityCheckbox {
+  static fromPriority(from: ProgrammePriorityDTO): CallPriorityCheckbox {
     const checkbox = new CallPriorityCheckbox();
     checkbox.name = from.code + ' ' + from.title;
-    checkbox.children = from.programmePriorityPolicies.map(policy => CallPriorityCheckbox.fromPriorityPolicy(policy));
+    checkbox.children = from.specificObjectives.map(policy => CallPriorityCheckbox.fromPriorityPolicy(policy));
     return checkbox;
   }
 

@@ -30,10 +30,9 @@ export class CallConfigurationComponent extends BaseComponent {
   callId = this.activatedRoute?.snapshot?.params?.callId;
 
   private allPriorities$ = this.programmePriorityService
-    .get(Tables.DEFAULT_INITIAL_PAGE_INDEX, 100, 'code,asc')
+    .get()
     .pipe(
-      tap(page => Log.info('Fetched the priorities:', this, page.content)),
-      map(page => page.content),
+      tap(priorities => Log.info('Fetched the priorities:', this, priorities)),
       map(priorities => priorities.map(priority => CallPriorityCheckbox.fromPriority(priority)))
     );
 
