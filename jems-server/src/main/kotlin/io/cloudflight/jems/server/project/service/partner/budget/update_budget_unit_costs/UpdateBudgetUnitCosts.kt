@@ -53,7 +53,7 @@ class UpdateBudgetUnitCosts(
     }
 
     private fun throwIfOtherCostFlatRateIsSet(budgetOptions: ProjectPartnerBudgetOptions?) {
-        if (budgetOptions?.staffCostsFlatRate !== null)
+        if (budgetOptions?.otherCostsOnStaffCostsFlatRate !== null)
             throw I18nValidationException(i18nKey = "project.partner.budget.not.allowed.because.of.otherCostsOnStaffCostsFlatRate")
     }
 

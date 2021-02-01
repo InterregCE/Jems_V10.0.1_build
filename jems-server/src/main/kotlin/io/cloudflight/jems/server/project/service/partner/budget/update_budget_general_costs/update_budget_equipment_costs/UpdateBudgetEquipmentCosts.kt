@@ -3,12 +3,10 @@ package io.cloudflight.jems.server.project.service.partner.budget.update_budget_
 import io.cloudflight.jems.server.project.authorization.CanUpdateProjectPartner
 import io.cloudflight.jems.server.project.service.ProjectPersistence
 import io.cloudflight.jems.server.project.service.partner.budget.BudgetCostValidator
-import io.cloudflight.jems.server.project.service.partner.budget.ProjectPartnerBudgetCostsPersistence
 import io.cloudflight.jems.server.project.service.partner.budget.ProjectPartnerBudgetCostsUpdatePersistence
-import io.cloudflight.jems.server.project.service.partner.budget.truncate
+import io.cloudflight.jems.server.project.service.partner.budget.ProjectPartnerBudgetOptionsPersistence
 import io.cloudflight.jems.server.project.service.partner.budget.update_budget_general_costs.UpdateBudgetGeneralCosts
 import io.cloudflight.jems.server.project.service.partner.model.BudgetGeneralCostEntry
-import io.cloudflight.jems.server.project.service.partner.model.truncateBaseEntryNumbers
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 
@@ -16,8 +14,10 @@ import org.springframework.transaction.annotation.Transactional
 class UpdateBudgetEquipmentCosts(
     private val persistence: ProjectPartnerBudgetCostsUpdatePersistence,
     private val projectPersistence: ProjectPersistence,
+    budgetOptionsPersistence: ProjectPartnerBudgetOptionsPersistence,
     budgetCostValidator: BudgetCostValidator
-) : UpdateBudgetEquipmentCostsInteractor, UpdateBudgetGeneralCosts(projectPersistence,budgetCostValidator) {
+) : UpdateBudgetEquipmentCostsInteractor,
+    UpdateBudgetGeneralCosts(projectPersistence, budgetOptionsPersistence, budgetCostValidator) {
 
     @Transactional
     @CanUpdateProjectPartner

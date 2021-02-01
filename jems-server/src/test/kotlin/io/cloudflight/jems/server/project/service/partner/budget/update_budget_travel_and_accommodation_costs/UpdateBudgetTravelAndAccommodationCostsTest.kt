@@ -147,6 +147,26 @@ internal class UpdateBudgetTravelAndAccommodationCostsTest : UnitTest() {
     }
 
     @Test
+    fun `should throw I18nValidationException when otherCostsOnStaffCostsFlatRate is set in the budget options`() {
+
+        every { budgetCostValidator.validateBaseEntries(budgetTravelCostEntries) } returns Unit
+        every { budgetCostValidator.validatePricePerUnits(budgetTravelCostEntries.map { it.pricePerUnit }) } returns Unit
+        every { budgetOptionsPersistence.getBudgetOptions(partnerId) } returns ProjectPartnerBudgetOptions(
+            partnerId,
+            otherCostsOnStaffCostsFlatRate = 10
+        )
+
+        assertThrows<I18nValidationException> {
+            updateBudgetTravelAndAccommodationCosts.updateBudgetTravelAndAccommodationCosts(partnerId, budgetTravelCostEntries)
+        }
+
+        verify(atLeast = 1) { budgetCostValidator.validateBaseEntries(budgetTravelCostEntries) }
+        verify(atLeast = 1) { budgetCostValidator.validatePricePerUnits(budgetTravelCostEntries.map { it.pricePerUnit }) }
+        verify(atLeast = 1) { budgetOptionsPersistence.getBudgetOptions(partnerId) }
+        confirmVerified(budgetCostValidator, budgetOptionsPersistence)
+    }
+
+    @Test
     fun `should throw I18nValidationException when there is a validation error in budgetPeriods`() {
         val budgetPeriods = budgetTravelCostEntriesWithInvalidPeriods.map { it.budgetPeriods }.flatten().toSet()
         every { budgetCostValidator.validateBaseEntries(budgetTravelCostEntriesWithInvalidPeriods) } returns Unit

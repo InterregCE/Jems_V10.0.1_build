@@ -31,7 +31,7 @@ class UpdateBudgetTravelAndAccommodationCosts(
         budgetCostValidator.validateBaseEntries(travelCosts)
         budgetCostValidator.validatePricePerUnits(travelCosts.map { it.pricePerUnit })
 
-        throwIfTravelCostFlatRateIsSet(optionsPersistence.getBudgetOptions(partnerId))
+        throwIfTravelOrOtherCostFlatRateAreSet(optionsPersistence.getBudgetOptions(partnerId))
 
         val projectId = projectPersistence.getProjectIdForPartner(partnerId)
 
@@ -55,9 +55,11 @@ class UpdateBudgetTravelAndAccommodationCosts(
             } }.toSet())
     }
 
-    private fun throwIfTravelCostFlatRateIsSet(budgetOptions: ProjectPartnerBudgetOptions?) {
+    private fun throwIfTravelOrOtherCostFlatRateAreSet(budgetOptions: ProjectPartnerBudgetOptions?) {
         if (budgetOptions?.travelAndAccommodationOnStaffCostsFlatRate !== null)
             throw I18nValidationException(i18nKey = "project.partner.budget.not.allowed.because.of.travelAndAccommodationOnStaffCostsFlatRate")
+        if (budgetOptions?.otherCostsOnStaffCostsFlatRate !== null)
+            throw I18nValidationException(i18nKey = "project.partner.budget.not.allowed.because.of.otherCostsOnStaffCostsFlatRate")
     }
 
     private fun calculateRowSum(travelCostEntry: BudgetTravelAndAccommodationCostEntry) =
