@@ -31,6 +31,9 @@ open class UpdateBudgetGeneralCostsTest : UnitTest() {
 
 
     @MockK
+    lateinit var budgetOptionsPersistence: ProjectPartnerBudgetOptionsPersistence
+
+    @MockK
     lateinit var budgetCostsPersistence: ProjectPartnerBudgetCostsUpdatePersistence
 
     @MockK

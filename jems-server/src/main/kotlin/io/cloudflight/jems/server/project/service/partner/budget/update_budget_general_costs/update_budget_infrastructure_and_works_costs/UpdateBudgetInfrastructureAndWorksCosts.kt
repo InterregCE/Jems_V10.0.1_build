@@ -4,6 +4,7 @@ import io.cloudflight.jems.server.project.authorization.CanUpdateProjectPartner
 import io.cloudflight.jems.server.project.service.ProjectPersistence
 import io.cloudflight.jems.server.project.service.partner.budget.BudgetCostValidator
 import io.cloudflight.jems.server.project.service.partner.budget.ProjectPartnerBudgetCostsUpdatePersistence
+import io.cloudflight.jems.server.project.service.partner.budget.ProjectPartnerBudgetOptionsPersistence
 import io.cloudflight.jems.server.project.service.partner.budget.update_budget_general_costs.UpdateBudgetGeneralCosts
 import io.cloudflight.jems.server.project.service.partner.model.BudgetGeneralCostEntry
 import org.springframework.stereotype.Service
@@ -13,9 +14,10 @@ import org.springframework.transaction.annotation.Transactional
 class UpdateBudgetInfrastructureAndWorksCosts(
     private val persistence: ProjectPartnerBudgetCostsUpdatePersistence,
     private val projectPersistence: ProjectPersistence,
+    budgetOptionsPersistence: ProjectPartnerBudgetOptionsPersistence,
     budgetCostValidator: BudgetCostValidator
 ) : UpdateBudgetInfrastructureAndWorksCostsInteractor,
-    UpdateBudgetGeneralCosts(projectPersistence, budgetCostValidator) {
+    UpdateBudgetGeneralCosts(projectPersistence, budgetOptionsPersistence, budgetCostValidator) {
 
     @Transactional
     @CanUpdateProjectPartner

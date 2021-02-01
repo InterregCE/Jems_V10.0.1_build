@@ -12,13 +12,14 @@ import {
   BudgetUnitCostEntryDTO,
   CallService,
   OutputCall,
+  OutputProjectPartnerDetail,
+  OutputProjectPeriod,
   ProgrammeFundOutputDTO,
   ProgrammeUnitCostDTO,
   ProjectPartnerBudgetOptionsDto,
   ProjectPartnerBudgetService,
   ProjectPartnerCoFinancingAndContributionInputDTO,
-  ProjectPartnerCoFinancingAndContributionOutputDTO,
-  OutputProjectPartnerDetail, OutputProjectPeriod
+  ProjectPartnerCoFinancingAndContributionOutputDTO
 } from '@cat/api';
 import {ProjectPartnerStore} from '../../project-application/containers/project-application-form-page/services/project-partner-store.service';
 import {NumberService} from '../../../common/services/number.service';
@@ -100,17 +101,23 @@ export class ProjectPartnerDetailPageStore {
   }
 
   private getBudgetsToSave(partner: OutputProjectPartnerDetail, newBudgets: PartnerBudgetTables, options: BudgetOptions): { [key: string]: Observable<any> } {
-    return options.otherCostsOnStaffCostsFlatRate
-      ? {
-        staff: this.projectPartnerBudgetService.updateBudgetStaffCosts(partner.id, this.toBudgetStaffCostEntryDTOArray(newBudgets.staffCosts))
-      } : {
-        staff: this.projectPartnerBudgetService.updateBudgetStaffCosts(partner.id, this.toBudgetStaffCostEntryDTOArray(newBudgets.staffCosts)),
-        travel: this.projectPartnerBudgetService.updateBudgetTravel(partner.id, this.toBudgetTravelAndAccommodationCostEntryDTOArray(newBudgets.travelCosts)),
+    if (options.otherCostsOnStaffCostsFlatRate) {
+      return {staff: this.projectPartnerBudgetService.updateBudgetStaffCosts(partner.id, this.toBudgetStaffCostEntryDTOArray(newBudgets.staffCosts))};
+    } else {
+      const requests: any = {
         external: this.projectPartnerBudgetService.updateBudgetExternal(partner.id, this.toGeneralBudgetEntryDTOArray(newBudgets.externalCosts)),
         equipment: this.projectPartnerBudgetService.updateBudgetEquipment(partner.id, this.toGeneralBudgetEntryDTOArray(newBudgets.equipmentCosts)),
         infrastructure: this.projectPartnerBudgetService.updateBudgetInfrastructure(partner.id, this.toGeneralBudgetEntryDTOArray(newBudgets.infrastructureCosts)),
         unitCosts: this.projectPartnerBudgetService.updateBudgetUnitCosts(partner.id, this.toBudgetUnitCostEntryDTOArray(newBudgets.unitCosts))
       };
+      if (!options.staffCostsFlatRate) {
+        requests.staff = this.projectPartnerBudgetService.updateBudgetStaffCosts(partner.id, this.toBudgetStaffCostEntryDTOArray(newBudgets.staffCosts));
+      }
+      if (!options.travelAndAccommodationOnStaffCostsFlatRate) {
+        requests.travel = this.projectPartnerBudgetService.updateBudgetTravel(partner.id, this.toBudgetTravelAndAccommodationCostEntryDTOArray(newBudgets.travelCosts));
+      }
+      return requests;
+    }
   }
 
   updateCoFinancingAndContributions(model: ProjectPartnerCoFinancingAndContributionInputDTO): Observable<any> {

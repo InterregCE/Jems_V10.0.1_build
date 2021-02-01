@@ -2,6 +2,7 @@ package io.cloudflight.jems.server.project.service.partner.budget.update_budget_
 
 import io.cloudflight.jems.server.common.exception.I18nValidationException
 import io.cloudflight.jems.server.project.service.partner.budget.update_budget_general_costs.UpdateBudgetGeneralCostsTest
+import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerBudgetOptions
 import io.mockk.confirmVerified
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
@@ -24,6 +25,7 @@ internal class UpdateBudgetInfrastructureAndWorksCostsTest : UpdateBudgetGeneral
         every { budgetCostValidator.validateBudgetPeriods(periods, validPeriodNumbers) } returns Unit
         every { projectPersistence.getProjectIdForPartner(partnerId) } returns projectId
         every { projectPersistence.getProjectPeriods(projectId) } returns projectPeriods
+        every { budgetOptionsPersistence.getBudgetOptions(partnerId) } returns null
         every { budgetCostsPersistence.deleteAllBudgetInfrastructureAndWorksCostsExceptFor(partnerId, listBudgetEntriesIds) } returns Unit
         every { budgetCostsPersistence.createOrUpdateBudgetInfrastructureAndWorksCosts(projectId, partnerId, budgetGeneralCostEntries.toSet()) } returns budgetGeneralCostEntries
 
@@ -34,6 +36,7 @@ internal class UpdateBudgetInfrastructureAndWorksCostsTest : UpdateBudgetGeneral
         verify(atLeast = 1) { budgetCostValidator.validateBudgetPeriods(periods, validPeriodNumbers) }
         verify(atLeast = 1) { projectPersistence.getProjectIdForPartner(partnerId) }
         verify(atLeast = 1) { projectPersistence.getProjectPeriods(projectId) }
+        verify(atLeast = 1) { budgetOptionsPersistence.getBudgetOptions(partnerId) }
         verify(atLeast = 1) { budgetCostsPersistence.deleteAllBudgetInfrastructureAndWorksCostsExceptFor(partnerId, listBudgetEntriesIds) }
         verify(atLeast = 1) { budgetCostsPersistence.createOrUpdateBudgetInfrastructureAndWorksCosts(projectId, partnerId, budgetGeneralCostEntries.toSet()) }
         confirmVerified(budgetCostsPersistence, budgetCostValidator, projectPersistence)
@@ -94,6 +97,33 @@ internal class UpdateBudgetInfrastructureAndWorksCostsTest : UpdateBudgetGeneral
         verify(atLeast = 1) { projectPersistence.getProjectIdForPartner(partnerId) }
         verify(atLeast = 1) { projectPersistence.getProjectPeriods(projectId) }
         confirmVerified(budgetCostValidator,  projectPersistence)
+    }
+
+    @Test
+    fun `should throw I18nValidationException when otherCostsOnStaffCostsFlatRate is set in the budget options`() {
+
+        val pricePerUnits = budgetGeneralCostEntries.map { it.pricePerUnit }
+        val periods = budgetGeneralCostEntries.map { it.budgetPeriods }.flatten().toSet()
+        every { budgetOptionsPersistence.getBudgetOptions(partnerId) } returns ProjectPartnerBudgetOptions(
+            partnerId,
+            otherCostsOnStaffCostsFlatRate = 10
+        )
+        every { budgetCostValidator.validateBaseEntries(budgetGeneralCostEntries) } returns Unit
+        every { budgetCostValidator.validatePricePerUnits(pricePerUnits) } returns Unit
+        every { budgetCostValidator.validateBudgetPeriods(periods, validPeriodNumbers) } returns Unit
+        every { projectPersistence.getProjectPeriods(projectId) } returns projectPeriods
+
+
+        assertThrows<I18nValidationException> {
+            updateBudgetInfrastructureAndWorksCosts.updateBudgetGeneralCosts(partnerId, budgetGeneralCostEntries)
+        }
+
+        verify(atLeast = 1) { budgetCostValidator.validateBaseEntries(budgetGeneralCostEntries) }
+        verify(atLeast = 1) { budgetCostValidator.validateBudgetPeriods(periods, validPeriodNumbers) }
+        verify(atLeast = 1) { budgetCostValidator.validatePricePerUnits(pricePerUnits) }
+        verify(atLeast = 1) { projectPersistence.getProjectPeriods(projectId) }
+        verify(atLeast = 1) { budgetOptionsPersistence.getBudgetOptions(partnerId) }
+        confirmVerified(budgetCostValidator, budgetOptionsPersistence)
     }
 
 

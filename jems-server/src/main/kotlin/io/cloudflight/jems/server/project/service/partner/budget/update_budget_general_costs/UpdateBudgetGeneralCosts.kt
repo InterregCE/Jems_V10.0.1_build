@@ -1,10 +1,13 @@
 package io.cloudflight.jems.server.project.service.partner.budget.update_budget_general_costs
 
+import io.cloudflight.jems.server.common.exception.I18nValidationException
 import io.cloudflight.jems.server.project.authorization.CanUpdateProjectPartner
 import io.cloudflight.jems.server.project.service.ProjectPersistence
 import io.cloudflight.jems.server.project.service.partner.budget.BudgetCostValidator
+import io.cloudflight.jems.server.project.service.partner.budget.ProjectPartnerBudgetOptionsPersistence
 import io.cloudflight.jems.server.project.service.partner.budget.truncate
 import io.cloudflight.jems.server.project.service.partner.model.BudgetGeneralCostEntry
+import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerBudgetOptions
 import io.cloudflight.jems.server.project.service.partner.model.truncateBaseEntryNumbers
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
@@ -12,6 +15,7 @@ import org.springframework.transaction.annotation.Transactional
 @Service
 abstract class UpdateBudgetGeneralCosts(
     private val projectPersistence: ProjectPersistence,
+    private val budgetOptionsPersistence: ProjectPartnerBudgetOptionsPersistence,
     private val budgetCostValidator: BudgetCostValidator
 ) : UpdateBudgetGeneralCostsInteractor {
 
@@ -31,6 +35,9 @@ abstract class UpdateBudgetGeneralCosts(
                 projectPersistence.getProjectIdForPartner(partnerId)
             ).map { it.number }.toSet()
         )
+
+        throwIfOtherCostFlatRateIsSet(budgetOptionsPersistence.getBudgetOptions(partnerId))
+
         deleteAllBudgetGeneralCostsExceptFor(
             partnerId = partnerId,
             idsToKeep = budgetGeneralCosts.mapNotNullTo(HashSet()) { it.id }
@@ -54,4 +61,8 @@ abstract class UpdateBudgetGeneralCosts(
     private fun calculateRowSum(generalCostEntry: BudgetGeneralCostEntry) =
         generalCostEntry.pricePerUnit.multiply(generalCostEntry.numberOfUnits).truncate()
 
+    private fun throwIfOtherCostFlatRateIsSet(budgetOptions: ProjectPartnerBudgetOptions?) {
+        if (budgetOptions?.otherCostsOnStaffCostsFlatRate !== null)
+            throw I18nValidationException(i18nKey = "project.partner.budget.not.allowed.because.of.otherCostsOnStaffCostsFlatRate")
+    }
 }
