@@ -4,6 +4,7 @@ import {ActivatedRouteSnapshot, CanActivate, Router, RouterStateSnapshot} from '
 import {Observable} from 'rxjs';
 import {filter, map} from 'rxjs/operators';
 import {SecurityService} from './security.service';
+import {Log} from '../common/utils/log';
 
 @Injectable({providedIn: 'root'})
 export class PermissionGuard implements CanActivate {
@@ -19,6 +20,7 @@ export class PermissionGuard implements CanActivate {
       allowed = permissionsOnly.some((only: string) => user?.role === only);
     }
     if (!allowed) {
+      Log.info('Current user role cannot access this route:', this, user?.role);
       this.router.navigate(['app']);
     }
     return allowed;

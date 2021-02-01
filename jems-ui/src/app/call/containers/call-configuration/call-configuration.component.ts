@@ -4,9 +4,9 @@ import {
   OutputCall,
   OutputProgrammeStrategy,
   ProgrammeFundOutputDTO,
+  ProgrammeFundService,
   ProgrammePriorityService,
-  ProgrammeStrategyService,
-  ProgrammeFundService
+  ProgrammeStrategyService
 } from '@cat/api';
 import {BaseComponent} from '@common/components/base-component';
 import {map, tap} from 'rxjs/operators';
@@ -14,7 +14,6 @@ import {Log} from '../../../common/utils/log';
 import {ActivatedRoute} from '@angular/router';
 import {combineLatest} from 'rxjs';
 import {CallStore} from '../../services/call-store.service';
-import {Permission} from '../../../security/permissions/permission';
 import {PermissionService} from '../../../security/permissions/permission.service';
 import {Tables} from '../../../common/utils/tables';
 import {CallPriorityCheckbox} from '../model/call-priority-checkbox';
@@ -50,32 +49,24 @@ export class CallConfigurationComponent extends BaseComponent {
 
   details$ = combineLatest([
     this.callStore.call$,
-    this.permissionService.permissionsChanged(),
+    this.callStore.isApplicant$,
     this.allActiveStrategies$,
     this.allPriorities$,
     this.allFunds$,
   ])
     .pipe(
-      map(([call, permissions, allActiveStrategies, allPriorities, allFunds]) => ({
+      map(([call, isApplicant, allActiveStrategies, allPriorities, allFunds]) => ({
         call,
-        applicantCanAccessCall: permissions[0] !== Permission.APPLICANT_USER
-          || call.status !== OutputCall.StatusEnum.PUBLISHED,
+        isApplicant,
         strategies: this.getStrategies(allActiveStrategies, call),
         priorities: this.getPriorities(allPriorities, call),
         funds: this.getFunds(allFunds, call)
       })),
-      tap(details => {
-        // applicant user cannot see published calls
-        if (!details.applicantCanAccessCall) {
-          this.callNavService.redirectToCallOverview();
-        }
-      }),
     );
 
   constructor(public callStore: CallStore,
               private activatedRoute: ActivatedRoute,
               private permissionService: PermissionService,
-              // private eventBusService: EventBusService,
               private programmePriorityService: ProgrammePriorityService,
               private programmeStrategyService: ProgrammeStrategyService,
               private programmeFundService: ProgrammeFundService,

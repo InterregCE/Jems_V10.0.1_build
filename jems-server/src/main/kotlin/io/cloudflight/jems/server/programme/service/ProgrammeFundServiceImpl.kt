@@ -4,6 +4,8 @@ import io.cloudflight.jems.api.programme.dto.InputProgrammeFund
 import io.cloudflight.jems.api.programme.dto.ProgrammeFundOutputDTO
 import io.cloudflight.jems.server.audit.service.AuditService
 import io.cloudflight.jems.server.common.exception.I18nValidationException
+import io.cloudflight.jems.server.programme.authorization.CanReadProgrammeSetup
+import io.cloudflight.jems.server.programme.authorization.CanUpdateProgrammeSetup
 import io.cloudflight.jems.server.programme.repository.ProgrammeFundRepository
 import org.springframework.http.HttpStatus
 import org.springframework.stereotype.Service
@@ -22,11 +24,13 @@ class ProgrammeFundServiceImpl(
         private val TO_JUST_UPDATE = false // isCreation() == false
     }
 
+    @CanReadProgrammeSetup
     @Transactional(readOnly = true)
     override fun get(): List<ProgrammeFundOutputDTO> {
         return programmeFundRepository.findAll().map { it.toOutputProgrammeFund() }
     }
 
+    @CanUpdateProgrammeSetup
     @Transactional
     override fun update(funds: Collection<InputProgrammeFund>): List<ProgrammeFundOutputDTO> {
         val groupOfCreatedAndExisting = funds.groupBy { it.isCreation() }

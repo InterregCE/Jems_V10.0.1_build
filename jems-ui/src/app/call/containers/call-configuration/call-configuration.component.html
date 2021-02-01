@@ -1,10 +1,10 @@
 <app-breadcrumb></app-breadcrumb>
 <div *ngIf="details$ | async as details">
     <app-call-detail
-            *ngIf="details.applicantCanAccessCall"
             [call]="details.call"
             [strategies]="details.strategies"
             [funds]="details.funds"
-            [priorityCheckboxes]="details.priorities">
+            [priorityCheckboxes]="details.priorities"
+            [isApplicant]="details.isApplicant">
     </app-call-detail>
 </div>

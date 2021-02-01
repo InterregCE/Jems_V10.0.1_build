@@ -12,10 +12,7 @@ import {TableConfiguration} from '@common/components/table/model/table.configura
 import {ColumnType} from '@common/components/table/model/column-type.enum';
 import {MatSort} from '@angular/material/sort';
 import {PageOutputCallList} from '@cat/api';
-import {Alert} from '@common/components/forms/alert';
-import {Permission} from '../../../security/permissions/permission';
 import {Router} from '@angular/router';
-import {BaseComponent} from '@common/components/base-component';
 
 @Component({
   selector: 'app-call-list',
@@ -23,12 +20,9 @@ import {BaseComponent} from '@common/components/base-component';
   styleUrls: ['./call-list.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class CallListComponent extends BaseComponent implements OnInit {
+export class CallListComponent implements OnInit {
   @ViewChild('callActionsCell', {static: true})
   actionsCell: TemplateRef<any>;
-
-  Alert = Alert;
-  Permission = Permission;
 
   @Input()
   callPage: PageOutputCallList;
@@ -44,15 +38,14 @@ export class CallListComponent extends BaseComponent implements OnInit {
   @Output()
   newSort: EventEmitter<Partial<MatSort>> = new EventEmitter<Partial<MatSort>>();
 
-  tableConfigurationProgramme: TableConfiguration;
-  tableConfigurationApplicant: TableConfiguration;
+  tableConfiguration: TableConfiguration;
+
 
   constructor(private router: Router) {
-    super();
   }
 
   ngOnInit(): void {
-    this.tableConfigurationProgramme = new TableConfiguration({
+    this.tableConfiguration = new TableConfiguration({
       routerLink: '/app/call/detail',
       isTableClickable: true,
       columns: [
@@ -86,44 +79,12 @@ export class CallListComponent extends BaseComponent implements OnInit {
         }
       ]
     });
-
-    this.tableConfigurationApplicant = new TableConfiguration({
-      isTableClickable: false,
-      columns: [
-        {
-          displayedColumn: 'call.table.column.name.id',
-          elementProperty: 'id',
-          sortProperty: 'id'
-        },
-        {
-          displayedColumn: 'call.table.column.name.name',
-          elementProperty: 'name',
-          sortProperty: 'name',
-        },
-        {
-          displayedColumn: 'call.table.column.name.status',
-          elementProperty: 'status',
-          elementTranslationKey: 'common.label.callstatus',
-          sortProperty: 'status'
-        },
-        {
-          displayedColumn: 'call.table.column.name.started',
-          columnType: ColumnType.DateColumn,
-          elementProperty: 'startDate',
-          sortProperty: 'startDate'
-        },
-        {
-          displayedColumn: 'call.table.column.name.end',
-          columnType: ColumnType.DateColumn,
-          elementProperty: 'endDate',
-          sortProperty: 'endDate'
-        },
-        {
-          displayedColumn: 'call.table.column.name.action',
-          customCellTemplate: this.actionsCell
-        }
-      ]
-    });
+    if (this.isApplicant) {
+      this.tableConfiguration.columns.push({
+        displayedColumn: 'call.table.column.name.action',
+        customCellTemplate: this.actionsCell
+      });
+    }
   }
 
   applyToCall(callId: number): void {

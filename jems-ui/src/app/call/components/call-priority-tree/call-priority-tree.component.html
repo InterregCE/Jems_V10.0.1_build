@@ -1,5 +1,6 @@
 <span *ngFor="let priority of priorityCheckboxes">
     <mat-checkbox
+            *ngIf="priorityVisible(priority)"
             [disabled]="disabled"
             [checked]="priority.checked"
             [indeterminate]="priority.someChecked()"
@@ -9,6 +10,7 @@
     <ul class="no-bullets">
         <li *ngFor="let policy of priority.children">
             <mat-checkbox
+                    *ngIf="!isApplicant || policy.checked"
                     [(ngModel)]="policy.checked"
                     [disabled]="disabled"
                     (ngModelChange)="priority.updateChecked(); selectionChanged.emit()">

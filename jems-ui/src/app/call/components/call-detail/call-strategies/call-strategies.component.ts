@@ -12,6 +12,8 @@ export class CallStrategiesComponent {
   disabled: boolean;
   @Input()
   strategies: OutputProgrammeStrategy[];
+  @Input()
+  isApplicant: boolean;
 
   @Output()
   selectionChanged = new EventEmitter<void>();

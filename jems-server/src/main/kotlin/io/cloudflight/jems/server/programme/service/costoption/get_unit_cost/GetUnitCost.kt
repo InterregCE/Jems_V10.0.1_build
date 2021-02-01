@@ -1,5 +1,6 @@
 package io.cloudflight.jems.server.programme.service.costoption.get_unit_cost
 
+import io.cloudflight.jems.server.programme.authorization.CanReadProgrammeSetup
 import io.cloudflight.jems.server.programme.authorization.CanUpdateProgrammeSetup
 import io.cloudflight.jems.server.programme.service.costoption.ProgrammeUnitCostPersistence
 import io.cloudflight.jems.server.programme.service.costoption.model.ProgrammeUnitCost
@@ -13,7 +14,7 @@ class GetUnitCost(
     private val persistence: ProgrammeUnitCostPersistence,
 ) : GetUnitCostInteractor {
 
-    @CanUpdateProgrammeSetup
+    @CanReadProgrammeSetup
     @Transactional(readOnly = true)
     override fun getUnitCosts(): List<ProgrammeUnitCost> =
         persistence.getUnitCosts()

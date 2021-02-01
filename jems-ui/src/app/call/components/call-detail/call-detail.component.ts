@@ -32,6 +32,8 @@ export class CallDetailComponent implements OnInit {
   strategies: OutputProgrammeStrategy[];
   @Input()
   funds: ProgrammeFundOutputDTO[];
+  @Input()
+  isApplicant: boolean;
 
   startDateErrors = {
     required: 'call.startDate.unknown',
@@ -55,7 +57,7 @@ export class CallDetailComponent implements OnInit {
     max: CallDetailComponent.CALL_INVALID_PERIOD,
     min: CallDetailComponent.CALL_INVALID_PERIOD,
   };
-  published = false;
+  editable = false;
 
   callForm = this.formBuilder.group({
     name: ['', Validators.compose([
@@ -79,8 +81,8 @@ export class CallDetailComponent implements OnInit {
   ngOnInit(): void {
     this.formService.init(this.callForm);
     this.formService.setCreation(!this.call?.id);
-    this.published = this.call?.status === OutputCall.StatusEnum.PUBLISHED;
-    this.formService.setEditable(!this.published);
+    this.editable = this.call?.status !== OutputCall.StatusEnum.PUBLISHED && !this.isApplicant;
+    this.formService.setEditable(this.editable);
     this.resetForm();
   }
 

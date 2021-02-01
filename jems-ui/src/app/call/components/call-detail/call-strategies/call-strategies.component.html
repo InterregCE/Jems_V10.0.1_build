@@ -1,8 +1,10 @@
 <span *ngFor="let element of strategies">
-    <mat-checkbox (click)="$event.stopPropagation()"
-                  (change)="element.active = !element.active; selectionChanged.emit()"
-                  [disabled]="disabled"
-                  [checked]="element.active">
+    <mat-checkbox
+            *ngIf="!isApplicant || element.active"
+            (click)="$event.stopPropagation()"
+            (change)="element.active = !element.active; selectionChanged.emit()"
+            [disabled]="disabled"
+            [checked]="element.active">
         {{'programme.strategy.' + element.strategy | translate}}
     </mat-checkbox>
     <br>

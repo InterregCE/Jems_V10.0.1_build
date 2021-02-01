@@ -10,8 +10,8 @@ import org.springframework.stereotype.Component
 annotation class CanUpdateProgrammeSetup
 
 @Retention(AnnotationRetention.RUNTIME)
-@PreAuthorize("@programmeSetupAuthorization.canReadIndicators()")
-annotation class CanReadIndicators
+@PreAuthorize("@programmeSetupAuthorization.canReadProgrammeSetup()")
+annotation class CanReadProgrammeSetup
 
 @Retention(AnnotationRetention.RUNTIME)
 @PreAuthorize("@programmeSetupAuthorization.canReadNuts()")
@@ -24,7 +24,7 @@ class ProgrammeSetupAuthorization(
 
     fun canAccessSetup() = isAdmin() || isProgrammeUser()
 
-    fun canReadIndicators() = canAccessSetup() || isApplicantUser()
+    fun canReadProgrammeSetup() = canAccessSetup() || isApplicantUser()
 
     fun canReadNuts() = canAccessSetup() || isApplicantUser()
 

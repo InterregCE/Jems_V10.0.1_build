@@ -10,6 +10,8 @@ import io.cloudflight.jems.server.common.exception.ResourceNotFoundException
 import io.cloudflight.jems.server.programme.repository.ProgrammePriorityPolicyRepository
 import io.cloudflight.jems.server.programme.repository.ProgrammePriorityRepository
 import io.cloudflight.jems.server.audit.service.AuditService
+import io.cloudflight.jems.server.programme.authorization.CanReadProgrammeSetup
+import io.cloudflight.jems.server.programme.authorization.CanUpdateProgrammeSetup
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
 import org.springframework.stereotype.Service
@@ -22,11 +24,13 @@ class ProgrammePriorityServiceImpl(
     private val auditService: AuditService
 ) : ProgrammePriorityService {
 
+    @CanReadProgrammeSetup
     @Transactional(readOnly = true)
     override fun getAll(page: Pageable): Page<OutputProgrammePriority> {
         return programmePriorityRepository.findAll(page).map { it.toOutputProgrammePriority() }
     }
 
+    @CanUpdateProgrammeSetup
     @Transactional
     override fun create(priority: InputProgrammePriorityCreate): OutputProgrammePriority {
         val savedProgrammePriority = programmePriorityRepository.save(priority.toEntity()).toOutputProgrammePriority()
@@ -34,11 +38,13 @@ class ProgrammePriorityServiceImpl(
         return savedProgrammePriority
     }
 
+    @CanUpdateProgrammeSetup
     @Transactional
     override fun update(priority: InputProgrammePriorityUpdate): OutputProgrammePriority {
         return programmePriorityRepository.save(priority.toEntity()).toOutputProgrammePriority()
     }
 
+    @CanUpdateProgrammeSetup
     @Transactional
     override fun delete(programmePriorityId: Long) {
         programmePriorityRepository.delete(
@@ -47,6 +53,7 @@ class ProgrammePriorityServiceImpl(
         )
     }
 
+    @CanReadProgrammeSetup
     @Transactional(readOnly = true)
     override fun getFreePrioritiesWithPolicies(): Map<ProgrammeObjective, List<ProgrammeObjectivePolicy>> {
         val allPolicies = ProgrammeObjectivePolicy.values().toMutableSet()

@@ -9,11 +9,9 @@ import io.cloudflight.jems.api.programme.dto.priority.ProgrammeObjectivePolicy
 import io.cloudflight.jems.server.programme.service.ProgrammePriorityService
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
-import org.springframework.security.access.prepost.PreAuthorize
 import org.springframework.web.bind.annotation.RestController
 
 @RestController
-@PreAuthorize("@programmeSetupAuthorization.canAccessSetup()")
 class ProgrammePriorityController(
     private val programmePriorityService: ProgrammePriorityService
 ) : ProgrammePriorityApi {
