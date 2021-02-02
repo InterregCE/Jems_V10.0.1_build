@@ -90,7 +90,7 @@ export class ProjectWorkPackageOutputsTabComponent implements OnInit {
   }
 
   addOutputVisible(): boolean {
-    return this.form.enabled && this.outputs.length < 20;
+    return this.form.enabled && this.outputs.length < 10;
   }
 
   getMeasurementUnit(indicatorId: number, indicators: IndicatorOutputDto[]): string | undefined {
