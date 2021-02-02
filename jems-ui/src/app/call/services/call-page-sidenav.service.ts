@@ -3,11 +3,14 @@ import {SideNavService} from '@common/components/side-nav/side-nav.service';
 import {CallStore} from './call-store.service';
 import {RoutingService} from '../../common/services/routing.service';
 import {I18nLabel} from '../../common/i18n/i18n-label';
+import {take} from 'rxjs/internal/operators';
+import {tap} from 'rxjs/operators';
 
 @Injectable()
 export class CallPageSidenavService {
 
   constructor(private sideNavService: SideNavService,
+              private callStore: CallStore,
               private routingService: RoutingService) {
   }
 
@@ -29,16 +32,21 @@ export class CallPageSidenavService {
       route: `/app/call/detail/${callId}/budgetSettings`,
     };
 
-    if (callId) {
-      bulletsArray.push(flatRates as any);
-    }
-
-    this.sideNavService.setHeadlines(CallStore.CALL_DETAIL_PATH, [
-      {
-        headline: {i18nKey: 'call.detail.title'},
-        bullets: bulletsArray
-      },
-    ]);
+    this.callStore.isApplicant$
+      .pipe(
+        take(1),
+        tap(isApplicant => {
+          if (callId && !isApplicant) {
+            bulletsArray.push(flatRates as any);
+          }
+          this.sideNavService.setHeadlines(CallStore.CALL_DETAIL_PATH, [
+            {
+              headline: {i18nKey: 'call.detail.title'},
+              bullets: bulletsArray
+            },
+          ]);
+        })
+      ).subscribe();
   }
 
   redirectToCallOverview(successMessage?: I18nLabel): void {

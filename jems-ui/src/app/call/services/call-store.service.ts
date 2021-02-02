@@ -1,8 +1,19 @@
 import {Injectable} from '@angular/core';
-import {CallService, FlatRateSetupDTO, InputCallCreate, InputCallUpdate, OutputCall, ProgrammeUnitCostListDTO, ProgrammeLumpSumListDTO, ProgrammeCostOptionService} from '@cat/api';
+import {
+  CallService,
+  FlatRateSetupDTO,
+  InputCallCreate,
+  InputCallUpdate,
+  OutputCall,
+  ProgrammeCostOptionService,
+  ProgrammeLumpSumListDTO,
+  ProgrammeUnitCostListDTO
+} from '@cat/api';
 import {Observable, ReplaySubject} from 'rxjs';
-import {tap} from 'rxjs/operators';
+import {map, shareReplay, tap} from 'rxjs/operators';
 import {Log} from '../../common/utils/log';
+import {PermissionService} from '../../security/permissions/permission.service';
+import {Permission} from '../../security/permissions/permission';
 
 @Injectable()
 export class CallStore {
@@ -11,9 +22,16 @@ export class CallStore {
   call$ = new ReplaySubject<OutputCall | any>(1);
   unitCosts$ = new ReplaySubject<ProgrammeUnitCostListDTO[] | any>(1);
   lumpSums$ = new ReplaySubject<ProgrammeLumpSumListDTO[] | any>(1);
+  isApplicant$: Observable<boolean>;
 
   constructor(private callService: CallService,
-              private programmeCostOptionService: ProgrammeCostOptionService) {
+              private programmeCostOptionService: ProgrammeCostOptionService,
+              private permissionService: PermissionService) {
+    this.isApplicant$ = this.permissionService.permissionsChanged()
+      .pipe(
+        map(permissions => permissions.some(perm => perm === Permission.APPLICANT_USER)),
+        shareReplay(1)
+      );
   }
 
   init(callId: number | string): void {

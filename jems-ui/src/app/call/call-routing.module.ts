@@ -23,7 +23,6 @@ export const routes: Routes = [
         component: CallConfigurationComponent,
         data: new RouteData({
           breadcrumb: 'call.breadcrumb.create',
-          permissionsOnly: [Permission.ADMINISTRATOR, Permission.PROGRAMME_USER],
         }),
         canActivate: [PermissionGuard],
       },
@@ -31,7 +30,6 @@ export const routes: Routes = [
         path: 'detail/:callId',
         data: {
           dynamicBreadcrumb: true,
-          permissionsOnly: [Permission.ADMINISTRATOR, Permission.PROGRAMME_USER],
         },
         resolve: {breadcrumb$: CallNameResolver},
         canActivate: [PermissionGuard],

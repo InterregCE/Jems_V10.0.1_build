@@ -12,6 +12,8 @@ export class CallFundsComponent {
   disabled: boolean;
   @Input()
   funds: ProgrammeFundOutputDTO[];
+  @Input()
+  isApplicant: boolean;
 
   @Output()
   selectionChanged = new EventEmitter<void>();

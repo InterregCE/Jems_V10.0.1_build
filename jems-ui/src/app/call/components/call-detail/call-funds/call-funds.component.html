@@ -1,8 +1,10 @@
 <span *ngFor="let element of funds">
-    <mat-checkbox (click)="$event.stopPropagation()"
-                  (change)="element.selected = !element.selected; selectionChanged.emit()"
-                  [disabled]="disabled"
-                  [checked]="element.selected">
+    <mat-checkbox
+            *ngIf="!isApplicant || element.selected"
+            (click)="$event.stopPropagation()"
+            (change)="element.selected = !element.selected; selectionChanged.emit()"
+            [disabled]="disabled"
+            [checked]="element.selected">
         {{element.abbreviation || 'programme.fund.abbreviation.' + element.id | translate}}
     </mat-checkbox>
     <br>

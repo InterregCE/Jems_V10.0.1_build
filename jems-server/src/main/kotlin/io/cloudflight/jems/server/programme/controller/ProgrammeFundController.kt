@@ -5,11 +5,9 @@ import io.cloudflight.jems.api.programme.dto.InputProgrammeFundWrapper
 import io.cloudflight.jems.api.programme.dto.ProgrammeFundOutputDTO
 import io.cloudflight.jems.server.programme.service.ProgrammeFundService
 import org.springframework.data.domain.Pageable
-import org.springframework.security.access.prepost.PreAuthorize
 import org.springframework.web.bind.annotation.RestController
 
 @RestController
-@PreAuthorize("@programmeSetupAuthorization.canAccessSetup()")
 class ProgrammeFundController(
     private val programmeFundService: ProgrammeFundService
 ) : ProgrammeFundApi {

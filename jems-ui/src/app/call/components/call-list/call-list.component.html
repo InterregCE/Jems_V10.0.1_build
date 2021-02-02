@@ -1,7 +1,7 @@
 <p *ngIf="!callPage?.content.length">No calls submitted</p>
 <ng-container>
     <app-table *ngIf="callPage.content.length"
-               [configuration]="isApplicant ? tableConfigurationApplicant : tableConfigurationProgramme"
+               [configuration]="tableConfiguration"
                [rows]="callPage.content"
                [totalElements]="callPage?.totalElements"
                [pageIndex]="pageIndex"

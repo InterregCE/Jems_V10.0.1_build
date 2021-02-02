@@ -5,7 +5,7 @@
 
         <div>
             <h4>{{'call.general.settings' | translate}}</h4>
-            <button *ngIf="call?.id && !published"
+            <button *ngIf="call?.id && editable"
                     mat-raised-button color="primary"
                     id="publish-btn"
                     class="mb-3 mt-2"
@@ -78,7 +78,7 @@
                     [messages]="descriptionErrors"
                     [characterLimit]="1000"
                     [label]="'call.detail.field.description'"
-                    [disabled]="published">
+                    [disabled]="!editable">
             </app-expandable-textarea>
         </div>
 
@@ -87,7 +87,8 @@
             <app-call-priority-tree
                     *ngIf="priorityCheckboxes"
                     [priorityCheckboxes]="priorityCheckboxes"
-                    [disabled]="published"
+                    [disabled]="!editable"
+                    [isApplicant]="isApplicant"
                     (selectionChanged)="formChanged()">
             </app-call-priority-tree>
         </div>
@@ -96,7 +97,8 @@
             <h4 id="callStrategies">{{'call.strategy.title' | translate}}</h4>
             <app-call-strategies
                     [strategies]="strategies"
-                    [disabled]="published"
+                    [disabled]="!editable"
+                    [isApplicant]="isApplicant"
                     (selectionChanged)="formChanged()">
             </app-call-strategies>
         </div>
@@ -105,7 +107,8 @@
             <h4 id="callFunds">{{'call.funds.title' | translate}}</h4>
             <app-call-funds
                     [funds]="funds"
-                    [disabled]="published"
+                    [disabled]="!editable"
+                    [isApplicant]="isApplicant"
                     (selectionChanged)="formChanged()">
             </app-call-funds>
         </div>

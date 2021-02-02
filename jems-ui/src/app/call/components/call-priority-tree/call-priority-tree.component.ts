@@ -13,7 +13,13 @@ export class CallPriorityTreeComponent extends BaseComponent {
   priorityCheckboxes: CallPriorityCheckbox[];
   @Input()
   disabled: boolean;
+  @Input()
+  isApplicant: boolean;
 
   @Output()
   selectionChanged = new EventEmitter<void>();
+
+  priorityVisible(priority: CallPriorityCheckbox): boolean {
+    return !this.isApplicant || priority.checked || priority.someChecked();
+  }
 }

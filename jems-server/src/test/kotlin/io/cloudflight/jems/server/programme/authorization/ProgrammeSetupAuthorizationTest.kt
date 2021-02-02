@@ -60,7 +60,7 @@ internal class ProgrammeSetupAuthorizationTest {
         every { securityService.currentUser } returns currentUser
 
         assertTrue(
-            programmeSetupAuthorization.canReadIndicators(),
+            programmeSetupAuthorization.canReadProgrammeSetup(),
             "${currentUser.user.email} should be able to read indicators"
         )
     }

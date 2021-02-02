@@ -1,5 +1,6 @@
 package io.cloudflight.jems.server.programme.service.costoption.get_lump_sum
 
+import io.cloudflight.jems.server.programme.authorization.CanReadProgrammeSetup
 import io.cloudflight.jems.server.programme.authorization.CanUpdateProgrammeSetup
 import io.cloudflight.jems.server.programme.service.costoption.ProgrammeLumpSumPersistence
 import io.cloudflight.jems.server.programme.service.costoption.model.ProgrammeLumpSum
@@ -11,7 +12,7 @@ class GetLumpSum(
     private val persistence: ProgrammeLumpSumPersistence,
 ) : GetLumpSumInteractor {
 
-    @CanUpdateProgrammeSetup
+    @CanReadProgrammeSetup
     @Transactional(readOnly = true)
     override fun getLumpSums(): List<ProgrammeLumpSum> =
         persistence.getLumpSums()

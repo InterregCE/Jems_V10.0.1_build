@@ -29,7 +29,7 @@ class IndicatorController(
         return indicatorService.getOutputIndicators(pageable)
     }
 
-    @PreAuthorize("@programmeSetupAuthorization.canReadIndicators()")
+    @PreAuthorize("@programmeSetupAuthorization.canReadProgrammeSetup()")
     override fun getAllIndicatorOutputDetail(): Set<IndicatorOutputDto> {
         return indicatorService.getOutputIndicatorsDetails()
     }
