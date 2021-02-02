@@ -1,11 +1,11 @@
-<span *ngFor="let element of strategies">
-    <mat-checkbox
-            *ngIf="!isApplicant || element.active"
-            (click)="$event.stopPropagation()"
-            (change)="element.active = !element.active; selectionChanged.emit()"
-            [disabled]="disabled"
-            [checked]="element.active">
-        {{'programme.strategy.' + element.strategy | translate}}
-    </mat-checkbox>
-    <br>
-</span>
+<ng-container *ngFor="let element of strategies">
+    <div *ngIf="!isApplicant || element.active" class="mt-2">
+        <mat-checkbox
+                (click)="$event.stopPropagation()"
+                (change)="element.active = !element.active; selectionChanged.emit()"
+                [disabled]="disabled"
+                [checked]="element.active">
+            {{'programme.strategy.' + element.strategy | translate}}
+        </mat-checkbox>
+    </div>
+</ng-container>
