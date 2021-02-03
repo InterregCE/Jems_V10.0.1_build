@@ -1,11 +1,11 @@
-<span *ngFor="let element of funds">
-    <mat-checkbox
-            *ngIf="!isApplicant || element.selected"
-            (click)="$event.stopPropagation()"
-            (change)="element.selected = !element.selected; selectionChanged.emit()"
-            [disabled]="disabled"
-            [checked]="element.selected">
-        {{element.abbreviation || 'programme.fund.abbreviation.' + element.id | translate}}
-    </mat-checkbox>
-    <br>
-</span>
+<ng-container *ngFor="let element of funds">
+    <div *ngIf="!isApplicant || element.selected" class="mt-2">
+        <mat-checkbox
+                (click)="$event.stopPropagation()"
+                (change)="element.selected = !element.selected; selectionChanged.emit()"
+                [disabled]="disabled"
+                [checked]="element.selected">
+            {{element.abbreviation || 'programme.fund.abbreviation.' + element.id | translate}}
+        </mat-checkbox>
+    </div>
+</ng-container>
