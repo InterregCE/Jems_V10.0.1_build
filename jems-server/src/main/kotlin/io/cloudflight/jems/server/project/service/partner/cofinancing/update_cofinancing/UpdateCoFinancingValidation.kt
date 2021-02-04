@@ -21,6 +21,10 @@ fun validateFinancing(
     if (financing.count { it.fundId != null } + 1 != financing.count())
         invalid("project.partner.coFinancing.one.and.only.partner.contribution")
 
+    // there can be
+    if (financing.count() !in 3 downTo 0)
+        invalid("project.partner.coFinancing.maximum.partner.contributions")
+
     if (financing.mapTo(HashSet()) { it.fundId }.size != financing.size)
         invalid("project.partner.coFinancing.fund.not.unique")
 

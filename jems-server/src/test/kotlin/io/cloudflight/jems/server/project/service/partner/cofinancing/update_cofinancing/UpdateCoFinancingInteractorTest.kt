@@ -29,6 +29,12 @@ internal class UpdateCoFinancingInteractorTest {
             UpdateProjectPartnerCoFinancing(percentage = 40, fundId = null),
             UpdateProjectPartnerCoFinancing(percentage = 60, fundId = 1)
         )
+
+        private val financingMultipleOk = setOf(
+            UpdateProjectPartnerCoFinancing(percentage = 40, fundId = null),
+            UpdateProjectPartnerCoFinancing(percentage = 30, fundId = 1),
+            UpdateProjectPartnerCoFinancing(percentage = 30, fundId = 2)
+        )
     }
 
     @MockK
@@ -120,6 +126,22 @@ internal class UpdateCoFinancingInteractorTest {
             updateInteractor.updateCoFinancing(1L, testCoFinancing, emptyList())
         }
         assertThat(ex.i18nKey).isEqualTo("project.partner.coFinancing.fund.not.unique")
+    }
+
+    @Test
+    fun `wrong ammount of funds - more than 2`() {
+        ignoreFundIdsRetrieval()
+        val testCoFinancing = setOf(
+            UpdateProjectPartnerCoFinancing(percentage = 40, fundId = null),
+            UpdateProjectPartnerCoFinancing(percentage = 20, fundId = 1),
+            UpdateProjectPartnerCoFinancing(percentage = 20, fundId = 2),
+            UpdateProjectPartnerCoFinancing(percentage = 20, fundId = 3)
+        )
+
+        val ex = assertThrows<I18nValidationException> {
+            updateInteractor.updateCoFinancing(1L, testCoFinancing, emptyList())
+        }
+        assertThat(ex.i18nKey).isEqualTo("project.partner.coFinancing.maximum.partner.contributions")
     }
 
     @Test

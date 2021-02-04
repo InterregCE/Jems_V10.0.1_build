@@ -34,6 +34,7 @@ class CallControllerIntegrationTest {
             "New Call",
             null,
             null,
+            false,
             null,
             ZonedDateTime.now(),
             ZonedDateTime.now().plusDays(3L),

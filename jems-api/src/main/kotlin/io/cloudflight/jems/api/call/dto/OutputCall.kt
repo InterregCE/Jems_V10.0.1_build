@@ -14,6 +14,7 @@ data class OutputCall (
     val priorityPolicies: List<OutputProgrammePriorityPolicySimple>,
     val strategies: List<ProgrammeStrategy>,
     val funds: List<ProgrammeFundOutputDTO>,
+    val multipleFundsAllowed: Boolean? = false,
     val startDate: ZonedDateTime,
     val endDate: ZonedDateTime,
     val status: CallStatus,

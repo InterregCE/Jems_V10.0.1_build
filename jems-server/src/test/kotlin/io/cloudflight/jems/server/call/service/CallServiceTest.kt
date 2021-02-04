@@ -172,6 +172,7 @@ class CallServiceTest {
             call.name,
             call.prioritySpecificObjectives,
             call.strategies,
+            call.multipleFundsAllowed,
             call.funds,
             call.startDate,
             call.endDate.withSecond(59).withNano(999999999),
