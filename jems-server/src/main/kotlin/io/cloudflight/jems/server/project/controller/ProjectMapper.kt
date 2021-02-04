@@ -32,6 +32,7 @@ fun ProjectCallSettings.toDto() = ProjectCallSettingsDTO(
     startDate = startDate,
     endDate = endDate,
     lengthOfPeriod = lengthOfPeriod,
+    isAdditionalFundAllowed = isAdditionalFundAllowed,
     flatRates = flatRates.toDto(),
     lumpSums = lumpSums.map { it.toDto() },
     unitCosts = unitCosts.map { it.toDto() },

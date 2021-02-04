@@ -7,6 +7,8 @@ import io.cloudflight.jems.server.project.service.partner.cofinancing.model.Upda
 import org.springframework.http.HttpStatus
 import java.math.BigDecimal
 
+private const val MAX_FUNDS = 3
+
 fun validateFinancing(
     financing: Collection<UpdateProjectPartnerCoFinancing>,
     allowedFundIds: Set<Long>
@@ -21,8 +23,8 @@ fun validateFinancing(
     if (financing.count { it.fundId != null } + 1 != financing.count())
         invalid("project.partner.coFinancing.one.and.only.partner.contribution")
 
-    // there can be
-    if (financing.count() !in 3 downTo 0)
+    // there can only be a maximum of 3 (MAX_FUNDS) funds for a partner
+    if (financing.count() > MAX_FUNDS)
         invalid("project.partner.coFinancing.maximum.partner.contributions")
 
     if (financing.mapTo(HashSet()) { it.fundId }.size != financing.size)

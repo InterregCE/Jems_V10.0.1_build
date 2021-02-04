@@ -40,6 +40,7 @@ internal class UpdateProjectLumpSumsTest : UnitTest() {
             startDate = ZonedDateTime.now(),
             endDate = ZonedDateTime.now(),
             lengthOfPeriod = 6,
+            isAdditionalFundAllowed = false,
             flatRates = emptySet(),
             lumpSums = lumpSums,
             unitCosts = listOf(),

@@ -99,6 +99,7 @@ internal class ProjectFileAuthorizationTest {
             startDate = ZonedDateTime.now(),
             endDate = ZonedDateTime.now(),
             lengthOfPeriod = 12,
+            isAdditionalFundAllowed = false,
             flatRates = FlatRateSetupDTO(),
             lumpSums = emptyList(),
             unitCosts = emptyList(),

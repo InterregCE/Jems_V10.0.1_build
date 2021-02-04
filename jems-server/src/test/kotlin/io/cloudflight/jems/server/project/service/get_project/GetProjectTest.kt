@@ -22,6 +22,7 @@ internal class GetProjectTest : UnitTest() {
             startDate = startDate,
             endDate = endDate,
             lengthOfPeriod = 6,
+            isAdditionalFundAllowed = false,
             flatRates = emptySet(),
             lumpSums = emptyList(),
             unitCosts = emptyList(),

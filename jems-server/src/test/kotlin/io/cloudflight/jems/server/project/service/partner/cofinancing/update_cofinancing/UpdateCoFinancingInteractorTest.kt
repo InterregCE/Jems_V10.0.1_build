@@ -1,5 +1,6 @@
 package io.cloudflight.jems.server.project.service.partner.cofinancing.update_cofinancing
 
+import io.cloudflight.jems.api.project.dto.partner.cofinancing.ProjectPartnerCoFinancingFundType
 import io.cloudflight.jems.api.project.dto.partner.cofinancing.ProjectPartnerContributionStatus.AutomaticPublic
 import io.cloudflight.jems.api.project.dto.partner.cofinancing.ProjectPartnerContributionStatus.Private
 import io.cloudflight.jems.api.project.dto.partner.cofinancing.ProjectPartnerContributionStatus.Public
@@ -26,14 +27,14 @@ internal class UpdateCoFinancingInteractorTest {
         private val fund = ProgrammeFundEntity(id = 1, selected = true)
 
         private val financingOk = setOf(
-            UpdateProjectPartnerCoFinancing(percentage = 40, fundId = null),
-            UpdateProjectPartnerCoFinancing(percentage = 60, fundId = 1)
+            UpdateProjectPartnerCoFinancing(fundType = ProjectPartnerCoFinancingFundType.PartnerContribution, percentage = 40, fundId = null),
+            UpdateProjectPartnerCoFinancing(fundType = ProjectPartnerCoFinancingFundType.MainFund,percentage = 60, fundId = 1)
         )
 
         private val financingMultipleOk = setOf(
-            UpdateProjectPartnerCoFinancing(percentage = 40, fundId = null),
-            UpdateProjectPartnerCoFinancing(percentage = 30, fundId = 1),
-            UpdateProjectPartnerCoFinancing(percentage = 30, fundId = 2)
+            UpdateProjectPartnerCoFinancing(fundType = ProjectPartnerCoFinancingFundType.PartnerContribution,percentage = 40, fundId = null),
+            UpdateProjectPartnerCoFinancing(fundType = ProjectPartnerCoFinancingFundType.MainFund,percentage = 30, fundId = 1),
+            UpdateProjectPartnerCoFinancing(fundType = ProjectPartnerCoFinancingFundType.AdditionalFund,percentage = 30, fundId = 2)
         )
     }
 
@@ -74,7 +75,7 @@ internal class UpdateCoFinancingInteractorTest {
     }
 
     private fun testWrongPercentage(percentages: List<Int?>, errorMsg: String) {
-        val testCoFinancing = percentages.mapTo(HashSet()) { UpdateProjectPartnerCoFinancing(percentage = it) }
+        val testCoFinancing = percentages.mapTo(HashSet()) { UpdateProjectPartnerCoFinancing(fundType = ProjectPartnerCoFinancingFundType.MainFund, percentage = it) }
         ignoreFundIdsRetrieval()
 
         val ex = assertThrows<I18nValidationException> {
@@ -89,8 +90,8 @@ internal class UpdateCoFinancingInteractorTest {
     fun `test wrong amount of fundIds - 2 nulls`() {
         ignoreFundIdsRetrieval()
         val testCoFinancing = setOf(
-            UpdateProjectPartnerCoFinancing(percentage = 20, fundId = null),
-            UpdateProjectPartnerCoFinancing(percentage = 80, fundId = null)
+            UpdateProjectPartnerCoFinancing(fundType = ProjectPartnerCoFinancingFundType.PartnerContribution, percentage = 20, fundId = null),
+            UpdateProjectPartnerCoFinancing(fundType = ProjectPartnerCoFinancingFundType.PartnerContribution, percentage = 80, fundId = null)
         )
 
         val ex = assertThrows<I18nValidationException> {
@@ -103,8 +104,8 @@ internal class UpdateCoFinancingInteractorTest {
     fun `test wrong amount of fundIds - no any null`() {
         ignoreFundIdsRetrieval()
         val testCoFinancing = setOf(
-            UpdateProjectPartnerCoFinancing(percentage = 20, fundId = 10),
-            UpdateProjectPartnerCoFinancing(percentage = 80, fundId = 11)
+            UpdateProjectPartnerCoFinancing(fundType = ProjectPartnerCoFinancingFundType.MainFund, percentage = 20, fundId = 10),
+            UpdateProjectPartnerCoFinancing(fundType = ProjectPartnerCoFinancingFundType.MainFund, percentage = 80, fundId = 11)
         )
 
         val ex = assertThrows<I18nValidationException> {
@@ -117,9 +118,9 @@ internal class UpdateCoFinancingInteractorTest {
     fun `test duplicate fundIds - no any null`() {
         ignoreFundIdsRetrieval()
         val testCoFinancing = setOf(
-            UpdateProjectPartnerCoFinancing(percentage = 20, fundId = null),
-            UpdateProjectPartnerCoFinancing(percentage = 30, fundId = 555),
-            UpdateProjectPartnerCoFinancing(percentage = 50, fundId = 555)
+            UpdateProjectPartnerCoFinancing(fundType = ProjectPartnerCoFinancingFundType.PartnerContribution, percentage = 20, fundId = null),
+            UpdateProjectPartnerCoFinancing(fundType = ProjectPartnerCoFinancingFundType.MainFund, percentage = 30, fundId = 555),
+            UpdateProjectPartnerCoFinancing(fundType = ProjectPartnerCoFinancingFundType.AdditionalFund, percentage = 50, fundId = 555)
         )
 
         val ex = assertThrows<I18nValidationException> {
@@ -129,13 +130,13 @@ internal class UpdateCoFinancingInteractorTest {
     }
 
     @Test
-    fun `wrong ammount of funds - more than 2`() {
+    fun `wrong amount of funds - more than 2`() {
         ignoreFundIdsRetrieval()
         val testCoFinancing = setOf(
-            UpdateProjectPartnerCoFinancing(percentage = 40, fundId = null),
-            UpdateProjectPartnerCoFinancing(percentage = 20, fundId = 1),
-            UpdateProjectPartnerCoFinancing(percentage = 20, fundId = 2),
-            UpdateProjectPartnerCoFinancing(percentage = 20, fundId = 3)
+            UpdateProjectPartnerCoFinancing(fundType = ProjectPartnerCoFinancingFundType.PartnerContribution, percentage = 40, fundId = null),
+            UpdateProjectPartnerCoFinancing(fundType = ProjectPartnerCoFinancingFundType.MainFund, percentage = 20, fundId = 1),
+            UpdateProjectPartnerCoFinancing(fundType = ProjectPartnerCoFinancingFundType.AdditionalFund, percentage = 20, fundId = 2),
+            UpdateProjectPartnerCoFinancing(fundType = ProjectPartnerCoFinancingFundType.AdditionalFund, percentage = 20, fundId = 3)
         )
 
         val ex = assertThrows<I18nValidationException> {
@@ -149,8 +150,8 @@ internal class UpdateCoFinancingInteractorTest {
         every { persistence.getAvailableFundIds(5) } returns setOf(fund.id)
 
         val toSave = setOf(
-            UpdateProjectPartnerCoFinancing(fundId = -1, percentage = 20),
-            UpdateProjectPartnerCoFinancing(fundId = null, percentage = 80)
+            UpdateProjectPartnerCoFinancing(fundType = ProjectPartnerCoFinancingFundType.MainFund, fundId = -1, percentage = 20),
+            UpdateProjectPartnerCoFinancing(fundType = ProjectPartnerCoFinancingFundType.PartnerContribution, fundId = null, percentage = 80)
         )
         val ex = assertThrows<I18nValidationException> {
             updateInteractor.updateCoFinancing(5, toSave, emptyList())
@@ -175,8 +176,8 @@ internal class UpdateCoFinancingInteractorTest {
             ProjectPartnerContribution(name = null, amount = BigDecimal.TEN, isPartner = true, status = Public)
         )
         assertThat(slotFinances.captured).containsExactlyInAnyOrder(
-            UpdateProjectPartnerCoFinancing(fundId = fund.id, percentage = 60),
-            UpdateProjectPartnerCoFinancing(fundId = null, percentage = 40)
+            UpdateProjectPartnerCoFinancing(fundType = ProjectPartnerCoFinancingFundType.MainFund, fundId = fund.id, percentage = 60),
+            UpdateProjectPartnerCoFinancing(fundType = ProjectPartnerCoFinancingFundType.PartnerContribution, fundId = null, percentage = 40)
         )
     }
 
@@ -272,8 +273,8 @@ internal class UpdateCoFinancingInteractorTest {
             ProjectPartnerContribution(name = "zero", amount = BigDecimal.ZERO, isPartner = true, status = Public)
         )
         assertThat(slotFinances.captured).containsExactlyInAnyOrder(
-            UpdateProjectPartnerCoFinancing(fundId = fund.id, percentage = 60),
-            UpdateProjectPartnerCoFinancing(fundId = null, percentage = 40)
+            UpdateProjectPartnerCoFinancing(fundType = ProjectPartnerCoFinancingFundType.MainFund, fundId = fund.id, percentage = 60),
+            UpdateProjectPartnerCoFinancing(fundType = ProjectPartnerCoFinancingFundType.PartnerContribution, fundId = null, percentage = 40)
         )
     }
 

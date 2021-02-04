@@ -1,6 +1,5 @@
 package io.cloudflight.jems.server.project.authorization
 
-import io.cloudflight.jems.api.call.dto.OutputCallWithDates
 import io.cloudflight.jems.api.call.dto.flatrate.FlatRateSetupDTO
 import io.cloudflight.jems.api.project.dto.OutputProject
 import io.cloudflight.jems.api.project.dto.ProjectCallSettingsDTO
@@ -359,6 +358,7 @@ internal class ProjectStatusAuthorizationTest {
                 startDate = ZonedDateTime.now(),
                 endDate = ZonedDateTime.now(),
                 lengthOfPeriod = 12,
+                isAdditionalFundAllowed = false,
                 flatRates = FlatRateSetupDTO(),
                 lumpSums = emptyList(),
                 unitCosts = emptyList(),

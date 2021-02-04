@@ -1,11 +1,11 @@
 package io.cloudflight.jems.server.project.service.partner.cofinancing.model
 
+import io.cloudflight.jems.api.project.dto.partner.cofinancing.ProjectPartnerCoFinancingFundType
+
 data class UpdateProjectPartnerCoFinancing(
 
-    // if updating
-    val id: Long? = null,
-
+    val fundType: ProjectPartnerCoFinancingFundType,
     val fundId: Long? = null,
-    val percentage: Int? = null
+    val percentage: Int? = null,
 
-)
+    )

@@ -56,7 +56,8 @@ data class CallEntity(
     val strategies: Set<Strategy>,
 
     @Column
-    val multipleFundsAllowed: Boolean? = false,
+    @field:NotNull
+    val isAdditionalFundAllowed: Boolean,
 
     @OneToMany
     @JoinTable(

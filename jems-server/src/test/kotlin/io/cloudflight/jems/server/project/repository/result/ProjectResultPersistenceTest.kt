@@ -43,6 +43,7 @@ class ProjectResultPersistenceTest {
             creator = user,
             startDate = ZonedDateTime.now(),
             endDate = ZonedDateTime.now(),
+            isAdditionalFundAllowed = false,
             funds = emptySet(),
             strategies = emptySet())
         val projectStatus = ProjectStatus(status = ProjectApplicationStatus.DRAFT, user = user)

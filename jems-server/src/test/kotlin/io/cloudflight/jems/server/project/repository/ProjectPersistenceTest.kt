@@ -143,6 +143,7 @@ internal class ProjectPersistenceTest : UnitTest() {
                 startDate = startDate,
                 endDate = endDate,
                 lengthOfPeriod = 9,
+                isAdditionalFundAllowed = false,
                 flatRates = setOf(
                     ProjectCallFlatRate(type = FlatRateType.STAFF_COSTS, rate = 15, isAdjustable = true),
                 ),

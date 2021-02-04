@@ -15,7 +15,7 @@ import io.cloudflight.jems.server.project.service.partner.cofinancing.model.Upda
 
 fun Collection<ProjectPartnerCoFinancingInputDTO>.toFinancingModel() = mapTo(HashSet()) {
     UpdateProjectPartnerCoFinancing(
-        id = it.id ?: 0,
+        fundType = it.fundType,
         fundId = it.fundId,
         percentage = it.percentage
     )
@@ -37,7 +37,7 @@ fun ProjectPartnerCoFinancingAndContribution.toDto() = ProjectPartnerCoFinancing
 )
 
 fun ProjectPartnerCoFinancing.toDto() = ProjectPartnerCoFinancingOutputDTO(
-    id = id!!,
+    fundType = fundType,
     percentage = percentage,
     fund = fund?.toDto()
 )
@@ -52,7 +52,6 @@ fun Collection<PartnerBudgetCoFinancing>.toProjectPartnerBudgetDTO() = map { it.
     .sortedBy { it.partner.sortNumber }
 
 fun Collection<ProjectPartnerCoFinancing>.toCoFinancingDto() = map { it.toDto() }
-    .sortedWith(compareBy({ it.fund == null }, { it.id }))
 
 fun ProjectPartnerContribution.toDto(partnerAbbreviation: String) = ProjectPartnerContributionDTO(
     id = id,
