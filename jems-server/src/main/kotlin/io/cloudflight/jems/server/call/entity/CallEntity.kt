@@ -80,7 +80,8 @@ data class CallEntity(
     @field:NotNull
     val lengthOfPeriod: Int,
 
-    val description: String? = null,
+    @OneToMany(cascade = [CascadeType.ALL], orphanRemoval = true, mappedBy = "translationId.projectCallId")
+    var translatedValues: MutableSet<CallTranslEntity> = mutableSetOf(),
 
     @OneToMany(mappedBy = "setupId.callId", cascade = [CascadeType.ALL], orphanRemoval = true, fetch = FetchType.LAZY)
     var flatRates: MutableSet<ProjectCallFlatRateEntity> = mutableSetOf(),

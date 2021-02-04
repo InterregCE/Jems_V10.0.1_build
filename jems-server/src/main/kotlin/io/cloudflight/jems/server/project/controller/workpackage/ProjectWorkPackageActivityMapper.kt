@@ -1,6 +1,6 @@
 package io.cloudflight.jems.server.project.controller.workpackage
 
-import io.cloudflight.jems.api.programme.dto.SystemLanguage
+import io.cloudflight.jems.api.programme.dto.language.SystemLanguage
 import io.cloudflight.jems.api.project.dto.InputTranslation
 import io.cloudflight.jems.api.project.dto.workpackage.activity.WorkPackageActivityDTO
 import io.cloudflight.jems.api.project.dto.workpackage.activity.WorkPackageActivityDeliverableDTO

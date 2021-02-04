@@ -1,6 +1,6 @@
 package io.cloudflight.jems.server.project.service
 
-import io.cloudflight.jems.api.programme.dto.SystemLanguage
+import io.cloudflight.jems.api.programme.dto.language.SystemLanguage
 import io.cloudflight.jems.api.project.dto.InputTranslation
 import io.cloudflight.jems.api.project.dto.description.InputProjectCooperationCriteria
 import io.cloudflight.jems.api.project.dto.description.InputProjectHorizontalPrinciples

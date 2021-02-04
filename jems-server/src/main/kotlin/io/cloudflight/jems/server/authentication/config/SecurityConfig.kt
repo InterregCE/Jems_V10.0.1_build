@@ -27,7 +27,8 @@ class SecurityConfig(val emsUserDetailsService: EmsUserDetailsService, val passw
     companion object {
         private val WHITELIST = arrayOf(
             "/api/auth/**",
-            "/api/_info/**"
+            "/api/_info/**",
+            "/api/programmeLanguage/available/**"
         )
     }
 
@@ -38,7 +39,6 @@ class SecurityConfig(val emsUserDetailsService: EmsUserDetailsService, val passw
             .and()
             .authorizeRequests()
             .antMatchers(*WHITELIST).permitAll()
-            .antMatchers("/api/programmelanguage").permitAll()  // access for enabled languages
             .antMatchers("/api/**").fullyAuthenticated()
             .and()
             .httpBasic()

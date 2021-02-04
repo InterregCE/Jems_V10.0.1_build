@@ -1,6 +1,6 @@
 package io.cloudflight.jems.server.project.service.workpackage.activity.model
 
-import io.cloudflight.jems.api.programme.dto.SystemLanguage
+import io.cloudflight.jems.api.programme.dto.language.SystemLanguage
 import io.cloudflight.jems.server.project.dto.TranslatedValue
 
 data class WorkPackageActivityDeliverableTranslatedValue(

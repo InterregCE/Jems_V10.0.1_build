@@ -7,10 +7,12 @@ import io.cloudflight.jems.api.call.dto.OutputCall
 import io.cloudflight.jems.api.call.dto.OutputCallList
 import io.cloudflight.jems.api.call.dto.flatrate.FlatRateDTO
 import io.cloudflight.jems.api.call.dto.flatrate.FlatRateSetupDTO
+import io.cloudflight.jems.api.programme.dto.language.SystemLanguage
 import io.cloudflight.jems.api.programme.dto.priority.OutputProgrammePriorityPolicySimple
 import io.cloudflight.jems.api.programme.dto.priority.ProgrammeObjectivePolicy.AdvancedTechnologies
 import io.cloudflight.jems.api.programme.dto.priority.ProgrammeObjectivePolicy.DigitalConnectivity
 import io.cloudflight.jems.api.programme.dto.strategy.ProgrammeStrategy
+import io.cloudflight.jems.api.project.dto.InputTranslation
 import io.cloudflight.jems.server.audit.entity.AuditAction
 import io.cloudflight.jems.server.audit.service.AuditCandidate
 import io.cloudflight.jems.server.call.entity.CallEntity
@@ -70,7 +72,7 @@ class CallServiceTest {
         endDate = call.endDate,
         status = call.status,
         lengthOfPeriod = call.lengthOfPeriod,
-        description = call.description,
+        description = setOf(InputTranslation(SystemLanguage.EN, "This is a dummy call")),
         flatRates = FlatRateSetupDTO(staffCostFlatRateSetup = FlatRateDTO(rate = 5, isAdjustable = true)),
     )
 
@@ -179,7 +181,7 @@ class CallServiceTest {
             call.endDate.withSecond(59).withNano(999999999),
             CallStatus.DRAFT,
             call.lengthOfPeriod,
-            call.description
+            call.translatedValues
         )
         val event = slot<AuditCandidate>()
         every { auditService.logEvent(capture(event)) } answers { }
@@ -189,7 +191,7 @@ class CallServiceTest {
             priorityPolicies = null,
             startDate = call.startDate,
             endDate = call.endDate,
-            description = call.description,
+            description = setOf(InputTranslation(SystemLanguage.EN, "This is a dummy call")),
             lengthOfPeriod = 12,
             isAdditionalFundAllowed = false
         )
@@ -200,7 +202,7 @@ class CallServiceTest {
         assertThat(result.startDate).isEqualTo(call.startDate)
         assertThat(result.endDate).isEqualTo(endDate)
         assertThat(result.status).isEqualTo(CallStatus.DRAFT)
-        assertThat(result.description).isEqualTo(call.description)
+        assertThat(result.description).containsExactly(InputTranslation(SystemLanguage.EN, "This is a dummy call"))
 
         with(event.captured) {
             assertThat(AuditAction.CALL_CREATED).isEqualTo(action)
@@ -274,7 +276,7 @@ class CallServiceTest {
             priorityPolicies = null,
             startDate = call.startDate,
             endDate = call.endDate,
-            description = call.description,
+            description = setOf(InputTranslation(SystemLanguage.EN, "This is a dummy call")),
             lengthOfPeriod = 12,
             isAdditionalFundAllowed = false
         )
@@ -302,7 +304,7 @@ class CallServiceTest {
             priorityPolicies = setOf(AdvancedTechnologies),
             startDate = startDate,
             endDate = endDate,
-            description = "new description",
+            description = setOf(InputTranslation(SystemLanguage.EN, "updated description")),
             lengthOfPeriod = 12
         )
         every { callRepository.findOneByName("new name") } returns null
@@ -319,7 +321,7 @@ class CallServiceTest {
         )
         assertThat(result.startDate).isEqualTo(startDate)
         assertThat(result.endDate).isEqualTo(endDate)
-        assertThat(result.description).isEqualTo("new description")
+        assertThat(result.description).containsExactly(InputTranslation(SystemLanguage.EN, "updated description"))
     }
 
     @Test
@@ -337,7 +339,7 @@ class CallServiceTest {
             priorityPolicies = emptySet(),
             startDate = startDate,
             endDate = endDate,
-            description = "new description",
+            description = setOf(InputTranslation(SystemLanguage.EN, "updated description")),
             lengthOfPeriod = 12
         )
         every { callRepository.findOneByName("existing name") } returns callWithId(ID_35)
@@ -365,7 +367,7 @@ class CallServiceTest {
             priorityPolicies = emptySet(),
             startDate = startDate,
             endDate = endDate,
-            description = "new description",
+            description = setOf(InputTranslation(SystemLanguage.EN, "updated description")),
             lengthOfPeriod = 12
         )
         every { callRepository.findOneByName(eq(call.name)) } returns callWithId(existingId)
@@ -374,7 +376,7 @@ class CallServiceTest {
         assertThat(result.name).isEqualTo(call.name)
         assertThat(result.startDate).isEqualTo(startDate)
         assertThat(result.endDate).isEqualTo(endDate)
-        assertThat(result.description).isEqualTo("new description")
+        assertThat(result.description).containsExactly(InputTranslation(SystemLanguage.EN, "updated description"))
     }
 
     @Test
@@ -388,7 +390,6 @@ class CallServiceTest {
             priorityPolicies = emptySet(),
             startDate = call.startDate,
             endDate = call.endDate,
-            description = call.description,
             lengthOfPeriod = 12
         )
 

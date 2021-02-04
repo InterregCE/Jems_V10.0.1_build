@@ -1,6 +1,6 @@
 package io.cloudflight.jems.server.workpackage.service.workpackageoutput.get_work_package_output
 
-import io.cloudflight.jems.api.programme.dto.SystemLanguage
+import io.cloudflight.jems.api.programme.dto.language.SystemLanguage
 import io.cloudflight.jems.api.project.dto.InputTranslation
 import io.cloudflight.jems.server.project.service.workpackage.WorkPackagePersistence
 import io.cloudflight.jems.server.project.service.workpackage.output.get_work_package_output.GetWorkPackageOutput

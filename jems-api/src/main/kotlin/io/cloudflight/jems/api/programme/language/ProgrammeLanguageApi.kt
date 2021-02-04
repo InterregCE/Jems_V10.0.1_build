@@ -1,7 +1,7 @@
-package io.cloudflight.jems.api.programme
+package io.cloudflight.jems.api.programme.language
 
-import io.cloudflight.jems.api.programme.dto.InputProgrammeLanguage
-import io.cloudflight.jems.api.programme.dto.OutputProgrammeLanguage
+import io.cloudflight.jems.api.programme.dto.language.ProgrammeLanguageDTO
+import io.cloudflight.jems.api.programme.dto.language.AvailableProgrammeLanguagesDTO
 import io.swagger.annotations.Api
 import io.swagger.annotations.ApiOperation
 import org.springframework.http.MediaType
@@ -9,18 +9,21 @@ import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PutMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
-import javax.validation.Valid
 
 @Api("Programme Language")
-@RequestMapping("/api/programmelanguage")
+@RequestMapping("/api/programmeLanguage")
 interface ProgrammeLanguageApi {
 
     @ApiOperation("Retrieve programme languages")
+    @GetMapping("/available")
+    fun getAvailableProgrammeLanguages(): AvailableProgrammeLanguagesDTO
+
+    @ApiOperation("Retrieve programme languages")
     @GetMapping
-    fun get(): List<OutputProgrammeLanguage>
+    fun get(): List<ProgrammeLanguageDTO>
 
     @ApiOperation("Specify languages for this programme")
     @PutMapping(consumes = [MediaType.APPLICATION_JSON_VALUE])
-    fun update(@Valid @RequestBody programmeLanguages: Collection<InputProgrammeLanguage>): List<OutputProgrammeLanguage>
+    fun update(@RequestBody programmeLanguages: Collection<ProgrammeLanguageDTO>): List<ProgrammeLanguageDTO>
 
 }
