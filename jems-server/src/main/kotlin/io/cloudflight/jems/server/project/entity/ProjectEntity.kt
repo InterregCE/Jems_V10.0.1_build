@@ -1,7 +1,7 @@
 package io.cloudflight.jems.server.project.entity
 
 import io.cloudflight.jems.server.call.entity.CallEntity
-import io.cloudflight.jems.server.programme.entity.ProgrammePriorityPolicy
+import io.cloudflight.jems.server.programme.entity.ProgrammeSpecificObjectiveEntity
 import io.cloudflight.jems.server.project.entity.lumpsum.ProjectLumpSumEntity
 import io.cloudflight.jems.server.project.entity.result.ProjectResultEntity
 import io.cloudflight.jems.server.user.entity.User
@@ -32,7 +32,7 @@ data class ProjectEntity(
 
     @ManyToOne(optional = true, fetch = FetchType.LAZY)
     @JoinColumn(name = "programme_priority_policy_objective_policy")
-    val priorityPolicy: ProgrammePriorityPolicy? = null,
+    val priorityPolicy: ProgrammeSpecificObjectiveEntity? = null,
 
     @field:NotNull
     val acronym: String,

@@ -1,6 +1,6 @@
 package io.cloudflight.jems.server.programme.entity.indicator
 
-import io.cloudflight.jems.server.programme.entity.ProgrammePriorityPolicy
+import io.cloudflight.jems.server.programme.entity.ProgrammeSpecificObjectiveEntity
 import java.math.BigDecimal
 import javax.persistence.Column
 import javax.persistence.Entity
@@ -30,7 +30,7 @@ data class IndicatorResult(
 
     @ManyToOne(optional = true, fetch = FetchType.EAGER)
     @JoinColumn(name = "programme_priority_policy_id")
-    val programmePriorityPolicy: ProgrammePriorityPolicy?,
+    val programmePriorityPolicy: ProgrammeSpecificObjectiveEntity?,
 
     val measurementUnit: String?,
 

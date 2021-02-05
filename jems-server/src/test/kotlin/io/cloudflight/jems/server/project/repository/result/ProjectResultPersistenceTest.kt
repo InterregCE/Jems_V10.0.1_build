@@ -39,7 +39,7 @@ class ProjectResultPersistenceTest {
             name = "test",
             lengthOfPeriod = 12,
             status = CallStatus.DRAFT,
-            priorityPolicies = emptySet(),
+            prioritySpecificObjectives = emptySet(),
             creator = user,
             startDate = ZonedDateTime.now(),
             endDate = ZonedDateTime.now(),

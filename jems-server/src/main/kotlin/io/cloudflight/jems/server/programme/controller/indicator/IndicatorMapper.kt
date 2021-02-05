@@ -10,7 +10,7 @@ import io.cloudflight.jems.api.programme.dto.indicator.OutputIndicatorOutput
 import io.cloudflight.jems.api.programme.dto.indicator.OutputIndicatorResult
 import io.cloudflight.jems.server.programme.entity.indicator.IndicatorOutput
 import io.cloudflight.jems.server.programme.entity.indicator.IndicatorResult
-import io.cloudflight.jems.server.programme.entity.ProgrammePriorityPolicy
+import io.cloudflight.jems.server.programme.entity.ProgrammeSpecificObjectiveEntity
 
 //region INDICATOR OUTPUT
 
@@ -27,7 +27,7 @@ fun IndicatorOutput.toOutputIndicator() = OutputIndicatorOutput(
     finalTarget = finalTarget
 )
 
-fun InputIndicatorOutputCreate.toEntity(programmePriorityPolicy: ProgrammePriorityPolicy?) = IndicatorOutput(
+fun InputIndicatorOutputCreate.toEntity(programmePriorityPolicy: ProgrammeSpecificObjectiveEntity?) = IndicatorOutput(
     identifier = identifier!!,
     code = code,
     name = name!!,
@@ -39,7 +39,7 @@ fun InputIndicatorOutputCreate.toEntity(programmePriorityPolicy: ProgrammePriori
 
 fun InputIndicatorOutputUpdate.toEntity(
     uniqueIdentifier: String,
-    programmePriorityPolicy: ProgrammePriorityPolicy?
+    programmePriorityPolicy: ProgrammeSpecificObjectiveEntity?
 ) = IndicatorOutput(
     id = id,
     identifier = uniqueIdentifier,
@@ -79,7 +79,7 @@ fun IndicatorResult.toOutputIndicator() = OutputIndicatorResult(
     comment = comment
 )
 
-fun InputIndicatorResultCreate.toEntity(programmePriorityPolicy: ProgrammePriorityPolicy?) = IndicatorResult(
+fun InputIndicatorResultCreate.toEntity(programmePriorityPolicy: ProgrammeSpecificObjectiveEntity?) = IndicatorResult(
     identifier = identifier!!,
     code = code,
     name = name!!,
@@ -94,7 +94,7 @@ fun InputIndicatorResultCreate.toEntity(programmePriorityPolicy: ProgrammePriori
 
 fun InputIndicatorResultUpdate.toEntity(
     uniqueIdentifier: String,
-    programmePriorityPolicy: ProgrammePriorityPolicy?
+    programmePriorityPolicy: ProgrammeSpecificObjectiveEntity?
 ) = IndicatorResult(
     id = id,
     identifier = uniqueIdentifier,

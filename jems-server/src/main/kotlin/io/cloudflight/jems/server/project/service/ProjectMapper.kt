@@ -8,7 +8,7 @@ import io.cloudflight.jems.api.project.dto.OutputProjectData
 import io.cloudflight.jems.api.project.dto.OutputProjectPeriod
 import io.cloudflight.jems.api.project.dto.OutputProjectSimple
 import io.cloudflight.jems.server.call.entity.CallEntity
-import io.cloudflight.jems.server.programme.entity.ProgrammePriorityPolicy
+import io.cloudflight.jems.server.programme.entity.ProgrammeSpecificObjectiveEntity
 import io.cloudflight.jems.server.programme.service.toOutputProgrammePriorityPolicy
 import io.cloudflight.jems.server.programme.service.toOutputProgrammePrioritySimple
 import io.cloudflight.jems.server.project.controller.toDto
@@ -90,7 +90,7 @@ fun combineTranslatedValuesProject(
     }
 }
 
-fun ProjectData.toOutputProjectData(priorityPolicy: ProgrammePriorityPolicy?) = OutputProjectData(
+fun ProjectData.toOutputProjectData(priorityPolicy: ProgrammeSpecificObjectiveEntity?) = OutputProjectData(
     title = translatedValues.mapTo(HashSet()) {
         InputTranslation(it.translationId.language, it.title)
     },

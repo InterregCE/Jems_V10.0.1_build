@@ -13,7 +13,7 @@ import {
   InputIndicatorOutputCreate,
   InputIndicatorOutputUpdate,
   OutputIndicatorOutput,
-  OutputProgrammePriority
+  ProgrammePriorityDTO,
 } from '@cat/api';
 import {FormBuilder, FormGroup, Validators} from '@angular/forms';
 import {MatDialog} from '@angular/material/dialog';
@@ -37,7 +37,7 @@ export class ProgrammeOutputIndicatorDetailComponent extends ViewEditForm implem
   @Input()
   outputIndicator: OutputIndicatorOutput;
   @Input()
-  priorities: Array<OutputProgrammePriority>;
+  priorities: Array<ProgrammePriorityDTO>;
   @Input()
   isCreate: boolean;
   @Output()

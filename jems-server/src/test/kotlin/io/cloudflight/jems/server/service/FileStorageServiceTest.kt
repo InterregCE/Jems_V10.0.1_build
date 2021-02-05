@@ -21,7 +21,7 @@ import io.cloudflight.jems.server.user.entity.User
 import io.cloudflight.jems.server.user.entity.UserRole
 import io.cloudflight.jems.server.common.exception.DuplicateFileException
 import io.cloudflight.jems.server.common.exception.ResourceNotFoundException
-import io.cloudflight.jems.server.programme.entity.ProgrammePriorityPolicy
+import io.cloudflight.jems.server.programme.entity.ProgrammeSpecificObjectiveEntity
 import io.cloudflight.jems.server.user.repository.UserRepository
 import io.cloudflight.jems.server.common.minio.MinioStorage
 import io.cloudflight.jems.server.project.repository.ProjectFileRepository
@@ -88,7 +88,7 @@ class FileStorageServiceTest {
         id = 5,
         creator = account,
         name = "call",
-        priorityPolicies = setOf(ProgrammePriorityPolicy(CircularEconomy, "CE")),
+        prioritySpecificObjectives = setOf(ProgrammeSpecificObjectiveEntity(CircularEconomy, "CE")),
         strategies = setOf(Strategy(ProgrammeStrategy.SeaBasinStrategyArcticOcean, true)),
         funds = emptySet(),
         startDate = ZonedDateTime.now(),

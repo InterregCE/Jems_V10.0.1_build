@@ -1,7 +1,6 @@
 package io.cloudflight.jems.server.project.service
 
 import io.cloudflight.jems.api.call.dto.CallStatus
-import io.cloudflight.jems.api.call.dto.OutputCallWithDates
 import io.cloudflight.jems.api.call.dto.flatrate.FlatRateSetupDTO
 import io.cloudflight.jems.api.programme.dto.SystemLanguage
 import io.cloudflight.jems.api.programme.dto.priority.OutputProgrammePriorityPolicySimple
@@ -31,7 +30,7 @@ import io.cloudflight.jems.server.authentication.service.SecurityService
 import io.cloudflight.jems.server.call.entity.CallEntity
 import io.cloudflight.jems.server.call.repository.flatrate.CallRepository
 import io.cloudflight.jems.server.common.exception.ResourceNotFoundException
-import io.cloudflight.jems.server.programme.entity.ProgrammePriorityPolicy
+import io.cloudflight.jems.server.programme.entity.ProgrammeSpecificObjectiveEntity
 import io.cloudflight.jems.server.programme.entity.Strategy
 import io.cloudflight.jems.server.project.entity.ProjectEntity
 import io.cloudflight.jems.server.project.entity.ProjectStatus
@@ -111,7 +110,7 @@ class ProjectServiceTest {
         id = 5,
         creator = account,
         name = "call",
-        priorityPolicies = setOf(ProgrammePriorityPolicy(HealthcareAcrossBorders, "HAB")),
+        prioritySpecificObjectives = setOf(ProgrammeSpecificObjectiveEntity(HealthcareAcrossBorders, "HAB")),
         strategies = setOf(Strategy(ProgrammeStrategy.MediterraneanSeaBasin, true)),
         funds = emptySet(),
         startDate = ZonedDateTime.now(),
@@ -346,7 +345,7 @@ class ProjectServiceTest {
         val ex = assertThrows<ResourceNotFoundException> {
             projectService.update(1, projectData.copy(specificObjective = SocialInnovation))
         }
-        assertThat(ex.entity).isEqualTo("programme_priority_policy")
+        assertThat(ex.entity).isEqualTo("programmeSpecificObjective")
     }
 
     @Test
@@ -355,7 +354,7 @@ class ProjectServiceTest {
             id = 5,
             creator = account,
             name = "call",
-            priorityPolicies = setOf(ProgrammePriorityPolicy(HealthcareAcrossBorders, "HAB")),
+            prioritySpecificObjectives = setOf(ProgrammeSpecificObjectiveEntity(HealthcareAcrossBorders, "HAB")),
             strategies = setOf(Strategy(ProgrammeStrategy.MediterraneanSeaBasin, true)),
             funds = emptySet(),
             startDate = ZonedDateTime.now(),

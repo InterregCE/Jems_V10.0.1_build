@@ -15,8 +15,8 @@ import io.cloudflight.jems.server.common.exception.I18nFieldError
 import io.cloudflight.jems.server.common.exception.I18nValidationException
 import io.cloudflight.jems.server.common.exception.ResourceNotFoundException
 import io.cloudflight.jems.server.call.repository.flatrate.CallRepository
-import io.cloudflight.jems.server.programme.entity.ProgrammePriorityPolicy
-import io.cloudflight.jems.server.programme.repository.ProgrammePriorityPolicyRepository
+import io.cloudflight.jems.server.programme.entity.ProgrammeSpecificObjectiveEntity
+import io.cloudflight.jems.server.programme.repository.priority.ProgrammeSpecificObjectiveRepository
 import io.cloudflight.jems.server.programme.service.toOutputProgrammePriorityPolicy
 import io.cloudflight.jems.server.programme.service.toOutputProgrammePrioritySimple
 import io.cloudflight.jems.server.user.repository.UserRepository
@@ -37,7 +37,7 @@ import org.springframework.transaction.annotation.Transactional
 class CallServiceImpl(
     private val callRepository: CallRepository,
     private val userRepository: UserRepository,
-    private val programmePriorityPolicyRepository: ProgrammePriorityPolicyRepository,
+    private val programmePriorityPolicyRepository: ProgrammeSpecificObjectiveRepository,
     private val strategyRepository: StrategyRepository,
     private val fundRepository: ProgrammeFundRepository,
     private val auditService: AuditService,
@@ -88,7 +88,7 @@ class CallServiceImpl(
 
         val toUpdate = oldCall.copy(
             name = getCallNameIfUnique(oldCall, inputCall.name!!),
-            priorityPolicies = getPoliciesAsEntities(inputCall.priorityPolicies!!),
+            prioritySpecificObjectives = getPoliciesAsEntities(inputCall.priorityPolicies!!),
             strategies = getStrategiesAsEntities(inputCall.strategies),
             funds = getFundsAsEntities(inputCall.funds),
             startDate = inputCall.startDate!!,
@@ -114,11 +114,11 @@ class CallServiceImpl(
         )
     }
 
-    private fun getPoliciesAsEntities(policies: Collection<ProgrammeObjectivePolicy>): Set<ProgrammePriorityPolicy> {
+    private fun getPoliciesAsEntities(policies: Collection<ProgrammeObjectivePolicy>): Set<ProgrammeSpecificObjectiveEntity> {
         val result = programmePriorityPolicyRepository.findAllById(policies).toSet()
 
         if (policies.size != result.size)
-            throw ResourceNotFoundException("programme_priority_policy")
+            throw ResourceNotFoundException("programmeSpecificObjective")
         else
             return result
     }
@@ -172,7 +172,7 @@ class CallServiceImpl(
     }
 
     private fun validatePublishingRequirementsAchieved(call: CallEntity) {
-        if (call.priorityPolicies.isEmpty())
+        if (call.prioritySpecificObjectives.isEmpty())
             throw I18nValidationException(
                 httpStatus = HttpStatus.UNPROCESSABLE_ENTITY,
                 i18nKey = "call.priorityPolicies.is.empty"
@@ -194,7 +194,7 @@ class CallServiceImpl(
         val call = callRepository.findById(callId)
             .orElseThrow { ResourceNotFoundException("call") }
 
-        return call.priorityPolicies
+        return call.prioritySpecificObjectives
             .groupBy { it.programmePriority!!.toOutputProgrammePrioritySimple() }
             .map { (programmePriority, policies) ->
                 OutputCallProgrammePriority(

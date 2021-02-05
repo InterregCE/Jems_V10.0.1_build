@@ -15,9 +15,9 @@ import {ProgrammePageSidenavService} from '../../services/programme-page-sidenav
 export class ProgrammePrioritiesComponent extends BaseComponent {
   Permission = Permission;
 
-  priorities$ = this.programmePriorityService.get(0, 100, 'code,asc')
+  priorities$ = this.programmePriorityService.get()
     .pipe(
-      tap(page => Log.info('Fetched the priorities:', this, page.content)),
+      tap(priorities => Log.info('Fetched the priorities:', this, priorities)),
     );
 
   constructor(private programmePriorityService: ProgrammePriorityService,

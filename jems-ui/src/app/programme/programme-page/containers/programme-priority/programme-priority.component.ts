@@ -1,6 +1,6 @@
 import {ChangeDetectionStrategy, Component} from '@angular/core';
 import {BaseComponent} from '@common/components/base-component';
-import {InputProgrammePriorityCreate, ProgrammePriorityService} from '@cat/api';
+import {ProgrammePriorityService, ProgrammePriorityDTO} from '@cat/api';
 import {catchError, map, take, takeUntil, tap} from 'rxjs/operators';
 import {Log} from '../../../../common/utils/log';
 import {Subject} from 'rxjs';
@@ -20,11 +20,11 @@ export class ProgrammePriorityComponent extends BaseComponent {
   prioritySaveError$ = new Subject<I18nValidationError | null>();
   prioritySaveSuccess$ = new Subject<boolean>();
 
-  details$ = this.programmePriorityService.getFreePrioritiesWithPolicies()
+  details$ = this.programmePriorityService.getAvailableSetup()
     .pipe(
-      map(freePrioritiesWithPolicies => ({
-        objectives: Object.keys(freePrioritiesWithPolicies),
-        objectivesWithPolicies: freePrioritiesWithPolicies
+      map(setup => ({
+        objectives: Object.keys(setup.freePrioritiesWithPolicies),
+        objectivesWithPolicies: setup.freePrioritiesWithPolicies
       })),
       tap(freePriorityData =>
         Log.info('Fetched free programme priorities with policies:', this, freePriorityData)),
@@ -37,7 +37,7 @@ export class ProgrammePriorityComponent extends BaseComponent {
     this.programmePageSidenavService.init(this.destroyed$);
   }
 
-  savePriority(priority: InputProgrammePriorityCreate): void {
+  savePriority(priority: ProgrammePriorityDTO): void {
     this.programmePriorityService.create(priority)
       .pipe(
         take(1),

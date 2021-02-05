@@ -18,8 +18,8 @@ import io.cloudflight.jems.server.common.exception.I18nFieldError
 import io.cloudflight.jems.server.common.exception.I18nValidationException
 import io.cloudflight.jems.server.common.exception.ResourceNotFoundException
 import io.cloudflight.jems.server.call.repository.flatrate.CallRepository
-import io.cloudflight.jems.server.programme.entity.ProgrammePriorityPolicy
-import io.cloudflight.jems.server.programme.repository.ProgrammePriorityPolicyRepository
+import io.cloudflight.jems.server.programme.entity.ProgrammeSpecificObjectiveEntity
+import io.cloudflight.jems.server.programme.repository.priority.ProgrammeSpecificObjectiveRepository
 import io.cloudflight.jems.server.user.repository.UserRepository
 import io.cloudflight.jems.server.authentication.model.LocalCurrentUser
 import io.cloudflight.jems.server.authentication.service.SecurityService
@@ -38,7 +38,6 @@ import io.mockk.every
 import io.mockk.impl.annotations.MockK
 import io.mockk.impl.annotations.RelaxedMockK
 import io.mockk.slot
-import io.mockk.verify
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -89,7 +88,7 @@ class CallServiceTest {
     lateinit var userRepository: UserRepository
 
     @MockK
-    lateinit var programmePriorityPolicyRepository: ProgrammePriorityPolicyRepository
+    lateinit var programmePriorityPolicyRepository: ProgrammeSpecificObjectiveRepository
 
     @MockK
     lateinit var strategyRepository: StrategyRepository
@@ -171,7 +170,7 @@ class CallServiceTest {
             100,
             call.creator,
             call.name,
-            call.priorityPolicies,
+            call.prioritySpecificObjectives,
             call.strategies,
             call.funds,
             call.startDate,
@@ -212,7 +211,7 @@ class CallServiceTest {
         every { userRepository.findById(eq(adminUser.user.id!!)) } returns Optional.of(call.creator)
         every { callRepository.save(any<CallEntity>()) } returnsArgument 0
         every { programmePriorityPolicyRepository.findAllById(eq(setOf(AdvancedTechnologies))) } returns
-                listOf(ProgrammePriorityPolicy(programmeObjectivePolicy = AdvancedTechnologies, code = "AT"))
+                listOf(ProgrammeSpecificObjectiveEntity(programmeObjectivePolicy = AdvancedTechnologies, code = "AT"))
         every { strategyRepository.findAllById(eq(setOf(ProgrammeStrategy.EUStrategyBalticSeaRegion))) } returns
                 listOf(Strategy(ProgrammeStrategy.EUStrategyBalticSeaRegion, true))
         every { fundRepository.findAllById(eq(setOf(1L))) } returns
@@ -258,7 +257,7 @@ class CallServiceTest {
         )
 
         val exception = assertThrows<ResourceNotFoundException> { callService.createCall(newCall) }
-        assertThat(exception.entity).isEqualTo("programme_priority_policy")
+        assertThat(exception.entity).isEqualTo("programmeSpecificObjective")
     }
 
     @Test
@@ -286,7 +285,7 @@ class CallServiceTest {
         every { callRepository.save(any<CallEntity>()) } returnsArgument 0
 
         val programmePriorityPolicy =
-            ProgrammePriorityPolicy(programmeObjectivePolicy = AdvancedTechnologies, code = "AT")
+            ProgrammeSpecificObjectiveEntity(programmeObjectivePolicy = AdvancedTechnologies, code = "AT")
         every { programmePriorityPolicyRepository.findById(eq(AdvancedTechnologies)) } returns Optional.of(
             programmePriorityPolicy
         )
@@ -400,7 +399,7 @@ class CallServiceTest {
     @Test
     fun `publishCall Successful`() {
         val existingId = 1L
-        val policies = setOf(ProgrammePriorityPolicy(programmeObjectivePolicy = AdvancedTechnologies, code = "AT"))
+        val policies = setOf(ProgrammeSpecificObjectiveEntity(programmeObjectivePolicy = AdvancedTechnologies, code = "AT"))
         val funds =
             setOf(ProgrammeFundEntity(id = 1, abbreviation = "test", description = "test description", selected = true))
 
@@ -408,7 +407,7 @@ class CallServiceTest {
                 Optional.of(
                     callWithId(existingId).copy(
                         status = CallStatus.DRAFT,
-                        priorityPolicies = policies,
+                        prioritySpecificObjectives = policies,
                         funds = funds
                     )
                 )
@@ -444,9 +443,9 @@ class CallServiceTest {
     @Test
     fun `publishCall empty policies`() {
         val existingId = 1L
-        val policies = emptySet<ProgrammePriorityPolicy>()
+        val policies = emptySet<ProgrammeSpecificObjectiveEntity>()
         every { callRepository.findById(eq(existingId)) } returns
-                Optional.of(callWithId(existingId).copy(status = CallStatus.DRAFT, priorityPolicies = policies))
+                Optional.of(callWithId(existingId).copy(status = CallStatus.DRAFT, prioritySpecificObjectives = policies))
         every { callRepository.save(any<CallEntity>()) } returnsArgument 0
 
         val expectedException = I18nValidationException(
