@@ -9,7 +9,7 @@ import java.time.ZoneOffset
 import java.time.ZonedDateTime
 import java.time.format.DateTimeFormatter
 
-@Document(indexName = "audit-log", type = "audit")
+@Document(indexName = "audit-log")
 data class Audit(
     @Id
     @Field(type = FieldType.Text)

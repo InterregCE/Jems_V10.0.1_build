@@ -35,11 +35,11 @@ dependencies {
     testImplementation('io.cloudflight.platform:platform-test-jpa')
 
     constraints {
-        implementation('commons-io:commons-io:2.7')
+        implementation('commons-io:commons-io:2.8.0')
         implementation('io.minio:minio:7.0.2')
-        implementation('org.mariadb.jdbc:mariadb-java-client:2.4.4')
+        implementation('org.mariadb.jdbc:mariadb-java-client:2.7.2')
         implementation('io.springfox:springfox-swagger-ui:2.9.2')
         implementation('io.springfox:springfox-swagger2:2.9.2')
-        implementation('org.springframework.data:spring-data-elasticsearch:3.0.8.RELEASE')
+        implementation('org.springframework.data:spring-data-elasticsearch:4.1.3')
     }
 }

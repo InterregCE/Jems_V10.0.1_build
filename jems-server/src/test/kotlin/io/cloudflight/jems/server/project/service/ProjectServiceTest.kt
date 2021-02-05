@@ -113,8 +113,8 @@ class ProjectServiceTest {
         prioritySpecificObjectives = setOf(ProgrammeSpecificObjectiveEntity(HealthcareAcrossBorders, "HAB")),
         strategies = setOf(Strategy(ProgrammeStrategy.MediterraneanSeaBasin, true)),
         funds = emptySet(),
-        startDate = ZonedDateTime.now(),
-        endDate = ZonedDateTime.now(),
+        startDate = ZonedDateTime.now().minusDays(1),
+        endDate = ZonedDateTime.now().plusDays(1),
         status = CallStatus.PUBLISHED,
         lengthOfPeriod = 1
     )
