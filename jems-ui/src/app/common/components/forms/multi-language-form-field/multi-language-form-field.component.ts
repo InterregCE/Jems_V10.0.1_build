@@ -12,7 +12,7 @@ import {
   Validator,
   Validators
 } from '@angular/forms';
-import {InputTranslation, OutputProgrammeLanguage} from '@cat/api';
+import {InputTranslation} from '@cat/api';
 import {UntilDestroy, untilDestroyed} from '@ngneat/until-destroy';
 import {MultiLanguageFormFieldConstants} from '@common/components/forms/multi-language-form-field/multi-language-form-field.constants';
 import {tap} from 'rxjs/operators';
@@ -75,7 +75,7 @@ export class MultiLanguageFormFieldComponent implements OnInit, ControlValueAcce
     ).subscribe();
   }
 
-  isInputVisible(currentLanguage: InputTranslation.LanguageEnum | null, language: InputTranslation.LanguageEnum): boolean {
+  isInputVisible(currentLanguage: string | null, language: InputTranslation.LanguageEnum): boolean {
     return currentLanguage === language;
   }
 
@@ -127,7 +127,7 @@ export class MultiLanguageFormFieldComponent implements OnInit, ControlValueAcce
     };
   }
 
-  private initForm(languages: OutputProgrammeLanguage.CodeEnum[]): void {
+  private initForm(languages: string[]): void {
     this.multiLanguageFormGroup = this.formBuilder.group({
       inputs: this.formBuilder.array([])
     });
@@ -141,7 +141,7 @@ export class MultiLanguageFormFieldComponent implements OnInit, ControlValueAcce
     );
   }
 
-  private resetForm(languages: OutputProgrammeLanguage.CodeEnum[]): void {
+  private resetForm(languages: string[]): void {
     if (!this.multiLanguageFormGroup) {
       this.initForm(languages);
     } else {
@@ -166,7 +166,7 @@ export class MultiLanguageFormFieldComponent implements OnInit, ControlValueAcce
     }
   }
 
-  private getIndexOfFormGroupForLanguage(language: OutputProgrammeLanguage.CodeEnum): number {
+  private getIndexOfFormGroupForLanguage(language: string): number {
     return this.inputs.controls.findIndex(formGroup => formGroup.get('language')?.value === language);
   }
 

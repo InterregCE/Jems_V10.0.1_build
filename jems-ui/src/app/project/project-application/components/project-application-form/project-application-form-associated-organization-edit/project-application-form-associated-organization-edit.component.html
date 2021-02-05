@@ -14,8 +14,8 @@
                 </app-form-field-errors>
             </mat-error>
         </mat-form-field>
-        <app-multi-language [staticLanguages]="[LANGUAGE.EN]">
-            <mat-form-field>
+        <app-multi-language [staticLanguages]="['EN']">
+            <mat-form-field class="field">
                 <mat-label>{{'project.organization.english.name.label' | translate}}</mat-label>
                 <input name="nameInEnglish" formControlName="nameInEnglish" matInput required>
                 <mat-error>

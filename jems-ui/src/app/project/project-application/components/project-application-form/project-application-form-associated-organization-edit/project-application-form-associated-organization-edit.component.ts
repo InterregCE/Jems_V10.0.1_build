@@ -17,7 +17,6 @@ import {
   OutputNuts,
   OutputProjectAssociatedOrganizationDetail,
   OutputProjectPartner,
-  OutputProgrammeLanguage,
 } from '@cat/api';
 import {Permission} from '../../../../../security/permissions/permission';
 import {BaseComponent} from '@common/components/base-component';
@@ -35,7 +34,6 @@ import {takeUntil, tap} from 'rxjs/operators';
 })
 export class ProjectApplicationFormAssociatedOrganizationEditComponent extends BaseComponent implements OnInit, OnChanges {
   Permission = Permission;
-  LANGUAGE = OutputProgrammeLanguage.CodeEnum;
 
   // TODO: remove these and adapt the component to save independently
   @Input()

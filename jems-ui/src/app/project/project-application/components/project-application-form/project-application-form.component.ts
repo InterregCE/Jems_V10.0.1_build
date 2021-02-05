@@ -1,6 +1,6 @@
 import {ChangeDetectionStrategy, ChangeDetectorRef, Component, Input, OnInit} from '@angular/core';
 import {FormBuilder, FormGroup, Validators} from '@angular/forms';
-import {InputProjectData, InputTranslation, OutputProgrammeLanguage, OutputProject} from '@cat/api';
+import {InputProjectData, InputTranslation, ProgrammeLanguageDTO, OutputProject} from '@cat/api';
 import {Permission} from '../../../../security/permissions/permission';
 import {Tools} from '../../../../common/utils/tools';
 import {catchError, distinctUntilChanged, take, takeUntil, tap} from 'rxjs/operators';
@@ -19,7 +19,7 @@ import {MultiLanguageInputService} from '../../../../common/services/multi-langu
 export class ProjectApplicationFormComponent extends BaseComponent implements OnInit {
   Permission = Permission;
   tools = Tools;
-  LANGUAGE = OutputProgrammeLanguage.CodeEnum;
+  LANGUAGE = ProgrammeLanguageDTO.CodeEnum;
 
   @Input()
   project: OutputProject;

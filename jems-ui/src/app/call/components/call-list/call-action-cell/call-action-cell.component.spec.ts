@@ -1,6 +1,6 @@
 import {fakeAsync, TestBed, tick} from '@angular/core/testing';
 import {CallActionCellComponent} from './call-action-cell.component';
-import {OutputCall, FlatRateSetupDTO} from '@cat/api';
+import {OutputCall, FlatRateSetupDTO, InputTranslation} from '@cat/api';
 import * as moment from 'moment';
 import {TranslateModule} from '@ngx-translate/core';
 
@@ -36,7 +36,7 @@ describe('CallActionCellComponent', () => {
       startDate = new Date('2020-08-01T14:15:00+02:00');
       endDate = new Date('2020-08-03T13:12:00+02:00');
       status = OutputCall.StatusEnum.PUBLISHED;
-      description = 'test';
+      description = [{language: InputTranslation.LanguageEnum.EN, translation: 'test'}];
       lengthOfPeriod = 1;
       flatRates = {} as FlatRateSetupDTO;
       lumpSums = [];
@@ -56,7 +56,7 @@ describe('CallActionCellComponent', () => {
       startDate = new Date('2020-08-11T14:15:00+05:00');
       endDate = new Date('2320-08-11T13:12:00+05:00');
       status = OutputCall.StatusEnum.PUBLISHED;
-      description = 'test';
+      description = [{language: InputTranslation.LanguageEnum.EN, translation: 'test'}];
       lengthOfPeriod = 1;
       flatRates = {} as FlatRateSetupDTO;
       lumpSums = [];

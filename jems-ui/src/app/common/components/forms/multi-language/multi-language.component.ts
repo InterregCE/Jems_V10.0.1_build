@@ -4,7 +4,6 @@ import {BaseComponent} from '@common/components/base-component';
 import {takeUntil, tap} from 'rxjs/operators';
 import {MultiLanguageInput} from '@common/components/forms/multi-language/multi-language-input';
 import {merge, Subject} from 'rxjs';
-import {OutputProgrammeLanguage} from '@cat/api';
 
 @Component({
   selector: 'app-multi-language',
@@ -13,14 +12,13 @@ import {OutputProgrammeLanguage} from '@cat/api';
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class MultiLanguageComponent extends BaseComponent implements OnInit, OnChanges {
-  LANGUAGE = OutputProgrammeLanguage.CodeEnum;
 
   @Input()
   inputs: MultiLanguageInput[];
   @Input()
-  languages?: OutputProgrammeLanguage.CodeEnum[];
+  languages?: string[];
   @Input()
-  staticLanguages?: OutputProgrammeLanguage.CodeEnum[];
+  staticLanguages?: string[];
 
   inputsChanged$ = new Subject<void>();
 
@@ -77,6 +75,6 @@ export class MultiLanguageComponent extends BaseComponent implements OnInit, OnC
   }
 
   private englishLanguageActive(): boolean {
-    return !!this.languageService.languages?.find(lang => this.LANGUAGE.EN === lang);
+    return !!this.languageService.languages?.find(lang => 'EN' === lang);
   }
 }

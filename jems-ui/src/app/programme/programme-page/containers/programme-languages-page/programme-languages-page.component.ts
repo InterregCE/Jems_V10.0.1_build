@@ -1,6 +1,6 @@
 import {ChangeDetectionStrategy, Component, OnDestroy} from '@angular/core';
 import {BaseComponent} from '@common/components/base-component';
-import {OutputProgrammeLanguage, ProgrammeLanguageService} from '@cat/api';
+import {ProgrammeLanguageDTO, ProgrammeLanguageService} from '@cat/api';
 import {catchError, mergeMap, tap} from 'rxjs/operators';
 import {Log} from '../../../../common/utils/log';
 import {HttpErrorResponse} from '@angular/common/http';
@@ -21,7 +21,7 @@ export class ProgrammeLanguagesPageComponent extends BaseComponent implements On
 
   languagesSaveError$ = new Subject<I18nValidationError | null>();
   languagesSaveSuccess$ = new Subject<boolean>();
-  saveLanguages$ = new Subject<OutputProgrammeLanguage[]>();
+  saveLanguages$ = new Subject<ProgrammeLanguageDTO[]>();
 
   private initLanguages$ = this.programmeLanguageService.get()
     .pipe(
@@ -48,7 +48,7 @@ export class ProgrammeLanguagesPageComponent extends BaseComponent implements On
     super();
   }
 
-  reloadLanguages(response: OutputProgrammeLanguage[]): void {
+  reloadLanguages(response: ProgrammeLanguageDTO[]): void {
     this.languageService.updateLanguages(response);
   }
 }

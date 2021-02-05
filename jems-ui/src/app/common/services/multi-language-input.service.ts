@@ -1,7 +1,7 @@
 import {Injectable} from '@angular/core';
 import {ReplaySubject} from 'rxjs';
 import {tap} from 'rxjs/operators';
-import {InputTranslation, OutputProgrammeLanguage} from '@cat/api';
+import {InputTranslation} from '@cat/api';
 import {LanguageService} from './language.service';
 import {MultiLanguageInput} from '@common/components/forms/multi-language/multi-language-input';
 import {AbstractControl} from '@angular/forms';
@@ -10,32 +10,20 @@ import {AbstractControl} from '@angular/forms';
   providedIn: 'root'
 })
 export class MultiLanguageInputService {
-  private static MAX_NUMBER_AVAILABLE_LANGUAGES = 4;
-  private currentLanguage: InputTranslation.LanguageEnum;
+  private currentLanguage: string;
 
-  languages$ = new ReplaySubject<OutputProgrammeLanguage.CodeEnum[]>();
-  languages: OutputProgrammeLanguage.CodeEnum[];
-  currentLanguage$ = new ReplaySubject<OutputProgrammeLanguage.CodeEnum>(1);
+  languages$ = new ReplaySubject<string[]>();
+  languages: string[];
+  currentLanguage$ = new ReplaySubject<string>(1);
 
   constructor(private languageService: LanguageService) {
-    this.languageService.languages$
+    this.languageService.inputLanguages$
       .pipe(
         tap(languages => {
-          let availableLanguages = languages
-            .filter(value => value.input)
-            .slice(0, MultiLanguageInputService.MAX_NUMBER_AVAILABLE_LANGUAGES)
-            .map(value => value.code);
-          // if there is no input language selected in the programme setup, use the fallback language
-          if (availableLanguages.length < 1) {
-            availableLanguages = languages
-              .filter(value => value.fallback)
-              .slice(0, MultiLanguageInputService.MAX_NUMBER_AVAILABLE_LANGUAGES)
-              .map(value => value.code);
-          }
-          this.languages$.next(availableLanguages);
-          this.languages = availableLanguages;
-          this.currentLanguage$.next(availableLanguages && availableLanguages[0]);
-          this.currentLanguage = availableLanguages && availableLanguages[0];
+          this.languages$.next(languages);
+          this.languages = languages;
+          this.currentLanguage$.next(languages && languages[0]);
+          this.currentLanguage = languages && languages[0];
         })
       ).subscribe();
 
@@ -99,7 +87,7 @@ export class MultiLanguageInputService {
     }
     this.languages.forEach(language => {
       if (!allInputs.find(value => value.language === language)) {
-        allInputs.push({language, translation: ''});
+        allInputs.push({language, translation: ''} as InputTranslation);
       }
     });
     return allInputs;

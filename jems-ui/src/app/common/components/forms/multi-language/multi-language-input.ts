@@ -4,7 +4,7 @@ import {AbstractControl} from '@angular/forms';
 export class MultiLanguageInput {
   inputs: InputTranslation[];
   formControl?: AbstractControl;
-  private valid = new Map<InputTranslation.LanguageEnum, boolean>();
+  private valid = new Map<string, boolean>();
 
   constructor(inputs: InputTranslation[], formControl?: AbstractControl) {
     this.inputs = inputs;
@@ -12,7 +12,7 @@ export class MultiLanguageInput {
     this.inputs?.forEach(input => this.valid.set(input.language, true));
   }
 
-  setValue(value: string, language: InputTranslation.LanguageEnum, valid: boolean): void {
+  setValue(value: string, language: string, valid: boolean): void {
     const input = this.inputs?.find(trans => trans.language === language);
     if (input) {
       input.translation = value;
