@@ -104,7 +104,21 @@
         </div>
 
         <div>
-            <h4 id="callFunds">{{'call.funds.title' | translate}}</h4>
+            <h4 id="callMultipleFundsAllowed">{{'call.funds.title' | translate}}</h4>
+            <div *ngIf="!isApplicant" class="mt-2">
+                <mat-checkbox
+                        name="multipleFundsAllowed"
+                        formControlName="multipleFundsAllowed"
+                        (click)="$event.stopPropagation()"
+                        [disabled]="!editable"
+                        [checked]="callForm?.controls?.multipleFundsAllowed.value">
+                    {{'call.multiple.funds.allowed' | translate}}
+                </mat-checkbox>
+            </div>
+        </div>
+
+        <div>
+            <h4 id="callFunds">{{'call.funds.select.funds' | translate}}</h4>
             <app-call-funds
                     [funds]="funds"
                     [disabled]="!editable"

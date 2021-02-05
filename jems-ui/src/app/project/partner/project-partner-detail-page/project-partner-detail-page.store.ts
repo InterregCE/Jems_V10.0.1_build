@@ -48,6 +48,7 @@ export class ProjectPartnerDetailPageStore {
   financingAndContribution$: Observable<ProjectPartnerCoFinancingAndContributionOutputDTO>;
   callFunds$: Observable<ProgrammeFundOutputDTO[]>;
   periods$: Observable<OutputProjectPeriod[]>;
+  multipleFundsAllowed$: Observable<boolean>;
 
   private updateBudgetOptionsEvent$ = new Subject();
   private updateBudgetEvent$ = new Subject();
@@ -75,6 +76,7 @@ export class ProjectPartnerDetailPageStore {
       .pipe(
         map(project => project.periods)
       );
+    this.multipleFundsAllowed$ = this.projectStore.projectCall$.pipe(map(it => it.multipleFundsAllowed));
   }
 
   updateBudgetOptions(budgetOptions: BudgetOptions): Observable<any> {

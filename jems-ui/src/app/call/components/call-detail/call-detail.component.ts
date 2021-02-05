@@ -68,7 +68,8 @@ export class CallDetailComponent implements OnInit {
     endDate: ['', Validators.required],
     description: ['', Validators.maxLength(1000)],
     lengthOfPeriod: ['', Validators.compose(
-      [Validators.required, Validators.max(99), Validators.min(1)])]
+      [Validators.required, Validators.max(99), Validators.min(1)])],
+    multipleFundsAllowed: [false]
   });
 
   constructor(private formBuilder: FormBuilder,
@@ -83,6 +84,7 @@ export class CallDetailComponent implements OnInit {
     this.formService.setCreation(!this.call?.id);
     this.editable = this.call?.status !== OutputCall.StatusEnum.PUBLISHED && !this.isApplicant;
     this.formService.setEditable(this.editable);
+    this.callForm.controls.multipleFundsAllowed.setValue(this.call.isAdditionalFundAllowed);
     this.resetForm();
   }
 
@@ -92,6 +94,7 @@ export class CallDetailComponent implements OnInit {
       .flatMap(checkbox => checkbox.getCheckedChildPolicies());
     call.strategies = this.buildUpdateEntityStrategies();
     call.funds = this.buildUpdateEntityFunds();
+    call.isAdditionalFundAllowed = this.callForm.controls.multipleFundsAllowed.value;
 
     if (!this.call.id) {
       this.callStore.createCall(call)

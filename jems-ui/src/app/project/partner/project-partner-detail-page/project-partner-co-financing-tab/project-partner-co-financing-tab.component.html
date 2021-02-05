@@ -6,11 +6,12 @@
             <p class="intro-text-small mb-3">{{ 'project.partner.coFinancing.intro' | translate }}</p>
 
             <div appTableConfig [appearance]="'table'"
-                 [widthConfig]="[{},{maxInRem:10},{maxInRem:5}]">
+                 [widthConfig]="[{},{maxInRem:10},{maxInRem:5},{maxInRem:2}]">
                 <div>
                     <span>{{ 'project.partner.coFinancing.source' | translate }}</span>
                     <span>{{ 'project.partner.coFinancing.amount' | translate }}</span>
                     <span class="text-right">{{ 'project.partner.coFinancing.percentage' | translate }}</span>
+                    <div class="mat-body-strong"></div>
                 </div>
 
                 <div>
@@ -19,7 +20,7 @@
                                     name="fundId"
                                     panelClass="material-select-panel"
                                     [formControlName]="constants.FORM_CONTROL_NAMES.fundId">
-                            <mat-option *ngFor="let fund of data.callFunds" [value]="fund.id">
+                            <mat-option *ngFor="let fund of filteredFunds(data.callFunds, additionalFundId.value)" [value]="fund.id">
                                 {{fund.abbreviation || 'programme.fund.abbreviation.' + fund.id | translate}}
                             </mat-option>
                         </mat-select>
@@ -43,7 +44,52 @@
                             </app-form-field-errors>
                         </mat-error>
                     </mat-form-field>
+                    <div></div>
                 </div>
+
+                <div *ngIf="multipleFundsAllowed && (hasASecondFundBeenAdded || additionalFundId.value)">
+                    <mat-form-field>
+                        <mat-select [disabled]="coFinancingForm.disabled"
+                                    name="additionalFundId"
+                                    panelClass="material-select-panel"
+                                    [formControlName]="constants.FORM_CONTROL_NAMES.additionalFundId">
+                            <mat-option *ngFor="let fund of filteredFunds(data.callFunds, fundId.value)" [value]="fund.id">
+                                {{fund.abbreviation || 'programme.fund.abbreviation.' + fund.id | translate}}
+                            </mat-option>
+                        </mat-select>
+                        <mat-error>
+                            <app-form-field-errors
+                                    [errors]="additionalFundId?.errors"
+                                    [messages]="constants.FORM_ERRORS.additionalFundIdErrors">
+                            </app-form-field-errors>
+                        </mat-error>
+                    </mat-form-field>
+                    <div>{{ additionalFundAmount.value | asMoney }}</div>
+                    <mat-form-field class="text-right">
+                        <input currencyMask type="integer" [options]="{min: 0, max: 100, align: 'right'}"
+                               name="additionalFundPercentage" [formControlName]="constants.FORM_CONTROL_NAMES.additionalFundPercentage"
+                               matInput>
+                        <div matSuffix class="pl-1">%</div>
+                        <mat-error>
+                            <app-form-field-errors
+                                    [errors]="additionalFundPercentage?.errors"
+                                    [messages]="constants.FORM_ERRORS.additionalFundPercentageErrors">
+                            </app-form-field-errors>
+                        </mat-error>
+                    </mat-form-field>
+                    <div>
+                        <button type="button" mat-icon-button color="accent"
+                                (click)="deleteAdditionalFund()">
+                            <mat-icon>delete</mat-icon>
+                        </button>
+                    </div>
+                </div>
+
+                <button *ngIf="multipleFundsAllowed && !hasASecondFundBeenAdded && !additionalFundId.value" mat-icon-button type="button" class="mt-2 co-financing-button"
+                        (click)="addAdditionalFund()">
+                    <mat-icon>add</mat-icon>
+                </button>
+
                 <div>
                     <div>{{ 'project.partner.coFinancing.partnerContribution' | translate }}</div>
                     <div>{{ partnerAmount.value | asMoney }}</div>
