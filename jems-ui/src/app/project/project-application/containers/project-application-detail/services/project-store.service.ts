@@ -37,6 +37,7 @@ import {ProgrammeLumpSum} from '../../../../model/lump-sums/programmeLumpSum';
 import {ProgrammeUnitCost} from '../../../../model/programmeUnitCost';
 import {LumpSumPhaseEnumUtils} from '../../../../model/lump-sums/LumpSumPhaseEnum';
 import {BudgetCostCategoryEnumUtils} from '../../../../model/lump-sums/BudgetCostCategoryEnum';
+import {RoutingService} from '../../../../../common/services/routing.service';
 
 /**
  * Stores project related information.
@@ -164,20 +165,13 @@ export class ProjectStore {
 
   constructor(private projectService: ProjectService,
               private projectStatusService: ProjectStatusService,
-              private router: Router,
+              private router: RoutingService,
               private permissionService: PermissionService) {
-    this.router.events
+
+    this.router.routeParameterChanges(ProjectStore.PROJECT_DETAIL_PATH, 'projectId')
       .pipe(
-        filter(val => val instanceof ResolveEnd),
-        map(e => (e as ResolveEnd)),
-        distinctUntilChanged((oldRoute, newRoute) => this.isProjectUrl(oldRoute.url) === this.isProjectUrl(newRoute.url)),
-        tap(e => {
-          if (!this.isProjectUrl(e.url)) {
-            this.projectId$.next(null as any);
-          } else {
-            this.projectId$.next(this.getLeafRoute(e.state.root).params.projectId);
-          }
-        })
+        // TODO: remove init make projectId$ just an observable
+        tap(id => this.projectId$.next(Number(id)))
       )
       .subscribe();
   }
@@ -238,17 +232,5 @@ export class ProjectStore {
 
   getAcronym(): Observable<string> {
     return this.projectAcronym$.asObservable();
-  }
-
-  private isProjectUrl(url: string): boolean {
-    return !!url && url.startsWith(ProjectStore.PROJECT_DETAIL_PATH);
-  }
-
-  private getLeafRoute(route: ActivatedRouteSnapshot): ActivatedRouteSnapshot {
-    let localRoot = route;
-    while (localRoot.firstChild) {
-      localRoot = localRoot.firstChild;
-    }
-    return localRoot;
   }
 }
