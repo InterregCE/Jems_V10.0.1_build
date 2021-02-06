@@ -15,7 +15,7 @@ import {Permission} from '../../../../security/permissions/permission';
   styleUrls: ['./programme-strategies-page.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class ProgrammeStrategiesPageComponent extends BaseComponent {
+export class ProgrammeStrategiesPageComponent {
   Permission = Permission;
 
   strategies$ = this.programmeStrategyService.getProgrammeStrategies()
@@ -42,7 +42,5 @@ export class ProgrammeStrategiesPageComponent extends BaseComponent {
 
   constructor(private programmeStrategyService: ProgrammeStrategyService,
               private programmePageSidenavService: ProgrammePageSidenavService) {
-    super();
-    this.programmePageSidenavService.init(this.destroyed$);
   }
 }

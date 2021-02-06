@@ -34,7 +34,6 @@ export class ProgrammePriorityComponent extends BaseComponent {
               private tabService: TabService,
               private programmePageSidenavService: ProgrammePageSidenavService) {
     super();
-    this.programmePageSidenavService.init(this.destroyed$);
   }
 
   savePriority(priority: ProgrammePriorityDTO): void {

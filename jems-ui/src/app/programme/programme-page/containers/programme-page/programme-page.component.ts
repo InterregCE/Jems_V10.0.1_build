@@ -89,6 +89,5 @@ export class ProgrammePageComponent extends BaseComponent {
               private programmePriorityService: ProgrammePriorityService,
               private programmePageSidenavService: ProgrammePageSidenavService) {
     super();
-    this.programmePageSidenavService.init(this.destroyed$);
   }
 }

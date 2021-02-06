@@ -42,6 +42,5 @@ export class ProgrammeLegalStatusComponent extends BaseComponent {
   constructor(private legalStatusService: ProgrammeLegalStatusService,
               private programmePageSidenavService: ProgrammePageSidenavService) {
     super();
-    this.programmePageSidenavService.init(this.destroyed$);
   }
 }
