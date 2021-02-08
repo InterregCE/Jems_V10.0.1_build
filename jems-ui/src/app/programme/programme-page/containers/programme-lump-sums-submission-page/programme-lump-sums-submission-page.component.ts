@@ -34,7 +34,6 @@ export class ProgrammeLumpSumsSubmissionPageComponent extends BaseComponent {
               private tabService: TabService,
               private programmePageSidenavService: ProgrammePageSidenavService) {
     super();
-    this.programmePageSidenavService.init(this.destroyed$);
   }
 
   createLumpSum(lumpSum: ProgrammeLumpSumDTO): void {

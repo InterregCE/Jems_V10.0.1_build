@@ -1,0 +1,22 @@
+<app-breadcrumb></app-breadcrumb>
+<h4>{{'programme.priority.list.header' | translate}}</h4>
+<button class="mb-3" mat-raised-button color="primary"
+        routerLink="/app/programme/priorities/create">
+    + {{'programme.priority.add.new' | translate}}
+</button>
+
+<ng-container *ngIf="prioritiesPageStore.priorities$ | async as priorities">
+    <app-table *ngIf="priorities.length"
+               [configuration]="tableConfiguration"
+               [rows]="priorities"
+               [totalElements]="priorities.length">
+    </app-table>
+</ng-container>
+
+<ng-template #specificObjective let-priority>
+    <div>
+        <div class="mt-1 mb-1" *ngFor="let objective of priority.specificObjectives">
+            {{objective.code}} - {{'programme.policy.' + objective.programmeObjectivePolicy | translate}}
+        </div>
+    </div>
+</ng-template>

@@ -4,11 +4,6 @@ import {routes} from './programme-routing.module';
 import {SharedModule} from '../common/shared-module';
 import {ProgrammePageComponent} from './programme-page/containers/programme-page/programme-page.component';
 import {ProgrammeDataComponent} from './programme-page/components/programme-data/programme-data.component';
-import {ProgrammePrioritiesComponent} from './programme-page/containers/programme-priorities/programme-priorities.component';
-import {ProgrammePriorityItemsComponent} from './programme-page/components/programme-priority-items/programme-priority-items.component';
-import {ProgrammePrioritySubmissionComponent} from './programme-page/components/programme-priority-submission/programme-priority-submission.component';
-import {ProgrammePolicyCheckboxComponent} from './programme-page/components/programme-priority-submission/programme-policy-checkbox/programme-policy-checkbox.component';
-import {ProgrammePriorityComponent} from './programme-page/containers/programme-priority/programme-priority.component';
 import {ProgrammeAreaComponent} from './programme-page/containers/programme-area/programme-area.component';
 import {ProgrammeNutsInfoComponent} from './programme-page/components/programme-nuts-info/programme-nuts-info.component';
 import {ProgrammeRegionsTreeComponent} from './programme-page/components/programme-regions-tree/programme-regions-tree.component';
@@ -30,26 +25,22 @@ import {ProgrammeLanguagesComponent} from './programme-page/components/programme
 import {ProgrammeLanguagesPageComponent} from './programme-page/containers/programme-languages-page/programme-languages-page.component';
 import {ProgrammeLegalStatusComponent} from './programme-page/containers/programme-legal-status/programme-legal-status.component';
 import {ProgrammeLegalStatusListComponent} from './programme-page/components/programme-legal-status-list/programme-legal-status-list.component';
-import { ProgrammeSimplifiedCostOptionsComponent } from './programme-page/containers/programme-simplified-cost-options/programme-simplified-cost-options.component';
+import {ProgrammeSimplifiedCostOptionsComponent} from './programme-page/containers/programme-simplified-cost-options/programme-simplified-cost-options.component';
 import {LumpSumsStore} from './programme-page/services/lump-sums-store.service';
-import { ProgrammeLumpSumsListComponent } from './programme-page/components/programme-lump-sums-list/programme-lump-sums-list.component';
-import { ProgrammeLumpSumsSubmissionPageComponent } from './programme-page/containers/programme-lump-sums-submission-page/programme-lump-sums-submission-page.component';
-import { ProgrammeLumpSumDetailComponent } from './programme-page/components/programme-lump-sum-detail/programme-lump-sum-detail.component';
-import { ProgrammeUnitCostsListComponent } from './programme-page/components/programme-unit-costs-list/programme-unit-costs-list.component';
+import {ProgrammeLumpSumsListComponent} from './programme-page/components/programme-lump-sums-list/programme-lump-sums-list.component';
+import {ProgrammeLumpSumsSubmissionPageComponent} from './programme-page/containers/programme-lump-sums-submission-page/programme-lump-sums-submission-page.component';
+import {ProgrammeLumpSumDetailComponent} from './programme-page/components/programme-lump-sum-detail/programme-lump-sum-detail.component';
+import {ProgrammeUnitCostsListComponent} from './programme-page/components/programme-unit-costs-list/programme-unit-costs-list.component';
 import {UnitCostStore} from './programme-page/services/unit-cost-store.service';
-import { ProgrammeUnitCostDetailComponent } from './programme-page/components/programme-unit-cost-detail/programme-unit-cost-detail.component';
-import { ProgrammeUnitCostsSubmissionPageComponent } from './programme-page/containers/programme-unit-costs-submission-page/programme-unit-costs-submission-page.component';
+import {ProgrammeUnitCostDetailComponent} from './programme-page/components/programme-unit-cost-detail/programme-unit-cost-detail.component';
+import {ProgrammeUnitCostsSubmissionPageComponent} from './programme-page/containers/programme-unit-costs-submission-page/programme-unit-costs-submission-page.component';
+import {ProgrammePriorityDetailPageComponent} from './priorities/programme-priority-list-page/programme-priority-detail-page/programme-priority-detail-page.component';
+import {ProgrammePriorityListPageComponent} from './priorities/programme-priority-list-page/programme-priority-list-page.component';
 
 @NgModule({
   declarations: [
     ProgrammePageComponent,
     ProgrammeDataComponent,
-    ProgrammePrioritiesComponent,
-    ProgrammePriorityItemsComponent,
-    ProgrammePrioritySubmissionComponent,
-    ProgrammePolicyCheckboxComponent,
-    ProgrammePolicyCheckboxComponent,
-    ProgrammePriorityComponent,
     ProgrammeAreaComponent,
     ProgrammeNutsInfoComponent,
     ProgrammeRegionsComponent,
@@ -76,7 +67,9 @@ import { ProgrammeUnitCostsSubmissionPageComponent } from './programme-page/cont
     ProgrammeLumpSumDetailComponent,
     ProgrammeUnitCostsListComponent,
     ProgrammeUnitCostDetailComponent,
-    ProgrammeUnitCostsSubmissionPageComponent
+    ProgrammeUnitCostsSubmissionPageComponent,
+    ProgrammePriorityListPageComponent,
+    ProgrammePriorityDetailPageComponent
   ],
   providers: [
     IndicatorsStore,

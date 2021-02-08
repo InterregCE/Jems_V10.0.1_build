@@ -45,7 +45,6 @@ export class ProgrammeOutputIndicatorSubmissionPageComponent extends BaseCompone
               private programmePriorityService: ProgrammePriorityService,
               private programmePageSidenavService: ProgrammePageSidenavService) {
     super();
-    this.programmePageSidenavService.init(this.destroyed$);
   }
 
   createOutputIndicator(indicator: InputIndicatorOutputCreate): void {

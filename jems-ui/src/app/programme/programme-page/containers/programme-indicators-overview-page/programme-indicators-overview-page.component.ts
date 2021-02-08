@@ -66,7 +66,6 @@ export class ProgrammeIndicatorsOverviewPageComponent extends BaseComponent {
               private programmeIndicatorService: ProgrammeIndicatorService,
               private programmePageSidenavService: ProgrammePageSidenavService) {
     super();
-    this.programmePageSidenavService.init(this.destroyed$);
   }
 
 }

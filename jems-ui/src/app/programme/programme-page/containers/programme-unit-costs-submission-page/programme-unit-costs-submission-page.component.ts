@@ -34,7 +34,6 @@ export class ProgrammeUnitCostsSubmissionPageComponent extends BaseComponent {
               private tabService: TabService,
               private programmePageSidenavService: ProgrammePageSidenavService) {
     super();
-    this.programmePageSidenavService.init(this.destroyed$);
   }
 
   createUnitCost(unitCost: ProgrammeUnitCostDTO): void {

@@ -1,6 +1,5 @@
 import {Injectable} from '@angular/core';
 import {SideNavService} from '@common/components/side-nav/side-nav.service';
-import {Subject} from 'rxjs';
 
 @Injectable()
 export class ProgrammePageSidenavService {
@@ -27,9 +26,10 @@ export class ProgrammePageSidenavService {
   };
 
   constructor(private sideNavService: SideNavService) {
+    this.init();
   }
 
-  public init(destroyed$: Subject<any>): void {
+  private init(): void {
     this.sideNavService.setHeadlines(ProgrammePageSidenavService.PROGRAMME_DETAIL_PATH, [
       {
         headline: {i18nKey: 'programme.data.page.title'},

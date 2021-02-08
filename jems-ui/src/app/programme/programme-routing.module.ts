@@ -1,7 +1,5 @@
 import {Routes} from '@angular/router';
 import {ProgrammePageComponent} from './programme-page/containers/programme-page/programme-page.component';
-import {ProgrammePrioritiesComponent} from './programme-page/containers/programme-priorities/programme-priorities.component';
-import {ProgrammePriorityComponent} from './programme-page/containers/programme-priority/programme-priority.component';
 import {ProgrammeOutputIndicatorSubmissionPageComponent} from './programme-page/containers/programme-output-indicator-submission-page/programme-output-indicator-submission-page.component';
 import {ProgrammeResultIndicatorSubmissionPageComponent} from './programme-page/containers/programme-result-indicator-submission-page/programme-result-indicator-submission-page.component';
 import {ProgrammeAreaComponent} from './programme-page/containers/programme-area/programme-area.component';
@@ -12,11 +10,17 @@ import {ProgrammeLegalStatusComponent} from './programme-page/containers/program
 import {ProgrammeSimplifiedCostOptionsComponent} from './programme-page/containers/programme-simplified-cost-options/programme-simplified-cost-options.component';
 import {ProgrammeLumpSumsSubmissionPageComponent} from './programme-page/containers/programme-lump-sums-submission-page/programme-lump-sums-submission-page.component';
 import {ProgrammeUnitCostsSubmissionPageComponent} from './programme-page/containers/programme-unit-costs-submission-page/programme-unit-costs-submission-page.component';
+import {Permission} from '../security/permissions/permission';
+import {ProgrammePriorityDetailPageComponent} from './priorities/programme-priority-list-page/programme-priority-detail-page/programme-priority-detail-page.component';
+import {ProgrammePriorityListPageComponent} from './priorities/programme-priority-list-page/programme-priority-list-page.component';
 
 export const routes: Routes = [
   {
     path: '',
-    data: {breadcrumb: 'programme.breadcrumb.setup'},
+    data: {
+      breadcrumb: 'programme.breadcrumb.setup',
+      permissionsOnly: [Permission.ADMINISTRATOR, Permission.PROGRAMME_USER],
+    },
     children: [
       {
         path: '',
@@ -28,11 +32,16 @@ export const routes: Routes = [
         children: [
           {
             path: '',
-            component: ProgrammePrioritiesComponent,
+            component: ProgrammePriorityListPageComponent,
           },
           {
-            path: 'priority',
-            component: ProgrammePriorityComponent,
+            path: 'create',
+            component: ProgrammePriorityDetailPageComponent,
+            data: {breadcrumb: 'programme.breadcrumb.priority'},
+          },
+          {
+            path: ':priorityId',
+            component: ProgrammePriorityDetailPageComponent,
             data: {breadcrumb: 'programme.breadcrumb.priority'},
           },
         ],

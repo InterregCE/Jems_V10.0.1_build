@@ -38,7 +38,6 @@ export class ProgrammeSimplifiedCostOptionsComponent extends BaseComponent {
               private programmeCostOptionService: ProgrammeCostOptionService,
               private programmePageSidenavService: ProgrammePageSidenavService) {
     super();
-    this.programmePageSidenavService.init(this.destroyed$);
   }
 
 }

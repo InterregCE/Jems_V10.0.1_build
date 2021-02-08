@@ -46,7 +46,6 @@ export class ProgrammeLanguagesPageComponent extends BaseComponent implements On
               private programmePageSidenavService: ProgrammePageSidenavService,
               private languageService: LanguageService) {
     super();
-    this.programmePageSidenavService.init(this.destroyed$);
   }
 
   reloadLanguages(response: OutputProgrammeLanguage[]): void {

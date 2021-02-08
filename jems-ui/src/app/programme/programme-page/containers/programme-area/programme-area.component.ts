@@ -86,7 +86,6 @@ export class ProgrammeAreaComponent extends BaseComponent implements OnInit {
               private programmeDataService: ProgrammeDataService,
               private programmePageSidenavService: ProgrammePageSidenavService) {
     super();
-    this.programmePageSidenavService.init(this.destroyed$);
   }
 
   ngOnInit(): void {
