@@ -54,6 +54,17 @@ export class MultiLanguageFormFieldComponent implements OnInit, ControlValueAcce
 
   multiLanguageFormGroup: FormGroup;
 
+  static didLanguagesChange(
+    savedTranslations: InputTranslation[],
+    currentSystemLanguages: OutputProgrammeLanguage.CodeEnum[]
+  ): boolean {
+    if (savedTranslations.length !== currentSystemLanguages.length) {
+      return true;
+    }
+    return !!currentSystemLanguages.filter(existingLanguage =>
+      !savedTranslations.filter(newTranslation => newTranslation.language === existingLanguage).length).length;
+  }
+
   constructor(public multiLanguageService: MultiLanguageInputService, public formBuilder: FormBuilder) {
   }
 
@@ -87,7 +98,7 @@ export class MultiLanguageFormFieldComponent implements OnInit, ControlValueAcce
   writeValue(newValue: InputTranslation[]): void {
     if (this.multiLanguageFormGroup) {
       if (newValue && Array.isArray(newValue)) {
-        if (newValue.length !== this.multiLanguageService.languages.length) {
+        if (MultiLanguageFormFieldComponent.didLanguagesChange(newValue, this.multiLanguageService.languages)) {
           const inputTranslations = this.multiLanguageService.multiLanguageFormFieldDefaultValue();
           inputTranslations.forEach(defaultItem => {
             defaultItem.translation = newValue.find(it => it.language === defaultItem.language)?.translation || '';
