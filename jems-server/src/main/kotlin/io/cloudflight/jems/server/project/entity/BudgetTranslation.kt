@@ -32,7 +32,6 @@ class BudgetTranslation<T: ProjectPartnerBudgetBase>(
             language == other.language
 
     override fun hashCode() =
-        if (budget.id <= 0) super.hashCode()
-        else budget.hashCode().plus(language.translationKey.hashCode())
+        budget.hashCode().plus(language.translationKey.hashCode())
 
 }

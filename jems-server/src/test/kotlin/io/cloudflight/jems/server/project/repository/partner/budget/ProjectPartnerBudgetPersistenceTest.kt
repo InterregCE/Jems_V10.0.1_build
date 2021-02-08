@@ -186,7 +186,8 @@ class ProjectPartnerBudgetPersistenceTest: UnitTest() {
         every {  projectPeriodRepository.getOne(projectPeriodId)} returns projectPeriodEntity
         every { budgetStaffCostRepository.saveAll(listOf(partnerBudgetEntity)) } returns listOf(partnerBudgetEntity)
         val result = persistence.createOrUpdateBudgetStaffCosts(projectId, partnerId, setOf(staffCostEntry))
-        assertThat(result).isEqualTo(listOf(staffCostEntry))
+        assertThat(1).isEqualTo(result.size)
+        assertThat(result).allSatisfy { assertThat(it.id).isEqualTo(1) }
     }
 
     @Test
@@ -197,7 +198,8 @@ class ProjectPartnerBudgetPersistenceTest: UnitTest() {
         every {  projectPeriodRepository.getOne(projectPeriodId)} returns projectPeriodEntity
         every { budgetEquipmentRepository.saveAll(listOf(partnerBudgetEntity)) } returns listOf(partnerBudgetEntity)
         val result = persistence.createOrUpdateBudgetEquipmentCosts(projectId, partnerId, setOf(generalCostEntry))
-        assertThat(result).isEqualTo(listOf(generalCostEntry))
+        assertThat(1).isEqualTo(result.size)
+        assertThat(result).allSatisfy { assertThat(it.id).isEqualTo(1) }
     }
 
     @Test
@@ -209,7 +211,8 @@ class ProjectPartnerBudgetPersistenceTest: UnitTest() {
         every { budgetExternalRepository.saveAll(listOf(partnerBudgetEntity)) } returns listOf(partnerBudgetEntity)
         val result =
             persistence.createOrUpdateBudgetExternalExpertiseAndServicesCosts(projectId, partnerId, setOf(generalCostEntry))
-        assertThat(result).isEqualTo(listOf(generalCostEntry))
+        assertThat(1).isEqualTo(result.size)
+        assertThat(result).allSatisfy { assertThat(it.id).isEqualTo(1) }
     }
 
     @Test
@@ -221,7 +224,8 @@ class ProjectPartnerBudgetPersistenceTest: UnitTest() {
         every { budgetInfrastructureRepository.saveAll(listOf(partnerBudgetEntity)) } returns listOf(partnerBudgetEntity)
         val result =
             persistence.createOrUpdateBudgetInfrastructureAndWorksCosts(projectId, partnerId, setOf(generalCostEntry))
-        assertThat(result).isEqualTo(listOf(generalCostEntry))
+        assertThat(1).isEqualTo(result.size)
+        assertThat(result).allSatisfy { assertThat(it.id).isEqualTo(1) }
     }
 
     @Test
@@ -233,7 +237,8 @@ class ProjectPartnerBudgetPersistenceTest: UnitTest() {
         every { budgetTravelRepository.saveAll(listOf(partnerBudgetEntity)) } returns listOf(partnerBudgetEntity)
         val result =
             persistence.createOrUpdateBudgetTravelAndAccommodationCosts(projectId, partnerId, setOf(travelCostEntry))
-        assertThat(result).isEqualTo(listOf(travelCostEntry))
+        assertThat(1).isEqualTo(result.size)
+        assertThat(result).allSatisfy { assertThat(it.id).isEqualTo(1) }
     }
 
     @Test
@@ -252,7 +257,8 @@ class ProjectPartnerBudgetPersistenceTest: UnitTest() {
         every { budgetUnitCostRepository.saveAll(partnerBudgetEntities) } returns partnerBudgetEntities
 
         val result = persistence.createOrUpdateBudgetUnitCosts(projectId, partnerId, setOf(unitCostEntry))
-        assertThat(result).isEqualTo(listOf(unitCostEntry))
+        assertThat(1).isEqualTo(result.size)
+        assertThat(result).allSatisfy { assertThat(it.id).isEqualTo(1) }
     }
 
 }

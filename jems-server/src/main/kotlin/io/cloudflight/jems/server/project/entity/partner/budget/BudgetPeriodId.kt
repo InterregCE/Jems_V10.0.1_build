@@ -2,7 +2,11 @@ package io.cloudflight.jems.server.project.entity.partner.budget
 
 import io.cloudflight.jems.server.project.entity.ProjectPeriodEntity
 import java.io.Serializable
-import javax.persistence.*
+import javax.persistence.Embeddable
+import javax.persistence.FetchType
+import javax.persistence.JoinColumn
+import javax.persistence.JoinColumns
+import javax.persistence.ManyToOne
 import javax.validation.constraints.NotNull
 
 @Embeddable
@@ -27,12 +31,11 @@ class BudgetPeriodId<T : ProjectPartnerBudgetBase>(
         this === other ||
             other !== null &&
             other is BudgetPeriodId<*> &&
-            budget.id == other.budget.id &&
+            budget == other.budget &&
             period.id == other.period.id
 
     override fun hashCode() =
-        if (budget.id <= 0) super.hashCode()
-        else budget.id.toInt().plus(period.id.hashCode())
+        budget.hashCode().plus(period.id.hashCode())
 
 
 }
