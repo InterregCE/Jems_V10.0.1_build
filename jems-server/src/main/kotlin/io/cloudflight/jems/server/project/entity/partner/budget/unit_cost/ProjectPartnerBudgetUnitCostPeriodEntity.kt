@@ -3,7 +3,6 @@ package io.cloudflight.jems.server.project.entity.partner.budget.unit_cost
 import io.cloudflight.jems.server.project.entity.partner.budget.BudgetPeriodId
 import io.cloudflight.jems.server.project.entity.partner.budget.ProjectPartnerBudgetPeriodBase
 import java.math.BigDecimal
-import javax.persistence.Column
 import javax.persistence.EmbeddedId
 import javax.persistence.Entity
 import javax.validation.constraints.NotNull
@@ -24,6 +23,5 @@ class ProjectPartnerBudgetUnitCostPeriodEntity(
             budgetPeriodId == other.budgetPeriodId
 
     override fun hashCode() =
-        if (budgetPeriodId.budget.id <= 0) super.hashCode()
-        else budgetPeriodId.budget.id.toInt().plus(budgetPeriodId.period.id.hashCode())
+        budgetPeriodId.hashCode()
 }

@@ -3,7 +3,14 @@ package io.cloudflight.jems.server.project.entity.partner.budget.general.externa
 import io.cloudflight.jems.server.project.entity.partner.budget.BaseBudgetProperties
 import io.cloudflight.jems.server.project.entity.partner.budget.general.ProjectPartnerBudgetGeneralBase
 import java.math.BigDecimal
-import javax.persistence.*
+import javax.persistence.CascadeType
+import javax.persistence.Column
+import javax.persistence.Embedded
+import javax.persistence.Entity
+import javax.persistence.GeneratedValue
+import javax.persistence.GenerationType
+import javax.persistence.Id
+import javax.persistence.OneToMany
 import javax.validation.constraints.NotNull
 
 @Entity(name = "project_partner_budget_external")
@@ -40,6 +47,6 @@ data class ProjectPartnerBudgetExternalEntity(
             id == other.id
 
     override fun hashCode() =
-        if (id > 0) id.toInt() else super.hashCode()
+        super.hashCode()
 
 }

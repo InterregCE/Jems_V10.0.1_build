@@ -26,6 +26,5 @@ data class ProjectPartnerBudgetExternalTranslEntity(
             budgetTranslation == other.budgetTranslation
 
     override fun hashCode() =
-        if (budgetTranslation.budget.id <= 0) super.hashCode()
-        else budgetTranslation.budget.id.toInt().plus(budgetTranslation.language.translationKey.hashCode())
+        budgetTranslation.hashCode()
 }

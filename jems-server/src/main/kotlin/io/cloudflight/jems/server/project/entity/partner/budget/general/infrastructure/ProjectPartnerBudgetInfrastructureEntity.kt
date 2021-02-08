@@ -1,6 +1,6 @@
 package io.cloudflight.jems.server.project.entity.partner.budget.general.infrastructure
 
-import io.cloudflight.jems.server.project.entity.partner.budget.*
+import io.cloudflight.jems.server.project.entity.partner.budget.BaseBudgetProperties
 import io.cloudflight.jems.server.project.entity.partner.budget.general.ProjectPartnerBudgetGeneralBase
 import java.math.BigDecimal
 import javax.persistence.CascadeType
@@ -48,6 +48,6 @@ data class ProjectPartnerBudgetInfrastructureEntity(
             id == other.id
 
     override fun hashCode() =
-        if (id > 0) id.toInt() else super.hashCode()
+        super.hashCode()
 
 }

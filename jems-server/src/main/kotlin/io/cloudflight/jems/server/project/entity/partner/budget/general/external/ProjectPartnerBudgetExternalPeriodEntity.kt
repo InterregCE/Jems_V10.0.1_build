@@ -23,6 +23,5 @@ class ProjectPartnerBudgetExternalPeriodEntity(
             budgetPeriodId == other.budgetPeriodId
 
     override fun hashCode() =
-        if (budgetPeriodId.budget.id <= 0) super.hashCode()
-        else budgetPeriodId.budget.id.toInt().plus(budgetPeriodId.period.id.hashCode())
+        budgetPeriodId.hashCode()
 }

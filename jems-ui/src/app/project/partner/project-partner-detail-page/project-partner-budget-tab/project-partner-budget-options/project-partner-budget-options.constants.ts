@@ -19,9 +19,9 @@ export class ProjectPartnerBudgetOptionsConstants {
       min: 'project.partner.budget.options.office.on.staff.cost.flat.rate.range',
     },
     officeAndAdministrationOnDirectCostsFlatRateErrors: {
-      required: 'project.partner.budget.options.office.on.staff.cost.flat.rate.empty',
-      max: 'project.partner.budget.options.office.on.staff.cost.flat.rate.range',
-      min: 'project.partner.budget.options.office.on.staff.cost.flat.rate.range',
+      required: 'project.partner.budget.options.office.on.direct.cost.flat.rate.empty',
+      max: 'project.partner.budget.options.office.on.direct.cost.flat.rate.range',
+      min: 'project.partner.budget.options.office.on.direct.cost.flat.rate.range',
     },
     staffCostsFlatRateErrors: {
       required: 'project.partner.budget.options.staff.costs.on.direct.cost.flat.rate.empty',
