@@ -28,7 +28,8 @@
               "src/assets"
             ],
             "styles": [
-              "src/styles.scss"
+              "src/styles.scss",
+              "node_modules/vis-timeline/styles/vis-timeline-graph2d.css"
             ],
             "scripts": []
           },
