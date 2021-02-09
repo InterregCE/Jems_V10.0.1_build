@@ -101,6 +101,7 @@ internal class ProjectStatusServiceTest {
         name = "call",
         prioritySpecificObjectives = setOf(ProgrammeSpecificObjectiveEntity(DisadvantagedGroups, "DG")),
         strategies = setOf(Strategy(ProgrammeStrategy.SeaBasinStrategyArcticOcean, true)),
+        isAdditionalFundAllowed = false,
         funds = emptySet(),
         startDate = ZonedDateTime.now().minusDays(2),
         endDate = ZonedDateTime.now().plusDays(2),

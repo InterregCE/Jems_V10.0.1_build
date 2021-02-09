@@ -90,6 +90,7 @@ class FileStorageServiceTest {
         name = "call",
         prioritySpecificObjectives = setOf(ProgrammeSpecificObjectiveEntity(CircularEconomy, "CE")),
         strategies = setOf(Strategy(ProgrammeStrategy.SeaBasinStrategyArcticOcean, true)),
+        isAdditionalFundAllowed = false,
         funds = emptySet(),
         startDate = ZonedDateTime.now(),
         endDate = ZonedDateTime.now(),

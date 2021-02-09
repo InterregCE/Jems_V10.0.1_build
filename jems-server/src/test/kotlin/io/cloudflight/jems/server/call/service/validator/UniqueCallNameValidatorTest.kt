@@ -40,7 +40,7 @@ class UniqueCallNameValidatorTest {
 
     @Test
     fun `existing is not valid`() {
-        every { callService.findOneByName(eq("existing")) } returns OutputCall(id = 1, name = "test call", priorityPolicies = emptyList(), strategies = emptyList(), funds = emptyList(), status = CallStatus.PUBLISHED, startDate = ZonedDateTime.now(), endDate = ZonedDateTime.now(), lengthOfPeriod = 1, flatRates = FlatRateSetupDTO())
+        every { callService.findOneByName(eq("existing")) } returns OutputCall(id = 1, name = "test call", priorityPolicies = emptyList(), strategies = emptyList(), isAdditionalFundAllowed = false, funds = emptyList(), status = CallStatus.PUBLISHED, startDate = ZonedDateTime.now(), endDate = ZonedDateTime.now(), lengthOfPeriod = 1, flatRates = FlatRateSetupDTO())
         assertFalse(uniqueCallNameValidator.isValid("existing"))
     }
 

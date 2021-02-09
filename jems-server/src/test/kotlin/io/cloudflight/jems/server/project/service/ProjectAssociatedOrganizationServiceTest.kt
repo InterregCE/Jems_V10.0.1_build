@@ -76,6 +76,7 @@ internal class ProjectAssociatedOrganizationServiceTest {
         endDate = ZonedDateTime.now(),
         prioritySpecificObjectives = emptySet(),
         strategies = emptySet(),
+        isAdditionalFundAllowed = false,
         funds = emptySet(),
         lengthOfPeriod = 1
     )

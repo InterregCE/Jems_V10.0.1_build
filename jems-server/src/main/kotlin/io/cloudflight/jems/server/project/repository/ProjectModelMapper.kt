@@ -22,6 +22,7 @@ fun CallEntity.toSettingsModel() = ProjectCallSettings(
     startDate = startDate,
     endDate = endDate,
     lengthOfPeriod = lengthOfPeriod,
+    isAdditionalFundAllowed = isAdditionalFundAllowed,
     flatRates = flatRates.mapTo(HashSet()) { it.toModel() },
     lumpSums = lumpSums.map { it.toProgrammeUnitCost() }.sortedBy { it.id },
     unitCosts = unitCosts.toProgrammeUnitCost()

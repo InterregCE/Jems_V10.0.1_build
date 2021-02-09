@@ -26,14 +26,15 @@ class CallFactory(
         return callRepository.save(
             CallEntity(
                 0,
-                user,
-                callName,
-                emptySet(),
-                emptySet(),
-                emptySet(),
-                callStart,
-                callEnd,
-                CallStatus.PUBLISHED,
+                creator = user,
+                name = callName,
+                prioritySpecificObjectives = emptySet(),
+                strategies = emptySet(),
+                isAdditionalFundAllowed = false,
+                funds = emptySet(),
+                startDate = callStart,
+                endDate = callEnd,
+                status = CallStatus.PUBLISHED,
                 lengthOfPeriod = 1
             )
         )

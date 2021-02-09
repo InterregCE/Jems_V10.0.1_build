@@ -55,6 +55,10 @@ data class CallEntity(
     )
     val strategies: Set<Strategy>,
 
+    @Column
+    @field:NotNull
+    val isAdditionalFundAllowed: Boolean,
+
     @OneToMany
     @JoinTable(
         name = "project_call_fund",

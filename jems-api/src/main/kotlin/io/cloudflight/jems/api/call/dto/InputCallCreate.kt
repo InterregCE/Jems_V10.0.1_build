@@ -23,6 +23,9 @@ data class InputCallCreate (
 
     val strategies: Set<ProgrammeStrategy>? = null,
 
+    @field:NotNull
+    val isAdditionalFundAllowed: Boolean,
+
     val funds: Set<Long>? = null,
 
     @field:NotNull(message = "call.startDate.unknown")

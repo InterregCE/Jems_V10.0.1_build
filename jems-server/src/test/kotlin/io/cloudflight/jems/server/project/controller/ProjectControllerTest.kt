@@ -96,6 +96,7 @@ class ProjectControllerTest {
             startDate = startDate,
             endDate = endDate,
             lengthOfPeriod = 6,
+            isAdditionalFundAllowed = false,
             flatRates = setOf(
                 ProjectCallFlatRate(type = FlatRateType.STAFF_COSTS, rate = 15, isAdjustable = true),
             ),
@@ -129,6 +130,7 @@ class ProjectControllerTest {
                 startDate = startDate,
                 endDate = endDate,
                 lengthOfPeriod = 6,
+                isAdditionalFundAllowed = false,
                 flatRates = FlatRateSetupDTO(
                     staffCostFlatRateSetup = FlatRateDTO(15, true),
                 ),

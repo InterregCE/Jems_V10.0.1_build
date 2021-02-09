@@ -1,5 +1,6 @@
 package io.cloudflight.jems.server.project.service.partner.cofinancing.get_cofinancing
 
+import io.cloudflight.jems.api.project.dto.partner.cofinancing.ProjectPartnerCoFinancingFundType
 import io.cloudflight.jems.api.project.dto.partner.cofinancing.ProjectPartnerContributionStatus.AutomaticPublic
 import io.cloudflight.jems.api.project.dto.partner.cofinancing.ProjectPartnerContributionStatus.Public
 import io.cloudflight.jems.server.programme.service.model.ProgrammeFund
@@ -35,8 +36,8 @@ internal class GetCoFinancingInteractorTest {
     @Test
     fun `test get cofinancing`() {
         val finances = setOf(
-            ProjectPartnerCoFinancing(id = 1, fund = fund, percentage = 20),
-            ProjectPartnerCoFinancing(id = 2, fund = null, percentage = 80)
+            ProjectPartnerCoFinancing(fundType = ProjectPartnerCoFinancingFundType.MainFund, fund = fund, percentage = 20),
+            ProjectPartnerCoFinancing(fundType = ProjectPartnerCoFinancingFundType.PartnerContribution, fund = null, percentage = 80)
         )
         val contributions = listOf(
             ProjectPartnerContribution(

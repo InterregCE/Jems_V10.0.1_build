@@ -7,6 +7,7 @@ import io.cloudflight.jems.api.project.dto.partner.budget.BudgetTravelAndAccommo
 import io.cloudflight.jems.api.project.dto.partner.budget.BudgetUnitCostEntryDTO
 import io.cloudflight.jems.api.project.dto.partner.cofinancing.ProjectPartnerCoFinancingAndContributionInputDTO
 import io.cloudflight.jems.api.project.dto.partner.cofinancing.ProjectPartnerCoFinancingAndContributionOutputDTO
+import io.cloudflight.jems.api.project.dto.partner.cofinancing.ProjectPartnerCoFinancingFundType
 import io.cloudflight.jems.api.project.dto.partner.cofinancing.ProjectPartnerCoFinancingInputDTO
 import io.cloudflight.jems.api.project.dto.partner.cofinancing.ProjectPartnerCoFinancingOutputDTO
 import io.cloudflight.jems.api.project.dto.partner.cofinancing.ProjectPartnerContributionDTO
@@ -47,7 +48,7 @@ class ProjectPartnerBudgetControllerTest : UnitTest() {
     private val expectedDto = ProjectPartnerCoFinancingAndContributionOutputDTO(
         finances = listOf(
             ProjectPartnerCoFinancingOutputDTO(
-                id = 10,
+                fundType = ProjectPartnerCoFinancingFundType.MainFund,
                 percentage = 20,
                 fund = ProgrammeFundOutputDTO(
                     id = 10,
@@ -57,11 +58,15 @@ class ProjectPartnerBudgetControllerTest : UnitTest() {
                 )
             ),
             ProjectPartnerCoFinancingOutputDTO(
-                id = 11,
+                fundType = ProjectPartnerCoFinancingFundType.AdditionalFund,
                 percentage = 30,
                 fund = ProgrammeFundOutputDTO(id = 2, selected = true /* abbreviation missing for ids 1..9 */)
             ),
-            ProjectPartnerCoFinancingOutputDTO(id = 12, percentage = 50, fund = null)
+            ProjectPartnerCoFinancingOutputDTO(
+                fundType = ProjectPartnerCoFinancingFundType.PartnerContribution,
+                percentage = 50,
+                fund = null
+            )
         ),
         partnerContributions = listOf(
             ProjectPartnerContributionDTO(
@@ -114,9 +119,8 @@ class ProjectPartnerBudgetControllerTest : UnitTest() {
 
     private val modelMock = ProjectPartnerCoFinancingAndContribution(
         finances = listOf(
-            ProjectPartnerCoFinancing(id = 12, percentage = 50, fund = null),
             ProjectPartnerCoFinancing(
-                id = 10,
+                fundType = ProjectPartnerCoFinancingFundType.MainFund,
                 percentage = 20,
                 fund = ProgrammeFund(
                     id = 10,
@@ -126,10 +130,11 @@ class ProjectPartnerBudgetControllerTest : UnitTest() {
                 )
             ),
             ProjectPartnerCoFinancing(
-                id = 11,
+                fundType = ProjectPartnerCoFinancingFundType.AdditionalFund,
                 percentage = 30,
-                fund = ProgrammeFund(id = 2, selected = true, abbreviation = "abbr 2")
-            )
+                fund = ProgrammeFund(id = 2, selected = true)
+            ),
+            ProjectPartnerCoFinancing(fundType = ProjectPartnerCoFinancingFundType.PartnerContribution, percentage = 50, fund = null)
         ),
         partnerContributions = listOf(contribution3, contribution2, contribution1),
         partnerAbbreviation = "PartnerName"
@@ -264,9 +269,9 @@ class ProjectPartnerBudgetControllerTest : UnitTest() {
     @Test
     fun updateProjectPartnerCoFinancing() {
         val inputFinances = listOf(
-            ProjectPartnerCoFinancingInputDTO(id = 11, fundId = 2, percentage = 30),
-            ProjectPartnerCoFinancingInputDTO(id = 10, fundId = 10, percentage = 20),
-            ProjectPartnerCoFinancingInputDTO(id = 12, fundId = null, percentage = 50)
+            ProjectPartnerCoFinancingInputDTO(fundType = ProjectPartnerCoFinancingFundType.MainFund, fundId = 2, percentage = 30),
+            ProjectPartnerCoFinancingInputDTO(fundType = ProjectPartnerCoFinancingFundType.AdditionalFund, fundId = 10, percentage = 20),
+            ProjectPartnerCoFinancingInputDTO(fundType = ProjectPartnerCoFinancingFundType.PartnerContribution, fundId = null, percentage = 50)
         )
         val inputPartnerContributions = expectedDto.partnerContributions
 
@@ -284,9 +289,9 @@ class ProjectPartnerBudgetControllerTest : UnitTest() {
 
         // no matter the order
         assertThat(slotFinances.captured).containsExactlyInAnyOrder(
-            UpdateProjectPartnerCoFinancing(id = 11, fundId = 2, percentage = 30),
-            UpdateProjectPartnerCoFinancing(id = 10, fundId = 10, percentage = 20),
-            UpdateProjectPartnerCoFinancing(id = 12, fundId = null, percentage = 50)
+            UpdateProjectPartnerCoFinancing(fundType = ProjectPartnerCoFinancingFundType.MainFund, fundId = 2, percentage = 30),
+            UpdateProjectPartnerCoFinancing(fundType = ProjectPartnerCoFinancingFundType.AdditionalFund, fundId = 10, percentage = 20),
+            UpdateProjectPartnerCoFinancing(fundType = ProjectPartnerCoFinancingFundType.PartnerContribution, fundId = null, percentage = 50)
         )
         // order matters (to not mix lines after save)
         assertThat(slotPartnerContributions.captured).containsExactly(

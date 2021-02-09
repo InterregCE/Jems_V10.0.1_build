@@ -11,6 +11,7 @@ data class ProjectCallSettingsDTO (
     val startDate: ZonedDateTime,
     val endDate: ZonedDateTime,
     val lengthOfPeriod: Int,
+    val isAdditionalFundAllowed: Boolean,
     val flatRates: FlatRateSetupDTO,
     val lumpSums: List<ProgrammeLumpSumDTO>,
     val unitCosts: List<ProgrammeUnitCostDTO>

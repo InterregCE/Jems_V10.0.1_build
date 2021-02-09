@@ -1,6 +1,7 @@
 package io.cloudflight.jems.server.project.repository.partner
 
 import io.cloudflight.jems.api.project.dto.partner.ProjectPartnerRole
+import io.cloudflight.jems.api.project.dto.partner.cofinancing.ProjectPartnerCoFinancingFundType
 import io.cloudflight.jems.api.project.dto.partner.cofinancing.ProjectPartnerContributionStatus.Private
 import io.cloudflight.jems.api.project.dto.partner.cofinancing.ProjectPartnerContributionStatus.Public
 import io.cloudflight.jems.api.project.dto.status.ProjectApplicationStatus
@@ -13,6 +14,7 @@ import io.cloudflight.jems.server.project.entity.ProjectEntity
 import io.cloudflight.jems.server.project.entity.ProjectStatus
 import io.cloudflight.jems.server.project.entity.partner.ProjectPartnerEntity
 import io.cloudflight.jems.server.project.entity.partner.cofinancing.ProjectPartnerCoFinancingEntity
+import io.cloudflight.jems.server.project.entity.partner.cofinancing.ProjectPartnerCoFinancingFundId
 import io.cloudflight.jems.server.project.entity.partner.cofinancing.ProjectPartnerContributionEntity
 import io.cloudflight.jems.server.project.repository.partner.cofinancing.ProjectPartnerCoFinancingPersistenceProvider
 import io.cloudflight.jems.server.project.service.partner.cofinancing.ProjectPartnerCoFinancingPersistence
@@ -89,8 +91,8 @@ class ProjectBudgetCoFinancingPersistenceTest {
     @Test
     fun `get co financing and contributions`() {
         val dummyFinancing = setOf(
-            ProjectPartnerCoFinancingEntity(id = 1, partnerId = PARTNER_ID, percentage = 25, programmeFund = fund1),
-            ProjectPartnerCoFinancingEntity(id = 2, partnerId = PARTNER_ID, percentage = 75, programmeFund = null)
+            ProjectPartnerCoFinancingEntity(coFinancingFundId = ProjectPartnerCoFinancingFundId(partnerId = PARTNER_ID, type=ProjectPartnerCoFinancingFundType.MainFund), percentage = 25, programmeFund = fund1),
+            ProjectPartnerCoFinancingEntity(coFinancingFundId = ProjectPartnerCoFinancingFundId(partnerId = PARTNER_ID, type=ProjectPartnerCoFinancingFundType.PartnerContribution), percentage = 75, programmeFund = null)
         )
         val dummyPartnerContributions = listOf(
             ProjectPartnerContributionEntity(id = 1, partnerId = PARTNER_ID, name = null, status = Public, amount = BigDecimal.TEN),
@@ -105,8 +107,8 @@ class ProjectBudgetCoFinancingPersistenceTest {
 
         assertThat(result.partnerAbbreviation).isEqualTo(dummyPartner.abbreviation)
         assertThat(result.finances).containsExactlyInAnyOrder(
-            ProjectPartnerCoFinancing(id = 1, fund = fund1Model, percentage = 25),
-            ProjectPartnerCoFinancing(id = 2, fund = null, percentage = 75)
+            ProjectPartnerCoFinancing(fundType=ProjectPartnerCoFinancingFundType.MainFund, fund = fund1Model, percentage = 25),
+            ProjectPartnerCoFinancing(fundType=ProjectPartnerCoFinancingFundType.PartnerContribution, fund = null, percentage = 75)
         )
         assertThat(result.partnerContributions).containsExactlyInAnyOrder(
             ProjectPartnerContribution(id = 1, name = null, status = Public, amount = BigDecimal.TEN, isPartner = true),
@@ -120,8 +122,8 @@ class ProjectBudgetCoFinancingPersistenceTest {
         every { projectPartnerRepository.save(any()) } returnsArgument 0
 
         val toBeSavedFinancing = setOf(
-            UpdateProjectPartnerCoFinancing(fundId = fund1.id, percentage = 30),
-            UpdateProjectPartnerCoFinancing(fundId = null, percentage = 70)
+            UpdateProjectPartnerCoFinancing(fundType=ProjectPartnerCoFinancingFundType.MainFund, fundId = fund1.id, percentage = 30),
+            UpdateProjectPartnerCoFinancing(fundType=ProjectPartnerCoFinancingFundType.PartnerContribution, fundId = null, percentage = 70)
         )
         val toBeSavedContributions = listOf(
             ProjectPartnerContribution(name = null, status = Public, amount = BigDecimal.TEN, isPartner = true),
@@ -136,8 +138,8 @@ class ProjectBudgetCoFinancingPersistenceTest {
 
         assertThat(result.partnerAbbreviation).isEqualTo(dummyPartner.abbreviation)
         assertThat(result.finances).containsExactlyInAnyOrder(
-            ProjectPartnerCoFinancing(id = 0, fund = fund1Model, percentage = 30),
-            ProjectPartnerCoFinancing(id = 0, fund = null, percentage = 70)
+            ProjectPartnerCoFinancing(fundType=ProjectPartnerCoFinancingFundType.MainFund, fund = fund1Model, percentage = 30),
+            ProjectPartnerCoFinancing(fundType=ProjectPartnerCoFinancingFundType.PartnerContribution, fund = null, percentage = 70)
         )
         assertThat(result.partnerContributions).containsExactlyInAnyOrder(
             ProjectPartnerContribution(id = 0, name = null, status = Public, amount = BigDecimal.TEN, isPartner = true),

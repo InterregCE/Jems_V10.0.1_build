@@ -64,6 +64,7 @@ class CallServiceTest {
         name = call.name,
         priorityPolicies = emptyList(),
         strategies = emptyList(),
+        isAdditionalFundAllowed = false,
         funds = emptyList(),
         startDate = call.startDate,
         endDate = call.endDate,
@@ -172,6 +173,7 @@ class CallServiceTest {
             call.name,
             call.prioritySpecificObjectives,
             call.strategies,
+            call.isAdditionalFundAllowed,
             call.funds,
             call.startDate,
             call.endDate.withSecond(59).withNano(999999999),
@@ -188,7 +190,8 @@ class CallServiceTest {
             startDate = call.startDate,
             endDate = call.endDate,
             description = call.description,
-            lengthOfPeriod = 12
+            lengthOfPeriod = 12,
+            isAdditionalFundAllowed = false
         )
         val endDate = call.endDate.withSecond(59).withNano(999999999)
 
@@ -224,7 +227,8 @@ class CallServiceTest {
             funds = setOf(1L),
             startDate = call.startDate,
             endDate = call.endDate,
-            lengthOfPeriod = 12
+            lengthOfPeriod = 12,
+            isAdditionalFundAllowed = false
         )
 
         val result = callService.createCall(newCall)
@@ -253,7 +257,8 @@ class CallServiceTest {
             priorityPolicies = setOf(DigitalConnectivity),
             startDate = call.startDate,
             endDate = call.endDate,
-            lengthOfPeriod = 12
+            lengthOfPeriod = 12,
+            isAdditionalFundAllowed = false
         )
 
         val exception = assertThrows<ResourceNotFoundException> { callService.createCall(newCall) }
@@ -270,7 +275,8 @@ class CallServiceTest {
             startDate = call.startDate,
             endDate = call.endDate,
             description = call.description,
-            lengthOfPeriod = 12
+            lengthOfPeriod = 12,
+            isAdditionalFundAllowed = false
         )
 
         assertThrows<ResourceNotFoundException> { callService.createCall(newCall) }
