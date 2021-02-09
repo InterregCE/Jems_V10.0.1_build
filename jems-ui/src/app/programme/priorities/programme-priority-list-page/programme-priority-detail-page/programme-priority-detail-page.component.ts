@@ -60,7 +60,7 @@ export class ProgrammePriorityDetailPageComponent {
       ),
       map(([priority, setup]) => ({
           priority,
-          objectives: Object.keys(setup.freePrioritiesWithPolicies),
+          objectives: this.getAvailableObjectives((priority as any).objective, setup.freePrioritiesWithPolicies),
           freePrioritiesWithPolicies: setup.freePrioritiesWithPolicies,
           objectivePoliciesAlreadyInUse: setup.objectivePoliciesAlreadyInUse as string[]
         })
@@ -150,7 +150,7 @@ export class ProgrammePriorityDetailPageComponent {
     return {
       i18nKey: this.saveError?.i18nFieldErrors?.specificObjectives.i18nKey,
       i8nArguments: {
-        code: this.saveError?.i18nFieldErrors?.specificObjectives?.i18nArguments?.join(',')
+        arg: this.saveError?.i18nFieldErrors?.specificObjectives?.i18nArguments?.join(',')
       }
     };
   }
@@ -188,6 +188,14 @@ export class ProgrammePriorityDetailPageComponent {
     this.saveError = err.error;
     this.changeDetectorRef.markForCheck();
     return of(priority);
+  }
+
+  private getAvailableObjectives(currentObjective: string, freeObjectives: { [key: string]: Array<string>; }): string[] {
+    const objectives = Object.keys(freeObjectives);
+    if (!currentObjective || objectives.find(obj => obj === currentObjective)) {
+      return objectives;
+    }
+    return [currentObjective, ...objectives];
   }
 
   get specificObjectives(): FormArray {
