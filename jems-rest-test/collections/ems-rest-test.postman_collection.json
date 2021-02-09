@@ -1,6 +1,6 @@
 {
 	"info": {
-		"_postman_id": "f74ade6a-a434-4329-8579-9acedd483319",
+		"_postman_id": "1d36b7cf-6398-498a-8b33-59ec5d3a1d11",
 		"name": "ems-rest-test",
 		"description": "Check EMS application for common use-cases",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
@@ -9683,8 +9683,10 @@
 									"    const finances = pm.response.json().finances;\r",
 									"    pm.expect(finances[0].percentage).to.eql(25);\r",
 									"    pm.expect(finances[0].fund).to.not.be.empty;\r",
+									"    pm.expect(finances[0].fundType).to.be.eql(\"MainFund\");\r",
 									"    pm.expect(finances[1].percentage).to.eql(75);\r",
 									"    pm.expect(finances[1].fund).to.be.null;\r",
+									"    pm.expect(finances[1].fundType).to.be.eql(\"PartnerContribution\");\r",
 									"});\r",
 									"\r",
 									"pm.test('1st contribution is correct', function() {\r",
@@ -9744,7 +9746,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"finances\": [\r\n        {\r\n            \"percentage\": 75\r\n        },\r\n        {\r\n            \"percentage\": 25,\r\n            \"fundId\": {{programmeFundId}}\r\n        }\r\n    ],\r\n    \"partnerContributions\": [\r\n        {\r\n            \"isPartner\": false,\r\n            \"name\": \"Source of money 01\",\r\n            \"status\": \"Public\",\r\n            \"amount\": 8000\r\n        },\r\n        {\r\n            \"isPartner\": true,\r\n            \"name\": \"THIS NAME SHOULD BE IGNORED\",\r\n            \"status\": \"Private\",\r\n            \"amount\": 5100\r\n        },\r\n        {\r\n            \"isPartner\": false,\r\n            \"name\": \"Source of money 02\",\r\n            \"status\": \"AutomaticPublic\",\r\n            \"amount\": 3000\r\n        },\r\n        {\r\n            \"isPartner\": false,\r\n            \"name\": \"Source of money 03\",\r\n            \"status\": \"Private\",\r\n            \"amount\": 2050\r\n        }\r\n    ]\r\n}\r\n",
+							"raw": "{\r\n    \"finances\": [\r\n        {\r\n            \"percentage\": 75,\r\n        \"fundType\":\"PartnerContribution\"\r\n},\r\n        {\r\n            \"percentage\": 25,\r\n     \"fundType\":\"MainFund\",\r\n       \"fundId\": {{programmeFundId}}\r\n        }\r\n    ],\r\n    \"partnerContributions\": [\r\n        {\r\n            \"isPartner\": false,\r\n            \"name\": \"Source of money 01\",\r\n            \"status\": \"Public\",\r\n            \"amount\": 8000\r\n        },\r\n        {\r\n            \"isPartner\": true,\r\n            \"name\": \"THIS NAME SHOULD BE IGNORED\",\r\n            \"status\": \"Private\",\r\n            \"amount\": 5100\r\n        },\r\n        {\r\n            \"isPartner\": false,\r\n            \"name\": \"Source of money 02\",\r\n            \"status\": \"AutomaticPublic\",\r\n            \"amount\": 3000\r\n        },\r\n        {\r\n            \"isPartner\": false,\r\n            \"name\": \"Source of money 03\",\r\n            \"status\": \"Private\",\r\n            \"amount\": 2050\r\n        }\r\n    ]\r\n}\r\n",
 							"options": {
 								"raw": {
 									"language": "json"
