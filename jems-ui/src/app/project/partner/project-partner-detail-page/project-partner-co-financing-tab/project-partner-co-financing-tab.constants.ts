@@ -1,4 +1,4 @@
-export class ProjectPartnerCoFinancingTapConstants {
+export class ProjectPartnerCoFinancingTabConstants {
 
   public static MAX_100_NUMBER_REGEX = '^([0-9]{1,2}|100)$';
   public static MAX_NUMBER_OF_PARTNER_CONTRIBUTIONS = 10;
@@ -14,7 +14,9 @@ export class ProjectPartnerCoFinancingTapConstants {
     fundAmount: 'fundAmount',
     partnerAmount: 'partnerAmount',
     partnerPercentage: 'partnerPercentage',
-
+    additionalFundId: 'additionalFundId',
+    additionalFundAmount: 'additionalFundAmount',
+    additionalFundPercentage: 'additionalFundPercentage',
   };
 
   public static FORM_ERRORS = {
@@ -39,6 +41,13 @@ export class ProjectPartnerCoFinancingTapConstants {
     partnerContributionErrors: {
       total: 'project.partner.coFinancing.contribution.origin.total.invalid',
       maxlength: 'project.partner.coFinancing.contribution.origin.max.length',
+    },
+    additionalFundIdErrors: {
+      required: 'project.partner.coFinancing.fundId.should.not.be.empty',
+    },
+    additionalFundPercentageErrors: {
+      pattern: 'project.partner.coFinancing.percentage.invalid',
+      required: 'project.partner.coFinancing.percentage.invalid',
     }
   };
 

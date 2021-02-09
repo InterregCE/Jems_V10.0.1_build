@@ -11,8 +11,9 @@ export class ProjectCallSettings {
   flatRates: CallFlatRateSetting;
   lumpSums: Array<ProgrammeLumpSum>;
   unitCosts: Array<ProgrammeUnitCost>;
+  multipleFundsAllowed: boolean;
 
-  constructor(callId: number, callName: string, startDate: Date, endDate: Date, lengthOfPeriod: number, flatRates: CallFlatRateSetting, lumpSums: Array<ProgrammeLumpSum>, unitCosts: Array<ProgrammeUnitCost>) {
+  constructor(callId: number, callName: string, startDate: Date, endDate: Date, lengthOfPeriod: number, flatRates: CallFlatRateSetting, lumpSums: Array<ProgrammeLumpSum>, unitCosts: Array<ProgrammeUnitCost>, multipleFundsAllowed: boolean) {
     this.callId = callId;
     this.callName = callName;
     this.startDate = startDate;
@@ -21,5 +22,6 @@ export class ProjectCallSettings {
     this.flatRates = flatRates;
     this.lumpSums = lumpSums;
     this.unitCosts = unitCosts;
+    this.multipleFundsAllowed = multipleFundsAllowed;
   }
 }
