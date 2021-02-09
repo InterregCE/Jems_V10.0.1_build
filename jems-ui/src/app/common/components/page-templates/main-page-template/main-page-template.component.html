@@ -14,12 +14,12 @@
         <p *ngIf="!descriptionText && descriptionKey">{{descriptionKey | translate}}</p>
         <ng-content select="[page-description]"></ng-content>
 
-        <mat-card *ngIf="needsCard" appNoWidthLimit>
+        <mat-card class="page-content-container" *ngIf="needsCard" appNoWidthLimit>
             <mat-card-content>
                 <ng-container [ngTemplateOutlet]="content"></ng-container>
             </mat-card-content>
         </mat-card>
-        <div *ngIf="!needsCard" appNoWidthLimit>
+        <div class="page-content-container" *ngIf="!needsCard" appNoWidthLimit>
             <ng-container [ngTemplateOutlet]="content"></ng-container>
         </div>
         <button *ngIf="isScrollButtonVisible" id="scroll-button" mat-icon-button (click)="scrollToTop()">
