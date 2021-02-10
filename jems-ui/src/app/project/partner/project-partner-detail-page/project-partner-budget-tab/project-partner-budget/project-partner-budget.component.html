@@ -14,10 +14,10 @@
                 <div *ngIf="data.isStaffCostFlatRateActive && !data.isOtherFlatRateBasedOnStaffCostActive">
                     <h6 id="staffCostsFlatRate"
                         class="header">{{'project.partner.budget.staff.costs.flat.rate.header' | translate}}</h6>
-                    <p class="intro-text-small">{{'project.partner.budget.other.costs.flat.rate.description' | translate}}</p>
+                    <p class="intro-text-small">{{'project.partner.budget.other.staff.costs.flat.rate.description' | translate}}</p>
                     <app-budget-flat-rate-table
                             [total]="data.staffCostsTotal"
-                            [description]="'project.partner.budget.other.costs.flat.rate' | translate"></app-budget-flat-rate-table>
+                            [description]="'project.partner.budget.staff.costs.flat.rate' | translate"></app-budget-flat-rate-table>
                 </div>
             </div>
 
@@ -101,7 +101,7 @@
                 <p class="intro-text-small">{{'project.partner.budget.other.costs.flat.rate.description' | translate}}</p>
                 <app-budget-flat-rate-table
                         [total]="data.otherCostsFlatRateTotal"
-                        [description]="'project.partner.budget.staff.costs.flat.rate' | translate"></app-budget-flat-rate-table>
+                        [description]="'project.partner.budget.other.costs.flat.rate' | translate"></app-budget-flat-rate-table>
             </div>
         </form>
     </app-form>
