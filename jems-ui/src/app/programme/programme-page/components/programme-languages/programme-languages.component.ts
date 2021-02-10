@@ -60,7 +60,7 @@ export class ProgrammeLanguagesComponent extends ViewEditForm implements OnInit 
 
   isSubmitDisabled(): boolean {
     return this.systemLangSelection.selected.length < 1
-      || this.systemLangSelection.selected.length > 40
+      || this.systemLangSelection.selected.length > 8
       || this.inputLangSelection.selected.length < 1
       || this.inputLangSelection.selected.length > 4
       || this.submitted;

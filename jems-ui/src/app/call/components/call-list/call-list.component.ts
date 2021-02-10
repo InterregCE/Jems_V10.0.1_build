@@ -11,8 +11,9 @@ import {
 import {TableConfiguration} from '@common/components/table/model/table.configuration';
 import {ColumnType} from '@common/components/table/model/column-type.enum';
 import {MatSort} from '@angular/material/sort';
-import {PageOutputCallList} from '@cat/api';
+import {OutputCall, PageOutputCallList} from '@cat/api';
 import {Router} from '@angular/router';
+import * as moment from 'moment';
 
 @Component({
   selector: 'app-call-list',
@@ -89,5 +90,10 @@ export class CallListComponent implements OnInit {
 
   applyToCall(callId: number): void {
     this.router.navigate(['/app/project/applyTo/' + callId]);
+  }
+
+  isOpen(call: OutputCall): boolean {
+    const currentDate = moment(new Date());
+    return currentDate.isBefore(call.endDate) && currentDate.isAfter(call.startDate);
   }
 }

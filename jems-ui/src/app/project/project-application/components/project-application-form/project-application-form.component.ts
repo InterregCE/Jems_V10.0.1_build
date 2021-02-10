@@ -158,7 +158,7 @@ export class ProjectApplicationFormComponent extends BaseComponent implements On
   }
 
   englishLanguageActive(): boolean {
-    return !!this.languageService.languages.find(lang => this.LANGUAGE.EN === lang);
+    return !!this.languageService.inputLanguages.find(lang => this.LANGUAGE.EN === lang);
   }
 
   private getEnglishIntro(inputs: InputTranslation[]): InputTranslation | undefined {
