@@ -95,7 +95,7 @@ private fun validateCommonRestrictions(programmePriority: ProgrammePriority) {
     )
 }
 
-fun validateCreateHasUniqueCodeAndTitle(
+private fun validateCreateHasUniqueCodeAndTitle(
     programmePriority: ProgrammePriority,
     getPriorityIdByCode: (String) -> Long?,
     getPriorityIdByTitle: (String) -> Long?,
@@ -109,7 +109,7 @@ fun validateCreateHasUniqueCodeAndTitle(
         invalid("programme.priority.title.already.in.use")
 }
 
-fun validateUpdateHasUniqueCodeAndTitle(
+private fun validateUpdateHasUniqueCodeAndTitle(
     priorityId: Long,
     programmePriority: ProgrammePriority,
     getPriorityIdByCode: (String) -> Long?,

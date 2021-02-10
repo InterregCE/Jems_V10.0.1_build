@@ -1,17 +1,19 @@
 package io.cloudflight.jems.server.programme.service.priority.update_priority
 
+import io.cloudflight.jems.server.audit.service.AuditService
 import io.cloudflight.jems.server.programme.authorization.CanUpdateProgrammeSetup
 import io.cloudflight.jems.server.programme.service.priority.ProgrammePriorityPersistence
 import io.cloudflight.jems.server.programme.service.priority.model.ProgrammePriority
 import io.cloudflight.jems.server.programme.service.priority.validator.checkNoCallExistsForRemovedSpecificObjectives
-import io.cloudflight.jems.server.programme.service.priority.validator.validateUpdateHasUniqueCodeAndTitle
 import io.cloudflight.jems.server.programme.service.priority.validator.validateUpdateProgrammePriority
+import io.cloudflight.jems.server.programme.service.programmePriorityUpdated
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 
 @Service
 class UpdatePriority(
     private val persistence: ProgrammePriorityPersistence,
+    private val auditService: AuditService,
 ) : UpdatePriorityInteractor {
 
     @Transactional
@@ -34,7 +36,9 @@ class UpdatePriority(
             alreadyUsedObjectivePolicies = persistence.getObjectivePoliciesAlreadyInUse()
         )
 
-        return persistence.update(priority.copy(id = priorityId))
+        val newPriority = persistence.update(priority.copy(id = priorityId))
+        programmePriorityUpdated(existingPriority, newPriority.getDiff(existingPriority)).logWith(auditService)
+        return newPriority
     }
 
 }
