@@ -7,6 +7,9 @@ import io.cloudflight.jems.api.programme.dto.priority.ProgrammeObjectivePolicy.E
 import io.cloudflight.jems.api.programme.dto.priority.ProgrammeObjectivePolicy.GreenUrban
 import io.cloudflight.jems.api.programme.dto.priority.ProgrammeObjectivePolicy.RenewableEnergy
 import io.cloudflight.jems.api.programme.dto.priority.ProgrammeObjectivePolicy.WaterManagement
+import io.cloudflight.jems.server.audit.entity.AuditAction
+import io.cloudflight.jems.server.audit.service.AuditCandidate
+import io.cloudflight.jems.server.audit.service.AuditService
 import io.cloudflight.jems.server.common.exception.I18nFieldError
 import io.cloudflight.jems.server.common.exception.I18nValidationException
 import io.cloudflight.jems.server.common.exception.ResourceNotFoundException
@@ -19,6 +22,7 @@ import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
 import io.mockk.impl.annotations.MockK
 import io.mockk.junit5.MockKExtension
+import io.mockk.slot
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
@@ -45,6 +49,9 @@ class UpdatePriorityInteractorTest {
     @MockK
     lateinit var persistence: ProgrammePriorityPersistence
 
+    @MockK
+    lateinit var auditService: AuditService
+
     @InjectMockKs
     private lateinit var updatePriority: UpdatePriority
 
@@ -66,8 +73,12 @@ class UpdatePriorityInteractorTest {
         // nothing is yet used by a Call
         every { persistence.getObjectivePoliciesAlreadyInUse() } returns emptySet()
         every { persistence.update(any()) } returnsArgument 0
+        val auditSlot = slot<AuditCandidate>()
+        every { auditService.logEvent(capture(auditSlot)) } answers {}
 
         assertThat(updatePriority.updatePriority(ID, toUpdatePriority)).isEqualTo(toUpdatePriority.copy(id = ID))
+        assertThat(auditSlot.captured.action).isEqualTo(AuditAction.PROGRAMME_PRIORITY_UPDATED)
+        assertThat(auditSlot.captured.description).startsWith("Programme priority data changed for 'PO-02' 'PO-02 title':\n")
     }
 
     @Test

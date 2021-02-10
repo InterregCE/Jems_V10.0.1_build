@@ -1,6 +1,5 @@
 package io.cloudflight.jems.server.programme.service
 
-import io.cloudflight.jems.api.programme.dto.priority.OutputProgrammePriority
 import io.cloudflight.jems.server.audit.entity.AuditAction
 import io.cloudflight.jems.server.audit.service.AuditBuilder
 import io.cloudflight.jems.server.audit.service.AuditCandidate
@@ -8,11 +7,22 @@ import io.cloudflight.jems.server.nuts.service.NutsIdentifier
 import io.cloudflight.jems.server.programme.entity.ProgrammeFundEntity
 import io.cloudflight.jems.server.programme.entity.ProgrammeLanguage
 import io.cloudflight.jems.server.programme.entity.ProgrammeLegalStatus
+import io.cloudflight.jems.server.programme.service.priority.model.ProgrammePriority
 import java.util.stream.Collectors
 
-fun programmePriorityAdded(programmePriority: OutputProgrammePriority): AuditCandidate {
+fun programmePriorityAdded(programmePriority: ProgrammePriority): AuditCandidate {
     return AuditBuilder(AuditAction.PROGRAMME_PRIORITY_ADDED)
         .description("New programme priority '${programmePriority.code}' '${programmePriority.title}' was created")
+        .build()
+}
+
+fun programmePriorityUpdated(oldPriority: ProgrammePriority, changes: Map<String, Pair<Any?, Any?>>): AuditCandidate {
+    val changedString = changes.entries.stream()
+        .map { "${it.key} changed from ${it.value.first} to ${it.value.second}" }
+        .collect(Collectors.joining(",\n"))
+
+    return AuditBuilder(AuditAction.PROGRAMME_PRIORITY_UPDATED)
+        .description("Programme priority data changed for '${oldPriority.code}' '${oldPriority.title}':\n$changedString")
         .build()
 }
 

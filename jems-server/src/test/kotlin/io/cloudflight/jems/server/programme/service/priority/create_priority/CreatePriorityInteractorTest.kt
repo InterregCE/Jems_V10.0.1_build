@@ -5,6 +5,9 @@ import io.cloudflight.jems.api.programme.dto.priority.ProgrammeObjectivePolicy
 import io.cloudflight.jems.api.programme.dto.priority.ProgrammeObjectivePolicy.GreenUrban
 import io.cloudflight.jems.api.programme.dto.priority.ProgrammeObjectivePolicy.RenewableEnergy
 import io.cloudflight.jems.api.programme.dto.priority.ProgrammeObjectivePolicy.SmartEnergy
+import io.cloudflight.jems.server.audit.entity.AuditAction
+import io.cloudflight.jems.server.audit.service.AuditCandidate
+import io.cloudflight.jems.server.audit.service.AuditService
 import io.cloudflight.jems.server.common.exception.I18nFieldError
 import io.cloudflight.jems.server.common.exception.I18nValidationException
 import io.cloudflight.jems.server.programme.service.priority.ProgrammePriorityPersistence
@@ -15,6 +18,7 @@ import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
 import io.mockk.impl.annotations.MockK
 import io.mockk.junit5.MockKExtension
+import io.mockk.slot
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
@@ -26,6 +30,9 @@ class CreatePriorityInteractorTest {
     @MockK
     lateinit var persistence: ProgrammePriorityPersistence
 
+    @MockK
+    lateinit var auditService: AuditService
+
     @InjectMockKs
     private lateinit var createPriority: CreatePriority
 
@@ -36,8 +43,14 @@ class CreatePriorityInteractorTest {
         every { persistence.getPriorityIdForPolicyIfExists(any()) } returns null
         every { persistence.getSpecificObjectivesByCodes(setOf("GU", "RE")) } returns emptyList()
         every { persistence.create(any()) } returnsArgument 0
+        val auditSlot = slot<AuditCandidate>()
+        every { auditService.logEvent(capture(auditSlot)) } answers {}
 
         assertThat(createPriority.createPriority(testPriority)).isEqualTo(testPriority)
+        assertThat(auditSlot.captured).isEqualTo(AuditCandidate(
+            action = AuditAction.PROGRAMME_PRIORITY_ADDED,
+            description = "New programme priority 'PO-02' 'PO-02 title' was created",
+        ))
     }
 
     @Test
