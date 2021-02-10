@@ -66,7 +66,7 @@ export class ProgrammePriorityDetailPageConstants {
     const oneSelected = objectives.controls.some(
       objective => !!objective.get(ProgrammePriorityDetailPageConstants.POLICY_SELECTED.name)?.value
     );
-    if (oneSelected) {
+    if (!objectives?.controls?.length || oneSelected) {
       return null;
     }
     return {required: true} as any;
