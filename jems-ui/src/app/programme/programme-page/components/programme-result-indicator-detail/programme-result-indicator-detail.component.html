@@ -1,157 +1,146 @@
-<div class="container">
-    <h4>{{'result.indicator.title' | translate}}
+<form appFormLayout [formGroup]="resultIndicatorForm">
+    <div appMultiColumnRow>
+        <h1 class="mb-0">{{'result.indicator.title' | translate}}</h1>
         <button *ngIf="formState === FormState.VIEW" mat-raised-button color="primary"
                 (click)="changeFormState$.next(FormState.EDIT)">
             {{'result.indicator.button.edit' | translate}}
         </button>
-    </h4>
-    <form [formGroup]="resultIndicatorForm">
-        <mat-form-field class="field-third">
-            <mat-label>{{'result.indicator.form.field.identifier' | translate}}</mat-label>
-            <input name="identifier" formControlName="identifier" matInput
-                   placeholder="{{'result.indicator.form.field.identifier' | translate}}" required>
-            <mat-error>
-                <app-form-field-errors
-                        [errors]="resultIndicatorForm?.controls?.identifier?.errors"
-                        [messages]="identifierErrors">
-                </app-form-field-errors>
-            </mat-error>
-        </mat-form-field>
-        <mat-form-field class="field-third">
-            <mat-label>{{'result.indicator.form.field.specific.code' | translate}}</mat-label>
-            <mat-select name="indicatorCode" formControlName="indicatorCode" [disableOptionCentering]="true"
-                        panelClass="material-select-panel">
-                <mat-option>
-                    {{'result.indicator.code.not.applicable' | translate}}
+    </div>
+    <mat-form-field>
+        <mat-label>{{'result.indicator.form.field.identifier' | translate}}</mat-label>
+        <input name="identifier" formControlName="identifier" matInput required>
+        <mat-error>
+            <app-form-field-errors
+                    [errors]="resultIndicatorForm?.controls?.identifier?.errors"
+                    [messages]="identifierErrors">
+            </app-form-field-errors>
+        </mat-error>
+    </mat-form-field>
+    <mat-form-field>
+        <mat-label>{{'result.indicator.form.field.specific.code' | translate}}</mat-label>
+        <mat-select name="indicatorCode" formControlName="indicatorCode">
+            <mat-option>
+                {{'result.indicator.code.not.applicable' | translate}}
+            </mat-option>
+            <mat-option *ngFor="let code of indicatorCodes" [value]="code">
+                {{code}}
+            </mat-option>
+        </mat-select>
+        <mat-error>
+            <app-form-field-errors
+                    [errors]="resultIndicatorForm?.controls?.indicatorCode?.errors"
+                    [messages]="indicatorCodeErrors">
+            </app-form-field-errors>
+        </mat-error>
+    </mat-form-field>
+    <mat-form-field>
+        <mat-label>{{'result.indicator.form.field.name' | translate}}</mat-label>
+        <input name="indicatorName" formControlName="indicatorName" matInput required
+               [matAutocomplete]="autoNames">
+        <mat-autocomplete #autoNames="matAutocomplete">
+            <mat-option *ngFor="let name of filteredIndicatorNames | async" [value]="name">
+                {{name}}
+            </mat-option>
+        </mat-autocomplete>
+        <mat-error>
+            <app-form-field-errors
+                    [errors]="resultIndicatorForm?.controls?.indicatorName?.errors"
+                    [messages]="indicatorNameErrors">
+            </app-form-field-errors>
+        </mat-error>
+    </mat-form-field>
+    <mat-form-field>
+        <mat-label>{{'result.indicator.form.field.specific.objective' | translate}}</mat-label>
+        <mat-select name="specificObjective" formControlName="specificObjective" required>
+            <mat-optgroup *ngFor="let priority of priorities" [label]="priority.title">
+                <mat-option *ngFor="let objective of priority.specificObjectives"
+                            [value]="objective.programmeObjectivePolicy">
+                    {{objective.code}} -  {{'programme.policy.' + objective.programmeObjectivePolicy | translate}}
                 </mat-option>
-                <mat-option *ngFor="let code of indicatorCodes" [value]="code">
-                    {{code}}
-                </mat-option>
-            </mat-select>
-            <mat-error>
-                <app-form-field-errors
-                        [errors]="resultIndicatorForm?.controls?.indicatorCode?.errors"
-                        [messages]="indicatorCodeErrors">
-                </app-form-field-errors>
-            </mat-error>
-        </mat-form-field>
-        <mat-form-field class="field-third">
-            <input name="indicatorName" formControlName="indicatorName" matInput
-                   placeholder="{{'result.indicator.form.field.name' | translate}}" required
-                   [matAutocomplete]="autoNames">
-            <mat-autocomplete #autoNames="matAutocomplete">
-                <mat-option *ngFor="let name of filteredIndicatorNames | async" [value]="name">
-                    {{name}}
-                </mat-option>
-            </mat-autocomplete>
-            <mat-error>
-                <app-form-field-errors
-                        [errors]="resultIndicatorForm?.controls?.indicatorName?.errors"
-                        [messages]="indicatorNameErrors">
-                </app-form-field-errors>
-            </mat-error>
-        </mat-form-field>
-        <mat-form-field class="field-third">
-            <mat-label>{{'result.indicator.form.field.specific.objective' | translate}}</mat-label>
-            <mat-select name="specificObjective" formControlName="specificObjective" [disableOptionCentering]="true"
-                        panelClass="material-select-panel" required>
-                <mat-optgroup *ngFor="let priority of priorities" [label]="priority.title">
-                    <mat-option *ngFor="let objective of priority.specificObjectives"
-                                [value]="objective.programmeObjectivePolicy">
-                        {{objective.code}} -  {{'programme.policy.' + objective.programmeObjectivePolicy | translate}}
-                    </mat-option>
-                </mat-optgroup>
-            </mat-select>
-            <mat-error>
-                <app-form-field-errors
-                        [errors]="resultIndicatorForm?.controls?.specificObjective?.errors"
-                        [messages]="specificObjectiveErrors">
-                </app-form-field-errors>
-            </mat-error>
-        </mat-form-field>
-        <mat-form-field class="field-third">
-            <input name="measurementUnit" formControlName="measurementUnit" matInput
-                   placeholder="{{'result.indicator.form.field.measurement.unit' | translate}}"
-                   [matAutocomplete]="autoUnits">
-            <mat-autocomplete #autoUnits="matAutocomplete">
-                <mat-option *ngFor="let unit of filteredMeasurementUnits | async" [value]="unit">
-                    {{unit}}
-                </mat-option>
-            </mat-autocomplete>
-            <mat-error>
-                <app-form-field-errors
-                        [errors]="resultIndicatorForm?.controls?.measurementUnit?.errors"
-                        [messages]="measurementUnitErrors">
-                </app-form-field-errors>
-            </mat-error>
-        </mat-form-field>
-        <mat-form-field class="field-third">
-            <mat-label>{{'result.indicator.form.field.baseline' | translate}}</mat-label>
-            <input currencyMask type="decimal"
-                   name="baseline" formControlName="baseline" matInput
-                   placeholder="{{'result.indicator.form.field.baseline' | translate}}">
-            <mat-error>
-                <app-form-field-errors [errors]="resultIndicatorForm?.controls?.baseline?.errors">
-                </app-form-field-errors>
-            </mat-error>
-        </mat-form-field>
-        <mat-form-field class="field-third">
-            <mat-label>{{'result.indicator.form.field.referenceYear' | translate}}</mat-label>
-            <input name="referenceYear" formControlName="referenceYear" matInput
-                   placeholder="{{'result.indicator.form.field.referenceYear' | translate}}">
-            <mat-error>
-                <app-form-field-errors
-                        [errors]="resultIndicatorForm?.controls?.referenceYear?.errors"
-                        [messages]="referenceYearErrors">
-                </app-form-field-errors>
-            </mat-error>
-        </mat-form-field>
-        <mat-form-field class="field-third">
-            <mat-label>{{'result.indicator.form.field.final.target' | translate}}</mat-label>
-            <input currencyMask type="decimal"
-                   name="finalTarget" formControlName="finalTarget" matInput
-                   placeholder="{{'result.indicator.form.field.final.target' | translate}}">
-            <mat-error>
-                <app-form-field-errors [errors]="resultIndicatorForm?.controls?.finalTarget?.errors">
-                </app-form-field-errors>
-            </mat-error>
-        </mat-form-field>
-        <app-expandable-textarea
-                class="field-third"
-                [control]="resultIndicatorForm?.controls?.sourceOfData"
-                [errors]="resultIndicatorForm?.controls?.sourceOfData?.errors"
-                [messages]="sourceOfDataErrors"
-                [characterLimit]="1000"
-                [label]="'result.indicator.form.field.source.of.data'"
-                [disabled]="formState === FormState.VIEW">
-        </app-expandable-textarea>
-        <app-expandable-textarea
-                class="field-third"
-                [control]="resultIndicatorForm?.controls?.comments"
-                [errors]="resultIndicatorForm?.controls?.comments?.errors"
-                [messages]="commentsErrors"
-                [characterLimit]="1000"
-                [label]="'result.indicator.form.field.comments'"
-                [disabled]="formState === FormState.VIEW">
-        </app-expandable-textarea>
-        <div *ngIf="formState === FormState.EDIT">
-            <button *ngxPermissionsExcept="Permission.APPLICANT_USER"
-                    mat-stroked-button
-                    class="button"
-                    type="button"
-                    (click)="onCancel()">
-                {{'result.indicator.new.button.cancel' | translate}}
-            </button>
-            <button mat-raised-button
-                    color="primary"
-                    type="button"
-                    class="button"
-                    [disabled]="resultIndicatorForm.invalid || submitted"
-                    (click)="onSubmit()">
-                {{'result.indicator.new.button.save' | translate}}
-            </button>
-        </div>
-    </form>
+            </mat-optgroup>
+        </mat-select>
+        <mat-error>
+            <app-form-field-errors
+                    [errors]="resultIndicatorForm?.controls?.specificObjective?.errors"
+                    [messages]="specificObjectiveErrors">
+            </app-form-field-errors>
+        </mat-error>
+    </mat-form-field>
+    <mat-form-field>
+        <mat-label>{{'result.indicator.form.field.measurement.unit' | translate}}</mat-label>
+        <input name="measurementUnit" formControlName="measurementUnit" matInput
+               [matAutocomplete]="autoUnits">
+        <mat-autocomplete #autoUnits="matAutocomplete">
+            <mat-option *ngFor="let unit of filteredMeasurementUnits | async" [value]="unit">
+                {{unit}}
+            </mat-option>
+        </mat-autocomplete>
+        <mat-error>
+            <app-form-field-errors
+                    [errors]="resultIndicatorForm?.controls?.measurementUnit?.errors"
+                    [messages]="measurementUnitErrors">
+            </app-form-field-errors>
+        </mat-error>
+    </mat-form-field>
+    <mat-form-field>
+        <mat-label>{{'result.indicator.form.field.baseline' | translate}}</mat-label>
+        <input currencyMask type="decimal"
+               name="baseline" formControlName="baseline" matInput>
+        <mat-error>
+            <app-form-field-errors [errors]="resultIndicatorForm?.controls?.baseline?.errors">
+            </app-form-field-errors>
+        </mat-error>
+    </mat-form-field>
+    <mat-form-field>
+        <mat-label>{{'result.indicator.form.field.referenceYear' | translate}}</mat-label>
+        <input name="referenceYear" formControlName="referenceYear" matInput>
+        <mat-error>
+            <app-form-field-errors
+                    [errors]="resultIndicatorForm?.controls?.referenceYear?.errors"
+                    [messages]="referenceYearErrors">
+            </app-form-field-errors>
+        </mat-error>
+    </mat-form-field>
+    <mat-form-field>
+        <mat-label>{{'result.indicator.form.field.final.target' | translate}}</mat-label>
+        <input currencyMask type="decimal"
+               name="finalTarget" formControlName="finalTarget" matInput>
+        <mat-error>
+            <app-form-field-errors [errors]="resultIndicatorForm?.controls?.finalTarget?.errors">
+            </app-form-field-errors>
+        </mat-error>
+    </mat-form-field>
+    <app-expandable-textarea
+            [control]="resultIndicatorForm?.controls?.sourceOfData"
+            [errors]="resultIndicatorForm?.controls?.sourceOfData?.errors"
+            [messages]="sourceOfDataErrors"
+            [characterLimit]="1000"
+            [label]="'result.indicator.form.field.source.of.data'"
+            [disabled]="formState === FormState.VIEW">
+    </app-expandable-textarea>
+    <app-expandable-textarea
+            [control]="resultIndicatorForm?.controls?.comments"
+            [errors]="resultIndicatorForm?.controls?.comments?.errors"
+            [messages]="commentsErrors"
+            [characterLimit]="1000"
+            [label]="'result.indicator.form.field.comments'"
+            [disabled]="formState === FormState.VIEW">
+    </app-expandable-textarea>
+    <div appMultiColumnRow *ngIf="formState === FormState.EDIT">
+        <button *ngxPermissionsExcept="Permission.APPLICANT_USER"
+                mat-stroked-button
+                type="button"
+                (click)="onCancel()">
+            {{'result.indicator.new.button.cancel' | translate}}
+        </button>
+        <button mat-raised-button
+                color="primary"
+                type="button"
+                [disabled]="resultIndicatorForm.invalid || submitted"
+                (click)="onSubmit()">
+            {{'result.indicator.new.button.save' | translate}}
+        </button>
+    </div>
 
     <app-alert
             [show]="!submitted && (showSuccessMessage$ | async)"
@@ -163,4 +152,5 @@
                [type]="Alert.ERROR">
         <p>{{error.i18nKey | translate}}</p>
     </app-alert>
-</div>
+
+</form>

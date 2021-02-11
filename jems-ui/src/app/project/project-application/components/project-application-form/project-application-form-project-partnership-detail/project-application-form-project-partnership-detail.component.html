@@ -1,17 +1,11 @@
 <app-form (save)="onSubmit()"
           (discard)="resetForm()">
-    <form [formGroup]="projectPartnershipForm">
-        <h5 class="header" id="projectPartnershipHeading">
-            {{'project.application.form.section.part.c.subsection.three' | translate}}
-        </h5>
-
-        <div class="intro-text">
-            <p class="intro-text-small">{{'project.application.form.project.partnership.field.row' | translate}}</p>
-        </div>
+    <form appFormLayout [formGroup]="projectPartnershipForm">
+        <h3>{{'project.application.form.section.part.c.subsection.three' | translate}}</h3>
+        <p>{{'project.application.form.project.partnership.field.row' | translate}}</p>
         <app-multi-language
                 [inputs]="[projectPartnership]">
-            <app-expandable-textarea class="field"
-                                     [control]="projectPartnershipForm?.controls?.projectPartnership"
+            <app-expandable-textarea [control]="projectPartnershipForm?.controls?.projectPartnership"
                                      [errors]="projectPartnershipForm?.controls?.projectPartnership?.errors"
                                      [messages]="projectPartnershipErrors"
                                      [characterLimit]="5000"

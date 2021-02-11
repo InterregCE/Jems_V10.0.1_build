@@ -1,50 +1,44 @@
 <app-form *ngIf="workPackage$ | async as workPackage"
           (save)="onSubmit()">
-    <form [formGroup]="form">
-        <div>
-            <h6>{{'project.application.form.workpackage.form.header' | translate}}</h6>
-        </div>
-        <mat-form-field class="field">
+    <form appFormLayout [formGroup]="form">
+        <h3>{{'project.application.form.workpackage.form.header' | translate}}</h3>
+
+        <mat-form-field>
             <mat-label>{{'project.application.form.workpackage.field.number' | translate}}</mat-label>
-            <input name="number" formControlName="number" matInput
-                   placeholder="{{'project.application.form.work.package.field.number' | translate}}">
+            <input name="number" formControlName="number" matInput>
         </mat-form-field>
 
         <app-multi-language>
             <app-multi-language-form-field
-                    class="pb-3"
                     label="project.application.form.workpackage.field.title"
                     formControlName="name"
                     maxLength="100">
             </app-multi-language-form-field>
         </app-multi-language>
 
+        <h4>{{'project.application.form.workpackage.form.objectives' | translate}}</h4>
         <div>
-            <h6>{{'project.application.form.workpackage.form.objectives' | translate}}</h6>
+            <p>{{'project.application.form.workpackage.form.objectives.intro.line.three' | translate}}</p>
+            <ul>
+                <li>{{'project.application.form.workpackage.form.objectives.intro.line.four' | translate}}</li>
+                <li>{{'project.application.form.workpackage.form.objectives.intro.line.five' | translate}}</li>
+                <li>{{'project.application.form.workpackage.form.objectives.intro.line.six' | translate}}</li>
+            </ul>
         </div>
-        <span class="intro-text">{{'project.application.form.workpackage.form.objectives.intro.line.three' | translate}}</span>
-        <ul>
-            <li>{{'project.application.form.workpackage.form.objectives.intro.line.four' | translate}}</li>
-            <li>{{'project.application.form.workpackage.form.objectives.intro.line.five' | translate}}</li>
-            <li>{{'project.application.form.workpackage.form.objectives.intro.line.six' | translate}}</li>
-        </ul>
-        <div class="intro-text">{{'project.application.form.workpackage.form.objectives.intro.line.one' | translate}}</div>
+        <p>{{'project.application.form.workpackage.form.objectives.intro.line.one' | translate}}</p>
         <app-multi-language>
             <app-multi-language-form-field
                     type="textarea"
-                    class="pb-3"
                     label="project.application.form.workpackage.field.specific.objective"
                     formControlName="specificObjective"
                     maxLength="250">
             </app-multi-language-form-field>
         </app-multi-language>
 
-        <div class="intro-text">
-            <br>{{'project.application.form.workpackage.form.objectives.intro.line.two' | translate}}</div>
+        <p>{{'project.application.form.workpackage.form.objectives.intro.line.two' | translate}}</p>
         <app-multi-language>
             <app-multi-language-form-field
                     type="textarea"
-                    class="pb-3"
                     label="project.application.form.workpackage.field.target.audience"
                     formControlName="objectiveAndAudience"
                     maxLength="500">

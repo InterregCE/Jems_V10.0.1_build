@@ -21,7 +21,7 @@ import {StaffCostTypeEnum} from '../../../../../model/budget/staff-cost-type.enu
 import {StaffCostUnitTypeEnum} from '../../../../../model/budget/staff-cost-unit-type.enum';
 import {BudgetPeriodDTO, OutputProjectPeriod} from '@cat/api';
 import {Alert} from '@common/components/forms/alert';
-import {WidthConfig} from '../../../../../../common/directives/table-config/WidthConfig';
+import {TableConfig} from '../../../../../../common/directives/table-config/TableConfig';
 
 @UntilDestroy()
 @Component({
@@ -49,7 +49,7 @@ export class StaffCostsBudgetTableComponent implements OnInit, OnChanges, OnDest
   numberOfItems$: Observable<number>;
   warnOpenForPeriods = false;
   columnsToDisplay: string[];
-  widthConfig: WidthConfig[];
+  tableConfig: TableConfig[];
 
   constructor(private formService: FormService, private controlContainer: ControlContainer, private formBuilder: FormBuilder, private multiLanguageInputService: MultiLanguageInputService) {
     this.budgetForm = this.controlContainer.control as FormGroup;
@@ -82,7 +82,7 @@ export class StaffCostsBudgetTableComponent implements OnInit, OnChanges, OnDest
 
     const periodWidths = this.projectPeriods?.length
       ? [...this.projectPeriods?.map(period => ({minInRem: 8})), {minInRem: 8}] : [];
-    this.widthConfig = [
+    this.tableConfig = [
       {minInRem: 12}, {minInRem: 12}, {minInRem: 5}, {minInRem: 12},
       {minInRem: 5}, {minInRem: 8}, {minInRem: 8}, ...periodWidths, {minInRem: 3}
     ];

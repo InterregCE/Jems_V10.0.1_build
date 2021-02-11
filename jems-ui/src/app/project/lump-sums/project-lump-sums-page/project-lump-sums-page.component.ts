@@ -13,7 +13,7 @@ import {
   Validators
 } from '@angular/forms';
 import {FormService} from '@common/components/section/form/form.service';
-import {WidthConfig} from '../../../common/directives/table-config/WidthConfig';
+import {TableConfig} from '../../../common/directives/table-config/TableConfig';
 import {ProjectLumSumsConstants} from './project-lum-sums.constants';
 import {MatTableDataSource} from '@angular/material/table';
 import {UntilDestroy, untilDestroyed} from '@ngneat/until-destroy';
@@ -46,7 +46,7 @@ export class ProjectLumpSumsPageComponent implements OnInit {
   data$: Observable<{
     projectAcronym: string
     columnsToDisplay: string[],
-    withConfigs: WidthConfig[],
+    withConfigs: TableConfig[],
     partners: ProjectPartner[],
     lumpSums: ProgrammeLumpSum[],
     periods: ProjectPeriod[],
@@ -57,7 +57,7 @@ export class ProjectLumpSumsPageComponent implements OnInit {
   }>;
 
   private columnsToDisplay$: Observable<string[]>;
-  private withConfigs$: Observable<WidthConfig[]>;
+  private withConfigs$: Observable<TableConfig[]>;
   private showAddButton$: Observable<boolean>;
   private costIsNotSplittableError$: Observable<ValidationErrors | null>;
   private partnerColumnsTotal$: Observable<number[]>;
@@ -85,7 +85,7 @@ export class ProjectLumpSumsPageComponent implements OnInit {
     );
 
     this.columnsToDisplay$ = this.pageStore.partners$.pipe(map((partners: ProjectPartner[]) => this.getColumnsToDisplay(partners)));
-    this.withConfigs$ = this.pageStore.partners$.pipe(map((partners: ProjectPartner[]) => this.getWithConfigs(partners)));
+    this.withConfigs$ = this.pageStore.partners$.pipe(map((partners: ProjectPartner[]) => this.getTableConfig(partners)));
     this.costIsNotSplittableError$ = this.items.valueChanges.pipe(startWith(null), map(() => this.items.controls.find(itemFormGroup => itemFormGroup.errors !== null)?.errors || null));
     this.partnerColumnsTotal$ = combineLatest([this.formService.reset$.pipe(startWith(null)), this.items.valueChanges.pipe(startWith(null))]).pipe(map(() => this.calculatePartnerColumnsTotal()));
 
@@ -249,13 +249,13 @@ export class ProjectLumpSumsPageComponent implements OnInit {
     return columnsToDisplay;
   }
 
-  private getWithConfigs(partners: ProjectPartner[]): WidthConfig[] {
-    let widthConfigs = [{minInRem: 8}, {minInRem: 5}, {minInRem: 4}, {minInRem: 8}];
-    widthConfigs = widthConfigs.concat(partners?.map(() => {
+  private getTableConfig(partners: ProjectPartner[]): TableConfig[] {
+    let tableConfig = [{minInRem: 8}, {minInRem: 5}, {minInRem: 4}, {minInRem: 8}];
+    tableConfig = tableConfig.concat(partners?.map(() => {
       return {minInRem: 8};
     }));
-    widthConfigs = widthConfigs.concat({minInRem: 8}, {minInRem: 8}, {minInRem: 12}, {minInRem: 3});
-    return widthConfigs;
+    tableConfig = tableConfig.concat({minInRem: 8}, {minInRem: 8}, {minInRem: 12}, {minInRem: 3});
+    return tableConfig;
   }
 
   private setGapAndRowSum(rowId: number): void {

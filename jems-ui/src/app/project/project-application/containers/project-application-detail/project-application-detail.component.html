@@ -1,22 +1,23 @@
 <app-breadcrumb></app-breadcrumb>
-<app-project-application-data></app-project-application-data>
-<br>
-<h5 id="applicationFormLifecycleAttachments">{{'file.tab.header' | translate}}</h5>
-<mat-tab-group class="files-container">
-    <mat-tab label="{{'file.tab.application' | translate}}">
-        <ng-template matTabContent>
-            <app-project-application-files
-                    [projectId]="projectId"
-                    [fileType]="fileType.APPLICANTFILE">
-            </app-project-application-files>
-        </ng-template>
-    </mat-tab>
-    <mat-tab label="{{'file.tab.assessment' | translate}}" *ngIf="assessmentFilesVisible$ | async">
-        <ng-template matTabContent>
-            <app-project-application-files
-                    [projectId]="projectId"
-                    [fileType]="fileType.ASSESSMENTFILE">
-            </app-project-application-files>
-        </ng-template>
-    </mat-tab>
-</mat-tab-group>
+<div appFormLayout>
+    <app-project-application-data appNoWidthLimit></app-project-application-data>
+    <h3>{{'file.tab.header' | translate}}</h3>
+    <mat-tab-group appNoWidthLimit>
+        <mat-tab label="{{'file.tab.application' | translate}}">
+            <ng-template matTabContent>
+                <app-project-application-files
+                        [projectId]="projectId"
+                        [fileType]="fileType.APPLICANTFILE">
+                </app-project-application-files>
+            </ng-template>
+        </mat-tab>
+        <mat-tab label="{{'file.tab.assessment' | translate}}" *ngIf="assessmentFilesVisible$ | async">
+            <ng-template matTabContent>
+                <app-project-application-files
+                        [projectId]="projectId"
+                        [fileType]="fileType.ASSESSMENTFILE">
+                </app-project-application-files>
+            </ng-template>
+        </mat-tab>
+    </mat-tab-group>
+</div>

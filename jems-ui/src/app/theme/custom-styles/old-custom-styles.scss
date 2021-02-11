@@ -1,0 +1,17 @@
+// todo should be removed after updating all forms to use <app-form>
+button.header-button {
+  margin-left: 0.5rem;
+  margin-right: 2rem;
+  margin-bottom: 0.25rem;
+}
+
+// todo should be removed after checking all the usages since it can cause conflicts
+.header {
+  display: inline-block;
+}
+
+// todo remove it?
+//textarea:read-only,
+//textarea:disabled {
+//  overflow: hidden !important;
+//}

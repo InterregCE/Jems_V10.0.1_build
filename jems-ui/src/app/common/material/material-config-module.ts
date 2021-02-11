@@ -8,10 +8,18 @@ import {
 import {NGX_MAT_DATE_FORMATS, NgxMatDateAdapter} from '@angular-material-components/datetime-picker';
 import {NgxMatMomentAdapter} from '@angular-material-components/moment-adapter';
 import {LanguageService} from '../services/language.service';
+import {MAT_FORM_FIELD_DEFAULT_OPTIONS, MatFormFieldDefaultOptions} from '@angular/material/form-field';
 
+const appearance: MatFormFieldDefaultOptions = {
+  appearance: 'fill'
+};
 
 @NgModule({
   providers: [
+    {
+      provide: MAT_FORM_FIELD_DEFAULT_OPTIONS,
+      useValue: appearance
+    },
     {provide: MAT_DATE_LOCALE, useValue: 'en-GB'},
     {provide: MAT_DATE_FORMATS, useValue: MAT_MOMENT_DATE_FORMATS},
     {

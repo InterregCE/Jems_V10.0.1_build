@@ -1,1 +1,28 @@
+@import "../../../../theme/custom-styles/custom-buttons-styles";
+
+.language-switcher-container {
+  .language-switcher {
+    display: flex;
+    justify-content: flex-end;
+
+    &.toggle-button-exists {
+      margin-bottom: -0.75rem;
+    }
+
+    .mat-button-toggle-group {
+      z-index: 2;
+      margin-right: 0.5rem;
+    }
+  }
+
+  ::ng-deep {
+    .language-switcher-toggle-group {
+      @include customize-toggle-button-size('small');
+    }
+
+    > * {
+      width: 100%;
+    }
+  }
+}
 

@@ -26,7 +26,7 @@ export class ProgrammeLegalStatusListComponent extends ViewEditForm implements O
   @Output()
   saveLegalStatuses = new EventEmitter<InputProgrammeLegalStatusWrapper>();
 
-  displayedColumns: string[] = ['add', 'description', 'delete'];
+  displayedColumns: string[] = ['description', 'delete'];
   dataSource: MatTableDataSource<InputProgrammeLegalStatus>;
   toDelete: InputProgrammeLegalStatus[] = [];
 

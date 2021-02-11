@@ -1,0 +1,60 @@
+@mixin custom-buttons-styles($is-dark-theme) {
+
+  @include custom-general-button-styles();
+
+  @include customize-stroked-button-style($is-dark-theme);
+
+  @include customize-toggle-button-style($is-dark-theme);
+
+  @include customize-toggle-button-size();
+
+}
+
+
+@mixin custom-general-button-styles() {
+  button:focus {
+    outline: none;
+  }
+}
+
+@mixin customize-stroked-button-style($is-dark-theme) {
+  .mat-stroked-button {
+    color: if($is-dark-theme, var(--font-color-primary), var(--primary-color));
+  }
+  .mat-stroked-button:not([disabled]) {
+    border-color: if($is-dark-theme, var(--outline-color), var(--primary-color));
+  }
+}
+
+@mixin customize-toggle-button-style($is-dark-theme) {
+  .mat-button-toggle-group:not([aria-disabled=true]) {
+    border-color: if($is-dark-theme, var(--outline-color), var(--primary-color));
+
+    .mat-button-toggle {
+      background-color: white;
+      color: if($is-dark-theme, var(--font-color-primary), var(--primary-color));
+    }
+
+    .mat-button-toggle-checked {
+      background-color: var(--primary-halftone-color);
+    }
+  }
+}
+
+@mixin customize-toggle-button-size($size:'medium') {
+  .mat-button-toggle-appearance-standard div.mat-button-toggle-label-content {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    @if $size == 'large' {
+      line-height: 3rem
+    } @else if ($size == 'medium') {
+      line-height: 2.25rem
+    } @else if ($size == 'small') {
+      line-height: 1.25rem
+    }
+
+  }
+}
+

@@ -1,24 +1,22 @@
 <app-form (save)="onSubmit(controls)"
           (discard)="discard()">
-    <form id="partner-form" [formGroup]="partnerForm">
-        <h4 *ngIf="!partner?.abbreviation">{{'project.application.form.partner.add' | translate}}</h4>
-        <h5><span>{{'project.partner.detail.title' | translate}}</span></h5>
+    <form appFormLayout id="partner-form" [formGroup]="partnerForm">
+        <h3 *ngIf="!partner?.abbreviation">{{'project.application.form.partner.add' | translate}}</h3>
+        <h3>{{'project.partner.detail.title' | translate}}</h3>
 
-        <mat-form-field *ngIf="!editable && partner.sortNumber" class="w-50">
+        <mat-form-field *ngIf="!editable && partner.sortNumber">
             <mat-label>{{'project.application.form.partner.table.number' | translate}}</mat-label>
             <input name="sortNumber" formControlName="sortNumber" matInput>
         </mat-form-field>
-        <mat-form-field *ngIf="!editable" class="w-50">
+
+        <mat-form-field *ngIf="!editable">
             <mat-label>{{'project.partner.role.label' | translate}}</mat-label>
             <input ngModel="{{('common.label.project.partner.role.' + controls?.role?.value) | translate}}"
                    name="role" formControlName="fakeRole" matInput>
         </mat-form-field>
 
-        <div *ngIf="editable" class="toggle-button-field">
-            <div [class.valid-role]="!controls?.role?.errors"
-                 [class.invalid-role]="!!controls?.role?.errors">
-                {{'project.partner.role.label' | translate}} *
-            </div>
+        <div *ngIf="editable">
+            <div appLabel>{{'project.partner.role.label' | translate}} *</div>
             <mat-button-toggle-group>
                 <mat-button-toggle
                         [checked]="controls?.role.value === RoleEnum.PARTNER"
@@ -41,11 +39,9 @@
             </mat-error>
         </div>
 
-        <mat-form-field class="w-50">
+        <mat-form-field>
             <mat-label>{{'project.partner.name.label' | translate}}</mat-label>
-            <input name="abbreviation" formControlName="abbreviation" matInput
-                   placeholder="{{'project.partner.name.label' | translate}}"
-                   required>
+            <input name="abbreviation" formControlName="abbreviation" matInput required>
             <mat-error>
                 <app-form-field-errors
                         [errors]="controls?.name?.errors"
@@ -54,10 +50,9 @@
             </mat-error>
         </mat-form-field>
 
-        <mat-form-field class="w-50">
+        <mat-form-field>
             <mat-label>{{'project.organization.original.name.label' | translate}}</mat-label>
-            <input name="nameInOriginalLanguage" formControlName="nameInOriginalLanguage" matInput
-                   placeholder="{{'project.organization.original.name.label' | translate}}">
+            <input name="nameInOriginalLanguage" formControlName="nameInOriginalLanguage" matInput>
             <mat-error>
                 <app-form-field-errors
                         [errors]="controls?.nameInOriginalLanguage?.errors"
@@ -66,12 +61,10 @@
             </mat-error>
         </mat-form-field>
 
-        <app-multi-language class="language-select"
-                            [staticLanguages]="[LANGUAGE.EN]">
+        <app-multi-language [staticLanguages]="[LANGUAGE.EN]">
             <mat-form-field>
                 <mat-label>{{'project.organization.english.name.label' | translate}}</mat-label>
-                <input name="nameInEnglish" formControlName="nameInEnglish" matInput
-                       placeholder="{{'project.organization.english.name.label' | translate}}">
+                <input name="nameInEnglish" formControlName="nameInEnglish" matInput>
                 <mat-error>
                     <app-form-field-errors
                             [errors]="controls?.nameInEnglish?.errors"
@@ -89,25 +82,20 @@
             </app-multi-language-form-field>
         </app-multi-language>
 
-        <h5>{{'project.partner.detail.title.legal.financial' | translate}}</h5>
+        <h4>{{'project.partner.detail.title.legal.financial' | translate}}</h4>
 
-        <mat-form-field class="w-50">
+        <mat-form-field>
             <mat-label>{{'project.partner.type' | translate}}</mat-label>
-            <mat-select name="partnerType" formControlName="partnerType"
-                        [disableOptionCentering]="true"
-                        panelClass="material-select-panel">
+            <mat-select name="partnerType" formControlName="partnerType">
                 <mat-option *ngFor="let type of partnerTypeEnums" [value]="type">
                     {{'project.application.form.relevance.target.group.' + type | translate}}
                 </mat-option>
             </mat-select>
         </mat-form-field>
 
-        <mat-form-field class="w-50">
+        <mat-form-field>
             <mat-label>{{'project.partner.legal.status' | translate}}</mat-label>
-            <mat-select name="legalStatusId" formControlName="legalStatusId"
-                        [disableOptionCentering]="true"
-                        required
-                        panelClass="material-select-panel">
+            <mat-select name="legalStatusId" formControlName="legalStatusId" required>
                 <mat-option *ngFor="let status of legalStatuses" [value]="status.id">
                     {{status.description || 'programme.legal.status.' + status.id | translate}}
                 </mat-option>
@@ -120,7 +108,7 @@
             </mat-error>
         </mat-form-field>
 
-        <mat-form-field class="w-50">
+        <mat-form-field>
             <mat-label>{{'project.partner.vat' | translate}}</mat-label>
             <input name="vat" formControlName="vat" matInput>
             <mat-error>
@@ -130,23 +118,20 @@
                 </app-form-field-errors>
             </mat-error>
         </mat-form-field>
-
-        <p class="intro-text-small">{{'project.partner.recoverVat.intro.text' | translate}}</p>
-        <div class="toggle-button-field">
-            <mat-button-toggle-group [disabled]="!editable">
-                <mat-button-toggle
-                        [checked]="controls?.vatRecovery.value === true"
-                        (change)="setVat(true)"
-                        [value]="true">
-                    {{'common.label.project.partner.recoverVat.true' | translate}}
-                </mat-button-toggle>
-                <mat-button-toggle
-                        [checked]="controls?.vatRecovery.value === false"
-                        (change)="setVat(false)"
-                        [value]="false">
-                    {{'common.label.project.partner.recoverVat.false' | translate}}
-                </mat-button-toggle>
-            </mat-button-toggle-group>
-        </div>
+        <p>{{'project.partner.recoverVat.intro.text' | translate}}</p>
+        <mat-button-toggle-group [disabled]="!editable">
+            <mat-button-toggle
+                    [checked]="controls?.vatRecovery.value === true"
+                    (change)="setVat(true)"
+                    [value]="true">
+                {{'common.label.project.partner.recoverVat.true' | translate}}
+            </mat-button-toggle>
+            <mat-button-toggle
+                    [checked]="controls?.vatRecovery.value === false"
+                    (change)="setVat(false)"
+                    [value]="false">
+                {{'common.label.project.partner.recoverVat.false' | translate}}
+            </mat-button-toggle>
+        </mat-button-toggle-group>
     </form>
 </app-form>

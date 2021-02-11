@@ -14,10 +14,6 @@
   width: 100% !important;
 }
 
-.pad-top-1 {
-  padding-top: 1rem;
-}
-
 .text-right {
   text-align: right !important;
 }
@@ -520,7 +516,12 @@
 .app-alert-warning .app-alert-link {
   color: #322200;
 }
-
+.inline-block{
+  display: inline-block;
+}
+.block{
+  display: block;
+}
 .row {
   display: -ms-flexbox;
   display: flex;

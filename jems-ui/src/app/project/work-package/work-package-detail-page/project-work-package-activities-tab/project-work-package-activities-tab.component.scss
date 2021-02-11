@@ -1,14 +1,10 @@
-#activitiesForm {
-
-  .activity-title {
-    max-width: 54rem;
-  }
-
-  .activity-index {
-    max-width: 9rem;
-  }
-
-  .period-error {
-    margin-top: -1rem;
+.activity-container{
+  padding: 0.75rem;
+  border: 1px solid var(--light-blue-gray);
+  .activity-header{
+    padding: 0.25rem 0.75rem ;
+    margin-left: -0.75rem;
+    margin-top: -0.75rem;;
+    background-color: var(--light-blue-gray);
   }
 }

@@ -1,32 +1,36 @@
-<div *ngIf="workPackageStore.workPackage$ | async as workPackage">
-    <app-breadcrumb></app-breadcrumb>
-    <h5 class="header">
-        {{'project.application.form.workpackage.form.header' | translate}}
-        {{workPackage.number}}
-    </h5>
+<app-breadcrumb></app-breadcrumb>
 
-    <mat-tab-group
-            *ngIf="workPackageId" class="workpackage-tab-menu"
-            (selectedIndexChange)="changeTab($event)"
-            [selectedIndex]="activeTab$ | async">
-        <mat-tab label="{{'workpackage.tab.objectives' | translate}}">
-            <app-project-work-package-objectives-tab>
-            </app-project-work-package-objectives-tab>
-        </mat-tab>
-        <mat-tab label="{{'workpackage.tab.investments' | translate}}">
-            <app-project-work-package-investments-tab
-                    [editable]="workPackageStore.isProjectEditable$ | async">
-            </app-project-work-package-investments-tab>
-        </mat-tab>
-        <mat-tab label="{{'workpackage.tab.activities' | translate}}">
-            <app-project-work-package-activities-tab></app-project-work-package-activities-tab>
-        </mat-tab>
-        <mat-tab label="{{'workpackage.tab.outputs' | translate}}">
-            <app-project-work-package-outputs-tab></app-project-work-package-outputs-tab>
-        </mat-tab>
-    </mat-tab-group>
+<ng-container *ngIf="workPackageStore.workPackage$ | async as workPackage">
+    <div appFormLayout>
+        <h3>
+            {{'project.application.form.workpackage.form.header' | translate}}
+            {{workPackage.number}}
+        </h3>
 
-    <app-project-work-package-objectives-tab *ngIf="!workPackageId">
-    </app-project-work-package-objectives-tab>
-</div>
+        <mat-tab-group
+                appNoWidthLimit
+                *ngIf="workPackageId"
+                (selectedIndexChange)="changeTab($event)"
+                [selectedIndex]="activeTab$ | async">
+            <mat-tab label="{{'workpackage.tab.objectives' | translate}}">
+                <app-project-work-package-objectives-tab>
+                </app-project-work-package-objectives-tab>
+            </mat-tab>
+            <mat-tab label="{{'workpackage.tab.investments' | translate}}">
+                <app-project-work-package-investments-tab
+                        [editable]="workPackageStore.isProjectEditable$ | async">
+                </app-project-work-package-investments-tab>
+            </mat-tab>
+            <mat-tab label="{{'workpackage.tab.activities' | translate}}">
+                <app-project-work-package-activities-tab></app-project-work-package-activities-tab>
+            </mat-tab>
+            <mat-tab label="{{'workpackage.tab.outputs' | translate}}">
+                <app-project-work-package-outputs-tab></app-project-work-package-outputs-tab>
+            </mat-tab>
+        </mat-tab-group>
 
+        <app-project-work-package-objectives-tab *ngIf="!workPackageId">
+        </app-project-work-package-objectives-tab>
+    </div>
+
+</ng-container>

@@ -1,9 +1,9 @@
 <app-breadcrumb></app-breadcrumb>
-<h2>{{'project.application.form.acronym' | translate : {acronym: projectStore.getAcronym() | async} }}</h2>
-<h4>{{'project.application.form.section.part.d' | translate}}</h4>
-<h5>{{'project.application.form.budgetPerPartner.title' | translate}}</h5>
+<h1>{{'project.application.form.acronym' | translate : {acronym: projectStore.getAcronym() | async} }}</h1>
+<h2>{{'project.application.form.section.part.d' | translate}}</h2>
+<h3>{{'project.application.form.budgetPerPartner.title' | translate}}</h3>
 
-<mat-table *ngIf="budgets$ | async" id="budget-table-per-partner" class="mat-elevation-z8 general-application-table w-150"
+<mat-table *ngIf="budgets$ | async" id="budget-table-per-partner" class="mat-elevation-z8 w-150"
            [dataSource]="budgetColumns">
 
     <ng-container matColumnDef="partner">

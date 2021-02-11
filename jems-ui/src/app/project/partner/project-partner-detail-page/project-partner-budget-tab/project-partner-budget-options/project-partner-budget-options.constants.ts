@@ -1,4 +1,5 @@
 export class ProjectPartnerBudgetOptionsConstants {
+  public static MIN_FLAT_RATE_VALUE = 1;
   public static FORM_CONTROL_NAMES = {
     staffCostsFlatRate: 'staffCostsFlatRate',
     isStaffCostsFlatRateActive: 'isStaffCostsFlatRateActive',

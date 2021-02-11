@@ -1,12 +1,10 @@
 <app-form (save)="onSubmit()"
           (discard)="resetForm()">
-    <form [formGroup]="partnerContactForm" class="wrapper">
-        <h5><span>{{'project.partner.representative.header' | translate}}</span></h5>
-
-        <mat-form-field class="field">
+    <form appFormLayout [formGroup]="partnerContactForm">
+        <h3>{{'project.partner.representative.header' | translate}}</h3>
+        <mat-form-field>
             <mat-label>{{'project.partner.representative.title' | translate}}</mat-label>
-            <input name="partnerRepresentativeTitle" formControlName="partnerRepresentativeTitle" matInput
-                   placeholder="{{'project.partner.representative.title' | translate}}">
+            <input name="partnerRepresentativeTitle" formControlName="partnerRepresentativeTitle" matInput>
             <mat-error>
                 <app-form-field-errors
                         [errors]="partnerContactForm?.controls?.partnerRepresentativeTitle?.errors"
@@ -15,10 +13,9 @@
             </mat-error>
         </mat-form-field>
 
-        <mat-form-field class="field">
+        <mat-form-field>
             <mat-label>{{'project.partner.representative.first.name' | translate}}</mat-label>
-            <input name="partnerRepresentativeFirstName" formControlName="partnerRepresentativeFirstName" matInput
-                   placeholder="{{'project.partner.representative.first.name' | translate}}">
+            <input name="partnerRepresentativeFirstName" formControlName="partnerRepresentativeFirstName" matInput>
             <mat-error>
                 <app-form-field-errors
                         [errors]="partnerContactForm?.controls?.partnerRepresentativeFirstName?.errors"
@@ -27,10 +24,9 @@
             </mat-error>
         </mat-form-field>
 
-        <mat-form-field class="field">
+        <mat-form-field>
             <mat-label>{{'project.partner.representative.last.name' | translate}}</mat-label>
-            <input name="partnerRepresentativeLastName" formControlName="partnerRepresentativeLastName" matInput
-                   placeholder="{{'project.partner.representative.last.name' | translate}}">
+            <input name="partnerRepresentativeLastName" formControlName="partnerRepresentativeLastName" matInput>
             <mat-error>
                 <app-form-field-errors
                         [errors]="partnerContactForm?.controls?.partnerRepresentativeLastName?.errors"
@@ -39,12 +35,11 @@
             </mat-error>
         </mat-form-field>
 
-        <h5>{{'project.partner.contact.header' | translate}}</h5>
+        <h3>{{'project.partner.contact.header' | translate}}</h3>
 
-        <mat-form-field class="field">
+        <mat-form-field>
             <mat-label>{{'project.partner.contact.title' | translate}}</mat-label>
-            <input name="partnerContactTitle" formControlName="partnerContactTitle" matInput
-                   placeholder="{{'project.partner.contact.title' | translate}}">
+            <input name="partnerContactTitle" formControlName="partnerContactTitle" matInput>
             <mat-error>
                 <app-form-field-errors
                         [errors]="partnerContactForm?.controls?.partnerContactTitle?.errors"
@@ -53,10 +48,9 @@
             </mat-error>
         </mat-form-field>
 
-        <mat-form-field class="field">
+        <mat-form-field>
             <mat-label>{{'project.partner.contact.first.name' | translate}}</mat-label>
-            <input name="partnerContactFirstName" formControlName="partnerContactFirstName" matInput
-                   placeholder="{{'project.partner.contact.first.name' | translate}}">
+            <input name="partnerContactFirstName" formControlName="partnerContactFirstName" matInput>
             <mat-error>
                 <app-form-field-errors
                         [errors]="partnerContactForm?.controls?.partnerContactFirstName?.errors"
@@ -65,10 +59,9 @@
             </mat-error>
         </mat-form-field>
 
-        <mat-form-field class="field">
+        <mat-form-field>
             <mat-label>{{'project.partner.contact.last.name' | translate}}</mat-label>
-            <input name="partnerContactLastName" formControlName="partnerContactLastName" matInput
-                   placeholder="{{'project.partner.contact.last.name' | translate}}">
+            <input name="partnerContactLastName" formControlName="partnerContactLastName" matInput>
             <mat-error>
                 <app-form-field-errors
                         [errors]="partnerContactForm?.controls?.partnerContactLastName?.errors"
@@ -77,10 +70,9 @@
             </mat-error>
         </mat-form-field>
 
-        <mat-form-field class="field">
+        <mat-form-field>
             <mat-label>{{'project.partner.contact.email' | translate}}</mat-label>
-            <input name="partnerContactEmail" formControlName="partnerContactEmail" matInput
-                   placeholder="{{'project.partner.contact.email' | translate}}">
+            <input name="partnerContactEmail" formControlName="partnerContactEmail" matInput>
             <mat-error>
                 <app-form-field-errors
                         [errors]="partnerContactForm?.controls?.partnerContactEmail?.errors"
@@ -89,10 +81,9 @@
             </mat-error>
         </mat-form-field>
 
-        <mat-form-field class="field">
+        <mat-form-field>
             <mat-label>{{'project.partner.contact.telephone' | translate}}</mat-label>
-            <input name="partnerContactTelephone" formControlName="partnerContactTelephone" matInput
-                   placeholder="{{'project.partner.contact.telephone' | translate}}">
+            <input name="partnerContactTelephone" formControlName="partnerContactTelephone" matInput>
             <mat-error>
                 <app-form-field-errors
                         [errors]="partnerContactForm?.controls?.partnerContactTelephone?.errors"

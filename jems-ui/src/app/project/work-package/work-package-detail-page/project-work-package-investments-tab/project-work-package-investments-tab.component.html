@@ -1,28 +1,28 @@
-<app-form *ngIf="currentPage$ | async as workPackageInvestmentsPage">
-    <div>
-        <h6>{{'project.application.form.workpackage.investment.form.list.title' | translate}}</h6>
-        <div class="pb-4 intro-text-small">{{'project.work.package.tab.investment.intro' | translate}}</div>
-    </div>
+<ng-container *ngIf="currentPage$ | async as workPackageInvestmentsPage">
+    <app-form>
+        <div appFormLayout>
+            <h3>{{'project.application.form.workpackage.investment.form.list.title' | translate}}</h3>
+            <div>{{'project.work.package.tab.investment.intro' | translate}}</div>
 
-    <span class="header-button" *ngIf="editable">
-        <button class="spaced-elements" mat-raised-button color="primary"
-                [routerLink]="'/app/project/detail/' + projectId + '/applicationFormWorkPackage/detail/' + workPackageId +  '/investment/create'"
-                [disabled]="!editable">
+            <button mat-stroked-button *ngIf="editable"
+                    [routerLink]="'/app/project/detail/' + projectId + '/applicationFormWorkPackage/detail/' + workPackageId +  '/investment/create'"
+                    [disabled]="!editable">
                 + {{'project.application.form.add.workpackage.investment' | translate}}
-        </button>
-    </span>
+            </button>
 
-    <app-table *ngIf="workPackageInvestmentsPage.content.length"
-               [configuration]="tableConfiguration"
-               [rows]="workPackageInvestmentsPage.content"
-               [totalElements]="workPackageInvestmentsPage?.totalElements"
-               [pageIndex]="pageIndex"
-               (newPageIndex)="newPageIndex$.next($event)"
-               (newPageSize)="newPageSize$.next($event)"
-               (sortRows)="newSort$.next($event)">
-    </app-table>
-
-</app-form>
+            <app-table appNoWidthLimit
+                       *ngIf="workPackageInvestmentsPage.content.length"
+                       [configuration]="tableConfiguration"
+                       [rows]="workPackageInvestmentsPage.content"
+                       [totalElements]="workPackageInvestmentsPage?.totalElements"
+                       [pageIndex]="pageIndex"
+                       (newPageIndex)="newPageIndex$.next($event)"
+                       (newPageSize)="newPageSize$.next($event)"
+                       (sortRows)="newSort$.next($event)">
+            </app-table>
+        </div>
+    </app-form>
+</ng-container>
 
 <ng-template #numberingCell let-workPackageInvestment>
     <span *ngIf="workPackageInvestment.investmentNumber">

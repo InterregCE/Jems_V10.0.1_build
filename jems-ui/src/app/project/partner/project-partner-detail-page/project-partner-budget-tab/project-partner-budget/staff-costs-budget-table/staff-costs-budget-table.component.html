@@ -7,9 +7,7 @@
         </app-alert>
         <ng-container [formGroup]="staff">
             <app-multi-language>
-                <mat-table
-                        appTableConfig
-                        [widthConfig]="widthConfig"
+                <mat-table [appTableConfig]="tableConfig"
                         [dataSource]="dataSource" [formArrayName]="constants.FORM_CONTROL_NAMES.items"
                         class="mat-elevation-z2 staff-budget-table">
                     <ng-container sticky matColumnDef="description">
@@ -28,8 +26,7 @@
                                 *matHeaderCellDef> {{'project.partner.budget.table.staff.type.of.staff' | translate}} </mat-header-cell>
                         <mat-cell *matCellDef="let control;  let i = index" [formGroupName]="i">
                             <mat-form-field [appFormFieldWidth]="'small'">
-                                <mat-select [formControlName]="constants.FORM_CONTROL_NAMES.type"
-                                            [disableOptionCentering]="true">
+                                <mat-select [formControlName]="constants.FORM_CONTROL_NAMES.type">
                                     <mat-option [value]="null"></mat-option>
                                     <mat-option
                                             [value]="staffCostType.REAL_COST">{{'project.partner.budget.table.staff.type.of.staff.fixed.percentage' | translate}}</mat-option>
@@ -58,8 +55,7 @@
                                 *matHeaderCellDef> {{'project.partner.budget.table.unit.type' | translate}} </mat-header-cell>
                         <mat-cell *matCellDef="let control;  let i = index" [formGroupName]="i">
                             <mat-form-field [appFormFieldWidth]="'small'">
-                                <mat-select [formControlName]="constants.FORM_CONTROL_NAMES.unitType"
-                                            [disableOptionCentering]="true" panelClass="material-select-panel">
+                                <mat-select [formControlName]="constants.FORM_CONTROL_NAMES.unitType">
                                     <mat-option [value]="null"></mat-option>
                                     <mat-option
                                             [value]="staffCostUnitType.PERIOD">{{'project.partner.budget.table.staff.unit.type.period' | translate}}</mat-option>
@@ -165,7 +161,7 @@
 
                 </mat-table>
             </app-multi-language>
-            <mat-error class="mt-3">
+            <mat-error class="mt-3" *ngIf="total.errors">
                 <app-form-field-errors
                         [errors]="total.errors"
                         [args]="constants.FORM_ERRORS_ARGS.total"

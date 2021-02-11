@@ -1,18 +1,14 @@
 <app-form (save)="onSubmit()"
           (discard)="resetForm()">
-    <form [formGroup]="projectRelevanceForm">
-        <h5 class="header" id="projectRelevanceHeading">
-            {{'project.application.form.section.part.c.subsection.two' | translate}}
-        </h5>
+    <form appFormLayout [formGroup]="projectRelevanceForm">
+        <h3>{{'project.application.form.section.part.c.subsection.two' | translate}}</h3>
 
-        <div class="intro-text">
-            <h6>{{'project.application.form.relevance.field.1' | translate}}</h6>
-            <p class="intro-text-small">{{'project.application.form.relevance.field.1.intro' | translate}}</p>
-        </div>
+        <h4>{{'project.application.form.relevance.field.1' | translate}}</h4>
+        <p>{{'project.application.form.relevance.field.1.intro' | translate}}</p>
+
         <app-multi-language
                 [inputs]="[territorialChallenge]">
             <app-expandable-textarea
-                    class="field"
                     [control]="projectRelevanceForm?.controls?.territorialChallenge"
                     [errors]="projectRelevanceForm?.controls?.territorialChallenge?.errors"
                     [messages]="territorialChallengeErrors"
@@ -22,14 +18,13 @@
             </app-expandable-textarea>
         </app-multi-language>
 
-        <div class="intro-text">
-            <h6>{{'project.application.form.relevance.field.2' | translate}}</h6>
-            <p class="intro-text-small">{{'project.application.form.relevance.field.2.intro' | translate}}</p>
-        </div>
+
+        <h4>{{'project.application.form.relevance.field.2' | translate}}</h4>
+        <p>{{'project.application.form.relevance.field.2.intro' | translate}}</p>
+
         <app-multi-language
                 [inputs]="[commonChallenge]">
             <app-expandable-textarea
-                    class="field"
                     [control]="projectRelevanceForm?.controls?.commonChallenge"
                     [errors]="projectRelevanceForm?.controls?.commonChallenge?.errors"
                     [messages]="commonChallengeErrors"
@@ -39,14 +34,11 @@
             </app-expandable-textarea>
         </app-multi-language>
 
-        <div class="intro-text">
-            <h6>{{'project.application.form.relevance.field.3' | translate}}</h6>
-            <p class="intro-text-small">{{'project.application.form.relevance.field.3.intro' | translate}}</p>
-        </div>
+        <h4>{{'project.application.form.relevance.field.3' | translate}}</h4>
+        <p>{{'project.application.form.relevance.field.3.intro' | translate}}</p>
         <app-multi-language
                 [inputs]="[transnationalCooperation]">
             <app-expandable-textarea
-                    class="field"
                     [control]="projectRelevanceForm?.controls?.transnationalCooperation"
                     [errors]="projectRelevanceForm?.controls?.transnationalCooperation?.errors"
                     [messages]="transnationalCooperationErrors"
@@ -56,22 +48,18 @@
             </app-expandable-textarea>
         </app-multi-language>
 
-        <div class="intro-text">
-            <h6>{{'project.application.form.relevance.field.4' | translate}}</h6>
-            <p class="intro-text-small">{{'project.application.form.relevance.field.4.intro' | translate}}</p>
-        </div>
-        <app-benefits-table
+        <h4>{{'project.application.form.relevance.field.4' | translate}}</h4>
+        <p>{{'project.application.form.relevance.field.4.intro' | translate}}</p>
+        <app-benefits-table appNoWidthLimit
                 [formGroup]="projectRelevanceForm"
                 [benefits]="benefits"
                 [editable]="editable"
                 (changed)="tableChanged()">
         </app-benefits-table>
 
-        <div class="intro-text">
-            <h6>{{'project.application.form.relevance.field.5' | translate}}</h6>
-            <p class="intro-text-small">{{'project.application.form.relevance.field.5.intro' | translate}}</p>
-        </div>
-        <app-strategy-table
+        <h4>{{'project.application.form.relevance.field.5' | translate}}</h4>
+        <p>{{'project.application.form.relevance.field.5.intro' | translate}}</p>
+        <app-strategy-table appNoWidthLimit
                 [formGroup]="projectRelevanceForm"
                 [strategies]="strategies"
                 [callStrategies]="strategiesFromCall"
@@ -79,24 +67,19 @@
                 (changed)="tableChanged()">
         </app-strategy-table>
 
-        <div class="intro-text">
-            <h6>{{'project.application.form.relevance.field.6' | translate}}</h6>
-        </div>
-        <app-synergy-table
+        <h4>{{'project.application.form.relevance.field.6' | translate}}</h4>
+        <app-synergy-table appNoWidthLimit
                 [formGroup]="projectRelevanceForm"
                 [synergies]="synergies"
                 [editable]="editable"
                 (changed)="tableChanged()">
         </app-synergy-table>
 
-        <div class="intro-text">
-            <h6>{{'project.application.form.relevance.field.7' | translate}}</h6>
-            <p class="intro-text-small">{{'project.application.form.relevance.field.7.intro' | translate}}</p>
-        </div>
+        <h4>{{'project.application.form.relevance.field.7' | translate}}</h4>
+        <p>{{'project.application.form.relevance.field.7.intro' | translate}}</p>
         <app-multi-language
                 [inputs]="[availableKnowledge]">
-            <app-expandable-textarea class="field"
-                                     [control]="projectRelevanceForm?.controls?.availableKnowledge"
+            <app-expandable-textarea [control]="projectRelevanceForm?.controls?.availableKnowledge"
                                      [errors]="projectRelevanceForm?.controls?.availableKnowledge?.errors"
                                      [messages]="availableKnowledgeErrors"
                                      [characterLimit]="5000"

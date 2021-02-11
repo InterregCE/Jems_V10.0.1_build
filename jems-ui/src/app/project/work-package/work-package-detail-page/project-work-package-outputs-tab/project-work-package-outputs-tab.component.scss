@@ -1,6 +1,10 @@
-#outputsForm {
-  .output-title {
-    max-width: 54rem;
+.output-container{
+  padding: 0.75rem;
+  border: 1px solid var(--light-blue-gray);
+  .output-header{
+    padding: 0.25rem 0.75rem ;
+    margin-left: -0.75rem;
+    margin-top: -0.75rem;;
+    background-color: var(--light-blue-gray);
   }
 }
-

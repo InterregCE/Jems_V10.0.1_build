@@ -6,19 +6,15 @@
             <p>{{'project.partner.budget.table.period.warning' | translate}}</p>
         </app-alert>
         <ng-container [formGroup]="table">
-            <mat-table
-                    appTableConfig
-                    [widthConfig]="widthConfig"
-                    [dataSource]="dataSource" [formArrayName]="constants.FORM_CONTROL_NAMES.items"
-                    class="mat-elevation-z2 unitcost-budget-table">
+            <mat-table [appTableConfig]="tableConfig"
+                       [dataSource]="dataSource" [formArrayName]="constants.FORM_CONTROL_NAMES.items"
+                       class="mat-elevation-z2 unitcost-budget-table">
                 <ng-container sticky matColumnDef="unitCost">
                     <mat-header-cell
                             *matHeaderCellDef> {{'project.partner.budget.table.unitcosts.selection' | translate}} </mat-header-cell>
                     <mat-cell *matCellDef="let control;  let i = index" [formGroupName]="i">
                         <mat-form-field [appFormFieldWidth]="'medium'">
-                            <mat-select panelClass="material-select-panel"
-                                        [formControlName]="constants.FORM_CONTROL_NAMES.unitCost"
-                                        [disableOptionCentering]="true">
+                            <mat-select [formControlName]="constants.FORM_CONTROL_NAMES.unitCost">
                                 <mat-option *ngFor="let unitCost of availableUnitCosts" [value]="unitCost">
                                     {{unitCost.name}}
                                 </mat-option>
@@ -139,7 +135,7 @@
 
             </mat-table>
 
-            <mat-error class="mt-3">
+            <mat-error class="mt-3" *ngIf="total.errors">
                 <app-form-field-errors
                         [errors]="total.errors"
                         [args]="constants.FORM_ERRORS_ARGS.total"

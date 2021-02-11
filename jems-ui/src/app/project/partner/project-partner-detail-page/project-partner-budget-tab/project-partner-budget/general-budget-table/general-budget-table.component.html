@@ -7,8 +7,7 @@
         </app-alert>
         <ng-container [formGroup]="table">
             <app-multi-language>
-                <mat-table appTableConfig
-                           [widthConfig]="widthConfig"
+                <mat-table [appTableConfig]="tableConfig"
                            [dataSource]="dataSource" [formArrayName]="constants.FORM_CONTROL_NAMES.items"
                            class="mat-elevation-z2 budget-table">
                     <ng-container sticky matColumnDef="description">
@@ -38,8 +37,7 @@
                         <mat-cell *matCellDef="let control;  let i = index" [formGroupName]="i">
                             <mat-form-field [appFormFieldWidth]="'small'">
                                 <mat-select name="indicatorCode"
-                                            [formControlName]="constants.FORM_CONTROL_NAMES.investmentId"
-                                            [disableOptionCentering]="true" panelClass="material-select-panel">
+                                            [formControlName]="constants.FORM_CONTROL_NAMES.investmentId">
                                     <mat-option></mat-option>
                                     <mat-option *ngFor="let investmentSummary of investmentSummaries"
                                                 [value]="investmentSummary.id">
@@ -155,7 +153,7 @@
 
                 </mat-table>
             </app-multi-language>
-            <mat-error class="mt-3">
+            <mat-error class="mt-3" *ngIf="total.errors">
                 <app-form-field-errors
                         [errors]="total.errors"
                         [args]="constants.FORM_ERRORS_ARGS.total"

@@ -1,7 +1,7 @@
 <app-breadcrumb></app-breadcrumb>
-<h2>{{'project.application.form.acronym' | translate : {acronym: projectStore.getAcronym() | async} }}</h2>
-<h4>{{'project.application.form.section.part.d' | translate}}</h4>
-<h5>{{'project.application.form.budget.title' | translate}}</h5>
+<h1>{{'project.application.form.acronym' | translate : {acronym: projectStore.getAcronym() | async} }}</h1>
+<h2>{{'project.application.form.section.part.d' | translate}}</h2>
+<h3>{{'project.application.form.budget.title' | translate}}</h3>
 
 <mat-table id="budget-table" class="mat-elevation-z8 general-application-table"
        [dataSource]="budget$ | async">

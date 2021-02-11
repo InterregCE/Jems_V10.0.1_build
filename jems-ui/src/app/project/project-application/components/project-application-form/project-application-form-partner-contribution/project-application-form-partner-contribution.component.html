@@ -1,9 +1,9 @@
 <app-form (save)="onSubmit()"
           (discard)="initForm()">
-    <form [formGroup]="partnerContributionForm" class="wrapper">
-        <h5><span>{{'project.partner.motivation.header' | translate}}</span></h5>
-        <h6 class="intro-text">{{'project.partner.motivation.organization.relevance' | translate}}</h6>
+    <form appFormLayout [formGroup]="partnerContributionForm">
+        <h3>{{'project.partner.motivation.header' | translate}}</h3>
 
+        <p>{{'project.partner.motivation.organization.relevance' | translate}}</p>
         <app-multi-language>
             <app-multi-language-form-field type="textarea"
                                            [label]="'common.textarea.enter.text'"
@@ -12,9 +12,7 @@
             </app-multi-language-form-field>
         </app-multi-language>
 
-        <h6 class="intro-text">
-            {{'project.partner.motivation.organization.role' | translate}}
-        </h6>
+        <p>{{'project.partner.motivation.organization.role' | translate}}</p>
         <app-multi-language>
             <app-multi-language-form-field type="textarea"
                                            [label]="'common.textarea.enter.text'"
@@ -23,9 +21,7 @@
             </app-multi-language-form-field>
         </app-multi-language>
 
-        <h6 class="intro-text">
-            {{'project.partner.motivation.organization.experience' | translate}}
-        </h6>
+        <p>{{'project.partner.motivation.organization.experience' | translate}}</p>
         <app-multi-language>
             <app-multi-language-form-field type="textarea"
                                            [label]="'common.textarea.enter.text'"

@@ -1,0 +1,13 @@
+@mixin custom-tooltip-styles() {
+
+  @include custom-general-tooltip-styles();
+
+}
+
+
+@mixin custom-general-tooltip-styles() {
+  div.mat-tooltip {
+    font-size: 0.875rem;
+  }
+}
+

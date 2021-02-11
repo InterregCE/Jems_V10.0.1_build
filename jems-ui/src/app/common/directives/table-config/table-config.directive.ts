@@ -1,14 +1,12 @@
 import {AfterContentChecked, AfterViewInit, Directive, ElementRef, Input} from '@angular/core';
-import {WidthConfig} from './WidthConfig';
-
-const DEFAULT_MIN_WIDTH = 10;
+import {TableConfig} from './TableConfig';
 
 @Directive({
   selector: '[appTableConfig]'
 })
 export class TableConfigDirective implements AfterViewInit, AfterContentChecked {
 
-  @Input() widthConfig: WidthConfig[];
+  @Input('appTableConfig') tableConfig: TableConfig[];
   @Input() appearance: 'table' | 'material-table' | null = null;
 
 
@@ -34,12 +32,12 @@ export class TableConfigDirective implements AfterViewInit, AfterContentChecked 
       row.style.minWidth = `${rowMinWidthToSupportStickyColumns}rem`;
       const columns = row.children;
       for (let i = 0; i < columns.length; ++i) {
-        if (this.widthConfig[i]) {
-          if (this.widthConfig[i].minInRem) {
-            columns[i].classList.add(`min-width-${this.widthConfig[i].minInRem}`);
+        if (this.tableConfig[i]) {
+          if (this.tableConfig[i].minInRem) {
+            columns[i].classList.add(`min-width-${this.tableConfig[i].minInRem}`);
           }
-          if (this.widthConfig[i].maxInRem) {
-            columns[i].classList.add(`max-width-${this.widthConfig[i].maxInRem}`);
+          if (this.tableConfig[i].maxInRem) {
+            columns[i].classList.add(`max-width-${this.tableConfig[i].maxInRem}`);
           }
         }
       }
@@ -49,6 +47,6 @@ export class TableConfigDirective implements AfterViewInit, AfterContentChecked 
   private calculateRowMinWidthToSupportStickyColumns(): number {
     const cellsRightAndLeftPadding = 1;
     const firstAndLastCellsPadding = 1.5;
-    return (this.widthConfig.map(config => config.minInRem).reduce((accumulator, minValue) => (accumulator || 0) + (minValue || 0) + cellsRightAndLeftPadding, 0) || 0) + firstAndLastCellsPadding;
+    return (this.tableConfig.map(config => config.minInRem).reduce((accumulator, minValue) => (accumulator || 0) + (minValue || 0) + cellsRightAndLeftPadding, 0) || 0) + firstAndLastCellsPadding;
   }
 }
