@@ -40,11 +40,15 @@ export class ProjectWorkPackageObjectivesTabComponent implements OnInit, OnChang
               public workPackageStore: ProjectWorkPackagePageStore,
               private projectStore: ProjectStore,
               private projectApplicationFormSidenavService: ProjectApplicationFormSidenavService) {
-    this.projectStore.init(this.projectId);
   }
 
   ngOnInit(): void {
-    this.formService.init(this.form, this.workPackageStore.isProjectEditable$);
+    this.formService.init(this.form);
+
+    this.workPackageStore.isProjectEditable$.pipe(
+        tap(editable => this.formService.setEditable(editable)),
+        tap(() => this.form.controls.number.disable())
+    ).subscribe();
 
     this.workPackage$ = this.workPackageStore.workPackage$
       .pipe(

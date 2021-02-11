@@ -108,6 +108,7 @@ export class FormService {
     } else {
       this.form?.disable();
     }
+    this.editable = editable;
   }
 
   resetEditable(): void {

@@ -71,7 +71,6 @@ export class ProjectWorkPackagePageStore {
       this.workPackage$.next({});
       return;
     }
-    this.projectStore.init(this.projectId);
     this.workPackageService.getWorkPackageById(this.workPackageId)
       .pipe(
         tap(workPackage => Log.info('Fetched project work package:', this, workPackage)),
