@@ -1,9 +1,8 @@
-import {fakeAsync, TestBed, tick} from '@angular/core/testing';
+import {fakeAsync, TestBed} from '@angular/core/testing';
 import {TestModule} from '../../../../../common/test-module';
 import {ProjectModule} from '../../../../project.module';
 import {HttpTestingController} from '@angular/common/http/testing';
 import {ProjectPartnerStore} from './project-partner-store.service';
-import {OutputProjectPartner} from '@cat/api';
 
 describe('ProjectPartnerStoreService', () => {
   let service: ProjectPartnerStore;
@@ -18,26 +17,15 @@ describe('ProjectPartnerStoreService', () => {
     });
     service = TestBed.inject(ProjectPartnerStore);
     httpTestingController = TestBed.inject(HttpTestingController);
+    (service as any).projectId = 1;
+    (service as any).partnerId = 2;
   });
 
   it('should be created', () => {
     expect(service).toBeTruthy();
   });
 
-  it('should fetch the initial partner', fakeAsync(() => {
-    let resultPartner;
-    service.partner$.subscribe(result => resultPartner = result as OutputProjectPartner);
-    service.init(2, 1);
-
-    httpTestingController.match({method: 'GET', url: `//api/project/1/partner/2`})
-      .forEach(req => req.flush({id: 2}));
-
-    tick();
-    expect(resultPartner).toEqual({id: 2} as any);
-  }));
-
   it('should update a project partner contact', fakeAsync(() => {
-    service.init(2, 1);
     service.updatePartnerContact([]).subscribe();
 
     httpTestingController.expectOne({
@@ -47,7 +35,6 @@ describe('ProjectPartnerStoreService', () => {
   }));
 
   it('should update a project partner motivation', fakeAsync(() => {
-    service.init(2, 1);
     service.updatePartnerMotivation({} as any).subscribe();
 
     httpTestingController.expectOne({

@@ -1,7 +1,7 @@
 import {ChangeDetectionStrategy, Component} from '@angular/core';
 import {combineLatest, Subject} from 'rxjs';
 import {MatSort} from '@angular/material/sort';
-import {mergeMap, map, startWith, take, tap} from 'rxjs/operators';
+import {map, mergeMap, startWith, take, tap} from 'rxjs/operators';
 import {Tables} from '../../../../../common/utils/tables';
 import {Log} from '../../../../../common/utils/log';
 import {WorkPackageService} from '@cat/api';
@@ -44,7 +44,6 @@ export class ProjectApplicationFormWorkPackageSectionComponent {
               private activatedRoute: ActivatedRoute,
               private workPackageService: WorkPackageService,
               private projectApplicationFormSidenavService: ProjectApplicationFormSidenavService) {
-    this.projectStore.init(this.projectId);
   }
 
   deleteWorkPackage(workPackageId: number): void {

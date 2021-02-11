@@ -39,7 +39,6 @@ export class ProjectResultsPageComponent implements OnInit {
               private projectResultsPageStore: ProjectResultsPageStore,
               private activatedRoute: ActivatedRoute,
               private sidenavService: ProjectApplicationFormSidenavService) {
-    this.projectResultsPageStore.init(this.projectId);
     this.formService.init(this.form, this.projectResultsPageStore.isProjectEditable$);
   }
 

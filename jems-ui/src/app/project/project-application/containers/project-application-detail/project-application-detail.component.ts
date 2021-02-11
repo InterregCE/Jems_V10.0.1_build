@@ -1,6 +1,5 @@
 import {ChangeDetectionStrategy, Component} from '@angular/core';
 import {ActivatedRoute} from '@angular/router';
-import {BaseComponent} from '@common/components/base-component';
 import {ProjectStore} from './services/project-store.service';
 import {Permission} from '../../../../security/permissions/permission';
 import {OutputProjectFile, OutputProjectStatus} from '@cat/api';
@@ -15,8 +14,7 @@ import {ProjectApplicationFormSidenavService} from '../project-application-form-
   styleUrls: ['./project-application-detail.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class ProjectApplicationDetailComponent extends BaseComponent {
-  Permission = Permission;
+export class ProjectApplicationDetailComponent {
   fileType = OutputProjectFile.TypeEnum;
 
   projectId = this.activatedRoute.snapshot.params.projectId;
@@ -36,8 +34,6 @@ export class ProjectApplicationDetailComponent extends BaseComponent {
               private activatedRoute: ActivatedRoute,
               private permissionService: PermissionService,
               private sidenavService: ProjectApplicationFormSidenavService) {
-    super();
-    this.projectStore.init(this.projectId);
   }
 
 }

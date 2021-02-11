@@ -1,8 +1,6 @@
-import {ChangeDetectionStrategy, Component, OnDestroy, OnInit} from '@angular/core';
-import {distinctUntilChanged, map, takeUntil, tap} from 'rxjs/operators';
+import {ChangeDetectionStrategy, Component, OnDestroy} from '@angular/core';
 import {ActivatedRoute, Router} from '@angular/router';
 import {ProjectPartnerService} from '@cat/api';
-import {BaseComponent} from '@common/components/base-component';
 import {ProjectStore} from '../../project-application/containers/project-application-detail/services/project-store.service';
 import {TabService} from '../../../common/services/tab.service';
 import {ProjectPartnerStore} from '../../project-application/containers/project-application-form-page/services/project-partner-store.service';
@@ -12,7 +10,7 @@ import {ProjectPartnerStore} from '../../project-application/containers/project-
   styleUrls: ['./project-partner-detail-page.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class ProjectPartnerDetailPageComponent extends BaseComponent implements OnInit, OnDestroy {
+export class ProjectPartnerDetailPageComponent implements OnDestroy {
 
   projectId = this.activatedRoute?.snapshot?.params?.projectId;
   partnerId = this.activatedRoute?.snapshot?.params?.partnerId;
@@ -27,21 +25,9 @@ export class ProjectPartnerDetailPageComponent extends BaseComponent implements 
               public partnerStore: ProjectPartnerStore,
               private router: Router,
               private tabService: TabService) {
-    super();
-    this.activatedRoute.params.pipe(
-      takeUntil(this.destroyed$),
-      map(params => params.partnerId),
-      distinctUntilChanged(),
-      tap(id => this.partnerStore.init(id, this.projectId)),
-    ).subscribe();
-  }
-
-  ngOnInit(): void {
-    this.projectStore.init(this.projectId);
   }
 
   ngOnDestroy(): void {
-    super.ngOnDestroy();
     this.tabService.cleanupTab(ProjectPartnerDetailPageComponent.name + this.partnerId);
   }
 

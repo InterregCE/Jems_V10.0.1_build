@@ -44,8 +44,6 @@ export class ProjectApplicationFormAssociatedOrgDetailComponent extends BaseComp
   }
 
   ngOnInit(): void {
-    this.projectStore.init(this.projectId);
-
     if (this.associatedOrganizationId) {
       return;
     }

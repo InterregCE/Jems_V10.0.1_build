@@ -1,10 +1,9 @@
 import {ChangeDetectionStrategy, Component} from '@angular/core';
 import {merge, Subject} from 'rxjs';
-import {I18nValidationError} from '@common/validation/i18n-validation-error';
-import {catchError, mergeMap, map, tap} from 'rxjs/operators';
+import {catchError, map, mergeMap, tap} from 'rxjs/operators';
 import {Log} from '../../../../../common/utils/log';
 import {HttpErrorResponse} from '@angular/common/http';
-import {ProjectDescriptionService, InputProjectManagement} from '@cat/api';
+import {InputProjectManagement, ProjectDescriptionService} from '@cat/api';
 import {ProjectApplicationFormStore} from '../services/project-application-form-store.service';
 import {ProjectApplicationFormSidenavService} from '../services/project-application-form-sidenav.service';
 import {ActivatedRoute} from '@angular/router';
@@ -47,7 +46,6 @@ export class ProjectApplicationFormManagementSectionComponent {
               private projectApplicationFormSidenavService: ProjectApplicationFormSidenavService,
               private projectDescriptionService: ProjectDescriptionService,
               private projectApplicationFormStore: ProjectApplicationFormStore) {
-    this.projectStore.init(this.projectId);
     this.projectApplicationFormStore.init(this.projectId);
   }
 

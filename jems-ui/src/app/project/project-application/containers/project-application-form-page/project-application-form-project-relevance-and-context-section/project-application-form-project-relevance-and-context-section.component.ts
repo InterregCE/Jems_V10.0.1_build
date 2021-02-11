@@ -78,7 +78,6 @@ export class ProjectApplicationFormProjectRelevanceAndContextSectionComponent {
               private projectApplicationFormSidenavService: ProjectApplicationFormSidenavService,
               private projectDescriptionService: ProjectDescriptionService,
               private projectApplicationFormStore: ProjectApplicationFormStore) {
-    this.projectStore.init(this.projectId);
     this.projectApplicationFormStore.init(this.projectId);
   }
 }

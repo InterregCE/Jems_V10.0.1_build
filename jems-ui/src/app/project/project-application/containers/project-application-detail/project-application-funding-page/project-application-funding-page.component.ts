@@ -1,10 +1,8 @@
-import {ChangeDetectionStrategy, Component, OnInit} from '@angular/core';
+import {ChangeDetectionStrategy, Component} from '@angular/core';
 import {ProjectStore} from '../services/project-store.service';
 import {ActivatedRoute, Router} from '@angular/router';
-import {Permission} from '../../../../../security/permissions/permission';
 import {InputProjectStatus, OutputProject, OutputProjectStatus} from '@cat/api';
-import {BaseComponent} from '@common/components/base-component';
-import {map, takeUntil} from 'rxjs/operators';
+import {map} from 'rxjs/operators';
 
 @Component({
   selector: 'app-project-application-funding-page',
@@ -12,14 +10,12 @@ import {map, takeUntil} from 'rxjs/operators';
   styleUrls: ['./project-application-funding-page.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class ProjectApplicationFundingPageComponent extends BaseComponent implements OnInit {
-  Permission = Permission;
+export class ProjectApplicationFundingPageComponent {
   OutputProjectStatus = OutputProjectStatus;
 
   projectId = this.activatedRoute.snapshot.params.projectId;
   details$ = this.projectStore.getProject()
     .pipe(
-      takeUntil(this.destroyed$),
       map(project => ({
         project,
         acronym: project.acronym,
@@ -44,11 +40,6 @@ export class ProjectApplicationFundingPageComponent extends BaseComponent implem
   constructor(public projectStore: ProjectStore,
               private router: Router,
               private activatedRoute: ActivatedRoute) {
-    super();
-  }
-
-  ngOnInit(): void {
-    this.projectStore.init(this.projectId);
   }
 
   redirectToProject(): void {

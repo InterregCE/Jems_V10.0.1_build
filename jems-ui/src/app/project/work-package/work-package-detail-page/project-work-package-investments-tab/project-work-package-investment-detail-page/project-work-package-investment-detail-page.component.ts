@@ -77,9 +77,7 @@ export class ProjectWorkPackageInvestmentDetailPageComponent implements OnInit {
         tap(() => this.workPackageInvestmentForm.controls.number.disable())
       ).subscribe();
 
-    this.workPackageInvestment$ = this.investmentPageStore.workPackageInvestment(
-      this.workPackageInvestmentId, this.workPackageId, this.projectId
-    )
+    this.workPackageInvestment$ = this.investmentPageStore.workPackageInvestment(this.workPackageInvestmentId, this.workPackageId)
       .pipe(
         tap(investment => this.resetForm(investment)),
       );

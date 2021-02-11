@@ -37,10 +37,9 @@ export class ProjectWorkPackageInvestmentDetailPageStore {
       );
   }
 
-  workPackageInvestment(investmentId: number | string | null, workPackageId: number, projectId: number): Observable<WorkPackageInvestmentDTO | any> {
+  workPackageInvestment(investmentId: number | string | null, workPackageId: number): Observable<WorkPackageInvestmentDTO | any> {
     this.investmentId = Number(investmentId);
     this.workPackageId = workPackageId;
-    this.workPackagePageStore.init(workPackageId, projectId);
 
     const initialInvestment$ = this.investmentId
       ? this.workPackageInvestmentService.getWorkPackageInvestment(this.investmentId)

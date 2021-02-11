@@ -1,7 +1,7 @@
 import {ChangeDetectionStrategy, Component} from '@angular/core';
 import {combineLatest, Subject} from 'rxjs';
 import {MatSort} from '@angular/material/sort';
-import {mergeMap, map, startWith, take, tap, takeUntil} from 'rxjs/operators';
+import {map, mergeMap, startWith, take, tap} from 'rxjs/operators';
 import {Tables} from '../../../../../common/utils/tables';
 import {Log} from '../../../../../common/utils/log';
 import {ProjectPartnerService} from '@cat/api';
@@ -9,7 +9,6 @@ import {Permission} from '../../../../../security/permissions/permission';
 import {ProjectApplicationFormSidenavService} from '../services/project-application-form-sidenav.service';
 import {ActivatedRoute} from '@angular/router';
 import {ProjectStore} from '../../project-application-detail/services/project-store.service';
-import {BaseComponent} from '@common/components/base-component';
 
 @Component({
   selector: 'app-project-application-form-partner-section',
@@ -17,7 +16,7 @@ import {BaseComponent} from '@common/components/base-component';
   styleUrls: ['./project-application-form-partner-section.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class ProjectApplicationFormPartnerSectionComponent extends BaseComponent {
+export class ProjectApplicationFormPartnerSectionComponent {
   Permission = Permission;
 
   projectId = this.activatedRoute?.snapshot?.params?.projectId;
@@ -47,15 +46,12 @@ export class ProjectApplicationFormPartnerSectionComponent extends BaseComponent
               private projectPartnerService: ProjectPartnerService,
               private projectApplicationFormSidenavService: ProjectApplicationFormSidenavService,
               private activatedRoute: ActivatedRoute) {
-    super();
-    this.projectStore.init(this.projectId);
   }
 
   deletePartner(partnerId: number): void {
     this.projectPartnerService.deleteProjectPartner(partnerId, this.projectId)
       .pipe(
         take(1),
-        takeUntil(this.destroyed$),
         tap(() => this.newPageIndex$.next(Tables.DEFAULT_INITIAL_PAGE_INDEX)),
         tap(() => Log.info('Deleted partner: ', this, partnerId)),
         tap(() => this.projectApplicationFormSidenavService.refreshPartners(this.projectId)),

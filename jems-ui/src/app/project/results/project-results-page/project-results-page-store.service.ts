@@ -1,5 +1,11 @@
 import {Injectable} from '@angular/core';
-import {IndicatorResultDto, OutputProjectPeriod, ProgrammeIndicatorService, ProjectResultDTO, ProjectResultService} from '@cat/api';
+import {
+  IndicatorResultDto,
+  OutputProjectPeriod,
+  ProgrammeIndicatorService,
+  ProjectResultDTO,
+  ProjectResultService
+} from '@cat/api';
 import {merge, Observable, Subject} from 'rxjs';
 import {map, shareReplay, switchMap, tap} from 'rxjs/operators';
 import {Log} from '../../../common/utils/log';
@@ -25,10 +31,6 @@ export class ProjectResultsPageStore {
     this.resultIndicators$ = this.resultIndicators();
     this.periods$ = this.periods();
     this.projectAcronym$ = this.projectStore.getAcronym();
-  }
-
-  init(projectId: number): void {
-    this.projectStore.init(projectId);
   }
 
   saveResults(results: ProjectResultDTO[]): Observable<ProjectResultDTO[]> {

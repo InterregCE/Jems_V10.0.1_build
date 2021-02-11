@@ -1,5 +1,10 @@
-import {ChangeDetectionStrategy, Component, OnInit} from '@angular/core';
-import {ProjectPartnerBudgetCoFinancingDTO, ProjectPartnerCoFinancingOutputDTO, ProjectPartnerContributionDTO, ProgrammeFundOutputDTO} from '@cat/api';
+import {ChangeDetectionStrategy, Component} from '@angular/core';
+import {
+  ProgrammeFundOutputDTO,
+  ProjectPartnerBudgetCoFinancingDTO,
+  ProjectPartnerCoFinancingOutputDTO,
+  ProjectPartnerContributionDTO
+} from '@cat/api';
 import {tap} from 'rxjs/operators';
 import {ProjectStore} from '../../project-application/containers/project-application-detail/services/project-store.service';
 import {ActivatedRoute} from '@angular/router';
@@ -16,24 +21,23 @@ import {take} from 'rxjs/internal/operators';
   styleUrls: ['./budget-page-per-partner.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class BudgetPagePerPartnerComponent implements OnInit {
-  projectId = this.activatedRoute?.snapshot?.params?.projectId;
+export class BudgetPagePerPartnerComponent {
   displayedColumns: string[] = [];
 
   chosenProjectFunds$ = this.pageStore.callFunds$
-      .pipe(
-          tap((funds) => {
-            this.getColumnsToDisplay(funds);
-          }),
-      );
+    .pipe(
+      tap((funds) => {
+        this.getColumnsToDisplay(funds);
+      }),
+    );
 
   budgets$ = this.projectStore.getProjectCoFinancing()
-      .pipe(
-          tap((data: ProjectPartnerBudgetCoFinancingDTO[]) => this.calculateTotal(data)),
-          tap((data: ProjectPartnerBudgetCoFinancingDTO[]) => this.constructBudgetColumns(data)),
-          tap(() => this.calculateContributionSums(this.budgetColumns)),
-          take(1)
-      );
+    .pipe(
+      tap((data: ProjectPartnerBudgetCoFinancingDTO[]) => this.calculateTotal(data)),
+      tap((data: ProjectPartnerBudgetCoFinancingDTO[]) => this.constructBudgetColumns(data)),
+      tap(() => this.calculateContributionSums(this.budgetColumns)),
+      take(1)
+    );
 
   budgetColumns: ProjectPartnerBudgetAndContribution[] = [];
   totalPublicContribution = 0;
@@ -47,10 +51,6 @@ export class BudgetPagePerPartnerComponent implements OnInit {
               private activatedRoute: ActivatedRoute,
               private projectApplicationFormSidenavService: ProjectApplicationFormSidenavService,
               private pageStore: ProjectPartnerDetailPageStore) {
-  }
-
-  ngOnInit(): void {
-    this.projectStore.init(this.projectId);
   }
 
   getBudgetAmountForFund(fund: ProgrammeFundOutputDTO, budgets: ProjectPartnerBudgetModel[]): number {
@@ -74,10 +74,10 @@ export class BudgetPagePerPartnerComponent implements OnInit {
     if (this.budgetColumns) {
       this.budgetColumns.forEach(column => {
         column.budgets
-            .filter((budget: ProjectPartnerBudgetModel) => budget.budgetFundId === fund.id && budget.budgetFundAbbreviation === fund.abbreviation)
-            .forEach((budget: ProjectPartnerBudgetModel) => {
-              totalSum = totalSum + budget.budgetTotal;
-            });
+          .filter((budget: ProjectPartnerBudgetModel) => budget.budgetFundId === fund.id && budget.budgetFundAbbreviation === fund.abbreviation)
+          .forEach((budget: ProjectPartnerBudgetModel) => {
+            totalSum = totalSum + budget.budgetTotal;
+          });
       });
     }
     return NumberService.truncateNumber(totalSum);
@@ -89,11 +89,11 @@ export class BudgetPagePerPartnerComponent implements OnInit {
     if (this.budgetColumns) {
       this.budgetColumns.forEach(column => {
         column.budgets
-            .filter((budget: ProjectPartnerBudgetModel) => budget.budgetFundId === fund.id && budget.budgetFundAbbreviation === fund.abbreviation)
-            .forEach((budget: ProjectPartnerBudgetModel) => {
-              totalSum = totalSum + budget.budgetPercentage;
-              counter = counter + 1;
-            });
+          .filter((budget: ProjectPartnerBudgetModel) => budget.budgetFundId === fund.id && budget.budgetFundAbbreviation === fund.abbreviation)
+          .forEach((budget: ProjectPartnerBudgetModel) => {
+            totalSum = totalSum + budget.budgetPercentage;
+            counter = counter + 1;
+          });
       });
       return counter > 0 ? NumberService.truncateNumber((totalSum / counter), 0) : 0;
     }
@@ -134,8 +134,8 @@ export class BudgetPagePerPartnerComponent implements OnInit {
 
   private getPartnerContributionTotal(partnerContributions: ProjectPartnerContributionDTO[], partnerStatus?: ProjectPartnerContributionDTO.StatusEnum): number {
     return NumberService.truncateNumber(NumberService.sum(partnerContributions
-        .filter(source => source.status === partnerStatus || !partnerStatus)
-        .map(item => item.amount ? item.amount : 0)
+      .filter(source => source.status === partnerStatus || !partnerStatus)
+      .map(item => item.amount ? item.amount : 0)
     ));
   }
 

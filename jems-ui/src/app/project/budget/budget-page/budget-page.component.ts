@@ -1,12 +1,11 @@
-import {ChangeDetectionStrategy, Component, OnInit} from '@angular/core';
+import {ChangeDetectionStrategy, Component} from '@angular/core';
 import {ProjectStore} from '../../project-application/containers/project-application-detail/services/project-store.service';
 import {ActivatedRoute} from '@angular/router';
 import {ProjectApplicationFormSidenavService} from '../../project-application/containers/project-application-form-page/services/project-application-form-sidenav.service';
 import {ProjectCallSettingsDTO, ProjectPartnerBudgetDTO, ProjectService} from '@cat/api';
-import {tap} from 'rxjs/operators';
+import {map, tap} from 'rxjs/operators';
 import {Log} from '../../../common/utils/log';
 import {combineLatest, Observable} from 'rxjs';
-import {map} from 'rxjs/operators';
 import {NumberService} from '../../../common/services/number.service';
 
 @Component({
@@ -15,7 +14,7 @@ import {NumberService} from '../../../common/services/number.service';
   styleUrls: ['./budget-page.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class BudgetPageComponent implements OnInit {
+export class BudgetPageComponent {
   projectId = this.activatedRoute?.snapshot?.params?.projectId;
   displayedColumns: string[] = [
     'partner', 'country', 'staffCosts', 'officeAndAdministrationCosts', 'travelCosts',
@@ -48,10 +47,6 @@ export class BudgetPageComponent implements OnInit {
               private activatedRoute: ActivatedRoute,
               private projectApplicationFormSidenavService: ProjectApplicationFormSidenavService,
               private projectService: ProjectService) {
-  }
-
-  ngOnInit(): void {
-    this.projectStore.init(this.projectId);
   }
 
   private calculateFooterSums(budgets: ProjectPartnerBudgetDTO[]): void {

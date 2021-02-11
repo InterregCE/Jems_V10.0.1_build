@@ -48,7 +48,6 @@ export class ProjectApplicationFormIdentificationPageComponent {
               private activatedRoute: ActivatedRoute,
               private projectApplicationFormSidenavService: ProjectApplicationFormSidenavService,
               private callService: CallService) {
-    this.projectStore.init(this.projectId);
     this.projectApplicationFormStore.init(this.projectId);
   }
 

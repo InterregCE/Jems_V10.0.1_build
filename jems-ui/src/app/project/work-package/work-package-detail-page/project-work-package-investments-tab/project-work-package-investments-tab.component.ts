@@ -61,6 +61,7 @@ export class ProjectWorkPackageInvestmentsTabComponent implements OnInit {
         )
     ])
       .pipe(
+        filter(() => !!this.workPackageId),
         mergeMap(([pageIndex, pageSize, sort]) =>
           this.workPackageInvestmentService.getWorkPackageInvestments(this.workPackageId, pageIndex, pageSize, sort)),
         tap(page => Log.info('Fetched the work package investments:', this, page.content)),

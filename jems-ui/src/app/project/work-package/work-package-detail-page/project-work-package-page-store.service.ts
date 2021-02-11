@@ -3,27 +3,29 @@ import {
   IndicatorOutputDto,
   InputWorkPackageCreate,
   InputWorkPackageUpdate,
+  InvestmentSummaryDTO,
   OutputProject,
   OutputWorkPackage,
   ProgrammeIndicatorService,
   WorkPackageActivityDTO,
   WorkPackageActivityService,
   WorkPackageInvestmentService,
-  InvestmentSummaryDTO,
   WorkPackageOutputDTO,
   WorkPackageOutputService,
   WorkPackageOutputUpdateDTO,
   WorkPackageService,
 } from '@cat/api';
-import {combineLatest, merge, Observable, ReplaySubject, Subject} from 'rxjs';
+import {combineLatest, merge, Observable, of, ReplaySubject, Subject} from 'rxjs';
 import {filter, map, shareReplay, startWith, switchMap, tap} from 'rxjs/operators';
 import {Log} from '../../../common/utils/log';
 import {ProjectApplicationFormSidenavService} from '../../project-application/containers/project-application-form-page/services/project-application-form-sidenav.service';
 import {ProjectStore} from '../../project-application/containers/project-application-detail/services/project-store.service';
 import {InvestmentSummary} from './workPackageInvestment';
+import {RoutingService} from '../../../common/services/routing.service';
 
 @Injectable()
 export class ProjectWorkPackagePageStore {
+  public static WORK_PACKAGE_DETAIL_PATH = '/applicationFormWorkPackage/detail/';
 
   private workPackageId: number;
   private projectId: number;
@@ -47,7 +49,8 @@ export class ProjectWorkPackagePageStore {
               private workPackageActivityService: WorkPackageActivityService,
               private workPackageInvestmentService: WorkPackageInvestmentService,
               private workPackageOutputService: WorkPackageOutputService,
-              private projectApplicationFormSidenavService: ProjectApplicationFormSidenavService) {
+              private projectApplicationFormSidenavService: ProjectApplicationFormSidenavService,
+              private routingService: RoutingService) {
     this.isProjectEditable$ = this.projectStore.projectEditable$;
     this.project$ = this.projectStore.getProject();
     this.activities$ = this.workPackageActivities();
@@ -59,23 +62,21 @@ export class ProjectWorkPackagePageStore {
       map((investmentSummeryDTOs: InvestmentSummaryDTO[]) => investmentSummeryDTOs.map(it => new InvestmentSummary(it.id, it.investmentNumber, it.workPackageNumber))),
       shareReplay(1)
     );
-  }
 
-  init(workPackageId: number | string | null, projectId: number): void {
-    if (workPackageId && Number(workPackageId) === this.workPackageId) {
-      return;
-    }
-    this.workPackageId = Number(workPackageId);
-    this.projectId = projectId;
-    if (!this.workPackageId || !this.projectId) {
-      this.workPackage$.next({});
-      return;
-    }
-    this.workPackageService.getWorkPackageById(this.workPackageId)
-      .pipe(
-        tap(workPackage => Log.info('Fetched project work package:', this, workPackage)),
-        tap(workPackage => this.workPackage$.next(workPackage)),
-      ).subscribe();
+    combineLatest([
+      this.routingService.routeParameterChanges(ProjectWorkPackagePageStore.WORK_PACKAGE_DETAIL_PATH, 'workPackageId'),
+      this.projectStore.projectId$
+    ]).pipe(
+      tap(([workPackageId, projectId]) => {
+        this.workPackageId = Number(workPackageId);
+        this.projectId = projectId;
+      }),
+      switchMap(([workPackageId, projectId]) =>
+        workPackageId && projectId ? this.workPackageService.getWorkPackageById(Number(workPackageId)) : of({})
+      ),
+      tap(workPackage => this.workPackage$.next(workPackage)),
+      tap(workPackage => Log.info('Fetched the programme work package:', this, workPackage)),
+    ).subscribe();
   }
 
   saveWorkPackage(workPackage: InputWorkPackageUpdate): Observable<OutputWorkPackage> {
