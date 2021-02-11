@@ -1,15 +1,14 @@
 import {ChangeDetectionStrategy, Component} from '@angular/core';
 import {combineLatest, Subject} from 'rxjs';
 import {MatSort} from '@angular/material/sort';
-import {map, mergeMap, startWith, take, takeUntil, tap} from 'rxjs/operators';
+import {map, mergeMap, startWith, take, tap} from 'rxjs/operators';
 import {Tables} from '../../../../../common/utils/tables';
 import {Log} from '../../../../../common/utils/log';
-import {ProjectAssociatedOrganizationService, ProjectPartnerService} from '@cat/api';
+import {ProjectAssociatedOrganizationService} from '@cat/api';
 import {ProjectApplicationFormSidenavService} from '../services/project-application-form-sidenav.service';
 import {ActivatedRoute} from '@angular/router';
 import {ProjectStore} from '../../project-application-detail/services/project-store.service';
 import {Permission} from '../../../../../security/permissions/permission';
-import {BaseComponent} from '@common/components/base-component';
 
 @Component({
   selector: 'app-project-application-form-associated-org-page',
@@ -17,7 +16,7 @@ import {BaseComponent} from '@common/components/base-component';
   styleUrls: ['./project-application-form-associated-org-page.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class ProjectApplicationFormAssociatedOrgPageComponent extends BaseComponent {
+export class ProjectApplicationFormAssociatedOrgPageComponent {
   Permission = Permission;
 
   projectId = this.activatedRoute?.snapshot?.params?.projectId;
@@ -46,15 +45,12 @@ export class ProjectApplicationFormAssociatedOrgPageComponent extends BaseCompon
               private projectApplicationFormSidenavService: ProjectApplicationFormSidenavService,
               private projectAssociatedOrganizationService: ProjectAssociatedOrganizationService,
               private activatedRoute: ActivatedRoute) {
-    super();
-    this.projectStore.init(this.projectId);
   }
 
   deleteAssociatedOrganization(associatedOrganizationId: number): void {
     this.projectAssociatedOrganizationService.deleteAssociatedOrganization(associatedOrganizationId, this.projectId)
       .pipe(
         take(1),
-        takeUntil(this.destroyed$),
         tap(() => this.newPageIndex$.next(Tables.DEFAULT_INITIAL_PAGE_INDEX)),
         tap(() => Log.info('Deleted associated organization: ', this, associatedOrganizationId)),
       ).subscribe();

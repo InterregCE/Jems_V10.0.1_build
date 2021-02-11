@@ -193,11 +193,16 @@ export class ProjectPartnerDetailPageStore {
   }
 
   private totalBudget(): Observable<number> {
-    return combineLatest([this.partnerStore.partner$, this.updateBudgetOptionsEvent$.pipe(startWith(null)), this.updateBudgetEvent$.pipe(startWith(null))]).pipe(
-      switchMap(([partner]) => this.projectPartnerBudgetService.getTotal(partner.id)),
-      map(total => NumberService.truncateNumber(total)),
-      shareReplay(1)
-    );
+    return combineLatest([
+      this.partnerStore.partner$,
+      this.updateBudgetOptionsEvent$.pipe(startWith(null)),
+      this.updateBudgetEvent$.pipe(startWith(null))
+    ])
+      .pipe(
+        switchMap(([partner]) => partner?.id ? this.projectPartnerBudgetService.getTotal(partner.id) : of(0)),
+        map(total => NumberService.truncateNumber(total)),
+        shareReplay(1)
+      );
   }
 
   private toBudgetStaffCostEntryDTOArray(table: StaffCostsBudgetTable): BudgetStaffCostEntryDTO[] {

@@ -9,7 +9,7 @@ import {Permission} from '../../../../../security/permissions/permission';
   styleUrls: ['./project-application-eligibility-decision-page.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class ProjectApplicationEligibilityDecisionPageComponent implements OnInit {
+export class ProjectApplicationEligibilityDecisionPageComponent {
 
   Permission = Permission;
 
@@ -19,10 +19,6 @@ export class ProjectApplicationEligibilityDecisionPageComponent implements OnIni
   constructor(public projectStore: ProjectStore,
               private router: Router,
               private activatedRoute: ActivatedRoute) {
-  }
-
-  ngOnInit(): void {
-    this.projectStore.init(this.projectId);
   }
 
   redirectToProject(): void {

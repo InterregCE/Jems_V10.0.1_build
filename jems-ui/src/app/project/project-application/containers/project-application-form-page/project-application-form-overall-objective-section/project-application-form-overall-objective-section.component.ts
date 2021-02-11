@@ -1,8 +1,7 @@
 import {ChangeDetectionStrategy, Component} from '@angular/core';
 import {Permission} from '../../../../../security/permissions/permission';
-import {combineLatest, merge, Observable, Subject} from 'rxjs';
-import {I18nValidationError} from '@common/validation/i18n-validation-error';
-import {catchError, mergeMap, map, tap} from 'rxjs/operators';
+import {combineLatest, merge, Subject} from 'rxjs';
+import {catchError, map, mergeMap, tap} from 'rxjs/operators';
 import {Log} from '../../../../../common/utils/log';
 import {HttpErrorResponse} from '@angular/common/http';
 import {InputProjectOverallObjective, ProjectDescriptionService} from '@cat/api';
@@ -61,7 +60,6 @@ export class ProjectApplicationFormOverallObjectiveSectionComponent {
               private projectApplicationFormSidenavService: ProjectApplicationFormSidenavService,
               private projectDescriptionService: ProjectDescriptionService,
               private projectApplicationFormStore: ProjectApplicationFormStore) {
-    this.projectStore.init(this.projectId);
     this.projectApplicationFormStore.init(this.projectId);
   }
 }

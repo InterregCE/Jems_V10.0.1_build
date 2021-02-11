@@ -46,7 +46,7 @@ import {RoutingService} from '../../../../../common/services/routing.service';
 export class ProjectStore {
   public static PROJECT_DETAIL_PATH = '/app/project/detail/';
 
-  private projectId$ = new ReplaySubject<number>(1);
+  projectId$ = new ReplaySubject<number>(1);
   private projectAcronym$ = new ReplaySubject<string>(1);
   private newStatus$ = new Subject<InputProjectStatus>();
   private newEligibilityAssessment$ = new Subject<InputProjectEligibilityAssessment>();
@@ -54,7 +54,6 @@ export class ProjectStore {
   private newRevertProjectStatus$ = new Subject<InputRevertProjectStatus>();
   private revertStatusChanged$ = new Subject<void>();
   private changeStatusError$ = new Subject<I18nValidationError | null>();
-  updateProjectData$ = new Subject<InputProjectData>();
 
   private projectById$ = this.projectId$
     .pipe(
@@ -177,10 +176,6 @@ export class ProjectStore {
       .subscribe();
   }
 
-  init(projectId: number): void {
-    this.projectId$.next(projectId);
-  }
-
   getProject(): Observable<OutputProject> {
     return this.project$;
   }
@@ -208,11 +203,11 @@ export class ProjectStore {
 
   getProjectCoFinancing(): Observable<ProjectPartnerBudgetCoFinancingDTO[]> {
     return this.projectId$
-        .pipe(
-            distinctUntilChanged(),
-            switchMap(id => this.projectService.getProjectCoFinancing(id)),
-            tap((data: ProjectPartnerBudgetCoFinancingDTO[]) => Log.info('Fetched project co-financing:', this, data))
-        );
+      .pipe(
+        distinctUntilChanged(),
+        switchMap(id => this.projectService.getProjectCoFinancing(id)),
+        tap((data: ProjectPartnerBudgetCoFinancingDTO[]) => Log.info('Fetched project co-financing:', this, data))
+      );
   }
 
   setEligibilityAssessment(assessment: InputProjectEligibilityAssessment): void {

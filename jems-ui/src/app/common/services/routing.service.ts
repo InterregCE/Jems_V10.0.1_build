@@ -50,17 +50,15 @@ export class RoutingService {
   routeParameterChanges(url: string, parameter: string): Observable<string | number> {
     return this.currentRoute
       .pipe(
-        distinctUntilChanged(
-          (oldRoute, newRoute) => this.startsWithPath(oldRoute, url) === this.startsWithPath(newRoute, url)
-        ),
-        map(route => route.snapshot.params[parameter]),
+        map(route => this.containsPath(route, url) ? route.snapshot.params[parameter] : null),
+        distinctUntilChanged(),
         tap(param => Log.debug('Route param changed', this, url, param)),
       );
   }
 
-  private startsWithPath(route: ActivatedRoute, path: string): boolean {
-    const url = (route?.snapshot as any)?._routerState?.url;
-    return !!url?.startsWith(path);
+  private containsPath(route: ActivatedRoute, path: string): boolean {
+    const url = (route?.snapshot as any)?._routerState?.url as string;
+    return !!url?.includes(path);
   }
 
   private getLeafRoute(route: ActivatedRoute): ActivatedRoute {

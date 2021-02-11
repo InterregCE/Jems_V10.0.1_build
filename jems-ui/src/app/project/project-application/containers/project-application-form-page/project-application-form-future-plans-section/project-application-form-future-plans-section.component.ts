@@ -1,7 +1,7 @@
 import {ChangeDetectionStrategy, Component} from '@angular/core';
 import {merge, Subject} from 'rxjs';
-import {ProjectDescriptionService, InputProjectLongTermPlans} from '@cat/api';
-import {catchError, mergeMap, map, tap} from 'rxjs/operators';
+import {InputProjectLongTermPlans, ProjectDescriptionService} from '@cat/api';
+import {catchError, map, mergeMap, tap} from 'rxjs/operators';
 import {Log} from '../../../../../common/utils/log';
 import {HttpErrorResponse} from '@angular/common/http';
 import {ProjectApplicationFormStore} from '../services/project-application-form-store.service';
@@ -46,7 +46,6 @@ export class ProjectApplicationFormFuturePlansSectionComponent {
               private projectApplicationFormSidenavService: ProjectApplicationFormSidenavService,
               private projectDescriptionService: ProjectDescriptionService,
               private projectApplicationFormStore: ProjectApplicationFormStore) {
-    this.projectStore.init(this.projectId);
     this.projectApplicationFormStore.init(this.projectId);
   }
 

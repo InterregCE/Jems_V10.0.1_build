@@ -47,7 +47,8 @@ describe('ProjectApplicationFilesComponent', () => {
 
     const users = [{name: '1'} as OutputProjectFile, {name: '2'} as OutputProjectFile];
 
-    projectStore.init(1);
+    projectStore.projectId$.next(1);
+
     httpTestingController.expectOne({method: 'GET', url: '//api/project/1'}).flush({id: 1});
     httpTestingController.match({
       method: 'GET',

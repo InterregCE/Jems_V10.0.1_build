@@ -8,16 +8,18 @@ import {
   ProjectPartnerMotivationDTO,
   ProjectPartnerService,
 } from '@cat/api';
-import {BehaviorSubject, combineLatest, Observable, ReplaySubject, Subject} from 'rxjs';
+import {BehaviorSubject, combineLatest, Observable, of, ReplaySubject} from 'rxjs';
 import {map, shareReplay, switchMap, tap} from 'rxjs/operators';
 import {Log} from '../../../../../common/utils/log';
 import {ProjectApplicationFormSidenavService} from './project-application-form-sidenav.service';
 import {ProjectStore} from '../../project-application-detail/services/project-store.service';
 import {ProjectPartner} from '../../../../model/ProjectPartner';
 import {ProjectPartnerRoleEnumUtil} from '../../../../model/ProjectPartnerRoleEnum';
+import {RoutingService} from '../../../../../common/services/routing.service';
 
 @Injectable()
 export class ProjectPartnerStore {
+  public static PARTNER_DETAIL_PATH = '/applicationFormPartner/detail/';
 
   private partnerId: number;
   private projectId: number;
@@ -29,7 +31,8 @@ export class ProjectPartnerStore {
 
   constructor(private partnerService: ProjectPartnerService,
               private projectApplicationFormSidenavService: ProjectApplicationFormSidenavService,
-              private projectStore: ProjectStore) {
+              private projectStore: ProjectStore,
+              private routingService: RoutingService) {
     this.isProjectEditable$ = this.projectStore.projectEditable$;
 
     this.partners$ = combineLatest([this.projectStore.getProject(), this.partnerUpdateEvent$]).pipe(
@@ -37,23 +40,21 @@ export class ProjectPartnerStore {
       map(projectPartners => projectPartners.map(projectPartner => new ProjectPartner(projectPartner.id, projectPartner.abbreviation, ProjectPartnerRoleEnumUtil.toProjectPartnerRoleEnum(projectPartner.role), projectPartner.sortNumber, projectPartner.country))),
       shareReplay(1)
     );
-  }
 
-  init(partnerId: number | string | null, projectId: number): void {
-    if (partnerId === this.partnerId) {
-      return;
-    }
-    this.partnerId = Number(partnerId);
-    this.projectId = projectId;
-    if (!this.partnerId || !this.projectId) {
-      this.partner$.next({});
-      return;
-    }
-    this.partnerService.getProjectPartnerById(this.partnerId, this.projectId)
-      .pipe(
-        tap(projectPartner => Log.info('Fetched project partner:', this, projectPartner)),
-        tap(projectPartner => this.partner$.next(projectPartner)),
-      ).subscribe();
+    combineLatest([
+      this.routingService.routeParameterChanges(ProjectPartnerStore.PARTNER_DETAIL_PATH, 'partnerId'),
+      this.projectStore.projectId$
+    ]).pipe(
+      tap(([partnerId, projectId]) => {
+        this.partnerId = Number(partnerId);
+        this.projectId = projectId;
+      }),
+      switchMap(([partnerId, projectId]) =>
+        partnerId && projectId ? this.partnerService.getProjectPartnerById(Number(partnerId), projectId) : of({})
+      ),
+      tap(partner => this.partner$.next(partner)),
+      tap(partner => Log.info('Fetched the programme partner:', this, partner)),
+    ).subscribe();
   }
 
   savePartner(partner: InputProjectPartnerUpdate): Observable<OutputProjectPartnerDetail> {
