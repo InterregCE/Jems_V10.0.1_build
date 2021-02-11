@@ -57,7 +57,11 @@ class UpdatePriorityInteractorTest {
 
     @Test
     fun `updatePriority - valid`() {
-        val priority = testPriority.copy(id = ID)
+        val priority = testPriority.copy(
+            id = ID,
+            code = "_old_",
+            title = "_oldTitle_"
+        )
         every { persistence.getPriorityById(ID) } returns priority
         // code and title are not used
         every { persistence.getPriorityIdByCode(toUpdatePriority.code) } returns null
@@ -77,8 +81,13 @@ class UpdatePriorityInteractorTest {
         every { auditService.logEvent(capture(auditSlot)) } answers {}
 
         assertThat(updatePriority.updatePriority(ID, toUpdatePriority)).isEqualTo(toUpdatePriority.copy(id = ID))
-        assertThat(auditSlot.captured.action).isEqualTo(AuditAction.PROGRAMME_PRIORITY_UPDATED)
-        assertThat(auditSlot.captured.description).startsWith("Programme priority data changed for 'PO-02' 'PO-02 title':\n")
+        assertThat(auditSlot.captured).isEqualTo(AuditCandidate(
+            action = AuditAction.PROGRAMME_PRIORITY_UPDATED,
+            description = "Programme priority data changed for '_old_' '_oldTitle_':\n" +
+                "code changed from _old_ to PO-02,\n" +
+                "title changed from _oldTitle_ to PO-02 title,\n" +
+                "specificObjectives changed from [RenewableEnergy, GreenUrban] to [WaterManagement, CircularEconomy, GreenUrban]",
+        ))
     }
 
     @Test

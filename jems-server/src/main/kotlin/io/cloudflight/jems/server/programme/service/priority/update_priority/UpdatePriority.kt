@@ -37,7 +37,7 @@ class UpdatePriority(
         )
 
         val newPriority = persistence.update(priority.copy(id = priorityId))
-        programmePriorityUpdated(existingPriority, newPriority.getDiff(existingPriority)).logWith(auditService)
+        programmePriorityUpdated(existingPriority, existingPriority.getDiff(newPriority)).logWith(auditService)
         return newPriority
     }
 
