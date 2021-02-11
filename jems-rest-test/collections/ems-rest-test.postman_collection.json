@@ -9906,7 +9906,7 @@
 										"exec": [
 											"pm.test('project duration is saved', function() {\r",
 											"    pm.response.to.have.status(200);\r",
-											"    pm.expect(pm.response.json().projectData.duration).to.eql(50);\r",
+											"    pm.expect(pm.response.json().projectData.duration).to.eql(80);\r",
 											"});\r",
 											""
 										],
@@ -9925,7 +9925,7 @@
 								],
 								"body": {
 									"mode": "raw",
-									"raw": "{\n\t\"acronym\": \"{{application_acronym}}\",\n\t\"specificObjective\": \"{{programmePriorityPolicy}}\",\n    \"title\": [\n        {\n            \"language\": \"{{inputLanguage}}\",\n            \"translation\": \"{{project_title}}\"\n        }\n    ],\n\t\"duration\": 50,\n    \"introProgrammeLanguage\": \"{{$randomLoremParagraph}}\\n{{$randomLoremParagraph}}\\n\\n{{$randomLoremParagraph}}\"\n}\n"
+									"raw": "{\n\t\"acronym\": \"{{application_acronym}}\",\n\t\"specificObjective\": \"{{programmePriorityPolicy}}\",\n    \"title\": [\n        {\n            \"language\": \"{{inputLanguage}}\",\n            \"translation\": \"{{project_title}}\"\n        }\n    ],\n\t\"duration\": 80,\n    \"introProgrammeLanguage\": \"{{$randomLoremParagraph}}\\n{{$randomLoremParagraph}}\\n\\n{{$randomLoremParagraph}}\"\n}\n"
 								},
 								"url": {
 									"raw": "{{url}}/api/project/{{application_id}}",
@@ -9944,7 +9944,7 @@
 					]
 				},
 				{
-					"name": "create project work package",
+					"name": "create work package 1",
 					"event": [
 						{
 							"listen": "prerequest",
@@ -9952,7 +9952,7 @@
 								"exec": [
 									"const workPackage = pm.variables.replaceIn('{{$randomProductName}}')\r",
 									"pm.variables.set(\r",
-									"    'workPackage_name',\r",
+									"    'workPackage_1_name',\r",
 									"    workPackage.substr(0, 100)\r",
 									");\r",
 									""
@@ -9972,7 +9972,7 @@
 									"\r",
 									"pm.test('workPackage has correct name (translated)', function() {\r",
 									"    const name = pm.response.json().name.find(x => x.language === pm.variables.get('inputLanguage')).translation;\r",
-									"    pm.expect(name).to.be.eql(pm.variables.get('workPackage_name'));\r",
+									"    pm.expect(name).to.be.eql(pm.variables.get('workPackage_1_name'));\r",
 									"});\r",
 									""
 								],
@@ -10000,7 +10000,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"name\": [\r\n        {\r\n            \"language\": \"{{inputLanguage}}\",\r\n            \"translation\": \"{{workPackage_name}}\"\r\n        }\r\n    ],\r\n    \"specificObjective\": [\r\n        {\r\n            \"language\": \"{{inputLanguage}}\",\r\n            \"translation\": \"{{$randomDepartment}}\"\r\n        }\r\n    ],\r\n    \"objectiveAndAudience\": [\r\n        {\r\n            \"language\": \"{{inputLanguage}}\",\r\n            \"translation\": \"{{$randomLoremParagraph}}\"\r\n        }\r\n    ]\r\n}\r\n",
+							"raw": "{\r\n    \"name\": [\r\n        {\r\n            \"language\": \"{{inputLanguage}}\",\r\n            \"translation\": \"{{workPackage_1_name}}\"\r\n        }\r\n    ],\r\n    \"specificObjective\": [\r\n        {\r\n            \"language\": \"{{inputLanguage}}\",\r\n            \"translation\": \"{{$randomDepartment}}\"\r\n        }\r\n    ],\r\n    \"objectiveAndAudience\": [\r\n        {\r\n            \"language\": \"{{inputLanguage}}\",\r\n            \"translation\": \"{{$randomLoremParagraph}}\"\r\n        }\r\n    ]\r\n}\r\n",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -10024,26 +10024,34 @@
 					"response": []
 				},
 				{
-					"name": "create project work package activities",
+					"name": "create activities for work package 1 Copy",
 					"event": [
 						{
 							"listen": "prerequest",
 							"script": {
 								"exec": [
-									"const activityName = pm.variables.replaceIn('{{$randomProduct}}') + ' - ' + pm.variables.replaceIn('{{$randomWords}}')\r",
-									"pm.variables.set(\r",
-									"    'activity_name',\r",
-									"    activityName.substr(0, 200)\r",
-									");\r",
+									"function createActivityNameAndDescription(activityNumber) {\r",
+									"    const activityName = pm.variables.replaceIn('{{$randomProduct}}') + ' - ' + pm.variables.replaceIn('{{$randomWords}}')\r",
+									"    pm.variables.set(\r",
+									"        'activity_name_' + activityNumber,\r",
+									"        activityName.substr(0, 200)\r",
+									"    );\r",
+									"    const activityDescription = pm.variables.replaceIn('{{$randomPhrase}}')\r",
+									"    pm.variables.set(\r",
+									"        'activity_description_' + activityNumber,\r",
+									"        activityDescription.substr(0, 500)\r",
+									"    );\r",
+									"}\r",
 									"\r",
-									"const activityDescription = pm.variables.replaceIn('{{$randomPhrase}}')\r",
-									"pm.variables.set(\r",
-									"    'activity_description',\r",
-									"    activityDescription.substr(0, 500)\r",
-									");\r",
+									"function createDeliverableName(deliverableNumber) {\r",
+									"    pm.variables.set('deliverable_' + deliverableNumber, pm.variables.replaceIn('{{$randomProduct}}'));\r",
+									"}\r",
 									"\r",
-									"pm.variables.set('deliverable_1', pm.variables.replaceIn('{{$randomProduct}}'));\r",
-									"pm.variables.set('deliverable_2', pm.variables.replaceIn('{{$randomProduct}}'));\r",
+									"createActivityNameAndDescription(1);\r",
+									"createDeliverableName(1);\r",
+									"createActivityNameAndDescription(2);\r",
+									"createDeliverableName(2);\r",
+									"createActivityNameAndDescription(3);\r",
 									""
 								],
 								"type": "text/javascript"
@@ -10061,31 +10069,60 @@
 									"    const activities = pm.response.json();\r",
 									"\r",
 									"    pm.expect(activities[0].startPeriod).to.eql(1);\r",
-									"    pm.expect(activities[0].endPeriod).to.eql(3);\r",
+									"    pm.expect(activities[0].endPeriod).to.eql(2);\r",
 									"\r",
-									"    pm.expect(activities[1].startPeriod).to.eql(4);\r",
-									"    pm.expect(activities[1].endPeriod).to.eql(5);\r",
+									"    pm.expect(activities[1].startPeriod).to.eql(2);\r",
+									"    pm.expect(activities[1].endPeriod).to.eql(3);\r",
+									"\r",
+									"    pm.expect(activities[2].startPeriod).to.eql(3);\r",
+									"    pm.expect(activities[2].endPeriod).to.eql(4);\r",
 									"});\r",
 									"\r",
-									"pm.test('deliverables are correctly sorted', function() {\r",
-									"    const deliverables = pm.response.json()[0].deliverables;\r",
+									"// pm.test('deliverables are correctly sorted', function() {\r",
+									"//     const deliverables = pm.response.json()[0].deliverables;\r",
 									"\r",
-									"    pm.expect(deliverables[0].period).to.eql(1);\r",
-									"    pm.expect(deliverables[1].period).to.eql(2);\r",
-									"});\r",
+									"//     pm.expect(deliverables[0].period).to.eql(1);\r",
+									"//     pm.expect(deliverables[1].period).to.eql(2);\r",
+									"// });\r",
 									"\r",
 									"pm.test('activities have correct names', function() {\r",
 									"    const activities = pm.response.json();\r",
 									"\r",
-									"    pm.expect(activities[0].title.find(tr => tr.language === pm.variables.get('inputLanguage')).translation).to.eql(pm.variables.get('activity_name'));\r",
-									"    pm.expect(activities[0].description.find(tr => tr.language === pm.variables.get('inputLanguage')).translation).to.eql(pm.variables.get('activity_description'));\r",
+									"    pm.expect(activities[0].title.find(tr => tr.language === pm.variables.get('inputLanguage')).translation)\r",
+									"        .to.eql(pm.variables.get('activity_name_1'));\r",
+									"    pm.expect(activities[0].description.find(tr => tr.language === pm.variables.get('inputLanguage')).translation)\r",
+									"        .to.eql(pm.variables.get('activity_description_1'));\r",
+									"\r",
+									"    pm.expect(activities[1].title.find(tr => tr.language === pm.variables.get('inputLanguage')).translation)\r",
+									"        .to.eql(pm.variables.get('activity_name_2'));\r",
+									"    pm.expect(activities[1].description.find(tr => tr.language === pm.variables.get('inputLanguage')).translation)\r",
+									"        .to.eql(pm.variables.get('activity_description_2'));\r",
+									"\r",
+									"    pm.expect(activities[2].title.find(tr => tr.language === pm.variables.get('inputLanguage')).translation)\r",
+									"        .to.eql(pm.variables.get('activity_name_3'));\r",
+									"    pm.expect(activities[2].description.find(tr => tr.language === pm.variables.get('inputLanguage')).translation)\r",
+									"        .to.eql(pm.variables.get('activity_description_3'));\r",
 									"});\r",
 									"\r",
-									"pm.test('deliverables have correct names', function() {\r",
-									"    const deliverables = pm.response.json()[0].deliverables;\r",
+									"pm.test('amount of deliverables is correct', function() {\r",
+									"    const activities = pm.response.json();\r",
 									"\r",
-									"    pm.expect(deliverables[0].description.find(tr => tr.language === pm.variables.get('inputLanguage')).translation).to.eql(pm.variables.get('deliverable_1'));\r",
-									"    pm.expect(deliverables[1].description.find(tr => tr.language === pm.variables.get('inputLanguage')).translation).to.eql(pm.variables.get('deliverable_2'));\r",
+									"    const deliverables_1 = activities[0].deliverables;\r",
+									"    pm.expect(deliverables_1).to.has.length(1);\r",
+									"\r",
+									"    const deliverables_2 = activities[1].deliverables;\r",
+									"    pm.expect(deliverables_2).to.has.length(1);\r",
+									"});\r",
+									"\r",
+									"\r",
+									"pm.test('deliverables have correct names', function() {\r",
+									"    const activities = pm.response.json();\r",
+									"\r",
+									"    const deliverable_1 = activities[0].deliverables[0];\r",
+									"    pm.expect(deliverable_1.description.find(tr => tr.language === pm.variables.get('inputLanguage')).translation).to.eql(pm.variables.get('deliverable_1'));\r",
+									"\r",
+									"    const deliverable_2 = activities[1].deliverables[0];\r",
+									"    pm.expect(deliverable_2.description.find(tr => tr.language === pm.variables.get('inputLanguage')).translation).to.eql(pm.variables.get('deliverable_2'));\r",
 									"});\r",
 									""
 								],
@@ -10113,7 +10150,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "[\r\n    {\r\n        \"title\": [\r\n            {\r\n                \"language\": \"{{inputLanguage}}\",\r\n                \"translation\": \"{{activity_name}}\"\r\n            }\r\n        ],\r\n        \"startPeriod\": 1,\r\n        \"endPeriod\": 3,\r\n        \"description\": [\r\n            {\r\n                \"language\": \"{{inputLanguage}}\",\r\n                \"translation\": \"{{activity_description}}\"\r\n            }\r\n        ],\r\n        \"deliverables\": [\r\n            {\r\n                \"description\": [\r\n                    {\r\n                        \"language\": \"{{inputLanguage}}\",\r\n                        \"translation\": \"{{deliverable_1}}\"\r\n                    }\r\n                ],\r\n                \"period\": 1\r\n            },\r\n            {\r\n                \"description\": [\r\n                    {\r\n                        \"language\": \"{{inputLanguage}}\",\r\n                        \"translation\": \"{{deliverable_2}}\"\r\n                    }\r\n                ],\r\n                \"period\": 2\r\n            }\r\n        ]\r\n    },\r\n    {\r\n        \"startPeriod\": 4,\r\n        \"endPeriod\": 5\r\n    }\r\n]\r\n",
+							"raw": "[\r\n    {\r\n        \"title\": [\r\n            {\r\n                \"language\": \"{{inputLanguage}}\",\r\n                \"translation\": \"{{activity_name_1}}\"\r\n            }\r\n        ],\r\n        \"startPeriod\": 1,\r\n        \"endPeriod\": 2,\r\n        \"description\": [\r\n            {\r\n                \"language\": \"{{inputLanguage}}\",\r\n                \"translation\": \"{{activity_description_1}}\"\r\n            }\r\n        ],\r\n        \"deliverables\": [\r\n            {\r\n                \"description\": [\r\n                    {\r\n                        \"language\": \"{{inputLanguage}}\",\r\n                        \"translation\": \"{{deliverable_1}}\"\r\n                    }\r\n                ],\r\n                \"period\": 2\r\n            }\r\n        ]\r\n    },\r\n    {\r\n        \"title\": [\r\n            {\r\n                \"language\": \"{{inputLanguage}}\",\r\n                \"translation\": \"{{activity_name_2}}\"\r\n            }\r\n        ],\r\n        \"startPeriod\": 2,\r\n        \"endPeriod\": 3,\r\n        \"description\": [\r\n            {\r\n                \"language\": \"{{inputLanguage}}\",\r\n                \"translation\": \"{{activity_description_2}}\"\r\n            }\r\n        ],\r\n        \"deliverables\": [\r\n            {\r\n                \"description\": [\r\n                    {\r\n                        \"language\": \"{{inputLanguage}}\",\r\n                        \"translation\": \"{{deliverable_2}}\"\r\n                    }\r\n                ],\r\n                \"period\": 2\r\n            }\r\n        ]\r\n    },\r\n        {\r\n        \"title\": [\r\n            {\r\n                \"language\": \"{{inputLanguage}}\",\r\n                \"translation\": \"{{activity_name_3}}\"\r\n            }\r\n        ],\r\n        \"startPeriod\": 3,\r\n        \"endPeriod\": 4,\r\n        \"description\": [\r\n            {\r\n                \"language\": \"{{inputLanguage}}\",\r\n                \"translation\": \"{{activity_description_3}}\"\r\n            }\r\n        ]\r\n    }\r\n]\r\n",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -10132,6 +10169,445 @@
 								"activity",
 								"forWorkPackage",
 								"{{workPackage_id_1}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "create outputs for work package 1",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"function createOutputTitleAndDescription(outputNumber) {\r",
+									"    const outputTitle = pm.variables.replaceIn('{{$randomProduct}}')\r",
+									"    pm.variables.set(\r",
+									"        'output_title_' + outputNumber,\r",
+									"        outputTitle.substr(0, 200)\r",
+									"    );\r",
+									"    const outputDescription = pm.variables.replaceIn('{{$randomPhrase}}')\r",
+									"    pm.variables.set(\r",
+									"        'output_description_' + outputNumber,\r",
+									"        outputDescription.substr(0, 500)\r",
+									"    );\r",
+									"}\r",
+									"\r",
+									"createOutputTitleAndDescription(1);\r",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('applicant can update workPackage outputs', function() {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"pm.test('output is correctly saved', function() {\r",
+									"    const output = pm.response.json()[0];\r",
+									"\r",
+									"    pm.expect(output.targetValue).to.eql('25000');\r",
+									"    pm.expect(output.periodNumber).to.eql(5);\r",
+									"});\r",
+									"\r",
+									"pm.test('output title is correct', function() {\r",
+									"    const outputTitles = pm.response.json()[0].title;\r",
+									"\r",
+									"    pm.expect(outputTitles.find(tr => tr.language === pm.variables.get('inputLanguage')).translation)\r",
+									"        .to.eql(pm.variables.get('output_title_1'));\r",
+									"});\r",
+									"\r",
+									"pm.test('output description is correct', function() {\r",
+									"    const outputDescriptions = pm.response.json()[0].description;\r",
+									"\r",
+									"    pm.expect(outputDescriptions.find(tr => tr.language === pm.variables.get('inputLanguage')).translation)\r",
+									"        .to.eql(pm.variables.get('output_description_1'));\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "basic",
+							"basic": [
+								{
+									"key": "password",
+									"value": "{{applicant_email}}",
+									"type": "string"
+								},
+								{
+									"key": "username",
+									"value": "{{applicant_email}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "[\r\n    {\r\n        \"outputNumber\": 1,\r\n        \"programmeOutputIndicatorId\": null,\r\n        \"title\": [\r\n            {\r\n                \"language\": \"{{inputLanguage}}\",\r\n                \"translation\": \"{{output_title_1}}\"\r\n            }\r\n        ],\r\n        \"targetValue\": \"25000\",\r\n        \"periodNumber\": 5,\r\n        \"description\": [\r\n            {\r\n                \"language\": \"{{inputLanguage}}\",\r\n                \"translation\": \"{{output_description_1}}\"\r\n            }\r\n        ]\r\n    }\r\n]\r\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{url}}/api/project/workPackage/output/forWorkPackage/{{workPackage_id_1}}",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"api",
+								"project",
+								"workPackage",
+								"output",
+								"forWorkPackage",
+								"{{workPackage_id_1}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "create work package 2",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"const workPackage = pm.variables.replaceIn('{{$randomJobTitle}}')\r",
+									"pm.variables.set(\r",
+									"    'workPackage_2_name',\r",
+									"    workPackage.substr(0, 100)\r",
+									");\r",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('applicant can create project workPackage 2', function() {\r",
+									"    const workPackage = pm.response.json();\r",
+									"    pm.response.to.have.status(200);\r",
+									"    pm.variables.set('workPackage_id_2', workPackage.id);\r",
+									"});\r",
+									"\r",
+									"pm.test('workPackage has correct name (translated)', function() {\r",
+									"    const name = pm.response.json().name.find(x => x.language === pm.variables.get('inputLanguage')).translation;\r",
+									"    pm.expect(name).to.be.eql(pm.variables.get('workPackage_2_name'));\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "basic",
+							"basic": [
+								{
+									"key": "password",
+									"value": "{{applicant_email}}",
+									"type": "string"
+								},
+								{
+									"key": "username",
+									"value": "{{applicant_email}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"name\": [\r\n        {\r\n            \"language\": \"{{inputLanguage}}\",\r\n            \"translation\": \"{{workPackage_2_name}}\"\r\n        }\r\n    ],\r\n    \"specificObjective\": [\r\n        {\r\n            \"language\": \"{{inputLanguage}}\",\r\n            \"translation\": \"{{$randomDepartment}}\"\r\n        }\r\n    ],\r\n    \"objectiveAndAudience\": [\r\n        {\r\n            \"language\": \"{{inputLanguage}}\",\r\n            \"translation\": \"{{$randomLoremParagraph}}\"\r\n        }\r\n    ]\r\n}\r\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{url}}/api/project/workPackage/forProject/{{application_id}}",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"api",
+								"project",
+								"workPackage",
+								"forProject",
+								"{{application_id}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "create activities for work package 2",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"function createActivityNameAndDescription(activityNumber) {\r",
+									"    const activityName = pm.variables.replaceIn('{{$randomProduct}}') + ' - ' + pm.variables.replaceIn('{{$randomWords}}')\r",
+									"    pm.variables.set(\r",
+									"        'activity_name_' + activityNumber,\r",
+									"        activityName.substr(0, 200)\r",
+									"    );\r",
+									"    const activityDescription = pm.variables.replaceIn('{{$randomPhrase}}')\r",
+									"    pm.variables.set(\r",
+									"        'activity_description_' + activityNumber,\r",
+									"        activityDescription.substr(0, 500)\r",
+									"    );\r",
+									"}\r",
+									"\r",
+									"function createDeliverableName(deliverableNumber) {\r",
+									"    pm.variables.set('deliverable_' + deliverableNumber, pm.variables.replaceIn('{{$randomProduct}}'));\r",
+									"}\r",
+									"\r",
+									"createActivityNameAndDescription(1);\r",
+									"createDeliverableName(1);\r",
+									"createActivityNameAndDescription(2);\r",
+									"createDeliverableName(2);\r",
+									"createDeliverableName(3);\r",
+									"createDeliverableName(4);\r",
+									"createDeliverableName(5);\r",
+									"createActivityNameAndDescription(3);\r",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('applicant can update workPackage activities', function() {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"pm.test('activities are correctly sorted', function() {\r",
+									"    const activities = pm.response.json();\r",
+									"    pm.expect(activities).to.have.length(3);\r",
+									"\r",
+									"    pm.expect(activities[0].startPeriod).to.eql(2);\r",
+									"    pm.expect(activities[0].endPeriod).to.eql(3);\r",
+									"\r",
+									"    pm.expect(activities[1].startPeriod).to.eql(3);\r",
+									"    pm.expect(activities[1].endPeriod).to.eql(4);\r",
+									"\r",
+									"    pm.expect(activities[2].startPeriod).to.eql(4);\r",
+									"    pm.expect(activities[2].endPeriod).to.eql(5);\r",
+									"});\r",
+									"\r",
+									"pm.test('deliverables are correctly sorted for the 2nd activity', function() {\r",
+									"    const deliverables = pm.response.json()[1].deliverables;\r",
+									"\r",
+									"    pm.expect(deliverables[0].period).to.eql(3);\r",
+									"    pm.expect(deliverables[1].period).to.eql(4);\r",
+									"    pm.expect(deliverables[2].period).to.eql(3);\r",
+									"    pm.expect(deliverables[3].period).to.eql(4);\r",
+									"\r",
+									"    pm.expect(deliverables[0].description.find(tr => tr.language === pm.variables.get('inputLanguage')).translation)\r",
+									"        .to.eql(pm.variables.get('deliverable_2'));\r",
+									"    pm.expect(deliverables[1].description.find(tr => tr.language === pm.variables.get('inputLanguage')).translation)\r",
+									"        .to.eql(pm.variables.get('deliverable_3'));\r",
+									"    pm.expect(deliverables[2].description.find(tr => tr.language === pm.variables.get('inputLanguage')).translation)\r",
+									"        .to.eql(pm.variables.get('deliverable_4'));\r",
+									"    pm.expect(deliverables[3].description.find(tr => tr.language === pm.variables.get('inputLanguage')).translation)\r",
+									"        .to.eql(pm.variables.get('deliverable_5'));\r",
+									"});\r",
+									"\r",
+									"pm.test('activities have correct names', function() {\r",
+									"    const activities = pm.response.json();\r",
+									"\r",
+									"    pm.expect(activities[0].title.find(tr => tr.language === pm.variables.get('inputLanguage')).translation)\r",
+									"        .to.eql(pm.variables.get('activity_name_1'));\r",
+									"    pm.expect(activities[0].description.find(tr => tr.language === pm.variables.get('inputLanguage')).translation)\r",
+									"        .to.eql(pm.variables.get('activity_description_1'));\r",
+									"\r",
+									"    pm.expect(activities[1].title.find(tr => tr.language === pm.variables.get('inputLanguage')).translation)\r",
+									"        .to.eql(pm.variables.get('activity_name_2'));\r",
+									"    pm.expect(activities[1].description.find(tr => tr.language === pm.variables.get('inputLanguage')).translation)\r",
+									"        .to.eql(pm.variables.get('activity_description_2'));\r",
+									"\r",
+									"    pm.expect(activities[2].title.find(tr => tr.language === pm.variables.get('inputLanguage')).translation)\r",
+									"        .to.eql(pm.variables.get('activity_name_3'));\r",
+									"    pm.expect(activities[2].description.find(tr => tr.language === pm.variables.get('inputLanguage')).translation)\r",
+									"        .to.eql(pm.variables.get('activity_description_3'));\r",
+									"});\r",
+									"\r",
+									"pm.test('overall amount of deliverables is correct', function() {\r",
+									"    const activities = pm.response.json();\r",
+									"\r",
+									"    const deliverables_1 = activities[0].deliverables.length;\r",
+									"    const deliverables_2 = activities[1].deliverables.length;\r",
+									"    const deliverables_3 = activities[2].deliverables.length;\r",
+									"\r",
+									"    pm.expect(deliverables_1 + deliverables_2 + deliverables_3).to.eql(5);\r",
+									"});\r",
+									"\r",
+									"\r",
+									"pm.test('deliverables have correct names', function() {\r",
+									"    const activities = pm.response.json();\r",
+									"\r",
+									"    const deliverable_1 = activities[0].deliverables[0];\r",
+									"    pm.expect(deliverable_1.description.find(tr => tr.language === pm.variables.get('inputLanguage')).translation).to.eql(pm.variables.get('deliverable_1'));\r",
+									"\r",
+									"    const deliverable_2 = activities[1].deliverables[0];\r",
+									"    pm.expect(deliverable_2.description.find(tr => tr.language === pm.variables.get('inputLanguage')).translation).to.eql(pm.variables.get('deliverable_2'));\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "basic",
+							"basic": [
+								{
+									"key": "password",
+									"value": "{{applicant_email}}",
+									"type": "string"
+								},
+								{
+									"key": "username",
+									"value": "{{applicant_email}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "[\r\n    {\r\n        \"title\": [\r\n            {\r\n                \"language\": \"{{inputLanguage}}\",\r\n                \"translation\": \"{{activity_name_1}}\"\r\n            }\r\n        ],\r\n        \"startPeriod\": 2,\r\n        \"endPeriod\": 3,\r\n        \"description\": [\r\n            {\r\n                \"language\": \"{{inputLanguage}}\",\r\n                \"translation\": \"{{activity_description_1}}\"\r\n            }\r\n        ],\r\n        \"deliverables\": [\r\n            {\r\n                \"description\": [\r\n                    {\r\n                        \"language\": \"{{inputLanguage}}\",\r\n                        \"translation\": \"{{deliverable_1}}\"\r\n                    }\r\n                ],\r\n                \"period\": 3\r\n            }\r\n        ]\r\n    },\r\n    {\r\n        \"title\": [\r\n            {\r\n                \"language\": \"{{inputLanguage}}\",\r\n                \"translation\": \"{{activity_name_2}}\"\r\n            }\r\n        ],\r\n        \"startPeriod\": 3,\r\n        \"endPeriod\": 4,\r\n        \"description\": [\r\n            {\r\n                \"language\": \"{{inputLanguage}}\",\r\n                \"translation\": \"{{activity_description_2}}\"\r\n            }\r\n        ],\r\n        \"deliverables\": [\r\n            {\r\n                \"description\": [\r\n                    {\r\n                        \"language\": \"{{inputLanguage}}\",\r\n                        \"translation\": \"{{deliverable_2}}\"\r\n                    }\r\n                ],\r\n                \"period\": 3\r\n            },\r\n            {\r\n                \"description\": [\r\n                    {\r\n                        \"language\": \"{{inputLanguage}}\",\r\n                        \"translation\": \"{{deliverable_3}}\"\r\n                    }\r\n                ],\r\n                \"period\": 4\r\n            },\r\n            {\r\n                \"description\": [\r\n                    {\r\n                        \"language\": \"{{inputLanguage}}\",\r\n                        \"translation\": \"{{deliverable_4}}\"\r\n                    }\r\n                ],\r\n                \"period\": 3\r\n            },\r\n            {\r\n                \"description\": [\r\n                    {\r\n                        \"language\": \"{{inputLanguage}}\",\r\n                        \"translation\": \"{{deliverable_5}}\"\r\n                    }\r\n                ],\r\n                \"period\": 4\r\n            }\r\n        ]\r\n    },\r\n        {\r\n        \"title\": [\r\n            {\r\n                \"language\": \"{{inputLanguage}}\",\r\n                \"translation\": \"{{activity_name_3}}\"\r\n            }\r\n        ],\r\n        \"startPeriod\": 4,\r\n        \"endPeriod\": 5,\r\n        \"description\": [\r\n            {\r\n                \"language\": \"{{inputLanguage}}\",\r\n                \"translation\": \"{{activity_description_3}}\"\r\n            }\r\n        ]\r\n    }\r\n]\r\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{url}}/api/project/workPackage/activity/forWorkPackage/{{workPackage_id_2}}",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"api",
+								"project",
+								"workPackage",
+								"activity",
+								"forWorkPackage",
+								"{{workPackage_id_2}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "create outputs for work package 2",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"function createOutputTitleAndDescription(outputNumber) {\r",
+									"    const outputTitle = pm.variables.replaceIn('{{$randomProduct}}')\r",
+									"    pm.variables.set(\r",
+									"        'output_title_' + outputNumber,\r",
+									"        outputTitle.substr(0, 200)\r",
+									"    );\r",
+									"    const outputDescription = pm.variables.replaceIn('{{$randomPhrase}}')\r",
+									"    pm.variables.set(\r",
+									"        'output_description_' + outputNumber,\r",
+									"        outputDescription.substr(0, 500)\r",
+									"    );\r",
+									"}\r",
+									"\r",
+									"createOutputTitleAndDescription(1);\r",
+									"createOutputTitleAndDescription(2);\r",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('applicant can update workPackage outputs', function() {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"pm.test('outputs are correctly saved', function() {\r",
+									"    const outputs = pm.response.json();\r",
+									"    pm.expect(outputs).to.have.length(2);\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "basic",
+							"basic": [
+								{
+									"key": "password",
+									"value": "{{applicant_email}}",
+									"type": "string"
+								},
+								{
+									"key": "username",
+									"value": "{{applicant_email}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "[\r\n    {\r\n        \"outputNumber\": 1,\r\n        \"programmeOutputIndicatorId\": null,\r\n        \"title\": [\r\n            {\r\n                \"language\": \"{{inputLanguage}}\",\r\n                \"translation\": \"{{output_title_1}}\"\r\n            }\r\n        ],\r\n        \"targetValue\": \"5000\",\r\n        \"periodNumber\": 5,\r\n        \"description\": [\r\n            {\r\n                \"language\": \"{{inputLanguage}}\",\r\n                \"translation\": \"{{output_description_1}}\"\r\n            }\r\n        ]\r\n    },\r\n    {\r\n        \"outputNumber\": 2,\r\n        \"programmeOutputIndicatorId\": null,\r\n        \"title\": [\r\n            {\r\n                \"language\": \"{{inputLanguage}}\",\r\n                \"translation\": \"{{output_title_2}}\"\r\n            }\r\n        ],\r\n        \"targetValue\": \"1800\",\r\n        \"periodNumber\": 6,\r\n        \"description\": [\r\n            {\r\n                \"language\": \"{{inputLanguage}}\",\r\n                \"translation\": \"{{output_description_2}}\"\r\n            }\r\n        ]\r\n    }\r\n]\r\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{url}}/api/project/workPackage/output/forWorkPackage/{{workPackage_id_2}}",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"api",
+								"project",
+								"workPackage",
+								"output",
+								"forWorkPackage",
+								"{{workPackage_id_2}}"
 							]
 						}
 					},

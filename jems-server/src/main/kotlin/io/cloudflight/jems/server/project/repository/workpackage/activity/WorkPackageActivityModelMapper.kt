@@ -59,7 +59,7 @@ fun WorkPackageActivityEntity.toModel() = WorkPackageActivity(
     deliverables = deliverables.sortedBy { it.deliverableId.deliverableNumber }.map { it.toModel() },
 )
 
-fun List<WorkPackageActivityEntity>.toModel() = sortedBy { it.activityId.activityNumber }.map { it.toModel() }
+fun Iterable<WorkPackageActivityEntity>.toModel() = sortedBy { it.activityId.activityNumber }.map { it.toModel() }
 
 fun WorkPackageActivityDeliverableEntity.toModel() = WorkPackageActivityDeliverable(
     translatedValues = translatedValues.toDeliverableModel(),

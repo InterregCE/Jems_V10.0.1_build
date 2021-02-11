@@ -1,4 +1,4 @@
-package io.cloudflight.jems.server.workpackage.service
+package io.cloudflight.jems.server.project.service.workpackage
 
 import io.cloudflight.jems.api.call.dto.CallStatus
 import io.cloudflight.jems.api.programme.dto.language.SystemLanguage
@@ -10,6 +10,7 @@ import io.cloudflight.jems.api.project.dto.workpackage.OutputWorkPackage
 import io.cloudflight.jems.server.call.entity.CallEntity
 import io.cloudflight.jems.server.call.entity.CallTranslEntity
 import io.cloudflight.jems.server.call.entity.CallTranslId
+import io.cloudflight.jems.server.common.exception.I18nValidationException
 import io.cloudflight.jems.server.project.entity.ProjectEntity
 import io.cloudflight.jems.server.project.entity.ProjectStatus
 import io.cloudflight.jems.server.project.entity.TranslationWorkPackageId
@@ -19,17 +20,15 @@ import io.cloudflight.jems.server.user.entity.UserRole
 import io.cloudflight.jems.server.project.entity.workpackage.WorkPackageEntity
 import io.cloudflight.jems.server.project.entity.workpackage.WorkPackageTransl
 import io.cloudflight.jems.server.project.repository.workpackage.WorkPackageRepository
-import io.cloudflight.jems.server.project.service.workpackage.WorkPackageService
-import io.cloudflight.jems.server.project.service.workpackage.WorkPackageServiceImpl
 import io.mockk.MockKAnnotations
 import io.mockk.every
 import io.mockk.impl.annotations.MockK
-import io.mockk.impl.annotations.RelaxedMockK
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.TestInstance
 import org.junit.jupiter.api.assertDoesNotThrow
+import org.junit.jupiter.api.assertThrows
 import org.springframework.data.domain.Sort
 import java.time.LocalDate
 import java.time.LocalTime
@@ -103,7 +102,7 @@ class WorkPackageServiceTest {
         setOf()
     )
 
-    @RelaxedMockK
+    @MockK
     lateinit var workPackageRepository: WorkPackageRepository
 
     @MockK
@@ -140,8 +139,15 @@ class WorkPackageServiceTest {
     }
 
     @Test
-    fun createWorkPackage() {
+    fun getProjectIdForWorkPackageId() {
+        every { workPackageRepository.findById(18L) } returns Optional.of(mockWorkPackage.copy(project = project.copy(id = 9465)))
+        assertThat(workPackageService.getProjectIdForWorkPackageId(18L)).isEqualTo(9465)
+    }
+
+    @Test
+    fun `createWorkPackage - valid`() {
         every { projectRepository.findById(1L) } returns Optional.of(project)
+        every { workPackageRepository.countAllByProjectId(1L) } returns 7
         every { workPackageRepository.save(any<WorkPackageEntity>()) } returns WorkPackageEntity(
             2,
             project,
@@ -153,6 +159,17 @@ class WorkPackageServiceTest {
 
         assertThat(result).isNotNull
         assertThat(result.number).isEqualTo(2)
+    }
+
+    @Test
+    fun `createWorkPackage - max amount reached`() {
+        every { projectRepository.findById(1L) } returns Optional.of(project)
+        every { workPackageRepository.countAllByProjectId(1L) } returns 20
+        val ex = assertThrows<I18nValidationException> {
+            workPackageService.createWorkPackage(1, mockWorkPackageToCreate)
+        }
+
+        assertThat(ex.i18nKey).isEqualTo("project.workPackage.max.allowed.reached")
     }
 
     @Test

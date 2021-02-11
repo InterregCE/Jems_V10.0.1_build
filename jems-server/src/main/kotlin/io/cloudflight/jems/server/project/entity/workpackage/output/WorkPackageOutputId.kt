@@ -1,4 +1,4 @@
-package io.cloudflight.jems.server.project.entity.workpackage
+package io.cloudflight.jems.server.project.entity.workpackage.output
 
 import java.io.Serializable
 import javax.persistence.Embeddable

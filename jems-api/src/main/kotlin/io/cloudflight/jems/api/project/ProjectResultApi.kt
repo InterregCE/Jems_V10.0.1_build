@@ -12,13 +12,13 @@ import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
 
 @Api("Project Result")
-@RequestMapping("/api/project/{projectId}/result")
+@RequestMapping("/api/project/result")
 interface ProjectResultApi {
     @ApiOperation("Returns all project results")
-    @GetMapping
+    @GetMapping("/{projectId}")
     fun getProjectResults(@PathVariable projectId: Long): Set<ProjectResultDTO>
 
     @ApiOperation("Creates or updates project results")
-    @PostMapping(consumes = [MediaType.APPLICATION_JSON_VALUE])
+    @PostMapping("/{projectId}", consumes = [MediaType.APPLICATION_JSON_VALUE])
     fun updateProjectResults(@PathVariable projectId: Long, @Valid @RequestBody projectResults: Set<ProjectResultDTO>): Set<ProjectResultDTO>
 }

@@ -1,5 +1,6 @@
 package io.cloudflight.jems.server.project.entity.workpackage.activity.deliverable
 
+import java.io.Serializable
 import javax.persistence.EmbeddedId
 import javax.persistence.Entity
 
@@ -10,4 +11,4 @@ data class WorkPackageActivityDeliverableTranslationEntity(
     val translationId: WorkPackageActivityDeliverableTranslationId,
 
     val description: String? = null,
-)
+): Serializable

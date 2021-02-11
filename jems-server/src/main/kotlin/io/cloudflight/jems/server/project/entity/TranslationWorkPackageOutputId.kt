@@ -1,7 +1,7 @@
 package io.cloudflight.jems.server.project.entity
 
 import io.cloudflight.jems.api.programme.dto.language.SystemLanguage
-import io.cloudflight.jems.server.project.entity.workpackage.WorkPackageOutputId
+import io.cloudflight.jems.server.project.entity.workpackage.output.WorkPackageOutputId
 import java.io.Serializable
 import javax.persistence.Embeddable
 import javax.persistence.EnumType

@@ -4,15 +4,34 @@ import io.cloudflight.jems.server.project.entity.workpackage.activity.deliverabl
 import javax.persistence.CascadeType
 import javax.persistence.EmbeddedId
 import javax.persistence.Entity
+import javax.persistence.FetchType
+import javax.persistence.NamedAttributeNode
+import javax.persistence.NamedEntityGraph
+import javax.persistence.NamedEntityGraphs
+import javax.persistence.NamedSubgraph
 import javax.persistence.OneToMany
 
 @Entity(name = "project_work_package_activity")
+@NamedEntityGraphs(
+    NamedEntityGraph(
+        name = "WorkPackageActivityEntity.full",
+        attributeNodes = [
+            NamedAttributeNode(value = "translatedValues"),
+            NamedAttributeNode(value = "deliverables", subgraph = "deliverables-subgraph"),
+        ],
+        subgraphs = [
+            NamedSubgraph(name = "deliverables-subgraph", attributeNodes = [
+                NamedAttributeNode(value = "translatedValues"),
+            ]),
+        ]
+    )
+)
 data class WorkPackageActivityEntity(
 
     @EmbeddedId
     val activityId: WorkPackageActivityId,
 
-    @OneToMany(cascade = [CascadeType.ALL], orphanRemoval = true, mappedBy = "translationId.activityId")
+    @OneToMany(cascade = [CascadeType.ALL], orphanRemoval = true, mappedBy = "translationId.activityId", fetch = FetchType.EAGER)
     val translatedValues: Set<WorkPackageActivityTranslationEntity> = emptySet(),
 
     val startPeriod: Int? = null,

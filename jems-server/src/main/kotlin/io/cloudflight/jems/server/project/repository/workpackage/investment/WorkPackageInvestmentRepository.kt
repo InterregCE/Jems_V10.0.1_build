@@ -1,4 +1,4 @@
-package io.cloudflight.jems.server.project.repository.workpackage
+package io.cloudflight.jems.server.project.repository.workpackage.investment
 
 import io.cloudflight.jems.server.project.entity.workpackage.investment.WorkPackageInvestmentEntity
 import org.springframework.data.domain.Page
@@ -18,4 +18,7 @@ interface WorkPackageInvestmentRepository : PagingAndSortingRepository<WorkPacka
 
     @Query("SELECT investment FROM project_work_package_investment investment where investment.workPackage.project.id = :projectId")
     fun findInvestmentsByProjectId(@Param("projectId") projectId: Long): List<WorkPackageInvestmentEntity>
+
+    fun countAllByWorkPackageId(workPackageId: Long): Long
+
 }
