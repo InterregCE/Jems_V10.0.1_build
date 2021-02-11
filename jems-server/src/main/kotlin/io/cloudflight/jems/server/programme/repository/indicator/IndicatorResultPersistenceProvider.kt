@@ -15,4 +15,10 @@ class IndicatorResultPersistenceProvider(
     override fun getResultIndicatorsDetails(): Set<IndicatorResultDto> {
         return indicatorResultRepository.findAll().map { it.toIndicatorResultDto() }.toSet()
     }
+
+    @Transactional(readOnly = true)
+    override fun getResultIndicatorsForSpecificObjective(code: String): List<IndicatorResultDto> {
+        return indicatorResultRepository.findAllByProgrammePriorityPolicyCodeOrderById(code)
+            .map { it.toIndicatorResultDto() }
+    }
 }

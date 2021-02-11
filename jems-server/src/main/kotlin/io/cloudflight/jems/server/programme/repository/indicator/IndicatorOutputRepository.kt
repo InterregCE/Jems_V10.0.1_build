@@ -19,5 +19,6 @@ interface IndicatorOutputRepository : PagingAndSortingRepository<IndicatorOutput
 
     fun existsByIdentifier(identifier: String): Boolean
     fun findOneByIdentifier(identifier: String): IndicatorOutput?
+    fun findAllByProgrammePriorityPolicyCodeOrderById(code: String): Iterable<IndicatorOutput>
 
 }

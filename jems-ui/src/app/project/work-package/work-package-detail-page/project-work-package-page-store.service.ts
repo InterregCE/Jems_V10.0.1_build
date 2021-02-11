@@ -148,9 +148,11 @@ export class ProjectWorkPackagePageStore {
   }
 
   private outputIndicators(): Observable<IndicatorOutputDto[]> {
-    return this.programmeIndicatorService.getAllIndicatorOutputDetail()
+    return this.projectStore.getProject()
       .pipe(
-        tap(results => Log.info('Fetched programme output indicators', results)),
+        map(project => project?.projectData.specificObjective.code),
+        switchMap(code => this.programmeIndicatorService.getOutputIndicatorsForSpecificObjective(code)),
+        tap(outputs => Log.info('Fetched programme output indicators', outputs)),
       );
   }
 }
