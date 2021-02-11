@@ -1,5 +1,6 @@
 package io.cloudflight.jems.server.programme.repository.indicator
 
+import io.cloudflight.jems.api.programme.dto.priority.ProgrammeObjectivePolicy
 import io.cloudflight.jems.server.programme.entity.indicator.IndicatorResult
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
@@ -19,5 +20,5 @@ interface IndicatorResultRepository : PagingAndSortingRepository<IndicatorResult
 
     fun existsByIdentifier(identifier: String): Boolean
     fun findOneByIdentifier(identifier: String): IndicatorResult?
-    fun findAllByProgrammePriorityPolicyCodeOrderById(code: String): Iterable<IndicatorResult>
+    fun findAllByProgrammePriorityPolicyProgrammeObjectivePolicyOrderById(programmeObjectivePolicy: ProgrammeObjectivePolicy): Iterable<IndicatorResult>
 }

@@ -23,6 +23,7 @@ import io.cloudflight.jems.server.programme.repository.priority.ProgrammeSpecifi
 import io.cloudflight.jems.server.programme.service.indicator.IndicatorService
 import io.cloudflight.jems.server.programme.service.indicator.IndicatorServiceImpl
 import io.cloudflight.jems.server.programme.controller.indicator.toEntity
+import io.cloudflight.jems.server.programme.controller.indicator.toIndicatorOutputDto
 import io.cloudflight.jems.server.programme.controller.indicator.toOutputIndicator
 import io.mockk.MockKAnnotations
 import io.mockk.every
@@ -98,6 +99,7 @@ class IndicatorServiceTest {
         )
 
         private val testOutputIndicatorResult = testIndicatorResult.toOutputIndicator()
+        private val testOutputIndicatorOutputDto = testIndicatorOutput.toIndicatorOutputDto()
     }
 
     @MockK
@@ -143,6 +145,14 @@ class IndicatorServiceTest {
         every { indicatorOutputRepository.findAll(eq(Pageable.unpaged())) } returns PageImpl(listOf(testIndicatorOutput))
         assertThat(indicatorService.getOutputIndicators(Pageable.unpaged()))
             .isEqualTo(PageImpl(listOf(testOutputIndicatorOutput)))
+    }
+
+
+    @Test
+    fun getOutputIndicatorsForSpecificObjective() {
+        every { indicatorOutputRepository.findAllByProgrammePriorityPolicyProgrammeObjectivePolicyOrderById(priorityPolicy.programmeObjectivePolicy) } returns listOf(testIndicatorOutput)
+        assertThat(indicatorService.getOutputIndicatorsForSpecificObjective(priorityPolicy.programmeObjectivePolicy))
+            .isEqualTo(listOf(testOutputIndicatorOutputDto))
     }
 
     @Test

@@ -4,12 +4,12 @@
         <h3>{{'project.application.form.section.part.c.subsection.one' | translate}}</h3>
         <p>{{'project.application.form.overall.objective.field.row.one' | translate}}</p>
         <mat-form-field
-                [ngClass]="!overallObjectiveForm?.controls?.projectSpecificObjective?.value && editable ? 'disable-warning-field' : 'field'"
+                [ngClass]="!overallObjectiveForm?.controls?.projectSpecificObjective?.value && editable ? 'mat-form-field-invalid' : 'field'"
                 name="projectSpecificObjective">
             <mat-label>{{'project.application.form.overall.objective.field.projectSpecificObjective' | translate}}</mat-label>
             <input readonly formControlName="projectSpecificObjective" matInput>
             <mat-hint *ngIf="!overallObjectiveForm?.controls?.projectSpecificObjective?.value && editable"
-                      class="warning-hint">
+                      class="mat-error">
                 {{'project.application.form.overall.objective.specific.objective.required' | translate}}
             </mat-hint>
         </mat-form-field>

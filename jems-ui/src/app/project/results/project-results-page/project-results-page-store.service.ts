@@ -6,7 +6,7 @@ import {
   ProjectResultDTO,
   ProjectResultService
 } from '@cat/api';
-import {merge, Observable, Subject} from 'rxjs';
+import {merge, Observable, of, Subject} from 'rxjs';
 import {map, shareReplay, switchMap, tap} from 'rxjs/operators';
 import {Log} from '../../../common/utils/log';
 import {ProjectStore} from '../../project-application/containers/project-application-detail/services/project-store.service';
@@ -58,8 +58,8 @@ export class ProjectResultsPageStore {
   private resultIndicators(): Observable<IndicatorResultDto[]> {
     return this.projectStore.getProject()
       .pipe(
-        map(project => project?.projectData.specificObjective.code),
-        switchMap(code => this.programmeIndicatorService.getAllIndicatorResultDetailForSpecificObjective(code)),
+        map(project => project?.projectData?.specificObjective?.programmeObjectivePolicy),
+        switchMap(programmeObjectivePolicy => programmeObjectivePolicy ? this.programmeIndicatorService.getAllIndicatorResultDetailForSpecificObjective(programmeObjectivePolicy) : of([])),
         tap(results => Log.info('Fetched programme result indicators', results)),
       );
   }

@@ -19,7 +19,7 @@
                             </button>
                         </div>
 
-                        <mat-form-field>
+                        <mat-form-field [class.mat-form-field-invalid]="!data.resultIndicators.length">
                             <mat-label>{{'project.results.result.indicator' | translate}}</mat-label>
                             <mat-select [disabled]="!data.resultIndicators.length"
                                         [formControlName]="constants.RESULT_INDICATOR.name">
@@ -28,6 +28,9 @@
                                     {{resultIndicator.name}}
                                 </mat-option>
                             </mat-select>
+                            <mat-hint *ngIf="!data.resultIndicators?.length" class="mat-error">
+                                {{'project.application.form.overall.objective.specific.objective.required' | translate}}
+                            </mat-hint>
                         </mat-form-field>
                         <div appMultiColumnRow stretch>
                             <mat-form-field appFormFieldWidth="large">

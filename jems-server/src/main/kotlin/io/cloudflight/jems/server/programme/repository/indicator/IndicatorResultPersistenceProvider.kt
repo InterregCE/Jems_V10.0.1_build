@@ -1,6 +1,7 @@
 package io.cloudflight.jems.server.programme.repository.indicator
 
 import io.cloudflight.jems.api.programme.dto.indicator.IndicatorResultDto
+import io.cloudflight.jems.api.programme.dto.priority.ProgrammeObjectivePolicy
 import io.cloudflight.jems.server.programme.service.indicator.IndicatorResultPersistence
 import io.cloudflight.jems.server.programme.controller.indicator.toIndicatorResultDto
 import org.springframework.stereotype.Repository
@@ -17,8 +18,8 @@ class IndicatorResultPersistenceProvider(
     }
 
     @Transactional(readOnly = true)
-    override fun getResultIndicatorsForSpecificObjective(code: String): List<IndicatorResultDto> {
-        return indicatorResultRepository.findAllByProgrammePriorityPolicyCodeOrderById(code)
+    override fun getResultIndicatorsForSpecificObjective(programmeObjectivePolicy: ProgrammeObjectivePolicy): List<IndicatorResultDto> {
+        return indicatorResultRepository.findAllByProgrammePriorityPolicyProgrammeObjectivePolicyOrderById(programmeObjectivePolicy)
             .map { it.toIndicatorResultDto() }
     }
 }
