@@ -1,6 +1,7 @@
 package io.cloudflight.jems.server.programme.service.priority.model
 
 import io.cloudflight.jems.api.programme.dto.priority.ProgrammeObjective
+import java.util.TreeSet
 
 data class ProgrammePriority(
     val id: Long? = null,
@@ -21,8 +22,8 @@ data class ProgrammePriority(
         if (objective != other.objective)
             changes["objective"] = Pair(objective, other.objective)
 
-        val policies = specificObjectives.mapTo(HashSet()) { it.programmeObjectivePolicy }
-        val otherPolicies = other.specificObjectives.mapTo(HashSet()) { it.programmeObjectivePolicy }
+        val policies = specificObjectives.mapTo(TreeSet()) { it.programmeObjectivePolicy }
+        val otherPolicies = other.specificObjectives.mapTo(TreeSet()) { it.programmeObjectivePolicy }
 
         if (policies != otherPolicies)
             changes["specificObjectives"] = Pair(policies, otherPolicies)
