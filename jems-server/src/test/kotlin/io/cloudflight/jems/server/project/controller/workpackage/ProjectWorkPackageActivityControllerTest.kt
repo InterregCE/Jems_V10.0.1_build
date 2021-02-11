@@ -1,8 +1,8 @@
 package io.cloudflight.jems.server.project.controller.workpackage
 
-import io.cloudflight.jems.api.programme.dto.SystemLanguage.CS
-import io.cloudflight.jems.api.programme.dto.SystemLanguage.EN
-import io.cloudflight.jems.api.programme.dto.SystemLanguage.SK
+import io.cloudflight.jems.api.programme.dto.language.SystemLanguage.CS
+import io.cloudflight.jems.api.programme.dto.language.SystemLanguage.EN
+import io.cloudflight.jems.api.programme.dto.language.SystemLanguage.SK
 import io.cloudflight.jems.api.project.dto.InputTranslation
 import io.cloudflight.jems.api.project.dto.workpackage.activity.WorkPackageActivityDTO
 import io.cloudflight.jems.api.project.dto.workpackage.activity.WorkPackageActivityDeliverableDTO

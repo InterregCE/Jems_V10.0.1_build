@@ -72,13 +72,14 @@ class CallServiceImpl(
                 strategies = getStrategiesAsEntities(inputCall.strategies),
                 funds = getFundsAsEntities(inputCall.funds)
             )
-        ).toOutputCall()
+        )
+        savedCall.translatedValues = inputCall.description.toDescriptionEntity(callId = savedCall.id)
 
         AuditBuilder(AuditAction.CALL_CREATED)
             .description("A new call id=${savedCall.id} '${savedCall.name}' was created")
             .logWithService(auditService)
 
-        return savedCall
+        return savedCall.toOutputCall()
     }
 
     @Transactional
@@ -93,7 +94,7 @@ class CallServiceImpl(
             funds = getFundsAsEntities(inputCall.funds),
             startDate = inputCall.startDate!!,
             endDate = inputCall.endDate!!,
-            description = inputCall.description,
+            translatedValues = inputCall.description.toDescriptionEntity(callId = oldCall.id),
             lengthOfPeriod = inputCall.lengthOfPeriod
         )
 

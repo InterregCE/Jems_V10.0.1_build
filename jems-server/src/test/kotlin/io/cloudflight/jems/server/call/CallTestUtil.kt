@@ -2,11 +2,14 @@ package io.cloudflight.jems.server.call
 
 import io.cloudflight.jems.api.call.dto.CallStatus
 import io.cloudflight.jems.api.call.dto.flatrate.FlatRateType
+import io.cloudflight.jems.api.programme.dto.language.SystemLanguage
 import io.cloudflight.jems.api.project.dto.partner.ProjectPartnerRole
 import io.cloudflight.jems.api.project.dto.status.ProjectApplicationStatus
 import io.cloudflight.jems.api.user.dto.OutputUserRole
 import io.cloudflight.jems.api.user.dto.OutputUserWithRole
 import io.cloudflight.jems.server.call.entity.CallEntity
+import io.cloudflight.jems.server.call.entity.CallTranslEntity
+import io.cloudflight.jems.server.call.entity.CallTranslId
 import io.cloudflight.jems.server.call.entity.FlatRateSetupId
 import io.cloudflight.jems.server.call.entity.ProjectCallFlatRateEntity
 import io.cloudflight.jems.server.programme.entity.ProgrammeLegalStatus
@@ -46,7 +49,7 @@ private val testCall = CallEntity(
     endDate = ZonedDateTime.now().plusDays(5L),
     status = CallStatus.DRAFT,
     lengthOfPeriod = 1,
-    description = "This is a dummy call",
+    translatedValues = mutableSetOf(CallTranslEntity(CallTranslId(0, SystemLanguage.EN),"This is a dummy call")),
     flatRates = mutableSetOf(ProjectCallFlatRateEntity(
         setupId = FlatRateSetupId(callId = 0, type = FlatRateType.STAFF_COSTS),
         rate = 5,
@@ -54,7 +57,10 @@ private val testCall = CallEntity(
     ))
 )
 
-fun callWithId(id: Long) = testCall.copy(id = id)
+fun callWithId(id: Long) = testCall.copy(
+    id = id,
+    translatedValues = mutableSetOf(CallTranslEntity(CallTranslId(id, SystemLanguage.EN),"This is a dummy call"))
+)
 
 private val dummyProject = ProjectEntity(
     id = 1,

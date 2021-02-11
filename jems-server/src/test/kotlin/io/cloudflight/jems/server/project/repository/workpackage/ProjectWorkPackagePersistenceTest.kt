@@ -1,9 +1,9 @@
 package io.cloudflight.jems.server.project.repository.workpackage
 
-import io.cloudflight.jems.api.programme.dto.SystemLanguage
-import io.cloudflight.jems.api.programme.dto.SystemLanguage.CS
-import io.cloudflight.jems.api.programme.dto.SystemLanguage.EN
-import io.cloudflight.jems.api.programme.dto.SystemLanguage.SK
+import io.cloudflight.jems.api.programme.dto.language.SystemLanguage
+import io.cloudflight.jems.api.programme.dto.language.SystemLanguage.CS
+import io.cloudflight.jems.api.programme.dto.language.SystemLanguage.EN
+import io.cloudflight.jems.api.programme.dto.language.SystemLanguage.SK
 import io.cloudflight.jems.server.common.exception.ResourceNotFoundException
 import io.cloudflight.jems.server.programme.entity.indicator.IndicatorOutput
 import io.cloudflight.jems.server.programme.repository.indicator.IndicatorOutputRepository

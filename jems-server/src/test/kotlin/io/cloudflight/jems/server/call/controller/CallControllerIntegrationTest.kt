@@ -2,6 +2,8 @@ package io.cloudflight.jems.server.call.controller
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import io.cloudflight.jems.api.call.dto.InputCallCreate
+import io.cloudflight.jems.api.programme.dto.language.SystemLanguage
+import io.cloudflight.jems.api.project.dto.InputTranslation
 import io.cloudflight.jems.server.factory.UserFactory
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
@@ -38,7 +40,7 @@ class CallControllerIntegrationTest {
             null,
             ZonedDateTime.now(),
             ZonedDateTime.now().plusDays(3L),
-            "Short description",
+            setOf(InputTranslation(SystemLanguage.EN, "Short description")),
             12
         )
 

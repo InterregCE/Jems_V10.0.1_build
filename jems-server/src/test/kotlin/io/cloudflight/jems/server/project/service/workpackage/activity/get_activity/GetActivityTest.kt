@@ -1,6 +1,6 @@
 package io.cloudflight.jems.server.project.service.workpackage.activity.get_activity
 
-import io.cloudflight.jems.api.programme.dto.SystemLanguage
+import io.cloudflight.jems.api.programme.dto.language.SystemLanguage
 import io.cloudflight.jems.server.project.service.workpackage.WorkPackagePersistence
 import io.cloudflight.jems.server.project.service.workpackage.activity.model.WorkPackageActivity
 import io.cloudflight.jems.server.project.service.workpackage.activity.model.WorkPackageActivityDeliverable

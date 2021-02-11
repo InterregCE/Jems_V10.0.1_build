@@ -11,7 +11,7 @@ import {
 import {FormBuilder, FormGroup, Validators} from '@angular/forms';
 import {
   InputProjectPartnerCreate,
-  InputProjectPartnerUpdate, OutputProgrammeLanguage,
+  InputProjectPartnerUpdate,
   OutputProgrammeLegalStatus,
   OutputProjectPartner,
   OutputProjectPartnerDetail
@@ -36,7 +36,6 @@ import {Router} from '@angular/router';
 })
 export class ProjectApplicationFormPartnerEditComponent extends BaseComponent implements OnInit, OnChanges {
   RoleEnum = OutputProjectPartner.RoleEnum;
-  LANGUAGE = OutputProgrammeLanguage.CodeEnum;
 
   @Input()
   partner: OutputProjectPartnerDetail;

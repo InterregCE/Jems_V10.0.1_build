@@ -1,7 +1,7 @@
 import {Injectable} from '@angular/core';
 import {take, tap} from 'rxjs/operators';
 import {Log} from '../utils/log';
-import {OutputProgrammeLanguage, ProgrammeLanguageService} from '@cat/api';
+import {AvailableProgrammeLanguagesDTO, ProgrammeLanguageService} from '@cat/api';
 import {TranslateService} from '@ngx-translate/core';
 import {LanguageService} from './language.service';
 
@@ -13,18 +13,15 @@ export class AppInitializerService {
   ) {
   }
 
-  async loadLanguages(): Promise<OutputProgrammeLanguage[]> {
-    return this.programmeLanguageService.get()
+  async loadLanguages(): Promise<AvailableProgrammeLanguagesDTO> {
+    return this.programmeLanguageService.getAvailableProgrammeLanguages()
       .pipe(
         take(1),
-        tap(languages => {
-          const availableLanguages = languages
-            .filter(value => value.ui)
-            .map(value => value.code);
-          this.translate.addLangs(availableLanguages);
-        }),
-        tap(languages => this.languageService.languages$.next(languages)),
-        tap(languages => Log.info('Fetched programme languages', this, languages)),
+        tap((languages: AvailableProgrammeLanguagesDTO) => this.languageService.systemLanguages$.next(languages.systemLanguages)),
+        tap((languages: AvailableProgrammeLanguagesDTO) => this.languageService.inputLanguages$.next(languages.inputLanguages)),
+        tap((languages: AvailableProgrammeLanguagesDTO) => this.languageService.fallbackLanguage$.next(languages.fallbackLanguage)),
+        tap((languages: AvailableProgrammeLanguagesDTO) => this.translate.addLangs(languages.systemLanguages)),
+        tap((languages: AvailableProgrammeLanguagesDTO) => Log.info('Fetched programme languages', this, languages)),
       ).toPromise();
   }
 }

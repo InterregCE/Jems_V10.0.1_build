@@ -5,8 +5,11 @@ import io.cloudflight.jems.api.call.dto.InputCallCreate
 import io.cloudflight.jems.api.call.dto.OutputCall
 import io.cloudflight.jems.api.call.dto.OutputCallList
 import io.cloudflight.jems.api.call.dto.OutputCallWithDates
+import io.cloudflight.jems.api.project.dto.InputTranslation
 import io.cloudflight.jems.server.call.controller.toDto
 import io.cloudflight.jems.server.call.entity.CallEntity
+import io.cloudflight.jems.server.call.entity.CallTranslEntity
+import io.cloudflight.jems.server.call.entity.CallTranslId
 import io.cloudflight.jems.server.call.repository.flatrate.toProjectCallFlatRate
 import io.cloudflight.jems.server.programme.controller.costoption.toDto
 import io.cloudflight.jems.server.programme.entity.ProgrammeFundEntity
@@ -36,7 +39,6 @@ fun InputCallCreate.toEntity(
     status = CallStatus.DRAFT,
     startDate = startDate!!.withSecond(0).withNano(0),
     endDate = endDate!!.withSecond(0).withNano(0).plusMinutes(1).minusNanos(1),
-    description = description,
     lengthOfPeriod = lengthOfPeriod
 )
 
@@ -50,7 +52,7 @@ fun CallEntity.toOutputCall() = OutputCall(
     status = status,
     startDate = startDate,
     endDate = endDate,
-    description = description,
+    description = translatedValues.mapTo(HashSet()) { InputTranslation(it.translationId.language, it.description) },
     lengthOfPeriod = lengthOfPeriod,
     flatRates = flatRates.toProjectCallFlatRate().toDto(),
     lumpSums = lumpSums.map { it.toProgrammeUnitCost().toDto() },
@@ -73,3 +75,7 @@ fun CallEntity.toOutputCallWithDates() = OutputCallWithDates(
     lengthOfPeriod = lengthOfPeriod,
     flatRates = flatRates.toProjectCallFlatRate().toDto()
 )
+
+fun Set<InputTranslation>.toDescriptionEntity(callId: Long) = mapTo(HashSet()) {
+    CallTranslEntity(CallTranslId(callId, it.language), it.translation)
+}

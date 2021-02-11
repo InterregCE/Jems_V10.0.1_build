@@ -1,6 +1,6 @@
 package io.cloudflight.jems.server.project.service.partner
 
-import io.cloudflight.jems.api.programme.dto.SystemLanguage
+import io.cloudflight.jems.api.programme.dto.language.SystemLanguage
 import io.cloudflight.jems.api.project.dto.InputProjectContact
 import io.cloudflight.jems.api.project.dto.InputTranslation
 import io.cloudflight.jems.api.project.dto.ProjectContactType
@@ -149,7 +149,8 @@ internal class ProjectPartnerServiceTest {
 
     @Test
     fun `createProjectPartner not existing`() {
-        val inputProjectPartner = InputProjectPartnerCreate("partner", ProjectPartnerRole.LEAD_PARTNER, null,"test","test", setOf(InputTranslation(SystemLanguage.EN, "test")), ProjectTargetGroup.BusinessSupportOrganisation,
+        val inputProjectPartner = InputProjectPartnerCreate("partner", ProjectPartnerRole.LEAD_PARTNER, null,"test","test", setOf(InputTranslation(
+            SystemLanguage.EN, "test")), ProjectTargetGroup.BusinessSupportOrganisation,
             1,"test vat", true)
         every { projectRepository.findById(-1) } returns Optional.empty()
         every { legalStatusRepo.findById(1) } returns Optional.of(legalStatus)
@@ -164,7 +165,8 @@ internal class ProjectPartnerServiceTest {
         every { legalStatusRepo.findById(1) } returns Optional.of(legalStatus)
 
         val ex = assertThrows<I18nValidationException> {
-            projectPartnerService.create(1, InputProjectPartnerCreate("partner", ProjectPartnerRole.PARTNER, null,"test","test", setOf(InputTranslation(SystemLanguage.EN, "test")), ProjectTargetGroup.BusinessSupportOrganisation,
+            projectPartnerService.create(1, InputProjectPartnerCreate("partner", ProjectPartnerRole.PARTNER, null,"test","test", setOf(InputTranslation(
+                SystemLanguage.EN, "test")), ProjectTargetGroup.BusinessSupportOrganisation,
                 1,"test vat", true))
         }
         assertThat(ex.i18nKey).isEqualTo("project.partner.max.allowed.count.reached")
@@ -304,7 +306,8 @@ internal class ProjectPartnerServiceTest {
 
     @Test
     fun createProjectPartnerWithOrganization() {
-        val inputProjectPartner = InputProjectPartnerCreate("partner", ProjectPartnerRole.LEAD_PARTNER, null, "test", "test", setOf(InputTranslation(SystemLanguage.EN, "test")), legalStatusId = 1)
+        val inputProjectPartner = InputProjectPartnerCreate("partner", ProjectPartnerRole.LEAD_PARTNER, null, "test", "test", setOf(InputTranslation(
+            SystemLanguage.EN, "test")), legalStatusId = 1)
         val projectPartnerWithProject = ProjectPartnerEntity(
             project = project,
             abbreviation = inputProjectPartner.abbreviation!!,
@@ -333,7 +336,8 @@ internal class ProjectPartnerServiceTest {
 
     @Test
     fun updateProjectPartnerWithOrganization() {
-        val projectPartnerUpdate =  InputProjectPartnerUpdate(1, "updated", ProjectPartnerRole.PARTNER, null, "test", "test", setOf(InputTranslation(SystemLanguage.EN, "test")), legalStatusId = 1)
+        val projectPartnerUpdate =  InputProjectPartnerUpdate(1, "updated", ProjectPartnerRole.PARTNER, null, "test", "test", setOf(InputTranslation(
+            SystemLanguage.EN, "test")), legalStatusId = 1)
         val updatedProjectPartner = ProjectPartnerEntity(
             id = 1,
             project = project,

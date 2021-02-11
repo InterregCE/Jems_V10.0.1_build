@@ -1,5 +1,10 @@
 import {Injectable} from '@angular/core';
-import {InputUserProfile, OutputProgrammeLanguage, OutputUserProfile, UserProfileService} from '@cat/api';
+import {
+  InputUserProfile,
+  OutputUserProfile,
+  UserProfileService,
+  ProgrammeLanguageDTO,
+} from '@cat/api';
 import {filter, map, take, tap} from 'rxjs/operators';
 import {TranslateService} from '@ngx-translate/core';
 import {SecurityService} from '../../security/security.service';
@@ -11,14 +16,11 @@ export class LanguageService {
   private profileChanged$ = new Subject<OutputUserProfile>();
 
   systemLanguage$ = new BehaviorSubject<string>(this.default());
-  languages$ = new ReplaySubject<OutputProgrammeLanguage[]>(1);
-  languageSelection$ = this.languages$
+  inputLanguages$ = new ReplaySubject<string[]>(1);
+  systemLanguages$ = new ReplaySubject<string[]>(1);
+  fallbackLanguage$ = new ReplaySubject<string>(1);
+  languageSelection$ = this.systemLanguages$
     .pipe(
-      map(programmeLanguages =>
-        programmeLanguages
-          .filter(selections => selections?.ui)
-          .map(selections => selections.code)
-      ),
       map(value => ({
         isEnglishAvailable: this.isDefaultLanguageIncluded(value),
         languages: value
@@ -75,8 +77,11 @@ export class LanguageService {
       });
   }
 
-  updateLanguages(languages: OutputProgrammeLanguage[]): void {
-    this.languages$.next(languages);
+  updateLanguages(languages: ProgrammeLanguageDTO[]): void {
+    this.systemLanguages$.next(languages.filter(selections => selections?.ui).map(selections => selections.code));
+    this.inputLanguages$.next(languages.filter(selections => selections?.input).map(selections => selections.code));
+    const fallbackLanguages = languages.filter(selections => selections?.fallback).map(selections => selections.code);
+    this.fallbackLanguage$.next(fallbackLanguages.length === 1 ? fallbackLanguages[0] : undefined);
   }
 
   default(): string {

@@ -1,7 +1,6 @@
 package io.cloudflight.jems.server.project.entity.workpackage.activity.deliverable
 
-import io.cloudflight.jems.api.programme.dto.SystemLanguage
-import io.cloudflight.jems.server.project.entity.workpackage.activity.WorkPackageActivityId
+import io.cloudflight.jems.api.programme.dto.language.SystemLanguage
 import java.io.Serializable
 import javax.persistence.Embeddable
 import javax.persistence.Embedded

@@ -1,6 +1,6 @@
-package io.cloudflight.jems.server.programme.entity
+package io.cloudflight.jems.server.programme.entity.language
 
-import io.cloudflight.jems.api.programme.dto.SystemLanguage
+import io.cloudflight.jems.api.programme.dto.language.SystemLanguage
 import javax.persistence.Entity
 import javax.persistence.EnumType
 import javax.persistence.Enumerated
@@ -13,7 +13,7 @@ import javax.validation.constraints.NotNull
  * fallback should be the default language.
  */
 @Entity(name = "programme_language")
-data class ProgrammeLanguage(
+data class ProgrammeLanguageEntity(
 
     @Id
     @Enumerated(EnumType.STRING)

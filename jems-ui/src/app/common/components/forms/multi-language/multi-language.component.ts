@@ -3,8 +3,7 @@ import {MultiLanguageInputService} from '../../../services/multi-language-input.
 import {BaseComponent} from '@common/components/base-component';
 import {takeUntil, tap} from 'rxjs/operators';
 import {MultiLanguageInput} from '@common/components/forms/multi-language/multi-language-input';
-import {merge, Subject} from 'rxjs';
-import {OutputProgrammeLanguage} from '@cat/api';
+import {BehaviorSubject, merge, Observable, of, Subject} from 'rxjs';
 
 @Component({
   selector: 'app-multi-language',
@@ -13,15 +12,20 @@ import {OutputProgrammeLanguage} from '@cat/api';
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class MultiLanguageComponent extends BaseComponent implements OnInit, OnChanges {
-  LANGUAGE = OutputProgrammeLanguage.CodeEnum;
 
+  // TODO: remove this input
   @Input()
   inputs: MultiLanguageInput[];
-  @Input()
-  languages?: OutputProgrammeLanguage.CodeEnum[];
-  @Input()
-  staticLanguages?: OutputProgrammeLanguage.CodeEnum[];
 
+  @Input()
+  switchButtonsVisible = true;
+  @Input()
+  useSystemLanguages = false;
+  @Input()
+  staticLanguages?: string[];
+
+  languages$: Observable<string[]>;
+  currentLanguage$: Subject<string>;
   inputsChanged$ = new Subject<void>();
 
   constructor(public languageService: MultiLanguageInputService) {
@@ -29,14 +33,25 @@ export class MultiLanguageComponent extends BaseComponent implements OnInit, OnC
   }
 
   ngOnInit(): void {
+    // TODO: remove this logic when last usage of inputs input is gone
     this.inputsChanged$.next();
     this.initializeInputs();
 
-    this.languageService.currentLanguage$
+    this.languageService.currentInputLanguage$
       .pipe(
         takeUntil(this.destroyed$),
         tap(() => this.updateControls())
       ).subscribe();
+
+    if (this.staticLanguages?.length) {
+      this.languages$ = of(this.staticLanguages);
+      this.currentLanguage$ = new BehaviorSubject(this.staticLanguages[0]);
+      return;
+    }
+    this.languages$ = this.useSystemLanguages
+      ? this.languageService.systemLanguages$ : this.languageService.inputLanguages$;
+    this.currentLanguage$ = this.useSystemLanguages
+      ? this.languageService.currentSystemLanguage$ : this.languageService.currentInputLanguage$;
   }
 
   ngOnChanges(changes: SimpleChanges): void {
@@ -72,11 +87,12 @@ export class MultiLanguageComponent extends BaseComponent implements OnInit, OnC
   }
 
   isMoreThanOneLanguageInputEnabled(): boolean {
-    return (this.staticLanguages?.length && !this.englishLanguageActive())
-      || this.languageService.languages.length > 1;
+    const languages = this.useSystemLanguages
+      ? this.languageService.systemLanguages : this.languageService.inputLanguages;
+    return (this.staticLanguages?.length && !this.englishLanguageActive(languages)) || languages.length > 1;
   }
 
-  private englishLanguageActive(): boolean {
-    return !!this.languageService.languages?.find(lang => this.LANGUAGE.EN === lang);
+  private englishLanguageActive(languages: string[]): boolean {
+    return !!languages?.find(lang => 'EN' === lang);
   }
 }

@@ -1,8 +1,8 @@
 package io.cloudflight.jems.server.project.service.workpackage.activity.update_activity
 
-import io.cloudflight.jems.api.programme.dto.SystemLanguage.CS
-import io.cloudflight.jems.api.programme.dto.SystemLanguage.EN
-import io.cloudflight.jems.api.programme.dto.SystemLanguage.SK
+import io.cloudflight.jems.api.programme.dto.language.SystemLanguage.CS
+import io.cloudflight.jems.api.programme.dto.language.SystemLanguage.EN
+import io.cloudflight.jems.api.programme.dto.language.SystemLanguage.SK
 import io.cloudflight.jems.server.common.exception.I18nValidationException
 import io.cloudflight.jems.server.project.service.workpackage.WorkPackagePersistence
 import io.cloudflight.jems.server.project.service.workpackage.activity.model.WorkPackageActivity

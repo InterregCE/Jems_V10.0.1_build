@@ -1,15 +1,15 @@
 package io.cloudflight.jems.server.workpackage.service
 
 import io.cloudflight.jems.api.call.dto.CallStatus
-import io.cloudflight.jems.api.programme.dto.SystemLanguage
+import io.cloudflight.jems.api.programme.dto.language.SystemLanguage
 import io.cloudflight.jems.api.project.dto.InputTranslation
 import io.cloudflight.jems.api.project.dto.status.ProjectApplicationStatus
-import io.cloudflight.jems.api.user.dto.OutputUserRole
-import io.cloudflight.jems.api.user.dto.OutputUserWithRole
 import io.cloudflight.jems.api.project.dto.workpackage.InputWorkPackageCreate
 import io.cloudflight.jems.api.project.dto.workpackage.InputWorkPackageUpdate
 import io.cloudflight.jems.api.project.dto.workpackage.OutputWorkPackage
 import io.cloudflight.jems.server.call.entity.CallEntity
+import io.cloudflight.jems.server.call.entity.CallTranslEntity
+import io.cloudflight.jems.server.call.entity.CallTranslId
 import io.cloudflight.jems.server.project.entity.ProjectEntity
 import io.cloudflight.jems.server.project.entity.ProjectStatus
 import io.cloudflight.jems.server.project.entity.TranslationWorkPackageId
@@ -51,14 +51,6 @@ class WorkPackageServiceTest {
         password = "hash_pass"
     )
 
-    private val user = OutputUserWithRole(
-        id = 1,
-        email = "admin@admin.dev",
-        name = "Name",
-        surname = "Surname",
-        userRole = OutputUserRole(id = 1, name = "ADMIN")
-    )
-
     private val call = CallEntity(
         id = 1,
         creator = account,
@@ -70,7 +62,7 @@ class WorkPackageServiceTest {
         startDate = ZonedDateTime.now(),
         endDate = ZonedDateTime.now().plusDays(5L),
         status = CallStatus.DRAFT,
-        description = "This is a dummy call",
+        translatedValues = mutableSetOf(CallTranslEntity(CallTranslId(1, SystemLanguage.EN), "This is a dummy call")),
         lengthOfPeriod = 1
     )
 

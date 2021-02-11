@@ -1,4 +1,4 @@
-package io.cloudflight.jems.api.programme.dto
+package io.cloudflight.jems.api.programme.dto.language
 
 /**
  * Language keys using ISO_639-1 codes.

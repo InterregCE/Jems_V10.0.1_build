@@ -1,49 +1,48 @@
 import {Injectable} from '@angular/core';
-import {ReplaySubject} from 'rxjs';
+import {combineLatest, ReplaySubject} from 'rxjs';
 import {tap} from 'rxjs/operators';
-import {InputTranslation, OutputProgrammeLanguage} from '@cat/api';
+import {InputTranslation} from '@cat/api';
 import {LanguageService} from './language.service';
 import {MultiLanguageInput} from '@common/components/forms/multi-language/multi-language-input';
 import {AbstractControl} from '@angular/forms';
+
 
 @Injectable({
   providedIn: 'root'
 })
 export class MultiLanguageInputService {
-  private static MAX_NUMBER_AVAILABLE_LANGUAGES = 4;
-  private currentLanguage: InputTranslation.LanguageEnum;
+  private currentInputLanguage: string;
 
-  languages$ = new ReplaySubject<OutputProgrammeLanguage.CodeEnum[]>();
-  languages: OutputProgrammeLanguage.CodeEnum[];
-  currentLanguage$ = new ReplaySubject<OutputProgrammeLanguage.CodeEnum>(1);
+  inputLanguages$ = this.languageService.inputLanguages$;
+  inputLanguages: string[];
+  currentInputLanguage$ = new ReplaySubject<string>(1);
+
+  systemLanguages$ = this.languageService.systemLanguages$;
+  systemLanguages: string[];
+  currentSystemLanguage$ = new ReplaySubject<string>(1);
 
   constructor(private languageService: LanguageService) {
-    this.languageService.languages$
+    this.languageService.inputLanguages$
       .pipe(
-        tap(languages => {
-          let availableLanguages = languages
-            .filter(value => value.input)
-            .slice(0, MultiLanguageInputService.MAX_NUMBER_AVAILABLE_LANGUAGES)
-            .map(value => value.code);
-          // if there is no input language selected in the programme setup, use the fallback language
-          if (availableLanguages.length < 1) {
-            availableLanguages = languages
-              .filter(value => value.fallback)
-              .slice(0, MultiLanguageInputService.MAX_NUMBER_AVAILABLE_LANGUAGES)
-              .map(value => value.code);
-          }
-          this.languages$.next(availableLanguages);
-          this.languages = availableLanguages;
-          this.currentLanguage$.next(availableLanguages && availableLanguages[0]);
-          this.currentLanguage = availableLanguages && availableLanguages[0];
+        tap(inputLanguages => {
+          this.inputLanguages = inputLanguages;
+          this.currentInputLanguage$.next(inputLanguages && inputLanguages[0]);
+          this.currentInputLanguage = inputLanguages && inputLanguages[0];
         })
       ).subscribe();
 
-    this.currentLanguage$
+    combineLatest([this.languageService.systemLanguages$, this.languageService.systemLanguage$])
       .pipe(
-        tap(lang => this.currentLanguage = lang)
-      )
-      .subscribe();
+        tap(([systemLanguages, currentLanguage]) => {
+          this.systemLanguages = systemLanguages;
+          this.currentSystemLanguage$.next(currentLanguage || systemLanguages && systemLanguages[0]);
+        })
+      ).subscribe();
+
+    this.currentInputLanguage$
+      .pipe(
+        tap(lang => this.currentInputLanguage = lang)
+      ).subscribe();
   }
 
   public static getFirstTranslation(inputs: InputTranslation[]): string {
@@ -64,32 +63,30 @@ export class MultiLanguageInputService {
     if (!this.isMultiInput(input)) {
       return;
     }
-    input.setValue(value, this.currentLanguage, !!valid);
+    input.setValue(value, this.currentInputLanguage, !!valid);
   }
 
   getInputValue(input: MultiLanguageInput): string {
     if (!this.isMultiInput(input)) {
       return input as any;
     }
-    return input.inputs.find(trans => trans.language === this.currentLanguage)?.translation || '';
+    return input.inputs.find(trans => trans.language === this.currentInputLanguage)?.translation || '';
   }
 
   getCurrentValue(inputs: InputTranslation[]): string {
     if (!inputs) {
       return '';
     }
-    return inputs.find(trans => trans.language === this.currentLanguage)?.translation || '';
+    return inputs.find(trans => trans.language === this.currentInputLanguage)?.translation || '';
   }
 
-  multiLanguageFormFieldDefaultValue(): InputTranslation[] {
-    return this.languages?.map(language => {
-      return {translation: '', language} as InputTranslation;
-    }) || [];
-
+  multiLanguageFormFieldDefaultValue(useSystemLanguages?: boolean): InputTranslation[] {
+    const languages = useSystemLanguages ? this.systemLanguages : this.inputLanguages;
+    return languages?.map(language => ({translation: '', language} as InputTranslation)) || [];
   }
 
   private getAvailableInputs(inputs: InputTranslation[]): InputTranslation[] {
-    if (!this.languages) {
+    if (!this.inputLanguages) {
       return inputs;
     }
 
@@ -97,9 +94,9 @@ export class MultiLanguageInputService {
     if (inputs?.length) {
       allInputs = inputs.map(value => ({language: value.language, translation: value.translation}));
     }
-    this.languages.forEach(language => {
+    this.inputLanguages.forEach(language => {
       if (!allInputs.find(value => value.language === language)) {
-        allInputs.push({language, translation: ''});
+        allInputs.push({language, translation: ''} as InputTranslation);
       }
     });
     return allInputs;

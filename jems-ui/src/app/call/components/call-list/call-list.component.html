@@ -12,8 +12,9 @@
 </ng-container>
 
 <ng-template #callActionsCell let-call>
-    <app-call-action-cell
-            [call]="call"
-            (apply)="applyToCall($event)">
-    </app-call-action-cell>
+    <button mat-raised-button color="primary"
+            [disabled]="!isOpen(call)"
+            (click)="applyToCall(call.id)">
+        {{'call.table.column.action.apply' | translate}}
+    </button>
 </ng-template>

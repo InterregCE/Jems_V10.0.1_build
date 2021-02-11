@@ -67,14 +67,18 @@
             </mat-error>
         </mat-form-field>
 
-        <app-expandable-textarea
-                [control]="callForm?.controls?.description"
-                [errors]="callForm?.controls?.description?.errors"
-                [messages]="descriptionErrors"
-                [characterLimit]="1000"
-                [label]="'call.detail.field.description'"
-                [disabled]="!editable">
-        </app-expandable-textarea>
+        <app-multi-language class="pb-3"
+                            [useSystemLanguages]="true"
+                            [switchButtonsVisible]="editable">
+            <app-multi-language-form-field
+                    type="textarea"
+                    formControlName="description"
+                    label="call.detail.field.description"
+                    [useSystemLanguages]="true"
+                    [maxLength]="1000">
+            </app-multi-language-form-field>
+        </app-multi-language>
+
         <div>
             <h2>{{'call.programme.priorities.title' | translate}}</h2>
             <app-call-priority-tree

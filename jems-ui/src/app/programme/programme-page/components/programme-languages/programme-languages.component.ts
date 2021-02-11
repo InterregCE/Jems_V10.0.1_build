@@ -9,7 +9,7 @@ import {
 } from '@angular/core';
 import {ViewEditForm} from '@common/components/forms/view-edit-form';
 import {FormGroup} from '@angular/forms';
-import {InputProgrammeLanguage, OutputProgrammeLanguage} from '@cat/api';
+import {ProgrammeLanguageDTO} from '@cat/api';
 import {MatTableDataSource} from '@angular/material/table';
 import {SelectionModel} from '@angular/cdk/collections';
 
@@ -22,15 +22,15 @@ import {SelectionModel} from '@angular/cdk/collections';
 export class ProgrammeLanguagesComponent extends ViewEditForm implements OnInit {
 
   @Input()
-  languages: OutputProgrammeLanguage[];
+  languages: ProgrammeLanguageDTO[];
 
   @Output()
-  saveLanguages: EventEmitter<InputProgrammeLanguage[]> = new EventEmitter<InputProgrammeLanguage[]>();
+  saveLanguages: EventEmitter<ProgrammeLanguageDTO[]> = new EventEmitter<ProgrammeLanguageDTO[]>();
 
   displayedColumns: string[] = ['system', 'input', 'name', 'translation'];
-  dataSource: MatTableDataSource<OutputProgrammeLanguage>;
-  systemLangSelection = new SelectionModel<OutputProgrammeLanguage>(true, []);
-  inputLangSelection = new SelectionModel<OutputProgrammeLanguage>(true, []);
+  dataSource: MatTableDataSource<ProgrammeLanguageDTO>;
+  systemLangSelection = new SelectionModel<ProgrammeLanguageDTO>(true, []);
+  inputLangSelection = new SelectionModel<ProgrammeLanguageDTO>(true, []);
 
   constructor(protected changeDetectorRef: ChangeDetectorRef) {
     super(changeDetectorRef);
@@ -60,7 +60,7 @@ export class ProgrammeLanguagesComponent extends ViewEditForm implements OnInit 
 
   isSubmitDisabled(): boolean {
     return this.systemLangSelection.selected.length < 1
-      || this.systemLangSelection.selected.length > 40
+      || this.systemLangSelection.selected.length > 8
       || this.inputLangSelection.selected.length < 1
       || this.inputLangSelection.selected.length > 4
       || this.submitted;

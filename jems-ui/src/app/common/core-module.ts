@@ -10,11 +10,11 @@ import {ThemeService} from '../theme/theme.service';
 import {HTTP_INTERCEPTORS} from '@angular/common/http';
 import {AuthenticationInterceptor} from '../security/authentication.interceptor';
 import {HttpErrorInterceptor} from './interceptors/http-error.interceptor';
-import {BASE_PATH, OutputProgrammeLanguage} from '@cat/api';
+import {BASE_PATH, AvailableProgrammeLanguagesDTO} from '@cat/api';
 import {MaterialConfigModule} from './material/material-config-module';
 import {AppInitializerService} from './services/app-initializer.service';
 
-export function loadLanguages(appInitializerService: AppInitializerService): () => Promise<OutputProgrammeLanguage[]> {
+export function loadLanguages(appInitializerService: AppInitializerService): () => Promise<AvailableProgrammeLanguagesDTO> {
   return () => appInitializerService.loadLanguages();
 }
 
