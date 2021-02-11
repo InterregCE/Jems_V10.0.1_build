@@ -1,6 +1,6 @@
 {
 	"info": {
-		"_postman_id": "1d36b7cf-6398-498a-8b33-59ec5d3a1d11",
+		"_postman_id": "f74ade6a-a434-4329-8579-9acedd483319",
 		"name": "ems-rest-test",
 		"description": "Check EMS application for common use-cases",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
@@ -242,13 +242,23 @@
 									"});\r",
 									"\r",
 									"pm.test('we have input language available', function() {\r",
-									"    const languages = pm.response.json();\r",
+									"    const languages = pm.response.json().inputLanguages;\r",
 									"    pm.expect(languages).to.be.an('array');\r",
-									"    const inputLanguage = languages.find(lang => lang.input);\r",
+									"    const inputLanguage = languages[0];\r",
 									"    pm.expect(inputLanguage).to.not.be.undefined;\r",
-									"    console.log('There is input language ' + inputLanguage.code + ' enabled, we will use this during test');\r",
-									"    pm.environment.set('inputLanguage', inputLanguage.code);\r",
-									"});"
+									"    console.log('There is input language ' + inputLanguage + ' enabled, we will use this during test');\r",
+									"    pm.environment.set('inputLanguage', inputLanguage);\r",
+									"});\r",
+									"\r",
+									"pm.test('we have system language available', function() {\r",
+									"    const languages = pm.response.json().systemLanguages;\r",
+									"    pm.expect(languages).to.be.an('array');\r",
+									"    const systemLanguage = languages[0];\r",
+									"    pm.expect(systemLanguage).to.not.be.undefined;\r",
+									"    console.log('There is system language ' + systemLanguage + ' enabled, we will use this during test');\r",
+									"    pm.environment.set('systemLanguage', systemLanguage);\r",
+									"});\r",
+									""
 								],
 								"type": "text/javascript"
 							}
@@ -258,13 +268,14 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "{{url}}/api/programmelanguage",
+							"raw": "{{url}}/api/programmeLanguage/available",
 							"host": [
 								"{{url}}"
 							],
 							"path": [
 								"api",
-								"programmelanguage"
+								"programmeLanguage",
+								"available"
 							]
 						}
 					},
@@ -739,6 +750,11 @@
 									"    pm.response.to.have.status(200);\r",
 									"    pm.environment.set(\"callId\", pm.response.json().id);\r",
 									"});\r",
+									"\r",
+									"pm.test('description is set', function () {\r",
+									"    const description = pm.response.json().description.find(description => description.language === pm.variables.get('inputLanguage')).translation;\r",
+									"    pm.expect(description).to.eql(pm.variables.get('inputLanguage') + \" description\");\r",
+									"});\r",
 									""
 								],
 								"type": "text/javascript"
@@ -771,7 +787,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n\t\"name\": \"{{call_name_to_create}}\",\n\t\"priorityPolicies\": [ \"{{programmePriorityPolicy}}\" ],\n    \"funds\": [{{programmeFundId}}],\n\t\"startDate\": \"{{callDateStart}}\",\n\t\"endDate\": \"{{callDateEnd}}\",\n    \"lengthOfPeriod\": 12\n}\n"
+							"raw": "{\n\t\"name\": \"{{call_name_to_create}}\",\n\t\"priorityPolicies\": [ \"{{programmePriorityPolicy}}\" ],\n    \"funds\": [{{programmeFundId}}],\n\t\"startDate\": \"{{callDateStart}}\",\n\t\"endDate\": \"{{callDateEnd}}\",\n    \"description\": [\n        {\n            \"language\": \"{{inputLanguage}}\",\n            \"translation\": \"{{inputLanguage}} description\"\n        }\n    ],\n    \"lengthOfPeriod\": 12\n}\n"
 						},
 						"url": {
 							"raw": "{{url}}/api/call",
@@ -7422,7 +7438,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"partnerId\": \"{{partnerIdA}}\",\r\n    \"nameInOriginalLanguage\": \"Name Original for {{partnerIdA}}\",\r\n    \"nameInEnglish\": \"Name EN for {{partnerIdA}}\",\r\n    \"address\": {\r\n        \"street\": \"test street\"\r\n    },\r\n    \"contacts\": [\r\n        {\r\n            \"type\": \"ContactPerson\",\r\n            \"title\": \"Champion\",\r\n            \"firstName\": \"Roger\",\r\n            \"lastName\": \"Federer\",\r\n            \"email\": \"roger@atp.com\",\r\n            \"telephone\": \"+6 20 542 265\"\r\n        },\r\n        {\r\n            \"type\": \"LegalRepresentative\",\r\n            \"firstName\": \"Rafael\",\r\n            \"lastName\": \"Nadal\",\r\n            \"email\": \"rafael@atp.com\",\r\n            \"telephone\": \"+6 30 216 896\"\r\n        }\r\n    ]\r\n}\r\n",
+							"raw": "{\r\n    \"partnerId\": \"{{partnerIdA}}\",\r\n    \"nameInOriginalLanguage\": \"Name Original for {{partnerIdA}}\",\r\n    \"nameInEnglish\": \"Name EN for {{partnerIdA}}\",\r\n    \"address\": {\r\n        \"street\": \"test street\"\r\n    },\r\n    \"contacts\": [\r\n        {\r\n            \"type\": \"ContactPerson\",\r\n            \"title\": \"Champion\",\r\n            \"firstName\": \"Roger\",\r\n            \"lastName\": \"Federer\",\r\n            \"email\": \"roger@atp.com\",\r\n            \"telephone\": \"+6 20 542 265\"\r\n        },\r\n        {\r\n            \"type\": \"LegalRepresentative\",\r\n            \"firstName\": \"Rafael\",\r\n            \"lastName\": \"Nadal\",\r\n            \"email\": \"rafael@atp.com\",\r\n            \"telephone\": \"+6 30 216 896\"\r\n        }\r\n    ],\r\n    \"roleDescription\": [\r\n        {\r\n            \"language\": \"{{inputLanguage}}\",\r\n            \"translation\": \"test role description\"\r\n        }\r\n    ]\r\n}\r\n",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -9683,10 +9699,8 @@
 									"    const finances = pm.response.json().finances;\r",
 									"    pm.expect(finances[0].percentage).to.eql(25);\r",
 									"    pm.expect(finances[0].fund).to.not.be.empty;\r",
-									"    pm.expect(finances[0].fundType).to.be.eql(\"MainFund\");\r",
 									"    pm.expect(finances[1].percentage).to.eql(75);\r",
 									"    pm.expect(finances[1].fund).to.be.null;\r",
-									"    pm.expect(finances[1].fundType).to.be.eql(\"PartnerContribution\");\r",
 									"});\r",
 									"\r",
 									"pm.test('1st contribution is correct', function() {\r",
@@ -9746,7 +9760,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"finances\": [\r\n        {\r\n            \"percentage\": 75,\r\n        \"fundType\":\"PartnerContribution\"\r\n},\r\n        {\r\n            \"percentage\": 25,\r\n     \"fundType\":\"MainFund\",\r\n       \"fundId\": {{programmeFundId}}\r\n        }\r\n    ],\r\n    \"partnerContributions\": [\r\n        {\r\n            \"isPartner\": false,\r\n            \"name\": \"Source of money 01\",\r\n            \"status\": \"Public\",\r\n            \"amount\": 8000\r\n        },\r\n        {\r\n            \"isPartner\": true,\r\n            \"name\": \"THIS NAME SHOULD BE IGNORED\",\r\n            \"status\": \"Private\",\r\n            \"amount\": 5100\r\n        },\r\n        {\r\n            \"isPartner\": false,\r\n            \"name\": \"Source of money 02\",\r\n            \"status\": \"AutomaticPublic\",\r\n            \"amount\": 3000\r\n        },\r\n        {\r\n            \"isPartner\": false,\r\n            \"name\": \"Source of money 03\",\r\n            \"status\": \"Private\",\r\n            \"amount\": 2050\r\n        }\r\n    ]\r\n}\r\n",
+							"raw": "{\r\n    \"finances\": [\r\n        {\r\n            \"percentage\": 25,\r\n            \"fundType\": \"MainFund\",\r\n            \"fundId\": {{programmeFundId}}\r\n        },\r\n        {\r\n            \"percentage\": 75,\r\n            \"fundType\": \"PartnerContribution\"\r\n        }\r\n    ],\r\n    \"partnerContributions\": [\r\n        {\r\n            \"isPartner\": false,\r\n            \"name\": \"Source of money 01\",\r\n            \"status\": \"Public\",\r\n            \"amount\": 8000\r\n        },\r\n        {\r\n            \"isPartner\": true,\r\n            \"name\": \"THIS NAME SHOULD BE IGNORED\",\r\n            \"status\": \"Private\",\r\n            \"amount\": 5100\r\n        },\r\n        {\r\n            \"isPartner\": false,\r\n            \"name\": \"Source of money 02\",\r\n            \"status\": \"AutomaticPublic\",\r\n            \"amount\": 3000\r\n        },\r\n        {\r\n            \"isPartner\": false,\r\n            \"name\": \"Source of money 03\",\r\n            \"status\": \"Private\",\r\n            \"amount\": 2050\r\n        }\r\n    ]\r\n}\r\n",
 							"options": {
 								"raw": {
 									"language": "json"
