@@ -34,6 +34,10 @@ class IndicatorController(
         return indicatorService.getOutputIndicatorsDetails()
     }
 
+    @PreAuthorize("@programmeSetupAuthorization.canReadProgrammeSetup()")
+    override fun getOutputIndicatorsForSpecificObjective(code: String): List<IndicatorOutputDto> =
+        indicatorService.getOutputIndicatorsForSpecificObjective(code)
+
     @PreAuthorize("@programmeSetupAuthorization.canAccessSetup()")
     override fun getIndicatorOutput(id: Long): OutputIndicatorOutput {
         return indicatorService.getOutputIndicatorById(id)
@@ -72,8 +76,11 @@ class IndicatorController(
         return indicatorService.save(indicator)
     }
 
+    override fun getAllIndicatorResultDetail(): Set<IndicatorResultDto> =
+        getResultIndicatorDetailsInteractor.getResultIndicatorsDetails()
 
-    override fun getAllIndicatorResultDetail(): Set<IndicatorResultDto> = getResultIndicatorDetailsInteractor.getResultIndicatorsDetails()
+    override fun getAllIndicatorResultDetailForSpecificObjective(code: String): List<IndicatorResultDto> =
+        getResultIndicatorDetailsInteractor.getResultIndicatorsDetailsForSpecificObjective(code)
     //endregion
 
 }

@@ -21,6 +21,8 @@ interface IndicatorService {
 
     fun getOutputIndicatorsDetails(): Set<IndicatorOutputDto>
 
+    fun getOutputIndicatorsForSpecificObjective(code: String): List<IndicatorOutputDto>
+
     fun existsOutputByIdentifier(identifier: String): Boolean
 
     fun save(indicator: InputIndicatorOutputCreate): OutputIndicatorOutput

@@ -41,6 +41,9 @@ interface IndicatorApi {
     @GetMapping("/output/detail")
     fun getAllIndicatorOutputDetail(): Set<IndicatorOutputDto>
 
+    @GetMapping("/output/detail/{code}")
+    fun getOutputIndicatorsForSpecificObjective(@PathVariable code: String): List<IndicatorOutputDto>
+
     @ApiOperation("Returns OUTPUT indicator by id")
     @GetMapping("/output/{id}")
     fun getIndicatorOutput(@PathVariable id: Long): OutputIndicatorOutput
@@ -67,6 +70,9 @@ interface IndicatorApi {
 
     @GetMapping("/result/detail")
     fun getAllIndicatorResultDetail(): Set<IndicatorResultDto>
+
+    @GetMapping("/result/detail/{code}")
+    fun getAllIndicatorResultDetailForSpecificObjective(@PathVariable code: String): List<IndicatorResultDto>
 
     @ApiOperation("Returns RESULT indicator by id")
     @GetMapping("/result/{id}")

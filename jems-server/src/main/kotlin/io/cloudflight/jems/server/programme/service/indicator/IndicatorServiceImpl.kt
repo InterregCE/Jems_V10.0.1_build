@@ -52,6 +52,12 @@ class IndicatorServiceImpl(
     }
 
     @Transactional(readOnly = true)
+    override fun getOutputIndicatorsForSpecificObjective(code: String): List<IndicatorOutputDto> {
+        return indicatorOutputRepository.findAllByProgrammePriorityPolicyCodeOrderById(code)
+            .map { it.toIndicatorOutputDto() }
+    }
+
+    @Transactional(readOnly = true)
     override fun existsOutputByIdentifier(identifier: String): Boolean {
         return indicatorOutputRepository.existsByIdentifier(identifier)
     }

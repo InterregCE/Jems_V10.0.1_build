@@ -54,8 +54,10 @@ export class ProjectResultsPageStore {
   }
 
   private resultIndicators(): Observable<IndicatorResultDto[]> {
-    return this.programmeIndicatorService.getAllIndicatorResultDetail()
+    return this.projectStore.getProject()
       .pipe(
+        map(project => project?.projectData.specificObjective.code),
+        switchMap(code => this.programmeIndicatorService.getAllIndicatorResultDetailForSpecificObjective(code)),
         tap(results => Log.info('Fetched programme result indicators', results)),
       );
   }

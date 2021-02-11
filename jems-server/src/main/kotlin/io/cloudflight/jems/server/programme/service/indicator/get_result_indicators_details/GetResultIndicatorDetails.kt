@@ -13,4 +13,7 @@ class GetResultIndicatorDetails(
     override fun getResultIndicatorsDetails() =
         indicatorResultPersistence.getResultIndicatorsDetails()
 
+    override fun getResultIndicatorsDetailsForSpecificObjective(code: String) =
+        indicatorResultPersistence.getResultIndicatorsForSpecificObjective(code)
+
 }
