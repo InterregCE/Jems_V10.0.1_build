@@ -1,74 +1,71 @@
-<div class="wrapper">
-    <h4 id="funds" class="header">{{'programme.legal.status.list.title' | translate}}</h4>
-    <button class="header-button" color="primary"
-            *ngIf="formState === FormState.VIEW" mat-raised-button
-            (click)="changeFormState$.next(FormState.EDIT)">
-        {{'common.edit.label' | translate}}
-    </button>
+<form appFormLayout [formGroup]="statusForm">
+    <div appMultiColumnRow>
+        <h2 class="mb-0">{{'programme.legal.status.list.title' | translate}}</h2>
+        <button color="primary"
+                *ngIf="formState === FormState.VIEW" mat-raised-button
+                (click)="changeFormState$.next(FormState.EDIT)">
+            {{'common.edit.label' | translate}}
+        </button>
+    </div>
+    <mat-table [appTableConfig]="[{},{maxInRem:5}]" class="mat-elevation-z1" [dataSource]="dataSource">
 
-    <form [formGroup]="statusForm" class="mat-elevation-z8">
-        <mat-table [dataSource]="dataSource">
-
-            <ng-container matColumnDef="add">
-                <mat-header-cell *matHeaderCellDef></mat-header-cell>
-                <mat-cell *matCellDef="let element"></mat-cell>
-                <mat-footer-cell *matFooterCellDef>
-                    <button *ngIf="formState === FormState.EDIT" mat-icon-button
-                            type="button"
-                            (click)="addNewLegalStatus()">
-                        <mat-icon>add</mat-icon>
-                    </button>
-                </mat-footer-cell>
-            </ng-container>
-
-            <ng-container matColumnDef="description">
-                <mat-header-cell
-                        *matHeaderCellDef>{{'programme.legal.status.list.description' | translate}}</mat-header-cell>
-                <mat-cell *matCellDef="let element">
+        <ng-container matColumnDef="description">
+            <mat-header-cell
+                    *matHeaderCellDef>{{'programme.legal.status.list.description' | translate}}</mat-header-cell>
+            <mat-cell *matCellDef="let element">
                     <span *ngIf="formState === FormState.VIEW || !statusForm.controls[element.id]">
                         {{element.description || 'programme.legal.status.' + element.id | translate}}
                     </span>
-                    <mat-form-field *ngIf="formState === FormState.EDIT && statusForm.controls[element.id]">
-                        <mat-label>{{'programme.legal.status.list.add' | translate}}</mat-label>
-                        <input matInput formnovalidate
-                               [name]="element.id"
-                               [formControlName]="element.id">
-                        <mat-error>
-                            <app-form-field-errors
-                                    [errors]="statusForm?.controls[element.id]?.errors"
-                                    [messages]="descErrors">
-                            </app-form-field-errors>
-                        </mat-error>
-                    </mat-form-field>
-                </mat-cell>
-            </ng-container>
+                <mat-form-field *ngIf="formState === FormState.EDIT && statusForm.controls[element.id]">
+                    <mat-label>{{'programme.legal.status.list.add' | translate}}</mat-label>
+                    <input matInput formnovalidate
+                           [name]="element.id"
+                           [formControlName]="element.id">
+                    <mat-error>
+                        <app-form-field-errors
+                                [errors]="statusForm?.controls[element.id]?.errors"
+                                [messages]="descErrors">
+                        </app-form-field-errors>
+                    </mat-error>
+                </mat-form-field>
+            </mat-cell>
 
-            <ng-container matColumnDef="delete">
-                <mat-header-cell *matHeaderCellDef></mat-header-cell>
-                <mat-cell *matCellDef="let element">
-                    <button *ngIf="formState === FormState.EDIT && element.id > 2"
-                            mat-icon-button color="accent"
-                            type="button"
-                            matTooltip="{{'common.delete.entry.tooltip' | translate}}"
-                            (click)="deleteLegalStatus(element)">
-                        <em class="fas fa-trash"></em>
-                    </button>
-                </mat-cell>
-            </ng-container>
+            <mat-footer-cell *matFooterCellDef>
+                <button *ngIf="formState === FormState.EDIT" mat-icon-button
+                        type="button"
+                        (click)="addNewLegalStatus()">
+                    <mat-icon>add</mat-icon>
+                </button>
+            </mat-footer-cell>
 
-            <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
-            <mat-row *matRowDef="let row; columns: displayedColumns;"></mat-row>
-            <mat-row *matFooterRowDef="['add']"
-                     [hidden]="formState === FormState.VIEW || dataSource.data.length > 19">
-            </mat-row>
-        </mat-table>
-    </form>
-    <div *ngIf="formState === FormState.EDIT">
-        <button class="button" mat-raised-button type="button"
+        </ng-container>
+
+        <ng-container matColumnDef="delete">
+            <mat-header-cell *matHeaderCellDef></mat-header-cell>
+            <mat-cell *matCellDef="let element">
+                <button *ngIf="formState === FormState.EDIT && element.id > 2"
+                        mat-icon-button color="accent"
+                        type="button"
+                        matTooltip="{{'common.delete.entry.tooltip' | translate}}"
+                        (click)="deleteLegalStatus(element)">
+                    <mat-icon>delete</mat-icon>
+                </button>
+            </mat-cell>
+        </ng-container>
+
+        <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
+        <mat-row *matRowDef="let row; columns: displayedColumns;"></mat-row>
+        <mat-row *matFooterRowDef="['description']"
+                 [hidden]="formState === FormState.VIEW || dataSource.data.length > 19">
+        </mat-row>
+    </mat-table>
+
+    <div appMultiColumnRow *ngIf="formState === FormState.EDIT">
+        <button mat-stroked-button type="button"
                 (click)="changeFormState$.next(FormState.VIEW)">
             {{'common.cancel.label' | translate}}
         </button>
-        <button class="button" mat-raised-button color="primary" type="button"
+        <button mat-raised-button color="primary" type="button"
                 [disabled]="!statusForm.valid || dataSource.data.length > 20 || submitted"
                 (click)="onSubmit()">
             {{'common.save.label' | translate}}
@@ -84,4 +81,5 @@
                [type]="Alert.ERROR">
         <p>{{error.i18nKey | translate}}</p>
     </app-alert>
-</div>
+
+</form>

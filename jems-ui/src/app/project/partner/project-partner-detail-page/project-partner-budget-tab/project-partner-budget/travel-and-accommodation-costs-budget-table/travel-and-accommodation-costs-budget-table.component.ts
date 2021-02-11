@@ -18,7 +18,7 @@ import {UntilDestroy, untilDestroyed} from '@ngneat/until-destroy';
 import {NumberService} from '../../../../../../common/services/number.service';
 import {TravelAndAccommodationCostsBudgetTable} from '../../../../../model/budget/travel-and-accommodation-costs-budget-table';
 import {BudgetPeriodDTO, OutputProjectPeriod} from '@cat/api';
-import {WidthConfig} from '../../../../../../common/directives/table-config/WidthConfig';
+import {TableConfig} from '../../../../../../common/directives/table-config/TableConfig';
 import {Alert} from '@common/components/forms/alert';
 
 @UntilDestroy()
@@ -43,7 +43,7 @@ export class TravelAndAccommodationCostsBudgetTableComponent implements OnInit, 
   numberOfItems$: Observable<number>;
   warnOpenForPeriods = false;
   columnsToDisplay: string[];
-  widthConfig: WidthConfig[];
+  tableConfig: TableConfig[];
 
   constructor(private formService: FormService, private controlContainer: ControlContainer, private formBuilder: FormBuilder, private multiLanguageInputService: MultiLanguageInputService) {
     this.budgetForm = this.controlContainer.control as FormGroup;
@@ -76,7 +76,7 @@ export class TravelAndAccommodationCostsBudgetTableComponent implements OnInit, 
 
     const periodWidths = this.projectPeriods?.length
       ? [...this.projectPeriods?.map(period => ({minInRem: 8})), {minInRem: 8}] : [];
-    this.widthConfig = [
+    this.tableConfig = [
       {minInRem: 12}, {minInRem: 12}, {minInRem: 5}, {minInRem: 12},
       {minInRem: 5}, ...periodWidths, {minInRem: 3}
     ];

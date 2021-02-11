@@ -1,26 +1,30 @@
-<div *ngxPermissionsExcept="Permission.APPLICANT_USER">
-    <app-breadcrumb></app-breadcrumb>
-    <div *ngIf="lumpSumsDataSource$ | async as lumpSumsDataSource">
-        <h4 id="lumpSums">{{'lump.sums.table.title' | translate}}</h4>
-        <button mat-raised-button color="primary"
-                [routerLink]="'/app/programme/costs/lumpSum/create'">
-            + {{ 'programme.lumpSum.add' | translate }}
-        </button>
-        <app-programme-lump-sums-list
-                [lumpSum]="lumpSum$ | async"
-                [dataSource]="lumpSumsDataSource">
-        </app-programme-lump-sums-list>
-    </div>
+<app-breadcrumb></app-breadcrumb>
+<ng-container *ngxPermissionsExcept="Permission.APPLICANT_USER">
+    <div appFormLayout>
+        <ng-container *ngIf="lumpSumsDataSource$ | async as lumpSumsDataSource">
+            <h2>{{'lump.sums.table.title' | translate}}</h2>
+            <app-programme-lump-sums-list
+                    appNoWidthLimit
+                    [lumpSum]="lumpSum$ | async"
+                    [dataSource]="lumpSumsDataSource">
+            </app-programme-lump-sums-list>
+            <button mat-stroked-button
+                    [routerLink]="'/app/programme/costs/lumpSum/create'">
+                + {{ 'programme.lumpSum.add' | translate }}
+            </button>
+        </ng-container>
 
-    <div *ngIf="unitCostDataSource$ | async as unitCostDataSource">
-        <h4 id="unitCosts">{{'unit.cost.table.title' | translate}}</h4>
-        <button mat-raised-button color="primary"
-                [routerLink]="'/app/programme/costs/unitCost/create'">
-            + {{ 'programme.unitCost.add' | translate }}
-        </button>
-        <app-programme-unit-costs-list
-                [unitCost]="unitCost$ | async"
-                [dataSource]="unitCostDataSource">
-        </app-programme-unit-costs-list>
+        <ng-container *ngIf="unitCostDataSource$ | async as unitCostDataSource">
+            <h2>{{'unit.cost.table.title' | translate}}</h2>
+            <app-programme-unit-costs-list
+                    appNoWidthLimit
+                    [unitCost]="unitCost$ | async"
+                    [dataSource]="unitCostDataSource">
+            </app-programme-unit-costs-list>
+            <button mat-stroked-button
+                    [routerLink]="'/app/programme/costs/unitCost/create'">
+                + {{ 'programme.unitCost.add' | translate }}
+            </button>
+        </ng-container>
     </div>
-</div>
+</ng-container>

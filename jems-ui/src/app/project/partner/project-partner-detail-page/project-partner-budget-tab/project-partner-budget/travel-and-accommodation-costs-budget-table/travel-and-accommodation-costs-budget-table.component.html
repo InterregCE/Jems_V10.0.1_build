@@ -7,11 +7,9 @@
         </app-alert>
         <ng-container [formGroup]="travel">
             <app-multi-language>
-                <mat-table
-                        appTableConfig
-                        [widthConfig]="widthConfig"
-                        [dataSource]="dataSource" [formArrayName]="constants.FORM_CONTROL_NAMES.items"
-                        class="mat-elevation-z2 travel-budget-table">
+                <mat-table [appTableConfig]="tableConfig"
+                           [dataSource]="dataSource" [formArrayName]="constants.FORM_CONTROL_NAMES.items"
+                           class="mat-elevation-z2 travel-budget-table">
                     <ng-container sticky matColumnDef="description">
                         <mat-header-cell
                                 *matHeaderCellDef> {{'project.partner.budget.table.description' | translate}} </mat-header-cell>
@@ -127,7 +125,7 @@
 
                 </mat-table>
             </app-multi-language>
-            <mat-error class="mt-3">
+            <mat-error class="mt-3" *ngIf="total.errors">
                 <app-form-field-errors
                         [errors]="total.errors"
                         [args]="constants.FORM_ERRORS_ARGS.total"

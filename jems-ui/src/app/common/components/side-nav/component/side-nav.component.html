@@ -14,24 +14,24 @@
                                      [disabled]="!subtitle.bullets?.length">
                     <mat-expansion-panel-header>
                         <mat-panel-title>
-                            <p *ngIf="subtitle.bullets?.length">
+                            <span *ngIf="subtitle.bullets?.length">
                                 {{subtitle.headline.i18nKey | translate}}
-                            </p>
-                            <p *ngIf="!subtitle.bullets?.length" class="side-nav-main_title_white-text"
+                            </span>
+                            <span *ngIf="!subtitle.bullets?.length" class="side-nav-main_title_white-text"
                                (click)="sideNavService.navigate(subtitle)">
                                 {{subtitle.headline.i18nKey | translate}}
-                            </p>
+                            </span>
                         </mat-panel-title>
                     </mat-expansion-panel-header>
                     <ul class="side-nav-section" *ngIf="subtitle.bullets?.length">
                         <li *ngFor="let section of subtitle.bullets"
                             (click)="sideNavService.navigate(section)">
-                            <p class="first-list-item">
-                                {{ section.headline.i18nKey | translate : section.headline.i18nArguments }}</p>
+                            <span class="first-list-item">
+                                {{ section.headline.i18nKey | translate : section.headline.i18nArguments }}</span>
                             <ul class="side-nav-subsection" *ngIf="section.bullets?.length">
                                 <li *ngFor="let subsection of section.bullets"
                                     (click)="$event.stopPropagation();sideNavService.navigate(subsection)">
-                                    <p class="second-list-item">{{ subsection.headline.i18nKey | translate : subsection.headline.i18nArguments }}</p>
+                                    <span class="second-list-item">{{ subsection.headline.i18nKey | translate : subsection.headline.i18nArguments }}</span>
                                 </li>
                             </ul>
                         </li>

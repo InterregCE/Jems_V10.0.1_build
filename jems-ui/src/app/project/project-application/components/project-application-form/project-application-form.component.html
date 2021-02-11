@@ -1,22 +1,17 @@
 <app-form (save)="save()"
           (discard)="resetForm()">
-    <form id="application-form" [formGroup]="applicationForm" class="wrapper">
-        <h2>{{'project.application.form.acronym' | translate : {acronym: projectStore.getAcronym() | async} }}</h2>
-        <h4 id="projectIdentification" class="header">
-            {{'project.application.form.section.part.a' | translate}}
-        </h4>
-        <h5 id="projectIdentificationHeading">{{'project.application.form.section.part.a.subsection.one' | translate}}</h5>
-
-        <mat-form-field class="w-50">
+    <form appFormLayout [formGroup]="applicationForm">
+        <h1>{{'project.application.form.acronym' | translate : {acronym: projectStore.getAcronym() | async} }}</h1>
+        <h2>{{'project.application.form.section.part.a' | translate}}</h2>
+        <h3>{{'project.application.form.section.part.a.subsection.one' | translate}}</h3>
+        <mat-form-field>
             <mat-label>{{'project.application.form.field.project.id' | translate}}</mat-label>
-            <input name="projectId" formControlName="projectId" matInput
-                   placeholder="{{'project.application.form.field.project.id' | translate}}">
+            <input name="projectId" formControlName="projectId" matInput>
         </mat-form-field>
 
-        <mat-form-field class="w-50">
+        <mat-form-field>
             <mat-label>{{'project.application.form.field.project.acronym' | translate}}</mat-label>
-            <input name="acronym" formControlName="acronym" matInput
-                   placeholder="{{'project.application.form.field.project.acronym' | translate}}">
+            <input name="acronym" formControlName="acronym" matInput>
             <app-context-info *ngIf="editable"
                               infoText="{{'project.application.form.field.project.acronym.info' | translate}}">
             </app-context-info>
@@ -30,16 +25,16 @@
 
         <app-multi-language>
             <app-multi-language-form-field
+                    type="textarea"
                     label="project.application.form.field.project.title"
                     [formControlName]="'title'"
                     [maxLength]="200">
             </app-multi-language-form-field>
         </app-multi-language>
 
-        <mat-form-field class="w-50">
+        <mat-form-field>
             <mat-label>{{'project.application.form.field.project.duration' | translate}}</mat-label>
             <input type="number" name="duration" formControlName="duration" matInput
-                   placeholder="{{'project.application.form.field.project.duration' | translate}}"
                    (paste)="tools.checkDigitsOnPaste($event)" (keypress)="tools.checkDigitsOnInput($event)">
             <mat-error>
                 <app-form-field-errors
@@ -49,23 +44,21 @@
             </mat-error>
         </mat-form-field>
 
-        <mat-form-field class="w-50">
+        <mat-form-field>
             <mat-label>{{'project.application.form.field.project.periodlength' | translate}}</mat-label>
-            <input name="projectPeriodLength" formControlName="projectPeriodLength" matInput
-                   placeholder="{{'project.application.form.field.project.periodlength' | translate}}"/>
-            <p class="intro-text-small w-50">{{'project.application.form.field.project.periodlength.info' | translate}}</p>
+            <input name="projectPeriodLength" formControlName="projectPeriodLength" matInput/>
+            <p>{{'project.application.form.field.project.periodlength.info' | translate}}</p>
         </mat-form-field>
-        <mat-form-field class="field">
+        <mat-form-field>
             <mat-label>{{'project.application.form.field.project.periodcount' | translate}}</mat-label>
-            <input name="projectPeriodCount" formControlName="projectPeriodCount" matInput
-                   placeholder="{{'project.application.form.field.project.periodcount' | translate}}"/>
-            <p class="intro-text-small w-50">{{'project.application.form.field.project.periodcount.info' | translate}}</p>
+            <input name="projectPeriodCount" formControlName="projectPeriodCount" matInput/>
+            <p>{{'project.application.form.field.project.periodcount.info' | translate}}</p>
         </mat-form-field>
 
-        <mat-form-field *ngIf="editable" class="w-50">
+        <mat-form-field *ngIf="editable">
             <mat-label>{{'project.application.form.field.project.priority' | translate}}</mat-label>
             <mat-select (selectionChange)="changeCurrentPriority( $event.value)" required [(value)]=currentPriority
-                        panelClass="material-select-panel" formControlName="programmePriority">
+                        formControlName="programmePriority">
                 <mat-option *ngFor="let objective of priorities" [value]="objective">
                     {{objective}}
                 </mat-option>
@@ -78,50 +71,59 @@
             </mat-error>
         </mat-form-field>
 
-        <div *ngIf="editable && currentPriority">
-            <app-project-application-form-policy-radio-button
-                    [objectives]="objectivesWithPolicies[currentPriority]"
-                    [applicationForm]="applicationForm"
-                    (selected)="selectedSpecificObjective = $event">
-            </app-project-application-form-policy-radio-button>
-        </div>
+        <ng-container *ngIf="editable && currentPriority">
+            <h4>{{'programme.priority.objective.title' | translate}}</h4>
+            <mat-radio-group
+                    formControlName="specificObjective"
+                    (change)="selectedSpecificObjective= $event.value">
+                <mat-radio-button
+                        *ngFor="let objective of objectivesWithPolicies[currentPriority]"
+                        [value]="objective"
+                        (change)="selectedSpecificObjective= $event.value">
+                    <div>{{'programme.policy.' + objective | translate}}</div>
+                </mat-radio-button>
+            </mat-radio-group>
+            <mat-error>
+                <app-form-field-errors
+                        [errors]="applicationForm?.controls?.specificObjective?.errors"
+                        [messages]="specificObjectiveErrors">
+                </app-form-field-errors>
+            </mat-error>
+        </ng-container>
 
         <div *ngIf="!editable">
-            <p class="policy-label">{{'project.application.form.field.project.priority' | translate}}</p>
-            <p class="policy-data" *ngIf="previousObjective">
+            <div>{{'project.application.form.field.project.priority' | translate}}</div>
+            <div *ngIf="previousObjective">
                 {{project.projectData.programmePriority.code + ' - '}}
                 {{project.projectData.programmePriority.title}}
-            </p>
-            <p class="policy-data" *ngIf="!previousObjective">
+            </div>
+            <div *ngIf="!previousObjective">
                 {{'project.application.form.field.project.field.empty' | translate}}
-            </p>
-            <p class="policy-label">{{'project.application.form.field.project.objective' | translate}}</p>
-            <p class="policy-data" *ngIf="previousObjective">
+            </div>
+            <div>{{'project.application.form.field.project.objective' | translate}}</div>
+            <div *ngIf="previousObjective">
                 {{project.projectData.specificObjective.code + ' - '}}
                 {{'programme.policy.' + project.projectData.specificObjective.programmeObjectivePolicy | translate}}
-            </p>
-            <p class="policy-data" *ngIf="!previousObjective">
+            </div>
+            <div *ngIf="!previousObjective">
                 {{'project.application.form.field.project.field.empty' | translate}}
-            </p>
+            </div>
         </div>
 
-        <h5 id="projectSummaryHeading">{{'project.application.form.section.part.a.subsection.two' | translate}}</h5>
+        <h3>{{'project.application.form.section.part.a.subsection.two' | translate}}</h3>
         <div>
-            <div class="intro-text-small">
-                <span>{{'project.application.form.summary.intro.row.one' | translate}}</span>
-                <ul>
-                    <li>{{'project.application.form.summary.intro.row.two' | translate}}</li>
-                    <li>{{'project.application.form.summary.intro.row.three' | translate}}</li>
-                    <li>{{'project.application.form.summary.intro.row.four' | translate}}</li>
-                    <li>{{'project.application.form.summary.intro.row.five' | translate}}</li>
-                    <li>{{'project.application.form.summary.intro.row.six' | translate}}</li>
-                </ul>
-            </div>
+            <span>{{'project.application.form.summary.intro.row.one' | translate}}</span>
+            <ul>
+                <li>{{'project.application.form.summary.intro.row.two' | translate}}</li>
+                <li>{{'project.application.form.summary.intro.row.three' | translate}}</li>
+                <li>{{'project.application.form.summary.intro.row.four' | translate}}</li>
+                <li>{{'project.application.form.summary.intro.row.five' | translate}}</li>
+                <li>{{'project.application.form.summary.intro.row.six' | translate}}</li>
+            </ul>
         </div>
         <app-multi-language *ngIf="!englishLanguageActive()"
                             [staticLanguages]="[LANGUAGE.EN]">
             <app-expandable-textarea
-                    class="pb-5"
                     label="project.application.form.field.project.summary.in.english"
                     [control]="applicationForm?.controls?.introEn"
                     [errors]="applicationForm?.controls?.introEn?.errors"

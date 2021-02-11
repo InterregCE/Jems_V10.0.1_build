@@ -1,14 +1,14 @@
 <app-breadcrumb></app-breadcrumb>
-<app-call-flat-rates class="my-3"
+<app-call-flat-rates class="my-3 block"
         *ngIf="call$ | async as call"
         [call]="call">
 </app-call-flat-rates>
-<app-call-lump-sums class="my-3"
+<app-call-lump-sums class="my-3 block"
         *ngIf="callStore.lumpSums$ | async as lumpSums"
         [lumpSums]="lumpSums"
         [call]="call$ | async">
 </app-call-lump-sums>
-<app-call-unit-costs class="my-3"
+<app-call-unit-costs class="my-3 block"
         *ngIf="callStore.unitCosts$ | async as unitCosts"
         [unitCosts]="unitCosts"
         [call]="call$ | async">

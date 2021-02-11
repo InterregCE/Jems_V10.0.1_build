@@ -1,20 +1,14 @@
 <app-form (save)="onSubmit()"
           (discard)="resetForm()">
-    <form [formGroup]="managementForm">
-        <h5 class="header" id="projectManagementHeading">
-            {{'project.application.form.section.part.c.subsection.seven' | translate}}
-        </h5>
-        <div class="intro-text">
-            {{'project.application.form.management.intro' | translate}}
-        </div>
+    <form appFormLayout [formGroup]="managementForm">
+        <h3>{{'project.application.form.section.part.c.subsection.seven' | translate}}</h3>
+        <p>{{'project.application.form.management.intro' | translate}}</p>
 
-        <div class="intro-text">
-            <h6>{{'project.application.form.management.field.1' | translate}}</h6>
-            <p class="intro-text-small">{{'project.application.form.management.field.1.intro' | translate}}</p>
-        </div>
+        <h4>{{'project.application.form.management.field.1' | translate}}</h4>
+        <p>{{'project.application.form.management.field.1.intro' | translate}}</p>
+
         <app-multi-language>
             <app-multi-language-form-field
-                    class="field"
                     type="textarea"
                     [label]="'common.textarea.enter.text'"
                     [formControlName]="'coordination'"
@@ -22,13 +16,11 @@
             </app-multi-language-form-field>
         </app-multi-language>
 
-        <div class="intro-text">
-            <h6>{{'project.application.form.management.field.2' | translate}}</h6>
-            <p class="intro-text-small">{{'project.application.form.management.field.2.intro' | translate}}</p>
-        </div>
+        <h4>{{'project.application.form.management.field.2' | translate}}</h4>
+        <p>{{'project.application.form.management.field.2.intro' | translate}}</p>
+
         <app-multi-language>
             <app-multi-language-form-field
-                    class="field"
                     type="textarea"
                     [label]="'common.textarea.enter.text'"
                     [formControlName]="'quality'"
@@ -36,13 +28,10 @@
             </app-multi-language-form-field>
         </app-multi-language>
 
-        <div class="intro-text">
-            <h6>{{'project.application.form.management.field.3' | translate}}</h6>
-            <p class="intro-text-small">{{'project.application.form.management.field.3.intro' | translate}}</p>
-        </div>
+        <h4>{{'project.application.form.management.field.3' | translate}}</h4>
+        <p>{{'project.application.form.management.field.3.intro' | translate}}</p>
         <app-multi-language>
             <app-multi-language-form-field
-                    class="field"
                     type="textarea"
                     [label]="'common.textarea.enter.text'"
                     [formControlName]="'communication'"
@@ -50,13 +39,10 @@
             </app-multi-language-form-field>
         </app-multi-language>
 
-        <div class="intro-text">
-            <h6>{{'project.application.form.management.field.4' | translate}}</h6>
-            <p class="intro-text-small">{{'project.application.form.management.field.4.intro' | translate}}</p>
-        </div>
+        <h4>{{'project.application.form.management.field.4' | translate}}</h4>
+        <p>{{'project.application.form.management.field.4.intro' | translate}}</p>
         <app-multi-language>
             <app-multi-language-form-field
-                    class="field"
                     type="textarea"
                     [label]="'common.textarea.enter.text'"
                     [formControlName]="'financial'"
@@ -64,13 +50,11 @@
             </app-multi-language-form-field>
         </app-multi-language>
 
-        <div class="intro-text">
-            <h6>{{'project.application.form.management.field.5' | translate}}</h6>
-            <p class="intro-text-small">{{'project.application.form.management.field.5.intro' | translate}}</p>
-        </div>
-        <app-multi-language>
-            <div appTableConfig [widthConfig]="[{maxInRem:15},{}]" [appearance]="'material-table'">
-                <div class="pb-3">
+        <h4>{{'project.application.form.management.field.5' | translate}}</h4>
+        <p>{{'project.application.form.management.field.5.intro' | translate}}</p>
+        <app-multi-language appNoWidthLimit>
+            <div [appTableConfig]="[{maxInRem:15},{}]" [appearance]="'material-table'">
+                <div>
                     <span>{{'project.application.form.management.cooperation.table.header.criteria' | translate}}</span>
                     <span>{{'project.application.form.management.cooperation.table.header.description' | translate}}</span>
                 </div>
@@ -85,7 +69,6 @@
                         </div>
                     </mat-checkbox>
                     <app-multi-language-form-field
-                            class="field"
                             type="textarea"
                             minRows="1"
                             [label]="'common.textarea.enter.text'"
@@ -105,7 +88,6 @@
                         </div>
                     </mat-checkbox>
                     <app-multi-language-form-field
-                            class="field"
                             type="textarea"
                             minRows="1"
                             [label]="'common.textarea.enter.text'"
@@ -124,7 +106,6 @@
                         </div>
                     </mat-checkbox>
                     <app-multi-language-form-field
-                            class="field"
                             type="textarea"
                             minRows="1"
                             [label]="'common.textarea.enter.text'"
@@ -143,7 +124,6 @@
                         </div>
                     </mat-checkbox>
                     <app-multi-language-form-field
-                            class="field"
                             type="textarea"
                             minRows="1"
                             [label]="'common.textarea.enter.text'"
@@ -154,27 +134,24 @@
             </div>
         </app-multi-language>
 
-        <div class="intro-text">
-            <h6>{{'project.application.form.management.field.6' | translate}}</h6>
-            <p class="intro-text-small">{{'project.application.form.management.field.6.intro' | translate}}</p>
-        </div>
+        <h4>{{'project.application.form.management.field.6' | translate}}</h4>
+        <p>{{'project.application.form.management.field.6.intro' | translate}}</p>
 
-        <app-multi-language>
-            <div appTableConfig [widthConfig]="[{minInRem:12},{minInRem:20},{}]" [appearance]="'material-table'">
-                <div class="pb-3">
+        <app-multi-language  appNoWidthLimit>
+            <div [appTableConfig]="[{minInRem:12},{minInRem:20},{}]" [appearance]="'material-table'">
+                <div>
                     <span>{{'project.application.form.management.principles.table.header.principles' | translate}}</span>
                     <span>{{'project.application.form.management.principles.table.header.contribution' | translate}}</span>
                     <span>{{'project.application.form.management.principles.table.header.description' | translate}}</span>
                 </div>
                 <div>
-                    <span class="pad-top-1">{{'project.application.form.management.principles.table.row.1' | translate}}</span>
+                    <span>{{'project.application.form.management.principles.table.row.1' | translate}}</span>
                     <app-contribution-toggle-column
                             [disabled]="!editable"
                             (selected)="selectedContributionPrincipleDevelopment = $event; formChanged()"
                             [previousSelection]="selectedContributionPrincipleDevelopment">
                     </app-contribution-toggle-column>
                     <app-multi-language-form-field
-                            class="field"
                             type="textarea"
                             minRows="1"
                             [label]="'common.textarea.enter.text'"
@@ -183,14 +160,13 @@
                     </app-multi-language-form-field>
                 </div>
                 <div>
-                    <span class="pad-top-1">{{'project.application.form.management.principles.table.row.2' | translate}}</span>
+                    <span>{{'project.application.form.management.principles.table.row.2' | translate}}</span>
                     <app-contribution-toggle-column
                             [disabled]="!editable"
                             (selected)="selectedContributionPrincipleOpportunities = $event; formChanged()"
                             [previousSelection]="selectedContributionPrincipleOpportunities">
                     </app-contribution-toggle-column>
                     <app-multi-language-form-field
-                            class="field"
                             type="textarea"
                             minRows="1"
                             [label]="'common.textarea.enter.text'"
@@ -199,14 +175,13 @@
                     </app-multi-language-form-field>
                 </div>
                 <div>
-                    <span class="pad-top-1">{{'project.application.form.management.principles.table.row.3' | translate}}</span>
+                    <span>{{'project.application.form.management.principles.table.row.3' | translate}}</span>
                     <app-contribution-toggle-column
                             [disabled]="!editable"
                             (selected)="selectedContributionPrincipleEquality = $event; formChanged()"
                             [previousSelection]="selectedContributionPrincipleEquality">
                     </app-contribution-toggle-column>
                     <app-multi-language-form-field
-                            class="field"
                             type="textarea"
                             minRows="1"
                             [label]="'common.textarea.enter.text'"

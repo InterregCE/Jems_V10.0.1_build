@@ -1,4 +1,3 @@
-
 /////////////////////////////////////////////////////////
 $container-max-widths: (
         sm: 540px,
@@ -584,5 +583,12 @@ $rfs-breakpoint-unit-cache: unit($rfs-breakpoint);
 .logout-button {
   &.not-collapsed {
     margin: 1rem 0;
+  }
+}
+
+.language-list {
+  ::ng-deep .mat-select-value-text, .mat-select-arrow {
+    font-size: .875rem;
+    color: var(--font-text-link) !important;
   }
 }

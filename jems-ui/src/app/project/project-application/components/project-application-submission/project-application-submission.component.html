@@ -1,25 +1,22 @@
-<div class="container vertical-center">
-    <h2>{{'project.detail.new.title' | translate}}</h2>
-    <!--p>{{'project.detail.new.subtitle' | translate}}</p-->
-    <form [formGroup]="submissionForm">
-        <mat-form-field class="w-100 project-application-submission-field">
-            <mat-label>{{'project.detail.new.field.acronym' | translate}}</mat-label>
-            <input name="acronym" formControlName="acronym" matInput
-                   placeholder="{{'project.detail.new.field.acronym' | translate}}" required>
-            <app-context-info
-                              infoText="{{'project.application.form.field.project.acronym.info' | translate}}">
-            </app-context-info>
-            <mat-error>
-                <app-form-field-errors
-                        [errors]="submissionForm?.controls?.acronym?.errors"
-                        [messages]="acronymErrors">
-                </app-form-field-errors>
-            </mat-error>
-        </mat-form-field>
+<form appFormLayout [formGroup]="submissionForm">
+    <h1>{{'project.detail.new.title' | translate}}</h1>
+    <mat-form-field>
+        <mat-label>{{'project.detail.new.field.acronym' | translate}}</mat-label>
+        <input name="acronym" formControlName="acronym" matInput required>
+        <app-context-info
+                infoText="{{'project.application.form.field.project.acronym.info' | translate}}">
+        </app-context-info>
+        <mat-error>
+            <app-form-field-errors
+                    [errors]="submissionForm?.controls?.acronym?.errors"
+                    [messages]="acronymErrors">
+            </app-form-field-errors>
+        </mat-error>
+    </mat-form-field>
 
+    <div appMultiColumnRow>
         <button *ngxPermissionsOnly="Permission.APPLICANT_USER"
                 mat-stroked-button
-                class="button"
                 type="button"
                 (click)="onCancel()">
             {{'project.detail.new.button.cancel' | translate}}
@@ -27,12 +24,11 @@
         <button mat-raised-button
                 color="primary"
                 type="submit"
-                class="button"
                 [disabled]="submissionForm.invalid || submitted"
                 (click)="onSubmit()">
             + {{'project.detail.new.button.create' | translate}}
         </button>
-    </form>
+    </div>
     <app-alert
             [show]="!submitted && (showSuccessMessage$ | async)"
             [type]="Alert.SUCCESS">
@@ -43,4 +39,5 @@
                [type]="Alert.ERROR">
         <p>{{error.i18nKey | translate}}</p>
     </app-alert>
-</div>
+</form>
+

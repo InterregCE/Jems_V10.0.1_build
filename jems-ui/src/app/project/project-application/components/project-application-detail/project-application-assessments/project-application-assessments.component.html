@@ -3,49 +3,45 @@
             && projectStatus !== OutputProjectStatus.StatusEnum.RETURNEDTOAPPLICANT"
         [expanded]="true">
     <mat-expansion-panel-header>
-        <mat-panel-title><h6>{{'project.assessment.check.header' | translate}}</h6></mat-panel-title>
+        <mat-panel-title>{{'project.assessment.check.header' | translate}}</mat-panel-title>
     </mat-expansion-panel-header>
     <div *ngIf="projectStatus !== OutputProjectStatus.StatusEnum.DRAFT">
-        <div class="fx-row fx-center-space-between">
+        <div appMultiColumnRow stretch class="mb-4">
             <div>{{'project.assessment.eligibilityCheck.title' | translate}}</div>
             <div>
-                <div *ngIf="project.eligibilityAssessment">
+                <span *ngIf="project.eligibilityAssessment">
                     {{'common.label.projecteligibilityassessmentresult.' + project.eligibilityAssessment.result | translate}}
-                </div>
+                </span>
             </div>
-            <div *ngIf="!project.eligibilityAssessment">
-                <button mat-raised-button color="primary" class="button"
-                        [routerLink]="'./assessment/eligibilityCheck'">
-                    {{'project.assessment.eligibilityCheck.assessment' | translate}}
-                </button>
-            </div>
-            <div *ngIf="project.eligibilityAssessment">
-                <button mat-stroked-button class="button"
-                        [routerLink]="'./assessment/eligibilityCheck'">
-                    {{'project.assessment.eligibilityCheck.assessment.view' | translate}}
-                </button>
-            </div>
+            <button *ngIf="!project.eligibilityAssessment"
+                    mat-stroked-button appFormFieldWidth="x-large"
+                    [routerLink]="'./assessment/eligibilityCheck'">
+                {{'project.assessment.eligibilityCheck.assessment' | translate}}
+            </button>
+            <button *ngIf="project.eligibilityAssessment"
+                    mat-stroked-button appFormFieldWidth="x-large"
+                    [routerLink]="'./assessment/eligibilityCheck'">
+                {{'project.assessment.eligibilityCheck.assessment.view' | translate}}
+            </button>
         </div>
-        <div class="fx-row fx-center-space-between mt-4">
-            <div >{{'project.assessment.qualityCheck.title' | translate}}</div>
+        <div appMultiColumnRow stretch>
+            <div>{{'project.assessment.qualityCheck.title' | translate}}</div>
             <div>
-                <div *ngIf="project.qualityAssessment">
+                <span *ngIf="project.qualityAssessment">
                     {{'common.label.projectqualityassessmentresult.' + project.qualityAssessment.result | translate}}
-                </div>
+                </span>
             </div>
-            <div *ngIf="!project.qualityAssessment">
-                <button mat-raised-button color="primary" class="button"
-                        [disabled]="project.projectStatus.status === OutputProjectStatus.StatusEnum.INELIGIBLE"
-                        [routerLink]="'./assessment/qualityCheck'">
-                    {{'project.assessment.qualityCheck.assessment' | translate}}
-                </button>
-            </div>
-            <div *ngIf="project.qualityAssessment">
-                <button mat-stroked-button class="button"
-                        [routerLink]="'./assessment/qualityCheck'">
-                    {{'project.assessment.qualityCheck.assessment.view' | translate}}
-                </button>
-            </div>
+            <button *ngIf="!project.qualityAssessment"
+                    mat-stroked-button appFormFieldWidth="x-large"
+                    [disabled]="project.projectStatus.status === OutputProjectStatus.StatusEnum.INELIGIBLE"
+                    [routerLink]="'./assessment/qualityCheck'">
+                {{'project.assessment.qualityCheck.assessment' | translate}}
+            </button>
+            <button *ngIf="project.qualityAssessment"
+                    mat-stroked-button appFormFieldWidth="x-large"
+                    [routerLink]="'./assessment/qualityCheck'">
+                {{'project.assessment.qualityCheck.assessment.view' | translate}}
+            </button>
         </div>
     </div>
 </mat-expansion-panel>

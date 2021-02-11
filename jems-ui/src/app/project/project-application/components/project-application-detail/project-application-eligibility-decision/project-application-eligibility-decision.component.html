@@ -1,62 +1,53 @@
-<div class="project-detail-container">
-    <h5>{{project.acronym}}</h5>
-    <app-project-application-information
-            [project]="project">
-    </app-project-application-information>
-    <div class="assessment-container">
-        <h5>{{'project.assessment.eligibilityDecision.dialog.title' | translate}}</h5>
-        <form [formGroup]="notesForm" class="description-form">
-            <mat-radio-group
-                    required
-                    class="assessment-radio-group"
-                    name="assessment"
-                    formControlName="assessment"
-                    [disabled]="!!project.eligibilityDecision"
-                    (change)="assessmentChangeHandler($event)">
-                <mat-radio-button
-                        class="assessment-radio-button"
-                        *ngFor="let option of options" [value]="option">
-                    {{'project.assessment.eligibilityDecision.dialog.select.' + option | translate}}
-                </mat-radio-button>
-            </mat-radio-group>
-            <app-expandable-textarea class="assessment-text-area"
-                    [control]="notesForm?.controls?.notes"
-                    [errors]="notesForm?.controls?.notes?.errors"
-                    [messages]="notesErrors"
-                    [characterLimit]="1000"
-                    [label]="'project.assessment.eligibilityDecision.dialog.field.note'"
-                    [disabled]="!!project.eligibilityDecision"
-                    [customStyle]="'outline'">
-            </app-expandable-textarea>
-            <mat-form-field>
-                <mat-label>{{'project.assessment.eligibilityDecision.dialog.field.date' | translate}}</mat-label>
-                <input class="assessment-date-picker" name="decisionDate" formControlName="decisionDate" matInput required
-                       [matDatepicker]="picker"
-                       [readonly]="!!project.eligibilityDecision"
-                       [max]="today">
-                <mat-datepicker-toggle [disabled]="!!project.eligibilityDecision" matSuffix [for]="picker"></mat-datepicker-toggle>
-                <mat-datepicker #picker></mat-datepicker>
-                <mat-error>
-                    <app-form-field-errors
-                            [errors]="notesForm?.controls?.decisionDate?.errors"
-                            [messages]="dateErrors">
-                    </app-form-field-errors>
-                </mat-error>
-            </mat-form-field>
-            <div *ngIf="!project.eligibilityDecision">
-                <button mat-stroked-button
-                        (click)="onCancel()">{{'project.assessment.eligibilityDecision.dialog.button.cancel' | translate}}
-                </button>
+<h1>{{project.acronym}}</h1>
+<app-project-application-information [project]="project"></app-project-application-information>
+<form appFormLayout [formGroup]="notesForm">
+    <h2>{{'project.assessment.eligibilityDecision.dialog.title' | translate}}</h2>
+    <mat-radio-group
+            required
+            name="assessment"
+            formControlName="assessment"
+            [disabled]="!!project.eligibilityDecision"
+            (change)="assessmentChangeHandler($event)">
+        <mat-radio-button *ngFor="let option of options" [value]="option">
+            <div>{{'project.assessment.eligibilityDecision.dialog.select.' + option | translate}}</div>
+        </mat-radio-button>
+    </mat-radio-group>
+    <app-expandable-textarea
+            [control]="notesForm?.controls?.notes"
+            [errors]="notesForm?.controls?.notes?.errors"
+            [messages]="notesErrors"
+            [characterLimit]="1000"
+            [label]="'project.assessment.eligibilityDecision.dialog.field.note'"
+            [disabled]="!!project.eligibilityDecision"
+            [customStyle]="'outline'">
+    </app-expandable-textarea>
+    <mat-form-field appFormFieldWidth="large">
+        <mat-label>{{'project.assessment.eligibilityDecision.dialog.field.date' | translate}}</mat-label>
+        <input name="decisionDate" formControlName="decisionDate" matInput required
+               [matDatepicker]="picker"
+               [readonly]="!!project.eligibilityDecision"
+               [max]="today">
+        <mat-datepicker-toggle [disabled]="!!project.eligibilityDecision" matSuffix
+                               [for]="picker"></mat-datepicker-toggle>
+        <mat-datepicker #picker></mat-datepicker>
+        <mat-error>
+            <app-form-field-errors
+                    [errors]="notesForm?.controls?.decisionDate?.errors"
+                    [messages]="dateErrors">
+            </app-form-field-errors>
+        </mat-error>
+    </mat-form-field>
+    <div appMultiColumnRow *ngIf="!project.eligibilityDecision">
+        <button mat-stroked-button
+                (click)="onCancel()">{{'project.assessment.eligibilityDecision.dialog.button.cancel' | translate}}
+        </button>
 
-                <button mat-raised-button color="primary"
-                        class="right-button"
-                        type="submit"
-                        [disabled]="notesForm.invalid || submitted"
-                        (click)="onSubmit()">{{'project.assessment.eligibilityDecision.dialog.button.submit' | translate}}
-                </button>
-            </div>
-        </form>
+        <button mat-raised-button color="primary"
+                type="submit"
+                [disabled]="notesForm.invalid || submitted"
+                (click)="onSubmit()">{{'project.assessment.eligibilityDecision.dialog.button.submit' | translate}}
+        </button>
     </div>
-</div>
+</form>
 
 

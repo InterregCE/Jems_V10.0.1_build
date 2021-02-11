@@ -23,7 +23,6 @@ import {ProjectApplicationFundingPageComponent} from './project-application/cont
 import {ProjectApplicationFundingDecisionComponent} from './project-application/components/project-application-detail/project-application-funding-decision/project-application-funding-decision.component';
 import {ProjectApplicationEligibilityDecisionPageComponent} from './project-application/containers/project-application-detail/project-application-eligibility-decision-page/project-application-eligibility-decision-page.component';
 import {ProjectApplicationFormComponent} from './project-application/components/project-application-form/project-application-form.component';
-import {ProjectApplicationFormPolicyRadioButtonComponent} from './project-application/components/project-application-form/project-application-form-policy-radio-button/project-application-form-policy-radio-button.component';
 import {ProjectApplicationFormWorkPackagesListComponent} from './project-application/components/project-application-form/project-application-form-work-packages-list/project-application-form-work-packages-list.component';
 import {ProjectApplicationFormWorkPackageSectionComponent} from './project-application/containers/project-application-form-page/project-application-form-work-package-section/project-application-form-work-package-section.component';
 import {ProjectApplicationFormPartnerSectionComponent} from './project-application/containers/project-application-form-page/project-application-form-partner-section/project-application-form-partner-section.component';
@@ -111,7 +110,6 @@ import { BudgetPagePerPartnerComponent } from './budget/budget-page-per-partner/
     ProjectApplicationFundingDecisionComponent,
     ProjectApplicationEligibilityDecisionPageComponent,
     ProjectApplicationFormComponent,
-    ProjectApplicationFormPolicyRadioButtonComponent,
     ProjectApplicationFormPartnerSectionComponent,
     ProjectApplicationFormPartnerListComponent,
     ProjectPartnerDetailPageComponent,

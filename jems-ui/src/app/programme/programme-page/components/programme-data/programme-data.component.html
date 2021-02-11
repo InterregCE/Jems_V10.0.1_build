@@ -1,25 +1,27 @@
-<div>
-    <h2>{{'programme.data.page.title' | translate}}</h2>
-    <h4 id="basicData" class="header">{{'programme.data.header' | translate}}</h4>
-    <button class="header-button" color="primary" *ngIf="formState === FormState.VIEW" mat-raised-button
-            (click)="changeFormState$.next(FormState.EDIT)">
-        {{'programme.data.button.edit' | translate}}
-    </button>
-    <form [formGroup]="programmeForm">
-        <mat-form-field class="field">
-            <mat-label>{{'programme.data.field.cci' | translate}}</mat-label>
-            <input name="cci" formControlName="cci" matInput placeholder="{{'programme.data.field.cci' | translate}}">
-            <mat-error>
-                <app-form-field-errors
-                        [errors]="programmeForm?.controls?.cci?.errors"
-                        [messages]="cciErrors">
-                </app-form-field-errors>
-            </mat-error>
-        </mat-form-field>
-        <mat-form-field class="field-half">
+<h1>{{'programme.data.page.title' | translate}}</h1>
+
+<form appFormLayout [formGroup]="programmeForm">
+    <div appMultiColumnRow>
+        <h2 class="mb-0">{{'programme.data.header' | translate}}</h2>
+        <button color="primary" *ngIf="formState === FormState.VIEW" mat-raised-button
+                (click)="changeFormState$.next(FormState.EDIT)">
+            {{'programme.data.button.edit' | translate}}
+        </button>
+    </div>
+    <mat-form-field>
+        <mat-label>{{'programme.data.field.cci' | translate}}</mat-label>
+        <input name="cci" formControlName="cci" matInput>
+        <mat-error>
+            <app-form-field-errors
+                    [errors]="programmeForm?.controls?.cci?.errors"
+                    [messages]="cciErrors">
+            </app-form-field-errors>
+        </mat-error>
+    </mat-form-field>
+    <div appMultiColumnRow stretch>
+        <mat-form-field>
             <mat-label>{{'programme.data.field.title' | translate}}</mat-label>
-            <input [title]="programme.title" name="title" formControlName="title" matInput
-                   placeholder="{{'programme.data.field.title' | translate}}">
+            <input [title]="programme.title" name="title" formControlName="title" matInput>
             <mat-error>
                 <app-form-field-errors
                         [errors]="programmeForm?.controls?.title?.errors"
@@ -27,10 +29,9 @@
                 </app-form-field-errors>
             </mat-error>
         </mat-form-field>
-        <mat-form-field class="field-half">
+        <mat-form-field>
             <mat-label>{{'programme.data.field.version' | translate}}</mat-label>
-            <input [title]="programme.version" name="version" formControlName="version" matInput
-                   placeholder="{{'programme.data.field.version' | translate}}">
+            <input [title]="programme.version" name="version" formControlName="version" matInput>
             <mat-error>
                 <app-form-field-errors
                         [errors]="programmeForm?.controls?.version?.errors"
@@ -38,10 +39,11 @@
                 </app-form-field-errors>
             </mat-error>
         </mat-form-field>
-        <mat-form-field class="field-half">
+    </div>
+    <div appMultiColumnRow stretch>
+        <mat-form-field>
             <mat-label>{{'programme.data.field.year.from' | translate}}</mat-label>
             <input type="number" name="firstYear" formControlName="firstYear" matInput
-                   placeholder="{{'programme.data.field.year.from' | translate}}"
                    [max]="programmeForm?.controls?.lastYear?.value"
                    (paste)="tools.checkDigitsOnPaste($event)" (keypress)="tools.checkDigitsOnInput($event)">
             <mat-error>
@@ -51,10 +53,9 @@
                 </app-form-field-errors>
             </mat-error>
         </mat-form-field>
-        <mat-form-field class="field-half">
+        <mat-form-field>
             <mat-label>{{'programme.data.field.year.until' | translate}}</mat-label>
             <input type="number" name="lastYear" formControlName="lastYear" matInput
-                   placeholder="{{'programme.data.field.year.until' | translate}}"
                    [min]="programmeForm?.controls?.firstYear?.value"
                    (paste)="tools.checkDigitsOnPaste($event)" (keypress)="tools.checkDigitsOnInput($event)">
             <mat-error>
@@ -64,13 +65,14 @@
                 </app-form-field-errors>
             </mat-error>
         </mat-form-field>
-        <mat-error *ngIf="programmeForm.errors?.lastYearBeforeFirstYear">
-            {{'programme.lastYear.before.firstYear' | translate}}
-        </mat-error>
-        <mat-form-field class="field-half">
+    </div>
+    <mat-error *ngIf="programmeForm.errors?.lastYearBeforeFirstYear">
+        {{'programme.lastYear.before.firstYear' | translate}}
+    </mat-error>
+    <div appMultiColumnRow stretch>
+        <mat-form-field>
             <mat-label>{{'programme.data.field.eligible.from' | translate}}</mat-label>
             <input name="eligibleFrom" formControlName="eligibleFrom" matInput
-                   placeholder="{{'programme.data.field.eligible.from' | translate}}"
                    [matDatepicker]="eligibleFromPicker"
                    [max]="programmeForm?.controls?.eligibleUntil?.value">
             <mat-datepicker-toggle matSuffix [for]="eligibleFromPicker"></mat-datepicker-toggle>
@@ -82,10 +84,9 @@
                 </app-form-field-errors>
             </mat-error>
         </mat-form-field>
-        <mat-form-field class="field-half">
+        <mat-form-field>
             <mat-label>{{'programme.data.field.eligible.until' | translate}}</mat-label>
             <input name="eligibleUntil" formControlName="eligibleUntil" matInput
-                   placeholder="{{'programme.data.field.eligible.until' | translate}}"
                    [matDatepicker]="eligibleUntilPicker"
                    [min]="programmeForm?.controls?.eligibleFrom?.value">
             <mat-datepicker-toggle matSuffix [for]="eligibleUntilPicker"></mat-datepicker-toggle>
@@ -97,11 +98,12 @@
                 </app-form-field-errors>
             </mat-error>
         </mat-form-field>
-        <mat-form-field class="field-half">
+    </div>
+    <div appMultiColumnRow stretch>
+        <mat-form-field>
             <mat-label>{{'programme.data.field.commission.number' | translate}}</mat-label>
             <input [title]="programme.commissionDecisionNumber" name="commissionDecisionNumber"
-                   formControlName="commissionDecisionNumber" matInput
-                   placeholder="{{'programme.data.field.commission.number' | translate}}">
+                   formControlName="commissionDecisionNumber" matInput>
             <mat-error>
                 <app-form-field-errors
                         [errors]="programmeForm?.controls?.commissionDecisionNumber?.errors"
@@ -109,10 +111,9 @@
                 </app-form-field-errors>
             </mat-error>
         </mat-form-field>
-        <mat-form-field class="field-half">
+        <mat-form-field>
             <mat-label>{{'programme.data.field.commission.date' | translate}}</mat-label>
             <input name="commissionDecisionDate" formControlName="commissionDecisionDate" matInput
-                   placeholder="{{'programme.data.field.commission.date' | translate}}"
                    [matDatepicker]="commissionDecisionPicker">
             <mat-datepicker-toggle matSuffix [for]="commissionDecisionPicker"></mat-datepicker-toggle>
             <mat-datepicker #commissionDecisionPicker></mat-datepicker>
@@ -123,11 +124,12 @@
                 </app-form-field-errors>
             </mat-error>
         </mat-form-field>
-        <mat-form-field class="field-half">
+    </div>
+    <div appMultiColumnRow stretch>
+        <mat-form-field>
             <mat-label>{{'programme.data.field.amending.decision.number' | translate}}</mat-label>
             <input [title]="programme.programmeAmendingDecisionNumber" name="programmeAmendingDecisionNumber"
-                   formControlName="programmeAmendingDecisionNumber" matInput
-                   placeholder="{{'programme.data.field.amending.decision' | translate}}">
+                   formControlName="programmeAmendingDecisionNumber" matInput>
             <mat-error>
                 <app-form-field-errors
                         [errors]="programmeForm?.controls?.programmeAmendingDecisionNumber?.errors"
@@ -135,10 +137,9 @@
                 </app-form-field-errors>
             </mat-error>
         </mat-form-field>
-        <mat-form-field class="field-half">
+        <mat-form-field>
             <mat-label>{{'programme.data.field.amending.decision.date' | translate}}</mat-label>
             <input name="programmeAmendingDecisionDate" formControlName="programmeAmendingDecisionDate" matInput
-                   placeholder="{{'programme.data.field.amending.decision.date' | translate}}"
                    [matDatepicker]="programmeAmendingDecisionPicker">
             <mat-datepicker-toggle matSuffix [for]="programmeAmendingDecisionPicker"></mat-datepicker-toggle>
             <mat-datepicker #programmeAmendingDecisionPicker></mat-datepicker>
@@ -149,31 +150,32 @@
                 </app-form-field-errors>
             </mat-error>
         </mat-form-field>
+    </div>
 
-        <div *ngIf="formState === FormState.EDIT">
-            <button mat-stroked-button
-                    type="button"
-                    (click)="changeFormState$.next(FormState.VIEW)">
-                {{'common.cancel.label' | translate}}
-            </button>
-            <button mat-raised-button
-                    color="primary"
-                    type="button"
-                    [disabled]="programmeForm.invalid || submitted"
-                    (click)="onSubmit()">
-                {{'programme.data.button.save' | translate}}
-            </button>
-        </div>
-        <app-alert
-                [show]="!submitted && (showSuccessMessage$ | async)"
-                [type]="Alert.SUCCESS">
-            <p>{{'programme.data.save.success' | translate}}</p>
-        </app-alert>
-        <app-alert *ngIf="error$ | async as error"
-                   [show]="!submitted && !!error.i18nKey"
-                   [type]="Alert.ERROR">
-            <p>{{error.i18nKey | translate}}</p>
-        </app-alert>
-    </form>
-</div>
+    <div appMultiColumnRow *ngIf="formState === FormState.EDIT">
+        <button mat-stroked-button
+                type="button"
+                (click)="changeFormState$.next(FormState.VIEW)">
+            {{'common.cancel.label' | translate}}
+        </button>
+        <button mat-raised-button
+                color="primary"
+                type="button"
+                [disabled]="programmeForm.invalid || submitted"
+                (click)="onSubmit()">
+            {{'programme.data.button.save' | translate}}
+        </button>
+    </div>
+    <app-alert
+            [show]="!submitted && (showSuccessMessage$ | async)"
+            [type]="Alert.SUCCESS">
+        <p>{{'programme.data.save.success' | translate}}</p>
+    </app-alert>
+    <app-alert *ngIf="error$ | async as error"
+               [show]="!submitted && !!error.i18nKey"
+               [type]="Alert.ERROR">
+        <p>{{error.i18nKey | translate}}</p>
+    </app-alert>
+</form>
+
 

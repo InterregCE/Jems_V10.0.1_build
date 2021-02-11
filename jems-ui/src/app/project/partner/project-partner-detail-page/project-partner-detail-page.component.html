@@ -1,9 +1,10 @@
 <div *ngIf="partnerStore.partner$ | async as partner">
     <app-breadcrumb></app-breadcrumb>
-    <h4 *ngIf="partner.abbreviation">
+
+    <h1 *ngIf="partner.abbreviation">
         {{'common.label.project.partner.role.' + partner.role | translate}}
         {{partner.abbreviation}}
-    </h4>
+    </h1>
     <mat-tab-group class="partner-tab-menu"
                    (selectedIndexChange)="changeTab($event)"
                    [selectedIndex]="activeTab$ | async">

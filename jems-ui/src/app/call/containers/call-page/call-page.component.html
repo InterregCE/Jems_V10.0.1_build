@@ -1,13 +1,13 @@
 <app-breadcrumb></app-breadcrumb>
-<h2>{{'call.header' | translate}}</h2>
+<h1>{{'call.header' | translate}}</h1>
 
-<div *ngxPermissionsExcept="Permission.APPLICANT_USER">
+<div appFormLayout *ngxPermissionsExcept="Permission.APPLICANT_USER">
     <button mat-raised-button color="primary"
             [routerLink]="'/app/call/create'">
         + {{'call.add.new' | translate}}
     </button>
-    <div *ngIf="currentPage$ | async as callPage">
-        <h4>{{'call.list.header' | translate}}</h4>
+    <ng-container *ngIf="currentPage$ | async as callPage">
+        <h2>{{'call.list.header' | translate}}</h2>
         <div *ngIf="success" class="success-wrapper">
             <div class="success app-alert-success">
                 <em class="far fa-check-circle"></em>
@@ -15,6 +15,7 @@
             </div>
         </div>
         <app-call-list
+                appNoWidthLimit
                 [isApplicant]="false"
                 [callPage]="callPage"
                 [pageIndex]="newPageIndex$ | async"
@@ -22,12 +23,12 @@
                 (newPageIndex)="newPageIndex$.next($event)"
                 (newSort)="newSort$.next($event)">
         </app-call-list>
-    </div>
+    </ng-container>
 </div>
 
 <div *ngxPermissionsOnly="Permission.APPLICANT_USER">
     <div *ngIf="currentPage$ | async as callPage">
-        <h4>{{'call.list.open.title' | translate}}</h4>
+        <h2>{{'call.list.open.title' | translate}}</h2>
         <app-call-list
                 [isApplicant]="true"
                 [callPage]="callPage"

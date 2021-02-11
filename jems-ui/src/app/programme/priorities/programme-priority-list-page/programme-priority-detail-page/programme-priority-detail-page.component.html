@@ -1,127 +1,138 @@
-<form *ngIf="data$ | async as data"
-      [formGroup]="form">
-    <app-breadcrumb></app-breadcrumb>
-    <h5>{{'programme.priority.add.title' | translate}}
-        <!--TODO: remove when new edit mode is introduced-->
-        <button color="primary" *ngIf="form.disabled" mat-raised-button
-                (click)="form.enable(); resetForm(data.priority, data.freePrioritiesWithPolicies)">
-            {{'common.edit.label' | translate}}
-        </button>
-    </h5>
-    <div class="row mt-4">
-        <mat-form-field class="col-3">
-            <mat-label>{{'programme.priority.field.code' | translate}}</mat-label>
-            <input [formControlName]="constants.CODE.name" matInput required>
-            <mat-error>
-                <app-form-field-errors
-                        [errors]="form.get(constants.CODE.name)?.errors"
-                        [messages]="constants.CODE.errorMessages">
-                </app-form-field-errors>
-            </mat-error>
-        </mat-form-field>
+<app-breadcrumb></app-breadcrumb>
+<ng-container *ngIf="data$ | async as data">
+    <form appFormLayout [formGroup]="form">
 
-        <mat-form-field class="col">
-            <mat-label>{{'programme.priority.field.title' | translate}}</mat-label>
-            <input [formControlName]="constants.TITLE.name" matInput required>
-            <mat-error>
-                <app-form-field-errors
-                        [errors]="form.get(constants.TITLE.name)?.errors"
-                        [messages]="constants.TITLE.errorMessages">
-                </app-form-field-errors>
-            </mat-error>
-        </mat-form-field>
-    </div>
-
-    <h5 class="mt-5">{{'programme.priority.add.objective.title' | translate}}</h5>
-    <mat-form-field class="mt-4 w-100">
-        <mat-label>{{'programme.priority.field.objective.select' | translate}}</mat-label>
-        <mat-select [formControlName]="constants.OBJECTIVE.name" required
-                    (selectionChange)="changeCurrentObjective($event.value, data.freePrioritiesWithPolicies)">
-            <mat-option *ngFor="let objective of data.objectives" [value]="objective">
-                {{objective}} - {{'programme.objective.' + objective | translate}}
-            </mat-option>
-        </mat-select>
-        <mat-error>
-            <app-form-field-errors
-                    [errors]="form.get(constants.OBJECTIVE.name)?.errors"
-                    [messages]="constants.OBJECTIVE.errorMessages">
-            </app-form-field-errors>
-        </mat-error>
-    </mat-form-field>
-
-    <div *ngIf="specificObjectives.length" appTableConfig [widthConfig]="[{maxInRem:15},{}]">
-        <h6>{{'programme.priority.objective.title' | translate}}</h6>
-        <div>
-            <h6><span class="ml-5">{{'programme.priority.objective.table.column.code' | translate}}</span></h6>
-            <h6>{{'programme.priority.objective.table.column.title' | translate}}</h6>
+        <div appMultiColumnRow>
+            <h2 class="mb-0">{{'programme.priority.add.title' | translate}}</h2>
+            <!--TODO: remove when new edit mode is introduced-->
+            <button color="primary" *ngIf="form.disabled" mat-raised-button
+                    (click)="form.enable(); resetForm(data.priority, data.freePrioritiesWithPolicies)">
+                {{'common.edit.label' | translate}}
+            </button>
         </div>
-        <div *ngFor="let control of specificObjectives.controls; let i=index" class="mb-1"
-             [formArrayName]="constants.SPECIFIC_OBJECTIVES.name">
-            <div [formGroupName]="i">
-                <mat-checkbox
-                        [formControlName]="constants.POLICY_SELECTED.name"
-                        (change)="setCheckedStatus(i, $event.checked)">
-                </mat-checkbox>
-                <mat-form-field class="ml-3">
-                    <mat-label>{{'programme.priority.objective.table.field.code' | translate}}</mat-label>
-                    <input [formControlName]="constants.POLICY_CODE.name" matInput>
-                    <mat-error>
-                        <app-form-field-errors
-                                [errors]="control.get(constants.POLICY_CODE.name)?.errors"
-                                [messages]="constants.POLICY_CODE.errorMessages">
-                        </app-form-field-errors>
-                    </mat-error>
-                </mat-form-field>
+
+        <div appMultiColumnRow stretch>
+            <mat-form-field appFormFieldWidth="large">
+                <mat-label>{{'programme.priority.field.code' | translate}}</mat-label>
+                <input [formControlName]="constants.CODE.name" matInput required>
                 <mat-error>
                     <app-form-field-errors
-                            [errors]="control?.errors"
-                            [messages]="constants.POLICY_CODE.errorMessages">
+                            [errors]="form.get(constants.CODE.name)?.errors"
+                            [messages]="constants.CODE.errorMessages">
+                    </app-form-field-errors>
+                </mat-error>
+            </mat-form-field>
+
+            <mat-form-field>
+                <mat-label>{{'programme.priority.field.title' | translate}}</mat-label>
+                <input [formControlName]="constants.TITLE.name" matInput required>
+                <mat-error>
+                    <app-form-field-errors
+                            [errors]="form.get(constants.TITLE.name)?.errors"
+                            [messages]="constants.TITLE.errorMessages">
+                    </app-form-field-errors>
+                </mat-error>
+            </mat-form-field>
+        </div>
+
+        <h3>{{'programme.priority.add.objective.title' | translate}}</h3>
+
+        <mat-form-field>
+            <mat-label>{{'programme.priority.field.objective.select' | translate}}</mat-label>
+            <mat-select [formControlName]="constants.OBJECTIVE.name" required
+                        (selectionChange)="changeCurrentObjective($event.value, data.freePrioritiesWithPolicies)">
+                <mat-option *ngFor="let objective of data.objectives" [value]="objective">
+                    {{objective}} - {{'programme.objective.' + objective | translate}}
+                </mat-option>
+            </mat-select>
+            <mat-error>
+                <app-form-field-errors
+                        [errors]="form.get(constants.OBJECTIVE.name)?.errors"
+                        [messages]="constants.OBJECTIVE.errorMessages">
+                </app-form-field-errors>
+            </mat-error>
+        </mat-form-field>
+
+        <ng-container *ngIf="specificObjectives.length">
+            <h3>{{'programme.priority.objective.title' | translate}}</h3>
+            <div appNoWidthLimit
+                 appearance="material-table"
+                 [appTableConfig]="[{maxInRem: 2},{maxInRem:15},{}]">
+                <div>
+                    <span></span>
+                    <div class="mat-body-strong">{{'programme.priority.objective.table.column.code' | translate}}</div>
+                    <div class="mat-body-strong">{{'programme.priority.objective.table.column.title' | translate}}</div>
+                </div>
+                <div *ngFor="let control of specificObjectives.controls; let i=index" class="mb-1"
+                     [formArrayName]="constants.SPECIFIC_OBJECTIVES.name">
+                    <ng-container [formGroupName]="i">
+                        <mat-checkbox
+                                [formControlName]="constants.POLICY_SELECTED.name"
+                                (change)="setCheckedStatus(i, $event.checked)">
+                        </mat-checkbox>
+                        <div>
+                            <mat-form-field>
+                                <mat-label>{{'programme.priority.objective.table.field.code' | translate}}</mat-label>
+                                <input [formControlName]="constants.POLICY_CODE.name" matInput>
+                                <mat-error>
+                                    <app-form-field-errors
+                                            [errors]="control.get(constants.POLICY_CODE.name)?.errors"
+                                            [messages]="constants.POLICY_CODE.errorMessages">
+                                    </app-form-field-errors>
+                                </mat-error>
+                            </mat-form-field>
+                            <!-- todo use custom validation for the input instead of this error line-->
+                            <mat-error class="mt-n3" *ngIf="control?.errors">
+                                <app-form-field-errors
+                                        [errors]="control?.errors"
+                                        [messages]="constants.POLICY_CODE.errorMessages">
+                                </app-form-field-errors>
+                            </mat-error>
+                        </div>
+
+                    </ng-container>
+                    <div>{{'programme.policy.' + control.get(constants.POLICY_OBJECTIVE.name).value | translate}}</div>
+                </div>
+
+                <mat-error>
+                    <app-form-field-errors
+                            [errors]="form.get(constants.SPECIFIC_OBJECTIVES.name)?.errors"
+                            [messages]="constants.SPECIFIC_OBJECTIVES.errorMessages">
                     </app-form-field-errors>
                 </mat-error>
             </div>
-            <div class="mb-3">
-                {{'programme.policy.' + control.get(constants.POLICY_OBJECTIVE.name).value | translate}}
-            </div>
+        </ng-container>
+
+        <!--TODO: remove when new edit mode is introduced-->
+        <div appMultiColumnRow *ngIf="form.enabled">
+            <button mat-stroked-button type="button"
+                    (click)="cancel(data.priority, data.freePrioritiesWithPolicies)">
+                {{'programme.priority.button.cancel' | translate}}
+            </button>
+            <button mat-raised-button color="primary" type="button"
+                    [disabled]="form.invalid"
+                    (click)="submit()">
+                <span *ngIf="!priorityId">{{'programme.priority.button.add' | translate}}</span>
+                <span *ngIf="priorityId">{{'programme.priority.button.update' | translate}}</span>
+            </button>
         </div>
-        <mat-error>
-            <app-form-field-errors
-                    [errors]="form.get(constants.SPECIFIC_OBJECTIVES.name)?.errors"
-                    [messages]="constants.SPECIFIC_OBJECTIVES.errorMessages">
-            </app-form-field-errors>
-        </mat-error>
-    </div>
 
-    <!--TODO: remove when new edit mode is introduced-->
-    <ng-container *ngIf="form.enabled">
-        <button mat-stroked-button type="button"
-                (click)="cancel(data.priority, data.freePrioritiesWithPolicies)">
-            {{'programme.priority.button.cancel' | translate}}
-        </button>
-        <button mat-raised-button color="primary" type="button" class="ml-3"
-                [disabled]="form.invalid"
-                (click)="submit()">
-            <span *ngIf="!priorityId">{{'programme.priority.button.add' | translate}}</span>
-            <span *ngIf="priorityId">{{'programme.priority.button.update' | translate}}</span>
-        </button>
-    </ng-container>
+        <app-alert [show]="!!saveSuccess"
+                   [type]="Alert.SUCCESS">
+            <p>{{saveSuccess | translate}}</p>
+        </app-alert>
+        <app-alert *ngIf="saveError"
+                   [show]="!!saveError"
+                   [type]="Alert.ERROR">
+            <p *ngIf="!!saveError.i18nKey">{{saveError.i18nKey | translate}}</p>
 
-    <app-alert class="mt-5"
-               [show]="!!saveSuccess"
-               [type]="Alert.SUCCESS">
-        <p>{{saveSuccess | translate}}</p>
-    </app-alert>
-    <app-alert *ngIf="saveError"
-               [show]="!!saveError"
-               [type]="Alert.ERROR">
-        <p *ngIf="!!saveError.i18nKey">{{saveError.i18nKey | translate}}</p>
+            <p *ngIf="!saveError.i18nKey && !specificObjectiveError()">
+                {{'programme.priority.code.or.title.already.in.use' | translate}}
+            </p>
 
-        <p *ngIf="!saveError.i18nKey && !specificObjectiveError()">
-            {{'programme.priority.code.or.title.already.in.use' | translate}}
-        </p>
-
-        <p *ngIf="!!specificObjectiveError()">
-            {{specificObjectiveError()?.i18nKey | translate : specificObjectiveError()?.i8nArguments }}
-        </p>
-    </app-alert>
-</form>
-
+            <p *ngIf="!!specificObjectiveError()">
+                {{specificObjectiveError()?.i18nKey | translate : specificObjectiveError()?.i8nArguments }}
+            </p>
+        </app-alert>
+    </form>
+</ng-container>

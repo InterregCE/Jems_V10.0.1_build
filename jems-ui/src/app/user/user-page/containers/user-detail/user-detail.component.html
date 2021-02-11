@@ -10,6 +10,7 @@
             (switchedFormState)="editSwitchedMode($event)">
     </app-user-edit>
     <app-user-password
+            class="mt-3 block"
             [success$]="passwordSaveSuccess$"
             [error$]="passwordSaveError$"
             [ownUser]="details.currentUser.id === details.user.id"

@@ -1,6 +1,6 @@
 <mat-form-field class="w-100" [class.warn-color]="!periods.length">
     <mat-label>{{label | translate}}</mat-label>
-    <mat-select panelClass="material-select-panel" [disabled]="!periods.length"
+    <mat-select [disabled]="!periods.length"
                 [formControl]="control"
                 (selectionChange)="selectionChanged.emit()">
         <mat-option *ngFor="let period of periods" [value]="period.number">

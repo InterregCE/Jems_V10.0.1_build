@@ -1,121 +1,107 @@
-<div>
-    <h4>{{'lump.sum.title' | translate}}
+<form appFormLayout [formGroup]="lumpSumForm">
+    <div appMultiColumnRow>
+        <h1 class="mb-0">{{'lump.sum.title' | translate}}</h1>
         <button *ngIf="formState === FormState.VIEW" mat-raised-button color="primary"
                 (click)="changeFormState$.next(FormState.EDIT)">
             {{'lump.sum.button.edit' | translate}}
         </button>
-    </h4>
-    <form [formGroup]="lumpSumForm" class="flex-container">
-        <mat-form-field class="field-third pad-top-1">
-            <mat-label>{{'lump.sum.form.field.name' | translate}}</mat-label>
-            <input name="name" formControlName="name" matInput
-                   placeholder="{{'lump.sum.form.field.name' | translate}}" required>
-            <mat-error>
-                <app-form-field-errors
-                        [errors]="lumpSumForm?.controls?.name?.errors"
-                        [messages]="nameErrors">
-                </app-form-field-errors>
-            </mat-error>
-        </mat-form-field>
-        <mat-form-field class="field-third pad-top-1">
-            <mat-label>{{'lump.sum.form.field.description' | translate}}</mat-label>
-            <input name="description" formControlName="description" matInput
-                   placeholder="{{'lump.sum.form.field.description' | translate}}">
-            <mat-error>
-                <app-form-field-errors
-                        [errors]="lumpSumForm?.controls?.description?.errors"
-                        [messages]="descriptionErrors">
-                </app-form-field-errors>
-            </mat-error>
-        </mat-form-field>
-        <mat-form-field class="field-third pad-top-1">
-            <mat-label>{{'lump.sum.form.field.cost' | translate}}</mat-label>
-            <input currencyMask type="decimal"
-                   name="cost" formControlName="cost" matInput required
-                   placeholder="{{'lump.sum.form.field.cost' | translate}}">
-            <mat-error>
-                <app-form-field-errors
-                        [errors]="lumpSumForm?.controls?.cost?.errors"
-                        [messages]="costErrors">
-                </app-form-field-errors>
-            </mat-error>
-        </mat-form-field>
+    </div>
 
-        <div class="field-third pad-top-1">
-            <div [class.valid-option]="!lumpSumForm?.controls?.allowSplitting?.errors"
-                 [class.invalid-option]="!!lumpSumForm?.controls?.allowSplitting?.errors"
-                 class="mt-3 mb-2">
-                {{'lump.sum.allow.splitting' | translate}} *
-            </div>
-            <mat-button-toggle-group
-                    [disabled]="formState === FormState.VIEW">
-                <mat-button-toggle
-                        class="intro-text-small"
-                        value="Yes"
-                        [checked]="previousSplitting === 'Yes'"
-                        (change)="changeSplitting($event.value)">
-                    {{'lump.sum.splitting.yes' | translate}}
-                </mat-button-toggle>
-                <mat-button-toggle
-                        class="intro-text-small"
-                        value="No"
-                        [checked]="previousSplitting === 'No'"
-                        (change)="changeSplitting($event.value)">
-                    {{'lump.sum.splitting.no' | translate}}
-                </mat-button-toggle>
-            </mat-button-toggle-group>
+    <mat-form-field>
+        <mat-label>{{'lump.sum.form.field.name' | translate}}</mat-label>
+        <input name="name" formControlName="name" matInput required>
+        <mat-error>
+            <app-form-field-errors
+                    [errors]="lumpSumForm?.controls?.name?.errors"
+                    [messages]="nameErrors">
+            </app-form-field-errors>
+        </mat-error>
+    </mat-form-field>
+
+    <mat-form-field>
+        <mat-label>{{'lump.sum.form.field.description' | translate}}</mat-label>
+        <input name="description" formControlName="description" matInput>
+        <mat-error>
+            <app-form-field-errors
+                    [errors]="lumpSumForm?.controls?.description?.errors"
+                    [messages]="descriptionErrors">
+            </app-form-field-errors>
+        </mat-error>
+    </mat-form-field>
+
+    <mat-form-field>
+        <mat-label>{{'lump.sum.form.field.cost' | translate}}</mat-label>
+        <input currencyMask type="decimal"
+               name="cost" formControlName="cost" matInput required>
+        <mat-error>
+            <app-form-field-errors
+                    [errors]="lumpSumForm?.controls?.cost?.errors"
+                    [messages]="costErrors">
+            </app-form-field-errors>
+        </mat-error>
+    </mat-form-field>
+
+    <div>
+        <div appLabel>
+            {{'lump.sum.allow.splitting' | translate}} *
         </div>
+        <mat-button-toggle-group
+                [disabled]="formState === FormState.VIEW">
+            <mat-button-toggle
+                    value="Yes"
+                    [checked]="previousSplitting === 'Yes'"
+                    (change)="changeSplitting($event.value)">
+                {{'lump.sum.splitting.yes' | translate}}
+            </mat-button-toggle>
+            <mat-button-toggle
+                    value="No"
+                    [checked]="previousSplitting === 'No'"
+                    (change)="changeSplitting($event.value)">
+                {{'lump.sum.splitting.no' | translate}}
+            </mat-button-toggle>
+        </mat-button-toggle-group>
         <mat-error>
             <app-form-field-errors
                     [errors]="lumpSumForm?.controls?.allowSplitting?.errors"
                     [messages]="allowSplittingErrors">
             </app-form-field-errors>
         </mat-error>
+    </div>
 
-        <div class="field-third pad-top-1">
-            <div [class.valid-option]="!lumpSumForm?.controls?.phase?.errors"
-                 [class.invalid-option]="!!lumpSumForm?.controls?.phase?.errors"
-                 class="mt-3 mb-2">
-                {{'lump.sum.related.phase' | translate}} *
-            </div>
-            <mat-button-toggle-group
-                    [disabled]="formState === FormState.VIEW">
-                <mat-button-toggle
-                        class="intro-text-small"
-                        value="{{ProgrammeLumpSumDTO.PhaseEnum.Preparation}}"
-                        [checked]="previousPhase === ProgrammeLumpSumDTO.PhaseEnum.Preparation"
-                        (change)="changePhase($event.value)">
-                    {{'lump.sum.phase.preparation' | translate}}
-                </mat-button-toggle>
-                <mat-button-toggle
-                        class="intro-text-small"
-                        value="{{ProgrammeLumpSumDTO.PhaseEnum.Implementation}}"
-                        [checked]="previousPhase === ProgrammeLumpSumDTO.PhaseEnum.Implementation"
-                        (change)="changePhase($event.value)">
-                    {{'lump.sum.phase.implementation' | translate}}
-                </mat-button-toggle>
-                <mat-button-toggle
-                        class="intro-text-small"
-                        value="{{ProgrammeLumpSumDTO.PhaseEnum.Closure}}"
-                        [checked]="previousPhase === ProgrammeLumpSumDTO.PhaseEnum.Closure"
-                        (change)="changePhase($event.value)">
-                    {{'lump.sum.phase.closure' | translate}}
-                </mat-button-toggle>
-            </mat-button-toggle-group>
-        </div>
+    <div>
+        <div appLabel>{{'lump.sum.related.phase' | translate}} *</div>
+        <mat-button-toggle-group
+                [disabled]="formState === FormState.VIEW">
+            <mat-button-toggle
+                    value="{{ProgrammeLumpSumDTO.PhaseEnum.Preparation}}"
+                    [checked]="previousPhase === ProgrammeLumpSumDTO.PhaseEnum.Preparation"
+                    (change)="changePhase($event.value)">
+       f         {{'lump.sum.phase.preparation' | translate}}
+            </mat-button-toggle>
+            <mat-button-toggle
+                    value="{{ProgrammeLumpSumDTO.PhaseEnum.Implementation}}"
+                    [checked]="previousPhase === ProgrammeLumpSumDTO.PhaseEnum.Implementation"
+                    (change)="changePhase($event.value)">
+                {{'lump.sum.phase.implementation' | translate}}
+            </mat-button-toggle>
+            <mat-button-toggle
+                    value="{{ProgrammeLumpSumDTO.PhaseEnum.Closure}}"
+                    [checked]="previousPhase === ProgrammeLumpSumDTO.PhaseEnum.Closure"
+                    (change)="changePhase($event.value)">
+                {{'lump.sum.phase.closure' | translate}}
+            </mat-button-toggle>
+        </mat-button-toggle-group>
         <mat-error>
             <app-form-field-errors
                     [errors]="lumpSumForm?.controls?.phase?.errors"
                     [messages]="phaseErrors">
             </app-form-field-errors>
         </mat-error>
+    </div>
 
-        <div [class.valid-option]="!lumpSumForm?.controls?.categories?.errors"
-             [class.invalid-option]="!!lumpSumForm?.controls?.categories?.errors"
-             class="mt-3 mb-2">
-            {{'lump.sum.cost.categories' | translate}} *
-        </div>
-        <span *ngFor="let element of categories">
+    <div>
+        <div appLabel>{{'lump.sum.cost.categories' | translate}} *</div>
+        <div *ngFor="let element of categories">
             <mat-checkbox (click)="$event.stopPropagation()"
                           (change)="checkSelection(element)"
                           [disabled]="formState === FormState.VIEW"
@@ -123,32 +109,30 @@
                 {{'lump.sum.cost.category.' + element | translate}}
             </mat-checkbox>
             <br>
-        </span>
+        </div>
         <mat-error>
             <app-form-field-errors
                     [errors]="lumpSumForm?.controls?.categories?.errors"
                     [messages]="categoriesErrors">
             </app-form-field-errors>
         </mat-error>
+    </div>
 
-        <div *ngIf="formState === FormState.EDIT">
-            <button *ngxPermissionsExcept="Permission.APPLICANT_USER"
-                    mat-stroked-button
-                    class="mr-4 mb-1 mt-3"
-                    type="button"
-                    (click)="onCancel()">
-                {{'lump.sum.new.button.cancel' | translate}}
-            </button>
-            <button mat-raised-button
-                    color="primary"
-                    type="button"
-                    class="mr-4 mb-1 mt-3"
-                    [disabled]="lumpSumForm.invalid || submitted || !validNumberOfSelections"
-                    (click)="onSubmit()">
-                {{'lump.sum.new.button.save' | translate}}
-            </button>
-        </div>
-    </form>
+    <div appMultiColumnRow *ngIf="formState === FormState.EDIT">
+        <button *ngxPermissionsExcept="Permission.APPLICANT_USER"
+                mat-stroked-button
+                type="button"
+                (click)="onCancel()">
+            {{'lump.sum.new.button.cancel' | translate}}
+        </button>
+        <button mat-raised-button
+                color="primary"
+                type="button"
+                [disabled]="lumpSumForm.invalid || submitted || !validNumberOfSelections"
+                (click)="onSubmit()">
+            {{'lump.sum.new.button.save' | translate}}
+        </button>
+    </div>
 
     <app-alert
             [show]="!submitted && (showSuccessMessage$ | async)"
@@ -160,6 +144,7 @@
                [type]="Alert.ERROR">
         <p>{{error.i18nKey | translate}}</p>
     </app-alert>
-</div>
+</form>
+
 
 

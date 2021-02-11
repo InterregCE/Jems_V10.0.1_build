@@ -1,30 +1,22 @@
 <app-form (save)="onSubmit()"
           (discard)="resetForm()">
-    <form [formGroup]="overallObjectiveForm">
-        <h5 class="header" id="projectOverallObjectiveHeading">
-            {{'project.application.form.section.part.c.subsection.one' | translate}}
-        </h5>
-        <div class="intro-text-small">
-            <span>{{'project.application.form.overall.objective.field.row.one' | translate}}</span>
-        </div>
+    <form appFormLayout [formGroup]="overallObjectiveForm">
+        <h3>{{'project.application.form.section.part.c.subsection.one' | translate}}</h3>
+        <p>{{'project.application.form.overall.objective.field.row.one' | translate}}</p>
         <mat-form-field
                 [ngClass]="!overallObjectiveForm?.controls?.projectSpecificObjective?.value && editable ? 'disable-warning-field' : 'field'"
                 name="projectSpecificObjective">
             <mat-label>{{'project.application.form.overall.objective.field.projectSpecificObjective' | translate}}</mat-label>
-            <input readonly formControlName="projectSpecificObjective" matInput
-                   placeholder="{{'project.application.form.overall.objective.field.projectSpecificObjective' | translate}}">
+            <input readonly formControlName="projectSpecificObjective" matInput>
             <mat-hint *ngIf="!overallObjectiveForm?.controls?.projectSpecificObjective?.value && editable"
                       class="warning-hint">
                 {{'project.application.form.overall.objective.specific.objective.required' | translate}}
             </mat-hint>
         </mat-form-field>
-        <h6 class="header">
-            {{'project.application.form.overall.objective.field.projectOverallObjective' | translate}}
-        </h6>
-        <div class="intro-text-small">
-            <span>{{'project.application.form.overall.objective.field.row.two' | translate}}</span>
-            <br>
-            <span>{{'project.application.form.overall.objective.field.row.three' | translate}}</span>
+        <h4>{{'project.application.form.overall.objective.field.projectOverallObjective' | translate}}</h4>
+        <p>{{'project.application.form.overall.objective.field.row.two' | translate}}</p>
+        <div>
+            {{'project.application.form.overall.objective.field.row.three' | translate}}
             <ul>
                 <li>{{'project.application.form.overall.objective.field.row.four' | translate}}</li>
                 <li>{{'project.application.form.overall.objective.field.row.five' | translate}}</li>
@@ -34,7 +26,6 @@
         <app-multi-language
                 [inputs]="[projectOverallObjective]">
             <app-expandable-textarea
-                    class="field"
                     [control]="overallObjectiveForm?.controls?.projectOverallObjective"
                     [errors]="overallObjectiveForm?.controls?.projectOverallObjective?.errors"
                     [messages]="projectOverallObjectiveError"

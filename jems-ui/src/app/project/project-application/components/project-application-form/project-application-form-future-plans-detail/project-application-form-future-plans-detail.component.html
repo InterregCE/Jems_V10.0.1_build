@@ -1,20 +1,12 @@
 <app-form (save)="onSubmit()"
           (discard)="resetForm()">
-    <form [formGroup]="futurePlansForm">
-        <h5 class="header" id="projectFuturePlansHeading">
-            {{'project.application.form.section.part.c.subsection.eight' | translate}}
-        </h5>
-
-        <div class="intro-text">
-            {{'project.application.form.future.plans.intro' | translate}}
-        </div>
-        <div class="intro-text">
-            <h6>{{'project.application.form.future.plans.field.1' | translate}}</h6>
-            <p class="intro-text-small">{{'project.application.form.future.plans.field.1.intro' | translate}}</p>
-        </div>
+    <form appFormLayout [formGroup]="futurePlansForm">
+        <h3>{{'project.application.form.section.part.c.subsection.eight' | translate}}</h3>
+        <p>{{'project.application.form.future.plans.intro' | translate}}</p>
+        <h4>{{'project.application.form.future.plans.field.1' | translate}}</h4>
+        <p>{{'project.application.form.future.plans.field.1.intro' | translate}}</p>
         <app-multi-language>
             <app-multi-language-form-field
-                    class="field"
                     type="textarea"
                     [label]="'common.textarea.enter.text'"
                     [formControlName]="'ownership'"
@@ -22,13 +14,10 @@
             </app-multi-language-form-field>
         </app-multi-language>
 
-        <div class="intro-text">
-            <h6>{{'project.application.form.future.plans.field.2' | translate}}</h6>
-            <p class="intro-text-small">{{'project.application.form.future.plans.field.2.intro' | translate}}</p>
-        </div>
+        <h4>{{'project.application.form.future.plans.field.2' | translate}}</h4>
+        <p>{{'project.application.form.future.plans.field.2.intro' | translate}}</p>
         <app-multi-language>
             <app-multi-language-form-field
-                    class="field"
                     type="textarea"
                     [label]="'common.textarea.enter.text'"
                     [formControlName]="'durability'"
@@ -36,13 +25,10 @@
             </app-multi-language-form-field>
         </app-multi-language>
 
-        <div class="intro-text">
-            <h6>{{'project.application.form.future.plans.field.3' | translate}}</h6>
-            <p class="intro-text-small">{{'project.application.form.future.plans.field.3.intro' | translate}}</p>
-        </div>
+        <h4>{{'project.application.form.future.plans.field.3' | translate}}</h4>
+        <p>{{'project.application.form.future.plans.field.3.intro' | translate}}</p>
         <app-multi-language>
             <app-multi-language-form-field
-                    class="field"
                     type="textarea"
                     [label]="'common.textarea.enter.text'"
                     [formControlName]="'transferability'"

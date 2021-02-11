@@ -1,65 +1,63 @@
 <div *ngIf="projectStatus !== OutputProjectStatus.StatusEnum.DRAFT
             && projectStatus !== OutputProjectStatus.StatusEnum.RETURNEDTOAPPLICANT">
-    <br>
-    <h5 id="applicationFormLifecycleAssessment">{{'project.assessment.header' | translate}}</h5>
+    <h3>{{'project.assessment.header' | translate}}</h3>
     <mat-expansion-panel
-        [expanded]="true">
-    <mat-expansion-panel-header>
-        <mat-panel-title><h6>{{'project.assessment.decision.header' | translate}}</h6></mat-panel-title>
-    </mat-expansion-panel-header>
-    <div class="fx-row fx-center-space-between">
-        <div>{{'project.assessment.eligibilityDecision.title' | translate}}</div>
-        <div>
-            <div *ngIf="project.eligibilityDecision">
-                {{'common.label.projectapplicationstatus.' + project.eligibilityDecision.status | translate}}
+            [expanded]="true">
+        <mat-expansion-panel-header>
+            <mat-panel-title>{{'project.assessment.decision.header' | translate}}</mat-panel-title>
+        </mat-expansion-panel-header>
+        <div appMultiColumnRow stretch class="mb-4">
+            <div>{{'project.assessment.eligibilityDecision.title' | translate}}</div>
+            <div>
+                <span *ngIf="project.eligibilityDecision">
+                    {{'common.label.projectapplicationstatus.' + project.eligibilityDecision.status | translate}}
+                </span>
             </div>
-        </div>
-        <div>
-            <div *ngIf="project.eligibilityDecision">
-                {{project.eligibilityDecision.decisionDate | date : Tables.DEFAULT_DATE_FORMAT_NO_TIME}}
+            <div>
+                <span *ngIf="project.eligibilityDecision">
+                    {{project.eligibilityDecision.decisionDate | date : Tables.DEFAULT_DATE_FORMAT_NO_TIME}}
+                </span>
             </div>
-        </div>
-        <div *ngIf="!project.eligibilityDecision">
-            <button mat-raised-button color="primary" class="button"
+            <button
+                    *ngIf="!project.eligibilityDecision"
+                    mat-stroked-button appFormFieldWidth="x-large"
                     [disabled]="!project.eligibilityAssessment"
                     [routerLink]="'./assessment/eligibilityDecision'">
                 {{'project.assessment.eligibilityDecision.assessment' | translate}}
             </button>
-        </div>
-        <div *ngIf="project.eligibilityDecision">
-            <button mat-stroked-button class="button"
+            <button
+                    *ngIf="project.eligibilityDecision"
+                    mat-stroked-button appFormFieldWidth="x-large"
                     [routerLink]="'./assessment/eligibilityDecision'">
                 {{'project.assessment.eligibilityDecision.assessment.view' | translate}}
             </button>
         </div>
-    </div>
-    <div class="fx-row fx-center-space-between mt-4">
-        <div>{{'project.assessment.fundingDecision.title' | translate}}</div>
-        <div>
-            <div *ngIf="project.fundingDecision">
-                {{'common.label.projectapplicationstatus.' + project.projectStatus.status | translate}}
+        <div appMultiColumnRow stretch>
+            <div>{{'project.assessment.fundingDecision.title' | translate}}</div>
+            <div>
+                <span *ngIf="project.fundingDecision">
+                    {{'common.label.projectapplicationstatus.' + project.projectStatus.status | translate}}
+                </span>
             </div>
-        </div>
-        <div>
-            <div *ngIf="project.fundingDecision">
-                {{project.projectStatus.decisionDate | date : Tables.DEFAULT_DATE_FORMAT_NO_TIME}}
+            <div>
+                <span *ngIf="project.fundingDecision">
+                    {{project.projectStatus.decisionDate | date : Tables.DEFAULT_DATE_FORMAT_NO_TIME}}
+                </span>
             </div>
-        </div>
-        <div *ngIf="!project.fundingDecision">
-            <button mat-raised-button color="primary" class="button"
-                    [disabled]="project.eligibilityDecision?.status !== OutputProjectStatus.StatusEnum.ELIGIBLE
-                            || !project.qualityAssessment"
+            <button
+                    *ngIf="!project.eligibilityDecision"
+                    mat-stroked-button appFormFieldWidth="x-large"
+                    [disabled]="project?.eligibilityDecision?.status !== OutputProjectStatus.StatusEnum.ELIGIBLE  || !project.qualityAssessment"
                     [routerLink]="'./assessment/fundingDecision'">
                 {{'project.assessment.fundingDecision.assessment' | translate}}
             </button>
-        </div>
-        <div *ngIf="!!project.fundingDecision">
-            <button mat-raised-button class="button"
+            <button
+                    *ngIf="!!project.fundingDecision"
+                    mat-stroked-button appFormFieldWidth="x-large"
                     [color]="projectStatus === OutputProjectStatus.StatusEnum.APPROVEDWITHCONDITIONS ? 'primary' : null"
                     [routerLink]="'./assessment/fundingDecision'">
                 {{updateOrViewFundingLabel() | translate}}
             </button>
         </div>
-    </div>
-</mat-expansion-panel>
+    </mat-expansion-panel>
 </div>

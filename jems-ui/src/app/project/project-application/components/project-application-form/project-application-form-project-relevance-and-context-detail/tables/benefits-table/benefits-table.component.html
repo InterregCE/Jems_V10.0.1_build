@@ -1,7 +1,7 @@
-<app-multi-language [inputs]="specificationInputs">
-    <div [formGroup]="formGroup">
-        <div appTableConfig [appearance]="'table'"
-             [widthConfig]="[{},{}, {maxInRem:2}]">
+<div appFormLayout [formGroup]="formGroup">
+    <app-multi-language appNoWidthLimit [inputs]="specificationInputs" *ngIf="benefitsForm.controls.length>0">
+        <div [appearance]="'table'"
+             [appTableConfig]="[{},{}, {maxInRem:2}]">
             <div>
                 <span class="mat-body-strong">{{ 'project.application.form.relevance.target.group' | translate }}</span>
                 <span class="mat-body-strong">{{ 'project.application.form.relevance.specification' | translate }}</span>
@@ -13,8 +13,7 @@
 
                         <mat-form-field>
                             <mat-label>{{'project.application.form.relevance.target.group' | translate}}</mat-label>
-                            <mat-select [disabled]="!editable"
-                                        panelClass="material-select-panel" formControlName="targetGroup" required>
+                            <mat-select [disabled]="!editable" formControlName="targetGroup" required>
                                 <mat-option *ngFor="let targetGroup of benefitEnums" [value]="targetGroup">
                                     {{'project.application.form.relevance.target.group.' + targetGroup | translate}}
                                 </mat-option>
@@ -52,8 +51,8 @@
                 </ng-container>
             </div>
         </div>
-    </div>
-    <button *ngIf="editable" mat-icon-button type="button" (click)="addNewBenefit()">
+    </app-multi-language>
+    <button *ngIf="editable" mat-stroked-button type="button" (click)="addNewBenefit()">
         <mat-icon>add</mat-icon>
     </button>
-</app-multi-language>
+</div>

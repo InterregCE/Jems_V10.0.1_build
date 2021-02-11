@@ -1,6 +1,6 @@
 <app-breadcrumb></app-breadcrumb>
-<h2>{{'project.application.form.acronym' | translate : {acronym: projectStore.getAcronym() | async} }}</h2>
-<h4>{{'project.application.form.section.part.c' | translate}}</h4>
+<h1>{{'project.application.form.acronym' | translate : {acronym: projectStore.getAcronym() | async} }}</h1>
+<h2>{{'project.application.form.section.part.c' | translate}}</h2>
 
 <app-project-application-form-future-plans-detail
         *ngIf="futurePlans$ | async as plans"

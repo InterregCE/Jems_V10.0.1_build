@@ -1,55 +1,19 @@
-.app-form-field-width-1 {
-  .mat-form-field-infix {
-    width: 1.5rem;
+.app-layout {
+  &.app-form-field {
+    &.app-form-field-width {
+      .mat-form-field-infix {
+        width: var(--widthBasedOnNumberChars);
+      }
+
+      width: var(--widthBasedOnType);
+      min-width: var(--widthBasedOnType);
+      max-width: var(--widthBasedOnType);
+    }
+
+    &[extendError] {
+      .mat-form-field-subscript-wrapper {
+        width: 100vw;
+      }
+    }
   }
 }
-
-.app-form-field-width-2 {
-  .mat-form-field-infix {
-    width: 2rem;
-  }
-}
-
-.app-form-field-width-3 {
-  .mat-form-field-infix {
-    width: 2.5rem;
-  }
-}
-
-.app-form-field-width-4 {
-  .mat-form-field-infix {
-    width: 3rem;
-  }
-}
-
-.app-form-field-width-5 {
-  .mat-form-field-infix {
-    width: 3.5rem;
-  }
-}
-
-.app-form-field-width-small {
-  .mat-form-field-infix {
-    width: 5rem;
-  }
-}
-
-.app-form-field-width-medium {
-  .mat-form-field-infix {
-    width: 7.5rem;
-  }
-}
-
-.app-form-field-width-large {
-  .mat-form-field-infix {
-    width: 10rem;
-  }
-}
-
-.extend-error {
-  .mat-form-field-subscript-wrapper {
-    width: 100vw;
-  }
-}
-
-

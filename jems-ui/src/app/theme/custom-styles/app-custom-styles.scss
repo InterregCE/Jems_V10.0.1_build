@@ -1,16 +1,13 @@
-@import 'node_modules/@angular/material/theming';
+@import "custom-buttons-styles";
+@import "custom-tooltip-styles";
+@import "custom-tab-group-styles";
+@import "custom-form-field-styles";
 
 // source: https://stackoverflow.com/a/57288409
-
-@mixin generate-theme-vars($theme) {
-  //default palette foreground/background:
+@mixin generate-css-vars-and-custom-styles($theme) {
   $foreground-palette: map-get($theme, foreground);
   $background-palette: map-get($theme, background);
   $is-dark-theme: map-get($theme, is-dark);
-
-  /////////////////////////////////////////////////
-  // SCSS VARS
-  /////////////////////////////////////////////////
 
   $primary-theme: map-get($theme, primary);
   $primary: mat-color(map-get($theme, primary));
@@ -33,9 +30,6 @@
   $hover: mat-color($background-palette, hover);
   $outline: mat-color($foreground-palette, divider, if($is-dark-theme, 0.3, 0.12));;
 
-  /////////////////////////////////////////////////
-  // CSS VARS
-  /////////////////////////////////////////////////
 
   --blue-gray: #{mat-color($mat-blue-gray, if($is-dark-theme, 50, 100))};
   --light-blue-gray: #{mat-color($mat-blue-gray, 100, if($is-dark-theme, 0.25, 0.5))};
@@ -44,6 +38,7 @@
   --pale-yellow: #{mat-color($mat-yellow, 50)};
 
   --primary-color: #{$primary};
+  --primary-halftone-color: #{$primary-halftone};
   --accent-color: #{$accent};
   --warn-color: #{$warn};
 
@@ -60,31 +55,18 @@
   --background-lighter: #{$background-lighter};
   --app-bar: #{$app-bar};
   --underline-color: #{$underline-color};
+  --outline-color: #{$outline};
 
-  /**
-   * Our custom coloring to global components:
-   */
+  @include custom-global-styles($is-dark-theme);
 
-  // changed coloring for stroked button
-  .mat-stroked-button {
-    color: if($is-dark-theme, $text, $primary);
-  }
-  .mat-stroked-button:not([disabled]) {
-    border-color: if($is-dark-theme, $outline, $primary);
-  }
+}
 
-  // changed button-toggle styling to match stroked button
-  .mat-button-toggle-group:not([aria-disabled=true]) {
-    border-color: if($is-dark-theme, $outline, $primary);
 
-    .mat-button-toggle {
-      background-color: transparent;
-      color: if($is-dark-theme, $text, $primary);
-    }
+@mixin custom-global-styles($is-dark-theme) {
 
-    .mat-button-toggle-checked {
-      background-color: $primary-halftone;
-    }
-  }
+  @include custom-buttons-styles($is-dark-theme);
+  @include custom-tooltip-styles();
+  @include custom-tab-group-styles();
+  @include custom-form-field-styles();
 
 }

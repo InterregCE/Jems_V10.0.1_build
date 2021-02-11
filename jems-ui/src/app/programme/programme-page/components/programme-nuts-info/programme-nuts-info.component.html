@@ -1,5 +1,5 @@
-<div>
-    <h4 class="header">{{'programme.area.nuts.header' | translate}}</h4>
+<div appFormLayout>
+    <h2>{{'programme.area.nuts.header' | translate}}</h2>
     <app-alert
             [show]="!submitted && (showSuccessMessage$ | async)"
             [type]="Alert.SUCCESS">
@@ -17,7 +17,7 @@
                [type]="Alert.ERROR">
         <p>{{ (error.i18nKey ? error.i18nKey : 'programme.area.nuts.download.error') | translate}}</p>
     </app-alert>
-    <div class="nuts-database">
+    <div>
         <p *ngIf="metadata">
             {{
             'programme.area.nuts.downloaded.label' | translate : {
@@ -34,13 +34,12 @@
         <p>{{'programme.area.nuts.copyright.fr' | translate}}</p>
         <p>{{'programme.area.nuts.copyright.de' | translate}}</p>
         <p>{{'programme.area.nuts.copyright.exception' | translate}}</p>
-        <div *ngIf="!metadata" class="text-center">
-            <br><br>
-            <button mat-raised-button color="primary" type="submit"
-                    [disabled]="submitted"
-                    (click)="onSubmit()">
-                {{'programme.area.nuts.download.button' | translate}}
-            </button>
-        </div>
     </div>
+    <ng-container *ngIf="!metadata">
+        <button mat-stroked-button type="submit"
+                [disabled]="submitted"
+                (click)="onSubmit()">
+            {{'programme.area.nuts.download.button' | translate}}
+        </button>
+    </ng-container>
 </div>

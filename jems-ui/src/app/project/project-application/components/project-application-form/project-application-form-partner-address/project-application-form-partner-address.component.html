@@ -1,9 +1,8 @@
 <app-form (save)="onSubmit()"
           (discard)="resetForm()">
-    <form [formGroup]="partnerAddressForm" class="container">
-        <h4><span>{{'project.partner.address.header' | translate}}</span></h4>
-        <h6><span>{{'project.partner.main-address.header' | translate}}</span></h6>
-
+    <form appFormLayout [formGroup]="partnerAddressForm">
+        <h3>{{'project.partner.address.header' | translate}}</h3>
+        <h4>{{'project.partner.main-address.header' | translate}}</h4>
         <app-project-application-form-address
                 *ngIf="partnerAddressForm?.controls"
                 [partnerId]="partnerId"
@@ -11,9 +10,7 @@
                 [nuts]="nuts">
         </app-project-application-form-address>
 
-        <br><br><br>
-
-        <h6><span>{{'project.partner.department-address.header' | translate}}</span></h6>
+        <h4>{{'project.partner.department-address.header' | translate}}</h4>
         <app-project-application-form-address
                 *ngIf="partnerAddressForm?.controls"
                 [partnerId]="partnerId"

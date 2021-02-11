@@ -1,31 +1,27 @@
 <ng-container *ngIf="data$ | async as data">
+    <div>
+        <app-breadcrumb></app-breadcrumb>
+        <h1>{{'project.application.form.acronym' | translate : {acronym: data.projectAcronym} }}</h1>
+        <h2>{{'project.application.form.section.part.c' | translate}}</h2>
+    </div>
     <app-form (save)="updateResults()">
-        <form id="resultsForm" [formGroup]="form">
-            <div>
-                <app-breadcrumb></app-breadcrumb>
-                <h2>{{'project.application.form.acronym' | translate : {acronym: data.projectAcronym} }}</h2>
-                <h4>{{'project.application.form.section.part.c' | translate}}</h4>
-                <h5 class="spaced-elements">{{'project.application.form.section.part.c.subsection.five' | translate}}</h5>
-                <div class="intro-text-small">{{'project.results.intro' | translate}}</div>
-            </div>
-
-            <app-multi-language *ngFor="let result of results.controls;let i=index">
+        <form appFormLayout [formGroup]="form">
+            <h3>{{'project.application.form.section.part.c.subsection.five' | translate}}</h3>
+            <p>{{'project.results.intro' | translate}}</p>
+            <div appNoWidthLimit *ngFor="let result of results.controls;let i=index">
                 <ng-container [formArrayName]="constants.RESULTS.name">
-                    <ng-container [formGroupName]="i">
-                        <div appTableConfig [widthConfig]="[{}, {maxInRem:2}]">
-                            <div>
-                                <h5>{{('project.results.result.title' | translate) + ' ' + (i + 1) }}</h5>
-                                <button *ngIf="form.enabled" type="button"
-                                        (click)="removeResult(i)" mat-icon-button color="accent">
-                                    <mat-icon>delete</mat-icon>
-                                </button>
-                            </div>
+                    <div class="result-container" appFormLayout [formGroupName]="i">
+                        <div class="result-header" appNoWidthLimit appMultiColumnRow itemsAlign="space-between">
+                            <h4 class="mb-0">{{('project.results.result.title' | translate) + ' ' + (i + 1) }}</h4>
+                            <button *ngIf="form.enabled" type="button"
+                                    (click)="removeResult(i)" mat-icon-button color="accent">
+                                <mat-icon>delete</mat-icon>
+                            </button>
                         </div>
 
-                        <mat-form-field class="w-100">
+                        <mat-form-field>
                             <mat-label>{{'project.results.result.indicator' | translate}}</mat-label>
-                            <mat-select panelClass="material-select-panel"
-                                        [disabled]="!data.resultIndicators.length"
+                            <mat-select [disabled]="!data.resultIndicators.length"
                                         [formControlName]="constants.RESULT_INDICATOR.name">
                                 <mat-option *ngFor="let resultIndicator of data.resultIndicators"
                                             [value]="resultIndicator.id">
@@ -33,23 +29,21 @@
                                 </mat-option>
                             </mat-select>
                         </mat-form-field>
-                        <div class="row">
-
-                            <mat-form-field class="col">
+                        <div appMultiColumnRow stretch>
+                            <mat-form-field appFormFieldWidth="large">
+                                <mat-label>{{'project.results.result.measurement.unit' | translate}}</mat-label>
                                 <input readonly matInput
-                                       placeholder="{{'project.results.result.measurement.unit' | translate}}"
                                        value="{{getMeasurementUnit(result.get(constants.RESULT_INDICATOR.name)?.value, data.resultIndicators)}}"
                                        [disabled]="form.disabled">
                             </mat-form-field>
 
-                            <mat-form-field class="col">
+                            <mat-form-field appFormFieldWidth="medium">
+                                <mat-label>{{'project.results.result.target.value' | translate}}</mat-label>
                                 <input currencyMask type="integer" [options]="{min: 1, max: 99999}"
-                                       name="targetValue" formControlName="targetValue" matInput
-                                       placeholder="{{'project.results.result.target.value' | translate}}">
+                                       name="targetValue" formControlName="targetValue" matInput>
                             </mat-form-field>
 
                             <app-project-periods-select
-                                    class="col"
                                     [periods]="data.periods"
                                     [control]="result.get(constants.PERIOD.name)"
                                     label='project.results.result.delivery.period'
@@ -57,19 +51,19 @@
                             </app-project-periods-select>
                         </div>
 
-                        <app-multi-language-form-field
-                                type="textarea"
-                                class="mt-2"
-                                label="project.results.result.description"
-                                [formControlName]="constants.DESCRIPTION.name"
-                                [maxLength]="constants.DESCRIPTION.maxLength">
-                        </app-multi-language-form-field>
+                        <app-multi-language>
+                            <app-multi-language-form-field
+                                    type="textarea"
+                                    label="project.results.result.description"
+                                    [formControlName]="constants.DESCRIPTION.name"
+                                    [maxLength]="constants.DESCRIPTION.maxLength">
+                            </app-multi-language-form-field>
+                        </app-multi-language>
 
-                    </ng-container>
+                    </div>
                 </ng-container>
-            </app-multi-language>
-            <button *ngIf="addResultVisible()" class="spaced-elements mt-4" mat-raised-button color="primary"
-                    (click)="addNewResult()">
+            </div>
+            <button *ngIf="addResultVisible()" mat-stroked-button (click)="addNewResult()">
                 + {{'project.results.result.add' | translate}}
             </button>
         </form>

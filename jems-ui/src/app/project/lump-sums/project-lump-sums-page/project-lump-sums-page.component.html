@@ -1,12 +1,10 @@
 <ng-container *ngIf="(data$ | async) as data">
     <app-breadcrumb></app-breadcrumb>
-    <h2>{{'project.application.form.acronym' | translate : {acronym: data.projectAcronym} }}</h2>
-    <h4>{{'project.application.form.section.part.e' | translate}}</h4>
-    <p class="intro-text-small">{{'project.application.form.section.part.e.description' | translate}}</p>
-    <app-alert
-            [closable]="false"
-            [show]="data.lumpSums.length===0 || data.partners.length===0"
-            [type]="Alert.WARNING">
+    <h1>{{'project.application.form.acronym' | translate : {acronym: data.projectAcronym} }}</h1>
+    <h2>{{'project.application.form.section.part.e' | translate}}</h2>
+    <p>{{'project.application.form.section.part.e.description' | translate}}</p>
+    <app-alert [closable]="false" [type]="Alert.WARNING"
+               [show]="data.lumpSums.length===0 || data.partners.length===0">
         <p *ngIf="data.lumpSums.length===0">{{'project.application.form.section.part.e.no.lump.sums.warning' | translate}}</p>
         <p *ngIf="data.lumpSums.length>0">{{'project.application.form.section.part.e.no.partner.warning' | translate}}</p>
     </app-alert>
@@ -14,7 +12,7 @@
     <ng-container *ngIf="data.partners.length>0 && data.lumpSums.length>0">
         <ng-container *ngIf="!data.showAddButton; else addItemButton">
             <app-form (save)="updateLumpSums()">
-                <form [formGroup]="lumpSumsForm">
+                <form appFormLayout [formGroup]="lumpSumsForm">
                     <app-alert
                             [show]="data.showGapExistsWarning"
                             [closable]="false"
@@ -22,19 +20,18 @@
                         {{'project.application.form.section.part.e.gap.warning' | translate}}
                     </app-alert>
                     <mat-table
+                            appNoWidthLimit
                             id="lump-sums-table"
-                            appTableConfig
-                            [widthConfig]="data.withConfigs"
+                            [appTableConfig]="data.withConfigs"
                             [dataSource]="dataSource" [formArrayName]="constants.FORM_CONTROL_NAMES.items"
-                            class="mat-elevation-z2">
+                            class="mat-elevation-z1">
 
                         <ng-container matColumnDef="lumpSum" sticky>
                             <mat-header-cell
                                     *matHeaderCellDef> {{'project.application.form.section.part.e.lump.sums.column.title' | translate}} </mat-header-cell>
                             <mat-cell *matCellDef="let control;  let i = index" [formGroupName]="i">
-                                <mat-form-field [appFormFieldWidth]="'small'">
-                                    <mat-select [formControlName]="constants.FORM_CONTROL_NAMES.lumpSum"
-                                                [disableOptionCentering]="true" panelClass="material-select-panel">
+                                <mat-form-field  [appFormFieldWidth]="'small'">
+                                    <mat-select [formControlName]="constants.FORM_CONTROL_NAMES.lumpSum">
                                         <mat-option *ngFor="let lumpSum of data.lumpSums" [value]="lumpSum">
                                             {{lumpSum.name}}
                                         </mat-option>
@@ -46,7 +43,6 @@
                                         ></app-form-field-errors>
                                     </mat-error>
                                 </mat-form-field>
-
                             </mat-cell>
                             <mat-footer-cell *matFooterCellDef></mat-footer-cell>
                         </ng-container>
@@ -62,8 +58,7 @@
                             <mat-cell *matCellDef="let control;  let i = index" [formGroupName]="i">
                                 <mat-form-field *ngIf="isLumpSumSelectedForRow(control)"
                                                 [appFormFieldWidth]="'small'">
-                                    <mat-select [formControlName]="constants.FORM_CONTROL_NAMES.periodNumber"
-                                                [disableOptionCentering]="true" panelClass="material-select-panel">
+                                    <mat-select [formControlName]="constants.FORM_CONTROL_NAMES.periodNumber">
                                         <mat-option></mat-option>
                                         <mat-option [value]="0">Preparation</mat-option>
                                         <mat-option *ngFor="let period of data.periods" [value]="period.periodNumber">
@@ -204,7 +199,7 @@
     </ng-container>
     <ng-template #addItemButton>
         <p *ngIf="lumpSumsForm.enabled">
-            <button mat-raised-button color="primary"
+            <button mat-stroked-button
                     (click)="addNewItem(data.partners)">+ {{'common.button.add' | translate}}
             </button>
         </p>

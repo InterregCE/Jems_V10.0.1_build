@@ -1,7 +1,7 @@
-<app-multi-language [inputs]="contributionInputs">
-    <div [formGroup]="formGroup">
-        <div appTableConfig [appearance]="'table'"
-             [widthConfig]="[{},{}, {maxInRem:2}]">
+<div appFormLayout [formGroup]="formGroup">
+    <app-multi-language appNoWidthLimit [inputs]="contributionInputs" *ngIf="strategiesForm.controls.length>0">
+        <div [appearance]="'table'"
+             [appTableConfig]="[{},{}, {maxInRem:2}]">
             <div>
                 <span class="mat-body-strong">{{ 'project.application.form.relevance.strategy' | translate }}</span>
                 <span class="mat-body-strong">{{ 'project.application.form.relevance.contribution' | translate }}</span>
@@ -13,8 +13,7 @@
 
                         <mat-form-field>
                             <mat-label>{{'project.application.form.relevance.strategy' | translate}}</mat-label>
-                            <mat-select [disabled]="!editable"
-                                        panelClass="material-select-panel" formControlName="strategy" required>
+                            <mat-select [disabled]="!editable" formControlName="strategy" required>
                                 <mat-option *ngFor="let enum of strategyEnum" [value]="enum">
                                     {{'programme.strategy.' + enum | translate}}
                                 </mat-option>
@@ -52,8 +51,10 @@
                 </ng-container>
             </div>
         </div>
-    </div>
-    <button *ngIf="editable" mat-icon-button type="button" (click)="addNewStrategy()">
+    </app-multi-language>
+    <button *ngIf="editable" mat-stroked-button type="button" (click)="addNewStrategy()">
         <mat-icon>add</mat-icon>
     </button>
-</app-multi-language>
+</div>
+
+

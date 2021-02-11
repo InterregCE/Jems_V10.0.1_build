@@ -1,11 +1,11 @@
 <app-breadcrumb></app-breadcrumb>
-<h2>{{'project.application.form.acronym' | translate : {acronym: projectStore.getAcronym() | async} }}</h2>
-<h4>{{'project.application.form.section.part.b' | translate}}</h4>
-<h5 class="spaced-elements">{{'project.application.form.section.part.b.partners' | translate}}</h5>
+<h1>{{'project.application.form.acronym' | translate : {acronym: projectStore.getAcronym() | async} }}</h1>
+<h2>{{'project.application.form.section.part.b' | translate}}</h2>
+<h3>{{'project.application.form.section.part.b.partners' | translate}}</h3>
 
-<span class="header-button" *ngxPermissionsExcept="Permission.PROGRAMME_USER">
+<span *ngxPermissionsExcept="Permission.PROGRAMME_USER">
     <button *ngIf="(projectStore.projectEditable$ | async) === true"
-            class="spaced-elements" mat-raised-button color="primary"
+            mat-stroked-button color="primary"
             [routerLink]="'/app/project/detail/' + projectId + '/applicationFormPartner/create'">
         + {{'project.application.form.partner.add' | translate}}
     </button>

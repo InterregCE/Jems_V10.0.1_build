@@ -1,19 +1,14 @@
-<app-form (discard)="initForm()"
-          (save)="onSubmit()">
-    <h5>
-        {{'lump.sums.table.title' | translate}}
-    </h5>
+<app-form (discard)="initForm()" (save)="onSubmit()">
+    <h3>{{'lump.sums.table.title' | translate}}</h3>
     <div *ngIf="lumpSumDataSource.data.length"
-         class="my-5"
-         appTableConfig
          [appearance]="'material-table'"
-         [widthConfig]="[{maxInRem:3},{},{maxInRem:8}]">
+         [appTableConfig]="[{maxInRem:2},{},{maxInRem:8}]">
         <div>
             <span>{{'lump.sum.table.column.name.activate.option' | translate}}</span>
             <span>{{'lump.sum.table.column.name.name' | translate}}</span>
-            <span class="display-flex justify-end">{{'lump.sum.table.column.name.cost' | translate}}</span>
+            <span>{{'lump.sum.table.column.name.cost' | translate}}</span>
         </div>
-        <span *ngFor="let element of lumpSumDataSource.data">
+        <div *ngFor="let element of lumpSumDataSource.data">
             <mat-checkbox
                     [disabled]="published"
                     (click)="$event.stopPropagation()"
@@ -21,7 +16,7 @@
                     [checked]="selection.isSelected(element)">
             </mat-checkbox>
             <span>{{ element?.name }}</span>
-            <span class="display-flex justify-end">{{ element?.cost | asMoney}}</span>
-        </span>
+            <span>{{ element?.cost | asMoney}}</span>
+        </div>
     </div>
 </app-form>

@@ -1,13 +1,12 @@
 <app-form (save)="onSubmit()"
           (discard)="onCancel()">
-    <form [formGroup]="associatedOrganizationForm" class="wrapper">
-        <h4 *ngIf="!associatedOrganization?.sortNumber">{{'project.application.form.associatedOrganization.add' | translate}}</h4>
-        <h4 *ngIf="associatedOrganization?.sortNumber">{{'project.breadcrumb.associatedOrganizationName' | translate}} {{ 'project.organization.number.format.short' | translate : {sortNumber: associatedOrganization.sortNumber} }}</h4>
-        <h5><span>{{'project.breadcrumb.associatedOrganizationName' | translate}}</span></h5>
-        <mat-form-field class="field">
+    <form appFormLayout [formGroup]="associatedOrganizationForm">
+        <h3 *ngIf="!associatedOrganization?.sortNumber">{{'project.application.form.associatedOrganization.add' | translate}}</h3>
+        <h3 *ngIf="associatedOrganization?.sortNumber">{{'project.breadcrumb.associatedOrganizationName' | translate}} {{ 'project.organization.number.format.short' | translate : {sortNumber: associatedOrganization.sortNumber} }}</h3>
+        <h4>{{'project.breadcrumb.associatedOrganizationName' | translate}}</h4>
+        <mat-form-field>
             <mat-label>{{'project.organization.original.name.label' | translate}}</mat-label>
-            <input name="nameInOriginalLanguage" formControlName="nameInOriginalLanguage" matInput
-                   placeholder="{{'project.organization.original.name.label' | translate}}" required>
+            <input name="nameInOriginalLanguage" formControlName="nameInOriginalLanguage" matInput required>
             <mat-error>
                 <app-form-field-errors
                         [errors]="associatedOrganizationForm.controls?.nameInOriginalLanguage?.errors"
@@ -15,12 +14,10 @@
                 </app-form-field-errors>
             </mat-error>
         </mat-form-field>
-        <app-multi-language class="language-select"
-                            [staticLanguages]="[LANGUAGE.EN]">
-            <mat-form-field class="field">
+        <app-multi-language [staticLanguages]="[LANGUAGE.EN]">
+            <mat-form-field>
                 <mat-label>{{'project.organization.english.name.label' | translate}}</mat-label>
-                <input name="nameInEnglish" formControlName="nameInEnglish" matInput
-                       placeholder="{{'project.organization.english.name.label' | translate}}" required>
+                <input name="nameInEnglish" formControlName="nameInEnglish" matInput required>
                 <mat-error>
                     <app-form-field-errors
                             [errors]="associatedOrganizationForm.controls?.nameInEnglish?.errors"
@@ -30,10 +27,9 @@
             </mat-form-field>
         </app-multi-language>
 
-        <mat-form-field class="field">
+        <mat-form-field>
             <mat-label>{{'project.organization.partner' | translate}}</mat-label>
-            <mat-select name="partnerId"
-                        panelClass="material-select-panel" formControlName="partnerId" required>
+            <mat-select name="partnerId" formControlName="partnerId" required>
                 <mat-option *ngFor="let partner of partners" [value]="partner.id">
                     {{ 'common.label.project.partner.role.shortcut.' + partner.role | translate : {partner: partner.sortNumber + ' ' + partner.abbreviation} }}
                 </mat-option>
@@ -51,13 +47,10 @@
                 [nuts]="nuts">
         </app-project-application-form-address>
 
-        <!--    LEGAL REPRESENTATIVE-->
-
-        <h5><span>{{'project.partner.representative.header.detail' | translate}}</span></h5>
-        <mat-form-field class="field">
+        <h4>{{'project.partner.representative.header.detail' | translate}}</h4>
+        <mat-form-field>
             <mat-label>{{'project.partner.representative.title' | translate}}</mat-label>
-            <input name="representativeTitle" formControlName="representativeTitle" matInput
-                   placeholder="{{'project.partner.representative.title' | translate}}">
+            <input name="representativeTitle" formControlName="representativeTitle" matInput>
             <mat-error>
                 <app-form-field-errors
                         [errors]="associatedOrganizationForm?.controls?.representativeTitle?.errors"
@@ -66,10 +59,9 @@
             </mat-error>
         </mat-form-field>
 
-        <mat-form-field class="field">
+        <mat-form-field>
             <mat-label>{{'project.partner.representative.first.name' | translate}}</mat-label>
-            <input name="representativeFirstName" formControlName="representativeFirstName" matInput
-                   placeholder="{{'project.partner.representative.first.name' | translate}}">
+            <input name="representativeFirstName" formControlName="representativeFirstName" matInput>
             <mat-error>
                 <app-form-field-errors
                         [errors]="associatedOrganizationForm?.controls?.representativeFirstName?.errors"
@@ -78,10 +70,9 @@
             </mat-error>
         </mat-form-field>
 
-        <mat-form-field class="field">
+        <mat-form-field>
             <mat-label>{{'project.partner.representative.last.name' | translate}}</mat-label>
-            <input name="representativeLastName" formControlName="representativeLastName" matInput
-                   placeholder="{{'project.partner.representative.last.name' | translate}}">
+            <input name="representativeLastName" formControlName="representativeLastName" matInput>
             <mat-error>
                 <app-form-field-errors
                         [errors]="associatedOrganizationForm?.controls?.representativeLastName?.errors"
@@ -90,13 +81,11 @@
             </mat-error>
         </mat-form-field>
 
-        <!--    CONTACT-->
-        <h5>{{'project.partner.contact.header.detail' | translate}}</h5>
 
-        <mat-form-field class="field">
+        <h4>{{'project.partner.contact.header.detail' | translate}}</h4>
+        <mat-form-field>
             <mat-label>{{'project.partner.contact.title' | translate}}</mat-label>
-            <input name="contactTitle" formControlName="contactTitle" matInput
-                   placeholder="{{'project.partner.contact.title' | translate}}">
+            <input name="contactTitle" formControlName="contactTitle" matInput>
             <mat-error>
                 <app-form-field-errors
                         [errors]="associatedOrganizationForm?.controls?.contactTitle?.errors"
@@ -105,10 +94,9 @@
             </mat-error>
         </mat-form-field>
 
-        <mat-form-field class="field">
+        <mat-form-field>
             <mat-label>{{'project.partner.contact.first.name' | translate}}</mat-label>
-            <input name="contactFirstName" formControlName="contactFirstName" matInput
-                   placeholder="{{'project.partner.contact.first.name' | translate}}">
+            <input name="contactFirstName" formControlName="contactFirstName" matInput>
             <mat-error>
                 <app-form-field-errors
                         [errors]="associatedOrganizationForm?.controls?.contactFirstName?.errors"
@@ -117,10 +105,9 @@
             </mat-error>
         </mat-form-field>
 
-        <mat-form-field class="field">
+        <mat-form-field>
             <mat-label>{{'project.partner.contact.last.name' | translate}}</mat-label>
-            <input name="contactLastName" formControlName="contactLastName" matInput
-                   placeholder="{{'project.partner.contact.last.name' | translate}}">
+            <input name="contactLastName" formControlName="contactLastName" matInput>
             <mat-error>
                 <app-form-field-errors
                         [errors]="associatedOrganizationForm?.controls?.contactLastName?.errors"
@@ -129,10 +116,9 @@
             </mat-error>
         </mat-form-field>
 
-        <mat-form-field class="field">
+        <mat-form-field>
             <mat-label>{{'project.partner.contact.email' | translate}}</mat-label>
-            <input name="contactEmail" formControlName="contactEmail" matInput
-                   placeholder="{{'project.partner.contact.email' | translate}}">
+            <input name="contactEmail" formControlName="contactEmail" matInput>
             <mat-error>
                 <app-form-field-errors
                         [errors]="associatedOrganizationForm?.controls?.contactEmail?.errors"
@@ -141,10 +127,9 @@
             </mat-error>
         </mat-form-field>
 
-        <mat-form-field class="field">
+        <mat-form-field>
             <mat-label>{{'project.partner.contact.telephone' | translate}}</mat-label>
-            <input name="contactTelephone" formControlName="contactTelephone" matInput
-                   placeholder="{{'project.partner.contact.telephone' | translate}}">
+            <input name="contactTelephone" formControlName="contactTelephone" matInput>
             <mat-error>
                 <app-form-field-errors
                         [errors]="associatedOrganizationForm?.controls?.contactTelephone?.errors"

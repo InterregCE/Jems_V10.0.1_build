@@ -1,12 +1,12 @@
-<div *ngIf="details$ | async as details" class="project-detail-container">
-    <app-breadcrumb></app-breadcrumb>
-    <h5>{{details.acronym}}</h5>
-    <app-project-application-information
-            [project]="details.project">
-    </app-project-application-information>
-    <div class="assessment-container">
-        <h5>{{'project.assessment.fundingDecision.dialog.title' | translate}}</h5>
+<app-breadcrumb></app-breadcrumb>
+<ng-container *ngIf="details$ | async as details">
+    <div appFormLayout>
+        <h2>{{details.acronym}}</h2>
+        <app-project-application-information appNoWidthLimit [project]="details.project">
+        </app-project-application-information>
+        <h3>{{'project.assessment.fundingDecision.dialog.title' | translate}}</h3>
         <app-project-application-funding-decision
+                appNoWidthLimit
                 *ngIf="details.showWithConditions"
                 [project]="details.project"
                 [status]="details.withConditionsStatus"
@@ -15,8 +15,8 @@
                 (changeStatus)="projectStore.changeStatus($event)"
                 (cancel)="redirectToProject()">
         </app-project-application-funding-decision>
-        <hr>
         <app-project-application-funding-decision
+                appNoWidthLimit
                 [project]="details.project"
                 [status]="details.status"
                 [options]="details.statusOptions"
@@ -25,4 +25,4 @@
                 (cancel)="redirectToProject()">
         </app-project-application-funding-decision>
     </div>
-</div>
+</ng-container>

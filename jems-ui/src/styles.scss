@@ -1,46 +1,19 @@
-@import "src/app/theme/functions.scss";
-@import '~@angular/material/theming';
-
-@include mat-core();
-.dark-theme {
-  @import "src/app/theme/theme_dark";
-  @include angular-material-theme($dark-theme);
-  @include generate-theme-vars($dark-theme);
-}
-
-.light-theme {
-  @import "src/app/theme/theme_light";
-  @include angular-material-theme($light-theme);
-  @include generate-theme-vars($light-theme);
-}
-
+@import "src/app/theme/theme";
+@import "src/common-classes.scss";
+@import "src/layout-classes.scss";
 @import "src/app/common/directives/form-field-width/form-feild-width";
+@import "src/app/common/directives/form-layout/form-layout";
+@import "app/common/directives/multi-column-row/multi-column-row";
 @import "src/app/common/directives/table-config/table-config";
 
-/**
- * Overriding styles: if you want to change colors of default material theme in specific components
- */
-@import "src/app/theme/override-material-in-component/top-bar.scss";
-@import "src/app/theme/override-material-in-component/disable-underline-on-disabled-forms";
-@import "src/app/theme/override-material-in-component/disable-padding-on-mat-lists";
-@import "src/app/theme/override-material-in-component/customize-form-fields-and-buttons";
-@import "src/app/theme/override-material-in-component/customize-tooltip";
-@import "src/app/theme/override-material-in-component/style-multi-language-selection-buttons";
-@import "src/app/theme/override-material-in-component/tab-group";
 
-
-@import "./common-classes.scss";
-@import "./layout-classes.scss";
-
-/**
- * Following styles are applied globally to every HTML tag in this app
- */
 html {
   scroll-behavior: smooth;
 }
 
 html, body {
   height: 100%;
+  font-size: 16px;
 }
 
 body {
@@ -48,78 +21,4 @@ body {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   margin: 0;
-}
-
-h1,h2,h3,h4,h5,h6 {
-  margin: 1.25rem 0 0.75rem 0;
-}
-h1, h2 { font-weight: 200; }
-h3, h4 { font-weight: 300; }
-h5, h6 { font-weight: 400; }
-h1 { font-size: 3rem; }
-h2 { font-size: 2.5rem; }
-h3 { font-size: 2.25rem; }
-h4 { font-size: 1.75rem; }
-h5 { font-size: 1.5rem; }
-h6 { font-size: 1.25rem; }
-
-p {
-  margin: 0;
-}
-
-form .form-group {
-  display: flex;
-  flex-direction: row;
-  flex-wrap: wrap;
-
-  label {
-    flex-shrink: 1;
-    padding-right: 5px;
-  }
-
-  input {
-    flex: 1;
-  }
-
-  .info-text {
-    flex-basis: 100%;
-  }
-}
-
-form.container {
-  margin: 2rem 0 !important;
-}
-
-.intro-text {
-  width: 100%;
-  padding-top: 1rem;
-}
-.intro-text-small {
-  font-size: 0.875rem;
-  line-height: 1.5rem;
-  ul {
-    padding: 0.25rem 1rem;
-    line-height: 1.5rem;
-  }
-}
-p.intro-text-small {
-  padding-bottom: 1rem;
-}
-
-.material-select-panel {
-  margin: 1.5rem 0 !important;
-}
-
-textarea:read-only,
-textarea:disabled {
-  overflow: hidden !important;
-}
-
-.no-bullets {
-  list-style-type: none;
-}
-
-// disable thick border when focusing button
-button:focus {
-  outline: none;
 }

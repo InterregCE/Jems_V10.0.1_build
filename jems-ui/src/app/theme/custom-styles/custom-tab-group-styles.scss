@@ -1,0 +1,14 @@
+@mixin custom-tab-group-styles() {
+
+  @include custom-general-tab-styles();
+
+}
+
+
+@mixin custom-general-tab-styles() {
+  .mat-tab-body, .mat-tab-body-wrapper, .mat-tab-body-content {
+    // unset overflow, otherwise the footer does not stay visible (sticky)
+    overflow: unset !important;
+  }
+}
+

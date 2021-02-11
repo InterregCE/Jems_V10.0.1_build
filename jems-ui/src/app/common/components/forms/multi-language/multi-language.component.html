@@ -1,12 +1,17 @@
-<div id="language-switcher" *ngIf="staticLanguages || languageService.languages as languages">
-    <mat-button-toggle-group
-            *ngIf="isMoreThanOneLanguageInputEnabled()"
-            [value]="languages.length === 1 ? languages[0] : languageService.currentLanguage$ | async"
-            (change)="languageService.currentLanguage$.next($event.value)">
-        <mat-button-toggle *ngFor="let language of languages; let index = index"
-                           [value]="language">
-            <p>{{language}}</p>
-        </mat-button-toggle>
-    </mat-button-toggle-group>
+<div class="language-switcher-container">
+    <div class="language-switcher"
+         [class.toggle-button-exists]="isMoreThanOneLanguageInputEnabled()"
+         *ngIf="staticLanguages || languageService.languages as languages">
+        <mat-button-toggle-group
+                class="language-switcher-toggle-group"
+                *ngIf="isMoreThanOneLanguageInputEnabled()"
+                [value]="languages.length === 1 ? languages[0] : languageService.currentLanguage$ | async"
+                (change)="languageService.currentLanguage$.next($event.value)">
+            <mat-button-toggle  *ngFor="let language of languages; let index = index"
+                               [value]="language">
+                <span>{{language}}</span>
+            </mat-button-toggle>
+        </mat-button-toggle-group>
+    </div>
+    <ng-content></ng-content>
 </div>
-<ng-content></ng-content>

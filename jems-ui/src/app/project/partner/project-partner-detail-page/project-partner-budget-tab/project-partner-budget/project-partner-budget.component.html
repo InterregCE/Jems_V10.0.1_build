@@ -1,91 +1,89 @@
 <ng-container *ngIf="(data$ | async) as data">
     <app-form (save)="updateBudgets()">
-        <form [formGroup]="budgetsForm">
-            <div class="my-2">
-                <h5 class="header">{{'project.partner.budget.header' | translate}}</h5>
-                <div *ngIf="!data.isStaffCostFlatRateActive">
-                    <h6 class="header">{{'project.partner.budget.staff' | translate}}</h6>
-                    <app-staff-costs-budget-table
-                            *ngIf="staff"
-                            [staffCostTable]="data.budgetTables.staffCosts"
-                            [editable]="budgetsForm.enabled"
-                            [projectPeriods]="data.periods"></app-staff-costs-budget-table>
-                </div>
-                <div *ngIf="data.isStaffCostFlatRateActive && !data.isOtherFlatRateBasedOnStaffCostActive">
-                    <h6 id="staffCostsFlatRate"
-                        class="header">{{'project.partner.budget.staff.costs.flat.rate.header' | translate}}</h6>
-                    <p class="intro-text-small">{{'project.partner.budget.other.staff.costs.flat.rate.description' | translate}}</p>
-                    <app-budget-flat-rate-table
-                            [total]="data.staffCostsTotal"
-                            [description]="'project.partner.budget.staff.costs.flat.rate' | translate"></app-budget-flat-rate-table>
-                </div>
-            </div>
+        <form appFormLayout [formGroup]="budgetsForm">
+            <h3>{{'project.partner.budget.header' | translate}}</h3>
+            <ng-container *ngIf="!data.isStaffCostFlatRateActive">
+                <h4>{{'project.partner.budget.staff' | translate}}</h4>
+                <app-staff-costs-budget-table
+                        appNoWidthLimit
+                        *ngIf="staff"
+                        [staffCostTable]="data.budgetTables.staffCosts"
+                        [editable]="budgetsForm.enabled"
+                        [projectPeriods]="data.periods"></app-staff-costs-budget-table>
+            </ng-container>
+            <ng-container *ngIf="data.isStaffCostFlatRateActive && !data.isOtherFlatRateBasedOnStaffCostActive">
+                <h4>{{'project.partner.budget.staff.costs.flat.rate.header' | translate}}</h4>
+                <p>{{'project.partner.budget.other.staff.costs.flat.rate.description' | translate}}</p>
+                <app-budget-flat-rate-table
+                        appNoWidthLimit
+                        [total]="data.staffCostsTotal"
+                        [description]="'project.partner.budget.staff.costs.flat.rate' | translate"></app-budget-flat-rate-table>
+            </ng-container>
 
             <ng-container *ngIf="!data.isOtherFlatRateBasedOnStaffCostActive">
-                <div class="my-2" *ngIf="data.isOfficeOnStaffFlatRateActive || data.isOfficeOnDirectFlatRateActive">
-                    <h6 class="header">{{'project.partner.budget.office.and.admin.header' | translate}}</h6>
-                    <p class="intro-text-small">
+                <ng-container *ngIf="data.isOfficeOnStaffFlatRateActive || data.isOfficeOnDirectFlatRateActive">
+                    <h4>{{'project.partner.budget.office.and.admin.header' | translate}}</h4>
+                    <p>
                         {{data.isOfficeOnStaffFlatRateActive ?
                             ('project.partner.budget.office.and.admin.on.staff.description' | translate) :
                             ('project.partner.budget.office.and.admin.on.direct.description' | translate)}}
                     </p>
                     <app-budget-flat-rate-table
+                            appNoWidthLimit
                             [total]="data.officeAndAdministrationFlatRateTotal"
                             [description]="'project.partner.budget.office.and.admin.flat.rate' | translate"></app-budget-flat-rate-table>
-                </div>
-                <div class="my-2">
-                    <ng-container *ngIf="!data.isTravelAndAccommodationFlatRateActive">
-                        <h6 class="header">{{'project.partner.budget.travel' | translate}}</h6>
-                        <app-travel-and-accommodation-costs-budget-table
-                                *ngIf="travel"
-                                [travelAndAccommodationTable]="data.budgetTables.travelCosts"
-                                [editable]="budgetsForm.enabled"
-                                [projectPeriods]="data.periods">
-                        </app-travel-and-accommodation-costs-budget-table>
-                    </ng-container>
-                    <ng-container *ngIf="data.isTravelAndAccommodationFlatRateActive">
-                        <h6 class="header">{{'project.partner.budget.travel.and.accommodation.flat.rate.header' | translate}}</h6>
-                        <p class="intro-text-small">{{'project.partner.budget.travel.and.accommodation.flat.rate.description' | translate}}</p>
-                        <app-budget-flat-rate-table
-                                [total]="data.travelAndAccommodationTotal"
-                                [description]="'project.partner.budget.travel.and.accommodation.flat.rate.header' | translate"></app-budget-flat-rate-table>
-                    </ng-container>
-                </div>
-                <div class="my-2">
-                    <h6 class="header">{{'project.partner.budget.external' | translate}}</h6>
-                    <app-general-budget-table
-                            *ngIf="external"
-                            [investmentSummaries]="data.investments"
-                            [budgetTable]="data.budgetTables.externalCosts"
+                </ng-container>
+                <ng-container *ngIf="!data.isTravelAndAccommodationFlatRateActive">
+                    <h4>{{'project.partner.budget.travel' | translate}}</h4>
+                    <app-travel-and-accommodation-costs-budget-table
+                            appNoWidthLimit
+                            *ngIf="travel"
+                            [travelAndAccommodationTable]="data.budgetTables.travelCosts"
                             [editable]="budgetsForm.enabled"
-                            [tableName]="constants.FORM_CONTROL_NAMES.external"
                             [projectPeriods]="data.periods">
-                    </app-general-budget-table>
-                </div>
-                <div class="my-2">
-                    <h6 class="header">{{'project.partner.budget.equipment' | translate}}</h6>
-                    <app-general-budget-table
-                            *ngIf="equipment"
-                            [investmentSummaries]="data.investments"
-                            [budgetTable]="data.budgetTables.equipmentCosts"
-                            [editable]="budgetsForm.enabled"
-                            [tableName]="constants.FORM_CONTROL_NAMES.equipment"
-                            [projectPeriods]="data.periods">
-                    </app-general-budget-table>
-                </div>
-                <div class="my-2">
-                    <h6 class="header">{{'project.partner.budget.infrastructure' | translate}}</h6>
-                    <app-general-budget-table
-                            *ngIf="infrastructure"
-                            [investmentSummaries]="data.investments"
-                            [budgetTable]="data.budgetTables.infrastructureCosts"
-                            [editable]="budgetsForm.enabled"
-                            [tableName]="constants.FORM_CONTROL_NAMES.infrastructure"
-                            [projectPeriods]="data.periods">
-                    </app-general-budget-table>
-                </div>
-                <div class="my-2" *ngIf="data.unitCosts?.length">
-                    <h6 class="header">{{'project.partner.budget.unitcosts' | translate}}</h6>
+                    </app-travel-and-accommodation-costs-budget-table>
+                </ng-container>
+                <ng-container *ngIf="data.isTravelAndAccommodationFlatRateActive">
+                    <h4>{{'project.partner.budget.travel.and.accommodation.flat.rate.header' | translate}}</h4>
+                    <p>{{'project.partner.budget.travel.and.accommodation.flat.rate.description' | translate}}</p>
+                    <app-budget-flat-rate-table
+                            appNoWidthLimit
+                            [total]="data.travelAndAccommodationTotal"
+                            [description]="'project.partner.budget.travel.and.accommodation.flat.rate.header' | translate"></app-budget-flat-rate-table>
+                </ng-container>
+                <h4>{{'project.partner.budget.external' | translate}}</h4>
+                <app-general-budget-table
+                        appNoWidthLimit
+                        *ngIf="external"
+                        [investmentSummaries]="data.investments"
+                        [budgetTable]="data.budgetTables.externalCosts"
+                        [editable]="budgetsForm.enabled"
+                        [tableName]="constants.FORM_CONTROL_NAMES.external"
+                        [projectPeriods]="data.periods">
+                </app-general-budget-table>
+                <h4>{{'project.partner.budget.equipment' | translate}}</h4>
+                <app-general-budget-table
+                        appNoWidthLimit
+                        *ngIf="equipment"
+                        [investmentSummaries]="data.investments"
+                        [budgetTable]="data.budgetTables.equipmentCosts"
+                        [editable]="budgetsForm.enabled"
+                        [tableName]="constants.FORM_CONTROL_NAMES.equipment"
+                        [projectPeriods]="data.periods">
+                </app-general-budget-table>
+
+                <h4>{{'project.partner.budget.infrastructure' | translate}}</h4>
+                <app-general-budget-table
+                        appNoWidthLimit
+                        *ngIf="infrastructure"
+                        [investmentSummaries]="data.investments"
+                        [budgetTable]="data.budgetTables.infrastructureCosts"
+                        [editable]="budgetsForm.enabled"
+                        [tableName]="constants.FORM_CONTROL_NAMES.infrastructure"
+                        [projectPeriods]="data.periods">
+                </app-general-budget-table>
+                <div *ngIf="data.unitCosts?.length">
+                    <h4>{{'project.partner.budget.unitcosts' | translate}}</h4>
                     <app-unit-costs-budget-table
                             *ngIf="unitCosts"
                             [availableUnitCosts]="data.unitCosts"
@@ -96,13 +94,14 @@
                 </div>
             </ng-container>
 
-            <div class="my-2" *ngIf="data.isOtherFlatRateBasedOnStaffCostActive">
-                <h6 class="header">{{'project.partner.budget.other.costs.flat.rate.header' | translate}}</h6>
-                <p class="intro-text-small">{{'project.partner.budget.other.costs.flat.rate.description' | translate}}</p>
+            <ng-container *ngIf="data.isOtherFlatRateBasedOnStaffCostActive">
+                <h4>{{'project.partner.budget.other.costs.flat.rate.header' | translate}}</h4>
+                <p>{{'project.partner.budget.other.costs.flat.rate.description' | translate}}</p>
                 <app-budget-flat-rate-table
+                        appNoWidthLimit
                         [total]="data.otherCostsFlatRateTotal"
                         [description]="'project.partner.budget.other.costs.flat.rate' | translate"></app-budget-flat-rate-table>
-            </div>
+            </ng-container>
         </form>
     </app-form>
 </ng-container>

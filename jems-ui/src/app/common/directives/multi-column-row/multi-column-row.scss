@@ -1,0 +1,19 @@
+.app-layout {
+  &.app-layout-row {
+    &.app-multi-column-row {
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+      justify-content: var(--align);
+
+      > * {
+        flex: var(--flex);
+        margin-right: var(--gap);
+      }
+
+      > :last-child {
+        margin-right: 0;
+      }
+    }
+  }
+}

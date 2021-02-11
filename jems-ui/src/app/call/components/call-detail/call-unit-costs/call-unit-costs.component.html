@@ -1,18 +1,14 @@
 <app-form (discard)="initForm()"
           (save)="onSubmit()">
-    <h5>
-        {{'unit.cost.table.title' | translate}}
-    </h5>
+    <h3>{{'unit.cost.table.title' | translate}}</h3>
     <div *ngIf="unitCostDataSource.data.length"
-         class="my-5"
-         appTableConfig
          [appearance]="'material-table'"
-         [widthConfig]="[{maxInRem:3},{},{maxInRem:5},{maxInRem:5}]">
+         [appTableConfig]="[{maxInRem:2},{},{maxInRem:5},{maxInRem:5}]">
         <div>
             <span>{{'unit.cost.table.column.name.activate.option' | translate}}</span>
             <span>{{'unit.cost.table.column.name.name' | translate}}</span>
             <span>{{'unit.cost.table.column.name.unit.type' | translate}}</span>
-            <span class="display-flex justify-end">{{'unit.cost.table.column.name.cost.unit' | translate}}</span>
+            <span>{{'unit.cost.table.column.name.cost.unit' | translate}}</span>
         </div>
         <span *ngFor="let element of unitCostDataSource.data">
             <mat-checkbox
@@ -23,7 +19,7 @@
             </mat-checkbox>
             <span>{{ element?.name }}</span>
             <span>{{ element?.type }}</span>
-            <span class="display-flex justify-end">{{ element?.costPerUnit | asMoney}}</span>
+            <span>{{ element?.costPerUnit | asMoney}}</span>
         </span>
     </div>
 </app-form>

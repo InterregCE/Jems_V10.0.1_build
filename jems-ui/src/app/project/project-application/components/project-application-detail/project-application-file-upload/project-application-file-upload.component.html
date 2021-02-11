@@ -1,8 +1,8 @@
-<div class="row project-detail-table-header">
-    <h6>{{'file.upload.header' | translate: {number: fileNumber} }}</h6>
+<div>
+    <h4>{{'file.upload.header' | translate: {number: fileNumber} }}</h4>
     <input type="file" #selectFile onclick="this.value=null;"
            (change)="addNewFilesForUpload($event)">
-    <button *ngIf="uploadPossible" mat-raised-button color="primary"
+    <button *ngIf="uploadPossible" mat-stroked-button
             (click)="selectFile.click()">+ {{'file.upload.add.new' | translate}}
     </button>
 </div>

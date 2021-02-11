@@ -1,90 +1,89 @@
-<div class="wrapper">
-    <h4 id="funds" class="header">{{'programme.fund.list.title' | translate}}</h4>
-    <button class="header-button" color="primary"
-            *ngIf="formState === FormState.VIEW" mat-raised-button
-            (click)="changeFormState$.next(FormState.EDIT)">
-        {{'common.edit.label' | translate}}
-    </button>
+<form appFormLayout [formGroup]="editableFundsForm">
+    <div appMultiColumnRow>
+        <h2 class="mb-0">{{'programme.fund.list.title' | translate}}</h2>
+        <button appFormFieldWidth="small" color="primary"
+                *ngIf="formState === FormState.VIEW" mat-raised-button
+                (click)="changeFormState$.next(FormState.EDIT)">
+            {{'common.edit.label' | translate}}
+        </button>
+    </div>
+    <mat-table [appTableConfig]="[{maxInRem:2},{},{}]"
+            appNoWidthLimit [dataSource]="dataSource" class="mat-elevation-z1">
+        <ng-container matColumnDef="select">
+            <mat-header-cell *matHeaderCellDef>{{'programme.fund.list.select' | translate}}</mat-header-cell>
+            <mat-cell *matCellDef="let element">
+                <mat-checkbox (click)="$event.stopPropagation()"
+                              (change)="selection.toggle(element)"
+                              [disabled]="formState === FormState.VIEW"
+                              [checked]="selection.isSelected(element)">
+                </mat-checkbox>
+            </mat-cell>
+            <mat-footer-cell *matFooterCellDef>
+                <button *ngIf="formState === FormState.EDIT" mat-icon-button
+                        type="button"
+                        (click)="addNewFund()">
+                    <mat-icon>add</mat-icon>
+                </button>
+            </mat-footer-cell>
+        </ng-container>
 
-    <form [formGroup]="editableFundsForm" class="mat-elevation-z8">
-        <mat-table [dataSource]="dataSource">
-
-            <ng-container matColumnDef="select">
-                <mat-header-cell *matHeaderCellDef>{{'programme.fund.list.select' | translate}}</mat-header-cell>
-                <mat-cell *matCellDef="let element">
-                    <mat-checkbox (click)="$event.stopPropagation()"
-                                  (change)="selection.toggle(element)"
-                                  [disabled]="formState === FormState.VIEW"
-                                  [checked]="selection.isSelected(element)">
-                    </mat-checkbox>
-                </mat-cell>
-                <mat-footer-cell *matFooterCellDef>
-                    <button *ngIf="formState === FormState.EDIT" mat-icon-button
-                            type="button"
-                            (click)="addNewFund()">
-                        <mat-icon>add</mat-icon>
-                    </button>
-                </mat-footer-cell>
-            </ng-container>
-
-            <ng-container matColumnDef="abbreviation">
-                <mat-header-cell *matHeaderCellDef>{{'programme.fund.list.abbreviation' | translate}}</mat-header-cell>
-                <mat-cell *matCellDef="let element">
+        <ng-container matColumnDef="abbreviation">
+            <mat-header-cell *matHeaderCellDef>{{'programme.fund.list.abbreviation' | translate}}</mat-header-cell>
+            <mat-cell *matCellDef="let element">
                     <span *ngIf="!element.creation || formState === FormState.VIEW">
                         {{element.abbreviation || 'programme.fund.abbreviation.' + element.id | translate}}
                     </span>
-                    <mat-form-field *ngIf="element.creation && formState === FormState.EDIT">
-                        <mat-label>{{'programme.fund.list.add.fund' | translate}}</mat-label>
-                        <input matInput formnovalidate
-                               [name]="abbreviation(element.id)"
-                               [formControlName]="abbreviation(element.id)">
-                        <mat-error>
-                            <app-form-field-errors
-                                    [errors]="editableFundsForm?.controls[abbreviation(element.id)]?.errors"
-                                    [messages]="abbrevErrors">
-                            </app-form-field-errors>
-                        </mat-error>
-                    </mat-form-field>
-                </mat-cell>
-            </ng-container>
+                <mat-form-field *ngIf="element.creation && formState === FormState.EDIT">
+                    <mat-label>{{'programme.fund.list.add.fund' | translate}}</mat-label>
+                    <input matInput formnovalidate
+                           [name]="abbreviation(element.id)"
+                           [formControlName]="abbreviation(element.id)">
+                    <mat-error>
+                        <app-form-field-errors
+                                [errors]="editableFundsForm?.controls[abbreviation(element.id)]?.errors"
+                                [messages]="abbrevErrors">
+                        </app-form-field-errors>
+                    </mat-error>
+                </mat-form-field>
+            </mat-cell>
+        </ng-container>
 
-            <ng-container matColumnDef="description">
-                <mat-header-cell *matHeaderCellDef>{{'programme.fund.list.description' | translate}}</mat-header-cell>
-                <mat-cell *matCellDef="let element">
-                    <ng-container *ngIf="!element.creation || formState === FormState.VIEW">
+        <ng-container matColumnDef="description">
+            <mat-header-cell *matHeaderCellDef>{{'programme.fund.list.description' | translate}}</mat-header-cell>
+            <mat-cell *matCellDef="let element">
+                <ng-container *ngIf="!element.creation || formState === FormState.VIEW">
                         <span *ngIf="element.id <= DEFAULT_FUNDS_LENGTH">
                             {{'programme.fund.description.' + element.id | translate}}
                         </span>
-                        <span *ngIf="element.id > DEFAULT_FUNDS_LENGTH">{{element.description}}</span>
-                    </ng-container>
-                    <mat-form-field *ngIf="element.creation && formState === FormState.EDIT">
-                        <mat-label>{{'programme.fund.list.description' | translate}}</mat-label>
-                        <input matInput
-                               [name]="description(element.id)"
-                               [formControlName]="description(element.id)">
-                        <mat-error>
-                            <app-form-field-errors
-                                    [errors]="editableFundsForm?.controls[description(element.id)]?.errors"
-                                    [messages]="descErrors">
-                            </app-form-field-errors>
-                        </mat-error>
-                    </mat-form-field>
-                </mat-cell>
-            </ng-container>
+                    <span *ngIf="element.id > DEFAULT_FUNDS_LENGTH">{{element.description}}</span>
+                </ng-container>
+                <mat-form-field *ngIf="element.creation && formState === FormState.EDIT">
+                    <mat-label>{{'programme.fund.list.description' | translate}}</mat-label>
+                    <input matInput
+                           [name]="description(element.id)"
+                           [formControlName]="description(element.id)">
+                    <mat-error>
+                        <app-form-field-errors
+                                [errors]="editableFundsForm?.controls[description(element.id)]?.errors"
+                                [messages]="descErrors">
+                        </app-form-field-errors>
+                    </mat-error>
+                </mat-form-field>
+            </mat-cell>
+        </ng-container>
 
-            <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
-            <mat-row *matRowDef="let row; columns: displayedColumns;"></mat-row>
-            <mat-row *matFooterRowDef="['select']"
-                     [hidden]="formState === FormState.VIEW">
-            </mat-row>
-        </mat-table>
-    </form>
-    <div *ngIf="formState === FormState.EDIT">
-        <button class="button" mat-stroked-button type="button"
+        <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
+        <mat-row *matRowDef="let row; columns: displayedColumns;"></mat-row>
+        <mat-row *matFooterRowDef="['select']"
+                 [hidden]="formState === FormState.VIEW">
+        </mat-row>
+    </mat-table>
+    <div appMultiColumnRow *ngIf="formState === FormState.EDIT">
+        <button mat-stroked-button type="button"
                 (click)="changeFormState$.next(FormState.VIEW)">
             {{'common.cancel.label' | translate}}
         </button>
-        <button class="button" mat-raised-button color="primary" type="button"
+        <button mat-raised-button color="primary" type="button"
                 [disabled]="!isValid() || submitted"
                 (click)="onSubmit()">
             {{'common.save.label' | translate}}
@@ -100,4 +99,4 @@
                [type]="Alert.ERROR">
         <p>{{error.i18nKey | translate}}</p>
     </app-alert>
-</div>
+</form>

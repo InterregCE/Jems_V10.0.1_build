@@ -27,6 +27,10 @@ import {NgxCurrencyModule} from 'ngx-currency';
 import {CurrencyDirective} from './directives/currency.directive';
 import {TableConfigDirective} from './directives/table-config/table-config.directive';
 import {MultiLanguageFormFieldComponent} from '@common/components/forms/multi-language-form-field/multi-language-form-field.component';
+import {FormLayoutDirective} from './directives/form-layout/form-layout.directive';
+import {MultiColumnRowDirective} from './directives/multi-column-row/multi-column-row.directive';
+import {NoWidthLimitDirective} from './directives/no-width-limit.directive';
+import {LabelDirective} from './directives/form-layout/label.directive';
 
 const modules = [
   CommonModule,
@@ -60,7 +64,11 @@ const declarations = [
   FormFieldWidthDirective,
   CurrencyDirective,
   TableConfigDirective,
-  MultiLanguageFormFieldComponent
+  MultiLanguageFormFieldComponent,
+  FormLayoutDirective,
+  MultiColumnRowDirective,
+  NoWidthLimitDirective,
+  LabelDirective
 ];
 
 const providers = [
