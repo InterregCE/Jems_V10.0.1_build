@@ -1,5 +1,4 @@
 import {ChangeDetectionStrategy, Component, OnInit} from '@angular/core';
-// import {DataSet, Timeline, TimelineOptions, TimelineTimeAxisScaleType} from 'vis';
 import {
   Content,
   EMPTY_STRING,
@@ -38,8 +37,6 @@ export class ProjectTimeplanPageComponent implements OnInit {
   }>;
 
   options: TimelineOptions = {
-    // zoomable: false,
-    // moveable: false,
     showCurrentTime: false,
     showMajorLabels: false,
     orientation: 'top',
@@ -50,23 +47,12 @@ export class ProjectTimeplanPageComponent implements OnInit {
       item: {vertical: 10, horizontal: 0}
     },
     min: START_DATE,
-    // TODO compute end date based on last available period for this project
-    // max: END_DATE,
   };
 
   constructor(private projectApplicationFormSidenavService: ProjectApplicationFormSidenavService,
               public pageStore: ProjectTimeplanPageStore) {
   }
 
-  /**
-   * TODO: you need to fetch:
-   * - getFullWorkPackagesByProjectId(projectId)
-   * - getProjectResults(projectId)
-   * - get last period or all periods (those should be in store already, we will then use them for setting boundaries)
-   * - get input languages available (instead of 'random lang' button we will use language toggle then)
-   *
-   * those first 2 you will use as ProjectTimePlan() instead of TEST_DATA in following lines:
-   */
   ngOnInit(): void {
     this.data$ = combineLatest([
       this.pageStore.workPackages$,
@@ -78,11 +64,10 @@ export class ProjectTimeplanPageComponent implements OnInit {
           translations: getTranslations({workPackages, results}),
           groups: getGroups({workPackages, results}),
           items: getItems({workPackages, results}),
-          periods
+          periods,
         })),
         tap(data => {
-          const lastPeriod = data.periods[data.periods.length - 1];
-          this.options.max = getEndDateFromPeriod(lastPeriod?.number)?.calendar();
+          this.options.max = getEndDateFromPeriod(data.periods.length)?.calendar();
           const doc = document.getElementById('visualization');
           if (doc) {
             this.timeline = new Timeline(doc, data.items, this.options);
@@ -100,19 +85,21 @@ export class ProjectTimeplanPageComponent implements OnInit {
 
   click(event: Event): void {
     const prop = this.timeline.getEventProperties(event);
-    console.log('click gr ' + prop.group + ', id ' + prop.item);
+    if (prop.item) {
+      console.log('click gr ' + prop.group + ', id ' + prop.item);
+    }
   }
 
   /**
    * Call this if different language has been selected.
    */
   updateLanguageSelection(data: any, language: InputTranslation.LanguageEnum | string): void {
-    const translatedIds = data.translations[language]?.map((group: any) => group.id);
+    const translatedIds = data.translations[language]?.map((group: any) => group.id) || [];
     const allIds: number[] = data.groups.getIds().map((groupId: any) => Number(groupId));
     const toEmptyIds = allIds.filter(element => !translatedIds.includes(element));
 
     // if some translations are missing for particular language, we need to reset them to EMPTY_STRING
-    data.groups.update(data.translations[language]
+    data.groups.update((data.translations[language] || [])
       .concat(toEmptyIds.map(groupId => ({id: groupId, content: EMPTY_STRING} as Content)))
     );
   }

@@ -1,13 +1,13 @@
 import { TestBed } from '@angular/core/testing';
 
-import { ProjectTimeplanPageStoreService } from './project-timeplan-page-store.service';
+import { ProjectTimeplanPageStore } from './project-timeplan-page-store.service';
 
-describe('ProjectTimeplanPageStoreService', () => {
-  let service: ProjectTimeplanPageStoreService;
+describe('ProjectTimeplanPageStore', () => {
+  let service: ProjectTimeplanPageStore;
 
   beforeEach(() => {
     TestBed.configureTestingModule({});
-    service = TestBed.inject(ProjectTimeplanPageStoreService);
+    service = TestBed.inject(ProjectTimeplanPageStore);
   });
 
   it('should be created', () => {

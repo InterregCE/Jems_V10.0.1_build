@@ -39,6 +39,7 @@ $color-cyan-light: #CCF2F6;
   .vis-item.vis-range {
     height: $size-of-box;
     border-width: .0625rem;
+    cursor: pointer;
 
     .vis-item-overflow {
       border-radius: $radius-nested;

@@ -119,7 +119,8 @@ export function getItems(timePlan: ProjectTimePlan): DataSet<any> {
         start: getNestedStartDateFromPeriod(output.periodNumber),
         end: getNestedEndDateFromPeriod(output.periodNumber),
         type: 'range',
-        content: `Nr. ${output.outputNumber}`,
+        title: `<span>Target value: ${output.targetValue}<br>Period: ${output.periodNumber}</span>`,
+        content: `O.${indexOutput + 1}`,
         className: getColor(indexWp),
       });
     });
@@ -136,7 +137,6 @@ export function getItems(timePlan: ProjectTimePlan): DataSet<any> {
     }
   });
 
-  console.log(items);
   return new DataSet(items);
 }
 
@@ -178,7 +178,6 @@ export function getGroups(timePlan: ProjectTimePlan): DataSet<any> {
     };
   });
 
-  console.log(groups.concat(wpGrouped));
   return new DataSet(groups.concat(wpGrouped));
 }
 
@@ -233,178 +232,3 @@ export function getTranslations(timePlan: ProjectTimePlan): { [language: string]
   });
   return languages;
 }
-
-export const TEST_DATA = {
-  workPackages: [
-    {
-      id: 1,
-      name: [
-        {
-          language: InputTranslation.LanguageEnum.EN,
-          translation: 'WP 1 EN'
-        },
-        {
-          language: InputTranslation.LanguageEnum.SK,
-          translation: 'WP 1 SK'
-        }
-      ],
-      activities: [
-        {
-          title: [
-            {
-              language: InputTranslation.LanguageEnum.EN,
-              translation: 'Activity 1 EN'
-            },
-            {
-              language: InputTranslation.LanguageEnum.SK,
-              translation: 'Activity 1 SK'
-            }
-          ],
-          startPeriod: 1,
-          endPeriod: 2,
-          description: [],
-          deliverables: [
-            {
-              period: 2,
-              description: [],
-            },
-          ]
-        },
-        {
-          title: [
-            {
-              language: InputTranslation.LanguageEnum.EN,
-              translation: 'Activity 2 EN'
-            },
-            {
-              language: InputTranslation.LanguageEnum.SK,
-              translation: 'Activity 2 SK'
-            }
-          ],
-          startPeriod: 2,
-          endPeriod: 3,
-          description: [],
-          deliverables: [
-            {
-              period: 2,
-              description: [],
-            },
-          ]
-        },
-        {
-          title: [],
-          startPeriod: 3,
-          endPeriod: 4,
-          description: [],
-          deliverables: []
-        },
-      ],
-      outputs: [
-        {
-          outputNumber: 1,
-          programmeOutputIndicatorId: 1,
-          title: [
-            {
-              language: InputTranslation.LanguageEnum.EN,
-              translation: 'Output 1 EN'
-            },
-            {
-              language: InputTranslation.LanguageEnum.SK,
-              translation: 'Output 2 SK'
-            }
-          ],
-          targetValue: 'string',
-          periodNumber: 6,
-          description: []
-        },
-      ],
-    },
-    {
-      id: 2,
-      name: [
-        {
-          language: InputTranslation.LanguageEnum.EN,
-          translation: 'WP 2 EN'
-        },
-        {
-          language: InputTranslation.LanguageEnum.SK,
-          translation: 'WP 2 SK'
-        }
-      ],
-      activities: [
-        {
-          title: [
-            {
-              language: InputTranslation.LanguageEnum.EN,
-              translation: 'A 1 only EN'
-            },
-          ],
-          startPeriod: 2,
-          endPeriod: 3,
-          description: [],
-          deliverables: [
-            {
-              period: 3,
-              description: [],
-            },
-          ]
-        },
-        {
-          title: [
-            {
-              language: InputTranslation.LanguageEnum.SK,
-              translation: 'A 2 only SK'
-            },
-          ],
-          startPeriod: 3,
-          endPeriod: 4,
-          description: [],
-          deliverables: [
-            {
-              period: 3,
-              description: [],
-            },
-            {
-              period: 4,
-              description: [],
-            },
-            {
-              period: 3,
-              description: [],
-            },
-            {
-              period: 4,
-              description: [],
-            }
-          ]
-        },
-        {
-          title: [],
-          startPeriod: 4,
-          endPeriod: 5,
-          description: [],
-          deliverables: []
-        },
-      ],
-      outputs: [
-        {
-          outputNumber: 1,
-          programmeOutputIndicatorId: 1,
-          title: [],
-          targetValue: 'string',
-          periodNumber: 6,
-          description: []
-        },
-        {
-          outputNumber: 2,
-          programmeOutputIndicatorId: 1,
-          title: [],
-          targetValue: 'string',
-          periodNumber: 7,
-          description: []
-        }
-      ]
-    }
-  ],
-  results: []
-} as ProjectTimePlan;
