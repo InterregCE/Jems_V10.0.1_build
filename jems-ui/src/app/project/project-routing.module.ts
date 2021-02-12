@@ -27,7 +27,7 @@ import {ProjectWorkPackageInvestmentDetailPageComponent} from './work-package/wo
 import {ProjectResultsPageComponent} from './results/project-results-page/project-results-page.component';
 import {ProjectLumpSumsPageComponent} from './lump-sums/project-lump-sums-page/project-lump-sums-page.component';
 import {BudgetPagePerPartnerComponent} from './budget/budget-page-per-partner/budget-page-per-partner.component';
-import {ProjectTimeplanComponent} from './project-application/timeplan/project-timeplan.component';
+import {ProjectTimeplanPageComponent} from './timeplan/project-timeplan-page/project-timeplan-page.component';
 
 export const routes: Routes = [
   {
@@ -200,7 +200,7 @@ export const routes: Routes = [
           },
           {
             path: 'applicationTimePlan',
-            component: ProjectTimeplanComponent,
+            component: ProjectTimeplanPageComponent,
             data: {breadcrumb: 'project.breadcrumb.applicationForm.timePlan'},
           },
           {

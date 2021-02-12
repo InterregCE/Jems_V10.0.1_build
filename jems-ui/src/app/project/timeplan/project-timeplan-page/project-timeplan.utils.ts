@@ -18,39 +18,50 @@ function getColor(index: number): string {
 export function getStartDateFromPeriod(period: number): Moment {
   return moment(START_DATE).utc().add(period, 'M').startOf('month');
 }
+
 export function getEndDateFromPeriod(period: number): Moment {
   return moment(START_DATE).utc().add(period, 'M').endOf('month');
 }
+
 export function getNestedStartDateFromPeriod(period: number): Moment {
   return getStartDateFromPeriod(period).add(1, 'd');
 }
+
 export function getNestedEndDateFromPeriod(period: number): Moment {
   return getEndDateFromPeriod(period).subtract(1, 'd');
 }
 
 export function periodLabelFunction(date: Date, scale: string, step: number): string {
-  const periodNumber =  Math.round(moment(date).utc().diff(moment('2000-01-01').utc(), 'months', true) + 1);
+  const periodNumber = Math.round(moment(date).utc().diff(
+    moment('2000-01-01').utc(), 'months', true) + 1
+  );
   return `Period ${periodNumber}`;
 }
 
 function getWorkPackageId(indexWp: number): number {
   return (indexWp + 1) * 100_000;
 }
+
 function getResultId(indexResult: number): number {
   return (indexResult + 1) * 1_000;
 }
+
 function getActivityId(indexWp: number, indexActivity: number): number {
   return getWorkPackageId(indexWp) + 10_000 + (indexActivity + 1) * 100;
 }
+
 function getActivityBoxId(indexWp: number, indexActivity: number): number {
   return getActivityId(indexWp, indexActivity) + 50;
 }
+
 function getDeliverableBoxId(indexWp: number, indexActivity: number, indexDeliverable: number): number {
   return getActivityBoxId(indexWp, indexActivity) + (indexDeliverable + 1);
 }
+
 function getOutputId(indexWp: number, indexOutput: number): number {
   return getWorkPackageId(indexWp) + 20_000 + (indexOutput + 1) * 100;
 }
+
 function getOutputBoxId(indexWp: number, indexOutput: number): number {
   return getOutputId(indexWp, indexOutput) + 50;
 }
@@ -184,13 +195,16 @@ export class Content {
 }
 
 export function getTranslations(timePlan: ProjectTimePlan): { [language: string]: Content[]; } {
-  const languages: { [language: string]: Content[]; } = { };
+  const languages: { [language: string]: Content[]; } = {};
   timePlan.workPackages.forEach((workPackage, indexWp) => {
     workPackage.name.forEach(translation => {
       if (!languages[translation.language]) {
         languages[translation.language] = new Array<Content>(0);
       }
-      languages[translation.language].push({id: getWorkPackageId(indexWp), content: translation.translation} as Content);
+      languages[translation.language].push({
+        id: getWorkPackageId(indexWp),
+        content: translation.translation
+      } as Content);
     });
 
     workPackage.activities.forEach((activity, indexActivity) => {
@@ -198,7 +212,10 @@ export function getTranslations(timePlan: ProjectTimePlan): { [language: string]
         if (!languages[translation.language]) {
           languages[translation.language] = new Array<Content>(0);
         }
-        languages[translation.language].push({id: getActivityId(indexWp, indexActivity), content: translation.translation} as Content);
+        languages[translation.language].push({
+          id: getActivityId(indexWp, indexActivity),
+          content: translation.translation
+        } as Content);
       });
     });
 
@@ -207,7 +224,10 @@ export function getTranslations(timePlan: ProjectTimePlan): { [language: string]
         if (!languages[translation.language]) {
           languages[translation.language] = new Array<Content>(0);
         }
-        languages[translation.language].push({id: getOutputId(indexWp, indexOutput), content: translation.translation} as Content);
+        languages[translation.language].push({
+          id: getOutputId(indexWp, indexOutput),
+          content: translation.translation
+        } as Content);
       });
     });
   });
