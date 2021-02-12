@@ -1,13 +1,13 @@
 package io.cloudflight.jems.server.programme.service.indicator
 
 import io.cloudflight.jems.api.programme.dto.indicator.IndicatorOutputDto
-import io.cloudflight.jems.api.programme.dto.indicator.IndicatorResultDto
 import io.cloudflight.jems.api.programme.dto.indicator.InputIndicatorOutputCreate
 import io.cloudflight.jems.api.programme.dto.indicator.InputIndicatorOutputUpdate
 import io.cloudflight.jems.api.programme.dto.indicator.InputIndicatorResultCreate
 import io.cloudflight.jems.api.programme.dto.indicator.InputIndicatorResultUpdate
 import io.cloudflight.jems.api.programme.dto.indicator.OutputIndicatorOutput
 import io.cloudflight.jems.api.programme.dto.indicator.OutputIndicatorResult
+import io.cloudflight.jems.api.programme.dto.priority.ProgrammeObjectivePolicy
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
 
@@ -21,7 +21,7 @@ interface IndicatorService {
 
     fun getOutputIndicatorsDetails(): Set<IndicatorOutputDto>
 
-    fun getOutputIndicatorsForSpecificObjective(code: String): List<IndicatorOutputDto>
+    fun getOutputIndicatorsForSpecificObjective(programmeObjectivePolicy: ProgrammeObjectivePolicy): List<IndicatorOutputDto>
 
     fun existsOutputByIdentifier(identifier: String): Boolean
 

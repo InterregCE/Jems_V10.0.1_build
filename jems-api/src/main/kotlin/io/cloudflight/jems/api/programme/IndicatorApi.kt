@@ -8,6 +8,7 @@ import io.cloudflight.jems.api.programme.dto.indicator.InputIndicatorResultCreat
 import io.cloudflight.jems.api.programme.dto.indicator.InputIndicatorResultUpdate
 import io.cloudflight.jems.api.programme.dto.indicator.OutputIndicatorOutput
 import io.cloudflight.jems.api.programme.dto.indicator.OutputIndicatorResult
+import io.cloudflight.jems.api.programme.dto.priority.ProgrammeObjectivePolicy
 import io.swagger.annotations.Api
 import io.swagger.annotations.ApiImplicitParam
 import io.swagger.annotations.ApiImplicitParams
@@ -41,8 +42,8 @@ interface IndicatorApi {
     @GetMapping("/output/detail")
     fun getAllIndicatorOutputDetail(): Set<IndicatorOutputDto>
 
-    @GetMapping("/output/detail/{code}")
-    fun getOutputIndicatorsForSpecificObjective(@PathVariable code: String): List<IndicatorOutputDto>
+    @GetMapping("/output/detail/{programmeObjectivePolicy}")
+    fun getOutputIndicatorsForSpecificObjective(@PathVariable programmeObjectivePolicy: ProgrammeObjectivePolicy): List<IndicatorOutputDto>
 
     @ApiOperation("Returns OUTPUT indicator by id")
     @GetMapping("/output/{id}")
@@ -71,8 +72,8 @@ interface IndicatorApi {
     @GetMapping("/result/detail")
     fun getAllIndicatorResultDetail(): Set<IndicatorResultDto>
 
-    @GetMapping("/result/detail/{code}")
-    fun getAllIndicatorResultDetailForSpecificObjective(@PathVariable code: String): List<IndicatorResultDto>
+    @GetMapping("/result/detail/{programmeObjectivePolicy}")
+    fun getAllIndicatorResultDetailForSpecificObjective(@PathVariable programmeObjectivePolicy: ProgrammeObjectivePolicy): List<IndicatorResultDto>
 
     @ApiOperation("Returns RESULT indicator by id")
     @GetMapping("/result/{id}")

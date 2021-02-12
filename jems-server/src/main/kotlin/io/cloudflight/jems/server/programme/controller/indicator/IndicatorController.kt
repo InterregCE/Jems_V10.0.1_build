@@ -9,6 +9,7 @@ import io.cloudflight.jems.api.programme.dto.indicator.InputIndicatorResultCreat
 import io.cloudflight.jems.api.programme.dto.indicator.InputIndicatorResultUpdate
 import io.cloudflight.jems.api.programme.dto.indicator.OutputIndicatorOutput
 import io.cloudflight.jems.api.programme.dto.indicator.OutputIndicatorResult
+import io.cloudflight.jems.api.programme.dto.priority.ProgrammeObjectivePolicy
 import io.cloudflight.jems.server.programme.service.indicator.IndicatorService
 import io.cloudflight.jems.server.programme.service.indicator.get_result_indicators_details.GetResultIndicatorDetailsInteractor
 import org.springframework.data.domain.Page
@@ -35,8 +36,8 @@ class IndicatorController(
     }
 
     @PreAuthorize("@programmeSetupAuthorization.canReadProgrammeSetup()")
-    override fun getOutputIndicatorsForSpecificObjective(code: String): List<IndicatorOutputDto> =
-        indicatorService.getOutputIndicatorsForSpecificObjective(code)
+    override fun getOutputIndicatorsForSpecificObjective(programmeObjectivePolicy: ProgrammeObjectivePolicy): List<IndicatorOutputDto> =
+        indicatorService.getOutputIndicatorsForSpecificObjective(programmeObjectivePolicy)
 
     @PreAuthorize("@programmeSetupAuthorization.canAccessSetup()")
     override fun getIndicatorOutput(id: Long): OutputIndicatorOutput {
@@ -79,8 +80,8 @@ class IndicatorController(
     override fun getAllIndicatorResultDetail(): Set<IndicatorResultDto> =
         getResultIndicatorDetailsInteractor.getResultIndicatorsDetails()
 
-    override fun getAllIndicatorResultDetailForSpecificObjective(code: String): List<IndicatorResultDto> =
-        getResultIndicatorDetailsInteractor.getResultIndicatorsDetailsForSpecificObjective(code)
+    override fun getAllIndicatorResultDetailForSpecificObjective(programmeObjectivePolicy: ProgrammeObjectivePolicy): List<IndicatorResultDto> =
+        getResultIndicatorDetailsInteractor.getResultIndicatorsDetailsForSpecificObjective(programmeObjectivePolicy)
     //endregion
 
 }

@@ -151,8 +151,8 @@ export class ProjectWorkPackagePageStore {
   private outputIndicators(): Observable<IndicatorOutputDto[]> {
     return this.projectStore.getProject()
       .pipe(
-        map(project => project?.projectData.specificObjective.code),
-        switchMap(code => this.programmeIndicatorService.getOutputIndicatorsForSpecificObjective(code)),
+        map(project => project?.projectData?.specificObjective?.programmeObjectivePolicy),
+        switchMap(programmeObjectivePolicy => programmeObjectivePolicy ? this.programmeIndicatorService.getOutputIndicatorsForSpecificObjective(programmeObjectivePolicy) : of([])),
         tap(outputs => Log.info('Fetched programme output indicators', outputs)),
       );
   }
