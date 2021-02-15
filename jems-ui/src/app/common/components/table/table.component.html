@@ -8,8 +8,7 @@
 </app-paginator>
 <mat-table matSort
            [dataSource]="rows"
-           (matSortChange)="sortRows.emit($event)"
-           class="mat-elevation-z1">
+           (matSortChange)="sortRows.emit($event)">
 
     <ng-container *ngFor="let column of configuration.columns; let i = index"
                   matColumnDef="{{column.displayedColumn}}">

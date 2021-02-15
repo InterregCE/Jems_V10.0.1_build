@@ -1,9 +1,8 @@
-<app-breadcrumb></app-breadcrumb>
-<h1>{{'project.application.form.acronym' | translate : {acronym: projectStore.getAcronym() | async} }}</h1>
-<h2>{{'project.application.form.section.part.d' | translate}}</h2>
+<app-main-page-template [needsCard]="true"
+                        [titleText]="'project.application.form.acronym' | translate : {acronym: projectStore.getAcronym() | async} "
+                        subTitleKey="project.application.form.section.part.d">
 <h3>{{'project.application.form.budgetPerPartner.title' | translate}}</h3>
-
-<mat-table *ngIf="budgets$ | async" id="budget-table-per-partner" class="mat-elevation-z8 w-150"
+<mat-table *ngIf="budgets$ | async" id="budget-table-per-partner"
            [dataSource]="budgetColumns">
 
     <ng-container matColumnDef="partner">
@@ -91,3 +90,4 @@
     <mat-row *matRowDef="let row; columns: displayedColumns;"></mat-row>
     <mat-footer-row *matFooterRowDef="displayedColumns"></mat-footer-row>
 </mat-table>
+</app-main-page-template>

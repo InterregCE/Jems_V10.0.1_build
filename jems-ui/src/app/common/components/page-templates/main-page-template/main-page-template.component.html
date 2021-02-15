@@ -1,0 +1,33 @@
+<div id="main-page-container">
+    <app-breadcrumb></app-breadcrumb>
+    <div appFormLayout (scroll)="onScroll()" #container id="main-page-content">
+
+        <h1 *ngIf="titleText">{{titleText}}</h1>
+        <h1 *ngIf="titleKey && !titleText">{{titleKey | translate}}</h1>
+        <ng-content select="[page-title]"></ng-content>
+
+        <h2 *ngIf="subTitleText">{{subTitleText}}</h2>
+        <h2 *ngIf="subTitleKey && !subTitleText">{{subTitleKey | translate}}</h2>
+        <ng-content select="[page-sub-title]"></ng-content>
+
+        <p *ngIf="descriptionText">{{descriptionText}}</p>
+        <p *ngIf="!descriptionText && descriptionKey">{{descriptionKey | translate}}</p>
+        <ng-content select="[page-description]"></ng-content>
+
+        <mat-card *ngIf="needsCard" appNoWidthLimit>
+            <mat-card-content>
+                <ng-container [ngTemplateOutlet]="content"></ng-container>
+            </mat-card-content>
+        </mat-card>
+        <div *ngIf="!needsCard" appNoWidthLimit>
+            <ng-container [ngTemplateOutlet]="content"></ng-container>
+        </div>
+        <button *ngIf="isScrollButtonVisible" id="scroll-button" mat-icon-button (click)="scrollToTop()">
+            <mat-icon>keyboard_arrow_up</mat-icon>
+        </button>
+
+    </div>
+</div>
+<ng-template #content>
+    <ng-content></ng-content>
+</ng-template>

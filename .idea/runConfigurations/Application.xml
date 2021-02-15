@@ -3,6 +3,7 @@
     <module name="jems.jems-server.main" />
     <option name="SPRING_BOOT_MAIN_CLASS" value="io.cloudflight.jems.server.Application" />
     <option name="ALTERNATIVE_JRE_PATH" />
+    <option name="SHORTEN_COMMAND_LINE" value="ARGS_FILE" />
     <option name="UPDATE_ACTION_UPDATE_POLICY" value="UpdateClassesAndTriggerFile" />
     <option name="FRAME_DEACTIVATION_UPDATE_POLICY" value="UpdateResources" />
     <method v="2">

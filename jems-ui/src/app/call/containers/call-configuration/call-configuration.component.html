@@ -1,5 +1,5 @@
-<app-breadcrumb></app-breadcrumb>
-<div *ngIf="details$ | async as details">
+<app-main-page-template *ngIf="details$ | async as details" titleKey="call.detail.title"
+                        subTitleKey="call.general.settings">
     <app-call-detail
             [call]="details.call"
             [strategies]="details.strategies"
@@ -7,4 +7,6 @@
             [priorityCheckboxes]="details.priorities"
             [isApplicant]="details.isApplicant">
     </app-call-detail>
-</div>
+</app-main-page-template>
+
+

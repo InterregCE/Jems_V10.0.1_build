@@ -1,7 +1,6 @@
 <app-form (discard)="initForm()" (save)="onSubmit()">
     <h3>{{'lump.sums.table.title' | translate}}</h3>
     <div *ngIf="lumpSumDataSource.data.length"
-         [appearance]="'material-table'"
          [appTableConfig]="[{maxInRem:2},{},{maxInRem:8}]">
         <div>
             <span>{{'lump.sum.table.column.name.activate.option' | translate}}</span>

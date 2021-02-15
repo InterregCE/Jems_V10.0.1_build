@@ -2,7 +2,6 @@
           (save)="onSubmit()">
     <h3>{{'unit.cost.table.title' | translate}}</h3>
     <div *ngIf="unitCostDataSource.data.length"
-         [appearance]="'material-table'"
          [appTableConfig]="[{maxInRem:2},{},{maxInRem:5},{maxInRem:5}]">
         <div>
             <span>{{'unit.cost.table.column.name.activate.option' | translate}}</span>

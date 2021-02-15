@@ -1,6 +1,6 @@
-<form appFormLayout [formGroup]="editableFundsForm">
+<form id="funds" appFormLayout [formGroup]="editableFundsForm">
     <div appMultiColumnRow>
-        <h2 class="mb-0">{{'programme.fund.list.title' | translate}}</h2>
+        <h3 class="mb-0">{{'programme.fund.list.title' | translate}}</h3>
         <button appFormFieldWidth="small" color="primary"
                 *ngIf="formState === FormState.VIEW" mat-raised-button
                 (click)="changeFormState$.next(FormState.EDIT)">
@@ -8,7 +8,7 @@
         </button>
     </div>
     <mat-table [appTableConfig]="[{maxInRem:2},{},{}]"
-            appNoWidthLimit [dataSource]="dataSource" class="mat-elevation-z1">
+            appNoWidthLimit [dataSource]="dataSource">
         <ng-container matColumnDef="select">
             <mat-header-cell *matHeaderCellDef>{{'programme.fund.list.select' | translate}}</mat-header-cell>
             <mat-cell *matCellDef="let element">

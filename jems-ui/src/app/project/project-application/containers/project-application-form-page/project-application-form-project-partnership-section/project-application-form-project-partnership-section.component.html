@@ -1,11 +1,11 @@
-<app-breadcrumb></app-breadcrumb>
-<h1>{{'project.application.form.acronym' | translate : {acronym: projectStore.getAcronym() | async} }}</h1>
-<h2>{{'project.application.form.section.part.c' | translate}}</h2>
-
-<app-project-application-form-project-partnership-detail
-        [success$]="saveSuccess$"
-        [project]="partnership$ | async"
-        [editable]="projectStore.projectEditable$ | async"
-        [error$]="saveError$"
-        (updateData)="updatePartnership$.next($event)">
-</app-project-application-form-project-partnership-detail>
+<app-main-page-template
+        [titleText]="'project.application.form.acronym' | translate : {acronym: projectStore.getAcronym() | async} "
+        subTitleKey="project.application.form.section.part.c">
+    <app-project-application-form-project-partnership-detail
+            [success$]="saveSuccess$"
+            [project]="partnership$ | async"
+            [editable]="projectStore.projectEditable$ | async"
+            [error$]="saveError$"
+            (updateData)="updatePartnership$.next($event)">
+    </app-project-application-form-project-partnership-detail>
+</app-main-page-template>

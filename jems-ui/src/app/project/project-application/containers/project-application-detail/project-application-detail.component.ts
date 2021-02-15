@@ -18,6 +18,7 @@ export class ProjectApplicationDetailComponent {
   fileType = OutputProjectFile.TypeEnum;
 
   projectId = this.activatedRoute.snapshot.params.projectId;
+  project$ = this.projectStore.getProject();
 
   assessmentFilesVisible$ = combineLatest([
     this.projectStore.getProject(),

@@ -1,13 +1,13 @@
 <form appFormLayout>
     <div appMultiColumnRow>
-        <h2 class="mb-0">{{'programme.languages.header' | translate}}</h2>
+        <h3 class="mb-0">{{'programme.languages.header' | translate}}</h3>
         <button color="primary"
                 *ngIf="formState === FormState.VIEW" mat-raised-button
                 (click)="changeFormState$.next(FormState.EDIT)">
             {{'common.edit.label' | translate}}
         </button>
     </div>
-    <table appNoWidthLimit mat-table class="mat-elevation-z1" [dataSource]="dataSource">
+    <table appNoWidthLimit mat-table [dataSource]="dataSource">
         <ng-container matColumnDef="system">
             <th mat-header-cell appFormFieldWidth="small"
                 *matHeaderCellDef>{{'programme.languages.list.select.system' | translate}}</th>

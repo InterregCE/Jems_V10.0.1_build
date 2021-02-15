@@ -10,8 +10,6 @@
     }
   }
 
-  .bold,
-  mat-footer-row {
-    font-weight: bold;
-  }
+  .bold{
+    font-weight: var(--body-strong-font-weight);  }
 }

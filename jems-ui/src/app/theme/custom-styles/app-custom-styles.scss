@@ -2,9 +2,10 @@
 @import "custom-tooltip-styles";
 @import "custom-tab-group-styles";
 @import "custom-form-field-styles";
+@import "custom-mat-table-styles";
 
 // source: https://stackoverflow.com/a/57288409
-@mixin generate-css-vars-and-custom-styles($theme) {
+@mixin generate-css-vars-and-custom-styles($theme, $app-typography) {
   $foreground-palette: map-get($theme, foreground);
   $background-palette: map-get($theme, background);
   $is-dark-theme: map-get($theme, is-dark);
@@ -30,10 +31,17 @@
   $hover: mat-color($background-palette, hover);
   $outline: mat-color($foreground-palette, divider, if($is-dark-theme, 0.3, 0.12));;
 
+  $body-strong-font-size: mat-font-size($app-typography, body-2);
+  $body-strong-font-weight: mat-font-weight($app-typography, body-2);
 
   --blue-gray: #{mat-color($mat-blue-gray, if($is-dark-theme, 50, 100))};
   --light-blue-gray: #{mat-color($mat-blue-gray, 100, if($is-dark-theme, 0.25, 0.5))};
   --pale-blue-gray: #{mat-color($mat-blue-gray, 50, if($is-dark-theme, 0.0625, 0.375))};
+  --table-backaground-color: #{if($is-dark-theme, $background, white)};
+  --table-highlight-color: #{if($is-dark-theme, lighten($background,2), lighten(mat-color($mat-blue-gray,50),1))};
+  --table-border-color: #{if($is-dark-theme, $background, mat-color($mat-blue-gray,100))};
+  --table-header-text-color: #{if($is-dark-theme, mat-color($mat-gray,400), mat-color($mat-gray,600,0.85))};
+
   --light-yellow: #{mat-color($mat-yellow, 100)};
   --pale-yellow: #{mat-color($mat-yellow, 50)};
 
@@ -57,6 +65,9 @@
   --underline-color: #{$underline-color};
   --outline-color: #{$outline};
 
+  --body-strong-font-size: #{$body-strong-font-size};
+  --body-strong-font-weight: #{$body-strong-font-weight};
+
   @include custom-global-styles($is-dark-theme);
 
 }
@@ -68,5 +79,6 @@
   @include custom-tooltip-styles();
   @include custom-tab-group-styles();
   @include custom-form-field-styles();
+  @include custom-mat-table-styles($is-dark-theme)
 
 }

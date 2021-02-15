@@ -1,5 +1,7 @@
-<ng-container *ngxPermissionsExcept="Permission.APPLICANT_USER">
-    <app-breadcrumb></app-breadcrumb>
+<app-main-page-template [needsCard]="true"
+                        *ngxPermissionsExcept="Permission.APPLICANT_USER"
+                        titleKey="programme.data.page.title"
+                        subTitleKey="programme.tab.strategies">
     <app-programme-strategies
             *ngIf="details$ | async as strategies"
             [strategies]="strategies"
@@ -7,4 +9,4 @@
             [error$]="strategiesSaveError$"
             (updateProgrammeStrategy)="saveStrategies$.next($event)">
     </app-programme-strategies>
-</ng-container>
+</app-main-page-template>>

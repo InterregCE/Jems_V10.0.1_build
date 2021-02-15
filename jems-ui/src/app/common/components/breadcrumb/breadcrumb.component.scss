@@ -1,15 +1,6 @@
 
 @import '~@angular/material/theming';
 
-:host {
-  display: inline-block;
-  width: 100%;
-  position: sticky;
-  top: 0;
-  background-color: var(--background);
-  outline: 1px solid var(--background);
-  z-index: 2;
-}
 
 ol.breadcrumbs {
   display: inline-block;

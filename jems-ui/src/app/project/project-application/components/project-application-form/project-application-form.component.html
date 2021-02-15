@@ -1,8 +1,6 @@
 <app-form (save)="save()"
           (discard)="resetForm()">
     <form appFormLayout [formGroup]="applicationForm">
-        <h1>{{'project.application.form.acronym' | translate : {acronym: projectStore.getAcronym() | async} }}</h1>
-        <h2>{{'project.application.form.section.part.a' | translate}}</h2>
         <h3>{{'project.application.form.section.part.a.subsection.one' | translate}}</h3>
         <mat-form-field>
             <mat-label>{{'project.application.form.field.project.id' | translate}}</mat-label>

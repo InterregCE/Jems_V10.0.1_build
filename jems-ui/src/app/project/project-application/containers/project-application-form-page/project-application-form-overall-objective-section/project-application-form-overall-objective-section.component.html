@@ -1,13 +1,13 @@
-<app-breadcrumb></app-breadcrumb>
-<h1>{{'project.application.form.acronym' | translate : {acronym: projectStore.getAcronym() | async} }}</h1>
-<h2>{{'project.application.form.section.part.c' | translate}}</h2>
-
-<app-project-application-form-overall-objective-detail
-        *ngIf="details$ | async as details"
-        [success$]="saveSuccess$"
-        [project]="details.description"
-        [specificObjective]="details.project.projectData?.specificObjective"
-        [editable]="projectStore.projectEditable$ | async"
-        [error$]="saveError$"
-        (updateData)="updateProjectDescription$.next($event)">
-</app-project-application-form-overall-objective-detail>
+<app-main-page-template
+        [titleText]="'project.application.form.acronym' | translate : {acronym: projectStore.getAcronym() | async} "
+        subTitleKey="project.application.form.section.part.c">
+    <app-project-application-form-overall-objective-detail
+            *ngIf="details$ | async as details"
+            [success$]="saveSuccess$"
+            [project]="details.description"
+            [specificObjective]="details.project.projectData?.specificObjective"
+            [editable]="projectStore.projectEditable$ | async"
+            [error$]="saveError$"
+            (updateData)="updateProjectDescription$.next($event)">
+    </app-project-application-form-overall-objective-detail>
+</app-main-page-template>

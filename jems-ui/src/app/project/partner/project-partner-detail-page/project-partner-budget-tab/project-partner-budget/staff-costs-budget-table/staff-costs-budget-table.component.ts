@@ -83,7 +83,7 @@ export class StaffCostsBudgetTableComponent implements OnInit, OnChanges, OnDest
     const periodWidths = this.projectPeriods?.length
       ? [...this.projectPeriods?.map(period => ({minInRem: 8})), {minInRem: 8}] : [];
     this.tableConfig = [
-      {minInRem: 12}, {minInRem: 12}, {minInRem: 5}, {minInRem: 12},
+      {minInRem: 12}, {minInRem: 10},  {minInRem: 12}, {minInRem: 6},
       {minInRem: 5}, {minInRem: 8}, {minInRem: 8}, ...periodWidths, {minInRem: 3}
     ];
   }

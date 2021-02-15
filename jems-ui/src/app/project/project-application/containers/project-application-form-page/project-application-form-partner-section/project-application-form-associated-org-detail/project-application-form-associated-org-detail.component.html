@@ -1,13 +1,16 @@
-<app-breadcrumb></app-breadcrumb>
-<app-project-application-form-associated-organization-edit
-        *ngIf="details$ | async as details"
-        [nuts]="details.nuts"
-        [partners]="details.partners"
-        [success$]="associatedOrganizationStore.associatedOrganizationSaveSuccess$"
-        [error$]="associatedOrganizationStore.associatedOrganizationSaveError$"
-        [associatedOrganization]="details.organization"
-        [editable]="projectStore.projectEditable$ | async"
-        (create)="associatedOrganizationStore.createAssociatedOrganization$.next($event)"
-        (update)="associatedOrganizationStore.saveAssociatedOrganization$.next($event)"
-        (cancel)="redirectToAssociatedOrganizationOverview()">
-</app-project-application-form-associated-organization-edit>
+<app-main-page-template
+        [titleText]="'project.application.form.acronym' | translate : {acronym: projectStore.getAcronym() | async} "
+        subTitleKey="project.application.form.section.part.b">
+    <app-project-application-form-associated-organization-edit
+            *ngIf="details$ | async as details"
+            [nuts]="details.nuts"
+            [partners]="details.partners"
+            [success$]="associatedOrganizationStore.associatedOrganizationSaveSuccess$"
+            [error$]="associatedOrganizationStore.associatedOrganizationSaveError$"
+            [associatedOrganization]="details.organization"
+            [editable]="projectStore.projectEditable$ | async"
+            (create)="associatedOrganizationStore.createAssociatedOrganization$.next($event)"
+            (update)="associatedOrganizationStore.saveAssociatedOrganization$.next($event)"
+            (cancel)="redirectToAssociatedOrganizationOverview()">
+    </app-project-application-form-associated-organization-edit>
+</app-main-page-template>

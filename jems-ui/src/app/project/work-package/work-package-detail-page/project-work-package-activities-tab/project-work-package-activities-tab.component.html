@@ -60,9 +60,7 @@
                         <h4>{{'Deliverables' | translate}}</h4>
                         <p>{{'project.work.package.tab.deliverables.intro' | translate}}</p>
                         <app-multi-language appNoWidthLimit *ngIf="deliverables(i).controls?.length">
-                            <div
-                                 [appearance]="'table'"
-                                 [appTableConfig]="[{maxInRem:3},{minInRem:15},{minInRem:10}, {maxInRem:2}]">
+                            <div [appTableConfig]="[{maxInRem:3},{minInRem:15},{minInRem:10}, {maxInRem:2}]">
                                 <div>
                                     <span class="mat-body-strong">{{'project.work.package.tab.deliverables.number' | translate }}</span>
                                     <span class="mat-body-strong">{{'project.work.package.tab.deliverables.deliverable' | translate }}</span>

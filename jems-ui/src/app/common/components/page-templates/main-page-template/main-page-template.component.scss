@@ -1,0 +1,51 @@
+:host {
+  display: block;
+  height: 100%;
+}
+
+#main-page-container {
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: stretch;
+  height: 100%;
+
+  app-breadcrumb {
+    display: flex;
+    justify-content: stretch;
+    align-items: center;
+    width: 100%;
+    background-color: var(--background);
+    outline: 1px solid var(--background);
+    z-index: 100;
+    min-height: 2rem;
+    padding: 0.5rem 0.5rem 0.5rem 3rem;
+  }
+
+  #main-page-content {
+    flex: 1;
+    display: block;
+    padding: 0 3rem 4rem;
+    height: calc(100% - 4rem);
+    overflow: auto;
+    scroll-behavior: smooth;
+
+    .mat-card {
+      padding: 0;
+
+      .mat-card-content {
+        padding: 2rem;
+      }
+    }
+
+    #scroll-button {
+      position: fixed;
+      bottom: 1rem;
+      right: 1.25rem;
+      background-color: var(--light-blue-gray);
+      width: 2.5rem;
+      height: 2.5rem;
+    }
+  }
+}

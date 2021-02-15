@@ -1,12 +1,16 @@
-<div *ngIf="project$ | async as project">
-    <app-breadcrumb></app-breadcrumb>
-    <h1>{{project.acronym}}</h1>
-    <app-project-application-information
-            [project]="project">
-    </app-project-application-information>
+<app-main-page-template [needsCard]="true" *ngIf="project$ | async as project"
+                        titleKey="project.application.form.lifecycle.title">
+
+    <div page-sub-title appNoWidthLimit appFormLayout>
+        <h2>{{project.acronym}}</h2>
+        <app-project-application-information
+                appNoWidthLimit
+                [project]="project">
+        </app-project-application-information>
+    </div>
 
     <form appFormLayout [formGroup]="notesForm">
-        <h2>{{'project.assessment.qualityCheck.dialog.title' | translate}}</h2>
+        <h3>{{'project.assessment.qualityCheck.dialog.title' | translate}}</h3>
         <mat-radio-group
                 required
                 name="assessment"
@@ -38,4 +42,4 @@
             </button>
         </div>
     </form>
-</div>
+</app-main-page-template>

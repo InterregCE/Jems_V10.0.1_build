@@ -1,7 +1,9 @@
-<app-breadcrumb></app-breadcrumb>
-<h1 *ngIf="currentUser$ | async as currentUser">
-    {{'project.welcome' | translate: {name: currentUser.name, surname: currentUser.surname} }}</h1>
-<div appFormLayout>
+<app-main-page-template [needsCard]="true">
+    <ng-container page-title *ngIf="currentUser$ | async as currentUser">
+        <h1>{{'project.welcome' | translate: {name: currentUser.name, surname: currentUser.surname} }}</h1>
+    </ng-container>
+    <h2 page-sub-title *ngxPermissionsExcept="Permission.APPLICANT_USER">{{'project.list.header' | translate}}</h2>
+    <h2 page-sub-title *ngxPermissionsOnly="Permission.APPLICANT_USER">{{'call.applications.title' | translate}}</h2>
     <ng-container *ngIf="currentPage$ | async as projectPage">
         <app-project-application-list
                 appNoWidthLimit
@@ -12,4 +14,4 @@
                 (newSort)="newSort$.next($event)">
         </app-project-application-list>
     </ng-container>
-</div>
+</app-main-page-template>

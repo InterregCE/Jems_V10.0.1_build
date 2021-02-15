@@ -1,5 +1,7 @@
-<div *ngIf="lumpSum$ | async as details" class="container">
-    <app-breadcrumb></app-breadcrumb>
+<app-main-page-template [needsCard]="true"
+                        *ngIf="lumpSum$ | async as details"
+                        titleKey="programme.data.page.title"
+                        subTitleKey="programme.tab.costs.option">
     <app-programme-lump-sum-detail
             [lumpSum]="details"
             [success$]="lumpSumSaveSuccess$"
@@ -9,4 +11,4 @@
             (updateLumpSum)="updateLumpSum($event)"
             (cancelCreate)="cancelCreate()">
     </app-programme-lump-sum-detail>
-</div>
+</app-main-page-template>

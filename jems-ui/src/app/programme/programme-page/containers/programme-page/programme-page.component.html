@@ -1,13 +1,15 @@
-<ng-container *ngIf="programme$ | async as programme">
+<app-main-page-template [needsCard]="true"
+                        *ngIf="programme$ | async as programme"
+                        titleKey="programme.data.page.title"
+                        subTitleKey="programme.tab.data">
     <div *ngxPermissionsExcept="Permission.APPLICANT_USER">
-        <app-breadcrumb></app-breadcrumb>
         <app-programme-data
                 [success$]="programmeSaveSuccess$"
                 [error$]="programmeSaveError$"
                 [programme]="programme"
                 (saveProgrammeData)="saveProgrammeData$.next($event)">
         </app-programme-data>
-        <app-programme-basic-funds class="mt-4 inline-block"
+        <app-programme-basic-funds class="mt-4 block"
                 *ngIf="funds$ | async as funds"
                 [success$]="fundsSaveSuccess$"
                 [error$]="fundsSaveError$"
@@ -15,4 +17,4 @@
                 (saveFunds)="saveFunds$.next($event)">
         </app-programme-basic-funds>
     </div>
-</ng-container>
+</app-main-page-template>

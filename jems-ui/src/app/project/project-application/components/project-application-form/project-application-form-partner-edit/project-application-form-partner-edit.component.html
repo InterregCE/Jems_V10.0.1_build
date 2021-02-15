@@ -1,7 +1,6 @@
 <app-form (save)="onSubmit(controls)"
           (discard)="discard()">
     <form appFormLayout id="partner-form" [formGroup]="partnerForm">
-        <h3 *ngIf="!partner?.abbreviation">{{'project.application.form.partner.add' | translate}}</h3>
         <h3>{{'project.partner.detail.title' | translate}}</h3>
 
         <mat-form-field *ngIf="!editable && partner.sortNumber">

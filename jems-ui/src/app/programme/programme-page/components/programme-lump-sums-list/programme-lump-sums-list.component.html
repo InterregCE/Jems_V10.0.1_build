@@ -5,7 +5,7 @@
 </app-alert>
 
 <p *ngIf="!dataSource.data.length">{{'lump.sum.empty.list' | translate}}</p>
-<mat-table *ngIf="dataSource.data.length" [dataSource]="dataSource" class="mat-elevation-z8 mt-4">
+<mat-table appNoWidthLimit *ngIf="dataSource.data.length" [dataSource]="dataSource">
 
     <ng-container matColumnDef="name">
         <mat-header-cell *matHeaderCellDef>{{ 'lump.sum.table.column.name.name' | translate }}</mat-header-cell>
@@ -13,11 +13,13 @@
     </ng-container>
 
     <ng-container matColumnDef="cost">
-        <mat-header-cell *matHeaderCellDef class="justify-end">{{ 'lump.sum.table.column.name.cost' | translate }}</mat-header-cell>
+        <mat-header-cell *matHeaderCellDef
+                         class="justify-end">{{ 'lump.sum.table.column.name.cost' | translate }}</mat-header-cell>
         <mat-cell *matCellDef="let element" class="justify-end">{{ element?.cost | asMoney }}</mat-cell>
     </ng-container>
 
     <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
-    <mat-row *matRowDef="let row; columns: displayedColumns;" [routerLink]="['lumpSum', 'detail', row.id]"></mat-row>
+    <mat-row *matRowDef="let row; columns: displayedColumns;"
+             [routerLink]="['lumpSum', 'detail', row.id]"></mat-row>
 
 </mat-table>

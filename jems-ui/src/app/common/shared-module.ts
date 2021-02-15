@@ -31,6 +31,7 @@ import {FormLayoutDirective} from './directives/form-layout/form-layout.directiv
 import {MultiColumnRowDirective} from './directives/multi-column-row/multi-column-row.directive';
 import {NoWidthLimitDirective} from './directives/no-width-limit.directive';
 import {LabelDirective} from './directives/form-layout/label.directive';
+import {MainPageTemplateComponent} from '@common/components/page-templates/main-page-template/main-page-template.component';
 
 const modules = [
   CommonModule,
@@ -68,7 +69,8 @@ const declarations = [
   FormLayoutDirective,
   MultiColumnRowDirective,
   NoWidthLimitDirective,
-  LabelDirective
+  LabelDirective,
+  MainPageTemplateComponent
 ];
 
 const providers = [

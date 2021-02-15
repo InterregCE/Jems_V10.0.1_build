@@ -6,8 +6,7 @@ import {TableConfig} from './TableConfig';
 })
 export class TableConfigDirective implements AfterViewInit, AfterContentChecked {
 
-  @Input('appTableConfig') tableConfig: TableConfig[];
-  @Input() appearance: 'table' | 'material-table' | null = null;
+  @Input('appTableConfig') tableConfig: TableConfig[] = [];
 
 
   constructor(private el: ElementRef) {
@@ -23,9 +22,9 @@ export class TableConfigDirective implements AfterViewInit, AfterContentChecked 
 
   setClasses(): void {
     this.el.nativeElement.classList.add(`app-table-config`);
-    if (this.appearance) {
-      this.el.nativeElement.classList.add(`${this.appearance}-appearance`);
-    }
+    this.el.nativeElement.classList.add(`material-table-appearance`);
+    if (!this.tableConfig) { this.tableConfig = []; }
+
     const rows = this.el.nativeElement.children;
     const rowMinWidthToSupportStickyColumns = this.calculateRowMinWidthToSupportStickyColumns();
     for (const row of rows) {

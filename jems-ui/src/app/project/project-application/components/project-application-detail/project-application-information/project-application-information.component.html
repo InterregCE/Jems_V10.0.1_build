@@ -1,60 +1,42 @@
-<div class="row project-detail-row col-sm-12">
-    <div class="col-sm-1 column">
+<div [appTableConfig]>
+    <div>
         <span>{{'project.detail.table.id.application' | translate}}</span>
-        <br>
-        <span>{{project.id}}</span>
-    </div>
-    <div class="col-sm-1 column">
         <span>{{'project.detail.table.id.programme' | translate}}</span>
-        <br>
-        <span>dummy</span>
-    </div>
-    <div class="col-sm-1 column">
         <span>{{'project.detail.table.call.name' | translate}}</span>
-        <br>
-        <span>{{project.callSettings.callName}}</span>
-    </div>
-    <div class="col-sm-2 column">
         <span>{{'project.detail.table.project.acronym' | translate}}</span>
-        <br>
-        <span>{{project.acronym}}</span>
-    </div>
-    <div class="col-sm-2 column">
         <span>{{'project.detail.table.submission.first' | translate}}</span>
-        <ng-container *ngIf="project.firstSubmission">
-            <br>
-            <span>{{project.firstSubmission?.updated | date : Tables.DEFAULT_DATE_FORMAT}}</span>
-            <br>
-            <span>by {{project.firstSubmission?.user?.name}} {{project.firstSubmission?.user?.surname}}</span>
-        </ng-container>
-    </div>
-    <div class="col-sm-2 column">
         <span>{{'project.detail.table.submission.latest' | translate}}</span>
-        <ng-container *ngIf="project.lastResubmission">
-            <br>
-            <span>{{project.lastResubmission?.updated | date : Tables.DEFAULT_DATE_FORMAT}}</span>
-            <br>
-            <span>by {{project.lastResubmission?.user?.name}} {{project.lastResubmission?.user?.surname}}</span>
-        </ng-container>
-    </div>
-    <ng-container *ngIf="project.projectData?.programmePriority">
-        <div [title]="project.projectData?.programmePriority?.title" class="col-sm-1 column">
-            <span>{{'project.detail.table.programme.priority' | translate}}</span>
-            <br>
-            <span>{{project.projectData?.programmePriority?.code}}</span>
-        </div>
-    </ng-container>
-    <ng-container *ngIf="project.projectData?.specificObjective">
-        <div [title]="'programme.policy.' + project.projectData?.specificObjective?.programmeObjectivePolicy | translate"
-             class="col-sm-1 column">
-            <span>{{'project.detail.table.specific.objective' | translate}}</span>
-            <br>
-            <span>{{project.projectData?.specificObjective?.code}}</span>
-        </div>
-    </ng-container>
-    <div class="col-sm-1 column">
+        <span *ngIf="project.projectData?.programmePriority"
+              [title]="project.projectData?.programmePriority?.title">{{'project.detail.table.programme.priority' | translate}}</span>
+        <span *ngIf="project.projectData?.specificObjective"
+              [title]="'programme.policy.' + project.projectData?.specificObjective?.programmeObjectivePolicy | translate">{{'project.detail.table.specific.objective' | translate}}</span>
         <span>{{'project.detail.table.status' | translate}}</span>
-        <br>
-        <span>{{'common.label.projectapplicationstatus.' + project.projectStatus.status | translate}}</span>
+    </div>
+    <div>
+        <span>{{project.id}}</span>
+        <span>dummy</span>
+        <span>{{project.callSettings.callName}}</span>
+        <span>{{project.acronym}}</span>
+        <div>
+            <ng-container *ngIf="project.firstSubmission">
+                <div>{{project.firstSubmission?.updated | date : Tables.DEFAULT_DATE_FORMAT}}</div>
+                <div>by {{project.firstSubmission?.user?.name}} {{project.firstSubmission?.user?.surname}}</div>
+            </ng-container>
+        </div>
+
+        <div>
+            <ng-container *ngIf="project.lastResubmission">
+                <div>{{project.lastResubmission?.updated | date : Tables.DEFAULT_DATE_FORMAT}}</div>
+                <span>by {{project.lastResubmission?.user?.name}} {{project.lastResubmission?.user?.surname}}</span>
+            </ng-container>
+        </div>
+        <div *ngIf="project.projectData?.programmePriority" [title]="project.projectData?.programmePriority?.title">
+            {{project.projectData?.programmePriority?.code}}
+        </div>
+        <div *ngIf="project.projectData?.specificObjective"
+             [title]="'programme.policy.' + project.projectData?.specificObjective?.programmeObjectivePolicy | translate">
+            {{project.projectData?.specificObjective?.code}}
+        </div>
+        <div>{{'common.label.projectapplicationstatus.' + project.projectStatus.status | translate}}</div>
     </div>
 </div>
