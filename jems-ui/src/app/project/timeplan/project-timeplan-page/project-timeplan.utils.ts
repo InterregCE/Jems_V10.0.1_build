@@ -12,6 +12,15 @@ export const colors = [
 export const EMPTY_STRING = '&nbsp';
 export const START_DATE = '2000-01-01';
 
+export const RESULT_BOX_ID = 9_939_999;
+
+/**
+ * If items/groups id is of format x_x3x_xxx, then it is connected to result indicator, those are not translated.
+ */
+export function shouldGroupBeTranslated(groupId: number): boolean {
+  return Math.floor(groupId / 10000) % 10 !== 3;
+}
+
 function getColor(index: number): string {
   return colors[index % colors.length];
 }
@@ -21,7 +30,7 @@ export function getStartDateFromPeriod(period: number): Moment {
 }
 
 export function getEndDateFromPeriod(period: number): Moment {
-  return moment(START_DATE).utc().add(period, 'M').endOf('month');
+  return moment(START_DATE).utc().add(period, 'M').endOf('month').subtract(1, 'h');
 }
 
 export function getNestedStartDateFromPeriod(period: number): Moment {
@@ -34,7 +43,7 @@ export function getNestedEndDateFromPeriod(period: number): Moment {
 
 export function periodLabelFunction(date: Date, scale: string, step: number): string {
   const periodNumber = Math.round(moment(date).utc().diff(
-    moment('2000-01-01').utc(), 'months', true) + 1
+    moment(START_DATE).utc(), 'months', true) + 1
   );
   return `Period ${periodNumber}`;
 }
@@ -43,10 +52,9 @@ function getWorkPackageId(indexWp: number): number {
   return (indexWp + 1) * 100_000;
 }
 
-function getResultId(indexResult: number): number {
-  return (indexResult + 1) * 1_000;
-}
-
+/**
+ * ID 1x_xxx stands for IDs related to activities
+ */
 function getActivityId(indexWp: number, indexActivity: number): number {
   return getWorkPackageId(indexWp) + 10_000 + (indexActivity + 1) * 100;
 }
@@ -59,12 +67,32 @@ function getDeliverableBoxId(indexWp: number, indexActivity: number, indexDelive
   return getActivityBoxId(indexWp, indexActivity) + (indexDeliverable + 1);
 }
 
+/**
+ * ID 2x_xxx stands for IDs related to outputs
+ */
 function getOutputId(indexWp: number, indexOutput: number): number {
   return getWorkPackageId(indexWp) + 20_000 + (indexOutput + 1) * 100;
 }
 
+/**
+ * it is 1 box per 1 group = we reuse group ID and just add 50
+ */
 function getOutputBoxId(indexWp: number, indexOutput: number): number {
   return getOutputId(indexWp, indexOutput) + 50;
+}
+
+/**
+ * ID 13x_xxx (everything 3x_xxx) stands for IDs related to results
+ */
+function getResultId(indexResult: number): number {
+  return 130_000 + (indexResult + 1) * 100;
+}
+
+/**
+ * it is 1 box per 1 group = we reuse group ID and just add 50
+ */
+function getResultBoxId(indexResult: number): number {
+  return getResultId(indexResult) + 50;
 }
 
 /**
@@ -75,7 +103,7 @@ function getOutputBoxId(indexWp: number, indexOutput: number): number {
  *     - activity
  *       - deliverable
  *     - output
- *   - result indicator //TODO
+ *   - result indicator
  */
 export function getItems(timePlan: ProjectTimePlan): DataSet<any> {
   let items = new Array(0);
@@ -120,7 +148,7 @@ export function getItems(timePlan: ProjectTimePlan): DataSet<any> {
         start: getNestedStartDateFromPeriod(output.periodNumber),
         end: getNestedEndDateFromPeriod(output.periodNumber),
         type: 'range',
-        title: `<span>Target value: ${output.targetValue}<br>Period: ${output.periodNumber}</span>`,
+        title: `<span>Period: ${output.periodNumber}<br>Target value: ${output.targetValue || '-'}</span>`,
         content: `O.${indexOutput + 1}`,
         className: getColor(indexWp),
       });
@@ -138,6 +166,18 @@ export function getItems(timePlan: ProjectTimePlan): DataSet<any> {
     }
   });
 
+  timePlan.results.forEach((result, indexResult) => {
+    items = items.concat({
+      id: getResultBoxId(indexResult),
+      group: getResultId(indexResult),
+      start: getNestedStartDateFromPeriod(result.periodNumber),
+      end: getNestedEndDateFromPeriod(result.periodNumber),
+      type: 'range',
+      content: `R.${indexResult + 1}`,
+      className: getColor(indexResult),
+    });
+  });
+
   return new DataSet(items);
 }
 
@@ -151,8 +191,8 @@ export function getItems(timePlan: ProjectTimePlan): DataSet<any> {
  *   - result indicator //TODO
  */
 export function getGroups(timePlan: ProjectTimePlan): DataSet<any> {
-  let wpGrouped = new Array(0);
-  const groups = timePlan.workPackages.map((workPackage, indexWp) => {
+  let wpSubGroups = new Array(0);
+  const workPackages = timePlan.workPackages.map((workPackage, indexWp) => {
     const activities = workPackage.activities.map((activity, indexActivity) => {
       return {
         id: getActivityId(indexWp, indexActivity),
@@ -160,16 +200,16 @@ export function getGroups(timePlan: ProjectTimePlan): DataSet<any> {
         treeLevel: 2,
       };
     });
-    wpGrouped = wpGrouped.concat(activities);
+    wpSubGroups = wpSubGroups.concat(activities);
 
     const outputs = workPackage.outputs.map((output, indexOutput) => {
       return {
         id: getOutputId(indexWp, indexOutput),
-        content: EMPTY_STRING,
+        content: EMPTY_STRING, // TODO use indicator code
         treeLevel: 2,
       };
     });
-    wpGrouped = wpGrouped.concat(outputs);
+    wpSubGroups = wpSubGroups.concat(outputs);
 
     return {
       id: getWorkPackageId(indexWp),
@@ -179,7 +219,24 @@ export function getGroups(timePlan: ProjectTimePlan): DataSet<any> {
     };
   });
 
-  return new DataSet(groups.concat(wpGrouped));
+  let results: any[] = timePlan.results.map((result, indexResult) => {
+    return {
+      id: getResultId(indexResult),
+      content: result.programmeResultIndicatorCode || EMPTY_STRING,
+      treeLevel: 2,
+    };
+  });
+  if (results.length) {
+    // create group for all results
+    results = results.concat({
+      id: RESULT_BOX_ID,
+      content: getGroupName('Result Indicator:'), // TODO use translation here
+      treeLevel: 1,
+      nestedGroups: results.map(result => result.id),
+    });
+  }
+
+  return new DataSet(workPackages.concat(wpSubGroups).concat(results));
 }
 
 export class ProjectTimePlan {
@@ -201,7 +258,7 @@ export function getTranslations(timePlan: ProjectTimePlan): { [language: string]
       }
       languages[translation.language].push({
         id: getWorkPackageId(indexWp),
-        content: translation.translation
+        content: getGroupName(translation.translation),
       } as Content);
     });
 
@@ -212,7 +269,8 @@ export function getTranslations(timePlan: ProjectTimePlan): { [language: string]
         }
         languages[translation.language].push({
           id: getActivityId(indexWp, indexActivity),
-          content: translation.translation
+          content: getGroupName(translation.translation),
+          title: translation.translation,
         } as Content);
       });
     });
@@ -224,12 +282,16 @@ export function getTranslations(timePlan: ProjectTimePlan): { [language: string]
         }
         languages[translation.language].push({
           id: getOutputId(indexWp, indexOutput),
-          content: translation.translation
+          content: getGroupName(translation.translation),
         } as Content);
       });
     });
   });
   return languages;
+}
+
+export function getGroupName(text: string = EMPTY_STRING): string {
+  return `<span>${text || EMPTY_STRING}</span>`;
 }
 
 export function getOptions(custom?: Partial<TimelineOptions>): TimelineOptions {

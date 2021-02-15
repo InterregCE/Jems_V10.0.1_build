@@ -6,16 +6,23 @@
         <h3>{{ 'project.application.form.section.part.c.subsection.six' | translate }}</h3>
         <div appNoWidthLimit>
             <ng-container *ngIf="data$ | async as data">
-                <app-multi-language *ngIf="data.periods.length; else noPeriods">
+                <app-multi-language *ngIf="data.periods.length">
                 </app-multi-language>
+
+                <app-alert [closable]="false" [type]="Alert.WARNING"
+                           [show]="!data.periods.length">
+                    <p>{{'project.application.form.work.package.output.delivery.period.required' | translate}}</p>
+                </app-alert>
+                <app-alert [closable]="false" [type]="Alert.WARNING"
+                           [show]="!data.groups.getIds().length">
+                    <p>{{'project.application.form.section.part.c.subsection.six.no.data' | translate}}</p>
+                </app-alert>
+
             </ng-container>
 
             <div #visualization></div>
         </div>
     </div>
-    <ng-template #noPeriods>
-        <h5>{{'project.application.form.work.package.output.delivery.period.required' | translate}}</h5>
-    </ng-template>
 </app-main-page-template>
 
 

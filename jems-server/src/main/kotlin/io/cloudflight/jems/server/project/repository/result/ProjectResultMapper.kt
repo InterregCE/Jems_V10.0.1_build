@@ -22,6 +22,7 @@ fun ProjectResultDTO.toEntity(indicatorResult: IndicatorResult?, project: Projec
 fun ProjectResultEntity.ProjectResultDTO() = ProjectResultDTO(
     resultNumber = resultNumber,
     programmeResultIndicatorId = programmeResultIndicator?.id,
+    programmeResultIndicatorCode = programmeResultIndicator?.code,
     targetValue = targetValue,
     periodNumber = period?.id?.number,
     description = translatedValues.mapTo(HashSet()) { InputTranslation(it.translationId.language, it.description) },

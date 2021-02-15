@@ -2,11 +2,13 @@ import {ChangeDetectionStrategy, Component, ElementRef, OnInit, ViewChild} from 
 import {
   Content,
   EMPTY_STRING,
-  getEndDateFromPeriod,
+  getEndDateFromPeriod, getGroupName,
   getGroups,
   getItems,
   getOptions,
-  getTranslations
+  getTranslations,
+  shouldGroupBeTranslated,
+  START_DATE,
 } from './project-timeplan.utils';
 import {ProjectApplicationFormSidenavService} from '../../project-application/containers/project-application-form-page/services/project-application-form-sidenav.service';
 import {InputTranslation, OutputProjectPeriod} from '@cat/api';
@@ -15,6 +17,7 @@ import {ProjectTimeplanPageStore} from './project-timeplan-page-store.service';
 import {map, tap} from 'rxjs/operators';
 import {combineLatest, Observable} from 'rxjs';
 import {DataSet} from 'vis-data/peer';
+import {Alert} from '@common/components/forms/alert';
 
 @Component({
   selector: 'app-project-timeplan-page',
@@ -24,6 +27,7 @@ import {DataSet} from 'vis-data/peer';
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class ProjectTimeplanPageComponent implements OnInit {
+  Alert = Alert;
   timeline: Timeline;
 
   @ViewChild('visualization', {static: true})
@@ -68,11 +72,13 @@ export class ProjectTimeplanPageComponent implements OnInit {
     if (!data.periods.length) {
       return false;
     }
-    const options = getOptions({max: getEndDateFromPeriod(data.periods.length)?.calendar()});
+    const endDate = getEndDateFromPeriod(data.periods.length).add(2, 'd');
+    const options = getOptions({max: endDate?.calendar()});
     const doc = this.visualization?.nativeElement;
     if (doc) {
       this.timeline = new Timeline(doc, data.items, options);
       this.timeline.setGroups(data.groups);
+      this.timeline.setWindow(START_DATE, endDate);
       return true;
     }
     return false;
@@ -84,11 +90,13 @@ export class ProjectTimeplanPageComponent implements OnInit {
   private updateLanguageSelection(data: any, language: InputTranslation.LanguageEnum | string): void {
     const translatedIds = data.translations[language]?.map((group: any) => group.id) || [];
     const allIds: number[] = data.groups.getIds().map((groupId: any) => Number(groupId));
-    const toEmptyIds = allIds.filter(element => !translatedIds.includes(element));
+    const toEmptyIds = allIds
+      .filter(id => !translatedIds.includes(id))
+      .filter(id => shouldGroupBeTranslated(id));
 
     // if some translations are missing for particular language, we need to reset them to EMPTY_STRING
     data.groups.update((data.translations[language] || [])
-      .concat(toEmptyIds.map(groupId => ({id: groupId, content: EMPTY_STRING} as Content)))
+      .concat(toEmptyIds.map(groupId => ({id: groupId, content: getGroupName()} as Content)))
     );
   }
 
