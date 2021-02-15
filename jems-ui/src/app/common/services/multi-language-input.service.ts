@@ -46,11 +46,11 @@ export class MultiLanguageInputService {
   }
 
   public static getFirstTranslation(inputs: InputTranslation[]): string {
-    if (!inputs?.length) {
+    const sorted = inputs?.filter(input => !!input.translation)
+      .sort((a, b) => a.language > b.language ? 1 : -1);
+    if (!sorted?.length) {
       return '';
     }
-    const sorted = [...inputs]
-      .sort((a, b) => a.language > b.language ? 1 : -1);
     return sorted[0].translation;
   }
 
