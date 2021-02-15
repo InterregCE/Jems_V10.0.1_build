@@ -1,24 +1,21 @@
-import {ChangeDetectionStrategy, Component, OnInit} from '@angular/core';
+import {ChangeDetectionStrategy, Component, ElementRef, OnInit, ViewChild} from '@angular/core';
 import {
   Content,
   EMPTY_STRING,
   getEndDateFromPeriod,
   getGroups,
   getItems,
-  getTranslations,
-  periodLabelFunction,
-  START_DATE
+  getOptions,
+  getTranslations
 } from './project-timeplan.utils';
 import {ProjectApplicationFormSidenavService} from '../../project-application/containers/project-application-form-page/services/project-application-form-sidenav.service';
 import {InputTranslation, OutputProjectPeriod} from '@cat/api';
-import {DataSet} from 'vis-data';
-import {Timeline, TimelineOptions, TimelineTimeAxisScaleType} from 'vis-timeline';
+import {Timeline} from 'vis-timeline';
 import {ProjectTimeplanPageStore} from './project-timeplan-page-store.service';
-import {UntilDestroy, untilDestroyed} from '@ngneat/until-destroy';
 import {map, tap} from 'rxjs/operators';
 import {combineLatest, Observable} from 'rxjs';
+import {DataSet} from 'vis-data/peer';
 
-@UntilDestroy()
 @Component({
   selector: 'app-project-timeplan-page',
   templateUrl: './project-timeplan-page.component.html',
@@ -29,32 +26,23 @@ import {combineLatest, Observable} from 'rxjs';
 export class ProjectTimeplanPageComponent implements OnInit {
   timeline: Timeline;
 
+  @ViewChild('visualization', {static: true})
+  visualization: ElementRef;
+
   data$: Observable<{
     translations: { [language: string]: Content[]; },
     groups: DataSet<any>,
     items: DataSet<any>,
-    periods: OutputProjectPeriod[]
+    periods: OutputProjectPeriod[],
+    language: string
   }>;
-
-  options: TimelineOptions = {
-    showCurrentTime: false,
-    showMajorLabels: false,
-    orientation: 'top',
-    timeAxis: {scale: 'month' as TimelineTimeAxisScaleType, step: 1},
-    format: {minorLabels: periodLabelFunction},
-    margin: {
-      axis: 10,
-      item: {vertical: 10, horizontal: 0}
-    },
-    min: START_DATE,
-  };
 
   constructor(private projectApplicationFormSidenavService: ProjectApplicationFormSidenavService,
               public pageStore: ProjectTimeplanPageStore) {
   }
 
   ngOnInit(): void {
-    this.data$ = combineLatest([
+    const projectData$ = combineLatest([
       this.pageStore.workPackages$,
       this.pageStore.projectResults$,
       this.pageStore.periods$,
@@ -66,34 +54,34 @@ export class ProjectTimeplanPageComponent implements OnInit {
           items: getItems({workPackages, results}),
           periods,
         })),
-        tap(data => {
-          this.options.max = getEndDateFromPeriod(data.periods.length)?.calendar();
-          const doc = document.getElementById('visualization');
-          if (doc) {
-            this.timeline = new Timeline(doc, data.items, this.options);
-            this.timeline.setGroups(data.groups);
-          }
-        })
+        tap(data => this.createVisualization(data))
       );
 
-    combineLatest([this.data$, this.pageStore.language$])
+    this.data$ = combineLatest([projectData$, this.pageStore.language$])
       .pipe(
         tap(([data, language]) => this.updateLanguageSelection(data, language)),
-        untilDestroyed(this)
-      ).subscribe();
+        map(([data, language]) => ({...data, language})),
+      );
   }
 
-  click(event: Event): void {
-    const prop = this.timeline.getEventProperties(event);
-    if (prop.item) {
-      console.log('click gr ' + prop.group + ', id ' + prop.item);
+  private createVisualization(data: any): boolean {
+    if (!data.periods.length) {
+      return false;
     }
+    const options = getOptions({max: getEndDateFromPeriod(data.periods.length)?.calendar()});
+    const doc = this.visualization?.nativeElement;
+    if (doc) {
+      this.timeline = new Timeline(doc, data.items, options);
+      this.timeline.setGroups(data.groups);
+      return true;
+    }
+    return false;
   }
 
   /**
    * Call this if different language has been selected.
    */
-  updateLanguageSelection(data: any, language: InputTranslation.LanguageEnum | string): void {
+  private updateLanguageSelection(data: any, language: InputTranslation.LanguageEnum | string): void {
     const translatedIds = data.translations[language]?.map((group: any) => group.id) || [];
     const allIds: number[] = data.groups.getIds().map((groupId: any) => Number(groupId));
     const toEmptyIds = allIds.filter(element => !translatedIds.includes(element));

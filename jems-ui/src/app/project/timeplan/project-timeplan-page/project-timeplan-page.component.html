@@ -3,6 +3,13 @@
 <h4>{{ 'project.application.form.section.part.d' | translate }}</h4>
 <h5>{{ 'project.application.form.section.part.c.subsection.six' | translate }}</h5>
 
-<app-multi-language>
-    <div id="visualization" (click)="click($event)"></div>
-</app-multi-language>
+<ng-container *ngIf="data$ | async as data">
+    <app-multi-language *ngIf="data.periods.length; else noPeriods">
+    </app-multi-language>
+</ng-container>
+
+<div #visualization></div>
+
+<ng-template #noPeriods>
+    <h5>{{'project.application.form.work.package.output.delivery.period.required' | translate}}</h5>
+</ng-template>

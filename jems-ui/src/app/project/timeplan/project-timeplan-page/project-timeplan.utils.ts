@@ -1,7 +1,8 @@
-import {InputTranslation, ProjectResultDTO, ProjectWorkPackageDTO} from '@cat/api';
+import {ProjectResultDTO, ProjectWorkPackageDTO} from '@cat/api';
 import {DataSet} from 'vis-data/peer';
 import * as moment from 'moment';
 import {Moment} from 'moment';
+import {TimelineOptions, TimelineTimeAxisScaleType} from 'vis-timeline';
 
 export const colors = [
   'bg-purple',
@@ -181,8 +182,6 @@ export function getGroups(timePlan: ProjectTimePlan): DataSet<any> {
   return new DataSet(groups.concat(wpGrouped));
 }
 
-// Temporary test data and DTOs:
-
 export class ProjectTimePlan {
   workPackages: ProjectWorkPackageDTO[];
   results: ProjectResultDTO[];
@@ -231,4 +230,22 @@ export function getTranslations(timePlan: ProjectTimePlan): { [language: string]
     });
   });
   return languages;
+}
+
+export function getOptions(custom?: Partial<TimelineOptions>): TimelineOptions {
+  return Object.assign(
+    {
+      showCurrentTime: false,
+      showMajorLabels: false,
+      orientation: 'top',
+      timeAxis: {scale: 'month' as TimelineTimeAxisScaleType, step: 1},
+      format: {minorLabels: periodLabelFunction},
+      margin: {
+        axis: 10,
+        item: {vertical: 10, horizontal: 0}
+      },
+      min: START_DATE,
+    },
+    custom
+  );
 }
