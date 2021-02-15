@@ -26,11 +26,11 @@ function getColor(index: number): string {
 }
 
 export function getStartDateFromPeriod(period: number): Moment {
-  return moment(START_DATE).utc().add(period, 'M').startOf('month');
+  return moment(START_DATE).add(period, 'M').startOf('month');
 }
 
 export function getEndDateFromPeriod(period: number): Moment {
-  return moment(START_DATE).utc().add(period, 'M').endOf('month').subtract(1, 'h');
+  return moment(START_DATE).add(period, 'M').endOf('month');
 }
 
 export function getNestedStartDateFromPeriod(period: number): Moment {
@@ -42,8 +42,8 @@ export function getNestedEndDateFromPeriod(period: number): Moment {
 }
 
 export function periodLabelFunction(date: Date, scale: string, step: number): string {
-  const periodNumber = Math.round(moment(date).utc().diff(
-    moment(START_DATE).utc(), 'months', true) + 1
+  const periodNumber = Math.round(moment(date).diff(
+    moment(START_DATE), 'months', true)
   );
   return `Period ${periodNumber}`;
 }
@@ -222,7 +222,7 @@ export function getGroups(timePlan: ProjectTimePlan): DataSet<any> {
   let results: any[] = timePlan.results.map((result, indexResult) => {
     return {
       id: getResultId(indexResult),
-      content: result.programmeResultIndicatorCode || EMPTY_STRING,
+      content: result.programmeResultIndicatorIdentifier || EMPTY_STRING,
       treeLevel: 2,
     };
   });
@@ -306,7 +306,9 @@ export function getOptions(custom?: Partial<TimelineOptions>): TimelineOptions {
         axis: 10,
         item: {vertical: 10, horizontal: 0}
       },
-      min: START_DATE,
+      min: getStartDateFromPeriod(1),
+      // if 1 Period = 1 Month, we can zoom only to max 1 Period ~= 30days
+      zoomMin: 33 * 24 * 60 * 60 * 1000,
     },
     custom
   );
