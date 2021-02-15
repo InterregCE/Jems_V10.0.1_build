@@ -113,6 +113,7 @@ export class FormService {
 
   resetEditable(): void {
     this.setEditable(this.editable);
+    this.setDirty(false);
   }
 
   setAdditionalValidators(additionalValidators?: (() => boolean)[]): void {
