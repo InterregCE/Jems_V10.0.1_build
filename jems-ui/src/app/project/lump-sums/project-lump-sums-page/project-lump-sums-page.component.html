@@ -30,7 +30,9 @@
                                     *matHeaderCellDef> {{'project.application.form.section.part.e.lump.sums.column.title' | translate}} </mat-header-cell>
                             <mat-cell *matCellDef="let control;  let i = index" [formGroupName]="i">
                                 <mat-form-field appFormFieldWidth="full">
-                                    <mat-select [formControlName]="constants.FORM_CONTROL_NAMES.lumpSum">
+                                    <mat-select
+                                            [matTooltip]="control.get(constants.FORM_CONTROL_NAMES.lumpSum)?.value?.name"
+                                            [formControlName]="constants.FORM_CONTROL_NAMES.lumpSum">
                                         <mat-option *ngFor="let lumpSum of data.lumpSums" [value]="lumpSum">
                                             {{lumpSum.name}}
                                         </mat-option>

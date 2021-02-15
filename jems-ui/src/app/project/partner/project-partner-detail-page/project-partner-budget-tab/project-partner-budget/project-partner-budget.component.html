@@ -82,7 +82,7 @@
                         [tableName]="constants.FORM_CONTROL_NAMES.infrastructure"
                         [projectPeriods]="data.periods">
                 </app-general-budget-table>
-                <div *ngIf="data.unitCosts?.length">
+                <div *ngIf="data.unitCosts?.length" appNoWidthLimit>
                     <h4>{{'project.partner.budget.unitcosts' | translate}}</h4>
                     <app-unit-costs-budget-table
                             *ngIf="unitCosts"

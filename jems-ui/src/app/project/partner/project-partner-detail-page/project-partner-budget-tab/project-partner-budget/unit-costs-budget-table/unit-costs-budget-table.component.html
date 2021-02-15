@@ -14,7 +14,9 @@
                             *matHeaderCellDef> {{'project.partner.budget.table.unitcosts.selection' | translate}} </mat-header-cell>
                     <mat-cell *matCellDef="let control;  let i = index" [formGroupName]="i">
                         <mat-form-field appFormFieldWidth="full">
-                            <mat-select [formControlName]="constants.FORM_CONTROL_NAMES.unitCost">
+                            <mat-select
+                                    [matTooltip]="control.get(constants.FORM_CONTROL_NAMES.unitCost)?.value?.name"
+                                    [formControlName]="constants.FORM_CONTROL_NAMES.unitCost">
                                 <mat-option *ngFor="let unitCost of availableUnitCosts" [value]="unitCost">
                                     {{unitCost.name}}
                                 </mat-option>
@@ -34,7 +36,10 @@
                     <mat-header-cell
                             *matHeaderCellDef> {{'project.partner.budget.table.description' | translate}} </mat-header-cell>
                     <mat-cell *matCellDef="let control;  let i = index" [formGroupName]="i">
-                        <div class="text-overflow-ellipsis">{{control.get(constants.FORM_CONTROL_NAMES.unitCost)?.value?.description}}</div>
+                        <div class="text-overflow-ellipsis"
+                             [matTooltip]="control.get(constants.FORM_CONTROL_NAMES.unitCost)?.value?.description">
+                            {{control.get(constants.FORM_CONTROL_NAMES.unitCost)?.value?.description}}
+                        </div>
                     </mat-cell>
                     <mat-footer-cell *matFooterCellDef></mat-footer-cell>
                 </ng-container>
