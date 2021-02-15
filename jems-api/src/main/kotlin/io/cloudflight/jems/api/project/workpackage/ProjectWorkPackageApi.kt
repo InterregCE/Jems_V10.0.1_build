@@ -4,6 +4,7 @@ import io.cloudflight.jems.api.project.dto.workpackage.InputWorkPackageCreate
 import io.cloudflight.jems.api.project.dto.workpackage.InputWorkPackageUpdate
 import io.cloudflight.jems.api.project.dto.workpackage.OutputWorkPackage
 import io.cloudflight.jems.api.project.dto.workpackage.OutputWorkPackageSimple
+import io.cloudflight.jems.api.project.dto.workpackage.ProjectWorkPackageDTO
 import io.swagger.annotations.Api
 import io.swagger.annotations.ApiImplicitParam
 import io.swagger.annotations.ApiImplicitParams
@@ -36,6 +37,15 @@ interface ProjectWorkPackageApi {
     )
     @GetMapping("/perProject/{projectId}")
     fun getWorkPackagesByProjectId(@PathVariable projectId: Long, pageable: Pageable): Page<OutputWorkPackageSimple>
+
+    @ApiOperation("Returns all work packages for a project including activities")
+    @ApiImplicitParams(
+        ApiImplicitParam(paramType = "query", name = "page", dataType = "integer"),
+        ApiImplicitParam(paramType = "query", name = "size", dataType = "integer"),
+        ApiImplicitParam(paramType = "query", name = "sort", dataType = "string")
+    )
+    @GetMapping("/perProject/{projectId}/full")
+    fun getFullWorkPackagesByProjectId(@PathVariable projectId: Long, pageable: Pageable): Page<ProjectWorkPackageDTO>
 
     @ApiOperation("Create work package")
     @PostMapping("/forProject/{projectId}", consumes = [MediaType.APPLICATION_JSON_VALUE])

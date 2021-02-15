@@ -1,4 +1,4 @@
-package io.cloudflight.jems.server.project.entity.workpackage
+package io.cloudflight.jems.server.project.entity.workpackage.output
 
 import io.cloudflight.jems.server.project.entity.TranslationWorkPackageOutputId
 import javax.persistence.Column

@@ -1,17 +1,19 @@
-package io.cloudflight.jems.server.workpackage.service.workpackageoutput.update_work_package_output
+package io.cloudflight.jems.server.project.service.workpackage.output.update_work_package_output
 
 import io.cloudflight.jems.api.programme.dto.language.SystemLanguage
+import io.cloudflight.jems.server.common.exception.I18nValidationException
+import io.cloudflight.jems.server.programme.service.language.model.ProgrammeLanguage
 import io.cloudflight.jems.server.project.service.workpackage.WorkPackagePersistence
 import io.cloudflight.jems.server.project.service.workpackage.output.model.WorkPackageOutput
 import io.cloudflight.jems.server.project.service.workpackage.output.model.WorkPackageOutputTranslatedValue
-import io.cloudflight.jems.server.project.service.workpackage.output.update_work_package_output.UpdateWorkPackageOutput
-import io.cloudflight.jems.server.project.service.workpackage.output.update_work_package_output.UpdateWorkPackageOutputInteractor
 import io.mockk.MockKAnnotations
 import io.mockk.every
 import io.mockk.impl.annotations.MockK
 import org.assertj.core.api.Assertions
+import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.assertThrows
 
 class UpdateWorkPackageOutputInteractorTest {
 
@@ -49,6 +51,9 @@ class UpdateWorkPackageOutputInteractorTest {
     }
 
     @MockK
+    lateinit var mockedList: List<WorkPackageOutput>
+
+    @MockK
     lateinit var persistence: WorkPackagePersistence
 
     private lateinit var updateWorkPackageOutputInteractor: UpdateWorkPackageOutputInteractor
@@ -66,7 +71,7 @@ class UpdateWorkPackageOutputInteractorTest {
     }
 
     @Test
-    fun `update `() {
+    fun `update - valid`() {
         every { persistence.updateWorkPackageOutputs(1L, any()) } returns workPackageOutputsUpdated
         Assertions.assertThat(
             updateWorkPackageOutputInteractor.updateWorkPackageOutputs(
@@ -74,6 +79,15 @@ class UpdateWorkPackageOutputInteractorTest {
                 workPackageOutputsToUpdate,
             )
         ).isEqualTo(workPackageOutputsUpdated)
+    }
+
+    @Test
+    fun `update - too many outputs`() {
+        every { mockedList.size } returns 11
+        val ex = assertThrows<I18nValidationException> {
+            updateWorkPackageOutputInteractor.updateWorkPackageOutputs(1L, mockedList)
+        }
+        assertThat(ex.i18nKey).isEqualTo("project.workPackage.outputs.max.allowed.reached")
     }
 
 }

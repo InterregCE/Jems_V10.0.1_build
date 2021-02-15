@@ -1,52 +1,16 @@
 package io.cloudflight.jems.server.project.repository.workpackage
 
 import io.cloudflight.jems.api.project.dto.InputTranslation
-import io.cloudflight.jems.server.programme.entity.indicator.IndicatorOutput
 import io.cloudflight.jems.server.project.entity.AddressEntity
-import io.cloudflight.jems.server.project.entity.ProjectPeriodEntity
-import io.cloudflight.jems.server.project.entity.TranslationWorkPackageOutputId
 import io.cloudflight.jems.server.project.entity.workpackage.WorkPackageEntity
-import io.cloudflight.jems.server.project.entity.workpackage.WorkPackageOutputEntity
 import io.cloudflight.jems.server.project.entity.workpackage.investment.WorkPackageInvestmentEntity
 import io.cloudflight.jems.server.project.entity.workpackage.investment.WorkPackageInvestmentTransl
 import io.cloudflight.jems.server.project.entity.workpackage.investment.WorkPackageInvestmentTranslation
-import io.cloudflight.jems.server.project.entity.workpackage.WorkPackageOutputId
-import io.cloudflight.jems.server.project.entity.workpackage.WorkPackageOutputTransl
 import io.cloudflight.jems.server.project.service.model.Address
 import io.cloudflight.jems.server.project.service.workpackage.model.InvestmentSummary
 import io.cloudflight.jems.server.project.service.workpackage.model.WorkPackageInvestment
-import io.cloudflight.jems.server.project.service.workpackage.output.model.WorkPackageOutput
-import io.cloudflight.jems.server.project.service.workpackage.output.model.WorkPackageOutputTranslatedValue
 import org.springframework.data.domain.Page
 import kotlin.collections.HashSet
-
-
-fun WorkPackageOutput.toEntity(
-    indicatorOutput: IndicatorOutput?,
-    workPackage: WorkPackageEntity,
-    projectPeriod: ProjectPeriodEntity?,
-    outputNumber: Int
-) : WorkPackageOutputEntity {
-    val outputId = WorkPackageOutputId(workPackage.id, outputNumber)
-    return WorkPackageOutputEntity(
-        outputId = outputId,
-        programmeOutputIndicator = indicatorOutput,
-        translatedValues = translatedValues.toEntity(outputId),
-        targetValue = targetValue,
-        period = projectPeriod
-    )
-}
-
-fun WorkPackageOutputEntity.toWorkPackageOutput() = WorkPackageOutput(
-    outputNumber = outputId.outputNumber,
-    programmeOutputIndicatorId = programmeOutputIndicator?.id,
-    translatedValues = translatedValues.toModel(),
-    targetValue = targetValue,
-    periodNumber = period?.id?.number
-)
-
-fun List<WorkPackageOutputEntity>.toWorkPackageOutputList() =
-    this.map { it.toWorkPackageOutput() }.sortedBy { it.outputNumber }.toList()
 
 fun Page<WorkPackageInvestmentEntity>.toWorkPackageInvestmentPage() = this.map { it.toWorkPackageInvestment() }
 
@@ -150,19 +114,3 @@ fun Address.toAddressEntity() = AddressEntity(
 
 fun AddressEntity.toAddress() =
     Address(this.country, this.nutsRegion2, this.nutsRegion3, this.street, this.houseNumber, this.postalCode, this.city)
-
-fun Set<WorkPackageOutputTranslatedValue>.toEntity(outputId: WorkPackageOutputId) = mapTo(HashSet()) { it.toEntity(outputId) }
-
-fun WorkPackageOutputTranslatedValue.toEntity(workPackageOutputId: WorkPackageOutputId) = WorkPackageOutputTransl(
-    translationId = TranslationWorkPackageOutputId(workPackageOutputId = workPackageOutputId, language = language),
-    title = title,
-    description = description,
-)
-
-fun Set<WorkPackageOutputTransl>.toModel() = mapTo(HashSet()) {
-    WorkPackageOutputTranslatedValue(
-        language = it.translationId.language,
-        description = it.description,
-        title = it.title
-    )
-}

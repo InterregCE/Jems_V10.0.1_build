@@ -1,4 +1,4 @@
-package io.cloudflight.jems.server.project.entity.workpackage
+package io.cloudflight.jems.server.project.entity.workpackage.output
 
 import io.cloudflight.jems.server.programme.entity.indicator.IndicatorOutput
 import io.cloudflight.jems.server.project.entity.ProjectPeriodEntity
@@ -8,9 +8,21 @@ import javax.persistence.EmbeddedId
 import javax.persistence.Entity
 import javax.persistence.JoinColumn
 import javax.persistence.ManyToOne
+import javax.persistence.NamedAttributeNode
+import javax.persistence.NamedEntityGraph
+import javax.persistence.NamedEntityGraphs
+import javax.persistence.NamedSubgraph
 import javax.persistence.OneToMany
 
 @Entity(name = "project_work_package_output")
+@NamedEntityGraphs(
+    NamedEntityGraph(
+        name = "WorkPackageOutputEntity.full",
+        attributeNodes = [
+            NamedAttributeNode(value = "translatedValues"),
+        ],
+    )
+)
 data class WorkPackageOutputEntity(
 
     @EmbeddedId

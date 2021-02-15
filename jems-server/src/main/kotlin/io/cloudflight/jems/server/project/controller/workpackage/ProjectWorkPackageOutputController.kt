@@ -15,7 +15,7 @@ class ProjectWorkPackageOutputController(
 
     override fun getWorkPackageOutputs(workPackageId: Long): List<WorkPackageOutputDTO> =
         getWorkPackageOutputInteractor.getWorkPackageOutputsForWorkPackage(workPackageId)
-            .toWorkPackageOutputDTOList()
+            .toDto()
 
 
     override fun updateWorkPackageOutputs(
@@ -25,6 +25,6 @@ class ProjectWorkPackageOutputController(
         updateWorkPackageOutputInteractor.updateWorkPackageOutputs(
             workPackageId,
             workPackageOutputUpdateDTO.toWorkPackageOutputList(),
-        ).toWorkPackageOutputDTOList()
+        ).toDto()
 
 }

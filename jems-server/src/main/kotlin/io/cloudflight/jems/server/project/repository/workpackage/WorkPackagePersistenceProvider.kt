@@ -4,12 +4,17 @@ import io.cloudflight.jems.server.common.exception.ResourceNotFoundException
 import io.cloudflight.jems.server.programme.repository.indicator.IndicatorOutputRepository
 import io.cloudflight.jems.server.project.entity.workpackage.WorkPackageEntity
 import io.cloudflight.jems.server.project.entity.workpackage.investment.WorkPackageInvestmentEntity
-import io.cloudflight.jems.server.project.entity.workpackage.WorkPackageOutputEntity
+import io.cloudflight.jems.server.project.entity.workpackage.output.WorkPackageOutputEntity
 import io.cloudflight.jems.server.project.repository.description.ProjectPeriodRepository
+import io.cloudflight.jems.server.project.repository.workpackage.activity.WorkPackageActivityRepository
+import io.cloudflight.jems.server.project.repository.workpackage.investment.WorkPackageInvestmentRepository
+import io.cloudflight.jems.server.project.repository.workpackage.output.WorkPackageOutputRepository
 import io.cloudflight.jems.server.project.service.workpackage.WorkPackagePersistence
 import io.cloudflight.jems.server.project.service.workpackage.activity.model.WorkPackageActivity
+import io.cloudflight.jems.server.project.service.workpackage.model.ProjectWorkPackage
 import io.cloudflight.jems.server.project.service.workpackage.model.WorkPackageInvestment
 import io.cloudflight.jems.server.project.service.workpackage.output.model.WorkPackageOutput
+import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
 import org.springframework.stereotype.Repository
 import org.springframework.transaction.annotation.Transactional
@@ -18,10 +23,34 @@ import org.springframework.data.domain.Sort
 @Repository
 class WorkPackagePersistenceProvider(
     private val workPackageRepository: WorkPackageRepository,
+    private val workPackageActivityRepository: WorkPackageActivityRepository,
+    private val workPackageOutputRepository: WorkPackageOutputRepository,
     private val workPackageInvestmentRepository: WorkPackageInvestmentRepository,
     private val indicatorOutputRepository: IndicatorOutputRepository,
     private val projectPeriodRepository: ProjectPeriodRepository
 ) : WorkPackagePersistence {
+
+    @Transactional(readOnly = true)
+    override fun getRichWorkPackagesByProjectId(projectId: Long, pageable: Pageable): Page<ProjectWorkPackage> {
+        // fetch all work packages in 1 request
+        val workPackagesPaged = workPackageRepository.findAllByProjectId(projectId, pageable)
+        val workPackageIds = workPackagesPaged.content.mapTo(HashSet()) { it.id }
+
+        // fetch all activities and deliverables in 1 request
+        val activitiesByWorkPackages = workPackageActivityRepository.findAllByActivityIdWorkPackageIdIn(workPackageIds)
+            .groupBy { it.activityId.workPackageId }
+
+        // fetch all outputs in 1 request
+        val outputsByWorkPackages = workPackageOutputRepository.findAllByOutputIdWorkPackageIdIn(workPackageIds)
+            .groupBy { it.outputId.workPackageId }
+
+        return workPackagesPaged.map { wp ->
+            wp.toModel(
+                getActivitiesForWorkPackageId = { id -> activitiesByWorkPackages[id] },
+                getOutputsForWorkPackageId = { id -> outputsByWorkPackages[id] },
+            )
+        }
+    }
 
     @Transactional
     override fun updateWorkPackageOutputs(
@@ -49,17 +78,17 @@ class WorkPackagePersistenceProvider(
 
         return workPackageRepository.save(
             getWorkPackageOrThrow(workPackageId).copy(
-                workPackageOutputs = outputsToSave
+                outputs = outputsToSave
             )
-        ).workPackageOutputs.toWorkPackageOutputList()
+        ).outputs.toModel()
 
     }
 
 
     @Transactional(readOnly = true)
     override fun getWorkPackageOutputsForWorkPackage(workPackageId: Long): List<WorkPackageOutput> =
-        getWorkPackageOrThrow(workPackageId).workPackageOutputs
-            .toWorkPackageOutputList()
+        getWorkPackageOrThrow(workPackageId).outputs
+            .toModel()
 
     @Transactional(readOnly = true)
     override fun getWorkPackageInvestment(workPackageInvestmentId: Long) =
@@ -72,6 +101,10 @@ class WorkPackagePersistenceProvider(
     @Transactional(readOnly = true)
     override fun getProjectInvestmentSummaries(projectId: Long) =
         workPackageInvestmentRepository.findInvestmentsByProjectId(projectId).toInvestmentSummaryList()
+
+    @Transactional(readOnly = true)
+    override fun countWorkPackageInvestments(workPackageId: Long): Long =
+        workPackageInvestmentRepository.countAllByWorkPackageId(workPackageId)
 
     @Transactional
     override fun addWorkPackageInvestment(workPackageId: Long, workPackageInvestment: WorkPackageInvestment) =

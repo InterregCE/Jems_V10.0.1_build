@@ -74,7 +74,7 @@ fun WorkPackageOutput.toWorkPackageOutputDTO() = WorkPackageOutputDTO(
 
 fun List<WorkPackageOutputUpdateDTO>.toWorkPackageOutputList() = this.map { it.toWorkPackageOutput() }.toList()
 
-fun List<WorkPackageOutput>.toWorkPackageOutputDTOList() = this.map { it.toWorkPackageOutputDTO() }.toList()
+fun List<WorkPackageOutput>.toDto() = this.map { it.toWorkPackageOutputDTO() }.toList()
 
 fun Address.toAddressDTO() = AddressDTO(
     this.country,

@@ -4,6 +4,7 @@ import io.cloudflight.jems.api.project.dto.workpackage.InputWorkPackageCreate
 import io.cloudflight.jems.api.project.dto.workpackage.InputWorkPackageUpdate
 import io.cloudflight.jems.api.project.dto.workpackage.OutputWorkPackage
 import io.cloudflight.jems.api.project.dto.workpackage.OutputWorkPackageSimple
+import io.cloudflight.jems.server.common.exception.I18nValidationException
 import io.cloudflight.jems.server.common.exception.ResourceNotFoundException
 import io.cloudflight.jems.server.project.authorization.CanReadProject
 import io.cloudflight.jems.server.project.authorization.CanReadProjectWorkPackage
@@ -11,7 +12,6 @@ import io.cloudflight.jems.server.project.authorization.CanUpdateProject
 import io.cloudflight.jems.server.project.authorization.CanUpdateProjectWorkPackage
 import io.cloudflight.jems.server.project.entity.workpackage.WorkPackageEntity
 import io.cloudflight.jems.server.project.repository.ProjectRepository
-import io.cloudflight.jems.server.project.repository.partner.combineTranslatedValues
 import io.cloudflight.jems.server.project.repository.workpackage.WorkPackageRepository
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
@@ -25,6 +25,10 @@ class WorkPackageServiceImpl(
     private val workPackageRepository: WorkPackageRepository,
     private val projectRepository: ProjectRepository
 ) : WorkPackageService {
+
+    companion object {
+        private const val MAX_WORK_PACKAGES_PER_PROJECT = 20L
+    }
 
     @CanReadProjectWorkPackage
     @Transactional(readOnly = true)
@@ -46,6 +50,8 @@ class WorkPackageServiceImpl(
     override fun createWorkPackage(projectId: Long, inputWorkPackageCreate: InputWorkPackageCreate): OutputWorkPackage {
         val project = projectRepository.findById(projectId)
             .orElseThrow { ResourceNotFoundException("project") }
+        if (workPackageRepository.countAllByProjectId(projectId) >= MAX_WORK_PACKAGES_PER_PROJECT)
+            throw I18nValidationException(i18nKey = "project.workPackage.max.allowed.reached")
 
         val workPackageCreated = workPackageRepository.save(inputWorkPackageCreate.toEntity(project))
         val workPackageSavedWithTranslations = workPackageRepository.save(
