@@ -66,7 +66,7 @@ export class CallDetailComponent implements OnInit {
     ])],
     startDate: ['', Validators.required],
     endDate: ['', Validators.required],
-    description: ['', Validators.maxLength(1000)],
+    description: [[], Validators.maxLength(1000)],
     lengthOfPeriod: ['', Validators.compose(
       [Validators.required, Validators.max(99), Validators.min(1)])],
     multipleFundsAllowed: [false]
