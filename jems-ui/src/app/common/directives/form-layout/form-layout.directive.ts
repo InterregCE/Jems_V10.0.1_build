@@ -6,7 +6,7 @@ import {AfterContentChecked, AfterViewInit, Directive, ElementRef, Input, OnInit
 export class FormLayoutDirective implements OnInit, AfterViewInit, AfterContentChecked {
 
   @Input() gap = '0.5rem';
-  @Input() defaultRowMaxWidth = '40rem';
+  @Input() defaultRowMaxWidth = '50rem';
 
   constructor(private el: ElementRef) {
   }

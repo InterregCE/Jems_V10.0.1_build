@@ -2,8 +2,9 @@
 
 @mixin custom-form-field-styles() {
 
+  @include custom-general-form-field-styles();
+  @include custom-disabled-form-fields();
   @include shorten-mat-form-field-appearance-fill-with-no-label($app-typography);
-
 }
 
 
@@ -35,5 +36,40 @@
     .mat-select-arrow-wrapper {
       transform: translateY(0);
     }
+  }
+}
+
+@mixin custom-general-form-field-styles() {
+  .mat-form-field-label {
+    color: var(--input-label-color);
+  }
+}
+
+@mixin custom-disabled-form-fields() {
+
+  .mat-form-field-disabled .mat-form-field-underline {
+    height: 0;
+  }
+
+  .mat-form-field-disabled {
+    .mat-select-arrow {
+      visibility: hidden;
+    }
+
+    .mat-form-field-label-wrapper {
+      .mat-form-field-label {
+        color: var(--input-label-color);
+      }
+    }
+
+    .mat-form-field-wrapper {
+      .mat-input-element {
+        color: var(--font-color-secondary);
+      }
+    }
+  }
+
+  .mat-form-field-disabled .mat-select-value-text, .light-theme .mat-input-element:disabled {
+    color: var(--font-color-primary);
   }
 }

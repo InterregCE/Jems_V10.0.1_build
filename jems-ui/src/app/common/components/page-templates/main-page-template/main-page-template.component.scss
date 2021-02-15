@@ -11,6 +11,12 @@
   align-items: stretch;
   height: 100%;
 
+  ::ng-deep {
+    h1, h2 {
+      margin-bottom: 0;
+      margin-top: 0;
+    }
+  }
   app-breadcrumb {
     display: flex;
     justify-content: stretch;
@@ -30,6 +36,11 @@
     height: calc(100% - 4rem);
     overflow: auto;
     scroll-behavior: smooth;
+
+
+    .page-content-container {
+      margin-top: 1rem;
+    }
 
     .mat-card {
       padding: 0;
