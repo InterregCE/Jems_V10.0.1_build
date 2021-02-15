@@ -1,4 +1,4 @@
-$size-of-box: 1.5rem;
+$size-of-box: 1.25rem;
 $radius-big: .375rem;
 $radius-nested: .25rem;
 $max-group-label-width: 18rem;
@@ -80,6 +80,7 @@ $color-cyan-light: #CCF2F6;
     color: var(--font-color-secondary) !important;
   }
 
+  .vis-label.vis-nesting-group.collapsed:before,
   .vis-label.vis-nesting-group.expanded:before {
     position: relative;
     top: -.5rem;
@@ -87,7 +88,7 @@ $color-cyan-light: #CCF2F6;
 
   .vis-labelset .vis-label,
   .vis-foreground .vis-group {
-    border-color: var(--light-blue-gray);
+    border-color: var(--table-border-color);
   }
 
   .vis-timeline.vis-bottom {
@@ -131,12 +132,16 @@ $color-cyan-light: #CCF2F6;
 
   .vis-inner {
     span {
-      line-height: $size-of-box;
+      line-height: 1.25rem;
       overflow: hidden;
       white-space: nowrap;
       text-overflow: ellipsis;
       display: inline-block !important;
     }
+  }
+
+  .vis-label .vis-inner {
+    height: 1.25rem;
   }
 
 }

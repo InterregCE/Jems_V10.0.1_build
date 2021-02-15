@@ -1,8 +1,8 @@
 import {ChangeDetectionStrategy, Component, ElementRef, OnInit, ViewChild} from '@angular/core';
 import {
   Content,
-  EMPTY_STRING,
-  getEndDateFromPeriod, getGroupName,
+  getEndDateFromPeriod,
+  getGroupName,
   getGroups,
   getItems,
   getOptions,
@@ -72,8 +72,8 @@ export class ProjectTimeplanPageComponent implements OnInit {
     if (!data.periods.length) {
       return false;
     }
-    const endDate = getEndDateFromPeriod(data.periods.length).add(2, 'd');
-    const options = getOptions({max: endDate?.calendar()});
+    const endDate = getEndDateFromPeriod(data.periods.length).toISOString();
+    const options = getOptions({max: endDate});
     const doc = this.visualization?.nativeElement;
     if (doc) {
       this.timeline = new Timeline(doc, data.items, options);
