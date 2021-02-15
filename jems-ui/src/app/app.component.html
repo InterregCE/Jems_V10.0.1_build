@@ -1,1 +1,7 @@
+<button mat-icon-button color="accent" *ngIf="componentCssClass === 'dark-theme'" (click)="onSetTheme('light-theme')">
+    <mat-icon>light_mode</mat-icon>
+</button>
+<button mat-icon-button color="accent" *ngIf="componentCssClass === 'light-theme'" (click)="onSetTheme('dark-theme')">
+    <mat-icon>dark_mode</mat-icon>
+</button>
 <router-outlet></router-outlet>

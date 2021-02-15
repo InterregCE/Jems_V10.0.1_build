@@ -185,6 +185,10 @@ export class ProjectApplicationFormSidenavService {
                 route: `${ProjectApplicationFormSidenavService.PROJECT_DETAIL_URL}/${projectId}/applicationFormResults`,
               },
               {
+                headline: {i18nKey: 'project.application.form.section.part.c.subsection.six'},
+                route: `${ProjectApplicationFormSidenavService.PROJECT_DETAIL_URL}/${projectId}/applicationTimePlan`,
+              },
+              {
                 headline: {i18nKey: 'project.application.form.section.part.c.subsection.seven'},
                 route: `${ProjectApplicationFormSidenavService.PROJECT_DETAIL_URL}/${projectId}/applicationFormManagement`,
               },

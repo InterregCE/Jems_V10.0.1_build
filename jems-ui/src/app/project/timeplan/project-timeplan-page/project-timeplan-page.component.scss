@@ -1,0 +1,110 @@
+$size-of-box: 1.5rem;
+$radius-big: .375rem;
+$radius-nested: .25rem;
+
+$color-purple: #D338FF;
+$color-purple-light: #EBD4EF;
+$color-cyan: #00BCD4;
+$color-cyan-light: #CCF2F6;
+
+::ng-deep {
+  .vis-text.vis-minor {
+    text-align: center;
+    font-size: .875rem;
+    line-height: 2.5rem;
+    font-weight: 500;
+  }
+
+  .vis-item.vis-background {
+    padding: .125rem 0;
+    background: 0;
+
+    .vis-item-overflow {
+      border-radius: $radius-big;
+    }
+
+    &.bg-purple {
+      .vis-item-overflow {
+        background-color: $color-purple;
+      }
+    }
+
+    &.bg-cyan {
+      .vis-item-overflow {
+        background-color: $color-cyan;
+      }
+    }
+  }
+
+  .vis-item.vis-range {
+    height: $size-of-box;
+    border-width: .0625rem;
+    cursor: pointer;
+
+    .vis-item-overflow {
+      border-radius: $radius-nested;
+    }
+
+    border-radius: $radius-nested;
+
+    &.bg-purple {
+      border-color: $color-purple;
+
+      .vis-item-overflow {
+        background-color: $color-purple-light;
+      }
+    }
+
+    &.bg-cyan {
+      border-color: $color-cyan;
+
+      .vis-item-overflow {
+        background-color: $color-cyan-light;
+      }
+    }
+
+    .vis-item-content {
+      width: 100%;
+      text-align: center;
+      padding: 0;
+      line-height: $size-of-box;
+    }
+  }
+
+  .vis-group-level-1 {
+    color: var(--font-color-primary) !important;
+  }
+
+  .vis-group-level-2 {
+    color: var(--font-color-secondary) !important;
+  }
+
+  .vis-labelset .vis-label,
+  .vis-foreground .vis-group {
+    border-color: var(--light-blue-gray);
+  }
+
+  .vis-timeline.vis-bottom {
+    background-color: var(--light-blue-gray);
+    border-color: var(--light-blue-gray);
+  }
+
+  .vis-panel.vis-top {
+    background-color: var(--light-blue-gray);
+  }
+
+  .vis-time-axis {
+    .vis-text {
+      color: var(--font-color-secondary);
+    }
+
+    .vis-grid.vis-minor {
+      border-color: var(--light-blue-gray);
+    }
+  }
+
+  .vis-panel.vis-background.vis-vertical {
+    background-color: var(--background);
+  }
+
+}
