@@ -51,7 +51,7 @@
             </mat-form-field>
         </div>
 
-        <p>{{'call.detail.field.lengthOfPeriod.help' | translate}}</p>
+        <p *ngIf="!isApplicant">{{'call.detail.field.lengthOfPeriod.help' | translate}}</p>
         <mat-form-field>
             <mat-label>{{'call.detail.field.lengthOfPeriod' | translate}}</mat-label>
             <input required type="number" name="lengthOfPeriod" formControlName="lengthOfPeriod" matInput
