@@ -1,23 +1,24 @@
-<div *ngxPermissionsOnly="Permission.ADMINISTRATOR">
-    <app-breadcrumb></app-breadcrumb>
-    <h2>{{'user.management.header' | translate}}</h2>
-    <div id="user-page-container">
-        <div id="user-submission-container" class="mr-4" *ngIf="userRoles$ | async as userRoles">
-            <app-user-submission
-                    [success$]="userSaveSuccess$"
-                    [error$]="userSaveError$"
-                    [userRoles]="userRoles"
-                    (submitUser)="createUser($event)">
-            </app-user-submission>
-        </div>
-        <div *ngIf="currentPage$ | async as userPage">
-            <app-user-list
-                    [userPage]="userPage"
-                    [pageIndex]="newPageIndex$ | async"
-                    (newPageSize)="newPageSize$.next($event)"
-                    (newPageIndex)="newPageIndex$.next($event)"
-                    (newSort)="newSort$.next($event)">
-            </app-user-list>
-        </div>
+<app-main-page-template *ngxPermissionsOnly="Permission.ADMINISTRATOR"
+                        [needsCard]="true"
+                        titleKey="user.breadcrumb.create"
+                        subTitleKey="user.management.header">
+<div id="user-page-container">
+    <div id="user-submission-container" class="mr-4" *ngIf="userRoles$ | async as userRoles">
+        <app-user-submission
+                [success$]="userSaveSuccess$"
+                [error$]="userSaveError$"
+                [userRoles]="userRoles"
+                (submitUser)="createUser($event)">
+        </app-user-submission>
+    </div>
+    <div *ngIf="currentPage$ | async as userPage">
+        <app-user-list
+                [userPage]="userPage"
+                [pageIndex]="newPageIndex$ | async"
+                (newPageSize)="newPageSize$.next($event)"
+                (newPageIndex)="newPageIndex$.next($event)"
+                (newSort)="newSort$.next($event)">
+        </app-user-list>
     </div>
 </div>
+</app-main-page-template>

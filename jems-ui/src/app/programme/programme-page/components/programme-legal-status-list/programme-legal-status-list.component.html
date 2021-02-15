@@ -1,13 +1,13 @@
 <form appFormLayout [formGroup]="statusForm">
     <div appMultiColumnRow>
-        <h2 class="mb-0">{{'programme.legal.status.list.title' | translate}}</h2>
+        <h3 class="mb-0">{{'programme.legal.status.list.title' | translate}}</h3>
         <button color="primary"
                 *ngIf="formState === FormState.VIEW" mat-raised-button
                 (click)="changeFormState$.next(FormState.EDIT)">
             {{'common.edit.label' | translate}}
         </button>
     </div>
-    <mat-table [appTableConfig]="[{},{maxInRem:5}]" class="mat-elevation-z1" [dataSource]="dataSource">
+    <mat-table appNoWidthLimit [appTableConfig]="[{},{maxInRem:5}]" [dataSource]="dataSource">
 
         <ng-container matColumnDef="description">
             <mat-header-cell

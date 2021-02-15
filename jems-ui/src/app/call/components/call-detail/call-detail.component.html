@@ -1,8 +1,6 @@
 <app-form (discard)="onCancel()"
           (save)="onSubmit()">
     <form appFormLayout [formGroup]="callForm">
-        <h1>{{'call.detail.title' | translate}}</h1>
-        <h2>{{'call.general.settings' | translate}}</h2>
         <button *ngIf="call?.id && editable"
                 appFormFieldWidth="medium"
                 mat-raised-button color="primary"
@@ -53,7 +51,6 @@
             </mat-form-field>
         </div>
 
-
         <p>{{'call.detail.field.lengthOfPeriod.help' | translate}}</p>
         <mat-form-field>
             <mat-label>{{'call.detail.field.lengthOfPeriod' | translate}}</mat-label>
@@ -79,49 +76,41 @@
             </app-multi-language-form-field>
         </app-multi-language>
 
-        <div>
-            <h2>{{'call.programme.priorities.title' | translate}}</h2>
-            <app-call-priority-tree
-                    *ngIf="priorityCheckboxes"
-                    [priorityCheckboxes]="priorityCheckboxes"
+        <h3>{{'call.programme.priorities.title' | translate}}</h3>
+        <app-call-priority-tree
+                *ngIf="priorityCheckboxes"
+                [priorityCheckboxes]="priorityCheckboxes"
+                [disabled]="!editable"
+                [isApplicant]="isApplicant"
+                (selectionChanged)="formChanged()">
+        </app-call-priority-tree>
+
+        <h3>{{'call.strategy.title' | translate}}</h3>
+        <app-call-strategies
+                [strategies]="strategies"
+                [disabled]="!editable"
+                [isApplicant]="isApplicant"
+                (selectionChanged)="formChanged()">
+        </app-call-strategies>
+
+        <h3>{{'call.funds.title' | translate}}</h3>
+        <div *ngIf="!isApplicant">
+            <mat-checkbox
+                    name="multipleFundsAllowed"
+                    formControlName="multipleFundsAllowed"
+                    (click)="$event.stopPropagation()"
                     [disabled]="!editable"
-                    [isApplicant]="isApplicant"
-                    (selectionChanged)="formChanged()">
-            </app-call-priority-tree>
+                    [checked]="callForm?.controls?.multipleFundsAllowed.value">
+                {{'call.multiple.funds.allowed' | translate}}
+            </mat-checkbox>
         </div>
 
-        <div>
-            <h2>{{'call.strategy.title' | translate}}</h2>
-            <app-call-strategies
-                    [strategies]="strategies"
-                    [disabled]="!editable"
-                    [isApplicant]="isApplicant"
-                    (selectionChanged)="formChanged()">
-            </app-call-strategies>
-        </div>
-
-        <div>
-            <h2>{{'call.funds.title' | translate}}</h2>
-            <div *ngIf="!isApplicant">
-                <mat-checkbox
-                        name="multipleFundsAllowed"
-                        formControlName="multipleFundsAllowed"
-                        (click)="$event.stopPropagation()"
-                        [disabled]="!editable"
-                        [checked]="callForm?.controls?.multipleFundsAllowed.value">
-                    {{'call.multiple.funds.allowed' | translate}}
-                </mat-checkbox>
-            </div>
-        </div>
-
-        <div>
-            <h2>{{'call.funds.select.funds' | translate}}</h2>
-            <app-call-funds
-                    [funds]="funds"
-                    [disabled]="!editable"
-                    [isApplicant]="isApplicant"
-                    (selectionChanged)="formChanged()">
-            </app-call-funds>
-        </div>
+        <h3>{{'call.funds.select.funds' | translate}}</h3>
+        <app-call-funds
+                [funds]="funds"
+                [disabled]="!editable"
+                [isApplicant]="isApplicant"
+                (selectionChanged)="formChanged()">
+        </app-call-funds>
     </form>
 </app-form>

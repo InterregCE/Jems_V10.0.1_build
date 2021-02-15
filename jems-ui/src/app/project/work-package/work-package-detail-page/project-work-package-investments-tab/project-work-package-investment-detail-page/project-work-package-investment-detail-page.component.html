@@ -1,4 +1,6 @@
-<app-breadcrumb></app-breadcrumb>
+<app-main-page-template *ngIf="workPackageStore.workPackage$ | async as workPackage"
+                        titleKey="project.application.form.section.part.c"
+                        subTitleText="{{'project.application.form.workpackage.form.header' | translate}}{{workPackage.number}}">
 <app-form *ngIf="workPackageInvestment$ | async as investment"
           (save)="onSubmit()">
     <form appFormLayout [formGroup]="workPackageInvestmentForm">
@@ -137,3 +139,4 @@
 
     </form>
 </app-form>
+</app-main-page-template>

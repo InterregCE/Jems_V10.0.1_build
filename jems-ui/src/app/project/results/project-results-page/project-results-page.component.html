@@ -1,9 +1,6 @@
-<ng-container *ngIf="data$ | async as data">
-    <div>
-        <app-breadcrumb></app-breadcrumb>
-        <h1>{{'project.application.form.acronym' | translate : {acronym: data.projectAcronym} }}</h1>
-        <h2>{{'project.application.form.section.part.c' | translate}}</h2>
-    </div>
+<app-main-page-template *ngIf="data$ | async as data"
+                        [titleText]="'project.application.form.acronym' | translate : {acronym: data.projectAcronym}"
+                        subTitleKey="project.application.form.section.part.c">
     <app-form (save)="updateResults()">
         <form appFormLayout [formGroup]="form">
             <h3>{{'project.application.form.section.part.c.subsection.five' | translate}}</h3>
@@ -71,4 +68,4 @@
             </button>
         </form>
     </app-form>
-</ng-container>
+</app-main-page-template>

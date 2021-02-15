@@ -1,5 +1,7 @@
-<div *ngIf="outputIndicator$ | async as details" class="container">
-    <app-breadcrumb></app-breadcrumb>
+<app-main-page-template [needsCard]="true"
+                        *ngIf="outputIndicator$ | async as details"
+                        titleKey="programme.data.page.title"
+                        subTitleKey="programme.tab.indicators">
     <app-programme-output-indicator-detail
             [outputIndicator]="details"
             [priorities]="priorities$ | async"
@@ -10,4 +12,4 @@
             (updateOutputIndicator)="updateOutputIndicator($event)"
             (cancelCreate)="cancelCreate()">
     </app-programme-output-indicator-detail>
-</div>
+</app-main-page-template>

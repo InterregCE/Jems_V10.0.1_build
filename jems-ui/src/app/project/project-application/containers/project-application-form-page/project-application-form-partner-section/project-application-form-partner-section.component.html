@@ -1,24 +1,26 @@
-<app-breadcrumb></app-breadcrumb>
-<h1>{{'project.application.form.acronym' | translate : {acronym: projectStore.getAcronym() | async} }}</h1>
-<h2>{{'project.application.form.section.part.b' | translate}}</h2>
-<h3>{{'project.application.form.section.part.b.partners' | translate}}</h3>
+<app-main-page-template
+        [needsCard]="true"
+        [titleText]="'project.application.form.acronym' | translate : {acronym: projectStore.getAcronym() | async} "
+        subTitleKey="project.application.form.section.part.b">
 
-<span *ngxPermissionsExcept="Permission.PROGRAMME_USER">
-    <button *ngIf="(projectStore.projectEditable$ | async) === true"
-            mat-stroked-button color="primary"
-            [routerLink]="'/app/project/detail/' + projectId + '/applicationFormPartner/create'">
-        + {{'project.application.form.partner.add' | translate}}
-    </button>
-</span>
+    <h3>{{'project.application.form.section.part.b.partners' | translate}}</h3>
+    <ng-container *ngxPermissionsExcept="Permission.PROGRAMME_USER">
+        <button *ngIf="(projectStore.projectEditable$ | async) === true"
+                mat-stroked-button color="primary"
+                [routerLink]="'/app/project/detail/' + projectId + '/applicationFormPartner/create'">
+            + {{'project.application.form.partner.add' | translate}}
+        </button>
+    </ng-container>
 
-<app-project-application-form-partner-list
-        *ngIf="partnerPage$ | async as partnerPage"
-        [projectId]="projectId"
-        [editable]="projectStore.projectEditable$ | async"
-        [partnerPage]="partnerPage"
-        [pageIndex]="newPageIndex$ | async"
-        (newPageSize)="newPageSize$.next($event)"
-        (newPageIndex)="newPageIndex$.next($event)"
-        (newSort)="newSort$.next($event)"
-        (deletePartner)="deletePartner($event)">
-</app-project-application-form-partner-list>
+    <app-project-application-form-partner-list
+            *ngIf="partnerPage$ | async as partnerPage"
+            [projectId]="projectId"
+            [editable]="projectStore.projectEditable$ | async"
+            [partnerPage]="partnerPage"
+            [pageIndex]="newPageIndex$ | async"
+            (newPageSize)="newPageSize$.next($event)"
+            (newPageIndex)="newPageIndex$.next($event)"
+            (newSort)="newSort$.next($event)"
+            (deletePartner)="deletePartner($event)">
+    </app-project-application-form-partner-list>
+</app-main-page-template>

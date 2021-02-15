@@ -15,7 +15,7 @@ export class MultiColumnRowDirective implements OnInit {
     this.el.nativeElement.classList.add('app-layout');
     this.el.nativeElement.classList.add('app-layout-row');
     this.el.nativeElement.classList.add('app-multi-column-row');
-    this.el.nativeElement.style.setProperty('--gap', this.gap);
+    this.el.nativeElement.style.setProperty('--column-gap', this.gap);
     this.el.nativeElement.style.setProperty('--flex', this.stretch === 'none' ? 'none' : 1);
     this.el.nativeElement.style.setProperty('--align', this.itemsAlign);
   }

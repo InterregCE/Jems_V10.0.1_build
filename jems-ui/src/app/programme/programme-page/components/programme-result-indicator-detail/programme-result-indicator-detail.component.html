@@ -1,6 +1,6 @@
 <form appFormLayout [formGroup]="resultIndicatorForm">
     <div appMultiColumnRow>
-        <h1 class="mb-0">{{'result.indicator.title' | translate}}</h1>
+        <h3 class="mb-0">{{'result.indicator.title' | translate}}</h3>
         <button *ngIf="formState === FormState.VIEW" mat-raised-button color="primary"
                 (click)="changeFormState$.next(FormState.EDIT)">
             {{'result.indicator.button.edit' | translate}}

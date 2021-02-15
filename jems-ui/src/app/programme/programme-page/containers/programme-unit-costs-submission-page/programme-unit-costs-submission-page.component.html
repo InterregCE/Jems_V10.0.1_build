@@ -1,5 +1,7 @@
-<div *ngIf="unitCost$ | async as details" class="container">
-    <app-breadcrumb></app-breadcrumb>
+<app-main-page-template [needsCard]="true"
+                        *ngIf="unitCost$ | async as details"
+                        titleKey="programme.data.page.title"
+                        subTitleKey="programme.tab.costs.option">
     <app-programme-unit-cost-detail
             [unitCost]="details"
             [success$]="unitCostSaveSuccess$"
@@ -9,4 +11,4 @@
             (updateUnitCost)="updateUnitCost($event)"
             (cancelCreate)="cancelCreate()">
     </app-programme-unit-cost-detail>
-</div>
+</app-main-page-template>

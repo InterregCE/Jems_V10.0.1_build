@@ -1,4 +1,4 @@
-import {ChangeDetectionStrategy, Component, OnInit} from '@angular/core';
+import {ChangeDetectionStrategy, Component} from '@angular/core';
 import {combineLatest} from 'rxjs';
 import {ProjectStore} from '../../project-application-detail/services/project-store.service';
 import {ProjectApplicationFormStore} from '../services/project-application-form-store.service';
@@ -6,7 +6,7 @@ import {ActivatedRoute} from '@angular/router';
 import {ProjectApplicationFormSidenavService} from '../services/project-application-form-sidenav.service';
 import {map, mergeMap, tap} from 'rxjs/operators';
 import {Log} from '../../../../../common/utils/log';
-import {CallService, ProjectService, InputProjectData, OutputCallProgrammePriority} from '@cat/api';
+import {CallService, InputProjectData, OutputCallProgrammePriority, ProjectService} from '@cat/api';
 
 @Component({
   selector: 'app-project-application-form-identification-page',

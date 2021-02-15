@@ -1,9 +1,12 @@
-<app-breadcrumb></app-breadcrumb>
-<div *ngxPermissionsOnly="Permission.APPLICANT_USER">
+<app-main-page-template
+        [needsCard]="true"
+        *ngxPermissionsOnly="Permission.APPLICANT_USER"
+        titleKey="project.breadcrumb.list"
+        subTitleKey="project.detail.new.title">
     <app-project-application-submission
             *ngxPermissionsExcept="[Permission.PROGRAMME_USER]"
             [success$]="applicationSaveSuccess$"
             [error$]="applicationSaveError$"
-            (submitProjectApplication)="createApplication($event)"
-    ></app-project-application-submission>
-</div>
+            (submitProjectApplication)="createApplication($event)">
+    </app-project-application-submission>
+</app-main-page-template>

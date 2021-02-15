@@ -1,9 +1,15 @@
-<app-breadcrumb></app-breadcrumb>
-<ng-container *ngIf="details$ | async as details">
-    <div appFormLayout>
+<app-main-page-template [needsCard]="true" *ngIf="details$ | async as details"
+                        titleKey="project.application.form.lifecycle.title">
+
+    <div page-sub-title appNoWidthLimit appFormLayout>
         <h2>{{details.acronym}}</h2>
-        <app-project-application-information appNoWidthLimit [project]="details.project">
+        <app-project-application-information
+                appNoWidthLimit
+                [project]="details.project">
         </app-project-application-information>
+    </div>
+
+    <div appFormLayout>
         <h3>{{'project.assessment.fundingDecision.dialog.title' | translate}}</h3>
         <app-project-application-funding-decision
                 appNoWidthLimit
@@ -25,4 +31,4 @@
                 (cancel)="redirectToProject()">
         </app-project-application-funding-decision>
     </div>
-</ng-container>
+</app-main-page-template>

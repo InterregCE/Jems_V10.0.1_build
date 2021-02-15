@@ -1,24 +1,26 @@
-<app-breadcrumb></app-breadcrumb>
-<h2>{{'programme.priority.list.header' | translate}}</h2>
-<div appFormLayout>
-    <ng-container *ngIf="prioritiesPageStore.priorities$ | async as priorities">
-        <app-table
-                appNoWidthLimit
-                *ngIf="priorities.length"
-                [configuration]="tableConfiguration"
-                [rows]="priorities"
-                [totalElements]="priorities.length">
-        </app-table>
-    </ng-container>
-    <button mat-stroked-button
-            routerLink="/app/programme/priorities/create">
-        + {{'programme.priority.add.new' | translate}}
-    </button>
-</div>
-<ng-template #specificObjective let-priority>
-    <div>
-        <div class="mt-1 mb-1" *ngFor="let objective of priority.specificObjectives">
-            {{objective.code}} - {{'programme.policy.' + objective.programmeObjectivePolicy | translate}}
-        </div>
+<app-main-page-template [needsCard]="true" titleKey="programme.data.page.title"
+                        subTitleKey="programme.priority.add.title">
+    <div appFormLayout>
+        <h3>{{'programme.priority.list.header' | translate}}</h3>
+        <ng-container *ngIf="prioritiesPageStore.priorities$ | async as priorities">
+            <app-table
+                    appNoWidthLimit
+                    *ngIf="priorities.length"
+                    [configuration]="tableConfiguration"
+                    [rows]="priorities"
+                    [totalElements]="priorities.length">
+            </app-table>
+        </ng-container>
+        <button mat-stroked-button
+                routerLink="/app/programme/priorities/create">
+            + {{'programme.priority.add.new' | translate}}
+        </button>
     </div>
-</ng-template>
+    <ng-template #specificObjective let-priority>
+        <div>
+            <div class="mt-1 mb-1" *ngFor="let objective of priority.specificObjectives">
+                {{objective.code}} - {{'programme.policy.' + objective.programmeObjectivePolicy | translate}}
+            </div>
+        </div>
+    </ng-template>
+</app-main-page-template>

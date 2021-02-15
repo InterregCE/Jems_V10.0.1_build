@@ -1,8 +1,6 @@
-<h1>{{'programme.data.page.title' | translate}}</h1>
-
 <form appFormLayout [formGroup]="programmeForm">
     <div appMultiColumnRow>
-        <h2 class="mb-0">{{'programme.data.header' | translate}}</h2>
+        <h3 class="mb-0">{{'programme.data.header' | translate}}</h3>
         <button color="primary" *ngIf="formState === FormState.VIEW" mat-raised-button
                 (click)="changeFormState$.next(FormState.EDIT)">
             {{'programme.data.button.edit' | translate}}

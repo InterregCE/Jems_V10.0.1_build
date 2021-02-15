@@ -31,7 +31,7 @@
     border-color: if($is-dark-theme, var(--outline-color), var(--primary-color));
 
     .mat-button-toggle {
-      background-color: white;
+      background-color: var(--background);
       color: if($is-dark-theme, var(--font-color-primary), var(--primary-color));
     }
 

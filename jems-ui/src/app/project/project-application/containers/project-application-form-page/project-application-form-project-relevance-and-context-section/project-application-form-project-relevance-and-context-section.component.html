@@ -1,14 +1,14 @@
-<app-breadcrumb></app-breadcrumb>
-<h1>{{'project.application.form.acronym' | translate : {acronym: projectStore.getAcronym() | async} }}</h1>
-<h2>{{'project.application.form.section.part.c' | translate}}</h2>
-
-<app-project-application-form-project-relevance-and-context-detail
-        *ngIf="details$ | async as details"
-        [success$]="saveSuccess$"
-        [project]="details.relevance"
-        [editable]="projectStore.projectEditable$ | async"
-        [strategiesFromCall]="details.strategies"
-        [error$]="saveError$"
-        (updateData)="updateProjectRelevance$.next($event)"
-        (deleteData)="deleteEntriesFromTables$.next($event)">
-</app-project-application-form-project-relevance-and-context-detail>
+<app-main-page-template
+        [titleText]="'project.application.form.acronym' | translate : {acronym: projectStore.getAcronym() | async} "
+        subTitleKey="project.application.form.section.part.c">
+    <app-project-application-form-project-relevance-and-context-detail
+            *ngIf="details$ | async as details"
+            [success$]="saveSuccess$"
+            [project]="details.relevance"
+            [editable]="projectStore.projectEditable$ | async"
+            [strategiesFromCall]="details.strategies"
+            [error$]="saveError$"
+            (updateData)="updateProjectRelevance$.next($event)"
+            (deleteData)="deleteEntriesFromTables$.next($event)">
+    </app-project-application-form-project-relevance-and-context-detail>
+</app-main-page-template>

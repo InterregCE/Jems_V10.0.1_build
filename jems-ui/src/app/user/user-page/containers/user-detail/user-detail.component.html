@@ -1,5 +1,6 @@
-<ng-container *ngIf="details$ | async as details">
-    <app-breadcrumb></app-breadcrumb>
+<app-main-page-template [needsCard]="true" *ngIf="details$ | async as details"
+                        titleKey="user.breadcrumb.create">
+
     <app-user-edit
             [success$]="userStore.userSaveSuccess$"
             [error$]="userStore.userSaveError$"
@@ -18,4 +19,4 @@
             (submitPassword)="changePassword($event)"
             (switchedFormState)="passwordSwitchedMode($event)">
     </app-user-password>
-</ng-container>
+</app-main-page-template>

@@ -5,7 +5,7 @@
 </app-alert>
 
 <p *ngIf="!dataSource?.data.length">{{'unit.cost.empty.list' | translate}}</p>
-<mat-table *ngIf="dataSource?.data.length" [dataSource]="dataSource" class="mat-elevation-z8 mt-4">
+<mat-table appNoWidthLimit *ngIf="dataSource?.data.length" [dataSource]="dataSource">
 
     <ng-container matColumnDef="name">
         <mat-header-cell *matHeaderCellDef>{{ 'unit.cost.table.column.name.name' | translate }}</mat-header-cell>

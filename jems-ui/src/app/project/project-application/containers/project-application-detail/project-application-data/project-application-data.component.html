@@ -1,9 +1,4 @@
-<h1 id="lifecycle-header">{{'project.application.form.lifecycle.title' | translate}}</h1>
 <div appFormLayout *ngIf="project$ | async as project" id="project-detail-container">
-    <app-project-application-information
-            appNoWidthLimit
-            [project]="project">
-    </app-project-application-information>
     <app-project-application-actions
             appNoWidthLimit
             [projectId]="project.id"

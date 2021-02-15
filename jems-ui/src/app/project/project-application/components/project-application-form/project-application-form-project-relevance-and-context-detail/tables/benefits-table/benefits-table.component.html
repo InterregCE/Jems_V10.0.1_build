@@ -1,7 +1,6 @@
 <div appFormLayout [formGroup]="formGroup">
     <app-multi-language appNoWidthLimit [inputs]="specificationInputs" *ngIf="benefitsForm.controls.length>0">
-        <div [appearance]="'table'"
-             [appTableConfig]="[{},{}, {maxInRem:2}]">
+        <div [appTableConfig]="[{},{}, {maxInRem:2}]">
             <div>
                 <span class="mat-body-strong">{{ 'project.application.form.relevance.target.group' | translate }}</span>
                 <span class="mat-body-strong">{{ 'project.application.form.relevance.specification' | translate }}</span>

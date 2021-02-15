@@ -1,0 +1,45 @@
+@mixin custom-mat-table-styles($is-dark-theme) {
+
+  @include custom-general-custom-mat-table-styles($is-dark-theme);
+
+}
+
+
+@mixin custom-general-custom-mat-table-styles($is-dark-theme) {
+  .mat-table {
+    border: 1px solid var(--table-border-color);
+    background-color: var(--table-backaground-color);
+
+
+    .mat-header-row {
+      .mat-header-cell {
+        color: var(--table-header-text-color);
+        font-size: var(--body-strong-font-size);
+        font-weight: var(--body-strong-font-weight);
+      }
+    }
+
+    .mat-row {
+      border-bottom: 0;
+
+      &:nth-child(even) {
+        background-color: var(--table-highlight-color);
+      }
+
+      &:hover {
+        background-color: var(--hover-color);
+      }
+    }
+
+    .mat-cell {
+      border-bottom: 0;
+    }
+
+    .mat-footer-row {
+      font-weight: 500;
+      border-bottom: 0;
+      border-top: 1px solid var(--table-border-color);
+    }
+  }
+}
+

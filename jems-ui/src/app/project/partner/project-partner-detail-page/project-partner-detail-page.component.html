@@ -1,15 +1,20 @@
-<div *ngIf="partnerStore.partner$ | async as partner">
-    <app-breadcrumb></app-breadcrumb>
+<app-main-page-template *ngIf="partnerStore.partner$ | async as partner"
+                        [titleText]="'project.application.form.acronym' | translate : {acronym: projectStore.getAcronym() | async} ">
+    <ng-container page-sub-title *ngIf="partner.abbreviation else defaultSubTitle" >
+        <h2>{{'common.label.project.partner.role.' + partner.role | translate}}{{partner.abbreviation}}</h2>
+    </ng-container>
 
-    <h1 *ngIf="partner.abbreviation">
-        {{'common.label.project.partner.role.' + partner.role | translate}}
-        {{partner.abbreviation}}
-    </h1>
     <mat-tab-group class="partner-tab-menu"
                    (selectedIndexChange)="changeTab($event)"
                    [selectedIndex]="activeTab$ | async">
         <mat-tab label="{{'partner.tab.identity' | translate}}">
-            <app-project-application-partner-identity></app-project-application-partner-identity>
+            <app-project-application-form-partner-edit
+                    *ngIf="partnerStore.partner$ | async as partner"
+                    [partner]="partner"
+                    [projectId]="projectId"
+                    [editable]="projectStore.projectEditable$ | async"
+                    [legalStatuses]="legalStatuses$ | async">
+            </app-project-application-form-partner-edit>
         </mat-tab>
         <mat-tab label="{{'partner.tab.address' | translate}}">
             <app-project-application-form-region-selection></app-project-application-form-region-selection>
@@ -31,4 +36,9 @@
             <app-project-partner-co-financing-tab></app-project-partner-co-financing-tab>
         </mat-tab>
     </mat-tab-group>
-</div>
+
+</app-main-page-template>
+
+<ng-template #defaultSubTitle>
+    <h2>{{'project.application.form.section.part.b.partners' | translate}}</h2>
+</ng-template>

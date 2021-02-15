@@ -1,5 +1,7 @@
-<ng-container *ngxPermissionsExcept="Permission.APPLICANT_USER">
-    <app-breadcrumb></app-breadcrumb>
+<app-main-page-template [needsCard]="true"
+                        *ngxPermissionsExcept="Permission.APPLICANT_USER"
+                        titleKey="programme.data.page.title"
+                        subTitleKey="programme.tab.area">
     <app-programme-nuts-info
             [metadata]="metaData$ | async"
             [success$]="downloadSuccess$"
@@ -7,12 +9,12 @@
             (downloadNuts)="downloadLatestNuts$.next()">
     </app-programme-nuts-info>
     <app-programme-regions class="margin-before"
-            *ngIf="(regionTreeDataSource._data | async)?.length"
-            [success$]="regionSaveSuccess$"
-            [dataSource]="regionTreeDataSource"
-            [selectedRegions]="selectedRegions$ | async"
-            (selectionChanged)="selectionChanged$.next(regionTreeDataSource.data)"
-            (saveRegions)="saveSelectedRegions$.next()"
-            (cancelEdit)="cancelEdit$.next()">
+                           *ngIf="(regionTreeDataSource._data | async)?.length"
+                           [success$]="regionSaveSuccess$"
+                           [dataSource]="regionTreeDataSource"
+                           [selectedRegions]="selectedRegions$ | async"
+                           (selectionChanged)="selectionChanged$.next(regionTreeDataSource.data)"
+                           (saveRegions)="saveSelectedRegions$.next()"
+                           (cancelEdit)="cancelEdit$.next()">
     </app-programme-regions>
-</ng-container>
+</app-main-page-template>

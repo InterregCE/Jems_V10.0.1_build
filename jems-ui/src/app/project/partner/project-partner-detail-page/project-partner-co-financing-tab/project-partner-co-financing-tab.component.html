@@ -1,15 +1,15 @@
 <ng-container *ngIf="data$ | async as data">
     <app-form (save)="updateCoFinancingAndContributions()">
         <form appFormLayout [formGroup]="coFinancingForm">
-            <h2>{{ 'partner.tab.coFinancing' | translate }}</h2>
+            <h3>{{ 'partner.tab.coFinancing' | translate }}</h3>
             <p>{{ 'project.partner.coFinancing.intro' | translate }}</p>
-            <div appNoWidthLimit [appearance]="'table'"
+            <div appNoWidthLimit
                  [appTableConfig]="[{},{maxInRem:10},{maxInRem:5}, {maxInRem: 2}]">
                 <div>
                     <span>{{ 'project.partner.coFinancing.source' | translate }}</span>
                     <span>{{ 'project.partner.coFinancing.amount' | translate }}</span>
                     <span class="text-right">{{ 'project.partner.coFinancing.percentage' | translate }}</span>
-                    <div class="mat-body-strong"></div>
+                    <div></div>
                 </div>
 
                 <div>
@@ -17,7 +17,8 @@
                         <mat-select [disabled]="coFinancingForm.disabled"
                                     name="fundId"
                                     [formControlName]="constants.FORM_CONTROL_NAMES.fundId">
-                            <mat-option *ngFor="let fund of filteredFunds(data.callFunds, additionalFundId.value)" [value]="fund.id">
+                            <mat-option *ngFor="let fund of filteredFunds(data.callFunds, additionalFundId.value)"
+                                        [value]="fund.id">
                                 {{fund.abbreviation || 'programme.fund.abbreviation.' + fund.id | translate}}
                             </mat-option>
                         </mat-select>
@@ -50,7 +51,8 @@
                                     name="additionalFundId"
                                     panelClass="material-select-panel"
                                     [formControlName]="constants.FORM_CONTROL_NAMES.additionalFundId">
-                            <mat-option *ngFor="let fund of filteredFunds(data.callFunds, fundId.value)" [value]="fund.id">
+                            <mat-option *ngFor="let fund of filteredFunds(data.callFunds, fundId.value)"
+                                        [value]="fund.id">
                                 {{fund.abbreviation || 'programme.fund.abbreviation.' + fund.id | translate}}
                             </mat-option>
                         </mat-select>
@@ -64,7 +66,8 @@
                     <div>{{ additionalFundAmount.value | asMoney }}</div>
                     <mat-form-field class="text-right">
                         <input currencyMask type="integer" [options]="{min: 0, max: 100, align: 'right'}"
-                               name="additionalFundPercentage" [formControlName]="constants.FORM_CONTROL_NAMES.additionalFundPercentage"
+                               name="additionalFundPercentage"
+                               [formControlName]="constants.FORM_CONTROL_NAMES.additionalFundPercentage"
                                matInput>
                         <div matSuffix class="pl-1">%</div>
                         <mat-error>
@@ -82,7 +85,8 @@
                     </div>
                 </div>
 
-                <button *ngIf="multipleFundsAllowed && !hasASecondFundBeenAdded && !additionalFundId.value" mat-icon-button type="button" class="mt-2 co-financing-button"
+                <button *ngIf="multipleFundsAllowed && !hasASecondFundBeenAdded && !additionalFundId.value"
+                        mat-icon-button type="button" class="mt-2 co-financing-button"
                         (click)="addAdditionalFund()">
                     <mat-icon>add</mat-icon>
                 </button>
@@ -91,15 +95,17 @@
                     <div>{{ 'project.partner.coFinancing.partnerContribution' | translate }}</div>
                     <div>{{ partnerAmount.value | asMoney }}</div>
                     <div class="text-right">{{ partnerPercentage.value }} %</div>
+                    <div></div>
                 </div>
-                <div class="mat-body-strong">
+                <div class="footer">
                     <div>{{ 'project.partner.coFinancing.total' | translate }}</div>
                     <div>{{ data.totalBudget | asMoney }}</div>
                     <div class="text-right">100 %</div>
+                    <div></div>
                 </div>
             </div>
 
-            <h2>{{ 'project.partner.coFinancing.contribution.title' | translate }}</h2>
+            <h3>{{ 'project.partner.coFinancing.contribution.title' | translate }}</h3>
 
             <app-alert
                     [show]="data.showTotalContributionWarning"
@@ -107,19 +113,19 @@
                 <p>{{'project.partner.coFinancing.contribution.total.warning' | translate}}</p>
             </app-alert>
 
-            <div appNoWidthLimit [appearance]="'table'"
+            <div appNoWidthLimit
                  [appTableConfig]="[{minInRem:5},{maxInRem:10},{maxInRem:10},{maxInRem:10}, {maxInRem:2}]">
                 <div>
-                    <span class="mat-body-strong">{{ 'project.partner.coFinancing.contribution.source.name' | translate }}</span>
-                    <span class="mat-body-strong">{{ 'project.partner.coFinancing.contribution.legal.status' | translate }}</span>
-                    <span class="mat-body-strong">{{ 'project.partner.coFinancing.contribution.amount' | translate }}</span>
-                    <span class="mat-body-strong">{{ 'project.partner.coFinancing.contribution.total.partner.contribution.percentage' | translate }}
+                    <span>{{ 'project.partner.coFinancing.contribution.source.name' | translate }}</span>
+                    <span>{{ 'project.partner.coFinancing.contribution.legal.status' | translate }}</span>
+                    <span>{{ 'project.partner.coFinancing.contribution.amount' | translate }}</span>
+                    <div>{{ 'project.partner.coFinancing.contribution.total.partner.contribution.percentage' | translate }}
                         <app-context-info
                                 infoText="{{ 'project.partner.coFinancing.contribution.total.partner.contribution.percentage.contextinfo' | translate }}"
                                 infoPosition="right">
-                    </app-context-info>
-                </span>
-                    <div class="mat-body-strong"></div>
+                        </app-context-info>
+                    </div>
+                    <div></div>
                 </div>
 
                 <div *ngFor="let partnerContribution of partnerContributions.controls;let i=index">
@@ -186,7 +192,7 @@
                 <span>{{ 'project.partner.coFinancing.contribution.add.contribution.origin' | translate }}</span>
             </button>
 
-            <div appNoWidthLimit [appearance]="'table'"
+            <div appNoWidthLimit
                  [appTableConfig]="[{minInRem:5},{maxInRem:10},{maxInRem:10}, {maxInRem:2}]">
                 <div class="hidden"></div>
                 <div>
@@ -204,7 +210,7 @@
                     <div class="text-right">{{ data.privateContributionSubTotal | asMoney}}</div>
                     <span class="text-right">{{ data.privateContributionSubTotal | percentage:data.totalBudget}}</span>
                 </div>
-                <div class="mat-body-strong">
+                <div class="footer">
                     <div>{{ 'project.partner.coFinancing.contribution.total' | translate }}
                         <app-context-info
                                 infoText="{{ 'project.partner.coFinancing.contribution.total.contextinfo' | translate }}"

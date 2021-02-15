@@ -1,8 +1,12 @@
-<app-breadcrumb></app-breadcrumb>
-<app-project-application-form
-        *ngIf="details$ | async as details"
-        [project]="details.project"
-        [editable]="projectStore.projectEditable$ | async"
-        [priorities]="details.callObjectives.priorities"
-        [objectivesWithPolicies]="details.callObjectives.objectivesWithPolicies">
-</app-project-application-form>
+<app-main-page-template
+        [titleText]="'project.application.form.acronym' | translate : {acronym: projectStore.getAcronym() | async}"
+        subTitleKey="project.application.form.section.part.a">
+    <app-project-application-form
+            *ngIf="details$ | async as details"
+            [project]="details.project"
+            [editable]="projectStore.projectEditable$ | async"
+            [priorities]="details.callObjectives.priorities"
+            [objectivesWithPolicies]="details.callObjectives.objectivesWithPolicies">
+    </app-project-application-form>
+</app-main-page-template>
+

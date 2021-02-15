@@ -1,6 +1,6 @@
 import {Injectable} from '@angular/core';
 import {combineLatest, Observable, ReplaySubject, Subject} from 'rxjs';
-import {delay, filter, take, tap} from 'rxjs/operators';
+import {delay, filter, tap} from 'rxjs/operators';
 import {Log} from '../../utils/log';
 import {HeadlineRoute} from '@common/components/side-nav/headline-route';
 import {ResolveEnd, Router} from '@angular/router';
@@ -65,7 +65,7 @@ export class SideNavService {
     if (headline.scrollRoute) {
       this.scrollToRoute(headline.scrollRoute);
     } else if (headline.scrollToTop) {
-      document.getElementById('main-content')?.scrollIntoView({behavior: 'smooth'});
+      document.getElementById('main-page-content')?.scrollTo({top: 0});
     }
   }
 

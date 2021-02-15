@@ -7,11 +7,11 @@
 .dark-theme {
   @import "src/app/theme/themes/theme_dark";
   @include angular-material-theme($dark-theme);
-  @include generate-css-vars-and-custom-styles($dark-theme);
+  @include generate-css-vars-and-custom-styles($dark-theme, $app-typography);
 }
 
 .light-theme {
   @import "src/app/theme/themes/theme_light";
   @include angular-material-theme($light-theme);
-  @include generate-css-vars-and-custom-styles($light-theme);
+  @include generate-css-vars-and-custom-styles($light-theme, $app-typography);
 }

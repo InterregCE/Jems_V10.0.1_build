@@ -1,8 +1,10 @@
-<app-breadcrumb></app-breadcrumb>
-<ng-container *ngxPermissionsExcept="Permission.APPLICANT_USER">
+<app-main-page-template [needsCard]="true"
+                        titleKey="programme.data.page.title"
+                        subTitleKey="programme.tab.indicators"
+                        *ngxPermissionsExcept="Permission.APPLICANT_USER">
     <div appFormLayout>
         <ng-container *ngIf="currentOutputIndicatorPage$ | async as outputIndicatorPage">
-            <h2>{{'output.indicator.table.title' | translate}}</h2>
+            <h3>{{'output.indicator.table.title' | translate}}</h3>
             <button mat-stroked-button
                     [routerLink]="'/app/programme/indicators/outputIndicator/create'">
                 + Add new Output Indicator
@@ -19,7 +21,7 @@
         </ng-container>
 
         <ng-container *ngIf="currentResultIndicatorPage$ | async as resultIndicatorPage">
-            <h2>{{'result.indicator.table.title' | translate}}</h2>
+            <h3>{{'result.indicator.table.title' | translate}}</h3>
             <button mat-stroked-button
                     [routerLink]="'/app/programme/indicators/resultIndicator/create'">
                 + Add new Result Indicator
@@ -35,5 +37,5 @@
             </app-programme-result-indicators-list>
         </ng-container>
     </div>
-</ng-container>
 
+</app-main-page-template>

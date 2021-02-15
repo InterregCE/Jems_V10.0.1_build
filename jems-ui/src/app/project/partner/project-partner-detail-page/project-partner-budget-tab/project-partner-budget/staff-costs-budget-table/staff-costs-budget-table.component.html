@@ -9,7 +9,7 @@
             <app-multi-language>
                 <mat-table [appTableConfig]="tableConfig"
                         [dataSource]="dataSource" [formArrayName]="constants.FORM_CONTROL_NAMES.items"
-                        class="mat-elevation-z2 staff-budget-table">
+                        class="staff-budget-table">
                     <ng-container sticky matColumnDef="description">
                         <mat-header-cell
                                 *matHeaderCellDef> {{'project.partner.budget.table.staff.description' | translate}} </mat-header-cell>
@@ -25,7 +25,7 @@
                         <mat-header-cell
                                 *matHeaderCellDef> {{'project.partner.budget.table.staff.type.of.staff' | translate}} </mat-header-cell>
                         <mat-cell *matCellDef="let control;  let i = index" [formGroupName]="i">
-                            <mat-form-field [appFormFieldWidth]="'small'">
+                            <mat-form-field appFormFieldWidth="full">
                                 <mat-select [formControlName]="constants.FORM_CONTROL_NAMES.type">
                                     <mat-option [value]="null"></mat-option>
                                     <mat-option
@@ -54,7 +54,7 @@
                         <mat-header-cell
                                 *matHeaderCellDef> {{'project.partner.budget.table.unit.type' | translate}} </mat-header-cell>
                         <mat-cell *matCellDef="let control;  let i = index" [formGroupName]="i">
-                            <mat-form-field [appFormFieldWidth]="'small'">
+                            <mat-form-field appFormFieldWidth="full">
                                 <mat-select [formControlName]="constants.FORM_CONTROL_NAMES.unitType">
                                     <mat-option [value]="null"></mat-option>
                                     <mat-option
@@ -73,7 +73,7 @@
                         <mat-header-cell
                                 *matHeaderCellDef> {{'project.partner.budget.table.number.of.units' | translate}} </mat-header-cell>
                         <mat-cell *matCellDef="let control;  let i = index" [formGroupName]="i">
-                            <mat-form-field [appFormFieldWidth]="5">
+                            <mat-form-field appFormFieldWidth="full">
                                 <input currencyMask
                                        [options]="{min: constants.MIN_VALUE, max: constants.MAX_VALUE, align: 'right'}"
                                        [formControlName]="constants.FORM_CONTROL_NAMES.numberOfUnits" type="decimal"
@@ -87,7 +87,7 @@
                         <mat-header-cell
                                 *matHeaderCellDef> {{'project.partner.budget.table.price.per.unit' | translate}} </mat-header-cell>
                         <mat-cell *matCellDef="let control;  let i = index" [formGroupName]="i">
-                            <mat-form-field [appFormFieldWidth]="'medium'">
+                            <mat-form-field appFormFieldWidth="full">
                                 <input currencyMask
                                        [options]="{min: constants.MIN_VALUE, max: constants.MAX_VALUE, align: 'right'}"
                                        [formControlName]="constants.FORM_CONTROL_NAMES.pricePerUnit" type="decimal"
@@ -118,7 +118,7 @@
                         </mat-header-cell>
                         <mat-cell *matCellDef="let control; let k = index" [formArrayName]="k">
                             <mat-form-field [formArrayName]="constants.FORM_CONTROL_NAMES.budgetPeriods"
-                                            [appFormFieldWidth]="'medium'">
+                                            appFormFieldWidth="full">
                                 <ng-container [formGroupName]="j">
                                     <input currencyMask type="decimal" matInput
                                            [formControlName]="constants.FORM_CONTROL_NAMES.amount"

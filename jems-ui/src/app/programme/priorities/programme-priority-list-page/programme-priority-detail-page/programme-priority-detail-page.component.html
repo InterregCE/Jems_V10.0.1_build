@@ -1,16 +1,14 @@
-<app-breadcrumb></app-breadcrumb>
-<ng-container *ngIf="data$ | async as data">
+<app-main-page-template [needsCard]="true" *ngIf="data$ | async as data"
+                        titleKey="programme.data.page.title"
+                        subTitleKey="programme.priority.add.title">
     <form appFormLayout [formGroup]="form">
-
-        <div appMultiColumnRow>
+        <div page-sub-title appMultiColumnRow>
             <h2 class="mb-0">{{'programme.priority.add.title' | translate}}</h2>
-            <!--TODO: remove when new edit mode is introduced-->
             <button color="primary" *ngIf="form.disabled" mat-raised-button
                     (click)="form.enable(); resetForm(data.priority, data.freePrioritiesWithPolicies)">
                 {{'common.edit.label' | translate}}
             </button>
         </div>
-
         <div appMultiColumnRow stretch>
             <mat-form-field appFormFieldWidth="large">
                 <mat-label>{{'programme.priority.field.code' | translate}}</mat-label>
@@ -56,14 +54,13 @@
         <ng-container *ngIf="specificObjectives.length">
             <h3>{{'programme.priority.objective.title' | translate}}</h3>
             <div appNoWidthLimit
-                 appearance="material-table"
                  [appTableConfig]="[{maxInRem: 2},{maxInRem:15},{}]">
                 <div>
                     <span></span>
                     <div class="mat-body-strong">{{'programme.priority.objective.table.column.code' | translate}}</div>
                     <div class="mat-body-strong">{{'programme.priority.objective.table.column.title' | translate}}</div>
                 </div>
-                <div *ngFor="let control of specificObjectives.controls; let i=index" class="mb-1"
+                <div *ngFor="let control of specificObjectives.controls; let i=index"
                      [formArrayName]="constants.SPECIFIC_OBJECTIVES.name">
                     <ng-container [formGroupName]="i">
                         <mat-checkbox
@@ -93,14 +90,13 @@
                     </ng-container>
                     <div>{{'programme.policy.' + control.get(constants.POLICY_OBJECTIVE.name).value | translate}}</div>
                 </div>
-
-                <mat-error>
-                    <app-form-field-errors
-                            [errors]="form.get(constants.SPECIFIC_OBJECTIVES.name)?.errors"
-                            [messages]="constants.SPECIFIC_OBJECTIVES.errorMessages">
-                    </app-form-field-errors>
-                </mat-error>
             </div>
+            <mat-error>
+                <app-form-field-errors
+                        [errors]="form.get(constants.SPECIFIC_OBJECTIVES.name)?.errors"
+                        [messages]="constants.SPECIFIC_OBJECTIVES.errorMessages">
+                </app-form-field-errors>
+            </mat-error>
         </ng-container>
 
         <!--TODO: remove when new edit mode is introduced-->
@@ -135,4 +131,4 @@
             </p>
         </app-alert>
     </form>
-</ng-container>
+</app-main-page-template>

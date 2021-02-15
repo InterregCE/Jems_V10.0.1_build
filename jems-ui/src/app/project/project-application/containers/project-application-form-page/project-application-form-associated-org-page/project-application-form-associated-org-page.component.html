@@ -1,23 +1,25 @@
-<app-breadcrumb></app-breadcrumb>
-<h1>{{'project.application.form.acronym' | translate : {acronym: projectStore.getAcronym() | async} }}</h1>
-<h2>{{'project.application.form.section.part.b' | translate}}</h2>
-<h3>{{'project.application.form.section.part.b.associatedOrganizations' | translate}}</h3>
+<app-main-page-template [needsCard]="true"
+                        [titleText]="'project.application.form.acronym' | translate : {acronym: projectStore.getAcronym() | async} "
+                        subTitleKey="project.application.form.section.part.b">
 
-<span *ngxPermissionsExcept="Permission.PROGRAMME_USER">
-    <button *ngIf="(projectStore.projectEditable$ | async) === true" mat-stroked-button
-            [routerLink]="'/app/project/detail/' + projectId + '/applicationFormAssociatedOrganization/create'">
-        + {{'project.application.form.associatedOrganization.add' | translate}}
-    </button>
-</span>
+    <h3>{{'project.application.form.section.part.b.associatedOrganizations' | translate}}</h3>
 
-<app-project-application-form-associated-organizations-list
-        *ngIf="associatedOrganizationsPage$ | async as associatedOrganizationPage"
-        [projectId]="projectId"
-        [editable]="projectStore.projectEditable$ | async"
-        [associatedOrganizationPage]="associatedOrganizationPage"
-        [pageIndex]="newPageIndex$ | async"
-        (newPageSize)="newPageSize$.next($event)"
-        (newPageIndex)="newPageIndex$.next($event)"
-        (newSort)="newSort$.next($event)"
-        (deleteAssociatedOrganization)="deleteAssociatedOrganization($event)">
-</app-project-application-form-associated-organizations-list>
+    <ng-container *ngxPermissionsExcept="Permission.PROGRAMME_USER">
+        <button *ngIf="(projectStore.projectEditable$ | async) === true" mat-stroked-button
+                [routerLink]="'/app/project/detail/' + projectId + '/applicationFormAssociatedOrganization/create'">
+            + {{'project.application.form.associatedOrganization.add' | translate}}
+        </button>
+    </ng-container>
+
+    <app-project-application-form-associated-organizations-list
+            *ngIf="associatedOrganizationsPage$ | async as associatedOrganizationPage"
+            [projectId]="projectId"
+            [editable]="projectStore.projectEditable$ | async"
+            [associatedOrganizationPage]="associatedOrganizationPage"
+            [pageIndex]="newPageIndex$ | async"
+            (newPageSize)="newPageSize$.next($event)"
+            (newPageIndex)="newPageIndex$.next($event)"
+            (newSort)="newSort$.next($event)"
+            (deleteAssociatedOrganization)="deleteAssociatedOrganization($event)">
+    </app-project-application-form-associated-organizations-list>
+</app-main-page-template>
