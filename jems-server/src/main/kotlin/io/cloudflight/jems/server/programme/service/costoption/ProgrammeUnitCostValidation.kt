@@ -1,5 +1,6 @@
 package io.cloudflight.jems.server.programme.service.costoption
 
+import io.cloudflight.jems.api.programme.dto.costoption.BudgetCategory
 import io.cloudflight.jems.server.common.exception.I18nFieldError
 import io.cloudflight.jems.server.common.exception.I18nValidationException
 import io.cloudflight.jems.server.programme.service.costoption.model.ProgrammeUnitCost
@@ -47,8 +48,7 @@ private fun validateCommonUnitCost(unitCost: ProgrammeUnitCost) {
     if (costPerUnit == null || costPerUnit < BigDecimal.ZERO || costPerUnit > MAX_COST || costPerUnit.scale() > 2)
         errors.put("costPerUnit", I18nFieldError(i18nKey = "programme.unitCost.costPerUnit.invalid"))
 
-    if (unitCost.categories.size < 2)
-        errors.put("categories", I18nFieldError(i18nKey = "programme.unitCost.categories.min.2"))
+    validateOneCostCategory(unitCost = unitCost, errors = errors)
 
     if (errors.isNotEmpty())
         throw I18nValidationException(
@@ -56,4 +56,18 @@ private fun validateCommonUnitCost(unitCost: ProgrammeUnitCost) {
             httpStatus = HttpStatus.UNPROCESSABLE_ENTITY,
             i18nFieldErrors = errors,
         )
+}
+
+private fun validateOneCostCategory(unitCost: ProgrammeUnitCost, errors: MutableMap<String, I18nFieldError>) {
+    if (unitCost.isOneCostCategory == true) {
+        if (unitCost.categories.size != 1)
+            errors.put("categories", I18nFieldError(i18nKey = "programme.unitCost.categories.exactly.1"))
+        else {
+            if (unitCost.categories.contains(BudgetCategory.OfficeAndAdministrationCosts))
+                errors.put("categories", I18nFieldError(i18nKey = "programme.unitCost.categories.restricted"))
+        }
+    } else {
+        if (unitCost.categories.size < 2)
+            errors.put("categories", I18nFieldError(i18nKey = "programme.unitCost.categories.min.2"))
+    }
 }

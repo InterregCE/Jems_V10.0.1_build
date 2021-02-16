@@ -118,6 +118,7 @@ class ProjectControllerTest {
                     description = "pus 4",
                     type = "type of unit cost",
                     costPerUnit = BigDecimal.ONE,
+                    isOneCostCategory = false,
                     categories = setOf(BudgetCategory.ExternalCosts, BudgetCategory.OfficeAndAdministrationCosts),
                 ),
             ),

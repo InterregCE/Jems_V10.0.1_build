@@ -31,6 +31,7 @@ class ProgrammeUnitCostControllerTest {
             description = "test unit cost 1",
             type = "type 1",
             costPerUnit = BigDecimal.ONE,
+            isOneCostCategory = false,
             categories = setOf(EquipmentCosts, TravelAndAccommodationCosts),
         )
 

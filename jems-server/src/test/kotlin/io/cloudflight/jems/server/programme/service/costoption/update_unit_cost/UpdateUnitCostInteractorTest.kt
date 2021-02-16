@@ -45,6 +45,7 @@ class UpdateUnitCostInteractorTest {
             description = "test unit cost 1",
             type = null,
             costPerUnit = null,
+            isOneCostCategory = false,
             categories = setOf(OfficeAndAdministrationCosts),
         )
         val ex = assertThrows<I18nValidationException> { updateUnitCostInteractor.updateUnitCost(wrongUnitCost) }
@@ -64,6 +65,7 @@ class UpdateUnitCostInteractorTest {
             description = getStringOfLength(501),
             type = getStringOfLength(26),
             costPerUnit = BigDecimal.ONE,
+            isOneCostCategory = false,
             categories = setOf(StaffCosts, OfficeAndAdministrationCosts),
         )
         val ex = assertThrows<I18nValidationException> { updateUnitCostInteractor.updateUnitCost(wrongUnitCost) }
@@ -83,6 +85,7 @@ class UpdateUnitCostInteractorTest {
             description = "test unit cost 1",
             type = "test type 1",
             costPerUnit = BigDecimal.ONE,
+            isOneCostCategory = false,
             categories = setOf(OfficeAndAdministrationCosts, StaffCosts),
         )
         val auditSlot = slot<AuditCandidate>()
@@ -99,6 +102,7 @@ class UpdateUnitCostInteractorTest {
         val unitCost = ProgrammeUnitCost(
             name = "UC1",
             costPerUnit = BigDecimal.ONE,
+            isOneCostCategory = false,
         )
 
         assertThrows<I18nValidationException>("when updating id cannot be invalid") {
@@ -114,6 +118,7 @@ class UpdateUnitCostInteractorTest {
             name = "UC1",
             type = "UC1 type",
             costPerUnit = BigDecimal.ONE,
+            isOneCostCategory = false,
             categories = setOf(OfficeAndAdministrationCosts, StaffCosts),
         )
         every { persistence.updateUnitCost(any()) } throws ResourceNotFoundException("programmeUnitCost")

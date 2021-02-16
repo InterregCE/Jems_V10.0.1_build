@@ -11,6 +11,7 @@ fun ProgrammeUnitCostEntity.toProgrammeUnitCost() = ProgrammeUnitCost(
     description = description,
     type = type,
     costPerUnit = costPerUnit,
+    isOneCostCategory = isOneCostCategory,
     categories = categories.mapTo(HashSet()) { it.category }
 )
 
@@ -22,6 +23,7 @@ fun ProgrammeUnitCost.toEntity() = ProgrammeUnitCostEntity(
     description = description,
     type = type!!,
     costPerUnit = costPerUnit!!,
+    isOneCostCategory = isOneCostCategory,
     categories = if (id == null) mutableSetOf() else categories.toBudgetCategoryEntity(id)
 )
 

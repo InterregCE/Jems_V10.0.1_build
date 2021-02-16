@@ -139,6 +139,7 @@ export class ProgrammeUnitCostDetailComponent extends ViewEditForm implements On
           description: this.unitCostForm?.controls?.description?.value,
           type: this.unitCostForm?.controls?.type?.value,
           costPerUnit: this.unitCostForm?.controls?.costPerUnit?.value,
+          isOneCostCategory: false,
           categories: this.selection.selected
         });
       }
