@@ -5,7 +5,6 @@ import io.cloudflight.jems.api.project.dto.InputTranslation
 import io.cloudflight.jems.api.project.dto.workpackage.investment.InvestmentSummaryDTO
 import io.cloudflight.jems.api.project.dto.workpackage.investment.WorkPackageInvestmentDTO
 import io.cloudflight.jems.api.project.dto.workpackage.output.WorkPackageOutputDTO
-import io.cloudflight.jems.api.project.dto.workpackage.output.WorkPackageOutputUpdateDTO
 import io.cloudflight.jems.server.project.service.model.Address
 import io.cloudflight.jems.server.project.service.workpackage.model.InvestmentSummary
 import io.cloudflight.jems.server.project.service.workpackage.model.WorkPackageInvestment
@@ -55,15 +54,14 @@ fun WorkPackageInvestmentDTO.toWorkPackageInvestment() = WorkPackageInvestment(
     ownershipMaintenance = ownershipMaintenance
 )
 
-fun WorkPackageOutputUpdateDTO.toWorkPackageOutput() = WorkPackageOutput(
-    outputNumber = outputNumber,
-    programmeOutputIndicatorId = programmeOutputIndicatorId,
+fun WorkPackageOutputDTO.toModel() = WorkPackageOutput(
     translatedValues = combineOutputTranslations(title, description),
-    targetValue = targetValue,
-    periodNumber = periodNumber
+    periodNumber = periodNumber,
+    programmeOutputIndicatorId = programmeOutputIndicatorId,
+    targetValue = targetValue
 )
 
-fun WorkPackageOutput.toWorkPackageOutputDTO() = WorkPackageOutputDTO(
+fun WorkPackageOutput.toDto() = WorkPackageOutputDTO(
     outputNumber = outputNumber,
     programmeOutputIndicatorId = programmeOutputIndicatorId,
     title = translatedValues.extractField { it.title },
@@ -72,9 +70,9 @@ fun WorkPackageOutput.toWorkPackageOutputDTO() = WorkPackageOutputDTO(
     description = translatedValues.extractField { it.description }
 )
 
-fun List<WorkPackageOutputUpdateDTO>.toWorkPackageOutputList() = this.map { it.toWorkPackageOutput() }.toList()
+fun List<WorkPackageOutputDTO>.toModel() = map { it.toModel() }.toList()
 
-fun List<WorkPackageOutput>.toDto() = this.map { it.toWorkPackageOutputDTO() }.toList()
+fun List<WorkPackageOutput>.toDto() = this.map { it.toDto() }.toList()
 
 fun Address.toAddressDTO() = AddressDTO(
     this.country,

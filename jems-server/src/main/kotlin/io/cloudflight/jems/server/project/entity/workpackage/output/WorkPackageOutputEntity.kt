@@ -28,8 +28,10 @@ data class WorkPackageOutputEntity(
     @EmbeddedId
     val outputId: WorkPackageOutputId,
 
-    @ManyToOne
-    val period: ProjectPeriodEntity? = null,
+    @OneToMany(cascade = [CascadeType.ALL], orphanRemoval = true, mappedBy = "translationId.workPackageOutputId")
+    val translatedValues: Set<WorkPackageOutputTransl> = emptySet(),
+
+    val periodNumber: Int? = null,
 
     @ManyToOne
     @JoinColumn(name = "indicator_output_id")
@@ -37,8 +39,5 @@ data class WorkPackageOutputEntity(
 
     @Column
     val targetValue: String? = null,
-
-    @OneToMany(cascade = [CascadeType.ALL], orphanRemoval = true, mappedBy = "translationId.workPackageOutputId")
-    val translatedValues: Set<WorkPackageOutputTransl> = emptySet()
 
 )

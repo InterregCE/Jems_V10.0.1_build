@@ -1,7 +1,6 @@
 package io.cloudflight.jems.api.project.workpackage
 
 import io.cloudflight.jems.api.project.dto.workpackage.output.WorkPackageOutputDTO
-import io.cloudflight.jems.api.project.dto.workpackage.output.WorkPackageOutputUpdateDTO
 import io.swagger.annotations.Api
 import io.swagger.annotations.ApiOperation
 import org.springframework.http.MediaType
@@ -18,13 +17,13 @@ interface ProjectWorkPackageOutputApi {
 
     @ApiOperation("Returns all work package outputs for a work package")
     @GetMapping
-    fun getWorkPackageOutputs(@PathVariable workPackageId: Long): List<WorkPackageOutputDTO>
+    fun getOutputs(@PathVariable workPackageId: Long): List<WorkPackageOutputDTO>
 
     @ApiOperation("Updates work packages outputs for a work package")
     @PostMapping(consumes = [MediaType.APPLICATION_JSON_VALUE])
-    fun updateWorkPackageOutputs(
+    fun updateOutputs(
         @PathVariable workPackageId: Long,
-        @Valid @RequestBody workPackageOutputUpdateDTO: List<WorkPackageOutputUpdateDTO>
+        @Valid @RequestBody outputs: List<WorkPackageOutputDTO>
     ): List<WorkPackageOutputDTO>
 
 }

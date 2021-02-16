@@ -53,6 +53,7 @@ fun WorkPackageActivityDeliverableTranslatedValue.toEntity(deliverableId: WorkPa
 fun Set<WorkPackageActivityDeliverableTranslatedValue>.toEntity(deliverableId: WorkPackageActivityDeliverableId) = mapTo(HashSet()) { it.toEntity(deliverableId) }
 
 fun WorkPackageActivityEntity.toModel() = WorkPackageActivity(
+    activityNumber = activityId.activityNumber,
     translatedValues = translatedValues.toModel(),
     startPeriod = startPeriod,
     endPeriod = endPeriod,
@@ -62,6 +63,7 @@ fun WorkPackageActivityEntity.toModel() = WorkPackageActivity(
 fun Iterable<WorkPackageActivityEntity>.toModel() = sortedBy { it.activityId.activityNumber }.map { it.toModel() }
 
 fun WorkPackageActivityDeliverableEntity.toModel() = WorkPackageActivityDeliverable(
+    deliverableNumber = deliverableId.deliverableNumber,
     translatedValues = translatedValues.toDeliverableModel(),
     period = startPeriod,
 )

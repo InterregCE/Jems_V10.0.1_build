@@ -7,9 +7,8 @@ import io.cloudflight.jems.api.programme.dto.language.SystemLanguage.SK
 import io.cloudflight.jems.server.common.exception.ResourceNotFoundException
 import io.cloudflight.jems.server.programme.entity.indicator.IndicatorOutput
 import io.cloudflight.jems.server.programme.repository.indicator.IndicatorOutputRepository
-import io.cloudflight.jems.server.project.entity.ProjectPeriodEntity
-import io.cloudflight.jems.server.project.entity.ProjectPeriodId
 import io.cloudflight.jems.server.project.entity.TranslationWorkPackageId
+import io.cloudflight.jems.server.project.entity.TranslationWorkPackageOutputId
 import io.cloudflight.jems.server.project.entity.workpackage.WorkPackageEntity
 import io.cloudflight.jems.server.project.entity.workpackage.WorkPackageTransl
 import io.cloudflight.jems.server.project.entity.workpackage.output.WorkPackageOutputEntity
@@ -23,7 +22,7 @@ import io.cloudflight.jems.server.project.entity.workpackage.activity.deliverabl
 import io.cloudflight.jems.server.project.entity.workpackage.activity.deliverable.WorkPackageActivityDeliverableTranslationEntity
 import io.cloudflight.jems.server.project.entity.workpackage.activity.deliverable.WorkPackageActivityDeliverableTranslationId
 import io.cloudflight.jems.server.project.entity.workpackage.investment.WorkPackageInvestmentEntity
-import io.cloudflight.jems.server.project.repository.description.ProjectPeriodRepository
+import io.cloudflight.jems.server.project.entity.workpackage.output.WorkPackageOutputTransl
 import io.cloudflight.jems.server.project.repository.workpackage.activity.WorkPackageActivityRepository
 import io.cloudflight.jems.server.project.repository.workpackage.investment.WorkPackageInvestmentRepository
 import io.cloudflight.jems.server.project.repository.workpackage.output.WorkPackageOutputRepository
@@ -74,6 +73,11 @@ class ProjectWorkPackagePersistenceTest {
             language = lang
         )
 
+        private fun trIdOut(outputId: WorkPackageOutputId, lang: SystemLanguage) = TranslationWorkPackageOutputId(
+            workPackageOutputId = outputId,
+            language = lang,
+        )
+
         private val deliverableId1_activityId1 = WorkPackageActivityDeliverableId(activityId = activityId1, deliverableNumber = 1)
         private val deliverableId2_activityId1 = WorkPackageActivityDeliverableId(activityId = activityId1, deliverableNumber = 2)
 
@@ -108,16 +112,17 @@ class ProjectWorkPackagePersistenceTest {
         )
 
         val activity1 = WorkPackageActivityEntity(
-            activityId = activityId2,
+            activityId = activityId1,
             startPeriod = 4,
             endPeriod = 6
         )
         val activity1_model = WorkPackageActivity(
+            activityNumber = 1,
             startPeriod = 4,
             endPeriod = 6
         )
         val activity2 = WorkPackageActivityEntity(
-            activityId = activityId1,
+            activityId = activityId2,
             startPeriod = 1,
             endPeriod = 3,
             translatedValues = setOf(
@@ -128,6 +133,7 @@ class ProjectWorkPackagePersistenceTest {
             deliverables = setOf(deliverable2_2, deliverable2_1)
         )
         val activity2_model = WorkPackageActivity(
+            activityNumber = 2,
             translatedValues = setOf(
                 WorkPackageActivityTranslatedValue(language = SK, title = "sk_title", description = ""),
                 WorkPackageActivityTranslatedValue(language = CS, title = null, description = "cs_desc"),
@@ -137,6 +143,7 @@ class ProjectWorkPackagePersistenceTest {
             endPeriod = 3,
             deliverables = listOf(
                 WorkPackageActivityDeliverable(
+                    deliverableNumber = 1,
                     period = 1,
                     translatedValues = setOf(
                         WorkPackageActivityDeliverableTranslatedValue(language = SK, description = "sk_deliverable_desc"),
@@ -145,6 +152,7 @@ class ProjectWorkPackagePersistenceTest {
                     )
                 ),
                 WorkPackageActivityDeliverable(
+                    deliverableNumber = 2,
                     period = 2
                 )
             )
@@ -152,7 +160,7 @@ class ProjectWorkPackagePersistenceTest {
 
         val output1 = WorkPackageOutputEntity(
             outputId = outputId1,
-            period = ProjectPeriodEntity(ProjectPeriodId(project.id, number = 1), start = 1, end = 2),
+            periodNumber = 1,
         )
         val output1_model = WorkPackageOutput(
             outputNumber = 1,
@@ -160,7 +168,7 @@ class ProjectWorkPackagePersistenceTest {
         )
         val output2 = WorkPackageOutputEntity(
             outputId = outputId2,
-            period = ProjectPeriodEntity(ProjectPeriodId(project.id, number = 2), start = 3, end = 4),
+            periodNumber = 2,
         )
         val output2_model = WorkPackageOutput(
             outputNumber = 2,
@@ -170,7 +178,8 @@ class ProjectWorkPackagePersistenceTest {
         val workPackageWithActivities = WorkPackageEntity(
             id = WORK_PACKAGE_ID,
             project = project,
-            activities = listOf(activity1, activity2),
+            number = 1,
+            activities = listOf(activity2, activity1), // for testing sorting
             translatedValues = setOf(
                 WorkPackageTransl(
                     translationId = TranslationWorkPackageId(WORK_PACKAGE_ID, CS),
@@ -198,24 +207,33 @@ class ProjectWorkPackagePersistenceTest {
             )
         )
 
-        val workPackageOutput = WorkPackageOutput(
+        const val INDICATOR_ID = 30L
+        val output = WorkPackageOutput(
             outputNumber = 1,
             translatedValues = setOf(
-                WorkPackageOutputTranslatedValue(language = EN, title = "text", description = "test")
+                WorkPackageOutputTranslatedValue(language = EN, title = null, description = "en_desc"),
+                WorkPackageOutputTranslatedValue(language = CS, title = "", description = null),
+                WorkPackageOutputTranslatedValue(language = SK, title = "sk_title", description = "sk_desc"),
             ),
             periodNumber = 3,
-            targetValue = "target",
-            programmeOutputIndicatorId = 2
+            programmeOutputIndicatorId = INDICATOR_ID,
+            targetValue = "target"
         )
+
         val indicatorOutput = IndicatorOutput(
-            id = 2,
+            id = INDICATOR_ID,
             identifier = "t",
             name = "test",
             code = "tst",
             measurementUnit = "x",
             programmePriorityPolicy = null
         )
-        val projectPeriodEntity = ProjectPeriodEntity(ProjectPeriodId(WORK_PACKAGE_ID, 3), 1, 12)
+
+        val workPackageWithOutputs = WorkPackageEntity(
+            id = WORK_PACKAGE_ID,
+            project = project,
+            outputs = listOf(output2, output1),
+        )
 
         val workPackageInvestment = WorkPackageInvestment(
             id = null,
@@ -239,9 +257,6 @@ class ProjectWorkPackagePersistenceTest {
     @RelaxedMockK
     lateinit var indicatorOutputRepository: IndicatorOutputRepository
 
-    @RelaxedMockK
-    lateinit var projectPeriodRepository: ProjectPeriodRepository
-
     @InjectMockKs
     private lateinit var persistence: WorkPackagePersistenceProvider
 
@@ -250,6 +265,7 @@ class ProjectWorkPackagePersistenceTest {
         val emptyWP = WorkPackageEntity(
             id = WORK_PACKAGE_ID_2,
             project = project,
+            number = 2,
         )
         every { repository.findAllByProjectId(eq(1), Pageable.unpaged()) } returns PageImpl(listOf(
             workPackageWithActivities.copy(activities = emptyList(), outputs = emptyList()),
@@ -261,8 +277,9 @@ class ProjectWorkPackagePersistenceTest {
         val result = persistence.getRichWorkPackagesByProjectId(1, Pageable.unpaged())
         assertThat(result.totalElements).isEqualTo(2)
         assertThat(result.content.map { it.id }).containsExactly(WORK_PACKAGE_ID, WORK_PACKAGE_ID_2)
+        assertThat(result.content.map { it.workPackageNumber }).containsExactly(1, 2)
         assertThat(result.content[0].translatedValues).containsExactly(ProjectWorkPackageTranslatedValue(CS, "WP CS name"))
-        assertThat(result.content[0].activities).containsExactly(activity2_model, activity1_model)
+        assertThat(result.content[0].activities).containsExactly(activity1_model, activity2_model)
         assertThat(result.content[0].outputs).containsExactly(output1_model, output2_model)
     }
 
@@ -277,7 +294,7 @@ class ProjectWorkPackagePersistenceTest {
     fun `work package activities and deliverables are correctly mapped and sorted`() {
         every { repository.findById(eq(1)) } returns Optional.of(workPackageWithActivities)
         assertThat(persistence.getWorkPackageActivitiesForWorkPackage(1)).containsExactly(
-            activity2_model, activity1_model,
+            activity1_model, activity2_model,
         )
     }
 
@@ -305,7 +322,7 @@ class ProjectWorkPackagePersistenceTest {
             )
         )
 
-        persistence.updateWorkPackageActivities(1L, toBeSaved)
+        persistence.updateWorkPackageActivities(WORK_PACKAGE_ID, toBeSaved)
 
         assertThat(workPackageSlot.captured.activities).containsExactly(
             WorkPackageActivityEntity(
@@ -342,22 +359,60 @@ class ProjectWorkPackagePersistenceTest {
     }
 
     @Test
-    fun `work package outputs are updated`() {
-        every { repository.findById(1) } returns Optional.of(workPackageWithActivities)
-        every { indicatorOutputRepository.findById(2) } returns Optional.of(indicatorOutput)
-        every { projectPeriodRepository.findByIdProjectIdAndIdNumber(WORK_PACKAGE_ID, 3) } returns projectPeriodEntity
-        val predictedWorkPackageOutput = WorkPackageOutputEntity(
-            outputId = WorkPackageOutputId(WORK_PACKAGE_ID, 1),
-            period = projectPeriodEntity,
-            programmeOutputIndicator = indicatorOutput,
-            targetValue = workPackageOutput.targetValue
+    fun updateWorkPackageOutputs() {
+        val workPackageSlot = slot<WorkPackageEntity>()
+        every { repository.findById(WORK_PACKAGE_ID) } returns Optional.of(WorkPackageEntity(
+            id = WORK_PACKAGE_ID,
+            project = project,
+            outputs = emptyList(),
+        ))
+        every { indicatorOutputRepository.findById(INDICATOR_ID) } returns Optional.of(indicatorOutput)
+        // we do not need to test mapping back to model as that is covered by getWorkPackageOutputsForWorkPackage
+        every { repository.save(capture(workPackageSlot)) } returnsArgument 0
+
+        val toBeSaved = listOf(
+            output,
+            WorkPackageOutput(
+                periodNumber = 7,
+                programmeOutputIndicatorId = null,
+            )
         )
-        val predictedResult = workPackageWithActivities.copy(outputs = listOf(predictedWorkPackageOutput))
-        every { repository.save(any<WorkPackageEntity>()) } returns predictedResult
 
-        val result = persistence.updateWorkPackageOutputs(1, listOf(workPackageOutput))
+        persistence.updateWorkPackageOutputs(WORK_PACKAGE_ID, toBeSaved)
 
-        assertThat(result).isEqualTo(predictedResult.outputs.toModel())
+        assertThat(workPackageSlot.captured.outputs).containsExactly(
+            WorkPackageOutputEntity(
+                outputId = outputId1,
+                translatedValues = setOf(
+                    WorkPackageOutputTransl(translationId = trIdOut(outputId1, EN), title = null, description = "en_desc"),
+                    WorkPackageOutputTransl(translationId = trIdOut(outputId1, CS), title = "", description = null),
+                    WorkPackageOutputTransl(translationId = trIdOut(outputId1, SK), title = "sk_title", description = "sk_desc"),
+                ),
+                periodNumber = 3,
+                programmeOutputIndicator = indicatorOutput,
+                targetValue = "target"
+            ),
+            WorkPackageOutputEntity(
+                outputId = outputId2,
+                periodNumber = 7,
+                programmeOutputIndicator = null,
+            ),
+        )
+    }
+
+    @Test
+    fun `getWorkPackageOutputs - not-existing work package`() {
+        every { repository.findById(eq(-1)) } returns Optional.empty()
+        val ex = assertThrows<ResourceNotFoundException> { persistence.getWorkPackageOutputsForWorkPackage(-1) }
+        assertThat(ex.entity).isEqualTo("workPackage")
+    }
+
+    @Test
+    fun `getWorkPackageOutputs are correctly mapped and sorted`() {
+        every { repository.findById(eq(1)) } returns Optional.of(workPackageWithOutputs)
+        assertThat(persistence.getWorkPackageOutputsForWorkPackage(1)).containsExactly(
+            output1_model, output2_model
+        )
     }
 
     @Test

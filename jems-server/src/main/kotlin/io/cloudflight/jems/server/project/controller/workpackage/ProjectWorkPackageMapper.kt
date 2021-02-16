@@ -6,6 +6,7 @@ import org.springframework.data.domain.Page
 
 fun ProjectWorkPackage.toDto() = ProjectWorkPackageDTO(
     id = id,
+    workPackageNumber = workPackageNumber,
     name = translatedValues.extractField { it.name },
     activities = activities.toDto(),
     outputs = outputs.toDto(),

@@ -12,7 +12,7 @@ class GetWorkPackageOutput(
 
     @CanReadProjectWorkPackage
     @Transactional(readOnly = true)
-    override fun getWorkPackageOutputsForWorkPackage(workPackageId: Long) =
+    override fun getOutputsForWorkPackage(workPackageId: Long) =
         workPackagePersistence.getWorkPackageOutputsForWorkPackage(workPackageId)
 
 }

@@ -12,6 +12,7 @@ fun WorkPackageEntity.toModel(
     getOutputsForWorkPackageId: (Long) -> Collection<WorkPackageOutputEntity>?,
 ) = ProjectWorkPackage (
     id = id,
+    workPackageNumber = number!!,
     translatedValues = translatedValues.toModel(),
     activities = getActivitiesForWorkPackageId.invoke(id)?.toModel() ?: emptyList(),
     outputs = getOutputsForWorkPackageId.invoke(id)?.toModel() ?: emptyList()

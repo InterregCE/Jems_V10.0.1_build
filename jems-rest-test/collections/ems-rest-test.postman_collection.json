@@ -10211,6 +10211,7 @@
 									"pm.test('output is correctly saved', function() {\r",
 									"    const output = pm.response.json()[0];\r",
 									"\r",
+									"    pm.expect(output.outputNumber).to.eql(1);\r",
 									"    pm.expect(output.targetValue).to.eql('25000');\r",
 									"    pm.expect(output.periodNumber).to.eql(5);\r",
 									"});\r",
@@ -10254,7 +10255,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "[\r\n    {\r\n        \"outputNumber\": 1,\r\n        \"programmeOutputIndicatorId\": null,\r\n        \"title\": [\r\n            {\r\n                \"language\": \"{{inputLanguage}}\",\r\n                \"translation\": \"{{output_title_1}}\"\r\n            }\r\n        ],\r\n        \"targetValue\": \"25000\",\r\n        \"periodNumber\": 5,\r\n        \"description\": [\r\n            {\r\n                \"language\": \"{{inputLanguage}}\",\r\n                \"translation\": \"{{output_description_1}}\"\r\n            }\r\n        ]\r\n    }\r\n]\r\n",
+							"raw": "[\r\n    {\r\n        \"programmeOutputIndicatorId\": null,\r\n        \"title\": [\r\n            {\r\n                \"language\": \"{{inputLanguage}}\",\r\n                \"translation\": \"{{output_title_1}}\"\r\n            }\r\n        ],\r\n        \"targetValue\": \"25000\",\r\n        \"periodNumber\": 5,\r\n        \"description\": [\r\n            {\r\n                \"language\": \"{{inputLanguage}}\",\r\n                \"translation\": \"{{output_description_1}}\"\r\n            }\r\n        ]\r\n    }\r\n]\r\n",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -10563,6 +10564,25 @@
 									"    const outputs = pm.response.json();\r",
 									"    pm.expect(outputs).to.have.length(2);\r",
 									"});\r",
+									"\r",
+									"pm.test('outputs are correctly sorted', function() {\r",
+									"    const outputs = pm.response.json();\r",
+									"\r",
+									"    pm.expect(outputs[0].outputNumber).to.eql(1);\r",
+									"    pm.expect(outputs[1].outputNumber).to.eql(2);\r",
+									"\r",
+									"    pm.expect(outputs[0].periodNumber).to.eql(5);\r",
+									"    pm.expect(outputs[1].periodNumber).to.eql(6);\r",
+									"});\r",
+									"\r",
+									"pm.test('outputs are correctly sorted and have proper titles', function() {\r",
+									"    const outputs = pm.response.json();\r",
+									"\r",
+									"    pm.expect(outputs[0].title.find(tr => tr.language === pm.variables.get('inputLanguage')).translation)\r",
+									"        .to.eql(pm.variables.get('output_title_1'));\r",
+									"    pm.expect(outputs[1].title.find(tr => tr.language === pm.variables.get('inputLanguage')).translation)\r",
+									"        .to.eql(pm.variables.get('output_title_2'));\r",
+									"});\r",
 									""
 								],
 								"type": "text/javascript"
@@ -10589,7 +10609,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "[\r\n    {\r\n        \"outputNumber\": 1,\r\n        \"programmeOutputIndicatorId\": null,\r\n        \"title\": [\r\n            {\r\n                \"language\": \"{{inputLanguage}}\",\r\n                \"translation\": \"{{output_title_1}}\"\r\n            }\r\n        ],\r\n        \"targetValue\": \"5000\",\r\n        \"periodNumber\": 5,\r\n        \"description\": [\r\n            {\r\n                \"language\": \"{{inputLanguage}}\",\r\n                \"translation\": \"{{output_description_1}}\"\r\n            }\r\n        ]\r\n    },\r\n    {\r\n        \"outputNumber\": 2,\r\n        \"programmeOutputIndicatorId\": null,\r\n        \"title\": [\r\n            {\r\n                \"language\": \"{{inputLanguage}}\",\r\n                \"translation\": \"{{output_title_2}}\"\r\n            }\r\n        ],\r\n        \"targetValue\": \"1800\",\r\n        \"periodNumber\": 6,\r\n        \"description\": [\r\n            {\r\n                \"language\": \"{{inputLanguage}}\",\r\n                \"translation\": \"{{output_description_2}}\"\r\n            }\r\n        ]\r\n    }\r\n]\r\n",
+							"raw": "[\r\n    {\r\n        \"programmeOutputIndicatorId\": null,\r\n        \"title\": [\r\n            {\r\n                \"language\": \"{{inputLanguage}}\",\r\n                \"translation\": \"{{output_title_1}}\"\r\n            }\r\n        ],\r\n        \"targetValue\": \"5000\",\r\n        \"periodNumber\": 5,\r\n        \"description\": [\r\n            {\r\n                \"language\": \"{{inputLanguage}}\",\r\n                \"translation\": \"{{output_description_1}}\"\r\n            }\r\n        ]\r\n    },\r\n    {\r\n        \"programmeOutputIndicatorId\": null,\r\n        \"title\": [\r\n            {\r\n                \"language\": \"{{inputLanguage}}\",\r\n                \"translation\": \"{{output_title_2}}\"\r\n            }\r\n        ],\r\n        \"targetValue\": \"1800\",\r\n        \"periodNumber\": 6,\r\n        \"description\": [\r\n            {\r\n                \"language\": \"{{inputLanguage}}\",\r\n                \"translation\": \"{{output_description_2}}\"\r\n            }\r\n        ]\r\n    }\r\n]\r\n",
 							"options": {
 								"raw": {
 									"language": "json"

@@ -5,6 +5,7 @@ import io.cloudflight.jems.server.project.service.workpackage.output.model.WorkP
 
 data class ProjectWorkPackage(
     val id: Long,
+    val workPackageNumber: Int,
     val translatedValues: Set<ProjectWorkPackageTranslatedValue> = emptySet(),
     val activities: List<WorkPackageActivity> = emptyList(),
     val outputs: List<WorkPackageOutput> = emptyList(),

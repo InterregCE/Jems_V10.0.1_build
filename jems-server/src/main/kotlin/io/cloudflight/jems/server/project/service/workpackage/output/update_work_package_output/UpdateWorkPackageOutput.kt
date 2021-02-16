@@ -14,11 +14,11 @@ class UpdateWorkPackageOutput(
 
     @CanUpdateProjectWorkPackage
     @Transactional
-    override fun updateWorkPackageOutputs(
+    override fun updateOutputsForWorkPackage(
         workPackageId: Long,
-        workPackageOutputUpdate: List<WorkPackageOutput>,
+        outputs: List<WorkPackageOutput>,
     ): List<WorkPackageOutput> {
-        validateWorkPackageOutputsLimit(workPackageOutputUpdate)
-        return workPackagePersistence.updateWorkPackageOutputs(workPackageId, workPackageOutputUpdate)
+        validateWorkPackageOutputsLimit(outputs)
+        return workPackagePersistence.updateWorkPackageOutputs(workPackageId, outputs)
     }
 }

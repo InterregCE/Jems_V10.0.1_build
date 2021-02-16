@@ -26,6 +26,7 @@ class ProjectWorkPackageActivityControllerTest {
 
     companion object {
         val activity1 = WorkPackageActivity(
+            activityNumber = 1,
             translatedValues = setOf(
                 WorkPackageActivityTranslatedValue(language = EN, title = null, description = "en_desc"),
                 WorkPackageActivityTranslatedValue(language = CS, title = "", description = null),
@@ -35,6 +36,7 @@ class ProjectWorkPackageActivityControllerTest {
             endPeriod = 3,
             deliverables = listOf(
                 WorkPackageActivityDeliverable(
+                    deliverableNumber = 1,
                     period = 1,
                     translatedValues = setOf(
                         WorkPackageActivityDeliverableTranslatedValue(language = EN, description = "en_deliv_desc"),
@@ -44,6 +46,7 @@ class ProjectWorkPackageActivityControllerTest {
             ),
         )
         val activity2 = WorkPackageActivity(
+            activityNumber = 2,
             translatedValues = emptySet(),
             startPeriod = 4,
             endPeriod = 6,
@@ -67,15 +70,17 @@ class ProjectWorkPackageActivityControllerTest {
 
         assertThat(controller.getActivities(1L)).containsExactly(
             WorkPackageActivityDTO(
+                activityNumber = 1,
                 title = setOf(InputTranslation(SK, "sk_title")),
                 startPeriod = 1,
                 endPeriod = 3,
                 description = setOf(InputTranslation(EN, "en_desc"), InputTranslation(SK, "sk_desc")),
                 deliverables = listOf(
-                    WorkPackageActivityDeliverableDTO(period = 1, description = setOf(InputTranslation(EN, "en_deliv_desc")))
+                    WorkPackageActivityDeliverableDTO(deliverableNumber = 1, period = 1, description = setOf(InputTranslation(EN, "en_deliv_desc")))
                 ),
             ),
             WorkPackageActivityDTO(
+                activityNumber = 2,
                 title = emptySet(),
                 startPeriod = 4,
                 endPeriod = 6,

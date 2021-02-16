@@ -15,21 +15,16 @@ class GetWorkPackageOutputInteractorTest {
 
     companion object {
 
-
-        private val testWorkPackageOutput1 = WorkPackageOutput(
+        private val testOutput1 = WorkPackageOutput(
             outputNumber = 1,
             translatedValues = setOf(WorkPackageOutputTranslatedValue(SystemLanguage.EN, "Test"))
         )
 
-        private val testWorkPackageOutput2 = WorkPackageOutput(
+        private val testOutput2 = WorkPackageOutput(
             outputNumber = 2,
             translatedValues = setOf(WorkPackageOutputTranslatedValue(SystemLanguage.EN, "Test"))
         )
 
-        private val workPackageOutputs = mutableListOf<WorkPackageOutput>(
-            testWorkPackageOutput1,
-            testWorkPackageOutput2
-        )
     }
 
 
@@ -46,15 +41,14 @@ class GetWorkPackageOutputInteractorTest {
 
     @Test
     fun `get work package outputs returns empty list`() {
-        every { persistence.getWorkPackageOutputsForWorkPackage(any()) } returns emptyList<WorkPackageOutput>()
-        assertThat(getWorkPackageOutputInteractor.getWorkPackageOutputsForWorkPackage(1L)).isEmpty()
+        every { persistence.getWorkPackageOutputsForWorkPackage(10L) } returns emptyList()
+        assertThat(getWorkPackageOutputInteractor.getOutputsForWorkPackage(10L)).isEmpty()
     }
 
     @Test
     fun `get work package outputs`() {
-        every { persistence.getWorkPackageOutputsForWorkPackage(any()) } returns workPackageOutputs
-        assertThat(getWorkPackageOutputInteractor.getWorkPackageOutputsForWorkPackage(1L)).isEqualTo(
-            workPackageOutputs
-        )
+        every { persistence.getWorkPackageOutputsForWorkPackage(1L) } returns listOf(testOutput1, testOutput2)
+        assertThat(getWorkPackageOutputInteractor.getOutputsForWorkPackage(1L))
+            .containsExactly(testOutput1, testOutput2)
     }
 }
