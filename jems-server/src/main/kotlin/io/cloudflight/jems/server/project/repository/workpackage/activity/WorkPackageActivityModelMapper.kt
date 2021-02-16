@@ -44,7 +44,7 @@ fun WorkPackageActivityDeliverable.toEntity(activityId: WorkPackageActivityId, i
 }
 
 fun List<WorkPackageActivityDeliverable>.toIndexedEntity(activityId: WorkPackageActivityId) =
-    mapIndexed { index, deliverable -> deliverable.toEntity(activityId, index.plus(1)) }
+    mapIndexedTo(HashSet()) { index, deliverable -> deliverable.toEntity(activityId, index.plus(1)) }
 
 fun WorkPackageActivityDeliverableTranslatedValue.toEntity(deliverableId: WorkPackageActivityDeliverableId) = WorkPackageActivityDeliverableTranslationEntity(
     translationId = WorkPackageActivityDeliverableTranslationId(deliverableId = deliverableId, language = language),
