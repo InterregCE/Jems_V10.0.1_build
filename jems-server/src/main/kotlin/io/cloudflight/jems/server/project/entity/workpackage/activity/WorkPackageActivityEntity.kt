@@ -4,7 +4,6 @@ import io.cloudflight.jems.server.project.entity.workpackage.activity.deliverabl
 import javax.persistence.CascadeType
 import javax.persistence.EmbeddedId
 import javax.persistence.Entity
-import javax.persistence.FetchType
 import javax.persistence.NamedAttributeNode
 import javax.persistence.NamedEntityGraph
 import javax.persistence.NamedEntityGraphs
@@ -31,7 +30,7 @@ data class WorkPackageActivityEntity(
     @EmbeddedId
     val activityId: WorkPackageActivityId,
 
-    @OneToMany(cascade = [CascadeType.ALL], orphanRemoval = true, mappedBy = "translationId.activityId", fetch = FetchType.EAGER)
+    @OneToMany(cascade = [CascadeType.ALL], orphanRemoval = true, mappedBy = "translationId.activityId")
     val translatedValues: Set<WorkPackageActivityTranslationEntity> = emptySet(),
 
     val startPeriod: Int? = null,
@@ -39,5 +38,5 @@ data class WorkPackageActivityEntity(
     val endPeriod: Int? = null,
 
     @OneToMany(mappedBy = "deliverableId.activityId", cascade = [CascadeType.ALL], orphanRemoval = true)
-    val deliverables: List<WorkPackageActivityDeliverableEntity> = emptyList(),
+    val deliverables: Set<WorkPackageActivityDeliverableEntity> = emptySet(),
 )

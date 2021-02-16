@@ -125,7 +125,7 @@ class ProjectWorkPackagePersistenceTest {
                 WorkPackageActivityTranslationEntity(translationId = trIdAct(activityId1, CS), title = null, description = "cs_desc"),
                 WorkPackageActivityTranslationEntity(translationId = trIdAct(activityId1, EN), title = " ", description = " ")
             ),
-            deliverables = listOf(deliverable2_2, deliverable2_1)
+            deliverables = setOf(deliverable2_2, deliverable2_1)
         )
         val activity2_model = WorkPackageActivity(
             translatedValues = setOf(
@@ -317,7 +317,7 @@ class ProjectWorkPackagePersistenceTest {
                 ),
                 startPeriod = 1,
                 endPeriod = 3,
-                deliverables = listOf(
+                deliverables = setOf(
                     WorkPackageActivityDeliverableEntity(
                         deliverableId = deliverableId1_activityId1,
                         startPeriod = 1,
@@ -332,7 +332,7 @@ class ProjectWorkPackagePersistenceTest {
                 activityId = activityId2,
                 startPeriod = 4,
                 endPeriod = 6,
-                deliverables = listOf(
+                deliverables = setOf(
                     WorkPackageActivityDeliverableEntity(deliverableId = deliverableId1_activityId2, startPeriod = 4),
                     WorkPackageActivityDeliverableEntity(deliverableId = deliverableId2_activityId2, startPeriod = 5),
                     WorkPackageActivityDeliverableEntity(deliverableId = deliverableId3_activityId2, startPeriod = 6)
