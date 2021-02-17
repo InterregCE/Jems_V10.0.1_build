@@ -23,7 +23,7 @@ data class IndicatorResult(
     @field:NotNull
     val identifier: String,
 
-    val code: String?,
+    val code: String? = null,
 
     @field:NotNull
     val name: String,
@@ -32,7 +32,7 @@ data class IndicatorResult(
     @JoinColumn(name = "programme_priority_policy_id")
     val programmePriorityPolicy: ProgrammeSpecificObjectiveEntity?,
 
-    val measurementUnit: String?,
+    val measurementUnit: String? = null,
 
     val baseline: BigDecimal? = null,
 

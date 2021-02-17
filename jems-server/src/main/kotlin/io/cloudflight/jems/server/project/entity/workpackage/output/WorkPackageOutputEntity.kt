@@ -1,7 +1,7 @@
 package io.cloudflight.jems.server.project.entity.workpackage.output
 
 import io.cloudflight.jems.server.programme.entity.indicator.IndicatorOutput
-import io.cloudflight.jems.server.project.entity.ProjectPeriodEntity
+import java.math.BigDecimal
 import javax.persistence.CascadeType
 import javax.persistence.Column
 import javax.persistence.EmbeddedId
@@ -11,7 +11,6 @@ import javax.persistence.ManyToOne
 import javax.persistence.NamedAttributeNode
 import javax.persistence.NamedEntityGraph
 import javax.persistence.NamedEntityGraphs
-import javax.persistence.NamedSubgraph
 import javax.persistence.OneToMany
 
 @Entity(name = "project_work_package_output")
@@ -38,6 +37,6 @@ data class WorkPackageOutputEntity(
     val programmeOutputIndicator: IndicatorOutput? = null,
 
     @Column
-    val targetValue: String? = null,
+    val targetValue: BigDecimal? = null,
 
 )

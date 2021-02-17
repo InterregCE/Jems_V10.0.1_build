@@ -54,9 +54,9 @@ export class ProjectTimeplanPageComponent implements OnInit {
     ])
       .pipe(
         map(([workPackages, results, periods]) => ({
-          translations: getInputTranslations({workPackages, results}, this.translateService),
+          translations: getInputTranslations({workPackages, results}),
           groups: getGroups({workPackages, results}),
-          items: getItems({workPackages, results}),
+          items: getItems({workPackages, results}, this.translateService),
           periods,
         })),
         tap(data => this.createVisualization(data))
@@ -93,13 +93,15 @@ export class ProjectTimeplanPageComponent implements OnInit {
       .filter(group => TRANSLATABLE_GROUP_TYPES.includes(group.data.type))
       .map(group => group.id);
 
-    const alreadyPreparedTranslatedIds = translations[language]?.map((group: any) => group.id) || [];
-    const toEmptyIds = idsToTranslate.filter(id => !alreadyPreparedTranslatedIds.includes(id));
+    const alreadyPreparedTranslatedIds: number[] = translations[language]?.map((group: any) => group.id) || [];
+    const toEmptyIds: number[] = idsToTranslate.filter(id => !alreadyPreparedTranslatedIds.includes(id));
 
-    // if some translations are missing for particular language, we need to reset them to EMPTY_STRING (toEmptyIds)
+    this.updateTranslationsInGroupsAndSetMissingTranslationsToEmptyString(groups, translations[language] || [], toEmptyIds);
+  }
+
+  private updateTranslationsInGroupsAndSetMissingTranslationsToEmptyString(groups: DataSet<any>, translations: Content[], toEmptyIds: number[]): void {
     groups.update(
-      (translations[language] || [])
-        .concat(toEmptyIds.map(groupId => ({id: groupId, content: '', title: ''} as Content)))
+      translations.concat(toEmptyIds.map(groupId => ({id: groupId, content: '', title: ''} as Content)))
     );
   }
 

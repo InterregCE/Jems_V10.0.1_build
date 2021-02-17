@@ -1,7 +1,7 @@
 package io.cloudflight.jems.server.project.service.result.get_project_result
 
-import io.cloudflight.jems.api.project.dto.result.ProjectResultDTO
+import io.cloudflight.jems.server.project.service.result.model.ProjectResult
 
 interface GetProjectResultInteractor {
-    fun getProjectResultsForProject(projectId: Long): Set<ProjectResultDTO>
+    fun getResultsForProject(projectId: Long): List<ProjectResult>
 }

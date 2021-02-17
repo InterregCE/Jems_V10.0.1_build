@@ -7,7 +7,7 @@ import org.springframework.http.MediaType
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.RequestMapping
-import org.springframework.web.bind.annotation.PostMapping
+import org.springframework.web.bind.annotation.PutMapping
 import org.springframework.web.bind.annotation.RequestBody
 import javax.validation.Valid
 
@@ -20,7 +20,7 @@ interface ProjectWorkPackageOutputApi {
     fun getOutputs(@PathVariable workPackageId: Long): List<WorkPackageOutputDTO>
 
     @ApiOperation("Updates work packages outputs for a work package")
-    @PostMapping(consumes = [MediaType.APPLICATION_JSON_VALUE])
+    @PutMapping(consumes = [MediaType.APPLICATION_JSON_VALUE])
     fun updateOutputs(
         @PathVariable workPackageId: Long,
         @Valid @RequestBody outputs: List<WorkPackageOutputDTO>

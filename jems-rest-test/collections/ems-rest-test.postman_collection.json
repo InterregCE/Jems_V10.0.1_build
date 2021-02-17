@@ -10146,7 +10146,7 @@
 								}
 							]
 						},
-						"method": "POST",
+						"method": "PUT",
 						"header": [],
 						"body": {
 							"mode": "raw",
@@ -10212,7 +10212,7 @@
 									"    const output = pm.response.json()[0];\r",
 									"\r",
 									"    pm.expect(output.outputNumber).to.eql(1);\r",
-									"    pm.expect(output.targetValue).to.eql('25000');\r",
+									"    pm.expect(output.targetValue).to.eql(25000);\r",
 									"    pm.expect(output.periodNumber).to.eql(5);\r",
 									"});\r",
 									"\r",
@@ -10251,11 +10251,11 @@
 								}
 							]
 						},
-						"method": "POST",
+						"method": "PUT",
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "[\r\n    {\r\n        \"programmeOutputIndicatorId\": null,\r\n        \"title\": [\r\n            {\r\n                \"language\": \"{{inputLanguage}}\",\r\n                \"translation\": \"{{output_title_1}}\"\r\n            }\r\n        ],\r\n        \"targetValue\": \"25000\",\r\n        \"periodNumber\": 5,\r\n        \"description\": [\r\n            {\r\n                \"language\": \"{{inputLanguage}}\",\r\n                \"translation\": \"{{output_description_1}}\"\r\n            }\r\n        ]\r\n    }\r\n]\r\n",
+							"raw": "[\r\n    {\r\n        \"programmeOutputIndicatorId\": null,\r\n        \"title\": [\r\n            {\r\n                \"language\": \"{{inputLanguage}}\",\r\n                \"translation\": \"{{output_title_1}}\"\r\n            }\r\n        ],\r\n        \"targetValue\": 25000,\r\n        \"periodNumber\": 5,\r\n        \"description\": [\r\n            {\r\n                \"language\": \"{{inputLanguage}}\",\r\n                \"translation\": \"{{output_description_1}}\"\r\n            }\r\n        ]\r\n    }\r\n]\r\n",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -10497,7 +10497,7 @@
 								}
 							]
 						},
-						"method": "POST",
+						"method": "PUT",
 						"header": [],
 						"body": {
 							"mode": "raw",
@@ -10605,11 +10605,11 @@
 								}
 							]
 						},
-						"method": "POST",
+						"method": "PUT",
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "[\r\n    {\r\n        \"programmeOutputIndicatorId\": null,\r\n        \"title\": [\r\n            {\r\n                \"language\": \"{{inputLanguage}}\",\r\n                \"translation\": \"{{output_title_1}}\"\r\n            }\r\n        ],\r\n        \"targetValue\": \"5000\",\r\n        \"periodNumber\": 5,\r\n        \"description\": [\r\n            {\r\n                \"language\": \"{{inputLanguage}}\",\r\n                \"translation\": \"{{output_description_1}}\"\r\n            }\r\n        ]\r\n    },\r\n    {\r\n        \"programmeOutputIndicatorId\": null,\r\n        \"title\": [\r\n            {\r\n                \"language\": \"{{inputLanguage}}\",\r\n                \"translation\": \"{{output_title_2}}\"\r\n            }\r\n        ],\r\n        \"targetValue\": \"1800\",\r\n        \"periodNumber\": 6,\r\n        \"description\": [\r\n            {\r\n                \"language\": \"{{inputLanguage}}\",\r\n                \"translation\": \"{{output_description_2}}\"\r\n            }\r\n        ]\r\n    }\r\n]\r\n",
+							"raw": "[\r\n    {\r\n        \"programmeOutputIndicatorId\": null,\r\n        \"title\": [\r\n            {\r\n                \"language\": \"{{inputLanguage}}\",\r\n                \"translation\": \"{{output_title_1}}\"\r\n            }\r\n        ],\r\n        \"targetValue\": 5000,\r\n        \"periodNumber\": 5,\r\n        \"description\": [\r\n            {\r\n                \"language\": \"{{inputLanguage}}\",\r\n                \"translation\": \"{{output_description_1}}\"\r\n            }\r\n        ]\r\n    },\r\n    {\r\n        \"programmeOutputIndicatorId\": null,\r\n        \"title\": [\r\n            {\r\n                \"language\": \"{{inputLanguage}}\",\r\n                \"translation\": \"{{output_title_2}}\"\r\n            }\r\n        ],\r\n        \"targetValue\": \"1800\",\r\n        \"periodNumber\": 6,\r\n        \"description\": [\r\n            {\r\n                \"language\": \"{{inputLanguage}}\",\r\n                \"translation\": \"{{output_description_2}}\"\r\n            }\r\n        ]\r\n    }\r\n]\r\n",
 							"options": {
 								"raw": {
 									"language": "json"

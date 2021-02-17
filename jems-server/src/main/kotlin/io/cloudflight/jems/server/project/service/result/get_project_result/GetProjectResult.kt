@@ -10,7 +10,7 @@ class GetProjectResult (
 ) : GetProjectResultInteractor {
 
     @CanReadProject
-    override fun getProjectResultsForProject(projectId: Long) =
-        projectResultPersistence.getProjectResultsForProject(projectId)
+    override fun getResultsForProject(projectId: Long) =
+        projectResultPersistence.getResultsForProject(projectId)
 
 }

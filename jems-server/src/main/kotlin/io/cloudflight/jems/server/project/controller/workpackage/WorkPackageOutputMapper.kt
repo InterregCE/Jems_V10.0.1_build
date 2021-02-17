@@ -61,18 +61,19 @@ fun WorkPackageOutputDTO.toModel() = WorkPackageOutput(
     targetValue = targetValue
 )
 
-fun WorkPackageOutput.toDto() = WorkPackageOutputDTO(
-    outputNumber = outputNumber,
-    programmeOutputIndicatorId = programmeOutputIndicatorId,
-    title = translatedValues.extractField { it.title },
-    targetValue = targetValue,
-    periodNumber = periodNumber,
-    description = translatedValues.extractField { it.description }
-)
-
 fun List<WorkPackageOutputDTO>.toModel() = map { it.toModel() }.toList()
 
-fun List<WorkPackageOutput>.toDto() = this.map { it.toDto() }.toList()
+fun List<WorkPackageOutput>.toDto() = map {
+    WorkPackageOutputDTO(
+        outputNumber = it.outputNumber,
+        programmeOutputIndicatorId = it.programmeOutputIndicatorId,
+        programmeOutputIndicatorIdentifier = it.programmeOutputIndicatorIdentifier,
+        title = it.translatedValues.extractField { it.title },
+        targetValue = it.targetValue,
+        periodNumber = it.periodNumber,
+        description = it.translatedValues.extractField { it.description }
+    )
+}
 
 fun Address.toAddressDTO() = AddressDTO(
     this.country,

@@ -1,108 +1,153 @@
 package io.cloudflight.jems.server.project.repository.result
 
-import io.cloudflight.jems.api.call.dto.CallStatus
-import io.cloudflight.jems.api.project.dto.status.ProjectApplicationStatus
-import io.cloudflight.jems.server.call.entity.CallEntity
+import io.cloudflight.jems.api.programme.dto.language.SystemLanguage
+import io.cloudflight.jems.api.programme.dto.language.SystemLanguage.BE
+import io.cloudflight.jems.api.programme.dto.language.SystemLanguage.NO
+import io.cloudflight.jems.api.programme.dto.language.SystemLanguage.SK
+import io.cloudflight.jems.api.programme.dto.priority.ProgrammeObjectivePolicy
+import io.cloudflight.jems.server.UnitTest
+import io.cloudflight.jems.server.common.exception.ResourceNotFoundException
+import io.cloudflight.jems.server.programme.entity.ProgrammeSpecificObjectiveEntity
 import io.cloudflight.jems.server.programme.entity.indicator.IndicatorResult
 import io.cloudflight.jems.server.programme.repository.indicator.IndicatorResultRepository
 import io.cloudflight.jems.server.project.entity.ProjectEntity
 import io.cloudflight.jems.server.project.entity.ProjectPeriodEntity
 import io.cloudflight.jems.server.project.entity.ProjectPeriodId
-import io.cloudflight.jems.server.project.entity.ProjectStatus
+import io.cloudflight.jems.server.project.entity.TranslationResultId
 import io.cloudflight.jems.server.project.entity.result.ProjectResultEntity
+import io.cloudflight.jems.server.project.entity.result.ProjectResultId
+import io.cloudflight.jems.server.project.entity.result.ProjectResultTransl
 import io.cloudflight.jems.server.project.repository.ProjectRepository
-import io.cloudflight.jems.server.project.repository.description.ProjectPeriodRepository
-import io.cloudflight.jems.server.user.entity.User
-import io.cloudflight.jems.server.user.entity.UserRole
+import io.cloudflight.jems.server.project.service.partner.ProjectPartnerTestUtil.Companion.project
+import io.cloudflight.jems.server.project.service.result.model.ProjectResult
+import io.cloudflight.jems.server.project.service.result.model.ProjectResultTranslatedValue
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
 import io.mockk.impl.annotations.RelaxedMockK
-import io.mockk.junit5.MockKExtension
-import io.mockk.verify
+import io.mockk.slot
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
-import org.junit.jupiter.api.extension.ExtendWith
-import org.springframework.data.domain.PageImpl
-import org.springframework.data.domain.Sort
-import java.time.ZonedDateTime
+import org.junit.jupiter.api.assertThrows
+import java.math.BigDecimal
 import java.util.Optional
-import java.util.UUID
+import javax.persistence.EntityNotFoundException
 
-@ExtendWith(MockKExtension::class)
-class ProjectResultPersistenceTest {
+class ProjectResultPersistenceTest: UnitTest() {
 
     companion object {
-        val projectPeriodEntity = ProjectPeriodEntity(ProjectPeriodId(1, 3), 1, 12)
-        val user = User(id = 1, name = "applicant", userRole = UserRole(id = 1, name = "APPLICANT"), email = "", surname = "test", password = "")
-        val callEntity = CallEntity(
-            id = 1,
-            name = "test",
-            lengthOfPeriod = 12,
-            status = CallStatus.DRAFT,
-            prioritySpecificObjectives = emptySet(),
-            creator = user,
-            startDate = ZonedDateTime.now(),
-            endDate = ZonedDateTime.now(),
-            isAdditionalFundAllowed = false,
-            funds = emptySet(),
-            strategies = emptySet())
-        val projectStatus = ProjectStatus(status = ProjectApplicationStatus.DRAFT, user = user)
+        private const val INDICATOR_ID = 5L
+        val resultId1 = ProjectResultId(projectId = project.id, resultNumber = 1)
+        val resultId2 = ProjectResultId(projectId = project.id, resultNumber = 2)
 
-        val projectEntity = ProjectEntity(id = 1, acronym = "test", applicant = user, call = callEntity, projectStatus = projectStatus)
+        private fun trIdRes(resultId: ProjectResultId, lang: SystemLanguage) = TranslationResultId(
+            resultId = resultId,
+            language = lang
+        )
+
         val indicatorResult = IndicatorResult(
-            id = 1,
-            identifier = "id",
-            code = "code",
-            name = "indicator title",
-            programmePriorityPolicy = null,
-            measurementUnit = "unit"
+            id = INDICATOR_ID,
+            identifier = "IND05",
+            name = "Indicator Nr. 5",
+            programmePriorityPolicy = ProgrammeSpecificObjectiveEntity(ProgrammeObjectivePolicy.AdvancedTechnologies, ""),
         )
-        val projectResult = ProjectResultEntity(
-            id = UUID.randomUUID(),
-            project = projectEntity,
-            resultNumber = 1,
-            period = projectPeriodEntity,
-            programmeResultIndicator = indicatorResult
-        )
-    }
 
-    @RelaxedMockK
-    lateinit var projectResultRepository: ProjectResultRepository
+        val result1_model = ProjectResult(
+            resultNumber = 1,
+            programmeResultIndicatorId = INDICATOR_ID,
+            programmeResultIndicatorIdentifier = "IND05",
+            targetValue = BigDecimal.ONE,
+            periodNumber = 10,
+            translatedValues = setOf(
+                ProjectResultTranslatedValue(language = BE, description = "BE desc"),
+                ProjectResultTranslatedValue(language = NO, description = ""),
+                ProjectResultTranslatedValue(language = SK, description = null),
+            ),
+        )
+
+        val result2_model = ProjectResult(
+            resultNumber = 2,
+            periodNumber = 20,
+        )
+
+        val result1 = ProjectResultEntity(
+            resultId = resultId1,
+            translatedValues = setOf(
+                ProjectResultTransl(translationId = trIdRes(resultId1, BE), description = "BE desc"),
+                ProjectResultTransl(translationId = trIdRes(resultId1, NO), description = ""),
+                ProjectResultTransl(translationId = trIdRes(resultId1, SK), description = null),
+            ),
+            periodNumber = 10,
+            programmeResultIndicator = indicatorResult,
+            targetValue = BigDecimal.ONE,
+        )
+
+        val result2 = ProjectResultEntity(
+            resultId = resultId2,
+            periodNumber = 20,
+        )
+
+    }
 
     @RelaxedMockK
     lateinit var projectRepository: ProjectRepository
 
     @RelaxedMockK
-    lateinit var indicatorResultRepository: IndicatorResultRepository
-
-    @RelaxedMockK
-    lateinit var projectPeriodRepository: ProjectPeriodRepository
+    lateinit var indicatorRepository: IndicatorResultRepository
 
     @InjectMockKs
     private lateinit var persistence: ProjectResultPersistenceProvider
 
     @Test
-    fun `get project results for project`() {
-        every { projectResultRepository.findAllByProjectId(1, Sort.by("resultNumber")) } returns PageImpl(listOf(projectResult))
-
-        val result = persistence.getProjectResultsForProject(1)
-
-        assertThat(result).isEqualTo(setOf(projectResult.ProjectResultDTO()))
+    fun `get project results - not-existing project`() {
+        every { projectRepository.findById(eq(-1)) } returns Optional.empty()
+        val ex = assertThrows<ResourceNotFoundException> { persistence.getResultsForProject(-1) }
+        assertThat(ex.entity).isEqualTo("project")
     }
 
     @Test
-    fun `project results are updated`() {
-        every { projectRepository.findById(1) } returns Optional.of(projectEntity)
-        val dummyProjectEntity = ProjectEntity(id = 1, acronym = "test", applicant = user, call = callEntity, projectStatus = projectStatus)
-        every { projectResultRepository.save(any<ProjectResultEntity>()) } returns projectResult.copy(project = dummyProjectEntity)
-        every { indicatorResultRepository.findById(indicatorResult.id) } returns Optional.of(indicatorResult)
-        every { projectPeriodRepository.findByIdProjectIdAndIdNumber(projectEntity.id, projectPeriodEntity.id.number) } returns projectPeriodEntity
+    fun `project results are correctly mapped and sorted`() {
+        every { projectRepository.findById(eq(1)) } returns Optional.of(project.copy(
+            results = setOf(result2, result1)
+        ))
+        assertThat(persistence.getResultsForProject(1L)).containsExactly(
+            result1_model, result2_model,
+        )
+    }
 
-        val result = persistence.updateProjectResults(1, setOf(projectResult.ProjectResultDTO()))
+    @Test
+    fun getAvailablePeriodNumbers() {
+        every { projectRepository.findById(eq(1)) } returns Optional.of(project.copy(periods = listOf(
+            ProjectPeriodEntity(id = ProjectPeriodId(project.id, 1), start = 1, end = 3),
+            ProjectPeriodEntity(id = ProjectPeriodId(project.id, 2), start = 4, end = 6),
+            ProjectPeriodEntity(id = ProjectPeriodId(project.id, 3), start = 7, end = 9),
+        )))
+        assertThat(persistence.getAvailablePeriodNumbers(1L)).containsExactly(1, 2, 3)
+    }
 
-        assertThat(result).isEqualTo(setOf(projectResult.ProjectResultDTO()))
-        verify(exactly = 2) { projectResultRepository.save(projectResult) }
-        verify { projectPeriodRepository.findByIdProjectIdAndIdNumber(projectEntity.id, projectPeriodEntity.id.number) }
+    @Test
+    fun `updateWorkPackageOutputs - test if repository save() is called with correct arguments`() {
+        val projectSlot = slot<ProjectEntity>()
+        every { projectRepository.findById(project.id) } returns Optional.of(project)
+        every { indicatorRepository.getOne(INDICATOR_ID) } returns indicatorResult
+        every { projectRepository.save(capture(projectSlot)) } returnsArgument 0
+
+        persistence.updateResultsForProject(projectId = project.id, projectResults = listOf(result1_model, result2_model))
+
+        assertThat(projectSlot.captured.results).containsExactly(
+            result1,
+            result2,
+        )
+    }
+
+    @Test
+    fun `updateWorkPackageOutputs - not existing indicator`() {
+        every { projectRepository.findById(project.id) } returns Optional.of(project)
+        every { indicatorRepository.getOne(-1) } throws EntityNotFoundException()
+
+        assertThrows<EntityNotFoundException> { persistence.updateResultsForProject(
+            projectId = project.id,
+            projectResults = listOf(result1_model.copy(programmeResultIndicatorId = -1))
+        ) }
     }
 
 }

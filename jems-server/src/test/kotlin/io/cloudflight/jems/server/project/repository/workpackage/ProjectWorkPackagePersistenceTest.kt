@@ -49,6 +49,7 @@ import org.junit.jupiter.api.extension.ExtendWith
 import org.springframework.data.domain.PageImpl
 import org.springframework.data.domain.Pageable
 import org.springframework.data.domain.Sort
+import java.math.BigDecimal
 import java.util.Optional
 
 @ExtendWith(MockKExtension::class)
@@ -158,13 +159,26 @@ class ProjectWorkPackagePersistenceTest {
             )
         )
 
+        const val INDICATOR_ID = 30L
+        val indicatorOutput = IndicatorOutput(
+            id = INDICATOR_ID,
+            identifier = "ID.30",
+            name = "test",
+            code = "tst",
+            measurementUnit = "x",
+            programmePriorityPolicy = null
+        )
+
         val output1 = WorkPackageOutputEntity(
             outputId = outputId1,
             periodNumber = 1,
+            programmeOutputIndicator = indicatorOutput,
         )
         val output1_model = WorkPackageOutput(
             outputNumber = 1,
             periodNumber = 1,
+            programmeOutputIndicatorId = INDICATOR_ID,
+            programmeOutputIndicatorIdentifier = "ID.30"
         )
         val output2 = WorkPackageOutputEntity(
             outputId = outputId2,
@@ -207,7 +221,6 @@ class ProjectWorkPackagePersistenceTest {
             )
         )
 
-        const val INDICATOR_ID = 30L
         val output = WorkPackageOutput(
             outputNumber = 1,
             translatedValues = setOf(
@@ -217,16 +230,7 @@ class ProjectWorkPackagePersistenceTest {
             ),
             periodNumber = 3,
             programmeOutputIndicatorId = INDICATOR_ID,
-            targetValue = "target"
-        )
-
-        val indicatorOutput = IndicatorOutput(
-            id = INDICATOR_ID,
-            identifier = "t",
-            name = "test",
-            code = "tst",
-            measurementUnit = "x",
-            programmePriorityPolicy = null
+            targetValue = BigDecimal.TEN
         )
 
         val workPackageWithOutputs = WorkPackageEntity(
@@ -390,7 +394,7 @@ class ProjectWorkPackagePersistenceTest {
                 ),
                 periodNumber = 3,
                 programmeOutputIndicator = indicatorOutput,
-                targetValue = "target"
+                targetValue = BigDecimal.TEN
             ),
             WorkPackageOutputEntity(
                 outputId = outputId2,

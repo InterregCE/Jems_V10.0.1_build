@@ -6,9 +6,4 @@ import org.springframework.data.jpa.repository.JpaRepository
 import org.springframework.stereotype.Repository
 
 @Repository
-interface ProjectPeriodRepository : JpaRepository<ProjectPeriodEntity, ProjectPeriodId> {
-
-    fun findByIdProjectIdAndIdNumber(projectId: Long, number: Int): ProjectPeriodEntity
-    fun findAllByIdProjectId(projectId: Long): List<ProjectPeriodEntity>
-
-}
+interface ProjectPeriodRepository : JpaRepository<ProjectPeriodEntity, ProjectPeriodId>

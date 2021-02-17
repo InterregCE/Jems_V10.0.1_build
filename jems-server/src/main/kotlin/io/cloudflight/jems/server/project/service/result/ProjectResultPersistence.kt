@@ -1,11 +1,11 @@
 package io.cloudflight.jems.server.project.service.result
 
-import io.cloudflight.jems.api.project.dto.result.ProjectResultDTO
+import io.cloudflight.jems.server.project.service.result.model.ProjectResult
 
 interface ProjectResultPersistence {
 
-    fun updateProjectResults(projectId: Long, projectResults: Set<ProjectResultDTO> ): Set<ProjectResultDTO>
-
-    fun getProjectResultsForProject(projectId: Long): Set<ProjectResultDTO>
+    fun getResultsForProject(projectId: Long): List<ProjectResult>
+    fun updateResultsForProject(projectId: Long, projectResults: List<ProjectResult>): List<ProjectResult>
+    fun getAvailablePeriodNumbers(projectId: Long): Set<Int>
 
 }

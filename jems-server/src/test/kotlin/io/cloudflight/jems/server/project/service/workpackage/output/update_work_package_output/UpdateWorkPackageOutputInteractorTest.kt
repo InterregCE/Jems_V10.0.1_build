@@ -12,6 +12,7 @@ import io.mockk.impl.annotations.MockK
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
+import java.math.BigDecimal
 
 class UpdateWorkPackageOutputInteractorTest: UnitTest() {
 
@@ -20,7 +21,7 @@ class UpdateWorkPackageOutputInteractorTest: UnitTest() {
             translatedValues = setOf(WorkPackageOutputTranslatedValue(SystemLanguage.EN, "Test")),
             periodNumber = 10,
             programmeOutputIndicatorId = 7L,
-            targetValue = "target_value",
+            targetValue = BigDecimal.ONE,
         )
     }
 
@@ -53,6 +54,20 @@ class UpdateWorkPackageOutputInteractorTest: UnitTest() {
             updateOutputInteractor.updateOutputsForWorkPackage(3L, mockedList)
         }
         assertThat(ex.i18nKey).isEqualTo("project.workPackage.outputs.max.allowed.reached")
+    }
+
+    @Test
+    fun `update - invalid target value`() {
+        assertTargetValueThrowException(BigDecimal.valueOf(999_999_999_990, 3))
+        assertTargetValueThrowException(BigDecimal.valueOf(999_999_999_991, 3))
+        assertTargetValueThrowException(BigDecimal.valueOf(1_000_000_000_00, 2))
+        assertTargetValueThrowException(BigDecimal.valueOf(-1, 2))
+    }
+
+    private fun assertTargetValueThrowException(value: BigDecimal) {
+        val toBeSaved = listOf(testOutput.copy(targetValue = value))
+        val exception = assertThrows<I18nValidationException> { updateOutputInteractor.updateOutputsForWorkPackage(10L, toBeSaved) }
+        assertThat(exception.i18nKey).isEqualTo("project.workPackage.targetValue.not.valid")
     }
 
 }

@@ -4,6 +4,7 @@ import * as moment from 'moment';
 import {Moment} from 'moment';
 import {TimelineOptions, TimelineTimeAxisScaleType} from 'vis-timeline';
 import {TranslateService} from '@ngx-translate/core';
+import {NumberService} from '../../../common/services/number.service';
 
 export const colors = [
   'bg-purple',
@@ -18,9 +19,8 @@ export const RESULT_BOX_ID = 9_939_999;
 enum GroupType {
   WorkPackage,
   Activity,
-  OutputIndicator,
+  Indicator,
   ResultTitle,
-  ResultIndicator
 }
 
 export const TRANSLATABLE_GROUP_TYPES: GroupType[] = [
@@ -68,8 +68,7 @@ function groupTemplateFunction(item: any, translateService: TranslateService): s
         'common.label.activity',
         {wpNumber: data.wpNumber, activityNumber: data.activityNumber, title: item.content}
       )}</span>`;
-    case GroupType.ResultIndicator:
-    case GroupType.OutputIndicator:
+    case GroupType.Indicator:
       return `<span>${item.content}</span>`;
     case GroupType.ResultTitle:
       return `<span>${translateService.instant('result.indicator.title')}</span>`;
@@ -114,15 +113,15 @@ function getOutputBoxId(workPackageNumber: number, outputNumber: number): number
 /**
  * ID 13x_xxx (everything 3x_xxx) stands for IDs related to results
  */
-function getResultId(indexResult: number): number {
-  return 130_000 + (indexResult + 1) * 100;
+function getResultId(resultNumber: number): number {
+  return 130_000 + resultNumber * 100;
 }
 
 /**
  * it is 1 box per 1 group = we reuse group ID and just add 50
  */
-function getResultBoxId(indexResult: number): number {
-  return getResultId(indexResult) + 50;
+function getResultBoxId(resultNumber: number): number {
+  return getResultId(resultNumber) + 50;
 }
 
 /**
@@ -135,7 +134,7 @@ function getResultBoxId(indexResult: number): number {
  *     - output
  *   - result indicator
  */
-export function getItems(timePlan: ProjectTimePlan): DataSet<any> {
+export function getItems(timePlan: ProjectTimePlan, translateService: TranslateService): DataSet<any> {
   let items = new Array(0);
   timePlan.workPackages.forEach((wp, indexWp) => {
     let minPeriod = 999;
@@ -178,7 +177,7 @@ export function getItems(timePlan: ProjectTimePlan): DataSet<any> {
         start: getNestedStartDateFromPeriod(output.periodNumber),
         end: getNestedEndDateFromPeriod(output.periodNumber),
         type: 'range',
-        title: `<span>Period: ${output.periodNumber}<br>Target value: ${output.targetValue || '-'}</span>`,
+        title: getIndicatorTooltip(output.targetValue, translateService),
         content: `O${wp.workPackageNumber}.${output.outputNumber}`,
         className: getColor(indexWp),
       });
@@ -198,17 +197,24 @@ export function getItems(timePlan: ProjectTimePlan): DataSet<any> {
 
   timePlan.results.forEach((result, indexResult) => {
     items = items.concat({
-      id: getResultBoxId(indexResult),
-      group: getResultId(indexResult),
+      id: getResultBoxId(result.resultNumber),
+      group: getResultId(result.resultNumber),
       start: getNestedStartDateFromPeriod(result.periodNumber),
       end: getNestedEndDateFromPeriod(result.periodNumber),
       type: 'range',
-      content: `R.${indexResult + 1}`,
+      title: getIndicatorTooltip(result.targetValue, translateService),
+      content: `R.${result.resultNumber}`,
       className: getColor(indexResult),
     });
   });
 
   return new DataSet(items);
+}
+
+function getIndicatorTooltip(targetValue: number, translateService: TranslateService): string {
+  return targetValue
+    ? `<span>${translateService.instant('project.results.result.target.value')}: ${NumberService.toLocale(targetValue)}</span>`
+    : '';
 }
 
 /**
@@ -235,9 +241,9 @@ export function getGroups(timePlan: ProjectTimePlan): DataSet<any> {
     const outputs = wp.outputs.map(output => {
       return {
         id: getOutputId(wp.workPackageNumber, output.outputNumber),
-        content: output.programmeOutputIndicatorId || EMPTY_STRING,
+        content: output.programmeOutputIndicatorIdentifier || EMPTY_STRING,
         treeLevel: 2,
-        data: {type: GroupType.OutputIndicator},
+        data: {type: GroupType.Indicator},
       };
     });
     wpSubGroups = wpSubGroups.concat(outputs);
@@ -250,12 +256,12 @@ export function getGroups(timePlan: ProjectTimePlan): DataSet<any> {
     };
   });
 
-  let results: any[] = timePlan.results.map((result, indexResult) => {
+  let results: any[] = timePlan.results.map(result => {
     return {
-      id: getResultId(indexResult),
+      id: getResultId(result.resultNumber),
       content: result.programmeResultIndicatorIdentifier || EMPTY_STRING,
       treeLevel: 2,
-      data: {type: GroupType.ResultIndicator},
+      data: {type: GroupType.Indicator},
     };
   });
   if (results.length) {
@@ -281,7 +287,7 @@ export class Content {
   content: string;
 }
 
-export function getInputTranslations(timePlan: ProjectTimePlan, translateService: TranslateService): { [language: string]: Content[]; } {
+export function getInputTranslations(timePlan: ProjectTimePlan): { [language: string]: Content[]; } {
   const languages: { [language: string]: Content[]; } = {};
   timePlan.workPackages.forEach(wp => {
     wp.name.forEach(translation => {

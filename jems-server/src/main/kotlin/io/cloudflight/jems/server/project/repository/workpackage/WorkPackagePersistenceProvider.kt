@@ -8,6 +8,8 @@ import io.cloudflight.jems.server.project.entity.workpackage.investment.WorkPack
 import io.cloudflight.jems.server.project.repository.workpackage.activity.WorkPackageActivityRepository
 import io.cloudflight.jems.server.project.repository.workpackage.investment.WorkPackageInvestmentRepository
 import io.cloudflight.jems.server.project.repository.workpackage.output.WorkPackageOutputRepository
+import io.cloudflight.jems.server.project.repository.workpackage.output.toIndexedEntity
+import io.cloudflight.jems.server.project.repository.workpackage.output.toModel
 import io.cloudflight.jems.server.project.service.workpackage.WorkPackagePersistence
 import io.cloudflight.jems.server.project.service.workpackage.activity.model.WorkPackageActivity
 import io.cloudflight.jems.server.project.service.workpackage.model.ProjectWorkPackage
@@ -66,8 +68,7 @@ class WorkPackagePersistenceProvider(
 
     @Transactional(readOnly = true)
     override fun getWorkPackageOutputsForWorkPackage(workPackageId: Long): List<WorkPackageOutput> =
-        getWorkPackageOrThrow(workPackageId).outputs
-            .toModel()
+        getWorkPackageOrThrow(workPackageId).outputs.toModel()
 
     @Transactional(readOnly = true)
     override fun getWorkPackageInvestment(workPackageInvestmentId: Long) =

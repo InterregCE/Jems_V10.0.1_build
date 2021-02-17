@@ -17,6 +17,7 @@ import io.mockk.slot
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
+import java.math.BigDecimal
 
 @ExtendWith(MockKExtension::class)
 class ProjectWorkPackageOutputControllerTest {
@@ -31,7 +32,8 @@ class ProjectWorkPackageOutputControllerTest {
             ),
             periodNumber = 1,
             programmeOutputIndicatorId = 50L,
-            targetValue = "target_value",
+            programmeOutputIndicatorIdentifier = "ID.50",
+            targetValue = BigDecimal.ONE,
         )
         val output2 = WorkPackageOutput(
             outputNumber = 2,
@@ -60,8 +62,9 @@ class ProjectWorkPackageOutputControllerTest {
                 title = setOf(InputTranslation(SK, "sk_title")),
                 periodNumber = 1,
                 programmeOutputIndicatorId = 50L,
+                programmeOutputIndicatorIdentifier = "ID.50",
                 description = setOf(InputTranslation(EN, "en_desc"), InputTranslation(SK, "sk_desc")),
-                targetValue = "target_value",
+                targetValue = BigDecimal.ONE,
             ),
             WorkPackageOutputDTO(
                 outputNumber = 2,
@@ -71,9 +74,8 @@ class ProjectWorkPackageOutputControllerTest {
     }
 
     @Test
-    fun updateOutputs() {
+    fun `updateOutputs - test if persistence method is called with correct arguments`() {
         val outputsSlot = slot<List<WorkPackageOutput>>()
-        // we test retrieval in getOutputs test
         every { updateOutputInteractor.updateOutputsForWorkPackage(1L, capture(outputsSlot)) } returnsArgument 1
 
         val outputDto1 = WorkPackageOutputDTO(
@@ -81,10 +83,11 @@ class ProjectWorkPackageOutputControllerTest {
             periodNumber = 1,
             programmeOutputIndicatorId = 15,
             description = setOf(InputTranslation(EN, "en_desc"), InputTranslation(CS, ""), InputTranslation(SK, "sk_desc")),
-            targetValue = "target value",
+            targetValue = BigDecimal.ONE,
         )
         val outputDto2 = WorkPackageOutputDTO(
             periodNumber = 3,
+            targetValue = null,
         )
 
         controller.updateOutputs(1L, listOf(outputDto1, outputDto2))
@@ -98,7 +101,7 @@ class ProjectWorkPackageOutputControllerTest {
                 ),
                 periodNumber = 1,
                 programmeOutputIndicatorId = 15,
-                targetValue = "target value",
+                targetValue = BigDecimal.ONE,
             ),
             WorkPackageOutput(
                 outputNumber = 0,

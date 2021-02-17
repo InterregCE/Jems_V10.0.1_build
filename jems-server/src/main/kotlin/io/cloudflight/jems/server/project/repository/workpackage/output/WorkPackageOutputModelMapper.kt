@@ -1,4 +1,4 @@
-package io.cloudflight.jems.server.project.repository.workpackage
+package io.cloudflight.jems.server.project.repository.workpackage.output
 
 import io.cloudflight.jems.server.programme.entity.indicator.IndicatorOutput
 import io.cloudflight.jems.server.project.entity.TranslationWorkPackageOutputId
@@ -29,18 +29,16 @@ fun List<WorkPackageOutput>.toIndexedEntity(
     resolveProgrammeIndicator: (Long?) -> IndicatorOutput?,
 ) = mapIndexed { index, output -> output.toEntity(workPackageId, index.plus(1), resolveProgrammeIndicator) }
 
-fun WorkPackageOutputEntity.toModel() = WorkPackageOutput(
-    outputNumber = outputId.outputNumber,
-    translatedValues = translatedValues.toModel(),
-    periodNumber = periodNumber,
-    programmeOutputIndicatorId = programmeOutputIndicator?.id,
-    targetValue = targetValue
-)
-
-fun Iterable<WorkPackageOutputEntity>.toModel() =
-    this.map { it.toModel() }.sortedBy { it.outputNumber }.toList()
-
-// region translations
+fun Iterable<WorkPackageOutputEntity>.toModel() = map {
+    WorkPackageOutput(
+        outputNumber = it.outputId.outputNumber,
+        translatedValues = it.translatedValues.toModel(),
+        periodNumber = it.periodNumber,
+        programmeOutputIndicatorId = it.programmeOutputIndicator?.id,
+        programmeOutputIndicatorIdentifier = it.programmeOutputIndicator?.identifier,
+        targetValue = it.targetValue
+    )
+}.sortedBy { it.outputNumber }
 
 fun Set<WorkPackageOutputTranslatedValue>.toEntity(outputId: WorkPackageOutputId) = mapTo(HashSet()) { it.toEntity(outputId) }
 
@@ -57,5 +55,3 @@ fun Set<WorkPackageOutputTransl>.toModel() = mapTo(HashSet()) {
         title = it.title
     )
 }
-
-// endregion translations
