@@ -1,7 +1,9 @@
 package io.cloudflight.jems.server.programme.service.costoption.create_unit_cost
 
+import io.cloudflight.jems.api.programme.dto.costoption.BudgetCategory
 import io.cloudflight.jems.api.programme.dto.costoption.BudgetCategory.OfficeAndAdministrationCosts
 import io.cloudflight.jems.api.programme.dto.costoption.BudgetCategory.StaffCosts
+import io.cloudflight.jems.api.programme.dto.costoption.BudgetCategory.TravelAndAccommodationCosts
 import io.cloudflight.jems.server.audit.entity.AuditAction
 import io.cloudflight.jems.server.audit.service.AuditCandidate
 import io.cloudflight.jems.server.audit.service.AuditService
@@ -44,6 +46,7 @@ class CreateUnitCostInteractorTest {
             description = "test unit cost 1",
             type = "this type is longer than25",
             costPerUnit = null,
+            isOneCostCategory = false,
             categories = setOf(OfficeAndAdministrationCosts),
         )
         val ex = assertThrows<I18nValidationException> { createUnitCostInteractor.createUnitCost(wrongUnitCost) }
@@ -56,6 +59,45 @@ class CreateUnitCostInteractorTest {
     }
 
     @Test
+    fun `create unit cost - one cost category invalid`() {
+        every { persistence.getCount() } returns 15
+        val wrongUnitCost = ProgrammeUnitCost(
+            id = null,
+            name = " ",
+            description = "test unit cost 1",
+            type = "this type is longer than25",
+            costPerUnit = null,
+            isOneCostCategory = true,
+            categories = setOf(StaffCosts, TravelAndAccommodationCosts),
+        )
+        val ex = assertThrows<I18nValidationException> { createUnitCostInteractor.createUnitCost(wrongUnitCost) }
+        assertThat(ex.i18nFieldErrors).containsExactlyInAnyOrderEntriesOf(mapOf(
+            "name" to I18nFieldError(i18nKey = "programme.unitCost.name.should.not.be.empty"),
+            "costPerUnit" to I18nFieldError(i18nKey = "programme.unitCost.costPerUnit.invalid"),
+            "type" to I18nFieldError(i18nKey = "programme.unitCost.type.too.long"),
+            "categories" to I18nFieldError(i18nKey = "programme.unitCost.categories.exactly.1"),
+        ))
+    }
+
+    @Test
+    fun `create unit cost - one cost category OfficeAndAdministrationCosts restricted`() {
+        every { persistence.getCount() } returns 15
+        val wrongUnitCost = ProgrammeUnitCost(
+            id = null,
+            name = "test",
+            description = "test unit cost 1",
+            type = "test type",
+            costPerUnit = BigDecimal.ONE,
+            isOneCostCategory = true,
+            categories = setOf(OfficeAndAdministrationCosts),
+        )
+        val ex = assertThrows<I18nValidationException> { createUnitCostInteractor.createUnitCost(wrongUnitCost) }
+        assertThat(ex.i18nFieldErrors).containsExactlyInAnyOrderEntriesOf(mapOf(
+            "categories" to I18nFieldError(i18nKey = "programme.unitCost.categories.restricted"),
+        ))
+    }
+
+    @Test
     fun `create unit cost - reached max allowed amount`() {
         every { persistence.getCount() } returns 25
         val unitCost = ProgrammeUnitCost(
@@ -64,6 +106,7 @@ class CreateUnitCostInteractorTest {
             description = "test unit cost 1",
             type = "type 1",
             costPerUnit = BigDecimal.ONE,
+            isOneCostCategory = false,
             categories = setOf(OfficeAndAdministrationCosts, StaffCosts),
         )
         val ex = assertThrows<I18nValidationException> { createUnitCostInteractor.createUnitCost(unitCost) }
@@ -80,7 +123,31 @@ class CreateUnitCostInteractorTest {
             description = "test unit cost 1",
             type = "type 1",
             costPerUnit = BigDecimal.ONE,
+            isOneCostCategory = false,
             categories = setOf(OfficeAndAdministrationCosts, StaffCosts),
+        )
+        val auditSlot = slot<AuditCandidate>()
+        every { auditService.logEvent(capture(auditSlot)) } answers {}
+
+        assertThat(createUnitCostInteractor.createUnitCost(unitCost)).isEqualTo(unitCost.copy())
+        assertThat(auditSlot.captured).isEqualTo(AuditCandidate(
+            action = AuditAction.PROGRAMME_UNIT_COST_ADDED,
+            description = "Programme unit cost (id=null) 'UC1' has been added" // null will be real ID from DB sequence
+        ))
+    }
+
+    @Test
+    fun `create unit cost - one cost category OK`() {
+        every { persistence.getCount() } returns 5
+        every { persistence.createUnitCost(any()) } returnsArgument 0
+        val unitCost = ProgrammeUnitCost(
+            id = null,
+            name = "UC1",
+            description = "test unit cost 1",
+            type = "type 1",
+            costPerUnit = BigDecimal.ONE,
+            isOneCostCategory = true,
+            categories = setOf(StaffCosts),
         )
         val auditSlot = slot<AuditCandidate>()
         every { auditService.logEvent(capture(auditSlot)) } answers {}
@@ -100,6 +167,7 @@ class CreateUnitCostInteractorTest {
             name = "UC1",
             type = "UC1 type",
             costPerUnit = BigDecimal.ONE,
+            isOneCostCategory = false
         )
 
         assertThrows<I18nValidationException>("when creating id cannot be filled in") {

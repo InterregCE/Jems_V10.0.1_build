@@ -57,6 +57,7 @@ class ProgrammeUnitCostPersistenceTest {
             description = "test unit cost 1",
             type = "type 1",
             costPerUnit = BigDecimal.ONE,
+            isOneCostCategory = false,
             categories = mutableSetOf(categoryEquipment, categoryTravel),
         )
         expectedUnitCost = ProgrammeUnitCost(
@@ -65,6 +66,7 @@ class ProgrammeUnitCostPersistenceTest {
             description = testUnitCost.description,
             type = testUnitCost.type,
             costPerUnit = testUnitCost.costPerUnit,
+            isOneCostCategory = false,
             categories = setOf(categoryEquipment.category, categoryTravel.category),
         )
     }
@@ -123,6 +125,7 @@ class ProgrammeUnitCostPersistenceTest {
             description = "new description",
             type = "new type",
             costPerUnit = BigDecimal.TEN,
+            isOneCostCategory = false,
             categories = setOf(ExternalCosts, EquipmentCosts),
         )
 
@@ -132,6 +135,7 @@ class ProgrammeUnitCostPersistenceTest {
             description = "new description",
             type = "new type",
             costPerUnit = BigDecimal.TEN,
+            isOneCostCategory = false,
             categories = setOf(ExternalCosts, EquipmentCosts),
         ))
     }
@@ -146,6 +150,7 @@ class ProgrammeUnitCostPersistenceTest {
             description = "new description",
             type = "new type",
             costPerUnit = BigDecimal.TEN,
+            isOneCostCategory = false,
             categories = setOf(ExternalCosts, EquipmentCosts),
         )
 

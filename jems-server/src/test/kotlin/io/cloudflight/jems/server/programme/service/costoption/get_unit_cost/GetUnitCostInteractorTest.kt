@@ -26,6 +26,7 @@ class GetUnitCostInteractorTest {
             description = "test unit cost 1",
             type = "test type 1",
             costPerUnit = BigDecimal.ONE,
+            isOneCostCategory = false,
             categories = setOf(StaffCosts, OfficeAndAdministrationCosts),
         )
 

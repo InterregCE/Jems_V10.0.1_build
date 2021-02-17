@@ -45,12 +45,14 @@ class CallCostOptionsPersistenceTest {
             id = 2,
             name = "testName 2",
             type = "UC 2",
+            isOneCostCategory = false,
             costPerUnit = BigDecimal.ZERO,
         )
         private val unitCost3 = ProgrammeUnitCostEntity(
             id = 3,
             name = "testName 3",
             type = "UC 3",
+            isOneCostCategory = false,
             costPerUnit = BigDecimal.ONE,
         )
     }
@@ -179,12 +181,14 @@ class CallCostOptionsPersistenceTest {
                 name = "testName 2",
                 type = "UC 2",
                 costPerUnit = BigDecimal.ZERO,
+                isOneCostCategory = false
             ),
             ProgrammeUnitCost(
                 id = 3,
                 name = "testName 3",
                 type = "UC 3",
                 costPerUnit = BigDecimal.ONE,
+                isOneCostCategory = false
             ),
         )
     }

@@ -73,6 +73,7 @@ internal class ProjectPersistenceTest : UnitTest() {
                     description = "pus 4",
                     type = "type of unit cost",
                     costPerUnit = BigDecimal.ONE,
+                    isOneCostCategory = false,
                     categories = mutableSetOf(
                         ProgrammeUnitCostBudgetCategoryEntity(programmeUnitCostId = 14, category = BudgetCategory.ExternalCosts),
                         ProgrammeUnitCostBudgetCategoryEntity(programmeUnitCostId = 15, category = BudgetCategory.OfficeAndAdministrationCosts),
@@ -165,6 +166,7 @@ internal class ProjectPersistenceTest : UnitTest() {
                         description = "pus 4",
                         type = "type of unit cost",
                         costPerUnit = BigDecimal.ONE,
+                        isOneCostCategory = false,
                         categories = setOf(BudgetCategory.ExternalCosts, BudgetCategory.OfficeAndAdministrationCosts),
                     ),
                 ),

@@ -9,5 +9,6 @@ data class ProgrammeUnitCost(
     val description: String? = null,
     val type: String? = null,
     val costPerUnit: BigDecimal? = null,
+    val isOneCostCategory: Boolean,
     val categories: Set<BudgetCategory> = emptySet()
 )

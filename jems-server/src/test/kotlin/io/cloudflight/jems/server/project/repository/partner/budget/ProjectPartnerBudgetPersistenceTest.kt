@@ -62,7 +62,8 @@ class ProjectPartnerBudgetPersistenceTest: UnitTest() {
             id = 1,
             name = "test",
             costPerUnit = BigDecimal.TEN,
-            type = "test"
+            type = "test",
+            isOneCostCategory = false
         )
 
         private val projectPeriodEntity = ProjectPeriodEntity(projectPeriodId, 1, 2)
