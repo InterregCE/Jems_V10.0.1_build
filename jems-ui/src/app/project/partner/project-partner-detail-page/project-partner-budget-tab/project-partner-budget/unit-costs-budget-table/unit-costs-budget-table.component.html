@@ -48,7 +48,10 @@
                     <mat-header-cell
                             *matHeaderCellDef> {{'project.partner.budget.table.unit.type' | translate}} </mat-header-cell>
                     <mat-cell *matCellDef="let control;  let i = index" [formGroupName]="i">
-                        <div class="text-overflow-ellipsis">{{control.get(constants.FORM_CONTROL_NAMES.unitCost)?.value?.type}}</div>
+                        <div class="text-overflow-ellipsis"
+                             [matTooltip]="control.get(constants.FORM_CONTROL_NAMES.unitCost)?.value?.type">
+                            {{control.get(constants.FORM_CONTROL_NAMES.unitCost)?.value?.type}}
+                        </div>
                     </mat-cell>
                     <mat-footer-cell *matFooterCellDef></mat-footer-cell>
                 </ng-container>

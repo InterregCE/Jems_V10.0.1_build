@@ -59,12 +59,13 @@
                             <mat-cell *matCellDef="let control;  let i = index" [formGroupName]="i">
                                 <mat-form-field *ngIf="isLumpSumSelectedForRow(control)"
                                                 appFormFieldWidth="full">
-                                    <mat-select [formControlName]="constants.FORM_CONTROL_NAMES.periodNumber">
+                                    <mat-select [formControlName]="constants.FORM_CONTROL_NAMES.periodNumber"
+                                                [matTooltip]="getPeriodLabel(getPeriod(i, data.periods))">
                                         <mat-option></mat-option>
                                         <mat-option [value]="0">Preparation</mat-option>
                                         <mat-option *ngFor="let period of data.periods"
                                                     [value]="period.periodNumber">
-                                            {{'project.application.form.work.package.output.delivery.period.entry' | translate : period}}
+                                            {{getPeriodLabel(period)}}
                                         </mat-option>
                                     </mat-select>
                                     <mat-error>

@@ -25,6 +25,7 @@ import {HttpErrorResponse} from '@angular/common/http';
 import {ProgrammeLumpSum} from '../../model/lump-sums/programmeLumpSum';
 import {Alert} from '@common/components/forms/alert';
 import {ProjectPeriod} from '../../model/ProjectPeriod';
+import {TranslateService} from '@ngx-translate/core';
 
 @UntilDestroy()
 @Component({
@@ -63,7 +64,10 @@ export class ProjectLumpSumsPageComponent implements OnInit {
   private partnerColumnsTotal$: Observable<number[]>;
   private showGapExistsWarning$: Observable<boolean>;
 
-  constructor(public pageStore: ProjectLumpSumsPageStore, private formBuilder: FormBuilder, private formService: FormService) {
+  constructor(public pageStore: ProjectLumpSumsPageStore,
+              private formBuilder: FormBuilder,
+              private formService: FormService,
+              private translateService: TranslateService) {
   }
 
   ngOnInit(): void {
@@ -155,6 +159,24 @@ export class ProjectLumpSumsPageComponent implements OnInit {
 
   isLumpSumSelectedForRow(control: FormGroup): boolean {
     return this.getLumpSumControl(control)?.value;
+  }
+
+  getPeriodLabel(period: ProjectPeriod | undefined): string {
+    if (!period) {
+      return '';
+    }
+    if (period.periodNumber === 0) {
+      return 'Preparation';
+    }
+    return this.translateService.instant('project.application.form.work.package.output.delivery.period.entry', period);
+  }
+
+  getPeriod(itemIndex: number, periods: ProjectPeriod[]): ProjectPeriod | undefined {
+    const periodNumber = this.items.at(itemIndex).get(this.constants.FORM_CONTROL_NAMES.periodNumber)?.value;
+    if (periodNumber === 0) {
+      return {periodNumber: 0} as any;
+    }
+    return periods.find(period => period.periodNumber === periodNumber);
   }
 
   private calculatePartnerColumnsTotal(): number[] {
