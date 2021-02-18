@@ -1,5 +1,11 @@
-package io.cloudflight.jems.server.project.repository.partner.budget
+package io.cloudflight.jems.server.project.repository.partner.budget.options
 
+import io.cloudflight.jems.server.project.repository.partner.budget.ProjectPartnerBudgetEquipmentRepository
+import io.cloudflight.jems.server.project.repository.partner.budget.ProjectPartnerBudgetExternalRepository
+import io.cloudflight.jems.server.project.repository.partner.budget.ProjectPartnerBudgetInfrastructureRepository
+import io.cloudflight.jems.server.project.repository.partner.budget.ProjectPartnerBudgetStaffCostRepository
+import io.cloudflight.jems.server.project.repository.partner.budget.ProjectPartnerBudgetTravelRepository
+import io.cloudflight.jems.server.project.repository.partner.budget.ProjectPartnerBudgetUnitCostRepository
 import io.cloudflight.jems.server.project.service.partner.budget.ProjectPartnerBudgetOptionsPersistence
 import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerBudgetOptions
 import org.springframework.stereotype.Repository

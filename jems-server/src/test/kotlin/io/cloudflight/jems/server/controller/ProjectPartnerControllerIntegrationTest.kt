@@ -72,7 +72,7 @@ class ProjectPartnerControllerIntegrationTest {
         )
             .andExpect(status().isBadRequest)
             .andExpect(
-                jsonPath("$.i18nFieldErrors.abbreviation.i18nKey")
+                jsonPath("$.formErrors.abbreviation.i18nKey")
                     .value("project.partner.name.should.not.be.empty")
             )
     }
@@ -89,7 +89,7 @@ class ProjectPartnerControllerIntegrationTest {
         )
             .andExpect(status().isBadRequest)
             .andExpect(
-                jsonPath("$.i18nFieldErrors.abbreviation.i18nKey")
+                jsonPath("$.formErrors.abbreviation.i18nKey")
                     .value("project.partner.name.size.too.long")
             )
     }

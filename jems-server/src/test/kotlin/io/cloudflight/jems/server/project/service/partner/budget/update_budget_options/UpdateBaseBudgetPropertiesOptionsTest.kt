@@ -1,12 +1,15 @@
 package io.cloudflight.jems.server.project.service.partner.budget.update_budget_options
 
 import io.cloudflight.jems.api.call.dto.flatrate.FlatRateType
-import io.cloudflight.jems.api.call.dto.flatrate.FlatRateType.*
+import io.cloudflight.jems.api.call.dto.flatrate.FlatRateType.OFFICE_AND_ADMINISTRATION_ON_OTHER_COSTS
+import io.cloudflight.jems.api.call.dto.flatrate.FlatRateType.OFFICE_AND_ADMINISTRATION_ON_STAFF_COSTS
+import io.cloudflight.jems.api.call.dto.flatrate.FlatRateType.OTHER_COSTS_ON_STAFF_COSTS
+import io.cloudflight.jems.api.call.dto.flatrate.FlatRateType.STAFF_COSTS
+import io.cloudflight.jems.api.call.dto.flatrate.FlatRateType.TRAVEL_AND_ACCOMMODATION_ON_STAFF_COSTS
+import io.cloudflight.jems.api.common.dto.I18nMessage
 import io.cloudflight.jems.server.UnitTest
 import io.cloudflight.jems.server.call.service.flatrate.CallFlatRateSetupPersistence
 import io.cloudflight.jems.server.call.service.flatrate.model.ProjectCallFlatRate
-import io.cloudflight.jems.server.common.exception.I18nFieldError
-import io.cloudflight.jems.server.common.exception.I18nValidationException
 import io.cloudflight.jems.server.project.service.partner.budget.ProjectPartnerBudgetOptionsPersistence
 import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerBudgetOptions
 import io.mockk.confirmVerified
@@ -78,7 +81,7 @@ internal class UpdateBaseBudgetPropertiesOptionsTest : UnitTest() {
         every { callFlatRateSetupPersistence.getProjectCallFlatRateByPartnerId(partnerId) } returns
             setOf(notAdjustableRate(type = OTHER_COSTS_ON_STAFF_COSTS, rate = 15))
 
-        val ex = assertThrows<I18nValidationException> {
+        val ex = assertThrows<InvalidFlatRateException> {
             updateBudgetOptions.updateBudgetOptions(
                 partnerId,
                 ProjectPartnerBudgetOptions(partnerId = partnerId, otherCostsOnStaffCostsFlatRate = 12)
@@ -88,9 +91,9 @@ internal class UpdateBaseBudgetPropertiesOptionsTest : UnitTest() {
         verify(atLeast = 1) { callFlatRateSetupPersistence.getProjectCallFlatRateByPartnerId(partnerId) }
         confirmVerified(callFlatRateSetupPersistence)
 
-        assertThat(ex.i18nFieldErrors).hasSize(1)
-        assertThat(ex.i18nFieldErrors!![OTHER_COSTS_ON_STAFF_COSTS.name])
-            .isEqualTo(I18nFieldError("project.partner.budget.options.flatRate.not.adjustable"))
+        assertThat(ex.formErrors).hasSize(1)
+        assertThat(ex.formErrors[OTHER_COSTS_ON_STAFF_COSTS.key])
+            .isEqualTo(I18nMessage("$UPDATE_BUDGET_OPTIONS_ERROR_KEY_PREFIX.flat.rate.not.adjustable.error"))
     }
 
     @Test
@@ -98,7 +101,7 @@ internal class UpdateBaseBudgetPropertiesOptionsTest : UnitTest() {
         every { callFlatRateSetupPersistence.getProjectCallFlatRateByPartnerId(partnerId) } returns
             setOf(adjustableRate(type = TRAVEL_AND_ACCOMMODATION_ON_STAFF_COSTS, rate = 15))
 
-        val ex = assertThrows<I18nValidationException> {
+        val ex = assertThrows<InvalidFlatRateException> {
             updateBudgetOptions.updateBudgetOptions(
                 partnerId, ProjectPartnerBudgetOptions(
                     partnerId = partnerId,
@@ -106,9 +109,9 @@ internal class UpdateBaseBudgetPropertiesOptionsTest : UnitTest() {
                 )
             )
         }
-        assertThat(ex.i18nFieldErrors).hasSize(1)
-        assertThat(ex.i18nFieldErrors!![OTHER_COSTS_ON_STAFF_COSTS.name])
-            .isEqualTo(I18nFieldError("project.partner.budget.options.flatRate.type.not.allowed"))
+        assertThat(ex.formErrors).hasSize(1)
+        assertThat(ex.formErrors[OTHER_COSTS_ON_STAFF_COSTS.key])
+            .isEqualTo(I18nMessage("$UPDATE_BUDGET_OPTIONS_ERROR_KEY_PREFIX.flat.rate.type.not.allowed.error"))
     }
 
     @Test
@@ -116,16 +119,21 @@ internal class UpdateBaseBudgetPropertiesOptionsTest : UnitTest() {
         every { callFlatRateSetupPersistence.getProjectCallFlatRateByPartnerId(partnerId) } returns
             setOf(adjustableRate(type = OTHER_COSTS_ON_STAFF_COSTS, rate = 10))
 
-        val ex = assertThrows<I18nValidationException> {
-            updateBudgetOptions.updateBudgetOptions(partnerId, ProjectPartnerBudgetOptions(partnerId = partnerId, otherCostsOnStaffCostsFlatRate = 12))
+        val ex = assertThrows<InvalidFlatRateException> {
+            updateBudgetOptions.updateBudgetOptions(
+                partnerId,
+                ProjectPartnerBudgetOptions(partnerId = partnerId, otherCostsOnStaffCostsFlatRate = 12)
+            )
         }
 
         verify(atLeast = 1) { callFlatRateSetupPersistence.getProjectCallFlatRateByPartnerId(partnerId) }
         confirmVerified(callFlatRateSetupPersistence)
 
-        assertThat(ex.i18nFieldErrors).hasSize(1)
-        assertThat(ex.i18nFieldErrors!![OTHER_COSTS_ON_STAFF_COSTS.name])
-            .isEqualTo(I18nFieldError("project.partner.budget.options.flatRate.exceeded"))
+        assertThat(ex.formErrors).hasSize(1)
+        assertThat(ex.formErrors[OTHER_COSTS_ON_STAFF_COSTS.key])
+            .isEqualTo(I18nMessage("$UPDATE_BUDGET_OPTIONS_ERROR_KEY_PREFIX.flat.rate.range.error",i18nArguments = hashMapOf(
+                Pair("maxValue", "10")
+            )))
 
     }
 
@@ -136,7 +144,7 @@ internal class UpdateBaseBudgetPropertiesOptionsTest : UnitTest() {
             adjustableRate(OFFICE_AND_ADMINISTRATION_ON_STAFF_COSTS, 20),
         )
 
-        val ex = assertThrows<I18nValidationException> {
+        val ex = assertThrows<InvalidFlatRateCombinationException> {
             updateBudgetOptions.updateBudgetOptions(
                 partnerId,
                 ProjectPartnerBudgetOptions(
@@ -150,9 +158,9 @@ internal class UpdateBaseBudgetPropertiesOptionsTest : UnitTest() {
         verify(atLeast = 1) { callFlatRateSetupPersistence.getProjectCallFlatRateByPartnerId(partnerId) }
         confirmVerified(callFlatRateSetupPersistence)
 
-        assertThat(ex.i18nFieldErrors).hasSize(1)
-        assertThat(ex.i18nFieldErrors!![OTHER_COSTS_ON_STAFF_COSTS.name])
-            .isEqualTo(I18nFieldError("project.partner.budget.options.flatRate.combination.is.not.valid"))
+        assertThat(ex.formErrors).hasSize(1)
+        assertThat(ex.formErrors[OTHER_COSTS_ON_STAFF_COSTS.key])
+            .isEqualTo(I18nMessage("$UPDATE_BUDGET_OPTIONS_ERROR_KEY_PREFIX.flat.rate.combination.is.not.valid"))
     }
 
     @Test
@@ -162,7 +170,7 @@ internal class UpdateBaseBudgetPropertiesOptionsTest : UnitTest() {
             adjustableRate(OFFICE_AND_ADMINISTRATION_ON_OTHER_COSTS, 20),
         )
 
-        val ex = assertThrows<I18nValidationException> {
+        val ex = assertThrows<InvalidFlatRateCombinationException> {
             updateBudgetOptions.updateBudgetOptions(
                 partnerId,
                 ProjectPartnerBudgetOptions(
@@ -176,9 +184,9 @@ internal class UpdateBaseBudgetPropertiesOptionsTest : UnitTest() {
         verify(atLeast = 1) { callFlatRateSetupPersistence.getProjectCallFlatRateByPartnerId(partnerId) }
         confirmVerified(callFlatRateSetupPersistence)
 
-        assertThat(ex.i18nFieldErrors).hasSize(1)
-        assertThat(ex.i18nFieldErrors!![OTHER_COSTS_ON_STAFF_COSTS.name])
-            .isEqualTo(I18nFieldError("project.partner.budget.options.flatRate.combination.is.not.valid"))
+        assertThat(ex.formErrors).hasSize(1)
+        assertThat(ex.formErrors[OTHER_COSTS_ON_STAFF_COSTS.key])
+            .isEqualTo(I18nMessage("$UPDATE_BUDGET_OPTIONS_ERROR_KEY_PREFIX.flat.rate.combination.is.not.valid"))
     }
 
     @Test
@@ -188,7 +196,7 @@ internal class UpdateBaseBudgetPropertiesOptionsTest : UnitTest() {
             adjustableRate(TRAVEL_AND_ACCOMMODATION_ON_STAFF_COSTS, 20),
         )
 
-        val ex = assertThrows<I18nValidationException> {
+        val ex = assertThrows<InvalidFlatRateCombinationException> {
             updateBudgetOptions.updateBudgetOptions(
                 partnerId,
                 ProjectPartnerBudgetOptions(
@@ -202,9 +210,9 @@ internal class UpdateBaseBudgetPropertiesOptionsTest : UnitTest() {
         verify(atLeast = 1) { callFlatRateSetupPersistence.getProjectCallFlatRateByPartnerId(partnerId) }
         confirmVerified(callFlatRateSetupPersistence)
 
-        assertThat(ex.i18nFieldErrors).hasSize(1)
-        assertThat(ex.i18nFieldErrors!![OTHER_COSTS_ON_STAFF_COSTS.name])
-            .isEqualTo(I18nFieldError("project.partner.budget.options.flatRate.combination.is.not.valid"))
+        assertThat(ex.formErrors).hasSize(1)
+        assertThat(ex.formErrors[OTHER_COSTS_ON_STAFF_COSTS.key])
+            .isEqualTo(I18nMessage("$UPDATE_BUDGET_OPTIONS_ERROR_KEY_PREFIX.flat.rate.combination.is.not.valid"))
     }
 
     @Test
@@ -214,7 +222,7 @@ internal class UpdateBaseBudgetPropertiesOptionsTest : UnitTest() {
             adjustableRate(STAFF_COSTS, 20),
         )
 
-        val ex = assertThrows<I18nValidationException> {
+        val ex = assertThrows<InvalidFlatRateCombinationException> {
             updateBudgetOptions.updateBudgetOptions(
                 partnerId,
                 ProjectPartnerBudgetOptions(
@@ -228,9 +236,9 @@ internal class UpdateBaseBudgetPropertiesOptionsTest : UnitTest() {
         verify(atLeast = 1) { callFlatRateSetupPersistence.getProjectCallFlatRateByPartnerId(partnerId) }
         confirmVerified(callFlatRateSetupPersistence)
 
-        assertThat(ex.i18nFieldErrors).hasSize(1)
-        assertThat(ex.i18nFieldErrors!![OTHER_COSTS_ON_STAFF_COSTS.name])
-            .isEqualTo(I18nFieldError("project.partner.budget.options.flatRate.combination.is.not.valid"))
+        assertThat(ex.formErrors).hasSize(1)
+        assertThat(ex.formErrors[OTHER_COSTS_ON_STAFF_COSTS.key])
+            .isEqualTo(I18nMessage("$UPDATE_BUDGET_OPTIONS_ERROR_KEY_PREFIX.flat.rate.combination.is.not.valid"))
     }
 
     @Test
@@ -240,7 +248,7 @@ internal class UpdateBaseBudgetPropertiesOptionsTest : UnitTest() {
             adjustableRate(OFFICE_AND_ADMINISTRATION_ON_OTHER_COSTS, 20),
         )
 
-        val ex = assertThrows<I18nValidationException> {
+        val ex = assertThrows<InvalidFlatRateCombinationException> {
             updateBudgetOptions.updateBudgetOptions(
                 partnerId,
                 ProjectPartnerBudgetOptions(
@@ -254,11 +262,11 @@ internal class UpdateBaseBudgetPropertiesOptionsTest : UnitTest() {
         verify(atLeast = 1) { callFlatRateSetupPersistence.getProjectCallFlatRateByPartnerId(partnerId) }
         confirmVerified(callFlatRateSetupPersistence)
 
-        assertThat(ex.i18nFieldErrors).hasSize(2)
-        assertThat(ex.i18nFieldErrors!![OFFICE_AND_ADMINISTRATION_ON_STAFF_COSTS.name])
-            .isEqualTo(I18nFieldError("project.partner.budget.options.flatRate.combination.is.not.valid"))
-        assertThat(ex.i18nFieldErrors!![OFFICE_AND_ADMINISTRATION_ON_OTHER_COSTS.name])
-            .isEqualTo(I18nFieldError("project.partner.budget.options.flatRate.combination.is.not.valid"))
+        assertThat(ex.formErrors).hasSize(2)
+        assertThat(ex.formErrors[OFFICE_AND_ADMINISTRATION_ON_STAFF_COSTS.key])
+            .isEqualTo(I18nMessage("$UPDATE_BUDGET_OPTIONS_ERROR_KEY_PREFIX.flat.rate.combination.is.not.valid"))
+        assertThat(ex.formErrors[OFFICE_AND_ADMINISTRATION_ON_OTHER_COSTS.key])
+            .isEqualTo(I18nMessage("$UPDATE_BUDGET_OPTIONS_ERROR_KEY_PREFIX.flat.rate.combination.is.not.valid"))
     }
 
     @Test
@@ -266,15 +274,15 @@ internal class UpdateBaseBudgetPropertiesOptionsTest : UnitTest() {
         every { callFlatRateSetupPersistence.getProjectCallFlatRateByPartnerId(partnerId) } returns
             setOf(notAdjustableRate(type = OFFICE_AND_ADMINISTRATION_ON_OTHER_COSTS, rate = 15))
 
-        val ex = assertThrows<I18nValidationException> {
+        val ex = assertThrows<InvalidFlatRateException> {
             updateBudgetOptions.updateBudgetOptions(
                 partnerId,
                 ProjectPartnerBudgetOptions(partnerId = partnerId, officeAndAdministrationOnDirectCostsFlatRate = 12)
             )
         }
-        assertThat(ex.i18nFieldErrors).hasSize(1)
-        assertThat(ex.i18nFieldErrors!![OFFICE_AND_ADMINISTRATION_ON_OTHER_COSTS.name])
-            .isEqualTo(I18nFieldError("project.partner.budget.options.flatRate.not.adjustable"))
+        assertThat(ex.formErrors).hasSize(1)
+        assertThat(ex.formErrors[OFFICE_AND_ADMINISTRATION_ON_OTHER_COSTS.key])
+            .isEqualTo(I18nMessage("$UPDATE_BUDGET_OPTIONS_ERROR_KEY_PREFIX.flat.rate.not.adjustable.error"))
     }
 
     @Test
@@ -282,15 +290,17 @@ internal class UpdateBaseBudgetPropertiesOptionsTest : UnitTest() {
         every { callFlatRateSetupPersistence.getProjectCallFlatRateByPartnerId(partnerId) } returns
             setOf(adjustableRate(type = OFFICE_AND_ADMINISTRATION_ON_OTHER_COSTS, rate = 10))
 
-        val ex = assertThrows<I18nValidationException> {
+        val ex = assertThrows<InvalidFlatRateException> {
             updateBudgetOptions.updateBudgetOptions(
                 partnerId,
                 ProjectPartnerBudgetOptions(partnerId = partnerId, officeAndAdministrationOnDirectCostsFlatRate = 12)
             )
         }
-        assertThat(ex.i18nFieldErrors).hasSize(1)
-        assertThat(ex.i18nFieldErrors!![OFFICE_AND_ADMINISTRATION_ON_OTHER_COSTS.name])
-            .isEqualTo(I18nFieldError("project.partner.budget.options.flatRate.exceeded"))
+        assertThat(ex.formErrors).hasSize(1)
+        assertThat(ex.formErrors[OFFICE_AND_ADMINISTRATION_ON_OTHER_COSTS.key])
+            .isEqualTo(I18nMessage("$UPDATE_BUDGET_OPTIONS_ERROR_KEY_PREFIX.flat.rate.range.error", i18nArguments = hashMapOf(
+                Pair("maxValue", "10")
+            )))
     }
 
     @Test
@@ -298,7 +308,7 @@ internal class UpdateBaseBudgetPropertiesOptionsTest : UnitTest() {
         every { callFlatRateSetupPersistence.getProjectCallFlatRateByPartnerId(partnerId) } returns
             setOf(adjustableRate(type = TRAVEL_AND_ACCOMMODATION_ON_STAFF_COSTS, rate = 15))
 
-        val ex = assertThrows<I18nValidationException> {
+        val ex = assertThrows<InvalidFlatRateException> {
             updateBudgetOptions.updateBudgetOptions(
                 partnerId, ProjectPartnerBudgetOptions(
                     partnerId = partnerId,
@@ -306,9 +316,9 @@ internal class UpdateBaseBudgetPropertiesOptionsTest : UnitTest() {
                 )
             )
         }
-        assertThat(ex.i18nFieldErrors).hasSize(1)
-        assertThat(ex.i18nFieldErrors!![OFFICE_AND_ADMINISTRATION_ON_OTHER_COSTS.name])
-            .isEqualTo(I18nFieldError("project.partner.budget.options.flatRate.type.not.allowed"))
+        assertThat(ex.formErrors).hasSize(1)
+        assertThat(ex.formErrors[OFFICE_AND_ADMINISTRATION_ON_OTHER_COSTS.key])
+            .isEqualTo(I18nMessage("$UPDATE_BUDGET_OPTIONS_ERROR_KEY_PREFIX.flat.rate.type.not.allowed.error"))
     }
 
     @Test
@@ -317,15 +327,15 @@ internal class UpdateBaseBudgetPropertiesOptionsTest : UnitTest() {
             // this one is not adjustable
             setOf(notAdjustableRate(type = OFFICE_AND_ADMINISTRATION_ON_STAFF_COSTS, rate = 15))
 
-        val ex = assertThrows<I18nValidationException> {
+        val ex = assertThrows<InvalidFlatRateException> {
             updateBudgetOptions.updateBudgetOptions(
                 partnerId,
                 ProjectPartnerBudgetOptions(partnerId = partnerId, officeAndAdministrationOnStaffCostsFlatRate = 12)
             )
         }
-        assertThat(ex.i18nFieldErrors).hasSize(1)
-        assertThat(ex.i18nFieldErrors!![OFFICE_AND_ADMINISTRATION_ON_STAFF_COSTS.name])
-            .isEqualTo(I18nFieldError("project.partner.budget.options.flatRate.not.adjustable"))
+        assertThat(ex.formErrors).hasSize(1)
+        assertThat(ex.formErrors[OFFICE_AND_ADMINISTRATION_ON_STAFF_COSTS.key])
+            .isEqualTo(I18nMessage("$UPDATE_BUDGET_OPTIONS_ERROR_KEY_PREFIX.flat.rate.not.adjustable.error"))
     }
 
     @Test
@@ -334,15 +344,21 @@ internal class UpdateBaseBudgetPropertiesOptionsTest : UnitTest() {
             // max is set to 10
             setOf(adjustableRate(type = OFFICE_AND_ADMINISTRATION_ON_STAFF_COSTS, rate = 10))
 
-        val ex = assertThrows<I18nValidationException> {
+        val ex = assertThrows<InvalidFlatRateException> {
             updateBudgetOptions.updateBudgetOptions(
                 partnerId,
                 ProjectPartnerBudgetOptions(partnerId = partnerId, officeAndAdministrationOnStaffCostsFlatRate = 12)
             )
         }
-        assertThat(ex.i18nFieldErrors).hasSize(1)
-        assertThat(ex.i18nFieldErrors!![OFFICE_AND_ADMINISTRATION_ON_STAFF_COSTS.name])
-            .isEqualTo(I18nFieldError("project.partner.budget.options.flatRate.exceeded"))
+        assertThat(ex.formErrors).hasSize(1)
+        assertThat(ex.formErrors[OFFICE_AND_ADMINISTRATION_ON_STAFF_COSTS.key])
+            .isEqualTo(
+                I18nMessage(
+                    "$UPDATE_BUDGET_OPTIONS_ERROR_KEY_PREFIX.flat.rate.range.error", i18nArguments = hashMapOf(
+                        Pair("maxValue", "10")
+                    )
+                )
+            )
     }
 
     @Test
@@ -351,7 +367,7 @@ internal class UpdateBaseBudgetPropertiesOptionsTest : UnitTest() {
             // this one will not be used (but would be possible)
             setOf(notAdjustableRate(type = OFFICE_AND_ADMINISTRATION_ON_STAFF_COSTS, rate = 15))
 
-        val ex = assertThrows<I18nValidationException> {
+        val ex = assertThrows<InvalidFlatRateException> {
             updateBudgetOptions.updateBudgetOptions(
                 partnerId, ProjectPartnerBudgetOptions(
                     partnerId = partnerId,
@@ -360,11 +376,11 @@ internal class UpdateBaseBudgetPropertiesOptionsTest : UnitTest() {
                 )
             )
         }
-        assertThat(ex.i18nFieldErrors).hasSize(2)
-        assertThat(ex.i18nFieldErrors!![STAFF_COSTS.name])
-            .isEqualTo(I18nFieldError("project.partner.budget.options.flatRate.type.not.allowed"))
-        assertThat(ex.i18nFieldErrors!![TRAVEL_AND_ACCOMMODATION_ON_STAFF_COSTS.name])
-            .isEqualTo(I18nFieldError("project.partner.budget.options.flatRate.type.not.allowed"))
+        assertThat(ex.formErrors).hasSize(2)
+        assertThat(ex.formErrors[STAFF_COSTS.key])
+            .isEqualTo(I18nMessage("$UPDATE_BUDGET_OPTIONS_ERROR_KEY_PREFIX.flat.rate.type.not.allowed.error"))
+        assertThat(ex.formErrors[TRAVEL_AND_ACCOMMODATION_ON_STAFF_COSTS.key])
+            .isEqualTo(I18nMessage("$UPDATE_BUDGET_OPTIONS_ERROR_KEY_PREFIX.flat.rate.type.not.allowed.error"))
     }
 
     @Test

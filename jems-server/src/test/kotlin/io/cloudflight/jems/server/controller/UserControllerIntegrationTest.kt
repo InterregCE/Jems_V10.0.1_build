@@ -93,19 +93,19 @@ class UserControllerIntegrationTest {
         )
             .andExpect(status().isBadRequest())
             .andExpect(
-                jsonPath("$.i18nFieldErrors.email.i18nKey")
+                jsonPath("$.formErrors.email.i18nKey")
                     .value("user.email.wrong.format")
             )
             .andExpect(
-                jsonPath("$.i18nFieldErrors.name.i18nKey")
+                jsonPath("$.formErrors.name.i18nKey")
                     .value("user.name.wrong.size")
             )
             .andExpect(
-                jsonPath("$.i18nFieldErrors.surname.i18nKey")
+                jsonPath("$.formErrors.surname.i18nKey")
                     .value("user.surname.wrong.size")
             )
             .andExpect(
-                jsonPath("$.i18nFieldErrors.userRoleId.i18nKey")
+                jsonPath("$.formErrors.userRoleId.i18nKey")
                     .value("user.userRoleId.should.not.be.empty")
             )
     }
@@ -123,7 +123,7 @@ class UserControllerIntegrationTest {
         )
             .andExpect(status().isBadRequest())
             .andExpect(
-                jsonPath("$.i18nFieldErrors.email.i18nKey")
+                jsonPath("$.formErrors.email.i18nKey")
                     .value("user.email.not.unique")
             )
     }
@@ -222,7 +222,7 @@ class UserControllerIntegrationTest {
         )
             .andExpect(status().isBadRequest)
             .andExpect(
-                jsonPath("$.i18nFieldErrors.password.i18nKey")
+                jsonPath("$.formErrors.password.i18nKey")
                     .value("user.password.size.too.short")
             )
     }

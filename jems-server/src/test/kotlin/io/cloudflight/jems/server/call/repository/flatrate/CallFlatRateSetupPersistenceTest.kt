@@ -10,7 +10,6 @@ import io.cloudflight.jems.server.call.entity.ProjectCallFlatRateEntity
 import io.cloudflight.jems.server.call.entity.FlatRateSetupId
 import io.cloudflight.jems.server.call.service.flatrate.CallFlatRateSetupPersistence
 import io.cloudflight.jems.server.call.service.flatrate.model.ProjectCallFlatRate
-import io.cloudflight.jems.server.common.exception.ResourceNotFoundException
 import io.cloudflight.jems.server.programme.entity.ProgrammeLegalStatus
 import io.cloudflight.jems.server.project.entity.ProjectEntity
 import io.cloudflight.jems.server.project.entity.ProjectStatus
@@ -70,8 +69,7 @@ class CallFlatRateSetupPersistenceTest {
     @Test
     fun `updateFlatRateSetup not-existing`() {
         every { callRepository.findById(eq(-1)) } returns Optional.empty()
-        val ex = assertThrows<ResourceNotFoundException> { callFlatRateSetupPersistence.updateProjectCallFlatRate(-1, emptySet()) }
-        assertThat(ex.entity).isEqualTo("call")
+        val ex = assertThrows<CallNotFoundException> { callFlatRateSetupPersistence.updateProjectCallFlatRate(-1, emptySet()) }
     }
 
     @Test
@@ -139,8 +137,7 @@ class CallFlatRateSetupPersistenceTest {
     @Test
     fun `getFlatRateSetup not-existing`() {
         every { callRepository.findById(eq(-1)) } returns Optional.empty()
-        val ex = assertThrows<ResourceNotFoundException> { callFlatRateSetupPersistence.getProjectCallFlatRate(-1) }
-        assertThat(ex.entity).isEqualTo("call")
+        val ex = assertThrows<CallNotFoundException> { callFlatRateSetupPersistence.getProjectCallFlatRate(-1) }
     }
 
     @Test
@@ -166,8 +163,7 @@ class CallFlatRateSetupPersistenceTest {
     @Test
     fun `getProjectCallFlatRate not-existing`() {
         every { projectPartnerRepository.findById(eq(-1)) } returns Optional.empty()
-        val ex = assertThrows<ResourceNotFoundException> { callFlatRateSetupPersistence.getProjectCallFlatRateByPartnerId(-1) }
-        assertThat(ex.entity).isEqualTo("projectPartner")
+        val ex = assertThrows<ProjectPartnerNotFoundException> { callFlatRateSetupPersistence.getProjectCallFlatRateByPartnerId(-1) }
     }
 
 }
