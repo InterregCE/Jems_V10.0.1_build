@@ -1,61 +1,47 @@
 package io.cloudflight.jems.server.project.repository.result
 
-import io.cloudflight.jems.api.project.dto.result.ProjectResultDTO
 import io.cloudflight.jems.server.common.exception.ResourceNotFoundException
+import io.cloudflight.jems.server.programme.entity.indicator.IndicatorResult
 import io.cloudflight.jems.server.programme.repository.indicator.IndicatorResultRepository
 import io.cloudflight.jems.server.project.entity.ProjectEntity
 import io.cloudflight.jems.server.project.repository.ProjectRepository
-import io.cloudflight.jems.server.project.repository.description.ProjectPeriodRepository
 import io.cloudflight.jems.server.project.service.result.ProjectResultPersistence
-import org.springframework.data.domain.Sort
+import io.cloudflight.jems.server.project.service.result.model.ProjectResult
 import org.springframework.stereotype.Repository
 import org.springframework.transaction.annotation.Transactional
 
 @Repository
 class ProjectResultPersistenceProvider(
-    private val projectResultRepository: ProjectResultRepository,
     private val projectRepository: ProjectRepository,
-    private val indicatorResultRepository: IndicatorResultRepository,
-    private val projectPeriodRepository: ProjectPeriodRepository
+    private val indicatorRepository: IndicatorResultRepository,
 ) : ProjectResultPersistence {
 
+    @Transactional(readOnly = true)
+    override fun getResultsForProject(projectId: Long): List<ProjectResult> =
+        getProjectOrThrow(projectId).results.toModel()
+
     @Transactional
-    override fun updateProjectResults(
+    override fun updateResultsForProject(
         projectId: Long,
-        projectResults: Set<ProjectResultDTO>
-    ) : Set<ProjectResultDTO> {
+        projectResults: List<ProjectResult>
+    ) : List<ProjectResult> {
         val project = getProjectOrThrow(projectId)
 
-        project.projectResultEntities.clear()
-
-        projectResults.forEach {
-            val indicatorResult =
-                if (it.programmeResultIndicatorId != null) indicatorResultRepository.findById(it.programmeResultIndicatorId!!)
-                    .orElse(null)
-                else null
-            val projectPeriod =
-                if (it.periodNumber != null)
-                    projectPeriodRepository.findByIdProjectIdAndIdNumber(projectId, it.periodNumber!!)
-                else null
-
-            val projectResultCreated = projectResultRepository.save(it.toEntity(indicatorResult = indicatorResult, project = project, projectPeriod = projectPeriod))
-            val projectResultSavedWithTranslations = projectResultRepository.save(projectResultCreated.copy(translatedValues = combineTranslatedValues(projectResultCreated.id, it.description)))
-            project.projectResultEntities.add(projectResultSavedWithTranslations)
-        }
-        return project.projectResultEntities.toProjectResultSet()
-
+        val resultsUpdated = projectResults.toIndexedEntity(
+            projectId = projectId,
+            resolveProgrammeIndicator = { getIndicatorOrThrow(it) },
+        )
+        return projectRepository.save(project.copy(results = resultsUpdated)).results.toModel()
     }
 
     @Transactional(readOnly = true)
-    override fun getProjectResultsForProject(projectId: Long): Set<ProjectResultDTO> {
-        val sort = Sort.by(Sort.Direction.ASC, "resultNumber")
-
-        return projectResultRepository.findAllByProjectId(projectId, sort)
-            .map { it.ProjectResultDTO() }
-            .toSet()
-    }
+    override fun getAvailablePeriodNumbers(projectId: Long): Set<Int> =
+        getProjectOrThrow(projectId).periods.mapTo(HashSet()) { it.id.number }
 
     private fun getProjectOrThrow(projectId: Long): ProjectEntity =
         projectRepository.findById(projectId).orElseThrow { ResourceNotFoundException("project") }
+
+    private fun getIndicatorOrThrow(indicatorId: Long?): IndicatorResult? =
+        indicatorId?.let { indicatorRepository.getOne(it) }
 
 }

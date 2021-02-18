@@ -1,9 +1,8 @@
 package io.cloudflight.jems.server.project.entity
 
 import io.cloudflight.jems.api.programme.dto.language.SystemLanguage
+import io.cloudflight.jems.server.project.entity.result.ProjectResultId
 import java.io.Serializable
-import java.util.UUID
-import javax.persistence.Column
 import javax.persistence.Embeddable
 import javax.persistence.EnumType
 import javax.persistence.Enumerated
@@ -15,9 +14,8 @@ import javax.validation.constraints.NotNull
 @Embeddable
 data class TranslationResultId(
 
-    @Column(name = "result_id")
     @field:NotNull
-    val resultId: UUID,
+    val resultId: ProjectResultId,
 
     @Enumerated(EnumType.STRING)
     @field:NotNull

@@ -6,8 +6,8 @@ import io.swagger.annotations.ApiOperation
 import org.springframework.http.MediaType
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
+import org.springframework.web.bind.annotation.PutMapping
 import org.springframework.web.bind.annotation.RequestMapping
-import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
 
 @Api("WorkPackageActivity")
@@ -19,7 +19,7 @@ interface ProjectWorkPackageActivityApi {
     fun getActivities(@PathVariable workPackageId: Long): List<WorkPackageActivityDTO>
 
     @ApiOperation("Updates activities for a work package")
-    @PostMapping(consumes = [MediaType.APPLICATION_JSON_VALUE])
+    @PutMapping(consumes = [MediaType.APPLICATION_JSON_VALUE])
     fun updateActivities(
         @PathVariable workPackageId: Long,
         @RequestBody activities: List<WorkPackageActivityDTO>

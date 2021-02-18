@@ -12,7 +12,6 @@ import {
   WorkPackageInvestmentService,
   WorkPackageOutputDTO,
   WorkPackageOutputService,
-  WorkPackageOutputUpdateDTO,
   WorkPackageService,
 } from '@cat/api';
 import {combineLatest, merge, Observable, of, ReplaySubject, Subject} from 'rxjs';
@@ -126,8 +125,8 @@ export class ProjectWorkPackagePageStore {
       );
   }
 
-  saveWorkPackageOutputs(outputs: WorkPackageOutputUpdateDTO[]): Observable<WorkPackageOutputDTO[]> {
-    return this.workPackageOutputService.updateWorkPackageOutputs(this.workPackageId, outputs)
+  saveWorkPackageOutputs(outputs: WorkPackageOutputDTO[]): Observable<WorkPackageOutputDTO[]> {
+    return this.workPackageOutputService.updateOutputs(this.workPackageId, outputs)
       .pipe(
         tap(saved => this.savedOutputs$.next(saved)),
         tap(saved => Log.info('Saved project outputs', saved)),
@@ -138,7 +137,7 @@ export class ProjectWorkPackagePageStore {
     const initialOutputs$ = this.workPackage$
       .pipe(
         filter(workPackage => workPackage && workPackage.id),
-        switchMap(workPackage => this.workPackageOutputService.getWorkPackageOutputs(workPackage.id)),
+        switchMap(workPackage => this.workPackageOutputService.getOutputs(workPackage.id)),
         tap(outputs => Log.info('Fetched project outputs', outputs)),
       );
 

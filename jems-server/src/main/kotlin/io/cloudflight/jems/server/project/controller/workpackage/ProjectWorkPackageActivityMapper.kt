@@ -28,6 +28,7 @@ fun List<WorkPackageActivityDeliverableDTO>.toDeliverableModel() = map { it.toDe
 
 
 fun WorkPackageActivity.toDto() = WorkPackageActivityDTO(
+    activityNumber = activityNumber,
     title = translatedValues.extractField { it.title },
     startPeriod = startPeriod,
     endPeriod = endPeriod,
@@ -38,6 +39,7 @@ fun WorkPackageActivity.toDto() = WorkPackageActivityDTO(
 fun List<WorkPackageActivity>.toDto() = map { it.toDto() }
 
 fun WorkPackageActivityDeliverable.toDeliverableDto() = WorkPackageActivityDeliverableDTO(
+    deliverableNumber = deliverableNumber,
     description = translatedValues.extractField { it.description },
     period = period,
 )

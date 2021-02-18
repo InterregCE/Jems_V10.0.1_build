@@ -1,14 +1,15 @@
 package io.cloudflight.jems.server.project.repository.workpackage
 
 import io.cloudflight.jems.server.common.exception.ResourceNotFoundException
+import io.cloudflight.jems.server.programme.entity.indicator.IndicatorOutput
 import io.cloudflight.jems.server.programme.repository.indicator.IndicatorOutputRepository
 import io.cloudflight.jems.server.project.entity.workpackage.WorkPackageEntity
 import io.cloudflight.jems.server.project.entity.workpackage.investment.WorkPackageInvestmentEntity
-import io.cloudflight.jems.server.project.entity.workpackage.output.WorkPackageOutputEntity
-import io.cloudflight.jems.server.project.repository.description.ProjectPeriodRepository
 import io.cloudflight.jems.server.project.repository.workpackage.activity.WorkPackageActivityRepository
 import io.cloudflight.jems.server.project.repository.workpackage.investment.WorkPackageInvestmentRepository
 import io.cloudflight.jems.server.project.repository.workpackage.output.WorkPackageOutputRepository
+import io.cloudflight.jems.server.project.repository.workpackage.output.toIndexedEntity
+import io.cloudflight.jems.server.project.repository.workpackage.output.toModel
 import io.cloudflight.jems.server.project.service.workpackage.WorkPackagePersistence
 import io.cloudflight.jems.server.project.service.workpackage.activity.model.WorkPackageActivity
 import io.cloudflight.jems.server.project.service.workpackage.model.ProjectWorkPackage
@@ -27,7 +28,6 @@ class WorkPackagePersistenceProvider(
     private val workPackageOutputRepository: WorkPackageOutputRepository,
     private val workPackageInvestmentRepository: WorkPackageInvestmentRepository,
     private val indicatorOutputRepository: IndicatorOutputRepository,
-    private val projectPeriodRepository: ProjectPeriodRepository
 ) : WorkPackagePersistence {
 
     @Transactional(readOnly = true)
@@ -57,38 +57,18 @@ class WorkPackagePersistenceProvider(
         workPackageId: Long,
         workPackageOutputs: List<WorkPackageOutput>
     ): List<WorkPackageOutput> {
-        val workPackage = getWorkPackageOrThrow(workPackageId)
-        val outputsToSave = mutableListOf<WorkPackageOutputEntity>()
+        val workPackage = getWorkPackageOrThrow(workPackageId = workPackageId)
 
-        for ((index, it) in workPackageOutputs.withIndex()) {
-                    val indicatorOutput =
-                        if (it.programmeOutputIndicatorId != null) indicatorOutputRepository.findById(it.programmeOutputIndicatorId)
-                            .orElse(null)
-                        else null
-                    val projectPeriod =
-                        if (it.periodNumber != null)
-                            projectPeriodRepository.findByIdProjectIdAndIdNumber(
-                                workPackage.project.id,
-                                it.periodNumber
-                            )
-                        else null
-
-                    outputsToSave.add(it.toEntity(indicatorOutput, workPackage, projectPeriod, index))
-                }
-
-        return workPackageRepository.save(
-            getWorkPackageOrThrow(workPackageId).copy(
-                outputs = outputsToSave
-            )
-        ).outputs.toModel()
-
+        val outputsUpdated = workPackageOutputs.toIndexedEntity(
+            workPackageId = workPackageId,
+            resolveProgrammeIndicator = { getIndicatorOrThrow(it) }
+        )
+        return workPackageRepository.save(workPackage.copy(outputs = outputsUpdated)).outputs.toModel()
     }
-
 
     @Transactional(readOnly = true)
     override fun getWorkPackageOutputsForWorkPackage(workPackageId: Long): List<WorkPackageOutput> =
-        getWorkPackageOrThrow(workPackageId).outputs
-            .toModel()
+        getWorkPackageOrThrow(workPackageId).outputs.toModel()
 
     @Transactional(readOnly = true)
     override fun getWorkPackageInvestment(workPackageInvestmentId: Long) =
@@ -160,6 +140,12 @@ class WorkPackagePersistenceProvider(
     private fun getWorkPackageInvestmentOrThrow(workPackageInvestmentId: Long): WorkPackageInvestmentEntity =
         workPackageInvestmentRepository.findById(workPackageInvestmentId)
             .orElseThrow { ResourceNotFoundException("WorkPackageInvestmentEntity") }
+
+    private fun getIndicatorOrThrow(indicatorId: Long?): IndicatorOutput? =
+        if (indicatorId == null)
+            null
+        else
+            indicatorOutputRepository.findById(indicatorId).orElseThrow { ResourceNotFoundException("indicatorOutput") }
 
     private fun updateSortOnNumber(workPackageId: Long) {
         val sort = Sort.by(Sort.Direction.ASC, "id")

@@ -2,13 +2,12 @@ import {ChangeDetectionStrategy, Component, ElementRef, OnInit, ViewChild} from 
 import {
   Content,
   getEndDateFromPeriod,
-  getGroupName,
   getGroups,
   getItems,
   getOptions,
-  getTranslations,
-  shouldGroupBeTranslated,
+  getInputTranslations,
   START_DATE,
+  TRANSLATABLE_GROUP_TYPES,
 } from './project-timeplan.utils';
 import {ProjectApplicationFormSidenavService} from '../../project-application/containers/project-application-form-page/services/project-application-form-sidenav.service';
 import {InputTranslation, OutputProjectPeriod} from '@cat/api';
@@ -18,6 +17,7 @@ import {map, tap} from 'rxjs/operators';
 import {combineLatest, Observable} from 'rxjs';
 import {DataSet} from 'vis-data/peer';
 import {Alert} from '@common/components/forms/alert';
+import {TranslateService} from '@ngx-translate/core';
 
 @Component({
   selector: 'app-project-timeplan-page',
@@ -42,6 +42,7 @@ export class ProjectTimeplanPageComponent implements OnInit {
   }>;
 
   constructor(private projectApplicationFormSidenavService: ProjectApplicationFormSidenavService,
+              private translateService: TranslateService,
               public pageStore: ProjectTimeplanPageStore) {
   }
 
@@ -53,9 +54,9 @@ export class ProjectTimeplanPageComponent implements OnInit {
     ])
       .pipe(
         map(([workPackages, results, periods]) => ({
-          translations: getTranslations({workPackages, results}),
+          translations: getInputTranslations({workPackages, results}),
           groups: getGroups({workPackages, results}),
-          items: getItems({workPackages, results}),
+          items: getItems({workPackages, results}, this.translateService),
           periods,
         })),
         tap(data => this.createVisualization(data))
@@ -63,7 +64,7 @@ export class ProjectTimeplanPageComponent implements OnInit {
 
     this.data$ = combineLatest([projectData$, this.pageStore.language$])
       .pipe(
-        tap(([data, language]) => this.updateLanguageSelection(data, language)),
+        tap(([data, language]) => this.updateLanguageSelection(data.groups, data.translations, language)),
         map(([data, language]) => ({...data, language})),
       );
   }
@@ -73,7 +74,7 @@ export class ProjectTimeplanPageComponent implements OnInit {
       return false;
     }
     const endDate = getEndDateFromPeriod(data.periods.length).toISOString();
-    const options = getOptions({max: endDate});
+    const options = getOptions(this.translateService, {max: endDate});
     const doc = this.visualization?.nativeElement;
     if (doc) {
       this.timeline = new Timeline(doc, data.items, options);
@@ -87,16 +88,20 @@ export class ProjectTimeplanPageComponent implements OnInit {
   /**
    * Call this if different language has been selected.
    */
-  private updateLanguageSelection(data: any, language: InputTranslation.LanguageEnum | string): void {
-    const translatedIds = data.translations[language]?.map((group: any) => group.id) || [];
-    const allIds: number[] = data.groups.getIds().map((groupId: any) => Number(groupId));
-    const toEmptyIds = allIds
-      .filter(id => !translatedIds.includes(id))
-      .filter(id => shouldGroupBeTranslated(id));
+  private updateLanguageSelection(groups: DataSet<any>, translations: { [language: string]: Content[]; }, language: InputTranslation.LanguageEnum | string): void {
+    const idsToTranslate = groups.get()
+      .filter(group => TRANSLATABLE_GROUP_TYPES.includes(group.data.type))
+      .map(group => group.id);
 
-    // if some translations are missing for particular language, we need to reset them to EMPTY_STRING
-    data.groups.update((data.translations[language] || [])
-      .concat(toEmptyIds.map(groupId => ({id: groupId, content: getGroupName()} as Content)))
+    const alreadyPreparedTranslatedIds: number[] = translations[language]?.map((group: any) => group.id) || [];
+    const toEmptyIds: number[] = idsToTranslate.filter(id => !alreadyPreparedTranslatedIds.includes(id));
+
+    this.updateTranslationsInGroupsAndSetMissingTranslationsToEmptyString(groups, translations[language] || [], toEmptyIds);
+  }
+
+  private updateTranslationsInGroupsAndSetMissingTranslationsToEmptyString(groups: DataSet<any>, translations: Content[], toEmptyIds: number[]): void {
+    groups.update(
+      translations.concat(toEmptyIds.map(groupId => ({id: groupId, content: '', title: ''} as Content)))
     );
   }
 

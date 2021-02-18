@@ -4,9 +4,9 @@ import io.cloudflight.jems.server.project.service.workpackage.output.model.WorkP
 
 interface UpdateWorkPackageOutputInteractor {
 
-    fun updateWorkPackageOutputs(
+    fun updateOutputsForWorkPackage(
         workPackageId: Long,
-        workPackageOutputUpdate: List<WorkPackageOutput>,
+        outputs: List<WorkPackageOutput>,
     ): List<WorkPackageOutput>
 
 }

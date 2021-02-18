@@ -5,7 +5,6 @@ import io.cloudflight.jems.api.project.dto.InputTranslation
 import io.cloudflight.jems.api.project.dto.workpackage.investment.InvestmentSummaryDTO
 import io.cloudflight.jems.api.project.dto.workpackage.investment.WorkPackageInvestmentDTO
 import io.cloudflight.jems.api.project.dto.workpackage.output.WorkPackageOutputDTO
-import io.cloudflight.jems.api.project.dto.workpackage.output.WorkPackageOutputUpdateDTO
 import io.cloudflight.jems.server.project.service.model.Address
 import io.cloudflight.jems.server.project.service.workpackage.model.InvestmentSummary
 import io.cloudflight.jems.server.project.service.workpackage.model.WorkPackageInvestment
@@ -55,26 +54,26 @@ fun WorkPackageInvestmentDTO.toWorkPackageInvestment() = WorkPackageInvestment(
     ownershipMaintenance = ownershipMaintenance
 )
 
-fun WorkPackageOutputUpdateDTO.toWorkPackageOutput() = WorkPackageOutput(
-    outputNumber = outputNumber,
-    programmeOutputIndicatorId = programmeOutputIndicatorId,
+fun WorkPackageOutputDTO.toModel() = WorkPackageOutput(
     translatedValues = combineOutputTranslations(title, description),
-    targetValue = targetValue,
-    periodNumber = periodNumber
-)
-
-fun WorkPackageOutput.toWorkPackageOutputDTO() = WorkPackageOutputDTO(
-    outputNumber = outputNumber,
-    programmeOutputIndicatorId = programmeOutputIndicatorId,
-    title = translatedValues.extractField { it.title },
-    targetValue = targetValue,
     periodNumber = periodNumber,
-    description = translatedValues.extractField { it.description }
+    programmeOutputIndicatorId = programmeOutputIndicatorId,
+    targetValue = targetValue
 )
 
-fun List<WorkPackageOutputUpdateDTO>.toWorkPackageOutputList() = this.map { it.toWorkPackageOutput() }.toList()
+fun List<WorkPackageOutputDTO>.toModel() = map { it.toModel() }.toList()
 
-fun List<WorkPackageOutput>.toDto() = this.map { it.toWorkPackageOutputDTO() }.toList()
+fun List<WorkPackageOutput>.toDto() = map {
+    WorkPackageOutputDTO(
+        outputNumber = it.outputNumber,
+        programmeOutputIndicatorId = it.programmeOutputIndicatorId,
+        programmeOutputIndicatorIdentifier = it.programmeOutputIndicatorIdentifier,
+        title = it.translatedValues.extractField { it.title },
+        targetValue = it.targetValue,
+        periodNumber = it.periodNumber,
+        description = it.translatedValues.extractField { it.description }
+    )
+}
 
 fun Address.toAddressDTO() = AddressDTO(
     this.country,

@@ -1,9 +1,7 @@
-package io.cloudflight.jems.server.project.repository.workpackage
+package io.cloudflight.jems.server.project.repository.workpackage.output
 
 import io.cloudflight.jems.server.programme.entity.indicator.IndicatorOutput
-import io.cloudflight.jems.server.project.entity.ProjectPeriodEntity
 import io.cloudflight.jems.server.project.entity.TranslationWorkPackageOutputId
-import io.cloudflight.jems.server.project.entity.workpackage.WorkPackageEntity
 import io.cloudflight.jems.server.project.entity.workpackage.output.WorkPackageOutputEntity
 import io.cloudflight.jems.server.project.entity.workpackage.output.WorkPackageOutputId
 import io.cloudflight.jems.server.project.entity.workpackage.output.WorkPackageOutputTransl
@@ -12,31 +10,35 @@ import io.cloudflight.jems.server.project.service.workpackage.output.model.WorkP
 import kotlin.collections.HashSet
 
 fun WorkPackageOutput.toEntity(
-    indicatorOutput: IndicatorOutput?,
-    workPackage: WorkPackageEntity,
-    projectPeriod: ProjectPeriodEntity?,
-    outputNumber: Int
+    workPackageId: Long,
+    index: Int,
+    resolveProgrammeIndicator: (Long?) -> IndicatorOutput?,
 ) : WorkPackageOutputEntity {
-    val outputId = WorkPackageOutputId(workPackage.id, outputNumber)
+    val outputId = WorkPackageOutputId(workPackageId, index)
     return WorkPackageOutputEntity(
         outputId = outputId,
-        programmeOutputIndicator = indicatorOutput,
         translatedValues = translatedValues.toEntity(outputId),
-        targetValue = targetValue,
-        period = projectPeriod
+        periodNumber = periodNumber,
+        programmeOutputIndicator = resolveProgrammeIndicator.invoke(programmeOutputIndicatorId),
+        targetValue = targetValue
     )
 }
 
-fun WorkPackageOutputEntity.toWorkPackageOutput() = WorkPackageOutput(
-    outputNumber = outputId.outputNumber,
-    programmeOutputIndicatorId = programmeOutputIndicator?.id,
-    translatedValues = translatedValues.toModel(),
-    targetValue = targetValue,
-    periodNumber = period?.id?.number
-)
+fun List<WorkPackageOutput>.toIndexedEntity(
+    workPackageId: Long,
+    resolveProgrammeIndicator: (Long?) -> IndicatorOutput?,
+) = mapIndexed { index, output -> output.toEntity(workPackageId, index.plus(1), resolveProgrammeIndicator) }
 
-fun Iterable<WorkPackageOutputEntity>.toModel() =
-    this.map { it.toWorkPackageOutput() }.sortedBy { it.outputNumber }.toList()
+fun Iterable<WorkPackageOutputEntity>.toModel() = map {
+    WorkPackageOutput(
+        outputNumber = it.outputId.outputNumber,
+        translatedValues = it.translatedValues.toModel(),
+        periodNumber = it.periodNumber,
+        programmeOutputIndicatorId = it.programmeOutputIndicator?.id,
+        programmeOutputIndicatorIdentifier = it.programmeOutputIndicator?.identifier,
+        targetValue = it.targetValue
+    )
+}.sortedBy { it.outputNumber }
 
 fun Set<WorkPackageOutputTranslatedValue>.toEntity(outputId: WorkPackageOutputId) = mapTo(HashSet()) { it.toEntity(outputId) }
 

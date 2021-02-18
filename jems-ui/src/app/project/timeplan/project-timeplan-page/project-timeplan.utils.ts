@@ -3,6 +3,8 @@ import {DataSet} from 'vis-data/peer';
 import * as moment from 'moment';
 import {Moment} from 'moment';
 import {TimelineOptions, TimelineTimeAxisScaleType} from 'vis-timeline';
+import {TranslateService} from '@ngx-translate/core';
+import {NumberService} from '../../../common/services/number.service';
 
 export const colors = [
   'bg-purple',
@@ -14,12 +16,17 @@ export const START_DATE = '2000-01-01';
 
 export const RESULT_BOX_ID = 9_939_999;
 
-/**
- * If items/groups id is of format x_x3x_xxx, then it is connected to result indicator, those are not translated.
- */
-export function shouldGroupBeTranslated(groupId: number): boolean {
-  return Math.floor(groupId / 10000) % 10 !== 3;
+enum GroupType {
+  WorkPackage,
+  Activity,
+  Indicator,
+  ResultTitle,
 }
+
+export const TRANSLATABLE_GROUP_TYPES: GroupType[] = [
+  GroupType.WorkPackage,
+  GroupType.Activity,
+];
 
 function getColor(index: number): string {
   return colors[index % colors.length];
@@ -48,51 +55,73 @@ export function periodLabelFunction(date: Date, scale: string, step: number): st
   return `Period ${periodNumber}`;
 }
 
-function getWorkPackageId(indexWp: number): number {
-  return (indexWp + 1) * 100_000;
+function groupTemplateFunction(item: any, translateService: TranslateService): string {
+  const data = item.data;
+  switch (data.type) {
+    case GroupType.WorkPackage:
+      return `<span>${translateService.instant(
+        'common.label.workpackage',
+        {wpNumber: data.wpNumber, title: item.content}
+      )}</span>`;
+    case GroupType.Activity:
+      return `<span>${translateService.instant(
+        'common.label.activity',
+        {wpNumber: data.wpNumber, activityNumber: data.activityNumber, title: item.content}
+      )}</span>`;
+    case GroupType.Indicator:
+      return `<span>${item.content}</span>`;
+    case GroupType.ResultTitle:
+      return `<span>${translateService.instant('result.indicator.title')}</span>`;
+    default:
+      return 'error';
+  }
+}
+
+function getWorkPackageId(workPackageNumber: number): number {
+  return workPackageNumber * 100_000;
 }
 
 /**
  * ID 1x_xxx stands for IDs related to activities
  */
-function getActivityId(indexWp: number, indexActivity: number): number {
-  return getWorkPackageId(indexWp) + 10_000 + (indexActivity + 1) * 100;
+function getActivityId(workPackageNumber: number, activityNumber: number): number {
+  return getWorkPackageId(workPackageNumber) + 10_000 + activityNumber * 100;
 }
 
-function getActivityBoxId(indexWp: number, indexActivity: number): number {
-  return getActivityId(indexWp, indexActivity) + 50;
+function getActivityBoxId(workPackageNumber: number, activityNumber: number): number {
+  return getActivityId(workPackageNumber, activityNumber) + 50;
 }
 
-function getDeliverableBoxId(indexWp: number, indexActivity: number, indexDeliverable: number): number {
-  return getActivityBoxId(indexWp, indexActivity) + (indexDeliverable + 1);
+function getDeliverableBoxId(workPackageNumber: number, activityNumber: number, deliverableNumber: number): number {
+  return getActivityBoxId(workPackageNumber, activityNumber) + deliverableNumber;
 }
 
 /**
  * ID 2x_xxx stands for IDs related to outputs
  */
-function getOutputId(indexWp: number, indexOutput: number): number {
-  return getWorkPackageId(indexWp) + 20_000 + (indexOutput + 1) * 100;
+function getOutputId(workPackageNumber: number, outputNumber: number): number {
+  return getWorkPackageId(workPackageNumber) + 20_000 + outputNumber * 100;
 }
 
 /**
  * it is 1 box per 1 group = we reuse group ID and just add 50
  */
-function getOutputBoxId(indexWp: number, indexOutput: number): number {
-  return getOutputId(indexWp, indexOutput) + 50;
+function getOutputBoxId(workPackageNumber: number, outputNumber: number): number {
+  return getOutputId(workPackageNumber, outputNumber) + 50;
 }
 
 /**
  * ID 13x_xxx (everything 3x_xxx) stands for IDs related to results
  */
-function getResultId(indexResult: number): number {
-  return 130_000 + (indexResult + 1) * 100;
+function getResultId(resultNumber: number): number {
+  return 130_000 + resultNumber * 100;
 }
 
 /**
  * it is 1 box per 1 group = we reuse group ID and just add 50
  */
-function getResultBoxId(indexResult: number): number {
-  return getResultId(indexResult) + 50;
+function getResultBoxId(resultNumber: number): number {
+  return getResultId(resultNumber) + 50;
 }
 
 /**
@@ -105,30 +134,30 @@ function getResultBoxId(indexResult: number): number {
  *     - output
  *   - result indicator
  */
-export function getItems(timePlan: ProjectTimePlan): DataSet<any> {
+export function getItems(timePlan: ProjectTimePlan, translateService: TranslateService): DataSet<any> {
   let items = new Array(0);
-  timePlan.workPackages.forEach((workPackage, indexWp) => {
+  timePlan.workPackages.forEach((wp, indexWp) => {
     let minPeriod = 999;
     let maxPeriod = 0;
 
-    workPackage.activities.forEach((activity, indexActivity) => {
+    wp.activities.forEach(activity => {
       items = items.concat({
-        id: getActivityBoxId(indexWp, indexActivity),
-        group: getActivityId(indexWp, indexActivity),
+        id: getActivityBoxId(wp.workPackageNumber, activity.activityNumber),
+        group: getActivityId(wp.workPackageNumber, activity.activityNumber),
         start: getStartDateFromPeriod(activity.startPeriod),
         end: getEndDateFromPeriod(activity.endPeriod),
         type: 'background',
         className: getColor(indexWp),
       });
 
-      activity.deliverables.forEach((deliverable, indexDeliverable) => {
+      activity.deliverables.forEach(deliverable => {
         items = items.concat({
-          id: getDeliverableBoxId(indexWp, indexActivity, indexDeliverable),
-          group: getActivityId(indexWp, indexActivity),
+          id: getDeliverableBoxId(wp.workPackageNumber, activity.activityNumber, deliverable.deliverableNumber),
+          group: getActivityId(wp.workPackageNumber, activity.activityNumber),
           start: getNestedStartDateFromPeriod(deliverable.period),
           end: getNestedEndDateFromPeriod(deliverable.period),
           type: 'range',
-          content: `D${indexWp + 1}.${indexActivity + 1}.${indexDeliverable + 1}`,
+          content: `D${wp.workPackageNumber}.${activity.activityNumber}.${deliverable.deliverableNumber}`,
           className: getColor(indexWp),
         });
       });
@@ -141,23 +170,23 @@ export function getItems(timePlan: ProjectTimePlan): DataSet<any> {
       }
     });
 
-    workPackage.outputs.forEach((output, indexOutput) => {
+    wp.outputs.forEach(output => {
       items = items.concat({
-        id: getOutputBoxId(indexWp, indexOutput),
-        group: getOutputId(indexWp, indexOutput),
+        id: getOutputBoxId(wp.workPackageNumber, output.outputNumber),
+        group: getOutputId(wp.workPackageNumber, output.outputNumber),
         start: getNestedStartDateFromPeriod(output.periodNumber),
         end: getNestedEndDateFromPeriod(output.periodNumber),
         type: 'range',
-        title: `<span>Period: ${output.periodNumber}<br>Target value: ${output.targetValue || '-'}</span>`,
-        content: `O.${indexOutput + 1}`,
+        title: getIndicatorTooltip(output.targetValue, translateService),
+        content: `O${wp.workPackageNumber}.${output.outputNumber}`,
         className: getColor(indexWp),
       });
     });
 
     if (minPeriod !== 999 && maxPeriod !== 0) {
       items = items.concat({
-        id: indexWp + 1,
-        group: getWorkPackageId(indexWp),
+        id: wp.workPackageNumber,
+        group: getWorkPackageId(wp.workPackageNumber),
         start: getStartDateFromPeriod(minPeriod),
         end: getEndDateFromPeriod(maxPeriod),
         type: 'background',
@@ -168,17 +197,24 @@ export function getItems(timePlan: ProjectTimePlan): DataSet<any> {
 
   timePlan.results.forEach((result, indexResult) => {
     items = items.concat({
-      id: getResultBoxId(indexResult),
-      group: getResultId(indexResult),
+      id: getResultBoxId(result.resultNumber),
+      group: getResultId(result.resultNumber),
       start: getNestedStartDateFromPeriod(result.periodNumber),
       end: getNestedEndDateFromPeriod(result.periodNumber),
       type: 'range',
-      content: `R.${indexResult + 1}`,
+      title: getIndicatorTooltip(result.targetValue, translateService),
+      content: `R.${result.resultNumber}`,
       className: getColor(indexResult),
     });
   });
 
   return new DataSet(items);
+}
+
+function getIndicatorTooltip(targetValue: number, translateService: TranslateService): string {
+  return targetValue
+    ? `<span>${translateService.instant('project.results.result.target.value')}: ${NumberService.toLocale(targetValue)}</span>`
+    : '';
 }
 
 /**
@@ -188,51 +224,53 @@ export function getItems(timePlan: ProjectTimePlan): DataSet<any> {
  *   - the whole WorkPackage
  *     - activity
  *     - output
- *   - result indicator //TODO
+ *   - result indicator
  */
 export function getGroups(timePlan: ProjectTimePlan): DataSet<any> {
   let wpSubGroups = new Array(0);
-  const workPackages = timePlan.workPackages.map((workPackage, indexWp) => {
-    const activities = workPackage.activities.map((activity, indexActivity) => {
+  const workPackages = timePlan.workPackages.map(wp => {
+    const activities = wp.activities.map(activity => {
       return {
-        id: getActivityId(indexWp, indexActivity),
-        content: EMPTY_STRING,
+        id: getActivityId(wp.workPackageNumber, activity.activityNumber),
         treeLevel: 2,
+        data: {type: GroupType.Activity, wpNumber: wp.workPackageNumber, activityNumber: activity.activityNumber}
       };
     });
     wpSubGroups = wpSubGroups.concat(activities);
 
-    const outputs = workPackage.outputs.map((output, indexOutput) => {
+    const outputs = wp.outputs.map(output => {
       return {
-        id: getOutputId(indexWp, indexOutput),
-        content: EMPTY_STRING, // TODO use indicator code
+        id: getOutputId(wp.workPackageNumber, output.outputNumber),
+        content: output.programmeOutputIndicatorIdentifier || EMPTY_STRING,
         treeLevel: 2,
+        data: {type: GroupType.Indicator},
       };
     });
     wpSubGroups = wpSubGroups.concat(outputs);
 
     return {
-      id: getWorkPackageId(indexWp),
-      content: EMPTY_STRING,
+      id: getWorkPackageId(wp.workPackageNumber),
       treeLevel: 1,
       nestedGroups: activities.map(activity => activity.id).concat(outputs.map(output => output.id)),
+      data: {type: GroupType.WorkPackage, wpNumber: wp.workPackageNumber},
     };
   });
 
-  let results: any[] = timePlan.results.map((result, indexResult) => {
+  let results: any[] = timePlan.results.map(result => {
     return {
-      id: getResultId(indexResult),
+      id: getResultId(result.resultNumber),
       content: result.programmeResultIndicatorIdentifier || EMPTY_STRING,
       treeLevel: 2,
+      data: {type: GroupType.Indicator},
     };
   });
   if (results.length) {
     // create group for all results
     results = results.concat({
       id: RESULT_BOX_ID,
-      content: getGroupName('Result Indicator:'), // TODO use translation here
       treeLevel: 1,
       nestedGroups: results.map(result => result.id),
+      data: {type: GroupType.ResultTitle},
     });
   }
 
@@ -249,40 +287,29 @@ export class Content {
   content: string;
 }
 
-export function getTranslations(timePlan: ProjectTimePlan): { [language: string]: Content[]; } {
+export function getInputTranslations(timePlan: ProjectTimePlan): { [language: string]: Content[]; } {
   const languages: { [language: string]: Content[]; } = {};
-  timePlan.workPackages.forEach((workPackage, indexWp) => {
-    workPackage.name.forEach(translation => {
+  timePlan.workPackages.forEach(wp => {
+    wp.name.forEach(translation => {
       if (!languages[translation.language]) {
         languages[translation.language] = new Array<Content>(0);
       }
       languages[translation.language].push({
-        id: getWorkPackageId(indexWp),
-        content: getGroupName(translation.translation),
+        id: getWorkPackageId(wp.workPackageNumber),
+        content: translation.translation,
+        title: translation.translation,
       } as Content);
     });
 
-    workPackage.activities.forEach((activity, indexActivity) => {
+    wp.activities.forEach(activity => {
       activity.title.forEach(translation => {
         if (!languages[translation.language]) {
           languages[translation.language] = new Array<Content>(0);
         }
         languages[translation.language].push({
-          id: getActivityId(indexWp, indexActivity),
-          content: getGroupName(translation.translation),
+          id: getActivityId(wp.workPackageNumber, activity.activityNumber),
+          content: translation.translation,
           title: translation.translation,
-        } as Content);
-      });
-    });
-
-    workPackage.outputs.forEach((output, indexOutput) => {
-      output.title.forEach(translation => {
-        if (!languages[translation.language]) {
-          languages[translation.language] = new Array<Content>(0);
-        }
-        languages[translation.language].push({
-          id: getOutputId(indexWp, indexOutput),
-          content: getGroupName(translation.translation),
         } as Content);
       });
     });
@@ -290,11 +317,7 @@ export function getTranslations(timePlan: ProjectTimePlan): { [language: string]
   return languages;
 }
 
-export function getGroupName(text: string = EMPTY_STRING): string {
-  return `<span>${text || EMPTY_STRING}</span>`;
-}
-
-export function getOptions(custom?: Partial<TimelineOptions>): TimelineOptions {
+export function getOptions(translateService: TranslateService, custom?: Partial<TimelineOptions>): TimelineOptions {
   return Object.assign(
     {
       showCurrentTime: false,
@@ -309,6 +332,7 @@ export function getOptions(custom?: Partial<TimelineOptions>): TimelineOptions {
       min: getStartDateFromPeriod(1),
       // if 1 Period = 1 Month, we can zoom only to max 1 Period ~= 30days
       zoomMin: 33 * 24 * 60 * 60 * 1000,
+      groupTemplate(item: any, element: any, d: any): string { return groupTemplateFunction(item, translateService); }
     },
     custom
   );
