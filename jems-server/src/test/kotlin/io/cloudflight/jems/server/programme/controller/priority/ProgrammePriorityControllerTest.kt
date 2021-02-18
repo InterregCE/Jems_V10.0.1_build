@@ -1,5 +1,6 @@
 package io.cloudflight.jems.server.programme.controller.priority
 
+import io.cloudflight.jems.api.programme.dto.language.SystemLanguage
 import io.cloudflight.jems.api.programme.dto.priority.ProgrammeObjective.PO1
 import io.cloudflight.jems.api.programme.dto.priority.ProgrammeObjective.PO2
 import io.cloudflight.jems.api.programme.dto.priority.ProgrammeObjectivePolicy.Growth
@@ -8,6 +9,7 @@ import io.cloudflight.jems.api.programme.dto.priority.ProgrammeObjectivePolicy.R
 import io.cloudflight.jems.api.programme.dto.priority.ProgrammePriorityAvailableSetupDTO
 import io.cloudflight.jems.api.programme.dto.priority.ProgrammePriorityDTO
 import io.cloudflight.jems.api.programme.dto.priority.ProgrammeSpecificObjectiveDTO
+import io.cloudflight.jems.api.project.dto.InputTranslation
 import io.cloudflight.jems.server.programme.service.priority.create_priority.CreatePriorityInteractor
 import io.cloudflight.jems.server.programme.service.priority.delete_priority.DeletePriorityInteractor
 import io.cloudflight.jems.server.programme.service.priority.get_priority.GetPriorityInteractor
@@ -32,7 +34,9 @@ class ProgrammePriorityControllerTest {
 
         private val testPriority = ProgrammePriority(
             code = "PO-01",
-            title = "PO-01 title",
+            title = setOf(
+                InputTranslation(SystemLanguage.EN, "PO-01 title")
+            ),
             objective = PO1,
             specificObjectives = listOf(
                 ProgrammeSpecificObjective(programmeObjectivePolicy = Growth, code = "G"),

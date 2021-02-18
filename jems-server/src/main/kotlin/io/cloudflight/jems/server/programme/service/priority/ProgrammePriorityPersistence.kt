@@ -12,7 +12,6 @@ interface ProgrammePriorityPersistence {
     fun delete(priorityId: Long)
 
     fun getPriorityIdByCode(code: String): Long?
-    fun getPriorityIdByTitle(title: String): Long?
     fun getPriorityIdForPolicyIfExists(policy: ProgrammeObjectivePolicy): Long?
     fun getSpecificObjectivesByCodes(specificObjectiveCodes: Collection<String>): List<ProgrammeSpecificObjective>
     fun getPrioritiesBySpecificObjectiveCodes(specificObjectiveCodes: Collection<String>): List<ProgrammePriority>

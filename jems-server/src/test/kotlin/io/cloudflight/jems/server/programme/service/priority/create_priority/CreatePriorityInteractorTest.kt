@@ -1,10 +1,12 @@
 package io.cloudflight.jems.server.programme.service.priority.create_priority
 
+import io.cloudflight.jems.api.programme.dto.language.SystemLanguage
 import io.cloudflight.jems.api.programme.dto.priority.ProgrammeObjective.ISO1
 import io.cloudflight.jems.api.programme.dto.priority.ProgrammeObjectivePolicy
 import io.cloudflight.jems.api.programme.dto.priority.ProgrammeObjectivePolicy.GreenUrban
 import io.cloudflight.jems.api.programme.dto.priority.ProgrammeObjectivePolicy.RenewableEnergy
 import io.cloudflight.jems.api.programme.dto.priority.ProgrammeObjectivePolicy.SmartEnergy
+import io.cloudflight.jems.api.project.dto.InputTranslation
 import io.cloudflight.jems.server.audit.entity.AuditAction
 import io.cloudflight.jems.server.audit.service.AuditCandidate
 import io.cloudflight.jems.server.audit.service.AuditService
@@ -39,7 +41,6 @@ class CreatePriorityInteractorTest {
     @Test
     fun `createPriority - valid`() {
         every { persistence.getPriorityIdByCode(testPriority.code) } returns null
-        every { persistence.getPriorityIdByTitle(testPriority.title) } returns null
         every { persistence.getPriorityIdForPolicyIfExists(any()) } returns null
         every { persistence.getSpecificObjectivesByCodes(setOf("GU", "RE")) } returns emptyList()
         every { persistence.create(any()) } returnsArgument 0
@@ -49,7 +50,7 @@ class CreatePriorityInteractorTest {
         assertThat(createPriority.createPriority(testPriority)).isEqualTo(testPriority)
         assertThat(auditSlot.captured).isEqualTo(AuditCandidate(
             action = AuditAction.PROGRAMME_PRIORITY_ADDED,
-            description = "New programme priority 'PO-02' 'PO-02 title' was created",
+            description = "New programme priority 'PO-02' '[InputTranslation(language=EN, translation=PO-02 title)]' was created",
         ))
     }
 
@@ -59,7 +60,9 @@ class CreatePriorityInteractorTest {
         var ex = assertThrows<I18nValidationException> { createPriority.createPriority(priorityWithLongCode) }
         assertThat(ex.i18nKey).isEqualTo("programme.priority.code.size.too.long")
 
-        val priorityWithLongTitle = testPriority.copy(title = getStringOfLength(301))
+        val priorityWithLongTitle = testPriority.copy(
+            title = setOf(InputTranslation(SystemLanguage.EN, getStringOfLength(301)))
+        )
         ex = assertThrows { createPriority.createPriority(priorityWithLongTitle) }
         assertThat(ex.i18nKey).isEqualTo("programme.priority.title.size.too.long")
     }
@@ -81,13 +84,10 @@ class CreatePriorityInteractorTest {
     @Test
     fun `createPriority - wrong title (long or empty)`() {
         testWrongTitle(getStringOfLength(301))
-        testWrongTitle(" ")
-        testWrongTitle("")
-        testWrongTitle("\t")
     }
 
     private fun testWrongTitle(title: String) {
-        val priority = testPriority.copy(title = title)
+        val priority = testPriority.copy(title = setOf(InputTranslation(SystemLanguage.EN, title)))
         val ex = assertThrows<I18nValidationException> { createPriority.createPriority(priority) }
         assertThat(ex.i18nKey).isEqualTo("programme.priority.title.size.too.long")
     }
@@ -182,18 +182,9 @@ class CreatePriorityInteractorTest {
     }
 
     @Test
-    fun `createPriority - priority title is already in use`() {
-        every { persistence.getPriorityIdByCode(testPriority.code) } returns null
-        every { persistence.getPriorityIdByTitle(testPriority.title) } returns 647
-        val ex = assertThrows<I18nValidationException> { createPriority.createPriority(testPriority) }
-        assertThat(ex.i18nKey).isEqualTo("programme.priority.title.already.in.use")
-    }
-
-    @Test
     fun `createPriority - specific objective policy is already used by other existing priority`() {
         // priority code and title are not used
         every { persistence.getPriorityIdByCode(testPriority.code) } returns null
-        every { persistence.getPriorityIdByTitle(testPriority.title) } returns null
         // this one is not used
         every { persistence.getPriorityIdForPolicyIfExists(GreenUrban) } returns null
         // this one IS ALREADY USED
@@ -210,7 +201,6 @@ class CreatePriorityInteractorTest {
     fun `createPriority - specific objective code is already used by other existing specific objective`() {
         // priority code and title are not used
         every { persistence.getPriorityIdByCode(testPriority.code) } returns null
-        every { persistence.getPriorityIdByTitle(testPriority.title) } returns null
         // every policy we try is not used
         every { persistence.getPriorityIdForPolicyIfExists(any()) } returns null
         // here code "RE" is already assigned to existing specific objective

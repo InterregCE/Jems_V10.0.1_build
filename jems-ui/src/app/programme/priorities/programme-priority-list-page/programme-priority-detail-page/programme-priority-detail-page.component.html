@@ -21,16 +21,14 @@
                 </mat-error>
             </mat-form-field>
 
-            <mat-form-field>
-                <mat-label>{{'programme.priority.field.title' | translate}}</mat-label>
-                <input [formControlName]="constants.TITLE.name" matInput required>
-                <mat-error>
-                    <app-form-field-errors
-                            [errors]="form.get(constants.TITLE.name)?.errors"
-                            [messages]="constants.TITLE.errorMessages">
-                    </app-form-field-errors>
-                </mat-error>
-            </mat-form-field>
+            <app-multi-language [useSystemLanguages]="true">
+                <app-multi-language-form-field
+                        [formControlName]="constants.TITLE.name"
+                        label="programme.priority.field.title"
+                        [useSystemLanguages]="true"
+                        [maxLength]="300">
+                </app-multi-language-form-field>
+            </app-multi-language>
         </div>
 
         <h3>{{'programme.priority.add.objective.title' | translate}}</h3>

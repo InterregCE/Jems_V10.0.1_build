@@ -49,7 +49,6 @@ class IndicatorServiceTest {
         private val priority = ProgrammePriorityEntity(
             id = 1,
             code = "prio_01",
-            title = "prio_01 title",
             objective = ProgrammeObjective.PO2,
             specificObjectives = emptySet() // not used here
         )
