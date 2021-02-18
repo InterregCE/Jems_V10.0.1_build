@@ -1,6 +1,8 @@
 ALTER TABLE project_work_package_output
-    DROP CONSTRAINT fk_project_work_package_output_to_project_period,
-    DROP COLUMN period_project_id,
+    DROP CONSTRAINT fk_project_work_package_output_to_project_period;
+ALTER TABLE project_work_package_output
+    DROP COLUMN period_project_id;
+ALTER TABLE project_work_package_output
     MODIFY COLUMN period_number SMALLINT UNSIGNED DEFAULT NULL;
 
 DROP TABLE project_result_transl;
@@ -37,5 +39,6 @@ CREATE TABLE project_result_transl
         ON UPDATE RESTRICT
 );
 
+UPDATE project_work_package_output SET target_value = NULL WHERE target_value IS NOT NULL;
 ALTER TABLE project_work_package_output
     MODIFY COLUMN target_value DECIMAL(11, 2) DEFAULT NULL;
