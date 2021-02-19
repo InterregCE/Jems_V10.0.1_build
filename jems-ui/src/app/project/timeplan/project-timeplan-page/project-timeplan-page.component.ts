@@ -1,4 +1,5 @@
 import {ChangeDetectionStrategy, Component, ElementRef, OnInit, ViewChild} from '@angular/core';
+import {ActivatedRoute, Router} from '@angular/router';
 import {Alert} from '@common/components/forms/alert';
 import {TranslateService} from '@ngx-translate/core';
 import {OutputProjectPeriod} from '@cat/api';
@@ -17,10 +18,11 @@ import {
   getItems,
   getOptions,
   getInputTranslations,
+  isResult,
+  RESULT_GROUP_TITLE_ID,
   START_DATE,
-  TRANSLATABLE_GROUP_TYPES, RESULT_BOX_ID,
+  TRANSLATABLE_GROUP_TYPES,
 } from './project-timeplan.utils';
-
 
 @Component({
   selector: 'app-project-timeplan-page',
@@ -44,6 +46,8 @@ export class ProjectTimeplanPageComponent implements OnInit {
   constructor(private projectApplicationFormSidenavService: ProjectApplicationFormSidenavService,
               private translateService: TranslateService,
               private languageService: LanguageService,
+              private router: Router,
+              private activatedRoute: ActivatedRoute,
               public pageStore: ProjectTimeplanPageStore) {
   }
 
@@ -55,7 +59,7 @@ export class ProjectTimeplanPageComponent implements OnInit {
       map(([workPackages, results]) => ({
         workPackages,
         results,
-        timelineGroups: getGroups({workPackages, results})
+        timelineGroups: getGroups(workPackages, results)
       })),
     );
 
@@ -116,7 +120,7 @@ export class ProjectTimeplanPageComponent implements OnInit {
    * Call this if different language has been selected.
    */
   private updateLanguageSelection(groups: DataSet<any>, translationsForChosenLanguage: Content[]): void {
-    const resultStaticTitle = groups.getIds().filter(id => id === RESULT_BOX_ID);
+    const resultStaticTitle = groups.getIds().filter(id => id === RESULT_GROUP_TITLE_ID);
 
     const idsToTranslate = groups.get()
       .filter(group => TRANSLATABLE_GROUP_TYPES.includes(group.data.type)).map(group => group.id)
@@ -132,6 +136,17 @@ export class ProjectTimeplanPageComponent implements OnInit {
     groups.update(
       translations.concat(toEmptyIds.map(groupId => ({id: groupId, content: '', title: ''} as Content)))
     );
+  }
+
+  click(event: Event): void {
+    const prop = this.timeline.getEventProperties(event);
+    if (prop.item && typeof prop.item === 'number') {
+
+      if (isResult(prop.item)) {
+        this.router.navigate(['..', 'applicationFormResults'], { relativeTo: this.activatedRoute});
+      }
+
+    }
   }
 
 }
