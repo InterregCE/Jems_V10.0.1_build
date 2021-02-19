@@ -15,7 +15,6 @@ import {ActivatedRoute} from '@angular/router';
 import {combineLatest} from 'rxjs';
 import {CallStore} from '../../services/call-store.service';
 import {PermissionService} from '../../../security/permissions/permission.service';
-import {Tables} from '../../../common/utils/tables';
 import {CallPriorityCheckbox} from '../model/call-priority-checkbox';
 import {CallPageSidenavService} from '../../services/call-page-sidenav.service';
 

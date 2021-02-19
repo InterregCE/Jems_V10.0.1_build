@@ -34,10 +34,10 @@ class ProgrammePriorityPersistenceProvider(
     @Transactional
     override fun update(priority: ProgrammePriority): ProgrammePriority {
         if (priorityRepo.existsById(priority.id!!)) {
-            val priorityUpdated = priorityRepo.save(priority.toEntity())
             return priorityRepo.save(
-                priorityUpdated.copy(translatedValues = combineTranslatedValues(priorityUpdated.id, priority.title))
-            ).toModel()
+                priority.toEntity().copy(
+                    translatedValues = combineTranslatedValues(priority.id, priority.title)
+                )).toModel()
         }
         else throw ResourceNotFoundException("programmePriority")
     }
