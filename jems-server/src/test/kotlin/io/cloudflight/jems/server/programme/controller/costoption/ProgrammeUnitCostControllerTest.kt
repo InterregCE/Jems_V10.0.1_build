@@ -49,6 +49,8 @@ class ProgrammeUnitCostControllerTest {
             name = "UC1",
             type = "type 1",
             costPerUnit = BigDecimal.ONE,
+            categories = setOf(EquipmentCosts, TravelAndAccommodationCosts),
+            sortId = 1
         )
 
     }

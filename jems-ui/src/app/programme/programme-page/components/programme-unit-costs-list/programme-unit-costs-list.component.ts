@@ -14,7 +14,7 @@ import {MatTableDataSource} from '@angular/material/table';
 export class ProgrammeUnitCostsListComponent {
   Alert = Alert;
 
-  displayedColumns: string[] = ['name', 'type', 'costPerUnit'];
+  displayedColumns: string[] = ['name', 'type', 'category', 'costPerUnit'];
 
   @Input()
   unitCost: string;

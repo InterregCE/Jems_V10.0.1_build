@@ -42,10 +42,11 @@ export class ProgrammeUnitCostDetailComponent extends ViewEditForm implements On
   cancelCreate: EventEmitter<void> = new EventEmitter<void>();
 
   unitCostForm = this.formBuilder.group({
+    isOneCostCategory: [null, Validators.required],
     name: ['', Validators.compose([Validators.required, Validators.maxLength(50)])],
     description: ['', Validators.maxLength(500)],
     type: ['', Validators.compose([Validators.required, Validators.maxLength(25)])],
-    costPerUnit: [null, Validators.required],
+    costPerUnit: ['', Validators.required],
     categories: ['', Validators.required]
   });
 
@@ -67,16 +68,32 @@ export class ProgrammeUnitCostDetailComponent extends ViewEditForm implements On
     required: 'programme.unitCost.costPerUnit.invalid',
   };
 
-  categoriesErrors = {
-    required: 'unit.cost.categories.should.not.be.empty'
+  categoriesErrorsMultiple = {
+    required: 'unit.cost.categories.should.not.be.empty.multiple'
   };
 
-  previousSplitting = '';
-  previousPhase = '';
-  selection = new SelectionModel<ProgrammeUnitCostDTO.CategoriesEnum>(true, []);
-  categories = [
+  categoriesErrorsSingle = {
+    required: 'unit.cost.categories.should.not.be.empty.single'
+  };
+
+  allowMultipleCostCategoriesErrors = {
+    required: 'unit.cost.categories.allow.multiple.should.not.be.empty'
+  };
+
+  selectionMultiple = new SelectionModel<ProgrammeUnitCostDTO.CategoriesEnum>(true, []);
+
+  selectionSingle = new SelectionModel<ProgrammeUnitCostDTO.CategoriesEnum>(false, []);
+
+  multipleCostCategories = [
     ProgrammeUnitCostDTO.CategoriesEnum.StaffCosts,
     ProgrammeUnitCostDTO.CategoriesEnum.OfficeAndAdministrationCosts,
+    ProgrammeUnitCostDTO.CategoriesEnum.TravelAndAccommodationCosts,
+    ProgrammeUnitCostDTO.CategoriesEnum.ExternalCosts,
+    ProgrammeUnitCostDTO.CategoriesEnum.EquipmentCosts,
+    ProgrammeUnitCostDTO.CategoriesEnum.InfrastructureCosts
+  ];
+  singleCostCategories = [
+    ProgrammeUnitCostDTO.CategoriesEnum.StaffCosts,
     ProgrammeUnitCostDTO.CategoriesEnum.TravelAndAccommodationCosts,
     ProgrammeUnitCostDTO.CategoriesEnum.ExternalCosts,
     ProgrammeUnitCostDTO.CategoriesEnum.EquipmentCosts,
@@ -95,18 +112,30 @@ export class ProgrammeUnitCostDetailComponent extends ViewEditForm implements On
     super.ngOnInit();
     if (this.isCreate) {
       this.changeFormState$.next(FormState.EDIT);
-      this.selection.clear();
+      this.selectionMultiple.clear();
+      this.selectionSingle.clear();
     } else {
-      this.unitCostForm.controls.name.setValue(this.unitCost.name);
-      this.unitCostForm.controls.description.setValue(this.unitCost.description);
-      this.unitCostForm.controls.type.setValue(this.unitCost.type);
-      this.unitCostForm.controls.costPerUnit.setValue(this.unitCost.costPerUnit);
-      this.selection.clear();
-      this.unitCost.categories.forEach(category => {
-        this.selection.select(category);
-      });
-      this.validNumberOfSelections = this.selection.selected.length >= 2;
+      this.resetForm();
       this.changeFormState$.next(FormState.VIEW);
+    }
+  }
+
+  resetForm(): void {
+    this.unitCostForm.controls.name.setValue(this.unitCost.name);
+    this.unitCostForm.controls.description.setValue(this.unitCost.description);
+    this.unitCostForm.controls.type.setValue(this.unitCost.type);
+    this.unitCostForm.controls.costPerUnit.setValue(this.unitCost.costPerUnit);
+    this.unitCostForm.controls.isOneCostCategory.setValue(this.unitCost.isOneCostCategory);
+    this.selectionMultiple.clear();
+    this.selectionSingle.clear();
+    if (this.unitCost.isOneCostCategory) {
+      this.selectionSingle.select(this.unitCost.categories[0]);
+      this.validNumberOfSelections = this.selectionMultiple.selected.length === 1;
+    } else {
+      this.unitCost.categories.forEach(category => {
+        this.selectionMultiple.select(category);
+        this.validNumberOfSelections = this.selectionMultiple.selected.length >= 2;
+      });
     }
   }
 
@@ -130,7 +159,8 @@ export class ProgrammeUnitCostDetailComponent extends ViewEditForm implements On
           description: this.unitCostForm?.controls?.description?.value,
           type: this.unitCostForm?.controls?.type?.value,
           costPerUnit: this.unitCostForm?.controls?.costPerUnit?.value,
-          categories: this.selection.selected
+          isOneCostCategory: this.unitCostForm?.controls?.isOneCostCategory?.value,
+          categories: this.unitCostForm?.controls?.isOneCostCategory?.value ? this.selectionSingle.selected : this.selectionMultiple.selected
         } as ProgrammeUnitCostDTO);
       } else {
         this.updateUnitCost.emit({
@@ -139,8 +169,8 @@ export class ProgrammeUnitCostDetailComponent extends ViewEditForm implements On
           description: this.unitCostForm?.controls?.description?.value,
           type: this.unitCostForm?.controls?.type?.value,
           costPerUnit: this.unitCostForm?.controls?.costPerUnit?.value,
-          isOneCostCategory: false,
-          categories: this.selection.selected
+          isOneCostCategory: this.unitCostForm?.controls?.isOneCostCategory?.value,
+          categories: this.unitCostForm?.controls?.isOneCostCategory?.value ? this.selectionSingle.selected : this.selectionMultiple.selected
         });
       }
     });
@@ -150,13 +180,14 @@ export class ProgrammeUnitCostDetailComponent extends ViewEditForm implements On
     if (this.isCreate) {
       this.cancelCreate.emit();
     } else {
+      this.resetForm();
       this.changeFormState$.next(FormState.VIEW);
     }
   }
 
-  checkSelection(element: ProgrammeUnitCostDTO.CategoriesEnum): void {
-    this.selection.toggle(element);
-    this.validNumberOfSelections = this.selection.selected.length >= 2;
+  checkSelectionMultiple(element: ProgrammeUnitCostDTO.CategoriesEnum): void {
+    this.selectionMultiple.toggle(element);
+    this.validNumberOfSelections = this.selectionMultiple.selected.length >= 2;
     if (this.validNumberOfSelections) {
       this.unitCostForm.controls.categories.setValue(true);
     } else {
@@ -164,9 +195,31 @@ export class ProgrammeUnitCostDetailComponent extends ViewEditForm implements On
     }
   }
 
+  checkSelectionSingle(element: ProgrammeUnitCostDTO.CategoriesEnum): void {
+    this.selectionSingle.toggle(element);
+    this.validNumberOfSelections = this.selectionSingle.selected.length === 1;
+    if (this.validNumberOfSelections) {
+      this.unitCostForm.controls.categories.setValue(true);
+    } else {
+      this.unitCostForm.controls.categories.setValue(null);
+    }
+  }
+
+  changeAllowedCategories(value: boolean): void {
+    this.unitCostForm.controls.isOneCostCategory.setValue(value);
+    this.selectionMultiple.clear();
+    this.selectionSingle.clear();
+    this.validNumberOfSelections = false;
+    this.unitCostForm.controls.categories.setValue(null);
+  }
+
   protected enterEditMode(): void {
     if (this.unitCost) {
       this.unitCostForm.controls.categories.setErrors(null);
+    }
+    if ((this.unitCost.isOneCostCategory && this.unitCost.categories?.length === 1)
+        || (!this.unitCost.isOneCostCategory && this.unitCost.categories?.length >= 2)) {
+      this.validNumberOfSelections = true;
     }
   }
 
