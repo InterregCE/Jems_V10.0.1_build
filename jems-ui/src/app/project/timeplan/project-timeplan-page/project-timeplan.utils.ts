@@ -7,8 +7,14 @@ import {TranslateService} from '@ngx-translate/core';
 import {NumberService} from '../../../common/services/number.service';
 
 export const colors = [
+  'bg-orange',
+  'bg-grey',
+  'bg-green',
+  'bg-brown',
   'bg-purple',
-  'bg-cyan'
+  'bg-cyan',
+  'bg-pink',
+  'bg-blue',
 ];
 
 export const EMPTY_STRING = '&nbsp';
@@ -32,7 +38,7 @@ function getColor(index: number): string {
   return colors[index % colors.length];
 }
 
-export function getStartDateFromPeriod(period: number): Moment {
+function getStartDateFromPeriod(period: number): Moment {
   return moment(START_DATE).add(period, 'M').startOf('month');
 }
 
@@ -40,15 +46,15 @@ export function getEndDateFromPeriod(period: number): Moment {
   return moment(START_DATE).add(period, 'M').endOf('month');
 }
 
-export function getNestedStartDateFromPeriod(period: number): Moment {
+function getNestedStartDateFromPeriod(period: number): Moment {
   return getStartDateFromPeriod(period).add(1, 'd');
 }
 
-export function getNestedEndDateFromPeriod(period: number): Moment {
+function getNestedEndDateFromPeriod(period: number): Moment {
   return getEndDateFromPeriod(period).subtract(1, 'd');
 }
 
-export function periodLabelFunction(date: Date, scale: string, step: number): string {
+function periodLabelFunction(date: Date, scale: string, step: number): string {
   const periodNumber = Math.round(moment(date).diff(
     moment(START_DATE), 'months', true)
   );
@@ -134,9 +140,9 @@ function getResultBoxId(resultNumber: number): number {
  *     - output
  *   - result indicator
  */
-export function getItems(timePlan: ProjectTimePlan, translateService: TranslateService): DataSet<any> {
+export function getItems(workPackages: ProjectWorkPackageDTO[], results: ProjectResultDTO[], translateService: TranslateService): DataSet<any> {
   let items = new Array(0);
-  timePlan.workPackages.forEach((wp, indexWp) => {
+  workPackages.forEach((wp, indexWp) => {
     let minPeriod = 999;
     let maxPeriod = 0;
 
@@ -195,7 +201,7 @@ export function getItems(timePlan: ProjectTimePlan, translateService: TranslateS
     }
   });
 
-  timePlan.results.forEach((result, indexResult) => {
+  results.forEach((result, indexResult) => {
     items = items.concat({
       id: getResultBoxId(result.resultNumber),
       group: getResultId(result.resultNumber),
@@ -204,7 +210,7 @@ export function getItems(timePlan: ProjectTimePlan, translateService: TranslateS
       type: 'range',
       title: getIndicatorTooltip(result.targetValue, translateService),
       content: `R.${result.resultNumber}`,
-      className: getColor(indexResult),
+      className: 'bg-blue',
     });
   });
 
@@ -287,9 +293,9 @@ export class Content {
   content: string;
 }
 
-export function getInputTranslations(timePlan: ProjectTimePlan): { [language: string]: Content[]; } {
+export function getInputTranslations(workPackages: ProjectWorkPackageDTO[]): { [language: string]: Content[]; } {
   const languages: { [language: string]: Content[]; } = {};
-  timePlan.workPackages.forEach(wp => {
+  workPackages.forEach(wp => {
     wp.name.forEach(translation => {
       if (!languages[translation.language]) {
         languages[translation.language] = new Array<Content>(0);
