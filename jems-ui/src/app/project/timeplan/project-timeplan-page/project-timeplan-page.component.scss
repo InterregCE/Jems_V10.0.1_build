@@ -3,10 +3,22 @@ $radius-big: .375rem;
 $radius-nested: .25rem;
 $max-group-label-width: 18rem;
 
-$color-purple: #D338FF;
-$color-purple-light: #EBD4EF;
+$color-orange: #FFA726;
+$color-orange-light: #FFE0B2;
+$color-grey: #546E7A;
+$color-grey-light: #A7C0CD;
+$color-green: #7CB342;
+$color-green-light: #BEF67A;
+$color-brown: #795548;
+$color-brown-light: #D3B8AE;
+$color-purple: #AB47BC;
+$color-purple-light: #FFC4FF;
 $color-cyan: #00BCD4;
 $color-cyan-light: #CCF2F6;
+$color-pink: #EC407A;
+$color-pink-light: #FFC1E3;
+$color-blue: #1E88E5;
+$color-blue-light: #81D4FA;
 
 ::ng-deep {
   .vis-text.vis-minor {
@@ -35,6 +47,42 @@ $color-cyan-light: #CCF2F6;
         background-color: $color-cyan;
       }
     }
+
+    &.bg-brown {
+      .vis-item-overflow {
+        background-color: $color-brown;
+      }
+    }
+
+    &.bg-green {
+      .vis-item-overflow {
+        background-color: $color-green;
+      }
+    }
+
+    &.bg-blue {
+      .vis-item-overflow {
+        background-color: $color-blue;
+      }
+    }
+
+    &.bg-orange {
+      .vis-item-overflow {
+        background-color: $color-orange;
+      }
+    }
+
+    &.bg-grey {
+      .vis-item-overflow {
+        background-color: $color-grey;
+      }
+    }
+
+    &.bg-pink {
+      .vis-item-overflow {
+        background-color: $color-pink;
+      }
+    }
   }
 
   .vis-item.vis-range {
@@ -61,6 +109,54 @@ $color-cyan-light: #CCF2F6;
 
       .vis-item-overflow {
         background-color: $color-cyan-light;
+      }
+    }
+
+    &.bg-brown {
+      border-color: $color-brown;
+
+      .vis-item-overflow {
+        background-color: $color-brown-light;
+      }
+    }
+
+    &.bg-green {
+      border-color: $color-green;
+
+      .vis-item-overflow {
+        background-color: $color-green-light;
+      }
+    }
+
+    &.bg-blue {
+      border-color: $color-blue;
+
+      .vis-item-overflow {
+        background-color: $color-blue-light;
+      }
+    }
+
+    &.bg-orange {
+      border-color: $color-orange;
+
+      .vis-item-overflow {
+        background-color: $color-orange-light;
+      }
+    }
+
+    &.bg-grey {
+      border-color: $color-grey;
+
+      .vis-item-overflow {
+        background-color: $color-grey-light;
+      }
+    }
+
+    &.bg-pink {
+      border-color: $color-pink;
+
+      .vis-item-overflow {
+        background-color: $color-pink-light;
       }
     }
 

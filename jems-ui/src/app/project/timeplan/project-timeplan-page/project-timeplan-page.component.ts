@@ -1,4 +1,15 @@
 import {ChangeDetectionStrategy, Component, ElementRef, OnInit, ViewChild} from '@angular/core';
+import {Alert} from '@common/components/forms/alert';
+import {TranslateService} from '@ngx-translate/core';
+import {OutputProjectPeriod} from '@cat/api';
+import {Timeline} from 'vis-timeline';
+import {DataSet} from 'vis-data/peer';
+import {map, tap} from 'rxjs/operators';
+import {combineLatest, Observable} from 'rxjs';
+
+import {ProjectTimeplanPageStore} from './project-timeplan-page-store.service';
+import {ProjectApplicationFormSidenavService} from '../../project-application/containers/project-application-form-page/services/project-application-form-sidenav.service';
+import {LanguageService} from '../../../common/services/language.service';
 import {
   Content,
   getEndDateFromPeriod,
@@ -7,17 +18,9 @@ import {
   getOptions,
   getInputTranslations,
   START_DATE,
-  TRANSLATABLE_GROUP_TYPES,
+  TRANSLATABLE_GROUP_TYPES, RESULT_BOX_ID,
 } from './project-timeplan.utils';
-import {ProjectApplicationFormSidenavService} from '../../project-application/containers/project-application-form-page/services/project-application-form-sidenav.service';
-import {InputTranslation, OutputProjectPeriod} from '@cat/api';
-import {Timeline} from 'vis-timeline';
-import {ProjectTimeplanPageStore} from './project-timeplan-page-store.service';
-import {map, tap} from 'rxjs/operators';
-import {combineLatest, Observable} from 'rxjs';
-import {DataSet} from 'vis-data/peer';
-import {Alert} from '@common/components/forms/alert';
-import {TranslateService} from '@ngx-translate/core';
+
 
 @Component({
   selector: 'app-project-timeplan-page',
@@ -34,69 +37,95 @@ export class ProjectTimeplanPageComponent implements OnInit {
   visualization: ElementRef;
 
   data$: Observable<{
-    translations: { [language: string]: Content[]; },
-    groups: DataSet<any>,
-    items: DataSet<any>,
-    periods: OutputProjectPeriod[],
-    language: string
+    periodsUnavailable: boolean,
+    dataAvailable: boolean,
   }>;
 
   constructor(private projectApplicationFormSidenavService: ProjectApplicationFormSidenavService,
               private translateService: TranslateService,
+              private languageService: LanguageService,
               public pageStore: ProjectTimeplanPageStore) {
   }
 
   ngOnInit(): void {
-    const projectData$ = combineLatest([
+    const workPackagesAndResultsAndGroups$ = combineLatest([
       this.pageStore.workPackages$,
       this.pageStore.projectResults$,
+    ]).pipe(
+      map(([workPackages, results]) => ({
+        workPackages,
+        results,
+        timelineGroups: getGroups({workPackages, results})
+      })),
+    );
+
+    const projectData$ = combineLatest([
+      workPackagesAndResultsAndGroups$,
       this.pageStore.periods$,
+      this.languageService.systemLanguage$,
     ])
       .pipe(
-        map(([workPackages, results, periods]) => ({
-          translations: getInputTranslations({workPackages, results}),
-          groups: getGroups({workPackages, results}),
-          items: getItems({workPackages, results}, this.translateService),
+        map(([data, periods]) => ({
+          ...data,
+          timelineItems: getItems(data.workPackages, data.results, this.translateService),
+          timelineTranslations: getInputTranslations(data.workPackages),
           periods,
         })),
-        tap(data => this.createVisualization(data))
+        tap(data => this.createVisualizationOrUpdateJustTranslations(data.periods, data.timelineItems, data.timelineGroups))
       );
 
-    this.data$ = combineLatest([projectData$, this.pageStore.language$])
+    this.data$ = combineLatest([projectData$, this.pageStore.inputLanguage$])
       .pipe(
-        tap(([data, language]) => this.updateLanguageSelection(data.groups, data.translations, language)),
-        map(([data, language]) => ({...data, language})),
+        map(([projectData, language]) => ({
+          timelineGroups: projectData.timelineGroups,
+          translations: projectData.timelineTranslations[language] || [],
+          periods: projectData.periods,
+        })),
+        tap((data) => this.updateLanguageSelection(data.timelineGroups, data.translations)),
+        map(data => ({periodsUnavailable: !data.periods.length, dataAvailable: !!data.timelineGroups.getIds().length})),
       );
   }
 
-  private createVisualization(data: any): boolean {
-    if (!data.periods.length) {
+  private createVisualizationOrUpdateJustTranslations(periods: OutputProjectPeriod[], newItems: DataSet<any>, groups: DataSet<any>): void {
+    if (!periods.length) {
+      return;
+    }
+    if (!this.timeline) {
+      this.initializeVisualization(newItems, groups, periods.length);
+    } else {
+      this.timeline.setItems(newItems);
+    }
+  }
+
+  private initializeVisualization(items: DataSet<any>, groups: DataSet<any>, lastPeriodNumber: number): boolean {
+    const doc = this.visualization?.nativeElement;
+    if (!doc) {
       return false;
     }
-    const endDate = getEndDateFromPeriod(data.periods.length).toISOString();
+
+    const endDate = getEndDateFromPeriod(lastPeriodNumber).toISOString();
     const options = getOptions(this.translateService, {max: endDate});
-    const doc = this.visualization?.nativeElement;
-    if (doc) {
-      this.timeline = new Timeline(doc, data.items, options);
-      this.timeline.setGroups(data.groups);
-      this.timeline.setWindow(START_DATE, endDate);
-      return true;
-    }
-    return false;
+
+    this.timeline = new Timeline(doc, items, options);
+    this.timeline.setWindow(START_DATE, endDate);
+    this.timeline.setGroups(groups);
+    return true;
   }
 
   /**
    * Call this if different language has been selected.
    */
-  private updateLanguageSelection(groups: DataSet<any>, translations: { [language: string]: Content[]; }, language: InputTranslation.LanguageEnum | string): void {
-    const idsToTranslate = groups.get()
-      .filter(group => TRANSLATABLE_GROUP_TYPES.includes(group.data.type))
-      .map(group => group.id);
+  private updateLanguageSelection(groups: DataSet<any>, translationsForChosenLanguage: Content[]): void {
+    const resultStaticTitle = groups.getIds().filter(id => id === RESULT_BOX_ID);
 
-    const alreadyPreparedTranslatedIds: number[] = translations[language]?.map((group: any) => group.id) || [];
+    const idsToTranslate = groups.get()
+      .filter(group => TRANSLATABLE_GROUP_TYPES.includes(group.data.type)).map(group => group.id)
+      .concat(resultStaticTitle);
+
+    const alreadyPreparedTranslatedIds: number[] = translationsForChosenLanguage.map((group: any) => group.id) || [];
     const toEmptyIds: number[] = idsToTranslate.filter(id => !alreadyPreparedTranslatedIds.includes(id));
 
-    this.updateTranslationsInGroupsAndSetMissingTranslationsToEmptyString(groups, translations[language] || [], toEmptyIds);
+    this.updateTranslationsInGroupsAndSetMissingTranslationsToEmptyString(groups, translationsForChosenLanguage, toEmptyIds);
   }
 
   private updateTranslationsInGroupsAndSetMissingTranslationsToEmptyString(groups: DataSet<any>, translations: Content[], toEmptyIds: number[]): void {

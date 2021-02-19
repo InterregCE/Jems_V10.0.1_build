@@ -11,7 +11,7 @@ import {Log} from '../../../common/utils/log';
 export class ProjectTimeplanPageStore {
 
   projectAcronym$: Observable<string>;
-  language$: Observable<string>;
+  inputLanguage$: Observable<string>;
   workPackages$: Observable<any>;
   periods$: Observable<OutputProjectPeriod[]>;
   projectResults$: Observable<ProjectResultDTO[]>;
@@ -21,7 +21,7 @@ export class ProjectTimeplanPageStore {
               private workPackageService: WorkPackageService,
               private projectResultService: ProjectResultService) {
     this.projectAcronym$ = this.projectStore.getAcronym();
-    this.language$ = languageService.currentInputLanguage$;
+    this.inputLanguage$ = languageService.currentInputLanguage$;
     this.workPackages$ = this.workPackages();
     this.periods$ = this.periods();
     this.projectResults$ = this.projectResults();
