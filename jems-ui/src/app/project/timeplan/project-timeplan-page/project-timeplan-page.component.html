@@ -4,23 +4,22 @@
         subTitleKey="project.application.form.section.part.c">
     <div appFormLayout>
         <h3>{{ 'project.application.form.section.part.c.subsection.six' | translate }}</h3>
+        <div *ngIf="data$ | async as data">
+
+            <app-alert [closable]="false" [type]="Alert.WARNING"
+                       [show]="data.periodsUnavailable">
+                <p>{{'project.application.form.work.package.output.delivery.period.required' | translate}}</p>
+            </app-alert>
+            <app-alert [closable]="false" [type]="Alert.WARNING"
+                       [show]="!data.dataAvailable">
+                <p>{{'project.application.form.section.part.c.subsection.six.no.data' | translate}}</p>
+            </app-alert>
+
+        </div>
         <div appNoWidthLimit>
-            <ng-container *ngIf="data$ | async as data">
-                <app-multi-language *ngIf="data.dataAvailable">
-                </app-multi-language>
-
-                <app-alert [closable]="false" [type]="Alert.WARNING"
-                           [show]="data.periodsUnavailable">
-                    <p>{{'project.application.form.work.package.output.delivery.period.required' | translate}}</p>
-                </app-alert>
-                <app-alert [closable]="false" [type]="Alert.WARNING"
-                           [show]="!data.dataAvailable">
-                    <p>{{'project.application.form.section.part.c.subsection.six.no.data' | translate}}</p>
-                </app-alert>
-
-            </ng-container>
-
-            <div #visualization></div>
+            <app-multi-language [switchButtonsVisible]="(data$ | async)?.dataAvailable">
+                <div #visualization></div>
+            </app-multi-language>
         </div>
     </div>
 </app-main-page-template>
