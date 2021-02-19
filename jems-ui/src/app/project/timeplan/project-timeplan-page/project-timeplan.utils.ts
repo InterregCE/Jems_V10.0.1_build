@@ -17,10 +17,11 @@ export const colors = [
   'bg-blue',
 ];
 
-export const EMPTY_STRING = '&nbsp';
+const EMPTY_STRING = '&nbsp';
 export const START_DATE = '2000-01-01';
 
-export const RESULT_BOX_ID = 9_939_999;
+export const RESULT_GROUP_TITLE_ID = 9_950_000;
+const OUTPUT_GROUP_UNKNOWN_INDICATOR = 9_900;
 
 enum GroupType {
   WorkPackage,
@@ -105,29 +106,43 @@ function getDeliverableBoxId(workPackageNumber: number, activityNumber: number, 
 /**
  * ID 2x_xxx stands for IDs related to outputs
  */
-function getOutputId(workPackageNumber: number, outputNumber: number): number {
-  return getWorkPackageId(workPackageNumber) + 20_000 + outputNumber * 100;
+function getOutputIndicatorId(workPackageNumber: number, outputIndicatorId: number): number {
+  if (outputIndicatorId) {
+    return getWorkPackageId(workPackageNumber) + 20_000 + outputIndicatorId * 100;
+  } else {
+    return getWorkPackageId(workPackageNumber) + 20_000 + OUTPUT_GROUP_UNKNOWN_INDICATOR;
+  }
 }
 
 /**
  * it is 1 box per 1 group = we reuse group ID and just add 50
  */
-function getOutputBoxId(workPackageNumber: number, outputNumber: number): number {
-  return getOutputId(workPackageNumber, outputNumber) + 50;
+function getOutputBoxId(workPackageNumber: number, outputIndicatorId: number): number {
+  return getOutputIndicatorId(workPackageNumber, outputIndicatorId) + 50;
 }
 
 /**
  * ID 13x_xxx (everything 3x_xxx) stands for IDs related to results
  */
-function getResultId(resultNumber: number): number {
-  return 130_000 + resultNumber * 100;
+function getResultIndicatorId(resultIndicatorId: number): number {
+  if (resultIndicatorId) {
+    return RESULT_GROUP_TITLE_ID + resultIndicatorId * 100;
+  } else {
+    return RESULT_GROUP_TITLE_ID + 99 * 100;
+  }
+}
+
+export function isResult(itemId: number): boolean {
+  const isResultRelated = Math.floor(itemId / 10000) % 10 === 5;
+  const isNotGroup = itemId % 100 !== 0;
+  return isResultRelated && isNotGroup;
 }
 
 /**
  * it is 1 box per 1 group = we reuse group ID and just add 50
  */
-function getResultBoxId(resultNumber: number): number {
-  return getResultId(resultNumber) + 50;
+function getResultBoxId(resultIndicatorId: number, resultNumber: number): number {
+  return getResultIndicatorId(resultIndicatorId) + resultNumber;
 }
 
 /**
@@ -179,7 +194,7 @@ export function getItems(workPackages: ProjectWorkPackageDTO[], results: Project
     wp.outputs.forEach(output => {
       items = items.concat({
         id: getOutputBoxId(wp.workPackageNumber, output.outputNumber),
-        group: getOutputId(wp.workPackageNumber, output.outputNumber),
+        group: getOutputIndicatorId(wp.workPackageNumber, output.programmeOutputIndicatorId),
         start: getNestedStartDateFromPeriod(output.periodNumber),
         end: getNestedEndDateFromPeriod(output.periodNumber),
         type: 'range',
@@ -203,13 +218,14 @@ export function getItems(workPackages: ProjectWorkPackageDTO[], results: Project
 
   results.forEach((result, indexResult) => {
     items = items.concat({
-      id: getResultBoxId(result.resultNumber),
-      group: getResultId(result.resultNumber),
+      id: getResultBoxId(result.programmeResultIndicatorId, result.resultNumber),
+      group: getResultIndicatorId(result.programmeResultIndicatorId),
       start: getNestedStartDateFromPeriod(result.periodNumber),
       end: getNestedEndDateFromPeriod(result.periodNumber),
       type: 'range',
       title: getIndicatorTooltip(result.targetValue, translateService),
       content: `R.${result.resultNumber}`,
+      data: {type: GroupType.Indicator},
       className: 'bg-blue',
     });
   });
@@ -223,6 +239,18 @@ function getIndicatorTooltip(targetValue: number, translateService: TranslateSer
     : '';
 }
 
+export function sortNullLast(a: Indicator, b: Indicator): number {
+  if (a.id === b.id) {
+    return 0;
+  } else if (a.id === null) {
+    return 1;
+  } else if (b.id === null) {
+    return -1;
+  } else {
+    return a.id < b.id ? -1 : 1;
+  }
+}
+
 /**
  * Generate groups = group represents 1 swim lane inside timeline (the first left collapsable column)
  *
@@ -232,9 +260,9 @@ function getIndicatorTooltip(targetValue: number, translateService: TranslateSer
  *     - output
  *   - result indicator
  */
-export function getGroups(timePlan: ProjectTimePlan): DataSet<any> {
+export function getGroups(workPackages: ProjectWorkPackageDTO[], results: ProjectResultDTO[]): DataSet<any> {
   let wpSubGroups = new Array(0);
-  const workPackages = timePlan.workPackages.map(wp => {
+  const wpGroups = workPackages.map(wp => {
     const activities = wp.activities.map(activity => {
       return {
         id: getActivityId(wp.workPackageNumber, activity.activityNumber),
@@ -244,48 +272,64 @@ export function getGroups(timePlan: ProjectTimePlan): DataSet<any> {
     });
     wpSubGroups = wpSubGroups.concat(activities);
 
-    const outputs = wp.outputs.map(output => {
+    const uniqueOutputIndicators: Indicator[] = [];
+    wp.outputs.forEach(output => {
+      if (uniqueOutputIndicators.findIndex(x => x.id === output.programmeOutputIndicatorId) === -1) {
+        uniqueOutputIndicators.push({id: output.programmeOutputIndicatorId, identifier: output.programmeOutputIndicatorIdentifier});
+      }
+    });
+
+    const outputGroups = uniqueOutputIndicators.sort(sortNullLast).map(indicator => {
       return {
-        id: getOutputId(wp.workPackageNumber, output.outputNumber),
-        content: output.programmeOutputIndicatorIdentifier || EMPTY_STRING,
+        id: getOutputIndicatorId(wp.workPackageNumber, indicator.id),
+        content: indicator.identifier || EMPTY_STRING,
         treeLevel: 2,
         data: {type: GroupType.Indicator},
       };
     });
-    wpSubGroups = wpSubGroups.concat(outputs);
+
+    wpSubGroups = wpSubGroups.concat(outputGroups);
 
     return {
       id: getWorkPackageId(wp.workPackageNumber),
       treeLevel: 1,
-      nestedGroups: activities.map(activity => activity.id).concat(outputs.map(output => output.id)),
+      nestedGroups: activities.map(activity => activity.id).concat(outputGroups.map(output => output.id)),
       data: {type: GroupType.WorkPackage, wpNumber: wp.workPackageNumber},
     };
   });
 
-  let results: any[] = timePlan.results.map(result => {
+  const uniqueResultIndicators: Indicator[] = [];
+  results.forEach(result => {
+    if (uniqueResultIndicators.findIndex(x => x.id === result.programmeResultIndicatorId) === -1) {
+      uniqueResultIndicators.push({id: result.programmeResultIndicatorId, identifier: result.programmeResultIndicatorIdentifier});
+    }
+  });
+
+  let resultGroups: any[] = uniqueResultIndicators.sort(sortNullLast).map(indicator => {
     return {
-      id: getResultId(result.resultNumber),
-      content: result.programmeResultIndicatorIdentifier || EMPTY_STRING,
+      id: getResultIndicatorId(indicator.id),
+      content: indicator.identifier || EMPTY_STRING,
       treeLevel: 2,
       data: {type: GroupType.Indicator},
     };
   });
-  if (results.length) {
+
+  if (resultGroups.length) {
     // create group for all results
-    results = results.concat({
-      id: RESULT_BOX_ID,
+    resultGroups = resultGroups.concat({
+      id: RESULT_GROUP_TITLE_ID,
       treeLevel: 1,
-      nestedGroups: results.map(result => result.id),
+      nestedGroups: resultGroups.map(result => result.id),
       data: {type: GroupType.ResultTitle},
     });
   }
 
-  return new DataSet(workPackages.concat(wpSubGroups).concat(results));
+  return new DataSet(wpGroups.concat(wpSubGroups).concat(resultGroups));
 }
 
-export class ProjectTimePlan {
-  workPackages: ProjectWorkPackageDTO[];
-  results: ProjectResultDTO[];
+class Indicator {
+  id: number;
+  identifier: string;
 }
 
 export class Content {
