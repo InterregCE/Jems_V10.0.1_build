@@ -25,9 +25,9 @@ data class ProgrammePriorityEntity(
     @field:NotNull
     val code: String,
 
-    @Column(unique = true)
-    @field:NotNull
-    val title: String,
+    // title
+    @OneToMany(cascade = [CascadeType.ALL], orphanRemoval = true, mappedBy = "translationId.programmePriorityId")
+    var translatedValues: MutableSet<ProgrammePriorityTranslEntity> = mutableSetOf(),
 
     @Column(name = "objective_id")
     @Enumerated(EnumType.STRING)

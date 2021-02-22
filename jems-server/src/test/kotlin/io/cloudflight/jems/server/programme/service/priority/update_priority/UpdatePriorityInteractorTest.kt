@@ -1,5 +1,6 @@
 package io.cloudflight.jems.server.programme.service.priority.update_priority
 
+import io.cloudflight.jems.api.programme.dto.language.SystemLanguage
 import io.cloudflight.jems.api.programme.dto.priority.ProgrammeObjective
 import io.cloudflight.jems.api.programme.dto.priority.ProgrammeObjectivePolicy
 import io.cloudflight.jems.api.programme.dto.priority.ProgrammeObjectivePolicy.CircularEconomy
@@ -7,6 +8,7 @@ import io.cloudflight.jems.api.programme.dto.priority.ProgrammeObjectivePolicy.E
 import io.cloudflight.jems.api.programme.dto.priority.ProgrammeObjectivePolicy.GreenUrban
 import io.cloudflight.jems.api.programme.dto.priority.ProgrammeObjectivePolicy.RenewableEnergy
 import io.cloudflight.jems.api.programme.dto.priority.ProgrammeObjectivePolicy.WaterManagement
+import io.cloudflight.jems.api.project.dto.InputTranslation
 import io.cloudflight.jems.server.audit.entity.AuditAction
 import io.cloudflight.jems.server.audit.service.AuditCandidate
 import io.cloudflight.jems.server.audit.service.AuditService
@@ -35,7 +37,7 @@ class UpdatePriorityInteractorTest {
         private val ID = 3L
         private val toUpdatePriority = ProgrammePriority(
             code = "PO-02",
-            title = "PO-02 title",
+            title = setOf(InputTranslation(SystemLanguage.EN, "PO-02 title")),
             objective = ProgrammeObjective.PO2,
             specificObjectives = listOf(
                 ProgrammeSpecificObjective(programmeObjectivePolicy = GreenUrban, code = "GU"),
@@ -60,12 +62,11 @@ class UpdatePriorityInteractorTest {
         val priority = testPriority.copy(
             id = ID,
             code = "_old_",
-            title = "_oldTitle_"
+            title = setOf(InputTranslation(SystemLanguage.EN, "_oldTitle_"))
         )
         every { persistence.getPriorityById(ID) } returns priority
         // code and title are not used
         every { persistence.getPriorityIdByCode(toUpdatePriority.code) } returns null
-        every { persistence.getPriorityIdByTitle(toUpdatePriority.title) } returns null
         // we can find existing one
         every { persistence.getPriorityIdForPolicyIfExists(RenewableEnergy) } returns ID
         every { persistence.getPriorityIdForPolicyIfExists(GreenUrban) } returns ID
@@ -83,9 +84,9 @@ class UpdatePriorityInteractorTest {
         assertThat(updatePriority.updatePriority(ID, toUpdatePriority)).isEqualTo(toUpdatePriority.copy(id = ID))
         assertThat(auditSlot.captured).isEqualTo(AuditCandidate(
             action = AuditAction.PROGRAMME_PRIORITY_UPDATED,
-            description = "Programme priority data changed for '_old_' '_oldTitle_':\n" +
+            description = "Programme priority data changed for '_old_' '[InputTranslation(language=EN, translation=_oldTitle_)]':\n" +
                 "code changed from _old_ to PO-02,\n" +
-                "title changed from _oldTitle_ to PO-02 title,\n" +
+                "title changed from [InputTranslation(language=EN, translation=_oldTitle_)] to [InputTranslation(language=EN, translation=PO-02 title)],\n" +
                 "specificObjectives changed from [RenewableEnergy, GreenUrban] to [WaterManagement, CircularEconomy, GreenUrban]",
         ))
     }
@@ -104,7 +105,9 @@ class UpdatePriorityInteractorTest {
         var ex = assertThrows<I18nValidationException> { updatePriority.updatePriority(ID, priorityWithLongCode) }
         assertThat(ex.i18nKey).isEqualTo("programme.priority.code.size.too.long")
 
-        val priorityWithLongTitle = toUpdatePriority.copy(title = getStringOfLength(301))
+        val priorityWithLongTitle = toUpdatePriority.copy(
+            title = setOf(InputTranslation(SystemLanguage.EN, getStringOfLength(301)))
+        )
         ex = assertThrows { updatePriority.updatePriority(ID, priorityWithLongTitle) }
         assertThat(ex.i18nKey).isEqualTo("programme.priority.title.size.too.long")
     }
@@ -128,13 +131,10 @@ class UpdatePriorityInteractorTest {
     fun `updatePriority - wrong title (long or empty)`() {
         every { persistence.getPriorityById(ID) } returns testPriority.copy(id = ID)
         testWrongTitle(getStringOfLength(301))
-        testWrongTitle(" ")
-        testWrongTitle("")
-        testWrongTitle("\t")
     }
 
     private fun testWrongTitle(title: String) {
-        val priority = toUpdatePriority.copy(title = title)
+        val priority = toUpdatePriority.copy(title = setOf(InputTranslation(SystemLanguage.EN, title)))
         val ex = assertThrows<I18nValidationException> { updatePriority.updatePriority(ID, priority) }
         assertThat(ex.i18nKey).isEqualTo("programme.priority.title.size.too.long")
     }
@@ -231,19 +231,8 @@ class UpdatePriorityInteractorTest {
         every { persistence.getPriorityById(ID) } returns testPriority.copy(id = ID)
         // title is not used and code is used by different priority
         every { persistence.getPriorityIdByCode(toUpdatePriority.code) } returns 826
-        every { persistence.getPriorityIdByTitle(testPriority.title) } returns null
         val ex = assertThrows<I18nValidationException> { updatePriority.updatePriority(ID, testPriority) }
         assertThat(ex.i18nKey).isEqualTo("programme.priority.code.already.in.use")
-    }
-
-    @Test
-    fun `updatePriority - priority title is already in use`() {
-        every { persistence.getPriorityById(ID) } returns testPriority.copy(id = ID)
-        // code is not used and title is used by different priority
-        every { persistence.getPriorityIdByCode(testPriority.code) } returns null
-        every { persistence.getPriorityIdByTitle(testPriority.title) } returns 826
-        val ex = assertThrows<I18nValidationException> { updatePriority.updatePriority(ID, testPriority) }
-        assertThat(ex.i18nKey).isEqualTo("programme.priority.title.already.in.use")
     }
 
     @Test
@@ -251,7 +240,6 @@ class UpdatePriorityInteractorTest {
         every { persistence.getPriorityById(ID) } returns testPriority.copy(id = ID)
         // code and title are both used, but they are used by this priority we are updating so it is OK
         every { persistence.getPriorityIdByCode(testPriority.code) } returns ID
-        every { persistence.getPriorityIdByTitle(testPriority.title) } returns ID
         // this one is used by priority we are updating now
         every { persistence.getPriorityIdForPolicyIfExists(GreenUrban) } returns ID
         // this one is not used
@@ -271,7 +259,6 @@ class UpdatePriorityInteractorTest {
         every { persistence.getPriorityById(ID) } returns testPriority.copy(id = ID)
         // code and title are both not used yet
         every { persistence.getPriorityIdByCode(testPriority.code) } returns null
-        every { persistence.getPriorityIdByTitle(testPriority.title) } returns null
         // this one is used by priority we are updating now
         every { persistence.getPriorityIdForPolicyIfExists(GreenUrban) } returns ID
         // these are not used
@@ -282,7 +269,7 @@ class UpdatePriorityInteractorTest {
             ProgrammePriority(
                 id = 15,
                 code = "CODE_15",
-                title = "TITLE_15",
+                title = setOf(InputTranslation(SystemLanguage.EN, "TITLE_15")),
                 objective = EnergyEfficiency.objective,
                 specificObjectives = listOf(ProgrammeSpecificObjective(EnergyEfficiency, "CE"))
             )
@@ -301,7 +288,6 @@ class UpdatePriorityInteractorTest {
         every { persistence.getPriorityById(ID) } returns priority
         // code and title are both not used yet
         every { persistence.getPriorityIdByCode(testPriority.code) } returns null
-        every { persistence.getPriorityIdByTitle(testPriority.title) } returns null
         // this one is used by priority we are updating now
         every { persistence.getPriorityIdForPolicyIfExists(GreenUrban) } returns ID
         every { persistence.getPrioritiesBySpecificObjectiveCodes(setOf("GU")) } returns listOf(priority)

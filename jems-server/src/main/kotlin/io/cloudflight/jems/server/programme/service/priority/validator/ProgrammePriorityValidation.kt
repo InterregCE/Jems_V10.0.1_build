@@ -11,16 +11,14 @@ import org.springframework.http.HttpStatus
 fun validateCreateProgrammePriority(
     programmePriority: ProgrammePriority,
     getPriorityIdByCode: (String) -> Long?,
-    getPriorityIdByTitle: (String) -> Long?,
     getPriorityIdForPolicyIfExists: (ProgrammeObjectivePolicy) -> Long?,
     getSpecificObjectivesByCodes: (Collection<String>) -> List<ProgrammeSpecificObjective>,
 ) {
     validateCommonRestrictions(programmePriority)
 
-    validateCreateHasUniqueCodeAndTitle(
+    validateCreateHasUniqueCode(
         programmePriority = programmePriority,
         getPriorityIdByCode = getPriorityIdByCode,
-        getPriorityIdByTitle = getPriorityIdByTitle,
     )
     validateEveryPolicyIsFree(
         policies = programmePriority.specificObjectives.mapTo(HashSet()) { it.programmeObjectivePolicy },
@@ -36,17 +34,15 @@ fun validateUpdateProgrammePriority(
     programmePriorityId: Long,
     programmePriority: ProgrammePriority,
     getPriorityIdByCode: (String) -> Long?,
-    getPriorityIdByTitle: (String) -> Long?,
     getPriorityIdForPolicyIfExists: (ProgrammeObjectivePolicy) -> Long?,
     getPrioritiesBySpecificObjectiveCodes: (Collection<String>) -> List<ProgrammePriority>,
 ) {
     validateCommonRestrictions(programmePriority)
 
-    validateUpdateHasUniqueCodeAndTitle(
+    validateUpdateHasUniqueCode(
         priorityId = programmePriorityId,
         programmePriority = programmePriority,
         getPriorityIdByCode = getPriorityIdByCode,
-        getPriorityIdByTitle = getPriorityIdByTitle,
     )
     validateEveryPolicyIsFreeOrLinkedToThisPriority(
         priorityId = programmePriorityId,
@@ -66,7 +62,7 @@ private fun validateCommonRestrictions(programmePriority: ProgrammePriority) {
         invalid("programme.priority.code.size.too.long")
 
     val title = programmePriority.title
-    if (title.isBlank() || title.length > 300)
+    if (title.any { it.translation != null && it.translation!!.length > 300 })
         invalid("programme.priority.title.size.too.long")
 
     if (programmePriority.specificObjectives.isEmpty())
@@ -95,33 +91,23 @@ private fun validateCommonRestrictions(programmePriority: ProgrammePriority) {
     )
 }
 
-private fun validateCreateHasUniqueCodeAndTitle(
+private fun validateCreateHasUniqueCode(
     programmePriority: ProgrammePriority,
-    getPriorityIdByCode: (String) -> Long?,
-    getPriorityIdByTitle: (String) -> Long?,
+    getPriorityIdByCode: (String) -> Long?
 ) {
     val priorityIdWithSameCode = getPriorityIdByCode.invoke(programmePriority.code)
     if (priorityIdWithSameCode != null)
         invalid("programme.priority.code.already.in.use")
-
-    val priorityIdWithSameTitle = getPriorityIdByTitle.invoke(programmePriority.title)
-    if (priorityIdWithSameTitle != null)
-        invalid("programme.priority.title.already.in.use")
 }
 
-private fun validateUpdateHasUniqueCodeAndTitle(
+private fun validateUpdateHasUniqueCode(
     priorityId: Long,
     programmePriority: ProgrammePriority,
-    getPriorityIdByCode: (String) -> Long?,
-    getPriorityIdByTitle: (String) -> Long?,
+    getPriorityIdByCode: (String) -> Long?
 ) {
     val priorityIdWithSameCode = getPriorityIdByCode.invoke(programmePriority.code)
     if (priorityIdWithSameCode != null && priorityIdWithSameCode != priorityId)
         invalid("programme.priority.code.already.in.use")
-
-    val priorityIdWithSameTitle = getPriorityIdByTitle.invoke(programmePriority.title)
-    if (priorityIdWithSameTitle != null && priorityIdWithSameTitle != priorityId)
-        invalid("programme.priority.title.already.in.use")
 }
 
 private fun validateSpecificObjectivePoliciesAreFromCorrectProgrammeObjective(

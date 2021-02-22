@@ -23,14 +23,24 @@ class ProgrammePriorityPersistenceProvider(
         priorityRepo.findTop45ByOrderByCodeAsc().map { it.toModel() }
 
     @Transactional
-    override fun create(priority: ProgrammePriority): ProgrammePriority =
-        priorityRepo.save(priority.toEntity()).toModel()
+    override fun create(priority: ProgrammePriority): ProgrammePriority {
+        val priorityCreated = priorityRepo.save(priority.toEntity())
+
+        return priorityRepo.save(
+            priorityCreated.copy(translatedValues = combineTranslatedValues(priorityCreated.id, priority.title))
+        ).toModel()
+    }
 
     @Transactional
-    override fun update(priority: ProgrammePriority): ProgrammePriority =
-        if (priorityRepo.existsById(priority.id!!))
-            priorityRepo.save(priority.toEntity()).toModel()
+    override fun update(priority: ProgrammePriority): ProgrammePriority {
+        if (priorityRepo.existsById(priority.id!!)) {
+            return priorityRepo.save(
+                priority.toEntity().copy(
+                    translatedValues = combineTranslatedValues(priority.id, priority.title)
+                )).toModel()
+        }
         else throw ResourceNotFoundException("programmePriority")
+    }
 
     @Transactional
     override fun delete(priorityId: Long) =
@@ -39,10 +49,6 @@ class ProgrammePriorityPersistenceProvider(
     @Transactional(readOnly = true)
     override fun getPriorityIdByCode(code: String): Long? =
         priorityRepo.findFirstByCode(code)?.id
-
-    @Transactional(readOnly = true)
-    override fun getPriorityIdByTitle(title: String): Long? =
-        priorityRepo.findFirstByTitle(title)?.id
 
     @Transactional(readOnly = true)
     override fun getPriorityIdForPolicyIfExists(policy: ProgrammeObjectivePolicy): Long? =

@@ -12,6 +12,4 @@ interface ProgrammePriorityRepository : PagingAndSortingRepository<ProgrammePrio
 
     fun findFirstByCode(code: String): ProgrammePriorityEntity?
 
-    fun findFirstByTitle(title: String): ProgrammePriorityEntity?
-
 }

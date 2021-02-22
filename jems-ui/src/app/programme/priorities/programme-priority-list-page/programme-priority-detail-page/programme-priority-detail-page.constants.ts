@@ -15,7 +15,6 @@ export class ProgrammePriorityDetailPageConstants {
   public static TITLE: AppControl = {
     name: 'title',
     errorMessages: {
-      required: 'programme.priority.title.should.not.be.empty',
       maxlength: 'programme.priority.title.size.too.long',
     },
     validators: [Validators.maxLength(300), Validators.required]

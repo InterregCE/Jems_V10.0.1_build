@@ -59,7 +59,7 @@ export class TableComponent implements OnInit {
     }
     const elementValue = Tools.getChainedProperty(element, column.elementProperty, '');
     if (column.elementTranslationKey) {
-      return column.elementTranslationKey + '.' + elementValue;
+      return `${column.elementTranslationKey}.${elementValue}`;
     }
     if (column.alternativeValueCondition && column.alternativeValueCondition(elementValue)) {
       return column.alternativeValue;
@@ -92,7 +92,7 @@ export class TableComponent implements OnInit {
     }
     const elementTitle = Tools.getChainedProperty(element, column.tooltip.tooltipContent, '');
     if (column.tooltip.tooltipTranslationKey) {
-      return column.tooltip.tooltipTranslationKey + '.' + elementTitle;
+      return `${column.tooltip.tooltipTranslationKey}.${elementTitle}`;
     }
     return elementTitle;
   }

@@ -8,7 +8,7 @@ export class CallPriorityCheckbox {
 
   static fromPriority(from: ProgrammePriorityDTO): CallPriorityCheckbox {
     const checkbox = new CallPriorityCheckbox();
-    checkbox.name = from.code + ' ' + from.title;
+    checkbox.name = `${from.code} ${from.title}`;
     checkbox.children = from.specificObjectives.map(policy => CallPriorityCheckbox.fromPriorityPolicy(policy));
     return checkbox;
   }

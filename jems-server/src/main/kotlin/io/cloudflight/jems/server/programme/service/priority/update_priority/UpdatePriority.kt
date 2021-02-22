@@ -25,7 +25,6 @@ class UpdatePriority(
             programmePriorityId = priorityId,
             programmePriority = priority,
             getPriorityIdByCode = { persistence.getPriorityIdByCode(it) },
-            getPriorityIdByTitle = { persistence.getPriorityIdByTitle(it) },
             getPriorityIdForPolicyIfExists = { persistence.getPriorityIdForPolicyIfExists(it) },
             getPrioritiesBySpecificObjectiveCodes = { persistence.getPrioritiesBySpecificObjectiveCodes(it) },
         )

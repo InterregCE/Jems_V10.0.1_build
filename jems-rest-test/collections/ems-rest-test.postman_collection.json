@@ -1,6 +1,6 @@
 {
 	"info": {
-		"_postman_id": "f74ade6a-a434-4329-8579-9acedd483319",
+		"_postman_id": "2aafe580-caa9-4d3a-95f4-9c3a5064d7cd",
 		"name": "ems-rest-test",
 		"description": "Check EMS application for common use-cases",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
@@ -387,8 +387,6 @@
 									"    } else {\r",
 									"        pm.response.to.have.status(400);\r",
 									"        console.log('We did an invalid POST to NOT create new programme priority, no variable is changing.');\r",
-									"        // pm.expect(pm.response.json().formErrors.programmePriorityPolicies.i18nKey)\r",
-									"        //     .to.eql(\"programme.priority.priorityPolicies.should.not.be.null\");\r",
 									"    }\r",
 									"});\r",
 									""
@@ -402,7 +400,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"code\": \"{{programmeCode}}\",\r\n    \"title\": \"API test Programme Priority {{programmeCode}}\",\r\n    \"objective\": \"PO1\",\r\n    \"specificObjectives\": {{programmePriorityPolicies}}\r\n}\r\n",
+							"raw": "{\r\n    \"code\": \"{{programmeCode}}\",\r\n    \"title\": [\r\n        {\r\n            \"language\": \"{{inputLanguage}}\",\r\n            \"translation\": \"API test Programme Priority {{programmeCode}}\"\r\n        }\r\n    ],\r\n    \"objective\": \"PO1\",\r\n    \"specificObjectives\": {{programmePriorityPolicies}}\r\n}\r\n",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -7028,8 +7026,8 @@
 									"\r",
 									"pm.test('partner has correct abbreviation', function() {\r",
 									"    pm.expect(partner.abbreviation).to.eql(\"Partner A LEAD\");\r",
-                                    "    pm.variables.set('partnerAbbreviationALead', partner.abbreviation);\r",
-                                  "});\r",
+									"    pm.variables.set('partnerAbbreviationALead', partner.abbreviation);\r",
+									"});\r",
 									""
 								],
 								"type": "text/javascript"

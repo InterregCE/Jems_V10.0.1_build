@@ -21,7 +21,6 @@ class CreatePriority(
         validateCreateProgrammePriority(
             programmePriority = priority,
             getPriorityIdByCode = { persistence.getPriorityIdByCode(it) },
-            getPriorityIdByTitle = { persistence.getPriorityIdByTitle(it) },
             getPriorityIdForPolicyIfExists = { persistence.getPriorityIdForPolicyIfExists(it) },
             getSpecificObjectivesByCodes = { persistence.getSpecificObjectivesByCodes(it) }
         )

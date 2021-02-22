@@ -1,5 +1,6 @@
 package io.cloudflight.jems.server.programme.repository.priority
 
+import io.cloudflight.jems.api.programme.dto.language.SystemLanguage
 import io.cloudflight.jems.api.programme.dto.priority.ProgrammeObjective.PO2
 import io.cloudflight.jems.api.programme.dto.priority.ProgrammeObjective.PO3
 import io.cloudflight.jems.api.programme.dto.priority.ProgrammeObjectivePolicy.CrossBorderMobility
@@ -7,6 +8,7 @@ import io.cloudflight.jems.api.programme.dto.priority.ProgrammeObjectivePolicy.G
 import io.cloudflight.jems.api.programme.dto.priority.ProgrammeObjectivePolicy.MultiModalUrban
 import io.cloudflight.jems.api.programme.dto.priority.ProgrammeObjectivePolicy.RenewableEnergy
 import io.cloudflight.jems.api.programme.dto.priority.ProgrammeObjectivePolicy.WaterManagement
+import io.cloudflight.jems.api.project.dto.InputTranslation
 import io.cloudflight.jems.server.UnitTest
 import io.cloudflight.jems.server.common.exception.ResourceNotFoundException
 import io.cloudflight.jems.server.programme.entity.ProgrammePriorityEntity
@@ -29,7 +31,10 @@ class ProgrammePriorityPersistenceTest : UnitTest() {
         private val _priority = ProgrammePriorityEntity(
             id = ID,
             code = "Code 10",
-            title = "10 Title",
+            translatedValues = combineTranslatedValues(
+                programmePriorityId = ID,
+                title = setOf(InputTranslation(SystemLanguage.EN, "10 Title"))
+            ),
             objective = PO2,
         )
 
@@ -43,7 +48,7 @@ class ProgrammePriorityPersistenceTest : UnitTest() {
         private val priorityModel = ProgrammePriority(
             id = ID,
             code = "Code 10",
-            title = "10 Title",
+            title = setOf(InputTranslation(SystemLanguage.EN, "10 Title")),
             objective = PO2,
             specificObjectives = listOf(
                 ProgrammeSpecificObjective(programmeObjectivePolicy = WaterManagement, code = "WM"),
@@ -87,7 +92,13 @@ class ProgrammePriorityPersistenceTest : UnitTest() {
 
         val toSave = priorityModel.copy(id = null)
         assertThat(persistence.create(toSave)).isEqualTo(priorityModel.copy(id = 0))
-        assertThat(entitySentToSave.captured).isEqualTo(priority.copy(id = 0))
+        assertThat(entitySentToSave.captured).isEqualTo(priority.copy(
+            id = 0,
+            translatedValues = combineTranslatedValues(
+                programmePriorityId = 0,
+                title = setOf(InputTranslation(SystemLanguage.EN, "10 Title"))
+            )
+        ))
     }
 
     @Test
@@ -100,7 +111,7 @@ class ProgrammePriorityPersistenceTest : UnitTest() {
         val toSave = ProgrammePriority(
             id = ID_UPDATED,
             code = "updated code",
-            title = "updated title",
+            title = setOf(InputTranslation(SystemLanguage.EN, "updated title")),
             objective = PO3,
             specificObjectives = listOf(
                 ProgrammeSpecificObjective(programmeObjectivePolicy = CrossBorderMobility, code = "CBM"),
@@ -112,7 +123,10 @@ class ProgrammePriorityPersistenceTest : UnitTest() {
         assertThat(entitySentToSave.captured).isEqualTo(ProgrammePriorityEntity(
             id = ID_UPDATED,
             code = "updated code",
-            title = "updated title",
+            translatedValues = combineTranslatedValues(
+                programmePriorityId = ID_UPDATED,
+                title = setOf(InputTranslation(SystemLanguage.EN, "updated title"))
+            ),
             objective = PO3,
             specificObjectives = setOf(
                 ProgrammeSpecificObjectiveEntity(programmeObjectivePolicy = MultiModalUrban, code = "MMU"),
@@ -146,18 +160,6 @@ class ProgrammePriorityPersistenceTest : UnitTest() {
     fun `getPriorityIdByCode - not existing`() {
         every { priorityRepository.findFirstByCode("not existing code") } returns null
         assertThat(persistence.getPriorityIdByCode("not existing code")).isNull()
-    }
-
-    @Test
-    fun `getPriorityIdByTitle - existing`() {
-        every { priorityRepository.findFirstByTitle("existing title") } returns priority.copy(title = "existing title")
-        assertThat(persistence.getPriorityIdByTitle("existing title")).isEqualTo(ID)
-    }
-
-    @Test
-    fun `getPriorityIdByTitle - not existing`() {
-        every { priorityRepository.findFirstByTitle("not existing title") } returns null
-        assertThat(persistence.getPriorityIdByTitle("not existing title")).isNull()
     }
 
     @Test

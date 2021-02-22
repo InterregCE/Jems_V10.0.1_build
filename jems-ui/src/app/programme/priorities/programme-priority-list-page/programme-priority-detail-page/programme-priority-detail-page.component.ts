@@ -35,7 +35,7 @@ export class ProgrammePriorityDetailPageComponent {
 
   form = this.formBuilder.group({
     code: this.formBuilder.control('', this.constants.CODE.validators),
-    title: this.formBuilder.control('', this.constants.TITLE.validators),
+    title: this.formBuilder.control([], this.constants.TITLE.validators),
     objective: this.formBuilder.control('', this.constants.OBJECTIVE.validators),
     specificObjectives: this.formBuilder.array([], {validators: this.constants.mustHaveSpecificObjectiveSelected})
   });

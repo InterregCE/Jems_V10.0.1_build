@@ -48,9 +48,9 @@ class UpdateProjectResult(
 
     private fun validatePeriods(projectId: Long, projectResults: List<ProjectResult>) {
         val periodNumbers = projectResults.mapNotNullTo(HashSet()) { it.periodNumber }
-        if (periodNumbers.isNotEmpty()) {
-            if (!projectResultPersistence.getAvailablePeriodNumbers(projectId).containsAll(periodNumbers))
-                throw I18nValidationException(i18nKey = "project.results.period.does.not.exist")
+        if (periodNumbers.isNotEmpty()
+            && !projectResultPersistence.getAvailablePeriodNumbers(projectId).containsAll(periodNumbers)) {
+            throw I18nValidationException(i18nKey = "project.results.period.does.not.exist")
         }
     }
 
