@@ -1,8 +1,12 @@
 package io.cloudflight.jems.server.project.repository.partner.budget
 
+import io.cloudflight.jems.api.programme.dto.language.SystemLanguage
+import io.cloudflight.jems.api.project.dto.InputTranslation
 import io.cloudflight.jems.server.UnitTest
 import io.cloudflight.jems.server.programme.entity.costoption.ProgrammeUnitCostEntity
 import io.cloudflight.jems.server.programme.repository.costoption.ProgrammeUnitCostRepository
+import io.cloudflight.jems.server.programme.repository.costoption.combineLumpSumTranslatedValues
+import io.cloudflight.jems.server.programme.repository.costoption.combineUnitCostTranslatedValues
 import io.cloudflight.jems.server.project.entity.ProjectPeriodEntity
 import io.cloudflight.jems.server.project.entity.ProjectPeriodId
 import io.cloudflight.jems.server.project.repository.description.ProjectPeriodRepository
@@ -60,9 +64,13 @@ class ProjectPartnerBudgetPersistenceTest: UnitTest() {
         )
         private val programmeUnitCostEntity = ProgrammeUnitCostEntity(
             id = 1,
-            name = "test",
+            translatedValues = combineUnitCostTranslatedValues(
+                programmeUnitCostId = 1,
+                name = setOf(InputTranslation(SystemLanguage.EN, "test")),
+                description = emptySet(),
+                type = setOf(InputTranslation(SystemLanguage.EN, "test"))
+            ),
             costPerUnit = BigDecimal.TEN,
-            type = "test",
             isOneCostCategory = false
         )
 

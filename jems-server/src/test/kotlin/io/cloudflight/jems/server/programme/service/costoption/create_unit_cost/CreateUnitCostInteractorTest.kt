@@ -1,9 +1,10 @@
 package io.cloudflight.jems.server.programme.service.costoption.create_unit_cost
 
-import io.cloudflight.jems.api.programme.dto.costoption.BudgetCategory
 import io.cloudflight.jems.api.programme.dto.costoption.BudgetCategory.OfficeAndAdministrationCosts
 import io.cloudflight.jems.api.programme.dto.costoption.BudgetCategory.StaffCosts
 import io.cloudflight.jems.api.programme.dto.costoption.BudgetCategory.TravelAndAccommodationCosts
+import io.cloudflight.jems.api.programme.dto.language.SystemLanguage
+import io.cloudflight.jems.api.project.dto.InputTranslation
 import io.cloudflight.jems.server.audit.entity.AuditAction
 import io.cloudflight.jems.server.audit.service.AuditCandidate
 import io.cloudflight.jems.server.audit.service.AuditService
@@ -42,16 +43,15 @@ class CreateUnitCostInteractorTest {
         every { persistence.getCount() } returns 15
         val wrongUnitCost = ProgrammeUnitCost(
             id = null,
-            name = " ",
-            description = "test unit cost 1",
-            type = "this type is longer than25",
+            name = setOf(InputTranslation(SystemLanguage.EN, " ")),
+            description = setOf(InputTranslation(SystemLanguage.EN, "test unit cost 1")),
+            type = setOf(InputTranslation(SystemLanguage.EN, "this type is longer than25")),
             costPerUnit = null,
             isOneCostCategory = false,
             categories = setOf(OfficeAndAdministrationCosts),
         )
         val ex = assertThrows<I18nValidationException> { createUnitCostInteractor.createUnitCost(wrongUnitCost) }
         assertThat(ex.i18nFieldErrors).containsExactlyInAnyOrderEntriesOf(mapOf(
-            "name" to I18nFieldError(i18nKey = "programme.unitCost.name.should.not.be.empty"),
             "costPerUnit" to I18nFieldError(i18nKey = "programme.unitCost.costPerUnit.invalid"),
             "type" to I18nFieldError(i18nKey = "programme.unitCost.type.too.long"),
             "categories" to I18nFieldError(i18nKey = "programme.unitCost.categories.min.2"),
@@ -63,16 +63,15 @@ class CreateUnitCostInteractorTest {
         every { persistence.getCount() } returns 15
         val wrongUnitCost = ProgrammeUnitCost(
             id = null,
-            name = " ",
-            description = "test unit cost 1",
-            type = "this type is longer than25",
+            name = setOf(InputTranslation(SystemLanguage.EN, " ")),
+            description = setOf(InputTranslation(SystemLanguage.EN, "test unit cost 1")),
+            type = setOf(InputTranslation(SystemLanguage.EN, "this type is longer than25")),
             costPerUnit = null,
             isOneCostCategory = true,
             categories = setOf(StaffCosts, TravelAndAccommodationCosts),
         )
         val ex = assertThrows<I18nValidationException> { createUnitCostInteractor.createUnitCost(wrongUnitCost) }
         assertThat(ex.i18nFieldErrors).containsExactlyInAnyOrderEntriesOf(mapOf(
-            "name" to I18nFieldError(i18nKey = "programme.unitCost.name.should.not.be.empty"),
             "costPerUnit" to I18nFieldError(i18nKey = "programme.unitCost.costPerUnit.invalid"),
             "type" to I18nFieldError(i18nKey = "programme.unitCost.type.too.long"),
             "categories" to I18nFieldError(i18nKey = "programme.unitCost.categories.exactly.1"),
@@ -84,9 +83,9 @@ class CreateUnitCostInteractorTest {
         every { persistence.getCount() } returns 15
         val wrongUnitCost = ProgrammeUnitCost(
             id = null,
-            name = "test",
-            description = "test unit cost 1",
-            type = "test type",
+            name = setOf(InputTranslation(SystemLanguage.EN, "test")),
+            description = setOf(InputTranslation(SystemLanguage.EN, "test unit cost 1")),
+            type = setOf(InputTranslation(SystemLanguage.EN, "test type")),
             costPerUnit = BigDecimal.ONE,
             isOneCostCategory = true,
             categories = setOf(OfficeAndAdministrationCosts),
@@ -102,9 +101,9 @@ class CreateUnitCostInteractorTest {
         every { persistence.getCount() } returns 25
         val unitCost = ProgrammeUnitCost(
             id = null,
-            name = "UC1",
-            description = "test unit cost 1",
-            type = "type 1",
+            name = setOf(InputTranslation(SystemLanguage.EN, "UC1")),
+            description = setOf(InputTranslation(SystemLanguage.EN, "test unit cost 1")),
+            type = setOf(InputTranslation(SystemLanguage.EN, "type 1")),
             costPerUnit = BigDecimal.ONE,
             isOneCostCategory = false,
             categories = setOf(OfficeAndAdministrationCosts, StaffCosts),
@@ -119,9 +118,9 @@ class CreateUnitCostInteractorTest {
         every { persistence.createUnitCost(any()) } returnsArgument 0
         val unitCost = ProgrammeUnitCost(
             id = null,
-            name = "UC1",
-            description = "test unit cost 1",
-            type = "type 1",
+            name = setOf(InputTranslation(SystemLanguage.EN, "UC1")),
+            description = setOf(InputTranslation(SystemLanguage.EN, "test unit cost 1")),
+            type = setOf(InputTranslation(SystemLanguage.EN, "type 1")),
             costPerUnit = BigDecimal.ONE,
             isOneCostCategory = false,
             categories = setOf(OfficeAndAdministrationCosts, StaffCosts),
@@ -132,7 +131,7 @@ class CreateUnitCostInteractorTest {
         assertThat(createUnitCostInteractor.createUnitCost(unitCost)).isEqualTo(unitCost.copy())
         assertThat(auditSlot.captured).isEqualTo(AuditCandidate(
             action = AuditAction.PROGRAMME_UNIT_COST_ADDED,
-            description = "Programme unit cost (id=null) 'UC1' has been added" // null will be real ID from DB sequence
+            description = "Programme unit cost (id=null) '[InputTranslation(language=EN, translation=UC1)]' has been added" // null will be real ID from DB sequence
         ))
     }
 
@@ -142,9 +141,9 @@ class CreateUnitCostInteractorTest {
         every { persistence.createUnitCost(any()) } returnsArgument 0
         val unitCost = ProgrammeUnitCost(
             id = null,
-            name = "UC1",
-            description = "test unit cost 1",
-            type = "type 1",
+            name = setOf(InputTranslation(SystemLanguage.EN, "UC1")),
+            description = setOf(InputTranslation(SystemLanguage.EN, "test unit cost 1")),
+            type = setOf(InputTranslation(SystemLanguage.EN, "type 1")),
             costPerUnit = BigDecimal.ONE,
             isOneCostCategory = true,
             categories = setOf(StaffCosts),
@@ -155,7 +154,7 @@ class CreateUnitCostInteractorTest {
         assertThat(createUnitCostInteractor.createUnitCost(unitCost)).isEqualTo(unitCost.copy())
         assertThat(auditSlot.captured).isEqualTo(AuditCandidate(
             action = AuditAction.PROGRAMME_UNIT_COST_ADDED,
-            description = "Programme unit cost (id=null) 'UC1' has been added" // null will be real ID from DB sequence
+            description = "Programme unit cost (id=null) '[InputTranslation(language=EN, translation=UC1)]' has been added" // null will be real ID from DB sequence
         ))
     }
 
@@ -164,8 +163,8 @@ class CreateUnitCostInteractorTest {
         every { persistence.getCount() } returns 10
         val unitCost = ProgrammeUnitCost(
             id = 1L,
-            name = "UC1",
-            type = "UC1 type",
+            name = setOf(InputTranslation(SystemLanguage.EN, "UC1")),
+            type = setOf(InputTranslation(SystemLanguage.EN, "UC1 type")),
             costPerUnit = BigDecimal.ONE,
             isOneCostCategory = false
         )

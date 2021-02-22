@@ -21,7 +21,8 @@
                 </mat-error>
             </mat-form-field>
 
-            <app-multi-language [useSystemLanguages]="true">
+            <app-multi-language [useSystemLanguages]="true"
+                                [switchButtonsVisible]="!form.disabled">
                 <app-multi-language-form-field
                         [formControlName]="constants.TITLE.name"
                         label="programme.priority.field.title"

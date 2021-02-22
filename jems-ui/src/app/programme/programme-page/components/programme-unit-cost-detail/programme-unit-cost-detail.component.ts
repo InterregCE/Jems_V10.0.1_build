@@ -43,15 +43,14 @@ export class ProgrammeUnitCostDetailComponent extends ViewEditForm implements On
 
   unitCostForm = this.formBuilder.group({
     isOneCostCategory: [null, Validators.required],
-    name: ['', Validators.compose([Validators.required, Validators.maxLength(50)])],
-    description: ['', Validators.maxLength(500)],
-    type: ['', Validators.compose([Validators.required, Validators.maxLength(25)])],
+    name: [[]],
+    description: [[]],
+    type: [[]],
     costPerUnit: ['', Validators.required],
     categories: ['', Validators.required]
   });
 
   nameErrors = {
-    required: 'unit.cost.name.should.not.be.empty',
     maxlength: 'unit.cost.name.size.too.long',
   };
 
@@ -60,7 +59,6 @@ export class ProgrammeUnitCostDetailComponent extends ViewEditForm implements On
   };
 
   typeErrors = {
-    required: 'unit.cost.type.should.not.be.empty',
     maxlength: 'unit.cost.type.size.too.long',
   };
 

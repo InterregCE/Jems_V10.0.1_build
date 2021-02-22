@@ -1,6 +1,8 @@
 package io.cloudflight.jems.server.call.repository.costoption
 
 import io.cloudflight.jems.api.programme.dto.costoption.ProgrammeLumpSumPhase
+import io.cloudflight.jems.api.programme.dto.language.SystemLanguage
+import io.cloudflight.jems.api.project.dto.InputTranslation
 import io.cloudflight.jems.server.call.callWithId
 import io.cloudflight.jems.server.call.entity.CallEntity
 import io.cloudflight.jems.server.call.repository.flatrate.CallRepository
@@ -9,6 +11,8 @@ import io.cloudflight.jems.server.programme.entity.costoption.ProgrammeLumpSumEn
 import io.cloudflight.jems.server.programme.entity.costoption.ProgrammeUnitCostEntity
 import io.cloudflight.jems.server.programme.repository.costoption.ProgrammeLumpSumRepository
 import io.cloudflight.jems.server.programme.repository.costoption.ProgrammeUnitCostRepository
+import io.cloudflight.jems.server.programme.repository.costoption.combineLumpSumTranslatedValues
+import io.cloudflight.jems.server.programme.repository.costoption.combineUnitCostTranslatedValues
 import io.cloudflight.jems.server.programme.service.costoption.model.ProgrammeLumpSum
 import io.cloudflight.jems.server.programme.service.costoption.model.ProgrammeUnitCost
 import io.mockk.every
@@ -29,29 +33,45 @@ class CallCostOptionsPersistenceTest {
     companion object {
         private val lumpSum2 = ProgrammeLumpSumEntity(
             id = 2,
-            name = "testName 2",
+            translatedValues = combineLumpSumTranslatedValues(
+                programmeLumpSumId = 2,
+                name = setOf(InputTranslation(SystemLanguage.EN, "testName 2")),
+                description = emptySet()
+            ),
             cost = BigDecimal.ONE,
             splittingAllowed = true,
             phase = ProgrammeLumpSumPhase.Closure,
         )
         private val lumpSum3 = ProgrammeLumpSumEntity(
             id = 3,
-            name = "testName 3",
+            translatedValues = combineLumpSumTranslatedValues(
+                programmeLumpSumId = 3,
+                name = setOf(InputTranslation(SystemLanguage.EN, "testName 3")),
+                description = emptySet()
+            ),
             cost = BigDecimal.TEN,
             splittingAllowed = false,
             phase = ProgrammeLumpSumPhase.Preparation,
         )
         private val unitCost2 = ProgrammeUnitCostEntity(
             id = 2,
-            name = "testName 2",
-            type = "UC 2",
+            translatedValues = combineUnitCostTranslatedValues(
+                programmeUnitCostId = 2,
+                name = setOf(InputTranslation(SystemLanguage.EN, "testName 2")),
+                description = emptySet(),
+                type = setOf(InputTranslation(SystemLanguage.EN, "UC 2")),
+            ),
             isOneCostCategory = false,
             costPerUnit = BigDecimal.ZERO,
         )
         private val unitCost3 = ProgrammeUnitCostEntity(
             id = 3,
-            name = "testName 3",
-            type = "UC 3",
+            translatedValues = combineUnitCostTranslatedValues(
+                programmeUnitCostId = 3,
+                name = setOf(InputTranslation(SystemLanguage.EN, "testName 3")),
+                description = emptySet(),
+                type = setOf(InputTranslation(SystemLanguage.EN, "UC 3")),
+            ),
             isOneCostCategory = false,
             costPerUnit = BigDecimal.ONE,
         )
@@ -116,14 +136,16 @@ class CallCostOptionsPersistenceTest {
         assertThat(persistence.getProjectCallLumpSum(1)).containsExactlyInAnyOrder(
             ProgrammeLumpSum(
                 id = 2,
-                name = "testName 2",
+                name = setOf(InputTranslation(SystemLanguage.EN, "testName 2")),
+                description = setOf(InputTranslation(SystemLanguage.EN, null)),
                 cost = BigDecimal.ONE,
                 splittingAllowed = true,
                 phase = ProgrammeLumpSumPhase.Closure,
             ),
             ProgrammeLumpSum(
                 id = 3,
-                name = "testName 3",
+                name = setOf(InputTranslation(SystemLanguage.EN, "testName 3")),
+                description = setOf(InputTranslation(SystemLanguage.EN, null)),
                 cost = BigDecimal.TEN,
                 splittingAllowed = false,
                 phase = ProgrammeLumpSumPhase.Preparation,
@@ -178,15 +200,17 @@ class CallCostOptionsPersistenceTest {
         assertThat(persistence.getProjectCallUnitCost(1)).containsExactlyInAnyOrder(
             ProgrammeUnitCost(
                 id = 2,
-                name = "testName 2",
-                type = "UC 2",
+                name = setOf(InputTranslation(SystemLanguage.EN, "testName 2")),
+                description = setOf(InputTranslation(SystemLanguage.EN, null)),
+                type = setOf(InputTranslation(SystemLanguage.EN, "UC 2")),
                 costPerUnit = BigDecimal.ZERO,
                 isOneCostCategory = false
             ),
             ProgrammeUnitCost(
                 id = 3,
-                name = "testName 3",
-                type = "UC 3",
+                name = setOf(InputTranslation(SystemLanguage.EN, "testName 3")),
+                description = setOf(InputTranslation(SystemLanguage.EN, null)),
+                type = setOf(InputTranslation(SystemLanguage.EN, "UC 3")),
                 costPerUnit = BigDecimal.ONE,
                 isOneCostCategory = false
             ),

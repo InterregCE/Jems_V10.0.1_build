@@ -1,15 +1,24 @@
 import {BudgetCostCategoryEnum} from './lump-sums/BudgetCostCategoryEnum';
+import {InputTranslation} from '@cat/api';
 
 export class ProgrammeUnitCost {
   id: number;
-  name: string;
-  description: string;
-  type: string;
+  name: Array<InputTranslation>;
+  description: Array<InputTranslation>;
+  type: Array<InputTranslation>;
   costPerUnit: number;
   isOneCostCategory: boolean;
   categories: Array<BudgetCostCategoryEnum>;
 
-  constructor(id: number, name: string, description: string, type: string, costPerUnit: number, isOneCostCategory: boolean, categories: Array<BudgetCostCategoryEnum>) {
+  constructor(
+    id: number,
+    name: Array<InputTranslation>,
+    description: Array<InputTranslation>,
+    type: Array<InputTranslation>,
+    costPerUnit: number,
+    isOneCostCategory: boolean,
+    categories: Array<BudgetCostCategoryEnum>
+  ) {
     this.id = id;
     this.name = name;
     this.description = description;

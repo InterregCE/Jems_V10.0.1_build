@@ -2,6 +2,8 @@ package io.cloudflight.jems.server.programme.service.costoption.update_unit_cost
 
 import io.cloudflight.jems.api.programme.dto.costoption.BudgetCategory.OfficeAndAdministrationCosts
 import io.cloudflight.jems.api.programme.dto.costoption.BudgetCategory.StaffCosts
+import io.cloudflight.jems.api.programme.dto.language.SystemLanguage
+import io.cloudflight.jems.api.project.dto.InputTranslation
 import io.cloudflight.jems.server.audit.entity.AuditAction
 import io.cloudflight.jems.server.audit.service.AuditCandidate
 import io.cloudflight.jems.server.audit.service.AuditService
@@ -41,18 +43,16 @@ class UpdateUnitCostInteractorTest {
     fun `update unit cost - test if various invalid values will fail`() {
         val wrongUnitCost = ProgrammeUnitCost(
             id = 4,
-            name = " ",
-            description = "test unit cost 1",
-            type = null,
+            name = setOf(InputTranslation(SystemLanguage.EN, " ")),
+            description = setOf(InputTranslation(SystemLanguage.EN, "test unit cost 1")),
+            type = emptySet(),
             costPerUnit = null,
             isOneCostCategory = false,
             categories = setOf(OfficeAndAdministrationCosts),
         )
         val ex = assertThrows<I18nValidationException> { updateUnitCostInteractor.updateUnitCost(wrongUnitCost) }
         assertThat(ex.i18nFieldErrors).containsExactlyInAnyOrderEntriesOf(mapOf(
-            "name" to I18nFieldError(i18nKey = "programme.unitCost.name.should.not.be.empty"),
             "costPerUnit" to I18nFieldError(i18nKey = "programme.unitCost.costPerUnit.invalid"),
-            "type" to I18nFieldError(i18nKey = "programme.unitCost.type.should.not.be.empty"),
             "categories" to I18nFieldError(i18nKey = "programme.unitCost.categories.min.2"),
         ))
     }
@@ -61,9 +61,9 @@ class UpdateUnitCostInteractorTest {
     fun `update unit cost - test if longer strings than allowed will fail`() {
         val wrongUnitCost = ProgrammeUnitCost(
             id = 4,
-            name = getStringOfLength(51),
-            description = getStringOfLength(501),
-            type = getStringOfLength(26),
+            name = setOf(InputTranslation(SystemLanguage.EN, getStringOfLength(51))),
+            description = setOf(InputTranslation(SystemLanguage.EN, getStringOfLength(501))),
+            type = setOf(InputTranslation(SystemLanguage.EN, getStringOfLength(26))),
             costPerUnit = BigDecimal.ONE,
             isOneCostCategory = false,
             categories = setOf(StaffCosts, OfficeAndAdministrationCosts),
@@ -81,9 +81,9 @@ class UpdateUnitCostInteractorTest {
         every { persistence.updateUnitCost(any()) } returnsArgument 0
         val unitCost = ProgrammeUnitCost(
             id = 4,
-            name = "UC1",
-            description = "test unit cost 1",
-            type = "test type 1",
+            name = setOf(InputTranslation(SystemLanguage.EN, "UC1")),
+            description = setOf(InputTranslation(SystemLanguage.EN, "test unit cost 1")),
+            type = setOf(InputTranslation(SystemLanguage.EN, "test type 1")),
             costPerUnit = BigDecimal.ONE,
             isOneCostCategory = false,
             categories = setOf(OfficeAndAdministrationCosts, StaffCosts),
@@ -93,14 +93,14 @@ class UpdateUnitCostInteractorTest {
         assertThat(updateUnitCostInteractor.updateUnitCost(unitCost)).isEqualTo(unitCost.copy())
         assertThat(auditSlot.captured).isEqualTo(AuditCandidate(
             action = AuditAction.PROGRAMME_UNIT_COST_CHANGED,
-            description = "Programme unit cost (id=4) 'UC1' has been changed"
+            description = "Programme unit cost (id=4) '[InputTranslation(language=EN, translation=UC1)]' has been changed"
         ))
     }
 
     @Test
     fun `update unit cost - test if validation will fail when wrong ID is filled in`() {
         val unitCost = ProgrammeUnitCost(
-            name = "UC1",
+            name = setOf(InputTranslation(SystemLanguage.EN, "UC1")),
             costPerUnit = BigDecimal.ONE,
             isOneCostCategory = false,
         )
@@ -115,8 +115,8 @@ class UpdateUnitCostInteractorTest {
     fun `update unit cost - test if not existing UnitCost will fail with correct exception`() {
         val unitCost = ProgrammeUnitCost(
             id = 777,
-            name = "UC1",
-            type = "UC1 type",
+            name = setOf(InputTranslation(SystemLanguage.EN, "UC1")),
+            type = setOf(InputTranslation(SystemLanguage.EN, "UC1 type")),
             costPerUnit = BigDecimal.ONE,
             isOneCostCategory = false,
             categories = setOf(OfficeAndAdministrationCosts, StaffCosts),

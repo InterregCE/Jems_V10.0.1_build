@@ -28,13 +28,11 @@ fun validateUpdateLumpSum(lumpSum: ProgrammeLumpSum) {
 
 private fun validateCommonLumpSum(lumpSum: ProgrammeLumpSum) {
     val errors = mutableMapOf<String, I18nFieldError>()
-    if (lumpSum.name.isNullOrBlank())
-        errors.put("name", I18nFieldError(i18nKey = "programme.lumpSum.name.should.not.be.empty"))
-    else if (lumpSum.name.length > 50)
+
+    if (lumpSum.name.any { it.translation != null && it.translation!!.length > 50 })
         errors.put("name", I18nFieldError(i18nKey = "programme.lumpSum.name.too.long"))
 
-    val description = lumpSum.description
-    if (description != null && description.length > 500)
+    if (lumpSum.description.any { it.translation != null && it.translation!!.length > 500 })
         errors.put("description", I18nFieldError(i18nKey = "programme.lumpSum.description.too.long"))
 
     val cost = lumpSum.cost

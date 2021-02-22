@@ -1,10 +1,12 @@
 package io.cloudflight.jems.server.programme.repository.costoption
 
-import io.cloudflight.jems.api.programme.dto.costoption.BudgetCategory.ExternalCosts
 import io.cloudflight.jems.api.programme.dto.costoption.BudgetCategory.EquipmentCosts
+import io.cloudflight.jems.api.programme.dto.costoption.BudgetCategory.ExternalCosts
 import io.cloudflight.jems.api.programme.dto.costoption.BudgetCategory.OfficeAndAdministrationCosts
 import io.cloudflight.jems.api.programme.dto.costoption.BudgetCategory.StaffCosts
 import io.cloudflight.jems.api.programme.dto.costoption.ProgrammeLumpSumPhase
+import io.cloudflight.jems.api.programme.dto.language.SystemLanguage
+import io.cloudflight.jems.api.project.dto.InputTranslation
 import io.cloudflight.jems.server.common.exception.ResourceNotFoundException
 import io.cloudflight.jems.server.programme.entity.costoption.ProgrammeLumpSumBudgetCategoryEntity
 import io.cloudflight.jems.server.programme.entity.costoption.ProgrammeLumpSumEntity
@@ -19,10 +21,13 @@ import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
-import org.springframework.data.domain.PageImpl
-import org.springframework.data.domain.Pageable
 import java.math.BigDecimal
 import java.util.Optional
+import kotlin.collections.HashSet
+import kotlin.collections.listOf
+import kotlin.collections.mapTo
+import kotlin.collections.mutableSetOf
+import kotlin.collections.setOf
 
 class ProgrammeLumpSumPersistenceTest {
 
@@ -54,8 +59,11 @@ class ProgrammeLumpSumPersistenceTest {
 
         testLumpSum = ProgrammeLumpSumEntity(
             id = 1,
-            name = "LS1",
-            description = "test lump sum 1",
+            translatedValues = combineLumpSumTranslatedValues(
+                programmeLumpSumId = 1,
+                name = setOf(InputTranslation(SystemLanguage.EN, "LS1")),
+                description = setOf(InputTranslation(SystemLanguage.EN, "test lump sum 1"))
+            ),
             cost = BigDecimal.ONE,
             splittingAllowed = true,
             phase = ProgrammeLumpSumPhase.Implementation,
@@ -63,8 +71,8 @@ class ProgrammeLumpSumPersistenceTest {
         )
         expectedLumpSum = ProgrammeLumpSum(
             id = testLumpSum.id,
-            name = testLumpSum.name,
-            description = testLumpSum.description,
+            name = testLumpSum.translatedValues.mapTo(HashSet()) { InputTranslation(it.translationId.language, it.name) },
+            description = testLumpSum.translatedValues.mapTo(HashSet()) { InputTranslation(it.translationId.language, it.description) },
             cost = testLumpSum.cost,
             splittingAllowed = testLumpSum.splittingAllowed,
             phase = testLumpSum.phase,
@@ -104,6 +112,11 @@ class ProgrammeLumpSumPersistenceTest {
         assertThat(entitySaved.captured).isEqualTo(
             testLumpSum.copy(
                 id = 0,
+                translatedValues = combineLumpSumTranslatedValues(
+                    programmeLumpSumId = 0,
+                    name = setOf(InputTranslation(SystemLanguage.EN, "LS1")),
+                    description = setOf(InputTranslation(SystemLanguage.EN, "test lump sum 1"))
+                ),
                 categories = mutableSetOf(
                     ProgrammeLumpSumBudgetCategoryEntity(programmeLumpSumId = 0, category = StaffCosts),
                     ProgrammeLumpSumBudgetCategoryEntity(programmeLumpSumId = 0, category = OfficeAndAdministrationCosts),
@@ -119,8 +132,8 @@ class ProgrammeLumpSumPersistenceTest {
 
         val toBeUpdated = ProgrammeLumpSum(
             id = testLumpSum.id,
-            name = "new name",
-            description = "new description",
+            name = setOf(InputTranslation(SystemLanguage.EN, "new name")),
+            description = setOf(InputTranslation(SystemLanguage.EN, "new description")),
             cost = BigDecimal.TEN,
             splittingAllowed = false,
             phase = ProgrammeLumpSumPhase.Closure,
@@ -129,8 +142,8 @@ class ProgrammeLumpSumPersistenceTest {
 
         assertThat(programmeLumpSumPersistence.updateLumpSum(toBeUpdated)).isEqualTo(ProgrammeLumpSum(
             id = testLumpSum.id,
-            name = "new name",
-            description = "new description",
+            name = setOf(InputTranslation(SystemLanguage.EN, "new name")),
+            description = setOf(InputTranslation(SystemLanguage.EN, "new description")),
             cost = BigDecimal.TEN,
             splittingAllowed = false,
             phase = ProgrammeLumpSumPhase.Closure,
@@ -144,8 +157,8 @@ class ProgrammeLumpSumPersistenceTest {
 
         val toBeUpdated = ProgrammeLumpSum(
             id = testLumpSum.id,
-            name = "new name",
-            description = "new description",
+            name = setOf(InputTranslation(SystemLanguage.EN, "new name")),
+            description = setOf(InputTranslation(SystemLanguage.EN, "new description")),
             cost = BigDecimal.TEN,
             splittingAllowed = false,
             phase = ProgrammeLumpSumPhase.Closure,

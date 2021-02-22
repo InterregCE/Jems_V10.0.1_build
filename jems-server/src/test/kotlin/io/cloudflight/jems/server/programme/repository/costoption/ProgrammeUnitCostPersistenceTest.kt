@@ -1,9 +1,11 @@
 package io.cloudflight.jems.server.programme.repository.costoption
 
-import io.cloudflight.jems.api.programme.dto.costoption.BudgetCategory.ExternalCosts
 import io.cloudflight.jems.api.programme.dto.costoption.BudgetCategory.EquipmentCosts
+import io.cloudflight.jems.api.programme.dto.costoption.BudgetCategory.ExternalCosts
 import io.cloudflight.jems.api.programme.dto.costoption.BudgetCategory.OfficeAndAdministrationCosts
 import io.cloudflight.jems.api.programme.dto.costoption.BudgetCategory.TravelAndAccommodationCosts
+import io.cloudflight.jems.api.programme.dto.language.SystemLanguage
+import io.cloudflight.jems.api.project.dto.InputTranslation
 import io.cloudflight.jems.server.common.exception.ResourceNotFoundException
 import io.cloudflight.jems.server.programme.entity.costoption.ProgrammeUnitCostBudgetCategoryEntity
 import io.cloudflight.jems.server.programme.entity.costoption.ProgrammeUnitCostEntity
@@ -18,10 +20,13 @@ import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
-import org.springframework.data.domain.PageImpl
-import org.springframework.data.domain.Pageable
 import java.math.BigDecimal
 import java.util.Optional
+import kotlin.collections.HashSet
+import kotlin.collections.listOf
+import kotlin.collections.mapTo
+import kotlin.collections.mutableSetOf
+import kotlin.collections.setOf
 
 class ProgrammeUnitCostPersistenceTest {
 
@@ -53,18 +58,21 @@ class ProgrammeUnitCostPersistenceTest {
 
         testUnitCost = ProgrammeUnitCostEntity(
             id = 1,
-            name = "UC1",
-            description = "test unit cost 1",
-            type = "type 1",
+            translatedValues = combineUnitCostTranslatedValues(
+                programmeUnitCostId = 1,
+                name = setOf(InputTranslation(SystemLanguage.EN, "UC1")),
+                description = setOf(InputTranslation(SystemLanguage.EN, "test unit cost 1")),
+                type = setOf(InputTranslation(SystemLanguage.EN, "type 1"))
+            ),
             costPerUnit = BigDecimal.ONE,
             isOneCostCategory = false,
             categories = mutableSetOf(categoryEquipment, categoryTravel),
         )
         expectedUnitCost = ProgrammeUnitCost(
             id = testUnitCost.id,
-            name = testUnitCost.name,
-            description = testUnitCost.description,
-            type = testUnitCost.type,
+            name = testUnitCost.translatedValues.mapTo(HashSet()) { InputTranslation(it.translationId.language, it.name) },
+            description = testUnitCost.translatedValues.mapTo(HashSet()) { InputTranslation(it.translationId.language, it.description) },
+            type = testUnitCost.translatedValues.mapTo(HashSet()) { InputTranslation(it.translationId.language, it.type) },
             costPerUnit = testUnitCost.costPerUnit,
             isOneCostCategory = false,
             categories = setOf(categoryEquipment.category, categoryTravel.category),
@@ -104,6 +112,12 @@ class ProgrammeUnitCostPersistenceTest {
         assertThat(entitySaved.captured).isEqualTo(
             testUnitCost.copy(
                 id = 0,
+                translatedValues = combineUnitCostTranslatedValues(
+                    programmeUnitCostId = 0,
+                    name = setOf(InputTranslation(SystemLanguage.EN, "UC1")),
+                    description = setOf(InputTranslation(SystemLanguage.EN, "test unit cost 1")),
+                    type = setOf(InputTranslation(SystemLanguage.EN, "type 1"))
+                ),
                 categories = mutableSetOf(
                     ProgrammeUnitCostBudgetCategoryEntity(programmeUnitCostId = 0, category = ExternalCosts),
                     ProgrammeUnitCostBudgetCategoryEntity(programmeUnitCostId = 0, category = OfficeAndAdministrationCosts),
@@ -121,9 +135,9 @@ class ProgrammeUnitCostPersistenceTest {
 
         val toBeUpdated = ProgrammeUnitCost(
             id = testUnitCost.id,
-            name = "new name",
-            description = "new description",
-            type = "new type",
+            name = setOf(InputTranslation(SystemLanguage.EN, "new name")),
+            description = setOf(InputTranslation(SystemLanguage.EN, "new description")),
+            type = setOf(InputTranslation(SystemLanguage.EN, "new type")),
             costPerUnit = BigDecimal.TEN,
             isOneCostCategory = false,
             categories = setOf(ExternalCosts, EquipmentCosts),
@@ -131,9 +145,9 @@ class ProgrammeUnitCostPersistenceTest {
 
         assertThat(programmeUnitCostPersistence.updateUnitCost(toBeUpdated)).isEqualTo(ProgrammeUnitCost(
             id = testUnitCost.id,
-            name = "new name",
-            description = "new description",
-            type = "new type",
+            name = setOf(InputTranslation(SystemLanguage.EN, "new name")),
+            description = setOf(InputTranslation(SystemLanguage.EN, "new description")),
+            type = setOf(InputTranslation(SystemLanguage.EN, "new type")),
             costPerUnit = BigDecimal.TEN,
             isOneCostCategory = false,
             categories = setOf(ExternalCosts, EquipmentCosts),
@@ -146,9 +160,9 @@ class ProgrammeUnitCostPersistenceTest {
 
         val toBeUpdated = ProgrammeUnitCost(
             id = testUnitCost.id,
-            name = "new name",
-            description = "new description",
-            type = "new type",
+            name = setOf(InputTranslation(SystemLanguage.EN, "new name")),
+            description = setOf(InputTranslation(SystemLanguage.EN, "new description")),
+            type = setOf(InputTranslation(SystemLanguage.EN, "new type")),
             costPerUnit = BigDecimal.TEN,
             isOneCostCategory = false,
             categories = setOf(ExternalCosts, EquipmentCosts),

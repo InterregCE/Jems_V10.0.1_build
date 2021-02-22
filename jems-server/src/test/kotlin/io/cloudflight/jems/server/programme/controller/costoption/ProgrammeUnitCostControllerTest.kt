@@ -4,6 +4,8 @@ import io.cloudflight.jems.api.programme.dto.costoption.BudgetCategory.Equipment
 import io.cloudflight.jems.api.programme.dto.costoption.BudgetCategory.TravelAndAccommodationCosts
 import io.cloudflight.jems.api.programme.dto.costoption.ProgrammeUnitCostDTO
 import io.cloudflight.jems.api.programme.dto.costoption.ProgrammeUnitCostListDTO
+import io.cloudflight.jems.api.programme.dto.language.SystemLanguage
+import io.cloudflight.jems.api.project.dto.InputTranslation
 import io.cloudflight.jems.server.programme.service.costoption.create_unit_cost.CreateUnitCostInteractor
 import io.cloudflight.jems.server.programme.service.costoption.delete_unit_cost.DeleteUnitCostInteractor
 import io.cloudflight.jems.server.programme.service.costoption.get_unit_cost.GetUnitCostInteractor
@@ -27,9 +29,9 @@ class ProgrammeUnitCostControllerTest {
 
         private val testUnitCost = ProgrammeUnitCost(
             id = 1,
-            name = "UC1",
-            description = "test unit cost 1",
-            type = "type 1",
+            name = setOf(InputTranslation(SystemLanguage.EN, "UC1")),
+            description = setOf(InputTranslation(SystemLanguage.EN, "test unit cost 1")),
+            type = setOf(InputTranslation(SystemLanguage.EN, "type 1")),
             costPerUnit = BigDecimal.ONE,
             isOneCostCategory = false,
             categories = setOf(EquipmentCosts, TravelAndAccommodationCosts),
@@ -37,17 +39,17 @@ class ProgrammeUnitCostControllerTest {
 
         private val expectedUnitCostDTO = ProgrammeUnitCostDTO(
             id = 1,
-            name = "UC1",
-            description = "test unit cost 1",
-            type = "type 1",
+            name = setOf(InputTranslation(SystemLanguage.EN, "UC1")),
+            description = setOf(InputTranslation(SystemLanguage.EN, "test unit cost 1")),
+            type = setOf(InputTranslation(SystemLanguage.EN, "type 1")),
             costPerUnit = BigDecimal.ONE,
             categories = setOf(EquipmentCosts, TravelAndAccommodationCosts),
         )
 
         private val expectedUnitCostListDTO = ProgrammeUnitCostListDTO(
             id = 1,
-            name = "UC1",
-            type = "type 1",
+            name = setOf(InputTranslation(SystemLanguage.EN, "UC1")),
+            type = setOf(InputTranslation(SystemLanguage.EN, "type 1")),
             costPerUnit = BigDecimal.ONE,
             categories = setOf(EquipmentCosts, TravelAndAccommodationCosts),
             sortId = 1

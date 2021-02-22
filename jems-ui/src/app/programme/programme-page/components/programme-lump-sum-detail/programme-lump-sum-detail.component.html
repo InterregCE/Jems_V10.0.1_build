@@ -7,27 +7,23 @@
         </button>
     </div>
 
-    <mat-form-field>
-        <mat-label>{{'lump.sum.form.field.name' | translate}}</mat-label>
-        <input name="name" formControlName="name" matInput required>
-        <mat-error>
-            <app-form-field-errors
-                    [errors]="lumpSumForm?.controls?.name?.errors"
-                    [messages]="nameErrors">
-            </app-form-field-errors>
-        </mat-error>
-    </mat-form-field>
+    <app-multi-language [useSystemLanguages]="true"
+                        [switchButtonsVisible]="formState === FormState.EDIT">
+        <app-multi-language-form-field
+                formControlName="name"
+                label="lump.sum.form.field.name"
+                [maxLength]="50">
+        </app-multi-language-form-field>
+    </app-multi-language>
 
-    <mat-form-field>
-        <mat-label>{{'lump.sum.form.field.description' | translate}}</mat-label>
-        <input name="description" formControlName="description" matInput>
-        <mat-error>
-            <app-form-field-errors
-                    [errors]="lumpSumForm?.controls?.description?.errors"
-                    [messages]="descriptionErrors">
-            </app-form-field-errors>
-        </mat-error>
-    </mat-form-field>
+    <app-multi-language [useSystemLanguages]="true"
+                        [switchButtonsVisible]="formState === FormState.EDIT">
+        <app-multi-language-form-field
+                formControlName="description"
+                label="lump.sum.form.field.description"
+                [maxLength]="500">
+        </app-multi-language-form-field>
+    </app-multi-language>
 
     <mat-form-field>
         <mat-label>{{'lump.sum.form.field.cost' | translate}}</mat-label>

@@ -7,6 +7,8 @@ import io.cloudflight.jems.api.programme.dto.costoption.BudgetCategory
 import io.cloudflight.jems.api.programme.dto.costoption.ProgrammeLumpSumDTO
 import io.cloudflight.jems.api.programme.dto.costoption.ProgrammeLumpSumPhase
 import io.cloudflight.jems.api.programme.dto.costoption.ProgrammeUnitCostDTO
+import io.cloudflight.jems.api.programme.dto.language.SystemLanguage
+import io.cloudflight.jems.api.project.dto.InputTranslation
 import io.cloudflight.jems.api.project.dto.ProjectCallSettingsDTO
 import io.cloudflight.jems.api.project.dto.partner.OutputProjectPartner
 import io.cloudflight.jems.api.project.dto.partner.ProjectPartnerRole
@@ -103,8 +105,8 @@ class ProjectControllerTest {
             lumpSums = listOf(
                 ProgrammeLumpSum(
                     id = 32,
-                    name = "LumpSum",
-                    description = "pls 32",
+                    name = setOf(InputTranslation(SystemLanguage.EN, "LumpSum")),
+                    description = setOf(InputTranslation(SystemLanguage.EN, "pls 32")),
                     cost = BigDecimal.TEN,
                     splittingAllowed = false,
                     phase = ProgrammeLumpSumPhase.Preparation,
@@ -114,9 +116,9 @@ class ProjectControllerTest {
             unitCosts = listOf(
                 ProgrammeUnitCost(
                     id = 4,
-                    name = "UnitCost",
-                    description = "pus 4",
-                    type = "type of unit cost",
+                    name = setOf(InputTranslation(SystemLanguage.EN, "UnitCost")),
+                    description = setOf(InputTranslation(SystemLanguage.EN, "pus 4")),
+                    type = setOf(InputTranslation(SystemLanguage.EN, "type of unit cost")),
                     costPerUnit = BigDecimal.ONE,
                     isOneCostCategory = false,
                     categories = setOf(BudgetCategory.ExternalCosts, BudgetCategory.OfficeAndAdministrationCosts),
@@ -138,8 +140,8 @@ class ProjectControllerTest {
                 lumpSums = listOf(
                     ProgrammeLumpSumDTO(
                         id = 32,
-                        name = "LumpSum",
-                        description = "pls 32",
+                        name = setOf(InputTranslation(SystemLanguage.EN, "LumpSum")),
+                        description = setOf(InputTranslation(SystemLanguage.EN, "pls 32")),
                         cost = BigDecimal.TEN,
                         splittingAllowed = false,
                         phase = ProgrammeLumpSumPhase.Preparation,
@@ -149,9 +151,9 @@ class ProjectControllerTest {
                 unitCosts = listOf(
                     ProgrammeUnitCostDTO(
                         id = 4,
-                        name = "UnitCost",
-                        description = "pus 4",
-                        type = "type of unit cost",
+                        name = setOf(InputTranslation(SystemLanguage.EN, "UnitCost")),
+                        description = setOf(InputTranslation(SystemLanguage.EN, "pus 4")),
+                        type = setOf(InputTranslation(SystemLanguage.EN, "type of unit cost")),
                         costPerUnit = BigDecimal.ONE,
                         categories = setOf(BudgetCategory.ExternalCosts, BudgetCategory.OfficeAndAdministrationCosts),
                     )

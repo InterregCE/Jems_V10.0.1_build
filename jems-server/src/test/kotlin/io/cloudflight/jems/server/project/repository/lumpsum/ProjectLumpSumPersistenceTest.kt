@@ -1,6 +1,8 @@
 package io.cloudflight.jems.server.project.repository.lumpsum
 
 import io.cloudflight.jems.api.programme.dto.costoption.ProgrammeLumpSumPhase
+import io.cloudflight.jems.api.programme.dto.language.SystemLanguage
+import io.cloudflight.jems.api.project.dto.InputTranslation
 import io.cloudflight.jems.api.project.dto.partner.ProjectPartnerRole
 import io.cloudflight.jems.api.project.dto.status.ProjectApplicationStatus
 import io.cloudflight.jems.server.UnitTest
@@ -9,6 +11,7 @@ import io.cloudflight.jems.server.common.exception.ResourceNotFoundException
 import io.cloudflight.jems.server.programme.entity.legalstatus.ProgrammeLegalStatusEntity
 import io.cloudflight.jems.server.programme.entity.costoption.ProgrammeLumpSumEntity
 import io.cloudflight.jems.server.programme.repository.costoption.ProgrammeLumpSumRepository
+import io.cloudflight.jems.server.programme.repository.costoption.combineLumpSumTranslatedValues
 import io.cloudflight.jems.server.project.entity.ProjectEntity
 import io.cloudflight.jems.server.project.entity.ProjectStatus
 import io.cloudflight.jems.server.project.entity.lumpsum.ProjectLumpSumEntity
@@ -54,7 +57,11 @@ internal class ProjectLumpSumPersistenceTest : UnitTest() {
 
         private fun programmeLumpSum(id: Long) = ProgrammeLumpSumEntity(
             id = id,
-            name = "",
+            translatedValues = combineLumpSumTranslatedValues(
+                programmeLumpSumId = id,
+                name = setOf(InputTranslation(SystemLanguage.EN, "")),
+                description = emptySet()
+            ),
             cost = BigDecimal.TEN,
             splittingAllowed = true,
             phase = ProgrammeLumpSumPhase.Preparation,

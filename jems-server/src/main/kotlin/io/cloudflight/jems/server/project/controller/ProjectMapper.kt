@@ -10,7 +10,7 @@ import io.cloudflight.jems.server.project.service.budget.model.PartnerBudget
 
 fun PartnerBudget.toProjectPartnerBudgetDTO() =
     ProjectPartnerBudgetDTO(
-        partner = partner?.toOutputProjectPartner(),
+        partner = partner.toOutputProjectPartner(),
         staffCosts = staffCosts,
         travelCosts = travelCosts,
         externalCosts = externalCosts,

@@ -3,6 +3,8 @@ package io.cloudflight.jems.server.project.repository
 import io.cloudflight.jems.api.call.dto.flatrate.FlatRateType
 import io.cloudflight.jems.api.programme.dto.costoption.BudgetCategory
 import io.cloudflight.jems.api.programme.dto.costoption.ProgrammeLumpSumPhase
+import io.cloudflight.jems.api.programme.dto.language.SystemLanguage
+import io.cloudflight.jems.api.project.dto.InputTranslation
 import io.cloudflight.jems.api.project.dto.status.ProjectApplicationStatus
 import io.cloudflight.jems.server.UnitTest
 import io.cloudflight.jems.server.call.callWithId
@@ -14,6 +16,8 @@ import io.cloudflight.jems.server.programme.entity.costoption.ProgrammeLumpSumBu
 import io.cloudflight.jems.server.programme.entity.costoption.ProgrammeLumpSumEntity
 import io.cloudflight.jems.server.programme.entity.costoption.ProgrammeUnitCostBudgetCategoryEntity
 import io.cloudflight.jems.server.programme.entity.costoption.ProgrammeUnitCostEntity
+import io.cloudflight.jems.server.programme.repository.costoption.combineLumpSumTranslatedValues
+import io.cloudflight.jems.server.programme.repository.costoption.combineUnitCostTranslatedValues
 import io.cloudflight.jems.server.programme.service.costoption.model.ProgrammeLumpSum
 import io.cloudflight.jems.server.programme.service.costoption.model.ProgrammeUnitCost
 import io.cloudflight.jems.server.project.entity.ProjectEntity
@@ -55,8 +59,11 @@ internal class ProjectPersistenceTest : UnitTest() {
             lumpSums = setOf(
                 ProgrammeLumpSumEntity(
                     id = 32,
-                    name = "LumpSum",
-                    description = "pls 32",
+                    translatedValues = combineLumpSumTranslatedValues(
+                        programmeLumpSumId = 32,
+                        name = setOf(InputTranslation(SystemLanguage.EN, "LumpSum")),
+                        description = setOf(InputTranslation(SystemLanguage.EN, "pls 32"))
+                    ),
                     cost = BigDecimal.TEN,
                     splittingAllowed = false,
                     phase = ProgrammeLumpSumPhase.Preparation,
@@ -69,9 +76,12 @@ internal class ProjectPersistenceTest : UnitTest() {
             unitCosts = setOf(
                 ProgrammeUnitCostEntity(
                     id = 4,
-                    name = "UnitCost",
-                    description = "pus 4",
-                    type = "type of unit cost",
+                    translatedValues = combineUnitCostTranslatedValues(
+                        programmeUnitCostId = 32,
+                        name = setOf(InputTranslation(SystemLanguage.EN, "UnitCost")),
+                        description = setOf(InputTranslation(SystemLanguage.EN, "plus 4")),
+                        type = setOf(InputTranslation(SystemLanguage.EN, "type of unit cost"))
+                    ),
                     costPerUnit = BigDecimal.ONE,
                     isOneCostCategory = false,
                     categories = mutableSetOf(
@@ -151,8 +161,8 @@ internal class ProjectPersistenceTest : UnitTest() {
                 lumpSums = listOf(
                     ProgrammeLumpSum(
                         id = 32,
-                        name = "LumpSum",
-                        description = "pls 32",
+                        name = setOf(InputTranslation(SystemLanguage.EN, "LumpSum")),
+                        description = setOf(InputTranslation(SystemLanguage.EN, "pls 32")),
                         cost = BigDecimal.TEN,
                         splittingAllowed = false,
                         phase = ProgrammeLumpSumPhase.Preparation,
@@ -162,9 +172,9 @@ internal class ProjectPersistenceTest : UnitTest() {
                 unitCosts = listOf(
                     ProgrammeUnitCost(
                         id = 4,
-                        name = "UnitCost",
-                        description = "pus 4",
-                        type = "type of unit cost",
+                        name = setOf(InputTranslation(SystemLanguage.EN, "UnitCost")),
+                        description = setOf(InputTranslation(SystemLanguage.EN, "plus 4")),
+                        type = setOf(InputTranslation(SystemLanguage.EN, "type of unit cost")),
                         costPerUnit = BigDecimal.ONE,
                         isOneCostCategory = false,
                         categories = setOf(BudgetCategory.ExternalCosts, BudgetCategory.OfficeAndAdministrationCosts),
