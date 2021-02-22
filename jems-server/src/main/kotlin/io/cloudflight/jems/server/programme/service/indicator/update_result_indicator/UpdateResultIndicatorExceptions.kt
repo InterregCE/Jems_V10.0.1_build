@@ -16,7 +16,7 @@ class UpdateResultIndicatorException(cause: Throwable) : ApplicationException(
 class InvalidIdException :
     ApplicationUnprocessableException(
         code = "$UPDATE_RESULT_INDICATOR_ERROR_CODE_PREFIX-001",
-        i18nMessage = I18nMessage("$UPDATE_RESULT_INDICATOR_ERROR_KEY_PREFIX.id.should.not.be.set"),
+        i18nMessage = I18nMessage("$UPDATE_RESULT_INDICATOR_ERROR_KEY_PREFIX.id.is.invalid"),
         cause = null
     )
 

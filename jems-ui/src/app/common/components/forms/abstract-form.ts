@@ -1,17 +1,17 @@
 import {ChangeDetectorRef, Input, OnInit} from '@angular/core';
 import {Observable, Subject} from 'rxjs';
 import {FormGroup} from '@angular/forms';
-import {I18nValidationError} from '../../validation/i18n-validation-error';
 import {filter, takeUntil} from 'rxjs/operators';
 import {BaseComponent} from '@common/components/base-component';
 import {Log} from '../../utils/log';
 import {Alert} from './alert';
+import {APIError} from '../../models/APIError';
 
 export abstract class AbstractForm extends BaseComponent implements OnInit {
   Alert = Alert;
 
   @Input()
-  error$: Observable<I18nValidationError | null>;
+  error$: Observable<APIError | null>;
   @Input()
   success$: Observable<any>;
 
@@ -39,7 +39,7 @@ export abstract class AbstractForm extends BaseComponent implements OnInit {
   private handleError(): void {
     this.error$
       .pipe(takeUntil(this.destroyed$))
-      .subscribe((error: I18nValidationError) => {
+      .subscribe((error: APIError) => {
         this.submitted = false;
         const formGroup = this.getForm();
         if (!formGroup) {
@@ -47,10 +47,10 @@ export abstract class AbstractForm extends BaseComponent implements OnInit {
         }
         Log.debug('Set form backend errors.', this, error);
         Object.keys(formGroup.controls).forEach(key => {
-          if (!error?.i18nFieldErrors || !error.i18nFieldErrors[key]) {
+          if (!error?.formErrors || !error.formErrors[key]) {
             return;
           }
-          formGroup.controls[key].setErrors({i18nError: error.i18nFieldErrors[key].i18nKey});
+          formGroup.controls[key].setErrors({i18nError: error.formErrors[key].i18nKey});
           formGroup.controls[key].markAsTouched();
           this.changeDetectorRef.markForCheck();
         });

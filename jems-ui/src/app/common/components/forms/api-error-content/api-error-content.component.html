@@ -1,0 +1,18 @@
+<div class="message app-alert-danger"><em class="fas fa-exclamation-triangle mr-4"></em>
+    <div>
+        <div>
+            <span class="mat-body-strong">
+                {{error?.i18nMessage.i18nKey ? (error?.i18nMessage.i18nKey | translate) : error?.message}}
+            </span>
+            <span *ngIf="error?.code" class="ml-1 mat-body-strong">(error code: {{error?.code | translate}})
+            </span>
+        </div>
+        <div class="detail-error ml-3 mt-1" *ngFor="let detail of error?.details as any">
+            <span>
+                {{$any(detail).i18nMessage.i18nKey ? ($any(detail)?.i18nMessage.i18nKey | translate) : $any(detail)?.message}}
+            </span>
+            <span *ngIf="detail?.code" class="ml-1">(error code: {{detail?.code | translate}})
+            </span>
+        </div>
+    </div>
+</div>

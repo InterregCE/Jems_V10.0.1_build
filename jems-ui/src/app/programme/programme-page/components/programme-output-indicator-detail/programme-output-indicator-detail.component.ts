@@ -13,15 +13,18 @@ import {
   OutputIndicatorCreateRequestDTO,
   OutputIndicatorDetailDTO,
   OutputIndicatorUpdateRequestDTO,
+  ProgrammeIndicatorService,
   ProgrammePriorityDTO,
+  ResultIndicatorDetailDTO,
 } from '@cat/api';
 import {FormBuilder, FormGroup, Validators} from '@angular/forms';
 import {MatDialog} from '@angular/material/dialog';
-import {Observable} from 'rxjs';
-import {filter, map, startWith, take, takeUntil} from 'rxjs/operators';
+import {combineLatest, Observable} from 'rxjs';
+import {filter, map, startWith, take, takeUntil, tap, withLatestFrom} from 'rxjs/operators';
 import {FormState} from '@common/components/forms/form-state';
-import {Forms} from '../../../../common/utils/forms';
 import {ProgrammeOutputIndicatorConstants} from './constants/programme-output-indicator-constants';
+import {Forms} from '../../../../common/utils/forms';
+import {Log} from '../../../../common/utils/log';
 
 @Component({
   selector: 'app-programme-output-indicator-detail',
@@ -56,6 +59,12 @@ export class ProgrammeOutputIndicatorDetailComponent extends ViewEditForm implem
   filteredIndicatorNames: Observable<string[]>;
   filteredMeasurementUnits: Observable<string[]>;
 
+  resultIndicators$: Observable<ResultIndicatorDetailDTO[]> = this.programmeIndicatorService.getResultIndicatorDetails(0, 50, 'DESC').pipe(
+    tap(resultIndicator => Log.info('Fetched result Indicator data:', this, resultIndicator)),
+    map(page => page.content));
+
+  filteredResultIndicators$: Observable<ResultIndicatorDetailDTO[]>;
+
   outputIndicatorForm = this.formBuilder.group({
     identifier: ['', Validators.compose([Validators.required, Validators.maxLength(5)])],
     indicatorCode: ['', Validators.maxLength(6)],
@@ -63,7 +72,8 @@ export class ProgrammeOutputIndicatorDetailComponent extends ViewEditForm implem
     specificObjective: ['', Validators.required],
     measurementUnit: ['', Validators.maxLength(255)],
     milestone: [null],
-    finalTarget: [null]
+    finalTarget: [null],
+    resultIndicatorId: [null]
   });
 
   identifierErrors = {
@@ -90,7 +100,9 @@ export class ProgrammeOutputIndicatorDetailComponent extends ViewEditForm implem
 
   constructor(private formBuilder: FormBuilder,
               private dialog: MatDialog,
-              protected changeDetectorRef: ChangeDetectorRef) {
+              protected changeDetectorRef: ChangeDetectorRef,
+              private programmeIndicatorService: ProgrammeIndicatorService
+  ) {
     super(changeDetectorRef);
   }
 
@@ -107,6 +119,22 @@ export class ProgrammeOutputIndicatorDetailComponent extends ViewEditForm implem
         startWith(''),
         map(value => this._filter(value, this.measurementUnits))
       );
+
+    this.filteredResultIndicators$ = combineLatest([this.resultIndicators$, this.outputIndicatorForm.controls.specificObjective.valueChanges.pipe(startWith(this.outputIndicator.programmePriorityPolicySpecificObjective))])
+      .pipe(
+        map(([resultIndicators, specificObjective]) => resultIndicators.filter((it: ResultIndicatorDetailDTO) => it.programmePriorityPolicySpecificObjective === specificObjective) || []),
+      );
+
+    this.outputIndicatorForm.controls.specificObjective.valueChanges.pipe(
+      takeUntil(this.destroyed$),
+      withLatestFrom(this.filteredResultIndicators$),
+      tap(([, filteredResultIndicators]) => {
+        if (filteredResultIndicators.every(it => it.id !== this.outputIndicatorForm.controls.resultIndicatorId.value)) {
+          this.outputIndicatorForm.controls.resultIndicatorId.setValue(null);
+        }
+      })
+    ).subscribe();
+
     if (this.isCreate) {
       this.changeFormState$.next(FormState.EDIT);
     } else {
@@ -117,6 +145,7 @@ export class ProgrammeOutputIndicatorDetailComponent extends ViewEditForm implem
       this.outputIndicatorForm.controls.measurementUnit.setValue(this.outputIndicator.measurementUnit);
       this.outputIndicatorForm.controls.milestone.setValue(this.outputIndicator.milestone);
       this.outputIndicatorForm.controls.finalTarget.setValue(this.outputIndicator.finalTarget);
+      this.outputIndicatorForm.controls.resultIndicatorId.setValue(this.outputIndicator.resultIndicatorId);
       this.changeFormState$.next(FormState.VIEW);
     }
   }
@@ -145,7 +174,7 @@ export class ProgrammeOutputIndicatorDetailComponent extends ViewEditForm implem
           measurementUnit: this.outputIndicatorForm?.controls?.measurementUnit?.value,
           milestone: this.outputIndicatorForm?.controls?.milestone?.value,
           finalTarget: this.outputIndicatorForm?.controls?.finalTarget?.value,
-          resultIndicatorId: 0
+          resultIndicatorId: this.outputIndicatorForm?.controls?.resultIndicatorId.value
         });
       } else {
         this.updateOutputIndicator.emit({
@@ -157,7 +186,7 @@ export class ProgrammeOutputIndicatorDetailComponent extends ViewEditForm implem
           measurementUnit: this.outputIndicatorForm?.controls?.measurementUnit?.value,
           milestone: this.outputIndicatorForm?.controls?.milestone?.value,
           finalTarget: this.outputIndicatorForm?.controls?.finalTarget?.value,
-          resultIndicatorId: 0
+          resultIndicatorId: this.outputIndicatorForm?.controls?.resultIndicatorId.value
         });
       }
     });

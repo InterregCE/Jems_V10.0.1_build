@@ -10,7 +10,7 @@ import io.cloudflight.jems.server.programme.service.indicator.model.ResultIndica
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 
-private const val MAX_NUMBER_OF_RESULT_INDICATORS = 50
+private const val MAX_COUNT_OF_RESULT_INDICATORS = 50
 
 @Service
 class CreateResultIndicator(
@@ -37,7 +37,7 @@ class CreateResultIndicator(
         if (persistence.isIdentifierUsedByAnotherResultIndicator(resultIndicator.id, resultIndicator.identifier))
             throw IdentifierIsUsedException()
 
-        if (persistence.getCountOfResultIndicators() >= MAX_NUMBER_OF_RESULT_INDICATORS)
-            throw ResultIndicatorsCountExceedException()
+        if (persistence.getCountOfResultIndicators() >= MAX_COUNT_OF_RESULT_INDICATORS)
+            throw ResultIndicatorsCountExceedException(MAX_COUNT_OF_RESULT_INDICATORS)
     }
 }

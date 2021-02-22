@@ -66,6 +66,20 @@
             </app-form-field-errors>
         </mat-error>
     </mat-form-field>
+    <ng-container *ngIf="filteredResultIndicators$ | async as filteredResultIndicators">
+        <mat-form-field>
+            <mat-label>{{'output.indicator.form.field.result.indicator' | translate}}</mat-label>
+            <mat-select formControlName="resultIndicatorId">
+                <mat-option *ngIf="filteredResultIndicators.length>0" [value]="null"></mat-option>
+                <mat-option *ngFor="let resultIndicator of filteredResultIndicators"
+                            [value]="resultIndicator.id">
+                    {{resultIndicator.identifier}}
+                </mat-option>
+            </mat-select>
+            <mat-hint
+                    *ngIf="filteredResultIndicators.length===0">{{'output.indicator.result.indicator.empty.hint' | translate}}</mat-hint>
+        </mat-form-field>
+    </ng-container>
     <mat-form-field>
         <mat-label>{{'output.indicator.form.field.measurement.unit' | translate}}</mat-label>
         <input name="measurementUnit" formControlName="measurementUnit" matInput
@@ -124,9 +138,9 @@
         <p>{{'output.indicator.new.message.successful' | translate}}</p>
     </app-alert>
     <app-alert *ngIf="error$ | async as error"
-               [show]="!!error.i18nKey"
+               [show]="!!error.i18nMessage?.i18nKey"
                [type]="Alert.ERROR">
-        <p>{{error.i18nKey | translate}}</p>
+       <app-api-error-content [error]="error"></app-api-error-content>
     </app-alert>
 </form>
 
