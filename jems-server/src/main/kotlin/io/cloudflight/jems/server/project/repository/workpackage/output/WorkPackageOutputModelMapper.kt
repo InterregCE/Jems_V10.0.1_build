@@ -1,6 +1,6 @@
 package io.cloudflight.jems.server.project.repository.workpackage.output
 
-import io.cloudflight.jems.server.programme.entity.indicator.IndicatorOutput
+import io.cloudflight.jems.server.programme.entity.indicator.OutputIndicatorEntity
 import io.cloudflight.jems.server.project.entity.TranslationWorkPackageOutputId
 import io.cloudflight.jems.server.project.entity.workpackage.output.WorkPackageOutputEntity
 import io.cloudflight.jems.server.project.entity.workpackage.output.WorkPackageOutputId
@@ -12,30 +12,30 @@ import kotlin.collections.HashSet
 fun WorkPackageOutput.toEntity(
     workPackageId: Long,
     index: Int,
-    resolveProgrammeIndicator: (Long?) -> IndicatorOutput?,
+    resolveProgrammeIndicatorEntity: (Long?) -> OutputIndicatorEntity?,
 ) : WorkPackageOutputEntity {
     val outputId = WorkPackageOutputId(workPackageId, index)
     return WorkPackageOutputEntity(
         outputId = outputId,
         translatedValues = translatedValues.toEntity(outputId),
         periodNumber = periodNumber,
-        programmeOutputIndicator = resolveProgrammeIndicator.invoke(programmeOutputIndicatorId),
+        programmeOutputIndicatorEntity = resolveProgrammeIndicatorEntity.invoke(programmeOutputIndicatorId),
         targetValue = targetValue
     )
 }
 
 fun List<WorkPackageOutput>.toIndexedEntity(
     workPackageId: Long,
-    resolveProgrammeIndicator: (Long?) -> IndicatorOutput?,
-) = mapIndexed { index, output -> output.toEntity(workPackageId, index.plus(1), resolveProgrammeIndicator) }
+    resolveProgrammeIndicatorEntity: (Long?) -> OutputIndicatorEntity?,
+) = mapIndexed { index, output -> output.toEntity(workPackageId, index.plus(1), resolveProgrammeIndicatorEntity) }
 
 fun Iterable<WorkPackageOutputEntity>.toModel() = map {
     WorkPackageOutput(
         outputNumber = it.outputId.outputNumber,
         translatedValues = it.translatedValues.toModel(),
         periodNumber = it.periodNumber,
-        programmeOutputIndicatorId = it.programmeOutputIndicator?.id,
-        programmeOutputIndicatorIdentifier = it.programmeOutputIndicator?.identifier,
+        programmeOutputIndicatorId = it.programmeOutputIndicatorEntity?.id,
+        programmeOutputIndicatorIdentifier = it.programmeOutputIndicatorEntity?.identifier,
         targetValue = it.targetValue
     )
 }.sortedBy { it.outputNumber }

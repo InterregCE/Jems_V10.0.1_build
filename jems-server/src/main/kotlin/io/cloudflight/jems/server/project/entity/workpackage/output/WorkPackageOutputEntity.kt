@@ -1,6 +1,6 @@
 package io.cloudflight.jems.server.project.entity.workpackage.output
 
-import io.cloudflight.jems.server.programme.entity.indicator.IndicatorOutput
+import io.cloudflight.jems.server.programme.entity.indicator.OutputIndicatorEntity
 import java.math.BigDecimal
 import javax.persistence.CascadeType
 import javax.persistence.Column
@@ -34,7 +34,7 @@ data class WorkPackageOutputEntity(
 
     @ManyToOne
     @JoinColumn(name = "indicator_output_id")
-    val programmeOutputIndicator: IndicatorOutput? = null,
+    val programmeOutputIndicatorEntity: OutputIndicatorEntity? = null,
 
     @Column
     val targetValue: BigDecimal? = null,

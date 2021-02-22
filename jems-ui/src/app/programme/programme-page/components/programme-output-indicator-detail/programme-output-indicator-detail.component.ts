@@ -10,9 +10,9 @@ import {
 import {ViewEditForm} from '@common/components/forms/view-edit-form';
 import {Permission} from '../../../../security/permissions/permission';
 import {
-  InputIndicatorOutputCreate,
-  InputIndicatorOutputUpdate,
-  OutputIndicatorOutput,
+  OutputIndicatorCreateRequestDTO,
+  OutputIndicatorDetailDTO,
+  OutputIndicatorUpdateRequestDTO,
   ProgrammePriorityDTO,
 } from '@cat/api';
 import {FormBuilder, FormGroup, Validators} from '@angular/forms';
@@ -35,15 +35,15 @@ export class ProgrammeOutputIndicatorDetailComponent extends ViewEditForm implem
   programmeOutputIndicatorConstants = ProgrammeOutputIndicatorConstants;
 
   @Input()
-  outputIndicator: OutputIndicatorOutput;
+  outputIndicator: OutputIndicatorDetailDTO;
   @Input()
   priorities: Array<ProgrammePriorityDTO>;
   @Input()
   isCreate: boolean;
   @Output()
-  createOutputIndicator: EventEmitter<InputIndicatorOutputCreate> = new EventEmitter<InputIndicatorOutputCreate>();
+  createOutputIndicator: EventEmitter<OutputIndicatorCreateRequestDTO> = new EventEmitter<OutputIndicatorCreateRequestDTO>();
   @Output()
-  updateOutputIndicator: EventEmitter<InputIndicatorOutputUpdate> = new EventEmitter<InputIndicatorOutputUpdate>();
+  updateOutputIndicator: EventEmitter<OutputIndicatorUpdateRequestDTO> = new EventEmitter<OutputIndicatorUpdateRequestDTO>();
   @Output()
   cancelCreate: EventEmitter<void> = new EventEmitter<void>();
 
@@ -145,6 +145,7 @@ export class ProgrammeOutputIndicatorDetailComponent extends ViewEditForm implem
           measurementUnit: this.outputIndicatorForm?.controls?.measurementUnit?.value,
           milestone: this.outputIndicatorForm?.controls?.milestone?.value,
           finalTarget: this.outputIndicatorForm?.controls?.finalTarget?.value,
+          resultIndicatorId: 0
         });
       } else {
         this.updateOutputIndicator.emit({
@@ -156,6 +157,7 @@ export class ProgrammeOutputIndicatorDetailComponent extends ViewEditForm implem
           measurementUnit: this.outputIndicatorForm?.controls?.measurementUnit?.value,
           milestone: this.outputIndicatorForm?.controls?.milestone?.value,
           finalTarget: this.outputIndicatorForm?.controls?.finalTarget?.value,
+          resultIndicatorId: 0
         });
       }
     });

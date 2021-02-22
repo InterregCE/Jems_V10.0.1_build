@@ -1,9 +1,9 @@
 import {Injectable} from '@angular/core';
 import {
-  IndicatorOutputDto,
   InputWorkPackageCreate,
   InputWorkPackageUpdate,
   InvestmentSummaryDTO,
+  OutputIndicatorSummaryDTO,
   OutputProject,
   OutputWorkPackage,
   ProgrammeIndicatorService,
@@ -35,7 +35,7 @@ export class ProjectWorkPackagePageStore {
   project$: Observable<OutputProject>;
   activities$: Observable<WorkPackageActivityDTO[]>;
   outputs$: Observable<WorkPackageOutputDTO[]>;
-  outputIndicators$: Observable<IndicatorOutputDto[]>;
+  outputIndicators$: Observable<OutputIndicatorSummaryDTO[]>;
 
   investmentChangeEvent$ = new Subject<void>();
 
@@ -147,11 +147,11 @@ export class ProjectWorkPackagePageStore {
       );
   }
 
-  private outputIndicators(): Observable<IndicatorOutputDto[]> {
+  private outputIndicators(): Observable<OutputIndicatorSummaryDTO[]> {
     return this.projectStore.getProject()
       .pipe(
         map(project => project?.projectData?.specificObjective?.programmeObjectivePolicy),
-        switchMap(programmeObjectivePolicy => programmeObjectivePolicy ? this.programmeIndicatorService.getOutputIndicatorsForSpecificObjective(programmeObjectivePolicy) : of([])),
+        switchMap(programmeObjectivePolicy => programmeObjectivePolicy ? this.programmeIndicatorService.getOutputIndicatorSummariesForSpecificObjective(programmeObjectivePolicy) : of([])),
         tap(outputs => Log.info('Fetched programme output indicators', outputs)),
       );
   }

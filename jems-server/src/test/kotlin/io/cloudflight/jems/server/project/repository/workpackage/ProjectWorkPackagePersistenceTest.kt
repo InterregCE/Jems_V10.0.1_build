@@ -5,8 +5,8 @@ import io.cloudflight.jems.api.programme.dto.language.SystemLanguage.CS
 import io.cloudflight.jems.api.programme.dto.language.SystemLanguage.EN
 import io.cloudflight.jems.api.programme.dto.language.SystemLanguage.SK
 import io.cloudflight.jems.server.common.exception.ResourceNotFoundException
-import io.cloudflight.jems.server.programme.entity.indicator.IndicatorOutput
-import io.cloudflight.jems.server.programme.repository.indicator.IndicatorOutputRepository
+import io.cloudflight.jems.server.programme.entity.indicator.OutputIndicatorEntity
+import io.cloudflight.jems.server.programme.repository.indicator.OutputIndicatorRepository
 import io.cloudflight.jems.server.project.entity.TranslationWorkPackageId
 import io.cloudflight.jems.server.project.entity.TranslationWorkPackageOutputId
 import io.cloudflight.jems.server.project.entity.workpackage.WorkPackageEntity
@@ -21,7 +21,6 @@ import io.cloudflight.jems.server.project.entity.workpackage.activity.deliverabl
 import io.cloudflight.jems.server.project.entity.workpackage.activity.deliverable.WorkPackageActivityDeliverableId
 import io.cloudflight.jems.server.project.entity.workpackage.activity.deliverable.WorkPackageActivityDeliverableTranslationEntity
 import io.cloudflight.jems.server.project.entity.workpackage.activity.deliverable.WorkPackageActivityDeliverableTranslationId
-import io.cloudflight.jems.server.project.entity.workpackage.investment.WorkPackageInvestmentEntity
 import io.cloudflight.jems.server.project.entity.workpackage.output.WorkPackageOutputTransl
 import io.cloudflight.jems.server.project.repository.workpackage.activity.WorkPackageActivityRepository
 import io.cloudflight.jems.server.project.repository.workpackage.investment.WorkPackageInvestmentRepository
@@ -160,19 +159,20 @@ class ProjectWorkPackagePersistenceTest {
         )
 
         const val INDICATOR_ID = 30L
-        val indicatorOutput = IndicatorOutput(
+        val indicatorOutput = OutputIndicatorEntity(
             id = INDICATOR_ID,
             identifier = "ID.30",
             name = "test",
             code = "tst",
             measurementUnit = "x",
-            programmePriorityPolicy = null
+            programmePriorityPolicyEntity = null,
+            resultIndicatorEntity = null
         )
 
         val output1 = WorkPackageOutputEntity(
             outputId = outputId1,
             periodNumber = 1,
-            programmeOutputIndicator = indicatorOutput,
+            programmeOutputIndicatorEntity = indicatorOutput,
         )
         val output1_model = WorkPackageOutput(
             outputNumber = 1,
@@ -259,7 +259,7 @@ class ProjectWorkPackagePersistenceTest {
     lateinit var investmentRepository: WorkPackageInvestmentRepository
 
     @RelaxedMockK
-    lateinit var indicatorOutputRepository: IndicatorOutputRepository
+    lateinit var outputIndicatorRepository: OutputIndicatorRepository
 
     @InjectMockKs
     private lateinit var persistence: WorkPackagePersistenceProvider
@@ -370,7 +370,7 @@ class ProjectWorkPackagePersistenceTest {
             project = project,
             outputs = emptyList(),
         ))
-        every { indicatorOutputRepository.findById(INDICATOR_ID) } returns Optional.of(indicatorOutput)
+        every { outputIndicatorRepository.findById(INDICATOR_ID) } returns Optional.of(indicatorOutput)
         // we do not need to test mapping back to model as that is covered by getWorkPackageOutputsForWorkPackage
         every { repository.save(capture(workPackageSlot)) } returnsArgument 0
 
@@ -393,13 +393,13 @@ class ProjectWorkPackagePersistenceTest {
                     WorkPackageOutputTransl(translationId = trIdOut(outputId1, SK), title = "sk_title", description = "sk_desc"),
                 ),
                 periodNumber = 3,
-                programmeOutputIndicator = indicatorOutput,
+                programmeOutputIndicatorEntity = indicatorOutput,
                 targetValue = BigDecimal.TEN
             ),
             WorkPackageOutputEntity(
                 outputId = outputId2,
                 periodNumber = 7,
-                programmeOutputIndicator = null,
+                programmeOutputIndicatorEntity = null,
             ),
         )
     }
@@ -431,7 +431,7 @@ class ProjectWorkPackagePersistenceTest {
         val predictedWorkPackageInvestment = workPackageInvestment.toWorkPackageInvestmentEntity(workPackageWithActivities).copy(
             id = 2
         )
-        every { investmentRepository.save(any<WorkPackageInvestmentEntity>()) } returns predictedWorkPackageInvestment
+        every { investmentRepository.save(any()) } returns predictedWorkPackageInvestment
         val sortedInvestments = listOf(predictedWorkPackageInvestment)
         every { investmentRepository.findAllByWorkPackageId(1, Sort.by("id")) } returns PageImpl(sortedInvestments)
         every { investmentRepository.saveAll(sortedInvestments) } returns sortedInvestments

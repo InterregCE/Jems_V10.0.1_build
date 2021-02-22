@@ -1,10 +1,9 @@
 import {Injectable} from '@angular/core';
 import {
-  IndicatorResultDto,
   OutputProjectPeriod,
   ProgrammeIndicatorService,
   ProjectResultDTO,
-  ProjectResultService
+  ProjectResultService, ResultIndicatorSummaryDTO
 } from '@cat/api';
 import {merge, Observable, of, Subject} from 'rxjs';
 import {map, shareReplay, switchMap, tap} from 'rxjs/operators';
@@ -17,7 +16,7 @@ export class ProjectResultsPageStore {
 
   isProjectEditable$: Observable<boolean>;
   results$: Observable<ProjectResultDTO[]>;
-  resultIndicators$: Observable<IndicatorResultDto[]>;
+  resultIndicators$: Observable<ResultIndicatorSummaryDTO[]>;
   periods$: Observable<OutputProjectPeriod[]>;
   projectAcronym$: Observable<string>;
 
@@ -45,7 +44,7 @@ export class ProjectResultsPageStore {
     const initialResults$ = this.projectStore.getProject()
       .pipe(
         tap(project => this.projectId = project.id),
-        switchMap(project => this.projectResultService.getProjectResults(this.projectId)),
+        switchMap(() => this.projectResultService.getProjectResults(this.projectId)),
         tap(results => Log.info('Fetched project results', results)),
       );
 
@@ -55,11 +54,11 @@ export class ProjectResultsPageStore {
       );
   }
 
-  private resultIndicators(): Observable<IndicatorResultDto[]> {
+  private resultIndicators(): Observable<ResultIndicatorSummaryDTO[]> {
     return this.projectStore.getProject()
       .pipe(
         map(project => project?.projectData?.specificObjective?.programmeObjectivePolicy),
-        switchMap(programmeObjectivePolicy => programmeObjectivePolicy ? this.programmeIndicatorService.getAllIndicatorResultDetailForSpecificObjective(programmeObjectivePolicy) : of([])),
+        switchMap(programmeObjectivePolicy => programmeObjectivePolicy ? this.programmeIndicatorService.getResultIndicatorSummariesForSpecificObjective(programmeObjectivePolicy) : of([])),
         tap(results => Log.info('Fetched programme result indicators', results)),
       );
   }

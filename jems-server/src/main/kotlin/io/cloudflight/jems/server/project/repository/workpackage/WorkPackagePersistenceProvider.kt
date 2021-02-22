@@ -1,8 +1,8 @@
 package io.cloudflight.jems.server.project.repository.workpackage
 
 import io.cloudflight.jems.server.common.exception.ResourceNotFoundException
-import io.cloudflight.jems.server.programme.entity.indicator.IndicatorOutput
-import io.cloudflight.jems.server.programme.repository.indicator.IndicatorOutputRepository
+import io.cloudflight.jems.server.programme.entity.indicator.OutputIndicatorEntity
+import io.cloudflight.jems.server.programme.repository.indicator.OutputIndicatorRepository
 import io.cloudflight.jems.server.project.entity.workpackage.WorkPackageEntity
 import io.cloudflight.jems.server.project.entity.workpackage.investment.WorkPackageInvestmentEntity
 import io.cloudflight.jems.server.project.repository.workpackage.activity.WorkPackageActivityRepository
@@ -27,7 +27,7 @@ class WorkPackagePersistenceProvider(
     private val workPackageActivityRepository: WorkPackageActivityRepository,
     private val workPackageOutputRepository: WorkPackageOutputRepository,
     private val workPackageInvestmentRepository: WorkPackageInvestmentRepository,
-    private val indicatorOutputRepository: IndicatorOutputRepository,
+    private val outputIndicatorRepository: OutputIndicatorRepository,
 ) : WorkPackagePersistence {
 
     @Transactional(readOnly = true)
@@ -61,7 +61,7 @@ class WorkPackagePersistenceProvider(
 
         val outputsUpdated = workPackageOutputs.toIndexedEntity(
             workPackageId = workPackageId,
-            resolveProgrammeIndicator = { getIndicatorOrThrow(it) }
+            resolveProgrammeIndicatorEntity = { getIndicatorOrThrow(it) }
         )
         return workPackageRepository.save(workPackage.copy(outputs = outputsUpdated)).outputs.toModel()
     }
@@ -141,11 +141,11 @@ class WorkPackagePersistenceProvider(
         workPackageInvestmentRepository.findById(workPackageInvestmentId)
             .orElseThrow { ResourceNotFoundException("WorkPackageInvestmentEntity") }
 
-    private fun getIndicatorOrThrow(indicatorId: Long?): IndicatorOutput? =
+    private fun getIndicatorOrThrow(indicatorId: Long?): OutputIndicatorEntity? =
         if (indicatorId == null)
             null
         else
-            indicatorOutputRepository.findById(indicatorId).orElseThrow { ResourceNotFoundException("indicatorOutput") }
+            outputIndicatorRepository.findById(indicatorId).orElseThrow { ResourceNotFoundException("indicatorOutput") }
 
     private fun updateSortOnNumber(workPackageId: Long) {
         val sort = Sort.by(Sort.Direction.ASC, "id")
