@@ -1,51 +1,39 @@
 package io.cloudflight.jems.server.project.service.partner.budget.update_budget_options
 
 import io.cloudflight.jems.api.call.dto.flatrate.FlatRateType
+import io.cloudflight.jems.api.common.dto.I18nMessage
 import io.cloudflight.jems.server.call.service.flatrate.model.ProjectCallFlatRate
-import io.cloudflight.jems.server.common.exception.I18nFieldError
-import io.cloudflight.jems.server.common.exception.I18nValidationException
 import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerBudgetOptions
-import org.springframework.http.HttpStatus
 
-private const val INVALID_ERR_MSG = "project.partner.budget.options.flatRate"
+const val INVALID_FLAT_RATE_COMBINATION_ERROR_KEY =
+    "$UPDATE_BUDGET_OPTIONS_ERROR_KEY_PREFIX.flat.rate.combination.is.not.valid"
 
 fun validateFlatRatesCombinations(options: ProjectPartnerBudgetOptions) {
-    val errors: MutableMap<String, I18nFieldError> = mutableMapOf()
+    val errors: MutableMap<String, I18nMessage> = mutableMapOf()
 
     if (options.officeAndAdministrationOnStaffCostsFlatRate != null && options.officeAndAdministrationOnDirectCostsFlatRate != null)
-        throw I18nValidationException(
-            httpStatus = HttpStatus.UNPROCESSABLE_ENTITY,
-            i18nKey = INVALID_ERR_MSG,
-            i18nFieldErrors = errors.apply {
-                this[FlatRateType.OFFICE_AND_ADMINISTRATION_ON_OTHER_COSTS.name] =
-                    I18nFieldError(i18nKey = "$INVALID_ERR_MSG.combination.is.not.valid")
-                this[FlatRateType.OFFICE_AND_ADMINISTRATION_ON_STAFF_COSTS.name] =
-                    I18nFieldError(i18nKey = "$INVALID_ERR_MSG.combination.is.not.valid")
-            }
-        )
+        errors.apply {
+            this[FlatRateType.OFFICE_AND_ADMINISTRATION_ON_OTHER_COSTS.key] =
+                I18nMessage(i18nKey = INVALID_FLAT_RATE_COMBINATION_ERROR_KEY)
+            this[FlatRateType.OFFICE_AND_ADMINISTRATION_ON_STAFF_COSTS.key] =
+                I18nMessage(i18nKey = INVALID_FLAT_RATE_COMBINATION_ERROR_KEY)
+        }
 
     val areOtherCostsApplicable =
         options.officeAndAdministrationOnStaffCostsFlatRate != null || options.officeAndAdministrationOnDirectCostsFlatRate != null || options.travelAndAccommodationOnStaffCostsFlatRate != null || options.staffCostsFlatRate != null
     if (options.otherCostsOnStaffCostsFlatRate != null && areOtherCostsApplicable)
-        throw I18nValidationException(
-            httpStatus = HttpStatus.UNPROCESSABLE_ENTITY,
-            i18nKey = INVALID_ERR_MSG,
-            i18nFieldErrors = errors.apply {
-                this[FlatRateType.OTHER_COSTS_ON_STAFF_COSTS.name] =
-                    I18nFieldError(i18nKey = "$INVALID_ERR_MSG.combination.is.not.valid")
-            }
-        )
+        errors.apply {
+            this[FlatRateType.OTHER_COSTS_ON_STAFF_COSTS.key] =
+                I18nMessage(i18nKey = INVALID_FLAT_RATE_COMBINATION_ERROR_KEY)
+
+        }
 
     if (errors.isNotEmpty())
-        throw I18nValidationException(
-            httpStatus = HttpStatus.UNPROCESSABLE_ENTITY,
-            i18nKey = INVALID_ERR_MSG,
-            i18nFieldErrors = errors
-        )
+        throw InvalidFlatRateCombinationException(formErrors = errors)
 }
 
 fun validateFlatRates(callFlatRateSetup: Set<ProjectCallFlatRate>, options: ProjectPartnerBudgetOptions) {
-    val errors: MutableMap<String, I18nFieldError> = mutableMapOf()
+    val errors: MutableMap<String, I18nMessage> = mutableMapOf()
 
     validateFlatRate(
         value = options.otherCostsOnStaffCostsFlatRate,
@@ -83,26 +71,28 @@ fun validateFlatRates(callFlatRateSetup: Set<ProjectCallFlatRate>, options: Proj
     )
 
     if (errors.isNotEmpty())
-        throw I18nValidationException(
-            httpStatus = HttpStatus.UNPROCESSABLE_ENTITY,
-            i18nKey = INVALID_ERR_MSG,
-            i18nFieldErrors = errors
-        )
+        throw InvalidFlatRateException(formErrors = errors)
 }
 
 private fun validateFlatRate(
     value: Int?,
     type: FlatRateType,
     callSetup: Set<ProjectCallFlatRate>,
-    errors: MutableMap<String, I18nFieldError>
+    errors: MutableMap<String, I18nMessage>
 ) {
     if (value != null) {
         val restriction = callSetup.find { it.type == type }
         if (restriction == null)
-            errors[type.name] = I18nFieldError(i18nKey = "$INVALID_ERR_MSG.type.not.allowed")
+            errors[type.key] =
+                I18nMessage(i18nKey = "$UPDATE_BUDGET_OPTIONS_ERROR_KEY_PREFIX.flat.rate.type.not.allowed.error")
         else if (value > restriction.rate)
-            errors[type.name] = I18nFieldError(i18nKey = "$INVALID_ERR_MSG.exceeded")
+            errors[type.key] =
+                I18nMessage(
+                    i18nKey = "$UPDATE_BUDGET_OPTIONS_ERROR_KEY_PREFIX.flat.rate.range.error",
+                    i18nArguments = hashMapOf(Pair("maxValue", restriction.rate.toString()))
+                )
         else if (!restriction.isAdjustable && restriction.rate != value)
-            errors[type.name] = I18nFieldError(i18nKey = "$INVALID_ERR_MSG.not.adjustable")
+            errors[type.key] =
+                I18nMessage(i18nKey = "$UPDATE_BUDGET_OPTIONS_ERROR_KEY_PREFIX.flat.rate.not.adjustable.error")
     }
 }

@@ -53,7 +53,7 @@ class UserRegistrationControllerIntegrationTest {
         )
             .andExpect(status().isBadRequest())
             .andExpect(
-                jsonPath("$.i18nFieldErrors.email.i18nKey")
+                jsonPath("$.formErrors.email.i18nKey")
                     .value("user.email.not.unique")
             )
     }

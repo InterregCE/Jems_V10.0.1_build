@@ -2,7 +2,6 @@ package io.cloudflight.jems.server.call.repository.flatrate
 
 import io.cloudflight.jems.server.call.service.flatrate.CallFlatRateSetupPersistence
 import io.cloudflight.jems.server.call.service.flatrate.model.ProjectCallFlatRate
-import io.cloudflight.jems.server.common.exception.ResourceNotFoundException
 import io.cloudflight.jems.server.project.repository.partner.ProjectPartnerRepository
 import org.springframework.stereotype.Repository
 import org.springframework.transaction.annotation.Transactional
@@ -24,10 +23,10 @@ class CallFlatRateSetupPersistenceProvider(
     @Transactional(readOnly = true)
     override fun getProjectCallFlatRateByPartnerId(partnerId: Long): Set<ProjectCallFlatRate> =
         projectPartnerRepository.findById(partnerId)
-            .orElseThrow { ResourceNotFoundException("projectPartner") }
+            .orElseThrow { ProjectPartnerNotFoundException() }
             .project.call.flatRates.toProjectCallFlatRate()
 
     private fun getCallOrThrow(callId: Long) =
-        callRepository.findById(callId).orElseThrow { ResourceNotFoundException("call") }
+        callRepository.findById(callId).orElseThrow { CallNotFoundException() }
 
 }

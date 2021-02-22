@@ -73,7 +73,7 @@ class ProjectFileControllerIntegrationTest {
         )
             .andExpect(status().isBadRequest)
             .andExpect(
-                jsonPath("$.i18nFieldErrors.description.i18nKey")
+                jsonPath("$.formErrors.description.i18nKey")
                     .value("project.file.description.size.too.long")
             )
     }

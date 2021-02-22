@@ -59,6 +59,6 @@ class AuthenticationControllerIntegrationTest {
                 .content(jsonMapper.writeValueAsString(loginRequest))
         )
             .andExpect(status().isUnauthorized)
-            .andExpect(jsonPath("$.i18nKey").value("authentication.bad.credentials"))
+            .andExpect(jsonPath("$.i18nMessage.i18nKey").value("authentication.bad.credentials"))
     }
 }

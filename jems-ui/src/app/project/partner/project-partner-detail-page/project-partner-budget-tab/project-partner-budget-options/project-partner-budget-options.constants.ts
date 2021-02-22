@@ -1,44 +1,24 @@
 export class ProjectPartnerBudgetOptionsConstants {
   public static MIN_FLAT_RATE_VALUE = 1;
   public static FORM_CONTROL_NAMES = {
-    staffCostsFlatRate: 'staffCostsFlatRate',
+    staffCostsFlatRate: 'StaffCost',
     isStaffCostsFlatRateActive: 'isStaffCostsFlatRateActive',
-    officeAndAdministrationOnStaffCostsFlatRate: 'officeAndAdministrationOnStaffCostsFlatRate',
+    officeAndAdministrationOnStaffCostsFlatRate: 'OfficeOnStaff',
     isOfficeAndAdministrationOnStaffCostsFlatRateActive: 'isOfficeAndAdministrationOnStaffCostsFlatRateActive',
-    officeAndAdministrationOnDirectCostsFlatRate: 'officeAndAdministrationOnDirectCostsFlatRate',
+    officeAndAdministrationOnDirectCostsFlatRate: 'OfficeOnOther',
     isOfficeAndAdministrationOnDirectCostsFlatRateActive: 'isOfficeAndAdministrationOnDirectCostsFlatRateActive',
-    travelAndAccommodationOnStaffCostsFlatRate: 'travelAndAccommodationOnStaffCostsFlatRate',
+    travelAndAccommodationOnStaffCostsFlatRate: 'TravelOnStaff',
     isTravelAndAccommodationOnStaffCostsFlatRateActive: 'isTravelAndAccommodationOnStaffCostsFlatRateActive',
-    otherCostsOnStaffCostsFlatRate: 'otherCostsOnStaffCostsFlatRate',
+    otherCostsOnStaffCostsFlatRate: 'OtherOnStaff',
     isOtherCostsOnStaffCostsFlatRateActive: 'isOtherCostsOnStaffCostsFlatRateActive',
   };
 
   public static FORM_ERRORS = {
-    officeAndAdministrationOnStaffCostsFlatRateErrors: {
-      required: 'project.partner.budget.options.office.on.staff.cost.flat.rate.empty',
-      max: 'project.partner.budget.options.office.on.staff.cost.flat.rate.range',
-      min: 'project.partner.budget.options.office.on.staff.cost.flat.rate.range',
+    flatRateErrors: {
+      required: 'use.case.update.budget.options.flat.rate.empty.error',
+      max: 'use.case.update.budget.options.flat.rate.range.error',
+      min: 'use.case.update.budget.options.flat.rate.range.error',
     },
-    officeAndAdministrationOnDirectCostsFlatRateErrors: {
-      required: 'project.partner.budget.options.office.on.direct.cost.flat.rate.empty',
-      max: 'project.partner.budget.options.office.on.direct.cost.flat.rate.range',
-      min: 'project.partner.budget.options.office.on.direct.cost.flat.rate.range',
-    },
-    staffCostsFlatRateErrors: {
-      required: 'project.partner.budget.options.staff.costs.on.direct.cost.flat.rate.empty',
-      max: 'project.partner.budget.options.staff.costs.on.direct.cost.flat.rate.range',
-      min: 'project.partner.budget.options.staff.costs.on.direct.cost.flat.rate.range',
-    },
-    travelAndAccommodationOnStaffCostsFlatRateErrors: {
-      required: 'project.partner.budget.options.travel.on.staff.cost.flat.rate.empty',
-      max: 'project.partner.budget.options.travel.on.staff.cost.flat.rate.range',
-      min: 'project.partner.budget.options.travel.on.staff.cost.flat.rate.range',
-    },
-    otherCostsOnStaffCostsFlatRateErrors: {
-      required: 'project.partner.budget.options.other.costs.on.staff.costs.flat.rate.empty',
-      max: 'project.partner.budget.options.other.costs.on.staff.cost.flat.rate.range',
-      min: 'project.partner.budget.options.other.costs.on.staff.cost.flat.rate.range',
-    }
   };
 
 }

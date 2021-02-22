@@ -1,5 +1,4 @@
 import {Injectable} from '@angular/core';
-import {I18nValidationError} from '@common/validation/i18n-validation-error';
 import {Observable, of, ReplaySubject, Subject} from 'rxjs';
 import {FormGroup} from '@angular/forms';
 import {I18nLabel} from '../../../i18n/i18n-label';
@@ -8,6 +7,8 @@ import {filter, tap} from 'rxjs/operators';
 import {RoutingService} from '../../../services/routing.service';
 import {HttpErrorResponse} from '@angular/common/http';
 import {UntilDestroy, untilDestroyed} from '@ngneat/until-destroy';
+import {TranslateService} from '@ngx-translate/core';
+import {APIError} from '../../../models/APIError';
 
 @UntilDestroy()
 @Injectable()
@@ -21,10 +22,10 @@ export class FormService {
   valid$ = new ReplaySubject<boolean>(1);
   dirty$ = new ReplaySubject<boolean>(1);
   success$ = new Subject<I18nLabel | string | null>();
-  error$ = new Subject<I18nValidationError | null>();
+  error$ = new Subject<APIError | null>();
   reset$ = this.resetSubject.asObservable();
 
-  constructor(private routingService: RoutingService) {
+  constructor(private routingService: RoutingService, private translateService: TranslateService) {
   }
 
   init(form: FormGroup, editable$?: Observable<boolean>): void {
@@ -48,23 +49,23 @@ export class FormService {
       ).subscribe();
   }
 
-  setError(error: HttpErrorResponse | null): Observable<any> {
-    if (!error || !error.error) {
+  setError(httpError: HttpErrorResponse | null): Observable<any> {
+    if (!httpError || !httpError.error) {
       this.error$.next(null);
       return of(null);
     }
 
-    const i18nError = error.error;
-    this.error$.next(i18nError);
-    if (i18nError) {
+    const apiError = httpError.error;
+    this.error$.next(apiError);
+    if (apiError) {
       this.success$.next(null);
-      if (!i18nError?.i18nKey) {
-        i18nError.i18nKey = 'incomplete.form';
+      if (!apiError.i18nMessage && !apiError.message) {
+        apiError.i18nMessage.i18nKey = 'incomplete.form';
       }
-      this.setFieldErrors(i18nError);
+      this.setFieldErrors(apiError);
     }
 
-    throw error;
+    throw httpError;
   }
 
   setSuccess(message: I18nLabel | string | null): void {
@@ -124,16 +125,16 @@ export class FormService {
     this.resetSubject.next();
   }
 
-  private setFieldErrors(error: I18nValidationError): void {
+  private setFieldErrors(error: APIError): void {
     if (!this.form) {
       return;
     }
     Log.debug('Set form backend errors.', this, error);
     Object.keys(this.form?.controls).forEach(key => {
-      if (!error?.i18nFieldErrors || !error.i18nFieldErrors[key]) {
+      if (!error?.formErrors || !error.formErrors[key]) {
         return;
       }
-      this.form?.controls[key].setErrors({i18nError: error.i18nFieldErrors[key].i18nKey});
+      this.form?.controls[key].setErrors({error: this.translateService.instant(error.formErrors[key].i18nKey, error.formErrors[key].i18nArguments)});
       this.form?.controls[key].markAsTouched();
     });
   }

@@ -61,7 +61,7 @@ class ProjectControllerIntegrationTest {
         )
             .andExpect(status().isBadRequest)
             .andExpect(
-                jsonPath("$.i18nFieldErrors.acronym.i18nKey")
+                jsonPath("$.formErrors.acronym.i18nKey")
                     .value("project.acronym.should.not.be.empty")
             )
     }
@@ -78,7 +78,7 @@ class ProjectControllerIntegrationTest {
         )
             .andExpect(status().isBadRequest)
             .andExpect(
-                jsonPath("$.i18nFieldErrors.acronym.i18nKey")
+                jsonPath("$.formErrors.acronym.i18nKey")
                     .value("project.acronym.size.too.long")
             )
     }
