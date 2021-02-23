@@ -7,7 +7,7 @@ import {FormArray, FormBuilder} from '@angular/forms';
 import {ProjectWorkPackagePageStore} from '../project-work-package-page-store.service';
 import {MultiLanguageInputService} from '../../../../common/services/multi-language-input.service';
 import {catchError, map, startWith, tap} from 'rxjs/operators';
-import {IndicatorOutputDto, OutputProjectPeriod, WorkPackageOutputDTO} from '@cat/api';
+import {OutputIndicatorSummaryDTO, OutputProjectPeriod, WorkPackageOutputDTO} from '@cat/api';
 import {take} from 'rxjs/internal/operators';
 
 @UntilDestroy()
@@ -28,7 +28,7 @@ export class ProjectWorkPackageOutputsTabComponent implements OnInit {
   data$: Observable<{
     outputs: WorkPackageOutputDTO[],
     periods: OutputProjectPeriod[],
-    outputIndicators: IndicatorOutputDto[],
+    outputIndicators: OutputIndicatorSummaryDTO[],
     workPackageNumber: number
   }>;
 
@@ -93,13 +93,13 @@ export class ProjectWorkPackageOutputsTabComponent implements OnInit {
     return this.form.enabled && this.outputs.length < 10;
   }
 
-  getMeasurementUnit(indicatorId: number, indicators: IndicatorOutputDto[]): string | undefined {
+  getMeasurementUnit(indicatorId: number, indicators: OutputIndicatorSummaryDTO[]): string | undefined {
     return indicators.find(indicator => indicator.id === indicatorId)?.measurementUnit;
   }
 
   private resetForm(outputs: WorkPackageOutputDTO[]): void {
     this.outputs.clear();
-    outputs.forEach((activity, index) => this.addOutput(activity));
+    outputs.forEach((activity) => this.addOutput(activity));
     this.formService.resetEditable();
     this.formService.setDirty(false);
   }

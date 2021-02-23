@@ -15,10 +15,7 @@ import {filter, map, startWith, take, takeUntil} from 'rxjs/operators';
 import {FormState} from '@common/components/forms/form-state';
 import {Forms} from '../../../../common/utils/forms';
 import {
-  InputIndicatorResultCreate,
-  InputIndicatorResultUpdate,
-  OutputIndicatorResult,
-  ProgrammePriorityDTO
+  ProgrammePriorityDTO, ResultIndicatorCreateRequestDTO, ResultIndicatorDetailDTO, ResultIndicatorUpdateRequestDTO
 } from '@cat/api';
 import {Permission} from '../../../../security/permissions/permission';
 import {ProgrammeResultIndicatorConstants} from './constants/programme-result-indicator-constants';
@@ -35,15 +32,15 @@ export class ProgrammeResultIndicatorDetailComponent extends ViewEditForm implem
   Permission = Permission;
   programmeResultIndicatorConstants = ProgrammeResultIndicatorConstants;
   @Input()
-  resultIndicator: OutputIndicatorResult;
+  resultIndicator: ResultIndicatorDetailDTO;
   @Input()
   priorities: Array<ProgrammePriorityDTO>;
   @Input()
   isCreate: boolean;
   @Output()
-  createResultIndicator: EventEmitter<InputIndicatorResultCreate> = new EventEmitter<InputIndicatorResultCreate>();
+  createResultIndicator: EventEmitter<ResultIndicatorCreateRequestDTO> = new EventEmitter<ResultIndicatorCreateRequestDTO>();
   @Output()
-  updateResultIndicator: EventEmitter<InputIndicatorResultUpdate> = new EventEmitter<InputIndicatorResultUpdate>();
+  updateResultIndicator: EventEmitter<ResultIndicatorUpdateRequestDTO> = new EventEmitter<ResultIndicatorUpdateRequestDTO>();
   @Output()
   cancelCreate: EventEmitter<void> = new EventEmitter<void>();
 

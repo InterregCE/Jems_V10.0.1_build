@@ -2,16 +2,14 @@ import {ChangeDetectionStrategy, Component} from '@angular/core';
 import {BaseComponent} from '@common/components/base-component';
 import {of, Subject} from 'rxjs';
 import {I18nValidationError} from '@common/validation/i18n-validation-error';
-import {catchError, map, take, takeUntil, tap} from 'rxjs/operators';
+import {catchError, take, takeUntil, tap} from 'rxjs/operators';
 import {Log} from '../../../../common/utils/log';
 import {ActivatedRoute} from '@angular/router';
 import {TabService} from '../../../../common/services/tab.service';
 import {HttpErrorResponse} from '@angular/common/http';
 import {
-  InputIndicatorResultCreate,
-  InputIndicatorResultUpdate,
   ProgrammeIndicatorService,
-  ProgrammePriorityService
+  ProgrammePriorityService, ResultIndicatorCreateRequestDTO, ResultIndicatorUpdateRequestDTO
 } from '@cat/api';
 import {ProgrammePageSidenavService} from '../../services/programme-page-sidenav.service';
 
@@ -30,7 +28,7 @@ export class ProgrammeResultIndicatorSubmissionPageComponent extends BaseCompone
   resultIndicatorSaveSuccess$ = new Subject<boolean>();
 
   resultIndicator$ = this.resultIndicatorId
-    ? this.programmeIndicatorService.getIndicatorResult(this.resultIndicatorId).pipe(
+    ? this.programmeIndicatorService.getResultIndicatorDetail(this.resultIndicatorId).pipe(
       tap(resultIndicatorData => Log.info('Fetched result Indicator data:', this, resultIndicatorData)))
     : of({});
 
@@ -47,8 +45,8 @@ export class ProgrammeResultIndicatorSubmissionPageComponent extends BaseCompone
     super();
   }
 
-  createResultIndicator(indicator: InputIndicatorResultCreate): void {
-    this.programmeIndicatorService.createIndicatorResult(indicator)
+  createResultIndicator(indicator: ResultIndicatorCreateRequestDTO): void {
+    this.programmeIndicatorService.createResultIndicator(indicator)
       .pipe(
         take(1),
         takeUntil(this.destroyed$),
@@ -63,8 +61,8 @@ export class ProgrammeResultIndicatorSubmissionPageComponent extends BaseCompone
       ).subscribe();
   }
 
-  updateResultIndicator(indicator: InputIndicatorResultUpdate): void {
-    this.programmeIndicatorService.updateIndicatorResult(indicator)
+  updateResultIndicator(indicator: ResultIndicatorUpdateRequestDTO): void {
+    this.programmeIndicatorService.updateResultIndicator(indicator)
       .pipe(
         take(1),
         takeUntil(this.destroyed$),

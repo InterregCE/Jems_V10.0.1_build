@@ -8,8 +8,8 @@ import io.cloudflight.jems.api.programme.dto.priority.ProgrammeObjectivePolicy
 import io.cloudflight.jems.server.UnitTest
 import io.cloudflight.jems.server.common.exception.ResourceNotFoundException
 import io.cloudflight.jems.server.programme.entity.ProgrammeSpecificObjectiveEntity
-import io.cloudflight.jems.server.programme.entity.indicator.IndicatorResult
-import io.cloudflight.jems.server.programme.repository.indicator.IndicatorResultRepository
+import io.cloudflight.jems.server.programme.entity.indicator.ResultIndicatorEntity
+import io.cloudflight.jems.server.programme.repository.indicator.ResultIndicatorRepository
 import io.cloudflight.jems.server.project.entity.ProjectEntity
 import io.cloudflight.jems.server.project.entity.ProjectPeriodEntity
 import io.cloudflight.jems.server.project.entity.ProjectPeriodId
@@ -44,11 +44,11 @@ class ProjectResultPersistenceTest: UnitTest() {
             language = lang
         )
 
-        val indicatorResult = IndicatorResult(
+        val indicatorResult = ResultIndicatorEntity(
             id = INDICATOR_ID,
             identifier = "IND05",
             name = "Indicator Nr. 5",
-            programmePriorityPolicy = ProgrammeSpecificObjectiveEntity(ProgrammeObjectivePolicy.AdvancedTechnologies, ""),
+            programmePriorityPolicyEntity = ProgrammeSpecificObjectiveEntity(ProgrammeObjectivePolicy.AdvancedTechnologies, ""),
         )
 
         val result1_model = ProjectResult(
@@ -77,7 +77,7 @@ class ProjectResultPersistenceTest: UnitTest() {
                 ProjectResultTransl(translationId = trIdRes(resultId1, SK), description = null),
             ),
             periodNumber = 10,
-            programmeResultIndicator = indicatorResult,
+            programmeResultIndicatorEntity = indicatorResult,
             targetValue = BigDecimal.ONE,
         )
 
@@ -92,7 +92,7 @@ class ProjectResultPersistenceTest: UnitTest() {
     lateinit var projectRepository: ProjectRepository
 
     @RelaxedMockK
-    lateinit var indicatorRepository: IndicatorResultRepository
+    lateinit var indicatorRepository: ResultIndicatorRepository
 
     @InjectMockKs
     private lateinit var persistence: ProjectResultPersistenceProvider

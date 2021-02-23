@@ -2,9 +2,9 @@ import {ChangeDetectionStrategy, Component, EventEmitter, Input, Output} from '@
 import {BaseComponent} from '@common/components/base-component';
 import {MatSort} from '@angular/material/sort';
 import {TableConfiguration} from '@common/components/table/model/table.configuration';
-import {PageOutputIndicatorResult} from '@cat/api';
 import {Alert} from '@common/components/forms/alert';
 import {ColumnType} from '@common/components/table/model/column-type.enum';
+import {PageResultIndicatorDetailDTO} from '@cat/api';
 
 @Component({
   selector: 'app-programme-result-indicators-list',
@@ -19,7 +19,7 @@ export class ProgrammeResultIndicatorsListComponent extends BaseComponent {
   @Input()
   indicator: string;
   @Input()
-  indicatorPage: PageOutputIndicatorResult;
+  indicatorPage: PageResultIndicatorDetailDTO;
   @Input()
   pageIndex: number;
 

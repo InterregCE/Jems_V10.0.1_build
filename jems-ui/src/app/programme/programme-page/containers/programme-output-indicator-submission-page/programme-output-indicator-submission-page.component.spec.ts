@@ -1,10 +1,10 @@
 import {async, ComponentFixture, fakeAsync, TestBed} from '@angular/core/testing';
 
 import { ProgrammeOutputIndicatorSubmissionPageComponent } from './programme-output-indicator-submission-page.component';
-import {InputIndicatorOutputCreate, InputIndicatorOutputUpdate} from '@cat/api';
 import {HttpTestingController} from '@angular/common/http/testing';
 import {TestModule} from '../../../../common/test-module';
 import {ProgrammeModule} from '../../../programme.module';
+import {OutputIndicatorCreateRequestDTO, OutputIndicatorUpdateRequestDTO} from '@cat/api';
 
 describe('ProgrammeFinalIndicatorSubmissionPageComponent', () => {
   let component: ProgrammeOutputIndicatorSubmissionPageComponent;
@@ -33,7 +33,7 @@ describe('ProgrammeFinalIndicatorSubmissionPageComponent', () => {
     expect(component).toBeTruthy();
   });
   it('should update an indicator', fakeAsync(() => {
-    component.updateOutputIndicator({} as InputIndicatorOutputUpdate);
+    component.updateOutputIndicator({} as OutputIndicatorUpdateRequestDTO);
 
     httpTestingController.expectOne({
       method: 'PUT',
@@ -42,7 +42,7 @@ describe('ProgrammeFinalIndicatorSubmissionPageComponent', () => {
   }));
 
   it('should create an indicator', fakeAsync(() => {
-    component.createOutputIndicator({} as InputIndicatorOutputCreate);
+    component.createOutputIndicator({} as OutputIndicatorCreateRequestDTO);
 
     httpTestingController.expectOne({
       method: 'POST',

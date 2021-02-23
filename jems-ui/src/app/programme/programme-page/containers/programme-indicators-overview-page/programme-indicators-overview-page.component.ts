@@ -42,7 +42,7 @@ export class ProgrammeIndicatorsOverviewPageComponent extends BaseComponent {
     ])
       .pipe(
         mergeMap(([pageIndex, pageSize, sort]) =>
-          this.programmeIndicatorService.getAllIndicatorOutput(pageIndex, pageSize, sort)),
+          this.programmeIndicatorService.getOutputIndicatorDetails(pageIndex, pageSize, sort)),
         tap(page => Log.info('Fetched the Final Indicators:', this, page.content)),
       );
 
@@ -58,7 +58,7 @@ export class ProgrammeIndicatorsOverviewPageComponent extends BaseComponent {
     ])
       .pipe(
         mergeMap(([pageIndex, pageSize, sort]) =>
-          this.programmeIndicatorService.getAllIndicatorResult(pageIndex, pageSize, sort)),
+          this.programmeIndicatorService.getResultIndicatorDetails(pageIndex, pageSize, sort)),
         tap(page => Log.info('Fetched the Result Indicators:', this, page.content)),
       );
 

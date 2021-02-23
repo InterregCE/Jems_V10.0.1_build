@@ -1,13 +1,12 @@
 import {ChangeDetectionStrategy, Component} from '@angular/core';
 import {BaseComponent} from '@common/components/base-component';
 import {
-  InputIndicatorOutputCreate,
-  InputIndicatorOutputUpdate,
+  OutputIndicatorCreateRequestDTO, OutputIndicatorUpdateRequestDTO,
   ProgrammeIndicatorService,
   ProgrammePriorityService
 } from '@cat/api';
 import {ActivatedRoute} from '@angular/router';
-import {catchError, map, take, takeUntil, tap} from 'rxjs/operators';
+import {catchError, take, takeUntil, tap} from 'rxjs/operators';
 import {Log} from '../../../../common/utils/log';
 import {of, Subject} from 'rxjs';
 import {I18nValidationError} from '@common/validation/i18n-validation-error';
@@ -30,7 +29,7 @@ export class ProgrammeOutputIndicatorSubmissionPageComponent extends BaseCompone
   outputIndicatorSaveSuccess$ = new Subject<boolean>();
 
   outputIndicator$ = this.outputIndicatorId
-    ? this.programmeIndicatorService.getIndicatorOutput(this.outputIndicatorId).pipe(
+    ? this.programmeIndicatorService.getOutputIndicatorDetail(this.outputIndicatorId).pipe(
       tap(outputIndicatorData => Log.info('Fetched output Indicator data:', this, outputIndicatorData)))
     : of({});
 
@@ -47,8 +46,8 @@ export class ProgrammeOutputIndicatorSubmissionPageComponent extends BaseCompone
     super();
   }
 
-  createOutputIndicator(indicator: InputIndicatorOutputCreate): void {
-    this.programmeIndicatorService.createIndicatorOutput(indicator)
+  createOutputIndicator(indicator: OutputIndicatorCreateRequestDTO): void {
+    this.programmeIndicatorService.createOutputIndicator(indicator)
       .pipe(
         take(1),
         takeUntil(this.destroyed$),
@@ -63,8 +62,8 @@ export class ProgrammeOutputIndicatorSubmissionPageComponent extends BaseCompone
       ).subscribe();
   }
 
-  updateOutputIndicator(indicator: InputIndicatorOutputUpdate): void {
-    this.programmeIndicatorService.updateIndicatorOutput(indicator)
+  updateOutputIndicator(indicator: OutputIndicatorUpdateRequestDTO): void {
+    this.programmeIndicatorService.updateOutputIndicator(indicator)
       .pipe(
         take(1),
         takeUntil(this.destroyed$),

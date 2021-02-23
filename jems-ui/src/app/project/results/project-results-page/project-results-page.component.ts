@@ -6,7 +6,7 @@ import {combineLatest, Observable} from 'rxjs';
 import {FormArray, FormBuilder} from '@angular/forms';
 import {UntilDestroy, untilDestroyed} from '@ngneat/until-destroy';
 import {catchError, map, startWith, tap} from 'rxjs/operators';
-import {IndicatorResultDto, OutputProjectPeriod, ProjectResultDTO} from '@cat/api';
+import {OutputProjectPeriod, ProjectResultDTO, ResultIndicatorSummaryDTO} from '@cat/api';
 import {take} from 'rxjs/internal/operators';
 import {ProjectApplicationFormSidenavService} from '../../project-application/containers/project-application-form-page/services/project-application-form-sidenav.service';
 import {ActivatedRoute} from '@angular/router';
@@ -29,7 +29,7 @@ export class ProjectResultsPageComponent implements OnInit {
 
   data$: Observable<{
     results: ProjectResultDTO[],
-    resultIndicators: IndicatorResultDto[],
+    resultIndicators: ResultIndicatorSummaryDTO[],
     periods: OutputProjectPeriod[],
     projectAcronym: string
   }>;
@@ -95,13 +95,13 @@ export class ProjectResultsPageComponent implements OnInit {
     return this.form.enabled && this.results.length < 20;
   }
 
-  getMeasurementUnit(indicatorId: number, indicators: IndicatorResultDto[]): string | undefined {
+  getMeasurementUnit(indicatorId: number, indicators: ResultIndicatorSummaryDTO[]): string | undefined {
     return indicators.find(indicator => indicator.id === indicatorId)?.measurementUnit;
   }
 
   private resetForm(results: ProjectResultDTO[]): void {
     this.results.clear();
-    results.forEach((result, index) => this.addResult(result));
+    results.forEach((result) => this.addResult(result));
     this.formService.resetEditable();
   }
 
