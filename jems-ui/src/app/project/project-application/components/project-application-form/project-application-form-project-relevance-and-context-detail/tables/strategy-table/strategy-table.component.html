@@ -1,5 +1,5 @@
 <div appFormLayout [formGroup]="formGroup">
-    <app-multi-language appNoWidthLimit [inputs]="contributionInputs" *ngIf="strategiesForm.controls.length>0">
+    <app-multi-language appNoWidthLimit *ngIf="strategiesForm.controls.length>0">
         <div [appTableConfig]="[{},{}, {maxInRem:2}]">
             <div>
                 <span class="mat-body-strong">{{ 'project.application.form.relevance.strategy' | translate }}</span>
@@ -24,21 +24,13 @@
                         </mat-form-field>
 
                         <div>
-                            <textarea *ngIf="!editable" matInput formControlName="contribution"
-                                      [cdkTextareaAutosize]
-                                      [cdkAutosizeMinRows]="1"
-                                      [cdkAutosizeMaxRows]="50"
-                                      [readonly]="!editable">
-                            </textarea>
-                            <app-expandable-textarea *ngIf="editable" class="text-area"
-                                                     [control]="strategy.get('contribution')"
-                                                     [errors]="strategy.get('contribution')?.errors"
-                                                     [messages]="contributionErrors"
-                                                     [characterLimit]="2000"
-                                                     [minRows]="1"
-                                                     [label]="'project.application.form.relevance.contribution'"
-                                                     [disabled]="!editable">
-                            </app-expandable-textarea>
+                            <app-multi-language-form-field
+                                    type="textarea"
+                                    formControlName="contribution"
+                                    maxLength="2000"
+                                    minRows="1"
+                                    label="project.application.form.relevance.contribution">
+                            </app-multi-language-form-field>
                         </div>
 
                         <div>

@@ -4,7 +4,6 @@ import {OutputProjectPartnerDetail, ProjectPartnerMotivationDTO} from '@cat/api'
 import {FormService} from '@common/components/section/form/form.service';
 import {ProjectPartnerStore} from '../../../containers/project-application-form-page/services/project-partner-store.service';
 import {catchError, take, tap} from 'rxjs/operators';
-import {MultiLanguageInput} from '@common/components/forms/multi-language/multi-language-input';
 
 @Component({
   selector: 'app-project-application-form-partner-contribution',
@@ -16,10 +15,6 @@ import {MultiLanguageInput} from '@common/components/forms/multi-language/multi-
 export class ProjectApplicationFormPartnerContributionComponent implements OnInit, OnChanges {
   @Input()
   partner: OutputProjectPartnerDetail;
-
-  organizationRelevance: MultiLanguageInput;
-  organizationRole: MultiLanguageInput;
-  organizationExperience: MultiLanguageInput;
 
   partnerContributionForm: FormGroup;
 

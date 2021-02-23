@@ -121,13 +121,11 @@
         </div>
         <app-multi-language *ngIf="!englishLanguageActive()"
                             [staticLanguages]="[LANGUAGE.EN]">
-            <app-expandable-textarea
+            <app-multi-language-form-field
                     label="project.application.form.field.project.summary.in.english"
-                    [control]="applicationForm?.controls?.introEn"
-                    [errors]="applicationForm?.controls?.introEn?.errors"
-                    [messages]="projectSummaryErrors"
-                    [characterLimit]="2000">
-            </app-expandable-textarea>
+                    formControlName="introEn"
+                    maxLength="2000">
+            </app-multi-language-form-field>
         </app-multi-language>
 
         <app-multi-language>

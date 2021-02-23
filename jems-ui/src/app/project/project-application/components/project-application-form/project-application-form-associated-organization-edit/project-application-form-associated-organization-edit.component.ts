@@ -14,6 +14,7 @@ import {
   InputProjectAssociatedOrganizationCreate,
   InputProjectAssociatedOrganizationUpdate,
   InputProjectContact,
+  InputTranslation,
   OutputNuts,
   OutputProjectAssociatedOrganizationDetail,
   OutputProjectPartner,
@@ -34,6 +35,7 @@ import {takeUntil, tap} from 'rxjs/operators';
 })
 export class ProjectApplicationFormAssociatedOrganizationEditComponent extends BaseComponent implements OnInit, OnChanges {
   Permission = Permission;
+  LANGUAGE = InputTranslation.LanguageEnum;
 
   // TODO: remove these and adapt the component to save independently
   @Input()
@@ -63,7 +65,7 @@ export class ProjectApplicationFormAssociatedOrganizationEditComponent extends B
       Validators.maxLength(100),
       Validators.required])
     ],
-    nameInEnglish: ['', Validators.compose([
+    nameInEnglish: [[], Validators.compose([
       Validators.maxLength(100),
       Validators.required])
     ],
@@ -95,10 +97,6 @@ export class ProjectApplicationFormAssociatedOrganizationEditComponent extends B
   nameInOriginalLanguageErrors = {
     maxlength: 'project.organization.original.name.size.too.long',
     required: 'project.organization.original.should.not.be.empty',
-  };
-  nameInEnglishErrors = {
-    maxlength: 'project.organization.english.name.size.too.long',
-    required: 'project.organization.english.should.not.be.empty',
   };
   partnerIdErrors = {
     required: 'project.organization.partner.should.not.be.empty',
@@ -168,7 +166,7 @@ export class ProjectApplicationFormAssociatedOrganizationEditComponent extends B
     const toSave = {
       partnerId: this.controls?.partnerId.value,
       nameInOriginalLanguage: this.controls?.nameInOriginalLanguage.value,
-      nameInEnglish: this.controls?.nameInEnglish.value,
+      nameInEnglish: this.controls?.nameInEnglish.value[0].translation,
       address: {
         country: this.controls?.country.value,
         nutsRegion2: this.controls?.region2.value,
@@ -229,7 +227,10 @@ export class ProjectApplicationFormAssociatedOrganizationEditComponent extends B
   resetForm(): void {
     this.controls?.id.setValue(this.associatedOrganization?.id);
     this.controls?.nameInOriginalLanguage.setValue(this.associatedOrganization?.nameInOriginalLanguage);
-    this.controls?.nameInEnglish.setValue(this.associatedOrganization?.nameInEnglish);
+    this.controls?.nameInEnglish.setValue([{
+      language: this.LANGUAGE.EN,
+      translation: this.associatedOrganization?.nameInEnglish || ''
+    }]);
     this.controls?.partnerId.setValue(this.associatedOrganization?.partner?.id);
     this.controls?.country.setValue(this.associatedOrganization?.address?.country);
     this.controls?.region2.setValue(this.associatedOrganization?.address?.nutsRegion2);

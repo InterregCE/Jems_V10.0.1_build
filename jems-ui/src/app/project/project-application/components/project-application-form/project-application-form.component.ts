@@ -1,6 +1,6 @@
 import {ChangeDetectionStrategy, ChangeDetectorRef, Component, Input, OnInit} from '@angular/core';
 import {FormBuilder, FormGroup, Validators} from '@angular/forms';
-import {InputProjectData, InputTranslation, ProgrammeLanguageDTO, OutputProject} from '@cat/api';
+import {InputProjectData, InputTranslation, OutputProject} from '@cat/api';
 import {Permission} from '../../../../security/permissions/permission';
 import {Tools} from '../../../../common/utils/tools';
 import {catchError, distinctUntilChanged, take, takeUntil, tap} from 'rxjs/operators';
@@ -19,7 +19,7 @@ import {MultiLanguageInputService} from '../../../../common/services/multi-langu
 export class ProjectApplicationFormComponent extends BaseComponent implements OnInit {
   Permission = Permission;
   tools = Tools;
-  LANGUAGE = ProgrammeLanguageDTO.CodeEnum;
+  LANGUAGE = InputTranslation.LanguageEnum;
 
   @Input()
   project: OutputProject;
@@ -48,7 +48,7 @@ export class ProjectApplicationFormComponent extends BaseComponent implements On
     ])],
     projectPeriodLength: [''],
     projectPeriodCount: [''],
-    introEn: ['', Validators.maxLength(2000)],
+    introEn: [[], Validators.maxLength(2000)],
     intro: ['', Validators.maxLength(2000)],
     programmePriority: ['', Validators.required],
     specificObjective: ['', Validators.required]
@@ -61,15 +61,9 @@ export class ProjectApplicationFormComponent extends BaseComponent implements On
     maxlength: 'project.acronym.size.too.long',
     required: 'project.acronym.should.not.be.empty'
   };
-  projectTitleErrors = {
-    maxlength: 'project.title.size.too.long',
-  };
   projectDurationErrors = {
     max: 'project.duration.size.max',
     min: 'project.duration.size.max',
-  };
-  projectSummaryErrors = {
-    maxlength: 'project.summary.size.too.long'
   };
   programmePriorityErrors = {
     required: 'project.priority.should.not.be.empty'
@@ -106,7 +100,7 @@ export class ProjectApplicationFormComponent extends BaseComponent implements On
 
   save(): void {
     const data = {
-      intro: this.getIntroValue(),
+      intro: this.applicationForm.controls.intro.value,
       acronym: this.applicationForm.controls.acronym.value,
       title: this.applicationForm.controls.title.value,
       duration: this.applicationForm.controls.duration.value,
@@ -131,7 +125,7 @@ export class ProjectApplicationFormComponent extends BaseComponent implements On
     );
     this.applicationForm.controls.intro.setValue(this.project?.projectData?.intro || []);
     if (!this.englishLanguageActive()) {
-      this.applicationForm.controls.introEn.setValue(this.getEnglishIntro(this.project?.projectData?.intro)?.translation);
+      this.applicationForm.controls.introEn.setValue(this.project?.projectData?.intro || []);
     }
     if (this.project?.projectData?.specificObjective) {
       this.previousObjective = this.project?.projectData?.specificObjective.programmeObjectivePolicy;
@@ -159,26 +153,5 @@ export class ProjectApplicationFormComponent extends BaseComponent implements On
 
   englishLanguageActive(): boolean {
     return !!this.languageService.inputLanguages.find(lang => this.LANGUAGE.EN === lang);
-  }
-
-  private getEnglishIntro(inputs: InputTranslation[]): InputTranslation | undefined {
-    if (!inputs) {
-      return undefined;
-    }
-    return inputs.find(trans => trans.language === this.LANGUAGE.EN);
-  }
-
-  private getIntroValue(): InputTranslation[] {
-    const intro = this.applicationForm.get('intro')?.value;
-    const introEn = this.applicationForm.get('introEn')?.value;
-    if (!this.englishLanguageActive()) {
-      const englishInput = this.getEnglishIntro(intro);
-      if (englishInput) {
-        englishInput.translation = introEn;
-      } else {
-        intro.push({language: this.LANGUAGE.EN, translation: introEn});
-      }
-    }
-    return intro;
   }
 }

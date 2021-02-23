@@ -1,5 +1,5 @@
 <div appFormLayout [formGroup]="formGroup">
-    <app-multi-language appNoWidthLimit [inputs]="allInputs" *ngIf="synergiesForm.controls.length>0">
+    <app-multi-language appNoWidthLimit *ngIf="synergiesForm.controls.length > 0">
         <div [appTableConfig]="[{},{}, {maxInRem:2}]">
             <div>
                 <span class="mat-body-strong">{{'project.application.form.relevance.project.or.initiative' | translate}}</span>
@@ -10,39 +10,23 @@
                 <ng-container formArrayName="synergies">
                     <ng-container [formGroupName]="i">
                         <div>
-                            <textarea *ngIf="!editable" matInput formControlName="initiative"
-                                      [cdkTextareaAutosize]
-                                      [cdkAutosizeMinRows]="1"
-                                      [cdkAutosizeMaxRows]="50"
-                                      [readonly]="!editable">
-                            </textarea>
-                            <app-expandable-textarea *ngIf="editable" class="text-area"
-                                                     [control]="synergy.get('initiative')"
-                                                     [errors]="synergy.get('initiative')?.errors"
-                                                     [messages]="projectErrors"
-                                                     [characterLimit]="2000"
-                                                     [minRows]="1"
-                                                     [label]="'project.application.form.relevance.project.or.initiative'"
-                                                     [disabled]="!editable">
-                            </app-expandable-textarea>
+                            <app-multi-language-form-field
+                                    type="textarea"
+                                    formControlName="initiative"
+                                    maxLength="2000"
+                                    minRows="1"
+                                    label="project.application.form.relevance.project.or.initiative">
+                            </app-multi-language-form-field>
                         </div>
 
                         <div>
-                            <textarea *ngIf="!editable" matInput formControlName="synergy"
-                                      [cdkTextareaAutosize]
-                                      [cdkAutosizeMinRows]="1"
-                                      [cdkAutosizeMaxRows]="50"
-                                      [readonly]="!editable">
-                            </textarea>
-                            <app-expandable-textarea *ngIf="editable" class="text-area"
-                                                     [control]="synergy.get('synergy')"
-                                                     [errors]="synergy.get('synergy')?.errors"
-                                                     [messages]="synergyErrors"
-                                                     [characterLimit]="2000"
-                                                     [minRows]="1"
-                                                     [label]="'project.application.form.relevance.synergy'"
-                                                     [disabled]="!editable">
-                            </app-expandable-textarea>
+                            <app-multi-language-form-field
+                                    type="textarea"
+                                    formControlName="synergy"
+                                    maxLength="2000"
+                                    minRows="1"
+                                    label="project.application.form.relevance.synergy">
+                            </app-multi-language-form-field>
                         </div>
 
                         <div>

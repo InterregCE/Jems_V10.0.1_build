@@ -12,6 +12,7 @@ import {FormBuilder, FormGroup, Validators} from '@angular/forms';
 import {
   InputProjectPartnerCreate,
   InputProjectPartnerUpdate,
+  InputTranslation,
   OutputProgrammeLegalStatus,
   OutputProjectPartner,
   OutputProjectPartnerDetail
@@ -36,6 +37,7 @@ import {Router} from '@angular/router';
 })
 export class ProjectApplicationFormPartnerEditComponent extends BaseComponent implements OnInit, OnChanges {
   RoleEnum = OutputProjectPartner.RoleEnum;
+  LANGUAGE = InputTranslation.LanguageEnum;
 
   @Input()
   partner: OutputProjectPartnerDetail;
@@ -63,7 +65,7 @@ export class ProjectApplicationFormPartnerEditComponent extends BaseComponent im
     ],
     role: ['', Validators.required],
     nameInOriginalLanguage: ['', Validators.maxLength(100)],
-    nameInEnglish: ['', Validators.maxLength(100)],
+    nameInEnglish: [[], Validators.maxLength(100)],
     department: [],
     partnerType: [''],
     legalStatusId: ['', Validators.required],
@@ -80,9 +82,6 @@ export class ProjectApplicationFormPartnerEditComponent extends BaseComponent im
   };
   nameInOriginalLanguageErrors = {
     maxlength: 'project.organization.original.name.size.too.long'
-  };
-  nameInEnglishErrors = {
-    maxlength: 'project.organization.english.name.size.too.long'
   };
   legalStatusErrors = {
     required: 'project.partner.legal.status.should.not.be.empty'
@@ -139,7 +138,7 @@ export class ProjectApplicationFormPartnerEditComponent extends BaseComponent im
         role: this.controls.role.value,
         oldLeadPartnerId: oldPartnerId,
         nameInOriginalLanguage: this.controls.nameInOriginalLanguage.value,
-        nameInEnglish: this.controls.nameInEnglish.value,
+        nameInEnglish: this.controls.nameInEnglish.value[0].translation,
         department: this.controls.department.value,
         partnerType: this.controls.partnerType.value,
         legalStatusId: this.controls.legalStatusId.value,
@@ -165,7 +164,7 @@ export class ProjectApplicationFormPartnerEditComponent extends BaseComponent im
         role: this.controls.role.value,
         oldLeadPartnerId: oldPartnerId,
         nameInOriginalLanguage: this.controls.nameInOriginalLanguage.value,
-        nameInEnglish: this.controls.nameInEnglish.value,
+        nameInEnglish: this.controls.nameInEnglish.value[0].translation,
         department: this.controls.department.value,
         partnerType: this.controls.partnerType.value,
         legalStatusId: this.controls.legalStatusId.value,
@@ -219,7 +218,10 @@ export class ProjectApplicationFormPartnerEditComponent extends BaseComponent im
     this.controls.abbreviation.setValue(this.partner?.abbreviation);
     this.controls.role.setValue(this.partner?.role);
     this.controls.nameInOriginalLanguage.setValue(this.partner?.nameInOriginalLanguage);
-    this.controls.nameInEnglish.setValue(this.partner?.nameInEnglish);
+    this.controls.nameInEnglish.setValue([{
+      language: this.LANGUAGE.EN,
+      translation: this.partner?.nameInEnglish || ''
+    }]);
     this.controls.department.setValue(this.partner?.department);
     this.controls.partnerType.setValue(this.partner?.partnerType);
     this.controls.legalStatusId.setValue(this.partner?.legalStatusId);

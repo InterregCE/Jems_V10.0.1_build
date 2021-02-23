@@ -1,11 +1,4 @@
-import {
-  ChangeDetectionStrategy,
-  Component,
-  EventEmitter,
-  Input,
-  OnInit,
-  Output
-} from '@angular/core';
+import {ChangeDetectionStrategy, Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
 import {InputProjectOverallObjective, OutputProgrammePriorityPolicySimple} from '@cat/api';
 import {FormBuilder, FormGroup, Validators} from '@angular/forms';
 import {TranslateService} from '@ngx-translate/core';
@@ -14,8 +7,8 @@ import {HttpErrorResponse} from '@angular/common/http';
 import {Observable} from 'rxjs';
 import {FormService} from '@common/components/section/form/form.service';
 import {takeUntil, tap} from 'rxjs/operators';
-import {MultiLanguageInput} from '@common/components/forms/multi-language/multi-language-input';
 import {MultiLanguageInputService} from '../../../../../common/services/multi-language-input.service';
+import {ProjectStore} from '../../../containers/project-application-detail/services/project-store.service';
 
 @Component({
   selector: 'app-project-application-form-overall-objective-detail',
@@ -41,28 +34,22 @@ export class ProjectApplicationFormOverallObjectiveDetailComponent extends BaseC
   @Output()
   updateData = new EventEmitter<InputProjectOverallObjective>();
 
-  projectOverallObjective: MultiLanguageInput;
-
   overallObjectiveForm: FormGroup = this.formBuilder.group({
     projectSpecificObjective: ['', Validators.required],
-    projectOverallObjective: ['', Validators.maxLength(500)]
+    projectOverallObjective: [[], Validators.maxLength(500)]
   });
-
-  projectOverallObjectiveError = {
-    maxlength: 'project.application.form.overall.objective.entered.text.size.too.long'
-  };
 
   constructor(private formBuilder: FormBuilder,
               private formService: FormService,
               private translate: TranslateService,
-              public languageService: MultiLanguageInputService) {
+              public languageService: MultiLanguageInputService,
+              private projectStore: ProjectStore) {
     super();
   }
 
   ngOnInit(): void {
     this.resetForm();
-    this.formService.init(this.overallObjectiveForm);
-    this.formService.setAdditionalValidators([this.formValid.bind(this)]);
+    this.formService.init(this.overallObjectiveForm, this.projectStore.projectEditable$);
     this.error$
       .pipe(
         takeUntil(this.destroyed$),
@@ -79,7 +66,7 @@ export class ProjectApplicationFormOverallObjectiveDetailComponent extends BaseC
 
   onSubmit(): void {
     this.updateData.emit({
-      overallObjective: this.projectOverallObjective.inputs
+      overallObjective: this.overallObjectiveForm.get('projectOverallObjective')?.value
     });
   }
 
@@ -87,12 +74,6 @@ export class ProjectApplicationFormOverallObjectiveDetailComponent extends BaseC
     if (this.specificObjective) {
       this.overallObjectiveForm.controls.projectSpecificObjective.setValue(this.translate.instant('programme.policy.' + this.specificObjective.programmeObjectivePolicy));
     }
-    this.projectOverallObjective = this.languageService.initInput(
-      this.project?.overallObjective, this.overallObjectiveForm.controls.projectOverallObjective
-    );
-  }
-
-  private formValid(): boolean {
-    return this.projectOverallObjective.isValid();
+    this.overallObjectiveForm.get('projectOverallObjective')?.setValue(this.project?.overallObjective || []);
   }
 }

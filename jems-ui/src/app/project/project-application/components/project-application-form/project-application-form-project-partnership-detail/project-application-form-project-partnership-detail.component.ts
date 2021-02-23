@@ -15,8 +15,8 @@ import {FormService} from '@common/components/section/form/form.service';
 import {Observable} from 'rxjs';
 import {HttpErrorResponse} from '@angular/common/http';
 import {takeUntil, tap} from 'rxjs/operators';
-import {MultiLanguageInput} from '@common/components/forms/multi-language/multi-language-input';
 import {MultiLanguageInputService} from '../../../../../common/services/multi-language-input.service';
+import {ProjectStore} from '../../../containers/project-application-detail/services/project-store.service';
 
 @Component({
   selector: 'app-project-application-form-project-partnership-detail',
@@ -33,32 +33,24 @@ export class ProjectApplicationFormProjectPartnershipDetailComponent extends Bas
   success$: Observable<any>;
 
   @Input()
-  editable: boolean;
-  @Input()
   project: InputProjectPartnership;
   @Output()
   updateData = new EventEmitter<InputProjectPartnership>();
 
-  projectPartnership: MultiLanguageInput;
-
   projectPartnershipForm: FormGroup = this.formBuilder.group({
-    projectPartnership: ['', Validators.maxLength(5000)]
+    partnership: ['', Validators.maxLength(5000)]
   });
-
-  projectPartnershipErrors = {
-    maxlength: 'project.application.form.project.partnership.entered.text.size.too.long'
-  };
 
   constructor(private formBuilder: FormBuilder,
               private formService: FormService,
-              public languageService: MultiLanguageInputService) {
+              public languageService: MultiLanguageInputService,
+              private projectStore: ProjectStore) {
     super();
   }
 
   ngOnInit(): void {
     this.resetForm();
-    this.formService.init(this.projectPartnershipForm);
-    this.formService.setAdditionalValidators([this.formValid.bind(this)]);
+    this.formService.init(this.projectPartnershipForm, this.projectStore.projectEditable$);
     this.error$
       .pipe(
         takeUntil(this.destroyed$),
@@ -79,23 +71,12 @@ export class ProjectApplicationFormProjectPartnershipDetailComponent extends Bas
     }
   }
 
-  getForm(): FormGroup | null {
-    return this.projectPartnershipForm;
-  }
-
   onSubmit(): void {
-    this.updateData.emit({
-      partnership: this.projectPartnership.inputs
-    });
+    this.updateData.emit(this.projectPartnershipForm.value);
   }
 
   resetForm(): void {
-    this.projectPartnership = this.languageService.initInput(
-      this.project?.partnership, this.projectPartnershipForm.controls.projectPartnership
-    );
+    this.projectPartnershipForm.get('partnership')?.setValue(this.project?.partnership || []);
   }
 
-  private formValid(): boolean {
-    return this.projectPartnership.isValid();
-  }
 }

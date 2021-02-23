@@ -10,8 +10,7 @@ import {
 } from '@angular/core';
 import {FormArray, FormBuilder, FormGroup, Validators} from '@angular/forms';
 import {InputProjectRelevanceSynergy} from '@cat/api';
-import {MultiLanguageInput} from '@common/components/forms/multi-language/multi-language-input';
-import {MultiLanguageInputService} from '../../../../../../../common/services/multi-language-input.service';
+import {FormService} from '@common/components/section/form/form.service';
 
 @Component({
   selector: 'app-synergy-table',
@@ -29,21 +28,10 @@ export class SynergyTableComponent implements OnInit, OnChanges {
   editable: boolean;
 
   @Output()
-  changed = new EventEmitter<MultiLanguageInput[]>();
-
-  initiativeInputs: MultiLanguageInput[] = [];
-  synergyInputs: MultiLanguageInput[] = [];
-  allInputs: MultiLanguageInput[] = [];
-
-  projectErrors = {
-    maxlength: 'project.application.form.relevance.project.size.too.long',
-  };
-  synergyErrors = {
-    maxlength: 'project.application.form.relevance.synergy.size.too.long'
-  };
+  changed = new EventEmitter<void>();
 
   constructor(private formBuilder: FormBuilder,
-              private languageService: MultiLanguageInputService) {
+              private formService: FormService) {
   }
 
   ngOnInit(): void {
@@ -68,32 +56,18 @@ export class SynergyTableComponent implements OnInit, OnChanges {
   private resetForm(): void {
     this.synergiesForm.clear();
     this.synergies.forEach(synergy => this.addControl(synergy));
+    this.formService.resetEditable();
   }
 
   private addControl(synergy?: InputProjectRelevanceSynergy): void {
-    const initiativeControl = this.formBuilder.control('', [Validators.maxLength(2000)]);
-    const initiativeInput = this.languageService.initInput(synergy?.specification || [], initiativeControl);
-    this.initiativeInputs.push(initiativeInput);
-
-    const synergyControl = this.formBuilder.control('', [Validators.maxLength(2000)]);
-    const synergyInput = this.languageService.initInput(synergy?.synergy || [], synergyControl);
-    this.synergyInputs.push(synergyInput);
-
-    this.allInputs = [...this.initiativeInputs, ...this.synergyInputs];
-
     this.synergiesForm.push(this.formBuilder.group({
-      initiative: initiativeControl,
-      synergy: synergyControl,
-      initiativeMultiInput: initiativeInput,
-      synergyMultiInput: synergyInput
+      initiative: this.formBuilder.control(synergy?.specification || [], [Validators.maxLength(2000)]),
+      synergy: this.formBuilder.control(synergy?.synergy || [], [Validators.maxLength(2000)])
     }));
   }
 
   deleteEntry(elementIndex: number): void {
     this.synergiesForm.removeAt(elementIndex);
-    this.initiativeInputs.splice(elementIndex, 1);
-    this.synergyInputs.splice(elementIndex, 1);
-    this.allInputs = [...this.initiativeInputs, ...this.synergyInputs];
     this.changed.emit();
   }
 }

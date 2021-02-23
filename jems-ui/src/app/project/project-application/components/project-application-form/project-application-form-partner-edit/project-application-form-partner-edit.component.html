@@ -60,24 +60,20 @@
             </mat-error>
         </mat-form-field>
 
-        <app-multi-language [staticLanguages]="['EN']">
-            <mat-form-field>
-                <mat-label>{{'project.organization.english.name.label' | translate}}</mat-label>
-                <input name="nameInEnglish" formControlName="nameInEnglish" matInput>
-                <mat-error>
-                    <app-form-field-errors
-                            [errors]="controls?.nameInEnglish?.errors"
-                            [messages]="nameInEnglishErrors">
-                    </app-form-field-errors>
-                </mat-error>
-            </mat-form-field>
+        <app-multi-language [staticLanguages]="[LANGUAGE.EN]">
+            <app-multi-language-form-field
+                    label="project.organization.english.name.label"
+                    formControlName="nameInEnglish"
+                    maxLength="100">
+            </app-multi-language-form-field>
         </app-multi-language>
 
         <app-multi-language>
-            <app-multi-language-form-field [label]="'project.organization.department.label'"
-                                           type="textarea"
-                                           formControlName="department"
-                                           [maxLength]="250">
+            <app-multi-language-form-field
+                    label="project.organization.department.label"
+                    type="textarea"
+                    formControlName="department"
+                    maxLength="250">
             </app-multi-language-form-field>
         </app-multi-language>
 

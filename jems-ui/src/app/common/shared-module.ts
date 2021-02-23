@@ -32,6 +32,7 @@ import {MultiColumnRowDirective} from './directives/multi-column-row/multi-colum
 import {NoWidthLimitDirective} from './directives/no-width-limit.directive';
 import {LabelDirective} from './directives/form-layout/label.directive';
 import {MainPageTemplateComponent} from '@common/components/page-templates/main-page-template/main-page-template.component';
+import {MatBadgeModule} from '@angular/material/badge';
 
 const modules = [
   CommonModule,
@@ -41,7 +42,8 @@ const modules = [
   NgxPermissionsModule.forChild(),
   RouterModule,
   MaterialModule,
-  NgxCurrencyModule
+  NgxCurrencyModule,
+  MatBadgeModule
 ];
 
 const declarations = [
