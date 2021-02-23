@@ -12,6 +12,7 @@
     .mat-button-toggle-group {
       z-index: 2;
       margin-right: 0.5rem;
+      padding: .1rem;
     }
   }
 
@@ -31,6 +32,7 @@
     right: .1rem;
     width: .7rem;
     height: .7rem;
+    line-height: .8rem;
   }
 
   ::ng-deep.mat-badge.empty .mat-badge-content {
