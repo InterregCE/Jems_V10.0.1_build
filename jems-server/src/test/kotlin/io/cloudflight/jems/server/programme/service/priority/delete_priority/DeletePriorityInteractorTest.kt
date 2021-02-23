@@ -29,9 +29,10 @@ class DeletePriorityInteractorTest {
 
     @Test
     fun `delete priority - OK`() {
-        every { persistence.delete(1L) } answers {}
+        every { persistence.isProgrammeSetupRestricted() } returns false
         every { persistence.getPriorityById(1L) } returns testPriority
         every { persistence.getObjectivePoliciesAlreadyInUse() } returns setOf(IndustrialTransition)
+        every { persistence.delete(1L) } answers {}
 
         deletePriority.deletePriority(1L)
         verify { persistence.delete(1L) }
@@ -39,7 +40,7 @@ class DeletePriorityInteractorTest {
 
     @Test
     fun `delete priority - specific objective in use`() {
-        every { persistence.delete(1L) } answers {}
+        every { persistence.isProgrammeSetupRestricted() } returns false
         every { persistence.getPriorityById(1L) } returns testPriority
         every { persistence.getObjectivePoliciesAlreadyInUse() } returns setOf(RenewableEnergy)
 
@@ -52,9 +53,16 @@ class DeletePriorityInteractorTest {
     }
 
     @Test
-    fun `delete prioty - not existing`() {
+    fun `delete priority - not existing`() {
+        every { persistence.isProgrammeSetupRestricted() } returns false
         every { persistence.getPriorityById(-1L) } throws ResourceNotFoundException("programmePriority")
         assertThrows<ResourceNotFoundException> { deletePriority.deletePriority(-1L) }
+    }
+
+    @Test
+    fun `delete priority - programme setup already locked`() {
+        every { persistence.isProgrammeSetupRestricted() } returns true
+        assertThrows<DeletionWhenProgrammeSetupRestricted> { deletePriority.deletePriority(-2L) }
     }
 
 }

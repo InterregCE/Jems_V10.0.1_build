@@ -8,7 +8,7 @@ import io.cloudflight.jems.api.project.dto.status.ProjectApplicationStatus
 import io.cloudflight.jems.server.call.callWithId
 import io.cloudflight.jems.server.common.exception.ResourceNotFoundException
 import io.cloudflight.jems.server.programme.entity.ProgrammeFundEntity
-import io.cloudflight.jems.server.programme.entity.ProgrammeLegalStatus
+import io.cloudflight.jems.server.programme.entity.legalstatus.ProgrammeLegalStatusEntity
 import io.cloudflight.jems.server.programme.service.model.ProgrammeFund
 import io.cloudflight.jems.server.project.entity.ProjectEntity
 import io.cloudflight.jems.server.project.entity.ProjectStatus
@@ -58,7 +58,7 @@ class ProjectBudgetCoFinancingPersistenceTest {
             project = dummyProject,
             abbreviation = "test abbr",
             role = ProjectPartnerRole.LEAD_PARTNER,
-            legalStatus = ProgrammeLegalStatus()
+            legalStatus = ProgrammeLegalStatusEntity()
         )
     }
 

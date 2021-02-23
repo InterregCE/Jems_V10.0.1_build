@@ -2,7 +2,7 @@ package io.cloudflight.jems.server.project.entity.partner
 
 import io.cloudflight.jems.api.project.dto.description.ProjectTargetGroup
 import io.cloudflight.jems.api.project.dto.partner.ProjectPartnerRole
-import io.cloudflight.jems.server.programme.entity.ProgrammeLegalStatus
+import io.cloudflight.jems.server.programme.entity.legalstatus.ProgrammeLegalStatusEntity
 import io.cloudflight.jems.server.project.entity.ProjectEntity
 import io.cloudflight.jems.server.project.entity.partner.cofinancing.ProjectPartnerCoFinancingEntity
 import io.cloudflight.jems.server.project.entity.partner.cofinancing.ProjectPartnerContributionEntity
@@ -55,7 +55,7 @@ data class ProjectPartnerEntity(
     @ManyToOne(optional = false)
     @JoinColumn(name = "legal_status_id")
     @field:NotNull
-    val legalStatus: ProgrammeLegalStatus,
+    val legalStatus: ProgrammeLegalStatusEntity,
 
     val vat: String? = null,
 

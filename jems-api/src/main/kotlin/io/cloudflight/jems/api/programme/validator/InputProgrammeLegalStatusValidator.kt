@@ -1,6 +1,6 @@
 package io.cloudflight.jems.api.programme.validator
 
-import io.cloudflight.jems.api.programme.dto.InputProgrammeLegalStatusWrapper
+import io.cloudflight.jems.api.programme.dto.legalstatus.ProgrammeLegalStatusUpdateDTO
 import javax.validation.Constraint
 import javax.validation.ConstraintValidator
 import javax.validation.ConstraintValidatorContext
@@ -17,14 +17,14 @@ annotation class InputProgrammeLegalStatusValidator(
 )
 
 class ProgrammeLegalStatusValidator(private val programmeLegalStatusValidator: ProgrammeLegalStatusInputValidator) :
-    ConstraintValidator<InputProgrammeLegalStatusValidator, InputProgrammeLegalStatusWrapper> {
-    override fun isValid(legalStatus: InputProgrammeLegalStatusWrapper, context: ConstraintValidatorContext): Boolean {
+    ConstraintValidator<InputProgrammeLegalStatusValidator, ProgrammeLegalStatusUpdateDTO> {
+    override fun isValid(legalStatus: ProgrammeLegalStatusUpdateDTO, context: ConstraintValidatorContext): Boolean {
         return programmeLegalStatusValidator.isProgrammeLegalStatusFilledInCorrectly(legalStatus, context)
     }
 }
 
 interface ProgrammeLegalStatusInputValidator {
 
-    fun isProgrammeLegalStatusFilledInCorrectly(legalStatus: InputProgrammeLegalStatusWrapper, context: ConstraintValidatorContext): Boolean
+    fun isProgrammeLegalStatusFilledInCorrectly(legalStatus: ProgrammeLegalStatusUpdateDTO, context: ConstraintValidatorContext): Boolean
 
 }

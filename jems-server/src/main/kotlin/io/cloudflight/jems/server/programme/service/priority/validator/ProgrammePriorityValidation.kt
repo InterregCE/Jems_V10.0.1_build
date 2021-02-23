@@ -21,7 +21,7 @@ fun validateCreateProgrammePriority(
         getPriorityIdByCode = getPriorityIdByCode,
     )
     validateEveryPolicyIsFree(
-        policies = programmePriority.specificObjectives.mapTo(HashSet()) { it.programmeObjectivePolicy },
+        policies = programmePriority.getSpecificObjectivePolicies(),
         getPriorityIdForPolicyIfExists = getPriorityIdForPolicyIfExists,
     )
     validateEveryPolicyCodeIsFree(
@@ -46,7 +46,7 @@ fun validateUpdateProgrammePriority(
     )
     validateEveryPolicyIsFreeOrLinkedToThisPriority(
         priorityId = programmePriorityId,
-        policies = programmePriority.specificObjectives.mapTo(HashSet()) { it.programmeObjectivePolicy },
+        policies = programmePriority.getSpecificObjectivePolicies(),
         getPriorityIdForPolicyIfExists = getPriorityIdForPolicyIfExists,
     )
     validateEveryPolicyCodeIsFreeOrLinkedToThisPriority(
@@ -207,13 +207,9 @@ private fun validateEveryPolicyCodeIsFreeOrLinkedToThisPriority(
 }
 
 fun checkNoCallExistsForRemovedSpecificObjectives(
-    newObjectivePolicies: Set<ProgrammeObjectivePolicy>,
-    existingPriority: ProgrammePriority,
+    objectivePoliciesToBeRemoved: Set<ProgrammeObjectivePolicy>,
     alreadyUsedObjectivePolicies: Iterable<ProgrammeObjectivePolicy>
 ) {
-    val objectivePoliciesToBeRemoved = existingPriority.specificObjectives.mapTo(HashSet()) { it.programmeObjectivePolicy }
-    objectivePoliciesToBeRemoved.removeAll(newObjectivePolicies)
-
     val policiesThatCannotBeRemoved = alreadyUsedObjectivePolicies intersect objectivePoliciesToBeRemoved
     if (policiesThatCannotBeRemoved.isNotEmpty())
         invalid(fieldErrors = mapOf(

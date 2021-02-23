@@ -1,5 +1,6 @@
 package io.cloudflight.jems.server.programme.service.priority.update_priority
 
+import io.cloudflight.jems.api.programme.dto.priority.ProgrammeObjectivePolicy
 import io.cloudflight.jems.server.audit.service.AuditService
 import io.cloudflight.jems.server.programme.authorization.CanUpdateProgrammeSetup
 import io.cloudflight.jems.server.programme.service.priority.ProgrammePriorityPersistence
@@ -29,15 +30,30 @@ class UpdatePriority(
             getPrioritiesBySpecificObjectiveCodes = { persistence.getPrioritiesBySpecificObjectiveCodes(it) },
         )
 
+        val objectivePoliciesToBeRemoved = extractRemovedSpecificObjectives(priority, existingPriority)
+        if (persistence.isProgrammeSetupRestricted() && objectivePoliciesToBeRemoved.isNotEmpty())
+            throw UpdateWhenProgrammeSetupRestricted()
+
         checkNoCallExistsForRemovedSpecificObjectives(
-            newObjectivePolicies = priority.specificObjectives.mapTo(HashSet()) { it.programmeObjectivePolicy },
-            existingPriority = existingPriority,
+            objectivePoliciesToBeRemoved = objectivePoliciesToBeRemoved,
             alreadyUsedObjectivePolicies = persistence.getObjectivePoliciesAlreadyInUse()
         )
 
         val newPriority = persistence.update(priority.copy(id = priorityId))
         programmePriorityUpdated(existingPriority, existingPriority.getDiff(newPriority)).logWith(auditService)
         return newPriority
+    }
+
+    private fun extractRemovedSpecificObjectives(
+        newPriority: ProgrammePriority,
+        existingPriority: ProgrammePriority,
+    ): Set<ProgrammeObjectivePolicy> {
+        val newObjectivePolicies = newPriority.getSpecificObjectivePolicies()
+
+        val objectivePoliciesToBeRemoved = existingPriority.getSpecificObjectivePolicies()
+        objectivePoliciesToBeRemoved.removeAll(newObjectivePolicies)
+
+        return objectivePoliciesToBeRemoved
     }
 
 }

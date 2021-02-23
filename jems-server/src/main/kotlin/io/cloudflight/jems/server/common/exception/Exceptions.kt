@@ -17,14 +17,14 @@ open class ApplicationNotFoundException(
 
 open class ApplicationUnprocessableException(
     override val code: String, override val i18nMessage: I18nMessage,
-    override val cause: Throwable?, override val message: String = "",
+    override val cause: Throwable? = null, override val message: String = "",
     override val formErrors: Map<String, I18nMessage> = hashMapOf()
 ) : ApplicationException(code, i18nMessage, HttpStatus.UNPROCESSABLE_ENTITY, cause, message)
 
 open class ApplicationBadRequestException(
     override val code: String,
     override val i18nMessage: I18nMessage,
-    override val cause: Throwable?,
+    override val cause: Throwable? = null,
     override val message: String = "",
     override val formErrors: Map<String, I18nMessage> = hashMapOf()
 ) : ApplicationException(code, i18nMessage, HttpStatus.BAD_REQUEST, cause, message)

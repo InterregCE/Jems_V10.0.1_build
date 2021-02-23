@@ -9,7 +9,7 @@ import {
 } from '@angular/core';
 import {ViewEditForm} from '@common/components/forms/view-edit-form';
 import {FormControl, FormGroup, Validators} from '@angular/forms';
-import {InputProgrammeLegalStatus, InputProgrammeLegalStatusWrapper} from '@cat/api';
+import {ProgrammeLegalStatusDTO, ProgrammeLegalStatusUpdateDTO} from '@cat/api';
 import {MatTableDataSource} from '@angular/material/table';
 import {Tables} from '../../../../common/utils/tables';
 
@@ -21,14 +21,14 @@ import {Tables} from '../../../../common/utils/tables';
 })
 export class ProgrammeLegalStatusListComponent extends ViewEditForm implements OnInit {
   @Input()
-  legalStatuses: InputProgrammeLegalStatus[];
+  legalStatuses: ProgrammeLegalStatusDTO[];
 
   @Output()
-  saveLegalStatuses = new EventEmitter<InputProgrammeLegalStatusWrapper>();
+  saveLegalStatuses = new EventEmitter<ProgrammeLegalStatusUpdateDTO>();
 
   displayedColumns: string[] = ['description', 'delete'];
-  dataSource: MatTableDataSource<InputProgrammeLegalStatus>;
-  toDelete: InputProgrammeLegalStatus[] = [];
+  dataSource: MatTableDataSource<ProgrammeLegalStatusDTO>;
+  toDeleteIds: number[] = [];
 
   statusForm = new FormGroup({});
 
@@ -54,7 +54,7 @@ export class ProgrammeLegalStatusListComponent extends ViewEditForm implements O
   addNewLegalStatus(): void {
     const legalStatus = {
       id: Tables.getNextId(this.dataSource.data),
-      description: '',
+      description: [],
     };
     this.dataSource.data = [...this.dataSource.data, legalStatus];
     this.statusForm.addControl(
@@ -66,7 +66,7 @@ export class ProgrammeLegalStatusListComponent extends ViewEditForm implements O
     );
   }
 
-  deleteLegalStatus(status: InputProgrammeLegalStatus): void {
+  deleteLegalStatus(status: ProgrammeLegalStatusDTO): void {
     this.dataSource.data = this.dataSource.data.filter(element => element.id !== status.id);
 
     if (this.statusForm.controls[status.id]) {
@@ -75,7 +75,7 @@ export class ProgrammeLegalStatusListComponent extends ViewEditForm implements O
 
     const persistedStatus = this.legalStatuses.find(element => element.id === status.id);
     if (persistedStatus) {
-      this.toDelete.push(persistedStatus);
+      this.toDeleteIds.push(persistedStatus.id);
     }
   }
 
@@ -88,7 +88,7 @@ export class ProgrammeLegalStatusListComponent extends ViewEditForm implements O
               ? this.statusForm.controls[element.id].value : element.description
           })
         ),
-      toDelete: this.toDelete
+      toDeleteIds: this.toDeleteIds
     });
   }
 
@@ -101,6 +101,6 @@ export class ProgrammeLegalStatusListComponent extends ViewEditForm implements O
   }
 
   protected enterEditMode(): void {
-    this.toDelete = [];
+    this.toDeleteIds = [];
   }
 }

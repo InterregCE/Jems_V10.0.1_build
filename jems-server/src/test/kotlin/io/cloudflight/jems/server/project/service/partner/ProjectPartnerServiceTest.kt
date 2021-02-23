@@ -11,8 +11,8 @@ import io.cloudflight.jems.api.project.dto.partner.InputProjectPartnerUpdate
 import io.cloudflight.jems.api.project.dto.partner.ProjectPartnerRole
 import io.cloudflight.jems.server.common.exception.I18nValidationException
 import io.cloudflight.jems.server.common.exception.ResourceNotFoundException
-import io.cloudflight.jems.server.programme.entity.ProgrammeLegalStatus
-import io.cloudflight.jems.server.programme.repository.ProgrammeLegalStatusRepository
+import io.cloudflight.jems.server.programme.entity.legalstatus.ProgrammeLegalStatusEntity
+import io.cloudflight.jems.server.programme.repository.legalstatus.ProgrammeLegalStatusRepository
 import io.cloudflight.jems.server.project.entity.TranslationPartnerId
 import io.cloudflight.jems.server.project.entity.partner.ProjectPartnerEntity
 import io.cloudflight.jems.server.project.entity.partner.ProjectPartnerTranslEntity
@@ -63,7 +63,7 @@ internal class ProjectPartnerServiceTest {
         abbreviation = "partner",
         role = ProjectPartnerRole.LEAD_PARTNER,
         partnerType = ProjectTargetGroup.BusinessSupportOrganisation,
-        legalStatus = ProgrammeLegalStatus(1,"description"),
+        legalStatus = ProgrammeLegalStatusEntity(id = 1,),
         vat = "test vat",
         vatRecovery = true
         )
@@ -80,14 +80,12 @@ internal class ProjectPartnerServiceTest {
         nameInEnglish = "test",
         translatedValues = partnerTranslatedValues,
         partnerType = ProjectTargetGroup.BusinessSupportOrganisation,
-        legalStatus = ProgrammeLegalStatus(1, "description"),
+        legalStatus = ProgrammeLegalStatusEntity(id = 1),
         vat = "test vat",
         vatRecovery = true
     )
-    private val legalStatus = ProgrammeLegalStatus(
-        id = 1,
-        description = "description"
-    )
+    private val legalStatus = ProgrammeLegalStatusEntity(id = 1)
+
     private fun partner(id: Long, role: ProjectPartnerRole) = projectPartnerWithOrganization
         .copy(
             id = id,
@@ -245,10 +243,10 @@ internal class ProjectPartnerServiceTest {
             "test",
             "test@ems.eu",
             "test")
-        val projectPartner = ProjectPartnerEntity(1, project, "updated", ProjectPartnerRole.PARTNER, legalStatus = ProgrammeLegalStatus(1, "test description"), partnerType = ProjectTargetGroup.EducationTrainingCentreAndSchool)
+        val projectPartner = ProjectPartnerEntity(1, project, "updated", ProjectPartnerRole.PARTNER, legalStatus = ProgrammeLegalStatusEntity(id = 1), partnerType = ProjectTargetGroup.EducationTrainingCentreAndSchool)
         val contactPersonsEntity = setOf(projectPartnerContactUpdate.toEntity(projectPartner))
         val updatedProjectPartner = ProjectPartnerEntity(id = 1, project =  project, abbreviation = "updated", role = ProjectPartnerRole.PARTNER,
-            contacts = contactPersonsEntity, legalStatus = ProgrammeLegalStatus(1, "test description"), partnerType = ProjectTargetGroup.EducationTrainingCentreAndSchool)
+            contacts = contactPersonsEntity, legalStatus = ProgrammeLegalStatusEntity(id = 1), partnerType = ProjectTargetGroup.EducationTrainingCentreAndSchool)
 
         every { projectPartnerRepository.findById(1) } returns Optional.of(projectPartner)
         every { projectPartnerRepository.save(updatedProjectPartner) } returns updatedProjectPartner
@@ -280,9 +278,9 @@ internal class ProjectPartnerServiceTest {
             setOf(InputTranslation(SystemLanguage.EN, "test")),
             setOf(InputTranslation(SystemLanguage.EN, "test")),
             setOf(InputTranslation(SystemLanguage.EN, "test")))
-        val projectPartner = ProjectPartnerEntity(1, project, "updated", ProjectPartnerRole.PARTNER, legalStatus = ProgrammeLegalStatus(1, "test description"), partnerType = ProjectTargetGroup.EducationTrainingCentreAndSchool)
+        val projectPartner = ProjectPartnerEntity(1, project, "updated", ProjectPartnerRole.PARTNER, legalStatus = ProgrammeLegalStatusEntity(id = 1), partnerType = ProjectTargetGroup.EducationTrainingCentreAndSchool)
         val updatedProjectPartner = ProjectPartnerEntity(id = 1, project = project, abbreviation = "updated", role = ProjectPartnerRole.PARTNER,
-            motivation = projectPartnerMotivationUpdate.toEntity(projectPartner.id), legalStatus = ProgrammeLegalStatus(1, "test description"), partnerType = ProjectTargetGroup.EducationTrainingCentreAndSchool)
+            motivation = projectPartnerMotivationUpdate.toEntity(projectPartner.id), legalStatus = ProgrammeLegalStatusEntity(id = 1), partnerType = ProjectTargetGroup.EducationTrainingCentreAndSchool)
 
         every { projectPartnerRepository.findById(1) } returns Optional.of(projectPartner)
         every { projectPartnerRepository.save(updatedProjectPartner) } returns updatedProjectPartner
@@ -314,7 +312,7 @@ internal class ProjectPartnerServiceTest {
             role =  inputProjectPartner.role!!,
             nameInOriginalLanguage = projectPartnerWithOrganization.nameInOriginalLanguage,
             nameInEnglish = projectPartnerWithOrganization.nameInEnglish,
-            legalStatus = ProgrammeLegalStatus(1,"description")
+            legalStatus = ProgrammeLegalStatusEntity(id = 1)
         )
         every { projectRepository.findById(0) } returns Optional.empty()
         every { projectRepository.findById(1) } returns Optional.of(project)
@@ -346,7 +344,7 @@ internal class ProjectPartnerServiceTest {
             nameInOriginalLanguage = projectPartnerWithOrganization.nameInOriginalLanguage,
             nameInEnglish = projectPartnerWithOrganization.nameInEnglish,
             translatedValues = projectPartnerWithOrganization.translatedValues,
-            legalStatus = ProgrammeLegalStatus(1,"description")
+            legalStatus = ProgrammeLegalStatusEntity(id = 1)
         )
         every { projectPartnerRepository.findById(1) } returns Optional.of(projectPartner)
         every { projectPartnerRepository.save(updatedProjectPartner) } returns updatedProjectPartner
@@ -366,7 +364,7 @@ internal class ProjectPartnerServiceTest {
             nameInOriginalLanguage = projectPartnerWithOrganization.nameInOriginalLanguage,
             nameInEnglish = projectPartnerWithOrganization.nameInEnglish,
             translatedValues = projectPartnerWithOrganization.translatedValues,
-            legalStatus = ProgrammeLegalStatus(1, "test description")
+            legalStatus = ProgrammeLegalStatusEntity(id = 1)
         )
         every { projectPartnerRepository.findById(projectPartnerWithOrganization.id) } returns Optional.of(projectPartnerWithOrganization)
         every { projectPartnerRepository.deleteById(projectPartnerWithOrganization.id) } returns Unit

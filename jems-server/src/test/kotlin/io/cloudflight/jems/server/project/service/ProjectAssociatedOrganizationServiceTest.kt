@@ -15,7 +15,7 @@ import io.cloudflight.jems.api.project.dto.partner.ProjectPartnerRole
 import io.cloudflight.jems.api.project.dto.status.ProjectApplicationStatus
 import io.cloudflight.jems.server.call.entity.CallEntity
 import io.cloudflight.jems.server.common.exception.ResourceNotFoundException
-import io.cloudflight.jems.server.programme.entity.ProgrammeLegalStatus
+import io.cloudflight.jems.server.programme.entity.legalstatus.ProgrammeLegalStatusEntity
 import io.cloudflight.jems.server.project.entity.AddressEntity
 import io.cloudflight.jems.server.project.entity.Contact
 import io.cloudflight.jems.server.project.entity.ProjectEntity
@@ -96,7 +96,7 @@ internal class ProjectAssociatedOrganizationServiceTest {
         project = project,
         abbreviation = "partner",
         role = ProjectPartnerRole.LEAD_PARTNER,
-        legalStatus = ProgrammeLegalStatus(1, "test"),
+        legalStatus = ProgrammeLegalStatusEntity(id = 1),
         sortNumber = 1,
     )
 

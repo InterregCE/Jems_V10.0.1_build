@@ -12,7 +12,7 @@ import io.cloudflight.jems.server.call.entity.CallTranslEntity
 import io.cloudflight.jems.server.call.entity.CallTranslId
 import io.cloudflight.jems.server.call.entity.FlatRateSetupId
 import io.cloudflight.jems.server.call.entity.ProjectCallFlatRateEntity
-import io.cloudflight.jems.server.programme.entity.ProgrammeLegalStatus
+import io.cloudflight.jems.server.programme.entity.legalstatus.ProgrammeLegalStatusEntity
 import io.cloudflight.jems.server.project.entity.ProjectEntity
 import io.cloudflight.jems.server.project.entity.ProjectStatus
 import io.cloudflight.jems.server.project.entity.partner.ProjectPartnerEntity
@@ -75,5 +75,5 @@ fun partnerWithId(id: Long) = ProjectPartnerEntity(
     project = dummyProject,
     abbreviation = "test abbr",
     role = ProjectPartnerRole.LEAD_PARTNER,
-    legalStatus = ProgrammeLegalStatus()
+    legalStatus = ProgrammeLegalStatusEntity()
 )

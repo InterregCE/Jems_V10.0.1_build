@@ -75,6 +75,7 @@ class UpdatePriorityInteractorTest {
         every { persistence.getPriorityIdForPolicyIfExists(WaterManagement) } returns null
 
         every { persistence.getPrioritiesBySpecificObjectiveCodes(setOf("GU", "CE", "WM")) } returns listOf(priority)
+        every { persistence.isProgrammeSetupRestricted() } returns false
         // nothing is yet used by a Call
         every { persistence.getObjectivePoliciesAlreadyInUse() } returns emptySet()
         every { persistence.update(any()) } returnsArgument 0
@@ -283,6 +284,24 @@ class UpdatePriorityInteractorTest {
     }
 
     @Test
+    fun `updatePriority - programme setup is locked so objectives cannot be removed`() {
+        val priority = testPriority.copy(id = ID)
+        every { persistence.getPriorityById(ID) } returns priority
+        // code and title are both not used yet
+        every { persistence.getPriorityIdByCode(testPriority.code) } returns null
+        // this one is used by priority we are updating now
+        every { persistence.getPriorityIdForPolicyIfExists(GreenUrban) } returns ID
+        every { persistence.getPrioritiesBySpecificObjectiveCodes(setOf("GU")) } returns listOf(priority)
+        // programme setup is already locked
+        every { persistence.isProgrammeSetupRestricted() } returns true
+
+        val toUpdateWithoutRenewableEnergy = toUpdatePriority.copy(specificObjectives = listOf(
+            ProgrammeSpecificObjective(programmeObjectivePolicy = GreenUrban, code = "GU"),
+        ))
+        assertThrows<UpdateWhenProgrammeSetupRestricted> { updatePriority.updatePriority(ID, toUpdateWithoutRenewableEnergy) }
+    }
+
+    @Test
     fun `updatePriority - specific objectives that are in use cannot be removed`() {
         val priority = testPriority.copy(id = ID)
         every { persistence.getPriorityById(ID) } returns priority
@@ -291,6 +310,8 @@ class UpdatePriorityInteractorTest {
         // this one is used by priority we are updating now
         every { persistence.getPriorityIdForPolicyIfExists(GreenUrban) } returns ID
         every { persistence.getPrioritiesBySpecificObjectiveCodes(setOf("GU")) } returns listOf(priority)
+        // programme setup still open for changes
+        every { persistence.isProgrammeSetupRestricted() } returns false
         // objective to be removed is used by a call already
         every { persistence.getObjectivePoliciesAlreadyInUse() } returns setOf(RenewableEnergy)
 

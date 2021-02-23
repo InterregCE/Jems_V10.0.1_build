@@ -5,8 +5,9 @@ import io.cloudflight.jems.server.audit.service.AuditBuilder
 import io.cloudflight.jems.server.audit.service.AuditCandidate
 import io.cloudflight.jems.server.nuts.service.NutsIdentifier
 import io.cloudflight.jems.server.programme.entity.ProgrammeFundEntity
-import io.cloudflight.jems.server.programme.entity.ProgrammeLegalStatus
+import io.cloudflight.jems.server.programme.entity.legalstatus.ProgrammeLegalStatusEntity
 import io.cloudflight.jems.server.programme.service.language.model.ProgrammeLanguage
+import io.cloudflight.jems.server.programme.service.legalstatus.model.ProgrammeLegalStatus
 import io.cloudflight.jems.server.programme.service.priority.model.ProgrammePriority
 import java.util.stream.Collectors
 
@@ -56,9 +57,9 @@ fun programmeFundsChanged(funds: Iterable<ProgrammeFundEntity>): AuditCandidate 
         .build()
 }
 
-fun programmeLegalStatusesChanged(statuses: Iterable<ProgrammeLegalStatus>): AuditCandidate {
+fun programmeLegalStatusesChanged(statuses: List<ProgrammeLegalStatus>): AuditCandidate {
     val statusesAsString = statuses.asSequence()
-        .map { it.description }.joinToString(",\n")
+        .map { "[" + it.translatedValues.joinToString { "${it.language}=${it.description}" } + "]" }.joinToString(",\n")
 
     return AuditBuilder(AuditAction.LEGAL_STATUS_EDITED)
         .description("Values for partner legal status set to:\n$statusesAsString")
