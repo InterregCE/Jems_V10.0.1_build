@@ -3,16 +3,13 @@
     <form appFormLayout [formGroup]="projectPartnershipForm">
         <h3>{{'project.application.form.section.part.c.subsection.three' | translate}}</h3>
         <p>{{'project.application.form.project.partnership.field.row' | translate}}</p>
-        <app-multi-language
-                [inputs]="[projectPartnership]">
-            <app-expandable-textarea [control]="projectPartnershipForm?.controls?.projectPartnership"
-                                     [errors]="projectPartnershipForm?.controls?.projectPartnership?.errors"
-                                     [messages]="projectPartnershipErrors"
-                                     [characterLimit]="5000"
-                                     [minRows]="3"
-                                     [label]="'common.textarea.enter.text'"
-                                     [disabled]="!editable">
-            </app-expandable-textarea>
+        <app-multi-language>
+            <app-multi-language-form-field
+                    type="textarea"
+                    formControlName="partnership"
+                    maxLength="5000"
+                    minRows="3">
+            </app-multi-language-form-field>
         </app-multi-language>
     </form>
 </app-form>

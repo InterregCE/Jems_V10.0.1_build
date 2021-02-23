@@ -10,8 +10,6 @@ import {
 } from '@angular/core';
 import {FormArray, FormBuilder, FormGroup, Validators} from '@angular/forms';
 import {InputProjectRelevanceStrategy, OutputCall} from '@cat/api';
-import {MultiLanguageInput} from '@common/components/forms/multi-language/multi-language-input';
-import {MultiLanguageInputService} from '../../../../../../../common/services/multi-language-input.service';
 
 @Component({
   selector: 'app-strategy-table',
@@ -30,20 +28,15 @@ export class StrategyTableComponent implements OnInit, OnChanges {
   editable: boolean;
 
   @Output()
-  changed = new EventEmitter<MultiLanguageInput[]>();
+  changed = new EventEmitter<void>();
 
   strategyEnum: string[] = [];
-  contributionInputs: MultiLanguageInput[] = [];
 
   strategyErrors = {
     required: 'project.application.form.relevance.strategy.not.empty',
   };
-  contributionErrors = {
-    maxlength: 'project.application.form.relevance.contribution.size.too.long'
-  };
 
-  constructor(private formBuilder: FormBuilder,
-              private languageService: MultiLanguageInputService) {
+  constructor(private formBuilder: FormBuilder) {
   }
 
   ngOnInit(): void {
@@ -73,20 +66,14 @@ export class StrategyTableComponent implements OnInit, OnChanges {
   }
 
   private addControl(strategy?: InputProjectRelevanceStrategy): void {
-    const contributionControl = this.formBuilder.control('', [Validators.maxLength(2000)]);
-    const contributionInput = this.languageService.initInput(strategy?.specification || [], contributionControl);
-    this.contributionInputs = [...this.contributionInputs, contributionInput];
-
     this.strategiesForm.push(this.formBuilder.group({
       strategy: this.formBuilder.control(strategy?.strategy || 'Other', []),
-      contribution: contributionControl,
-      contributionMultiInput: contributionInput
+      contribution: this.formBuilder.control(strategy?.specification || [], [Validators.maxLength(2000)])
     }));
   }
 
   deleteEntry(elementIndex: number): void {
     this.strategiesForm.removeAt(elementIndex);
-    this.contributionInputs = this.contributionInputs.filter((element, index) => index !== elementIndex);
     this.changed.emit();
   }
 }

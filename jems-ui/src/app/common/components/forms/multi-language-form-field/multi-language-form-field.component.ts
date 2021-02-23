@@ -1,5 +1,4 @@
 import {Component, forwardRef, Input, OnInit} from '@angular/core';
-import {MultiLanguageInputService} from '../../../services/multi-language-input.service';
 import {
   AbstractControl,
   ControlValueAccessor,
@@ -16,7 +15,9 @@ import {InputTranslation} from '@cat/api';
 import {UntilDestroy, untilDestroyed} from '@ngneat/until-destroy';
 import {MultiLanguageFormFieldConstants} from '@common/components/forms/multi-language-form-field/multi-language-form-field.constants';
 import {tap} from 'rxjs/operators';
-import {Observable} from 'rxjs';
+import {Observable, ReplaySubject} from 'rxjs';
+import {MultiLanguageComponentService} from '@common/components/forms/multi-language/multi-language-component.service';
+import {INPUT_STATE} from '@common/components/forms/multi-language/multi-language-input-state';
 
 @UntilDestroy()
 @Component({
@@ -41,8 +42,6 @@ export class MultiLanguageFormFieldComponent implements OnInit, ControlValueAcce
   constants = MultiLanguageFormFieldConstants;
 
   @Input()
-  useSystemLanguages = false;
-  @Input()
   type: 'input' | 'textarea' = 'input';
   @Input()
   label: string;
@@ -58,26 +57,15 @@ export class MultiLanguageFormFieldComponent implements OnInit, ControlValueAcce
   multiLanguageFormGroup: FormGroup;
   languages$: Observable<string[]>;
   currentLanguage$: Observable<string>;
-  languages: string[];
+  state$ = new ReplaySubject<{ [key: string]: INPUT_STATE }>(1);
 
-  static didLanguagesChange(savedTranslations: InputTranslation[], currentSystemLanguages: string[]): boolean {
-    if (savedTranslations.length !== currentSystemLanguages.length) {
-      return true;
-    }
-    return !!currentSystemLanguages.filter(existingLanguage =>
-      !savedTranslations.filter(newTranslation => newTranslation.language === existingLanguage).length).length;
-  }
-
-  constructor(public multiLanguageService: MultiLanguageInputService, public formBuilder: FormBuilder) {
+  constructor(private componentService: MultiLanguageComponentService,
+              public formBuilder: FormBuilder) {
   }
 
   ngOnInit(): void {
-    this.languages$ = this.useSystemLanguages
-      ? this.multiLanguageService.systemLanguages$ : this.multiLanguageService.inputLanguages$;
-    this.currentLanguage$ = this.useSystemLanguages
-      ? this.multiLanguageService.currentSystemLanguage$ : this.multiLanguageService.currentInputLanguage$;
-    this.languages = this.useSystemLanguages
-      ? this.multiLanguageService.systemLanguages : this.multiLanguageService.inputLanguages;
+    this.languages$ = this.componentService.languages$;
+    this.currentLanguage$ = this.componentService.currentLanguage$;
 
     this.languages$.pipe(
       tap(languages => this.resetForm(languages)),
@@ -86,7 +74,10 @@ export class MultiLanguageFormFieldComponent implements OnInit, ControlValueAcce
   }
 
   registerOnChange(fn: any): void {
-    this.inputs?.valueChanges.pipe(untilDestroyed(this)).subscribe(fn);
+    this.inputs?.valueChanges.pipe(
+      untilDestroyed(this),
+      tap(() => this.valueChanged()),
+    ).subscribe(fn);
   }
 
   registerOnTouched(fn: any): void {
@@ -104,8 +95,8 @@ export class MultiLanguageFormFieldComponent implements OnInit, ControlValueAcce
   writeValue(newValue: InputTranslation[]): void {
     if (this.multiLanguageFormGroup) {
       if (newValue && Array.isArray(newValue)) {
-        if (MultiLanguageFormFieldComponent.didLanguagesChange(newValue, this.languages)) {
-          const inputTranslations = this.multiLanguageService.multiLanguageFormFieldDefaultValue(this.useSystemLanguages);
+        if (this.componentService.didLanguagesChange(newValue)) {
+          const inputTranslations = this.componentService.multiLanguageFormFieldDefaultValue();
           inputTranslations.forEach(defaultItem => {
             defaultItem.translation = newValue.find(it => it.language === defaultItem.language)?.translation || '';
           });
@@ -114,8 +105,9 @@ export class MultiLanguageFormFieldComponent implements OnInit, ControlValueAcce
           this.inputs.setValue(newValue, {emitEvent: false});
         }
       } else {
-        this.inputs.setValue(this.multiLanguageService.multiLanguageFormFieldDefaultValue(this.useSystemLanguages));
+        this.inputs.setValue(this.componentService.multiLanguageFormFieldDefaultValue(), {emitEvent: false});
       }
+      this.valueChanged();
     }
   }
 
@@ -170,6 +162,20 @@ export class MultiLanguageFormFieldComponent implements OnInit, ControlValueAcce
         this.inputs.push(formGroup);
       });
     }
+  }
+
+  private valueChanged(): void {
+    this.state$.next(
+      Object.fromEntries(
+        this.inputs?.controls.map(group => {
+          const translation = group.get('translation');
+          const language = group.get('language')?.value;
+          if (translation?.invalid) {
+            return [language, INPUT_STATE.INVALID];
+          }
+          return [language, translation?.value ? INPUT_STATE.VALID : INPUT_STATE.EMPTY];
+        })
+      ));
   }
 
   private getIndexOfFormGroupForLanguage(language: string): number {

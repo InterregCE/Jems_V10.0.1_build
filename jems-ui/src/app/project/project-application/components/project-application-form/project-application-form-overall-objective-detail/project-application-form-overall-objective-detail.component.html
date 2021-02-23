@@ -23,17 +23,15 @@
                 <li>{{'project.application.form.overall.objective.field.row.six' | translate}}</li>
             </ul>
         </div>
-        <app-multi-language
-                [inputs]="[projectOverallObjective]">
-            <app-expandable-textarea
-                    [control]="overallObjectiveForm?.controls?.projectOverallObjective"
-                    [errors]="overallObjectiveForm?.controls?.projectOverallObjective?.errors"
-                    [messages]="projectOverallObjectiveError"
-                    [characterLimit]="500"
-                    [minRows]="3"
-                    [label]="'project.application.form.overall.objective.field.projectOverallObjective'"
+        <app-multi-language>
+            <app-multi-language-form-field
+                    type="textarea"
+                    formControlName="projectOverallObjective"
+                    maxLength="500"
+                    minRows="3"
+                    label="project.application.form.overall.objective.field.projectOverallObjective"
                     [disabled]="!editable">
-            </app-expandable-textarea>
+            </app-multi-language-form-field>
         </app-multi-language>
     </form>
 </app-form>

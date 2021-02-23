@@ -4,7 +4,6 @@
     <app-project-application-form-project-partnership-detail
             [success$]="saveSuccess$"
             [project]="partnership$ | async"
-            [editable]="projectStore.projectEditable$ | async"
             [error$]="saveError$"
             (updateData)="updatePartnership$.next($event)">
     </app-project-application-form-project-partnership-detail>

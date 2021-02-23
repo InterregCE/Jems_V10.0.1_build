@@ -9,6 +9,10 @@
                     [value]="currentLanguage$ | async"
                     (change)="currentLanguage$.next($event.value)">
                 <mat-button-toggle *ngFor="let language of languages; let index = index"
+                                   matBadgeSize="small" matBadgePosition="after"
+                                   [class.empty]="isEmptyState(language)"
+                                   [class.error]="isErrorState(language)"
+                                   [matBadge]="getBadgeContent(language)"
                                    [value]="language">
                     <span>{{language}}</span>
                 </mat-button-toggle>

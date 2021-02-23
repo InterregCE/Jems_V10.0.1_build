@@ -10,8 +10,6 @@ import {
 } from '@angular/core';
 import {FormArray, FormBuilder, FormGroup, Validators} from '@angular/forms';
 import {InputProjectRelevanceBenefit} from '@cat/api';
-import {MultiLanguageInput} from '@common/components/forms/multi-language/multi-language-input';
-import {MultiLanguageInputService} from '../../../../../../../common/services/multi-language-input.service';
 
 @Component({
   selector: 'app-benefits-table',
@@ -30,20 +28,15 @@ export class BenefitsTableComponent implements OnInit, OnChanges {
   editable: boolean;
 
   @Output()
-  changed = new EventEmitter<MultiLanguageInput[]>();
+  changed = new EventEmitter<void>();
 
-  specificationInputs: MultiLanguageInput[] = [];
   benefitEnums = Object.keys(InputProjectRelevanceBenefit.GroupEnum);
 
   targetGroupErrors = {
     required: 'project.application.form.relevance.target.group.not.empty',
   };
-  specificationErrors = {
-    maxlength: 'project.application.form.relevance.specification.size.too.long'
-  };
 
-  constructor(private formBuilder: FormBuilder,
-              private languageService: MultiLanguageInputService) {
+  constructor(private formBuilder: FormBuilder) {
   }
 
   ngOnInit(): void {
@@ -71,22 +64,16 @@ export class BenefitsTableComponent implements OnInit, OnChanges {
   }
 
   private addControl(benefit?: InputProjectRelevanceBenefit): void {
-    const specificationControl = this.formBuilder.control('', [Validators.maxLength(2000)]);
-    const specificationInput = this.languageService.initInput(benefit?.specification || [], specificationControl);
-    this.specificationInputs = [...this.specificationInputs, specificationInput];
-
     this.benefitsForm.push(this.formBuilder.group({
       targetGroup: this.formBuilder.control(
         benefit ? benefit.group : InputProjectRelevanceBenefit.GroupEnum.Other, [Validators.required]
       ),
-      specification: specificationControl,
-      specificationMultiInput: specificationInput
+      specification: this.formBuilder.control(benefit?.specification || [], [Validators.maxLength(2000)]),
     }));
   }
 
   deleteEntry(elementIndex: number): void {
     this.benefitsForm.removeAt(elementIndex);
-    this.specificationInputs = this.specificationInputs.filter((element, index) => index !== elementIndex);
     this.changed.emit();
   }
 }

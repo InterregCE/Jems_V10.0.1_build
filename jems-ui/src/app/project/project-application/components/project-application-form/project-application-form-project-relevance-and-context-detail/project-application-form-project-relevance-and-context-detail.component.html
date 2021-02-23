@@ -6,86 +6,71 @@
         <h4>{{'project.application.form.relevance.field.1' | translate}}</h4>
         <p>{{'project.application.form.relevance.field.1.intro' | translate}}</p>
 
-        <app-multi-language
-                [inputs]="[territorialChallenge]">
-            <app-expandable-textarea
-                    [control]="projectRelevanceForm?.controls?.territorialChallenge"
-                    [errors]="projectRelevanceForm?.controls?.territorialChallenge?.errors"
-                    [messages]="territorialChallengeErrors"
-                    [characterLimit]="5000"
-                    [label]="'common.textarea.enter.text'"
-                    [disabled]="!editable">
-            </app-expandable-textarea>
+        <app-multi-language>
+            <app-multi-language-form-field
+                    type="textarea"
+                    formControlName="territorialChallenge"
+                    maxLength="5000">
+            </app-multi-language-form-field>
         </app-multi-language>
 
 
         <h4>{{'project.application.form.relevance.field.2' | translate}}</h4>
         <p>{{'project.application.form.relevance.field.2.intro' | translate}}</p>
 
-        <app-multi-language
-                [inputs]="[commonChallenge]">
-            <app-expandable-textarea
-                    [control]="projectRelevanceForm?.controls?.commonChallenge"
-                    [errors]="projectRelevanceForm?.controls?.commonChallenge?.errors"
-                    [messages]="commonChallengeErrors"
-                    [characterLimit]="5000"
-                    [label]="'common.textarea.enter.text'"
-                    [disabled]="!editable">
-            </app-expandable-textarea>
+        <app-multi-language>
+            <app-multi-language-form-field
+                    type="textarea"
+                    formControlName="commonChallenge"
+                    maxLength="5000">
+            </app-multi-language-form-field>
         </app-multi-language>
 
         <h4>{{'project.application.form.relevance.field.3' | translate}}</h4>
         <p>{{'project.application.form.relevance.field.3.intro' | translate}}</p>
-        <app-multi-language
-                [inputs]="[transnationalCooperation]">
-            <app-expandable-textarea
-                    [control]="projectRelevanceForm?.controls?.transnationalCooperation"
-                    [errors]="projectRelevanceForm?.controls?.transnationalCooperation?.errors"
-                    [messages]="transnationalCooperationErrors"
-                    [characterLimit]="5000"
-                    [label]="'common.textarea.enter.text'"
-                    [disabled]="!editable">
-            </app-expandable-textarea>
+        <app-multi-language>
+            <app-multi-language-form-field
+                    type="textarea"
+                    formControlName="transnationalCooperation"
+                    maxLength="5000">
+            </app-multi-language-form-field>
         </app-multi-language>
 
         <h4>{{'project.application.form.relevance.field.4' | translate}}</h4>
         <p>{{'project.application.form.relevance.field.4.intro' | translate}}</p>
         <app-benefits-table appNoWidthLimit
-                [formGroup]="projectRelevanceForm"
-                [benefits]="benefits"
-                [editable]="editable"
-                (changed)="tableChanged()">
+                            [formGroup]="projectRelevanceForm"
+                            [benefits]="benefits"
+                            (changed)="tableChanged()">
         </app-benefits-table>
 
         <h4>{{'project.application.form.relevance.field.5' | translate}}</h4>
         <p>{{'project.application.form.relevance.field.5.intro' | translate}}</p>
         <app-strategy-table appNoWidthLimit
-                [formGroup]="projectRelevanceForm"
-                [strategies]="strategies"
-                [callStrategies]="strategiesFromCall"
-                [editable]="editable"
-                (changed)="tableChanged()">
+                            [formGroup]="projectRelevanceForm"
+                            [strategies]="strategies"
+                            [callStrategies]="strategiesFromCall"
+                            [editable]="editable"
+                            (changed)="tableChanged()">
         </app-strategy-table>
 
         <h4>{{'project.application.form.relevance.field.6' | translate}}</h4>
         <app-synergy-table appNoWidthLimit
-                [formGroup]="projectRelevanceForm"
-                [synergies]="synergies"
-                [editable]="editable"
-                (changed)="tableChanged()">
+                           [formGroup]="projectRelevanceForm"
+                           [synergies]="synergies"
+                           [editable]="editable"
+                           (changed)="tableChanged()">
         </app-synergy-table>
 
         <h4>{{'project.application.form.relevance.field.7' | translate}}</h4>
         <p>{{'project.application.form.relevance.field.7.intro' | translate}}</p>
-        <app-multi-language
-                [inputs]="[availableKnowledge]">
-            <app-expandable-textarea [control]="projectRelevanceForm?.controls?.availableKnowledge"
-                                     [errors]="projectRelevanceForm?.controls?.availableKnowledge?.errors"
-                                     [messages]="availableKnowledgeErrors"
-                                     [characterLimit]="5000"
-                                     [label]="'common.textarea.enter.text'"
-                                     [disabled]="!editable">
-            </app-expandable-textarea>
+        <app-multi-language>
+            <app-multi-language-form-field
+                    type="textarea"
+                    formControlName="availableKnowledge"
+                    maxLength="5000"
+                    [disabled]="!editable">
+            </app-multi-language-form-field>
         </app-multi-language>
     </form>
 </app-form>

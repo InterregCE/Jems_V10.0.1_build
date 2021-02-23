@@ -17,12 +17,31 @@
 
   ::ng-deep {
     .language-switcher-toggle-group {
+      overflow: visible;
       @include customize-toggle-button-size('small');
     }
 
     > * {
       width: 100%;
     }
+  }
+
+  ::ng-deep.mat-badge-small.mat-badge-overlap .mat-badge-content {
+    z-index: 3;
+    right: .1rem;
+    width: .7rem;
+    height: .7rem;
+  }
+
+  ::ng-deep.mat-badge.empty .mat-badge-content {
+    color: transparent;
+    border: 1px solid var(--primary-color);
+    background: var(--background);
+  }
+
+  ::ng-deep.mat-badge.error .mat-badge-content {
+    border: 1px solid var(--warn-color);
+    background: var(--warn-color);
   }
 }
 

@@ -14,7 +14,6 @@ import {APIError} from '../../../models/APIError';
 @Injectable()
 export class FormService {
   private form: FormGroup;
-  private additionalValidators?: (() => boolean)[];
   private resetSubject = new Subject();
   private editable = true;
 
@@ -93,9 +92,7 @@ export class FormService {
   }
 
   setValid(valid: boolean): void {
-    this.valid$.next(
-      valid && this.additionalValidators?.every(validator => validator())
-    );
+    this.valid$.next(valid);
   }
 
   setCreation(isCreationForm: boolean): void {
@@ -115,10 +112,6 @@ export class FormService {
   resetEditable(): void {
     this.setEditable(this.editable);
     this.setDirty(false);
-  }
-
-  setAdditionalValidators(additionalValidators?: (() => boolean)[]): void {
-    this.additionalValidators = additionalValidators;
   }
 
   reset(): void {
