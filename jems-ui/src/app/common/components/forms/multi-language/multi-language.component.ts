@@ -60,6 +60,9 @@ export class MultiLanguageComponent implements OnInit, AfterContentInit {
   }
 
   getBadgeContent(language: string): string {
+    if (!Object.keys(this.states).length) {
+      return '';
+    }
     return this.states[language] !== INPUT_STATE.VALID ? '!' : '';
   }
 
