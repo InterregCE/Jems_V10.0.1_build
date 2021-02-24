@@ -7,6 +7,7 @@ import {ProjectModule} from '../../../../project.module';
 import {ActivatedRoute} from '@angular/router';
 import {BudgetOptions} from '../../../../model/budget/budget-options';
 import {ProjectPartnerDetailPageStore} from '../../project-partner-detail-page.store';
+import {ProjectPartnerBudgetTabService} from '../project-partner-budget-tab.service';
 
 
 describe('ProjectApplicationFormPartnerBudgetOptionsComponent', () => {
@@ -14,6 +15,7 @@ describe('ProjectApplicationFormPartnerBudgetOptionsComponent', () => {
   let fixture: ComponentFixture<ProjectPartnerBudgetOptionsComponent>;
   let httpTestingController: HttpTestingController;
   let partnerStore: ProjectPartnerStore;
+  let projectPartnerBudgetTabService: ProjectPartnerBudgetTabService;
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
@@ -32,12 +34,17 @@ describe('ProjectApplicationFormPartnerBudgetOptionsComponent', () => {
         {
           provide: ProjectPartnerDetailPageStore,
           useClass: ProjectPartnerDetailPageStore
+        },
+        {
+          provide: ProjectPartnerBudgetTabService,
+          useClass: ProjectPartnerBudgetTabService
         }
       ]
     })
       .compileComponents();
     httpTestingController = TestBed.inject(HttpTestingController);
     partnerStore = TestBed.inject(ProjectPartnerStore);
+    projectPartnerBudgetTabService = TestBed.inject(ProjectPartnerBudgetTabService);
   }));
 
   beforeEach(() => {

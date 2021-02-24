@@ -1,6 +1,6 @@
 import {ChangeDetectionStrategy, Component, OnInit} from '@angular/core';
 import {FormService} from '@common/components/section/form/form.service';
-import {combineLatest, Observable} from 'rxjs';
+import {combineLatest, merge, Observable} from 'rxjs';
 import {catchError, map, startWith, tap} from 'rxjs/operators';
 import {ProjectPartnerDetailPageStore} from '../../project-partner-detail-page.store';
 import {UntilDestroy, untilDestroyed} from '@ngneat/until-destroy';
@@ -20,6 +20,7 @@ import {TravelAndAccommodationCostsBudgetTableEntry} from '../../../../model/bud
 import {ProgrammeUnitCostDTO, OutputProjectPeriod} from '@cat/api';
 import {UnitCostsBudgetTable} from '../../../../model/budget/unit-costs-budget-table';
 import {UnitCostsBudgetTableEntry} from '../../../../model/budget/unit-costs-budget-table-entry';
+import {ProjectPartnerBudgetTabService} from '../project-partner-budget-tab.service';
 
 @UntilDestroy()
 @Component({
@@ -55,11 +56,12 @@ export class ProjectPartnerBudgetComponent implements OnInit {
   private officeAndAdministrationFlatRateTotal$: Observable<number>;
   private travelAndAccommodationTotal$: Observable<number>;
 
-  constructor(private formService: FormService, private formBuilder: FormBuilder, private multiLanguageInputService: MultiLanguageInputService, private pageStore: ProjectPartnerDetailPageStore) {
+  constructor(private formService: FormService, private tabService: ProjectPartnerBudgetTabService, private formBuilder: FormBuilder, private multiLanguageInputService: MultiLanguageInputService, private pageStore: ProjectPartnerDetailPageStore) {
   }
 
   ngOnInit(): void {
-    this.formService.init(this.budgetsForm, this.pageStore.isProjectEditable$);
+    this.formService.init(this.budgetsForm, merge(this.pageStore.isProjectEditable$, this.tabService.isBudgetFormDisabled$));
+    this.tabService.trackBudgetFormState(this.formService);
 
     this.pageStore.budgets$.pipe(untilDestroyed(this)).subscribe();
 
