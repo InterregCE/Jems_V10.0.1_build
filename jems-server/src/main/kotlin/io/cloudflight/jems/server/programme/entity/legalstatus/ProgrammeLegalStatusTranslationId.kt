@@ -25,9 +25,10 @@ data class ProgrammeLegalStatusTranslationId(
 ) : Serializable {
 
     override fun equals(other: Any?): Boolean = (other is ProgrammeLegalStatusTranslationId)
+        && legalStatus.id > 0
         && legalStatus.id == other.legalStatus.id
         && language == other.language
 
-    override fun hashCode(): Int = legalStatus.id.hashCode()
+    override fun hashCode(): Int = if (legalStatus.id > 0) legalStatus.id.hashCode() else super.hashCode()
 
 }
