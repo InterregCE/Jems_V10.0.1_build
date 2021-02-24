@@ -1,8 +1,10 @@
 import {ChangeDetectionStrategy, Component, Input} from '@angular/core';
 import {Alert} from '@common/components/forms/alert';
-import {ProgrammeLumpSumListDTO} from '@cat/api';
+import {InputTranslation, ProgrammeLumpSumListDTO} from '@cat/api';
 import {UntilDestroy} from '@ngneat/until-destroy';
 import {MatTableDataSource} from '@angular/material/table';
+import {LanguageService} from '../../../../common/services/language.service';
+import {tap} from 'rxjs/operators';
 
 @Component({
   selector: 'app-programme-lump-sums-list',
@@ -23,4 +25,19 @@ export class ProgrammeLumpSumsListComponent {
   @Input()
   dataSource: MatTableDataSource<ProgrammeLumpSumListDTO>;
 
+  currentSystemLanguage: string;
+
+  constructor(private languageService: LanguageService) {
+    this.languageService.systemLanguage$
+      .pipe(
+        tap(lang => {
+          this.currentSystemLanguage = lang;
+        })
+      ).subscribe();
+  }
+
+  translated(element: InputTranslation[]): string {
+    const elementInSystemLang = element.find((it: InputTranslation) => it.language === this.currentSystemLanguage);
+    return !!elementInSystemLang ? elementInSystemLang.translation : '';
+  }
 }

@@ -8,6 +8,9 @@ import {Tools} from '../../utils/tools';
 import {MatSort} from '@angular/material/sort';
 import {Tables} from '../../utils/tables';
 import {MoneyPipe} from '../../pipe/money.pipe';
+import {LanguageService} from '../../services/language.service';
+import {InputTranslation} from '@cat/api';
+import {tap} from 'rxjs/operators';
 
 @Component({
   selector: 'app-table',
@@ -35,13 +38,22 @@ export class TableComponent implements OnInit {
 
   columnsToDisplay: string[] = [];
   currentPageSize = Tables.DEFAULT_INITIAL_PAGE_SIZE;
+  currentSystemLanguage: string; // = new ReplaySubject<string>(1);
 
   constructor(private datePipe: DatePipe,
-              private moneyPipe: MoneyPipe) {
+              private moneyPipe: MoneyPipe,
+              private languageService: LanguageService) {
   }
 
   ngOnInit(): void {
     this.columnsToDisplay = this.configuration.columns.map(col => col.displayedColumn);
+
+    this.languageService.systemLanguage$
+      .pipe(
+        tap(lang => {
+          this.currentSystemLanguage = lang;
+        })
+      ).subscribe();
   }
 
   /**
@@ -56,6 +68,11 @@ export class TableComponent implements OnInit {
     }
     if (column.i18nFixedKey) {
       return column.i18nFixedKey;
+    }
+    if (column.columnType === ColumnType.InputTranslation) {
+      const elementInSystemLang = element[column.elementProperty]
+        .find((it: InputTranslation) => it.language === this.currentSystemLanguage);
+      return !!elementInSystemLang ? elementInSystemLang.translation : '';
     }
     const elementValue = Tools.getChainedProperty(element, column.elementProperty, '');
     if (column.elementTranslationKey) {
