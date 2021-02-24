@@ -19,7 +19,7 @@ open class CustomResultIndicatorRepositoryImpl(val repository: ResultIndicatorRe
     @Transactional(readOnly = true)
     override fun getReferenceIfExistsOrThrow(id: Long?): ResultIndicatorEntity? {
         var resultIndicatorEntity: ResultIndicatorEntity? = null
-        if (id != null)
+        if (id != null && id != 0L)
             runCatching {
                 resultIndicatorEntity =
                     repository.getOne(id)
@@ -38,7 +38,7 @@ interface ResultIndicatorRepository : JpaRepository<ResultIndicatorEntity, Long>
     override fun findById(id: Long): Optional<ResultIndicatorEntity>
 
 
-    fun  findTop50ByOrderById(): List<ResultIndicatorEntity>
+    fun findTop50ByOrderById(): List<ResultIndicatorEntity>
     fun findOneByIdentifier(identifier: String): ResultIndicatorEntity?
     fun findAllByProgrammePriorityPolicyEntityProgrammeObjectivePolicyOrderById(programmeObjectivePolicy: ProgrammeObjectivePolicy): Iterable<ResultIndicatorEntity>
 }

@@ -34,8 +34,11 @@ class InvalidResultIndicatorException : ApplicationBadRequestException(
     cause = null
 )
 
-class OutputIndicatorsCountExceedException : ApplicationBadRequestException(
+class OutputIndicatorsCountExceedException(maxCount: Int) : ApplicationBadRequestException(
     code = "$CREATE_OUTPUT_INDICATOR_ERROR_CODE_PREFIX-004",
-    i18nMessage = I18nMessage("$CREATE_OUTPUT_INDICATOR_ERROR_KEY_PREFIX.count.exceed"),
+    i18nMessage = I18nMessage(
+        "$CREATE_OUTPUT_INDICATOR_ERROR_KEY_PREFIX.count.exceed",
+        mapOf("maxCount" to maxCount.toString())
+    ),
     cause = null
 )

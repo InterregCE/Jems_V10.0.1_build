@@ -45,7 +45,7 @@ class UpdateOutputIndicator(
         if (persistence.isIdentifierUsedByAnotherOutputIndicator(outputIndicator.id, outputIndicator.identifier))
             throw IdentifierIsUsedException()
 
-        if (outputIndicator.resultIndicatorId != null &&
+        if (outputIndicator.resultIndicatorId != null && outputIndicator.resultIndicatorId != 0L &&
             resultIndicatorPersistence.getResultIndicator(outputIndicator.resultIndicatorId).programmeObjectivePolicy != outputIndicator.programmeObjectivePolicy
         ) throw InvalidResultIndicatorException()
     }

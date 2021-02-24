@@ -11,7 +11,7 @@ import io.cloudflight.jems.server.programme.service.indicator.model.OutputIndica
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 
-private const val MAX_NUMBER_OF_OUTPUT_INDICATORS = 50
+private const val MAX_COUNT_OF_OUTPUT_INDICATORS = 50
 
 @Service
 class CreateOutputIndicator(
@@ -39,11 +39,11 @@ class CreateOutputIndicator(
         if (persistence.isIdentifierUsedByAnotherOutputIndicator(outputIndicator.id, outputIndicator.identifier))
             throw IdentifierIsUsedException()
 
-        if (outputIndicator.resultIndicatorId != null &&
+        if (outputIndicator.resultIndicatorId != null && outputIndicator.resultIndicatorId != 0L &&
             resultIndicatorPersistence.getResultIndicator(outputIndicator.resultIndicatorId).programmeObjectivePolicy != outputIndicator.programmeObjectivePolicy
         ) throw InvalidResultIndicatorException()
 
-        if (persistence.getCountOfOutputIndicators() >= MAX_NUMBER_OF_OUTPUT_INDICATORS)
-            throw OutputIndicatorsCountExceedException()
+        if (persistence.getCountOfOutputIndicators() >= MAX_COUNT_OF_OUTPUT_INDICATORS)
+            throw OutputIndicatorsCountExceedException(MAX_COUNT_OF_OUTPUT_INDICATORS)
     }
 }

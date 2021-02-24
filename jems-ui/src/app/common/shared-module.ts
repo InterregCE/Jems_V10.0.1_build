@@ -33,6 +33,7 @@ import {NoWidthLimitDirective} from './directives/no-width-limit.directive';
 import {LabelDirective} from './directives/form-layout/label.directive';
 import {MainPageTemplateComponent} from '@common/components/page-templates/main-page-template/main-page-template.component';
 import {MatBadgeModule} from '@angular/material/badge';
+import {ApiErrorContentComponent} from '@common/components/forms/api-error-content/api-error-content.component';
 
 const modules = [
   CommonModule,
@@ -72,7 +73,8 @@ const declarations = [
   MultiColumnRowDirective,
   NoWidthLimitDirective,
   LabelDirective,
-  MainPageTemplateComponent
+  MainPageTemplateComponent,
+  ApiErrorContentComponent
 ];
 
 const providers = [
