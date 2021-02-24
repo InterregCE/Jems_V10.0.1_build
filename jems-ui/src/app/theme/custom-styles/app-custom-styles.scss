@@ -3,6 +3,7 @@
 @import "custom-tab-group-styles";
 @import "custom-form-field-styles";
 @import "custom-mat-table-styles";
+@import "custom-date-time-picker-styles";
 
 // source: https://stackoverflow.com/a/57288409
 @mixin generate-css-vars-and-custom-styles($theme, $app-typography) {
@@ -79,6 +80,7 @@
   @include custom-tooltip-styles();
   @include custom-tab-group-styles();
   @include custom-form-field-styles();
-  @include custom-mat-table-styles($is-dark-theme)
+  @include custom-mat-table-styles($is-dark-theme);
+  @include custom-date-time-picker-styles()
 
 }

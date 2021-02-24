@@ -1,0 +1,12 @@
+@mixin custom-date-time-picker-styles() {
+
+  @include custom-ngx-time-picker-styles();
+}
+
+
+@mixin custom-ngx-time-picker-styles() {
+  .ngx-mat-timepicker form .table .tbody tr td .mat-form-field {
+    max-width: 3rem;
+    width: 3rem;
+  }
+}
