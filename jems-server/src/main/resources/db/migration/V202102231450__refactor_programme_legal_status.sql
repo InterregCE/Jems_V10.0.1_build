@@ -1,5 +1,6 @@
-ALTER TABLE programme_legal_status DROP COLUMN IF EXISTS description;
+ALTER TABLE programme_legal_status DROP COLUMN description;
 
+DELETE FROM project_partner WHERE legal_status_id IS NOT NULL;
 DELETE FROM programme_legal_status WHERE id IS NOT NULL;
 
 CREATE TABLE programme_legal_status_transl
