@@ -1,6 +1,12 @@
 import {ChangeDetectionStrategy, ChangeDetectorRef, Component, Input, OnInit} from '@angular/core';
 import {FormBuilder, FormGroup, Validators} from '@angular/forms';
-import {InputProjectData, InputTranslation, OutputProject} from '@cat/api';
+import {
+  InputProjectData,
+  InputTranslation,
+  OutputCallProgrammePriority,
+  OutputProgrammePrioritySimple,
+  OutputProject
+} from '@cat/api';
 import {Permission} from '../../../../security/permissions/permission';
 import {Tools} from '../../../../common/utils/tools';
 import {catchError, distinctUntilChanged, take, takeUntil, tap} from 'rxjs/operators';
@@ -26,7 +32,7 @@ export class ProjectApplicationFormComponent extends BaseComponent implements On
   @Input()
   editable: boolean;
   @Input()
-  priorities: string[];
+  priorities: OutputProgrammePrioritySimple[];
   @Input()
   objectivesWithPolicies: { [key: string]: InputProjectData.SpecificObjectiveEnum[] };
 
@@ -70,10 +76,10 @@ export class ProjectApplicationFormComponent extends BaseComponent implements On
   };
 
   constructor(private formBuilder: FormBuilder,
+              private formService: FormService,
               protected changeDetectorRef: ChangeDetectorRef,
               public projectStore: ProjectStore,
-              private formService: FormService,
-              private languageService: MultiLanguageInputService) {
+              public languageService: MultiLanguageInputService) {
     super();
   }
 
@@ -130,10 +136,9 @@ export class ProjectApplicationFormComponent extends BaseComponent implements On
     if (this.project?.projectData?.specificObjective) {
       this.previousObjective = this.project?.projectData?.specificObjective.programmeObjectivePolicy;
       this.selectedSpecificObjective = this.project?.projectData?.specificObjective.programmeObjectivePolicy;
-      const prevPriority = this.project?.projectData?.programmePriority.code
-        + ' - ' + this.project?.projectData?.programmePriority.title;
-      this.currentPriority = prevPriority;
-      this.applicationForm.controls.programmePriority.setValue(prevPriority);
+      const prevPriority = this.project?.projectData?.programmePriority;
+      this.currentPriority = prevPriority.code;
+      this.applicationForm.controls.programmePriority.setValue(prevPriority.code);
       this.applicationForm.controls.specificObjective.setValue(this.selectedSpecificObjective);
     } else {
       this.currentPriority = undefined;
@@ -146,12 +151,20 @@ export class ProjectApplicationFormComponent extends BaseComponent implements On
     return projectDuration ? Math.ceil(projectDuration / this.project?.callSettings.lengthOfPeriod) : 0;
   }
 
-  changeCurrentPriority(selectedPriority: string): void {
-    this.currentPriority = selectedPriority;
+  changeCurrentPriority(selectedPriority: OutputCallProgrammePriority): void {
+    this.currentPriority = selectedPriority.code;
     this.applicationForm.controls.specificObjective.setValue('');
   }
 
   englishLanguageActive(): boolean {
     return !!this.languageService.inputLanguages.find(lang => this.LANGUAGE.EN === lang);
+  }
+
+  priorityTranslated(priority: OutputProgrammePrioritySimple, currentSystemLanguage: string | null): string {
+    if (!currentSystemLanguage || !priority.code) {
+      return '';
+    }
+    const elementInSystemLang = priority.title.find((it: InputTranslation) => it.language === currentSystemLanguage);
+    return `${priority.code} - ${!!elementInSystemLang ? elementInSystemLang.translation : ''}`;
   }
 }

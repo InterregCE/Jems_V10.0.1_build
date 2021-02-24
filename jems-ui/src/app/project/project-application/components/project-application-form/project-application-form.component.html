@@ -55,10 +55,10 @@
 
         <mat-form-field *ngIf="editable">
             <mat-label>{{'project.application.form.field.project.priority' | translate}}</mat-label>
-            <mat-select (selectionChange)="changeCurrentPriority( $event.value)" required [(value)]=currentPriority
+            <mat-select (selectionChange)="changeCurrentPriority($event.value)" required [(value)]=currentPriority
                         formControlName="programmePriority">
-                <mat-option *ngFor="let objective of priorities" [value]="objective">
-                    {{objective}}
+                <mat-option *ngFor="let priority of priorities" [value]="priority.code">
+                    {{ priorityTranslated(priority, languageService.currentSystemLanguage$ | async) }}
                 </mat-option>
             </mat-select>
             <mat-error>

@@ -33,8 +33,7 @@ data class ProgrammeLumpSumEntity(
     @OneToMany(
         cascade = [CascadeType.ALL],
         orphanRemoval = true,
-        mappedBy = "translationId.programmeLumpSumId",
-        fetch = FetchType.EAGER
+        mappedBy = "translationId.programmeLumpSumId"
     )
     var translatedValues: MutableSet<ProgrammeLumpSumTranslEntity> = mutableSetOf(),
 

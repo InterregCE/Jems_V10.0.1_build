@@ -6,7 +6,13 @@ import {ActivatedRoute} from '@angular/router';
 import {ProjectApplicationFormSidenavService} from '../services/project-application-form-sidenav.service';
 import {map, mergeMap, tap} from 'rxjs/operators';
 import {Log} from '../../../../../common/utils/log';
-import {CallService, InputProjectData, OutputCallProgrammePriority, ProjectService} from '@cat/api';
+import {
+  CallService,
+  InputProjectData,
+  OutputCallProgrammePriority,
+  OutputProgrammePrioritySimple,
+  ProjectService
+} from '@cat/api';
 
 @Component({
   selector: 'app-project-application-form-identification-page',
@@ -27,7 +33,7 @@ export class ProjectApplicationFormIdentificationPageComponent {
             const orderBool = a.code.toLocaleLowerCase() > b.code.toLocaleLowerCase();
             return orderBool ? 1 : -1;
           })
-          .map(objective => objective.code + ' - ' + objective.title),
+          .map(objective => ({ title: objective.title, code: objective.code }) as OutputProgrammePrioritySimple),
         objectivesWithPolicies: this.getObjectivesWithPolicies(objectives)
       }))
     );
@@ -54,7 +60,7 @@ export class ProjectApplicationFormIdentificationPageComponent {
   private getObjectivesWithPolicies(objectives: OutputCallProgrammePriority[]): { [key: string]: InputProjectData.SpecificObjectiveEnum[] } {
     const objectivesWithPolicies: any = {};
     objectives.forEach(objective =>
-      objectivesWithPolicies[objective.code + ' - ' + objective.title] =
+      objectivesWithPolicies[objective.code] =
         objective.programmePriorityPolicies.map(priority => priority.programmeObjectivePolicy));
     return objectivesWithPolicies;
   }

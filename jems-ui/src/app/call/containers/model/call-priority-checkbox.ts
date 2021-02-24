@@ -1,14 +1,16 @@
-import {ProgrammePriorityDTO, OutputProgrammePriorityPolicySimple} from '@cat/api';
+import {ProgrammePriorityDTO, OutputProgrammePriorityPolicySimple, InputTranslation} from '@cat/api';
 
 export class CallPriorityCheckbox {
   name: string;
+  translatableTitle: InputTranslation[];
   checked: boolean;
   children: CallPriorityCheckbox[] = [];
   policy: OutputProgrammePriorityPolicySimple.ProgrammeObjectivePolicyEnum;
 
   static fromPriority(from: ProgrammePriorityDTO): CallPriorityCheckbox {
     const checkbox = new CallPriorityCheckbox();
-    checkbox.name = `${from.code} ${from.title}`;
+    checkbox.name = `${from.code} `;
+    checkbox.translatableTitle = from.title;
     checkbox.children = from.specificObjectives.map(policy => CallPriorityCheckbox.fromPriorityPolicy(policy));
     return checkbox;
   }
@@ -25,6 +27,7 @@ export class CallPriorityCheckbox {
                            checked: OutputProgrammePriorityPolicySimple.ProgrammeObjectivePolicyEnum[]): CallPriorityCheckbox {
     const checkbox = new CallPriorityCheckbox();
     checkbox.name = priorityCheckbox.name;
+    checkbox.translatableTitle = priorityCheckbox.translatableTitle;
     checkbox.children = priorityCheckbox.children.map(child => {
         const copy = new CallPriorityCheckbox();
         copy.name = child.name;

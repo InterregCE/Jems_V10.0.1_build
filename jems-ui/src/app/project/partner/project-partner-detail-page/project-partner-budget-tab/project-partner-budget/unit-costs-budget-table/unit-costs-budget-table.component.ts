@@ -16,7 +16,7 @@ import {NumberService} from '../../../../../../common/services/number.service';
 import {FormService} from '@common/components/section/form/form.service';
 import {MultiLanguageInputService} from '../../../../../../common/services/multi-language-input.service';
 import {UntilDestroy, untilDestroyed} from '@ngneat/until-destroy';
-import {BudgetPeriodDTO, OutputProjectPeriod, ProgrammeUnitCostDTO} from '@cat/api';
+import {BudgetPeriodDTO, InputTranslation, OutputProjectPeriod, ProgrammeUnitCostDTO} from '@cat/api';
 import {UnitCostsBudgetTable} from '../../../../../model/budget/unit-costs-budget-table';
 import {TableConfig} from '../../../../../../common/directives/table-config/TableConfig';
 import {Alert} from '@common/components/forms/alert';
@@ -49,7 +49,10 @@ export class UnitCostsBudgetTableComponent implements OnInit, OnChanges {
   columnsToDisplay: string[];
   tableConfig: TableConfig[];
 
-  constructor(private formService: FormService, private controlContainer: ControlContainer, private formBuilder: FormBuilder, private multiLanguageInputService: MultiLanguageInputService) {
+  constructor(private formService: FormService,
+              private controlContainer: ControlContainer,
+              private formBuilder: FormBuilder,
+              public multiLanguageInputService: MultiLanguageInputService) {
     this.budgetForm = this.controlContainer.control as FormGroup;
   }
 
@@ -213,4 +216,11 @@ export class UnitCostsBudgetTableComponent implements OnInit, OnChanges {
     );
   }
 
+  translated(element: InputTranslation[], currentSystemLanguage: string | null): string {
+    if (!currentSystemLanguage || !element) {
+      return '';
+    }
+    const elementInSystemLang = element.find((it: InputTranslation) => it.language === currentSystemLanguage);
+    return !!elementInSystemLang ? elementInSystemLang.translation : '';
+  }
 }

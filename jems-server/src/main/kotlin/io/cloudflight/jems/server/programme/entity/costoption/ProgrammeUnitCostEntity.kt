@@ -30,8 +30,7 @@ data class ProgrammeUnitCostEntity(
     @OneToMany(
         cascade = [CascadeType.ALL],
         orphanRemoval = true,
-        mappedBy = "translationId.programmeUnitCostId",
-        fetch = FetchType.EAGER
+        mappedBy = "translationId.programmeUnitCostId"
     )
     var translatedValues: MutableSet<ProgrammeUnitCostTranslEntity> = mutableSetOf(),
 

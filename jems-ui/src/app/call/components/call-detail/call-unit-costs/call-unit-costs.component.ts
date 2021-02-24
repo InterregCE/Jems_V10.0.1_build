@@ -1,11 +1,12 @@
 import {ChangeDetectionStrategy, Component, Input, OnInit} from '@angular/core';
 import {MatTableDataSource} from '@angular/material/table';
 import {FormBuilder, FormGroup} from '@angular/forms';
-import {ProgrammeUnitCostListDTO, OutputCall} from '@cat/api';
+import {ProgrammeUnitCostListDTO, OutputCall, InputTranslation} from '@cat/api';
 import {FormService} from '@common/components/section/form/form.service';
 import {SelectionModel} from '@angular/cdk/collections';
 import {CallStore} from '../../../services/call-store.service';
 import {catchError, take, tap} from 'rxjs/operators';
+import {LanguageService} from '../../../../common/services/language.service';
 
 @Component({
   selector: 'app-call-unit-costs',
@@ -27,7 +28,8 @@ export class CallUnitCostsComponent implements OnInit {
 
   unitCostDataSource = new MatTableDataSource();
 
-  constructor(private formBuilder: FormBuilder,
+  constructor(public languageService: LanguageService,
+              private formBuilder: FormBuilder,
               private formService: FormService,
               private callStore: CallStore) {
   }
@@ -68,5 +70,13 @@ export class CallUnitCostsComponent implements OnInit {
 
   formChanged(): void {
     this.formService.setDirty(true);
+  }
+
+  translated(element: InputTranslation[], currentSystemLanguage: string | null): string {
+    if (!currentSystemLanguage || !element) {
+      return '';
+    }
+    const elementInSystemLang = element.find((it: InputTranslation) => it.language === currentSystemLanguage);
+    return !!elementInSystemLang ? elementInSystemLang.translation : '';
   }
 }

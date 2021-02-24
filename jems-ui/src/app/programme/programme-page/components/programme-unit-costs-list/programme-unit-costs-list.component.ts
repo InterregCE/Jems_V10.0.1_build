@@ -1,10 +1,9 @@
-import {ChangeDetectionStrategy, Component, EventEmitter, Input, Output} from '@angular/core';
+import {ChangeDetectionStrategy, Component, Input} from '@angular/core';
 import {UntilDestroy} from '@ngneat/until-destroy';
 import {Alert} from '@common/components/forms/alert';
 import {InputTranslation, ProgrammeUnitCostListDTO} from '@cat/api';
 import {MatTableDataSource} from '@angular/material/table';
 import {LanguageService} from '../../../../common/services/language.service';
-import {tap} from 'rxjs/operators';
 
 @Component({
   selector: 'app-programme-unit-costs-list',
@@ -23,19 +22,14 @@ export class ProgrammeUnitCostsListComponent {
   @Input()
   dataSource: MatTableDataSource<ProgrammeUnitCostListDTO>;
 
-  currentSystemLanguage: string;
-
-  constructor(private languageService: LanguageService) {
-    this.languageService.systemLanguage$
-      .pipe(
-        tap(lang => {
-          this.currentSystemLanguage = lang;
-        })
-      ).subscribe();
+  constructor(public languageService: LanguageService) {
   }
 
-  translated(element: InputTranslation[]): string {
-    const elementInSystemLang = element.find((it: InputTranslation) => it.language === this.currentSystemLanguage);
+  translated(element: InputTranslation[], currentSystemLanguage: string | null): string {
+    if (!currentSystemLanguage) {
+      return '';
+    }
+    const elementInSystemLang = element.find((it: InputTranslation) => it.language === currentSystemLanguage);
     return !!elementInSystemLang ? elementInSystemLang.translation : '';
   }
 }
