@@ -8,6 +8,7 @@
                 (click)="publishCall()">
             {{'call.detail.button.publish' | translate}}
         </button>
+        <h3>{{'call.identification.title' | translate}}</h3>
         <mat-form-field>
             <mat-label>{{'call.detail.field.name' | translate}}</mat-label>
             <input name="name" formControlName="name" matInput>
@@ -93,6 +94,7 @@
         </app-call-strategies>
 
         <h3>{{'call.funds.title' | translate}}</h3>
+        <h4 *ngIf="!isApplicant">{{'call.funds.options' | translate}}</h4>
         <div *ngIf="!isApplicant">
             <mat-checkbox
                     name="multipleFundsAllowed"
@@ -104,7 +106,7 @@
             </mat-checkbox>
         </div>
 
-        <h3>{{'call.funds.select.funds' | translate}}</h3>
+        <h4>{{'call.funds.select.funds' | translate}}</h4>
         <app-call-funds
                 [funds]="funds"
                 [disabled]="!editable"
