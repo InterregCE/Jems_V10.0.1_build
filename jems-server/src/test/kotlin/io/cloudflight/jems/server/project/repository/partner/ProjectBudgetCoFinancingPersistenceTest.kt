@@ -7,9 +7,9 @@ import io.cloudflight.jems.api.project.dto.partner.cofinancing.ProjectPartnerCon
 import io.cloudflight.jems.api.project.dto.status.ProjectApplicationStatus
 import io.cloudflight.jems.server.call.callWithId
 import io.cloudflight.jems.server.common.exception.ResourceNotFoundException
-import io.cloudflight.jems.server.programme.entity.ProgrammeFundEntity
+import io.cloudflight.jems.server.programme.entity.fund.ProgrammeFundEntity
 import io.cloudflight.jems.server.programme.entity.legalstatus.ProgrammeLegalStatusEntity
-import io.cloudflight.jems.server.programme.service.model.ProgrammeFund
+import io.cloudflight.jems.server.programme.service.fund.model.ProgrammeFund
 import io.cloudflight.jems.server.project.entity.ProjectEntity
 import io.cloudflight.jems.server.project.entity.ProjectStatus
 import io.cloudflight.jems.server.project.entity.partner.ProjectPartnerEntity
@@ -36,12 +36,12 @@ class ProjectBudgetCoFinancingPersistenceTest {
     companion object {
         private const val PARTNER_ID = 1L
 
-        private val fund1 = ProgrammeFundEntity(id = 10, abbreviation = "test01", selected = true)
-        private val fund2 = ProgrammeFundEntity(id = 11, abbreviation = "test02", selected = true)
+        private val fund1 = ProgrammeFundEntity(id = 10, selected = true)
+        private val fund2 = ProgrammeFundEntity(id = 11, selected = true)
 
         private val funds: Set<ProgrammeFundEntity> = setOf(fund1, fund2)
 
-        private val fund1Model = ProgrammeFund(id = fund1.id, abbreviation = fund1.abbreviation, selected = true)
+        private val fund1Model = ProgrammeFund(id = fund1.id, selected = true)
 
         private val dummyCall = callWithId(10).copy(funds = funds)
 

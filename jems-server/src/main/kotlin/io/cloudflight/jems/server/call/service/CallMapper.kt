@@ -12,14 +12,15 @@ import io.cloudflight.jems.server.call.entity.CallTranslEntity
 import io.cloudflight.jems.server.call.entity.CallTranslId
 import io.cloudflight.jems.server.call.repository.flatrate.toProjectCallFlatRate
 import io.cloudflight.jems.server.programme.controller.costoption.toDto
-import io.cloudflight.jems.server.programme.entity.ProgrammeFundEntity
+import io.cloudflight.jems.server.programme.controller.fund.toDto
+import io.cloudflight.jems.server.programme.entity.fund.ProgrammeFundEntity
 import io.cloudflight.jems.server.user.entity.User
 import io.cloudflight.jems.server.programme.entity.ProgrammeSpecificObjectiveEntity
-import io.cloudflight.jems.server.programme.service.toOutputProgrammeFund
 import io.cloudflight.jems.server.programme.service.toOutputProgrammePriorityPolicy
 import io.cloudflight.jems.server.programme.entity.Strategy
 import io.cloudflight.jems.server.programme.repository.costoption.toProgrammeLumpSum
 import io.cloudflight.jems.server.programme.repository.costoption.toProgrammeUnitCost
+import io.cloudflight.jems.server.programme.repository.fund.toModel
 
 /**
  * Map InputCallCreate to entity Call.
@@ -48,7 +49,7 @@ fun CallEntity.toOutputCall() = OutputCall(
     name = name,
     priorityPolicies = prioritySpecificObjectives.map { it.toOutputProgrammePriorityPolicy() },
     strategies = strategies.map { it.strategy },
-    funds = funds.map { it.toOutputProgrammeFund() },
+    funds = funds.toModel().toDto(),
     isAdditionalFundAllowed = isAdditionalFundAllowed,
     status = status,
     startDate = startDate,

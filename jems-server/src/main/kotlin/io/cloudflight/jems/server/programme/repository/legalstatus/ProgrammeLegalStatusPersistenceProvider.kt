@@ -17,7 +17,7 @@ class ProgrammeLegalStatusPersistenceProvider(
     override fun getMax20Statuses(): List<ProgrammeLegalStatus> =
         repository.findTop20ByOrderById().toModel()
 
-    @Transactional(readOnly = true)
+    @Transactional
     override fun updateLegalStatuses(
         toDeleteIds: Set<Long>,
         toPersist: Collection<ProgrammeLegalStatus>

@@ -9,7 +9,7 @@ import {
   Validators
 } from '@angular/forms';
 import {
-  ProgrammeFundOutputDTO,
+  ProgrammeFundDTO,
   ProjectPartnerCoFinancingAndContributionInputDTO,
   ProjectPartnerCoFinancingAndContributionOutputDTO,
   ProjectPartnerCoFinancingInputDTO,
@@ -50,7 +50,7 @@ export class ProjectPartnerCoFinancingTabComponent implements OnInit {
 
   data$: Observable<{
     financingAndContribution: ProjectPartnerCoFinancingAndContributionOutputDTO,
-    callFunds: ProgrammeFundOutputDTO[],
+    callFunds: ProgrammeFundDTO[],
     totalBudget: number,
     publicContributionSubTotal: number,
     privateContributionSubTotal: number,
@@ -160,9 +160,9 @@ export class ProjectPartnerCoFinancingTabComponent implements OnInit {
     this.additionalFundPercentage.updateValueAndValidity();
   }
 
-  filteredFunds(allFunds: ProgrammeFundOutputDTO[], selectedFund: number | null): ProgrammeFundOutputDTO[] {
+  filteredFunds(allFunds: ProgrammeFundDTO[], selectedFund: number | null): ProgrammeFundDTO[] {
     if (selectedFund) {
-      return allFunds.filter((fund: ProgrammeFundOutputDTO) => fund.id !== selectedFund);
+      return allFunds.filter((fund: ProgrammeFundDTO) => fund.id !== selectedFund);
     }
     return allFunds;
   }

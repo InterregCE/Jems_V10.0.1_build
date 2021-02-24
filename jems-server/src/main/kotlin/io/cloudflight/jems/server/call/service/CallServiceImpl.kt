@@ -23,8 +23,8 @@ import io.cloudflight.jems.server.user.repository.UserRepository
 import io.cloudflight.jems.server.authentication.model.APPLICANT_USER
 import io.cloudflight.jems.server.authentication.service.SecurityService
 import io.cloudflight.jems.server.audit.service.AuditService
-import io.cloudflight.jems.server.programme.entity.ProgrammeFundEntity
-import io.cloudflight.jems.server.programme.repository.ProgrammeFundRepository
+import io.cloudflight.jems.server.programme.entity.fund.ProgrammeFundEntity
+import io.cloudflight.jems.server.programme.repository.fund.ProgrammeFundRepository
 import io.cloudflight.jems.server.programme.entity.Strategy
 import io.cloudflight.jems.server.programme.repository.StrategyRepository
 import org.springframework.data.domain.Page

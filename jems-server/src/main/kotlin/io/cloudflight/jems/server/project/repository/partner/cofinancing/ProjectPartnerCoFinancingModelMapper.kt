@@ -1,7 +1,7 @@
 package io.cloudflight.jems.server.project.repository.partner.cofinancing
 
-import io.cloudflight.jems.server.programme.entity.ProgrammeFundEntity
-import io.cloudflight.jems.server.programme.repository.toModel
+import io.cloudflight.jems.server.programme.entity.fund.ProgrammeFundEntity
+import io.cloudflight.jems.server.programme.repository.fund.toModel
 import io.cloudflight.jems.server.project.entity.partner.cofinancing.ProjectPartnerCoFinancingEntity
 import io.cloudflight.jems.server.project.entity.partner.cofinancing.ProjectPartnerCoFinancingFundId
 import io.cloudflight.jems.server.project.entity.partner.cofinancing.ProjectPartnerContributionEntity

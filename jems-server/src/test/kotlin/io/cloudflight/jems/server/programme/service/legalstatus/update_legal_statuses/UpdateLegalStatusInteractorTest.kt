@@ -26,8 +26,8 @@ internal class UpdateLegalStatusInteractorTest : UnitTest() {
         private val alreadyExistingLegalStatus = ProgrammeLegalStatus(
             id = 14,
             translatedValues = setOf(
-                ProgrammeLegalStatusTranslatedValue(language = EN, description = "EN desc"),
-                ProgrammeLegalStatusTranslatedValue(language = SK, description = "SK desc"),
+                ProgrammeLegalStatusTranslatedValue(language = EN, description = "already existing EN desc"),
+                ProgrammeLegalStatusTranslatedValue(language = SK, description = "already existing SK desc"),
             )
         )
     }
@@ -47,7 +47,7 @@ internal class UpdateLegalStatusInteractorTest : UnitTest() {
     @Test
     fun `update legal statuses - everything should be fine`() {
         val legalStatus = ProgrammeLegalStatus(translatedValues = setOf(
-            ProgrammeLegalStatusTranslatedValue(language = EN, description = "already existing legal status")
+            ProgrammeLegalStatusTranslatedValue(language = EN, description = "LS EN desc")
         ))
 
         val slotToDeleteIds = slot<Set<Long>>()
@@ -71,8 +71,8 @@ internal class UpdateLegalStatusInteractorTest : UnitTest() {
         with(event.captured) {
             assertThat(action).isEqualTo(AuditAction.LEGAL_STATUS_EDITED)
             assertThat(description).isEqualTo("Values for partner legal status set to:\n" +
-                "[EN=EN desc, SK=SK desc],\n" +
-                "[EN=already existing legal status]"
+                "[EN=already existing EN desc, SK=already existing SK desc],\n" +
+                "[EN=LS EN desc]"
             )
         }
     }

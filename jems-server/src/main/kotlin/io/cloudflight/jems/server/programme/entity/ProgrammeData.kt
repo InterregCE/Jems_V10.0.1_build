@@ -1,6 +1,7 @@
 package io.cloudflight.jems.server.programme.entity
 
 import io.cloudflight.jems.server.nuts.entity.NutsRegion3
+import io.cloudflight.jems.server.programme.entity.fund.ProgrammeFundEntity
 import java.time.LocalDate
 import javax.persistence.Column
 import javax.persistence.Entity
@@ -54,6 +55,14 @@ data class ProgrammeData(
         joinColumns = [JoinColumn(name = "programme_data_id")],
         inverseJoinColumns = [JoinColumn(name = "nuts_region_3_id")]
     )
-    val programmeNuts: Set<NutsRegion3> = emptySet()
+    val programmeNuts: Set<NutsRegion3> = emptySet(),
+
+    @OneToMany
+    @JoinTable(
+        name = "programme_fund_selected",
+        joinColumns = [JoinColumn(name = "programme_data_id")],
+        inverseJoinColumns = [JoinColumn(name = "fund_id")]
+    )
+    val funds: Set<ProgrammeFundEntity> = emptySet()
 
 )

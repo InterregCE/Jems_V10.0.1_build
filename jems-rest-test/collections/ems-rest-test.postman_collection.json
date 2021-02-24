@@ -1,6 +1,6 @@
 {
 	"info": {
-		"_postman_id": "2aafe580-caa9-4d3a-95f4-9c3a5064d7cd",
+		"_postman_id": "5f916f0e-c493-43ea-914a-382d5d590af1",
 		"name": "ems-rest-test",
 		"description": "Check EMS application for common use-cases",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
@@ -461,13 +461,13 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "{{url}}/api/programmefund",
+							"raw": "{{url}}/api/programmeFund",
 							"host": [
 								"{{url}}"
 							],
 							"path": [
 								"api",
-								"programmefund"
+								"programmeFund"
 							]
 						}
 					},
@@ -526,13 +526,13 @@
 							}
 						},
 						"url": {
-							"raw": "{{url}}/api/programmefund",
+							"raw": "{{url}}/api/programmeFund",
 							"host": [
 								"{{url}}"
 							],
 							"path": [
 								"api",
-								"programmefund"
+								"programmeFund"
 							]
 						}
 					},
@@ -679,7 +679,7 @@
 									"\r",
 									"pm.test('programme lump sum was created', function() {\r",
 									"    const lumpSum = pm.response.json();\r",
-									"    pm.expect(lumpSum.name).to.eql(\"[API test] splittable\");\r",
+									"    pm.expect(lumpSum.name.find(name => name.language === pm.variables.get('inputLanguage')).translation).to.eql(\"[API test] splittable\");\r",
 									"    pm.expect(lumpSum.cost).to.eql(10000);\r",
 									"    pm.expect(lumpSum.splittingAllowed).to.be.true;\r",
 									"});\r",
@@ -694,7 +694,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"id\": {{programmeLumpSumId}},\r\n    \"name\": \"[API test] splittable\",\r\n    \"cost\": 10000,\r\n    \"splittingAllowed\": true,\r\n    \"phase\": \"Preparation\",\r\n    \"categories\": [\"StaffCosts\", \"OfficeAndAdministrationCosts\"]\r\n}\r\n",
+							"raw": "{\r\n    \"id\": {{programmeLumpSumId}},\r\n    \"name\": [\r\n        {\r\n            \"language\": \"{{inputLanguage}}\",\r\n            \"translation\": \"[API test] splittable\"\r\n        }\r\n    ],\r\n    \"cost\": 10000,\r\n    \"splittingAllowed\": true,\r\n    \"phase\": \"Preparation\",\r\n    \"categories\": [\"StaffCosts\", \"OfficeAndAdministrationCosts\"]\r\n}\r\n",
 							"options": {
 								"raw": {
 									"language": "json"

@@ -4,8 +4,8 @@ import io.cloudflight.jems.server.audit.entity.AuditAction
 import io.cloudflight.jems.server.audit.service.AuditBuilder
 import io.cloudflight.jems.server.audit.service.AuditCandidate
 import io.cloudflight.jems.server.nuts.service.NutsIdentifier
-import io.cloudflight.jems.server.programme.entity.ProgrammeFundEntity
-import io.cloudflight.jems.server.programme.entity.legalstatus.ProgrammeLegalStatusEntity
+import io.cloudflight.jems.server.programme.entity.fund.ProgrammeFundEntity
+import io.cloudflight.jems.server.programme.service.fund.model.ProgrammeFund
 import io.cloudflight.jems.server.programme.service.language.model.ProgrammeLanguage
 import io.cloudflight.jems.server.programme.service.legalstatus.model.ProgrammeLegalStatus
 import io.cloudflight.jems.server.programme.service.priority.model.ProgrammePriority
@@ -47,10 +47,9 @@ fun programmeNutsAreaChanged(updatedNuts: Collection<NutsIdentifier>): AuditCand
         .build()
 }
 
-fun programmeFundsChanged(funds: Iterable<ProgrammeFundEntity>): AuditCandidate {
+fun programmeFundsChanged(funds: Iterable<ProgrammeFund>): AuditCandidate {
     val fundsAsString = funds.asSequence()
-        .filter { it.selected }
-        .map { it.abbreviation }.joinToString(",\n")
+        .map { "[selected=${it.selected}, " + it.translatedValues.joinToString { "${it.language}=${it.abbreviation}" } + "]" }.joinToString(",\n")
 
     return AuditBuilder(AuditAction.PROGRAMME_FUNDS_CHANGED)
         .description("Programme funds has been set to:\n$fundsAsString")
