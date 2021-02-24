@@ -4,7 +4,7 @@ import io.cloudflight.jems.api.call.dto.CallStatus
 import io.cloudflight.jems.api.programme.dto.language.SystemLanguage.EN
 import io.cloudflight.jems.api.programme.dto.language.SystemLanguage.SK
 import io.cloudflight.jems.server.UnitTest
-import io.cloudflight.jems.server.call.repository.flatrate.CallRepository
+import io.cloudflight.jems.server.call.repository.CallRepository
 import io.cloudflight.jems.server.programme.entity.legalstatus.ProgrammeLegalStatusEntity
 import io.cloudflight.jems.server.programme.entity.legalstatus.ProgrammeLegalStatusTranslationEntity
 import io.cloudflight.jems.server.programme.entity.legalstatus.ProgrammeLegalStatusTranslationId

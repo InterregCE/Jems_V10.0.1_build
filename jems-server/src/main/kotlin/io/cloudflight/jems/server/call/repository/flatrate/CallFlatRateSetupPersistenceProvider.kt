@@ -1,5 +1,6 @@
 package io.cloudflight.jems.server.call.repository.flatrate
 
+import io.cloudflight.jems.server.call.repository.CallRepository
 import io.cloudflight.jems.server.call.service.flatrate.CallFlatRateSetupPersistence
 import io.cloudflight.jems.server.call.service.flatrate.model.ProjectCallFlatRate
 import io.cloudflight.jems.server.project.repository.partner.ProjectPartnerRepository

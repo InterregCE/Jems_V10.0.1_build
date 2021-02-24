@@ -1,6 +1,6 @@
 package io.cloudflight.jems.server.programme.repository.legalstatus
 
-import io.cloudflight.jems.server.call.repository.flatrate.CallRepository
+import io.cloudflight.jems.server.call.repository.CallRepository
 import io.cloudflight.jems.server.programme.repository.ProgrammePersistenceProvider
 import io.cloudflight.jems.server.programme.service.legalstatus.ProgrammeLegalStatusPersistence
 import io.cloudflight.jems.server.programme.service.legalstatus.model.ProgrammeLegalStatus

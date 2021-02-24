@@ -28,7 +28,7 @@ import io.cloudflight.jems.server.authentication.model.LocalCurrentUser
 import io.cloudflight.jems.server.authentication.model.PROGRAMME_USER
 import io.cloudflight.jems.server.authentication.service.SecurityService
 import io.cloudflight.jems.server.call.entity.CallEntity
-import io.cloudflight.jems.server.call.repository.flatrate.CallRepository
+import io.cloudflight.jems.server.call.repository.CallRepository
 import io.cloudflight.jems.server.common.exception.ResourceNotFoundException
 import io.cloudflight.jems.server.programme.entity.ProgrammeSpecificObjectiveEntity
 import io.cloudflight.jems.server.programme.entity.Strategy
@@ -200,7 +200,7 @@ class ProjectServiceTest {
                 listOf(SimpleGrantedAuthority("ROLE_$PROGRAMME_USER"))
             )
 
-        projectService.findAll(UNPAGED);
+        projectService.findAll(UNPAGED)
 
         verify {
             projectRepository.findAllByProjectStatusStatusNot(
@@ -265,10 +265,10 @@ class ProjectServiceTest {
         every { projectRepository.findById(eq(1)) } returns
             Optional.of(ProjectEntity(id = 1, call = dummyCall, acronym = "test", applicant = account, projectStatus = statusSubmitted, firstSubmission = statusSubmitted))
 
-        val result = projectService.getById(1);
+        val result = projectService.getById(1)
 
         assertThat(result).isNotNull()
-        assertThat(result.id).isEqualTo(1);
+        assertThat(result.id).isEqualTo(1)
         assertThat(result.acronym).isEqualTo("test")
         assertThat(result.projectStatus.id).isEqualTo(11)
         assertThat(result.firstSubmission?.id).isEqualTo(11)

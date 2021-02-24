@@ -1,8 +1,10 @@
 package io.cloudflight.jems.server.programme.service.indicator.update_result_indicator
 
 import io.cloudflight.jems.api.common.dto.I18nMessage
+import io.cloudflight.jems.api.programme.dto.priority.ProgrammeObjectivePolicy
 import io.cloudflight.jems.server.audit.entity.AuditAction
 import io.cloudflight.jems.server.audit.service.AuditCandidate
+import io.cloudflight.jems.server.call.service.CallPersistence
 import io.cloudflight.jems.server.programme.service.indicator.IndicatorsBaseTest
 import io.cloudflight.jems.server.programme.service.indicator.ResultIndicatorPersistence
 import io.mockk.every
@@ -21,6 +23,9 @@ internal class UpdateResultIndicatorTest : IndicatorsBaseTest() {
     @MockK
     lateinit var persistence: ResultIndicatorPersistence
 
+    @MockK
+    lateinit var callPersistence: CallPersistence
+
     @InjectMockKs
     lateinit var updateResultIndicator: UpdateResultIndicator
 
@@ -31,6 +36,7 @@ internal class UpdateResultIndicatorTest : IndicatorsBaseTest() {
         val savedResultIndicatorDetail = buildResultIndicatorDetailInstance(code = "new code")
         every { persistence.getResultIndicator(newResultIndicator.id!!) } returns oldResultIndicatorDetail
         every { persistence.saveResultIndicator(newResultIndicator) } returns savedResultIndicatorDetail
+        every { callPersistence.hasAnyCallPublished() } returns false
         every {
             persistence.isIdentifierUsedByAnotherResultIndicator(
                 newResultIndicator.id,
@@ -58,6 +64,7 @@ internal class UpdateResultIndicatorTest : IndicatorsBaseTest() {
         val savedResultIndicatorDetail = buildResultIndicatorDetailInstance(identifier = "newID")
         every { persistence.getResultIndicator(newResultIndicator.id!!) } returns oldResultIndicatorDetail
         every { persistence.saveResultIndicator(newResultIndicator) } returns savedResultIndicatorDetail
+        every { callPersistence.hasAnyCallPublished() } returns false
         every {
             persistence.isIdentifierUsedByAnotherResultIndicator(
                 newResultIndicator.id,
@@ -93,5 +100,23 @@ internal class UpdateResultIndicatorTest : IndicatorsBaseTest() {
         )
 
         assertThat(exception.formErrors["identifier"]).isEqualTo(I18nMessage("$UPDATE_RESULT_INDICATOR_ERROR_KEY_PREFIX.identifier.is.used"))
+    }
+
+
+    @Test
+    fun `should throw SpecificObjectiveCannotBeChangedException when specific objective in the new result indicator is changed and there is a published call`() {
+        val newResultIndicator = buildResultIndicatorInstance(programmeObjectivePolicy = ProgrammeObjectivePolicy.Digitalization)
+        val oldResultIndicatorDetail = buildResultIndicatorDetailInstance()
+        every { persistence.getResultIndicator(newResultIndicator.id!!) } returns oldResultIndicatorDetail
+        every { callPersistence.hasAnyCallPublished() } returns true
+        every {
+            persistence.isIdentifierUsedByAnotherResultIndicator(
+                newResultIndicator.id,
+                newResultIndicator.identifier
+            )
+        } returns false
+        assertThatExceptionOfType(SpecificObjectiveCannotBeChangedException::class.java).isThrownBy {
+            updateResultIndicator.updateResultIndicator(newResultIndicator)
+        }
     }
 }

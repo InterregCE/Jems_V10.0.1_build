@@ -18,3 +18,10 @@ class IdentifierIsUsedException : ApplicationBadRequestException(
     formErrors = mapOf("identifier" to I18nMessage("$UPDATE_RESULT_INDICATOR_ERROR_KEY_PREFIX.identifier.is.used")),
     cause = null
 )
+
+class SpecificObjectiveCannotBeChangedException : ApplicationBadRequestException(
+    code = "$UPDATE_RESULT_INDICATOR_ERROR_CODE_PREFIX-003",
+    i18nMessage = I18nMessage("$UPDATE_RESULT_INDICATOR_ERROR_CODE_PREFIX.specific.objective.cannot.be.changed.after.first.published.call"),
+    formErrors = mapOf("specificObjective" to I18nMessage("$UPDATE_RESULT_INDICATOR_ERROR_CODE_PREFIX.specific.objective.cannot.be.changed.after.first.published.call")),
+    cause = null
+)

@@ -1,6 +1,7 @@
 package io.cloudflight.jems.server.programme.service.indicator.update_output_indicator
 
 import io.cloudflight.jems.server.audit.service.AuditService
+import io.cloudflight.jems.server.call.service.CallPersistence
 import io.cloudflight.jems.server.common.exception.ExceptionWrapper
 import io.cloudflight.jems.server.common.validator.GeneralValidatorService
 import io.cloudflight.jems.server.programme.authorization.CanUpdateProgrammeSetup
@@ -18,6 +19,7 @@ class UpdateOutputIndicator(
     private val persistence: OutputIndicatorPersistence,
     private val generalValidator: GeneralValidatorService,
     private val resultIndicatorPersistence: ResultIndicatorPersistence,
+    private val callPersistence: CallPersistence,
     private val auditService: AuditService
 ) : UpdateOutputIndicatorInteractor {
 
@@ -31,6 +33,9 @@ class UpdateOutputIndicator(
         validateOutputIndicatorDetail(outputIndicator)
 
         val oldOutputIndicator = persistence.getOutputIndicator(outputIndicator.id!!)
+
+        checkUpdateConstraintsAfterFirstPublishedCall(outputIndicator, oldOutputIndicator)
+
         val savedOutputIndicator = persistence.saveOutputIndicator(outputIndicator)
 
         auditService.logEvent(
@@ -66,4 +71,13 @@ class UpdateOutputIndicator(
             generalValidator.minDecimal(outputIndicator.finalTarget, BigDecimal.ZERO, "finalTarget"),
             generalValidator.digits(outputIndicator.finalTarget, 9, 2, "finalTarget")
         )
+
+    private fun checkUpdateConstraintsAfterFirstPublishedCall(
+        outputIndicator: OutputIndicator,
+        oldOutputIndicatorDetail: OutputIndicatorDetail
+    ) {
+        if (oldOutputIndicatorDetail.programmeObjectivePolicy != outputIndicator.programmeObjectivePolicy && callPersistence.hasAnyCallPublished())
+            throw SpecificObjectiveCannotBeChangedException()
+    }
+
 }
