@@ -2,6 +2,16 @@
                         titleKey="programme.data.page.title"
                         subTitleKey="programme.tab.indicators"
                         *ngxPermissionsExcept="Permission.APPLICANT_USER">
+
+    <div page-description>
+        {{ "programme.tab.indicators.description" | translate}}
+        <ul>
+            <li>{{ "programme.tab.indicators.description.point.1" | translate}}</li>
+            <li>{{ "programme.tab.indicators.description.point.2" | translate}}</li>
+            <li>{{ "programme.tab.indicators.description.point.3" | translate}}</li>
+        </ul>
+    </div>
+
     <div appFormLayout>
         <ng-container *ngIf="currentOutputIndicatorPage$ | async as outputIndicatorPage">
             <h3>{{'output.indicator.table.title' | translate}}</h3>
