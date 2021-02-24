@@ -13,9 +13,9 @@ import {
   InputProjectPartnerCreate,
   InputProjectPartnerUpdate,
   InputTranslation,
-  OutputProgrammeLegalStatus,
   OutputProjectPartner,
-  OutputProjectPartnerDetail
+  OutputProjectPartnerDetail,
+  ProgrammeLegalStatusDTO,
 } from '@cat/api';
 import {catchError, take, takeUntil, tap} from 'rxjs/operators';
 import {I18nValidationError} from '@common/validation/i18n-validation-error';
@@ -46,7 +46,7 @@ export class ProjectApplicationFormPartnerEditComponent extends BaseComponent im
   @Input()
   editable: boolean;
   @Input()
-  legalStatuses: OutputProgrammeLegalStatus[];
+  legalStatuses: ProgrammeLegalStatusDTO[];
 
   @Output()
   create = new EventEmitter<InputProjectPartnerCreate>();

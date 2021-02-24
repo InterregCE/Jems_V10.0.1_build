@@ -14,9 +14,11 @@ class DeletePriority(
     @Transactional(readOnly = true)
     @CanUpdateProgrammeSetup
     override fun deletePriority(priorityId: Long) {
+        if (persistence.isProgrammeSetupRestricted())
+            throw DeletionWhenProgrammeSetupRestricted()
+
         checkNoCallExistsForRemovedSpecificObjectives(
-            newObjectivePolicies = emptySet(),
-            existingPriority = persistence.getPriorityById(priorityId),
+            objectivePoliciesToBeRemoved = persistence.getPriorityById(priorityId).getSpecificObjectivePolicies(),
             alreadyUsedObjectivePolicies = persistence.getObjectivePoliciesAlreadyInUse()
         )
         persistence.delete(priorityId)

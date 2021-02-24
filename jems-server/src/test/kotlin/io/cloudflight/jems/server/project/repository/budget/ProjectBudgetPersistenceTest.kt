@@ -4,7 +4,7 @@ import io.cloudflight.jems.api.project.dto.partner.ProjectPartnerAddressType
 import io.cloudflight.jems.api.project.dto.partner.ProjectPartnerRole
 import io.cloudflight.jems.server.audit.service.AuditService
 import io.cloudflight.jems.server.call.partnerWithId
-import io.cloudflight.jems.server.programme.entity.ProgrammeLegalStatus
+import io.cloudflight.jems.server.programme.entity.legalstatus.ProgrammeLegalStatusEntity
 import io.cloudflight.jems.server.project.entity.AddressEntity
 import io.cloudflight.jems.server.project.entity.lumpsum.ProjectLumpSumPerPartnerSumEntity
 import io.cloudflight.jems.server.project.entity.partner.ProjectPartnerAddress
@@ -27,7 +27,6 @@ import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.springframework.data.domain.Sort
 import java.math.BigDecimal
-import java.util.UUID
 
 class ProjectBudgetPersistenceTest {
 
@@ -125,7 +124,7 @@ class ProjectBudgetPersistenceTest {
                 project = ProjectPartnerTestUtil.project,
                 abbreviation = "partner",
                 role = ProjectPartnerRole.LEAD_PARTNER,
-                legalStatus = ProgrammeLegalStatus(1, "description"),
+                legalStatus = ProgrammeLegalStatusEntity(1),
                 sortNumber = 1,
                 addresses = setOf(ProjectPartnerAddress(
                     addressId = ProjectPartnerAddressId(5, ProjectPartnerAddressType.Organization),

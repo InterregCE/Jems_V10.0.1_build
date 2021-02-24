@@ -206,4 +206,7 @@ class CallServiceImpl(
             }
     }
 
+    @Transactional(readOnly = true)
+    override fun existsPublishedCall(): Boolean = callRepository.existsByStatus(CallStatus.PUBLISHED)
+
 }

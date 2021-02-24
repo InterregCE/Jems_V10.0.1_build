@@ -4,7 +4,7 @@ import {ProgrammeLegalStatusComponent} from './programme-legal-status.component'
 import {ProgrammeModule} from '../../../programme.module';
 import {TestModule} from '../../../../common/test-module';
 import {HttpTestingController} from '@angular/common/http/testing';
-import {InputProgrammeLegalStatus} from '@cat/api';
+import {ProgrammeLegalStatusDTO} from '@cat/api';
 
 describe('ProgrammeLegalStatusComponent', () => {
   let httpTestingController: HttpTestingController;
@@ -32,10 +32,10 @@ describe('ProgrammeLegalStatusComponent', () => {
   });
 
   it('should fetch initial legal statuses', fakeAsync(() => {
-    let result: InputProgrammeLegalStatus[] = [];
+    let result: ProgrammeLegalStatusDTO[] = [];
     component.legalStatuses$.subscribe(res => result = res);
 
-    httpTestingController.match({method: 'GET', url: `//api/programmelegalstatus`})
+    httpTestingController.match({method: 'GET', url: `//api/programmeLegalStatus`})
       .forEach(req => req.flush([{id: 1}]));
 
     tick();
@@ -44,12 +44,12 @@ describe('ProgrammeLegalStatusComponent', () => {
   }));
 
   it('should update legal statuses', fakeAsync(() => {
-    let result: InputProgrammeLegalStatus[] = [];
+    let result: ProgrammeLegalStatusDTO[] = [];
     component.legalStatuses$.subscribe(res => result = res);
-    component.saveStatuses$.next({toPersist: [], toDelete: []});
+    component.saveStatuses$.next({toPersist: [], toDeleteIds: []});
 
-    httpTestingController.match({method: 'GET', url: `//api/programmelegalstatus`});
-    httpTestingController.match({method: 'POST', url: `//api/programmelegalstatus`})
+    httpTestingController.match({method: 'GET', url: `//api/programmeLegalStatus`});
+    httpTestingController.match({method: 'PUT', url: `//api/programmeLegalStatus`})
       .forEach(req => req.flush([{id: 1}]));
 
     tick();

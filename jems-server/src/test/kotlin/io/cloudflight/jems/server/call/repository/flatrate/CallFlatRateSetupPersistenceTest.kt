@@ -10,7 +10,7 @@ import io.cloudflight.jems.server.call.entity.ProjectCallFlatRateEntity
 import io.cloudflight.jems.server.call.entity.FlatRateSetupId
 import io.cloudflight.jems.server.call.service.flatrate.CallFlatRateSetupPersistence
 import io.cloudflight.jems.server.call.service.flatrate.model.ProjectCallFlatRate
-import io.cloudflight.jems.server.programme.entity.ProgrammeLegalStatus
+import io.cloudflight.jems.server.programme.entity.legalstatus.ProgrammeLegalStatusEntity
 import io.cloudflight.jems.server.project.entity.ProjectEntity
 import io.cloudflight.jems.server.project.entity.ProjectStatus
 import io.cloudflight.jems.server.project.entity.partner.ProjectPartnerEntity
@@ -42,7 +42,7 @@ class CallFlatRateSetupPersistenceTest {
             ),
             abbreviation = "test",
             role = ProjectPartnerRole.PARTNER,
-            legalStatus = ProgrammeLegalStatus()
+            legalStatus = ProgrammeLegalStatusEntity()
         )
     }
 

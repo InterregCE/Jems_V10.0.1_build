@@ -6,7 +6,7 @@ import io.cloudflight.jems.api.project.dto.status.ProjectApplicationStatus
 import io.cloudflight.jems.server.UnitTest
 import io.cloudflight.jems.server.call.callWithId
 import io.cloudflight.jems.server.common.exception.ResourceNotFoundException
-import io.cloudflight.jems.server.programme.entity.ProgrammeLegalStatus
+import io.cloudflight.jems.server.programme.entity.legalstatus.ProgrammeLegalStatusEntity
 import io.cloudflight.jems.server.programme.entity.costoption.ProgrammeLumpSumEntity
 import io.cloudflight.jems.server.programme.repository.costoption.ProgrammeLumpSumRepository
 import io.cloudflight.jems.server.project.entity.ProjectEntity
@@ -29,7 +29,6 @@ import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
 import java.math.BigDecimal
 import java.util.Optional
-import java.util.UUID
 
 internal class ProjectLumpSumPersistenceTest : UnitTest() {
 
@@ -50,7 +49,7 @@ internal class ProjectLumpSumPersistenceTest : UnitTest() {
             abbreviation = "",
             role = ProjectPartnerRole.LEAD_PARTNER,
             sortNumber = sortNumber,
-            legalStatus = ProgrammeLegalStatus(id = 1, description = ""),
+            legalStatus = ProgrammeLegalStatusEntity(id = 1),
         )
 
         private fun programmeLumpSum(id: Long) = ProgrammeLumpSumEntity(

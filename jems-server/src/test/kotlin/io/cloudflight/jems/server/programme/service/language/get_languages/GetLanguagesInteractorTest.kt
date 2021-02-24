@@ -3,14 +3,12 @@ package io.cloudflight.jems.server.programme.service.language.get_languages
 import io.cloudflight.jems.api.programme.dto.language.SystemLanguage.EN
 import io.cloudflight.jems.api.programme.dto.language.SystemLanguage.SK
 import io.cloudflight.jems.server.UnitTest
-import io.cloudflight.jems.server.audit.service.AuditService
 import io.cloudflight.jems.server.programme.service.language.ProgrammeLanguagePersistence
 import io.cloudflight.jems.server.programme.service.language.model.AvailableProgrammeLanguages
 import io.cloudflight.jems.server.programme.service.language.model.ProgrammeLanguage
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
 import io.mockk.impl.annotations.MockK
-import io.mockk.impl.annotations.RelaxedMockK
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 
@@ -33,9 +31,6 @@ internal class GetLanguagesInteractorTest : UnitTest() {
 
     @MockK
     lateinit var persistence: ProgrammeLanguagePersistence
-
-    @RelaxedMockK
-    lateinit var auditService: AuditService
 
     @InjectMockKs
     lateinit var getLanguages: GetLanguages

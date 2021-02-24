@@ -1,10 +1,11 @@
 package io.cloudflight.jems.server.programme.service.priority
 
 import io.cloudflight.jems.api.programme.dto.priority.ProgrammeObjectivePolicy
+import io.cloudflight.jems.server.programme.service.ProgrammePersistence
 import io.cloudflight.jems.server.programme.service.priority.model.ProgrammePriority
 import io.cloudflight.jems.server.programme.service.priority.model.ProgrammeSpecificObjective
 
-interface ProgrammePriorityPersistence {
+interface ProgrammePriorityPersistence: ProgrammePersistence {
     fun getPriorityById(priorityId: Long): ProgrammePriority
     fun getAllMax45Priorities(): List<ProgrammePriority>
     fun create(priority: ProgrammePriority): ProgrammePriority

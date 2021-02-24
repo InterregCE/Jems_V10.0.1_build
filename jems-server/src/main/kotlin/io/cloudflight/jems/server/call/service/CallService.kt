@@ -27,4 +27,6 @@ interface CallService {
 
     fun getPriorityAndPoliciesForCall(callId: Long): List<OutputCallProgrammePriority>
 
+    fun existsPublishedCall(): Boolean
+
 }

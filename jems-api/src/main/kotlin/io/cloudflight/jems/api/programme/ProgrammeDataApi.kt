@@ -32,4 +32,8 @@ interface ProgrammeDataApi {
     @GetMapping("/nuts")
     fun getNuts(): List<OutputNuts>
 
+    @ApiOperation("Check if programme setup is still open for changes or not yet")
+    @GetMapping("/isLocked")
+    fun isProgrammeSetupLocked(): Boolean
+
 }

@@ -1,6 +1,5 @@
 package io.cloudflight.jems.api.project.dto.partner
 
-import io.cloudflight.jems.api.programme.dto.OutputProgrammeLegalStatus
 import io.cloudflight.jems.api.project.dto.InputTranslation
 import io.cloudflight.jems.api.project.dto.description.ProjectTargetGroup
 import javax.validation.constraints.NotBlank

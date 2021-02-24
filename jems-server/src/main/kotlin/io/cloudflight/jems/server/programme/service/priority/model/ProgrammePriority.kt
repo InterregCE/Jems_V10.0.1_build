@@ -31,4 +31,6 @@ data class ProgrammePriority(
 
         return changes
     }
+
+    fun getSpecificObjectivePolicies() = specificObjectives.mapTo(HashSet()) { it.programmeObjectivePolicy }
 }

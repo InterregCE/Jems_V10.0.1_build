@@ -1,7 +1,7 @@
 import {ChangeDetectionStrategy, Component} from '@angular/core';
 import {merge, Subject} from 'rxjs';
 import {I18nValidationError} from '@common/validation/i18n-validation-error';
-import {InputProgrammeLegalStatusWrapper, ProgrammeLegalStatusService} from '@cat/api';
+import {ProgrammeLegalStatusUpdateDTO, ProgrammeLegalStatusService} from '@cat/api';
 import {catchError, mergeMap, tap} from 'rxjs/operators';
 import {Log} from '../../../../common/utils/log';
 import {HttpErrorResponse} from '@angular/common/http';
@@ -18,7 +18,7 @@ export class ProgrammeLegalStatusComponent extends BaseComponent {
 
   error$ = new Subject<I18nValidationError | null>();
   success$ = new Subject<string>();
-  saveStatuses$ = new Subject<InputProgrammeLegalStatusWrapper>();
+  saveStatuses$ = new Subject<ProgrammeLegalStatusUpdateDTO>();
 
   private initialStatus$ = this.legalStatusService.getProgrammeLegalStatusList()
     .pipe(
