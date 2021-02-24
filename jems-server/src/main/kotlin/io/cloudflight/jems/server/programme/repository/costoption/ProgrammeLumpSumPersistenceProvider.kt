@@ -14,11 +14,11 @@ class ProgrammeLumpSumPersistenceProvider(
 
     @Transactional(readOnly = true)
     override fun getLumpSums(): List<ProgrammeLumpSum> =
-        repository.findTop25ByOrderById().map { it.toProgrammeUnitCost() }
+        repository.findTop25ByOrderById().map { it.toProgrammeLumpSum() }
 
     @Transactional(readOnly = true)
     override fun getLumpSum(lumpSumId: Long): ProgrammeLumpSum =
-        getLumpSumOrThrow(lumpSumId).toProgrammeUnitCost()
+        getLumpSumOrThrow(lumpSumId).toProgrammeLumpSum()
 
     @Transactional(readOnly = true)
     override fun getCount(): Long = repository.count()
@@ -27,21 +27,21 @@ class ProgrammeLumpSumPersistenceProvider(
     override fun createLumpSum(lumpSum: ProgrammeLumpSum): ProgrammeLumpSum {
         val created = repository.save(lumpSum.toEntity())
         return repository.save(created.copy(
+            translatedValues = combineLumpSumTranslatedValues(created.id, lumpSum.name, lumpSum.description),
             categories = lumpSum.categories.toEntity(created.id)
-        )).toProgrammeUnitCost()
+        )).toProgrammeLumpSum()
     }
 
     @Transactional
     override fun updateLumpSum(lumpSum: ProgrammeLumpSum): ProgrammeLumpSum {
         val lumpSumEntity = getLumpSumOrThrow(lumpSumId = lumpSum.id!!)
-        lumpSumEntity.name = lumpSum.name!!
-        lumpSumEntity.description = lumpSum.description
+        lumpSumEntity.translatedValues = combineLumpSumTranslatedValues(lumpSum.id, lumpSum.name, lumpSum.description)
         lumpSumEntity.cost = lumpSum.cost!!
         lumpSumEntity.splittingAllowed = lumpSum.splittingAllowed
         lumpSumEntity.phase = lumpSum.phase!!
         lumpSumEntity.categories.clear()
         lumpSumEntity.categories.addAll(lumpSum.categories.toEntity(lumpSum.id))
-        return lumpSumEntity.toProgrammeUnitCost()
+        return lumpSumEntity.toProgrammeLumpSum()
     }
 
     @Transactional

@@ -3,6 +3,8 @@ package io.cloudflight.jems.server.programme.service.costoption.create_lump_sum
 import io.cloudflight.jems.api.programme.dto.costoption.BudgetCategory.OfficeAndAdministrationCosts
 import io.cloudflight.jems.api.programme.dto.costoption.BudgetCategory.StaffCosts
 import io.cloudflight.jems.api.programme.dto.costoption.ProgrammeLumpSumPhase.Implementation
+import io.cloudflight.jems.api.programme.dto.language.SystemLanguage
+import io.cloudflight.jems.api.project.dto.InputTranslation
 import io.cloudflight.jems.server.audit.entity.AuditAction
 import io.cloudflight.jems.server.audit.service.AuditCandidate
 import io.cloudflight.jems.server.audit.service.AuditService
@@ -41,8 +43,8 @@ class CreateLumpSumInteractorTest {
         every { persistence.getCount() } returns 15
         val wrongLumpSum = ProgrammeLumpSum(
             id = null,
-            name = " ",
-            description = "test lump sum 1",
+            name = setOf(InputTranslation(SystemLanguage.EN, " ")),
+            description = setOf(InputTranslation(SystemLanguage.EN, "test lump sum 1")),
             cost = null,
             splittingAllowed = true,
             phase = null,
@@ -50,7 +52,6 @@ class CreateLumpSumInteractorTest {
         )
         val ex = assertThrows<I18nValidationException> { createLumpSumInteractor.createLumpSum(wrongLumpSum) }
         assertThat(ex.i18nFieldErrors).containsExactlyInAnyOrderEntriesOf(mapOf(
-            "name" to I18nFieldError(i18nKey = "programme.lumpSum.name.should.not.be.empty"),
             "cost" to I18nFieldError(i18nKey = "lump.sum.out.of.range"),
             "phase" to I18nFieldError(i18nKey = "lump.sum.phase.should.not.be.empty"),
             "categories" to I18nFieldError(i18nKey = "programme.lumpSum.categories.min.2"),
@@ -62,8 +63,8 @@ class CreateLumpSumInteractorTest {
         every { persistence.getCount() } returns 25
         val lumpSum = ProgrammeLumpSum(
             id = null,
-            name = "LS1",
-            description = "test lump sum 1",
+            name = setOf(InputTranslation(SystemLanguage.EN, "LS1")),
+            description = setOf(InputTranslation(SystemLanguage.EN, "test lump sum 1")),
             cost = BigDecimal.ONE,
             splittingAllowed = true,
             phase = Implementation,
@@ -79,8 +80,8 @@ class CreateLumpSumInteractorTest {
         every { persistence.createLumpSum(any()) } returnsArgument 0
         val lumpSum = ProgrammeLumpSum(
             id = null,
-            name = "LS1",
-            description = "test lump sum 1",
+            name = setOf(InputTranslation(SystemLanguage.EN, "LS1")),
+            description = setOf(InputTranslation(SystemLanguage.EN, "test lump sum 1")),
             cost = BigDecimal.ONE,
             splittingAllowed = true,
             phase = Implementation,
@@ -92,7 +93,7 @@ class CreateLumpSumInteractorTest {
         assertThat(createLumpSumInteractor.createLumpSum(lumpSum)).isEqualTo(lumpSum.copy())
         assertThat(auditSlot.captured).isEqualTo(AuditCandidate(
             action = AuditAction.PROGRAMME_LUMP_SUM_ADDED,
-            description = "Programme lump sum (id=null) 'LS1' has been added" // null will be real ID from DB sequence
+            description = "Programme lump sum (id=null) '[InputTranslation(language=EN, translation=LS1)]' has been added" // null will be real ID from DB sequence
         ))
     }
 
@@ -101,7 +102,7 @@ class CreateLumpSumInteractorTest {
         every { persistence.getCount() } returns 10
         val lumpSum = ProgrammeLumpSum(
             id = 1L,
-            name = "LS1",
+            name = setOf(InputTranslation(SystemLanguage.EN, "LS1")),
             cost = BigDecimal.ONE,
             splittingAllowed = true,
             phase = Implementation,

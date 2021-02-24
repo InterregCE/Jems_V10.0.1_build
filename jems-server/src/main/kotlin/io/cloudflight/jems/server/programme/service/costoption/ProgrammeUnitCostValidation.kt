@@ -29,19 +29,14 @@ fun validateUpdateUnitCost(unitCost: ProgrammeUnitCost) {
 
 private fun validateCommonUnitCost(unitCost: ProgrammeUnitCost) {
     val errors = mutableMapOf<String, I18nFieldError>()
-    if (unitCost.name.isNullOrBlank())
-        errors.put("name", I18nFieldError(i18nKey = "programme.unitCost.name.should.not.be.empty"))
-    else if (unitCost.name.length > 50)
+
+    if (unitCost.name.any { it.translation != null && it.translation!!.length > 50 })
         errors.put("name", I18nFieldError(i18nKey = "programme.unitCost.name.too.long"))
 
-    val description = unitCost.description
-    if (description != null && description.length > 500)
+    if (unitCost.description.any { it.translation != null && it.translation!!.length > 500 })
         errors.put("description", I18nFieldError(i18nKey = "programme.unitCost.description.too.long"))
 
-    val type = unitCost.type
-    if (type == null)
-        errors.put("type", I18nFieldError(i18nKey = "programme.unitCost.type.should.not.be.empty"))
-    else if (type.length > 25)
+    if (unitCost.type.any { it.translation != null && it.translation!!.length > 25 })
         errors.put("type", I18nFieldError(i18nKey = "programme.unitCost.type.too.long"))
 
     val costPerUnit = unitCost.costPerUnit

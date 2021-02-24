@@ -3,6 +3,8 @@ package io.cloudflight.jems.server.programme.service.costoption.update_lump_sum
 import io.cloudflight.jems.api.programme.dto.costoption.BudgetCategory.OfficeAndAdministrationCosts
 import io.cloudflight.jems.api.programme.dto.costoption.BudgetCategory.StaffCosts
 import io.cloudflight.jems.api.programme.dto.costoption.ProgrammeLumpSumPhase.Implementation
+import io.cloudflight.jems.api.programme.dto.language.SystemLanguage
+import io.cloudflight.jems.api.project.dto.InputTranslation
 import io.cloudflight.jems.server.audit.entity.AuditAction
 import io.cloudflight.jems.server.audit.service.AuditCandidate
 import io.cloudflight.jems.server.audit.service.AuditService
@@ -42,8 +44,8 @@ class UpdateLumpSumInteractorTest {
     fun `update lump sum - invalid`() {
         val wrongLumpSum = ProgrammeLumpSum(
             id = 4,
-            name = " ",
-            description = "test lump sum 1",
+            name = setOf(InputTranslation(SystemLanguage.EN, " ")),
+            description = setOf(InputTranslation(SystemLanguage.EN, "test lump sum 1")),
             cost = null,
             splittingAllowed = true,
             phase = null,
@@ -51,7 +53,6 @@ class UpdateLumpSumInteractorTest {
         )
         val ex = assertThrows<I18nValidationException> { updateLumpSumInteractor.updateLumpSum(wrongLumpSum) }
         assertThat(ex.i18nFieldErrors).containsExactlyInAnyOrderEntriesOf(mapOf(
-            "name" to I18nFieldError(i18nKey = "programme.lumpSum.name.should.not.be.empty"),
             "cost" to I18nFieldError(i18nKey = "lump.sum.out.of.range"),
             "phase" to I18nFieldError(i18nKey = "lump.sum.phase.should.not.be.empty"),
             "categories" to I18nFieldError(i18nKey = "programme.lumpSum.categories.min.2"),
@@ -62,8 +63,8 @@ class UpdateLumpSumInteractorTest {
     fun `update lump sum - long strings`() {
         val wrongLumpSum = ProgrammeLumpSum(
             id = 4,
-            name = getStringOfLength(51),
-            description = getStringOfLength(501),
+            name = setOf(InputTranslation(SystemLanguage.EN, getStringOfLength(51))),
+            description = setOf(InputTranslation(SystemLanguage.EN, getStringOfLength(501))),
             cost = BigDecimal.ONE,
             splittingAllowed = true,
             phase = Implementation,
@@ -81,8 +82,8 @@ class UpdateLumpSumInteractorTest {
         every { persistence.updateLumpSum(any()) } returnsArgument 0
         val lumpSum = ProgrammeLumpSum(
             id = 4,
-            name = "LS1",
-            description = "test lump sum 1",
+            name = setOf(InputTranslation(SystemLanguage.EN, "LS1")),
+            description = setOf(InputTranslation(SystemLanguage.EN, "test lump sum 1")),
             cost = BigDecimal.ONE,
             splittingAllowed = true,
             phase = Implementation,
@@ -93,14 +94,14 @@ class UpdateLumpSumInteractorTest {
         assertThat(updateLumpSumInteractor.updateLumpSum(lumpSum)).isEqualTo(lumpSum.copy())
         assertThat(auditSlot.captured).isEqualTo(AuditCandidate(
             action = AuditAction.PROGRAMME_LUMP_SUM_CHANGED,
-            description = "Programme lump sum (id=4) 'LS1' has been changed"
+            description = "Programme lump sum (id=4) '[InputTranslation(language=EN, translation=LS1)]' has been changed"
         ))
     }
 
     @Test
     fun `update lump sum - wrong ID filled in`() {
         val lumpSum = ProgrammeLumpSum(
-            name = "LS1",
+            name = setOf(InputTranslation(SystemLanguage.EN, "LS1")),
             cost = BigDecimal.ONE,
             splittingAllowed = true,
             phase = Implementation,
@@ -116,7 +117,7 @@ class UpdateLumpSumInteractorTest {
     fun `update lump sum - not existing`() {
         val lumpSum = ProgrammeLumpSum(
             id = 777,
-            name = "LS1",
+            name = setOf(InputTranslation(SystemLanguage.EN, "LS1")),
             cost = BigDecimal.ONE,
             splittingAllowed = true,
             phase = Implementation,

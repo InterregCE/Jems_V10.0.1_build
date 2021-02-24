@@ -38,8 +38,8 @@ describe('ProgrammeSimplifiedCostOptionsComponent', () => {
     component.lumpSumsDataSource$.subscribe(result => results = result.data);
 
     const sums = [
-      {name: 'test1'} as ProgrammeLumpSumListDTO,
-      {name: 'test2'} as ProgrammeLumpSumListDTO
+      {name: [ { language: 'EN', translation: 'test1'} ] } as ProgrammeLumpSumListDTO,
+      {name: [ { language: 'EN', translation: 'test2'} ] } as ProgrammeLumpSumListDTO
     ];
 
     httpTestingController.match({method: 'GET', url: `//api/costOption/lumpSum`})
@@ -54,8 +54,8 @@ describe('ProgrammeSimplifiedCostOptionsComponent', () => {
     component.unitCostDataSource$.subscribe(result => results = result.data);
 
     const sums = [
-      {name: 'test1'} as ProgrammeUnitCostListDTO,
-      {name: 'test2'} as ProgrammeUnitCostListDTO
+      {name: [ { language: 'EN', translation: 'test1'} ] } as ProgrammeUnitCostListDTO,
+      {name: [ { language: 'EN', translation: 'test2'} ] } as ProgrammeUnitCostListDTO
     ];
 
     httpTestingController.match({method: 'GET', url: `//api/costOption/unitCost`})

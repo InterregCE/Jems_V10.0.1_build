@@ -5,6 +5,7 @@ import io.cloudflight.jems.server.call.service.costoption.CallCostOptionsPersist
 import io.cloudflight.jems.server.common.exception.ResourceNotFoundException
 import io.cloudflight.jems.server.programme.repository.costoption.ProgrammeLumpSumRepository
 import io.cloudflight.jems.server.programme.repository.costoption.ProgrammeUnitCostRepository
+import io.cloudflight.jems.server.programme.repository.costoption.toProgrammeLumpSum
 import io.cloudflight.jems.server.programme.repository.costoption.toProgrammeUnitCost
 import io.cloudflight.jems.server.programme.service.costoption.model.ProgrammeLumpSum
 import io.cloudflight.jems.server.programme.service.costoption.model.ProgrammeUnitCost
@@ -30,7 +31,7 @@ class CallCostOptionsPersistenceProvider(
 
     @Transactional(readOnly = true)
     override fun getProjectCallLumpSum(callId: Long): Iterable<ProgrammeLumpSum> =
-        getCallOrThrow(callId).lumpSums.map { it.toProgrammeUnitCost() }
+        getCallOrThrow(callId).lumpSums.map { it.toProgrammeLumpSum() }
 
     @Transactional
     override fun updateProjectCallUnitCost(callId: Long, unitCostIds: Set<Long>) {

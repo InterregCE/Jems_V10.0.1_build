@@ -3,6 +3,8 @@ package io.cloudflight.jems.server.programme.service.costoption.get_lump_sum
 import io.cloudflight.jems.api.programme.dto.costoption.BudgetCategory.OfficeAndAdministrationCosts
 import io.cloudflight.jems.api.programme.dto.costoption.BudgetCategory.StaffCosts
 import io.cloudflight.jems.api.programme.dto.costoption.ProgrammeLumpSumPhase.Implementation
+import io.cloudflight.jems.api.programme.dto.language.SystemLanguage
+import io.cloudflight.jems.api.project.dto.InputTranslation
 import io.cloudflight.jems.server.common.exception.ResourceNotFoundException
 import io.cloudflight.jems.server.programme.service.costoption.ProgrammeLumpSumPersistence
 import io.cloudflight.jems.server.programme.service.costoption.model.ProgrammeLumpSum
@@ -23,8 +25,8 @@ class GetLumpSumInteractorTest {
 
         private val testLumpSum = ProgrammeLumpSum(
             id = 1,
-            name = "LS1",
-            description = "test lump sum 1",
+            name = setOf(InputTranslation(SystemLanguage.EN, "LS1")),
+            description = setOf(InputTranslation(SystemLanguage.EN, "test lump sum 1")),
             cost = BigDecimal.ONE,
             splittingAllowed = true,
             phase = Implementation,

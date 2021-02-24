@@ -37,8 +37,8 @@ fun ProgrammeUnitCostDTO.toModel() = ProgrammeUnitCost(
 )
 
 fun determineSortId(unitCost: ProgrammeUnitCost): Int {
-    return if (!unitCost.isOneCostCategory!!) {
-        1;
+    return if (!unitCost.isOneCostCategory) {
+        1
     } else {
         when (unitCost.categories.first()) {
             BudgetCategory.StaffCosts -> 2

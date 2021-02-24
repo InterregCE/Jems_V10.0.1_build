@@ -18,6 +18,7 @@ import io.cloudflight.jems.server.programme.entity.ProgrammeSpecificObjectiveEnt
 import io.cloudflight.jems.server.programme.service.toOutputProgrammeFund
 import io.cloudflight.jems.server.programme.service.toOutputProgrammePriorityPolicy
 import io.cloudflight.jems.server.programme.entity.Strategy
+import io.cloudflight.jems.server.programme.repository.costoption.toProgrammeLumpSum
 import io.cloudflight.jems.server.programme.repository.costoption.toProgrammeUnitCost
 
 /**
@@ -55,7 +56,7 @@ fun CallEntity.toOutputCall() = OutputCall(
     description = translatedValues.mapTo(HashSet()) { InputTranslation(it.translationId.language, it.description) },
     lengthOfPeriod = lengthOfPeriod,
     flatRates = flatRates.toProjectCallFlatRate().toDto(),
-    lumpSums = lumpSums.map { it.toProgrammeUnitCost().toDto() },
+    lumpSums = lumpSums.map { it.toProgrammeLumpSum().toDto() },
     unitCosts = unitCosts.map { it.toProgrammeUnitCost().toDto() },
 )
 

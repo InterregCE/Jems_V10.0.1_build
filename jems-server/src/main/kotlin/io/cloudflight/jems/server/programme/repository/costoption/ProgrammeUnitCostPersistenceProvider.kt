@@ -27,6 +27,8 @@ class ProgrammeUnitCostPersistenceProvider(
     override fun createUnitCost(unitCost: ProgrammeUnitCost): ProgrammeUnitCost {
         val created = repository.save(unitCost.toEntity())
         return repository.save(created.copy(
+            translatedValues =
+                combineUnitCostTranslatedValues(created.id, unitCost.name, unitCost.description, unitCost.type),
             categories = unitCost.categories.toBudgetCategoryEntity(created.id)
         )).toProgrammeUnitCost()
     }
@@ -34,9 +36,8 @@ class ProgrammeUnitCostPersistenceProvider(
     @Transactional
     override fun updateUnitCost(unitCost: ProgrammeUnitCost): ProgrammeUnitCost {
         val unitCostEntity = getUnitCostOrThrow(unitCostId = unitCost.id!!)
-        unitCostEntity.name = unitCost.name!!
-        unitCostEntity.description = unitCost.description
-        unitCostEntity.type = unitCost.type!!
+        unitCostEntity.translatedValues =
+            combineUnitCostTranslatedValues(unitCost.id, unitCost.name, unitCost.description, unitCost.type)
         unitCostEntity.costPerUnit = unitCost.costPerUnit!!
         unitCostEntity.categories.clear()
         unitCostEntity.categories.addAll(unitCost.categories.toBudgetCategoryEntity(unitCost.id))

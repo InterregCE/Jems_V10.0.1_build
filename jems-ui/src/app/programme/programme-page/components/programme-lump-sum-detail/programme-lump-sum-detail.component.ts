@@ -43,8 +43,8 @@ export class ProgrammeLumpSumDetailComponent extends ViewEditForm implements OnI
   cancelCreate: EventEmitter<void> = new EventEmitter<void>();
 
   lumpSumForm = this.formBuilder.group({
-    name: ['', Validators.compose([Validators.required, Validators.maxLength(50)])],
-    description: ['', Validators.maxLength(500)],
+    name: [[]],
+    description: [[]],
     cost: [null, Validators.required],
     allowSplitting: ['', Validators.required],
     phase: ['', Validators.required],
@@ -52,7 +52,6 @@ export class ProgrammeLumpSumDetailComponent extends ViewEditForm implements OnI
   });
 
   nameErrors = {
-    required: 'lump.sum.name.should.not.be.empty',
     maxlength: 'lump.sum.name.size.too.long',
   };
 

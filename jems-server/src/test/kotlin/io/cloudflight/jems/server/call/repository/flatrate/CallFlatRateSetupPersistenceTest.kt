@@ -69,7 +69,7 @@ class CallFlatRateSetupPersistenceTest {
     @Test
     fun `updateFlatRateSetup not-existing`() {
         every { callRepository.findById(eq(-1)) } returns Optional.empty()
-        val ex = assertThrows<CallNotFoundException> { callFlatRateSetupPersistence.updateProjectCallFlatRate(-1, emptySet()) }
+        assertThrows<CallNotFoundException> { callFlatRateSetupPersistence.updateProjectCallFlatRate(-1, emptySet()) }
     }
 
     @Test
@@ -137,7 +137,7 @@ class CallFlatRateSetupPersistenceTest {
     @Test
     fun `getFlatRateSetup not-existing`() {
         every { callRepository.findById(eq(-1)) } returns Optional.empty()
-        val ex = assertThrows<CallNotFoundException> { callFlatRateSetupPersistence.getProjectCallFlatRate(-1) }
+        assertThrows<CallNotFoundException> { callFlatRateSetupPersistence.getProjectCallFlatRate(-1) }
     }
 
     @Test
@@ -163,7 +163,7 @@ class CallFlatRateSetupPersistenceTest {
     @Test
     fun `getProjectCallFlatRate not-existing`() {
         every { projectPartnerRepository.findById(eq(-1)) } returns Optional.empty()
-        val ex = assertThrows<ProjectPartnerNotFoundException> { callFlatRateSetupPersistence.getProjectCallFlatRateByPartnerId(-1) }
+        assertThrows<ProjectPartnerNotFoundException> { callFlatRateSetupPersistence.getProjectCallFlatRateByPartnerId(-1) }
     }
 
 }

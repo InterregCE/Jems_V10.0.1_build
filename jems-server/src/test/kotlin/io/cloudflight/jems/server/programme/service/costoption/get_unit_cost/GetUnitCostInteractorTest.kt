@@ -2,6 +2,8 @@ package io.cloudflight.jems.server.programme.service.costoption.get_unit_cost
 
 import io.cloudflight.jems.api.programme.dto.costoption.BudgetCategory.OfficeAndAdministrationCosts
 import io.cloudflight.jems.api.programme.dto.costoption.BudgetCategory.StaffCosts
+import io.cloudflight.jems.api.programme.dto.language.SystemLanguage
+import io.cloudflight.jems.api.project.dto.InputTranslation
 import io.cloudflight.jems.server.common.exception.ResourceNotFoundException
 import io.cloudflight.jems.server.programme.service.costoption.ProgrammeUnitCostPersistence
 import io.cloudflight.jems.server.programme.service.costoption.model.ProgrammeUnitCost
@@ -22,9 +24,9 @@ class GetUnitCostInteractorTest {
 
         private val testUnitCost = ProgrammeUnitCost(
             id = 1,
-            name = "UC1",
-            description = "test unit cost 1",
-            type = "test type 1",
+            name = setOf(InputTranslation(SystemLanguage.EN, "UC1")),
+            description = setOf(InputTranslation(SystemLanguage.EN, "test unit cost 1")),
+            type = setOf(InputTranslation(SystemLanguage.EN, "test type 1")),
             costPerUnit = BigDecimal.ONE,
             isOneCostCategory = false,
             categories = setOf(StaffCosts, OfficeAndAdministrationCosts),
