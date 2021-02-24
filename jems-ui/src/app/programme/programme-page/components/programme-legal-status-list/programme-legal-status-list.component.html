@@ -43,7 +43,7 @@
         <ng-container matColumnDef="delete">
             <mat-header-cell *matHeaderCellDef></mat-header-cell>
             <mat-cell *matCellDef="let element">
-                <button *ngIf="formState === FormState.EDIT && element.id > 2"
+                <button *ngIf="formState === FormState.EDIT && element.id > 2 && (programmeEditableStateStore.isProgrammeEditableDependingOnCall$ | async) === false"
                         mat-icon-button color="accent"
                         type="button"
                         matTooltip="{{'common.delete.entry.tooltip' | translate}}"

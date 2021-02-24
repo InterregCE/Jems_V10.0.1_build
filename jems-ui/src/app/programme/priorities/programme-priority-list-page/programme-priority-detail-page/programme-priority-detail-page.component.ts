@@ -13,7 +13,10 @@ import {Forms} from '../../../../common/utils/forms';
 import {MatDialog} from '@angular/material/dialog';
 import {I18nValidationError} from '@common/validation/i18n-validation-error';
 import {HttpErrorResponse} from '@angular/common/http';
+import {UntilDestroy, untilDestroyed} from '@ngneat/until-destroy';
+import {ProgrammeEditableStateStore} from '../../../programme-page/services/programme-editable-state-store.service';
 
+@UntilDestroy()
 @Component({
   selector: 'app-programme-priority-detail-page',
   templateUrl: './programme-priority-detail-page.component.html',
@@ -26,6 +29,7 @@ export class ProgrammePriorityDetailPageComponent {
   constants = ProgrammePriorityDetailPageConstants;
   priorityId = this.activatedRoute.snapshot.params.priorityId;
   objectivePoliciesAlreadyInUse: string[] = [];
+  isProgrammeSetupLocked: boolean;
 
   data$: Observable<{
     priority: ProgrammePriorityDTO | {},
@@ -49,6 +53,7 @@ export class ProgrammePriorityDetailPageComponent {
               private formBuilder: FormBuilder,
               private changeDetectorRef: ChangeDetectorRef, // TODO: remove when new edit mode is introduced
               private dialog: MatDialog,
+              private programmeEditableStateStore: ProgrammeEditableStateStore,
               public pageStore: ProgrammePriorityDetailPageStore) {
 
     this.data$ = combineLatest([
@@ -68,6 +73,12 @@ export class ProgrammePriorityDetailPageComponent {
       tap(data => this.resetForm(data.priority as ProgrammePriorityDTO, data.freePrioritiesWithPolicies)),
       tap(data => (data.priority as any)?.id ? this.form.disable() : this.form.enable())
     );
+
+    this.programmeEditableStateStore.init();
+    this.programmeEditableStateStore.isProgrammeEditableDependingOnCall$.pipe(
+        tap(isProgrammeEditingLimited => this.isProgrammeSetupLocked = isProgrammeEditingLimited),
+        untilDestroyed(this)
+    ).subscribe();
   }
 
   save(): void {
@@ -165,7 +176,7 @@ export class ProgrammePriorityDetailPageComponent {
       {
         validators: this.constants.selectedSpecificObjectiveCodeRequired
       });
-    if (this.objectivePoliciesAlreadyInUse.find(used => used === policy)) {
+    if (this.objectivePoliciesAlreadyInUse.find(used => used === policy) || (this.isProgrammeSetupLocked && selected)) {
       control.disable();
       this.form.get(this.constants.OBJECTIVE.name)?.disable();
     }

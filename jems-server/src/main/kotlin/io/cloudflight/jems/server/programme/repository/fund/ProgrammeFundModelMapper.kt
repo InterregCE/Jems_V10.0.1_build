@@ -12,7 +12,7 @@ fun ProgrammeFundEntity.toModel() = ProgrammeFund(
     translatedValues = translatedValues.toModel(),
 )
 
-fun Iterable<ProgrammeFundEntity>.toModel() = map { it.toModel() }
+fun Iterable<ProgrammeFundEntity>.toModel() = map { it.toModel() }.sortedBy { it.id }
 
 fun Set<ProgrammeFundTranslationEntity>.toModel() = mapTo(HashSet()) {
     ProgrammeFundTranslatedValue(

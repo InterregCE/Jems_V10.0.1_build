@@ -12,7 +12,10 @@ import {FormControl, FormGroup, Validators} from '@angular/forms';
 import {ProgrammeLegalStatusDTO, ProgrammeLegalStatusUpdateDTO} from '@cat/api';
 import {MatTableDataSource} from '@angular/material/table';
 import {Tables} from '../../../../common/utils/tables';
+import {UntilDestroy} from '@ngneat/until-destroy';
+import {ProgrammeEditableStateStore} from '../../services/programme-editable-state-store.service';
 
+@UntilDestroy()
 @Component({
   selector: 'app-programme-legal-status-list',
   templateUrl: './programme-legal-status-list.component.html',
@@ -37,8 +40,11 @@ export class ProgrammeLegalStatusListComponent extends ViewEditForm implements O
     required: 'programme.legal.status.description.not.be.empty',
   };
 
-  constructor(protected changeDetectorRef: ChangeDetectorRef) {
+  constructor(protected changeDetectorRef: ChangeDetectorRef,
+              public programmeEditableStateStore: ProgrammeEditableStateStore) {
     super(changeDetectorRef);
+
+    this.programmeEditableStateStore.init();
   }
 
   ngOnInit(): void {

@@ -8,7 +8,10 @@ import {Forms} from '../../../../common/utils/forms';
 import {filter, take, takeUntil} from 'rxjs/operators';
 import {FormState} from '@common/components/forms/form-state';
 import {SelectionModel} from '@angular/cdk/collections';
+import {UntilDestroy} from '@ngneat/until-destroy';
+import {ProgrammeEditableStateStore} from '../../services/programme-editable-state-store.service';
 
+@UntilDestroy()
 @Component({
   selector: 'app-programme-strategies',
   templateUrl: './programme-strategies.component.html',
@@ -22,14 +25,19 @@ export class ProgrammeStrategiesComponent extends ViewEditForm {
   strategies: OutputProgrammeStrategy[];
   @Output()
   updateProgrammeStrategy: EventEmitter<InputProgrammeStrategy[]> = new EventEmitter<InputProgrammeStrategy[]>();
+
+  initialSelection = new SelectionModel<OutputProgrammeStrategy>(true, []);
   selection = new SelectionModel<OutputProgrammeStrategy>(true, []);
   programmeStrategyForm = this.formBuilder.group({});
 
 
   constructor(private formBuilder: FormBuilder,
               private dialog: MatDialog,
+              public programmeEditableStateStore: ProgrammeEditableStateStore,
               protected changeDetectorRef: ChangeDetectorRef) {
     super(changeDetectorRef);
+
+    this.programmeEditableStateStore.init();
   }
 
   getForm(): FormGroup | null {
@@ -63,6 +71,8 @@ export class ProgrammeStrategiesComponent extends ViewEditForm {
   }
 
   protected enterViewMode(): void {
+    this.initialSelection.clear();
+    this.initialSelection.select(...this.strategies.filter(element => element.active));
     this.selection.select(...this.strategies.filter(element => element.active));
     this.selection.deselect(...this.strategies.filter(element => !element.active));
     this.changeDetectorRef.markForCheck();

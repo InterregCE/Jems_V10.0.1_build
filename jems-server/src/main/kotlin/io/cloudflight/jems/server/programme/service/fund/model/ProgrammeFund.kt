@@ -5,6 +5,6 @@ data class ProgrammeFund(
     val selected: Boolean,
     val translatedValues: Set<ProgrammeFundTranslatedValue> = emptySet(),
 ) {
-    fun selectionChanged(other: ProgrammeFund?) =
-        if (other != null) selected != other.selected else true
+    fun deselectionHappened(other: ProgrammeFund?) =
+        if (other != null) (selected != other.selected && !selected) else true
 }

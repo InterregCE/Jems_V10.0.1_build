@@ -4,7 +4,10 @@ import {NestedTreeControl} from '@angular/cdk/tree';
 import {ProgrammeRegionCheckbox} from '../../model/programme-region-checkbox';
 import {BaseComponent} from '@common/components/base-component';
 import {takeUntil, tap} from 'rxjs/operators';
+import {UntilDestroy} from '@ngneat/until-destroy';
+import {ProgrammeEditableStateStore} from '../../services/programme-editable-state-store.service';
 
+@UntilDestroy()
 @Component({
   selector: 'app-programme-regions-tree',
   templateUrl: './programme-regions-tree.component.html',
@@ -21,6 +24,12 @@ export class ProgrammeRegionsTreeComponent extends BaseComponent implements OnIn
   selectionChanged = new EventEmitter<void>();
 
   treeControl = new NestedTreeControl<ProgrammeRegionCheckbox>(node => node.children);
+
+  constructor(public programmeEditableStateStore: ProgrammeEditableStateStore) {
+    super();
+
+    this.programmeEditableStateStore.init();
+  }
 
   ngOnInit(): void {
     this.dataSource._data

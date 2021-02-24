@@ -36,7 +36,8 @@
         <mat-form-field>
             <mat-label>{{'programme.priority.field.objective.select' | translate}}</mat-label>
             <mat-select [formControlName]="constants.OBJECTIVE.name" required
-                        (selectionChange)="changeCurrentObjective($event.value, data.freePrioritiesWithPolicies)">
+                        (selectionChange)="changeCurrentObjective($event.value, data.freePrioritiesWithPolicies)"
+                        [disabled]="isProgrammeSetupLocked && priorityId">
                 <mat-option *ngFor="let objective of data.objectives" [value]="objective">
                     {{objective}} - {{'programme.objective.' + objective | translate}}
                 </mat-option>

@@ -40,7 +40,7 @@ class UpdateFund(
 
         if (persistence.isProgrammeSetupRestricted()) {
             if (toDeleteFundIds.isNotEmpty()
-                || toUpdateFunds.any { fund -> fund.selectionChanged(existingFundsById[fund.id]) })
+                || toUpdateFunds.any { fund -> fund.deselectionHappened(existingFundsById[fund.id]) })
                 throw MakingChangesWhenProgrammeSetupRestricted()
         }
 

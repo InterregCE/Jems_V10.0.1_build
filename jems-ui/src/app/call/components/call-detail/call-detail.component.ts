@@ -9,7 +9,10 @@ import {Tools} from '../../../common/utils/tools';
 import {FormService} from '@common/components/section/form/form.service';
 import {CallStore} from '../../services/call-store.service';
 import {CallPageSidenavService} from '../../services/call-page-sidenav.service';
+import {ProgrammeEditableStateStore} from '../../../programme/programme-page/services/programme-editable-state-store.service';
+import {UntilDestroy, untilDestroyed} from '@ngneat/until-destroy';
 
+@UntilDestroy()
 @Component({
   selector: 'app-call-detail',
   templateUrl: './call-detail.component.html',
@@ -23,6 +26,7 @@ export class CallDetailComponent implements OnInit {
 
   static ID = 'CallDetailComponent';
   tools = Tools;
+  isFirstCall: boolean;
 
   @Input()
   call: OutputCall;
@@ -76,7 +80,13 @@ export class CallDetailComponent implements OnInit {
               private dialog: MatDialog,
               private callStore: CallStore,
               private formService: FormService,
-              private callNavService: CallPageSidenavService) {
+              private callNavService: CallPageSidenavService,
+              private programmeEditableStateStore: ProgrammeEditableStateStore) {
+    this.programmeEditableStateStore.init();
+    this.programmeEditableStateStore.isProgrammeEditableDependingOnCall$.pipe(
+        tap(isProgrammeEditingLimited => this.isFirstCall = !isProgrammeEditingLimited),
+        untilDestroyed(this)
+    ).subscribe();
   }
 
   ngOnInit(): void {
@@ -133,7 +143,7 @@ export class CallDetailComponent implements OnInit {
     Forms.confirmDialog(
       this.dialog,
       'call.dialog.title',
-      'call.dialog.message'
+      this.isFirstCall ? 'call.dialog.message.and.additional.message' : 'call.dialog.message'
     ).pipe(
       take(1),
       filter(yes => !!yes)

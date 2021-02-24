@@ -12,14 +12,17 @@ import {FormBuilder, FormGroup, Validators} from '@angular/forms';
 import {MatDialog} from '@angular/material/dialog';
 import {FormState} from '@common/components/forms/form-state';
 import {Forms} from '../../../../common/utils/forms';
-import {filter, take, takeUntil} from 'rxjs/operators';
+import {filter, take, takeUntil, tap} from 'rxjs/operators';
 import {Permission} from '../../../../security/permissions/permission';
 import {
   ProgrammeUnitCostDTO
 } from '@cat/api';
 import {SelectionModel} from '@angular/cdk/collections';
 import {NumberService} from '../../../../common/services/number.service';
+import {UntilDestroy, untilDestroyed} from '@ngneat/until-destroy';
+import {ProgrammeEditableStateStore} from '../../services/programme-editable-state-store.service';
 
+@UntilDestroy()
 @Component({
   selector: 'app-programme-unit-cost-detail',
   templateUrl: './programme-unit-cost-detail.component.html',
@@ -40,6 +43,8 @@ export class ProgrammeUnitCostDetailComponent extends ViewEditForm implements On
   updateUnitCost: EventEmitter<ProgrammeUnitCostDTO> = new EventEmitter<ProgrammeUnitCostDTO>();
   @Output()
   cancelCreate: EventEmitter<void> = new EventEmitter<void>();
+
+  isProgrammeSetupLocked: boolean;
 
   unitCostForm = this.formBuilder.group({
     isOneCostCategory: [null, Validators.required],
@@ -101,9 +106,16 @@ export class ProgrammeUnitCostDetailComponent extends ViewEditForm implements On
 
   constructor(private formBuilder: FormBuilder,
               private dialog: MatDialog,
+              private programmeEditableStateStore: ProgrammeEditableStateStore,
               protected changeDetectorRef: ChangeDetectorRef,
               public numberService: NumberService) {
     super(changeDetectorRef);
+
+    this.programmeEditableStateStore.init();
+    this.programmeEditableStateStore.isProgrammeEditableDependingOnCall$.pipe(
+        tap(isProgrammeEditingLimited => this.isProgrammeSetupLocked = isProgrammeEditingLimited),
+        untilDestroyed(this)
+    ).subscribe();
   }
 
   ngOnInit(): void {
@@ -219,6 +231,9 @@ export class ProgrammeUnitCostDetailComponent extends ViewEditForm implements On
         || (!this.unitCost.isOneCostCategory && this.unitCost.categories?.length >= 2)) {
       this.validNumberOfSelections = true;
     }
+    if (this.isProgrammeSetupLocked && !this.isCreate) {
+      this.unitCostForm.controls.type.disable();
+      this.unitCostForm.controls.costPerUnit.disable();
+    }
   }
-
 }

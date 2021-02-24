@@ -11,7 +11,7 @@
             <mat-checkbox
                     (click)="$event.stopPropagation()"
                     (change)="selection.toggle(element)"
-                    [disabled]="formState === FormState.VIEW"
+                    [disabled]="formState === FormState.VIEW || ((programmeEditableStateStore.isProgrammeEditableDependingOnCall$ | async) && initialSelection.isSelected(element))"
                     [checked]="selection.isSelected(element)">
                 {{'programme.strategy.' + element.strategy | translate}}
             </mat-checkbox>
