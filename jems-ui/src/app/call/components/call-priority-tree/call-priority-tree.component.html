@@ -1,11 +1,11 @@
-<span *ngFor="let priority of priorityCheckboxes">
+<ng-container *ngFor="let priority of priorityCheckboxes">
     <mat-checkbox
             *ngIf="priorityVisible(priority)"
             [disabled]="disabled"
             [checked]="priority.checked"
             [indeterminate]="priority.someChecked()"
             (change)="priority.checkOrUncheckAll(); selectionChanged.emit()">
-        {{priority.name | translate}}
+        {{ priority.name + translated(priority.translatableTitle, languageService.systemLanguage$ | async) }}
     </mat-checkbox>
     <ul class="no-bullets">
         <li *ngFor="let policy of priority.children">
@@ -18,4 +18,4 @@
             </mat-checkbox>
         </li>
     </ul>
-</span>
+</ng-container>

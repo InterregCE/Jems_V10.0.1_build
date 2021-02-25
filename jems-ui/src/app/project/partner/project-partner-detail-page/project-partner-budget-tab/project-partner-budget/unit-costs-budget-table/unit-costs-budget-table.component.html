@@ -15,10 +15,10 @@
                     <mat-cell *matCellDef="let control;  let i = index" [formGroupName]="i">
                         <mat-form-field appFormFieldWidth="full">
                             <mat-select
-                                    [matTooltip]="control.get(constants.FORM_CONTROL_NAMES.unitCost)?.value?.name"
+                                    [matTooltip]="translated(control.get(constants.FORM_CONTROL_NAMES.unitCost)?.value?.name, multiLanguageInputService.currentSystemLanguage$ | async)"
                                     [formControlName]="constants.FORM_CONTROL_NAMES.unitCost">
                                 <mat-option *ngFor="let unitCost of availableUnitCosts" [value]="unitCost">
-                                    {{unitCost.name}}
+                                    {{ translated(unitCost.name, multiLanguageInputService.currentSystemLanguage$ | async) }}
                                 </mat-option>
                             </mat-select>
                             <mat-error>
@@ -37,8 +37,8 @@
                             *matHeaderCellDef> {{'project.partner.budget.table.description' | translate}} </mat-header-cell>
                     <mat-cell *matCellDef="let control;  let i = index" [formGroupName]="i">
                         <div class="text-overflow-ellipsis"
-                             [matTooltip]="control.get(constants.FORM_CONTROL_NAMES.unitCost)?.value?.description">
-                            {{control.get(constants.FORM_CONTROL_NAMES.unitCost)?.value?.description}}
+                             [matTooltip]="translated(control.get(constants.FORM_CONTROL_NAMES.unitCost)?.value?.description, multiLanguageInputService.currentSystemLanguage$ | async)">
+                            {{ translated(control.get(constants.FORM_CONTROL_NAMES.unitCost)?.value?.description, multiLanguageInputService.currentSystemLanguage$ | async) }}
                         </div>
                     </mat-cell>
                     <mat-footer-cell *matFooterCellDef></mat-footer-cell>
@@ -49,8 +49,8 @@
                             *matHeaderCellDef> {{'project.partner.budget.table.unit.type' | translate}} </mat-header-cell>
                     <mat-cell *matCellDef="let control;  let i = index" [formGroupName]="i">
                         <div class="text-overflow-ellipsis"
-                             [matTooltip]="control.get(constants.FORM_CONTROL_NAMES.unitCost)?.value?.type">
-                            {{control.get(constants.FORM_CONTROL_NAMES.unitCost)?.value?.type}}
+                             [matTooltip]="translated(control.get(constants.FORM_CONTROL_NAMES.unitCost)?.value?.type, multiLanguageInputService.currentSystemLanguage$ | async)">
+                            {{ translated(control.get(constants.FORM_CONTROL_NAMES.unitCost)?.value?.type, multiLanguageInputService.currentSystemLanguage$ | async) }}
                         </div>
                     </mat-cell>
                     <mat-footer-cell *matFooterCellDef></mat-footer-cell>

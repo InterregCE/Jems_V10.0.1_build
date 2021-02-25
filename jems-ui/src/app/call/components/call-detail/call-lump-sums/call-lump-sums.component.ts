@@ -2,10 +2,11 @@ import {ChangeDetectionStrategy, Component, Input, OnInit} from '@angular/core';
 import {FormBuilder, FormGroup} from '@angular/forms';
 import {FormService} from '@common/components/section/form/form.service';
 import {MatTableDataSource} from '@angular/material/table';
-import {ProgrammeLumpSumListDTO, OutputCall} from '@cat/api';
+import {ProgrammeLumpSumListDTO, OutputCall, InputTranslation} from '@cat/api';
 import {SelectionModel} from '@angular/cdk/collections';
 import {CallStore} from '../../../services/call-store.service';
 import {catchError, take, tap} from 'rxjs/operators';
+import {LanguageService} from '../../../../common/services/language.service';
 
 @Component({
   selector: 'app-call-lump-sums',
@@ -27,7 +28,8 @@ export class CallLumpSumsComponent implements OnInit {
 
   lumpSumDataSource = new MatTableDataSource();
 
-  constructor(private formBuilder: FormBuilder,
+  constructor(public languageService: LanguageService,
+              private formBuilder: FormBuilder,
               private formService: FormService,
               private callStore: CallStore) {
   }
@@ -70,4 +72,11 @@ export class CallLumpSumsComponent implements OnInit {
     this.formService.setDirty(true);
   }
 
+  translated(element: InputTranslation[], currentSystemLanguage: string | null): string {
+    if (!currentSystemLanguage || !element) {
+      return '';
+    }
+    const elementInSystemLang = element.find((it: InputTranslation) => it.language === currentSystemLanguage);
+    return !!elementInSystemLang ? elementInSystemLang.translation : '';
+  }
 }

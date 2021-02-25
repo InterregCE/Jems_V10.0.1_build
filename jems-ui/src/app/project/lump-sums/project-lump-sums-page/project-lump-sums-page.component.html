@@ -31,10 +31,10 @@
                             <mat-cell *matCellDef="let control;  let i = index" [formGroupName]="i">
                                 <mat-form-field appFormFieldWidth="full">
                                     <mat-select
-                                            [matTooltip]="control.get(constants.FORM_CONTROL_NAMES.lumpSum)?.value?.name"
+                                            [matTooltip]="translated(control.get(constants.FORM_CONTROL_NAMES.lumpSum)?.value?.name, languageService.systemLanguage$ | async)"
                                             [formControlName]="constants.FORM_CONTROL_NAMES.lumpSum">
                                         <mat-option *ngFor="let lumpSum of data.lumpSums" [value]="lumpSum">
-                                            {{lumpSum.name}}
+                                            {{ translated(lumpSum.name, languageService.systemLanguage$ | async) }}
                                         </mat-option>
                                     </mat-select>
                                     <mat-error>
@@ -158,9 +158,9 @@
                             <mat-header-cell
                                     *matHeaderCellDef> {{'project.application.form.section.part.e.lump.sums.description.column.title' | translate}} </mat-header-cell>
                             <mat-cell *matCellDef="let control;  let i = index" [formGroupName]="i">
-                                <div [matTooltip]="control.get(constants.FORM_CONTROL_NAMES.lumpSum).value?.description"
+                                <div [matTooltip]="translated(control.get(constants.FORM_CONTROL_NAMES.lumpSum).value?.description, languageService.systemLanguage$ | async)"
                                      matTooltipShowDelay="500">
-                                    {{control.get(constants.FORM_CONTROL_NAMES.lumpSum).value?.description}}</div>
+                                    {{ translated(control.get(constants.FORM_CONTROL_NAMES.lumpSum).value?.description, languageService.systemLanguage$ | async) }}</div>
                             </mat-cell>
                             <mat-footer-cell *matFooterCellDef></mat-footer-cell>
                         </ng-container>

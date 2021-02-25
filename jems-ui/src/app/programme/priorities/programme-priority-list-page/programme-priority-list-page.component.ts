@@ -2,6 +2,7 @@ import {ChangeDetectionStrategy, Component, OnInit, TemplateRef, ViewChild} from
 import {ProgrammePageSidenavService} from '../../programme-page/services/programme-page-sidenav.service';
 import {ProgrammePrioritiesPageStore} from './programme-priorities-page-store.service';
 import {TableConfiguration} from '@common/components/table/model/table.configuration';
+import {ColumnType} from '@common/components/table/model/column-type.enum';
 
 @Component({
   selector: 'app-programme-priority-list-page',
@@ -33,7 +34,8 @@ export class ProgrammePriorityListPageComponent implements OnInit {
         },
         {
           displayedColumn: 'programme.priority.list.column.title',
-          elementProperty: 'title'
+          elementProperty: 'title',
+          columnType: ColumnType.InputTranslation
         },
         {
           displayedColumn: 'programme.priority.list.column.objective',
