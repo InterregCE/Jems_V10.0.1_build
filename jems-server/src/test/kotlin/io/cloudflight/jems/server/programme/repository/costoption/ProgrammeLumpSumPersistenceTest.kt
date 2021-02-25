@@ -128,8 +128,6 @@ class ProgrammeLumpSumPersistenceTest {
 
     @Test
     fun updateLumpSum() {
-        every { repository.findById(testLumpSum.id) } returns Optional.of(testLumpSum)
-
         val toBeUpdated = ProgrammeLumpSum(
             id = testLumpSum.id,
             name = setOf(InputTranslation(SystemLanguage.EN, "new name")),
@@ -139,6 +137,10 @@ class ProgrammeLumpSumPersistenceTest {
             phase = ProgrammeLumpSumPhase.Closure,
             categories = setOf(ExternalCosts, EquipmentCosts),
         )
+        every { repository.existsById(testLumpSum.id) } returns true
+        val translations = combineLumpSumTranslatedValues(toBeUpdated.id!!, toBeUpdated.name, toBeUpdated.description)
+        every { repository.save(any()) } returns toBeUpdated.toEntity().copy(translatedValues = translations)
+
 
         assertThat(programmeLumpSumPersistence.updateLumpSum(toBeUpdated)).isEqualTo(ProgrammeLumpSum(
             id = testLumpSum.id,
@@ -153,7 +155,7 @@ class ProgrammeLumpSumPersistenceTest {
 
     @Test
     fun `updateLumpSum - not existing`() {
-        every { repository.findById(testLumpSum.id) } returns Optional.empty()
+        every { repository.existsById(testLumpSum.id) } returns false
 
         val toBeUpdated = ProgrammeLumpSum(
             id = testLumpSum.id,

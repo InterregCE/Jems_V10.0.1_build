@@ -131,8 +131,6 @@ class ProgrammeUnitCostPersistenceTest {
 
     @Test
     fun updateUnitCost() {
-        every { repository.findById(testUnitCost.id) } returns Optional.of(testUnitCost)
-
         val toBeUpdated = ProgrammeUnitCost(
             id = testUnitCost.id,
             name = setOf(InputTranslation(SystemLanguage.EN, "new name")),
@@ -142,6 +140,9 @@ class ProgrammeUnitCostPersistenceTest {
             isOneCostCategory = false,
             categories = setOf(ExternalCosts, EquipmentCosts),
         )
+        every { repository.existsById(testUnitCost.id) } returns true
+        val translations = combineUnitCostTranslatedValues(toBeUpdated.id!!, toBeUpdated.name, toBeUpdated.description, toBeUpdated.type)
+        every { repository.save(any()) } returns toBeUpdated.toEntity().copy(translatedValues = translations)
 
         assertThat(programmeUnitCostPersistence.updateUnitCost(toBeUpdated)).isEqualTo(ProgrammeUnitCost(
             id = testUnitCost.id,
@@ -156,8 +157,7 @@ class ProgrammeUnitCostPersistenceTest {
 
     @Test
     fun `updateUnitCost - not existing`() {
-        every { repository.findById(testUnitCost.id) } returns Optional.empty()
-
+        every { repository.existsById(testUnitCost.id) } returns false
         val toBeUpdated = ProgrammeUnitCost(
             id = testUnitCost.id,
             name = setOf(InputTranslation(SystemLanguage.EN, "new name")),

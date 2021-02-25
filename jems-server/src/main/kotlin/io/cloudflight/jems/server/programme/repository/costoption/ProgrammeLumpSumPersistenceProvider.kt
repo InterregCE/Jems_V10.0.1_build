@@ -34,14 +34,14 @@ class ProgrammeLumpSumPersistenceProvider(
 
     @Transactional
     override fun updateLumpSum(lumpSum: ProgrammeLumpSum): ProgrammeLumpSum {
-        val lumpSumEntity = getLumpSumOrThrow(lumpSumId = lumpSum.id!!)
-        lumpSumEntity.translatedValues = combineLumpSumTranslatedValues(lumpSum.id, lumpSum.name, lumpSum.description)
-        lumpSumEntity.cost = lumpSum.cost!!
-        lumpSumEntity.splittingAllowed = lumpSum.splittingAllowed
-        lumpSumEntity.phase = lumpSum.phase!!
-        lumpSumEntity.categories.clear()
-        lumpSumEntity.categories.addAll(lumpSum.categories.toEntity(lumpSum.id))
-        return lumpSumEntity.toProgrammeLumpSum()
+        if (repository.existsById(lumpSum.id!!)) {
+            return repository.save(
+                lumpSum.toEntity().copy(
+                    translatedValues = combineLumpSumTranslatedValues(lumpSum.id, lumpSum.name, lumpSum.description),
+                    categories = lumpSum.categories.toEntity(lumpSum.id)
+                )).toProgrammeLumpSum()
+        }
+        else throw ResourceNotFoundException("programmeLumpSum")
     }
 
     @Transactional
