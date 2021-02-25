@@ -35,13 +35,15 @@ class ProgrammeUnitCostPersistenceProvider(
 
     @Transactional
     override fun updateUnitCost(unitCost: ProgrammeUnitCost): ProgrammeUnitCost {
-        val unitCostEntity = getUnitCostOrThrow(unitCostId = unitCost.id!!)
-        unitCostEntity.translatedValues =
-            combineUnitCostTranslatedValues(unitCost.id, unitCost.name, unitCost.description, unitCost.type)
-        unitCostEntity.costPerUnit = unitCost.costPerUnit!!
-        unitCostEntity.categories.clear()
-        unitCostEntity.categories.addAll(unitCost.categories.toBudgetCategoryEntity(unitCost.id))
-        return unitCostEntity.toProgrammeUnitCost()
+        if (repository.existsById(unitCost.id!!)) {
+            return repository.save(
+                unitCost.toEntity().copy(
+                    translatedValues =
+                        combineUnitCostTranslatedValues(unitCost.id, unitCost.name, unitCost.description, unitCost.type),
+                    categories = unitCost.categories.toBudgetCategoryEntity(unitCost.id)
+                )).toProgrammeUnitCost()
+        }
+        else throw ResourceNotFoundException("programmeUnitCost")
     }
 
     @Transactional
