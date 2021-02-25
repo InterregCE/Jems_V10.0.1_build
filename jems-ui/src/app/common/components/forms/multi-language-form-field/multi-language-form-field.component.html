@@ -14,7 +14,7 @@
                     <app-context-info *ngIf="contextInfoText"
                                       [infoText]="contextInfoText">
                     </app-context-info>
-                    <mat-hint>
+                    <mat-hint *ngIf="hideCountersWhenInView && !multiLanguageFormGroup.disabled">
                         {{formGroup.get('translation')?.value?.length}}
                         / {{maxLength}} {{'common.textarea.hint' | translate}}
                     </mat-hint>

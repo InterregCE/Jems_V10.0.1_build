@@ -19,7 +19,7 @@
                                     [formControlName]="constants.FORM_CONTROL_NAMES.fundId">
                             <mat-option *ngFor="let fund of filteredFunds(data.callFunds, additionalFundId.value)"
                                         [value]="fund.id">
-                                {{fund.abbreviation || 'programme.fund.abbreviation.' + fund.id | translate}}
+                                {{ fund.abbreviation | translateSystem | async }}
                             </mat-option>
                         </mat-select>
                         <mat-error>

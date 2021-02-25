@@ -5,7 +5,7 @@
                 (change)="element.selected = !element.selected; selectionChanged.emit()"
                 [disabled]="disabled"
                 [checked]="element.selected">
-            {{element.abbreviation || 'programme.fund.abbreviation.' + element.id | translate}}
+            {{ element.abbreviation | translateSystem | async }}
         </mat-checkbox>
     </div>
 </ng-container>

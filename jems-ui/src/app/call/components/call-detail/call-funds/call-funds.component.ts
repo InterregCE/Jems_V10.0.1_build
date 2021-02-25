@@ -1,5 +1,6 @@
 import {ChangeDetectionStrategy, Component, EventEmitter, Input, Output} from '@angular/core';
 import {ProgrammeFundDTO} from '@cat/api';
+import {LanguageService} from '../../../../common/services/language.service';
 
 @Component({
   selector: 'app-call-funds',
@@ -17,4 +18,7 @@ export class CallFundsComponent {
 
   @Output()
   selectionChanged = new EventEmitter<void>();
+
+  constructor(public languageService: LanguageService) {
+  }
 }
