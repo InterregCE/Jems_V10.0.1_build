@@ -34,6 +34,7 @@ import {LabelDirective} from './directives/form-layout/label.directive';
 import {MainPageTemplateComponent} from '@common/components/page-templates/main-page-template/main-page-template.component';
 import {MatBadgeModule} from '@angular/material/badge';
 import {ApiErrorContentComponent} from '@common/components/forms/api-error-content/api-error-content.component';
+import {InputSystemTranslatePipe} from './pipe/input-system-translate.pipe';
 
 const modules = [
   CommonModule,
@@ -52,6 +53,7 @@ const declarations = [
   TableComponent,
   PaginatorComponent,
   FormComponent,
+  InputSystemTranslatePipe,
   MoneyPipe,
   PercentagePipe,
   MultiLanguageComponent,

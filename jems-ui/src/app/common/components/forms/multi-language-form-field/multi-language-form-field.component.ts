@@ -53,6 +53,8 @@ export class MultiLanguageFormFieldComponent implements OnInit, ControlValueAcce
   maxRows ? = 50;
   @Input()
   contextInfoText?: string;
+  @Input()
+  hideCountersWhenInView = false;
 
   multiLanguageFormGroup: FormGroup;
   languages$: Observable<string[]>;

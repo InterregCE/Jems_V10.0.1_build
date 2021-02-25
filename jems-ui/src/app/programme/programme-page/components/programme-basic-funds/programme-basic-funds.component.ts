@@ -8,10 +8,9 @@ import {
   Output
 } from '@angular/core';
 import {ViewEditForm} from '@common/components/forms/view-edit-form';
-import {FormControl, FormGroup, Validators} from '@angular/forms';
+import {FormArray, FormBuilder, FormGroup} from '@angular/forms';
 import {ProgrammeFundDTO} from '@cat/api';
-import {MatTableDataSource} from '@angular/material/table';
-import {SelectionModel} from '@angular/cdk/collections';
+import {FormState} from '@common/components/forms/form-state';
 
 @Component({
   selector: 'app-programme-basic-funds',
@@ -20,7 +19,6 @@ import {SelectionModel} from '@angular/cdk/collections';
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class ProgrammeBasicFundsComponent extends ViewEditForm implements OnInit {
-  DEFAULT_FUNDS_LENGTH = 9;
 
   @Input()
   programmeFunds: ProgrammeFundDTO[];
@@ -28,102 +26,52 @@ export class ProgrammeBasicFundsComponent extends ViewEditForm implements OnInit
   @Output()
   saveFunds = new EventEmitter<ProgrammeFundDTO[]>();
 
-  displayedColumns: string[] = ['select', 'abbreviation', 'description'];
-  selection = new SelectionModel<ProgrammeFundDTO>(true, []);
-  dataSource: MatTableDataSource<ProgrammeFundDTO>;
-
   editableFundsForm = new FormGroup({});
 
-  abbrevErrors = {
-    maxlength: 'programme.fund.abbreviation.size.too.long',
-    required: 'programme.fund.abbreviation.not.be.empty',
-  };
-
-  descErrors = {
-    maxlength: 'programme.fund.description.size.too.long'
-  };
-
-  constructor(protected changeDetectorRef: ChangeDetectorRef) {
+  constructor(
+    private formBuilder: FormBuilder,
+    protected changeDetectorRef: ChangeDetectorRef,
+  ) {
     super(changeDetectorRef);
   }
 
   ngOnInit(): void {
     super.ngOnInit();
-    this.dataSource = new MatTableDataSource(this.programmeFunds);
-    this.enterViewMode();
+    this.editableFundsForm = this.formBuilder.group({
+      funds: this.formBuilder.array([]),
+    });
+    this.resetForm();
+  }
+
+  get fundsForm(): FormArray {
+    return this.editableFundsForm.get('funds') as FormArray;
   }
 
   getForm(): FormGroup | null {
-    return null;
+    return this.editableFundsForm;
+  }
+
+  private resetForm(): void {
+    this.fundsForm.clear();
+    this.programmeFunds.forEach(fund => this.addControl(fund));
+    this.changeFormState$.next(FormState.VIEW);
   }
 
   addNewFund(): void {
-    this.addControl(this.addLastFund());
+    this.addControl();
   }
 
   onSubmit(): void {
-    this.saveFunds.emit(this.dataSource.data
-      .map(element => ({
-        id: (element.creation ? null : element.id as any),
-        selected: this.selection.isSelected(element),
-        abbreviation: element.creation ? this.editableFundsForm.get(this.abbreviation(element.id))?.value : null,
-        description: element.creation ? this.editableFundsForm.get(this.description(element.id))?.value : null,
-        creation: element.creation
-      }))
-    );
+    this.saveFunds.emit(this.editableFundsForm.controls.funds.value);
   }
 
-  description = (id: number): string => id + 'desc';
-  abbreviation = (id: number): string => id + 'abb';
-
-  isValid(): boolean {
-    return Object.keys(this.editableFundsForm.controls)
-      .slice(this.DEFAULT_FUNDS_LENGTH * 2) // don't validate the first 9 (default)
-      .every(control => this.editableFundsForm.get(control)?.valid);
-  }
-
-  protected enterViewMode(): void {
-    this.editableFundsForm = new FormGroup({});
-    if (!this.dataSource) {
-      return;
-    }
-    this.dataSource.data = this.programmeFunds;
-    this.selection.clear();
-    this.selection.select(...this.dataSource.data.filter(element => element.selected));
-  }
-
-  protected enterEditMode(): void {
-    this.dataSource.data.forEach(fund => this.addControl(fund));
-  }
-
-  private addLastFund(): ProgrammeFundDTO {
-    const lastFund = {
-      id: this.getNextId(),
-      selected: false,
-      abbreviation: [],
-      description: [],
-      creation: true
-    };
-    this.dataSource.data = [...this.dataSource.data, lastFund];
-    return lastFund;
-  }
-
-  private addControl(fund: ProgrammeFundDTO): void {
-    this.editableFundsForm.addControl(
-      this.abbreviation(fund.id),
-      new FormControl(fund?.abbreviation, [
-        Validators.required,
-        Validators.maxLength(50)
-      ])
-    );
-    this.editableFundsForm.addControl(
-      this.description(fund.id),
-      new FormControl(fund?.description, Validators.maxLength(250))
-    );
-  }
-
-  getNextId(): number {
-    return Math.max(...this.dataSource.data.map(fund => fund.id)) + 1;
+  private addControl(fund?: ProgrammeFundDTO): void {
+    this.fundsForm.push(this.formBuilder.group({
+      id: this.formBuilder.control(fund?.id || null),
+      selected: this.formBuilder.control(fund?.selected || false),
+      abbreviation: this.formBuilder.control(fund?.abbreviation || []),
+      description: this.formBuilder.control(fund?.description || []),
+    }));
   }
 
 }

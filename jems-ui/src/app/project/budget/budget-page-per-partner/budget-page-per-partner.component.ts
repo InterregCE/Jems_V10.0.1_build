@@ -54,7 +54,7 @@ export class BudgetPagePerPartnerComponent {
   }
 
   getBudgetAmountForFund(fund: ProgrammeFundDTO, budgets: ProjectPartnerBudgetModel[]): number {
-    const filteredBudgets = budgets.filter(budget => budget.budgetFundId === fund.id && budget.budgetFundAbbreviation === '$fund.abbreviation');
+    const filteredBudgets = budgets.filter(budget => budget.budgetFundId === fund.id);
     if (!filteredBudgets || filteredBudgets.length === 0) {
       return 0;
     }
@@ -62,7 +62,7 @@ export class BudgetPagePerPartnerComponent {
   }
 
   getPercentageAmountForFund(fund: ProgrammeFundDTO, budgets: ProjectPartnerBudgetModel[]): number {
-    const filteredBudgets = budgets.filter(budget => budget.budgetFundId === fund.id && budget.budgetFundAbbreviation === '$fund.abbreviation');
+    const filteredBudgets = budgets.filter(budget => budget.budgetFundId === fund.id);
     if (!filteredBudgets || filteredBudgets.length === 0) {
       return 0;
     }
@@ -74,7 +74,7 @@ export class BudgetPagePerPartnerComponent {
     if (this.budgetColumns) {
       this.budgetColumns.forEach(column => {
         column.budgets
-          .filter((budget: ProjectPartnerBudgetModel) => budget.budgetFundId === fund.id && budget.budgetFundAbbreviation === '$fund.abbreviation')
+          .filter((budget: ProjectPartnerBudgetModel) => budget.budgetFundId === fund.id)
           .forEach((budget: ProjectPartnerBudgetModel) => {
             totalSum = totalSum + budget.budgetTotal;
           });
@@ -89,7 +89,7 @@ export class BudgetPagePerPartnerComponent {
     if (this.budgetColumns) {
       this.budgetColumns.forEach(column => {
         column.budgets
-          .filter((budget: ProjectPartnerBudgetModel) => budget.budgetFundId === fund.id && budget.budgetFundAbbreviation === '$fund.abbreviation')
+          .filter((budget: ProjectPartnerBudgetModel) => budget.budgetFundId === fund.id)
           .forEach((budget: ProjectPartnerBudgetModel) => {
             totalSum = totalSum + budget.budgetPercentage;
             counter = counter + 1;
@@ -123,7 +123,6 @@ export class BudgetPagePerPartnerComponent {
       if (finance.fund) {
         budgets.push({
           budgetFundId: finance.fund.id,
-          budgetFundAbbreviation: '${finance.fund.abbreviation}',
           budgetPercentage: finance.percentage,
           budgetTotal: NumberService.truncateNumber(NumberService.product([totalBudget, (finance.percentage / 100)]))
         });
