@@ -2,7 +2,7 @@
           (discard)="resetForm()">
     <form appFormLayout [formGroup]="applicationForm">
         <h3>{{'project.application.form.section.part.a.subsection.one' | translate}}</h3>
-        <mat-form-field>
+        <mat-form-field  appFormFieldWidth="xx-large">
             <mat-label>{{'project.application.form.field.project.id' | translate}}</mat-label>
             <input name="projectId" formControlName="projectId" matInput>
         </mat-form-field>
@@ -30,29 +30,37 @@
             </app-multi-language-form-field>
         </app-multi-language>
 
-        <mat-form-field>
-            <mat-label>{{'project.application.form.field.project.duration' | translate}}</mat-label>
-            <input type="number" name="duration" formControlName="duration" matInput
-                   (paste)="tools.checkDigitsOnPaste($event)" (keypress)="tools.checkDigitsOnInput($event)">
-            <mat-error>
-                <app-form-field-errors
-                        [errors]="applicationForm?.controls?.duration?.errors"
-                        [messages]="projectDurationErrors">
-                </app-form-field-errors>
-            </mat-error>
-        </mat-form-field>
+        <h4>{{'project.application.project.duration.title' | translate}}</h4>
 
-        <mat-form-field>
-            <mat-label>{{'project.application.form.field.project.periodlength' | translate}}</mat-label>
-            <input name="projectPeriodLength" formControlName="projectPeriodLength" matInput/>
-            <p>{{'project.application.form.field.project.periodlength.info' | translate}}</p>
-        </mat-form-field>
-        <mat-form-field>
-            <mat-label>{{'project.application.form.field.project.periodcount' | translate}}</mat-label>
-            <input name="projectPeriodCount" formControlName="projectPeriodCount" matInput/>
-            <p>{{'project.application.form.field.project.periodcount.info' | translate}}</p>
-        </mat-form-field>
+        <div appMultiColumnRow stretch>
+            <mat-form-field>
+                <mat-label>{{'project.application.form.field.project.duration' | translate}}</mat-label>
+                <input type="number" name="duration" formControlName="duration" matInput
+                       (paste)="tools.checkDigitsOnPaste($event)" (keypress)="tools.checkDigitsOnInput($event)">
+                <mat-error>
+                    <app-form-field-errors
+                            [errors]="applicationForm?.controls?.duration?.errors"
+                            [messages]="projectDurationErrors">
+                    </app-form-field-errors>
+                </mat-error>
+            </mat-form-field>
+            <span style="max-width:1rem;">{{'common.symbol.divide'| translate}}</span>
+            <mat-form-field>
+                <mat-label>{{'project.application.form.field.project.periodlength' | translate}}</mat-label>
+                <input name="projectPeriodLength" formControlName="projectPeriodLength" matInput/>
+            </mat-form-field>
+            <span style="max-width:1rem;">{{'common.symbol.result'| translate}}</span>
+            <mat-form-field>
+                <mat-label>{{'project.application.form.field.project.periodcount' | translate}}</mat-label>
+                <input name="projectPeriodCount" formControlName="projectPeriodCount" matInput/>
+                <app-context-info
+                        infoText="{{'project.application.form.field.project.periodcount.info'| translate}}">
+                </app-context-info>
+            </mat-form-field>
+        </div>
 
+
+        <h4>{{'project.application.project.priority.title' | translate}}</h4>
         <mat-form-field *ngIf="editable">
             <mat-label>{{'project.application.form.field.project.priority' | translate}}</mat-label>
             <mat-select (selectionChange)="changeCurrentPriority($event.value)" required [(value)]=currentPriority
@@ -122,6 +130,7 @@
         <app-multi-language *ngIf="!englishLanguageActive()"
                             [staticLanguages]="[LANGUAGE.EN]">
             <app-multi-language-form-field
+                    type="textarea"
                     label="project.application.form.field.project.summary.in.english"
                     formControlName="introEn"
                     maxLength="2000">
