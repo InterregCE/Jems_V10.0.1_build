@@ -7,9 +7,9 @@ import io.cloudflight.jems.server.call.service.CallService
 import io.cloudflight.jems.server.common.exception.ResourceNotFoundException
 import io.cloudflight.jems.server.authentication.model.LocalCurrentUser
 import io.cloudflight.jems.server.authentication.service.SecurityService
-import io.cloudflight.jems.server.security.service.authorization.AuthorizationUtil.Companion.adminUser
-import io.cloudflight.jems.server.security.service.authorization.AuthorizationUtil.Companion.applicantUser
-import io.cloudflight.jems.server.security.service.authorization.AuthorizationUtil.Companion.programmeUser
+import io.cloudflight.jems.server.project.authorization.AuthorizationUtil.Companion.adminUser
+import io.cloudflight.jems.server.project.authorization.AuthorizationUtil.Companion.applicantUser
+import io.cloudflight.jems.server.project.authorization.AuthorizationUtil.Companion.programmeUser
 import io.mockk.MockKAnnotations
 import io.mockk.every
 import io.mockk.impl.annotations.MockK

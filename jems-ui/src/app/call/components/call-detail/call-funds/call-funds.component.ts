@@ -1,5 +1,5 @@
 import {ChangeDetectionStrategy, Component, EventEmitter, Input, Output} from '@angular/core';
-import {ProgrammeFundOutputDTO} from '@cat/api';
+import {ProgrammeFundDTO} from '@cat/api';
 
 @Component({
   selector: 'app-call-funds',
@@ -11,7 +11,7 @@ export class CallFundsComponent {
   @Input()
   disabled: boolean;
   @Input()
-  funds: ProgrammeFundOutputDTO[];
+  funds: ProgrammeFundDTO[];
   @Input()
   isApplicant: boolean;
 

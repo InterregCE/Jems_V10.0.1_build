@@ -25,14 +25,14 @@ import io.cloudflight.jems.server.programme.repository.priority.ProgrammeSpecifi
 import io.cloudflight.jems.server.user.repository.UserRepository
 import io.cloudflight.jems.server.authentication.model.LocalCurrentUser
 import io.cloudflight.jems.server.authentication.service.SecurityService
-import io.cloudflight.jems.server.security.service.authorization.AuthorizationUtil.Companion.adminUser
-import io.cloudflight.jems.server.security.service.authorization.AuthorizationUtil.Companion.applicantUser
-import io.cloudflight.jems.server.security.service.authorization.AuthorizationUtil.Companion.programmeUser
+import io.cloudflight.jems.server.project.authorization.AuthorizationUtil.Companion.adminUser
+import io.cloudflight.jems.server.project.authorization.AuthorizationUtil.Companion.applicantUser
+import io.cloudflight.jems.server.project.authorization.AuthorizationUtil.Companion.programmeUser
 import io.cloudflight.jems.server.audit.service.AuditService
 import io.cloudflight.jems.server.call.callWithId
 import io.cloudflight.jems.server.call.testUser
-import io.cloudflight.jems.server.programme.entity.ProgrammeFundEntity
-import io.cloudflight.jems.server.programme.repository.ProgrammeFundRepository
+import io.cloudflight.jems.server.programme.entity.fund.ProgrammeFundEntity
+import io.cloudflight.jems.server.programme.repository.fund.ProgrammeFundRepository
 import io.cloudflight.jems.server.programme.entity.Strategy
 import io.cloudflight.jems.server.programme.repository.StrategyRepository
 import io.mockk.MockKAnnotations
@@ -220,7 +220,7 @@ class CallServiceTest {
         every { strategyRepository.findAllById(eq(setOf(ProgrammeStrategy.EUStrategyBalticSeaRegion))) } returns
                 listOf(Strategy(ProgrammeStrategy.EUStrategyBalticSeaRegion, true))
         every { fundRepository.findAllById(eq(setOf(1L))) } returns
-                listOf(ProgrammeFundEntity(1, "test", "test description", true))
+                listOf(ProgrammeFundEntity(id = 1, selected =  true))
 
         val newCall = InputCallCreate(
             name = call.name,
@@ -408,7 +408,7 @@ class CallServiceTest {
         val existingId = 1L
         val policies = setOf(ProgrammeSpecificObjectiveEntity(programmeObjectivePolicy = AdvancedTechnologies, code = "AT"))
         val funds =
-            setOf(ProgrammeFundEntity(id = 1, abbreviation = "test", description = "test description", selected = true))
+            setOf(ProgrammeFundEntity(id = 1, selected = true))
 
         every { callRepository.findById(eq(existingId)) } returns
                 Optional.of(

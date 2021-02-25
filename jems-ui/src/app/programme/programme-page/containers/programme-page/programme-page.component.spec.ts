@@ -1,7 +1,7 @@
 import {async, ComponentFixture, fakeAsync, TestBed, tick} from '@angular/core/testing';
 
 import {ProgrammePageComponent} from './programme-page.component';
-import {InputProgrammeFund, OutputProgrammeData} from '@cat/api';
+import {ProgrammeFundDTO, OutputProgrammeData} from '@cat/api';
 import {HttpTestingController} from '@angular/common/http/testing';
 import {TestModule} from '../../../../common/test-module';
 import {ProgrammeModule} from '../../../programme.module';
@@ -56,13 +56,13 @@ describe('ProgrammePageComponent', () => {
   }));
 
   it('should fetch initial funds', fakeAsync(() => {
-    let result: InputProgrammeFund[] = [];
+    let result: ProgrammeFundDTO[] = [];
     component.funds$.subscribe(res => result = res);
 
     httpTestingController.expectOne({method: 'GET', url: `//api/programmedata`})
       .flush({cci: 'some cci'} as OutputProgrammeData);
 
-    httpTestingController.expectOne({method: 'GET', url: `//api/programmefund`})
+    httpTestingController.expectOne({method: 'GET', url: `//api/programmeFund`})
       .flush([{id: 1}]);
 
     tick();
@@ -72,11 +72,11 @@ describe('ProgrammePageComponent', () => {
   }));
 
   it('should update funds', fakeAsync(() => {
-    let result: InputProgrammeFund[] = [];
+    let result: ProgrammeFundDTO[] = [];
     component.funds$.subscribe(res => result = res);
-    component.saveFunds$.next({funds: []});
+    component.saveFunds$.next([]);
 
-    httpTestingController.expectOne({method: 'PUT', url: `//api/programmefund`})
+    httpTestingController.expectOne({method: 'PUT', url: `//api/programmeFund`})
       .flush([{id: 1}]);
 
     tick();

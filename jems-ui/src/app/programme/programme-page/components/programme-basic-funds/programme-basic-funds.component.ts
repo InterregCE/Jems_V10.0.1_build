@@ -9,7 +9,7 @@ import {
 } from '@angular/core';
 import {ViewEditForm} from '@common/components/forms/view-edit-form';
 import {FormControl, FormGroup, Validators} from '@angular/forms';
-import {InputProgrammeFund, InputProgrammeFundWrapper, ProgrammeFundOutputDTO} from '@cat/api';
+import {ProgrammeFundDTO} from '@cat/api';
 import {MatTableDataSource} from '@angular/material/table';
 import {SelectionModel} from '@angular/cdk/collections';
 
@@ -23,14 +23,14 @@ export class ProgrammeBasicFundsComponent extends ViewEditForm implements OnInit
   DEFAULT_FUNDS_LENGTH = 9;
 
   @Input()
-  programmeFunds: InputProgrammeFund[];
+  programmeFunds: ProgrammeFundDTO[];
 
   @Output()
-  saveFunds = new EventEmitter<InputProgrammeFundWrapper>();
+  saveFunds = new EventEmitter<ProgrammeFundDTO[]>();
 
   displayedColumns: string[] = ['select', 'abbreviation', 'description'];
-  selection = new SelectionModel<InputProgrammeFund>(true, []);
-  dataSource: MatTableDataSource<InputProgrammeFund>;
+  selection = new SelectionModel<ProgrammeFundDTO>(true, []);
+  dataSource: MatTableDataSource<ProgrammeFundDTO>;
 
   editableFundsForm = new FormGroup({});
 
@@ -62,16 +62,15 @@ export class ProgrammeBasicFundsComponent extends ViewEditForm implements OnInit
   }
 
   onSubmit(): void {
-    this.saveFunds.emit({
-      funds: this.dataSource.data
-        .map(element => ({
-          id: (element.creation ? null : element.id as any),
-          selected: this.selection.isSelected(element),
-          abbreviation: element.creation ? this.editableFundsForm.get(this.abbreviation(element.id))?.value : null,
-          description: element.creation ? this.editableFundsForm.get(this.description(element.id))?.value : null,
-          creation: element.creation
-        }))
-    });
+    this.saveFunds.emit(this.dataSource.data
+      .map(element => ({
+        id: (element.creation ? null : element.id as any),
+        selected: this.selection.isSelected(element),
+        abbreviation: element.creation ? this.editableFundsForm.get(this.abbreviation(element.id))?.value : null,
+        description: element.creation ? this.editableFundsForm.get(this.description(element.id))?.value : null,
+        creation: element.creation
+      }))
+    );
   }
 
   description = (id: number): string => id + 'desc';
@@ -97,19 +96,19 @@ export class ProgrammeBasicFundsComponent extends ViewEditForm implements OnInit
     this.dataSource.data.forEach(fund => this.addControl(fund));
   }
 
-  private addLastFund(): InputProgrammeFund {
+  private addLastFund(): ProgrammeFundDTO {
     const lastFund = {
       id: this.getNextId(),
       selected: false,
-      abbreviation: '',
-      description: '',
+      abbreviation: [],
+      description: [],
       creation: true
     };
     this.dataSource.data = [...this.dataSource.data, lastFund];
     return lastFund;
   }
 
-  private addControl(fund: ProgrammeFundOutputDTO): void {
+  private addControl(fund: ProgrammeFundDTO): void {
     this.editableFundsForm.addControl(
       this.abbreviation(fund.id),
       new FormControl(fund?.abbreviation, [

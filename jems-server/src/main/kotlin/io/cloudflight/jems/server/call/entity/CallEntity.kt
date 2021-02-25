@@ -1,7 +1,7 @@
 package io.cloudflight.jems.server.call.entity
 
 import io.cloudflight.jems.api.call.dto.CallStatus
-import io.cloudflight.jems.server.programme.entity.ProgrammeFundEntity
+import io.cloudflight.jems.server.programme.entity.fund.ProgrammeFundEntity
 import io.cloudflight.jems.server.user.entity.User
 import io.cloudflight.jems.server.programme.entity.ProgrammeSpecificObjectiveEntity
 import io.cloudflight.jems.server.programme.entity.Strategy

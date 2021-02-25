@@ -3,7 +3,7 @@ package io.cloudflight.jems.server.project.service.partner.cofinancing.get_cofin
 import io.cloudflight.jems.api.project.dto.partner.cofinancing.ProjectPartnerCoFinancingFundType
 import io.cloudflight.jems.api.project.dto.partner.cofinancing.ProjectPartnerContributionStatus.AutomaticPublic
 import io.cloudflight.jems.api.project.dto.partner.cofinancing.ProjectPartnerContributionStatus.Public
-import io.cloudflight.jems.server.programme.service.model.ProgrammeFund
+import io.cloudflight.jems.server.programme.service.fund.model.ProgrammeFund
 import io.cloudflight.jems.server.project.service.partner.cofinancing.ProjectPartnerCoFinancingPersistence
 import io.cloudflight.jems.server.project.service.partner.cofinancing.model.ProjectPartnerCoFinancing
 import io.cloudflight.jems.server.project.service.partner.cofinancing.model.ProjectPartnerCoFinancingAndContribution
@@ -19,7 +19,7 @@ import java.math.BigDecimal
 internal class GetCoFinancingInteractorTest {
 
     companion object {
-        private val fund = ProgrammeFund(id = 1, abbreviation = "Fund", selected = true)
+        private val fund = ProgrammeFund(id = 1, selected = true)
     }
 
     @MockK

@@ -1,6 +1,6 @@
 import {ChangeDetectionStrategy, Component} from '@angular/core';
 import {
-  ProgrammeFundOutputDTO,
+  ProgrammeFundDTO,
   ProjectPartnerBudgetCoFinancingDTO,
   ProjectPartnerCoFinancingOutputDTO,
   ProjectPartnerContributionDTO
@@ -53,28 +53,28 @@ export class BudgetPagePerPartnerComponent {
               private pageStore: ProjectPartnerDetailPageStore) {
   }
 
-  getBudgetAmountForFund(fund: ProgrammeFundOutputDTO, budgets: ProjectPartnerBudgetModel[]): number {
-    const filteredBudgets = budgets.filter(budget => budget.budgetFundId === fund.id && budget.budgetFundAbbreviation === fund.abbreviation);
+  getBudgetAmountForFund(fund: ProgrammeFundDTO, budgets: ProjectPartnerBudgetModel[]): number {
+    const filteredBudgets = budgets.filter(budget => budget.budgetFundId === fund.id && budget.budgetFundAbbreviation === '$fund.abbreviation');
     if (!filteredBudgets || filteredBudgets.length === 0) {
       return 0;
     }
     return filteredBudgets[0].budgetTotal;
   }
 
-  getPercentageAmountForFund(fund: ProgrammeFundOutputDTO, budgets: ProjectPartnerBudgetModel[]): number {
-    const filteredBudgets = budgets.filter(budget => budget.budgetFundId === fund.id && budget.budgetFundAbbreviation === fund.abbreviation);
+  getPercentageAmountForFund(fund: ProgrammeFundDTO, budgets: ProjectPartnerBudgetModel[]): number {
+    const filteredBudgets = budgets.filter(budget => budget.budgetFundId === fund.id && budget.budgetFundAbbreviation === '$fund.abbreviation');
     if (!filteredBudgets || filteredBudgets.length === 0) {
       return 0;
     }
     return filteredBudgets[0].budgetPercentage;
   }
 
-  getTotalBudgetAmountForFund(fund: ProgrammeFundOutputDTO): number {
+  getTotalBudgetAmountForFund(fund: ProgrammeFundDTO): number {
     let totalSum = 0;
     if (this.budgetColumns) {
       this.budgetColumns.forEach(column => {
         column.budgets
-          .filter((budget: ProjectPartnerBudgetModel) => budget.budgetFundId === fund.id && budget.budgetFundAbbreviation === fund.abbreviation)
+          .filter((budget: ProjectPartnerBudgetModel) => budget.budgetFundId === fund.id && budget.budgetFundAbbreviation === '$fund.abbreviation')
           .forEach((budget: ProjectPartnerBudgetModel) => {
             totalSum = totalSum + budget.budgetTotal;
           });
@@ -83,13 +83,13 @@ export class BudgetPagePerPartnerComponent {
     return NumberService.truncateNumber(totalSum);
   }
 
-  getTotalPercentageAmountForFund(fund: ProgrammeFundOutputDTO): number {
+  getTotalPercentageAmountForFund(fund: ProgrammeFundDTO): number {
     let totalSum = 0;
     let counter = 0;
     if (this.budgetColumns) {
       this.budgetColumns.forEach(column => {
         column.budgets
-          .filter((budget: ProjectPartnerBudgetModel) => budget.budgetFundId === fund.id && budget.budgetFundAbbreviation === fund.abbreviation)
+          .filter((budget: ProjectPartnerBudgetModel) => budget.budgetFundId === fund.id && budget.budgetFundAbbreviation === '$fund.abbreviation')
           .forEach((budget: ProjectPartnerBudgetModel) => {
             totalSum = totalSum + budget.budgetPercentage;
             counter = counter + 1;
@@ -123,7 +123,7 @@ export class BudgetPagePerPartnerComponent {
       if (finance.fund) {
         budgets.push({
           budgetFundId: finance.fund.id,
-          budgetFundAbbreviation: finance.fund.abbreviation,
+          budgetFundAbbreviation: '${finance.fund.abbreviation}',
           budgetPercentage: finance.percentage,
           budgetTotal: NumberService.truncateNumber(NumberService.product([totalBudget, (finance.percentage / 100)]))
         });
@@ -150,7 +150,7 @@ export class BudgetPagePerPartnerComponent {
     this.totalPartnerContribution = NumberService.sum(budgets.map(budget => budget.totalContribution));
   }
 
-  private getColumnsToDisplay(funds: ProgrammeFundOutputDTO[]): void {
+  private getColumnsToDisplay(funds: ProgrammeFundDTO[]): void {
     this.displayedColumns.push('partner', 'country');
     funds.forEach(fund => {
       this.displayedColumns.push('budget' + (fund.abbreviation || fund.id), 'percentage' + (fund.abbreviation || fund.id));

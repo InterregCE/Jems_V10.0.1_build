@@ -4,9 +4,9 @@ import {Permission} from '../../../../security/permissions/permission';
 import {merge, Subject} from 'rxjs';
 import {I18nValidationError} from '@common/validation/i18n-validation-error';
 import {
-  InputProgrammeFundWrapper,
   OutputProgrammeData,
   ProgrammeDataService,
+  ProgrammeFundDTO,
   ProgrammeFundService,
   ProgrammePriorityService
 } from '@cat/api';
@@ -31,7 +31,7 @@ export class ProgrammePageComponent extends BaseComponent {
 
   fundsSaveError$ = new Subject<I18nValidationError | null>();
   fundsSaveSuccess$ = new Subject<boolean>();
-  saveFunds$ = new Subject<InputProgrammeFundWrapper>();
+  saveFunds$ = new Subject<ProgrammeFundDTO[]>();
 
   newPageSize$ = new Subject<number>();
   newPageIndex$ = new Subject<number>();

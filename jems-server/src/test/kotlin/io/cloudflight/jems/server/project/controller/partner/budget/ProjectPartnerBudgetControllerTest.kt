@@ -1,6 +1,6 @@
 package io.cloudflight.jems.server.project.controller.partner.budget
 
-import io.cloudflight.jems.api.programme.dto.ProgrammeFundOutputDTO
+import io.cloudflight.jems.api.programme.dto.fund.ProgrammeFundDTO
 import io.cloudflight.jems.api.project.dto.partner.budget.BudgetGeneralCostEntryDTO
 import io.cloudflight.jems.api.project.dto.partner.budget.BudgetStaffCostEntryDTO
 import io.cloudflight.jems.api.project.dto.partner.budget.BudgetTravelAndAccommodationCostEntryDTO
@@ -15,7 +15,7 @@ import io.cloudflight.jems.api.project.dto.partner.cofinancing.ProjectPartnerCon
 import io.cloudflight.jems.api.project.dto.partner.cofinancing.ProjectPartnerContributionStatus.Private
 import io.cloudflight.jems.api.project.dto.partner.cofinancing.ProjectPartnerContributionStatus.Public
 import io.cloudflight.jems.server.UnitTest
-import io.cloudflight.jems.server.programme.service.model.ProgrammeFund
+import io.cloudflight.jems.server.programme.service.fund.model.ProgrammeFund
 import io.cloudflight.jems.server.project.service.partner.budget.get_budget_costs.GetBudgetCosts
 import io.cloudflight.jems.server.project.service.partner.budget.get_budget_options.GetBudgetOptionsInteractor
 import io.cloudflight.jems.server.project.service.partner.budget.get_budget_total_cost.GetBudgetTotalCost
@@ -50,17 +50,15 @@ class ProjectPartnerBudgetControllerTest : UnitTest() {
             ProjectPartnerCoFinancingOutputDTO(
                 fundType = ProjectPartnerCoFinancingFundType.MainFund,
                 percentage = 20,
-                fund = ProgrammeFundOutputDTO(
+                fund = ProgrammeFundDTO(
                     id = 10,
                     selected = true,
-                    abbreviation = "fund abbreviation",
-                    description = "fund description"
                 )
             ),
             ProjectPartnerCoFinancingOutputDTO(
                 fundType = ProjectPartnerCoFinancingFundType.AdditionalFund,
                 percentage = 30,
-                fund = ProgrammeFundOutputDTO(id = 2, selected = true /* abbreviation missing for ids 1..9 */)
+                fund = ProgrammeFundDTO(id = 2, selected = true /* abbreviation missing for ids 1..9 */)
             ),
             ProjectPartnerCoFinancingOutputDTO(
                 fundType = ProjectPartnerCoFinancingFundType.PartnerContribution,
@@ -125,8 +123,6 @@ class ProjectPartnerBudgetControllerTest : UnitTest() {
                 fund = ProgrammeFund(
                     id = 10,
                     selected = true,
-                    abbreviation = "fund abbreviation",
-                    description = "fund description"
                 )
             ),
             ProjectPartnerCoFinancing(

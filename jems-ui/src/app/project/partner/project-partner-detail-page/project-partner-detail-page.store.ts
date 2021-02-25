@@ -14,7 +14,7 @@ import {
   OutputCall,
   OutputProjectPartnerDetail,
   OutputProjectPeriod,
-  ProgrammeFundOutputDTO,
+  ProgrammeFundDTO,
   ProgrammeUnitCostDTO,
   ProjectPartnerBudgetOptionsDto,
   ProjectPartnerBudgetService,
@@ -46,7 +46,7 @@ export class ProjectPartnerDetailPageStore {
   investmentSummaries$: Observable<InvestmentSummary[]>;
   unitCosts$: Observable<ProgrammeUnitCostDTO[]>;
   financingAndContribution$: Observable<ProjectPartnerCoFinancingAndContributionOutputDTO>;
-  callFunds$: Observable<ProgrammeFundOutputDTO[]>;
+  callFunds$: Observable<ProgrammeFundDTO[]>;
   periods$: Observable<OutputProjectPeriod[]>;
   multipleFundsAllowed$: Observable<boolean>;
 
@@ -133,13 +133,13 @@ export class ProjectPartnerDetailPageStore {
     );
   }
 
-  private callFunds(): Observable<ProgrammeFundOutputDTO[]> {
+  private callFunds(): Observable<ProgrammeFundDTO[]> {
     return this.projectStore.getProject()
       .pipe(
         map(project => project.callSettings.callId),
         switchMap(callId => this.callService.getCallById(callId)),
         map((call: OutputCall) => call.funds),
-        map((funds: ProgrammeFundOutputDTO[]) => [...funds].sort((a, b) => (a.id > b.id) ? 1 : -1)),
+        map((funds: ProgrammeFundDTO[]) => [...funds].sort((a, b) => (a.id > b.id) ? 1 : -1)),
       );
   }
 

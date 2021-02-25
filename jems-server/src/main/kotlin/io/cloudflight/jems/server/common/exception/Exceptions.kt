@@ -12,7 +12,7 @@ open class ApplicationException(
 
 open class ApplicationNotFoundException(
     override val code: String, override val i18nMessage: I18nMessage,
-    override val cause: Throwable?, override val message: String = ""
+    override val cause: Throwable? = null, override val message: String = ""
 ) : ApplicationException(code, i18nMessage, HttpStatus.NOT_FOUND, cause, message)
 
 open class ApplicationUnprocessableException(
@@ -36,5 +36,5 @@ open class ApplicationAuthenticationException(
 
 open class ApplicationAccessDeniedException(
     override val code: String, override val i18nMessage: I18nMessage,
-    override val cause: Throwable?, override val message: String = "",
+    override val cause: Throwable? = null, override val message: String = "",
 ) : ApplicationException(code, i18nMessage, HttpStatus.FORBIDDEN, cause, message)
