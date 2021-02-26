@@ -1,24 +1,16 @@
-import {
-  ChangeDetectionStrategy,
-  Component,
-  EventEmitter,
-  Input,
-  OnInit,
-  Output,
-  TemplateRef,
-  ViewChild
-} from '@angular/core';
+import {ChangeDetectionStrategy, Component, Input, OnInit, TemplateRef, ViewChild} from '@angular/core';
 import {TableConfiguration} from '@common/components/table/model/table.configuration';
-import {ColumnType} from '@common/components/table/model/column-type.enum';
-import {MatSort} from '@angular/material/sort';
-import {OutputCall, PageOutputCallList} from '@cat/api';
 import {Router} from '@angular/router';
-import * as moment from 'moment';
+import {ColumnType} from '@common/components/table/model/column-type.enum';
+import {OutputCall} from '@cat/api';
+import moment from 'moment/moment';
+import {CallListStore} from '@common/components/call-list/call-list-store.service';
 
 @Component({
   selector: 'app-call-list',
   templateUrl: './call-list.component.html',
   styleUrls: ['./call-list.component.scss'],
+  providers: [CallListStore],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class CallListComponent implements OnInit {
@@ -26,23 +18,12 @@ export class CallListComponent implements OnInit {
   actionsCell: TemplateRef<any>;
 
   @Input()
-  callPage: PageOutputCallList;
-  @Input()
-  pageIndex: number;
-  @Input()
   isApplicant: boolean;
-
-  @Output()
-  newPageSize: EventEmitter<number> = new EventEmitter<number>();
-  @Output()
-  newPageIndex: EventEmitter<number> = new EventEmitter<number>();
-  @Output()
-  newSort: EventEmitter<Partial<MatSort>> = new EventEmitter<Partial<MatSort>>();
 
   tableConfiguration: TableConfiguration;
 
-
-  constructor(private router: Router) {
+  constructor(private router: Router,
+              public listStore: CallListStore) {
   }
 
   ngOnInit(): void {
@@ -96,4 +77,5 @@ export class CallListComponent implements OnInit {
     const currentDate = moment(new Date());
     return currentDate.isBefore(call.endDate) && currentDate.isAfter(call.startDate);
   }
+
 }

@@ -1,0 +1,12 @@
+<app-main-page-template [needsCard]="true">
+    <ng-container page-title *ngIf="pageStore.currentUser$ | async as currentUser">
+        <h1>{{'project.welcome' | translate: {name: currentUser.name, surname: currentUser.surname} }}</h1>
+    </ng-container>
+
+    <h2>{{'call.applications.title' | translate}}</h2>
+    <app-project-application-list appNoWidthLimit></app-project-application-list>
+
+    <h2>{{'call.list.open.title' | translate}}</h2>
+    <app-call-list appNoWidthLimit [isApplicant]="true"></app-call-list>
+
+</app-main-page-template>

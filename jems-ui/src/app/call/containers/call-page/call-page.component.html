@@ -1,42 +1,17 @@
 <app-main-page-template [needsCard]="true" titleKey="call.header">
 
-    <h2 page-sub-title *ngxPermissionsExcept="Permission.APPLICANT_USER">{{'call.list.header' | translate}}</h2>
-    <h2 page-sub-title *ngxPermissionsOnly="Permission.APPLICANT_USER">{{'call.list.open.title' | translate}}</h2>
+    <h2 page-sub-title> {{'call.list.header' | translate}}</h2>
 
-    <div appFormLayout *ngxPermissionsExcept="Permission.APPLICANT_USER">
-        <button mat-raised-button color="primary"
-                [routerLink]="'/app/call/create'">
-            + {{'call.add.new' | translate}}
-        </button>
-        <ng-container *ngIf="currentPage$ | async as callPage">
-            <div *ngIf="success" class="success-wrapper">
-                <div class="success app-alert-success">
-                    <em class="far fa-check-circle"></em>
-                    <span *ngIf="success.i18nKey">{{success.i18nKey | translate : success.i18nArguments}}</span>
-                </div>
-            </div>
-            <app-call-list
-                    appNoWidthLimit
-                    [isApplicant]="false"
-                    [callPage]="callPage"
-                    [pageIndex]="newPageIndex$ | async"
-                    (newPageSize)="newPageSize$.next($event)"
-                    (newPageIndex)="newPageIndex$.next($event)"
-                    (newSort)="newSort$.next($event)">
-            </app-call-list>
-        </ng-container>
-    </div>
-
-    <div *ngxPermissionsOnly="Permission.APPLICANT_USER">
-        <div *ngIf="currentPage$ | async as callPage">
-            <app-call-list
-                    [isApplicant]="true"
-                    [callPage]="callPage"
-                    [pageIndex]="newPageIndex$ | async"
-                    (newPageSize)="newPageSize$.next($event)"
-                    (newPageIndex)="newPageIndex$.next($event)"
-                    (newSort)="newSort$.next($event)">
-            </app-call-list>
+    <button *ngxPermissionsExcept="Permission.APPLICANT_USER" mat-raised-button color="primary"
+            [routerLink]="'/app/call/create'">
+        + {{'call.add.new' | translate}}
+    </button>
+    <div *ngIf="success" class="success-wrapper">
+        <div class="success app-alert-success">
+            <em class="far fa-check-circle"></em>
+            <span *ngIf="success.i18nKey">{{success.i18nKey | translate : success.i18nArguments}}</span>
         </div>
     </div>
+    <app-call-list appNoWidthLimit [isApplicant]="false"></app-call-list>
+
 </app-main-page-template>

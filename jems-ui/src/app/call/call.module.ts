@@ -3,7 +3,6 @@ import {RouterModule} from '@angular/router';
 
 import {routes} from './call-routing.module';
 import {CallPageComponent} from './containers/call-page/call-page.component';
-import {CallListComponent} from './components/call-list/call-list.component';
 import {SharedModule} from '../common/shared-module';
 import {CallDetailComponent} from './components/call-detail/call-detail.component';
 import {CallConfigurationComponent} from './containers/call-configuration/call-configuration.component';
@@ -23,7 +22,6 @@ import {ProgrammeEditableStateStore} from '../programme/programme-page/services/
 @NgModule({
   declarations: [
     CallPageComponent,
-    CallListComponent,
     CallDetailComponent,
     CallConfigurationComponent,
     CallPriorityTreeComponent,

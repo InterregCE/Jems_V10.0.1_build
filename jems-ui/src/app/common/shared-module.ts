@@ -6,7 +6,6 @@ import {TableComponent} from './components/table/table.component';
 import {NgxPermissionsModule} from 'ngx-permissions';
 import {PaginatorComponent} from '@common/components/table/paginator/paginator.component';
 import {RouterModule} from '@angular/router';
-import {ProjectApplicationListComponent} from '../project/project-application/components/project-application-list/project-application-list.component';
 import {MoneyPipe} from './pipe/money.pipe';
 import {MaterialModule} from './material/material-module';
 import {BreadcrumbComponent} from '@common/components/breadcrumb/breadcrumb.component';
@@ -35,6 +34,9 @@ import {MainPageTemplateComponent} from '@common/components/page-templates/main-
 import {MatBadgeModule} from '@angular/material/badge';
 import {ApiErrorContentComponent} from '@common/components/forms/api-error-content/api-error-content.component';
 import {InputSystemTranslatePipe} from './pipe/input-system-translate.pipe';
+import {ProjectApplicationListComponent} from '@common/components/project-application-list/project-application-list.component';
+import {CallListComponent} from '@common/components/call-list/call-list.component';
+
 
 const modules = [
   CommonModule,
@@ -50,6 +52,7 @@ const modules = [
 
 const declarations = [
   ProjectApplicationListComponent,
+  CallListComponent,
   TableComponent,
   PaginatorComponent,
   FormComponent,

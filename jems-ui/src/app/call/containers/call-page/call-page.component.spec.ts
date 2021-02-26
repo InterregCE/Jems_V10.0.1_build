@@ -1,6 +1,6 @@
 import {async, ComponentFixture, fakeAsync, TestBed, tick} from '@angular/core/testing';
 
-import { CallPageComponent } from './call-page.component';
+import {CallPageComponent} from './call-page.component';
 import {TestModule} from '../../../common/test-module';
 import {CallModule} from '../../call.module';
 import {OutputCallList} from '@cat/api';
@@ -17,9 +17,9 @@ describe('CallPageComponent', () => {
         TestModule,
         CallModule
       ],
-      declarations: [ CallPageComponent ]
+      declarations: [CallPageComponent]
     })
-    .compileComponents();
+      .compileComponents();
     httpTestingController = TestBed.inject(HttpTestingController);
   }));
 
@@ -32,20 +32,4 @@ describe('CallPageComponent', () => {
   it('should create', () => {
     expect(component).toBeTruthy();
   });
-
-  it('should list calls', fakeAsync(() => {
-    let results: OutputCallList[] = [];
-    component.currentPage$.subscribe(result => results = result.content);
-
-    const calls = [
-      {name: 'test1'} as OutputCallList,
-      {name: 'test2'} as OutputCallList
-    ];
-
-    httpTestingController.match({method: 'GET', url: `//api/call?page=0&size=25&sort=id,desc`})
-      .forEach(req => req.flush({content: calls}));
-
-    tick();
-    expect(results).toEqual(calls);
-  }));
 });
