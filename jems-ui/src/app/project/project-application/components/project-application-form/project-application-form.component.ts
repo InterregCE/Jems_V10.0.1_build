@@ -151,8 +151,8 @@ export class ProjectApplicationFormComponent extends BaseComponent implements On
     return projectDuration ? Math.ceil(projectDuration / this.project?.callSettings.lengthOfPeriod) : 0;
   }
 
-  changeCurrentPriority(selectedPriority: OutputCallProgrammePriority): void {
-    this.currentPriority = selectedPriority.code;
+  changeCurrentPriority(selectedPriority: string): void {
+    this.currentPriority = selectedPriority;
     this.applicationForm.controls.specificObjective.setValue('');
   }
 
