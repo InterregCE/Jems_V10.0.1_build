@@ -92,7 +92,7 @@
             <mat-label>{{'project.partner.legal.status' | translate}}</mat-label>
             <mat-select name="legalStatusId" formControlName="legalStatusId" required>
                 <mat-option *ngFor="let status of legalStatuses" [value]="status.id">
-                    {{status.description || 'programme.legal.status.' + status.id | translate}}
+                    {{ status.description | translateSystem | async }}
                 </mat-option>
             </mat-select>
             <mat-error>

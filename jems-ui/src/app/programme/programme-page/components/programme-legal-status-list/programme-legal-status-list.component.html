@@ -1,72 +1,61 @@
-<form appFormLayout [formGroup]="statusForm">
+<form id="legalStatuses" appFormLayout [formGroup]="statusForm">
     <div appMultiColumnRow>
         <h3 class="mb-0">{{'programme.legal.status.list.title' | translate}}</h3>
         <button color="primary"
-                *ngIf="formState === FormState.VIEW" mat-raised-button
+                *ngIf="(changeFormState$ | async) === FormState.VIEW" mat-raised-button
                 (click)="changeFormState$.next(FormState.EDIT)">
             {{'common.edit.label' | translate}}
         </button>
     </div>
-    <mat-table appNoWidthLimit [appTableConfig]="[{},{maxInRem:5}]" [dataSource]="dataSource">
+    <app-multi-language [useSystemLanguages]="true" [switchButtonsVisible]="(changeFormState$ | async) === FormState.EDIT">
+        <div [appTableConfig]="[{},{maxInRem: 5}]">
+            <div>
+                <span class="mat-body-strong">{{ 'programme.legal.status.list.description' | translate }}</span>
+                <span class="mat-body-strong">{{'common.delete.entry.tooltip' | translate}}</span>
+            </div>
 
-        <ng-container matColumnDef="description">
-            <mat-header-cell
-                    *matHeaderCellDef>{{'programme.legal.status.list.description' | translate}}</mat-header-cell>
-            <mat-cell *matCellDef="let element">
-                    <span *ngIf="formState === FormState.VIEW || !statusForm.controls[element.id]">
-                        {{element.description || 'programme.legal.status.' + element.id | translate}}
-                    </span>
-                <mat-form-field *ngIf="formState === FormState.EDIT && statusForm.controls[element.id]">
-                    <mat-label>{{'programme.legal.status.list.add' | translate}}</mat-label>
-                    <input matInput formnovalidate
-                           [name]="element.id"
-                           [formControlName]="element.id">
-                    <mat-error>
-                        <app-form-field-errors
-                                [errors]="statusForm?.controls[element.id]?.errors"
-                                [messages]="descErrors">
-                        </app-form-field-errors>
-                    </mat-error>
-                </mat-form-field>
-            </mat-cell>
+            <div *ngFor="let legalStatus of legalStatusesForm.controls; let i = index">
+                <ng-container formArrayName="legalStatuses">
+                    <ng-container [formGroupName]="i">
 
-            <mat-footer-cell *matFooterCellDef>
-                <button *ngIf="formState === FormState.EDIT" mat-icon-button
-                        type="button"
-                        (click)="addNewLegalStatus()">
-                    <mat-icon>add</mat-icon>
-                </button>
-            </mat-footer-cell>
+                        <app-multi-language-form-field
+                                hideCountersWhenInView="true"
+                                formControlName="description"
+                                maxLength="50"
+                                label="programme.legal.status.list.description">
+                        </app-multi-language-form-field>
 
-        </ng-container>
+                        <div *ngIf="(changeFormState$ | async) === FormState.EDIT">
+                            <button *ngIf="!isProgrammeSetupRestricted"
+                                    mat-icon-button color="accent"
+                                    type="button"
+                                    matTooltip="{{'common.delete.entry.tooltip' | translate}}"
+                                    (click)="deleteLegalStatus(i, legalStatus.get('id').value)">
+                                <mat-icon>delete</mat-icon>
+                            </button>
+                        </div>
 
-        <ng-container matColumnDef="delete">
-            <mat-header-cell *matHeaderCellDef></mat-header-cell>
-            <mat-cell *matCellDef="let element">
-                <button *ngIf="formState === FormState.EDIT && element.id > 2 && (programmeEditableStateStore.isProgrammeEditableDependingOnCall$ | async) === false"
-                        mat-icon-button color="accent"
-                        type="button"
-                        matTooltip="{{'common.delete.entry.tooltip' | translate}}"
-                        (click)="deleteLegalStatus(element)">
-                    <mat-icon>delete</mat-icon>
-                </button>
-            </mat-cell>
-        </ng-container>
-
-        <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
-        <mat-row *matRowDef="let row; columns: displayedColumns;"></mat-row>
-        <mat-row *matFooterRowDef="['description']"
-                 [hidden]="formState === FormState.VIEW || dataSource.data.length > 19">
-        </mat-row>
-    </mat-table>
-
-    <div appMultiColumnRow *ngIf="formState === FormState.EDIT">
+                    </ng-container>
+                </ng-container>
+            </div>
+            <div *ngIf="(changeFormState$ | async) === FormState.EDIT">
+                <div >
+                    <button mat-icon-button
+                            type="button"
+                            (click)="addNewLegalStatus()">
+                        <mat-icon>add</mat-icon>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </app-multi-language>
+    <div appMultiColumnRow *ngIf="(changeFormState$ | async) === FormState.EDIT">
         <button mat-stroked-button type="button"
-                (click)="changeFormState$.next(FormState.VIEW)">
+                (click)="resetForm()">
             {{'common.cancel.label' | translate}}
         </button>
         <button mat-raised-button color="primary" type="button"
-                [disabled]="!statusForm.valid || dataSource.data.length > 20 || submitted"
+                [disabled]="submitted"
                 (click)="onSubmit()">
             {{'common.save.label' | translate}}
         </button>

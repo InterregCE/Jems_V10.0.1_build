@@ -22,7 +22,7 @@ fun Set<ProgrammeLegalStatusTranslationEntity>.toModel() = mapTo(HashSet()) {
 
 fun Collection<ProgrammeLegalStatus>.toEntity() = map { model ->
     ProgrammeLegalStatusEntity(
-        id = 0,
+        id = model.id,
         translatedValues = mutableSetOf(),
     ).apply {
         this.translatedValues.addAll(model.translatedValues.map { transl ->
