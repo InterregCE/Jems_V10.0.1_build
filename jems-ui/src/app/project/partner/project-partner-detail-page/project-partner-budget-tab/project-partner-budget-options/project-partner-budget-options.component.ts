@@ -3,7 +3,7 @@ import {Tools} from '../../../../../common/utils/tools';
 import {FormBuilder, FormControl, FormGroup, Validators} from '@angular/forms';
 import {BudgetOptions} from '../../../../model/budget/budget-options';
 import {FormService} from '@common/components/section/form/form.service';
-import {combineLatest, merge, Observable} from 'rxjs';
+import {combineLatest, Observable} from 'rxjs';
 import {HttpErrorResponse} from '@angular/common/http';
 import {catchError, map, startWith, tap} from 'rxjs/operators';
 import {FlatRateSetting} from '../../../../model/flat-rate-setting';
@@ -11,7 +11,6 @@ import {ProjectPartnerDetailPageStore} from '../../project-partner-detail-page.s
 import {CallFlatRateSetting} from '../../../../model/call-flat-rate-setting';
 import {ProjectPartnerBudgetOptionsConstants} from './project-partner-budget-options.constants';
 import {UntilDestroy, untilDestroyed} from '@ngneat/until-destroy';
-import {ProjectPartnerBudgetTabService} from '../project-partner-budget-tab.service';
 
 @UntilDestroy()
 @Component({
@@ -44,7 +43,6 @@ export class ProjectPartnerBudgetOptionsComponent implements OnInit {
 
   constructor(private formBuilder: FormBuilder,
               private formService: FormService,
-              private tabService: ProjectPartnerBudgetTabService,
               private pageStore: ProjectPartnerDetailPageStore
   ) {
   }
@@ -111,8 +109,7 @@ export class ProjectPartnerBudgetOptionsComponent implements OnInit {
 
   private initForm(): void {
     this.budgetOptionForm = this.formBuilder.group({});
-    this.formService.init(this.budgetOptionForm, merge(this.pageStore.isProjectEditable$, this.tabService.isBudgetOptionsFormDisabled$));
-    this.tabService.trackBudgetOptionsFormState(this.formService);
+    this.formService.init(this.budgetOptionForm, this.pageStore.isProjectEditable$);
   }
 
   private handleResetForm(): void {
