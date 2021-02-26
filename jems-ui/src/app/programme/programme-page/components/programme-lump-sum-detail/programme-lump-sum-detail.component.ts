@@ -10,7 +10,7 @@ import {
 import {ViewEditForm} from '@common/components/forms/view-edit-form';
 import {FormBuilder, FormGroup, Validators} from '@angular/forms';
 import {MatDialog} from '@angular/material/dialog';
-import {filter, take, takeUntil} from 'rxjs/operators';
+import {filter, take, takeUntil, tap} from 'rxjs/operators';
 import {FormState} from '@common/components/forms/form-state';
 import {Forms} from '../../../../common/utils/forms';
 import {Permission} from '../../../../security/permissions/permission';
@@ -19,7 +19,10 @@ import {
 } from '@cat/api';
 import {SelectionModel} from '@angular/cdk/collections';
 import {NumberService} from '../../../../common/services/number.service';
+import {UntilDestroy, untilDestroyed} from '@ngneat/until-destroy';
+import {ProgrammeEditableStateStore} from '../../services/programme-editable-state-store.service';
 
+@UntilDestroy()
 @Component({
   selector: 'app-programme-lump-sum-detail',
   templateUrl: './programme-lump-sum-detail.component.html',
@@ -30,6 +33,7 @@ export class ProgrammeLumpSumDetailComponent extends ViewEditForm implements OnI
 
   Permission = Permission;
   ProgrammeLumpSumDTO = ProgrammeLumpSumDTO;
+  isProgrammeSetupLocked: boolean;
 
   @Input()
   lumpSum: ProgrammeLumpSumDTO;
@@ -90,9 +94,16 @@ export class ProgrammeLumpSumDetailComponent extends ViewEditForm implements OnI
 
   constructor(private formBuilder: FormBuilder,
               private dialog: MatDialog,
+              private programmeEditableStateStore: ProgrammeEditableStateStore,
               protected changeDetectorRef: ChangeDetectorRef,
               public numberService: NumberService) {
     super(changeDetectorRef);
+
+    this.programmeEditableStateStore.init();
+    this.programmeEditableStateStore.isProgrammeEditableDependingOnCall$.pipe(
+        tap(isProgrammeEditingLimited => this.isProgrammeSetupLocked = isProgrammeEditingLimited),
+        untilDestroyed(this)
+    ).subscribe();
   }
 
   ngOnInit(): void {
@@ -196,6 +207,9 @@ export class ProgrammeLumpSumDetailComponent extends ViewEditForm implements OnI
       this.lumpSumForm.controls.allowSplitting.setErrors(null);
       this.lumpSumForm.controls.phase.setErrors(null);
       this.lumpSumForm.controls.categories.setErrors(null);
+    }
+    if (this.isProgrammeSetupLocked && !this.isCreate) {
+      this.lumpSumForm.controls.cost.disable();
     }
   }
 

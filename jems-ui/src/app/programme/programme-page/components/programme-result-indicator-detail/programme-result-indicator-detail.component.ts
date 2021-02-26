@@ -11,7 +11,7 @@ import {ViewEditForm} from '@common/components/forms/view-edit-form';
 import {Observable} from 'rxjs';
 import {FormBuilder, FormGroup, Validators} from '@angular/forms';
 import {MatDialog} from '@angular/material/dialog';
-import {filter, map, startWith, take, takeUntil} from 'rxjs/operators';
+import {filter, map, startWith, take, takeUntil, tap} from 'rxjs/operators';
 import {FormState} from '@common/components/forms/form-state';
 import {Forms} from '../../../../common/utils/forms';
 import {
@@ -20,7 +20,10 @@ import {
 import {Permission} from '../../../../security/permissions/permission';
 import {ProgrammeResultIndicatorConstants} from './constants/programme-result-indicator-constants';
 import {NumberService} from '../../../../common/services/number.service';
+import {UntilDestroy, untilDestroyed} from '@ngneat/until-destroy';
+import {ProgrammeEditableStateStore} from '../../services/programme-editable-state-store.service';
 
+@UntilDestroy()
 @Component({
   selector: 'app-programme-result-indicator-detail',
   templateUrl: './programme-result-indicator-detail.component.html',
@@ -31,6 +34,8 @@ export class ProgrammeResultIndicatorDetailComponent extends ViewEditForm implem
 
   Permission = Permission;
   programmeResultIndicatorConstants = ProgrammeResultIndicatorConstants;
+  isProgrammeSetupLocked: boolean;
+
   @Input()
   resultIndicator: ResultIndicatorDetailDTO;
   @Input()
@@ -102,9 +107,16 @@ export class ProgrammeResultIndicatorDetailComponent extends ViewEditForm implem
 
   constructor(private formBuilder: FormBuilder,
               private dialog: MatDialog,
+              private programmeEditableStateStore: ProgrammeEditableStateStore,
               protected changeDetectorRef: ChangeDetectorRef,
               public numberService: NumberService) {
     super(changeDetectorRef);
+
+    this.programmeEditableStateStore.init();
+    this.programmeEditableStateStore.isProgrammeEditableDependingOnCall$.pipe(
+        tap(isProgrammeEditingLimited => this.isProgrammeSetupLocked = isProgrammeEditingLimited),
+        untilDestroyed(this)
+    ).subscribe();
   }
 
   ngOnInit(): void {
@@ -188,6 +200,12 @@ export class ProgrammeResultIndicatorDetailComponent extends ViewEditForm implem
       this.cancelCreate.emit();
     } else {
       this.changeFormState$.next(FormState.VIEW);
+    }
+  }
+
+  protected enterEditMode(): void {
+    if (this.isProgrammeSetupLocked && !this.isCreate) {
+      this.resultIndicatorForm.controls.specificObjective.disable();
     }
   }
 

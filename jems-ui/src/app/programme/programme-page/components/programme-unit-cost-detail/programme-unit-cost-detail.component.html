@@ -9,7 +9,7 @@
 
     <div>
         <mat-button-toggle-group
-                [disabled]="formState === FormState.VIEW">
+                [disabled]="formState === FormState.VIEW || (isProgrammeSetupLocked && !isCreate)">
             <mat-button-toggle
                     [value]="true"
                     [checked]="unitCostForm.controls.isOneCostCategory.value === true"
@@ -75,7 +75,7 @@
         <div *ngFor="let element of multipleCostCategories">
             <mat-checkbox (click)="$event.stopPropagation()"
                           (change)="checkSelectionMultiple(element)"
-                          [disabled]="formState === FormState.VIEW"
+                          [disabled]="formState === FormState.VIEW || (isProgrammeSetupLocked && !isCreate)"
                           [checked]="selectionMultiple.isSelected(element)">
                 {{'unit.cost.cost.category.' + element | translate}}
             </mat-checkbox>
@@ -92,7 +92,7 @@
         <div *ngFor="let element of singleCostCategories">
             <mat-radio-button (click)="$event.stopPropagation()"
                           (change)="checkSelectionSingle(element)"
-                          [disabled]="formState === FormState.VIEW"
+                          [disabled]="formState === FormState.VIEW || (isProgrammeSetupLocked && !isCreate)"
                           [checked]="selectionSingle.isSelected(element)">
                 {{'unit.cost.cost.category.' + element | translate}}
             </mat-radio-button>

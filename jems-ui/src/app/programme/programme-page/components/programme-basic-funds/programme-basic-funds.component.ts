@@ -11,7 +11,11 @@ import {ViewEditForm} from '@common/components/forms/view-edit-form';
 import {FormArray, FormBuilder, FormGroup} from '@angular/forms';
 import {ProgrammeFundDTO} from '@cat/api';
 import {FormState} from '@common/components/forms/form-state';
+import {UntilDestroy, untilDestroyed} from '@ngneat/until-destroy';
+import {ProgrammeEditableStateStore} from '../../services/programme-editable-state-store.service';
+import {tap} from 'rxjs/operators';
 
+@UntilDestroy()
 @Component({
   selector: 'app-programme-basic-funds',
   templateUrl: './programme-basic-funds.component.html',
@@ -27,12 +31,20 @@ export class ProgrammeBasicFundsComponent extends ViewEditForm implements OnInit
   saveFunds = new EventEmitter<ProgrammeFundDTO[]>();
 
   editableFundsForm = new FormGroup({});
+  isProgrammeSetupLocked: boolean;
 
   constructor(
     private formBuilder: FormBuilder,
     protected changeDetectorRef: ChangeDetectorRef,
+    public programmeEditableStateStore: ProgrammeEditableStateStore,
   ) {
     super(changeDetectorRef);
+
+    this.programmeEditableStateStore.init();
+    this.programmeEditableStateStore.isProgrammeEditableDependingOnCall$.pipe(
+        tap(isProgrammeEditingLimited => this.isProgrammeSetupLocked = isProgrammeEditingLimited),
+        untilDestroyed(this)
+    ).subscribe();
   }
 
   ngOnInit(): void {
@@ -51,7 +63,7 @@ export class ProgrammeBasicFundsComponent extends ViewEditForm implements OnInit
     return this.editableFundsForm;
   }
 
-  private resetForm(): void {
+  resetForm(): void {
     this.fundsForm.clear();
     this.programmeFunds.forEach(fund => this.addControl(fund));
     this.changeFormState$.next(FormState.VIEW);
@@ -62,7 +74,12 @@ export class ProgrammeBasicFundsComponent extends ViewEditForm implements OnInit
   }
 
   onSubmit(): void {
-    this.saveFunds.emit(this.editableFundsForm.controls.funds.value);
+    this.saveFunds.emit(this.editableFundsForm.controls.funds.value.map((fund: any) => ({
+      id: fund.id,
+      selected: fund.selected === undefined ? true : fund.selected,
+      abbreviation: fund.abbreviation,
+      description: fund.description,
+    })));
   }
 
   private addControl(fund?: ProgrammeFundDTO): void {
@@ -74,4 +91,12 @@ export class ProgrammeBasicFundsComponent extends ViewEditForm implements OnInit
     }));
   }
 
+  protected enterEditMode(): void {
+      this.fundsForm.controls.forEach(control => {
+        if (this.isProgrammeSetupLocked && control.get('selected')?.value) {
+          control.get('selected')?.disable();
+        }
+      });
+      this.changeDetectorRef.markForCheck();
+     }
 }

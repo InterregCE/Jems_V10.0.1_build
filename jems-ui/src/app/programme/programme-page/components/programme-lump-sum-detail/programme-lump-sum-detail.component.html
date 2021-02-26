@@ -42,7 +42,7 @@
             {{'lump.sum.allow.splitting' | translate}} *
         </div>
         <mat-button-toggle-group
-                [disabled]="formState === FormState.VIEW">
+                [disabled]="formState === FormState.VIEW || (isProgrammeSetupLocked && !isCreate)">
             <mat-button-toggle
                     value="Yes"
                     [checked]="previousSplitting === 'Yes'"
@@ -67,7 +67,7 @@
     <div>
         <div appLabel>{{'lump.sum.related.phase' | translate}} *</div>
         <mat-button-toggle-group
-                [disabled]="formState === FormState.VIEW">
+                [disabled]="formState === FormState.VIEW || (isProgrammeSetupLocked && !isCreate)">
             <mat-button-toggle
                     value="{{ProgrammeLumpSumDTO.PhaseEnum.Preparation}}"
                     [checked]="previousPhase === ProgrammeLumpSumDTO.PhaseEnum.Preparation"
@@ -100,7 +100,7 @@
         <div *ngFor="let element of categories">
             <mat-checkbox (click)="$event.stopPropagation()"
                           (change)="checkSelection(element)"
-                          [disabled]="formState === FormState.VIEW"
+                          [disabled]="formState === FormState.VIEW || (isProgrammeSetupLocked && !isCreate)"
                           [checked]="selection.isSelected(element)">
                 {{'lump.sum.cost.category.' + element | translate}}
             </mat-checkbox>

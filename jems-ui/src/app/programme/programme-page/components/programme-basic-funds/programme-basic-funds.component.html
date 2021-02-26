@@ -22,7 +22,7 @@
                                 name="multipleFundsAllowed"
                                 formControlName="selected"
                                 (click)="$event.stopPropagation()"
-                                [disabled]="formState === FormState.VIEW">
+                                [disabled]="formState === FormState.VIEW || fund.get('selected').status === 'DISABLED'">
                         </mat-checkbox>
 
                         <app-multi-language-form-field
@@ -41,11 +41,16 @@
                     </ng-container>
                 </ng-container>
             </div>
+            <button *ngIf="formState === FormState.EDIT" mat-icon-button
+                    type="button"
+                    (click)="addNewFund()">
+                <mat-icon>add</mat-icon>
+            </button>
         </div>
     </app-multi-language>
     <div appMultiColumnRow *ngIf="formState === FormState.EDIT">
         <button mat-stroked-button type="button"
-                (click)="changeFormState$.next(FormState.VIEW)">
+                (click)="resetForm()">
             {{'common.cancel.label' | translate}}
         </button>
         <button mat-raised-button color="primary" type="button"

@@ -18,6 +18,7 @@ import {CallBudgetSettingsPageComponent} from './containers/call-budget-settings
 import {CallPageSidenavService} from './services/call-page-sidenav.service';
 import {CallLumpSumsComponent} from './components/call-detail/call-lump-sums/call-lump-sums.component';
 import {CallUnitCostsComponent} from './components/call-detail/call-unit-costs/call-unit-costs.component';
+import {ProgrammeEditableStateStore} from '../programme/programme-page/services/programme-editable-state-store.service';
 
 @NgModule({
   declarations: [
@@ -40,6 +41,7 @@ import {CallUnitCostsComponent} from './components/call-detail/call-unit-costs/c
   ],
   providers: [
     CallStore,
+    ProgrammeEditableStateStore,
     CallNameResolver,
     CallPageSidenavService
   ],

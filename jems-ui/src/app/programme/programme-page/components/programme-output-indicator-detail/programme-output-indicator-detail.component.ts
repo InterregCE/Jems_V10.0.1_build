@@ -25,7 +25,10 @@ import {FormState} from '@common/components/forms/form-state';
 import {ProgrammeOutputIndicatorConstants} from './constants/programme-output-indicator-constants';
 import {Forms} from '../../../../common/utils/forms';
 import {Log} from '../../../../common/utils/log';
+import {UntilDestroy, untilDestroyed} from '@ngneat/until-destroy';
+import {ProgrammeEditableStateStore} from '../../services/programme-editable-state-store.service';
 
+@UntilDestroy()
 @Component({
   selector: 'app-programme-output-indicator-detail',
   templateUrl: './programme-output-indicator-detail.component.html',
@@ -36,6 +39,7 @@ export class ProgrammeOutputIndicatorDetailComponent extends ViewEditForm implem
 
   Permission = Permission;
   programmeOutputIndicatorConstants = ProgrammeOutputIndicatorConstants;
+  isProgrammeSetupLocked: boolean;
 
   @Input()
   outputIndicator: OutputIndicatorDetailDTO;
@@ -101,9 +105,16 @@ export class ProgrammeOutputIndicatorDetailComponent extends ViewEditForm implem
   constructor(private formBuilder: FormBuilder,
               private dialog: MatDialog,
               protected changeDetectorRef: ChangeDetectorRef,
-              private programmeIndicatorService: ProgrammeIndicatorService
+              private programmeIndicatorService: ProgrammeIndicatorService,
+              private programmeEditableStateStore: ProgrammeEditableStateStore,
   ) {
     super(changeDetectorRef);
+
+    this.programmeEditableStateStore.init();
+    this.programmeEditableStateStore.isProgrammeEditableDependingOnCall$.pipe(
+        tap(isProgrammeEditingLimited => this.isProgrammeSetupLocked = isProgrammeEditingLimited),
+        untilDestroyed(this)
+    ).subscribe();
   }
 
   ngOnInit(): void {
@@ -197,6 +208,12 @@ export class ProgrammeOutputIndicatorDetailComponent extends ViewEditForm implem
       this.cancelCreate.emit();
     } else {
       this.changeFormState$.next(FormState.VIEW);
+    }
+  }
+
+  protected enterEditMode(): void {
+    if (this.isProgrammeSetupLocked && !this.isCreate) {
+      this.outputIndicatorForm.controls.specificObjective.disable();
     }
   }
 

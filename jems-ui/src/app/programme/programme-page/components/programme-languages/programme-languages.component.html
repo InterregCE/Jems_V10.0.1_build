@@ -15,7 +15,7 @@
             <td mat-cell *matCellDef="let element">
                 <mat-checkbox (click)="$event.stopPropagation()"
                               (change)="systemLangSelection.toggle(element)"
-                              [disabled]="formState === FormState.VIEW"
+                              [disabled]="formState === FormState.VIEW || ((programmeEditableStateStore.isProgrammeEditableDependingOnCall$ | async) && initialSystemLangSelection.isSelected(element))"
                               [checked]="systemLangSelection.isSelected(element)">
                 </mat-checkbox>
             </td>
@@ -27,7 +27,7 @@
             <td mat-cell *matCellDef="let element">
                 <mat-checkbox (click)="$event.stopPropagation()"
                               (change)="inputLangSelection.toggle(element)"
-                              [disabled]="formState === FormState.VIEW"
+                              [disabled]="formState === FormState.VIEW || ((programmeEditableStateStore.isProgrammeEditableDependingOnCall$ | async) && initialInputLangSelection.isSelected(element))"
                               [checked]="inputLangSelection.isSelected(element)">
                 </mat-checkbox>
             </td>

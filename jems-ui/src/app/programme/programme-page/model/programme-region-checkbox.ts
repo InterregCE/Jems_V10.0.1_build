@@ -5,6 +5,7 @@ export class ProgrammeRegionCheckbox {
   title: string;
   checked: boolean;
   someChecked: boolean;
+  initiallyChecked: boolean;
   parent: ProgrammeRegionCheckbox | null;
   children: ProgrammeRegionCheckbox[] = [];
 
@@ -46,6 +47,7 @@ export class ProgrammeRegionCheckbox {
   static checkAllWithCodes(checkbox: ProgrammeRegionCheckbox, codes: string[]): void {
     if (checkbox.code && codes.includes(checkbox.code)) {
       checkbox.checked = true;
+      checkbox.initiallyChecked = true;
       checkbox.updateChecked();
     }
     checkbox.children.forEach(child => ProgrammeRegionCheckbox.checkAllWithCodes(child, codes));
