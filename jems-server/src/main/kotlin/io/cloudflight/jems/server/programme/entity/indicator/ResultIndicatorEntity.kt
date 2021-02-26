@@ -42,4 +42,13 @@ class ResultIndicatorEntity(
     @OneToMany(cascade = [CascadeType.ALL], orphanRemoval = true, mappedBy = "translationId.sourceEntity")
     val translatedValues: MutableSet<ResultIndicatorTranslEntity> = mutableSetOf(),
 
-    )
+    ){
+    override fun equals(other: Any?) =
+        this === other ||
+            other !== null &&
+            other is ResultIndicatorEntity &&
+            identifier == other.identifier
+
+    override fun hashCode() =
+        identifier.hashCode()
+}

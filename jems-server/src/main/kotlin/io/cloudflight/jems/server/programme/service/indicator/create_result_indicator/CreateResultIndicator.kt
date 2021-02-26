@@ -46,7 +46,7 @@ class CreateResultIndicator(
 
     private fun validateInput(resultIndicator: ResultIndicator) =
         generalValidator.throwIfAnyIsInvalid(
-            generalValidator.nullOrZero(resultIndicator.id, "id"),
+            generalValidator.notNullOrZero(resultIndicator.id, "id"),
             generalValidator.notBlank(resultIndicator.identifier, "identifier"),
             generalValidator.maxLength(resultIndicator.identifier, 5, "identifier"),
             generalValidator.maxLength(resultIndicator.code, 6, "indicatorCode"),
