@@ -17,27 +17,7 @@ import {Router} from '@angular/router';
 export class CallPageComponent implements OnInit {
   Permission = Permission;
 
-  newPageSize$ = new Subject<number>();
-  newPageIndex$ = new Subject<number>();
-  newSort$ = new Subject<Partial<MatSort>>();
-
   success = this.router.getCurrentNavigation()?.extras?.state?.success;
-
-  currentPage$ =
-    combineLatest([
-      this.newPageIndex$.pipe(startWith(Tables.DEFAULT_INITIAL_PAGE_INDEX)),
-      this.newPageSize$.pipe(startWith(Tables.DEFAULT_INITIAL_PAGE_SIZE)),
-      this.newSort$.pipe(
-        startWith(Tables.DEFAULT_INITIAL_SORT),
-        map(sort => sort?.direction ? sort : Tables.DEFAULT_INITIAL_SORT),
-        map(sort => `${sort.active},${sort.direction}`)
-      )
-    ])
-      .pipe(
-        mergeMap(([pageIndex, pageSize, sort]) =>
-          this.callService.getCalls(pageIndex, pageSize, sort)),
-        tap(page => Log.info('Fetched the Calls:', this, page.content)),
-      );
 
   constructor(private callService: CallService,
               private router: Router,

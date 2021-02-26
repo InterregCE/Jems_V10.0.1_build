@@ -83,11 +83,7 @@ export class TopBarService {
         take(1),
         filter(canSee => canSee),
       )
-      .subscribe(() => this.menuItems$.next([
-        this.applicationsItem,
-        this.callsItem,
-        this.editUserItem
-      ]));
+      .subscribe(() => this.menuItems$.next([this.editUserItem]));
 
     this.permissionService.hasPermission(Permission.PROGRAMME_USER)
       .pipe(

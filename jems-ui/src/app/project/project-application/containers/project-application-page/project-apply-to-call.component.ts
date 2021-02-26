@@ -3,9 +3,8 @@ import {InputProject, ProjectService} from '@cat/api';
 import {I18nValidationError} from '@common/validation/i18n-validation-error';
 import {Permission} from '../../../../security/permissions/permission';
 import {HttpErrorResponse} from '@angular/common/http';
-import {catchError, take, takeUntil, tap} from 'rxjs/operators';
+import {catchError, take, tap} from 'rxjs/operators';
 import {Log} from '../../../../common/utils/log';
-import {BaseComponent} from '@common/components/base-component';
 import {Subject} from 'rxjs';
 import {SecurityService} from '../../../../security/security.service';
 import {Router} from '@angular/router';
@@ -17,7 +16,7 @@ import {Router} from '@angular/router';
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 
-export class ProjectApplyToCallComponent extends BaseComponent {
+export class ProjectApplyToCallComponent {
   Permission = Permission;
 
   applicationSaveError$ = new Subject<I18nValidationError | null>();
@@ -26,18 +25,16 @@ export class ProjectApplyToCallComponent extends BaseComponent {
   constructor(private projectService: ProjectService,
               private securityService: SecurityService,
               private router: Router) {
-    super();
   }
 
   createApplication(application: InputProject): void {
     this.projectService.createProject(application)
       .pipe(
         take(1),
-        takeUntil(this.destroyed$),
         tap(() => this.applicationSaveSuccess$.next(true)),
         tap(() => this.applicationSaveError$.next(null)),
         tap(saved => Log.info('Created project application:', this, saved)),
-        tap(() => this.router.navigate(['app', 'project'])),
+        tap(() => this.router.navigate(['app', 'dashboard'])),
         catchError((error: HttpErrorResponse) => {
           this.applicationSaveError$.next(error.error);
           throw error;

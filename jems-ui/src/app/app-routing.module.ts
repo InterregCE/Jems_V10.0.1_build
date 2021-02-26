@@ -25,7 +25,12 @@ export const routes: Routes = [
       breadcrumb: 'common.breadcrumb.home'
     },
     children: [
-      {path: '', pathMatch: 'full', redirectTo: 'project'},
+      {path: '', pathMatch: 'full', redirectTo: 'dashboard'},
+      {
+        path: 'dashboard',
+        loadChildren: () => import('./dashboard/dashboard.module').then(m => m.DashboardModule),
+        data: {skipBreadcrumb: true},
+      },
       {
         path: 'call',
         loadChildren: () => import('./call/call.module').then(m => m.CallModule),

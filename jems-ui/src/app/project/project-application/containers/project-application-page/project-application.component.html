@@ -4,14 +4,5 @@
     </ng-container>
     <h2 page-sub-title *ngxPermissionsExcept="Permission.APPLICANT_USER">{{'project.list.header' | translate}}</h2>
     <h2 page-sub-title *ngxPermissionsOnly="Permission.APPLICANT_USER">{{'call.applications.title' | translate}}</h2>
-    <ng-container *ngIf="currentPage$ | async as projectPage">
-        <app-project-application-list
-                appNoWidthLimit
-                [projectPage]="projectPage"
-                [pageIndex]="newPageIndex$ | async"
-                (newPageSize)="newPageSize$.next($event)"
-                (newPageIndex)="newPageIndex$.next($event)"
-                (newSort)="newSort$.next($event)">
-        </app-project-application-list>
-    </ng-container>
+    <app-project-application-list appNoWidthLimit></app-project-application-list>
 </app-main-page-template>

@@ -1,0 +1,20 @@
+<ng-container *ngIf="listStore.page$ | async as page">
+    <p *ngIf="!page?.content.length">No calls submitted</p>
+    <app-table *ngIf="page.content.length"
+               [configuration]="tableConfiguration"
+               [rows]="page.content"
+               [totalElements]="page?.totalElements"
+               [pageIndex]="listStore.newPageIndex$ | async"
+               (newPageIndex)="listStore.newPageIndex$.next($event)"
+               (newPageSize)="listStore.newPageSize$.next($event)"
+               (sortRows)="listStore.newSort$.next($event)">
+    </app-table>
+</ng-container>
+
+<ng-template #callActionsCell let-call>
+    <button mat-raised-button color="primary"
+            [disabled]="!isOpen(call)"
+            (click)="applyToCall(call.id)">
+        {{'call.table.column.action.apply' | translate}}
+    </button>
+</ng-template>
