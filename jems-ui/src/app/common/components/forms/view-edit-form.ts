@@ -2,7 +2,7 @@ import {ChangeDetectorRef, EventEmitter, OnInit, Output} from '@angular/core';
 import {AbstractControl, FormGroup} from '@angular/forms';
 import {AbstractForm} from './abstract-form';
 import {delay, filter, takeUntil} from 'rxjs/operators';
-import {Subject} from 'rxjs';
+import {BehaviorSubject} from 'rxjs';
 import {Log} from '../../utils/log';
 import {FormState} from '@common/components/forms/form-state';
 
@@ -12,8 +12,9 @@ export abstract class ViewEditForm extends AbstractForm implements OnInit {
   @Output()
   switchedFormState: EventEmitter<FormState> = new EventEmitter<FormState>();
 
+  // formState is deprecated. Should be replaced with (changeFormState$ | async) <- see programme-legal-status-list.component.html
   formState: FormState;
-  changeFormState$ = new Subject<FormState>();
+  changeFormState$ = new BehaviorSubject<FormState>(FormState.VIEW);
 
   protected constructor(protected changeDetectorRef: ChangeDetectorRef) {
     super(changeDetectorRef);

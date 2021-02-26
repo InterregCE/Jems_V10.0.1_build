@@ -1,17 +1,17 @@
-<form appFormLayout [formGroup]="statusForm">
+<form id="legalStatuses" appFormLayout [formGroup]="statusForm">
     <div appMultiColumnRow>
         <h3 class="mb-0">{{'programme.legal.status.list.title' | translate}}</h3>
         <button color="primary"
-                *ngIf="formState === FormState.VIEW" mat-raised-button
+                *ngIf="(changeFormState$ | async) === FormState.VIEW" mat-raised-button
                 (click)="changeFormState$.next(FormState.EDIT)">
             {{'common.edit.label' | translate}}
         </button>
     </div>
-    <app-multi-language [useSystemLanguages]="true" [switchButtonsVisible]="formState === FormState.EDIT">
-        <div [appTableConfig]="[{},{maxInRem: 2}]">
+    <app-multi-language [useSystemLanguages]="true" [switchButtonsVisible]="(changeFormState$ | async) === FormState.EDIT">
+        <div [appTableConfig]="[{},{maxInRem: 5}]">
             <div>
                 <span class="mat-body-strong">{{ 'programme.legal.status.list.description' | translate }}</span>
-                <span class="mat-body-strong">{{ 'delete?' | translate }}</span>
+                <span class="mat-body-strong">{{'common.delete.entry.tooltip' | translate}}</span>
             </div>
 
             <div *ngFor="let legalStatus of legalStatusesForm.controls; let i = index">
@@ -25,8 +25,8 @@
                                 label="programme.legal.status.list.description">
                         </app-multi-language-form-field>
 
-                        <div *ngIf="formState === FormState.EDIT">
-                            <button *ngIf="isProgrammeSetupRestricted ? !legalStatus.get('id').value : true"
+                        <div *ngIf="(changeFormState$ | async) === FormState.EDIT">
+                            <button *ngIf="!isProgrammeSetupRestricted"
                                     mat-icon-button color="accent"
                                     type="button"
                                     matTooltip="{{'common.delete.entry.tooltip' | translate}}"
@@ -38,15 +38,18 @@
                     </ng-container>
                 </ng-container>
             </div>
-            <button *ngIf="formState === FormState.EDIT" mat-icon-button
-                    type="button"
-                    (click)="addNewLegalStatus()">
-                <mat-icon>add</mat-icon>
-            </button>
+            <div *ngIf="(changeFormState$ | async) === FormState.EDIT">
+                <div >
+                    <button mat-icon-button
+                            type="button"
+                            (click)="addNewLegalStatus()">
+                        <mat-icon>add</mat-icon>
+                    </button>
+                </div>
+            </div>
         </div>
     </app-multi-language>
-
-    <div appMultiColumnRow *ngIf="formState === FormState.EDIT">
+    <div appMultiColumnRow *ngIf="(changeFormState$ | async) === FormState.EDIT">
         <button mat-stroked-button type="button"
                 (click)="resetForm()">
             {{'common.cancel.label' | translate}}

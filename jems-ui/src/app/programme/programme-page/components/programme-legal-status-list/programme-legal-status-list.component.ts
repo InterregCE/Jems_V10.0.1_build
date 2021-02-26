@@ -8,13 +8,12 @@ import {
   Output
 } from '@angular/core';
 import {ViewEditForm} from '@common/components/forms/view-edit-form';
-import {FormArray, FormBuilder, FormControl, FormGroup, Validators} from '@angular/forms';
+import {FormArray, FormBuilder, FormGroup} from '@angular/forms';
 import {ProgrammeLegalStatusDTO, ProgrammeLegalStatusUpdateDTO} from '@cat/api';
-import {MatTableDataSource} from '@angular/material/table';
-import {Tables} from '../../../../common/utils/tables';
-import {UntilDestroy} from '@ngneat/until-destroy';
+import {UntilDestroy, untilDestroyed} from '@ngneat/until-destroy';
 import {ProgrammeEditableStateStore} from '../../services/programme-editable-state-store.service';
 import {FormState} from '@common/components/forms/form-state';
+import {tap} from 'rxjs/operators';
 
 @UntilDestroy()
 @Component({
@@ -30,7 +29,7 @@ export class ProgrammeLegalStatusListComponent extends ViewEditForm implements O
   @Output()
   saveLegalStatuses = new EventEmitter<ProgrammeLegalStatusUpdateDTO>();
 
-  isProgrammeSetupRestricted = false;
+  isProgrammeSetupRestricted: boolean;
   toDeleteIds: number[] = [];
 
   statusForm = new FormGroup({});
@@ -40,6 +39,10 @@ export class ProgrammeLegalStatusListComponent extends ViewEditForm implements O
               public programmeEditableStateStore: ProgrammeEditableStateStore) {
     super(changeDetectorRef);
     this.programmeEditableStateStore.init();
+    this.programmeEditableStateStore.isProgrammeEditableDependingOnCall$.pipe(
+        tap(isProgrammeEditingLimited => this.isProgrammeSetupRestricted = isProgrammeEditingLimited),
+        untilDestroyed(this)
+    ).subscribe();
   }
 
   ngOnInit(): void {
