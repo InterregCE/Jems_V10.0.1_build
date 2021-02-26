@@ -11,19 +11,30 @@ import io.cloudflight.jems.server.common.exception.I18nFieldError
 import io.cloudflight.jems.server.common.exception.I18nValidationException
 import io.cloudflight.jems.server.common.exception.ResourceNotFoundException
 import io.cloudflight.jems.server.programme.service.costoption.ProgrammeUnitCostPersistence
+import io.cloudflight.jems.server.programme.service.costoption.UpdateUnitCostWhenProgrammeSetupRestricted
 import io.cloudflight.jems.server.programme.service.costoption.model.ProgrammeUnitCost
 import io.mockk.MockKAnnotations
 import io.mockk.every
 import io.mockk.impl.annotations.MockK
 import io.mockk.slot
+import java.math.BigDecimal
+import java.util.stream.Collectors
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
-import java.math.BigDecimal
-import java.util.stream.Collectors
 
 class UpdateUnitCostInteractorTest {
+
+    private val initialUnitCost = ProgrammeUnitCost(
+        id = 4,
+        name = setOf(InputTranslation(SystemLanguage.EN, " ")),
+        description = setOf(InputTranslation(SystemLanguage.EN, "test unit cost 1")),
+        type = emptySet(),
+        costPerUnit = null,
+        isOneCostCategory = false,
+        categories = setOf(OfficeAndAdministrationCosts, StaffCosts),
+    )
 
     @MockK
     lateinit var persistence: ProgrammeUnitCostPersistence
@@ -37,6 +48,8 @@ class UpdateUnitCostInteractorTest {
     fun setup() {
         MockKAnnotations.init(this)
         updateUnitCostInteractor = UpdateUnitCost(persistence, auditService)
+        every { persistence.getUnitCost(any()) } returns initialUnitCost
+        every { persistence.isProgrammeSetupRestricted() } returns false
     }
 
     @Test
@@ -125,6 +138,13 @@ class UpdateUnitCostInteractorTest {
 
         assertThrows<ResourceNotFoundException>("when updating not existing unit cost") {
             updateUnitCostInteractor.updateUnitCost(unitCost) }
+    }
+
+    @Test
+    fun `update unit cost - call already published with different costPerUnit value`() {
+        every { persistence.isProgrammeSetupRestricted() } returns true
+
+        assertThrows<UpdateUnitCostWhenProgrammeSetupRestricted> {updateUnitCostInteractor.updateUnitCost(initialUnitCost.copy(costPerUnit = BigDecimal.TEN))}
     }
 
     private fun getStringOfLength(length: Int): String =

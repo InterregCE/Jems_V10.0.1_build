@@ -1,6 +1,7 @@
 package io.cloudflight.jems.server.programme.service.costoption.delete_lump_sum
 
 import io.cloudflight.jems.server.common.exception.ResourceNotFoundException
+import io.cloudflight.jems.server.programme.service.costoption.DeleteLumpSumWhenProgrammeSetupRestricted
 import io.cloudflight.jems.server.programme.service.costoption.ProgrammeLumpSumPersistence
 import io.mockk.MockKAnnotations
 import io.mockk.every
@@ -26,6 +27,7 @@ class DeleteLumpSumInteractorTest {
     @Test
     fun `delete lump sum - OK`() {
         every { persistence.deleteLumpSum(1L) } answers {}
+        every { persistence.isProgrammeSetupRestricted() } returns false
         deleteLumpSumInteractor.deleteLumpSum(1L)
         verify { persistence.deleteLumpSum(1L) }
     }
@@ -33,7 +35,15 @@ class DeleteLumpSumInteractorTest {
     @Test
     fun `delete lump sum - not existing`() {
         every { persistence.deleteLumpSum(-1L) } throws ResourceNotFoundException("programmeLumpSum")
+        every { persistence.isProgrammeSetupRestricted() } returns false
         assertThrows<ResourceNotFoundException> { deleteLumpSumInteractor.deleteLumpSum(-1L) }
+    }
+
+    @Test
+    fun `delete lump sum - call already published`() {
+        every { persistence.deleteLumpSum(1L) } throws ResourceNotFoundException("programmeLumpSum")
+        every { persistence.isProgrammeSetupRestricted() } returns true
+        assertThrows<DeleteLumpSumWhenProgrammeSetupRestricted> { deleteLumpSumInteractor.deleteLumpSum(1L) }
     }
 
 }

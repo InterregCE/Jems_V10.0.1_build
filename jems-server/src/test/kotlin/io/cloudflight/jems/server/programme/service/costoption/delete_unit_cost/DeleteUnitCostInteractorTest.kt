@@ -1,6 +1,7 @@
 package io.cloudflight.jems.server.programme.service.costoption.delete_unit_cost
 
 import io.cloudflight.jems.server.common.exception.ResourceNotFoundException
+import io.cloudflight.jems.server.programme.service.costoption.DeleteUnitCostWhenProgrammeSetupRestricted
 import io.cloudflight.jems.server.programme.service.costoption.ProgrammeUnitCostPersistence
 import io.mockk.MockKAnnotations
 import io.mockk.every
@@ -26,6 +27,7 @@ class DeleteUnitCostInteractorTest {
     @Test
     fun `delete unit cost - OK`() {
         every { persistence.deleteUnitCost(1L) } answers {}
+        every { persistence.isProgrammeSetupRestricted() } returns false
         deleteUnitCostInteractor.deleteUnitCost(1L)
         verify { persistence.deleteUnitCost(1L) }
     }
@@ -33,7 +35,15 @@ class DeleteUnitCostInteractorTest {
     @Test
     fun `delete unit cost - not existing`() {
         every { persistence.deleteUnitCost(-1L) } throws ResourceNotFoundException("programmeUnitCost")
+        every { persistence.isProgrammeSetupRestricted() } returns false
         assertThrows<ResourceNotFoundException> { deleteUnitCostInteractor.deleteUnitCost(-1L) }
+    }
+
+    @Test
+    fun `delete unit cost - call already published`() {
+        every { persistence.deleteUnitCost(1L) } throws ResourceNotFoundException("programmeUnitCost")
+        every { persistence.isProgrammeSetupRestricted() } returns true
+        assertThrows<DeleteUnitCostWhenProgrammeSetupRestricted> { deleteUnitCostInteractor.deleteUnitCost(1L) }
     }
 
 }

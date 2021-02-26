@@ -6,6 +6,7 @@ import io.cloudflight.jems.server.audit.service.AuditCandidate
 import io.cloudflight.jems.server.audit.service.AuditService
 import io.cloudflight.jems.server.programme.authorization.CanUpdateProgrammeSetup
 import io.cloudflight.jems.server.programme.service.costoption.ProgrammeLumpSumPersistence
+import io.cloudflight.jems.server.programme.service.costoption.UpdateLumpSumWhenProgrammeSetupRestricted
 import io.cloudflight.jems.server.programme.service.costoption.model.ProgrammeLumpSum
 import io.cloudflight.jems.server.programme.service.costoption.validateUpdateLumpSum
 import org.springframework.stereotype.Service
@@ -20,6 +21,10 @@ class UpdateLumpSum(
     @CanUpdateProgrammeSetup
     @Transactional
     override fun updateLumpSum(lumpSum: ProgrammeLumpSum): ProgrammeLumpSum {
+        val existingLumpSum = lumpSum.id?.let { persistence.getLumpSum(it) }
+        if (persistence.isProgrammeSetupRestricted()) {
+            lumpSumUpdateRestrictions(existingLumpSum = existingLumpSum, updatedLumpSum = lumpSum)
+        }
         validateUpdateLumpSum(lumpSum)
         val saved = persistence.updateLumpSum(lumpSum)
 
@@ -31,6 +36,15 @@ class UpdateLumpSum(
         return AuditBuilder(AuditAction.PROGRAMME_LUMP_SUM_CHANGED)
             .description("Programme lump sum (id=${lumpSum.id}) '${lumpSum.name}' has been changed")
             .build()
+    }
+
+    private fun lumpSumUpdateRestrictions(existingLumpSum: ProgrammeLumpSum?, updatedLumpSum: ProgrammeLumpSum) {
+        if (existingLumpSum?.cost != updatedLumpSum.cost ||
+            existingLumpSum?.splittingAllowed != updatedLumpSum.splittingAllowed ||
+            existingLumpSum.phase != updatedLumpSum.phase ||
+            existingLumpSum.categories != updatedLumpSum.categories
+        )
+            throw UpdateLumpSumWhenProgrammeSetupRestricted()
     }
 
 }

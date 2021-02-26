@@ -6,6 +6,7 @@ import io.cloudflight.jems.api.programme.dto.costoption.BudgetCategory.OfficeAnd
 import io.cloudflight.jems.api.programme.dto.costoption.BudgetCategory.TravelAndAccommodationCosts
 import io.cloudflight.jems.api.programme.dto.language.SystemLanguage
 import io.cloudflight.jems.api.project.dto.InputTranslation
+import io.cloudflight.jems.server.call.repository.CallRepository
 import io.cloudflight.jems.server.common.exception.ResourceNotFoundException
 import io.cloudflight.jems.server.programme.entity.costoption.ProgrammeUnitCostBudgetCategoryEntity
 import io.cloudflight.jems.server.programme.entity.costoption.ProgrammeUnitCostEntity
@@ -48,13 +49,15 @@ class ProgrammeUnitCostPersistenceTest {
 
     @MockK
     lateinit var repository: ProgrammeUnitCostRepository
+    @MockK
+    lateinit var callRepository: CallRepository
 
     private lateinit var programmeUnitCostPersistence: ProgrammeUnitCostPersistence
 
     @BeforeEach
     fun setup() {
         MockKAnnotations.init(this)
-        programmeUnitCostPersistence = ProgrammeUnitCostPersistenceProvider(repository)
+        programmeUnitCostPersistence = ProgrammeUnitCostPersistenceProvider(repository, callRepository)
 
         testUnitCost = ProgrammeUnitCostEntity(
             id = 1,

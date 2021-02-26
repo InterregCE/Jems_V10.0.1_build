@@ -1,6 +1,7 @@
 package io.cloudflight.jems.server.programme.service.costoption.delete_unit_cost
 
 import io.cloudflight.jems.server.programme.authorization.CanUpdateProgrammeSetup
+import io.cloudflight.jems.server.programme.service.costoption.DeleteUnitCostWhenProgrammeSetupRestricted
 import io.cloudflight.jems.server.programme.service.costoption.ProgrammeUnitCostPersistence
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
@@ -12,7 +13,10 @@ class DeleteUnitCost(
 
     @CanUpdateProgrammeSetup
     @Transactional(readOnly = true)
-    override fun deleteUnitCost(unitCostId: Long) =
+    override fun deleteUnitCost(unitCostId: Long) {
+        if (persistence.isProgrammeSetupRestricted())
+            throw DeleteUnitCostWhenProgrammeSetupRestricted()
         persistence.deleteUnitCost(unitCostId)
+    }
 
 }
