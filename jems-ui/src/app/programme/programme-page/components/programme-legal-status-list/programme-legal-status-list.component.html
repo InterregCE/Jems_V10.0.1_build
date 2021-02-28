@@ -11,7 +11,7 @@
         <div [appTableConfig]="[{},{maxInRem: 5}]">
             <div>
                 <span class="mat-body-strong">{{ 'programme.legal.status.list.description' | translate }}</span>
-                <span class="mat-body-strong">{{'common.delete.entry.tooltip' | translate}}</span>
+                <span class="mat-body-strong" *ngIf="(changeFormState$ | async) === FormState.EDIT">{{ 'common.delete.entry.tooltip' | translate }}</span>
             </div>
 
             <div *ngFor="let legalStatus of legalStatusesForm.controls; let i = index">
@@ -26,9 +26,9 @@
                         </app-multi-language-form-field>
 
                         <div *ngIf="(changeFormState$ | async) === FormState.EDIT">
-                            <button *ngIf="!isProgrammeSetupRestricted"
-                                    mat-icon-button color="accent"
+                            <button mat-icon-button color="accent"
                                     type="button"
+                                    [disabled]="isProgrammeSetupRestricted ? !!legalStatus.get('id').value : false"
                                     matTooltip="{{'common.delete.entry.tooltip' | translate}}"
                                     (click)="deleteLegalStatus(i, legalStatus.get('id').value)">
                                 <mat-icon>delete</mat-icon>
@@ -70,5 +70,7 @@
                [type]="Alert.ERROR">
         <p>{{error.i18nKey | translate}}</p>
     </app-alert>
+
+    <div>{{ legalStatuses | json }}</div>
 
 </form>
