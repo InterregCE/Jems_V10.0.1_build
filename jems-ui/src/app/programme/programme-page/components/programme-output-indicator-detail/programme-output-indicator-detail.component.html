@@ -44,7 +44,7 @@
     <mat-form-field>
         <mat-label>{{'output.indicator.form.field.specific.objective' | translate}}</mat-label>
         <mat-select name="specificObjective" formControlName="specificObjective" required>
-            <mat-optgroup *ngFor="let priority of priorities" [label]="priority.title">
+            <mat-optgroup *ngFor="let priority of priorities" [label]="priority.title | translateSystem | async">
                 <mat-option *ngFor="let objective of priority.specificObjectives"
                             [value]="objective.programmeObjectivePolicy">
                     {{objective.code}} -  {{'programme.policy.' + objective.programmeObjectivePolicy | translate}}

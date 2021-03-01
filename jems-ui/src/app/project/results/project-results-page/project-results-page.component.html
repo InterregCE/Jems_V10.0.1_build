@@ -22,7 +22,7 @@
                                         [formControlName]="constants.RESULT_INDICATOR.name">
                                 <mat-option *ngFor="let resultIndicator of data.resultIndicators"
                                             [value]="resultIndicator.id">
-                                    {{resultIndicator.name}}
+                                    {{resultIndicator.name | translateSystem | async}}
                                 </mat-option>
                             </mat-select>
                             <mat-hint *ngIf="!data.resultIndicators?.length" class="mat-error">
@@ -33,7 +33,8 @@
                             <mat-form-field appFormFieldWidth="large">
                                 <mat-label>{{'project.results.result.measurement.unit' | translate}}</mat-label>
                                 <input readonly matInput
-                                       value="{{getMeasurementUnit(result.get(constants.RESULT_INDICATOR.name)?.value, data.resultIndicators)}}"
+                                       value="{{getMeasurementUnit(result.get(constants.RESULT_INDICATOR.name)?.value, data.resultIndicators)
+                                                | translateSystem | async}}"
                                        [disabled]="form.disabled">
                             </mat-form-field>
 
