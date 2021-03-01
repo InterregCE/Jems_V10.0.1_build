@@ -1,7 +1,8 @@
 import {ChangeDetectorRef, Component, EventEmitter, Output} from '@angular/core';
 import {FormBuilder, FormGroup, Validators} from '@angular/forms';
 import {AbstractForm} from '@common/components/forms/abstract-form';
-import { LoginRequest } from '@cat/api';
+import {LoginRequest} from '@cat/api';
+import {TranslateService} from '@ngx-translate/core';
 
 @Component({
   selector: 'app-login',
@@ -22,8 +23,8 @@ export class LoginComponent extends AbstractForm {
   registerLink = '/no-auth/register';
 
   constructor(private readonly formBuilder: FormBuilder,
-              protected changeDetectorRef: ChangeDetectorRef) {
-    super(changeDetectorRef);
+              protected changeDetectorRef: ChangeDetectorRef, protected translationService: TranslateService) {
+    super(changeDetectorRef, translationService);
   }
 
   onSubmit(): void {

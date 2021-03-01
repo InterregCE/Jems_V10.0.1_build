@@ -162,11 +162,10 @@ class ProjectWorkPackagePersistenceTest {
         val indicatorOutput = OutputIndicatorEntity(
             id = INDICATOR_ID,
             identifier = "ID.30",
-            name = "test",
             code = "tst",
-            measurementUnit = "x",
             programmePriorityPolicyEntity = null,
-            resultIndicatorEntity = null
+            resultIndicatorEntity = null,
+            translatedValues = mutableSetOf()
         )
 
         val output1 = WorkPackageOutputEntity(

@@ -13,6 +13,7 @@ import {InputPassword} from '@cat/api';
 import {filter, take, takeUntil} from 'rxjs/operators';
 import {MatDialog} from '@angular/material/dialog';
 import {ViewEditForm} from '@common/components/forms/view-edit-form';
+import {TranslateService} from '@ngx-translate/core';
 
 @Component({
   selector: 'app-user-password',
@@ -43,8 +44,8 @@ export class UserPasswordComponent extends ViewEditForm implements OnInit {
 
   constructor(private formBuilder: FormBuilder,
               private dialog: MatDialog,
-              protected changeDetectorRef: ChangeDetectorRef) {
-    super(changeDetectorRef);
+              protected changeDetectorRef: ChangeDetectorRef, protected translationService: TranslateService) {
+    super(changeDetectorRef, translationService);
   }
 
   ngOnInit(): void {

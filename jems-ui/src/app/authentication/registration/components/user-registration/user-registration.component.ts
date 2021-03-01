@@ -2,13 +2,14 @@ import {ChangeDetectorRef, Component, EventEmitter, OnInit, Output} from '@angul
 import {AbstractForm} from '@common/components/forms/abstract-form';
 import {FormBuilder, FormGroup, Validators} from '@angular/forms';
 import {InputUserRegistration} from '@cat/api';
+import {TranslateService} from '@ngx-translate/core';
 
 @Component({
   selector: 'app-user-registration',
   templateUrl: './user-registration.component.html',
   styleUrls: ['./user-registration.component.scss']
 })
-export class UserRegistrationComponent extends AbstractForm implements OnInit{
+export class UserRegistrationComponent extends AbstractForm implements OnInit {
 
   private static readonly USER_NAME_WRONG_SIZE = 'user.name.wrong.size';
   private static readonly USER_SURNAME_WRONG_SIZE = 'user.surname.wrong.size';
@@ -68,8 +69,10 @@ export class UserRegistrationComponent extends AbstractForm implements OnInit{
   };
 
   constructor(private formBuilder: FormBuilder,
-              protected changeDetectorRef: ChangeDetectorRef) {
-    super(changeDetectorRef);
+              protected changeDetectorRef: ChangeDetectorRef,
+              protected translationService: TranslateService
+  ) {
+    super(changeDetectorRef, translationService);
   }
 
   ngOnInit(): void {

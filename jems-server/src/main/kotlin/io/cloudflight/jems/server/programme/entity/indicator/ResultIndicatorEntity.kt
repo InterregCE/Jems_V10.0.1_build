@@ -2,6 +2,7 @@ package io.cloudflight.jems.server.programme.entity.indicator
 
 import io.cloudflight.jems.server.programme.entity.ProgrammeSpecificObjectiveEntity
 import java.math.BigDecimal
+import javax.persistence.CascadeType
 import javax.persistence.Column
 import javax.persistence.Entity
 import javax.persistence.FetchType
@@ -10,10 +11,11 @@ import javax.persistence.GenerationType
 import javax.persistence.Id
 import javax.persistence.JoinColumn
 import javax.persistence.ManyToOne
+import javax.persistence.OneToMany
 import javax.validation.constraints.NotNull
 
 @Entity(name = "programme_indicator_result")
-data class ResultIndicatorEntity(
+class ResultIndicatorEntity(
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -25,14 +27,9 @@ data class ResultIndicatorEntity(
 
     val code: String? = null,
 
-    @field:NotNull
-    val name: String,
-
     @ManyToOne(optional = true, fetch = FetchType.EAGER)
     @JoinColumn(name = "programme_priority_policy_id")
     val programmePriorityPolicyEntity: ProgrammeSpecificObjectiveEntity?,
-
-    val measurementUnit: String? = null,
 
     val baseline: BigDecimal? = null,
 
@@ -40,8 +37,9 @@ data class ResultIndicatorEntity(
 
     val finalTarget: BigDecimal? = null,
 
-    val sourceOfData: String? = null,
+    val comment: String? = null,
 
-    val comment: String? = null
+    @OneToMany(cascade = [CascadeType.ALL], orphanRemoval = true, mappedBy = "translationId.sourceEntity")
+    val translatedValues: MutableSet<ResultIndicatorTranslEntity> = mutableSetOf(),
 
-)
+    )

@@ -13,22 +13,16 @@ class UpdateOutputIndicatorException(cause: Throwable) : ApplicationException(
     i18nMessage = I18nMessage("$UPDATE_OUTPUT_INDICATOR_ERROR_KEY_PREFIX.failed"), cause = cause
 )
 
-class InvalidIdException :
-    ApplicationUnprocessableException(
-        code = "$UPDATE_OUTPUT_INDICATOR_ERROR_CODE_PREFIX-001",
-        i18nMessage = I18nMessage("$UPDATE_OUTPUT_INDICATOR_ERROR_KEY_PREFIX.id.is.invalid"),
-        cause = null
-    )
 
 class IdentifierIsUsedException : ApplicationBadRequestException(
-    code = "$UPDATE_OUTPUT_INDICATOR_ERROR_CODE_PREFIX-002",
+    code = "$UPDATE_OUTPUT_INDICATOR_ERROR_CODE_PREFIX-001",
     i18nMessage = I18nMessage("$UPDATE_OUTPUT_INDICATOR_ERROR_KEY_PREFIX.identifier.is.used"),
     formErrors = mapOf("identifier" to I18nMessage("$UPDATE_OUTPUT_INDICATOR_ERROR_KEY_PREFIX.identifier.is.used")),
     cause = null
 )
 
 class InvalidResultIndicatorException : ApplicationBadRequestException(
-    code = "$UPDATE_OUTPUT_INDICATOR_ERROR_CODE_PREFIX-003",
+    code = "$UPDATE_OUTPUT_INDICATOR_ERROR_CODE_PREFIX-002",
     i18nMessage = I18nMessage("$UPDATE_OUTPUT_INDICATOR_ERROR_KEY_PREFIX.invalid.result.indicator"),
     formErrors = mapOf("resultIndicatorId" to I18nMessage("$UPDATE_OUTPUT_INDICATOR_ERROR_KEY_PREFIX.invalid.result.indicator")),
     cause = null

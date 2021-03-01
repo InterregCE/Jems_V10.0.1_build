@@ -10,6 +10,7 @@ import {FormState} from '@common/components/forms/form-state';
 import {SelectionModel} from '@angular/cdk/collections';
 import {UntilDestroy} from '@ngneat/until-destroy';
 import {ProgrammeEditableStateStore} from '../../services/programme-editable-state-store.service';
+import {TranslateService} from '@ngx-translate/core';
 
 @UntilDestroy()
 @Component({
@@ -34,8 +35,9 @@ export class ProgrammeStrategiesComponent extends ViewEditForm {
   constructor(private formBuilder: FormBuilder,
               private dialog: MatDialog,
               public programmeEditableStateStore: ProgrammeEditableStateStore,
+              protected translationService: TranslateService,
               protected changeDetectorRef: ChangeDetectorRef) {
-    super(changeDetectorRef);
+    super(changeDetectorRef, translationService);
 
     this.programmeEditableStateStore.init();
   }

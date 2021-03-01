@@ -53,14 +53,6 @@ internal class CreateOutputIndicatorTest : IndicatorsBaseTest() {
     }
 
     @Test
-    fun `should throw InvalidIdException when output indicator id is not zero`() {
-        val outputIndicator = buildOutputIndicatorInstance(id = 1L)
-        assertThatExceptionOfType(InvalidIdException::class.java).isThrownBy {
-            createOutputIndicator.createOutputIndicator(outputIndicator)
-        }
-    }
-
-    @Test
     fun `should throw IdentifierIsUsedException when output indicator identifier is already used`() {
         val outputIndicator = buildOutputIndicatorInstance(id = 0L)
         every {

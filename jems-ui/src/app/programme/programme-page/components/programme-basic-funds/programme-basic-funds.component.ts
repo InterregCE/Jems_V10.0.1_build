@@ -14,6 +14,7 @@ import {FormState} from '@common/components/forms/form-state';
 import {UntilDestroy, untilDestroyed} from '@ngneat/until-destroy';
 import {ProgrammeEditableStateStore} from '../../services/programme-editable-state-store.service';
 import {tap} from 'rxjs/operators';
+import {TranslateService} from '@ngx-translate/core';
 
 @UntilDestroy()
 @Component({
@@ -36,9 +37,10 @@ export class ProgrammeBasicFundsComponent extends ViewEditForm implements OnInit
   constructor(
     private formBuilder: FormBuilder,
     protected changeDetectorRef: ChangeDetectorRef,
-    public programmeEditableStateStore: ProgrammeEditableStateStore,
+    protected translationService: TranslateService,
+    public programmeEditableStateStore: ProgrammeEditableStateStore
   ) {
-    super(changeDetectorRef);
+    super(changeDetectorRef, translationService);
 
     this.programmeEditableStateStore.init();
     this.programmeEditableStateStore.isProgrammeEditableDependingOnCall$.pipe(

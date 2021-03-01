@@ -4,6 +4,7 @@ import {InputProject} from '@cat/api';
 import {AbstractForm} from '@common/components/forms/abstract-form';
 import {ActivatedRoute, Router} from '@angular/router';
 import {Permission} from '../../../../security/permissions/permission';
+import {TranslateService} from '@ngx-translate/core';
 
 @Component({
   selector: 'app-project-application-submission',
@@ -35,8 +36,9 @@ export class ProjectApplicationSubmissionComponent extends AbstractForm {
   constructor(private formBuilder: FormBuilder,
               private router: Router,
               protected changeDetectorRef: ChangeDetectorRef,
+              protected translationService: TranslateService,
               protected activatedRoute: ActivatedRoute) {
-    super(changeDetectorRef);
+    super(changeDetectorRef, translationService);
   }
 
   callId = this.activatedRoute.snapshot.params.callId;

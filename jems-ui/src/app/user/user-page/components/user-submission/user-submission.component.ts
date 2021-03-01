@@ -2,6 +2,7 @@ import {ChangeDetectionStrategy, ChangeDetectorRef, Component, EventEmitter, Inp
 import {FormBuilder, FormGroup, Validators} from '@angular/forms';
 import {InputUserCreate, OutputUserRole} from '@cat/api';
 import {AbstractForm} from '@common/components/forms/abstract-form';
+import {TranslateService} from '@ngx-translate/core';
 
 
 @Component({
@@ -63,8 +64,10 @@ export class UserSubmissionComponent extends AbstractForm {
   };
 
   constructor(private formBuilder: FormBuilder,
-              protected changeDetectorRef: ChangeDetectorRef) {
-    super(changeDetectorRef);
+              protected changeDetectorRef: ChangeDetectorRef,
+              protected translationService: TranslateService
+  ) {
+    super(changeDetectorRef, translationService);
   }
 
   getForm(): FormGroup | null {

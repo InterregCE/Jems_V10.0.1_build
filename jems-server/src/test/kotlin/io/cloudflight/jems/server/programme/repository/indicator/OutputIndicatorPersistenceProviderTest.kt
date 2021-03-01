@@ -1,10 +1,12 @@
 package io.cloudflight.jems.server.programme.repository.indicator
 
 import io.cloudflight.jems.api.programme.dto.priority.ProgrammeObjectivePolicy
+import io.cloudflight.jems.server.programme.entity.indicator.OutputIndicatorEntity
 import io.cloudflight.jems.server.programme.repository.priority.ProgrammeSpecificObjectiveRepository
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
 import io.mockk.impl.annotations.MockK
+import io.mockk.slot
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import org.springframework.data.domain.PageImpl
@@ -78,16 +80,16 @@ internal class OutputIndicatorPersistenceProviderTest : IndicatorsPersistenceBas
     fun `should save and return the output indicator detail`() {
         val outputIndicator = buildOutputIndicatorInstance()
         val outputIndicatorEntity = buildOutputIndicatorEntityInstance()
+        val outputIndicatorEntitySlot= slot<OutputIndicatorEntity>()
         every { programmeSpecificObjectiveRepository.getReferenceIfExistsOrThrow(outputIndicator.programmeObjectivePolicy) } returns indicatorProgrammeSpecificObjectiveEntity
         every { resultIndicatorRepository.getReferenceIfExistsOrThrow(outputIndicator.resultIndicatorId) } returns defaultResultIndicatorEntity
         every {
-            outputIndicatorRepository.save(
-                outputIndicator.toOutputIndicatorEntity(indicatorProgrammeSpecificObjectiveEntity, defaultResultIndicatorEntity)
-            )
+            outputIndicatorRepository.save(capture(outputIndicatorEntitySlot))
         } returns outputIndicatorEntity
         assertThat(
             outputIndicatorPersistenceProvider.saveOutputIndicator(outputIndicator)
         ).isEqualTo(outputIndicatorEntity.toOutputIndicatorDetail())
+        assertThat(outputIndicatorEntitySlot.captured.id).isEqualTo(outputIndicator.id)
     }
 
     @Test

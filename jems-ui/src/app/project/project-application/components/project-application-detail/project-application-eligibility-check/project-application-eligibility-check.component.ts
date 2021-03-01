@@ -8,6 +8,7 @@ import {filter, take, takeUntil} from 'rxjs/internal/operators';
 import {AbstractForm} from '@common/components/forms/abstract-form';
 import {InputProjectEligibilityAssessment, OutputProject} from '@cat/api';
 import {Observable} from 'rxjs';
+import {TranslateService} from '@ngx-translate/core';
 
 @Component({
   selector: 'app-project-application-eligibility-check',
@@ -39,8 +40,10 @@ export class ProjectApplicationEligibilityCheckComponent extends AbstractForm im
     private activatedRoute: ActivatedRoute,
     private formBuilder: FormBuilder,
     private projectStore: ProjectStore,
-    protected changeDetectorRef: ChangeDetectorRef) {
-    super(changeDetectorRef);
+    protected changeDetectorRef: ChangeDetectorRef,
+    protected translationService: TranslateService
+  ) {
+    super(changeDetectorRef, translationService);
   }
 
   ngOnInit(): void {

@@ -3,6 +3,7 @@ import {OutputProjectStatus} from '@cat/api';
 import {Alert} from '@common/components/forms/alert';
 import {AbstractForm} from '@common/components/forms/abstract-form';
 import {FormGroup} from '@angular/forms';
+import {TranslateService} from '@ngx-translate/core';
 
 @Component({
   selector: 'app-project-application-file-upload',
@@ -25,8 +26,8 @@ export class ProjectApplicationFileUploadComponent extends AbstractForm {
 
   uploadedFileName: string;
 
-  constructor(protected changeDetectorRef: ChangeDetectorRef) {
-    super(changeDetectorRef);
+  constructor(protected changeDetectorRef: ChangeDetectorRef, protected translationService: TranslateService) {
+    super(changeDetectorRef, translationService);
   }
 
   addNewFilesForUpload($event: any): void {

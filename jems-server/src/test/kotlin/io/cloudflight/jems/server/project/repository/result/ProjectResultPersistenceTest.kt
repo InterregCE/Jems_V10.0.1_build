@@ -2,9 +2,11 @@ package io.cloudflight.jems.server.project.repository.result
 
 import io.cloudflight.jems.api.programme.dto.language.SystemLanguage
 import io.cloudflight.jems.api.programme.dto.language.SystemLanguage.BE
+import io.cloudflight.jems.api.programme.dto.language.SystemLanguage.EN
 import io.cloudflight.jems.api.programme.dto.language.SystemLanguage.NO
 import io.cloudflight.jems.api.programme.dto.language.SystemLanguage.SK
 import io.cloudflight.jems.api.programme.dto.priority.ProgrammeObjectivePolicy
+import io.cloudflight.jems.api.project.dto.InputTranslation
 import io.cloudflight.jems.server.UnitTest
 import io.cloudflight.jems.server.common.exception.ResourceNotFoundException
 import io.cloudflight.jems.server.programme.entity.ProgrammeSpecificObjectiveEntity
@@ -47,8 +49,8 @@ class ProjectResultPersistenceTest: UnitTest() {
         val indicatorResult = ResultIndicatorEntity(
             id = INDICATOR_ID,
             identifier = "IND05",
-            name = "Indicator Nr. 5",
             programmePriorityPolicyEntity = ProgrammeSpecificObjectiveEntity(ProgrammeObjectivePolicy.AdvancedTechnologies, ""),
+            translatedValues = mutableSetOf()
         )
 
         val result1_model = ProjectResult(

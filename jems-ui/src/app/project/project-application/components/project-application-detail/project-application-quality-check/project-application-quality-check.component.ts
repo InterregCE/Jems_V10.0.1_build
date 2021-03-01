@@ -8,6 +8,7 @@ import {Forms} from '../../../../../common/utils/forms';
 import {filter, take, takeUntil} from 'rxjs/internal/operators';
 import {AbstractForm} from '@common/components/forms/abstract-form';
 import {InputProjectQualityAssessment, OutputProject} from '@cat/api';
+import {TranslateService} from '@ngx-translate/core';
 
 @Component({
   selector: 'app-project-application-quality-check',
@@ -40,8 +41,10 @@ export class ProjectApplicationQualityCheckComponent extends AbstractForm implem
     private activatedRoute: ActivatedRoute,
     private formBuilder: FormBuilder,
     private projectStore: ProjectStore,
-    protected changeDetectorRef: ChangeDetectorRef) {
-    super(changeDetectorRef);
+    protected changeDetectorRef: ChangeDetectorRef,
+    protected translationService: TranslateService
+    ) {
+    super(changeDetectorRef, translationService);
   }
 
   ngOnInit(): void {

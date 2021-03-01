@@ -27,6 +27,7 @@ import {Forms} from '../../../../common/utils/forms';
 import {Log} from '../../../../common/utils/log';
 import {UntilDestroy, untilDestroyed} from '@ngneat/until-destroy';
 import {ProgrammeEditableStateStore} from '../../services/programme-editable-state-store.service';
+import {TranslateService} from '@ngx-translate/core';
 
 @UntilDestroy()
 @Component({
@@ -70,50 +71,34 @@ export class ProgrammeOutputIndicatorDetailComponent extends ViewEditForm implem
   filteredResultIndicators$: Observable<ResultIndicatorDetailDTO[]>;
 
   outputIndicatorForm = this.formBuilder.group({
-    identifier: ['', Validators.compose([Validators.required, Validators.maxLength(5)])],
+    identifier: ['', [Validators.required, Validators.maxLength(5)]],
     indicatorCode: ['', Validators.maxLength(6)],
-    indicatorName: ['', Validators.compose([Validators.required, Validators.maxLength(250)])],
+    indicatorName: [[]],
     specificObjective: ['', Validators.required],
-    measurementUnit: ['', Validators.maxLength(255)],
+    measurementUnit: [[]],
     milestone: [null],
     finalTarget: [null],
     resultIndicatorId: [null]
   });
 
-  identifierErrors = {
-    required: 'indicator.identifier.should.not.be.empty',
-    maxlength: 'indicator.identifier.size.too.long',
-  };
-
-  indicatorCodeErrors = {
-    maxlength: 'indicator.code.size.too.long',
-  };
-
-  indicatorNameErrors = {
-    required: 'indicator.name.should.not.be.empty',
-    maxlength: 'indicator.name.size.too.long',
-  };
-
-  measurementUnitErrors = {
-    maxlength: 'indicator.measurementUnit.size.too.long',
-  };
-
-  specificObjectiveErrors = {
-    required: 'indicator.specific.objective.not.be.empty',
+  inputErrorMessages = {
+    required: 'common.error.field.blank',
+    maxlength: 'common.error.field.max.length',
   };
 
   constructor(private formBuilder: FormBuilder,
               private dialog: MatDialog,
               protected changeDetectorRef: ChangeDetectorRef,
+              protected translationService: TranslateService,
               private programmeIndicatorService: ProgrammeIndicatorService,
               private programmeEditableStateStore: ProgrammeEditableStateStore,
   ) {
-    super(changeDetectorRef);
+    super(changeDetectorRef, translationService);
 
     this.programmeEditableStateStore.init();
     this.programmeEditableStateStore.isProgrammeEditableDependingOnCall$.pipe(
-        tap(isProgrammeEditingLimited => this.isProgrammeSetupLocked = isProgrammeEditingLimited),
-        untilDestroyed(this)
+      tap(isProgrammeEditingLimited => this.isProgrammeSetupLocked = isProgrammeEditingLimited),
+      untilDestroyed(this)
     ).subscribe();
   }
 
@@ -215,6 +200,15 @@ export class ProgrammeOutputIndicatorDetailComponent extends ViewEditForm implem
     if (this.isProgrammeSetupLocked && !this.isCreate) {
       this.outputIndicatorForm.controls.specificObjective.disable();
     }
+  }
+
+  getMaxLengthErrorArgs(currentLength: number, maxLength: number): { [p: string]: {} } {
+    return {
+      maxlength: {
+        currentLength,
+        maxLength
+      }
+    };
   }
 
   private _filter(value: string, source: string[]): string[] {

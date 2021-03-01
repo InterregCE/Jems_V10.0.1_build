@@ -1,17 +1,18 @@
 package io.cloudflight.jems.server.programme.service.indicator.model
 
 import io.cloudflight.jems.api.programme.dto.priority.ProgrammeObjectivePolicy
+import io.cloudflight.jems.api.project.dto.InputTranslation
 import java.math.BigDecimal
 
 data class OutputIndicatorDetail(
     val id: Long?,
     val identifier: String,
     val code: String?,
-    val name: String,
+    val name: Set<InputTranslation> = emptySet(),
     val programmeObjectivePolicy: ProgrammeObjectivePolicy?,
     val programmePriorityPolicyCode: String?,
     val programmePriorityCode: String?,
-    val measurementUnit: String?,
+    val measurementUnit: Set<InputTranslation> = emptySet(),
     val milestone: BigDecimal?,
     val finalTarget: BigDecimal?,
     val resultIndicatorDetail: ResultIndicatorDetail?,

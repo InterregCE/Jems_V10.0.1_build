@@ -8,6 +8,7 @@ import {ViewEditForm} from '@common/components/forms/view-edit-form';
 import {Permission} from '../../../../../security/permissions/permission';
 import {Forms} from '../../../../../common/utils/forms';
 import {Log} from '../../../../../common/utils/log';
+import {TranslateService} from '@ngx-translate/core';
 
 @Component({
   selector: 'app-user-edit',
@@ -68,8 +69,8 @@ export class UserEditComponent extends ViewEditForm {
 
   constructor(private formBuilder: FormBuilder,
               private dialog: MatDialog,
-              protected changeDetectorRef: ChangeDetectorRef) {
-    super(changeDetectorRef);
+              protected changeDetectorRef: ChangeDetectorRef, protected translationService: TranslateService) {
+    super(changeDetectorRef, translationService);
   }
 
   getForm(): FormGroup | null {
