@@ -6,11 +6,12 @@ import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
 import org.springframework.data.jpa.repository.JpaRepository
 import org.springframework.stereotype.Repository
+import java.time.ZonedDateTime
 
 @Repository
 interface CallRepository: JpaRepository<CallEntity, Long> {
 
-    fun findAllByStatus(status: CallStatus, pageable: Pageable): Page<CallEntity>
+    fun findAllByStatusAndEndDateAfter(status: CallStatus, after: ZonedDateTime, pageable: Pageable): Page<CallEntity>
 
     fun findOneByName(name: String): CallEntity?
 

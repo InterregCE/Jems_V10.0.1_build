@@ -155,8 +155,14 @@ class CallServiceTest {
     @Test
     fun `getAllCalls applicantUser`() {
         every { securityService.currentUser } returns applicantUser
-        every { callRepository.findAllByStatus(eq(CallStatus.PUBLISHED), any<Pageable>()) } returns
-                PageImpl(listOf(callWithId(1)))
+        every {
+            callRepository.findAllByStatusAndEndDateAfter(
+                eq(CallStatus.PUBLISHED),
+                any<ZonedDateTime>(),
+                any<Pageable>()
+            )
+        } returns
+            PageImpl(listOf(callWithId(1)))
 
         val expectedResult = listOf(outputCallListWithId(1))
 

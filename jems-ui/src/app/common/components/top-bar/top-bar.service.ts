@@ -14,6 +14,11 @@ export class TopBarService {
   private menuItems$ = new ReplaySubject<MenuItemConfiguration[]>(1);
   private newAuditUrl$ = new ReplaySubject<string>(1);
 
+  private dashboardItem: MenuItemConfiguration = {
+    name: 'topbar.main.dashboard',
+    isInternal: true,
+    route: '/app/dashboard',
+  };
   private applicationsItem: MenuItemConfiguration = {
     name: 'topbar.main.project',
     isInternal: true,
@@ -83,7 +88,7 @@ export class TopBarService {
         take(1),
         filter(canSee => canSee),
       )
-      .subscribe(() => this.menuItems$.next([this.editUserItem]));
+      .subscribe(() => this.menuItems$.next([this.dashboardItem, this.editUserItem]));
 
     this.permissionService.hasPermission(Permission.PROGRAMME_USER)
       .pipe(
