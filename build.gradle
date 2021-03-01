@@ -4,7 +4,7 @@ plugins {
 
 description "Jems Project"
 group "io.cloudflight.jems"
-version "1.20.0"
+version "1.21.0"
 
 cloudflight {
     softwareProjectKey = "interact/ems"
