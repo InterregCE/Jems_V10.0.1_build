@@ -7,6 +7,7 @@ import {ProjectModule} from '../../../../project.module';
 import {ActivatedRoute} from '@angular/router';
 import {ProjectPartnerDetailPageStore} from '../../project-partner-detail-page.store';
 import {of} from 'rxjs';
+import {ProjectPartnerBudgetTabService} from '../project-partner-budget-tab.service';
 
 
 describe('ProjectApplicationPartnerBudgetPageComponent', () => {
@@ -15,6 +16,7 @@ describe('ProjectApplicationPartnerBudgetPageComponent', () => {
   let httpTestingController: HttpTestingController;
   let partnerStore: ProjectPartnerStore;
   let partnerDetailPageStore: ProjectPartnerDetailPageStore;
+  let projectPartnerDetailPageStore: ProjectPartnerDetailPageStore;
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
@@ -33,6 +35,10 @@ describe('ProjectApplicationPartnerBudgetPageComponent', () => {
         {
           provide: ProjectPartnerDetailPageStore,
           useClass: ProjectPartnerDetailPageStore
+        },
+        {
+          provide: ProjectPartnerBudgetTabService,
+          useClass: ProjectPartnerBudgetTabService
         }
       ]
     })
@@ -40,6 +46,7 @@ describe('ProjectApplicationPartnerBudgetPageComponent', () => {
     httpTestingController = TestBed.inject(HttpTestingController);
     partnerStore = TestBed.inject(ProjectPartnerStore);
     partnerDetailPageStore = TestBed.inject(ProjectPartnerDetailPageStore);
+    projectPartnerDetailPageStore = TestBed.inject(ProjectPartnerDetailPageStore);
   }));
 
   beforeEach(() => {
