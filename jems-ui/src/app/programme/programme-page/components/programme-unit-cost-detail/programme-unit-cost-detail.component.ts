@@ -225,6 +225,9 @@ export class ProgrammeUnitCostDetailComponent extends ViewEditForm implements On
 
   protected enterEditMode(): void {
     if (this.unitCost) {
+      this.unitCostForm.controls.name.setErrors(null);
+      this.unitCostForm.controls.description.setErrors(null);
+      this.unitCostForm.controls.type.setErrors(null);
       this.unitCostForm.controls.categories.setErrors(null);
     }
     if ((this.unitCost.isOneCostCategory && this.unitCost.categories?.length === 1)
