@@ -310,6 +310,7 @@
 									"            const policy = specificObjectives[0].programmeObjectivePolicy\r",
 									"            console.log('There is already specific objective ' + policy + ', which we will use for calls during this test');\r",
 									"            pm.environment.set('programmePriorityPolicy', policy);\r",
+									"            pm.environment.set('programmePriority', response[0]);\r",
 									"        } else {\r",
 									"            console.log('There is already a programme priority, but no specific objective. We have to create one.');\r",
 									"            pm.environment.set('programmePriorityPolicy', null);\r",
@@ -384,6 +385,7 @@
 									"        pm.response.to.have.status(200);\r",
 									"        console.log('We created new programme priority.')\r",
 									"        pm.environment.set('programmePriorityPolicy', 'AdvancedTechnologies');\r",
+									"        pm.environment.set('programmePriority', pm.response.json());\r",
 									"    } else {\r",
 									"        pm.response.to.have.status(400);\r",
 									"        console.log('We did an invalid POST to NOT create new programme priority, no variable is changing.');\r",
@@ -441,15 +443,19 @@
 									"});\r",
 									"\r",
 									"pm.test('we have programme fund or we need to enable first one', function() {\r",
-									"    const funds = pm.response.json().filter(f => f.selected);\r",
-									"    if (funds.length > 0) {\r",
-									"        const fundId = funds[0].id;\r",
-									"        console.log('There is fund wth id ' + fundId);\r",
+									"    const funds = pm.response.json();\r",
+									"    const selectedFunds = funds.filter(f => f.selected);\r",
+									"    if (selectedFunds.length >= 2) {\r",
+									"        const fundId = selectedFunds[0].id;\r",
+									"        const fundId_2 = selectedFunds[1].id;\r",
+									"        console.log('There are selected funds with id ' + fundId + ' and id ' + fundId_2);\r",
 									"        pm.environment.set('programmeFundId', fundId);\r",
+									"        pm.environment.set('programmeFundId_2', fundId_2);\r",
 									"    } else {\r",
-									"        console.log('There are no any programme funds yet enabled. We need to enable one.');\r",
+									"        console.log('There are no any programme funds yet enabled. We need to enable 2.');\r",
 									"        pm.environment.set('programmeFundId', null);\r",
 									"    }\r",
+									"    pm.environment.set('funds', funds);\r",
 									"});\r",
 									""
 								],
@@ -474,18 +480,22 @@
 					"response": []
 				},
 				{
-					"name": "[IF] not exists, then enable programme fund 1",
+					"name": "[IF] not exists, then enable some programme fund Copy",
 					"event": [
 						{
 							"listen": "prerequest",
 							"script": {
 								"exec": [
 									"if (pm.environment.get('programmeFundId') == null) {\r",
-									"    console.log('There is no any programme fund enabled we can use, so we need to enable one.');\r",
-									"    pm.variables.set('programmeFundIdToBeEnabled', 1);\r",
+									"    console.log('There is no enough programme funds enabled, so we need to enable few.');\r",
+									"    var fundsToModify = pm.environment.get('funds');\r",
+									"    fundsToModify.forEach(function(fund, index) {\r",
+									"        fund.selected = index < 2;\r",
+									"    });\r",
+									"    pm.variables.set('modifiedFunds', JSON.stringify(fundsToModify));\r",
 									"} else {\r",
-									"    console.log('There is already a programme fund enabled, so we will use that one.');\r",
-									"    pm.variables.set('programmeFundIdToBeEnabled', \"not-existing\");\r",
+									"    console.log('There are already at least 2 programme funds enabled, so we will use that one.');\r",
+									"    pm.variables.set('modifiedFunds', \"please-just-fail\");\r",
 									"}\r",
 									""
 								],
@@ -497,14 +507,16 @@
 							"script": {
 								"exec": [
 									"pm.test('programme fund was enabled', function() {\r",
-									"    console.log('programmePriorityPolicy is set to ' + pm.environment.get('programmePriorityPolicy'));\r",
-									"    if (pm.environment.get('programmeFundId') == null) {\r",
-									"        pm.response.to.have.status(200);\r",
-									"        console.log('We enabled programme fund id=1');\r",
-									"        pm.environment.set('programmeFundId', 1);\r",
-									"    } else {\r",
+									"    console.log(pm.variables.get('modifiedFunds'));\r",
+									"    if (pm.variables.get('modifiedFunds') === \"please-just-fail\") {\r",
 									"        pm.response.to.have.status(400);\r",
 									"        console.log('We did an invalid POST to NOT enable new programme funds, no variable is changing.');\r",
+									"    } else {\r",
+									"        pm.response.to.have.status(200);\r",
+									"        const selectedFunds = pm.response.json().filter(fund => fund.selected);\r",
+									"        pm.expect(selectedFunds.length).to.be.above(1);\r",
+									"        pm.variables.set('programmeFundId', selectedFunds[0].id);\r",
+									"        pm.variables.set('programmeFundId_2', selectedFunds[1].id);\r",
 									"    }\r",
 									"});\r",
 									""
@@ -518,7 +530,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"funds\": [\r\n        {\r\n            \"id\": {{programmeFundIdToBeEnabled}},\r\n            \"selected\": true\r\n        }\r\n    ]\r\n}\r\n",
+							"raw": "{{modifiedFunds}}\r\n",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -600,10 +612,8 @@
 								"exec": [
 									"if (pm.environment.get('programmeLumpSumId') == null) {\r",
 									"    console.log('There is no any programme lump sum we can use, so we need to create one.');\r",
-									"    pm.variables.set('lumpSumName', '\\\"[API test] splittable\\\"');\r",
 									"} else {\r",
 									"    console.log('There is already a programme lump sum, so we will use that one.');\r",
-									"    pm.variables.set('lumpSumName', null);\r",
 									"}\r",
 									""
 								],
@@ -636,7 +646,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"name\": {{lumpSumName}},\r\n    \"cost\": 10000,\r\n    \"splittingAllowed\": true,\r\n    \"phase\": \"Preparation\",\r\n    \"categories\": [\"StaffCosts\", \"OfficeAndAdministrationCosts\"]\r\n}\r\n",
+							"raw": "{\r\n    \"id\": \"{{programmeLumpSumId}}\",\r\n    \"cost\": 10000,\r\n    \"splittingAllowed\": true,\r\n    \"phase\": \"Preparation\",\r\n    \"categories\": [\"StaffCosts\", \"OfficeAndAdministrationCosts\"]\r\n}\r\n",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -1029,6 +1039,167 @@
 							""
 						]
 					}
+				}
+			]
+		},
+		{
+			"name": "test restricted setup",
+			"item": [
+				{
+					"name": "disable programme fund after setup restricted",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"var fundsToModify = pm.environment.get('funds');\r",
+									"fundsToModify.forEach(function(fund) {\r",
+									"    fund.selected = false;\r",
+									"});\r",
+									"pm.variables.set('disabledFunds', JSON.stringify(fundsToModify));\r",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('programme fund cannot be disabled after setup is in restricted mode', function() {\r",
+									"    pm.response.to.have.status(403);\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{{disabledFunds}}\r\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{url}}/api/programmeFund",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"api",
+								"programmeFund"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "retrieve free priority policy",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('we can retrieve available specific objectives', function() {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"pm.test('we have not used specifc objective', function() {\r",
+									"    const response = pm.response.json().freePrioritiesWithPolicies;\r",
+									"    const policyObjective = Object.keys(response)[0];\r",
+									"    pm.variables.set('freeSpecificObjectivePolicy', response[policyObjective][0]);\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{url}}/api/programmePriority/availableSetup",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"api",
+								"programmePriority",
+								"availableSetup"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "change priority after setup restricted",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"var priorityToModify = pm.environment.get('programmePriority');\r",
+									"priorityToModify.specificObjectives[0].programmeObjectivePolicy === pm.variables.get('freeSpecificObjectivePolicy');\r",
+									"pm.variables.set('priorityToModify', JSON.stringify(priorityToModify));\r",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('programme priority cannot be changed after programme is in restricted mode', function() {\r",
+									"    pm.response.to.have.status(403);\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{{disabledFunds}}\r\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{url}}/api/programmeFund",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"api",
+								"programmeFund"
+							]
+						}
+					},
+					"response": []
 				}
 			]
 		},
