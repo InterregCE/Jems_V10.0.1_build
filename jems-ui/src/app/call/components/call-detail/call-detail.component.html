@@ -94,8 +94,8 @@
         </app-call-strategies>
 
         <h3>{{'call.funds.title' | translate}}</h3>
-        <h4 *ngIf="!isApplicant">{{'call.funds.options' | translate}}</h4>
-        <div *ngIf="!isApplicant">
+        <h4 *ngIf="!isApplicant || callForm?.controls?.multipleFundsAllowed.value">{{'call.funds.options' | translate}}</h4>
+        <div *ngIf="!isApplicant  || callForm?.controls?.multipleFundsAllowed.value">
             <mat-checkbox
                     name="multipleFundsAllowed"
                     formControlName="multipleFundsAllowed"
