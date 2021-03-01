@@ -57,12 +57,4 @@ data class ProgrammeData(
     )
     val programmeNuts: Set<NutsRegion3> = emptySet(),
 
-    @OneToMany
-    @JoinTable(
-        name = "programme_fund_selected",
-        joinColumns = [JoinColumn(name = "programme_data_id")],
-        inverseJoinColumns = [JoinColumn(name = "fund_id")]
-    )
-    val funds: Set<ProgrammeFundEntity> = emptySet()
-
 )

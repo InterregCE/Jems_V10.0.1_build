@@ -2,6 +2,7 @@ package io.cloudflight.jems.server.programme.repository.language
 
 import io.cloudflight.jems.api.programme.dto.language.SystemLanguage
 import io.cloudflight.jems.server.UnitTest
+import io.cloudflight.jems.server.call.repository.CallRepository
 import io.cloudflight.jems.server.programme.entity.language.ProgrammeLanguageEntity
 import io.cloudflight.jems.server.programme.service.language.model.ProgrammeLanguage
 import io.mockk.every
@@ -30,6 +31,9 @@ class ProgrammeLanguagePersistenceTest : UnitTest() {
 
     @MockK
     lateinit var repository: ProgrammeLanguageRepository
+
+    @MockK
+    lateinit var callRepository: CallRepository
 
     @InjectMockKs
     lateinit var persistence: ProgrammeLanguagePersistenceProvider
