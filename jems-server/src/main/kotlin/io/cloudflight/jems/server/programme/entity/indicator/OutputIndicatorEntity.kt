@@ -16,7 +16,7 @@ import javax.persistence.OneToOne
 import javax.validation.constraints.NotNull
 
 @Entity(name = "programme_indicator_output")
-data class OutputIndicatorEntity(
+class OutputIndicatorEntity(
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -42,13 +42,4 @@ data class OutputIndicatorEntity(
 
     @OneToMany(cascade = [CascadeType.ALL], orphanRemoval = true, mappedBy = "translationId.sourceEntity")
     val translatedValues: MutableSet<OutputIndicatorTranslEntity> = mutableSetOf(),
-){
-    override fun equals(other: Any?) =
-        this === other ||
-            other !== null &&
-            other is OutputIndicatorEntity &&
-            identifier == other.identifier
-
-    override fun hashCode() =
-        identifier.hashCode()
-}
+)
