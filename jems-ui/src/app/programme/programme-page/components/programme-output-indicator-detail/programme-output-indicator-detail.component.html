@@ -12,7 +12,8 @@
         <mat-error>
             <app-form-field-errors
                     [errors]="outputIndicatorForm?.controls?.identifier?.errors"
-                    [messages]="identifierErrors">
+                    [messages]="inputErrorMessages"
+                    [args]="getMaxLengthErrorArgs(outputIndicatorForm?.controls?.identifier?.value.length,5)">
             </app-form-field-errors>
         </mat-error>
     </mat-form-field>
@@ -29,26 +30,17 @@
         <mat-error>
             <app-form-field-errors
                     [errors]="outputIndicatorForm?.controls?.indicatorCode?.errors"
-                    [messages]="indicatorCodeErrors">
+                    [messages]="inputErrorMessages"
+                    [args]="getMaxLengthErrorArgs(outputIndicatorForm?.controls?.indicatorCode?.value?.length,6 )">
             </app-form-field-errors>
         </mat-error>
     </mat-form-field>
-    <mat-form-field>
-        <mat-label>{{'output.indicator.form.field.name' | translate}}</mat-label>
-        <input name="indicatorName" formControlName="indicatorName" matInput required
-               [matAutocomplete]="autoNames">
-        <mat-autocomplete #autoNames="matAutocomplete">
-            <mat-option *ngFor="let name of filteredIndicatorNames | async" [value]="name">
-                {{name}}
-            </mat-option>
-        </mat-autocomplete>
-        <mat-error>
-            <app-form-field-errors
-                    [errors]="outputIndicatorForm?.controls?.indicatorName?.errors"
-                    [messages]="indicatorNameErrors">
-            </app-form-field-errors>
-        </mat-error>
-    </mat-form-field>
+    <app-multi-language [useSystemLanguages]="true">
+        <app-multi-language-form-field
+                label="output.indicator.form.field.name"
+                name="indicatorName" formControlName="indicatorName">
+        </app-multi-language-form-field>
+    </app-multi-language>
     <mat-form-field>
         <mat-label>{{'output.indicator.form.field.specific.objective' | translate}}</mat-label>
         <mat-select name="specificObjective" formControlName="specificObjective" required>
@@ -62,7 +54,7 @@
         <mat-error>
             <app-form-field-errors
                     [errors]="outputIndicatorForm?.controls?.specificObjective?.errors"
-                    [messages]="specificObjectiveErrors">
+                    [messages]="inputErrorMessages">
             </app-form-field-errors>
         </mat-error>
     </mat-form-field>
@@ -80,22 +72,11 @@
                     *ngIf="filteredResultIndicators.length===0">{{'output.indicator.result.indicator.empty.hint' | translate}}</mat-hint>
         </mat-form-field>
     </ng-container>
-    <mat-form-field>
-        <mat-label>{{'output.indicator.form.field.measurement.unit' | translate}}</mat-label>
-        <input name="measurementUnit" formControlName="measurementUnit" matInput
-               [matAutocomplete]="autoUnits">
-        <mat-autocomplete #autoUnits="matAutocomplete">
-            <mat-option *ngFor="let unit of filteredMeasurementUnits | async" [value]="unit">
-                {{unit}}
-            </mat-option>
-        </mat-autocomplete>
-        <mat-error>
-            <app-form-field-errors
-                    [errors]="outputIndicatorForm?.controls?.measurementUnit?.errors"
-                    [messages]="measurementUnitErrors">
-            </app-form-field-errors>
-        </mat-error>
-    </mat-form-field>
+    <app-multi-language [useSystemLanguages]="true">
+        <app-multi-language-form-field label="output.indicator.form.field.measurement.unit"
+                                       name="measurementUnit" formControlName="measurementUnit">
+        </app-multi-language-form-field>
+    </app-multi-language>
     <mat-form-field>
         <mat-label>{{'output.indicator.form.field.milestone' | translate}}</mat-label>
         <input currencyMask type="decimal"
@@ -140,7 +121,7 @@
     <app-alert *ngIf="error$ | async as error"
                [show]="!!error.i18nMessage?.i18nKey"
                [type]="Alert.ERROR">
-       <app-api-error-content [error]="error"></app-api-error-content>
+        <app-api-error-content [error]="error"></app-api-error-content>
     </app-alert>
 </form>
 

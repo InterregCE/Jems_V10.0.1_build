@@ -13,22 +13,16 @@ class CreateResultIndicatorException(cause: Throwable) : ApplicationException(
     i18nMessage = I18nMessage("$CREATE_RESULT_INDICATOR_ERROR_KEY_PREFIX.failed"), cause = cause
 )
 
-class InvalidIdException :
-    ApplicationUnprocessableException(
-        code = "$CREATE_RESULT_INDICATOR_ERROR_CODE_PREFIX-001",
-        i18nMessage = I18nMessage("$CREATE_RESULT_INDICATOR_ERROR_KEY_PREFIX.id.should.not.be.set"),
-        cause = null
-    )
 
 class IdentifierIsUsedException : ApplicationBadRequestException(
-    code = "$CREATE_RESULT_INDICATOR_ERROR_CODE_PREFIX-002",
+    code = "$CREATE_RESULT_INDICATOR_ERROR_CODE_PREFIX-001",
     i18nMessage = I18nMessage("$CREATE_RESULT_INDICATOR_ERROR_KEY_PREFIX.identifier.is.used"),
     formErrors = mapOf("identifier" to I18nMessage("$CREATE_RESULT_INDICATOR_ERROR_KEY_PREFIX.identifier.is.used")),
     cause = null
 )
 
 class ResultIndicatorsCountExceedException(maxCount: Int) : ApplicationBadRequestException(
-    code = "$CREATE_RESULT_INDICATOR_ERROR_CODE_PREFIX-003",
+    code = "$CREATE_RESULT_INDICATOR_ERROR_CODE_PREFIX-002",
     i18nMessage = I18nMessage(
         "$CREATE_RESULT_INDICATOR_ERROR_CODE_PREFIX.count.exceed",
         mapOf("maxCount" to maxCount.toString())

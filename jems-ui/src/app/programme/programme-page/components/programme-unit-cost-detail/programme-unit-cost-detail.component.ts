@@ -21,6 +21,7 @@ import {SelectionModel} from '@angular/cdk/collections';
 import {NumberService} from '../../../../common/services/number.service';
 import {UntilDestroy, untilDestroyed} from '@ngneat/until-destroy';
 import {ProgrammeEditableStateStore} from '../../services/programme-editable-state-store.service';
+import {TranslateService} from '@ngx-translate/core';
 
 @UntilDestroy()
 @Component({
@@ -108,8 +109,9 @@ export class ProgrammeUnitCostDetailComponent extends ViewEditForm implements On
               private dialog: MatDialog,
               private programmeEditableStateStore: ProgrammeEditableStateStore,
               protected changeDetectorRef: ChangeDetectorRef,
+              protected translationService: TranslateService,
               public numberService: NumberService) {
-    super(changeDetectorRef);
+    super(changeDetectorRef, translationService);
 
     this.programmeEditableStateStore.init();
     this.programmeEditableStateStore.isProgrammeEditableDependingOnCall$.pipe(

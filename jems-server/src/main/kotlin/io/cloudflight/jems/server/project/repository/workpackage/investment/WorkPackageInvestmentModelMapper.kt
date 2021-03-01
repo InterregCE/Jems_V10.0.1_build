@@ -76,8 +76,7 @@ fun WorkPackageInvestment.toWorkPackageInvestmentEntity(workPackageEntity: WorkP
                 .plus(ownershipSiteLocation)
                 .plus(ownershipMaintenance)
                 .plus(ownershipRetain)
-                .map { it.language }
-                .distinct()
+                .mapTo(HashSet()){it.language}
                 .map { language ->
                     WorkPackageInvestmentTransl(
                         investmentTranslation = WorkPackageInvestmentTranslation(this, language),

@@ -4,7 +4,7 @@ import { ProgrammeIndicatorsOverviewPageComponent } from './programme-indicators
 import {TestModule} from '../../../../common/test-module';
 import {ProgrammeModule} from '../../../programme.module';
 import {HttpTestingController} from '@angular/common/http/testing';
-import {OutputIndicatorDetailDTO, ResultIndicatorDetailDTO} from '@cat/api';
+import {InputTranslation, OutputIndicatorDetailDTO, ResultIndicatorDetailDTO} from '@cat/api';
 
 describe('ProgrammeIndicatorsOverviewPageComponent', () => {
   let httpTestingController: HttpTestingController;
@@ -38,8 +38,8 @@ describe('ProgrammeIndicatorsOverviewPageComponent', () => {
     component.currentOutputIndicatorPage$.subscribe(result => results = result.content);
 
     const indicators = [
-      {name: 'test1'} as OutputIndicatorDetailDTO,
-      {name: 'test2'} as OutputIndicatorDetailDTO
+      {name: [{language: InputTranslation.LanguageEnum.EN, translation: 'test1'} as InputTranslation]} as OutputIndicatorDetailDTO,
+      {name: [{language: InputTranslation.LanguageEnum.EN, translation: 'test2'} as InputTranslation]} as OutputIndicatorDetailDTO
     ];
 
     httpTestingController.match({method: 'GET', url: `//api/programmeindicator/output?page=0&size=25&sort=id,desc`})
@@ -54,8 +54,8 @@ describe('ProgrammeIndicatorsOverviewPageComponent', () => {
     component.currentResultIndicatorPage$.subscribe(result => results = result.content);
 
     const indicators = [
-      {name: 'test1'} as ResultIndicatorDetailDTO,
-      {name: 'test2'} as ResultIndicatorDetailDTO
+      {name: [{language: InputTranslation.LanguageEnum.EN, translation: 'test1'} as InputTranslation]} as ResultIndicatorDetailDTO,
+      {name: [{language: InputTranslation.LanguageEnum.EN, translation: 'test2'} as InputTranslation]} as ResultIndicatorDetailDTO
     ];
 
     httpTestingController.match({method: 'GET', url: `//api/programmeindicator/result?page=0&size=25&sort=id,desc`})

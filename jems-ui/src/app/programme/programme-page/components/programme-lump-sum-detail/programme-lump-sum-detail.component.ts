@@ -12,7 +12,6 @@ import {FormBuilder, FormGroup, Validators} from '@angular/forms';
 import {MatDialog} from '@angular/material/dialog';
 import {filter, take, takeUntil, tap} from 'rxjs/operators';
 import {FormState} from '@common/components/forms/form-state';
-import {Forms} from '../../../../common/utils/forms';
 import {Permission} from '../../../../security/permissions/permission';
 import {
   ProgrammeLumpSumDTO
@@ -21,6 +20,8 @@ import {SelectionModel} from '@angular/cdk/collections';
 import {NumberService} from '../../../../common/services/number.service';
 import {UntilDestroy, untilDestroyed} from '@ngneat/until-destroy';
 import {ProgrammeEditableStateStore} from '../../services/programme-editable-state-store.service';
+import {TranslateService} from '@ngx-translate/core';
+import {Forms} from '../../../../common/utils/forms';
 
 @UntilDestroy()
 @Component({
@@ -96,8 +97,9 @@ export class ProgrammeLumpSumDetailComponent extends ViewEditForm implements OnI
               private dialog: MatDialog,
               private programmeEditableStateStore: ProgrammeEditableStateStore,
               protected changeDetectorRef: ChangeDetectorRef,
+              protected translationService: TranslateService,
               public numberService: NumberService) {
-    super(changeDetectorRef);
+    super(changeDetectorRef, translationService);
 
     this.programmeEditableStateStore.init();
     this.programmeEditableStateStore.isProgrammeEditableDependingOnCall$.pipe(

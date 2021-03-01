@@ -1,21 +1,22 @@
 package io.cloudflight.jems.server.programme.service.indicator.model
 
 import io.cloudflight.jems.api.programme.dto.priority.ProgrammeObjectivePolicy
+import io.cloudflight.jems.api.project.dto.InputTranslation
 import java.math.BigDecimal
 
 data class ResultIndicatorDetail(
     val id: Long?,
     val identifier: String,
     val code: String?,
-    val name: String,
+    val name: Set<InputTranslation> = emptySet(),
     val programmeObjectivePolicy: ProgrammeObjectivePolicy?,
     val programmePriorityPolicyCode: String?,
     val programmePriorityCode: String?,
-    val measurementUnit: String?,
+    val measurementUnit: Set<InputTranslation> = emptySet(),
     val baseline: BigDecimal?,
     val referenceYear: String?,
     val finalTarget: BigDecimal?,
-    val sourceOfData: String?,
+    val sourceOfData: Set<InputTranslation> = emptySet(),
     val comment: String?
 ) {
     fun getDiff(other: ResultIndicatorDetail): Map<String, Pair<Any?, Any?>> {

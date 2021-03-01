@@ -1,6 +1,6 @@
 package io.cloudflight.jems.server.project.entity.partner.budget.general.equipment
 
-import io.cloudflight.jems.server.project.entity.BudgetTranslation
+import io.cloudflight.jems.server.project.entity.partner.budget.BudgetTranslation
 import io.cloudflight.jems.server.project.entity.partner.budget.general.ProjectPartnerBudgetGeneralTranslBase
 import javax.persistence.EmbeddedId
 import javax.persistence.Entity

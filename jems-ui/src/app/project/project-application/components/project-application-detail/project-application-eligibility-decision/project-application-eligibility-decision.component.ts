@@ -15,6 +15,7 @@ import {FormBuilder, FormGroup, Validators} from '@angular/forms';
 import {AbstractForm} from '@common/components/forms/abstract-form';
 import {InputProjectStatus, OutputProject, OutputProjectStatus} from '@cat/api';
 import {filter} from 'rxjs/operators';
+import {TranslateService} from '@ngx-translate/core';
 
 @Component({
   selector: 'app-project-eligibility-decision',
@@ -61,8 +62,9 @@ export class ProjectApplicationEligibilityDecisionComponent extends AbstractForm
     private router: Router,
     private activatedRoute: ActivatedRoute,
     private formBuilder: FormBuilder,
-    protected changeDetectorRef: ChangeDetectorRef) {
-    super(changeDetectorRef);
+    protected changeDetectorRef: ChangeDetectorRef,
+    protected translationService: TranslateService) {
+    super(changeDetectorRef, translationService);
   }
 
   ngOnInit(): void {

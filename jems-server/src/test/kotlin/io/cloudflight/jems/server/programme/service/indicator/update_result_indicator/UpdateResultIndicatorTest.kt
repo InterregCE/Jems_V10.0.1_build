@@ -26,9 +26,9 @@ internal class UpdateResultIndicatorTest : IndicatorsBaseTest() {
 
     @Test
     fun `should update and return result indicator when there is no problem`() {
-        val newResultIndicator = buildResultIndicatorInstance(measurementUnit = "new measurement unit")
+        val newResultIndicator = buildResultIndicatorInstance(code = "new code")
         val oldResultIndicatorDetail = buildResultIndicatorDetailInstance()
-        val savedResultIndicatorDetail = buildResultIndicatorDetailInstance(measurementUnit = "new measurement unit")
+        val savedResultIndicatorDetail = buildResultIndicatorDetailInstance(code = "new code")
         every { persistence.getResultIndicator(newResultIndicator.id!!) } returns oldResultIndicatorDetail
         every { persistence.saveResultIndicator(newResultIndicator) } returns savedResultIndicatorDetail
         every {
@@ -46,7 +46,7 @@ internal class UpdateResultIndicatorTest : IndicatorsBaseTest() {
         with(auditLog.captured) {
             assertThat(action).isEqualTo(AuditAction.PROGRAMME_INDICATOR_EDITED)
             assertThat(description)
-                .isEqualTo("Programme indicator ID01 edited:\nmeasurementUnit changed from measurement unit to new measurement unit")
+                .isEqualTo("Programme indicator ID01 edited:\ncode changed from ioCODE to new code")
         }
     }
 
@@ -93,13 +93,5 @@ internal class UpdateResultIndicatorTest : IndicatorsBaseTest() {
         )
 
         assertThat(exception.formErrors["identifier"]).isEqualTo(I18nMessage("$UPDATE_RESULT_INDICATOR_ERROR_KEY_PREFIX.identifier.is.used"))
-    }
-
-    @Test
-    fun `should throw InvalidIdException when new result indicator id is zero`() {
-        val newResultIndicator = buildResultIndicatorInstance(id = 0L)
-        assertThatExceptionOfType(InvalidIdException::class.java).isThrownBy {
-            updateResultIndicator.updateResultIndicator(newResultIndicator)
-        }
     }
 }

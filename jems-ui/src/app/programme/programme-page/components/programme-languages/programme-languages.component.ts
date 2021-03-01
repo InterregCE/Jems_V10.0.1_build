@@ -14,6 +14,7 @@ import {MatTableDataSource} from '@angular/material/table';
 import {SelectionModel} from '@angular/cdk/collections';
 import {ProgrammeEditableStateStore} from '../../services/programme-editable-state-store.service';
 import {UntilDestroy} from '@ngneat/until-destroy';
+import {TranslateService} from '@ngx-translate/core';
 
 @UntilDestroy()
 @Component({
@@ -39,8 +40,9 @@ export class ProgrammeLanguagesComponent extends ViewEditForm implements OnInit 
 
 
   constructor(protected changeDetectorRef: ChangeDetectorRef,
+              protected translationService: TranslateService,
               public programmeEditableStateStore: ProgrammeEditableStateStore) {
-    super(changeDetectorRef);
+    super(changeDetectorRef, translationService);
 
     this.programmeEditableStateStore.init();
   }

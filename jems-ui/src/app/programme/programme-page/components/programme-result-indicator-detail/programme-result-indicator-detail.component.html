@@ -12,7 +12,8 @@
         <mat-error>
             <app-form-field-errors
                     [errors]="resultIndicatorForm?.controls?.identifier?.errors"
-                    [messages]="identifierErrors">
+                    [messages]="inputErrorMessages"
+                    [args]="getMaxLengthErrorArgs(resultIndicatorForm?.controls?.identifier?.value.length, 5)">
             </app-form-field-errors>
         </mat-error>
     </mat-form-field>
@@ -29,26 +30,16 @@
         <mat-error>
             <app-form-field-errors
                     [errors]="resultIndicatorForm?.controls?.indicatorCode?.errors"
-                    [messages]="indicatorCodeErrors">
+                    [messages]="inputErrorMessages"
+                    [args]="getMaxLengthErrorArgs(resultIndicatorForm?.controls?.indicatorCode?.value.length, 6)">
             </app-form-field-errors>
         </mat-error>
     </mat-form-field>
-    <mat-form-field>
-        <mat-label>{{'result.indicator.form.field.name' | translate}}</mat-label>
-        <input name="indicatorName" formControlName="indicatorName" matInput required
-               [matAutocomplete]="autoNames">
-        <mat-autocomplete #autoNames="matAutocomplete">
-            <mat-option *ngFor="let name of filteredIndicatorNames | async" [value]="name">
-                {{name}}
-            </mat-option>
-        </mat-autocomplete>
-        <mat-error>
-            <app-form-field-errors
-                    [errors]="resultIndicatorForm?.controls?.indicatorName?.errors"
-                    [messages]="indicatorNameErrors">
-            </app-form-field-errors>
-        </mat-error>
-    </mat-form-field>
+    <app-multi-language [useSystemLanguages]="true" [switchButtonsVisible]="formState === FormState.EDIT">
+        <app-multi-language-form-field label="result.indicator.form.field.name" formControlName="indicatorName">
+        </app-multi-language-form-field>
+    </app-multi-language>
+
     <mat-form-field>
         <mat-label>{{'result.indicator.form.field.specific.objective' | translate}}</mat-label>
         <mat-select name="specificObjective" formControlName="specificObjective" required>
@@ -62,26 +53,17 @@
         <mat-error>
             <app-form-field-errors
                     [errors]="resultIndicatorForm?.controls?.specificObjective?.errors"
-                    [messages]="specificObjectiveErrors">
+                    [messages]="inputErrorMessages">
             </app-form-field-errors>
         </mat-error>
     </mat-form-field>
-    <mat-form-field>
-        <mat-label>{{'result.indicator.form.field.measurement.unit' | translate}}</mat-label>
-        <input name="measurementUnit" formControlName="measurementUnit" matInput
-               [matAutocomplete]="autoUnits">
-        <mat-autocomplete #autoUnits="matAutocomplete">
-            <mat-option *ngFor="let unit of filteredMeasurementUnits | async" [value]="unit">
-                {{unit}}
-            </mat-option>
-        </mat-autocomplete>
-        <mat-error>
-            <app-form-field-errors
-                    [errors]="resultIndicatorForm?.controls?.measurementUnit?.errors"
-                    [messages]="measurementUnitErrors">
-            </app-form-field-errors>
-        </mat-error>
-    </mat-form-field>
+
+    <app-multi-language [useSystemLanguages]="true" [switchButtonsVisible]="formState === FormState.EDIT">
+        <app-multi-language-form-field label="result.indicator.form.field.measurement.unit"
+                                       formControlName="measurementUnit">
+        </app-multi-language-form-field>
+    </app-multi-language>
+
     <mat-form-field>
         <mat-label>{{'result.indicator.form.field.baseline' | translate}}</mat-label>
         <input currencyMask type="decimal"
@@ -97,7 +79,8 @@
         <mat-error>
             <app-form-field-errors
                     [errors]="resultIndicatorForm?.controls?.referenceYear?.errors"
-                    [messages]="referenceYearErrors">
+                    [messages]="inputErrorMessages"
+                    [args]="getMaxLengthErrorArgs(resultIndicatorForm?.controls?.referenceYear?.value.length, 10)">
             </app-form-field-errors>
         </mat-error>
     </mat-form-field>
@@ -110,18 +93,18 @@
             </app-form-field-errors>
         </mat-error>
     </mat-form-field>
-    <app-expandable-textarea
-            [control]="resultIndicatorForm?.controls?.sourceOfData"
-            [errors]="resultIndicatorForm?.controls?.sourceOfData?.errors"
-            [messages]="sourceOfDataErrors"
-            [characterLimit]="1000"
-            [label]="'result.indicator.form.field.source.of.data'"
-            [disabled]="formState === FormState.VIEW">
-    </app-expandable-textarea>
+    <app-multi-language [useSystemLanguages]="true"
+                        [switchButtonsVisible]="formState === FormState.EDIT">
+        <app-multi-language-form-field [disabled]="formState === FormState.VIEW" [maxLength]="1000" type="textarea"
+                                       label="result.indicator.form.field.source.of.data"
+                                       formControlName="sourceOfData">
+        </app-multi-language-form-field>
+    </app-multi-language>
+
     <app-expandable-textarea
             [control]="resultIndicatorForm?.controls?.comments"
             [errors]="resultIndicatorForm?.controls?.comments?.errors"
-            [messages]="commentsErrors"
+            [messages]="inputErrorMessages"
             [characterLimit]="1000"
             [label]="'result.indicator.form.field.comments'"
             [disabled]="formState === FormState.VIEW">
@@ -152,5 +135,4 @@
                [type]="Alert.ERROR">
         <app-api-error-content [error]="error"></app-api-error-content>
     </app-alert>
-
 </form>

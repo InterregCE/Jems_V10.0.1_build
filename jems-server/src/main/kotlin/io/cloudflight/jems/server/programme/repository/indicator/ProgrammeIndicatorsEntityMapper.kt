@@ -1,8 +1,12 @@
 package io.cloudflight.jems.server.programme.repository.indicator
 
+import io.cloudflight.jems.api.project.dto.InputTranslation
+import io.cloudflight.jems.server.common.entity.TranslationId
 import io.cloudflight.jems.server.programme.entity.ProgrammeSpecificObjectiveEntity
 import io.cloudflight.jems.server.programme.entity.indicator.OutputIndicatorEntity
+import io.cloudflight.jems.server.programme.entity.indicator.OutputIndicatorTranslEntity
 import io.cloudflight.jems.server.programme.entity.indicator.ResultIndicatorEntity
+import io.cloudflight.jems.server.programme.entity.indicator.ResultIndicatorTranslEntity
 import io.cloudflight.jems.server.programme.service.indicator.model.OutputIndicator
 import io.cloudflight.jems.server.programme.service.indicator.model.OutputIndicatorDetail
 import io.cloudflight.jems.server.programme.service.indicator.model.OutputIndicatorSummary
@@ -11,17 +15,25 @@ import io.cloudflight.jems.server.programme.service.indicator.model.ResultIndica
 import io.cloudflight.jems.server.programme.service.indicator.model.ResultIndicatorSummary
 import org.springframework.data.domain.Page
 
+fun OutputIndicatorEntity.getName() = translatedValues.mapTo(HashSet()) {
+    InputTranslation(it.translationId.language, it.name)
+}
+
+fun OutputIndicatorEntity.getMeasurementUnit() = translatedValues.mapTo(HashSet()) {
+    InputTranslation(it.translationId.language, it.measurementUnit)
+}
+
 fun Page<OutputIndicatorEntity>.toOutputIndicatorDetailPage() = map { it.toOutputIndicatorDetail() }
 fun OutputIndicatorEntity.toOutputIndicatorDetail() =
     OutputIndicatorDetail(
         id = id,
         identifier = identifier,
         code = code,
-        name = name,
+        name = getName(),
         programmeObjectivePolicy = programmePriorityPolicyEntity?.programmeObjectivePolicy,
         programmePriorityPolicyCode = programmePriorityPolicyEntity?.code,
         programmePriorityCode = programmePriorityPolicyEntity?.programmePriority?.code,
-        measurementUnit = measurementUnit,
+        measurementUnit = getMeasurementUnit(),
         milestone = milestone,
         finalTarget = finalTarget,
         resultIndicatorDetail = resultIndicatorEntity?.toResultIndicatorDetail(),
@@ -34,13 +46,27 @@ fun OutputIndicator.toOutputIndicatorEntity(
     id = id ?: 0,
     identifier = identifier,
     code = code,
-    name = name,
     programmePriorityPolicyEntity = programmePriorityPolicy,
     resultIndicatorEntity = resultIndicatorEntityReference,
-    measurementUnit = measurementUnit,
     milestone = milestone,
-    finalTarget = finalTarget
-)
+    finalTarget = finalTarget,
+    translatedValues = mutableSetOf()
+).apply {
+    translatedValues.addAll(
+        name.filter { !it.translation.isNullOrBlank() }.plus(measurementUnit.filter { !it.translation.isNullOrBlank() })
+            .mapTo(HashSet()) { it.language }
+            .map { language ->
+                OutputIndicatorTranslEntity(
+                    translationId = TranslationId(
+                        this,
+                        language
+                    ),
+                    name = name.firstOrNull { it.language == language }?.translation,
+                    measurementUnit = measurementUnit.firstOrNull { it.language == language }?.translation
+                )
+            }.toMutableSet()
+    )
+}
 
 fun Iterable<OutputIndicatorEntity>.toOutputIndicatorSummaryList() = map { it.toOutputIndicatorSummary() }.toList()
 fun Iterable<OutputIndicatorEntity>.toOutputIndicatorSummarySet() = map { it.toOutputIndicatorSummary() }.toSet()
@@ -49,9 +75,9 @@ fun OutputIndicatorEntity.toOutputIndicatorSummary() =
         id = id,
         identifier = identifier,
         code = code,
-        name = name,
+        name = getName(),
         programmePriorityCode = programmePriorityPolicyEntity?.programmePriority?.code,
-        measurementUnit = measurementUnit,
+        measurementUnit = getMeasurementUnit()
     )
 
 fun ResultIndicator.toResultIndicatorEntity(
@@ -62,15 +88,41 @@ fun ResultIndicator.toResultIndicatorEntity(
         id = id ?: 0,
         identifier = uniqueIdentifier ?: identifier,
         code = code,
-        name = name,
         programmePriorityPolicyEntity = programmePriorityPolicy,
-        measurementUnit = measurementUnit,
         baseline = baseline,
         referenceYear = referenceYear,
         finalTarget = finalTarget,
-        sourceOfData = sourceOfData,
-        comment = comment
-    )
+        comment = comment,
+        translatedValues = mutableSetOf()
+    ).apply {
+        translatedValues.addAll(
+            name.filter { !it.translation.isNullOrBlank() }.plus(measurementUnit.filter { !it.translation.isNullOrBlank() }).plus(sourceOfData.filter { !it.translation.isNullOrBlank() })
+                .mapTo(HashSet()) { it.language }
+                .map { language ->
+                    ResultIndicatorTranslEntity(
+                        translationId = TranslationId(
+                            this,
+                            language
+                        ),
+                        name = name.firstOrNull { it.language == language }?.translation,
+                        measurementUnit = measurementUnit.firstOrNull { it.language == language }?.translation,
+                        sourceOfData = sourceOfData.firstOrNull { it.language == language }?.translation,
+                    )
+                }.toMutableSet()
+        )
+    }
+
+fun ResultIndicatorEntity.getName() = translatedValues.mapTo(HashSet()) {
+    InputTranslation(it.translationId.language, it.name)
+}
+
+fun ResultIndicatorEntity.getMeasurementUnit() = translatedValues.mapTo(HashSet()) {
+    InputTranslation(it.translationId.language, it.measurementUnit)
+}
+
+fun ResultIndicatorEntity.getSourceOfData() = translatedValues.mapTo(HashSet()) {
+    InputTranslation(it.translationId.language, it.sourceOfData)
+}
 
 fun Page<ResultIndicatorEntity>.toResultIndicatorDetailPage() = map { it.toResultIndicatorDetail() }
 fun ResultIndicatorEntity.toResultIndicatorDetail() =
@@ -78,15 +130,15 @@ fun ResultIndicatorEntity.toResultIndicatorDetail() =
         id = id,
         identifier = identifier,
         code = code,
-        name = name,
+        name = getName(),
         programmeObjectivePolicy = programmePriorityPolicyEntity?.programmeObjectivePolicy,
         programmePriorityPolicyCode = programmePriorityPolicyEntity?.code,
         programmePriorityCode = programmePriorityPolicyEntity?.programmePriority?.code,
-        measurementUnit = measurementUnit,
+        measurementUnit = getMeasurementUnit(),
         baseline = baseline,
         referenceYear = referenceYear,
         finalTarget = finalTarget,
-        sourceOfData = sourceOfData,
+        sourceOfData = getSourceOfData(),
         comment = comment
     )
 
@@ -98,7 +150,7 @@ fun ResultIndicatorEntity.toResultIndicatorSummary() =
         id = id,
         identifier = identifier,
         code = code,
-        name = name,
+        name = getName(),
         programmePriorityCode = programmePriorityPolicyEntity?.programmePriority?.code,
-        measurementUnit = measurementUnit,
+        measurementUnit = getMeasurementUnit(),
     )

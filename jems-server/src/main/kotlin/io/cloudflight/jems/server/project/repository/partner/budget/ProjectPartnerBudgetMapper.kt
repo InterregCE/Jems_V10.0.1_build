@@ -1,10 +1,10 @@
 package io.cloudflight.jems.server.project.repository.partner.budget
 
 import io.cloudflight.jems.api.project.dto.InputTranslation
-import io.cloudflight.jems.server.project.entity.BudgetTranslation
 import io.cloudflight.jems.server.project.entity.ProjectPeriodEntity
 import io.cloudflight.jems.server.project.entity.partner.budget.BaseBudgetProperties
 import io.cloudflight.jems.server.project.entity.partner.budget.BudgetPeriodId
+import io.cloudflight.jems.server.project.entity.partner.budget.BudgetTranslation
 import io.cloudflight.jems.server.project.entity.partner.budget.general.ProjectPartnerBudgetGeneralBase
 import io.cloudflight.jems.server.project.entity.partner.budget.general.equipment.ProjectPartnerBudgetEquipmentEntity
 import io.cloudflight.jems.server.project.entity.partner.budget.general.equipment.ProjectPartnerBudgetEquipmentPeriodEntity
@@ -65,8 +65,7 @@ fun BudgetStaffCostEntry.toProjectPartnerBudgetStaffCostEntity(
     ).apply {
         translatedValues.addAll(
             description.plus(comment)
-                .map { it.language }
-                .distinct()
+                .mapTo(HashSet()) { it.language }
                 .map { language ->
                     ProjectPartnerBudgetStaffCostTranslEntity(
                         budgetTranslation = BudgetTranslation(this, language),
@@ -123,8 +122,7 @@ fun BudgetTravelAndAccommodationCostEntry.toProjectPartnerBudgetTravelEntity(
     ).apply {
         translatedValues.addAll(
             description.plus(unitType)
-                .map { it.language }
-                .distinct()
+                .mapTo(HashSet()) { it.language }
                 .map { language ->
                     ProjectPartnerBudgetTravelTranslEntity(
                         budgetTranslation = BudgetTranslation(this, language),
@@ -168,8 +166,7 @@ fun BudgetGeneralCostEntry.toProjectPartnerBudgetEquipmentEntity(
     ).apply {
         translatedValues.addAll(
             description.plus(awardProcedures).plus(unitType)
-                .map { it.language }
-                .distinct()
+                .mapTo(HashSet()) { it.language }
                 .map { language ->
                     ProjectPartnerBudgetEquipmentTranslEntity(
                         budgetTranslation = BudgetTranslation(this, language),
@@ -214,8 +211,7 @@ fun BudgetGeneralCostEntry.toProjectPartnerBudgetExternalEntity(
     ).apply {
         translatedValues.addAll(
             description.plus(awardProcedures).plus(unitType)
-                .map { it.language }
-                .distinct()
+                .mapTo(HashSet()) { it.language }
                 .map { language ->
                     ProjectPartnerBudgetExternalTranslEntity(
                         budgetTranslation = BudgetTranslation(this, language),
@@ -260,8 +256,7 @@ fun BudgetGeneralCostEntry.toProjectPartnerBudgetInfrastructureEntity(
     ).apply {
         translatedValues.addAll(
             description.plus(awardProcedures).plus(unitType)
-                .map { it.language }
-                .distinct()
+                .mapTo(HashSet()) { it.language }
                 .map { language ->
                     ProjectPartnerBudgetInfrastructureTranslEntity(
                         budgetTranslation = BudgetTranslation(this, language),

@@ -1,6 +1,8 @@
 package io.cloudflight.jems.server.programme.service.indicator.model
 
+import io.cloudflight.jems.api.programme.dto.language.SystemLanguage
 import io.cloudflight.jems.api.programme.dto.priority.ProgrammeObjectivePolicy
+import io.cloudflight.jems.api.project.dto.InputTranslation
 import io.cloudflight.jems.server.programme.service.indicator.IndicatorsBaseTest
 import org.assertj.core.api.Assertions
 import org.junit.jupiter.api.Test
@@ -14,8 +16,8 @@ internal class OutputIndicatorDetailTest : IndicatorsBaseTest() {
         val updatedOutputIndicatorDetail = buildOutputIndicatorDetailInstance(
             identifier = "ID11",
             code = "ioCODE-update",
-            name = "indicator title2",
-            measurementUnit = "new measurement unit",
+            name = setOf(InputTranslation(SystemLanguage.EN, "new indicator title")),
+            measurementUnit = setOf(InputTranslation(SystemLanguage.EN, "new measurement unit")),
             finalTarget = BigDecimal.TEN,
             programmeObjectivePolicy = ProgrammeObjectivePolicy.AdvancedTechnologies,
             programmePriorityCode = indicatorProgrammePriorityCode,

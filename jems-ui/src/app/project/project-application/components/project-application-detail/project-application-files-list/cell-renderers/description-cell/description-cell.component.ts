@@ -3,6 +3,7 @@ import {FormBuilder, FormGroup, Validators} from '@angular/forms';
 import {FormState} from '@common/components/forms/form-state';
 import {AbstractForm} from '@common/components/forms/abstract-form';
 import {OutputProjectFile} from '@cat/api';
+import {TranslateService} from '@ngx-translate/core';
 
 @Component({
   selector: 'app-description-cell',
@@ -29,8 +30,8 @@ export class DescriptionCellComponent extends AbstractForm implements OnInit {
   });
 
   constructor(private formBuilder: FormBuilder,
-              protected changeDetectorRef: ChangeDetectorRef) {
-    super(changeDetectorRef);
+              protected changeDetectorRef: ChangeDetectorRef,  protected translationService: TranslateService) {
+    super(changeDetectorRef, translationService);
   }
 
   ngOnInit(): void {

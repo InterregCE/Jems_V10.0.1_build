@@ -1,12 +1,17 @@
 package io.cloudflight.jems.server.programme.repository.indicator
 
+import io.cloudflight.jems.api.programme.dto.language.SystemLanguage
 import io.cloudflight.jems.api.programme.dto.priority.ProgrammeObjective
 import io.cloudflight.jems.api.programme.dto.priority.ProgrammeObjectivePolicy
+import io.cloudflight.jems.api.project.dto.InputTranslation
 import io.cloudflight.jems.server.UnitTest
+import io.cloudflight.jems.server.common.entity.TranslationId
 import io.cloudflight.jems.server.programme.entity.ProgrammePriorityEntity
 import io.cloudflight.jems.server.programme.entity.ProgrammeSpecificObjectiveEntity
 import io.cloudflight.jems.server.programme.entity.indicator.OutputIndicatorEntity
+import io.cloudflight.jems.server.programme.entity.indicator.OutputIndicatorTranslEntity
 import io.cloudflight.jems.server.programme.entity.indicator.ResultIndicatorEntity
+import io.cloudflight.jems.server.programme.entity.indicator.ResultIndicatorTranslEntity
 import io.cloudflight.jems.server.programme.service.indicator.model.OutputIndicator
 import io.cloudflight.jems.server.programme.service.indicator.model.ResultIndicator
 import java.math.BigDecimal
@@ -28,23 +33,23 @@ abstract class IndicatorsPersistenceBaseTest : UnitTest() {
     )
     protected val indicatorId = 1L
     private val indicatorCode = "ioCODE"
-    private val indicatorName = "indicator title"
-    private val indicatorMeasurementUnit = "measurement unit"
-    private val indicatorSourceOfData = "test source of data"
+    private val indicatorNameSet = setOf(InputTranslation(SystemLanguage.EN, "indicator title"))
+    private val indicatorMeasurementUnitSet = setOf(InputTranslation(SystemLanguage.EN, "measurement unit"))
+    private val indicatorSourceOfDataSet = setOf(InputTranslation(SystemLanguage.EN, "test source of data"))
     private val indicatorComment = "test comment"
     protected val indicatorIdentifier = "ID01"
     private val indicatorReferenceYear = "2022/2023"
     private val indicatorResultIndicatorId = 2L
 
-    protected val defaultResultIndicatorEntity= buildResultIndicatorEntityInstance()
+    protected val defaultResultIndicatorEntity = buildResultIndicatorEntityInstance()
 
     protected fun buildOutputIndicatorInstance(
         id: Long = indicatorId,
         identifier: String = indicatorIdentifier,
         code: String = indicatorCode,
-        name: String = indicatorName,
+        name: Set<InputTranslation> = indicatorNameSet,
         programmeObjectivePolicy: ProgrammeObjectivePolicy = ProgrammeObjectivePolicy.RenewableEnergy,
-        measurementUnit: String = indicatorMeasurementUnit,
+        measurementUnit: Set<InputTranslation> = indicatorMeasurementUnitSet,
         milestone: BigDecimal = BigDecimal.TEN,
         finalTarget: BigDecimal = BigDecimal.ONE,
         resultIndicatorId: Long? = indicatorResultIndicatorId
@@ -66,13 +71,13 @@ abstract class IndicatorsPersistenceBaseTest : UnitTest() {
         id: Long = indicatorId,
         identifier: String = indicatorIdentifier,
         code: String = indicatorCode,
-        name: String = indicatorName,
+        name: Set<InputTranslation> = indicatorNameSet,
         programmePriorityPolicy: ProgrammeObjectivePolicy = ProgrammeObjectivePolicy.RenewableEnergy,
-        measurementUnit: String = indicatorMeasurementUnit,
+        measurementUnit: Set<InputTranslation> = indicatorMeasurementUnitSet,
         baseline: BigDecimal = BigDecimal.TEN,
         referenceYear: String = indicatorReferenceYear,
         finalTarget: BigDecimal = BigDecimal.ONE,
-        sourceOfData: String = indicatorSourceOfData,
+        sourceOfData: Set<InputTranslation> = indicatorSourceOfDataSet,
         comment: String = indicatorComment
     ) =
         ResultIndicator(
@@ -93,48 +98,65 @@ abstract class IndicatorsPersistenceBaseTest : UnitTest() {
         id: Long = indicatorId,
         identifier: String = indicatorIdentifier,
         code: String = indicatorCode,
-        name: String = indicatorName,
+        name: Set<InputTranslation> = indicatorNameSet,
         programmeSpecificObjectiveEntity: ProgrammeSpecificObjectiveEntity = indicatorProgrammeSpecificObjectiveEntity,
-        measurementUnit: String = indicatorMeasurementUnit,
+        measurementUnit: Set<InputTranslation> = indicatorMeasurementUnitSet,
         milestone: BigDecimal = BigDecimal.TEN,
         finalTarget: BigDecimal = BigDecimal.ONE,
-        resultIndicatorEntity: ResultIndicatorEntity= defaultResultIndicatorEntity,
+        resultIndicatorEntity: ResultIndicatorEntity = defaultResultIndicatorEntity,
     ) =
         OutputIndicatorEntity(
             id,
             identifier,
             code,
-            name,
             resultIndicatorEntity,
             programmeSpecificObjectiveEntity,
-            measurementUnit,
             milestone,
-            finalTarget
-        )
+            finalTarget,
+            translatedValues = mutableSetOf()
+        ).apply {
+            translatedValues.add(
+                OutputIndicatorTranslEntity(
+                    TranslationId(
+                        this, SystemLanguage.EN
+                    ),
+                    name = name.first { it.language == SystemLanguage.EN }.translation!!,
+                    measurementUnit = measurementUnit.first { it.language == SystemLanguage.EN }.translation
+                )
+            )
+        }
 
     protected fun buildResultIndicatorEntityInstance(
         id: Long = indicatorId,
         identifier: String = indicatorIdentifier,
         code: String = indicatorCode,
-        name: String = indicatorName,
-        measurementUnit: String = indicatorMeasurementUnit,
+        name: Set<InputTranslation> = indicatorNameSet,
+        measurementUnit: Set<InputTranslation> = indicatorMeasurementUnitSet,
         baseline: BigDecimal = BigDecimal.TEN,
         referenceYear: String = indicatorReferenceYear,
         finalTarget: BigDecimal = BigDecimal.ONE,
-        sourceOfData: String = indicatorSourceOfData,
+        sourceOfData: Set<InputTranslation> = indicatorSourceOfDataSet,
         comment: String = indicatorComment
     ) =
         ResultIndicatorEntity(
             id,
             identifier,
             code,
-            name,
             indicatorProgrammeSpecificObjectiveEntity,
-            measurementUnit,
             baseline,
             referenceYear,
             finalTarget,
-            sourceOfData,
             comment
-        )
+        ).apply {
+            translatedValues.add(
+                ResultIndicatorTranslEntity(
+                    TranslationId(
+                        this, SystemLanguage.EN
+                    ),
+                    name = name.first { it.language == SystemLanguage.EN }.translation!!,
+                    measurementUnit = measurementUnit.first { it.language == SystemLanguage.EN }.translation,
+                    sourceOfData = sourceOfData.first { it.language == SystemLanguage.EN }.translation
+                )
+            )
+        }
 }

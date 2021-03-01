@@ -5,6 +5,7 @@ import {delay, filter, takeUntil} from 'rxjs/operators';
 import {BehaviorSubject} from 'rxjs';
 import {Log} from '../../utils/log';
 import {FormState} from '@common/components/forms/form-state';
+import {TranslateService} from '@ngx-translate/core';
 
 export abstract class ViewEditForm extends AbstractForm implements OnInit {
   FormState = FormState;
@@ -16,8 +17,8 @@ export abstract class ViewEditForm extends AbstractForm implements OnInit {
   formState: FormState;
   changeFormState$ = new BehaviorSubject<FormState>(FormState.VIEW);
 
-  protected constructor(protected changeDetectorRef: ChangeDetectorRef) {
-    super(changeDetectorRef);
+  protected constructor(protected changeDetectorRef: ChangeDetectorRef, protected translationService: TranslateService) {
+    super(changeDetectorRef, translationService);
   }
 
   abstract getForm(): FormGroup | null;

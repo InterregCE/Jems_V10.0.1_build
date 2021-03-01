@@ -2,6 +2,7 @@ import {ChangeDetectionStrategy, ChangeDetectorRef, Component, EventEmitter, Inp
 import {AbstractForm} from '@common/components/forms/abstract-form';
 import {FormGroup} from '@angular/forms';
 import {OutputNutsMetadata} from '@cat/api';
+import {TranslateService} from '@ngx-translate/core';
 
 @Component({
   selector: 'app-programme-nuts-info',
@@ -16,8 +17,8 @@ export class ProgrammeNutsInfoComponent extends AbstractForm {
   @Output()
   downloadNuts = new EventEmitter<void>();
 
-  constructor(protected changeDetectorRef: ChangeDetectorRef) {
-    super(changeDetectorRef);
+  constructor(protected changeDetectorRef: ChangeDetectorRef, protected translationService: TranslateService) {
+    super(changeDetectorRef, translationService);
   }
 
   onSubmit(): void {

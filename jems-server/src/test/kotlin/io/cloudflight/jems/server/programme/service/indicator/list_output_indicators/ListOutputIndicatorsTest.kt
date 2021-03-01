@@ -19,9 +19,9 @@ internal class ListOutputIndicatorsTest : IndicatorsBaseTest() {
         1L,
         "ID01",
         "ioCODE",
-        "indicator title",
+        indicatorNameSet,
         indicatorProgrammeSpecificObjectiveCode,
-        "measurement unit",
+        indicatorMeasurementUnitSet,
     )
 
     @MockK

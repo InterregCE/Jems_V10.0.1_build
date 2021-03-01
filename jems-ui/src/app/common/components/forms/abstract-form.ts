@@ -6,6 +6,7 @@ import {BaseComponent} from '@common/components/base-component';
 import {Log} from '../../utils/log';
 import {Alert} from './alert';
 import {APIError} from '../../models/APIError';
+import {TranslateService} from '@ngx-translate/core';
 
 export abstract class AbstractForm extends BaseComponent implements OnInit {
   Alert = Alert;
@@ -20,7 +21,7 @@ export abstract class AbstractForm extends BaseComponent implements OnInit {
   clearOnSuccess = false;
   permanentSuccessAlert = false;
 
-  protected constructor(protected changeDetectorRef: ChangeDetectorRef) {
+  protected constructor(protected changeDetectorRef: ChangeDetectorRef, protected translateService: TranslateService) {
     super();
   }
 
@@ -41,21 +42,23 @@ export abstract class AbstractForm extends BaseComponent implements OnInit {
       .pipe(takeUntil(this.destroyed$))
       .subscribe((error: APIError) => {
         this.submitted = false;
-        const formGroup = this.getForm();
-        if (!formGroup) {
-          return;
-        }
-        Log.debug('Set form backend errors.', this, error);
-        Object.keys(formGroup.controls).forEach(key => {
-          if (!error?.formErrors || !error.formErrors[key]) {
-            return;
-          }
-          formGroup.controls[key].setErrors({i18nError: error.formErrors[key].i18nKey});
-          formGroup.controls[key].markAsTouched();
-          this.changeDetectorRef.markForCheck();
-        });
-
+        this.setFieldErrors(error, this.getForm());
       });
+  }
+
+  private setFieldErrors(error: APIError, form: FormGroup | null): void {
+    if (!form) {
+      return;
+    }
+    Log.debug('Set form backend errors.', this, error);
+    Object.keys(form.controls).forEach(key => {
+      if (!error?.formErrors || !error.formErrors[key]) {
+        return;
+      }
+      form.controls[key].setErrors({error: this.translateService.instant(error.formErrors[key].i18nKey, error.formErrors[key].i18nArguments)});
+      form.controls[key].markAsTouched();
+      this.changeDetectorRef.markForCheck();
+    });
   }
 
   private handleSuccess(): void {

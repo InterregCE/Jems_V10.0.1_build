@@ -7,7 +7,7 @@ import {FormArray, FormBuilder} from '@angular/forms';
 import {ProjectWorkPackagePageStore} from '../project-work-package-page-store.service';
 import {MultiLanguageInputService} from '../../../../common/services/multi-language-input.service';
 import {catchError, map, startWith, tap} from 'rxjs/operators';
-import {OutputIndicatorSummaryDTO, OutputProjectPeriod, WorkPackageOutputDTO} from '@cat/api';
+import {InputTranslation, OutputIndicatorSummaryDTO, OutputProjectPeriod, WorkPackageOutputDTO} from '@cat/api';
 import {take} from 'rxjs/internal/operators';
 
 @UntilDestroy()
@@ -93,8 +93,8 @@ export class ProjectWorkPackageOutputsTabComponent implements OnInit {
     return this.form.enabled && this.outputs.length < 10;
   }
 
-  getMeasurementUnit(indicatorId: number, indicators: OutputIndicatorSummaryDTO[]): string | undefined {
-    return indicators.find(indicator => indicator.id === indicatorId)?.measurementUnit;
+  getMeasurementUnit(indicatorId: number, indicators: OutputIndicatorSummaryDTO[]): InputTranslation[]{
+    return indicators.find(indicator => indicator.id === indicatorId)?.measurementUnit || [];
   }
 
   private resetForm(outputs: WorkPackageOutputDTO[]): void {

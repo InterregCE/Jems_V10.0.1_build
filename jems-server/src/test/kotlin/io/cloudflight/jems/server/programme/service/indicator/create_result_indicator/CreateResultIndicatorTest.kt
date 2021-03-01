@@ -49,14 +49,6 @@ internal class CreateResultIndicatorTest : IndicatorsBaseTest() {
     }
 
     @Test
-    fun `should throw InvalidIdException when result indicator id is not zero`() {
-        val resultIndicator = buildResultIndicatorInstance(id = 1L)
-        assertThatExceptionOfType(InvalidIdException::class.java).isThrownBy {
-            createResultIndicator.createResultIndicator(resultIndicator)
-        }
-    }
-
-    @Test
     fun `should throw IdentifierIsUsedException when result indicator identifier is already used`() {
         val resultIndicator = buildResultIndicatorInstance(id = 0L)
         every {

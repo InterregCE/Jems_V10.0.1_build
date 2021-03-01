@@ -1,11 +1,13 @@
 package io.cloudflight.jems.server.programme.repository.indicator
 
 import io.cloudflight.jems.api.programme.dto.priority.ProgrammeObjectivePolicy
+import io.cloudflight.jems.server.programme.entity.indicator.ResultIndicatorEntity
 import io.cloudflight.jems.server.programme.repository.priority.ProgrammeSpecificObjectiveRepository
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
 import io.mockk.impl.annotations.MockK
-import org.assertj.core.api.Assertions
+import io.mockk.slot
+import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import org.springframework.data.domain.PageImpl
 import org.springframework.data.domain.Pageable
@@ -25,7 +27,7 @@ internal class ResultIndicatorPersistenceProviderTest : IndicatorsPersistenceBas
     @Test
     fun `should return count of result indicators`() {
         every { resultIndicatorRepository.count() } returns 10
-        Assertions.assertThat(
+        assertThat(
             resultIndicatorPersistenceProvider.getCountOfResultIndicators()
         ).isEqualTo(10)
     }
@@ -34,7 +36,7 @@ internal class ResultIndicatorPersistenceProviderTest : IndicatorsPersistenceBas
     fun `should return result indicator detail`() {
         val resultIndicatorEntity = buildResultIndicatorEntityInstance()
         every { resultIndicatorRepository.findById(indicatorId) } returns Optional.of(resultIndicatorEntity)
-        Assertions.assertThat(
+        assertThat(
             resultIndicatorPersistenceProvider.getResultIndicator(indicatorId)
         ).isEqualTo(resultIndicatorEntity.toResultIndicatorDetail())
     }
@@ -43,7 +45,7 @@ internal class ResultIndicatorPersistenceProviderTest : IndicatorsPersistenceBas
     fun `should return set of result indicator summary`() {
         val resultIndicatorEntity = buildResultIndicatorEntityInstance()
         every { resultIndicatorRepository.findTop50ByOrderById() } returns listOf(resultIndicatorEntity)
-        Assertions.assertThat(
+        assertThat(
             resultIndicatorPersistenceProvider.getTop50ResultIndicators()
         ).isEqualTo(listOf(resultIndicatorEntity).toResultIndicatorSummarySet())
     }
@@ -52,7 +54,7 @@ internal class ResultIndicatorPersistenceProviderTest : IndicatorsPersistenceBas
     fun `should return a page of result indicator detail`() {
         val resultIndicatorEntity = buildResultIndicatorEntityInstance()
         every { resultIndicatorRepository.findAll(Pageable.unpaged()) } returns PageImpl(listOf(resultIndicatorEntity))
-        Assertions.assertThat(
+        assertThat(
             resultIndicatorPersistenceProvider.getResultIndicators(Pageable.unpaged())
         ).isEqualTo(PageImpl(listOf(resultIndicatorEntity)).toResultIndicatorDetailPage())
     }
@@ -65,7 +67,7 @@ internal class ResultIndicatorPersistenceProviderTest : IndicatorsPersistenceBas
                 ProgrammeObjectivePolicy.RenewableEnergy
             )
         } returns PageImpl(listOf(resultIndicatorEntity))
-        Assertions.assertThat(
+        assertThat(
             resultIndicatorPersistenceProvider.getResultIndicatorsForSpecificObjective(ProgrammeObjectivePolicy.RenewableEnergy)
         ).isEqualTo(listOf(resultIndicatorEntity).toResultIndicatorSummaryList())
     }
@@ -74,15 +76,16 @@ internal class ResultIndicatorPersistenceProviderTest : IndicatorsPersistenceBas
     fun `should save and return the result indicator detail`() {
         val resultIndicator = buildResultIndicatorInstance()
         val resultIndicatorEntity = buildResultIndicatorEntityInstance()
+        val resultIndicatorEntitySlot = slot<ResultIndicatorEntity>()
+
         every { programmeSpecificObjectiveRepository.getReferenceIfExistsOrThrow(resultIndicator.programmeObjectivePolicy) } returns indicatorProgrammeSpecificObjectiveEntity
         every {
-            resultIndicatorRepository.save(
-                resultIndicator.toResultIndicatorEntity(indicatorProgrammeSpecificObjectiveEntity)
-            )
+            resultIndicatorRepository.save(capture(resultIndicatorEntitySlot))
         } returns resultIndicatorEntity
-        Assertions.assertThat(
+        assertThat(
             resultIndicatorPersistenceProvider.saveResultIndicator(resultIndicator)
         ).isEqualTo(resultIndicatorEntity.toResultIndicatorDetail())
+        assertThat(resultIndicatorEntitySlot.captured.id).isEqualTo(resultIndicator.id)
     }
 
     @Test
@@ -90,7 +93,7 @@ internal class ResultIndicatorPersistenceProviderTest : IndicatorsPersistenceBas
 
         val resultIndicatorEntity = buildResultIndicatorEntityInstance()
         every { resultIndicatorRepository.findOneByIdentifier(indicatorIdentifier) } returns resultIndicatorEntity
-        Assertions.assertThat(
+        assertThat(
             resultIndicatorPersistenceProvider.isIdentifierUsedByAnotherResultIndicator(
                 resultIndicatorEntity.id,
                 resultIndicatorEntity.identifier
@@ -103,7 +106,7 @@ internal class ResultIndicatorPersistenceProviderTest : IndicatorsPersistenceBas
 
         val resultIndicatorEntity = buildResultIndicatorEntityInstance(2L)
         every { resultIndicatorRepository.findOneByIdentifier(indicatorIdentifier) } returns resultIndicatorEntity
-        Assertions.assertThat(
+        assertThat(
             resultIndicatorPersistenceProvider.isIdentifierUsedByAnotherResultIndicator(
                 indicatorId,
                 resultIndicatorEntity.identifier

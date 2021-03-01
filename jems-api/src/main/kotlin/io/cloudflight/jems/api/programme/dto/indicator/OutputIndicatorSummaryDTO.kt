@@ -1,10 +1,12 @@
 package io.cloudflight.jems.api.programme.dto.indicator
 
+import io.cloudflight.jems.api.project.dto.InputTranslation
+
 data class OutputIndicatorSummaryDTO (
     val id: Long?,
     val identifier: String,
     val code: String?,
-    val name: String,
+    val name: Set<InputTranslation> = emptySet(),
     val programmePriorityCode: String?,
-    val measurementUnit: String?
+    val measurementUnit: Set<InputTranslation> = emptySet()
 )

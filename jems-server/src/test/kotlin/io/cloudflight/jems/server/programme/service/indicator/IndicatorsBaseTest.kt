@@ -1,8 +1,11 @@
 package io.cloudflight.jems.server.programme.service.indicator
 
+import io.cloudflight.jems.api.programme.dto.language.SystemLanguage
 import io.cloudflight.jems.api.programme.dto.priority.ProgrammeObjectivePolicy
+import io.cloudflight.jems.api.project.dto.InputTranslation
 import io.cloudflight.jems.server.UnitTest
 import io.cloudflight.jems.server.audit.service.AuditService
+import io.cloudflight.jems.server.common.validator.GeneralValidatorService
 import io.cloudflight.jems.server.programme.service.indicator.model.OutputIndicator
 import io.cloudflight.jems.server.programme.service.indicator.model.OutputIndicatorDetail
 import io.cloudflight.jems.server.programme.service.indicator.model.ResultIndicator
@@ -18,6 +21,9 @@ abstract class IndicatorsBaseTest : UnitTest() {
     @RelaxedMockK
     lateinit var auditService: AuditService
 
+    @RelaxedMockK
+    lateinit var generalValidator: GeneralValidatorService
+
     @BeforeEach
     fun resetAuditService() {
         clearMocks(auditService)
@@ -25,9 +31,9 @@ abstract class IndicatorsBaseTest : UnitTest() {
 
     private val indicatorId = 1L
     private val indicatorCode = "ioCODE"
-    private val indicatorName = "indicator title"
-    private val indicatorMeasurementUnit = "measurement unit"
-    private val indicatorSourceOfData = "test source of data"
+    protected val indicatorNameSet = setOf(InputTranslation(SystemLanguage.EN, "indicator title"))
+    protected val indicatorMeasurementUnitSet = setOf(InputTranslation(SystemLanguage.EN, "measurement unit"))
+    protected val indicatorSourceOfDataSet = setOf(InputTranslation(SystemLanguage.EN, "test source of data"))
     private val indicatorComment = "test comment"
     private val indicatorIdentifier = "ID01"
     private val indicatorReferenceYear = "2022/2023"
@@ -39,9 +45,9 @@ abstract class IndicatorsBaseTest : UnitTest() {
         id: Long = indicatorId,
         identifier: String = indicatorIdentifier,
         code: String = indicatorCode,
-        name: String = indicatorName,
+        name: Set<InputTranslation> = indicatorNameSet,
         programmeObjectivePolicy: ProgrammeObjectivePolicy = ProgrammeObjectivePolicy.RenewableEnergy,
-        measurementUnit: String = indicatorMeasurementUnit,
+        measurementUnit: Set<InputTranslation> = indicatorMeasurementUnitSet,
         milestone: BigDecimal = BigDecimal.TEN,
         finalTarget: BigDecimal = BigDecimal.ONE,
         resultIndicatorId: Long? = null
@@ -62,11 +68,11 @@ abstract class IndicatorsBaseTest : UnitTest() {
         id: Long = indicatorId,
         identifier: String = indicatorIdentifier,
         code: String = indicatorCode,
-        name: String = indicatorName,
+        name: Set<InputTranslation> = indicatorNameSet,
         programmeObjectivePolicy: ProgrammeObjectivePolicy = ProgrammeObjectivePolicy.RenewableEnergy,
         programmePriorityPolicyCode: String = indicatorProgrammeSpecificObjectiveCode,
         programmePriorityCode: String = indicatorProgrammePriorityCode,
-        measurementUnit: String = indicatorMeasurementUnit,
+        measurementUnit: Set<InputTranslation> = indicatorMeasurementUnitSet,
         milestone: BigDecimal = BigDecimal.TEN,
         finalTarget: BigDecimal = BigDecimal.ONE,
         resultIndicatorDetail: ResultIndicatorDetail? = null
@@ -89,13 +95,13 @@ abstract class IndicatorsBaseTest : UnitTest() {
         id: Long = indicatorId,
         identifier: String = indicatorIdentifier,
         code: String = indicatorCode,
-        name: String = indicatorName,
+        name: Set<InputTranslation> = indicatorNameSet,
         programmePriorityPolicy: ProgrammeObjectivePolicy = ProgrammeObjectivePolicy.RenewableEnergy,
-        measurementUnit: String = indicatorMeasurementUnit,
+        measurementUnit: Set<InputTranslation> = indicatorMeasurementUnitSet,
         baseline: BigDecimal = BigDecimal.TEN,
         referenceYear: String = indicatorReferenceYear,
         finalTarget: BigDecimal = BigDecimal.ONE,
-        sourceOfData: String = indicatorSourceOfData,
+        sourceOfData: Set<InputTranslation> = indicatorSourceOfDataSet,
         comment: String = indicatorComment
     ) =
         ResultIndicator(
@@ -116,15 +122,15 @@ abstract class IndicatorsBaseTest : UnitTest() {
         id: Long = indicatorId,
         identifier: String = indicatorIdentifier,
         code: String = indicatorCode,
-        name: String = indicatorName,
+        name: Set<InputTranslation> = indicatorNameSet,
         programmeObjectivePolicy: ProgrammeObjectivePolicy = ProgrammeObjectivePolicy.RenewableEnergy,
         programmePriorityPolicyCode: String = indicatorProgrammeSpecificObjectiveCode,
         programmePriorityCode: String = indicatorProgrammePriorityCode,
-        measurementUnit: String = indicatorMeasurementUnit,
+        measurementUnit: Set<InputTranslation> = indicatorMeasurementUnitSet,
         baseline: BigDecimal = BigDecimal.TEN,
         referenceYear: String = indicatorReferenceYear,
         finalTarget: BigDecimal = BigDecimal.ONE,
-        sourceOfData: String = indicatorSourceOfData,
+        sourceOfData: Set<InputTranslation> = indicatorSourceOfDataSet,
         comment: String = indicatorComment
     ) =
         ResultIndicatorDetail(

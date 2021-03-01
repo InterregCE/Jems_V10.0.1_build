@@ -16,6 +16,8 @@ import {UntilDestroy, untilDestroyed} from '@ngneat/until-destroy';
 import {ProgrammeEditableStateStore} from '../../services/programme-editable-state-store.service';
 import {FormState} from '@common/components/forms/form-state';
 import {tap} from 'rxjs/operators';
+import {TranslateService} from '@ngx-translate/core';
+
 
 @UntilDestroy()
 @Component({
@@ -38,8 +40,9 @@ export class ProgrammeLegalStatusListComponent extends ViewEditForm implements O
 
   constructor(protected changeDetectorRef: ChangeDetectorRef,
               private formBuilder: FormBuilder,
+              protected translationService: TranslateService,
               public programmeEditableStateStore: ProgrammeEditableStateStore) {
-    super(changeDetectorRef);
+    super(changeDetectorRef, translationService);
     this.programmeEditableStateStore.init();
     this.programmeEditableStateStore.isProgrammeEditableDependingOnCall$.pipe(
         tap(isProgrammeEditingLimited => this.isProgrammeSetupRestricted = isProgrammeEditingLimited),

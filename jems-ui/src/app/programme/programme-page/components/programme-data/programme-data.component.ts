@@ -15,6 +15,7 @@ import {filter, take, takeUntil} from 'rxjs/operators';
 import {Permission} from '../../../../security/permissions/permission';
 import {InputProgrammeData, OutputProgrammeData} from '@cat/api';
 import {Tools} from '../../../../common/utils/tools';
+import {TranslateService} from '@ngx-translate/core';
 
 @Component({
   selector: 'app-programme-data',
@@ -95,8 +96,8 @@ export class ProgrammeDataComponent extends ViewEditForm implements OnInit {
 
   constructor(private formBuilder: FormBuilder,
               private dialog: MatDialog,
-              protected changeDetectorRef: ChangeDetectorRef) {
-    super(changeDetectorRef);
+              protected changeDetectorRef: ChangeDetectorRef, protected translationService: TranslateService) {
+    super(changeDetectorRef, translationService);
   }
 
   ngOnInit(): void {

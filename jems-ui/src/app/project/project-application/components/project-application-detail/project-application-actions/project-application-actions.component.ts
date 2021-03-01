@@ -44,8 +44,8 @@ export class ProjectApplicationActionsComponent extends AbstractForm {
 
   constructor(public translate: TranslateService,
               private dialog: MatDialog,
-              protected changeDetectorRef: ChangeDetectorRef) {
-    super(changeDetectorRef);
+              protected changeDetectorRef: ChangeDetectorRef, protected translationService: TranslateService) {
+    super(changeDetectorRef, translationService);
   }
 
   getForm(): FormGroup | null {

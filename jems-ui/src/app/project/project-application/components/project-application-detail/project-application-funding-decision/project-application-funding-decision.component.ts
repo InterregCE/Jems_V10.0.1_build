@@ -13,6 +13,7 @@ import {FormBuilder, FormGroup, Validators} from '@angular/forms';
 import {MatDialog} from '@angular/material/dialog';
 import {Forms} from '../../../../../common/utils/forms';
 import {filter, take, takeUntil} from 'rxjs/operators';
+import {TranslateService} from '@ngx-translate/core';
 
 @Component({
   selector: 'app-project-application-funding-decision',
@@ -56,8 +57,8 @@ export class ProjectApplicationFundingDecisionComponent extends AbstractForm imp
 
   constructor(private dialog: MatDialog,
               private formBuilder: FormBuilder,
-              protected changeDetectorRef: ChangeDetectorRef) {
-    super(changeDetectorRef);
+              protected changeDetectorRef: ChangeDetectorRef, protected translationService: TranslateService) {
+    super(changeDetectorRef, translationService);
   }
 
   ngOnInit(): void {
