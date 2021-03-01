@@ -4,8 +4,10 @@ import {
   Component,
   EventEmitter,
   Input,
+  OnChanges,
   OnInit,
-  Output
+  Output,
+  SimpleChanges
 } from '@angular/core';
 import {ViewEditForm} from '@common/components/forms/view-edit-form';
 import {FormArray, FormBuilder, FormGroup} from '@angular/forms';
@@ -22,7 +24,7 @@ import {tap} from 'rxjs/operators';
   styleUrls: ['./programme-legal-status-list.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class ProgrammeLegalStatusListComponent extends ViewEditForm implements OnInit {
+export class ProgrammeLegalStatusListComponent extends ViewEditForm implements OnInit, OnChanges {
   @Input()
   legalStatuses: ProgrammeLegalStatusDTO[];
 
@@ -100,4 +102,11 @@ export class ProgrammeLegalStatusListComponent extends ViewEditForm implements O
   protected enterEditMode(): void {
     this.toDeleteIds = [];
   }
+
+  ngOnChanges(changes: SimpleChanges): void {
+    if (changes.legalStatuses && this.legalStatusesForm) {
+      this.resetForm();
+    }
+  }
+
 }
