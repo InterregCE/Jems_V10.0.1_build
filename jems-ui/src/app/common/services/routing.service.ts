@@ -47,6 +47,15 @@ export class RoutingService {
     ).subscribe();
   }
 
+  routeChanges(url: string): Observable<boolean> {
+    return this.currentRoute
+      .pipe(
+        map(route => this.containsPath(route, url)),
+        distinctUntilChanged(),
+        tap(param => Log.debug('Route changed', this, url)),
+      );
+  }
+
   routeParameterChanges(url: string, parameter: string): Observable<string | number> {
     return this.currentRoute
       .pipe(
