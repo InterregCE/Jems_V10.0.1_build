@@ -11,10 +11,10 @@ import {take} from 'rxjs/internal/operators';
 import {Alert} from '@common/components/forms/alert';
 import {Forms} from '../../../../common/utils/forms';
 import {MatDialog} from '@angular/material/dialog';
-import {I18nValidationError} from '@common/validation/i18n-validation-error';
 import {HttpErrorResponse} from '@angular/common/http';
 import {UntilDestroy, untilDestroyed} from '@ngneat/until-destroy';
 import {ProgrammeEditableStateStore} from '../../../programme-page/services/programme-editable-state-store.service';
+import {APIError} from '../../../../common/models/APIError';
 
 @UntilDestroy()
 @Component({
@@ -46,7 +46,7 @@ export class ProgrammePriorityDetailPageComponent {
 
   // TODO: remove when new edit mode is introduced
   saveSuccess: string;
-  saveError: I18nValidationError;
+  saveError: APIError;
 
   constructor(private programmePageSidenavService: ProgrammePageSidenavService,
               private activatedRoute: ActivatedRoute,
@@ -155,13 +155,15 @@ export class ProgrammePriorityDetailPageComponent {
   }
 
   specificObjectiveError(): { [key: string]: any } | null {
-    if (!this.saveError?.i18nFieldErrors?.specificObjectives) {
+    if (!this.saveError?.formErrors?.specificObjectives) {
       return null;
     }
+    const args: string[] = [];
+    Object.keys(this.saveError?.formErrors?.specificObjectives?.i18nArguments).forEach(argKey => args.push(this.saveError?.formErrors?.specificObjectives?.i18nArguments[argKey]));
     return {
-      i18nKey: this.saveError?.i18nFieldErrors?.specificObjectives.i18nKey,
+      i18nKey: this.saveError?.formErrors?.specificObjectives.i18nKey,
       i8nArguments: {
-        arg: this.saveError?.i18nFieldErrors?.specificObjectives?.i18nArguments?.join(',')
+        arg: args.join(',')
       }
     };
   }
