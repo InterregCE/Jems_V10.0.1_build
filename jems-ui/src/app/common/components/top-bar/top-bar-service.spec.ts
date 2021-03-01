@@ -60,7 +60,8 @@ describe('TopBarService', () => {
 
     (securityService as any).myCurrentUser.next({name: 'user', role: Permission.APPLICANT_USER});
     tick();
-    expect(menuItems.length).toBe(1);
-    expect(menuItems[0].name).toBe('user (applicant user)');
+    expect(menuItems.length).toBe(2);
+    expect(menuItems[0].name).toBe('topbar.main.dashboard');
+    expect(menuItems[1].name).toBe('user (applicant user)');
   }));
 });
