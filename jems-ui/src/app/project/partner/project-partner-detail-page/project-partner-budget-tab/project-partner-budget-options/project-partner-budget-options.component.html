@@ -1,21 +1,22 @@
 <ng-container *ngIf="(data$ | async) as data">
-    <app-form (save)="updateBudgetOptions(formToBudgetOptions(data.callFlatRateSettings))">
+    <app-form (save)="updateBudgetOptions(formToBudgetOptions())">
         <form appFormLayout *ngIf="data.isAnyOptionAvailable else noOptionIsAvailable" [formGroup]="budgetOptionForm">
             <h3>{{'project.partner.budget.options.header' | translate}}</h3>
             <mat-list>
-                <mat-list-item *ngIf="data.callFlatRateSettings.staffCostFlatRateSetup">
+                <mat-list-item *ngIf="staffCostsFlatRate">
                     <mat-checkbox
-                            [formControl]="isStaffCostsFlatRateSelected"
+                            [formControl]="isStaffCostsFlatRateActive"
                             (click)="$event.stopPropagation()"
-                            (change)="toggleFlatRate(isStaffCostsFlatRateSelected,staffCostsFlatRate,data.callFlatRateSettings.staffCostFlatRateSetup,$event.checked)"
-                            [checked]="isStaffCostsFlatRateSelected?.value">
+                            (change)="toggleFlatRate(isStaffCostsFlatRateActive,staffCostsFlatRate,data.callFlatRateSettings.staffCostFlatRateSetup,$event.checked)"
+                            [disabled]="data.areFlatRatesInFirstCategoryDisabled"
+                            [checked]="isStaffCostsFlatRateActive?.value">
                         {{'project.partner.budget.options.staff.costs.on.direct.cost.flat.rate.enabled' | translate}}
                     </mat-checkbox>
                     <mat-form-field
                             appFormFieldWidth
                             extendError
                             [expectedNumberOfChars]="3"
-                            *ngIf="isStaffCostsFlatRateSelected?.value">
+                            *ngIf="isStaffCostsFlatRateActive?.value">
                         <input matInput currencyMask type="integer"
                                [options]="{min: constants.MIN_FLAT_RATE_VALUE, max: data.callFlatRateSettings.staffCostFlatRateSetup.rate, align: 'right'}"
                                [formControl]="staffCostsFlatRate"
@@ -32,89 +33,92 @@
                         </mat-error>
                     </mat-form-field>
                 </mat-list-item>
-                <mat-list-item *ngIf="data.callFlatRateSettings.officeAndAdministrationOnStaffCostsFlatRateSetup">
+                <mat-list-item *ngIf="officeAndAdministrationOnStaffCostsFlatRate">
                     <mat-checkbox
-                            [formControl]="isOfficeOnStaffSelected"
+                            [formControl]="isOfficeAndAdministrationOnStaffCostsFlatRateActive"
                             (click)="$event.stopPropagation()"
-                            (change)="toggleFlatRate(isOfficeOnStaffSelected, officeOnStaffCostsFlatRate,data.callFlatRateSettings.officeAndAdministrationOnStaffCostsFlatRateSetup,$event.checked)"
-                            [checked]="isOfficeOnStaffSelected?.value">
+                            (change)="toggleFlatRate(isOfficeAndAdministrationOnStaffCostsFlatRateActive, officeAndAdministrationOnStaffCostsFlatRate,data.callFlatRateSettings.officeAndAdministrationOnStaffCostsFlatRateSetup,$event.checked)"
+                            [disabled]="data.areFlatRatesInFirstCategoryDisabled || isOfficeAndAdministrationOnDirectCostsFlatRateActive?.value"
+                            [checked]="isOfficeAndAdministrationOnStaffCostsFlatRateActive?.value">
                         {{'project.partner.budget.options.office.on.staff.cost.flat.rate.enabled' | translate}}
                     </mat-checkbox>
                     <mat-form-field
                             appFormFieldWidth
                             extendError
                             [expectedNumberOfChars]="3"
-                            *ngIf="isOfficeOnStaffSelected?.value">
+                            *ngIf="isOfficeAndAdministrationOnStaffCostsFlatRateActive?.value">
                         <input matInput
                                currencyMask type="integer"
                                [options]="{min: constants.MIN_FLAT_RATE_VALUE, max: data.callFlatRateSettings.officeAndAdministrationOnStaffCostsFlatRateSetup.rate, align: 'right'}"
-                               [formControl]="officeOnStaffCostsFlatRate"
+                               [formControl]="officeAndAdministrationOnStaffCostsFlatRate"
                                [readonly]="!data.callFlatRateSettings.officeAndAdministrationOnStaffCostsFlatRateSetup.isAdjustable"
                                (paste)="Tools.checkDigitsOnPaste($event)"
                                (keypress)="Tools.checkDigitsOnInput($event)">
                         <span matSuffix class="pl-1">{{'project.partner.budget.options.office.on.staff.cost.flat.rate.percent' | translate}}</span>
                         <mat-error>
                             <app-form-field-errors
-                                    [errors]="officeOnStaffCostsFlatRate?.errors"
+                                    [errors]="officeAndAdministrationOnStaffCostsFlatRate?.errors"
                                     [messages]="constants.FORM_ERRORS.flatRateErrors"
                                     [args]="data.flatRateErrorsArgs.officeOnStaff">
                             </app-form-field-errors>
                         </mat-error>
                     </mat-form-field>
                 </mat-list-item>
-                <mat-list-item *ngIf="data.callFlatRateSettings.officeAndAdministrationOnDirectCostsFlatRateSetup">
+                <mat-list-item *ngIf="officeAndAdministrationOnDirectCostsFlatRate">
                     <mat-checkbox
-                            [formControl]="isOfficeOnDirectCostsSelected"
+                            [formControl]="isOfficeAndAdministrationOnDirectCostsFlatRateActive"
                             (click)="$event.stopPropagation()"
-                            (change)="toggleFlatRate(isOfficeOnDirectCostsSelected, officeOnDirectCostsFlatRate,data.callFlatRateSettings.officeAndAdministrationOnDirectCostsFlatRateSetup,$event.checked)"
-                            [checked]="isOfficeOnDirectCostsSelected?.value">
+                            (change)="toggleFlatRate(isOfficeAndAdministrationOnDirectCostsFlatRateActive, officeAndAdministrationOnDirectCostsFlatRate,data.callFlatRateSettings.officeAndAdministrationOnDirectCostsFlatRateSetup,$event.checked)"
+                            [disabled]="data.areFlatRatesInFirstCategoryDisabled || isOfficeAndAdministrationOnStaffCostsFlatRateActive?.value"
+                            [checked]="isOfficeAndAdministrationOnDirectCostsFlatRateActive?.value">
                         {{'project.partner.budget.options.office.on.direct.cost.flat.rate.enabled' | translate}}
                     </mat-checkbox>
                     <mat-form-field
                             appFormFieldWidth
                             extendError
                             [expectedNumberOfChars]="3"
-                            *ngIf="isOfficeOnDirectCostsSelected?.value">
+                            *ngIf="isOfficeAndAdministrationOnDirectCostsFlatRateActive?.value">
                         <input matInput currencyMask type="integer"
                                [options]="{min: constants.MIN_FLAT_RATE_VALUE, max: data.callFlatRateSettings.officeAndAdministrationOnDirectCostsFlatRateSetup.rate, align: 'right'}"
-                               [formControl]="officeOnDirectCostsFlatRate"
+                               [formControl]="officeAndAdministrationOnDirectCostsFlatRate"
                                [readonly]="!data.callFlatRateSettings.officeAndAdministrationOnDirectCostsFlatRateSetup.isAdjustable"
                                (paste)="Tools.checkDigitsOnPaste($event)"
                                (keypress)="Tools.checkDigitsOnInput($event)">
                         <span matSuffix class="pl-1">{{'project.partner.budget.options.office.on.direct.cost.flat.rate.percent' | translate}}</span>
                         <mat-error>
                             <app-form-field-errors
-                                    [errors]="officeOnDirectCostsFlatRate?.errors"
+                                    [errors]="officeAndAdministrationOnDirectCostsFlatRate?.errors"
                                     [messages]="constants.FORM_ERRORS.flatRateErrors"
                                     [args]="data.flatRateErrorsArgs.officeOnDirect">
                             </app-form-field-errors>
                         </mat-error>
                     </mat-form-field>
                 </mat-list-item>
-                <mat-list-item *ngIf="data.callFlatRateSettings.travelAndAccommodationOnStaffCostsFlatRateSetup">
+                <mat-list-item *ngIf="travelAndAccommodationOnStaffCostsFlatRate">
                     <mat-checkbox
-                            [formControl]="isTravelOnStaffCostsSelected"
+                            [formControl]="isTravelAndAccommodationOnStaffCostsFlatRateActive"
                             (click)="$event.stopPropagation()"
-                            (change)="toggleFlatRate(isTravelOnStaffCostsSelected,travelOnStaffCostsFlatRate,data.callFlatRateSettings.travelAndAccommodationOnStaffCostsFlatRateSetup,$event.checked)"
-                            [checked]="isTravelOnStaffCostsSelected?.value">
+                            (change)="toggleFlatRate(isTravelAndAccommodationOnStaffCostsFlatRateActive,travelAndAccommodationOnStaffCostsFlatRate,data.callFlatRateSettings.travelAndAccommodationOnStaffCostsFlatRateSetup,$event.checked)"
+                            [disabled]="data.areFlatRatesInFirstCategoryDisabled"
+                            [checked]="isTravelAndAccommodationOnStaffCostsFlatRateActive?.value">
                         {{'project.partner.budget.options.travel.based.on.staff.cost.flat.rate.enabled' | translate}}
                     </mat-checkbox>
                     <mat-form-field
                             appFormFieldWidth
                             extendError
                             [expectedNumberOfChars]="3"
-                            *ngIf="isTravelOnStaffCostsSelected?.value">
+                            *ngIf="isTravelAndAccommodationOnStaffCostsFlatRateActive?.value">
                         <input matInput
                                currencyMask type="integer"
                                [options]="{min: constants.MIN_FLAT_RATE_VALUE, max: data.callFlatRateSettings.travelAndAccommodationOnStaffCostsFlatRateSetup.rate, align: 'right'}"
-                               [formControl]="travelOnStaffCostsFlatRate"
+                               [formControl]="travelAndAccommodationOnStaffCostsFlatRate"
                                [readonly]="!data.callFlatRateSettings.travelAndAccommodationOnStaffCostsFlatRateSetup.isAdjustable"
                                (paste)="Tools.checkDigitsOnPaste($event)"
                                (keypress)="Tools.checkDigitsOnInput($event)">
                         <span matSuffix class="pl-1">{{'project.partner.budget.options.travel.based.on.staff.cost.flat.rate.percent' | translate}}</span>
                         <mat-error>
                             <app-form-field-errors
-                                    [errors]="travelOnStaffCostsFlatRate?.errors"
+                                    [errors]="travelAndAccommodationOnStaffCostsFlatRate?.errors"
                                     [messages]="constants.FORM_ERRORS.flatRateErrors"
                                     [args]="data.flatRateErrorsArgs.travel">
                             </app-form-field-errors>
@@ -122,19 +126,20 @@
                     </mat-form-field>
                 </mat-list-item>
                 <mat-divider *ngIf="data.isDividerVisible" [inset]="true" class="my-3"></mat-divider>
-                <mat-list-item *ngIf="data.callFlatRateSettings.otherCostsOnStaffCostsFlatRateSetup">
+                <mat-list-item *ngIf="otherCostsOnStaffCostsFlatRate">
                     <mat-checkbox
-                            [formControl]="isOtherCostsOnStaffCostsSelected"
+                            [formControl]="isOtherCostsOnStaffCostsFlatRateActive"
                             (click)="$event.stopPropagation()"
-                            (change)="toggleFlatRate(isOtherCostsOnStaffCostsSelected,otherCostsOnStaffCostsFlatRate,data.callFlatRateSettings.otherCostsOnStaffCostsFlatRateSetup,$event.checked)"
-                            [checked]="isOtherCostsOnStaffCostsSelected?.value">
+                            (change)="toggleFlatRate(isOtherCostsOnStaffCostsFlatRateActive,otherCostsOnStaffCostsFlatRate,data.callFlatRateSettings.otherCostsOnStaffCostsFlatRateSetup,$event.checked)"
+                            [disabled]="data.isOtherCostFlatRateDisabled"
+                            [checked]="isOtherCostsOnStaffCostsFlatRateActive?.value">
                         {{'project.partner.budget.options.other.costs.on.staff.costs.flat.rate.enabled' | translate}}
                     </mat-checkbox>
                     <mat-form-field
                             appFormFieldWidth
                             extendError
                             [expectedNumberOfChars]="3"
-                            *ngIf="isOtherCostsOnStaffCostsSelected?.value">
+                            *ngIf="isOtherCostsOnStaffCostsFlatRateActive?.value">
                         <input matInput
                                currencyMask type="integer"
                                [options]="{min: constants.MIN_FLAT_RATE_VALUE, max: data.callFlatRateSettings.otherCostsOnStaffCostsFlatRateSetup.rate, align: 'right'}"
