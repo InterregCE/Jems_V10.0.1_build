@@ -182,11 +182,11 @@ export class ProgrammeLumpSumDetailComponent extends ViewEditForm implements OnI
   }
 
   getCorrectPhase(value: string): ProgrammeLumpSumDTO.PhaseEnum {
-    if (value === 'Preparation') {
+    if (value === ProgrammeLumpSumDTO.PhaseEnum.Preparation) {
       return ProgrammeLumpSumDTO.PhaseEnum.Preparation;
     }
 
-    if (value === 'implementation') {
+    if (value === ProgrammeLumpSumDTO.PhaseEnum.Implementation) {
       return ProgrammeLumpSumDTO.PhaseEnum.Implementation;
     }
     return ProgrammeLumpSumDTO.PhaseEnum.Closure;
@@ -204,6 +204,8 @@ export class ProgrammeLumpSumDetailComponent extends ViewEditForm implements OnI
 
   protected enterEditMode(): void {
     if (this.lumpSum) {
+      this.lumpSumForm.controls.name.setErrors(null);
+      this.lumpSumForm.controls.description.setErrors(null);
       this.lumpSumForm.controls.allowSplitting.setErrors(null);
       this.lumpSumForm.controls.phase.setErrors(null);
       this.lumpSumForm.controls.categories.setErrors(null);
