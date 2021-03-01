@@ -17,9 +17,10 @@ import {PartnerBudgetTables} from '../../../../model/budget/partner-budget-table
 import {GeneralBudgetTable} from '../../../../model/budget/general-budget-table';
 import {TravelAndAccommodationCostsBudgetTable} from '../../../../model/budget/travel-and-accommodation-costs-budget-table';
 import {TravelAndAccommodationCostsBudgetTableEntry} from '../../../../model/budget/travel-and-accommodation-costs-budget-table-entry';
-import {ProgrammeUnitCostDTO, OutputProjectPeriod} from '@cat/api';
+import {OutputProjectPeriod, ProgrammeUnitCostDTO} from '@cat/api';
 import {UnitCostsBudgetTable} from '../../../../model/budget/unit-costs-budget-table';
 import {UnitCostsBudgetTableEntry} from '../../../../model/budget/unit-costs-budget-table-entry';
+import {ProjectPartnerBudgetTabService} from '../project-partner-budget-tab.service';
 
 @UntilDestroy()
 @Component({
@@ -55,11 +56,12 @@ export class ProjectPartnerBudgetComponent implements OnInit {
   private officeAndAdministrationFlatRateTotal$: Observable<number>;
   private travelAndAccommodationTotal$: Observable<number>;
 
-  constructor(private formService: FormService, private formBuilder: FormBuilder, private multiLanguageInputService: MultiLanguageInputService, private pageStore: ProjectPartnerDetailPageStore) {
+  constructor(private formService: FormService, private tabService: ProjectPartnerBudgetTabService, private formBuilder: FormBuilder, private multiLanguageInputService: MultiLanguageInputService, private pageStore: ProjectPartnerDetailPageStore) {
   }
 
   ngOnInit(): void {
-    this.formService.init(this.budgetsForm, this.pageStore.isProjectEditable$);
+    this.formService.init(this.budgetsForm, combineLatest([this.pageStore.isProjectEditable$, this.tabService.isBudgetOptionsFormInEditMode$.pipe(startWith(false))]).pipe(map(([isProjectEditable, isBudgetOptionsFormInEditMode]) => isProjectEditable && !isBudgetOptionsFormInEditMode)));
+    this.tabService.trackBudgetFormState(this.formService);
 
     this.pageStore.budgets$.pipe(untilDestroyed(this)).subscribe();
 

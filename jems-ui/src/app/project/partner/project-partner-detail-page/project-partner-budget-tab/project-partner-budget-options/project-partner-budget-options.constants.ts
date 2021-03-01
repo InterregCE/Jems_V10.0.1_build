@@ -2,15 +2,15 @@ export class ProjectPartnerBudgetOptionsConstants {
   public static MIN_FLAT_RATE_VALUE = 1;
   public static FORM_CONTROL_NAMES = {
     staffCostsFlatRate: 'StaffCost',
-    isStaffCostsFlatRateActive: 'isStaffCostsFlatRateActive',
+    isStaffCostsFlatRateActive: 'isStaffCostSelected',
     officeAndAdministrationOnStaffCostsFlatRate: 'OfficeOnStaff',
-    isOfficeAndAdministrationOnStaffCostsFlatRateActive: 'isOfficeAndAdministrationOnStaffCostsFlatRateActive',
+    isOfficeAndAdministrationOnStaffCostsFlatRateActive: 'isOfficeOnStaffSelected',
     officeAndAdministrationOnDirectCostsFlatRate: 'OfficeOnOther',
-    isOfficeAndAdministrationOnDirectCostsFlatRateActive: 'isOfficeAndAdministrationOnDirectCostsFlatRateActive',
+    isOfficeAndAdministrationOnDirectCostsFlatRateActive: 'isOfficeOnOtherSelected',
     travelAndAccommodationOnStaffCostsFlatRate: 'TravelOnStaff',
-    isTravelAndAccommodationOnStaffCostsFlatRateActive: 'isTravelAndAccommodationOnStaffCostsFlatRateActive',
+    isTravelAndAccommodationOnStaffCostsFlatRateActive: 'isTravelOnStaffSelected',
     otherCostsOnStaffCostsFlatRate: 'OtherOnStaff',
-    isOtherCostsOnStaffCostsFlatRateActive: 'isOtherCostsOnStaffCostsFlatRateActive',
+    isOtherCostsOnStaffCostsFlatRateActive: 'isOtherOnStaffSelected',
   };
 
   public static FORM_ERRORS = {
