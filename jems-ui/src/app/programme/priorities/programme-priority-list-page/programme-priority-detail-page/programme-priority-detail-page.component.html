@@ -119,9 +119,9 @@
         <app-alert *ngIf="saveError"
                    [show]="!!saveError"
                    [type]="Alert.ERROR">
-            <p *ngIf="!!saveError.i18nKey">{{saveError.i18nKey | translate}}</p>
+            <app-api-error-content *ngIf="!!saveError.i18nMessage.i18nKey" [error]="saveError"></app-api-error-content>
 
-            <p *ngIf="!saveError.i18nKey && !specificObjectiveError()">
+            <p *ngIf="!saveError.i18nMessage.i18nKey && !specificObjectiveError()">
                 {{'programme.priority.code.or.title.already.in.use' | translate}}
             </p>
 

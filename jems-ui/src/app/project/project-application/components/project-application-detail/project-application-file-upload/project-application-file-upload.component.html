@@ -15,7 +15,7 @@
 <app-alert
         [show]="(error$ | async) !== null"
         [type]="Alert.ERROR">
-    <p *ngIf="(error$ | async)?.httpStatus === 422; else unknown">{{'file.upload.message.duplicate' | translate: {name: uploadedFileName} }}</p>
+    <p *ngIf="(error$ | async)?.i18nMessage.i18nKey; else unknown">{{'file.upload.message.duplicate' | translate: {name: uploadedFileName} }}</p>
 </app-alert>
 <ng-template #unknown>
     <p>{{'file.upload.message.failed' | translate: {name: uploadedFileName} }}</p>

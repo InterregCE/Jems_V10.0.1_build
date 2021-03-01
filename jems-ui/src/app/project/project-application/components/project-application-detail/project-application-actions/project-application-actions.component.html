@@ -49,7 +49,7 @@
 </app-alert>
 
 <app-alert *ngIf="error$ | async as error"
-           [show]="!!error.i18nKey"
+           [show]="!!error.i18nMessage?.i18nKey"
            [type]="Alert.ERROR">
-    <p>{{error.i18nKey | translate}}</p>
+    <app-api-error-content [error]="error"></app-api-error-content>
 </app-alert>

@@ -15,7 +15,8 @@
     <app-alert *ngIf="error$ | async as error"
                [show]="!!error"
                [type]="Alert.ERROR">
-        <p>{{ (error.i18nKey ? error.i18nKey : 'programme.area.nuts.download.error') | translate}}</p>
+        <app-api-error-content *ngIf="error.i18nMessage?.i18nKey" [error]="error"></app-api-error-content>
+        <p *ngIf="!error.i18nMessage?.i18nKey">{{'programme.area.nuts.download.error' | translate}}</p>
     </app-alert>
     <div>
         <p *ngIf="metadata">
