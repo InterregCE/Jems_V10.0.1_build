@@ -2,15 +2,15 @@ export class ProjectPartnerBudgetOptionsConstants {
   public static MIN_FLAT_RATE_VALUE = 1;
   public static FORM_CONTROL_NAMES = {
     staffCostsFlatRate: 'StaffCost',
-    isStaffCostsFlatRateActive: 'isStaffCostsFlatRateActive',
-    officeAndAdministrationOnStaffCostsFlatRate: 'OfficeOnStaff',
-    isOfficeAndAdministrationOnStaffCostsFlatRateActive: 'isOfficeAndAdministrationOnStaffCostsFlatRateActive',
-    officeAndAdministrationOnDirectCostsFlatRate: 'OfficeOnOther',
-    isOfficeAndAdministrationOnDirectCostsFlatRateActive: 'isOfficeAndAdministrationOnDirectCostsFlatRateActive',
+    isStaffCostsFlatRateSelected: 'isStaffCostSelected',
+    officeOnStaffCostsFlatRate: 'OfficeOnStaff',
+    isOfficeOnStaffCostsFlatRateSelected: 'isOfficeOnStaffSelected',
+    officeOnDirectCostsFlatRate: 'OfficeOnOther',
+    isOfficeOnDirectCostsFlatRateSelected: 'isOfficeOnOtherSelected',
     travelAndAccommodationOnStaffCostsFlatRate: 'TravelOnStaff',
-    isTravelAndAccommodationOnStaffCostsFlatRateActive: 'isTravelAndAccommodationOnStaffCostsFlatRateActive',
+    isTravelAndAccommodationOnStaffCostsFlatRateSelected: 'isTravelOnStaffSelected',
     otherCostsOnStaffCostsFlatRate: 'OtherOnStaff',
-    isOtherCostsOnStaffCostsFlatRateActive: 'isOtherCostsOnStaffCostsFlatRateActive',
+    isOtherCostsOnStaffCostsFlatRateSelected: 'isOtherOnStaffSelected',
   };
 
   public static FORM_ERRORS = {
