@@ -27,3 +27,10 @@ class InvalidResultIndicatorException : ApplicationBadRequestException(
     formErrors = mapOf("resultIndicatorId" to I18nMessage("$UPDATE_OUTPUT_INDICATOR_ERROR_KEY_PREFIX.invalid.result.indicator")),
     cause = null
 )
+
+class SpecificObjectiveCannotBeChangedException : ApplicationBadRequestException(
+    code = "$UPDATE_OUTPUT_INDICATOR_ERROR_CODE_PREFIX-004",
+    i18nMessage = I18nMessage("$UPDATE_OUTPUT_INDICATOR_ERROR_KEY_PREFIX.specific.objective.cannot.be.changed.after.first.published.call"),
+    formErrors = mapOf("specificObjective" to I18nMessage("$UPDATE_OUTPUT_INDICATOR_ERROR_KEY_PREFIX.specific.objective.cannot.be.changed.after.first.published.call")),
+    cause = null
+)

@@ -1,4 +1,4 @@
-package io.cloudflight.jems.server.call.repository.flatrate
+package io.cloudflight.jems.server.call.repository
 
 import io.cloudflight.jems.api.call.dto.CallStatus
 import io.cloudflight.jems.server.call.entity.CallEntity

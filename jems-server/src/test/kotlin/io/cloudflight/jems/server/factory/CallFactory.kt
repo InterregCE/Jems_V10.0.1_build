@@ -3,7 +3,7 @@ package io.cloudflight.jems.server.factory
 import io.cloudflight.jems.api.call.dto.CallStatus
 import io.cloudflight.jems.server.call.entity.CallEntity
 import io.cloudflight.jems.server.user.entity.User
-import io.cloudflight.jems.server.call.repository.flatrate.CallRepository
+import io.cloudflight.jems.server.call.repository.CallRepository
 import org.springframework.stereotype.Component
 import org.springframework.transaction.annotation.Transactional
 import java.time.ZonedDateTime

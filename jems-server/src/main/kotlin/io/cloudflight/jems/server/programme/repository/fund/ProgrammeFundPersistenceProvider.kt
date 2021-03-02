@@ -1,6 +1,6 @@
 package io.cloudflight.jems.server.programme.repository.fund
 
-import io.cloudflight.jems.server.call.repository.flatrate.CallRepository
+import io.cloudflight.jems.server.call.repository.CallRepository
 import io.cloudflight.jems.server.programme.repository.ProgrammePersistenceProvider
 import io.cloudflight.jems.server.programme.service.fund.ProgrammeFundPersistence
 import io.cloudflight.jems.server.programme.service.fund.model.ProgrammeFund

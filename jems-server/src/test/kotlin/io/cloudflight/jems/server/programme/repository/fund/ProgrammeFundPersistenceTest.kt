@@ -3,7 +3,7 @@ package io.cloudflight.jems.server.programme.repository.fund
 import io.cloudflight.jems.api.programme.dto.language.SystemLanguage.EN
 import io.cloudflight.jems.api.programme.dto.language.SystemLanguage.SK
 import io.cloudflight.jems.server.UnitTest
-import io.cloudflight.jems.server.call.repository.flatrate.CallRepository
+import io.cloudflight.jems.server.call.repository.CallRepository
 import io.cloudflight.jems.server.programme.entity.fund.ProgrammeFundEntity
 import io.cloudflight.jems.server.programme.entity.fund.ProgrammeFundTranslationEntity
 import io.cloudflight.jems.server.programme.entity.fund.ProgrammeFundTranslationId

@@ -1,6 +1,6 @@
 package io.cloudflight.jems.server.call.repository.costoption
 
-import io.cloudflight.jems.server.call.repository.flatrate.CallRepository
+import io.cloudflight.jems.server.call.repository.CallRepository
 import io.cloudflight.jems.server.call.service.costoption.CallCostOptionsPersistence
 import io.cloudflight.jems.server.common.exception.ResourceNotFoundException
 import io.cloudflight.jems.server.programme.repository.costoption.ProgrammeLumpSumRepository

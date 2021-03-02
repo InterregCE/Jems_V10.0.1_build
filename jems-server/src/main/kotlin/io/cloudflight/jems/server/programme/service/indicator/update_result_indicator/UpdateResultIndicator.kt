@@ -1,6 +1,7 @@
 package io.cloudflight.jems.server.programme.service.indicator.update_result_indicator
 
 import io.cloudflight.jems.server.audit.service.AuditService
+import io.cloudflight.jems.server.call.service.CallPersistence
 import io.cloudflight.jems.server.common.exception.ExceptionWrapper
 import io.cloudflight.jems.server.common.validator.GeneralValidatorService
 import io.cloudflight.jems.server.programme.authorization.CanUpdateProgrammeSetup
@@ -16,6 +17,7 @@ import java.math.BigDecimal
 class UpdateResultIndicator(
     private val persistence: ResultIndicatorPersistence,
     private val generalValidator: GeneralValidatorService,
+    private val callPersistence: CallPersistence,
     private val auditService: AuditService
 ) : UpdateResultIndicatorInteractor {
 
@@ -30,6 +32,9 @@ class UpdateResultIndicator(
             throw IdentifierIsUsedException()
 
         val oldResultIndicator = persistence.getResultIndicator(resultIndicator.id!!)
+
+        checkUpdateConstraintsAfterFirstPublishedCall(resultIndicator, oldResultIndicator)
+
         val savedResultIndicator = persistence.saveResultIndicator(resultIndicator)
 
         auditService.logEvent(
@@ -57,4 +62,12 @@ class UpdateResultIndicator(
             generalValidator.minDecimal(resultIndicator.finalTarget, BigDecimal.ZERO, "finalTarget"),
             generalValidator.digits(resultIndicator.finalTarget, 9, 2, "finalTarget")
         )
+
+    private fun checkUpdateConstraintsAfterFirstPublishedCall(
+        resultIndicator: ResultIndicator,
+        oldResultIndicatorDetail: ResultIndicatorDetail
+    ) {
+        if (oldResultIndicatorDetail.programmeObjectivePolicy != resultIndicator.programmeObjectivePolicy && callPersistence.hasAnyCallPublished())
+            throw SpecificObjectiveCannotBeChangedException()
+    }
 }
