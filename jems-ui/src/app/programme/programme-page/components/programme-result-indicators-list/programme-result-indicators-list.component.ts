@@ -47,6 +47,7 @@ export class ProgrammeResultIndicatorsListComponent extends BaseComponent {
       },
       {
         displayedColumn: 'result.indicator.table.column.name.name',
+        columnType: ColumnType.InputTranslation,
         elementProperty: 'name',
         sortProperty: 'name'
       },
@@ -62,6 +63,7 @@ export class ProgrammeResultIndicatorsListComponent extends BaseComponent {
       },
       {
         displayedColumn: 'result.indicator.table.column.name.measurement.unit',
+        columnType: ColumnType.InputTranslation,
         elementProperty: 'measurementUnit',
         sortProperty: 'measurementUnit'
       },
