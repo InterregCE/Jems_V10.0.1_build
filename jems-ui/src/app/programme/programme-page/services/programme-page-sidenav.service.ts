@@ -1,6 +1,10 @@
 import {Injectable} from '@angular/core';
 import {SideNavService} from '@common/components/side-nav/side-nav.service';
+import {RoutingService} from 'src/app/common/services/routing.service';
+import {tap, filter} from 'rxjs/operators';
+import {UntilDestroy, untilDestroyed} from '@ngneat/until-destroy';
 
+@UntilDestroy()
 @Injectable()
 export class ProgrammePageSidenavService {
   public static PROGRAMME_DETAIL_PATH = '/app/programme';
@@ -25,8 +29,14 @@ export class ProgrammePageSidenavService {
     route: `${ProgrammePageSidenavService.PROGRAMME_DETAIL_PATH}/costs`
   };
 
-  constructor(private sideNavService: SideNavService) {
-    this.init();
+  constructor(private sideNavService: SideNavService,
+              private routingService: RoutingService) {
+    this.routingService.routeChanges(ProgrammePageSidenavService.PROGRAMME_DETAIL_PATH)
+      .pipe(
+        filter(programmePath => programmePath),
+        tap(() => this.init()),
+        untilDestroyed(this)
+      ).subscribe();
   }
 
   private init(): void {
