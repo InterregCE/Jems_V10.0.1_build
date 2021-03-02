@@ -26,6 +26,16 @@ import java.util.stream.Collectors
 
 class UpdateLumpSumInteractorTest {
 
+    val initialLumpSum = ProgrammeLumpSum(
+        id = 4,
+        name = setOf(InputTranslation(SystemLanguage.EN, "LS1")),
+        description = setOf(InputTranslation(SystemLanguage.EN, "test lump sum 1")),
+        cost = BigDecimal.ONE,
+        splittingAllowed = true,
+        phase = Implementation,
+        categories = setOf(OfficeAndAdministrationCosts, StaffCosts),
+    )
+
     @MockK
     lateinit var persistence: ProgrammeLumpSumPersistence
 
@@ -38,6 +48,8 @@ class UpdateLumpSumInteractorTest {
     fun setup() {
         MockKAnnotations.init(this)
         updateLumpSumInteractor = UpdateLumpSum(persistence, auditService)
+        every { persistence.isProgrammeSetupRestricted() } returns false
+        every { persistence.getLumpSum(any()) } returns initialLumpSum
     }
 
     @Test

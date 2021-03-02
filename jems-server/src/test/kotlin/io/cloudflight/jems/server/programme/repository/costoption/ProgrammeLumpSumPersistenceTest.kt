@@ -7,6 +7,7 @@ import io.cloudflight.jems.api.programme.dto.costoption.BudgetCategory.StaffCost
 import io.cloudflight.jems.api.programme.dto.costoption.ProgrammeLumpSumPhase
 import io.cloudflight.jems.api.programme.dto.language.SystemLanguage
 import io.cloudflight.jems.api.project.dto.InputTranslation
+import io.cloudflight.jems.server.call.repository.CallRepository
 import io.cloudflight.jems.server.common.exception.ResourceNotFoundException
 import io.cloudflight.jems.server.programme.entity.costoption.ProgrammeLumpSumBudgetCategoryEntity
 import io.cloudflight.jems.server.programme.entity.costoption.ProgrammeLumpSumEntity
@@ -50,12 +51,15 @@ class ProgrammeLumpSumPersistenceTest {
     @MockK
     lateinit var repository: ProgrammeLumpSumRepository
 
+    @MockK
+    lateinit var callRepository: CallRepository
+
     private lateinit var programmeLumpSumPersistence: ProgrammeLumpSumPersistence
 
     @BeforeEach
     fun setup() {
         MockKAnnotations.init(this)
-        programmeLumpSumPersistence = ProgrammeLumpSumPersistenceProvider(repository)
+        programmeLumpSumPersistence = ProgrammeLumpSumPersistenceProvider(repository, callRepository)
 
         testLumpSum = ProgrammeLumpSumEntity(
             id = 1,

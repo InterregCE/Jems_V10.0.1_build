@@ -1,10 +1,9 @@
 package io.cloudflight.jems.server.programme.service.costoption
 
+import io.cloudflight.jems.server.programme.service.ProgrammePersistence
 import io.cloudflight.jems.server.programme.service.costoption.model.ProgrammeUnitCost
-import org.springframework.data.domain.Page
-import org.springframework.data.domain.Pageable
 
-interface ProgrammeUnitCostPersistence {
+interface ProgrammeUnitCostPersistence : ProgrammePersistence {
 
     fun getUnitCosts(): List<ProgrammeUnitCost>
     fun getUnitCost(unitCostId: Long): ProgrammeUnitCost

@@ -1,7 +1,9 @@
 package io.cloudflight.jems.server.programme.repository.costoption
 
+import io.cloudflight.jems.server.call.repository.CallRepository
 import io.cloudflight.jems.server.common.exception.ResourceNotFoundException
 import io.cloudflight.jems.server.programme.entity.costoption.ProgrammeUnitCostEntity
+import io.cloudflight.jems.server.programme.repository.ProgrammePersistenceProvider
 import io.cloudflight.jems.server.programme.service.costoption.ProgrammeUnitCostPersistence
 import io.cloudflight.jems.server.programme.service.costoption.model.ProgrammeUnitCost
 import org.springframework.stereotype.Repository
@@ -10,7 +12,8 @@ import org.springframework.transaction.annotation.Transactional
 @Repository
 class ProgrammeUnitCostPersistenceProvider(
     private val repository: ProgrammeUnitCostRepository,
-) : ProgrammeUnitCostPersistence {
+    private val callRepository: CallRepository
+) : ProgrammeUnitCostPersistence, ProgrammePersistenceProvider(callRepository) {
 
     @Transactional(readOnly = true)
     override fun getUnitCosts(): List<ProgrammeUnitCost> =
