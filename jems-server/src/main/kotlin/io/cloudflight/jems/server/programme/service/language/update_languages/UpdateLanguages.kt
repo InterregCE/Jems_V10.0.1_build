@@ -26,6 +26,8 @@ class UpdateLanguages(
     @CanUpdateProgrammeSetup
     @Transactional
     override fun updateLanguages(languages: List<ProgrammeLanguage>): List<ProgrammeLanguage> {
+        if (persistence.isProgrammeSetupRestricted())
+            throw UpdateLanguagesWhenProgrammeSetupRestricted()
         validateLanguageRequirements(languages)
 
         val result = persistence.updateLanguages(languages)

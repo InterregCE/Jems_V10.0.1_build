@@ -10,6 +10,7 @@ import io.cloudflight.jems.server.UnitTest
 import io.cloudflight.jems.server.audit.entity.AuditAction
 import io.cloudflight.jems.server.audit.service.AuditCandidate
 import io.cloudflight.jems.server.audit.service.AuditService
+import io.cloudflight.jems.server.call.repository.CallRepository
 import io.cloudflight.jems.server.common.exception.I18nValidationException
 import io.cloudflight.jems.server.programme.service.language.ProgrammeLanguagePersistence
 import io.cloudflight.jems.server.programme.service.language.model.ProgrammeLanguage
@@ -37,6 +38,9 @@ internal class UpdateLanguagesInteractorTest : UnitTest() {
     @MockK
     lateinit var persistence: ProgrammeLanguagePersistence
 
+    @MockK
+    lateinit var callRepository: CallRepository
+
     @RelaxedMockK
     lateinit var auditService: AuditService
 
@@ -49,6 +53,7 @@ internal class UpdateLanguagesInteractorTest : UnitTest() {
     @Test
     fun `update existing programme language`() {
         val slotLanguages = slot<List<ProgrammeLanguage>>()
+        every { persistence.isProgrammeSetupRestricted() } returns false
         every { persistence.updateLanguages(capture(slotLanguages)) } returnsArgument 0
 
         assertThat(updateLanguages.updateLanguages(listOf(languageInputEN, languageInputDE))).containsExactly(
@@ -74,6 +79,7 @@ internal class UpdateLanguagesInteractorTest : UnitTest() {
 
     @Test
     fun `update fails on too many programme languages`() {
+        every { persistence.isProgrammeSetupRestricted() } returns false
         every { mockedList.size } returns 41
 
         val ex = assertThrows<I18nValidationException> { updateLanguages.updateLanguages(mockedList) }
@@ -82,6 +88,7 @@ internal class UpdateLanguagesInteractorTest : UnitTest() {
 
     @Test
     fun `update fails on empty input languages`() {
+        every { persistence.isProgrammeSetupRestricted() } returns false
         val ex = assertThrows<I18nValidationException> {
             updateLanguages.updateLanguages(
                 listOf(
@@ -96,10 +103,18 @@ internal class UpdateLanguagesInteractorTest : UnitTest() {
 
     @Test
     fun `update fails on too many input languages`() {
+        every { persistence.isProgrammeSetupRestricted() } returns false
         val ex = assertThrows<I18nValidationException> {
             updateLanguages.updateLanguages(getInputLanguages(CS, DE, EL, EN, SK))
         }
         assertThat(ex.i18nKey).isEqualTo("programme.language.max.allowed.input.languages")
+    }
+
+    @Test
+    fun `update fails on call already published`() {
+        every { persistence.isProgrammeSetupRestricted() } returns true
+        every { persistence.getLanguages() } returns listOf(languageInputEN, languageInputDE)
+        assertThrows<UpdateLanguagesWhenProgrammeSetupRestricted> { updateLanguages.updateLanguages(listOf(languageInputEN)) }
     }
 
     private fun getInputLanguages(vararg language: SystemLanguage) = language.toList().map {
