@@ -61,7 +61,7 @@
             {{'common.cancel.label' | translate}}
         </button>
         <button mat-raised-button color="primary" type="button"
-                [disabled]="isSubmitDisabled() || (programmeEditableStateStore.isProgrammeEditableDependingOnCall$ | async)"
+                [disabled]="isSubmitDisabled((programmeEditableStateStore.isProgrammeEditableDependingOnCall$ | async))"
                 (click)="onSubmit()">
             {{'common.save.label' | translate}}
         </button>

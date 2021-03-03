@@ -4,18 +4,22 @@ import io.cloudflight.jems.api.programme.dto.costoption.BudgetCategory.OfficeAnd
 import io.cloudflight.jems.api.programme.dto.costoption.BudgetCategory.StaffCosts
 import io.cloudflight.jems.api.programme.dto.language.SystemLanguage
 import io.cloudflight.jems.api.project.dto.InputTranslation
+import io.cloudflight.jems.server.UnitTest
 import io.cloudflight.jems.server.audit.entity.AuditAction
 import io.cloudflight.jems.server.audit.service.AuditCandidate
 import io.cloudflight.jems.server.audit.service.AuditService
 import io.cloudflight.jems.server.common.exception.I18nFieldError
 import io.cloudflight.jems.server.common.exception.I18nValidationException
 import io.cloudflight.jems.server.common.exception.ResourceNotFoundException
+import io.cloudflight.jems.server.common.validator.GeneralValidatorService
 import io.cloudflight.jems.server.programme.service.costoption.ProgrammeUnitCostPersistence
 import io.cloudflight.jems.server.programme.service.costoption.UpdateUnitCostWhenProgrammeSetupRestricted
 import io.cloudflight.jems.server.programme.service.costoption.model.ProgrammeUnitCost
 import io.mockk.MockKAnnotations
+import io.mockk.clearMocks
 import io.mockk.every
 import io.mockk.impl.annotations.MockK
+import io.mockk.impl.annotations.RelaxedMockK
 import io.mockk.slot
 import java.math.BigDecimal
 import java.util.stream.Collectors
@@ -24,7 +28,7 @@ import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
 
-class UpdateUnitCostInteractorTest {
+class UpdateUnitCostInteractorTest : UnitTest() {
 
     private val initialUnitCost = ProgrammeUnitCost(
         id = 4,
@@ -39,15 +43,18 @@ class UpdateUnitCostInteractorTest {
     @MockK
     lateinit var persistence: ProgrammeUnitCostPersistence
 
-    @MockK
+    @RelaxedMockK
     lateinit var auditService: AuditService
+
+    @RelaxedMockK
+    lateinit var generalValidator: GeneralValidatorService
 
     private lateinit var updateUnitCostInteractor: UpdateUnitCostInteractor
 
     @BeforeEach
     fun setup() {
-        MockKAnnotations.init(this)
-        updateUnitCostInteractor = UpdateUnitCost(persistence, auditService)
+        clearMocks(auditService)
+        updateUnitCostInteractor = UpdateUnitCost(persistence, auditService, generalValidator)
         every { persistence.getUnitCost(any()) } returns initialUnitCost
         every { persistence.isProgrammeSetupRestricted() } returns false
     }
@@ -166,8 +173,4 @@ class UpdateUnitCostInteractorTest {
 
         assertThrows<UpdateUnitCostWhenProgrammeSetupRestricted> {updateUnitCostInteractor.updateUnitCost(initialUnitCost.copy(costPerUnit = BigDecimal.TEN))}
     }
-
-    private fun getStringOfLength(length: Int): String =
-        IntArray(length).map { "x" }.stream().collect(Collectors.joining())
-
 }

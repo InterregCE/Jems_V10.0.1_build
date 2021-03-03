@@ -4,6 +4,8 @@ import io.cloudflight.jems.server.audit.entity.AuditAction
 import io.cloudflight.jems.server.audit.service.AuditBuilder
 import io.cloudflight.jems.server.audit.service.AuditCandidate
 import io.cloudflight.jems.server.audit.service.AuditService
+import io.cloudflight.jems.server.common.exception.ExceptionWrapper
+import io.cloudflight.jems.server.common.validator.GeneralValidatorService
 import io.cloudflight.jems.server.programme.authorization.CanUpdateProgrammeSetup
 import io.cloudflight.jems.server.programme.service.costoption.ProgrammeLumpSumPersistence
 import io.cloudflight.jems.server.programme.service.costoption.UpdateLumpSumWhenProgrammeSetupRestricted
@@ -16,17 +18,18 @@ import org.springframework.transaction.annotation.Transactional
 class UpdateLumpSum(
     private val persistence: ProgrammeLumpSumPersistence,
     private val audit: AuditService,
+    private val generalValidator: GeneralValidatorService,
 ) : UpdateLumpSumInteractor {
 
     @CanUpdateProgrammeSetup
     @Transactional
+    @ExceptionWrapper(UpdateLumpSumException::class)
     override fun updateLumpSum(lumpSum: ProgrammeLumpSum): ProgrammeLumpSum {
-        if (lumpSum.id == null)
-            throw NullPointerException("we need id of updated entity")
+        validateInput(lumpSum)
 
         validateUpdateLumpSum(lumpSum)
 
-        val existingLumpSum  = persistence.getLumpSum(lumpSumId = lumpSum.id)
+        val existingLumpSum  = persistence.getLumpSum(lumpSumId = lumpSum.id!!)
         if (persistence.isProgrammeSetupRestricted()) {
             lumpSumUpdateRestrictions(existingLumpSum = existingLumpSum, updatedLumpSum = lumpSum)
         }
@@ -50,5 +53,10 @@ class UpdateLumpSum(
         )
             throw UpdateLumpSumWhenProgrammeSetupRestricted()
     }
+
+    private fun validateInput(programmeLumpSum: ProgrammeLumpSum) =
+        generalValidator.throwIfAnyIsInvalid(
+            generalValidator.notNullOrZero(programmeLumpSum.id, "id"),
+    )
 
 }

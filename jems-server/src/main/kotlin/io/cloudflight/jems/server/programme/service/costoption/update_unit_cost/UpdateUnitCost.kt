@@ -4,6 +4,8 @@ import io.cloudflight.jems.server.audit.entity.AuditAction
 import io.cloudflight.jems.server.audit.service.AuditBuilder
 import io.cloudflight.jems.server.audit.service.AuditCandidate
 import io.cloudflight.jems.server.audit.service.AuditService
+import io.cloudflight.jems.server.common.exception.ExceptionWrapper
+import io.cloudflight.jems.server.common.validator.GeneralValidatorService
 import io.cloudflight.jems.server.programme.authorization.CanUpdateProgrammeSetup
 import io.cloudflight.jems.server.programme.service.costoption.ProgrammeUnitCostPersistence
 import io.cloudflight.jems.server.programme.service.costoption.UpdateUnitCostWhenProgrammeSetupRestricted
@@ -16,11 +18,15 @@ import org.springframework.transaction.annotation.Transactional
 class UpdateUnitCost(
     private val persistence: ProgrammeUnitCostPersistence,
     private val audit: AuditService,
+    private val generalValidator: GeneralValidatorService,
 ) : UpdateUnitCostInteractor {
 
     @CanUpdateProgrammeSetup
     @Transactional
+    @ExceptionWrapper(UpdateUnitCostException::class)
     override fun updateUnitCost(unitCost: ProgrammeUnitCost): ProgrammeUnitCost {
+        validateInput(unitCost)
+
         validateUpdateUnitCost(unitCost)
 
         val existingUnitCost  = persistence.getUnitCost(unitCostId = unitCost.id)
@@ -47,5 +53,10 @@ class UpdateUnitCost(
         )
             throw UpdateUnitCostWhenProgrammeSetupRestricted()
     }
+
+    private fun validateInput(programmeUnitCost: ProgrammeUnitCost) =
+        generalValidator.throwIfAnyIsInvalid(
+            generalValidator.notNullOrZero(programmeUnitCost.id, "id"),
+    )
 
 }
