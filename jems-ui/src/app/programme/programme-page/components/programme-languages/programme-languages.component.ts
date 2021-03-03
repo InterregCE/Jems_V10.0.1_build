@@ -33,8 +33,6 @@ export class ProgrammeLanguagesComponent extends ViewEditForm implements OnInit 
 
   displayedColumns: string[] = ['system', 'input', 'name', 'translation'];
   dataSource: MatTableDataSource<ProgrammeLanguageDTO>;
-  initialSystemLangSelection = new SelectionModel<ProgrammeLanguageDTO>(true, []);
-  initialInputLangSelection = new SelectionModel<ProgrammeLanguageDTO>(true, []);
   systemLangSelection = new SelectionModel<ProgrammeLanguageDTO>(true, []);
   inputLangSelection = new SelectionModel<ProgrammeLanguageDTO>(true, []);
 
@@ -82,12 +80,8 @@ export class ProgrammeLanguagesComponent extends ViewEditForm implements OnInit 
       return;
     }
     this.dataSource.data = this.languages;
-    this.initialSystemLangSelection.clear();
-    this.initialInputLangSelection.clear();
     this.systemLangSelection.clear();
     this.inputLangSelection.clear();
-    this.initialSystemLangSelection.select(...this.dataSource.data.filter(element => element.ui));
-    this.initialInputLangSelection.select(...this.dataSource.data.filter(element => element.input));
     this.systemLangSelection.select(...this.dataSource.data.filter(element => element.ui));
     this.inputLangSelection.select(...this.dataSource.data.filter(element => element.input));
   }

@@ -12,6 +12,7 @@ import io.cloudflight.jems.server.common.exception.I18nFieldError
 import io.cloudflight.jems.server.common.exception.I18nValidationException
 import io.cloudflight.jems.server.common.exception.ResourceNotFoundException
 import io.cloudflight.jems.server.programme.service.costoption.ProgrammeLumpSumPersistence
+import io.cloudflight.jems.server.programme.service.costoption.UpdateLumpSumWhenProgrammeSetupRestricted
 import io.cloudflight.jems.server.programme.service.costoption.model.ProgrammeLumpSum
 import io.mockk.MockKAnnotations
 import io.mockk.every
@@ -121,7 +122,7 @@ class UpdateLumpSumInteractorTest {
 
         assertThrows<I18nValidationException>("when updating id cannot be invalid") {
             updateLumpSumInteractor.updateLumpSum(lumpSum.copy(id = 0)) }
-        assertThrows<I18nValidationException>("when updating id cannot be invalid") {
+        assertThrows<NullPointerException>("when updating id cannot be invalid") {
             updateLumpSumInteractor.updateLumpSum(lumpSum.copy(id = null)) }
     }
 
@@ -139,6 +140,35 @@ class UpdateLumpSumInteractorTest {
 
         assertThrows<ResourceNotFoundException>("when updating not existing lump sum") {
             updateLumpSumInteractor.updateLumpSum(lumpSum) }
+    }
+
+    @Test
+    fun `update lump sum - call already published with same cost effective value but different number of decimal zeros`() {
+        every { persistence.updateLumpSum(any()) } returnsArgument 0
+        every { persistence.isProgrammeSetupRestricted() } returns true
+        val lumpSum = ProgrammeLumpSum(
+            id = 4,
+            name = setOf(InputTranslation(SystemLanguage.EN, "LS1 changed")),
+            description = setOf(InputTranslation(SystemLanguage.EN, "test lump sum 1 changed")),
+            cost = BigDecimal(1),
+            splittingAllowed = true,
+            phase = Implementation,
+            categories = setOf(OfficeAndAdministrationCosts, StaffCosts),
+        )
+        val auditSlot = slot<AuditCandidate>()
+        every { auditService.logEvent(capture(auditSlot)) } answers {}
+        assertThat(updateLumpSumInteractor.updateLumpSum(lumpSum)).isEqualTo(lumpSum.copy())
+        assertThat(auditSlot.captured).isEqualTo(AuditCandidate(
+            action = AuditAction.PROGRAMME_LUMP_SUM_CHANGED,
+            description = "Programme lump sum (id=4) '[InputTranslation(language=EN, translation=LS1 changed)]' has been changed"
+        ))
+    }
+
+    @Test
+    fun `update lump sum - call already published with different cost value`() {
+        every { persistence.isProgrammeSetupRestricted() } returns true
+
+        assertThrows<UpdateLumpSumWhenProgrammeSetupRestricted> {updateLumpSumInteractor.updateLumpSum(initialLumpSum.copy(cost = BigDecimal.TEN))}
     }
 
     private fun getStringOfLength(length: Int): String =

@@ -31,7 +31,7 @@ class UpdateUnitCostInteractorTest {
         name = setOf(InputTranslation(SystemLanguage.EN, " ")),
         description = setOf(InputTranslation(SystemLanguage.EN, "test unit cost 1")),
         type = emptySet(),
-        costPerUnit = null,
+        costPerUnit = BigDecimal.ZERO,
         isOneCostCategory = false,
         categories = setOf(OfficeAndAdministrationCosts, StaffCosts),
     )
@@ -120,7 +120,7 @@ class UpdateUnitCostInteractorTest {
 
         assertThrows<I18nValidationException>("when updating id cannot be invalid") {
             updateUnitCostInteractor.updateUnitCost(unitCost.copy(id = 0)) }
-        assertThrows<I18nValidationException>("when updating id cannot be invalid") {
+        assertThrows<NullPointerException>("when updating id cannot be invalid") {
             updateUnitCostInteractor.updateUnitCost(unitCost.copy(id = null)) }
     }
 
@@ -138,6 +138,28 @@ class UpdateUnitCostInteractorTest {
 
         assertThrows<ResourceNotFoundException>("when updating not existing unit cost") {
             updateUnitCostInteractor.updateUnitCost(unitCost) }
+    }
+
+    @Test
+    fun `update unit cost - call already published with same costPerUnit effective value but different number of decimal zeros`() {
+        every { persistence.updateUnitCost(any()) } returnsArgument 0
+        every { persistence.isProgrammeSetupRestricted() } returns true
+        val unitCost = ProgrammeUnitCost(
+            id = 4,
+            name = setOf(InputTranslation(SystemLanguage.EN, "UC1 changed")),
+            description = setOf(InputTranslation(SystemLanguage.EN, "test unit cost 1 changed")),
+            type = emptySet(),
+            costPerUnit = BigDecimal(0),
+            isOneCostCategory = false,
+            categories = setOf(OfficeAndAdministrationCosts, StaffCosts),
+        )
+        val auditSlot = slot<AuditCandidate>()
+        every { auditService.logEvent(capture(auditSlot)) } answers {}
+        assertThat(updateUnitCostInteractor.updateUnitCost(unitCost)).isEqualTo(unitCost.copy())
+        assertThat(auditSlot.captured).isEqualTo(AuditCandidate(
+            action = AuditAction.PROGRAMME_UNIT_COST_CHANGED,
+            description = "Programme unit cost (id=4) '[InputTranslation(language=EN, translation=UC1 changed)]' has been changed"
+        ))
     }
 
     @Test

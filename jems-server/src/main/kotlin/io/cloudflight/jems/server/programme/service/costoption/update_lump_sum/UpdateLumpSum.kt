@@ -21,11 +21,15 @@ class UpdateLumpSum(
     @CanUpdateProgrammeSetup
     @Transactional
     override fun updateLumpSum(lumpSum: ProgrammeLumpSum): ProgrammeLumpSum {
-        val existingLumpSum = lumpSum.id?.let { persistence.getLumpSum(it) }
+        if (lumpSum.id == null)
+            throw NullPointerException("we need id of updated entity")
+
+        validateUpdateLumpSum(lumpSum)
+
+        val existingLumpSum  = persistence.getLumpSum(lumpSumId = lumpSum.id)
         if (persistence.isProgrammeSetupRestricted()) {
             lumpSumUpdateRestrictions(existingLumpSum = existingLumpSum, updatedLumpSum = lumpSum)
         }
-        validateUpdateLumpSum(lumpSum)
         val saved = persistence.updateLumpSum(lumpSum)
 
         lumpSumChangedAudit(saved).logWith(audit)
@@ -38,9 +42,9 @@ class UpdateLumpSum(
             .build()
     }
 
-    private fun lumpSumUpdateRestrictions(existingLumpSum: ProgrammeLumpSum?, updatedLumpSum: ProgrammeLumpSum) {
-        if (existingLumpSum?.cost != updatedLumpSum.cost ||
-            existingLumpSum?.splittingAllowed != updatedLumpSum.splittingAllowed ||
+    private fun lumpSumUpdateRestrictions(existingLumpSum: ProgrammeLumpSum, updatedLumpSum: ProgrammeLumpSum) {
+        if (existingLumpSum.cost?.compareTo(updatedLumpSum.cost) != 0 ||
+            existingLumpSum.splittingAllowed != updatedLumpSum.splittingAllowed ||
             existingLumpSum.phase != updatedLumpSum.phase ||
             existingLumpSum.categories != updatedLumpSum.categories
         )

@@ -3,7 +3,8 @@
         <h3 class="mb-0">{{'programme.languages.header' | translate}}</h3>
         <button color="primary"
                 *ngIf="formState === FormState.VIEW" mat-raised-button
-                (click)="changeFormState$.next(FormState.EDIT)">
+                (click)="changeFormState$.next(FormState.EDIT)"
+                [disabled]="(programmeEditableStateStore.isProgrammeEditableDependingOnCall$ | async)">
             {{'common.edit.label' | translate}}
         </button>
     </div>
@@ -15,7 +16,7 @@
             <td mat-cell *matCellDef="let element">
                 <mat-checkbox (click)="$event.stopPropagation()"
                               (change)="systemLangSelection.toggle(element)"
-                              [disabled]="formState === FormState.VIEW || ((programmeEditableStateStore.isProgrammeEditableDependingOnCall$ | async) && initialSystemLangSelection.isSelected(element))"
+                              [disabled]="formState === FormState.VIEW || (programmeEditableStateStore.isProgrammeEditableDependingOnCall$ | async)"
                               [checked]="systemLangSelection.isSelected(element)">
                 </mat-checkbox>
             </td>
@@ -27,7 +28,7 @@
             <td mat-cell *matCellDef="let element">
                 <mat-checkbox (click)="$event.stopPropagation()"
                               (change)="inputLangSelection.toggle(element)"
-                              [disabled]="formState === FormState.VIEW || ((programmeEditableStateStore.isProgrammeEditableDependingOnCall$ | async) && initialInputLangSelection.isSelected(element))"
+                              [disabled]="formState === FormState.VIEW || (programmeEditableStateStore.isProgrammeEditableDependingOnCall$ | async)"
                               [checked]="inputLangSelection.isSelected(element)">
                 </mat-checkbox>
             </td>
@@ -60,7 +61,7 @@
             {{'common.cancel.label' | translate}}
         </button>
         <button mat-raised-button color="primary" type="button"
-                [disabled]="isSubmitDisabled()"
+                [disabled]="isSubmitDisabled() || (programmeEditableStateStore.isProgrammeEditableDependingOnCall$ | async)"
                 (click)="onSubmit()">
             {{'common.save.label' | translate}}
         </button>

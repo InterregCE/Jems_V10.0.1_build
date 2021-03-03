@@ -21,12 +21,15 @@ class UpdateUnitCost(
     @CanUpdateProgrammeSetup
     @Transactional
     override fun updateUnitCost(unitCost: ProgrammeUnitCost): ProgrammeUnitCost {
-        val existingUnitCost = unitCost.id?.let { persistence.getUnitCost(it) }
+        if (unitCost.id == null)
+            throw NullPointerException("we need id of updated entity")
+
+        validateUpdateUnitCost(unitCost)
+
+        val existingUnitCost  = persistence.getUnitCost(unitCostId = unitCost.id)
         if (persistence.isProgrammeSetupRestricted()) {
             unitCostUpdateRestrictions(existingUnitCost = existingUnitCost, updatedUnitCost = unitCost)
         }
-
-        validateUpdateUnitCost(unitCost)
         val saved = persistence.updateUnitCost(unitCost)
 
         unitCostChangedAudit(saved).logWith(audit)
@@ -39,9 +42,9 @@ class UpdateUnitCost(
             .build()
     }
 
-    private fun unitCostUpdateRestrictions(existingUnitCost: ProgrammeUnitCost?, updatedUnitCost: ProgrammeUnitCost) {
-        if (existingUnitCost?.type != updatedUnitCost.type ||
-            existingUnitCost.costPerUnit != updatedUnitCost.costPerUnit ||
+    private fun unitCostUpdateRestrictions(existingUnitCost: ProgrammeUnitCost, updatedUnitCost: ProgrammeUnitCost) {
+        if (existingUnitCost.type != updatedUnitCost.type ||
+            existingUnitCost.costPerUnit?.compareTo( updatedUnitCost.costPerUnit) != 0 ||
             existingUnitCost.isOneCostCategory != updatedUnitCost.isOneCostCategory ||
             existingUnitCost.categories != updatedUnitCost.categories
         )
