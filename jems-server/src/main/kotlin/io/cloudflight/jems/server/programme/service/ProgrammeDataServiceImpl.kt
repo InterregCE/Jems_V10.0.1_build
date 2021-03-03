@@ -1,5 +1,6 @@
 package io.cloudflight.jems.server.programme.service
 
+import io.cloudflight.jems.api.call.dto.CallStatus
 import io.cloudflight.jems.api.nuts.dto.OutputNuts
 import io.cloudflight.jems.api.programme.dto.InputProgrammeData
 import io.cloudflight.jems.api.programme.dto.OutputProgrammeData
@@ -7,6 +8,7 @@ import io.cloudflight.jems.server.common.exception.ResourceNotFoundException
 import io.cloudflight.jems.server.nuts.repository.NutsRegion3Repository
 import io.cloudflight.jems.server.programme.repository.ProgrammeDataRepository
 import io.cloudflight.jems.server.audit.service.AuditService
+import io.cloudflight.jems.server.call.repository.CallRepository
 import io.cloudflight.jems.server.nuts.service.toOutput
 import io.cloudflight.jems.server.programme.authorization.CanReadNuts
 import io.cloudflight.jems.server.programme.authorization.CanUpdateProgrammeSetup
@@ -17,6 +19,7 @@ import org.springframework.transaction.annotation.Transactional
 @Service
 class ProgrammeDataServiceImpl(
     private val programmeDataRepository: ProgrammeDataRepository,
+    private val callRepository: CallRepository,
     private val nutsRegion3Repository: NutsRegion3Repository,
     private val auditService: AuditService
 ) : ProgrammeDataService {
@@ -45,7 +48,14 @@ class ProgrammeDataServiceImpl(
     @Transactional
     @CanUpdateProgrammeSetup
     override fun saveProgrammeNuts(regions: Collection<String>): OutputProgrammeData {
-        val toBeSaved = getProgrammeDataOrThrow()
+        val programmeData = getProgrammeDataOrThrow()
+        val oldNuts = programmeData.programmeNuts.mapTo(HashSet()) { it.id }
+
+        if (callRepository.existsByStatus(CallStatus.PUBLISHED) && !regions.containsAll(oldNuts)) {
+            throw UpdateProgrammeAreasWhenProgrammeSetupRestricted()
+        }
+
+        val toBeSaved = programmeData
             .copy(programmeNuts = nutsRegion3Repository.findAllById(regions).toSet())
 
         val savedProgramme = programmeDataRepository.save(toBeSaved).toOutputProgrammeData()

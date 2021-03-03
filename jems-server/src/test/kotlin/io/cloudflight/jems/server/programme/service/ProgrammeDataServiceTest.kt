@@ -1,19 +1,20 @@
 package io.cloudflight.jems.server.programme.service
 
+import io.cloudflight.jems.api.call.dto.CallStatus
 import io.cloudflight.jems.api.nuts.dto.OutputNuts
 import io.cloudflight.jems.api.programme.dto.InputProgrammeData
 import io.cloudflight.jems.api.programme.dto.OutputProgrammeData
 import io.cloudflight.jems.server.audit.entity.AuditAction
 import io.cloudflight.jems.server.audit.service.AuditCandidate
 import io.cloudflight.jems.server.audit.service.AuditService
-import io.cloudflight.jems.server.programme.entity.ProgrammeData
+import io.cloudflight.jems.server.call.repository.CallRepository
 import io.cloudflight.jems.server.common.exception.ResourceNotFoundException
 import io.cloudflight.jems.server.nuts.entity.NutsCountry
 import io.cloudflight.jems.server.nuts.entity.NutsRegion1
 import io.cloudflight.jems.server.nuts.entity.NutsRegion2
 import io.cloudflight.jems.server.nuts.entity.NutsRegion3
 import io.cloudflight.jems.server.nuts.repository.NutsRegion3Repository
-import io.cloudflight.jems.server.nuts.service.NutsIdentifier
+import io.cloudflight.jems.server.programme.entity.ProgrammeData
 import io.cloudflight.jems.server.programme.repository.ProgrammeDataRepository
 import io.mockk.MockKAnnotations
 import io.mockk.every
@@ -52,6 +53,8 @@ internal class ProgrammeDataServiceTest {
     lateinit var programmeDataRepository: ProgrammeDataRepository
     @MockK
     lateinit var nutsRegion3Repository: NutsRegion3Repository
+    @MockK
+    lateinit var callRepository: CallRepository
 
     @RelaxedMockK
     lateinit var auditService: AuditService
@@ -62,9 +65,11 @@ internal class ProgrammeDataServiceTest {
         MockKAnnotations.init(this)
         programmeDataService = ProgrammeDataServiceImpl(
             programmeDataRepository,
+            callRepository,
             nutsRegion3Repository,
             auditService
         )
+        every { callRepository.existsByStatus(CallStatus.PUBLISHED) } returns false
     }
 
     @Test
@@ -192,6 +197,21 @@ internal class ProgrammeDataServiceTest {
                 ))
             ))
         )
+    }
+
+    @Test
+    fun `update programme areas - failed on call already published`() {
+        every { callRepository.existsByStatus(CallStatus.PUBLISHED) } returns true
+        val nuts = NutsRegion3(id = "SK010", title = "Slovakia R3",
+            region2 = NutsRegion2(id = "SK01", title = "Slovakia R2",
+                region1 = NutsRegion1(id = "SK0", title = "Slovakia R1",
+                    country = NutsCountry(id = "SK", title = "Slovakia")
+                )
+            )
+        )
+        every { programmeDataRepository.findById(1) } returns Optional.of(existingProgrammeData.copy(programmeNuts = setOf(nuts)))
+
+        assertThrows<UpdateProgrammeAreasWhenProgrammeSetupRestricted> { programmeDataService.saveProgrammeNuts(emptySet()) }
     }
 
 
