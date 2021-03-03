@@ -19,6 +19,7 @@ fun Iterable<ProgrammeLumpSum>.toDto() = map {
         id = it.id,
         name = it.name,
         cost = it.cost,
+        splittingAllowed = it.splittingAllowed,
     )
 }
 
