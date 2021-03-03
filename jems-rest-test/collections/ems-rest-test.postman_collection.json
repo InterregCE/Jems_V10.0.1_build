@@ -1416,7 +1416,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"id\": \"{{programmeUnitCostId}}\",\r\n    \"name\": [\r\n        {\r\n            \"language\": \"{{inputLanguage}}\",\r\n            \"translation\": \"this should never be seen (ERR in API tests)\"\r\n        }\r\n    ],\r\n    \"costPerUnit\": 97851.32,\r\n    \"isOneCostCategory\": false,\r\n    \"categories\": [\r\n        \"OfficeAndAdministrationCosts\"\r\n    ]\r\n}\r\n",
+							"raw": "{\r\n    \"id\": \"{{programmeUnitCostId}}\",\r\n    \"name\": [\r\n        {\r\n            \"language\": \"{{inputLanguage}}\",\r\n            \"translation\": \"this should never be seen (ERR in API tests)\"\r\n        }\r\n    ],\r\n    \"costPerUnit\": 97851.32,\r\n    \"isOneCostCategory\": false,\r\n    \"categories\": [\r\n        \"OfficeAndAdministrationCosts\",\r\n        \"InfrastructureCosts\"\r\n    ]\r\n}\r\n",
 							"options": {
 								"raw": {
 									"language": "json"
