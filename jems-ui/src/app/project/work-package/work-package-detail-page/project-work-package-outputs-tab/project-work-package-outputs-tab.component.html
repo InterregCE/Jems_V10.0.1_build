@@ -53,7 +53,7 @@
 
                         <mat-form-field appFormFieldWidth="medium">
                             <mat-label>{{'project.application.form.work.package.output.target.value' | translate}}</mat-label>
-                            <input currencyMask type="integer" [options]="{min: 1, max: 99999}"
+                            <input currencyMask type="integer" [options]="{min: 1, max: 99999999, align: 'right'}"
                                    name="targetValue" formControlName="targetValue" matInput>
                         </mat-form-field>
                     </div>
