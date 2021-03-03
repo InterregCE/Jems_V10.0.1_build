@@ -25,7 +25,7 @@ fun ProgrammeUnitCost.toEntity() = ProgrammeUnitCostEntity(
     // translatedValues - needs programmeUnitCostId
     costPerUnit = costPerUnit!!,
     isOneCostCategory = isOneCostCategory,
-    categories = if (id == null) mutableSetOf() else categories.toBudgetCategoryEntity(id)
+    categories = if (id == 0L) mutableSetOf() else categories.toBudgetCategoryEntity(id)
 )
 
 fun Collection<BudgetCategory>.toBudgetCategoryEntity(programmeUnitCostId: Long) = mapTo(HashSet()) {

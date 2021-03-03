@@ -120,8 +120,6 @@ class UpdateUnitCostInteractorTest {
 
         assertThrows<I18nValidationException>("when updating id cannot be invalid") {
             updateUnitCostInteractor.updateUnitCost(unitCost.copy(id = 0)) }
-        assertThrows<NullPointerException>("when updating id cannot be invalid") {
-            updateUnitCostInteractor.updateUnitCost(unitCost.copy(id = null)) }
     }
 
     @Test

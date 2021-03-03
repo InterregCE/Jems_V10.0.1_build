@@ -21,9 +21,6 @@ class UpdateUnitCost(
     @CanUpdateProgrammeSetup
     @Transactional
     override fun updateUnitCost(unitCost: ProgrammeUnitCost): ProgrammeUnitCost {
-        if (unitCost.id == null)
-            throw NullPointerException("we need id of updated entity")
-
         validateUpdateUnitCost(unitCost)
 
         val existingUnitCost  = persistence.getUnitCost(unitCostId = unitCost.id)

@@ -38,7 +38,7 @@ class ProgrammeUnitCostPersistenceProvider(
 
     @Transactional
     override fun updateUnitCost(unitCost: ProgrammeUnitCost): ProgrammeUnitCost {
-        if (repository.existsById(unitCost.id!!)) {
+        if (repository.existsById(unitCost.id)) {
             return repository.save(
                 unitCost.toEntity().copy(
                     translatedValues =

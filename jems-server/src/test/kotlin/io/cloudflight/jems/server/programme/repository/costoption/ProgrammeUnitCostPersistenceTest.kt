@@ -106,7 +106,7 @@ class ProgrammeUnitCostPersistenceTest {
         every { repository.save(capture(entitySaved)) } returnsArgument 0
 
         val toSave = expectedUnitCost.copy(
-            id = null,
+            id = 0,
             categories = setOf(ExternalCosts, OfficeAndAdministrationCosts),
         )
 
