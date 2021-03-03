@@ -50,6 +50,7 @@ class ProgrammeLumpSumControllerTest {
             id = 1,
             name = setOf(InputTranslation(SystemLanguage.EN, "LS1")),
             cost = BigDecimal.ONE,
+            splittingAllowed = true,
         )
 
     }

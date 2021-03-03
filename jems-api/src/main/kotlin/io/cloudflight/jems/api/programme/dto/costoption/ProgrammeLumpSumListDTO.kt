@@ -6,5 +6,6 @@ import java.math.BigDecimal
 data class ProgrammeLumpSumListDTO(
     val id: Long? = null,
     val name: Set<InputTranslation> = emptySet(),
-    val cost: BigDecimal? = null
+    val cost: BigDecimal? = null,
+    val splittingAllowed: Boolean
 )
