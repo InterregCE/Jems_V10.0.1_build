@@ -11,7 +11,7 @@ private val MAX_COST = BigDecimal.valueOf(999_999_999_99, 2)
 private const val MAX_ALLOWED_UNIT_COSTS = 25
 
 fun validateCreateUnitCost(unitCostToValidate: ProgrammeUnitCost, currentCount: Long) {
-    if (unitCostToValidate.id != null)
+    if (unitCostToValidate.id != 0L)
         throw I18nValidationException(i18nKey = "programme.unitCost.id.not.allowed")
     if (currentCount >= MAX_ALLOWED_UNIT_COSTS)
         throw I18nValidationException(i18nKey = "programme.unitCost.max.allowed.reached")
@@ -19,7 +19,7 @@ fun validateCreateUnitCost(unitCostToValidate: ProgrammeUnitCost, currentCount: 
 }
 
 fun validateUpdateUnitCost(unitCost: ProgrammeUnitCost) {
-    if (unitCost.id == null || unitCost.id < 1)
+    if (unitCost.id == 0L)
         throw I18nValidationException(
             i18nKey = "programme.unitCost.id.not.valid",
             httpStatus = HttpStatus.UNPROCESSABLE_ENTITY,

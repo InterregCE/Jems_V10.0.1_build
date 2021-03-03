@@ -42,7 +42,7 @@ class CreateUnitCostInteractorTest {
     fun `create unit cost - invalid`() {
         every { persistence.getCount() } returns 15
         val wrongUnitCost = ProgrammeUnitCost(
-            id = null,
+            id = 0,
             name = setOf(InputTranslation(SystemLanguage.EN, " ")),
             description = setOf(InputTranslation(SystemLanguage.EN, "test unit cost 1")),
             type = setOf(InputTranslation(SystemLanguage.EN, "this type is longer than25")),
@@ -62,7 +62,7 @@ class CreateUnitCostInteractorTest {
     fun `create unit cost - one cost category invalid`() {
         every { persistence.getCount() } returns 15
         val wrongUnitCost = ProgrammeUnitCost(
-            id = null,
+            id = 0,
             name = setOf(InputTranslation(SystemLanguage.EN, " ")),
             description = setOf(InputTranslation(SystemLanguage.EN, "test unit cost 1")),
             type = setOf(InputTranslation(SystemLanguage.EN, "this type is longer than25")),
@@ -82,7 +82,7 @@ class CreateUnitCostInteractorTest {
     fun `create unit cost - one cost category OfficeAndAdministrationCosts restricted`() {
         every { persistence.getCount() } returns 15
         val wrongUnitCost = ProgrammeUnitCost(
-            id = null,
+            id = 0,
             name = setOf(InputTranslation(SystemLanguage.EN, "test")),
             description = setOf(InputTranslation(SystemLanguage.EN, "test unit cost 1")),
             type = setOf(InputTranslation(SystemLanguage.EN, "test type")),
@@ -100,7 +100,7 @@ class CreateUnitCostInteractorTest {
     fun `create unit cost - reached max allowed amount`() {
         every { persistence.getCount() } returns 25
         val unitCost = ProgrammeUnitCost(
-            id = null,
+            id = 0,
             name = setOf(InputTranslation(SystemLanguage.EN, "UC1")),
             description = setOf(InputTranslation(SystemLanguage.EN, "test unit cost 1")),
             type = setOf(InputTranslation(SystemLanguage.EN, "type 1")),
@@ -117,7 +117,7 @@ class CreateUnitCostInteractorTest {
         every { persistence.getCount() } returns 5
         every { persistence.createUnitCost(any()) } returnsArgument 0
         val unitCost = ProgrammeUnitCost(
-            id = null,
+            id = 0,
             name = setOf(InputTranslation(SystemLanguage.EN, "UC1")),
             description = setOf(InputTranslation(SystemLanguage.EN, "test unit cost 1")),
             type = setOf(InputTranslation(SystemLanguage.EN, "type 1")),
@@ -131,7 +131,7 @@ class CreateUnitCostInteractorTest {
         assertThat(createUnitCostInteractor.createUnitCost(unitCost)).isEqualTo(unitCost.copy())
         assertThat(auditSlot.captured).isEqualTo(AuditCandidate(
             action = AuditAction.PROGRAMME_UNIT_COST_ADDED,
-            description = "Programme unit cost (id=null) '[InputTranslation(language=EN, translation=UC1)]' has been added" // null will be real ID from DB sequence
+            description = "Programme unit cost (id=0) '[InputTranslation(language=EN, translation=UC1)]' has been added" // null will be real ID from DB sequence
         ))
     }
 
@@ -140,7 +140,7 @@ class CreateUnitCostInteractorTest {
         every { persistence.getCount() } returns 5
         every { persistence.createUnitCost(any()) } returnsArgument 0
         val unitCost = ProgrammeUnitCost(
-            id = null,
+            id = 0,
             name = setOf(InputTranslation(SystemLanguage.EN, "UC1")),
             description = setOf(InputTranslation(SystemLanguage.EN, "test unit cost 1")),
             type = setOf(InputTranslation(SystemLanguage.EN, "type 1")),
@@ -154,7 +154,7 @@ class CreateUnitCostInteractorTest {
         assertThat(createUnitCostInteractor.createUnitCost(unitCost)).isEqualTo(unitCost.copy())
         assertThat(auditSlot.captured).isEqualTo(AuditCandidate(
             action = AuditAction.PROGRAMME_UNIT_COST_ADDED,
-            description = "Programme unit cost (id=null) '[InputTranslation(language=EN, translation=UC1)]' has been added" // null will be real ID from DB sequence
+            description = "Programme unit cost (id=0) '[InputTranslation(language=EN, translation=UC1)]' has been added" // null will be real ID from DB sequence
         ))
     }
 

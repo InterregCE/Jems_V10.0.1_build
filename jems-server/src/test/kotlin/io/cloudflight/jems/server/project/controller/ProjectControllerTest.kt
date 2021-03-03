@@ -155,6 +155,7 @@ class ProjectControllerTest {
                         description = setOf(InputTranslation(SystemLanguage.EN, "pus 4")),
                         type = setOf(InputTranslation(SystemLanguage.EN, "type of unit cost")),
                         costPerUnit = BigDecimal.ONE,
+                        isOneCostCategory = false,
                         categories = setOf(BudgetCategory.ExternalCosts, BudgetCategory.OfficeAndAdministrationCosts),
                     )
                 ),

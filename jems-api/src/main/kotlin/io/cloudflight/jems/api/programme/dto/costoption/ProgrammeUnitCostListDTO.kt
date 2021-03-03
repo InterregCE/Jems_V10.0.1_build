@@ -8,6 +8,5 @@ data class ProgrammeUnitCostListDTO(
     val name: Set<InputTranslation> = emptySet(),
     val type: Set<InputTranslation> = emptySet(),
     val costPerUnit: BigDecimal? = null,
-    val categories: Set<BudgetCategory>? = emptySet(),
-    val sortId: Int? = null
+    val categories: Set<BudgetCategory>? = emptySet()
 )
