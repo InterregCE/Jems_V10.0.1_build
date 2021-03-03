@@ -1,8 +1,8 @@
 import {Injectable} from '@angular/core';
 import {SideNavService} from '@common/components/side-nav/side-nav.service';
-import {RoutingService} from 'src/app/common/services/routing.service';
-import {tap, filter} from 'rxjs/operators';
+import {filter, tap} from 'rxjs/operators';
 import {UntilDestroy, untilDestroyed} from '@ngneat/until-destroy';
+import {RoutingService} from '../../../common/services/routing.service';
 
 @UntilDestroy()
 @Injectable()
