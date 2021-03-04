@@ -147,7 +147,7 @@ class ProjectPartnerServiceImpl(
                 partnerType = projectPartner.partnerType,
                 legalStatus = legalStatus,
                 vat = projectPartner.vat,
-                vatRecovery = projectPartner.vatRecovery
+                vatRecovery = null // TODO MP2-1052
             )
         )
         // update sorting if leadPartner changed

@@ -148,8 +148,18 @@ VALUES (1);
 
 CREATE TABLE programme_fund
 (
-    id           INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
-    selected     BOOLEAN NOT NULL DEFAULT FALSE
+    id       INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    selected BOOLEAN NOT NULL DEFAULT FALSE,
+    type     ENUM (
+        'ERDF',
+        'IPA III CBC',
+        'Neighbourhood CBC',
+        'IPA III',
+        'NDICI',
+        'OCTP Greenland',
+        'OCTP',
+        'Interreg Funds',
+        'Other')     NOT NULL DEFAULT 'Other'
 );
 
 CREATE TABLE programme_fund_transl
@@ -165,47 +175,42 @@ CREATE TABLE programme_fund_transl
             ON UPDATE RESTRICT
 );
 
-INSERT INTO programme_fund () VALUE ();
+INSERT INTO programme_fund (type) VALUE ('ERDF');
 SELECT id INTO @id FROM programme_fund ORDER BY id DESC LIMIT 1;
 INSERT INTO programme_fund_transl(fund_id, language, abbreviation, description)
     VALUE (@id, 'EN', 'ERDF', 'Territorial cooperation Goal (Interreg)');
 
-INSERT INTO programme_fund () VALUE ();
-SELECT id INTO @id FROM programme_fund ORDER BY id DESC LIMIT 1;
-INSERT INTO programme_fund_transl(fund_id, language, abbreviation, description)
-    VALUE (@id, 'EN', 'ERDF Article 17(3)', 'Investments for Jobs and Growth goal ("Mainstream")');
-
-INSERT INTO programme_fund () VALUE ();
+INSERT INTO programme_fund (type) VALUE ('IPA III CBC');
 SELECT id INTO @id FROM programme_fund ORDER BY id DESC LIMIT 1;
 INSERT INTO programme_fund_transl(fund_id, language, abbreviation, description)
     VALUE (@id, 'EN', 'IPA III CBC', 'Interreg A, external cross-border cooperation');
 
-INSERT INTO programme_fund () VALUE ();
+INSERT INTO programme_fund (type) VALUE ('Neighbourhood CBC');
 SELECT id INTO @id FROM programme_fund ORDER BY id DESC LIMIT 1;
 INSERT INTO programme_fund_transl(fund_id, language, abbreviation, description)
     VALUE (@id, 'EN', 'Neighbourhood CBC', 'Interreg A, external cross-border cooperation');
 
-INSERT INTO programme_fund () VALUE ();
+INSERT INTO programme_fund (type) VALUE ('IPA III');
 SELECT id INTO @id FROM programme_fund ORDER BY id DESC LIMIT 1;
 INSERT INTO programme_fund_transl(fund_id, language, abbreviation, description)
     VALUE (@id, 'EN', 'IPA III', 'Interreg B and C');
 
-INSERT INTO programme_fund () VALUE ();
+INSERT INTO programme_fund (type) VALUE ('NDICI');
 SELECT id INTO @id FROM programme_fund ORDER BY id DESC LIMIT 1;
 INSERT INTO programme_fund_transl(fund_id, language, abbreviation, description)
     VALUE (@id, 'EN', 'NDICI', 'Interreg B and C');
 
-INSERT INTO programme_fund () VALUE ();
+INSERT INTO programme_fund (type) VALUE ('OCTP Greenland');
 SELECT id INTO @id FROM programme_fund ORDER BY id DESC LIMIT 1;
 INSERT INTO programme_fund_transl(fund_id, language, abbreviation, description)
     VALUE (@id, 'EN', 'OCTP Greenland', 'Interreg B and C');
 
-INSERT INTO programme_fund () VALUE ();
+INSERT INTO programme_fund (type) VALUE ('OCTP');
 SELECT id INTO @id FROM programme_fund ORDER BY id DESC LIMIT 1;
 INSERT INTO programme_fund_transl(fund_id, language, abbreviation, description)
     VALUE (@id, 'EN', 'OCTP', 'Interreg C and D');
 
-INSERT INTO programme_fund () VALUE ();
+INSERT INTO programme_fund (type) VALUE ('Interreg Funds');
 SELECT id INTO @id FROM programme_fund ORDER BY id DESC LIMIT 1;
 INSERT INTO programme_fund_transl(fund_id, language, abbreviation, description)
     VALUE (@id, 'EN', 'Interreg Funds', 'ERDF, IPA III, NDICI or OCTP, where as single amount under Interreg B and C');
@@ -603,12 +608,12 @@ CREATE TABLE project_partner
     project_id                INT UNSIGNED NOT NULL,
     abbreviation              VARCHAR(15)  NOT NULL,
     role                      VARCHAR(127) NOT NULL,
-    sort_number               INT          DEFAULT NULL,
-    name_in_original_language VARCHAR(127) DEFAULT NULL,
-    name_in_english           VARCHAR(127) DEFAULT NULL,
-    partner_type              VARCHAR(127) DEFAULT NULL,
-    vat                       VARCHAR(50)  DEFAULT NULL,
-    vat_recovery              BOOLEAN      DEFAULT TRUE,
+    sort_number               INT                          DEFAULT NULL,
+    name_in_original_language VARCHAR(127)                 DEFAULT NULL,
+    name_in_english           VARCHAR(127)                 DEFAULT NULL,
+    partner_type              VARCHAR(127)                 DEFAULT NULL,
+    vat                       VARCHAR(50)                  DEFAULT NULL,
+    vat_recovery              ENUM ('Yes', 'No', 'Partly') DEFAULT NULL,
     CONSTRAINT fk_project_partner_project
         FOREIGN KEY (project_id) REFERENCES project (id)
             ON DELETE CASCADE
@@ -920,8 +925,8 @@ CREATE TABLE project_description_c2_relevance_synergy_transl
 (
     reference_id  BINARY(16) NOT NULL,
     language      VARCHAR(3) NOT NULL,
-    synergy       VARCHAR(500) DEFAULT NULL,
-    specification TEXT(2000)   DEFAULT NULL,
+    synergy       TEXT(2000) DEFAULT NULL,
+    specification TEXT(2000) DEFAULT NULL,
     PRIMARY KEY (reference_id, language),
     CONSTRAINT fk_project_description_c2_relevance_synergy_transl FOREIGN KEY (reference_id)
         REFERENCES project_description_c2_relevance_synergy (id)

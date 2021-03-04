@@ -35,7 +35,7 @@ fun InputProjectPartnerCreate.toEntity(project: ProjectEntity, legalStatus: Prog
     partnerType = partnerType,
     legalStatus = legalStatus,
     vat = vat,
-    vatRecovery = vatRecovery
+    vatRecovery = null, // TODO MP2-1052
 )
 
 fun InputProjectPartnerCreate.combineTranslatedValues(
@@ -96,7 +96,7 @@ fun ProjectPartnerEntity.toOutputProjectPartnerDetail() = OutputProjectPartnerDe
     partnerType = partnerType,
     legalStatusId = legalStatus.id,
     vat = vat,
-    vatRecovery = vatRecovery,
+    vatRecovery = null, // TODO MP2-1052
     addresses = addresses?.map { it.toDto() } ?: emptyList(),
     contacts = contacts?.map { it.toOutputProjectPartnerContact() } ?: emptyList(),
     motivation = motivation.map { it.toDto() }.firstOrNull()
