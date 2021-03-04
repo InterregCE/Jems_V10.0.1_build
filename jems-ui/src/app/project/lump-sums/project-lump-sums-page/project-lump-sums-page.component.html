@@ -118,13 +118,16 @@
                                 <ng-container *ngIf="isLumpSumSelectedForRow(control)"
                                               [formArrayName]="constants.FORM_CONTROL_NAMES.partnersContribution">
                                     <ng-container [formGroupName]="partnerAmountIndex">
-                                        <mat-form-field appFormFieldWidth="full">
-                                            <input currencyMask
-                                                   [options]="{min: constants.MIN_VALUE, max: constants.MAX_VALUE, align: 'right'}"
-                                                   [formControlName]="constants.FORM_CONTROL_NAMES.amount"
-                                                   type="decimal"
-                                                   matInput>
-                                        </mat-form-field>
+                                        <app-inline-editable-field appFormFieldWidth="full">
+                                            <mat-form-field>
+                                                <input currencyMask
+                                                       #input
+                                                       [options]="{min: constants.MIN_VALUE, max: constants.MAX_VALUE, align: 'right'}"
+                                                       [formControlName]="constants.FORM_CONTROL_NAMES.amount"
+                                                       type="decimal"
+                                                       matInput>
+                                            </mat-form-field>
+                                        </app-inline-editable-field>
                                     </ng-container>
                                 </ng-container>
                             </mat-cell>

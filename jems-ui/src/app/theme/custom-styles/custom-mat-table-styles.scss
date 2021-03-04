@@ -22,8 +22,16 @@
     .mat-row {
       border-bottom: 0;
 
+      > * {
+        background-color: var(--table-backaground-color);
+      }
+
       &:nth-child(even) {
         background-color: var(--table-highlight-color);
+
+        > * {
+          background-color: var(--table-highlight-color);
+        }
       }
 
       &:hover {
