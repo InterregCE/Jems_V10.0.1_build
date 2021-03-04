@@ -1,0 +1,12 @@
+<div class="inline-editable-field-view-mode text-overflow-ellipsis"  *ngIf="!isInEditMode"
+     (click)="enterEditMode()">
+    {{inputElement?.nativeElement?.value}}
+</div>
+
+<div class="inline-field-container" *ngIf="isInEditMode">
+    <ng-container [ngTemplateOutlet]="content"></ng-container>
+</div>
+<ng-template #content>
+    <ng-content></ng-content>
+</ng-template>
+

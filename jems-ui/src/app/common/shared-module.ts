@@ -36,6 +36,8 @@ import {ApiErrorContentComponent} from '@common/components/forms/api-error-conte
 import {InputSystemTranslatePipe} from './pipe/input-system-translate.pipe';
 import {ProjectApplicationListComponent} from '@common/components/project-application-list/project-application-list.component';
 import {CallListComponent} from '@common/components/call-list/call-list.component';
+import {InlineEditableFieldComponent} from '@common/components/inline-editable-field/inline-editable-field.component';
+import {MatProgressSpinnerModule} from '@angular/material/progress-spinner';
 
 
 const modules = [
@@ -47,7 +49,8 @@ const modules = [
   RouterModule,
   MaterialModule,
   NgxCurrencyModule,
-  MatBadgeModule
+  MatBadgeModule,
+  MatProgressSpinnerModule
 ];
 
 const declarations = [
@@ -79,7 +82,8 @@ const declarations = [
   NoWidthLimitDirective,
   LabelDirective,
   MainPageTemplateComponent,
-  ApiErrorContentComponent
+  ApiErrorContentComponent,
+  InlineEditableFieldComponent
 ];
 
 const providers = [
