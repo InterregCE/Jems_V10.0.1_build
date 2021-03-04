@@ -2,6 +2,7 @@ package io.cloudflight.jems.server.project.entity.partner
 
 import io.cloudflight.jems.api.project.dto.description.ProjectTargetGroup
 import io.cloudflight.jems.api.project.dto.partner.ProjectPartnerRole
+import io.cloudflight.jems.api.project.dto.partner.ProjectPartnerVatRecovery
 import io.cloudflight.jems.server.programme.entity.legalstatus.ProgrammeLegalStatusEntity
 import io.cloudflight.jems.server.project.entity.ProjectEntity
 import io.cloudflight.jems.server.project.entity.partner.cofinancing.ProjectPartnerCoFinancingEntity
@@ -59,7 +60,8 @@ data class ProjectPartnerEntity(
 
     val vat: String? = null,
 
-    val vatRecovery: Boolean? = null,
+    @Enumerated(EnumType.STRING)
+    val vatRecovery: ProjectPartnerVatRecovery? = null,
 
     @OneToMany(mappedBy = "addressId.partnerId", cascade = [CascadeType.ALL], orphanRemoval = true)
     val addresses: Set<ProjectPartnerAddress>?= emptySet(),

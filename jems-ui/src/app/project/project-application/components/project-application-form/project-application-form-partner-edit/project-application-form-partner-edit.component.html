@@ -116,15 +116,21 @@
         <p>{{'project.partner.recoverVat.intro.text' | translate}}</p>
         <mat-button-toggle-group [disabled]="!editable">
             <mat-button-toggle
-                    [checked]="controls?.vatRecovery.value === true"
-                    (change)="setVat(true)"
-                    [value]="true">
+                    [checked]="controls?.vatRecovery.value === VatRecoveryEnum.Yes"
+                    (change)="setVat(VatRecoveryEnum.Yes)"
+                    [value]="VatRecoveryEnum.Yes">
                 {{'common.label.project.partner.recoverVat.true' | translate}}
             </mat-button-toggle>
             <mat-button-toggle
-                    [checked]="controls?.vatRecovery.value === false"
-                    (change)="setVat(false)"
-                    [value]="false">
+                    [checked]="controls?.vatRecovery.value === VatRecoveryEnum.Partly"
+                    (change)="setVat(VatRecoveryEnum.Partly)"
+                    [value]="VatRecoveryEnum.Partly">
+                {{'common.label.project.partner.recoverVat.partly' | translate}}
+            </mat-button-toggle>
+            <mat-button-toggle
+                    [checked]="controls?.vatRecovery.value === VatRecoveryEnum.No"
+                    (change)="setVat(VatRecoveryEnum.No)"
+                    [value]="VatRecoveryEnum.No">
                 {{'common.label.project.partner.recoverVat.false' | translate}}
             </mat-button-toggle>
         </mat-button-toggle-group>

@@ -15,7 +15,7 @@ data class OutputProjectPartnerDetail (
     val partnerType: ProjectTargetGroup?,
     val legalStatusId: Long?,
     val vat: String?,
-    val vatRecovery: Boolean?,
+    val vatRecovery: ProjectPartnerVatRecovery?,
     val addresses: List<ProjectPartnerAddressDTO> = emptyList(),
     val contacts: List<OutputProjectPartnerContact> = emptyList(),
     val motivation: ProjectPartnerMotivationDTO? = null

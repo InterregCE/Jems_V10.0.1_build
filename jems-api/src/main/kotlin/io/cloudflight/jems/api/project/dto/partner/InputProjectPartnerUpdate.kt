@@ -38,6 +38,6 @@ data class InputProjectPartnerUpdate(
     @field:Size(max = 50, message = "project.partner.vat.size.too.long")
     val vat: String? = null,
 
-    val vatRecovery: Boolean? = null
+    val vatRecovery: ProjectPartnerVatRecovery? = null
 
 )

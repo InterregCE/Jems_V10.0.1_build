@@ -9,6 +9,7 @@ import io.cloudflight.jems.api.project.dto.description.ProjectTargetGroup
 import io.cloudflight.jems.api.project.dto.partner.InputProjectPartnerCreate
 import io.cloudflight.jems.api.project.dto.partner.InputProjectPartnerUpdate
 import io.cloudflight.jems.api.project.dto.partner.ProjectPartnerRole
+import io.cloudflight.jems.api.project.dto.partner.ProjectPartnerVatRecovery
 import io.cloudflight.jems.server.common.exception.I18nValidationException
 import io.cloudflight.jems.server.common.exception.ResourceNotFoundException
 import io.cloudflight.jems.server.programme.entity.legalstatus.ProgrammeLegalStatusEntity
@@ -65,7 +66,7 @@ internal class ProjectPartnerServiceTest {
         partnerType = ProjectTargetGroup.BusinessSupportOrganisation,
         legalStatus = ProgrammeLegalStatusEntity(id = 1,),
         vat = "test vat",
-        vatRecovery = true
+        vatRecovery = ProjectPartnerVatRecovery.Yes
         )
     private val partnerTranslatedValues =
         mutableSetOf(ProjectPartnerTranslEntity(TranslationPartnerId(1, SystemLanguage.EN), "test"))
@@ -82,7 +83,7 @@ internal class ProjectPartnerServiceTest {
         partnerType = ProjectTargetGroup.BusinessSupportOrganisation,
         legalStatus = ProgrammeLegalStatusEntity(id = 1),
         vat = "test vat",
-        vatRecovery = true
+        vatRecovery = ProjectPartnerVatRecovery.Yes
     )
     private val legalStatus = ProgrammeLegalStatusEntity(id = 1)
 
@@ -149,7 +150,7 @@ internal class ProjectPartnerServiceTest {
     fun `createProjectPartner not existing`() {
         val inputProjectPartner = InputProjectPartnerCreate("partner", ProjectPartnerRole.LEAD_PARTNER, null,"test","test", setOf(InputTranslation(
             SystemLanguage.EN, "test")), ProjectTargetGroup.BusinessSupportOrganisation,
-            1,"test vat", true)
+            1,"test vat", ProjectPartnerVatRecovery.Yes)
         every { projectRepository.findById(-1) } returns Optional.empty()
         every { legalStatusRepo.findById(1) } returns Optional.of(legalStatus)
         val ex = assertThrows<ResourceNotFoundException> { projectPartnerService.create(-1, inputProjectPartner) }
@@ -165,7 +166,7 @@ internal class ProjectPartnerServiceTest {
         val ex = assertThrows<I18nValidationException> {
             projectPartnerService.create(1, InputProjectPartnerCreate("partner", ProjectPartnerRole.PARTNER, null,"test","test", setOf(InputTranslation(
                 SystemLanguage.EN, "test")), ProjectTargetGroup.BusinessSupportOrganisation,
-                1,"test vat", true))
+                1,"test vat", ProjectPartnerVatRecovery.Yes))
         }
         assertThat(ex.i18nKey).isEqualTo("project.partner.max.allowed.count.reached")
         assertThat(ex.httpStatus).isEqualTo(HttpStatus.UNPROCESSABLE_ENTITY)
