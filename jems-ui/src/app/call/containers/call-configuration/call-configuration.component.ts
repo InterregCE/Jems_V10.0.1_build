@@ -95,9 +95,7 @@ export class CallConfigurationComponent extends BaseComponent {
       return allPriorities;
     }
     const savedPolicies = call.objectives
-      .map(priority => priority.specificObjectives)
-      .map(([specificObjective]) => specificObjective.programmeObjectivePolicy)
-      .flat(1) as ProgrammeSpecificObjectiveDTO.ProgrammeObjectivePolicyEnum[];
+      .map(policy => policy.objective ? policy.objective : policy) as any;
     Log.debug('Adapting the priority policies', this, allPriorities, savedPolicies);
     return allPriorities.map(priority => CallPriorityCheckbox.fromSavedPolicies(priority, savedPolicies));
   }
