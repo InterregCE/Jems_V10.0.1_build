@@ -17,11 +17,11 @@ class ProgrammeLumpSumPersistenceProvider(
 
     @Transactional(readOnly = true)
     override fun getLumpSums(): List<ProgrammeLumpSum> =
-        repository.findTop25ByOrderById().map { it.toProgrammeLumpSum() }
+        repository.findTop25ByOrderById().toModel()
 
     @Transactional(readOnly = true)
     override fun getLumpSum(lumpSumId: Long): ProgrammeLumpSum =
-        getLumpSumOrThrow(lumpSumId).toProgrammeLumpSum()
+        getLumpSumOrThrow(lumpSumId).toModel()
 
     @Transactional(readOnly = true)
     override fun getCount(): Long = repository.count()
@@ -34,7 +34,7 @@ class ProgrammeLumpSumPersistenceProvider(
                 translatedValues = combineLumpSumTranslatedValues(created.id, lumpSum.name, lumpSum.description),
                 categories = lumpSum.categories.toEntity(created.id)
             )
-        ).toProgrammeLumpSum()
+        ).toModel()
     }
 
     @Transactional
@@ -45,7 +45,7 @@ class ProgrammeLumpSumPersistenceProvider(
                     translatedValues = combineLumpSumTranslatedValues(lumpSum.id, lumpSum.name, lumpSum.description),
                     categories = lumpSum.categories.toEntity(lumpSum.id)
                 )
-            ).toProgrammeLumpSum()
+            ).toModel()
         } else throw ResourceNotFoundException("programmeLumpSum")
     }
 

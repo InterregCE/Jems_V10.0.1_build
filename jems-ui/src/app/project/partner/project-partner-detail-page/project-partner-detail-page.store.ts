@@ -11,7 +11,7 @@ import {
   BudgetTravelAndAccommodationCostEntryDTO,
   BudgetUnitCostEntryDTO,
   CallService,
-  OutputCall,
+  CallDetailDTO,
   OutputProjectPartnerDetail,
   OutputProjectPeriod,
   ProgrammeFundDTO,
@@ -139,7 +139,7 @@ export class ProjectPartnerDetailPageStore {
       .pipe(
         map(project => project.callSettings.callId),
         switchMap(callId => this.callService.getCallById(callId)),
-        map((call: OutputCall) => call.funds),
+        map((call: CallDetailDTO) => call.funds),
         map((funds: ProgrammeFundDTO[]) => [...funds].sort((a, b) => (a.id > b.id) ? 1 : -1)),
       );
   }

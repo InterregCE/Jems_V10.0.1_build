@@ -26,7 +26,7 @@ data class ProgrammeFundEntity(
     val id: Long = 0,
 
     @field:NotNull
-    val selected: Boolean = false,
+    val selected: Boolean,
 
     @OneToMany(
         cascade = [CascadeType.ALL],

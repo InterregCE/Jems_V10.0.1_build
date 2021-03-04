@@ -3,7 +3,6 @@ import {FormBuilder, FormGroup, Validators} from '@angular/forms';
 import {
   InputProjectData,
   InputTranslation,
-  OutputCallProgrammePriority,
   OutputProgrammePrioritySimple,
   OutputProject
 } from '@cat/api';
@@ -160,11 +159,4 @@ export class ProjectApplicationFormComponent extends BaseComponent implements On
     return !!this.languageService.inputLanguages.find(lang => this.LANGUAGE.EN === lang);
   }
 
-  priorityTranslated(priority: OutputProgrammePrioritySimple, currentSystemLanguage: string | null): string {
-    if (!currentSystemLanguage || !priority.code) {
-      return '';
-    }
-    const elementInSystemLang = priority.title.find((it: InputTranslation) => it.language === currentSystemLanguage);
-    return `${priority.code} - ${!!elementInSystemLang ? elementInSystemLang.translation : ''}`;
-  }
 }

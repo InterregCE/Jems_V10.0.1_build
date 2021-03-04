@@ -8,7 +8,7 @@ import io.cloudflight.jems.server.programme.entity.costoption.ProgrammeLumpSumTr
 import io.cloudflight.jems.server.programme.entity.costoption.ProgrammeLumpSumTranslId
 import io.cloudflight.jems.server.programme.service.costoption.model.ProgrammeLumpSum
 
-fun ProgrammeLumpSumEntity.toProgrammeLumpSum() = ProgrammeLumpSum(
+fun ProgrammeLumpSumEntity.toModel() = ProgrammeLumpSum(
     id = id,
     name = translatedValues.mapTo(HashSet()) { InputTranslation(it.translationId.language, it.name) },
     description = translatedValues.mapTo(HashSet()) { InputTranslation(it.translationId.language, it.description) },
@@ -18,13 +18,15 @@ fun ProgrammeLumpSumEntity.toProgrammeLumpSum() = ProgrammeLumpSum(
     categories = categories.mapTo(HashSet()) { it.category }
 )
 
+fun Iterable<ProgrammeLumpSumEntity>.toModel() = map { it.toModel() }
+
 fun ProgrammeLumpSum.toEntity() = ProgrammeLumpSumEntity(
-    id = id ?: 0,
+    id = id,
     // translatedValues - needs programmeLumpSumId
     cost = cost!!,
     splittingAllowed = splittingAllowed,
     phase = phase!!,
-    categories = if (id == null) mutableSetOf() else categories.toEntity(id)
+    categories = if (id == 0L) mutableSetOf() else categories.toEntity(id)
 )
 
 fun Collection<BudgetCategory>.toEntity(programmeLumpSumId: Long) = mapTo(HashSet()) {

@@ -1,12 +1,11 @@
 package io.cloudflight.jems.server.call.authorization
 
 import io.cloudflight.jems.api.call.dto.CallStatus
-import io.cloudflight.jems.api.call.dto.OutputCall
-import io.cloudflight.jems.api.call.dto.flatrate.FlatRateSetupDTO
-import io.cloudflight.jems.server.call.service.CallService
-import io.cloudflight.jems.server.common.exception.ResourceNotFoundException
 import io.cloudflight.jems.server.authentication.model.LocalCurrentUser
 import io.cloudflight.jems.server.authentication.service.SecurityService
+import io.cloudflight.jems.server.call.repository.CallNotFound
+import io.cloudflight.jems.server.call.service.CallPersistence
+import io.cloudflight.jems.server.call.service.model.CallDetail
 import io.cloudflight.jems.server.project.authorization.AuthorizationUtil.Companion.adminUser
 import io.cloudflight.jems.server.project.authorization.AuthorizationUtil.Companion.applicantUser
 import io.cloudflight.jems.server.project.authorization.AuthorizationUtil.Companion.programmeUser
@@ -32,93 +31,43 @@ internal class CallAuthorizationTest {
     @MockK
     lateinit var securityService: SecurityService
     @MockK
-    lateinit var callService: CallService
+    lateinit var callPersistence: CallPersistence
 
     lateinit var callAuthorization: CallAuthorization
 
-    private fun dummyCallWithStatus(status: CallStatus) = OutputCall(
+    private fun dummyCallWithStatus(status: CallStatus) = CallDetail(
         id = 1,
         name = "test call",
-        priorityPolicies = emptyList(),
-        strategies = emptyList(),
-        isAdditionalFundAllowed = false,
-        funds = emptyList(),
         status = status,
         startDate = ZonedDateTime.now().minusDays(2),
         endDate = ZonedDateTime.now().plusDays(2),
-        lengthOfPeriod = 1,
-        flatRates = FlatRateSetupDTO()
+        isAdditionalFundAllowed = false,
+        lengthOfPeriod = 10,
     )
 
     @BeforeEach
     fun setup() {
         MockKAnnotations.init(this)
         callAuthorization =
-            CallAuthorization(securityService, callService)
+            CallAuthorization(securityService, callPersistence)
     }
 
     @ParameterizedTest
     @MethodSource("provideAdminAndProgramUsers")
-    fun `this user can create a call`(currentUser: LocalCurrentUser) {
+    fun `this user can create or update calls`(currentUser: LocalCurrentUser) {
         every { securityService.currentUser } returns currentUser
 
         assertTrue(
-            callAuthorization.canCreateCall(),
-            "${currentUser.user.email} should be able to create call"
-        )
-    }
-
-    @Test
-    fun `applicant user cannot create call`() {
-        every { securityService.currentUser } returns applicantUser
-
-        assertFalse(
-            callAuthorization.canCreateCall(),
-            "${applicantUser.user.email} should not be able to create call"
-        )
-    }
-
-    @ParameterizedTest
-    @MethodSource("provideAdminAndProgramUsers")
-    fun `this user can update call`(currentUser: LocalCurrentUser) {
-        every { securityService.currentUser } returns currentUser
-
-        var status = CallStatus.PUBLISHED
-        every { callService.getCallById(eq(1)) } returns dummyCallWithStatus(status)
-        assertFalse(
-            callAuthorization.canUpdateCall(1L),
-            "${currentUser.user.email} should NOT be able to update call which is in status $status"
-        )
-
-        status = CallStatus.DRAFT
-        every { callService.getCallById(eq(2)) } returns dummyCallWithStatus(status)
-        assertTrue(
-            callAuthorization.canUpdateCall(2L),
-            "${currentUser.user.email} should be able to update call which is in status $status"
+            callAuthorization.canUpdateCalls(),
+            "${currentUser.user.email} should be able to create or update calls"
         )
     }
 
     @Test
     fun `applicant user cannot update any call`() {
         every { securityService.currentUser } returns applicantUser
-        every { callService.getCallById(1L) } returns dummyCallWithStatus(CallStatus.PUBLISHED)
-        every { callService.getCallById(2L) } returns dummyCallWithStatus(CallStatus.DRAFT)
-        every { callService.getCallById(-1L) } throws ResourceNotFoundException("call")
-
-        var exception = assertThrows<ResourceNotFoundException>(
-            "${applicantUser.user.email} should not be able to update existing ${CallStatus.PUBLISHED} call"
-        ) { callAuthorization.canUpdateCall(1L) }
-        assertThat(exception.entity).isEqualTo("call")
-
-        exception = assertThrows<ResourceNotFoundException>(
-            "${applicantUser.user.email} should not be able to update existing ${CallStatus.DRAFT} call"
-        ) { callAuthorization.canUpdateCall(2L) }
-        assertThat(exception.entity).isEqualTo("call")
-
-        exception = assertThrows<ResourceNotFoundException>(
-            "${applicantUser.user.email} should not be able to update non-existing call"
-        ) { callAuthorization.canUpdateCall(-1L) }
-        assertThat(exception.entity).isEqualTo("call")
+        assertThat(callAuthorization.canUpdateCalls()).isFalse
+            .overridingErrorMessage("applicant can never update call")
     }
 
     @ParameterizedTest
@@ -127,39 +76,38 @@ internal class CallAuthorizationTest {
         every { securityService.currentUser } returns currentUser
 
         listOf(CallStatus.PUBLISHED, CallStatus.DRAFT).forEach {
-            every { callService.getCallById(1L) } returns dummyCallWithStatus(it)
+            every { callPersistence.getCallById(1L) } returns dummyCallWithStatus(it)
             assertTrue(
-                callAuthorization.canReadCallDetail(1L),
+                callAuthorization.canReadCall(1L),
                 "${currentUser.user.email} should be able to read call detail (call status was $it)"
             )
         }
     }
 
     @Test
-    fun `applicant user cannot read call based on conditions`() {
+    fun `applicant user can-cannot read call`() {
         every { securityService.currentUser } returns applicantUser
 
-        val ID_PUBLISHED = 1L
-        val ID_DRAFT = 2L
-        val ID_PUBLISHED_BUT_CLOSED = 3L
-        every { callService.getCallById(ID_PUBLISHED) } returns dummyCallWithStatus(CallStatus.PUBLISHED)
-        every { callService.getCallById(ID_DRAFT) } returns dummyCallWithStatus(CallStatus.DRAFT)
-        every { callService.getCallById(ID_PUBLISHED_BUT_CLOSED) } returns
-            dummyCallWithStatus(CallStatus.PUBLISHED).copy(endDate = ZonedDateTime.now().minusDays(1))
+        val ID_EXISTING_DRAFT = 1L
+        val ID_EXISTING_PUBLISHED = 2L
+        val ID_NOT_EXISTING = 3L
+        every { callPersistence.getCallById(ID_EXISTING_DRAFT) } returns dummyCallWithStatus(CallStatus.DRAFT)
+        every { callPersistence.getCallById(ID_EXISTING_PUBLISHED) } returns dummyCallWithStatus(CallStatus.PUBLISHED)
+        every { callPersistence.getCallById(ID_NOT_EXISTING) } throws CallNotFound()
 
         assertTrue(
-            callAuthorization.canReadCallDetail(ID_PUBLISHED),
+            callAuthorization.canReadCall(ID_EXISTING_PUBLISHED),
             "${applicantUser.user.email} should be able to read call detail which is in status ${CallStatus.PUBLISHED})"
         )
 
-        val exception = assertThrows<ResourceNotFoundException>(
-            "${applicantUser.user.email} should NOT be able to find call detail which is in status ${CallStatus.DRAFT})"
-        ) { callAuthorization.canReadCallDetail(ID_DRAFT) }
-        assertThat(exception.entity).isEqualTo("call")
+        assertFalse(
+            callAuthorization.canReadCall(ID_EXISTING_DRAFT),
+            "${applicantUser.user.email} should get FORBIDDEN when status ${CallStatus.DRAFT}"
+        )
 
-        assertTrue(
-            callAuthorization.canReadCallDetail(ID_PUBLISHED_BUT_CLOSED),
-            "${applicantUser.user.email} should be able to read EXPIRED call detail which is in status ${CallStatus.PUBLISHED})"
+        assertFalse(
+            callAuthorization.canReadCall(ID_NOT_EXISTING),
+            "${applicantUser.user.email} should get FORBIDDEN when call does not exist"
         )
     }
 

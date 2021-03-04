@@ -4,7 +4,7 @@ import io.cloudflight.jems.api.project.dto.InputTranslation
 import java.math.BigDecimal
 
 data class ProgrammeUnitCostListDTO(
-    val id: Long? = null,
+    val id: Long,
     val name: Set<InputTranslation> = emptySet(),
     val type: Set<InputTranslation> = emptySet(),
     val costPerUnit: BigDecimal? = null,

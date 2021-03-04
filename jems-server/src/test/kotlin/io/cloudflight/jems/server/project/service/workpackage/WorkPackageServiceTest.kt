@@ -9,7 +9,7 @@ import io.cloudflight.jems.api.project.dto.workpackage.InputWorkPackageUpdate
 import io.cloudflight.jems.api.project.dto.workpackage.OutputWorkPackage
 import io.cloudflight.jems.server.call.entity.CallEntity
 import io.cloudflight.jems.server.call.entity.CallTranslEntity
-import io.cloudflight.jems.server.call.entity.CallTranslId
+import io.cloudflight.jems.server.common.entity.TranslationId
 import io.cloudflight.jems.server.common.exception.I18nValidationException
 import io.cloudflight.jems.server.project.entity.ProjectEntity
 import io.cloudflight.jems.server.project.entity.ProjectStatus
@@ -54,16 +54,16 @@ class WorkPackageServiceTest {
         id = 1,
         creator = account,
         name = "Test call name",
-        prioritySpecificObjectives = emptySet(),
-        strategies = emptySet(),
+        prioritySpecificObjectives = mutableSetOf(),
+        strategies = mutableSetOf(),
         isAdditionalFundAllowed = false,
-        funds = emptySet(),
+        funds = mutableSetOf(),
         startDate = ZonedDateTime.now(),
         endDate = ZonedDateTime.now().plusDays(5L),
         status = CallStatus.DRAFT,
-        translatedValues = mutableSetOf(CallTranslEntity(CallTranslId(1, SystemLanguage.EN), "This is a dummy call")),
+        translatedValues = mutableSetOf(),
         lengthOfPeriod = 1
-    )
+    ).apply { translatedValues.add(CallTranslEntity(TranslationId(this, SystemLanguage.EN), "This is a dummy call")) }
 
     private val statusDraft = ProjectStatus(
         id = 10,

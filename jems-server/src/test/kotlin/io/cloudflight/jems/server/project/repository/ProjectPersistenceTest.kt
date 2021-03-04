@@ -8,9 +8,10 @@ import io.cloudflight.jems.api.project.dto.InputTranslation
 import io.cloudflight.jems.api.project.dto.status.ProjectApplicationStatus
 import io.cloudflight.jems.server.UnitTest
 import io.cloudflight.jems.server.call.callWithId
+import io.cloudflight.jems.server.call.entity.CallEntity
 import io.cloudflight.jems.server.call.entity.FlatRateSetupId
 import io.cloudflight.jems.server.call.entity.ProjectCallFlatRateEntity
-import io.cloudflight.jems.server.call.service.flatrate.model.ProjectCallFlatRate
+import io.cloudflight.jems.server.call.service.model.ProjectCallFlatRate
 import io.cloudflight.jems.server.common.exception.ResourceNotFoundException
 import io.cloudflight.jems.server.programme.entity.costoption.ProgrammeLumpSumBudgetCategoryEntity
 import io.cloudflight.jems.server.programme.entity.costoption.ProgrammeLumpSumEntity
@@ -47,16 +48,16 @@ internal class ProjectPersistenceTest : UnitTest() {
         val startDate: ZonedDateTime = ZonedDateTime.now().minusDays(2)
         val endDate: ZonedDateTime = ZonedDateTime.now().plusDays(2)
 
-        private val dummyCall = callWithId(10).copy(
-            id = CALL_ID,
-            name = "call name",
-            startDate = startDate,
-            endDate = endDate,
-            lengthOfPeriod = 9,
-            flatRates = mutableSetOf(
-                ProjectCallFlatRateEntity(setupId = FlatRateSetupId(CALL_ID, FlatRateType.STAFF_COSTS), rate = 15, isAdjustable = true),
-            ),
-            lumpSums = setOf(
+        private fun dummyCall(): CallEntity {
+            val call = callWithId(CALL_ID)
+            call.name = "call name"
+            call.startDate = startDate
+            call.endDate = endDate
+            call.lengthOfPeriod = 9
+            call.flatRates.clear()
+            call.flatRates.add(ProjectCallFlatRateEntity(setupId = FlatRateSetupId(call, FlatRateType.STAFF_COSTS), rate = 15, isAdjustable = true))
+            call.lumpSums.clear()
+            call.lumpSums.add(
                 ProgrammeLumpSumEntity(
                     id = 32,
                     translatedValues = combineLumpSumTranslatedValues(
@@ -71,9 +72,10 @@ internal class ProjectPersistenceTest : UnitTest() {
                         ProgrammeLumpSumBudgetCategoryEntity(programmeLumpSumId = 12, category = BudgetCategory.EquipmentCosts),
                         ProgrammeLumpSumBudgetCategoryEntity(programmeLumpSumId = 13, category = BudgetCategory.TravelAndAccommodationCosts),
                     ),
-                ),
-            ),
-            unitCosts = setOf(
+                )
+            )
+            call.unitCosts.clear()
+            call.unitCosts.add(
                 ProgrammeUnitCostEntity(
                     id = 4,
                     translatedValues = combineUnitCostTranslatedValues(
@@ -88,24 +90,28 @@ internal class ProjectPersistenceTest : UnitTest() {
                         ProgrammeUnitCostBudgetCategoryEntity(programmeUnitCostId = 14, category = BudgetCategory.ExternalCosts),
                         ProgrammeUnitCostBudgetCategoryEntity(programmeUnitCostId = 15, category = BudgetCategory.OfficeAndAdministrationCosts),
                     ),
-                ),
-            ),
-        )
-
-        private val dummyProject = ProjectEntity(
-            id = PROJECT_ID,
-            call = dummyCall,
-            acronym = "Test Project",
-            applicant = dummyCall.creator,
-            projectStatus = ProjectStatus(id = 1, status = ProjectApplicationStatus.DRAFT, user = dummyCall.creator),
-            periods = listOf(
-                ProjectPeriodEntity(
-                    id = ProjectPeriodId(projectId = PROJECT_ID, number = 1),
-                    start = 1,
-                    end = 2,
                 )
-            ),
-        )
+            )
+            return call
+        }
+
+        private fun dummyProject(): ProjectEntity {
+            val call = dummyCall()
+            return ProjectEntity(
+                id = PROJECT_ID,
+                call = dummyCall(),
+                acronym = "Test Project",
+                applicant = call.creator,
+                projectStatus = ProjectStatus(id = 1, status = ProjectApplicationStatus.DRAFT, user = call.creator),
+                periods = listOf(
+                    ProjectPeriodEntity(
+                        id = ProjectPeriodId(projectId = PROJECT_ID, number = 1),
+                        start = 1,
+                        end = 2,
+                    )
+                )
+            )
+        }
     }
 
     @MockK
@@ -126,7 +132,7 @@ internal class ProjectPersistenceTest : UnitTest() {
 
     @Test
     fun `getProject - everything OK`() {
-        every { projectRepository.findById(PROJECT_ID) } returns Optional.of(dummyProject)
+        every { projectRepository.findById(PROJECT_ID) } returns Optional.of(dummyProject())
         assertThat(persistence.getProject(PROJECT_ID)).isEqualTo(
             Project(
                 id = PROJECT_ID,
@@ -146,7 +152,7 @@ internal class ProjectPersistenceTest : UnitTest() {
 
     @Test
     fun `getProjectCallSettingsForProject - everything OK`() {
-        every { projectRepository.findById(PROJECT_ID) } returns Optional.of(dummyProject)
+        every { projectRepository.findById(PROJECT_ID) } returns Optional.of(dummyProject())
         assertThat(persistence.getProjectCallSettings(PROJECT_ID)).isEqualTo(
             ProjectCallSettings(
                 callId = CALL_ID,

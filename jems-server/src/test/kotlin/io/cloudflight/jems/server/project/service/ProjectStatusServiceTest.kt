@@ -27,7 +27,7 @@ import io.cloudflight.jems.server.project.repository.ProjectRepository
 import io.cloudflight.jems.server.project.repository.ProjectStatusRepository
 import io.cloudflight.jems.server.authentication.model.LocalCurrentUser
 import io.cloudflight.jems.server.authentication.service.SecurityService
-import io.cloudflight.jems.server.programme.entity.Strategy
+import io.cloudflight.jems.server.programme.entity.ProgrammeStrategyEntity
 import io.cloudflight.jems.server.user.entity.User
 import io.cloudflight.jems.server.user.entity.UserRole
 import io.cloudflight.jems.server.user.repository.UserRepository
@@ -99,10 +99,10 @@ internal class ProjectStatusServiceTest {
         id = 5,
         creator = user,
         name = "call",
-        prioritySpecificObjectives = setOf(ProgrammeSpecificObjectiveEntity(DisadvantagedGroups, "DG")),
-        strategies = setOf(Strategy(ProgrammeStrategy.SeaBasinStrategyArcticOcean, true)),
+        prioritySpecificObjectives = mutableSetOf(ProgrammeSpecificObjectiveEntity(DisadvantagedGroups, "DG")),
+        strategies = mutableSetOf(ProgrammeStrategyEntity(ProgrammeStrategy.SeaBasinStrategyArcticOcean, true)),
         isAdditionalFundAllowed = false,
-        funds = emptySet(),
+        funds = mutableSetOf(),
         startDate = ZonedDateTime.now().minusDays(2),
         endDate = ZonedDateTime.now().plusDays(2),
         status = CallStatus.PUBLISHED,

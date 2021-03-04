@@ -74,10 +74,10 @@ internal class ProjectAssociatedOrganizationServiceTest {
         status = CallStatus.DRAFT,
         startDate = ZonedDateTime.now(),
         endDate = ZonedDateTime.now(),
-        prioritySpecificObjectives = emptySet(),
-        strategies = emptySet(),
+        prioritySpecificObjectives = mutableSetOf(),
+        strategies = mutableSetOf(),
         isAdditionalFundAllowed = false,
-        funds = emptySet(),
+        funds = mutableSetOf(),
         lengthOfPeriod = 1
     )
     private val projectStatus = ProjectStatus(

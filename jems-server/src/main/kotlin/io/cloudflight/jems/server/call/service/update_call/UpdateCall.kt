@@ -1,0 +1,84 @@
+package io.cloudflight.jems.server.call.service.update_call
+
+import io.cloudflight.jems.api.programme.dto.priority.ProgrammeObjectivePolicy
+import io.cloudflight.jems.server.audit.service.AuditService
+import io.cloudflight.jems.server.call.authorization.CanUpdateCalls
+import io.cloudflight.jems.server.call.service.CallPersistence
+import io.cloudflight.jems.server.call.service.callUpdated
+import io.cloudflight.jems.server.call.service.model.CallDetail
+import io.cloudflight.jems.server.call.service.model.Call
+import io.cloudflight.jems.server.call.service.validator.CallValidator
+import io.cloudflight.jems.server.common.exception.ExceptionWrapper
+import io.cloudflight.jems.server.programme.service.priority.model.ProgrammePriority
+import org.springframework.stereotype.Service
+import org.springframework.transaction.annotation.Transactional
+import java.time.ZonedDateTime
+
+@Service
+class UpdateCall(
+    private val persistence: CallPersistence,
+    private val callValidator: CallValidator,
+    private val auditService: AuditService,
+) : UpdateCallInteractor {
+
+    @CanUpdateCalls
+    @Transactional
+    @ExceptionWrapper(UpdateCallException::class)
+    override fun updateCall(call: Call): CallDetail {
+        callValidator.validateCommonCall(call = call)
+        validateUniqueName(callId = call.id, callIdWithThisName = persistence.getCallIdForNameIfExists(call.name))
+
+        val existingCall = persistence.getCallById(callId = call.id)
+        validateCorrectStatus(call = call, oldCall = existingCall)
+        call.status = existingCall.status
+
+        if (existingCall.isPublished())
+            validateAllowedChanges(call, existingCall)
+
+        return persistence.updateCall(call).also {
+            callUpdated(existingCall, it).logWith(auditService)
+        }
+    }
+
+    private fun validateUniqueName(callId: Long, callIdWithThisName: Long?) {
+        if (callIdWithThisName != null && callIdWithThisName != callId)
+            throw CallNameNotUnique()
+    }
+
+    private fun validateCorrectStatus(call: Call, oldCall: CallDetail) {
+        if (call.status != null && call.status != oldCall.status)
+            throw CallStatusChangeForbidden()
+    }
+
+    private fun validateAllowedChanges(call: Call, oldCall: CallDetail) {
+        val startDateChanged = call.startDate.toInstant() != oldCall.startDate.toInstant()
+        val lengthOfPeriodChanged = call.lengthOfPeriod != oldCall.lengthOfPeriod
+        val isAdditionalFundAllowedChanged = call.isAdditionalFundAllowed != oldCall.isAdditionalFundAllowed
+
+        val newSpecificObjectives: Set<ProgrammeObjectivePolicy> = call.priorityPolicies
+        val newFundIds = call.fundIds
+        val oldSpecificObjectives = oldCall.objectives.mergeAllSpecificObjectives()
+        val oldFundIds = oldCall.funds.mapTo(HashSet()) { it.id }
+
+        val specificObjectivesRemoved = !newSpecificObjectives.containsAll(oldSpecificObjectives)
+        val strategiesRemoved = !call.strategies.containsAll(oldCall.strategies)
+        val fundsRemoved = !newFundIds.containsAll(oldFundIds)
+
+        if (startDateChanged
+            || lengthOfPeriodChanged
+            || isAdditionalFundAllowedChanged
+            || specificObjectivesRemoved
+            || strategiesRemoved
+            || fundsRemoved
+        )
+            throw UpdateRestrictedFieldsWhenCallPublished()
+
+        if (call.endDate.toInstant() != oldCall.endDate.toInstant() && call.endDate.isBefore(ZonedDateTime.now()))
+            throw UpdatingEndDateIntoPast()
+    }
+
+    private fun List<ProgrammePriority>.mergeAllSpecificObjectives(): Set<ProgrammeObjectivePolicy> =
+        map { it.specificObjectives.map { it.programmeObjectivePolicy }.toSet() }
+            .reduce { first, second -> first union second }
+
+}

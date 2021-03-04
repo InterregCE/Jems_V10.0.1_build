@@ -1,7 +1,7 @@
 package io.cloudflight.jems.server.call.controller
 
 import com.fasterxml.jackson.databind.ObjectMapper
-import io.cloudflight.jems.api.call.dto.InputCallCreate
+import io.cloudflight.jems.api.call.dto.CallUpdateRequestDTO
 import io.cloudflight.jems.api.programme.dto.language.SystemLanguage
 import io.cloudflight.jems.api.project.dto.InputTranslation
 import io.cloudflight.jems.server.factory.UserFactory
@@ -32,16 +32,13 @@ class CallControllerIntegrationTest {
     @WithUserDetails(value = UserFactory.ADMINISTRATOR_EMAIL)
     @Transactional
     fun `create call`() {
-        val call = InputCallCreate(
-            "New Call",
-            null,
-            null,
-            false,
-            null,
-            ZonedDateTime.now(),
-            ZonedDateTime.now().plusDays(3L),
-            setOf(InputTranslation(SystemLanguage.EN, "Short description")),
-            12
+        val call = CallUpdateRequestDTO(
+            name = "New Call",
+            startDateTime = ZonedDateTime.now(),
+            endDateTime = ZonedDateTime.now().plusDays(3L),
+            isAdditionalFundAllowed = false,
+            lengthOfPeriod = 12,
+            description = setOf(InputTranslation(SystemLanguage.EN, "Short description")),
         )
 
         mockMvc.perform(
@@ -50,6 +47,6 @@ class CallControllerIntegrationTest {
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .content(jsonMapper.writeValueAsString(call))
         )
-            .andExpect(MockMvcResultMatchers.status().isOk());
+            .andExpect(MockMvcResultMatchers.status().isOk)
     }
 }

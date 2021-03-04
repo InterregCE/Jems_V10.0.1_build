@@ -2,7 +2,8 @@ package io.cloudflight.jems.server.audit.entity
 
 enum class AuditAction {
     // package CALL
-    CALL_CREATED,
+    CALL_ADDED,
+    CALL_CONFIGURATION_CHANGED,
     CALL_PUBLISHED,
 
 

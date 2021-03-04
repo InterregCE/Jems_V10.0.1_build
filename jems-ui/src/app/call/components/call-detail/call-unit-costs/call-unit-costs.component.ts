@@ -1,7 +1,7 @@
 import {ChangeDetectionStrategy, Component, Input, OnInit} from '@angular/core';
 import {MatTableDataSource} from '@angular/material/table';
 import {FormBuilder, FormGroup} from '@angular/forms';
-import {ProgrammeUnitCostListDTO, OutputCall, InputTranslation} from '@cat/api';
+import {ProgrammeUnitCostListDTO, InputTranslation, CallDetailDTO} from '@cat/api';
 import {FormService} from '@common/components/section/form/form.service';
 import {SelectionModel} from '@angular/cdk/collections';
 import {CallStore} from '../../../services/call-store.service';
@@ -20,7 +20,7 @@ export class CallUnitCostsComponent implements OnInit {
   @Input()
   unitCosts: ProgrammeUnitCostListDTO[];
   @Input()
-  call: OutputCall;
+  call: CallDetailDTO;
 
   callUnitCostForm: FormGroup;
   published = false;
@@ -38,7 +38,7 @@ export class CallUnitCostsComponent implements OnInit {
     this.initForm();
     this.formService.init(this.callUnitCostForm);
     this.formService.setCreation(!this.call?.id);
-    this.published = this.call?.status === OutputCall.StatusEnum.PUBLISHED;
+    this.published = this.call?.status === CallDetailDTO.StatusEnum.PUBLISHED;
     this.formService.setEditable(!this.published);
   }
 

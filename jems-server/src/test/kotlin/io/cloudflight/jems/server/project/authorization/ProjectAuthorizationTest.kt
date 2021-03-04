@@ -1,6 +1,5 @@
 package io.cloudflight.jems.server.project.authorization
 
-import io.cloudflight.jems.api.call.dto.OutputCallWithDates
 import io.cloudflight.jems.api.call.dto.flatrate.FlatRateSetupDTO
 import io.cloudflight.jems.api.project.dto.status.ProjectApplicationStatus
 import io.cloudflight.jems.api.user.dto.OutputUser
@@ -44,15 +43,6 @@ internal class ProjectAuthorizationTest {
             email = "not-owner@applicant",
             surname = "applicant",
             userRole = OutputUserRole(id = 1, name = "applicant")
-        )
-
-        private val call = OutputCallWithDates(
-            id = 1,
-            name = "call",
-            startDate = ZonedDateTime.now().minusDays(1),
-            endDate = ZonedDateTime.now().plusDays(1),
-            lengthOfPeriod = 12,
-            flatRates = FlatRateSetupDTO(),
         )
 
         private fun testProject(status: ProjectApplicationStatus) = ProjectApplicantAndStatus(
@@ -147,7 +137,7 @@ internal class ProjectAuthorizationTest {
     @Test
     fun `admin canCreateProjectForCall`() {
         every { securityService.currentUser } returns adminUser
-        every { callAuthorization.canReadCallDetail(eq(1)) } returns true
+        every { callAuthorization.canReadCall(eq(1)) } returns true
         assertTrue(
             projectAuthorization.canCreateProjectForCall(1),
             "admin is able to create call when he can read call"
@@ -157,7 +147,7 @@ internal class ProjectAuthorizationTest {
     @Test
     fun `applicant canCreateProjectForCall`() {
         every { securityService.currentUser } returns applicantUser
-        every { callAuthorization.canReadCallDetail(eq(2)) } returns true
+        every { callAuthorization.canReadCall(eq(2)) } returns true
         assertTrue(
             projectAuthorization.canCreateProjectForCall(2),
             "applicant is able to create call when he can read call"
@@ -167,7 +157,7 @@ internal class ProjectAuthorizationTest {
     @Test
     fun `programmeUser canCreateProjectForCall`() {
         every { securityService.currentUser } returns programmeUser
-        every { callAuthorization.canReadCallDetail(eq(3)) } returns true
+        every { callAuthorization.canReadCall(eq(3)) } returns true
         assertFalse(
             projectAuthorization.canCreateProjectForCall(3),
             "programmeUser is NOT able to create call"
@@ -176,7 +166,7 @@ internal class ProjectAuthorizationTest {
 
     @Test
     fun `anyone canCreateProjectForCall when cannot read`() {
-        every { callAuthorization.canReadCallDetail(eq(4)) } returns false
+        every { callAuthorization.canReadCall(eq(4)) } returns false
         listOf(applicantUser, adminUser, programmeUser).forEach {
             every { securityService.currentUser } returns it
             assertFalse(

@@ -2,7 +2,7 @@ import {fakeAsync, TestBed} from '@angular/core/testing';
 
 import {CallStore} from './call-store.service';
 import {CallModule} from '../call.module';
-import {InputCallCreate, InputCallUpdate} from '@cat/api';
+import {CallUpdateRequestDTO} from '@cat/api';
 import {HttpTestingController} from '@angular/common/http/testing';
 import {TestModule} from '../../common/test-module';
 
@@ -23,7 +23,7 @@ describe('CallStoreService', () => {
   });
 
   it('should update a call', fakeAsync(() => {
-    service.saveCall({} as InputCallUpdate).subscribe();
+    service.saveCall({} as CallUpdateRequestDTO).subscribe();
 
     httpTestingController.expectOne({
       method: 'PUT',
@@ -36,12 +36,12 @@ describe('CallStoreService', () => {
 
     httpTestingController.expectOne({
       method: 'PUT',
-      url: `//api/call/1/publish`
+      url: `//api/call/byId/1/publish`
     });
   }));
 
   it('should create a call', fakeAsync(() => {
-    service.createCall({} as InputCallCreate).subscribe();
+    service.createCall({} as CallUpdateRequestDTO).subscribe();
 
     httpTestingController.expectOne({
       method: 'POST',

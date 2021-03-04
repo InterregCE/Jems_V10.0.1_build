@@ -1,6 +1,6 @@
 {
 	"info": {
-		"_postman_id": "5f916f0e-c493-43ea-914a-382d5d590af1",
+		"_postman_id": "7e52d1d2-491f-4f8e-b960-5b9b5693d356",
 		"name": "ems-rest-test",
 		"description": "Check EMS application for common use-cases",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
@@ -856,7 +856,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n\t\"name\": \"{{call_name_to_create}}\",\n\t\"priorityPolicies\": [ \"{{programmePriorityPolicy}}\" ],\n    \"funds\": [{{programmeFundId}}],\n\t\"startDate\": \"{{callDateStart}}\",\n\t\"endDate\": \"{{callDateEnd}}\",\n    \"description\": [\n        {\n            \"language\": \"{{inputLanguage}}\",\n            \"translation\": \"{{inputLanguage}} description\"\n        }\n    ],\n    \"lengthOfPeriod\": 12\n}\n"
+							"raw": "{\n\t\"name\": \"{{call_name_to_create}}\",\n\t\"startDateTime\": \"{{callDateStart}}\",\n\t\"endDateTime\": \"{{callDateEnd}}\",\n    \"isAdditionalFundAllowed\": true,\n    \"lengthOfPeriod\": 12,\n    \"description\": [\n        {\n            \"language\": \"{{inputLanguage}}\",\n            \"translation\": \"{{inputLanguage}} description\"\n        }\n    ],\n\t\"priorityPolicies\": [ \"{{programmePriorityPolicy}}\" ],\n    \"strategies\": [\"EUStrategyDanubeRegion\", \"SeaBasinStrategyOutermostRegions\"],\n    \"fundIds\": [{{programmeFundId}}]\n}\n"
 						},
 						"url": {
 							"raw": "{{url}}/api/call",
@@ -930,15 +930,16 @@
 							}
 						},
 						"url": {
-							"raw": "{{url}}/api/call/{{callId}}/flatrate",
+							"raw": "{{url}}/api/call/byId/{{callId}}/flatRate",
 							"host": [
 								"{{url}}"
 							],
 							"path": [
 								"api",
 								"call",
+								"byId",
 								"{{callId}}",
-								"flatrate"
+								"flatRate"
 							]
 						}
 					},
@@ -1003,13 +1004,14 @@
 							}
 						},
 						"url": {
-							"raw": "{{url}}/api/call/{{callId}}/lumpSum",
+							"raw": "{{url}}/api/call/byId/{{callId}}/lumpSum",
 							"host": [
 								"{{url}}"
 							],
 							"path": [
 								"api",
 								"call",
+								"byId",
 								"{{callId}}",
 								"lumpSum"
 							]
@@ -1076,13 +1078,14 @@
 							}
 						},
 						"url": {
-							"raw": "{{url}}/api/call/{{callId}}/unitCost",
+							"raw": "{{url}}/api/call/byId/{{callId}}/unitCost",
 							"host": [
 								"{{url}}"
 							],
 							"path": [
 								"api",
 								"call",
+								"byId",
 								"{{callId}}",
 								"unitCost"
 							]
@@ -1140,13 +1143,14 @@
 							}
 						],
 						"url": {
-							"raw": "{{url}}/api/call/{{callId}}/publish",
+							"raw": "{{url}}/api/call/byId/{{callId}}/publish",
 							"host": [
 								"{{url}}"
 							],
 							"path": [
 								"api",
 								"call",
+								"byId",
 								"{{callId}}",
 								"publish"
 							]

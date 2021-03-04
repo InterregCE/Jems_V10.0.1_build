@@ -31,7 +31,7 @@ import io.cloudflight.jems.server.authentication.service.SecurityService
 import io.cloudflight.jems.server.project.service.file.FileStorageService
 import io.cloudflight.jems.server.project.service.file.FileStorageServiceImpl
 import io.cloudflight.jems.server.project.service.file.PROJECT_FILES_BUCKET
-import io.cloudflight.jems.server.programme.entity.Strategy
+import io.cloudflight.jems.server.programme.entity.ProgrammeStrategyEntity
 import io.mockk.MockKAnnotations
 import io.mockk.every
 import io.mockk.impl.annotations.MockK
@@ -88,10 +88,10 @@ class FileStorageServiceTest {
         id = 5,
         creator = account,
         name = "call",
-        prioritySpecificObjectives = setOf(ProgrammeSpecificObjectiveEntity(CircularEconomy, "CE")),
-        strategies = setOf(Strategy(ProgrammeStrategy.SeaBasinStrategyArcticOcean, true)),
+        prioritySpecificObjectives = mutableSetOf(ProgrammeSpecificObjectiveEntity(CircularEconomy, "CE")),
+        strategies = mutableSetOf(ProgrammeStrategyEntity(ProgrammeStrategy.SeaBasinStrategyArcticOcean, true)),
         isAdditionalFundAllowed = false,
-        funds = emptySet(),
+        funds = mutableSetOf(),
         startDate = ZonedDateTime.now(),
         endDate = ZonedDateTime.now(),
         status = CallStatus.PUBLISHED,

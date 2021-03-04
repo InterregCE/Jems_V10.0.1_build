@@ -24,7 +24,7 @@ fun Iterable<ProgrammeLumpSum>.toDto() = map {
 }
 
 fun ProgrammeLumpSumDTO.toModel() = ProgrammeLumpSum(
-    id = id,
+    id = id ?: 0,
     name = name,
     description = description,
     cost = cost,

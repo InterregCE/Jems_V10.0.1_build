@@ -1,6 +1,6 @@
 import {ChangeDetectionStrategy, Component, Input, OnInit} from '@angular/core';
 import {FormBuilder, Validators} from '@angular/forms';
-import {OutputCall, OutputProgrammeStrategy, ProgrammeFundDTO} from '@cat/api';
+import {CallDetailDTO, OutputProgrammeStrategy, ProgrammeFundDTO} from '@cat/api';
 import {Forms} from '../../../common/utils/forms';
 import {catchError, filter, take, tap} from 'rxjs/operators';
 import {MatDialog} from '@angular/material/dialog';
@@ -29,7 +29,7 @@ export class CallDetailComponent implements OnInit {
   isFirstCall: boolean;
 
   @Input()
-  call: OutputCall;
+  call: CallDetailDTO;
   @Input()
   priorityCheckboxes: CallPriorityCheckbox[];
   @Input()
@@ -39,12 +39,12 @@ export class CallDetailComponent implements OnInit {
   @Input()
   isApplicant: boolean;
 
-  startDateErrors = {
+  startDateTimeErrors = {
     required: 'call.startDate.unknown',
     matDatetimePickerParse: CallDetailComponent.DATE_SHOULD_BE_VALID,
     matDatetimePickerMax: 'call.startDate.must.be.before.endDate',
   };
-  endDateErrors = {
+  endDateTimeErrors = {
     required: 'call.endDate.unknown',
     matDatetimePickerParse: CallDetailComponent.DATE_SHOULD_BE_VALID,
     matDatetimePickerMin: 'call.endDate.must.be.after.startDate',
@@ -68,8 +68,8 @@ export class CallDetailComponent implements OnInit {
       Validators.required,
       Validators.maxLength(250)
     ])],
-    startDate: ['', Validators.required],
-    endDate: ['', Validators.required],
+    startDateTime: ['', Validators.required],
+    endDateTime: ['', Validators.required],
     description: [[], Validators.maxLength(1000)],
     lengthOfPeriod: ['', Validators.compose(
       [Validators.required, Validators.max(99), Validators.min(1)])],
@@ -92,7 +92,7 @@ export class CallDetailComponent implements OnInit {
   ngOnInit(): void {
     this.formService.init(this.callForm);
     this.formService.setCreation(!this.call?.id);
-    this.editable = this.call?.status !== OutputCall.StatusEnum.PUBLISHED && !this.isApplicant;
+    this.editable = this.call?.status !== CallDetailDTO.StatusEnum.PUBLISHED && !this.isApplicant;
     this.formService.setEditable(this.editable);
     this.callForm.controls.multipleFundsAllowed.setValue(this.call.isAdditionalFundAllowed);
     this.resetForm();
@@ -103,7 +103,7 @@ export class CallDetailComponent implements OnInit {
     call.priorityPolicies = this.priorityCheckboxes
       .flatMap(checkbox => checkbox.getCheckedChildPolicies());
     call.strategies = this.buildUpdateEntityStrategies();
-    call.funds = this.buildUpdateEntityFunds();
+    call.fundIds = this.buildUpdateEntityFunds();
     call.isAdditionalFundAllowed = this.callForm.controls.multipleFundsAllowed.value;
 
     if (!this.call.id) {

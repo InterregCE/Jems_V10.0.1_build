@@ -42,7 +42,7 @@ class CreateLumpSumInteractorTest {
     fun `create lump sum - invalid`() {
         every { persistence.getCount() } returns 15
         val wrongLumpSum = ProgrammeLumpSum(
-            id = null,
+            id = 0L,
             name = setOf(InputTranslation(SystemLanguage.EN, " ")),
             description = setOf(InputTranslation(SystemLanguage.EN, "test lump sum 1")),
             cost = null,
@@ -62,7 +62,7 @@ class CreateLumpSumInteractorTest {
     fun `create lump sum - reached max allowed amount`() {
         every { persistence.getCount() } returns 25
         val lumpSum = ProgrammeLumpSum(
-            id = null,
+            id = 0L,
             name = setOf(InputTranslation(SystemLanguage.EN, "LS1")),
             description = setOf(InputTranslation(SystemLanguage.EN, "test lump sum 1")),
             cost = BigDecimal.ONE,
@@ -79,7 +79,7 @@ class CreateLumpSumInteractorTest {
         every { persistence.getCount() } returns 5
         every { persistence.createLumpSum(any()) } returnsArgument 0
         val lumpSum = ProgrammeLumpSum(
-            id = null,
+            id = 0L,
             name = setOf(InputTranslation(SystemLanguage.EN, "LS1")),
             description = setOf(InputTranslation(SystemLanguage.EN, "test lump sum 1")),
             cost = BigDecimal.ONE,
@@ -93,7 +93,7 @@ class CreateLumpSumInteractorTest {
         assertThat(createLumpSumInteractor.createLumpSum(lumpSum)).isEqualTo(lumpSum.copy())
         assertThat(auditSlot.captured).isEqualTo(AuditCandidate(
             action = AuditAction.PROGRAMME_LUMP_SUM_ADDED,
-            description = "Programme lump sum (id=null) '[InputTranslation(language=EN, translation=LS1)]' has been added" // null will be real ID from DB sequence
+            description = "Programme lump sum (id=0) '[InputTranslation(language=EN, translation=LS1)]' has been added" // null will be real ID from DB sequence
         ))
     }
 

@@ -1,5 +1,8 @@
 package io.cloudflight.jems.server.project.repository.partner.budget.options
 
+import io.cloudflight.jems.server.call.repository.toModel
+import io.cloudflight.jems.server.call.service.model.ProjectCallFlatRate
+import io.cloudflight.jems.server.project.repository.partner.ProjectPartnerRepository
 import io.cloudflight.jems.server.project.repository.partner.budget.ProjectPartnerBudgetEquipmentRepository
 import io.cloudflight.jems.server.project.repository.partner.budget.ProjectPartnerBudgetExternalRepository
 import io.cloudflight.jems.server.project.repository.partner.budget.ProjectPartnerBudgetInfrastructureRepository
@@ -20,6 +23,7 @@ class ProjectPartnerBudgetOptionsPersistenceProvider(
     private val budgetEquipmentRepository: ProjectPartnerBudgetEquipmentRepository,
     private val budgetInfrastructureRepository: ProjectPartnerBudgetInfrastructureRepository,
     private val budgetUnitCostRepository: ProjectPartnerBudgetUnitCostRepository,
+    private val partnerRepository: ProjectPartnerRepository,
 ) : ProjectPartnerBudgetOptionsPersistence {
 
     @Transactional(readOnly = true)
@@ -64,5 +68,9 @@ class ProjectPartnerBudgetOptionsPersistenceProvider(
     @Transactional
     override fun deleteUnitCosts(partnerId: Long) =
         budgetUnitCostRepository.deleteAllByBasePropertiesPartnerId(partnerId)
+
+    @Transactional(readOnly = true)
+    override fun getProjectCallFlatRateByPartnerId(partnerId: Long): Set<ProjectCallFlatRate> =
+        partnerRepository.getOne(partnerId).project.call.flatRates.toModel()
 
 }

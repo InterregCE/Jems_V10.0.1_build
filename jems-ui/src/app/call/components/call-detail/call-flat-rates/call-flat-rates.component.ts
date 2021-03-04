@@ -1,6 +1,6 @@
 import {ChangeDetectionStrategy, Component, Input, OnInit} from '@angular/core';
 import {Tools} from '../../../../common/utils/tools';
-import {FlatRateSetupDTO, OutputCall} from '@cat/api';
+import {CallDetailDTO, FlatRateSetupDTO} from '@cat/api';
 import {FormBuilder, FormControl, FormGroup, Validators} from '@angular/forms';
 import {FormService} from '@common/components/section/form/form.service';
 import {CallStore} from '../../../services/call-store.service';
@@ -20,7 +20,7 @@ export class CallFlatRatesComponent implements OnInit {
   constants = CallFlatRatesConstants;
 
   @Input()
-  call: OutputCall;
+  call: CallDetailDTO;
 
   published = false;
 
@@ -35,7 +35,7 @@ export class CallFlatRatesComponent implements OnInit {
     this.initForm(this.call.flatRates);
     this.formService.init(this.callFlatRateForm);
     this.formService.setCreation(!this.call?.id);
-    this.published = this.call?.status === OutputCall.StatusEnum.PUBLISHED;
+    this.published = this.call?.status === CallDetailDTO.StatusEnum.PUBLISHED;
     this.formService.setEditable(!this.published);
   }
 

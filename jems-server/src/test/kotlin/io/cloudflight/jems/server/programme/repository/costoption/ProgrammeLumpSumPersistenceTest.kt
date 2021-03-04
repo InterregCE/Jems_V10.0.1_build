@@ -109,7 +109,7 @@ class ProgrammeLumpSumPersistenceTest {
         val entitySaved = slot<ProgrammeLumpSumEntity>()
         every { repository.save(capture(entitySaved)) } returnsArgument 0
 
-        val toSave = expectedLumpSum.copy(id = null)
+        val toSave = expectedLumpSum.copy(id = 0L)
 
         val result = programmeLumpSumPersistence.createLumpSum(toSave)
 

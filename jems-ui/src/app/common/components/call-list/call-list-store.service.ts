@@ -1,5 +1,5 @@
 import {Injectable} from '@angular/core';
-import {CallService, PageOutputCallList} from '@cat/api';
+import {CallService, PageCallDTO} from '@cat/api';
 import {combineLatest, Observable, Subject} from 'rxjs';
 import {MatSort} from '@angular/material/sort';
 import {map, startWith, switchMap, tap} from 'rxjs/operators';
@@ -9,7 +9,7 @@ import {Log} from '../../utils/log';
 @Injectable()
 export class CallListStore {
 
-  page$: Observable<PageOutputCallList>;
+  page$: Observable<PageCallDTO>;
 
   newPageSize$ = new Subject<number>();
   newPageIndex$ = new Subject<number>();
@@ -19,7 +19,7 @@ export class CallListStore {
     this.page$ = this.page();
   }
 
-  private page(): Observable<PageOutputCallList> {
+  private page(): Observable<PageCallDTO> {
     return combineLatest([
       this.newPageIndex$.pipe(startWith(Tables.DEFAULT_INITIAL_PAGE_INDEX)),
       this.newPageSize$.pipe(startWith(Tables.DEFAULT_INITIAL_PAGE_SIZE)),
