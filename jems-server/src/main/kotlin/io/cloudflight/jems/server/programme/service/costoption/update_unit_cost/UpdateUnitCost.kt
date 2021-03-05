@@ -46,10 +46,10 @@ class UpdateUnitCost(
     }
 
     private fun unitCostUpdateRestrictions(existingUnitCost: ProgrammeUnitCost, updatedUnitCost: ProgrammeUnitCost) {
-        if (existingUnitCost.type != updatedUnitCost.type ||
+        if (!updatedUnitCost.type.containsAll(existingUnitCost.type) ||
             existingUnitCost.costPerUnit?.compareTo( updatedUnitCost.costPerUnit) != 0 ||
             existingUnitCost.isOneCostCategory != updatedUnitCost.isOneCostCategory ||
-            existingUnitCost.categories != updatedUnitCost.categories
+            !updatedUnitCost.categories.containsAll(existingUnitCost.categories )
         )
             throw UpdateUnitCostWhenProgrammeSetupRestricted()
     }
