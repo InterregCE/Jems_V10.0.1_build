@@ -1,42 +1,54 @@
-<div [appTableConfig]>
-    <div>
-        <span>{{'project.detail.table.id.application' | translate}}</span>
-        <span>{{'project.detail.table.id.programme' | translate}}</span>
-        <span>{{'project.detail.table.call.name' | translate}}</span>
-        <span>{{'project.detail.table.project.acronym' | translate}}</span>
-        <span>{{'project.detail.table.submission.first' | translate}}</span>
-        <span>{{'project.detail.table.submission.latest' | translate}}</span>
-        <span *ngIf="project.projectData?.programmePriority"
-              [title]="project.projectData?.programmePriority?.title">{{'project.detail.table.programme.priority' | translate}}</span>
-        <span *ngIf="project.projectData?.specificObjective"
-              [title]="'programme.policy.' + project.projectData?.specificObjective?.programmeObjectivePolicy | translate">{{'project.detail.table.specific.objective' | translate}}</span>
-        <span>{{'project.detail.table.status' | translate}}</span>
+<h2>{{project.id}} - {{project.acronym}}</h2>
+<div class="mb-3">
+    {{'project.detail.table.status' | translate}}:
+    <span class="app-alert-warning">
+        {{'common.label.projectapplicationstatus.' + project?.projectStatus.status | translate}}
+    </span>
+    <span>{{'project.detail.overview.since' | translate : {date: formatDate(project.projectStatus.updated)} }}</span>
+</div>
+<div id="project-info">
+    <div class="project-row">
+        <span class="header col-2">{{'project.detail.table.id.application' | translate}}</span>
+        <span class="col">{{project.id}} - {{project.acronym}}</span>
     </div>
-    <div>
-        <span>{{project.id}}</span>
-        <span>dummy</span>
-        <span>{{project.callSettings.callName}}</span>
-        <span>{{project.acronym}}</span>
-        <div>
-            <ng-container *ngIf="project.firstSubmission">
-                <div>{{project.firstSubmission?.updated | date : Tables.DEFAULT_DATE_FORMAT}}</div>
-                <div>by {{project.firstSubmission?.user?.name}} {{project.firstSubmission?.user?.surname}}</div>
-            </ng-container>
-        </div>
-
-        <div>
-            <ng-container *ngIf="project.lastResubmission">
-                <div>{{project.lastResubmission?.updated | date : Tables.DEFAULT_DATE_FORMAT}}</div>
-                <span>by {{project.lastResubmission?.user?.name}} {{project.lastResubmission?.user?.surname}}</span>
-            </ng-container>
-        </div>
-        <div *ngIf="project.projectData?.programmePriority" [title]="project.projectData?.programmePriority?.title">
-            {{project.projectData?.programmePriority?.code}}
-        </div>
-        <div *ngIf="project.projectData?.specificObjective"
-             [title]="'programme.policy.' + project.projectData?.specificObjective?.programmeObjectivePolicy | translate">
-            {{project.projectData?.specificObjective?.code}}
-        </div>
-        <div>{{'common.label.projectapplicationstatus.' + project.projectStatus.status | translate}}</div>
+    <div class="project-row">
+        <span class="header col-2">{{'project.detail.overview.applicant.name' | translate}}</span>
+        <span class="col">{{getApplicantName()}}</span>
+    </div>
+    <div class="project-row">
+        <span class="header col-2">{{'project.detail.overview.project.name' | translate}}</span>
+        <span class="col">{{getCodeAndTitle(undefined, project?.projectData?.title)}}</span>
+    </div>
+    <div class="project-row">
+        <span class="header col-2">{{'project.detail.table.programme.priority' | translate}}</span>
+        <span class="col">{{getCodeAndTitle(project.projectData?.programmePriority?.code, project.projectData?.programmePriority?.title)}}</span>
+    </div>
+    <div class="project-row">
+        <span class="header col-2">{{'project.detail.table.specific.objective' | translate}}</span>
+        <span class="col">
+              <ng-container *ngIf="project.projectData?.specificObjective">
+                  {{project.projectData?.specificObjective?.code}}
+                  - {{'programme.policy.' + project.projectData?.specificObjective?.programmeObjectivePolicy | translate}}
+              </ng-container>
+        </span>
+    </div>
+    <div class="project-row">
+        <span class="header col-2">{{'project.detail.table.call.name' | translate}}</span>
+        <span class="col">
+            {{project?.callSettings?.callName}}
+            <span class="expiration">{{'project.detail.overview.call.expiration' | translate : getCallInfo()}}</span>
+        </span>
+    </div>
+    <div class="project-row">
+        <span class="header col-2">{{'project.detail.table.submission.latest' | translate}}</span>
+        <span *ngIf="project?.lastResubmission" class="col">
+            {{'project.detail.overview.applicant' | translate : getSubmission(project?.lastResubmission)}}
+        </span>
+    </div>
+    <div class="project-row">
+        <span class="header col-2">{{'project.detail.table.submission.first' | translate}}</span>
+        <span *ngIf="project?.firstSubmission" class="col">
+            {{'project.detail.overview.applicant' | translate : getSubmission(project?.firstSubmission)}}
+        </span>
     </div>
 </div>

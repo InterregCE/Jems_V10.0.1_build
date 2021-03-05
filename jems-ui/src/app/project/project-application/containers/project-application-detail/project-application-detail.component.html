@@ -1,13 +1,13 @@
 <app-main-page-template [needsCard]="true"
                         *ngIf="project$ | async as project"
                         titleKey="project.application.form.lifecycle.title">
-    <div page-sub-title appNoWidthLimit appFormLayout>
-        <h2>{{project.acronym}}</h2>
-        <app-project-application-information appNoWidthLimit
-                                             [project]="project"></app-project-application-information>
-    </div>
+    <div appFormLayout>
 
-    <div appFormLayout >
+        <div appNoWidthLimit>
+            <app-project-application-information appNoWidthLimit
+                                                 [project]="project"></app-project-application-information>
+        </div>
+
         <app-project-application-data appNoWidthLimit></app-project-application-data>
         <h3 id="applicationFormLifecycleAttachments">{{'file.tab.header' | translate}}</h3>
         <mat-tab-group appNoWidthLimit>

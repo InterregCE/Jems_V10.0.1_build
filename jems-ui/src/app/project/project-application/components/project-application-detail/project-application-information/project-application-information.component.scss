@@ -1,4 +1,18 @@
-.project-detail-row {
-  border: solid 1px darkgrey;
-  margin-left: 0;
+#project-info {
+  border: 1px solid;
+  border-color: var(--table-border-color);
+
+  .project-row {
+    display: flex;
+    flex-wrap: wrap;
+  }
+
+  .header {
+    background-color: var(--table-highlight-color);
+  }
+
+  .expiration {
+    color: var(--warn-color);
+  }
 }
+
