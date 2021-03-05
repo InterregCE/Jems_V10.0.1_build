@@ -83,23 +83,6 @@ export class BudgetPagePerPartnerComponent {
     return NumberService.truncateNumber(totalSum);
   }
 
-  getTotalPercentageAmountForFund(fund: ProgrammeFundDTO): number {
-    let totalSum = 0;
-    let counter = 0;
-    if (this.budgetColumns) {
-      this.budgetColumns.forEach(column => {
-        column.budgets
-          .filter((budget: ProjectPartnerBudgetModel) => budget.budgetFundId === fund.id)
-          .forEach((budget: ProjectPartnerBudgetModel) => {
-            totalSum = totalSum + budget.budgetPercentage;
-            counter = counter + 1;
-          });
-      });
-      return counter > 0 ? NumberService.truncateNumber((totalSum / counter), 0) : 0;
-    }
-    return 0;
-  }
-
   private constructBudgetColumns(budgets: ProjectPartnerBudgetCoFinancingDTO[]): void {
     budgets.forEach((budget: ProjectPartnerBudgetCoFinancingDTO) => {
       this.budgetColumns.push({
