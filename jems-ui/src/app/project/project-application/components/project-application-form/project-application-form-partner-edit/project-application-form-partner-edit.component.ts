@@ -37,6 +37,7 @@ import {Router} from '@angular/router';
 })
 export class ProjectApplicationFormPartnerEditComponent extends BaseComponent implements OnInit, OnChanges {
   RoleEnum = OutputProjectPartner.RoleEnum;
+  VatRecoveryEnum = InputProjectPartnerCreate.VatRecoveryEnum;
   LANGUAGE = InputTranslation.LanguageEnum;
 
   @Input()
@@ -190,7 +191,7 @@ export class ProjectApplicationFormPartnerEditComponent extends BaseComponent im
     this.formService.setDirty(true);
   }
 
-  setVat(vat: boolean): void {
+  setVat(vat: InputProjectPartnerCreate.VatRecoveryEnum): void {
     this.controls?.vatRecovery.setValue(vat);
     this.formService.setDirty(true);
   }
