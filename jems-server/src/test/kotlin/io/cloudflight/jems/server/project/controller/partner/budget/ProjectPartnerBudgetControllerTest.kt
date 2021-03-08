@@ -2,6 +2,7 @@ package io.cloudflight.jems.server.project.controller.partner.budget
 
 import io.cloudflight.jems.api.programme.dto.fund.ProgrammeFundDTO
 import io.cloudflight.jems.api.project.dto.partner.budget.BudgetGeneralCostEntryDTO
+import io.cloudflight.jems.api.project.dto.partner.budget.BudgetPeriodDTO
 import io.cloudflight.jems.api.project.dto.partner.budget.BudgetStaffCostEntryDTO
 import io.cloudflight.jems.api.project.dto.partner.budget.BudgetTravelAndAccommodationCostEntryDTO
 import io.cloudflight.jems.api.project.dto.partner.budget.BudgetUnitCostEntryDTO
@@ -185,22 +186,43 @@ class ProjectPartnerBudgetControllerTest : UnitTest() {
 
     @Test
     fun updateBudgetStaffCost() {
-        val budgetCosts = emptyList<BudgetStaffCostEntryDTO>()
-        every { updateBudgetStaffCosts.updateBudgetStaffCosts(PARTNER_ID, budgetCosts.toBudgetStaffCostEntryList()) } returns budgetCosts.toBudgetStaffCostEntryList()
+        val budgetCosts = listOf(BudgetStaffCostEntryDTO(
+            id = 1,
+            numberOfUnits = BigDecimal.ONE,
+            pricePerUnit = BigDecimal.TEN,
+            rowSum = BigDecimal.TEN,
+            budgetPeriods = setOf(BudgetPeriodDTO(1, BigDecimal.ONE)),
+            unitCostId = 1
+        ))
+        every { updateBudgetStaffCosts.updateBudgetStaffCosts(PARTNER_ID, any()) } returns budgetCosts.toBudgetStaffCostEntryList()
         assertThat(controller.updateBudgetStaffCosts(PARTNER_ID, budgetCosts)).isEqualTo(budgetCosts)
     }
 
     @Test
     fun updateBudgetTravel() {
-        val travels = emptyList<BudgetTravelAndAccommodationCostEntryDTO>()
-        every { updateBudgetTravelAndAccommodationCosts.updateBudgetTravelAndAccommodationCosts(PARTNER_ID, travels.toBudgetTravelAndAccommodationCostEntryList()) } returns travels.toBudgetTravelAndAccommodationCostEntryList()
+        val travels = listOf(BudgetTravelAndAccommodationCostEntryDTO(
+            id = 1,
+            numberOfUnits = BigDecimal.ONE,
+            pricePerUnit = BigDecimal.TEN,
+            rowSum = BigDecimal.TEN,
+            budgetPeriods = emptySet(),
+            unitCostId = 1
+        ))
+        every { updateBudgetTravelAndAccommodationCosts.updateBudgetTravelAndAccommodationCosts(PARTNER_ID, any()) } returns travels.toBudgetTravelAndAccommodationCostEntryList()
         assertThat(controller.updateBudgetTravel(PARTNER_ID, travels)).isEqualTo(travels)
     }
 
     @Test
     fun updateBudgetExternal() {
-        val externals = emptyList<BudgetGeneralCostEntryDTO>()
-        every { updateBudgetExternalExpertiseAndServicesCosts.updateBudgetGeneralCosts(PARTNER_ID, externals.toBudgetGeneralCostEntryList()) } returns externals.toBudgetGeneralCostEntryList()
+        val externals = listOf(BudgetGeneralCostEntryDTO(
+            id = 1,
+            numberOfUnits = BigDecimal.ONE,
+            pricePerUnit = BigDecimal.TEN,
+            rowSum = BigDecimal.TEN,
+            budgetPeriods = emptySet(),
+            unitCostId = 1
+        ))
+        every { updateBudgetExternalExpertiseAndServicesCosts.updateBudgetGeneralCosts(PARTNER_ID, any()) } returns externals.toBudgetGeneralCostEntryList()
         assertThat(controller.updateBudgetExternal(PARTNER_ID, externals)).isEqualTo(externals)
     }
 
@@ -220,8 +242,14 @@ class ProjectPartnerBudgetControllerTest : UnitTest() {
 
     @Test
     fun updateBudgetUnitCosts() {
-        val unitCosts = emptyList<BudgetUnitCostEntryDTO>()
-        every { updateBudgetUnitCosts.updateBudgetUnitCosts(PARTNER_ID, unitCosts.toBudgetUnitCostEntryList()) } returns unitCosts.toBudgetUnitCostEntryList()
+        val unitCosts = listOf(BudgetUnitCostEntryDTO(
+            id = 1,
+            numberOfUnits = BigDecimal.ONE,
+            rowSum = BigDecimal.TEN,
+            budgetPeriods = emptySet(),
+            unitCostId = 1
+        ))
+        every { updateBudgetUnitCosts.updateBudgetUnitCosts(PARTNER_ID, any()) } returns unitCosts.toBudgetUnitCostEntryList()
         assertThat(controller.updateBudgetUnitCosts(PARTNER_ID, unitCosts)).isEqualTo(unitCosts)
     }
 

@@ -7,6 +7,7 @@ import java.math.BigDecimal
 
 interface ProjectPartnerBudgetGeneralBase :
     ProjectPartnerBudgetBase {
+    val unitCostId: Long?
     val investmentId: Long?
     val pricePerUnit: BigDecimal
     val translatedValues: MutableSet<out ProjectPartnerBudgetGeneralTranslBase>

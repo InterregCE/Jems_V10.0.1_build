@@ -144,7 +144,7 @@ class ProgrammeUnitCostPersistenceTest {
             categories = setOf(ExternalCosts, EquipmentCosts),
         )
         every { repository.existsById(testUnitCost.id) } returns true
-        val translations = combineUnitCostTranslatedValues(toBeUpdated.id!!, toBeUpdated.name, toBeUpdated.description, toBeUpdated.type)
+        val translations = combineUnitCostTranslatedValues(toBeUpdated.id, toBeUpdated.name, toBeUpdated.description, toBeUpdated.type)
         every { repository.save(any()) } returns toBeUpdated.toEntity().copy(translatedValues = translations)
 
         assertThat(programmeUnitCostPersistence.updateUnitCost(toBeUpdated)).isEqualTo(ProgrammeUnitCost(

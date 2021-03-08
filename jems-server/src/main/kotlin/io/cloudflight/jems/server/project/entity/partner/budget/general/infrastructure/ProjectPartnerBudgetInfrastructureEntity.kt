@@ -37,8 +37,9 @@ data class ProjectPartnerBudgetInfrastructureEntity(
     @field:NotNull
     override val pricePerUnit: BigDecimal,
 
-    ) :
-    ProjectPartnerBudgetGeneralBase {
+    override val unitCostId: Long?
+
+) : ProjectPartnerBudgetGeneralBase {
 
     override fun equals(other: Any?) =
         this === other ||

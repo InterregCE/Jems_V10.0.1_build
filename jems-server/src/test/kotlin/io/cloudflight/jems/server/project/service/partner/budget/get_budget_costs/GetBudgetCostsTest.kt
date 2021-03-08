@@ -64,7 +64,8 @@ internal class GetBudgetCostsTest : UnitTest() {
             StaffCostUnitType.HOUR,
             StaffCostType.UNIT_COST,
             emptySet(),
-            emptySet()
+            emptySet(),
+            null
         ),
         BudgetStaffCostEntry(
             2,
@@ -75,7 +76,8 @@ internal class GetBudgetCostsTest : UnitTest() {
             StaffCostUnitType.HOUR,
             StaffCostType.UNIT_COST,
             emptySet(),
-            emptySet()
+            emptySet(),
+            1
         )
     )
 
@@ -96,7 +98,8 @@ internal class GetBudgetCostsTest : UnitTest() {
             mutableSetOf(),
             BigDecimal.ONE,
             emptySet(),
-            emptySet()
+            emptySet(),
+            2
         )
     )
 
@@ -121,7 +124,8 @@ internal class GetBudgetCostsTest : UnitTest() {
             0L,
             emptySet(),
             emptySet(),
-            emptySet()
+            emptySet(),
+            3
         )
     )
 

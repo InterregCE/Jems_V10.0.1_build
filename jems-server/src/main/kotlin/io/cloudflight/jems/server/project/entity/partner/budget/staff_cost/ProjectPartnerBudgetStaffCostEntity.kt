@@ -39,7 +39,9 @@ data class ProjectPartnerBudgetStaffCostEntity(
     val translatedValues: MutableSet<ProjectPartnerBudgetStaffCostTranslEntity> = mutableSetOf(),
 
     @OneToMany(cascade = [CascadeType.ALL], orphanRemoval = true, mappedBy = "budgetPeriodId.budget")
-    val budgetPeriodEntities: MutableSet<ProjectPartnerBudgetStaffCostPeriodEntity>
+    val budgetPeriodEntities: MutableSet<ProjectPartnerBudgetStaffCostPeriodEntity>,
+
+    val unitCostId: Long?
 
 ) : ProjectPartnerBudgetBase {
 

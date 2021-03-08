@@ -12,5 +12,6 @@ class BudgetStaffCostEntry(
     val unitType: StaffCostUnitType?,
     val type: StaffCostType?,
     val description: Set<InputTranslation> = emptySet(),
-    val comment: Set<InputTranslation> = emptySet()
+    val comment: Set<InputTranslation> = emptySet(),
+    val unitCostId: Long? = null
 ) : BaseBudgetEntry

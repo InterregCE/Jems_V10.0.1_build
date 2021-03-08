@@ -14,5 +14,6 @@ data class BudgetStaffCostEntryDTO(
     val unitType: StaffCostUnitTypeDTO? = null,
     val type: StaffCostTypeDTO? = null,
     val description: Set<InputTranslation> = emptySet(),
-    val comment: Set<InputTranslation> = emptySet()
+    val comment: Set<InputTranslation> = emptySet(),
+    val unitCostId: Long? = null
 ) : BaseBudgetEntryDTO

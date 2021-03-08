@@ -35,7 +35,9 @@ data class ProjectPartnerBudgetEquipmentEntity(
 
     @Column
     @field:NotNull
-    override val pricePerUnit: BigDecimal
+    override val pricePerUnit: BigDecimal,
+
+    override val unitCostId: Long?
 
     ) :
     ProjectPartnerBudgetGeneralBase {
