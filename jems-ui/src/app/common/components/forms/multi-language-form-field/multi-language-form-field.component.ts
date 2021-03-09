@@ -39,6 +39,7 @@ import {INPUT_STATE} from '@common/components/forms/multi-language/multi-languag
 })
 export class MultiLanguageFormFieldComponent implements OnInit, ControlValueAccessor, Validator {
 
+  disabled = false;
   constants = MultiLanguageFormFieldConstants;
 
   @Input()
@@ -87,11 +88,7 @@ export class MultiLanguageFormFieldComponent implements OnInit, ControlValueAcce
   }
 
   setDisabledState(isDisabled: boolean): void {
-    if (isDisabled) {
-      this.multiLanguageFormGroup?.disable();
-    } else {
-      this.multiLanguageFormGroup?.enable();
-    }
+    this.disabled = isDisabled;
   }
 
   writeValue(newValue: InputTranslation[]): void {
