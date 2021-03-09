@@ -43,7 +43,8 @@
             </div>
         </div>
     </app-multi-language>
-    <button *ngIf="editable" mat-stroked-button type="button" (click)="addNewStrategy()">
+    <button *ngIf="editable && strategiesForm.controls?.length < 20" mat-stroked-button type="button"
+            (click)="addNewStrategy()">
         <mat-icon>add</mat-icon>
     </button>
 </div>

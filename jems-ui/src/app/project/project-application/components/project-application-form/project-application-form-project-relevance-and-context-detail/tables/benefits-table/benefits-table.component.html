@@ -1,5 +1,5 @@
 <div appFormLayout [formGroup]="formGroup">
-    <app-multi-language appNoWidthLimit *ngIf="benefitsForm.controls.length>0">
+    <app-multi-language appNoWidthLimit>
         <div [appTableConfig]="[{},{}, {maxInRem:2}]">
             <div>
                 <span class="mat-body-strong">{{ 'project.application.form.relevance.target.group' | translate }}</span>
@@ -44,7 +44,8 @@
             </div>
         </div>
     </app-multi-language>
-    <button *ngIf="editable" mat-stroked-button type="button" (click)="addNewBenefit()">
+    <button *ngIf="editable && benefitsForm.controls?.length < 20" mat-stroked-button type="button"
+            (click)="addNewBenefit()">
         <mat-icon>add</mat-icon>
     </button>
 </div>

@@ -24,6 +24,7 @@ import {MatTreeModule} from '@angular/material/tree';
 import {MatFormFieldModule} from '@angular/material/form-field';
 import {TranslatableMatPaginatorIntl} from './translatable-mat-paginator-intl.service';
 import {TranslatableMatDatepickerIntl} from './translatable-mat-datepicker-intl.service';
+import {MatChipsModule} from '@angular/material/chips';
 
 const modules = [
   MatTabsModule,
@@ -48,7 +49,8 @@ const modules = [
   MatAutocompleteModule,
   NgxMatDatetimePickerModule,
   MatTreeModule,
-  MatFormFieldModule
+  MatFormFieldModule,
+  MatChipsModule
 ];
 
 @NgModule({

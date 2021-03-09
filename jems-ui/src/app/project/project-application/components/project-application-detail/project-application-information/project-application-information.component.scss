@@ -1,14 +1,22 @@
+#status {
+  display: flex;
+  align-items: baseline;
+}
+
 #project-info {
   border: 1px solid;
   border-color: var(--table-border-color);
 
+
   .project-row {
     display: flex;
-    flex-wrap: wrap;
   }
 
   .header {
-    background-color: var(--table-highlight-color);
+    background-color: var(--light-blue-gray);
+    min-width: 12rem;
+    padding-left: .5rem;
+    margin-right: .5rem;
   }
 
   .expiration {

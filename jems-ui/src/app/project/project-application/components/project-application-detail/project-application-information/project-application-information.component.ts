@@ -36,13 +36,14 @@ export class ProjectApplicationInformationComponent {
     const endDate = moment(this.project?.callSettings.endDate);
     const now = moment(new Date());
     const diff = moment.duration(endDate.diff(now));
+    const daysLeft = Math.floor(diff.asDays());
 
     return {
       call: this.project?.callSettings.callName,
       date: endDate.format(Tables.DEFAULT_DATE_FORMAT),
-      days: Math.floor(diff.asDays()),
-      hours: diff.hours(),
-      minutes: diff.minutes()
+      days: daysLeft > 0 ? daysLeft : 0,
+      hours: diff.hours() > 0 ? diff.hours() : 0,
+      minutes: diff.minutes() > 0 ? diff.minutes() : 0
     };
   }
 

@@ -96,7 +96,7 @@ export class ProjectApplicationFormProjectRelevanceAndContextDetailComponent ext
     this.benefits = this.project?.projectBenefits ? [...this.project.projectBenefits] : [];
     this.strategies = this.project?.projectStrategies ? [...this.project.projectStrategies] : [];
     this.synergies = this.project?.projectSynergies ? [...this.project.projectSynergies] : [];
-    this.formService.setEditable(false);
+    this.formService.resetEditable();
   }
 
   private buildBenefitsToSave(): InputProjectRelevanceBenefit[] {
