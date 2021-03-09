@@ -45,7 +45,7 @@
                 </span>
             </div>
             <button
-                    *ngIf="!project.eligibilityDecision"
+                    *ngIf="!project.fundingDecision"
                     mat-stroked-button appFormFieldWidth="x-large"
                     [disabled]="project?.eligibilityDecision?.status !== OutputProjectStatus.StatusEnum.ELIGIBLE  || !project.qualityAssessment"
                     [routerLink]="'./assessment/fundingDecision'">
