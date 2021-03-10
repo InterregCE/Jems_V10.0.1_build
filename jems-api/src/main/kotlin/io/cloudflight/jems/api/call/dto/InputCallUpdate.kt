@@ -18,7 +18,7 @@ data class InputCallUpdate (
     val id: Long,
 
     @field:NotBlank
-    @field:Size(max = 150, message = "call.name.wrong.size")
+    @field:Size(max = 250, message = "call.name.wrong.size")
     val name: String?,
 
     @field:NotNull(message = "call.priorityPolicies.unknown")

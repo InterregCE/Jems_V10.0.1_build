@@ -13,10 +13,10 @@ import javax.validation.constraints.NotNull
 import javax.validation.constraints.Size
 
 @StartDateBeforeEndDate("call.endDate.is.before.startDate")
-data class InputCallCreate (
+data class InputCallCreate(
 
     @field:NotBlank
-    @field:Size(max = 150, message = "call.name.wrong.size")
+    @field:Size(max = 250, message = "call.name.wrong.size")
     @UniqueCallName
     val name: String?,
 

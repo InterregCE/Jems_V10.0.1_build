@@ -110,7 +110,7 @@ export class ProjectResultsPageComponent implements OnInit {
       {
         programmeResultIndicatorId: this.formBuilder.control(existing?.programmeResultIndicatorId),
         resultNumber: this.formBuilder.control(existing?.resultNumber || this.results.length),
-        targetValue: this.formBuilder.control(existing?.targetValue || ''),
+        targetValue: this.formBuilder.control(existing?.targetValue || 1),
         periodNumber: this.formBuilder.control(existing?.periodNumber || ''),
         description: this.formBuilder.control(existing?.description || []),
       })
