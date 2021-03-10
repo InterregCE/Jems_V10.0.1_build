@@ -31,7 +31,7 @@
                     </mat-form-field>
                     <div>{{ fundAmount.value | asMoney }}</div>
                     <mat-form-field class="text-right">
-                        <input currencyMask type="integer" [options]="{min: 0, max: 100, align: 'right'}"
+                        <input currencyMask type="integer" [options]="{min: 0, max: maxFundPercentage, align: 'right'}"
                                name="percentage" [formControlName]="constants.FORM_CONTROL_NAMES.fundPercentage"
                                matInput>
                         <div matSuffix class="pl-1">%</div>
@@ -65,7 +65,7 @@
                     </mat-form-field>
                     <div>{{ additionalFundAmount.value | asMoney }}</div>
                     <mat-form-field class="text-right">
-                        <input currencyMask type="integer" [options]="{min: 0, max: 100, align: 'right'}"
+                        <input currencyMask type="integer" [options]="{min: 0, max: maxAdditionalFundPercentage, align: 'right'}"
                                name="additionalFundPercentage"
                                [formControlName]="constants.FORM_CONTROL_NAMES.additionalFundPercentage"
                                matInput>

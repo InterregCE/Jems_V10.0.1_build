@@ -352,4 +352,12 @@ export class ProjectPartnerCoFinancingTabComponent implements OnInit {
   get additionalFundPercentage(): FormControl {
     return this.coFinancingForm.get(this.constants.FORM_CONTROL_NAMES.additionalFundPercentage) as FormControl;
   }
+
+  get maxFundPercentage(): number {
+    return NumberService.minus(100, this.additionalFundPercentage.value);
+  }
+
+  get maxAdditionalFundPercentage(): number {
+    return NumberService.minus(100, this.fundPercentage.value);
+  }
 }
