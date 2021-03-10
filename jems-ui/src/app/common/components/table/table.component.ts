@@ -1,6 +1,5 @@
 import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
 import {TableConfiguration} from './model/table.configuration';
-import {DatePipe} from '@angular/common';
 import {ColumnConfiguration} from './model/column.configuration';
 import {ColumnType} from './model/column-type.enum';
 import {Observable} from 'rxjs';
@@ -10,6 +9,7 @@ import {Tables} from '../../utils/tables';
 import {MoneyPipe} from '../../pipe/money.pipe';
 import {LanguageService} from '../../services/language.service';
 import {InputTranslation} from '@cat/api';
+import moment from 'moment/moment';
 
 @Component({
   selector: 'app-table',
@@ -38,8 +38,7 @@ export class TableComponent implements OnInit {
   columnsToDisplay: string[] = [];
   currentPageSize = Tables.DEFAULT_INITIAL_PAGE_SIZE;
 
-  constructor(private datePipe: DatePipe,
-              private moneyPipe: MoneyPipe,
+  constructor(private moneyPipe: MoneyPipe,
               public languageService: LanguageService) {
   }
 
@@ -74,7 +73,7 @@ export class TableComponent implements OnInit {
       return column.alternativeValue;
     }
     if (column.columnType === ColumnType.DateColumn) {
-      return this.datePipe.transform(elementValue, Tables.DEFAULT_DATE_FORMAT);
+      return moment(elementValue).format(Tables.DEFAULT_DATE_FORMAT);
     }
     if (column.columnType === ColumnType.Decimal) {
       return this.moneyPipe.transform(elementValue);

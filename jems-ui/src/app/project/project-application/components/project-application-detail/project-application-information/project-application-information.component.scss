@@ -1,4 +1,26 @@
-.project-detail-row {
-  border: solid 1px darkgrey;
-  margin-left: 0;
+#status {
+  display: flex;
+  align-items: baseline;
 }
+
+#project-info {
+  border: 1px solid;
+  border-color: var(--table-border-color);
+
+
+  .project-row {
+    display: flex;
+  }
+
+  .header {
+    background-color: var(--light-blue-gray);
+    min-width: 12rem;
+    padding-left: .5rem;
+    margin-right: .5rem;
+  }
+
+  .expiration {
+    color: var(--warn-color);
+  }
+}
+

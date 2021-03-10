@@ -39,7 +39,8 @@
             </div>
         </div>
     </app-multi-language>
-    <button *ngIf="editable" mat-stroked-button type="button" (click)="addNewSynergy()">
+    <button *ngIf="editable && synergiesForm.controls?.length < 20" mat-stroked-button type="button"
+            (click)="addNewSynergy()">
         <mat-icon>add</mat-icon>
     </button>
 </div>
