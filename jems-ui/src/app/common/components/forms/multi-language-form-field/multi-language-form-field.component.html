@@ -2,11 +2,12 @@
     <ng-container formArrayName="inputs">
         <ng-container *ngFor="let formGroup of inputs?.controls; let i=index;" [formGroupName]="i">
             <ng-container *ngIf="(currentLanguage$ | async) === formGroup.get('language')?.value">
-                <mat-form-field class="w-100">
+                <mat-form-field [class.mat-form-field-disabled]="disabled" class="w-100" >
                     <mat-label *ngIf="label">{{label | translate}}</mat-label>
-                    <input *ngIf="type==='input'" formControlName="translation" matInput>
+                    <input [readonly]="disabled" *ngIf="type==='input'" formControlName="translation" matInput>
 
                     <textarea *ngIf="type==='textarea'" formControlName="translation" matInput
+                              [readonly]="disabled"
                               [cdkTextareaAutosize]
                               [cdkAutosizeMinRows]="minRows"
                               [cdkAutosizeMaxRows]="maxRows">
