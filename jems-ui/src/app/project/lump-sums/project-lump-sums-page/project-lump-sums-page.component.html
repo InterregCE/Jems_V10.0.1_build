@@ -19,172 +19,187 @@
                             [type]="Alert.WARNING">
                         {{'project.application.form.section.part.e.gap.warning' | translate}}
                     </app-alert>
-                    <mat-table
-                            appNoWidthLimit
-                            id="lump-sums-table"
-                            [appTableConfig]="data.withConfigs"
-                            [dataSource]="dataSource" [formArrayName]="constants.FORM_CONTROL_NAMES.items">
 
-                        <ng-container matColumnDef="lumpSum" sticky>
-                            <mat-header-cell
-                                    *matHeaderCellDef> {{'project.application.form.section.part.e.lump.sums.column.title' | translate}} </mat-header-cell>
-                            <mat-cell *matCellDef="let control;  let i = index" [formGroupName]="i">
-                                <mat-form-field appFormFieldWidth="full">
-                                    <mat-select
-                                            [matTooltip]="translated(control.get(constants.FORM_CONTROL_NAMES.lumpSum)?.value?.name, languageService.systemLanguage$ | async)"
-                                            [formControlName]="constants.FORM_CONTROL_NAMES.lumpSum">
-                                        <mat-option *ngFor="let lumpSum of data.lumpSums" [value]="lumpSum">
-                                            {{ translated(lumpSum.name, languageService.systemLanguage$ | async) }}
-                                        </mat-option>
-                                    </mat-select>
-                                    <mat-error>
-                                        <app-form-field-errors
-                                                [errors]="control?.get(constants.FORM_CONTROL_NAMES.lumpSum)?.errors"
-                                                [messages]="constants.FORM_ERRORS.lumpSum"
-                                        ></app-form-field-errors>
-                                    </mat-error>
-                                </mat-form-field>
-                            </mat-cell>
-                            <mat-footer-cell *matFooterCellDef></mat-footer-cell>
-                        </ng-container>
+                    <div id="loading-container" appNoWidthLimit *ngIf="data.loading">
+                        {{'common.loading' | translate}}
+                        <mat-spinner class="ml-2" [diameter]="32" [strokeWidth]="3"></mat-spinner>
+                    </div>
 
-                        <ng-container matColumnDef="period">
-                            <mat-header-cell *matHeaderCellDef>
-                                {{'project.application.form.section.part.e.period.column.title' | translate}}
-                                <app-context-info
-                                        infoText="{{ 'project.application.form.section.part.e.period.column.contextinfo' | translate }}"
-                                        infoPosition="right">
-                                </app-context-info>
-                            </mat-header-cell>
-                            <mat-cell *matCellDef="let control;  let i = index" [formGroupName]="i">
-                                <mat-form-field *ngIf="isLumpSumSelectedForRow(control)"
-                                                appFormFieldWidth="full">
-                                    <mat-select [formControlName]="constants.FORM_CONTROL_NAMES.periodNumber"
-                                                [matTooltip]="getPeriodLabel(getPeriod(i, data.periods))">
-                                        <mat-option></mat-option>
-                                        <mat-option [value]="0">Preparation</mat-option>
-                                        <mat-option *ngFor="let period of data.periods"
-                                                    [value]="period.periodNumber">
-                                            {{getPeriodLabel(period)}}
-                                        </mat-option>
-                                    </mat-select>
-                                    <mat-error>
-                                        <app-form-field-errors
-                                                [errors]="control?.get(constants.FORM_CONTROL_NAMES.periodNumber)?.errors"
-                                                [messages]="constants.FORM_ERRORS.period"
-                                        ></app-form-field-errors>
-                                    </mat-error>
-                                </mat-form-field>
-                            </mat-cell>
-                            <mat-footer-cell *matFooterCellDef></mat-footer-cell>
-                        </ng-container>
+                    <div id="table-container" appNoWidthLimit>
+                        <div id="overlay" *ngIf="data.loading"></div>
+                        <mat-table
+                                #table
+                                appNoWidthLimit
+                                id="lump-sums-table"
+                                [appTableConfig]="data.withConfigs"
+                                [dataSource]="tableData" [formArrayName]="constants.FORM_CONTROL_NAMES.items">
+                            <ng-container matColumnDef="lumpSum" sticky>
+                                <mat-header-cell
+                                        *matHeaderCellDef> {{'project.application.form.section.part.e.lump.sums.column.title' | translate}} </mat-header-cell>
+                                <mat-cell *matCellDef="let control;  let i = index" [formGroupName]="i">
+                                    <mat-form-field appFormFieldWidth="full">
+                                        <mat-select
+                                                [matTooltip]="translated(control.get(constants.FORM_CONTROL_NAMES.lumpSum)?.value?.name, languageService.systemLanguage$ | async)"
+                                                [formControlName]="constants.FORM_CONTROL_NAMES.lumpSum">
+                                            <mat-option *ngFor="let lumpSum of data.lumpSums" [value]="lumpSum">
+                                                {{ translated(lumpSum.name, languageService.systemLanguage$ | async) }}
+                                            </mat-option>
+                                        </mat-select>
+                                        <mat-error>
+                                            <app-form-field-errors
+                                                    [errors]="control?.get(constants.FORM_CONTROL_NAMES.lumpSum)?.errors"
+                                                    [messages]="constants.FORM_ERRORS.lumpSum"
+                                            ></app-form-field-errors>
+                                        </mat-error>
+                                    </mat-form-field>
+                                </mat-cell>
+                                <mat-footer-cell *matFooterCellDef></mat-footer-cell>
+                            </ng-container>
 
-                        <ng-container matColumnDef="isSplittingLumpSumAllowed">
-                            <mat-header-cell *matHeaderCellDef>
-                                {{'project.application.form.section.part.e.is.splitting.lump.sums.allowed.column.title' | translate}}
-                                <app-context-info
-                                        infoText="{{ 'project.application.form.section.part.e.is.splitting.lump.sums.allowed.column.contextinfo' | translate }}"
-                                        infoPosition="right">
-                                </app-context-info>
-                            </mat-header-cell>
-                            <mat-cell *matCellDef="let control;  let i = index" [formGroupName]="i">
-                                <div *ngIf="isLumpSumSelectedForRow(control)">
-                                    {{control.get(constants.FORM_CONTROL_NAMES.lumpSum)?.value?.isSplittingAllowed ?
-                                        ('project.application.form.section.part.e.is.splittable.yes' | translate) :
-                                        'project.application.form.section.part.e.is.splittable.no' | translate
-                                    }}
-                                </div>
-                            </mat-cell>
-                            <mat-footer-cell *matFooterCellDef></mat-footer-cell>
-                        </ng-container>
+                            <ng-container matColumnDef="period">
+                                <mat-header-cell *matHeaderCellDef>
+                                    {{'project.application.form.section.part.e.period.column.title' | translate}}
+                                    <app-context-info
+                                            infoText="{{ 'project.application.form.section.part.e.period.column.contextinfo' | translate }}"
+                                            infoPosition="right">
+                                    </app-context-info>
+                                </mat-header-cell>
+                                <mat-cell *matCellDef="let control;  let i = index" [formGroupName]="i">
+                                    <mat-form-field *ngIf="isLumpSumSelectedForRow(control)"
+                                                    appFormFieldWidth="full">
+                                        <mat-select [formControlName]="constants.FORM_CONTROL_NAMES.periodNumber"
+                                                    [matTooltip]="getPeriodLabel(getPeriod(i, data.periods))">
+                                            <mat-option></mat-option>
+                                            <mat-option [value]="0">Preparation</mat-option>
+                                            <mat-option *ngFor="let period of data.periods"
+                                                        [value]="period.periodNumber">
+                                                {{getPeriodLabel(period)}}
+                                            </mat-option>
+                                        </mat-select>
+                                        <mat-error>
+                                            <app-form-field-errors
+                                                    [errors]="control?.get(constants.FORM_CONTROL_NAMES.periodNumber)?.errors"
+                                                    [messages]="constants.FORM_ERRORS.period"
+                                            ></app-form-field-errors>
+                                        </mat-error>
+                                    </mat-form-field>
+                                </mat-cell>
+                                <mat-footer-cell *matFooterCellDef></mat-footer-cell>
+                            </ng-container>
 
-                        <ng-container matColumnDef="lumpSumCost">
-                            <mat-header-cell
-                                    *matHeaderCellDef> {{'project.application.form.section.part.e.lump.sums.cost.column.title' | translate}} </mat-header-cell>
-                            <mat-cell class="cost" [class.gap-exists]="isGapExistsInRow(control)"
-                                      *matCellDef="let control;  let i = index" [formGroupName]="i">
-                                <div>{{control.get(constants.FORM_CONTROL_NAMES.lumpSum).value?.cost | asMoney}}</div>
-                            </mat-cell>
-                            <mat-footer-cell *matFooterCellDef></mat-footer-cell>
-                        </ng-container>
+                            <ng-container matColumnDef="isSplittingLumpSumAllowed">
+                                <mat-header-cell *matHeaderCellDef>
+                                    {{'project.application.form.section.part.e.is.splitting.lump.sums.allowed.column.title' | translate}}
+                                    <app-context-info
+                                            infoText="{{ 'project.application.form.section.part.e.is.splitting.lump.sums.allowed.column.contextinfo' | translate }}"
+                                            infoPosition="right">
+                                    </app-context-info>
+                                </mat-header-cell>
+                                <mat-cell *matCellDef="let control;  let i = index" [formGroupName]="i">
+                                    <div *ngIf="isLumpSumSelectedForRow(control)">
+                                        {{control.get(constants.FORM_CONTROL_NAMES.lumpSum)?.value?.isSplittingAllowed ?
+                                            ('project.application.form.section.part.e.is.splittable.yes' | translate) :
+                                            'project.application.form.section.part.e.is.splittable.no' | translate
+                                        }}
+                                    </div>
+                                </mat-cell>
+                                <mat-footer-cell *matFooterCellDef></mat-footer-cell>
+                            </ng-container>
 
-                        <ng-container
-                                *ngFor="let partner of data.partners, let partnerAmountIndex=index"
-                                [matColumnDef]="partner.toPartnerNumberString()">
-                            <mat-header-cell *matHeaderCellDef
-                                             class="justify-end"> {{partner.toPartnerNumberString()}} </mat-header-cell>
-                            <mat-cell *matCellDef="let control;  let i = index" [formGroupName]="i"
-                                      [class.gap-exists]="isGapExistsInRow(control)">
-                                <ng-container *ngIf="isLumpSumSelectedForRow(control)"
-                                              [formArrayName]="constants.FORM_CONTROL_NAMES.partnersContribution">
-                                    <ng-container [formGroupName]="partnerAmountIndex">
-                                        <mat-form-field appFormFieldWidth="full">
-                                            <input currencyMask
-                                                   [options]="{min: constants.MIN_VALUE, max: constants.MAX_VALUE, align: 'right'}"
-                                                   [formControlName]="constants.FORM_CONTROL_NAMES.amount"
-                                                   type="decimal"
-                                                   matInput>
-                                        </mat-form-field>
+                            <ng-container matColumnDef="lumpSumCost">
+                                <mat-header-cell
+                                        *matHeaderCellDef> {{'project.application.form.section.part.e.lump.sums.cost.column.title' | translate}} </mat-header-cell>
+                                <mat-cell class="cost" [class.gap-exists]="isGapExistsInRow(control)"
+                                          *matCellDef="let control;  let i = index" [formGroupName]="i">
+                                    <div>{{control.get(constants.FORM_CONTROL_NAMES.lumpSum).value?.cost | asMoney}}</div>
+                                </mat-cell>
+                                <mat-footer-cell *matFooterCellDef></mat-footer-cell>
+                            </ng-container>
+
+                            <ng-container
+                                    *ngFor="let partner of data.partners, let partnerAmountIndex=index"
+                                    [matColumnDef]="partner.toPartnerNumberString()">
+                                <mat-header-cell *matHeaderCellDef
+                                                 class="justify-end"> {{partner.toPartnerNumberString()}} </mat-header-cell>
+                                <mat-cell *matCellDef="let control;  let i = index" [formGroupName]="i"
+                                          [class.gap-exists]="isGapExistsInRow(control)">
+                                    <ng-container *ngIf="isLumpSumSelectedForRow(control)"
+                                                  [formArrayName]="constants.FORM_CONTROL_NAMES.partnersContribution">
+                                        <ng-container [formGroupName]="partnerAmountIndex">
+                                            <app-inline-editable-field appFormFieldWidth="full">
+                                                <mat-form-field>
+                                                    <input
+                                                            currencyMask
+                                                           [options]="{min: constants.MIN_VALUE, max: constants.MAX_VALUE, align: 'right'}"
+                                                           [formControlName]="constants.FORM_CONTROL_NAMES.amount"
+                                                           type="decimal"
+                                                           matInput>
+                                                </mat-form-field>
+                                            </app-inline-editable-field>
+                                        </ng-container>
                                     </ng-container>
-                                </ng-container>
-                            </mat-cell>
-                            <mat-footer-cell class="justify-end"
-                                             *matFooterCellDef>{{data.partnerColumnsTotal[partnerAmountIndex] | asMoney}}</mat-footer-cell>
-                        </ng-container>
+                                </mat-cell>
+                                <mat-footer-cell class="justify-end"
+                                                 *matFooterCellDef><span
+                                        *ngIf="!data.loading">{{data.partnerColumnsTotal[partnerAmountIndex] | asMoney}}</span>
+                                </mat-footer-cell>
+                            </ng-container>
 
-                        <ng-container matColumnDef="rowSum">
-                            <mat-header-cell
-                                    class="justify-end"
-                                    *matHeaderCellDef> {{'project.application.form.section.part.e.lump.sums.row.sum.column.title' | translate}} </mat-header-cell>
-                            <mat-cell class="justify-end row-sum" [class.gap-exists]="isGapExistsInRow(control)"
-                                      *matCellDef="let control;  let i = index" [formGroupName]="i">
-                                <div *ngIf="isLumpSumSelectedForRow(control)">{{control.get(constants.FORM_CONTROL_NAMES.rowSum).value | asMoney}}</div>
-                            </mat-cell>
-                            <mat-footer-cell *matFooterCellDef></mat-footer-cell>
-                        </ng-container>
+                            <ng-container matColumnDef="rowSum">
+                                <mat-header-cell
+                                        class="justify-end"
+                                        *matHeaderCellDef> {{'project.application.form.section.part.e.lump.sums.row.sum.column.title' | translate}} </mat-header-cell>
+                                <mat-cell class="justify-end row-sum" [class.gap-exists]="isGapExistsInRow(control)"
+                                          *matCellDef="let control;  let i = index" [formGroupName]="i">
+                                    <div *ngIf="isLumpSumSelectedForRow(control)">{{control.get(constants.FORM_CONTROL_NAMES.rowSum).value | asMoney}}</div>
+                                </mat-cell>
+                                <mat-footer-cell *matFooterCellDef></mat-footer-cell>
+                            </ng-container>
 
-                        <ng-container matColumnDef="gap">
-                            <mat-header-cell class="justify-end"
-                                             *matHeaderCellDef> {{'project.application.form.section.part.e.lump.sums.gap.column.title' | translate}} </mat-header-cell>
-                            <mat-cell class="justify-end" *matCellDef="let control;  let i = index"
-                                      [formGroupName]="i"
-                                      [class.gap-exists]="isGapExistsInRow(control)">
-                                <div *ngIf="isLumpSumSelectedForRow(control)">{{control.get(constants.FORM_CONTROL_NAMES.gap)?.value | asMoney}}</div>
-                            </mat-cell>
-                            <mat-footer-cell *matFooterCellDef></mat-footer-cell>
-                        </ng-container>
+                            <ng-container matColumnDef="gap">
+                                <mat-header-cell class="justify-end"
+                                                 *matHeaderCellDef> {{'project.application.form.section.part.e.lump.sums.gap.column.title' | translate}} </mat-header-cell>
+                                <mat-cell class="justify-end" *matCellDef="let control;  let i = index"
+                                          [formGroupName]="i"
+                                          [class.gap-exists]="isGapExistsInRow(control)">
+                                    <div *ngIf="isLumpSumSelectedForRow(control)">{{control.get(constants.FORM_CONTROL_NAMES.gap)?.value | asMoney}}</div>
+                                </mat-cell>
+                                <mat-footer-cell *matFooterCellDef></mat-footer-cell>
+                            </ng-container>
 
-                        <ng-container matColumnDef="description">
-                            <mat-header-cell
-                                    *matHeaderCellDef> {{'project.application.form.section.part.e.lump.sums.description.column.title' | translate}} </mat-header-cell>
-                            <mat-cell *matCellDef="let control;  let i = index" [formGroupName]="i">
-                                <div [matTooltip]="translated(control.get(constants.FORM_CONTROL_NAMES.lumpSum).value?.description, languageService.systemLanguage$ | async)"
-                                     matTooltipShowDelay="500">
-                                    {{ translated(control.get(constants.FORM_CONTROL_NAMES.lumpSum).value?.description, languageService.systemLanguage$ | async) }}</div>
-                            </mat-cell>
-                            <mat-footer-cell *matFooterCellDef></mat-footer-cell>
-                        </ng-container>
+                            <ng-container matColumnDef="description">
+                                <mat-header-cell
+                                        *matHeaderCellDef> {{'project.application.form.section.part.e.lump.sums.description.column.title' | translate}} </mat-header-cell>
+                                <mat-cell *matCellDef="let control;  let i = index" [formGroupName]="i">
+                                    <div [matTooltip]="translated(control.get(constants.FORM_CONTROL_NAMES.lumpSum).value?.description, languageService.systemLanguage$ | async)"
+                                         matTooltipShowDelay="500">
+                                        {{ translated(control.get(constants.FORM_CONTROL_NAMES.lumpSum).value?.description, languageService.systemLanguage$ | async) }}</div>
+                                </mat-cell>
+                                <mat-footer-cell *matFooterCellDef></mat-footer-cell>
+                            </ng-container>
 
-                        <ng-container stickyEnd matColumnDef="actions">
-                            <mat-header-cell *matHeaderCellDef></mat-header-cell>
-                            <mat-cell *matCellDef="let control;let index=index">
-                                <button *ngIf="lumpSumsForm.enabled" class="delete-button"
-                                        type="button"
-                                        tabindex="-1" mat-icon-button color="accent"
-                                        matTooltip="{{'common.delete.entry.tooltip' | translate}}"
-                                        (click)="removeItem(index)">
-                                    <mat-icon>delete</mat-icon>
-                                </button>
-                            </mat-cell>
-                            <mat-footer-cell *matFooterCellDef></mat-footer-cell>
-                        </ng-container>
+                            <ng-container stickyEnd matColumnDef="actions">
+                                <mat-header-cell *matHeaderCellDef></mat-header-cell>
+                                <mat-cell *matCellDef="let control;let index=index">
+                                    <button *ngIf="lumpSumsForm.enabled" class="delete-button"
+                                            type="button"
+                                            tabindex="-1" mat-icon-button color="accent"
+                                            matTooltip="{{'common.delete.entry.tooltip' | translate}}"
+                                            (click)="removeItem(index)">
+                                        <mat-icon>delete</mat-icon>
+                                    </button>
+                                </mat-cell>
+                                <mat-footer-cell *matFooterCellDef></mat-footer-cell>
+                            </ng-container>
 
-                        <mat-header-row *matHeaderRowDef="data.columnsToDisplay"></mat-header-row>
-                        <mat-row *matRowDef="let myRowData; columns: data.columnsToDisplay; let rowIndex =index"
-                                 [class.row-has-error]="items.controls[rowIndex]?.invalid"></mat-row>
-                        <mat-footer-row *matFooterRowDef="data.columnsToDisplay"></mat-footer-row>
+                            <mat-header-row *matHeaderRowDef="data.columnsToDisplay"></mat-header-row>
+                            <mat-row *matRowDef="let myRowData; columns: data.columnsToDisplay; let rowIndex =index"
+                                     [class.row-has-error]="items.controls[rowIndex]?.invalid"></mat-row>
+                            <mat-footer-row *matFooterRowDef="data.columnsToDisplay"></mat-footer-row>
 
-                    </mat-table>
+                        </mat-table>
+                    </div>
+
 
                     <mat-error class="pt-3">
                         <app-form-field-errors

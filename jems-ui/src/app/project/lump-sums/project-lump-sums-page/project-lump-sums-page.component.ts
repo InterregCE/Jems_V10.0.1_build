@@ -1,6 +1,6 @@
-import {ChangeDetectionStrategy, Component, OnInit} from '@angular/core';
+import {ChangeDetectionStrategy, Component, OnInit, ViewChild} from '@angular/core';
 import {ProjectLumpSumsPageStore} from './project-lump-sums-page.store';
-import {combineLatest, Observable} from 'rxjs';
+import {BehaviorSubject, combineLatest, Observable} from 'rxjs';
 import {catchError, map, startWith, tap} from 'rxjs/operators';
 import {
   AbstractControl,
@@ -15,7 +15,6 @@ import {
 import {FormService} from '@common/components/section/form/form.service';
 import {TableConfig} from '../../../common/directives/table-config/TableConfig';
 import {ProjectLumSumsConstants} from './project-lum-sums.constants';
-import {MatTableDataSource} from '@angular/material/table';
 import {UntilDestroy, untilDestroyed} from '@ngneat/until-destroy';
 import {NumberService} from '../../../common/services/number.service';
 import {ProjectLumpSum} from '../../model/lump-sums/projectLumpSum';
@@ -28,6 +27,7 @@ import {ProjectPeriod} from '../../model/ProjectPeriod';
 import {TranslateService} from '@ngx-translate/core';
 import {LanguageService} from '../../../common/services/language.service';
 import {InputTranslation} from '@cat/api';
+import {MatTable} from '@angular/material/table';
 
 @UntilDestroy()
 @Component({
@@ -39,12 +39,13 @@ import {InputTranslation} from '@cat/api';
 })
 export class ProjectLumpSumsPageComponent implements OnInit {
 
+  @ViewChild('table') table: MatTable<any>;
   rowId = 0;
   constants = ProjectLumSumsConstants;
   Alert = Alert;
 
   lumpSumsForm: FormGroup;
-  dataSource: MatTableDataSource<AbstractControl>;
+  tableData: AbstractControl[] = [];
 
   data$: Observable<{
     projectAcronym: string
@@ -56,7 +57,8 @@ export class ProjectLumpSumsPageComponent implements OnInit {
     showAddButton: boolean,
     showGapExistsWarning: boolean,
     costIsNotSplittableError: ValidationErrors | null,
-    partnerColumnsTotal: number[]
+    partnerColumnsTotal: number[],
+    loading: boolean
   }>;
 
   private columnsToDisplay$: Observable<string[]>;
@@ -65,6 +67,7 @@ export class ProjectLumpSumsPageComponent implements OnInit {
   private costIsNotSplittableError$: Observable<ValidationErrors | null>;
   private partnerColumnsTotal$: Observable<number[]>;
   private showGapExistsWarning$: Observable<boolean>;
+  private loading = new BehaviorSubject(false);
 
   private static getColumnsToDisplay(partners: ProjectPartner[]): string[] {
     let columnsToDisplay = ['lumpSum', 'period', 'isSplittingLumpSumAllowed', 'lumpSumCost'];
@@ -102,12 +105,7 @@ export class ProjectLumpSumsPageComponent implements OnInit {
 
     this.handelFormReset();
 
-    this.dataSource = new MatTableDataSource<AbstractControl>(this.items.controls);
-
-    this.items.valueChanges.pipe(untilDestroyed(this)).subscribe(() => {
-      this.dataSource.data = this.items.controls;
-    });
-
+    this.formService.reset$.pipe(untilDestroyed(this), tap(() => this.loading.next(true))).subscribe();
     this.showGapExistsWarning$ = combineLatest([this.items.valueChanges.pipe(startWith(null)), this.formService.reset$.pipe(startWith(null))]).pipe(
       map(() => this.items.controls.some(control => this.isGapExistsInRow(control))),
     );
@@ -133,9 +131,10 @@ export class ProjectLumpSumsPageComponent implements OnInit {
       this.showAddButton$,
       this.showGapExistsWarning$,
       this.costIsNotSplittableError$,
-      this.partnerColumnsTotal$
+      this.partnerColumnsTotal$,
+      this.loading
     ]).pipe(
-      map(([projectAcronym, columnsToDisplay, withConfigs, partners, lumpSums, periods, showAddButton, showGapExistsWarning, costIsNotSplittableError, partnerColumnsTotal]: any) => {
+      map(([projectAcronym, columnsToDisplay, withConfigs, partners, lumpSums, periods, showAddButton, showGapExistsWarning, costIsNotSplittableError, partnerColumnsTotal, loading]: any) => {
         return {
           projectAcronym,
           columnsToDisplay,
@@ -146,7 +145,8 @@ export class ProjectLumpSumsPageComponent implements OnInit {
           showAddButton,
           showGapExistsWarning,
           costIsNotSplittableError,
-          partnerColumnsTotal
+          partnerColumnsTotal,
+          loading
         };
       })
     );
@@ -154,6 +154,7 @@ export class ProjectLumpSumsPageComponent implements OnInit {
 
   removeItem(index: number): void {
     this.items.removeAt(index);
+    this.tableData = [...this.items.controls];
     this.formService.setDirty(true);
   }
 
@@ -171,14 +172,19 @@ export class ProjectLumpSumsPageComponent implements OnInit {
       gap: [0],
     });
     this.addItemToItems(item);
+    this.tableData = [...this.items.controls];
     this.formService.setDirty(true);
   }
 
   updateLumpSums(): void {
+    this.loading.next(true);
     this.pageStore.updateProjectLumpSums(this.formToProjectLumpSums())
       .pipe(
         tap(() => this.formService.setSuccess('project.application.form.section.part.e.lump.sums.save.success')),
-        catchError((error: HttpErrorResponse) => this.formService.setError(error)),
+        catchError((error: HttpErrorResponse) => {
+          this.loading.next(false);
+          return this.formService.setError(error);
+        }),
         untilDestroyed(this)
       ).subscribe();
   }
@@ -231,7 +237,7 @@ export class ProjectLumpSumsPageComponent implements OnInit {
     this.lumpSumsForm = this.formBuilder.group({
       items: this.formBuilder.array([], Validators.maxLength(this.constants.MAX_NUMBER_OF_ITEMS))
     });
-    this.formService.init(this.lumpSumsForm, this.pageStore.isProjectEditable$);
+    this.formService.init(this.lumpSumsForm, combineLatest([this.pageStore.isProjectEditable$, this.loading]).pipe(map(([isProjectEditable, isLoading]) => isProjectEditable && !isLoading)));
   }
 
   private handelFormReset(): void {
@@ -273,6 +279,12 @@ export class ProjectLumpSumsPageComponent implements OnInit {
       });
       this.addItemToItems(item);
     });
+
+    this.loading.next(true);
+    setTimeout(() => {
+      this.tableData = [...this.items.controls];
+      this.loading.next(false);
+    },         0);
     this.formService.resetEditable();
   }
 
