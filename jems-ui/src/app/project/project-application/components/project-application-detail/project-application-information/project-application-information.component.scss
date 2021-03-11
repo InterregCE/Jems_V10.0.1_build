@@ -1,12 +1,35 @@
 #status {
   display: flex;
   align-items: baseline;
+
+  .mat-chip {
+    color: var(--font-color-primary);
+  }
+
+  .draft {
+    background-color: var(--status-draft);
+  }
+
+  .submitted {
+    background-color: var(--status-submitted);
+  }
+
+  .approved {
+    background-color: var(--status-approved);
+  }
+
+  .declined {
+    background-color: var(--status-declined);
+  }
+
+  .with-conditions {
+    background-color: var(--status-approved-with-conditions);
+  }
 }
 
 #project-info {
   border: 1px solid;
   border-color: var(--table-border-color);
-
 
   .project-row {
     display: flex;
@@ -15,8 +38,7 @@
   .header {
     background-color: var(--light-blue-gray);
     min-width: 12rem;
-    padding-left: .5rem;
-    margin-right: .5rem;
+    background-clip: padding-box;
   }
 
   .expiration {

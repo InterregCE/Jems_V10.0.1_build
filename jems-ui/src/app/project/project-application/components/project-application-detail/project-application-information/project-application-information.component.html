@@ -1,7 +1,12 @@
 <div id="status" class="mb-3">
     {{'project.detail.table.status' | translate}}:
     <mat-chip-list class="mr-1 ml-1">
-        <mat-chip color="accent" selected="true">
+        <mat-chip selected="true"
+                  [class.draft]="project.projectStatus.status === STATUS.DRAFT || project.projectStatus.status === STATUS.RETURNEDTOAPPLICANT"
+                  [class.submitted]="project.projectStatus.status === STATUS.SUBMITTED || project.projectStatus.status === STATUS.ELIGIBLE"
+                  [class.approved]="project.projectStatus.status === STATUS.APPROVED"
+                  [class.declined]="project.projectStatus.status === STATUS.INELIGIBLE || project.projectStatus.status === STATUS.NOTAPPROVED"
+                  [class.with-conditions]="project.projectStatus.status === STATUS.APPROVEDWITHCONDITIONS">
             {{'common.label.projectapplicationstatus.' + project?.projectStatus.status | translate}}
         </mat-chip>
     </mat-chip-list>
@@ -9,24 +14,24 @@
 </div>
 <div id="project-info">
     <div class="project-row">
-        <span class="header">{{'project.detail.table.id.application' | translate}}</span>
-        <span>{{project.id}} - {{project.acronym}}</span>
+        <span class="header p-1">{{'project.detail.table.id.application' | translate}}</span>
+        <span class="p-1">{{project.id}} - {{project.acronym}}</span>
     </div>
     <div class="project-row">
-        <span class="header">{{'project.detail.overview.applicant.name' | translate}}</span>
-        <span>{{getApplicantName()}}</span>
+        <span class="header p-1">{{'project.detail.overview.applicant.name' | translate}}</span>
+        <span class="p-1">{{getApplicantName()}}</span>
     </div>
     <div class="project-row">
-        <span class="header">{{'project.detail.overview.project.name' | translate}}</span>
-        <span>{{getCodeAndTitle(undefined, project?.projectData?.title)}}</span>
+        <span class="header p-1">{{'project.detail.overview.project.name' | translate}}</span>
+        <span class="p-1">{{getCodeAndTitle(undefined, project?.projectData?.title)}}</span>
     </div>
     <div class="project-row">
-        <span class="header">{{'project.detail.table.programme.priority' | translate}}</span>
-        <span>{{getCodeAndTitle(project.projectData?.programmePriority?.code, project.projectData?.programmePriority?.title)}}</span>
+        <span class="header p-1">{{'project.detail.table.programme.priority' | translate}}</span>
+        <span class="p-1">{{getCodeAndTitle(project.projectData?.programmePriority?.code, project.projectData?.programmePriority?.title)}}</span>
     </div>
     <div class="project-row">
-        <span class="header">{{'project.detail.table.specific.objective' | translate}}</span>
-        <span>
+        <span class="header p-1">{{'project.detail.table.specific.objective' | translate}}</span>
+        <span class="p-1">
               <ng-container *ngIf="project.projectData?.specificObjective">
                   {{project.projectData?.specificObjective?.code}}
                   - {{'programme.policy.' + project.projectData?.specificObjective?.programmeObjectivePolicy | translate}}
@@ -34,21 +39,21 @@
         </span>
     </div>
     <div class="project-row">
-        <span class="header">{{'project.detail.table.call.name' | translate}}</span>
-        <span>
+        <span class="header p-1 pt-3">{{'project.detail.table.call.name' | translate}}</span>
+        <span class="p-1 pt-3">
             {{project?.callSettings?.callName}}
             <span class="expiration">{{'project.detail.overview.call.expiration' | translate : getCallInfo()}}</span>
         </span>
     </div>
-    <div class="project-row">
-        <span class="header">{{'project.detail.table.submission.latest' | translate}}</span>
-        <span *ngIf="project?.lastResubmission">
+    <div *ngIf="project?.lastResubmission" class="project-row">
+        <span class="header p-1">{{'project.detail.table.submission.latest' | translate}}</span>
+        <span class="p-1">
             {{'project.detail.overview.applicant' | translate : getSubmission(project?.lastResubmission)}}
         </span>
     </div>
-    <div class="project-row">
-        <span class="header">{{'project.detail.table.submission.first' | translate}}</span>
-        <span *ngIf="project?.firstSubmission">
+    <div *ngIf="project?.firstSubmission" class="project-row">
+        <span class="header p-1">{{'project.detail.table.submission.first' | translate}}</span>
+        <span class="p-1">
             {{'project.detail.overview.applicant' | translate : getSubmission(project?.firstSubmission)}}
         </span>
     </div>
