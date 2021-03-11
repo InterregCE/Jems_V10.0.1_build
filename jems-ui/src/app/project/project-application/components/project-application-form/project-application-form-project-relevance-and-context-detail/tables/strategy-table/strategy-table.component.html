@@ -34,7 +34,7 @@
                         </div>
 
                         <div>
-                            <button type="button" (click)="deleteEntry(i)" mat-icon-button color="accent">
+                            <button *ngIf="editable" type="button" (click)="deleteEntry(i)" mat-icon-button color="accent">
                                 <mat-icon>delete</mat-icon>
                             </button>
                         </div>

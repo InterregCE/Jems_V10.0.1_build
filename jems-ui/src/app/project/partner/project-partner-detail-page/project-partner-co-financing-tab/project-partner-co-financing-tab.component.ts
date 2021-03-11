@@ -1,4 +1,4 @@
-import {ChangeDetectionStrategy, Component, OnInit} from '@angular/core';
+import {ChangeDetectionStrategy, Component, Input, OnInit} from '@angular/core';
 import {
   FormArray,
   FormBuilder,
@@ -43,6 +43,8 @@ const totalContributionValidator = (expectedAmount: number): ValidatorFn => (for
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class ProjectPartnerCoFinancingTabComponent implements OnInit {
+  @Input()
+  editable: boolean;
 
   constants = ProjectPartnerCoFinancingTabConstants;
   partnerContributionStatus = ProjectPartnerContributionDTO.StatusEnum;
