@@ -198,7 +198,8 @@ internal class UpdateBudgetStaffCostsTest : UnitTest() {
                     StaffCostUnitType.HOUR,
                     StaffCostType.UNIT_COST,
                     emptySet(),
-                    emptySet()
+                    emptySet(),
+                    1
                 )
             )
 

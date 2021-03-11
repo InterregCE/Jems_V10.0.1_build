@@ -39,6 +39,7 @@ fun BudgetStaffCostEntry.toBudgetStaffCostEntryDTO() = BudgetStaffCostEntryDTO(
     pricePerUnit = pricePerUnit,
     rowSum = rowSum,
     budgetPeriods = budgetPeriods.toBudgetPeriodDTOs(),
+    unitCostId = unitCostId,
     unitType = unitType?.toStaffCostUnitTypeDTO(),
     type = type?.toStaffCostTypeDTO(),
     description = description,
@@ -53,6 +54,7 @@ fun BudgetStaffCostEntryDTO.toBudgetStaffCostEntry() = BudgetStaffCostEntry(
     pricePerUnit = pricePerUnit,
     rowSum = rowSum,
     budgetPeriods = budgetPeriods.toBudgetPeriods(),
+    unitCostId = unitCostId,
     unitType = unitType?.toStaffCostUnitType(),
     type = type?.toStaffCostType(),
     description = description,
@@ -67,6 +69,7 @@ fun BudgetTravelAndAccommodationCostEntry.toBudgetTravelAndAccommodationCostsEnt
     pricePerUnit = pricePerUnit,
     rowSum = rowSum,
     budgetPeriods = budgetPeriods.toBudgetPeriodDTOs(),
+    unitCostId = unitCostId,
     unitType = unitType,
     description = description
 )
@@ -79,6 +82,7 @@ fun BudgetTravelAndAccommodationCostEntryDTO.toBudgetTravelAndAccommodationCostE
     pricePerUnit = pricePerUnit,
     rowSum = rowSum,
     budgetPeriods = budgetPeriods.toBudgetPeriods(),
+    unitCostId = unitCostId,
     unitType = unitType,
     description = description
 )
@@ -113,6 +117,7 @@ fun BudgetGeneralCostEntry.toBudgetGeneralCostsEntryDTO() = BudgetGeneralCostEnt
     budgetPeriods = budgetPeriods.toBudgetPeriodDTOs(),
     unitType = unitType,
     investmentId = investmentId,
+    unitCostId = unitCostId,
     awardProcedures = awardProcedures,
     description = description
 )
@@ -127,6 +132,7 @@ fun BudgetGeneralCostEntryDTO.toBudgetGeneralCostEntry() = BudgetGeneralCostEntr
     budgetPeriods = budgetPeriods.toBudgetPeriods(),
     unitType = unitType,
     investmentId = investmentId,
+    unitCostId = unitCostId,
     awardProcedures = awardProcedures,
     description = description
 )

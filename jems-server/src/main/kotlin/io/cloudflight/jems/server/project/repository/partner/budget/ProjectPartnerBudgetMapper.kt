@@ -38,6 +38,7 @@ fun ProjectPartnerBudgetStaffCostEntity.toBudgetStaffCostEntry() = BudgetStaffCo
     },
     budgetPeriods = budgetPeriodEntities.map { BudgetPeriod(it.budgetPeriodId.period.id.number, it.amount) }
         .toMutableSet(),
+    unitCostId = unitCostId,
     unitType = unitType,
     type = type,
     numberOfUnits = baseProperties.numberOfUnits,
@@ -57,6 +58,7 @@ fun BudgetStaffCostEntry.toProjectPartnerBudgetStaffCostEntity(
     ProjectPartnerBudgetStaffCostEntity(
         baseProperties = BaseBudgetProperties(partnerId, numberOfUnits, rowSum!!),
         pricePerUnit = pricePerUnit,
+        unitCostId = unitCostId,
         type = type,
         unitType = unitType,
         translatedValues = mutableSetOf(),
@@ -99,6 +101,7 @@ fun ProjectPartnerBudgetTravelEntity.toBudgetTravelAndAccommodationCostEntry() =
     },
     budgetPeriods = budgetPeriodEntities.map { BudgetPeriod(it.budgetPeriodId.period.id.number, it.amount) }
         .toMutableSet(),
+    unitCostId = unitCostId,
     numberOfUnits = baseProperties.numberOfUnits,
     pricePerUnit = pricePerUnit,
     rowSum = baseProperties.rowSum
@@ -116,6 +119,7 @@ fun BudgetTravelAndAccommodationCostEntry.toProjectPartnerBudgetTravelEntity(
     ProjectPartnerBudgetTravelEntity(
         baseProperties = BaseBudgetProperties(partnerId, numberOfUnits, rowSum!!),
         pricePerUnit = pricePerUnit,
+        unitCostId = unitCostId,
         translatedValues = mutableSetOf(),
         budgetPeriodEntities = mutableSetOf(),
         id = id ?: 0L
@@ -159,6 +163,7 @@ fun BudgetGeneralCostEntry.toProjectPartnerBudgetEquipmentEntity(
     ProjectPartnerBudgetEquipmentEntity(
         id = id ?: 0L,
         investmentId = investmentId,
+        unitCostId = unitCostId,
         baseProperties = BaseBudgetProperties(partnerId, numberOfUnits, rowSum!!),
         pricePerUnit = pricePerUnit,
         budgetPeriodEntities = mutableSetOf(),
@@ -204,6 +209,7 @@ fun BudgetGeneralCostEntry.toProjectPartnerBudgetExternalEntity(
     ProjectPartnerBudgetExternalEntity(
         id = id ?: 0L,
         investmentId = investmentId,
+        unitCostId = unitCostId,
         baseProperties = BaseBudgetProperties(partnerId, numberOfUnits, rowSum!!),
         pricePerUnit = pricePerUnit,
         budgetPeriodEntities = mutableSetOf(),
@@ -249,6 +255,7 @@ fun BudgetGeneralCostEntry.toProjectPartnerBudgetInfrastructureEntity(
     ProjectPartnerBudgetInfrastructureEntity(
         id = id ?: 0L,
         investmentId = investmentId,
+        unitCostId = unitCostId,
         baseProperties = BaseBudgetProperties(partnerId, numberOfUnits, rowSum!!),
         pricePerUnit = pricePerUnit,
         budgetPeriodEntities = mutableSetOf(),
@@ -292,6 +299,7 @@ fun ProjectPartnerBudgetGeneralBase.toBudgetGeneralCostEntry() = BudgetGeneralCo
     budgetPeriods = budgetPeriodEntities.map { BudgetPeriod(it.budgetPeriodId.period.id.number, it.amount) }
         .toMutableSet(),
     investmentId = investmentId,
+    unitCostId = unitCostId,
     numberOfUnits = baseProperties.numberOfUnits,
     pricePerUnit = pricePerUnit,
     rowSum = baseProperties.rowSum

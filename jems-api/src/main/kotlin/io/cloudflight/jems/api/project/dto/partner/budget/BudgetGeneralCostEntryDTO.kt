@@ -14,5 +14,6 @@ data class BudgetGeneralCostEntryDTO(
     val investmentId: Long? = null,
     val unitType: Set<InputTranslation> = emptySet(),
     val awardProcedures: Set<InputTranslation> = emptySet(),
-    val description: Set<InputTranslation> = emptySet()
+    val description: Set<InputTranslation> = emptySet(),
+    val unitCostId: Long? = null
 ) : BaseBudgetEntryDTO
