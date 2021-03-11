@@ -11,6 +11,7 @@ import {Tables} from '../../../../../common/utils/tables';
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class ProjectApplicationInformationComponent {
+  STATUS = OutputProjectStatus.StatusEnum;
 
   @Input()
   project: OutputProject;

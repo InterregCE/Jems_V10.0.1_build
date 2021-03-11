@@ -69,6 +69,12 @@
   --body-strong-font-size: #{$body-strong-font-size};
   --body-strong-font-weight: #{$body-strong-font-weight};
 
+  --status-draft: #8EBED1;
+  --status-submitted: #9BA3CD;
+  --status-approved-with-conditions: #FBB900;
+  --status-declined: #E76A4C;
+  --status-approved: #86AC63;
+
   @include custom-global-styles($is-dark-theme);
 
 }
