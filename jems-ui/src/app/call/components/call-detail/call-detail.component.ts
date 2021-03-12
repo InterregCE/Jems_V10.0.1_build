@@ -11,6 +11,7 @@ import {CallStore} from '../../services/call-store.service';
 import {CallPageSidenavService} from '../../services/call-page-sidenav.service';
 import {ProgrammeEditableStateStore} from '../../../programme/programme-page/services/programme-editable-state-store.service';
 import {UntilDestroy, untilDestroyed} from '@ngneat/until-destroy';
+import { Alert } from '@common/components/forms/alert';
 
 @UntilDestroy()
 @Component({
@@ -25,6 +26,9 @@ export class CallDetailComponent implements OnInit {
   private static readonly CALL_INVALID_PERIOD = 'call.lengthOfPeriod.invalid.period';
 
   static ID = 'CallDetailComponent';
+
+  Alert = Alert;
+
   tools = Tools;
   isFirstCall: boolean;
 
@@ -38,30 +42,25 @@ export class CallDetailComponent implements OnInit {
   funds: ProgrammeFundDTO[];
   @Input()
   isApplicant: boolean;
+  @Input()
+  initialPriorityCheckboxes: CallPriorityCheckbox[];
+  @Input()
+  initialStrategies: OutputProgrammeStrategy[];
+  @Input()
+  initialFunds: ProgrammeFundDTO[];
 
-  startDateTimeErrors = {
-    required: 'call.startDate.unknown',
-    matDatetimePickerParse: CallDetailComponent.DATE_SHOULD_BE_VALID,
-    matDatetimePickerMax: 'call.startDate.must.be.before.endDate',
-  };
-  endDateTimeErrors = {
-    required: 'call.endDate.unknown',
-    matDatetimePickerParse: CallDetailComponent.DATE_SHOULD_BE_VALID,
-    matDatetimePickerMin: 'call.endDate.must.be.after.startDate',
-  };
-  nameErrors = {
-    required: 'call.name.unknown',
-    maxlength: 'call.name.wrong.size'
-  };
-  descriptionErrors = {
-    maxlength: 'call.description.wrong.size'
-  };
-  lengthOfPeriodErrors = {
-    required: 'call.lengthOfPeriod.unknown',
+  inputErrorMessages = {
+    required: 'common.error.field.blank',
+    maxlength: 'common.error.field.max.length',
     max: CallDetailComponent.CALL_INVALID_PERIOD,
     min: CallDetailComponent.CALL_INVALID_PERIOD,
+    matDatetimePickerParse: CallDetailComponent.DATE_SHOULD_BE_VALID,
+    matDatetimePickerMin: 'call.endDate.must.be.after.startDate',
+    matDatetimePickerMax: 'common.error.start.before.end'
   };
+
   editable = false;
+  published = false;
 
   callForm = this.formBuilder.group({
     name: ['', Validators.compose([
@@ -93,9 +92,15 @@ export class CallDetailComponent implements OnInit {
     this.formService.init(this.callForm);
     this.formService.setCreation(!this.call?.id);
     this.editable = this.call?.status !== CallDetailDTO.StatusEnum.PUBLISHED && !this.isApplicant;
+    this.published = this.call?.status === CallDetailDTO.StatusEnum.PUBLISHED;
     this.formService.setEditable(this.editable);
     this.callForm.controls.multipleFundsAllowed.setValue(this.call.isAdditionalFundAllowed);
     this.resetForm();
+    if (this.call && this.call.status === CallDetailDTO.StatusEnum.PUBLISHED && !this.isApplicant) {
+      this.callForm.controls.name.enable();
+      this.callForm.controls.description.enable();
+      this.callForm.controls.endDateTime.enable();
+    }
   }
 
   onSubmit(): void {
@@ -123,6 +128,8 @@ export class CallDetailComponent implements OnInit {
     }
 
     call.id = this.call.id;
+    call.startDateTime = this.call.startDateTime;
+    call.lengthOfPeriod = this.call.lengthOfPeriod;
     this.callStore.saveCall(call)
       .pipe(
         take(1),

@@ -1,5 +1,9 @@
 <app-form (discard)="onCancel()"
           (save)="onSubmit()">
+    <app-alert [show]="published && !isApplicant"
+               [type]="Alert.WARNING">
+        <p>{{'call.detail.edit.published.warning' | translate}}</p>
+    </app-alert>
     <form appFormLayout [formGroup]="callForm">
         <button *ngIf="call?.id && editable"
                 appFormFieldWidth="medium"
@@ -15,7 +19,7 @@
             <mat-error>
                 <app-form-field-errors
                         [errors]="callForm?.controls?.name?.errors"
-                        [messages]="nameErrors">
+                        [messages]="inputErrorMessages">
                 </app-form-field-errors>
             </mat-error>
         </mat-form-field>
@@ -24,14 +28,15 @@
                 <mat-label>{{'call.detail.field.start' | translate}}</mat-label>
                 <input required formControlName="startDateTime" matInput name="startDateTime"
                        [max]="callForm?.controls?.endDate?.value"
+                       [disabled]="published"
                        [ngxMatDatetimePicker]="start">
-                <mat-datepicker-toggle matSuffix [for]="start">
+                <mat-datepicker-toggle matSuffix [for]="start" [disabled]="published">
                 </mat-datepicker-toggle>
                 <ngx-mat-datetime-picker #start></ngx-mat-datetime-picker>
                 <mat-error>
                     <app-form-field-errors
                             [errors]="callForm?.controls?.startDateTime?.errors"
-                            [messages]="startDateTimeErrors">
+                            [messages]="inputErrorMessages">
                     </app-form-field-errors>
                 </mat-error>
             </mat-form-field>
@@ -46,7 +51,7 @@
                 <mat-error>
                     <app-form-field-errors
                             [errors]="callForm?.controls?.endDateTime?.errors"
-                            [messages]="endDateTimeErrors">
+                            [messages]="inputErrorMessages">
                     </app-form-field-errors>
                 </mat-error>
             </mat-form-field>
@@ -60,14 +65,14 @@
             <mat-error>
                 <app-form-field-errors
                         [errors]="callForm?.controls?.lengthOfPeriod?.errors"
-                        [messages]="lengthOfPeriodErrors">
+                        [messages]="inputErrorMessages">
                 </app-form-field-errors>
             </mat-error>
         </mat-form-field>
 
         <app-multi-language class="pb-3"
                             [useSystemLanguages]="true"
-                            [switchButtonsVisible]="editable">
+                            [switchButtonsVisible]="editable || (published && !isApplicant)">
             <app-multi-language-form-field
                     type="textarea"
                     formControlName="description"
@@ -80,7 +85,8 @@
         <app-call-priority-tree
                 *ngIf="priorityCheckboxes"
                 [priorityCheckboxes]="priorityCheckboxes"
-                [disabled]="!editable"
+                [initialPriorityCheckboxes]="initialPriorityCheckboxes"
+                [disabled]="published || isApplicant"
                 [isApplicant]="isApplicant"
                 (selectionChanged)="formChanged()">
         </app-call-priority-tree>
@@ -88,6 +94,7 @@
         <h3>{{'call.strategy.title' | translate}}</h3>
         <app-call-strategies
                 [strategies]="strategies"
+                [initialStrategies]="initialStrategies"
                 [disabled]="!editable"
                 [isApplicant]="isApplicant"
                 (selectionChanged)="formChanged()">
@@ -109,6 +116,7 @@
         <h4>{{'call.funds.select.funds' | translate}}</h4>
         <app-call-funds
                 [funds]="funds"
+                [initialFunds]="initialFunds"
                 [disabled]="!editable"
                 [isApplicant]="isApplicant"
                 (selectionChanged)="formChanged()">

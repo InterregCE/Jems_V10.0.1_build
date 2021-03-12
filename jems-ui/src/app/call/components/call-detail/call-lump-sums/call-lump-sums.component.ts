@@ -7,7 +7,9 @@ import {SelectionModel} from '@angular/cdk/collections';
 import {CallStore} from '../../../services/call-store.service';
 import {catchError, take, tap} from 'rxjs/operators';
 import {LanguageService} from '../../../../common/services/language.service';
+import {UntilDestroy, untilDestroyed} from '@ngneat/until-destroy';
 
+@UntilDestroy()
 @Component({
   selector: 'app-call-lump-sums',
   templateUrl: './call-lump-sums.component.html',
@@ -24,6 +26,7 @@ export class CallLumpSumsComponent implements OnInit {
 
   callLumpSumForm: FormGroup;
   published = false;
+  initialSelection = new SelectionModel<ProgrammeLumpSumListDTO>(true, []);
   selection = new SelectionModel<ProgrammeLumpSumListDTO>(true, []);
 
   lumpSumDataSource = new MatTableDataSource();
@@ -31,7 +34,7 @@ export class CallLumpSumsComponent implements OnInit {
   constructor(public languageService: LanguageService,
               private formBuilder: FormBuilder,
               private formService: FormService,
-              private callStore: CallStore) {
+              public callStore: CallStore) {
   }
 
   ngOnInit(): void {
@@ -45,12 +48,24 @@ export class CallLumpSumsComponent implements OnInit {
   initForm(): void {
     this.lumpSumDataSource = new MatTableDataSource<ProgrammeLumpSumListDTO>(this.lumpSums);
     this.selection.clear();
+    this.initialSelection.clear();
     this.lumpSumDataSource.data.forEach((lumpSum: ProgrammeLumpSumListDTO) => {
       if (this.call.lumpSums.filter(element => element.id === lumpSum.id).length > 0) {
         this.selection.select(lumpSum);
+        this.initialSelection.select(lumpSum);
       }
     });
     this.formService.init(this.callLumpSumForm);
+    this.callStore.call$.pipe(
+        untilDestroyed(this)
+    ).subscribe((call: CallDetailDTO) => {
+      this.initialSelection.clear();
+      this.lumpSumDataSource.data.forEach((lumpSum: ProgrammeLumpSumListDTO) => {
+        if (call.lumpSums.filter(element => element.id === lumpSum.id).length > 0) {
+          this.initialSelection.select(lumpSum);
+        }
+      });
+    });
   }
 
   onSubmit(): void {

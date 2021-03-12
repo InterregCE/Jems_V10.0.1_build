@@ -12,7 +12,7 @@
         </div>
         <span *ngFor="let element of unitCostDataSource.data">
             <mat-checkbox
-                    [disabled]="published"
+                    [disabled]="(callStore.isApplicant$ | async) || initialSelection.isSelected(element)"
                     (click)="$event.stopPropagation()"
                     (change)="toggleUnitCost(element)"
                     [checked]="selection.isSelected(element)">

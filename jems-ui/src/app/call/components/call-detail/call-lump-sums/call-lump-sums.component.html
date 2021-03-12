@@ -9,7 +9,7 @@
         </div>
         <div *ngFor="let element of lumpSumDataSource.data">
             <mat-checkbox
-                    [disabled]="published"
+                    [disabled]="(callStore.isApplicant$ | async) || initialSelection.isSelected(element)"
                     (click)="$event.stopPropagation()"
                     (change)="toggleLumpSum(element)"
                     [checked]="selection.isSelected(element)">
