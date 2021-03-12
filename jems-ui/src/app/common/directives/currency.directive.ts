@@ -1,4 +1,4 @@
-import {Directive, Host, Input, OnInit} from '@angular/core';
+import {Directive, Host, Input, OnChanges, OnInit, SimpleChanges} from '@angular/core';
 import {CurrencyMaskConfig, CurrencyMaskDirective} from 'ngx-currency';
 import {NumberService} from '../services/number.service';
 
@@ -9,7 +9,7 @@ import {NumberService} from '../services/number.service';
   // tslint:disable-next-line:directive-selector
   selector: '[currencyMask]',
 })
-export class CurrencyDirective implements OnInit {
+export class CurrencyDirective implements OnInit, OnChanges {
   @Input()
   options?: Partial<CurrencyMaskConfig>;
   @Input()
@@ -20,6 +20,16 @@ export class CurrencyDirective implements OnInit {
   }
 
   ngOnInit(): void {
+    this.refreshOptions();
+  }
+
+  ngOnChanges(changes: SimpleChanges): void {
+    if (changes.options) {
+      this.refreshOptions();
+    }
+  }
+
+  private refreshOptions(): void {
     this.currencyMaskDirective.options = this.type === 'decimal'
       ? this.numberService.decimalInput(this.options) : this.numberService.integerInput(this.options);
     this.currencyMaskDirective.ngDoCheck();
