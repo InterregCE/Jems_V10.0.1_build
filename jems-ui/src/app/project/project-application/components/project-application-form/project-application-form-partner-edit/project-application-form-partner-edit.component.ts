@@ -26,7 +26,7 @@ import {BaseComponent} from '@common/components/base-component';
 import {ProjectPartnerStore} from '../../../containers/project-application-form-page/services/project-partner-store.service';
 import {HttpErrorResponse} from '@angular/common/http';
 import {Observable, of} from 'rxjs';
-import {Router} from '@angular/router';
+import {ActivatedRoute, Router} from '@angular/router';
 
 @Component({
   selector: 'app-project-application-form-partner-edit',
@@ -39,6 +39,8 @@ export class ProjectApplicationFormPartnerEditComponent extends BaseComponent im
   RoleEnum = OutputProjectPartner.RoleEnum;
   VatRecoveryEnum = InputProjectPartnerCreate.VatRecoveryEnum;
   LANGUAGE = InputTranslation.LanguageEnum;
+
+  partnerId = this.activatedRoute?.snapshot?.params?.partnerId;
 
   @Input()
   partner: OutputProjectPartnerDetail;
@@ -113,7 +115,8 @@ export class ProjectApplicationFormPartnerEditComponent extends BaseComponent im
               private dialog: MatDialog,
               public formService: FormService,
               private partnerStore: ProjectPartnerStore,
-              private router: Router) {
+              private router: Router,
+              private activatedRoute: ActivatedRoute) {
     super();
   }
 
@@ -214,7 +217,9 @@ export class ProjectApplicationFormPartnerEditComponent extends BaseComponent im
 
   private resetForm(): void {
     this.formService.setEditable(this.editable);
-    this.formService.setCreation(!this.partner?.id);
+    if (!this.partnerId) {
+      this.formService.setCreation(true);
+    }
     this.controls.id.setValue(this.partner?.id);
     this.controls.abbreviation.setValue(this.partner?.abbreviation);
     this.controls.role.setValue(this.partner?.role);
