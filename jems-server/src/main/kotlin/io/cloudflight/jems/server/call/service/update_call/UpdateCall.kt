@@ -1,7 +1,6 @@
 package io.cloudflight.jems.server.call.service.update_call
 
 import io.cloudflight.jems.api.programme.dto.priority.ProgrammeObjectivePolicy
-import io.cloudflight.jems.server.audit.service.AuditService
 import io.cloudflight.jems.server.call.authorization.CanUpdateCalls
 import io.cloudflight.jems.server.call.service.CallPersistence
 import io.cloudflight.jems.server.call.service.callUpdated
@@ -10,6 +9,7 @@ import io.cloudflight.jems.server.call.service.model.Call
 import io.cloudflight.jems.server.call.service.validator.CallValidator
 import io.cloudflight.jems.server.common.exception.ExceptionWrapper
 import io.cloudflight.jems.server.programme.service.priority.model.ProgrammePriority
+import org.springframework.context.ApplicationEventPublisher
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import java.time.ZonedDateTime
@@ -18,7 +18,7 @@ import java.time.ZonedDateTime
 class UpdateCall(
     private val persistence: CallPersistence,
     private val callValidator: CallValidator,
-    private val auditService: AuditService,
+    private val auditPublisher: ApplicationEventPublisher,
 ) : UpdateCallInteractor {
 
     @CanUpdateCalls
@@ -36,7 +36,7 @@ class UpdateCall(
             validateAllowedChanges(call, existingCall)
 
         return persistence.updateCall(call).also {
-            callUpdated(existingCall, it).logWith(auditService)
+            auditPublisher.publishEvent(callUpdated(this, existingCall, it))
         }
     }
 

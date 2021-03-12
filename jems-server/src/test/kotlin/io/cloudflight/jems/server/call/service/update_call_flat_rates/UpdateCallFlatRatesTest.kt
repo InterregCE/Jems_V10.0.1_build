@@ -3,23 +3,27 @@ package io.cloudflight.jems.server.call.service.update_call_flat_rates
 import io.cloudflight.jems.api.call.dto.CallStatus
 import io.cloudflight.jems.api.call.dto.flatrate.FlatRateType
 import io.cloudflight.jems.api.common.dto.I18nMessage
-import io.cloudflight.jems.server.UnitTest
-import io.cloudflight.jems.server.audit.service.AuditService
+import io.cloudflight.jems.server.audit.entity.AuditAction
+import io.cloudflight.jems.server.audit.model.AuditCandidateEvent
+import io.cloudflight.jems.server.audit.service.AuditCandidate
 import io.cloudflight.jems.server.call.service.CallPersistence
 import io.cloudflight.jems.server.call.service.model.CallDetail
 import io.cloudflight.jems.server.call.service.model.ProjectCallFlatRate
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
 import io.mockk.impl.annotations.MockK
-import io.mockk.impl.annotations.RelaxedMockK
+import io.mockk.junit5.MockKExtension
 import io.mockk.slot
 import io.mockk.verify
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
+import org.junit.jupiter.api.extension.ExtendWith
+import org.springframework.context.ApplicationEventPublisher
 import java.time.ZonedDateTime
 
-class UpdateCallFlatRatesTest: UnitTest() {
+@ExtendWith(MockKExtension::class)
+class UpdateCallFlatRatesTest {
 
     companion object {
         private fun callWithStatus(id: Long, status: CallStatus) = CallDetail(
@@ -37,8 +41,8 @@ class UpdateCallFlatRatesTest: UnitTest() {
     @MockK
     lateinit var persistence: CallPersistence
 
-    @RelaxedMockK
-    lateinit var auditService: AuditService
+    @MockK
+    lateinit var auditPublisher: ApplicationEventPublisher
 
     @InjectMockKs
     private lateinit var updateCallFlatRates: UpdateCallFlatRates
@@ -60,12 +64,27 @@ class UpdateCallFlatRatesTest: UnitTest() {
         val call = callWithStatus(id = ID, CallStatus.PUBLISHED).copy(flatRates = sortedSetOf(existing))
         every { persistence.getCallById(ID) } returns call
 
+        val data = sortedSetOf(existing, toBeCreated)
         val slotFlatRate = slot<Set<ProjectCallFlatRate>>()
-        every { persistence.updateProjectCallFlatRate(ID, capture(slotFlatRate)) } returns call
-        updateCallFlatRates.updateFlatRateSetup(ID, setOf(existing, toBeCreated))
+        every { persistence.updateProjectCallFlatRate(ID, capture(slotFlatRate)) } returns call.copy(flatRates = data)
+        val slotAudit = slot<AuditCandidateEvent>()
+        every { auditPublisher.publishEvent(capture(slotAudit)) } answers {}
+
+        updateCallFlatRates.updateFlatRateSetup(ID, data)
 
         verify(exactly = 1) { persistence.updateProjectCallFlatRate(ID, any()) }
         assertThat(slotFlatRate.captured).containsExactlyInAnyOrder(existing, toBeCreated)
+        verify(exactly = 1) { auditPublisher.publishEvent(any()) }
+        assertThat(slotAudit.captured.auditCandidate).isEqualTo(AuditCandidate(
+            action = AuditAction.CALL_CONFIGURATION_CHANGED,
+            description = "Configuration of published call id=9 name='' changed:\n" +
+                "flatRates changed from [\n" +
+                "  ProjectCallFlatRate(type=OTHER_COSTS_ON_STAFF_COSTS, rate=10, isAdjustable=false)\n" +
+                "] to [\n" +
+                "  ProjectCallFlatRate(type=OFFICE_AND_ADMINISTRATION_ON_OTHER_COSTS, rate=5, isAdjustable=true)\n" +
+                "  ProjectCallFlatRate(type=OTHER_COSTS_ON_STAFF_COSTS, rate=10, isAdjustable=false)\n" +
+                "]",
+        ))
     }
 
     @Test
@@ -92,11 +111,26 @@ class UpdateCallFlatRatesTest: UnitTest() {
 
 
         val slotFlatRate = slot<Set<ProjectCallFlatRate>>()
-        every { persistence.updateProjectCallFlatRate(ID, capture(slotFlatRate)) } returns call
+        every { persistence.updateProjectCallFlatRate(ID, capture(slotFlatRate)) } returns call.copy(flatRates = sortedSetOf(newToBeUpdated))
+        val slotAudit = slot<AuditCandidateEvent>()
+        every { auditPublisher.publishEvent(capture(slotAudit)) } answers {}
+
         updateCallFlatRates.updateFlatRateSetup(ID, setOf(newToBeUpdated))
 
         verify(exactly = 1) { persistence.updateProjectCallFlatRate(ID, any()) }
         assertThat(slotFlatRate.captured).containsExactlyInAnyOrder(newToBeUpdated)
+
+        verify(exactly = 1) { auditPublisher.publishEvent(any()) }
+        assertThat(slotAudit.captured.auditCandidate).isEqualTo(AuditCandidate(
+            action = AuditAction.CALL_CONFIGURATION_CHANGED,
+            description = "Configuration of not-published call id=10 name='' changed:\n" +
+                "flatRates changed from [\n" +
+                "  ProjectCallFlatRate(type=OFFICE_AND_ADMINISTRATION_ON_STAFF_COSTS, rate=7, isAdjustable=false)\n" +
+                "  ProjectCallFlatRate(type=OTHER_COSTS_ON_STAFF_COSTS, rate=7, isAdjustable=false)\n" +
+                "] to [\n" +
+                "  ProjectCallFlatRate(type=OTHER_COSTS_ON_STAFF_COSTS, rate=10, isAdjustable=true)\n" +
+                "]",
+        ))
     }
 
     @Test

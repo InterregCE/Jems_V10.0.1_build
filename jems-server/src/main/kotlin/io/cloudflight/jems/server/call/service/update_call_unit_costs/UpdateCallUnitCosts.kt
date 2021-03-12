@@ -1,18 +1,18 @@
 package io.cloudflight.jems.server.call.service.update_call_unit_costs
 
-import io.cloudflight.jems.server.audit.service.AuditService
 import io.cloudflight.jems.server.call.authorization.CanUpdateCalls
 import io.cloudflight.jems.server.call.service.CallPersistence
 import io.cloudflight.jems.server.call.service.callUpdated
 import io.cloudflight.jems.server.call.service.model.CallDetail
 import io.cloudflight.jems.server.common.exception.ExceptionWrapper
+import org.springframework.context.ApplicationEventPublisher
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 
 @Service
 class UpdateCallUnitCosts(
     private val persistence: CallPersistence,
-    private val auditService: AuditService,
+    private val auditPublisher: ApplicationEventPublisher,
 ) : UpdateCallUnitCostsInteractor {
 
     @Transactional
@@ -25,7 +25,7 @@ class UpdateCallUnitCosts(
         validateUnitCostsNotRemovedIfCallPublished(existingCall, unitCostIds)
 
         return persistence.updateProjectCallUnitCost(callId, unitCostIds).also {
-            callUpdated(existingCall, it).logWith(auditService)
+            auditPublisher.publishEvent(callUpdated(this, existingCall, it))
         }
     }
 

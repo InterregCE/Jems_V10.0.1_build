@@ -2,20 +2,29 @@ package io.cloudflight.jems.server.call.service.update_call_lump_sums
 
 import io.cloudflight.jems.api.call.dto.CallStatus
 import io.cloudflight.jems.server.UnitTest
-import io.cloudflight.jems.server.audit.service.AuditService
+import io.cloudflight.jems.server.audit.entity.AuditAction
+import io.cloudflight.jems.server.audit.model.AuditCandidateEvent
+import io.cloudflight.jems.server.audit.service.AuditCandidate
 import io.cloudflight.jems.server.call.service.CallPersistence
 import io.cloudflight.jems.server.call.service.model.CallDetail
 import io.cloudflight.jems.server.programme.service.costoption.model.ProgrammeLumpSum
+import io.mockk.confirmVerified
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
 import io.mockk.impl.annotations.MockK
 import io.mockk.impl.annotations.RelaxedMockK
+import io.mockk.junit5.MockKExtension
+import io.mockk.slot
 import io.mockk.verify
+import org.assertj.core.api.Assertions
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
+import org.junit.jupiter.api.extension.ExtendWith
+import org.springframework.context.ApplicationEventPublisher
 import java.time.ZonedDateTime
 
-class UpdateCallLumpSumsTest: UnitTest() {
+@ExtendWith(MockKExtension::class)
+class UpdateCallLumpSumsTest {
 
     companion object {
         private fun callWithStatus(id: Long, status: CallStatus) = CallDetail(
@@ -33,7 +42,7 @@ class UpdateCallLumpSumsTest: UnitTest() {
     lateinit var persistence: CallPersistence
 
     @RelaxedMockK
-    lateinit var auditService: AuditService
+    lateinit var auditPublisher: ApplicationEventPublisher
 
     @InjectMockKs
     private lateinit var updateCallLumpSums: UpdateCallLumpSums
@@ -43,11 +52,21 @@ class UpdateCallLumpSumsTest: UnitTest() {
         val ID = 1L
         val call = callWithStatus(id = ID, CallStatus.PUBLISHED)
         every { persistence.existsAllProgrammeLumpSumsByIds(setOf(2, 3)) } returns true
-        every { persistence.updateProjectCallLumpSum(ID, setOf(2, 3)) } returns call
+        every { persistence.updateProjectCallLumpSum(ID, setOf(2, 3)) } returns call.copy(lumpSums = listOf(ProgrammeLumpSum(id = 2, splittingAllowed = true), ProgrammeLumpSum(id = 3, splittingAllowed = true)))
         every { persistence.getCallById(ID) } returns call
         updateCallLumpSums.updateLumpSums(ID, setOf(2, 3))
 
         verify { persistence.updateProjectCallLumpSum(ID, setOf(2, 3)) }
+
+        val slotAudit = slot<AuditCandidateEvent>()
+        verify(exactly = 1) { auditPublisher.publishEvent(capture(slotAudit)) }
+        Assertions.assertThat(slotAudit.captured.auditCandidate).isEqualTo(
+            AuditCandidate(
+                action = AuditAction.CALL_CONFIGURATION_CHANGED,
+                description = "Configuration of published call id=1 name='' changed:\n" +
+                    "lumpSumIds changed from [] to [2, 3]"
+            )
+        )
     }
 
     @Test
@@ -73,6 +92,8 @@ class UpdateCallLumpSumsTest: UnitTest() {
             )
         )
         assertThrows<LumpSumsRemovedAfterCallPublished> { updateCallLumpSums.updateLumpSums(ID, setOf(3)) }
+        verify(exactly = 0) { auditPublisher.publishEvent(any<AuditCandidateEvent>()) }
+        confirmVerified(auditPublisher)
     }
 
     @Test
@@ -80,6 +101,8 @@ class UpdateCallLumpSumsTest: UnitTest() {
         val ID = 4L
         every { persistence.existsAllProgrammeLumpSumsByIds(setOf(2, 3)) } returns false
         assertThrows<LumpSumNotFound> { updateCallLumpSums.updateLumpSums(ID, setOf(2, 3)) }
+        verify(exactly = 0) { auditPublisher.publishEvent(any<AuditCandidateEvent>()) }
+        confirmVerified(auditPublisher)
     }
 
 }

@@ -10,6 +10,7 @@ import io.cloudflight.jems.api.programme.dto.strategy.ProgrammeStrategy.EUStrate
 import io.cloudflight.jems.api.project.dto.InputTranslation
 import io.cloudflight.jems.server.UnitTest
 import io.cloudflight.jems.server.audit.entity.AuditAction
+import io.cloudflight.jems.server.audit.model.AuditCandidateEvent
 import io.cloudflight.jems.server.audit.service.AuditCandidate
 import io.cloudflight.jems.server.audit.service.AuditService
 import io.cloudflight.jems.server.authentication.service.SecurityService
@@ -30,6 +31,7 @@ import io.mockk.verify
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
+import org.springframework.context.ApplicationEventPublisher
 import java.time.ZonedDateTime
 
 class CreateCallTest: UnitTest() {
@@ -83,7 +85,7 @@ class CreateCallTest: UnitTest() {
     lateinit var securityService: SecurityService
 
     @RelaxedMockK
-    lateinit var auditService: AuditService
+    lateinit var auditPublisher: ApplicationEventPublisher
 
     @RelaxedMockK
     lateinit var callValidator: CallValidator
@@ -103,34 +105,45 @@ class CreateCallTest: UnitTest() {
         assertThat(createCall.createCallInDraft(callToCreate)).isEqualTo(expectedCallDetail)
         assertThat(slotCall.captured).isEqualTo(callToCreate.copy(status = CallStatus.DRAFT))
 
-        val slotAudit = slot<AuditCandidate>()
-        verify(exactly = 1) { auditService.logEvent(capture(slotAudit)) }
+        val slotAudit = slot<AuditCandidateEvent>()
+        verify(exactly = 1) { auditPublisher.publishEvent(capture(slotAudit)) }
 
-        assertThat(slotAudit.captured.action).isEqualTo(AuditAction.CALL_ADDED)
-        assertThat(slotAudit.captured.description).startsWith("A new call id=0 name='call to create' was created as:\n" +
-            "name set to call to create,\n" +
-            "status set to DRAFT,\n" +
-            "startDate set to ")
-        assertThat(slotAudit.captured.description).endsWith("isAdditionalFundAllowed set to true,\n" +
-            "lengthOfPeriod set to 9,\n" +
-            "description set to [InputTranslation(language=EN, translation=EN desc), InputTranslation(language=SK, translation=SK desc)],\n" +
-            "objectives set to [AdvancedTechnologies, Digitalization],\n" +
-            "strategies set to [EUStrategyBalticSeaRegion, AtlanticStrategy],\n" +
-            "fundIds set to [54]")
+        with(slotAudit.captured.auditCandidate) {
+            assertThat(action).isEqualTo(AuditAction.CALL_ADDED)
+            assertThat(description).startsWith("A new call id=0 name='call to create' was created as:\n" +
+                "name set to 'call to create',\n" +
+                "status set to DRAFT,\n" +
+                "startDate set to ")
+            assertThat(description).endsWith("isAdditionalFundAllowed set to enabled,\n" +
+                "lengthOfPeriod set to 9,\n" +
+                "description set to [\n" +
+                "  InputTranslation(language=EN, translation=EN desc)\n" +
+                "  InputTranslation(language=SK, translation=SK desc)\n" +
+                "],\n" +
+                "objectives set to [\n" +
+                "  AdvancedTechnologies\n" +
+                "  Digitalization\n" +
+                "],\n" +
+                "strategies set to [\n" +
+                "  EUStrategyBalticSeaRegion\n" +
+                "  AtlanticStrategy\n" +
+                "],\n" +
+                "fundIds set to [54]")
+        }
     }
 
     @Test
     fun `createCallInDraft - name is not unique`() {
         every { persistence.getCallIdForNameIfExists("call to create") } returns 89L
         assertThrows<CallNameNotUnique> { createCall.createCallInDraft(callToCreate) }
-        verify(exactly = 0) { auditService.logEvent(any<AuditCandidate>()) }
+        verify(exactly = 0) { auditPublisher.publishEvent(any<AuditCandidateEvent>()) }
     }
 
     @Test
     fun `createCallInDraft - wrong call status`() {
         every { persistence.getCallIdForNameIfExists("call to create") } returns null
         assertThrows<CallCreatedIsNotDraft> { createCall.createCallInDraft(callToCreate.copy(status = CallStatus.PUBLISHED)) }
-        verify(exactly = 0) { auditService.logEvent(any<AuditCandidate>()) }
+        verify(exactly = 0) { auditPublisher.publishEvent(any<AuditCandidateEvent>()) }
     }
 
     @Test
@@ -139,7 +152,7 @@ class CreateCallTest: UnitTest() {
         every { persistence.createCall(any(), any()) } throws RuntimeException("whatever not-expected exception")
 
         assertThrows<RuntimeException> { createCall.createCallInDraft(callToCreate) }
-        verify(exactly = 0) { auditService.logEvent(any<AuditCandidate>()) }
+        verify(exactly = 0) { auditPublisher.publishEvent(any<AuditCandidateEvent>()) }
     }
 
 }
