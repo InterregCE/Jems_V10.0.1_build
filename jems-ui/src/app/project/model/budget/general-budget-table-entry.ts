@@ -5,6 +5,7 @@ export class GeneralBudgetTableEntry {
   id?: number;
   description?: InputTranslation[] = [];
   unitType?: InputTranslation[] = [];
+  unitCostId?: number;
   awardProcedures?: InputTranslation[] = [];
   investmentId?: number;
   numberOfUnits?: number;
@@ -19,6 +20,7 @@ export class GeneralBudgetTableEntry {
     this.numberOfUnits = data.numberOfUnits;
     this.pricePerUnit = data.pricePerUnit;
     this.unitType = data.unitType;
+    this.unitCostId = data.unitCostId;
     this.awardProcedures = data.awardProcedures;
     this.investmentId = data.investmentId;
     this.new = data.new;

@@ -87,6 +87,7 @@ import {ProjectLumpSumsPageComponent} from './lump-sums/project-lump-sums-page/p
 import {ProjectLumpSumsPageStore} from './lump-sums/project-lump-sums-page/project-lump-sums-page.store';
 import {BudgetPagePerPartnerComponent} from './budget/budget-page-per-partner/budget-page-per-partner.component';
 import {ProjectTimeplanPageComponent} from './timeplan/project-timeplan-page/project-timeplan-page.component';
+import { FilterUnitCostsPipe } from './partner/project-partner-detail-page/project-partner-budget-tab/project-partner-budget/filter-unit-costs.pipe';
 
 @NgModule({
   declarations: [
@@ -166,7 +167,8 @@ import {ProjectTimeplanPageComponent} from './timeplan/project-timeplan-page/pro
     ProjectResultsPageComponent,
     ProjectLumpSumsPageComponent,
     BudgetPagePerPartnerComponent,
-    ProjectTimeplanPageComponent
+    ProjectTimeplanPageComponent,
+    FilterUnitCostsPipe
   ],
   imports: [
     SharedModule,

@@ -14,12 +14,12 @@ import {Observable} from 'rxjs';
 import {map, startWith} from 'rxjs/operators';
 import {NumberService} from '../../../../../../common/services/number.service';
 import {FormService} from '@common/components/section/form/form.service';
-import {MultiLanguageInputService} from '../../../../../../common/services/multi-language-input.service';
 import {UntilDestroy, untilDestroyed} from '@ngneat/until-destroy';
-import {BudgetPeriodDTO, InputTranslation, OutputProjectPeriod, ProgrammeUnitCostDTO} from '@cat/api';
+import {BudgetPeriodDTO, OutputProjectPeriod} from '@cat/api';
 import {UnitCostsBudgetTable} from '../../../../../model/budget/unit-costs-budget-table';
 import {TableConfig} from '../../../../../../common/directives/table-config/TableConfig';
 import {Alert} from '@common/components/forms/alert';
+import {ProgrammeUnitCost} from '../../../../../model/programmeUnitCost';
 
 @UntilDestroy()
 @Component({
@@ -38,7 +38,7 @@ export class UnitCostsBudgetTableComponent implements OnInit, OnChanges {
   @Input()
   unitCostTable: UnitCostsBudgetTable;
   @Input()
-  availableUnitCosts: ProgrammeUnitCostDTO[];
+  availableUnitCosts: ProgrammeUnitCost[];
   @Input()
   projectPeriods: OutputProjectPeriod[];
 
@@ -51,8 +51,7 @@ export class UnitCostsBudgetTableComponent implements OnInit, OnChanges {
 
   constructor(private formService: FormService,
               private controlContainer: ControlContainer,
-              private formBuilder: FormBuilder,
-              public multiLanguageInputService: MultiLanguageInputService) {
+              private formBuilder: FormBuilder) {
     this.budgetForm = this.controlContainer.control as FormGroup;
   }
 
@@ -84,10 +83,10 @@ export class UnitCostsBudgetTableComponent implements OnInit, OnChanges {
     ];
 
     const periodWidths = this.projectPeriods?.length
-      ? [...this.projectPeriods?.map(period => ({minInRem: 8})), {minInRem: 8}] : [];
+      ? [...this.projectPeriods?.map(() => ({minInRem: 8})), {minInRem: 8}] : [];
     this.tableConfig = [
-      {minInRem: 12}, {minInRem: 12}, {minInRem: 5}, {minInRem: 12},
-      {minInRem: 5}, {minInRem: 8}, ...periodWidths, {minInRem: 3}
+      {minInRem: 10}, {minInRem: 12}, {minInRem: 5}, {minInRem: 12},
+      {minInRem: 5}, {minInRem: 8}, ...periodWidths, {minInRem: 3, maxInRem: 3}
     ];
   }
 
@@ -119,7 +118,6 @@ export class UnitCostsBudgetTableComponent implements OnInit, OnChanges {
   private resetUnitCostFormGroup(unitCostTable: UnitCostsBudgetTable): void {
     this.total.setValue(unitCostTable.total);
     this.items.clear();
-    console.log(unitCostTable.entries);
     this.unitCostTable.entries.forEach(item => {
       this.items.push(this.formBuilder.group({
         id: [item.id],
@@ -150,6 +148,9 @@ export class UnitCostsBudgetTableComponent implements OnInit, OnChanges {
     control.get(this.constants.FORM_CONTROL_NAMES.rowSum)?.setValue(NumberService.truncateNumber(NumberService.product([numberOfUnits, pricePerUnit])), {emitEvent: false});
   }
 
+  getUnitCostValue(formGroup: FormGroup): ProgrammeUnitCost | null{
+    return formGroup.get(this.constants.FORM_CONTROL_NAMES.unitCost)?.value as ProgrammeUnitCost;
+  }
   get table(): FormGroup {
     return this.budgetForm.get(this.constants.FORM_CONTROL_NAMES.unitCost) as FormGroup;
   }
@@ -216,11 +217,4 @@ export class UnitCostsBudgetTableComponent implements OnInit, OnChanges {
     );
   }
 
-  translated(element: InputTranslation[], currentSystemLanguage: string | null): string {
-    if (!currentSystemLanguage || !element) {
-      return '';
-    }
-    const elementInSystemLang = element.find((it: InputTranslation) => it.language === currentSystemLanguage);
-    return !!elementInSystemLang ? elementInSystemLang.translation : '';
-  }
 }

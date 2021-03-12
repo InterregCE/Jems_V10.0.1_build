@@ -39,8 +39,9 @@
   --light-blue-gray: #{mat-color($mat-blue-gray, 100, if($is-dark-theme, 0.25, 0.5))};
   --pale-blue-gray: #{mat-color($mat-blue-gray, 50, if($is-dark-theme, 0.0625, 0.375))};
   --table-backaground-color: #{if($is-dark-theme, $background, white)};
-  --table-highlight-color: #{if($is-dark-theme, lighten($background,2), lighten(mat-color($mat-blue-gray,50),1))};
-  --table-border-color: #{if($is-dark-theme, $background, mat-color($mat-blue-gray,100))};
+  --table-highlight-color: #{if($is-dark-theme, lighten($background,2), lighten(mat-color($primary-theme,50),3.5))};
+  --table-hover-color: #{if($is-dark-theme, lighten($background,1), mat-color($mat-gray,100))};
+  --table-border-color: #{if($is-dark-theme, $background, lighten(mat-color($mat-blue-gray,100),1))};
   --table-header-text-color: #{if($is-dark-theme, mat-color($mat-gray,400), mat-color($mat-gray,600,0.85))};
 
   --light-yellow: #{mat-color($mat-yellow, 100)};

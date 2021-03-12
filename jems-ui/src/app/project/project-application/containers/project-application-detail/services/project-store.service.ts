@@ -26,7 +26,6 @@ import {
   withLatestFrom
 } from 'rxjs/operators';
 import {Log} from '../../../../../common/utils/log';
-import {ActivatedRouteSnapshot, ResolveEnd, Router} from '@angular/router';
 import {PermissionService} from '../../../../../security/permissions/permission.service';
 import {Permission} from '../../../../../security/permissions/permission';
 import {I18nValidationError} from '@common/validation/i18n-validation-error';
@@ -159,7 +158,6 @@ export class ProjectStore {
         callSetting.lumpSums.map(lumpSum =>
           new ProgrammeLumpSum(lumpSum.id, lumpSum.name, lumpSum.description, lumpSum.cost, lumpSum.splittingAllowed, LumpSumPhaseEnumUtils.toLumpSumPhaseEnum(lumpSum.phase), BudgetCostCategoryEnumUtils.toBudgetCostCategoryEnums(lumpSum.categories))),
         callSetting.unitCosts
-            .filter(unitCost => unitCost.isOneCostCategory === false)
             .map(unitCost => new ProgrammeUnitCost(unitCost.id, unitCost.name, unitCost.description, unitCost.type, unitCost.costPerUnit, unitCost.isOneCostCategory, BudgetCostCategoryEnumUtils.toBudgetCostCategoryEnums(unitCost.categories))),
         callSetting.isAdditionalFundAllowed
       )),
