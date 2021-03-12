@@ -22,7 +22,7 @@
         <div appMultiColumnRow stretch>
             <mat-form-field>
                 <mat-label>{{'call.detail.field.start' | translate}}</mat-label>
-                <input required formControlName="startDate" matInput name="startDate"
+                <input required formControlName="startDateTime" matInput name="startDateTime"
                        [max]="callForm?.controls?.endDate?.value"
                        [ngxMatDatetimePicker]="start">
                 <mat-datepicker-toggle matSuffix [for]="start">
@@ -30,14 +30,14 @@
                 <ngx-mat-datetime-picker #start></ngx-mat-datetime-picker>
                 <mat-error>
                     <app-form-field-errors
-                            [errors]="callForm?.controls?.startDate?.errors"
-                            [messages]="startDateErrors">
+                            [errors]="callForm?.controls?.startDateTime?.errors"
+                            [messages]="startDateTimeErrors">
                     </app-form-field-errors>
                 </mat-error>
             </mat-form-field>
             <mat-form-field>
                 <mat-label>{{'call.detail.field.end' | translate}}</mat-label>
-                <input required formControlName="endDate" matInput name="endDate"
+                <input required formControlName="endDateTime" matInput name="endDateTime"
                        [min]="callForm?.controls?.startDate?.value"
                        [ngxMatDatetimePicker]="end">
                 <mat-datepicker-toggle matSuffix [for]="end">
@@ -45,8 +45,8 @@
                 <ngx-mat-datetime-picker #end></ngx-mat-datetime-picker>
                 <mat-error>
                     <app-form-field-errors
-                            [errors]="callForm?.controls?.endDate?.errors"
-                            [messages]="endDateErrors">
+                            [errors]="callForm?.controls?.endDateTime?.errors"
+                            [messages]="endDateTimeErrors">
                     </app-form-field-errors>
                 </mat-error>
             </mat-form-field>

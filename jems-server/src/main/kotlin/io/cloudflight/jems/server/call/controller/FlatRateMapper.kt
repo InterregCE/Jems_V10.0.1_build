@@ -7,7 +7,7 @@ import io.cloudflight.jems.api.call.dto.flatrate.FlatRateType.OFFICE_AND_ADMINIS
 import io.cloudflight.jems.api.call.dto.flatrate.FlatRateType.OTHER_COSTS_ON_STAFF_COSTS
 import io.cloudflight.jems.api.call.dto.flatrate.FlatRateType.STAFF_COSTS
 import io.cloudflight.jems.api.call.dto.flatrate.FlatRateType.TRAVEL_AND_ACCOMMODATION_ON_STAFF_COSTS
-import io.cloudflight.jems.server.call.service.flatrate.model.ProjectCallFlatRate
+import io.cloudflight.jems.server.call.service.model.ProjectCallFlatRate
 import java.util.stream.Collectors
 import java.util.stream.Stream
 

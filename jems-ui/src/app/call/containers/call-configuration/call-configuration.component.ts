@@ -1,11 +1,11 @@
 import {ChangeDetectionStrategy, Component} from '@angular/core';
 import {
-  InputCallUpdate,
-  OutputCall,
+  CallDetailDTO,
   OutputProgrammeStrategy,
   ProgrammeFundDTO,
   ProgrammeFundService,
   ProgrammePriorityService,
+  ProgrammeSpecificObjectiveDTO,
   ProgrammeStrategyService
 } from '@cat/api';
 import {BaseComponent} from '@common/components/base-component';
@@ -74,7 +74,7 @@ export class CallConfigurationComponent extends BaseComponent {
     this.callNavService.init(this.callId);
   }
 
-  private getStrategies(allActiveStrategies: OutputProgrammeStrategy[], call: OutputCall): OutputProgrammeStrategy[] {
+  private getStrategies(allActiveStrategies: OutputProgrammeStrategy[], call: CallDetailDTO): OutputProgrammeStrategy[] {
     const savedStrategies = allActiveStrategies
       .filter(strategy => strategy.active)
       .map(element =>
@@ -90,17 +90,19 @@ export class CallConfigurationComponent extends BaseComponent {
     return savedStrategies;
   }
 
-  private getPriorities(allPriorities: CallPriorityCheckbox[], call: OutputCall): CallPriorityCheckbox[] {
-    if (!call || !call.priorityPolicies) {
+  private getPriorities(allPriorities: CallPriorityCheckbox[], call: CallDetailDTO): CallPriorityCheckbox[] {
+    if (!call || !call.objectives) {
       return allPriorities;
     }
-    const savedPolicies = call.priorityPolicies
-      .map(policy => policy.programmeObjectivePolicy ? policy.programmeObjectivePolicy : policy) as any;
+    const savedPolicies = call.objectives
+      .map(priority => priority.specificObjectives)
+      .map(([specificObjective]) => specificObjective.programmeObjectivePolicy)
+      .flat(1) as ProgrammeSpecificObjectiveDTO.ProgrammeObjectivePolicyEnum[];
     Log.debug('Adapting the priority policies', this, allPriorities, savedPolicies);
     return allPriorities.map(priority => CallPriorityCheckbox.fromSavedPolicies(priority, savedPolicies));
   }
 
-  private getFunds(allFunds: ProgrammeFundDTO[], call: OutputCall | InputCallUpdate): ProgrammeFundDTO[] {
+  private getFunds(allFunds: ProgrammeFundDTO[], call: CallDetailDTO): ProgrammeFundDTO[] {
     const savedFunds = allFunds
       .filter(fund => fund.selected)
       .map(element =>
@@ -111,11 +113,11 @@ export class CallConfigurationComponent extends BaseComponent {
           selected: false
         } as ProgrammeFundDTO)
       );
-    if (!call || !(call as OutputCall).funds?.length) {
+    if (!call || !call.funds?.length) {
       return savedFunds;
     }
-    Log.debug('Adapting the selected funds', this, allFunds, (call as OutputCall).funds);
-    const callFundIds = (call as OutputCall).funds.map(element => element.id ? element.id : element);
+    Log.debug('Adapting the selected funds', this, allFunds, call.funds);
+    const callFundIds = call.funds.map(element => element.id ? element.id : element);
     savedFunds
       .filter(element => callFundIds.includes(element.id))
       .forEach(element => element.selected = true);

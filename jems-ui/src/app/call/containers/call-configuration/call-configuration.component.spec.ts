@@ -4,7 +4,6 @@ import {CallConfigurationComponent} from './call-configuration.component';
 import {TestModule} from '../../../common/test-module';
 import {CallModule} from '../../call.module';
 import {HttpTestingController} from '@angular/common/http/testing';
-import {InputCallCreate} from '@cat/api';
 
 describe('CallConfigurationComponent', () => {
   let component: CallConfigurationComponent;

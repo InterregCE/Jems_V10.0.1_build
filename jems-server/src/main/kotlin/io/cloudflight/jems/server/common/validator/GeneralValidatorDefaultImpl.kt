@@ -4,6 +4,7 @@ import io.cloudflight.jems.api.common.dto.I18nMessage
 import io.cloudflight.jems.api.project.dto.InputTranslation
 import org.springframework.stereotype.Service
 import java.math.BigDecimal
+import java.time.ZonedDateTime
 
 @Service
 class GeneralValidatorDefaultImpl : GeneralValidatorService {
@@ -30,6 +31,19 @@ class GeneralValidatorDefaultImpl : GeneralValidatorService {
                         )
                     )
             }
+        }
+
+    override fun numberBetween(number: Int, minValue: Int, maxValue: Int, fieldName: String) =
+        mutableMapOf<String, I18nMessage>().apply {
+            if (number < minValue || number > maxValue)
+                this[fieldName] = I18nMessage(
+                    i18nKey = "common.error.field.number.out.of.range",
+                    i18nArguments = mapOf(
+                        "number" to "$number",
+                        "min" to "$minValue",
+                        "max" to "$maxValue",
+                    )
+                )
         }
 
     override fun notBlank(input: String?, fieldName: String) =
@@ -73,6 +87,12 @@ class GeneralValidatorDefaultImpl : GeneralValidatorService {
                         )
                     )
             }
+        }
+
+    override fun startDateBeforeEndDate(start: ZonedDateTime, end: ZonedDateTime, fieldName: String): Map<String, I18nMessage> =
+        mutableMapOf<String, I18nMessage>().apply {
+            if (end.isBefore(start))
+                this[fieldName] = I18nMessage(i18nKey = "common.error.start.before.end")
         }
 
     override fun throwIfAnyIsInvalid(vararg validationResult: Map<String, I18nMessage>) =

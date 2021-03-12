@@ -9,7 +9,7 @@ import {
   SimpleChanges
 } from '@angular/core';
 import {FormArray, FormBuilder, FormGroup, Validators} from '@angular/forms';
-import {InputProjectRelevanceStrategy, OutputCall} from '@cat/api';
+import {InputProjectRelevanceStrategy, CallDetailDTO} from '@cat/api';
 
 @Component({
   selector: 'app-strategy-table',
@@ -23,7 +23,7 @@ export class StrategyTableComponent implements OnInit, OnChanges {
   @Input()
   strategies: InputProjectRelevanceStrategy[];
   @Input()
-  callStrategies: OutputCall.StrategiesEnum[];
+  callStrategies: CallDetailDTO.StrategiesEnum[];
   @Input()
   editable: boolean;
 

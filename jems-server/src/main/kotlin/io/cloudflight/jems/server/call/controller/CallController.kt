@@ -1,63 +1,54 @@
 package io.cloudflight.jems.server.call.controller
 
 import io.cloudflight.jems.api.call.CallApi
-import io.cloudflight.jems.api.call.dto.InputCallCreate
-import io.cloudflight.jems.api.call.dto.InputCallUpdate
-import io.cloudflight.jems.api.call.dto.OutputCall
-import io.cloudflight.jems.api.call.dto.OutputCallList
+import io.cloudflight.jems.api.call.dto.CallDTO
+import io.cloudflight.jems.api.call.dto.CallDetailDTO
+import io.cloudflight.jems.api.call.dto.CallUpdateRequestDTO
 import io.cloudflight.jems.api.call.dto.flatrate.FlatRateSetupDTO
-import io.cloudflight.jems.server.call.service.CallService
-import io.cloudflight.jems.server.call.service.flatrate.update_flat_rate_setup.UpdateFlatRateSetupInteractor
-import io.cloudflight.jems.server.call.service.costoption.update_call_cost_options.UpdateCallCostOptionsInteractor
+import io.cloudflight.jems.server.call.service.create_call.CreateCallInteractor
+import io.cloudflight.jems.server.call.service.get_call.GetCallInteractor
+import io.cloudflight.jems.server.call.service.publish_call.PublishCallInteractor
+import io.cloudflight.jems.server.call.service.update_call.UpdateCallInteractor
+import io.cloudflight.jems.server.call.service.update_call_lump_sums.UpdateCallLumpSumsInteractor
+import io.cloudflight.jems.server.call.service.update_call_unit_costs.UpdateCallUnitCostsInteractor
+import io.cloudflight.jems.server.call.service.update_call_flat_rates.UpdateCallFlatRatesInteractor
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
-import org.springframework.security.access.prepost.PreAuthorize
 import org.springframework.web.bind.annotation.RestController
 
 @RestController
 class CallController(
-    private val callService: CallService,
-    private val updateFlatRateSetup: UpdateFlatRateSetupInteractor,
-    private val updateCostOption: UpdateCallCostOptionsInteractor,
+    private val getCall: GetCallInteractor,
+    private val createCall: CreateCallInteractor,
+    private val updateCall: UpdateCallInteractor,
+    private val publishCall: PublishCallInteractor,
+    private val updateCallFlatRates: UpdateCallFlatRatesInteractor,
+    private val updateCallLumpSums: UpdateCallLumpSumsInteractor,
+    private val updateCallUnitCosts: UpdateCallUnitCostsInteractor,
 ) : CallApi {
 
-    /**
-     * Here the @PreAuthorize annotation is missing because list is filtered based on restrictions inside the service
-     */
-    override fun getCalls(pageable: Pageable): Page<OutputCallList> {
-        return callService.getCalls(pageable)
-    }
+    override fun getCalls(pageable: Pageable): Page<CallDTO> =
+        getCall.getCalls(pageable).toDto()
 
-    @PreAuthorize("@callAuthorization.canReadCallDetail(#id)")
-    override fun getCallById(id: Long): OutputCall {
-        return callService.getCallById(id)
-    }
+    override fun getCallById(callId: Long): CallDetailDTO =
+        getCall.getCallById(callId = callId).toDto()
 
-    @PreAuthorize("@callAuthorization.canCreateCall()")
-    override fun createCall(call: InputCallCreate): OutputCall {
-        return callService.createCall(call)
-    }
+    override fun createCall(call: CallUpdateRequestDTO): CallDetailDTO =
+        createCall.createCallInDraft(call = call.toModel()).toDto()
 
-    @PreAuthorize("@callAuthorization.canUpdateCall(#call.id)")
-    override fun updateCall(call: InputCallUpdate): OutputCall {
-        return callService.updateCall(call)
-    }
+    override fun updateCall(call: CallUpdateRequestDTO): CallDetailDTO =
+        updateCall.updateCall(call = call.toModel()).toDto()
 
-    @PreAuthorize("@callAuthorization.canUpdateCall(#id)")
-    override fun publishCall(id: Long) =
-        callService.publishCall(id)
-
-    @PreAuthorize("@callAuthorization.canReadCallDetail(#id)")
-    override fun getCallObjectives(id: Long) =
-        callService.getPriorityAndPoliciesForCall(id)
+    override fun publishCall(callId: Long) =
+        publishCall.publishCall(callId = callId).toDto()
 
     override fun updateCallFlatRateSetup(callId: Long, flatRateSetup: FlatRateSetupDTO) =
-        updateFlatRateSetup.updateFlatRateSetup(callId, flatRateSetup.toModel())
+        updateCallFlatRates.updateFlatRateSetup(callId, flatRateSetup.toModel()).toDto()
 
     override fun updateCallLumpSums(callId: Long, lumpSumIds: Set<Long>) =
-        updateCostOption.updateLumpSums(callId, lumpSumIds)
+        updateCallLumpSums.updateLumpSums(callId, lumpSumIds).toDto()
 
     override fun updateCallUnitCosts(callId: Long, unitCostIds: Set<Long>) =
-        updateCostOption.updateUnitCosts(callId, unitCostIds)
+        updateCallUnitCosts.updateUnitCosts(callId, unitCostIds).toDto()
 
 }

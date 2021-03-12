@@ -3,12 +3,15 @@ package io.cloudflight.jems.server.common.validator
 import io.cloudflight.jems.api.common.dto.I18nMessage
 import io.cloudflight.jems.api.project.dto.InputTranslation
 import java.math.BigDecimal
+import java.time.ZonedDateTime
 
 interface GeneralValidatorService {
 
     fun maxLength(input: String?, maxLength: Int, fieldName: String): Map<String, I18nMessage>
 
     fun maxLength(translations: Set<InputTranslation>, maxLength: Int, fieldName: String): Map<String, I18nMessage>
+
+    fun numberBetween(number: Int, minValue: Int, maxValue: Int, fieldName: String): Map<String, I18nMessage>
 
     fun notBlank(input: String?, fieldName: String): Map<String, I18nMessage>
 
@@ -19,6 +22,8 @@ interface GeneralValidatorService {
     fun minDecimal(input: BigDecimal?, minValue: BigDecimal, fieldName: String): Map<String, I18nMessage>
 
     fun digits(input: BigDecimal?, maxIntegerLength: Int, maxFractionLength: Int, fieldName: String): Map<String, I18nMessage>
+
+    fun startDateBeforeEndDate(start: ZonedDateTime, end: ZonedDateTime, fieldName: String): Map<String, I18nMessage>
 
     fun throwIfAnyIsInvalid(vararg validationResult: Map<String, I18nMessage>)
 }

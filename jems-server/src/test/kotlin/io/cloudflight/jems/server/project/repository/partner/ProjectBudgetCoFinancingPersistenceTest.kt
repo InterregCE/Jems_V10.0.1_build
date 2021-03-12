@@ -6,6 +6,7 @@ import io.cloudflight.jems.api.project.dto.partner.cofinancing.ProjectPartnerCon
 import io.cloudflight.jems.api.project.dto.partner.cofinancing.ProjectPartnerContributionStatus.Public
 import io.cloudflight.jems.api.project.dto.status.ProjectApplicationStatus
 import io.cloudflight.jems.server.call.callWithId
+import io.cloudflight.jems.server.call.entity.CallEntity
 import io.cloudflight.jems.server.common.exception.ResourceNotFoundException
 import io.cloudflight.jems.server.programme.entity.fund.ProgrammeFundEntity
 import io.cloudflight.jems.server.programme.entity.legalstatus.ProgrammeLegalStatusEntity
@@ -39,23 +40,29 @@ class ProjectBudgetCoFinancingPersistenceTest {
         private val fund1 = ProgrammeFundEntity(id = 10, selected = true)
         private val fund2 = ProgrammeFundEntity(id = 11, selected = true)
 
-        private val funds: Set<ProgrammeFundEntity> = setOf(fund1, fund2)
-
         private val fund1Model = ProgrammeFund(id = fund1.id, selected = true)
 
-        private val dummyCall = callWithId(10).copy(funds = funds)
+        private fun dummyCall(): CallEntity {
+            val call = callWithId(10)
+            call.funds.clear()
+            call.funds.addAll(setOf(fund1, fund2))
+            return call
+        }
 
-        private val dummyProject = ProjectEntity(
-            id = 1,
-            call = dummyCall,
-            acronym = "Test Project",
-            applicant = dummyCall.creator,
-            projectStatus = ProjectStatus(id = 1, status = ProjectApplicationStatus.DRAFT, user = dummyCall.creator)
-        )
+        private fun dummyProject(): ProjectEntity {
+            val call = dummyCall()
+            return ProjectEntity(
+                id = 1,
+                call = call,
+                acronym = "Test Project",
+                applicant = call.creator,
+                projectStatus = ProjectStatus(id = 1, status = ProjectApplicationStatus.DRAFT, user = call.creator)
+            )
+        }
 
         private val dummyPartner = ProjectPartnerEntity(
             id = PARTNER_ID,
-            project = dummyProject,
+            project = dummyProject(),
             abbreviation = "test abbr",
             role = ProjectPartnerRole.LEAD_PARTNER,
             legalStatus = ProgrammeLegalStatusEntity()

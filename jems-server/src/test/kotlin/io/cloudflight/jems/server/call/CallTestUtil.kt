@@ -7,11 +7,12 @@ import io.cloudflight.jems.api.project.dto.partner.ProjectPartnerRole
 import io.cloudflight.jems.api.project.dto.status.ProjectApplicationStatus
 import io.cloudflight.jems.api.user.dto.OutputUserRole
 import io.cloudflight.jems.api.user.dto.OutputUserWithRole
+import io.cloudflight.jems.server.authentication.model.LocalCurrentUser
 import io.cloudflight.jems.server.call.entity.CallEntity
 import io.cloudflight.jems.server.call.entity.CallTranslEntity
-import io.cloudflight.jems.server.call.entity.CallTranslId
 import io.cloudflight.jems.server.call.entity.FlatRateSetupId
 import io.cloudflight.jems.server.call.entity.ProjectCallFlatRateEntity
+import io.cloudflight.jems.server.common.entity.TranslationId
 import io.cloudflight.jems.server.programme.entity.legalstatus.ProgrammeLegalStatusEntity
 import io.cloudflight.jems.server.project.entity.ProjectEntity
 import io.cloudflight.jems.server.project.entity.ProjectStatus
@@ -29,45 +30,37 @@ private val account = User(
     password = "hash_pass"
 )
 
-val testUser = OutputUserWithRole(
-    id = 1,
-    email = "admin@admin.dev",
-    name = "Name",
-    surname = "Surname",
-    userRole = OutputUserRole(id = 1, name = "ADMIN")
-)
-
-private val testCall = CallEntity(
-    id = 0,
+private fun testCall(id: Long = 0) = CallEntity(
+    id = id,
     creator = account,
     name = "Test call name",
-    prioritySpecificObjectives = emptySet(),
-    strategies = emptySet(),
-    isAdditionalFundAllowed = false,
-    funds = emptySet(),
+    status = CallStatus.DRAFT,
     startDate = ZonedDateTime.now(),
     endDate = ZonedDateTime.now().plusDays(5L),
-    status = CallStatus.DRAFT,
     lengthOfPeriod = 1,
-    translatedValues = mutableSetOf(CallTranslEntity(CallTranslId(0, SystemLanguage.EN),"This is a dummy call")),
-    flatRates = mutableSetOf(ProjectCallFlatRateEntity(
-        setupId = FlatRateSetupId(callId = 0, type = FlatRateType.STAFF_COSTS),
-        rate = 5,
-        isAdjustable = true
-    ))
-)
+    isAdditionalFundAllowed = false,
+    translatedValues = mutableSetOf(),
+    prioritySpecificObjectives = mutableSetOf(),
+    strategies = mutableSetOf(),
+    funds = mutableSetOf(),
+    flatRates = mutableSetOf(),
+).apply {
+    translatedValues.add(CallTranslEntity(TranslationId(this, SystemLanguage.EN),"This is a dummy call"))
+    flatRates.add(ProjectCallFlatRateEntity(setupId = FlatRateSetupId(call = this, type = FlatRateType.STAFF_COSTS), rate = 5, isAdjustable = true))
+}
 
-fun callWithId(id: Long) = testCall.copy(
-    id = id,
-    translatedValues = mutableSetOf(CallTranslEntity(CallTranslId(id, SystemLanguage.EN),"This is a dummy call"))
-)
+fun callWithId(id: Long): CallEntity {
+    val call = testCall(id)
+    call.translatedValues.add(CallTranslEntity(TranslationId(call, SystemLanguage.EN), "This is a dummy call"))
+    return call
+}
 
 private val dummyProject = ProjectEntity(
     id = 1,
-    call = testCall,
+    call = testCall(),
     acronym = "Test Project",
-    applicant = testCall.creator,
-    projectStatus = ProjectStatus(id = 1, status = ProjectApplicationStatus.DRAFT, user = testCall.creator)
+    applicant = account,
+    projectStatus = ProjectStatus(id = 1, status = ProjectApplicationStatus.DRAFT, user = account)
 )
 
 fun partnerWithId(id: Long) = ProjectPartnerEntity(
@@ -76,4 +69,10 @@ fun partnerWithId(id: Long) = ProjectPartnerEntity(
     abbreviation = "test abbr",
     role = ProjectPartnerRole.LEAD_PARTNER,
     legalStatus = ProgrammeLegalStatusEntity()
+)
+
+fun userWithId(id: Long) = LocalCurrentUser(
+    user = OutputUserWithRole(id = id, email = "x@y", name = "", surname = "", userRole = OutputUserRole(0, "")),
+    password = "hash_pass",
+    authorities = emptyList(),
 )

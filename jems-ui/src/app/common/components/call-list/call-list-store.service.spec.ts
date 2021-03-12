@@ -1,7 +1,7 @@
 import {fakeAsync, TestBed, tick} from '@angular/core/testing';
 
 import {CallListStore} from '@common/components/call-list/call-list-store.service';
-import {OutputCallList} from '@cat/api';
+import {CallDTO} from '@cat/api';
 import {HttpTestingController} from '@angular/common/http/testing';
 import {TestModule} from '../../test-module';
 
@@ -23,12 +23,12 @@ describe('CallListStoreService', () => {
   });
 
   it('should list calls', fakeAsync(() => {
-    let results: OutputCallList[] = [];
+    let results: CallDTO[] = [];
     service.page$.subscribe(result => results = result.content);
 
     const calls = [
-      {name: 'test1'} as OutputCallList,
-      {name: 'test2'} as OutputCallList
+      {name: 'test1'} as CallDTO,
+      {name: 'test2'} as CallDTO
     ];
 
     httpTestingController.match({method: 'GET', url: `//api/call?page=0&size=25&sort=id,desc`})

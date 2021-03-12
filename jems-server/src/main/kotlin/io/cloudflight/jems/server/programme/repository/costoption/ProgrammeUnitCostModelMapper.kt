@@ -21,7 +21,7 @@ fun ProgrammeUnitCostEntity.toProgrammeUnitCost() = ProgrammeUnitCost(
 fun Iterable<ProgrammeUnitCostEntity>.toProgrammeUnitCost() = map { it.toProgrammeUnitCost() }
 
 fun ProgrammeUnitCost.toEntity() = ProgrammeUnitCostEntity(
-    id = id ?: 0,
+    id = id,
     // translatedValues - needs programmeUnitCostId
     costPerUnit = costPerUnit!!,
     isOneCostCategory = isOneCostCategory,

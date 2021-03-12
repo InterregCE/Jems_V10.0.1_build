@@ -1,4 +1,9 @@
-import {ProgrammePriorityDTO, OutputProgrammePriorityPolicySimple, InputTranslation} from '@cat/api';
+import {
+  ProgrammePriorityDTO,
+  OutputProgrammePriorityPolicySimple,
+  InputTranslation,
+  ProgrammeSpecificObjectiveDTO
+} from '@cat/api';
 
 export class CallPriorityCheckbox {
   name: string;
@@ -24,7 +29,7 @@ export class CallPriorityCheckbox {
   }
 
   static fromSavedPolicies(priorityCheckbox: CallPriorityCheckbox,
-                           checked: OutputProgrammePriorityPolicySimple.ProgrammeObjectivePolicyEnum[]): CallPriorityCheckbox {
+                           checked: ProgrammeSpecificObjectiveDTO.ProgrammeObjectivePolicyEnum[]): CallPriorityCheckbox {
     const checkbox = new CallPriorityCheckbox();
     checkbox.name = priorityCheckbox.name;
     checkbox.translatableTitle = priorityCheckbox.translatableTitle;

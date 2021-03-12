@@ -4,7 +4,7 @@ import io.cloudflight.jems.api.call.dto.CallStatus
 import io.cloudflight.jems.server.programme.entity.fund.ProgrammeFundEntity
 import io.cloudflight.jems.server.user.entity.User
 import io.cloudflight.jems.server.programme.entity.ProgrammeSpecificObjectiveEntity
-import io.cloudflight.jems.server.programme.entity.Strategy
+import io.cloudflight.jems.server.programme.entity.ProgrammeStrategyEntity
 import io.cloudflight.jems.server.programme.entity.costoption.ProgrammeLumpSumEntity
 import io.cloudflight.jems.server.programme.entity.costoption.ProgrammeUnitCostEntity
 import java.time.ZonedDateTime
@@ -24,20 +24,39 @@ import javax.persistence.OneToMany
 import javax.validation.constraints.NotNull
 
 @Entity(name = "project_call")
-data class CallEntity(
+class CallEntity(
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     val id: Long = 0,
 
-    @ManyToOne(optional = false)
+    @ManyToOne(optional = false, fetch = FetchType.LAZY)
     @JoinColumn(name = "creator_id")
     @field:NotNull
     val creator: User,
 
     @Column(unique = true)
     @field:NotNull
-    val name: String,
+    var name: String,
+
+    @Enumerated(EnumType.STRING)
+    @field:NotNull
+    var status: CallStatus = CallStatus.DRAFT,
+
+    @field:NotNull
+    var startDate: ZonedDateTime,
+
+    @field:NotNull
+    var endDate: ZonedDateTime,
+
+    @field:NotNull
+    var lengthOfPeriod: Int,
+
+    @field:NotNull
+    var isAdditionalFundAllowed: Boolean,
+
+    @OneToMany(cascade = [CascadeType.ALL], orphanRemoval = true, mappedBy = "translationId.sourceEntity")
+    val translatedValues: MutableSet<CallTranslEntity> = mutableSetOf(),
 
     @OneToMany
     @JoinTable(
@@ -45,7 +64,7 @@ data class CallEntity(
         joinColumns = [JoinColumn(name = "call_id")],
         inverseJoinColumns = [JoinColumn(name = "programme_specific_objective")]
     )
-    val prioritySpecificObjectives: Set<ProgrammeSpecificObjectiveEntity>,
+    val prioritySpecificObjectives: MutableSet<ProgrammeSpecificObjectiveEntity> = mutableSetOf(),
 
     @OneToMany
     @JoinTable(
@@ -53,11 +72,7 @@ data class CallEntity(
         joinColumns = [JoinColumn(name = "call_id")],
         inverseJoinColumns = [JoinColumn(name = "programme_strategy")]
     )
-    val strategies: Set<Strategy>,
-
-    @Column
-    @field:NotNull
-    val isAdditionalFundAllowed: Boolean,
+    val strategies: MutableSet<ProgrammeStrategyEntity> = mutableSetOf(),
 
     @OneToMany
     @JoinTable(
@@ -65,26 +80,10 @@ data class CallEntity(
         joinColumns = [JoinColumn(name = "call_id")],
         inverseJoinColumns = [JoinColumn(name = "programme_fund")]
     )
-    val funds: Set<ProgrammeFundEntity>,
+    val funds: MutableSet<ProgrammeFundEntity> = mutableSetOf(),
 
-    @field:NotNull
-    val startDate: ZonedDateTime,
-
-    @field:NotNull
-    val endDate: ZonedDateTime,
-
-    @Enumerated(EnumType.STRING)
-    @field:NotNull
-    val status: CallStatus,
-
-    @field:NotNull
-    val lengthOfPeriod: Int,
-
-    @OneToMany(cascade = [CascadeType.ALL], orphanRemoval = true, mappedBy = "translationId.projectCallId")
-    var translatedValues: MutableSet<CallTranslEntity> = mutableSetOf(),
-
-    @OneToMany(mappedBy = "setupId.callId", cascade = [CascadeType.ALL], orphanRemoval = true, fetch = FetchType.LAZY)
-    var flatRates: MutableSet<ProjectCallFlatRateEntity> = mutableSetOf(),
+    @OneToMany(mappedBy = "setupId.call", cascade = [CascadeType.ALL], orphanRemoval = true)
+    val flatRates: MutableSet<ProjectCallFlatRateEntity> = mutableSetOf(),
 
     @OneToMany
     @JoinTable(
@@ -92,7 +91,7 @@ data class CallEntity(
         joinColumns = [JoinColumn(name = "project_call_id")],
         inverseJoinColumns = [JoinColumn(name = "programme_lump_sum_id")]
     )
-    val lumpSums: Set<ProgrammeLumpSumEntity> = emptySet(),
+    val lumpSums: MutableSet<ProgrammeLumpSumEntity> = mutableSetOf(),
 
     @OneToMany
     @JoinTable(
@@ -100,7 +99,7 @@ data class CallEntity(
         joinColumns = [JoinColumn(name = "project_call_id")],
         inverseJoinColumns = [JoinColumn(name = "programme_unit_cost_id")]
     )
-    val unitCosts: Set<ProgrammeUnitCostEntity> = emptySet()
+    val unitCosts: MutableSet<ProgrammeUnitCostEntity> = mutableSetOf()
 
 ) {
     fun updateFlatRateSetup(flatRates: Set<ProjectCallFlatRateEntity>) {

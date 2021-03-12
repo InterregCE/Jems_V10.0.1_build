@@ -50,4 +50,7 @@ interface ProgrammeSpecificObjectiveRepository :
         value = "SELECT DISTINCT programme_specific_objective FROM project_call_priority_specific_objective"
     )
     fun getObjectivePoliciesAlreadyInUse(): Iterable<String>
+
+    fun getAllByProgrammeObjectivePolicyIn(ids: Set<ProgrammeObjectivePolicy>): Set<ProgrammeSpecificObjectiveEntity>
+
 }

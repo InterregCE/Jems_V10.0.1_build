@@ -2,7 +2,7 @@ package io.cloudflight.jems.server.project.service.partner.budget.update_budget_
 
 import io.cloudflight.jems.api.call.dto.flatrate.FlatRateType
 import io.cloudflight.jems.api.common.dto.I18nMessage
-import io.cloudflight.jems.server.call.service.flatrate.model.ProjectCallFlatRate
+import io.cloudflight.jems.server.call.service.model.ProjectCallFlatRate
 import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerBudgetOptions
 
 const val INVALID_FLAT_RATE_COMBINATION_ERROR_KEY =

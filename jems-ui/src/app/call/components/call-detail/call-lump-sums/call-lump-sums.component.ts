@@ -2,7 +2,7 @@ import {ChangeDetectionStrategy, Component, Input, OnInit} from '@angular/core';
 import {FormBuilder, FormGroup} from '@angular/forms';
 import {FormService} from '@common/components/section/form/form.service';
 import {MatTableDataSource} from '@angular/material/table';
-import {ProgrammeLumpSumListDTO, OutputCall, InputTranslation} from '@cat/api';
+import {ProgrammeLumpSumListDTO, InputTranslation, CallDetailDTO} from '@cat/api';
 import {SelectionModel} from '@angular/cdk/collections';
 import {CallStore} from '../../../services/call-store.service';
 import {catchError, take, tap} from 'rxjs/operators';
@@ -20,7 +20,7 @@ export class CallLumpSumsComponent implements OnInit {
   @Input()
   lumpSums: ProgrammeLumpSumListDTO[];
   @Input()
-  call: OutputCall;
+  call: CallDetailDTO;
 
   callLumpSumForm: FormGroup;
   published = false;
@@ -38,7 +38,7 @@ export class CallLumpSumsComponent implements OnInit {
     this.initForm();
     this.formService.init(this.callLumpSumForm);
     this.formService.setCreation(!this.call?.id);
-    this.published = this.call?.status === OutputCall.StatusEnum.PUBLISHED;
+    this.published = this.call?.status === CallDetailDTO.StatusEnum.PUBLISHED;
     this.formService.setEditable(!this.published);
   }
 

@@ -14,4 +14,6 @@ interface ProgrammeDataService {
 
     fun getAvailableNuts(): List<OutputNuts>
 
+    fun isProgrammeSetupLocked(): Boolean
+
 }

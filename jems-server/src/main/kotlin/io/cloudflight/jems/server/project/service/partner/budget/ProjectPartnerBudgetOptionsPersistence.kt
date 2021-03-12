@@ -1,5 +1,6 @@
 package io.cloudflight.jems.server.project.service.partner.budget
 
+import io.cloudflight.jems.server.call.service.model.ProjectCallFlatRate
 import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerBudgetOptions
 
 interface ProjectPartnerBudgetOptionsPersistence {
@@ -14,5 +15,6 @@ interface ProjectPartnerBudgetOptionsPersistence {
     fun deleteInfrastructureCosts(partnerId: Long)
     fun deleteTravelAndAccommodationCosts(partnerId: Long)
     fun deleteUnitCosts(partnerId: Long)
+    fun getProjectCallFlatRateByPartnerId(partnerId: Long): Set<ProjectCallFlatRate>
 
 }

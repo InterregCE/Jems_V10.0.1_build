@@ -25,7 +25,7 @@ class ProjectPersistenceProvider(
 
     @Transactional(readOnly = true)
     override fun getProjectUnitCosts(projectId: Long): List<ProgrammeUnitCost> =
-        getProjectOrThrow(projectId).call.unitCosts.toProgrammeUnitCosts()
+        getProjectOrThrow(projectId).call.unitCosts.toModel()
 
     @Transactional(readOnly = true)
     override fun getProjectIdForPartner(partnerId: Long) =

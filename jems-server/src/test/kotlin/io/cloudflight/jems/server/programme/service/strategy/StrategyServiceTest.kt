@@ -8,7 +8,7 @@ import io.cloudflight.jems.server.audit.entity.AuditAction
 import io.cloudflight.jems.server.audit.service.AuditCandidate
 import io.cloudflight.jems.server.audit.service.AuditService
 import io.cloudflight.jems.server.call.repository.CallRepository
-import io.cloudflight.jems.server.programme.entity.Strategy
+import io.cloudflight.jems.server.programme.entity.ProgrammeStrategyEntity
 import io.cloudflight.jems.server.programme.repository.StrategyRepository
 import io.mockk.MockKAnnotations
 import io.mockk.every
@@ -23,11 +23,11 @@ import org.junit.jupiter.api.assertThrows
 
 internal class StrategyServiceTest {
     companion object {
-        val strategy = Strategy(
+        val strategy = ProgrammeStrategyEntity(
             strategy = ProgrammeStrategy.EUStrategyAdriaticIonianRegion,
             active = false
         )
-        val strategySelected = Strategy(
+        val strategySelected = ProgrammeStrategyEntity(
             strategy = ProgrammeStrategy.AtlanticStrategy,
             active = true
         )
@@ -71,7 +71,7 @@ internal class StrategyServiceTest {
     @Test
     fun `update existing - active`() {
         every { callRepository.existsByStatus(CallStatus.PUBLISHED) } returns false
-        every { strategyRepository.saveAll(any<List<Strategy>>()) } returnsArgument 0
+        every { strategyRepository.saveAll(any<List<ProgrammeStrategyEntity>>()) } returnsArgument 0
         val expectedResult = listOf(strategy.copy(active = true))
         every { strategyRepository.count() } returns expectedResult.size.toLong()
         every { strategyRepository.findAll() } returns expectedResult

@@ -2,7 +2,7 @@ import {ChangeDetectionStrategy, Component, Input, OnInit, TemplateRef, ViewChil
 import {TableConfiguration} from '@common/components/table/model/table.configuration';
 import {Router} from '@angular/router';
 import {ColumnType} from '@common/components/table/model/column-type.enum';
-import {OutputCall} from '@cat/api';
+import {CallDTO} from '@cat/api';
 import moment from 'moment/moment';
 import {CallListStore} from '@common/components/call-list/call-list-store.service';
 
@@ -50,13 +50,13 @@ export class CallListComponent implements OnInit {
         {
           displayedColumn: 'call.table.column.name.started',
           columnType: ColumnType.DateColumn,
-          elementProperty: 'startDate',
+          elementProperty: 'startDateTime',
           sortProperty: 'startDate'
         },
         {
           displayedColumn: 'call.table.column.name.end',
           columnType: ColumnType.DateColumn,
-          elementProperty: 'endDate',
+          elementProperty: 'endDateTime',
           sortProperty: 'endDate'
         }
       ]
@@ -73,9 +73,9 @@ export class CallListComponent implements OnInit {
     this.router.navigate(['/app/project/applyTo/' + callId]);
   }
 
-  isOpen(call: OutputCall): boolean {
+  isOpen(call: CallDTO): boolean {
     const currentDate = moment(new Date());
-    return currentDate.isBefore(call.endDate) && currentDate.isAfter(call.startDate);
+    return currentDate.isBefore(call.endDateTime) && currentDate.isAfter(call.startDateTime);
   }
 
 }

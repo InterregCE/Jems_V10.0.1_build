@@ -1,53 +1,44 @@
 package io.cloudflight.jems.server.call.authorization
 
-import io.cloudflight.jems.api.call.dto.CallStatus
-import io.cloudflight.jems.api.call.dto.OutputCall
-import io.cloudflight.jems.server.common.exception.ResourceNotFoundException
 import io.cloudflight.jems.server.authentication.service.SecurityService
 import io.cloudflight.jems.server.authentication.authorization.Authorization
-import io.cloudflight.jems.server.call.service.CallService
+import io.cloudflight.jems.server.call.repository.CallNotFound
+import io.cloudflight.jems.server.call.service.CallPersistence
+import io.cloudflight.jems.server.call.service.model.CallDetail
 import org.springframework.security.access.prepost.PreAuthorize
 import org.springframework.stereotype.Component
 
 @Retention(AnnotationRetention.RUNTIME)
-@PreAuthorize("@callAuthorization.canUpdateCall(#callId)")
-annotation class CanUpdateCall
+@PreAuthorize("@callAuthorization.canUpdateCalls()")
+annotation class CanUpdateCalls
+
+@Retention(AnnotationRetention.RUNTIME)
+@PreAuthorize("@callAuthorization.canReadCall(#callId)")
+annotation class CanReadCall
 
 @Component
 class CallAuthorization(
     override val securityService: SecurityService,
-    val callService: CallService
+    val callPersistence: CallPersistence,
 ) : Authorization(securityService) {
 
-    fun canCreateCall(): Boolean {
-        return isAdmin() || isProgrammeUser()
-    }
+    fun canUpdateCalls(): Boolean = isAdmin() || isProgrammeUser()
 
-    fun canUpdateCall(callId: Long): Boolean {
-        val callStatus = callService.getCallById(callId).status
-        if (isAdmin() || isProgrammeUser())
-            return callStatus == CallStatus.DRAFT
-
-        if (!isAdmin() && !isProgrammeUser())
-            throw ResourceNotFoundException("call")
-
-        return false
-    }
-
-    fun canReadCallDetail(callId: Long): Boolean {
-        if (isApplicantUser())
-            if (isCallPublished(callService.getCallById(callId)))
-                return true
-            else throw ResourceNotFoundException("call")
+    fun canReadCall(callId: Long): Boolean {
+        if (isApplicantUser()) {
+            val call: CallDetail
+            try {
+                call = callPersistence.getCallById(callId)
+            } catch (e: CallNotFound) {
+                return false
+            }
+            return call.isPublished()
+        }
 
         if (isAdmin() || isProgrammeUser())
             return true
 
         return false
-    }
-
-    private fun isCallPublished(call: OutputCall): Boolean {
-        return call.status == CallStatus.PUBLISHED
     }
 
 }

@@ -11,4 +11,6 @@ interface ProgrammeFundRepository : JpaRepository<ProgrammeFundEntity, Long> {
     @EntityGraph(value = "ProgrammeFundEntity.fetchWithTranslations")
     fun findTop20ByOrderById(): Iterable<ProgrammeFundEntity>
 
+    fun getTop20ByIdInAndSelectedTrue(ids: Set<Long>): Iterable<ProgrammeFundEntity>
+
 }

@@ -5,7 +5,7 @@ import javax.persistence.Entity
 import javax.validation.constraints.NotNull
 
 @Entity(name = "project_call_flat_rate")
-data class ProjectCallFlatRateEntity(
+class ProjectCallFlatRateEntity(
 
     @EmbeddedId
     val setupId: FlatRateSetupId,
@@ -16,4 +16,13 @@ data class ProjectCallFlatRateEntity(
     @field:NotNull
     var isAdjustable: Boolean
 
-)
+) {
+    override fun equals(other: Any?): Boolean = this === other
+        || other is ProjectCallFlatRateEntity
+        && setupId == other.setupId
+        && rate == other.rate
+        && isAdjustable == other.isAdjustable
+
+    override fun hashCode() = setupId.hashCode()
+
+}

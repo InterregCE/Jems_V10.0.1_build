@@ -1,6 +1,6 @@
 package io.cloudflight.jems.server.project.service.model
 
-import io.cloudflight.jems.server.call.service.flatrate.model.ProjectCallFlatRate
+import io.cloudflight.jems.server.call.service.model.ProjectCallFlatRate
 import io.cloudflight.jems.server.programme.service.costoption.model.ProgrammeLumpSum
 import io.cloudflight.jems.server.programme.service.costoption.model.ProgrammeUnitCost
 import java.time.ZonedDateTime

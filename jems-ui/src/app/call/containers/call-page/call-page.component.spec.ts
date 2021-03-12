@@ -3,7 +3,6 @@ import {async, ComponentFixture, fakeAsync, TestBed, tick} from '@angular/core/t
 import {CallPageComponent} from './call-page.component';
 import {TestModule} from '../../../common/test-module';
 import {CallModule} from '../../call.module';
-import {OutputCallList} from '@cat/api';
 import {HttpTestingController} from '@angular/common/http/testing';
 
 describe('CallPageComponent', () => {

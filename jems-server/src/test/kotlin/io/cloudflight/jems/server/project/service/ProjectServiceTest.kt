@@ -31,7 +31,7 @@ import io.cloudflight.jems.server.call.entity.CallEntity
 import io.cloudflight.jems.server.call.repository.CallRepository
 import io.cloudflight.jems.server.common.exception.ResourceNotFoundException
 import io.cloudflight.jems.server.programme.entity.ProgrammeSpecificObjectiveEntity
-import io.cloudflight.jems.server.programme.entity.Strategy
+import io.cloudflight.jems.server.programme.entity.ProgrammeStrategyEntity
 import io.cloudflight.jems.server.project.entity.ProjectEntity
 import io.cloudflight.jems.server.project.entity.ProjectStatus
 import io.cloudflight.jems.server.project.repository.ProjectRepository
@@ -110,10 +110,10 @@ class ProjectServiceTest {
         id = 5,
         creator = account,
         name = "call",
-        prioritySpecificObjectives = setOf(ProgrammeSpecificObjectiveEntity(HealthcareAcrossBorders, "HAB")),
-        strategies = setOf(Strategy(ProgrammeStrategy.MediterraneanSeaBasin, true)),
+        prioritySpecificObjectives = mutableSetOf(ProgrammeSpecificObjectiveEntity(HealthcareAcrossBorders, "HAB")),
+        strategies = mutableSetOf(ProgrammeStrategyEntity(ProgrammeStrategy.MediterraneanSeaBasin, true)),
         isAdditionalFundAllowed = false,
-        funds = emptySet(),
+        funds = mutableSetOf(),
         startDate = ZonedDateTime.now().minusDays(1),
         endDate = ZonedDateTime.now().plusDays(1),
         status = CallStatus.PUBLISHED,
@@ -222,8 +222,8 @@ class ProjectServiceTest {
 
     @Test
     fun projectCreation_OK() {
-        every { callRepository.findById(eq(dummyCall.id)) } returns Optional.of(dummyCall.copy(endDate = ZonedDateTime.now().plusDays(1)))
-        every { projectRepository.save(any<ProjectEntity>()) } returns ProjectEntity(
+        every { callRepository.findById(eq(dummyCall.id)) } returns Optional.of(dummyCall)
+        every { projectRepository.save(any()) } returns ProjectEntity(
             id = 612,
             call = dummyCall,
             acronym = "test",
@@ -356,10 +356,10 @@ class ProjectServiceTest {
             id = 5,
             creator = account,
             name = "call",
-            prioritySpecificObjectives = setOf(ProgrammeSpecificObjectiveEntity(HealthcareAcrossBorders, "HAB")),
-            strategies = setOf(Strategy(ProgrammeStrategy.MediterraneanSeaBasin, true)),
+            prioritySpecificObjectives = mutableSetOf(ProgrammeSpecificObjectiveEntity(HealthcareAcrossBorders, "HAB")),
+            strategies = mutableSetOf(ProgrammeStrategyEntity(ProgrammeStrategy.MediterraneanSeaBasin, true)),
             isAdditionalFundAllowed = false,
-            funds = emptySet(),
+            funds = mutableSetOf(),
             startDate = ZonedDateTime.now(),
             endDate = ZonedDateTime.now(),
             status = CallStatus.PUBLISHED,

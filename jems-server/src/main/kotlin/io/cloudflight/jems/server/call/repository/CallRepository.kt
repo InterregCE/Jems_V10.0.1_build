@@ -13,7 +13,7 @@ interface CallRepository: JpaRepository<CallEntity, Long> {
 
     fun findAllByStatusAndEndDateAfter(status: CallStatus, after: ZonedDateTime, pageable: Pageable): Page<CallEntity>
 
-    fun findOneByName(name: String): CallEntity?
+    fun findFirstByName(name: String): CallEntity?
 
     fun existsByStatus(status: CallStatus): Boolean
 

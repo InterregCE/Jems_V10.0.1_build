@@ -9,8 +9,8 @@ import {Log} from '../../../../../common/utils/log';
 import {
   CallService,
   InputProjectData,
-  OutputCallProgrammePriority,
   OutputProgrammePrioritySimple,
+  ProgrammePriorityDTO,
   ProjectService
 } from '@cat/api';
 
@@ -25,7 +25,8 @@ export class ProjectApplicationFormIdentificationPageComponent {
 
   private callObjectives$ = this.projectStore.getProject()
     .pipe(
-      mergeMap(project => this.callService.getCallObjectives(project.callSettings.callId)),
+      mergeMap(project => this.callService.getCallById(project.callSettings.callId)),
+      map(call => call.objectives),
       tap(objectives => Log.info('Fetched objectives', this, objectives)),
       map(objectives => ({
         priorities: objectives
@@ -57,11 +58,11 @@ export class ProjectApplicationFormIdentificationPageComponent {
     this.projectApplicationFormStore.init(this.projectId);
   }
 
-  private getObjectivesWithPolicies(objectives: OutputCallProgrammePriority[]): { [key: string]: InputProjectData.SpecificObjectiveEnum[] } {
+  private getObjectivesWithPolicies(objectives: ProgrammePriorityDTO[]): { [key: string]: InputProjectData.SpecificObjectiveEnum[] } {
     const objectivesWithPolicies: any = {};
     objectives.forEach(objective =>
       objectivesWithPolicies[objective.code] =
-        objective.programmePriorityPolicies.map(priority => priority.programmeObjectivePolicy));
+        objective.specificObjectives.map(priority => priority.programmeObjectivePolicy));
     return objectivesWithPolicies;
   }
 

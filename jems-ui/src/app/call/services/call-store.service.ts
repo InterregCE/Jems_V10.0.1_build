@@ -1,10 +1,8 @@
 import {Injectable} from '@angular/core';
 import {
-  CallService,
+  CallDetailDTO, CallDTO,
+  CallService, CallUpdateRequestDTO,
   FlatRateSetupDTO,
-  InputCallCreate,
-  InputCallUpdate,
-  OutputCall,
   ProgrammeCostOptionService,
   ProgrammeLumpSumListDTO,
   ProgrammeUnitCostListDTO
@@ -19,7 +17,7 @@ import {Permission} from '../../security/permissions/permission';
 export class CallStore {
   public static CALL_DETAIL_PATH = '/app/call/detail';
   private callId: number;
-  call$ = new ReplaySubject<OutputCall | any>(1);
+  call$ = new ReplaySubject<CallDetailDTO | any>(1);
   unitCosts$ = new ReplaySubject<ProgrammeUnitCostListDTO[] | any>(1);
   lumpSums$ = new ReplaySubject<ProgrammeLumpSumListDTO[] | any>(1);
   isApplicant$: Observable<boolean>;
@@ -64,7 +62,7 @@ export class CallStore {
       ).subscribe();
   }
 
-  saveCall(call: InputCallUpdate): Observable<OutputCall> {
+  saveCall(call: CallUpdateRequestDTO): Observable<CallDetailDTO> {
     return this.callService.updateCall(call)
       .pipe(
         tap(saved => this.call$.next(saved)),
@@ -72,7 +70,7 @@ export class CallStore {
       );
   }
 
-  createCall(call: InputCallCreate): Observable<OutputCall> {
+  createCall(call: CallUpdateRequestDTO): Observable<CallDetailDTO> {
     return this.callService.createCall(call)
       .pipe(
         tap(created => this.call$.next(created)),
@@ -80,7 +78,7 @@ export class CallStore {
       );
   }
 
-  publishCall(callId: number): Observable<OutputCall> {
+  publishCall(callId: number): Observable<CallDTO> {
     return this.callService.publishCall(callId)
       .pipe(
         tap(saved => this.call$.next(saved)),
@@ -88,21 +86,21 @@ export class CallStore {
       );
   }
 
-  saveFlatRates(flatRates: FlatRateSetupDTO): Observable<OutputCall> {
+  saveFlatRates(flatRates: FlatRateSetupDTO): Observable<CallDetailDTO> {
     return this.callService.updateCallFlatRateSetup(this.callId, flatRates)
       .pipe(
         tap(saved => Log.info('Updated call flat rates:', this, saved))
       );
   }
 
-  saveLumpSums(lumpSumIds: number[]): Observable<OutputCall> {
+  saveLumpSums(lumpSumIds: number[]): Observable<CallDetailDTO> {
     return this.callService.updateCallLumpSums(this.callId, lumpSumIds)
       .pipe(
         tap(saved => Log.info('Updated call lump sums:', this, saved))
       );
   }
 
-  saveUnitCosts(unitCostIds: number[]): Observable<OutputCall> {
+  saveUnitCosts(unitCostIds: number[]): Observable<CallDetailDTO> {
     return this.callService.updateCallUnitCosts(this.callId, unitCostIds)
       .pipe(
         tap(saved => Log.info('Updated call unit costs:', this, saved))

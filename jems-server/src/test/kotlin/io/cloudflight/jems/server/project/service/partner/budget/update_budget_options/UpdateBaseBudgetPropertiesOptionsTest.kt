@@ -8,8 +8,7 @@ import io.cloudflight.jems.api.call.dto.flatrate.FlatRateType.STAFF_COSTS
 import io.cloudflight.jems.api.call.dto.flatrate.FlatRateType.TRAVEL_AND_ACCOMMODATION_ON_STAFF_COSTS
 import io.cloudflight.jems.api.common.dto.I18nMessage
 import io.cloudflight.jems.server.UnitTest
-import io.cloudflight.jems.server.call.service.flatrate.CallFlatRateSetupPersistence
-import io.cloudflight.jems.server.call.service.flatrate.model.ProjectCallFlatRate
+import io.cloudflight.jems.server.call.service.model.ProjectCallFlatRate
 import io.cloudflight.jems.server.project.service.partner.budget.ProjectPartnerBudgetOptionsPersistence
 import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerBudgetOptions
 import io.mockk.confirmVerified
@@ -29,9 +28,6 @@ internal class UpdateBaseBudgetPropertiesOptionsTest : UnitTest() {
     @MockK
     lateinit var optionsPersistence: ProjectPartnerBudgetOptionsPersistence
 
-    @MockK
-    lateinit var callFlatRateSetupPersistence: CallFlatRateSetupPersistence
-
     @InjectMockKs
     lateinit var updateBudgetOptions: UpdateBudgetOptions
 
@@ -42,7 +38,7 @@ internal class UpdateBaseBudgetPropertiesOptionsTest : UnitTest() {
             officeAndAdministrationOnStaffCostsFlatRate = 15,
             staffCostsFlatRate = 8,
         )
-        every { callFlatRateSetupPersistence.getProjectCallFlatRateByPartnerId(partnerId) } returns
+        every { optionsPersistence.getProjectCallFlatRateByPartnerId(partnerId) } returns
             setOf(
                 notAdjustableRate(type = OFFICE_AND_ADMINISTRATION_ON_STAFF_COSTS, rate = 15),
                 notAdjustableRate(type = STAFF_COSTS, rate = 8)
@@ -55,7 +51,7 @@ internal class UpdateBaseBudgetPropertiesOptionsTest : UnitTest() {
 
         verify(atLeast = 1) { optionsPersistence.updateBudgetOptions(partnerId, flatRates) }
         verify(atLeast = 1) { optionsPersistence.deleteStaffCosts(partnerId) }
-        verify(atLeast = 1) { callFlatRateSetupPersistence.getProjectCallFlatRateByPartnerId(partnerId) }
+        verify(atLeast = 1) { optionsPersistence.getProjectCallFlatRateByPartnerId(partnerId) }
     }
 
     @Test
@@ -67,18 +63,18 @@ internal class UpdateBaseBudgetPropertiesOptionsTest : UnitTest() {
             travelAndAccommodationOnStaffCostsFlatRate = null,
             staffCostsFlatRate = null,
         )
-        every { callFlatRateSetupPersistence.getProjectCallFlatRateByPartnerId(partnerId) } returns setOf()
+        every { optionsPersistence.getProjectCallFlatRateByPartnerId(partnerId) } returns setOf()
         every { optionsPersistence.deleteBudgetOptions(partnerId) } returns Unit
 
         updateBudgetOptions.updateBudgetOptions(partnerId, flatRates)
 
         verify(atLeast = 1) { optionsPersistence.deleteBudgetOptions(partnerId) }
-        verify(atLeast = 1) { callFlatRateSetupPersistence.getProjectCallFlatRateByPartnerId(partnerId) }
+        verify(atLeast = 1) { optionsPersistence.getProjectCallFlatRateByPartnerId(partnerId) }
     }
 
     @Test
     fun `should throw Exception when otherCostsOnStaffCostsFlatRate is not adjustable and it's value does not match the configured value in the call flat rate setup`() {
-        every { callFlatRateSetupPersistence.getProjectCallFlatRateByPartnerId(partnerId) } returns
+        every { optionsPersistence.getProjectCallFlatRateByPartnerId(partnerId) } returns
             setOf(notAdjustableRate(type = OTHER_COSTS_ON_STAFF_COSTS, rate = 15))
 
         val ex = assertThrows<InvalidFlatRateException> {
@@ -88,8 +84,8 @@ internal class UpdateBaseBudgetPropertiesOptionsTest : UnitTest() {
             )
         }
 
-        verify(atLeast = 1) { callFlatRateSetupPersistence.getProjectCallFlatRateByPartnerId(partnerId) }
-        confirmVerified(callFlatRateSetupPersistence)
+        verify(atLeast = 1) { optionsPersistence.getProjectCallFlatRateByPartnerId(partnerId) }
+        confirmVerified(optionsPersistence)
 
         assertThat(ex.formErrors).hasSize(1)
         assertThat(ex.formErrors[OTHER_COSTS_ON_STAFF_COSTS.key])
@@ -98,7 +94,7 @@ internal class UpdateBaseBudgetPropertiesOptionsTest : UnitTest() {
 
     @Test
     fun `should throw Exception when otherCostsOnStaffCostsFlatRate is provided but it's not checked in the call flat rate setup`() {
-        every { callFlatRateSetupPersistence.getProjectCallFlatRateByPartnerId(partnerId) } returns
+        every { optionsPersistence.getProjectCallFlatRateByPartnerId(partnerId) } returns
             setOf(adjustableRate(type = TRAVEL_AND_ACCOMMODATION_ON_STAFF_COSTS, rate = 15))
 
         val ex = assertThrows<InvalidFlatRateException> {
@@ -116,7 +112,7 @@ internal class UpdateBaseBudgetPropertiesOptionsTest : UnitTest() {
 
     @Test
     fun `should throw Exception when otherCostsOnStaffCostsFlatRate's exceeds the configured value in the call flat rate setup`() {
-        every { callFlatRateSetupPersistence.getProjectCallFlatRateByPartnerId(partnerId) } returns
+        every { optionsPersistence.getProjectCallFlatRateByPartnerId(partnerId) } returns
             setOf(adjustableRate(type = OTHER_COSTS_ON_STAFF_COSTS, rate = 10))
 
         val ex = assertThrows<InvalidFlatRateException> {
@@ -126,8 +122,8 @@ internal class UpdateBaseBudgetPropertiesOptionsTest : UnitTest() {
             )
         }
 
-        verify(atLeast = 1) { callFlatRateSetupPersistence.getProjectCallFlatRateByPartnerId(partnerId) }
-        confirmVerified(callFlatRateSetupPersistence)
+        verify(atLeast = 1) { optionsPersistence.getProjectCallFlatRateByPartnerId(partnerId) }
+        confirmVerified(optionsPersistence)
 
         assertThat(ex.formErrors).hasSize(1)
         assertThat(ex.formErrors[OTHER_COSTS_ON_STAFF_COSTS.key])
@@ -139,7 +135,7 @@ internal class UpdateBaseBudgetPropertiesOptionsTest : UnitTest() {
 
     @Test
     fun `should throw Exception when otherCostsOnStaffCostsFlatRate option is combined with officeAndAdministrationOnStaffCostsFlatRate option`() {
-        every { callFlatRateSetupPersistence.getProjectCallFlatRateByPartnerId(partnerId) } returns setOf(
+        every { optionsPersistence.getProjectCallFlatRateByPartnerId(partnerId) } returns setOf(
             adjustableRate(OTHER_COSTS_ON_STAFF_COSTS, 10),
             adjustableRate(OFFICE_AND_ADMINISTRATION_ON_STAFF_COSTS, 20),
         )
@@ -155,8 +151,8 @@ internal class UpdateBaseBudgetPropertiesOptionsTest : UnitTest() {
             )
         }
 
-        verify(atLeast = 1) { callFlatRateSetupPersistence.getProjectCallFlatRateByPartnerId(partnerId) }
-        confirmVerified(callFlatRateSetupPersistence)
+        verify(atLeast = 1) { optionsPersistence.getProjectCallFlatRateByPartnerId(partnerId) }
+        confirmVerified(optionsPersistence)
 
         assertThat(ex.formErrors).hasSize(1)
         assertThat(ex.formErrors[OTHER_COSTS_ON_STAFF_COSTS.key])
@@ -165,7 +161,7 @@ internal class UpdateBaseBudgetPropertiesOptionsTest : UnitTest() {
 
     @Test
     fun `should throw Exception when otherCostsOnStaffCostsFlatRate option is combined with officeAndAdministrationOnDirectCostsFlatRate option`() {
-        every { callFlatRateSetupPersistence.getProjectCallFlatRateByPartnerId(partnerId) } returns setOf(
+        every { optionsPersistence.getProjectCallFlatRateByPartnerId(partnerId) } returns setOf(
             adjustableRate(OTHER_COSTS_ON_STAFF_COSTS, 10),
             adjustableRate(OFFICE_AND_ADMINISTRATION_ON_OTHER_COSTS, 20),
         )
@@ -181,8 +177,8 @@ internal class UpdateBaseBudgetPropertiesOptionsTest : UnitTest() {
             )
         }
 
-        verify(atLeast = 1) { callFlatRateSetupPersistence.getProjectCallFlatRateByPartnerId(partnerId) }
-        confirmVerified(callFlatRateSetupPersistence)
+        verify(atLeast = 1) { optionsPersistence.getProjectCallFlatRateByPartnerId(partnerId) }
+        confirmVerified(optionsPersistence)
 
         assertThat(ex.formErrors).hasSize(1)
         assertThat(ex.formErrors[OTHER_COSTS_ON_STAFF_COSTS.key])
@@ -191,7 +187,7 @@ internal class UpdateBaseBudgetPropertiesOptionsTest : UnitTest() {
 
     @Test
     fun `should throw Exception when otherCostsOnStaffCostsFlatRate option is combined with travelAndAccommodationOnStaffCostsFlatRate option`() {
-        every { callFlatRateSetupPersistence.getProjectCallFlatRateByPartnerId(partnerId) } returns setOf(
+        every { optionsPersistence.getProjectCallFlatRateByPartnerId(partnerId) } returns setOf(
             adjustableRate(OTHER_COSTS_ON_STAFF_COSTS, 10),
             adjustableRate(TRAVEL_AND_ACCOMMODATION_ON_STAFF_COSTS, 20),
         )
@@ -207,8 +203,8 @@ internal class UpdateBaseBudgetPropertiesOptionsTest : UnitTest() {
             )
         }
 
-        verify(atLeast = 1) { callFlatRateSetupPersistence.getProjectCallFlatRateByPartnerId(partnerId) }
-        confirmVerified(callFlatRateSetupPersistence)
+        verify(atLeast = 1) { optionsPersistence.getProjectCallFlatRateByPartnerId(partnerId) }
+        confirmVerified(optionsPersistence)
 
         assertThat(ex.formErrors).hasSize(1)
         assertThat(ex.formErrors[OTHER_COSTS_ON_STAFF_COSTS.key])
@@ -217,7 +213,7 @@ internal class UpdateBaseBudgetPropertiesOptionsTest : UnitTest() {
 
     @Test
     fun `should throw Exception when otherCostsOnStaffCostsFlatRate option is combined with staffCostsFlatRate option`() {
-        every { callFlatRateSetupPersistence.getProjectCallFlatRateByPartnerId(partnerId) } returns setOf(
+        every { optionsPersistence.getProjectCallFlatRateByPartnerId(partnerId) } returns setOf(
             adjustableRate(OTHER_COSTS_ON_STAFF_COSTS, 10),
             adjustableRate(STAFF_COSTS, 20),
         )
@@ -233,8 +229,8 @@ internal class UpdateBaseBudgetPropertiesOptionsTest : UnitTest() {
             )
         }
 
-        verify(atLeast = 1) { callFlatRateSetupPersistence.getProjectCallFlatRateByPartnerId(partnerId) }
-        confirmVerified(callFlatRateSetupPersistence)
+        verify(atLeast = 1) { optionsPersistence.getProjectCallFlatRateByPartnerId(partnerId) }
+        confirmVerified(optionsPersistence)
 
         assertThat(ex.formErrors).hasSize(1)
         assertThat(ex.formErrors[OTHER_COSTS_ON_STAFF_COSTS.key])
@@ -243,7 +239,7 @@ internal class UpdateBaseBudgetPropertiesOptionsTest : UnitTest() {
 
     @Test
     fun `should throw Exception when officeAndAdministrationOnStaffCostsFlatRate option is combined with officeAndAdministrationOnDirectCostsFlatRate option`() {
-        every { callFlatRateSetupPersistence.getProjectCallFlatRateByPartnerId(partnerId) } returns setOf(
+        every { optionsPersistence.getProjectCallFlatRateByPartnerId(partnerId) } returns setOf(
             adjustableRate(OFFICE_AND_ADMINISTRATION_ON_STAFF_COSTS, 10),
             adjustableRate(OFFICE_AND_ADMINISTRATION_ON_OTHER_COSTS, 20),
         )
@@ -259,8 +255,8 @@ internal class UpdateBaseBudgetPropertiesOptionsTest : UnitTest() {
             )
         }
 
-        verify(atLeast = 1) { callFlatRateSetupPersistence.getProjectCallFlatRateByPartnerId(partnerId) }
-        confirmVerified(callFlatRateSetupPersistence)
+        verify(atLeast = 1) { optionsPersistence.getProjectCallFlatRateByPartnerId(partnerId) }
+        confirmVerified(optionsPersistence)
 
         assertThat(ex.formErrors).hasSize(2)
         assertThat(ex.formErrors[OFFICE_AND_ADMINISTRATION_ON_STAFF_COSTS.key])
@@ -271,7 +267,7 @@ internal class UpdateBaseBudgetPropertiesOptionsTest : UnitTest() {
 
     @Test
     fun `should throw Exception when officeAndAdministrationOnDirectCostsFlatRate option is not adjustable and it's value does not match the configured value in the call flat rate setup`() {
-        every { callFlatRateSetupPersistence.getProjectCallFlatRateByPartnerId(partnerId) } returns
+        every { optionsPersistence.getProjectCallFlatRateByPartnerId(partnerId) } returns
             setOf(notAdjustableRate(type = OFFICE_AND_ADMINISTRATION_ON_OTHER_COSTS, rate = 15))
 
         val ex = assertThrows<InvalidFlatRateException> {
@@ -287,7 +283,7 @@ internal class UpdateBaseBudgetPropertiesOptionsTest : UnitTest() {
 
     @Test
     fun `should throw Exception when officeAndAdministrationOnDirectCostsFlatRate's exceeds the configured value in the call flat rate setup`() {
-        every { callFlatRateSetupPersistence.getProjectCallFlatRateByPartnerId(partnerId) } returns
+        every { optionsPersistence.getProjectCallFlatRateByPartnerId(partnerId) } returns
             setOf(adjustableRate(type = OFFICE_AND_ADMINISTRATION_ON_OTHER_COSTS, rate = 10))
 
         val ex = assertThrows<InvalidFlatRateException> {
@@ -305,7 +301,7 @@ internal class UpdateBaseBudgetPropertiesOptionsTest : UnitTest() {
 
     @Test
     fun `should throw Exception when officeAndAdministrationOnDirectCostsFlatRate is provided but it's not checked in the call flat rate setup`() {
-        every { callFlatRateSetupPersistence.getProjectCallFlatRateByPartnerId(partnerId) } returns
+        every { optionsPersistence.getProjectCallFlatRateByPartnerId(partnerId) } returns
             setOf(adjustableRate(type = TRAVEL_AND_ACCOMMODATION_ON_STAFF_COSTS, rate = 15))
 
         val ex = assertThrows<InvalidFlatRateException> {
@@ -323,7 +319,7 @@ internal class UpdateBaseBudgetPropertiesOptionsTest : UnitTest() {
 
     @Test
     fun `invalid rate value - OfficeOnStuff not adjustable`() {
-        every { callFlatRateSetupPersistence.getProjectCallFlatRateByPartnerId(partnerId) } returns
+        every { optionsPersistence.getProjectCallFlatRateByPartnerId(partnerId) } returns
             // this one is not adjustable
             setOf(notAdjustableRate(type = OFFICE_AND_ADMINISTRATION_ON_STAFF_COSTS, rate = 15))
 
@@ -340,7 +336,7 @@ internal class UpdateBaseBudgetPropertiesOptionsTest : UnitTest() {
 
     @Test
     fun `invalid rate value - OfficeOnStuff is exceeding limit`() {
-        every { callFlatRateSetupPersistence.getProjectCallFlatRateByPartnerId(partnerId) } returns
+        every { optionsPersistence.getProjectCallFlatRateByPartnerId(partnerId) } returns
             // max is set to 10
             setOf(adjustableRate(type = OFFICE_AND_ADMINISTRATION_ON_STAFF_COSTS, rate = 10))
 
@@ -363,7 +359,7 @@ internal class UpdateBaseBudgetPropertiesOptionsTest : UnitTest() {
 
     @Test
     fun `invalid rate type - staffCostFlatRate and travelFlatRate not available`() {
-        every { callFlatRateSetupPersistence.getProjectCallFlatRateByPartnerId(partnerId) } returns
+        every { optionsPersistence.getProjectCallFlatRateByPartnerId(partnerId) } returns
             // this one will not be used (but would be possible)
             setOf(notAdjustableRate(type = OFFICE_AND_ADMINISTRATION_ON_STAFF_COSTS, rate = 15))
 
@@ -389,7 +385,7 @@ internal class UpdateBaseBudgetPropertiesOptionsTest : UnitTest() {
         every { optionsPersistence.deleteTravelAndAccommodationCosts(any()) } answers {}
         val slotOptions = slot<ProjectPartnerBudgetOptions>()
         every { optionsPersistence.updateBudgetOptions(partnerId, capture(slotOptions)) } answers {}
-        every { callFlatRateSetupPersistence.getProjectCallFlatRateByPartnerId(partnerId) } returns setOf(
+        every { optionsPersistence.getProjectCallFlatRateByPartnerId(partnerId) } returns setOf(
             adjustableRate(type = STAFF_COSTS, rate = 10),
             adjustableRate(type = TRAVEL_AND_ACCOMMODATION_ON_STAFF_COSTS, rate = 10),
         )
@@ -404,8 +400,8 @@ internal class UpdateBaseBudgetPropertiesOptionsTest : UnitTest() {
         verify(atLeast = 1) { optionsPersistence.deleteTravelAndAccommodationCosts(partnerId) }
         verify(atLeast = 1) { optionsPersistence.deleteStaffCosts(partnerId) }
         verify(atLeast = 1) { optionsPersistence.updateBudgetOptions(partnerId, any()) }
-        verify(atLeast = 1) { callFlatRateSetupPersistence.getProjectCallFlatRateByPartnerId(partnerId) }
-        confirmVerified(optionsPersistence, callFlatRateSetupPersistence)
+        verify(atLeast = 1) { optionsPersistence.getProjectCallFlatRateByPartnerId(partnerId) }
+        confirmVerified(optionsPersistence, optionsPersistence)
 
         assertThat(slotOptions.captured).isEqualTo(options)
     }
@@ -419,7 +415,7 @@ internal class UpdateBaseBudgetPropertiesOptionsTest : UnitTest() {
         every { optionsPersistence.deleteUnitCosts(any()) } answers {}
         val slotOptions = slot<ProjectPartnerBudgetOptions>()
         every { optionsPersistence.updateBudgetOptions(partnerId, capture(slotOptions)) } answers {}
-        every { callFlatRateSetupPersistence.getProjectCallFlatRateByPartnerId(partnerId) } returns setOf(
+        every { optionsPersistence.getProjectCallFlatRateByPartnerId(partnerId) } returns setOf(
             adjustableRate(type = OTHER_COSTS_ON_STAFF_COSTS, rate = 10)
         )
 
@@ -435,8 +431,8 @@ internal class UpdateBaseBudgetPropertiesOptionsTest : UnitTest() {
         verify(atLeast = 1) { optionsPersistence.deleteInfrastructureCosts(partnerId) }
         verify(atLeast = 1) { optionsPersistence.deleteUnitCosts(partnerId) }
         verify(atLeast = 1) { optionsPersistence.updateBudgetOptions(partnerId, capture(slotOptions)) }
-        verify(atLeast = 1) { callFlatRateSetupPersistence.getProjectCallFlatRateByPartnerId(partnerId) }
-        confirmVerified(optionsPersistence, callFlatRateSetupPersistence)
+        verify(atLeast = 1) { optionsPersistence.getProjectCallFlatRateByPartnerId(partnerId) }
+        confirmVerified(optionsPersistence, optionsPersistence)
 
 
         assertThat(slotOptions.captured).isEqualTo(options)

@@ -44,7 +44,7 @@ class ProjectAuthorization(
     }
 
     fun canCreateProjectForCall(callId: Long): Boolean {
-        return callAuthorization.canReadCallDetail(callId)
+        return callAuthorization.canReadCall(callId)
             && (isAdmin() || isApplicantUser())
     }
 

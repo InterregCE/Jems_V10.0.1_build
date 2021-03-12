@@ -67,8 +67,8 @@ class ProgrammeFundPersistenceTest : UnitTest() {
     @Test
     fun updateFunds() {
         val toBeRemoved = listOf(
-            ProgrammeFundEntity(id = 14),
-            ProgrammeFundEntity(id = 15),
+            ProgrammeFundEntity(id = 14, selected = false),
+            ProgrammeFundEntity(id = 15, selected = false),
         )
 
         every { repository.findAllById(setOf(14, 15)) } returns toBeRemoved

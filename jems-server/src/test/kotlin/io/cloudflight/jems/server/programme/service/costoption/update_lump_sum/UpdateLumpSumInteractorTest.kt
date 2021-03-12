@@ -133,8 +133,6 @@ internal class UpdateLumpSumInteractorTest : UnitTest() {
 
         assertThrows<I18nValidationException>("when updating id cannot be invalid") {
             updateLumpSumInteractor.updateLumpSum(lumpSum.copy(id = 0)) }
-        assertThrows<I18nValidationException>("when updating id cannot be invalid") {
-            updateLumpSumInteractor.updateLumpSum(lumpSum.copy(id = null)) }
     }
 
     @Test

@@ -20,7 +20,7 @@ class CallFactory(
 
     @Transactional
     fun savePublishedCallWithoutPolicy(user: User): CallEntity {
-        val call = callRepository.findOneByName(callName)
+        val call = callRepository.findFirstByName(callName)
         if (call != null)
             return call
         return callRepository.save(
@@ -28,10 +28,10 @@ class CallFactory(
                 0,
                 creator = user,
                 name = callName,
-                prioritySpecificObjectives = emptySet(),
-                strategies = emptySet(),
+                prioritySpecificObjectives = mutableSetOf(),
+                strategies = mutableSetOf(),
                 isAdditionalFundAllowed = false,
-                funds = emptySet(),
+                funds = mutableSetOf(),
                 startDate = callStart,
                 endDate = callEnd,
                 status = CallStatus.PUBLISHED,

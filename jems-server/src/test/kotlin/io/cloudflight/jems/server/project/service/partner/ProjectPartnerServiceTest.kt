@@ -370,7 +370,7 @@ internal class ProjectPartnerServiceTest {
         every { projectPartnerRepository.findById(projectPartnerWithOrganization.id) } returns Optional.of(projectPartnerWithOrganization)
         every { projectPartnerRepository.deleteById(projectPartnerWithOrganization.id) } returns Unit
         every { projectPartnerRepository.findTop30ByProjectId(project.id, any<Sort>()) } returns emptySet()
-        every { projectPartnerRepository.saveAll(emptyList()) } returns emptySet()
+        every { projectPartnerRepository.saveAll(emptyList()) } returns emptyList()
 
         assertDoesNotThrow { projectPartnerService.deletePartner(projectPartnerWithOrganization.id) }
         verify { projectAssociatedOrganizationService.refreshSortNumbers(project.id) }
@@ -381,7 +381,7 @@ internal class ProjectPartnerServiceTest {
         every { projectPartnerRepository.findById(projectPartner.id) } returns Optional.of(projectPartner)
         every { projectPartnerRepository.deleteById(projectPartner.id) } returns Unit
         every { projectPartnerRepository.findTop30ByProjectId(project.id, any<Sort>()) } returns emptySet()
-        every { projectPartnerRepository.saveAll(emptyList()) } returns emptySet()
+        every { projectPartnerRepository.saveAll(emptyList()) } returns emptyList()
 
         assertDoesNotThrow { projectPartnerService.deletePartner(projectPartner.id) }
         verify { projectAssociatedOrganizationService.refreshSortNumbers(project.id) }
