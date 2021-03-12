@@ -95,7 +95,7 @@ export class BudgetPagePerPartnerComponent {
         privateContribution: this.getPartnerContributionTotal(budget.projectPartnerCoFinancingAndContributionOutputDTO.partnerContributions, ProjectPartnerContributionDTO.StatusEnum.Private),
         totalContribution: this.getPartnerContributionTotal(budget.projectPartnerCoFinancingAndContributionOutputDTO.partnerContributions),
         totalEligibleBudget: NumberService.truncateNumber(budget.total),
-        percentOfTotalBudget: NumberService.truncateNumber(NumberService.product([100, (NumberService.truncateNumber(budget.total) / this.totalEligibleBudget)]), 0)
+        percentOfTotalBudget: this.getPercentOfTotalBudget(budget.total)
       });
     });
   }
@@ -135,9 +135,14 @@ export class BudgetPagePerPartnerComponent {
   private getColumnsToDisplay(funds: ProgrammeFundDTO[]): void {
     this.displayedColumns.push('partner', 'country');
     funds.forEach(fund => {
-      this.displayedColumns.push('budget' + (fund.abbreviation || fund.id), 'percentage' + (fund.abbreviation || fund.id));
+      this.displayedColumns.push('budget' + fund.id, 'percentage' + fund.id);
     });
     this.displayedColumns.push('publicContribution', 'autoPublicContribution', 'privateContribution', 'totalContribution', 'totalEligibleBudget', 'percentOfTotalBudget');
+  }
+
+  private getPercentOfTotalBudget(budgetTotal: number): number {
+    const perEligibleBudget = NumberService.divide(NumberService.truncateNumber(budgetTotal), this.totalEligibleBudget);
+    return NumberService.truncateNumber(NumberService.product([100, perEligibleBudget]), 0);
   }
 
 }
