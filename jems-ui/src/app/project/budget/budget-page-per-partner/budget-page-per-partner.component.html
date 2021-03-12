@@ -28,7 +28,7 @@
         </ng-container>
 
         <ng-container *ngFor="let fund of chosenProjectFunds$ | async">
-            <ng-container matColumnDef="{{'budget' + (fund.abbreviation || fund.id)}}">
+            <ng-container matColumnDef="{{'budget' + fund.id}}">
                 <mat-header-cell *matHeaderCellDef
                                  class="justify-end m-1">{{ fund.abbreviation | translateSystem | async }}</mat-header-cell>
                 <mat-cell *matCellDef="let budget"
@@ -36,7 +36,7 @@
                 <mat-footer-cell *matFooterCellDef
                                  class="justify-end m-1">{{ getTotalBudgetAmountForFund(fund) | asMoney }}</mat-footer-cell>
             </ng-container>
-            <ng-container matColumnDef="{{'percentage' + (fund.abbreviation || fund.id)}}">
+            <ng-container matColumnDef="{{'percentage' + fund.id}}">
                 <mat-header-cell *matHeaderCellDef
                                  class="justify-end m-1">{{ (fund.abbreviation | translateSystem | async) + ' ' + ('project.partner.percentage'| translate) }}</mat-header-cell>
                 <mat-cell *matCellDef="let budget" class="justify-end m-1">
