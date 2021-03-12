@@ -14,23 +14,23 @@
 </div>
 <div id="project-info">
     <div class="project-row">
-        <span class="header p-1">{{'project.detail.table.id.application' | translate}}</span>
+        <span class="header p-1 pr-3">{{'project.detail.table.id.application' | translate}}</span>
         <span class="p-1">{{project.id}} - {{project.acronym}}</span>
     </div>
     <div class="project-row">
-        <span class="header p-1">{{'project.detail.overview.applicant.name' | translate}}</span>
+        <span class="header p-1 pr-3">{{'project.detail.overview.applicant.name' | translate}}</span>
         <span class="p-1">{{getApplicantName()}}</span>
     </div>
     <div class="project-row">
-        <span class="header p-1">{{'project.detail.overview.project.name' | translate}}</span>
+        <span class="header p-1 pr-3">{{'project.detail.overview.project.name' | translate}}</span>
         <span class="p-1">{{getCodeAndTitle(undefined, project?.projectData?.title)}}</span>
     </div>
     <div class="project-row">
-        <span class="header p-1">{{'project.detail.table.programme.priority' | translate}}</span>
+        <span class="header p-1 pr-3">{{'project.detail.table.programme.priority' | translate}}</span>
         <span class="p-1">{{getCodeAndTitle(project.projectData?.programmePriority?.code, project.projectData?.programmePriority?.title)}}</span>
     </div>
     <div class="project-row">
-        <span class="header p-1">{{'project.detail.table.specific.objective' | translate}}</span>
+        <span class="header p-1 pr-3">{{'project.detail.table.specific.objective' | translate}}</span>
         <span class="p-1">
               <ng-container *ngIf="project.projectData?.specificObjective">
                   {{project.projectData?.specificObjective?.code}}
@@ -39,20 +39,20 @@
         </span>
     </div>
     <div class="project-row">
-        <span class="header p-1 pt-3">{{'project.detail.table.call.name' | translate}}</span>
+        <span class="header p-1 pt-3 pr-3">{{'project.detail.table.call.name' | translate}}</span>
         <span class="p-1 pt-3">
             {{project?.callSettings?.callName}}
             <span class="expiration">{{'project.detail.overview.call.expiration' | translate : getCallInfo()}}</span>
         </span>
     </div>
     <div *ngIf="project?.lastResubmission" class="project-row">
-        <span class="header p-1">{{'project.detail.table.submission.latest' | translate}}</span>
+        <span class="header p-1 pr-3">{{'project.detail.table.submission.latest' | translate}}</span>
         <span class="p-1">
             {{'project.detail.overview.applicant' | translate : getSubmission(project?.lastResubmission)}}
         </span>
     </div>
     <div *ngIf="project?.firstSubmission" class="project-row">
-        <span class="header p-1">{{'project.detail.table.submission.first' | translate}}</span>
+        <span class="header p-1 pr-3">{{'project.detail.table.submission.first' | translate}}</span>
         <span class="p-1">
             {{'project.detail.overview.applicant' | translate : getSubmission(project?.firstSubmission)}}
         </span>

@@ -17,7 +17,7 @@ export class ProjectApplicationInformationComponent {
   project: OutputProject;
 
   getApplicantName(): string {
-    const user = this?.project?.firstSubmission?.user || this?.project?.lastResubmission?.user;
+    const user = this?.project?.applicant;
     return user ? user.name + ' ' + user.surname : '';
   }
 
