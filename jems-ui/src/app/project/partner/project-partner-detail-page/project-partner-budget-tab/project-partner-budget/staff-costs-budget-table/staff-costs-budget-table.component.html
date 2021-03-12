@@ -17,7 +17,7 @@
                         <mat-cell *matCellDef="let control;  let i = index" [formGroupName]="i">
                             <mat-form-field appFormFieldWidth="full">
                                 <mat-select
-                                        (selectionChange)="onUnitCostChange($event, control)"
+                                        (selectionChange)="onUnitCostChange($event, control, i)"
                                         #unitCostSelect
                                         [matTooltip]="unitCostSelect.triggerValue"
                                         [formControlName]="constants.FORM_CONTROL_NAMES.unitCost">
@@ -36,7 +36,7 @@
                             </mat-form-field>
                         </mat-cell>
                         <mat-footer-cell *matFooterCellDef>
-                                <ng-container *ngTemplateOutlet="addItemButton; context:numberOfItems"></ng-container>
+                            <ng-container *ngTemplateOutlet="addItemButton; context:numberOfItems"></ng-container>
                         </mat-footer-cell>
                     </ng-container>
 
@@ -62,9 +62,11 @@
                         <mat-header-cell
                                 *matHeaderCellDef> {{'project.partner.budget.table.staff.type.of.staff' | translate}} </mat-header-cell>
                         <mat-cell *matCellDef="let control;  let i = index" [formGroupName]="i">
-                            <mat-form-field appFormFieldWidth="full">
-                                <mat-select [disabled]="getUnitCost(control).value"
-                                            [formControlName]="constants.FORM_CONTROL_NAMES.type">
+                            <div class="text-overflow-ellipsis"
+                                 *ngIf="getUnitCost(control).value">{{'project.partner.budget.table.staff.type.of.staff.unit.cost' | translate}}</div>
+                            <mat-form-field appFormFieldWidth="full" *ngIf="!getUnitCost(control).value">
+                                <mat-select
+                                        [formControlName]="constants.FORM_CONTROL_NAMES.type">
                                     <mat-option [value]="null"></mat-option>
                                     <mat-option
                                             [value]="staffCostType.REAL_COST">{{'project.partner.budget.table.staff.type.of.staff.fixed.percentage' | translate}}</mat-option>
@@ -124,7 +126,7 @@
                         <mat-footer-cell *matFooterCellDef></mat-footer-cell>
                     </ng-container>
 
-                    <ng-container matColumnDef="pricePerUnit" >
+                    <ng-container matColumnDef="pricePerUnit">
                         <mat-header-cell
                                 *matHeaderCellDef> {{'project.partner.budget.table.price.per.unit' | translate}} </mat-header-cell>
                         <mat-cell *matCellDef="let control;  let i = index" [formGroupName]="i">
@@ -155,7 +157,7 @@
 
                     <ng-container *ngFor="let period of projectPeriods; let j = index"
                                   matColumnDef="{{'period' + period.number}}">
-                        <mat-header-cell *matHeaderCellDef>
+                        <mat-header-cell class="justify-end" *matHeaderCellDef>
                             {{'project.partner.budget.table.period' | translate }} {{period.number}}
                         </mat-header-cell>
                         <mat-cell *matCellDef="let control; let k = index" [formArrayName]="k">
@@ -185,7 +187,7 @@
 
                     <ng-container stickyEnd matColumnDef="action">
                         <mat-header-cell *matHeaderCellDef></mat-header-cell>
-                        <mat-cell class="justify-center"  *matCellDef="let control;let index=index">
+                        <mat-cell class="justify-center" *matCellDef="let control;let index=index">
                             <button *ngIf="editable" class="delete-button"
                                     type="button"
                                     tabindex="-1" mat-icon-button color="accent"

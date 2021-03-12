@@ -16,7 +16,7 @@
                         <mat-cell *matCellDef="let control;  let i = index" [formGroupName]="i">
                             <mat-form-field appFormFieldWidth="full">
                                 <mat-select
-                                        (selectionChange)="onUnitCostChange($event, control)"
+                                        (selectionChange)="onUnitCostChange($event, control, i)"
                                         #unitCostSelect
                                         [matTooltip]="unitCostSelect.triggerValue"
                                         [formControlName]="constants.FORM_CONTROL_NAMES.unitCost">
@@ -50,7 +50,11 @@
                                     [formControlName]="constants.FORM_CONTROL_NAMES.description">
                             </app-multi-language-form-field>
                         </mat-cell>
-                        <mat-footer-cell *matFooterCellDef></mat-footer-cell>
+                        <mat-footer-cell *matFooterCellDef>
+                            <ng-container *ngIf="availableUnitCosts.length<=0">
+                                <ng-container *ngTemplateOutlet="addItemButton; context:numberOfItems"></ng-container>
+                            </ng-container>
+                        </mat-footer-cell>
                     </ng-container>
                     <ng-container matColumnDef="awardProcedures">
                         <mat-header-cell
@@ -77,11 +81,7 @@
                                 </mat-select>
                             </mat-form-field>
                         </mat-cell>
-                        <mat-footer-cell *matFooterCellDef>
-                            <ng-container *ngIf="availableUnitCosts.length<=0">
-                                <ng-container *ngTemplateOutlet="addItemButton; context:numberOfItems"></ng-container>
-                            </ng-container>
-                        </mat-footer-cell>
+                        <mat-footer-cell *matFooterCellDef></mat-footer-cell>
                     </ng-container>
 
                     <ng-container matColumnDef="unitType">
@@ -144,7 +144,7 @@
 
                     <ng-container *ngFor="let period of projectPeriods; let j = index"
                                   matColumnDef="{{'period' + period.number}}">
-                        <mat-header-cell *matHeaderCellDef>
+                        <mat-header-cell class="justify-end" *matHeaderCellDef>
                             {{'project.partner.budget.table.period' | translate }} {{period.number}}
                         </mat-header-cell>
                         <mat-cell *matCellDef="let control; let k = index" [formArrayName]="k">

@@ -105,7 +105,7 @@ export class GeneralBudgetTableComponent implements OnInit, OnChanges {
     }
   }
 
-  onUnitCostChange(change: MatSelectChange, control: FormGroup): void {
+  onUnitCostChange(change: MatSelectChange, control: FormGroup, rowIndex: number): void {
     const selectedUnitCost = change.value as ProgrammeUnitCost;
     control.patchValue(
       {
@@ -118,7 +118,9 @@ export class GeneralBudgetTableComponent implements OnInit, OnChanges {
         openForPeriods: 0,
       }
     );
-    (control.get(this.constants.FORM_CONTROL_NAMES.budgetPeriods) as FormArray).clear();
+    this.periods(rowIndex).controls.forEach(periodControl => {
+      periodControl.get(this.constants.FORM_CONTROL_NAMES.amount)?.setValue(0);
+    });
   }
 
   removeItem(index: number): void {
