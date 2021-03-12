@@ -3,6 +3,7 @@ import {InputTranslation, OutputProject, OutputProjectStatus} from '@cat/api';
 import {MultiLanguageInputService} from '../../../../../common/services/multi-language-input.service';
 import moment from 'moment/moment';
 import {Tables} from '../../../../../common/utils/tables';
+import {CallStore} from '../../../../../call/services/call-store.service';
 
 @Component({
   selector: 'app-project-application-information',
@@ -12,6 +13,7 @@ import {Tables} from '../../../../../common/utils/tables';
 })
 export class ProjectApplicationInformationComponent {
   STATUS = OutputProjectStatus.StatusEnum;
+  CALL_PATH = CallStore.CALL_DETAIL_PATH;
 
   @Input()
   project: OutputProject;

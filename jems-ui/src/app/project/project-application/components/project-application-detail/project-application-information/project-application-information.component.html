@@ -23,7 +23,7 @@
     </div>
     <div class="project-row">
         <span class="header p-1 pr-3">{{'project.detail.overview.project.name' | translate}}</span>
-        <span class="p-1">{{getCodeAndTitle(undefined, project?.projectData?.title)}}</span>
+        <span class="p-1">{{project?.projectData?.title | translateSystem | async}}</span>
     </div>
     <div class="project-row">
         <span class="header p-1 pr-3">{{'project.detail.table.programme.priority' | translate}}</span>
@@ -41,8 +41,12 @@
     <div class="project-row">
         <span class="header p-1 pt-3 pr-3">{{'project.detail.table.call.name' | translate}}</span>
         <span class="p-1 pt-3">
-            {{project?.callSettings?.callName}}
-            <span class="expiration">{{'project.detail.overview.call.expiration' | translate : getCallInfo()}}</span>
+            <a [routerLink]="[CALL_PATH, project?.callSettings?.callId]">
+                {{project?.callSettings?.callName}}
+            </a>
+            <span [class.expiration]="project.projectStatus.status === STATUS.DRAFT">
+                {{'project.detail.overview.call.expiration' | translate : getCallInfo()}}
+            </span>
         </span>
     </div>
     <div *ngIf="project?.lastResubmission" class="project-row">
