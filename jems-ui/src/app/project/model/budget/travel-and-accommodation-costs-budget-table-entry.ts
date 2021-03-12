@@ -6,6 +6,7 @@ export class TravelAndAccommodationCostsBudgetTableEntry {
   id?: number;
   description?: InputTranslation[] = [];
   unitType?: InputTranslation[] = [];
+  unitCostId?: number;
   numberOfUnits?: number;
   pricePerUnit?: number;
   rowSum?: number;
@@ -16,6 +17,7 @@ export class TravelAndAccommodationCostsBudgetTableEntry {
     this.id = data.id;
     this.description = data.description;
     this.unitType = data.unitType;
+    this.unitCostId = data.unitCostId;
     this.numberOfUnits = data.numberOfUnits;
     this.pricePerUnit = data.pricePerUnit;
     this.new = data.new;

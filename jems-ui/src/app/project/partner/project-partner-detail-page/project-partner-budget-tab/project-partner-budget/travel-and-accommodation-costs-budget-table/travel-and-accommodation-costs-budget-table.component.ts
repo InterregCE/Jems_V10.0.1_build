@@ -20,6 +20,8 @@ import {TravelAndAccommodationCostsBudgetTable} from '../../../../../model/budge
 import {BudgetPeriodDTO, OutputProjectPeriod} from '@cat/api';
 import {TableConfig} from '../../../../../../common/directives/table-config/TableConfig';
 import {Alert} from '@common/components/forms/alert';
+import {ProgrammeUnitCost} from '../../../../../model/programmeUnitCost';
+import {MatSelectChange} from '@angular/material/select/select';
 
 @UntilDestroy()
 @Component({
@@ -37,6 +39,8 @@ export class TravelAndAccommodationCostsBudgetTableComponent implements OnInit, 
   travelAndAccommodationTable: TravelAndAccommodationCostsBudgetTable;
   @Input()
   projectPeriods: OutputProjectPeriod[];
+  @Input()
+  availableUnitCosts: ProgrammeUnitCost[];
 
   budgetForm: FormGroup;
   dataSource: MatTableDataSource<AbstractControl>;
@@ -75,17 +79,36 @@ export class TravelAndAccommodationCostsBudgetTableComponent implements OnInit, 
     ];
 
     const periodWidths = this.projectPeriods?.length
-      ? [...this.projectPeriods?.map(period => ({minInRem: 8})), {minInRem: 8}] : [];
+      ? [...this.projectPeriods?.map(() => ({minInRem: 8})), {minInRem: 8}] : [];
     this.tableConfig = [
-      {minInRem: 12}, {minInRem: 12}, {minInRem: 5}, {minInRem: 12},
-      {minInRem: 5}, ...periodWidths, {minInRem: 3}
+      {minInRem: 12}, {minInRem: 12}, {minInRem: 5}, {minInRem: 8},
+      {minInRem: 5}, ...periodWidths, {minInRem: 3, maxInRem: 3}
     ];
+
+    if (this.availableUnitCosts.length > 0) {
+      this.columnsToDisplay.unshift('unitCost');
+      this.tableConfig.unshift( {minInRem: 10});
+    }
   }
 
   ngOnChanges(changes: SimpleChanges): void {
     if (changes.travelAndAccommodationTable || changes.editable) {
       this.resetTravelFormGroup(this.travelAndAccommodationTable);
     }
+  }
+
+  onUnitCostChange(change: MatSelectChange, control: FormGroup): void {
+    const selectedUnitCost = change.value as ProgrammeUnitCost;
+    control.patchValue(
+      {
+        description: [],
+        unitType: [],
+        numberOfUnits: 1,
+        pricePerUnit: selectedUnitCost?.costPerUnit || 0,
+        openForPeriods: 0,
+      }
+    );
+    (control.get(this.constants.FORM_CONTROL_NAMES.budgetPeriods) as FormArray).clear();
   }
 
   ngOnDestroy(): void {
@@ -102,6 +125,7 @@ export class TravelAndAccommodationCostsBudgetTableComponent implements OnInit, 
       id: null,
       description: [this.multiLanguageInputService.multiLanguageFormFieldDefaultValue()],
       unitType: [this.multiLanguageInputService.multiLanguageFormFieldDefaultValue()],
+      unitCost: [null],
       numberOfUnits: [1, [Validators.max(this.constants.MAX_VALUE), Validators.min(this.constants.MIN_VALUE)]],
       pricePerUnit: [0, [Validators.max(this.constants.MAX_VALUE), Validators.min(this.constants.MIN_VALUE)]],
       rowSum: [0, [Validators.max(this.constants.MAX_VALUE), Validators.min(this.constants.MIN_VALUE)]],
@@ -121,6 +145,7 @@ export class TravelAndAccommodationCostsBudgetTableComponent implements OnInit, 
         id: [item.id],
         description: [item.description],
         unitType: [item.unitType],
+        unitCost: [this.availableUnitCosts.find(it => it.id === item.unitCostId) || null],
         numberOfUnits: [item.numberOfUnits, [Validators.max(this.constants.MAX_VALUE), Validators.min(this.constants.MIN_VALUE)]],
         pricePerUnit: [item.pricePerUnit, [Validators.max(this.constants.MAX_VALUE), Validators.min(this.constants.MIN_VALUE)]],
         rowSum: [item.rowSum, [Validators.max(this.constants.MAX_VALUE), Validators.min(this.constants.MIN_VALUE)]],
@@ -144,6 +169,10 @@ export class TravelAndAccommodationCostsBudgetTableComponent implements OnInit, 
     const numberOfUnits = control.get(this.constants.FORM_CONTROL_NAMES.numberOfUnits)?.value || 0;
     const pricePerUnit = control.get(this.constants.FORM_CONTROL_NAMES.pricePerUnit)?.value || 0;
     control.get(this.constants.FORM_CONTROL_NAMES.rowSum)?.setValue(NumberService.truncateNumber(NumberService.product([numberOfUnits, pricePerUnit])), {emitEvent: false});
+  }
+
+  getUnitCost(formGroup: FormGroup): FormControl {
+    return formGroup.get(this.constants.FORM_CONTROL_NAMES.unitCost) as FormControl;
   }
 
   get travel(): FormGroup {

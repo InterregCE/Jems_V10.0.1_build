@@ -21,6 +21,8 @@ import {InvestmentSummary} from '../../../../../work-package/work-package-detail
 import {BudgetPeriodDTO, OutputProjectPeriod} from '@cat/api';
 import {Alert} from '@common/components/forms/alert';
 import {TableConfig} from '../../../../../../common/directives/table-config/TableConfig';
+import {ProgrammeUnitCost} from '../../../../../model/programmeUnitCost';
+import {MatSelectChange} from '@angular/material/select/select';
 
 @UntilDestroy()
 @Component({
@@ -43,6 +45,8 @@ export class GeneralBudgetTableComponent implements OnInit, OnChanges {
   investmentSummaries: InvestmentSummary[];
   @Input()
   projectPeriods: OutputProjectPeriod[];
+  @Input()
+  availableUnitCosts: ProgrammeUnitCost[];
 
   budgetForm: FormGroup;
   dataSource: MatTableDataSource<AbstractControl>;
@@ -83,17 +87,38 @@ export class GeneralBudgetTableComponent implements OnInit, OnChanges {
     ];
 
     const periodWidths = this.projectPeriods?.length
-      ? [...this.projectPeriods?.map(period => ({minInRem: 8})), {minInRem: 8}] : [];
+      ? [...this.projectPeriods?.map(() => ({minInRem: 8})), {minInRem: 8}] : [];
     this.tableConfig = [
       {minInRem: 12}, {minInRem: 12}, {minInRem: 5}, {minInRem: 12}, {minInRem: 5},
-      {minInRem: 8}, {minInRem: 8}, ...periodWidths, {minInRem: 3}
+      {minInRem: 8}, {minInRem: 8}, ...periodWidths, {minInRem: 3, maxInRem: 3}
     ];
+
+    if (this.availableUnitCosts.length > 0) {
+      this.columnsToDisplay.unshift('unitCost');
+      this.tableConfig.unshift({minInRem: 10});
+    }
   }
 
   ngOnChanges(changes: SimpleChanges): void {
     if (changes.budgetTable || changes.editable) {
       this.resetTableFormGroup(this.budgetTable);
     }
+  }
+
+  onUnitCostChange(change: MatSelectChange, control: FormGroup): void {
+    const selectedUnitCost = change.value as ProgrammeUnitCost;
+    control.patchValue(
+      {
+        description: [],
+        unitType: [],
+        awardProcedures: [],
+        investmentId: null,
+        numberOfUnits: 1,
+        pricePerUnit: selectedUnitCost?.costPerUnit || 0,
+        openForPeriods: 0,
+      }
+    );
+    (control.get(this.constants.FORM_CONTROL_NAMES.budgetPeriods) as FormArray).clear();
   }
 
   removeItem(index: number): void {
@@ -106,6 +131,7 @@ export class GeneralBudgetTableComponent implements OnInit, OnChanges {
       id: null,
       description: [this.multiLanguageInputService.multiLanguageFormFieldDefaultValue()],
       unitType: [this.multiLanguageInputService.multiLanguageFormFieldDefaultValue()],
+      unitCost: [null],
       awardProcedures: [this.multiLanguageInputService.multiLanguageFormFieldDefaultValue()],
       investmentId: [null],
       numberOfUnits: [1, [Validators.max(this.constants.MAX_VALUE), Validators.min(this.constants.MIN_VALUE)]],
@@ -126,6 +152,7 @@ export class GeneralBudgetTableComponent implements OnInit, OnChanges {
         id: [item.id],
         description: [item.description],
         unitType: [item.unitType],
+        unitCost: [this.availableUnitCosts.find(it => it.id === item.unitCostId) || null],
         awardProcedures: [item.awardProcedures],
         investmentId: [item.investmentId],
         numberOfUnits: [item.numberOfUnits, [Validators.max(this.constants.MAX_VALUE), Validators.min(this.constants.MIN_VALUE)]],
@@ -155,6 +182,10 @@ export class GeneralBudgetTableComponent implements OnInit, OnChanges {
 
   get table(): FormGroup {
     return this.budgetForm.get(this.tableName) as FormGroup;
+  }
+
+  getUnitCost(formGroup: FormGroup): FormControl {
+    return formGroup.get(this.constants.FORM_CONTROL_NAMES.unitCost) as FormControl;
   }
 
   get items(): FormArray {

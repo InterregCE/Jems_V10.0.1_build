@@ -15,7 +15,6 @@ import {
   OutputProjectPartnerDetail,
   OutputProjectPeriod,
   ProgrammeFundDTO,
-  ProgrammeUnitCostDTO,
   ProjectPartnerBudgetOptionsDto,
   ProjectPartnerBudgetService,
   ProjectPartnerCoFinancingAndContributionInputDTO,
@@ -34,6 +33,7 @@ import {ProjectWorkPackagePageStore} from '../../work-package/work-package-detai
 import {UnitCostsBudgetTable} from '../../model/budget/unit-costs-budget-table';
 import {UnitCostsBudgetTableEntry} from '../../model/budget/unit-costs-budget-table-entry';
 import {InvestmentSummary} from '../../work-package/work-package-detail-page/workPackageInvestment';
+import {ProgrammeUnitCost} from '../../model/programmeUnitCost';
 
 @Injectable()
 export class ProjectPartnerDetailPageStore {
@@ -44,7 +44,7 @@ export class ProjectPartnerDetailPageStore {
   totalBudget$: Observable<number>;
   isProjectEditable$: Observable<boolean>;
   investmentSummaries$: Observable<InvestmentSummary[]>;
-  unitCosts$: Observable<ProgrammeUnitCostDTO[]>;
+  unitCosts$: Observable<ProgrammeUnitCost[]>;
   financingAndContribution$: Observable<ProjectPartnerCoFinancingAndContributionOutputDTO>;
   callFunds$: Observable<ProgrammeFundDTO[]>;
   periods$: Observable<OutputProjectPeriod[]>;
@@ -94,6 +94,7 @@ export class ProjectPartnerDetailPageStore {
   }
 
   updateBudgets(budgets: PartnerBudgetTables): Observable<any> {
+    console.log(budgets);
     return of(budgets).pipe(withLatestFrom(this.partnerStore.partner$, this.budgetOptions$)).pipe(
       switchMap(([newBudgets, partner, options]: any) =>
         forkJoin(this.getBudgetsToSave(partner, newBudgets, options))),
@@ -211,6 +212,7 @@ export class ProjectPartnerDetailPageStore {
       description: entry.description as any,
       type: entry.type,
       unitType: entry.unitType,
+      unitCostId: entry.unitCostId,
       comment: entry.comment,
       numberOfUnits: entry.numberOfUnits as any,
       pricePerUnit: entry.pricePerUnit as any,
@@ -224,6 +226,7 @@ export class ProjectPartnerDetailPageStore {
       id: entry.id as any,
       description: entry.description as any,
       unitType: entry.unitType as any,
+      unitCostId: entry.unitCostId,
       numberOfUnits: entry.numberOfUnits as any,
       pricePerUnit: entry.pricePerUnit as any,
       rowSum: entry.rowSum,
@@ -246,6 +249,7 @@ export class ProjectPartnerDetailPageStore {
       id: entry.id as any,
       description: entry.description as any,
       unitType: entry.unitType as any,
+      unitCostId: entry.unitCostId,
       awardProcedures: entry.awardProcedures as any,
       investmentId: entry.investmentId as any,
       numberOfUnits: entry.numberOfUnits as any,

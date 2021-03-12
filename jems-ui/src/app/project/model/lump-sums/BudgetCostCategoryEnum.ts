@@ -10,7 +10,7 @@ export enum BudgetCostCategoryEnum {
 export class BudgetCostCategoryEnumUtils {
 
   public static toBudgetCostCategoryEnums(categories: string[]): BudgetCostCategoryEnum [] {
-    return categories.map(it => BudgetCostCategoryEnumUtils.toBudgetCostCategoryEnum(it)).filter(it => it === null) as BudgetCostCategoryEnum [];
+    return categories.map(it => BudgetCostCategoryEnumUtils.toBudgetCostCategoryEnum(it)).filter(it => it !== null) as BudgetCostCategoryEnum [];
   }
 
   private static toBudgetCostCategoryEnum(category: string): BudgetCostCategoryEnum | null {

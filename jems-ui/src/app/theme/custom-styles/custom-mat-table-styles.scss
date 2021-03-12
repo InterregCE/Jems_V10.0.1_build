@@ -27,7 +27,7 @@
       }
 
       &:hover {
-        background-color: var(--hover-color);
+        background-color: var(--table-hover-color);
       }
     }
 
@@ -35,10 +35,12 @@
       border-bottom: 0;
     }
 
-    .mat-footer-row {
+    mat-footer-row.mat-footer-row {
       font-weight: 500;
       border-bottom: 0;
+      min-height: 3rem;
       border-top: 1px solid var(--table-border-color);
+      background-color: var(--table-backaground-color);
     }
   }
 }

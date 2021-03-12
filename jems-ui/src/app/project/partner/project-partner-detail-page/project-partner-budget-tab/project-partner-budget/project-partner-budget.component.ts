@@ -17,10 +17,13 @@ import {PartnerBudgetTables} from '../../../../model/budget/partner-budget-table
 import {GeneralBudgetTable} from '../../../../model/budget/general-budget-table';
 import {TravelAndAccommodationCostsBudgetTable} from '../../../../model/budget/travel-and-accommodation-costs-budget-table';
 import {TravelAndAccommodationCostsBudgetTableEntry} from '../../../../model/budget/travel-and-accommodation-costs-budget-table-entry';
-import {OutputProjectPeriod, ProgrammeUnitCostDTO} from '@cat/api';
+import {OutputProjectPeriod} from '@cat/api';
 import {UnitCostsBudgetTable} from '../../../../model/budget/unit-costs-budget-table';
 import {UnitCostsBudgetTableEntry} from '../../../../model/budget/unit-costs-budget-table-entry';
 import {ProjectPartnerBudgetTabService} from '../project-partner-budget-tab.service';
+import {BudgetCostCategoryEnum} from '../../../../model/lump-sums/BudgetCostCategoryEnum';
+import {ProgrammeUnitCost} from '../../../../model/programmeUnitCost';
+import {InvestmentSummary} from '../../../../work-package/work-package-detail-page/workPackageInvestment';
 
 @UntilDestroy()
 @Component({
@@ -33,12 +36,13 @@ import {ProjectPartnerBudgetTabService} from '../project-partner-budget-tab.serv
 export class ProjectPartnerBudgetComponent implements OnInit {
 
   constants = ProjectPartnerBudgetConstants;
+  BudgetCostCategoryEnum = BudgetCostCategoryEnum;
   budgetsForm = this.initForm();
 
   data$: Observable<{
     budgetTables: PartnerBudgetTables,
-    investments: number[],
-    unitCosts: ProgrammeUnitCostDTO[],
+    investments: InvestmentSummary[],
+    unitCosts: ProgrammeUnitCost[],
     staffCostsTotal: number,
     officeAndAdministrationFlatRateTotal: number,
     travelAndAccommodationTotal: number,
@@ -169,11 +173,11 @@ export class ProjectPartnerBudgetComponent implements OnInit {
 
   private formToBudgetTables(): PartnerBudgetTables {
     return new PartnerBudgetTables(
-      new StaffCostsBudgetTable(this.getTotalOf(this.staff), this.staff?.value.items.map((item: any) => new StaffCostsBudgetTableEntry({...item}))),
-      new TravelAndAccommodationCostsBudgetTable(this.getTotalOf(this.travel), this.travel?.value.items.map((item: any) => new TravelAndAccommodationCostsBudgetTableEntry({...item}))),
-      new GeneralBudgetTable(this.getTotalOf(this.external), this.external?.value.items.map((item: any) => new GeneralBudgetTableEntry({...item}))),
-      new GeneralBudgetTable(this.getTotalOf(this.equipment), this.equipment?.value.items.map((item: any) => new GeneralBudgetTableEntry({...item}))),
-      new GeneralBudgetTable(this.getTotalOf(this.infrastructure), this.infrastructure?.value.items.map((item: any) => new GeneralBudgetTableEntry({...item}))),
+      new StaffCostsBudgetTable(this.getTotalOf(this.staff), this.staff?.value.items.map((item: any) => new StaffCostsBudgetTableEntry({...item, unitCostId: item.unitCost?.id}))),
+      new TravelAndAccommodationCostsBudgetTable(this.getTotalOf(this.travel), this.travel?.value.items.map((item: any) => new TravelAndAccommodationCostsBudgetTableEntry({...item, unitCostId: item.unitCost?.id}))),
+      new GeneralBudgetTable(this.getTotalOf(this.external), this.external?.value.items.map((item: any) => new GeneralBudgetTableEntry({...item, unitCostId: item.unitCost?.id}))),
+      new GeneralBudgetTable(this.getTotalOf(this.equipment), this.equipment?.value.items.map((item: any) => new GeneralBudgetTableEntry({...item, unitCostId: item.unitCost?.id}))),
+      new GeneralBudgetTable(this.getTotalOf(this.infrastructure), this.infrastructure?.value.items.map((item: any) => new GeneralBudgetTableEntry({...item, unitCostId: item.unitCost?.id}))),
       new UnitCostsBudgetTable(this.getTotalOf(this.unitCosts), this.unitCosts?.value.items.map((item: any) => new UnitCostsBudgetTableEntry({...item}, item.unitCost?.id)))
     );
   }

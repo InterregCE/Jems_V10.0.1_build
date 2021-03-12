@@ -22,6 +22,8 @@ import {StaffCostUnitTypeEnum} from '../../../../../model/budget/staff-cost-unit
 import {BudgetPeriodDTO, OutputProjectPeriod} from '@cat/api';
 import {Alert} from '@common/components/forms/alert';
 import {TableConfig} from '../../../../../../common/directives/table-config/TableConfig';
+import {ProgrammeUnitCost} from '../../../../../model/programmeUnitCost';
+import {MatSelectChange} from '@angular/material/select/select';
 
 @UntilDestroy()
 @Component({
@@ -43,6 +45,8 @@ export class StaffCostsBudgetTableComponent implements OnInit, OnChanges, OnDest
   staffCostTable: StaffCostsBudgetTable;
   @Input()
   projectPeriods: OutputProjectPeriod[];
+  @Input()
+  availableUnitCosts: ProgrammeUnitCost[];
 
   budgetForm: FormGroup;
   dataSource: MatTableDataSource<AbstractControl>;
@@ -53,6 +57,22 @@ export class StaffCostsBudgetTableComponent implements OnInit, OnChanges, OnDest
 
   constructor(private formService: FormService, private controlContainer: ControlContainer, private formBuilder: FormBuilder, private multiLanguageInputService: MultiLanguageInputService) {
     this.budgetForm = this.controlContainer.control as FormGroup;
+  }
+
+  onUnitCostChange(change: MatSelectChange, control: FormGroup): void {
+    const selectedUnitCost = change.value as ProgrammeUnitCost;
+    control.patchValue(
+      {
+        description: [],
+        type: selectedUnitCost ? this.staffCostType.UNIT_COST : null,
+        unitType: null,
+        comment: [],
+        numberOfUnits: 1,
+        pricePerUnit: selectedUnitCost?.costPerUnit || 0,
+        openForPeriods: 0,
+      }
+    );
+    (control.get(this.constants.FORM_CONTROL_NAMES.budgetPeriods) as FormArray).clear();
   }
 
   ngOnInit(): void {
@@ -81,11 +101,16 @@ export class StaffCostsBudgetTableComponent implements OnInit, OnChanges, OnDest
     ];
 
     const periodWidths = this.projectPeriods?.length
-      ? [...this.projectPeriods?.map(period => ({minInRem: 8})), {minInRem: 8}] : [];
+      ? [...this.projectPeriods?.map(() => ({minInRem: 8})), {minInRem: 8}] : [];
     this.tableConfig = [
-      {minInRem: 12}, {minInRem: 10},  {minInRem: 12}, {minInRem: 6},
-      {minInRem: 5}, {minInRem: 8}, {minInRem: 8}, ...periodWidths, {minInRem: 3}
+      {minInRem: 12}, {minInRem: 10}, {minInRem: 12}, {minInRem: 6},
+      {minInRem: 5}, {minInRem: 8}, {minInRem: 8}, ...periodWidths, {minInRem: 3, maxInRem: 3}
     ];
+
+    if (this.availableUnitCosts.length > 0) {
+      this.columnsToDisplay.unshift('unitCost');
+      this.tableConfig.unshift({minInRem: 10});
+    }
   }
 
   ngOnChanges(changes: SimpleChanges): void {
@@ -109,6 +134,7 @@ export class StaffCostsBudgetTableComponent implements OnInit, OnChanges, OnDest
       description: [this.multiLanguageInputService.multiLanguageFormFieldDefaultValue()],
       type: [null],
       unitType: [null],
+      unitCost: [null],
       comment: [this.multiLanguageInputService.multiLanguageFormFieldDefaultValue()],
       numberOfUnits: [1, [Validators.max(this.constants.MAX_VALUE), Validators.min(this.constants.MIN_VALUE)]],
       pricePerUnit: [0, [Validators.max(this.constants.MAX_VALUE), Validators.min(this.constants.MIN_VALUE)]],
@@ -122,7 +148,7 @@ export class StaffCostsBudgetTableComponent implements OnInit, OnChanges, OnDest
   }
 
   private resetStaffFormGroup(staffTable: StaffCostsBudgetTable): void {
-    this.total.setValue(staffTable.total);
+    this.total.setValue(staffTable.total, {emitEvent: false});
     this.items.clear();
     staffTable.entries.forEach(item => {
       this.items.push(this.formBuilder.group({
@@ -130,6 +156,7 @@ export class StaffCostsBudgetTableComponent implements OnInit, OnChanges, OnDest
         description: [item.description],
         type: [item.type],
         unitType: [item.unitType],
+        unitCost: [this.availableUnitCosts.find(it => it.id === item.unitCostId) || null],
         comment: [item.comment],
         numberOfUnits: [item.numberOfUnits, [Validators.max(this.constants.MAX_VALUE), Validators.min(this.constants.MIN_VALUE)]],
         pricePerUnit: [item.pricePerUnit, [Validators.max(this.constants.MAX_VALUE), Validators.min(this.constants.MIN_VALUE)]],
@@ -154,6 +181,10 @@ export class StaffCostsBudgetTableComponent implements OnInit, OnChanges, OnDest
     const numberOfUnits = control.get(this.constants.FORM_CONTROL_NAMES.numberOfUnits)?.value || 0;
     const pricePerUnit = control.get(this.constants.FORM_CONTROL_NAMES.pricePerUnit)?.value || 0;
     control.get(this.constants.FORM_CONTROL_NAMES.rowSum)?.setValue(NumberService.truncateNumber(NumberService.product([numberOfUnits, pricePerUnit])), {emitEvent: false});
+  }
+
+  getUnitCost(formGroup: FormGroup): FormControl {
+    return formGroup.get(this.constants.FORM_CONTROL_NAMES.unitCost) as FormControl;
   }
 
   get staff(): FormGroup {

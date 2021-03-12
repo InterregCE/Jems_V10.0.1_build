@@ -10,6 +10,7 @@ export class StaffCostsBudgetTableEntry {
   new?: boolean;
   type?: string;
   unitType?: string;
+  unitCostId?: number;
   comment?: InputTranslation[] = [];
   budgetPeriods?: BudgetPeriodDTO[];
 
@@ -22,6 +23,7 @@ export class StaffCostsBudgetTableEntry {
     this.rowSum = data.rowSum;
     this.type = data.type;
     this.unitType = data.unitType;
+    this.unitCostId = data.unitCostId;
     this.comment = data.comment;
     this.budgetPeriods = data.budgetPeriods;
   }
