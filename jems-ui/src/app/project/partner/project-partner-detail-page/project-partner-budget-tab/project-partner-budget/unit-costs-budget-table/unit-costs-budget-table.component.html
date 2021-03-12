@@ -98,7 +98,7 @@
 
                 <ng-container *ngFor="let period of projectPeriods; let j = index"
                               matColumnDef="{{'period' + period.number}}">
-                    <mat-header-cell *matHeaderCellDef>
+                    <mat-header-cell class="justify-end" *matHeaderCellDef>
                         {{'project.partner.budget.table.period' | translate }} {{period.number}}
                     </mat-header-cell>
                     <mat-cell *matCellDef="let control; let k = index" [formArrayName]="k">
@@ -107,7 +107,7 @@
                             <ng-container [formGroupName]="j">
                                 <input currencyMask type="decimal" matInput
                                        [formControlName]="constants.FORM_CONTROL_NAMES.amount"
-                  s                     [options]="{min: constants.MIN_VALUE, max: constants.MAX_VALUE, align: 'right'}">
+                                       [options]="{min: constants.MIN_VALUE, max: constants.MAX_VALUE, align: 'right'}">
                             </ng-container>
                         </mat-form-field>
                     </mat-cell>

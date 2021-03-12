@@ -97,6 +97,7 @@ export class TableConfigDirective implements AfterViewInit, AfterContentChecked 
 
   private handleStickyColumn(column: any, columnMinInRem: number, stickyConfig: StickyConfig): StickyConfig {
     column.style.left = `${stickyConfig.stickyLeftPosition}rem`;
+    column.style.zIndex = 3;
     const nextStickyLeftPosition = stickyConfig.stickyLeftPosition + columnMinInRem + stickyConfig.paddingToAdd;
     const nextPaddingToAdd = this.colsRightPaddingInRem + this.colsLeftPaddingInRem;
     return {
