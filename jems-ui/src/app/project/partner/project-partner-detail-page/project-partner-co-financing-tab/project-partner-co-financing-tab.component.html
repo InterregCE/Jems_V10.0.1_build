@@ -78,7 +78,7 @@
                         </mat-error>
                     </mat-form-field>
                     <div>
-                        <button type="button" mat-icon-button color="accent"
+                        <button *ngIf="editable" type="button" mat-icon-button color="accent"
                                 (click)="deleteAdditionalFund()">
                             <mat-icon>delete</mat-icon>
                         </button>
