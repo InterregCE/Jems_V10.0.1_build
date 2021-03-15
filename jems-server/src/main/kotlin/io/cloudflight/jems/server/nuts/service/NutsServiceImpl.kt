@@ -13,6 +13,7 @@ import io.cloudflight.jems.server.nuts.repository.NutsRegion1Repository
 import io.cloudflight.jems.server.nuts.repository.NutsRegion2Repository
 import io.cloudflight.jems.server.nuts.repository.NutsRegion3Repository
 import io.cloudflight.jems.server.audit.service.AuditService
+import io.cloudflight.jems.server.programme.authorization.CanReadNuts
 import io.cloudflight.jems.server.programme.authorization.CanUpdateProgrammeSetup
 import org.apache.tomcat.util.json.JSONParser
 import org.slf4j.LoggerFactory
@@ -28,7 +29,6 @@ import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 
 @Service
-@CanUpdateProgrammeSetup
 class NutsServiceImpl(
     restTemplateBuilder: RestTemplateBuilder,
     private val nutsRepository: NutsCountryRepository,
@@ -45,6 +45,7 @@ class NutsServiceImpl(
 
     val restTemplate: RestTemplate = restTemplateBuilder.build()
 
+    @CanReadNuts
     @Transactional(readOnly = true)
     override fun getNutsMetadata(): OutputNutsMetadata? {
         return nutsMetadataRepository.findById(1L)
@@ -53,6 +54,7 @@ class NutsServiceImpl(
             .orElse(null)
     }
 
+    @CanUpdateProgrammeSetup
     @Transactional
     override fun downloadLatestNutsFromGisco(): OutputNutsMetadata {
         auditService.logEvent(nutsDownloadRequest())
@@ -101,6 +103,7 @@ class NutsServiceImpl(
         nutsRegion3Repository.saveAll(nutsGroupedByCodeLength.getRegion3Nuts())
     }
 
+    @CanReadNuts
     @Transactional(readOnly = true)
     override fun getNuts(): List<OutputNuts> {
         if (getNutsMetadata() == null)
