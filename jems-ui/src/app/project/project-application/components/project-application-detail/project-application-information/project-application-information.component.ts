@@ -20,7 +20,7 @@ export class ProjectApplicationInformationComponent {
 
   getApplicantName(): string {
     const user = this?.project?.applicant;
-    return user ? user.name + ' ' + user.surname : '';
+    return user ? `${user.name} ${user.surname}` : '';
   }
 
   getSubmission(submission?: OutputProjectStatus): { [key: string]: any } {
