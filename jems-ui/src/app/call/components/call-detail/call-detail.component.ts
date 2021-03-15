@@ -55,8 +55,8 @@ export class CallDetailComponent implements OnInit {
     max: CallDetailComponent.CALL_INVALID_PERIOD,
     min: CallDetailComponent.CALL_INVALID_PERIOD,
     matDatetimePickerParse: CallDetailComponent.DATE_SHOULD_BE_VALID,
-    matDatetimePickerMin: 'call.endDate.must.be.after.startDate',
-    matDatetimePickerMax: 'common.error.start.before.end'
+    matDatetimePickerMin: 'common.error.start.before.end',
+    matDatetimePickerMax: 'common.error.end.after.start'
   };
 
   editable = false;

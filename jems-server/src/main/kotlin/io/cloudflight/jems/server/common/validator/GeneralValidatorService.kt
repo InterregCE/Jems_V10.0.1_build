@@ -23,7 +23,7 @@ interface GeneralValidatorService {
 
     fun digits(input: BigDecimal?, maxIntegerLength: Int, maxFractionLength: Int, fieldName: String): Map<String, I18nMessage>
 
-    fun startDateBeforeEndDate(start: ZonedDateTime, end: ZonedDateTime, fieldName: String): Map<String, I18nMessage>
+    fun startDateBeforeEndDate(start: ZonedDateTime, end: ZonedDateTime, startDateFieldName: String, endDateFieldName: String): Map<String, I18nMessage>
 
     fun throwIfAnyIsInvalid(vararg validationResult: Map<String, I18nMessage>)
 }
