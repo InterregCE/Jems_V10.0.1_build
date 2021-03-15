@@ -25,5 +25,7 @@ interface GeneralValidatorService {
 
     fun startDateBeforeEndDate(start: ZonedDateTime, end: ZonedDateTime, startDateFieldName: String, endDateFieldName: String): Map<String, I18nMessage>
 
+    fun matches(input: String?, regex: String, fieldName: String, errorKey: String?): Map<String, I18nMessage>
+
     fun throwIfAnyIsInvalid(vararg validationResult: Map<String, I18nMessage>)
 }

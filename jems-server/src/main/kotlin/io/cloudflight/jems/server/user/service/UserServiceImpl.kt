@@ -1,23 +1,27 @@
-package io.cloudflight.jems.server.user.service;
+package io.cloudflight.jems.server.user.service
 
 import io.cloudflight.jems.api.user.dto.InputPassword
 import io.cloudflight.jems.api.user.dto.InputUserCreate
 import io.cloudflight.jems.api.user.dto.InputUserRegistration
 import io.cloudflight.jems.api.user.dto.InputUserUpdate
 import io.cloudflight.jems.api.user.dto.OutputUserWithRole
-import io.cloudflight.jems.server.user.model.UserWithCredentials
-import io.cloudflight.jems.server.user.entity.User
-import io.cloudflight.jems.server.user.entity.UserRole
 import io.cloudflight.jems.server.audit.service.AuditService
-import io.cloudflight.jems.server.common.exception.I18nFieldError
-import io.cloudflight.jems.server.common.exception.I18nValidationException
-import io.cloudflight.jems.server.common.exception.ResourceNotFoundException
-import io.cloudflight.jems.server.user.repository.UserRepository
-import io.cloudflight.jems.server.user.repository.UserRoleRepository
 import io.cloudflight.jems.server.authentication.model.ADMINISTRATOR
 import io.cloudflight.jems.server.authentication.model.APPLICANT_USER
 import io.cloudflight.jems.server.authentication.service.SecurityService
+import io.cloudflight.jems.server.common.exception.I18nFieldError
+import io.cloudflight.jems.server.common.exception.I18nValidationException
+import io.cloudflight.jems.server.common.exception.ResourceNotFoundException
+import io.cloudflight.jems.server.common.validator.GeneralValidatorService
+import io.cloudflight.jems.server.common.validator.PASSWORD_REGEX
+import io.cloudflight.jems.server.config.AppSecurityProperties
+import io.cloudflight.jems.server.user.entity.User
+import io.cloudflight.jems.server.user.entity.UserRole
+import io.cloudflight.jems.server.user.model.UserWithCredentials
+import io.cloudflight.jems.server.user.repository.UserRepository
+import io.cloudflight.jems.server.user.repository.UserRoleRepository
 import org.slf4j.LoggerFactory
+import org.springframework.beans.factory.annotation.Value
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
 import org.springframework.data.repository.findByIdOrNull
@@ -32,11 +36,15 @@ class UserServiceImpl(
     private val userRoleRepository: UserRoleRepository,
     private val auditService: AuditService,
     private val securityService: SecurityService,
-    private val passwordEncoder: PasswordEncoder
+    private val passwordEncoder: PasswordEncoder,
+    private val generalValidatorService: GeneralValidatorService,
+    private val appSecurityProperties: AppSecurityProperties
 ) : UserService {
 
     companion object {
         private val logger = LoggerFactory.getLogger(UserServiceImpl::class.java)
+        private const val PASSWORD_FIELD_NAME = "password"
+        private const val PASSWORD_ERROR_KEY = "user.password.constraints.not.satisfied"
     }
 
     @Transactional(readOnly = true)
@@ -62,7 +70,16 @@ class UserServiceImpl(
         val role = userRoleRepository.findByIdOrNull(user.userRoleId!!)
             ?: throwNotFound("User with id ${user.userRoleId} was not found.")
 
-        val passwordEncoded = passwordEncoder.encode(user.email)
+        val password = appSecurityProperties.defaultPasswordPrefix.plus(user.email)
+        generalValidatorService.throwIfAnyIsInvalid(
+            generalValidatorService.matches(
+                password,
+                PASSWORD_REGEX,
+                PASSWORD_FIELD_NAME,
+                PASSWORD_ERROR_KEY
+            )
+        )
+        val passwordEncoded = passwordEncoder.encode(password)
         val createdUser = userRepository.save(user.toEntity(role, passwordEncoded)).toOutputUserWithRole()
         auditService.logEvent(userCreated(securityService.currentUser, createdUser))
         return createdUser
@@ -72,7 +89,14 @@ class UserServiceImpl(
     override fun registerApplicant(user: InputUserRegistration): OutputUserWithRole {
         val role = userRoleRepository.findOneByName(APPLICANT_USER)
             ?: throwNotFound("The default applicant role cannot be found in the system.")
-
+        generalValidatorService.throwIfAnyIsInvalid(
+            generalValidatorService.matches(
+                user.password,
+                PASSWORD_REGEX,
+                PASSWORD_FIELD_NAME,
+                PASSWORD_ERROR_KEY
+            )
+        )
         val passwordEncoded = passwordEncoder.encode(user.password)
         val createdUser = userRepository.save(user.toEntity(role, passwordEncoded)).toOutputUserWithRole()
         auditService.logEvent(applicantRegistered(createdUser))
@@ -109,6 +133,14 @@ class UserServiceImpl(
                 i18nFieldErrors = mapOf("password" to I18nFieldError("user.password.not.match"))
             )
 
+        generalValidatorService.throwIfAnyIsInvalid(
+            generalValidatorService.matches(
+                passwordData.password,
+                PASSWORD_REGEX,
+                PASSWORD_FIELD_NAME,
+                PASSWORD_ERROR_KEY
+            )
+        )
         userRepository.save(
             account.copy(password = passwordEncoder.encode(passwordData.password))
         )

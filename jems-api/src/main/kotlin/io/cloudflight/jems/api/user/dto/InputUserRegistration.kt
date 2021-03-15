@@ -19,7 +19,6 @@ data class InputUserRegistration (
     @field:Size(min = 1, max = 50, message = "user.surname.wrong.size")
     val surname: String,
 
-    @field:Size(min = 10, message = "user.password.size.too.short")
     val password: String
 
 )
