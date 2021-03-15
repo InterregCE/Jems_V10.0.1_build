@@ -19,7 +19,7 @@ import io.cloudflight.jems.api.project.dto.status.ProjectApplicationStatus
 import io.cloudflight.jems.api.user.dto.OutputUser
 import io.cloudflight.jems.api.user.dto.OutputUserRole
 import io.cloudflight.jems.api.user.dto.OutputUserWithRole
-import io.cloudflight.jems.server.audit.entity.AuditAction
+import io.cloudflight.jems.api.audit.dto.AuditAction
 import io.cloudflight.jems.server.audit.service.AuditCandidate
 import io.cloudflight.jems.server.audit.service.AuditService
 import io.cloudflight.jems.server.authentication.model.ADMINISTRATOR
@@ -286,7 +286,7 @@ class ProjectServiceTest {
 
         verify { auditService.logEvent(capture(event)) }
         with(event) {
-            assertEquals(projectIdExpected, captured.projectId)
+            assertEquals(projectIdExpected, captured.project?.id)
             assertEquals(AuditAction.APPLICATION_STATUS_CHANGED, captured.action)
         }
     }

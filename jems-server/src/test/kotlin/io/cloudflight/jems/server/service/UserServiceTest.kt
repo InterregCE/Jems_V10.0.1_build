@@ -11,7 +11,8 @@ import io.cloudflight.jems.api.user.dto.OutputUserRole
 import io.cloudflight.jems.api.user.dto.OutputUserWithRole
 import io.cloudflight.jems.server.user.entity.User
 import io.cloudflight.jems.server.user.entity.UserRole
-import io.cloudflight.jems.server.audit.entity.AuditAction
+import io.cloudflight.jems.api.audit.dto.AuditAction
+import io.cloudflight.jems.server.audit.model.AuditCandidateEvent
 import io.cloudflight.jems.server.audit.service.AuditCandidate
 import io.cloudflight.jems.server.audit.service.AuditCandidateWithUser
 import io.cloudflight.jems.server.audit.service.AuditService
@@ -45,6 +46,7 @@ import org.junit.jupiter.api.assertThrows
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.ValueSource
 import org.slf4j.LoggerFactory
+import org.springframework.context.ApplicationEventPublisher
 import org.springframework.data.domain.PageImpl
 import org.springframework.data.domain.Pageable
 import org.springframework.data.repository.findByIdOrNull
@@ -93,6 +95,9 @@ class UserServiceTest {
     @RelaxedMockK
     lateinit var auditService: AuditService
 
+    @RelaxedMockK
+    lateinit var auditPublisher: ApplicationEventPublisher
+
     private val passwordEncoder: PasswordEncoder = DelegatingPasswordEncoder(
         PasswordConfig.PASSWORD_ENCODER,
         mapOf(PasswordConfig.PASSWORD_ENCODER to BCryptPasswordEncoder())
@@ -108,7 +113,7 @@ class UserServiceTest {
         MockKAnnotations.init(this)
         every { securityService.currentUser } returns LocalCurrentUser(user, "hash_pass", emptyList())
         userService =
-            UserServiceImpl(userRepository, userRoleRepository, auditService, securityService, passwordEncoder, generalValidatorService, appSecurityProperties)
+            UserServiceImpl(userRepository, userRoleRepository, auditService, auditPublisher, securityService, passwordEncoder, generalValidatorService, appSecurityProperties)
     }
 
     @Test
@@ -276,12 +281,12 @@ class UserServiceTest {
         assertEquals("Tester", result.surname)
         assertEquals(OutputUserRole(3, "applicant user"), result.userRole)
 
-        val event = slot<AuditCandidateWithUser>()
-        verify { auditService.logEvent(capture(event)) }
-        assertEquals(18, event.captured.user.id)
-        assertEquals("new@user.com", event.captured.user.email)
-        assertEquals(AuditAction.USER_REGISTERED, event.captured.action)
-        assertEquals("new user 'Ondrej Tester' with role 'applicant user' registered", event.captured.description)
+        val event = slot<AuditCandidateEvent>()
+        verify { auditPublisher.publishEvent(capture(event)) }
+        assertEquals(18, event.captured.overrideCurrentUser!!.id)
+        assertEquals("new@user.com", event.captured.overrideCurrentUser!!.email)
+        assertEquals(AuditAction.USER_REGISTERED, event.captured.auditCandidate.action)
+        assertEquals("new user 'Ondrej Tester' with role 'applicant user' registered", event.captured.auditCandidate.description)
 
     }
 

@@ -77,11 +77,7 @@ class ProjectStatusServiceImpl(
             )
         project = projectRepo.save(updateProject(project, projectStatus))
 
-        projectStatusChanged(
-            projectId = project.id,
-            oldStatus = oldStatus,
-            newStatus = projectStatus.status
-        ).logWith(auditService)
+        projectStatusChanged(project = project, oldStatus = oldStatus).logWith(auditService)
 
         return project.toOutputProject()
     }
@@ -131,12 +127,7 @@ class ProjectStatusServiceImpl(
         )
         val result = projectRepo.save(project.copy(qualityAssessment = qualityAssessment)).toOutputProject()
 
-        auditService.logEvent(
-            qualityAssessmentConcluded(
-                projectId = result.id!!,
-                result = result.qualityAssessment!!.result
-            )
-        )
+        auditService.logEvent(qualityAssessmentConcluded(project = result))
         return result
     }
 
@@ -159,10 +150,7 @@ class ProjectStatusServiceImpl(
         val result = projectRepo.save(project.copy(eligibilityAssessment = eligibilityAssessment)).toOutputProject()
 
         auditService.logEvent(
-            eligibilityAssessmentConcluded(
-                projectId = result.id!!,
-                result = result.eligibilityAssessment!!.result
-            )
+            eligibilityAssessmentConcluded(project = result)
         )
         return result
     }
@@ -210,11 +198,7 @@ class ProjectStatusServiceImpl(
 
         log.warn("Decision-reversion has been done for project(id=$projectId) status moved from ${statusToBeRevoked.status} to ${statusToBeReestablished.status}")
         auditService.logEvent(
-            projectStatusChanged(
-                projectId = projectId,
-                oldStatus = statusToBeRevoked.status,
-                newStatus = statusToBeReestablished.status
-            )
+            projectStatusChanged(project = project, oldStatus = statusToBeRevoked.status)
         )
         return project.toOutputProject()
     }

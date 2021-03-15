@@ -91,10 +91,7 @@ class ProjectServiceImpl(
         )
         projectStatusRepo.save(projectStatus.copy(project = createdProject))
 
-        projectStatusChanged(
-            projectId = createdProject.id,
-            newStatus = createdProject.projectStatus.status
-        ).logWith(auditService)
+        projectStatusChanged(project = createdProject).logWith(auditService)
 
         return createdProject.toOutputProject()
     }

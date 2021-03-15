@@ -3,7 +3,7 @@ package io.cloudflight.jems.server.call.service.update_call_flat_rates
 import io.cloudflight.jems.api.call.dto.CallStatus
 import io.cloudflight.jems.api.call.dto.flatrate.FlatRateType
 import io.cloudflight.jems.api.common.dto.I18nMessage
-import io.cloudflight.jems.server.audit.entity.AuditAction
+import io.cloudflight.jems.api.audit.dto.AuditAction
 import io.cloudflight.jems.server.audit.model.AuditCandidateEvent
 import io.cloudflight.jems.server.audit.service.AuditCandidate
 import io.cloudflight.jems.server.call.service.CallPersistence
@@ -77,6 +77,7 @@ class UpdateCallFlatRatesTest {
         verify(exactly = 1) { auditPublisher.publishEvent(any()) }
         assertThat(slotAudit.captured.auditCandidate).isEqualTo(AuditCandidate(
             action = AuditAction.CALL_CONFIGURATION_CHANGED,
+            entityRelatedId = ID,
             description = "Configuration of published call id=9 name='' changed:\n" +
                 "flatRates changed from [\n" +
                 "  ProjectCallFlatRate(type=OTHER_COSTS_ON_STAFF_COSTS, rate=10, isAdjustable=false)\n" +
@@ -123,6 +124,7 @@ class UpdateCallFlatRatesTest {
         verify(exactly = 1) { auditPublisher.publishEvent(any()) }
         assertThat(slotAudit.captured.auditCandidate).isEqualTo(AuditCandidate(
             action = AuditAction.CALL_CONFIGURATION_CHANGED,
+            entityRelatedId = ID,
             description = "Configuration of not-published call id=10 name='' changed:\n" +
                 "flatRates changed from [\n" +
                 "  ProjectCallFlatRate(type=OFFICE_AND_ADMINISTRATION_ON_STAFF_COSTS, rate=7, isAdjustable=false)\n" +

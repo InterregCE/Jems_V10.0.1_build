@@ -10,7 +10,7 @@ import io.cloudflight.jems.api.user.dto.OutputUserWithRole
 import io.cloudflight.jems.api.programme.dto.priority.ProgrammeObjectivePolicy.CircularEconomy
 import io.cloudflight.jems.api.programme.dto.strategy.ProgrammeStrategy
 import io.cloudflight.jems.server.project.entity.file.FileMetadata
-import io.cloudflight.jems.server.audit.entity.AuditAction
+import io.cloudflight.jems.api.audit.dto.AuditAction
 import io.cloudflight.jems.server.audit.service.AuditCandidate
 import io.cloudflight.jems.server.audit.service.AuditService
 import io.cloudflight.jems.server.call.entity.CallEntity

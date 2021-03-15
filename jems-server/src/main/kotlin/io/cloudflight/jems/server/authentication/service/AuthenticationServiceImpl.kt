@@ -2,9 +2,9 @@ package io.cloudflight.jems.server.authentication.service
 
 import io.cloudflight.jems.api.authentication.dto.LoginRequest
 import io.cloudflight.jems.api.authentication.dto.OutputCurrentUser
-import io.cloudflight.jems.server.audit.entity.AuditAction
-import io.cloudflight.jems.server.audit.entity.AuditUser
-import io.cloudflight.jems.server.audit.service.AuditCandidateWithUser
+import io.cloudflight.jems.api.audit.dto.AuditAction
+import io.cloudflight.jems.server.audit.model.AuditUser
+import io.cloudflight.jems.server.audit.service.AuditCandidate
 import io.cloudflight.jems.server.audit.service.AuditService
 import io.cloudflight.jems.server.audit.service.toEsUser
 import org.slf4j.LoggerFactory
@@ -20,7 +20,7 @@ import javax.servlet.http.HttpServletRequest
 class AuthenticationServiceImpl(
     private val securityService: SecurityService,
     private val authenticationManager: AuthenticationManager,
-    private val auditService: AuditService
+    private val auditService: AuditService,
 ) : AuthenticationService {
 
     companion object {
@@ -46,32 +46,32 @@ class AuthenticationServiceImpl(
         val session = req.getSession(true)
         session.setAttribute(SPRING_SECURITY_CONTEXT_KEY, SecurityContextHolder.getContext())
 
-        auditService.logEvent(userLoggedInAudit(getCurrentUser().toEsUser()))
+        val esUser = getCurrentUser().toEsUser()
+        auditService.logEvent(userLoggedInAudit(esUser), esUser)
 
         log.info("Logged in successfully for email {}", loginRequest.email)
-        return getCurrentUser();
+        return getCurrentUser()
     }
 
     override fun logout(req: HttpServletRequest) {
         log.info("Logging out for current user with email {}", getCurrentUser().name)
 
-        auditService.logEvent(userLoggedOutAudit(getCurrentUser().toEsUser()))
+        val esUser = getCurrentUser().toEsUser()
+        auditService.logEvent(userLoggedOutAudit(esUser), esUser)
 
-        SecurityContextHolder.clearContext();
-        req.logout();
+        SecurityContextHolder.clearContext()
+        req.logout()
     }
 
-    private fun userLoggedInAudit(user: AuditUser): AuditCandidateWithUser =
-        AuditCandidateWithUser(
+    private fun userLoggedInAudit(user: AuditUser) =
+        AuditCandidate(
             action = AuditAction.USER_LOGGED_IN,
-            user = user,
             description = "user with email ${user.email} logged in"
         )
 
-    private fun userLoggedOutAudit(user: AuditUser): AuditCandidateWithUser =
-        AuditCandidateWithUser(
+    private fun userLoggedOutAudit(user: AuditUser) =
+        AuditCandidate(
             action = AuditAction.USER_LOGGED_OUT,
-            user = user,
             description = "user with email ${user.email} logged out"
         )
 }

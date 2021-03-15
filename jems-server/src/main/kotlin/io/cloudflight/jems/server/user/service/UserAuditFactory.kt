@@ -2,11 +2,11 @@ package io.cloudflight.jems.server.user.service
 
 import io.cloudflight.jems.api.user.dto.OutputUser
 import io.cloudflight.jems.api.user.dto.OutputUserWithRole
-import io.cloudflight.jems.server.audit.entity.AuditAction
-import io.cloudflight.jems.server.audit.entity.AuditUser
+import io.cloudflight.jems.api.audit.dto.AuditAction
+import io.cloudflight.jems.server.audit.model.AuditCandidateEvent
+import io.cloudflight.jems.server.audit.model.AuditUser
 import io.cloudflight.jems.server.audit.service.AuditBuilder
 import io.cloudflight.jems.server.audit.service.AuditCandidate
-import io.cloudflight.jems.server.audit.service.AuditCandidateWithUser
 import io.cloudflight.jems.server.authentication.model.CurrentUser
 import java.util.stream.Collectors
 
@@ -37,11 +37,14 @@ fun userDataChanged(userId: Long, changes: Map<String, Pair<String, String>>): A
 /**
  * In this specific case we are logging user, which is not currently-logged-in user.
  */
-fun applicantRegistered(createdUser: OutputUserWithRole): AuditCandidateWithUser {
-    return AuditCandidateWithUser(
-        action = AuditAction.USER_REGISTERED,
-        user = AuditUser(createdUser.id!!, createdUser.email),
-        description = "new user '${createdUser.name} ${createdUser.surname}' with role '${createdUser.userRole.name}' registered"
+fun applicantRegistered(context: Any, createdUser: OutputUserWithRole): AuditCandidateEvent {
+    return AuditCandidateEvent(
+        context = context,
+        auditCandidate = AuditCandidate(
+            action = AuditAction.USER_REGISTERED,
+            description = "new user '${createdUser.name} ${createdUser.surname}' with role '${createdUser.userRole.name}' registered"
+        ),
+        overrideCurrentUser = AuditUser(createdUser.id!!, createdUser.email),
     )
 }
 

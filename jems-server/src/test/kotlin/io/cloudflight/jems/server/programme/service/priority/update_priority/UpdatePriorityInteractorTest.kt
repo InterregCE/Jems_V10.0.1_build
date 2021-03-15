@@ -9,7 +9,7 @@ import io.cloudflight.jems.api.programme.dto.priority.ProgrammeObjectivePolicy.G
 import io.cloudflight.jems.api.programme.dto.priority.ProgrammeObjectivePolicy.RenewableEnergy
 import io.cloudflight.jems.api.programme.dto.priority.ProgrammeObjectivePolicy.WaterManagement
 import io.cloudflight.jems.api.project.dto.InputTranslation
-import io.cloudflight.jems.server.audit.entity.AuditAction
+import io.cloudflight.jems.api.audit.dto.AuditAction
 import io.cloudflight.jems.server.audit.service.AuditCandidate
 import io.cloudflight.jems.server.audit.service.AuditService
 import io.cloudflight.jems.server.common.exception.I18nFieldError

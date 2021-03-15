@@ -1,0 +1,50 @@
+{
+  "mappings": {
+    "properties": {
+      "id": {
+        "type": "keyword"
+      },
+      "timestamp": {
+        "type": "date",
+        "store": true,
+        "format": "date_time"
+      },
+      "action": {
+        "type": "keyword",
+        "store": true
+      },
+      "user": {
+        "properties": {
+          "email": {
+            "type": "keyword"
+          },
+          "id": {
+            "type": "long"
+          }
+        }
+      },
+      "project": {
+        "properties": {
+          "id": {
+            "type": "keyword"
+          },
+          "name": {
+            "type": "keyword"
+          }
+        }
+      },
+      "entityRelatedId": {
+        "type": "long"
+      },
+      "description": {
+        "type": "text",
+        "index": false,
+        "store": true
+      }
+    }
+  },
+  "settings": {
+    "number_of_shards": 3,
+    "number_of_replicas": 2
+  }
+}

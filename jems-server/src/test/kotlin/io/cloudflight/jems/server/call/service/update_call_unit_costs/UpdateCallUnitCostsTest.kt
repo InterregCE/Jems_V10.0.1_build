@@ -1,7 +1,7 @@
 package io.cloudflight.jems.server.call.service.update_call_unit_costs
 
 import io.cloudflight.jems.api.call.dto.CallStatus
-import io.cloudflight.jems.server.audit.entity.AuditAction
+import io.cloudflight.jems.api.audit.dto.AuditAction
 import io.cloudflight.jems.server.audit.model.AuditCandidateEvent
 import io.cloudflight.jems.server.audit.service.AuditCandidate
 import io.cloudflight.jems.server.call.service.CallPersistence
@@ -67,6 +67,7 @@ class UpdateCallUnitCostsTest {
         Assertions.assertThat(slotAudit.captured.auditCandidate).isEqualTo(
             AuditCandidate(
                 action = AuditAction.CALL_CONFIGURATION_CHANGED,
+                entityRelatedId = ID,
                 description = "Configuration of published call id=$ID name='' changed:\n" +
                     "unitCostIds changed from [] to [4, 5]"
             )

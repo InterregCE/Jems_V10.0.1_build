@@ -11,7 +11,7 @@ import io.cloudflight.jems.api.programme.dto.strategy.ProgrammeStrategy.EUStrate
 import io.cloudflight.jems.api.programme.dto.strategy.ProgrammeStrategy.MediterraneanSeaBasin
 import io.cloudflight.jems.api.project.dto.InputTranslation
 import io.cloudflight.jems.server.UnitTest
-import io.cloudflight.jems.server.audit.entity.AuditAction
+import io.cloudflight.jems.api.audit.dto.AuditAction
 import io.cloudflight.jems.server.audit.model.AuditCandidateEvent
 import io.cloudflight.jems.server.audit.service.AuditCandidate
 import io.cloudflight.jems.server.call.service.CallPersistence
@@ -111,6 +111,7 @@ class UpdateCallTest: UnitTest() {
         assertThat(slotAudit.captured.auditCandidate).isEqualTo(
             AuditCandidate(
                 action = AuditAction.CALL_CONFIGURATION_CHANGED,
+                entityRelatedId = CALL_ID,
                 description = "Configuration of published call id=592 name='call name' changed:\n" +
                     "name changed from 'old name' to 'call name'"
             )

@@ -3,7 +3,7 @@ package io.cloudflight.jems.server.programme.service.legalstatus.update_legal_st
 import io.cloudflight.jems.api.programme.dto.language.SystemLanguage.EN
 import io.cloudflight.jems.api.programme.dto.language.SystemLanguage.SK
 import io.cloudflight.jems.server.UnitTest
-import io.cloudflight.jems.server.audit.entity.AuditAction
+import io.cloudflight.jems.api.audit.dto.AuditAction
 import io.cloudflight.jems.server.audit.service.AuditCandidate
 import io.cloudflight.jems.server.audit.service.AuditCandidateWithUser
 import io.cloudflight.jems.server.audit.service.AuditService
@@ -104,7 +104,6 @@ internal class UpdateLegalStatusInteractorTest : UnitTest() {
         assertThat(ex.message).isEqualTo("max allowed: 20")
 
         verify(exactly = 0) { auditService.logEvent(any<AuditCandidate>()) }
-        verify(exactly = 0) { auditService.logEvent(any<AuditCandidateWithUser>()) }
     }
 
 }

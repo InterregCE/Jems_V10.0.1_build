@@ -21,7 +21,7 @@ import io.cloudflight.jems.server.user.model.UserWithCredentials
 import io.cloudflight.jems.server.user.repository.UserRepository
 import io.cloudflight.jems.server.user.repository.UserRoleRepository
 import org.slf4j.LoggerFactory
-import org.springframework.beans.factory.annotation.Value
+import org.springframework.context.ApplicationEventPublisher
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
 import org.springframework.data.repository.findByIdOrNull
@@ -35,6 +35,7 @@ class UserServiceImpl(
     private val userRepository: UserRepository,
     private val userRoleRepository: UserRoleRepository,
     private val auditService: AuditService,
+    private val auditPublisher: ApplicationEventPublisher,
     private val securityService: SecurityService,
     private val passwordEncoder: PasswordEncoder,
     private val generalValidatorService: GeneralValidatorService,
@@ -99,7 +100,7 @@ class UserServiceImpl(
         )
         val passwordEncoded = passwordEncoder.encode(user.password)
         val createdUser = userRepository.save(user.toEntity(role, passwordEncoded)).toOutputUserWithRole()
-        auditService.logEvent(applicantRegistered(createdUser))
+        auditPublisher.publishEvent(applicantRegistered(this, createdUser))
         return createdUser
     }
 

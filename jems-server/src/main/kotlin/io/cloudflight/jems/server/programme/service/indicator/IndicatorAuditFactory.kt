@@ -1,6 +1,6 @@
 package io.cloudflight.jems.server.programme.service.indicator
 
-import io.cloudflight.jems.server.audit.entity.AuditAction
+import io.cloudflight.jems.api.audit.dto.AuditAction
 import io.cloudflight.jems.server.audit.service.AuditBuilder
 import io.cloudflight.jems.server.audit.service.AuditCandidate
 import java.util.stream.Collectors

@@ -1,10 +1,9 @@
 package io.cloudflight.jems.server.call.service.publish_call
 
 import io.cloudflight.jems.api.call.dto.CallStatus
-import io.cloudflight.jems.server.audit.entity.AuditAction
+import io.cloudflight.jems.api.audit.dto.AuditAction
 import io.cloudflight.jems.server.audit.model.AuditCandidateEvent
 import io.cloudflight.jems.server.audit.service.AuditCandidate
-import io.cloudflight.jems.server.audit.service.AuditService
 import io.cloudflight.jems.server.call.service.CallPersistence
 import io.cloudflight.jems.server.call.service.model.CallSummary
 import io.mockk.every
@@ -54,6 +53,7 @@ class PublishCallTest {
 
         assertThat(slotAudit.captured.auditCandidate).isEqualTo(AuditCandidate(
             action = AuditAction.CALL_PUBLISHED,
+            entityRelatedId = ID,
             description = "Call id=$ID 'name of just-now-published call' published"
         ))
     }

@@ -1,7 +1,7 @@
 package io.cloudflight.jems.server.nuts.service
 
 import io.cloudflight.jems.api.nuts.dto.OutputNutsMetadata
-import io.cloudflight.jems.server.audit.entity.AuditAction
+import io.cloudflight.jems.api.audit.dto.AuditAction
 import io.cloudflight.jems.server.audit.service.AuditBuilder
 import io.cloudflight.jems.server.audit.service.AuditCandidate
 
