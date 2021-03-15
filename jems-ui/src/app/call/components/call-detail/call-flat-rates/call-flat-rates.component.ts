@@ -28,7 +28,7 @@ export class CallFlatRatesComponent implements OnInit {
 
   constructor(private formBuilder: FormBuilder,
               private formService: FormService,
-              private callStore: CallStore) {
+              public callStore: CallStore) {
   }
 
   ngOnInit(): void {
@@ -36,7 +36,6 @@ export class CallFlatRatesComponent implements OnInit {
     this.formService.init(this.callFlatRateForm);
     this.formService.setCreation(!this.call?.id);
     this.published = this.call?.status === CallDetailDTO.StatusEnum.PUBLISHED;
-    this.formService.setEditable(!this.published);
   }
 
   onSubmit(): void {

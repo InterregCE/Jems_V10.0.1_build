@@ -89,6 +89,7 @@ export class CallStore {
   saveFlatRates(flatRates: FlatRateSetupDTO): Observable<CallDetailDTO> {
     return this.callService.updateCallFlatRateSetup(this.callId, flatRates)
       .pipe(
+        tap(saved => this.call$.next(saved)),
         tap(saved => Log.info('Updated call flat rates:', this, saved))
       );
   }
@@ -96,6 +97,7 @@ export class CallStore {
   saveLumpSums(lumpSumIds: number[]): Observable<CallDetailDTO> {
     return this.callService.updateCallLumpSums(this.callId, lumpSumIds)
       .pipe(
+        tap(saved => this.call$.next(saved)),
         tap(saved => Log.info('Updated call lump sums:', this, saved))
       );
   }
@@ -103,6 +105,7 @@ export class CallStore {
   saveUnitCosts(unitCostIds: number[]): Observable<CallDetailDTO> {
     return this.callService.updateCallUnitCosts(this.callId, unitCostIds)
       .pipe(
+        tap(saved => this.call$.next(saved)),
         tap(saved => Log.info('Updated call unit costs:', this, saved))
       );
   }

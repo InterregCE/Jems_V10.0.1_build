@@ -1,7 +1,7 @@
 <ng-container *ngFor="let priority of priorityCheckboxes">
     <mat-checkbox
             *ngIf="priorityVisible(priority)"
-            [disabled]="disabled"
+            [disabled]="disabled && isPriorityAlreadySelected(priority)"
             [checked]="priority.checked"
             [indeterminate]="priority.someChecked()"
             (change)="priority.checkOrUncheckAll(); selectionChanged.emit()">
@@ -12,7 +12,7 @@
             <mat-checkbox
                     *ngIf="!isApplicant || policy.checked"
                     [(ngModel)]="policy.checked"
-                    [disabled]="disabled"
+                    [disabled]="disabled && isPolicyAlreadySelected(priority, policy)"
                     (ngModelChange)="priority.updateChecked(); selectionChanged.emit()">
                 {{policy.name | translate}}
             </mat-checkbox>

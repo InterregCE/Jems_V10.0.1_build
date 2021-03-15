@@ -3,7 +3,7 @@
         <mat-checkbox
                 (click)="$event.stopPropagation()"
                 (change)="element.selected = !element.selected; selectionChanged.emit()"
-                [disabled]="disabled"
+                [disabled]="disabled && isFundAlreadySelected(element)"
                 [checked]="element.selected">
             {{ element.abbreviation | translateSystem | async }}
         </mat-checkbox>

@@ -7,7 +7,9 @@ import {SelectionModel} from '@angular/cdk/collections';
 import {CallStore} from '../../../services/call-store.service';
 import {catchError, take, tap} from 'rxjs/operators';
 import {LanguageService} from '../../../../common/services/language.service';
+import {UntilDestroy, untilDestroyed} from '@ngneat/until-destroy';
 
+@UntilDestroy()
 @Component({
   selector: 'app-call-unit-costs',
   templateUrl: './call-unit-costs.component.html',
@@ -24,6 +26,7 @@ export class CallUnitCostsComponent implements OnInit {
 
   callUnitCostForm: FormGroup;
   published = false;
+  initialSelection = new SelectionModel<ProgrammeUnitCostListDTO>(true, []);
   selection = new SelectionModel<ProgrammeUnitCostListDTO>(true, []);
 
   unitCostDataSource = new MatTableDataSource();
@@ -31,7 +34,7 @@ export class CallUnitCostsComponent implements OnInit {
   constructor(public languageService: LanguageService,
               private formBuilder: FormBuilder,
               private formService: FormService,
-              private callStore: CallStore) {
+              public callStore: CallStore) {
   }
 
   ngOnInit(): void {
@@ -44,13 +47,25 @@ export class CallUnitCostsComponent implements OnInit {
 
   initForm(): void {
     this.unitCostDataSource = new MatTableDataSource<ProgrammeUnitCostListDTO>(this.unitCosts);
+    this.initialSelection.clear();
     this.selection.clear();
     this.unitCostDataSource.data.forEach((unitCost: ProgrammeUnitCostListDTO) => {
       if (this.call.unitCosts.filter(element => element.id === unitCost.id).length > 0) {
         this.selection.select(unitCost);
+        this.initialSelection.select(unitCost);
       }
     });
     this.formService.init(this.callUnitCostForm);
+    this.callStore.call$.pipe(
+        untilDestroyed(this)
+    ).subscribe((call: CallDetailDTO) => {
+      this.initialSelection.clear();
+      this.unitCostDataSource.data.forEach((unitCost: ProgrammeUnitCostListDTO) => {
+        if (call.unitCosts.filter(element => element.id === unitCost.id).length > 0) {
+          this.initialSelection.select(unitCost);
+        }
+      });
+    });
   }
 
   onSubmit(): void {

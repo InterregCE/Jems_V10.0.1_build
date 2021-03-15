@@ -5,7 +5,6 @@ import {
   ProgrammeFundDTO,
   ProgrammeFundService,
   ProgrammePriorityService,
-  ProgrammeSpecificObjectiveDTO,
   ProgrammeStrategyService
 } from '@cat/api';
 import {BaseComponent} from '@common/components/base-component';
@@ -57,8 +56,11 @@ export class CallConfigurationComponent extends BaseComponent {
         call,
         isApplicant,
         strategies: this.getStrategies(allActiveStrategies, call),
+        initialStrategies: this.getStrategies(allActiveStrategies, call),
         priorities: this.getPriorities(allPriorities, call),
-        funds: this.getFunds(allFunds, call)
+        initialPriorities: this.getPriorities(allPriorities, call),
+        funds: this.getFunds(allFunds, call),
+        initialFunds: this.getFunds(allFunds, call)
       })),
     );
 
@@ -95,9 +97,8 @@ export class CallConfigurationComponent extends BaseComponent {
       return allPriorities;
     }
     const savedPolicies = call.objectives
-      .map(priority => priority.specificObjectives)
-      .map(([specificObjective]) => specificObjective.programmeObjectivePolicy)
-      .flat(1) as ProgrammeSpecificObjectiveDTO.ProgrammeObjectivePolicyEnum[];
+        .flatMap(priority => priority.specificObjectives)
+        .map(specificObjectives => specificObjectives.programmeObjectivePolicy);
     Log.debug('Adapting the priority policies', this, allPriorities, savedPolicies);
     return allPriorities.map(priority => CallPriorityCheckbox.fromSavedPolicies(priority, savedPolicies));
   }
