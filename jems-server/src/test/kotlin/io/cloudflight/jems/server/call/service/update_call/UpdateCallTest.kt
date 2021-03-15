@@ -11,7 +11,9 @@ import io.cloudflight.jems.api.programme.dto.strategy.ProgrammeStrategy.EUStrate
 import io.cloudflight.jems.api.programme.dto.strategy.ProgrammeStrategy.MediterraneanSeaBasin
 import io.cloudflight.jems.api.project.dto.InputTranslation
 import io.cloudflight.jems.server.UnitTest
-import io.cloudflight.jems.server.audit.service.AuditService
+import io.cloudflight.jems.server.audit.entity.AuditAction
+import io.cloudflight.jems.server.audit.model.AuditCandidateEvent
+import io.cloudflight.jems.server.audit.service.AuditCandidate
 import io.cloudflight.jems.server.call.service.CallPersistence
 import io.cloudflight.jems.server.call.service.model.Call
 import io.cloudflight.jems.server.call.service.model.CallDetail
@@ -19,18 +21,19 @@ import io.cloudflight.jems.server.call.service.validator.CallValidator
 import io.cloudflight.jems.server.programme.service.fund.model.ProgrammeFund
 import io.cloudflight.jems.server.programme.service.priority.model.ProgrammePriority
 import io.cloudflight.jems.server.programme.service.priority.model.ProgrammeSpecificObjective
-import io.cloudflight.jems.server.project.authorization.AuthorizationUtil
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
 import io.mockk.impl.annotations.MockK
 import io.mockk.impl.annotations.RelaxedMockK
 import io.mockk.slot
+import io.mockk.verify
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.Arguments
 import org.junit.jupiter.params.provider.MethodSource
+import org.springframework.context.ApplicationEventPublisher
 import java.time.ZonedDateTime
 import java.util.stream.Stream
 
@@ -88,7 +91,7 @@ class UpdateCallTest: UnitTest() {
     lateinit var callValidator: CallValidator
 
     @RelaxedMockK
-    lateinit var auditService: AuditService
+    lateinit var auditPublisher: ApplicationEventPublisher
 
     @InjectMockKs
     private lateinit var updateCall: UpdateCall
@@ -102,6 +105,16 @@ class UpdateCallTest: UnitTest() {
 
         updateCall.updateCall(callToUpdate)
         assertThat(slotCallUpdate.captured).isEqualTo(callToUpdate)
+
+        val slotAudit = slot<AuditCandidateEvent>()
+        verify(exactly = 1) { auditPublisher.publishEvent(capture(slotAudit)) }
+        assertThat(slotAudit.captured.auditCandidate).isEqualTo(
+            AuditCandidate(
+                action = AuditAction.CALL_CONFIGURATION_CHANGED,
+                description = "Configuration of published call id=592 name='call name' changed:\n" +
+                    "name changed from 'old name' to 'call name'"
+            )
+        )
     }
 
     @Test
@@ -112,6 +125,7 @@ class UpdateCallTest: UnitTest() {
         assertThrows<CallStatusChangeForbidden> {
             updateCall.updateCall(callToUpdate.copy(status = CallStatus.DRAFT))
         }
+        verify(exactly = 0) { auditPublisher.publishEvent(any<AuditCandidateEvent>()) }
     }
 
     @ParameterizedTest
@@ -121,6 +135,7 @@ class UpdateCallTest: UnitTest() {
         every { persistence.getCallById(CALL_ID) } returns existingCall.copy(name = "old name")
 
         assertThrows<UpdateRestrictedFieldsWhenCallPublished> { updateCall.updateCall(call) }
+        verify(exactly = 0) { auditPublisher.publishEvent(any<AuditCandidateEvent>()) }
     }
 
     private fun provideNotAllowedChangesToPublishedCall(): Stream<Arguments> {

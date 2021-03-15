@@ -1,7 +1,6 @@
 package io.cloudflight.jems.server.call.service.create_call
 
 import io.cloudflight.jems.api.call.dto.CallStatus
-import io.cloudflight.jems.server.audit.service.AuditService
 import io.cloudflight.jems.server.authentication.service.SecurityService
 import io.cloudflight.jems.server.call.authorization.CanUpdateCalls
 import io.cloudflight.jems.server.call.service.CallPersistence
@@ -10,6 +9,7 @@ import io.cloudflight.jems.server.call.service.model.CallDetail
 import io.cloudflight.jems.server.call.service.model.Call
 import io.cloudflight.jems.server.call.service.validator.CallValidator
 import io.cloudflight.jems.server.common.exception.ExceptionWrapper
+import org.springframework.context.ApplicationEventPublisher
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 
@@ -17,8 +17,8 @@ import org.springframework.transaction.annotation.Transactional
 class CreateCall(
     private val persistence: CallPersistence,
     private val securityService: SecurityService,
-    private val auditService: AuditService,
     private val callValidator: CallValidator,
+    private val auditPublisher: ApplicationEventPublisher,
 ) : CreateCallInteractor {
 
     @CanUpdateCalls
@@ -33,7 +33,7 @@ class CreateCall(
             call = call.apply { status = CallStatus.DRAFT },
             userId = securityService.currentUser?.user?.id!!,
         ).also {
-            callCreated(it).logWith(auditService)
+            auditPublisher.publishEvent(callCreated(this, it))
         }
     }
 
