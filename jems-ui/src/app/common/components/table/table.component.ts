@@ -73,7 +73,7 @@ export class TableComponent implements OnInit {
       return column.alternativeValue;
     }
     if (column.columnType === ColumnType.DateColumn) {
-      return moment(elementValue).format(Tables.DEFAULT_DATE_FORMAT);
+      return elementValue ? moment(elementValue).format(Tables.DEFAULT_DATE_FORMAT) : '';
     }
     if (column.columnType === ColumnType.Decimal) {
       return this.moneyPipe.transform(elementValue);
