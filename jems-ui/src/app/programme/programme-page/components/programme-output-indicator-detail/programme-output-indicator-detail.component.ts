@@ -104,6 +104,10 @@ export class ProgrammeOutputIndicatorDetailComponent extends ViewEditForm implem
 
   ngOnInit(): void {
     super.ngOnInit();
+    this.resetForm();
+  }
+
+  resetForm(): void {
     this.indicatorNames.sort();
     this.filteredIndicatorNames = this.outputIndicatorForm.controls.indicatorName.valueChanges
       .pipe(
@@ -139,8 +143,8 @@ export class ProgrammeOutputIndicatorDetailComponent extends ViewEditForm implem
       this.outputIndicatorForm.controls.indicatorName.setValue(this.outputIndicator.name);
       this.outputIndicatorForm.controls.specificObjective.setValue(this.outputIndicator.programmePriorityPolicySpecificObjective);
       this.outputIndicatorForm.controls.measurementUnit.setValue(this.outputIndicator.measurementUnit);
-      this.outputIndicatorForm.controls.milestone.setValue(this.outputIndicator.milestone);
-      this.outputIndicatorForm.controls.finalTarget.setValue(this.outputIndicator.finalTarget);
+      this.outputIndicatorForm.controls.milestone.setValue(this.outputIndicator.milestone || 0);
+      this.outputIndicatorForm.controls.finalTarget.setValue(this.outputIndicator.finalTarget || 0);
       this.outputIndicatorForm.controls.resultIndicatorId.setValue(this.outputIndicator.resultIndicatorId);
       this.changeFormState$.next(FormState.VIEW);
     }
@@ -151,7 +155,6 @@ export class ProgrammeOutputIndicatorDetailComponent extends ViewEditForm implem
   }
 
   onSubmit(): void {
-
     Forms.confirmDialog(
       this.dialog,
       this.isCreate ? 'output.indicator.final.dialog.title.save' : 'output.indicator.final.dialog.title.update',
@@ -192,7 +195,7 @@ export class ProgrammeOutputIndicatorDetailComponent extends ViewEditForm implem
     if (this.isCreate) {
       this.cancelCreate.emit();
     } else {
-      this.changeFormState$.next(FormState.VIEW);
+      this.resetForm();
     }
   }
 

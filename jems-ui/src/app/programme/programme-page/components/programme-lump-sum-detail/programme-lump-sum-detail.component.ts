@@ -114,18 +114,22 @@ export class ProgrammeLumpSumDetailComponent extends ViewEditForm implements OnI
       this.changeFormState$.next(FormState.EDIT);
       this.selection.clear();
     } else {
-      this.lumpSumForm.controls.name.setValue(this.lumpSum.name);
-      this.lumpSumForm.controls.description.setValue(this.lumpSum.description);
-      this.lumpSumForm.controls.cost.setValue(this.lumpSum.cost);
-      this.previousSplitting = this.lumpSum.splittingAllowed ? 'Yes' : 'No';
-      this.previousPhase = this.lumpSum.phase;
-      this.selection.clear();
-      this.lumpSum.categories.forEach(category => {
-        this.selection.select(category);
-      });
-      this.validNumberOfSelections = this.selection.selected.length >= 2;
-      this.changeFormState$.next(FormState.VIEW);
+      this.resetForm();
     }
+  }
+
+  resetForm(): void {
+    this.lumpSumForm.controls.name.setValue(this.lumpSum.name);
+    this.lumpSumForm.controls.description.setValue(this.lumpSum.description);
+    this.lumpSumForm.controls.cost.setValue(this.lumpSum.cost);
+    this.previousSplitting = this.lumpSum.splittingAllowed ? 'Yes' : 'No';
+    this.previousPhase = this.lumpSum.phase;
+    this.selection.clear();
+    this.lumpSum.categories.forEach(category => {
+      this.selection.select(category);
+    });
+    this.validNumberOfSelections = this.selection.selected.length >= 2;
+    this.changeFormState$.next(FormState.VIEW);
   }
 
   getForm(): FormGroup | null {
@@ -169,7 +173,7 @@ export class ProgrammeLumpSumDetailComponent extends ViewEditForm implements OnI
     if (this.isCreate) {
       this.cancelCreate.emit();
     } else {
-      this.changeFormState$.next(FormState.VIEW);
+      this.resetForm();
     }
   }
 

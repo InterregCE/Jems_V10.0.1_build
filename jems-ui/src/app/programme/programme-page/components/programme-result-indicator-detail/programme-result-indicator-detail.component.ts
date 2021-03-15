@@ -95,6 +95,10 @@ export class ProgrammeResultIndicatorDetailComponent extends ViewEditForm implem
 
   ngOnInit(): void {
     super.ngOnInit();
+    this.resetForm();
+  }
+
+  resetForm(): void {
     this.indicatorNames.sort();
     this.filteredIndicatorNames = this.resultIndicatorForm.controls.indicatorName.valueChanges
       .pipe(
@@ -112,9 +116,9 @@ export class ProgrammeResultIndicatorDetailComponent extends ViewEditForm implem
       this.resultIndicatorForm.controls.indicatorName.setValue(this.resultIndicator.name);
       this.resultIndicatorForm.controls.specificObjective.setValue(this.resultIndicator.programmePriorityPolicySpecificObjective);
       this.resultIndicatorForm.controls.measurementUnit.setValue(this.resultIndicator.measurementUnit);
-      this.resultIndicatorForm.controls.baseline.setValue(this.resultIndicator.baseline);
+      this.resultIndicatorForm.controls.baseline.setValue(this.resultIndicator.baseline || 0);
       this.resultIndicatorForm.controls.referenceYear.setValue(this.resultIndicator.referenceYear);
-      this.resultIndicatorForm.controls.finalTarget.setValue(this.resultIndicator.finalTarget);
+      this.resultIndicatorForm.controls.finalTarget.setValue(this.resultIndicator.finalTarget || 0);
       this.resultIndicatorForm.controls.sourceOfData.setValue(this.resultIndicator.sourceOfData);
       this.resultIndicatorForm.controls.comments.setValue(this.resultIndicator.comment);
       this.changeFormState$.next(FormState.VIEW);
@@ -128,7 +132,6 @@ export class ProgrammeResultIndicatorDetailComponent extends ViewEditForm implem
   }
 
   onSubmit(): void {
-
     Forms.confirmDialog(
       this.dialog,
       this.isCreate ? 'result.indicator.final.dialog.title.save' : 'result.indicator.final.dialog.title.update',
@@ -173,7 +176,7 @@ export class ProgrammeResultIndicatorDetailComponent extends ViewEditForm implem
     if (this.isCreate) {
       this.cancelCreate.emit();
     } else {
-      this.changeFormState$.next(FormState.VIEW);
+      this.resetForm();
     }
   }
 
