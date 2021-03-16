@@ -13,10 +13,10 @@ fun validateFinancing(
     financing: Collection<UpdateProjectPartnerCoFinancing>,
     allowedFundIds: Set<Long>
 ) {
-    if (!financing.all { it.percentage in 0..100 })
+    if (!financing.all { it.percentage != null && it.percentage < BigDecimal.valueOf(100) && it.percentage > BigDecimal.ZERO })
         invalid("project.partner.coFinancing.percentage.invalid")
 
-    if (financing.sumBy { it.percentage!! } != 100)
+    if (financing.fold(BigDecimal.ZERO) { acc, e -> acc.add(e.percentage) }.compareTo(BigDecimal.valueOf(100.0)) != 0)
         invalid("project.partner.coFinancing.sum.invalid")
 
     // there needs to be exactly 1 fundId, which is null

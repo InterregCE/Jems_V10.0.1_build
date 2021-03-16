@@ -12,6 +12,7 @@
 
 .text-right {
   text-align: right !important;
+  justify-content: flex-end;
 }
 
 .text-left {
@@ -32,6 +33,7 @@
 .justify-end {
   justify-content: flex-end !important;
 }
+
 .justify-center {
   justify-content: center !important;
 }
@@ -515,12 +517,15 @@
 .app-alert-warning .app-alert-link {
   color: #322200;
 }
-.inline-block{
+
+.inline-block {
   display: inline-block;
 }
-.block{
+
+.block {
   display: block;
 }
+
 .row {
   display: -ms-flexbox;
   display: flex;

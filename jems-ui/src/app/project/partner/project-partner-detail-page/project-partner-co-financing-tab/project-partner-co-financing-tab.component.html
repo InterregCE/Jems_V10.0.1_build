@@ -4,7 +4,7 @@
             <h3>{{ 'partner.tab.coFinancing' | translate }}</h3>
             <p>{{ 'project.partner.coFinancing.intro' | translate }}</p>
             <div appNoWidthLimit
-                 [appTableConfig]="[{},{maxInRem:10},{maxInRem:5}, {maxInRem: 2}]">
+                 [appTableConfig]="[{},{maxInRem:10},{maxInRem:10}, {maxInRem: 2}]">
                 <div>
                     <span>{{ 'project.partner.coFinancing.source' | translate }}</span>
                     <span>{{ 'project.partner.coFinancing.amount' | translate }}</span>
@@ -29,9 +29,9 @@
                             </app-form-field-errors>
                         </mat-error>
                     </mat-form-field>
-                    <div>{{ fundAmount.value | asMoney }}</div>
+                    <div class="text-right">{{ fundAmount.value | asMoney }}</div>
                     <mat-form-field class="text-right">
-                        <input currencyMask type="integer" [options]="{min: 0, max: maxFundPercentage, align: 'right'}"
+                        <input currencyMask type="decimal" [options]="{min: 0, max: maxFundPercentage, align: 'right'}"
                                name="percentage" [formControlName]="constants.FORM_CONTROL_NAMES.fundPercentage"
                                matInput>
                         <div matSuffix class="pl-1">%</div>
@@ -63,9 +63,10 @@
                             </app-form-field-errors>
                         </mat-error>
                     </mat-form-field>
-                    <div>{{ additionalFundAmount.value | asMoney }}</div>
+                    <div class="text-right">{{ additionalFundAmount.value | asMoney }}</div>
                     <mat-form-field class="text-right">
-                        <input currencyMask type="integer" [options]="{min: 0, max: maxAdditionalFundPercentage, align: 'right'}"
+                        <input currencyMask type="decimal"
+                               [options]="{min: 0, max: maxAdditionalFundPercentage, align: 'right'}"
                                name="additionalFundPercentage"
                                [formControlName]="constants.FORM_CONTROL_NAMES.additionalFundPercentage"
                                matInput>
@@ -93,14 +94,14 @@
 
                 <div>
                     <div>{{ 'project.partner.coFinancing.partnerContribution' | translate }}</div>
-                    <div>{{ partnerAmount.value | asMoney }}</div>
-                    <div class="text-right">{{ partnerPercentage.value }} %</div>
+                    <div class="text-right">{{ partnerAmount.value | asMoney }}</div>
+                    <div class="text-right">{{ partnerPercentage.value | asMoney}} %</div>
                     <div></div>
                 </div>
                 <div class="footer">
                     <div>{{ 'project.partner.coFinancing.total' | translate }}</div>
-                    <div>{{ data.totalBudget | asMoney }}</div>
-                    <div class="text-right">100 %</div>
+                    <div class="text-right">{{ data.totalBudget | asMoney }}</div>
+                    <div class="text-right">{{100 | asMoney}} %</div>
                     <div></div>
                 </div>
             </div>
@@ -168,7 +169,7 @@
                                 </mat-error>
                             </mat-form-field>
                             <div class="text-right">
-                                {{partnerContribution.value.amount  | percentage: data.totalBudget}} %
+                                {{partnerContribution.value.amount  | percentage: data.totalBudget : 2 | asMoney}} %
                             </div>
                             <div>
                                 <button type="button" mat-icon-button color="accent"
@@ -200,20 +201,22 @@
                 <div>
                     <span>{{ 'project.partner.coFinancing.contribution.sub.total.public.contribution' | translate }}</span>
                     <div class="text-right">{{ data.publicContributionSubTotal | asMoney}}</div>
-                    <span class="text-right">{{ data.publicContributionSubTotal | percentage:data.totalBudget}} %</span>
+                    <span class="text-right">
+                        {{ data.publicContributionSubTotal | percentage:data.totalBudget : 2 | asMoney}} %
+                    </span>
                 </div>
                 <div>
                     <div>{{ 'project.partner.coFinancing.contribution.sub.total.automatic.public.contribution' | translate }}</div>
                     <div class="text-right">{{ data.automaticPublicContributionSubTotal | asMoney}}</div>
                     <span class="text-right">
-                        {{ data.automaticPublicContributionSubTotal | percentage:data.totalBudget}} %
+                        {{ data.automaticPublicContributionSubTotal | percentage:data.totalBudget : 2 | asMoney}} %
                     </span>
                 </div>
                 <div>
                     <div>{{ 'project.partner.coFinancing.contribution.sub.total.private.contribution' | translate }}</div>
                     <div class="text-right">{{ data.privateContributionSubTotal | asMoney}}</div>
                     <span class="text-right">
-                        {{ data.privateContributionSubTotal | percentage:data.totalBudget}} %
+                        {{ data.privateContributionSubTotal | percentage:data.totalBudget : 2 | asMoney}} %
                     </span>
                 </div>
                 <div class="footer">
@@ -224,7 +227,7 @@
                         </app-context-info>
                     </div>
                     <div class="text-right">{{ data.contributionTotal | asMoney}}</div>
-                    <div class="text-right">{{ data.contributionTotal | percentage: data.totalBudget}} %</div>
+                    <div class="text-right">{{ partnerPercentage.value | asMoney}} %</div>
                 </div>
             </div>
         </form>
