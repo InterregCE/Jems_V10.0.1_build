@@ -2,16 +2,19 @@
                         subTitleKey="call.detail.budget.settings">
     <app-call-flat-rates class="my-3 block"
                          *ngIf="call$ | async as call"
-                         [call]="call">
+                         [call]="call"
+                         [isApplicant]="callStore.isApplicant$ | async">
     </app-call-flat-rates>
     <app-call-lump-sums class="my-3 block"
                         *ngIf="callStore.lumpSums$ | async as lumpSums"
                         [lumpSums]="lumpSums"
-                        [call]="call$ | async">
+                        [call]="call$ | async"
+                        [isApplicant]="callStore.isApplicant$ | async">
     </app-call-lump-sums>
     <app-call-unit-costs class="my-3 block"
                          *ngIf="callStore.unitCosts$ | async as unitCosts"
                          [unitCosts]="unitCosts"
-                         [call]="call$ | async">
+                         [call]="call$ | async"
+                         [isApplicant]="callStore.isApplicant$ | async">
     </app-call-unit-costs>
 </app-main-page-template>

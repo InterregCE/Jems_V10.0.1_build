@@ -21,6 +21,8 @@ export class CallFlatRatesComponent implements OnInit {
 
   @Input()
   call: CallDetailDTO;
+  @Input()
+  isApplicant: boolean;
 
   published = false;
 
@@ -109,6 +111,9 @@ export class CallFlatRatesComponent implements OnInit {
     this.formService.init(this.callFlatRateForm);
   }
 
+  isCallPartiallyEditable(): boolean {
+    return !this.isApplicant && this.published;
+  }
 
   get isStaffCostFlatRateActive(): FormControl {
     return this.callFlatRateForm.get('isStaffCostFlatRateActive') as FormControl;
