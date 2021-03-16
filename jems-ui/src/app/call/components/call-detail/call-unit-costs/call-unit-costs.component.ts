@@ -23,6 +23,8 @@ export class CallUnitCostsComponent implements OnInit {
   unitCosts: ProgrammeUnitCostListDTO[];
   @Input()
   call: CallDetailDTO;
+  @Input()
+  isApplicant: boolean;
 
   callUnitCostForm: FormGroup;
   published = false;

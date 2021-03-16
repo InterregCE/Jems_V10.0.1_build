@@ -23,6 +23,8 @@ export class CallLumpSumsComponent implements OnInit {
   lumpSums: ProgrammeLumpSumListDTO[];
   @Input()
   call: CallDetailDTO;
+  @Input()
+  isApplicant: boolean;
 
   callLumpSumForm: FormGroup;
   published = false;
