@@ -89,10 +89,12 @@ class GeneralValidatorDefaultImpl : GeneralValidatorService {
             }
         }
 
-    override fun startDateBeforeEndDate(start: ZonedDateTime, end: ZonedDateTime, fieldName: String): Map<String, I18nMessage> =
+    override fun startDateBeforeEndDate(start: ZonedDateTime, end: ZonedDateTime, startDateFieldName: String, endDateFieldName: String): Map<String, I18nMessage> =
         mutableMapOf<String, I18nMessage>().apply {
-            if (end.isBefore(start))
-                this[fieldName] = I18nMessage(i18nKey = "common.error.start.before.end")
+            if (end.isBefore(start)) {
+                this[startDateFieldName] = I18nMessage(i18nKey = "common.error.start.before.end")
+                this[endDateFieldName] = I18nMessage(i18nKey = "common.error.end.after.start")
+            }
         }
 
     override fun throwIfAnyIsInvalid(vararg validationResult: Map<String, I18nMessage>) =

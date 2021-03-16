@@ -13,7 +13,7 @@ class CallValidator(private val validator: GeneralValidatorService) {
             validator.maxLength(call.name, 250, "description"),
             validator.maxLength(call.description, 1000, "description"),
             validator.numberBetween(call.lengthOfPeriod, 1, 99, "lengthOfPeriod"),
-            validator.startDateBeforeEndDate(call.startDate, call.endDate, "startDate"),
+            validator.startDateBeforeEndDate(call.startDate, call.endDate, "startDateTime", "endDateTime"),
         )
     }
 
