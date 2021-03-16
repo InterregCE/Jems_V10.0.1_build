@@ -689,7 +689,7 @@
 									"});\r",
 									"\r",
 									"pm.test('we have programme 1-category unit cost or we need to create one', function() {\r",
-									"    const response = pm.response.json().filter(unitCost => unitCost.isOneCostCategory);\r",
+									"    const response = pm.response.json().filter(unitCost => !unitCost.isOneCostCategory);\r",
 									"    if (response.length > 0) {\r",
 									"        console.log('There is already some 1-category unitCost ' + response[0].name + ' with id=' + response[0].id + ', which we will use for calls during this test');\r",
 									"        pm.environment.set('programmeUnitCostId', response[0].id);\r",
