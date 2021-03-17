@@ -55,10 +55,7 @@
       color: var(--table-header-text-color);
       font-size: var(--body-strong-font-size);
       font-weight: var(--body-strong-font-weight);
-      > * {
-
-      }
-      &:hover {
+      > * &:hover {
         background-color: var(--table-backaground-color);
       }
     }

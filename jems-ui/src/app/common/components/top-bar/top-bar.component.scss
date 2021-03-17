@@ -322,7 +322,7 @@ $rfs-breakpoint-unit-cache: unit($rfs-breakpoint);
     flex-wrap: wrap; // allow us to do the line break for collapsing content
     align-items: center;
     justify-content: space-between; // space out brand from logo
-    padding: 0.5rem 1rem;
+    padding: 0.125rem .5rem;
 
     // Because flex properties aren't inherited, we need to redeclare these first
     // few properties so that content nested within behave properly.
@@ -353,6 +353,9 @@ $rfs-breakpoint-unit-cache: unit($rfs-breakpoint);
     @include font-size($navbar-brand-font-size);
     line-height: inherit;
     white-space: nowrap;
+    font-size: 1.5rem;
+    font-weight: 500;
+    color: var(--font-text-link);
 
     @include hover-focus() {
       text-decoration: none;
@@ -403,6 +406,9 @@ $rfs-breakpoint-unit-cache: unit($rfs-breakpoint);
     .dropdown-menu {
       position: static;
       float: none;
+    }
+    &.divide {
+      border-top: 1px solid var(--font-text-link) !important;
     }
   }
 
@@ -513,20 +519,6 @@ $rfs-breakpoint-unit-cache: unit($rfs-breakpoint);
 :host {
   display: inline-block;
   background: linear-gradient(157deg, var(--app-bar) 0%, var(--background-lighter) 100%);
-}
-
-.navbar {
-  padding: 0.125rem .5rem;
-}
-.navbar-brand {
-  font-size: 1.5rem;
-  font-weight: 500;
-  color: var(--font-text-link);
-}
-.navbar-nav {
-  &.divide {
-    border-top: 1px solid var(--font-text-link) !important;
-  }
 }
 
 .language-select {

@@ -170,10 +170,20 @@ $color-blue-light: #81D4FA;
 
   .vis-group-level-1 {
     color: var(--font-color-primary) !important;
+    .vis-inner {
+      span {
+        max-width: $max-group-label-width;
+      }
+    }
   }
 
   .vis-group-level-2 {
     color: var(--font-color-secondary) !important;
+    .vis-inner {
+      span {
+        max-width: calc(#{$max-group-label-width} - 1.25rem);
+      }
+    }
   }
 
   .vis-label.vis-nesting-group.collapsed:before,
@@ -208,22 +218,6 @@ $color-blue-light: #81D4FA;
 
   .vis-panel.vis-background.vis-vertical {
     background-color: var(--background);
-  }
-
-  .vis-group-level-1 {
-    .vis-inner {
-      span {
-        max-width: $max-group-label-width;
-      }
-    }
-  }
-
-  .vis-group-level-2 {
-    .vis-inner {
-      span {
-        max-width: calc(#{$max-group-label-width} - 1.25rem);
-      }
-    }
   }
 
   .vis-inner {

@@ -138,6 +138,6 @@ export class ProjectApplicationFormAddressComponent implements OnInit, OnChanges
   }
 
   private formatRegion(region: OutputNuts): string {
-    return region.title + ' (' + region.code + ')';
+    return `${region.title} (${region.code})`;
   }
 }

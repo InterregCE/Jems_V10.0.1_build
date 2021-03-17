@@ -119,7 +119,7 @@ export class ProjectApplicationFormPartnerListComponent implements OnInit {
   }
 
   private getPartnerLink(): string {
-    return '/app/project/detail/' + this.projectId + '/applicationFormPartner/detail';
+    return `/app/project/detail/${this.projectId}/applicationFormPartner/detail`;
   }
 
 }

@@ -50,7 +50,7 @@ export class ProjectApplicationFormAssociatedOrganizationsListComponent implemen
 
   ngOnInit(): void {
     this.tableConfiguration = new TableConfiguration({
-      routerLink: '/app/project/detail/' + this.projectId + '/applicationFormAssociatedOrganization/detail',
+      routerLink: `/app/project/detail/${this.projectId}/applicationFormAssociatedOrganization/detail`,
       isTableClickable: true,
       columns: [
         {

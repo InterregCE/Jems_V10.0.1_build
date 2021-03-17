@@ -76,7 +76,7 @@ export class ProjectWorkPackageInvestmentsTabComponent implements OnInit {
   ngOnInit(): void {
     this.tableConfiguration = new TableConfiguration({
       isTableClickable: true,
-      routerLink: '/app/project/detail/' + this.projectId + '/applicationFormWorkPackage/detail/' + this.workPackageId + '/investment/detail',
+      routerLink: `/app/project/detail/${this.projectId}/applicationFormWorkPackage/detail/${this.workPackageId}/investment/detail`,
       columns: [
         {
           displayedColumn: 'project.application.form.workpackage.investments.number',
@@ -128,7 +128,7 @@ export class ProjectWorkPackageInvestmentsTabComponent implements OnInit {
   }
 
   private setRouterLink(): void {
-    this.tableConfiguration.routerLink = '/app/project/detail/' + this.projectId + '/applicationFormWorkPackage/detail/' + this.workPackageId + '/investment/detail';
+    this.tableConfiguration.routerLink = `/app/project/detail/${this.projectId}/applicationFormWorkPackage/detail/${this.workPackageId}/investment/detail`;
   }
 }
 

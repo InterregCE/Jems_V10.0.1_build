@@ -156,7 +156,7 @@ function getResultBoxId(resultIndicatorId: number, resultNumber: number): number
  *   - result indicator
  */
 export function getItems(workPackages: ProjectWorkPackageDTO[], results: ProjectResultDTO[], translateService: TranslateService): DataSet<any> {
-  let items = new Array(0);
+  let items: any[] = [];
   workPackages.forEach((wp, indexWp) => {
     let minPeriod = 999;
     let maxPeriod = 0;
@@ -261,7 +261,7 @@ export function sortNullLast(a: Indicator, b: Indicator): number {
  *   - result indicator
  */
 export function getGroups(workPackages: ProjectWorkPackageDTO[], results: ProjectResultDTO[]): DataSet<any> {
-  let wpSubGroups = new Array(0);
+  let wpSubGroups: any[] = [];
   const wpGroups = workPackages.map(wp => {
     const activities = wp.activities.map(activity => {
       return {
@@ -342,7 +342,7 @@ export function getInputTranslations(workPackages: ProjectWorkPackageDTO[]): { [
   workPackages.forEach(wp => {
     wp.name.forEach(translation => {
       if (!languages[translation.language]) {
-        languages[translation.language] = new Array<Content>(0);
+        languages[translation.language] = [];
       }
       languages[translation.language].push({
         id: getWorkPackageId(wp.workPackageNumber),
@@ -354,7 +354,7 @@ export function getInputTranslations(workPackages: ProjectWorkPackageDTO[]): { [
     wp.activities.forEach(activity => {
       activity.title.forEach(translation => {
         if (!languages[translation.language]) {
-          languages[translation.language] = new Array<Content>(0);
+          languages[translation.language] = [];
         }
         languages[translation.language].push({
           id: getActivityId(wp.workPackageNumber, activity.activityNumber),

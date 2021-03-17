@@ -1,4 +1,4 @@
-import {FormGroup, ValidatorFn, Validators} from '@angular/forms';
+import {FormGroup, ValidatorFn} from '@angular/forms';
 import {AppControl} from '@common/components/section/form/app-control';
 
 export class ProjectWorkPackageActivitiesTabConstants {

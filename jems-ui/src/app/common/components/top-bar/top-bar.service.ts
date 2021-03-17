@@ -3,7 +3,6 @@ import {combineLatest, Observable, ReplaySubject} from 'rxjs';
 import {MenuItemConfiguration} from '../menu/model/menu-item.configuration';
 import {PermissionService} from '../../../security/permissions/permission.service';
 import {Permission} from '../../../security/permissions/permission';
-import {Router} from '@angular/router';
 import {filter, take} from 'rxjs/operators';
 import {SecurityService} from '../../../security/security.service';
 import {OutputCurrentUser} from '@cat/api';
