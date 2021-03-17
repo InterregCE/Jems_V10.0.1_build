@@ -7,8 +7,7 @@
         </button>
     </div>
 
-    <app-multi-language-container [useSystemLanguages]="true"
-                                  [switchButtonsVisible]="formState === FormState.EDIT">
+    <app-multi-language-container [switchButtonsVisible]="formState === FormState.EDIT">
         <app-multi-language-form-field
                 formControlName="name"
                 label="lump.sum.form.field.name"
@@ -16,8 +15,7 @@
         </app-multi-language-form-field>
     </app-multi-language-container>
 
-    <app-multi-language-container [useSystemLanguages]="true"
-                                  [switchButtonsVisible]="formState === FormState.EDIT">
+    <app-multi-language-container [switchButtonsVisible]="formState === FormState.EDIT">
         <app-multi-language-form-field
                 formControlName="description"
                 label="lump.sum.form.field.description"

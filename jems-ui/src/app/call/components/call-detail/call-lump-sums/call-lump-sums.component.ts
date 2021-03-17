@@ -57,7 +57,7 @@ export class CallLumpSumsComponent implements OnInit {
     });
     this.formService.init(this.callLumpSumForm);
     this.callStore.call$.pipe(
-        untilDestroyed(this)
+      untilDestroyed(this)
     ).subscribe((call: CallDetailDTO) => {
       this.initialSelection.clear();
       this.lumpSumDataSource.data.forEach((lumpSum: ProgrammeLumpSumListDTO) => {
