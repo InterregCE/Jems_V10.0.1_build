@@ -44,6 +44,11 @@ export class ProgrammePageSidenavService {
       {
         headline: {i18nKey: 'programme.data.page.title'},
         bullets: [
+          this.languagesPage,
+          {
+            headline: {i18nKey: 'programme.tab.area'},
+            route: `${ProgrammePageSidenavService.PROGRAMME_DETAIL_PATH}/areas`,
+          },
           {
             headline: {i18nKey: 'programme.tab.data'},
             route: ProgrammePageSidenavService.PROGRAMME_DETAIL_PATH,
@@ -54,12 +59,7 @@ export class ProgrammePageSidenavService {
             scrollRoute: 'funds',
             route: ProgrammePageSidenavService.PROGRAMME_DETAIL_PATH,
           },
-          this.languagesPage,
           this.prioritiesPage,
-          {
-            headline: {i18nKey: 'programme.tab.area'},
-            route: `${ProgrammePageSidenavService.PROGRAMME_DETAIL_PATH}/areas`,
-          },
           this.indicatorsPage,
           {
             headline: {i18nKey: 'programme.tab.strategies'},
