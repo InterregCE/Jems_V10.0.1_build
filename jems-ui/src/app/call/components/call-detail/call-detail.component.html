@@ -70,16 +70,16 @@
             </mat-error>
         </mat-form-field>
 
-        <app-multi-language class="pb-3"
-                            [useSystemLanguages]="true"
-                            [switchButtonsVisible]="editable || (published && !isApplicant)">
+        <app-multi-language-container class="pb-3"
+                                      [useSystemLanguages]="true"
+                                      [switchButtonsVisible]="editable || (published && !isApplicant)">
             <app-multi-language-form-field
                     type="textarea"
                     formControlName="description"
                     label="call.detail.field.description"
                     [maxLength]="1000">
             </app-multi-language-form-field>
-        </app-multi-language>
+        </app-multi-language-container>
 
         <h3>{{'call.programme.priorities.title' | translate}}</h3>
         <app-call-priority-tree

@@ -1,8 +1,6 @@
 import {ChangeDetectionStrategy, Component, EventEmitter, Input, Output} from '@angular/core';
 import {BaseComponent} from '@common/components/base-component';
 import {CallPriorityCheckbox} from '../../containers/model/call-priority-checkbox';
-import {InputTranslation} from '@cat/api';
-import {LanguageService} from '../../../common/services/language.service';
 
 @Component({
   selector: 'app-call-priority-tree',
@@ -23,20 +21,12 @@ export class CallPriorityTreeComponent extends BaseComponent {
   @Output()
   selectionChanged = new EventEmitter<void>();
 
-  constructor(public languageService: LanguageService) {
+  constructor() {
     super();
   }
 
   priorityVisible(priority: CallPriorityCheckbox): boolean {
     return !this.isApplicant || priority.checked || priority.someChecked();
-  }
-
-  translated(element: InputTranslation[], currentSystemLanguage: string | null): string {
-    if (!currentSystemLanguage || !element) {
-      return '';
-    }
-    const elementInSystemLang = element.find((it: InputTranslation) => it.language === currentSystemLanguage);
-    return !!elementInSystemLang ? elementInSystemLang.translation : '';
   }
 
   isPriorityAlreadySelected(priority: CallPriorityCheckbox): boolean {

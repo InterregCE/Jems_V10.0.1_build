@@ -7,7 +7,6 @@ import {combineLatest, Observable} from 'rxjs';
 import {catchError, map, startWith, take, tap} from 'rxjs/operators';
 import {ProjectWorkPackagePageStore} from '../project-work-package-page-store.service';
 import {ProjectWorkPackageActivitiesTabConstants} from './project-work-package-activities-tab.constants';
-import {MultiLanguageInputService} from '../../../../common/services/multi-language-input.service';
 
 @UntilDestroy()
 @Component({
@@ -32,8 +31,7 @@ export class ProjectWorkPackageActivitiesTabComponent implements OnInit {
 
   constructor(public formService: FormService,
               private formBuilder: FormBuilder,
-              private workPackageStore: ProjectWorkPackagePageStore,
-              public languageService: MultiLanguageInputService) {
+              private workPackageStore: ProjectWorkPackagePageStore) {
     this.formService.init(this.form, this.workPackageStore.isProjectEditable$);
   }
 

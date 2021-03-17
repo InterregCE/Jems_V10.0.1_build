@@ -11,7 +11,7 @@
                         <h4 class="mb-0" appMultiColumnRow>
                             <span>{{('project.application.form.work.package.output' | translate) + ' ' + data.workPackageNumber + '.' + (i + 1) }}</span>
                             <span appFormFieldWidth="xx-large"
-                                  class="text-overflow-ellipsis">{{languageService.getCurrentValue(output.get(constants.TITLE.name).value)}}</span>
+                                  class="text-overflow-ellipsis">{{output.get(constants.TITLE.name).value | translateByInputLanguage}}</span>
                         </h4>
                         <button *ngIf="form.enabled" type="button" mat-icon-button color="accent"
                                 matTooltip="{{'project.application.form.work.package.output.table.action.delete.tooltip' | translate}}"
@@ -20,13 +20,13 @@
                         </button>
                     </div>
 
-                    <app-multi-language>
+                    <app-multi-language-container>
                         <app-multi-language-form-field
                                 label="project.application.form.work.package.output.title"
                                 [formControlName]="constants.TITLE.name"
                                 [maxLength]="constants.TITLE.maxLength">
                         </app-multi-language-form-field>
-                    </app-multi-language>
+                    </app-multi-language-container>
 
                     <mat-form-field [class.mat-form-field-invalid]="!data.outputIndicators.length">
                         <mat-label>{{'project.application.form.work.package.output.programme.output.indicator' | translate}}</mat-label>
@@ -34,7 +34,7 @@
                                     [formControlName]="constants.RESULT_INDICATOR.name">
                             <mat-option *ngFor="let resultIndicator of data.outputIndicators"
                                         [value]="resultIndicator.id">
-                                {{resultIndicator.name | translateSystem | async}}
+                                {{resultIndicator.name | translateBySystemLanguage | async}}
                             </mat-option>
                         </mat-select>
                         <mat-hint *ngIf="!data.outputIndicators?.length" class="mat-error">
@@ -47,7 +47,7 @@
                             <mat-label>{{'project.application.form.work.package.output.measurement.unit' | translate}}</mat-label>
                             <input readonly matInput
                                    value="{{getMeasurementUnit(output.get(constants.RESULT_INDICATOR.name)?.value, data.outputIndicators)
-                                            | translateSystem | async}}"
+                                            | translateBySystemLanguage | async}}"
                                    [disabled]="form.disabled">
                         </mat-form-field>
 
@@ -65,13 +65,13 @@
                             (selectionChanged)="formService.setDirty(true)">
                     </app-project-periods-select>
 
-                    <app-multi-language>
+                    <app-multi-language-container>
                         <app-multi-language-form-field
                                 label="project.application.form.work.package.output.description"
                                 [formControlName]="constants.DESCRIPTION.name"
                                 [maxLength]="constants.DESCRIPTION.maxLength">
                         </app-multi-language-form-field>
-                    </app-multi-language>
+                    </app-multi-language-container>
                 </div>
             </ng-container>
         </div>

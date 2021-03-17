@@ -14,7 +14,6 @@ import {map, startWith} from 'rxjs/operators';
 import {Observable} from 'rxjs';
 import {NumberService} from '../../../../../../common/services/number.service';
 import {FormService} from '@common/components/section/form/form.service';
-import {MultiLanguageInputService} from '../../../../../../common/services/multi-language-input.service';
 import {UntilDestroy, untilDestroyed} from '@ngneat/until-destroy';
 import {GeneralBudgetTable} from '../../../../../model/budget/general-budget-table';
 import {InvestmentSummary} from '../../../../../work-package/work-package-detail-page/workPackageInvestment';
@@ -55,7 +54,7 @@ export class GeneralBudgetTableComponent implements OnInit, OnChanges {
   columnsToDisplay: string[];
   tableConfig: TableConfig[];
 
-  constructor(private formService: FormService, private controlContainer: ControlContainer, private formBuilder: FormBuilder, private multiLanguageInputService: MultiLanguageInputService) {
+  constructor(private formService: FormService, private controlContainer: ControlContainer, private formBuilder: FormBuilder) {
     this.budgetForm = this.controlContainer.control as FormGroup;
   }
 
@@ -131,10 +130,10 @@ export class GeneralBudgetTableComponent implements OnInit, OnChanges {
   addNewItem(): void {
     this.items.push(this.formBuilder.group({
       id: null,
-      description: [this.multiLanguageInputService.multiLanguageFormFieldDefaultValue()],
-      unitType: [this.multiLanguageInputService.multiLanguageFormFieldDefaultValue()],
+      description: [[]],
+      unitType: [[]],
       unitCost: [null],
-      awardProcedures: [this.multiLanguageInputService.multiLanguageFormFieldDefaultValue()],
+      awardProcedures: [[]],
       investmentId: [null],
       numberOfUnits: [1, [Validators.max(this.constants.MAX_VALUE), Validators.min(this.constants.MIN_VALUE)]],
       pricePerUnit: [0, [Validators.max(this.constants.MAX_VALUE), Validators.min(this.constants.MIN_VALUE)]],

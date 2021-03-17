@@ -9,7 +9,7 @@
 
     <ng-container matColumnDef="name">
         <mat-header-cell *matHeaderCellDef>{{ 'lump.sum.table.column.name.name' | translate }}</mat-header-cell>
-        <mat-cell *matCellDef="let element">{{ translated(element?.name, languageService.systemLanguage$ | async) }}</mat-cell>
+        <mat-cell *matCellDef="let element">{{ element?.name | translateBySystemLanguage | async }}</mat-cell>
     </ng-container>
 
     <ng-container matColumnDef="cost">

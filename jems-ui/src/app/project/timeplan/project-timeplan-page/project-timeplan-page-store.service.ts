@@ -1,7 +1,6 @@
 import {Injectable} from '@angular/core';
 import {ProjectStore} from '../../project-application/containers/project-application-detail/services/project-store.service';
 import {Observable} from 'rxjs';
-import {MultiLanguageInputService} from '../../../common/services/multi-language-input.service';
 import {OutputProjectPeriod, ProjectResultDTO, ProjectResultService, WorkPackageService} from '@cat/api';
 import {map, switchMap, tap} from 'rxjs/operators';
 import {filter} from 'rxjs/internal/operators';
@@ -11,17 +10,14 @@ import {Log} from '../../../common/utils/log';
 export class ProjectTimeplanPageStore {
 
   projectAcronym$: Observable<string>;
-  inputLanguage$: Observable<string>;
   workPackages$: Observable<any>;
   periods$: Observable<OutputProjectPeriod[]>;
   projectResults$: Observable<ProjectResultDTO[]>;
 
   constructor(private projectStore: ProjectStore,
-              private languageService: MultiLanguageInputService,
               private workPackageService: WorkPackageService,
               private projectResultService: ProjectResultService) {
     this.projectAcronym$ = this.projectStore.getAcronym();
-    this.inputLanguage$ = languageService.currentInputLanguage$;
     this.workPackages$ = this.workPackages();
     this.periods$ = this.periods();
     this.projectResults$ = this.projectResults();

@@ -7,7 +7,6 @@ import {HttpErrorResponse} from '@angular/common/http';
 import {Observable} from 'rxjs';
 import {FormService} from '@common/components/section/form/form.service';
 import {takeUntil, tap} from 'rxjs/operators';
-import {MultiLanguageInputService} from '../../../../../common/services/multi-language-input.service';
 import {ProjectStore} from '../../../containers/project-application-detail/services/project-store.service';
 
 @Component({
@@ -42,7 +41,6 @@ export class ProjectApplicationFormOverallObjectiveDetailComponent extends BaseC
   constructor(private formBuilder: FormBuilder,
               private formService: FormService,
               private translate: TranslateService,
-              public languageService: MultiLanguageInputService,
               private projectStore: ProjectStore) {
     super();
   }

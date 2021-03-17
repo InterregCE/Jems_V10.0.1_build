@@ -17,9 +17,9 @@
                     (change)="toggleUnitCost(element)"
                     [checked]="selection.isSelected(element)">
             </mat-checkbox>
-            <span>{{ translated(element?.name, languageService.systemLanguage$ | async) }}</span>
+            <span>{{ element?.name | translateBySystemLanguage | async }}</span>
             <span>{{ element?.categories?.length > 1 ? ('unit.cost.cost.category.Multiple' | translate) : ('unit.cost.cost.category.' + element?.categories[0] | translate) }}</span>
-            <span>{{ translated(element?.type, languageService.systemLanguage$ | async) }}</span>
+            <span>{{ element?.type | translateBySystemLanguage | async}}</span>
             <span>{{ element?.costPerUnit | asMoney}}</span>
         </span>
     </div>

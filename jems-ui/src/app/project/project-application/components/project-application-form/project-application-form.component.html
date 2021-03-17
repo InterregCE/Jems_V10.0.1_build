@@ -21,14 +21,14 @@
             </mat-error>
         </mat-form-field>
 
-        <app-multi-language>
+        <app-multi-language-container>
             <app-multi-language-form-field
                     type="textarea"
                     label="project.application.form.field.project.title"
                     [formControlName]="'title'"
                     [maxLength]="200">
             </app-multi-language-form-field>
-        </app-multi-language>
+        </app-multi-language-container>
 
         <h4>{{'project.application.project.duration.title' | translate}}</h4>
 
@@ -66,7 +66,7 @@
             <mat-select (selectionChange)="changeCurrentPriority($event.value)" required [(value)]=currentPriority
                         formControlName="programmePriority">
                 <mat-option *ngFor="let priority of priorities" [value]="priority.code">
-                    {{ priority.code }} - {{ priority.title | translateSystem | async }}
+                    {{ priority.code }} - {{ priority.title | translateBySystemLanguage | async }}
                 </mat-option>
             </mat-select>
             <mat-error>
@@ -127,23 +127,23 @@
                 <li>{{'project.application.form.summary.intro.row.six' | translate}}</li>
             </ul>
         </div>
-        <app-multi-language *ngIf="!englishLanguageActive()"
-                            [staticLanguages]="[LANGUAGE.EN]">
+        <app-multi-language-container *ngIf="!languageStore.isInputLanguageExist(this.LANGUAGE.EN)"
+                                      [staticLanguages]="[LANGUAGE.EN]">
             <app-multi-language-form-field
                     type="textarea"
                     label="project.application.form.field.project.summary.in.english"
                     formControlName="introEn"
                     maxLength="2000">
             </app-multi-language-form-field>
-        </app-multi-language>
+        </app-multi-language-container>
 
-        <app-multi-language>
+        <app-multi-language-container>
             <app-multi-language-form-field
                     type="textarea"
                     label="project.application.form.field.project.summary"
                     formControlName="intro"
                     [maxLength]="2000">
             </app-multi-language-form-field>
-        </app-multi-language>
+        </app-multi-language-container>
     </form>
 </app-form>

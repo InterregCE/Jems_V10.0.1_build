@@ -7,23 +7,23 @@
         </button>
     </div>
 
-    <app-multi-language [useSystemLanguages]="true"
-                        [switchButtonsVisible]="formState === FormState.EDIT">
+    <app-multi-language-container [useSystemLanguages]="true"
+                                  [switchButtonsVisible]="formState === FormState.EDIT">
         <app-multi-language-form-field
                 formControlName="name"
                 label="lump.sum.form.field.name"
                 [maxLength]="50">
         </app-multi-language-form-field>
-    </app-multi-language>
+    </app-multi-language-container>
 
-    <app-multi-language [useSystemLanguages]="true"
-                        [switchButtonsVisible]="formState === FormState.EDIT">
+    <app-multi-language-container [useSystemLanguages]="true"
+                                  [switchButtonsVisible]="formState === FormState.EDIT">
         <app-multi-language-form-field
                 formControlName="description"
                 label="lump.sum.form.field.description"
                 [maxLength]="500">
         </app-multi-language-form-field>
-    </app-multi-language>
+    </app-multi-language-container>
 
     <mat-form-field>
         <mat-label>{{'lump.sum.form.field.cost' | translate}}</mat-label>

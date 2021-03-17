@@ -2,7 +2,8 @@
     <a class="navbar-brand">{{ 'app.name' | translate }}</a>
 
     <!--Hamburger Menu-->
-    <button mat-stroked-button class="navbar-toggler" [ngClass]="{'collapsed': isNavBarCollapsed}" type="button" data-toggle="collapse"
+    <button mat-stroked-button class="navbar-toggler" [ngClass]="{'collapsed': isNavBarCollapsed}" type="button"
+            data-toggle="collapse"
             data-target="#navbarSupportedContent"
             aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation"
             (click)="isNavBarCollapsed = !isNavBarCollapsed">
@@ -19,7 +20,8 @@
                          'active-not-collapsed': router.url.startsWith(item.route) && !isNavBarCollapsed,
                          'active-collapsed': router.url.startsWith(item.route) && isNavBarCollapsed
                        }">
-                    <a class="nav-link" *ngIf="item.isInternal" [routerLink]="item.route" (click)="isNavBarCollapsed = true">
+                    <a class="nav-link" *ngIf="item.isInternal" [routerLink]="item.route"
+                       (click)="isNavBarCollapsed = true">
                         {{item.name | translate}}
                     </a>
                     <a class="nav-link" *ngIf="!item.isInternal" [href]="item.route" target="_blank">
@@ -36,16 +38,17 @@
             </li>
 
             <!-- Language selection -->
-            <li class="nav-item language-list" *ngIf="languageService.languageSelection$ | async as languagelist">
+            <li class="nav-item language-list" *ngIf="languageSettings$ | async as languageSettings">
                 <mat-select #langSelect
                             class="language-select nav-link"
                             [value]="translate.currentLang"
                             (selectionChange)="changeLanguage(langSelect.value)">
-                    <mat-option *ngIf="!languagelist.isEnglishAvailable && translate.currentLang === languageService.default()"
-                                [value]="languageService.default()">
-                        <mat-label>{{'language.en' | translate}}</mat-label>
+                    <mat-option
+                            *ngIf="!languageSettings.isDefaultAvailable && translate.currentLang === languageSettings.fallbackLanguage"
+                            [value]="languageSettings.fallbackLanguage">
+                        <mat-label>{{'language.' + languageSettings.fallbackLanguage.toLowerCase() | translate}}</mat-label>
                     </mat-option>
-                    <mat-option *ngFor="let lang of languagelist.languages" [value]="lang">
+                    <mat-option *ngFor="let lang of languageSettings.languages" [value]="lang">
                         <mat-label>{{'language.' + lang.toLowerCase() | translate}}</mat-label>
                     </mat-option>
                 </mat-select>

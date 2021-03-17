@@ -7,7 +7,7 @@
             {{'common.edit.label' | translate}}
         </button>
     </div>
-    <app-multi-language [useSystemLanguages]="true" [switchButtonsVisible]="(changeFormState$ | async) === FormState.EDIT">
+    <app-multi-language-container [useSystemLanguages]="true" [switchButtonsVisible]="(changeFormState$ | async) === FormState.EDIT">
         <div [appTableConfig]="[{},{maxInRem: 5}]">
             <div>
                 <span class="mat-body-strong">{{ 'programme.legal.status.list.description' | translate }}</span>
@@ -19,10 +19,10 @@
                     <ng-container [formGroupName]="i">
 
                         <app-multi-language-form-field
-                                hideCountersWhenInView="true"
                                 formControlName="description"
-                                maxLength="50"
-                                label="programme.legal.status.list.description">
+                                [useFallBackLanguage]="true"
+                                [isFallBackLanguageReadonly]="i==0 || i==1"
+                                maxLength="50">
                         </app-multi-language-form-field>
 
                         <div *ngIf="(changeFormState$ | async) === FormState.EDIT">
@@ -39,7 +39,7 @@
                 </ng-container>
             </div>
             <div *ngIf="(changeFormState$ | async) === FormState.EDIT">
-                <div >
+                <div>
                     <button mat-icon-button
                             type="button"
                             (click)="addNewLegalStatus()">
@@ -48,7 +48,7 @@
                 </div>
             </div>
         </div>
-    </app-multi-language>
+    </app-multi-language-container>
     <div appMultiColumnRow *ngIf="(changeFormState$ | async) === FormState.EDIT">
         <button mat-stroked-button type="button"
                 (click)="resetForm()">

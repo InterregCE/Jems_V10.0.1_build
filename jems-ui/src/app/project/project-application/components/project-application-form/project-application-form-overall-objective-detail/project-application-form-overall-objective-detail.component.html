@@ -23,7 +23,7 @@
                 <li>{{'project.application.form.overall.objective.field.row.six' | translate}}</li>
             </ul>
         </div>
-        <app-multi-language>
+        <app-multi-language-container>
             <app-multi-language-form-field
                     type="textarea"
                     formControlName="projectOverallObjective"
@@ -32,6 +32,6 @@
                     label="project.application.form.overall.objective.field.projectOverallObjective"
                     [disabled]="!editable">
             </app-multi-language-form-field>
-        </app-multi-language>
+        </app-multi-language-container>
     </form>
 </app-form>

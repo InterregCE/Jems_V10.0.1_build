@@ -5,7 +5,7 @@
                 (change)="element.selected = !element.selected; selectionChanged.emit()"
                 [disabled]="disabled && isFundAlreadySelected(element)"
                 [checked]="element.selected">
-            {{ element.abbreviation | translateSystem | async }}
+            {{ element.abbreviation | translateBySystemLanguage | async }}
         </mat-checkbox>
     </div>
 </ng-container>

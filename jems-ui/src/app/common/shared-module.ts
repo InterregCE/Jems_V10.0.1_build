@@ -19,7 +19,7 @@ import {HelpMenuComponent} from '@common/components/top-bar/help-menu/help-menu.
 import {SideNavComponent} from '@common/components/side-nav/component/side-nav.component';
 import {FormComponent} from '@common/components/section/form/form.component';
 import {PercentagePipe} from './pipe/percentage';
-import {MultiLanguageComponent} from '@common/components/forms/multi-language/multi-language.component';
+import {MultiLanguageContainerComponent} from '@common/components/forms/multi-language-container/multi-language-container.component';
 import {ContextInfoComponent} from '@common/components/info-trigger/context-info.component';
 import {FormFieldWidthDirective} from './directives/form-field-width/form-field-width.directive';
 import {NgxCurrencyModule} from 'ngx-currency';
@@ -33,11 +33,13 @@ import {LabelDirective} from './directives/form-layout/label.directive';
 import {MainPageTemplateComponent} from '@common/components/page-templates/main-page-template/main-page-template.component';
 import {MatBadgeModule} from '@angular/material/badge';
 import {ApiErrorContentComponent} from '@common/components/forms/api-error-content/api-error-content.component';
-import {InputSystemTranslatePipe} from './pipe/input-system-translate.pipe';
 import {ProjectApplicationListComponent} from '@common/components/project-application-list/project-application-list.component';
 import {CallListComponent} from '@common/components/call-list/call-list.component';
 import {InlineEditableFieldComponent} from '@common/components/inline-editable-field/inline-editable-field.component';
 import {MatProgressSpinnerModule} from '@angular/material/progress-spinner';
+import {TranslateBySystemLanguagePipe} from './pipe/translate-by-system-language.pipe';
+import {TranslateByInputLanguagePipe} from './pipe/translate-by-input-language.pipe';
+import {TranslateContainerLessInputsBySystemLanguagePipe} from './pipe/translate-container-less-inputs-by-system-language.pipe';
 
 
 const modules = [
@@ -59,10 +61,12 @@ const declarations = [
   TableComponent,
   PaginatorComponent,
   FormComponent,
-  InputSystemTranslatePipe,
+  TranslateBySystemLanguagePipe,
+  TranslateByInputLanguagePipe,
+  TranslateContainerLessInputsBySystemLanguagePipe,
   MoneyPipe,
   PercentagePipe,
-  MultiLanguageComponent,
+  MultiLanguageContainerComponent,
   BreadcrumbComponent,
   AlertComponent,
   ExpandableTextareaComponent,

@@ -5,7 +5,6 @@ import {ProjectWorkPackageOutputsTabConstants} from './project-work-package-outp
 import {combineLatest, Observable} from 'rxjs';
 import {FormArray, FormBuilder} from '@angular/forms';
 import {ProjectWorkPackagePageStore} from '../project-work-package-page-store.service';
-import {MultiLanguageInputService} from '../../../../common/services/multi-language-input.service';
 import {catchError, map, startWith, tap} from 'rxjs/operators';
 import {InputTranslation, OutputIndicatorSummaryDTO, OutputProjectPeriod, WorkPackageOutputDTO} from '@cat/api';
 import {take} from 'rxjs/internal/operators';
@@ -34,8 +33,7 @@ export class ProjectWorkPackageOutputsTabComponent implements OnInit {
 
   constructor(public formService: FormService,
               private formBuilder: FormBuilder,
-              private workPackageStore: ProjectWorkPackagePageStore,
-              public languageService: MultiLanguageInputService) {
+              private workPackageStore: ProjectWorkPackagePageStore) {
     this.formService.init(this.form, this.workPackageStore.isProjectEditable$);
   }
 
@@ -93,7 +91,7 @@ export class ProjectWorkPackageOutputsTabComponent implements OnInit {
     return this.form.enabled && this.outputs.length < 10;
   }
 
-  getMeasurementUnit(indicatorId: number, indicators: OutputIndicatorSummaryDTO[]): InputTranslation[]{
+  getMeasurementUnit(indicatorId: number, indicators: OutputIndicatorSummaryDTO[]): InputTranslation[] {
     return indicators.find(indicator => indicator.id === indicatorId)?.measurementUnit || [];
   }
 

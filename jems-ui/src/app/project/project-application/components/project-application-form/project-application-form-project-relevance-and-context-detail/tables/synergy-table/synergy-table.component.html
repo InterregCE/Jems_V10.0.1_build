@@ -1,5 +1,5 @@
 <div appFormLayout [formGroup]="formGroup">
-    <app-multi-language appNoWidthLimit *ngIf="synergiesForm.controls.length > 0">
+    <app-multi-language-container appNoWidthLimit *ngIf="synergiesForm.controls.length > 0">
         <div [appTableConfig]="[{},{}, {maxInRem:2}]">
             <div>
                 <span class="mat-body-strong">{{'project.application.form.relevance.project.or.initiative' | translate}}</span>
@@ -38,7 +38,7 @@
                 </ng-container>
             </div>
         </div>
-    </app-multi-language>
+    </app-multi-language-container>
     <button *ngIf="editable && synergiesForm.controls?.length < 20" mat-stroked-button type="button"
             (click)="addNewSynergy()">
         <mat-icon>add</mat-icon>

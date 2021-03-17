@@ -17,9 +17,9 @@
 
         </div>
         <div appNoWidthLimit>
-            <app-multi-language [switchButtonsVisible]="(data$ | async)?.dataAvailable">
+            <app-multi-language-container [switchButtonsVisible]="(data$ | async)?.dataAvailable">
                 <div #visualization (click)="click($event)"></div>
-            </app-multi-language>
+            </app-multi-language-container>
         </div>
     </div>
 </app-main-page-template>

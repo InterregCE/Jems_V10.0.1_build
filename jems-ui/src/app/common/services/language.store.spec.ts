@@ -1,13 +1,13 @@
 import {TestBed} from '@angular/core/testing';
-import {LanguageService} from './language.service';
+import {LanguageStore} from './language-store.service';
 import {TestModule} from '../test-module';
 import {HttpTestingController} from '@angular/common/http/testing';
 import {TranslateService} from '@ngx-translate/core';
 import {RouterTestingModule} from '@angular/router/testing';
 
-describe('LanguageService', () => {
+describe('LanguageStore', () => {
   let httpTestingController: HttpTestingController;
-  let service: LanguageService;
+  let service: LanguageStore;
   let translate: TranslateService;
 
   beforeEach(() => {
@@ -15,11 +15,11 @@ describe('LanguageService', () => {
       imports: [
         TestModule,
         RouterTestingModule.withRoutes(
-          [{path: 'app/project/detail/1', component: LanguageService}])
+          [{path: 'app/project/detail/1', component: LanguageStore}])
       ],
     });
     httpTestingController = TestBed.inject(HttpTestingController);
-    service = TestBed.inject(LanguageService);
+    service = TestBed.inject(LanguageStore);
     translate = TestBed.inject(TranslateService);
   });
 
@@ -28,8 +28,7 @@ describe('LanguageService', () => {
   });
 
   it('should set the new language', () => {
-    service.changeLanguage('de');
-
+    service.setSystemLanguageAndUpdateProfile('de');
     expect(translate.currentLang).toBe('de');
   });
 });

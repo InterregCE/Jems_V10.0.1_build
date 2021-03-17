@@ -60,22 +60,22 @@
             </mat-error>
         </mat-form-field>
 
-        <app-multi-language [staticLanguages]="[LANGUAGE.EN]">
+        <app-multi-language-container [staticLanguages]="[LANGUAGE.EN]">
             <app-multi-language-form-field
                     label="project.organization.english.name.label"
                     formControlName="nameInEnglish"
                     maxLength="100">
             </app-multi-language-form-field>
-        </app-multi-language>
+        </app-multi-language-container>
 
-        <app-multi-language>
+        <app-multi-language-container>
             <app-multi-language-form-field
                     label="project.organization.department.label"
                     type="textarea"
                     formControlName="department"
                     maxLength="250">
             </app-multi-language-form-field>
-        </app-multi-language>
+        </app-multi-language-container>
 
         <h4>{{'project.partner.detail.title.legal.financial' | translate}}</h4>
 
@@ -92,7 +92,7 @@
             <mat-label>{{'project.partner.legal.status' | translate}}</mat-label>
             <mat-select name="legalStatusId" formControlName="legalStatusId" required>
                 <mat-option *ngFor="let status of legalStatuses" [value]="status.id">
-                    {{ status.description | translateSystem | async }}
+                    {{ status.description | translateBySystemLanguage | async }}
                 </mat-option>
             </mat-select>
             <mat-error>

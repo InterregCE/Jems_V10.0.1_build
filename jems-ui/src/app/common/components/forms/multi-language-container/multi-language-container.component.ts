@@ -8,23 +8,22 @@ import {
   OnInit,
   QueryList
 } from '@angular/core';
-import {MultiLanguageInputService} from '../../../services/multi-language-input.service';
-import {map, startWith, switchMap, tap} from 'rxjs/operators';
-import {combineLatest, Observable, Subject} from 'rxjs';
+import {map, startWith, switchMap, tap, withLatestFrom} from 'rxjs/operators';
+import {combineLatest} from 'rxjs';
 import {MultiLanguageFormFieldComponent} from '@common/components/forms/multi-language-form-field/multi-language-form-field.component';
-import {MultiLanguageComponentService} from '@common/components/forms/multi-language/multi-language-component.service';
-import {INPUT_STATE} from '@common/components/forms/multi-language/multi-language-input-state';
+import {MultiLanguageContainerService} from '@common/components/forms/multi-language-container/multi-language-container.service';
+import {INPUT_STATE} from '@common/components/forms/multi-language-container/multi-language-input-state';
 import {UntilDestroy, untilDestroyed} from '@ngneat/until-destroy';
 
 @UntilDestroy()
 @Component({
-  selector: 'app-multi-language',
-  templateUrl: './multi-language.component.html',
-  styleUrls: ['./multi-language.component.scss'],
-  providers: [MultiLanguageComponentService],
+  selector: 'app-multi-language-container',
+  templateUrl: './multi-language-container.component.html',
+  styleUrls: ['./multi-language-container.component.scss'],
+  providers: [MultiLanguageContainerService],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class MultiLanguageComponent implements OnInit, AfterContentInit {
+export class MultiLanguageContainerComponent implements OnInit, AfterContentInit {
 
   @ContentChildren(MultiLanguageFormFieldComponent, {descendants: true})
   children: QueryList<MultiLanguageFormFieldComponent>;
@@ -36,19 +35,14 @@ export class MultiLanguageComponent implements OnInit, AfterContentInit {
   @Input()
   staticLanguages?: string[];
 
-  languages$: Observable<string[]>;
-  currentLanguage$: Subject<string>;
   states: { [key: string]: INPUT_STATE } = {};
 
-  constructor(public languageService: MultiLanguageInputService,
-              public componentService: MultiLanguageComponentService,
+  constructor(public multiLanguageContainerService: MultiLanguageContainerService,
               private changeDetectorRef: ChangeDetectorRef) {
   }
 
   ngOnInit(): void {
-    this.componentService.init(this.useSystemLanguages, this.staticLanguages);
-    this.languages$ = this.componentService.languages$;
-    this.currentLanguage$ = this.componentService.currentLanguage$;
+    this.multiLanguageContainerService.init(this.useSystemLanguages, this.staticLanguages);
   }
 
   isEmptyState(language: string): boolean {
@@ -74,9 +68,10 @@ export class MultiLanguageComponent implements OnInit, AfterContentInit {
         switchMap(children => combineLatest([
           ...children.map((child: MultiLanguageFormFieldComponent) => child.state$)
         ])),
-        tap((states: { [key: string]: INPUT_STATE }[]) =>
+        withLatestFrom(this.multiLanguageContainerService.languages$),
+        tap(([states, languages]) =>
           this.states = Object.fromEntries(
-            this.componentService.languages.map(lang => [lang, this.getLanguageState(lang, states)])
+            languages.map(lang => [lang, this.getLanguageState(lang, states as { [key: string]: INPUT_STATE }[])])
           )
         ),
         tap(() => this.changeDetectorRef.markForCheck()),
@@ -95,10 +90,9 @@ export class MultiLanguageComponent implements OnInit, AfterContentInit {
     return INPUT_STATE.VALID;
   }
 
-  isMoreThanOneLanguageInputEnabled(): boolean {
-    const languages = this.useSystemLanguages
-      ? this.languageService.systemLanguages : this.languageService.inputLanguages;
-    return (this.staticLanguages?.length && !this.englishLanguageActive(languages)) || languages.length > 1;
+  isMoreThanOneLanguageEnabled(languages: string[]): boolean {
+    return (this.staticLanguages?.length && !this.englishLanguageActive(languages))
+      || languages.length > 1;
   }
 
   private englishLanguageActive(languages: string[]): boolean {

@@ -4,30 +4,30 @@
         <h3>{{'project.partner.motivation.header' | translate}}</h3>
 
         <p>{{'project.partner.motivation.organization.relevance' | translate}}</p>
-        <app-multi-language>
+        <app-multi-language-container>
             <app-multi-language-form-field type="textarea"
                                            [label]="'common.textarea.enter.text'"
                                            formControlName="organizationRelevance"
                                            [maxLength]="2000">
             </app-multi-language-form-field>
-        </app-multi-language>
+        </app-multi-language-container>
 
         <p>{{'project.partner.motivation.organization.role' | translate}}</p>
-        <app-multi-language>
+        <app-multi-language-container>
             <app-multi-language-form-field type="textarea"
                                            [label]="'common.textarea.enter.text'"
                                            formControlName="organizationRole"
                                            [maxLength]="2000">
             </app-multi-language-form-field>
-        </app-multi-language>
+        </app-multi-language-container>
 
         <p>{{'project.partner.motivation.organization.experience' | translate}}</p>
-        <app-multi-language>
+        <app-multi-language-container>
             <app-multi-language-form-field type="textarea"
                                            [label]="'common.textarea.enter.text'"
                                            formControlName="organizationExperience"
                                            [maxLength]="2000">
             </app-multi-language-form-field>
-        </app-multi-language>
+        </app-multi-language-container>
     </form>
 </app-form>

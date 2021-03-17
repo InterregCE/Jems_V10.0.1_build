@@ -28,7 +28,7 @@
         <mat-cell *matCellDef="let row" [class.justify-end]="column.columnType === ColumnType.Decimal" class="cell">
             <div *ngIf="!column.customCellTemplate; else customCellTemplate"
                  [title]="column.tooltip ? (formatColumnTooltip(column, row) | translate) : ''">
-                {{ formatColumnValue(column, row, (languageService.systemLanguage$ | async)!) | translate : getI18nArgs(column, row) }}
+                {{ formatColumnValue(column, row, (languageStore.currentSystemLanguage$ | async)!) | translate : getI18nArgs(column, row) }}
             </div>
 
             <ng-template #customCellTemplate>

@@ -7,9 +7,9 @@ spring:
   messages:
     basename: classpath:/messages
   datasource:
-    url: "${SPRING_DATASOURCE_URL:jdbc:mariadb://localhost:3306/jems}"
+    url: "${SPRING_DATASOURCE_URL:jdbc:mariadb://localhost:3306/jemsdb}"
     username: root
-    password: "${SPRING_DATASOURCE_PASSWORD:jemspass}"
+    password: "${SPRING_DATASOURCE_PASSWORD:Mariadb@2020}"
     driver-class-name: org.mariadb.jdbc.Driver
     jpa:
       database: mariadb
@@ -29,8 +29,8 @@ audit-service:
 
 minio-storage:
   endpoint: "${MINIO_URL_AND_PORT:http://localhost:9000}"
-  accessKey: "${MINIO_ACCESS_KEY:minio}"
-  secretKey: "${MINIO_SECRET_KEY:minio123}"
+  accessKey: "${MINIO_ACCESS_KEY:jemsminio}"
+  secretKey: "${MINIO_SECRET_KEY:Minio@2020}"
 server:
   servlet:
     session:
