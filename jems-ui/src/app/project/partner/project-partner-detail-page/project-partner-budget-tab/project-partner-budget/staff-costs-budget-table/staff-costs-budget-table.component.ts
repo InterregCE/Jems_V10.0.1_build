@@ -14,7 +14,6 @@ import {Observable} from 'rxjs';
 import {map, startWith} from 'rxjs/operators';
 import {NumberService} from '../../../../../../common/services/number.service';
 import {FormService} from '@common/components/section/form/form.service';
-import {MultiLanguageInputService} from '../../../../../../common/services/multi-language-input.service';
 import {StaffCostsBudgetTable} from '../../../../../model/budget/staff-costs-budget-table';
 import {UntilDestroy, untilDestroyed} from '@ngneat/until-destroy';
 import {StaffCostTypeEnum} from '../../../../../model/budget/staff-cost-type.enum';
@@ -55,7 +54,7 @@ export class StaffCostsBudgetTableComponent implements OnInit, OnChanges, OnDest
   columnsToDisplay: string[];
   tableConfig: TableConfig[];
 
-  constructor(private formService: FormService, private controlContainer: ControlContainer, private formBuilder: FormBuilder, private multiLanguageInputService: MultiLanguageInputService) {
+  constructor(private formService: FormService, private controlContainer: ControlContainer, private formBuilder: FormBuilder) {
     this.budgetForm = this.controlContainer.control as FormGroup;
   }
 
@@ -134,11 +133,11 @@ export class StaffCostsBudgetTableComponent implements OnInit, OnChanges, OnDest
   addNewItem(): void {
     this.items.push(this.formBuilder.group({
       id: null,
-      description: [this.multiLanguageInputService.multiLanguageFormFieldDefaultValue()],
+      description: [[]],
       type: [null],
       unitType: [null],
       unitCost: [null],
-      comment: [this.multiLanguageInputService.multiLanguageFormFieldDefaultValue()],
+      comment: [[]],
       numberOfUnits: [1, [Validators.max(this.constants.MAX_VALUE), Validators.min(this.constants.MIN_VALUE)]],
       pricePerUnit: [0, [Validators.max(this.constants.MAX_VALUE), Validators.min(this.constants.MIN_VALUE)]],
       rowSum: [0, [Validators.max(this.constants.MAX_VALUE), Validators.min(this.constants.MIN_VALUE)]],

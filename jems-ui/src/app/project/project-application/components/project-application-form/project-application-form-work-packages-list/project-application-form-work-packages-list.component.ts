@@ -16,7 +16,6 @@ import {ColumnType} from '@common/components/table/model/column-type.enum';
 import {Forms} from '../../../../../common/utils/forms';
 import {filter, map, take} from 'rxjs/operators';
 import {MatDialog} from '@angular/material/dialog';
-import {MultiLanguageInputService} from '../../../../../common/services/multi-language-input.service';
 
 @Component({
   selector: 'app-project-application-form-work-packages-list',
@@ -82,8 +81,7 @@ export class ProjectApplicationFormWorkPackagesListComponent implements OnInit {
     });
   }
 
-  delete(workPackage: OutputWorkPackageSimple): void {
-    const name = this.getTitleValue(workPackage);
+  delete(workPackage: OutputWorkPackageSimple, name: string): void {
     const message = name
       ? 'project.application.form.workpackage.table.action.delete.dialog.message'
       : 'project.application.form.workpackage.table.action.delete.dialog.message.no.name';
@@ -99,9 +97,4 @@ export class ProjectApplicationFormWorkPackagesListComponent implements OnInit {
         map(() => this.deleteWorkPackage.emit(workPackage.id)),
       ).subscribe();
   }
-
-  getTitleValue(workPackage: OutputWorkPackageSimple): string {
-    return MultiLanguageInputService.getFirstTranslation(workPackage.name);
-  }
-
 }

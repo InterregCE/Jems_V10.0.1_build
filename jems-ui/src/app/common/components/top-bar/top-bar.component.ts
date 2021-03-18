@@ -5,8 +5,8 @@ import {Observable} from 'rxjs';
 import {OutputCurrentUser} from '@cat/api';
 import {MenuItemConfiguration} from '../menu/model/menu-item.configuration';
 import {TopBarService} from '@common/components/top-bar/top-bar.service';
-import {LanguageService} from '../../services/language.service';
-import {finalize} from 'rxjs/operators';
+import {LanguageStore} from '../../services/language-store.service';
+import {finalize, map, withLatestFrom} from 'rxjs/operators';
 
 @Component({
   selector: 'app-top-bar',
@@ -25,9 +25,19 @@ export class TopBarComponent implements OnInit {
   logoutOngoing = false;
   isNavBarCollapsed = true;
 
+  languageSettings$ = this.languageStore.systemLanguages$
+    .pipe(
+      withLatestFrom(this.languageStore.fallbackLanguage$),
+      map(([languages, fallbackLanguage]) => ({
+        languages,
+        fallbackLanguage,
+        isDefaultAvailable: !!languages.find((lang: string) => lang === fallbackLanguage)
+      }))
+    );
+
   constructor(public router: Router,
               private topBarService: TopBarService,
-              public languageService: LanguageService,
+              public languageStore: LanguageStore,
               public translate: TranslateService) {
     const auditUrl = this.prepareAuditUrl(window.location.href);
     this.topBarService.newAuditUrl(auditUrl);
@@ -56,7 +66,7 @@ export class TopBarComponent implements OnInit {
   }
 
   changeLanguage(newLang: string): void {
-    this.languageService.changeLanguage(newLang);
+    this.languageStore.setSystemLanguageAndUpdateProfile(newLang);
     this.isNavBarCollapsed = true;
   }
 }

@@ -8,7 +8,7 @@ import {merge, Subject} from 'rxjs';
 import {I18nValidationError} from '@common/validation/i18n-validation-error';
 import {ProgrammePageSidenavService} from '../../services/programme-page-sidenav.service';
 import {Permission} from '../../../../security/permissions/permission';
-import {LanguageService} from '../../../../common/services/language.service';
+import {LanguageStore} from '../../../../common/services/language-store.service';
 
 @Component({
   selector: 'app-programme-languages-page',
@@ -44,11 +44,15 @@ export class ProgrammeLanguagesPageComponent extends BaseComponent implements On
 
   constructor(private programmeLanguageService: ProgrammeLanguageService,
               private programmePageSidenavService: ProgrammePageSidenavService,
-              private languageService: LanguageService) {
+              private languageStore: LanguageStore) {
     super();
   }
 
   reloadLanguages(response: ProgrammeLanguageDTO[]): void {
-    this.languageService.updateLanguages(response);
+    this.languageStore.setLanguages(
+      response.filter(selections => selections?.ui).map(selections => selections.code),
+      response.filter(selections => selections?.input).map(selections => selections.code),
+      response.find(selections => selections?.fallback)?.code.valueOf()
+    );
   }
 }

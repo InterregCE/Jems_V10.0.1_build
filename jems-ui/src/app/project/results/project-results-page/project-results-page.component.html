@@ -22,7 +22,7 @@
                                         [formControlName]="constants.RESULT_INDICATOR.name">
                                 <mat-option *ngFor="let resultIndicator of data.resultIndicators"
                                             [value]="resultIndicator.id">
-                                    {{resultIndicator.name | translateSystem | async}}
+                                    {{resultIndicator.name | translateBySystemLanguage | async}}
                                 </mat-option>
                             </mat-select>
                             <mat-hint *ngIf="!data.resultIndicators?.length" class="mat-error">
@@ -34,7 +34,7 @@
                                 <mat-label>{{'project.results.result.measurement.unit' | translate}}</mat-label>
                                 <input readonly matInput
                                        value="{{getMeasurementUnit(result.get(constants.RESULT_INDICATOR.name)?.value, data.resultIndicators)
-                                                | translateSystem | async}}"
+                                                | translateBySystemLanguage | async}}"
                                        [disabled]="form.disabled">
                             </mat-form-field>
 
@@ -52,14 +52,14 @@
                             </app-project-periods-select>
                         </div>
 
-                        <app-multi-language>
+                        <app-multi-language-container>
                             <app-multi-language-form-field
                                     type="textarea"
                                     label="project.results.result.description"
                                     [formControlName]="constants.DESCRIPTION.name"
                                     [maxLength]="constants.DESCRIPTION.maxLength">
                             </app-multi-language-form-field>
-                        </app-multi-language>
+                        </app-multi-language-container>
 
                     </div>
                 </ng-container>

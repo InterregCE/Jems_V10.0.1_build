@@ -5,35 +5,35 @@
         <p>{{'project.application.form.future.plans.intro' | translate}}</p>
         <h4>{{'project.application.form.future.plans.field.1' | translate}}</h4>
         <p>{{'project.application.form.future.plans.field.1.intro' | translate}}</p>
-        <app-multi-language>
+        <app-multi-language-container>
             <app-multi-language-form-field
                     type="textarea"
                     [label]="'common.textarea.enter.text'"
                     [formControlName]="'ownership'"
                     [maxLength]="5000">
             </app-multi-language-form-field>
-        </app-multi-language>
+        </app-multi-language-container>
 
         <h4>{{'project.application.form.future.plans.field.2' | translate}}</h4>
         <p>{{'project.application.form.future.plans.field.2.intro' | translate}}</p>
-        <app-multi-language>
+        <app-multi-language-container>
             <app-multi-language-form-field
                     type="textarea"
                     [label]="'common.textarea.enter.text'"
                     [formControlName]="'durability'"
                     [maxLength]="5000">
             </app-multi-language-form-field>
-        </app-multi-language>
+        </app-multi-language-container>
 
         <h4>{{'project.application.form.future.plans.field.3' | translate}}</h4>
         <p>{{'project.application.form.future.plans.field.3.intro' | translate}}</p>
-        <app-multi-language>
+        <app-multi-language-container>
             <app-multi-language-form-field
                     type="textarea"
                     [label]="'common.textarea.enter.text'"
                     [formControlName]="'transferability'"
                     [maxLength]="5000">
             </app-multi-language-form-field>
-        </app-multi-language>
+        </app-multi-language-container>
     </form>
 </app-form>

@@ -1,6 +1,5 @@
 import {ChangeDetectionStrategy, Component, Input} from '@angular/core';
-import {InputTranslation, OutputProject, OutputProjectStatus} from '@cat/api';
-import {MultiLanguageInputService} from '../../../../../common/services/multi-language-input.service';
+import {OutputProject, OutputProjectStatus} from '@cat/api';
 import moment from 'moment/moment';
 import {Tables} from '../../../../../common/utils/tables';
 import {CallStore} from '../../../../../call/services/call-store.service';
@@ -30,8 +29,7 @@ export class ProjectApplicationInformationComponent {
     };
   }
 
-  getCodeAndTitle(code?: string, titleTranslations?: InputTranslation[]): string {
-    const title = MultiLanguageInputService.getFirstTranslation(titleTranslations || []);
+  getCodeAndTitle(code?: string, title?: string| null): string {
     return code && title ? `${code} - ${title}` : code || title || '';
   }
 

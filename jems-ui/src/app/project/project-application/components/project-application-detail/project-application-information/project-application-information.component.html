@@ -23,11 +23,11 @@
     </div>
     <div class="project-row">
         <span class="header p-1 pr-3">{{'project.detail.overview.project.name' | translate}}</span>
-        <span class="p-1">{{project?.projectData?.title | translateSystem | async}}</span>
+        <span class="p-1">{{project?.projectData?.title | translateContainerLessInputsBySystemLanguage | async}}</span>
     </div>
     <div class="project-row">
         <span class="header p-1 pr-3">{{'project.detail.table.programme.priority' | translate}}</span>
-        <span class="p-1">{{getCodeAndTitle(project.projectData?.programmePriority?.code, project.projectData?.programmePriority?.title)}}</span>
+        <span class="p-1">{{getCodeAndTitle(project.projectData?.programmePriority?.code, (project.projectData?.programmePriority?.title | translateContainerLessInputsBySystemLanguage| async))}}</span>
     </div>
     <div class="project-row">
         <span class="header p-1 pr-3">{{'project.detail.table.specific.objective' | translate}}</span>

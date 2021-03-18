@@ -21,14 +21,14 @@
                 </mat-error>
             </mat-form-field>
 
-            <app-multi-language [useSystemLanguages]="true"
-                                [switchButtonsVisible]="!form.disabled">
+            <app-multi-language-container [useSystemLanguages]="true"
+                                          [switchButtonsVisible]="!form.disabled">
                 <app-multi-language-form-field
                         [formControlName]="constants.TITLE.name"
                         label="programme.priority.field.title"
                         [maxLength]="300">
                 </app-multi-language-form-field>
-            </app-multi-language>
+            </app-multi-language-container>
         </div>
 
         <h3>{{'programme.priority.add.objective.title' | translate}}</h3>

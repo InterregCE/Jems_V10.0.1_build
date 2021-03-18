@@ -10,7 +10,7 @@
                             <h4 appMultiColumnRow class="mb-0">
                                 <span>{{('project.work.package.tab.activity' | translate) + ' ' + data.workPackageNumber + '.' + (i + 1) }}</span>
                                 <span appFormFieldWidth="xx-large"
-                                      class="text-overflow-ellipsis">{{languageService.getCurrentValue(activity.get(constants.TITLE.name).value)}}</span>
+                                      class="text-overflow-ellipsis">{{activity.get(constants.TITLE.name).value | translateByInputLanguage}}</span>
                             </h4>
 
                             <button *ngIf="form.enabled"
@@ -19,13 +19,13 @@
                                 <mat-icon>delete</mat-icon>
                             </button>
                         </div>
-                        <app-multi-language>
+                        <app-multi-language-container>
                             <app-multi-language-form-field
                                     [label]="'project.work.package.tab.activity.title'"
                                     [formControlName]="constants.TITLE.name"
                                     [maxLength]="constants.TITLE.maxLength">
                             </app-multi-language-form-field>
-                        </app-multi-language>
+                        </app-multi-language-container>
 
                         <div>
                             <div appMultiColumnRow stretch>
@@ -50,16 +50,16 @@
                             </mat-error>
                         </div>
 
-                        <app-multi-language>
+                        <app-multi-language-container>
                             <app-multi-language-form-field [label]="'project.work.package.tab.activity.description'"
                                                            [formControlName]="constants.DESCRIPTION.name"
                                                            [maxLength]="constants.DESCRIPTION.maxLength">
                             </app-multi-language-form-field>
-                        </app-multi-language>
+                        </app-multi-language-container>
 
                         <h4>{{'Deliverables' | translate}}</h4>
                         <p>{{'project.work.package.tab.deliverables.intro' | translate}}</p>
-                        <app-multi-language appNoWidthLimit *ngIf="deliverables(i).controls?.length">
+                        <app-multi-language-container appNoWidthLimit *ngIf="deliverables(i).controls?.length">
                             <div [appTableConfig]="[{maxInRem:3},{minInRem:15},{minInRem:10}, {maxInRem:2}]">
                                 <div>
                                     <span class="mat-body-strong">{{'project.work.package.tab.deliverables.number' | translate }}</span>
@@ -98,7 +98,7 @@
                                     </ng-container>
                                 </div>
                             </div>
-                        </app-multi-language>
+                        </app-multi-language-container>
                         <button *ngIf="addDeliverableVisible(i)" mat-stroked-button type="button"
                                 (click)="addNewDeliverable(i)">
                             <mat-icon>add</mat-icon>

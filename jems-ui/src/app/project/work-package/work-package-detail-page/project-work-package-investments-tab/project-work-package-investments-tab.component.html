@@ -31,13 +31,15 @@
 </ng-template>
 
 <ng-template #titleCell let-workPackageInvestment>
-    {{getTitleValue(workPackageInvestment)}}
+    {{workPackageInvestment?.title | translateContainerLessInputsBySystemLanguage}}
 </ng-template>
 
-<ng-template #deletionCell let-workPackageInvestment>
-    <button *ngIf="editable" mat-icon-button color="accent"
-            (click)="$event.stopPropagation();delete(workPackageInvestment)"
-            matTooltip="{{'project.application.form.workpackage.investment.table.action.delete.tooltip' | translate}}">
-        <em class="mat-column-delete fas fa-trash"></em>
-    </button>
+<ng-template #deletionCell let-workPackageInvestment let-name>
+    <ng-container *ngIf="(workPackageInvestment.title | translateContainerLessInputsBySystemLanguage | async) as title">
+        <button *ngIf="editable" mat-icon-button color="accent"
+                (click)="$event.stopPropagation();delete(workPackageInvestment, title)"
+                matTooltip="{{'project.application.form.workpackage.investment.table.action.delete.tooltip' | translate}}">
+            <em class="mat-column-delete fas fa-trash"></em>
+        </button>
+    </ng-container>
 </ng-template>

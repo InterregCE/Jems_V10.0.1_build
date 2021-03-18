@@ -7,52 +7,52 @@
         <h4>{{'project.application.form.management.field.1' | translate}}</h4>
         <p>{{'project.application.form.management.field.1.intro' | translate}}</p>
 
-        <app-multi-language>
+        <app-multi-language-container>
             <app-multi-language-form-field
                     type="textarea"
                     [label]="'common.textarea.enter.text'"
                     [formControlName]="'coordination'"
                     [maxLength]="5000">
             </app-multi-language-form-field>
-        </app-multi-language>
+        </app-multi-language-container>
 
         <h4>{{'project.application.form.management.field.2' | translate}}</h4>
         <p>{{'project.application.form.management.field.2.intro' | translate}}</p>
 
-        <app-multi-language>
+        <app-multi-language-container>
             <app-multi-language-form-field
                     type="textarea"
                     [label]="'common.textarea.enter.text'"
                     [formControlName]="'quality'"
                     [maxLength]="5000">
             </app-multi-language-form-field>
-        </app-multi-language>
+        </app-multi-language-container>
 
         <h4>{{'project.application.form.management.field.3' | translate}}</h4>
         <p>{{'project.application.form.management.field.3.intro' | translate}}</p>
-        <app-multi-language>
+        <app-multi-language-container>
             <app-multi-language-form-field
                     type="textarea"
                     [label]="'common.textarea.enter.text'"
                     [formControlName]="'communication'"
                     [maxLength]="5000">
             </app-multi-language-form-field>
-        </app-multi-language>
+        </app-multi-language-container>
 
         <h4>{{'project.application.form.management.field.4' | translate}}</h4>
         <p>{{'project.application.form.management.field.4.intro' | translate}}</p>
-        <app-multi-language>
+        <app-multi-language-container>
             <app-multi-language-form-field
                     type="textarea"
                     [label]="'common.textarea.enter.text'"
                     [formControlName]="'financial'"
                     [maxLength]="5000">
             </app-multi-language-form-field>
-        </app-multi-language>
+        </app-multi-language-container>
 
         <h4>{{'project.application.form.management.field.5' | translate}}</h4>
         <p>{{'project.application.form.management.field.5.intro' | translate}}</p>
-        <app-multi-language appNoWidthLimit>
+        <app-multi-language-container appNoWidthLimit>
             <div [appTableConfig]="[{maxInRem:15},{}]">
                 <div>
                     <span>{{'project.application.form.management.cooperation.table.header.criteria' | translate}}</span>
@@ -132,12 +132,12 @@
                     </app-multi-language-form-field>
                 </div>
             </div>
-        </app-multi-language>
+        </app-multi-language-container>
 
         <h4>{{'project.application.form.management.field.6' | translate}}</h4>
         <p>{{'project.application.form.management.field.6.intro' | translate}}</p>
 
-        <app-multi-language  appNoWidthLimit>
+        <app-multi-language-container appNoWidthLimit>
             <div [appTableConfig]="[{minInRem:12},{minInRem:20},{}]">
                 <div>
                     <span>{{'project.application.form.management.principles.table.header.principles' | translate}}</span>
@@ -190,6 +190,6 @@
                     </app-multi-language-form-field>
                 </div>
             </div>
-        </app-multi-language>
+        </app-multi-language-container>
     </form>
 </app-form>

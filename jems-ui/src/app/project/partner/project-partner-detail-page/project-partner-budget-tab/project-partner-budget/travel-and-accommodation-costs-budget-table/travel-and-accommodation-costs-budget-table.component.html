@@ -6,7 +6,7 @@
             <p>{{'project.partner.budget.table.period.warning' | translate}}</p>
         </app-alert>
         <ng-container [formGroup]="travel">
-            <app-multi-language>
+            <app-multi-language-container>
                 <mat-table [appTableConfig]="tableConfig"
                            [dataSource]="dataSource" [formArrayName]="constants.FORM_CONTROL_NAMES.items"
                            class="travel-budget-table">
@@ -25,7 +25,7 @@
                                     <mat-option [value]="null">{{'common.not.applicable.option' | translate}}</mat-option>
                                     <mat-option *ngFor="let unitCost of availableUnitCosts"
                                                 [value]="unitCost">
-                                        {{ unitCost.name | translateSystem | async }}
+                                        {{ unitCost.name | translateBySystemLanguage | async }}
                                     </mat-option>
                                 </mat-select>
                                 <mat-error>
@@ -46,7 +46,7 @@
                                 *matHeaderCellDef> {{'project.partner.budget.table.description' | translate}} </mat-header-cell>
                         <mat-cell *matCellDef="let control;  let i = index" [formGroupName]="i">
                             <div class="text-overflow-ellipsis"
-                                 *ngIf="getUnitCost(control).value"> {{getUnitCost(control).value.description | translateSystem | async}}</div>
+                                 *ngIf="getUnitCost(control).value"> {{getUnitCost(control).value.description | translateBySystemLanguage | async}}</div>
                             <app-multi-language-form-field
                                     *ngIf="!getUnitCost(control).value"
                                     [formControlName]="constants.FORM_CONTROL_NAMES.description">
@@ -64,7 +64,7 @@
                                 *matHeaderCellDef> {{'project.partner.budget.table.unit.type' | translate}} </mat-header-cell>
                         <mat-cell *matCellDef="let control;  let i = index" [formGroupName]="i">
                             <div class="text-overflow-ellipsis"
-                                 *ngIf="getUnitCost(control).value"> {{getUnitCost(control).value.type | translateSystem | async}}</div>
+                                 *ngIf="getUnitCost(control).value"> {{getUnitCost(control).value.type | translateBySystemLanguage | async}}</div>
                             <app-multi-language-form-field
                                     *ngIf="!getUnitCost(control).value"
                                     [maxLength]="constants.MAX_UNIT_TYPE_TEXT_LENGTH"
@@ -166,7 +166,7 @@
                     <mat-footer-row *matFooterRowDef="columnsToDisplay"></mat-footer-row>
 
                 </mat-table>
-            </app-multi-language>
+            </app-multi-language-container>
             <mat-error class="mt-3" *ngIf="total.errors">
                 <app-form-field-errors
                         [errors]="total.errors"

@@ -19,7 +19,7 @@
                                     [matTooltip]="select.triggerValue"
                                     [formControlName]="constants.FORM_CONTROL_NAMES.unitCost">
                                 <mat-option *ngFor="let unitCost of availableUnitCosts" [value]="unitCost">
-                                    {{ unitCost.name| translateSystem | async}}
+                                    {{ unitCost.name| translateBySystemLanguage | async}}
                                 </mat-option>
                             </mat-select>
                             <mat-error>
@@ -40,8 +40,8 @@
                             *matHeaderCellDef> {{'project.partner.budget.table.description' | translate}} </mat-header-cell>
                     <mat-cell *matCellDef="let control;  let i = index" [formGroupName]="i">
                         <div class="text-overflow-ellipsis"
-                             [matTooltip]="getUnitCostValue(control)?.description | translateSystem | async">
-                            {{getUnitCostValue(control)?.description | translateSystem | async}}
+                             [matTooltip]="getUnitCostValue(control)?.description | translateBySystemLanguage | async">
+                            {{getUnitCostValue(control)?.description | translateBySystemLanguage | async}}
                         </div>
                     </mat-cell>
                     <mat-footer-cell *matFooterCellDef></mat-footer-cell>
@@ -52,8 +52,8 @@
                             *matHeaderCellDef> {{'project.partner.budget.table.unit.type' | translate}} </mat-header-cell>
                     <mat-cell *matCellDef="let control;  let i = index" [formGroupName]="i">
                         <div class="text-overflow-ellipsis"
-                             [matTooltip]="getUnitCostValue(control)?.type | translateSystem | async">
-                            {{getUnitCostValue(control)?.type | translateSystem | async}}
+                             [matTooltip]="getUnitCostValue(control)?.type | translateBySystemLanguage | async">
+                            {{getUnitCostValue(control)?.type | translateBySystemLanguage | async}}
                         </div>
                     </mat-cell>
                     <mat-footer-cell *matFooterCellDef></mat-footer-cell>

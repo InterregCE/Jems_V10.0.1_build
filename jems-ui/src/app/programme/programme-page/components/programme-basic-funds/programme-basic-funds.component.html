@@ -7,7 +7,7 @@
             {{'common.edit.label' | translate}}
         </button>
     </div>
-    <app-multi-language [useSystemLanguages]="true" [switchButtonsVisible]="formState === FormState.EDIT">
+    <app-multi-language-container [useSystemLanguages]="true" [switchButtonsVisible]="formState === FormState.EDIT">
         <div [appTableConfig]="[{maxInRem: 2},{},{}]">
             <div>
                 <span class="mat-body-strong">{{ 'programme.fund.list.select' | translate }}</span>
@@ -26,7 +26,6 @@
                         </mat-checkbox>
 
                         <app-multi-language-form-field
-                                hideCountersWhenInView="true"
                                 formControlName="abbreviation"
                                 maxLength="127"
                                 label="programme.fund.list.abbreviation">
@@ -47,7 +46,7 @@
                 <mat-icon>add</mat-icon>
             </button>
         </div>
-    </app-multi-language>
+    </app-multi-language-container>
     <div appMultiColumnRow *ngIf="formState === FormState.EDIT">
         <button mat-stroked-button type="button"
                 (click)="resetForm()">

@@ -13,7 +13,6 @@ import {ColumnType} from '@common/components/table/model/column-type.enum';
 import {Forms} from '../../../../common/utils/forms';
 import {MatDialog} from '@angular/material/dialog';
 import {ProjectApplicationFormSidenavService} from '../../../project-application/containers/project-application-form-page/services/project-application-form-sidenav.service';
-import {MultiLanguageInputService} from '../../../../common/services/multi-language-input.service';
 
 @Component({
   selector: 'app-project-work-package-investments-tab',
@@ -106,9 +105,8 @@ export class ProjectWorkPackageInvestmentsTabComponent implements OnInit {
     this.setRouterLink();
   }
 
-  delete(workPackageInvestment: WorkPackageInvestmentDTO): void {
-    const name = this.getTitleValue(workPackageInvestment);
-    const message = name
+  delete(workPackageInvestment: WorkPackageInvestmentDTO, title: string): void {
+    const message = title
       ? 'project.application.form.workpackage.investment.table.action.delete.dialog.message'
       : 'project.application.form.workpackage.investment.table.action.delete.dialog.message.no.name';
 
@@ -116,7 +114,7 @@ export class ProjectWorkPackageInvestmentsTabComponent implements OnInit {
       this.dialog,
       'project.application.form.workpackage.table.action.delete.dialog.header',
       message,
-      {name, boldWarningMessage: 'project.application.form.workpackage.investment.table.action.delete.dialog.warning'})
+      {title, boldWarningMessage: 'project.application.form.workpackage.investment.table.action.delete.dialog.warning'})
       .pipe(
         take(1),
         filter(answer => !!answer),
@@ -132,10 +130,5 @@ export class ProjectWorkPackageInvestmentsTabComponent implements OnInit {
   private setRouterLink(): void {
     this.tableConfiguration.routerLink = '/app/project/detail/' + this.projectId + '/applicationFormWorkPackage/detail/' + this.workPackageId + '/investment/detail';
   }
-
-  getTitleValue(workPackageInvestment: WorkPackageInvestmentDTO): string {
-    return MultiLanguageInputService.getFirstTranslation(workPackageInvestment.title);
-  }
-
 }
 

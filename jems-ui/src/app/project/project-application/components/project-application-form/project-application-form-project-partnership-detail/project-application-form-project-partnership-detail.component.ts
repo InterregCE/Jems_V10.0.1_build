@@ -15,7 +15,6 @@ import {FormService} from '@common/components/section/form/form.service';
 import {Observable} from 'rxjs';
 import {HttpErrorResponse} from '@angular/common/http';
 import {takeUntil, tap} from 'rxjs/operators';
-import {MultiLanguageInputService} from '../../../../../common/services/multi-language-input.service';
 import {ProjectStore} from '../../../containers/project-application-detail/services/project-store.service';
 
 @Component({
@@ -43,7 +42,6 @@ export class ProjectApplicationFormProjectPartnershipDetailComponent extends Bas
 
   constructor(private formBuilder: FormBuilder,
               private formService: FormService,
-              public languageService: MultiLanguageInputService,
               private projectStore: ProjectStore) {
     super();
   }

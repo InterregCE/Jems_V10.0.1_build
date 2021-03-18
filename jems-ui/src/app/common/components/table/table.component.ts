@@ -7,7 +7,7 @@ import {Tools} from '../../utils/tools';
 import {MatSort} from '@angular/material/sort';
 import {Tables} from '../../utils/tables';
 import {MoneyPipe} from '../../pipe/money.pipe';
-import {LanguageService} from '../../services/language.service';
+import {LanguageStore} from '../../services/language-store.service';
 import {InputTranslation} from '@cat/api';
 import moment from 'moment/moment';
 
@@ -39,7 +39,7 @@ export class TableComponent implements OnInit {
   currentPageSize = Tables.DEFAULT_INITIAL_PAGE_SIZE;
 
   constructor(private moneyPipe: MoneyPipe,
-              public languageService: LanguageService) {
+              public languageStore: LanguageStore) {
   }
 
   ngOnInit(): void {

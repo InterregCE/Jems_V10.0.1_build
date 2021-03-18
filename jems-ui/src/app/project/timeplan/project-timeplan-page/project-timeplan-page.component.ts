@@ -10,7 +10,6 @@ import {combineLatest, Observable} from 'rxjs';
 
 import {ProjectTimeplanPageStore} from './project-timeplan-page-store.service';
 import {ProjectApplicationFormSidenavService} from '../../project-application/containers/project-application-form-page/services/project-application-form-sidenav.service';
-import {LanguageService} from '../../../common/services/language.service';
 import {
   Content,
   getEndDateFromPeriod,
@@ -23,6 +22,7 @@ import {
   START_DATE,
   TRANSLATABLE_GROUP_TYPES,
 } from './project-timeplan.utils';
+import {MultiLanguageContainerService} from '@common/components/forms/multi-language-container/multi-language-container.service';
 
 @Component({
   selector: 'app-project-timeplan-page',
@@ -45,7 +45,7 @@ export class ProjectTimeplanPageComponent implements OnInit {
 
   constructor(private projectApplicationFormSidenavService: ProjectApplicationFormSidenavService,
               private translateService: TranslateService,
-              private languageService: LanguageService,
+              private multiLanguageContainerService: MultiLanguageContainerService,
               private router: Router,
               private activatedRoute: ActivatedRoute,
               public pageStore: ProjectTimeplanPageStore) {
@@ -66,7 +66,6 @@ export class ProjectTimeplanPageComponent implements OnInit {
     const projectData$ = combineLatest([
       workPackagesAndResultsAndGroups$,
       this.pageStore.periods$,
-      this.languageService.systemLanguage$,
     ])
       .pipe(
         map(([data, periods]) => ({
@@ -78,7 +77,7 @@ export class ProjectTimeplanPageComponent implements OnInit {
         tap(data => this.createVisualizationOrUpdateJustTranslations(data.periods, data.timelineItems, data.timelineGroups))
       );
 
-    this.data$ = combineLatest([projectData$, this.pageStore.inputLanguage$])
+    this.data$ = combineLatest([projectData$, this.multiLanguageContainerService.activeLanguage$])
       .pipe(
         map(([projectData, language]) => ({
           timelineGroups: projectData.timelineGroups,

@@ -5,7 +5,7 @@
             [checked]="priority.checked"
             [indeterminate]="priority.someChecked()"
             (change)="priority.checkOrUncheckAll(); selectionChanged.emit()">
-        {{ priority.name + translated(priority.translatableTitle, languageService.systemLanguage$ | async) }}
+        {{ priority.name + (priority.translatableTitle | translateBySystemLanguage | async) }}
     </mat-checkbox>
     <ul class="no-bullets">
         <li *ngFor="let policy of priority.children">

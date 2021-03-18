@@ -5,7 +5,6 @@ import {catchError, map, startWith, tap} from 'rxjs/operators';
 import {ProjectPartnerDetailPageStore} from '../../project-partner-detail-page.store';
 import {UntilDestroy, untilDestroyed} from '@ngneat/until-destroy';
 import {BudgetOptions} from '../../../../model/budget/budget-options';
-import {MultiLanguageInputService} from '../../../../../common/services/multi-language-input.service';
 import {NumberService} from '../../../../../common/services/number.service';
 import {FormBuilder, FormGroup, Validators} from '@angular/forms';
 import {ProjectPartnerBudgetConstants} from './project-partner-budget.constants';
@@ -60,7 +59,7 @@ export class ProjectPartnerBudgetComponent implements OnInit {
   private officeAndAdministrationFlatRateTotal$: Observable<number>;
   private travelAndAccommodationTotal$: Observable<number>;
 
-  constructor(private formService: FormService, private tabService: ProjectPartnerBudgetTabService, private formBuilder: FormBuilder, private multiLanguageInputService: MultiLanguageInputService, private pageStore: ProjectPartnerDetailPageStore) {
+  constructor(private formService: FormService, private tabService: ProjectPartnerBudgetTabService, private formBuilder: FormBuilder, private pageStore: ProjectPartnerDetailPageStore) {
   }
 
   ngOnInit(): void {

@@ -14,7 +14,7 @@
                     (change)="toggleLumpSum(element)"
                     [checked]="selection.isSelected(element)">
             </mat-checkbox>
-            <span>{{ translated(element?.name, languageService.systemLanguage$ | async) }}</span>
+            <span>{{ element?.name | translateBySystemLanguage | async }}</span>
             <span>{{ element?.cost | asMoney}}</span>
         </div>
     </div>

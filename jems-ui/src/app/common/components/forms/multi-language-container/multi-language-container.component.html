@@ -1,13 +1,13 @@
 <div class="language-switcher-container">
     <ng-container *ngIf="switchButtonsVisible">
         <div class="language-switcher"
-             [class.toggle-button-exists]="isMoreThanOneLanguageInputEnabled()"
-             *ngIf="languages$ | async as languages">
+             *ngIf="multiLanguageContainerService.languages$ | async as languages"
+             [class.toggle-button-exists]="isMoreThanOneLanguageEnabled(languages)">
             <mat-button-toggle-group
                     class="language-switcher-toggle-group"
-                    *ngIf="isMoreThanOneLanguageInputEnabled()"
-                    [value]="currentLanguage$ | async"
-                    (change)="currentLanguage$.next($event.value)">
+                    *ngIf="isMoreThanOneLanguageEnabled(languages)"
+                    [value]="multiLanguageContainerService.activeLanguage$ | async"
+                    (change)="multiLanguageContainerService.changeLanguage($event.value, useSystemLanguages)">
                 <mat-button-toggle *ngFor="let language of languages; let index = index"
                                    matBadgeSize="small" matBadgePosition="after"
                                    [class.empty]="isEmptyState(language)"

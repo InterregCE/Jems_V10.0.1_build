@@ -12,7 +12,6 @@ import {
 import {MatTableDataSource} from '@angular/material/table';
 import {Observable} from 'rxjs';
 import {FormService} from '@common/components/section/form/form.service';
-import {MultiLanguageInputService} from '../../../../../../common/services/multi-language-input.service';
 import {map, startWith} from 'rxjs/operators';
 import {UntilDestroy, untilDestroyed} from '@ngneat/until-destroy';
 import {NumberService} from '../../../../../../common/services/number.service';
@@ -49,7 +48,7 @@ export class TravelAndAccommodationCostsBudgetTableComponent implements OnInit, 
   columnsToDisplay: string[];
   tableConfig: TableConfig[];
 
-  constructor(private formService: FormService, private controlContainer: ControlContainer, private formBuilder: FormBuilder, private multiLanguageInputService: MultiLanguageInputService) {
+  constructor(private formService: FormService, private controlContainer: ControlContainer, private formBuilder: FormBuilder) {
     this.budgetForm = this.controlContainer.control as FormGroup;
   }
 
@@ -125,8 +124,8 @@ export class TravelAndAccommodationCostsBudgetTableComponent implements OnInit, 
   addNewItem(): void {
     this.items.push(this.formBuilder.group({
       id: null,
-      description: [this.multiLanguageInputService.multiLanguageFormFieldDefaultValue()],
-      unitType: [this.multiLanguageInputService.multiLanguageFormFieldDefaultValue()],
+      description: [[]],
+      unitType: [[]],
       unitCost: [null],
       numberOfUnits: [1, [Validators.max(this.constants.MAX_VALUE), Validators.min(this.constants.MIN_VALUE)]],
       pricePerUnit: [0, [Validators.max(this.constants.MAX_VALUE), Validators.min(this.constants.MIN_VALUE)]],

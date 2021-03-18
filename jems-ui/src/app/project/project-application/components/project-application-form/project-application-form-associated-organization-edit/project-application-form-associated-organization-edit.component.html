@@ -14,14 +14,14 @@
                 </app-form-field-errors>
             </mat-error>
         </mat-form-field>
-        <app-multi-language [staticLanguages]="[LANGUAGE.EN]">
+        <app-multi-language-container [staticLanguages]="[LANGUAGE.EN]">
             <app-multi-language-form-field
                     label="project.organization.english.name.label"
                     formControlName="nameInEnglish"
                     maxLength="100"
                     [required]="true">
             </app-multi-language-form-field>
-        </app-multi-language>
+        </app-multi-language-container>
 
         <mat-form-field>
             <mat-label>{{'project.organization.partner' | translate}}</mat-label>
@@ -134,12 +134,12 @@
             </mat-error>
         </mat-form-field>
 
-        <app-multi-language>
+        <app-multi-language-container>
             <app-multi-language-form-field [label]="'project.organization.roleDescription'"
                                            type="textarea"
                                            formControlName="roleDescription"
                                            [maxLength]="2000">
             </app-multi-language-form-field>
-        </app-multi-language>
+        </app-multi-language-container>
     </form>
 </app-form>

@@ -8,13 +8,13 @@
             <input name="number" formControlName="number" matInput>
         </mat-form-field>
 
-        <app-multi-language>
+        <app-multi-language-container>
             <app-multi-language-form-field
                     label="project.application.form.workpackage.field.title"
                     formControlName="name"
                     maxLength="100">
             </app-multi-language-form-field>
-        </app-multi-language>
+        </app-multi-language-container>
 
         <h4>{{'project.application.form.workpackage.form.objectives' | translate}}</h4>
         <div>
@@ -26,23 +26,23 @@
             </ul>
         </div>
         <p>{{'project.application.form.workpackage.form.objectives.intro.line.one' | translate}}</p>
-        <app-multi-language>
+        <app-multi-language-container>
             <app-multi-language-form-field
                     type="textarea"
                     label="project.application.form.workpackage.field.specific.objective"
                     formControlName="specificObjective"
                     maxLength="250">
             </app-multi-language-form-field>
-        </app-multi-language>
+        </app-multi-language-container>
 
         <p>{{'project.application.form.workpackage.form.objectives.intro.line.two' | translate}}</p>
-        <app-multi-language>
+        <app-multi-language-container>
             <app-multi-language-form-field
                     type="textarea"
                     label="project.application.form.workpackage.field.target.audience"
                     formControlName="objectiveAndAudience"
                     maxLength="500">
             </app-multi-language-form-field>
-        </app-multi-language>
+        </app-multi-language-container>
     </form>
 </app-form>

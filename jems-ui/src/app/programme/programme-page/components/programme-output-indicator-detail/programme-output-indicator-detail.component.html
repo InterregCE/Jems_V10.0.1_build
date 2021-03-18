@@ -35,16 +35,16 @@
             </app-form-field-errors>
         </mat-error>
     </mat-form-field>
-    <app-multi-language [useSystemLanguages]="true" [switchButtonsVisible]="formState === FormState.EDIT">
+    <app-multi-language-container [useSystemLanguages]="true" [switchButtonsVisible]="formState === FormState.EDIT">
         <app-multi-language-form-field
                 label="output.indicator.form.field.name"
                 name="indicatorName" formControlName="indicatorName">
         </app-multi-language-form-field>
-    </app-multi-language>
+    </app-multi-language-container>
     <mat-form-field>
         <mat-label>{{'output.indicator.form.field.specific.objective' | translate}}</mat-label>
         <mat-select name="specificObjective" formControlName="specificObjective" required>
-            <mat-optgroup *ngFor="let priority of priorities" [label]="priority.title | translateSystem | async">
+            <mat-optgroup *ngFor="let priority of priorities" [label]="priority.title | translateBySystemLanguage | async">
                 <mat-option *ngFor="let objective of priority.specificObjectives"
                             [value]="objective.programmeObjectivePolicy">
                     {{objective.code}} -  {{'programme.policy.' + objective.programmeObjectivePolicy | translate}}
@@ -72,11 +72,11 @@
                     *ngIf="filteredResultIndicators.length===0">{{'output.indicator.result.indicator.empty.hint' | translate}}</mat-hint>
         </mat-form-field>
     </ng-container>
-    <app-multi-language [useSystemLanguages]="true" [switchButtonsVisible]="formState === FormState.EDIT">
+    <app-multi-language-container [useSystemLanguages]="true" [switchButtonsVisible]="formState === FormState.EDIT">
         <app-multi-language-form-field label="output.indicator.form.field.measurement.unit"
                                        name="measurementUnit" formControlName="measurementUnit">
         </app-multi-language-form-field>
-    </app-multi-language>
+    </app-multi-language-container>
     <mat-form-field>
         <mat-label>{{'output.indicator.form.field.milestone' | translate}}</mat-label>
         <input currencyMask type="decimal"

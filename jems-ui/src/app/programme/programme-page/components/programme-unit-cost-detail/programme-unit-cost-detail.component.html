@@ -34,30 +34,30 @@
     <div>{{'unit.cost.toggle.row.one' | translate}}</div>
     <div>{{'unit.cost.toggle.row.two' | translate}}</div>
 
-    <app-multi-language [useSystemLanguages]="true"
-                        [switchButtonsVisible]="formState === FormState.EDIT">
+    <app-multi-language-container [useSystemLanguages]="true"
+                                  [switchButtonsVisible]="formState === FormState.EDIT">
         <app-multi-language-form-field
                 formControlName="name"
                 label="unit.cost.form.field.name"
                 [maxLength]="50">
         </app-multi-language-form-field>
-    </app-multi-language>
-    <app-multi-language [useSystemLanguages]="true"
-                        [switchButtonsVisible]="formState === FormState.EDIT">
+    </app-multi-language-container>
+    <app-multi-language-container [useSystemLanguages]="true"
+                                  [switchButtonsVisible]="formState === FormState.EDIT">
         <app-multi-language-form-field
                 formControlName="description"
                 label="unit.cost.form.field.description"
                 [maxLength]="50">
         </app-multi-language-form-field>
-    </app-multi-language>
-    <app-multi-language [useSystemLanguages]="true"
-                        [switchButtonsVisible]="formState === FormState.EDIT">
+    </app-multi-language-container>
+    <app-multi-language-container [useSystemLanguages]="true"
+                                  [switchButtonsVisible]="formState === FormState.EDIT">
         <app-multi-language-form-field
                 formControlName="type"
                 label="unit.cost.form.field.unit.type"
                 [maxLength]="25">
         </app-multi-language-form-field>
-    </app-multi-language>
+    </app-multi-language-container>
     <mat-form-field>
         <mat-label>{{'unit.cost.form.field.cost' | translate}}</mat-label>
         <input currencyMask type="decimal"

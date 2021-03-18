@@ -25,8 +25,6 @@ import {ProgrammeLumpSum} from '../../model/lump-sums/programmeLumpSum';
 import {Alert} from '@common/components/forms/alert';
 import {ProjectPeriod} from '../../model/ProjectPeriod';
 import {TranslateService} from '@ngx-translate/core';
-import {LanguageService} from '../../../common/services/language.service';
-import {InputTranslation} from '@cat/api';
 import {MatTable} from '@angular/material/table';
 
 @UntilDestroy()
@@ -94,7 +92,6 @@ export class ProjectLumpSumsPageComponent implements OnInit {
   }
 
   constructor(public pageStore: ProjectLumpSumsPageStore,
-              public languageService: LanguageService,
               private formBuilder: FormBuilder,
               private formService: FormService,
               private translateService: TranslateService) {
@@ -367,13 +364,5 @@ export class ProjectLumpSumsPageComponent implements OnInit {
 
   get items(): FormArray {
     return this.lumpSumsForm.get(this.constants.FORM_CONTROL_NAMES.items) as FormArray;
-  }
-
-  translated(element: InputTranslation[], currentSystemLanguage: string | null): string {
-    if (!currentSystemLanguage || !element) {
-      return '';
-    }
-    const elementInSystemLang = element.find((it: InputTranslation) => it.language === currentSystemLanguage);
-    return !!elementInSystemLang ? elementInSystemLang.translation : '';
   }
 }

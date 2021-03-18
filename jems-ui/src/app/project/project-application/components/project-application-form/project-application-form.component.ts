@@ -1,18 +1,13 @@
 import {ChangeDetectionStrategy, ChangeDetectorRef, Component, Input, OnInit} from '@angular/core';
 import {FormBuilder, FormGroup, Validators} from '@angular/forms';
-import {
-  InputProjectData,
-  InputTranslation,
-  OutputProgrammePrioritySimple,
-  OutputProject
-} from '@cat/api';
+import {InputProjectData, InputTranslation, OutputProgrammePrioritySimple, OutputProject} from '@cat/api';
 import {Permission} from '../../../../security/permissions/permission';
 import {Tools} from '../../../../common/utils/tools';
 import {catchError, distinctUntilChanged, take, takeUntil, tap} from 'rxjs/operators';
 import {BaseComponent} from '@common/components/base-component';
 import {FormService} from '@common/components/section/form/form.service';
 import {ProjectStore} from '../../containers/project-application-detail/services/project-store.service';
-import {MultiLanguageInputService} from '../../../../common/services/multi-language-input.service';
+import {LanguageStore} from '../../../../common/services/language-store.service';
 
 @Component({
   selector: 'app-project-application-form',
@@ -78,7 +73,8 @@ export class ProjectApplicationFormComponent extends BaseComponent implements On
               private formService: FormService,
               protected changeDetectorRef: ChangeDetectorRef,
               public projectStore: ProjectStore,
-              public languageService: MultiLanguageInputService) {
+              public languageStore: LanguageStore
+              ) {
     super();
   }
 
@@ -129,7 +125,7 @@ export class ProjectApplicationFormComponent extends BaseComponent implements On
       this.projectPeriodCount(this.project?.projectData?.duration)
     );
     this.applicationForm.controls.intro.setValue(this.project?.projectData?.intro || []);
-    if (!this.englishLanguageActive()) {
+    if (!this.languageStore.isInputLanguageExist(this.LANGUAGE.EN)) {
       this.applicationForm.controls.introEn.setValue(this.project?.projectData?.intro || []);
     }
     if (this.project?.projectData?.specificObjective) {
@@ -154,9 +150,4 @@ export class ProjectApplicationFormComponent extends BaseComponent implements On
     this.currentPriority = selectedPriority;
     this.applicationForm.controls.specificObjective.setValue('');
   }
-
-  englishLanguageActive(): boolean {
-    return !!this.languageService.inputLanguages.find(lang => this.LANGUAGE.EN === lang);
-  }
-
 }
