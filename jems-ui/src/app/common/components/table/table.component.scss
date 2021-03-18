@@ -24,3 +24,12 @@ mat-footer-cell {
 .clickable-table-row:active {
   background-color: var(--hover-color);
 }
+
+.id-column-width {
+  max-width: 4rem;
+  padding-right: 2rem;
+}
+
+.date-column-width {
+  max-width: 8rem;
+}

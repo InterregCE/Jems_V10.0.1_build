@@ -32,7 +32,6 @@ describe('TopBarService', () => {
 
   it('should create menus depending on rights', fakeAsync(() => {
     const securityService: SecurityService = TestBed.inject(SecurityService);
-    service.newAuditUrl('auditUrl');
 
     let menuItems: MenuItemConfiguration[] = [];
     service.menuItems()

@@ -1,0 +1,55 @@
+<app-main-page-template [needsCard]="true">
+        <h3 class="mb-0">{{'audit.list.title' | translate}}</h3>
+        <div appMultiColumnRow [formGroup]="referenceForm">
+            <mat-form-field>
+                <mat-label>{{'audit.user.ids' | translate}}</mat-label>
+                <input (keyup.enter)="addFilter(0, $event)" matInput name="userId" formControlName="userId">
+            </mat-form-field>
+            <mat-form-field>
+                <mat-label>{{'audit.user.emails' | translate}}</mat-label>
+                <input (keyup.enter)="addFilter(1, $event)" matInput name="userEmail" formControlName="userEmail">
+            </mat-form-field>
+            <mat-form-field class="actions-field">
+                <mat-label>{{'audit.actions' | translate}}</mat-label>
+                <input (keyup.enter)="addFilter(2, $event)" matInput [matAutocomplete]="autoActions" name="actions" formControlName="actions">
+                <mat-autocomplete #autoActions="matAutocomplete">
+                    <mat-option *ngFor="let action of filteredActions | async" [value]="action">
+                        {{action}}
+                    </mat-option>
+                </mat-autocomplete>
+            </mat-form-field>
+            <mat-form-field>
+                <mat-label>{{'audit.projectIds' | translate}}</mat-label>
+                <input (keyup.enter)="addFilter(3, $event)" matInput name="description" formControlName="description">
+            </mat-form-field>
+        </div>
+
+        <mat-chip-list [selectable]="false">
+            <ng-container *ngFor="let control of filtersForm.controls; let filterIndex = index;">
+                <mat-chip *ngFor="let filterItem of control.get('values').value; let itemIndex = index;"
+                          class="color-{{ ['grey', 'blue', 'green', 'orange'][filterIndex] }}"
+                          [removable]="true"
+                          [selectable]="false"
+                          (removed)="getValuesForFilterOnIndex(filterIndex).removeAt(itemIndex)">
+                    {{ control.get('name').value }} = {{ filterItem }}<mat-icon matChipRemove>cancel</mat-icon>
+                </mat-chip>
+            </ng-container>
+        </mat-chip-list>
+
+    <app-table *ngIf="(auditPage$ | async)?.content.length"
+               [configuration]="auditTableConfiguration"
+               [rows]="(auditPage$ | async)?.content"
+               [totalElements]="(auditPage$ | async)?.totalElements"
+               [pageIndex]="auditPageIndex$ | async"
+               (newPageIndex)="auditPageIndex$.next($event)"
+               (newPageSize)="auditPageSize$.next($event)">
+    </app-table>
+</app-main-page-template>
+
+<ng-template #userIdCell let-audit>
+    <span>{{audit.user?.id}}</span>
+</ng-template>
+
+<ng-template #projectIdCell let-audit>
+    <span>{{audit.project?.id}}</span>
+</ng-template>
