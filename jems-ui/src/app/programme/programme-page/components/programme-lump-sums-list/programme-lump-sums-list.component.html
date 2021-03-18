@@ -5,21 +5,23 @@
 </app-alert>
 
 <p *ngIf="!dataSource.data.length">{{'lump.sum.empty.list' | translate}}</p>
-<mat-table appNoWidthLimit *ngIf="dataSource.data.length" [dataSource]="dataSource">
+<app-multi-language-container [switchButtonsVisible]="!!dataSource.data.length" appNoWidthLimit>
+    <mat-table appNoWidthLimit *ngIf="dataSource.data.length" [dataSource]="dataSource">
 
-    <ng-container matColumnDef="name">
-        <mat-header-cell *matHeaderCellDef>{{ 'lump.sum.table.column.name.name' | translate }}</mat-header-cell>
-        <mat-cell *matCellDef="let element">{{ element?.name | translateBySystemLanguage | async }}</mat-cell>
-    </ng-container>
+        <ng-container matColumnDef="name">
+            <mat-header-cell *matHeaderCellDef>{{ 'lump.sum.table.column.name.name' | translate }}</mat-header-cell>
+            <mat-cell *matCellDef="let element">{{ element?.name | translateByInputLanguage | async }}</mat-cell>
+        </ng-container>
 
-    <ng-container matColumnDef="cost">
-        <mat-header-cell *matHeaderCellDef
-                         class="justify-end">{{ 'lump.sum.table.column.name.cost' | translate }}</mat-header-cell>
-        <mat-cell *matCellDef="let element" class="justify-end">{{ element?.cost | asMoney }}</mat-cell>
-    </ng-container>
+        <ng-container matColumnDef="cost">
+            <mat-header-cell *matHeaderCellDef
+                             class="justify-end">{{ 'lump.sum.table.column.name.cost' | translate }}</mat-header-cell>
+            <mat-cell *matCellDef="let element" class="justify-end">{{ element?.cost | asMoney }}</mat-cell>
+        </ng-container>
 
-    <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
-    <mat-row *matRowDef="let row; columns: displayedColumns;"
-             [routerLink]="['lumpSum', 'detail', row.id]"></mat-row>
+        <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
+        <mat-row *matRowDef="let row; columns: displayedColumns;"
+                 [routerLink]="['lumpSum', 'detail', row.id]"></mat-row>
 
-</mat-table>
+    </mat-table>
+</app-multi-language-container>

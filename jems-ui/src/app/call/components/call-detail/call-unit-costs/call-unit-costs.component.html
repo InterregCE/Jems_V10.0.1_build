@@ -1,26 +1,28 @@
 <app-form (discard)="initForm()"
           (save)="onSubmit()">
     <h3>{{'unit.cost.table.title' | translate}}</h3>
-    <div *ngIf="unitCostDataSource.data.length"
-         [appTableConfig]="[{maxInRem:2},{},{maxInRem:10},{maxInRem:5},{maxInRem:5}]">
-        <div>
-            <span>{{'unit.cost.table.column.name.activate.option' | translate}}</span>
-            <span>{{'unit.cost.table.column.name.name' | translate}}</span>
-            <span>{{'unit.cost.table.column.name.unit.category' | translate}}</span>
-            <span>{{'unit.cost.table.column.name.unit.type' | translate}}</span>
-            <span>{{'unit.cost.table.column.name.cost.unit' | translate}}</span>
+    <app-multi-language-container>
+        <div *ngIf="unitCostDataSource.data.length"
+             [appTableConfig]="[{maxInRem:2},{},{maxInRem:10},{maxInRem:5},{maxInRem:6}]">
+            <div>
+                <span>{{'unit.cost.table.column.name.activate.option' | translate}}</span>
+                <span>{{'unit.cost.table.column.name.name' | translate}}</span>
+                <span>{{'unit.cost.table.column.name.unit.category' | translate}}</span>
+                <span>{{'unit.cost.table.column.name.unit.type' | translate}}</span>
+                <span>{{'unit.cost.table.column.name.cost.unit' | translate}}</span>
+            </div>
+            <span *ngFor="let element of unitCostDataSource.data">
+                <mat-checkbox
+                        [disabled]="isApplicant || initialSelection.isSelected(element) && published"
+                        (click)="$event.stopPropagation()"
+                        (change)="toggleUnitCost(element)"
+                        [checked]="selection.isSelected(element)">
+                </mat-checkbox>
+                <span>{{ element?.name | translateByInputLanguage | async }}</span>
+                <span>{{ element?.categories?.length > 1 ? ('unit.cost.cost.category.Multiple' | translate) : ('unit.cost.cost.category.' + element?.categories[0] | translate) }}</span>
+                <span>{{ element?.type | translateByInputLanguage | async }}</span>
+                <span>{{ element?.costPerUnit | asMoney}}</span>
+            </span>
         </div>
-        <span *ngFor="let element of unitCostDataSource.data">
-            <mat-checkbox
-                    [disabled]="isApplicant || initialSelection.isSelected(element) && published"
-                    (click)="$event.stopPropagation()"
-                    (change)="toggleUnitCost(element)"
-                    [checked]="selection.isSelected(element)">
-            </mat-checkbox>
-            <span>{{ element?.name | translateBySystemLanguage | async }}</span>
-            <span>{{ element?.categories?.length > 1 ? ('unit.cost.cost.category.Multiple' | translate) : ('unit.cost.cost.category.' + element?.categories[0] | translate) }}</span>
-            <span>{{ element?.type | translateBySystemLanguage | async}}</span>
-            <span>{{ element?.costPerUnit | asMoney}}</span>
-        </span>
-    </div>
+    </app-multi-language-container>
 </app-form>
