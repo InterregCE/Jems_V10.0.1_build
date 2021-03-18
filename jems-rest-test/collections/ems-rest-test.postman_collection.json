@@ -1,6 +1,6 @@
 {
 	"info": {
-		"_postman_id": "7e52d1d2-491f-4f8e-b960-5b9b5693d356",
+		"_postman_id": "38ac7b1b-b782-4b18-b884-f53ebc728a01",
 		"name": "ems-rest-test",
 		"description": "Check EMS application for common use-cases",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
@@ -27,7 +27,7 @@
 											"    pm.expect(response.email).to.equal(pm.variables.get(\"admin_user_email_to_create\"));",
 											"",
 											"    pm.environment.set(\"admin_email\", response.email);",
-											"    pm.environment.set(\"admin_password\", response.email);",
+											"    pm.environment.set(\"admin_password\", pm.environment.get('default_password_prefix') + response.email);",
 											"});",
 											"",
 											"pm.test('should be created with correct name and surname', function () {",
@@ -97,7 +97,7 @@
 										"exec": [
 											"var uuid = require('uuid');\r",
 											"const randomIdentifier = uuid.v4().substring(24, 32);\r",
-											"pm.variables.set('applicant_email', randomIdentifier + \"@applicant.eu\");\r",
+											"pm.variables.set('applicant_email', randomIdentifier + \"@Applicant.eu\");\r",
 											""
 										],
 										"type": "text/javascript"
@@ -167,6 +167,7 @@
 											"pm.test('programme user can be created', function() {\r",
 											"    pm.response.to.have.status(200);\r",
 											"    pm.environment.set('programme_user_email', pm.response.json().email);\r",
+											"    pm.environment.set('programme_user_password', pm.environment.get('default_password_prefix') + pm.response.json().email);\r",
 											"});\r",
 											""
 										],
@@ -836,7 +837,7 @@
 							"basic": [
 								{
 									"key": "password",
-									"value": "{{programme_user_email}}",
+									"value": "{{programme_user_password}}",
 									"type": "string"
 								},
 								{
@@ -902,7 +903,7 @@
 							"basic": [
 								{
 									"key": "password",
-									"value": "{{programme_user_email}}",
+									"value": "{{programme_user_password}}",
 									"type": "string"
 								},
 								{
@@ -976,7 +977,7 @@
 							"basic": [
 								{
 									"key": "password",
-									"value": "{{programme_user_email}}",
+									"value": "{{programme_user_password}}",
 									"type": "string"
 								},
 								{
@@ -1050,7 +1051,7 @@
 							"basic": [
 								{
 									"key": "password",
-									"value": "{{programme_user_email}}",
+									"value": "{{programme_user_password}}",
 									"type": "string"
 								},
 								{
@@ -1124,7 +1125,7 @@
 							"basic": [
 								{
 									"key": "password",
-									"value": "{{programme_user_email}}",
+									"value": "{{programme_user_password}}",
 									"type": "string"
 								},
 								{
@@ -2753,7 +2754,7 @@
 							"basic": [
 								{
 									"key": "password",
-									"value": "{{programme_user_email}}",
+									"value": "{{programme_user_password}}",
 									"type": "string"
 								},
 								{
@@ -2824,7 +2825,7 @@
 							"basic": [
 								{
 									"key": "password",
-									"value": "{{programme_user_email}}",
+									"value": "{{programme_user_password}}",
 									"type": "string"
 								},
 								{
@@ -2894,7 +2895,7 @@
 							"basic": [
 								{
 									"key": "password",
-									"value": "{{programme_user_email}}",
+									"value": "{{programme_user_password}}",
 									"type": "string"
 								},
 								{
@@ -2980,7 +2981,7 @@
 							"basic": [
 								{
 									"key": "password",
-									"value": "{{programme_user_email}}",
+									"value": "{{programme_user_password}}",
 									"type": "string"
 								},
 								{
@@ -3055,7 +3056,7 @@
 							"basic": [
 								{
 									"key": "password",
-									"value": "{{programme_user_email}}",
+									"value": "{{programme_user_password}}",
 									"type": "string"
 								},
 								{
@@ -3501,7 +3502,7 @@
 							"basic": [
 								{
 									"key": "password",
-									"value": "{{programme_user_email}}",
+									"value": "{{programme_user_password}}",
 									"type": "string"
 								},
 								{
@@ -3576,7 +3577,7 @@
 							"basic": [
 								{
 									"key": "password",
-									"value": "{{programme_user_email}}",
+									"value": "{{programme_user_password}}",
 									"type": "string"
 								},
 								{
@@ -3656,7 +3657,7 @@
 							"basic": [
 								{
 									"key": "password",
-									"value": "{{programme_user_email}}",
+									"value": "{{programme_user_password}}",
 									"type": "string"
 								},
 								{
@@ -3713,7 +3714,7 @@
 							"basic": [
 								{
 									"key": "password",
-									"value": "{{programme_user_email}}",
+									"value": "{{programme_user_password}}",
 									"type": "string"
 								},
 								{
@@ -3861,7 +3862,7 @@
 							"basic": [
 								{
 									"key": "password",
-									"value": "{{programme_user_email}}",
+									"value": "{{programme_user_password}}",
 									"type": "string"
 								},
 								{
@@ -4156,7 +4157,7 @@
 							"basic": [
 								{
 									"key": "password",
-									"value": "{{programme_user_email}}",
+									"value": "{{programme_user_password}}",
 									"type": "string"
 								},
 								{
@@ -4224,7 +4225,7 @@
 							"basic": [
 								{
 									"key": "password",
-									"value": "{{programme_user_email}}",
+									"value": "{{programme_user_password}}",
 									"type": "string"
 								},
 								{
@@ -4296,7 +4297,7 @@
 							"basic": [
 								{
 									"key": "password",
-									"value": "{{programme_user_email}}",
+									"value": "{{programme_user_password}}",
 									"type": "string"
 								},
 								{
@@ -4371,7 +4372,7 @@
 							"basic": [
 								{
 									"key": "password",
-									"value": "{{programme_user_email}}",
+									"value": "{{programme_user_password}}",
 									"type": "string"
 								},
 								{
@@ -4457,7 +4458,7 @@
 							"basic": [
 								{
 									"key": "password",
-									"value": "{{programme_user_email}}",
+									"value": "{{programme_user_password}}",
 									"type": "string"
 								},
 								{
@@ -4535,7 +4536,7 @@
 							"basic": [
 								{
 									"key": "password",
-									"value": "{{programme_user_email}}",
+									"value": "{{programme_user_password}}",
 									"type": "string"
 								},
 								{
@@ -4921,7 +4922,7 @@
 									"basic": [
 										{
 											"key": "password",
-											"value": "{{programme_user_email}}",
+											"value": "{{programme_user_password}}",
 											"type": "string"
 										},
 										{
@@ -4989,7 +4990,7 @@
 									"basic": [
 										{
 											"key": "password",
-											"value": "{{programme_user_email}}",
+											"value": "{{programme_user_password}}",
 											"type": "string"
 										},
 										{
@@ -5206,7 +5207,7 @@
 									"basic": [
 										{
 											"key": "password",
-											"value": "{{programme_user_email}}",
+											"value": "{{programme_user_password}}",
 											"type": "string"
 										},
 										{
@@ -5283,7 +5284,7 @@
 									"basic": [
 										{
 											"key": "password",
-											"value": "{{programme_user_email}}",
+											"value": "{{programme_user_password}}",
 											"type": "string"
 										},
 										{
@@ -5572,7 +5573,7 @@
 									"basic": [
 										{
 											"key": "password",
-											"value": "{{programme_user_email}}",
+											"value": "{{programme_user_password}}",
 											"type": "string"
 										},
 										{
@@ -5640,7 +5641,7 @@
 									"basic": [
 										{
 											"key": "password",
-											"value": "{{programme_user_email}}",
+											"value": "{{programme_user_password}}",
 											"type": "string"
 										},
 										{
@@ -5711,7 +5712,7 @@
 									"basic": [
 										{
 											"key": "password",
-											"value": "{{programme_user_email}}",
+											"value": "{{programme_user_password}}",
 											"type": "string"
 										},
 										{
@@ -5808,7 +5809,7 @@
 									"basic": [
 										{
 											"key": "password",
-											"value": "{{programme_user_email}}",
+											"value": "{{programme_user_password}}",
 											"type": "string"
 										},
 										{
@@ -6024,7 +6025,7 @@
 									"basic": [
 										{
 											"key": "password",
-											"value": "{{programme_user_email}}",
+											"value": "{{programme_user_password}}",
 											"type": "string"
 										},
 										{
@@ -6092,7 +6093,7 @@
 									"basic": [
 										{
 											"key": "password",
-											"value": "{{programme_user_email}}",
+											"value": "{{programme_user_password}}",
 											"type": "string"
 										},
 										{
@@ -6308,7 +6309,7 @@
 									"basic": [
 										{
 											"key": "password",
-											"value": "{{programme_user_email}}",
+											"value": "{{programme_user_password}}",
 											"type": "string"
 										},
 										{
@@ -6379,7 +6380,7 @@
 									"basic": [
 										{
 											"key": "password",
-											"value": "{{programme_user_email}}",
+											"value": "{{programme_user_password}}",
 											"type": "string"
 										},
 										{
@@ -6446,7 +6447,7 @@
 									"basic": [
 										{
 											"key": "password",
-											"value": "{{programme_user_email}}",
+											"value": "{{programme_user_password}}",
 											"type": "string"
 										},
 										{
@@ -6662,7 +6663,7 @@
 									"basic": [
 										{
 											"key": "password",
-											"value": "{{programme_user_email}}",
+											"value": "{{programme_user_password}}",
 											"type": "string"
 										},
 										{
@@ -6730,7 +6731,7 @@
 									"basic": [
 										{
 											"key": "password",
-											"value": "{{programme_user_email}}",
+											"value": "{{programme_user_password}}",
 											"type": "string"
 										},
 										{
@@ -6801,7 +6802,7 @@
 									"basic": [
 										{
 											"key": "password",
-											"value": "{{programme_user_email}}",
+											"value": "{{programme_user_password}}",
 											"type": "string"
 										},
 										{
@@ -6898,7 +6899,7 @@
 									"basic": [
 										{
 											"key": "password",
-											"value": "{{programme_user_email}}",
+											"value": "{{programme_user_password}}",
 											"type": "string"
 										},
 										{
@@ -6976,7 +6977,7 @@
 									"basic": [
 										{
 											"key": "password",
-											"value": "{{programme_user_email}}",
+											"value": "{{programme_user_password}}",
 											"type": "string"
 										},
 										{
@@ -7150,7 +7151,7 @@
 									"basic": [
 										{
 											"key": "password",
-											"value": "{{programme_user_email}}",
+											"value": "{{programme_user_password}}",
 											"type": "string"
 										},
 										{
