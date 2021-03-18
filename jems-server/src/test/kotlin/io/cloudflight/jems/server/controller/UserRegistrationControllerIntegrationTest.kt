@@ -30,8 +30,8 @@ class UserRegistrationControllerIntegrationTest {
     fun `register applicant`() {
         val userRegistration = InputUserRegistration(
             "e@e", "name", "surname",
-            RandomString.make(10)
-        );
+            "ApplicantPa55"
+        )
         mockMvc.perform(
             post("/api/registration")
                 .accept(MediaType.APPLICATION_JSON_VALUE)

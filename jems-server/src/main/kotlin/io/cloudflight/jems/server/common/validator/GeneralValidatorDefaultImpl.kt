@@ -5,6 +5,10 @@ import io.cloudflight.jems.api.project.dto.InputTranslation
 import org.springframework.stereotype.Service
 import java.math.BigDecimal
 import java.time.ZonedDateTime
+import java.util.regex.Pattern
+
+// password should have: at least 10 characters, one upper case letter, one lower case letter and one digit
+const val PASSWORD_REGEX="^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.{10,}).+\$"
 
 @Service
 class GeneralValidatorDefaultImpl : GeneralValidatorService {
@@ -95,6 +99,12 @@ class GeneralValidatorDefaultImpl : GeneralValidatorService {
                 this[startDateFieldName] = I18nMessage(i18nKey = "common.error.start.before.end")
                 this[endDateFieldName] = I18nMessage(i18nKey = "common.error.end.after.start")
             }
+        }
+
+    override fun matches(input: String?, regex: String, fieldName: String, errorKey: String?) =
+        mutableMapOf<String, I18nMessage>().apply {
+            if (!Pattern.matches(regex, input))
+                this[fieldName] = I18nMessage(errorKey ?: "common.error.field.pattern")
         }
 
     override fun throwIfAnyIsInvalid(vararg validationResult: Map<String, I18nMessage>) =

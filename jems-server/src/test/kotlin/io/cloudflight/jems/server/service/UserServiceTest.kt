@@ -26,6 +26,8 @@ import io.cloudflight.jems.server.authentication.model.PROGRAMME_USER
 import io.cloudflight.jems.server.authentication.config.PasswordConfig
 import io.cloudflight.jems.server.authentication.model.LocalCurrentUser
 import io.cloudflight.jems.server.authentication.service.SecurityService
+import io.cloudflight.jems.server.common.validator.GeneralValidatorService
+import io.cloudflight.jems.server.config.AppSecurityProperties
 import io.cloudflight.jems.server.user.service.UserService
 import io.cloudflight.jems.server.user.service.UserServiceImpl
 import io.mockk.MockKAnnotations
@@ -83,6 +85,12 @@ class UserServiceTest {
     lateinit var userRoleRepository: UserRoleRepository
 
     @RelaxedMockK
+    lateinit var generalValidatorService: GeneralValidatorService
+
+    @RelaxedMockK
+    lateinit var appSecurityProperties: AppSecurityProperties
+
+    @RelaxedMockK
     lateinit var auditService: AuditService
 
     private val passwordEncoder: PasswordEncoder = DelegatingPasswordEncoder(
@@ -100,7 +108,7 @@ class UserServiceTest {
         MockKAnnotations.init(this)
         every { securityService.currentUser } returns LocalCurrentUser(user, "hash_pass", emptyList())
         userService =
-            UserServiceImpl(userRepository, userRoleRepository, auditService, securityService, passwordEncoder)
+            UserServiceImpl(userRepository, userRoleRepository, auditService, securityService, passwordEncoder, generalValidatorService, appSecurityProperties)
     }
 
     @Test
@@ -119,7 +127,7 @@ class UserServiceTest {
         val result = userService.findAll(UNPAGED)
 
         // assertions:
-        assertThat(result.totalElements).isEqualTo(1);
+        assertThat(result.totalElements).isEqualTo(1)
 
         val expectedUsers = listOf(
             OutputUserWithRole(
@@ -130,7 +138,7 @@ class UserServiceTest {
                 userRole = OutputUserRole(9, "admin")
             )
         )
-        assertThat(result.stream()).isEqualTo(expectedUsers);
+        assertThat(result.stream()).isEqualTo(expectedUsers)
     }
 
     @Test
@@ -138,7 +146,7 @@ class UserServiceTest {
         every { userRepository.findOneByEmail(eq("not_existing@ems.io")) } returns null
 
         val result = userService.findOneByEmail("not_existing@ems.io")
-        assertThat(result).isNull();
+        assertThat(result).isNull()
     }
 
     @Test

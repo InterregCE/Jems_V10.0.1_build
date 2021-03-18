@@ -4,6 +4,9 @@ import {FormBuilder, FormGroup, Validators} from '@angular/forms';
 import {InputUserRegistration} from '@cat/api';
 import {TranslateService} from '@ngx-translate/core';
 
+// password should have: at least 10 characters, one upper case letter, one lower case letter and one digit
+const PASSWORD_REGEX = new RegExp('^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.{10,})');
+
 @Component({
   selector: 'app-user-registration',
   templateUrl: './user-registration.component.html',
@@ -41,7 +44,7 @@ export class UserRegistrationComponent extends AbstractForm implements OnInit {
     ])],
     password: ['', Validators.compose([
       Validators.required,
-      Validators.minLength(10),
+      Validators.pattern(PASSWORD_REGEX)
     ])],
   });
 
@@ -65,7 +68,7 @@ export class UserRegistrationComponent extends AbstractForm implements OnInit {
 
   passwordErrors = {
     required: 'user.password.should.not.be.empty',
-    minlength: 'user.password.wrong.size',
+    pattern: 'user.password.constraints.not.satisfied',
   };
 
   constructor(private formBuilder: FormBuilder,

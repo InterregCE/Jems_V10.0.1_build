@@ -49,3 +49,6 @@ management:
       enabled: "${AUDIT_ENABLED:false}"
 info:
   helpdesk-url: "https://helpdesk.interact-eu.net"
+app:
+  security:
+    default-password-prefix: Jems@2020

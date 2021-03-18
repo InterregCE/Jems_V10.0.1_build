@@ -31,7 +31,7 @@ class UserControllerIntegrationTest {
     private lateinit var mockMvc: MockMvc
 
     @Autowired
-    private lateinit var userFactory: UserFactory;
+    private lateinit var userFactory: UserFactory
 
     @Autowired
     private lateinit var jsonMapper: ObjectMapper
@@ -48,28 +48,28 @@ class UserControllerIntegrationTest {
                 .accept(MediaType.APPLICATION_JSON)
         )
             .andExpect(jsonPath("$.numberOfElements").value(2))
-            .andExpect(status().isOk());
+            .andExpect(status().isOk())
 
         mockMvc.perform(
             get("/api/user?page=1")
                 .accept(MediaType.APPLICATION_JSON)
         )
             .andExpect(jsonPath("$.numberOfElements").value(1))
-            .andExpect(status().isOk());
+            .andExpect(status().isOk())
 
         mockMvc.perform(
             get("/api/user?sort=email,desc")
                 .accept(MediaType.APPLICATION_JSON)
         )
             .andExpect(jsonPath("$.content[0].email").value("u1"))
-            .andExpect(status().isOk());
+            .andExpect(status().isOk())
     }
 
     @Test
     @WithUserDetails(value = ADMINISTRATOR_EMAIL)
     @Transactional
     fun `create user`() {
-        val user = InputUserCreate("user@rmail.com", "user", "user", 1);
+        val user = InputUserCreate("user@rmail.com", "user", "user", 1)
 
         mockMvc.perform(
             post("/api/user")
@@ -77,13 +77,13 @@ class UserControllerIntegrationTest {
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .content(jsonMapper.writeValueAsString(user))
         )
-            .andExpect(status().isOk());
+            .andExpect(status().isOk())
     }
 
     @Test
     @WithUserDetails(value = ADMINISTRATOR_EMAIL)
     fun `create user with invalid data fails`() {
-        val user = InputUserCreate("user", "", "", null);
+        val user = InputUserCreate("user", "", "", null)
 
         mockMvc.perform(
             post("/api/user")
@@ -113,7 +113,7 @@ class UserControllerIntegrationTest {
     @Test
     @WithUserDetails(value = ADMINISTRATOR_EMAIL)
     fun `create user with duplicate email fails`() {
-        val user = InputUserCreate(ADMINISTRATOR_EMAIL, ADMINISTRATOR_EMAIL, ADMINISTRATOR_EMAIL, 1);
+        val user = InputUserCreate(ADMINISTRATOR_EMAIL, ADMINISTRATOR_EMAIL, ADMINISTRATOR_EMAIL, 1)
 
         mockMvc.perform(
             post("/api/user")
@@ -137,9 +137,9 @@ class UserControllerIntegrationTest {
             get("/api/user?page=0")
                 .accept(MediaType.APPLICATION_JSON)
         )
-            .andExpect(status().isForbidden());
+            .andExpect(status().isForbidden())
 
-        val user = InputUserCreate("random@email.com", "user", "user", 1);
+        val user = InputUserCreate("random@email.com", "user", "user", 1)
         mockMvc.perform(
             put("/api/user")
                 .accept(MediaType.APPLICATION_JSON_VALUE)
@@ -154,7 +154,7 @@ class UserControllerIntegrationTest {
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .content(jsonMapper.writeValueAsString(user))
         )
-            .andExpect(status().isForbidden());
+            .andExpect(status().isForbidden())
     }
 
     @Test
@@ -220,21 +220,21 @@ class UserControllerIntegrationTest {
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .content(jsonMapper.writeValueAsString(InputPassword("short", null)))
         )
-            .andExpect(status().isBadRequest)
+            .andExpect(status().isUnprocessableEntity)
             .andExpect(
                 jsonPath("$.formErrors.password.i18nKey")
-                    .value("user.password.size.too.short")
+                    .value("user.password.constraints.not.satisfied")
             )
     }
 
     @Test
     @WithUserDetails(value = ADMINISTRATOR_EMAIL)
-    fun `change password long`() {
+    fun `should return OK when change password to a strong enought password`() {
         mockMvc.perform(
             put("/api/user/password/${userFactory.adminUser.id}")
                 .accept(MediaType.APPLICATION_JSON_VALUE)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .content(jsonMapper.writeValueAsString(InputPassword("password_long_enough", null)))
+                .content(jsonMapper.writeValueAsString(InputPassword("StrongPa55word", null)))
         )
             .andExpect(status().isOk)
     }
