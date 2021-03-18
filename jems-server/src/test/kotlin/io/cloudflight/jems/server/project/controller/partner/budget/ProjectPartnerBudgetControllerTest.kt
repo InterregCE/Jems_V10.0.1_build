@@ -50,7 +50,7 @@ class ProjectPartnerBudgetControllerTest : UnitTest() {
         finances = listOf(
             ProjectPartnerCoFinancingOutputDTO(
                 fundType = ProjectPartnerCoFinancingFundType.MainFund,
-                percentage = 20,
+                percentage = BigDecimal.valueOf(20.5),
                 fund = ProgrammeFundDTO(
                     id = 10,
                     selected = true,
@@ -58,12 +58,12 @@ class ProjectPartnerBudgetControllerTest : UnitTest() {
             ),
             ProjectPartnerCoFinancingOutputDTO(
                 fundType = ProjectPartnerCoFinancingFundType.AdditionalFund,
-                percentage = 30,
+                percentage = BigDecimal.valueOf(30.5),
                 fund = ProgrammeFundDTO(id = 2, selected = true /* abbreviation missing for ids 1..9 */)
             ),
             ProjectPartnerCoFinancingOutputDTO(
                 fundType = ProjectPartnerCoFinancingFundType.PartnerContribution,
-                percentage = 50,
+                percentage = BigDecimal.valueOf(50.5),
                 fund = null
             )
         ),
@@ -120,7 +120,7 @@ class ProjectPartnerBudgetControllerTest : UnitTest() {
         finances = listOf(
             ProjectPartnerCoFinancing(
                 fundType = ProjectPartnerCoFinancingFundType.MainFund,
-                percentage = 20,
+                percentage = BigDecimal.valueOf(20.5),
                 fund = ProgrammeFund(
                     id = 10,
                     selected = true,
@@ -128,10 +128,14 @@ class ProjectPartnerBudgetControllerTest : UnitTest() {
             ),
             ProjectPartnerCoFinancing(
                 fundType = ProjectPartnerCoFinancingFundType.AdditionalFund,
-                percentage = 30,
+                percentage = BigDecimal.valueOf(30.5),
                 fund = ProgrammeFund(id = 2, selected = true)
             ),
-            ProjectPartnerCoFinancing(fundType = ProjectPartnerCoFinancingFundType.PartnerContribution, percentage = 50, fund = null)
+            ProjectPartnerCoFinancing(
+                fundType = ProjectPartnerCoFinancingFundType.PartnerContribution,
+                percentage = BigDecimal.valueOf(50.5),
+                fund = null
+            )
         ),
         partnerContributions = listOf(contribution3, contribution2, contribution1),
         partnerAbbreviation = "PartnerName"
@@ -186,70 +190,108 @@ class ProjectPartnerBudgetControllerTest : UnitTest() {
 
     @Test
     fun updateBudgetStaffCost() {
-        val budgetCosts = listOf(BudgetStaffCostEntryDTO(
-            id = 1,
-            numberOfUnits = BigDecimal.ONE,
-            pricePerUnit = BigDecimal.TEN,
-            rowSum = BigDecimal.TEN,
-            budgetPeriods = setOf(BudgetPeriodDTO(1, BigDecimal.ONE)),
-            unitCostId = 1
-        ))
-        every { updateBudgetStaffCosts.updateBudgetStaffCosts(PARTNER_ID, any()) } returns budgetCosts.toBudgetStaffCostEntryList()
+        val budgetCosts = listOf(
+            BudgetStaffCostEntryDTO(
+                id = 1,
+                numberOfUnits = BigDecimal.ONE,
+                pricePerUnit = BigDecimal.TEN,
+                rowSum = BigDecimal.TEN,
+                budgetPeriods = setOf(BudgetPeriodDTO(1, BigDecimal.ONE)),
+                unitCostId = 1
+            )
+        )
+        every {
+            updateBudgetStaffCosts.updateBudgetStaffCosts(
+                PARTNER_ID,
+                any()
+            )
+        } returns budgetCosts.toBudgetStaffCostEntryList()
         assertThat(controller.updateBudgetStaffCosts(PARTNER_ID, budgetCosts)).isEqualTo(budgetCosts)
     }
 
     @Test
     fun updateBudgetTravel() {
-        val travels = listOf(BudgetTravelAndAccommodationCostEntryDTO(
-            id = 1,
-            numberOfUnits = BigDecimal.ONE,
-            pricePerUnit = BigDecimal.TEN,
-            rowSum = BigDecimal.TEN,
-            budgetPeriods = emptySet(),
-            unitCostId = 1
-        ))
-        every { updateBudgetTravelAndAccommodationCosts.updateBudgetTravelAndAccommodationCosts(PARTNER_ID, any()) } returns travels.toBudgetTravelAndAccommodationCostEntryList()
+        val travels = listOf(
+            BudgetTravelAndAccommodationCostEntryDTO(
+                id = 1,
+                numberOfUnits = BigDecimal.ONE,
+                pricePerUnit = BigDecimal.TEN,
+                rowSum = BigDecimal.TEN,
+                budgetPeriods = emptySet(),
+                unitCostId = 1
+            )
+        )
+        every {
+            updateBudgetTravelAndAccommodationCosts.updateBudgetTravelAndAccommodationCosts(
+                PARTNER_ID,
+                any()
+            )
+        } returns travels.toBudgetTravelAndAccommodationCostEntryList()
         assertThat(controller.updateBudgetTravel(PARTNER_ID, travels)).isEqualTo(travels)
     }
 
     @Test
     fun updateBudgetExternal() {
-        val externals = listOf(BudgetGeneralCostEntryDTO(
-            id = 1,
-            numberOfUnits = BigDecimal.ONE,
-            pricePerUnit = BigDecimal.TEN,
-            rowSum = BigDecimal.TEN,
-            budgetPeriods = emptySet(),
-            unitCostId = 1
-        ))
-        every { updateBudgetExternalExpertiseAndServicesCosts.updateBudgetGeneralCosts(PARTNER_ID, any()) } returns externals.toBudgetGeneralCostEntryList()
+        val externals = listOf(
+            BudgetGeneralCostEntryDTO(
+                id = 1,
+                numberOfUnits = BigDecimal.ONE,
+                pricePerUnit = BigDecimal.TEN,
+                rowSum = BigDecimal.TEN,
+                budgetPeriods = emptySet(),
+                unitCostId = 1
+            )
+        )
+        every {
+            updateBudgetExternalExpertiseAndServicesCosts.updateBudgetGeneralCosts(
+                PARTNER_ID,
+                any()
+            )
+        } returns externals.toBudgetGeneralCostEntryList()
         assertThat(controller.updateBudgetExternal(PARTNER_ID, externals)).isEqualTo(externals)
     }
 
     @Test
     fun updateBudgetEquipment() {
         val equipments = emptyList<BudgetGeneralCostEntryDTO>()
-        every { updateBudgetEquipmentCosts.updateBudgetGeneralCosts(PARTNER_ID, equipments.toBudgetGeneralCostEntryList()) } returns equipments.toBudgetGeneralCostEntryList()
+        every {
+            updateBudgetEquipmentCosts.updateBudgetGeneralCosts(
+                PARTNER_ID,
+                equipments.toBudgetGeneralCostEntryList()
+            )
+        } returns equipments.toBudgetGeneralCostEntryList()
         assertThat(controller.updateBudgetEquipment(PARTNER_ID, equipments)).isEqualTo(equipments)
     }
 
     @Test
     fun updateBudgetInfrastructure() {
         val infrastructures = emptyList<BudgetGeneralCostEntryDTO>()
-        every { updateBudgetInfrastructureAndWorksCosts.updateBudgetGeneralCosts(PARTNER_ID, infrastructures.toBudgetGeneralCostEntryList()) } returns infrastructures.toBudgetGeneralCostEntryList()
+        every {
+            updateBudgetInfrastructureAndWorksCosts.updateBudgetGeneralCosts(
+                PARTNER_ID,
+                infrastructures.toBudgetGeneralCostEntryList()
+            )
+        } returns infrastructures.toBudgetGeneralCostEntryList()
         assertThat(controller.updateBudgetInfrastructure(PARTNER_ID, infrastructures)).isEqualTo(infrastructures)
     }
 
     @Test
     fun updateBudgetUnitCosts() {
-        val unitCosts = listOf(BudgetUnitCostEntryDTO(
-            id = 1,
-            numberOfUnits = BigDecimal.ONE,
-            rowSum = BigDecimal.TEN,
-            budgetPeriods = emptySet(),
-            unitCostId = 1
-        ))
-        every { updateBudgetUnitCosts.updateBudgetUnitCosts(PARTNER_ID, any()) } returns unitCosts.toBudgetUnitCostEntryList()
+        val unitCosts = listOf(
+            BudgetUnitCostEntryDTO(
+                id = 1,
+                numberOfUnits = BigDecimal.ONE,
+                rowSum = BigDecimal.TEN,
+                budgetPeriods = emptySet(),
+                unitCostId = 1
+            )
+        )
+        every {
+            updateBudgetUnitCosts.updateBudgetUnitCosts(
+                PARTNER_ID,
+                any()
+            )
+        } returns unitCosts.toBudgetUnitCostEntryList()
         assertThat(controller.updateBudgetUnitCosts(PARTNER_ID, unitCosts)).isEqualTo(unitCosts)
     }
 
@@ -293,16 +335,34 @@ class ProjectPartnerBudgetControllerTest : UnitTest() {
     @Test
     fun updateProjectPartnerCoFinancing() {
         val inputFinances = listOf(
-            ProjectPartnerCoFinancingInputDTO(fundType = ProjectPartnerCoFinancingFundType.MainFund, fundId = 2, percentage = 30),
-            ProjectPartnerCoFinancingInputDTO(fundType = ProjectPartnerCoFinancingFundType.AdditionalFund, fundId = 10, percentage = 20),
-            ProjectPartnerCoFinancingInputDTO(fundType = ProjectPartnerCoFinancingFundType.PartnerContribution, fundId = null, percentage = 50)
+            ProjectPartnerCoFinancingInputDTO(
+                fundType = ProjectPartnerCoFinancingFundType.MainFund,
+                fundId = 2,
+                percentage = BigDecimal.valueOf(30.5)
+            ),
+            ProjectPartnerCoFinancingInputDTO(
+                fundType = ProjectPartnerCoFinancingFundType.AdditionalFund,
+                fundId = 10,
+                percentage = BigDecimal.valueOf(20.5)
+            ),
+            ProjectPartnerCoFinancingInputDTO(
+                fundType = ProjectPartnerCoFinancingFundType.PartnerContribution,
+                fundId = null,
+                percentage = BigDecimal.valueOf(50.5)
+            )
         )
         val inputPartnerContributions = expectedDto.partnerContributions
 
         val slotFinances = slot<Collection<UpdateProjectPartnerCoFinancing>>()
         val slotPartnerContributions = slot<List<ProjectPartnerContribution>>()
 
-        every { updateCoFinancing.updateCoFinancing(PARTNER_ID, capture(slotFinances), capture(slotPartnerContributions)) } returns modelMock
+        every {
+            updateCoFinancing.updateCoFinancing(
+                PARTNER_ID,
+                capture(slotFinances),
+                capture(slotPartnerContributions)
+            )
+        } returns modelMock
 
         val result = controller.updateProjectPartnerCoFinancing(
             PARTNER_ID,
@@ -313,9 +373,21 @@ class ProjectPartnerBudgetControllerTest : UnitTest() {
 
         // no matter the order
         assertThat(slotFinances.captured).containsExactlyInAnyOrder(
-            UpdateProjectPartnerCoFinancing(fundType = ProjectPartnerCoFinancingFundType.MainFund, fundId = 2, percentage = 30),
-            UpdateProjectPartnerCoFinancing(fundType = ProjectPartnerCoFinancingFundType.AdditionalFund, fundId = 10, percentage = 20),
-            UpdateProjectPartnerCoFinancing(fundType = ProjectPartnerCoFinancingFundType.PartnerContribution, fundId = null, percentage = 50)
+            UpdateProjectPartnerCoFinancing(
+                fundType = ProjectPartnerCoFinancingFundType.MainFund,
+                fundId = 2,
+                percentage = BigDecimal.valueOf(30.5)
+            ),
+            UpdateProjectPartnerCoFinancing(
+                fundType = ProjectPartnerCoFinancingFundType.AdditionalFund,
+                fundId = 10,
+                percentage = BigDecimal.valueOf(20.5)
+            ),
+            UpdateProjectPartnerCoFinancing(
+                fundType = ProjectPartnerCoFinancingFundType.PartnerContribution,
+                fundId = null,
+                percentage = BigDecimal.valueOf(50.5)
+            )
         )
         // order matters (to not mix lines after save)
         assertThat(slotPartnerContributions.captured).containsExactly(

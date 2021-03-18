@@ -1,6 +1,7 @@
 package io.cloudflight.jems.server.project.entity.partner.cofinancing
 
 import io.cloudflight.jems.server.programme.entity.fund.ProgrammeFundEntity
+import java.math.BigDecimal
 import javax.persistence.EmbeddedId
 import javax.persistence.Entity
 import javax.persistence.JoinColumn
@@ -14,7 +15,7 @@ data class ProjectPartnerCoFinancingEntity(
     val coFinancingFundId: ProjectPartnerCoFinancingFundId,
 
     @field:NotNull
-    val percentage: Int,
+    val percentage: BigDecimal,
 
     @ManyToOne
     @JoinColumn(name = "programme_fund_id")

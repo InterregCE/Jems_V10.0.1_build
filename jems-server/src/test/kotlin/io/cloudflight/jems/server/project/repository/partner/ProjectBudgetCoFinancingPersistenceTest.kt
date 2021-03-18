@@ -98,28 +98,66 @@ class ProjectBudgetCoFinancingPersistenceTest {
     @Test
     fun `get co financing and contributions`() {
         val dummyFinancing = setOf(
-            ProjectPartnerCoFinancingEntity(coFinancingFundId = ProjectPartnerCoFinancingFundId(partnerId = PARTNER_ID, type=ProjectPartnerCoFinancingFundType.MainFund), percentage = 25, programmeFund = fund1),
-            ProjectPartnerCoFinancingEntity(coFinancingFundId = ProjectPartnerCoFinancingFundId(partnerId = PARTNER_ID, type=ProjectPartnerCoFinancingFundType.PartnerContribution), percentage = 75, programmeFund = null)
+            ProjectPartnerCoFinancingEntity(
+                coFinancingFundId = ProjectPartnerCoFinancingFundId(
+                    partnerId = PARTNER_ID,
+                    type = ProjectPartnerCoFinancingFundType.MainFund
+                ), percentage = BigDecimal.valueOf(24.5), programmeFund = fund1
+            ),
+            ProjectPartnerCoFinancingEntity(
+                coFinancingFundId = ProjectPartnerCoFinancingFundId(
+                    partnerId = PARTNER_ID,
+                    type = ProjectPartnerCoFinancingFundType.PartnerContribution
+                ), percentage = BigDecimal.valueOf(74.5), programmeFund = null
+            )
         )
         val dummyPartnerContributions = listOf(
-            ProjectPartnerContributionEntity(id = 1, partnerId = PARTNER_ID, name = null, status = Public, amount = BigDecimal.TEN),
-            ProjectPartnerContributionEntity(id = 2, partnerId = PARTNER_ID, name = "source01", status = Private, amount = BigDecimal.ONE)
+            ProjectPartnerContributionEntity(
+                id = 1,
+                partnerId = PARTNER_ID,
+                name = null,
+                status = Public,
+                amount = BigDecimal.TEN
+            ),
+            ProjectPartnerContributionEntity(
+                id = 2,
+                partnerId = PARTNER_ID,
+                name = "source01",
+                status = Private,
+                amount = BigDecimal.ONE
+            )
         )
-        every { projectPartnerRepository.findById(PARTNER_ID) } returns Optional.of(dummyPartner.copy(
-            financing = dummyFinancing,
-            partnerContributions = dummyPartnerContributions
-        ))
+        every { projectPartnerRepository.findById(PARTNER_ID) } returns Optional.of(
+            dummyPartner.copy(
+                financing = dummyFinancing,
+                partnerContributions = dummyPartnerContributions
+            )
+        )
 
         val result = persistence.getCoFinancingAndContributions(PARTNER_ID)
 
         assertThat(result.partnerAbbreviation).isEqualTo(dummyPartner.abbreviation)
         assertThat(result.finances).containsExactlyInAnyOrder(
-            ProjectPartnerCoFinancing(fundType=ProjectPartnerCoFinancingFundType.MainFund, fund = fund1Model, percentage = 25),
-            ProjectPartnerCoFinancing(fundType=ProjectPartnerCoFinancingFundType.PartnerContribution, fund = null, percentage = 75)
+            ProjectPartnerCoFinancing(
+                fundType = ProjectPartnerCoFinancingFundType.MainFund,
+                fund = fund1Model,
+                percentage = BigDecimal.valueOf(24.5)
+            ),
+            ProjectPartnerCoFinancing(
+                fundType = ProjectPartnerCoFinancingFundType.PartnerContribution,
+                fund = null,
+                percentage = BigDecimal.valueOf(74.5)
+            )
         )
         assertThat(result.partnerContributions).containsExactlyInAnyOrder(
             ProjectPartnerContribution(id = 1, name = null, status = Public, amount = BigDecimal.TEN, isPartner = true),
-            ProjectPartnerContribution(id = 2, name = "source01", status = Private, amount = BigDecimal.ONE, isPartner = false)
+            ProjectPartnerContribution(
+                id = 2,
+                name = "source01",
+                status = Private,
+                amount = BigDecimal.ONE,
+                isPartner = false
+            )
         )
     }
 
@@ -129,8 +167,16 @@ class ProjectBudgetCoFinancingPersistenceTest {
         every { projectPartnerRepository.save(any()) } returnsArgument 0
 
         val toBeSavedFinancing = setOf(
-            UpdateProjectPartnerCoFinancing(fundType=ProjectPartnerCoFinancingFundType.MainFund, fundId = fund1.id, percentage = 30),
-            UpdateProjectPartnerCoFinancing(fundType=ProjectPartnerCoFinancingFundType.PartnerContribution, fundId = null, percentage = 70)
+            UpdateProjectPartnerCoFinancing(
+                fundType = ProjectPartnerCoFinancingFundType.MainFund,
+                fundId = fund1.id,
+                percentage = BigDecimal.valueOf(29.5)
+            ),
+            UpdateProjectPartnerCoFinancing(
+                fundType = ProjectPartnerCoFinancingFundType.PartnerContribution,
+                fundId = null,
+                percentage = BigDecimal.valueOf(69.5)
+            )
         )
         val toBeSavedContributions = listOf(
             ProjectPartnerContribution(name = null, status = Public, amount = BigDecimal.TEN, isPartner = true),
@@ -145,12 +191,26 @@ class ProjectBudgetCoFinancingPersistenceTest {
 
         assertThat(result.partnerAbbreviation).isEqualTo(dummyPartner.abbreviation)
         assertThat(result.finances).containsExactlyInAnyOrder(
-            ProjectPartnerCoFinancing(fundType=ProjectPartnerCoFinancingFundType.MainFund, fund = fund1Model, percentage = 30),
-            ProjectPartnerCoFinancing(fundType=ProjectPartnerCoFinancingFundType.PartnerContribution, fund = null, percentage = 70)
+            ProjectPartnerCoFinancing(
+                fundType = ProjectPartnerCoFinancingFundType.MainFund,
+                fund = fund1Model,
+                percentage = BigDecimal.valueOf(29.5)
+            ),
+            ProjectPartnerCoFinancing(
+                fundType = ProjectPartnerCoFinancingFundType.PartnerContribution,
+                fund = null,
+                percentage = BigDecimal.valueOf(69.5)
+            )
         )
         assertThat(result.partnerContributions).containsExactlyInAnyOrder(
             ProjectPartnerContribution(id = 0, name = null, status = Public, amount = BigDecimal.TEN, isPartner = true),
-            ProjectPartnerContribution(id = 0, name = "source", status = Private, amount = BigDecimal.ONE, isPartner = false)
+            ProjectPartnerContribution(
+                id = 0,
+                name = "source",
+                status = Private,
+                amount = BigDecimal.ONE,
+                isPartner = false
+            )
         )
     }
 

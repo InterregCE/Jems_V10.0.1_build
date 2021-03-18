@@ -36,8 +36,16 @@ internal class GetCoFinancingInteractorTest {
     @Test
     fun `test get cofinancing`() {
         val finances = setOf(
-            ProjectPartnerCoFinancing(fundType = ProjectPartnerCoFinancingFundType.MainFund, fund = fund, percentage = 20),
-            ProjectPartnerCoFinancing(fundType = ProjectPartnerCoFinancingFundType.PartnerContribution, fund = null, percentage = 80)
+            ProjectPartnerCoFinancing(
+                fundType = ProjectPartnerCoFinancingFundType.MainFund,
+                fund = fund,
+                percentage = BigDecimal.valueOf(19.5)
+            ),
+            ProjectPartnerCoFinancing(
+                fundType = ProjectPartnerCoFinancingFundType.PartnerContribution,
+                fund = null,
+                percentage = BigDecimal.valueOf(79.5)
+            )
         )
         val contributions = listOf(
             ProjectPartnerContribution(
@@ -45,7 +53,8 @@ internal class GetCoFinancingInteractorTest {
                 name = null,
                 status = Public,
                 amount = BigDecimal.TEN,
-                isPartner = true),
+                isPartner = true
+            ),
             ProjectPartnerContribution(
                 id = 2,
                 name = "BMW",

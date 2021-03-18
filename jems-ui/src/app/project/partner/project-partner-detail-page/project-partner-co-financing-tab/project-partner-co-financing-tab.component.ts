@@ -155,7 +155,7 @@ export class ProjectPartnerCoFinancingTabComponent implements OnInit {
     this.hasASecondFundBeenAdded = true;
     this.coFinancingForm.markAsDirty();
     this.additionalFundId.setValidators([Validators.required]);
-    this.additionalFundPercentage.setValidators([Validators.pattern(this.constants.MAX_100_NUMBER_REGEX), Validators.required]);
+    this.additionalFundPercentage.setValidators([Validators.required]);
     this.additionalFundId.patchValue(null);
     this.additionalFundPercentage.patchValue(0);
     this.additionalFundId.updateValueAndValidity();
@@ -272,11 +272,11 @@ export class ProjectPartnerCoFinancingTabComponent implements OnInit {
     this.coFinancingForm = this.formBuilder.group({
       fundId: [null, Validators.required],
       fundAmount: [0],
-      fundPercentage: [0, [Validators.pattern(this.constants.MAX_100_NUMBER_REGEX), Validators.required]],
+      fundPercentage: [0, [Validators.required]],
       additionalFundId: [null],
       additionalFundAmount: [0],
       additionalFundPercentage: [0],
-      partnerPercentage: [0, [Validators.pattern(this.constants.MAX_100_NUMBER_REGEX), Validators.required]],
+      partnerPercentage: [0, [Validators.required]],
       partnerAmount: [0],
       partnerContributions: this.formBuilder.array([], {
         validators: [totalContributionValidator(0), Validators.maxLength(this.constants.MAX_NUMBER_OF_PARTNER_CONTRIBUTIONS)]

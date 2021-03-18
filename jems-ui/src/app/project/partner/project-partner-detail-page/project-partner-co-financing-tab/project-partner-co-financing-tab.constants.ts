@@ -1,6 +1,5 @@
 export class ProjectPartnerCoFinancingTabConstants {
 
-  public static MAX_100_NUMBER_REGEX = '^([0-9]{1,2}|100)$';
   public static MAX_NUMBER_OF_PARTNER_CONTRIBUTIONS = 10;
   private static PERCENTAGE_ERROR_TRANSLATION_KEY = 'project.partner.coFinancing.percentage.invalid';
 
@@ -26,7 +25,6 @@ export class ProjectPartnerCoFinancingTabConstants {
       required: 'project.partner.coFinancing.fundId.should.not.be.empty',
     },
     percentageErrors: {
-      pattern: ProjectPartnerCoFinancingTabConstants.PERCENTAGE_ERROR_TRANSLATION_KEY,
       required: ProjectPartnerCoFinancingTabConstants.PERCENTAGE_ERROR_TRANSLATION_KEY,
     },
     partnerContributionNameErrors: {
@@ -47,7 +45,6 @@ export class ProjectPartnerCoFinancingTabConstants {
       required: 'project.partner.coFinancing.fundId.should.not.be.empty',
     },
     additionalFundPercentageErrors: {
-      pattern: ProjectPartnerCoFinancingTabConstants.PERCENTAGE_ERROR_TRANSLATION_KEY,
       required: ProjectPartnerCoFinancingTabConstants.PERCENTAGE_ERROR_TRANSLATION_KEY,
     }
   };
