@@ -47,9 +47,15 @@
 </app-main-page-template>
 
 <ng-template #userIdCell let-audit>
-    <span>{{audit.user?.id}}</span>
+    <ng-container *ngIf="audit.user">
+        <span>{{audit.user.id}}</span>
+        <mat-icon (click)="addFilterToIndex(MAT_CHIP_USER_IDS_INDEX, audit.user.id)">zoom_in</mat-icon>
+    </ng-container>
 </ng-template>
 
 <ng-template #projectIdCell let-audit>
-    <span>{{audit.project?.id}}</span>
+    <ng-container *ngIf="audit.project">
+        <span [matTooltip]="audit.project.name">{{audit.project.id}}</span>
+        <mat-icon (click)="addFilterToIndex(MAT_CHIP_PROJECT_IDS_INDEX, audit.project.id)">zoom_in</mat-icon>
+    </ng-container>
 </ng-template>

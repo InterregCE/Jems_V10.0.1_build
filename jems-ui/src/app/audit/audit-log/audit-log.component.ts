@@ -152,8 +152,14 @@ export class AuditLogComponent implements OnInit {
 
   addFilter(filterIndex: number, event: Event): void {
     const value: number = (event.target as any)?.value;
-    this.getValuesForFilterOnIndex(filterIndex).push(this.formBuilder.control(value));
+    this.addFilterToIndex(filterIndex, value);
     (event.target as any).value = '';
+  }
+
+  addFilterToIndex(filterIndex: number, value: number|string): void {
+    if (this.getValuesForFilterOnIndex(filterIndex).value.indexOf(value) === -1) {
+      this.getValuesForFilterOnIndex(filterIndex).push(this.formBuilder.control(value));
+    }
   }
 
   getValuesForFilterOnIndex(index: number): FormArray {
