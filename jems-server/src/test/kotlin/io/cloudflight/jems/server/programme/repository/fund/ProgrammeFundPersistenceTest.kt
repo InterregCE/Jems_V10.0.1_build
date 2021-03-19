@@ -73,7 +73,7 @@ class ProgrammeFundPersistenceTest : UnitTest() {
 
         every { repository.findAllById(setOf(14, 15)) } returns toBeRemoved
         every { repository.deleteInBatch(any()) } answers { }
-        every { repository.saveAll(any()) } returnsArgument 0
+        every { repository.saveAll(any<List<ProgrammeFundEntity>>()) } returnsArgument 0
 
         val funds = persistence.updateFunds(
             toDeleteIds = setOf(14, 15),
