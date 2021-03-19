@@ -15,6 +15,7 @@ import io.cloudflight.jems.server.common.validator.GeneralValidatorService
 import io.cloudflight.jems.server.programme.service.costoption.ProgrammeUnitCostPersistence
 import io.cloudflight.jems.server.programme.service.costoption.UpdateUnitCostWhenProgrammeSetupRestricted
 import io.cloudflight.jems.server.programme.service.costoption.model.ProgrammeUnitCost
+import io.cloudflight.jems.server.programme.service.is_programme_setup_locked.IsProgrammeSetupLockedInteractor
 import io.mockk.clearMocks
 import io.mockk.every
 import io.mockk.impl.annotations.MockK
@@ -41,6 +42,9 @@ class UpdateUnitCostInteractorTest : UnitTest() {
     @MockK
     lateinit var persistence: ProgrammeUnitCostPersistence
 
+    @MockK
+    lateinit var isProgrammeSetupLocked: IsProgrammeSetupLockedInteractor
+
     @RelaxedMockK
     lateinit var auditService: AuditService
 
@@ -52,9 +56,9 @@ class UpdateUnitCostInteractorTest : UnitTest() {
     @BeforeEach
     fun setup() {
         clearMocks(auditService)
-        updateUnitCostInteractor = UpdateUnitCost(persistence, auditService, generalValidator)
+        updateUnitCostInteractor = UpdateUnitCost(persistence, isProgrammeSetupLocked, auditService, generalValidator)
         every { persistence.getUnitCost(any()) } returns initialUnitCost
-        every { persistence.isProgrammeSetupRestricted() } returns false
+        every { isProgrammeSetupLocked.isLocked() } returns false
     }
 
     @Test
@@ -146,7 +150,7 @@ class UpdateUnitCostInteractorTest : UnitTest() {
     @Test
     fun `update unit cost - call already published with same costPerUnit effective value but different number of decimal zeros`() {
         every { persistence.updateUnitCost(any()) } returnsArgument 0
-        every { persistence.isProgrammeSetupRestricted() } returns true
+        every { isProgrammeSetupLocked.isLocked() } returns true
         val unitCost = ProgrammeUnitCost(
             id = 4,
             name = setOf(InputTranslation(SystemLanguage.EN, "UC1 changed")),
@@ -167,7 +171,7 @@ class UpdateUnitCostInteractorTest : UnitTest() {
 
     @Test
     fun `update unit cost - call already published with different costPerUnit value`() {
-        every { persistence.isProgrammeSetupRestricted() } returns true
+        every { isProgrammeSetupLocked.isLocked() } returns true
 
         assertThrows<UpdateUnitCostWhenProgrammeSetupRestricted> {updateUnitCostInteractor.updateUnitCost(initialUnitCost.copy(costPerUnit = BigDecimal.TEN))}
     }

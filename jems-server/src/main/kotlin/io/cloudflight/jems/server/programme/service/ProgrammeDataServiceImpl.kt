@@ -11,7 +11,6 @@ import io.cloudflight.jems.server.audit.service.AuditService
 import io.cloudflight.jems.server.call.repository.CallRepository
 import io.cloudflight.jems.server.nuts.service.toOutput
 import io.cloudflight.jems.server.programme.authorization.CanReadNuts
-import io.cloudflight.jems.server.programme.authorization.CanReadProgrammeSetup
 import io.cloudflight.jems.server.programme.authorization.CanUpdateProgrammeSetup
 import io.cloudflight.jems.server.programme.entity.ProgrammeData
 import org.springframework.stereotype.Service
@@ -71,10 +70,6 @@ class ProgrammeDataServiceImpl(
     override fun getAvailableNuts(): List<OutputNuts> =
         getProgrammeDataOrThrow().programmeNuts.toDto()
 
-    @Transactional(readOnly = true)
-    @CanReadProgrammeSetup
-    override fun isProgrammeSetupLocked() =
-        callRepository.existsByStatus(CallStatus.PUBLISHED)
 
     private fun getProgrammeDataOrThrow(): ProgrammeData =
         programmeDataRepository.findById(1).orElseThrow { ResourceNotFoundException() }

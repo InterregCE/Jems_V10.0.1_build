@@ -1,9 +1,9 @@
 package io.cloudflight.jems.server.programme.service.legalstatus
 
-import io.cloudflight.jems.server.programme.service.ProgrammePersistence
 import io.cloudflight.jems.server.programme.service.legalstatus.model.ProgrammeLegalStatus
+import io.cloudflight.jems.server.programme.service.legalstatus.model.ProgrammeLegalStatusType
 
-interface ProgrammeLegalStatusPersistence : ProgrammePersistence {
+interface ProgrammeLegalStatusPersistence {
 
     fun getMax20Statuses(): List<ProgrammeLegalStatus>
 
@@ -12,6 +12,7 @@ interface ProgrammeLegalStatusPersistence : ProgrammePersistence {
         toPersist: Collection<ProgrammeLegalStatus>
     ): List<ProgrammeLegalStatus>
 
+    fun getByType(types: List<ProgrammeLegalStatusType>): List<ProgrammeLegalStatus>
     fun getCount(): Long
 
 }

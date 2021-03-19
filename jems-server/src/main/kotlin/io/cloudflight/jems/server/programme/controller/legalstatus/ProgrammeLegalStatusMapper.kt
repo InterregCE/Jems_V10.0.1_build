@@ -1,26 +1,22 @@
 package io.cloudflight.jems.server.programme.controller.legalstatus
 
 import io.cloudflight.jems.api.programme.dto.legalstatus.ProgrammeLegalStatusDTO
-import io.cloudflight.jems.api.project.dto.InputTranslation
+import io.cloudflight.jems.api.programme.dto.legalstatus.ProgrammeLegalStatusTypeDTO
 import io.cloudflight.jems.server.programme.service.legalstatus.model.ProgrammeLegalStatus
-import io.cloudflight.jems.server.programme.service.legalstatus.model.ProgrammeLegalStatusTranslatedValue
-import io.cloudflight.jems.server.project.controller.workpackage.extractField
+import io.cloudflight.jems.server.programme.service.legalstatus.model.ProgrammeLegalStatusType
 
 fun Iterable<ProgrammeLegalStatus>.toDto() = map {
     ProgrammeLegalStatusDTO(
         id = it.id,
-        description = it.translatedValues.extractField { it.description },
+        description = it.description ,
+        type = ProgrammeLegalStatusTypeDTO.valueOf(it.type.name)
     )
 }
 
 fun Iterable<ProgrammeLegalStatusDTO>.toModel() = map {
     ProgrammeLegalStatus(
         id = it.id ?: 0,
-        translatedValues = it.description.toModel(),
+        description = it.description,
+        type = ProgrammeLegalStatusType.valueOf(it.type.name)
     )
 }
-
-private fun Set<InputTranslation>.toModel() =
-    map { ProgrammeLegalStatusTranslatedValue(language = it.language, description = it.translation) }
-        .filter { !it.isEmpty() }
-        .toSet()

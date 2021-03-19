@@ -13,7 +13,4 @@ interface ProgrammeDataService {
     fun saveProgrammeNuts(regions: Collection<String>): OutputProgrammeData
 
     fun getAvailableNuts(): List<OutputNuts>
-
-    fun isProgrammeSetupLocked(): Boolean
-
 }

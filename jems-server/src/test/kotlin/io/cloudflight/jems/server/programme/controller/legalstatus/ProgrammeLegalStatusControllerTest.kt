@@ -1,15 +1,14 @@
 package io.cloudflight.jems.server.programme.controller.legalstatus
 
 import io.cloudflight.jems.api.programme.dto.language.SystemLanguage.CS
-import io.cloudflight.jems.api.programme.dto.language.SystemLanguage.EN
-import io.cloudflight.jems.api.programme.dto.language.SystemLanguage.SK
 import io.cloudflight.jems.api.programme.dto.legalstatus.ProgrammeLegalStatusDTO
+import io.cloudflight.jems.api.programme.dto.legalstatus.ProgrammeLegalStatusTypeDTO
 import io.cloudflight.jems.api.programme.dto.legalstatus.ProgrammeLegalStatusUpdateDTO
 import io.cloudflight.jems.api.project.dto.InputTranslation
 import io.cloudflight.jems.server.UnitTest
 import io.cloudflight.jems.server.programme.service.legalstatus.get_legal_statuses.GetLegalStatusInteractor
 import io.cloudflight.jems.server.programme.service.legalstatus.model.ProgrammeLegalStatus
-import io.cloudflight.jems.server.programme.service.legalstatus.model.ProgrammeLegalStatusTranslatedValue
+import io.cloudflight.jems.server.programme.service.legalstatus.model.ProgrammeLegalStatusType
 import io.cloudflight.jems.server.programme.service.legalstatus.update_legal_statuses.UpdateLegalStatusInteractor
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
@@ -25,15 +24,13 @@ class ProgrammeLegalStatusControllerTest: UnitTest() {
         private const val ID = 1L
         private val legalStatus = ProgrammeLegalStatus(
             id = ID,
-            translatedValues = setOf(
-                ProgrammeLegalStatusTranslatedValue(language = CS, description = "CS desc"),
-                ProgrammeLegalStatusTranslatedValue(language = EN, description = ""),
-                ProgrammeLegalStatusTranslatedValue(language = SK, description = null),
-            )
+            description = setOf(InputTranslation(language = CS, translation = "CS desc")),
+            type = ProgrammeLegalStatusType.OTHER
         )
         private val legalStatusDto = ProgrammeLegalStatusDTO(
             id = ID,
-            description = setOf(InputTranslation(language = CS, translation = "CS desc"))
+            description = setOf(InputTranslation(language = CS, translation = "CS desc")),
+            type = ProgrammeLegalStatusTypeDTO.OTHER
         )
 
     }
@@ -68,7 +65,8 @@ class ProgrammeLegalStatusControllerTest: UnitTest() {
         assertThat(toPersistSlot.captured).containsExactly(
             ProgrammeLegalStatus(
                 id = 0,
-                translatedValues = setOf(ProgrammeLegalStatusTranslatedValue(language = CS, description = "CS desc")),
+                description = setOf(InputTranslation(language = CS, translation = "CS desc")),
+                type = ProgrammeLegalStatusType.OTHER
             )
         )
     }

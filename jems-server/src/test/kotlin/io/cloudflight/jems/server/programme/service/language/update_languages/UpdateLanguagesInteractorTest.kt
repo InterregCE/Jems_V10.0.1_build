@@ -12,6 +12,7 @@ import io.cloudflight.jems.server.audit.service.AuditCandidate
 import io.cloudflight.jems.server.audit.service.AuditService
 import io.cloudflight.jems.server.call.repository.CallRepository
 import io.cloudflight.jems.server.common.exception.I18nValidationException
+import io.cloudflight.jems.server.programme.service.is_programme_setup_locked.IsProgrammeSetupLockedInteractor
 import io.cloudflight.jems.server.programme.service.language.ProgrammeLanguagePersistence
 import io.cloudflight.jems.server.programme.service.language.model.ProgrammeLanguage
 import io.mockk.every
@@ -39,6 +40,9 @@ internal class UpdateLanguagesInteractorTest : UnitTest() {
     lateinit var persistence: ProgrammeLanguagePersistence
 
     @MockK
+    lateinit var isProgrammeSetupLocked: IsProgrammeSetupLockedInteractor
+
+    @MockK
     lateinit var callRepository: CallRepository
 
     @RelaxedMockK
@@ -53,7 +57,7 @@ internal class UpdateLanguagesInteractorTest : UnitTest() {
     @Test
     fun `update existing programme language`() {
         val slotLanguages = slot<List<ProgrammeLanguage>>()
-        every { persistence.isProgrammeSetupRestricted() } returns false
+        every { isProgrammeSetupLocked.isLocked() } returns false
         every { persistence.updateLanguages(capture(slotLanguages)) } returnsArgument 0
 
         assertThat(updateLanguages.updateLanguages(listOf(languageInputEN, languageInputDE))).containsExactly(
@@ -79,7 +83,7 @@ internal class UpdateLanguagesInteractorTest : UnitTest() {
 
     @Test
     fun `update fails on too many programme languages`() {
-        every { persistence.isProgrammeSetupRestricted() } returns false
+        every { isProgrammeSetupLocked.isLocked() } returns false
         every { mockedList.size } returns 41
 
         val ex = assertThrows<I18nValidationException> { updateLanguages.updateLanguages(mockedList) }
@@ -88,7 +92,7 @@ internal class UpdateLanguagesInteractorTest : UnitTest() {
 
     @Test
     fun `update fails on empty input languages`() {
-        every { persistence.isProgrammeSetupRestricted() } returns false
+        every { isProgrammeSetupLocked.isLocked() } returns false
         val ex = assertThrows<I18nValidationException> {
             updateLanguages.updateLanguages(
                 listOf(
@@ -103,7 +107,7 @@ internal class UpdateLanguagesInteractorTest : UnitTest() {
 
     @Test
     fun `update fails on too many input languages`() {
-        every { persistence.isProgrammeSetupRestricted() } returns false
+        every { isProgrammeSetupLocked.isLocked() } returns false
         val ex = assertThrows<I18nValidationException> {
             updateLanguages.updateLanguages(getInputLanguages(CS, DE, EL, EN, SK))
         }
@@ -112,7 +116,7 @@ internal class UpdateLanguagesInteractorTest : UnitTest() {
 
     @Test
     fun `update fails on call already published`() {
-        every { persistence.isProgrammeSetupRestricted() } returns true
+        every { isProgrammeSetupLocked.isLocked() } returns true
         every { persistence.getLanguages() } returns listOf(languageInputEN, languageInputDE)
         assertThrows<UpdateLanguagesWhenProgrammeSetupRestricted> { updateLanguages.updateLanguages(listOf(languageInputEN)) }
     }

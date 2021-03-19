@@ -4,6 +4,7 @@ import io.cloudflight.jems.server.audit.service.AuditService
 import io.cloudflight.jems.server.programme.authorization.CanUpdateProgrammeSetup
 import io.cloudflight.jems.server.programme.service.fund.ProgrammeFundPersistence
 import io.cloudflight.jems.server.programme.service.fund.model.ProgrammeFund
+import io.cloudflight.jems.server.programme.service.is_programme_setup_locked.IsProgrammeSetupLockedInteractor
 import io.cloudflight.jems.server.programme.service.programmeFundsChanged
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
@@ -11,6 +12,7 @@ import org.springframework.transaction.annotation.Transactional
 @Service
 class UpdateFund(
     private val persistence: ProgrammeFundPersistence,
+    private val isProgrammeSetupLocked: IsProgrammeSetupLockedInteractor,
     private val auditService: AuditService,
 ) : UpdateFundInteractor {
 
@@ -38,7 +40,7 @@ class UpdateFund(
         val toUpdateFundIds = toUpdateFunds.mapTo(HashSet()) { it.id }
         val toDeleteFundIds = existingFundsById.keys.filterTo(HashSet()) { !toUpdateFundIds.contains(it) }
 
-        if (persistence.isProgrammeSetupRestricted() && (toDeleteFundIds.isNotEmpty()
+        if (isProgrammeSetupLocked.isLocked() && (toDeleteFundIds.isNotEmpty()
                 || toUpdateFunds.any { fund -> fund.deselectionHappened(existingFundsById[fund.id]) })
         ) throw MakingChangesWhenProgrammeSetupRestricted()
 

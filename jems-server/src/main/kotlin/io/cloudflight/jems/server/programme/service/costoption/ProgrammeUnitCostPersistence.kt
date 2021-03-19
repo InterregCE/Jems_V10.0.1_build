@@ -1,9 +1,8 @@
 package io.cloudflight.jems.server.programme.service.costoption
 
-import io.cloudflight.jems.server.programme.service.ProgrammePersistence
 import io.cloudflight.jems.server.programme.service.costoption.model.ProgrammeUnitCost
 
-interface ProgrammeUnitCostPersistence : ProgrammePersistence {
+interface ProgrammeUnitCostPersistence {
 
     fun getUnitCosts(): List<ProgrammeUnitCost>
     fun getUnitCost(unitCostId: Long): ProgrammeUnitCost

@@ -3,6 +3,7 @@ package io.cloudflight.jems.server.programme.service.priority.update_priority
 import io.cloudflight.jems.api.programme.dto.priority.ProgrammeObjectivePolicy
 import io.cloudflight.jems.server.audit.service.AuditService
 import io.cloudflight.jems.server.programme.authorization.CanUpdateProgrammeSetup
+import io.cloudflight.jems.server.programme.service.is_programme_setup_locked.IsProgrammeSetupLockedInteractor
 import io.cloudflight.jems.server.programme.service.priority.ProgrammePriorityPersistence
 import io.cloudflight.jems.server.programme.service.priority.model.ProgrammePriority
 import io.cloudflight.jems.server.programme.service.priority.validator.checkNoCallExistsForRemovedSpecificObjectives
@@ -14,6 +15,7 @@ import org.springframework.transaction.annotation.Transactional
 @Service
 class UpdatePriority(
     private val persistence: ProgrammePriorityPersistence,
+    private val isProgrammeSetupLocked: IsProgrammeSetupLockedInteractor,
     private val auditService: AuditService,
 ) : UpdatePriorityInteractor {
 
@@ -31,7 +33,7 @@ class UpdatePriority(
         )
 
         val objectivePoliciesToBeRemoved = extractRemovedSpecificObjectives(priority, existingPriority)
-        if (persistence.isProgrammeSetupRestricted() && objectivePoliciesToBeRemoved.isNotEmpty())
+        if (isProgrammeSetupLocked.isLocked() && objectivePoliciesToBeRemoved.isNotEmpty())
             throw UpdateWhenProgrammeSetupRestricted()
 
         checkNoCallExistsForRemovedSpecificObjectives(

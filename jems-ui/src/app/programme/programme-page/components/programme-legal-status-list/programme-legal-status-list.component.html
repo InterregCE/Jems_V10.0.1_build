@@ -7,27 +7,32 @@
             {{'common.edit.label' | translate}}
         </button>
     </div>
-    <app-multi-language-container [useSystemLanguages]="true" [switchButtonsVisible]="(changeFormState$ | async) === FormState.EDIT">
-        <div [appTableConfig]="[{},{maxInRem: 5}]">
+    <app-multi-language-container [useSystemLanguages]="true"
+                                  [switchButtonsVisible]="(changeFormState$ | async) === FormState.EDIT">
+        <div [appTableConfig]="[{maxInRem: 4},{},{maxInRem: 5}]">
             <div>
+                <span class="mat-body-strong">{{ 'programme.legal.status.list.type' | translate }}</span>
                 <span class="mat-body-strong">{{ 'programme.legal.status.list.description' | translate }}</span>
-                <span class="mat-body-strong" *ngIf="(changeFormState$ | async) === FormState.EDIT">{{ 'common.delete.entry.tooltip' | translate }}</span>
+                <span class="mat-body-strong"
+                      *ngIf="(changeFormState$ | async) === FormState.EDIT">{{ 'common.delete.entry.tooltip' | translate }}</span>
             </div>
 
             <div *ngFor="let legalStatus of legalStatusesForm.controls; let i = index">
                 <ng-container formArrayName="legalStatuses">
                     <ng-container [formGroupName]="i">
 
+                        <div>{{legalStatus?.value?.type}}</div>
                         <app-multi-language-form-field
                                 formControlName="description"
                                 [useFallBackLanguage]="true"
-                                [isFallBackLanguageReadonly]="i==0 || i==1"
+                                [isFallBackLanguageReadonly]="isPublicOrPrivate(legalStatus)"
                                 maxLength="50">
                         </app-multi-language-form-field>
 
                         <div *ngIf="(changeFormState$ | async) === FormState.EDIT">
                             <button mat-icon-button color="accent"
                                     type="button"
+                                    *ngIf="!isPublicOrPrivate(legalStatus)"
                                     [disabled]="isProgrammeSetupRestricted ? !!legalStatus.get('id').value : false"
                                     matTooltip="{{'common.delete.entry.tooltip' | translate}}"
                                     (click)="deleteLegalStatus(i, legalStatus.get('id').value)">

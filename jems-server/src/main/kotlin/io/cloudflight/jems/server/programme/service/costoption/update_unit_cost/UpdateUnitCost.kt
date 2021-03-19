@@ -11,12 +11,14 @@ import io.cloudflight.jems.server.programme.service.costoption.ProgrammeUnitCost
 import io.cloudflight.jems.server.programme.service.costoption.UpdateUnitCostWhenProgrammeSetupRestricted
 import io.cloudflight.jems.server.programme.service.costoption.model.ProgrammeUnitCost
 import io.cloudflight.jems.server.programme.service.costoption.validateUpdateUnitCost
+import io.cloudflight.jems.server.programme.service.is_programme_setup_locked.IsProgrammeSetupLockedInteractor
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 
 @Service
 class UpdateUnitCost(
     private val persistence: ProgrammeUnitCostPersistence,
+    private val isProgrammeSetupLocked: IsProgrammeSetupLockedInteractor,
     private val audit: AuditService,
     private val generalValidator: GeneralValidatorService,
 ) : UpdateUnitCostInteractor {
@@ -30,7 +32,7 @@ class UpdateUnitCost(
         validateUpdateUnitCost(unitCost)
 
         val existingUnitCost  = persistence.getUnitCost(unitCostId = unitCost.id)
-        if (persistence.isProgrammeSetupRestricted()) {
+        if (isProgrammeSetupLocked.isLocked()) {
             unitCostUpdateRestrictions(existingUnitCost = existingUnitCost, updatedUnitCost = unitCost)
         }
         val saved = persistence.updateUnitCost(unitCost)

@@ -3,6 +3,7 @@ package io.cloudflight.jems.server.programme.service.language.update_languages
 import io.cloudflight.jems.server.audit.service.AuditService
 import io.cloudflight.jems.server.common.exception.I18nValidationException
 import io.cloudflight.jems.server.programme.authorization.CanUpdateProgrammeSetup
+import io.cloudflight.jems.server.programme.service.is_programme_setup_locked.IsProgrammeSetupLockedInteractor
 import io.cloudflight.jems.server.programme.service.language.ProgrammeLanguagePersistence
 import io.cloudflight.jems.server.programme.service.language.model.ProgrammeLanguage
 import io.cloudflight.jems.server.programme.service.programmeInputLanguagesChanged
@@ -14,6 +15,7 @@ import org.springframework.transaction.annotation.Transactional
 @Service
 class UpdateLanguages(
     private val persistence: ProgrammeLanguagePersistence,
+    private val isProgrammeSetupLocked: IsProgrammeSetupLockedInteractor,
     private val auditService: AuditService,
 ) : UpdateLanguagesInteractor {
 
@@ -26,7 +28,7 @@ class UpdateLanguages(
     @CanUpdateProgrammeSetup
     @Transactional
     override fun updateLanguages(languages: List<ProgrammeLanguage>): List<ProgrammeLanguage> {
-        if (persistence.isProgrammeSetupRestricted())
+        if (isProgrammeSetupLocked.isLocked())
             throw UpdateLanguagesWhenProgrammeSetupRestricted()
         validateLanguageRequirements(languages)
 

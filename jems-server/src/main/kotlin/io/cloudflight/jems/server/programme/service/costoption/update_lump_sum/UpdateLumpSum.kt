@@ -11,12 +11,14 @@ import io.cloudflight.jems.server.programme.service.costoption.ProgrammeLumpSumP
 import io.cloudflight.jems.server.programme.service.costoption.UpdateLumpSumWhenProgrammeSetupRestricted
 import io.cloudflight.jems.server.programme.service.costoption.model.ProgrammeLumpSum
 import io.cloudflight.jems.server.programme.service.costoption.validateUpdateLumpSum
+import io.cloudflight.jems.server.programme.service.is_programme_setup_locked.IsProgrammeSetupLockedInteractor
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 
 @Service
 class UpdateLumpSum(
     private val persistence: ProgrammeLumpSumPersistence,
+    private val isProgrammeSetupLocked: IsProgrammeSetupLockedInteractor,
     private val audit: AuditService,
     private val generalValidator: GeneralValidatorService,
 ) : UpdateLumpSumInteractor {
@@ -29,8 +31,8 @@ class UpdateLumpSum(
 
         validateUpdateLumpSum(lumpSum)
 
-        val existingLumpSum  = persistence.getLumpSum(lumpSumId = lumpSum.id!!)
-        if (persistence.isProgrammeSetupRestricted()) {
+        val existingLumpSum  = persistence.getLumpSum(lumpSumId = lumpSum.id)
+        if (isProgrammeSetupLocked.isLocked()) {
             lumpSumUpdateRestrictions(existingLumpSum = existingLumpSum, updatedLumpSum = lumpSum)
         }
         val saved = persistence.updateLumpSum(lumpSum)
