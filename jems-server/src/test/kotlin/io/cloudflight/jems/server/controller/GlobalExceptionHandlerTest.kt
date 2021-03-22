@@ -37,7 +37,7 @@ internal class GlobalExceptionHandlerTest {
 
         assertThat(result).isNotNull
         assertThat(result.statusCode).isEqualTo(HttpStatus.UNPROCESSABLE_ENTITY)
-        assertThat((result.body as APIErrorDTO).i18nMessage.i18nKey).isEqualTo("file.duplicate.error")
+        assertThat((result.body as APIErrorDTO).i18nMessage.i18nKey).isEqualTo("file.upload.message.duplicate")
         assertThat((result.body as APIErrorDTO).i18nMessage.i18nArguments).isEqualTo(hashMapOf(
             Pair("name", exception.error.name),
             Pair("origin", exception.error.origin.name),

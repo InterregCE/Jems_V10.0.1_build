@@ -43,7 +43,7 @@ class GlobalExceptionHandler : ResponseEntityExceptionHandler() {
             ApplicationUnprocessableException(
                 DEFAULT_ERROR_CODE,
                 I18nMessage(
-                    "file.duplicate.error", hashMapOf(
+                    "file.upload.message.duplicate", hashMapOf(
                         Pair("name", exception.error.name),
                         Pair("origin", exception.error.origin.name),
                         Pair("updated", exception.error.updated.toString())
