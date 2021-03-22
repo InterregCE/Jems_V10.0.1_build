@@ -1,133 +1,330 @@
+export interface ResultIndicatorCodeRelation {
+  code: string;
+  name: string;
+  measurementUnit: string;
+}
+
 export class ProgrammeResultIndicatorConstants {
-  static indicatorCodes = ['RCR01', 'RCR02', 'RCR03', 'RCR04', 'RCR05', 'RCR06', 'RCR07', 'RCR08', 'RCR11', 'RCR12',
-                           'RCR13', 'RCR14', 'RCR16', 'RCR17', 'RCR18', 'RCR19', 'RCR25', 'RCR24', 'RCR97', 'RCR98',
-                           'RCR99', 'RCR100', 'RCR26', 'RCR27', 'RCR28', 'RCR29', 'RCR30', 'RCR31', 'RCR32', 'RCR33',
-                           'RCR34', 'RCR35', 'RCR36', 'RCR37', 'RCR96', 'RCR38', 'RCR41', 'RCR42', 'RCR43', 'RCR44',
-                           'RCR46', 'RCR47', 'RCR48', 'RCR49', 'RCR50', 'RCR95', 'RCR51', 'RCR52', 'RCR53', 'RCR54',
-                           'RCR55', 'RCR56', 'RCR101', 'RCR57', 'RCR58', 'RCR59', 'RCR60', 'RCR62', 'RCR63', 'RCR64',
-                           'RCR65', 'RCR66', 'RCR67', 'RCR68', 'RCR70', 'RCR71', 'RCR72', 'RCR73', 'RCR74', 'RCR75',
-                           'RCR76', 'RCR77', 'RCR78', 'RCR91', 'RCR92', 'RCR93', 'RCR94', 'RCR79', 'RCR80', 'RCR81',
-                           'RCR82', 'RCR83', 'RCR84', 'RCR85', 'RCR86'
-  ];
-
-  static indicatorNames = [
-    'Jobs created in supported entities',
-    'Private investments matching public support (of which: grants, financial instruments) ',
-    'SMEs introducing product or process innovation ',
-    'SMEs introducing marketing or organisational innovation ',
-    'SMEs innovating in-house ',
-    'Patent applications submitted to European Patent Office',
-    'Trademark and design applications  ',
-    'Public-private co-publications ',
-    'Users of new public digital services and applications ',
-    'Users of new digital products, services and applications developed by enterprises ',
-    'Enterprises reaching high digital intensity ',
-    'Enterprises using public digital services ',
-    'High growth enterprises supported ',
-    '3-year-old enterprises surviving in the market ',
-    'SMEs using incubator services one year after the incubator creation ',
-    'Enterprises with higher turnover ',
-    'Value added per employee in supported SMEs ',
-    'SMEs benefiting from activities for skills development delivered by a local/ regional ecosystem ',
-    'Apprenticeships supported in SMEs ',
-    'SMEs staff completing Continuing Vocational Education and Training (CVET) (by type of skill: technical, management, entrepreneurship, green, other)',
-    'SMEs staff completing alternative training for knowledge intensive service activities (KISA) (by type of  skills: technical, management, entrepreneurship, green, other) ',
-    'SMEs staff completing formal training for skills development (KISA) (by type of skills: technical, management, entrepreneurship, green, other) ',
-    'Annual final energy consumption (of which: residential, private nonresidential, public non-residential) ',
-    'Households with improved energy performance of their dwellings ',
-    'Buildings with improved energy classification  (of which: residential, private non-residential, public non-residential)',
-    'Estimated greenhouse gas emissions',
-    'Enterprises with improved energy performance ',
-    'Total renewable energy produced (of which: electricity, thermal) ',
-    'Renewable energy: Capacity connected to the grid (operational)  ',
-    'Users connected to smart grids ',
-    'Roll-out of projects for smart grids ',
-    'Population benefiting from flood protection measures ',
-    'Population benefiting from forest fires protection measures ',
-    'Population benefiting from protection measures against climate related natural disasters (other than floods and forest fires) ',
-    'Population benefiting from protection measures against non-climate related natural risks and risks related to human activities ',
-    'Estimated average response time to disaster situations ',
-    'Population connected to improved water supply  ',
-    'Population connected to at least secondary waste water treatment ',
-    'Water losses ',
-    'Waste water properly treated  ',
-    'Population served by waste recycling facilities and small waste management systems  ',
-    'Waste recycled ',
-    'Recycled waste used as raw materials  ',
-    'Waste recovered ',
-    'Population benefiting from measures for air quality ',
-    'Population having access to new or upgraded green infrastructure in urban areas ',
-    'Population benefiting from measures for noise reduction ',
-    'Rehabilitated land used for green areas, social housing, economic or community activities ',
-    'Households with broadband subscriptions to a very high capacity network',
-    'Enterprises with broadband subscriptions to a very high capacity network ',
-    'Users of newly built, reconstructed or upgraded roads  ',
-    'Time savings due to improved road infrastructure ',
-    'Time savings due to improved rail infrastructure  ',
-    'Length of European Rail Traffic Management System equipped railways in operation  ',
-    'Annual number of passengers on supported railways ',
-    'Freight transport on rail ',
-    'Freight transport on inland waterways  ',
-    'Annual passengers of public transport  ',
-    'Annual users of new/ upgraded tram and metro lines ',
-    'Annual users of dedicated cycling infrastructure ',
-    'Job seekers using annually the services of the employment services supported ',
-    'Occupancy of temporary reception infrastructure built or renovated  ',
-    'Occupancy of rehabilitated housing – migrants, refugees and persons under or applying for international protection ',
-    'Occupancy of rehabilitated housing - other  ',
-    'Annual number of children using childcare infrastructure supported ',
-    'Annual number of students using education infrastructure supported ',
-    'People with access to improved health care services  ',
-    'Annual number of persons using the health care facilities supported ',
-    'Annual number of persons using the social care facilities supported  ',
-    'Average response time for medical emergencies in the area supported  ',
-    'Stakeholders involved in the preparation and implementation of strategies of urban development  ',
-    'Tourists/ visits to supported sites  ',
-    'Users benefiting from cultural infrastructure supported ',
-    'Average time for launch of calls, selection of projects and signature of contracts ',
-    'Average time for tendering (from launch of procurement until signature of contract)  ',
-    'Average time for project implementation (from signature of contract to last payment)  ',
-    'Single bidding for ERDF and Cohesion Fund interventions ',
-    'Joint strategies/ action plans taken up by organisations at/ after project completion ',
-    'Joint pilot activities taken up or up-scaled by organisations at/ after project completion ',
-    'Participants completing joint training schemes ',
-    'Legal or administrative obstacles addressed or alleviated ',
-    'Persons covered by signed joint agreements signed ',
-    'Organisations cooperating across borders-12 months after project completion ',
-    'Participants in joint actions-12 months after project completion  ',
-    'Stakeholders/ institutions with enhanced cooperation capacity beyond national borders '
-  ];
-
-  static measurementUnits = [
-    'annual FTEs',
-    'annual users',
-    'cubic metres per year',
-    'dwellings',
-    'end users/year',
-    'enterprises',
-    'euro',
-    'hectares',
-    'joint strategy / action plan',
-    'man-days/year connections',
-    'MW',
-    'MWh/year',
-    'obstacles resolved',
-    'organisations',
-    'participants Completion',
-    'participation',
-    'passenger-km/year',
-    'patent applications',
-    'persons',
-    'population equivalent',
-    'projects',
-    'publications',
-    'solutions applied',
-    'tonnes/year',
-    'tonnes-km/year',
-    'tons of CO2eq/year',
-    'trademark and design applications',
-    'users',
-    'users/year',
-    'visitors/year'
+  static indicatorCodes: ResultIndicatorCodeRelation[] = [
+    {
+      code: 'RCR001',
+      name: 'Jobs created in supported entities',
+      measurementUnit: 'annual FTEs'
+    },
+    {
+      code: 'RCR002',
+      name: 'Private investments matching public support (of which: grants, financial instruments)',
+      measurementUnit: 'euro'
+    },
+    {
+      code: 'RCR003',
+      name: 'Small and medium-sized enterprises (SMEs) introducing product or process innovation',
+      measurementUnit: 'enterprises'
+    },
+    {
+      code: 'RCR004',
+      name: 'SMEs introducing marketing or organisational innovation',
+      measurementUnit: 'enterprises'
+    },
+    {
+      code: 'RCR005',
+      name: 'SMEs innovating in-house',
+      measurementUnit: 'enterprises'
+    },
+    {
+      code: 'RCR006',
+      name: 'Patent applications submitted',
+      measurementUnit: 'patent applications'
+    },
+    {
+      code: 'RCR007',
+      name: 'Trademark and design applications',
+      measurementUnit: 'trademark and design applications'
+    },
+    {
+      code: 'RCR008',
+      name: 'Publications from supported projects',
+      measurementUnit: 'publications'
+    },
+    {
+      code: 'RCR011',
+      name: 'Users of new and upgraded public digital services, products and processes',
+      measurementUnit: 'annual users'
+    },
+    {
+      code: 'RCR012',
+      name: 'Users of new and upgraded digital services, products and processes developed by enterprises',
+      measurementUnit: 'annual users'
+    },
+    {
+      code: 'RCR013',
+      name: 'Enterprises reaching high digital intensity',
+      measurementUnit: 'enterprises'
+    },
+    {
+      code: 'RCR017',
+      name: 'New enterprises surviving in the market',
+      measurementUnit: 'enterprises'
+    },
+    {
+      code: 'RCR018',
+      name: 'SMEs using incubator services after incubator creation',
+      measurementUnit: 'enterprises'
+    },
+    {
+      code: 'RCR019',
+      name: 'Enterprises with higher turnover',
+      measurementUnit: 'enterprises'
+    },
+    {
+      code: 'RCR025',
+      name: 'SMEs with higher value added per employee',
+      measurementUnit: 'enterprises'
+    },
+    {
+      code: 'RCR026',
+      name: 'Annual primary energy consumption (of which: dwellings, public buildings, enterprises, other)',
+      measurementUnit: 'MWh/year'
+    },
+    {
+      code: 'RCR029',
+      name: 'Estimated greenhouse gas emissions',
+      measurementUnit: 'tons of CO2eq/year'
+    },
+    {
+      code: 'RCR031',
+      name: 'Total renewable energy produced (of which: electricity, thermal)',
+      measurementUnit: 'MWh/year'
+    },
+    {
+      code: 'RCR032',
+      name: 'Additional operational capacity installed for renewable energy',
+      measurementUnit: 'MW'
+    },
+    {
+      code: 'RCR033',
+      name: 'Users connected to smart energy systems',
+      measurementUnit: 'end users/year'
+    },
+    {
+      code: 'RCR034',
+      name: 'Roll-out of projects for smart energy systems',
+      measurementUnit: 'projects'
+    },
+    {
+      code: 'RCR035',
+      name: 'Population benefiting from flood protection measures',
+      measurementUnit: 'persons'
+    },
+    {
+      code: 'RCR036',
+      name: 'Population benefiting from wildfire protection measures',
+      measurementUnit: 'persons'
+    },
+    {
+      code: 'RCR037',
+      name: 'Population benefiting from protection measures against climate related natural disaster (other than flood and wildfires)',
+      measurementUnit: 'persons'
+    },
+    {
+      code: 'RCR042',
+      name: 'Population connected to at least secondary public waste water treatment',
+      measurementUnit: 'population equivalent'
+    },
+    {
+      code: 'RCR043',
+      name: 'Water losses in distribution systems for public water supply',
+      measurementUnit: 'cubic metres per year'
+    },
+    {
+      code: 'RCR047',
+      name: 'Waste recycled',
+      measurementUnit: 'tonnes/year'
+    },
+    {
+      code: 'RCR048',
+      name: 'Waste used as raw materials',
+      measurementUnit: 'tonnes/year'
+    },
+    {
+      code: 'RCR050',
+      name: 'Population benefiting from measures for air quality',
+      measurementUnit: 'persons'
+    },
+    {
+      code: 'RCR052',
+      name: 'Rehabilitated land used for green areas, social housing, economic or other uses',
+      measurementUnit: 'hectares'
+    },
+    {
+      code: 'RCR053',
+      name: 'Dwellings with broadband subscriptions to a very high capacity network',
+      measurementUnit: 'dwellings'
+    },
+    {
+      code: 'RCR054',
+      name: 'Enterprises with broadband subscriptions to a very high capacity network',
+      measurementUnit: 'enterprises'
+    },
+    {
+      code: 'RCR055',
+      name: 'Annual users of newly built, reconstructed, upgraded or modernised roads',
+      measurementUnit: 'passenger-km/year'
+    },
+    {
+      code: 'RCR056',
+      name: 'Time savings due to improved road infrastructures',
+      measurementUnit: 'man-days/year'
+    },
+    {
+      code: 'RCR058',
+      name: 'Annual users of newly, built, upgraded, reconstructed or modernised railways',
+      measurementUnit: 'passenger-km/year'
+    },
+    {
+      code: 'RCR059',
+      name: 'Freight transport on rail',
+      measurementUnit: 'tonnes-km/year'
+    },
+    {
+      code: 'RCR060',
+      name: 'Freight transport on inland waterways',
+      measurementUnit: 'tonnes-km/year'
+    },
+    {
+      code: 'RCR062',
+      name: 'Annual users of new or modernised public transport',
+      measurementUnit: 'users'
+    },
+    {
+      code: 'RCR063',
+      name: 'Annual users of new or modernised tram and metro lines',
+      measurementUnit: 'users'
+    },
+    {
+      code: 'RCR064',
+      name: 'Annual users of dedicated cycling infrastructure',
+      measurementUnit: 'users'
+    },
+    {
+      code: 'RCR065',
+      name: 'Annual users of new or modernised facilities for employment services',
+      measurementUnit: 'users/year'
+    },
+    {
+      code: 'RCR066',
+      name: 'Annual users of new or modernised temporary reception facilities',
+      measurementUnit: 'users/year'
+    },
+    {
+      code: 'RCR067',
+      name: 'Annual users of new or modernised social housing',
+      measurementUnit: 'users/year'
+    },
+    {
+      code: 'RCR070',
+      name: 'Annual users of new or modernised childcare',
+      measurementUnit: 'users/year'
+    },
+    {
+      code: 'RCR071',
+      name: 'Annual users of new or modernised education facilities',
+      measurementUnit: 'users/year'
+    },
+    {
+      code: 'RCR072',
+      name: 'Annual users of new or modernised e-health care services',
+      measurementUnit: 'users/year'
+    },
+    {
+      code: 'RCR073',
+      name: 'Annual users of new or modernised health care facilities',
+      measurementUnit: 'users/year'
+    },
+    {
+      code: 'RCR074',
+      name: 'Annual users of new or modernised social care facilities',
+      measurementUnit: 'users/year'
+    },
+    {
+      code: 'RCR077',
+      name: 'Visitors of cultural and tourism sites supported',
+      measurementUnit: 'visitors/year'
+    },
+    {
+      code: 'RCR079',
+      name: 'Joint strategies and action plans taken up by organisations',
+      measurementUnit: 'Joint strategy / action plan'
+    },
+    {
+      code: 'RCR081',
+      name: 'Completion of joint training schemes',
+      measurementUnit: 'Participants Completion'
+    },
+    {
+      code: 'RCR082',
+      name: 'Legal or administrative obstacles across borders alleviated or resolved',
+      measurementUnit: 'Obstacles resolved'
+    },
+    {
+      code: 'RCR083',
+      name: 'Persons covered by joint administrative or legal agreements signed',
+      measurementUnit: 'persons'
+    },
+    {
+      code: 'RCR084',
+      name: 'Organisations cooperating across borders after project completion',
+      measurementUnit: 'organisations'
+    },
+    {
+      code: 'RCR085',
+      name: 'Participations in joint actions across borders after project completion',
+      measurementUnit: 'Participation'
+    },
+    {
+      code: 'RCR095',
+      name: 'Population having access to new or improved green infrastructure',
+      measurementUnit: 'persons'
+    },
+    {
+      code: 'RCR096',
+      name: 'Population benefiting from protection measures against non-climate related natural risks and risks related to human activities',
+      measurementUnit: 'persons'
+    },
+    {
+      code: 'RCR097',
+      name: 'Apprenticeships supported in SMEs',
+      measurementUnit: 'annual FTEs'
+    },
+    {
+      code: 'RCR098',
+      name: 'SMEs staff completing training for skills for smart specialisation, for industrial transition and entrepreneurship (by type of skill: technical, management, entrepreneurship, green, other)',
+      measurementUnit: 'persons'
+    },
+    {
+      code: 'RCR101',
+      name: 'Time savings due to improved rail infrastructures',
+      measurementUnit: 'man-days/year'
+    },
+    {
+      code: 'RCR102',
+      name: 'Research jobs created in supported entities',
+      measurementUnit: 'annual FTEs'
+    },
+    {
+      code: 'RCR103',
+      name: 'Waste collected separately',
+      measurementUnit: 'tonnes/year'
+    },
+    {
+      code: 'RCR104',
+      name: 'Solutions taken up or up-scaled by organisations',
+      measurementUnit: 'solutions applied'
+    },
+    {
+      code: 'RCR105',
+      name: 'Estimated greenhouse emissions by boilers and heating systems converted from solid fossil fuels to gas',
+      measurementUnit: 'tons of CO2eq/year',
+    },
   ];
 }

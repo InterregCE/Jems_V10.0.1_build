@@ -1,137 +1,492 @@
+export interface OutputIndicatorCodeRelation {
+  code: string;
+  name: string;
+  measurementUnit: string;
+}
+
 export class ProgrammeOutputIndicatorConstants {
-  static indicatorCodes = ['RCO01', 'RCO02', 'RCO03', 'RCO04', 'RCO05', 'RCO06', 'RCO08', 'RCO10', 'RCO96', 'RCO12',
-                           'RCO13', 'RCO14', 'RCO15', 'RCO16', 'RCO17', 'RCO101', 'RCO102', 'RCO18', 'RCO19', 'RCO20',
-                           'RCO22', 'RCO97', 'RCO23', 'RCO98', 'RCO24', 'RCO25', 'RCO26', 'RCO27', 'RCO28', 'RCO30',
-                           'RCO31', 'RCO32', 'RCO34', 'RCO36', 'RCO37', 'RCO99', 'RCO38', 'RCO39', 'RCO41', 'RCO42',
-                           'RCO43', 'RCO44', 'RCO45', 'RCO46', 'RCO47', 'RCO48', 'RCO49', 'RCO50', 'RCO51', 'RCO52',
-                           'RCO53', 'RCO54', 'RCO100', 'RCO55', 'RCO56', 'RCO57', 'RCO58', 'RCO59', 'RCO60', 'RCO61',
-                           'RCO63', 'RCO64', 'RCO65', 'RCO66', 'RCO67', 'RCO69', 'RCO70', 'RCO74', 'RCO75', 'RCO76',
-                           'RCO77', 'RCO80', 'RCO95', 'RCO81', 'RCO82', 'RCO83', 'RCO84', 'RCO85', 'RCO96', 'RCO86',
-                           'RCO87', 'RCO88', 'RCO89', 'RCO90'
+
+  static indicatorCodes: OutputIndicatorCodeRelation[] = [
+    {
+      code: 'RCO001',
+      name: 'Enterprises supported (of which: micro, small, medium, large)',
+      measurementUnit: 'enterprises',
+    },
+    {
+      code: 'RCO002',
+      name: 'Enterprises supported by grants',
+      measurementUnit: 'enterprises',
+    },
+    {
+      code: 'RCO003',
+      name: 'Enterprises supported by financial instruments',
+      measurementUnit: 'enterprises',
+    },
+    {
+      code: 'RCO004',
+      name: 'Enterprises with non-financial support',
+      measurementUnit: 'enterprises',
+    },
+    {
+      code: 'RCO005',
+      name: 'New enterprises supported',
+      measurementUnit: 'enterprises',
+    },
+    {
+      code: 'RCO006',
+      name: 'Researchers working in supported research facilities',
+      measurementUnit: 'annual FTEs',
+    },
+    {
+      code: 'RCO007',
+      name: 'Research institutions participating in joint research projects',
+      measurementUnit: 'research institutions',
+    },
+    {
+      code: 'RCO008',
+      name: 'Nominal value of research and innovation equipment',
+      measurementUnit: 'euro',
+    },
+    {
+      code: 'RCO010',
+      name: 'Enterprises cooperating with research institutions',
+      measurementUnit: 'enterprises',
+    },
+    {
+      code: 'RCO013',
+      name: 'Value of digital services, products and processes developed for enterprises',
+      measurementUnit: 'euro',
+    },
+    {
+      code: 'RCO014',
+      name: 'Public institutions supported to develop digital services, products and processes',
+      measurementUnit: 'public institutions',
+    },
+    {
+      code: 'RCO015',
+      name: 'Capacity of incubation created',
+      measurementUnit: 'enterprises',
+    },
+    {
+      code: 'RCO016',
+      name: 'Participations of institutional stakeholders in entrepreneurial discovery process',
+      measurementUnit: 'participations of institutional stakeholders',
+    },
+    {
+      code: 'RCO018',
+      name: 'Dwellings with improved energy performance',
+      measurementUnit: 'dwellings',
+    },
+    {
+      code: 'RCO019',
+      name: 'Public buildings with improved energy performance',
+      measurementUnit: 'square meters',
+    },
+    {
+      code: 'RCO020',
+      name: 'District heating and cooling network lines newly constructed and improved',
+      measurementUnit: 'km',
+    },
+    {
+      code: 'RCO022',
+      name: 'Additional production capacity for renewable energy (of which: electricity, thermal)',
+      measurementUnit: 'MW',
+    },
+    {
+      code: 'RCO023',
+      name: 'Digital management systems for smart energy systems',
+      measurementUnit: 'systems',
+    },
+    {
+      code: 'RCO024',
+      name: 'Investments in new or upgraded disaster monitoring, preparedness, warning and response systems against natural disasters',
+      measurementUnit: 'euro',
+    },
+    {
+      code: 'RCO025',
+      name: 'Coastal strip, river bank and lakeshore flood protection newly built or consolidated',
+      measurementUnit: 'km',
+    },
+    {
+      code: 'RCO026',
+      name: 'Green infrastructure built or upgraded for adaptation to climate change',
+      measurementUnit: 'hectares',
+    },
+    {
+      code: 'RCO027',
+      name: 'National and sub-national strategies addressing climate change adaptation',
+      measurementUnit: 'strategies',
+    },
+    {
+      code: 'RCO028',
+      name: 'Area covered by protection measures against wildfires',
+      measurementUnit: 'hectares',
+    },
+    {
+      code: 'RCO030',
+      name: 'Area covered by protection measures against wildfires',
+      measurementUnit: 'hectares',
+    },
+    {
+      code: 'RCO031',
+      name: 'Length of new or upgraded pipes for the distribution systems of public water supply',
+      measurementUnit: 'km',
+    },
+    {
+      code: 'RCO032',
+      name: 'New or upgraded capacity for waste water treatment',
+      measurementUnit: 'population equivalent',
+    },
+    {
+      code: 'RCO034',
+      name: 'Additional capacity for waste recycling',
+      measurementUnit: 'tonnes/year',
+    },
+    {
+      code: 'RCO036',
+      name: 'Green infrastructure supported for other purposes than adaptation to climate change',
+      measurementUnit: 'hectares',
+    },
+    {
+      code: 'RCO037',
+      name: 'Surface of Natura 2000 sites covered by protection and restoration measures',
+      measurementUnit: 'hectares'
+    },
+    {
+      code: 'RCO038',
+      name: 'Surface area of rehabilitated land supported',
+      measurementUnit: 'hectares'
+    },
+    {
+      code: 'RCO039',
+      name: 'Area covered by systems for monitoring air pollution installed',
+      measurementUnit: 'hectares'
+    },
+    {
+      code: 'RCO041',
+      name: 'Additional dwellings with broadband access of very high capacity',
+      measurementUnit: 'dwellings'
+    },
+    {
+      code: 'RCO042',
+      name: 'Additional enterprises with broadband access of very high capacity',
+      measurementUnit: 'enterprises'
+    },
+    {
+      code: 'RCO043',
+      name: 'Length of new or upgraded roads - TEN-T',
+      measurementUnit: 'km'
+    },
+    {
+      code: 'RCO044',
+      name: 'Length of new or upgraded roads –non-TEN-T',
+      measurementUnit: 'km'
+    },
+    {
+      code: 'RCO045',
+      name: 'Length of roads reconstructed or modernised - TEN-T',
+      measurementUnit: 'km'
+    },
+    {
+      code: 'RCO046',
+      name: 'Length of roads reconstructed or modernised - non-TEN-T',
+      measurementUnit: 'km'
+    },
+    {
+      code: 'RCO047',
+      name: 'Length of new or upgraded rail - TEN-T',
+      measurementUnit: 'km'
+    },
+    {
+      code: 'RCO048',
+      name: 'Length of new or upgraded rail - non-TEN-T',
+      measurementUnit: 'km'
+    },
+    {
+      code: 'RCO049',
+      name: 'Length of rail reconstructed or modernised - TEN-T',
+      measurementUnit: 'km'
+    },
+    {
+      code: 'RCO050',
+      name: 'Length of rail reconstructed or modernised – non-TEN-T',
+      measurementUnit: 'km'
+    },
+    {
+      code: 'RCO051',
+      name: 'Length of new, upgraded or modernised inland waterways - TEN-T',
+      measurementUnit: 'km'
+    },
+    {
+      code: 'RCO052',
+      name: 'Length of new, upgraded or modernised inland waterways –non-TEN-T',
+      measurementUnit: 'km'
+    },
+    {
+      code: 'RCO053',
+      name: 'New or modernised railway stations and stops',
+      measurementUnit: 'stations and stops'
+    },
+    {
+      code: 'RCO054',
+      name: 'New or modernised intermodal connections',
+      measurementUnit: 'intermodal connections'
+    },
+    {
+      code: 'RCO055',
+      name: 'Length of new tram and metro lines',
+      measurementUnit: 'km'
+    },
+    {
+      code: 'RCO056',
+      name: 'Length of reconstructed or modernised tram and metro lines',
+      measurementUnit: 'km'
+    },
+    {
+      code: 'RCO057',
+      name: 'Capacity of environmentally friendly rolling stock for collective public transport',
+      measurementUnit: 'passengers'
+    },
+    {
+      code: 'RCO058',
+      name: 'Dedicated cycling infrastructure supported',
+      measurementUnit: 'km'
+    },
+    {
+      code: 'RCO059',
+      name: 'Alternative fuels infrastructure (refuelling/ recharging points)',
+      measurementUnit: 'refuelling/recharging points'
+    },
+    {
+      code: 'RCO060',
+      name: 'Cities and towns with new or modernised digitised urban transport systems',
+      measurementUnit: 'cities and towns'
+    },
+    {
+      code: 'RCO061',
+      name: 'Surface of new or modernised facilities for employment services',
+      measurementUnit: 'square metres'
+    },
+    {
+      code: 'RCO063',
+      name: 'Capacity of new or modernised temporary reception facilities',
+      measurementUnit: 'persons'
+    },
+    {
+      code: 'RCO065',
+      name: 'Capacity of new or modernised social housing',
+      measurementUnit: 'persons'
+    },
+    {
+      code: 'RCO066',
+      name: 'Classroom capacity of new or modernised childcare facilities',
+      measurementUnit: 'persons'
+    },
+    {
+      code: 'RCO067',
+      name: 'Classroom capacity of new or modernised education facilities',
+      measurementUnit: 'persons'
+    },
+    {
+      code: 'RCO069',
+      name: 'Capacity of new or modernised health care facilities',
+      measurementUnit: 'persons/year'
+    },
+    {
+      code: 'RCO070',
+      name: 'Capacity of new or modernised social care facilities (other than housing)',
+      measurementUnit: 'persons/year'
+    },
+    {
+      code: 'RCO074',
+      name: 'Population covered by projects in the framework of strategies for integrated territorial development',
+      measurementUnit: 'persons'
+    },
+    {
+      code: 'RCO075',
+      name: 'Strategies for integrated territorial development supported',
+      measurementUnit: 'strategies'
+    },
+    {
+      code: 'RCO076',
+      name: 'Integrated projects for territorial development',
+      measurementUnit: 'projects'
+    },
+    {
+      code: 'RCO077',
+      name: 'Number of cultural and tourism sites supported',
+      measurementUnit: 'cultural and tourism sites'
+    },
+    {
+      code: 'RCO080',
+      name: 'Community-led local development strategies supported',
+      measurementUnit: 'strategies'
+    },
+    {
+      code: 'RCO081',
+      name: 'Participations in joint actions across borders',
+      measurementUnit: 'participation'
+    },
+    {
+      code: 'RCO082',
+      name: 'Participations in joint actions promoting gender equality, equal opportunities and social inclusion',
+      measurementUnit: 'participation'
+    },
+    {
+      code: 'RCO083',
+      name: 'Strategies and action plans jointly developed',
+      measurementUnit: 'Strategy/action plan'
+    },
+    {
+      code: 'RCO084',
+      name: 'Pilot actions developed jointly and implemented in projects ',
+      measurementUnit: 'pilot actions'
+    },
+    {
+      code: 'RCO085',
+      name: 'Participations in joint training schemes',
+      measurementUnit: 'participation'
+    },
+    {
+      code: 'RCO086',
+      name: 'Joint administrative or legal agreements signed',
+      measurementUnit: 'Legal or administrative agreement'
+    },
+    {
+      code: 'RCO087',
+      name: 'Organisations cooperating across borders',
+      measurementUnit: 'organisations'
+    },
+    {
+      code: 'RCO090',
+      name: 'Projects for innovation networks across borders',
+      measurementUnit: 'projects'
+    },
+    {
+      code: 'RCO096',
+      name: 'Interregional investments for innovation in EU projects',
+      measurementUnit: 'euro'
+    },
+    {
+      code: 'RCO097',
+      name: 'Renewable energy communities supported',
+      measurementUnit: 'renewable energy communities'
+    },
+    {
+      code: 'RCO101',
+      name: 'SMEs investing in skills for smart specialisation, for industrial transition and entrepreneurship',
+      measurementUnit: 'enterprises'
+    },
+    {
+      code: 'RCO103',
+      name: 'High growth enterprises supported',
+      measurementUnit: 'enterprises'
+    },
+    {
+      code: 'RCO104',
+      name: 'Number of high efficiency co-generation units',
+      measurementUnit: 'co-generation units'
+    },
+    {
+      code: 'RCO105',
+      name: 'Solutions for electricity storage',
+      measurementUnit: 'MWh'
+    },
+    {
+      code: 'RCO106',
+      name: 'Landslide protection newly built or consolidated',
+      measurementUnit: 'hectares'
+    },
+    {
+      code: 'RCO107',
+      name: 'Investments in facilities for separate waste collection',
+      measurementUnit: 'euro'
+    },
+    {
+      code: 'RCO108',
+      name: 'Length of roads with new or modernised traffic management systems – TEN-T',
+      measurementUnit: 'km'
+    },
+    {
+      code: 'RCO109',
+      name: 'Length of European Rail Traffic Management System equipped railways in operation – TEN-T',
+      measurementUnit: 'km'
+    },
+    {
+      code: 'RCO110',
+      name: 'Length of roads with new or modernised traffic management systems – non-TEN-T',
+      measurementUnit: 'km'
+    },
+    {
+      code: 'RCO111',
+      name: 'Length of European Rail Traffic Management System equipped railways in operation – non-TEN-T',
+      measurementUnit: 'km'
+    },
+    {
+      code: 'RCO112',
+      name: 'Stakeholders involved in the preparation and implementation of strategies for integrated territorial development',
+      measurementUnit: 'participations of institutional stakeholders'
+    },
+    {
+      code: 'RCO113',
+      name: 'Population covered by projects in the framework of integrated actions for socioeconomic inclusion of marginalised communities, low income households and disadvantaged groups',
+      measurementUnit: 'persons'
+    },
+    {
+      code: 'RCO114',
+      name: 'Open space created or rehabilitated in urban areas',
+      measurementUnit: 'square metres'
+    },
+    {
+      code: 'RCO115',
+      name: 'Public events across borders jointly organised',
+      measurementUnit: 'events'
+    },
+    {
+      code: 'RCO116',
+      name: 'Jointly developed solutions',
+      measurementUnit: 'solutions developed'
+    },
+    {
+      code: 'RCO117',
+      name: 'Solutions for legal or administrative obstacles across border identified',
+      measurementUnit: 'solution identified for obstacles'
+    },
+    {
+      code: 'RCO118',
+      name: 'Organisations cooperating for the multi-level governance of macroregional strategies',
+      measurementUnit: 'organisations'
+    },
+    {
+      code: 'RCO119',
+      name: 'Waste prepared for re-use',
+      measurementUnit: 'tonnes/year'
+    },
+    {
+      code: 'RCO120',
+      name: 'Projects supporting cooperation across borders to develop urban-rural linkages',
+      measurementUnit: 'projects'
+    },
+    {
+      code: 'RCO121',
+      name: 'Area covered by protection measures against climate related natural disasters (other than floods and wildfire)',
+      measurementUnit: 'hectares'
+    },
+    {
+      code: 'RCO122',
+      name: 'Investments in new or upgraded disaster monitoring, preparedness, warning and response systems against non-climate related natural risks and risks related to human activities',
+      measurementUnit: 'euro'
+    },
+    {
+      code: 'RCO123',
+      name: 'Dwellings benefiting from natural gas-fired boilers and heating systems replacing solid fossil fuels based installations',
+      measurementUnit: 'dwellings'
+    },
+    {
+      code: 'RCO124',
+      name: 'Gas transmission and distribution network lines newly constructed or improved',
+      measurementUnit: 'km'
+    },
   ];
 
-  static indicatorNames = [
-    'Enterprises supported (of which: micro, small, medium, large)',
-    'Enterprises supported by grants',
-    'Enterprises supported by financial instruments',
-    'Enterprises with non-financial support',
-    'Start-ups supported',
-    'Researchers working in supported research facilities Research institutions participating in joint research projects ',
-    'Nominal value of research and innovation equipment',
-    'Enterprises cooperating with research institutions',
-    'Interregional investments in EU projects',
-    'Enterprises supported to digitise their products and services',
-    'Digital services and products developed for enterprises',
-    'Public institutions supported to develop digital services and applications',
-    'Capacity of incubation created',
-    'Stakeholders participating in entrepreneurial discovery process',
-    'Investments in regional/ local ecosystems for skills development',
-    'SMEs investing in skills development',
-    'SMEs investing in training management systems',
-    'Households supported to improve energy performance of their dwelling',
-    'Public buildings supported to improve energy performance',
-    'District heating network lines newly constructed or improved',
-    'Additional production capacity for renewable energy  (of which: electricity, thermal) ',
-    'Number of energy communities and renewable energy communities supported',
-    'Digital management systems for smart grids',
-    'Households supported to use smart energy grids',
-    'New or upgraded disaster monitoring, preparedness, warning and response systems',
-    'Coastal strip, river banks and lakeshores, and landslide protection newly built or consolidated to protect people, assets and the natural environment',
-    'Green infrastructure built for adaptation to climate change',
-    'National/ regional/ local strategies addressing climate change adaptation',
-    'Areas covered by protection measures against forest fires',
-    'Length of new or consolidated pipes for  household water connections',
-    'Length of sewage collection networks newly constructed or consolidated',
-    'New or upgraded capacity for waste water treatment',
-    'Additional capacity for waste recycling',
-    'Surface area of green infrastructure supported in urban areas',
-    'Surface of Natura sites covered by protection and restoration measures in accordance with the prioritised action framework',
-    'Surface area outside Natura sites covered by protection and restoration measures',
-    'Surface area of rehabilitated land supported',
-    'Systems for monitoring air pollution installed',
-    'Additional households with broadband access of very high capacity',
-    'Additional enterprises with broadband access of very high capacity',
-    'Capacity of cultural and tourism infrastructure supported',
-    'Length of new roads supported - other',
-    'Length of roads reconstructed or upgraded - TEN-T',
-    'Length of roads reconstructed or upgraded - other',
-    'Length of new rail supported - TEN-T',
-    'Length of new rail supported - other',
-    'Length of rail reconstructed or upgraded - TEN-T',
-    'Length of rail reconstructed or upgraded - other',
-    'Length of new or upgraded inland waterways - TEN-T',
-    'Length of new or upgraded inland waterways - other',
-    'Railways stations and facilities new or upgraded',
-    'Intermodal connections new or upgraded',
-    'Number of ports supported',
-    'Length of tram and metro lines - new',
-    'Length of tram and metro lines - reconstructed/ upgraded',
-    'Environmentally friendly rolling stock for public transport',
-    'Dedicated cycling infrastructure supported',
-    'Alternative fuels infrastructure (refuelling/ recharging points) supported',
-    'Cities and towns with new or upgraded digitised urban transport systems',
-    'Annual unemployed persons served by enhanced facilities for employment services (capacity)',
-    'Capacity of temporary reception infrastructure created',
-    'Capacity of rehabilitated housing – migrants, refugees and persons under or applying for international protection',
-    'Capacity of rehabilitated housing - other',
-    'Classroom capacity of supported childcare infrastructure (new or upgraded)_x000D_ _x000D_',
-    'Classroom capacity of supported education infrastructure (new or upgraded)',
-    'Capacity of supported health care infrastructure',
-    'Capacity of supported social infrastructure (other than housing)',
-    'Population covered by strategies for integrated urban development',
-    'Integrated strategies for urban development',
-    'Collaborative projects',
-    'Capacity of cultural and tourism infrastructure supported',
-    'Community-led local development strategies for local development',
-    'Staff financed by ERDF and Cohesion Fund',
-    'Participants in cross-border mobility initiatives',
-    'Participants in joint actions promoting gender equality, equal opportunities and social inclusion',
-    'Joint strategies/ action plans developed or implemented',
-    'Joint pilot activities implemented in projects',
-    'Participants in joint training schemes',
-    'Legal or administrative obstacles identified',
-    'Joint administrative or legal agreements signed',
-    'Organisations cooperating across borders',
-    'Projects across national borders for peer-learning to enhance cooperation activities',
-    'Projects across borders to improve multilevel governance',
-    'Projects across national borders leading to networks/clusters',
-  ];
-
-  static measurementUnits = [
-    'annual FTEs',
-    'cities and towns',
-    'co-generation units',
-    'cultural and tourism sites',
-    'dwellings',
-    'enterprises',
-    'euro',
-    'events',
-    'hectares',
-    'intermodal connections',
-    'km',
-    'Legal or administrative agreement',
-    'MW',
-    'MWh',
-    'organisations',
-    'participation',
-    'participations of institutional stakeholders',
-    'passengers',
-    'persons',
-    'persons/year',
-    'pilot actions',
-    'population equivalent',
-    'projects',
-    'public institutions',
-    'refuelling/recharging points',
-    'renewable energy communities',
-    'research institutions',
-    'solution identified for obstacles',
-    'solutions developed',
-    'square metres',
-    'stations and stops',
-    'strategies',
-    'strategy/action plan',
-    'systems',
-    'tonnes/year',
-  ];
 }

@@ -23,8 +23,8 @@
             <mat-option>
                 {{'result.indicator.code.not.applicable' | translate}}
             </mat-option>
-            <mat-option *ngFor="let code of indicatorCodes" [value]="code">
-                {{code}}
+            <mat-option *ngFor="let indicatorCode of indicatorCodes" [value]="indicatorCode">
+                {{ indicatorCode.code }}
             </mat-option>
         </mat-select>
         <mat-error>
