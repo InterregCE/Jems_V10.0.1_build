@@ -33,7 +33,7 @@ export class LanguageStore {
     this.fallbackLanguage$ = this.fallbackLanguageSubject.asObservable();
 
     this.securityService.currentUser.pipe(
-      mergeMap(user => user ? this.userProfileService.getUserProfile().pipe(map(profile => profile.language)) : this.fallbackLanguage$),
+      mergeMap(user => user ? this.userProfileService.getUserProfile().pipe(map(profile => profile?.language)) : this.fallbackLanguage$),
       tap(language => this.setSystemLanguage(language)),
       untilDestroyed(this)
     ).subscribe();
