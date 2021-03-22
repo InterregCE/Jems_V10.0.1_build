@@ -107,7 +107,7 @@
                     name="multipleFundsAllowed"
                     formControlName="multipleFundsAllowed"
                     (click)="$event.stopPropagation()"
-                    [disabled]="!editable"
+                    [disabled]="!editable && (!isApplicant && published && call.isAdditionalFundAllowed)"
                     [checked]="callForm?.controls?.multipleFundsAllowed.value">
                 {{'call.multiple.funds.allowed' | translate}}
             </mat-checkbox>

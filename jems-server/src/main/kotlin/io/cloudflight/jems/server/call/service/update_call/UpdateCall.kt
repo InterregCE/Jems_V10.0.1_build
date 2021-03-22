@@ -53,7 +53,7 @@ class UpdateCall(
     private fun validateAllowedChanges(call: Call, oldCall: CallDetail) {
         val startDateChanged = call.startDate.toInstant() != oldCall.startDate.toInstant()
         val lengthOfPeriodChanged = call.lengthOfPeriod != oldCall.lengthOfPeriod
-        val isAdditionalFundAllowedChanged = call.isAdditionalFundAllowed != oldCall.isAdditionalFundAllowed
+        val isAdditionalFundAllowedDisabled = oldCall.isAdditionalFundAllowed && !call.isAdditionalFundAllowed
 
         val newSpecificObjectives: Set<ProgrammeObjectivePolicy> = call.priorityPolicies
         val newFundIds = call.fundIds
@@ -66,7 +66,7 @@ class UpdateCall(
 
         if (startDateChanged
             || lengthOfPeriodChanged
-            || isAdditionalFundAllowedChanged
+            || isAdditionalFundAllowedDisabled
             || specificObjectivesRemoved
             || strategiesRemoved
             || fundsRemoved

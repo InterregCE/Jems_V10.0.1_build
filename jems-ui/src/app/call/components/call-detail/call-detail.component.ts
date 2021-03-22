@@ -100,6 +100,9 @@ export class CallDetailComponent implements OnInit {
       this.callForm.controls.name.enable();
       this.callForm.controls.description.enable();
       this.callForm.controls.endDateTime.enable();
+      if (!this.call.isAdditionalFundAllowed) {
+        this.callForm.controls.multipleFundsAllowed.enable();
+      }
     }
   }
 
