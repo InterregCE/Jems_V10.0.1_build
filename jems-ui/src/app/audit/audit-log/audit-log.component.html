@@ -1,17 +1,17 @@
-<app-main-page-template [needsCard]="true">
+<app-main-page-template [needsCard]="true" *ngIf="auditLogStore.auditPage$ | async as auditPage">
         <h3 class="mb-0">{{'audit.list.title' | translate}}</h3>
         <div appMultiColumnRow [formGroup]="referenceForm">
             <mat-form-field>
                 <mat-label>{{'audit.user.ids' | translate}}</mat-label>
-                <input (keyup.enter)="addFilter(0, $event)" matInput name="userId" formControlName="userId">
+                <input (keyup.enter)="addFilter(MAT_CHIP_USER_IDS_INDEX, $event)" matInput name="userId" formControlName="userId">
             </mat-form-field>
             <mat-form-field>
                 <mat-label>{{'audit.user.emails' | translate}}</mat-label>
-                <input (keyup.enter)="addFilter(1, $event)" matInput name="userEmail" formControlName="userEmail">
+                <input (keyup.enter)="addFilter(MAT_CHIP_USER_EMAILS_INDEX, $event)" matInput name="userEmail" formControlName="userEmail">
             </mat-form-field>
             <mat-form-field class="actions-field">
                 <mat-label>{{'audit.actions' | translate}}</mat-label>
-                <input (keyup.enter)="addFilter(2, $event)" matInput [matAutocomplete]="autoActions" name="actions" formControlName="actions">
+                <input (keyup.enter)="addFilter(MAT_CHIP_ACTIONS_INDEX, $event)" matInput [matAutocomplete]="autoActions" name="actions" formControlName="actions">
                 <mat-autocomplete #autoActions="matAutocomplete">
                     <mat-option *ngFor="let action of filteredActions | async" [value]="action">
                         {{action}}
@@ -20,14 +20,13 @@
             </mat-form-field>
             <mat-form-field>
                 <mat-label>{{'audit.projectIds' | translate}}</mat-label>
-                <input (keyup.enter)="addFilter(3, $event)" matInput name="description" formControlName="description">
+                <input (keyup.enter)="addFilter(MAT_CHIP_PROJECT_IDS_INDEX, $event)" matInput name="description" formControlName="description">
             </mat-form-field>
         </div>
 
         <mat-chip-list [selectable]="false">
             <ng-container *ngFor="let control of filtersForm.controls; let filterIndex = index;">
                 <mat-chip *ngFor="let filterItem of control.get('values').value; let itemIndex = index;"
-                          class="color-{{ ['grey', 'blue', 'green', 'orange'][filterIndex] }}"
                           [removable]="true"
                           [selectable]="false"
                           (removed)="getValuesForFilterOnIndex(filterIndex).removeAt(itemIndex)">
@@ -36,13 +35,13 @@
             </ng-container>
         </mat-chip-list>
 
-    <app-table *ngIf="(auditPage$ | async)?.content.length"
+    <app-table *ngIf="auditPage?.content.length"
                [configuration]="auditTableConfiguration"
-               [rows]="(auditPage$ | async)?.content"
-               [totalElements]="(auditPage$ | async)?.totalElements"
-               [pageIndex]="auditPageIndex$ | async"
-               (newPageIndex)="auditPageIndex$.next($event)"
-               (newPageSize)="auditPageSize$.next($event)">
+               [rows]="auditPage?.content"
+               [totalElements]="auditPage?.totalElements"
+               [pageIndex]="auditLogStore.auditPageIndex$ | async"
+               (newPageIndex)="auditLogStore.auditPageIndex$.next($event)"
+               (newPageSize)="auditLogStore.auditPageSize$.next($event)">
     </app-table>
 </app-main-page-template>
 

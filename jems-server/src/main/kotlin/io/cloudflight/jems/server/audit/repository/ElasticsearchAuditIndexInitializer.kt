@@ -1,5 +1,6 @@
 package io.cloudflight.jems.server.audit.repository
 
+import io.cloudflight.jems.server.audit.repository.AuditPersistenceProvider.Companion.AUDIT_INDEX
 import io.cloudflight.jems.server.config.AUDIT_ENABLED
 import io.cloudflight.jems.server.config.AUDIT_PROPERTY_PREFIX
 import org.apache.commons.io.IOUtils
@@ -16,7 +17,7 @@ import org.springframework.stereotype.Component
 import java.nio.charset.StandardCharsets
 
 
-private const val INDEX_NAME = "audit-index"
+private const val INDEX_NAME = AUDIT_INDEX
 private const val ES_INDEX_SOURCE_JSON = "elasticsearch/create_index_body.json"
 
 

@@ -1,7 +1,7 @@
 import {ColumnType} from './column-type.enum';
 import {TemplateRef} from '@angular/core';
 import {TooltipConfiguration} from '@common/components/table/model/tooltip.configuration';
-import {ColumnWidth} from "@common/components/table/model/column-width";
+import {ColumnWidth} from '@common/components/table/model/column-width';
 
 export class ColumnConfiguration {
   // the name of the column that will appear in the header of the table.
