@@ -25,16 +25,20 @@ class AuditServiceImpl(
     }
 
     override fun logEvent(audit: AuditCandidate, optionalUser: AuditUser?) {
-        val auditId = auditPersistence.saveAudit(
-            Audit(
-                action = audit.action,
-                project = audit.project,
-                // todo check if it works properly
-                user = if (securityService.currentUser != null) securityService.currentUser!!.toEsUser() else optionalUser,
-                description = audit.description
+        try {
+            val auditId = auditPersistence.saveAudit(
+                Audit(
+                    action = audit.action,
+                    project = audit.project,
+                    // todo check if it works properly
+                    user = if (securityService.currentUser != null) securityService.currentUser!!.toEsUser() else optionalUser,
+                    description = audit.description
+                )
             )
-        )
-        logger.info("Audit event with id=$auditId persisted to ES.")
+            logger.info("Audit event with id=$auditId persisted to ES.")
+        } catch (e: Exception) {
+            logger.error("Audit event cannot be persisted into ES.", e)
+        }
     }
 
 }
