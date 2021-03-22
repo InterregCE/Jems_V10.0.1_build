@@ -1,15 +1,26 @@
 package io.cloudflight.jems.server.audit.service
 
-import io.cloudflight.jems.server.audit.entity.AuditAction
-import io.cloudflight.jems.server.audit.entity.AuditUser
+import io.cloudflight.jems.api.audit.dto.AuditAction
+import io.cloudflight.jems.server.audit.model.AuditProject
+import io.cloudflight.jems.server.audit.model.AuditUser
 
+@Deprecated("This class is about to be removed, use AuditCandidateEvent and publish with overrideCurrentUser")
 data class AuditCandidateWithUser(
     val action: AuditAction,
-    val projectId: String? = null,
+    val project: AuditProject? = null,
     val description: String,
     val user: AuditUser
 ) {
-    fun logWithService(auditService: AuditService) {
-        auditService.logEvent(this)
+
+    @Deprecated("Instantiate AuditCandidate and pass it through ApplicationEventPublisher", replaceWith = ReplaceWith("publishEvent"))
+    fun logWith(auditService: AuditService) {
+        auditService.logEvent(
+            audit = AuditCandidate(
+                action = action,
+                project = project,
+                description = description,
+            ),
+            optionalUser = user,
+        )
     }
 }

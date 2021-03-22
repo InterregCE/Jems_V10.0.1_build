@@ -1,6 +1,6 @@
 package io.cloudflight.jems.server.call.service
 
-import io.cloudflight.jems.server.audit.entity.AuditAction
+import io.cloudflight.jems.api.audit.dto.AuditAction
 import io.cloudflight.jems.server.audit.model.AuditCandidateEvent
 import io.cloudflight.jems.server.audit.service.AuditBuilder
 import io.cloudflight.jems.server.call.service.model.CallSummary
@@ -10,6 +10,7 @@ import java.util.stream.Collectors
 fun callCreated(context: Any, call: CallDetail) = AuditCandidateEvent(
     context = context,
     auditCandidate = AuditBuilder(AuditAction.CALL_ADDED)
+        .entityRelatedId(call.id)
         .description("A new call id=${call.id} name='${call.name}' was created as:\n${call.getDiff().onlyNewChanges()}")
         .build()
 )
@@ -21,6 +22,7 @@ fun callUpdated(context: Any, oldCall: CallDetail, call: CallDetail): AuditCandi
     return AuditCandidateEvent(
         context = context,
         auditCandidate = AuditBuilder(AuditAction.CALL_CONFIGURATION_CHANGED)
+            .entityRelatedId(call.id)
             .description("Configuration of $callStatus call id=${call.id} name='${call.name}' changed:\n$changes")
             .build()
     )
@@ -29,6 +31,7 @@ fun callUpdated(context: Any, oldCall: CallDetail, call: CallDetail): AuditCandi
 fun callPublished(context: Any, call: CallSummary) = AuditCandidateEvent(
     context = context,
     auditCandidate = AuditBuilder(AuditAction.CALL_PUBLISHED)
+        .entityRelatedId(call.id)
         .description("Call id=${call.id} '${call.name}' published")
         .build()
 )

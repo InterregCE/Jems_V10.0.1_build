@@ -1,10 +1,9 @@
 package io.cloudflight.jems.server.authentication.service
 
-import io.cloudflight.jems.server.audit.entity.AuditAction
-import io.cloudflight.jems.server.audit.entity.AuditUser
-import io.cloudflight.jems.server.audit.service.AuditCandidateWithUser
-import io.cloudflight.jems.server.authentication.model.LocalCurrentUser
+import io.cloudflight.jems.api.audit.dto.AuditAction
+import io.cloudflight.jems.server.audit.service.AuditCandidate
 import io.cloudflight.jems.server.audit.service.AuditService
+import io.cloudflight.jems.server.authentication.model.LocalCurrentUser
 import io.cloudflight.jems.server.audit.service.toEsUser
 import org.slf4j.LoggerFactory
 import org.springframework.security.core.context.SecurityContextImpl
@@ -29,19 +28,16 @@ class HttpSessionService(private val auditService: AuditService) : HttpSessionLi
         val session: Any? = event.session.getAttribute(SPRING_SECURITY_CONTEXT_KEY) ?: return
         (session as SecurityContextImpl)
             .authentication?.let { authentication ->
-                auditService.logEvent(
-                    userSessionExpiredAudit(
-                        (authentication.principal as LocalCurrentUser).toEsUser()
-                    )
-                )
+                with((authentication.principal as LocalCurrentUser).toEsUser()) {
+                    auditService.logEvent(userSessionExpiredAudit(email), this)
+                }
             }
     }
 
-    private fun userSessionExpiredAudit(user: AuditUser): AuditCandidateWithUser =
-        AuditCandidateWithUser(
+    private fun userSessionExpiredAudit(email: String) =
+        AuditCandidate(
             action = AuditAction.USER_SESSION_EXPIRED,
-            user = user,
-            description = "user with email ${user.email} was logged out by the system"
+            description = "user with email $email was logged out by the system"
         )
 
 }

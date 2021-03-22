@@ -6,4 +6,5 @@ import org.springframework.context.ApplicationEvent
 class AuditCandidateEvent(
     context: Any,
     val auditCandidate: AuditCandidate,
+    val overrideCurrentUser: AuditUser? = null
 ) : ApplicationEvent(context)

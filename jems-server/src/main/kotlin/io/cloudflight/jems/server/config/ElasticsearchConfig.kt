@@ -1,14 +1,12 @@
 package io.cloudflight.jems.server.config
 
-import io.cloudflight.jems.server.audit.repository.AuditRepository
+import org.apache.http.HttpHost
+import org.elasticsearch.client.RestClient
 import org.elasticsearch.client.RestHighLevelClient
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty
 import org.springframework.boot.context.properties.ConfigurationProperties
+import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
-import org.springframework.data.elasticsearch.client.ClientConfiguration
-import org.springframework.data.elasticsearch.client.RestClients
-import org.springframework.data.elasticsearch.config.AbstractElasticsearchConfiguration
-import org.springframework.data.elasticsearch.repository.config.EnableElasticsearchRepositories
 
 const val AUDIT_PROPERTY_PREFIX = "audit-service"
 const val AUDIT_ENABLED = "enabled"
@@ -21,16 +19,12 @@ const val AUDIT_ENABLED = "enabled"
 @Configuration
 @ConditionalOnProperty(prefix = AUDIT_PROPERTY_PREFIX, name = [AUDIT_ENABLED], havingValue = "true")
 @ConfigurationProperties(prefix = AUDIT_PROPERTY_PREFIX)
-@EnableElasticsearchRepositories(basePackageClasses = [AuditRepository::class])
-class AuditConfig: AbstractElasticsearchConfiguration() {
+class ElasticsearchConfig {
 
     lateinit var urlAndPort: String
 
-    override fun elasticsearchClient(): RestHighLevelClient {
-        return RestClients.create(
-            ClientConfiguration.builder()
-                .connectedTo(urlAndPort)
-                .build()).rest()
-    }
+    @Bean(destroyMethod = "close")
+    fun client(): RestHighLevelClient =
+        RestHighLevelClient(RestClient.builder(HttpHost.create(urlAndPort)))
 
 }

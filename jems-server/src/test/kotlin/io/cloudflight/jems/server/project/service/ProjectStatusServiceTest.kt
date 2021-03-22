@@ -13,7 +13,7 @@ import io.cloudflight.jems.api.project.dto.status.ProjectQualityAssessmentResult
 import io.cloudflight.jems.api.programme.dto.strategy.ProgrammeStrategy
 import io.cloudflight.jems.api.user.dto.OutputUserRole
 import io.cloudflight.jems.api.user.dto.OutputUserWithRole
-import io.cloudflight.jems.server.audit.entity.AuditAction
+import io.cloudflight.jems.api.audit.dto.AuditAction
 import io.cloudflight.jems.server.audit.service.AuditCandidate
 import io.cloudflight.jems.server.audit.service.AuditService
 import io.cloudflight.jems.server.call.entity.CallEntity
@@ -406,7 +406,7 @@ internal class ProjectStatusServiceTest {
         val event = slot<AuditCandidate>()
         verify { auditService.logEvent(capture(event)) }
         assertThat(event.captured.action).isEqualTo(AuditAction.QUALITY_ASSESSMENT_CONCLUDED)
-        assertThat(event.captured.projectId).isEqualTo(16.toString())
+        assertThat(event.captured.project?.id).isEqualTo(16.toString())
         assertThat(event.captured.description).isEqualTo("Project application quality assessment concluded as RECOMMENDED_FOR_FUNDING")
 
     }
@@ -463,7 +463,7 @@ internal class ProjectStatusServiceTest {
         val event = slot<AuditCandidate>()
         verify { auditService.logEvent(capture(event)) }
         assertThat(event.captured.action).isEqualTo(AuditAction.ELIGIBILITY_ASSESSMENT_CONCLUDED)
-        assertThat(event.captured.projectId).isEqualTo(79.toString())
+        assertThat(event.captured.project?.id).isEqualTo(79.toString())
         assertThat(event.captured.description).isEqualTo("Project application eligibility assessment concluded as PASSED")
     }
 

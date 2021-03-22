@@ -11,8 +11,12 @@ class AuditListener(
 ) {
 
     @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
-    fun pushAuditAfterSuccessfulTransaction(event: AuditCandidateEvent) {
-        auditService.logEvent(event.auditCandidate)
-    }
+    fun pushAuditAfterSuccessfulTransaction(event: AuditCandidateEvent) =
+        with(event) {
+            if (overrideCurrentUser == null)
+                auditService.logEvent(audit = auditCandidate)
+            else
+                auditService.logEvent(audit = auditCandidate, optionalUser = overrideCurrentUser)
+        }
 
 }

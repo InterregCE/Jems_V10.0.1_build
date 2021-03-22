@@ -4,10 +4,10 @@ import ch.qos.logback.classic.Level
 import ch.qos.logback.classic.Logger
 import ch.qos.logback.classic.spi.ILoggingEvent
 import ch.qos.logback.core.read.ListAppender
-import io.cloudflight.jems.server.audit.entity.Audit
-import io.cloudflight.jems.server.audit.entity.AuditAction
-import io.cloudflight.jems.server.audit.entity.AuditUser
-import io.cloudflight.jems.server.audit.repository.AuditRepository
+import io.cloudflight.jems.server.audit.model.Audit
+import io.cloudflight.jems.api.audit.dto.AuditAction
+import io.cloudflight.jems.server.audit.model.AuditProject
+import io.cloudflight.jems.server.audit.model.AuditUser
 import io.cloudflight.jems.server.authentication.service.SecurityService
 import io.cloudflight.jems.server.project.authorization.AuthorizationUtil.Companion.applicantUser
 import io.mockk.MockKAnnotations
@@ -27,7 +27,7 @@ class AuditServiceTest {
     private val EXPECTED_LOG = "AUDIT >>> APPLICATION_STATUS_CHANGED (projectId 1, user (3, user@applicant.dev)) : status change from X to Y"
 
     @MockK
-    lateinit var auditRepository: AuditRepository
+    lateinit var auditPersistence: AuditPersistence
     @MockK
     lateinit var securityService: SecurityService
 
@@ -45,22 +45,24 @@ class AuditServiceTest {
     @Test
     fun testLogEvent_repository() {
         val event = slot<Audit>()
-        every { auditRepository.save(capture(event)) } returnsArgument 0
-        auditService = AuditServiceImpl(securityService, auditRepository)
+        every { auditPersistence.saveAudit(capture(event)) } returns "ID_of_audit"
+        auditService = AuditServiceImpl(securityService, auditPersistence)
 
         // test start
         auditService.logEvent(AuditCandidate(
-            AuditAction.APPLICATION_STATUS_CHANGED,
-            1L.toString(),
-            "status change from X to Y"
+            action = AuditAction.APPLICATION_STATUS_CHANGED,
+            project = AuditProject(1L.toString()),
+            description = "status change from X to Y"
         ))
 
         // assert
-        assertEquals(AuditAction.APPLICATION_STATUS_CHANGED, event.captured.action,
+        assertEquals(
+            AuditAction.APPLICATION_STATUS_CHANGED, event.captured.action,
             "Correct audit log action should be assigned to audit log entry")
-        assertEquals("1", event.captured.projectId,
+        assertEquals("1", event.captured.project?.id,
             "project ID should not be lost when creating audit log entry")
-        assertEquals(AuditUser(applicantUser.user.id!!, applicantUser.user.email), event.captured.user,
+        assertEquals(
+            AuditUser(applicantUser.user.id!!, applicantUser.user.email), event.captured.user,
             "Correct User should be assigned to audit log entry.")
         assertEquals("status change from X to Y", event.captured.description,
             "Description should be saved to audit log entry.")
@@ -80,9 +82,9 @@ class AuditServiceTest {
 
         // test start
         auditService.logEvent(AuditCandidate(
-            AuditAction.APPLICATION_STATUS_CHANGED,
-            1L.toString(),
-            "status change from X to Y"
+            action = AuditAction.APPLICATION_STATUS_CHANGED,
+            project = AuditProject(1L.toString()),
+            description = "status change from X to Y"
         ))
 
         // assert

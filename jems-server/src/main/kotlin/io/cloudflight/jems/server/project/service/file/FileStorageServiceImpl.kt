@@ -3,7 +3,8 @@ package io.cloudflight.jems.server.project.service.file
 import io.cloudflight.jems.api.project.dto.file.OutputProjectFile
 import io.cloudflight.jems.api.project.dto.file.ProjectFileType
 import io.cloudflight.jems.server.project.entity.file.FileMetadata
-import io.cloudflight.jems.server.audit.entity.AuditAction
+import io.cloudflight.jems.api.audit.dto.AuditAction
+import io.cloudflight.jems.server.audit.model.AuditProject
 import io.cloudflight.jems.server.audit.service.AuditCandidate
 import io.cloudflight.jems.server.audit.service.AuditService
 import io.cloudflight.jems.server.project.entity.file.ProjectFile
@@ -38,7 +39,7 @@ class FileStorageServiceImpl(
         if (potentialDuplicate.isPresent) {
             with(potentialDuplicate.get()) {
                 auditService.logEvent(
-                    projectFileUploadFailed(fileMetadata.projectId, fileMetadata.name)
+                    projectFileUploadFailed(this, fileMetadata.name)
                 )
                 throw DuplicateFileException(project.id, name, updated)
             }
@@ -143,28 +144,28 @@ class FileStorageServiceImpl(
     private fun projectFileDescriptionChangedAudit(projectId: Long, file: ProjectFile, oldDescription: String?): AuditCandidate =
         AuditCandidate(
             action = AuditAction.PROJECT_FILE_DESCRIPTION_CHANGED,
-            projectId = projectId.toString(),
+            project = AuditProject(id = file.project.id.toString(), name = file.project.acronym),
             description = "description of document ${file.name} in project application $projectId has changed from $oldDescription to ${file.description}"
         )
 
     private fun projectFileDeleted(projectId: Long, file: ProjectFile): AuditCandidate =
         AuditCandidate(
             action = AuditAction.PROJECT_FILE_DELETED,
-            projectId = projectId.toString(),
+            project = AuditProject(id = file.project.id.toString(), name = file.project.acronym),
             description = "document ${file.name} deleted from application $projectId"
         )
 
     private fun projectFileUploadedSuccessfully(projectId: Long, file: ProjectFile): AuditCandidate =
         AuditCandidate(
             action = AuditAction.PROJECT_FILE_UPLOADED_SUCCESSFULLY,
-            projectId = projectId.toString(),
+            project = AuditProject(id = file.project.id.toString(), name = file.project.acronym),
             description = "document ${file.name} uploaded to project application $projectId"
         )
 
-    private fun projectFileUploadFailed(projectId: Long, fileName: String?): AuditCandidate =
+    private fun projectFileUploadFailed(file: ProjectFile, fileName: String?): AuditCandidate =
         AuditCandidate(
             action = AuditAction.PROJECT_FILE_UPLOAD_FAILED,
-            projectId = projectId.toString(),
-            description = "FAILED upload of document $fileName to project application $projectId"
+            project = AuditProject(id = file.project.id.toString(), name = file.project.acronym),
+            description = "FAILED upload of document $fileName to project application ${file.project.id}"
         )
 }

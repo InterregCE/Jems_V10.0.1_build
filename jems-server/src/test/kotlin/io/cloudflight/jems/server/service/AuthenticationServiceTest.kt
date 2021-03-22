@@ -3,7 +3,8 @@ package io.cloudflight.jems.server.service
 import io.cloudflight.jems.api.authentication.dto.LoginRequest
 import io.cloudflight.jems.api.user.dto.OutputUserRole
 import io.cloudflight.jems.api.user.dto.OutputUserWithRole
-import io.cloudflight.jems.server.audit.service.AuditCandidateWithUser
+import io.cloudflight.jems.server.audit.model.AuditUser
+import io.cloudflight.jems.server.audit.service.AuditCandidate
 import io.cloudflight.jems.server.audit.service.AuditService
 import io.cloudflight.jems.server.authentication.model.LocalCurrentUser
 import io.cloudflight.jems.server.authentication.service.SecurityService
@@ -54,17 +55,19 @@ class AuthenticationServiceTest {
 
         authenticationService.login(req, LoginRequest("admin@test.net", "admin"))
 
-        val event = slot<AuditCandidateWithUser>()
-        verify { auditService.logEvent(capture(event)) }
+        val event = slot<AuditCandidate>()
+        val user = slot<AuditUser>()
+        verify { auditService.logEvent(capture(event), capture(user)) }
         assertThat(event.captured.description).isEqualTo("user with email admin@test.net logged in")
+        assertThat(user.captured).isEqualTo(AuditUser(id = 1, email = "admin@test.net"))
     }
 
     @Test
     fun `logging out is audited`() {
         authenticationService.logout(req)
 
-        val event = slot<AuditCandidateWithUser>()
-        verify { auditService.logEvent(capture(event)) }
+        val event = slot<AuditCandidate>()
+        verify { auditService.logEvent(capture(event), any()) }
         assertThat(event.captured.description).isEqualTo("user with email  logged out")
     }
 

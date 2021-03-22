@@ -1,4 +1,4 @@
-package io.cloudflight.jems.server.audit.entity
+package io.cloudflight.jems.api.audit.dto
 
 enum class AuditAction {
     // package CALL
