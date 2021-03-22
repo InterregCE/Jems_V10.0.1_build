@@ -74,7 +74,7 @@ class ProgrammeLegalStatusPersistenceTest : UnitTest() {
         val slotToDelete = slot<Iterable<ProgrammeLegalStatusEntity>>()
         every { repository.findAllById(setOf(14, 15)) } returns toBeRemoved
         every { repository.deleteInBatch(capture(slotToDelete)) } answers { }
-        every { repository.saveAll(any()) } returnsArgument 0
+        every { repository.saveAll(any<List<ProgrammeLegalStatusEntity>>()) } returnsArgument 0
         every { repository.findTop20ByOrderById() } returns listOf(legalStatusEntity)
 
         assertThat(
@@ -96,7 +96,7 @@ class ProgrammeLegalStatusPersistenceTest : UnitTest() {
 
         every { callRepository.existsByStatus(CallStatus.PUBLISHED) } returns true
         every { repository.findAllById(setOf(14, 15)) } returns toBeRemoved
-        every { repository.saveAll(any()) } returnsArgument 0
+        every { repository.saveAll(any<List<ProgrammeLegalStatusEntity>>()) } returnsArgument 0
         every { repository.findTop20ByOrderById() } returns emptyList()
 
         persistence.updateLegalStatuses(toDeleteIds = setOf(14, 15), toPersist = emptyList())
