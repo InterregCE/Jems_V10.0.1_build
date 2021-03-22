@@ -1,4 +1,4 @@
-import {ChangeDetectionStrategy, Component, OnInit} from '@angular/core';
+import {ChangeDetectionStrategy, Component} from '@angular/core';
 import {BaseComponent} from '@common/components/base-component';
 import {of, Subject} from 'rxjs';
 import {I18nValidationError} from '@common/validation/i18n-validation-error';

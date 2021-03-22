@@ -1,4 +1,4 @@
-import {ChangeDetectionStrategy, Component, HostListener} from '@angular/core';
+import {ChangeDetectionStrategy, Component} from '@angular/core';
 import {SideNavService} from '@common/components/side-nav/side-nav.service';
 import {SecurityService} from '../../security/security.service';
 

@@ -30,7 +30,7 @@
   $background-lighter: mat-color($primary-theme, if($is-dark-theme, darker, lighter));
   $app-bar: mat-color($background-palette, app-bar);
   $hover: mat-color($background-palette, hover);
-  $outline: mat-color($foreground-palette, divider, if($is-dark-theme, 0.3, 0.12));;
+  $outline: mat-color($foreground-palette, divider, if($is-dark-theme, 0.3, 0.12));
 
   $body-strong-font-size: mat-font-size($app-typography, body-2);
   $body-strong-font-weight: mat-font-weight($app-typography, body-2);

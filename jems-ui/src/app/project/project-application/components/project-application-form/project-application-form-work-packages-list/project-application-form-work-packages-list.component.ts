@@ -55,7 +55,7 @@ export class ProjectApplicationFormWorkPackagesListComponent implements OnInit {
 
   ngOnInit(): void {
     this.tableConfiguration = new TableConfiguration({
-      routerLink: '/app/project/detail/' + this.projectId + '/applicationFormWorkPackage/detail',
+      routerLink: `/app/project/detail/${this.projectId}/applicationFormWorkPackage/detail`,
       isTableClickable: true,
       columns: [
         {

@@ -127,7 +127,7 @@ export class ProjectWorkPackageInvestmentDetailPageComponent implements OnInit {
   }
 
   private resetForm(investment: WorkPackageInvestmentDTO): void {
-    this.workPackageInvestmentForm.controls.number?.setValue(investment?.investmentNumber ? this.workPackageNumber + '.' + investment?.investmentNumber : '');
+    this.workPackageInvestmentForm.controls.number?.setValue(investment?.investmentNumber ? `${this.workPackageNumber}.${investment?.investmentNumber}` : '');
     this.workPackageInvestmentForm.controls.title?.setValue(investment?.title || []);
     this.workPackageInvestmentForm.controls.justificationExplanation?.setValue(investment?.justificationExplanation || []);
     this.workPackageInvestmentForm.controls.justificationTransactionalRelevance?.setValue(investment?.justificationTransactionalRelevance || []);

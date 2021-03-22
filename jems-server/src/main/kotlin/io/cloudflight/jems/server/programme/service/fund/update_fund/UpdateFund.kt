@@ -38,11 +38,9 @@ class UpdateFund(
         val toUpdateFundIds = toUpdateFunds.mapTo(HashSet()) { it.id }
         val toDeleteFundIds = existingFundsById.keys.filterTo(HashSet()) { !toUpdateFundIds.contains(it) }
 
-        if (persistence.isProgrammeSetupRestricted()) {
-            if (toDeleteFundIds.isNotEmpty()
+        if (persistence.isProgrammeSetupRestricted() && (toDeleteFundIds.isNotEmpty()
                 || toUpdateFunds.any { fund -> fund.deselectionHappened(existingFundsById[fund.id]) })
-                throw MakingChangesWhenProgrammeSetupRestricted()
-        }
+        ) throw MakingChangesWhenProgrammeSetupRestricted()
 
         val result = persistence.updateFunds(
             toDeleteIds = toDeleteFundIds,

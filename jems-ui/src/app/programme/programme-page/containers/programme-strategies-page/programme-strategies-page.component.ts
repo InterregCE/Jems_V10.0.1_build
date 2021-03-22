@@ -1,5 +1,4 @@
 import {ChangeDetectionStrategy, Component} from '@angular/core';
-import {BaseComponent} from '@common/components/base-component';
 import {InputProgrammeStrategy, ProgrammeStrategyService} from '@cat/api';
 import {catchError, mergeMap, tap} from 'rxjs/operators';
 import {Log} from '../../../../common/utils/log';

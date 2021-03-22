@@ -40,6 +40,6 @@ export class TranslatableMatPaginatorIntl extends MatPaginatorIntl {
     const endIndex = startIndex < lengthMax ?
       Math.min(startIndex + pageSize, lengthMax) :
       startIndex + pageSize;
-    return startIndex + 1 + ' - ' + endIndex + ` ${this.rangeLabel} ` + lengthMax;
+    return `${startIndex + 1} - ${endIndex} ${this.rangeLabel} ${lengthMax}`;
   }
 }
