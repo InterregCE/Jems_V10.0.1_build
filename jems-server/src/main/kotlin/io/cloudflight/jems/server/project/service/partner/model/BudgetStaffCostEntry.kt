@@ -9,9 +9,9 @@ class BudgetStaffCostEntry(
     override var rowSum: BigDecimal?,
     override val budgetPeriods: MutableSet<BudgetPeriod>,
     val pricePerUnit: BigDecimal,
-    val unitType: StaffCostUnitType?,
     val type: StaffCostType?,
     val description: Set<InputTranslation> = emptySet(),
     val comment: Set<InputTranslation> = emptySet(),
+    val unitType: Set<InputTranslation> = emptySet(),
     val unitCostId: Long? = null
 ) : BaseBudgetEntry

@@ -134,11 +134,12 @@
                                             <ng-container [formGroupName]="partnerAmountIndex">
                                                 <app-inline-editable-field appFormFieldWidth="full">
                                                     <mat-form-field>
-                                                        <input currencyMask
-                                                               [options]="{min: constants.MIN_VALUE, max: constants.MAX_VALUE, align: 'right'}"
-                                                               [formControlName]="constants.FORM_CONTROL_NAMES.amount"
-                                                               type="decimal"
-                                                               matInput>
+                                                        <input
+                                                                currencyMask
+                                                                [options]="{min: constants.MIN_VALUE, max: constants.MAX_VALUE, align: 'right'}"
+                                                                [formControlName]="constants.FORM_CONTROL_NAMES.amount"
+                                                                type="decimal"
+                                                                matInput>
                                                     </mat-form-field>
                                                 </app-inline-editable-field>
                                             </ng-container>

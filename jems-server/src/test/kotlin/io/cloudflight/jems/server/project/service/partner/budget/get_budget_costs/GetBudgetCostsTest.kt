@@ -61,8 +61,8 @@ internal class GetBudgetCostsTest : UnitTest() {
             BigDecimal.ONE,
             mutableSetOf(),
             BigDecimal.ONE,
-            StaffCostUnitType.HOUR,
             StaffCostType.UNIT_COST,
+            emptySet(),
             emptySet(),
             emptySet(),
             null
@@ -73,8 +73,8 @@ internal class GetBudgetCostsTest : UnitTest() {
             BigDecimal.ONE,
             mutableSetOf(),
             BigDecimal.ONE,
-            StaffCostUnitType.HOUR,
             StaffCostType.UNIT_COST,
+            emptySet(),
             emptySet(),
             emptySet(),
             1

@@ -22,14 +22,12 @@ fun ProjectPartnerBudgetOptionsDto.toProjectPartnerBudgetOptions(partnerId: Long
     otherCostsOnStaffCostsFlatRate = this.otherCostsOnStaffCostsFlatRate
 )
 
-fun StaffCostUnitType.toStaffCostUnitTypeDTO() = StaffCostUnitTypeDTO.valueOf(this.key)
-fun StaffCostUnitTypeDTO.toStaffCostUnitType() = StaffCostUnitType.valueOf(this.key)
 fun StaffCostType.toStaffCostTypeDTO() = StaffCostTypeDTO.valueOf(this.key)
 fun StaffCostTypeDTO.toStaffCostType() = StaffCostType.valueOf(this.key)
-fun BudgetPeriod.toBudgetPeriodDTO()=BudgetPeriodDTO(this.number,this.amount)
-fun Set<BudgetPeriod>.toBudgetPeriodDTOs()=this.map{it.toBudgetPeriodDTO()}.toMutableSet()
-fun BudgetPeriodDTO.toBudgetPeriod()=BudgetPeriod(this.number,this.amount?: BigDecimal.ZERO)
-fun Set<BudgetPeriodDTO>.toBudgetPeriods()=this.map{it.toBudgetPeriod()}.toMutableSet()
+fun BudgetPeriod.toBudgetPeriodDTO() = BudgetPeriodDTO(this.number, this.amount)
+fun Set<BudgetPeriod>.toBudgetPeriodDTOs() = this.map { it.toBudgetPeriodDTO() }.toMutableSet()
+fun BudgetPeriodDTO.toBudgetPeriod() = BudgetPeriod(this.number, this.amount ?: BigDecimal.ZERO)
+fun Set<BudgetPeriodDTO>.toBudgetPeriods() = this.map { it.toBudgetPeriod() }.toMutableSet()
 
 fun List<BudgetStaffCostEntry>.toBudgetStaffCostEntryDTOList() = this.map { it.toBudgetStaffCostEntryDTO() }
 
@@ -40,7 +38,7 @@ fun BudgetStaffCostEntry.toBudgetStaffCostEntryDTO() = BudgetStaffCostEntryDTO(
     rowSum = rowSum,
     budgetPeriods = budgetPeriods.toBudgetPeriodDTOs(),
     unitCostId = unitCostId,
-    unitType = unitType?.toStaffCostUnitTypeDTO(),
+    unitType = unitType,
     type = type?.toStaffCostTypeDTO(),
     description = description,
     comment = comment
@@ -55,37 +53,41 @@ fun BudgetStaffCostEntryDTO.toBudgetStaffCostEntry() = BudgetStaffCostEntry(
     rowSum = rowSum,
     budgetPeriods = budgetPeriods.toBudgetPeriods(),
     unitCostId = unitCostId,
-    unitType = unitType?.toStaffCostUnitType(),
+    unitType = unitType,
     type = type?.toStaffCostType(),
     description = description,
     comment = comment
 )
 
-fun List<BudgetTravelAndAccommodationCostEntry>.toBudgetTravelAndAccommodationCostsEntryDTOList() = this.map { it.toBudgetTravelAndAccommodationCostsEntryDTO() }
+fun List<BudgetTravelAndAccommodationCostEntry>.toBudgetTravelAndAccommodationCostsEntryDTOList() =
+    this.map { it.toBudgetTravelAndAccommodationCostsEntryDTO() }
 
-fun BudgetTravelAndAccommodationCostEntry.toBudgetTravelAndAccommodationCostsEntryDTO() = BudgetTravelAndAccommodationCostEntryDTO(
-    id = id,
-    numberOfUnits = numberOfUnits,
-    pricePerUnit = pricePerUnit,
-    rowSum = rowSum,
-    budgetPeriods = budgetPeriods.toBudgetPeriodDTOs(),
-    unitCostId = unitCostId,
-    unitType = unitType,
-    description = description
-)
+fun BudgetTravelAndAccommodationCostEntry.toBudgetTravelAndAccommodationCostsEntryDTO() =
+    BudgetTravelAndAccommodationCostEntryDTO(
+        id = id,
+        numberOfUnits = numberOfUnits,
+        pricePerUnit = pricePerUnit,
+        rowSum = rowSum,
+        budgetPeriods = budgetPeriods.toBudgetPeriodDTOs(),
+        unitCostId = unitCostId,
+        unitType = unitType,
+        description = description
+    )
 
-fun List<BudgetTravelAndAccommodationCostEntryDTO>.toBudgetTravelAndAccommodationCostEntryList() = this.map { it.toBudgetTravelAndAccommodationCostEntry() }
+fun List<BudgetTravelAndAccommodationCostEntryDTO>.toBudgetTravelAndAccommodationCostEntryList() =
+    this.map { it.toBudgetTravelAndAccommodationCostEntry() }
 
-fun BudgetTravelAndAccommodationCostEntryDTO.toBudgetTravelAndAccommodationCostEntry() = BudgetTravelAndAccommodationCostEntry(
-    id = id,
-    numberOfUnits = numberOfUnits,
-    pricePerUnit = pricePerUnit,
-    rowSum = rowSum,
-    budgetPeriods = budgetPeriods.toBudgetPeriods(),
-    unitCostId = unitCostId,
-    unitType = unitType,
-    description = description
-)
+fun BudgetTravelAndAccommodationCostEntryDTO.toBudgetTravelAndAccommodationCostEntry() =
+    BudgetTravelAndAccommodationCostEntry(
+        id = id,
+        numberOfUnits = numberOfUnits,
+        pricePerUnit = pricePerUnit,
+        rowSum = rowSum,
+        budgetPeriods = budgetPeriods.toBudgetPeriods(),
+        unitCostId = unitCostId,
+        unitType = unitType,
+        description = description
+    )
 
 fun List<BudgetUnitCostEntry>.toBudgetUnitCostEntryDTOList() = this.map { it.toBudgetUnitCostEntryDTO() }
 

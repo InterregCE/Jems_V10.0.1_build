@@ -183,8 +183,8 @@ internal class UpdateBudgetStaffCostsTest : UnitTest() {
                     BigDecimal.ONE,
                     budgetPeriods,
                     BigDecimal.ONE,
-                    StaffCostUnitType.HOUR,
                     StaffCostType.UNIT_COST,
+                    emptySet(),
                     emptySet(),
                     emptySet()
                 )
@@ -195,8 +195,8 @@ internal class UpdateBudgetStaffCostsTest : UnitTest() {
                     BigDecimal.ONE,
                     budgetPeriods,
                     BigDecimal.ONE,
-                    StaffCostUnitType.HOUR,
                     StaffCostType.UNIT_COST,
+                    emptySet(),
                     emptySet(),
                     emptySet(),
                     1

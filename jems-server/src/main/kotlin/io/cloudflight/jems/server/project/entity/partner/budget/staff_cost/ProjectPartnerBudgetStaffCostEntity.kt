@@ -3,7 +3,6 @@ package io.cloudflight.jems.server.project.entity.partner.budget.staff_cost
 import io.cloudflight.jems.server.project.entity.partner.budget.BaseBudgetProperties
 import io.cloudflight.jems.server.project.entity.partner.budget.ProjectPartnerBudgetBase
 import io.cloudflight.jems.server.project.service.partner.model.StaffCostType
-import io.cloudflight.jems.server.project.service.partner.model.StaffCostUnitType
 import java.math.BigDecimal
 import javax.persistence.CascadeType
 import javax.persistence.Column
@@ -28,9 +27,6 @@ data class ProjectPartnerBudgetStaffCostEntity(
     @Column
     @field:NotNull
     val pricePerUnit: BigDecimal,
-
-    @Column
-    val unitType: StaffCostUnitType?,
 
     @Column
     val type: StaffCostType?,
