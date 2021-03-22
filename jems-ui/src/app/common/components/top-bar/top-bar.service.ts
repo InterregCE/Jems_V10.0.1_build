@@ -11,7 +11,6 @@ import {OutputCurrentUser} from '@cat/api';
 export class TopBarService {
 
   private menuItems$ = new ReplaySubject<MenuItemConfiguration[]>(1);
-  private newAuditUrl$ = new ReplaySubject<string>(1);
 
   private dashboardItem: MenuItemConfiguration = {
     name: 'topbar.main.dashboard',
@@ -43,33 +42,25 @@ export class TopBarService {
 
   constructor(private permissionService: PermissionService,
               private securityService: SecurityService) {
-    combineLatest([
-      this.newAuditUrl$,
-      this.securityService.currentUser
-    ])
-      .subscribe(([auditUrl, currentUser]) => {
-        this.adaptMenuItems(auditUrl, currentUser);
-        this.assingMenuItemsToUser();
-      });
+    this.securityService.currentUser.subscribe((currentUser) => {
+      this.adaptMenuItems(currentUser);
+      this.assingMenuItemsToUser();
+    });
   }
 
   menuItems(): Observable<MenuItemConfiguration[]> {
     return this.menuItems$.asObservable();
   }
 
-  newAuditUrl(auditUrl: string): void {
-    this.newAuditUrl$.next(auditUrl);
-  }
-
   logout(): Observable<any> {
     return this.securityService.logout();
   }
 
-  private adaptMenuItems(auditUrl: string, currentUser: OutputCurrentUser | null): void {
+  private adaptMenuItems(currentUser: OutputCurrentUser | null): void {
     this.auditItem = {
       name: 'topbar.main.audit',
-      isInternal: false,
-      route: auditUrl,
+      isInternal: true,
+      route: '/app/audit',
     };
     if (!currentUser) {
       return;

@@ -1,6 +1,7 @@
 import {ColumnType} from './column-type.enum';
 import {TemplateRef} from '@angular/core';
 import {TooltipConfiguration} from '@common/components/table/model/tooltip.configuration';
+import {ColumnWidth} from '@common/components/table/model/column-width';
 
 export class ColumnConfiguration {
   // the name of the column that will appear in the header of the table.
@@ -25,6 +26,8 @@ export class ColumnConfiguration {
   customCellTemplate?: TemplateRef<any>;
   // the cell tooltip
   tooltip?: TooltipConfiguration;
+  // determines the max width of a column
+  columnWidth?: ColumnWidth;
 
   public constructor(init?: Partial<ColumnConfiguration>) {
     Object.assign(this, init);

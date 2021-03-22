@@ -64,6 +64,11 @@ export const routes: Routes = [
         loadChildren: () => import('./user-profile/user-profile.module').then(m => m.UserProfileModule),
         data: {skipBreadcrumb: true},
       },
+      {
+        path: 'audit',
+        loadChildren: () => import('./audit/audit.module').then(m => m.AuditModule),
+        data: {skipBreadcrumb: true},
+      },
     ]
   },
   {

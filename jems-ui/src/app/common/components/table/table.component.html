@@ -22,10 +22,17 @@
         </ng-container>
 
         <ng-template #noSort>
-            <mat-header-cell *matHeaderCellDef class="cell">{{column.displayedColumn | translate}}</mat-header-cell>
+            <mat-header-cell
+                    [class.id-column-width]="column.columnWidth === ColumnWidth.IdColumn"
+                    [class.date-column-width]="column.columnWidth === ColumnWidth.DateColumn"
+                    *matHeaderCellDef class="cell">{{column.displayedColumn | translate}}</mat-header-cell>
         </ng-template>
 
-        <mat-cell *matCellDef="let row" [class.justify-end]="column.columnType === ColumnType.Decimal" class="cell">
+        <mat-cell *matCellDef="let row"
+                  [class.justify-end]="column.columnType === ColumnType.Decimal"
+                  [class.id-column-width]="column.columnWidth === ColumnWidth.IdColumn"
+                  [class.date-column-width]="column.columnWidth === ColumnWidth.DateColumn"
+                  class="cell">
             <div *ngIf="!column.customCellTemplate; else customCellTemplate"
                  [title]="column.tooltip ? (formatColumnTooltip(column, row) | translate) : ''">
                 {{ formatColumnValue(column, row, (languageStore.currentSystemLanguage$ | async)!) | translate : getI18nArgs(column, row) }}

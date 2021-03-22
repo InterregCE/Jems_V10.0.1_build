@@ -39,20 +39,10 @@ export class TopBarComponent implements OnInit {
               private topBarService: TopBarService,
               public languageStore: LanguageStore,
               public translate: TranslateService) {
-    const auditUrl = this.prepareAuditUrl(window.location.href);
-    this.topBarService.newAuditUrl(auditUrl);
   }
 
   ngOnInit(): void {
     this.menuItems = this.topBarService.menuItems();
-  }
-
-  prepareAuditUrl(url: string): string {
-    const splitHttp = url.split('://');
-    const splitAddress = splitHttp[1].split('/');
-    const auditFilter = 'discover?_g=(filters:!(),refreshInterval:(pause:!t,value:0),time:(from:now-24h,to:now))' +
-      '&_a=(columns:!(user.id,user.email,action,projectId,description),filters:!(),interval:auto,query:(language:kuery,query:\'\'),sort:!())';
-    return `${splitHttp[0]}://audit-${splitAddress[0]}/app/kibana#/${auditFilter}`;
   }
 
   logout(): void {

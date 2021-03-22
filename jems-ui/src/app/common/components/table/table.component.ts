@@ -10,6 +10,7 @@ import {MoneyPipe} from '../../pipe/money.pipe';
 import {LanguageStore} from '../../services/language-store.service';
 import {InputTranslation} from '@cat/api';
 import moment from 'moment/moment';
+import { ColumnWidth } from './model/column-width';
 
 @Component({
   selector: 'app-table',
@@ -18,6 +19,7 @@ import moment from 'moment/moment';
 })
 export class TableComponent implements OnInit {
   ColumnType = ColumnType;
+  ColumnWidth = ColumnWidth;
 
   @Input()
   configuration: TableConfiguration;
