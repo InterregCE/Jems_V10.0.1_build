@@ -16,7 +16,7 @@ class AuditListener(
             if (overrideCurrentUser == null)
                 auditService.logEvent(audit = auditCandidate)
             else
-                auditService.logEvent(audit = auditCandidate, overrideCurrentUser = overrideCurrentUser)
+                auditService.logEvent(audit = auditCandidate, optionalUser = overrideCurrentUser)
         }
 
 }

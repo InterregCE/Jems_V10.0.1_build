@@ -4,6 +4,6 @@ import io.cloudflight.jems.server.audit.model.AuditUser
 
 interface AuditService {
 
-    fun logEvent(audit: AuditCandidate, overrideCurrentUser: AuditUser? = null)
+    fun logEvent(audit: AuditCandidate, optionalUser: AuditUser? = null)
 
 }

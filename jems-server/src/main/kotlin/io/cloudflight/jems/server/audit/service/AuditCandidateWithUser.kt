@@ -20,7 +20,7 @@ data class AuditCandidateWithUser(
                 project = project,
                 description = description,
             ),
-            overrideCurrentUser = user,
+            optionalUser = user,
         )
     }
 }

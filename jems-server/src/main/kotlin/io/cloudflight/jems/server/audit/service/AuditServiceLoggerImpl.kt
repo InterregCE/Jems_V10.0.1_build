@@ -1,9 +1,9 @@
 package io.cloudflight.jems.server.audit.service
 
 import io.cloudflight.jems.server.audit.model.AuditUser
+import io.cloudflight.jems.server.authentication.service.SecurityService
 import io.cloudflight.jems.server.config.AUDIT_ENABLED
 import io.cloudflight.jems.server.config.AUDIT_PROPERTY_PREFIX
-import io.cloudflight.jems.server.authentication.service.SecurityService
 import org.slf4j.LoggerFactory
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty
 import org.springframework.stereotype.Service
@@ -23,10 +23,10 @@ class AuditServiceLoggerImpl(
         private val logger = LoggerFactory.getLogger(AuditServiceLoggerImpl::class.java)
     }
 
-    override fun logEvent(audit: AuditCandidate, overrideCurrentUser: AuditUser?) {
-        val user = overrideCurrentUser ?: securityService.currentUser?.toEsUser()
+    override fun logEvent(audit: AuditCandidate, optionalUser: AuditUser?) {
+        val actualUser = if(securityService.currentUser!=null) securityService.currentUser?.toEsUser() else optionalUser
         with(audit) {
-            logger.info("AUDIT >>> {} (projectId {}, user ({}, {})) : {}", action, project?.id, user?.id, user?.email, description)
+            logger.info("AUDIT >>> {} (projectId {}, user ({}, {})) : {}", action, project?.id, actualUser?.id, actualUser?.email, description)
         }
     }
 
