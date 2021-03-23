@@ -1,5 +1,5 @@
 <nav class="navbar navbar-expand-lg">
-    <a class="navbar-brand">{{ 'app.name' | translate }}</a>
+    <a class="navbar-brand" href="/">{{ 'app.name' | translate }}</a>
 
     <!--Hamburger Menu-->
     <button mat-stroked-button class="navbar-toggler" [ngClass]="{'collapsed': isNavBarCollapsed}" type="button"
@@ -41,14 +41,17 @@
             <li class="nav-item language-list" *ngIf="languageSettings$ | async as languageSettings">
                 <mat-select #langSelect
                             class="language-select nav-link"
+                            aria-label="Language select"
                             [value]="translate.currentLang"
                             (selectionChange)="changeLanguage(langSelect.value)">
                     <mat-option
                             *ngIf="!languageSettings.isDefaultAvailable && translate.currentLang === languageSettings.fallbackLanguage"
-                            [value]="languageSettings.fallbackLanguage">
+                            [value]="languageSettings.fallbackLanguage"
+                            role="option">
                         <mat-label>{{'language.' + languageSettings.fallbackLanguage.toLowerCase() | translate}}</mat-label>
                     </mat-option>
-                    <mat-option *ngFor="let lang of languageSettings.languages" [value]="lang">
+                    <mat-option *ngFor="let lang of languageSettings.languages" [value]="lang"
+                                role="option">
                         <mat-label>{{'language.' + lang.toLowerCase() | translate}}</mat-label>
                     </mat-option>
                 </mat-select>

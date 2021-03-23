@@ -5,6 +5,7 @@ import {AppNotFoundComponent} from './component/app-not-found/app-not-found.comp
 import {AuthenticationGuard} from './security/authentication-guard.service';
 import {Permission} from './security/permissions/permission';
 import {PermissionGuard} from './security/permission.guard';
+import {AccessibilityDisclaimerComponent} from './component/accessibility-disclaimer/accessibility-disclaimer.component';
 
 export const routes: Routes = [
   {
@@ -78,6 +79,16 @@ export const routes: Routes = [
       {
         path: '',
         loadChildren: () => import('./authentication/authentication.module').then(m => m.AuthenticationModule),
+      }
+    ]
+  },
+  {
+    path: 'accessibility',
+    component: NoAuthWrapComponent,
+    children: [
+      {
+        path: '',
+        component: AccessibilityDisclaimerComponent,
       }
     ]
   },
