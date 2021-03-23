@@ -22,7 +22,7 @@ import {
   START_DATE,
   TRANSLATABLE_GROUP_TYPES,
 } from './project-timeplan.utils';
-import {MultiLanguageContainerService} from '@common/components/forms/multi-language-container/multi-language-container.service';
+import {MultiLanguageGlobalService} from '@common/components/forms/multi-language-container/multi-language-global.service';
 
 @Component({
   selector: 'app-project-timeplan-page',
@@ -45,7 +45,7 @@ export class ProjectTimeplanPageComponent implements OnInit {
 
   constructor(private projectApplicationFormSidenavService: ProjectApplicationFormSidenavService,
               private translateService: TranslateService,
-              private multiLanguageContainerService: MultiLanguageContainerService,
+              private multiLanguageGlobalService: MultiLanguageGlobalService,
               private router: Router,
               private activatedRoute: ActivatedRoute,
               public pageStore: ProjectTimeplanPageStore) {
@@ -77,7 +77,7 @@ export class ProjectTimeplanPageComponent implements OnInit {
         tap(data => this.createVisualizationOrUpdateJustTranslations(data.periods, data.timelineItems, data.timelineGroups))
       );
 
-    this.data$ = combineLatest([projectData$, this.multiLanguageContainerService.activeLanguage$])
+    this.data$ = combineLatest([projectData$, this.multiLanguageGlobalService.activeInputLanguage$])
       .pipe(
         map(([projectData, language]) => ({
           timelineGroups: projectData.timelineGroups,
@@ -142,7 +142,7 @@ export class ProjectTimeplanPageComponent implements OnInit {
     if (prop.item && typeof prop.item === 'number') {
 
       if (isResult(prop.item)) {
-        this.router.navigate(['..', 'applicationFormResults'], { relativeTo: this.activatedRoute});
+        this.router.navigate(['..', 'applicationFormResults'], {relativeTo: this.activatedRoute});
       }
 
     }
