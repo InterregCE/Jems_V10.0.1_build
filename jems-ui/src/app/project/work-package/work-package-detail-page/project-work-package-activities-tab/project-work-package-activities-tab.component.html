@@ -10,7 +10,7 @@
                             <h4 appMultiColumnRow class="mb-0">
                                 <span>{{('project.work.package.tab.activity' | translate) + ' ' + data.workPackageNumber + '.' + (i + 1) }}</span>
                                 <span appFormFieldWidth="xx-large"
-                                      class="text-overflow-ellipsis">{{activity.get(constants.TITLE.name).value | translateByInputLanguage}}</span>
+                                      class="text-overflow-ellipsis">{{activity.get(constants.TITLE.name).value | translateByInputLanguage | async}}</span>
                             </h4>
 
                             <button *ngIf="form.enabled"

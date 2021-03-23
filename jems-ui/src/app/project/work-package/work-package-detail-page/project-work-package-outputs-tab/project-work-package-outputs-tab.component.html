@@ -11,7 +11,7 @@
                         <h4 class="mb-0" appMultiColumnRow>
                             <span>{{('project.application.form.work.package.output' | translate) + ' ' + data.workPackageNumber + '.' + (i + 1) }}</span>
                             <span appFormFieldWidth="xx-large"
-                                  class="text-overflow-ellipsis">{{output.get(constants.TITLE.name).value | translateByInputLanguage}}</span>
+                                  class="text-overflow-ellipsis">{{output.get(constants.TITLE.name).value | translateByInputLanguage | async}}</span>
                         </h4>
                         <button *ngIf="form.enabled" type="button" mat-icon-button color="accent"
                                 matTooltip="{{'project.application.form.work.package.output.table.action.delete.tooltip' | translate}}"
