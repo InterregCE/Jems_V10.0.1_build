@@ -77,6 +77,9 @@ export class TableComponent implements OnInit {
     if (column.columnType === ColumnType.DateColumn) {
       return elementValue ? moment(elementValue).format(Tables.DEFAULT_DATE_FORMAT) : '';
     }
+    if (column.columnType === ColumnType.DateColumnWithSeconds) {
+      return elementValue ? moment(elementValue).format(Tables.DEFAULT_DATE_FORMAT_WITH_SECONDS) : '';
+    }
     if (column.columnType === ColumnType.Decimal) {
       return this.moneyPipe.transform(elementValue);
     }
