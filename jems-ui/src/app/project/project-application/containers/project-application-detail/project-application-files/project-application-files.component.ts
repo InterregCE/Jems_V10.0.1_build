@@ -10,7 +10,7 @@ import {MatSort} from '@angular/material/sort';
 import {Tables} from '../../../../../common/utils/tables';
 import {Log} from '../../../../../common/utils/log';
 import {HttpErrorResponse} from '@angular/common/http';
-import {I18nValidationError} from '@common/validation/i18n-validation-error';
+import {APIError} from '../../../../../common/models/APIError';
 
 @Component({
   selector: 'app-project-application-files',
@@ -27,7 +27,7 @@ export class ProjectApplicationFilesComponent extends BaseComponent {
   fileType: OutputProjectFile.TypeEnum;
 
   uploadSuccess$ = new Subject<boolean>();
-  uploadError$ = new ReplaySubject<I18nValidationError | null>(1);
+  uploadError$ = new ReplaySubject<APIError | null>(1);
 
   newPageSize$ = new Subject<number>();
   newPageIndex$ = new Subject<number>();
@@ -79,7 +79,7 @@ export class ProjectApplicationFilesComponent extends BaseComponent {
         tap(() => this.uploadSuccess$.next(true)),
         tap(() => this.uploadError$.next(null)),
         catchError((error: HttpErrorResponse) => {
-          this.uploadError$.next({httpStatus: error.status});
+          this.uploadError$.next(error.error);
           throw error;
         })
       ).subscribe();
