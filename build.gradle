@@ -2,9 +2,12 @@ plugins {
     id "cloudflight-gradle-plugin" version "5.15.2"
 }
 
+// add version-postfix if the build was triggered by customer
+def customerPostfix = (System.getProperty("TEAMCITY_BUILD") != null && System.getProperty("TEAMCITY_BUILD").toBoolean()) || System.getProperty("REMOVE_DEFAULT_CUSTOMER_VERSION_POSTFIX") ? "" : "-P"
+
 description "Jems Project"
 group "io.cloudflight.jems"
-version "1.22.0"
+version "1.22.0$customerPostfix"
 
 cloudflight {
     softwareProjectKey = "interact/ems"
@@ -32,7 +35,7 @@ sonarqube {
     properties {
         property "sonar.exclusions", "**/*.spec.ts"
         // exclude frontend files from code coverage
-        property "sonar.coverage.exclusions", "**/*.ts, **/*.html, **/*.scss, **/*.properties"
+        property "sonar.coverage.exclusions", "**/*.ts, **/*.html, **/*.scss, **/*.properties, **/*.xml"
 
         property "sonar.issue.ignore.multicriteria", "e1,e2,e3"
         // ignore rule: readonly was decided to provide no big advantage
