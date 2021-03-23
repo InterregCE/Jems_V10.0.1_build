@@ -4,7 +4,7 @@ import io.cloudflight.jems.api.call.dto.CallStatus
 import io.cloudflight.jems.api.programme.dto.language.SystemLanguage
 import io.cloudflight.jems.api.programme.dto.priority.ProgrammeObjective.PO1
 import io.cloudflight.jems.api.programme.dto.priority.ProgrammeObjectivePolicy.AdvancedTechnologies
-import io.cloudflight.jems.api.programme.dto.priority.ProgrammeObjectivePolicy.Digitalization
+import io.cloudflight.jems.api.programme.dto.priority.ProgrammeObjectivePolicy.Digitisation
 import io.cloudflight.jems.api.programme.dto.priority.ProgrammeObjectivePolicy.Growth
 import io.cloudflight.jems.api.programme.dto.strategy.ProgrammeStrategy.AtlanticStrategy
 import io.cloudflight.jems.api.programme.dto.strategy.ProgrammeStrategy.EUStrategyBalticSeaRegion
@@ -59,7 +59,7 @@ class UpdateCallTest: UnitTest() {
                 ProgrammePriority(
                     code = "PRIO_CODE", objective = PO1, specificObjectives = listOf(
                         ProgrammeSpecificObjective(AdvancedTechnologies, "CODE_ADVA"),
-                        ProgrammeSpecificObjective(Digitalization, "CODE_DIGI"),
+                        ProgrammeSpecificObjective(Digitisation, "CODE_DIGI"),
                     )
                 )
             ),
@@ -78,7 +78,7 @@ class UpdateCallTest: UnitTest() {
             isAdditionalFundAllowed = existingCall.isAdditionalFundAllowed,
             lengthOfPeriod = existingCall.lengthOfPeriod!!,
             description = emptySet(),
-            priorityPolicies = setOf(AdvancedTechnologies, Digitalization, Growth),
+            priorityPolicies = setOf(AdvancedTechnologies, Digitisation, Growth),
             strategies = setOf(EUStrategyBalticSeaRegion, AtlanticStrategy, MediterraneanSeaBasin),
             fundIds = setOf(FUND_ID),
         )

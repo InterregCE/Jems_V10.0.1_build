@@ -107,9 +107,9 @@ internal class ResultIndicatorControllerTest : IndicatorsControllerBaseTest() {
     @Test
     fun `should throw GetResultIndicatorSummariesForSpecificObjectiveException when there is a problem in getting list of result indicator summaries for a specific objective`() {
         val exception = GetResultIndicatorSummariesForSpecificObjectiveException(Exception())
-        every { listResultIndicators.getResultIndicatorSummariesForSpecificObjective(ProgrammeObjectivePolicy.Digitalization) } throws exception
+        every { listResultIndicators.getResultIndicatorSummariesForSpecificObjective(ProgrammeObjectivePolicy.Digitisation) } throws exception
         Assertions.assertThatExceptionOfType(GetResultIndicatorSummariesForSpecificObjectiveException::class.java).isThrownBy {
-            resultIndicatorController.getResultIndicatorSummariesForSpecificObjective(ProgrammeObjectivePolicy.Digitalization)
+            resultIndicatorController.getResultIndicatorSummariesForSpecificObjective(ProgrammeObjectivePolicy.Digitisation)
         }
     }
 

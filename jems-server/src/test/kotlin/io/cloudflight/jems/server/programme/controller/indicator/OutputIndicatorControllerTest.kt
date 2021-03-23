@@ -110,9 +110,9 @@ internal class OutputIndicatorControllerTest : IndicatorsControllerBaseTest() {
     @Test
     fun `should throw GetOutputIndicatorSummariesForSpecificObjectiveException when there is a problem in getting list of output indicator summaries for a specific objective`() {
         val exception = GetOutputIndicatorSummariesForSpecificObjectiveException(Exception())
-        every { listOutputIndicators.getOutputIndicatorSummariesForSpecificObjective(ProgrammeObjectivePolicy.Digitalization) } throws exception
+        every { listOutputIndicators.getOutputIndicatorSummariesForSpecificObjective(ProgrammeObjectivePolicy.Digitisation) } throws exception
         Assertions.assertThatExceptionOfType(GetOutputIndicatorSummariesForSpecificObjectiveException::class.java).isThrownBy {
-            outputIndicatorController.getOutputIndicatorSummariesForSpecificObjective(ProgrammeObjectivePolicy.Digitalization)
+            outputIndicatorController.getOutputIndicatorSummariesForSpecificObjective(ProgrammeObjectivePolicy.Digitisation)
         }
     }
 

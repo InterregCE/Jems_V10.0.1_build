@@ -7,7 +7,7 @@ import io.cloudflight.jems.api.programme.dto.costoption.ProgrammeLumpSumPhase
 import io.cloudflight.jems.api.programme.dto.language.SystemLanguage
 import io.cloudflight.jems.api.programme.dto.priority.ProgrammeObjective.PO1
 import io.cloudflight.jems.api.programme.dto.priority.ProgrammeObjectivePolicy.AdvancedTechnologies
-import io.cloudflight.jems.api.programme.dto.priority.ProgrammeObjectivePolicy.Digitalization
+import io.cloudflight.jems.api.programme.dto.priority.ProgrammeObjectivePolicy.Digitisation
 import io.cloudflight.jems.api.programme.dto.strategy.ProgrammeStrategy.AtlanticStrategy
 import io.cloudflight.jems.api.programme.dto.strategy.ProgrammeStrategy.EUStrategyBalticSeaRegion
 import io.cloudflight.jems.api.project.dto.InputTranslation
@@ -84,8 +84,8 @@ internal class CallPersistenceProviderTest {
 
         val specificObjectives = setOf(
             ProgrammeSpecificObjectiveEntity(
-                programmeObjectivePolicy = Digitalization, code = "CODE_DIGI",
-                programmePriority = ProgrammePriorityEntity(code = "PRIO_CODE", objective = Digitalization.objective)
+                programmeObjectivePolicy = Digitisation, code = "CODE_DIGI",
+                programmePriority = ProgrammePriorityEntity(code = "PRIO_CODE", objective = Digitisation.objective)
             ),
             ProgrammeSpecificObjectiveEntity(
                 programmeObjectivePolicy = AdvancedTechnologies, code = "CODE_ADVA",
@@ -150,7 +150,7 @@ internal class CallPersistenceProviderTest {
                 objective = PO1,
                 specificObjectives = listOf(
                     ProgrammeSpecificObjective(AdvancedTechnologies, "CODE_ADVA"),
-                    ProgrammeSpecificObjective(Digitalization, "CODE_DIGI"),
+                    ProgrammeSpecificObjective(Digitisation, "CODE_DIGI"),
                 )
             )),
             strategies = sortedSetOf(EUStrategyBalticSeaRegion, AtlanticStrategy),
@@ -187,7 +187,7 @@ internal class CallPersistenceProviderTest {
             isAdditionalFundAllowed = expectedCallDetail.isAdditionalFundAllowed,
             lengthOfPeriod = expectedCallDetail.lengthOfPeriod!!,
             description = setOf(InputTranslation(SystemLanguage.EN ,"This is a dummy call")),
-            priorityPolicies = setOf(Digitalization, AdvancedTechnologies),
+            priorityPolicies = setOf(Digitisation, AdvancedTechnologies),
             strategies = setOf(EUStrategyBalticSeaRegion, AtlanticStrategy),
             fundIds = setOf(FUND_ID),
         )
@@ -318,7 +318,7 @@ internal class CallPersistenceProviderTest {
         expectedResultEntity.translatedValues.add(CallTranslEntity(translationId = TranslationId(expectedResultEntity, language = SystemLanguage.EN), "This is a dummy call"))
 
         every { userRepo.getOne(expectedResultEntity.creator.id) } returns expectedResultEntity.creator
-        every { programmeSpecificObjectiveRepo.getOne(Digitalization) } returns specificObjectives.first { it.programmeObjectivePolicy == Digitalization }
+        every { programmeSpecificObjectiveRepo.getOne(Digitisation) } returns specificObjectives.first { it.programmeObjectivePolicy == Digitisation }
         every { programmeSpecificObjectiveRepo.getOne(AdvancedTechnologies) } returns specificObjectives.first { it.programmeObjectivePolicy == AdvancedTechnologies }
         every { programmeStrategyRepo.getAllByStrategyInAndActiveTrue(setOf(EUStrategyBalticSeaRegion, AtlanticStrategy)) } returns strategies
         every { programmeFundRepo.getTop20ByIdInAndSelectedTrue(setOf(FUND_ID)) } returns setOf(ProgrammeFundEntity(id = FUND_ID, selected = true))

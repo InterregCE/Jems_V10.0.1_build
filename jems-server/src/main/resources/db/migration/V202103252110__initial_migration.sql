@@ -22,7 +22,7 @@ VALUES (1, 'administrator'),
        (3, 'applicant user');
 
 INSERT INTO account (email, name, surname, account_role_id, password)
-VALUES ('admin@jems.eu', 'Admin', 'Admin', 1, '{bcrypt}$2a$10$YbArQmvqQJVXXGehyHrJK.HlZv.FH29ropwqf/WaIRMKjOWVmMrqm');
+VALUES ('admin@jems.eu', 'Admin', 'Admin', 1, '{bcrypt}$2a$10$U7oTeVv4GXWmZzL0lE1H8eX4.TpJyhwz6SlKefFKnb3VDLoivO8sC');
 
 DELIMITER $$
 
@@ -242,9 +242,10 @@ CREATE TABLE programme_objective_policy
 
 INSERT INTO programme_objective_policy (objective_id, code)
 VALUES ('PO1', 'AdvancedTechnologies'),
-       ('PO1', 'Digitalization'),
+       ('PO1', 'Digitisation'),
        ('PO1', 'Growth'),
        ('PO1', 'IndustrialTransition'),
+       ('PO1', 'DigitalConnectivity'),
 
        ('PO2', 'EnergyEfficiency'),
        ('PO2', 'RenewableEnergy'),
@@ -252,45 +253,56 @@ VALUES ('PO1', 'AdvancedTechnologies'),
        ('PO2', 'ClimateChange'),
        ('PO2', 'WaterManagement'),
        ('PO2', 'CircularEconomy'),
-       ('PO2', 'GreenUrban'),
+       ('PO2', 'GreenInfrastructure'),
+       ('PO2', 'ZeroCarbonEconomy'),
 
-       ('PO3', 'DigitalConnectivity'),
        ('PO3', 'InterModalTenT'),
        ('PO3', 'CrossBorderMobility'),
-       ('PO3', 'MultiModalUrban'),
 
-       ('PO4', 'SocialInnovation'),
-       ('PO4', 'Infrastructure'),
+       ('PO4', 'SocialInfrastructure'),
+       ('PO4', 'QualityInEducation'),
        ('PO4', 'DisadvantagedGroups'),
+       ('PO4', 'IntegratedActionsForMigrants'),
        ('PO4', 'Healthcare'),
-       ('PO4', 'EmploymentAcrossBorders'),
-       ('PO4', 'LearningAcrossBorders'),
-       ('PO4', 'HealthcareAcrossBorders'),
-       ('PO4', 'LongTermHealthcareAcrossBorders'),
-       ('PO4', 'EqualOpportunitiesAcrossBorders'),
+       ('PO4', 'CultureAndTourism'),
+       ('PO4', 'PeacePlus'),
+       ('PO4', 'JobSeekers'),
+       ('PO4', 'LabourMarketMatching'),
+       ('PO4', 'GenderBalance'),
+       ('PO4', 'HealthyAgeing'),
+       ('PO4', 'DualTrainingSystems'),
+       ('PO4', 'EqualAccess'),
+       ('PO4', 'LifelongLearning'),
+       ('PO4', 'EqualOpportunities'),
+       ('PO4', 'IntegrationOfThirdCountryNationals'),
+       ('PO4', 'IntegrationOfMarginalised'),
+       ('PO4', 'AffordableServices'),
+       ('PO4', 'SocialIntegration'),
+       ('PO4', 'MaterialAssistance'),
 
        ('PO5', 'EnvDevelopment'),
        ('PO5', 'LocalEnvDevelopment'),
 
        ('ISO1', 'ISO1PublicAuthorities'),
        ('ISO1', 'ISO1AdministrativeCooperation'),
-       ('ISO1', 'ISO1IncreaseTrust'),
+       ('ISO1', 'ISO1MutualTrust'),
        ('ISO1', 'ISO1MacroRegion'),
        ('ISO1', 'ISO1Democracy'),
        ('ISO1', 'ISO1Other'),
 
-       ('ISO2', 'ISO2PublicAuthorities'),
-       ('ISO2', 'ISO2AdministrativeCooperation'),
-       ('ISO2', 'ISO2IncreaseTrust'),
-       ('ISO2', 'ISO2MacroRegion'),
-       ('ISO2', 'ISO2Democracy'),
+       ('ISO2', 'ISO2BorderCrossing'),
+       ('ISO2', 'ISO2MobilityMigration'),
+       ('ISO2', 'ISO2InternationalProtection'),
        ('ISO2', 'ISO2Other'),
 
        ('ISO12', 'ISO12PublicAuthorities'),
-       ('ISO12', 'ISO12AdministrativeCooperation'),
-       ('ISO12', 'ISO12IncreaseTrust'),
+       ('ISO12', 'ISO12PromotingCooperation'),
+       ('ISO12', 'ISO12MutualTrust'),
        ('ISO12', 'ISO12MacroRegion'),
        ('ISO12', 'ISO12Democracy'),
+       ('ISO12', 'ISO12BorderCrossing'),
+       ('ISO12', 'ISO12MobilityMigration'),
+       ('ISO12', 'ISO12InternationalProtection'),
        ('ISO12', 'ISO12Other');
 
 CREATE TABLE programme_priority
@@ -428,12 +440,12 @@ CREATE TABLE project_call
 
 CREATE TABLE project_call_transl
 (
-    project_call_id INT UNSIGNED NOT NULL,
+    source_entity_id INT UNSIGNED NOT NULL,
     language        VARCHAR(3)   NOT NULL,
     description     TEXT(1000) DEFAULT NULL,
-    PRIMARY KEY (project_call_id, language),
+    PRIMARY KEY (source_entity_id, language),
     CONSTRAINT fk_project_call_transl_to_project_call
-        FOREIGN KEY (project_call_id)
+        FOREIGN KEY (source_entity_id)
             REFERENCES project_call (id)
             ON DELETE CASCADE
             ON UPDATE RESTRICT
@@ -1081,30 +1093,30 @@ CREATE TABLE project_partner_contribution
 
 CREATE TABLE programme_legal_status
 (
-    id          INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
-    description VARCHAR(127) DEFAULT NULL
+    id   INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    type ENUM ('Public', 'Private', 'Other') NOT NULL DEFAULT 'Other'
 );
 
 CREATE TABLE programme_legal_status_transl
 (
-    legal_status_id INT UNSIGNED NOT NULL,
-    language        VARCHAR(3)   NOT NULL,
-    description     VARCHAR(127) DEFAULT NULL,
-    PRIMARY KEY (legal_status_id, language),
+    source_entity_id INT UNSIGNED NOT NULL,
+    language         VARCHAR(3)   NOT NULL,
+    description      VARCHAR(127) DEFAULT NULL,
+    PRIMARY KEY (source_entity_id, language),
     CONSTRAINT fk_programme_legal_status_transl_to_programme_legal_status
-        FOREIGN KEY (legal_status_id) REFERENCES programme_legal_status (id)
+        FOREIGN KEY (source_entity_id) REFERENCES programme_legal_status (id)
             ON DELETE CASCADE
             ON UPDATE RESTRICT
 );
 
-INSERT INTO programme_legal_status () VALUE ();
+INSERT INTO programme_legal_status (type) VALUE ('Public');
 SELECT id INTO @id FROM programme_legal_status ORDER BY id DESC LIMIT 1;
-INSERT INTO programme_legal_status_transl(legal_status_id, language, description)
+INSERT INTO programme_legal_status_transl(source_entity_id, language, description)
     VALUE (@id, 'EN', 'Public');
 
-INSERT INTO programme_legal_status () VALUE ();
+INSERT INTO programme_legal_status (type) VALUE ('Private');
 SELECT id INTO @id FROM programme_legal_status ORDER BY id DESC LIMIT 1;
-INSERT INTO programme_legal_status_transl(legal_status_id, language, description)
+INSERT INTO programme_legal_status_transl(source_entity_id, language, description)
     VALUE (@id, 'EN', 'Private');
 
 ALTER TABLE project_partner
@@ -1119,11 +1131,11 @@ CREATE TABLE project_partner_budget_staff_cost
 (
     id              INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
     partner_id      INT UNSIGNED            NOT NULL,
-    unit_type       ENUM ('PERIOD','MONTH','HOUR')   DEFAULT NULL,
     type            ENUM ('REAL_COST','UNIT_COST')   DEFAULT NULL,
     number_of_units DECIMAL(17, 2) UNSIGNED NOT NULL DEFAULT 1.00,
     price_per_unit  DECIMAL(17, 2) UNSIGNED NOT NULL,
     row_sum         DECIMAL(17, 2) UNSIGNED NOT NULL,
+    unit_cost_id    INT UNSIGNED                     DEFAULT NULL,
     CONSTRAINT fk_project_partner_budget_staff_cost_to_project_partner FOREIGN KEY (partner_id) REFERENCES project_partner (id)
         ON DELETE CASCADE
         ON UPDATE RESTRICT
@@ -1132,7 +1144,8 @@ CREATE TABLE project_partner_budget_staff_cost
 CREATE TABLE project_partner_budget_staff_cost_transl
 (
     budget_id   INT UNSIGNED NOT NULL,
-    language    VARCHAR(3)   NOT NULL,
+    language    VARCHAR(3) NOT NULL,
+    unit_type   TEXT(100) DEFAULT NULL,
     description TEXT(255) DEFAULT NULL,
     comment     TEXT(255) DEFAULT NULL,
     PRIMARY KEY (budget_id, language),
@@ -1148,6 +1161,7 @@ CREATE TABLE project_partner_budget_travel
     number_of_units DECIMAL(17, 2) UNSIGNED NOT NULL DEFAULT 1.00,
     price_per_unit  DECIMAL(17, 2) UNSIGNED NOT NULL,
     row_sum         DECIMAL(17, 2) UNSIGNED NOT NULL,
+    unit_cost_id    INT UNSIGNED                     DEFAULT NULL,
     CONSTRAINT fk_project_partner_budget_travel_to_project_partner FOREIGN KEY (partner_id) REFERENCES project_partner (id)
         ON DELETE CASCADE
         ON UPDATE RESTRICT
@@ -1173,6 +1187,7 @@ CREATE TABLE project_partner_budget_external
     price_per_unit  DECIMAL(17, 2) UNSIGNED NOT NULL,
     row_sum         DECIMAL(17, 2) UNSIGNED NOT NULL,
     investment_id   INT UNSIGNED                     DEFAULT NULL,
+    unit_cost_id    INT UNSIGNED                     DEFAULT NULL,
     CONSTRAINT fk_project_partner_budget_external_to_project_partner FOREIGN KEY (partner_id) REFERENCES project_partner (id)
         ON DELETE CASCADE
         ON UPDATE RESTRICT
@@ -1199,6 +1214,7 @@ CREATE TABLE project_partner_budget_equipment
     price_per_unit  DECIMAL(17, 2) UNSIGNED NOT NULL,
     row_sum         DECIMAL(17, 2) UNSIGNED NOT NULL,
     investment_id   INT UNSIGNED                     DEFAULT NULL,
+    unit_cost_id    INT UNSIGNED                     DEFAULT NULL,
     CONSTRAINT fk_project_partner_budget_equipment_to_project_partner FOREIGN KEY (partner_id) REFERENCES project_partner (id)
         ON DELETE CASCADE
         ON UPDATE RESTRICT
@@ -1225,6 +1241,7 @@ CREATE TABLE project_partner_budget_infrastructure
     price_per_unit  DECIMAL(17, 2) UNSIGNED NOT NULL,
     row_sum         DECIMAL(17, 2) UNSIGNED NOT NULL,
     investment_id   INT UNSIGNED                     DEFAULT NULL,
+    unit_cost_id    INT UNSIGNED                     DEFAULT NULL,
     CONSTRAINT fk_project_partner_budget_infrastructure_to_project_partner FOREIGN KEY (partner_id) REFERENCES project_partner (id)
         ON DELETE CASCADE
         ON UPDATE RESTRICT
@@ -1247,7 +1264,7 @@ CREATE TABLE project_partner_co_financing
 (
     partner_id        INT UNSIGNED                                               NOT NULL,
     type              ENUM ('PartnerContribution', 'MainFund', 'AdditionalFund') NOT NULL,
-    percentage        TINYINT UNSIGNED                                           NOT NULL,
+    percentage        DECIMAL(11, 2)                                             NOT NULL,
     programme_fund_id INT UNSIGNED DEFAULT NULL,
     PRIMARY KEY (partner_id, type),
     CONSTRAINT fk_project_partner_co_financing_to_project_partner FOREIGN KEY (partner_id) REFERENCES project_partner (id)

@@ -105,7 +105,7 @@ internal class UpdateResultIndicatorTest : IndicatorsBaseTest() {
 
     @Test
     fun `should throw SpecificObjectiveCannotBeChangedException when specific objective in the new result indicator is changed and there is a published call`() {
-        val newResultIndicator = buildResultIndicatorInstance(programmeObjectivePolicy = ProgrammeObjectivePolicy.Digitalization)
+        val newResultIndicator = buildResultIndicatorInstance(programmeObjectivePolicy = ProgrammeObjectivePolicy.Digitisation)
         val oldResultIndicatorDetail = buildResultIndicatorDetailInstance()
         every { persistence.getResultIndicator(newResultIndicator.id!!) } returns oldResultIndicatorDetail
         every { callPersistence.hasAnyCallPublished() } returns true

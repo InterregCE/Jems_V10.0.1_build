@@ -19,8 +19,8 @@ class ProgrammePriorityPersistenceProvider(
         getPriorityOrThrow(priorityId).toModel()
 
     @Transactional(readOnly = true)
-    override fun getAllMax45Priorities(): List<ProgrammePriority> =
-        priorityRepo.findTop45ByOrderByCodeAsc().map { it.toModel() }
+    override fun getAllMax56Priorities(): List<ProgrammePriority> =
+        priorityRepo.findTop56ByOrderByCodeAsc().map { it.toModel() }
 
     @Transactional
     override fun create(priority: ProgrammePriority): ProgrammePriority {
@@ -66,7 +66,7 @@ class ProgrammePriorityPersistenceProvider(
 
     @Transactional(readOnly = true)
     override fun getObjectivePoliciesAlreadySetUp(): Iterable<ProgrammeObjectivePolicy> =
-        specificObjectiveRepo.findTop45ByOrderByProgrammeObjectivePolicy().map { it.programmeObjectivePolicy }
+        specificObjectiveRepo.findTop56ByOrderByProgrammeObjectivePolicy().map { it.programmeObjectivePolicy }
 
     @Transactional(readOnly = true)
     override fun getObjectivePoliciesAlreadyInUse(): Iterable<ProgrammeObjectivePolicy> =

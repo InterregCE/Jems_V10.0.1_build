@@ -5,8 +5,8 @@ import io.cloudflight.jems.api.call.dto.flatrate.FlatRateSetupDTO
 import io.cloudflight.jems.api.programme.dto.language.SystemLanguage
 import io.cloudflight.jems.api.programme.dto.priority.OutputProgrammePriorityPolicySimple
 import io.cloudflight.jems.api.programme.dto.priority.ProgrammeObjectivePolicy.AdvancedTechnologies
-import io.cloudflight.jems.api.programme.dto.priority.ProgrammeObjectivePolicy.HealthcareAcrossBorders
-import io.cloudflight.jems.api.programme.dto.priority.ProgrammeObjectivePolicy.SocialInnovation
+import io.cloudflight.jems.api.programme.dto.priority.ProgrammeObjectivePolicy.HealthyAgeing
+import io.cloudflight.jems.api.programme.dto.priority.ProgrammeObjectivePolicy.SocialInfrastructure
 import io.cloudflight.jems.api.programme.dto.strategy.ProgrammeStrategy
 import io.cloudflight.jems.api.project.dto.InputProject
 import io.cloudflight.jems.api.project.dto.InputProjectData
@@ -110,7 +110,7 @@ class ProjectServiceTest {
         id = 5,
         creator = account,
         name = "call",
-        prioritySpecificObjectives = mutableSetOf(ProgrammeSpecificObjectiveEntity(HealthcareAcrossBorders, "HAB")),
+        prioritySpecificObjectives = mutableSetOf(ProgrammeSpecificObjectiveEntity(HealthyAgeing, "HAB")),
         strategies = mutableSetOf(ProgrammeStrategyEntity(ProgrammeStrategy.MediterraneanSeaBasin, true)),
         isAdditionalFundAllowed = false,
         funds = mutableSetOf(),
@@ -319,13 +319,13 @@ class ProjectServiceTest {
         every { projectRepository.findById(eq(1)) } returns Optional.of(projectToReturn)
         every { projectRepository.save(any<ProjectEntity>()) } returnsArgument 0
 
-        val result = projectService.update(1, projectData.copy(specificObjective = HealthcareAcrossBorders))
+        val result = projectService.update(1, projectData.copy(specificObjective = HealthyAgeing))
 
         val expectedData = OutputProjectData(
             title = projectData.title,
             duration = projectData.duration,
             intro = projectData.intro,
-            specificObjective = OutputProgrammePriorityPolicySimple(programmeObjectivePolicy = HealthcareAcrossBorders, code = "HAB"),
+            specificObjective = OutputProgrammePriorityPolicySimple(programmeObjectivePolicy = HealthyAgeing, code = "HAB"),
             programmePriority = null
         )
         assertThat(result.projectData).isEqualTo(expectedData)
@@ -345,7 +345,7 @@ class ProjectServiceTest {
         every { projectRepository.findById(eq(1)) } returns Optional.of(projectToReturn)
 
         val ex = assertThrows<ResourceNotFoundException> {
-            projectService.update(1, projectData.copy(specificObjective = SocialInnovation))
+            projectService.update(1, projectData.copy(specificObjective = SocialInfrastructure))
         }
         assertThat(ex.entity).isEqualTo("programmeSpecificObjective")
     }
@@ -356,7 +356,7 @@ class ProjectServiceTest {
             id = 5,
             creator = account,
             name = "call",
-            prioritySpecificObjectives = mutableSetOf(ProgrammeSpecificObjectiveEntity(HealthcareAcrossBorders, "HAB")),
+            prioritySpecificObjectives = mutableSetOf(ProgrammeSpecificObjectiveEntity(HealthyAgeing, "HAB")),
             strategies = mutableSetOf(ProgrammeStrategyEntity(ProgrammeStrategy.MediterraneanSeaBasin, true)),
             isAdditionalFundAllowed = false,
             funds = mutableSetOf(),

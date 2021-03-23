@@ -3,7 +3,7 @@ package io.cloudflight.jems.server.programme.service.priority.create_priority
 import io.cloudflight.jems.api.programme.dto.language.SystemLanguage
 import io.cloudflight.jems.api.programme.dto.priority.ProgrammeObjective.ISO1
 import io.cloudflight.jems.api.programme.dto.priority.ProgrammeObjectivePolicy
-import io.cloudflight.jems.api.programme.dto.priority.ProgrammeObjectivePolicy.GreenUrban
+import io.cloudflight.jems.api.programme.dto.priority.ProgrammeObjectivePolicy.GreenInfrastructure
 import io.cloudflight.jems.api.programme.dto.priority.ProgrammeObjectivePolicy.RenewableEnergy
 import io.cloudflight.jems.api.programme.dto.priority.ProgrammeObjectivePolicy.SmartEnergy
 import io.cloudflight.jems.api.project.dto.InputTranslation
@@ -143,7 +143,7 @@ class CreatePriorityInteractorTest {
                     code = NOT_UNIQUE_CODE
                 ),
                 ProgrammeSpecificObjective(
-                    programmeObjectivePolicy = GreenUrban,
+                    programmeObjectivePolicy = GreenInfrastructure,
                     code = NOT_UNIQUE_CODE
                 ),
             )
@@ -186,7 +186,7 @@ class CreatePriorityInteractorTest {
         // priority code and title are not used
         every { persistence.getPriorityIdByCode(testPriority.code) } returns null
         // this one is not used
-        every { persistence.getPriorityIdForPolicyIfExists(GreenUrban) } returns null
+        every { persistence.getPriorityIdForPolicyIfExists(GreenInfrastructure) } returns null
         // this one IS ALREADY USED
         every { persistence.getPriorityIdForPolicyIfExists(RenewableEnergy) } returns 25
 

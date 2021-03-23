@@ -18,7 +18,7 @@ class GetPriority(
     @Transactional(readOnly = true)
     @CanReadProgrammeSetup
     override fun getAllPriorities(): List<ProgrammePriority> =
-        persistence.getAllMax45Priorities()
+        persistence.getAllMax56Priorities()
 
     @Transactional(readOnly = true)
     @CanUpdateProgrammeSetup

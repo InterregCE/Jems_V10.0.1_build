@@ -132,7 +132,7 @@ internal class UpdateOutputIndicatorTest : IndicatorsBaseTest() {
 
     @Test
     fun `should throw SpecificObjectiveCannotBeChangedException when specific objective in the new output indicator is changed and there is a published call`() {
-        val newOutputIndicator = buildOutputIndicatorInstance(programmeObjectivePolicy = ProgrammeObjectivePolicy.Digitalization)
+        val newOutputIndicator = buildOutputIndicatorInstance(programmeObjectivePolicy = ProgrammeObjectivePolicy.Digitisation)
         val oldOutputIndicatorDetail = buildOutputIndicatorDetailInstance()
         every { persistence.getOutputIndicator(newOutputIndicator.id!!) } returns oldOutputIndicatorDetail
         every { callPersistence.hasAnyCallPublished() } returns true

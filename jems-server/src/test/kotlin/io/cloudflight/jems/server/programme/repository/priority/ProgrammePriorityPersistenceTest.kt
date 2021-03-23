@@ -4,8 +4,8 @@ import io.cloudflight.jems.api.programme.dto.language.SystemLanguage
 import io.cloudflight.jems.api.programme.dto.priority.ProgrammeObjective.PO2
 import io.cloudflight.jems.api.programme.dto.priority.ProgrammeObjective.PO3
 import io.cloudflight.jems.api.programme.dto.priority.ProgrammeObjectivePolicy.CrossBorderMobility
-import io.cloudflight.jems.api.programme.dto.priority.ProgrammeObjectivePolicy.GreenUrban
-import io.cloudflight.jems.api.programme.dto.priority.ProgrammeObjectivePolicy.MultiModalUrban
+import io.cloudflight.jems.api.programme.dto.priority.ProgrammeObjectivePolicy.GreenInfrastructure
+import io.cloudflight.jems.api.programme.dto.priority.ProgrammeObjectivePolicy.InterModalTenT
 import io.cloudflight.jems.api.programme.dto.priority.ProgrammeObjectivePolicy.RenewableEnergy
 import io.cloudflight.jems.api.programme.dto.priority.ProgrammeObjectivePolicy.WaterManagement
 import io.cloudflight.jems.api.project.dto.InputTranslation
@@ -41,7 +41,7 @@ class ProgrammePriorityPersistenceTest : UnitTest() {
 
         private val priority = _priority.copy(
             specificObjectives = setOf(
-                ProgrammeSpecificObjectiveEntity(programmeObjectivePolicy = GreenUrban, code = "GU", programmePriority = _priority),
+                ProgrammeSpecificObjectiveEntity(programmeObjectivePolicy = GreenInfrastructure, code = "GU", programmePriority = _priority),
                 ProgrammeSpecificObjectiveEntity(programmeObjectivePolicy = WaterManagement, code = "WM", programmePriority = _priority),
             )
         )
@@ -53,7 +53,7 @@ class ProgrammePriorityPersistenceTest : UnitTest() {
             objective = PO2,
             specificObjectives = listOf(
                 ProgrammeSpecificObjective(programmeObjectivePolicy = WaterManagement, code = "WM"),
-                ProgrammeSpecificObjective(programmeObjectivePolicy = GreenUrban, code = "GU"),
+                ProgrammeSpecificObjective(programmeObjectivePolicy = GreenInfrastructure, code = "GU"),
             )
         )
 
@@ -85,8 +85,8 @@ class ProgrammePriorityPersistenceTest : UnitTest() {
 
     @Test
     fun getAllPriorities() {
-        every { priorityRepository.findTop45ByOrderByCodeAsc() } returns listOf(priority)
-        assertThat(persistence.getAllMax45Priorities()).containsExactly(priorityModel)
+        every { priorityRepository.findTop56ByOrderByCodeAsc() } returns listOf(priority)
+        assertThat(persistence.getAllMax56Priorities()).containsExactly(priorityModel)
     }
 
     @Test
@@ -118,8 +118,8 @@ class ProgrammePriorityPersistenceTest : UnitTest() {
             title = setOf(InputTranslation(SystemLanguage.EN, "updated title")),
             objective = PO3,
             specificObjectives = listOf(
+                ProgrammeSpecificObjective(programmeObjectivePolicy = InterModalTenT, code = "IM10T"),
                 ProgrammeSpecificObjective(programmeObjectivePolicy = CrossBorderMobility, code = "CBM"),
-                ProgrammeSpecificObjective(programmeObjectivePolicy = MultiModalUrban, code = "MMU"),
             )
         )
 
@@ -133,7 +133,7 @@ class ProgrammePriorityPersistenceTest : UnitTest() {
             ),
             objective = PO3,
             specificObjectives = setOf(
-                ProgrammeSpecificObjectiveEntity(programmeObjectivePolicy = MultiModalUrban, code = "MMU"),
+                ProgrammeSpecificObjectiveEntity(programmeObjectivePolicy = InterModalTenT, code = "IM10T"),
                 ProgrammeSpecificObjectiveEntity(programmeObjectivePolicy = CrossBorderMobility, code = "CBM"),
             )
         ))
@@ -169,9 +169,9 @@ class ProgrammePriorityPersistenceTest : UnitTest() {
     @Test
     fun getPriorityIdForPolicyIfExists() {
         every { specificObjectiveRepository.getPriorityIdForPolicyIfExists(RenewableEnergy) } returns ID
-        every { specificObjectiveRepository.getPriorityIdForPolicyIfExists(GreenUrban) } returns null
+        every { specificObjectiveRepository.getPriorityIdForPolicyIfExists(GreenInfrastructure) } returns null
         assertThat(persistence.getPriorityIdForPolicyIfExists(RenewableEnergy)).isEqualTo(ID)
-        assertThat(persistence.getPriorityIdForPolicyIfExists(GreenUrban)).isNull()
+        assertThat(persistence.getPriorityIdForPolicyIfExists(GreenInfrastructure)).isNull()
     }
 
     @Test
@@ -179,7 +179,7 @@ class ProgrammePriorityPersistenceTest : UnitTest() {
         every { specificObjectiveRepository.findAllByCodeIn(emptySet()) } returns emptySet()
         every { specificObjectiveRepository.findAllByCodeIn(setOf("GU")) } returns setOf(
             ProgrammeSpecificObjectiveEntity(
-                programmeObjectivePolicy = GreenUrban,
+                programmeObjectivePolicy = GreenInfrastructure,
                 code = "GU",
                 programmePriority = priority
             )
@@ -188,7 +188,7 @@ class ProgrammePriorityPersistenceTest : UnitTest() {
         assertThat(persistence.getSpecificObjectivesByCodes(emptySet())).isEmpty()
         assertThat(persistence.getSpecificObjectivesByCodes(setOf("GU"))).containsExactly(
             ProgrammeSpecificObjective(
-                programmeObjectivePolicy = GreenUrban,
+                programmeObjectivePolicy = GreenInfrastructure,
                 code = "GU"
             )
         )
@@ -198,7 +198,7 @@ class ProgrammePriorityPersistenceTest : UnitTest() {
     fun getPrioritiesBySpecificObjectiveCodes() {
         every { specificObjectiveRepository.findAllByCodeIn(setOf("RE", "WM")) } returns setOf(
             ProgrammeSpecificObjectiveEntity(
-                programmeObjectivePolicy = GreenUrban,
+                programmeObjectivePolicy = GreenInfrastructure,
                 code = "GU",
                 programmePriority = priority.copy()
             ),
@@ -216,9 +216,9 @@ class ProgrammePriorityPersistenceTest : UnitTest() {
 
     @Test
     fun getObjectivePoliciesAlreadySetUp() {
-        every { specificObjectiveRepository.findTop45ByOrderByProgrammeObjectivePolicy() } returns listOf(
+        every { specificObjectiveRepository.findTop56ByOrderByProgrammeObjectivePolicy() } returns listOf(
             ProgrammeSpecificObjectiveEntity(
-                programmeObjectivePolicy = GreenUrban,
+                programmeObjectivePolicy = GreenInfrastructure,
                 code = "GU",
                 programmePriority = priority
             ),
@@ -229,16 +229,16 @@ class ProgrammePriorityPersistenceTest : UnitTest() {
             ),
         )
 
-        assertThat(persistence.getObjectivePoliciesAlreadySetUp()).containsExactlyInAnyOrder(GreenUrban, WaterManagement)
+        assertThat(persistence.getObjectivePoliciesAlreadySetUp()).containsExactlyInAnyOrder(GreenInfrastructure, WaterManagement)
     }
 
     @Test
     fun getObjectivePoliciesAlreadyInUse() {
         every { specificObjectiveRepository.getObjectivePoliciesAlreadyInUse() } returns listOf(
-            GreenUrban.name,
+            GreenInfrastructure.name,
             WaterManagement.name,
         )
-        assertThat(persistence.getObjectivePoliciesAlreadyInUse()).containsExactly(GreenUrban, WaterManagement)
+        assertThat(persistence.getObjectivePoliciesAlreadyInUse()).containsExactly(GreenInfrastructure, WaterManagement)
     }
 
 }
