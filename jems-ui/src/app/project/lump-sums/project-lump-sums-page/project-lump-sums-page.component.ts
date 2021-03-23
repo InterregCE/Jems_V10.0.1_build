@@ -36,6 +36,8 @@ import {MatTable} from '@angular/material/table';
   providers: [FormService]
 })
 export class ProjectLumpSumsPageComponent implements OnInit {
+  PREPARATION_PERIOD = 0;
+  CLOSURE_PERIOD = 255;
 
   @ViewChild('table') table: MatTable<any>;
   rowId = 0;
@@ -258,7 +260,7 @@ export class ProjectLumpSumsPageComponent implements OnInit {
     periods: ProjectPeriod[]
   ): void {
     this.items.clear();
-    const periodNumbers = [0].concat(periods.map(period => period.periodNumber));
+    const periodNumbers = [this.PREPARATION_PERIOD, ...periods.map(period => period.periodNumber), this.CLOSURE_PERIOD];
     projectLumpSums.forEach(projectLumpSum => {
       const lumpSum = projectCallLumpSums.find(it => it.id === projectLumpSum.programmeLumpSumId);
       const rowSum = ProjectLumpSumsPageComponent.calculateRowSum(projectLumpSum.lumpSumContributions.map(it => it.amount));

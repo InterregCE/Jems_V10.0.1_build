@@ -20,6 +20,10 @@ class UpdateProjectLumpSums(
 
     companion object {
         private const val MAX_ALLOWED_PROJECT_LUMP_SUMS = 50
+
+        // predefined periods
+        private const val PREPARATION_PERIOD = 0
+        private const val CLOSURE_PERIOD = 255
     }
 
     @Transactional
@@ -54,8 +58,9 @@ class UpdateProjectLumpSums(
 
     private fun validatePeriods(lumpSums: List<ProjectLumpSum>, project: Project) {
         val periodNumbers = project.periods.mapTo(HashSet()) { it.number }
-        periodNumbers.add(0) // Preparation = period number 0
-        if (lumpSums.mapNotNullTo(HashSet()) { it.period}.any { !periodNumbers.contains(it) })
+        periodNumbers.add(PREPARATION_PERIOD)
+        periodNumbers.add(CLOSURE_PERIOD)
+        if (lumpSums.mapNotNullTo(HashSet()) { it.period }.any { !periodNumbers.contains(it) })
             throw I18nValidationException(i18nKey = "project.lumpSum.period.does.not.exist")
     }
 }
