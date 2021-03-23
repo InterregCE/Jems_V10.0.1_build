@@ -81,7 +81,7 @@ export class AuditLogComponent implements OnInit {
         {
           displayedColumn: 'audit.table.date.and.time',
           elementProperty: 'timestamp',
-          columnType: ColumnType.DateColumn,
+          columnType: ColumnType.DateColumnWithSeconds,
           columnWidth: ColumnWidth.DateColumn
         },
         {

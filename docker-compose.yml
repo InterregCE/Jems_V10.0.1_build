@@ -39,15 +39,18 @@ services:
     environment:
       - discovery.type=single-node
 
-  audit-analyzer:
-    image: docker.elastic.co/kibana/kibana:7.10.2
-    container_name: audit-analyzer
-    ports:
-      - '5601:5601'
-    depends_on:
-      - audit-database
-    environment:
-      ELASTICSEARCH_HOSTS: 'http://audit-database:9200'
+#
+#  Optional: if you need, you can create kibana container to analyze all ElasticSearch data:
+#
+#  audit-analyzer:
+#    image: docker.elastic.co/kibana/kibana:7.10.2
+#    container_name: audit-analyzer
+#    ports:
+#      - '5601:5601'
+#    depends_on:
+#      - audit-database
+#    environment:
+#      ELASTICSEARCH_HOSTS: 'http://audit-database:9200'
 
 #volumes:
 #  ems-database-data:

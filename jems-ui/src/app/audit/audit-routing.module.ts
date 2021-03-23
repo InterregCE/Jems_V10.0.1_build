@@ -9,6 +9,7 @@ export const routes: Routes = [
     canActivate: [PermissionGuard],
     data: {
       permissionsOnly: [Permission.ADMINISTRATOR, Permission.PROGRAMME_USER],
+      breadcrumb: 'audit.list.title'
     },
     children: [
       {
