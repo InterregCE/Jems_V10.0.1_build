@@ -12,8 +12,7 @@
         <mat-error>
             <app-form-field-errors
                     [errors]="resultIndicatorForm?.controls?.identifier?.errors"
-                    [messages]="inputErrorMessages"
-                    [args]="getMaxLengthErrorArgs(resultIndicatorForm?.controls?.identifier?.value.length, 5)">
+                    [messages]="inputErrorMessages">
             </app-form-field-errors>
         </mat-error>
     </mat-form-field>
@@ -30,8 +29,7 @@
         <mat-error>
             <app-form-field-errors
                     [errors]="resultIndicatorForm?.controls?.indicatorCode?.errors"
-                    [messages]="inputErrorMessages"
-                    [args]="getMaxLengthErrorArgs(resultIndicatorForm?.controls?.indicatorCode?.value.length, 6)">
+                    [messages]="inputErrorMessages">
             </app-form-field-errors>
         </mat-error>
     </mat-form-field>
@@ -43,7 +41,8 @@
     <mat-form-field>
         <mat-label>{{'result.indicator.form.field.specific.objective' | translate}}</mat-label>
         <mat-select name="specificObjective" formControlName="specificObjective" required>
-            <mat-optgroup *ngFor="let priority of priorities" [label]="priority.title | translateBySystemLanguage | async">
+            <mat-optgroup *ngFor="let priority of priorities"
+                          [label]="priority.title | translateBySystemLanguage | async">
                 <mat-option *ngFor="let objective of priority.specificObjectives"
                             [value]="objective.programmeObjectivePolicy">
                     {{objective.code}} -  {{'programme.policy.' + objective.programmeObjectivePolicy | translate}}
@@ -79,8 +78,7 @@
         <mat-error>
             <app-form-field-errors
                     [errors]="resultIndicatorForm?.controls?.referenceYear?.errors"
-                    [messages]="inputErrorMessages"
-                    [args]="getMaxLengthErrorArgs(resultIndicatorForm?.controls?.referenceYear?.value.length, 10)">
+                    [messages]="inputErrorMessages">
             </app-form-field-errors>
         </mat-error>
     </mat-form-field>

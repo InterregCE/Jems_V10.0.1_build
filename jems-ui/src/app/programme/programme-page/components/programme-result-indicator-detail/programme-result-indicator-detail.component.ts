@@ -86,8 +86,8 @@ export class ProgrammeResultIndicatorDetailComponent extends ViewEditForm implem
 
     this.programmeEditableStateStore.init();
     this.programmeEditableStateStore.isProgrammeEditableDependingOnCall$.pipe(
-        tap(isProgrammeEditingLimited => this.isProgrammeSetupLocked = isProgrammeEditingLimited),
-        untilDestroyed(this)
+      tap(isProgrammeEditingLimited => this.isProgrammeSetupLocked = isProgrammeEditingLimited),
+      untilDestroyed(this)
     ).subscribe();
   }
 
@@ -183,15 +183,6 @@ export class ProgrammeResultIndicatorDetailComponent extends ViewEditForm implem
     if (this.isProgrammeSetupLocked && !this.isCreate) {
       this.resultIndicatorForm.controls.specificObjective.disable();
     }
-  }
-
-  getMaxLengthErrorArgs(currentLength: number, maxLength: number): { [p: string]: {} } {
-    return {
-      maxlength: {
-        currentLength,
-        maxLength
-      }
-    };
   }
 
   private _filter(value: string, source: ResultIndicatorCodeRelation[]): ResultIndicatorCodeRelation[] {

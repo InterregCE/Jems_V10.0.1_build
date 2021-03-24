@@ -24,7 +24,7 @@ internal class GeneralValidatorDefaultImplTest : UnitTest() {
             .isEqualTo(
                 I18nMessage(
                     "common.error.field.max.length",
-                    mapOf("currentLength" to input.length.toString(), "maxLength" to maxLength.toString())
+                    mapOf("actualLength" to input.length.toString(), "requiredLength" to maxLength.toString())
                 )
             )
     }
@@ -41,8 +41,8 @@ internal class GeneralValidatorDefaultImplTest : UnitTest() {
                 I18nMessage(
                     "common.error.field.max.length",
                     mapOf(
-                        "currentLength" to input.first().translation!!.length.toString(),
-                        "maxLength" to maxLength.toString()
+                        "actualLength" to input.first().translation!!.length.toString(),
+                        "requiredLength" to maxLength.toString()
                     )
                 )
             )
@@ -128,7 +128,7 @@ internal class GeneralValidatorDefaultImplTest : UnitTest() {
             .isEqualTo(
                 I18nMessage(
                     "common.error.field.max.length",
-                    mapOf("currentLength" to input.length.toString(), "maxLength" to maxLength.toString())
+                    mapOf("actualLength" to input.length.toString(), "requiredLength" to maxLength.toString())
                 )
             )
 

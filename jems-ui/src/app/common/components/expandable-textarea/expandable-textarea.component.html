@@ -16,7 +16,10 @@
     </mat-hint>
     <mat-error>
         <div *ngIf="inputText.value.length > characterLimit">
-            {{ 'common.error.field.max.length' | translate : {currentLength: inputText.value.length,maxLength:characterLimit } }}
+            {{ 'common.error.field.max.length' | translate : {
+            actualLength: inputText.value.length,
+            requiredLength: characterLimit
+        } }}
         </div>
     </mat-error>
 </mat-form-field>

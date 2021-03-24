@@ -11,10 +11,4 @@ export class MultiLanguageFormFieldConstants {
       maxlength: 'common.error.field.max.length'
     }
   };
-
-  public static translationFormErrorArgs(currentLength: number, maxLength: number): { [p: string]: {} } {
-    return {
-      maxlength: {currentLength, maxLength}
-    };
-  }
 }
