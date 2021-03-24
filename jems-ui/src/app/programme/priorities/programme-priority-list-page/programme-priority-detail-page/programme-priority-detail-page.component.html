@@ -53,7 +53,7 @@
         <ng-container *ngIf="specificObjectives.length">
             <h3>{{'programme.priority.objective.title' | translate}}</h3>
             <div appNoWidthLimit
-                 [appTableConfig]="[{maxInRem: 2},{maxInRem:15},{}]">
+                 [appTableConfig]="[{maxInRem: 2},{maxInRem:16},{}]">
                 <div>
                     <span></span>
                     <div class="mat-body-strong">{{'programme.priority.objective.table.column.code' | translate}}</div>
@@ -67,9 +67,9 @@
                                 (change)="setCheckedStatus(i, $event.checked)">
                         </mat-checkbox>
                         <div>
-                            <mat-form-field>
+                            <mat-form-field appFormFieldWidth="full" extendError>
                                 <mat-label>{{'programme.priority.objective.table.field.code' | translate}}</mat-label>
-                                <input [formControlName]="constants.POLICY_CODE.name" matInput>
+                                <input [formControlName]="constants.POLICY_CODE.name" [required]="control.get(constants.POLICY_SELECTED.name).value" matInput>
                                 <mat-error>
                                     <app-form-field-errors
                                             [errors]="control.get(constants.POLICY_CODE.name)?.errors"
@@ -77,13 +77,6 @@
                                     </app-form-field-errors>
                                 </mat-error>
                             </mat-form-field>
-                            <!-- todo use custom validation for the input instead of this error line-->
-                            <mat-error class="mt-n3" *ngIf="control?.errors">
-                                <app-form-field-errors
-                                        [errors]="control?.errors"
-                                        [messages]="constants.POLICY_CODE.errorMessages">
-                                </app-form-field-errors>
-                            </mat-error>
                         </div>
 
                     </ng-container>

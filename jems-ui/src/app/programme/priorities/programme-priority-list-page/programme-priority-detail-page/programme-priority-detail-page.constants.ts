@@ -1,4 +1,4 @@
-import {FormArray, FormGroup, ValidatorFn, Validators} from '@angular/forms';
+import {FormArray, FormControl, FormGroup, ValidationErrors, ValidatorFn, Validators} from '@angular/forms';
 import {AppControl} from '@common/components/section/form/app-control';
 
 export class ProgrammePriorityDetailPageConstants {
@@ -45,14 +45,14 @@ export class ProgrammePriorityDetailPageConstants {
       maxlength: 'programme.priority.specific.objective.code.size.too.long',
       required: 'programme.priority.specific.objective.code.should.not.be.empty'
     },
-    validators: [Validators.maxLength(300)]
+    validators: [Validators.maxLength(50)]
   };
 
   public static POLICY_SELECTED: AppControl = {
     name: 'selected'
   };
 
-  public static selectedSpecificObjectiveCodeRequired(objective: FormGroup): ValidatorFn | null {
+  public static selectedSpecificObjectiveCodeRequired: (control: FormGroup) => ValidatorFn = (objective: FormGroup) => (valueControl: FormControl): ValidationErrors | null => {
     const selected = objective.get(ProgrammePriorityDetailPageConstants.POLICY_SELECTED.name)?.value;
     const code = objective.get(ProgrammePriorityDetailPageConstants.POLICY_CODE.name)?.value;
     if (selected && !code) {

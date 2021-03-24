@@ -169,15 +169,14 @@ export class ProgrammePriorityDetailPageComponent {
   }
 
   private addSpecificObjective(policy: string, selected: boolean, code: string): void {
+    const codeControl = this.formBuilder.control(code);
     const control = this.formBuilder.group(
       {
         selected: this.formBuilder.control(selected),
-        code: this.formBuilder.control(code, this.constants.POLICY_CODE.validators),
+        code: codeControl,
         programmeObjectivePolicy: this.formBuilder.control(policy),
-      },
-      {
-        validators: this.constants.selectedSpecificObjectiveCodeRequired
       });
+    codeControl.setValidators([this.constants.selectedSpecificObjectiveCodeRequired(control)].concat(this.constants.POLICY_CODE.validators || []));
     if (this.objectivePoliciesAlreadyInUse.find(used => used === policy) || (this.isProgrammeSetupLocked && selected)) {
       control.disable();
       this.form.get(this.constants.OBJECTIVE.name)?.disable();
