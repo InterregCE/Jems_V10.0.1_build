@@ -12,8 +12,7 @@
         <mat-error>
             <app-form-field-errors
                     [errors]="outputIndicatorForm?.controls?.identifier?.errors"
-                    [messages]="inputErrorMessages"
-                    [args]="getMaxLengthErrorArgs(outputIndicatorForm?.controls?.identifier?.value.length,5)">
+                    [messages]="inputErrorMessages">
             </app-form-field-errors>
         </mat-error>
     </mat-form-field>
@@ -30,8 +29,7 @@
         <mat-error>
             <app-form-field-errors
                     [errors]="outputIndicatorForm?.controls?.indicatorCode?.errors"
-                    [messages]="inputErrorMessages"
-                    [args]="getMaxLengthErrorArgs(outputIndicatorForm?.controls?.indicatorCode?.value?.length,6 )">
+                    [messages]="inputErrorMessages">
             </app-form-field-errors>
         </mat-error>
     </mat-form-field>
@@ -44,7 +42,8 @@
     <mat-form-field>
         <mat-label>{{'output.indicator.form.field.specific.objective' | translate}}</mat-label>
         <mat-select name="specificObjective" formControlName="specificObjective" required>
-            <mat-optgroup *ngFor="let priority of priorities" [label]="priority.title | translateBySystemLanguage | async">
+            <mat-optgroup *ngFor="let priority of priorities"
+                          [label]="priority.title | translateBySystemLanguage | async">
                 <mat-option *ngFor="let objective of priority.specificObjectives"
                             [value]="objective.programmeObjectivePolicy">
                     {{objective.code}} -  {{'programme.policy.' + objective.programmeObjectivePolicy | translate}}

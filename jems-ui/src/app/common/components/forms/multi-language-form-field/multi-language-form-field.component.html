@@ -31,8 +31,7 @@
                     <mat-error>
                         <app-form-field-errors
                                 [errors]="getTranslation(formGroup).errors"
-                                [messages]="constants.FORM_ERRORS.translation"
-                                [args]="constants.translationFormErrorArgs(getTranslation(formGroup)?.value?.length,maxLength)">
+                                [messages]="constants.FORM_ERRORS.translation">
                         </app-form-field-errors>
                     </mat-error>
                 </mat-form-field>

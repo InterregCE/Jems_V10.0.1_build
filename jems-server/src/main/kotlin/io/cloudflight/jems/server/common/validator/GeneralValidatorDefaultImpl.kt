@@ -8,7 +8,7 @@ import java.time.ZonedDateTime
 import java.util.regex.Pattern
 
 // password should have: at least 10 characters, one upper case letter, one lower case letter and one digit
-const val PASSWORD_REGEX="^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.{10,}).+\$"
+const val PASSWORD_REGEX = "^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.{10,}).+\$"
 
 @Service
 class GeneralValidatorDefaultImpl : GeneralValidatorService {
@@ -18,7 +18,7 @@ class GeneralValidatorDefaultImpl : GeneralValidatorService {
             if (!input.isNullOrBlank() && input.length > maxLength)
                 this[fieldName] = I18nMessage(
                     "common.error.field.max.length",
-                    mapOf("currentLength" to input.length.toString(), "maxLength" to maxLength.toString())
+                    mapOf("actualLength" to input.length.toString(), "requiredLength" to maxLength.toString())
                 )
         }
 
@@ -30,8 +30,8 @@ class GeneralValidatorDefaultImpl : GeneralValidatorService {
                     this["$fieldName.${it.language.translationKey}"] = I18nMessage(
                         "common.error.field.max.length",
                         mapOf(
-                            "currentLength" to it.translation!!.length.toString(),
-                            "maxLength" to maxLength.toString()
+                            "actualLength" to it.translation!!.length.toString(),
+                            "requiredLength" to maxLength.toString()
                         )
                     )
             }
@@ -93,7 +93,12 @@ class GeneralValidatorDefaultImpl : GeneralValidatorService {
             }
         }
 
-    override fun startDateBeforeEndDate(start: ZonedDateTime, end: ZonedDateTime, startDateFieldName: String, endDateFieldName: String): Map<String, I18nMessage> =
+    override fun startDateBeforeEndDate(
+        start: ZonedDateTime,
+        end: ZonedDateTime,
+        startDateFieldName: String,
+        endDateFieldName: String
+    ): Map<String, I18nMessage> =
         mutableMapOf<String, I18nMessage>().apply {
             if (end.isBefore(start)) {
                 this[startDateFieldName] = I18nMessage(i18nKey = "common.error.start.before.end")

@@ -205,15 +205,6 @@ export class ProgrammeOutputIndicatorDetailComponent extends ViewEditForm implem
     }
   }
 
-  getMaxLengthErrorArgs(currentLength: number, maxLength: number): { [p: string]: {} } {
-    return {
-      maxlength: {
-        currentLength,
-        maxLength
-      }
-    };
-  }
-
   private _filter(value: string, source: OutputIndicatorCodeRelation[]): OutputIndicatorCodeRelation[] {
     const filterValue = value.toLowerCase();
     return source.filter(option => option.code.toLowerCase().includes(filterValue));
