@@ -211,7 +211,7 @@ export class ProjectPartnerDetailPageStore {
       id: entry.id as any,
       description: entry.description as any,
       type: entry.type,
-      unitType: entry.unitType,
+      unitType: entry.unitType as any,
       unitCostId: entry.unitCostId,
       comment: entry.comment,
       numberOfUnits: entry.numberOfUnits as any,

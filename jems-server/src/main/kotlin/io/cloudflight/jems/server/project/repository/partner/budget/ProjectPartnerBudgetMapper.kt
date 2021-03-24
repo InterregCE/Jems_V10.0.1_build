@@ -36,10 +36,12 @@ fun ProjectPartnerBudgetStaffCostEntity.toBudgetStaffCostEntry() = BudgetStaffCo
     comment = translatedValues.mapTo(HashSet()) {
         InputTranslation(it.budgetTranslation.language, it.comment)
     },
+    unitType = translatedValues.mapTo(HashSet()) {
+        InputTranslation(it.budgetTranslation.language, it.unitType)
+    },
     budgetPeriods = budgetPeriodEntities.map { BudgetPeriod(it.budgetPeriodId.period.id.number, it.amount) }
         .toMutableSet(),
     unitCostId = unitCostId,
-    unitType = unitType,
     type = type,
     numberOfUnits = baseProperties.numberOfUnits,
     pricePerUnit = pricePerUnit,
@@ -60,19 +62,19 @@ fun BudgetStaffCostEntry.toProjectPartnerBudgetStaffCostEntity(
         pricePerUnit = pricePerUnit,
         unitCostId = unitCostId,
         type = type,
-        unitType = unitType,
         translatedValues = mutableSetOf(),
         budgetPeriodEntities = mutableSetOf(),
         id = id ?: 0L
     ).apply {
         translatedValues.addAll(
-            description.plus(comment)
+            description.asSequence().plus(comment).plus(unitType)
                 .mapTo(HashSet()) { it.language }
                 .map { language ->
                     ProjectPartnerBudgetStaffCostTranslEntity(
                         budgetTranslation = BudgetTranslation(this, language),
                         description = description.firstOrNull { it.language == language }?.translation ?: "",
-                        comment = comment.firstOrNull { it.language == language }?.translation ?: ""
+                        comment = comment.firstOrNull { it.language == language }?.translation ?: "",
+                        unitType = unitType.firstOrNull { it.language == language }?.translation ?: ""
                     )
                 }.toMutableSet()
         )

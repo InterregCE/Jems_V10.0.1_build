@@ -9,7 +9,7 @@ export class StaffCostsBudgetTableEntry {
   rowSum?: number;
   new?: boolean;
   type?: string;
-  unitType?: string;
+  unitType?: InputTranslation[] = [];
   unitCostId?: number;
   comment?: InputTranslation[] = [];
   budgetPeriods?: BudgetPeriodDTO[];

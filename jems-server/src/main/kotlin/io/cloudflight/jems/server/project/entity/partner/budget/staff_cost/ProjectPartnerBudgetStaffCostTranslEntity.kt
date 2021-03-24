@@ -13,7 +13,9 @@ data class ProjectPartnerBudgetStaffCostTranslEntity(
 
     val description: String? = null,
 
-    val comment: String? = null
+    val comment: String? = null,
+
+    val unitType: String? = null
 
 ) : ProjectPartnerBudgetTranslBase {
     override fun equals(other: Any?) =

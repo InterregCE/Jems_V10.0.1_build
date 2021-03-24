@@ -36,7 +36,6 @@ export class StaffCostsBudgetTableComponent implements OnInit, OnChanges, OnDest
   Alert = Alert;
   constants = ProjectPartnerBudgetConstants;
   staffCostType = StaffCostTypeEnum;
-  staffCostUnitType = StaffCostUnitTypeEnum;
 
   @Input()
   editable: boolean;
@@ -64,7 +63,7 @@ export class StaffCostsBudgetTableComponent implements OnInit, OnChanges, OnDest
       {
         description: [],
         type: selectedUnitCost ? this.staffCostType.UNIT_COST : null,
-        unitType: null,
+        unitType: selectedUnitCost?.type || [],
         comment: [],
         numberOfUnits: 1,
         pricePerUnit: selectedUnitCost?.costPerUnit || 0,
@@ -135,7 +134,7 @@ export class StaffCostsBudgetTableComponent implements OnInit, OnChanges, OnDest
       id: null,
       description: [[]],
       type: [null],
-      unitType: [null],
+      unitType: [[]],
       unitCost: [null],
       comment: [[]],
       numberOfUnits: [1, [Validators.max(this.constants.MAX_VALUE), Validators.min(this.constants.MIN_VALUE)]],

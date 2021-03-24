@@ -35,7 +35,6 @@ class ProjectPartnerBudgetPersistenceTest: UnitTest() {
             rowSum = BigDecimal.TEN,
             type = StaffCostType.REAL_COST,
             budgetPeriods = mutableSetOf(),
-            unitType = StaffCostUnitType.HOUR
         )
 
         private val generalCostEntry = BudgetGeneralCostEntry(
