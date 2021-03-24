@@ -8,23 +8,27 @@ import {
   Output
 } from '@angular/core';
 import {ViewEditForm} from '@common/components/forms/view-edit-form';
-import {Observable} from 'rxjs';
 import {FormBuilder, FormGroup, Validators} from '@angular/forms';
 import {MatDialog} from '@angular/material/dialog';
-import {filter, map, startWith, take, takeUntil, tap} from 'rxjs/operators';
+import {filter, take, takeUntil, tap} from 'rxjs/operators';
 import {FormState} from '@common/components/forms/form-state';
 import {Forms} from '../../../../common/utils/forms';
 import {
+  InputTranslation,
   ProgrammePriorityDTO,
   ResultIndicatorCreateRequestDTO,
   ResultIndicatorDetailDTO,
   ResultIndicatorUpdateRequestDTO
 } from '@cat/api';
 import {Permission} from '../../../../security/permissions/permission';
-import {ProgrammeResultIndicatorConstants} from './constants/programme-result-indicator-constants';
+import {
+  ResultIndicatorCodeRelation,
+  ProgrammeResultIndicatorConstants
+} from './constants/programme-result-indicator-constants';
 import {TranslateService} from '@ngx-translate/core';
 import {UntilDestroy, untilDestroyed} from '@ngneat/until-destroy';
 import {ProgrammeEditableStateStore} from '../../services/programme-editable-state-store.service';
+import {LanguageStore} from '../../../../common/services/language-store.service';
 
 @UntilDestroy()
 @Component({
@@ -54,13 +58,6 @@ export class ProgrammeResultIndicatorDetailComponent extends ViewEditForm implem
 
   indicatorCodes = this.programmeResultIndicatorConstants.indicatorCodes;
 
-  indicatorNames = this.programmeResultIndicatorConstants.indicatorNames;
-
-  measurementUnits = this.programmeResultIndicatorConstants.measurementUnits;
-
-  filteredIndicatorNames: Observable<string[]>;
-  filteredMeasurementUnits: Observable<string[]>;
-
   resultIndicatorForm = this.formBuilder.group({
     identifier: ['', [Validators.required, Validators.maxLength(5)]],
     indicatorCode: ['', Validators.maxLength(6)],
@@ -82,6 +79,7 @@ export class ProgrammeResultIndicatorDetailComponent extends ViewEditForm implem
   constructor(private formBuilder: FormBuilder,
               private dialog: MatDialog,
               private programmeEditableStateStore: ProgrammeEditableStateStore,
+              private languageStore: LanguageStore,
               protected changeDetectorRef: ChangeDetectorRef,
               protected translationService: TranslateService) {
     super(changeDetectorRef, translationService);
@@ -96,23 +94,24 @@ export class ProgrammeResultIndicatorDetailComponent extends ViewEditForm implem
   ngOnInit(): void {
     super.ngOnInit();
     this.resetForm();
+    this.resultIndicatorForm.get('indicatorCode')?.valueChanges
+      .pipe(
+        tap((relation: ResultIndicatorCodeRelation) => this.resultIndicatorForm.get('indicatorName')
+          ?.setValue(this.extractFromCodeRelation(relation, code => code.name))
+        ),
+        tap((relation: ResultIndicatorCodeRelation) => this.resultIndicatorForm.get('measurementUnit')
+          ?.setValue(this.extractFromCodeRelation(relation, code => code.measurementUnit))
+        ),
+        untilDestroyed(this),
+      ).subscribe();
   }
 
   resetForm(): void {
-    this.indicatorNames.sort();
-    this.filteredIndicatorNames = this.resultIndicatorForm.controls.indicatorName.valueChanges
-      .pipe(
-        startWith(''),
-        map(value => this._filter(value, this.indicatorNames))
-      );
-    this.filteredMeasurementUnits = this.resultIndicatorForm.controls.measurementUnit.valueChanges
-      .pipe(
-        startWith(''),
-        map(value => this._filter(value, this.measurementUnits))
-      );
     if (!this.isCreate) {
       this.resultIndicatorForm.controls.identifier.setValue(this.resultIndicator.identifier);
-      this.resultIndicatorForm.controls.indicatorCode.setValue(this.resultIndicator.code);
+      this.resultIndicatorForm.controls.indicatorCode.setValue(
+        this.indicatorCodes.find(relation => relation.code === this.resultIndicator.code)
+      );
       this.resultIndicatorForm.controls.indicatorName.setValue(this.resultIndicator.name);
       this.resultIndicatorForm.controls.specificObjective.setValue(this.resultIndicator.programmePriorityPolicySpecificObjective);
       this.resultIndicatorForm.controls.measurementUnit.setValue(this.resultIndicator.measurementUnit);
@@ -144,7 +143,7 @@ export class ProgrammeResultIndicatorDetailComponent extends ViewEditForm implem
       if (this.isCreate) {
         this.createResultIndicator.emit({
           identifier: this.resultIndicatorForm?.controls?.identifier?.value,
-          code: this.resultIndicatorForm?.controls?.indicatorCode?.value,
+          code: this.resultIndicatorForm?.controls?.indicatorCode?.value?.code,
           name: this.resultIndicatorForm?.controls?.indicatorName?.value,
           programmeObjectivePolicy: this.resultIndicatorForm?.controls?.specificObjective?.value,
           measurementUnit: this.resultIndicatorForm?.controls?.measurementUnit?.value,
@@ -158,7 +157,7 @@ export class ProgrammeResultIndicatorDetailComponent extends ViewEditForm implem
         this.updateResultIndicator.emit({
           id: this.resultIndicator?.id,
           identifier: this.resultIndicatorForm?.controls?.identifier?.value,
-          code: this.resultIndicatorForm?.controls?.indicatorCode?.value,
+          code: this.resultIndicatorForm?.controls?.indicatorCode?.value?.code,
           name: this.resultIndicatorForm?.controls?.indicatorName?.value,
           programmeObjectivePolicy: this.resultIndicatorForm?.controls?.specificObjective?.value,
           measurementUnit: this.resultIndicatorForm?.controls?.measurementUnit?.value,
@@ -195,8 +194,20 @@ export class ProgrammeResultIndicatorDetailComponent extends ViewEditForm implem
     };
   }
 
-  private _filter(value: string, source: string[]): string[] {
+  private _filter(value: string, source: ResultIndicatorCodeRelation[]): ResultIndicatorCodeRelation[] {
     const filterValue = value.toLowerCase();
-    return source.filter(option => option.toLowerCase().includes(filterValue));
+    return source.filter(option => option.code.toLowerCase().includes(filterValue));
   }
+
+  extractFromCodeRelation(codeRelation: ResultIndicatorCodeRelation, extract: (f: ResultIndicatorCodeRelation) => string): InputTranslation[] {
+    if (!codeRelation) {
+      return [];
+    }
+
+    return this.languageStore.getSystemLanguagesValue().map(language => ({
+      language,
+      translation: extract(codeRelation),
+    } as InputTranslation));
+  }
+
 }

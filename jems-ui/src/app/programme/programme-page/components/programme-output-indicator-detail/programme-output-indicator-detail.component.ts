@@ -10,6 +10,7 @@ import {
 import {ViewEditForm} from '@common/components/forms/view-edit-form';
 import {Permission} from '../../../../security/permissions/permission';
 import {
+  InputTranslation,
   OutputIndicatorCreateRequestDTO,
   OutputIndicatorDetailDTO,
   OutputIndicatorUpdateRequestDTO,
@@ -22,12 +23,16 @@ import {MatDialog} from '@angular/material/dialog';
 import {combineLatest, Observable} from 'rxjs';
 import {filter, map, startWith, take, takeUntil, tap, withLatestFrom} from 'rxjs/operators';
 import {FormState} from '@common/components/forms/form-state';
-import {ProgrammeOutputIndicatorConstants} from './constants/programme-output-indicator-constants';
+import {
+  OutputIndicatorCodeRelation,
+  ProgrammeOutputIndicatorConstants
+} from './constants/programme-output-indicator-constants';
 import {Forms} from '../../../../common/utils/forms';
 import {Log} from '../../../../common/utils/log';
 import {UntilDestroy, untilDestroyed} from '@ngneat/until-destroy';
 import {ProgrammeEditableStateStore} from '../../services/programme-editable-state-store.service';
 import {TranslateService} from '@ngx-translate/core';
+import {LanguageStore} from '../../../../common/services/language-store.service';
 
 @UntilDestroy()
 @Component({
@@ -57,13 +62,6 @@ export class ProgrammeOutputIndicatorDetailComponent extends ViewEditForm implem
 
   indicatorCodes = this.programmeOutputIndicatorConstants.indicatorCodes;
 
-  indicatorNames = this.programmeOutputIndicatorConstants.indicatorNames;
-
-  measurementUnits = this.programmeOutputIndicatorConstants.measurementUnits;
-
-  filteredIndicatorNames: Observable<string[]>;
-  filteredMeasurementUnits: Observable<string[]>;
-
   resultIndicators$: Observable<ResultIndicatorDetailDTO[]> = this.programmeIndicatorService.getResultIndicatorDetails(0, 50, 'DESC').pipe(
     tap(resultIndicator => Log.info('Fetched result Indicator data:', this, resultIndicator)),
     map(page => page.content));
@@ -90,6 +88,7 @@ export class ProgrammeOutputIndicatorDetailComponent extends ViewEditForm implem
               private dialog: MatDialog,
               protected changeDetectorRef: ChangeDetectorRef,
               protected translationService: TranslateService,
+              private languageStore: LanguageStore,
               private programmeIndicatorService: ProgrammeIndicatorService,
               private programmeEditableStateStore: ProgrammeEditableStateStore,
   ) {
@@ -105,21 +104,20 @@ export class ProgrammeOutputIndicatorDetailComponent extends ViewEditForm implem
   ngOnInit(): void {
     super.ngOnInit();
     this.resetForm();
+
+    this.outputIndicatorForm.get('indicatorCode')?.valueChanges
+      .pipe(
+        tap((relation: OutputIndicatorCodeRelation) => this.outputIndicatorForm.get('indicatorName')
+          ?.setValue(this.extractFromCodeRelation(relation, code => code.name))
+        ),
+        tap((relation: OutputIndicatorCodeRelation) => this.outputIndicatorForm.get('measurementUnit')
+          ?.setValue(this.extractFromCodeRelation(relation, code => code.measurementUnit))
+        ),
+        untilDestroyed(this),
+      ).subscribe();
   }
 
   resetForm(): void {
-    this.indicatorNames.sort();
-    this.filteredIndicatorNames = this.outputIndicatorForm.controls.indicatorName.valueChanges
-      .pipe(
-        startWith(''),
-        map(value => this._filter(value, this.indicatorNames))
-      );
-    this.filteredMeasurementUnits = this.outputIndicatorForm.controls.measurementUnit.valueChanges
-      .pipe(
-        startWith(''),
-        map(value => this._filter(value, this.measurementUnits))
-      );
-
     this.filteredResultIndicators$ = combineLatest([this.resultIndicators$, this.outputIndicatorForm.controls.specificObjective.valueChanges.pipe(startWith(this.outputIndicator.programmePriorityPolicySpecificObjective))])
       .pipe(
         map(([resultIndicators, specificObjective]) => resultIndicators.filter((it: ResultIndicatorDetailDTO) => it.programmePriorityPolicySpecificObjective === specificObjective) || []),
@@ -139,7 +137,9 @@ export class ProgrammeOutputIndicatorDetailComponent extends ViewEditForm implem
       this.changeFormState$.next(FormState.EDIT);
     } else {
       this.outputIndicatorForm.controls.identifier.setValue(this.outputIndicator.identifier);
-      this.outputIndicatorForm.controls.indicatorCode.setValue(this.outputIndicator.code);
+      this.outputIndicatorForm.controls.indicatorCode.setValue(
+        this.indicatorCodes.find(relation => relation.code === this.outputIndicator.code)
+      );
       this.outputIndicatorForm.controls.indicatorName.setValue(this.outputIndicator.name);
       this.outputIndicatorForm.controls.specificObjective.setValue(this.outputIndicator.programmePriorityPolicySpecificObjective);
       this.outputIndicatorForm.controls.measurementUnit.setValue(this.outputIndicator.measurementUnit);
@@ -167,7 +167,7 @@ export class ProgrammeOutputIndicatorDetailComponent extends ViewEditForm implem
       if (this.isCreate) {
         this.createOutputIndicator.emit({
           identifier: this.outputIndicatorForm?.controls?.identifier?.value,
-          code: this.outputIndicatorForm?.controls?.indicatorCode?.value,
+          code: this.outputIndicatorForm?.controls?.indicatorCode?.value?.code,
           name: this.outputIndicatorForm?.controls?.indicatorName?.value,
           programmeObjectivePolicy: this.outputIndicatorForm?.controls?.specificObjective?.value,
           measurementUnit: this.outputIndicatorForm?.controls?.measurementUnit?.value,
@@ -179,7 +179,7 @@ export class ProgrammeOutputIndicatorDetailComponent extends ViewEditForm implem
         this.updateOutputIndicator.emit({
           id: this.outputIndicator?.id,
           identifier: this.outputIndicatorForm?.controls?.identifier?.value,
-          code: this.outputIndicatorForm?.controls?.indicatorCode?.value,
+          code: this.outputIndicatorForm?.controls?.indicatorCode?.value?.code,
           name: this.outputIndicatorForm?.controls?.indicatorName?.value,
           programmeObjectivePolicy: this.outputIndicatorForm?.controls?.specificObjective?.value,
           measurementUnit: this.outputIndicatorForm?.controls?.measurementUnit?.value,
@@ -214,8 +214,20 @@ export class ProgrammeOutputIndicatorDetailComponent extends ViewEditForm implem
     };
   }
 
-  private _filter(value: string, source: string[]): string[] {
+  private _filter(value: string, source: OutputIndicatorCodeRelation[]): OutputIndicatorCodeRelation[] {
     const filterValue = value.toLowerCase();
-    return source.filter(option => option.toLowerCase().includes(filterValue));
+    return source.filter(option => option.code.toLowerCase().includes(filterValue));
   }
+
+  extractFromCodeRelation(codeRelation: OutputIndicatorCodeRelation, extract: (f: OutputIndicatorCodeRelation) => string): InputTranslation[] {
+    if (!codeRelation) {
+      return [];
+    }
+
+    return this.languageStore.getSystemLanguagesValue().map(language => ({
+      language,
+      translation: extract(codeRelation),
+    } as InputTranslation));
+  }
+
 }
