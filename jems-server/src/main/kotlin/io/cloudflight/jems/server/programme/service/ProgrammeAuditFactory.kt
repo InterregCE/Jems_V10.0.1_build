@@ -48,7 +48,7 @@ fun programmeNutsAreaChanged(updatedNuts: Collection<NutsIdentifier>): AuditCand
 
 fun programmeFundsChanged(funds: Iterable<ProgrammeFund>): AuditCandidate {
     val fundsAsString = funds.asSequence()
-        .map { "[selected=${it.selected}, " + it.translatedValues.joinToString { "${it.language}=${it.abbreviation}" } + "]" }.joinToString(",\n")
+        .map { fund -> "[selected=${fund.selected}, " + fund.abbreviation.joinToString { "${it.language}=${it.translation}" } + "]" }.joinToString(",\n")
 
     return AuditBuilder(AuditAction.PROGRAMME_FUNDS_CHANGED)
         .description("Programme funds has been set to:\n$fundsAsString")
@@ -57,7 +57,7 @@ fun programmeFundsChanged(funds: Iterable<ProgrammeFund>): AuditCandidate {
 
 fun programmeLegalStatusesChanged(statuses: List<ProgrammeLegalStatus>): AuditCandidate {
     val statusesAsString = statuses.asSequence()
-        .map { "[" + it.description.joinToString { "${it.language}=${it.translation}" } + "]" }.joinToString(",\n")
+        .map { fund -> "[" + fund.description.joinToString { "${it.language}=${it.translation}" } + "]" }.joinToString(",\n")
 
     return AuditBuilder(AuditAction.LEGAL_STATUS_EDITED)
         .description("Values for partner legal status set to:\n$statusesAsString")

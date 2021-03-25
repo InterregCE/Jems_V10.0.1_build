@@ -2,13 +2,14 @@ package io.cloudflight.jems.server.programme.repository.fund
 
 import io.cloudflight.jems.api.programme.dto.language.SystemLanguage.EN
 import io.cloudflight.jems.api.programme.dto.language.SystemLanguage.SK
+import io.cloudflight.jems.api.project.dto.InputTranslation
 import io.cloudflight.jems.server.UnitTest
 import io.cloudflight.jems.server.call.repository.CallRepository
+import io.cloudflight.jems.server.common.entity.TranslationId
 import io.cloudflight.jems.server.programme.entity.fund.ProgrammeFundEntity
 import io.cloudflight.jems.server.programme.entity.fund.ProgrammeFundTranslationEntity
-import io.cloudflight.jems.server.programme.entity.fund.ProgrammeFundTranslationId
 import io.cloudflight.jems.server.programme.service.fund.model.ProgrammeFund
-import io.cloudflight.jems.server.programme.service.fund.model.ProgrammeFundTranslatedValue
+import io.cloudflight.jems.server.programme.service.fund.model.ProgrammeFundType
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
 import io.mockk.impl.annotations.MockK
@@ -25,12 +26,12 @@ class ProgrammeFundPersistenceTest : UnitTest() {
             translatedValues.addAll(
                 setOf(
                     ProgrammeFundTranslationEntity(
-                        translationId = ProgrammeFundTranslationId(fund = this, language = EN),
+                        translationId = TranslationId(sourceEntity = this, language = EN),
                         abbreviation = "EN abbr",
                         description = "EN desc"
                     ),
                     ProgrammeFundTranslationEntity(
-                        translationId = ProgrammeFundTranslationId(fund = this, language = SK),
+                        translationId = TranslationId(sourceEntity = this, language = SK),
                         abbreviation = "SK abbr",
                         description = "SK desc"
                     ),
@@ -41,10 +42,9 @@ class ProgrammeFundPersistenceTest : UnitTest() {
         private val fund = ProgrammeFund(
             id = ID,
             selected = true,
-            translatedValues = setOf(
-                ProgrammeFundTranslatedValue(language = EN, abbreviation = "EN abbr", description = "EN desc"),
-                ProgrammeFundTranslatedValue(language = SK, abbreviation = "SK abbr", description = "SK desc"),
-            )
+            type = ProgrammeFundType.OTHER,
+            abbreviation = setOf(InputTranslation(EN, "EN abbr"), InputTranslation(SK, "SK abbr")),
+            description = setOf(InputTranslation(EN, "EN desc"), InputTranslation(SK, "SK desc"))
         )
 
     }
@@ -81,7 +81,8 @@ class ProgrammeFundPersistenceTest : UnitTest() {
         )
         assertThat(funds).hasSize(1)
         assertThat(funds[0].selected).isTrue()
-        assertThat(funds[0].translatedValues).containsExactlyInAnyOrderElementsOf(fund.translatedValues)
+        assertThat(funds[0].description).isEqualTo(fund.description)
+        assertThat(funds[0].abbreviation).isEqualTo(fund.abbreviation)
 
         verify(exactly = 1) { repository.deleteInBatch(toBeRemoved) }
     }

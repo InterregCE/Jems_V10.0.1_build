@@ -112,6 +112,16 @@ class GeneralValidatorDefaultImpl : GeneralValidatorService {
                 this[fieldName] = I18nMessage(errorKey ?: "common.error.field.pattern")
         }
 
+    override fun maxSize(items: Collection<Any>?, maxSize: Int, fieldName: String): Map<String, I18nMessage> =
+        mutableMapOf<String, I18nMessage>().apply {
+            if (items != null && items.size > maxSize) {
+                this[fieldName] = I18nMessage(
+                    i18nKey = "common.error.field.max.size",
+                    i18nArguments = mapOf("maxSize" to maxSize.toString())
+                )
+            }
+        }
+
     override fun throwIfAnyIsInvalid(vararg validationResult: Map<String, I18nMessage>) =
         mutableMapOf<String, I18nMessage>().run {
             validationResult.forEach { this.putAll(it) }

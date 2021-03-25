@@ -36,7 +36,7 @@ class UpdateLegalStatus(
         validateInput(toPersist)
 
         if (toPersist.any { it.id == 0L && it.type != ProgrammeLegalStatusType.OTHER })
-            throw CreatingPublicOrPrivateLegalStatusesIsNotAllowedException()
+            throw CreationOfLegalStatusUnderPredefinedTypesIsNotAllowedException()
 
         if (isProgrammeSetupLocked.isLocked() && toDeleteIds.isNotEmpty())
             throw DeletionIsNotAllowedException()
@@ -45,7 +45,7 @@ class UpdateLegalStatus(
             persistence.getByType(listOf(ProgrammeLegalStatusType.PRIVATE, ProgrammeLegalStatusType.PUBLIC))
 
         if (toDeleteIds.intersect(readOnlyLegalStatuses.map { it.id }).isNotEmpty())
-            throw DefaultLegalStatusesCannotBeDeletedException()
+            throw PredefinedLegalStatusesCannotBeDeletedException()
 
         // todo throw exception if description translation for the fallback language is changed (in MP2-1304 adding mandatory field checks)
 

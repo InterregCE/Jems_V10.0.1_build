@@ -1,7 +1,6 @@
 package io.cloudflight.jems.server.programme.service.legalstatus.update_legal_statuses
 
 import io.cloudflight.jems.api.common.dto.I18nMessage
-import io.cloudflight.jems.server.common.exception.ApplicationBadRequestException
 import io.cloudflight.jems.server.common.exception.ApplicationException
 import io.cloudflight.jems.server.common.exception.ApplicationUnprocessableException
 
@@ -14,25 +13,28 @@ class UpdateLegalStatusesFailedException(cause: Throwable) : ApplicationExceptio
     cause = cause
 )
 
-class DeletionIsNotAllowedException : ApplicationBadRequestException(
+class DeletionIsNotAllowedException : ApplicationUnprocessableException(
     code = "$UPDATE_LEGAL_STATUSES_ERROR_CODE_PREFIX-001",
     i18nMessage = I18nMessage("$UPDATE_LEGAL_STATUSES_ERROR_KEY_PREFIX.deletion.is.not.allowed"),
 )
 
-class MaxAllowedLegalStatusesReachedException(amount: Long) :
-    ApplicationBadRequestException(
+class MaxAllowedLegalStatusesReachedException(maxAmount: Long) :
+    ApplicationUnprocessableException(
         code = "$UPDATE_LEGAL_STATUSES_ERROR_CODE_PREFIX-002",
-        i18nMessage = I18nMessage("$UPDATE_LEGAL_STATUSES_ERROR_KEY_PREFIX.max.allowed.amount.reached"),
-        message = "max allowed: $amount",
+        i18nMessage = I18nMessage(
+            "$UPDATE_LEGAL_STATUSES_ERROR_KEY_PREFIX.max.allowed.amount.reached",
+            mapOf("maxSize" to maxAmount.toString())
+        ),
+        message = "max allowed: $maxAmount",
     )
 
-class DefaultLegalStatusesCannotBeDeletedException :
+class PredefinedLegalStatusesCannotBeDeletedException :
     ApplicationUnprocessableException(
         code = "$UPDATE_LEGAL_STATUSES_ERROR_CODE_PREFIX-003",
-        i18nMessage = I18nMessage("$UPDATE_LEGAL_STATUSES_ERROR_KEY_PREFIX.default.legal.statuses.cannot.be.deleted"),
+        i18nMessage = I18nMessage("$UPDATE_LEGAL_STATUSES_ERROR_KEY_PREFIX.predefined.legal.statuses.cannot.be.deleted"),
     )
 
-class CreatingPublicOrPrivateLegalStatusesIsNotAllowedException : ApplicationBadRequestException(
+class CreationOfLegalStatusUnderPredefinedTypesIsNotAllowedException : ApplicationUnprocessableException(
     code = "$UPDATE_LEGAL_STATUSES_ERROR_CODE_PREFIX-004",
-    i18nMessage = I18nMessage("$UPDATE_LEGAL_STATUSES_ERROR_KEY_PREFIX.creating.public.or.private.legal.statuses.is.not.allowed"),
+    i18nMessage = I18nMessage("$UPDATE_LEGAL_STATUSES_ERROR_KEY_PREFIX.creation.of.legal.status.under.predefined.types.is.not.allowed"),
 )

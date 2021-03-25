@@ -8,13 +8,11 @@ import {
   ProgrammeDataService,
   ProgrammeFundDTO,
   ProgrammeFundService,
-  ProgrammePriorityService
 } from '@cat/api';
 import {catchError, mergeMap, map, tap} from 'rxjs/operators';
 import {Log} from '../../../../common/utils/log';
 import {HttpErrorResponse} from '@angular/common/http';
 import {MatSort} from '@angular/material/sort';
-import {ProgrammePageSidenavService} from '../../services/programme-page-sidenav.service';
 
 @Component({
   selector: 'app-programme-page',
@@ -78,6 +76,7 @@ export class ProgrammePageComponent extends BaseComponent {
       map(funds => funds.map(fund => ({
         id: fund.id,
         selected: fund.selected,
+        type: fund.type,
         abbreviation: fund.abbreviation,
         description: fund.description,
         creation: false
@@ -85,9 +84,7 @@ export class ProgrammePageComponent extends BaseComponent {
     );
 
   constructor(private programmeDataService: ProgrammeDataService,
-              private programmeFundService: ProgrammeFundService,
-              private programmePriorityService: ProgrammePriorityService,
-              private programmePageSidenavService: ProgrammePageSidenavService) {
+              private programmeFundService: ProgrammeFundService) {
     super();
   }
 }

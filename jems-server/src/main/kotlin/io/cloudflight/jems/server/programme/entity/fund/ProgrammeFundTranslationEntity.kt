@@ -1,13 +1,14 @@
 package io.cloudflight.jems.server.programme.entity.fund
 
-import java.io.Serializable
+import io.cloudflight.jems.server.common.entity.TranslationEntity
+import io.cloudflight.jems.server.common.entity.TranslationId
 import javax.persistence.EmbeddedId
 import javax.persistence.Entity
 
 @Entity(name = "programme_fund_transl")
-data class ProgrammeFundTranslationEntity(
+class ProgrammeFundTranslationEntity(
     @EmbeddedId
-    val translationId: ProgrammeFundTranslationId,
+    override val translationId: TranslationId<ProgrammeFundEntity>,
     val abbreviation: String? = null,
     val description: String? = null,
-) : Serializable
+) : TranslationEntity()

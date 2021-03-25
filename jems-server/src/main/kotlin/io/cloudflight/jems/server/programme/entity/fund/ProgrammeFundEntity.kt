@@ -1,5 +1,6 @@
 package io.cloudflight.jems.server.programme.entity.fund
 
+import io.cloudflight.jems.server.programme.service.fund.model.ProgrammeFundType
 import javax.persistence.CascadeType
 import javax.persistence.Entity
 import javax.persistence.FetchType
@@ -19,7 +20,7 @@ import javax.validation.constraints.NotNull
         attributeNodes = [NamedAttributeNode(value = "translatedValues")],
     )
 )
-data class ProgrammeFundEntity(
+class ProgrammeFundEntity(
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -28,10 +29,13 @@ data class ProgrammeFundEntity(
     @field:NotNull
     val selected: Boolean,
 
+    @field:NotNull
+    val type: ProgrammeFundType = ProgrammeFundType.OTHER,
+
     @OneToMany(
         cascade = [CascadeType.ALL],
         orphanRemoval = true,
-        mappedBy = "translationId.fund",
+        mappedBy = "translationId.sourceEntity",
         fetch = FetchType.EAGER
     )
     val translatedValues: MutableSet<ProgrammeFundTranslationEntity> = mutableSetOf()

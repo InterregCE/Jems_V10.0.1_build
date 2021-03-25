@@ -12,6 +12,7 @@ import io.cloudflight.jems.server.programme.service.is_programme_setup_locked.Is
 import io.cloudflight.jems.server.programme.service.legalstatus.ProgrammeLegalStatusPersistence
 import io.cloudflight.jems.server.programme.service.legalstatus.model.ProgrammeLegalStatus
 import io.cloudflight.jems.server.programme.service.legalstatus.model.ProgrammeLegalStatusType
+import io.mockk.clearMocks
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
 import io.mockk.impl.annotations.MockK
@@ -20,8 +21,11 @@ import io.mockk.slot
 import io.mockk.verify
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeAll
+import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
+import org.junit.jupiter.params.ParameterizedTest
+import org.junit.jupiter.params.provider.MethodSource
 import org.springframework.context.ApplicationEventPublisher
 
 internal class UpdateLegalStatusInteractorTest : UnitTest() {
@@ -82,6 +86,11 @@ internal class UpdateLegalStatusInteractorTest : UnitTest() {
                 listOf(ProgrammeLegalStatusType.PRIVATE, ProgrammeLegalStatusType.PUBLIC)
             )
         } returns defaultLegalStatuses
+    }
+
+    @BeforeEach
+    fun reset() {
+        clearMocks(generalValidatorService)
     }
 
     @Test
@@ -174,7 +183,7 @@ internal class UpdateLegalStatusInteractorTest : UnitTest() {
     fun `should throw exception when public-private legal statuses are being deleted`() {
         every { isProgrammeSetupLocked.isLocked() } returns false
 
-        assertThrows<DefaultLegalStatusesCannotBeDeletedException> {
+        assertThrows<PredefinedLegalStatusesCannotBeDeletedException> {
             updateLegalStatus.updateLegalStatuses(
                 setOf(1L),
                 emptyList()
@@ -182,24 +191,17 @@ internal class UpdateLegalStatusInteractorTest : UnitTest() {
         }
     }
 
-    @Test
-    fun `should throw exception when new private legal statuses is being created`() {
-        assertThrows<CreatingPublicOrPrivateLegalStatusesIsNotAllowedException> {
+    @ParameterizedTest
+    @MethodSource("providePreDefinedLegalStatusTypes")
+    fun `should throw exception when new legal status under predefined types is being created`(type: ProgrammeLegalStatusType) {
+        assertThrows<CreationOfLegalStatusUnderPredefinedTypesIsNotAllowedException> {
             updateLegalStatus.updateLegalStatuses(
                 emptySet(),
-                listOf(ProgrammeLegalStatus(id = 0, type = ProgrammeLegalStatusType.PRIVATE))
+                listOf(ProgrammeLegalStatus(id = 0, type = type))
             )
         }
     }
 
-    @Test
-    fun `should throw exception when new public legal statuses is being created`() {
-        assertThrows<CreatingPublicOrPrivateLegalStatusesIsNotAllowedException> {
-            updateLegalStatus.updateLegalStatuses(
-                emptySet(),
-                listOf(ProgrammeLegalStatus(id = 0, type = ProgrammeLegalStatusType.PUBLIC))
-            )
-        }
-    }
-
+    private fun providePreDefinedLegalStatusTypes() =
+        ProgrammeLegalStatusType.values().filter { it != ProgrammeLegalStatusType.OTHER }
 }

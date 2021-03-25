@@ -8,7 +8,7 @@ import {
   Output
 } from '@angular/core';
 import {ViewEditForm} from '@common/components/forms/view-edit-form';
-import {FormArray, FormBuilder, FormGroup} from '@angular/forms';
+import {AbstractControl, FormArray, FormBuilder, FormGroup} from '@angular/forms';
 import {ProgrammeFundDTO} from '@cat/api';
 import {FormState} from '@common/components/forms/form-state';
 import {UntilDestroy, untilDestroyed} from '@ngneat/until-destroy';
@@ -79,15 +79,21 @@ export class ProgrammeBasicFundsComponent extends ViewEditForm implements OnInit
     this.saveFunds.emit(this.editableFundsForm.controls.funds.value.map((fund: any) => ({
       id: fund.id,
       selected: fund.selected === undefined ? true : fund.selected,
+      type: fund.type,
       abbreviation: fund.abbreviation,
       description: fund.description,
     })));
+  }
+
+  isPredefinedFund(formGroup: AbstractControl): boolean {
+    return formGroup.get('type')?.value !== ProgrammeFundDTO.TypeEnum.OTHER;
   }
 
   private addControl(fund?: ProgrammeFundDTO): void {
     this.fundsForm.push(this.formBuilder.group({
       id: this.formBuilder.control(fund?.id || null),
       selected: this.formBuilder.control(fund?.selected || false),
+      type: this.formBuilder.control(fund?.type || ProgrammeFundDTO.TypeEnum.OTHER),
       abbreviation: this.formBuilder.control(fund?.abbreviation || []),
       description: this.formBuilder.control(fund?.description || []),
     }));

@@ -84,7 +84,7 @@ class CallControllerTest: UnitTest() {
             )),
             strategies = sortedSetOf(EUStrategyBalticSeaRegion, AtlanticStrategy),
             funds = listOf(
-                ProgrammeFund(id = 10L, selected = true, translatedValues = emptySet()),
+                ProgrammeFund(id = 10L, selected = true),
             ),
             flatRates = sortedSetOf(
                 ProjectCallFlatRate(type = OFFICE_AND_ADMINISTRATION_ON_OTHER_COSTS, rate = 5, isAdjustable = true),
