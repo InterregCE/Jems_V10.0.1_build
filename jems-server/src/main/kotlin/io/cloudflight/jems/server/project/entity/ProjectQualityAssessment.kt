@@ -3,6 +3,7 @@ package io.cloudflight.jems.server.project.entity
 import io.cloudflight.jems.api.project.dto.status.ProjectQualityAssessmentResult
 import io.cloudflight.jems.server.user.entity.User
 import java.time.ZonedDateTime
+import java.util.*
 import javax.persistence.Column
 import javax.persistence.Entity
 import javax.persistence.EnumType
@@ -46,4 +47,10 @@ data class ProjectQualityAssessment(
     override fun toString(): String {
         return "${this.javaClass.simpleName}(result=$result, user=$user, updated=$updated, note=$note)"
     }
+
+    override fun equals(other: Any?): Boolean =
+        this === other || other is ProjectQualityAssessment && id == other.id && project.id == other.project.id
+
+    override fun hashCode(): Int =
+        Objects.hash(id, project.id)
 }
