@@ -7,7 +7,6 @@ import org.springframework.data.domain.Pageable
 import org.springframework.data.domain.Sort
 import org.springframework.data.jpa.repository.JpaRepository
 import org.springframework.data.jpa.repository.Query
-import org.springframework.data.repository.PagingAndSortingRepository
 import org.springframework.stereotype.Repository
 import java.util.*
 
@@ -21,6 +20,8 @@ interface ProjectPartnerRepository : JpaRepository<ProjectPartnerEntity, Long> {
     fun findTop30ByProjectId(projectId: Long, sort: Sort): Iterable<ProjectPartnerEntity>
 
     fun findFirstByProjectIdAndRole(projectId: Long, role: ProjectPartnerRole): Optional<ProjectPartnerEntity>
+
+    fun findFirstByProjectIdAndAbbreviation(projectId: Long, name: String): Optional<ProjectPartnerEntity>
 
     fun countByProjectId(projectId: Long): Long
 

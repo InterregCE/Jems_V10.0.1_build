@@ -147,6 +147,7 @@ internal class ProjectPartnerServiceTest {
                 ProjectPartnerRole.LEAD_PARTNER
             )
         } returns Optional.empty()
+        every { projectPartnerRepository.findFirstByProjectIdAndAbbreviation(1, "partner") } returns Optional.empty()
         every { projectPartnerRepository.save(projectPartnerWithProject) } returns projectPartner
         every { projectPartnerRepository.save(projectPartner) } returns projectPartnerInclTransl
         every { legalStatusRepo.findById(1) } returns Optional.of(legalStatus)
@@ -218,6 +219,7 @@ internal class ProjectPartnerServiceTest {
                 ProjectPartnerRole.LEAD_PARTNER
             )
         } returns Optional.of(projectPartnerWithProject)
+        every { projectPartnerRepository.findFirstByProjectIdAndAbbreviation(1, "partner") } returns Optional.empty()
         every { projectPartnerRepository.save(projectPartnerWithProject) } returns projectPartner
         every { projectPartnerRepository.save(projectPartner) } returns projectPartnerInclTransl
         every { legalStatusRepo.findById(1) } returns Optional.of(legalStatus)
@@ -234,6 +236,25 @@ internal class ProjectPartnerServiceTest {
     }
 
     @Test
+    fun `error on already existing partner name when creating`() {
+        val inputProjectPartner = InputProjectPartnerCreate("partner", ProjectPartnerRole.LEAD_PARTNER, legalStatusId = 1)
+        val inputProjectPartner2 = InputProjectPartnerCreate("partner", ProjectPartnerRole.PARTNER, legalStatusId = 1)
+        val projectPartnerWithProject = ProjectPartnerEntity(0, project, inputProjectPartner.abbreviation!!, inputProjectPartner.role!!, legalStatus = legalStatus)
+
+        every { projectRepository.findById(1) } returns Optional.of(project)
+        every { projectPartnerRepository.findFirstByProjectIdAndAbbreviation(1, "partner") } returns Optional.of(projectPartnerWithProject)
+        every { legalStatusRepo.findById(1) } returns Optional.of(legalStatus)
+        every { projectPartnerRepository.countByProjectId(eq(1)) } returns 0
+
+        val ex = assertThrows<I18nValidationException> {
+            projectPartnerService.create(1, inputProjectPartner2)
+        }
+
+        assertThat(ex.i18nKey).isEqualTo("project.partner.abbreviation.already.existing")
+        assertThat(ex.httpStatus).isEqualTo(HttpStatus.UNPROCESSABLE_ENTITY)
+    }
+
+    @Test
     fun updateProjectPartner() {
         val projectPartnerUpdate =
             InputProjectPartnerUpdate(1, "updated", ProjectPartnerRole.PARTNER, legalStatusId = 1)
@@ -245,6 +266,7 @@ internal class ProjectPartnerServiceTest {
             legalStatus = legalStatus
         )
         every { projectPartnerRepository.findById(1) } returns Optional.of(projectPartner)
+        every { projectPartnerRepository.findFirstByProjectIdAndAbbreviation(1, "updated") } returns Optional.empty()
         every { projectPartnerRepository.save(updatedProjectPartner) } returns updatedProjectPartner
         every { legalStatusRepo.findById(1) } returns Optional.of(legalStatus)
 
@@ -264,6 +286,7 @@ internal class ProjectPartnerServiceTest {
             legalStatus = legalStatus
         )
         // we are changing partner to Lead Partner
+        every { projectPartnerRepository.findFirstByProjectIdAndAbbreviation(1, "updated") } returns Optional.empty()
         every { projectPartnerRepository.findById(3) } returns Optional.of(
             projectPartner.copy(
                 id = 3,
@@ -395,6 +418,27 @@ internal class ProjectPartnerServiceTest {
     }
 
     @Test
+    fun `error on already existing partner name when updating`() {
+        val inputProjectPartner = InputProjectPartnerCreate("partner", ProjectPartnerRole.LEAD_PARTNER, legalStatusId = 1)
+        val updateProjectPartner = InputProjectPartnerUpdate(1, "partner", ProjectPartnerRole.PARTNER, legalStatusId = 1)
+        val projectPartnerWithProject = ProjectPartnerEntity(0, project, inputProjectPartner.abbreviation!!, inputProjectPartner.role!!, legalStatus = legalStatus)
+        val oldProjectPartnerWithProject = ProjectPartnerEntity(0, project, "old partner", inputProjectPartner.role!!, legalStatus = legalStatus)
+
+        every { projectRepository.findById(1) } returns Optional.of(project)
+        every { projectPartnerRepository.findById(1) } returns Optional.of(oldProjectPartnerWithProject)
+        every { projectPartnerRepository.findFirstByProjectIdAndAbbreviation(1, "partner") } returns Optional.of(projectPartnerWithProject)
+        every { legalStatusRepo.findById(1) } returns Optional.of(legalStatus)
+        every { projectPartnerRepository.countByProjectId(eq(1)) } returns 1
+
+        val ex = assertThrows<I18nValidationException> {
+            projectPartnerService.update(updateProjectPartner)
+        }
+
+        assertThat(ex.i18nKey).isEqualTo("project.partner.abbreviation.already.existing")
+        assertThat(ex.httpStatus).isEqualTo(HttpStatus.UNPROCESSABLE_ENTITY)
+    }
+
+    @Test
     fun createProjectPartnerWithOrganization() {
         val inputProjectPartner = InputProjectPartnerCreate(
             "partner", ProjectPartnerRole.LEAD_PARTNER, null, "test", "test", setOf(
@@ -408,6 +452,7 @@ internal class ProjectPartnerServiceTest {
         every { projectRepository.findById(0) } returns Optional.empty()
         every { projectRepository.findById(1) } returns Optional.of(project)
         every { projectPartnerRepository.countByProjectId(any()) } returns 0
+        every { projectPartnerRepository.findFirstByProjectIdAndAbbreviation(1, "partner") } returns Optional.empty()
         every {
             projectPartnerRepository.findFirstByProjectIdAndRole(
                 1,
@@ -453,6 +498,7 @@ internal class ProjectPartnerServiceTest {
             legalStatus = legalStatus
         )
         every { projectPartnerRepository.findById(1) } returns Optional.of(projectPartner)
+        every { projectPartnerRepository.findFirstByProjectIdAndAbbreviation(1, "updated") } returns Optional.empty()
         every { projectPartnerRepository.save(updatedProjectPartner) } returns updatedProjectPartner
         every { legalStatusRepo.findById(1) } returns Optional.of(legalStatus)
 
