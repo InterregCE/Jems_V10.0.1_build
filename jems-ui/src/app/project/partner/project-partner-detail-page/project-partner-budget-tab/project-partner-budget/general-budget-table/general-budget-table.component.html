@@ -21,10 +21,11 @@
                                         [matTooltip]="unitCostSelect.triggerValue"
                                         [formControlName]="constants.FORM_CONTROL_NAMES.unitCost"
                                         [placeholder]="getUnitCost(control).value? '': 'common.not.applicable.option' | translate">
-                                    <mat-option [value]="null">{{'common.not.applicable.option' | translate}}</mat-option>
+                                    <mat-option
+                                            [value]="null">{{'common.not.applicable.option' | translate}}</mat-option>
                                     <mat-option *ngFor="let unitCost of availableUnitCosts"
                                                 [value]="unitCost">
-                                        {{ unitCost.name | translateBySystemLanguage | async }}
+                                        {{ unitCost.name | translateByInputLanguage | async }}
                                     </mat-option>
                                 </mat-select>
                                 <mat-error>
@@ -45,7 +46,7 @@
                                 *matHeaderCellDef> {{'project.partner.budget.table.description' | translate}} </mat-header-cell>
                         <mat-cell *matCellDef="let control;  let i = index" [formGroupName]="i">
                             <div class="text-overflow-ellipsis"
-                                 *ngIf="getUnitCost(control).value"> {{getUnitCost(control).value.description | translateBySystemLanguage | async}}</div>
+                                 *ngIf="getUnitCost(control).value"> {{getUnitCost(control).value.description | translateByInputLanguage | async}}</div>
                             <app-multi-language-form-field
                                     *ngIf="!getUnitCost(control).value"
                                     [formControlName]="constants.FORM_CONTROL_NAMES.description">
@@ -89,8 +90,9 @@
                         <mat-header-cell
                                 *matHeaderCellDef> {{'project.partner.budget.table.unit.type' | translate}} </mat-header-cell>
                         <mat-cell *matCellDef="let control;  let i = index" [formGroupName]="i">
-                            <div class="text-overflow-ellipsis"
-                                 *ngIf="getUnitCost(control).value"> {{getUnitCost(control).value.type | translateBySystemLanguage | async}}</div>
+                            <div class="text-overflow-ellipsis" *ngIf="getUnitCost(control).value">
+                                {{getUnitCost(control).value.type | translateByInputLanguage | async}}
+                            </div>
                             <app-multi-language-form-field
                                     *ngIf="!getUnitCost(control).value"
                                     [maxLength]="constants.MAX_UNIT_TYPE_TEXT_LENGTH"
@@ -118,7 +120,8 @@
                         <mat-header-cell
                                 *matHeaderCellDef> {{'project.partner.budget.table.price.per.unit' | translate}} </mat-header-cell>
                         <mat-cell *matCellDef="let control;  let i = index" [formGroupName]="i">
-                            <mat-form-field appFormFieldWidth="full" [class.mat-form-field-disabled]="getUnitCost(control).value">
+                            <mat-form-field appFormFieldWidth="full"
+                                            [class.mat-form-field-disabled]="getUnitCost(control).value">
                                 <input currencyMask
                                        [readonly]="getUnitCost(control).value"
                                        [options]="{min: constants.MIN_VALUE, max: constants.MAX_VALUE, align: 'right'}"
