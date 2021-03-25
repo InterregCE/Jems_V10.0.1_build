@@ -15,6 +15,7 @@ import io.cloudflight.jems.server.audit.service.AuditService
 import io.cloudflight.jems.server.common.exception.I18nFieldError
 import io.cloudflight.jems.server.common.exception.I18nValidationException
 import io.cloudflight.jems.server.common.exception.ResourceNotFoundException
+import io.cloudflight.jems.server.programme.service.is_programme_setup_locked.IsProgrammeSetupLockedInteractor
 import io.cloudflight.jems.server.programme.service.priority.ProgrammePriorityPersistence
 import io.cloudflight.jems.server.programme.service.priority.getStringOfLength
 import io.cloudflight.jems.server.programme.service.priority.model.ProgrammePriority
@@ -52,6 +53,9 @@ class UpdatePriorityInteractorTest {
     lateinit var persistence: ProgrammePriorityPersistence
 
     @MockK
+    lateinit var isProgrammeSetupLocked: IsProgrammeSetupLockedInteractor
+
+    @MockK
     lateinit var auditService: AuditService
 
     @InjectMockKs
@@ -75,7 +79,7 @@ class UpdatePriorityInteractorTest {
         every { persistence.getPriorityIdForPolicyIfExists(WaterManagement) } returns null
 
         every { persistence.getPrioritiesBySpecificObjectiveCodes(setOf("GU", "CE", "WM")) } returns listOf(priority)
-        every { persistence.isProgrammeSetupRestricted() } returns false
+        every { isProgrammeSetupLocked.isLocked() } returns false
         // nothing is yet used by a Call
         every { persistence.getObjectivePoliciesAlreadyInUse() } returns emptySet()
         every { persistence.update(any()) } returnsArgument 0
@@ -293,7 +297,7 @@ class UpdatePriorityInteractorTest {
         every { persistence.getPriorityIdForPolicyIfExists(GreenUrban) } returns ID
         every { persistence.getPrioritiesBySpecificObjectiveCodes(setOf("GU")) } returns listOf(priority)
         // programme setup is already locked
-        every { persistence.isProgrammeSetupRestricted() } returns true
+        every { isProgrammeSetupLocked.isLocked() } returns true
 
         val toUpdateWithoutRenewableEnergy = toUpdatePriority.copy(specificObjectives = listOf(
             ProgrammeSpecificObjective(programmeObjectivePolicy = GreenUrban, code = "GU"),
@@ -311,7 +315,7 @@ class UpdatePriorityInteractorTest {
         every { persistence.getPriorityIdForPolicyIfExists(GreenUrban) } returns ID
         every { persistence.getPrioritiesBySpecificObjectiveCodes(setOf("GU")) } returns listOf(priority)
         // programme setup still open for changes
-        every { persistence.isProgrammeSetupRestricted() } returns false
+        every { isProgrammeSetupLocked.isLocked() } returns false
         // objective to be removed is used by a call already
         every { persistence.getObjectivePoliciesAlreadyInUse() } returns setOf(RenewableEnergy)
 

@@ -57,7 +57,7 @@ fun programmeFundsChanged(funds: Iterable<ProgrammeFund>): AuditCandidate {
 
 fun programmeLegalStatusesChanged(statuses: List<ProgrammeLegalStatus>): AuditCandidate {
     val statusesAsString = statuses.asSequence()
-        .map { "[" + it.translatedValues.joinToString { "${it.language}=${it.description}" } + "]" }.joinToString(",\n")
+        .map { "[" + it.description.joinToString { "${it.language}=${it.translation}" } + "]" }.joinToString(",\n")
 
     return AuditBuilder(AuditAction.LEGAL_STATUS_EDITED)
         .description("Values for partner legal status set to:\n$statusesAsString")

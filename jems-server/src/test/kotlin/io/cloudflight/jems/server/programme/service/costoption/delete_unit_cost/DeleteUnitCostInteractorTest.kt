@@ -3,6 +3,7 @@ package io.cloudflight.jems.server.programme.service.costoption.delete_unit_cost
 import io.cloudflight.jems.server.common.exception.ResourceNotFoundException
 import io.cloudflight.jems.server.programme.service.costoption.DeleteUnitCostWhenProgrammeSetupRestricted
 import io.cloudflight.jems.server.programme.service.costoption.ProgrammeUnitCostPersistence
+import io.cloudflight.jems.server.programme.service.is_programme_setup_locked.IsProgrammeSetupLockedInteractor
 import io.mockk.MockKAnnotations
 import io.mockk.every
 import io.mockk.impl.annotations.MockK
@@ -16,18 +17,21 @@ class DeleteUnitCostInteractorTest {
     @MockK
     lateinit var persistence: ProgrammeUnitCostPersistence
 
+    @MockK
+    lateinit var isProgrammeSetupLocked: IsProgrammeSetupLockedInteractor
+
     private lateinit var deleteUnitCostInteractor: DeleteUnitCostInteractor
 
     @BeforeEach
     fun setup() {
         MockKAnnotations.init(this)
-        deleteUnitCostInteractor = DeleteUnitCost(persistence)
+        deleteUnitCostInteractor = DeleteUnitCost(persistence, isProgrammeSetupLocked)
     }
 
     @Test
     fun `delete unit cost - OK`() {
         every { persistence.deleteUnitCost(1L) } answers {}
-        every { persistence.isProgrammeSetupRestricted() } returns false
+        every { isProgrammeSetupLocked.isLocked() } returns false
         deleteUnitCostInteractor.deleteUnitCost(1L)
         verify { persistence.deleteUnitCost(1L) }
     }
@@ -35,14 +39,14 @@ class DeleteUnitCostInteractorTest {
     @Test
     fun `delete unit cost - not existing`() {
         every { persistence.deleteUnitCost(-1L) } throws ResourceNotFoundException("programmeUnitCost")
-        every { persistence.isProgrammeSetupRestricted() } returns false
+        every { isProgrammeSetupLocked.isLocked() } returns false
         assertThrows<ResourceNotFoundException> { deleteUnitCostInteractor.deleteUnitCost(-1L) }
     }
 
     @Test
     fun `delete unit cost - call already published`() {
         every { persistence.deleteUnitCost(1L) } throws ResourceNotFoundException("programmeUnitCost")
-        every { persistence.isProgrammeSetupRestricted() } returns true
+        every { isProgrammeSetupLocked.isLocked() } returns true
         assertThrows<DeleteUnitCostWhenProgrammeSetupRestricted> { deleteUnitCostInteractor.deleteUnitCost(1L) }
     }
 

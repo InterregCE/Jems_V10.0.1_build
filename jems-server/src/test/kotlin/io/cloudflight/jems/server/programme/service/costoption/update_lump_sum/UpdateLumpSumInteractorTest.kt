@@ -16,6 +16,7 @@ import io.cloudflight.jems.server.common.validator.GeneralValidatorService
 import io.cloudflight.jems.server.programme.service.costoption.ProgrammeLumpSumPersistence
 import io.cloudflight.jems.server.programme.service.costoption.UpdateLumpSumWhenProgrammeSetupRestricted
 import io.cloudflight.jems.server.programme.service.costoption.model.ProgrammeLumpSum
+import io.cloudflight.jems.server.programme.service.is_programme_setup_locked.IsProgrammeSetupLockedInteractor
 import io.mockk.clearMocks
 import io.mockk.every
 import io.mockk.impl.annotations.MockK
@@ -42,6 +43,9 @@ internal class UpdateLumpSumInteractorTest : UnitTest() {
     @MockK
     lateinit var persistence: ProgrammeLumpSumPersistence
 
+    @MockK
+    lateinit var isProgrammeSetupLocked: IsProgrammeSetupLockedInteractor
+
     @RelaxedMockK
     lateinit var auditService: AuditService
 
@@ -52,13 +56,13 @@ internal class UpdateLumpSumInteractorTest : UnitTest() {
 
     @BeforeEach
     fun resetAuditService() {
-        updateLumpSumInteractor = UpdateLumpSum(persistence, auditService, generalValidator)
+        updateLumpSumInteractor = UpdateLumpSum(persistence, isProgrammeSetupLocked, auditService, generalValidator)
         clearMocks(auditService)
     }
 
     @Test
     fun `update lump sum - invalid`() {
-        every { persistence.isProgrammeSetupRestricted() } returns false
+        every { isProgrammeSetupLocked.isLocked() } returns false
         every { persistence.getLumpSum(any()) } returns initialLumpSum
         val wrongLumpSum = ProgrammeLumpSum(
             id = 4,
@@ -79,7 +83,7 @@ internal class UpdateLumpSumInteractorTest : UnitTest() {
 
     @Test
     fun `update lump sum - long strings`() {
-        every { persistence.isProgrammeSetupRestricted() } returns false
+        every { isProgrammeSetupLocked.isLocked() } returns false
         every { persistence.getLumpSum(any()) } returns initialLumpSum
         val wrongLumpSum = ProgrammeLumpSum(
             id = 4,
@@ -99,7 +103,7 @@ internal class UpdateLumpSumInteractorTest : UnitTest() {
 
     @Test
     fun `update lump sum - OK`() {
-        every { persistence.isProgrammeSetupRestricted() } returns false
+        every { isProgrammeSetupLocked.isLocked() } returns false
         every { persistence.getLumpSum(any()) } returns initialLumpSum
         every { persistence.updateLumpSum(any()) } returnsArgument 0
         val lumpSum = ProgrammeLumpSum(
@@ -122,7 +126,7 @@ internal class UpdateLumpSumInteractorTest : UnitTest() {
 
     @Test
     fun `update lump sum - wrong ID filled in`() {
-        every { persistence.isProgrammeSetupRestricted() } returns false
+        every { isProgrammeSetupLocked.isLocked() } returns false
         every { persistence.getLumpSum(any()) } returns initialLumpSum
         val lumpSum = ProgrammeLumpSum(
             name = setOf(InputTranslation(SystemLanguage.EN, "LS1")),
@@ -137,7 +141,7 @@ internal class UpdateLumpSumInteractorTest : UnitTest() {
 
     @Test
     fun `update lump sum - not existing`() {
-        every { persistence.isProgrammeSetupRestricted() } returns false
+        every { isProgrammeSetupLocked.isLocked() } returns false
         every { persistence.getLumpSum(any()) } returns initialLumpSum
         val lumpSum = ProgrammeLumpSum(
             id = 777,
@@ -157,7 +161,7 @@ internal class UpdateLumpSumInteractorTest : UnitTest() {
     fun `update lump sum - call already published with same cost effective value but different number of decimal zeros`() {
         every { persistence.getLumpSum(any()) } returns initialLumpSum
         every { persistence.updateLumpSum(any()) } returnsArgument 0
-        every { persistence.isProgrammeSetupRestricted() } returns true
+        every { isProgrammeSetupLocked.isLocked() } returns true
         val lumpSum = ProgrammeLumpSum(
             id = 4,
             name = setOf(InputTranslation(SystemLanguage.EN, "LS1 changed")),
@@ -179,7 +183,7 @@ internal class UpdateLumpSumInteractorTest : UnitTest() {
     @Test
     fun `update lump sum - call already published with different cost value`() {
         every { persistence.getLumpSum(any()) } returns initialLumpSum
-        every { persistence.isProgrammeSetupRestricted() } returns true
+        every { isProgrammeSetupLocked.isLocked() } returns true
 
         assertThrows<UpdateLumpSumWhenProgrammeSetupRestricted> {updateLumpSumInteractor.updateLumpSum(initialLumpSum.copy(cost = BigDecimal.TEN))}
     }

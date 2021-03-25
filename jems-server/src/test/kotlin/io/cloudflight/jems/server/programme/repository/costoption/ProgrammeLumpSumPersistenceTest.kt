@@ -59,7 +59,7 @@ class ProgrammeLumpSumPersistenceTest {
     @BeforeEach
     fun setup() {
         MockKAnnotations.init(this)
-        programmeLumpSumPersistence = ProgrammeLumpSumPersistenceProvider(repository, callRepository)
+        programmeLumpSumPersistence = ProgrammeLumpSumPersistenceProvider(repository)
 
         testLumpSum = ProgrammeLumpSumEntity(
             id = 1,
@@ -142,7 +142,7 @@ class ProgrammeLumpSumPersistenceTest {
             categories = setOf(ExternalCosts, EquipmentCosts),
         )
         every { repository.existsById(testLumpSum.id) } returns true
-        val translations = combineLumpSumTranslatedValues(toBeUpdated.id!!, toBeUpdated.name, toBeUpdated.description)
+        val translations = combineLumpSumTranslatedValues(toBeUpdated.id, toBeUpdated.name, toBeUpdated.description)
         every { repository.save(any()) } returns toBeUpdated.toEntity().copy(translatedValues = translations)
 
 

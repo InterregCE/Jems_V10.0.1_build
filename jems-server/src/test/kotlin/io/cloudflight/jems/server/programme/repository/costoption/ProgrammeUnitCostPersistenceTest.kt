@@ -57,7 +57,7 @@ class ProgrammeUnitCostPersistenceTest {
     @BeforeEach
     fun setup() {
         MockKAnnotations.init(this)
-        programmeUnitCostPersistence = ProgrammeUnitCostPersistenceProvider(repository, callRepository)
+        programmeUnitCostPersistence = ProgrammeUnitCostPersistenceProvider(repository)
 
         testUnitCost = ProgrammeUnitCostEntity(
             id = 1,

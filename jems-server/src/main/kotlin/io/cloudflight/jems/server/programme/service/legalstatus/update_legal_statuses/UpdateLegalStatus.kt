@@ -1,48 +1,66 @@
 package io.cloudflight.jems.server.programme.service.legalstatus.update_legal_statuses
 
-import io.cloudflight.jems.server.audit.service.AuditService
+import io.cloudflight.jems.server.common.exception.ExceptionWrapper
+import io.cloudflight.jems.server.common.validator.GeneralValidatorService
 import io.cloudflight.jems.server.programme.authorization.CanUpdateProgrammeSetup
+import io.cloudflight.jems.server.programme.service.is_programme_setup_locked.IsProgrammeSetupLockedInteractor
 import io.cloudflight.jems.server.programme.service.legalstatus.ProgrammeLegalStatusPersistence
 import io.cloudflight.jems.server.programme.service.legalstatus.model.ProgrammeLegalStatus
+import io.cloudflight.jems.server.programme.service.legalstatus.model.ProgrammeLegalStatusType
 import io.cloudflight.jems.server.programme.service.programmeLegalStatusesChanged
+import org.springframework.context.ApplicationEventPublisher
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 
 @Service
 class UpdateLegalStatus(
     private val persistence: ProgrammeLegalStatusPersistence,
-    private val audit: AuditService,
+    private val isProgrammeSetupLocked: IsProgrammeSetupLockedInteractor,
+    private val generalValidator: GeneralValidatorService,
+    private val auditPublisher: ApplicationEventPublisher
 ) : UpdateLegalStatusInteractor {
 
     companion object {
         private const val MAX_ALLOWED_AMOUNT_OF_LEGAL_STATUSES = 20L
-        private const val MAX_DESCRIPTION_LENGTH = 127
+        private const val MAX_DESCRIPTION_LENGTH = 50
     }
 
     @CanUpdateProgrammeSetup
     @Transactional
+    @ExceptionWrapper(UpdateLegalStatusesFailedException::class)
     override fun updateLegalStatuses(
         toDeleteIds: Set<Long>,
         toPersist: Collection<ProgrammeLegalStatus>
     ): List<ProgrammeLegalStatus> {
 
-        if (persistence.isProgrammeSetupRestricted() && toDeleteIds.isNotEmpty())
-            throw DeletionWhenProgrammeSetupRestricted()
+        validateInput(toPersist)
 
-        if (toPersist.any { legalStatus ->
-                legalStatus.translatedValues.any {
-                    it.description != null && it.description.length > MAX_DESCRIPTION_LENGTH
-                }
-            })
-            throw LegalStatusesDescriptionTooLong()
+        if (toPersist.any { it.id == 0L && it.type != ProgrammeLegalStatusType.OTHER })
+            throw CreatingPublicOrPrivateLegalStatusesIsNotAllowedException()
 
-        val legalStatuses = persistence.updateLegalStatuses(toDeleteIds, toPersist)
+        if (isProgrammeSetupLocked.isLocked() && toDeleteIds.isNotEmpty())
+            throw DeletionIsNotAllowedException()
 
-        if (legalStatuses.size > MAX_ALLOWED_AMOUNT_OF_LEGAL_STATUSES)
-            throw MaxAllowedLegalStatusesReachedException(MAX_ALLOWED_AMOUNT_OF_LEGAL_STATUSES)
+        val readOnlyLegalStatuses =
+            persistence.getByType(listOf(ProgrammeLegalStatusType.PRIVATE, ProgrammeLegalStatusType.PUBLIC))
 
-        programmeLegalStatusesChanged(legalStatuses).logWith(audit)
-        return legalStatuses
+        if (toDeleteIds.intersect(readOnlyLegalStatuses.map { it.id }).isNotEmpty())
+            throw DefaultLegalStatusesCannotBeDeletedException()
+
+        // todo throw exception if description translation for the fallback language is changed (in MP2-1304 adding mandatory field checks)
+
+        return persistence.updateLegalStatuses(toDeleteIds, toPersist).also { legalStatuses ->
+            if (legalStatuses.size > MAX_ALLOWED_AMOUNT_OF_LEGAL_STATUSES)
+                throw MaxAllowedLegalStatusesReachedException(MAX_ALLOWED_AMOUNT_OF_LEGAL_STATUSES)
+            auditPublisher.publishEvent(programmeLegalStatusesChanged(legalStatuses))
+        }
+
     }
 
+    private fun validateInput(legalStatuses: Collection<ProgrammeLegalStatus>) =
+        generalValidator.throwIfAnyIsInvalid(
+            *legalStatuses.map { legalStatus ->
+                generalValidator.maxLength(legalStatus.description, MAX_DESCRIPTION_LENGTH, "description")
+            }.toTypedArray()
+        )
 }

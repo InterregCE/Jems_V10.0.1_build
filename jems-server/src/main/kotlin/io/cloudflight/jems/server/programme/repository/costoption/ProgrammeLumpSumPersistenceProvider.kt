@@ -1,9 +1,7 @@
 package io.cloudflight.jems.server.programme.repository.costoption
 
-import io.cloudflight.jems.server.call.repository.CallRepository
 import io.cloudflight.jems.server.common.exception.ResourceNotFoundException
 import io.cloudflight.jems.server.programme.entity.costoption.ProgrammeLumpSumEntity
-import io.cloudflight.jems.server.programme.repository.ProgrammePersistenceProvider
 import io.cloudflight.jems.server.programme.service.costoption.ProgrammeLumpSumPersistence
 import io.cloudflight.jems.server.programme.service.costoption.model.ProgrammeLumpSum
 import org.springframework.stereotype.Repository
@@ -11,9 +9,8 @@ import org.springframework.transaction.annotation.Transactional
 
 @Repository
 class ProgrammeLumpSumPersistenceProvider(
-    private val repository: ProgrammeLumpSumRepository,
-    private val callRepository: CallRepository
-) : ProgrammeLumpSumPersistence, ProgrammePersistenceProvider(callRepository) {
+    private val repository: ProgrammeLumpSumRepository
+) : ProgrammeLumpSumPersistence {
 
     @Transactional(readOnly = true)
     override fun getLumpSums(): List<ProgrammeLumpSum> =
@@ -39,7 +36,7 @@ class ProgrammeLumpSumPersistenceProvider(
 
     @Transactional
     override fun updateLumpSum(lumpSum: ProgrammeLumpSum): ProgrammeLumpSum {
-        if (repository.existsById(lumpSum.id!!)) {
+        if (repository.existsById(lumpSum.id)) {
             return repository.save(
                 lumpSum.toEntity().copy(
                     translatedValues = combineLumpSumTranslatedValues(lumpSum.id, lumpSum.name, lumpSum.description),

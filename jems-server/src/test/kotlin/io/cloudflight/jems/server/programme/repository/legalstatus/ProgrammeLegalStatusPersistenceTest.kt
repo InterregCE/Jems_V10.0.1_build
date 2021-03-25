@@ -1,15 +1,14 @@
 package io.cloudflight.jems.server.programme.repository.legalstatus
 
-import io.cloudflight.jems.api.call.dto.CallStatus
 import io.cloudflight.jems.api.programme.dto.language.SystemLanguage.EN
 import io.cloudflight.jems.api.programme.dto.language.SystemLanguage.SK
+import io.cloudflight.jems.api.project.dto.InputTranslation
 import io.cloudflight.jems.server.UnitTest
-import io.cloudflight.jems.server.call.repository.CallRepository
+import io.cloudflight.jems.server.common.entity.TranslationId
 import io.cloudflight.jems.server.programme.entity.legalstatus.ProgrammeLegalStatusEntity
 import io.cloudflight.jems.server.programme.entity.legalstatus.ProgrammeLegalStatusTranslationEntity
-import io.cloudflight.jems.server.programme.entity.legalstatus.ProgrammeLegalStatusTranslationId
 import io.cloudflight.jems.server.programme.service.legalstatus.model.ProgrammeLegalStatus
-import io.cloudflight.jems.server.programme.service.legalstatus.model.ProgrammeLegalStatusTranslatedValue
+import io.cloudflight.jems.server.programme.service.legalstatus.model.ProgrammeLegalStatusType
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
 import io.mockk.impl.annotations.MockK
@@ -23,15 +22,15 @@ class ProgrammeLegalStatusPersistenceTest : UnitTest() {
     companion object {
         private val ID = 1L
 
-        private val legalStatusEntity = ProgrammeLegalStatusEntity(id = ID).apply {
+        private val legalStatusEntity = ProgrammeLegalStatusEntity(id = ID, ProgrammeLegalStatusType.OTHER).apply {
             translatedValues.addAll(
                 setOf(
                     ProgrammeLegalStatusTranslationEntity(
-                        translationId = ProgrammeLegalStatusTranslationId(legalStatus = this, language = EN),
+                        translationId = TranslationId(sourceEntity = this, language = EN),
                         description = "EN desc"
                     ),
                     ProgrammeLegalStatusTranslationEntity(
-                        translationId = ProgrammeLegalStatusTranslationId(legalStatus = this, language = SK),
+                        translationId = TranslationId(sourceEntity = this, language = SK),
                         description = "SK desc"
                     ),
                 )
@@ -40,10 +39,11 @@ class ProgrammeLegalStatusPersistenceTest : UnitTest() {
 
         private val legalStatus = ProgrammeLegalStatus(
             id = ID,
-            translatedValues = setOf(
-                ProgrammeLegalStatusTranslatedValue(language = EN, description = "EN desc"),
-                ProgrammeLegalStatusTranslatedValue(language = SK, description = "SK desc"),
-            )
+            description = setOf(
+                InputTranslation(language = EN, translation = "EN desc"),
+                InputTranslation(language = SK, translation = "SK desc")
+            ),
+            type = ProgrammeLegalStatusType.OTHER
         )
 
     }
@@ -51,8 +51,6 @@ class ProgrammeLegalStatusPersistenceTest : UnitTest() {
     @MockK
     lateinit var repository: ProgrammeLegalStatusRepository
 
-    @MockK
-    lateinit var callRepository: CallRepository
 
     @InjectMockKs
     private lateinit var persistence: ProgrammeLegalStatusPersistenceProvider
@@ -66,11 +64,10 @@ class ProgrammeLegalStatusPersistenceTest : UnitTest() {
     @Test
     fun `updateLegalStatuses - everything should be fine`() {
         val toBeRemoved = listOf(
-            ProgrammeLegalStatusEntity(id = 14),
-            ProgrammeLegalStatusEntity(id = 15),
+            ProgrammeLegalStatusEntity(id = 14, ProgrammeLegalStatusType.OTHER),
+            ProgrammeLegalStatusEntity(id = 15, ProgrammeLegalStatusType.OTHER),
         )
 
-        every { callRepository.existsByStatus(CallStatus.PUBLISHED) } returns false
         val slotToDelete = slot<Iterable<ProgrammeLegalStatusEntity>>()
         every { repository.findAllById(setOf(14, 15)) } returns toBeRemoved
         every { repository.deleteInBatch(capture(slotToDelete)) } answers { }
@@ -85,22 +82,6 @@ class ProgrammeLegalStatusPersistenceTest : UnitTest() {
         ).containsExactly(legalStatus)
 
         verify(exactly = 1) { repository.deleteInBatch(toBeRemoved) }
-    }
-
-    @Test
-    fun `updateLegalStatuses - there should not be deletion if programme setup is restricted`() {
-        val toBeRemoved = listOf(
-            ProgrammeLegalStatusEntity(id = 14),
-            ProgrammeLegalStatusEntity(id = 15),
-        )
-
-        every { callRepository.existsByStatus(CallStatus.PUBLISHED) } returns true
-        every { repository.findAllById(setOf(14, 15)) } returns toBeRemoved
-        every { repository.saveAll(any<List<ProgrammeLegalStatusEntity>>()) } returnsArgument 0
-        every { repository.findTop20ByOrderById() } returns emptyList()
-
-        persistence.updateLegalStatuses(toDeleteIds = setOf(14, 15), toPersist = emptyList())
-        verify(exactly = 0) { repository.deleteInBatch(any()) }
     }
 
 }

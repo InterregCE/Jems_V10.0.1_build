@@ -12,6 +12,7 @@ import io.cloudflight.jems.server.programme.service.fund.model.ProgrammeFundTran
 import io.cloudflight.jems.server.programme.service.fund.update_fund.UpdateFund.Companion.MAX_FUNDS
 import io.cloudflight.jems.server.programme.service.fund.update_fund.UpdateFund.Companion.MAX_FUND_ABBREVIATION_LENGTH
 import io.cloudflight.jems.server.programme.service.fund.update_fund.UpdateFund.Companion.MAX_FUND_DESCRIPTION_LENGTH
+import io.cloudflight.jems.server.programme.service.is_programme_setup_locked.IsProgrammeSetupLockedInteractor
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
 import io.mockk.impl.annotations.MockK
@@ -42,6 +43,9 @@ internal class UpdateFundTest : UnitTest() {
     @MockK
     lateinit var persistence: ProgrammeFundPersistence
 
+    @MockK
+    lateinit var isProgrammeSetupLocked: IsProgrammeSetupLockedInteractor
+
     @RelaxedMockK
     lateinit var auditService: AuditService
 
@@ -67,7 +71,7 @@ internal class UpdateFundTest : UnitTest() {
             toDelete,
             toUpdate,
         )
-        every { persistence.isProgrammeSetupRestricted() } returns false
+        every { isProgrammeSetupLocked.isLocked() } returns false
 
         val slotToDeleteIds = slot<Set<Long>>()
         val slotFunds = slot<Set<ProgrammeFund>>()
@@ -135,7 +139,7 @@ internal class UpdateFundTest : UnitTest() {
         ))
 
         every { persistence.getMax20Funds() } returns listOf(toDelete)
-        every { persistence.isProgrammeSetupRestricted() } returns true
+        every { isProgrammeSetupLocked.isLocked() } returns true
 
         assertThrows<MakingChangesWhenProgrammeSetupRestricted> { updateFund.updateFunds(emptyList()) }
     }
@@ -147,7 +151,7 @@ internal class UpdateFundTest : UnitTest() {
         ))
 
         every { persistence.getMax20Funds() } returns listOf(toUpdate)
-        every { persistence.isProgrammeSetupRestricted() } returns true
+        every { isProgrammeSetupLocked.isLocked() } returns true
 
         assertThrows<MakingChangesWhenProgrammeSetupRestricted> { updateFund.updateFunds(listOf(
             toUpdate.copy(selected = !toUpdate.selected)
@@ -161,7 +165,7 @@ internal class UpdateFundTest : UnitTest() {
         ))
 
         every { persistence.getMax20Funds() } returns emptyList()
-        every { persistence.isProgrammeSetupRestricted() } returns false
+        every { isProgrammeSetupLocked.isLocked() } returns false
 
         assertThrows<FundNotFound> { updateFund.updateFunds(listOf(
             toUpdate.copy(selected = !toUpdate.selected)

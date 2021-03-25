@@ -1,9 +1,8 @@
 package io.cloudflight.jems.server.programme.service.fund
 
-import io.cloudflight.jems.server.programme.service.ProgrammePersistence
 import io.cloudflight.jems.server.programme.service.fund.model.ProgrammeFund
 
-interface ProgrammeFundPersistence : ProgrammePersistence {
+interface ProgrammeFundPersistence {
 
     fun getMax20Funds(): List<ProgrammeFund>
 

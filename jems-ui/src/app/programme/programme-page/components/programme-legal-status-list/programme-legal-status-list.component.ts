@@ -10,7 +10,7 @@ import {
   SimpleChanges
 } from '@angular/core';
 import {ViewEditForm} from '@common/components/forms/view-edit-form';
-import {FormArray, FormBuilder, FormGroup} from '@angular/forms';
+import {AbstractControl, FormArray, FormBuilder, FormGroup} from '@angular/forms';
 import {ProgrammeLegalStatusDTO, ProgrammeLegalStatusUpdateDTO} from '@cat/api';
 import {UntilDestroy, untilDestroyed} from '@ngneat/until-destroy';
 import {ProgrammeEditableStateStore} from '../../services/programme-editable-state-store.service';
@@ -78,8 +78,9 @@ export class ProgrammeLegalStatusListComponent extends ViewEditForm implements O
 
   addControl(legalStatus?: ProgrammeLegalStatusDTO): void {
     this.legalStatusesForm.push(this.formBuilder.group({
-      id: this.formBuilder.control(legalStatus?.id),
-      description: this.formBuilder.control(legalStatus?.description || []),
+      id: [legalStatus?.id],
+      type: [legalStatus?.type || ProgrammeLegalStatusDTO.TypeEnum.OTHER ],
+      description: [legalStatus?.description || []],
     }));
   }
 
@@ -96,10 +97,15 @@ export class ProgrammeLegalStatusListComponent extends ViewEditForm implements O
         .map((ls: any) => ({
             id: ls.id,
             description: ls.description,
+            type: ls.type,
           })
         ),
       toDeleteIds: this.toDeleteIds
     });
+  }
+
+  isPublicOrPrivate(formGroup: AbstractControl): boolean {
+    return formGroup.get('type')?.value === ProgrammeLegalStatusDTO.TypeEnum.PRIVATE || formGroup.get('type')?.value === ProgrammeLegalStatusDTO.TypeEnum.PUBLIC;
   }
 
   protected enterEditMode(): void {

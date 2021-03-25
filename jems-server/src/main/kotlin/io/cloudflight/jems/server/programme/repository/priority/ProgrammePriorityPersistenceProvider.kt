@@ -1,9 +1,7 @@
 package io.cloudflight.jems.server.programme.repository.priority
 
 import io.cloudflight.jems.api.programme.dto.priority.ProgrammeObjectivePolicy
-import io.cloudflight.jems.server.call.repository.CallRepository
 import io.cloudflight.jems.server.common.exception.ResourceNotFoundException
-import io.cloudflight.jems.server.programme.repository.ProgrammePersistenceProvider
 import io.cloudflight.jems.server.programme.service.priority.ProgrammePriorityPersistence
 import io.cloudflight.jems.server.programme.service.priority.model.ProgrammePriority
 import io.cloudflight.jems.server.programme.service.priority.model.ProgrammeSpecificObjective
@@ -13,9 +11,8 @@ import org.springframework.transaction.annotation.Transactional
 @Repository
 class ProgrammePriorityPersistenceProvider(
     private val priorityRepo: ProgrammePriorityRepository,
-    private val specificObjectiveRepo: ProgrammeSpecificObjectiveRepository,
-    private val callRepository: CallRepository,
-) : ProgrammePriorityPersistence, ProgrammePersistenceProvider(callRepository) {
+    private val specificObjectiveRepo: ProgrammeSpecificObjectiveRepository
+) : ProgrammePriorityPersistence {
 
     @Transactional(readOnly = true)
     override fun getPriorityById(priorityId: Long): ProgrammePriority =

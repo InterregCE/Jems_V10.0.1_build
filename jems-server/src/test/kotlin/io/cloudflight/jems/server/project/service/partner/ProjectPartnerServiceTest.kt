@@ -67,9 +67,10 @@ internal class ProjectPartnerServiceTest {
         legalStatus = ProgrammeLegalStatusEntity(id = 1,),
         vat = "test vat",
         vatRecovery = ProjectPartnerVatRecovery.Yes
-        )
+    )
     private val partnerTranslatedValues =
         mutableSetOf(ProjectPartnerTranslEntity(TranslationPartnerId(1, SystemLanguage.EN), "test"))
+    private val laegalStatus = ProgrammeLegalStatusEntity(id = 1)
     private val projectPartnerInclTransl =
         projectPartner.copy(translatedValues = partnerTranslatedValues)
     private val projectPartnerWithOrganization = ProjectPartnerEntity(
@@ -81,7 +82,7 @@ internal class ProjectPartnerServiceTest {
         nameInEnglish = "test",
         translatedValues = partnerTranslatedValues,
         partnerType = ProjectTargetGroup.BusinessSupportOrganisation,
-        legalStatus = ProgrammeLegalStatusEntity(id = 1),
+        legalStatus = laegalStatus,
         vat = "test vat",
         vatRecovery = ProjectPartnerVatRecovery.Yes
     )
@@ -129,11 +130,23 @@ internal class ProjectPartnerServiceTest {
 
     @Test
     fun createProjectPartner() {
-        val inputProjectPartner = InputProjectPartnerCreate("partner", ProjectPartnerRole.LEAD_PARTNER, legalStatusId = 1)
-        val projectPartnerWithProject = ProjectPartnerEntity(0, project, inputProjectPartner.abbreviation!!, inputProjectPartner.role!!, legalStatus = legalStatus)
+        val inputProjectPartner =
+            InputProjectPartnerCreate("partner", ProjectPartnerRole.LEAD_PARTNER, legalStatusId = 1)
+        val projectPartnerWithProject = ProjectPartnerEntity(
+            0,
+            project,
+            inputProjectPartner.abbreviation!!,
+            inputProjectPartner.role!!,
+            legalStatus = legalStatus
+        )
         every { projectRepository.findById(1) } returns Optional.of(project)
         every { projectPartnerRepository.countByProjectId(eq(1)) } returns 0
-        every { projectPartnerRepository.findFirstByProjectIdAndRole(1, ProjectPartnerRole.LEAD_PARTNER) } returns Optional.empty()
+        every {
+            projectPartnerRepository.findFirstByProjectIdAndRole(
+                1,
+                ProjectPartnerRole.LEAD_PARTNER
+            )
+        } returns Optional.empty()
         every { projectPartnerRepository.save(projectPartnerWithProject) } returns projectPartner
         every { projectPartnerRepository.save(projectPartner) } returns projectPartnerInclTransl
         every { legalStatusRepo.findById(1) } returns Optional.of(legalStatus)
@@ -148,9 +161,14 @@ internal class ProjectPartnerServiceTest {
 
     @Test
     fun `createProjectPartner not existing`() {
-        val inputProjectPartner = InputProjectPartnerCreate("partner", ProjectPartnerRole.LEAD_PARTNER, null,"test","test", setOf(InputTranslation(
-            SystemLanguage.EN, "test")), ProjectTargetGroup.BusinessSupportOrganisation,
-            1,"test vat", ProjectPartnerVatRecovery.Yes)
+        val inputProjectPartner = InputProjectPartnerCreate(
+            "partner", ProjectPartnerRole.LEAD_PARTNER, null, "test", "test", setOf(
+                InputTranslation(
+                    SystemLanguage.EN, "test"
+                )
+            ), ProjectTargetGroup.BusinessSupportOrganisation,
+            1, "test vat", ProjectPartnerVatRecovery.Yes
+        )
         every { projectRepository.findById(-1) } returns Optional.empty()
         every { legalStatusRepo.findById(1) } returns Optional.of(legalStatus)
         val ex = assertThrows<ResourceNotFoundException> { projectPartnerService.create(-1, inputProjectPartner) }
@@ -164,9 +182,16 @@ internal class ProjectPartnerServiceTest {
         every { legalStatusRepo.findById(1) } returns Optional.of(legalStatus)
 
         val ex = assertThrows<I18nValidationException> {
-            projectPartnerService.create(1, InputProjectPartnerCreate("partner", ProjectPartnerRole.PARTNER, null,"test","test", setOf(InputTranslation(
-                SystemLanguage.EN, "test")), ProjectTargetGroup.BusinessSupportOrganisation,
-                1,"test vat", ProjectPartnerVatRecovery.Yes))
+            projectPartnerService.create(
+                1, InputProjectPartnerCreate(
+                    "partner", ProjectPartnerRole.PARTNER, null, "test", "test", setOf(
+                        InputTranslation(
+                            SystemLanguage.EN, "test"
+                        )
+                    ), ProjectTargetGroup.BusinessSupportOrganisation,
+                    1, "test vat", ProjectPartnerVatRecovery.Yes
+                )
+            )
         }
         assertThat(ex.i18nKey).isEqualTo("project.partner.max.allowed.count.reached")
         assertThat(ex.httpStatus).isEqualTo(HttpStatus.UNPROCESSABLE_ENTITY)
@@ -175,12 +200,24 @@ internal class ProjectPartnerServiceTest {
     @Test
     fun `error on multiple LEAD_PARTNER partner creation attempt`() {
         val inputProjectPartner = InputProjectPartnerCreate("partner", ProjectPartnerRole.PARTNER, legalStatusId = 1)
-        val inputProjectPartnerLead = InputProjectPartnerCreate("partner", ProjectPartnerRole.LEAD_PARTNER, legalStatusId = 1)
-        val projectPartnerWithProject = ProjectPartnerEntity(0, project, inputProjectPartner.abbreviation!!, inputProjectPartner.role!!, legalStatus = legalStatus)
+        val inputProjectPartnerLead =
+            InputProjectPartnerCreate("partner", ProjectPartnerRole.LEAD_PARTNER, legalStatusId = 1)
+        val projectPartnerWithProject = ProjectPartnerEntity(
+            0,
+            project,
+            inputProjectPartner.abbreviation!!,
+            inputProjectPartner.role!!,
+            legalStatus = legalStatus
+        )
 
         every { projectRepository.findById(1) } returns Optional.of(project)
         every { projectPartnerRepository.countByProjectId(eq(1)) } returns 2
-        every { projectPartnerRepository.findFirstByProjectIdAndRole(1, ProjectPartnerRole.LEAD_PARTNER) } returns Optional.of(projectPartnerWithProject)
+        every {
+            projectPartnerRepository.findFirstByProjectIdAndRole(
+                1,
+                ProjectPartnerRole.LEAD_PARTNER
+            )
+        } returns Optional.of(projectPartnerWithProject)
         every { projectPartnerRepository.save(projectPartnerWithProject) } returns projectPartner
         every { projectPartnerRepository.save(projectPartner) } returns projectPartnerInclTransl
         every { legalStatusRepo.findById(1) } returns Optional.of(legalStatus)
@@ -198,8 +235,15 @@ internal class ProjectPartnerServiceTest {
 
     @Test
     fun updateProjectPartner() {
-        val projectPartnerUpdate = InputProjectPartnerUpdate(1, "updated", ProjectPartnerRole.PARTNER, legalStatusId = 1)
-        val updatedProjectPartner = ProjectPartnerEntity(1, project, projectPartnerUpdate.abbreviation!!, projectPartnerUpdate.role!!, legalStatus = legalStatus)
+        val projectPartnerUpdate =
+            InputProjectPartnerUpdate(1, "updated", ProjectPartnerRole.PARTNER, legalStatusId = 1)
+        val updatedProjectPartner = ProjectPartnerEntity(
+            1,
+            project,
+            projectPartnerUpdate.abbreviation!!,
+            projectPartnerUpdate.role!!,
+            legalStatus = legalStatus
+        )
         every { projectPartnerRepository.findById(1) } returns Optional.of(projectPartner)
         every { projectPartnerRepository.save(updatedProjectPartner) } returns updatedProjectPartner
         every { legalStatusRepo.findById(1) } returns Optional.of(legalStatus)
@@ -210,15 +254,33 @@ internal class ProjectPartnerServiceTest {
 
     @Test
     fun `updateProjectPartner to lead when no other leads`() {
-        val projectPartnerUpdate = InputProjectPartnerUpdate(3, "updated", ProjectPartnerRole.LEAD_PARTNER, legalStatusId = 1)
-        val updatedProjectPartner = ProjectPartnerEntity(3, project, projectPartnerUpdate.abbreviation!!, projectPartnerUpdate.role!!, legalStatus = legalStatus)
+        val projectPartnerUpdate =
+            InputProjectPartnerUpdate(3, "updated", ProjectPartnerRole.LEAD_PARTNER, legalStatusId = 1)
+        val updatedProjectPartner = ProjectPartnerEntity(
+            3,
+            project,
+            projectPartnerUpdate.abbreviation!!,
+            projectPartnerUpdate.role!!,
+            legalStatus = legalStatus
+        )
         // we are changing partner to Lead Partner
-        every { projectPartnerRepository.findById(3) } returns Optional.of(projectPartner.copy(id = 3, role = ProjectPartnerRole.PARTNER))
-        every { projectPartnerRepository.findFirstByProjectIdAndRole(1, ProjectPartnerRole.LEAD_PARTNER) } returns Optional.empty()
+        every { projectPartnerRepository.findById(3) } returns Optional.of(
+            projectPartner.copy(
+                id = 3,
+                role = ProjectPartnerRole.PARTNER
+            )
+        )
+        every {
+            projectPartnerRepository.findFirstByProjectIdAndRole(
+                1,
+                ProjectPartnerRole.LEAD_PARTNER
+            )
+        } returns Optional.empty()
         // to update role of Partner (id=3):
         every { projectPartnerRepository.save(updatedProjectPartner) } returns updatedProjectPartner
         // to update sort-numbers for both Partners:
-        val projectPartners = listOf(partner(3, ProjectPartnerRole.LEAD_PARTNER), partner(2, ProjectPartnerRole.PARTNER))
+        val projectPartners =
+            listOf(partner(3, ProjectPartnerRole.LEAD_PARTNER), partner(2, ProjectPartnerRole.PARTNER))
         every { projectPartnerRepository.findTop30ByProjectId(1, any<Sort>()) } returns projectPartners
         every { projectPartnerRepository.saveAll(any<Iterable<ProjectPartnerEntity>>()) } returnsArgument 0
 
@@ -229,10 +291,12 @@ internal class ProjectPartnerServiceTest {
         val updatedPartners = slot<Iterable<ProjectPartnerEntity>>()
         verify { projectPartnerRepository.saveAll(capture(updatedPartners)) }
         assertThat(updatedPartners.captured)
-            .isEqualTo(listOf(
-                partner(3, ProjectPartnerRole.LEAD_PARTNER).copy(sortNumber = 1),
-                partner(2, ProjectPartnerRole.PARTNER).copy(sortNumber = 2)
-            ))
+            .isEqualTo(
+                listOf(
+                    partner(3, ProjectPartnerRole.LEAD_PARTNER).copy(sortNumber = 1),
+                    partner(2, ProjectPartnerRole.PARTNER).copy(sortNumber = 2)
+                )
+            )
     }
 
     @Test
@@ -243,11 +307,18 @@ internal class ProjectPartnerServiceTest {
             "test",
             "test",
             "test@ems.eu",
-            "test")
-        val projectPartner = ProjectPartnerEntity(1, project, "updated", ProjectPartnerRole.PARTNER, legalStatus = ProgrammeLegalStatusEntity(id = 1), partnerType = ProjectTargetGroup.EducationTrainingCentreAndSchool)
+            "test"
+        )
+        val projectPartner = ProjectPartnerEntity(
+            1,
+            project,
+            "updated",
+            ProjectPartnerRole.PARTNER,
+            legalStatus = ProgrammeLegalStatusEntity(id = 1),
+            partnerType = ProjectTargetGroup.EducationTrainingCentreAndSchool
+        )
         val contactPersonsEntity = setOf(projectPartnerContactUpdate.toEntity(projectPartner))
-        val updatedProjectPartner = ProjectPartnerEntity(id = 1, project =  project, abbreviation = "updated", role = ProjectPartnerRole.PARTNER,
-            contacts = contactPersonsEntity, legalStatus = ProgrammeLegalStatusEntity(id = 1), partnerType = ProjectTargetGroup.EducationTrainingCentreAndSchool)
+        val updatedProjectPartner = projectPartner.copy(contacts = contactPersonsEntity)
 
         every { projectPartnerRepository.findById(1) } returns Optional.of(projectPartner)
         every { projectPartnerRepository.save(updatedProjectPartner) } returns updatedProjectPartner
@@ -265,11 +336,17 @@ internal class ProjectPartnerServiceTest {
             "test",
             "test",
             "test@ems.eu",
-            "test")
+            "test"
+        )
         val contactPersonsDto = setOf(projectPartnerContactUpdate)
         every { projectPartnerRepository.findById(eq(-1)) } returns Optional.empty()
         every { legalStatusRepo.findById(1) } returns Optional.of(legalStatus)
-        val exception = assertThrows<ResourceNotFoundException> { projectPartnerService.updatePartnerContacts(-1, contactPersonsDto) }
+        val exception = assertThrows<ResourceNotFoundException> {
+            projectPartnerService.updatePartnerContacts(
+                -1,
+                contactPersonsDto
+            )
+        }
         assertThat(exception.entity).isEqualTo("projectPartner")
     }
 
@@ -278,10 +355,18 @@ internal class ProjectPartnerServiceTest {
         val projectPartnerMotivationUpdate = ProjectPartnerMotivationDTO(
             setOf(InputTranslation(SystemLanguage.EN, "test")),
             setOf(InputTranslation(SystemLanguage.EN, "test")),
-            setOf(InputTranslation(SystemLanguage.EN, "test")))
-        val projectPartner = ProjectPartnerEntity(1, project, "updated", ProjectPartnerRole.PARTNER, legalStatus = ProgrammeLegalStatusEntity(id = 1), partnerType = ProjectTargetGroup.EducationTrainingCentreAndSchool)
-        val updatedProjectPartner = ProjectPartnerEntity(id = 1, project = project, abbreviation = "updated", role = ProjectPartnerRole.PARTNER,
-            motivation = projectPartnerMotivationUpdate.toEntity(projectPartner.id), legalStatus = ProgrammeLegalStatusEntity(id = 1), partnerType = ProjectTargetGroup.EducationTrainingCentreAndSchool)
+            setOf(InputTranslation(SystemLanguage.EN, "test"))
+        )
+        val projectPartner = ProjectPartnerEntity(
+            1,
+            project,
+            "updated",
+            ProjectPartnerRole.PARTNER,
+            legalStatus = ProgrammeLegalStatusEntity(id = 1),
+            partnerType = ProjectTargetGroup.EducationTrainingCentreAndSchool
+        )
+        val updatedProjectPartner =
+            projectPartner.copy(motivation = projectPartnerMotivationUpdate.toEntity(projectPartner.id))
 
         every { projectPartnerRepository.findById(1) } returns Optional.of(projectPartner)
         every { projectPartnerRepository.save(updatedProjectPartner) } returns updatedProjectPartner
@@ -296,29 +381,39 @@ internal class ProjectPartnerServiceTest {
         val projectPartnerContributionUpdate = ProjectPartnerMotivationDTO(
             setOf(InputTranslation(SystemLanguage.EN, "test")),
             setOf(InputTranslation(SystemLanguage.EN, "test")),
-            setOf(InputTranslation(SystemLanguage.EN, "test")))
+            setOf(InputTranslation(SystemLanguage.EN, "test"))
+        )
         every { projectPartnerRepository.findById(eq(-1)) } returns Optional.empty()
         every { legalStatusRepo.findById(1) } returns Optional.of(legalStatus)
-        val exception = assertThrows<ResourceNotFoundException> { projectPartnerService.updatePartnerMotivation(-1, projectPartnerContributionUpdate) }
+        val exception = assertThrows<ResourceNotFoundException> {
+            projectPartnerService.updatePartnerMotivation(
+                -1,
+                projectPartnerContributionUpdate
+            )
+        }
         assertThat(exception.entity).isEqualTo("projectPartner")
     }
 
     @Test
     fun createProjectPartnerWithOrganization() {
-        val inputProjectPartner = InputProjectPartnerCreate("partner", ProjectPartnerRole.LEAD_PARTNER, null, "test", "test", setOf(InputTranslation(
-            SystemLanguage.EN, "test")), legalStatusId = 1)
-        val projectPartnerWithProject = ProjectPartnerEntity(
-            project = project,
-            abbreviation = inputProjectPartner.abbreviation!!,
-            role =  inputProjectPartner.role!!,
-            nameInOriginalLanguage = projectPartnerWithOrganization.nameInOriginalLanguage,
-            nameInEnglish = projectPartnerWithOrganization.nameInEnglish,
-            legalStatus = ProgrammeLegalStatusEntity(id = 1)
+        val inputProjectPartner = InputProjectPartnerCreate(
+            "partner", ProjectPartnerRole.LEAD_PARTNER, null, "test", "test", setOf(
+                InputTranslation(
+                    SystemLanguage.EN, "test"
+                )
+            ), legalStatusId = 1
         )
+        val projectPartnerWithProject = inputProjectPartner.toEntity(project, legalStatus)
+
         every { projectRepository.findById(0) } returns Optional.empty()
         every { projectRepository.findById(1) } returns Optional.of(project)
         every { projectPartnerRepository.countByProjectId(any()) } returns 0
-        every { projectPartnerRepository.findFirstByProjectIdAndRole(1, ProjectPartnerRole.LEAD_PARTNER) } returns Optional.empty()
+        every {
+            projectPartnerRepository.findFirstByProjectIdAndRole(
+                1,
+                ProjectPartnerRole.LEAD_PARTNER
+            )
+        } returns Optional.empty()
         every { projectPartnerRepository.save(projectPartnerWithProject) } returns projectPartnerWithOrganization
         every { projectPartnerRepository.save(projectPartnerWithOrganization) } returns projectPartnerWithOrganization
         // also handle sorting
@@ -329,14 +424,24 @@ internal class ProjectPartnerServiceTest {
         every { legalStatusRepo.findById(1) } returns Optional.of(legalStatus)
 
         assertThrows<ResourceNotFoundException> { projectPartnerService.create(0, inputProjectPartner) }
-        assertThat(projectPartnerService.create(1, inputProjectPartner)).isEqualTo(projectPartnerWithOrganization.toOutputProjectPartnerDetail())
+        assertThat(
+            projectPartnerService.create(
+                1,
+                inputProjectPartner
+            )
+        ).isEqualTo(projectPartnerWithOrganization.toOutputProjectPartnerDetail())
         verify { projectPartnerRepository.save(projectPartnerWithProject) }
     }
 
     @Test
     fun updateProjectPartnerWithOrganization() {
-        val projectPartnerUpdate =  InputProjectPartnerUpdate(1, "updated", ProjectPartnerRole.PARTNER, null, "test", "test", setOf(InputTranslation(
-            SystemLanguage.EN, "test")), legalStatusId = 1)
+        val projectPartnerUpdate = InputProjectPartnerUpdate(
+            1, "updated", ProjectPartnerRole.PARTNER, null, "test", "test", setOf(
+                InputTranslation(
+                    SystemLanguage.EN, "test"
+                )
+            ), legalStatusId = 1
+        )
         val updatedProjectPartner = ProjectPartnerEntity(
             id = 1,
             project = project,
@@ -345,7 +450,7 @@ internal class ProjectPartnerServiceTest {
             nameInOriginalLanguage = projectPartnerWithOrganization.nameInOriginalLanguage,
             nameInEnglish = projectPartnerWithOrganization.nameInEnglish,
             translatedValues = projectPartnerWithOrganization.translatedValues,
-            legalStatus = ProgrammeLegalStatusEntity(id = 1)
+            legalStatus = legalStatus
         )
         every { projectPartnerRepository.findById(1) } returns Optional.of(projectPartner)
         every { projectPartnerRepository.save(updatedProjectPartner) } returns updatedProjectPartner
@@ -367,7 +472,9 @@ internal class ProjectPartnerServiceTest {
             translatedValues = projectPartnerWithOrganization.translatedValues,
             legalStatus = ProgrammeLegalStatusEntity(id = 1)
         )
-        every { projectPartnerRepository.findById(projectPartnerWithOrganization.id) } returns Optional.of(projectPartnerWithOrganization)
+        every { projectPartnerRepository.findById(projectPartnerWithOrganization.id) } returns Optional.of(
+            projectPartnerWithOrganization
+        )
         every { projectPartnerRepository.deleteById(projectPartnerWithOrganization.id) } returns Unit
         every { projectPartnerRepository.findTop30ByProjectId(project.id, any<Sort>()) } returns emptySet()
         every { projectPartnerRepository.saveAll(emptyList()) } returns emptyList()

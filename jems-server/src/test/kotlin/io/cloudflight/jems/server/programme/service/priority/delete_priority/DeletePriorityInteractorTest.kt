@@ -5,6 +5,7 @@ import io.cloudflight.jems.api.programme.dto.priority.ProgrammeObjectivePolicy.R
 import io.cloudflight.jems.server.common.exception.I18nFieldError
 import io.cloudflight.jems.server.common.exception.I18nValidationException
 import io.cloudflight.jems.server.common.exception.ResourceNotFoundException
+import io.cloudflight.jems.server.programme.service.is_programme_setup_locked.IsProgrammeSetupLockedInteractor
 import io.cloudflight.jems.server.programme.service.priority.ProgrammePriorityPersistence
 import io.cloudflight.jems.server.programme.service.priority.testPriority
 import io.mockk.every
@@ -24,12 +25,15 @@ class DeletePriorityInteractorTest {
     @MockK
     lateinit var persistence: ProgrammePriorityPersistence
 
+    @MockK
+    lateinit var isProgrammeSetupLocked: IsProgrammeSetupLockedInteractor
+
     @InjectMockKs
     private lateinit var deletePriority: DeletePriority
 
     @Test
     fun `delete priority - OK`() {
-        every { persistence.isProgrammeSetupRestricted() } returns false
+        every { isProgrammeSetupLocked.isLocked() } returns false
         every { persistence.getPriorityById(1L) } returns testPriority
         every { persistence.getObjectivePoliciesAlreadyInUse() } returns setOf(IndustrialTransition)
         every { persistence.delete(1L) } answers {}
@@ -40,7 +44,7 @@ class DeletePriorityInteractorTest {
 
     @Test
     fun `delete priority - specific objective in use`() {
-        every { persistence.isProgrammeSetupRestricted() } returns false
+        every { isProgrammeSetupLocked.isLocked() } returns false
         every { persistence.getPriorityById(1L) } returns testPriority
         every { persistence.getObjectivePoliciesAlreadyInUse() } returns setOf(RenewableEnergy)
 
@@ -54,14 +58,14 @@ class DeletePriorityInteractorTest {
 
     @Test
     fun `delete priority - not existing`() {
-        every { persistence.isProgrammeSetupRestricted() } returns false
+        every { isProgrammeSetupLocked.isLocked() } returns false
         every { persistence.getPriorityById(-1L) } throws ResourceNotFoundException("programmePriority")
         assertThrows<ResourceNotFoundException> { deletePriority.deletePriority(-1L) }
     }
 
     @Test
     fun `delete priority - programme setup already locked`() {
-        every { persistence.isProgrammeSetupRestricted() } returns true
+        every { isProgrammeSetupLocked.isLocked() } returns true
         assertThrows<DeletionWhenProgrammeSetupRestricted> { deletePriority.deletePriority(-2L) }
     }
 
