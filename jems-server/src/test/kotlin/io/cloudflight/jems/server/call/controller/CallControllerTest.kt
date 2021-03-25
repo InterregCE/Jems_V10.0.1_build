@@ -15,7 +15,7 @@ import io.cloudflight.jems.api.programme.dto.language.SystemLanguage.EN
 import io.cloudflight.jems.api.programme.dto.language.SystemLanguage.SK
 import io.cloudflight.jems.api.programme.dto.priority.ProgrammeObjective.PO1
 import io.cloudflight.jems.api.programme.dto.priority.ProgrammeObjectivePolicy.AdvancedTechnologies
-import io.cloudflight.jems.api.programme.dto.priority.ProgrammeObjectivePolicy.Digitalization
+import io.cloudflight.jems.api.programme.dto.priority.ProgrammeObjectivePolicy.Digitisation
 import io.cloudflight.jems.api.programme.dto.priority.ProgrammePriorityDTO
 import io.cloudflight.jems.api.programme.dto.priority.ProgrammeSpecificObjectiveDTO
 import io.cloudflight.jems.api.programme.dto.strategy.ProgrammeStrategy.AtlanticStrategy
@@ -79,7 +79,7 @@ class CallControllerTest: UnitTest() {
                 objective = PO1,
                 specificObjectives = listOf(
                     ProgrammeSpecificObjective(AdvancedTechnologies, "CODE_ADVA"),
-                    ProgrammeSpecificObjective(Digitalization, "CODE_DIGI"),
+                    ProgrammeSpecificObjective(Digitisation, "CODE_DIGI"),
                 )
             )),
             strategies = sortedSetOf(EUStrategyBalticSeaRegion, AtlanticStrategy),
@@ -122,7 +122,7 @@ class CallControllerTest: UnitTest() {
                 objective = PO1,
                 specificObjectives = listOf(
                     ProgrammeSpecificObjectiveDTO(AdvancedTechnologies, "CODE_ADVA"),
-                    ProgrammeSpecificObjectiveDTO(Digitalization, "CODE_DIGI"),
+                    ProgrammeSpecificObjectiveDTO(Digitisation, "CODE_DIGI"),
                 )
             )),
             strategies = listOf(EUStrategyBalticSeaRegion, AtlanticStrategy),
@@ -149,7 +149,7 @@ class CallControllerTest: UnitTest() {
                 InputTranslation(language = EN, translation = "EN desc"),
                 InputTranslation(language = SK, translation = "SK desc"),
             ),
-            priorityPolicies = setOf(AdvancedTechnologies, Digitalization),
+            priorityPolicies = setOf(AdvancedTechnologies, Digitisation),
             strategies = setOf(EUStrategyBalticSeaRegion, AtlanticStrategy),
             fundIds = setOf(10L),
         )
@@ -166,7 +166,7 @@ class CallControllerTest: UnitTest() {
                 InputTranslation(language = EN, translation = "EN desc"),
                 InputTranslation(language = SK, translation = "SK desc"),
             ),
-            priorityPolicies = setOf(AdvancedTechnologies, Digitalization),
+            priorityPolicies = setOf(AdvancedTechnologies, Digitisation),
             strategies = setOf(EUStrategyBalticSeaRegion, AtlanticStrategy),
             fundIds = setOf(10L),
         )

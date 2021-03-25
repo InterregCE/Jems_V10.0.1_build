@@ -5,7 +5,7 @@ import io.cloudflight.jems.api.call.dto.flatrate.FlatRateType
 import io.cloudflight.jems.api.programme.dto.language.SystemLanguage
 import io.cloudflight.jems.api.programme.dto.priority.ProgrammeObjective.PO1
 import io.cloudflight.jems.api.programme.dto.priority.ProgrammeObjectivePolicy.AdvancedTechnologies
-import io.cloudflight.jems.api.programme.dto.priority.ProgrammeObjectivePolicy.Digitalization
+import io.cloudflight.jems.api.programme.dto.priority.ProgrammeObjectivePolicy.Digitisation
 import io.cloudflight.jems.api.programme.dto.strategy.ProgrammeStrategy
 import io.cloudflight.jems.api.project.dto.InputTranslation
 import io.cloudflight.jems.server.UnitTest
@@ -58,7 +58,7 @@ class GetCallTest: UnitTest() {
                 objective = PO1,
                 specificObjectives = listOf(
                     ProgrammeSpecificObjective(AdvancedTechnologies, "CODE_ADVA"),
-                    ProgrammeSpecificObjective(Digitalization, "CODE_DIGI"),
+                    ProgrammeSpecificObjective(Digitisation, "CODE_DIGI"),
                 )
             )),
             strategies = sortedSetOf(ProgrammeStrategy.EUStrategyBalticSeaRegion, ProgrammeStrategy.AtlanticStrategy),

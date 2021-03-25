@@ -6,7 +6,7 @@ import io.cloudflight.jems.server.programme.service.priority.model.ProgrammeSpec
 
 interface ProgrammePriorityPersistence {
     fun getPriorityById(priorityId: Long): ProgrammePriority
-    fun getAllMax45Priorities(): List<ProgrammePriority>
+    fun getAllMax56Priorities(): List<ProgrammePriority>
     fun create(priority: ProgrammePriority): ProgrammePriority
     fun update(priority: ProgrammePriority): ProgrammePriority
     fun delete(priorityId: Long)

@@ -2,7 +2,7 @@ package io.cloudflight.jems.server.programme.service.priority.get_priority
 
 import io.cloudflight.jems.api.programme.dto.priority.ProgrammeObjective.PO2
 import io.cloudflight.jems.api.programme.dto.priority.ProgrammeObjectivePolicy
-import io.cloudflight.jems.api.programme.dto.priority.ProgrammeObjectivePolicy.GreenUrban
+import io.cloudflight.jems.api.programme.dto.priority.ProgrammeObjectivePolicy.GreenInfrastructure
 import io.cloudflight.jems.api.programme.dto.priority.ProgrammeObjectivePolicy.RenewableEnergy
 import io.cloudflight.jems.server.common.exception.ResourceNotFoundException
 import io.cloudflight.jems.server.programme.service.priority.ProgrammePriorityPersistence
@@ -28,7 +28,7 @@ class GetPriorityInteractorTest {
 
     @Test
     fun getAllPriorities() {
-        every { persistence.getAllMax45Priorities() } returns listOf(testPriority)
+        every { persistence.getAllMax56Priorities() } returns listOf(testPriority)
         assertThat(getPriority.getAllPriorities()).containsExactly(testPriority.copy())
     }
 
@@ -50,11 +50,11 @@ class GetPriorityInteractorTest {
         allValuesWithoutRenewableEnergy.remove(RenewableEnergy)
 
         every { persistence.getObjectivePoliciesAlreadySetUp() } returns allValuesWithoutRenewableEnergy
-        every { persistence.getObjectivePoliciesAlreadyInUse() } returns listOf(GreenUrban, RenewableEnergy)
+        every { persistence.getObjectivePoliciesAlreadyInUse() } returns listOf(GreenInfrastructure, RenewableEnergy)
 
         assertThat(getPriority.getAvailableSetup()).isEqualTo(ProgrammePriorityAvailableSetup(
             freePrioritiesWithPolicies = mapOf(PO2 to listOf(RenewableEnergy)),
-            objectivePoliciesAlreadyInUse = listOf(GreenUrban, RenewableEnergy),
+            objectivePoliciesAlreadyInUse = listOf(GreenInfrastructure, RenewableEnergy),
         ))
     }
 

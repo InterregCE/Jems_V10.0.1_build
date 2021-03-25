@@ -4,7 +4,7 @@ import io.cloudflight.jems.api.call.dto.CallStatus
 import io.cloudflight.jems.api.programme.dto.language.SystemLanguage
 import io.cloudflight.jems.api.programme.dto.priority.ProgrammeObjective
 import io.cloudflight.jems.api.programme.dto.priority.ProgrammeObjectivePolicy.AdvancedTechnologies
-import io.cloudflight.jems.api.programme.dto.priority.ProgrammeObjectivePolicy.Digitalization
+import io.cloudflight.jems.api.programme.dto.priority.ProgrammeObjectivePolicy.Digitisation
 import io.cloudflight.jems.api.programme.dto.strategy.ProgrammeStrategy.AtlanticStrategy
 import io.cloudflight.jems.api.programme.dto.strategy.ProgrammeStrategy.EUStrategyBalticSeaRegion
 import io.cloudflight.jems.api.project.dto.InputTranslation
@@ -46,7 +46,7 @@ class CreateCallTest: UnitTest() {
                 InputTranslation(language = SystemLanguage.EN, translation = "EN desc"),
                 InputTranslation(language = SystemLanguage.SK, translation = "SK desc"),
             ),
-            priorityPolicies = setOf(Digitalization, AdvancedTechnologies),
+            priorityPolicies = setOf(Digitisation, AdvancedTechnologies),
             strategies = setOf(EUStrategyBalticSeaRegion, AtlanticStrategy),
             fundIds = setOf(FUND_ID),
         )
@@ -68,7 +68,7 @@ class CreateCallTest: UnitTest() {
                 objective = ProgrammeObjective.PO1,
                 specificObjectives = listOf(
                     ProgrammeSpecificObjective(AdvancedTechnologies, "CODE_ADVA"),
-                    ProgrammeSpecificObjective(Digitalization, "CODE_DIGI"),
+                    ProgrammeSpecificObjective(Digitisation, "CODE_DIGI"),
                 )
             )),
             strategies = sortedSetOf(EUStrategyBalticSeaRegion, AtlanticStrategy),
@@ -120,7 +120,7 @@ class CreateCallTest: UnitTest() {
                 "],\n" +
                 "objectives set to [\n" +
                 "  AdvancedTechnologies\n" +
-                "  Digitalization\n" +
+                "  Digitisation\n" +
                 "],\n" +
                 "strategies set to [\n" +
                 "  EUStrategyBalticSeaRegion\n" +

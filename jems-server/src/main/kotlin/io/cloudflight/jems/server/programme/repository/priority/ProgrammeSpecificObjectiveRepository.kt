@@ -32,10 +32,10 @@ interface ProgrammeSpecificObjectiveRepository :
     JpaRepository<ProgrammeSpecificObjectiveEntity, ProgrammeObjectivePolicy> , CustomProgrammeSpecificObjectiveRepository{
 
     // max = ProgrammeObjectivePolicy enum size
-    fun findTop45ByOrderByProgrammeObjectivePolicy(): Iterable<ProgrammeSpecificObjectiveEntity>
+    fun findTop56ByOrderByProgrammeObjectivePolicy(): Iterable<ProgrammeSpecificObjectiveEntity>
 
     override fun findAll(): List<ProgrammeSpecificObjectiveEntity> =
-        throw UnsupportedOperationException("use findTop45ByOrderByProgrammeObjectivePolicy")
+        throw UnsupportedOperationException("use findTop56ByOrderByProgrammeObjectivePolicy")
 
     @Query(
         nativeQuery = true, value = "SELECT programme_priority_id " +

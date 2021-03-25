@@ -5,7 +5,7 @@ import io.cloudflight.jems.api.programme.dto.priority.ProgrammeObjective
 import io.cloudflight.jems.api.programme.dto.priority.ProgrammeObjectivePolicy
 import io.cloudflight.jems.api.programme.dto.priority.ProgrammeObjectivePolicy.CircularEconomy
 import io.cloudflight.jems.api.programme.dto.priority.ProgrammeObjectivePolicy.EnergyEfficiency
-import io.cloudflight.jems.api.programme.dto.priority.ProgrammeObjectivePolicy.GreenUrban
+import io.cloudflight.jems.api.programme.dto.priority.ProgrammeObjectivePolicy.GreenInfrastructure
 import io.cloudflight.jems.api.programme.dto.priority.ProgrammeObjectivePolicy.RenewableEnergy
 import io.cloudflight.jems.api.programme.dto.priority.ProgrammeObjectivePolicy.WaterManagement
 import io.cloudflight.jems.api.project.dto.InputTranslation
@@ -41,7 +41,7 @@ class UpdatePriorityInteractorTest {
             title = setOf(InputTranslation(SystemLanguage.EN, "PO-02 title")),
             objective = ProgrammeObjective.PO2,
             specificObjectives = listOf(
-                ProgrammeSpecificObjective(programmeObjectivePolicy = GreenUrban, code = "GU"),
+                ProgrammeSpecificObjective(programmeObjectivePolicy = GreenInfrastructure, code = "GU"),
                 ProgrammeSpecificObjective(programmeObjectivePolicy = CircularEconomy, code = "CE"),
                 ProgrammeSpecificObjective(programmeObjectivePolicy = WaterManagement, code = "WM"),
             ),
@@ -73,7 +73,7 @@ class UpdatePriorityInteractorTest {
         every { persistence.getPriorityIdByCode(toUpdatePriority.code) } returns null
         // we can find existing one
         every { persistence.getPriorityIdForPolicyIfExists(RenewableEnergy) } returns ID
-        every { persistence.getPriorityIdForPolicyIfExists(GreenUrban) } returns ID
+        every { persistence.getPriorityIdForPolicyIfExists(GreenInfrastructure) } returns ID
         // new "to be set" are not used
         every { persistence.getPriorityIdForPolicyIfExists(CircularEconomy) } returns null
         every { persistence.getPriorityIdForPolicyIfExists(WaterManagement) } returns null
@@ -92,7 +92,7 @@ class UpdatePriorityInteractorTest {
             description = "Programme priority data changed for '_old_' '[InputTranslation(language=EN, translation=_oldTitle_)]':\n" +
                 "code changed from _old_ to PO-02,\n" +
                 "title changed from [InputTranslation(language=EN, translation=_oldTitle_)] to [InputTranslation(language=EN, translation=PO-02 title)],\n" +
-                "specificObjectives changed from [RenewableEnergy, GreenUrban] to [WaterManagement, CircularEconomy, GreenUrban]",
+                "specificObjectives changed from [RenewableEnergy, GreenInfrastructure] to [WaterManagement, CircularEconomy, GreenInfrastructure]",
         ))
     }
 
@@ -199,7 +199,7 @@ class UpdatePriorityInteractorTest {
                     code = NOT_UNIQUE_CODE
                 ),
                 ProgrammeSpecificObjective(
-                    programmeObjectivePolicy = GreenUrban,
+                    programmeObjectivePolicy = GreenInfrastructure,
                     code = NOT_UNIQUE_CODE
                 ),
             )
@@ -246,7 +246,7 @@ class UpdatePriorityInteractorTest {
         // code and title are both used, but they are used by this priority we are updating so it is OK
         every { persistence.getPriorityIdByCode(testPriority.code) } returns ID
         // this one is used by priority we are updating now
-        every { persistence.getPriorityIdForPolicyIfExists(GreenUrban) } returns ID
+        every { persistence.getPriorityIdForPolicyIfExists(GreenInfrastructure) } returns ID
         // this one is not used
         every { persistence.getPriorityIdForPolicyIfExists(CircularEconomy) } returns null
         // this one IS ALREADY USED
@@ -265,7 +265,7 @@ class UpdatePriorityInteractorTest {
         // code and title are both not used yet
         every { persistence.getPriorityIdByCode(testPriority.code) } returns null
         // this one is used by priority we are updating now
-        every { persistence.getPriorityIdForPolicyIfExists(GreenUrban) } returns ID
+        every { persistence.getPriorityIdForPolicyIfExists(GreenInfrastructure) } returns ID
         // these are not used
         every { persistence.getPriorityIdForPolicyIfExists(CircularEconomy) } returns null
         every { persistence.getPriorityIdForPolicyIfExists(WaterManagement) } returns null
@@ -294,13 +294,13 @@ class UpdatePriorityInteractorTest {
         // code and title are both not used yet
         every { persistence.getPriorityIdByCode(testPriority.code) } returns null
         // this one is used by priority we are updating now
-        every { persistence.getPriorityIdForPolicyIfExists(GreenUrban) } returns ID
+        every { persistence.getPriorityIdForPolicyIfExists(GreenInfrastructure) } returns ID
         every { persistence.getPrioritiesBySpecificObjectiveCodes(setOf("GU")) } returns listOf(priority)
         // programme setup is already locked
         every { isProgrammeSetupLocked.isLocked() } returns true
 
         val toUpdateWithoutRenewableEnergy = toUpdatePriority.copy(specificObjectives = listOf(
-            ProgrammeSpecificObjective(programmeObjectivePolicy = GreenUrban, code = "GU"),
+            ProgrammeSpecificObjective(programmeObjectivePolicy = GreenInfrastructure, code = "GU"),
         ))
         assertThrows<UpdateWhenProgrammeSetupRestricted> { updatePriority.updatePriority(ID, toUpdateWithoutRenewableEnergy) }
     }
@@ -312,7 +312,7 @@ class UpdatePriorityInteractorTest {
         // code and title are both not used yet
         every { persistence.getPriorityIdByCode(testPriority.code) } returns null
         // this one is used by priority we are updating now
-        every { persistence.getPriorityIdForPolicyIfExists(GreenUrban) } returns ID
+        every { persistence.getPriorityIdForPolicyIfExists(GreenInfrastructure) } returns ID
         every { persistence.getPrioritiesBySpecificObjectiveCodes(setOf("GU")) } returns listOf(priority)
         // programme setup still open for changes
         every { isProgrammeSetupLocked.isLocked() } returns false
@@ -320,7 +320,7 @@ class UpdatePriorityInteractorTest {
         every { persistence.getObjectivePoliciesAlreadyInUse() } returns setOf(RenewableEnergy)
 
         val toUpdateWithoutRenewableEnergy = toUpdatePriority.copy(specificObjectives = listOf(
-            ProgrammeSpecificObjective(programmeObjectivePolicy = GreenUrban, code = "GU"),
+            ProgrammeSpecificObjective(programmeObjectivePolicy = GreenInfrastructure, code = "GU"),
         ))
 
         val ex = assertThrows<I18nValidationException> { updatePriority.updatePriority(ID, toUpdateWithoutRenewableEnergy) }
