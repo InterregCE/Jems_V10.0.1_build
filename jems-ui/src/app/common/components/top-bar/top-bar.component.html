@@ -41,7 +41,7 @@
             <li class="nav-item language-list" *ngIf="languageSettings$ | async as languageSettings">
                 <mat-select #langSelect
                             class="language-select nav-link"
-                            aria-label="Language select"
+                            aria-label="{{'topbar.help.language.select' | translate}}"
                             [value]="translate.currentLang"
                             (selectionChange)="changeLanguage(langSelect.value)">
                     <mat-option
