@@ -81,6 +81,9 @@ class ProjectPartnerServiceImpl(
         if (projectPartner.role!!.isLead)
             validateLeadPartnerChange(projectId, projectPartner.oldLeadPartnerId)
 
+        // prevent multiple partners with same abbreviation
+        validatePartnerAbbreviationUnique(projectId, abbreviation = projectPartner.abbreviation!!)
+
         val partnerCreated = projectPartnerRepo.save(projectPartner.toEntity(project = project, legalStatus = legalStatus))
         // save translations for which the just created Id is needed
         projectPartnerRepo.save(
@@ -97,6 +100,17 @@ class ProjectPartnerServiceImpl(
             validateOnlyOneLeadPartner(projectId)
         else
             updateOldLeadPartner(projectId, oldLeadPartnerId)
+    }
+
+    private fun validatePartnerAbbreviationUnique(projectId: Long, abbreviation: String) {
+        val partnerWithSameName = projectPartnerRepo.findFirstByProjectIdAndAbbreviation(projectId, abbreviation)
+        if (partnerWithSameName.isPresent) {
+            throw I18nValidationException(
+                httpStatus = HttpStatus.UNPROCESSABLE_ENTITY,
+                i18nKey = "project.partner.abbreviation.already.existing",
+                i18nArguments = listOf(abbreviation)
+            )
+        }
     }
 
     /**
@@ -136,6 +150,10 @@ class ProjectPartnerServiceImpl(
         val makingThisLead = !oldProjectPartner.role.isLead && projectPartner.role!!.isLead
         if (makingThisLead)
             validateLeadPartnerChange(projectId, projectPartner.oldLeadPartnerId)
+
+        if (oldProjectPartner.abbreviation != projectPartner.abbreviation) {
+            validatePartnerAbbreviationUnique(projectId, abbreviation = projectPartner.abbreviation!!)
+        }
 
         val partnerUpdated = projectPartnerRepo.save(
             oldProjectPartner.copy(
