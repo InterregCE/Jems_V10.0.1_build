@@ -1,39 +1,36 @@
 package io.cloudflight.jems.server.programme.repository.fund
 
+import io.cloudflight.jems.server.common.entity.TranslationId
+import io.cloudflight.jems.server.common.entity.addTranslationEntities
+import io.cloudflight.jems.server.common.entity.extractField
+import io.cloudflight.jems.server.common.entity.extractTranslation
 import io.cloudflight.jems.server.programme.entity.fund.ProgrammeFundEntity
 import io.cloudflight.jems.server.programme.entity.fund.ProgrammeFundTranslationEntity
-import io.cloudflight.jems.server.programme.entity.fund.ProgrammeFundTranslationId
 import io.cloudflight.jems.server.programme.service.fund.model.ProgrammeFund
-import io.cloudflight.jems.server.programme.service.fund.model.ProgrammeFundTranslatedValue
 
 fun ProgrammeFundEntity.toModel() = ProgrammeFund(
     id = id,
     selected = selected,
-    translatedValues = translatedValues.toModel(),
+    type = type,
+    abbreviation = translatedValues.extractField { it.abbreviation },
+    description = translatedValues.extractField { it.description }
 )
 
 fun Iterable<ProgrammeFundEntity>.toModel() = map { it.toModel() }.sortedBy { it.id }
 
-fun Set<ProgrammeFundTranslationEntity>.toModel() = mapTo(HashSet()) {
-    ProgrammeFundTranslatedValue(
-        language = it.translationId.language,
-        abbreviation = it.abbreviation,
-        description = it.description,
-    )
-}
-
 fun Collection<ProgrammeFund>.toEntity() = map { model ->
     ProgrammeFundEntity(
-        id = model.id,
-        selected = model.selected,
-        translatedValues = mutableSetOf(),
+        id = model.id, type = model.type, selected = model.selected, translatedValues = mutableSetOf()
     ).apply {
-        this.translatedValues.addAll(model.translatedValues.map { transl ->
-            ProgrammeFundTranslationEntity(
-                translationId = ProgrammeFundTranslationId(fund = this, language = transl.language),
-                abbreviation = transl.abbreviation,
-                description = transl.description,
-            )
-        })
+        translatedValues.addTranslationEntities(
+            { language ->
+                ProgrammeFundTranslationEntity(
+                    translationId = TranslationId(this, language),
+                    abbreviation = model.abbreviation.extractTranslation(language),
+                    description = model.description.extractTranslation(language),
+                )
+            }, arrayOf(model.abbreviation, model.description)
+        )
     }
 }
+

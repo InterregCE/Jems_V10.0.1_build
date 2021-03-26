@@ -27,5 +27,7 @@ interface GeneralValidatorService {
 
     fun matches(input: String?, regex: String, fieldName: String, errorKey: String?): Map<String, I18nMessage>
 
+    fun maxSize(items: Collection<Any>?, maxSize: Int, fieldName: String): Map<String, I18nMessage>
+
     fun throwIfAnyIsInvalid(vararg validationResult: Map<String, I18nMessage>)
 }

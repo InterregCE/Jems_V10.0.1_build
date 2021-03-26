@@ -49,7 +49,6 @@ import io.mockk.impl.annotations.InjectMockKs
 import io.mockk.impl.annotations.MockK
 import io.mockk.junit5.MockKExtension
 import io.mockk.slot
-import io.mockk.verify
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
@@ -95,6 +94,7 @@ internal class CallPersistenceProviderTest {
 
         val strategies = setOf(ProgrammeStrategyEntity(EUStrategyBalticSeaRegion, true), ProgrammeStrategyEntity(AtlanticStrategy, true))
 
+        val fund=ProgrammeFundEntity(id = FUND_ID, selected = true)
         private fun callEntity(id: Long? = null): CallEntity {
             val call = callWithId(id ?: CALL_ID)
             call.startDate = START
@@ -104,7 +104,7 @@ internal class CallPersistenceProviderTest {
             call.strategies.clear()
             call.strategies.addAll(strategies)
             call.funds.clear()
-            call.funds.add(ProgrammeFundEntity(id = FUND_ID, selected = true))
+            call.funds.add(fund)
             call.flatRates.clear()
             call.flatRates.add(
                 ProjectCallFlatRateEntity(
@@ -321,7 +321,7 @@ internal class CallPersistenceProviderTest {
         every { programmeSpecificObjectiveRepo.getOne(Digitisation) } returns specificObjectives.first { it.programmeObjectivePolicy == Digitisation }
         every { programmeSpecificObjectiveRepo.getOne(AdvancedTechnologies) } returns specificObjectives.first { it.programmeObjectivePolicy == AdvancedTechnologies }
         every { programmeStrategyRepo.getAllByStrategyInAndActiveTrue(setOf(EUStrategyBalticSeaRegion, AtlanticStrategy)) } returns strategies
-        every { programmeFundRepo.getTop20ByIdInAndSelectedTrue(setOf(FUND_ID)) } returns setOf(ProgrammeFundEntity(id = FUND_ID, selected = true))
+        every { programmeFundRepo.getTop20ByIdInAndSelectedTrue(setOf(FUND_ID)) } returns setOf(fund)
 
         val slotCall = slot<CallEntity>()
         every { callRepo.save(capture(slotCall)) } returnsArgument 0
@@ -337,7 +337,7 @@ internal class CallPersistenceProviderTest {
             assertThat(lengthOfPeriod).isEqualTo(expectedResultEntity.lengthOfPeriod)
             assertThat(isAdditionalFundAllowed).isEqualTo(expectedResultEntity.isAdditionalFundAllowed)
             assertThat(prioritySpecificObjectives).containsExactlyInAnyOrderElementsOf(specificObjectives)
-            assertThat(funds).containsExactly(ProgrammeFundEntity(id = FUND_ID, selected = true))
+            assertThat(funds).containsExactly(fund)
             assertThat(strategies).containsExactlyInAnyOrderElementsOf(strategies)
             assertThat(flatRates).isEmpty()
             assertThat(lumpSums).isEmpty()
