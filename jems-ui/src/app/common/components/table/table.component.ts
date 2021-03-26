@@ -9,8 +9,8 @@ import {Tables} from '../../utils/tables';
 import {MoneyPipe} from '../../pipe/money.pipe';
 import {LanguageStore} from '../../services/language-store.service';
 import {InputTranslation} from '@cat/api';
-import moment from 'moment/moment';
-import { ColumnWidth } from './model/column-width';
+import {ColumnWidth} from './model/column-width';
+import {LocaleDatePipe} from '../../pipe/locale-date.pipe';
 
 @Component({
   selector: 'app-table',
@@ -41,6 +41,7 @@ export class TableComponent implements OnInit {
   currentPageSize = Tables.DEFAULT_INITIAL_PAGE_SIZE;
 
   constructor(private moneyPipe: MoneyPipe,
+              private localeDatePipe: LocaleDatePipe,
               public languageStore: LanguageStore) {
   }
 
@@ -75,10 +76,10 @@ export class TableComponent implements OnInit {
       return column.alternativeValue;
     }
     if (column.columnType === ColumnType.DateColumn) {
-      return elementValue ? moment(elementValue).format(Tables.DEFAULT_DATE_FORMAT) : '';
+      return this.localeDatePipe.transform(elementValue, 'L', 'LT');
     }
     if (column.columnType === ColumnType.DateColumnWithSeconds) {
-      return elementValue ? moment(elementValue).format(Tables.DEFAULT_DATE_FORMAT_WITH_SECONDS) : '';
+      return this.localeDatePipe.transform(elementValue, 'L', 'LTS');
     }
     if (column.columnType === ColumnType.Decimal) {
       return this.moneyPipe.transform(elementValue);

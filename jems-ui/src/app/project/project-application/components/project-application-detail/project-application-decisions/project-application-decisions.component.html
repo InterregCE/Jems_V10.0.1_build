@@ -15,7 +15,7 @@
             </div>
             <div>
                 <span *ngIf="project.eligibilityDecision">
-                    {{project.eligibilityDecision.decisionDate | date : Tables.DEFAULT_DATE_FORMAT_NO_TIME}}
+                    {{project.eligibilityDecision.decisionDate | localeDate}}
                 </span>
             </div>
             <button
@@ -41,7 +41,7 @@
             </div>
             <div>
                 <span *ngIf="project.fundingDecision">
-                    {{project.projectStatus.decisionDate | date : Tables.DEFAULT_DATE_FORMAT_NO_TIME}}
+                    {{project.projectStatus.decisionDate | localeDate }}
                 </span>
             </div>
             <button

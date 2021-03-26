@@ -7,8 +7,8 @@ import {
 } from '@angular/material-moment-adapter';
 import {NGX_MAT_DATE_FORMATS, NgxMatDateAdapter} from '@angular-material-components/datetime-picker';
 import {NgxMatMomentAdapter} from '@angular-material-components/moment-adapter';
-import {LanguageStore} from '../services/language-store.service';
 import {MAT_FORM_FIELD_DEFAULT_OPTIONS, MatFormFieldDefaultOptions} from '@angular/material/form-field';
+import {LocaleStore} from '../services/locale-store.service';
 
 const appearance: MatFormFieldDefaultOptions = {
   appearance: 'fill'
@@ -20,7 +20,6 @@ const appearance: MatFormFieldDefaultOptions = {
       provide: MAT_FORM_FIELD_DEFAULT_OPTIONS,
       useValue: appearance
     },
-    {provide: MAT_DATE_LOCALE, useValue: 'en-GB'},
     {provide: MAT_DATE_FORMATS, useValue: MAT_MOMENT_DATE_FORMATS},
     {
       provide: DateAdapter,
@@ -38,7 +37,7 @@ const appearance: MatFormFieldDefaultOptions = {
           dateInput: ['YYYY-MM-DDTHH:MM:00Z', 'l, LT']
         },
         display: {
-          dateInput: 'l, LT',
+          dateInput: 'L LT',
           monthYearLabel: 'MMM YYYY',
           dateA11yLabel: 'LL',
           monthYearA11yLabel: 'MMMM YYYY'
@@ -50,14 +49,9 @@ const appearance: MatFormFieldDefaultOptions = {
 })
 export class MaterialConfigModule {
   constructor(private dateAdapter: DateAdapter<MomentDateAdapter>,
-              private ngxDateAdapter: NgxMatDateAdapter<NgxMatMomentAdapter>,
-              private languageStore: LanguageStore
-  ) {
-    this.languageStore.currentSystemLanguage$.subscribe(language => {
-      // since moment.js is using different dialect than us for the Norway, we should map 'no' to 'nb' (we are using 'NO' for the Norway while moment.js is using 'nb' for that)
-      const local = language.toLowerCase() === 'no' ? 'nb' : language;
-      this.dateAdapter.setLocale(local);
-      this.ngxDateAdapter.setLocale(local);
-    });
+              private ngxDateAdapter: NgxMatDateAdapter<NgxMatMomentAdapter>) {
+    // for date formats we currently use the browser locale
+    this.dateAdapter.setLocale(LocaleStore.browserLocale());
+    this.ngxDateAdapter.setLocale(LocaleStore.browserLocale());
   }
 }

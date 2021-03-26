@@ -25,7 +25,7 @@
         </mat-form-field>
         <div appMultiColumnRow stretch>
             <mat-form-field>
-                <mat-label>{{'call.detail.field.start' | translate}}</mat-label>
+                <mat-label>{{'call.detail.field.start' | translate | dateFormatInfo : true}}</mat-label>
                 <input required formControlName="startDateTime" matInput name="startDateTime"
                        [max]="callForm?.controls?.endDate?.value"
                        [disabled]="published"
@@ -41,7 +41,7 @@
                 </mat-error>
             </mat-form-field>
             <mat-form-field>
-                <mat-label>{{'call.detail.field.end' | translate}}</mat-label>
+                <mat-label>{{'call.detail.field.end' | translate | dateFormatInfo : true}}</mat-label>
                 <input required formControlName="endDateTime" matInput name="endDateTime"
                        [min]="callForm?.controls?.startDate?.value"
                        [ngxMatDatetimePicker]="end">

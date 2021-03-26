@@ -40,7 +40,8 @@ import {MatProgressSpinnerModule} from '@angular/material/progress-spinner';
 import {TranslateBySystemLanguagePipe} from './pipe/translate-by-system-language.pipe';
 import {TranslateByInputLanguagePipe} from './pipe/translate-by-input-language.pipe';
 import {TranslateContainerLessInputsBySystemLanguagePipe} from './pipe/translate-container-less-inputs-by-system-language.pipe';
-
+import {LocaleDatePipe} from './pipe/locale-date.pipe';
+import {DateFormatInfoPipe} from './pipe/date-format-info.pipe';
 
 const modules = [
   CommonModule,
@@ -66,6 +67,8 @@ const declarations = [
   TranslateContainerLessInputsBySystemLanguagePipe,
   MoneyPipe,
   PercentagePipe,
+  LocaleDatePipe,
+  DateFormatInfoPipe,
   MultiLanguageContainerComponent,
   BreadcrumbComponent,
   AlertComponent,
@@ -91,7 +94,9 @@ const declarations = [
 ];
 
 const providers = [
-  MoneyPipe
+  MoneyPipe,
+  LocaleDatePipe,
+  DateFormatInfoPipe
 ];
 
 @NgModule({
