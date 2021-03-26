@@ -1,7 +1,12 @@
 <ng-container *ngIf="(data$ | async) as data">
     <app-form (save)="updateBudgets()">
         <form appFormLayout [formGroup]="budgetsForm">
-            <h3>{{'project.partner.budget.header' | translate}}</h3>
+            <h3>{{'project.partner.budget.header' | translate}}
+                <app-context-info infoPosition="right"
+                                  infoText="{{'project.partner.budget.options.office.on.direct.cost.flat.rate.info' | translate}}">
+                </app-context-info>
+            </h3>
+
             <ng-container *ngIf="!data.isStaffCostFlatRateActive">
                 <h4>{{'project.partner.budget.staff' | translate}}</h4>
                 <app-staff-costs-budget-table
