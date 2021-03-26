@@ -19,8 +19,10 @@
             [disabled]="!!project.eligibilityDecision"
             [customStyle]="'outline'">
     </app-expandable-textarea>
-    <mat-form-field appFormFieldWidth="large">
-        <mat-label>{{'project.assessment.eligibilityDecision.dialog.field.date' | translate}}</mat-label>
+    <mat-form-field appFormFieldWidth="x-large">
+        <mat-label>
+            {{'project.assessment.eligibilityDecision.dialog.field.date' | translate | dateFormatInfo}}
+        </mat-label>
         <input name="decisionDate" formControlName="decisionDate" matInput required
                [matDatepicker]="picker"
                [readonly]="!!project.eligibilityDecision"

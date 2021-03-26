@@ -14,8 +14,8 @@
                              [disabled]="!!status"
                              [customStyle]="'outline'">
     </app-expandable-textarea>
-    <mat-form-field appFormFieldWidth="large">
-        <mat-label>{{'project.assessment.fundingDecision.dialog.field.date' | translate}}</mat-label>
+    <mat-form-field appFormFieldWidth="xx-large">
+        <mat-label>{{'project.assessment.fundingDecision.dialog.field.date' | translate | dateFormatInfo}}</mat-label>
         <input required formControlName="decisionDate" matInput
                name="decisionDate-{{status?.status}}"
                [readonly]="!!project.fundingDecision"

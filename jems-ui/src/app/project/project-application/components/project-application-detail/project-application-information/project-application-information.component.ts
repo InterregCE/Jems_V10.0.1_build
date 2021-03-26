@@ -1,8 +1,8 @@
 import {ChangeDetectionStrategy, Component, Input} from '@angular/core';
 import {OutputProject, OutputProjectStatus} from '@cat/api';
 import moment from 'moment/moment';
-import {Tables} from '../../../../../common/utils/tables';
 import {CallStore} from '../../../../../call/services/call-store.service';
+import {LocaleDatePipe} from '../../../../../common/pipe/locale-date.pipe';
 
 @Component({
   selector: 'app-project-application-information',
@@ -17,6 +17,9 @@ export class ProjectApplicationInformationComponent {
   @Input()
   project: OutputProject;
 
+  constructor(private localeDatePipe: LocaleDatePipe) {
+  }
+
   getApplicantName(): string {
     const user = this?.project?.applicant;
     return user ? `${user.name} ${user.surname}` : '';
@@ -25,11 +28,11 @@ export class ProjectApplicationInformationComponent {
   getSubmission(submission?: OutputProjectStatus): { [key: string]: any } {
     return {
       user: submission?.user?.email,
-      date: this.formatDate(submission?.updated)
+      date: this.localeDatePipe.transform(submission?.updated)
     };
   }
 
-  getCodeAndTitle(code?: string, title?: string| null): string {
+  getCodeAndTitle(code?: string, title?: string | null): string {
     return code && title ? `${code} - ${title}` : code || title || '';
   }
 
@@ -41,14 +44,10 @@ export class ProjectApplicationInformationComponent {
 
     return {
       call: this.project?.callSettings.callName,
-      date: endDate.format(Tables.DEFAULT_DATE_FORMAT),
+      date: this.localeDatePipe.transform(this.project?.callSettings.endDate),
       days: daysLeft > 0 ? daysLeft : 0,
       hours: diff.hours() > 0 ? diff.hours() : 0,
       minutes: diff.minutes() > 0 ? diff.minutes() : 0
     };
-  }
-
-  formatDate(date?: Date): string {
-    return date ? moment(date).format(Tables.DEFAULT_DATE_FORMAT) : '';
   }
 }

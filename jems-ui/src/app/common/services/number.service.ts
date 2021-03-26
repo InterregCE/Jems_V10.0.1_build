@@ -87,14 +87,6 @@ export class NumberService {
   /**
    * Customizable later.
    */
-  getLocale(): string {
-    return 'de-DE';
-  }
-
-  /**
-   * Customizable later.
-   */
-
   getPrecision(): number {
     return 2;
   }
@@ -102,7 +94,6 @@ export class NumberService {
   /**
    * Customizable later.
    */
-
   getDecimalSeparator(): string {
     return ',';
   }

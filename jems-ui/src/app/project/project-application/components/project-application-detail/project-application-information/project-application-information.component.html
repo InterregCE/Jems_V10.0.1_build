@@ -10,7 +10,7 @@
             {{'common.label.projectapplicationstatus.' + project?.projectStatus.status | translate}}
         </mat-chip>
     </mat-chip-list>
-    <span>{{'project.detail.overview.since' | translate : {date: formatDate(project.projectStatus.updated)} }}</span>
+    <span>{{'project.detail.overview.since' | translate : {date: project.projectStatus.updated | localeDate} }}</span>
 </div>
 <div id="project-info">
     <div class="project-row">
