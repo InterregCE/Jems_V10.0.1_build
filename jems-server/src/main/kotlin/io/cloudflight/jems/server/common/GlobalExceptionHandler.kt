@@ -130,8 +130,8 @@ class GlobalExceptionHandler : ResponseEntityExceptionHandler() {
     ): ResponseEntity<Any> {
         val result = ex.bindingResult
         val applicationBadRequestException = ApplicationBadRequestException(
-            code = DEFAULT_ERROR_CODE,
-            i18nMessage = if (!result.globalError?.defaultMessage.isNullOrBlank()) I18nMessage(result.globalError?.defaultMessage) else DEFAULT_ERROR_MESSAGE,
+            code = "C-INP-ERR",
+            i18nMessage = I18nMessage("common.error.input.invalid"),
             cause = ex,
             formErrors = result.fieldErrors.associateBy(
                 { it.field }, { I18nMessage(it.defaultMessage) }
