@@ -5,8 +5,7 @@ import io.cloudflight.jems.api.programme.dto.strategy.InputProgrammeStrategy
 import io.cloudflight.jems.api.programme.dto.strategy.OutputProgrammeStrategy
 import io.cloudflight.jems.api.programme.dto.strategy.ProgrammeStrategy
 import io.cloudflight.jems.api.audit.dto.AuditAction
-import io.cloudflight.jems.server.audit.service.AuditCandidate
-import io.cloudflight.jems.server.audit.service.AuditService
+import io.cloudflight.jems.server.audit.model.AuditCandidateEvent
 import io.cloudflight.jems.server.call.repository.CallRepository
 import io.cloudflight.jems.server.programme.entity.ProgrammeStrategyEntity
 import io.cloudflight.jems.server.programme.repository.StrategyRepository
@@ -20,6 +19,7 @@ import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
+import org.springframework.context.ApplicationEventPublisher
 
 internal class StrategyServiceTest {
     companion object {
@@ -40,7 +40,7 @@ internal class StrategyServiceTest {
     lateinit var callRepository: CallRepository
 
     @RelaxedMockK
-    lateinit var auditService: AuditService
+    lateinit var auditPublisher: ApplicationEventPublisher
 
     lateinit var strategyService: StrategyService
 
@@ -50,7 +50,7 @@ internal class StrategyServiceTest {
         strategyService = StrategyServiceImpl(
             strategyRepository,
             callRepository,
-            auditService
+            auditPublisher
         )
     }
 
@@ -88,11 +88,11 @@ internal class StrategyServiceTest {
             )
         )
 
-        val audit = slot<AuditCandidate>()
-        verify { auditService.logEvent(capture(audit)) }
+        val audit = slot<AuditCandidateEvent>()
+        verify { auditPublisher.publishEvent(capture(audit)) }
         with(audit) {
-            assertThat(captured.action).isEqualTo(AuditAction.PROGRAMME_STRATEGIES_CHANGED)
-            assertThat(captured.description).isEqualTo("Programme strategies was set to:\nEUStrategyAdriaticIonianRegion")
+            assertThat(captured.auditCandidate.action).isEqualTo(AuditAction.PROGRAMME_STRATEGIES_CHANGED)
+            assertThat(captured.auditCandidate.description).isEqualTo("Programme strategies was set to:\nEUStrategyAdriaticIonianRegion")
         }
     }
 

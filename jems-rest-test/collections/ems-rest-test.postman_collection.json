@@ -1,6 +1,6 @@
 {
 	"info": {
-		"_postman_id": "38ac7b1b-b782-4b18-b884-f53ebc728a01",
+		"_postman_id": "aabc20be-2573-4844-830c-4f34328039c6",
 		"name": "ems-rest-test",
 		"description": "Check EMS application for common use-cases",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
@@ -1206,7 +1206,7 @@
 							"script": {
 								"exec": [
 									"pm.test('programme fund cannot be disabled after setup is in restricted mode', function() {\r",
-									"    pm.response.to.have.status(403);\r",
+									"    pm.response.to.have.status(422);\r",
 									"});\r",
 									""
 								],
@@ -1307,7 +1307,7 @@
 							"script": {
 								"exec": [
 									"pm.test('programme priority cannot be changed after programme is in restricted mode', function() {\r",
-									"    pm.response.to.have.status(403);\r",
+									"    pm.response.to.have.status(422);\r",
 									"});\r",
 									""
 								],
