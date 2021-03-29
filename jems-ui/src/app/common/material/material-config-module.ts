@@ -6,7 +6,7 @@ import {
   MomentDateAdapter
 } from '@angular/material-moment-adapter';
 import {NGX_MAT_DATE_FORMATS, NgxMatDateAdapter} from '@angular-material-components/datetime-picker';
-import {NgxMatMomentAdapter} from '@angular-material-components/moment-adapter';
+import {NGX_MAT_MOMENT_DATE_ADAPTER_OPTIONS, NgxMatMomentAdapter} from '@angular-material-components/moment-adapter';
 import {MAT_FORM_FIELD_DEFAULT_OPTIONS, MatFormFieldDefaultOptions} from '@angular/material/form-field';
 import {LocaleStore} from '../services/locale-store.service';
 
@@ -20,7 +20,15 @@ const appearance: MatFormFieldDefaultOptions = {
       provide: MAT_FORM_FIELD_DEFAULT_OPTIONS,
       useValue: appearance
     },
-    {provide: MAT_DATE_FORMATS, useValue: MAT_MOMENT_DATE_FORMATS},
+    {
+      provide: MAT_DATE_FORMATS, useValue: MAT_MOMENT_DATE_FORMATS
+    },
+    {
+      provide: MAT_MOMENT_DATE_ADAPTER_OPTIONS, useValue: {useUtc: true}
+    },
+    {
+      provide: NGX_MAT_MOMENT_DATE_ADAPTER_OPTIONS, useValue: {useUtc: false}
+    },
     {
       provide: DateAdapter,
       useClass: MomentDateAdapter,
@@ -29,7 +37,7 @@ const appearance: MatFormFieldDefaultOptions = {
     {
       provide: NgxMatDateAdapter,
       useClass: NgxMatMomentAdapter,
-      deps: [MAT_DATE_LOCALE, MAT_MOMENT_DATE_ADAPTER_OPTIONS]
+      deps: [MAT_DATE_LOCALE, NGX_MAT_MOMENT_DATE_ADAPTER_OPTIONS]
     },
     {
       provide: NGX_MAT_DATE_FORMATS, useValue: {
