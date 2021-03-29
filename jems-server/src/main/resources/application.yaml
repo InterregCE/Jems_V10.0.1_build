@@ -24,7 +24,7 @@ spring:
       max-request-size: 50MB
 
 audit-service:
-  enabled: "${AUDIT_ENABLED:false}"
+  enabled: "${AUDIT_ENABLED:true}"
   url-and-port: "${AUDIT_ELASTICSEARCH_URL_AND_PORT:localhost:9200}"
 
 minio-storage:
@@ -46,7 +46,7 @@ management:
       enabled: true
   health:
     elasticsearch:
-      enabled: "${AUDIT_ENABLED:false}"
+      enabled: "${AUDIT_ENABLED:true}"
 info:
   helpdesk-url: "https://helpdesk.interact-eu.net"
 app:

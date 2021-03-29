@@ -6,6 +6,9 @@
     <option name="SHORTEN_COMMAND_LINE" value="ARGS_FILE" />
     <option name="UPDATE_ACTION_UPDATE_POLICY" value="UpdateClassesAndTriggerFile" />
     <option name="FRAME_DEACTIVATION_UPDATE_POLICY" value="UpdateResources" />
+    <envs>
+      <env name="AUDIT_ENABLED" value="false"></env>
+    </envs>
     <method v="2">
       <option name="Make" enabled="true" />
     </method>

@@ -18,3 +18,9 @@ spring:
   flyway:
     enabled: false
 
+audit-service:
+  enabled: "${AUDIT_ENABLED:false}"
+management:
+  health:
+    elasticsearch:
+      enabled: "${AUDIT_ENABLED:false}"
