@@ -17,6 +17,10 @@ export const routes: Routes = [
       {
         path: '',
         component: CallPageComponent,
+        canActivate: [PermissionGuard],
+        data: {
+          permissionsOnly: [Permission.ADMINISTRATOR, Permission.PROGRAMME_USER],
+        }
       },
       {
         path: 'create',
