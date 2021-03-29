@@ -175,7 +175,7 @@ class GlobalExceptionHandler : ResponseEntityExceptionHandler() {
 
     private fun toI18nArguments(i18nArgumentList: List<String>?) =
         if (!i18nArgumentList.isNullOrEmpty())
-            hashMapOf(*i18nArgumentList.map { Pair(it, it) }.toTypedArray())
+            hashMapOf(*i18nArgumentList.mapIndexed { index, it -> Pair(index.toString(), it) }.toTypedArray())
         else
             hashMapOf()
 
