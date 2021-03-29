@@ -142,11 +142,11 @@ export class ProjectPartnerBudgetOptionsComponent implements OnInit {
     if (budgetOptions.staffCostsFlatRate !== null && budgets.staffCosts.entries.length > 0) { return true; }
     if (budgetOptions.travelAndAccommodationOnStaffCostsFlatRate !== null && budgets.travelCosts.entries.length > 0) { return true; }
     return budgetOptions.otherCostsOnStaffCostsFlatRate !== null &&
-      (budgets.travelCosts.entries.length > 0) ||
+      ((budgets.travelCosts.entries.length > 0) ||
       (budgets.infrastructureCosts.entries.length > 0) ||
       (budgets.equipmentCosts.entries.length > 0) ||
       (budgets.externalCosts.entries.length > 0) ||
-      (budgets.unitCosts.entries.length > 0);
+      (budgets.unitCosts.entries.length > 0));
 
   }
 
