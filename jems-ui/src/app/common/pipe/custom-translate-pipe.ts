@@ -17,8 +17,8 @@ export class CustomTranslatePipe extends TranslatePipe implements PipeTransform 
   }
 
   transform(query: string, ...args: any[]): any {
-    if (!(query && query.length > 0)) {
-      return '';
+    if (!query || !query.length) {
+      return query;
     }
     let translation = super.transform(query, ...args);
     if (translation === null || translation === '') {
