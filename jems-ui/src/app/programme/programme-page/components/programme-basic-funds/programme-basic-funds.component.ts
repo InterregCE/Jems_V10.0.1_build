@@ -4,8 +4,10 @@ import {
   Component,
   EventEmitter,
   Input,
+  OnChanges,
   OnInit,
-  Output
+  Output,
+  SimpleChanges
 } from '@angular/core';
 import {ViewEditForm} from '@common/components/forms/view-edit-form';
 import {AbstractControl, FormArray, FormBuilder, FormGroup} from '@angular/forms';
@@ -23,7 +25,7 @@ import {TranslateService} from '@ngx-translate/core';
   styleUrls: ['./programme-basic-funds.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class ProgrammeBasicFundsComponent extends ViewEditForm implements OnInit {
+export class ProgrammeBasicFundsComponent extends ViewEditForm implements OnInit, OnChanges {
 
   @Input()
   programmeFunds: ProgrammeFundDTO[];
@@ -55,6 +57,12 @@ export class ProgrammeBasicFundsComponent extends ViewEditForm implements OnInit
       funds: this.formBuilder.array([]),
     });
     this.resetForm();
+  }
+
+  ngOnChanges(changes: SimpleChanges): void {
+    if (changes.programmeFunds) {
+      this.resetForm();
+    }
   }
 
   get fundsForm(): FormArray {

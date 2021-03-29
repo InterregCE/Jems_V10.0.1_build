@@ -79,8 +79,7 @@ export class ProgrammePageComponent extends BaseComponent {
         selected: fund.selected,
         type: fund.type,
         abbreviation: fund.abbreviation,
-        description: fund.description,
-        creation: false
+        description: fund.description
       })))
     );
 

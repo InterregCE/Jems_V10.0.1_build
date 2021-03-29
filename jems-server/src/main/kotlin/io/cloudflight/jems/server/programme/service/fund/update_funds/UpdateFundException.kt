@@ -16,7 +16,7 @@ class UpdateFundsFailed(cause: Throwable) : ApplicationException(
 
 class ChangesAreNotAllowedException : ApplicationUnprocessableException(
     code = "$UPDATE_FUNDS_ERROR_CODE_PREFIX-001",
-    i18nMessage = I18nMessage("$UPDATE_FUNDS_ERROR_KEY_PREFIX.changes.are,not.allowed.since.programme.setup.is.restricted"),
+    i18nMessage = I18nMessage("$UPDATE_FUNDS_ERROR_KEY_PREFIX.changes.are.not.allowed.since.programme.setup.is.restricted"),
 )
 
 class FundNotFoundException : ApplicationNotFoundException(
