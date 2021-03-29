@@ -68,7 +68,6 @@ describe('ProgrammePageComponent', () => {
     tick();
     expect(result.length).toBe(1);
     expect(result[0].id).toBe(1);
-    expect(result[0].creation).toBe(false);
   }));
 
   it('should update funds', fakeAsync(() => {
@@ -82,6 +81,5 @@ describe('ProgrammePageComponent', () => {
     tick();
     expect(result.length).toBe(1);
     expect(result[0].id).toBe(1);
-    expect(result[0].creation).toBe(false);
   }));
 });

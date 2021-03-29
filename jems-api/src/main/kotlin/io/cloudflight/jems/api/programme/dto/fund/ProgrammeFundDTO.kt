@@ -8,6 +8,4 @@ data class ProgrammeFundDTO(
     val type: ProgrammeFundTypeDTO = ProgrammeFundTypeDTO.OTHER,
     val abbreviation: Set<InputTranslation> = emptySet(),
     val description: Set<InputTranslation> = emptySet(),
-) {
-    fun isCreation() = id == null
-}
+)
