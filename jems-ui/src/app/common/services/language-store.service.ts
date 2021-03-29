@@ -62,6 +62,7 @@ export class LanguageStore {
       this.currentSystemLanguageSubject.next(this.determineSystemLanguage(systemLanguages, this.fallbackLanguageSubject.getValue()));
     }
     this.translate.addLangs(systemLanguages);
+    this.translate.setDefaultLang(fallbackLanguage || DEFAULT_FALLBACK_LANGUAGE);
   }
 
   isInputLanguageExist(language: string): boolean {
@@ -78,6 +79,10 @@ export class LanguageStore {
 
   getInputLanguagesValue(): string[] {
     return this.inputLanguagesSubject.getValue();
+  }
+
+  getFallbackLanguageValue(): string {
+    return this.fallbackLanguageSubject.getValue();
   }
 
   private setSystemLanguage(newLanguage: string): void {

@@ -42,6 +42,7 @@ import {TranslateByInputLanguagePipe} from './pipe/translate-by-input-language.p
 import {TranslateContainerLessInputsBySystemLanguagePipe} from './pipe/translate-container-less-inputs-by-system-language.pipe';
 import {LocaleDatePipe} from './pipe/locale-date.pipe';
 import {DateFormatInfoPipe} from './pipe/date-format-info.pipe';
+import {CustomTranslatePipe} from './pipe/custom-translate-pipe';
 
 const modules = [
   CommonModule,
@@ -90,13 +91,15 @@ const declarations = [
   LabelDirective,
   MainPageTemplateComponent,
   ApiErrorContentComponent,
-  InlineEditableFieldComponent
+  InlineEditableFieldComponent,
+  CustomTranslatePipe
 ];
 
 const providers = [
   MoneyPipe,
   LocaleDatePipe,
-  DateFormatInfoPipe
+  DateFormatInfoPipe,
+  CustomTranslatePipe
 ];
 
 @NgModule({
