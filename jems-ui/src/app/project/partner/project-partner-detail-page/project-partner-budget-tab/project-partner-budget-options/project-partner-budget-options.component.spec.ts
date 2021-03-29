@@ -9,7 +9,6 @@ import {BudgetOptions} from '../../../../model/budget/budget-options';
 import {ProjectPartnerDetailPageStore} from '../../project-partner-detail-page.store';
 import {ProjectPartnerBudgetTabService} from '../project-partner-budget-tab.service';
 
-
 describe('ProjectApplicationFormPartnerBudgetOptionsComponent', () => {
   let component: ProjectPartnerBudgetOptionsComponent;
   let fixture: ComponentFixture<ProjectPartnerBudgetOptionsComponent>;
@@ -64,7 +63,7 @@ describe('ProjectApplicationFormPartnerBudgetOptionsComponent', () => {
       url: '//api/project/partner/2/budget/options'
     });
 
-    component.updateBudgetOptions(new BudgetOptions(8, 12, 10, 10, null));
+    component.doUpdateBudgetOptions(new BudgetOptions(8, 12, 10, 10, null));
     tick();
 
     httpTestingController.expectOne({

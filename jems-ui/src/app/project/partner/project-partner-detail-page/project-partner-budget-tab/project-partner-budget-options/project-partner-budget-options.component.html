@@ -53,6 +53,9 @@
                                (paste)="Tools.checkDigitsOnPaste($event)"
                                (keypress)="Tools.checkDigitsOnInput($event)">
                         <span matSuffix class="pl-1">{{'project.partner.budget.options.office.on.staff.cost.flat.rate.percent' | translate}}</span>
+                        <app-context-info matSuffix *ngIf="officeOnStaffCostsFlatRate.enabled"
+                                          infoText="{{'project.partner.budget.options.office.on.staff.cost.flat.rate.info' | translate}}">
+                        </app-context-info>
                         <mat-error>
                             <app-form-field-errors
                                     [errors]="officeOnStaffCostsFlatRate?.errors"
@@ -82,6 +85,9 @@
                                (paste)="Tools.checkDigitsOnPaste($event)"
                                (keypress)="Tools.checkDigitsOnInput($event)">
                         <span matSuffix class="pl-1">{{'project.partner.budget.options.office.on.direct.cost.flat.rate.percent' | translate}}</span>
+                        <app-context-info matSuffix *ngIf="officeOnDirectCostsFlatRate.enabled"
+                                          infoText="{{'project.partner.budget.options.office.on.direct.cost.flat.rate.info' | translate}}">
+                        </app-context-info>
                         <mat-error>
                             <app-form-field-errors
                                     [errors]="officeOnDirectCostsFlatRate?.errors"
@@ -143,6 +149,9 @@
                                (paste)="Tools.checkDigitsOnPaste($event)"
                                (keypress)="Tools.checkDigitsOnInput($event)">
                         <span matSuffix class="pl-1">{{'project.partner.budget.options.other.costs.on.staff.costs.flat.rate.percent' | translate}}</span>
+                        <app-context-info matSuffix *ngIf="otherCostsOnStaffCostsFlatRate.enabled"
+                                          infoText="{{'project.partner.budget.options.other.costs.on.staff.costs.flat.rate.info' | translate}}">
+                        </app-context-info>
                         <mat-error>
                             <app-form-field-errors
                                     [errors]="otherCostsOnStaffCostsFlatRate?.errors"

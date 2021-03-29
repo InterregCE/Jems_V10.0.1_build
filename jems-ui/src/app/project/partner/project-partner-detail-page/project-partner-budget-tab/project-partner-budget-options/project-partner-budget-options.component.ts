@@ -3,15 +3,18 @@ import {Tools} from '../../../../../common/utils/tools';
 import {FormBuilder, FormControl, FormGroup, ValidationErrors, ValidatorFn, Validators} from '@angular/forms';
 import {BudgetOptions} from '../../../../model/budget/budget-options';
 import {FormService} from '@common/components/section/form/form.service';
-import {combineLatest, Observable} from 'rxjs';
+import {combineLatest, Observable, of} from 'rxjs';
 import {HttpErrorResponse} from '@angular/common/http';
-import {catchError, map, startWith, tap} from 'rxjs/operators';
+import {catchError, filter, map, startWith, tap, withLatestFrom} from 'rxjs/operators';
 import {FlatRateSetting} from '../../../../model/flat-rate-setting';
 import {ProjectPartnerDetailPageStore} from '../../project-partner-detail-page.store';
 import {CallFlatRateSetting} from '../../../../model/call-flat-rate-setting';
 import {ProjectPartnerBudgetOptionsConstants} from './project-partner-budget-options.constants';
 import {UntilDestroy, untilDestroyed} from '@ngneat/until-destroy';
 import {ProjectPartnerBudgetTabService} from '../project-partner-budget-tab.service';
+import {Forms} from '../../../../../common/utils/forms';
+import {MatDialog} from '@angular/material/dialog';
+import {PartnerBudgetTables} from '../../../../model/budget/partner-budget-tables';
 
 const flatRateValidator: (control: FormControl) => ValidatorFn = (checkBoxControl: FormControl) => (valueControl: FormControl): ValidationErrors | null => {
   if (checkBoxControl?.value && valueControl === null) {
@@ -48,6 +51,7 @@ export class ProjectPartnerBudgetOptionsComponent implements OnInit {
   }>;
 
   constructor(private formBuilder: FormBuilder,
+              private dialog: MatDialog,
               private formService: FormService,
               private tabService: ProjectPartnerBudgetTabService,
               private pageStore: ProjectPartnerDetailPageStore
@@ -76,9 +80,21 @@ export class ProjectPartnerBudgetOptionsComponent implements OnInit {
   }
 
   updateBudgetOptions(budgetOptions: BudgetOptions): void {
-    this.pageStore.updateBudgetOptions(budgetOptions).pipe(
-      tap(() => this.formService.setSuccess('project.partner.budget.options.save.success')),
-      catchError((error: HttpErrorResponse) => this.formService.setError(error)),
+    this.formService.setDirty(true);
+    of(budgetOptions).pipe(
+      withLatestFrom(this.pageStore.budgets$),
+      tap(([options, budgets]) => {
+        if (this.wouldSelectedFlatRatesAffectRealCosts(options, budgets)) {
+          Forms.confirmDialog(this.dialog, 'project.partner.budget.options.changes.warning.title', 'project.partner.budget.options.changes.warning.message')
+            .pipe(
+              untilDestroyed(this),
+              filter(confirmed => !!confirmed),
+              tap(() => this.doUpdateBudgetOptions(options))
+            ).subscribe();
+        } else {
+          this.doUpdateBudgetOptions(options);
+        }
+      }),
       untilDestroyed(this)
     ).subscribe();
   }
@@ -110,6 +126,29 @@ export class ProjectPartnerBudgetOptionsComponent implements OnInit {
     }
   }
 
+  doUpdateBudgetOptions(budgetOptions: BudgetOptions): void {
+    this.pageStore.updateBudgetOptions(budgetOptions).pipe(
+      tap(() => this.formService.setDirty(false)),
+      tap(() => this.formService.setSuccess('project.partner.budget.options.save.success')),
+      catchError((error: HttpErrorResponse) => {
+        this.formService.setDirty(false);
+        return this.formService.setError(error);
+      }),
+      untilDestroyed(this)
+    ).subscribe();
+  }
+
+  private wouldSelectedFlatRatesAffectRealCosts(budgetOptions: BudgetOptions, budgets: PartnerBudgetTables): boolean {
+    if (budgetOptions.staffCostsFlatRate !== null && budgets.staffCosts.entries.length > 0) { return true; }
+    if (budgetOptions.travelAndAccommodationOnStaffCostsFlatRate !== null && budgets.travelCosts.entries.length > 0) { return true; }
+    return budgetOptions.otherCostsOnStaffCostsFlatRate !== null &&
+      (budgets.travelCosts.entries.length > 0) ||
+      (budgets.infrastructureCosts.entries.length > 0) ||
+      (budgets.equipmentCosts.entries.length > 0) ||
+      (budgets.externalCosts.entries.length > 0) ||
+      (budgets.unitCosts.entries.length > 0);
+
+  }
 
   private initForm(): void {
     this.budgetOptionForm = this.formBuilder.group({
