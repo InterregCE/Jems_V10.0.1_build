@@ -3,11 +3,11 @@ package io.cloudflight.jems.server.programme.service.strategy
 import io.cloudflight.jems.api.call.dto.CallStatus
 import io.cloudflight.jems.api.programme.dto.strategy.InputProgrammeStrategy
 import io.cloudflight.jems.api.programme.dto.strategy.OutputProgrammeStrategy
-import io.cloudflight.jems.server.audit.service.AuditService
 import io.cloudflight.jems.server.call.repository.CallRepository
 import io.cloudflight.jems.server.programme.authorization.CanReadProgrammeSetup
 import io.cloudflight.jems.server.programme.authorization.CanUpdateProgrammeSetup
 import io.cloudflight.jems.server.programme.repository.StrategyRepository
+import org.springframework.context.ApplicationEventPublisher
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 
@@ -15,13 +15,13 @@ import org.springframework.transaction.annotation.Transactional
 class StrategyServiceImpl(
     private val strategyRepository: StrategyRepository,
     private val callRepository: CallRepository,
-    private val auditService: AuditService
+    private val auditPublisher: ApplicationEventPublisher
 ) : StrategyService {
 
     @CanReadProgrammeSetup
     @Transactional(readOnly = true)
     override fun getProgrammeStrategies(): List<OutputProgrammeStrategy> {
-        return strategyRepository.findAll().map { it.toStrategy() }
+        return strategyRepository.findAll().toDto()
     }
 
     @CanUpdateProgrammeSetup
@@ -34,11 +34,8 @@ class StrategyServiceImpl(
         if (callRepository.existsByStatus(CallStatus.PUBLISHED) && !newSelectedStrategies.containsAll(oldSelectedStrategies))
             throw UpdateStrategiesWhenProgrammeSetupRestricted()
 
-        strategyRepository.saveAll(toBeSaved)
-
-        val savedStrategies = toBeSaved.map { it.toStrategy() }
-        strategyChanged(strategies = savedStrategies).logWith(auditService)
-        return savedStrategies
-
+        return strategyRepository.saveAll(toBeSaved).toDto().also {
+            auditPublisher.publishEvent(strategyChanged(this, it))
+        }
     }
 }
