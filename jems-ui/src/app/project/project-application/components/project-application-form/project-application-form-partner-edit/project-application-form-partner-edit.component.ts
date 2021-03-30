@@ -236,7 +236,6 @@ export class ProjectApplicationFormPartnerEditComponent extends BaseComponent im
   }
 
   private handleLeadAlreadyExisting(controls: any, error: APIError): void {
-    const newLeadPartnerName = error.i18nMessage.i18nArguments ? error.i18nMessage.i18nArguments[2] : null;
     const oldLeadPartnerName = error.i18nMessage.i18nArguments ? error.i18nMessage.i18nArguments[1] : null;
     const partnerId = error.i18nMessage.i18nArguments ? error.i18nMessage.i18nArguments[0] : null;
     Forms.confirmDialog(
@@ -245,7 +244,7 @@ export class ProjectApplicationFormPartnerEditComponent extends BaseComponent im
       'project.partner.role.lead.already.existing',
       {
         old_name: oldLeadPartnerName,
-        new_name: newLeadPartnerName
+        new_name: controls.abbreviation.value
       }
     ).pipe(
       take(1),

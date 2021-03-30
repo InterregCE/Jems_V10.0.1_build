@@ -79,7 +79,7 @@ class ProjectPartnerServiceImpl(
 
         // prevent multiple role LEAD_PARTNER entries
         if (projectPartner.role!!.isLead)
-            validateLeadPartnerChange(projectId, projectPartner.oldLeadPartnerId, projectPartner.abbreviation ?: "")
+            validateLeadPartnerChange(projectId, projectPartner.oldLeadPartnerId)
 
         // prevent multiple partners with same abbreviation
         validatePartnerAbbreviationUnique(projectId, abbreviation = projectPartner.abbreviation!!)
@@ -95,9 +95,9 @@ class ProjectPartnerServiceImpl(
         return partnerCreated.toOutputProjectPartnerDetail()
     }
 
-    private fun validateLeadPartnerChange(projectId: Long, oldLeadPartnerId: Long?, newAbbreviation: String) {
+    private fun validateLeadPartnerChange(projectId: Long, oldLeadPartnerId: Long?) {
         if (oldLeadPartnerId == null)
-            validateOnlyOneLeadPartner(projectId, newAbbreviation)
+            validateOnlyOneLeadPartner(projectId)
         else
             updateOldLeadPartner(projectId, oldLeadPartnerId)
     }
@@ -116,14 +116,14 @@ class ProjectPartnerServiceImpl(
     /**
      * validate project partner to be saved: only one role LEAD should exist.
      */
-    private fun validateOnlyOneLeadPartner(projectId: Long, newAbbreviation: String) {
+    private fun validateOnlyOneLeadPartner(projectId: Long) {
         val projectPartner = projectPartnerRepo.findFirstByProjectIdAndRole(projectId, ProjectPartnerRole.LEAD_PARTNER)
         if (projectPartner.isPresent) {
             val currentLead = projectPartner.get()
             throw I18nValidationException(
                 httpStatus = HttpStatus.UNPROCESSABLE_ENTITY,
                 i18nKey = "project.partner.role.lead.already.existing",
-                i18nArguments = listOf(currentLead.id.toString(), currentLead.abbreviation, newAbbreviation)
+                i18nArguments = listOf(currentLead.id.toString(), currentLead.abbreviation)
             )
         }
     }
@@ -149,7 +149,7 @@ class ProjectPartnerServiceImpl(
 
         val makingThisLead = !oldProjectPartner.role.isLead && projectPartner.role!!.isLead
         if (makingThisLead)
-            validateLeadPartnerChange(projectId, projectPartner.oldLeadPartnerId, projectPartner.abbreviation ?: "")
+            validateLeadPartnerChange(projectId, projectPartner.oldLeadPartnerId)
 
         if (oldProjectPartner.abbreviation != projectPartner.abbreviation) {
             validatePartnerAbbreviationUnique(projectId, abbreviation = projectPartner.abbreviation!!)
