@@ -7504,16 +7504,16 @@
 							"listen": "test",
 							"script": {
 								"exec": [
-									"const error = pm.response.json();\r",
-									"\r",
 									"pm.test('applicant cannot update Partner B to be LEAD when A already is', function() {\r",
+									"    const error = pm.response.json();\r",
 									"    pm.response.to.have.status(422);\r",
 									"    pm.expect(error.i18nMessage.i18nKey).to.eql(\"project.partner.role.lead.already.existing\");\r",
 									"});\r",
 									"\r",
 									"pm.test('correct id is sent to FE in error response', function() {\r",
-									"    pm.expect(error.i18nMessage.i18nArguments[pm.variables.get('partnerIdA')]).to.eql(pm.variables.get('partnerIdA') + \"\",);\r",
-									"    pm.expect(error.i18nMessage.i18nArguments[pm.variables.get('partnerAbbreviationALead')]).to.eql(pm.variables.get('partnerAbbreviationALead') + \"\");\r",
+									"    const error = pm.response.json();\r",
+									"    pm.expect(error.i18nMessage.i18nArguments[0]).to.eql(pm.variables.get('partnerIdA') + \"\",);\r",
+									"    pm.expect(error.i18nMessage.i18nArguments[1]).to.eql(pm.variables.get('partnerAbbreviationALead') + \"\");\r",
 									"});\r",
 									""
 								],
