@@ -106,7 +106,10 @@ export class ProjectApplicationFormComponent extends BaseComponent implements On
       title: this.applicationForm.controls.title.value,
       duration: this.applicationForm.controls.duration.value,
       specificObjective: this.selectedSpecificObjective
-    };
+    } as InputProjectData;
+    if (this.applicationForm.controls.introEn.value[0]) {
+      data.intro.push(this.applicationForm.controls.introEn.value[0]);
+    }
     this.projectStore.updateProjectData(data)
       .pipe(
         take(1),
