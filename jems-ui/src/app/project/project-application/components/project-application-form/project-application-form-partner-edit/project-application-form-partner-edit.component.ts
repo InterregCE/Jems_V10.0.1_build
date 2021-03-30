@@ -18,7 +18,6 @@ import {
   ProgrammeLegalStatusDTO,
 } from '@cat/api';
 import {catchError, take, takeUntil, tap} from 'rxjs/operators';
-import {I18nValidationError} from '@common/validation/i18n-validation-error';
 import {MatDialog} from '@angular/material/dialog';
 import {Forms} from '../../../../../common/utils/forms';
 import {FormService} from '@common/components/section/form/form.service';
@@ -27,6 +26,7 @@ import {ProjectPartnerStore} from '../../../containers/project-application-form-
 import {HttpErrorResponse} from '@angular/common/http';
 import {Observable, of} from 'rxjs';
 import {ActivatedRoute, Router} from '@angular/router';
+import {APIError} from '../../../../../common/models/APIError';
 
 @Component({
   selector: 'app-project-application-form-partner-edit',
@@ -208,8 +208,8 @@ export class ProjectApplicationFormPartnerEditComponent extends BaseComponent im
   }
 
   private handleError(error: HttpErrorResponse): Observable<any> {
-    if (!!error && error.error?.i18nKey === 'project.partner.role.lead.already.existing') {
-      this.handleLeadAlreadyExisting(this.controls, error.error as I18nValidationError);
+    if (!!error && error.error?.i18nMessage?.i18nKey === 'project.partner.role.lead.already.existing') {
+      this.handleLeadAlreadyExisting(this.controls, error.error as APIError);
       return of(null);
     }
     return this.formService.setError(error);
@@ -235,15 +235,15 @@ export class ProjectApplicationFormPartnerEditComponent extends BaseComponent im
     this.controls.vatRecovery.setValue(this.partner?.vatRecovery);
   }
 
-  private handleLeadAlreadyExisting(controls: any, error: I18nValidationError): void {
-    const partnerName = error.i18nArguments ? error.i18nArguments[1] : null;
-    const partnerId = error.i18nArguments ? error.i18nArguments[0] : null;
+  private handleLeadAlreadyExisting(controls: any, error: APIError): void {
+    const oldLeadPartnerName = error.i18nMessage.i18nArguments ? error.i18nMessage.i18nArguments[1] : null;
+    const partnerId = error.i18nMessage.i18nArguments ? error.i18nMessage.i18nArguments[0] : null;
     Forms.confirmDialog(
       this.dialog,
       'project.partner.role.lead.already.existing.title',
       'project.partner.role.lead.already.existing',
       {
-        old_name: partnerName,
+        old_name: oldLeadPartnerName,
         new_name: controls.abbreviation.value
       }
     ).pipe(
