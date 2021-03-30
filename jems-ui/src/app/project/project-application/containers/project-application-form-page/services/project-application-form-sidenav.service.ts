@@ -1,7 +1,7 @@
 import {Injectable} from '@angular/core';
 import {SideNavService} from '@common/components/side-nav/side-nav.service';
 import {combineLatest, forkJoin, merge, Observable, of, Subject} from 'rxjs';
-import {mergeMap, map, tap} from 'rxjs/operators';
+import {mergeMap, map, tap, switchMap} from 'rxjs/operators';
 import {OutputProjectStatus, ProjectPartnerService, WorkPackageService} from '@cat/api';
 import {HeadlineRoute} from '@common/components/side-nav/headline-route';
 import {Log} from '../../../../../common/utils/log';
@@ -9,8 +9,12 @@ import {TranslateService} from '@ngx-translate/core';
 import {PermissionService} from '../../../../../security/permissions/permission.service';
 import {Permission} from '../../../../../security/permissions/permission';
 import {ProjectStore} from '../../project-application-detail/services/project-store.service';
+import {RoutingService} from '../../../../../common/services/routing.service';
+import {filter} from 'rxjs/internal/operators';
+import {UntilDestroy, untilDestroyed} from '@ngneat/until-destroy';
 
 @Injectable()
+@UntilDestroy()
 export class ProjectApplicationFormSidenavService {
   private static readonly PROJECT_DETAIL_URL = '/app/project/detail';
 
@@ -73,12 +77,14 @@ export class ProjectApplicationFormSidenavService {
               private workPackageService: WorkPackageService,
               private projectStore: ProjectStore,
               private translate: TranslateService,
-              private permissionService: PermissionService) {
-    combineLatest([
+              private permissionService: PermissionService,
+              private routingService: RoutingService) {
+
+    const headlines$ = combineLatest([
       this.isNotApplicant$,
       this.projectStore.getProject(),
       this.partners$,
-      this.packages$,
+      this.packages$
     ])
       .pipe(
         tap(([isNotApplicant, project, partners, packages]) => {
@@ -90,6 +96,13 @@ export class ProjectApplicationFormSidenavService {
             && status !== OutputProjectStatus.StatusEnum.RETURNEDTOAPPLICANT;
           this.setHeadlines(isNotApplicant && isNotOpen, project.id, partners, packages);
         })
+      );
+
+    this.routingService.routeChanges(ProjectApplicationFormSidenavService.PROJECT_DETAIL_URL)
+      .pipe(
+        filter(isProjectDetailPath => isProjectDetailPath),
+        switchMap(() => headlines$),
+        untilDestroyed(this)
       ).subscribe();
   }
 
