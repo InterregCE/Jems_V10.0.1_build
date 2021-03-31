@@ -3,6 +3,7 @@ import {ProjectStore} from '../services/project-store.service';
 import {ActivatedRoute, Router} from '@angular/router';
 import {InputProjectStatus, OutputProject, OutputProjectStatus} from '@cat/api';
 import {map} from 'rxjs/operators';
+import {ProjectApplicationFormSidenavService} from '../../project-application-form-page/services/project-application-form-sidenav.service';
 
 @Component({
   selector: 'app-project-application-funding-page',
@@ -39,7 +40,8 @@ export class ProjectApplicationFundingPageComponent {
 
   constructor(public projectStore: ProjectStore,
               private router: Router,
-              private activatedRoute: ActivatedRoute) {
+              private activatedRoute: ActivatedRoute,
+              private sidenavService: ProjectApplicationFormSidenavService) {
   }
 
   redirectToProject(): void {

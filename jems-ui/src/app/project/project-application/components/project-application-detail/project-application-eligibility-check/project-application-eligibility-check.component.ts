@@ -9,6 +9,7 @@ import {AbstractForm} from '@common/components/forms/abstract-form';
 import {InputProjectEligibilityAssessment, OutputProject} from '@cat/api';
 import {Observable} from 'rxjs';
 import {TranslateService} from '@ngx-translate/core';
+import {ProjectApplicationFormSidenavService} from '../../../containers/project-application-form-page/services/project-application-form-sidenav.service';
 
 @Component({
   selector: 'app-project-application-eligibility-check',
@@ -41,8 +42,8 @@ export class ProjectApplicationEligibilityCheckComponent extends AbstractForm im
     private formBuilder: FormBuilder,
     private projectStore: ProjectStore,
     protected changeDetectorRef: ChangeDetectorRef,
-    protected translationService: TranslateService
-  ) {
+    protected translationService: TranslateService,
+    private sidenavService: ProjectApplicationFormSidenavService) {
     super(changeDetectorRef, translationService);
   }
 

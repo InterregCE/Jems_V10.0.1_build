@@ -2,6 +2,7 @@ import {ChangeDetectionStrategy, Component} from '@angular/core';
 import {ProjectStore} from '../services/project-store.service';
 import {ActivatedRoute, Router} from '@angular/router';
 import {Permission} from '../../../../../security/permissions/permission';
+import {ProjectApplicationFormSidenavService} from '../../project-application-form-page/services/project-application-form-sidenav.service';
 
 @Component({
   selector: 'app-project-application-eligibility-decision-page',
@@ -18,7 +19,8 @@ export class ProjectApplicationEligibilityDecisionPageComponent {
 
   constructor(public projectStore: ProjectStore,
               private router: Router,
-              private activatedRoute: ActivatedRoute) {
+              private activatedRoute: ActivatedRoute,
+              private sidenavService: ProjectApplicationFormSidenavService) {
   }
 
   redirectToProject(): void {
