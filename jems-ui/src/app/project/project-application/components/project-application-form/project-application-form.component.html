@@ -101,7 +101,7 @@
             <div>{{'project.application.form.field.project.priority' | translate}}</div>
             <div *ngIf="previousObjective">
                 {{project.projectData.programmePriority.code + ' - '}}
-                {{project.projectData.programmePriority.title}}
+                {{project.projectData.programmePriority.title | translateBySystemLanguage | async }}
             </div>
             <div *ngIf="!previousObjective">
                 {{'project.application.form.field.project.field.empty' | translate}}
