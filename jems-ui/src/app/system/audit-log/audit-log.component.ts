@@ -8,6 +8,7 @@ import {ColumnType} from '@common/components/table/model/column-type.enum';
 import {UntilDestroy, untilDestroyed} from '@ngneat/until-destroy';
 import {ColumnWidth} from '@common/components/table/model/column-width';
 import {AuditLogStore} from './audit-log-store.service';
+import {SystemPageSidenavService} from '../services/system-page-sidenav.service';
 
 @UntilDestroy()
 @Component({
@@ -69,6 +70,7 @@ export class AuditLogComponent implements OnInit {
 
   constructor(private auditService: AuditService,
               private formBuilder: FormBuilder,
+              private systemPageSidenavService: SystemPageSidenavService,
               public auditLogStore: AuditLogStore) {
   }
 

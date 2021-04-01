@@ -52,22 +52,13 @@ export const routes: Routes = [
         canActivate: [PermissionGuard]
       },
       {
-        path: 'user',
-        loadChildren: () => import('./user/user.module').then(m => m.UserModule),
-        data: {
-          skipBreadcrumb: true,
-          permissionsOnly: [Permission.ADMINISTRATOR],
-        },
-        canActivate: [PermissionGuard],
-      },
-      {
         path: 'profile',
         loadChildren: () => import('./user-profile/user-profile.module').then(m => m.UserProfileModule),
         data: {skipBreadcrumb: true},
       },
       {
-        path: 'audit',
-        loadChildren: () => import('./audit/audit.module').then(m => m.AuditModule),
+        path: 'system',
+        loadChildren: () => import('./system/system.module').then(m => m.SystemModule),
         data: {skipBreadcrumb: true},
       },
     ]

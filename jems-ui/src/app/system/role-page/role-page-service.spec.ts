@@ -1,12 +1,12 @@
 import {fakeAsync, TestBed, tick} from '@angular/core/testing';
 
 import {RolePageService} from './role-page.service';
-import {UserModule} from '../../../user.module';
-import {TestModule} from '../../../../common/test-module';
 import {OutputUserRole} from '@cat/api';
 import {HttpTestingController} from '@angular/common/http/testing';
-import {PermissionService} from '../../../../security/permissions/permission.service';
-import {Permission} from '../../../../security/permissions/permission';
+import {SystemModule} from '../system.module';
+import {TestModule} from '../../common/test-module';
+import {PermissionService} from '../../security/permissions/permission.service';
+import {Permission} from '../../security/permissions/permission';
 
 describe('RolePageService', () => {
   let service: RolePageService;
@@ -15,7 +15,7 @@ describe('RolePageService', () => {
   beforeEach(() => {
     TestBed.configureTestingModule({
       imports: [
-        UserModule,
+        SystemModule,
         TestModule
       ]
     });

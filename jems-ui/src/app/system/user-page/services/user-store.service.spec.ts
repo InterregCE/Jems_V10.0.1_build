@@ -3,8 +3,8 @@ import {fakeAsync, TestBed, tick} from '@angular/core/testing';
 import {UserStore} from './user-store.service';
 import {HttpTestingController} from '@angular/common/http/testing';
 import {InputUserUpdate} from '@cat/api';
-import {UserModule} from '../../user.module';
 import {TestModule} from '../../../common/test-module';
+import {SystemModule} from '../../system.module';
 
 describe('UserStoreService', () => {
   let service: UserStore;
@@ -12,7 +12,7 @@ describe('UserStoreService', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      imports: [UserModule, TestModule]
+      imports: [SystemModule, TestModule]
     });
     service = TestBed.inject(UserStore);
     httpTestingController = TestBed.inject(HttpTestingController);

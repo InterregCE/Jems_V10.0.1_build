@@ -2,7 +2,6 @@ import {ChangeDetectionStrategy, Component, OnInit} from '@angular/core';
 import {combineLatest, of, Subject} from 'rxjs';
 import {InputPassword, UserService} from '@cat/api';
 import {ActivatedRoute} from '@angular/router';
-import {RolePageService} from '../../../user-role/services/role-page/role-page.service';
 import {SecurityService} from '../../../../security/security.service';
 import {I18nValidationError} from '@common/validation/i18n-validation-error';
 import {catchError, filter, map, take, takeUntil, tap} from 'rxjs/operators';
@@ -11,6 +10,7 @@ import {BaseComponent} from '@common/components/base-component';
 import {Log} from '../../../../common/utils/log';
 import {FormState} from '@common/components/forms/form-state';
 import {UserStore} from '../../services/user-store.service';
+import {RolePageService} from '../../../role-page/role-page.service';
 
 @Component({
   selector: 'app-user-detail',
