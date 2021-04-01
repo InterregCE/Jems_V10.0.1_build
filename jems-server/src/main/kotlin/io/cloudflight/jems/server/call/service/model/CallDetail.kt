@@ -15,6 +15,7 @@ data class CallDetail (
     val name: String,
     val status: CallStatus,
     val startDate: ZonedDateTime,
+    val endDateStep1: ZonedDateTime?,
     val endDate: ZonedDateTime,
     val isAdditionalFundAllowed: Boolean,
     val lengthOfPeriod: Int?,

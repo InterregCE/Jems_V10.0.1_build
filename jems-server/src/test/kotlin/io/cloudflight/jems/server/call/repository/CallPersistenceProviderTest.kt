@@ -140,6 +140,7 @@ internal class CallPersistenceProviderTest {
             name = "Test call name",
             status = CallStatus.DRAFT,
             startDate = START,
+            endDateStep1 = null,
             endDate = END,
             isAdditionalFundAllowed = false,
             lengthOfPeriod = 1,

@@ -40,6 +40,7 @@ internal class CallAuthorizationTest {
         name = "test call",
         status = status,
         startDate = ZonedDateTime.now().minusDays(2),
+        endDateStep1 = null,
         endDate = ZonedDateTime.now().plusDays(2),
         isAdditionalFundAllowed = false,
         lengthOfPeriod = 10,

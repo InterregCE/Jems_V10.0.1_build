@@ -14,6 +14,7 @@ data class CallDetailDTO (
     val name: String,
     val status: CallStatus,
     val startDateTime: ZonedDateTime,
+    val endDateTimeStep1: ZonedDateTime?,
     val endDateTime: ZonedDateTime,
     val isAdditionalFundAllowed: Boolean,
     val lengthOfPeriod: Int?,

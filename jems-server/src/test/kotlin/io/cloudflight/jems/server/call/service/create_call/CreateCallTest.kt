@@ -56,6 +56,7 @@ class CreateCallTest: UnitTest() {
             name = "call to create",
             status = CallStatus.DRAFT,
             startDate = ZonedDateTime.now().minusDays(1),
+            endDateStep1 = null,
             endDate = ZonedDateTime.now().plusDays(1),
             isAdditionalFundAllowed = true,
             lengthOfPeriod = 9,

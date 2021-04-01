@@ -33,6 +33,7 @@ class CallFactory(
                 isAdditionalFundAllowed = false,
                 funds = mutableSetOf(),
                 startDate = callStart,
+                endDateStep1 = null,
                 endDate = callEnd,
                 status = CallStatus.PUBLISHED,
                 lengthOfPeriod = 1

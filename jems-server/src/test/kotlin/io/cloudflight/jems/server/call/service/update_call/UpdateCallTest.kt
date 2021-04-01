@@ -48,6 +48,7 @@ class UpdateCallTest: UnitTest() {
             name = "call name",
             status = CallStatus.PUBLISHED,
             startDate = ZonedDateTime.now().plusDays(1),
+            endDateStep1 = null,
             endDate = ZonedDateTime.now().plusDays(2),
             isAdditionalFundAllowed = true,
             lengthOfPeriod = 8,

@@ -36,6 +36,7 @@ private fun testCall(id: Long = 0) = CallEntity(
     name = "Test call name",
     status = CallStatus.DRAFT,
     startDate = ZonedDateTime.now(),
+    endDateStep1 = null,
     endDate = ZonedDateTime.now().plusDays(5L),
     lengthOfPeriod = 1,
     isAdditionalFundAllowed = false,

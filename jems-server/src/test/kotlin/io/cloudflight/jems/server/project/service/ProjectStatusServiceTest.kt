@@ -104,6 +104,7 @@ internal class ProjectStatusServiceTest {
         isAdditionalFundAllowed = false,
         funds = mutableSetOf(),
         startDate = ZonedDateTime.now().minusDays(2),
+        endDateStep1 = null,
         endDate = ZonedDateTime.now().plusDays(2),
         status = CallStatus.PUBLISHED,
         lengthOfPeriod = 1
