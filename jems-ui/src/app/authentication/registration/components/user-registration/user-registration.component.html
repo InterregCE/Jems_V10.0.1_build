@@ -8,10 +8,7 @@
                 <mat-label>{{'user.registration.field.name' | translate}}</mat-label>
                 <input name="name" formControlName="name" matInput required>
                 <mat-error>
-                    <app-form-field-errors
-                            [errors]="userForm?.controls?.name?.errors"
-                            [messages]="nameErrors">
-                    </app-form-field-errors>
+                    <app-form-field-errors [errors]="userForm?.controls?.name?.errors"></app-form-field-errors>
                 </mat-error>
             </mat-form-field>
 
@@ -19,10 +16,7 @@
                 <mat-label>{{'user.registration.field.surname' | translate}}</mat-label>
                 <input name="surname" formControlName="surname" matInput required>
                 <mat-error>
-                    <app-form-field-errors
-                            [errors]="userForm?.controls?.surname?.errors"
-                            [messages]="surnameErrors">
-                    </app-form-field-errors>
+                    <app-form-field-errors [errors]="userForm?.controls?.surname?.errors"></app-form-field-errors>
                 </mat-error>
             </mat-form-field>
 

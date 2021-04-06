@@ -1,0 +1,122 @@
+import {Injectable} from '@angular/core';
+import {combineLatest, merge, Observable, of, ReplaySubject, Subject} from 'rxjs';
+import {
+  InputPassword,
+  InputUserCreate,
+  InputUserUpdate,
+  OutputCurrentUser,
+  OutputUserRole,
+  OutputUserWithRole,
+  UserService
+} from '@cat/api';
+import {catchError, map, mergeMap, switchMap, tap} from 'rxjs/operators';
+import {Log} from '../../../common/utils/log';
+import {HttpErrorResponse} from '@angular/common/http';
+import {SecurityService} from '../../../security/security.service';
+import {RoutingService} from '../../../common/services/routing.service';
+import {filter, take} from 'rxjs/internal/operators';
+import {RolePageService} from '../../role-page/role-page.service';
+import {APIError} from '../../../common/models/APIError';
+
+@Injectable()
+export class UserDetailPageStore {
+  public static USER_DETAIL_PATH = '/app/system/user/detail/';
+  public static PROFILE_PATH = '/app/profile';
+
+  // TODO: remove when switching to new edit mode
+  userSaveError$ = new Subject<APIError | null>();
+  userSaveSuccess$ = new Subject<boolean>();
+  passwordSaveError$ = new Subject<APIError | null>();
+  passwordSaveSuccess$ = new Subject<boolean>();
+
+  user$: Observable<OutputUserWithRole>;
+  currentUser$: Observable<OutputCurrentUser | null>;
+  roles$: Observable<OutputUserRole[]>;
+  saveUser$ = new Subject<InputUserUpdate>();
+
+  private userName$ = new ReplaySubject<string>(1);
+
+  private savedUser$ = this.saveUser$
+    .pipe(
+      mergeMap(userUpdate => this.userService.update(userUpdate)),
+      tap(saved => Log.info('Updated user:', this, saved)),
+      tap(user => this.userName$.next(`${user.name} ${user.surname}`)),
+      tap(() => this.userSaveSuccess$.next(true)),
+      tap(() => this.userSaveError$.next(null)),
+      catchError((error: HttpErrorResponse) => {
+        this.userSaveError$.next(error.error);
+        throw error;
+      })
+    );
+
+  constructor(private userService: UserService,
+              private router: RoutingService,
+              private securityService: SecurityService,
+              private rolePageService: RolePageService) {
+    this.user$ = this.user();
+    this.roles$ = this.roles();
+    this.currentUser$ = this.securityService.currentUser;
+  }
+
+  createUser(user: InputUserCreate): Observable<OutputUserWithRole> {
+    return this.userService.createUser(user)
+      .pipe(
+        take(1),
+        tap(() => this.userSaveError$.next(null)),
+        tap(saved => Log.info('Created user:', this, saved)),
+        catchError((error: HttpErrorResponse) => {
+          this.userSaveError$.next(error.error);
+          throw error;
+        })
+      );
+  }
+
+  changePassword(userId: number, password: InputPassword): Observable<void> {
+    return (userId ? this.userService.changePassword(userId, password) : this.userService.changeMyPassword(password))
+      .pipe(
+        tap(() => this.passwordSaveSuccess$.next(true)),
+        tap(() => this.passwordSaveError$.next(null)),
+        tap(() => Log.info('User password changed successfully.', this)),
+        catchError((error: HttpErrorResponse) => {
+          this.passwordSaveError$.next(error.error);
+          throw error;
+        })
+      );
+  }
+
+  private user(): Observable<OutputUserWithRole> {
+    const initialUser$ = this.router.routeParameterChanges(UserDetailPageStore.USER_DETAIL_PATH, 'userId')
+      .pipe(
+        filter(userId => userId !== null),
+        switchMap(userId => userId ? this.userService.getById(Number(userId)) : of({} as OutputUserWithRole)),
+        tap(user => this.updateUserName(user)),
+        tap(user => Log.info('Fetched the user:', this, user))
+      );
+
+    const ownProfileUser$ = this.router.routeChanges(UserDetailPageStore.PROFILE_PATH)
+      .pipe(
+        filter(isProfilePath => isProfilePath),
+        switchMap(() => this.securityService.currentUserDetails as Observable<OutputUserWithRole>),
+        tap(user => this.updateUserName(user)),
+      );
+
+    return merge(initialUser$, ownProfileUser$, this.savedUser$);
+  }
+
+  private roles(): Observable<OutputUserRole[]> {
+    return combineLatest([this.user$, this.rolePageService.userRoles()])
+      .pipe(
+        map(([user, roles]) => roles?.length ? roles : [user?.userRole])
+      );
+  }
+
+  private updateUserName(user: OutputUserWithRole): void {
+    if (user?.name) {
+      this.userName$.next(`${user.name} ${user.surname}`);
+    }
+  }
+
+  getUserName(): Observable<string> {
+    return this.userName$.asObservable();
+  }
+}

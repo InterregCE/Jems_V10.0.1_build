@@ -1,10 +1,10 @@
 import {Routes} from '@angular/router';
-import {UserPageComponent} from './user-page/containers/user-page/user-page.component';
-import {UserDetailComponent} from './user-page/containers/user-detail/user-detail.component';
-import {UserNameResolver} from './user-page/services/user-name.resolver';
+import {UserPageComponent} from './user-page/user-page.component';
+import {UserNameResolver} from './user-page/user-detail-page/user-name.resolver';
 import {PermissionGuard} from '../security/permission.guard';
 import {Permission} from '../security/permissions/permission';
 import {AuditLogComponent} from './audit-log/audit-log.component';
+import {UserDetailPageComponent} from './user-page/user-detail-page/user-detail-page.component';
 
 export const routes: Routes = [
   {
@@ -21,18 +21,32 @@ export const routes: Routes = [
       },
       {
         path: 'user',
-        component: UserPageComponent,
         canActivate: [PermissionGuard],
         data: {
           breadcrumb: 'user.breadcrumb.create',
           permissionsOnly: [Permission.ADMINISTRATOR],
         },
-      },
-      {
-        path: 'user/detail/:userId',
-        component: UserDetailComponent,
-        data: {dynamicBreadcrumb: true},
-        resolve: {breadcrumb$: UserNameResolver}
+        children: [
+          {
+            path: '',
+            component: UserPageComponent,
+          },
+          {
+            path: 'detail/create',
+            component: UserDetailPageComponent,
+            canActivate: [PermissionGuard],
+            data: {
+              breadcrumb: 'user.create.header',
+              permissionsOnly: [Permission.ADMINISTRATOR],
+            },
+          },
+          {
+            path: 'detail/:userId',
+            component: UserDetailPageComponent,
+            data: {dynamicBreadcrumb: true},
+            resolve: {breadcrumb$: UserNameResolver}
+          },
+        ]
       },
     ]
   }

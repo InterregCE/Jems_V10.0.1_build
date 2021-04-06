@@ -1,10 +1,10 @@
 import {Routes} from '@angular/router';
-import {UserDetailComponent} from '../system/user-page/containers/user-detail/user-detail.component';
+import {UserDetailPageComponent} from '../system/user-page/user-detail-page/user-detail-page.component';
 
 export const routes: Routes = [
   {
     path: '',
-    component: UserDetailComponent,
+    component: UserDetailPageComponent,
     data: {
       breadcrumb: 'user.breadcrumb.your.profile'
     },
