@@ -1,4 +1,4 @@
-import {ChangeDetectionStrategy, Component, OnInit, TemplateRef, ViewChild} from '@angular/core';
+import {AfterViewInit, ChangeDetectionStrategy, Component, OnInit, TemplateRef, ViewChild} from '@angular/core';
 import {TableConfiguration} from '@common/components/table/model/table.configuration';
 import {Observable} from 'rxjs';
 import {map, startWith, tap} from 'rxjs/operators';
@@ -18,12 +18,14 @@ import {SystemPageSidenavService} from '../services/system-page-sidenav.service'
   changeDetection: ChangeDetectionStrategy.OnPush,
   providers: [AuditLogStore]
 })
-export class AuditLogComponent implements OnInit {
+export class AuditLogComponent implements OnInit, AfterViewInit {
 
   MAT_CHIP_USER_IDS_INDEX = 0;
   MAT_CHIP_USER_EMAILS_INDEX = 1;
   MAT_CHIP_ACTIONS_INDEX = 2;
   MAT_CHIP_PROJECT_IDS_INDEX = 3;
+  MAT_CHIP_START_DATE_INDEX = 4;
+  MAT_CHIP_END_DATE_INDEX = 5;
 
   @ViewChild('userIdCell', {static: true})
   userIdCell: TemplateRef<any>;
@@ -42,7 +44,9 @@ export class AuditLogComponent implements OnInit {
     userId: [],
     userEmail: [],
     actions: [],
-    description: [],
+    projectIds: [],
+    timeFrom: [],
+    timeTo: [],
   });
 
   filtersForm = this.formBuilder.array([
@@ -66,6 +70,16 @@ export class AuditLogComponent implements OnInit {
       values: this.formBuilder.array([]),
       isInverted: false,
     }),
+    this.formBuilder.group({
+      name: 'timeFrom',
+      values: this.formBuilder.array([]),
+      isInverted: false,
+    }),
+    this.formBuilder.group({
+      name: 'timeTo',
+      values: this.formBuilder.array([]),
+      isInverted: false,
+    }),
   ]);
 
   constructor(private auditService: AuditService,
@@ -84,7 +98,8 @@ export class AuditLogComponent implements OnInit {
           displayedColumn: 'audit.table.date.and.time',
           elementProperty: 'timestamp',
           columnType: ColumnType.DateColumnWithSeconds,
-          columnWidth: ColumnWidth.DateColumn
+          columnWidth: ColumnWidth.DateColumn,
+          sortProperty: 'timestamp'
         },
         {
           displayedColumn: 'audit.table.user.id',
@@ -119,8 +134,8 @@ export class AuditLogComponent implements OnInit {
         userEmails: filters[this.MAT_CHIP_USER_EMAILS_INDEX].values,
         actions: filters[this.MAT_CHIP_ACTIONS_INDEX].values,
         projectIds: filters[this.MAT_CHIP_PROJECT_IDS_INDEX].values,
-        timeFrom: null as any,
-        timeTo: null as any,
+        timeFrom: filters[this.MAT_CHIP_START_DATE_INDEX].values[0],
+        timeTo: filters[this.MAT_CHIP_END_DATE_INDEX].values[0],
       } as AuditSearchRequestDTO)),
       tap((filters) => this.auditLogStore.auditPageFilter$.next(filters)),
       untilDestroyed(this)
@@ -133,13 +148,41 @@ export class AuditLogComponent implements OnInit {
       );
   }
 
-  addFilter(filterIndex: number, event: Event): void {
-    const value: number = (event.target as any)?.value;
-    this.addFilterToIndex(filterIndex, value);
-    (event.target as any).value = '';
+  ngAfterViewInit(): void {
+    const endDate = new Date();
+    const startDate = new Date(endDate.getFullYear(), endDate.getMonth(), endDate.getDate(), endDate.getHours(), 0, 0);
+
+    this.addDateFilterToIndex(this.MAT_CHIP_START_DATE_INDEX, startDate);
+    this.addDateFilterToIndex(this.MAT_CHIP_END_DATE_INDEX, endDate);
+  }
+
+  addFilter(filterIndex: number, event: Event, isDate: boolean): void {
+    if (isDate) {
+      const value: Date = filterIndex === this.MAT_CHIP_START_DATE_INDEX ? this.referenceForm.controls.timeFrom.value.toDate() : this.referenceForm.controls.timeTo.value.toDate();
+      this.addDateFilterToIndex(filterIndex, value);
+
+      if (filterIndex === this.MAT_CHIP_START_DATE_INDEX) {
+        this.referenceForm.controls.timeFrom.patchValue(null);
+      }
+      if (filterIndex === this.MAT_CHIP_END_DATE_INDEX) {
+        this.referenceForm.controls.timeTo.patchValue(null);
+      }
+
+    } else {
+      const value: number = (event.target as any)?.value;
+      this.addFilterToIndex(filterIndex, value);
+      (event.target as any).value = '';
+    }
   }
 
   addFilterToIndex(filterIndex: number, value: number | string): void {
+    if (this.getValuesForFilterOnIndex(filterIndex).value.indexOf(value) === -1) {
+      this.getValuesForFilterOnIndex(filterIndex).push(this.formBuilder.control(value));
+    }
+  }
+
+  addDateFilterToIndex(filterIndex: number, value: Date): void {
+    this.getValuesForFilterOnIndex(filterIndex).clear();
     if (this.getValuesForFilterOnIndex(filterIndex).value.indexOf(value) === -1) {
       this.getValuesForFilterOnIndex(filterIndex).push(this.formBuilder.control(value));
     }

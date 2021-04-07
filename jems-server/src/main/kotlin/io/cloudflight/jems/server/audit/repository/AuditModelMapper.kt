@@ -19,6 +19,8 @@ const val FIELD_USER_EMAIL = "email"
 const val FIELD_PROJECT = "project"
 const val FIELD_PROJECT_ID = "id"
 const val FIELD_PROJECT_NAME = "name"
+const val TIME_FROM = "timeFrom"
+const val TIME_TO = "timeTo"
 private const val FIELD_ENTITY_RELATED_ID = "entityRelatedId"
 private const val FIELD_DESCRIPTION = "description"
 
