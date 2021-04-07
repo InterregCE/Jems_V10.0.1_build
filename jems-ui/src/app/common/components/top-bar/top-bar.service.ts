@@ -22,11 +22,6 @@ export class TopBarService {
     isInternal: true,
     route: '/app/project',
   };
-  private usersItem: MenuItemConfiguration = {
-    name: 'topbar.main.user.management',
-    isInternal: true,
-    route: '/app/user',
-  };
   private programmItem: MenuItemConfiguration = {
     name: 'topbar.main.programme',
     isInternal: true,
@@ -36,6 +31,11 @@ export class TopBarService {
     name: 'topbar.main.call',
     isInternal: true,
     route: '/app/call',
+  };
+  private systemItem: MenuItemConfiguration = {
+    name: 'topbar.main.system',
+    isInternal: true,
+    route: '/app/system',
   };
   private auditItem: MenuItemConfiguration;
   private editUserItem: MenuItemConfiguration;
@@ -57,11 +57,6 @@ export class TopBarService {
   }
 
   private adaptMenuItems(currentUser: OutputCurrentUser | null): void {
-    this.auditItem = {
-      name: 'topbar.main.audit',
-      isInternal: true,
-      route: '/app/audit',
-    };
     if (!currentUser) {
       return;
     }
@@ -89,7 +84,7 @@ export class TopBarService {
         this.applicationsItem,
         this.callsItem,
         this.programmItem,
-        this.auditItem,
+        this.systemItem,
         this.editUserItem,
       ]));
 
@@ -102,8 +97,7 @@ export class TopBarService {
         this.applicationsItem,
         this.callsItem,
         this.programmItem,
-        this.usersItem,
-        this.auditItem,
+        this.systemItem,
         this.editUserItem,
       ]));
   }

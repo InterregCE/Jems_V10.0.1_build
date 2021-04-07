@@ -1,9 +1,9 @@
 import {async, ComponentFixture, fakeAsync, TestBed, tick} from '@angular/core/testing';
-import {UserModule} from '../../../user.module';
 import {HttpTestingController} from '@angular/common/http/testing';
 import {TestModule} from '../../../../common/test-module';
 import {UserPageComponent} from './user-page.component';
 import {InputUserCreate, OutputUser} from '@cat/api';
+import {SystemModule} from '../../../system.module';
 
 describe('UserPageComponent', () => {
   let httpTestingController: HttpTestingController;
@@ -14,7 +14,7 @@ describe('UserPageComponent', () => {
     TestBed.configureTestingModule({
       declarations: [UserPageComponent],
       imports: [
-        UserModule,
+        SystemModule,
         TestModule
       ],
     })

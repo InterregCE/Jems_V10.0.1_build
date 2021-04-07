@@ -1,7 +1,6 @@
 import {ChangeDetectionStrategy, Component} from '@angular/core';
 import {InputUserCreate, UserService} from '@cat/api';
 import {Permission} from '../../../../security/permissions/permission';
-import {RolePageService} from '../../../user-role/services/role-page/role-page.service';
 import {catchError, mergeMap, map, startWith, take, takeUntil, tap} from 'rxjs/operators';
 import {HttpErrorResponse} from '@angular/common/http';
 import {combineLatest, Subject} from 'rxjs';
@@ -10,6 +9,8 @@ import {BaseComponent} from '@common/components/base-component';
 import {Log} from '../../../../common/utils/log';
 import {MatSort} from '@angular/material/sort';
 import {Tables} from '../../../../common/utils/tables';
+import {SystemPageSidenavService} from '../../../services/system-page-sidenav.service';
+import {RolePageService} from '../../../role-page/role-page.service';
 
 @Component({
   selector: 'app-user-page',
@@ -45,7 +46,8 @@ export class UserPageComponent extends BaseComponent {
   userSaveSuccess$ = new Subject<boolean>();
 
   constructor(private userService: UserService,
-              private rolePageService: RolePageService) {
+              private rolePageService: RolePageService,
+              private systemPageSidenavService: SystemPageSidenavService) {
     super();
   }
 

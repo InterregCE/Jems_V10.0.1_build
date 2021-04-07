@@ -2,9 +2,10 @@ import {Injectable} from '@angular/core';
 import {mergeMap, map, shareReplay, tap} from 'rxjs/operators';
 import {OutputUserRole, UserRoleService} from '@cat/api';
 import {Observable, of} from 'rxjs';
-import {Log} from '../../../../common/utils/log';
-import {PermissionService} from '../../../../security/permissions/permission.service';
-import {Permission} from '../../../../security/permissions/permission';
+import {Log} from '../../common/utils/log';
+import {Permission} from '../../security/permissions/permission';
+import {PermissionService} from '../../security/permissions/permission.service';
+
 
 @Injectable({providedIn: 'root'})
 export class RolePageService {

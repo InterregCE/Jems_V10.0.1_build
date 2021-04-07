@@ -1,9 +1,9 @@
 import {async, ComponentFixture, TestBed} from '@angular/core/testing';
-import {UserModule} from '../../../user.module';
 import {TestModule} from '../../../../common/test-module';
 import {UserDetailComponent} from './user-detail.component';
 import {ActivatedRoute} from '@angular/router';
 import {RouterTestingModule} from '@angular/router/testing';
+import {SystemModule} from '../../../system.module';
 
 describe('UserDetailComponent', () => {
   let component: UserDetailComponent;
@@ -13,7 +13,7 @@ describe('UserDetailComponent', () => {
     TestBed.configureTestingModule({
       declarations: [UserDetailComponent],
       imports: [
-        UserModule,
+        SystemModule,
         TestModule,
         RouterTestingModule.withRoutes(
           [{path: 'app/project/detail/1/applicationForm', component: UserDetailComponent}])
