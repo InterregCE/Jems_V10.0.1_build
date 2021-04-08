@@ -65,11 +65,12 @@ class AuditPersistenceProvider(
                     filterQuery.must(TermsQueryBuilder(it.first, it.second.values))
             }
 
+        filterQuery.must(timestampQuery)
+
         return SearchRequest(index)
             .source(
                 SearchSourceBuilder()
                     .query(filterQuery)
-                    .query(timestampQuery)
                     .from(pageable.offset.toInt())
                     .size(pageable.pageSize)
                     .sort(FieldSortBuilder(FIELD_TIMESTAMP).order(order))

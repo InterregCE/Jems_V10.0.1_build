@@ -50,7 +50,7 @@
                           [removable]="true"
                           [selectable]="false"
                           (removed)="getValuesForFilterOnIndex(filterIndex).removeAt(itemIndex)">
-                    {{ control.get('name').value }} = {{ filterItem }}<mat-icon matChipRemove>cancel</mat-icon>
+                    {{ control.get('name').value }} = {{ formatDateValueInChip(filterItem) }}<mat-icon matChipRemove>cancel</mat-icon>
                 </mat-chip>
             </ng-container>
         </mat-chip-list>
