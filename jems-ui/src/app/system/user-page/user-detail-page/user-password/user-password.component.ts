@@ -8,12 +8,13 @@ import {
   Output
 } from '@angular/core';
 import {FormBuilder, FormGroup, Validators} from '@angular/forms';
-import {Forms} from '../../../../../common/utils/forms';
-import {InputPassword} from '@cat/api';
 import {filter, take, takeUntil} from 'rxjs/operators';
 import {MatDialog} from '@angular/material/dialog';
 import {ViewEditForm} from '@common/components/forms/view-edit-form';
 import {TranslateService} from '@ngx-translate/core';
+import {FormState} from '@common/components/forms/form-state';
+import {UserDetailPageStore} from '../user-detail-page-store.service';
+import {Forms} from '../../../../common/utils/forms';
 
 @Component({
   selector: 'app-user-password',
@@ -22,29 +23,30 @@ import {TranslateService} from '@ngx-translate/core';
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class UserPasswordComponent extends ViewEditForm implements OnInit {
+  // password should have: at least 10 characters, one upper case letter, one lower case letter and one digit
+  static PASSWORD_REGEX = new RegExp('^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.{10,})');
 
   @Input()
   ownUser: boolean;
   @Input()
   disabled: boolean;
+  @Input()
+  userId: number;
   @Output()
-  submitPassword: EventEmitter<InputPassword> = new EventEmitter<InputPassword>();
+  passwordFormState: EventEmitter<FormState> = new EventEmitter<FormState>();
 
   clearOnSuccess = true;
   passwordForm: FormGroup;
 
   passwordErrors = {
-    required: 'user.password.should.not.be.empty',
-    minlength: 'user.password.wrong.size',
-  };
-
-  oldPasswordErrors = {
-    required: 'user.password.should.not.be.empty',
+    pattern: 'user.password.constraints.not.satisfied'
   };
 
   constructor(private formBuilder: FormBuilder,
               private dialog: MatDialog,
-              protected changeDetectorRef: ChangeDetectorRef, protected translationService: TranslateService) {
+              private userStore: UserDetailPageStore,
+              protected changeDetectorRef: ChangeDetectorRef,
+              protected translationService: TranslateService) {
     super(changeDetectorRef, translationService);
   }
 
@@ -53,6 +55,7 @@ export class UserPasswordComponent extends ViewEditForm implements OnInit {
       password: ['', Validators.compose([
         Validators.required,
         Validators.minLength(10),
+        Validators.pattern(UserPasswordComponent.PASSWORD_REGEX)
       ])]
     };
     if (this.ownUser) {
@@ -61,7 +64,6 @@ export class UserPasswordComponent extends ViewEditForm implements OnInit {
       ])];
     }
     this.passwordForm = this.formBuilder.group(controls);
-
     super.ngOnInit();
   }
 
@@ -90,15 +92,14 @@ export class UserPasswordComponent extends ViewEditForm implements OnInit {
 
   private savePassword(): void {
     this.submitted = true;
-    this.submitPassword.emit({
-      password: this.passwordForm?.controls?.password?.value,
-      oldPassword: this.passwordForm?.controls?.oldPassword?.value
-    });
+    this.userStore.changePassword(!this.ownUser ? this.userId : null as any, this.passwordForm.value)
+      .pipe(
+        take(1),
+      ).subscribe();
   }
 
   enterEditMode(): void {
-    this.passwordForm?.controls?.password?.setValue('');
-    this.passwordForm?.controls?.oldPassword?.setValue('');
+    this.passwordForm.reset();
   }
 
 }

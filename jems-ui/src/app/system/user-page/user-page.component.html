@@ -1,0 +1,27 @@
+<app-main-page-template [needsCard]="true"
+                        titleKey="user.breadcrumb.create"
+                        subTitleKey="user.management.header">
+    <button mat-raised-button class="mb-3" color="primary" routerLink="/app/system/user/detail/create">
+        + {{'user.create.button.add' | translate}}
+    </button>
+
+    <div *ngIf="success" class="success-wrapper">
+        <div class="success app-alert-success">
+            <em class="far fa-check-circle"></em>
+            <span *ngIf="success.i18nKey">{{success.i18nKey | translate : success.i18nArguments}}</span>
+        </div>
+    </div>
+
+    <div *ngIf="userPageStore.page$ | async as page">
+        <h3>{{'users.table.title.label'| translate}}</h3>
+        <app-table
+                [configuration]="tableConfiguration"
+                [rows]="page.content"
+                [totalElements]="page.totalElements"
+                [pageIndex]="userPageStore.newPageIndex$ | async"
+                (newPageSize)="userPageStore.newPageSize$.next($event)"
+                (newPageIndex)="userPageStore.newPageIndex$.next($event)"
+                (sortRows)="userPageStore.newSort$.next($event)">
+        </app-table>
+    </div>
+</app-main-page-template>

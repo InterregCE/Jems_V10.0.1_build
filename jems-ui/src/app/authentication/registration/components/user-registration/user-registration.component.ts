@@ -3,9 +3,8 @@ import {AbstractForm} from '@common/components/forms/abstract-form';
 import {FormBuilder, FormGroup, Validators} from '@angular/forms';
 import {InputUserRegistration} from '@cat/api';
 import {TranslateService} from '@ngx-translate/core';
+import {UserPasswordComponent} from '../../../../system/user-page/user-detail-page/user-password/user-password.component';
 
-// password should have: at least 10 characters, one upper case letter, one lower case letter and one digit
-const PASSWORD_REGEX = new RegExp('^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.{10,})');
 
 @Component({
   selector: 'app-user-registration',
@@ -13,10 +12,6 @@ const PASSWORD_REGEX = new RegExp('^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.{10,})'
   styleUrls: ['./user-registration.component.scss']
 })
 export class UserRegistrationComponent extends AbstractForm implements OnInit {
-
-  private static readonly USER_NAME_WRONG_SIZE = 'user.name.wrong.size';
-  private static readonly USER_SURNAME_WRONG_SIZE = 'user.surname.wrong.size';
-
   @Output()
   submitUser: EventEmitter<InputUserRegistration> = new EventEmitter<InputUserRegistration>();
   @Output()
@@ -44,30 +39,15 @@ export class UserRegistrationComponent extends AbstractForm implements OnInit {
     ])],
     password: ['', Validators.compose([
       Validators.required,
-      Validators.pattern(PASSWORD_REGEX)
+      Validators.pattern(UserPasswordComponent.PASSWORD_REGEX)
     ])],
   });
 
-  nameErrors = {
-    maxlength: UserRegistrationComponent.USER_NAME_WRONG_SIZE,
-    minlength: UserRegistrationComponent.USER_NAME_WRONG_SIZE,
-    required: UserRegistrationComponent.USER_NAME_WRONG_SIZE,
-  };
-
-  surnameErrors = {
-    maxlength: UserRegistrationComponent.USER_SURNAME_WRONG_SIZE,
-    minlength: UserRegistrationComponent.USER_SURNAME_WRONG_SIZE,
-    required: UserRegistrationComponent.USER_SURNAME_WRONG_SIZE,
-  };
-
   emailErrors = {
-    required: 'user.email.should.not.be.empty',
-    maxlength: 'user.email.wrong.size',
     email: 'user.email.wrong.format'
   };
 
   passwordErrors = {
-    required: 'user.password.should.not.be.empty',
     pattern: 'user.password.constraints.not.satisfied',
   };
 
