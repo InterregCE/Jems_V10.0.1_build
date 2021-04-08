@@ -6,6 +6,7 @@ import {UntilDestroy, untilDestroyed} from '@ngneat/until-destroy';
 import {PermissionService} from '../../security/permissions/permission.service';
 import {Permission} from '../../security/permissions/permission';
 import {combineLatest} from 'rxjs';
+import {HeadlineRoute} from '@common/components/side-nav/headline-route';
 
 @UntilDestroy()
 @Injectable()
@@ -33,22 +34,18 @@ export class SystemPageSidenavService {
   }
 
   private setHeadlines(isAdministrator: boolean): void {
-    const bulletsArray = [];
-    const userManagement = {
+    const bulletsArray: HeadlineRoute[] = [{
+      headline: {i18nKey: 'topbar.main.audit'},
+      route: `${SystemPageSidenavService.SYSTEM_DETAIL_PATH}`,
+    }];
+
+    if (isAdministrator) {
+      bulletsArray.push({
         headline: {i18nKey: 'topbar.main.user.management'},
         route: `${SystemPageSidenavService.SYSTEM_DETAIL_PATH}/user`,
         scrollToTop: true,
-      };
-
-    const audit = {
-      headline: {i18nKey: 'topbar.main.audit'},
-      route: `${SystemPageSidenavService.SYSTEM_DETAIL_PATH}`,
-    };
-
-    if (isAdministrator) {
-      bulletsArray.push(userManagement);
+      });
     }
-    bulletsArray.push(audit);
 
     this.sideNavService.setHeadlines(SystemPageSidenavService.SYSTEM_DETAIL_PATH, [
       {

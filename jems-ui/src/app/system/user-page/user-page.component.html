@@ -5,9 +5,9 @@
         + {{'user.create.button.add' | translate}}
     </button>
 
-    <div *ngIf="success" class="success-wrapper">
+    <div *ngIf="success" class="success-wrapper mb-3">
         <div class="success app-alert-success">
-            <em class="far fa-check-circle"></em>
+            <em class="far fa-check-circle mr-1"></em>
             <span *ngIf="success.i18nKey">{{success.i18nKey | translate : success.i18nArguments}}</span>
         </div>
     </div>
