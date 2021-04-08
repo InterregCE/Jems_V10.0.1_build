@@ -115,6 +115,7 @@ class ProjectServiceTest {
         isAdditionalFundAllowed = false,
         funds = mutableSetOf(),
         startDate = ZonedDateTime.now().minusDays(1),
+        endDateStep1 = null,
         endDate = ZonedDateTime.now().plusDays(1),
         status = CallStatus.PUBLISHED,
         lengthOfPeriod = 1
@@ -361,6 +362,7 @@ class ProjectServiceTest {
             isAdditionalFundAllowed = false,
             funds = mutableSetOf(),
             startDate = ZonedDateTime.now(),
+            endDateStep1 = null,
             endDate = ZonedDateTime.now(),
             status = CallStatus.PUBLISHED,
             lengthOfPeriod = 6

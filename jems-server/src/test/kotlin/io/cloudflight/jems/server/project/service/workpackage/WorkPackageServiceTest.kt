@@ -59,6 +59,7 @@ class WorkPackageServiceTest {
         isAdditionalFundAllowed = false,
         funds = mutableSetOf(),
         startDate = ZonedDateTime.now(),
+        endDateStep1 = null,
         endDate = ZonedDateTime.now().plusDays(5L),
         status = CallStatus.DRAFT,
         translatedValues = mutableSetOf(),

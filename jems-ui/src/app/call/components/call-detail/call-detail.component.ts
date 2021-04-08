@@ -59,6 +59,12 @@ export class CallDetailComponent implements OnInit {
     matDatetimePickerMax: 'common.error.end.after.start'
   };
 
+  inputErrorMessagesForEndDateStep1 = {
+    ...this.inputErrorMessages,
+    matDatetimePickerMin: 'call.endDateTimeStep1.needs.to.be.between.start.and.end',
+    matDatetimePickerMax: 'call.endDateTimeStep1.needs.to.be.between.start.and.end'
+  };
+
   editable = false;
   published = false;
 
@@ -67,7 +73,9 @@ export class CallDetailComponent implements OnInit {
       Validators.required,
       Validators.maxLength(250)
     ])],
+    is2Step: [false, Validators.required],
     startDateTime: ['', Validators.required],
+    endDateTimeStep1: [''],
     endDateTime: ['', Validators.required],
     description: [[], Validators.maxLength(1000)],
     lengthOfPeriod: ['', Validators.compose(
@@ -99,6 +107,9 @@ export class CallDetailComponent implements OnInit {
     if (this.call && this.call.status === CallDetailDTO.StatusEnum.PUBLISHED && !this.isApplicant) {
       this.callForm.controls.name.enable();
       this.callForm.controls.description.enable();
+      if (this.callForm.controls.is2Step) {
+        this.callForm.controls.endDateTimeStep1.enable();
+      }
       this.callForm.controls.endDateTime.enable();
       if (!this.call.isAdditionalFundAllowed) {
         this.callForm.controls.multipleFundsAllowed.enable();
@@ -113,6 +124,10 @@ export class CallDetailComponent implements OnInit {
     call.strategies = this.buildUpdateEntityStrategies();
     call.fundIds = this.buildUpdateEntityFunds();
     call.isAdditionalFundAllowed = this.callForm.controls.multipleFundsAllowed.value;
+    if (!this.callForm.controls.is2Step.value) {
+      call.endDateTimeStep1 = null;
+      call.is2Step = null;
+    }
 
     if (!this.call.id) {
       this.callStore.createCall(call)
@@ -185,6 +200,9 @@ export class CallDetailComponent implements OnInit {
 
   resetForm(): void {
     this.callForm.patchValue(this.call);
+    if (this.call.endDateTimeStep1) {
+      this.callForm.get('is2Step')?.setValue(true);
+    }
   }
 
   private buildUpdateEntityStrategies(): OutputProgrammeStrategy.StrategyEnum[] {

@@ -28,6 +28,7 @@ class ProjectPartnerTestUtil {
             name = "call",
             status = CallStatus.DRAFT,
             startDate = ZonedDateTime.now(),
+            endDateStep1 = null,
             endDate = ZonedDateTime.now(),
             prioritySpecificObjectives = mutableSetOf(),
             strategies = mutableSetOf(),

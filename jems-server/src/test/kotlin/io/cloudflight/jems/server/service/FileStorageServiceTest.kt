@@ -93,6 +93,7 @@ class FileStorageServiceTest {
         isAdditionalFundAllowed = false,
         funds = mutableSetOf(),
         startDate = ZonedDateTime.now(),
+        endDateStep1 = null,
         endDate = ZonedDateTime.now(),
         status = CallStatus.PUBLISHED,
         lengthOfPeriod = 1
