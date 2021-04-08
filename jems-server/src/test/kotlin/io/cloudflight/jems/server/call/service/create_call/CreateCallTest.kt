@@ -76,6 +76,9 @@ class CreateCallTest: UnitTest() {
             funds = listOf(ProgrammeFund(id = FUND_ID, selected = true)),
         )
     }
+    private val expectedCallDetailWith2StepEnabled = expectedCallDetail.copy(
+        endDateStep1 = ZonedDateTime.now().plusHours(4)
+    )
 
     @MockK
     lateinit var persistence: CallPersistence
@@ -154,4 +157,15 @@ class CreateCallTest: UnitTest() {
         verify(exactly = 0) { auditPublisher.publishEvent(any<AuditCandidateEvent>()) }
     }
 
+    @Test
+    fun `createCAllInDraft - 2 step enabled OK`() {
+        val USER_ID = 5L
+        every { persistence.getCallIdForNameIfExists("call to create") } returns null
+        every { securityService.currentUser } returns userWithId(USER_ID)
+        val slotCall = slot<Call>()
+        val slotUserId = slot<Long>()
+        every { persistence.createCall(capture(slotCall), capture(slotUserId)) } returns expectedCallDetailWith2StepEnabled
+
+        assertThat(createCall.createCallInDraft(callToCreate.copy(endDateStep1 = ZonedDateTime.now().plusHours(4)))).isEqualTo(expectedCallDetailWith2StepEnabled)
+    }
 }

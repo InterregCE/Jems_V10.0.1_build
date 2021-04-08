@@ -48,6 +48,9 @@ data class CallDetail (
         if (old == null || startDate.toInstant() != old.startDate.toInstant())
             changes["startDate"] = Pair(old?.startDate, startDate)
 
+        if (old == null || endDateStep1?.toInstant() != old.endDateStep1?.toInstant())
+            changes["endDateStep1"] = Pair(old?.endDateStep1, endDateStep1)
+
         if (old == null || endDate.toInstant() != old.endDate.toInstant())
             changes["endDate"] = Pair(old?.endDate, endDate)
 
