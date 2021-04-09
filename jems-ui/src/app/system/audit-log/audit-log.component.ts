@@ -1,4 +1,4 @@
-import {AfterViewInit, ChangeDetectionStrategy, Component, OnInit, TemplateRef, ViewChild} from '@angular/core';
+import {ChangeDetectionStrategy, Component, OnInit, TemplateRef, ViewChild} from '@angular/core';
 import {TableConfiguration} from '@common/components/table/model/table.configuration';
 import {Observable} from 'rxjs';
 import {map, startWith, tap} from 'rxjs/operators';
@@ -19,7 +19,7 @@ import {LocaleDatePipe} from '../../common/pipe/locale-date.pipe';
   changeDetection: ChangeDetectionStrategy.OnPush,
   providers: [AuditLogStore]
 })
-export class AuditLogComponent implements OnInit, AfterViewInit {
+export class AuditLogComponent implements OnInit {
 
   MAT_CHIP_USER_IDS_INDEX = 0;
   MAT_CHIP_USER_EMAILS_INDEX = 1;
@@ -150,15 +150,10 @@ export class AuditLogComponent implements OnInit, AfterViewInit {
       );
   }
 
-  ngAfterViewInit(): void {
-    const endDate = new Date();
-    const startDate = new Date(endDate.getFullYear(), endDate.getMonth(), endDate.getDate(), endDate.getHours(), 0, 0);
-
-    this.addDateFilterToIndex(this.MAT_CHIP_START_DATE_INDEX, startDate);
-    this.addDateFilterToIndex(this.MAT_CHIP_END_DATE_INDEX, endDate);
-  }
-
   addFilter(filterIndex: number, event: Event, isDate: boolean): void {
+    if (!this.referenceForm.valid) {
+      return;
+    }
     if (isDate) {
       const value: Date = filterIndex === this.MAT_CHIP_START_DATE_INDEX ? this.referenceForm.controls.timeFrom.value.toDate() : this.referenceForm.controls.timeTo.value.toDate();
       this.addDateFilterToIndex(filterIndex, value);

@@ -4,7 +4,7 @@
             <div appMultiColumnRow>
                 <mat-form-field>
                     <mat-label>{{'audit.user.ids' | translate}}</mat-label>
-                    <input (keyup.enter)="addFilter(MAT_CHIP_USER_IDS_INDEX, $event, false)" matInput name="userId" formControlName="userId">
+                    <input (keyup.enter)="addFilter(MAT_CHIP_USER_IDS_INDEX, $event, false)" matInput name="userId" formControlName="userId" currencyMask type="integer" [options]="{allowZero:true, thousands:'', nullable: true}">
                 </mat-form-field>
                 <mat-form-field>
                     <mat-label>{{'audit.user.emails' | translate}}</mat-label>
@@ -21,7 +21,7 @@
                 </mat-form-field>
                 <mat-form-field>
                     <mat-label>{{'audit.projectIds' | translate}}</mat-label>
-                    <input (keyup.enter)="addFilter(MAT_CHIP_PROJECT_IDS_INDEX, $event, false)" matInput name="projectIds" formControlName="projectIds">
+                    <input (keyup.enter)="addFilter(MAT_CHIP_PROJECT_IDS_INDEX, $event, false)" matInput name="projectIds" formControlName="projectIds" currencyMask type="integer" [options]="{allowZero:true, thousands:'', nullable: true}">
                 </mat-form-field>
             </div>
             <div appMultiColumnRow>
