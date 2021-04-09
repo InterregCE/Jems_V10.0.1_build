@@ -9,6 +9,7 @@ import {UntilDestroy, untilDestroyed} from '@ngneat/until-destroy';
 import {ColumnWidth} from '@common/components/table/model/column-width';
 import {AuditLogStore} from './audit-log-store.service';
 import {SystemPageSidenavService} from '../services/system-page-sidenav.service';
+import {LocaleDatePipe} from '../../common/pipe/locale-date.pipe';
 
 @UntilDestroy()
 @Component({
@@ -85,6 +86,7 @@ export class AuditLogComponent implements OnInit, AfterViewInit {
   constructor(private auditService: AuditService,
               private formBuilder: FormBuilder,
               private systemPageSidenavService: SystemPageSidenavService,
+              private localeDatePipe: LocaleDatePipe,
               public auditLogStore: AuditLogStore) {
   }
 
@@ -196,5 +198,12 @@ export class AuditLogComponent implements OnInit, AfterViewInit {
     const filterValue = (value || '').toLowerCase();
     return actions
       .filter(action => action.toLowerCase().includes(filterValue));
+  }
+
+  formatDateValueInChip(filterItem: any): string {
+    if (filterItem instanceof Date) {
+      return this.localeDatePipe.transform(filterItem, 'L', 'LT');
+    }
+    return filterItem;
   }
 }
