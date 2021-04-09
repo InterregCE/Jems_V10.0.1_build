@@ -1,6 +1,6 @@
 import {Injectable} from '@angular/core';
 import {
-  OutputProjectPeriod,
+  ProjectPeriodDTO,
   ProgrammeIndicatorService,
   ProjectResultDTO,
   ProjectResultService, ResultIndicatorSummaryDTO
@@ -17,7 +17,7 @@ export class ProjectResultsPageStore {
   isProjectEditable$: Observable<boolean>;
   results$: Observable<ProjectResultDTO[]>;
   resultIndicators$: Observable<ResultIndicatorSummaryDTO[]>;
-  periods$: Observable<OutputProjectPeriod[]>;
+  periods$: Observable<ProjectPeriodDTO[]>;
   projectAcronym$: Observable<string>;
 
   private savedResults$ = new Subject<ProjectResultDTO[]>();
@@ -63,7 +63,7 @@ export class ProjectResultsPageStore {
       );
   }
 
-  private periods(): Observable<OutputProjectPeriod[]> {
+  private periods(): Observable<ProjectPeriodDTO[]> {
     return this.projectStore.getProject()
       .pipe(
         map(project => project.periods),

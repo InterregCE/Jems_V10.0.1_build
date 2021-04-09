@@ -1,15 +1,16 @@
 package io.cloudflight.jems.server.factory
 
-import io.cloudflight.jems.api.project.dto.status.ProjectApplicationStatus
+import io.cloudflight.jems.api.project.dto.status.ApplicationStatusDTO
 import io.cloudflight.jems.api.project.dto.file.ProjectFileType
 import io.cloudflight.jems.server.call.entity.CallEntity
 import io.cloudflight.jems.server.user.entity.User
 import io.cloudflight.jems.server.project.entity.ProjectEntity
 import io.cloudflight.jems.server.project.entity.file.ProjectFile
-import io.cloudflight.jems.server.project.entity.ProjectStatus
+import io.cloudflight.jems.server.project.entity.ProjectStatusHistoryEntity
 import io.cloudflight.jems.server.project.repository.ProjectFileRepository
 import io.cloudflight.jems.server.project.repository.ProjectRepository
-import io.cloudflight.jems.server.project.repository.ProjectStatusRepository
+import io.cloudflight.jems.server.project.repository.ProjectStatusHistoryRepository
+import io.cloudflight.jems.server.project.service.application.ApplicationStatus
 import org.springframework.stereotype.Component
 import org.springframework.transaction.annotation.Transactional
 import java.time.ZonedDateTime
@@ -17,7 +18,7 @@ import java.time.ZonedDateTime
 @Component
 class ProjectFileFactory(
     val projectRepository: ProjectRepository,
-    val projectStatusRepository: ProjectStatusRepository,
+    val projectStatusHistoryRepository: ProjectStatusHistoryRepository,
     val projectFileRepository: ProjectFileRepository
 ) {
 
@@ -26,14 +27,14 @@ class ProjectFileFactory(
 
     @Transactional
     fun saveProject(author: User, call: CallEntity): ProjectEntity {
-        val projectStatus = projectStatusRepository.save(ProjectStatus(0, null, ProjectApplicationStatus.DRAFT, author, ZonedDateTime.now(), null))
+        val projectStatus = projectStatusHistoryRepository.save(ProjectStatusHistoryEntity(0, null, ApplicationStatus.DRAFT, author, ZonedDateTime.now(), null))
         return projectRepository.save(
             ProjectEntity(
                 id = 0,
                 call = call,
                 acronym = "test_project",
                 applicant = author,
-                projectStatus = projectStatus,
+                currentStatus = projectStatus,
                 firstSubmission = projectStatus
             )
         )

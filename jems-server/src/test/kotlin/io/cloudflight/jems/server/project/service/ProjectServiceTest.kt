@@ -3,7 +3,7 @@ package io.cloudflight.jems.server.project.service
 import io.cloudflight.jems.api.call.dto.CallStatus
 import io.cloudflight.jems.api.call.dto.flatrate.FlatRateSetupDTO
 import io.cloudflight.jems.api.programme.dto.language.SystemLanguage
-import io.cloudflight.jems.api.programme.dto.priority.OutputProgrammePriorityPolicySimple
+import io.cloudflight.jems.api.programme.dto.priority.OutputProgrammePriorityPolicySimpleDTO
 import io.cloudflight.jems.api.programme.dto.priority.ProgrammeObjectivePolicy.AdvancedTechnologies
 import io.cloudflight.jems.api.programme.dto.priority.ProgrammeObjectivePolicy.HealthyAgeing
 import io.cloudflight.jems.api.programme.dto.priority.ProgrammeObjectivePolicy.SocialInfrastructure
@@ -11,11 +11,11 @@ import io.cloudflight.jems.api.programme.dto.strategy.ProgrammeStrategy
 import io.cloudflight.jems.api.project.dto.InputProject
 import io.cloudflight.jems.api.project.dto.InputProjectData
 import io.cloudflight.jems.api.project.dto.InputTranslation
-import io.cloudflight.jems.api.project.dto.OutputProjectData
-import io.cloudflight.jems.api.project.dto.OutputProjectPeriod
+import io.cloudflight.jems.api.project.dto.ProjectDataDTO
+import io.cloudflight.jems.api.project.dto.ProjectPeriodDTO
 import io.cloudflight.jems.api.project.dto.OutputProjectSimple
 import io.cloudflight.jems.api.project.dto.ProjectCallSettingsDTO
-import io.cloudflight.jems.api.project.dto.status.ProjectApplicationStatus
+import io.cloudflight.jems.api.project.dto.status.ApplicationStatusDTO
 import io.cloudflight.jems.api.user.dto.OutputUser
 import io.cloudflight.jems.api.user.dto.OutputUserRole
 import io.cloudflight.jems.api.user.dto.OutputUserWithRole
@@ -33,9 +33,10 @@ import io.cloudflight.jems.server.common.exception.ResourceNotFoundException
 import io.cloudflight.jems.server.programme.entity.ProgrammeSpecificObjectiveEntity
 import io.cloudflight.jems.server.programme.entity.ProgrammeStrategyEntity
 import io.cloudflight.jems.server.project.entity.ProjectEntity
-import io.cloudflight.jems.server.project.entity.ProjectStatus
+import io.cloudflight.jems.server.project.entity.ProjectStatusHistoryEntity
 import io.cloudflight.jems.server.project.repository.ProjectRepository
-import io.cloudflight.jems.server.project.repository.ProjectStatusRepository
+import io.cloudflight.jems.server.project.repository.ProjectStatusHistoryRepository
+import io.cloudflight.jems.server.project.service.application.ApplicationStatus
 import io.cloudflight.jems.server.user.entity.User
 import io.cloudflight.jems.server.user.entity.UserRole
 import io.cloudflight.jems.server.user.repository.UserRepository
@@ -92,16 +93,16 @@ class ProjectServiceTest {
         password = "hash_pass"
     )
 
-    private val statusDraft = ProjectStatus(
+    private val statusDraft = ProjectStatusHistoryEntity(
         id = 10,
-        status = ProjectApplicationStatus.DRAFT,
+        status = ApplicationStatus.DRAFT,
         user = account,
         updated = TEST_DATE_TIME
     )
 
-    private val statusSubmitted = ProjectStatus(
+    private val statusSubmitted = ProjectStatusHistoryEntity(
         id = 11,
-        status = ProjectApplicationStatus.SUBMITTED,
+        status = ApplicationStatus.SUBMITTED,
         user = account,
         updated = TEST_DATE_TIME
     )
@@ -125,7 +126,7 @@ class ProjectServiceTest {
     lateinit var projectRepository: ProjectRepository
 
     @MockK
-    lateinit var projectStatusRepository: ProjectStatusRepository
+    lateinit var projectStatusHistoryRepository: ProjectStatusHistoryRepository
 
     @MockK
     lateinit var userRepository: UserRepository
@@ -146,10 +147,10 @@ class ProjectServiceTest {
         MockKAnnotations.init(this)
         every { securityService.currentUser } returns LocalCurrentUser(user, "hash_pass", emptyList())
         every { userRepository.findById(eq(user.id!!)) } returns Optional.of(account)
-        every { projectStatusRepository.save(any<ProjectStatus>()) } returnsArgument 0
+        every { projectStatusHistoryRepository.save(any<ProjectStatusHistoryEntity>()) } returnsArgument 0
         projectService = ProjectServiceImpl(
             projectRepository,
-            projectStatusRepository,
+            projectStatusHistoryRepository,
             callRepository,
             userRepository,
             auditService,
@@ -167,7 +168,7 @@ class ProjectServiceTest {
             call = dummyCall,
             acronym = "test acronym",
             applicant = account,
-            projectStatus = statusSubmitted,
+            currentStatus = statusSubmitted,
             firstSubmission = statusSubmitted
         )
         every { projectRepository.findAll(UNPAGED) } returns PageImpl(listOf(projectToReturn))
@@ -185,7 +186,7 @@ class ProjectServiceTest {
                 acronym = "test acronym",
                 firstSubmissionDate = TEST_DATE_TIME,
                 lastResubmissionDate = null,
-                projectStatus = ProjectApplicationStatus.SUBMITTED,
+                projectStatus = ApplicationStatusDTO.SUBMITTED,
                 specificObjectiveCode = null,
                 programmePriorityCode = null
             )
@@ -204,9 +205,9 @@ class ProjectServiceTest {
         projectService.findAll(UNPAGED)
 
         verify {
-            projectRepository.findAllByProjectStatusStatusNot(
+            projectRepository.findAllByCurrentStatusStatusNot(
                 withArg {
-                    assertThat(it).isEqualTo(ProjectApplicationStatus.DRAFT)
+                    assertThat(it).isEqualTo(ApplicationStatusDTO.DRAFT)
                 }, UNPAGED
             )
         }
@@ -229,7 +230,7 @@ class ProjectServiceTest {
             call = dummyCall,
             acronym = "test",
             applicant = account,
-            projectStatus = statusDraft
+            currentStatus = statusDraft
         )
 
         val result = projectService.createProject(InputProject("test", dummyCall.id))
@@ -249,7 +250,7 @@ class ProjectServiceTest {
         assertEquals(result.firstSubmission, null)
         assertEquals(result.lastResubmission, null)
         assertEquals(result.projectStatus.id, 10)
-        assertEquals(result.projectStatus.status, ProjectApplicationStatus.DRAFT)
+        assertEquals(result.projectStatus.status, ApplicationStatusDTO.DRAFT)
         assertEquals(result.projectStatus.updated, TEST_DATE_TIME)
 
         verifyAudit("612")
@@ -264,7 +265,7 @@ class ProjectServiceTest {
     @Test
     fun projectGet_OK() {
         every { projectRepository.findById(eq(1)) } returns
-            Optional.of(ProjectEntity(id = 1, call = dummyCall, acronym = "test", applicant = account, projectStatus = statusSubmitted, firstSubmission = statusSubmitted))
+            Optional.of(ProjectEntity(id = 1, call = dummyCall, acronym = "test", applicant = account, currentStatus = statusSubmitted, firstSubmission = statusSubmitted))
 
         val result = projectService.getById(1)
 
@@ -314,7 +315,7 @@ class ProjectServiceTest {
             call = dummyCall,
             acronym = "test acronym",
             applicant = account,
-            projectStatus = statusSubmitted,
+            currentStatus = statusSubmitted,
             firstSubmission = statusSubmitted
         )
         every { projectRepository.findById(eq(1)) } returns Optional.of(projectToReturn)
@@ -322,11 +323,11 @@ class ProjectServiceTest {
 
         val result = projectService.update(1, projectData.copy(specificObjective = HealthyAgeing))
 
-        val expectedData = OutputProjectData(
+        val expectedData = ProjectDataDTO(
             title = projectData.title,
             duration = projectData.duration,
             intro = projectData.intro,
-            specificObjective = OutputProgrammePriorityPolicySimple(programmeObjectivePolicy = HealthyAgeing, code = "HAB"),
+            specificObjective = OutputProgrammePriorityPolicySimpleDTO(programmeObjectivePolicy = HealthyAgeing, code = "HAB"),
             programmePriority = null
         )
         assertThat(result.projectData).isEqualTo(expectedData)
@@ -340,7 +341,7 @@ class ProjectServiceTest {
             call = dummyCall,
             acronym = "test acronym",
             applicant = account,
-            projectStatus = statusSubmitted,
+            currentStatus = statusSubmitted,
             firstSubmission = statusSubmitted
         )
         every { projectRepository.findById(eq(1)) } returns Optional.of(projectToReturn)
@@ -373,14 +374,14 @@ class ProjectServiceTest {
             call = callWithDuration,
             acronym = "acronym",
             applicant = account,
-            projectStatus = statusDraft
+            currentStatus = statusDraft
         )
         every { projectRepository.findById(eq(1)) } returns Optional.of(projectToReturn)
         every { projectRepository.save(any<ProjectEntity>()) } returnsArgument 0
 
         val result = projectService.update(1, projectData)
 
-        val expectedData = OutputProjectData(
+        val expectedData = ProjectDataDTO(
             title = projectData.title,
             duration = projectData.duration,
             intro = projectData.intro,
@@ -390,9 +391,9 @@ class ProjectServiceTest {
         assertThat(result.projectData).isEqualTo(expectedData)
         assertThat(result.acronym).isEqualTo(projectData.acronym)
         assertThat(result.periods).containsExactly(
-            OutputProjectPeriod(1, 1, 1, 6),
-            OutputProjectPeriod(1, 2, 7, 12),
-            OutputProjectPeriod(1, 3, 13, 13)
+            ProjectPeriodDTO(1, 1, 1, 6),
+            ProjectPeriodDTO(1, 2, 7, 12),
+            ProjectPeriodDTO(1, 3, 13, 13)
         )
     }
 }

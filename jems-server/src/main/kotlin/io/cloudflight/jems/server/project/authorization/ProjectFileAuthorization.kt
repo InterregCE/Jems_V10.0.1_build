@@ -1,13 +1,13 @@
 package io.cloudflight.jems.server.project.authorization
 
-import io.cloudflight.jems.api.project.dto.OutputProject
+import io.cloudflight.jems.api.project.dto.ProjectDetailDTO
 import io.cloudflight.jems.api.project.dto.file.OutputProjectFile
-import io.cloudflight.jems.api.project.dto.status.ProjectApplicationStatus.APPROVED
-import io.cloudflight.jems.api.project.dto.status.ProjectApplicationStatus.INELIGIBLE
-import io.cloudflight.jems.api.project.dto.status.ProjectApplicationStatus.NOT_APPROVED
-import io.cloudflight.jems.api.project.dto.status.ProjectApplicationStatus.Companion.isNotFinallyFunded
-import io.cloudflight.jems.api.project.dto.status.ProjectApplicationStatus.Companion.isNotSubmittedNow
-import io.cloudflight.jems.api.project.dto.status.ProjectApplicationStatus.Companion.wasSubmittedAtLeastOnce
+import io.cloudflight.jems.api.project.dto.status.ApplicationStatusDTO.APPROVED
+import io.cloudflight.jems.api.project.dto.status.ApplicationStatusDTO.INELIGIBLE
+import io.cloudflight.jems.api.project.dto.status.ApplicationStatusDTO.NOT_APPROVED
+import io.cloudflight.jems.api.project.dto.status.ApplicationStatusDTO.Companion.isNotFinallyFunded
+import io.cloudflight.jems.api.project.dto.status.ApplicationStatusDTO.Companion.isNotSubmittedNow
+import io.cloudflight.jems.api.project.dto.status.ApplicationStatusDTO.Companion.wasSubmittedAtLeastOnce
 import io.cloudflight.jems.api.project.dto.file.ProjectFileType
 import io.cloudflight.jems.api.project.dto.file.ProjectFileType.APPLICANT_FILE
 import io.cloudflight.jems.api.project.dto.file.ProjectFileType.ASSESSMENT_FILE
@@ -56,16 +56,16 @@ class ProjectFileAuthorization(
         }
     }
 
-    private fun canChangeApplicantProjectFile(project: OutputProject, file: OutputProjectFile): Boolean {
-        val status = project.projectStatus.status
-        if (isApplicantOwner(project.applicant.id!!))
-            return isNotSubmittedNow(status) && file.updated.isAfter(getLastSubmissionFor(project))
+    private fun canChangeApplicantProjectFile(projectDetailDTO: ProjectDetailDTO, file: OutputProjectFile): Boolean {
+        val status = projectDetailDTO.projectStatus.status
+        if (isApplicantOwner(projectDetailDTO.applicant.id!!))
+            return isNotSubmittedNow(status) && file.updated.isAfter(getLastSubmissionFor(projectDetailDTO))
         else
             throw ResourceNotFoundException("project_file")
     }
 
-    private fun canChangeAssessmentProjectFile(project: OutputProject, file: OutputProjectFile): Boolean {
-        val status = project.projectStatus.status
+    private fun canChangeAssessmentProjectFile(projectDetailDTO: ProjectDetailDTO, file: OutputProjectFile): Boolean {
+        val status = projectDetailDTO.projectStatus.status
         if (isProgrammeUser()) {
             return when {
 
@@ -73,10 +73,10 @@ class ProjectFileAuthorization(
                     wasSubmittedAtLeastOnce(status)
 
                 status == APPROVED || status == NOT_APPROVED ->
-                    file.updated.isAfter(project.fundingDecision!!.updated)
+                    file.updated.isAfter(projectDetailDTO.fundingDecision!!.updated)
 
                 status == INELIGIBLE ->
-                    file.updated.isAfter(project.eligibilityDecision!!.updated)
+                    file.updated.isAfter(projectDetailDTO.eligibilityDecision!!.updated)
 
                 else -> false
             }
@@ -120,10 +120,10 @@ class ProjectFileAuthorization(
     /**
      * take last resubmission, if not then submission, if not then it means it is a DRAFT so take status timestamp
      */
-    fun getLastSubmissionFor(project: OutputProject): ZonedDateTime {
-        return project.lastResubmission?.updated
-            ?: project.firstSubmission?.updated
-            ?: project.projectStatus.updated
+    fun getLastSubmissionFor(projectDetailDTO: ProjectDetailDTO): ZonedDateTime {
+        return projectDetailDTO.lastResubmission?.updated
+            ?: projectDetailDTO.firstSubmission?.updated
+            ?: projectDetailDTO.projectStatus.updated
     }
 
 }

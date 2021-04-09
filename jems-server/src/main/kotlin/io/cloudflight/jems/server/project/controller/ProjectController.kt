@@ -4,7 +4,7 @@ import io.cloudflight.jems.api.project.ProjectApi
 import io.cloudflight.jems.api.project.dto.ProjectCallSettingsDTO
 import io.cloudflight.jems.api.project.dto.InputProject
 import io.cloudflight.jems.api.project.dto.InputProjectData
-import io.cloudflight.jems.api.project.dto.OutputProject
+import io.cloudflight.jems.api.project.dto.ProjectDetailDTO
 import io.cloudflight.jems.api.project.dto.OutputProjectSimple
 import io.cloudflight.jems.api.project.dto.budget.ProjectPartnerBudgetDTO
 import io.cloudflight.jems.api.project.dto.cofinancing.ProjectPartnerBudgetCoFinancingDTO
@@ -36,7 +36,7 @@ class ProjectController(
     }
 
     @CanReadProject
-    override fun getProjectById(projectId: Long): OutputProject {
+    override fun getProjectById(projectId: Long): ProjectDetailDTO {
         return projectService.getById(projectId)
     }
 
@@ -44,12 +44,12 @@ class ProjectController(
         getProjectInteractor.getProjectCallSettings(projectId).toDto()
 
     @PreAuthorize("@projectAuthorization.canCreateProjectForCall(#project.projectCallId)")
-    override fun createProject(project: InputProject): OutputProject {
+    override fun createProject(project: InputProject): ProjectDetailDTO {
         return projectService.createProject(project)
     }
 
     @CanUpdateProject
-    override fun updateProjectData(projectId: Long, project: InputProjectData): OutputProject {
+    override fun updateProjectData(projectId: Long, project: InputProjectData): ProjectDetailDTO {
         return projectService.update(projectId, project)
     }
 

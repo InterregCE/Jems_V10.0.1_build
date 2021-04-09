@@ -17,7 +17,7 @@ import {FormService} from '@common/components/section/form/form.service';
 import {UntilDestroy, untilDestroyed} from '@ngneat/until-destroy';
 import {GeneralBudgetTable} from '../../../../../model/budget/general-budget-table';
 import {InvestmentSummary} from '../../../../../work-package/work-package-detail-page/workPackageInvestment';
-import {BudgetPeriodDTO, OutputProjectPeriod} from '@cat/api';
+import {BudgetPeriodDTO, ProjectPeriodDTO} from '@cat/api';
 import {Alert} from '@common/components/forms/alert';
 import {TableConfig} from '../../../../../../common/directives/table-config/TableConfig';
 import {ProgrammeUnitCost} from '../../../../../model/programmeUnitCost';
@@ -43,7 +43,7 @@ export class GeneralBudgetTableComponent implements OnInit, OnChanges {
   @Input()
   investmentSummaries: InvestmentSummary[];
   @Input()
-  projectPeriods: OutputProjectPeriod[];
+  projectPeriods: ProjectPeriodDTO[];
   @Input()
   availableUnitCosts: ProgrammeUnitCost[];
 

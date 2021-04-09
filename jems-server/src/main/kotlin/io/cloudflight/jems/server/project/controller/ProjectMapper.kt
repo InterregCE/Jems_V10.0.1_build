@@ -1,13 +1,19 @@
 package io.cloudflight.jems.server.project.controller
 
+import io.cloudflight.jems.api.project.dto.ApplicationActionInfoDTO
 import io.cloudflight.jems.api.project.dto.ProjectCallSettingsDTO
 import io.cloudflight.jems.api.project.dto.budget.ProjectPartnerBudgetDTO
+import io.cloudflight.jems.api.project.dto.status.ApplicationStatusDTO
 import io.cloudflight.jems.server.call.controller.toDto
-import io.cloudflight.jems.server.project.service.model.ProjectCallSettings
 import io.cloudflight.jems.server.programme.controller.costoption.toDto
 import io.cloudflight.jems.server.project.controller.partner.toOutputProjectPartner
+import io.cloudflight.jems.server.project.service.application.ApplicationActionInfo
+import io.cloudflight.jems.server.project.service.application.ApplicationStatus
 import io.cloudflight.jems.server.project.service.budget.model.PartnerBudget
+import io.cloudflight.jems.server.project.service.model.ProjectCallSettings
 
+fun ApplicationStatus.toDTO() = ApplicationStatusDTO.valueOf(this.name)
+fun ApplicationActionInfoDTO.toModel() = ApplicationActionInfo(this.note,this.date)
 fun PartnerBudget.toProjectPartnerBudgetDTO() =
     ProjectPartnerBudgetDTO(
         partner = partner.toOutputProjectPartner(),

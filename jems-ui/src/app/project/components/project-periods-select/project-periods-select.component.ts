@@ -1,5 +1,5 @@
 import {ChangeDetectionStrategy, Component, EventEmitter, Input, Output} from '@angular/core';
-import {OutputProjectPeriod} from '@cat/api';
+import {ProjectPeriodDTO} from '@cat/api';
 import {AbstractControl} from '@angular/forms';
 
 @Component({
@@ -11,7 +11,7 @@ import {AbstractControl} from '@angular/forms';
 export class ProjectPeriodsSelectComponent {
 
   @Input()
-  periods: OutputProjectPeriod[];
+  periods: ProjectPeriodDTO[];
   @Input()
   control: AbstractControl;
   @Input()
@@ -20,7 +20,7 @@ export class ProjectPeriodsSelectComponent {
   @Output()
   selectionChanged = new EventEmitter<void>();
 
-  getPeriodArguments(period: OutputProjectPeriod): { [key: string]: number } {
+  getPeriodArguments(period: ProjectPeriodDTO): { [key: string]: number } {
     return {
       periodNumber: period.number,
       start: period.start,

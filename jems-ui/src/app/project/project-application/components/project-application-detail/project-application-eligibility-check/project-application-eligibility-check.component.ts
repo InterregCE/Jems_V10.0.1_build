@@ -6,7 +6,7 @@ import {ProjectStore} from '../../../containers/project-application-detail/servi
 import {Forms} from '../../../../../common/utils/forms';
 import {filter, take, takeUntil} from 'rxjs/internal/operators';
 import {AbstractForm} from '@common/components/forms/abstract-form';
-import {InputProjectEligibilityAssessment, OutputProject} from '@cat/api';
+import {InputProjectEligibilityAssessment, ProjectDetailDTO} from '@cat/api';
 import {Observable} from 'rxjs';
 import {TranslateService} from '@ngx-translate/core';
 import {ProjectApplicationFormSidenavService} from '../../../containers/project-application-form-page/services/project-application-form-sidenav.service';
@@ -23,7 +23,7 @@ export class ProjectApplicationEligibilityCheckComponent extends AbstractForm im
   // TODO move id to a container
   projectId = this.activatedRoute.snapshot.params.projectId;
   options: string[] = [this.ELIGIBLE, this.INELIGIBLE];
-  project$: Observable<OutputProject>;
+  project$: Observable<ProjectDetailDTO>;
   selectedAssessment: string;
 
   notesForm = this.formBuilder.group({
@@ -100,7 +100,7 @@ export class ProjectApplicationEligibilityCheckComponent extends AbstractForm im
       : InputProjectEligibilityAssessment.ResultEnum.PASSED;
   }
 
-  private setEligibilityCheckValue(project: OutputProject): void {
+  private setEligibilityCheckValue(project: ProjectDetailDTO): void {
     if (project.eligibilityAssessment.result === InputProjectEligibilityAssessment.ResultEnum.FAILED) {
       this.notesForm.controls.assessment.setValue(this.INELIGIBLE);
       return;

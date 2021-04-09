@@ -7,8 +7,9 @@ import io.cloudflight.jems.server.project.authorization.CanUpdateProject
 import io.cloudflight.jems.server.project.service.ProjectPersistence
 import io.cloudflight.jems.server.project.service.lumpsum.ProjectLumpSumPersistence
 import io.cloudflight.jems.server.project.service.lumpsum.model.ProjectLumpSum
-import io.cloudflight.jems.server.project.service.model.Project
+import io.cloudflight.jems.server.project.service.model.ProjectPeriods
 import io.cloudflight.jems.server.project.service.model.ProjectCallSettings
+import io.cloudflight.jems.server.project.service.model.ProjectPeriod
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 
@@ -31,7 +32,7 @@ class UpdateProjectLumpSums(
     override fun updateLumpSums(projectId: Long, lumpSums: List<ProjectLumpSum>): List<ProjectLumpSum> {
         validateMaxAllowedSize(lumpSums)
         validateWrongSplitting(lumpSums, projectPersistence.getProjectCallSettings(projectId))
-        validatePeriods(lumpSums, projectPersistence.getProject(projectId))
+        validatePeriods(lumpSums, projectPersistence.getProjectPeriods(projectId))
 
         return persistence.updateLumpSums(projectId, lumpSums)
     }
@@ -56,8 +57,8 @@ class UpdateProjectLumpSums(
             throw I18nValidationException(i18nKey = "project.lumpSum.splitting.not.allowed")
     }
 
-    private fun validatePeriods(lumpSums: List<ProjectLumpSum>, project: Project) {
-        val periodNumbers = project.periods.mapTo(HashSet()) { it.number }
+    private fun validatePeriods(lumpSums: List<ProjectLumpSum>, projectPeriods: List<ProjectPeriod>) {
+        val periodNumbers = projectPeriods.mapTo(HashSet()) { it.number }
         periodNumbers.add(PREPARATION_PERIOD)
         periodNumbers.add(CLOSURE_PERIOD)
         if (lumpSums.mapNotNullTo(HashSet()) { it.period }.any { !periodNumbers.contains(it) })
