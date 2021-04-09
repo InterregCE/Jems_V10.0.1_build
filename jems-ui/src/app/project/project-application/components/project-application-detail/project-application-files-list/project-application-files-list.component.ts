@@ -10,7 +10,7 @@ import {
 } from '@angular/core';
 import {TableConfiguration} from '@common/components/table/model/table.configuration';
 import {ColumnType} from '@common/components/table/model/column-type.enum';
-import {OutputProject, OutputProjectFile, PageOutputProjectFile} from '@cat/api';
+import {ProjectDetailDTO, OutputProjectFile, PageOutputProjectFile} from '@cat/api';
 import {BaseComponent} from '@common/components/base-component';
 import {MatSort} from '@angular/material/sort';
 import {filter, map, take, takeUntil} from 'rxjs/operators';
@@ -33,7 +33,7 @@ export class ProjectApplicationFilesListComponent extends BaseComponent implemen
   @Input()
   pageIndex: number;
   @Input()
-  project: OutputProject;
+  project: ProjectDetailDTO;
   @Input()
   permission: Permission;
 
@@ -102,7 +102,7 @@ export class ProjectApplicationFilesListComponent extends BaseComponent implemen
       this.dialog,
       file.name,
       'file.dialog.message',
-      {name: file.name} )
+      {name: file.name})
       .pipe(
         take(1),
         takeUntil(this.destroyed$),

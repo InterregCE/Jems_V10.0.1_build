@@ -1,7 +1,7 @@
 package io.cloudflight.jems.server.project.authorization
 
-import io.cloudflight.jems.api.project.dto.status.ProjectApplicationStatus.Companion.isNotSubmittedNow
-import io.cloudflight.jems.api.project.dto.status.ProjectApplicationStatus.DRAFT
+import io.cloudflight.jems.api.project.dto.status.ApplicationStatusDTO.Companion.isNotSubmittedNow
+import io.cloudflight.jems.api.project.dto.status.ApplicationStatusDTO.DRAFT
 import io.cloudflight.jems.server.call.authorization.CallAuthorization
 import io.cloudflight.jems.server.common.exception.ResourceNotFoundException
 import io.cloudflight.jems.server.authentication.service.SecurityService

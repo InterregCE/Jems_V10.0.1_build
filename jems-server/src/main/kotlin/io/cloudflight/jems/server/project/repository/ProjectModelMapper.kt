@@ -7,7 +7,7 @@ import io.cloudflight.jems.server.programme.repository.costoption.toModel
 import io.cloudflight.jems.server.programme.repository.costoption.toProgrammeUnitCost
 import io.cloudflight.jems.server.project.entity.ProjectEntity
 import io.cloudflight.jems.server.project.entity.ProjectPeriodEntity
-import io.cloudflight.jems.server.project.service.model.Project
+import io.cloudflight.jems.server.project.service.model.ProjectPeriods
 import io.cloudflight.jems.server.project.service.model.ProjectCallSettings
 import io.cloudflight.jems.server.project.service.model.ProjectPeriod
 
@@ -27,15 +27,4 @@ fun CallEntity.toSettingsModel() = ProjectCallSettings(
     flatRates = flatRates.toModel(),
     lumpSums = lumpSums.map { it.toModel() }.sortedBy { it.id },
     unitCosts = unitCosts.toProgrammeUnitCost()
-)
-
-fun ProjectEntity.toModel() = Project(
-    id = id,
-    periods = periods.map { it.toModel() },
-)
-
-fun ProjectPeriodEntity.toModel() = ProjectPeriod(
-    number = id.number,
-    start = start,
-    end = end,
 )

@@ -6,7 +6,7 @@ import {combineLatest, Observable} from 'rxjs';
 import {FormArray, FormBuilder} from '@angular/forms';
 import {UntilDestroy, untilDestroyed} from '@ngneat/until-destroy';
 import {catchError, map, startWith, tap} from 'rxjs/operators';
-import {InputTranslation, OutputProjectPeriod, ProjectResultDTO, ResultIndicatorSummaryDTO} from '@cat/api';
+import {InputTranslation, ProjectPeriodDTO, ProjectResultDTO, ResultIndicatorSummaryDTO} from '@cat/api';
 import {take} from 'rxjs/internal/operators';
 import {ProjectApplicationFormSidenavService} from '../../project-application/containers/project-application-form-page/services/project-application-form-sidenav.service';
 import {ActivatedRoute} from '@angular/router';
@@ -30,7 +30,7 @@ export class ProjectResultsPageComponent implements OnInit {
   data$: Observable<{
     results: ProjectResultDTO[],
     resultIndicators: ResultIndicatorSummaryDTO[],
-    periods: OutputProjectPeriod[],
+    periods: ProjectPeriodDTO[],
     projectAcronym: string
   }>;
 

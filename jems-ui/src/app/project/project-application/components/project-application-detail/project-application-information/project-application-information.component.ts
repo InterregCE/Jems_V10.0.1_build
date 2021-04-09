@@ -1,5 +1,5 @@
 import {ChangeDetectionStrategy, Component, Input} from '@angular/core';
-import {OutputProject, OutputProjectStatus} from '@cat/api';
+import {ProjectDetailDTO, ProjectStatusDTO} from '@cat/api';
 import moment from 'moment/moment';
 import {CallStore} from '../../../../../call/services/call-store.service';
 import {LocaleDatePipe} from '../../../../../common/pipe/locale-date.pipe';
@@ -11,11 +11,11 @@ import {LocaleDatePipe} from '../../../../../common/pipe/locale-date.pipe';
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class ProjectApplicationInformationComponent {
-  STATUS = OutputProjectStatus.StatusEnum;
+  STATUS = ProjectStatusDTO.StatusEnum;
   CALL_PATH = CallStore.CALL_DETAIL_PATH;
 
   @Input()
-  project: OutputProject;
+  project: ProjectDetailDTO;
 
   constructor(private localeDatePipe: LocaleDatePipe) {
   }
@@ -25,7 +25,7 @@ export class ProjectApplicationInformationComponent {
     return user ? `${user.name} ${user.surname}` : '';
   }
 
-  getSubmission(submission?: OutputProjectStatus): { [key: string]: any } {
+  getSubmission(submission?: ProjectStatusDTO): { [key: string]: any } {
     return {
       user: submission?.user?.email,
       date: this.localeDatePipe.transform(submission?.updated)

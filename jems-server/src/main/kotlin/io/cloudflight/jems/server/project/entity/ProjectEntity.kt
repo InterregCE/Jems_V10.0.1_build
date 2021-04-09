@@ -44,15 +44,15 @@ data class ProjectEntity(
     @ManyToOne(optional = false)
     @JoinColumn(name = "project_status_id")
     @field:NotNull
-    val projectStatus: ProjectStatus,
+    var currentStatus: ProjectStatusHistoryEntity,
 
     @ManyToOne(optional = true)
     @JoinColumn(name = "first_submission_id")
-    val firstSubmission: ProjectStatus? = null,
+    var firstSubmission: ProjectStatusHistoryEntity? = null,
 
     @ManyToOne(optional = true)
     @JoinColumn(name = "last_resubmission_id")
-    val lastResubmission: ProjectStatus? = null,
+    var lastResubmission: ProjectStatusHistoryEntity? = null,
 
     @OneToOne(mappedBy = "project", cascade = [CascadeType.ALL])
     val qualityAssessment: ProjectQualityAssessment? = null,
@@ -62,11 +62,11 @@ data class ProjectEntity(
 
     @ManyToOne(optional = true, fetch = FetchType.LAZY)
     @JoinColumn(name = "eligibility_decision_id")
-    val eligibilityDecision: ProjectStatus? = null,
+    var eligibilityDecision: ProjectStatusHistoryEntity? = null,
 
     @ManyToOne(optional = true, fetch = FetchType.LAZY)
     @JoinColumn(name = "funding_decision_id")
-    val fundingDecision: ProjectStatus? = null,
+    var fundingDecision: ProjectStatusHistoryEntity? = null,
 
     @Embedded
     val projectData: ProjectData? = null,

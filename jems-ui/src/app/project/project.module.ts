@@ -1,27 +1,24 @@
 import {NgModule} from '@angular/core';
 import {DatePipe} from '@angular/common';
 import {routes} from './project-routing.module';
-import {ProjectApplicationDetailComponent} from './project-application/containers/project-application-detail/project-application-detail.component';
 import {ProjectApplicationSubmissionComponent} from './project-application/components/project-application-submission/project-application-submission.component';
 import {ProjectApplicationComponent} from './project-application/containers/project-application-page/project-application.component';
 import {SharedModule} from '../common/shared-module';
-import {ProjectApplicationDataComponent} from './project-application/containers/project-application-detail/project-application-data/project-application-data.component';
 import {ProjectApplicationFilesListComponent} from './project-application/components/project-application-detail/project-application-files-list/project-application-files-list.component';
 import {ProjectApplicationInformationComponent} from './project-application/components/project-application-detail/project-application-information/project-application-information.component';
 import {ProjectApplicationFileUploadComponent} from './project-application/components/project-application-detail/project-application-file-upload/project-application-file-upload.component';
 import {ProjectApplicationAssessmentsComponent} from './project-application/components/project-application-detail/project-application-assessments/project-application-assessments.component';
 import {ProjectApplicationFilesComponent} from './project-application/containers/project-application-detail/project-application-files/project-application-files.component';
 import {DescriptionCellComponent} from './project-application/components/project-application-detail/project-application-files-list/cell-renderers/description-cell/description-cell.component';
-import {ProjectApplicationEligibilityDecisionComponent} from './project-application/components/project-application-detail/project-application-eligibility-decision/project-application-eligibility-decision.component';
 import {ProjectApplicationEligibilityCheckComponent} from './project-application/components/project-application-detail/project-application-eligibility-check/project-application-eligibility-check.component';
 import {ProjectApplicationQualityCheckComponent} from './project-application/components/project-application-detail/project-application-quality-check/project-application-quality-check.component';
 import {ProjectStore} from './project-application/containers/project-application-detail/services/project-store.service';
 import {ActionsCellComponent} from './project-application/components/project-application-detail/project-application-files-list/cell-renderers/actions-cell/actions-cell.component';
 import {ProjectApplicationDecisionsComponent} from './project-application/components/project-application-detail/project-application-decisions/project-application-decisions.component';
-import {ProjectApplicationActionsComponent} from './project-application/components/project-application-detail/project-application-actions/project-application-actions.component';
-import {ProjectApplicationFundingPageComponent} from './project-application/containers/project-application-detail/project-application-funding-page/project-application-funding-page.component';
-import {ProjectApplicationFundingDecisionComponent} from './project-application/components/project-application-detail/project-application-funding-decision/project-application-funding-decision.component';
-import {ProjectApplicationEligibilityDecisionPageComponent} from './project-application/containers/project-application-detail/project-application-eligibility-decision-page/project-application-eligibility-decision-page.component';
+import {ProjectApplicationActionsComponent} from './project-detail-page/project-application-actions/project-application-actions.component';
+import {ProjectApplicationFundingPageComponent} from './project-detail-page/project-application-funding-page/project-application-funding-page.component';
+import {ProjectApplicationFundingDecisionComponent} from './project-detail-page/project-application-funding-page/project-application-funding-decision/project-application-funding-decision.component';
+import {ProjectApplicationEligibilityDecisionPageComponent} from './project-detail-page/project-application-eligibility-decision-page/project-application-eligibility-decision-page.component';
 import {ProjectApplicationFormComponent} from './project-application/components/project-application-form/project-application-form.component';
 import {ProjectApplicationFormWorkPackagesListComponent} from './project-application/components/project-application-form/project-application-form-work-packages-list/project-application-form-work-packages-list.component';
 import {ProjectApplicationFormWorkPackageSectionComponent} from './project-application/containers/project-application-form-page/project-application-form-work-package-section/project-application-form-work-package-section.component';
@@ -87,7 +84,8 @@ import {ProjectLumpSumsPageComponent} from './lump-sums/project-lump-sums-page/p
 import {ProjectLumpSumsPageStore} from './lump-sums/project-lump-sums-page/project-lump-sums-page.store';
 import {BudgetPagePerPartnerComponent} from './budget/budget-page-per-partner/budget-page-per-partner.component';
 import {ProjectTimeplanPageComponent} from './timeplan/project-timeplan-page/project-timeplan-page.component';
-import { FilterUnitCostsPipe } from './partner/project-partner-detail-page/project-partner-budget-tab/project-partner-budget/filter-unit-costs.pipe';
+import {FilterUnitCostsPipe} from './partner/project-partner-detail-page/project-partner-budget-tab/project-partner-budget/filter-unit-costs.pipe';
+import {ProjectDetailPageComponent} from './project-detail-page/project-detail-page.component';
 
 @NgModule({
   declarations: [
@@ -95,8 +93,7 @@ import { FilterUnitCostsPipe } from './partner/project-partner-detail-page/proje
     ProjectApplicationComponent,
     ProjectApplyToCallComponent,
     ProjectApplicationSubmissionComponent,
-    ProjectApplicationDetailComponent,
-    ProjectApplicationDataComponent,
+    ProjectDetailPageComponent,
     ProjectApplicationFilesListComponent,
     ProjectApplicationInformationComponent,
     ProjectApplicationFileUploadComponent,
@@ -104,7 +101,6 @@ import { FilterUnitCostsPipe } from './partner/project-partner-detail-page/proje
     ProjectApplicationFilesComponent,
     ProjectApplicationDecisionsComponent,
     ProjectApplicationActionsComponent,
-    ProjectApplicationEligibilityDecisionComponent,
     ProjectApplicationQualityCheckComponent,
     ProjectApplicationEligibilityCheckComponent,
     ActionsCellComponent,
@@ -168,14 +164,15 @@ import { FilterUnitCostsPipe } from './partner/project-partner-detail-page/proje
     ProjectLumpSumsPageComponent,
     BudgetPagePerPartnerComponent,
     ProjectTimeplanPageComponent,
-    FilterUnitCostsPipe
+    FilterUnitCostsPipe,
+    ProjectDetailPageComponent,
   ],
   imports: [
     SharedModule,
     RouterModule.forChild(routes),
   ],
   exports: [
-    ProjectApplicationDetailComponent
+    ProjectDetailPageComponent
   ],
   providers: [
     DatePipe,

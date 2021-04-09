@@ -1,5 +1,5 @@
 import {ChangeDetectionStrategy, ChangeDetectorRef, Component, EventEmitter, Input, Output} from '@angular/core';
-import {OutputProjectStatus} from '@cat/api';
+import {ProjectStatusDTO} from '@cat/api';
 import {Alert} from '@common/components/forms/alert';
 import {AbstractForm} from '@common/components/forms/abstract-form';
 import {FormGroup} from '@angular/forms';
@@ -19,7 +19,7 @@ export class ProjectApplicationFileUploadComponent extends AbstractForm {
   @Input()
   fileNumber: number;
   @Input()
-  projectStatus: OutputProjectStatus.StatusEnum;
+  projectStatus: ProjectStatusDTO.StatusEnum;
 
   @Output()
   uploadFile: EventEmitter<File> = new EventEmitter<File>();

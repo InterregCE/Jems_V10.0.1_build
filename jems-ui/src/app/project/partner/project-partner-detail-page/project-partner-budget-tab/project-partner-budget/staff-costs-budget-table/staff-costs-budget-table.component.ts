@@ -17,8 +17,7 @@ import {FormService} from '@common/components/section/form/form.service';
 import {StaffCostsBudgetTable} from '../../../../../model/budget/staff-costs-budget-table';
 import {UntilDestroy, untilDestroyed} from '@ngneat/until-destroy';
 import {StaffCostTypeEnum} from '../../../../../model/budget/staff-cost-type.enum';
-import {StaffCostUnitTypeEnum} from '../../../../../model/budget/staff-cost-unit-type.enum';
-import {BudgetPeriodDTO, OutputProjectPeriod} from '@cat/api';
+import {BudgetPeriodDTO, ProjectPeriodDTO} from '@cat/api';
 import {Alert} from '@common/components/forms/alert';
 import {TableConfig} from '../../../../../../common/directives/table-config/TableConfig';
 import {ProgrammeUnitCost} from '../../../../../model/programmeUnitCost';
@@ -42,7 +41,7 @@ export class StaffCostsBudgetTableComponent implements OnInit, OnChanges, OnDest
   @Input()
   staffCostTable: StaffCostsBudgetTable;
   @Input()
-  projectPeriods: OutputProjectPeriod[];
+  projectPeriods: ProjectPeriodDTO[];
   @Input()
   availableUnitCosts: ProgrammeUnitCost[];
 

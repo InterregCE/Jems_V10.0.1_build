@@ -2,8 +2,15 @@ package io.cloudflight.jems.server.authentication.authorization
 
 import io.cloudflight.jems.server.authentication.model.APPLICANT_USER
 import io.cloudflight.jems.server.authentication.service.SecurityService
+import org.springframework.security.access.prepost.PreAuthorize
+import org.springframework.stereotype.Component
 
-abstract class Authorization(
+@Retention(AnnotationRetention.RUNTIME)
+@PreAuthorize("@authorization.isAdmin()")
+annotation class IsAdmin
+
+@Component
+class Authorization(
     open val securityService: SecurityService
 ) {
 

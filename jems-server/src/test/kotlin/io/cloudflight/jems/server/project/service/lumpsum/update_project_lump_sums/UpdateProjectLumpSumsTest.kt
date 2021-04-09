@@ -7,7 +7,7 @@ import io.cloudflight.jems.server.project.service.ProjectPersistence
 import io.cloudflight.jems.server.project.service.lumpsum.ProjectLumpSumPersistence
 import io.cloudflight.jems.server.project.service.lumpsum.model.ProjectLumpSum
 import io.cloudflight.jems.server.project.service.lumpsum.model.ProjectPartnerLumpSum
-import io.cloudflight.jems.server.project.service.model.Project
+import io.cloudflight.jems.server.project.service.model.ProjectPeriods
 import io.cloudflight.jems.server.project.service.model.ProjectCallSettings
 import io.cloudflight.jems.server.project.service.model.ProjectPeriod
 import io.mockk.every
@@ -70,7 +70,7 @@ internal class UpdateProjectLumpSumsTest : UnitTest() {
         val programmeLumpSum = ProgrammeLumpSum(id = PROGRAMME_LUMP_SUM_ID, splittingAllowed = true)
         every { projectPersistence.getProjectCallSettings(PROJECT_ID) } returns
             callSettings(lumpSums = listOf(programmeLumpSum))
-        every { projectPersistence.getProject(PROJECT_ID) } returns Project(id = PROJECT_ID, periods = periods)
+        every { projectPersistence.getProjectPeriods(PROJECT_ID) } returns periods
 
         every { persistence.updateLumpSums(PROJECT_ID, any()) } returnsArgument 1
 
@@ -82,7 +82,7 @@ internal class UpdateProjectLumpSumsTest : UnitTest() {
         val programmeLumpSum = ProgrammeLumpSum(id = PROGRAMME_LUMP_SUM_ID, splittingAllowed = true)
         every { projectPersistence.getProjectCallSettings(PROJECT_ID) } returns
             callSettings(lumpSums = listOf(programmeLumpSum))
-        every { projectPersistence.getProject(PROJECT_ID) } returns Project(id = PROJECT_ID, periods = periods)
+        every { projectPersistence.getProjectPeriods(PROJECT_ID) } returns periods
 
         every { persistence.updateLumpSums(PROJECT_ID, any()) } returnsArgument 1
 
@@ -108,9 +108,7 @@ internal class UpdateProjectLumpSumsTest : UnitTest() {
         val programmeLumpSum = ProgrammeLumpSum(id = PROGRAMME_LUMP_SUM_ID, splittingAllowed = true)
         every { projectPersistence.getProjectCallSettings(PROJECT_ID) } returns
             callSettings(lumpSums = listOf(programmeLumpSum))
-        every { projectPersistence.getProject(PROJECT_ID) } returns Project(id = PROJECT_ID, periods = listOf(
-            ProjectPeriod(number = 1, start = 1, end = 6),
-        ))
+        every { projectPersistence.getProjectPeriods(PROJECT_ID) } returns  listOf(ProjectPeriod(number = 1, start = 1, end = 6))
 
         every { persistence.updateLumpSums(PROJECT_ID, any()) } returnsArgument 1
 
@@ -125,7 +123,7 @@ internal class UpdateProjectLumpSumsTest : UnitTest() {
         val programmeLumpSum = ProgrammeLumpSum(id = PROGRAMME_LUMP_SUM_ID, splittingAllowed = true)
         every { projectPersistence.getProjectCallSettings(PROJECT_ID) } returns
             callSettings(lumpSums = listOf(programmeLumpSum))
-        every { projectPersistence.getProject(PROJECT_ID) } returns Project(id = PROJECT_ID, periods = periods)
+        every { projectPersistence.getProjectPeriods(PROJECT_ID) } returns periods
 
         val lumpSumWithoutPeriod = lumpSum.copy(period = null)
         every { persistence.updateLumpSums(PROJECT_ID, any()) } returnsArgument 1

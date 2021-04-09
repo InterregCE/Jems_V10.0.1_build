@@ -1,23 +1,23 @@
 package io.cloudflight.jems.server.project.repository
 
-import io.cloudflight.jems.api.project.dto.status.ProjectApplicationStatus
+import io.cloudflight.jems.api.project.dto.status.ApplicationStatusDTO
 import io.cloudflight.jems.server.project.entity.ProjectEntity
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
 import org.springframework.data.jpa.repository.EntityGraph
-import org.springframework.data.repository.PagingAndSortingRepository
+import org.springframework.data.jpa.repository.JpaRepository
 import org.springframework.stereotype.Repository
 
 @Repository
-interface ProjectRepository : PagingAndSortingRepository<ProjectEntity, Long> {
+interface ProjectRepository : JpaRepository<ProjectEntity, Long> {
 
-    @EntityGraph(attributePaths = ["call", "projectStatus", "priorityPolicy.programmePriority"])
+    @EntityGraph(attributePaths = ["call", "currentStatus", "priorityPolicy.programmePriority"])
     override fun findAll(pageable: Pageable): Page<ProjectEntity>
 
-    @EntityGraph(attributePaths = ["call", "projectStatus", "priorityPolicy.programmePriority"])
+    @EntityGraph(attributePaths = ["call", "currentStatus", "priorityPolicy.programmePriority"])
     fun findAllByApplicantId(applicantId: Long, pageable: Pageable): Page<ProjectEntity>
 
-    @EntityGraph(attributePaths = ["call", "projectStatus", "priorityPolicy.programmePriority"])
-    fun findAllByProjectStatusStatusNot(status: ProjectApplicationStatus, pageable: Pageable): Page<ProjectEntity>
+    @EntityGraph(attributePaths = ["call", "currentStatus", "priorityPolicy.programmePriority"])
+    fun findAllByCurrentStatusStatusNot(status: ApplicationStatusDTO, pageable: Pageable): Page<ProjectEntity>
 
 }

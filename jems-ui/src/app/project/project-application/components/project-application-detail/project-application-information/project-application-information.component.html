@@ -1,12 +1,13 @@
 <div id="status" class="mb-3">
     {{'project.detail.table.status' | translate}}:
     <mat-chip-list class="mr-1 ml-1">
-        <mat-chip selected="true"
-                  [class.draft]="project.projectStatus.status === STATUS.DRAFT || project.projectStatus.status === STATUS.RETURNEDTOAPPLICANT"
-                  [class.submitted]="project.projectStatus.status === STATUS.SUBMITTED || project.projectStatus.status === STATUS.ELIGIBLE"
-                  [class.approved]="project.projectStatus.status === STATUS.APPROVED"
-                  [class.declined]="project.projectStatus.status === STATUS.INELIGIBLE || project.projectStatus.status === STATUS.NOTAPPROVED"
-                  [class.with-conditions]="project.projectStatus.status === STATUS.APPROVEDWITHCONDITIONS">
+        <mat-chip
+                selected="true"
+                [class.draft]="project.projectStatus.status === STATUS.DRAFT || project.projectStatus.status === STATUS.RETURNEDTOAPPLICANT"
+                [class.submitted]="project.projectStatus.status === STATUS.SUBMITTED || project.projectStatus.status === STATUS.ELIGIBLE"
+                [class.approved]="project.projectStatus.status === STATUS.APPROVED"
+                [class.declined]="project.projectStatus.status === STATUS.INELIGIBLE || project.projectStatus.status === STATUS.NOTAPPROVED"
+                [class.with-conditions]="project.projectStatus.status === STATUS.APPROVEDWITHCONDITIONS">
             {{'common.label.projectapplicationstatus.' + project?.projectStatus.status | translate}}
         </mat-chip>
     </mat-chip-list>

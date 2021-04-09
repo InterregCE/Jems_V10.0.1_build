@@ -1,0 +1,56 @@
+<app-main-page-template [needsCard]="true"
+                        *ngIf="projectDetailStore.project$ | async as project"
+                        titleKey="project.application.form.lifecycle.title">
+    <div appFormLayout>
+
+        <div appNoWidthLimit>
+            <h2>{{project.id}} - {{project.acronym}}</h2>
+            <app-project-application-information appNoWidthLimit
+                                                 [project]="project">
+            </app-project-application-information>
+        </div>
+
+        <div appFormLayout id="project-detail-container">
+            <app-project-application-actions
+                    appNoWidthLimit
+                    [projectId]="project.id"
+                    [projectStatus]="project.projectStatus.status"
+                    [revertToStatus]="projectDetailStore.revertToStatus$ | async"
+                    [projectCallEndDate]="project.callSettings.endDate">
+            </app-project-application-actions>
+            <app-project-application-decisions
+                    appNoWidthLimit
+                    *ngxPermissionsExcept="[Permission.APPLICANT_USER]"
+                    [project]="project"
+                    [projectStatus]="project.projectStatus.status">
+            </app-project-application-decisions>
+            <app-project-application-assessments
+                    appNoWidthLimit
+                    *ngxPermissionsExcept="[Permission.APPLICANT_USER]"
+                    [project]="project"
+                    [projectStatus]="project.projectStatus.status">
+            </app-project-application-assessments>
+        </div>
+
+        <h3 id="applicationFormLifecycleAttachments">{{'file.tab.header' | translate}}</h3>
+        <mat-tab-group appNoWidthLimit>
+            <mat-tab label="{{'file.tab.application' | translate}}">
+                <ng-template matTabContent>
+                    <app-project-application-files
+                            [projectId]="projectId"
+                            [fileType]="fileType.APPLICANTFILE">
+                    </app-project-application-files>
+                </ng-template>
+            </mat-tab>
+            <mat-tab *ngIf="projectDetailStore.assessmentFilesVisible$ | async"
+                     label="{{'file.tab.assessment' | translate}}">
+                <ng-template matTabContent>
+                    <app-project-application-files
+                            [projectId]="projectId"
+                            [fileType]="fileType.ASSESSMENTFILE">
+                    </app-project-application-files>
+                </ng-template>
+            </mat-tab>
+        </mat-tab-group>
+    </div>
+</app-main-page-template>

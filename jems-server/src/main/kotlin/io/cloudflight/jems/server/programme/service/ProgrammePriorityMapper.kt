@@ -1,6 +1,6 @@
 package io.cloudflight.jems.server.programme.service
 
-import io.cloudflight.jems.api.programme.dto.priority.OutputProgrammePriorityPolicySimple
+import io.cloudflight.jems.api.programme.dto.priority.OutputProgrammePriorityPolicySimpleDTO
 import io.cloudflight.jems.api.programme.dto.priority.OutputProgrammePrioritySimple
 import io.cloudflight.jems.api.project.dto.InputTranslation
 import io.cloudflight.jems.server.programme.entity.ProgrammePriorityEntity
@@ -11,7 +11,7 @@ fun ProgrammePriorityEntity.toOutputProgrammePrioritySimple() = OutputProgrammeP
     title = translatedValues.mapTo(HashSet()) { InputTranslation(it.translationId.language, it.title) },
 )
 
-fun ProgrammeSpecificObjectiveEntity.toOutputProgrammePriorityPolicy() = OutputProgrammePriorityPolicySimple(
+fun ProgrammeSpecificObjectiveEntity.toOutputProgrammePriorityPolicy() = OutputProgrammePriorityPolicySimpleDTO(
     programmeObjectivePolicy = programmeObjectivePolicy,
     code = code
 )

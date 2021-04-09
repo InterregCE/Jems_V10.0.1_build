@@ -13,7 +13,7 @@ import {
   CallService,
   CallDetailDTO,
   OutputProjectPartnerDetail,
-  OutputProjectPeriod,
+  ProjectPeriodDTO,
   ProgrammeFundDTO,
   ProjectPartnerBudgetOptionsDto,
   ProjectPartnerBudgetService,
@@ -47,7 +47,7 @@ export class ProjectPartnerDetailPageStore {
   unitCosts$: Observable<ProgrammeUnitCost[]>;
   financingAndContribution$: Observable<ProjectPartnerCoFinancingAndContributionOutputDTO>;
   callFunds$: Observable<ProgrammeFundDTO[]>;
-  periods$: Observable<OutputProjectPeriod[]>;
+  periods$: Observable<ProjectPeriodDTO[]>;
   multipleFundsAllowed$: Observable<boolean>;
 
   private updateBudgetOptionsEvent$ = new Subject();

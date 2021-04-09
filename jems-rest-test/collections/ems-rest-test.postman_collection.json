@@ -4283,7 +4283,7 @@
 									"});\r",
 									"\r",
 									"pm.test('correct translation key returned for this error', function() {\r",
-									"    pm.expect(pm.response.json().i18nMessage.i18nKey).to.eql('project.decision.date.unknown')\r",
+									"    pm.expect(pm.response.json().i18nMessage.i18nKey).to.eql('common.error.date.required')\r",
 									"});\r",
 									""
 								],

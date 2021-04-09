@@ -1,6 +1,6 @@
 import {ChangeDetectionStrategy, ChangeDetectorRef, Component, Input, OnInit} from '@angular/core';
 import {FormBuilder, FormGroup, Validators} from '@angular/forms';
-import {InputProjectData, InputTranslation, OutputProgrammePrioritySimple, OutputProject} from '@cat/api';
+import {InputProjectData, InputTranslation, OutputProgrammePrioritySimple, ProjectDetailDTO} from '@cat/api';
 import {Permission} from '../../../../security/permissions/permission';
 import {Tools} from '../../../../common/utils/tools';
 import {catchError, distinctUntilChanged, take, takeUntil, tap} from 'rxjs/operators';
@@ -22,7 +22,7 @@ export class ProjectApplicationFormComponent extends BaseComponent implements On
   LANGUAGE = InputTranslation.LanguageEnum;
 
   @Input()
-  project: OutputProject;
+  project: ProjectDetailDTO;
   @Input()
   editable: boolean;
   @Input()
@@ -73,8 +73,7 @@ export class ProjectApplicationFormComponent extends BaseComponent implements On
               private formService: FormService,
               protected changeDetectorRef: ChangeDetectorRef,
               public projectStore: ProjectStore,
-              public languageStore: LanguageStore
-              ) {
+              public languageStore: LanguageStore) {
     super();
   }
 

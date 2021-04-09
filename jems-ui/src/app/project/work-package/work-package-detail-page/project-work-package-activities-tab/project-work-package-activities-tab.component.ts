@@ -1,5 +1,5 @@
 import {ChangeDetectionStrategy, Component, OnInit} from '@angular/core';
-import {OutputProjectPeriod, WorkPackageActivityDeliverableDTO, WorkPackageActivityDTO} from '@cat/api';
+import {ProjectPeriodDTO, WorkPackageActivityDeliverableDTO, WorkPackageActivityDTO} from '@cat/api';
 import {UntilDestroy, untilDestroyed} from '@ngneat/until-destroy';
 import {FormService} from '@common/components/section/form/form.service';
 import {FormArray, FormBuilder} from '@angular/forms';
@@ -25,7 +25,7 @@ export class ProjectWorkPackageActivitiesTabComponent implements OnInit {
 
   data$: Observable<{
     activities: WorkPackageActivityDTO[],
-    periods: OutputProjectPeriod[],
+    periods: ProjectPeriodDTO[],
     workPackageNumber: number
   }>;
 

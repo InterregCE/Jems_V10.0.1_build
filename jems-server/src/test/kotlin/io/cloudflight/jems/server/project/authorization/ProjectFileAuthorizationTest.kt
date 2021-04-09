@@ -1,19 +1,19 @@
 package io.cloudflight.jems.server.project.authorization
 
 import io.cloudflight.jems.api.call.dto.flatrate.FlatRateSetupDTO
-import io.cloudflight.jems.api.project.dto.OutputProject
+import io.cloudflight.jems.api.project.dto.ProjectDetailDTO
 import io.cloudflight.jems.api.project.dto.ProjectCallSettingsDTO
 import io.cloudflight.jems.api.project.dto.file.OutputProjectFile
-import io.cloudflight.jems.api.project.dto.status.OutputProjectStatus
-import io.cloudflight.jems.api.project.dto.status.ProjectApplicationStatus
-import io.cloudflight.jems.api.project.dto.status.ProjectApplicationStatus.APPROVED
-import io.cloudflight.jems.api.project.dto.status.ProjectApplicationStatus.APPROVED_WITH_CONDITIONS
-import io.cloudflight.jems.api.project.dto.status.ProjectApplicationStatus.DRAFT
-import io.cloudflight.jems.api.project.dto.status.ProjectApplicationStatus.ELIGIBLE
-import io.cloudflight.jems.api.project.dto.status.ProjectApplicationStatus.INELIGIBLE
-import io.cloudflight.jems.api.project.dto.status.ProjectApplicationStatus.NOT_APPROVED
-import io.cloudflight.jems.api.project.dto.status.ProjectApplicationStatus.RETURNED_TO_APPLICANT
-import io.cloudflight.jems.api.project.dto.status.ProjectApplicationStatus.SUBMITTED
+import io.cloudflight.jems.api.project.dto.status.ProjectStatusDTO
+import io.cloudflight.jems.api.project.dto.status.ApplicationStatusDTO
+import io.cloudflight.jems.api.project.dto.status.ApplicationStatusDTO.APPROVED
+import io.cloudflight.jems.api.project.dto.status.ApplicationStatusDTO.APPROVED_WITH_CONDITIONS
+import io.cloudflight.jems.api.project.dto.status.ApplicationStatusDTO.DRAFT
+import io.cloudflight.jems.api.project.dto.status.ApplicationStatusDTO.ELIGIBLE
+import io.cloudflight.jems.api.project.dto.status.ApplicationStatusDTO.INELIGIBLE
+import io.cloudflight.jems.api.project.dto.status.ApplicationStatusDTO.NOT_APPROVED
+import io.cloudflight.jems.api.project.dto.status.ApplicationStatusDTO.RETURNED_TO_APPLICANT
+import io.cloudflight.jems.api.project.dto.status.ApplicationStatusDTO.SUBMITTED
 import io.cloudflight.jems.api.project.dto.file.ProjectFileType
 import io.cloudflight.jems.api.user.dto.OutputUser
 import io.cloudflight.jems.server.common.exception.ResourceNotFoundException
@@ -103,33 +103,33 @@ internal class ProjectFileAuthorizationTest {
             unitCosts = emptyList(),
         )
 
-        private fun getProject(id: Long, applicantId: Long, status: ProjectApplicationStatus): OutputProject {
-            return OutputProject(
+        private fun getProject(id: Long, applicantId: Long, status: ApplicationStatusDTO): ProjectDetailDTO {
+            return ProjectDetailDTO(
                 id = id,
                 callSettings = dummyCall,
                 acronym = "",
                 applicant = OutputUser(applicantId, "", "", ""),
-                projectStatus = OutputProjectStatus(null, status, OutputUser(null, "", "", ""), ZonedDateTime.now())
+                projectStatus = ProjectStatusDTO(null, status, OutputUser(null, "", "", ""), ZonedDateTime.now())
             )
         }
 
-        private fun getProjectLastSubmitted(id: Long, applicantId: Long, status: ProjectApplicationStatus, lastSubmitted: LocalDate): OutputProject {
+        private fun getProjectLastSubmitted(id: Long, applicantId: Long, status: ApplicationStatusDTO, lastSubmitted: LocalDate): ProjectDetailDTO {
             return getProject(id, applicantId, status)
                 .copy(lastResubmission = getSubmissionAt(lastSubmitted))
         }
 
-        private fun dummyProjectWithStatus(status: OutputProjectStatus): OutputProject {
-            return OutputProject(
+        private fun dummyProjectWithStatus(statusDTO: ProjectStatusDTO): ProjectDetailDTO {
+            return ProjectDetailDTO(
                 id = null,
                 callSettings = dummyCall,
                 acronym = "",
                 applicant = OutputUser(null, "", "", ""),
-                projectStatus = status
+                projectStatus = statusDTO
             )
         }
 
-        private fun getSubmissionAt(year: LocalDate): OutputProjectStatus {
-            return OutputProjectStatus(
+        private fun getSubmissionAt(year: LocalDate): ProjectStatusDTO {
+            return ProjectStatusDTO(
                 id = null,
                 status = SUBMITTED,
                 user = OutputUser(null, "", "", ""),
@@ -186,7 +186,7 @@ internal class ProjectFileAuthorizationTest {
 
         // #### status no-DRAFT
 
-        val statusesWithoutDraft = ProjectApplicationStatus.values().toMutableSet()
+        val statusesWithoutDraft = ApplicationStatusDTO.values().toMutableSet()
         statusesWithoutDraft.remove(DRAFT)
 
         statusesWithoutDraft.forEach {
@@ -310,7 +310,7 @@ internal class ProjectFileAuthorizationTest {
             APPROVED,
             NOT_APPROVED
         ).forEach {
-            val fundingDecision = OutputProjectStatus(id = null, status = it, updated = toZonedDate(year2008), user = OutputUser(null, "", "", ""))
+            val fundingDecision = ProjectStatusDTO(id = null, status = it, updated = toZonedDate(year2008), user = OutputUser(null, "", "", ""))
             every { projectService.getById(eq(210)) } returns getProject(210, 42, it).copy(fundingDecision = fundingDecision)
             every { projectAuthorization.canReadProject(eq(210))} returns true
 
@@ -326,7 +326,7 @@ internal class ProjectFileAuthorizationTest {
         listOf(
             INELIGIBLE
         ).forEach {
-            val eligibilityDecision = OutputProjectStatus(id = null, status = it, updated = toZonedDate(year2008), user = OutputUser(null, "", "", ""))
+            val eligibilityDecision = ProjectStatusDTO(id = null, status = it, updated = toZonedDate(year2008), user = OutputUser(null, "", "", ""))
             every { projectService.getById(eq(220)) } returns getProject(220, 42, it).copy(eligibilityDecision = eligibilityDecision)
             every { projectAuthorization.canReadProject(eq(220))} returns true
 
@@ -378,7 +378,7 @@ internal class ProjectFileAuthorizationTest {
         }
 
         // check assessment files
-        ProjectApplicationStatus.values().forEach {
+        ApplicationStatusDTO.values().forEach {
             every { projectService.getById(eq(667)) } returns getProject(667, applicantUser.user.id!!, it)
             every { projectAuthorization.canReadProject(eq(667L))} returns true
             val exception = assertThrows<ResourceNotFoundException>(
@@ -456,7 +456,7 @@ internal class ProjectFileAuthorizationTest {
         every { securityService.currentUser } returns applicantUser
 
         // ## APPLICANT_FILE section: ##
-        ProjectApplicationStatus.values().forEach {
+        ApplicationStatusDTO.values().forEach {
             // is owner
             every { projectService.getApplicantAndStatusById(eq(115)) } returns ProjectApplicantAndStatus(applicantUser.user.id!!, it)
             every { projectAuthorization.canReadProject(eq(115))} returns true
@@ -473,7 +473,7 @@ internal class ProjectFileAuthorizationTest {
         }
 
         // ## ASSESSMENT_FILE section: ##
-        ProjectApplicationStatus.values().forEach {
+        ApplicationStatusDTO.values().forEach {
             every { projectService.getApplicantAndStatusById(eq(180)) } returns ProjectApplicantAndStatus(applicantUser.user.id!!, it)
             every { projectAuthorization.canReadProject(eq(180)) } returns true
 
@@ -496,7 +496,7 @@ internal class ProjectFileAuthorizationTest {
     fun `canListFiles programme user`() {
         every { securityService.currentUser } returns programmeUser
 
-        val statusesWithoutDraft = ProjectApplicationStatus.values().toMutableSet()
+        val statusesWithoutDraft = ApplicationStatusDTO.values().toMutableSet()
         statusesWithoutDraft.remove(DRAFT)
 
         // ## ASSESSMENT_FILE section: ##
@@ -541,7 +541,7 @@ internal class ProjectFileAuthorizationTest {
         every { securityService.currentUser } returns applicantUser
 
         // ## APPLICANT_FILE section: ##
-        ProjectApplicationStatus.values().forEach {
+        ApplicationStatusDTO.values().forEach {
             // is owner
             every { projectService.getApplicantAndStatusById(eq(396)) } returns ProjectApplicantAndStatus(applicantUser.user.id!!, it)
             every { projectAuthorization.canReadProject(eq(396))} returns true
@@ -558,7 +558,7 @@ internal class ProjectFileAuthorizationTest {
         }
 
         // ## ASSESSMENT_FILE section: ##
-        ProjectApplicationStatus.values().forEach {
+        ApplicationStatusDTO.values().forEach {
             every { projectService.getApplicantAndStatusById(eq(398)) } returns ProjectApplicantAndStatus(applicantUser.user.id!!, it)
             every { projectAuthorization.canReadProject(eq(398))} returns true
             assertFalse(projectFileAuthorization.canListFiles(398, ProjectFileType.ASSESSMENT_FILE),

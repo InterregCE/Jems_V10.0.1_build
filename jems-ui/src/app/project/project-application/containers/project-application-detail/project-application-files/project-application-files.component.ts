@@ -5,7 +5,7 @@ import {combineLatest, ReplaySubject, Subject} from 'rxjs';
 import {catchError, mergeMap, map, startWith, take, takeUntil, tap} from 'rxjs/operators';
 import {BaseComponent} from '@common/components/base-component';
 import {Permission} from '../../../../../security/permissions/permission';
-import {OutputProject, OutputProjectFile, OutputProjectStatus, ProjectFileStorageService} from '@cat/api';
+import {ProjectDetailDTO, OutputProjectFile, ProjectStatusDTO, ProjectFileStorageService} from '@cat/api';
 import {MatSort} from '@angular/material/sort';
 import {Tables} from '../../../../../common/utils/tables';
 import {Log} from '../../../../../common/utils/log';
@@ -112,7 +112,7 @@ export class ProjectApplicationFilesComponent extends BaseComponent {
       ).subscribe();
   }
 
-  private canUploadFiles(project: OutputProject, permission: Permission): boolean {
+  private canUploadFiles(project: ProjectDetailDTO, permission: Permission): boolean {
     if (permission === Permission.ADMINISTRATOR) {
       return true;
     }
@@ -123,7 +123,7 @@ export class ProjectApplicationFilesComponent extends BaseComponent {
       // programme user can only upload assessment files
       return false;
     }
-    return project.projectStatus.status === OutputProjectStatus.StatusEnum.DRAFT
-      || project.projectStatus.status === OutputProjectStatus.StatusEnum.RETURNEDTOAPPLICANT;
+    return project.projectStatus.status === ProjectStatusDTO.StatusEnum.DRAFT
+      || project.projectStatus.status === ProjectStatusDTO.StatusEnum.RETURNEDTOAPPLICANT;
   }
 }

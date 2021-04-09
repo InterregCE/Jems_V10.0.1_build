@@ -1,7 +1,7 @@
 import {
-  ProgrammePriorityDTO,
-  OutputProgrammePriorityPolicySimple,
   InputTranslation,
+  OutputProgrammePriorityPolicySimpleDTO,
+  ProgrammePriorityDTO,
   ProgrammeSpecificObjectiveDTO
 } from '@cat/api';
 
@@ -10,7 +10,7 @@ export class CallPriorityCheckbox {
   translatableTitle: InputTranslation[];
   checked: boolean;
   children: CallPriorityCheckbox[] = [];
-  policy: OutputProgrammePriorityPolicySimple.ProgrammeObjectivePolicyEnum;
+  policy: OutputProgrammePriorityPolicySimpleDTO.ProgrammeObjectivePolicyEnum;
 
   static fromPriority(from: ProgrammePriorityDTO): CallPriorityCheckbox {
     const checkbox = new CallPriorityCheckbox();
@@ -20,7 +20,7 @@ export class CallPriorityCheckbox {
     return checkbox;
   }
 
-  static fromPriorityPolicy(from: OutputProgrammePriorityPolicySimple): CallPriorityCheckbox {
+  static fromPriorityPolicy(from: OutputProgrammePriorityPolicySimpleDTO): CallPriorityCheckbox {
     const checkbox = new CallPriorityCheckbox();
     checkbox.name = 'programme.policy.' + from.programmeObjectivePolicy;
     checkbox.children = [];
@@ -60,7 +60,7 @@ export class CallPriorityCheckbox {
     this.updateChecked();
   }
 
-  getCheckedChildPolicies(): OutputProgrammePriorityPolicySimple.ProgrammeObjectivePolicyEnum[] {
+  getCheckedChildPolicies(): OutputProgrammePriorityPolicySimpleDTO.ProgrammeObjectivePolicyEnum[] {
     return this.children
       .filter(child => child.checked)
       .map(child => child.policy);

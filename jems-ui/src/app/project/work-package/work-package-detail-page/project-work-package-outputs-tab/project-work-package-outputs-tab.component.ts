@@ -6,7 +6,7 @@ import {combineLatest, Observable} from 'rxjs';
 import {FormArray, FormBuilder} from '@angular/forms';
 import {ProjectWorkPackagePageStore} from '../project-work-package-page-store.service';
 import {catchError, map, startWith, tap} from 'rxjs/operators';
-import {InputTranslation, OutputIndicatorSummaryDTO, OutputProjectPeriod, WorkPackageOutputDTO} from '@cat/api';
+import {InputTranslation, OutputIndicatorSummaryDTO, ProjectPeriodDTO, WorkPackageOutputDTO} from '@cat/api';
 import {take} from 'rxjs/internal/operators';
 
 @UntilDestroy()
@@ -26,7 +26,7 @@ export class ProjectWorkPackageOutputsTabComponent implements OnInit {
 
   data$: Observable<{
     outputs: WorkPackageOutputDTO[],
-    periods: OutputProjectPeriod[],
+    periods: ProjectPeriodDTO[],
     outputIndicators: OutputIndicatorSummaryDTO[],
     workPackageNumber: number
   }>;
