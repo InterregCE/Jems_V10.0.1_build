@@ -2,6 +2,7 @@ package io.cloudflight.jems.server.project.service.application.refuse_applicatio
 
 import io.cloudflight.jems.api.audit.dto.AuditAction
 import io.cloudflight.jems.server.UnitTest
+import io.cloudflight.jems.server.audit.model.AuditCandidateEvent
 import io.cloudflight.jems.server.audit.model.AuditProject
 import io.cloudflight.jems.server.audit.service.AuditCandidate
 import io.cloudflight.jems.server.project.service.ProjectPersistence
@@ -60,9 +61,9 @@ class RefuseApplicationInteractorTest : UnitTest() {
 
         assertThat(refuseApplication.refuse(PROJECT_ID, actionInfo)).isEqualTo(ApplicationStatus.NOT_APPROVED)
 
-        val slotAudit = slot<AuditCandidate>()
+        val slotAudit = slot<AuditCandidateEvent>()
         verify(exactly = 1) { auditPublisher.publishEvent(capture(slotAudit)) }
-        assertThat(slotAudit.captured).isEqualTo(
+        assertThat(slotAudit.captured.auditCandidate).isEqualTo(
             AuditCandidate(
                 action = AuditAction.APPLICATION_STATUS_CHANGED,
                 project = AuditProject(id = PROJECT_ID.toString(), name = "project acronym"),

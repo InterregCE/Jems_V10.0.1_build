@@ -2,6 +2,7 @@ package io.cloudflight.jems.server.project.service
 
 import io.cloudflight.jems.api.audit.dto.AuditAction
 import io.cloudflight.jems.api.project.dto.ProjectDetailDTO
+import io.cloudflight.jems.server.audit.model.AuditCandidateEvent
 import io.cloudflight.jems.server.audit.service.AuditBuilder
 import io.cloudflight.jems.server.audit.service.AuditCandidate
 import io.cloudflight.jems.server.project.service.application.ApplicationStatus
@@ -17,12 +18,14 @@ fun projectApplicationCreated(
         .description("Project application created with status $newStatus")
         .build()
 
-fun projectStatusChanged(projectSummary: ProjectSummary, newStatus: ApplicationStatus): AuditCandidate =
-    AuditBuilder(AuditAction.APPLICATION_STATUS_CHANGED)
-        .project(id = projectSummary.id, name = projectSummary.acronym)
-        .description("Project application status changed from ${projectSummary.status} to $newStatus")
-        .build()
-
+fun projectStatusChanged(context: Any, projectSummary: ProjectSummary, newStatus: ApplicationStatus) =
+    AuditCandidateEvent(
+        context = context,
+        auditCandidate =     AuditBuilder(AuditAction.APPLICATION_STATUS_CHANGED)
+            .project(id = projectSummary.id, name = projectSummary.acronym)
+            .description("Project application status changed from ${projectSummary.status} to $newStatus")
+            .build()
+    )
 
 fun callAlreadyEnded(callId: Long): AuditCandidate =
     AuditBuilder(AuditAction.CALL_ALREADY_ENDED)

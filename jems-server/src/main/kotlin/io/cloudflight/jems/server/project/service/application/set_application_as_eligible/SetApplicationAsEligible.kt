@@ -24,7 +24,7 @@ class SetApplicationAsEligible(
     override fun setAsEligible(projectId: Long, actionInfo: ApplicationActionInfo): ApplicationStatus =
         projectPersistence.getProjectSummary(projectId).let { projectSummary ->
             applicationStateFactory.getInstance(projectSummary).setAsEligible(actionInfo).also {
-                auditPublisher.publishEvent(projectStatusChanged(projectSummary = projectSummary, newStatus = it))
+                auditPublisher.publishEvent(projectStatusChanged(this, projectSummary = projectSummary, newStatus = it))
             }
         }
 }

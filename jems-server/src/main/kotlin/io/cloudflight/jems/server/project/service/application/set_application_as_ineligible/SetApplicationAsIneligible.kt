@@ -24,7 +24,7 @@ class SetApplicationAsIneligible(
     override fun setAsIneligible(projectId: Long, actionInfo: ApplicationActionInfo): ApplicationStatus =
         projectPersistence.getProjectSummary(projectId).let { projectSummary ->
             applicationStateFactory.getInstance(projectSummary).setAsIneligible(actionInfo).also {
-                auditPublisher.publishEvent(projectStatusChanged(projectSummary = projectSummary, newStatus = it))
+                auditPublisher.publishEvent(projectStatusChanged(this, projectSummary = projectSummary, newStatus = it))
             }
         }
 }

@@ -24,7 +24,7 @@ class ReturnApplicationToApplicant(
     override fun returnToApplicant(projectId: Long): ApplicationStatus =
         projectPersistence.getProjectSummary(projectId).let { projectSummary ->
             applicationStateFactory.getInstance(projectSummary).returnToApplicant().also {
-                auditPublisher.publishEvent(projectStatusChanged(projectSummary = projectSummary, newStatus = it))
+                auditPublisher.publishEvent(projectStatusChanged(this, projectSummary = projectSummary, newStatus = it))
             }
         }
 }

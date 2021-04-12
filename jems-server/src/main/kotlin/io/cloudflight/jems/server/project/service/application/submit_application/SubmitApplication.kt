@@ -23,7 +23,7 @@ class SubmitApplication(
     override fun submit(projectId: Long): ApplicationStatus =
         projectPersistence.getProjectSummary(projectId).let { projectSummary ->
             applicationStateFactory.getInstance(projectSummary).submit().also {
-                auditPublisher.publishEvent(projectStatusChanged(projectSummary = projectSummary, newStatus = it))
+                auditPublisher.publishEvent(projectStatusChanged(this, projectSummary = projectSummary, newStatus = it))
             }
         }
 }

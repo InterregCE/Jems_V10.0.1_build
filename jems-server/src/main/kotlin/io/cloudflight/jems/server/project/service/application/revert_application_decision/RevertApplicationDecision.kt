@@ -28,7 +28,7 @@ class RevertApplicationDecision(
     override fun revert(projectId: Long): ApplicationStatus =
         projectPersistence.getProjectSummary(projectId).let { projectSummary ->
             applicationStateFactory.getInstance(projectSummary).revertDecision().also {
-                auditPublisher.publishEvent(projectStatusChanged(projectSummary = projectSummary, newStatus = it))
+                auditPublisher.publishEvent(projectStatusChanged(this, projectSummary = projectSummary, newStatus = it))
                 log.warn("Decision-reversion has been done for project(id=$projectId) status moved from ${projectSummary.status} to $it")
             }
         }
