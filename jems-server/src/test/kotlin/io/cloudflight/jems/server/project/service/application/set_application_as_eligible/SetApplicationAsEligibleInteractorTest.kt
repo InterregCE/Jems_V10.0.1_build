@@ -2,6 +2,7 @@ package io.cloudflight.jems.server.project.service.application.set_application_a
 
 import io.cloudflight.jems.api.audit.dto.AuditAction
 import io.cloudflight.jems.server.UnitTest
+import io.cloudflight.jems.server.audit.model.AuditCandidateEvent
 import io.cloudflight.jems.server.audit.model.AuditProject
 import io.cloudflight.jems.server.audit.service.AuditCandidate
 import io.cloudflight.jems.server.project.service.ProjectPersistence
@@ -60,9 +61,9 @@ class SetApplicationAsEligibleInteractorTest : UnitTest() {
 
         assertThat(setApplicationAsEligible.setAsEligible(PROJECT_ID, actionInfo)).isEqualTo(ApplicationStatus.ELIGIBLE)
 
-        val slotAudit = slot<AuditCandidate>()
+        val slotAudit = slot<AuditCandidateEvent>()
         verify(exactly = 1) { auditPublisher.publishEvent(capture(slotAudit)) }
-        assertThat(slotAudit.captured).isEqualTo(
+        assertThat(slotAudit.captured.auditCandidate).isEqualTo(
             AuditCandidate(
                 action = AuditAction.APPLICATION_STATUS_CHANGED,
                 project = AuditProject(id = PROJECT_ID.toString(), name = "project acronym"),

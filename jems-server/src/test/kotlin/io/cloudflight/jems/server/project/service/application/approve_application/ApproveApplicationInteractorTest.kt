@@ -2,12 +2,12 @@ package io.cloudflight.jems.server.project.service.application.approve_applicati
 
 import io.cloudflight.jems.api.audit.dto.AuditAction
 import io.cloudflight.jems.server.UnitTest
+import io.cloudflight.jems.server.audit.model.AuditCandidateEvent
 import io.cloudflight.jems.server.audit.model.AuditProject
 import io.cloudflight.jems.server.audit.service.AuditCandidate
 import io.cloudflight.jems.server.project.service.ProjectPersistence
 import io.cloudflight.jems.server.project.service.application.ApplicationActionInfo
 import io.cloudflight.jems.server.project.service.application.ApplicationStatus
-import io.cloudflight.jems.server.project.service.application.refuse_application.RefuseApplicationInteractorTest
 import io.cloudflight.jems.server.project.service.application.workflow.ApplicationStateFactory
 import io.cloudflight.jems.server.project.service.application.workflow.states.EligibleApplicationState
 import io.cloudflight.jems.server.project.service.model.ProjectSummary
@@ -62,9 +62,9 @@ class ApproveApplicationInteractorTest : UnitTest() {
         assertThat(approveApplication.approve(PROJECT_ID, actionInfo))
             .isEqualTo(ApplicationStatus.APPROVED)
 
-        val slotAudit = slot<AuditCandidate>()
+        val slotAudit = slot<AuditCandidateEvent>()
         verify(exactly = 1) { auditPublisher.publishEvent(capture(slotAudit)) }
-        assertThat(slotAudit.captured).isEqualTo(
+        assertThat(slotAudit.captured.auditCandidate).isEqualTo(
             AuditCandidate(
                 action = AuditAction.APPLICATION_STATUS_CHANGED,
                 project = AuditProject(id = PROJECT_ID.toString(), name = "project acronym"),
