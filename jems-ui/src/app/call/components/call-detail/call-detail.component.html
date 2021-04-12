@@ -5,13 +5,15 @@
         <p>{{'call.detail.edit.published.warning' | translate}}</p>
     </app-alert>
     <form appFormLayout [formGroup]="callForm">
-        <button *ngIf="call?.id && editable"
-                appFormFieldWidth="medium"
-                mat-raised-button color="primary"
+        <app-pending-button
+                *ngIf="call?.id && editable"
+                confirmTitle="call.dialog.title"
+                [confirmMessage]="isFirstCall ? 'call.dialog.message.and.additional.message' : 'call.dialog.message'"
                 [disabled]="publishingRequirementsNotAchieved()"
-                (click)="publishCall()">
+                [pending]="publishPending"
+                (clicked)="publishCall()">
             {{'call.detail.button.publish' | translate}}
-        </button>
+        </app-pending-button>
         <h3>{{'call.identification.title' | translate}}</h3>
         <mat-form-field>
             <mat-label>{{'call.detail.field.name' | translate}}</mat-label>

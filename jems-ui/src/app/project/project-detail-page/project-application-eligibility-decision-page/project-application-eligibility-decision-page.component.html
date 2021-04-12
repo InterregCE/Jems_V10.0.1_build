@@ -53,11 +53,14 @@
                 {{'project.assessment.eligibilityDecision.dialog.button.cancel' | translate}}
             </button>
 
-            <button mat-raised-button color="primary" type="submit"
+            <app-pending-button
+                    confirmTitle="project.assessment.eligibilityDecision.dialog.title"
+                    [confirmMessage]="getEligibilityDecisionMessage()"
+                    [pending]="actionPending"
                     [disabled]="notesForm.invalid"
-                    (click)="confirmEligibilityDecision()">
+                    (clicked)="submitEligibilityDecision()">
                 {{'project.assessment.eligibilityDecision.dialog.button.submit' | translate}}
-            </button>
+            </app-pending-button>
         </div>
     </form>
 </app-main-page-template>

@@ -43,6 +43,7 @@ import {TranslateContainerLessInputsBySystemLanguagePipe} from './pipe/translate
 import {LocaleDatePipe} from './pipe/locale-date.pipe';
 import {DateFormatInfoPipe} from './pipe/date-format-info.pipe';
 import {CustomTranslatePipe} from './pipe/custom-translate-pipe';
+import {PendingButtonComponent} from '@common/components/section/form/pending-button/pending-button.component';
 
 const modules = [
   CommonModule,
@@ -63,6 +64,7 @@ const declarations = [
   TableComponent,
   PaginatorComponent,
   FormComponent,
+  PendingButtonComponent,
   TranslateBySystemLanguagePipe,
   TranslateByInputLanguagePipe,
   TranslateContainerLessInputsBySystemLanguagePipe,

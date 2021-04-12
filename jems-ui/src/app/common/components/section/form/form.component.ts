@@ -1,6 +1,8 @@
 import {ChangeDetectionStrategy, Component, EventEmitter, Output} from '@angular/core';
 import {FormService} from '@common/components/section/form/form.service';
 import {animate, style, transition, trigger} from '@angular/animations';
+import {combineLatest} from 'rxjs';
+import {map} from 'rxjs/operators';
 
 @Component({
   selector: 'app-form',
@@ -26,6 +28,17 @@ export class FormComponent {
   @Output()
   discard = new EventEmitter<void>();
 
+  showSaveDiscard$ = combineLatest([this.formService.dirty$, this.formService.pending$])
+    .pipe(
+      map(([dirty, pending]) => dirty || pending)
+    );
+
   constructor(public formService: FormService) {
+  }
+
+  submit(): void {
+    this.formService.pending$.next(true);
+    this.formService.setDirty(false);
+    this.save.emit();
   }
 }
