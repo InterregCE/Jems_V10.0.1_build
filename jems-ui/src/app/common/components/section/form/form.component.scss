@@ -25,9 +25,16 @@
     position: sticky;
     z-index: 4;
     margin: 0;
+    display: flex;
 
     .action-button {
       margin: 1rem 0.3rem 0.2rem 1rem;
+
+      .spinner-wrapper {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
 
       mat-icon {
         font-size: 1.33em;

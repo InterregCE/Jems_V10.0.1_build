@@ -25,6 +25,7 @@ import {MatFormFieldModule} from '@angular/material/form-field';
 import {TranslatableMatPaginatorIntl} from './translatable-mat-paginator-intl.service';
 import {TranslatableMatDatepickerIntl} from './translatable-mat-datepicker-intl.service';
 import {MatChipsModule} from '@angular/material/chips';
+import {MatProgressSpinnerModule} from '@angular/material/progress-spinner';
 
 const modules = [
   MatTabsModule,
@@ -50,7 +51,8 @@ const modules = [
   NgxMatDatetimePickerModule,
   MatTreeModule,
   MatFormFieldModule,
-  MatChipsModule
+  MatChipsModule,
+  MatProgressSpinnerModule
 ];
 
 @NgModule({
