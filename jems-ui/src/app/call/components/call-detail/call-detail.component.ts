@@ -11,7 +11,7 @@ import {CallStore} from '../../services/call-store.service';
 import {CallPageSidenavService} from '../../services/call-page-sidenav.service';
 import {ProgrammeEditableStateStore} from '../../../programme/programme-page/services/programme-editable-state-store.service';
 import {UntilDestroy, untilDestroyed} from '@ngneat/until-destroy';
-import { Alert } from '@common/components/forms/alert';
+import {Alert} from '@common/components/forms/alert';
 
 @UntilDestroy()
 @Component({
@@ -31,6 +31,7 @@ export class CallDetailComponent implements OnInit {
 
   tools = Tools;
   isFirstCall: boolean;
+  publishPending = false;
 
   @Input()
   call: CallDetailDTO;
@@ -84,15 +85,14 @@ export class CallDetailComponent implements OnInit {
   });
 
   constructor(private formBuilder: FormBuilder,
-              private dialog: MatDialog,
               private callStore: CallStore,
               private formService: FormService,
               private callNavService: CallPageSidenavService,
               private programmeEditableStateStore: ProgrammeEditableStateStore) {
     this.programmeEditableStateStore.init();
     this.programmeEditableStateStore.isProgrammeEditableDependingOnCall$.pipe(
-        tap(isProgrammeEditingLimited => this.isFirstCall = !isProgrammeEditingLimited),
-        untilDestroyed(this)
+      tap(isProgrammeEditingLimited => this.isFirstCall = !isProgrammeEditingLimited),
+      untilDestroyed(this)
     ).subscribe();
   }
 
@@ -165,26 +165,18 @@ export class CallDetailComponent implements OnInit {
   }
 
   publishCall(): void {
-    Forms.confirmDialog(
-      this.dialog,
-      'call.dialog.title',
-      this.isFirstCall ? 'call.dialog.message.and.additional.message' : 'call.dialog.message'
-    ).pipe(
-      take(1),
-      filter(yes => !!yes)
-    ).subscribe(() => {
-      this.callStore.publishCall(this.call?.id)
-        .pipe(
-          take(1),
-          tap(published => this.callNavService.redirectToCallOverview(
-            {
-              i18nKey: 'call.detail.publish.success',
-              i18nArguments: {name: published.name}
-            })
-          ),
-          catchError(err => this.formService.setError(err))
-        ).subscribe();
-    });
+    this.callStore.publishCall(this.call?.id)
+      .pipe(
+        take(1),
+        tap(() => this.publishPending = false),
+        tap(published => this.callNavService.redirectToCallOverview(
+          {
+            i18nKey: 'call.detail.publish.success',
+            i18nArguments: {name: published.name}
+          })
+        ),
+        catchError(err => this.formService.setError(err))
+      ).subscribe();
   }
 
   publishingRequirementsNotAchieved(): boolean {

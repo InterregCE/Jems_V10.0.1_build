@@ -40,10 +40,14 @@
             {{'project.assessment.fundingDecision.dialog.button.cancel' | translate}}
         </button>
 
-        <button mat-raised-button color="primary" type="submit"
+        <app-pending-button
+                confirmTitle="project.assessment.fundingDecision.dialog.title"
+                [confirmMessage]="'project.assessment.fundingDecision.dialog.message.' + decisionForm?.controls?.status?.value"
+                [pending]="actionPending"
                 [disabled]="decisionForm.invalid"
-                (click)="onSubmit()">{{submitLabel | translate}}
-        </button>
+                (clicked)="onSubmit()">
+            {{submitLabel | translate}}
+        </app-pending-button>
     </div>
 </form>
 

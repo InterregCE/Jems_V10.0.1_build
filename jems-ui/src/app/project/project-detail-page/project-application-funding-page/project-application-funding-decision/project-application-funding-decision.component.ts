@@ -1,12 +1,12 @@
 import {ChangeDetectionStrategy, Component, Input, OnInit} from '@angular/core';
 import {ApplicationActionInfoDTO, ProjectDetailDTO, ProjectStatusDTO} from '@cat/api';
 import {FormBuilder, Validators} from '@angular/forms';
-import {MatDialog} from '@angular/material/dialog';
-import {Forms} from '../../../../common/utils/forms';
-import {filter, switchMap, take, tap} from 'rxjs/operators';
+import {tap} from 'rxjs/operators';
 import {ProjectFundingDecisionStore} from '../project-funding-decision-store.service';
 import {RoutingService} from '../../../../common/services/routing.service';
 import {ProjectApplicationFormSidenavService} from '../../../project-application/containers/project-application-form-page/services/project-application-form-sidenav.service';
+import {Observable} from 'rxjs';
+import {take} from 'rxjs/internal/operators';
 
 @Component({
   selector: 'app-project-application-funding-decision',
@@ -26,6 +26,8 @@ export class ProjectApplicationFundingDecisionComponent implements OnInit {
   submitLabel: string;
 
   today = new Date();
+  actionPending = false;
+
   dateErrors = {
     required: 'common.error.date.required',
     matDatepickerMax: 'project.decision.date.must.be.in.the.past',
@@ -42,8 +44,7 @@ export class ProjectApplicationFundingDecisionComponent implements OnInit {
     decisionDate: ['', Validators.required]
   });
 
-  constructor(private dialog: MatDialog,
-              private fundingDecisionStore: ProjectFundingDecisionStore,
+  constructor(private fundingDecisionStore: ProjectFundingDecisionStore,
               private formBuilder: FormBuilder,
               private router: RoutingService,
               private sidenavService: ProjectApplicationFormSidenavService) {
@@ -56,31 +57,29 @@ export class ProjectApplicationFundingDecisionComponent implements OnInit {
   }
 
   onSubmit(): void {
-    const statusInfo: ApplicationActionInfoDTO = {
-      note: this.decisionForm?.controls?.notes?.value,
-      date: this.decisionForm?.controls?.decisionDate?.value?.format('YYYY-MM-DD')
-    };
-    Forms.confirmDialog(
-      this.dialog,
-      'project.assessment.fundingDecision.dialog.title',
-      'project.assessment.fundingDecision.dialog.message.' + this.decisionForm?.controls?.status?.value
-    ).pipe(
-      take(1),
-      filter(yes => !!yes),
-      switchMap(() => {
-        if (this.decisionForm?.controls?.status?.value === ProjectStatusDTO.StatusEnum.APPROVED) {
-          return this.fundingDecisionStore.approveApplication(this.project.id, statusInfo);
-        } else if (this.decisionForm?.controls?.status?.value === ProjectStatusDTO.StatusEnum.APPROVEDWITHCONDITIONS) {
-          return this.fundingDecisionStore.approveApplicationWithCondition(this.project.id, statusInfo);
-        } else {
-          return this.fundingDecisionStore.refuseApplication(this.project.id, statusInfo);
-        }
-      }),
-      tap(() => this.redirectToProject())
-    ).subscribe();
+    this.getDecisionAction()
+      .pipe(
+        take(1),
+        tap(() => this.actionPending = false),
+        tap(() => this.redirectToProject())
+      ).subscribe();
   }
 
   redirectToProject(): void {
     this.router.navigate(['app', 'project', 'detail', this.project.id]);
+  }
+
+  private getDecisionAction(): Observable<string> {
+    const statusInfo: ApplicationActionInfoDTO = {
+      note: this.decisionForm?.controls?.notes?.value,
+      date: this.decisionForm?.controls?.decisionDate?.value?.format('YYYY-MM-DD')
+    };
+
+    if (this.decisionForm?.controls?.status?.value === ProjectStatusDTO.StatusEnum.APPROVED) {
+      return this.fundingDecisionStore.approveApplication(this.project.id, statusInfo);
+    } else if (this.decisionForm?.controls?.status?.value === ProjectStatusDTO.StatusEnum.APPROVEDWITHCONDITIONS) {
+      return this.fundingDecisionStore.approveApplicationWithCondition(this.project.id, statusInfo);
+    }
+    return this.fundingDecisionStore.refuseApplication(this.project.id, statusInfo);
   }
 }

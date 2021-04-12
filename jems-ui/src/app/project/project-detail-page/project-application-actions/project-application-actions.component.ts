@@ -1,7 +1,5 @@
 import {ChangeDetectionStrategy, ChangeDetectorRef, Component, Input} from '@angular/core';
-import {MatDialog} from '@angular/material/dialog';
-import {filter, switchMap, take, tap} from 'rxjs/operators';
-import {Forms} from '../../../common/utils/forms';
+import {tap} from 'rxjs/operators';
 import {ProjectStatusDTO} from '@cat/api';
 import {Alert} from '@common/components/forms/alert';
 import {Permission} from '../../../security/permissions/permission';
@@ -38,65 +36,41 @@ export class ProjectApplicationActionsComponent {
 
   // TODO: create a component
   successMessage: boolean;
+  actionPending = false;
 
   constructor(public translate: TranslateService,
               private projectDetailStore: ProjectDetailPageStore,
-              private changeDetectorRef: ChangeDetectorRef,
-              private dialog: MatDialog) {
+              private changeDetectorRef: ChangeDetectorRef) {
   }
 
   submitProject(): void {
-    Forms.confirmDialog(
-      this.dialog,
-      'project.detail.submit.dialog.title',
-      'project.detail.submit.dialog.message',
-    ).pipe(
-      take(1),
-      filter(answer => !!answer),
-      switchMap(() => this.projectDetailStore.submitApplication(this.projectId))
-    ).subscribe();
+    this.projectDetailStore.submitApplication(this.projectId)
+      .pipe(
+        tap(() => this.actionPending = false),
+      ).subscribe();
   }
 
   resubmitProject(): void {
-    Forms.confirmDialog(
-      this.dialog,
-      'project.detail.resubmit.dialog.title',
-      'project.detail.resubmit.dialog.message',
-    ).pipe(
-      take(1),
-      filter(answer => !!answer),
-      switchMap(() => this.projectDetailStore.submitApplication(this.projectId)),
-      tap(() => this.showSuccessMessage())
-    ).subscribe();
+    this.projectDetailStore.submitApplication(this.projectId)
+      .pipe(
+        tap(() => this.actionPending = false),
+        tap(() => this.showSuccessMessage())
+      ).subscribe();
   }
 
   returnToApplicant(): void {
-    Forms.confirmDialog(
-      this.dialog,
-      'project.detail.return.dialog.title',
-      'project.detail.return.dialog.message',
-    ).pipe(
-      take(1),
-      filter(answer => !!answer),
-      switchMap(() => this.projectDetailStore.returnApplicationToApplicant(this.projectId)),
-      tap(() => this.showSuccessMessage())
-    ).subscribe();
+    this.projectDetailStore.returnApplicationToApplicant(this.projectId)
+      .pipe(
+        tap(() => this.actionPending = false),
+        tap(() => this.showSuccessMessage())
+      ).subscribe();
   }
 
   revertProjectStatus(): void {
-    Forms.confirmDialog(
-      this.dialog,
-      'project.application.revert.status.dialog.title',
-      'project.application.revert.status.dialog.message',
-      {
-        from: this.translate.instant('common.label.projectapplicationstatus.' + this.projectStatus),
-        to: this.translate.instant('common.label.projectapplicationstatus.' + this.revertToStatus)
-      }
-    ).pipe(
-      take(1),
-      filter(answer => !!answer),
-      switchMap(() => this.projectDetailStore.revertApplicationDecision(this.projectId))
-    ).subscribe();
+    this.projectDetailStore.revertApplicationDecision(this.projectId)
+      .pipe(
+        tap(() => this.actionPending = false),
+      ).subscribe();
   }
 
   isOpen(): boolean {
@@ -110,5 +84,12 @@ export class ProjectApplicationActionsComponent {
       this.successMessage = false;
       this.changeDetectorRef.markForCheck();
     },         4000);
+  }
+
+  getRevertArgs(): { [key: string]: string } {
+    return {
+      from: this.translate.instant('common.label.projectapplicationstatus.' + this.projectStatus),
+      to: this.translate.instant('common.label.projectapplicationstatus.' + this.revertToStatus)
+    };
   }
 }
