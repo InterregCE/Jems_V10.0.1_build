@@ -7,6 +7,14 @@ const val PROJECT_ERROR_CODE_PREFIX = "P-PA"
 const val PROJECT_ERROR_KEY_PREFIX = "project"
 
 class PreviousApplicationStatusNotFoundException : ApplicationNotFoundException(
-    code = PROJECT_ERROR_CODE_PREFIX,
+    code = "$PROJECT_ERROR_CODE_PREFIX-001",
     i18nMessage = I18nMessage("$PROJECT_ERROR_KEY_PREFIX.application.previous.status.not.found")
+)
+class ApplicationStatusNotFoundException : ApplicationNotFoundException(
+    code = "$PROJECT_ERROR_CODE_PREFIX-002",
+    i18nMessage = I18nMessage("$PROJECT_ERROR_KEY_PREFIX.application.status.not.found")
+)
+class ApplicationVersionNotFoundException : ApplicationNotFoundException(
+    code = "$PROJECT_ERROR_CODE_PREFIX-003",
+    i18nMessage = I18nMessage("$PROJECT_ERROR_KEY_PREFIX.application.version.not.found")
 )

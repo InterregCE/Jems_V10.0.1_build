@@ -1,7 +1,10 @@
 package io.cloudflight.jems.server.project.repository.partner.budget
 
+import io.cloudflight.jems.server.project.repository.ProjectVersionUtils
 import io.cloudflight.jems.server.project.repository.budget.ProjectLumpSumRepository
+import io.cloudflight.jems.server.project.service.ProjectPersistence
 import io.cloudflight.jems.server.project.service.partner.budget.ProjectPartnerBudgetCostsPersistence
+import io.cloudflight.jems.server.project.service.partner.model.BudgetStaffCostEntry
 import io.cloudflight.jems.server.project.service.partner.model.BudgetUnitCostEntry
 import org.springframework.stereotype.Repository
 import org.springframework.transaction.annotation.Transactional
@@ -9,18 +12,30 @@ import java.math.BigDecimal
 
 @Repository
 class ProjectPartnerBudgetCostsPersistenceProvider(
+    private val projectVersionUtils: ProjectVersionUtils,
+    private val projectPersistence: ProjectPersistence,
     private val budgetStaffCostRepository: ProjectPartnerBudgetStaffCostRepository,
     private val budgetTravelRepository: ProjectPartnerBudgetTravelRepository,
     private val budgetExternalRepository: ProjectPartnerBudgetExternalRepository,
     private val budgetEquipmentRepository: ProjectPartnerBudgetEquipmentRepository,
     private val budgetInfrastructureRepository: ProjectPartnerBudgetInfrastructureRepository,
     private val budgetUnitCostRepository: ProjectPartnerBudgetUnitCostRepository,
-    private val budgetLumpSumRepository: ProjectLumpSumRepository,
+    private val budgetLumpSumRepository: ProjectLumpSumRepository
 ) : ProjectPartnerBudgetCostsPersistence {
 
     @Transactional(readOnly = true)
-    override fun getBudgetStaffCosts(partnerId: Long) =
-        budgetStaffCostRepository.findAllByBasePropertiesPartnerIdOrderByIdAsc(partnerId).toBudgetStaffCostEntries()
+    override fun getBudgetStaffCosts(partnerId: Long, version: Int?): List<BudgetStaffCostEntry> =
+        projectVersionUtils.fetch(version, projectPersistence.getProjectIdForPartner(partnerId),
+            currentVersionFetcher = {
+                budgetStaffCostRepository.findAllByBasePropertiesPartnerIdOrderByIdAsc(partnerId)
+                    .toBudgetStaffCostEntries()
+            },
+            previousVersionFetcher = { timestamp ->
+                budgetStaffCostRepository.findAllByPartnerIdAsOfTimestamp(partnerId, timestamp)
+                    .toBudgetStaffCostEntryList()
+            }
+        )
+
 
     @Transactional(readOnly = true)
     override fun getBudgetStaffCostTotal(partnerId: Long): BigDecimal =

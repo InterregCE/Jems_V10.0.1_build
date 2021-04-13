@@ -2,17 +2,15 @@ package io.cloudflight.jems.server.project.service.application.workflow
 
 import io.cloudflight.jems.server.audit.service.AuditService
 import io.cloudflight.jems.server.authentication.service.SecurityService
-import io.cloudflight.jems.server.project.service.ProjectPersistence
+import io.cloudflight.jems.server.project.service.ProjectWorkflowPersistence
 import io.cloudflight.jems.server.project.service.application.ApplicationActionInfo
 import io.cloudflight.jems.server.project.service.application.ApplicationStatus
 import io.cloudflight.jems.server.project.service.model.ProjectSummary
-import org.slf4j.Logger
-import org.slf4j.LoggerFactory
 import java.time.LocalDate
 
 abstract class ApplicationState(
     protected open val projectSummary: ProjectSummary,
-    protected open val projectPersistence: ProjectPersistence,
+    protected open val projectWorkflowPersistence: ProjectWorkflowPersistence,
     protected open val auditService: AuditService,
     protected open val securityService: SecurityService
 ) {
@@ -62,29 +60,29 @@ abstract class ApplicationState(
 
 
     protected fun getPossibleStatusToRevertToDefaultImpl(validRevertStatuses: Set<ApplicationStatus>) =
-        projectPersistence.getApplicationPreviousStatus(projectSummary.id).let { previousStatus ->
+        projectWorkflowPersistence.getApplicationPreviousStatus(projectSummary.id).let { previousStatus ->
             validRevertStatuses.firstOrNull { it === previousStatus }
         }
 
     protected fun returnToApplicantDefaultImpl(): ApplicationStatus =
-        projectPersistence.updateProjectCurrentStatus(
+        projectWorkflowPersistence.updateProjectCurrentStatus(
             projectId = projectSummary.id,
             userId = securityService.getUserIdOrThrow(),
             status = ApplicationStatus.RETURNED_TO_APPLICANT
         )
 
     protected fun revertCurrentStatusToPreviousStatus(validRevertStatuses: Set<ApplicationStatus>): ApplicationStatus =
-        projectPersistence.getApplicationPreviousStatus(projectSummary.id).also { previousStatus ->
+        projectWorkflowPersistence.getApplicationPreviousStatus(projectSummary.id).also { previousStatus ->
 
             if (!validRevertStatuses.contains(previousStatus))
                 throw DecisionReversionIsNotPossibleException(projectSummary.status, previousStatus)
 
-            projectPersistence.revertCurrentStatusToPreviousStatus(projectSummary.id)
+            projectWorkflowPersistence.revertCurrentStatusToPreviousStatus(projectSummary.id)
 
         }
 
     protected fun ifFundingDecisionDateIsValid(fundingDecisionDate: LocalDate?) {
-        projectPersistence.getProjectEligibilityDecisionDate(projectSummary.id).let { decisionDate ->
+        projectWorkflowPersistence.getProjectEligibilityDecisionDate(projectSummary.id).let { decisionDate ->
             if (decisionDate == null || fundingDecisionDate == null || fundingDecisionDate.isBefore(decisionDate))
                 throw FundingDecisionIsBeforeEligibilityDecisionException()
         }

@@ -11,9 +11,9 @@ class GetBudgetCosts(private val persistence: ProjectPartnerBudgetCostsPersisten
 
     @Transactional(readOnly = true)
     @CanReadProjectPartner
-    override fun getBudgetCosts(partnerId: Long) =
+    override fun getBudgetCosts(partnerId: Long, version: Int?) =
         BudgetCosts(
-            staffCosts = persistence.getBudgetStaffCosts(partnerId),
+            staffCosts = persistence.getBudgetStaffCosts(partnerId, version),
             travelCosts = persistence.getBudgetTravelAndAccommodationCosts(partnerId),
             externalCosts = persistence.getBudgetExternalExpertiseAndServicesCosts(partnerId),
             equipmentCosts = persistence.getBudgetEquipmentCosts(partnerId),

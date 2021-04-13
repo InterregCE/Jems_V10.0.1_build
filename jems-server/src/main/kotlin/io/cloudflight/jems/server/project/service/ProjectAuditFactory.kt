@@ -7,6 +7,7 @@ import io.cloudflight.jems.server.audit.service.AuditBuilder
 import io.cloudflight.jems.server.audit.service.AuditCandidate
 import io.cloudflight.jems.server.project.service.application.ApplicationStatus
 import io.cloudflight.jems.server.project.service.model.ProjectSummary
+import io.cloudflight.jems.server.project.service.model.ProjectVersion
 
 fun projectApplicationCreated(
     projectId: Long,
@@ -26,6 +27,12 @@ fun projectStatusChanged(context: Any, projectSummary: ProjectSummary, newStatus
             .description("Project application status changed from ${projectSummary.status} to $newStatus")
             .build()
     )
+
+fun projectVersionCreated(projectSummary: ProjectSummary, projectVersion: ProjectVersion): AuditCandidate =
+    AuditBuilder(AuditAction.APPLICATION_VERSION_CREATED)
+        .project(id = projectSummary.id, name = projectSummary.acronym)
+        .description("New project version \"V.${projectVersion.version}\" is created by user: ${projectVersion.user.email} on ${projectVersion.createdAt.toLocalDateTime()}")
+        .build()
 
 fun callAlreadyEnded(callId: Long): AuditCandidate =
     AuditBuilder(AuditAction.CALL_ALREADY_ENDED)

@@ -1,5 +1,6 @@
 package io.cloudflight.jems.server.common.entity
 
+import io.cloudflight.jems.api.programme.dto.language.SystemLanguage
 import io.cloudflight.jems.api.programme.dto.language.SystemLanguage.DE
 import io.cloudflight.jems.api.programme.dto.language.SystemLanguage.EN
 import io.cloudflight.jems.api.programme.dto.language.SystemLanguage.FR
@@ -9,7 +10,7 @@ import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 
 
-class CommonModelMapperKtTest : UnitTest() {
+class CommonModelMapperTest : UnitTest() {
 
     @Test
     fun `should filter null or empty translations when mapping entities to models`() {
@@ -17,6 +18,18 @@ class CommonModelMapperKtTest : UnitTest() {
             SampleTranslationEntity(TranslationId(this, FR), ""),
             SampleTranslationEntity(TranslationId(this, DE), null),
             SampleTranslationEntity(TranslationId(this, EN), "not empty"),
+        )
+
+        assertThat(translatedValue.extractField { it.text }).containsExactly(InputTranslation(EN, "not empty"))
+
+    }
+
+    @Test
+    fun `should filter null or empty translations when mapping views to models`() {
+        val translatedValue = listOf(
+            SampleTranslationView( FR, "", ),
+            SampleTranslationView(DE, null ),
+            SampleTranslationView(EN, "not empty"),
         )
 
         assertThat(translatedValue.extractField { it.text }).containsExactly(InputTranslation(EN, "not empty"))
@@ -47,3 +60,9 @@ internal class SampleTranslationEntity(
     val text: String? = null,
     val title: String? = null
 ) : TranslationEntity()
+
+internal class SampleTranslationView(
+    override val language: SystemLanguage?,
+    val text: String? = null,
+    val title: String? = null
+) : TranslationView
