@@ -17,7 +17,7 @@ export class FormFieldWidthDirective implements OnInit {
     this.el.nativeElement.classList.add(`app-layout`);
     this.el.nativeElement.classList.add(`app-form-field`);
     this.el.nativeElement.classList.add(`app-form-field-width`);
-    this.el.nativeElement.style.setProperty('--widthBasedOnType', this.mapWidthTypeToActualWidth(this.formFieldWidth));
+    this.el.nativeElement.style.setProperty('--widthBasedOnType', this.mapWidthToActualWidth(this.formFieldWidth));
 
     if (this.expectedNumberOfChars) {
       this.el.nativeElement.style.setProperty('--widthBasedOnNumberChars', this.mapNumberOfCharsToRem(this.expectedNumberOfChars));
@@ -48,8 +48,8 @@ export class FormFieldWidthDirective implements OnInit {
     }
   }
 
-  private mapWidthTypeToActualWidth(widthType: string): string {
-    switch (widthType) {
+  private mapWidthToActualWidth(width: string): string {
+    switch (width) {
       case 'small':
         return '5rem';
       case 'medium':
@@ -65,7 +65,7 @@ export class FormFieldWidthDirective implements OnInit {
       case 'full':
         return '100%';
       default:
-        return widthType;
+        return width;
     }
   }
 }
