@@ -6,9 +6,11 @@ import io.cloudflight.jems.server.audit.model.AuditCandidateEvent
 import io.cloudflight.jems.server.audit.model.AuditProject
 import io.cloudflight.jems.server.audit.service.AuditCandidate
 import io.cloudflight.jems.server.project.service.ProjectPersistence
+import io.cloudflight.jems.server.project.service.ProjectWorkflowPersistence
 import io.cloudflight.jems.server.project.service.application.ApplicationStatus
 import io.cloudflight.jems.server.project.service.application.workflow.ApplicationStateFactory
 import io.cloudflight.jems.server.project.service.application.workflow.states.DraftApplicationState
+import io.cloudflight.jems.server.project.service.create_new_project_version.CreateNewProjectVersionInteractor
 import io.cloudflight.jems.server.project.service.model.ProjectSummary
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
@@ -36,7 +38,13 @@ class SubmitApplicationInteractorTest : UnitTest() {
     lateinit var projectPersistence: ProjectPersistence
 
     @MockK
+    lateinit var projectWorkflowPersistence: ProjectWorkflowPersistence
+
+    @MockK
     lateinit var applicationStateFactory: ApplicationStateFactory
+
+    @RelaxedMockK
+    lateinit var createNewProjectVersionInteractor: CreateNewProjectVersionInteractor
 
     @RelaxedMockK
     lateinit var auditPublisher: ApplicationEventPublisher
@@ -53,6 +61,11 @@ class SubmitApplicationInteractorTest : UnitTest() {
         every { projectPersistence.getProjectSummary(PROJECT_ID) } returns summary
         every { applicationStateFactory.getInstance(any()) } returns draftState
         every { draftState.submit() } returns ApplicationStatus.SUBMITTED
+        every { projectWorkflowPersistence.getLatestApplicationStatusNotEqualTo(
+            PROJECT_ID,
+            ApplicationStatus.RETURNED_TO_APPLICANT
+        ) } returns ApplicationStatus.SUBMITTED
+
 
         assertThat(submitApplication.submit(PROJECT_ID)).isEqualTo(ApplicationStatus.SUBMITTED)
 

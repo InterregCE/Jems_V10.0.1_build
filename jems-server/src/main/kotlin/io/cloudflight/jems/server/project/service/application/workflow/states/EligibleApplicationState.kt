@@ -2,19 +2,18 @@ package io.cloudflight.jems.server.project.service.application.workflow.states
 
 import io.cloudflight.jems.server.audit.service.AuditService
 import io.cloudflight.jems.server.authentication.service.SecurityService
-import io.cloudflight.jems.server.project.service.ProjectPersistence
+import io.cloudflight.jems.server.project.service.ProjectWorkflowPersistence
 import io.cloudflight.jems.server.project.service.application.ApplicationActionInfo
 import io.cloudflight.jems.server.project.service.application.ApplicationStatus
 import io.cloudflight.jems.server.project.service.application.workflow.ApplicationState
-import io.cloudflight.jems.server.project.service.application.workflow.ApplicationStateFactory
 import io.cloudflight.jems.server.project.service.model.ProjectSummary
 
 class EligibleApplicationState(
     override val projectSummary: ProjectSummary,
-    override val projectPersistence: ProjectPersistence,
+    override val projectWorkflowPersistence: ProjectWorkflowPersistence,
     override val auditService: AuditService,
     override val securityService: SecurityService
-) : ApplicationState(projectSummary, projectPersistence, auditService, securityService) {
+) : ApplicationState(projectSummary, projectWorkflowPersistence, auditService, securityService) {
 
     private val canBeRevertTo = setOf(ApplicationStatus.SUBMITTED)
 
@@ -23,7 +22,7 @@ class EligibleApplicationState(
 
     override fun revertDecision(): ApplicationStatus =
         revertCurrentStatusToPreviousStatus(canBeRevertTo).also {
-            projectPersistence.clearProjectEligibilityDecision(projectSummary.id)
+            projectWorkflowPersistence.clearProjectEligibilityDecision(projectSummary.id)
         }
 
     override fun getPossibleStatusToRevertTo() =
@@ -41,7 +40,7 @@ class EligibleApplicationState(
 
     private fun updateFundingDecision(targetStatus: ApplicationStatus, actionInfo: ApplicationActionInfo) =
         ifFundingDecisionDateIsValid(actionInfo.date).run {
-            projectPersistence.updateProjectFundingDecision(
+            projectWorkflowPersistence.updateProjectFundingDecision(
                 projectSummary.id,
                 securityService.getUserIdOrThrow(),
                 targetStatus,

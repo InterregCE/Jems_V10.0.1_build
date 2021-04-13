@@ -7,6 +7,10 @@ inline fun <T : TranslationEntity> Set<T>.extractField(extractFunction: (T) -> S
     map { InputTranslation(it.language(), extractFunction.invoke(it)) }
         .filterTo(HashSet()) { !it.translation.isNullOrBlank() }
 
+inline fun <T : TranslationView> List<T>.extractField(extractFunction: (T) -> String?) =
+    filter { it.language !=null }.map { InputTranslation(it.language!!, extractFunction.invoke(it)) }
+        .filterTo(HashSet()) { !it.translation.isNullOrBlank() }
+
 fun <T : TranslationEntity> MutableSet<T>.addTranslationEntities(
     entitySupplier: (SystemLanguage) -> T,
     translatableFields: Array<Set<InputTranslation>>

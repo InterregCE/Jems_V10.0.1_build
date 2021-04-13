@@ -18,7 +18,7 @@ interface ProjectPartnerBudgetCostsPersistence {
     fun getBudgetInfrastructureAndWorksCosts(partnerId: Long): List<BudgetGeneralCostEntry>
     fun getBudgetInfrastructureAndWorksCostTotal(partnerId: Long): BigDecimal
 
-    fun getBudgetStaffCosts(partnerId: Long): List<BudgetStaffCostEntry>
+    fun getBudgetStaffCosts(partnerId: Long, version: Int? = null): List<BudgetStaffCostEntry>
     fun getBudgetStaffCostTotal(partnerId: Long): BigDecimal
 
     fun getBudgetTravelAndAccommodationCosts(partnerId: Long): List<BudgetTravelAndAccommodationCostEntry>
