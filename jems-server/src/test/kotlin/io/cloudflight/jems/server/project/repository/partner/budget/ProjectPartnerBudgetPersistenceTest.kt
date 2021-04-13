@@ -33,7 +33,6 @@ class ProjectPartnerBudgetPersistenceTest: UnitTest() {
             numberOfUnits = BigDecimal.ONE,
             pricePerUnit = BigDecimal.TEN,
             rowSum = BigDecimal.TEN,
-            type = StaffCostType.REAL_COST,
             budgetPeriods = mutableSetOf(),
         )
 

@@ -60,26 +60,6 @@
                         </mat-footer-cell>
                     </ng-container>
 
-                    <ng-container matColumnDef="type">
-                        <mat-header-cell
-                                *matHeaderCellDef> {{'project.partner.budget.table.staff.type.of.staff' | translate}} </mat-header-cell>
-                        <mat-cell *matCellDef="let control;  let i = index" [formGroupName]="i">
-                            <div class="text-overflow-ellipsis"
-                                 *ngIf="getUnitCost(control).value">{{'project.partner.budget.table.staff.type.of.staff.unit.cost' | translate}}</div>
-                            <mat-form-field appFormFieldWidth="full" *ngIf="!getUnitCost(control).value">
-                                <mat-select
-                                        [formControlName]="constants.FORM_CONTROL_NAMES.type">
-                                    <mat-option [value]="null"></mat-option>
-                                    <mat-option
-                                            [value]="staffCostType.REAL_COST">{{'project.partner.budget.table.staff.type.of.staff.fixed.percentage' | translate}}</mat-option>
-                                    <mat-option
-                                            [value]="staffCostType.UNIT_COST">{{'project.partner.budget.table.staff.type.of.staff.unit.cost' | translate}}</mat-option>
-                                </mat-select>
-                            </mat-form-field>
-                        </mat-cell>
-                        <mat-footer-cell *matFooterCellDef></mat-footer-cell>
-                    </ng-container>
-
                     <ng-container matColumnDef="comment">
                         <mat-header-cell
                                 *matHeaderCellDef> {{'project.partner.budget.table.staff.comment' | translate}} </mat-header-cell>

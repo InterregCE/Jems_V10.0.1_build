@@ -8,7 +8,6 @@ export class StaffCostsBudgetTableEntry {
   pricePerUnit?: number;
   rowSum?: number;
   new?: boolean;
-  type?: string;
   unitType?: InputTranslation[] = [];
   unitCostId?: number;
   comment?: InputTranslation[] = [];
@@ -21,7 +20,6 @@ export class StaffCostsBudgetTableEntry {
     this.pricePerUnit = data.pricePerUnit;
     this.new = data.new;
     this.rowSum = data.rowSum;
-    this.type = data.type;
     this.unitType = data.unitType;
     this.unitCostId = data.unitCostId;
     this.comment = data.comment;

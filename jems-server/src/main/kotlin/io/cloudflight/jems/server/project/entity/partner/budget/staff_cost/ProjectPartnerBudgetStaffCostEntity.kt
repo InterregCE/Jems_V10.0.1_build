@@ -2,7 +2,6 @@ package io.cloudflight.jems.server.project.entity.partner.budget.staff_cost
 
 import io.cloudflight.jems.server.project.entity.partner.budget.BaseBudgetProperties
 import io.cloudflight.jems.server.project.entity.partner.budget.ProjectPartnerBudgetBase
-import io.cloudflight.jems.server.project.service.partner.model.StaffCostType
 import java.math.BigDecimal
 import javax.persistence.CascadeType
 import javax.persistence.Column
@@ -27,9 +26,6 @@ data class ProjectPartnerBudgetStaffCostEntity(
     @Column
     @field:NotNull
     val pricePerUnit: BigDecimal,
-
-    @Column
-    val type: StaffCostType?,
 
     @OneToMany(cascade = [CascadeType.ALL], orphanRemoval = true, mappedBy = "budgetTranslation.budget")
     val translatedValues: MutableSet<ProjectPartnerBudgetStaffCostTranslEntity> = mutableSetOf(),
