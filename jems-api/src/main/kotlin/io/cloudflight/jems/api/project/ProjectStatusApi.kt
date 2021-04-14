@@ -4,7 +4,6 @@ import io.cloudflight.jems.api.project.dto.status.InputProjectEligibilityAssessm
 import io.cloudflight.jems.api.project.dto.status.InputProjectQualityAssessment
 import io.cloudflight.jems.api.project.dto.ApplicationActionInfoDTO
 import io.cloudflight.jems.api.project.dto.ProjectDetailDTO
-import io.cloudflight.jems.api.project.dto.status.OutputRevertProjectStatus
 import io.cloudflight.jems.api.project.dto.status.ApplicationStatusDTO
 import io.swagger.annotations.Api
 import io.swagger.annotations.ApiOperation
@@ -29,35 +28,35 @@ interface ProjectStatusApi {
     @PutMapping("set-as-eligible", consumes = [MediaType.APPLICATION_JSON_VALUE])
     fun setApplicationAsEligible(
         @PathVariable id: Long,
-        @Valid @RequestBody actionInfo: ApplicationActionInfoDTO
+        @RequestBody actionInfo: ApplicationActionInfoDTO
     ): ApplicationStatusDTO
 
     @ApiOperation("Set project application as ineligible")
     @PutMapping("set-as-ineligible", consumes = [MediaType.APPLICATION_JSON_VALUE])
     fun setApplicationAsIneligible(
         @PathVariable id: Long,
-        @Valid @RequestBody actionInfo: ApplicationActionInfoDTO
+        @RequestBody actionInfo: ApplicationActionInfoDTO
     ): ApplicationStatusDTO
 
     @ApiOperation("Approve project application")
     @PutMapping("approve", consumes = [MediaType.APPLICATION_JSON_VALUE])
     fun approveApplication(
         @PathVariable id: Long,
-        @Valid @RequestBody actionInfo: ApplicationActionInfoDTO
+        @RequestBody actionInfo: ApplicationActionInfoDTO
     ): ApplicationStatusDTO
 
     @ApiOperation("Approve project application with condition")
     @PutMapping("approve-with-conditions", consumes = [MediaType.APPLICATION_JSON_VALUE])
     fun approveApplicationWithCondition(
         @PathVariable id: Long,
-        @Valid @RequestBody actionInfo: ApplicationActionInfoDTO
+        @RequestBody actionInfo: ApplicationActionInfoDTO
     ): ApplicationStatusDTO
 
     @ApiOperation("Refuse project application")
     @PutMapping("refuse", consumes = [MediaType.APPLICATION_JSON_VALUE])
     fun refuseApplication(
         @PathVariable id: Long,
-        @Valid @RequestBody actionInfo: ApplicationActionInfoDTO
+        @RequestBody actionInfo: ApplicationActionInfoDTO
     ): ApplicationStatusDTO
 
     @ApiOperation("Return project application to applicant")

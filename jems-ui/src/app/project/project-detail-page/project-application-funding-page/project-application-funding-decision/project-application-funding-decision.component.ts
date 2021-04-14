@@ -29,7 +29,7 @@ export class ProjectApplicationFundingDecisionComponent implements OnInit {
   actionPending = false;
 
   dateErrors = {
-    required: 'common.error.date.required',
+    required: 'common.error.field.required',
     matDatepickerMax: 'project.decision.date.must.be.in.the.past',
     matDatepickerMin: 'project.decision.date.must.be.after.eligibility.date',
     matDatepickerParse: 'common.date.should.be.valid'

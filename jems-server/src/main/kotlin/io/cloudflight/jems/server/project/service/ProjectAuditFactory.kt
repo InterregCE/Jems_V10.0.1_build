@@ -19,20 +19,29 @@ fun projectApplicationCreated(
         .description("Project application created with status $newStatus")
         .build()
 
-fun projectStatusChanged(context: Any, projectSummary: ProjectSummary, newStatus: ApplicationStatus) =
+fun projectStatusChanged(
+    context: Any, projectSummary: ProjectSummary, newStatus: ApplicationStatus
+): AuditCandidateEvent =
     AuditCandidateEvent(
         context = context,
-        auditCandidate =     AuditBuilder(AuditAction.APPLICATION_STATUS_CHANGED)
+        auditCandidate = AuditBuilder(AuditAction.APPLICATION_STATUS_CHANGED)
             .project(id = projectSummary.id, name = projectSummary.acronym)
             .description("Project application status changed from ${projectSummary.status} to $newStatus")
             .build()
     )
 
-fun projectVersionCreated(projectSummary: ProjectSummary, projectVersion: ProjectVersion): AuditCandidate =
-    AuditBuilder(AuditAction.APPLICATION_VERSION_CREATED)
-        .project(id = projectSummary.id, name = projectSummary.acronym)
-        .description("New project version \"V.${projectVersion.version}\" is created by user: ${projectVersion.user.email} on ${projectVersion.createdAt.toLocalDateTime()}")
-        .build()
+
+fun projectVersionCreated(
+    context: Any, projectSummary: ProjectSummary, projectVersion: ProjectVersion
+): AuditCandidateEvent =
+    AuditCandidateEvent(
+        context = context,
+        auditCandidate = AuditBuilder(AuditAction.APPLICATION_VERSION_CREATED)
+            .project(id = projectSummary.id, name = projectSummary.acronym)
+            .description("New project version \"V.${projectVersion.version}\" is created by user: ${projectVersion.user.email} on ${projectVersion.createdAt.toLocalDateTime()}")
+            .build()
+    )
+
 
 fun callAlreadyEnded(callId: Long): AuditCandidate =
     AuditBuilder(AuditAction.CALL_ALREADY_ENDED)

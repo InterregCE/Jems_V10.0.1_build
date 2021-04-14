@@ -246,7 +246,7 @@ internal class ProjectStatusServiceTest {
 ////        }
 ////
 ////        assertThat(exception.httpStatus).isEqualTo(HttpStatus.UNPROCESSABLE_ENTITY)
-////        assertThat(exception.i18nKey).isEqualTo("common.error.date.required")
+////        assertThat(exception.i18nKey).isEqualTo("common.error.field.required")
 //    }
 //
 //    @Test

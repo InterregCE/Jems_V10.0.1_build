@@ -5,6 +5,7 @@ import io.cloudflight.jems.server.UnitTest
 import io.cloudflight.jems.server.audit.model.AuditCandidateEvent
 import io.cloudflight.jems.server.audit.model.AuditProject
 import io.cloudflight.jems.server.audit.service.AuditCandidate
+import io.cloudflight.jems.server.common.validator.GeneralValidatorService
 import io.cloudflight.jems.server.project.service.ProjectPersistence
 import io.cloudflight.jems.server.project.service.application.ApplicationActionInfo
 import io.cloudflight.jems.server.project.service.application.ApplicationStatus
@@ -42,6 +43,9 @@ class RefuseApplicationInteractorTest : UnitTest() {
 
     @MockK
     lateinit var applicationStateFactory: ApplicationStateFactory
+
+    @RelaxedMockK
+    lateinit var generalValidatorService: GeneralValidatorService
 
     @RelaxedMockK
     lateinit var auditPublisher: ApplicationEventPublisher

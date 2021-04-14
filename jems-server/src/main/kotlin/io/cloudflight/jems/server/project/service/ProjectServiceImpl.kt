@@ -64,7 +64,7 @@ class ProjectServiceImpl(
             return projectRepo.findAll(page).map { it.toOutputProjectSimple() }
         }
         if (currentUser.hasRole(PROGRAMME_USER)) {
-            return projectRepo.findAllByCurrentStatusStatusNot(ApplicationStatusDTO.DRAFT, page)
+            return projectRepo.findAllByCurrentStatusStatusNot(ApplicationStatus.DRAFT, page)
                 .map { it.toOutputProjectSimple() }
         }
         if (currentUser.hasRole(APPLICANT_USER)) {

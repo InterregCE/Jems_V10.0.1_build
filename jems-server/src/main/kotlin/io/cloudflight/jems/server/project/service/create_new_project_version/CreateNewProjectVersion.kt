@@ -27,7 +27,7 @@ class CreateNewProjectVersion(
                 userId = securityService.getUserIdOrThrow()
             ).also {
                 auditPublisher.publishEvent(
-                    projectVersionCreated(projectPersistence.getProjectSummary(projectId), projectVersion = it)
+                    projectVersionCreated(context = this, projectPersistence.getProjectSummary(projectId), projectVersion = it)
                 )
             }
         }
